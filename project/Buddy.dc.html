@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<span style="display:inline-grid;place-items:center;width:100%;height:100%">
+  <sc-if value="{{ isSpellbound }}" hint-placeholder-val="{{ true }}">
+    <span style="position:relative;width:48px;height:40px;display:grid;place-items:center">
+      <span style="position:absolute;left:2px;right:2px;top:50%;height:9px;margin-top:-4px;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--accent2) 60%,transparent),transparent);border-radius:5px;opacity:0;animation:buddy-trail 2.2s ease-in-out infinite"></span>
+      <span style="width:34px;height:38px;animation:buddy-zoom 2.2s ease-in-out infinite"><dc-import name="SpellboundMascot" mood="excited" hint-size="34px,38px" style="width:34px;height:38px"></dc-import></span>
+    </span>
+  </sc-if>
+  <sc-if value="{{ isMarquee }}" hint-placeholder-val="{{ false }}">
+    <span style="position:relative;width:38px;height:38px;display:block">
+      <span style="position:absolute;left:50%;top:1px;transform:translateX(-50%);width:22px;height:22px;background:var(--accent);clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);box-shadow:0 0 9px color-mix(in srgb,var(--accent) 55%,transparent);animation:sl-twinkle 2.2s ease-in-out infinite"></span>
+      <span style="position:absolute;left:3px;bottom:7px;right:3px;height:5px;border-radius:2px;background:var(--accent2)"></span>
+      <span style="position:absolute;left:9px;bottom:1px;right:9px;height:4px;border-radius:2px;background:color-mix(in srgb,var(--accent2) 60%,transparent)"></span>
+    </span>
+  </sc-if>
+  <sc-if value="{{ isGalaxy }}" hint-placeholder-val="{{ false }}">
+    <span style="position:relative;width:34px;height:34px;display:grid;place-items:center"><span style="width:34px;height:19px;border-radius:50%;transform:rotate(-20deg);animation:sl-spin 6s linear infinite;background:radial-gradient(ellipse at 50% 50%,var(--slw),var(--accent) 24%,var(--accent2) 52%,transparent 74%);box-shadow:0 0 9px color-mix(in srgb,var(--accent) 50%,transparent)"><span style="position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent,color-mix(in srgb,var(--accent2) 55%,transparent) 55deg,transparent 120deg,color-mix(in srgb,var(--slw) 45%,transparent) 240deg,transparent 305deg)"></span></span><span style="position:absolute;width:6px;height:6px;border-radius:50%;background:var(--slw);box-shadow:0 0 7px var(--slw)"></span></span>
+  </sc-if>
+  <sc-if value="{{ isAnime }}" hint-placeholder-val="{{ false }}">
+    <span style="position:relative;width:34px;height:34px;display:block"><span style="position:absolute;inset:1px;border:2px solid transparent;border-bottom-color:var(--accent);border-left-color:var(--accent);border-radius:50%;animation:sl-spin 1.7s linear infinite"></span><span style="position:absolute;left:50%;top:50%;width:30px;height:5px;margin:-2.5px 0 0 -15px;background:linear-gradient(90deg,var(--accent),var(--slw) 90%);border-radius:1px 3px 3px 1px;transform:rotate(-42deg);box-shadow:0 0 6px color-mix(in srgb,var(--accent) 50%,transparent)"></span><span style="position:absolute;left:50%;top:50%;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:2px;background:var(--accent);transform:rotate(45deg)"></span></span>
+  </sc-if>
+  <sc-if value="{{ isScience }}" hint-placeholder-val="{{ false }}">
+    <span style="position:relative;width:34px;height:34px;display:block"><span style="position:absolute;left:9px;top:3px;width:9px;height:21px;border:2px solid var(--accent2);border-top:none;border-radius:0 0 5px 5px;transform:rotate(38deg);transform-origin:50% 85%;overflow:hidden"><span style="position:absolute;left:0;right:0;bottom:0;height:8px;background:var(--accent)"></span></span><span style="position:absolute;right:7px;top:15px;width:4px;height:4px;border-radius:50%;background:var(--accent);animation:sl-drop 1.1s ease-in infinite"></span><span style="position:absolute;right:6px;top:13px;width:5px;height:5px;border-radius:50%;background:var(--accent);opacity:.6;animation:sl-drop 1.1s ease-in .55s infinite"></span></span>
+  </sc-if>
+  <sc-if value="{{ isOrigami }}" hint-placeholder-val="{{ false }}">
+    <span style="position:relative;width:30px;height:24px;display:block"><span style="position:absolute;inset:0;background:var(--accent);clip-path:polygon(50% 0,100% 100%,50% 76%,0 100%)"></span><span style="position:absolute;inset:0;background:color-mix(in srgb,#000 20%,transparent);clip-path:polygon(50% 0,50% 76%,0 100%)"></span></span>
+  </sc-if>
+  <sc-if value="{{ isAvatar }}" hint-placeholder-val="{{ false }}">
+    <span style="position:relative;width:34px;height:34px;display:grid;place-items:center"><span style="width:16px;height:16px;border-radius:50%;background:#13202a;position:relative;z-index:1;display:grid;place-items:center;box-shadow:0 0 6px rgba(0,0,0,.5)"><span style="width:7px;height:10px;background:#eaf6ff;clip-path:polygon(50% 0,100% 50%,70% 50%,70% 100%,30% 100%,30% 50%,0 50%)"></span></span><span style="position:absolute;inset:0;animation:sl-spin 5s linear infinite"><span style="position:absolute;top:0;left:50%;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:#ff6a3d;box-shadow:0 0 4px #ff6a3d"></span><span style="position:absolute;bottom:0;left:50%;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:var(--accent2)"></span><span style="position:absolute;left:0;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--accent3)"></span><span style="position:absolute;right:0;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--slw)"></span></span></span>
+  </sc-if>
+  <sc-if value="{{ isPixel }}" hint-placeholder-val="{{ false }}">
+    <span style="display:grid;grid-template-columns:repeat(2,7px);grid-template-rows:repeat(2,7px);gap:3px;width:34px;height:34px;place-content:center"><span style="background:var(--accent);animation:sl-blink .9s steps(1,end) infinite"></span><span style="background:var(--accent2);animation:sl-blink .9s steps(1,end) .3s infinite"></span><span style="background:var(--accent2);animation:sl-blink .9s steps(1,end) .6s infinite"></span><span style="background:var(--accent);animation:sl-blink .9s steps(1,end) .15s infinite"></span></span>
+  </sc-if>
+</span>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:60,&quot;height&quot;:60},&quot;theme&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const t = this.props.theme || 'spellbound';
+    return {
+      isSpellbound: t === 'spellbound', isMarquee: t === 'marquee', isGalaxy: t === 'aurora',
+      isAnime: t === 'anime', isScience: t === 'science', isOrigami: t === 'origami',
+      isAvatar: t === 'avatar', isPixel: t === 'pixel',
+    };
+  }
+}
+</script>
+</body>
+</html>

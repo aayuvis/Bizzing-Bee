@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;line-height:0;">{{ mascot }}</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:240,&quot;height&quot;:270},&quot;mood&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;happy&quot;,&quot;excited&quot;,&quot;love&quot;,&quot;sleepy&quot;,&quot;oops&quot;,&quot;wow&quot;],&quot;default&quot;:&quot;happy&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;bodyColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#FFC23D&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;accentColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#3A2A8C&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const h = React.createElement;
+    const mood = this.props.mood || 'happy';
+    const C = {
+      body:   this.props.bodyColor || '#FFC23D',
+      bodyLt: '#FFD86E',
+      bodyEdge:'#F0A81C',
+      stripe: this.props.accentColor || '#3A2A8C',
+      wing:   '#EDE7FF',
+      wingEdge:'#C4B4FF',
+      gold:   '#FFC83D',
+      white:  '#FFFFFF',
+      pupil:  '#2B1B5E',
+      cheek:  '#FF7FBE',
+      mouth:  '#3A1E5C',
+      tongue: '#FF6FA0',
+      heart:  '#FF4D8D',
+      tear:   '#5EC2FF',
+    };
+    this._cid = this._cid || ('bc' + Math.random().toString(36).slice(2, 8));
+    const CLIP = this._cid;
+
+    function starPath(cx, cy, outer, inner, pts) {
+      pts = pts || 5;
+      let p = '';
+      const step = Math.PI / pts;
+      for (let i = 0; i < 2 * pts; i++) {
+        const r = i % 2 ? inner : outer;
+        const a = -Math.PI / 2 + i * step;
+        const x = cx + r * Math.cos(a);
+        const y = cy + r * Math.sin(a);
+        p += (i ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1);
+      }
+      return p + 'Z';
+    }
+    function heartPath(cx, cy, s) {
+      return 'M' + cx + ',' + (cy + 0.32 * s) +
+        ' C' + cx + ',' + (cy - 0.05 * s) + ' ' + (cx - 0.55 * s) + ',' + (cy - 0.45 * s) + ' ' + (cx - 0.55 * s) + ',' + (cy - 0.05 * s) +
+        ' C' + (cx - 0.55 * s) + ',' + (cy + 0.22 * s) + ' ' + (cx - 0.18 * s) + ',' + (cy + 0.42 * s) + ' ' + cx + ',' + (cy + 0.62 * s) +
+        ' C' + (cx + 0.18 * s) + ',' + (cy + 0.42 * s) + ' ' + (cx + 0.55 * s) + ',' + (cy + 0.22 * s) + ' ' + (cx + 0.55 * s) + ',' + (cy - 0.05 * s) +
+        ' C' + (cx + 0.55 * s) + ',' + (cy - 0.45 * s) + ' ' + cx + ',' + (cy - 0.05 * s) + ' ' + cx + ',' + (cy + 0.32 * s) + ' Z';
+    }
+
+    const EL = 92, ER = 152, EY = 150; // eye centers
+
+    // ---- shared body + hat ----
+    const base = [
+      // wings (behind body)
+      h('ellipse', { key:'wl', cx:58,  cy:106, rx:30, ry:50, fill:C.wing, stroke:C.wingEdge, strokeWidth:3, opacity:0.92, transform:'rotate(-26 58 106)' }),
+      h('ellipse', { key:'wr', cx:182, cy:106, rx:30, ry:50, fill:C.wing, stroke:C.wingEdge, strokeWidth:3, opacity:0.92, transform:'rotate(26 182 106)' }),
+      // antennae
+      h('path', { key:'anl', d:'M104,84 Q88,48 84,28', fill:'none', stroke:C.stripe, strokeWidth:6, strokeLinecap:'round' }),
+      h('path', { key:'anr', d:'M136,84 Q152,48 156,28', fill:'none', stroke:C.stripe, strokeWidth:6, strokeLinecap:'round' }),
+      h('path', { key:'ans1', d: starPath(84, 24, 11, 4.5), fill:C.gold }),
+      h('path', { key:'ans2', d: starPath(156, 24, 11, 4.5), fill:C.gold }),
+      // arms / legs nubs
+      h('ellipse', { key:'a1', cx:32,  cy:196, rx:13, ry:20, fill:C.body, transform:'rotate(22 32 196)' }),
+      h('ellipse', { key:'a2', cx:208, cy:196, rx:13, ry:20, fill:C.body, transform:'rotate(-22 208 196)' }),
+      // body
+      h('ellipse', { key:'body', cx:120, cy:172, rx:88, ry:96, fill:C.body }),
+      // top sheen
+      h('ellipse', { key:'hl', cx:98, cy:118, rx:42, ry:30, fill:C.bodyLt, opacity:0.5 }),
+      // stripes (clipped to body)
+      h('defs', { key:'defs' }, h('clipPath', { id:CLIP }, h('ellipse', { cx:120, cy:172, rx:88, ry:96 }))),
+      h('g', { key:'stripes', clipPath:'url(#' + CLIP + ')' },
+        h('rect', { x:28, y:214, width:184, height:24, fill:C.stripe }),
+        h('rect', { x:28, y:246, width:184, height:24, fill:C.stripe })
+      ),
+    ];
+    const hat = [];
+    const cheeks = [
+      h('ellipse', { key:'c1', cx:62,  cy:184, rx:15, ry:9, fill:C.cheek, opacity:0.85 }),
+      h('ellipse', { key:'c2', cx:178, cy:184, rx:15, ry:9, fill:C.cheek, opacity:0.85 }),
+    ];
+
+    // ---- per-mood face ----
+    let face = [];
+    const normalEye = (cx, cy, er, pr, dx, dy) => [
+      h('circle', { key:'we'+cx, cx, cy, r:er, fill:C.white }),
+      h('circle', { key:'pe'+cx, cx:cx+dx, cy:cy+dy, r:pr, fill:C.pupil }),
+      h('circle', { key:'hi'+cx, cx:cx+dx-pr*0.35, cy:cy+dy-pr*0.4, r:pr*0.32, fill:C.white }),
+    ];
+
+    if (mood === 'happy') {
+      face = [
+        ...normalEye(EL, EY, 27, 13, 2, 2),
+        ...normalEye(ER, EY, 27, 13, 2, 2),
+        h('path', { key:'m', d:'M96,196 Q120,224 150,196', fill:'none', stroke:C.mouth, strokeWidth:9, strokeLinecap:'round' }),
+      ];
+    } else if (mood === 'excited') {
+      face = [
+        h('path', { key:'es1', d: starPath(EL, EY, 26, 11), fill:C.pupil }),
+        h('path', { key:'es2', d: starPath(ER, EY, 26, 11), fill:C.pupil }),
+        h('path', { key:'mo', d:'M92,194 Q120,200 150,194 Q142,232 120,232 Q98,232 92,194 Z', fill:C.mouth }),
+        h('path', { key:'tg', d:'M104,222 Q120,238 138,222 Q138,210 120,210 Q104,210 104,222 Z', fill:C.tongue }),
+        h('path', { key:'sp1', d: starPath(30, 70, 9, 4, 4), fill:C.gold }),
+        h('path', { key:'sp2', d: starPath(214, 60, 11, 5, 4), fill:C.gold }),
+        h('path', { key:'sp3', d: starPath(200, 120, 7, 3, 4), fill:C.gold }),
+      ];
+    } else if (mood === 'love') {
+      face = [
+        h('path', { key:'h1', d: heartPath(EL, EY, 46), fill:C.heart }),
+        h('path', { key:'h2', d: heartPath(ER, EY, 46), fill:C.heart }),
+        h('path', { key:'m', d:'M100,198 Q120,218 142,198', fill:'none', stroke:C.mouth, strokeWidth:9, strokeLinecap:'round' }),
+        h('path', { key:'fh1', d: heartPath(34, 96, 26), fill:C.heart, opacity:0.85 }),
+        h('path', { key:'fh2', d: heartPath(210, 84, 20), fill:C.heart, opacity:0.85 }),
+      ];
+    } else if (mood === 'sleepy') {
+      face = [
+        h('path', { key:'le', d:'M76,150 Q92,162 108,150', fill:'none', stroke:C.pupil, strokeWidth:8, strokeLinecap:'round' }),
+        h('path', { key:'re', d:'M136,150 Q152,162 168,150', fill:'none', stroke:C.pupil, strokeWidth:8, strokeLinecap:'round' }),
+        h('path', { key:'m', d:'M108,202 Q120,212 132,202', fill:'none', stroke:C.mouth, strokeWidth:8, strokeLinecap:'round' }),
+        h('text', { key:'z1', x:182, y:70, fill:C.pupil, fontSize:30, fontFamily:'Baloo 2, sans-serif', fontWeight:800 }, 'z'),
+        h('text', { key:'z2', x:202, y:46, fill:C.pupil, fontSize:22, fontFamily:'Baloo 2, sans-serif', fontWeight:800 }, 'z'),
+      ];
+    } else if (mood === 'oops') {
+      face = [
+        ...normalEye(EL, EY+4, 22, 11, 0, 5),
+        ...normalEye(ER, EY+4, 22, 11, 0, 5),
+        h('path', { key:'b1', d:'M72,128 L110,138', stroke:C.pupil, strokeWidth:7, strokeLinecap:'round' }),
+        h('path', { key:'b2', d:'M172,128 L134,138', stroke:C.pupil, strokeWidth:7, strokeLinecap:'round' }),
+        h('path', { key:'m', d:'M100,214 Q120,198 144,214', fill:'none', stroke:C.mouth, strokeWidth:8, strokeLinecap:'round' }),
+        h('path', { key:'tear', d:'M168,158 q-8,12 0,18 q8,-6 0,-18 Z', fill:C.tear }),
+      ];
+    } else { // wow
+      face = [
+        ...normalEye(EL, EY, 30, 15, 1, 1),
+        ...normalEye(ER, EY, 30, 15, 1, 1),
+        h('path', { key:'b1', d:'M70,116 Q92,106 112,116', fill:'none', stroke:C.pupil, strokeWidth:7, strokeLinecap:'round' }),
+        h('path', { key:'b2', d:'M132,116 Q152,106 174,116', fill:'none', stroke:C.pupil, strokeWidth:7, strokeLinecap:'round' }),
+        h('ellipse', { key:'m', cx:120, cy:212, rx:15, ry:18, fill:C.mouth }),
+      ];
+    }
+
+    const svg = h('svg', { viewBox:'0 0 240 270', width:'100%', height:'100%', style:{ display:'block', overflow:'visible' } },
+      ...base, ...hat,
+      h('g', { key:'facegrp', transform:'translate(0,-18)' }, ...cheeks, ...face)
+    );
+    return { mascot: svg };
+  }
+}
+</script>
+</body>
+</html>

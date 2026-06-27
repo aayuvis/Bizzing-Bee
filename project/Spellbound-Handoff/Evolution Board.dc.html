@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&family=Space+Mono&display=swap" rel="stylesheet">
+  <meta name="design_doc_mode" content="canvas">
+  <style>
+    *{box-sizing:border-box}
+    @keyframes ev-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+    @keyframes ev-spin{to{transform:rotate(360deg)}}
+    @keyframes ev-pulse{0%,100%{opacity:1}50%{opacity:.5}}
+    @keyframes ev-sway{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+    @keyframes ev-blink{0%,100%{opacity:1}50%{opacity:.35}}
+    @keyframes ev-rise{0%{transform:translateY(3px);opacity:0}40%{opacity:1}100%{transform:translateY(-9px);opacity:0}}
+    @keyframes ev-orbit{to{transform:rotate(360deg)}}
+    @keyframes ev-fold{0%,100%{transform:perspective(90px) rotateX(0deg)}50%{transform:perspective(90px) rotateX(26deg)}}
+    @keyframes ev-wobble{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+    @keyframes ev-crawl{0%,100%{transform:scaleX(1) scaleY(1)}50%{transform:scaleX(.82) scaleY(1.13)}}
+    @keyframes ev-breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+    @keyframes ev-hover{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.6px)}}
+    @keyframes ev-twinkle{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.76);opacity:.6}}
+    @keyframes ev-flicker{0%,100%{opacity:1}42%{opacity:.35}54%{opacity:.92}}
+    @keyframes ev-slash{0%,60%,100%{transform:rotate(-12deg)}80%{transform:rotate(13deg)}}
+    @keyframes ev-slosh{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+    @keyframes ev-fly{0%,100%{transform:translate(-2px,1px) rotate(-3deg)}50%{transform:translate(2px,-3px) rotate(3deg)}}
+    @keyframes ev-bloom{0%,100%{transform:scale(.85)}50%{transform:scale(1.05)}}
+    @keyframes ev-glide{0%,100%{transform:translateY(0) rotate(-2.5deg)}50%{transform:translateY(-3px) rotate(2.5deg)}}
+    @keyframes ev-hop{0%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}46%{transform:translateY(-5px)}}
+    @keyframes ev-drift{0%,100%{transform:translate(-2px,1px)}50%{transform:translate(2px,-2px)}}
+    @keyframes ev-wave{0%,100%{transform:translateX(-2.4px)}50%{transform:translateX(2.4px)}}
+    @keyframes ev-flame{0%,100%{transform:scaleY(1) skewX(0deg)}50%{transform:scaleY(1.13) skewX(-5deg)}}
+    @keyframes ev-sweep{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+    @keyframes ev-fizz{0%{transform:translateY(0);opacity:0}25%{opacity:1}100%{transform:translateY(-11px);opacity:0}}
+    @media (prefers-reduced-motion:reduce){svg *{animation:none!important}svg{animation:none!important}}
+  </style>
+</helmet>
+<div style="position:absolute;left:40px;top:30px;width:1240px">
+  <div data-drags-parent style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#8a8698;margin-bottom:10px">Light board · warm paper · 8×10</div>
+  <div style="background:#f4efe4;border:1px solid rgba(0,0,0,.1);border-radius:16px;padding:18px 18px 22px;box-shadow:0 12px 34px rgba(0,0,0,.14)">
+    <div style="display:grid;grid-template-columns:118px repeat(10,1fr)">
+      <div></div>
+      <sc-for list="{{ levels }}" as="lv" hint-placeholder-count="10"><div style="text-align:center;font-family:'Space Mono',monospace;font-size:10px;color:#9a9485;padding-bottom:7px">Lv {{ lv }}</div></sc-for>
+    </div>
+    <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+      <div style="display:grid;grid-template-columns:118px repeat(10,1fr);align-items:center;border-top:1px solid rgba(0,0,0,.08)">
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:13px;padding:8px 8px 8px 2px;color:{{ r.color }}">{{ r.label }}</div>
+        <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="10">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px 8px">
+            <div style="height:48px;display:grid;place-items:center">{{ c.node }}</div>
+            <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:9px;text-align:center;line-height:1.12;color:rgba(40,34,52,.72)">{{ c.name }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-for>
+  </div>
+</div>
+<div style="position:absolute;left:1360px;top:30px;width:1240px">
+  <div data-drags-parent style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#8a8698;margin-bottom:10px">White board · pure white · 8×10</div>
+  <div style="background:#ffffff;border:1px solid rgba(0,0,0,.1);border-radius:16px;padding:18px 18px 22px;box-shadow:0 12px 34px rgba(0,0,0,.14)">
+    <div style="display:grid;grid-template-columns:118px repeat(10,1fr)">
+      <div></div>
+      <sc-for list="{{ levels }}" as="lv" hint-placeholder-count="10"><div style="text-align:center;font-family:'Space Mono',monospace;font-size:10px;color:#9893a4;padding-bottom:7px">Lv {{ lv }}</div></sc-for>
+    </div>
+    <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+      <div style="display:grid;grid-template-columns:118px repeat(10,1fr);align-items:center;border-top:1px solid rgba(0,0,0,.08)">
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:13px;padding:8px 8px 8px 2px;color:{{ r.color }}">{{ r.label }}</div>
+        <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="10">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px 8px">
+            <div style="height:48px;display:grid;place-items:center">{{ c.node }}</div>
+            <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:9px;text-align:center;line-height:1.12;color:rgba(28,24,38,.66)">{{ c.name }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  TC = {
+    spellbound:{ a:'#7C5CFF', b:'#FFC83D', c:'#FF5FA2', ink:'#5a3fd0' },
+    marquee:   { a:'#E8B23A', b:'#F4D27A', c:'#C0392B', ink:'#9a6a14' },
+    aurora:    { a:'#7C5CFF', b:'#36D1FF', c:'#B98CFF', ink:'#4a3fb0' },
+    anime:     { a:'#FF4D8D', b:'#FFD23F', c:'#36C6E0', ink:'#c41f6a' },
+    science:   { a:'#22B814', b:'#16BEDC', c:'#9BE34D', ink:'#1f8e0c' },
+    origami:   { a:'#D9694A', b:'#5F8A6B', c:'#E0A458', ink:'#b04a2e' },
+    pixel:     { a:'#12B59C', b:'#FF5D9E', c:'#36E0C8', ink:'#0e9a86' },
+    avatar:    { a:'#F3A13C', b:'#2FA7D8', c:'#5FB87A', ink:'#1c6f96' },
+  };
+  NOMEN = {
+    spellbound:['Egg','Hatchling','Larva','Grub','Pupa','Cocoon','Worker','Forager','Spellbinder','Queen Bee'],
+    marquee:['Spark','Flicker','Bulb','Footlight','Rising Star','Star','Featured','Headliner','Legend','Marquee'],
+    aurora:['Dust','Cloud','Moon','Planet','Spark','Star','Pulsar','Nebula','Quasar','Galaxy'],
+    anime:['Mizunoto','Mizunoe','Kanoto','Kanoe','Tsuchinoto','Tsuchinoe','Hinoto','Hinoe','Kinoe','Hashira'],
+    science:['Spark','Drop','Vial','Sample','Reaction','Catalyst','Compound','Formula','Theory','Eureka'],
+    origami:['Sheet','Fold','Cup','Boat','Dart','Plane','Lotus','Crane','Dragon','Swan'],
+    pixel:['Bit','Byte','Sprite','Pixel','Hero','Combo','Mini-Boss','Boss','High Score','Arcade'],
+    avatar:['Pebble','Breeze','Gust','Droplet','Wave','Stone','Boulder','Ember','Flame','Avatar'],
+  };
+  ORDER = ['spellbound','marquee','aurora','anime','science','origami','pixel','avatar'];
+  LABEL = { spellbound:'Spellbound', marquee:'Marquee', aurora:'Galaxy', anime:'Anime', science:'Science', origami:'Origami', pixel:'Pixel', avatar:'Avatar' };
+  ANIM = {
+    spellbound:['ev-bob 2.6s ease-in-out infinite','50% 60%'],
+    marquee:['ev-bob 3s ease-in-out infinite','50% 60%'],
+    aurora:['ev-spin 16s linear infinite','50% 55%'],
+    anime:['ev-sway 2.4s ease-in-out infinite','50% 88%'],
+    science:['ev-bob 2.7s ease-in-out infinite','50% 60%'],
+    origami:['ev-fold 3.4s ease-in-out infinite','50% 50%'],
+    pixel:['ev-blink 1.1s steps(2) infinite','50% 50%'],
+    avatar:['ev-bob 2.9s ease-in-out infinite','50% 55%'],
+  };
+
+  star(cx, cy, R, fill, stroke) {
+    let p = '';
+    for (let i = 0; i < 10; i++) {
+      const ang = -Math.PI / 2 + i * Math.PI / 5;
+      const rr = i % 2 ? R * 0.44 : R;
+      p += (i ? 'L' : 'M') + (cx + Math.cos(ang) * rr).toFixed(1) + ' ' + (cy + Math.sin(ang) * rr).toFixed(1);
+    }
+    return `<path d="${p}Z" fill="${fill}"${stroke ? ` stroke="${stroke}" stroke-width="1"` : ''}/>`;
+  }
+
+  emb(id, s) {
+    const C = this.TC[id];
+    let g = '';
+    if (id === 'spellbound') {
+      if (s <= 1) {
+        g += `<ellipse cx="24" cy="30" rx="${7 + s}" ry="${10 + s}" fill="#FFE6A8" stroke="${C.ink}" stroke-width="1.5"/>`;
+        if (s === 1) g += `<circle cx="22" cy="27" r="1.3" fill="${C.ink}" opacity=".55"/><circle cx="26" cy="33" r="1.3" fill="${C.ink}" opacity=".55"/>`;
+      } else if (s <= 3) {
+        const n = 4 + s;
+        for (let i = 0; i < n; i++) { const ang = -1.5 + i * 0.5; g += `<circle cx="${(24 + Math.cos(ang) * 9).toFixed(1)}" cy="${(30 + Math.sin(ang) * 9).toFixed(1)}" r="${(4.4 - i * 0.18).toFixed(1)}" fill="#FFD98A" stroke="${C.ink}" stroke-width="1"/>`; }
+        g += `<circle cx="${(24 + Math.cos(-1.5) * 9).toFixed(1)}" cy="${(30 + Math.sin(-1.5) * 9 - 1).toFixed(1)}" r="1" fill="${C.ink}"/>`;
+      } else if (s <= 5) {
+        g += `<rect x="${17 - (s - 4)}" y="17" width="${14 + 2 * (s - 4)}" height="24" rx="7" fill="${C.b}" stroke="${C.ink}" stroke-width="1.3"/>`;
+        g += `<path d="M19 24 H29 M19 30 H29 M20 36 H28" stroke="${C.ink}" stroke-width="1.1" opacity=".55"/>`;
+        if (s === 5) g += `<path d="M17 22 Q9 18 12 29" fill="#eaf4ff" opacity=".85" stroke="${C.ink}" stroke-width=".8"/><path d="M31 22 Q39 18 36 29" fill="#eaf4ff" opacity=".85" stroke="${C.ink}" stroke-width=".8"/>`;
+      } else {
+        g += `<ellipse cx="15" cy="20" rx="7.5" ry="5" fill="#dff0ff" stroke="${C.ink}" stroke-width="1" transform="rotate(-22 15 20)"/>`;
+        g += `<ellipse cx="33" cy="20" rx="7.5" ry="5" fill="#dff0ff" stroke="${C.ink}" stroke-width="1" transform="rotate(22 33 20)"/>`;
+        g += `<ellipse cx="24" cy="31" rx="9.5" ry="11.5" fill="${C.b}" stroke="${C.ink}" stroke-width="1.4"/>`;
+        g += `<path d="M15.5 28 H32.5 M15 33 H33 M17 38 H31" stroke="${C.ink}" stroke-width="2.1"/>`;
+        g += `<path d="M21 20 Q19 13 16 12 M27 20 Q29 13 32 12" stroke="${C.ink}" stroke-width="1.3" fill="none"/><circle cx="16" cy="12" r="1.4" fill="${C.ink}"/><circle cx="32" cy="12" r="1.4" fill="${C.ink}"/>`;
+        g += `<circle cx="21" cy="29" r="1.6" fill="#1a1226"/><circle cx="27" cy="29" r="1.6" fill="#1a1226"/>`;
+        if (s >= 8) g += `<path d="M16 16 l2.2 -7 3 4.5 2.8 -7 2.8 7 3 -4.5 2.2 7 z" fill="${C.a}" stroke="${C.ink}" stroke-width=".8"/>`;
+        if (s === 9) g += `<g fill="${C.a}"><path d="M7 15 l1 2.2 2.2 1 -2.2 1 -1 2.2 -1 -2.2 -2.2 -1 2.2 -1z"/><path d="M41 31 l1 2.2 2.2 1 -2.2 1 -1 2.2 -1 -2.2 -2.2 -1 2.2 -1z"/></g>`;
+      }
+    } else if (id === 'marquee') {
+      const bulb = (x, y, r, d) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${C.b}" stroke="${C.ink}" stroke-width="1" style="animation:ev-pulse 1.4s ease-in-out ${d}s infinite"/>`;
+      if (s === 0) { g += bulb(24, 30, 3, 0); g += `<g stroke="${C.a}" stroke-width="1.4" stroke-linecap="round"><path d="M24 22V17M24 38V43M16 30H11M32 30H37M18 24l-3-3M30 24l3-3M18 36l-3 3M30 36l3 3"/></g>`; }
+      else if (s === 1) { g += bulb(24, 29, 5, 0); g += `<rect x="22" y="34" width="4" height="5" rx="1" fill="${C.ink}"/>`; }
+      else if (s === 2) { g += bulb(24, 27, 6.5, 0); g += `<rect x="20" y="33" width="8" height="6" rx="1.5" fill="${C.ink}"/><path d="M21 36h6" stroke="${C.b}" stroke-width="1"/>`; }
+      else if (s === 3) { g += bulb(15, 30, 4, 0) + bulb(24, 30, 4, .3) + bulb(33, 30, 4, .6); g += `<rect x="11" y="35" width="26" height="4" rx="2" fill="${C.ink}"/>`; }
+      else if (s === 4) { g += this.star(24, 29, 8, C.b, C.ink); }
+      else if (s === 5) { g += `<circle cx="24" cy="29" r="13" fill="${C.b}" opacity=".18"/>` + this.star(24, 29, 10, C.b, C.ink); }
+      else if (s === 6) { g += `<rect x="9" y="18" width="30" height="22" rx="3" fill="none" stroke="${C.ink}" stroke-width="1.4"/>` + this.star(24, 29, 8, C.b, C.ink); }
+      else if (s === 7) { g += this.star(24, 29, 9, C.b, C.ink) + bulb(10, 24, 3, 0) + bulb(38, 24, 3, .4) + bulb(10, 36, 3, .2) + bulb(38, 36, 3, .6); }
+      else { // 8,9 canonical spotlight beam + footlight star
+        g += `<g transform="rotate(26 36 13)"><rect x="31" y="9" width="10" height="8" rx="1.6" fill="#5a4628" stroke="${C.ink}" stroke-width="1"/><rect x="40" y="10.5" width="2.4" height="5" rx="1" fill="${C.b}"/></g>`;
+        g += `<path d="M38 16 L42 19 L16 39 L10 33 Z" fill="${C.b}" opacity=".4"/>`;
+        g += `<path d="M38 16 L40.5 18 L18 37 L13.5 32 Z" fill="${C.b}" opacity=".28"/>`;
+        g += `<g style="animation:ev-pulse 1.8s ease-in-out infinite">` + this.star(15, 35, 6.5, C.b, C.ink) + `</g>`;
+        if (s === 9) g += `<g fill="${C.b}"><path d="M27 11 l.8 1.8 1.8 .8 -1.8 .8 -.8 1.8 -.8 -1.8 -1.8 -.8 1.8 -.8z"/><path d="M9 22 l.7 1.5 1.5 .7 -1.5 .7 -.7 1.5 -.7 -1.5 -1.5 -.7 1.5 -.7z"/></g>`;
+      }
+    } else if (id === 'aurora') {
+      const pts = [[19, 26], [28, 30], [23, 35], [30, 23], [17, 32], [27, 38], [33, 33], [14, 27]];
+      if (s === 0) { for (let i = 0; i < 3; i++) g += `<circle cx="${pts[i][0]}" cy="${pts[i][1]}" r="2" fill="${C.b}"/>`; }
+      else if (s === 1) { g += `<ellipse cx="24" cy="30" rx="13" ry="9" fill="${C.c}" opacity=".4"/>`; for (let i = 0; i < 6; i++) g += `<circle cx="${pts[i][0]}" cy="${pts[i][1]}" r="1.8" fill="${C.b}"/>`; }
+      else if (s === 2) { g += `<circle cx="24" cy="30" r="9" fill="#c4cde0" stroke="${C.ink}" stroke-width="1"/><circle cx="21" cy="27" r="1.6" fill="#9aa6c0"/><circle cx="27" cy="31" r="2.1" fill="#9aa6c0"/><circle cx="23" cy="33" r="1.2" fill="#9aa6c0"/>`; }
+      else if (s === 3) { g += `<circle cx="24" cy="30" r="10" fill="${C.a}"/><path d="M16 27 Q24 24 32 28" stroke="${C.b}" stroke-width="1.5" fill="none" opacity=".7"/><ellipse cx="24" cy="30" rx="15" ry="4.5" fill="none" stroke="${C.b}" stroke-width="1.6" transform="rotate(-18 24 30)"/>`; }
+      else if (s === 4) { g += this.star(24, 30, 6, C.b, ''); }
+      else if (s === 5) { g += `<circle cx="24" cy="30" r="12" fill="${C.b}" opacity=".2"/>` + this.star(24, 30, 9, C.b, ''); }
+      else if (s === 6) { g += `<circle cx="24" cy="30" r="6" fill="#fff"/><circle cx="24" cy="30" r="6" fill="${C.b}" opacity=".5"/><g stroke="${C.a}" stroke-width="2" stroke-linecap="round"><path d="M24 14V22M24 38V46M8 30H16M32 30H40"/></g>`; }
+      else if (s === 7) { g += `<g style="filter:blur(1px)"><ellipse cx="22" cy="28" rx="11" ry="8" fill="${C.a}"/><ellipse cx="28" cy="33" rx="9" ry="7" fill="${C.c}"/><ellipse cx="24" cy="30" rx="6" ry="5" fill="${C.b}"/></g>`; }
+      else if (s === 8) { g += `<circle cx="24" cy="30" r="5" fill="#fff"/><circle cx="24" cy="30" r="8" fill="${C.b}" opacity=".35"/><path d="M24 30 L10 14 M24 30 L38 46" stroke="${C.a}" stroke-width="3" stroke-linecap="round"/>`; }
+      else { g += `<g><circle cx="24" cy="30" r="4" fill="#fff"/><path d="M24 30 Q36 22 34 36 Q24 40 24 30" fill="${C.a}" opacity=".85"/><path d="M24 30 Q12 38 14 24 Q24 20 24 30" fill="${C.c}" opacity=".85"/><circle cx="33" cy="33" r="1.3" fill="${C.b}"/><circle cx="15" cy="27" r="1.3" fill="${C.b}"/></g>`; }
+    } else if (id === 'anime') {
+      // katana growing
+      const len = 8 + s * 2.2;
+      if (s <= 1) { g += this.star(24, 30, 4 + s, C.a, ''); if (s === 1) g += `<path d="M24 30 l8 -8" stroke="${C.c}" stroke-width="2" stroke-linecap="round"/>`; }
+      else {
+        g += `<g transform="rotate(35 24 30)">`;
+        g += `<rect x="22.5" y="${30 - len}" width="3" height="${len}" rx="1.5" fill="#e9eef5" stroke="${C.ink}" stroke-width="1"/>`;
+        g += `<rect x="21.5" y="30" width="5" height="3" rx="1" fill="${C.ink}"/>`;
+        g += `<rect x="22.5" y="33" width="3" height="7" rx="1.5" fill="#3a2a2a"/>`;
+        g += `</g>`;
+        if (s >= 5) g += `<path d="M10 40 Q24 8 40 22" fill="none" stroke="${C.a}" stroke-width="2.4" stroke-linecap="round" opacity=".8" style="animation:ev-pulse 1.6s ease-in-out infinite"/>`;
+        if (s >= 8) g += `<g fill="${C.b}">` + `<path d="M12 16 l.7 1.6 1.6 .7 -1.6 .7 -.7 1.6 -.7 -1.6 -1.6 -.7 1.6 -.7z"/><path d="M36 34 l.7 1.6 1.6 .7 -1.6 .7 -.7 1.6 -.7 -1.6 -1.6 -.7 1.6 -.7z"/></g>`;
+        if (s === 9) g += `<circle cx="24" cy="30" r="15" fill="none" stroke="${C.a}" stroke-width="1.4" opacity=".5"/>`;
+      }
+    } else if (id === 'science') {
+      if (s === 0) { g += this.star(24, 30, 4, C.b, ''); }
+      else if (s === 1) { g += `<path d="M24 18 C30 28 30 33 24 38 C18 33 18 28 24 18 Z" fill="${C.b}" stroke="${C.ink}" stroke-width="1"/>`; }
+      else {
+        // test tube / flask
+        const flask = s >= 6;
+        const fill = Math.min(1, 0.25 + (s - 2) * 0.13);
+        if (!flask) {
+          g += `<path d="M20 14 V32 a4 4 0 0 0 8 0 V14" fill="#eef6f8" stroke="${C.ink}" stroke-width="1.4"/>`;
+          const ly = 32 - fill * 16;
+          g += `<path d="M20.3 ${ly.toFixed(1)} V32 a3.7 3.7 0 0 0 7.4 0 V${ly.toFixed(1)} Z" fill="${C.a}" opacity=".85"/>`;
+          g += `<rect x="18.5" y="12" width="11" height="3" rx="1.5" fill="${C.ink}"/>`;
+        } else {
+          g += `<path d="M21 13 V22 L14 36 a3 3 0 0 0 3 4 H31 a3 3 0 0 0 3 -4 L27 22 V13 Z" fill="#eef6f8" stroke="${C.ink}" stroke-width="1.4"/>`;
+          g += `<path d="M17 30 L31 30 L33 35 a3 3 0 0 1 -2.5 5 H17.5 a3 3 0 0 1 -2.5 -5 Z" fill="${C.a}" opacity=".85"/>`;
+          g += `<rect x="19.5" y="11" width="9" height="3" rx="1.5" fill="${C.ink}"/>`;
+        }
+        const nb = Math.max(0, s - 3);
+        for (let i = 0; i < nb; i++) g += `<circle cx="${21 + (i % 3) * 3}" cy="30" r="${1 + (i % 2) * 0.6}" fill="${C.c}" style="animation:ev-rise ${(1.4 + i * 0.2).toFixed(1)}s ease-in-out ${(i * 0.25).toFixed(2)}s infinite"/>`;
+        if (s >= 8) { g += `<g fill="none" stroke="${C.b}" stroke-width="1.2"><ellipse cx="24" cy="24" rx="9" ry="3.4"/><ellipse cx="24" cy="24" rx="9" ry="3.4" transform="rotate(60 24 24)"/><ellipse cx="24" cy="24" rx="9" ry="3.4" transform="rotate(-60 24 24)"/></g><circle cx="24" cy="24" r="1.6" fill="${C.a}"/>`; }
+      }
+    } else if (id === 'origami') {
+      const A = C.a, B = C.b, k = C.ink;
+      const sj = ` stroke="${k}" stroke-width="1.4" stroke-linejoin="round"`;
+      if (s === 0) g += `<path d="M13 15 H35 V37 H13 Z" fill="${A}"${sj}/><path d="M29 15 H35 V21 Z" fill="${B}" stroke="${k}" stroke-width="1"/><path d="M13 15 L35 37" stroke="${k}" stroke-width=".7" opacity=".22"/>`;
+      else if (s === 1) g += `<path d="M13 15 H35 V37 H13 Z" fill="${A}"${sj}/><path d="M13 15 H35 L13 37 Z" fill="${B}" stroke="${k}" stroke-width="1" stroke-linejoin="round"/><path d="M35 15 L13 37" stroke="${k}" stroke-width="1.1"/>`;
+      else if (s === 2) g += `<path d="M12 17 L36 17 L24 39 Z" fill="${A}"${sj}/><path d="M12 17 L24 23 L36 17" fill="none" stroke="${k}" stroke-width="1"/><path d="M18 26 L30 26 L24 33 Z" fill="${B}" stroke="${k}" stroke-width="1" stroke-linejoin="round"/>`;
+      else if (s === 3) g += `<path d="M10 32 L38 32 L31 39 L17 39 Z" fill="${A}"${sj}/><path d="M24 13 L24 31 L12 31 Z" fill="${B}" stroke="${k}" stroke-width="1" stroke-linejoin="round"/><path d="M24 13 L24 31 L36 31 Z" fill="${A}" stroke="${k}" stroke-width="1" stroke-linejoin="round"/>`;
+      else if (s === 4) g += `<path d="M9 30 L37 19 L26 30 Z" fill="${A}"${sj}/><path d="M9 30 L26 30 L37 41 Z" fill="${B}" stroke="${k}" stroke-width="1.1" stroke-linejoin="round"/><path d="M9 30 H26" stroke="${k}" stroke-width=".7" opacity=".4"/>`;
+      else if (s === 5) g += `<path d="M8 36 L41 13 L23 33 Z" fill="${B}"${sj}/><path d="M23 33 L41 13 L28 35 Z" fill="${A}" stroke="${k}" stroke-width="1.3" stroke-linejoin="round"/><path d="M23 33 L28 35 L24 39 Z" fill="${A}" opacity=".7" stroke="${k}" stroke-width=".8" stroke-linejoin="round"/>`;
+      else if (s === 6) g += `<g stroke="${k}" stroke-width="1.1" stroke-linejoin="round"><path d="M10 33 C12 25 20 24 24 30 C20 36 12 38 10 33 Z" fill="${B}"/><path d="M38 33 C36 25 28 24 24 30 C28 36 36 38 38 33 Z" fill="${B}"/><path d="M24 39 C16 32 16 22 24 15 C32 22 32 32 24 39 Z" fill="${A}"/></g><path d="M24 18 V37" stroke="${k}" stroke-width=".7" opacity=".4"/>`;
+      else if (s === 7) g += `<g stroke="${k}" stroke-width="1.1" stroke-linejoin="round"><path d="M24 30 L6 19 L22 31 Z" fill="${A}"/><path d="M24 30 L42 19 L26 31 Z" fill="${B}"/><path d="M19 30 L24 27 L29 30 L24 42 Z" fill="${A}"/><path d="M22 29 L10 11 L16 13 L19 19 Z" fill="${A}"/><path d="M10 11 L5 12 L12 14 Z" fill="${k}"/><path d="M26 29 L41 33 L29 31 Z" fill="${B}"/></g>`;
+      else if (s === 8) g += `<g stroke="${k}" stroke-width="1.1" stroke-linejoin="round"><path d="M7 33 L17 28 L14 21 L22 25 L21 16 L28 23 L32 16 L32 27 L26 31 Z" fill="${A}"/><path d="M26 31 L41 27 L33 33 L42 39 L30 35 L33 41 L23 35 Z" fill="${B}"/><circle cx="13" cy="29" r="1.1" fill="${k}"/></g>`;
+      else g += `<path d="M11 39 Q10 28 22 28 L26 28 Q23 21 30 17 L33 21 Q42 25 32 31 Q30 39 20 39 Z" fill="${A}"${sj}/><path d="M16 37 Q16 31 24 31 Q26 35 21 37 Z" fill="${B}" stroke="${k}" stroke-width=".8" stroke-linejoin="round"/><path d="M30 18 Q27 24 26 28" fill="none" stroke="${k}" stroke-width=".7" opacity=".4"/><circle cx="31" cy="16" r="1.5" fill="${k}"/><path d="M32 16 L37 17 L32 18 Z" fill="${C.c}"/>`;
+    } else if (id === 'pixel') {
+      const px = [[2, 0], [3, 0], [1, 1], [2, 1], [3, 1], [4, 1], [0, 2], [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [0, 3], [2, 3], [3, 3], [5, 3], [1, 4], [4, 4], [0, 4], [5, 4]];
+      const tot = px.length, n = Math.round((s + 1) / 10 * tot);
+      const sz = 5, ox = 12, oy = 16;
+      for (let i = 0; i < n; i++) { const [x, y] = px[i]; const col = (i % 5 === 0) ? C.b : C.a; g += `<rect x="${ox + x * sz}" y="${oy + y * sz}" width="${sz}" height="${sz}" fill="${col}" stroke="rgba(0,0,0,.18)" stroke-width=".5"/>`; }
+      if (s >= 4) { g += `<rect x="${ox + 2 * sz}" y="${oy + 2 * sz}" width="${sz}" height="${sz}" fill="#1a1226"/><rect x="${ox + 3 * sz}" y="${oy + 2 * sz}" width="${sz}" height="${sz}" fill="#1a1226"/>`; }
+    } else if (id === 'avatar') {
+      const A = C.a, B = C.b, G = C.c, k = C.ink;
+      if (s === 0) g += `<ellipse cx="24" cy="33" rx="8" ry="6" fill="#9aa3ad" stroke="${k}" stroke-width="1"/><path d="M19 31 l3 2 M27 30 l-2 3" stroke="${k}" stroke-width=".8" opacity=".5"/>`;
+      else if (s <= 2) { const sc = s === 1 ? 1 : 1.3; g += `<g transform="translate(24 30) scale(${sc})"><path d="M-10 -2 Q0 -10 8 -4 Q2 0 8 4 Q0 8 -8 3" fill="none" stroke="${B}" stroke-width="2.4" stroke-linecap="round"/></g>`; }
+      else if (s === 3) g += `<path d="M24 16 C31 27 31 33 24 39 C17 33 17 27 24 16 Z" fill="${B}" stroke="${k}" stroke-width="1"/><circle cx="24" cy="32" r="2.5" fill="#fff" opacity=".5"/>`;
+      else if (s === 4) g += `<path d="M10 32 Q15 24 20 32 T30 32 T40 32" fill="none" stroke="${B}" stroke-width="3" stroke-linecap="round"/><path d="M12 37 Q18 31 24 37 T36 37" fill="none" stroke="${B}" stroke-width="2.4" stroke-linecap="round" opacity=".6"/>`;
+      else if (s === 5) g += `<path d="M14 38 L20 22 L30 22 L34 38 Z" fill="#8a949e" stroke="${k}" stroke-width="1"/><path d="M20 30 H30 M24 22 V38" stroke="${k}" stroke-width=".8" opacity=".4"/>`;
+      else if (s === 6) g += `<path d="M11 39 L17 20 L31 18 L37 30 L33 39 Z" fill="#7f8a94" stroke="${k}" stroke-width="1.1"/><path d="M17 20 L24 30 L37 30 M24 30 L22 39" stroke="${k}" stroke-width=".8" opacity=".4"/>`;
+      else if (s === 7) g += `<path d="M24 38 C18 34 19 27 24 20 C27 26 26 28 28 25 C31 30 30 35 24 38 Z" fill="${A}" stroke="${k}" stroke-width="1"/>`;
+      else if (s === 8) g += `<path d="M24 40 C15 35 17 24 24 14 C28 22 27 26 31 22 C35 30 33 36 24 40 Z" fill="${A}"/><path d="M24 38 C20 35 21 29 24 23 C26 28 26 30 28 27 C30 32 28 36 24 38Z" fill="${C.b}" opacity=".8"/>`;
+      else { // avatar: core + 4 elements orbiting
+        g += `<circle cx="24" cy="30" r="6" fill="${k}"/><path d="M24 26 v8 M24 26 l-2.4 3 M24 26 l2.4 3" stroke="#fff" stroke-width="1.2" fill="none"/>`;
+        g += `<g style="animation:ev-orbit 7s linear infinite;transform-origin:24px 30px">`;
+        g += `<circle cx="24" cy="16" r="2.6" fill="${A}"/><circle cx="38" cy="30" r="2.6" fill="${B}"/><circle cx="24" cy="44" r="2.6" fill="${G}"/><circle cx="10" cy="30" r="2.6" fill="#C0392B"/>`;
+        g += `</g>`;
+      }
+    }
+    const [wrapAnim, origin] = this.animFor(id, s);
+    return `<svg viewBox="0 0 48 52" width="42" height="46" style="overflow:visible;animation:${wrapAnim};transform-origin:${origin}">${g}</svg>`;
+  }
+
+  animFor(id, s) {
+    const A = {
+      spellbound: [['ev-wobble 2.2s ease-in-out infinite','50% 82%'],['ev-wobble 1.5s ease-in-out infinite','50% 82%'],['ev-crawl 1.5s ease-in-out infinite','50% 62%'],['ev-crawl 1.2s ease-in-out infinite','50% 62%'],['ev-breathe 2.6s ease-in-out infinite','50% 50%'],['ev-wobble 1.8s ease-in-out infinite','50% 82%'],['ev-hover .8s ease-in-out infinite','50% 50%'],['ev-hover .7s ease-in-out infinite','50% 50%'],['ev-hover .8s ease-in-out infinite','50% 50%'],['ev-hover 1s ease-in-out infinite','50% 50%']],
+      marquee: [['ev-twinkle 1.2s ease-in-out infinite','50% 50%'],['ev-flicker .5s steps(2,end) infinite','50% 50%'],['ev-pulse 1.4s ease-in-out infinite','50% 60%'],['ev-bob 2.4s ease-in-out infinite','50% 60%'],['ev-twinkle 1.4s ease-in-out infinite','50% 60%'],['ev-twinkle 1.6s ease-in-out infinite','50% 50%'],['ev-twinkle 1.8s ease-in-out infinite','50% 50%'],['ev-twinkle 1.6s ease-in-out infinite','50% 50%'],['ev-sweep 3s ease-in-out infinite','82% 26%'],['ev-sweep 2.6s ease-in-out infinite','82% 26%']],
+      aurora: [['ev-drift 4s ease-in-out infinite','50% 50%'],['ev-drift 4.6s ease-in-out infinite','50% 50%'],['ev-spin 16s linear infinite','50% 60%'],['ev-spin 10s linear infinite','50% 62%'],['ev-twinkle 1.3s ease-in-out infinite','50% 60%'],['ev-twinkle 1.7s ease-in-out infinite','50% 60%'],['ev-pulse 1s ease-in-out infinite','50% 60%'],['ev-drift 4s ease-in-out infinite','50% 50%'],['ev-spin 6s linear infinite','50% 62%'],['ev-spin 13s linear infinite','50% 62%']],
+      anime: [['ev-twinkle 1.1s ease-in-out infinite','50% 50%'],['ev-slash 2.6s ease-in-out infinite','50% 90%'],['ev-slash 2.4s ease-in-out infinite','50% 90%'],['ev-slash 2.2s ease-in-out infinite','50% 90%'],['ev-slash 2s ease-in-out infinite','50% 90%'],['ev-slash 1.9s ease-in-out infinite','50% 90%'],['ev-slash 1.8s ease-in-out infinite','50% 90%'],['ev-slash 1.7s ease-in-out infinite','50% 90%'],['ev-slash 1.7s ease-in-out infinite','50% 90%'],['ev-slash 1.6s ease-in-out infinite','50% 90%']],
+      science: [['ev-twinkle 1.2s ease-in-out infinite','50% 50%'],['ev-bob 1.5s ease-in-out infinite','50% 20%'],['ev-slosh 2.4s ease-in-out infinite','50% 88%'],['ev-slosh 2.2s ease-in-out infinite','50% 88%'],['ev-slosh 2s ease-in-out infinite','50% 88%'],['ev-slosh 1.8s ease-in-out infinite','50% 88%'],['ev-bob 2.4s ease-in-out infinite','50% 88%'],['ev-bob 2.2s ease-in-out infinite','50% 88%'],['ev-spin 9s linear infinite','50% 62%'],['ev-pulse 1.1s ease-in-out infinite','50% 60%']],
+      origami: [['ev-fold 3.2s ease-in-out infinite','50% 50%'],['ev-fold 3s ease-in-out infinite','50% 50%'],['ev-fold 3.2s ease-in-out infinite','50% 50%'],['ev-bob 2.8s ease-in-out infinite','50% 90%'],['ev-fly 2.6s ease-in-out infinite','50% 50%'],['ev-fly 2.4s ease-in-out infinite','50% 50%'],['ev-bloom 3s ease-in-out infinite','50% 70%'],['ev-glide 2.6s ease-in-out infinite','50% 60%'],['ev-sway 2.4s ease-in-out infinite','50% 80%'],['ev-glide 3s ease-in-out infinite','50% 60%']],
+      pixel: [['ev-blink .9s steps(2,end) infinite','50% 50%'],['ev-blink .8s steps(2,end) infinite','50% 50%'],['ev-blink .7s steps(2,end) infinite','50% 50%'],['ev-hop 1.2s ease-in-out infinite','50% 90%'],['ev-hop 1.1s ease-in-out infinite','50% 90%'],['ev-hop 1s ease-in-out infinite','50% 90%'],['ev-hop 1s ease-in-out infinite','50% 90%'],['ev-hop .9s ease-in-out infinite','50% 90%'],['ev-hop .9s ease-in-out infinite','50% 90%'],['ev-hop .8s ease-in-out infinite','50% 90%']],
+      avatar: [['ev-wobble 2s ease-in-out infinite','50% 88%'],['ev-drift 3.4s ease-in-out infinite','50% 50%'],['ev-spin 5s linear infinite','50% 50%'],['ev-bob 1.5s ease-in-out infinite','50% 20%'],['ev-wave 2.2s ease-in-out infinite','50% 50%'],['ev-bob 3s ease-in-out infinite','50% 90%'],['ev-bob 3.2s ease-in-out infinite','50% 90%'],['ev-flame 1s ease-in-out infinite','50% 90%'],['ev-flame .8s ease-in-out infinite','50% 90%'],['ev-breathe 2.4s ease-in-out infinite','50% 50%']],
+    };
+    return (A[id] && A[id][s]) || ['ev-bob 2.6s ease-in-out infinite','50% 60%'];
+  }
+
+  renderVals() {
+    const levels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const rows = this.ORDER.map(id => ({
+      label: this.LABEL[id],
+      color: this.TC[id].a,
+      cells: levels.map((lv, i) => ({
+        name: this.NOMEN[id][i],
+        node: React.createElement('div', { style: { width: '42px', height: '46px' }, dangerouslySetInnerHTML: { __html: this.emb(id, i) } }),
+      })),
+    }));
+    return { levels, rows };
+  }
+}
+</script>
+</body>
+</html>
