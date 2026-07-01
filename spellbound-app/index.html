@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#7c5cff">
+<meta name="description" content="Spellbound — a spelling-bee trainer that hears your child spell, evolves a character with every win, and shows parents exactly where they stand.">
+<title>Spellbound — spelling-bee trainer</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%F0%9F%90%9D%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;500;600;700;800;900&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Space+Mono:wght@400;700&family=Space+Grotesk:wght@500;600;700&family=Orbitron:wght@600;800&family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg1,#f3efff);transition:background .35s ease}
+  ::selection{background:color-mix(in srgb,var(--accent) 28%,transparent)}
+  input,button,select,textarea{font-family:inherit}
+  button{cursor:pointer;border:0;background:none}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+  button:focus:not(:focus-visible){outline:none}
+  /* ===== token layer — themes remap the SAME names ===== */
+  [data-theme]{--bg1:#251b58;--bg2:#322670;--bg3:#1a1342;--surface:rgba(255,255,255,.06);--surface2:rgba(255,255,255,.10);--line:rgba(124,92,255,.22);--text:#f1edff;--muted:#a99fd6;--accent:#7c5cff;--accent2:#ffc83d;--accent3:#ffe1a0;--good:#34e0a1;--bad:#ff6b8a;--display:'Baloo 2',cursive;--body:'Nunito',sans-serif;--mono:'Space Mono',monospace;--entry:'Space Grotesk','Nunito',sans-serif;--glow:0 18px 50px rgba(124,92,255,.4);--chip:rgba(124,92,255,.16);--slw:#fff}
+  [data-theme="spellbound"]{--bg1:#251b58;--bg2:#322670;--bg3:#1a1342;--surface:rgba(255,255,255,.06);--surface2:rgba(255,255,255,.10);--line:rgba(124,92,255,.22);--text:#f1edff;--muted:#a99fd6;--accent:#7c5cff;--accent2:#ffc83d;--accent3:#ffe1a0;--good:#34e0a1;--bad:#ff6b8a;--display:'Baloo 2',cursive;--glow:0 18px 50px rgba(124,92,255,.4);--chip:rgba(124,92,255,.16)}
+  [data-theme="marquee"]{--bg1:#241f2c;--bg2:#2e2838;--bg3:#1b1724;--line:rgba(232,178,58,.16);--text:#f1ece2;--muted:#aa9f90;--accent:#e8b23a;--accent2:#f0c668;--accent3:#fff4d6;--good:#5fd1a0;--bad:#e2557a;--display:'Bricolage Grotesque',sans-serif;--glow:0 18px 50px rgba(0,0,0,.45);--chip:rgba(232,178,58,.14)}
+  [data-theme="aurora"]{--bg1:#1c1e2e;--bg2:#272b42;--bg3:#15171f;--surface:rgba(255,255,255,.05);--surface2:rgba(255,255,255,.09);--line:rgba(255,255,255,.12);--text:#eceef6;--muted:#9197b5;--accent:#7c5cff;--accent2:#36d1ff;--accent3:#ffd23f;--good:#34e0a1;--bad:#ff6b6b;--display:'Bricolage Grotesque',sans-serif;--glow:0 18px 48px rgba(124,92,255,.3);--chip:rgba(124,92,255,.15)}
+  [data-theme="anime"]{--bg1:#241d2f;--bg2:#2e2439;--bg3:#181320;--surface:rgba(255,255,255,.05);--surface2:rgba(255,255,255,.09);--line:rgba(255,77,141,.16);--text:#f6ecf2;--muted:#b39bb0;--accent:#ff4d8d;--accent2:#36e2ff;--accent3:#ffd23f;--good:#34e0a1;--bad:#ff6b6b;--display:'Bricolage Grotesque',sans-serif;--glow:0 0 40px rgba(255,77,141,.3);--chip:rgba(255,77,141,.14)}
+  [data-theme="science"]{--bg1:#19212f;--bg2:#222c3a;--bg3:#111722;--surface:rgba(255,255,255,.05);--surface2:rgba(255,255,255,.09);--line:rgba(57,255,20,.16);--text:#e8f1ec;--muted:#8ba0a6;--accent:#39ff14;--accent2:#18d6ff;--accent3:#ffd23f;--good:#39ff14;--bad:#ff5d5d;--display:'Orbitron',sans-serif;--glow:0 0 40px rgba(57,255,20,.28);--chip:rgba(57,255,20,.12)}
+  [data-theme="origami"]{--bg1:#26211a;--bg2:#312a22;--bg3:#1a1611;--surface:rgba(255,255,255,.05);--surface2:rgba(255,255,255,.09);--line:rgba(217,105,74,.16);--text:#f1ebe2;--muted:#b3a795;--accent:#d9694a;--accent2:#e0a458;--accent3:#7faa8b;--good:#7faa8b;--bad:#d9694a;--display:'Bricolage Grotesque',sans-serif;--glow:0 14px 40px rgba(217,105,74,.28);--chip:rgba(217,105,74,.14)}
+  [data-theme="pixel"]{--bg1:#1e2029;--bg2:#282a38;--bg3:#14151e;--surface:rgba(255,255,255,.05);--surface2:rgba(255,255,255,.09);--line:rgba(54,224,200,.20);--text:#eef1f5;--muted:#929ab0;--accent:#36e0c8;--accent2:#ff5d9e;--accent3:#ffd84d;--good:#36e0c8;--bad:#ff5d6c;--display:'Pixelify Sans',sans-serif;--glow:0 0 40px rgba(54,224,200,.3);--chip:rgba(54,224,200,.14)}
+  [data-theme="avatar"]{--bg1:#1c262d;--bg2:#253139;--bg3:#131c20;--surface:rgba(255,255,255,.06);--surface2:rgba(255,255,255,.10);--line:rgba(47,167,216,.18);--text:#e8f0f4;--muted:#8ba0a8;--accent:#f3a13c;--accent2:#2fa7d8;--accent3:#5fb87a;--good:#5fb87a;--bad:#e0533f;--display:'Bricolage Grotesque',sans-serif;--glow:0 0 40px rgba(47,167,216,.3);--chip:rgba(243,161,60,.14)}
+  /* ===== LIGHT mode (tinted paper, default) ===== */
+  [data-theme="spellbound"][data-mode="light"]{--bg1:#f3efff;--bg2:#ffffff;--bg3:#e7defc;--surface:rgba(43,27,94,.04);--surface2:rgba(43,27,94,.07);--line:rgba(124,92,255,.2);--text:#2b1b5e;--muted:#7e70b4;--accent:#6b4df0;--accent2:#e0a516;--accent3:#5a3fd0;--good:#1fa377;--bad:#e04b6a;--chip:rgba(124,92,255,.14);--glow:0 18px 48px rgba(124,92,255,.2)}
+  [data-theme="marquee"][data-mode="light"]{--bg1:#f4ecdb;--bg2:#fffaf0;--bg3:#eaddc7;--surface:rgba(60,40,0,.035);--surface2:rgba(60,40,0,.06);--line:rgba(150,110,30,.22);--text:#2a2014;--muted:#7d6a4c;--accent:#bd820e;--accent2:#9a6c0c;--accent3:#5a3f10;--good:#2f9e72;--bad:#c43e62;--chip:rgba(189,130,14,.16);--glow:0 18px 50px rgba(150,110,30,.16)}
+  [data-theme="aurora"][data-mode="light"]{--bg1:#eef0fb;--bg2:#ffffff;--bg3:#e3e7f6;--surface:rgba(20,22,50,.04);--surface2:rgba(20,22,50,.07);--line:rgba(40,40,90,.16);--text:#1b1d33;--muted:#5c6184;--accent:#6a4cf0;--accent2:#1f9fd0;--accent3:#5a3fd0;--good:#1fa377;--bad:#e04b4b;--chip:rgba(106,76,240,.14);--glow:0 18px 48px rgba(106,76,240,.18)}
+  [data-theme="anime"][data-mode="light"]{--bg1:#fbeef5;--bg2:#fffafd;--bg3:#f4e2ee;--surface:rgba(40,15,30,.04);--surface2:rgba(40,15,30,.07);--line:rgba(120,40,80,.16);--text:#2a1722;--muted:#876a80;--accent:#e63a7e;--accent2:#0e9fc4;--accent3:#c41f6a;--good:#1fa377;--bad:#e04b4b;--chip:rgba(230,58,126,.13);--glow:0 18px 44px rgba(230,58,126,.18)}
+  [data-theme="science"][data-mode="light"]{--bg1:#eef5f0;--bg2:#fbfffd;--bg3:#e2efe8;--surface:rgba(15,30,20,.04);--surface2:rgba(15,30,20,.07);--line:rgba(30,80,40,.16);--text:#14201a;--muted:#5a7068;--accent:#1f9e0f;--accent2:#0e8fb0;--accent3:#1f8e0c;--good:#1f9e0f;--bad:#d23a3a;--chip:rgba(31,158,15,.13);--glow:0 18px 44px rgba(31,158,15,.16)}
+  [data-theme="origami"][data-mode="light"]{--bg1:#f6efe4;--bg2:#fffbf3;--bg3:#ece0cf;--surface:rgba(40,30,15,.04);--surface2:rgba(40,30,15,.07);--line:rgba(130,90,40,.18);--text:#241c12;--muted:#8a7558;--accent:#c8593a;--accent2:#b9803a;--accent3:#b04a2e;--good:#3f7d5e;--bad:#c8593a;--chip:rgba(200,89,58,.14);--glow:0 18px 44px rgba(200,89,58,.16)}
+  [data-theme="pixel"][data-mode="light"]{--bg1:#eef2f7;--bg2:#fdfeff;--bg3:#e3e9f1;--surface:rgba(15,25,40,.04);--surface2:rgba(15,25,40,.07);--line:rgba(20,90,80,.16);--text:#161a26;--muted:#5e667e;--accent:#11a892;--accent2:#e63a86;--accent3:#0e9a86;--good:#11a892;--bad:#e04b58;--chip:rgba(17,168,146,.14);--glow:0 18px 44px rgba(17,168,146,.16)}
+  [data-theme="avatar"][data-mode="light"]{--bg1:#eaf3f6;--bg2:#fbffff;--bg3:#ddeaef;--surface:rgba(15,30,40,.04);--surface2:rgba(15,30,40,.07);--line:rgba(30,90,120,.16);--text:#14242a;--muted:#5a7078;--accent:#d98a2a;--accent2:#1c7fa8;--accent3:#c47318;--good:#3f8a5a;--bad:#cc4632;--chip:rgba(217,138,42,.14);--glow:0 18px 44px rgba(28,127,168,.18)}
+  /* ===== WHITE mode ===== */
+  [data-theme][data-mode="white"]{--bg1:#ffffff;--bg2:#ffffff;--bg3:#f1f1f4;--surface:rgba(20,18,30,.03);--surface2:rgba(20,18,30,.06);--line:rgba(20,18,30,.12);--text:#1b1822;--slw:#2a2536;--muted:#6a6573;--accent2:color-mix(in srgb,var(--accent2) 55%,#000);--accent3:color-mix(in srgb,var(--accent) 62%,#000);--good:#1f9e6a;--bad:#d23a52;--glow:0 14px 36px rgba(20,18,40,.12);--chip:color-mix(in srgb,var(--accent) 13%,transparent)}
+  [data-theme="science"][data-mode="white"]{--accent:#1f9e0f}
+  [data-theme="pixel"][data-mode="white"]{--accent:#11a892}
+  /* signature motif */
+  [data-theme]{position:relative}
+  [data-theme]::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.16;background-image:radial-gradient(color-mix(in srgb,var(--accent) 24%,transparent) 1.3px,transparent 1.3px);background-size:26px 26px}
+  [data-theme="marquee"]::before{opacity:.5;background-image:radial-gradient(circle at 50% 9px,color-mix(in srgb,var(--accent) 36%,transparent) 2px,transparent 3px);background-size:34px 18px;background-repeat:repeat-x;background-position:top}
+  [data-theme="science"]::before{opacity:.1;background-image:linear-gradient(color-mix(in srgb,var(--accent) 26%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--accent) 26%,transparent) 1px,transparent 1px);background-size:34px 34px}
+  [data-theme="pixel"]::before{opacity:.14;background-image:linear-gradient(color-mix(in srgb,var(--accent) 22%,transparent) 2px,transparent 2px),linear-gradient(90deg,color-mix(in srgb,var(--accent) 22%,transparent) 2px,transparent 2px);background-size:18px 18px}
+  /* concept animation engine */
+  @keyframes ca-pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+  @keyframes ca-sl{0%{transform:translateX(-72px);opacity:0}100%{transform:translateX(0);opacity:1}}
+  @keyframes ca-sr{0%{transform:translateX(72px);opacity:0}100%{transform:translateX(0);opacity:1}}
+  @keyframes ca-up{0%{transform:translateY(28px);opacity:0}100%{transform:translateY(0);opacity:1}}
+  @keyframes ca-morph{0%{transform:rotateX(0)}42%{transform:rotateX(88deg);opacity:.2}60%{transform:rotateX(88deg);opacity:.2}100%{transform:rotateX(0);opacity:1}}
+  @keyframes ca-glow{0%,100%{filter:none}50%{filter:brightness(1.12) drop-shadow(0 0 9px color-mix(in srgb,var(--accent) 55%,transparent))}}
+  @keyframes sb-bee-bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-7px) rotate(3deg)}}
+  /* livelier "talking" loop: hop, lean side to side, little scale pulses */
+  @keyframes sb-bee-talk{0%{transform:translate(0,0) rotate(-5deg) scale(1)}20%{transform:translate(-3px,-9px) rotate(3deg) scale(1.05)}40%{transform:translate(2px,-2px) rotate(6deg) scale(1)}60%{transform:translate(4px,-8px) rotate(-2deg) scale(1.04)}80%{transform:translate(-2px,-1px) rotate(-6deg) scale(1)}100%{transform:translate(0,0) rotate(-5deg) scale(1)}}
+  @keyframes sb-bee-pop{0%{transform:scale(.55) translateY(14px) rotate(-12deg);opacity:0}65%{transform:scale(1.12) translateY(-2px) rotate(4deg)}100%{transform:scale(1) translateY(0) rotate(0);opacity:1}}
+  .sb-bee-presenter{animation:sb-bee-pop .5s ease both, sb-bee-bob 2.4s ease-in-out .5s infinite;transform-origin:50% 90%}
+  .sb-bee-presenter.talking{animation:sb-bee-pop .45s ease both, sb-bee-talk 1.5s ease-in-out .45s infinite;transform-origin:50% 90%}
+  @keyframes sb-confetti{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-6px) rotate(calc(var(--r,0deg) + 12deg))}}
+  @keyframes sb-arcade{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+  .sb-arcade-card{background-size:180% 180%;animation:sb-arcade 9s ease-in-out infinite}
+  .sb-cover-card{transition:transform .16s ease,box-shadow .16s ease}
+  .sb-cover-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(43,27,94,.12)!important}
+  @keyframes sb-rise{from{transform:translateY(12px)}to{transform:translateY(0)}}
+  @keyframes sb-pop{0%{transform:scale(.86)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
+  @keyframes sb-fade{from{opacity:0}to{opacity:1}}
+  @keyframes sb-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  @keyframes sb-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+  @keyframes sb-spin{to{transform:rotate(360deg)}}
+  /* EvoLadder emblem motions */
+  @keyframes ev-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+  @keyframes ev-spin{to{transform:rotate(360deg)}}
+  @keyframes ev-pulse{0%,100%{opacity:1}50%{opacity:.5}}
+  @keyframes ev-sway{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+  @keyframes ev-blink{0%,100%{opacity:1}50%{opacity:.35}}
+  @keyframes ev-rise{0%{transform:translateY(3px);opacity:0}40%{opacity:1}100%{transform:translateY(-9px);opacity:0}}
+  @keyframes ev-orbit{to{transform:rotate(360deg)}}
+  @keyframes ev-fold{0%,100%{transform:perspective(90px) rotateX(0deg)}50%{transform:perspective(90px) rotateX(26deg)}}
+  @keyframes ev-wobble{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+  @keyframes ev-crawl{0%,100%{transform:scaleX(1) scaleY(1)}50%{transform:scaleX(.82) scaleY(1.13)}}
+  @keyframes ev-breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+  @keyframes ev-hover{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.6px)}}
+  @keyframes ev-twinkle{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.76);opacity:.6}}
+  @keyframes ev-flicker{0%,100%{opacity:1}42%{opacity:.35}54%{opacity:.92}}
+  @keyframes ev-slash{0%,60%,100%{transform:rotate(-12deg)}80%{transform:rotate(13deg)}}
+  @keyframes ev-slosh{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+  @keyframes ev-fly{0%,100%{transform:translate(-2px,1px) rotate(-3deg)}50%{transform:translate(2px,-3px) rotate(3deg)}}
+  @keyframes ev-bloom{0%,100%{transform:scale(.85)}50%{transform:scale(1.05)}}
+  @keyframes ev-glide{0%,100%{transform:translateY(0) rotate(-2.5deg)}50%{transform:translateY(-3px) rotate(2.5deg)}}
+  @keyframes ev-hop{0%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}46%{transform:translateY(-5px)}}
+  @keyframes ev-drift{0%,100%{transform:translate(-2px,1px)}50%{transform:translate(2px,-2px)}}
+  @keyframes ev-wave{0%,100%{transform:translateX(-2.4px)}50%{transform:translateX(2.4px)}}
+  @keyframes ev-flame{0%,100%{transform:scaleY(1) skewX(0deg)}50%{transform:scaleY(1.13) skewX(-5deg)}}
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="words-data.js"></script>
+<script src="concepts-data.js"></script>
+<script src="lessons-data.js"></script>
+<script src="concept-scripts.js"></script>
+<script src="voice-manifest.js"></script>
+<script src="app.js"></script>
+<script src="app2.js"></script>
+<script src="app3.js"></script>
+</body>
+</html>
