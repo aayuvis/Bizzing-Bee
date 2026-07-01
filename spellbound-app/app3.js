@@ -171,7 +171,7 @@ const XP_BASE = 5, XP_GROWTH = 1.6;
 function xpToNext(level){ return Math.max(1, Math.round(XP_BASE * Math.pow(XP_GROWTH, (level||1)-1))); }
 function levelFromXp(xp){ xp=Math.max(0, xp||0); let lvl=1, need=xpToNext(1); while(xp>=need){ xp-=need; lvl++; need=xpToNext(lvl); } return { level:lvl, into:xp, need:need }; }
 function ensureLists(c){ if(!c) return c; if(!c.lists){ c.lists = { default:{ xp: (c.xp||0) }, journey:{xp:0} }; } if(!c.activeList) c.activeList='journey'; if(!c.lists.journey) c.lists.journey={xp:0}; if(!c.lists[c.activeList]) c.lists[c.activeList]={xp:0};
-  if(c.coins==null) c.coins=0; if(!c.unlockedThemes) c.unlockedThemes=[c.theme||'spellbound']; if(!c.unlockedLists) c.unlockedLists={}; if(!c.gameLog) c.gameLog=[]; if(!c.removedLists) c.removedLists={};
+  if(c.coins==null) c.coins=0; if(!c.unlockedThemes) c.unlockedThemes=[c.theme||'spellbound']; if(!c.unlockedLists) c.unlockedLists={}; if(!c.gameLog) c.gameLog=[]; if(!c.pinnedLists) c.pinnedLists={};
   if(!c.missed) c.missed=[]; if(!c.activity) c.activity=[]; if(!c.unlockedConcepts) c.unlockedConcepts={};
   if(!c.daysPlayed) c.daysPlayed=[]; if(!c.streakRewards) c.streakRewards={}; if(!c.listNames) c.listNames={}; if(c.journeyDay==null) c.journeyDay=0; return c; }
 /* ---- coins economy: earn by playing, spend on boosts / lists / themes ---- */
@@ -500,7 +500,7 @@ const app = {
   openCoach:()=>{ const c=active(); ensureLists(c); ensureCoachWords(c.activeList||'default'); state.coachSession=false;
     set({nav:'coach', screen:'app', coachMode:'hub', coachTab:'train', luTab:'revise', luWordsOpen:false, status:'idle', typed:'', mood:'happy', conceptSel:null}); },
   startWordCoach:()=>app.openCoach(),
-  selectList:(key)=>{ if(!isListUnlocked(key)){ set({showPaywall:true}); return; } const c=active(); ensureLists(c); c.activeList=key; if(!c.lists[key]) c.lists[key]={xp:0}; if(c.removedLists) delete c.removedLists[key];
+  selectList:(key)=>{ if(!isListUnlocked(key)){ set({showPaywall:true}); return; } const c=active(); ensureLists(c); c.activeList=key; if(!c.lists[key]) c.lists[key]={xp:0}; if(!{journey:1,review:1,missed:1}[key]){ if(!c.pinnedLists) c.pinnedLists={}; c.pinnedLists[key]=1; }
     state.sessionListKey=null; ensureCoachWords(key); set({nav:'coach', screen:'app', coachMode:'hub', coachTab:'train', luTab:'revise', status:'idle', typed:''});
     if(key==='all' && !window.SB_FULL){ loadFullLibrary(()=>{ state.sessionListKey=null; ensureCoachWords('all'); render(); }); }
     flash('Now training: '+listLabel(key)); },
@@ -1308,7 +1308,7 @@ function viewConceptDetail(){
       <div style="font-size:15px;line-height:1.65;color:var(--text);${st.kind==='method'?'white-space:pre-line':''}">${st.kind==='method'?st.html:esc(st.body||'')}</div>
     </div>`;
   const stepContent = step.kind==='anim' ? conceptPlayer() : genericCard(step);
-  const stepNav = `<div style="position:sticky;bottom:0;z-index:4;display:flex;gap:10px;margin-top:14px;padding:10px 0 10px;background:linear-gradient(to top,var(--bg1) 62%,transparent)">${idx>0?`<button data-act="conceptPrev" style="padding:12px 18px;border-radius:12px;background:var(--surface2);color:var(--text);font-weight:800;font-size:14.5px">← Back</button>`:''}${idx<total-1?`<button data-act="conceptNext" style="flex:1;padding:12px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">${idx===0?'Read more →':'Next card →'}</button>`:''}</div>`;
+  const stepNav = (idx>0||idx<total-1) ? `<div style="display:flex;gap:10px;margin-bottom:14px">${idx>0?`<button data-act="conceptPrev" style="padding:12px 18px;border-radius:12px;background:var(--surface2);color:var(--text);font-weight:800;font-size:14.5px">← Back</button>`:''}${idx<total-1?`<button data-act="conceptNext" style="flex:1;padding:12px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">${idx===0?'Read more →':'Next card →'}</button>`:''}</div>` : '';
   return `<div style="animation:sb-rise .35s ease both;max-width:780px">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><button data-act="conceptBack" style="color:var(--muted);font-weight:700;font-size:14px">← All concepts</button></div>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700">${esc(csel.category)}</span><span style="${diffStyleFor(csel.difficulty)}">${(diffMap[csel.difficulty]||diffMap.medium)[0]}</span></div>
@@ -1318,8 +1318,8 @@ function viewConceptDetail(){
     <div style="margin-bottom:22px">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span style="font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">Card ${idx+1} of ${total}${step.kind==='anim'?' · Watch':''}</span><div style="flex:1;height:6px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:99px;background:var(--accent);width:${Math.round((idx+1)/total*100)}%;transition:width .3s"></div></div></div>
       <div style="display:flex;gap:6px;margin-bottom:14px">${dots}</div>
-      ${stepContent}
       ${stepNav}
+      ${stepContent}
     </div>
     <button data-act="conceptWordsToggle" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:15px 18px;font-family:var(--display);font-weight:800;font-size:15px;color:var(--text);margin-bottom:12px"><span>${(S.conceptWordsOpen?'Hide word study':'Study the words one by one')+' · '+cw.length}</span><span style="color:var(--accent)">${S.conceptWordsOpen?'▲':'▼'}</span></button>
     ${S.conceptWordsOpen?`<div style="margin-bottom:22px;animation:sb-rise .3s ease both">${wordFlash(cw.map(x=>({w:x.w,d:x.def||'',s:x.ex||'',p:x.say||'',o:''})), S.conceptWordIdx, 'conceptWordNav', {})}</div>`:''}
@@ -1691,6 +1691,7 @@ function viewLesson(){ const S=state; const L=S.lessonSel; const dn=lessonComple
     <div style="font-family:var(--mono);font-weight:700;font-size:11.5px;color:${f.c};margin-bottom:3px">Chapter ${L.unit} · ${esc(capWords(u.title))}</div>
     <h2 style="font-family:var(--display);font-weight:800;font-size:22px;line-height:1.15;margin:0 0 14px">${esc(L.title)}${dn?' <span style="color:var(--good);font-size:17px">✓</span>':''}</h2>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span style="font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">Card ${idx+1} of ${N}</span><div style="display:flex;gap:5px;flex:1">${dots}</div></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><button data-act="lessonStepPrev" style="padding:12px 18px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;${idx<=0?'opacity:.4;pointer-events:none':''}">← Back</button>${nextBtn}</div>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--glow);animation:sb-rise .3s ease both">
       <div style="height:6px;${unitCoverBG(L.unit)}"></div>
       <div style="padding:clamp(18px,4vw,24px)">
@@ -1698,7 +1699,6 @@ function viewLesson(){ const S=state; const L=S.lessonSel; const dn=lessonComple
         ${step.body}
       </div>
     </div>
-    <div style="position:sticky;bottom:0;z-index:4;display:flex;align-items:center;gap:10px;margin-top:14px;padding:10px 0 10px;background:linear-gradient(to top,var(--bg1) 62%,transparent)"><button data-act="lessonStepPrev" style="padding:13px 18px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;${idx<=0?'opacity:.4;pointer-events:none':''}">← Back</button>${nextBtn}</div>
   </div>`; }
 function viewEvoFeedback(){ const S=state; const themes=Object.keys(EV_NOMEN);
   const RC={keep:'var(--good)',tweak:'#E8A33A',redo:'var(--bad)'};
@@ -1779,7 +1779,7 @@ window.sbDelList = function(e,key){ try{ e.preventDefault(); e.stopPropagation()
   if({journey:1,review:1,missed:1}[key]){ flash('That one stays — it’s a core list.'); return false; }
   const c=active(); const nm=(key==='journey'?'Spellbound Journey':listLabel(key).split(' · ')[0]);
   if(!window.confirm('Remove “'+nm+'” from your lists?\n\n(Your progress is kept — you can add it again from Setup & lists.)')) return false;
-  if(!c.removedLists) c.removedLists={}; c.removedLists[key]=1;
+  if(c.pinnedLists) delete c.pinnedLists[key];
   if(key==='custom') state.customWords=[]; if(key==='ai') state.aiWords=[];
   if((c.activeList||'default')===key){ c.activeList='journey'; state.sessionListKey=null; }
   save(); flash('List removed ✓'); render(); return false;
@@ -1799,10 +1799,9 @@ function coachTrain(){
   const chipLabel=(k)=> k==='journey'?'Spellbound Journey':listLabel(k).split(' · ')[0];
   // The 3 core lists always stay. Any other list the child has added shows here too and can be
   // removed with a right-click (it just leaves the quick-switch — progress is kept, re-add from Setup).
-  const CORE_LISTS={journey:1,review:1,missed:1}; const removed=c.removedLists||{};
-  let extras=Object.keys(c.lists||{}).filter(k=>!CORE_LISTS[k] && !removed[k]);
-  extras=extras.filter(k=> k!=='default' || key==='default' || (getList(c,'default').xp||0)>0 ); // hide unused Default
-  if(!CORE_LISTS[key] && !removed[key] && !extras.includes(key)) extras.push(key);
+  const CORE_LISTS={journey:1,review:1,missed:1}; const pinned=c.pinnedLists||{};
+  let extras=Object.keys(pinned).filter(k=>!CORE_LISTS[k] && pinned[k]);   // only lists the user has added
+  if(!CORE_LISTS[key] && !extras.includes(key)) extras.push(key);           // always show the one being trained
   let chipKeys=['journey', ...extras, 'review','missed'];
   chipKeys=chipKeys.filter((k,i)=>chipKeys.indexOf(k)===i);
   const chips=chipKeys.map(k=>{ const on=k===key; const star=(k==='journey')?'★ ':''; const canDel=!CORE_LISTS[k];
