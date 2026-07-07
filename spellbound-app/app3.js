@@ -297,6 +297,24 @@ const VOICE = { name:'' };
 function loadVoiceCfg(){ try{ const raw=localStorage.getItem('sb_voice'); if(raw) Object.assign(VOICE, JSON.parse(raw)); }catch(e){} }
 function saveVoiceCfg(){ try{ localStorage.setItem('sb_voice', JSON.stringify(VOICE)); }catch(e){} }
 function enVoices(){ try{ return (window.speechSynthesis.getVoices()||[]).filter(v=>/^en/i.test(v.lang)); }catch(e){ return []; } }
+// A one-time OS step unlocks a much nicer voice — apps can't install system voices, so we
+// detect the platform and show the exact path. Once added, it appears in the picker above.
+function voiceUpgradeTip(){
+  const ua=navigator.userAgent||''; const isIOS=/iPad|iPhone|iPod/.test(ua)||(/Mac/.test(ua)&&navigator.maxTouchPoints>1);
+  const os=isIOS?'ios':/Mac/.test(ua)?'mac':/Windows/.test(ua)?'win':/Android/.test(ua)?'android':'other';
+  const hasPremium=enVoices().some(v=>/premium|enhanced|natural|neural|siri/i.test(v.name));
+  const tips={
+    mac:['On this Mac (free, one time, ~5 min):','<b>System Settings → Accessibility → Spoken Content → System Voice → Manage Voices…</b> — download <b>Ava (Premium)</b> or <b>Zoe (Premium)</b>. Then reopen Settings here and pick it (✨).'],
+    ios:['On this iPhone/iPad (free, one time):','<b>Settings → Accessibility → Spoken Content → Voices → English</b> — download <b>Ava (Premium)</b>. Then reopen Settings here and pick it (✨).'],
+    win:['On Windows:','For the most natural voices, open Spellbound in <b>Microsoft Edge</b> — its “Natural” voices (Aria, Jenny…) appear in the list above automatically. Offline voices: <b>Settings → Time &amp; Language → Speech → Add voices</b>.'],
+    android:['On Android:','<b>Settings → System → Languages → Text-to-speech output</b> — make sure <b>Speech Services by Google</b> is the engine and its English voice data is downloaded.'],
+    other:['Tip:','Add a higher-quality English voice in your device’s text-to-speech settings and it will appear in the list above.']};
+  const t=tips[os];
+  if(hasPremium && os!=='other') return `<div style="margin-top:12px;font-size:12px;color:var(--good);font-weight:700">✓ A high-quality voice is installed on this device — pick a ✨ one above.</div>`;
+  return `<div style="margin-top:12px;background:color-mix(in srgb,var(--accent) 8%,var(--bg2));border:1px solid var(--line);border-radius:12px;padding:12px 14px">
+    <div style="display:inline-flex;align-items:center;gap:6px;font-family:var(--display);font-weight:800;font-size:12.5px;color:var(--accent);margin-bottom:4px">${iconSVG('spark',13)} Get a much nicer voice — ${esc(t[0])}</div>
+    <div style="font-size:12px;color:var(--text);line-height:1.6">${t[1]}</div>
+  </div>`; }
 function speak(){ deviceSpeak(curWord().w, 0.9); }
 function say(text,rate){ deviceSpeak(text, rate||0.95); }
 // split a sentence around its target word (and simple inflections) so we can read it aloud
@@ -1925,7 +1943,8 @@ function viewSettings(){
         <button data-act="voiceTest" style="padding:11px 18px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);white-space:nowrap">▶ Test</button>
       </div>
       <div style="position:relative"><select data-chg="voiceSetDevice" style="width:100%;appearance:none;-webkit-appearance:none;padding:13px 36px 13px 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:14px;cursor:pointer">${voiceOpts}</select><span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--accent);font-size:11px">▼</span></div>
-      <p style="font-size:12px;color:var(--muted);line-height:1.55;margin:12px 0 0">Spellbound picks the smoothest voice your device offers and works on phones, tablets and computers — no account or key, fully offline. Voices marked ✨ are the most natural. ${_voices.length?'':'<b style="color:var(--text)">Voices load a moment after opening</b> — reopen Settings to see the full list. '}For an even nicer voice you can add a free one in your device’s settings (Apple: Accessibility → Spoken Content; Android: Text-to-speech; Windows: Speech) and it’ll appear here.</p>
+      <p style="font-size:12px;color:var(--muted);line-height:1.55;margin:12px 0 0">Spellbound picks the smoothest voice your device offers — no account or key, fully offline. Voices marked ✨ are the most natural. ${_voices.length?'':'<b style="color:var(--text)">Voices load a moment after opening</b> — reopen Settings to see the full list. '}</p>
+      ${voiceUpgradeTip()}
     </div>`;
   return `<div style="max-width:640px">
     <h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:0 0 16px">Settings</h2>
