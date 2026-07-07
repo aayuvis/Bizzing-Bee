@@ -1719,9 +1719,11 @@ function viewJourneys(){ const S=state; if(S.lessonSel) return viewLesson();
 /* ===== Theme Journeys view — pick themes you love; each becomes a staged journey ===== */
 function themeCoverBG(cl){ const t=CONCEPT_TEX[cl.tex]||CONCEPT_TEX.stripes;
   return `background-color:${cl.c};background-image:${t[0]},linear-gradient(135deg,${cl.c},${cl.c2});background-size:${t[1]},100% 100%;background-position:center`; }
-/* Hand-drawn white line-art emblem per theme (offline, theme-colored cover behind it). */
-function themeArtSVG(id,size){ size=size||54;
-  const W=(inner)=>`<svg viewBox="0 0 48 48" width="${size}" height="${size}" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:block;filter:drop-shadow(0 3px 6px rgba(0,0,0,.22))">${inner}</svg>`;
+/* Hand-drawn white line-art emblem per theme (offline, theme-colored cover behind it).
+   `sketch` mode runs the art through a turbulence filter so it looks pencil-sketched. */
+let _artN=0;
+function themeArtSVG(id,size,sketch){ size=size||54; const fid='skf'+(++_artN);
+  const W=(inner)=>`<svg viewBox="0 0 48 48" width="${size}" height="${size}" fill="none" stroke="#fff" stroke-width="${sketch?2.2:2.4}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:block;filter:drop-shadow(0 3px 6px rgba(0,0,0,.22))">${sketch?`<defs><filter id="${fid}" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="${(id||'').length*3+2}" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6"/></filter></defs><g filter="url(#${fid})" opacity=".97">${inner}</g>`:inner}</svg>`;
   const P=(d)=>`<path d="${d}"/>`; const C=(cx,cy,r,f)=>`<circle cx="${cx}" cy="${cy}" r="${r}"${f?' fill="rgba(255,255,255,.28)" stroke="none"':''}/>`;
   const F=(d)=>`<path d="${d}" fill="rgba(255,255,255,.28)" stroke="none"/>`;
   const M={
@@ -1788,7 +1790,7 @@ function themeCard(t){ const c=active(); const cl=themeClusters().find(x=>x.id==
       <span style="position:absolute;top:10px;left:11px;font-family:var(--mono);font-weight:700;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(cl.label)}</span>
       ${done?'<span style="position:absolute;bottom:8px;right:9px;width:21px;height:21px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:12px">✓</span>':''}
       ${pinned?'<span style="position:absolute;top:9px;right:10px;padding:2px 8px;border-radius:99px;background:rgba(255,255,255,.92);color:#1fa377;font-weight:900;font-size:9px">MY THEME</span>':''}
-      ${themeArtSVG(t.id,58)}
+      <div class="sb-theme-art" style="animation-delay:${((t.id.length*137)%1800)/1000}s">${themeArtSVG(t.id,58,true)}</div>
     </div>
     <div style="padding:12px 14px 13px;display:flex;flex-direction:column;flex:1">
       <div style="font-family:var(--display);font-weight:800;font-size:14.5px;line-height:1.18;color:var(--text)">${esc(t.label)}</div>
