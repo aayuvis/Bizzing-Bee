@@ -991,22 +991,22 @@ function viewHome(){
   const lDone=lessonsDoneCount(); const lUnits=lessonUnits();
   const lChapDone=lUnits.filter(u=>{ const ls=lessonsAll().filter(L=>L.unit===u.n); return ls.length && ls.every(L=>lessonComplete(L)); }).length; const lChapTot=lUnits.length||10;
   const journeys=[
-    {goAct:'openCoach', ic:'steps', c1:'#7C5CFF',c2:'#5A37D6',accent:'#7C5CFF', title:'Spellbound Coaching Journey', desc:'Your training hub — pick a list and climb its Levels with Revise & Practice.', pct:Math.min(100,Math.round(aLvlNew/20*100))+'%', badge:'Lv '+aLvlNew, kind:'go'},
-    {goAct:'setNav', goArg:'concepts', ic:'grid', c1:'#13A892',c2:'#0E8A78',accent:'#13A892', title:'Concepts', desc:'Spelling patterns — prefixes, roots & tricky endings, in 10 short chapters.', pct:Math.round(cDone/(cTot||1)*100)+'%', badge:cChapDone+'/10 chapters', kind:'go'},
-    {goAct:'openJourneys', ic:'book', c1:'#E0922E',c2:'#C8791B',accent:'#E0922E', title:'Word Journeys', desc:'The history & geography of words — roots, journeys & origins, in 10 chapters.', pct:Math.round((lChapTot?lChapDone/lChapTot:0)*100)+'%', badge:S.premium?(lChapDone+'/'+lChapTot+' chapters'):'Premium', kind:S.premium?'go':'lock'},
-    {goAct:'setNav', goArg:'themes', ic:'palette', c1:'#B14FC4',c2:'#9438A8',accent:'#B14FC4', title:'Theme Journeys', desc:'Learn words by their worlds — medicine, music, maps & 50 more themes to pick from.', pct:Math.min(100,myThemes().length*20)+'%', badge:myThemes().length+' picked', kind:'go'},
-    {goAct:'openGames', ic:'joystick', festive:true, title:'Arcade', desc:'8 mini-games — Magic Squares, Champ Challenge, Boss Battle & more. Earn coins!', pct:Math.min(100,(c.streak||0)*10)+'%', badge:(c.coins||0)+' coins', kind:'go'},
+    {goAct:'openCoach', ic:'steps', sc:'coach', c1:'#7C5CFF',c2:'#5A37D6',accent:'#7C5CFF', title:'Spellbound Coaching Journey', desc:'Your training hub — pick a list and climb its Levels with Revise & Practice.', pct:Math.min(100,Math.round(aLvlNew/20*100))+'%', badge:'Lv '+aLvlNew, kind:'go'},
+    {goAct:'setNav', goArg:'concepts', ic:'grid', sc:'concept', c1:'#13A892',c2:'#0E8A78',accent:'#13A892', title:'Concepts', desc:'Spelling patterns — prefixes, roots & tricky endings, in 10 short chapters.', pct:Math.round(cDone/(cTot||1)*100)+'%', badge:cChapDone+'/10 chapters', kind:'go'},
+    {goAct:'openJourneys', ic:'book', sc:'book', c1:'#E0922E',c2:'#C8791B',accent:'#E0922E', title:'Word Journeys', desc:'The history & geography of words — roots, journeys & origins, in 10 chapters.', pct:Math.round((lChapTot?lChapDone/lChapTot:0)*100)+'%', badge:S.premium?(lChapDone+'/'+lChapTot+' chapters'):'Premium', kind:S.premium?'go':'lock'},
+    {goAct:'setNav', goArg:'themes', ic:'palette', sc:'theme', c1:'#B14FC4',c2:'#9438A8',accent:'#B14FC4', title:'Theme Journeys', desc:'Learn words by their worlds — medicine, music, maps & 50 more themes to pick from.', pct:Math.min(100,myThemes().length*20)+'%', badge:myThemes().length+' picked', kind:'go'},
+    {goAct:'openGames', ic:'joystick', sc:'joystick', festive:true, title:'Arcade', desc:'8 mini-games — Magic Squares, Champ Challenge, Boss Battle & more. Earn coins!', pct:Math.min(100,(c.streak||0)*10)+'%', badge:(c.coins||0)+' coins', kind:'go'},
   ].map(j=>{
     const arg=j.goArg?`data-arg="${j.goArg}"`:'';
     if(j.festive){ return `<button class="sb-arcade-card" data-act="${j.goAct}" ${arg} style="position:relative;overflow:hidden;text-align:left;border-radius:16px;padding:18px 20px;background-image:linear-gradient(120deg,#7C5CFF 0%,#FF5FA2 52%,#FFB23E 100%);box-shadow:0 8px 22px rgba(124,92,255,.32);color:#fff;display:flex;flex-direction:column">
       ${streamers()}
-      <div style="position:relative;display:flex;justify-content:space-between;align-items:start;gap:8px;margin-bottom:13px"><div class="sb-theme-art" style="width:46px;height:46px;border-radius:13px;background:rgba(255,255,255,.24);display:grid;place-items:center;color:#fff;box-shadow:0 3px 10px rgba(0,0,0,.18)">${iconSVG(j.ic,26,2.3)}</div><span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;padding:5px 12px;border-radius:99px;font-size:11.5px;font-weight:900;background:#fff;color:#7C5CFF;box-shadow:0 2px 6px rgba(0,0,0,.15)">${iconSVG('coin',12)}${c.coins||0} coins</span></div>
+      <div style="position:relative;display:flex;justify-content:space-between;align-items:start;gap:8px;margin-bottom:13px"><div style="width:46px;height:46px;border-radius:13px;background:rgba(255,255,255,.24);display:grid;place-items:center;color:#fff;box-shadow:0 3px 10px rgba(0,0,0,.18)">${journeyArtSVG(j.sc,27)}</div><span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;padding:5px 12px;border-radius:99px;font-size:11.5px;font-weight:900;background:#fff;color:#7C5CFF;box-shadow:0 2px 6px rgba(0,0,0,.15)">${iconSVG('coin',12)}${c.coins||0} coins</span></div>
       <div style="position:relative;font-family:var(--display);font-weight:800;font-size:18.5px;margin-bottom:4px;text-shadow:0 1px 5px rgba(0,0,0,.22)">Arcade 🎉</div>
       <div style="position:relative;font-size:13px;color:rgba(255,255,255,.96);line-height:1.45;margin-bottom:14px">${j.desc}</div>
       <div style="position:relative;margin-top:auto;height:7px;border-radius:99px;background:rgba(255,255,255,.3);overflow:hidden"><div style="height:100%;border-radius:99px;background:#fff;width:${j.pct}"></div></div></button>`; }
     const badgeStyle = j.kind==='lock' ? 'background:var(--surface2);color:var(--muted)' : ('background:color-mix(in srgb,'+j.accent+' 15%,transparent);color:'+j.accent);
     return `<button class="sb-lift" data-act="${j.goAct}" ${arg} style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.07);display:flex;flex-direction:column">
-      <div style="display:flex;justify-content:space-between;align-items:start;gap:8px;margin-bottom:13px"><div class="sb-theme-art" style="width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,${j.c1},${j.c2});color:#fff;display:grid;place-items:center;box-shadow:0 4px 12px color-mix(in srgb,${j.accent} 38%,transparent);animation-delay:${(j.title.length%9)*0.22}s">${iconSVG(j.ic,25,2.3)}</div><span style="display:inline-flex;align-items:center;gap:4px;white-space:nowrap;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:800;${badgeStyle}">${j.kind==='lock'?iconSVG('lock',11,2.2):''}${esc(j.badge)}</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:start;gap:8px;margin-bottom:13px"><div style="width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,${j.c1},${j.c2});color:#fff;display:grid;place-items:center;box-shadow:0 4px 12px color-mix(in srgb,${j.accent} 38%,transparent)">${journeyArtSVG(j.sc,26)}</div><span style="display:inline-flex;align-items:center;gap:4px;white-space:nowrap;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:800;${badgeStyle}">${j.kind==='lock'?iconSVG('lock',11,2.2):''}${esc(j.badge)}</span></div>
       <div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15;margin-bottom:4px">${j.title}</div>
       <div style="font-size:13px;color:var(--muted);line-height:1.45;margin-bottom:14px">${j.desc}</div>
       <div style="margin-top:auto;height:7px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:99px;background:${j.accent};width:${j.pct}"></div></div></button>`;
@@ -1132,7 +1132,7 @@ function conceptCardHTML(ch, allChs){
     : `<span style="padding:3px 9px;border-radius:99px;font-family:var(--body);font-weight:800;font-size:11px;color:#fff;background:${dc}">${(diffMap[ch.difficulty]||diffMap.medium)[0]}</span>`;
   const footR=`<span style="font-family:var(--body);font-weight:800;font-size:12px;color:${f.c};white-space:nowrap">${locked?'Unlock':(nWords+' words')} →</span>`;
   const prog=(!locked && !st.done && st.m>0)?`<div style="font-family:var(--mono);font-size:11px;color:${f.c};font-weight:700;margin-top:7px">${st.m}/${st.total} mastered</div>`:'';
-  return `<button class="sb-cover-card" data-act="${locked?'buyConcept':'openConcept'}" data-arg="${ci}" style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column;${locked?'opacity:.97':''}">
+  return `<button class="sb-cover-card" data-act="${locked?'buyConcept':'openConcept'}" data-arg="${ci}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px var(--line),0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column;${locked?'opacity:.97':''}">
     ${cover}
     <div style="padding:14px 15px 15px;display:flex;flex-direction:column;flex:1">
       <div style="font-family:var(--display);font-weight:800;font-size:16px;line-height:1.15;color:var(--text)">${esc(titleClean)}</div>
@@ -1168,7 +1168,7 @@ function conceptChapters(){ const chs=state.conceptData||[]; if(state._cchap && 
   out._n=chs.length; state._cchap=out; return out; }
 function conceptChapterStat(chap){ const done=chap.items.filter(c=>conceptStat(c).done).length; return { done, total:chap.items.length, complete:done>=chap.items.length }; }
 function chapterCoverCard(chap){ const f=CONCEPT_FAM[chap.name]||CONCEPT_FAM.Advanced; const st=conceptChapterStat(chap); const pct=st.total?Math.round(st.done/st.total*100):0;
-  return `<button class="sb-cover-card" data-act="openConceptChapter" data-arg="${chap.n-1}" style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">
+  return `<button class="sb-cover-card" data-act="openConceptChapter" data-arg="${chap.n-1}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px var(--line),0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">
     <div style="position:relative;height:94px;display:flex;align-items:center;justify-content:center;${famCoverBG(chap.name)}">
       <span style="position:absolute;top:11px;left:12px;font-family:var(--mono);font-weight:700;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">Chapter</span>
       ${st.complete?'<span style="position:absolute;bottom:9px;right:10px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
@@ -1654,7 +1654,7 @@ function lessonCoverCard(L){
     ${dn?'<span style="position:absolute;bottom:9px;right:10px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
     <div class="sb-theme-art" style="text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.16);animation-delay:${(L.n%9)*0.22}s"><div style="font-family:var(--display);color:#fff;line-height:1;letter-spacing:-.01em;font-style:italic;font-weight:700;font-size:${heroFont(hero)}px">${esc(hero)}</div></div>
   </div>`;
-  return `<button class="sb-cover-card" data-act="openLesson" data-arg="${L.n}" style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">
+  return `<button class="sb-cover-card" data-act="openLesson" data-arg="${L.n}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px var(--line),0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">
     ${cover}
     <div style="padding:14px 15px 15px;display:flex;flex-direction:column;flex:1">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.18;color:var(--text)">${esc(L.title)}</div>
@@ -1816,7 +1816,7 @@ function themeCard(t){ const c=active(); const cl=themeClusters().find(x=>x.id==
   const key=themeKey(t.id); const pinned=!!((c.pinnedLists||{})[key]); const st=themeStat(t.id);
   const lvl=listStageIdx(c,key)+1;
   const done=st.total>0 && st.m/st.total>=PATTERN_DONE_PCT;
-  return `<div class="sb-cover-card" style="text-align:left;background:var(--bg2);border:1px solid ${pinned?cl.c:'var(--line)'};border-radius:16px;overflow:hidden;box-shadow:0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">
+  return `<div class="sb-cover-card" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px ${pinned?cl.c:'var(--line)'},0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">
     <div style="position:relative;height:104px;display:flex;align-items:center;justify-content:center;padding:12px;${themeCoverBG(cl)}">
       <span style="position:absolute;top:10px;left:11px;font-family:var(--mono);font-weight:700;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(cl.label)}</span>
       ${done?'<span style="position:absolute;bottom:8px;right:9px;width:21px;height:21px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:12px">✓</span>':''}
@@ -2092,7 +2092,7 @@ function listCoverBG(k){ const f=listCoverOf(k); const t=CONCEPT_TEX[f.tex]||CON
 function listCoverCard(k,label,sub,count,locked){ const c=active(); const on=(c.activeList||'default')===k; const f=listCoverOf(k); const act=locked?'buyList':'selectList';
   const lvl=(getList(c,k).stage||0)+1;
   const stMeta = (k==='journey') ? (' · Level '+(listStageIdx(c,'journey')+1)) : ((on && !locked) ? (' · Level '+(listStageIdx(c,k)+1)+'/'+listStages(k).length) : '');
-  return `<button class="sb-cover-card" data-act="${act}" data-arg="${k}" style="text-align:left;background:var(--bg2);border:1px solid ${on?f.c:'var(--line)'};border-radius:16px;overflow:hidden;box-shadow:0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">
+  return `<button class="sb-cover-card" data-act="${act}" data-arg="${k}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px ${on?f.c:'var(--line)'},0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">
     <div style="position:relative;height:88px;display:flex;align-items:center;justify-content:center;padding:12px;${listCoverBG(k)}">
       <span style="position:absolute;top:10px;left:11px;font-family:var(--mono);font-weight:700;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(f.tag)}</span>
       ${on?'<span style="position:absolute;top:9px;right:10px;padding:2px 8px;border-radius:99px;background:rgba(255,255,255,.92);color:#1fa377;font-weight:900;font-size:9.5px">ACTIVE</span>':''}
@@ -2363,6 +2363,33 @@ function gameArtSVG(type,size){ size=size||58;
   // fallback: existing icon set with float
   const gm=GAMES.find(g=>g.type===type);
   return `<div class="sb-theme-art">${iconSVG((gm&&gm.ic)||'spark',46,2)}</div>`; }
+// Meaningful, self-animating emblems for the Home journey cards — each scene tells its journey's story,
+// mirroring the arcade game scenes (motion lives inside the SVG, not a generic float on the box).
+function journeyArtSVG(kind,size){ size=size||26;
+  const W=(inner)=>`<svg viewBox="0 0 48 48" width="${size}" height="${size}" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:block;overflow:visible;filter:drop-shadow(0 2px 4px rgba(0,0,0,.18))">${inner}</svg>`;
+  const P=(d,extra)=>`<path d="${d}"${extra?' '+extra:''}/>`;
+  if(kind==='coach'){ // Coaching — three rising level-bars light in turn while a chevron climbs above them
+    const bars=[[11,30,10],[21,22,18],[31,14,26]].map(([x,y,h],i)=>
+      `<rect x="${x}" y="${y}" width="6" height="${h}" rx="1.6" fill="#fff" fill-opacity=".18" style="animation:sb-ga-cell 2.8s linear infinite;animation-delay:${(i*0.5).toFixed(2)}s"/>`).join('');
+    return W(bars+`<g style="animation:sb-jr-rise 2.8s ease-in-out infinite">`+P('M30 12l4-4 4 4')+`</g>`); }
+  if(kind==='concept'){ // Concepts — letter tiles light in sequence, an underline sweeps the pattern
+    const tiles=[10,20,30].map((x,i)=>
+      `<rect x="${x}" y="14" width="8" height="8" rx="1.8" fill="#fff" fill-opacity=".18" style="animation:sb-ga-cell 3s linear infinite;animation-delay:${(i*0.5).toFixed(2)}s"/>`).join('');
+    const letters=['a','b','c'].map((L,i)=>`<text x="${14+i*10}" y="20.6" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="7" fill="#fff" stroke="none">${L}</text>`).join('');
+    return W(tiles+letters+`<g style="animation:sb-ga-scan 3s ease-in-out infinite">`+P('M13 30h9',' stroke-opacity=".95"')+`</g>`); }
+  if(kind==='book'){ // Word Journeys — an open book whose page turns
+    return W(P('M24 14v22')+P('M24 14C20 11 14 11 8 12v22c6-1 12-1 16 2')+P('M24 14c4-3 10-3 16-2v22c-6-1-12-1-16 2')+
+      `<g style="animation:sb-jr-flip 3.2s ease-in-out infinite;transform-origin:24px 24px">`+P('M24 14c3-2 7-2.4 10-1.6v20c-3-.8-7-.4-10 1.6z',' fill="rgba(255,255,255,.24)"')+`</g>`); }
+  if(kind==='theme'){ // Theme Journeys — a painter's palette whose colour dabs pop in turn, with a sparkle
+    const dabs=[[16,20],[24,15],[32,19],[30,28]].map(([x,y],i)=>
+      `<circle cx="${x}" cy="${y}" r="2.6" fill="#fff" fill-opacity=".2" style="animation:sb-ga-cell 3.2s linear infinite;animation-delay:${(i*0.5).toFixed(2)}s"/>`).join('');
+    return W(P('M24 8C14 8 7 15 7 23c0 6 5 8 9 8 3 0 3 4 6 5 8 2 18-5 18-14C40 14 33 8 24 8z')+dabs+
+      `<g style="animation:sb-ga-star 3.2s ease-in-out infinite;transform-origin:20px 22px">`+P('M20 18l1.3 3 3.3.3-2.5 2.2.8 3.2-2.9-1.7-2.9 1.7.8-3.2-2.5-2.2 3.3-.3z',' fill="rgba(255,255,255,.92)" stroke="none"')+`</g>`); }
+  if(kind==='joystick'){ // Arcade — the stick waggles while a button presses
+    return W(P('M13 42h22a3 3 0 0 0 3-3v-5H10v5a3 3 0 0 0 3 3z')+
+      `<g style="animation:sb-ga-joy 2.4s ease-in-out infinite;transform-origin:24px 34px">`+P('M24 34V16')+`<circle cx="24" cy="12" r="5" fill="rgba(255,255,255,.3)"/></g>`+
+      `<circle cx="33" cy="29" r="2.4" fill="#fff" stroke="none" style="animation:sb-ga-press 2.4s ease-in-out infinite;transform-origin:33px 29px"/>`); }
+  return `<div class="sb-theme-art">${iconSVG('spark',size,2)}</div>`; }
 const MC_ORIGINS=['Latin','Greek','French','Old English','Norse','Spanish','Italian','German','Arabic','Japanese','Hindi','Sanskrit','Dutch','Russian','Hebrew','Portuguese'];
 // generate plausible wrong spellings (double/drop/swap letters, ie↔ei, ent↔ant, ible↔able …)
 function misspellings(w, n){ const out=new Set();
@@ -2535,7 +2562,7 @@ function magicView(){ const g=state.game; const S=state;
   </div>`; }
 function gamesHub(){ const S=state;
   const champCard=`<button data-act="openChallenge" data-arg="journey" style="grid-column:1/-1;text-align:left;border-radius:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 6px 18px rgba(43,27,94,.18)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">${iconSVG('bolt',32)}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">Set timed or counted · pick a difficulty</div><div style="font-family:var(--display);font-weight:800;font-size:18px;line-height:1.15">Champ Challenge</div><div style="font-size:12px;color:rgba(255,255,255,.9)">Beat the clock or a set number — pass your Level to test out.</div></div><span style="padding:9px 16px;border-radius:11px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Set it up →</span></div></button>`;
-  const cards=champCard+GAMES.map(gm=>`<button class="sb-cover-card" data-act="playGame" data-arg="${gm.type}" style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">
+  const cards=champCard+GAMES.map(gm=>`<button class="sb-cover-card" data-act="playGame" data-arg="${gm.type}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px var(--line),0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">
       <div style="position:relative;height:108px;display:flex;align-items:center;justify-content:center;padding:14px;${gameCoverBG(gm)}">
         <span style="position:absolute;top:11px;left:12px;font-family:var(--mono);font-weight:700;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(gm.tag)}</span>
         <div style="color:#fff;display:grid;place-items:center">${gameArtSVG(gm.type,58)}</div>

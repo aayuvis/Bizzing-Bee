@@ -107,6 +107,8 @@
   @keyframes sb-ga-tickpop{0%,44%,100%{opacity:0;transform:scale(.4)}52%,78%{opacity:1;transform:scale(1)}}
   @keyframes sb-ga-orbit{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
   @keyframes sb-ga-joy{0%,100%{transform:rotate(-16deg)}45%,55%{transform:rotate(16deg)}}
+  @keyframes sb-jr-rise{0%,100%{transform:translateY(1.5px)}50%{transform:translateY(-3px)}}
+  @keyframes sb-jr-flip{0%,100%{transform:scaleX(1)}44%,54%{transform:scaleX(-.82)}}
   @media (prefers-reduced-motion: reduce){.sb-theme-art,.sb-ga *,[class^="sb-ga"]{animation:none!important}}
   .sb-bee-presenter{animation:sb-bee-pop .5s ease both, sb-bee-bob 2.4s ease-in-out .5s infinite;transform-origin:50% 90%}
   .sb-bee-presenter.talking{animation:sb-bee-pop .45s ease both, sb-bee-talk 1.5s ease-in-out .45s infinite;transform-origin:50% 90%}
@@ -115,8 +117,8 @@
   .sb-arcade-card{background-size:180% 180%;animation:sb-arcade 9s ease-in-out infinite}
   /* covers are clipped BY the card, so the color meets the card edge exactly; the mask keeps
      the rounded clip alive mid-transform (Safari/Chrome compositing bug) */
-  .sb-cover-card{transition:transform .16s ease,box-shadow .16s ease;overflow:hidden;isolation:isolate;-webkit-mask-image:-webkit-radial-gradient(white,black)}
-  .sb-cover-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(43,27,94,.12)!important}
+  .sb-cover-card{padding:0;transition:transform .16s ease,box-shadow .16s ease;overflow:hidden;isolation:isolate;-webkit-mask-image:-webkit-radial-gradient(white,black)}
+  .sb-cover-card:hover{transform:translateY(-2px);box-shadow:0 0 0 1px var(--line),0 10px 24px rgba(43,27,94,.12)!important}
   @keyframes sb-rise{from{transform:translateY(12px)}to{transform:translateY(0)}}
   @keyframes sb-pop{0%{transform:scale(.86)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
   @keyframes sb-fade{from{opacity:0}to{opacity:1}}
