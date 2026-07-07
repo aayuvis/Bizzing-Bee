@@ -104,6 +104,13 @@ Keep all of these files together in the same folder.
   the audio is pre-recorded and **bundled in the app** (the `voice/` folder), so it plays
   instantly, fully offline — no internet, no robotic browser voice. Every scene's animation is
   timed to its narration. (If a clip is ever missing, it quietly falls back to the browser voice.)
+- **Theme Journeys** — the third pillar: learn words by the **worlds they live in**. 50+
+  themes in 8 clusters (Human Body & Medicine, Astronomy, Culinary Arts, Mythology, Law,
+  Fabrics & Fashion…), each self-assembled from the word database by matching definitions —
+  so a theme can hold anywhere from 135 to 2,400 real bee words. Pick 3–5 themes you love
+  (they join your Practice top bar), and each becomes its own Level ladder that ramps
+  easy→hard. Mastery flows back into every other list. The Arcade's **Theme Detective**
+  game quizzes the same skill in reverse: hear a word, pick its world.
 - **Word Journeys** (Premium) — a 100-lesson program on the **history & geography of words**:
   10 units from Proto-Indo-European roots through Latin, Greek, the Norman invasion, world
   borrowings and championship linguistics. Each lesson tells the story behind the spellings,

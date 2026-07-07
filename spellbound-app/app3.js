@@ -77,7 +77,25 @@ function defaultStages(){ if(_defStages) return _defStages;
    other lists are auto-chunked (≤16 stages) by difficulty. ---- */
 const _stageCache = {};
 const _DYNAMIC_LISTS = { missed:1, custom:1, ai:1, review:1 }; // recompute (don't cache) — contents change
-function rawListWords(key){ if(key==='journey') return journeySorted(); const cat=coachCatalog().find(c=>c.key===key); return (cat&&cat.words&&cat.words.length)?cat.words:WORDS; }
+/* ===== Theme Journeys — 50 semantic themes, self-assembled from the word database.
+   A word joins a theme when its DEFINITION matches the theme's keyword classifier, so the
+   themes stay in sync with the library and need no hand-tagging. Theme lists ride the same
+   Level ladder as every other list (th_<id> keys). ===== */
+function themeDefs(){ return (window.SB_THEMES&&SB_THEMES.themes)||[]; }
+function themeClusters(){ return (window.SB_THEMES&&SB_THEMES.clusters)||[]; }
+function themeOf(id){ return themeDefs().find(t=>t.id===id); }
+let _themeCache={};
+function themeWords(id){ if(_themeCache[id]) return _themeCache[id];
+  const t=themeOf(id); if(!t) return [];
+  let re; try{ re=new RegExp(t.re,'i'); }catch(e){ return []; }
+  const out=[]; const nsf=(window.SB_DATA&&SB_DATA.nsf)||[];
+  for(const w of nsf){ if(!w||!w.w||!w.d) continue; if(re.test(w.d)) out.push(w); }
+  _themeCache[id]=out; return out; }
+function themeKey(id){ return 'th_'+id; }
+function isThemeKey(key){ return typeof key==='string' && key.slice(0,3)==='th_'; }
+function themeStat(id){ const ws=themeWords(id); const m=ws.filter(w=>state.luMastered[nkey(w.w)]).length; return {total:ws.length, m, pct:ws.length?Math.round(m/ws.length*100):0}; }
+function myThemes(){ const c=active(); const pins=c.pinnedLists||{}; return themeDefs().filter(t=>pins[themeKey(t.id)]); }
+function rawListWords(key){ if(key==='journey') return journeySorted(); if(isThemeKey(key)) return themeWords(key.slice(3)); const cat=coachCatalog().find(c=>c.key===key); return (cat&&cat.words&&cat.words.length)?cat.words:WORDS; }
 function listStages(key){
   if(key==='default') return defaultStages();
   if(key==='journey') return journeyStages();
@@ -222,7 +240,7 @@ function logActivity(kind, label, stats, misses){ const c=active(); if(!c.activi
   if(c.activity.length>120) c.activity=c.activity.slice(0,120); }
 function fmtAgo(ts){ if(!ts) return ''; const s=Math.max(0,Math.floor((now()-ts)/1000));
   if(s<60) return 'just now'; const m=Math.floor(s/60); if(m<60) return m+'m ago'; const h=Math.floor(m/60); if(h<24) return h+'h ago'; const d=Math.floor(h/24); return d+'d ago'; }
-const ACT_LABEL = { practice:'Practice', buzz:'Buzz of the Day', beat:'Beat the Buzzer', boss:'Boss Battle', meaning:'Meaning Match', spell:'Spot the Spelling', origin:'Origin Detective', written:'Written round', oral:'Oral elimination', concept:'Concept study' };
+const ACT_LABEL = { practice:'Practice', buzz:'Buzz of the Day', beat:'Beat the Buzzer', boss:'Boss Battle', meaning:'Meaning Match', spell:'Spot the Spelling', origin:'Origin Detective', themeq:'Theme Detective', written:'Written round', oral:'Oral elimination', concept:'Concept study' };
 function getList(c,key){ ensureLists(c); if(!c.lists[key]) c.lists[key]={xp:0}; return c.lists[key]; }
 function levelCap(){ return (state.premium||state.devUnlock) ? Infinity : FREE_LEVEL_CAP; }
 function listLevelRaw(c,key){ return levelFromXp(getList(c,key).xp||0).level; }
@@ -230,7 +248,7 @@ function listProgress(c,key){ return levelFromXp(getList(c,key).xp||0); } // {le
 function listLevel(c,key){ return Math.min(listLevelRaw(c,key), levelCap()); }
 function activeListKey(){ return (active().activeList)||'default'; }
 function overallLevel(c){ ensureLists(c); const ks=Object.keys(c.lists||{}); if(!ks.length) return 1; const ls=ks.map(k=>listLevel(c,k)); const best=Math.max(...ls); const avg=ls.reduce((a,b)=>a+b,0)/ls.length; return Math.max(1, Math.round(best*0.6 + avg*0.4)); }
-function listBaseLabel(key){ if(key==='default') return 'Default · Level-Up'; if(key==='journey') return 'The Spellbound Journey'; const cat=coachCatalog().find(c=>c.key===key); return cat?cat.label:key; }
+function listBaseLabel(key){ if(key==='default') return 'Default · Level-Up'; if(key==='journey') return 'The Spellbound Journey'; if(isThemeKey(key)){ const t=themeOf(key.slice(3)); if(t) return t.label; } const cat=coachCatalog().find(c=>c.key===key); return cat?cat.label:key; }
 function listLabel(key){ const custom=((active().listNames)||{})[key]; return custom||listBaseLabel(key); }
 function listWords(key){ return stageWords(key); }            // current stage's words (staged progression)
 function listFullWords(key){ if(key==='default') return defaultStages().reduce((a,s)=>a.concat(s.words),[]); return rawListWords(key); }
@@ -494,12 +512,15 @@ const app = {
   openDrawer:()=>set({drawerOpen:true}), closeDrawer:()=>set({drawerOpen:false}),
   drawer:(key)=>{ state.drawerOpen=false; const F={ home:()=>app.setNav('home'), levelup:()=>app.startLevelUp(), games:()=>app.openGames(), shop:()=>app.openShop(), concepts:()=>app.setNav('concepts'),
       coach:()=>app.openCoach(), journeys:()=>app.openJourneys(), study:()=>app.coachStudy(), written:()=>app.startWritten(), oral:()=>app.startOral(),
-      weak:()=>app.coachWeakDrill(), parentview:()=>{ app.openCoach(); state.coachTab='parent'; render(); }, settings:()=>app.setNav('settings') };
+      weak:()=>app.coachWeakDrill(), parentview:()=>{ app.openCoach(); state.coachTab='parent'; render(); }, settings:()=>app.setNav('settings'), themes:()=>app.setNav('themes') };
     (F[key]||(()=>{}))(); },
   // coach
   openCoach:()=>{ const c=active(); ensureLists(c); ensureCoachWords(c.activeList||'default'); state.coachSession=false;
     set({nav:'coach', screen:'app', coachMode:'hub', coachTab:'train', luTab:'revise', luWordsOpen:false, status:'idle', typed:'', mood:'happy', conceptSel:null}); },
   startWordCoach:()=>app.openCoach(),
+  addTheme:(id)=>{ const c=active(); ensureLists(c); const key=themeKey(id); const t=themeOf(id); if(!t) return;
+    if(!(c.pinnedLists||{})[key]){ if(!c.pinnedLists) c.pinnedLists={}; c.pinnedLists[key]=1; if(!c.lists[key]) c.lists[key]={xp:0}; save(); sfx('coin'); flash('“'+t.label+'” added to your themes ✓ — tap it again to train'); render(); }
+    else app.selectList(key); },
   selectList:(key)=>{ if(!isListUnlocked(key)){ set({showPaywall:true}); return; } const c=active(); ensureLists(c); c.activeList=key; if(!c.lists[key]) c.lists[key]={xp:0}; if(!{journey:1,review:1,missed:1}[key]){ if(!c.pinnedLists) c.pinnedLists={}; c.pinnedLists[key]=1; }
     state.sessionListKey=null; ensureCoachWords(key); set({nav:'coach', screen:'app', coachMode:'hub', coachTab:'train', luTab:'revise', status:'idle', typed:''});
     if(key==='all' && !window.SB_FULL){ loadFullLibrary(()=>{ state.sessionListKey=null; ensureCoachWords('all'); render(); }); }
@@ -550,7 +571,7 @@ const app = {
     if(type==='buzz'){ const list=pickFresh(gameWords(),10); if(!list.length){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,right:0,ans:[],status:'idle'}; setTimeout(()=>{ if(state.game&&state.game.list[0]) say(state.game.list[0].w); },320); }
     else if(type==='beat'){ const list=pickFresh(gameWords(),240); if(list.length<3){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,right:0,wrong:0,timeLeft:60,status:'play'}; startGTimer(); setTimeout(()=>{ if(state.game&&state.game.list[0]) say(state.game.list[0].w); },320); }
     else if(type==='boss'){ const list=pickFresh((state.missedWords||[]).concat(REVIEW).concat(listWords(c.activeList||'default')), 60); if(list.length<3){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,hp:8,maxhp:8,lives:3,maxlives:3,right:0,status:'play',last:null}; setTimeout(()=>{ if(state.game&&state.game.list[0]) say(state.game.list[0].w); },320); }
-    else if(type==='meaning'||type==='spell'||type==='origin'){ const qs=buildMC(type,8); if(qs.length<3){ flash('Need a few more words for this game — train a list first'); return; } state.game={type,qs,i:0,picked:null,right:0,status:'play'}; setTimeout(()=>{ mcSpeak(state.game&&state.game.qs[0]); },320); }
+    else if(type==='meaning'||type==='spell'||type==='origin'||type==='themeq'){ const qs=buildMC(type,8); if(qs.length<3){ flash('Need a few more words for this game — train a list first'); return; } state.game={type,qs,i:0,picked:null,right:0,status:'play'}; setTimeout(()=>{ mcSpeak(state.game&&state.game.qs[0]); },320); }
     else return;
     set({nav:'games', screen:'app'}); },
   exitGame:()=>{ clearGTimer(); set({game:null, gInfo:false, typed:''}); },
@@ -813,7 +834,7 @@ function viewOnboarding(){
 /* ===================== APP SHELL ===================== */
 function viewApp(){
   const S=state;
-  const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['games','Arcade','joystick'],['concepts','Concepts','grid'],['journeys','Word Journeys','book'],['progress','Progress','chart'],['parent','Parent','users']].map(([key,label,ic])=>{
+  const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['games','Arcade','joystick'],['concepts','Concepts','grid'],['journeys','Word Journeys','book'],['themes','Themes','palette'],['progress','Progress','chart'],['parent','Parent','users']].map(([key,label,ic])=>{
     const on=S.nav===key;
     return `<button data-act="setNav" data-arg="${key}" style="display:inline-flex;align-items:center;gap:7px;white-space:nowrap;padding:9px 15px;border-radius:11px;font-weight:800;font-size:14px;${on?'background:var(--accent);color:#fff':'background:transparent;color:var(--muted)'}">${iconSVG(ic,17)} ${label}</button>`;
   }).join('');
@@ -825,6 +846,7 @@ function viewApp(){
   else if(S.nav==='coach') content=viewCoach();
   else if(S.nav==='games') content=viewGames();
   else if(S.nav==='shop') content=viewShop();
+  else if(S.nav==='themes') content=viewThemes();
   else if(S.nav==='progress') content=viewProgress();
   else if(S.nav==='parent') content=viewParent();
   else if(S.nav==='journeys') content=viewJourneys();
@@ -860,6 +882,7 @@ function viewDrawer(){
     {t:'item',label:'Shop',ic:'crown',key:'shop',active:state.nav==='shop'},
     {t:'item',label:'Concepts',ic:'grid',key:'concepts',active:state.nav==='concepts'},
     {t:'item',label:'Word Journeys',ic:'book',key:'journeys',active:state.nav==='journeys'},
+    {t:'item',label:'Theme Journeys',ic:'palette',key:'themes',active:state.nav==='themes'},
     {t:'label',label:'Word Coach · Bee Prep'},
     {t:'item',label:'Coach overview',ic:'target',key:'coach',active:state.nav==='coach'},
     {t:'sub',label:'Study',ic:'book',key:'study'},
@@ -922,7 +945,8 @@ function viewHome(){
     {goAct:'openCoach', ic:'steps', c1:'#7C5CFF',c2:'#5A37D6',accent:'#7C5CFF', title:'Spellbound Coaching Journey', desc:'Your training hub — pick a list and climb its Levels with Revise & Practice.', pct:Math.min(100,Math.round(aLvlNew/20*100))+'%', badge:'Lv '+aLvlNew, kind:'go'},
     {goAct:'setNav', goArg:'concepts', ic:'grid', c1:'#13A892',c2:'#0E8A78',accent:'#13A892', title:'Concepts', desc:'Spelling patterns — prefixes, roots & tricky endings, in 10 short chapters.', pct:Math.round(cDone/(cTot||1)*100)+'%', badge:cChapDone+'/10 chapters', kind:'go'},
     {goAct:'openJourneys', ic:'book', c1:'#E0922E',c2:'#C8791B',accent:'#E0922E', title:'Word Journeys', desc:'The history & geography of words — roots, journeys & origins, in 10 chapters.', pct:Math.round((lChapTot?lChapDone/lChapTot:0)*100)+'%', badge:S.premium?(lChapDone+'/'+lChapTot+' chapters'):'Premium', kind:S.premium?'go':'lock'},
-    {goAct:'openGames', ic:'joystick', festive:true, title:'Arcade', desc:'7 mini-games — Champ Challenge, Buzz, Boss Battle, Spot the Spelling, Origin Detective & more. Earn coins!', pct:Math.min(100,(c.streak||0)*10)+'%', badge:(c.coins||0)+' coins', kind:'go'},
+    {goAct:'setNav', goArg:'themes', ic:'palette', c1:'#B14FC4',c2:'#9438A8',accent:'#B14FC4', title:'Theme Journeys', desc:'Learn words by their worlds — medicine, music, maps & 50 more themes to pick from.', pct:Math.min(100,myThemes().length*20)+'%', badge:myThemes().length+' picked', kind:'go'},
+    {goAct:'openGames', ic:'joystick', festive:true, title:'Arcade', desc:'8 mini-games — Champ Challenge, Buzz, Boss Battle, Theme Detective & more. Earn coins!', pct:Math.min(100,(c.streak||0)*10)+'%', badge:(c.coins||0)+' coins', kind:'go'},
   ].map(j=>{
     const arg=j.goArg?`data-arg="${j.goArg}"`:'';
     if(j.festive){ return `<button class="sb-arcade-card" data-act="${j.goAct}" ${arg} style="position:relative;overflow:hidden;text-align:left;border-radius:16px;padding:18px 20px;background-image:linear-gradient(120deg,#7C5CFF 0%,#FF5FA2 52%,#FFB23E 100%);box-shadow:0 8px 22px rgba(124,92,255,.32);color:#fff;display:flex;flex-direction:column">
@@ -1661,6 +1685,53 @@ function viewJourneys(){ const S=state; if(S.lessonSel) return viewLesson();
       <span style="font-size:12.5px;color:var(--muted);font-weight:700">${done}%</span>
     </div>
     ${main}</div>`; }
+/* ===== Theme Journeys view — pick themes you love; each becomes a staged journey ===== */
+function themeCoverBG(cl){ const t=CONCEPT_TEX[cl.tex]||CONCEPT_TEX.stripes;
+  return `background-color:${cl.c};background-image:${t[0]},linear-gradient(135deg,${cl.c},${cl.c2});background-size:${t[1]},100% 100%;background-position:center`; }
+function themeCard(t){ const c=active(); const cl=themeClusters().find(x=>x.id===t.cluster)||themeClusters()[0];
+  const key=themeKey(t.id); const pinned=!!((c.pinnedLists||{})[key]); const st=themeStat(t.id);
+  const started=pinned||(getList(c,key).xp||0)>0; const lvl=listStageIdx(c,key)+1;
+  const done=st.total>0 && st.m/st.total>=PATTERN_DONE_PCT;
+  return `<button class="sb-cover-card" data-act="addTheme" data-arg="${t.id}" style="text-align:left;background:var(--bg2);border:1px solid ${pinned?cl.c:'var(--line)'};border-radius:16px;overflow:hidden;box-shadow:0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">
+    <div style="position:relative;height:92px;display:flex;align-items:center;justify-content:center;padding:12px;${themeCoverBG(cl)}">
+      <span style="position:absolute;top:10px;left:11px;font-family:var(--mono);font-weight:700;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(cl.label)}</span>
+      ${done?'<span style="position:absolute;bottom:8px;right:9px;width:21px;height:21px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:12px">✓</span>':''}
+      ${pinned?'<span style="position:absolute;top:9px;right:10px;padding:2px 8px;border-radius:99px;background:rgba(255,255,255,.92);color:#1fa377;font-weight:900;font-size:9px">MY THEME</span>':''}
+      <div style="font-family:var(--display);color:#fff;font-weight:700;font-style:italic;font-size:${heroFont(t.hero)}px;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,.18)">${esc(t.hero)}</div>
+    </div>
+    <div style="padding:12px 14px 13px;display:flex;flex-direction:column;flex:1">
+      <div style="font-family:var(--display);font-weight:800;font-size:14.5px;line-height:1.18;color:var(--text)">${esc(t.label)}</div>
+      <div style="font-family:var(--body);font-weight:600;font-size:11.5px;line-height:1.4;color:var(--muted);margin-top:4px">${esc(t.sub)}</div>
+      <div style="margin-top:auto;padding-top:11px;display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <span style="font-family:var(--mono);font-size:10.5px;color:var(--muted);font-weight:700">${fmtN(st.total)} words${st.m?(' · '+st.m+' ✓'):''}</span>
+        <span style="font-family:var(--body);font-weight:800;font-size:12px;color:${cl.c};white-space:nowrap">${started?('Level '+lvl+' →'):'Add →'}</span>
+      </div>
+    </div>
+  </button>`; }
+function viewThemes(){ const S=state; const c=active(); ensureLists(c);
+  const defs=themeDefs(); const mine=myThemes();
+  const mastered=defs.reduce((a,t)=>a+themeStat(t.id).m,0);
+  const doneThemes=defs.filter(t=>{ const st=themeStat(t.id); return st.total>0 && st.m/st.total>=PATTERN_DONE_PCT; }).length;
+  const myRow = mine.length
+    ? `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px"><span style="font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700">My themes</span>${mine.map(t=>{ const cl=themeClusters().find(x=>x.id===t.cluster)||{}; return `<button data-act="selectList" data-arg="${themeKey(t.id)}" oncontextmenu="return sbDelList(event,'${themeKey(t.id)}')" title="Train · right-click to remove" style="display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:11px;border:1px solid ${cl.c};background:color-mix(in srgb,${cl.c} 12%,var(--bg2));color:var(--text);font-weight:800;font-size:12.5px">${esc(t.label)} <span style="opacity:.7;font-size:11px">L${listStageIdx(c,themeKey(t.id))+1}</span></button>`; }).join('')}</div>`
+    : `<div style="background:color-mix(in srgb,var(--accent) 9%,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin-bottom:16px;font-size:13.5px;color:var(--text)"><b>Pick 3–5 themes you love.</b> Words stick better when they live somewhere — a kitchen, a courtroom, the night sky. Each theme becomes its own level ladder, and it joins your top bar in Practice.</div>`;
+  const grid='display:grid;grid-template-columns:repeat(auto-fill,minmax(224px,1fr));gap:13px';
+  const sections=themeClusters().map(cl=>{ const ts=defs.filter(t=>t.cluster===cl.id); if(!ts.length) return '';
+    return `<div style="display:flex;align-items:center;gap:12px;margin:24px 0 12px">
+      <span style="width:10px;height:10px;border-radius:3px;background:${cl.c};flex-shrink:0"></span>
+      <h3 style="font-family:var(--display);font-weight:800;font-size:18px;margin:0;color:var(--text)">${esc(cl.label)}</h3>
+      <span style="font-family:var(--mono);font-size:11.5px;color:var(--muted);white-space:nowrap">${ts.length} themes</span>
+      <span style="flex:1;height:1px;background:var(--line)"></span>
+    </div><div style="${grid}">${ts.map(themeCard).join('')}</div>`; }).join('');
+  return `<div style="animation:sb-rise .35s ease both">
+    ${pageHead('Theme Journeys', defs.length+' themes', 'Learn words by the worlds they live in — medicine, music, maps, mythology… Pick a theme and climb its levels; every word you master counts everywhere else too.')}
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin-bottom:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <span style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">${iconSVG('palette',15)} ${mine.length} picked · ${doneThemes} complete</span>
+      <span style="font-size:12.5px;color:var(--muted);font-weight:700">${fmtN(mastered)} themed words mastered</span>
+    </div>
+    ${myRow}
+    ${sections}
+  </div>`; }
 function viewLesson(){ const S=state; const L=S.lessonSel; const dn=lessonComplete(L); const ws=lessonWordObjs(L);
   const f=unitPal(L.unit); const u=lessonUnits().find(x=>x.n===L.unit)||{title:''};
   // Each of the 5 words as a rich sub-card: word · pronunciation · syllables · meaning · full etymology (every bullet kept).
@@ -1773,7 +1844,7 @@ function viewSettings(){
 
 /* ===================== WORD COACH ===================== */
 const FREE_LISTS = { default:1, review:1, missed:1, custom:1, ai:1, journey:1 };
-function isPremiumList(key){ return !FREE_LISTS[key]; }
+function isPremiumList(key){ if(isThemeKey(key)) return false; return !FREE_LISTS[key]; }
 // Right-click a top-nav list chip to remove it (all but the core 3). Progress is kept; re-add from Setup.
 window.sbDelList = function(e,key){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
   if({journey:1,review:1,missed:1}[key]){ flash('That one stays — it’s a core list.'); return false; }
@@ -2071,6 +2142,7 @@ const GAMES=[
   { type:'meaning',  ic:'book',   name:'Meaning Match',   blurb:'Match a word to its meaning or its sentence.', tag:'Quiz', c:'#13A892',c2:'#0E8A78',tex:'rings' },
   { type:'spell',    ic:'spark',  name:'Spot the Spelling',blurb:'Pick the correctly-spelled word from look-alikes.', tag:'Quiz', c:'#3D7DF0',c2:'#2A63D6',tex:'grid' },
   { type:'origin',   ic:'grid',   name:'Origin Detective', blurb:'Guess each word’s language of origin.', tag:'Detective', c:'#4F9E6A',c2:'#3C8455',tex:'stripes' },
+  { type:'themeq',   ic:'palette',name:'Theme Detective',  blurb:'Match each word to its world — medicine, music, maps…', tag:'Detective', c:'#B14FC4',c2:'#9438A8',tex:'dots' },
 ];
 function gameCoverBG(gm){ const t=CONCEPT_TEX[gm.tex]||CONCEPT_TEX.stripes;
   return `background-color:${gm.c};background-image:${t[0]},linear-gradient(135deg,${gm.c},${gm.c2});background-size:${t[1]},100% 100%;background-position:center`; }
@@ -2085,7 +2157,7 @@ function misspellings(w, n){ const out=new Set();
     x=>x.replace(/cc/,'c'), x=>x.replace(/ss/,'s'), x=>x.replace(/ph/,'f') ];
   let t=0; while(out.size<n && t<50){ t++; const c=ops[Math.floor(Math.random()*ops.length)](w); if(c && c!==w && /^[a-z'\- ]+$/i.test(c)) out.add(c); }
   return [...out]; }
-function mcSpeak(q){ if(!q) return; if(q.kind==='sentence') sayMasked(q.say, q.word); else if(q.kind==='spell'||q.kind==='origin') say(q.word); /* 'meaning': stay silent so the word isn't given away */ }
+function mcSpeak(q){ if(!q) return; if(q.kind==='sentence') sayMasked(q.say, q.word); else if(q.kind==='spell'||q.kind==='origin'||q.kind==='themeq') say(q.word); /* 'meaning': stay silent so the word isn't given away */ }
 const gameName=(t)=>{ const g=GAMES.find(x=>x.type===t); return g?g.name:'Game'; };
 let _gtimer=null;
 function clearGTimer(){ if(_gtimer){ clearInterval(_gtimer); _gtimer=null; } }
@@ -2151,6 +2223,22 @@ function pickFresh(pool, n){ const c=active(); const recent=recentGameKeys(c); c
   const used=valid.filter(w=>recent.has(nkey(w.w))).sort((a,b)=>log.lastIndexOf(nkey(a.w))-log.lastIndexOf(nkey(b.w)));
   return sample(fresh).concat(used).slice(0, n); }
 function buildMC(mode,n){ const all=gameWords();
+  if(mode==='themeq'){
+    // Prefer the child's picked themes; top up with random ones. One question = a word + 4 theme names.
+    const defs=themeDefs(); if(defs.length<4) return [];
+    let pool=myThemes(); const others=defs.filter(t=>!pool.some(p=>p.id===t.id));
+    pool=pool.concat(sample(others, Math.max(0, 8-pool.length)));
+    const qs=[]; const usedWords=new Set();
+    for(const t of sample(pool, pool.length)){
+      const ws=themeWords(t.id).filter(w=>w.d && !usedWords.has(nkey(w.w))
+        && defs.filter(o=>o.id!==t.id && themeWords(o.id).some(x=>nkey(x.w)===nkey(w.w))).length===0); // unambiguous words only
+      if(!ws.length) continue;
+      const w=pickFresh(ws,1)[0]; if(!w) continue; usedWords.add(nkey(w.w));
+      const wrong=sample(defs.filter(o=>o.id!==t.id),3).map(o=>o.label);
+      qs.push({ kind:'themeq', word:w.w, wordObj:w, answer:t.label, choices:sample([t.label].concat(wrong)), prompt:esc(w.w)+(w.d?(' — '+esc(trunc(w.d,90))):''), say:w.w });
+      if(qs.length>=n) break;
+    }
+    return qs; }
   if(mode==='origin'){ const pool=all.filter(w=>w.o && MC_ORIGINS.indexOf(w.o)>=0); if(pool.length<4) return [];
     return pickFresh(pool, Math.min(n,pool.length)).map(w=>{
       const choices=sample([w.o].concat(sample(MC_ORIGINS.filter(o=>o!==w.o),3)));
@@ -2211,7 +2299,7 @@ function gamesHub(){ const S=state;
       </div></div>`;
   return `<div style="max-width:760px;margin:0 auto">
     <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:14px">← Home</button><span style="margin-left:2px">${arcadeLogoSVG(38)}</span><span style="font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.01em">Arcade</span><span style="margin-left:auto">${coinChip()}</span></div>
-    <p style="margin:0 0 16px;color:var(--muted);font-size:14px">Seven ways to play — every correct word earns coins.</p>
+    <p style="margin:0 0 16px;color:var(--muted);font-size:14px">Eight ways to play — every correct word earns coins.</p>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">${cards}</div>
     ${store}
   </div>`;
