@@ -91,9 +91,13 @@ function themePool(){ const full=window.SB_FULL; return (full&&full.length)?full
 function themeWords(id){ const pool=themePool();
   const hit=_themeCache[id]; if(hit && hit._n===pool.length) return hit;
   const t=themeOf(id); if(!t) return [];
-  let re; try{ re=new RegExp(t.re,'i'); }catch(e){ return []; }
+  // Fast path: the base JSON is enriched with baked theme tags (w.t). The keyword classifier
+  // remains as a fallback for any word without tags (e.g. custom/pasted words).
+  let re=null; try{ re=new RegExp(t.re,'i'); }catch(e){}
   const out=[];
-  for(const w of pool){ if(!w||!w.w||!w.d) continue; if(re.test(w.d)) out.push(w); }
+  for(const w of pool){ if(!w||!w.w) continue;
+    if(w.t){ if(w.t.indexOf(id)>=0) out.push(w); }
+    else if(re && w.d && re.test(w.d)) out.push(w); }
   out._n=pool.length; _themeCache[id]=out; return out; }
 function themeKey(id){ return 'th_'+id; }
 function isThemeKey(key){ return typeof key==='string' && key.slice(0,3)==='th_'; }
