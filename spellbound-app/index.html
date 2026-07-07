@@ -63,15 +63,19 @@
   @keyframes sb-art-float{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-5px) rotate(1.5deg)}}
   @keyframes sb-art-wig{0%{transform:scale(1) rotate(0)}30%{transform:scale(1.16) rotate(-7deg)}60%{transform:scale(1.1) rotate(6deg)}100%{transform:scale(1.12) rotate(0)}}
   .sb-theme-art{animation:sb-art-float 3.6s ease-in-out infinite;transform-origin:50% 60%}
-  .sb-cover-card:hover .sb-theme-art{animation:sb-art-wig .5s ease both}
+  .sb-cover-card:hover .sb-theme-art,.sb-lift:hover .sb-theme-art,.sb-arcade-card:hover .sb-theme-art{animation:sb-art-wig .5s ease both}
+  .sb-lift{transition:transform .16s ease,box-shadow .16s ease}
+  .sb-lift:hover{transform:translateY(-2px)}
   @media (prefers-reduced-motion: reduce){.sb-theme-art{animation:none}}
   .sb-bee-presenter{animation:sb-bee-pop .5s ease both, sb-bee-bob 2.4s ease-in-out .5s infinite;transform-origin:50% 90%}
   .sb-bee-presenter.talking{animation:sb-bee-pop .45s ease both, sb-bee-talk 1.5s ease-in-out .45s infinite;transform-origin:50% 90%}
   @keyframes sb-confetti{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-6px) rotate(calc(var(--r,0deg) + 12deg))}}
   @keyframes sb-arcade{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
   .sb-arcade-card{background-size:180% 180%;animation:sb-arcade 9s ease-in-out infinite}
-  .sb-cover-card{transition:transform .16s ease,box-shadow .16s ease}
+  .sb-cover-card{transition:transform .16s ease,box-shadow .16s ease;overflow:hidden;isolation:isolate}
   .sb-cover-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(43,27,94,.12)!important}
+  /* the colored cover always shares the card's roundedness — even mid-transform (Safari clip bug) */
+  .sb-cover-card>:first-child{border-radius:15px 15px 0 0}
   @keyframes sb-rise{from{transform:translateY(12px)}to{transform:translateY(0)}}
   @keyframes sb-pop{0%{transform:scale(.86)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
   @keyframes sb-fade{from{opacity:0}to{opacity:1}}

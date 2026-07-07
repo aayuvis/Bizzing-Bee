@@ -982,13 +982,13 @@ function viewHome(){
     const arg=j.goArg?`data-arg="${j.goArg}"`:'';
     if(j.festive){ return `<button class="sb-arcade-card" data-act="${j.goAct}" ${arg} style="position:relative;overflow:hidden;text-align:left;border-radius:16px;padding:18px 20px;background-image:linear-gradient(120deg,#7C5CFF 0%,#FF5FA2 52%,#FFB23E 100%);box-shadow:0 8px 22px rgba(124,92,255,.32);color:#fff;display:flex;flex-direction:column">
       ${streamers()}
-      <div style="position:relative;display:flex;justify-content:space-between;align-items:start;gap:8px;margin-bottom:13px"><div style="width:46px;height:46px;border-radius:13px;background:rgba(255,255,255,.24);display:grid;place-items:center;color:#fff;box-shadow:0 3px 10px rgba(0,0,0,.18)">${iconSVG(j.ic,26,2.3)}</div><span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;padding:5px 12px;border-radius:99px;font-size:11.5px;font-weight:900;background:#fff;color:#7C5CFF;box-shadow:0 2px 6px rgba(0,0,0,.15)">${iconSVG('coin',12)}${c.coins||0} coins</span></div>
+      <div style="position:relative;display:flex;justify-content:space-between;align-items:start;gap:8px;margin-bottom:13px"><div class="sb-theme-art" style="width:46px;height:46px;border-radius:13px;background:rgba(255,255,255,.24);display:grid;place-items:center;color:#fff;box-shadow:0 3px 10px rgba(0,0,0,.18)">${iconSVG(j.ic,26,2.3)}</div><span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;padding:5px 12px;border-radius:99px;font-size:11.5px;font-weight:900;background:#fff;color:#7C5CFF;box-shadow:0 2px 6px rgba(0,0,0,.15)">${iconSVG('coin',12)}${c.coins||0} coins</span></div>
       <div style="position:relative;font-family:var(--display);font-weight:800;font-size:18.5px;margin-bottom:4px;text-shadow:0 1px 5px rgba(0,0,0,.22)">Arcade 🎉</div>
       <div style="position:relative;font-size:13px;color:rgba(255,255,255,.96);line-height:1.45;margin-bottom:14px">${j.desc}</div>
       <div style="position:relative;margin-top:auto;height:7px;border-radius:99px;background:rgba(255,255,255,.3);overflow:hidden"><div style="height:100%;border-radius:99px;background:#fff;width:${j.pct}"></div></div></button>`; }
     const badgeStyle = j.kind==='lock' ? 'background:var(--surface2);color:var(--muted)' : ('background:color-mix(in srgb,'+j.accent+' 15%,transparent);color:'+j.accent);
-    return `<button data-act="${j.goAct}" ${arg} style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.07);display:flex;flex-direction:column">
-      <div style="display:flex;justify-content:space-between;align-items:start;gap:8px;margin-bottom:13px"><div style="width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,${j.c1},${j.c2});color:#fff;display:grid;place-items:center;box-shadow:0 4px 12px color-mix(in srgb,${j.accent} 38%,transparent)">${iconSVG(j.ic,25,2.3)}</div><span style="display:inline-flex;align-items:center;gap:4px;white-space:nowrap;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:800;${badgeStyle}">${j.kind==='lock'?iconSVG('lock',11,2.2):''}${esc(j.badge)}</span></div>
+    return `<button class="sb-lift" data-act="${j.goAct}" ${arg} style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.07);display:flex;flex-direction:column">
+      <div style="display:flex;justify-content:space-between;align-items:start;gap:8px;margin-bottom:13px"><div class="sb-theme-art" style="width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,${j.c1},${j.c2});color:#fff;display:grid;place-items:center;box-shadow:0 4px 12px color-mix(in srgb,${j.accent} 38%,transparent);animation-delay:${(j.title.length%9)*0.22}s">${iconSVG(j.ic,25,2.3)}</div><span style="display:inline-flex;align-items:center;gap:4px;white-space:nowrap;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:800;${badgeStyle}">${j.kind==='lock'?iconSVG('lock',11,2.2):''}${esc(j.badge)}</span></div>
       <div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15;margin-bottom:4px">${j.title}</div>
       <div style="font-size:13px;color:var(--muted);line-height:1.45;margin-bottom:14px">${j.desc}</div>
       <div style="margin-top:auto;height:7px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:99px;background:${j.accent};width:${j.pct}"></div></div></button>`;
@@ -1104,7 +1104,7 @@ function conceptCardHTML(ch, allChs){
     <span style="position:absolute;top:11px;left:12px;font-family:var(--mono);font-weight:700;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(fam)}</span>
     <span style="position:absolute;top:12px;right:12px;width:9px;height:9px;border-radius:50%;background:${dc};box-shadow:0 0 0 3px rgba(255,255,255,.28)"></span>
     ${st.done?'<span style="position:absolute;bottom:9px;right:10px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
-    <div style="text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.16)${locked?';opacity:.92':''}">
+    <div class="sb-theme-art" style="text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.16);animation-delay:${(ci%9)*0.22}s${locked?';opacity:.92':''}">
       ${locked?`<div style="display:flex;justify-content:center;color:#fff">${iconSVG('lock',42,2)}</div>`:`<div style="${mainStyle}">${esc(main)}</div>`}
       ${(!locked&&rest.length)?`<div style="font-family:var(--mono);font-weight:700;font-size:13px;color:rgba(255,255,255,.85);margin-top:6px;letter-spacing:.04em">${rest.map(esc).join('&nbsp;&nbsp;&nbsp;')}</div>`:''}
     </div>
@@ -1154,7 +1154,7 @@ function chapterCoverCard(chap){ const f=CONCEPT_FAM[chap.name]||CONCEPT_FAM.Adv
     <div style="position:relative;height:94px;display:flex;align-items:center;justify-content:center;${famCoverBG(chap.name)}">
       <span style="position:absolute;top:11px;left:12px;font-family:var(--mono);font-weight:700;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">Chapter</span>
       ${st.complete?'<span style="position:absolute;bottom:9px;right:10px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
-      <div style="font-family:var(--display);color:#fff;font-weight:800;font-size:44px;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,.2)">${chap.n}</div>
+      <div class="sb-theme-art" style="font-family:var(--display);color:#fff;font-weight:800;font-size:44px;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,.2);animation-delay:${(chap.n%9)*0.22}s">${chap.n}</div>
     </div>
     <div style="padding:13px 15px 14px;display:flex;flex-direction:column;flex:1">
       <div style="font-family:var(--display);font-weight:800;font-size:15.5px;color:var(--text)">Chapter ${chap.n}</div>
@@ -1634,7 +1634,7 @@ function lessonCoverCard(L){
     <span style="position:absolute;top:11px;left:12px;font-family:var(--mono);font-weight:700;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(L.id)}</span>
     <span style="position:absolute;top:12px;right:12px;width:9px;height:9px;border-radius:50%;background:${dc};box-shadow:0 0 0 3px rgba(255,255,255,.28)"></span>
     ${dn?'<span style="position:absolute;bottom:9px;right:10px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
-    <div style="text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.16)"><div style="font-family:var(--display);color:#fff;line-height:1;letter-spacing:-.01em;font-style:italic;font-weight:700;font-size:${heroFont(hero)}px">${esc(hero)}</div></div>
+    <div class="sb-theme-art" style="text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.16);animation-delay:${(L.n%9)*0.22}s"><div style="font-family:var(--display);color:#fff;line-height:1;letter-spacing:-.01em;font-style:italic;font-weight:700;font-size:${heroFont(hero)}px">${esc(hero)}</div></div>
   </div>`;
   return `<button class="sb-cover-card" data-act="openLesson" data-arg="${L.n}" style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">
     ${cover}
@@ -1790,7 +1790,7 @@ function themeCard(t){ const c=active(); const cl=themeClusters().find(x=>x.id==
       <span style="position:absolute;top:10px;left:11px;font-family:var(--mono);font-weight:700;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(cl.label)}</span>
       ${done?'<span style="position:absolute;bottom:8px;right:9px;width:21px;height:21px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:12px">✓</span>':''}
       ${pinned?'<span style="position:absolute;top:9px;right:10px;padding:2px 8px;border-radius:99px;background:rgba(255,255,255,.92);color:#1fa377;font-weight:900;font-size:9px">MY THEME</span>':''}
-      <div class="sb-theme-art" style="animation-delay:${((t.id.length*137)%1800)/1000}s">${themeArtSVG(t.id,58,true)}</div>
+      <div class="sb-theme-art" style="animation-delay:${((t.id.length*137)%1800)/1000}s">${themeArtSVG(t.id,58,false)}</div>
     </div>
     <div style="padding:12px 14px 13px;display:flex;flex-direction:column;flex:1">
       <div style="font-family:var(--display);font-weight:800;font-size:14.5px;line-height:1.18;color:var(--text)">${esc(t.label)}</div>
@@ -2064,7 +2064,7 @@ function listCoverCard(k,label,sub,count,locked){ const c=active(); const on=(c.
     <div style="position:relative;height:88px;display:flex;align-items:center;justify-content:center;padding:12px;${listCoverBG(k)}">
       <span style="position:absolute;top:10px;left:11px;font-family:var(--mono);font-weight:700;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(f.tag)}</span>
       ${on?'<span style="position:absolute;top:9px;right:10px;padding:2px 8px;border-radius:99px;background:rgba(255,255,255,.92);color:#1fa377;font-weight:900;font-size:9.5px">ACTIVE</span>':''}
-      <div style="text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.16)">${locked?`<div style="display:flex;justify-content:center;color:#fff">${iconSVG('lock',34,2)}</div>`:`<div style="font-family:var(--display);color:#fff;line-height:1;letter-spacing:-.01em;font-weight:800;font-size:${heroFont(f.hero)}px">${esc(f.hero)}</div>`}</div>
+      <div class="sb-theme-art" style="text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.16);animation-delay:${(k.length%9)*0.22}s">${locked?`<div style="display:flex;justify-content:center;color:#fff">${iconSVG('lock',34,2)}</div>`:`<div style="font-family:var(--display);color:#fff;line-height:1;letter-spacing:-.01em;font-weight:800;font-size:${heroFont(f.hero)}px">${esc(f.hero)}</div>`}</div>
     </div>
     <div style="padding:12px 14px 13px;display:flex;flex-direction:column;flex:1">
       <div style="font-family:var(--display);font-weight:800;font-size:14.5px;line-height:1.18;color:var(--text)">${esc(label)}</div>
@@ -2417,8 +2417,8 @@ function magicView(){ const g=state.game; const S=state;
   if(g.status==='board'){
     const tiles=g.board.map((cell,i)=>{ const cl=magicClusterOf(cell);
       const doneBG=`${themeCoverBG(cl)};color:#fff`;
-      return `<button data-act="magicCell" data-arg="${i}" style="position:relative;aspect-ratio:1;border-radius:15px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;border:2px solid ${cell.done?cl.c:'var(--line)'};${cell.done?doneBG:'background:var(--bg2)'};box-shadow:${cell.done?('0 6px 16px rgba(43,27,94,.2)'):'0 2px 6px rgba(43,27,94,.06)'}">
-        ${cell.done?`<div style="font-size:26px;line-height:1;animation:sb-pop .4s ease both">⭐</div>`:`<div style="width:26px;height:26px;border-radius:8px;background:color-mix(in srgb,${cl.c} 16%,var(--bg2));color:${cl.c};display:grid;place-items:center">${iconSVG('spark',15)}</div>`}
+      return `<button class="sb-lift" data-act="magicCell" data-arg="${i}" style="position:relative;aspect-ratio:1;border-radius:15px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;border:2px solid ${cell.done?cl.c:'var(--line)'};${cell.done?doneBG:'background:var(--bg2)'};box-shadow:${cell.done?('0 6px 16px rgba(43,27,94,.2)'):'0 2px 6px rgba(43,27,94,.06)'}">
+        ${cell.done?`<div class="sb-theme-art" style="font-size:26px;line-height:1">⭐</div>`:`<div class="sb-theme-art" style="width:26px;height:26px;border-radius:8px;background:color-mix(in srgb,${cl.c} 16%,var(--bg2));color:${cl.c};display:grid;place-items:center;animation-delay:${(i%9)*0.22}s">${iconSVG('spark',15)}</div>`}
         <div style="font-family:var(--display);font-weight:800;font-size:12.5px;line-height:1.15;${cell.done?'color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.25)':'color:var(--text)'}">${esc(cell.label)}</div>
         ${(!cell.done&&cell.tried)?`<div style="font-size:10px;font-weight:800;color:var(--muted)">best ${cell.best}/5 · retry</div>`:''}
       </button>`; }).join('');
@@ -2470,7 +2470,7 @@ function gamesHub(){ const S=state;
   const cards=champCard+GAMES.map(gm=>`<button class="sb-cover-card" data-act="playGame" data-arg="${gm.type}" style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">
       <div style="position:relative;height:108px;display:flex;align-items:center;justify-content:center;padding:14px;${gameCoverBG(gm)}">
         <span style="position:absolute;top:11px;left:12px;font-family:var(--mono);font-weight:700;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(gm.tag)}</span>
-        <div style="color:#fff;display:grid;place-items:center;filter:drop-shadow(0 2px 8px rgba(0,0,0,.22))">${iconSVG(gm.ic,46,2)}</div>
+        <div class="sb-theme-art" style="color:#fff;display:grid;place-items:center;filter:drop-shadow(0 2px 8px rgba(0,0,0,.22));animation-delay:${(gm.type.length%9)*0.22}s">${iconSVG(gm.ic,46,2)}</div>
       </div>
       <div style="padding:14px 15px 15px;display:flex;flex-direction:column;flex:1">
         <div style="font-family:var(--display);font-weight:800;font-size:16.5px;color:var(--text)">${gm.name}</div>
