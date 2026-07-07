@@ -452,7 +452,7 @@ const app = {
   startLevelUp:()=>{ const c=active(); ensureLists(c); c.activeList='default'; app.openCoach(); },
   reviseNav:(dir)=>{ const N=(state.sessionWords&&state.sessionWords.length)||LEVEL_WORDS.length; let i=(state.reviseIdx||0)+(dir==='next'?1:-1); set({reviseIdx:Math.max(0,Math.min(N-1,i))}); },
   conceptWordNav:(dir)=>{ const ws=((state.conceptSel&&state.conceptSel.words)||[]).filter(x=>x&&x.w); const N=ws.length||1; let i=(state.conceptWordIdx||0)+(dir==='next'?1:-1); set({conceptWordIdx:Math.max(0,Math.min(N-1,i))}); },
-  exitTrain:()=>{ if((state.sessionDone||0)>0){ logActivity(state.coachSession?'concept':'practice', state.sessionLabel||'Practice', {done:state.sessionDone,right:state.sessionRight}, []); } if(state.coachSession){ state.coachSession=false; app.openCoach(); } else app.setNav('home'); },
+  exitTrain:()=>{ if((state.sessionDone||0)>0){ logActivity(state.coachSession?'concept':'practice', state.sessionLabel||'Practice', {done:state.sessionDone,right:state.sessionRight}, []); } if(state.coachSession){ state.coachSession=false; app.openCoach(); } else if(state.trainBack==='themes'){ state.trainBack=null; app.setNav('themes'); } else app.setNav('home'); },
   onType:(v)=>{ state.typed=v; render(); },
   trainKey:(e)=>{ if(e.key==='Enter'){ if(state.status==='idle') app.check(); else app.next(); } },
   toggleDef:()=>set({showDef:!state.showDef}),
@@ -527,8 +527,13 @@ const app = {
     set({nav:'coach', screen:'app', coachMode:'hub', coachTab:'train', luTab:'revise', luWordsOpen:false, status:'idle', typed:'', mood:'happy', conceptSel:null}); },
   startWordCoach:()=>app.openCoach(),
   addTheme:(id)=>{ const c=active(); ensureLists(c); const key=themeKey(id); const t=themeOf(id); if(!t) return;
-    if(!(c.pinnedLists||{})[key]){ if(!c.pinnedLists) c.pinnedLists={}; c.pinnedLists[key]=1; if(!c.lists[key]) c.lists[key]={xp:0}; save(); sfx('coin'); flash('“'+t.label+'” added to your themes ✓ — tap it again to train'); render(); }
+    if(!(c.pinnedLists||{})[key]){ if(!c.pinnedLists) c.pinnedLists={}; c.pinnedLists[key]=1; if(!c.lists[key]) c.lists[key]={xp:0}; save(); sfx('coin'); flash('“'+t.label+'” added to your lists ✓'); render(); }
     else app.selectList(key); },
+  themePractice:(id)=>{ const c=active(); ensureLists(c); const key=themeKey(id); const t=themeOf(id); if(!t) return;
+    if(!c.lists[key]) c.lists[key]={xp:0};             // give it a ladder, but don't pin it to the top bar
+    const ws=workingSet(key); if(!ws.length){ flash('No words in this theme yet'); return; }
+    state.sessionWords=ws; state.sessionListKey=key; state.sessionLabel=t.label;
+    state.gi=0; state.coachSession=false; state.trainBack='themes'; app.startTrain(); },
   selectList:(key)=>{ if(!isListUnlocked(key)){ set({showPaywall:true}); return; } const c=active(); ensureLists(c); c.activeList=key; if(!c.lists[key]) c.lists[key]={xp:0}; if(!{journey:1,review:1,missed:1}[key]){ if(!c.pinnedLists) c.pinnedLists={}; c.pinnedLists[key]=1; }
     state.sessionListKey=null; ensureCoachWords(key); set({nav:'coach', screen:'app', coachMode:'hub', coachTab:'train', luTab:'revise', status:'idle', typed:''});
     if(key==='all' && !window.SB_FULL){ loadFullLibrary(()=>{ state.sessionListKey=null; ensureCoachWords('all'); render(); }); }
@@ -1714,26 +1719,90 @@ function viewJourneys(){ const S=state; if(S.lessonSel) return viewLesson();
 /* ===== Theme Journeys view — pick themes you love; each becomes a staged journey ===== */
 function themeCoverBG(cl){ const t=CONCEPT_TEX[cl.tex]||CONCEPT_TEX.stripes;
   return `background-color:${cl.c};background-image:${t[0]},linear-gradient(135deg,${cl.c},${cl.c2});background-size:${t[1]},100% 100%;background-position:center`; }
+/* Hand-drawn white line-art emblem per theme (offline, theme-colored cover behind it). */
+function themeArtSVG(id,size){ size=size||54;
+  const W=(inner)=>`<svg viewBox="0 0 48 48" width="${size}" height="${size}" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:block;filter:drop-shadow(0 3px 6px rgba(0,0,0,.22))">${inner}</svg>`;
+  const P=(d)=>`<path d="${d}"/>`; const C=(cx,cy,r,f)=>`<circle cx="${cx}" cy="${cy}" r="${r}"${f?' fill="rgba(255,255,255,.28)" stroke="none"':''}/>`;
+  const F=(d)=>`<path d="${d}" fill="rgba(255,255,255,.28)" stroke="none"/>`;
+  const M={
+  body:P('M24 40s-13-7.5-13-17a7.5 7.5 0 0 1 13-5 7.5 7.5 0 0 1 13 5c0 9.5-13 17-13 17z')+P('M11 24h7l3-5 4 9 3-6h9'),
+  disease:P('M20 8h8M24 8v7')+P('M24 15a10 10 0 1 0 .01 0')+C(20,27,1.6,1)+C(28,25,1.6,1)+C(24,32,1.6,1),
+  pharmacy:'<rect x="14" y="16" width="20" height="24" rx="4"/>'+P('M17 16v-5h14v5')+P('M24 24v8M20 28h8'),
+  animals:C(15,18,3.4)+C(24,14,3.4)+C(33,18,3.4)+P('M24 24c-6 0-10 4.5-10 9 0 3 2.2 4.6 4.6 4-2.3-4.4 1-8 5.4-8s7.7 3.6 5.4 8c2.4.6 4.6-1 4.6-4 0-4.5-4-9-10-9z'),
+  birds:P('M10 30c8 2 20 2 26-8-3-1-5-1-7 0 1-6-3-11-9-11-5 0-9 4-9 9v5c0 2-.5 3.6-1 5z')+C(19,15,1.5,1)+P('M36 22l6-2M10 36c8 3 18 3 24-3'),
+  insects:P('M24 18v18')+C(24,14,3.2)+P('M24 22c-7-6-14-3-14 3s6 9 14 4c8 5 14 1 14-4s-7-9-14-3z')+P('M20 10l-3-4M28 10l3-4'),
+  marine:P('M8 26c5-7 12-9 18-6l8-6v9l3 3-3 3v3l-8-3c-6 3-13 1-18-3z')+C(15,24,1.6,1)+P('M34 40c-3-2-6-2-9 0s-6 2-9 0'),
+  botany:P('M24 40V22')+P('M24 26c0-7-5-11-12-11 0 7 5 11 12 11z')+P('M24 22c0-6 4-9 10-9 0 6-4 9-10 9z')+P('M16 40h16'),
+  flowers:C(24,22,4)+P('M24 12a5 5 0 0 1 0 10 5 5 0 0 1 0-10zM34 22a5 5 0 0 1-10 0M24 32a5 5 0 0 1 0-10M14 22a5 5 0 0 1 10 0')+P('M24 32v9M24 41c0-4-3-6-7-6M24 41c0-4 3-6 7-6'),
+  chemistry:P('M20 8h8M22 8v10l-9 16a4 4 0 0 0 3.4 6h15.2a4 4 0 0 0 3.4-6l-9-16V8')+P('M17 30h14')+C(22,35,1.6,1)+C(27,33,1.4,1),
+  astronomy:C(24,24,8)+P('M10 32c5 1 9 0 14-3s9-8 10-13')+'<ellipse cx="24" cy="24" rx="15" ry="5.5" transform="rotate(-24 24 24)"/>'+C(37,12,1.5,1)+C(11,36,1.3,1),
+  weather:P('M14 28a8 8 0 1 1 3-15.5A10 10 0 0 1 36 16a7 7 0 0 1 2 13.8')+P('M24 30l-4 8h5l-3 7 9-11h-5l3-4z'),
+  minerals:P('M15 10h18l8 10-17 20L7 20z')+P('M7 20h34M15 10l9 10 9-10M24 40V20'),
+  physics:'<ellipse cx="24" cy="24" rx="17" ry="7"/>'+'<ellipse cx="24" cy="24" rx="17" ry="7" transform="rotate(60 24 24)"/>'+'<ellipse cx="24" cy="24" rx="17" ry="7" transform="rotate(-60 24 24)"/>'+C(24,24,2.4,1),
+  ecology:P('M24 8a16 16 0 1 0 16 16C40 15 33 8 24 8z')+P('M24 8c-8 8-8 24 0 32M24 8c8 8 8 24 0 32M9 20h30M9 28h30'),
+  landforms:P('M6 38l10-18 6 10 4-6 10 14z')+P('M16 20l3-5 3 5')+F('M19 15l3 5h-6z')+C(38,12,3.4)+P('M10 38h30'),
+  nations:C(24,24,15)+P('M9 24h30M24 9c-5 4-7 9-7 15s2 11 7 15c5-4 7-9 7-15s-2-11-7-15z'),
+  waterways:P('M8 18c4-4 8-4 12 0s8 4 12 0 8-4 12 0')+P('M8 27c4-4 8-4 12 0s8 4 12 0 8-4 12 0')+P('M8 36c4-4 8-4 12 0s8 4 12 0 8-4 12 0'),
+  maps:C(24,24,15)+P('M24 9v4M24 35v4M9 24h4M35 24h4')+P('M30 18l-4 9-9 4 4-9z')+C(24,24,1.6,1),
+  farming:P('M24 40V16')+P('M24 22c-5 0-8-3-8-8 5 0 8 3 8 8zM24 22c5 0 8-3 8-8-5 0-8 3-8 8zM24 30c-5 0-8-3-8-8 5 0 8 3 8 8zM24 30c5 0 8-3 8-8-5 0-8 3-8 8z')+P('M14 40h20'),
+  culinary:P('M10 26h28l-3 12a3 3 0 0 1-3 2H16a3 3 0 0 1-3-2z')+P('M24 26v-6a6 6 0 0 1 6-6')+P('M17 22c1-3 3-5 7-6M31 22c-1-2-2-3-4-4'),
+  dishes:P('M8 28h32a16 16 0 0 0-32 0z')+P('M6 28h36M20 12c0 2 2 2 2 4s-2 2-2 4M27 12c0 2 2 2 2 4s-2 2-2 4'),
+  spices:P('M20 12c-6 5-10 12-10 18a9 9 0 0 0 18 0c0-6-3-13-8-18z')+P('M28 10c4 1 8 5 9 10')+C(33,26,2)+C(37,32,2)+C(31,34,2),
+  fabrics:P('M14 10l-6 8 5 4v18h22V22l5-4-6-8h-6a4 4 0 0 1-8 0z')+P('M18 24c4 3 8 3 12 0M18 31c4 3 8 3 12 0'),
+  buildings:P('M10 40V20l8-6v26M18 40V14l12-6v32M30 40V16l8 6v18')+P('M6 40h36')+P('M23 16v3M23 24v3M23 32v3M34 26v3M34 33v2'),
+  household:P('M10 26v-6a4 4 0 0 1 4-4h20a4 4 0 0 1 4 4v6')+P('M8 26a3 3 0 0 1 3 3v5h26v-5a3 3 0 0 1 6 0v4a4 4 0 0 1-2 3.4V40M8 26a3 3 0 0 0-3 3v4a4 4 0 0 0 2 3.4V40')+P('M11 34h26'),
+  music:P('M18 34V12l18-4v22')+C(14,34,4.4)+C(32,30,4.4)+P('M18 18l18-4'),
+  stage:P('M8 10c10 5 22 5 32 0v6c-10 5-22 5-32 0z')+P('M12 18v16a24 24 0 0 0 24 0V18')+P('M18 28c1.5 2 4 2 5.5 0M27 28c1.5 2 4 2 5.5 0M20 36c2.5 2 5.5 2 8 0'),
+  painting:P('M24 8a16 16 0 0 0 0 32c2.6 0 3.6-2 2.6-3.8-1-1.9.4-4.2 2.8-4.2h2.6a8 8 0 0 0 8-8c0-9-7-16-16-16z')+C(16,22,2,1)+C(24,16,2,1)+C(32,22,2,1)+C(15,30,1.8,1),
+  poetry:P('M12 40c-2-12-2-22 0-30 8-2 16-2 24 0 2 8 2 18 0 30-8-2-16-2-24 0z')+P('M18 18h12M18 24h12M18 30h7')+P('M34 34l6-6-3-3-6 6-1 4z'),
+  myth:P('M24 6l3.5 8 8.5.8-6.4 5.6 2 8.6L24 24.6 16.4 29l2-8.6L12 14.8l8.5-.8z')+P('M14 38c6 3 14 3 20 0M17 43h14'),
+  religion:P('M24 40V14')+P('M24 14a6 6 0 1 1 .01 0')+P('M14 26h20M18 40h12')+C(24,8,1.6,1),
+  festivals:P('M10 40l8-22 8 14z')+F('M14 30l4-11 4 7z')+P('M26 8l1.5 4 4 .4-3 2.6 1 4-3.5-2-3.5 2 1-4-3-2.6 4-.4z')+C(38,18,2)+C(34,30,1.6,1)+P('M36 36l4 4M40 36l-4 4'),
+  law:P('M24 8v32M16 40h16')+P('M10 16h28')+P('M14 16l-5 10a6 5 0 0 0 11 0zM34 16l-5 10a6 5 0 0 0 11 0z'),
+  politics:P('M8 40h32M10 34h28')+P('M12 34V22M18 34V22M24 34V22M30 34V22M36 34V22')+P('M8 22L24 10l16 12z')+C(24,17,1.8,1),
+  economy:C(24,24,14)+P('M28 18c-1.4-1.4-6-2.4-8 0-1.8 2.2-.4 4.6 2 5.4l4.2 1.4c2.8 1 3.4 4 1.4 5.8-2.2 2-6.4 1.2-8-.6')+P('M24 13v4M24 31v4'),
+  jobs:P('M16 16v-3a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v3')+'<rect x="8" y="16" width="32" height="20" rx="4"/>'+P('M8 25c10 4 22 4 32 0M24 24v4'),
+  character:C(24,20,9)+P('M9 42a15 15 0 0 1 30 0')+P('M20 19c.8-1.4 3-1.4 3.8 0M27 19c.8-1.4 3-1.4 3.8 0M19 24c3 2.6 7 2.6 10 0'),
+  emotions:P('M24 40s-13-7.5-13-17a7.5 7.5 0 0 1 13-5 7.5 7.5 0 0 1 13 5c0 9.5-13 17-13 17z')+P('M18 22c1-1.4 3-1.4 4 0M27 22c1-1.4 3-1.4 4 0M19 27c3 2.6 8 2.6 11 0'),
+  kinship:C(17,15,4.4)+C(31,15,4.4)+P('M8 36a9 9 0 0 1 18 0zM22 36a9 9 0 0 1 18 0z')+P('M24 8l1 2.4 2.6.2-2 1.8.6 2.6-2.2-1.4-2.2 1.4.6-2.6-2-1.8 2.6-.2z'),
+  war:P('M12 36L34 14M30 10l8 8-4 4-8-8zM14 34l-4 8 8-4z')+P('M36 36L14 14M18 10l-8 8 4 4 8-8zM34 34l4 8-8-4z'),
+  ancient:P('M8 40h32M10 36h28')+P('M12 36V18M20 36V18M28 36V18M36 36V18')+P('M8 18L24 8l16 10z')+P('M8 18h32'),
+  royalty:P('M10 34l-2-18 9 7 7-11 7 11 9-7-2 18z')+P('M10 38h28')+C(24,26,2,1)+C(15,28,1.6,1)+C(33,28,1.6,1),
+  seafaring:P('M24 8v22')+P('M24 10c8 2 8 10 0 12 10 1 12-4 14-2-2 6-8 8-14 8')+P('M8 34c2 4 6 6 16 6s14-2 16-6c-4-1-8-2-16-2s-12 1-16 2z')+P('M24 22c-8-2-8-10 0-12'),
+  sports:C(24,24,15)+P('M24 9c5 4 7 9 7 15s-2 11-7 15c-5-4-7-9-7-15s2-11 7-15z')+P('M9.5 20c9-3 20-3 29 0M9.5 28c9 3 20 3 29 0'),
+  vehicles:P('M8 30l3-9a4 4 0 0 1 3.8-3h18.4a4 4 0 0 1 3.8 3l3 9')+P('M8 30h32v6a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-1H14v1a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2z')+C(14,33,1.8,1)+C(34,33,1.8,1),
+  tools:P('M28 14a8 8 0 0 0-11 9L8 32a3.5 3.5 0 0 0 5 5l9-9a8 8 0 0 0 9-11l-5 5-4-1-1-4z')+C(36,36,5)+P('M36 33v3l2.4 1.6'),
+  logic:P('M17 8a8 8 0 0 0-8 8c0 3 1 4.6 2.4 6.4C9 24.6 8 26.6 8 29a8 8 0 0 0 9 8M31 8a8 8 0 0 1 8 8c0 3-1 4.6-2.4 6.4C38.4 24.6 40 26.6 40 29a8 8 0 0 1-9 8')+P('M17 37c2 2 4 3 7 3s5-1 7-3M24 12v28'),
+  numbers:P('M14 8v8M10 12h8')+P('M30 10h8M30 15h8')+P('M12 30l6 8M18 30l-6 8')+C(35,34,5)+P('M32 34h6'),
+  wordwords:P('M8 12h24a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H20l-8 7v-7h-4z')+P('M14 19h16M14 25h10')+P('M36 20h4a2 2 0 0 1 2 2v16l-5-4h-9'),
+  time:C(24,24,15)+P('M24 13v11l8 5')+P('M24 6v3M42 24h-3M24 42v-3M6 24h3'),
+  colors:P('M24 6c4 7 12 15 12 24a12 12 0 0 1-24 0c0-9 8-17 12-24z')+P('M18 30a6 6 0 0 0 6 6')+C(30,17,1.6,1),
+  };
+  return W(M[id]||M.wordwords); }
 function themeCard(t){ const c=active(); const cl=themeClusters().find(x=>x.id===t.cluster)||themeClusters()[0];
   const key=themeKey(t.id); const pinned=!!((c.pinnedLists||{})[key]); const st=themeStat(t.id);
-  const started=pinned||(getList(c,key).xp||0)>0; const lvl=listStageIdx(c,key)+1;
+  const lvl=listStageIdx(c,key)+1;
   const done=st.total>0 && st.m/st.total>=PATTERN_DONE_PCT;
-  return `<button class="sb-cover-card" data-act="addTheme" data-arg="${t.id}" style="text-align:left;background:var(--bg2);border:1px solid ${pinned?cl.c:'var(--line)'};border-radius:16px;overflow:hidden;box-shadow:0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">
-    <div style="position:relative;height:92px;display:flex;align-items:center;justify-content:center;padding:12px;${themeCoverBG(cl)}">
+  return `<div class="sb-cover-card" style="text-align:left;background:var(--bg2);border:1px solid ${pinned?cl.c:'var(--line)'};border-radius:16px;overflow:hidden;box-shadow:0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">
+    <div style="position:relative;height:104px;display:flex;align-items:center;justify-content:center;padding:12px;${themeCoverBG(cl)}">
       <span style="position:absolute;top:10px;left:11px;font-family:var(--mono);font-weight:700;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(cl.label)}</span>
       ${done?'<span style="position:absolute;bottom:8px;right:9px;width:21px;height:21px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:12px">✓</span>':''}
       ${pinned?'<span style="position:absolute;top:9px;right:10px;padding:2px 8px;border-radius:99px;background:rgba(255,255,255,.92);color:#1fa377;font-weight:900;font-size:9px">MY THEME</span>':''}
-      <div style="font-family:var(--display);color:#fff;font-weight:700;font-style:italic;font-size:${heroFont(t.hero)}px;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,.18)">${esc(t.hero)}</div>
+      ${themeArtSVG(t.id,58)}
     </div>
     <div style="padding:12px 14px 13px;display:flex;flex-direction:column;flex:1">
       <div style="font-family:var(--display);font-weight:800;font-size:14.5px;line-height:1.18;color:var(--text)">${esc(t.label)}</div>
       <div style="font-family:var(--body);font-weight:600;font-size:11.5px;line-height:1.4;color:var(--muted);margin-top:4px">${esc(t.sub)}</div>
-      <div style="margin-top:auto;padding-top:11px;display:flex;align-items:center;justify-content:space-between;gap:8px">
-        <span style="font-family:var(--mono);font-size:10.5px;color:var(--muted);font-weight:700">${fmtN(st.total)} words${st.m?(' · '+st.m+' ✓'):''}</span>
-        <span style="font-family:var(--body);font-weight:800;font-size:12px;color:${cl.c};white-space:nowrap">${started?('Level '+lvl+' →'):'Add →'}</span>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
+        <div style="flex:1;height:6px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:99px;background:${done?'var(--good)':cl.c};width:${st.pct}%;transition:width .4s"></div></div>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--muted);font-weight:700;white-space:nowrap">${st.m}/${fmtN(st.total)}</span>
+      </div>
+      <div style="margin-top:auto;padding-top:11px;display:flex;gap:7px">
+        <button data-act="themePractice" data-arg="${t.id}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:11px;background:${cl.c};color:#fff;font-weight:800;font-size:12.5px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.16)">${iconSVG('pencil',13)} Practice</button>
+        <button data-act="addTheme" data-arg="${t.id}" title="${pinned?'In your lists — tap to open in Word Coach':'Add to your lists (top bar in Practice)'}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:11px;font-weight:800;font-size:12.5px;${pinned?`background:color-mix(in srgb,${cl.c} 13%,var(--bg2));border:1px solid ${cl.c};color:${cl.c}`:'background:var(--surface2);border:1px solid var(--line);color:var(--text)'}">${pinned?('✓ L'+lvl):'+ Add'}</button>
       </div>
     </div>
-  </button>`; }
+  </div>`; }
 function viewThemes(){ const S=state; const c=active(); ensureLists(c);
   const defs=themeDefs(); const mine=myThemes();
   const mastered=defs.reduce((a,t)=>a+themeStat(t.id).m,0);
@@ -2166,11 +2235,17 @@ function coachOrGone(){
 const MAGIC_BONUS={cell:3,row:10,col:10,diag:15,square:40};
 function magicNewBoard(){ clearGTimer();
   const ok=t=>themeWords(t.id).length>=10;
-  let pool=myThemes().filter(ok);
-  pool=pool.concat(sample(themeDefs().filter(t=>ok(t)&&!pool.some(p=>p.id===t.id)), 9-Math.min(pool.length,9)));
+  const used=state._magicUsed||(state._magicUsed=new Set());
+  const fresh=t=>ok(t)&&!used.has(t.id);
+  // every round deals different themes; when the deck runs out, reshuffle it
+  if(themeDefs().filter(fresh).length<9) used.clear();
+  let pool=myThemes().filter(fresh);
+  pool=pool.concat(sample(themeDefs().filter(t=>fresh(t)&&!pool.some(p=>p.id===t.id)), 9-Math.min(pool.length,9)));
   if(pool.length<9) pool=pool.concat(sample(themeDefs().filter(t=>ok(t)&&!pool.some(p=>p.id===t.id)),9-pool.length));
   const board=sample(pool,9).map(t=>({id:t.id,label:t.label,cluster:t.cluster,done:false,best:0,tried:0}));
-  state.game={type:'magic',board,cell:null,qs:null,qi:0,right:0,picked:null,ok:null,revealed:false,
+  board.forEach(c=>used.add(c.id));
+  const round=((state.game&&state.game.type==='magic')?(state.game.round||1):0)+1;
+  state.game={type:'magic',board,round,cell:null,qs:null,qi:0,right:0,picked:null,ok:null,revealed:false,
     lines:{r:[false,false,false],c:[false,false,false],d:[false,false]},squareDone:false,celebr:null,coins:0,status:'board'};
   state.typed=''; render(); }
 function magicClusterOf(cell){ return themeClusters().find(x=>x.id===cell.cluster)||themeClusters()[0]; }
@@ -2349,7 +2424,7 @@ function magicView(){ const g=state.game; const S=state;
     return `<div style="max-width:560px;margin:0 auto">${head}
       <p style="margin:0 0 14px;color:var(--muted);font-size:13.5px">Pick a square and ace <b>4 of 5</b> questions to claim it. Finish a <b>row +${MAGIC_BONUS.row}</b> 🪙, <b>column +${MAGIC_BONUS.col}</b>, <b>diagonal +${MAGIC_BONUS.diag}</b> — and the whole square for <b>+${MAGIC_BONUS.square}</b>!</p>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">${tiles}</div>
-      <div style="display:flex;align-items:center;gap:10px"><span style="font-size:12.5px;color:var(--muted);font-weight:700">${doneN}/9 squares</span><span style="flex:1"></span><button data-act="magicNew" style="padding:10px 16px;border-radius:11px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">🔄 New board</button></div>
+      <div style="display:flex;align-items:center;gap:10px"><span style="font-size:12.5px;color:var(--muted);font-weight:700">Round ${g.round||1} · ${doneN}/9 squares</span><span style="flex:1"></span><button data-act="magicNew" style="padding:10px 16px;border-radius:11px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">🔄 New board</button></div>
     </div>`; }
   if(g.status==='play'){ const q=g.qs[g.qi]; const cell=g.board[g.cell]; const cl=magicClusterOf(cell);
     const dots=g.qs.map((_,i)=>`<span style="flex:1;height:6px;border-radius:99px;background:${i<g.qi?'var(--good)':(i===g.qi?cl.c:'var(--surface2)')}"></span>`).join('');
@@ -2384,7 +2459,9 @@ function magicView(){ const g=state.game; const S=state;
     <h2 style="font-family:var(--display);font-weight:800;font-size:25px;margin:0 0 4px">${r.win?(g.celebr&&g.celebr.mega?'MAGIC SQUARE!':'Square claimed! ⭐'):'So close!'}</h2>
     <div style="font-size:14.5px;color:var(--muted);font-weight:700">${esc(cell.label)} — ${r.right}/5 right${r.coins?(' · +'+r.coins+' 🪙 bonus'):''}</div>
     ${celebr}
-    <div style="display:flex;gap:10px;margin-top:16px">${r.win?'':`<button data-act="magicCell" data-arg="${g.cell}" style="flex:1;padding:13px;border-radius:13px;background:${cl.c};color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Try again →</button>`}<button data-act="magicBoard" style="flex:1;padding:13px;border-radius:13px;background:${r.win?'var(--accent)':'var(--surface2)'};color:${r.win?'#fff':'var(--text)'};font-weight:800;font-size:15px;${r.win?'box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)':'border:1px solid var(--line)'}">Back to the board</button></div>
+    <div style="display:flex;gap:10px;margin-top:16px">${r.win?'':`<button data-act="magicCell" data-arg="${g.cell}" style="flex:1;padding:13px;border-radius:13px;background:${cl.c};color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Try again →</button>`}${g.squareDone
+      ? `<button data-act="magicNew" style="flex:1;padding:13px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Round ${(g.round||1)+1} — 9 new themes →</button><button data-act="exitGame" style="padding:13px 16px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">Done</button>`
+      : `<button data-act="magicBoard" style="flex:1;padding:13px;border-radius:13px;background:${r.win?'var(--accent)':'var(--surface2)'};color:${r.win?'#fff':'var(--text)'};font-weight:800;font-size:15px;${r.win?'box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)':'border:1px solid var(--line)'}">Back to the board</button>`}</div>
   </div>`; }
 function gamesHub(){ const S=state;
   const champCard=`<button data-act="openChallenge" data-arg="journey" style="grid-column:1/-1;text-align:left;border-radius:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 6px 18px rgba(43,27,94,.18)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">${iconSVG('bolt',32)}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">Set timed or counted · pick a difficulty</div><div style="font-family:var(--display);font-weight:800;font-size:18px;line-height:1.15">Champ Challenge</div><div style="font-size:12px;color:rgba(255,255,255,.9)">Beat the clock or a set number — pass your Level to test out.</div></div><span style="padding:9px 16px;border-radius:11px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Set it up →</span></div></button>`;
