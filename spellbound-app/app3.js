@@ -248,7 +248,7 @@ function logActivity(kind, label, stats, misses){ const c=active(); if(!c.activi
   if(c.activity.length>120) c.activity=c.activity.slice(0,120); }
 function fmtAgo(ts){ if(!ts) return ''; const s=Math.max(0,Math.floor((now()-ts)/1000));
   if(s<60) return 'just now'; const m=Math.floor(s/60); if(m<60) return m+'m ago'; const h=Math.floor(m/60); if(h<24) return h+'h ago'; const d=Math.floor(h/24); return d+'d ago'; }
-const ACT_LABEL = { practice:'Practice', buzz:'Buzz of the Day', beat:'Beat the Buzzer', boss:'Boss Battle', meaning:'Meaning Match', spell:'Spot the Spelling', origin:'Origin Detective', themeq:'Theme Detective', written:'Written round', oral:'Oral elimination', concept:'Concept study' };
+const ACT_LABEL = { practice:'Practice', buzz:'Buzz of the Day', beat:'Beat the Buzzer', boss:'Boss Battle', meaning:'Meaning Match', spell:'Spot the Spelling', origin:'Origin Detective', magic:'Magic Squares', written:'Written round', oral:'Oral elimination', concept:'Concept study' };
 function getList(c,key){ ensureLists(c); if(!c.lists[key]) c.lists[key]={xp:0}; return c.lists[key]; }
 function levelCap(){ return (state.premium||state.devUnlock) ? Infinity : FREE_LEVEL_CAP; }
 function listLevelRaw(c,key){ return levelFromXp(getList(c,key).xp||0).level; }
@@ -571,6 +571,23 @@ const app = {
   startBuzz:()=>app.playGame('buzz'),
   // ===== games arcade =====
   openGames:()=>{ clearGTimer(); const c=active(); ensureLists(c); set({nav:'games', screen:'app', game:null, gInfo:false, typed:'', mood:'happy', conceptSel:null}); },
+  // ----- Magic Squares -----
+  magicCell:(i)=>{ const g=state.game; if(!g||g.type!=='magic') return; i=+i; if(g.board[i].done){ flash('That square is already yours ⭐'); return; }
+    g.qs=magicBuildQs(g.board[i].id); if(g.qs.length<5){ flash('Not enough words in that theme yet'); return; }
+    g.cell=i; g.qi=0; g.right=0; g.picked=null; g.ok=null; g.revealed=false; g.status='play'; state.typed='';
+    render(); const q=g.qs[0]; if(q.k==='spell') setTimeout(()=>say(q.w.w),350); },
+  magicPick:(c)=>{ const g=state.game; if(!g||g.status!=='play'||g.picked!=null) return; const q=g.qs[g.qi];
+    g.picked=c; g.ok=(nkey(c)===nkey(q.w.w)); if(g.ok){ g.right++; sfx('correct'); addCoins(1); g.coins++; } else sfx('wrong');
+    render(); setTimeout(magicAdvance, g.ok?900:1700); },
+  magicKey:(e)=>{ if(e.key==='Enter') app.magicSubmit(); },
+  magicSubmit:()=>{ const g=state.game; if(!g||g.status!=='play'||g.revealed) return; const q=g.qs[g.qi];
+    const ans=(state.typed||'').trim().toLowerCase(); if(!ans){ flash('Type the word first'); return; }
+    g.revealed=true; g.ok=(ans===q.w.w.toLowerCase());
+    if(g.ok){ g.right++; sfx('correct'); addCoins(1); g.coins++; markMastered(nkey(q.w.w)); } else { sfx('wrong'); addMiss(q.w); }
+    render(); setTimeout(magicAdvance, g.ok?900:2100); },
+  magicHear:()=>{ const g=state.game; if(g&&g.qs&&g.qs[g.qi]) say(g.qs[g.qi].w.w); },
+  magicBoard:()=>{ const g=state.game; if(!g) return; g.status='board'; g.celebr=null; state.typed=''; render(); },
+  magicNew:()=>magicNewBoard(),
   openShop:()=>{ try{ loadConcepts(); }catch(e){} set({nav:'shop', screen:'app', game:null, conceptSel:null}); },
   shopTab:(t)=>set({shopTab:t}),
   toggleSound:()=>{ set({sound:!state.sound}); if(state.sound) sfx('coin'); },
@@ -579,7 +596,8 @@ const app = {
     if(type==='buzz'){ const list=pickFresh(gameWords(),10); if(!list.length){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,right:0,ans:[],status:'idle'}; setTimeout(()=>{ if(state.game&&state.game.list[0]) say(state.game.list[0].w); },320); }
     else if(type==='beat'){ const list=pickFresh(gameWords(),240); if(list.length<3){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,right:0,wrong:0,timeLeft:60,status:'play'}; startGTimer(); setTimeout(()=>{ if(state.game&&state.game.list[0]) say(state.game.list[0].w); },320); }
     else if(type==='boss'){ const list=pickFresh((state.missedWords||[]).concat(REVIEW).concat(listWords(c.activeList||'default')), 60); if(list.length<3){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,hp:8,maxhp:8,lives:3,maxlives:3,right:0,status:'play',last:null}; setTimeout(()=>{ if(state.game&&state.game.list[0]) say(state.game.list[0].w); },320); }
-    else if(type==='meaning'||type==='spell'||type==='origin'||type==='themeq'){ const qs=buildMC(type,8); if(qs.length<3){ flash('Need a few more words for this game — train a list first'); return; } state.game={type,qs,i:0,picked:null,right:0,status:'play'}; setTimeout(()=>{ mcSpeak(state.game&&state.game.qs[0]); },320); }
+    else if(type==='magic'){ magicNewBoard(); }
+    else if(type==='meaning'||type==='spell'||type==='origin'){ const qs=buildMC(type,8); if(qs.length<3){ flash('Need a few more words for this game — train a list first'); return; } state.game={type,qs,i:0,picked:null,right:0,status:'play'}; setTimeout(()=>{ mcSpeak(state.game&&state.game.qs[0]); },320); }
     else return;
     set({nav:'games', screen:'app'}); },
   exitGame:()=>{ clearGTimer(); set({game:null, gInfo:false, typed:''}); },
@@ -954,7 +972,7 @@ function viewHome(){
     {goAct:'setNav', goArg:'concepts', ic:'grid', c1:'#13A892',c2:'#0E8A78',accent:'#13A892', title:'Concepts', desc:'Spelling patterns — prefixes, roots & tricky endings, in 10 short chapters.', pct:Math.round(cDone/(cTot||1)*100)+'%', badge:cChapDone+'/10 chapters', kind:'go'},
     {goAct:'openJourneys', ic:'book', c1:'#E0922E',c2:'#C8791B',accent:'#E0922E', title:'Word Journeys', desc:'The history & geography of words — roots, journeys & origins, in 10 chapters.', pct:Math.round((lChapTot?lChapDone/lChapTot:0)*100)+'%', badge:S.premium?(lChapDone+'/'+lChapTot+' chapters'):'Premium', kind:S.premium?'go':'lock'},
     {goAct:'setNav', goArg:'themes', ic:'palette', c1:'#B14FC4',c2:'#9438A8',accent:'#B14FC4', title:'Theme Journeys', desc:'Learn words by their worlds — medicine, music, maps & 50 more themes to pick from.', pct:Math.min(100,myThemes().length*20)+'%', badge:myThemes().length+' picked', kind:'go'},
-    {goAct:'openGames', ic:'joystick', festive:true, title:'Arcade', desc:'8 mini-games — Champ Challenge, Buzz, Boss Battle, Theme Detective & more. Earn coins!', pct:Math.min(100,(c.streak||0)*10)+'%', badge:(c.coins||0)+' coins', kind:'go'},
+    {goAct:'openGames', ic:'joystick', festive:true, title:'Arcade', desc:'8 mini-games — Magic Squares, Champ Challenge, Boss Battle & more. Earn coins!', pct:Math.min(100,(c.streak||0)*10)+'%', badge:(c.coins||0)+' coins', kind:'go'},
   ].map(j=>{
     const arg=j.goArg?`data-arg="${j.goArg}"`:'';
     if(j.festive){ return `<button class="sb-arcade-card" data-act="${j.goAct}" ${arg} style="position:relative;overflow:hidden;text-align:left;border-radius:16px;padding:18px 20px;background-image:linear-gradient(120deg,#7C5CFF 0%,#FF5FA2 52%,#FFB23E 100%);box-shadow:0 8px 22px rgba(124,92,255,.32);color:#fff;display:flex;flex-direction:column">
@@ -2142,6 +2160,52 @@ function coachOrGone(){
   </div>`;
 }
 
+/* ===== Magic Squares — a 3×3 bingo board of themes. Clear a cell by acing 5 questions
+   (spell-it or pick-the-meaning). Complete rows, columns & diagonals for bonus coins;
+   black out the whole square for the mega prize. ===== */
+const MAGIC_BONUS={cell:3,row:10,col:10,diag:15,square:40};
+function magicNewBoard(){ clearGTimer();
+  const ok=t=>themeWords(t.id).length>=10;
+  let pool=myThemes().filter(ok);
+  pool=pool.concat(sample(themeDefs().filter(t=>ok(t)&&!pool.some(p=>p.id===t.id)), 9-Math.min(pool.length,9)));
+  if(pool.length<9) pool=pool.concat(sample(themeDefs().filter(t=>ok(t)&&!pool.some(p=>p.id===t.id)),9-pool.length));
+  const board=sample(pool,9).map(t=>({id:t.id,label:t.label,cluster:t.cluster,done:false,best:0,tried:0}));
+  state.game={type:'magic',board,cell:null,qs:null,qi:0,right:0,picked:null,ok:null,revealed:false,
+    lines:{r:[false,false,false],c:[false,false,false],d:[false,false]},squareDone:false,celebr:null,coins:0,status:'board'};
+  state.typed=''; render(); }
+function magicClusterOf(cell){ return themeClusters().find(x=>x.id===cell.cluster)||themeClusters()[0]; }
+function magicBuildQs(id){ const all=themeWords(id).filter(w=>w.d&&w.d.length>4);
+  let ws=pickFresh(all,5); if(ws.length<5) ws=ws.concat(sample(all.filter(w=>!ws.some(x=>nkey(x.w)===nkey(w.w))),5-ws.length));
+  return ws.slice(0,5).map(w=>{ logGameWord(nkey(w.w));
+    if(Math.random()<0.5 && /^[a-z'\- ]+$/i.test(w.w)) return {k:'spell',w};
+    const others=sample(all.filter(x=>nkey(x.w)!==nkey(w.w)),3).map(x=>x.w);
+    return {k:'mean',w,choices:sample([w.w].concat(others))}; }); }
+function magicLinesCheck(g){ const d=g.board.map(c=>c.done); const won=[];
+  const L=g.lines;
+  for(let r=0;r<3;r++) if(!L.r[r] && d[r*3]&&d[r*3+1]&&d[r*3+2]){ L.r[r]=true; won.push({label:'Row '+(r+1)+' complete!',coins:MAGIC_BONUS.row}); }
+  for(let c=0;c<3;c++) if(!L.c[c] && d[c]&&d[c+3]&&d[c+6]){ L.c[c]=true; won.push({label:'Column '+(c+1)+' complete!',coins:MAGIC_BONUS.col}); }
+  if(!L.d[0] && d[0]&&d[4]&&d[8]){ L.d[0]=true; won.push({label:'Diagonal complete!',coins:MAGIC_BONUS.diag}); }
+  if(!L.d[1] && d[2]&&d[4]&&d[6]){ L.d[1]=true; won.push({label:'Diagonal complete!',coins:MAGIC_BONUS.diag}); }
+  if(!g.squareDone && d.every(Boolean)){ g.squareDone=true; won.push({label:'✨ MAGIC SQUARE! ✨',coins:MAGIC_BONUS.square,mega:true}); }
+  return won; }
+function magicFinishCell(){ const g=state.game; const i=g.cell; const cell=g.board[i];
+  cell.tried++; cell.best=Math.max(cell.best,g.right);
+  const win=g.right>=4; let celebr=null; let coins=0;
+  if(win && !cell.done){ cell.done=true; coins+=MAGIC_BONUS.cell;
+    const lines=magicLinesCheck(g);
+    if(lines.length){ celebr={msgs:lines.map(l=>l.label+' +'+l.coins+' 🪙'), mega:lines.some(l=>l.mega)}; coins+=lines.reduce((a,l)=>a+l.coins,0); } }
+  if(coins){ addCoins(coins); g.coins+=coins; }
+  g.cellResult={win, right:g.right, coins}; g.celebr=celebr; g.status='result';
+  if(celebr&&celebr.mega){ sfx('win'); burstConfetti(240); setTimeout(()=>burstConfetti(180),700); }
+  else if(celebr){ sfx('win'); burstConfetti(140); }
+  else if(win){ sfx('level'); burstConfetti(60); }
+  else sfx('lose');
+  logActivity('magic','Magic Squares — '+g.board[i].label, {done:5, right:g.right, coins}, []);
+  render(); }
+function magicAdvance(){ const g=state.game; if(!g) return;
+  g.qi++; g.picked=null; g.ok=null; g.revealed=false; state.typed='';
+  if(g.qi>=g.qs.length){ magicFinishCell(); return; }
+  render(); const q=g.qs[g.qi]; if(q.k==='spell') setTimeout(()=>say(q.w.w),300); }
 /* ===================== GAMES ARCADE ===================== */
 const GAMES=[
   { type:'buzz',     ic:'flame',  name:'Buzz of the Day', blurb:'10 mixed words, typed. Your daily warm-up.', tag:'Daily', c:'#E0922E',c2:'#C8791B',tex:'diag' },
@@ -2150,7 +2214,7 @@ const GAMES=[
   { type:'meaning',  ic:'book',   name:'Meaning Match',   blurb:'Match a word to its meaning or its sentence.', tag:'Quiz', c:'#13A892',c2:'#0E8A78',tex:'rings' },
   { type:'spell',    ic:'spark',  name:'Spot the Spelling',blurb:'Pick the correctly-spelled word from look-alikes.', tag:'Quiz', c:'#3D7DF0',c2:'#2A63D6',tex:'grid' },
   { type:'origin',   ic:'grid',   name:'Origin Detective', blurb:'Guess each word’s language of origin.', tag:'Detective', c:'#4F9E6A',c2:'#3C8455',tex:'stripes' },
-  { type:'themeq',   ic:'palette',name:'Theme Detective',  blurb:'Match each word to its world — medicine, music, maps…', tag:'Detective', c:'#B14FC4',c2:'#9438A8',tex:'dots' },
+  { type:'magic',    ic:'palette',name:'Magic Squares',    blurb:'A 3×3 board of themes — clear cells, complete rows & diagonals for bonus coins!', tag:'Board', c:'#B14FC4',c2:'#9438A8',tex:'dots' },
 ];
 function gameCoverBG(gm){ const t=CONCEPT_TEX[gm.tex]||CONCEPT_TEX.stripes;
   return `background-color:${gm.c};background-image:${t[0]},linear-gradient(135deg,${gm.c},${gm.c2});background-size:${t[1]},100% 100%;background-position:center`; }
@@ -2165,7 +2229,7 @@ function misspellings(w, n){ const out=new Set();
     x=>x.replace(/cc/,'c'), x=>x.replace(/ss/,'s'), x=>x.replace(/ph/,'f') ];
   let t=0; while(out.size<n && t<50){ t++; const c=ops[Math.floor(Math.random()*ops.length)](w); if(c && c!==w && /^[a-z'\- ]+$/i.test(c)) out.add(c); }
   return [...out]; }
-function mcSpeak(q){ if(!q) return; if(q.kind==='sentence') sayMasked(q.say, q.word); else if(q.kind==='spell'||q.kind==='origin'||q.kind==='themeq') say(q.word); /* 'meaning': stay silent so the word isn't given away */ }
+function mcSpeak(q){ if(!q) return; if(q.kind==='sentence') sayMasked(q.say, q.word); else if(q.kind==='spell'||q.kind==='origin') say(q.word); /* 'meaning': stay silent so the word isn't given away */ }
 const gameName=(t)=>{ const g=GAMES.find(x=>x.type===t); return g?g.name:'Game'; };
 let _gtimer=null;
 function clearGTimer(){ if(_gtimer){ clearInterval(_gtimer); _gtimer=null; } }
@@ -2231,22 +2295,6 @@ function pickFresh(pool, n){ const c=active(); const recent=recentGameKeys(c); c
   const used=valid.filter(w=>recent.has(nkey(w.w))).sort((a,b)=>log.lastIndexOf(nkey(a.w))-log.lastIndexOf(nkey(b.w)));
   return sample(fresh).concat(used).slice(0, n); }
 function buildMC(mode,n){ const all=gameWords();
-  if(mode==='themeq'){
-    // Prefer the child's picked themes; top up with random ones. One question = a word + 4 theme names.
-    const defs=themeDefs(); if(defs.length<4) return [];
-    let pool=myThemes(); const others=defs.filter(t=>!pool.some(p=>p.id===t.id));
-    pool=pool.concat(sample(others, Math.max(0, 8-pool.length)));
-    const qs=[]; const usedWords=new Set();
-    for(const t of sample(pool, pool.length)){
-      const ws=themeWords(t.id).filter(w=>w.d && !usedWords.has(nkey(w.w))
-        && defs.filter(o=>o.id!==t.id && themeWords(o.id).some(x=>nkey(x.w)===nkey(w.w))).length===0); // unambiguous words only
-      if(!ws.length) continue;
-      const w=pickFresh(ws,1)[0]; if(!w) continue; usedWords.add(nkey(w.w));
-      const wrong=sample(defs.filter(o=>o.id!==t.id),3).map(o=>o.label);
-      qs.push({ kind:'themeq', word:w.w, wordObj:w, answer:t.label, choices:sample([t.label].concat(wrong)), prompt:esc(w.w)+(w.d?(' — '+esc(trunc(w.d,90))):''), say:w.w });
-      if(qs.length>=n) break;
-    }
-    return qs; }
   if(mode==='origin'){ const pool=all.filter(w=>w.o && MC_ORIGINS.indexOf(w.o)>=0); if(pool.length<4) return [];
     return pickFresh(pool, Math.min(n,pool.length)).map(w=>{
       const choices=sample([w.o].concat(sample(MC_ORIGINS.filter(o=>o!==w.o),3)));
@@ -2283,8 +2331,61 @@ function gFinishMC(){ const g=state.game; g.status='done'; const bonus=2+g.right
 function coinAmt(n, sz){ return `<span style="display:inline-flex;align-items:center;gap:3px;white-space:nowrap">${iconSVG('coin',sz||13)} ${n}</span>`; }
 function coinChip(){ return `<span style="display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(coinsOf(),14)}</span>`; }
 function viewGames(){ const g=state.game; if(!g) return gamesHub();
+  if(g.type==='magic') return magicView();
   if(g.qs) return (g.status==='done')?mcDone():mcGame();
   return (g.status==='done'||g.status==='won'||g.status==='lost')?typedDone():typedGame(); }
+/* ---- Magic Squares view: board → 5-question cell → result (+ line celebrations) ---- */
+function magicView(){ const g=state.game; const S=state;
+  const head=`<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px"><button data-act="exitGame" style="color:var(--muted);font-weight:700;font-size:14px">← Arcade</button><span style="display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:800;font-size:22px;margin-left:4px">${iconSVG('palette',21)} Magic Squares</span><span style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px">${iconSVG('coin',14)} +${g.coins}</span></div>`;
+  if(g.status==='board'){
+    const tiles=g.board.map((cell,i)=>{ const cl=magicClusterOf(cell);
+      const doneBG=`${themeCoverBG(cl)};color:#fff`;
+      return `<button data-act="magicCell" data-arg="${i}" style="position:relative;aspect-ratio:1;border-radius:15px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;border:2px solid ${cell.done?cl.c:'var(--line)'};${cell.done?doneBG:'background:var(--bg2)'};box-shadow:${cell.done?('0 6px 16px rgba(43,27,94,.2)'):'0 2px 6px rgba(43,27,94,.06)'}">
+        ${cell.done?`<div style="font-size:26px;line-height:1;animation:sb-pop .4s ease both">⭐</div>`:`<div style="width:26px;height:26px;border-radius:8px;background:color-mix(in srgb,${cl.c} 16%,var(--bg2));color:${cl.c};display:grid;place-items:center">${iconSVG('spark',15)}</div>`}
+        <div style="font-family:var(--display);font-weight:800;font-size:12.5px;line-height:1.15;${cell.done?'color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.25)':'color:var(--text)'}">${esc(cell.label)}</div>
+        ${(!cell.done&&cell.tried)?`<div style="font-size:10px;font-weight:800;color:var(--muted)">best ${cell.best}/5 · retry</div>`:''}
+      </button>`; }).join('');
+    const doneN=g.board.filter(c=>c.done).length;
+    return `<div style="max-width:560px;margin:0 auto">${head}
+      <p style="margin:0 0 14px;color:var(--muted);font-size:13.5px">Pick a square and ace <b>4 of 5</b> questions to claim it. Finish a <b>row +${MAGIC_BONUS.row}</b> 🪙, <b>column +${MAGIC_BONUS.col}</b>, <b>diagonal +${MAGIC_BONUS.diag}</b> — and the whole square for <b>+${MAGIC_BONUS.square}</b>!</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">${tiles}</div>
+      <div style="display:flex;align-items:center;gap:10px"><span style="font-size:12.5px;color:var(--muted);font-weight:700">${doneN}/9 squares</span><span style="flex:1"></span><button data-act="magicNew" style="padding:10px 16px;border-radius:11px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">🔄 New board</button></div>
+    </div>`; }
+  if(g.status==='play'){ const q=g.qs[g.qi]; const cell=g.board[g.cell]; const cl=magicClusterOf(cell);
+    const dots=g.qs.map((_,i)=>`<span style="flex:1;height:6px;border-radius:99px;background:${i<g.qi?'var(--good)':(i===g.qi?cl.c:'var(--surface2)')}"></span>`).join('');
+    let body='';
+    if(q.k==='spell'){
+      const fb = g.revealed ? (g.ok?`<div style="border-radius:13px;padding:12px 15px;margin-bottom:12px;font-weight:800;background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good);animation:sb-pop .3s ease both">✓ Correct!</div>`:`<div style="border-radius:13px;padding:12px 15px;margin-bottom:12px;font-weight:800;background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad);animation:sb-pop .3s ease both">✗ It's “${esc(q.w.w)}”</div>`) : '';
+      body=`<div style="text-align:center">
+        <button data-act="magicHear" style="display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:999px;background:${cl.c};color:#fff;font-weight:800;font-size:14.5px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);margin-bottom:14px">${iconSVG('volume',17)} Hear it again</button>
+        ${q.w.d?`<div style="font-size:13.5px;color:var(--muted);line-height:1.55;margin-bottom:14px;max-width:40em;margin-left:auto;margin-right:auto"><b style="color:var(--text)">Meaning.</b> ${esc(q.w.d)}</div>`:''}
+        ${fb}
+        <input data-inp="onType" data-key="magicKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="spell it" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" ${g.revealed?'disabled':''} style="width:100%;text-align:center;padding:15px 14px;border-radius:15px;background:var(--surface);border:2px solid ${g.revealed?(g.ok?'var(--good)':'var(--bad)'):'var(--line)'};color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(19px,4.5vw,26px);letter-spacing:.13em;text-transform:lowercase;outline:none;margin-bottom:12px">
+        ${g.revealed?'':`<button data-act="magicSubmit" style="width:100%;padding:13px;border-radius:13px;background:${cl.c};color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Check ✓</button>`}
+      </div>`;
+    } else {
+      const btns=q.choices.map(c=>{ const isPick=g.picked===c; const isAns=nkey(c)===nkey(q.w.w);
+        let st='background:var(--surface2);border:1px solid var(--line);color:var(--text)';
+        if(g.picked!=null){ if(isAns) st=`background:color-mix(in srgb,var(--good) 20%,transparent);border:1.5px solid var(--good);color:var(--good)`; else if(isPick) st=`background:color-mix(in srgb,var(--bad) 16%,transparent);border:1.5px solid var(--bad);color:var(--bad)`; else st+=';opacity:.55'; }
+        return `<button data-act="magicPick" data-arg="${escA(c)}" style="padding:14px 12px;border-radius:13px;font-family:var(--display);font-weight:800;font-size:16px;${st}">${esc(c)}</button>`; }).join('');
+      body=`<div style="font-size:14.5px;color:var(--text);line-height:1.6;margin-bottom:16px;text-align:center"><b>Which word means:</b><br>“${esc(q.w.d)}”</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">${btns}</div>`;
+    }
+    return `<div style="max-width:560px;margin:0 auto">${head}
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:99px;background:color-mix(in srgb,${cl.c} 14%,var(--bg2));color:${cl.c};font-weight:800;font-size:12px">${esc(cell.label)}</span><span style="font-family:var(--mono);font-size:11.5px;color:var(--muted)">Question ${g.qi+1}/5 · ${g.right} right</span></div>
+      <div style="display:flex;gap:5px;margin-bottom:14px">${dots}</div>
+      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:clamp(16px,4vw,24px);box-shadow:var(--glow)">${body}</div>
+    </div>`; }
+  // result
+  const r=g.cellResult||{}; const cell=g.board[g.cell]||{}; const cl=magicClusterOf(cell);
+  const celebr=g.celebr?`<div style="margin:14px 0;animation:sb-pop .45s ease both">${g.celebr.msgs.map(m=>`<div style="font-family:var(--display);font-weight:800;font-size:${g.celebr.mega?'26px':'19px'};color:var(--accent);margin-bottom:4px">🎉 ${esc(m)}</div>`).join('')}</div>`:'';
+  return `<div style="max-width:520px;margin:0 auto;text-align:center;animation:sb-pop .4s ease both">${head}
+    <div style="display:flex;justify-content:center;margin:6px 0 4px"><div style="width:84px;height:92px">${mascotSVG(r.win?(g.celebr?'excited':'happy'):'oops')}</div></div>
+    <h2 style="font-family:var(--display);font-weight:800;font-size:25px;margin:0 0 4px">${r.win?(g.celebr&&g.celebr.mega?'MAGIC SQUARE!':'Square claimed! ⭐'):'So close!'}</h2>
+    <div style="font-size:14.5px;color:var(--muted);font-weight:700">${esc(cell.label)} — ${r.right}/5 right${r.coins?(' · +'+r.coins+' 🪙 bonus'):''}</div>
+    ${celebr}
+    <div style="display:flex;gap:10px;margin-top:16px">${r.win?'':`<button data-act="magicCell" data-arg="${g.cell}" style="flex:1;padding:13px;border-radius:13px;background:${cl.c};color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Try again →</button>`}<button data-act="magicBoard" style="flex:1;padding:13px;border-radius:13px;background:${r.win?'var(--accent)':'var(--surface2)'};color:${r.win?'#fff':'var(--text)'};font-weight:800;font-size:15px;${r.win?'box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)':'border:1px solid var(--line)'}">Back to the board</button></div>
+  </div>`; }
 function gamesHub(){ const S=state;
   const champCard=`<button data-act="openChallenge" data-arg="journey" style="grid-column:1/-1;text-align:left;border-radius:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 6px 18px rgba(43,27,94,.18)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">${iconSVG('bolt',32)}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">Set timed or counted · pick a difficulty</div><div style="font-family:var(--display);font-weight:800;font-size:18px;line-height:1.15">Champ Challenge</div><div style="font-size:12px;color:rgba(255,255,255,.9)">Beat the clock or a set number — pass your Level to test out.</div></div><span style="padding:9px 16px;border-radius:11px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Set it up →</span></div></button>`;
   const cards=champCard+GAMES.map(gm=>`<button class="sb-cover-card" data-act="playGame" data-arg="${gm.type}" style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">

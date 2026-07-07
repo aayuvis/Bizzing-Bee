@@ -109,8 +109,10 @@ Keep all of these files together in the same folder.
   Fabrics & Fashion…), each self-assembled from the word database by matching definitions —
   so a theme can hold anywhere from 135 to 2,400 real bee words. Pick 3–5 themes you love
   (they join your Practice top bar), and each becomes its own Level ladder that ramps
-  easy→hard. Mastery flows back into every other list. The Arcade's **Theme Detective**
-  game quizzes the same skill in reverse: hear a word, pick its world.
+  easy→hard. Mastery flows back into every other list. The Arcade's **Magic Squares**
+  game turns themes into a bingo board: a 3×3 grid of 9 themes, 5 questions per square
+  (spell-it or pick-the-meaning) — ace 4 of 5 to claim a square, and earn bonus coins for
+  every row, column and diagonal, with a mega celebration for blacking out the board.
 - **Word Journeys** (Premium) — a 100-lesson program on the **history & geography of words**:
   10 units from Proto-Indo-European roots through Latin, Greek, the Norman invasion, world
   borrowings and championship linguistics. Each lesson tells the story behind the spellings,
