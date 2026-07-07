@@ -1719,6 +1719,19 @@ function viewJourneys(){ const S=state; if(S.lessonSel) return viewLesson();
 /* ===== Theme Journeys view — pick themes you love; each becomes a staged journey ===== */
 function themeCoverBG(cl){ const t=CONCEPT_TEX[cl.tex]||CONCEPT_TEX.stripes;
   return `background-color:${cl.c};background-image:${t[0]},linear-gradient(135deg,${cl.c},${cl.c2});background-size:${t[1]},100% 100%;background-position:center`; }
+/* Motion per theme — the emblem moves like its subject: birds fly, fish swim, plants grow,
+   lightning flashes, the clock ticks, the ship rocks, war shakes, the heart beats… */
+const THEME_MOTION={
+  body:'m-beat', emotions:'m-beat', kinship:'m-beat', disease:'m-shake', pharmacy:'m-grow',
+  animals:'m-fly', birds:'m-fly', insects:'m-fly', marine:'m-swim',
+  botany:'m-grow', flowers:'m-grow', farming:'m-grow', ecology:'m-grow',
+  chemistry:'m-sparkle', minerals:'m-sparkle', colors:'m-sparkle', festivals:'m-sparkle',
+  astronomy:'m-spin', physics:'m-spin', maps:'m-spin', time:'m-tick',
+  weather:'m-flash', war:'m-shake',
+  music:'m-swing', stage:'m-swing', poetry:'m-swing', law:'m-swing',
+  seafaring:'m-rock', waterways:'m-swim', dishes:'m-rock',
+  vehicles:'m-drive', sports:'m-drive',
+};
 /* Hand-drawn white line-art emblem per theme (offline, theme-colored cover behind it).
    `sketch` mode runs the art through a turbulence filter so it looks pencil-sketched. */
 let _artN=0;
@@ -1790,7 +1803,7 @@ function themeCard(t){ const c=active(); const cl=themeClusters().find(x=>x.id==
       <span style="position:absolute;top:10px;left:11px;font-family:var(--mono);font-weight:700;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(cl.label)}</span>
       ${done?'<span style="position:absolute;bottom:8px;right:9px;width:21px;height:21px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:12px">✓</span>':''}
       ${pinned?'<span style="position:absolute;top:9px;right:10px;padding:2px 8px;border-radius:99px;background:rgba(255,255,255,.92);color:#1fa377;font-weight:900;font-size:9px">MY THEME</span>':''}
-      <div class="sb-theme-art" style="animation-delay:${((t.id.length*137)%1800)/1000}s">${themeArtSVG(t.id,58,false)}</div>
+      <div class="sb-theme-art ${THEME_MOTION[t.id]||''}" style="animation-delay:${((t.id.length*137)%1800)/1000}s">${themeArtSVG(t.id,58,false)}</div>
     </div>
     <div style="padding:12px 14px 13px;display:flex;flex-direction:column;flex:1">
       <div style="font-family:var(--display);font-weight:800;font-size:14.5px;line-height:1.18;color:var(--text)">${esc(t.label)}</div>
@@ -2295,6 +2308,42 @@ const GAMES=[
 ];
 function gameCoverBG(gm){ const t=CONCEPT_TEX[gm.tex]||CONCEPT_TEX.stripes;
   return `background-color:${gm.c};background-image:${t[0]},linear-gradient(135deg,${gm.c},${gm.c2});background-size:${t[1]},100% 100%;background-position:center`; }
+/* Animated cover scene per game — each icon acts out its game (buzzer gets pressed, sword
+   strikes shield, grid cells light up…). Parts share one timeline so the choreography syncs. */
+function gameArtSVG(type,size){ size=size||58;
+  const W=(inner)=>`<svg class="sb-ga" viewBox="0 0 48 48" width="${size}" height="${size}" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:block;overflow:visible;filter:drop-shadow(0 3px 6px rgba(0,0,0,.22))">${inner}</svg>`;
+  const P=(d)=>`<path d="${d}"/>`;
+  if(type==='beat') return W(
+    `<g style="animation:sb-ga-ring 1.9s ease-in-out infinite;transform-origin:24px 30px"><circle cx="24" cy="30" r="13" stroke-opacity=".85"/></g>`+
+    `<g style="animation:sb-ga-press 1.9s ease-in-out infinite">`+P('M24 4v6M24 10c-4 0-6 2-6 5v4h12v-4c0-3-2-5-6-5z')+`</g>`+
+    `<g style="animation:sb-ga-squash 1.9s ease-in-out infinite;transform-origin:24px 34px">`+P('M15 26a9 5.5 0 0 1 18 0v3H15z')+`</g>`+
+    P('M12 34h24a3 3 0 0 1 3 3v3H9v-3a3 3 0 0 1 3-3z'));
+  if(type==='boss') return W(
+    `<g style="animation:sb-ga-brace 2.2s ease-in-out infinite">`+P('M8 12l10-3 10 3v9c0 8-4 13-10 16-6-3-10-8-10-16z').replace('<path','<path transform="translate(-2,2) scale(.9)"')+P('M14 20l4 4 7-8').replace('<path','<path transform="translate(-2,2) scale(.9)"')+`</g>`+
+    `<g style="animation:sb-ga-swing 2.2s ease-in-out infinite;transform-origin:40px 40px">`+P('M40 40L23 23M20 18l5 5M27 25l-4 4M18 20l10 10')+`</g>`+
+    `<g style="animation:sb-ga-spark 2.2s linear infinite;transform-origin:22px 24px">`+P('M22 17v-4M17 22h-4M18.5 18.5l-3-3M27 19l3-3')+`</g>`);
+  if(type==='magic'){ const cells=[0,1,2,3,4,5,6,7,8].map(i=>{ const x=13+(i%3)*8, y=13+Math.floor(i/3)*8;
+      return `<rect x="${x-3}" y="${y-3}" width="6.4" height="6.4" rx="1.6" fill="#fff" fill-opacity=".14" style="animation:sb-ga-cell 3.6s linear infinite;animation-delay:${(i*0.28).toFixed(2)}s"/>`; }).join('');
+    return W(cells+`<g style="animation:sb-ga-star 3.6s ease-in-out infinite;transform-origin:24px 24px">`+P('M24 15l2.6 5.8 6.4.6-4.8 4.2 1.4 6.2-5.6-3.4-5.6 3.4 1.4-6.2-4.8-4.2 6.4-.6z').replace('<path','<path fill="rgba(255,255,255,.85)"')+`</g>`); }
+  if(type==='buzz') return W(
+    `<g style="animation:sb-ga-flame 2.2s ease-in-out infinite;transform-origin:24px 40px">`+P('M24 6c1 6 6.5 9 6.5 15.5a11 11 0 0 1-4.5 9c.7-3-.4-5.6-2.6-7.2.5 4.5-2.7 7-5 9.4a8 8 0 0 1-1.4-4.7C13.7 30.5 13 26 15.5 21.5 18 17 23 13 24 6z')+`</g>`+
+    [0,1,2].map(i=>`<circle cx="${18+i*6}" cy="34" r="1.3" fill="#fff" stroke="none" style="animation:sb-ga-ember 2.2s linear infinite;animation-delay:${i*0.7}s"/>`).join('')+
+    P('M14 40c3 2.5 6 3.6 10 3.6s7-1.1 10-3.6'));
+  if(type==='meaning') return W(
+    `<g style="animation:sb-ga-snapL 2.6s ease-in-out infinite">`+P('M8 16h12a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3z')+`<text x="14" y="25.6" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="9" fill="#fff" stroke="none">A</text></g>`+
+    `<g style="animation:sb-ga-snapR 2.6s ease-in-out infinite">`+P('M28 16h12a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H28a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3z')+P('M30 21h8M30 25h5')+`</g>`+
+    `<g style="animation:sb-ga-tickpop 2.6s ease-in-out infinite;transform-origin:24px 38px">`+P('M19 38l3.6 3.6L31 34')+`</g>`);
+  if(type==='spell') return W(
+    `<text x="10" y="20" font-family="Baloo 2,sans-serif" font-weight="800" font-size="10" fill="#fff" stroke="none" opacity=".9">a</text>`+
+    `<text x="22" y="20" font-family="Baloo 2,sans-serif" font-weight="800" font-size="10" fill="#fff" stroke="none" opacity=".9">b</text>`+
+    `<text x="34" y="20" font-family="Baloo 2,sans-serif" font-weight="800" font-size="10" fill="#fff" stroke="none" opacity=".9">c</text>`+
+    `<g style="animation:sb-ga-scan 3.2s ease-in-out infinite"><circle cx="24" cy="18" r="8"/>`+P('M30 24l7 7')+`</g>`);
+  if(type==='origin') return W(
+    `<circle cx="24" cy="24" r="13"/>`+P('M11 24h26M24 11c-4.5 3.5-6 8-6 13s1.5 9.5 6 13c4.5-3.5 6-8 6-13s-1.5-9.5-6-13z')+
+    `<g style="animation:sb-ga-orbit 7s linear infinite;transform-origin:24px 24px"><g transform="translate(24,5)"><circle cx="0" cy="0" r="4.6"/>`+P('M3.4 3.4l4 4')+`</g></g>`);
+  // fallback: existing icon set with float
+  const gm=GAMES.find(g=>g.type===type);
+  return `<div class="sb-theme-art">${iconSVG((gm&&gm.ic)||'spark',46,2)}</div>`; }
 const MC_ORIGINS=['Latin','Greek','French','Old English','Norse','Spanish','Italian','German','Arabic','Japanese','Hindi','Sanskrit','Dutch','Russian','Hebrew','Portuguese'];
 // generate plausible wrong spellings (double/drop/swap letters, ie↔ei, ent↔ant, ible↔able …)
 function misspellings(w, n){ const out=new Set();
@@ -2470,7 +2519,7 @@ function gamesHub(){ const S=state;
   const cards=champCard+GAMES.map(gm=>`<button class="sb-cover-card" data-act="playGame" data-arg="${gm.type}" style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">
       <div style="position:relative;height:108px;display:flex;align-items:center;justify-content:center;padding:14px;${gameCoverBG(gm)}">
         <span style="position:absolute;top:11px;left:12px;font-family:var(--mono);font-weight:700;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(gm.tag)}</span>
-        <div class="sb-theme-art" style="color:#fff;display:grid;place-items:center;filter:drop-shadow(0 2px 8px rgba(0,0,0,.22));animation-delay:${(gm.type.length%9)*0.22}s">${iconSVG(gm.ic,46,2)}</div>
+        <div style="color:#fff;display:grid;place-items:center">${gameArtSVG(gm.type,58)}</div>
       </div>
       <div style="padding:14px 15px 15px;display:flex;flex-direction:column;flex:1">
         <div style="font-family:var(--display);font-weight:800;font-size:16.5px;color:var(--text)">${gm.name}</div>

@@ -59,23 +59,64 @@
   /* livelier "talking" loop: hop, lean side to side, little scale pulses */
   @keyframes sb-bee-talk{0%{transform:translate(0,0) rotate(-5deg) scale(1)}20%{transform:translate(-3px,-9px) rotate(3deg) scale(1.05)}40%{transform:translate(2px,-2px) rotate(6deg) scale(1)}60%{transform:translate(4px,-8px) rotate(-2deg) scale(1.04)}80%{transform:translate(-2px,-1px) rotate(-6deg) scale(1)}100%{transform:translate(0,0) rotate(-5deg) scale(1)}}
   @keyframes sb-bee-pop{0%{transform:scale(.55) translateY(14px) rotate(-12deg);opacity:0}65%{transform:scale(1.12) translateY(-2px) rotate(4deg)}100%{transform:scale(1) translateY(0) rotate(0);opacity:1}}
-  /* theme-cover emblems: slow idle float (staggered per card), playful wiggle on hover */
+  /* ==== cover-art motion library — each card's art moves like the thing it depicts ==== */
   @keyframes sb-art-float{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-5px) rotate(1.5deg)}}
   @keyframes sb-art-wig{0%{transform:scale(1) rotate(0)}30%{transform:scale(1.16) rotate(-7deg)}60%{transform:scale(1.1) rotate(6deg)}100%{transform:scale(1.12) rotate(0)}}
+  @keyframes sb-m-fly{0%,100%{transform:translate(-4px,0) rotate(-4deg)}25%{transform:translate(0,-6px) rotate(2deg)}50%{transform:translate(4px,-2px) rotate(5deg)}75%{transform:translate(1px,-7px) rotate(0)}}
+  @keyframes sb-m-swim{0%,100%{transform:translateX(-5px) rotate(-3deg)}50%{transform:translateX(5px) rotate(3deg)}}
+  @keyframes sb-m-grow{0%,100%{transform:scale(1,.96) translateY(1px)}50%{transform:scale(1.04,1.05) translateY(-2px)}}
+  @keyframes sb-m-flash{0%,58%,100%{opacity:1;filter:brightness(1)}60%,66%{opacity:1;filter:brightness(1.9) drop-shadow(0 0 8px rgba(255,255,255,.9))}63%{opacity:.55}}
+  @keyframes sb-m-sparkle{0%,100%{filter:brightness(1)}30%{filter:brightness(1.55) drop-shadow(0 0 7px rgba(255,255,255,.8));transform:rotate(-3deg) scale(1.04)}60%{filter:brightness(1.1)}}
+  @keyframes sb-m-spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+  @keyframes sb-m-tick{0%,7%{transform:rotate(0)}8%,15%{transform:rotate(30deg)}16%,24%{transform:rotate(60deg)}25%,32%{transform:rotate(90deg)}33%,99%{transform:rotate(90deg) scale(1)}100%{transform:rotate(0)}}
+  @keyframes sb-m-beat{0%,100%{transform:scale(1)}12%{transform:scale(1.12)}24%{transform:scale(1)}36%{transform:scale(1.09)}48%{transform:scale(1)}}
+  @keyframes sb-m-swing{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+  @keyframes sb-m-rock{0%,100%{transform:rotate(-6deg) translateY(0)}25%{transform:rotate(0) translateY(-2px)}50%{transform:rotate(6deg) translateY(0)}75%{transform:rotate(0) translateY(2px)}}
+  @keyframes sb-m-shake{0%,84%,100%{transform:translate(0) rotate(0)}86%{transform:translate(-2px,-1px) rotate(-4deg)}89%{transform:translate(2px,1px) rotate(4deg)}92%{transform:translate(-2px,1px) rotate(-3deg)}95%{transform:translate(2px,-1px) rotate(3deg)}98%{transform:translate(0)}}
+  @keyframes sb-m-drive{0%,100%{transform:translateX(-7px)}48%,55%{transform:translateX(7px) translateY(-1px)}}
   .sb-theme-art{animation:sb-art-float 3.6s ease-in-out infinite;transform-origin:50% 60%}
+  .sb-theme-art.m-fly{animation:sb-m-fly 4.2s ease-in-out infinite}
+  .sb-theme-art.m-swim{animation:sb-m-swim 3.8s ease-in-out infinite}
+  .sb-theme-art.m-grow{animation:sb-m-grow 3.2s ease-in-out infinite;transform-origin:50% 95%}
+  .sb-theme-art.m-flash{animation:sb-m-flash 4.4s linear infinite}
+  .sb-theme-art.m-sparkle{animation:sb-m-sparkle 3.4s ease-in-out infinite}
+  .sb-theme-art.m-spin{animation:sb-m-spin 14s linear infinite;transform-origin:50% 50%}
+  .sb-theme-art.m-tick{animation:sb-m-tick 8s linear infinite;transform-origin:50% 50%}
+  .sb-theme-art.m-beat{animation:sb-m-beat 2.6s ease-in-out infinite}
+  .sb-theme-art.m-swing{animation:sb-m-swing 3s ease-in-out infinite;transform-origin:50% 10%}
+  .sb-theme-art.m-rock{animation:sb-m-rock 4.4s ease-in-out infinite;transform-origin:50% 85%}
+  .sb-theme-art.m-shake{animation:sb-m-shake 3.8s linear infinite}
+  .sb-theme-art.m-drive{animation:sb-m-drive 4.6s ease-in-out infinite}
   .sb-cover-card:hover .sb-theme-art,.sb-lift:hover .sb-theme-art,.sb-arcade-card:hover .sb-theme-art{animation:sb-art-wig .5s ease both}
   .sb-lift{transition:transform .16s ease,box-shadow .16s ease}
   .sb-lift:hover{transform:translateY(-2px)}
-  @media (prefers-reduced-motion: reduce){.sb-theme-art{animation:none}}
+  /* ==== game covers: little scenes. Timelines share one duration so parts stay in sync ==== */
+  @keyframes sb-ga-press{0%,55%,100%{transform:translateY(0)}62%,72%{transform:translateY(7px)}80%{transform:translateY(0)}}
+  @keyframes sb-ga-squash{0%,60%,100%{transform:scaleY(1)}64%,72%{transform:scaleY(.55)}82%{transform:scaleY(1)}}
+  @keyframes sb-ga-ring{0%,63%{transform:scale(.4);opacity:0}68%{opacity:.95}88%,100%{transform:scale(1.5);opacity:0}}
+  @keyframes sb-ga-swing{0%,48%,100%{transform:rotate(18deg)}58%,66%{transform:rotate(-14deg)}78%{transform:rotate(18deg)}}
+  @keyframes sb-ga-brace{0%,58%,100%{transform:translateX(0) rotate(0)}62%,68%{transform:translateX(-2.5px) rotate(-4deg)}76%{transform:translateX(0)}}
+  @keyframes sb-ga-spark{0%,59%,74%,100%{opacity:0;transform:scale(.4)}63%,68%{opacity:1;transform:scale(1.15)}}
+  @keyframes sb-ga-cell{0%,100%{fill-opacity:.14}12%,22%{fill-opacity:.95}34%{fill-opacity:.14}}
+  @keyframes sb-ga-star{0%,68%,100%{opacity:0;transform:scale(.3) rotate(-20deg)}74%,88%{opacity:1;transform:scale(1.1) rotate(8deg)}94%{opacity:0}}
+  @keyframes sb-ga-flame{0%,100%{transform:scaleY(1) skewX(0)}25%{transform:scaleY(1.07) skewX(-3deg)}50%{transform:scaleY(.95) skewX(2deg)}75%{transform:scaleY(1.05) skewX(-1.5deg)}}
+  @keyframes sb-ga-ember{0%{transform:translateY(2px);opacity:0}25%{opacity:.9}100%{transform:translateY(-11px);opacity:0}}
+  @keyframes sb-ga-scan{0%,100%{transform:translateX(-8px)}42%,58%{transform:translateX(8px)}}
+  @keyframes sb-ga-snapL{0%,100%{transform:translateX(-6px)}42%,72%{transform:translateX(0)}86%{transform:translateX(-1.5px)}}
+  @keyframes sb-ga-snapR{0%,100%{transform:translateX(6px)}42%,72%{transform:translateX(0)}86%{transform:translateX(1.5px)}}
+  @keyframes sb-ga-tickpop{0%,44%,100%{opacity:0;transform:scale(.4)}52%,78%{opacity:1;transform:scale(1)}}
+  @keyframes sb-ga-orbit{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+  @keyframes sb-ga-joy{0%,100%{transform:rotate(-16deg)}45%,55%{transform:rotate(16deg)}}
+  @media (prefers-reduced-motion: reduce){.sb-theme-art,.sb-ga *,[class^="sb-ga"]{animation:none!important}}
   .sb-bee-presenter{animation:sb-bee-pop .5s ease both, sb-bee-bob 2.4s ease-in-out .5s infinite;transform-origin:50% 90%}
   .sb-bee-presenter.talking{animation:sb-bee-pop .45s ease both, sb-bee-talk 1.5s ease-in-out .45s infinite;transform-origin:50% 90%}
   @keyframes sb-confetti{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-6px) rotate(calc(var(--r,0deg) + 12deg))}}
   @keyframes sb-arcade{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
   .sb-arcade-card{background-size:180% 180%;animation:sb-arcade 9s ease-in-out infinite}
-  .sb-cover-card{transition:transform .16s ease,box-shadow .16s ease;overflow:hidden;isolation:isolate}
+  /* covers are clipped BY the card, so the color meets the card edge exactly; the mask keeps
+     the rounded clip alive mid-transform (Safari/Chrome compositing bug) */
+  .sb-cover-card{transition:transform .16s ease,box-shadow .16s ease;overflow:hidden;isolation:isolate;-webkit-mask-image:-webkit-radial-gradient(white,black)}
   .sb-cover-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(43,27,94,.12)!important}
-  /* the colored cover always shares the card's roundedness — even mid-transform (Safari clip bug) */
-  .sb-cover-card>:first-child{border-radius:15px 15px 0 0}
   @keyframes sb-rise{from{transform:translateY(12px)}to{transform:translateY(0)}}
   @keyframes sb-pop{0%{transform:scale(.86)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
   @keyframes sb-fade{from{opacity:0}to{opacity:1}}
