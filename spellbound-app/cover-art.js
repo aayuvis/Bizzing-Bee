@@ -94,6 +94,7 @@
     if(g==='meaning') return '<rect x="118" y="42" width="40" height="26" rx="6" fill="'+k.p1+'"/><rect x="166" y="42" width="40" height="26" rx="6" fill="'+k.a+'"/><path d="M158 55 h8" stroke="'+k.p2+'" stroke-width="4" stroke-linecap="round"/><path d="M140 84 l6 6 10-12" stroke="'+k.p2+'" stroke-width="4" fill="none" stroke-linecap="round"/>';
     if(g==='spell') return '<circle cx="150" cy="56" r="20" fill="none" stroke="'+k.a+'" stroke-width="5"/><path d="M164 70 l16 16" stroke="'+k.a+'" stroke-width="5" stroke-linecap="round"/><text x="150" y="62" text-anchor="middle" font-family="'+k.face+'" font-weight="800" font-size="16" fill="'+k.p1+'">ab</text>';
     if(g==='origin') return '<circle cx="160" cy="60" r="24" fill="none" stroke="'+k.a+'" stroke-width="4"/><path d="M136 60 h48 M160 36 c-8 8 -8 40 0 48 M160 36 c8 8 8 40 0 48" fill="none" stroke="'+k.p1+'" stroke-width="2.4"/>';
+    if(g==='duel') return '<rect x="112" y="46" width="42" height="26" rx="8" fill="'+k.p1+'" transform="rotate(-8 133 59)"/><rect x="166" y="46" width="42" height="26" rx="8" fill="'+k.a+'" transform="rotate(8 187 59)"/><text x="160" y="42" text-anchor="middle" font-family="'+k.face+'" font-weight="800" font-size="15" fill="'+k.p2+'">VS</text><path d="M160 78 l3 6 6.6.6-5 4.4 1.5 6.5-6.1-3.6-6.1 3.6 1.5-6.5-5-4.4 6.6-.6Z" fill="'+k.p2+'"/>';
     if(g==='champ') return '<path d="M148 30 h24 l-6 22 h14 l-32 40 8 -28 h-14 Z" fill="'+k.p2+'"/>';
     return cabinet(k,w);
   }

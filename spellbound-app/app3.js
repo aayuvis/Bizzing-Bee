@@ -227,7 +227,10 @@ function markActiveToday(){ const c=active(); if(!c) return; const t=todayKey();
   if(!c.daysPlayed) c.daysPlayed=[]; if(c.daysPlayed.indexOf(t)<0){ c.daysPlayed.push(t); if(c.daysPlayed.length>140) c.daysPlayed=c.daysPlayed.slice(-140); }
   if(c.lastActiveDay===t) return; // already counted today
   const d=dayDiff(c.lastActiveDay, t);
-  c.streak = (!c.lastActiveDay) ? 1 : (d===1 ? (c.streak||0)+1 : (d>1 ? 1 : (c.streak||1)));
+  if(!c.lastActiveDay) c.streak=1;
+  else if(d===1) c.streak=(c.streak||0)+1;
+  else if(d===2 && (c.freezes||0)>0){ c.freezes--; c.streak=(c.streak||0)+1; try{ flash('🧊 Streak Freeze used — your '+c.streak+'-day streak survives!'); }catch(e){} }
+  else if(d>1) c.streak=1; else c.streak=(c.streak||1);
   c.lastActiveDay=t; c.streakBest=Math.max(c.streakBest||0, c.streak||1);
   if(!c.streakRewards) c.streakRewards={}; const rw=STREAK_REWARDS[c.streak];
   if(rw && !c.streakRewards[c.streak]){ c.streakRewards[c.streak]=1; addCoins(rw); state.toast='🔥 '+c.streak+'-day streak! +'+rw+' coins'; scheduleToast(2800); sfx('win'); burstConfetti(80); }
@@ -316,7 +319,13 @@ function voiceUpgradeTip(){
     <div style="font-size:12px;color:var(--text);line-height:1.6">${t[1]}</div>
   </div>`; }
 function speak(){ deviceSpeak(curWord().w, 0.9); }
-function say(text,rate){ deviceSpeak(text, rate||0.95); }
+let _pronA=null;
+function pronSrc(text){ try{ const P=window.SB_PRON; if(!P||!P.size) return null; if(/\s/.test(String(text))) return null;
+  const k=String(text).toLowerCase().replace(/[^a-z]/g,''); return P.has(k)?('pron/'+k+'.mp3'):null; }catch(e){ return null; } }
+function say(text,rate){
+  if((!rate||rate>=0.9) && state.sound!==false){ const src=pronSrc(text);
+    if(src){ try{ if(_pronA){ _pronA.pause(); } _pronA=new Audio(src); _pronA.play(); return; }catch(e){} } }
+  deviceSpeak(text, rate||0.95); }
 // split a sentence around its target word (and simple inflections) so we can read it aloud
 // WITHOUT speaking the answer — used by "Finish the Sentence"
 function maskParts(sentence, word){ const t=sentence||''; const w=(word||'').trim(); if(!w) return {before:t, after:'', matched:false};
@@ -647,11 +656,41 @@ const app = {
   magicNew:()=>magicNewBoard(),
   openShop:()=>{ try{ loadConcepts(); }catch(e){} set({nav:'shop', screen:'app', game:null, conceptSel:null}); },
   shopTab:(t)=>set({shopTab:t}),
+  celebrateLore:(n)=>{ state.celebrate=null; app.openLesson(n); },
+  duelName:(v)=>{ state.game.p[1].name=(v||'Player 2').slice(0,16); },
+  duelBegin:()=>{ const g=state.game; g.phase='play'; g.turn=0; g.i=0; state.typed=''; render(); setTimeout(()=>{ const gg=state.game; if(gg&&gg.type==='duel'&&gg.phase==='play'&&gg.list[0]) say(gg.list[0].w); },350); },
+  duelSay:()=>{ const g=state.game; if(g&&g.list[g.i]) say(g.list[g.i].w); },
+  duelType:(v)=>{ state.typed=v; },
+  duelKey:(e)=>{ if(e.key==='Enter'){ e.preventDefault(); app.duelEnter(); } },
+  duelEnter:()=>{ const g=state.game; const w=g.list[g.i]; if(!w) return;
+    const ok=nkey(state.typed)===nkey(w.w); if(ok){ g.p[g.turn].right++; sfx('right'); } else sfx('wrong');
+    state.typed=''; g.i++;
+    if(g.i>=g.list.length){ if(g.turn===0){ g.phase='pass'; render(); return; }
+      g.phase='done'; const a=g.p[0].right,b=g.p[1].right; addCoins(a===b?8:12); sfx('win'); burstConfetti(120); render(); return; }
+    render(); setTimeout(()=>{ const gg=state.game; if(gg&&gg.type==='duel'&&gg.phase==='play'&&gg.list[gg.i]) say(gg.list[gg.i].w); },300); },
+  duelP2:()=>{ const g=state.game; g.turn=1; g.i=0; g.phase='play'; state.typed=''; render(); setTimeout(()=>{ const gg=state.game; if(gg&&gg.type==='duel'&&gg.phase==='play'&&gg.list[0]) say(gg.list[0].w); },350); },
+  drillTrap:(k)=>{ const ws=trapWords(k); if(!ws.length){ flash('No words for this trap right now'); return; }
+    state.sessionWords=ws; state.sessionListKey='__trap__'; state.sessionLabel='Trap drill'; state.gi=0; state.coachSession=false; state.trainBack='home'; app.startTrain(); },
+  gReveal:()=>{ const g=state.game; if(!g||g.type!=='boss') return; const c=active(); if(((c.pow||{}).reveal||0)<=0) return;
+    const w=g.list[g.i]; if(!w) return; const cur=(state.typed||''); if(cur.length>=w.w.length) return;
+    c.pow.reveal--; state.typed=w.w.slice(0,cur.length+1); save(); sfx('coin'); render();
+    try{ document.querySelector('[data-fkey="gType"],[data-inp="gType"]')?.focus(); }catch(e){} },
+  buyPower:(k)=>{ const c=active(); const cost=k==='freeze'?80:40;
+    if(!spendCoins(cost)){ flash('Need '+cost+' 🪙 — play games to earn!'); return; }
+    if(k==='freeze') c.freezes=(c.freezes||0)+1; else { if(!c.pow) c.pow={}; c.pow[k]=(c.pow[k]||0)+1; }
+    save(); sfx('coin'); flash(k==='freeze'?'🧊 Streak Freeze stocked!':'⚡ Power-up stocked!'); render(); },
+  buyAcc:(k)=>{ const c=active(); if(!spendCoins(120)){ flash('Need 120 🪙 — play games to earn!'); return; }
+    if(!c.beeAcc) c.beeAcc={}; c.beeAcc[k]=1; c.accOn=k; save(); sfx('win'); burstConfetti(50); flash('New bee style! ✨'); render(); },
+  wearAcc:(k)=>{ const c=active(); c.accOn=(c.accOn===k?null:k); save(); render(); },
+
   toggleSound:()=>{ set({sound:!state.sound}); if(state.sound) sfx('coin'); },
   toggleDevUnlock:()=>{ const on=!state.devUnlock; state.devUnlock=on; state.premium=on?true:false; try{localStorage.setItem('sb_devunlock',on?'1':'0');}catch(e){} save(); flash(on?'🔓 All features & content unlocked (testing)':'🔒 Locked features restored'); render(); },
   playGame:(type)=>{ clearGTimer(); const c=active(); ensureLists(c); state.gInfo=false; state.typed='';
     if(type==='buzz'){ const list=pickFresh(gameWords(),10); if(!list.length){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,right:0,ans:[],status:'idle'}; setTimeout(()=>{ if(state.game&&state.game.list[0]) say(state.game.list[0].w); },320); }
-    else if(type==='beat'){ const list=pickFresh(gameWords(),240); if(list.length<3){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,right:0,wrong:0,timeLeft:60,status:'play'}; startGTimer(); setTimeout(()=>{ if(state.game&&state.game.list[0]) say(state.game.list[0].w); },320); }
+    else if(type==='beat'){ const list=pickFresh(gameWords(),240); if(list.length<3){ flash('No words yet — try a list first'); return; } let _t=60; const _c=active(); if(((_c.pow||{}).time||0)>0){ _c.pow.time--; _t=75; save(); setTimeout(()=>flash('⚡ +15s boost active!'),200); }
+      state.game={type,list,i:0,right:0,wrong:0,timeLeft:_t,status:'play'}; startGTimer(); setTimeout(()=>{ if(state.game&&state.game.list[0]) say(state.game.list[0].w); },320); }
+    else if(type==='duel'){ const list=pickFresh(gameWords(),10); if(list.length<5){ flash('No words yet — try a list first'); return; }
+      state.game={type,list:list.slice(0,10),phase:'setup',p:[{name:c.name||'Player 1',right:0},{name:'Player 2',right:0}],turn:0,i:0,status:'play'}; state.typed=''; }
     else if(type==='boss'){ const list=pickFresh((state.missedWords||[]).concat(REVIEW).concat(listWords(c.activeList||'default')), 60); if(list.length<3){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,hp:8,maxhp:8,lives:3,maxlives:3,right:0,status:'play',last:null}; setTimeout(()=>{ if(state.game&&state.game.list[0]) say(state.game.list[0].w); },320); }
     else if(type==='magic'){ magicNewBoard(); }
     else if(type==='meaning'||type==='spell'||type==='origin'){ const qs=buildMC(type,8); if(qs.length<3){ flash('Need a few more words for this game — train a list first'); return; } state.game={type,qs,i:0,picked:null,right:0,status:'play'}; setTimeout(()=>{ mcSpeak(state.game&&state.game.qs[0]); },320); }
@@ -708,7 +747,7 @@ const app = {
   journeySetView:(v)=>set({journeyView:v, journeyPage:0}),
   journeyPagePrev:()=>set({journeyPage:Math.max(0,(state.journeyPage||0)-1)}),
   journeyPageNext:()=>set({journeyPage:(state.journeyPage||0)+1}),
-  openLesson:(n)=>{ if(!state.premium){ set({showPaywall:true}); return; } const L=lessonsAll().find(x=>x.n===+n); if(!L) return; set({nav:'journeys', screen:'app', lessonSel:L, lessonWordsOpen:false, lessonGuided:(state.journeyView==='guided'), lessonStep:0}); try{window.scrollTo(0,0);}catch(e){} },
+  openLesson:(n)=>{ const earned=+n<=loreCount(); if(!state.premium && !earned){ set({showPaywall:true}); return; } const L=lessonsAll().find(x=>x.n===+n); if(!L) return; set({nav:'journeys', screen:'app', lessonSel:L, lessonWordsOpen:false, lessonGuided:(state.journeyView==='guided'), lessonStep:0}); try{window.scrollTo(0,0);}catch(e){} },
   lessonBack:()=>set({lessonSel:null}),
   lessonStepGo:(i)=>{ set({lessonStep:+i}); try{window.scrollTo(0,0);}catch(e){} },
   lessonStepPrev:()=>{ set({lessonStep:Math.max(0,(state.lessonStep||0)-1)}); try{window.scrollTo(0,0);}catch(e){} },
@@ -920,6 +959,34 @@ function viewOnboarding(){
 
 // Buddy empty states — the bee lives in every empty moment (spec §8)
 function beeEmpty(mood,text){ return `<div style="display:flex;align-items:center;gap:14px;padding:10px 4px"><div style="width:56px;height:62px;flex-shrink:0;opacity:.95">${mascotSVG(mood)}</div><p style="margin:0;font-size:15px;color:var(--muted);line-height:1.5">${text}</p></div>`; }
+/* ---- Word Journeys as lore: one lesson unlocks per Level cleared (any list) ---- */
+function loreCount(c){ c=c||active(); try{ return Object.values(c.lists||{}).reduce((n,l)=>n+(l.stage||0),0); }catch(e){ return 0; } }
+function loreUnlocked(){ const n=loreCount(); return lessonsAll().slice(0,Math.min(n,lessonsAll().length)); }
+/* ---- Weak-pattern radar: the analytics engine aimed at the speller (12+) ---- */
+const TRAP_DEFS=[ ['double',/(.)\1/,'Double letters'], ['silent',/^(kn|wr|gn|ps|mn)|mb$|gh/i,'Silent letters'],
+  ['ieei',/ie|ei/i,'ie / ei'], ['schwa',/(le|el|al|on|an|ar|er|or)$/i,'Schwa endings'],
+  ['endings',/(tion|sion|ous|able|ible|ance|ence|ary|ery)$/i,'Suffix endings'] ];
+function missTraps(){ const c=active(); const ms=(c.missed||[]); if(!ms.length) return [];
+  const idx=wordIndex(); const b={};
+  ms.forEach(m=>{ const w=idx[nkey(m.w)]||{w:m.w}; const n=m.n||1;
+    TRAP_DEFS.forEach(([k,re])=>{ if(re.test(w.w)) b[k]=(b[k]||0)+n; });
+    const o=(w.o||'').toLowerCase();
+    if(/french/.test(o)) b.french=(b.french||0)+n; if(/greek/.test(o)) b.greek=(b.greek||0)+n; if(/latin/.test(o)) b.latin=(b.latin||0)+n; });
+  const L={double:'Double letters',silent:'Silent letters',ieei:'ie / ei',schwa:'Schwa endings',endings:'Suffix endings',french:'French origin',greek:'Greek origin',latin:'Latin origin'};
+  return Object.keys(b).map(k=>({k,label:L[k],n:b[k]})).sort((a,x)=>x.n-a.n).slice(0,3); }
+function trapWords(k){ const c=active(); const idx=wordIndex(); const def=TRAP_DEFS.find(t=>t[0]===k);
+  const hit=(w)=>{ if(def) return def[1].test(w.w); const o=(w.o||'').toLowerCase(); return k==='french'?/french/.test(o):k==='greek'?/greek/.test(o):/latin/.test(o); };
+  const mine=(c.missed||[]).map(m=>idx[nkey(m.w)]||{w:m.w}).filter(hit);
+  const extra=journeySorted().filter(w=>hit(w)&&!state.luMastered[nkey(w.w)]&&!mine.some(x=>nkey(x.w)===nkey(w.w))).slice(0,Math.max(0,12-mine.length));
+  return mine.concat(extra).slice(0,12); }
+function trapRadar(){ const traps=missTraps(); if(!traps.length) return '';
+  const rows=traps.map(t=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)">
+      <span style="min-width:0;flex:1"><span style="display:block;font-weight:800;font-size:15px">${t.label}</span><span style="font-size:12px;color:var(--muted);font-weight:650">${t.n} miss${t.n>1?'es':''} traced here</span></span>
+      <button data-act="drillTrap" data-arg="${t.k}" style="padding:8px 14px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:13px;box-shadow:var(--edge)">Drill →</button></div>`).join('');
+  return `<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--sh-rest)">
+    <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:3px"><div style="font-family:var(--display);font-weight:800;font-size:17px">Your traps</div><span style="font-size:12px;color:var(--muted);font-weight:650">where your misses cluster</span></div>
+    <p style="margin:0 0 12px;font-size:13px;color:var(--muted)">Fix the pattern, not just the word.</p>
+    <div style="display:flex;flex-direction:column;gap:8px">${rows}</div></div>`; }
 /* ---- Worlds are worlds, not recolors: each world's hero card carries its own display
    face, palette, tagline and hero imagery (photo-duotone for Spotlight; CSS/SVG
    illustration for the rest). Body face & semantics never move. ---- */
@@ -1025,11 +1092,16 @@ function viewApp(){
   const celebrate=S.celebrate?(()=>{ const cb=S.celebrate; const c2=active(); const evo2=EVO[S.theme]||EVO.spellbound; const fi=formIdx(listLevel(c2,activeListKey()));
     return `<div style="position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:20px;background:color-mix(in srgb,var(--action) 26%,rgb(20 12 40 / .78))" data-act="celebrateClose">
       <div data-act="noop" style="background:var(--paper,#fff);border-radius:20px;box-shadow:var(--sh-overlay);max-width:420px;width:100%;padding:32px 28px;text-align:center;animation:sb-pop .45s ease both">
-        <div style="width:110px;height:120px;margin:0 auto 6px;animation:sb-bee-talk 1.6s ease-in-out infinite">${mascotSVG('excited')}</div>
+        <div style="width:110px;height:120px;margin:0 auto 6px;animation:sb-bee-talk 1.6s ease-in-out infinite">${mascotAcc('excited')}</div>
         <div style="font-family:var(--ui);font-weight:650;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">${cb.champ?'Champion unlocked':'Level cleared'}</div>
         <div style="font-family:var(--display);font-weight:800;font-size:32px;line-height:1.08;margin:6px 0 4px">${cb.champ?'Spellbound Champ!':('Level '+cb.level+' unlocked!')}</div>
         <div style="font-size:15px;color:var(--muted);font-weight:450">${esc(cb.list)} · ${esc(c2.name||'')} — ${evo2[fi]} · ${cb.date}</div>
         <div style="display:flex;justify-content:center;gap:6px;margin:14px 0 18px">${[0,1,2].map(i=>`<span style="display:inline-block;width:12px;height:12px;border-radius:999px;background:var(--treasure,#F0B429);animation:sb-pop .4s ease ${(i*0.12).toFixed(2)}s both"></span>`).join('')}</div>
+        ${(()=>{ const L=lessonsAll()[loreCount(c2)-1]; if(!L) return ''; return `<div style="text-align:left;display:flex;align-items:center;gap:11px;background:var(--treasure-tint,#FFF3D6);border-radius:12px;padding:11px 13px;margin-bottom:14px">
+          <span style="flex-shrink:0;color:var(--treasure-deep,#8A5B00)">${window.SB_ICON?SB_ICON('book',{size:22}):iconSVG('book',22)}</span>
+          <span style="min-width:0;flex:1"><span style="display:block;font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">Lore unlocked</span>
+          <span style="display:block;font-weight:800;font-size:14px;color:#241E33;line-height:1.25">${esc(L.title)}</span></span>
+          <button data-act="celebrateLore" data-arg="${L.n}" style="flex-shrink:0;padding:8px 12px;border-radius:10px;background:var(--treasure-deep,#8A5B00);color:#fff;font-weight:800;font-size:12px">Read →</button></div>`; })()}
         <button data-act="celebrateClose" style="width:100%;padding:14px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Keep climbing →</button>
         <div style="font-size:12px;color:var(--muted);margin-top:10px">Screenshot this card to share it!</div>
       </div></div>`; })():'';
@@ -1070,7 +1142,7 @@ function viewDrawer(){
   return `<div data-act="closeDrawer" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:55;animation:sb-fade .2s ease both"></div>
     <aside data-act="noop" style="position:fixed;top:0;left:0;bottom:0;width:300px;max-width:86vw;background:var(--paper,var(--bg2));border-right:1px solid var(--line);z-index:56;display:flex;flex-direction:column;padding:14px 12px;overflow-y:auto;box-shadow:var(--sh-overlay)">
       <div style="display:flex;align-items:center;gap:11px;padding:8px 8px 14px;border-bottom:1px solid var(--line);margin-bottom:4px">
-        <div style="width:44px;height:50px;flex-shrink:0">${mascotSVG('happy')}</div>
+        <div style="width:44px;height:50px;flex-shrink:0">${mascotAcc('happy')}</div>
         <div style="min-width:0;flex:1">
           <div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.1">${esc(c.name||'Speller')}</div>
           <div style="font-size:12px;color:var(--muted);font-weight:650">${evoD[fiD]} · Lv ${listLevel(c,key)} · <span style="color:var(--treasure-deep,#8A5B00);font-weight:800">${c.coins||0} coins</span></div>
@@ -1100,6 +1172,14 @@ function viewDrawer(){
     </aside>`;
 }
 
+// bee accessories — cosmetic overlays on the mascot (viewBox matches mascotSVG)
+function beeAccSVG(k){ if(!k) return '';
+  if(k==='crown') return '<svg viewBox="0 0 240 270" width="100%" height="100%" style="display:block;overflow:visible;position:absolute;inset:0;pointer-events:none"><path d="M84 30 L96 8 L112 24 L120 2 L128 24 L144 8 L156 30 Z" fill="#F0B429" stroke="#C8901B" stroke-width="3" stroke-linejoin="round"/><circle cx="96" cy="10" r="4" fill="#FFD34D"/><circle cx="120" cy="4" r="4" fill="#FFD34D"/><circle cx="144" cy="10" r="4" fill="#FFD34D"/></svg>';
+  if(k==='bow') return '<svg viewBox="0 0 240 270" width="100%" height="100%" style="display:block;overflow:visible;position:absolute;inset:0;pointer-events:none"><g transform="translate(120,238)"><path d="M0 0 L-26 -14 Q-34 0 -26 14 Z" fill="#DC5B7E"/><path d="M0 0 L26 -14 Q34 0 26 14 Z" fill="#DC5B7E"/><circle cx="0" cy="0" r="7" fill="#C43D5A"/></g></svg>';
+  if(k==='halo') return '<svg viewBox="0 0 240 270" width="100%" height="100%" style="display:block;overflow:visible;position:absolute;inset:0;pointer-events:none"><ellipse cx="120" cy="18" rx="46" ry="12" fill="none" stroke="#F0B429" stroke-width="5"/><circle cx="74" cy="18" r="4" fill="#FFD34D"/><circle cx="166" cy="18" r="4" fill="#FFD34D"/><circle cx="120" cy="6" r="4" fill="#FFD34D"/></svg>';
+  return ''; }
+function mascotAcc(mood){ const c=active(); const acc=c&&c.accOn?beeAccSVG(c.accOn):'';
+  return '<div style="position:relative;width:100%;height:100%">'+mascotSVG(mood)+acc+'</div>'; }
 function streakCard(){ const c=active(); ensureLists(c); const t=todayKey(); const played=new Set(c.daysPlayed||[]);
   const days=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); days.push({on:played.has(k), today:k===t, dn:['S','M','T','W','T','F','S'][d.getDay()]}); }
   const dots=days.map(d=>`<div style="display:flex;flex-direction:column;align-items:center;gap:3px"><span style="width:17px;height:17px;border-radius:6px;display:inline-block;background:${d.on?'var(--accent)':'var(--surface2)'};${d.today?'box-shadow:0 0 0 2px var(--accent)':''}"></span><span style="font-size:12px;color:var(--muted);font-weight:700">${d.dn}</span></div>`).join('');
@@ -1122,6 +1202,7 @@ function streamers(){
 }
 function viewHome(){
   const S=state; const c=active(); ensureLists(c); const theme=S.theme; const evo=EVO[theme]||EVO.spellbound;
+  const focusedH=((c.ageMode)||((c.age||9)<=11?'playful':'focused'))==='focused';
   const aKey=activeListKey(); const aLevel=listLevel(c,aKey); const fIdx=formIdx(aLevel); const oLevel=overallLevel(c);
   const greetHour=new Date().getHours(); const greeting=greetHour<12?'Good morning,':greetHour<18?'Good afternoon,':'Good evening,';
   const goalTarget=c.goal||S.draft.goal||10; const goalPctNum=Math.min(100,Math.round((S.goalDone/goalTarget)*100));
@@ -1138,7 +1219,7 @@ function viewHome(){
     {goAct:'setNav', goArg:'concepts', ic:'grid', sc:'concept', c1:'#13A892',c2:'#0E8A78',accent:'#13A892', title:'Concepts', desc:'Spelling basics, patterns, prefixes, roots & tricky endings, in 11 short chapters.', pct:Math.round(cDone/(cTot||1)*100)+'%', badge:cChapDone+'/'+(conceptChapters().length||11)+' chapters', kind:'go'},
     {goAct:'openJourneys', ic:'book', sc:'book', c1:'#E0922E',c2:'#C8791B',accent:'#E0922E', title:'Word Journeys', desc:'The history & geography of words — roots, journeys & origins, in 10 chapters.', pct:Math.round((lChapTot?lChapDone/lChapTot:0)*100)+'%', badge:S.premium?(lChapDone+'/'+lChapTot+' chapters'):'Premium', kind:S.premium?'go':'lock'},
     {goAct:'openGames', ic:'joystick', sc:'joystick', festive:true, title:'Arcade', desc:'8 mini-games — Magic Squares, Champ Challenge, Boss Battle & more. Earn coins!', pct:Math.min(100,(c.streak||0)*10)+'%', badge:(c.coins||0)+' coins', kind:'go'},
-  ].map((j,ji)=>{
+  ].filter(j=>focusedH?false:(j.sc==='coach'||j.festive)).map((j,ji)=>{
     const arg=j.goArg?`data-arg="${j.goArg}"`:'';
     const wk=({coach:'quest',concept:'concepts',book:'journeys',joystick:'arcade',theme:'themes'})[j.sc]||'quest';
     const cid=({coach:'quest',concept:'concepts',book:'journeys',joystick:'arcade',theme:'themes'})[j.sc]||'quest';
@@ -1162,7 +1243,7 @@ function viewHome(){
       return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-bottom:18px">
       <div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:var(--r-xl,20px);padding:22px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:18px">
         <div style="position:relative;flex-shrink:0">
-          <div style="width:84px;height:94px;animation:sb-bee-bob 3.4s ease-in-out infinite">${mascotSVG(S.mood)}</div>
+          <div style="width:84px;height:94px;animation:sb-bee-bob 3.4s ease-in-out infinite">${mascotAcc(S.mood)}</div>
           <div class="sb-bubble" style="position:absolute;left:64px;top:-16px;white-space:nowrap;background:var(--paper,#fff);border:1px solid var(--line);border-radius:10px;border-bottom-left-radius:3px;padding:6px 10px;font-size:12px;font-weight:650;color:var(--ink,var(--text));box-shadow:var(--sh-rest)">${bub}</div>
         </div>
         <div style="min-width:0;flex:1">
@@ -1189,8 +1270,20 @@ function viewHome(){
         </div>
       </div>
     </div>`; })()}
-    <div style="font-family:var(--display);font-weight:800;font-size:15px;margin:4px 2px 12px">Keep going</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:18px">${journeys}</div>
+${focusedH?(()=>{ const sg=parentSignals(); let rd=0; try{ rd=coachReadiness().ready||0; }catch(e){}
+      const mini=[['Readiness',rd],['Accuracy',sg.acc],['Consistency',sg.consistency]].map(([l,v])=>{ v=Math.max(0,Math.min(100,Math.round(v||0)));
+        return `<div style="flex:1;min-width:130px"><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:650;color:var(--muted);margin-bottom:5px"><span>${l}</span><span style="color:var(--ink,var(--text))">${v}%</span></div><div style="height:6px;border-radius:999px;background:var(--tint-deep,var(--surface2));overflow:hidden"><div style="height:100%;background:${v>=70?'var(--mastered,#178A4C)':'var(--action,var(--accent))'};width:${v}%"></div></div></div>`; }).join('');
+      const doors=['quest','concepts','journeys','arcade'].map((k,i)=>{ const w=WAYFIND[k]; const act=k==='quest'?'openCoach':k==='arcade'?'openGames':k==='journeys'?'openJourneys':'setNav'; const arg=k==='concepts'?'data-arg="concepts"':'';
+        return `<button data-act="${act}" ${arg} style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--paper,var(--bg2));box-shadow:var(--sh-rest)">${wayTile(k,34,i%2?2:-2)}<span style="font-weight:800;font-size:14px">${w.label}</span></button>`; }).join('');
+      return `<div style="display:flex;gap:16px;flex-wrap:wrap;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:14px;box-shadow:var(--sh-rest)">${mini}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:14px">${trapRadar()||`<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--sh-rest)"><div style="font-family:var(--display);font-weight:800;font-size:17px;margin-bottom:4px">No traps yet</div><p style="margin:0;font-size:13px;color:var(--muted)">Miss a few words and your personal weak-pattern radar lights up here.</p></div>`}
+        <button data-act="openCoach" class="sb-lift" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0">
+          <div style="position:relative;width:100%">${SB_COVER(S.theme,'quest',{h:96,dark:S.mode==='dusk'})}</div>
+          <div style="padding:14px 16px 16px;width:100%"><div style="font-family:var(--ui,var(--body));font-weight:650;font-size:17px">Continue training</div><div style="font-size:13px;color:var(--muted);margin-top:3px">${esc(listLabel(aKey).split(' · ')[0])} · Level ${listStageIdx(c,aKey)+1}</div></div></button>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:18px">${doors}</div>`; })()
+    :`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:4px 2px 12px">Keep going</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:18px">${journeys}</div>`}
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest)">
       <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:6px;flex-wrap:wrap">
         <div style="font-family:var(--display);font-weight:800;font-size:17px">Your evolution</div>
@@ -1872,6 +1965,13 @@ function viewQuest(){
     ${pageHead("Champion's Quest",'one quest · three paths','Pick the path that fits today — the other two stay one tap away in your list row, with all progress kept.')}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:16px">${paths}</div>
     <div style="display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:14px;background:var(--surface2);border:1px solid var(--line)"><span style="color:var(--accent)">${iconSVG('spark',17)}</span><span style="font-size:13px;color:var(--muted);font-weight:600">Switching paths never loses progress — every list keeps its own Level ladder, and you can hop between them from the Word Coach list row.</span></div>
+    ${(()=>{ const un=loreUnlocked(); const all=lessonsAll().length||100; const next=lessonsAll()[un.length];
+      const chips=un.slice(-8).map(L=>`<button data-act="openLesson" data-arg="${L.n}" style="display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12px">${window.SB_ICON?SB_ICON('book',{size:13}):iconSVG('book',13)} ${esc(trunc(L.title,26))}</button>`).join('');
+      return `<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-top:14px;box-shadow:var(--sh-rest)">
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px"><span style="font-family:var(--display);font-weight:800;font-size:17px">Story vault</span><span style="font-size:12px;color:var(--muted);font-weight:650">${un.length}/${all} word-history tales unlocked — one per Level you clear</span></div>
+        ${un.length?`<div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px">${chips}</div>`:`<p style="margin:6px 0 0;font-size:13px;color:var(--muted)">Clear your first Level to unlock a tale from the history of words.</p>`}
+        ${next?`<div style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12px;color:var(--muted);font-weight:650">${iconSVG('lock',13,2.2)} Next up: <b style="color:var(--ink,var(--text))">${esc(next.title)}</b> — clear a Level to open it</div>`:''}
+      </div>`; })()}
   </div>`;
 }
 function viewProgress(){
@@ -2317,7 +2417,7 @@ function viewSettings(){
       <div style="min-width:0"><div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:15px">${iconSVG('lock',16)} Unlock everything <span style="font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:999px">testing</span></div><div style="font-size:13px;color:var(--muted)">Unlocks all concepts, lists, worlds &amp; every level — no coins or Premium needed.</div></div>
       <button data-act="toggleDevUnlock" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:${S.devUnlock?'var(--accent)':'var(--surface2)'};color:${S.devUnlock?'#fff':'var(--muted)'};font-weight:800;font-size:13px">${S.devUnlock?'🔓 On':'Off'}</button>
     </div>
-    <button data-act="openEvoFeedback" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-radius:14px;background:var(--bg2);border:1px solid var(--line);box-shadow:var(--sh-rest);margin-bottom:16px;color:var(--text)"><div style="text-align:left"><div style="font-family:var(--display);font-weight:800;font-size:15px">Design feedback</div><div style="font-size:12px;color:var(--muted)">Review the 80 evolution tiles &amp; export notes</div></div><span style="color:var(--accent)">${iconSVG('arrow',18)}</span></button>
+    ${state.devUnlock?`<button data-act="openEvoFeedback" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-radius:14px;background:var(--bg2);border:1px solid var(--line);box-shadow:var(--sh-rest);margin-bottom:16px;color:var(--text)"><div style="text-align:left"><div style="font-family:var(--display);font-weight:800;font-size:15px">Design feedback</div><div style="font-size:12px;color:var(--muted)">Review the 80 evolution tiles &amp; export notes</div></div><span style="color:var(--accent)">${iconSVG('arrow',18)}</span></button>`:''}
     <button data-act="signOut" style="width:100%;padding:14px;border-radius:14px;background:var(--surface2);color:var(--bad);font-weight:800;font-size:15px">Sign out</button>
   </div>`;
 }
@@ -2569,11 +2669,7 @@ function coachHub(){
       <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px">Choose your target list</div><p style="font-size:12px;color:var(--muted);margin:0 0 14px">This drives your plan, readiness and drills.</p>
         <div style="position:relative"><select data-chg="setCoachTarget" style="width:100%;appearance:none;-webkit-appearance:none;padding:14px 38px 14px 14px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-family:var(--display);font-weight:800;font-size:15px;cursor:pointer">${opts}</select><span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--accent);font-size:12px">▼</span></div>
         <div style="display:flex;align-items:center;gap:8px;margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--surface2)"><span style="color:var(--accent)">${iconSVG('target',18)}</span><div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:13px">${esc(S.coachTargetLabel)} · ${cat?cat.count:0} words</div><div style="font-size:12px;color:var(--muted)">${cat?esc(cat.sub):''}</div></div></div></div>
-      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px;display:flex;align-items:center;gap:8px"><span style="color:var(--accent)">${iconSVG('spark',16)}</span> Smart list with AI</div><p style="font-size:12px;color:var(--muted);margin:0 0 12px">Describe what you want to drill and Coach AI builds a list from the word database.</p>
-        <input data-inp="setAiPrompt" data-fkey="aiPrompt" value="${escA(S.aiPrompt)}" placeholder="e.g. tricky silent-letter words for a 5th grader" style="width:100%;padding:13px 14px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:600;font-size:13px;margin-bottom:10px">
-        <button data-act="generateAiList" style="width:100%;padding:13px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${S.aiLoading?'Thinking…':'Generate smart list →'}</button>
-        ${S.aiError?`<div style="font-size:12px;color:var(--bad);font-weight:700;margin-top:10px">${esc(S.aiError)}</div>`:''}</div>
-      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:18px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px;display:flex;align-items:center;gap:8px"><span style="color:var(--accent)">${iconSVG('upload',18)}</span> Bring your own words</div><p style="font-size:12px;color:var(--muted);margin:0 0 12px">Paste words (commas or new lines). We enrich them with definitions, sentences and origins from the database.</p>
+            <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:18px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px;display:flex;align-items:center;gap:8px"><span style="color:var(--accent)">${iconSVG('upload',18)}</span> Bring your own words</div><p style="font-size:12px;color:var(--muted);margin:0 0 12px">Paste words (commas or new lines). We enrich them with definitions, sentences and origins from the database.</p>
         <textarea data-inp="setCustomText" data-fkey="customText" placeholder="silhouette, bouquet, mnemonic" style="width:100%;min-height:84px;resize:vertical;padding:13px 14px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:600;font-size:13px;line-height:1.5;margin-bottom:10px;font-family:var(--body)">${esc(S.customText)}</textarea>
         <button data-act="enrichCustom" style="width:100%;padding:13px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;border:1px solid var(--line)">Enrich & set as target →</button>
         ${S.enrichResult?`<div style="font-size:12px;color:var(--accent);font-weight:700;margin-top:10px">${esc(S.enrichResult)}</div>`:''}</div>`;
@@ -2711,6 +2807,7 @@ const GAMES=[
   { type:'meaning',  ic:'book',   name:'Meaning Match',   blurb:'Match a word to its meaning or its sentence.', tag:'Quiz', c:'#13A892',c2:'#0E8A78',tex:'rings' },
   { type:'spell',    ic:'spark',  name:'Spot the Spelling',blurb:'Pick the correctly-spelled word from look-alikes.', tag:'Quiz', c:'#3D7DF0',c2:'#2A63D6',tex:'grid' },
   { type:'origin',   ic:'grid',   name:'Origin Detective', blurb:'Guess each word’s language of origin.', tag:'Detective', c:'#4F9E6A',c2:'#3C8455',tex:'stripes' },
+  { type:'duel',     ic:'swords', name:'Spelling Duel',  blurb:'Pass the device — same 10 words, two spellers. Who takes the crown?', tag:'Versus', c:'#C43D5A',c2:'#8E2C44',tex:'diag' },
   { type:'magic',    ic:'palette',name:'Magic Squares',    blurb:'A 3×3 board of themes — clear cells, complete rows & diagonals for bonus coins!', tag:'Board', c:'#B14FC4',c2:'#9438A8',tex:'dots' },
 ];
 function gameCoverBG(gm){ const t=CONCEPT_TEX[gm.tex]||CONCEPT_TEX.stripes;
@@ -2891,9 +2988,38 @@ function gFinishMC(){ const g=state.game; g.status='done'; const bonus=2+g.right
 function coinAmt(n, sz){ return `<span style="display:inline-flex;align-items:center;gap:3px;white-space:nowrap">${iconSVG('coin',sz||13)} ${n}</span>`; }
 function coinChip(){ return `<span style="display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(coinsOf(),14)}</span>`; }
 function viewGames(){ const g=state.game; if(!g) return gamesHub();
+  if(g.type==='duel') return duelView();
   if(g.type==='magic') return magicView();
   if(g.qs) return (g.status==='done')?mcDone():mcGame();
   return (g.status==='done'||g.status==='won'||g.status==='lost')?typedDone():typedGame(); }
+/* ---- Spelling Duel: pass-the-device, same 10 words, two spellers ---- */
+function duelView(){ const S=state; const g=S.game; const shell=(inner)=>`<div style="max-width:560px;margin:0 auto;animation:sb-rise .3s ease both">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><button data-act="exitGame" style="color:var(--muted);font-weight:700;font-size:14px">← Arcade</button><span style="font-family:var(--display);font-weight:800;font-size:20px">Spelling Duel</span></div>${inner}</div>`;
+  if(g.phase==='setup') return shell(`<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;padding:26px;box-shadow:var(--sh-rest);text-align:center">
+      <div style="width:84px;height:92px;margin:0 auto 10px">${mascotAcc('excited')}</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:24px;margin-bottom:6px">${esc(g.p[0].name)} vs …</div>
+      <p style="font-size:15px;color:var(--muted);margin:0 0 14px">Same 10 words for both spellers. Player 2, type your name:</p>
+      <input data-inp="duelName" data-fkey="duelName" value="${escA(g.p[1].name)}" maxlength="16" style="width:100%;max-width:260px;padding:12px 14px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px;text-align:center;margin-bottom:16px">
+      <button data-act="duelBegin" style="display:block;width:100%;max-width:260px;margin:0 auto;padding:14px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Start the duel →</button></div>`);
+  if(g.phase==='pass') return shell(`<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:var(--sh-rest);text-align:center">
+      <div style="font-size:15px;color:var(--muted);font-weight:650;margin-bottom:6px">${esc(g.p[0].name)} scored</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:44px;color:var(--action,var(--accent));line-height:1">${g.p[0].right}/10</div>
+      <p style="font-size:15px;margin:14px 0 18px">Pass the device to <b>${esc(g.p[1].name)}</b> — same 10 words. No peeking!</p>
+      <button data-act="duelP2" style="padding:14px 26px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">I'm ${esc(g.p[1].name)} — go →</button></div>`);
+  if(g.phase==='done'){ const a=g.p[0],b=g.p[1]; const tie=a.right===b.right; const win=a.right>=b.right?a:b; const lose=win===a?b:a;
+    return shell(`<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:var(--sh-overlay);text-align:center">
+      <div style="width:100px;height:110px;margin:0 auto 8px;animation:sb-bee-talk 1.6s ease-in-out infinite">${mascotAcc('excited')}</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:28px;margin-bottom:10px">${tie?'It\'s a tie!':esc(win.name)+' wins! 🏆'}</div>
+      <div style="display:flex;justify-content:center;gap:22px;margin-bottom:16px">${[a,b].map(pp=>`<div><div style="font-family:var(--display);font-weight:800;font-size:36px;line-height:1;color:${pp===win&&!tie?'var(--treasure-deep,#8A5B00)':'var(--ink,var(--text))'}">${pp.right}</div><div style="font-size:13px;color:var(--muted);font-weight:650">${esc(pp.name)}</div></div>`).join('')}</div>
+      <p style="font-size:13px;color:var(--muted);margin:0 0 16px">${tie?'Both':'Winner'} earned ${tie?'8':'12'} 🪙 · rematch with fresh words any time.</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button data-act="playGame" data-arg="duel" style="padding:13px 22px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:14px;box-shadow:var(--edge)">Rematch →</button><button data-act="exitGame" style="padding:13px 22px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:14px">Back to Arcade</button></div></div>`); }
+  const pl=g.p[g.turn]; const w=g.list[g.i];
+  return shell(`<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,30px);box-shadow:var(--sh-rest);text-align:center">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="font-weight:800;font-size:14px;color:var(--action,var(--accent))">${esc(pl.name)}'s turn</span><span style="font-family:var(--mono);font-size:13px;color:var(--muted)">${g.i+1}/10 · ✓ ${pl.right}</span></div>
+      <button data-act="duelSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">${iconSVG('volume',18)} Hear the word</button>
+      <input data-inp="duelType" data-key="duelKey" data-fkey="duelType" value="${escA(S.typed)}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type it…" style="width:100%;padding:15px;border-radius:12px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:20px;text-align:center;letter-spacing:.06em;margin-bottom:12px">
+      <button data-act="duelEnter" style="width:100%;padding:14px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Submit</button></div>`);
+}
 /* ---- Magic Squares view: board → 5-question cell → result (+ line celebrations) ---- */
 function magicView(){ const g=state.game; const S=state;
   const head=`<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px"><button data-act="exitGame" style="color:var(--muted);font-weight:700;font-size:13px">← Arcade</button><span style="display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">${iconSVG('palette',21)} Magic Squares</span><span style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px">${iconSVG('coin',14)} +${g.coins}</span></div>`;
@@ -2986,7 +3112,31 @@ function viewShop(){ const S=state; const c=active(); ensureLists(c); const tab=
         <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:15px">${t.label}</div><div style="font-size:12px;color:var(--muted)">${WORLD_DEF[t.id]||(ev[0]+' → '+ev[9])}</div></div>${right}</button>`; }).join('');
     const unc=THEMES.filter(t=>isThemeUnlocked(t.id)).length;
     body=`<p style="font-size:13px;color:var(--muted);margin:0 0 12px">${unc}/${THEMES.length} worlds unlocked · 2 free, ${state.premium?'2 more with Premium, ':''}the rest with coins.</p>${rows}`;
-  } else if(tab==='lists'){
+  }if(tab==='power'){
+    const items=[
+      {k:'freeze', ic:'timer', name:'Streak Freeze', desc:'Miss one day — your streak survives. Auto-used.', cost:80, own:(c.freezes||0)},
+      {k:'time',   ic:'timer', name:'+15s Buzzer Time', desc:'Auto-boosts your next Beat the Buzzer round.', cost:40, own:((c.pow||{}).time||0)},
+      {k:'reveal', ic:'bulb',  name:'Letter Reveal', desc:'Reveal the next letter in Boss Battle. One use each.', cost:40, own:((c.pow||{}).reveal||0)},
+    ].map(it=>`<div style="display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:9px">
+        <div style="width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--chip);color:var(--accent);flex-shrink:0">${window.SB_ICON?SB_ICON(it.ic,{size:20}):iconSVG('spark',20)}</div>
+        <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:15px">${it.name} ${it.own?`<span style="font-size:12px;color:var(--good);font-weight:800">× ${it.own}</span>`:''}</div><div style="font-size:12px;color:var(--muted)">${it.desc}</div></div>
+        <button data-act="buyPower" data-arg="${it.k}" style="padding:9px 14px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:900;font-size:13px;white-space:nowrap">${coinAmt(it.cost,12)}</button>
+      </div>`).join('');
+    const accs=[
+      {k:'crown', name:'Golden Crown', desc:'For royalty of the spelling stage.'},
+      {k:'bow',   name:'Scarlet Bow', desc:'A dapper bow for word detectives.'},
+      {k:'halo',  name:'Star Halo', desc:'Sparkles orbiting a champion.'},
+    ].map(a=>{ const owned=!!((c.beeAcc||{})[a.k]); const on=c.accOn===a.k;
+      return `<div style="display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:12px 14px;margin-bottom:9px">
+        <div style="width:44px;height:48px;flex-shrink:0;position:relative">${mascotSVG('happy')}<div style="position:absolute;inset:0">${beeAccSVG(a.k)}</div></div>
+        <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:15px">${a.name}</div><div style="font-size:12px;color:var(--muted)">${a.desc}</div></div>
+        ${owned?`<button data-act="wearAcc" data-arg="${a.k}" style="padding:9px 14px;border-radius:10px;background:${on?'var(--action,var(--accent))':'var(--surface)'};color:${on?'var(--action-ink,#fff)':'var(--text)'};font-weight:800;font-size:13px">${on?'Wearing ✓':'Wear'}</button>`
+          :`<button data-act="buyAcc" data-arg="${a.k}" style="padding:9px 14px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:900;font-size:13px;white-space:nowrap">${coinAmt(120,12)}</button>`}
+      </div>`; }).join('');
+    body=`<p style="font-size:13px;color:var(--muted);margin:0 0 12px">Spend coins on boosts for your games and style for your bee.</p>${items}
+      <div style="font-family:var(--display);font-weight:800;font-size:15px;margin:16px 2px 10px">Bee style</div>${accs}`;
+  }
+  else if(tab==='lists'){
     const cats=[{key:'default',label:'Default · Level-Up',sub:'Curated starter words',count:LEVEL_WORDS.length}].concat(coachCatalog().filter(o=>o.key!=='default').map(o=>({key:o.key,label:o.label,sub:o.sub,count:o.count})));
     const rows=cats.map(o=>{ const un=isListUnlocked(o.key); const on=(c.activeList||'default')===o.key;
       const right=on?'<span style="font-weight:800;font-size:12px;color:var(--accent)">Active</span>':(un?'<span style="font-weight:800;font-size:12px;color:var(--good)">Train</span>':`<span style="font-weight:900;font-size:12px;color:#a06a00">${coinAmt(COST.list,12)}</span>`);
@@ -3004,7 +3154,7 @@ function viewShop(){ const S=state; const c=active(); ensureLists(c); const tab=
   return `<div style="max-width:680px;margin:0 auto">
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button><span style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">${iconSVG('cart',21)} Shop</span><span style="margin-left:auto">${coinChip()}</span></div>
     <p style="margin:0 0 14px;color:var(--muted);font-size:13px">Spend the coins you earn from games, Word Coach &amp; Concepts.</p>
-    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">${tabBtn('worlds','palette','Worlds')}${tabBtn('lists','book','Word lists')}${tabBtn('concepts','grid','Concepts')}</div>
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">${tabBtn('power','spark','Power-ups')}${tabBtn('worlds','palette','Worlds')}${tabBtn('lists','book','Word lists')}${tabBtn('concepts','grid','Concepts')}</div>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px">${body}</div>
   </div>`; }
 function gameShell(statusBar, inner){ return `<div style="max-width:680px;margin:0 auto">
@@ -3021,7 +3171,7 @@ function typedGame(){ const S=state; const g=S.game; const w=g.list[g.i]; let st
   const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,32px);box-shadow:var(--glow);text-align:center">
       <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 14px">${g.type==='boss'?'Spell it to attack!':'Listen and type'}</p>
       <button data-act="gSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">${iconSVG('volume',18)} Hear the word</button>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px"><button data-act="gSaySlow" style="padding:9px 14px;border-radius:999px;background:var(--surface2);font-weight:700;font-size:13px;border:1px solid var(--line)">Slow</button><button data-act="gInfoToggle" style="padding:9px 14px;border-radius:999px;font-weight:700;font-size:13px;border:1px solid var(--line);${S.gInfo?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">💡 Hint</button></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px"><button data-act="gSaySlow" style="padding:9px 14px;border-radius:999px;background:var(--surface2);font-weight:700;font-size:13px;border:1px solid var(--line)">Slow</button>${g.type==='boss'&&((active().pow||{}).reveal||0)>0?`<button data-act="gReveal" style="padding:9px 14px;border-radius:999px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">💡 Reveal letter × ${(active().pow||{}).reveal}</button>`:''}<button data-act="gInfoToggle" style="padding:9px 14px;border-radius:999px;font-weight:700;font-size:13px;border:1px solid var(--line);${S.gInfo?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">💡 Hint</button></div>
       ${hint}${bossFb}
       <input data-inp="onType" data-key="gKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="type here" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;text-align:center;padding:16px 14px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(20px,5vw,28px);letter-spacing:.14em;text-transform:lowercase;outline:none;margin-bottom:14px">
       <button data-act="gSubmit" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${g.type==='boss'?'Attack! ⚔️':'Enter →'}</button>
