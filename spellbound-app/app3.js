@@ -1010,9 +1010,12 @@ function viewOnboarding(){
   const dots=[0,1,2].map(i=>`<div style="width:${i===S.onbStep?'26px':'8px'};height:8px;border-radius:999px;transition:.25s;background:${i<=S.onbStep?'var(--accent)':'var(--surface2)'}"></div>`).join('');
   let card='';
   if(S.onbStep===0){
-    const avatars=SB_AVATARS.packs.map(p=>{ const packAvs=SB_AVATARS.list.filter(a=>a.pack===p.id);
-      return `<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:8px">${packAvs.map(a=>{ const free=a.rarity==='free'; const on=S.draft.avatar===a.id;
-        return `<button data-act="pickAvatar" data-arg="${a.id}" title="${a.name} · ${p.label}${free?'':' · unlock later with coins'}" style="position:relative;aspect-ratio:1;border-radius:14px;display:grid;place-items:center;transition:.15s;background:var(--surface2);border:2px solid ${on?'var(--accent)':'transparent'};padding:5px;${free?'':'opacity:.45'}"><span style="width:40px;height:40px;display:inline-block">${avatarSVG(a.id,40)}</span>${free?'':`<span style="position:absolute;top:3px;right:4px;font-size:10px">🔒</span>`}</button>`; }).join('')}</div>`; }).join('');
+    const _freeAvs=SB_AVATARS.list.filter(a=>a.rarity==='free');
+    const _legendAvs=SB_AVATARS.list.filter(a=>a.rarity==='legendary');
+    const avatars=`<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-width:380px">${_freeAvs.map(a=>{ const on=S.draft.avatar===a.id;
+        return `<button data-act="pickAvatar" data-arg="${a.id}" title="${a.name}" style="position:relative;aspect-ratio:1;border-radius:14px;display:grid;place-items:center;transition:.15s;background:var(--surface2);border:2px solid ${on?'var(--accent)':'transparent'};padding:5px"><span style="width:44px;height:44px;display:inline-block">${avatarSVG(a.id,44)}</span></button>`; }).join('')}</div>
+      <div style="margin-top:14px;font-size:12.5px;font-weight:700;color:var(--muted)">…and ${SB_AVATARS.list.length-_freeAvs.length} more to collect — earn coins by playing.</div>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">${_legendAvs.map(a=>`<button data-act="pickAvatar" data-arg="${a.id}" title="${a.name} · legendary — unlock later with coins" style="position:relative;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--surface2);border:2px solid transparent;padding:4px;opacity:.45"><span style="width:32px;height:32px;display:inline-block">${avatarSVG(a.id,32)}</span><span style="position:absolute;top:1px;right:2px;font-size:9px">🔒</span></button>`).join('')}</div>`;
     card=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow)">
       <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">Who's practising?</h2>
       <p style="margin:0 0 20px;color:var(--muted);font-size:13px">Set up your speller's profile.</p>
@@ -1021,7 +1024,7 @@ function viewOnboarding(){
       <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:8px">Age · <b style="color:var(--text)">${S.draft.age}</b></label>
       <input data-inp="onDraftAge" data-fkey="draftAge" type="range" min="5" max="15" step="1" value="${S.draft.age}" style="width:100%;accent-color:var(--accent);margin-bottom:20px">
       <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:10px">Pick a buddy</label>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:8px">${avatars}</div></div>`;
+      ${avatars}</div>`;
   } else if(S.onbStep===1){
     const worldCards=THEMES.map(t=>{ const open=FREE_THEMES.indexOf(t.id)>=0; const card=worldHeroCard(t, t.id===S.draft.theme, false, 'onbWorld');
       return open?card:card.replace('<div style="position:relative;height:104px',`<span style="position:absolute;top:10px;right:10px;z-index:2;display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:rgba(20,14,34,.72);color:#FFD24D;font-weight:800;font-size:11.5px;letter-spacing:.03em">▶ Play to unlock</span><div style="position:relative;height:104px;filter:saturate(.55)`); }).join('');
@@ -1368,7 +1371,7 @@ function viewDrawer(){
         ${wayRow('journeys','journeys','Word Journeys','the history of words')}
         ${wayRow('themes','themes','Theme Journeys',myThemes().length?myThemes().length+' worlds picked':'pick 3–5 worlds')}
         ${kick('Training tools')}
-        ${row('collection','crown','Collection',avOwnedCount(c)+'/30 avatars · badges',state.nav==='collection')}
+        ${row('collection','crown','Collection',avOwnedCount(c)+'/'+SB_AVATARS.list.length+' avatars · badges',state.nav==='collection')}
         ${row('traps','target','Your Traps',missTraps().length?(missTraps().length+' weak patterns found'):'weak-pattern radar',state.nav==='traps')}
         ${row('quest','target',"Champion's Quest",'switch your path',state.nav==='quest')}
         ${row('builder','pencil','List Builder','custom list in five taps',state.nav==='builder')}
@@ -1535,7 +1538,7 @@ function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageI
     { id:'champ', name:'Bizzing Bee Champ', desc:'Clear all 20 Champ Levels', ic:'crown', done:isChampDone(c) },
     { id:'scholar', name:'Pattern Scholar', desc:'Master 10 concepts', ic:'grid', done:concepts>=10 },
     { id:'storyteller', name:'Storykeeper', desc:'Unlock 10 word-history tales', ic:'book', done:loreCount(c)>=10 },
-    { id:'collector', name:'Collector', desc:'Own 15 avatars', ic:'spark', done:avOwnedCount(c)>=15 },
+    { id:'collector', name:'Collector', desc:'Own 25 avatars', ic:'spark', done:avOwnedCount(c)>=25 },
   ]; }
 function viewCollection(){ const S=state; const c=active(); const tab=S.collTab||'avatars';
   const tabBtn=(k,l)=>`<button data-act="collTab" data-arg="${k}" style="flex:1;min-width:120px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${l}</button>`;
@@ -1564,9 +1567,9 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
         <span style="font-weight:800;font-size:10.5px;color:${b.done?'var(--good)':'var(--muted)'}">${b.done?'WON ✓':'LOCKED'}</span></div>`).join('')}</div></div>`;
   }
   return `<div style="max-width:920px;margin:0 auto">
-    ${pageHead('Collection', avOwnedCount(c)+'/30 avatars', 'Collect avatars with coins, win badges by playing. Your avatar rides on the welcome card.',
+    ${pageHead('Collection', avOwnedCount(c)+'/'+SB_AVATARS.list.length+' avatars', 'Collect avatars with coins, win badges by playing. Your avatar rides on the welcome card.',
       `<span style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px">${coinAmt(c.coins||0,14)}</span>`)}
-    <div style="display:flex;gap:8px;margin-bottom:14px">${tabBtn('avatars','Avatars · '+avOwnedCount(c)+'/30')}${tabBtn('badges','Badges · '+badgeDefs().filter(b=>b.done).length+'/'+badgeDefs().length)}</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px">${tabBtn('avatars','Avatars · '+avOwnedCount(c)+'/'+SB_AVATARS.list.length)}${tabBtn('badges','Badges · '+badgeDefs().filter(b=>b.done).length+'/'+badgeDefs().length)}</div>
     ${body}
   </div>`; }
 /* ---- Evolution ladder as its own screen (Home shows only the compact card) ---- */
@@ -2710,8 +2713,8 @@ function viewSettings(){
   const _nat=(n)=>/natural|enhanced|premium|siri|google|neural|online/i.test(n);
   const voiceOpts=['<option value="">Auto · best available</option>'].concat(_voices.map(v=>`<option value="${escA(v.name)}"${VOICE.name===v.name?' selected':''}>${esc(v.name)}${_nat(v.name)?' ✨':''}</option>`)).join('');
   const _pc=active();
-  const _avRows=SB_AVATARS.packs.map(p=>`<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:8px;max-width:340px">${SB_AVATARS.list.filter(a=>a.pack===p.id).map(a=>{ const own=avOwned(_pc,a.id);
-    return `<button data-act="${own?'profAvatar':'openCollection'}" data-arg="${a.id}" title="${a.name}${own?'':' · unlock in Collection'}" style="position:relative;aspect-ratio:1;border-radius:12px;display:grid;place-items:center;background:var(--surface2);border:2px solid ${_pc.avatar===a.id?'var(--accent)':'transparent'};padding:4px;${own?'':'opacity:.4'}"><span style="width:34px;height:34px;display:inline-block">${avatarSVG(a.id,34)}</span>${own?'':'<span style="position:absolute;top:2px;right:3px;font-size:10px">🔒</span>'}</button>`; }).join('')}</div>`).join('')+`<div style="margin-top:4px"><button data-act="openCollection" class="sb-cl" style="background:none;border:0;padding:0;cursor:pointer">Collect more in your Collection →</button></div>`;
+  const _avRows=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:8px;max-width:380px">${SB_AVATARS.list.filter(a=>avOwned(_pc,a.id)).map(a=>
+    `<button data-act="profAvatar" data-arg="${a.id}" title="${a.name}" style="position:relative;aspect-ratio:1;border-radius:12px;display:grid;place-items:center;background:var(--surface2);border:2px solid ${_pc.avatar===a.id?'var(--accent)':'transparent'};padding:4px"><span style="width:34px;height:34px;display:inline-block">${avatarSVG(a.id,34)}</span></button>`).join('')}</div>`+`<div style="margin-top:10px"><button data-act="openCollection" class="sb-cl" style="background:none;border:0;padding:0;cursor:pointer">Collect more in your Collection →</button></div>`;
   const profileCard=`<div class="sb-card" style="margin-bottom:16px">
       <div style="font-family:var(--display);font-weight:800;font-size:15px">Profile</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Pick your own display name and buddy — parents can adjust age and the daily goal here too.</div>

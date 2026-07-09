@@ -29,7 +29,8 @@
     "GoalRing": "done?: number; goal?: number; size?: number;",
     "TabBar": "items?: {key: string; label: string; icon: string}[]; active?: string;",
     "TipOfDay": "label?: string; children?: React.ReactNode;",
-    "Wordmark": "size?: number;"
+    "Wordmark": "size?: number;",
+    "Avatar": "id?: string; size?: number;"
   },
   "componentSrcMap": {
     "Root": "src/index.js",
@@ -49,7 +50,13 @@
     "GoalRing": "src/index.js",
     "TabBar": "src/index.js",
     "TipOfDay": "src/index.js",
-    "Wordmark": "src/index.js"
+    "Wordmark": "src/index.js",
+    "Avatar": "src/index.js"
   },
-  "readmeHeader": ".design-sync/conventions.md"
+  "readmeHeader": ".design-sync/conventions.md",
+  "overrides": {
+    "Avatar": {
+      "cardMode": "column"
+    }
+  }
 }

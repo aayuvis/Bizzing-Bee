@@ -6,6 +6,7 @@ import React from 'react';
 import './vendor/icons.js';
 import './vendor/cover-art.js';
 import './vendor/mascot.js';
+import './vendor/avatars.js';
 
 const h = React.createElement;
 const raw = (html, style, cls) => h('div', { className: cls, style, dangerouslySetInnerHTML: { __html: html } });
@@ -128,4 +129,12 @@ export function TipOfDay({ label = 'Tip of the day', children }) {
 export function Wordmark({ size = 20 }) {
   return h('span', { style: { fontFamily: 'var(--display)', fontWeight: 800, fontSize: size, letterSpacing: '-.01em', whiteSpace: 'nowrap' } },
     h('i', { style: { fontStyle: 'italic' } }, 'Bizzing'), ' Bee');
+}
+
+/** Collectible avatar ("blook") from the 80-character set — 8 world packs x 10, rarity-tiered
+ *  (free / rare / epic / legendary, one legendary per pack). Packs: hive, stage, cosmos, dojo,
+ *  lab, arcade, origami, elements. Sample ids: bizzy, queenhive, goldlegend, nebula,
+ *  dragonmaster, aurum, neonking, goldencrane, elemental — full roster in window.SB_AVATARS.list. */
+export function Avatar({ id = 'bizzy', size = 64 }) {
+  return h('span', { style: { display: 'inline-block', width: size, height: size }, dangerouslySetInnerHTML: { __html: window.SB_AVATAR ? window.SB_AVATAR(id, size) : '' } });
 }
