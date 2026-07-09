@@ -263,7 +263,7 @@ function evoLadderHTML(theme,current){
     let wrap='flex:1;min-width:60px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 2px 7px;border-radius:10px;transition:background .2s;'+(isCur?`background:color-mix(in srgb,${C.a} 18%,transparent);box-shadow:inset 0 0 0 1.5px ${C.a};`:'')+(!done&&!isCur?'opacity:.78;':'');
     const badge=`font-family:var(--mono);font-size:12px;letter-spacing:.04em;font-weight:700;color:${isCur?C.ink:'rgba(70,64,90,.78)'}`; // dusk override via .sb-evotxt
     const nameStyle=`font-family:var(--body);font-weight:${isCur?800:700};font-size:12px;text-align:center;line-height:1.1;color:${isCur?C.ink:'rgba(50,44,68,.92)'}`;
-    return `<div style="${wrap}"><div class="sb-evotxt" style="${badge}">Lv ${i+1}</div><div style="height:60px;display:grid;place-items:center"><div style="width:54px;height:58px">${evEmb(theme,i)}</div></div><div class="sb-evotxt" style="${nameStyle}">${nm}</div></div>`;
+    return `<div style="${wrap}"><div class="sb-evotxt" style="${badge}">${isCur?'YOU':(done?'✓':'')}</div><div style="height:60px;display:grid;place-items:center"><div style="width:54px;height:58px">${evEmb(theme,i)}</div></div><div class="sb-evotxt" style="${nameStyle}">${nm}</div></div>`;
   }).join('');
   return `<div style="width:100%;display:flex;align-items:flex-start;gap:2px">${cells}</div>`;
 }
