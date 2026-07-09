@@ -445,7 +445,7 @@ function bandTier(b){ return b<=2?'Classroom Speller':b<=4?'School-Bee Ready':b<
 function beeBand(c){ c=c||active(); const band=Math.max(1,Math.min(9,c.band||c.bandSeed||2));
   const cal=bandEvidence(c)<BAND_MIN_EV && !c.bandSeed; /* a placement result IS evidence — never call it calibrating */
   const s=_bandAcc(c,band);
-  return { band, tier:bandTier(band), calibrating:cal, acc:Math.round((s.acc||0)*100) }; }
+  return { band, tier:bandTier(band), calibrating:cal, acc:Math.round((s.acc||0)*100), n:s.w }; }
 function masteredCount(){ try{ return Object.keys(state.luMastered||{}).filter(k=>state.luMastered[k]).length; }catch(e){ return 0; } }
 function coachReadiness(){ const pool=coachPool(); const srs=state.coachSrs||{}; let nw=0,lr=0,rv=0,ms=0;
   pool.forEach(r=>{ const st=srsState(srs[nkey(r.w)]); if(st==='new')nw++; else if(st==='learning')lr++; else if(st==='review')rv++; else ms++; });
@@ -887,6 +887,7 @@ const app = {
   celebrateClose:()=>set({celebrate:null}),
   setAgeMode:(m)=>{ const c=active(); c.ageMode=m; save(); render(); },
   setLight:()=>app.setMode('light'), setWhite:()=>app.setMode('white'), setDusk:()=>app.setMode('dusk'),
+  cycleMode:()=>{ const o=['light','white','dusk']; app.setMode(o[(o.indexOf(state.mode)+1)%3]); },
   voiceSetDevice:(v)=>{ VOICE.name=v||''; saveVoiceCfg(); loadVoices(); flash(VOICE.name?'Voice set ✨':'Using the best available voice'); },
   voiceTest:()=>{ say('Hi! I am your spelling buddy. Try this word: iridescent. The soap bubble had an iridescent shine.'); },
   noop:()=>{},
@@ -913,7 +914,7 @@ function viewLanding(){
     { ic:'volume', title:'Hears every word', body:'Real spoken pronunciation, definition, sentence and origin — like a true bee round.' },
     { ic:'sprout', title:'A character that evolves', body:'Ten forms per world. Every level visibly grows your speller’s buddy.' },
     { ic:'chart', title:'Parents see everything', body:'Accuracy, streaks, weak words and a finals countdown in one dashboard.' },
-  ].map(f=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:var(--sh-rest)">
+  ].map(f=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:22px">
       <div style="width:46px;height:46px;border-radius:14px;background:var(--chip);color:var(--accent);display:grid;place-items:center;margin-bottom:13px">${iconSVG(f.ic,22)}</div>
       <div style="font-family:var(--display);font-weight:700;font-size:17px;margin-bottom:6px">${f.title}</div>
       <div style="font-size:13px;color:var(--muted);line-height:1.5">${f.body}</div></div>`).join('');
@@ -1035,7 +1036,7 @@ function tipOfDay(){ const pool=[]; let band=2; try{ band=beeBand(active()).band
   try{ if(band>2) lessonsAll().slice(0,40).forEach(L=>{ if(L.hook) pool.push(L.hook); }); }catch(e){}
   if(!pool.length) return '';
   const t=trunc(pool[dayNum()%pool.length],150);
-  return `<div style="position:relative;display:flex;align-items:flex-start;gap:13px;background:var(--paper,var(--bg2));border:1px solid var(--line);border-left:4px solid var(--treasure,#F0B429);border-radius:14px;padding:14px 18px;margin-bottom:14px;box-shadow:var(--sh-rest)">
+  return `<div style="position:relative;display:flex;align-items:flex-start;gap:13px;background:var(--paper,var(--bg2));border:1px solid var(--line);border-left:4px solid var(--treasure,#F0B429);border-radius:14px;padding:14px 18px;margin-bottom:14px">
     <span style="flex-shrink:0;font-family:var(--display);font-weight:800;font-size:32px;line-height:.8;color:var(--treasure,#F0B429)">“</span>
     <span style="min-width:0"><span style="display:block;font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:3px">Tip of the day</span>
     <span style="display:block;font-size:15px;line-height:1.5;font-weight:650;color:var(--ink,var(--text))">${esc(t)}</span></span>
@@ -1062,7 +1063,7 @@ function trapRadar(){ const traps=topTraps(3); if(!traps.length) return '';
   const rows=traps.map(t=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)">
       <span style="min-width:0;flex:1"><span style="display:block;font-weight:800;font-size:15px">${t.label}</span><span style="font-size:12px;color:var(--muted);font-weight:650">${t.n} miss${t.n>1?'es':''} traced here</span></span>
       <button data-act="drillTrap" data-arg="${t.k}" style="padding:8px 14px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:13px;box-shadow:var(--edge)">Drill →</button></div>`).join('');
-  return `<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--sh-rest)">
+  return `<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:18px">
     <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:3px"><div style="font-family:var(--display);font-weight:800;font-size:17px">Your traps</div><span style="font-size:12px;color:var(--muted);font-weight:650">where your misses cluster</span></div>
     <p style="margin:0 0 12px;font-size:13px;color:var(--muted)">Fix the pattern, not just the word.</p>
     <div style="display:flex;flex-direction:column;gap:8px">${rows}</div></div>`; }
@@ -1196,7 +1197,7 @@ function viewTraps(){ const S=state; const traps=missTraps(); const sel=S.trapSe
       <button data-act="drillTrap" data-arg="${sel}" style="width:100%;padding:15px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Free yourself — practice these →</button>
     </div>`; }
   const maxN=traps.length?traps[0].n:1;
-  const rows=traps.map((t,i)=>`<button data-act="trapPick" data-arg="${t.k}" class="sb-lift" style="display:flex;align-items:center;gap:13px;width:100%;text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--sh-rest)">
+  const rows=traps.map((t,i)=>`<button data-act="trapPick" data-arg="${t.k}" class="sb-lift" style="display:flex;align-items:center;gap:13px;width:100%;text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:14px 16px">
       <span style="width:40px;height:40px;border-radius:12px;flex-shrink:0;display:grid;place-items:center;background:var(--fix-tint,#FBE9E7);color:var(--fix,#C4453C);font-weight:900;font-size:15px">${t.n}</span>
       <span style="min-width:0;flex:1"><span style="display:block;font-weight:800;font-size:15px">${t.label}</span>
         <span style="display:block;height:5px;border-radius:999px;background:var(--tint-deep,var(--surface2));overflow:hidden;margin-top:7px"><span style="display:block;height:100%;background:var(--fix,#C4453C);width:${Math.round(t.n/maxN*100)}%"></span></span></span>
@@ -1261,18 +1262,24 @@ function viewApp(){
     <div style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
       <div style="max-width:1080px;margin:0 auto;padding:11px clamp(14px,3.5vw,32px);display:flex;align-items:center;gap:12px">
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
-        <div style="display:flex;align-items:center;gap:9px;margin-right:auto"><div style="width:34px;height:38px">${mascotSVG('happy')}</div><span style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em"><i style="font-style:italic">Bizzing</i> Bee</span></div>
+        <div style="display:flex;align-items:center;gap:9px;margin-right:auto"><div style="width:34px;height:38px;flex-shrink:0">${mascotSVG('happy')}</div><span class="sb-brand" style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i> Bee</span></div>
         <button data-act="openShop" title="Your coins — tap to open the Shop" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(active().coins||0,14)}</button>
-        <div style="display:flex;background:var(--surface2);border-radius:999px;padding:3px">
+        <div class="sb-modeswitch" style="display:flex;background:var(--surface2);border-radius:999px;padding:3px">
           <button data-act="setLight" aria-pressed="${lightOn}" style="padding:7px 15px;border-radius:999px;font-weight:800;font-size:13px;${lightOn?'background:var(--accent);color:#fff':'background:transparent;color:var(--muted)'}">Light</button>
           <button data-act="setWhite" aria-pressed="${S.mode==='white'}" style="padding:7px 15px;border-radius:999px;font-weight:800;font-size:13px;${S.mode==='white'?'background:var(--accent);color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">White</button><button data-act="setDusk" aria-pressed="${S.mode==='dusk'}" style="padding:7px 15px;border-radius:999px;font-weight:800;font-size:13px;${S.mode==='dusk'?'background:var(--accent);color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">Dusk</button>
         </div>
+        <button class="sb-cycle" data-act="cycleMode" aria-label="Switch look (Light / White / Dusk)" title="Light / White / Dusk" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:none;place-items:center;color:var(--text);font-size:16px;line-height:1">${S.mode==='light'?'☀':S.mode==='white'?'◻':'☾'}</button>
         <button data-act="goSettings" aria-label="Settings" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text)">${iconSVG('gear',17)}</button>
       </div>
-      <div style="max-width:1080px;margin:0 auto;padding:0 clamp(14px,3.5vw,32px) 9px;display:flex;gap:6px;overflow-x:auto">${navTabs}</div>
+      <div class="sb-topnav" style="max-width:1080px;margin:0 auto;padding:0 clamp(14px,3.5vw,32px) 9px;display:flex;gap:6px;overflow-x:auto">${navTabs}</div>
     </div>
     ${viewDrawer()}
-    <div style="max-width:1080px;margin:0 auto;width:100%;padding:18px clamp(14px,3.5vw,32px) 60px">${content}</div>
+    <div class="sb-content" style="max-width:1080px;margin:0 auto;width:100%;padding:18px clamp(14px,3.5vw,32px) 60px">${content}</div>
+    <nav class="sb-tabbar" aria-label="Primary">
+      ${[['home','Home','home'],['coach','Practice','pencil'],['games','Arcade','joystick'],['progress','Progress','chart']].map(([k,l,ic])=>{ const on=S.nav===k||(k==='coach'&&(S.nav==='train'||S.nav==='levelup'));
+        return `<button data-act="setNav" data-arg="${k}" aria-current="${on?'page':'false'}" style="${on?'color:var(--accent)':'color:var(--muted)'}">${iconSVG(ic,21)}<span>${l}</span></button>`; }).join('')}
+      <button data-act="openDrawer" style="color:var(--muted)">${iconSVG('menu',21)}<span>More</span></button>
+    </nav>
   </div>`;
 }
 
@@ -1297,7 +1304,7 @@ function viewDrawer(){
         <div style="width:44px;height:50px;flex-shrink:0">${mascotAcc('happy')}</div>
         <div style="min-width:0;flex:1">
           <div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.1">${esc(c.name||'Speller')}</div>
-          <div style="font-size:12px;color:var(--muted);font-weight:650">${evoD[fiD]} · Level ${listLevel(c,key)} · <span style="color:var(--treasure-deep,#8A5B00);font-weight:800">${c.coins||0} coins</span></div>
+          <div style="font-size:12px;color:var(--muted);font-weight:650">${evoD[fiD]} · <span style="color:var(--treasure-deep,#8A5B00);font-weight:800">${c.coins||0} coins</span></div>
         </div>
         <button data-act="closeDrawer" aria-label="Close" style="width:32px;height:32px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('close',18)}</button>
       </div>
@@ -1337,7 +1344,7 @@ function streakCard(){ const c=active(); ensureLists(c); const t=todayKey(); con
   const days=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); days.push({on:played.has(k), today:k===t, dn:['S','M','T','W','T','F','S'][d.getDay()]}); }
   const dots=days.map(d=>`<div style="display:flex;flex-direction:column;align-items:center;gap:3px"><span style="width:17px;height:17px;border-radius:6px;display:inline-block;background:${d.on?'var(--accent)':'var(--surface2)'};${d.today?'box-shadow:0 0 0 2px var(--accent)':''}"></span><span style="font-size:12px;color:var(--muted);font-weight:700">${d.dn}</span></div>`).join('');
   const playedToday=played.has(t); const next=[3,7,14,30].find(m=>m>(c.streak||0));
-  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest)">
+  return `<div class="sb-card">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
       <div style="display:flex;align-items:center;gap:11px"><div style="width:42px;height:42px;border-radius:10px;background:color-mix(in srgb,#FF8A3D 18%,var(--bg2));color:#FF7A1A;display:grid;place-items:center">${iconSVG('fire',24)}</div><div><div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1">${c.streak||0}-day streak</div><div style="font-size:12px;color:var(--muted);font-weight:600">Best ${c.streakBest||c.streak||0} · ${playedToday?'practised today ✓':'practise today to keep it going'}</div></div></div>
       ${next?`<div style="text-align:right"><div style="font-size:12px;color:var(--muted);font-weight:700">Next reward</div><div style="display:flex;align-items:center;gap:5px;justify-content:flex-end;font-weight:800;font-size:13px;color:var(--accent)">${next}-day · ${coinAmt(STREAK_REWARDS[next],12)}</div></div>`:'<div style="font-weight:800;font-size:13px;color:var(--accent)">All rewards earned ✓</div>'}
@@ -1377,7 +1384,7 @@ function viewHome(){
     const wk=({coach:'quest',concept:'concepts',book:'journeys',joystick:'arcade',theme:'themes'})[j.sc]||'quest';
     const cid=({coach:'quest',concept:'concepts',book:'journeys',joystick:'arcade',theme:'themes'})[j.sc]||'quest';
     const _pd=S.mode==='dusk'; const pillBg=_pd?'#FFFFFF':'#241E33', pillFg=_pd?'#241E33':'#FFFFFF';
-    const meta=`<span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;padding:4px 11px;border-radius:var(--r-pill,999px);font-size:11px;font-weight:800;letter-spacing:.02em;background:${pillBg};color:${pillFg};box-shadow:var(--sh-rest)">${j.festive?iconSVG('coin',12):(j.kind==='lock'?iconSVG('lock',11,2.2):'')}${j.festive?((c.coins||0)+' coins'):esc(j.badge)}</span>`;
+    const meta=`<span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;padding:4px 11px;border-radius:var(--r-pill,999px);font-size:11px;font-weight:800;letter-spacing:.02em;background:${pillBg};color:${pillFg}">${j.festive?iconSVG('coin',12):(j.kind==='lock'?iconSVG('lock',11,2.2):'')}${j.festive?((c.coins||0)+' coins'):esc(j.badge)}</span>`;
     return `<button class="sb-lift" data-act="${j.goAct}" ${arg} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0">
       <div style="position:relative;width:100%">
         ${SB_COVER(S.theme,cid,{h:110,dark:S.mode==='dusk'})}
@@ -1399,7 +1406,7 @@ function viewHome(){
         <span style="display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--action,var(--accent));color:var(--action-ink,#fff);flex-shrink:0">${iconSVG('target',22)}</span>
         <span style="min-width:0;flex:1">
           <span class="sb-ct" style="display:block">${bb.calibrating?'Bee Band: calibrating…':('Bee Band '+bb.band+' · '+bb.tier)}</span>
-          <span class="sb-cn" style="display:block">${bb.calibrating?'Your skill band appears after ~30 graded words — everything you spell counts.':'Skill — what you\u2019re ready to spell, proven by your words. Games and tips follow it.'}</span>
+          <span class="sb-cn sb-bandsub" style="display:block">${bb.calibrating?'Your skill band appears after ~30 graded words — everything you spell counts.':'Skill — what you\u2019re ready to spell, proven by your words. Games and tips follow it.'}</span>
         </span>
         ${bb.calibrating?'':`<span style="flex-shrink:0;display:flex;gap:4px;align-items:center" aria-hidden="true">${[1,2,3,4,5,6,7,8,9].map(n=>`<span style="width:${n===bb.band?'11px':'7px'};height:${n===bb.band?'11px':'7px'};border-radius:99px;background:${n<=bb.band?'var(--action,var(--accent))':'var(--tint-deep,var(--surface2))'};${n===bb.band?'box-shadow:0 0 0 3px color-mix(in srgb,var(--action,var(--accent)) 25%,transparent);':''}"></span>`).join('')}</span>`}
         <span class="sb-cl">details →</span>
@@ -1433,7 +1440,7 @@ function viewHome(){
         </div>
       </button>
       <div class="sb-card" style="display:flex;align-items:center;gap:16px;min-height:156px">
-        <div style="width:112px;height:112px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(var(--action,var(--accent)) ${goalPctNum}%, var(--tint-deep,var(--surface2)) 0);box-shadow:var(--sh-rest)">
+        <div style="width:112px;height:112px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(var(--action,var(--accent)) ${goalPctNum}%, var(--tint-deep,var(--surface2)) 0)">
           <div style="width:94px;height:94px;border-radius:50%;background:var(--paper,var(--bg2));display:grid;place-items:center;text-align:center"><div><div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1">${S.goalDone}/${goalTarget}</div><div class="sb-cn" style="margin-top:2px">today</div></div></div>
         </div>
         <div style="min-width:0">
@@ -1458,7 +1465,7 @@ function viewEvolution(){ const S=state; const c=active(); ensureLists(c); const
     <button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px;margin-bottom:8px">← Home</button>
     <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 4px">Your evolution</h2><span style="font-size:13px;color:var(--muted);font-weight:650">how your bee grows</span></div>
     <p style="margin:0 0 16px;font-size:14px;color:var(--muted);line-height:1.5">Every word you practise feeds your bee. Evolution measures <b style="color:var(--text)">effort</b> — it always climbs and never falls. (What you're <i>ready</i> to spell is your Bee Band — that lives on Progress.)</p>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest);margin-bottom:14px">
+    <div class="sb-card" style="margin-bottom:14px">
       <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:6px;flex-wrap:wrap">
         <div style="font-family:var(--display);font-weight:800;font-size:17px">You're ${evo[fIdx]}</div>
         <div style="font-size:12px;color:var(--muted);font-weight:600">${fIdx>=9?'Top form reached! 🎉':(xpToNext+' XP of practice to '+evo[fIdx+1])}</div>
@@ -1590,14 +1597,13 @@ function conceptChapters(){ const chs=state.conceptData||[]; if(state._cchap && 
 function conceptChapterStat(chap){ const done=chap.items.filter(c=>conceptStat(c).done).length; return { done, total:chap.items.length, complete:done>=chap.items.length }; }
 function chapterCoverCard(chap){ const f=CONCEPT_FAM[chap.name]||CONCEPT_FAM.Advanced; const st=conceptChapterStat(chap); const pct=st.total?Math.round(st.done/st.total*100):0;
   return `<button class="sb-cover-card" data-act="openConceptChapter" data-arg="${chap.n-1}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
-    <div style="position:relative">
-      ${SB_CHAPTER(state.theme,'Ch '+chap.n,{h:94,dark:state.mode==='dusk'})}
-      <span style="position:absolute;top:10px;left:12px;font-family:var(--ui,var(--body));font-weight:650;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:6px;background:${state.mode==='dusk'?'rgba(36,30,51,.85);color:#fff':'rgba(255,255,255,.92);color:#241E33'}">Chapter</span>
+    <div style="position:relative;height:94px;display:flex;align-items:center;justify-content:center;padding:12px 14px;${famCoverBG(chap.name)}">
+      <span style="position:absolute;top:9px;left:11px;font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.09em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:rgba(0,0,0,.28);color:#fff">Ch ${chap.n}</span>
+      <span style="font-family:var(--display);font-weight:800;font-size:24px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.3);text-align:center;line-height:1.05">${esc(chap.name)}</span>
       ${st.complete?'<span style="position:absolute;bottom:9px;right:10px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
     </div>
     <div style="padding:13px 15px 14px;display:flex;flex-direction:column;flex:1">
-      <div style="font-family:var(--display);font-weight:800;font-size:15px;color:var(--text)">Chapter ${chap.n}</div>
-      <div style="font-family:var(--mono);font-weight:700;font-size:12px;color:${f.c};margin-top:3px">${esc(chap.name)} · ${st.total} concepts</div>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px"><span class="sb-ct" style="font-size:15px">Chapter ${chap.n}</span><span style="font-family:var(--mono);font-weight:700;font-size:12px;color:${f.c}">${st.total} concepts</span></div>
       <div style="margin-top:auto;padding-top:13px;display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:${st.complete?'var(--good)':f.c};width:${pct}%;transition:width .4s"></div></div><span style="font-size:12px;color:var(--muted);font-weight:800;white-space:nowrap">${st.done}/${st.total}</span></div>
     </div>
   </button>`; }
@@ -1802,7 +1808,7 @@ function viewConceptDetail(){
   (csel.cards||[]).forEach(cc=>steps.push({kind:'card',title:cc.title,body:cc.body}));
   const total=steps.length; const idx=Math.min(Math.max(S.conceptStep||0,0),total-1); const step=steps[idx];
   const dots=steps.map((s,i)=>`<button data-act="conceptStepGo" data-arg="${i}" style="height:7px;border-radius:999px;flex:1;background:${i<=idx?'var(--accent)':'var(--surface2)'}" title="${s.kind==='anim'?'Animated explainer':escA(s.title||'')}"></button>`).join('');
-  const genericCard=(st)=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:24px;min-height:170px;box-shadow:var(--sh-rest)">
+  const genericCard=(st)=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:24px;min-height:170px">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><span style="width:30px;height:30px;flex-shrink:0;border-radius:10px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG(st.kind==='method'?'spark':'book',16)}</span><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.2">${esc(st.title||'')}</div></div>
       <div style="font-size:15px;line-height:1.65;color:var(--text);${st.kind==='method'?'white-space:pre-line':''}">${st.kind==='method'?st.html:esc(st.body||'')}</div>
     </div>`;
@@ -1939,7 +1945,7 @@ function liveHeatmap(words, opts){
   const pct=Math.round(m/N*100);
   const toggle=(anon?`<button data-act="toggleHeat" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12px;white-space:nowrap">${iconSVG(reveal?'eyeoff':'eye',14)} ${reveal?'Hide words':'Show words'}</button>`:'')
     +(opts.print?`<button data-act="printOpen" title="Print this word list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12px;white-space:nowrap">${SB_ICON('printer',{size:16})} Print</button>`:'');
-  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:18px;box-shadow:var(--sh-rest)">
+  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:18px">
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:11px"><div style="font-family:var(--display);font-weight:800;font-size:15px">Live progress</div><div style="flex:1;min-width:90px;height:7px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--accent);width:${pct}%;transition:width .35s"></div></div><div style="font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">${m}/${N} mastered${missed?(' · '+missed+' to review'):''}</div>${toggle}</div>
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">${cells}</div>
     <div style="display:flex;flex-wrap:wrap;gap:14px">${legend}</div>
@@ -2017,7 +2023,7 @@ function parentAnalytics(){ const s=parentSignals(); let rd=0; try{ rd=coachRead
   const tips=parentTips().map(t=>`<div style="display:flex;gap:11px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--surface)">
       <span style="flex-shrink:0;margin-top:1px;padding:4px 9px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px;white-space:nowrap">${TIP_CAT_LABEL[t.cat]||t.cat}</span>
       <div style="min-width:0"><div style="font-size:13px;line-height:1.5;color:var(--text);font-weight:600">${esc(t.text)}</div><div style="font-size:12px;color:var(--muted);font-weight:700;margin-top:3px">Why now: ${esc(t.why)}</div></div></div>`).join('');
-  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:18px;box-shadow:var(--sh-rest)">
+  return `<div class="sb-card" style="margin-bottom:18px">
     <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px"><div style="font-family:var(--display);font-weight:800;font-size:15px">Parent analytics</div><span style="font-size:12px;color:var(--muted);font-weight:700">readiness across five signals</span></div>
     <p style="margin:0 0 14px;font-size:12px;color:var(--muted)">All computed on this device from the practice log — no internet, no AI.</p>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:16px">${bars}</div>
@@ -2053,7 +2059,7 @@ function viewBuilder(){ const S=state; const b=bldState(); const picked=bldPick(
   const preview=picked.slice(0,18).map(w=>`<span style="font-family:var(--mono);font-size:12px;font-weight:700;padding:4px 9px;border-radius:6px;background:var(--surface2);border:1px solid var(--line)">${esc(w.w)}</span>`).join('');
   return `<div style="animation:sb-rise .35s ease both">
     ${pageHead('List Builder','pick · build · print','Build a custom word list with five taps — or pick a ready-made list below. Every list gets its own Level ladder.')}
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest)">
+    <div class="sb-card" style="margin-bottom:16px">
       ${row('1 · Difficulty','how hard the words are',['easy','medium','hard','champion','mixed'].map(d=>btn('diff',d,d[0].toUpperCase()+d.slice(1),b.diff)).join(''))}
       ${row('2 · List size','how many words',[24,60,120,240,480].map(s=>btn('size',String(s),s+' words',String(b.size))).join(''))}
       ${row('3 · Source','which word pool to draw from',srcs.map(([k,l])=>btn('src',k,l,b.src)).join(''))}
@@ -2067,7 +2073,7 @@ function viewBuilder(){ const S=state; const b=bldState(); const picked=bldPick(
       ${n?`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px">${preview}${n>18?`<span style="font-size:12px;color:var(--muted);font-weight:700;align-self:center">+${n-18} more</span>`:''}</div>`:''}
       <button data-act="bldCreate" ${n?'':'disabled'} style="width:100%;padding:14px;border-radius:14px;background:${n?'var(--accent)':'var(--surface2)'};color:${n?'#fff':'var(--muted)'};font-weight:800;font-size:15px;box-shadow:var(--edge)">${n?('Create list & start training → ('+n+' words · '+lv+' '+(lv===1?'Level':'Levels')+')'):'No words match yet'}</button>
     </div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest)">
+    <div class="sb-card">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px">…or pick a ready-made list</div>
       <p style="font-size:12px;color:var(--muted);margin:0 0 12px">North South Finals, Scripps winners, origin lists and more — includes paste-your-own in Setup & lists.</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -2142,7 +2148,7 @@ function viewQuest(){
     <div style="display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:14px;background:var(--surface2);border:1px solid var(--line)"><span style="color:var(--accent)">${iconSVG('spark',17)}</span><span style="font-size:13px;color:var(--muted);font-weight:600">Switching paths never loses progress — every list keeps its own Level ladder, and you can hop between them from the Word Coach list row.</span></div>
     ${(()=>{ const un=loreUnlocked(); const all=lessonsAll().length||100; const next=lessonsAll()[un.length];
       const chips=un.slice(-8).map(L=>`<button data-act="openLesson" data-arg="${L.n}" style="display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12px">${window.SB_ICON?SB_ICON('book',{size:13}):iconSVG('book',13)} ${esc(trunc(L.title,26))}</button>`).join('');
-      return `<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-top:14px;box-shadow:var(--sh-rest)">
+      return `<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-top:14px">
         <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px"><span style="font-family:var(--display);font-weight:800;font-size:17px">Story vault</span><span style="font-size:12px;color:var(--muted);font-weight:650">${un.length}/${all} word-history tales unlocked — one per Level you clear</span></div>
         ${un.length?`<div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px">${chips}</div>`:`<p style="margin:6px 0 0;font-size:13px;color:var(--muted)">Clear your first Level to unlock a tale from the history of words.</p>`}
         ${next?`<div style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12px;color:var(--muted);font-weight:650">${iconSVG('lock',13,2.2)} Next up: <b style="color:var(--ink,var(--text))">${esc(next.title)}</b> — clear a Level to open it</div>`:''}
@@ -2152,10 +2158,10 @@ function viewQuest(){
 function viewProgress(){
   const c=active();
   const bb=beeBand(c);
-  const stats=[{v:masteredCount(),k:'Words mastered'},{v:c.streak||0,k:'Day streak'},{v:bb.calibrating?'…':('Band '+bb.band),k:'Bee Band'}]
-    .map(s=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--sh-rest)"><div style="font-family:var(--display);font-weight:800;font-size:24px;color:var(--accent)">${s.v}</div><div style="font-size:12px;color:var(--muted);font-weight:700">${s.k}</div></div>`).join('');
+  const stats=[{v:masteredCount(),k:'Words mastered'},{v:c.streak||0,k:'Day streak'}]
+    .map(s=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px"><div style="font-family:var(--display);font-weight:800;font-size:24px;color:var(--accent)">${s.v}</div><div style="font-size:12px;color:var(--muted);font-weight:700">${s.k}</div></div>`).join('');
   const wk=c.week&&c.week.length?c.week:[12,20,15,30,18,25,22]; const maxW=Math.max(...wk,1); const days=['M','T','W','T','F','S','S'];
-  const week=wk.map((m,i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;height:100%;justify-content:flex-end"><div style="width:100%;border-radius:6px 7px 4px 4px;background:var(--accent);height:${Math.round((m/maxW)*100)}%;min-height:5px;opacity:${m?'1':'.3'}"></div><div style="font-size:12px;color:var(--muted);font-weight:700">${days[i]}</div></div>`).join('');
+  const week=wk.map((m,i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end"><div style="font-size:11px;font-weight:800;color:var(--muted)">${m||''}</div><div style="width:100%;border-radius:6px 7px 4px 4px;background:var(--accent);height:${Math.round((m/maxW)*100)}%;min-height:5px;opacity:${m?'1':'.3'}"></div><div style="font-size:12px;color:var(--muted);font-weight:700">${days[i]}</div></div>`).join('');
   // ---- real per-list heatmap: dropdown over activated lists, plus All ----
   const S=state; const hKeys=activatedListKeys(); const hSel=(S.progHeatKey&&(S.progHeatKey==='all'||hKeys.includes(S.progHeatKey)))?S.progHeatKey:'all';
   const hLabel=(k)=> k==='journey'?'Bizzing Bee Journey':listLabel(k).split(' · ')[0];
@@ -2190,17 +2196,17 @@ function viewProgress(){
         return `<div style="flex:1;min-width:96px;text-align:center;padding:10px 6px;border-radius:12px;${on?'background:var(--chip);box-shadow:inset 0 0 0 1.5px var(--accent)':'background:var(--surface);opacity:.75'}">
           <div style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--muted)">${a===b2?('Band '+a):('Bands '+a+'–'+b2)}</div>
           <div style="font-size:12px;font-weight:800;line-height:1.15;margin-top:3px;${on?'color:var(--accent)':''}">${label}</div></div>`; }).join('');
-      return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:18px;box-shadow:var(--sh-rest)">
-        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px"><span style="font-family:var(--display);font-weight:800;font-size:15px">Your Bee Band</span><span style="font-size:12px;color:var(--muted);font-weight:650">${bb.calibrating?'calibrating — appears after ~30 graded words':('Band '+bb.band+' · '+bb.tier+' · '+bb.acc+'% right at this band')}</span></div>
+      return `<div class="sb-card" style="margin-bottom:18px">
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px"><span style="font-family:var(--display);font-weight:800;font-size:15px">Your Bee Band</span><span style="font-size:12px;color:var(--muted);font-weight:650">${bb.calibrating?'calibrating — appears after ~30 graded words':('Band '+bb.band+' · '+bb.tier+(bb.n>=2?(' · '+bb.acc+'% right at this band'):''))}</span></div>
         <p style="margin:0 0 12px;font-size:12.5px;color:var(--muted);line-height:1.5">One skill measure across everything — Word Coach, games, duels and tests all feed it. It climbs the moment you prove a harder band (80%+ right) and never falls from one bad game — only a sustained slide moves it down. Your games and daily tip follow it automatically.</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap">${row}</div>
       </div>`; })()}
     <div style="margin-bottom:18px">${streakCard()}</div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:18px;box-shadow:var(--sh-rest)">
+    <div class="sb-card" style="margin-bottom:18px">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:16px">This week</div>
       <div style="display:flex;align-items:flex-end;gap:9px;height:120px">${week}</div>
     </div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest)">
+    <div class="sb-card">
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:15px">Word heatmap <span style="color:var(--muted);font-weight:700;font-size:12px">· by list</span></div>${hDrop}</div>
       ${hBody}
       <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:14px">${legend}</div>
@@ -2210,7 +2216,7 @@ function viewProgress(){
 
 function parentReviseCard(){ const c=active(); const misses=(c.missed||[]); const top=misses.slice(0,14);
   const chips=top.map(m=>`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:700;font-size:12px"><span style="font-family:var(--mono)">${esc(m.w)}</span>${(m.n>1)?`<span style="color:var(--bad);font-weight:800">×${m.n}</span>`:''}</span>`).join('');
-  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-top:18px;box-shadow:var(--sh-rest)">
+  return `<div class="sb-card" style="margin-top:18px">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px"><div style="font-family:var(--display);font-weight:800;font-size:15px">Words to revise <span style="color:var(--muted);font-weight:700">· ${misses.length}</span></div>${misses.length?`<button data-act="reviseMisses" style="padding:9px 16px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">Revise these →</button>`:''}</div>
     ${misses.length?`<div style="display:flex;flex-wrap:wrap;gap:7px">${chips}${misses.length>14?`<span style="padding:5px 10px;font-size:12px;color:var(--muted);font-weight:700">+${misses.length-14} more</span>`:''}</div>`:beeEmpty('sleepy','No misses to chase — the bee ate every tricky word. Nap time earned!')}
   </div>`; }
@@ -2225,7 +2231,7 @@ function parentActivityCard(){ const S=state; const c=active(); const acts=(c.ac
       </button>
       ${(open&&hasDetail)?`<div style="padding:0 13px 12px;font-size:12px;color:var(--muted);line-height:1.6"><b style="color:var(--bad)">Missed:</b> <span style="font-family:var(--mono)">${a.misses.map(esc).join(', ')}</span></div>`:''}
     </div>`; }).join('');
-  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-top:18px;box-shadow:var(--sh-rest)">
+  return `<div class="sb-card" style="margin-top:18px">
     <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px">Activity log</div>
     <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Everything ${esc(c.name||'your speller')} has done — tap a row to see the missed words.</div>
     ${acts.length?rows:`<p style="margin:0;font-size:13px;color:var(--muted)">No activity yet. Play a game or a practice round and it’ll show up here.</p>`}
@@ -2236,7 +2242,7 @@ function viewParent(){
   const sub=S.premium
     ? {ic:'crown',title:'Premium',body:'4 worlds, half the concepts & uncapped levels. Earn coins for the rest.',btn:'Manage',btnStyle:'padding:10px 16px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:13px',cardStyle:'background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 16%,var(--bg2)),var(--bg2));border:1px solid var(--accent);border-radius:20px;padding:20px;box-shadow:var(--glow)'}
     : {ic:'spark',title:'Free plan',body:'2 worlds & Level-Up to Level 5. Earn 🪙 coins to unlock more, or go Premium.',btn:'Upgrade',btnStyle:'padding:10px 18px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)',cardStyle:'background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest)'};
-  const kids=(S.children.length?S.children:[demo()]).map((k,i)=>`<div style="background:var(--bg2);border:1px solid ${i===S.activeIdx?'var(--accent)':'var(--line)'};border-radius:14px;padding:18px;box-shadow:var(--sh-rest)">
+  const kids=(S.children.length?S.children:[demo()]).map((k,i)=>`<div style="background:var(--bg2);border:1px solid ${i===S.activeIdx?'var(--accent)':'var(--line)'};border-radius:14px;padding:18px">
       <div style="display:flex;align-items:center;gap:13px;margin-bottom:16px"><div style="width:48px;height:48px;border-radius:14px;background:var(--surface2);display:grid;place-items:center">${buddySVG(k.avatar,28)}</div>
         <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:17px">${esc(k.name)}</div><div style="font-size:12px;color:var(--muted);font-weight:600">Age ${k.age} · ${THEME_LABEL[k.theme]||'Bizzing Bee'}</div></div>
         <button data-act="selectChild" data-arg="${i}" style="padding:7px 13px;border-radius:10px;font-weight:800;font-size:12px;${i===S.activeIdx?'background:var(--chip);color:var(--accent)':'background:var(--surface2);color:var(--text)'}">${i===S.activeIdx?'Active':'Switch'}</button>
@@ -2257,7 +2263,7 @@ function viewParent(){
     <div style="margin-top:18px">${parentAnalytics()}</div>
     ${parentReviseCard()}
     ${parentActivityCard()}
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-top:18px;box-shadow:var(--sh-rest)">
+    <div class="sb-card" style="margin-top:18px">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:6px">Countdown to the Finals</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:14px">North South Foundation National Finals</div>
       <div style="display:flex;align-items:baseline;gap:10px"><div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent)">${daysToBee()}</div><div style="font-size:13px;color:var(--muted);font-weight:700">days to go · 31 Jul 2026</div></div>
@@ -2573,7 +2579,7 @@ function viewSettings(){
   const _voices=enVoices();
   const _nat=(n)=>/natural|enhanced|premium|siri|google|neural|online/i.test(n);
   const voiceOpts=['<option value="">Auto · best available</option>'].concat(_voices.map(v=>`<option value="${escA(v.name)}"${VOICE.name===v.name?' selected':''}>${esc(v.name)}${_nat(v.name)?' ✨':''}</option>`)).join('');
-  const voiceCard=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest)">
+  const voiceCard=`<div class="sb-card" style="margin-bottom:16px">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px">
         <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Voice</div><div style="font-size:13px;color:var(--muted)">The voice that reads words &amp; sentences aloud</div></div>
         <button data-act="voiceTest" style="padding:11px 18px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge);white-space:nowrap">▶ Test</button>
@@ -2584,18 +2590,18 @@ function viewSettings(){
     </div>`;
   return `<div style="max-width:640px">
     <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 16px">Settings</h2>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest)">
+    <div class="sb-card" style="margin-bottom:16px">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:3px">World</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Each world is a different look and a character that evolves as you level up.</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:11px">${themes}</div>
     </div>
     ${voiceCard}
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
+    <div class="sb-card" style="margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
       <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Background</div><div style="font-size:13px;color:var(--muted)">Tinted paper or pure white</div></div>
       <div style="display:flex;background:var(--surface2);border-radius:999px;padding:3px"><button data-act="setLight" style="${seg(S.mode==='light')}">Light</button><button data-act="setWhite" style="${seg(S.mode==='white')}">White</button><button data-act="setDusk" style="${seg(S.mode==='dusk')}">Dusk</button></div>
       <div style="display:flex;align-items:center;gap:10px;margin-top:12px"><span style="font-size:13px;font-weight:650;color:var(--muted)">Style</span><div style="display:flex;background:var(--surface2);border-radius:999px;padding:3px"><button data-act="setAgeMode" data-arg="playful" style="${seg((active().ageMode||((active().age||9)<=11?'playful':'focused'))==='playful')}">Playful</button><button data-act="setAgeMode" data-arg="focused" style="${seg((active().ageMode||((active().age||9)<=11?'playful':'focused'))==='focused')}">Focused</button></div><span style="font-size:12px;color:var(--muted)">Playful = buddy everywhere & big celebrations · Focused = calmer, compact</span></div>
     </div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
+    <div class="sb-card" style="margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
       <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Sound effects</div><div style="font-size:13px;color:var(--muted)">Dings, coins &amp; celebrations during games</div></div>
       <button data-act="toggleSound" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:${S.sound?'var(--accent)':'var(--surface2)'};color:${S.sound?'#fff':'var(--muted)'};font-weight:800;font-size:13px">${S.sound?'🔊 On':'🔇 Off'}</button>
     </div>
@@ -2666,7 +2672,7 @@ function coachTrain(){
   const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button><span style="font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">Word Coach</span><button data-act="openQuestChooser" title="Change your quest path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} Quest path</button>${(()=>{ const n=missTraps().length; return `<button data-act="openTraps" title="Your weak patterns" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${n?'var(--fix-tint,#FBE9E7)':'var(--surface2)'};border:1px solid ${n?'var(--fix,#C4453C)':'var(--line)'};color:${n?'var(--fix,#C4453C)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('target',13)} Traps${n?' · '+n:''}</button>`; })()}<span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('target',14)} ${daysToBee()} days to the bee</span></div>`;
   const allWordsBtn=`<button data-act="luToggleWords" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid ${S.luWordsOpen?'var(--accent)':'var(--line)'};background:var(--surface2);color:var(--text)">${iconSVG('grid',14)} All words <span style="color:var(--muted);font-weight:700">${fullList.length}</span> ${S.luWordsOpen?'▴':'▾'}</button>`;
   const newSetBtn = fullList.length>WORK_MAX ? `<button data-act="newBatch" title="Swap in a fresh set of words from this list" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid var(--line);background:var(--surface2);color:var(--text)">${SB_ICON('retry',{size:16})} New set</button>` : '';
-  const chipsRow=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px;box-shadow:var(--sh-rest)">
+  const chipsRow=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px">
     <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:stretch">${bigTile}<div style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:7px;justify-content:center">${smallTiles||'<div style="font-size:12px;color:var(--muted);font-weight:600;padding:4px 2px">Add another list to switch between quests — each keeps its own Level ladder.</div>'}</div></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">${addBtn}${allWordsBtn}${newSetBtn}</div>
     ${pausedShelf}
@@ -2707,7 +2713,7 @@ function coachTrain(){
     ? `<div style="display:flex;gap:3px;margin-top:11px">${Array.from({length:CHAMP_LEVELS},(_,i)=>`<span style="flex:1;height:5px;border-radius:999px;background:${(uiLevel>i+1||(uiLevel===i+1&&stageDone))?'var(--good)':(uiLevel===i+1?'var(--accent)':'var(--line)')}"></span>`).join('')}</div><div style="font-size:12px;color:var(--muted);margin-top:5px">20 levels to Bizzing Bee Champ${uiLevel>CHAMP_LEVELS?' ✓ — now exploring the Library':''}</div>`
     : `<div style="display:flex;gap:4px;margin-top:11px">${stages.map((s,i)=>`<span style="flex:1;height:5px;border-radius:999px;background:${(i<sIdx||(i===sIdx&&stageDone))?'var(--good)':(i===sIdx?'var(--accent)':'var(--line)')}"></span>`).join('')}</div>`;
   const libMeter = isJourney ? `<div style="margin-top:11px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:7px"><span style="font-weight:800;color:var(--text)">Library explored</span> ${fmtN(journeyMastered(c))} / ${fmtN(journeyTotal())} words mastered</div>` : '';
-  const levelBlock=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:16px;box-shadow:var(--sh-rest)">
+  const levelBlock=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:16px">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px">${titleRow}<div style="font-size:12px;color:var(--muted);font-weight:700">You're <b style="color:var(--text)">${form}</b></div></div>
       <div style="background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:12px">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:3px">${levelTag}<span style="font-size:12px;color:var(--muted);font-weight:700">${stageM}/${stage.words.length} mastered</span></div>
