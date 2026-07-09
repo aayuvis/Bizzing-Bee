@@ -1,0 +1,7 @@
+{
+  "name": "bizzing-bee-ds",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.js",
+  "description": "Bizzing Bee design system — React adapters over the app's shipped art engines (icons, cover art, mascot) and its token/card CSS. 8 worlds x 3 modes."
+}

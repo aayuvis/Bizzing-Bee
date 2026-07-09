@@ -1,0 +1,210 @@
+/* ================================================================
+   SPELLBOUND TOKENS v2 — the single source of truth
+   Replaces the token layer in index.html. Same contract:
+   <html data-theme="spellbound" data-mode="light|white">
+   ----------------------------------------------------------------
+   RULES (the whole system in five lines)
+   · ACTION (world accent) = "do it".  One filled action per screen.
+   · TREASURE gold = coins, streaks, rewards. Never a button.
+   · MASTERED green / FIX coral = word states. Never decoration.
+   · Everything you READ is ink on paper. Data is never accent-colored.
+   · Worlds remap --action + --tint + motif. They never touch semantics.
+   ================================================================ */
+
+:root {
+  /* ---- type (only these) ---- */
+  --display: "Fraunces", Georgia, serif;          /* headings 800 only */
+  --ui: "Hanken Grotesk", system-ui, sans-serif;  /* everything else  */
+  --mono: "Space Mono", monospace;                /* LETTERS ONLY: tiles + word chips */
+  --fs-meta: 12px;  /* legal, axis labels — nothing interactive */
+  --fs-label: 13px; /* chips, badges, captions */
+  --fs-body: 15px;  /* default body — the floor for reading */
+  --fs-lead: 17px;  /* lead paragraphs, list rows */
+  --fs-h3: 20px;
+  --fs-h2: 24px;
+  --fs-h1: 32px;
+  --fs-display: clamp(34px, 5vw, 44px);
+  --w-body: 450; --w-em: 650; --w-display: 800;
+
+  /* ---- radius (only these) ---- */
+  --r-sm: 6px;    /* small chips, tags, inputs-inline */
+  --r-md: 10px;   /* buttons, inputs, list rows */
+  --r-lg: 14px;   /* cards */
+  --r-xl: 20px;   /* hero cards, modals, covers */
+  --r-pill: 999px;
+
+  /* ---- elevation (only these) ---- */
+  --ink-rgb: 26 21 35;
+  --sh-rest: 0 1px 2px rgb(var(--ink-rgb) / .05);
+  --sh-raised: 0 2px 6px rgb(var(--ink-rgb) / .07), 0 10px 28px rgb(var(--ink-rgb) / .07);
+  --sh-overlay: 0 24px 64px rgb(var(--ink-rgb) / .20);
+  --edge: inset 0 -2.5px 0 rgb(0 0 0 / .16);       /* 3D press edge on filled buttons */
+  --focus: 0 0 0 3px color-mix(in srgb, var(--action) 32%, transparent);
+
+  /* ---- space (4-base) ---- */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 64px;
+
+  /* ---- fixed semantics (identical in every world & mode) ---- */
+  --treasure: #F0B429;            /* gold fills */
+  --treasure-tint: #FFF3D6;       /* gold chip bg (ink text on top) */
+  --treasure-deep: #8A5B00;       /* gold text on tint */
+  --mastered: #178A4C;            /* white text on it */
+  --mastered-tint: #E1F4E8;
+  --fix: #C4453C;                 /* white text on it */
+  --fix-tint: #FBE9E7;
+  --medium: #B7791F;              /* difficulty: easy=mastered, medium=this, hard=fix — all white text */
+}
+
+/* ================= WORLDS =================
+   Each world sets: --action (buttons/links/active-nav), --action-ink
+   (text on action), --tint (page bg, light mode), --tint-deep (bg edge),
+   --world-ink / --world-muted (ink tinted toward the world), --line.
+   ids are IP-clean: spellbound spotlight galaxy blade lab origami arcade elements */
+
+[data-theme] { /* default = spellbound */
+  --display: "Fraunces", Georgia, serif;   /* worlds override — headings only */
+  --action: #6C4FE0; --action-ink: #FFFFFF;
+  --tint: #EFEBF8; --tint-deep: #E3DCF2;
+  --ink: #241E33; --muted: #6A6478;
+  --paper: #FFFFFF; --line: #E9E5F0;
+}
+[data-theme="spotlight"] { --display: "Abril Fatface", Georgia, serif; --action: #9C6A08; --tint: #F0E6CC; --tint-deep: #E6D8B8; --ink: #2A2114; --muted: #7C6E58; --line: #EAE0C9; }
+[data-theme="galaxy"]    { --display: "Space Grotesk", system-ui, sans-serif; --action: #4A5BD4; --tint: #E9EDF8; --tint-deep: #DBE1F2; --ink: #1D2138; --muted: #62688A; --line: #E5E8F3; }
+[data-theme="blade"]     { --display: "Rajdhani", system-ui, sans-serif; --action: #C43D5A; --tint: #F5E7EB; --tint-deep: #EDD6DD; --ink: #2C1B21; --muted: #85686F; --line: #F0DFE4; }
+[data-theme="lab"]       { --display: "Spline Sans Mono", monospace; --action: #0E8A78; --tint: #E6F0EB; --tint-deep: #D5E6DE; --ink: #17251F; --muted: #5E7169; --line: #DFEBE5; }
+[data-theme="origami"]   { --display: "Zen Maru Gothic", system-ui, sans-serif; --action: #C25A2E; --tint: #F2E9DA; --tint-deep: #E9DAC1; --ink: #292013; --muted: #83715C; --line: #EDE2CE; }
+[data-theme="arcade"]    { --display: "Bungee", system-ui, sans-serif; --action: #3B6FE0; --tint: #E7EDF8; --tint-deep: #D6E0F0; --ink: #182031; --muted: #5D6880; --line: #E3E9F4; }
+[data-theme="elements"]  { --display: "Philosopher", system-ui, sans-serif; --action: #2E8FB8; --tint: #E3EEF2; --tint-deep: #D2E4EA; --ink: #16262C; --muted: #5B7078; --line: #DFECF0; }
+
+/* ---- WHITE mode: pure paper. World survives via action + motif + hairlines. ---- */
+[data-mode="white"] {
+  --tint: #FFFFFF; --tint-deep: #F4F3F6;
+  --ink: #1B1822; --muted: #66626F; --line: #E7E5EC;
+  --sh-rest: 0 0 0 0 transparent;           /* hairline borders carry structure */
+  --sh-raised: 0 1px 3px rgb(var(--ink-rgb) / .06), 0 6px 18px rgb(var(--ink-rgb) / .05);
+}
+
+/* ---- signature motif (page-level, behind content, NEVER on cards) ----
+   opacity ≤ .05 in light, ≤ .035 in white — identity that survives both modes */
+[data-theme] { position: relative; }
+[data-theme]::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .13;
+  background-image: radial-gradient(color-mix(in srgb, var(--action) 60%, transparent) 1.2px, transparent 1.3px);
+  background-size: 26px 26px;
+}
+[data-theme="spotlight"]::before { /* marquee bulb rows */
+  background-image: radial-gradient(circle at 50% 8px, color-mix(in srgb, var(--action) 70%, transparent) 1.6px, transparent 2.6px);
+  background-size: 34px 20px;
+}
+[data-theme="galaxy"]::before { /* scattered stars */
+  background-image:
+    radial-gradient(color-mix(in srgb, var(--action) 75%, transparent) 1px, transparent 1.4px),
+    radial-gradient(color-mix(in srgb, var(--action) 50%, transparent) .8px, transparent 1.2px);
+  background-size: 64px 64px, 38px 38px;
+  background-position: 0 0, 19px 23px;
+}
+[data-theme="lab"]::before { /* graph grid */
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--action) 45%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--action) 45%, transparent) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+[data-theme="blade"]::before { /* diagonal weave */
+  background-image: repeating-linear-gradient(45deg, color-mix(in srgb, var(--action) 55%, transparent) 0 1px, transparent 1px 18px);
+}
+[data-theme="origami"]::before { /* fold triangles */
+  background-image: linear-gradient(135deg, color-mix(in srgb, var(--action) 40%, transparent) 25%, transparent 25.5%);
+  background-size: 36px 36px;
+}
+[data-theme="arcade"]::before { /* pixel checker */
+  background-image: conic-gradient(color-mix(in srgb, var(--action) 40%, transparent) 90deg, transparent 90deg 180deg, color-mix(in srgb, var(--action) 40%, transparent) 180deg 270deg, transparent 270deg);
+  background-size: 28px 28px;
+}
+[data-theme="elements"]::before { /* four-element quadrant dots */
+  background-image:
+    radial-gradient(color-mix(in srgb, var(--action) 60%, transparent) 1.3px, transparent 1.6px),
+    radial-gradient(color-mix(in srgb, #C25A2E 45%, transparent) 1.3px, transparent 1.6px);
+  background-size: 52px 52px, 52px 52px;
+  background-position: 0 0, 26px 26px;
+}
+[data-mode="white"][data-theme]::before { opacity: .07; }
+
+/* ---- DUSK mode (optional third appearance — soft, kid-friendly dark for evening practice; never near-black) ---- */
+[data-mode="dusk"] {
+  --tint: #2B2740; --tint-deep: #232033;
+  --paper: #353052; --line: #454060;
+  --ink: #FFFFFF; --muted: #FFFFFF;
+  --ink-rgb: 8 6 16;
+  --treasure-tint: #4A3E2A; --treasure-deep: #F4C95B;
+  --mastered-tint: #27423A; --mastered: #35B573;
+  --fix-tint: #4A2E2E; --fix: #E06158;
+  --sh-rest: 0 1px 2px rgb(8 6 16 / .3);
+  --sh-raised: 0 2px 6px rgb(8 6 16 / .35), 0 10px 28px rgb(8 6 16 / .3);
+}
+[data-theme="spellbound"][data-mode="dusk"] { --action: #9B82F2; }
+[data-theme="spotlight"][data-mode="dusk"]  { --action: #E3B23C; --action-ink: #2A2114; }
+[data-theme="galaxy"][data-mode="dusk"]     { --action: #7D8CF0; }
+[data-theme="blade"][data-mode="dusk"]      { --action: #E76D88; }
+[data-theme="lab"][data-mode="dusk"]        { --action: #3BC0AA; --action-ink: #0E2B25; }
+[data-theme="origami"][data-mode="dusk"]    { --action: #E88A5C; --action-ink: #33200F; }
+[data-theme="arcade"][data-mode="dusk"]     { --action: #7BA3F5; --action-ink: #101B33; }
+[data-theme="elements"][data-mode="dusk"]   { --action: #6FC2E4; --action-ink: #0F2833; }
+[data-mode="dusk"][data-theme]::before { opacity: .05; }
+
+/* ---- migration aliases (old names → v2). Delete after full migration. ---- */
+[data-theme] {
+  --bg1: var(--tint); --bg2: var(--paper); --bg3: var(--tint-deep);
+  --accent: var(--action); --accent2: var(--action); --accent3: var(--tint-deep);
+  --text: var(--ink); --good: var(--mastered); --bad: var(--fix);
+  --surface: rgb(var(--ink-rgb) / .04); --surface2: rgb(var(--ink-rgb) / .07);
+  --glow: var(--sh-raised);
+}
+
+/* ---- app compatibility supplement (Spellbound build) ----
+   Legacy var names still referenced by app*.js, mapped onto v2 tokens. */
+[data-theme] {
+  --body: var(--ui); --entry: var(--ui);
+  --chip: color-mix(in srgb, var(--action) 12%, transparent);
+  --slw: #fff;
+}
+/* Old world ids → v2 palettes (storage/JS still uses these ids; visual = new worlds).
+   marquee→spotlight · aurora→galaxy · anime→blade · science→lab · pixel→arcade · avatar→elements */
+[data-theme="marquee"]:not([data-mode="dusk"]) { --display:"Abril Fatface", Georgia, serif; --action:#9C6A08; --tint:#F0E6CC; --tint-deep:#E6D8B8; --ink:#2A2114; --muted:#7C6E58; --line:#EAE0C9; }
+[data-theme="aurora"]  { --display:"Space Grotesk", system-ui, sans-serif; --action:#4A5BD4; --tint:#E9EDF8; --tint-deep:#DBE1F2; --ink:#1D2138; --muted:#62688A; --line:#E5E8F3; }
+[data-theme="anime"]   { --display:"Rajdhani", system-ui, sans-serif; --action:#C43D5A; --tint:#F5E7EB; --tint-deep:#EDD6DD; --ink:#2C1B21; --muted:#85686F; --line:#F0DFE4; }
+[data-theme="science"]:not([data-mode="dusk"]) { --display:"Spline Sans Mono", monospace; --action:#0E8A78; --tint:#E6F0EB; --tint-deep:#D5E6DE; --ink:#17251F; --muted:#5E7169; --line:#DFEBE5; }
+[data-theme="pixel"]   { --display:"Bungee", system-ui, sans-serif; --action:#3B6FE0; --tint:#E7EDF8; --tint-deep:#D6E0F0; --ink:#182031; --muted:#5D6880; --line:#E3E9F4; }
+[data-theme="avatar"]  { --display:"Philosopher", system-ui, sans-serif; --action:#2E8FB8; --tint:#E3EEF2; --tint-deep:#D2E4EA; --ink:#16262C; --muted:#5B7078; --line:#DFECF0; }
+[data-theme="marquee"]::before { background-image: radial-gradient(circle at 50% 8px, color-mix(in srgb, var(--action) 70%, transparent) 1.6px, transparent 2.6px); background-size: 34px 20px; }
+[data-theme="aurora"]::before  { background-image: radial-gradient(color-mix(in srgb, var(--action) 75%, transparent) 1px, transparent 1.4px), radial-gradient(color-mix(in srgb, var(--action) 50%, transparent) .8px, transparent 1.2px); background-size: 64px 64px, 38px 38px; background-position: 0 0, 19px 23px; }
+[data-theme="anime"]::before   { background-image: repeating-linear-gradient(45deg, color-mix(in srgb, var(--action) 55%, transparent) 0 1px, transparent 1px 18px); }
+[data-theme="science"]::before { background-image: linear-gradient(color-mix(in srgb, var(--action) 45%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--action) 45%, transparent) 1px, transparent 1px); background-size: 30px 30px; }
+[data-theme="pixel"]::before   { background-image: conic-gradient(color-mix(in srgb, var(--action) 40%, transparent) 90deg, transparent 90deg 180deg, color-mix(in srgb, var(--action) 40%, transparent) 180deg 270deg, transparent 270deg); background-size: 28px 28px; }
+[data-theme="avatar"]::before  { background-image: radial-gradient(color-mix(in srgb, var(--action) 60%, transparent) 1.3px, transparent 1.6px), radial-gradient(color-mix(in srgb, #C25A2E 45%, transparent) 1.3px, transparent 1.6px); background-size: 52px 52px, 52px 52px; background-position: 0 0, 26px 26px; }
+
+/* Dusk accents for legacy world ids (mirror spotlight/galaxy/blade/lab/arcade/elements) */
+[data-theme="marquee"][data-mode="dusk"]  { --action:#E3B23C; --action-ink:#2A2114; }
+[data-theme="aurora"][data-mode="dusk"]   { --action:#7D8CF0; }
+[data-theme="anime"][data-mode="dusk"]    { --action:#E76D88; }
+[data-theme="science"][data-mode="dusk"]  { --action:#3BC0AA; --action-ink:#0E2B25; }
+[data-theme="pixel"][data-mode="dusk"]    { --action:#7BA3F5; --action-ink:#101B33; }
+[data-theme="avatar"][data-mode="dusk"]   { --action:#6FC2E4; --action-ink:#0F2833; }
+/* Dusk, brightened one notch (kid-friendly evening — softer than the stock indigo) */
+[data-mode="dusk"] {
+  --tint:#3D3766; --tint-deep:#332E52; --paper:#4C4578; --line:#5E5690;
+  --ink:#FFFFFF; --muted:#FFFFFF;
+  --treasure-tint:#57482E; --treasure-deep:#F7CE63;
+  --mastered-tint:#2C4C42; --fix-tint:#553434;
+  --surface: rgb(255 255 255 / .06); --surface2: rgb(255 255 255 / .10);
+}
+
+/* ---- page character: a soft world-accent wash over the motif (all modes) ---- */
+[data-theme]::after{ content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(62% 36% at 50% -6%, color-mix(in srgb, var(--action) 15%, transparent), transparent 72%),
+    radial-gradient(44% 32% at 94% 102%, color-mix(in srgb, var(--action) 10%, transparent), transparent 70%),
+    radial-gradient(30% 24% at 4% 88%, color-mix(in srgb, var(--treasure) 7%, transparent), transparent 70%);
+}
+[data-mode="white"][data-theme]::after{ display:none } /* white stays pure paper */
+[data-mode="dusk"][data-theme]::after{ opacity:.5 }

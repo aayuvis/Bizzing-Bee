@@ -1,0 +1,55 @@
+{
+  "projectId": "399239ae-0ac9-42db-9cd9-6ed89bcc3ea2",
+  "shape": "package",
+  "pkg": "bizzing-bee-ds",
+  "globalName": "BizzingBeeDS",
+  "srcDir": "src",
+  "cssEntry": "ds.css",
+  "extraFonts": [
+    "../spellbound-app/fonts/fonts.css"
+  ],
+  "provider": {
+    "component": "Root"
+  },
+  "dtsPropsFor": {
+    "Root": "world?: 'spellbound'|'spotlight'|'galaxy'|'blade'|'lab'|'origami'|'arcade'|'elements'; mode?: 'light'|'white'|'dusk'; children?: React.ReactNode;",
+    "Icon": "name?: string; size?: number; color?: string;",
+    "Mascot": "mood?: 'happy'|'excited'|'love'|'sleepy'|'think'|'oops'; size?: number;",
+    "WorldCover": "world?: string; card?: 'quest'|'concepts'|'journeys'|'arcade'|'themes'|'traps'; height?: number; dark?: boolean;",
+    "GameCover": "world?: string; game?: 'buzz'|'beat'|'boss'|'mean'|'spot'|'origin'|'duel'|'magic'; height?: number; dark?: boolean;",
+    "ChapterCover": "world?: string; label?: string; height?: number; dark?: boolean;",
+    "Card": "children?: React.ReactNode; style?: React.CSSProperties;",
+    "CardTitle": "children?: React.ReactNode; style?: React.CSSProperties;",
+    "CardSub": "children?: React.ReactNode; style?: React.CSSProperties;",
+    "CardNote": "children?: React.ReactNode; style?: React.CSSProperties;",
+    "CardLink": "children?: React.ReactNode; style?: React.CSSProperties;",
+    "Chip": "icon?: string; children?: React.ReactNode; tone?: 'accent'|'treasure';",
+    "ActionButton": "children?: React.ReactNode; onClick?: () => void; style?: React.CSSProperties;",
+    "BandBanner": "band?: number; tier?: string; calibrating?: boolean;",
+    "GoalRing": "done?: number; goal?: number; size?: number;",
+    "TabBar": "items?: {key: string; label: string; icon: string}[]; active?: string;",
+    "TipOfDay": "label?: string; children?: React.ReactNode;",
+    "Wordmark": "size?: number;"
+  },
+  "componentSrcMap": {
+    "Root": "src/index.js",
+    "Icon": "src/index.js",
+    "Mascot": "src/index.js",
+    "WorldCover": "src/index.js",
+    "GameCover": "src/index.js",
+    "ChapterCover": "src/index.js",
+    "Card": "src/index.js",
+    "CardTitle": "src/index.js",
+    "CardSub": "src/index.js",
+    "CardNote": "src/index.js",
+    "CardLink": "src/index.js",
+    "Chip": "src/index.js",
+    "ActionButton": "src/index.js",
+    "BandBanner": "src/index.js",
+    "GoalRing": "src/index.js",
+    "TabBar": "src/index.js",
+    "TipOfDay": "src/index.js",
+    "Wordmark": "src/index.js"
+  },
+  "readmeHeader": ".design-sync/conventions.md"
+}
