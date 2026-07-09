@@ -1394,7 +1394,17 @@ function viewHome(){
     ${(()=>{ const lp=getList(c,aKey); const lf=levelFromXp(lp.xp||0); const xpToNext=Math.max(0,(lf.need||1)-(lf.into||0));
       const bub=goalPctNum>=100?'Goal smashed — bonus rounds are pure treasure!':('Spell '+Math.max(0,goalTarget-S.goalDone)+' more — let\'s buzz!');
       const evoPct=Math.min(100,Math.round((lf.into||0)/(lf.need||1)*100));
-      return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:18px">
+      const bb=beeBand(c);
+      const bandBanner=`<button data-act="setNav" data-arg="progress" title="Open Progress for the full band ladder" style="width:100%;text-align:left;display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:linear-gradient(100deg,color-mix(in srgb,var(--action,var(--accent)) 14%,var(--paper,var(--bg2))),var(--paper,var(--bg2)) 62%);border:1px solid color-mix(in srgb,var(--action,var(--accent)) 35%,var(--line));border-radius:var(--r-lg,16px);padding:13px 18px;box-shadow:var(--sh-rest);margin-bottom:14px;cursor:pointer">
+        <span style="display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--action,var(--accent));color:var(--action-ink,#fff);flex-shrink:0">${iconSVG('target',22)}</span>
+        <span style="min-width:0;flex:1">
+          <span style="display:block;font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">${bb.calibrating?'Bee Band: calibrating…':('Bee Band '+bb.band+' · '+bb.tier)}</span>
+          <span style="display:block;font-size:12px;color:var(--muted);font-weight:650">${bb.calibrating?'Your skill band appears after ~30 graded words — everything you spell counts.':'Skill — what you’re ready to spell, proven by your words. Games and tips follow it.'}</span>
+        </span>
+        ${bb.calibrating?'':`<span style="flex-shrink:0;display:flex;gap:4px;align-items:center" aria-hidden="true">${[1,2,3,4,5,6,7,8,9].map(n=>`<span style="width:${n===bb.band?'11px':'7px'};height:${n===bb.band?'11px':'7px'};border-radius:99px;background:${n<=bb.band?'var(--action,var(--accent))':'var(--tint-deep,var(--surface2))'};${n===bb.band?'box-shadow:0 0 0 3px color-mix(in srgb,var(--action,var(--accent)) 25%,transparent);':''}"></span>`).join('')}</span>`}
+        <span style="font-size:12px;color:var(--accent);font-weight:800;white-space:nowrap">details →</span>
+      </button>`;
+      return `${bandBanner}<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:18px">
       <div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:var(--r-xl,20px);padding:20px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:16px">
         <div style="position:relative;flex-shrink:0">
           <div style="width:80px;height:90px;animation:sb-bee-bob 3.4s ease-in-out infinite">${mascotAcc(S.mood)}</div>
@@ -1408,21 +1418,12 @@ function viewHome(){
           </div>
         </div>
       </div>
-      <button data-act="openEvo" title="Open the full evolution ladder" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:var(--r-xl,20px);padding:16px 20px;box-shadow:var(--sh-rest);display:flex;flex-direction:column;justify-content:center;gap:10px;cursor:pointer">
-        <div style="display:flex;align-items:center;gap:12px;width:100%">
-          <div style="width:46px;height:50px;flex-shrink:0">${evEmb(theme,fIdx)}</div>
-          <div style="min-width:0;flex:1">
-            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px"><span style="font-family:var(--display);font-weight:800;font-size:16px">${evo[fIdx]}</span><span style="font-size:11.5px;color:var(--accent);font-weight:800;white-space:nowrap">ladder →</span></div>
-            <div style="font-size:11.5px;color:var(--muted);font-weight:650">Effort — grows with practice, never shrinks.${fIdx>=9?' Top form! 🎉':(' On the way to '+evo[fIdx+1]+'.')}</div>
-            <div style="height:5px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden;margin-top:6px"><div style="height:100%;border-radius:inherit;background:var(--treasure,#F0B429);width:${evoPct}%"></div></div>
-          </div>
-        </div>
-        <div style="width:100%;border-top:1px dashed var(--line);padding-top:9px;display:flex;align-items:center;gap:12px">
-          <div style="width:46px;flex-shrink:0;display:grid;place-items:center;color:var(--accent)">${iconSVG('target',26)}</div>
-          <div style="min-width:0;flex:1">${(()=>{ const bb=beeBand(c);
-            return `<div style="font-family:var(--display);font-weight:800;font-size:16px">${bb.calibrating?'Bee Band: calibrating…':('Band '+bb.band+' · '+bb.tier)}</div>
-            <div style="font-size:11.5px;color:var(--muted);font-weight:650">Skill — what you're ready to spell, proven by your words.${bb.calibrating?' Shows after ~30 graded words.':''}</div>`; })()}
-          </div>
+      <button data-act="openEvo" title="Open the full evolution ladder" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:var(--r-xl,20px);padding:20px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:14px;cursor:pointer">
+        <div style="width:56px;height:60px;flex-shrink:0">${evEmb(theme,fIdx)}</div>
+        <div style="min-width:0;flex:1">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px"><span style="font-family:var(--display);font-weight:800;font-size:17px">${evo[fIdx]}</span><span style="font-size:12px;color:var(--accent);font-weight:800;white-space:nowrap">ladder →</span></div>
+          <div style="font-size:12px;color:var(--muted);font-weight:650;margin:2px 0 8px">Effort — grows with practice, never shrinks.${fIdx>=9?' Top form! 🎉':(' On the way to '+evo[fIdx+1]+'.')}</div>
+          <div style="height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden"><div style="height:100%;border-radius:inherit;background:var(--treasure,#F0B429);width:${evoPct}%"></div></div>
         </div>
       </button>
       <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:16px">
