@@ -263,11 +263,12 @@ function listBaseLabel(key){ if(key==='default') return 'Default · Level-Up'; i
 function listLabel(key){ const custom=((active().listNames)||{})[key]; return custom||listBaseLabel(key); }
 function listWords(key){ return stageWords(key); }            // current stage's words (staged progression)
 function listFullWords(key){ if(key==='default') return defaultStages().reduce((a,s)=>a.concat(s.words),[]); return rawListWords(key); }
-function workingSet(key){ const ws=listWords(key); if(ws.length<=WORK_MAX) return ws.slice();
-  const un=ws.filter(w=>!state.luMastered[nkey(w.w)]); const pool=un.length>=24?un:ws;
-  // focus on the most bee-likely words: shuffle a batch of 24 from the top of the bp ranking
-  const ranked=pool.slice().sort((a,b)=>(b.bp||0)-(a.bp||0)).slice(0, Math.min(pool.length, 80));
-  return sample(ranked, 24); }
+function workingSet(key){ const ws=listWords(key);
+  // a session is "what you still need": every unmastered word of this Level (up to 36),
+  // so finishing sessions always converges on the level-up — mastered words only return once none remain
+  const un=ws.filter(w=>!state.luMastered[nkey(w.w)]);
+  if(un.length) return un.slice(0,36);
+  return ws.length<=36?ws.slice():sample(ws,36); }
 // bee-likelihood as 5 dots (●●●○○) from a 0–100 probability score
 function beeOdds(bp){ const n=Math.max(1,Math.min(5,Math.round((bp||0)/20))); return '●'.repeat(n)+'○'.repeat(5-n); }
 // Build the Word Coach working set for a list ONCE and keep it stable while you navigate —
@@ -896,6 +897,10 @@ const app = {
   setAgeMode:(m)=>{ const c=active(); c.ageMode=m; save(); render(); },
   setLight:()=>app.setMode('light'), setWhite:()=>app.setMode('white'), setDusk:()=>app.setMode('dusk'),
   cycleMode:()=>{ const o=['light','white','dusk']; app.setMode(o[(o.indexOf(state.mode)+1)%3]); },
+  profName:(v)=>{ const c=active(); c.name=(v||'').slice(0,24); save(); }, /* no per-key render (input keeps its own value) */
+  profAge:(v)=>{ const c=active(); const n=parseInt(v,10); if(n>=5&&n<=18){ c.age=n; save(); render(); } },
+  profGoal:(v)=>{ const c=active(); c.goal=+v||10; save(); render(); flash('Daily goal set to '+c.goal+' words'); },
+  profAvatar:(id)=>{ const c=active(); c.avatar=id; save(); render(); },
   landType:(v)=>{ state.landTyped=v; },
   landKey:(e)=>{ if(e.key==='Enter'){ e.preventDefault(); app.landCheck(); } },
   landCheck:()=>{ const w=LAND_WORDS[state.landIdx||0]; if((state.landTyped||'').trim().toLowerCase()===w){ state.landDone=true; state.landTyped=''; state.landIdx=((state.landIdx||0)+1)%LAND_WORDS.length; try{ sfx('correct'); burstConfetti(90); }catch(e){} render(); setTimeout(()=>{ state.landDone=false; render(); },2600); } else { flash('Almost — check it letter by letter!'); } },
@@ -1895,9 +1900,11 @@ function sessionResults(){
       } else if(lm<st.words.length){
         advBtn=`<div style="flex:1;min-width:100%;display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:12px 16px;text-align:left">
           <span style="color:var(--accent);flex-shrink:0">${iconSVG('steps',18)}</span>
-          <span style="min-width:0;flex:1;font-size:13px;font-weight:650;color:var(--muted)"><b style="color:var(--ink,var(--text))">Level ${li+1} progress: ${lm}/${st.words.length} words mastered</b> — ${st.words.length-lm} to go. Sessions pull from your Level's words; master them all (or pass the ⚡ Challenge) to unlock Level ${li+2}.</span>
+          <span style="min-width:0;flex:1;font-size:13px;font-weight:650;color:var(--muted)"><b style="color:var(--ink,var(--text))">Level ${li+1} progress: ${lm}/${st.words.length} words mastered</b> — ${st.words.length-lm} to go. Your next session serves exactly those words; master them all (or pass the ⚡ Challenge) to unlock Level ${li+2}.</span>
           <div style="flex-shrink:0;width:90px;height:7px;border-radius:999px;background:var(--tint-deep,var(--surface2));overflow:hidden"><div style="height:100%;background:var(--good);width:${Math.round(lm/st.words.length*100)}%"></div></div>
-        </div>`;
+        </div>
+        ${(()=>{ const miss=st.words.filter(w=>!state.luMastered[nkey(w.w)]);
+          return `<div style="flex:1;min-width:100%;display:flex;align-items:center;gap:7px;flex-wrap:wrap;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:11px 16px;text-align:left"><span style="font-size:13px;font-weight:800;flex-shrink:0">Still to master · ${miss.length}:</span>${miss.slice(0,14).map(w=>`<button data-act="say" data-arg="${escA(w.w)}" title="Tap to hear" style="font-family:var(--mono);font-size:12px;font-weight:700;padding:5px 10px;border-radius:6px;background:var(--paper,var(--bg2));border:1px solid var(--line)">${esc(w.w)}</button>`).join('')}${miss.length>14?`<span class="sb-cn">+${miss.length-14} more</span>`:''}</div>`; })()}`;
       } } }catch(e){}
   return `<div style="max-width:720px;margin:0 auto;animation:sb-rise .35s ease both">
     <div style="text-align:center;margin-bottom:18px"><div style="width:78px;height:86px;margin:0 auto 8px">${mascotSVG(mood)}</div>
@@ -2635,6 +2642,22 @@ function viewSettings(){
   const _voices=enVoices();
   const _nat=(n)=>/natural|enhanced|premium|siri|google|neural|online/i.test(n);
   const voiceOpts=['<option value="">Auto · best available</option>'].concat(_voices.map(v=>`<option value="${escA(v.name)}"${VOICE.name===v.name?' selected':''}>${esc(v.name)}${_nat(v.name)?' ✨':''}</option>`)).join('');
+  const _pc=active();
+  const _avRows=[4,7,9].map(fi=>`<div style="display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-bottom:8px">${THEMES.map(t=>{ const id='w:'+t.id+':'+fi;
+    return `<button data-act="profAvatar" data-arg="${id}" title="${(EV_NOMEN[t.id]||EV_NOMEN.spellbound)[fi]} · ${THEME_LABEL[t.id]||t.id}" style="aspect-ratio:1;border-radius:12px;display:grid;place-items:center;background:var(--surface2);border:2px solid ${_pc.avatar===id?'var(--accent)':'transparent'};padding:3px"><span style="width:30px;height:33px;display:inline-block">${avatarSVG(id,30)}</span></button>`; }).join('')}</div>`).join('');
+  const profileCard=`<div class="sb-card" style="margin-bottom:16px">
+      <div style="font-family:var(--display);font-weight:800;font-size:15px">Profile</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Pick your own display name and buddy — parents can adjust age and the daily goal here too.</div>
+      <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Display name</label>
+      <input data-inp="profName" data-fkey="profName" value="${escA(_pc.name||'')}" maxlength="24" placeholder="e.g. Ahana" autocomplete="off" style="width:100%;max-width:320px;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:700;margin-bottom:14px;outline:none">
+      <div style="display:flex;gap:22px;flex-wrap:wrap;margin-bottom:14px">
+        <div><label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Age · <b style="color:var(--text)">${_pc.age||9}</b></label>
+          <input type="range" min="5" max="18" value="${_pc.age||9}" data-inp="profAge" style="width:200px"></div>
+        <div><label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Daily goal</label>
+          <div style="display:flex;gap:7px">${[5,10,15].map(g=>`<button data-act="profGoal" data-arg="${g}" style="padding:9px 15px;border-radius:999px;font-weight:800;font-size:13px;${(_pc.goal||10)===g?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">${g} words</button>`).join('')}</div></div>
+      </div>
+      <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:8px">Buddy</label>
+      ${_avRows}</div>`;
   const voiceCard=`<div class="sb-card" style="margin-bottom:16px">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px">
         <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Voice</div><div style="font-size:13px;color:var(--muted)">The voice that reads words &amp; sentences aloud</div></div>
@@ -2651,6 +2674,7 @@ function viewSettings(){
       <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Each world is a different look and a character that evolves as you level up.</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:11px">${themes}</div>
     </div>
+    ${profileCard}
     ${voiceCard}
     <div class="sb-card" style="margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
       <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Background</div><div style="font-size:13px;color:var(--muted)">Tinted paper or pure white</div></div>
@@ -2731,8 +2755,11 @@ function coachTrain(){
     if(done) return `<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:color-mix(in srgb,var(--good) 14%,var(--paper,var(--bg2)));border:1.5px solid var(--good);border-radius:14px;padding:12px 16px;margin-bottom:12px;animation:sb-rise .3s ease both">
       <span style="font-size:20px">🏆</span><span style="min-width:0;flex:1;font-weight:800;font-size:14px">Level ${i+1} cleared — every word mastered!</span>
       <button data-act="advanceStage" data-arg="${escA(k)}" style="padding:10px 16px;border-radius:10px;background:var(--good);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">Go to Level ${i+2} →</button></div>`;
-    return `<div class="sb-cn" style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:9px 14px;margin-bottom:12px">
-      <span style="color:var(--accent);flex-shrink:0">${iconSVG('steps',14)}</span><span style="min-width:0"><b style="color:var(--ink,var(--text))">Level ${i+1}:</b> master all ${st.words.length} words to unlock Level ${i+2} — <b style="color:var(--accent)">${m}/${st.words.length} done</b> · or pass the ⚡ Challenge to test out</span></div>`;
+    const miss=st.words.filter(w=>!state.luMastered[nkey(w.w)]);
+    const missChips=miss.slice(0,10).map(w=>`<button data-act="say" data-arg="${escA(w.w)}" title="Tap to hear" style="font-family:var(--mono);font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:6px;background:var(--paper,var(--bg2));border:1px solid var(--line)">${esc(w.w)}</button>`).join('')+(miss.length>10?`<span class="sb-cn" style="align-self:center">+${miss.length-10} more</span>`:'');
+    return `<div class="sb-cn" style="background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:${miss.length?'7px':'0'}"><span style="color:var(--accent);flex-shrink:0">${iconSVG('steps',14)}</span><span style="min-width:0"><b style="color:var(--ink,var(--text))">Level ${i+1}:</b> master all ${st.words.length} words to unlock Level ${i+2} — <b style="color:var(--accent)">${m}/${st.words.length} done</b> · or pass the ⚡ Challenge to test out</span></div>
+      ${miss.length?`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="font-weight:800;color:var(--ink,var(--text));flex-shrink:0">Still to master · ${miss.length}:</span>${missChips}</div>`:''}</div>`;
   }catch(e){ return ''; } })();
   const topBar=`${lvBanner}<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button><span style="font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">Word Coach</span><button data-act="openQuestChooser" title="Change your quest path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} Quest path</button>${(()=>{ const n=missTraps().length; return `<button data-act="openTraps" title="Your weak patterns" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${n?'var(--fix-tint,#FBE9E7)':'var(--surface2)'};border:1px solid ${n?'var(--fix,#C4453C)':'var(--line)'};color:${n?'var(--fix,#C4453C)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('target',13)} Traps${n?' · '+n:''}</button>`; })()}<span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('target',14)} ${daysToBee()} days to the bee</span></div>`;
   const allWordsBtn=`<button data-act="luToggleWords" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid ${S.luWordsOpen?'var(--accent)':'var(--line)'};background:var(--surface2);color:var(--text)">${iconSVG('grid',14)} All words <span style="color:var(--muted);font-weight:700">${fullList.length}</span> ${S.luWordsOpen?'▴':'▾'}</button>`;
