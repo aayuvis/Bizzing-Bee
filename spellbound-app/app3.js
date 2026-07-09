@@ -530,7 +530,7 @@ const app = {
   reviseNav:(dir)=>{ const N=(state.sessionWords&&state.sessionWords.length)||LEVEL_WORDS.length; let i=(state.reviseIdx||0)+(dir==='next'?1:-1); set({reviseIdx:Math.max(0,Math.min(N-1,i))}); },
   conceptWordNav:(dir)=>{ const ws=((state.conceptSel&&state.conceptSel.words)||[]).filter(x=>x&&x.w); const N=ws.length||1; let i=(state.conceptWordIdx||0)+(dir==='next'?1:-1); set({conceptWordIdx:Math.max(0,Math.min(N-1,i))}); },
   exitTrain:()=>{ if((state.sessionDone||0)>0){ logActivity(state.coachSession?'concept':'practice', state.sessionLabel||'Practice', {done:state.sessionDone,right:state.sessionRight}, []); } if(state.coachSession){ state.coachSession=false; app.openCoach(); } else if(state.trainBack==='themes'){ state.trainBack=null; app.setNav('themes'); } else app.setNav('home'); },
-  onType:(v)=>{ state.typed=v; render(); },
+  onType:(v)=>{ state.typed=v; }, /* no per-keystroke render — a full re-render restarts tile animations (dock flicker) */
   trainKey:(e)=>{ if(e.key==='Enter'){ if(state.status==='idle') app.check(); else app.next(); } },
   toggleDef:()=>set({showDef:!state.showDef}),
   toggleSent:()=>{ const on=!state.showSent; if(on){ const w=curWord(); if(w&&w.s) say(w.s); } set({showSent:on}); },
