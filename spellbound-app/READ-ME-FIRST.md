@@ -33,7 +33,8 @@ Some Mac browsers block local files. Here's a 30-second fix using the Terminal:
 - `words-data.js` — the fast core word library (~40,000 high-probability bee words, loaded on open).
 - `words-full.js` — the **entire 128,040-word library** (loads only when you open
   "Entire library" in Word Coach — a one-time few-second load). Keep it in this folder.
-- `concepts-data.js` — the 110 concept chapters (real data).
+- `concepts-data.js` — the 121 concepts in 11 chapters (Chapter 1 = **Spelling Bee Basics**, free for everyone).
+- `tips-data.js` — the parent coaching tip library (Progress → Parent analytics).
 - `lessons-data.js` — the 100 Word Journeys etymology lessons.
 - `voice/` — the bundled narration clips (one small MP3 per explainer scene) plus
   `voice-manifest.js`, which tells the app which clips exist and how long each runs.
@@ -93,7 +94,14 @@ Keep all of these files together in the same folder.
   **Revise** button drills them. Misses are saved per child across sessions. The **🖨️
   Weekly report** button opens a clean one-page summary (days practised, streak, words
   mastered, top misses, finals countdown) you can **print or Save as PDF** to email.
-- **Concepts** — 110 spelling-pattern chapters with worked examples and word lists; level
+- **Champion's Quest** — the Home hub card: one quest, three paths (Spellbound Journey ladder,
+  Theme Journey, or your own list — pick a ready-made one or build one in the **List Builder**
+  with five taps and a live "N Levels to mastery" estimate). Paths you didn't pick stay one tap
+  away in the Word Coach list row. **Print any list** (🖨 beside the list name): words only /
+  + pronunciation / + meaning on Letter, A4 or A5. **Parent analytics** (Progress) shows readiness
+  across five signals plus Coach's corner — thousands of coaching tips picked by the practice
+  data itself, all offline, no AI — and a real per-list Progress heatmap with a dropdown + All.
+- **Concepts** — 121 spelling concepts in 11 chapters with worked examples and word lists; level
   up from easy patterns to harder ones. Card 1 of every chapter is a **▶ animated explainer
   taught by the Spellbound bee** — the bee presents beside the lesson (hopping while it talks
   and changing expression scene to scene) and actually **explains the concept**, not just the
