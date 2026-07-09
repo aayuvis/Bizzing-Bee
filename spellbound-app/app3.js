@@ -1405,12 +1405,12 @@ function viewHome(){
         <span style="font-size:12px;color:var(--accent);font-weight:800;white-space:nowrap">details →</span>
       </button>`;
       return `${bandBanner}<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:18px">
-      <div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:var(--r-xl,20px);padding:20px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:16px">
+      <div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:var(--r-xl,20px);padding:20px;box-shadow:var(--sh-rest);display:flex;align-items:flex-end;gap:16px;min-height:196px">
         <div style="position:relative;flex-shrink:0">
           <div style="width:80px;height:90px;animation:sb-bee-bob 3.4s ease-in-out infinite">${mascotAcc(S.mood)}</div>
-          <div class="sb-bubble" style="position:absolute;left:60px;top:-14px;white-space:nowrap;background:var(--paper,#fff);border:1px solid var(--line);border-radius:10px;border-bottom-left-radius:3px;padding:6px 10px;font-size:12px;font-weight:650;color:var(--ink,var(--text));box-shadow:var(--sh-rest);z-index:2">${bub}</div>
+          <div class="sb-bubble" style="position:absolute;left:56px;top:-34px;white-space:nowrap;background:var(--paper,#fff);border:1px solid var(--line);border-radius:10px;border-bottom-left-radius:3px;padding:6px 10px;font-size:12px;font-weight:650;color:var(--ink,var(--text));box-shadow:var(--sh-rest);z-index:2">${bub}</div>
         </div>
-        <div style="min-width:0;flex:1;padding-top:12px">
+        <div style="min-width:0;flex:1">
           <div style="font-size:13px;color:var(--muted);font-weight:650">${greeting}</div>
           <div style="font-family:var(--display);font-weight:800;font-size:clamp(22px,3.4vw,27px);line-height:1.1">${esc(c.name)}</div>
           <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:9px">
@@ -1418,25 +1418,20 @@ function viewHome(){
           </div>
         </div>
       </div>
-      <button data-act="openEvo" title="Open the full evolution ladder" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:var(--r-xl,20px);padding:16px 18px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:16px;cursor:pointer">
+      <button data-act="openEvo" title="Open the full evolution ladder" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:var(--r-xl,20px);padding:16px 18px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:16px;cursor:pointer;min-height:196px">
         <div style="flex-shrink:0;text-align:center">
           <div style="width:96px;height:104px">${evArt(theme,fIdx)}</div>
           <div style="font-family:var(--display);font-weight:800;font-size:14px;margin-top:2px">${evo[fIdx]}</div>
         </div>
         <div style="min-width:0;flex:1">
           ${fIdx>=9
-            ?`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:6px">Top form reached! 🎉</div>`
-            :`<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px"><span style="font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">Next</span><span style="width:22px;height:24px;flex-shrink:0;display:inline-block;overflow:hidden">${evArt(theme,fIdx+1)}</span><span style="font-family:var(--display);font-weight:800;font-size:15px">${evo[fIdx+1]}</span><span style="margin-left:auto;font-size:11.5px;color:var(--accent);font-weight:800;white-space:nowrap">ladder →</span></div>`}
+            ?`<div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:7px">Top form reached! 🎉</div>`
+            :`<div style="display:flex;align-items:center;gap:7px;margin-bottom:7px"><span style="font-family:var(--display);font-weight:800;font-size:16px">${xpToNext} XP to ${evo[fIdx+1]}</span><span style="width:22px;height:24px;flex-shrink:0;display:inline-block;overflow:hidden">${evArt(theme,fIdx+1)}</span><span style="margin-left:auto;font-size:11.5px;color:var(--accent);font-weight:800;white-space:nowrap">ladder →</span></div>`}
           <div style="height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden;margin-bottom:8px"><div style="height:100%;border-radius:inherit;background:var(--treasure,#F0B429);width:${evoPct}%"></div></div>
-          <div style="display:flex;flex-direction:column;gap:3px;font-size:11.5px;color:var(--muted);font-weight:650;line-height:1.35">
-            ${fIdx>=9?`<span>🐝 Queen of the hive — keep the streak alive</span><span>🎯 Push your Bee Band higher</span><span>🏆 Finish every Quest Level</span>`
-            :`<span>✏️ +1 XP for every word you spell right</span>
-            <span>⚡ ${xpToNext} XP to go — Coach, games & duels all count</span>
-            <span>🎁 Level-ups drop bonus coins on the way</span>`}
-          </div>
+          <div style="font-size:11.5px;color:var(--muted);font-weight:650">${fIdx>=9?'Queen of the hive 🐝':'+1 XP per correct word — everything counts.'}</div>
         </div>
       </button>
-      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:16px">
+      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:16px;min-height:196px">
         <div style="width:116px;height:116px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(var(--action,var(--accent)) ${goalPctNum}%, var(--tint-deep,var(--surface2)) 0);box-shadow:var(--sh-rest)">
           <div style="width:98px;height:98px;border-radius:50%;background:var(--paper,var(--bg2));display:grid;place-items:center;text-align:center"><div><div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1">${S.goalDone}/${goalTarget}</div><div style="font-size:12px;color:var(--muted);font-weight:650;margin-top:2px">today</div></div></div>
         </div>
