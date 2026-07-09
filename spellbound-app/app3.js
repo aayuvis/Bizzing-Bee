@@ -1887,11 +1887,18 @@ function sessionResults(){
     </div>`;
   const mood = pct>=80?'love':pct>=50?'happy':'think';   // encouraging, never sad
   // If this session was for a levelled list and its level is now complete, offer to advance.
-  const c=active(); const lk=S.sessionListKey; let advBtn='';
-  try{ if(lk && lk!=='__lesson__' && lk!=='__retry__' && !S.coachSession && stageComplete(c,lk) && listStageIdx(c,lk)<listStages(lk).length-1){
-    const nextN=listStageIdx(c,lk)+2;
-    advBtn=`<button data-act="advanceStage" data-arg="${escA(lk)}" style="flex:1;min-width:100%;padding:15px;border-radius:14px;background:var(--good);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${iconSVG('check',16)} Level cleared — go to Level ${nextN} →</button>`;
-  } }catch(e){}
+  const c=active(); const lk=(S.sessionListKey&&S.sessionListKey[0]!=='_')?S.sessionListKey:activeListKey(); let advBtn='';
+  try{ const stages=listStages(lk); const li=listStageIdx(c,lk); const st=stages[li];
+    if(st&&st.words.length){ const lm=st.words.filter(w=>state.luMastered[nkey(w.w)]).length;
+      if(lm>=st.words.length && li<stages.length-1){
+        advBtn=`<button data-act="advanceStage" data-arg="${escA(lk)}" style="flex:1;min-width:100%;padding:15px;border-radius:14px;background:var(--good);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${iconSVG('check',16)} Level ${li+1} cleared — go to Level ${li+2} →</button>`;
+      } else if(lm<st.words.length){
+        advBtn=`<div style="flex:1;min-width:100%;display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:12px 16px;text-align:left">
+          <span style="color:var(--accent);flex-shrink:0">${iconSVG('steps',18)}</span>
+          <span style="min-width:0;flex:1;font-size:13px;font-weight:650;color:var(--muted)"><b style="color:var(--ink,var(--text))">Level ${li+1} progress: ${lm}/${st.words.length} words mastered</b> — ${st.words.length-lm} to go. Sessions pull from your Level's words; master them all (or pass the ⚡ Challenge) to unlock Level ${li+2}.</span>
+          <div style="flex-shrink:0;width:90px;height:7px;border-radius:999px;background:var(--tint-deep,var(--surface2));overflow:hidden"><div style="height:100%;background:var(--good);width:${Math.round(lm/st.words.length*100)}%"></div></div>
+        </div>`;
+      } } }catch(e){}
   return `<div style="max-width:720px;margin:0 auto;animation:sb-rise .35s ease both">
     <div style="text-align:center;margin-bottom:18px"><div style="width:78px;height:86px;margin:0 auto 8px">${mascotSVG(mood)}</div>
       <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">Test complete!</h2>
