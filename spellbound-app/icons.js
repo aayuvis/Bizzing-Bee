@@ -103,7 +103,7 @@
     var R = window.React, w = (props && props.size) || 104;
     return R.createElement('svg', {
       viewBox: '0 0 240 270', width: w, height: Math.round(w * 1.125),
-      role: 'img', 'aria-label': 'Spellbound bee',
+      role: 'img', 'aria-label': 'BizzingBee bee',
       style: { display: 'block', flex: 'none', overflow: 'visible' },
       dangerouslySetInnerHTML: { __html: BEE_ART }
     });

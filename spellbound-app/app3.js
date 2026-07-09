@@ -1,7 +1,7 @@
 "use strict";
 /* =====================================================================
-   Spellbound app — part 3: state, logic, views, render + event wiring.
-   Ported from the renderVals()/handlers in Spellbound App.dc.html.
+   BizzingBee app — part 3: state, logic, views, render + event wiring.
+   Ported from the renderVals()/handlers in BizzingBee App.dc.html.
    ===================================================================== */
 const EVO = EV_NOMEN; // evolution nomenclature (shared with the emblem engine)
 
@@ -121,8 +121,8 @@ function stageWords(key){ const s=curStage(active(),key); return (s&&s.words)||W
 function stageComplete(c,key){ c=c||active(); const s=curStage(c,key); return s && s.words.length>0 && s.words.every(w=>state.luMastered[nkey(w.w)]); }
 function stagesDone(c,key){ c=c||active(); return listStageIdx(c,key) + (stageComplete(c,key)?1:0); }
 
-/* ===== The Spellbound Journey — ONE Level ladder.
-   Levels 1–20 = "Spellbound Champ": the ~1,600 highest-value bee words, ramped easy→hard.
+/* ===== The BizzingBee Journey — ONE Level ladder.
+   Levels 1–20 = "BizzingBee Champ": the ~1,600 highest-value bee words, ramped easy→hard.
    Levels 21+  = "The Champion's Library": the rest of the 40,000, 120 a level (Premium).
    You climb a Level by mastering its words OR passing its Champ Challenge (test-out). ===== */
 const CHAMP_LEVELS = 20;
@@ -259,7 +259,7 @@ function listProgress(c,key){ return levelFromXp(getList(c,key).xp||0); } // {le
 function listLevel(c,key){ return Math.min(listLevelRaw(c,key), levelCap()); }
 function activeListKey(){ return (active().activeList)||'default'; }
 function overallLevel(c){ ensureLists(c); const ks=Object.keys(c.lists||{}); if(!ks.length) return 1; const ls=ks.map(k=>listLevel(c,k)); const best=Math.max(...ls); const avg=ls.reduce((a,b)=>a+b,0)/ls.length; return Math.max(1, Math.round(best*0.6 + avg*0.4)); }
-function listBaseLabel(key){ if(key==='default') return 'Default · Level-Up'; if(key==='journey') return 'The Spellbound Journey'; if(isThemeKey(key)){ const t=themeOf(key.slice(3)); if(t) return t.label; } const cat=coachCatalog().find(c=>c.key===key); return cat?cat.label:key; }
+function listBaseLabel(key){ if(key==='default') return 'Default · Level-Up'; if(key==='journey') return 'The BizzingBee Journey'; if(isThemeKey(key)){ const t=themeOf(key.slice(3)); if(t) return t.label; } const cat=coachCatalog().find(c=>c.key===key); return cat?cat.label:key; }
 function listLabel(key){ const custom=((active().listNames)||{})[key]; return custom||listBaseLabel(key); }
 function listWords(key){ return stageWords(key); }            // current stage's words (staged progression)
 function listFullWords(key){ if(key==='default') return defaultStages().reduce((a,s)=>a.concat(s.words),[]); return rawListWords(key); }
@@ -309,7 +309,7 @@ function voiceUpgradeTip(){
   const tips={
     mac:['On this Mac (free, one time, ~5 min):','<b>System Settings → Accessibility → Spoken Content → System Voice → Manage Voices…</b> — download <b>Ava (Premium)</b> or <b>Zoe (Premium)</b>. Then reopen Settings here and pick it (✨).'],
     ios:['On this iPhone/iPad (free, one time):','<b>Settings → Accessibility → Spoken Content → Voices → English</b> — download <b>Ava (Premium)</b>. Then reopen Settings here and pick it (✨).'],
-    win:['On Windows:','For the most natural voices, open Spellbound in <b>Microsoft Edge</b> — its “Natural” voices (Aria, Jenny…) appear in the list above automatically. Offline voices: <b>Settings → Time &amp; Language → Speech → Add voices</b>.'],
+    win:['On Windows:','For the most natural voices, open BizzingBee in <b>Microsoft Edge</b> — its “Natural” voices (Aria, Jenny…) appear in the list above automatically. Offline voices: <b>Settings → Time &amp; Language → Speech → Add voices</b>.'],
     android:['On Android:','<b>Settings → System → Languages → Text-to-speech output</b> — make sure <b>Speech Services by Google</b> is the engine and its English voice data is downloaded.'],
     other:['Tip:','Add a higher-quality English voice in your device’s text-to-speech settings and it will appear in the list above.']};
   const t=tips[os];
@@ -605,7 +605,7 @@ const app = {
   startWordCoach:()=>app.openCoach(),
   openQuestChooser:()=>set({nav:'quest', screen:'app', conceptSel:null}),
   questPick:(p)=>{ const c=active(); ensureLists(c); c.questPath=p; save(); sfx('coin');
-    if(p==='journey'){ app.selectList('journey'); flash('⚔️ Quest set: the Spellbound Journey — climb to Champ!'); }
+    if(p==='journey'){ app.selectList('journey'); flash('⚔️ Quest set: the BizzingBee Journey — climb to Champ!'); }
     else if(p==='themes'){ set({nav:'themes'}); flash('⚔️ Quest set: Theme Journey — pick the worlds you love'); }
     else { app.openBuilder(); flash('⚔️ Quest set: your own list — pick one or build one in five taps'); } },
   progHeat:(v)=>set({progHeatKey:v}),
@@ -653,10 +653,10 @@ const app = {
     const champJustDone = (key==='journey' && idx+1===CHAMP_LEVELS);
     getList(c,key).stage=idx+1; state.sessionListKey=null; ensureCoachWords(key); sfx(champJustDone?'win':'level'); burstConfetti(champJustDone?170:100);
     state.celebrate={ level:idx+2, list:listLabel(key).split(' · ')[0], champ:champJustDone, date:new Date().toLocaleDateString() }; render(); },
-  // ----- The Spellbound Journey -----
+  // ----- The BizzingBee Journey -----
   startJourney:()=>{ const c=active(); ensureLists(c); c.activeList='journey'; if(!c.lists.journey) c.lists.journey={xp:0};
     state.sessionListKey=null; ensureCoachWords('journey'); set({nav:'coach', screen:'app', coachMode:'hub', coachTab:'revise', luTab:'revise', status:'idle', typed:''});
-    flash('Welcome to the Spellbound Journey ✨'); },
+    flash('Welcome to the BizzingBee Journey ✨'); },
   // ----- Champ Challenge: configurable test-out quiz (timed or count, pick a difficulty) -----
   openChallenge:(key)=>{ const c=active(); ensureLists(c); key=key||activeListKey(); clearGTimer();
     set({nav:'coach', screen:'app', coachMode:'challenge', challengeKey:key, chBand:'level', game:null, typed:'', gInfo:false}); },
@@ -835,7 +835,7 @@ const app = {
     const E=(s)=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     const dotRow=last7.map(d=>`<td style="text-align:center;padding:4px"><div style="width:30px;height:30px;border-radius:6px;margin:0 auto;background:${d.on?'#7C5CFF':'#e7e3f5'}"></div><div style="font-size:12px;color:#888;margin-top:3px">${d.label}</div></td>`).join('');
     const missChips=misses.length?misses.map(m=>`<span style="display:inline-block;border:1px solid #ddd;border-radius:20px;padding:3px 10px;margin:3px;font-size:12px;font-family:monospace">${E(m.w)}${m.n>1?(' ×'+m.n):''}</span>`).join(''):'<i style="color:#888">No misses — great week!</i>';
-    const html='<!doctype html><html><head><meta charset="utf-8"><title>Spellbound — '+E(c.name)+'</title>'+
+    const html='<!doctype html><html><head><meta charset="utf-8"><title>BizzingBee — '+E(c.name)+'</title>'+
       '<style>*{box-sizing:border-box}body{font-family:-apple-system,Segoe UI,Arial,sans-serif;color:#1a1530;max-width:740px;margin:0 auto;padding:28px}h1{font-size:24px;margin:0}h2{font-size:15px;text-transform:uppercase;letter-spacing:.05em;color:#7C5CFF;margin:26px 0 10px;border-bottom:2px solid #eee;padding-bottom:6px}.row{display:flex;gap:14px;flex-wrap:wrap}.stat{flex:1;min-width:120px;border:1px solid #eee;border-radius:10px;padding:14px;text-align:center}.stat b{display:block;font-size:24px}.stat span{font-size:12px;color:#888;text-transform:uppercase;letter-spacing:.04em}@media print{body{padding:0}button{display:none}}</style></head><body>'+
       '<div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #7C5CFF;padding-bottom:12px"><div><div style="font-size:13px;color:#7C5CFF;font-weight:800;letter-spacing:.08em">SPELLBOUND · WEEKLY REPORT</div><h1>'+E(c.name)+'</h1></div><div style="text-align:right;font-size:12px;color:#888">'+new Date().toLocaleDateString()+'<br>Age '+E(c.age||9)+'</div></div>'+
       '<h2>This week at a glance</h2><div class="row"><div class="stat"><b>'+daysThisWeek+'/7</b><span>Days practised</span></div><div class="stat"><b>'+(c.streak||0)+'</b><span>Day streak</span></div><div class="stat"><b>'+sessions+'</b><span>Sessions</span></div><div class="stat"><b>'+acc+'%</b><span>Accuracy</span></div></div>'+
@@ -850,7 +850,7 @@ const app = {
         return '<h2>Readiness signals</h2><table style="border-collapse:collapse;width:100%"><tr>'+rows+'</tr></table>'+
                '<h2>Coach&#39;s corner — this week&#39;s tips</h2><ol style="padding-left:20px">'+tips+'</ol>'; }catch(e){ return ''; } })()+
       '<div style="margin-top:24px;text-align:center"><button onclick="window.print()" style="background:#7C5CFF;color:#fff;border:0;border-radius:10px;padding:12px 22px;font-weight:700;font-size:15px;cursor:pointer">🖨️ Print / Save as PDF</button></div>'+
-      '<p style="text-align:center;color:#aaa;font-size:12px;margin-top:18px">Generated by Spellbound · keep practising a little every day 🐝</p>'+
+      '<p style="text-align:center;color:#aaa;font-size:12px;margin-top:18px">Generated by BizzingBee · keep practising a little every day 🐝</p>'+
       '</body></html>';
     w.document.write(html); w.document.close(); setTimeout(()=>{ try{ w.focus(); }catch(e){} }, 300);
   }catch(e){ flash('Could not open the report'); } },
@@ -919,7 +919,7 @@ function viewLanding(){
       <div style="font-size:13px;color:var(--muted);line-height:1.5">${f.body}</div></div>`).join('');
   return `<div style="position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:22px clamp(18px,4vw,40px) 60px">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:clamp(28px,7vw,72px)">
-      <div style="display:flex;align-items:center;gap:11px"><div style="width:44px;height:48px">${mascotSVG('happy')}</div><span style="font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:-.01em">Spellbound</span></div>
+      <div style="display:flex;align-items:center;gap:11px"><div style="width:44px;height:48px">${mascotSVG('happy')}</div><span style="font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:-.01em"><i style="font-style:italic">Bizzing</i>Bee</span></div>
       <button data-act="goSignin" style="padding:10px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:700;font-size:13px">Sign in</button>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(24px,5vw,56px);align-items:center">
@@ -961,7 +961,7 @@ function viewAuth(){
       <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Password</label>
       <input data-inp="onPw" data-fkey="pw" value="${escA(S.pw)}" type="password" placeholder="••••••••" autocomplete="off" style="width:100%;padding:13px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:600;margin-bottom:20px;outline:none">
       <button data-act="doAuth" style="width:100%;padding:15px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${signup?'Create account':'Sign in'}</button>
-      <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--muted)">${signup?'Already have an account?':'New to Spellbound?'} <button data-act="swapAuth" style="color:var(--accent);font-weight:800;font-size:13px">${signup?'Sign in':'Create one'}</button></div>
+      <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--muted)">${signup?'Already have an account?':'New to BizzingBee?'} <button data-act="swapAuth" style="color:var(--accent);font-weight:800;font-size:13px">${signup?'Sign in':'Create one'}</button></div>
       <div style="text-align:center;margin-top:18px"><button data-act="goLanding" style="color:var(--muted);font-size:13px;font-weight:600">← Back</button></div>
     </div>
   </div>`;
@@ -1155,7 +1155,7 @@ function viewLevelTest(){ const lt=state.lt||{}; if(lt.done) return `<div style=
       <div style="font-family:var(--ui,var(--body));font-weight:650;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">Placement complete</div>
       <div style="font-family:var(--display);font-weight:800;font-size:30px;margin:6px 0 4px">Band ${lt.placed} — ${bandTier(lt.placed||1)}!</div>
       <p style="font-size:15px;color:var(--muted);margin:0 0 6px">That's exactly where champions start. Your Bee Band, your games and your Quest are all set to it — spell well and the Band climbs with you.</p>
-      <p style="font-size:13px;color:var(--muted);margin:0 0 8px">Quest start: Level ${ltStageForBand(lt.placed||1)+1} of the Spellbound Journey.</p>
+      <p style="font-size:13px;color:var(--muted);margin:0 0 8px">Quest start: Level ${ltStageForBand(lt.placed||1)+1} of the BizzingBee Journey.</p>
       <p style="font-size:12.5px;color:var(--muted);margin:0 0 18px;line-height:1.5">One more thing: your <b>bee</b> still hatches young — evolution measures <b>practice</b>, not skill, and it only ever climbs. Your Band is the skill part, and yours is already set. 🐝</p>
       <button data-act="ltGo" style="width:100%;max-width:280px;padding:14px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Let's spell →</button>
     </div></div>`;
@@ -1246,7 +1246,7 @@ function viewApp(){
       <div data-act="noop" style="background:var(--paper,#fff);border-radius:20px;box-shadow:var(--sh-overlay);max-width:420px;width:100%;padding:32px 28px;text-align:center;animation:sb-pop .45s ease both">
         <div style="width:110px;height:120px;margin:0 auto 6px;animation:sb-bee-talk 1.6s ease-in-out infinite">${mascotAcc('excited')}</div>
         <div style="font-family:var(--ui);font-weight:650;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">${cb.champ?'Champion unlocked':'Level cleared'}</div>
-        <div style="font-family:var(--display);font-weight:800;font-size:32px;line-height:1.08;margin:6px 0 4px">${cb.champ?'Spellbound Champ!':('Level '+cb.level+' unlocked!')}</div>
+        <div style="font-family:var(--display);font-weight:800;font-size:32px;line-height:1.08;margin:6px 0 4px">${cb.champ?'BizzingBee Champ!':('Level '+cb.level+' unlocked!')}</div>
         <div style="font-size:15px;color:var(--muted);font-weight:450">${esc(cb.list)} · ${esc(c2.name||'')} — ${evo2[fi]} · ${cb.date}</div>
         <div style="display:flex;justify-content:center;gap:6px;margin:14px 0 18px">${[0,1,2].map(i=>`<span style="display:inline-block;width:12px;height:12px;border-radius:999px;background:var(--treasure,#F0B429);animation:sb-pop .4s ease ${(i*0.12).toFixed(2)}s both"></span>`).join('')}</div>
         ${(()=>{ const L=lessonsAll()[loreCount(c2)-1]; if(!L) return ''; return `<div style="text-align:left;display:flex;align-items:center;gap:11px;background:var(--treasure-tint,#FFF3D6);border-radius:12px;padding:11px 13px;margin-bottom:14px">
@@ -1261,7 +1261,7 @@ function viewApp(){
     <div style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
       <div style="max-width:1080px;margin:0 auto;padding:11px clamp(14px,3.5vw,32px);display:flex;align-items:center;gap:12px">
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
-        <div style="display:flex;align-items:center;gap:9px;margin-right:auto"><div style="width:34px;height:38px">${mascotSVG('happy')}</div><span style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em">Spellbound</span></div>
+        <div style="display:flex;align-items:center;gap:9px;margin-right:auto"><div style="width:34px;height:38px">${mascotSVG('happy')}</div><span style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em"><i style="font-style:italic">Bizzing</i>Bee</span></div>
         <button data-act="openShop" title="Your coins — tap to open the Shop" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(active().coins||0,14)}</button>
         <div style="display:flex;background:var(--surface2);border-radius:999px;padding:3px">
           <button data-act="setLight" aria-pressed="${lightOn}" style="padding:7px 15px;border-radius:999px;font-weight:800;font-size:13px;${lightOn?'background:var(--accent);color:#fff':'background:transparent;color:var(--muted)'}">Light</button>
@@ -1366,9 +1366,9 @@ function viewHome(){
   const cChapDone=(cAll.length?conceptChapters().filter(x=>conceptChapterStat(x).complete).length:0);
   const lDone=lessonsDoneCount(); const lUnits=lessonUnits();
   const lChapDone=lUnits.filter(u=>{ const ls=lessonsAll().filter(L=>L.unit===u.n); return ls.length && ls.every(L=>lessonComplete(L)); }).length; const lChapTot=lUnits.length||10;
-  const qp=c.questPath; const qpLabel=qp==='themes'?'Theme Journey':qp==='own'?'My own list':qp==='journey'?'Spellbound Journey':null;
+  const qp=c.questPath; const qpLabel=qp==='themes'?'Theme Journey':qp==='own'?'My own list':qp==='journey'?'BizzingBee Journey':null;
   const journeys=[
-    {goAct:'openCoach', ic:'steps', sc:'coach', c1:'#7C5CFF',c2:'#5A37D6',accent:'#7C5CFF', title:"Champion's Quest", desc:qp?('Your path: '+qpLabel+' — climb its Levels with Revise & Practice. Switch paths any time.'):'One quest, three paths — the Spellbound ladder, a Theme Journey, or your own word list.', pct:Math.min(100,Math.round(aLvlNew/20*100))+'%', badge:qp?('Level '+aLvlNew+' · '+qpLabel):'Choose your path', kind:'go'},
+    {goAct:'openCoach', ic:'steps', sc:'coach', c1:'#7C5CFF',c2:'#5A37D6',accent:'#7C5CFF', title:"Champion's Quest", desc:qp?('Your path: '+qpLabel+' — climb its Levels with Revise & Practice. Switch paths any time.'):'One quest, three paths — the BizzingBee ladder, a Theme Journey, or your own word list.', pct:Math.min(100,Math.round(aLvlNew/20*100))+'%', badge:qp?('Level '+aLvlNew+' · '+qpLabel):'Choose your path', kind:'go'},
     {goAct:'setNav', goArg:'concepts', ic:'grid', sc:'concept', c1:'#13A892',c2:'#0E8A78',accent:'#13A892', title:'Concepts', desc:'Spelling basics, patterns, prefixes, roots & tricky endings, in 11 short chapters.', pct:Math.round(cDone/(cTot||1)*100)+'%', badge:cChapDone+'/'+(conceptChapters().length||11)+' chapters', kind:'go'},
     {goAct:'openJourneys', ic:'book', sc:'book', c1:'#E0922E',c2:'#C8791B',accent:'#E0922E', title:'Word Journeys', desc:'The history & geography of words — roots, journeys & origins, in 10 chapters.', pct:Math.round((lChapTot?lChapDone/lChapTot:0)*100)+'%', badge:S.premium?(lChapDone+'/'+lChapTot+' chapters'):'Premium', kind:S.premium?'go':'lock'},
     {goAct:'openGames', ic:'joystick', sc:'joystick', festive:true, title:'Arcade', desc:'8 mini-games — Magic Squares, Champ Challenge, Boss Battle & more. Earn coins!', pct:Math.min(100,(c.streak||0)*10)+'%', badge:(c.coins||0)+' coins', kind:'go'},
@@ -1418,12 +1418,22 @@ function viewHome(){
           </div>
         </div>
       </div>
-      <button data-act="openEvo" title="Open the full evolution ladder" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:var(--r-xl,20px);padding:20px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:14px;cursor:pointer">
-        <div style="width:56px;height:60px;flex-shrink:0">${evEmb(theme,fIdx)}</div>
+      <button data-act="openEvo" title="Open the full evolution ladder" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:var(--r-xl,20px);padding:16px 18px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:16px;cursor:pointer">
+        <div style="flex-shrink:0;text-align:center">
+          <div style="width:96px;height:104px">${evArt(theme,fIdx)}</div>
+          <div style="font-family:var(--display);font-weight:800;font-size:14px;margin-top:2px">${evo[fIdx]}</div>
+        </div>
         <div style="min-width:0;flex:1">
-          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px"><span style="font-family:var(--display);font-weight:800;font-size:17px">${evo[fIdx]}</span><span style="font-size:12px;color:var(--accent);font-weight:800;white-space:nowrap">ladder →</span></div>
-          <div style="font-size:12px;color:var(--muted);font-weight:650;margin:2px 0 8px">Effort — grows with practice, never shrinks.${fIdx>=9?' Top form! 🎉':(' On the way to '+evo[fIdx+1]+'.')}</div>
-          <div style="height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden"><div style="height:100%;border-radius:inherit;background:var(--treasure,#F0B429);width:${evoPct}%"></div></div>
+          ${fIdx>=9
+            ?`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:6px">Top form reached! 🎉</div>`
+            :`<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px"><span style="font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">Next</span><span style="width:22px;height:24px;flex-shrink:0;display:inline-block;overflow:hidden">${evArt(theme,fIdx+1)}</span><span style="font-family:var(--display);font-weight:800;font-size:15px">${evo[fIdx+1]}</span><span style="margin-left:auto;font-size:11.5px;color:var(--accent);font-weight:800;white-space:nowrap">ladder →</span></div>`}
+          <div style="height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden;margin-bottom:8px"><div style="height:100%;border-radius:inherit;background:var(--treasure,#F0B429);width:${evoPct}%"></div></div>
+          <div style="display:flex;flex-direction:column;gap:3px;font-size:11.5px;color:var(--muted);font-weight:650;line-height:1.35">
+            ${fIdx>=9?`<span>🐝 Queen of the hive — keep the streak alive</span><span>🎯 Push your Bee Band higher</span><span>🏆 Finish every Quest Level</span>`
+            :`<span>✏️ +1 XP for every word you spell right</span>
+            <span>⚡ ${xpToNext} XP to go — Coach, games & duels all count</span>
+            <span>🎁 Level-ups drop bonus coins on the way</span>`}
+          </div>
         </div>
       </button>
       <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:16px">
@@ -1443,6 +1453,7 @@ ${focusedH?(()=>{ return `${tipOfDay()}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:18px">${journeys}</div>`}
   </div>`;
 }
+function evArt(theme,i){ try{ return evEmb(theme,i).replace('width="54" height="58"','width="100%" height="100%"'); }catch(e){ return ''; } }
 /* ---- Evolution ladder as its own screen (Home shows only the compact card) ---- */
 function viewEvolution(){ const S=state; const c=active(); ensureLists(c); const theme=S.theme; const evo=EVO[theme]||EVO.spellbound;
   const aKey=activeListKey(); const aLevel=listLevel(c,aKey); const fIdx=formIdx(aLevel);
@@ -2079,7 +2090,7 @@ function printDoc(key){ const p=state.prn||{}; const depth=p.depth||'full'; cons
     if(depth==='words') return `<div class="cell"><span class="n">${i+1}</span><span class="w">${esc(w.w)}</span></div>`;
     if(depth==='say') return `<div class="cell"><span class="n">${i+1}</span><span class="w">${esc(w.w)}</span>${say?`<span class="p">${esc(say)}</span>`:''}</div>`;
     return `<div class="cell full"><div><span class="n">${i+1}</span><span class="w">${esc(w.w)}</span>${say?`<span class="p">${esc(say)}</span>`:''}</div>${w.d?`<div class="d">${esc(w.d)}</div>`:''}</div>`; }).join('');
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(label)} — Spellbound word list</title><style>
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(label)} — BizzingBee word list</title><style>
     @page{size:${sizes[page]||'letter'};margin:14mm} *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:Georgia,'Times New Roman',serif;color:#1c1633;padding:4px}
     h1{font-size:20px;margin-bottom:2px} .meta{font-size:12px;color:#666;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #1c1633}
@@ -2091,7 +2102,7 @@ function printDoc(key){ const p=state.prn||{}; const depth=p.depth||'full'; cons
     .foot{margin-top:16px;font-size:12px;color:#888;text-align:center}
   </style></head><body>
     <h1>${esc(label)}</h1>
-    <div class="meta">${esc(c.name||'Speller')} · ${words.length}${total>words.length?(' of '+total):''} words · ${scope==='level'?('Level '+(listStageIdx(c,key)+1)):'whole list'}${total>words.length?' (first '+PRINT_CAP+' shown — print a Level for a focused sheet)':''} · printed ${new Date().toLocaleDateString()} · Spellbound</div>
+    <div class="meta">${esc(c.name||'Speller')} · ${words.length}${total>words.length?(' of '+total):''} words · ${scope==='level'?('Level '+(listStageIdx(c,key)+1)):'whole list'}${total>words.length?' (first '+PRINT_CAP+' shown — print a Level for a focused sheet)':''} · printed ${new Date().toLocaleDateString()} · BizzingBee</div>
     <div class="grid">${rows}</div>
     <div class="foot">Say it → spell it → say it again. 🐝</div>
   </body></html>`; }
@@ -2107,8 +2118,8 @@ function encounteredWords(key){ try{ const c=active(); const stages=listStages(k
 function viewQuest(){
   const c=active(); ensureLists(c); const qp=c.questPath;
   const paths=[
-    { id:'journey', sc:'coach', c1:'#7C5CFF', c2:'#5A37D6', tex:'stripes', title:'Spellbound Journey',
-      sub:'The classic champ ladder', desc:'~1,600 top bee words ramped easy→hard across 20 Levels. Master each Level (or pass its Champ Challenge) and evolve all the way to Spellbound Champ.',
+    { id:'journey', sc:'coach', c1:'#7C5CFF', c2:'#5A37D6', tex:'stripes', title:'BizzingBee Journey',
+      sub:'The classic champ ladder', desc:'~1,600 top bee words ramped easy→hard across 20 Levels. Master each Level (or pass its Champ Challenge) and evolve all the way to BizzingBee Champ.',
       points:['20 Levels → Champ','Champ Challenge test-outs','The Champion’s Library beyond'] },
     { id:'themes', sc:'theme', c1:'#B14FC4', c2:'#9438A8', tex:'rings', title:'Theme Journey',
       sub:'Learn words by their worlds', desc:'Pick 3–5 worlds you love — medicine, music, maps, myths & 50 more. Each theme becomes its own Level ladder, and mastery flows back into every list.',
@@ -2151,7 +2162,7 @@ function viewProgress(){
   const week=wk.map((m,i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;height:100%;justify-content:flex-end"><div style="width:100%;border-radius:6px 7px 4px 4px;background:var(--accent);height:${Math.round((m/maxW)*100)}%;min-height:5px;opacity:${m?'1':'.3'}"></div><div style="font-size:12px;color:var(--muted);font-weight:700">${days[i]}</div></div>`).join('');
   // ---- real per-list heatmap: dropdown over activated lists, plus All ----
   const S=state; const hKeys=activatedListKeys(); const hSel=(S.progHeatKey&&(S.progHeatKey==='all'||hKeys.includes(S.progHeatKey)))?S.progHeatKey:'all';
-  const hLabel=(k)=> k==='journey'?'Spellbound Journey':listLabel(k).split(' · ')[0];
+  const hLabel=(k)=> k==='journey'?'BizzingBee Journey':listLabel(k).split(' · ')[0];
   const hOpts=[`<option value="all"${hSel==='all'?' selected':''}>All lists</option>`,...hKeys.map(k=>`<option value="${escA(k)}"${hSel===k?' selected':''}>${esc(hLabel(k))} · L${listStageIdx(c,k)+1}</option>`)].join('');
   const hDrop=`<div style="position:relative;margin-left:auto"><select data-chg="progHeat" style="appearance:none;-webkit-appearance:none;padding:9px 34px 9px 13px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-family:var(--display);font-weight:800;font-size:13px;cursor:pointer">${hOpts}</select><span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--accent);font-size:12px">▼</span></div>`;
   let hBody='';
@@ -2231,7 +2242,7 @@ function viewParent(){
     : {ic:'spark',title:'Free plan',body:'2 worlds & Level-Up to Level 5. Earn 🪙 coins to unlock more, or go Premium.',btn:'Upgrade',btnStyle:'padding:10px 18px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)',cardStyle:'background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest)'};
   const kids=(S.children.length?S.children:[demo()]).map((k,i)=>`<div style="background:var(--bg2);border:1px solid ${i===S.activeIdx?'var(--accent)':'var(--line)'};border-radius:14px;padding:18px;box-shadow:var(--sh-rest)">
       <div style="display:flex;align-items:center;gap:13px;margin-bottom:16px"><div style="width:48px;height:48px;border-radius:14px;background:var(--surface2);display:grid;place-items:center">${buddySVG(k.avatar,28)}</div>
-        <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:17px">${esc(k.name)}</div><div style="font-size:12px;color:var(--muted);font-weight:600">Age ${k.age} · ${THEME_LABEL[k.theme]||'Spellbound'}</div></div>
+        <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:17px">${esc(k.name)}</div><div style="font-size:12px;color:var(--muted);font-weight:600">Age ${k.age} · ${THEME_LABEL[k.theme]||'BizzingBee'}</div></div>
         <button data-act="selectChild" data-arg="${i}" style="padding:7px 13px;border-radius:10px;font-weight:800;font-size:12px;${i===S.activeIdx?'background:var(--chip);color:var(--accent)':'background:var(--surface2);color:var(--text)'}">${i===S.activeIdx?'Active':'Switch'}</button>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px">
@@ -2572,7 +2583,7 @@ function viewSettings(){
         <button data-act="voiceTest" style="padding:11px 18px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge);white-space:nowrap">▶ Test</button>
       </div>
       <div style="position:relative"><select data-chg="voiceSetDevice" style="width:100%;appearance:none;-webkit-appearance:none;padding:13px 36px 13px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px;cursor:pointer">${voiceOpts}</select><span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--accent);font-size:12px">▼</span></div>
-      <p style="font-size:12px;color:var(--muted);line-height:1.55;margin:12px 0 0">Spellbound picks the smoothest voice your device offers — no account or key, fully offline. Voices marked ✨ are the most natural. ${_voices.length?'':'<b style="color:var(--text)">Voices load a moment after opening</b> — reopen Settings to see the full list. '}</p>
+      <p style="font-size:12px;color:var(--muted);line-height:1.55;margin:12px 0 0">BizzingBee picks the smoothest voice your device offers — no account or key, fully offline. Voices marked ✨ are the most natural. ${_voices.length?'':'<b style="color:var(--text)">Voices load a moment after opening</b> — reopen Settings to see the full list. '}</p>
       ${voiceUpgradeTip()}
     </div>`;
   return `<div style="max-width:640px">
@@ -2607,7 +2618,7 @@ function isPremiumList(key){ if(isThemeKey(key)) return false; if(String(key).st
 // Right-click a top-nav list chip to remove it (all but the core 3). Progress is kept; re-add from Setup.
 window.sbDelList = function(e,key){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
   if({journey:1,review:1,missed:1}[key]){ flash('That one stays — it’s a core list.'); return false; }
-  const c=active(); const nm=(key==='journey'?'Spellbound Journey':listLabel(key).split(' · ')[0]);
+  const c=active(); const nm=(key==='journey'?'BizzingBee Journey':listLabel(key).split(' · ')[0]);
   if(!window.confirm('Remove “'+nm+'” from your lists?\n\n(Your progress is kept — you can add it again from Setup & lists.)')) return false;
   if(c.pinnedLists) delete c.pinnedLists[key];
   if(key==='custom') state.customWords=[]; if(key==='ai') state.aiWords=[];
@@ -2625,7 +2636,7 @@ function coachTrain(){
   const nextIsLibrary = isJourney && stage.n>=CHAMP_LEVELS;      // advancing from here enters/continues the Library
   const libLocked = nextIsLibrary && !state.premium;
   // ---- List Dock: one clear "now training" tile + visual switching; pause/remove live in a ⋯ menu ----
-  const dockLabel=(k)=> k==='journey'?'Spellbound Journey':listLabel(k).split(' · ')[0];
+  const dockLabel=(k)=> k==='journey'?'BizzingBee Journey':listLabel(k).split(' · ')[0];
   const CORE_LISTS={journey:1,review:1,missed:1}; const pinned=c.pinnedLists||{}; const pausedL=c.pausedLists||{};
   let extras=Object.keys(pinned).filter(k=>!CORE_LISTS[k] && pinned[k]);   // only lists the user has added
   if(!CORE_LISTS[key] && !extras.includes(key)) extras.push(key);           // always show the one being trained
@@ -2693,11 +2704,11 @@ function coachTrain(){
   const advanceTo = isJourney ? (nextIsLibrary ? ('Library '+(stage.n-CHAMP_LEVELS+1)) : ('Level '+(stage.n+1))) : ('Level '+(stage.n+1));
   let advanceHTML;
   if(lastStage && stageDone){ advanceHTML=`<div style="margin-top:10px;font-size:12px;color:var(--good);font-weight:800">🏆 Every level cleared — legendary!</div>`; }
-  else if(stageDone && libLocked){ advanceHTML=`<div style="margin-top:11px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:11px 13px"><div style="font-weight:800;font-size:13px;margin-bottom:3px">🏆 You're a Spellbound Champ!</div><div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:9px">The Champion's Library — the other ${fmtN(journeyTotal()-champWordCount())} words — is Premium.</div><button data-act="goPaywall" style="padding:9px 15px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">Unlock the Library 👑</button></div>`; }
+  else if(stageDone && libLocked){ advanceHTML=`<div style="margin-top:11px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:11px 13px"><div style="font-weight:800;font-size:13px;margin-bottom:3px">🏆 You're a BizzingBee Champ!</div><div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:9px">The Champion's Library — the other ${fmtN(journeyTotal()-champWordCount())} words — is Premium.</div><button data-act="goPaywall" style="padding:9px 15px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">Unlock the Library 👑</button></div>`; }
   else if(stageDone){ advanceHTML=`<button data-act="advanceStage" data-arg="${escA(key)}" style="margin-top:11px;width:100%;padding:12px;border-radius:10px;background:var(--good);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Level ${stage.n} cleared! Go to ${advanceTo} →</button>`; }
   else { advanceHTML=`<div style="margin-top:11px"><button data-act="openChallenge" data-arg="${escA(key)}" style="width:100%;padding:12px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">⚡ Take the Level ${stage.n} Challenge</button></div><div style="margin-top:8px;font-size:12px;color:var(--muted);line-height:1.5">Master all ${stage.words.length} words to level up — or pass the Challenge to test out early.</div>`; }
   const tracker = isJourney
-    ? `<div style="display:flex;gap:3px;margin-top:11px">${Array.from({length:CHAMP_LEVELS},(_,i)=>`<span style="flex:1;height:5px;border-radius:999px;background:${(uiLevel>i+1||(uiLevel===i+1&&stageDone))?'var(--good)':(uiLevel===i+1?'var(--accent)':'var(--line)')}"></span>`).join('')}</div><div style="font-size:12px;color:var(--muted);margin-top:5px">20 levels to Spellbound Champ${uiLevel>CHAMP_LEVELS?' ✓ — now exploring the Library':''}</div>`
+    ? `<div style="display:flex;gap:3px;margin-top:11px">${Array.from({length:CHAMP_LEVELS},(_,i)=>`<span style="flex:1;height:5px;border-radius:999px;background:${(uiLevel>i+1||(uiLevel===i+1&&stageDone))?'var(--good)':(uiLevel===i+1?'var(--accent)':'var(--line)')}"></span>`).join('')}</div><div style="font-size:12px;color:var(--muted);margin-top:5px">20 levels to BizzingBee Champ${uiLevel>CHAMP_LEVELS?' ✓ — now exploring the Library':''}</div>`
     : `<div style="display:flex;gap:4px;margin-top:11px">${stages.map((s,i)=>`<span style="flex:1;height:5px;border-radius:999px;background:${(i<sIdx||(i===sIdx&&stageDone))?'var(--good)':(i===sIdx?'var(--accent)':'var(--line)')}"></span>`).join('')}</div>`;
   const libMeter = isJourney ? `<div style="margin-top:11px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:7px"><span style="font-weight:800;color:var(--text)">Library explored</span> ${fmtN(journeyMastered(c))} / ${fmtN(journeyTotal())} words mastered</div>` : '';
   const levelBlock=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:16px;box-shadow:var(--sh-rest)">
@@ -2716,7 +2727,7 @@ function coachTrain(){
   const body = S.luTab==='practice' ? trainerCard() : wordFlash(ws, S.reviseIdx, 'reviseNav', {});
   const act=(a,ic,t,d)=>`<button data-act="${a}" style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:13px"><span style="color:var(--accent)">${iconSVG(ic,18)}</span><span style="font-family:var(--display);font-weight:800;font-size:13px">${t}</span><span style="font-size:12px;color:var(--muted)">${d}</span></button>`;
   const actions=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:16px">${act('startBuzz','flame','Daily Buzz','Quick mixed round')}${act('startWritten','pencil','Written round','Type a sequence, scored')}${act('startOral','volume','Oral elimination','Spell aloud, survive')}${act('coachSetupOpen','gear','Setup &amp; lists','Date, goal, choose lists')}</div>`;
-  const journeyPromo = (key!=='journey' && (getList(c,'journey').stage||0)===0) ? `<button data-act="startJourney" style="width:100%;text-align:left;border-radius:14px;margin-top:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 4px 14px rgba(43,27,94,.16)"><div style="padding:13px 16px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">★ Recommended path</div><div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">The Spellbound Journey — 20 Levels to Champ</div></div><span style="padding:8px 14px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Start →</span></div></button>` : '';
+  const journeyPromo = (key!=='journey' && (getList(c,'journey').stage||0)===0) ? `<button data-act="startJourney" style="width:100%;text-align:left;border-radius:14px;margin-top:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 4px 14px rgba(43,27,94,.16)"><div style="padding:13px 16px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">★ Recommended path</div><div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">The BizzingBee Journey — 20 Levels to Champ</div></div><span style="padding:8px 14px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Start →</span></div></button>` : '';
   return `<div style="max-width:760px;margin:0 auto">${printDlg}${topBar}
     <div style="display:flex;gap:6px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:16px">${tab('revise','Learn')}${tab('practice','Practice')}</div>
     ${body}
@@ -2781,12 +2792,12 @@ function coachSetup(){
   const others=coachCatalog().filter(o=>o.key!=='default').map(o=>listCoverCard(o.key,o.label,o.sub,o.count, !isListUnlocked(o.key))).join('');
   const jc=listCoverOf('journey'); const jLvl=(getList(c,'journey').stage||0)+1; const jMast=journeyMastered(c);
   const jChampPct=Math.round(Math.min(1,(getList(c,'journey').stage||0)/CHAMP_LEVELS)*100); const jStarted=(getList(c,'journey').stage||0)>0 || jMast>0;
-  const champLabel = jLvl>CHAMP_LEVELS ? 'Spellbound Champ 🏆 · exploring the Library' : ('Level '+Math.min(jLvl,CHAMP_LEVELS)+' of '+CHAMP_LEVELS+' to Champ');
+  const champLabel = jLvl>CHAMP_LEVELS ? 'BizzingBee Champ 🏆 · exploring the Library' : ('Level '+Math.min(jLvl,CHAMP_LEVELS)+' of '+CHAMP_LEVELS+' to Champ');
   const journeyBanner=`<button data-act="startJourney" style="position:relative;overflow:hidden;text-align:left;width:100%;border-radius:20px;margin-bottom:16px;${listCoverBG('journey')};box-shadow:0 8px 22px rgba(43,27,94,.18)">
     <div style="padding:18px 20px;color:#fff">
       <span style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">★ Recommended path</span>
-      <div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1.1;margin:6px 0 4px">The Spellbound Journey</div>
-      <div style="font-size:13px;color:rgba(255,255,255,.9);line-height:1.5;margin-bottom:12px;max-width:46em">Climb <b>20 Levels</b> through the ~${fmtN(champWordCount())} highest-value bee words to become a <b>Spellbound Champ</b> — then unlock the full ${fmtN(journeyTotal())}-word Library. Words → Set of 24 → Level → Champ.</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1.1;margin:6px 0 4px">The BizzingBee Journey</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.9);line-height:1.5;margin-bottom:12px;max-width:46em">Climb <b>20 Levels</b> through the ~${fmtN(champWordCount())} highest-value bee words to become a <b>BizzingBee Champ</b> — then unlock the full ${fmtN(journeyTotal())}-word Library. Words → Set of 24 → Level → Champ.</div>
       <div style="height:8px;border-radius:999px;background:rgba(255,255,255,.25);overflow:hidden;margin-bottom:9px"><div style="height:100%;width:${jChampPct}%;background:#fff"></div></div>
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><span style="font-size:12px;font-weight:800;color:rgba(255,255,255,.92)">${champLabel} · ${fmtN(jMast)} mastered</span><span style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:10px;background:#fff;color:${jc.c};font-weight:800;font-size:13px">${jStarted?'Continue':'Start the Journey'} →</span></div>
     </div></button>`;

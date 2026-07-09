@@ -1,6 +1,6 @@
 "use strict";
 /* =====================================================================
-   Spellbound — full app (vanilla port of Spellbound App.dc.html).
+   BizzingBee — full app (vanilla port of BizzingBee App.dc.html).
    No framework, no build. Renders into #root from a single state object.
    ===================================================================== */
 
@@ -9,7 +9,7 @@ const SB_DATA = (typeof window !== 'undefined' && window.SB_DATA) || { nsf:[], c
 const SB_CONCEPTS = (typeof window !== 'undefined' && window.SB_CONCEPTS) || { chapters:[] };
 
 /* =====================================================================
-   Bee mascot — ported from SpellboundMascot.dc.html
+   Bee mascot — ported from BizzingBeeMascot.dc.html
    ===================================================================== */
 let _clipN = 0;
 function mascotSVG(mood, bodyColor, accentColor){
@@ -101,7 +101,7 @@ function evEmb(id,s){
       g+=`<ellipse cx="24" cy="30" rx="8" ry="12" fill="${C.b}" stroke="${C.ink}" stroke-width="1.3"/>`;
       g+=`<g stroke="${C.ink}" stroke-width=".9" fill="none" opacity=".5"><path d="M17 23 Q24 21 31 25"/><path d="M16 28 Q24 26 32 30"/><path d="M16 33 Q24 31 32 35"/><path d="M18 38 Q24 36 30 39"/></g>`;
       g+=`<path d="M32 26 Q40.5 25 37.5 34" fill="none" stroke="#fff" stroke-width="1.1" opacity=".9"/><circle cx="37.5" cy="34" r="1.2" fill="#fff"/>`; }
-    else if(s===9){ /* Queen — echoes the Spellbound logo bee, crowned */
+    else if(s===9){ /* Queen — echoes the BizzingBee logo bee, crowned */
       g+=`<ellipse cx="12.5" cy="22" rx="8" ry="5.5" fill="#EDE7FF" stroke="${C.ink}" stroke-width="1" transform="rotate(-24 12.5 22)"/><ellipse cx="35.5" cy="22" rx="8" ry="5.5" fill="#EDE7FF" stroke="${C.ink}" stroke-width="1" transform="rotate(24 35.5 22)"/>`;
       g+=`<ellipse cx="24" cy="32" rx="10" ry="11.5" fill="${C.b}" stroke="${C.ink}" stroke-width="1.4"/>`;
       g+=`<path d="M15.5 30 H32.5 M15 35.5 H33" stroke="${C.ink}" stroke-width="2.2"/>`;

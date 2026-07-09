@@ -1,6 +1,6 @@
 "use strict";
 /* =====================================================================
-   Spellbound app — part 2: buddy sprites, UI icons, world emblems, data
+   BizzingBee app — part 2: buddy sprites, UI icons, world emblems, data
    ===================================================================== */
 
 /* ---- 16 buddy sprites (ported from buddy()) ---- */
@@ -144,7 +144,7 @@ function worldEmblemSVG(id, size){
 
 /* ---- constants ---- */
 const THEMES = [
-  { id:'spellbound', label:'Spellbound', sub:'The bee',   c1:'#6C4FE0', c2:'#F6F4FC' },
+  { id:'spellbound', label:'BizzingBee', sub:'The bee',   c1:'#6C4FE0', c2:'#F6F4FC' },
   { id:'marquee',    label:'Spotlight',  sub:'On stage',  c1:'#9C6A08', c2:'#F7F1E2' },
   { id:'aurora',     label:'Galaxy',     sub:'Cosmic',    c1:'#4A5BD4', c2:'#F2F4FB' },
   { id:'anime',      label:'Blade',      sub:'Dojo',      c1:'#C43D5A', c2:'#FAF1F3' },
@@ -153,7 +153,7 @@ const THEMES = [
   { id:'pixel',      label:'Arcade',     sub:'Game on',   c1:'#3B6FE0', c2:'#EFF3FA' },
   { id:'avatar',     label:'Elements',   sub:'Elemental', c1:'#2E8FB8', c2:'#EDF5F7' },
 ];
-const THEME_LABEL = { spellbound:'Spellbound', marquee:'Spotlight', aurora:'Galaxy', anime:'Blade', science:'Lab', origami:'Origami', pixel:'Arcade', avatar:'Elements' };
+const THEME_LABEL = { spellbound:'BizzingBee', marquee:'Spotlight', aurora:'Galaxy', anime:'Blade', science:'Lab', origami:'Origami', pixel:'Arcade', avatar:'Elements' };
 const WORLD_DEF = {
   spellbound:'Grow a bee from a tiny egg to queen of the hive.',
   marquee:'Rise from a single spark to top billing on the marquee.',
