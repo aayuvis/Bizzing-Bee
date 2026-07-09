@@ -42,6 +42,19 @@ What Priya *loves*: "All computed on this device — no internet, no AI" (exactl
 
 ---
 
+## Part 2b · The boys' bench — Arjun 8, Kabir 16 (Dev, 12, already spoke for them)
+
+### Arjun, 8 — announces his evolution form out loud at dinner
+- **The Queen Bee problem.** The default world's ladder — the one every new family lands in — ends at **Queen Bee**. Arjun says "I'm a Grub!" with pride, but a meaningful share of 8-year-old boys will stall at aspiring to become a *Queen*. Every other world already solves this (Master, Arcade, Galaxy, Eureka, Elemental — all neutral); it's only the default world, where the youngest and least-committed users start, that carries the risk. Two fixes, either works: a line of hive lore right on the ladder — *"every hive is ruled by its Queen — the strongest, most protected bee alive"* — turning the name into a flex; or a final-form title choice (Queen Bee / Monarch of the Hive). Do not silently rename it for everyone — Maya loves it.
+- **The accessory shop has nothing he covets.** Golden Crown, Scarlet Bow, Star Halo — three ornaments. Where are the flight goggles, the cape, the lightning bolt, the tiny headphones? Cosmetics are how 8-year-old boys spend; the current catalog is styled for exactly half of them.
+- **Onboarding pre-selects the cute purple world.** Blade, Arcade and Lab are right there, but the default is already highlighted, and 8-year-olds accept defaults. Make world choice an active tap with nothing pre-selected — every child ends up in a world that feels *chosen*, which is worth more retention than any default.
+- What already works for him: Boss Battle framing, the duel, coins, the trophy-case cover art. The bee itself is not a problem — round, big-eyed mascots are gender-neutral at this age; it's the *aspiration ladder* and the *shop*, not the mascot.
+
+### Kabir, 16 — indistinguishable from Sana, by design
+At sixteen the app's gender coding has essentially vanished: Focused mode quiets the mascot, Dusk + Blade/Lab worlds carry the aesthetic, Band tiers speak pure competition ("State & National"), and his asks are identical to Sana's (mic mode, due-today queue, Band-up celebration). That's the correct outcome — a design that needs no male variant at 16 because the personality dials (world, mode, age) already cover it. The one thing he'd add: the share-card celebration is the right brag mechanic, and the missing **Band-promotion card** matters even more to him than to Dev — proven rank is the thing his group chat respects.
+
+**Pattern across ages:** the app's gender-neutrality is strong *except* where the default world funnels everyone at the start — its endpoint name and its shop catalog. Fix those two and the funnel is neutral end-to-end.
+
 ## Part 3 · Adoption funnel audit (minute 0 → day 1)
 
 **Landing page: strong.** Real hero copy, live demo card (word + streak + form), "Start free →", "No card to start." This is a credible commercial front door. Two blemishes: the invented 4.9★ rating (above), and the demo card is static — it *looks* tappable; letting a visitor actually spell `iridescent` right on the landing page would be the cheapest conversion win available.
@@ -73,11 +86,12 @@ The lore tease in the Story vault ("Next up: The Proto-Indo-European Mother Tong
 | **Day-30 engagement** | ★★★★☆ | ★★★★☆ |
 | Trust (parent) | ★★☆☆☆ — the 999 days | ★★☆☆☆ |
 
-## Top 5 moves, in order
+## Top 6 moves, in order
 1. **Parent cold-start welcome state** — kill "999 days", replace day-zero alarm tiles and "Re-engage" advice with a warm "signals appear after the first session" panel. This is a trust P0.
 2. **Band promotion celebration** — full celebration card ("Band 5 — Regional Ready! Proven, not given."), confetti, share prompt. The system's proudest number currently changes in silence.
 3. **Day-one staging**: banner becomes a placement invitation; bee bubble announces "5 words and I hatch!"; streak chip hidden at zero.
 4. **Playful-home daily content**: a kid-phrased tip/word-fact of the day (the pool exists — reuse `tipOfDay` with the basics band and simpler framing).
 5. **Landing honesty + interactivity**: drop the invented 4.9★, make the demo card actually spellable.
+6. **Neutralize the default-world funnel**: hive-lore line under Queen Bee (or a title choice at the final form), 3 gear-coded accessories (goggles, cape, bolt), and no pre-selected world in onboarding.
 
 *Bottom line: the design system is now consistent from desktop to phone, and the mid-game engagement loops are genuinely strong — the celebration-and-lore ladder would be at home in a top-tier kids app. The soft spots are the two edges of the lifecycle: the first ten minutes (cold-start states that read as alarms or shrugs) and the proudest milestone (Band promotion) passing without applause. All five recommended moves are conditionals and copy on existing systems — a day of work for the highest-leverage retention gains left.*
