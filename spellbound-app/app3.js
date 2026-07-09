@@ -1405,7 +1405,7 @@ function viewHome(){
         <span class="sb-cl">details →</span>
       </button>`;
       return `${bandBanner}<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:18px">
-      <div class="sb-card" style="display:flex;align-items:flex-end;gap:16px;min-height:156px">
+      <div class="sb-card" style="display:flex;align-items:center;gap:16px;min-height:156px">
         <div style="position:relative;flex-shrink:0">
           <div style="width:74px;height:84px;animation:sb-bee-bob 3.4s ease-in-out infinite">${mascotAcc(S.mood)}</div>
           <div class="sb-bubble" style="position:absolute;left:52px;top:-30px;white-space:nowrap;background:var(--paper,#fff);border:1px solid var(--line);border-radius:10px;border-bottom-left-radius:3px;padding:5px 9px;font-size:12px;font-weight:650;color:var(--ink,var(--text));box-shadow:var(--sh-rest);z-index:2">${bub}</div>
@@ -1425,8 +1425,8 @@ function viewHome(){
         </div>
         <div style="min-width:0;flex:1;display:flex;flex-direction:column">
           ${fIdx>=9
-            ?`<div class="sb-ct" style="margin-bottom:7px">Top form reached! 🎉</div>`
-            :`<div style="display:flex;align-items:center;gap:7px;margin-bottom:7px"><span class="sb-ct">${xpToNext} XP to ${evo[fIdx+1]}</span><span style="width:22px;height:24px;flex-shrink:0;display:inline-block;overflow:hidden">${evArt(theme,fIdx+1)}</span></div>`}
+            ?`<div class="sb-ct" style="margin-top:auto;margin-bottom:7px">Top form reached! 🎉</div>`
+            :`<div style="display:flex;align-items:center;gap:7px;margin-top:auto;margin-bottom:7px"><span class="sb-ct">${xpToNext} XP to ${evo[fIdx+1]}</span><span style="width:22px;height:24px;flex-shrink:0;display:inline-block;overflow:hidden">${evArt(theme,fIdx+1)}</span></div>`}
           <div style="height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden;margin-bottom:7px"><div style="height:100%;border-radius:inherit;background:var(--treasure,#F0B429);width:${evoPct}%"></div></div>
           <div class="sb-cn">${fIdx>=9?'Queen of the hive 🐝':'+1 XP per correct word — everything counts.'}</div>
           <div style="margin-top:auto;text-align:right"><span class="sb-cl">See the ladder →</span></div>
@@ -3218,7 +3218,8 @@ function magicView(){ const g=state.game; const S=state;
     const tiles=g.board.map((cell,i)=>{ const cl=magicClusterOf(cell);
       const doneBG=`${themeCoverBG(cl)};color:#fff`;
       return `<button class="sb-lift" data-act="magicCell" data-arg="${i}" style="position:relative;aspect-ratio:1;border-radius:14px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;border:2px solid ${cell.done?cl.c:'var(--line)'};${cell.done?doneBG:'background:var(--bg2)'};box-shadow:${cell.done?('0 6px 16px rgba(43,27,94,.2)'):'0 2px 6px rgba(43,27,94,.06)'}">
-        ${cell.done?`<div class="sb-theme-art" style="font-size:24px;line-height:1">⭐</div>`:`<div class="sb-theme-art" style="width:26px;height:26px;border-radius:6px;background:color-mix(in srgb,${cl.c} 16%,var(--bg2));color:${cl.c};display:grid;place-items:center;animation-delay:${(i%9)*0.22}s">${iconSVG('spark',15)}</div>`}
+        ${cell.done?`<span style="position:absolute;top:6px;right:7px;font-size:16px;line-height:1">⭐</span>`:''}
+        <div class="sb-theme-art" style="width:54px;height:54px;border-radius:14px;display:grid;place-items:center;animation-delay:${(i%9)*0.22}s;${cell.done?'filter:drop-shadow(0 1px 3px rgba(0,0,0,.3))':`background:linear-gradient(135deg,${cl.c},${cl.c2||cl.c})`}">${themeArtSVG(cell.id,44,false)}</div>
         <div style="font-family:var(--display);font-weight:800;font-size:12px;line-height:1.15;${cell.done?'color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.25)':'color:var(--text)'}">${esc(cell.label)}</div>
         ${(!cell.done&&cell.tried)?`<div style="font-size:12px;font-weight:800;color:var(--muted)">best ${cell.best}/5 · retry</div>`:''}
       </button>`; }).join('');
