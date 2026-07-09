@@ -1,0 +1,5 @@
+/* Spellbound fonts — bundled locally so the app renders identically offline (P0) */
+@font-face{font-family:'Fraunces';font-style:normal;font-weight:800;font-display:swap;src:url('fraunces-800.woff2') format('woff2')}
+@font-face{font-family:'Hanken Grotesk';font-style:normal;font-weight:100 900;font-display:swap;src:url('hanken-var.woff2') format('woff2')}
+@font-face{font-family:'Space Mono';font-style:normal;font-weight:400;font-display:swap;src:url('spacemono-400.woff2') format('woff2')}
+@font-face{font-family:'Space Mono';font-style:normal;font-weight:700;font-display:swap;src:url('spacemono-700.woff2') format('woff2')}

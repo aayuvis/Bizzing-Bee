@@ -560,7 +560,7 @@ const app = {
   dockMenu:(k)=>set({dockMenu:state.dockMenu===k?null:k}),
   pauseList:(k)=>{ const c=active(); ensureLists(c); if(!c.pausedLists) c.pausedLists={};
     if((c.activeList||'default')===k){ flash('Switch to another list first, then pause this one'); state.dockMenu=null; render(); return; }
-    c.pausedLists[k]=1; state.dockMenu=null; save(); flash('⏸ Paused — progress kept. Resume any time.'); render(); },
+    c.pausedLists[k]=1; state.dockMenu=null; save(); flash('Paused — progress kept. Resume any time ⏸'); render(); },
   resumeList:(k)=>{ const c=active(); if(c.pausedLists) delete c.pausedLists[k]; state.dockMenu=null; save(); app.selectList(k); },
   dockRemove:(k)=>{ state.dockMenu=null; const c=active(); if(c.pausedLists) delete c.pausedLists[k];
     window.sbDelList({preventDefault(){},stopPropagation(){}},k); },
@@ -811,7 +811,7 @@ function viewLanding(){
     { ic:'volume', title:'Hears every word', body:'Real spoken pronunciation, definition, sentence and origin — like a true bee round.' },
     { ic:'sprout', title:'A character that evolves', body:'Ten forms per world. Every level visibly grows your speller’s buddy.' },
     { ic:'chart', title:'Parents see everything', body:'Accuracy, streaks, weak words and a finals countdown in one dashboard.' },
-  ].map(f=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.06)">
+  ].map(f=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:var(--sh-rest)">
       <div style="width:46px;height:46px;border-radius:13px;background:var(--chip);color:var(--accent);display:grid;place-items:center;margin-bottom:13px">${iconSVG(f.ic,22)}</div>
       <div style="font-family:var(--display);font-weight:700;font-size:17px;margin-bottom:6px">${f.title}</div>
       <div style="font-size:14px;color:var(--muted);line-height:1.5">${f.body}</div></div>`).join('');
@@ -826,7 +826,7 @@ function viewLanding(){
         <h1 style="font-family:var(--display);font-weight:800;font-size:clamp(34px,6.4vw,58px);line-height:1.03;letter-spacing:-.02em;margin:0 0 16px">Spell your way to the National&nbsp;Bee.</h1>
         <p style="font-size:clamp(16px,2.2vw,19px);line-height:1.55;color:var(--muted);max-width:30em;margin:0 0 26px">A daily spelling trainer that hears your child spell out loud, evolves a character with every win, and shows parents exactly where they stand — built around real championship words.</p>
         <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:24px">
-          <button data-act="goSignup" style="padding:15px 26px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),0 8px 22px color-mix(in srgb,var(--accent) 40%,transparent)">Start free →</button>
+          <button data-act="goSignup" style="padding:15px 26px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge),0 8px 22px color-mix(in srgb,var(--accent) 40%,transparent)">Start free →</button>
           <button data-act="goSignin" style="padding:15px 24px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:16px">I have an account</button>
         </div>
         <div style="display:flex;align-items:center;gap:16px;color:var(--muted);font-size:13.5px;font-weight:600"><span>★★★★★ <b style="color:var(--text)">4.9</b> parents</span><span style="width:1px;height:14px;background:var(--line)"></span><span>No card to start</span></div>
@@ -858,7 +858,7 @@ function viewAuth(){
       <input data-inp="onEmail" data-fkey="email" value="${escA(S.email)}" type="email" placeholder="you@email.com" autocomplete="off" style="width:100%;padding:13px 14px;border-radius:13px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:600;margin-bottom:14px;outline:none">
       <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Password</label>
       <input data-inp="onPw" data-fkey="pw" value="${escA(S.pw)}" type="password" placeholder="••••••••" autocomplete="off" style="width:100%;padding:13px 14px;border-radius:13px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:600;margin-bottom:20px;outline:none">
-      <button data-act="doAuth" style="width:100%;padding:15px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">${signup?'Create account':'Sign in'}</button>
+      <button data-act="doAuth" style="width:100%;padding:15px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">${signup?'Create account':'Sign in'}</button>
       <div style="text-align:center;margin-top:16px;font-size:14px;color:var(--muted)">${signup?'Already have an account?':'New to Spellbound?'} <button data-act="swapAuth" style="color:var(--accent);font-weight:800;font-size:14px">${signup?'Sign in':'Create one'}</button></div>
       <div style="text-align:center;margin-top:18px"><button data-act="goLanding" style="color:var(--muted);font-size:13px;font-weight:600">← Back</button></div>
     </div>
@@ -907,7 +907,7 @@ function viewOnboarding(){
       ${card}
       <div style="display:flex;justify-content:space-between;gap:12px;margin-top:18px">
         <button data-act="onbBack" style="padding:13px 20px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:700;font-size:15px">${S.onbStep===0?'Cancel':'Back'}</button>
-        <button data-act="onbNext" style="flex:1;max-width:240px;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);opacity:${(S.onbStep===0&&!S.draft.name.trim())?'.5':'1'}">${S.onbStep===2?'Start spelling →':'Continue'}</button>
+        <button data-act="onbNext" style="flex:1;max-width:240px;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge);opacity:${(S.onbStep===0&&!S.draft.name.trim())?'.5':'1'}">${S.onbStep===2?'Start spelling →':'Continue'}</button>
       </div>
     </div>
   </div>`;
@@ -997,7 +997,7 @@ function streakCard(){ const c=active(); ensureLists(c); const t=todayKey(); con
   const days=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); days.push({on:played.has(k), today:k===t, dn:['S','M','T','W','T','F','S'][d.getDay()]}); }
   const dots=days.map(d=>`<div style="display:flex;flex-direction:column;align-items:center;gap:3px"><span style="width:17px;height:17px;border-radius:5px;display:inline-block;background:${d.on?'var(--accent)':'var(--surface2)'};${d.today?'box-shadow:0 0 0 2px var(--accent)':''}"></span><span style="font-size:9px;color:var(--muted);font-weight:700">${d.dn}</span></div>`).join('');
   const playedToday=played.has(t); const next=[3,7,14,30].find(m=>m>(c.streak||0));
-  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.06)">
+  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--sh-rest)">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
       <div style="display:flex;align-items:center;gap:11px"><div style="width:42px;height:42px;border-radius:12px;background:color-mix(in srgb,#FF8A3D 18%,var(--bg2));color:#FF7A1A;display:grid;place-items:center">${iconSVG('fire',24)}</div><div><div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1">${c.streak||0}-day streak</div><div style="font-size:12px;color:var(--muted);font-weight:600">Best ${c.streakBest||c.streak||0} · ${playedToday?'practised today ✓':'practise today to keep it going'}</div></div></div>
       ${next?`<div style="text-align:right"><div style="font-size:12px;color:var(--muted);font-weight:700">Next reward</div><div style="display:flex;align-items:center;gap:5px;justify-content:flex-end;font-weight:800;font-size:13.5px;color:var(--accent)">${next}-day · ${coinAmt(STREAK_REWARDS[next],12)}</div></div>`:'<div style="font-weight:800;font-size:13px;color:var(--accent)">All rewards earned ✓</div>'}
@@ -1040,41 +1040,48 @@ function viewHome(){
       <div style="position:relative;font-size:13px;color:rgba(255,255,255,.96);line-height:1.45;margin-bottom:14px">${j.desc}</div>
       <div style="position:relative;margin-top:auto;height:7px;border-radius:99px;background:rgba(255,255,255,.3);overflow:hidden"><div style="height:100%;border-radius:99px;background:#fff;width:${j.pct}"></div></div></button>`; }
     const badgeStyle = j.kind==='lock' ? 'background:var(--surface2);color:var(--muted)' : ('background:color-mix(in srgb,'+j.accent+' 15%,transparent);color:'+j.accent);
-    return `<button class="sb-lift" data-act="${j.goAct}" ${arg} style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.07);display:flex;flex-direction:column">
+    return `<button class="sb-lift" data-act="${j.goAct}" ${arg} style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:var(--sh-rest);display:flex;flex-direction:column">
       <div style="display:flex;justify-content:space-between;align-items:start;gap:8px;margin-bottom:13px"><div style="width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,${j.c1},${j.c2});color:#fff;display:grid;place-items:center;box-shadow:0 4px 12px color-mix(in srgb,${j.accent} 38%,transparent)">${journeyArtSVG(j.sc,26)}</div><span style="display:inline-flex;align-items:center;gap:4px;white-space:nowrap;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:800;${badgeStyle}">${j.kind==='lock'?iconSVG('lock',11,2.2):''}${esc(j.badge)}</span></div>
       <div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15;margin-bottom:4px">${j.title}</div>
       <div style="font-size:13px;color:var(--muted);line-height:1.45;margin-bottom:14px">${j.desc}</div>
       <div style="margin-top:auto;height:7px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:99px;background:${j.accent};width:${j.pct}"></div></div></button>`;
   }).join('');
   return `<div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:18px">
-      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--glow);display:flex;align-items:center;gap:18px">
-        <div style="width:84px;height:94px;flex-shrink:0;animation:sb-float 4.5s ease-in-out infinite">${mascotSVG(S.mood)}</div>
-        <div style="min-width:0">
-          <div style="font-size:13px;color:var(--muted);font-weight:700">${greeting}</div>
+    ${(()=>{ const lp=getList(c,aKey); const lf=levelFromXp(lp.xp||0); const xpToNext=Math.max(0,(lf.need||1)-(lf.into||0));
+      const bub=goalPctNum>=100?'Goal smashed — bonus rounds are pure treasure!':('Spell '+Math.max(0,goalTarget-S.goalDone)+' more — let\'s buzz!');
+      return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-bottom:18px">
+      <div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:var(--r-xl,20px);padding:22px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:18px">
+        <div style="position:relative;flex-shrink:0">
+          <div style="width:84px;height:94px;animation:sb-bee-bob 3.4s ease-in-out infinite">${mascotSVG(S.mood)}</div>
+          <div style="position:absolute;left:64px;top:-16px;white-space:nowrap;background:var(--paper,#fff);border:1px solid var(--line);border-radius:12px;border-bottom-left-radius:3px;padding:6px 10px;font-size:12px;font-weight:650;color:var(--ink,var(--text));box-shadow:var(--sh-rest)">${bub}</div>
+        </div>
+        <div style="min-width:0;flex:1">
+          <div style="font-size:13px;color:var(--muted);font-weight:650">${greeting}</div>
           <div style="font-family:var(--display);font-weight:800;font-size:clamp(22px,3.6vw,28px);line-height:1.1">${esc(c.name)}</div>
           <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px">
-            <span style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">${iconSVG('flame',14)} ${c.streak||0}-day streak</span>
-            <span style="padding:5px 11px;border-radius:999px;background:var(--surface2);font-weight:800;font-size:12.5px">${evo[fIdx]} · Lv ${aLevel}</span>
-            <span style="padding:5px 11px;border-radius:999px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:12.5px">Overall Lv ${oLevel}</span>
+            <span style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">${iconSVG('flame',14)} ${c.streak||0}-day streak</span>
+            <span style="padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--surface2);font-weight:800;font-size:13px">${evo[fIdx]} · Lv ${aLevel}</span>
+          </div>
+          <div style="margin-top:11px">
+            <div style="display:flex;justify-content:space-between;gap:8px;font-size:12px;font-weight:650;color:var(--muted);margin-bottom:5px"><span>Evolution — next: ${fIdx>=9?'top form!':evo[fIdx+1]}</span><span style="color:var(--treasure-deep,#8A5B00);white-space:nowrap">${xpToNext} XP to go</span></div>
+            <div style="height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden"><div style="height:100%;border-radius:inherit;background:var(--treasure,#F0B429);width:${Math.min(100,Math.round((lf.into||0)/(lf.need||1)*100))}%"></div></div>
           </div>
         </div>
       </div>
-      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.06);display:flex;align-items:center;gap:20px">
+      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:20px">
         <div style="width:92px;height:92px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(var(--accent) ${goalPctNum}%, var(--surface2) 0)">
           <div style="width:70px;height:70px;border-radius:50%;background:var(--bg2);display:grid;place-items:center;text-align:center"><div><div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1">${S.goalDone}/${goalTarget}</div><div style="font-size:10px;color:var(--muted);font-weight:700">today</div></div></div>
         </div>
         <div style="min-width:0">
           <div style="font-family:var(--display);font-weight:800;font-size:18px;margin-bottom:3px">Daily goal</div>
           <div style="font-size:13.5px;color:var(--muted);line-height:1.45;margin-bottom:12px">${goalPctNum>=100?'Goal smashed for today — amazing!':('Spell '+Math.max(0,goalTarget-S.goalDone)+' more to hit today’s goal.')}</div>
-          <button data-act="openCoach" style="padding:11px 18px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14.5px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">${S.goalDone>0?'Continue →':'Start practice →'}</button>
+          <button data-act="openCoach" style="padding:11px 18px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">${S.goalDone>0?'Continue →':'Start practice →'}</button>
         </div>
       </div>
-      ${streakCard()}
-    </div>
+    </div>`; })()}
     <div style="font-family:var(--display);font-weight:800;font-size:16px;margin:4px 2px 12px">Keep going</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:18px">${journeys}</div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.06)">
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--sh-rest)">
       <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:6px;flex-wrap:wrap">
         <div style="font-family:var(--display);font-weight:800;font-size:17px">Your evolution</div>
         <div style="font-size:12.5px;color:var(--muted);font-weight:600">You're <b style="color:var(--text)">${evo[fIdx]}</b> — ${fIdx>=9?'top form reached! 🎉':('next: '+evo[fIdx+1])}</div>
@@ -1168,7 +1175,7 @@ function conceptCardHTML(ch, allChs){
     : `<span style="padding:3px 9px;border-radius:99px;font-family:var(--body);font-weight:800;font-size:11px;color:#fff;background:${dc}">${(diffMap[ch.difficulty]||diffMap.medium)[0]}</span>`;
   const footR=`<span style="font-family:var(--body);font-weight:800;font-size:12px;color:${f.c};white-space:nowrap">${locked?'Unlock':(nWords+' words')} →</span>`;
   const prog=(!locked && !st.done && st.m>0)?`<div style="font-family:var(--mono);font-size:11px;color:${f.c};font-weight:700;margin-top:7px">${st.m}/${st.total} mastered</div>`:'';
-  return `<button class="sb-cover-card" data-act="${locked?'buyConcept':'openConcept'}" data-arg="${ci}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px var(--line),0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column;${locked?'opacity:.97':''}">
+  return `<button class="sb-cover-card" data-act="${locked?'buyConcept':'openConcept'}" data-arg="${ci}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column;${locked?'opacity:.97':''}">
     ${cover}
     <div style="padding:14px 15px 15px;display:flex;flex-direction:column;flex:1">
       <div style="font-family:var(--display);font-weight:800;font-size:16px;line-height:1.15;color:var(--text)">${esc(titleClean)}</div>
@@ -1182,7 +1189,7 @@ function conceptCardHTML(ch, allChs){
 function conceptBigCard(ch, allChs){
   const ci=allChs.indexOf(ch); const st=conceptStat(ch); const locked=!isConceptUnlocked(ci);
   const tag=locked?`<span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;font-size:12px;font-weight:900;color:#a06a00;background:linear-gradient(135deg,#FFE08A,#F0B85C)">${iconSVG('lock',12,2.2)} Locked</span>`:`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:99px;font-size:12px;font-weight:800;background:${st.bg};color:${st.fg}">${st.done?'✓ Mastered':(st.label+(st.total?(' · '+st.m+'/'+st.total):''))}</span>`;
-  const cta=locked?`<button data-act="buyConcept" data-arg="${ci}" style="padding:12px 20px;border-radius:13px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.14)">🔓 Unlock · ${coinAmt(COST.concept,12)}</button>`:`<button data-act="openConcept" data-arg="${ci}" style="padding:12px 20px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Open &amp; study · ${st.total} words →</button>`;
+  const cta=locked?`<button data-act="buyConcept" data-arg="${ci}" style="padding:12px 20px;border-radius:13px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.14)">🔓 Unlock · ${coinAmt(COST.concept,12)}</button>`:`<button data-act="openConcept" data-arg="${ci}" style="padding:12px 20px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Open &amp; study · ${st.total} words →</button>`;
   return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:clamp(20px,4vw,28px);box-shadow:var(--glow)">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px"><span style="font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700">${esc(catGroup(ch.category))}</span><span style="${diffStyleFor(ch.difficulty)}">${(diffMap[ch.difficulty]||diffMap.medium)[0]}</span></div>
     <div style="font-family:var(--display);font-weight:800;font-size:clamp(22px,4.5vw,28px);line-height:1.12;margin-bottom:4px;display:flex;align-items:center;gap:9px">${locked?`<span style="color:var(--muted);display:inline-flex">${iconSVG('lock',22,2.2)}</span>`:''}${esc(conceptShort(ch.title))}</div>
@@ -1204,7 +1211,7 @@ function conceptChapters(){ const chs=state.conceptData||[]; if(state._cchap && 
   out._n=chs.length; state._cchap=out; return out; }
 function conceptChapterStat(chap){ const done=chap.items.filter(c=>conceptStat(c).done).length; return { done, total:chap.items.length, complete:done>=chap.items.length }; }
 function chapterCoverCard(chap){ const f=CONCEPT_FAM[chap.name]||CONCEPT_FAM.Advanced; const st=conceptChapterStat(chap); const pct=st.total?Math.round(st.done/st.total*100):0;
-  return `<button class="sb-cover-card" data-act="openConceptChapter" data-arg="${chap.n-1}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px var(--line),0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">
+  return `<button class="sb-cover-card" data-act="openConceptChapter" data-arg="${chap.n-1}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
     <div style="position:relative;height:94px;display:flex;align-items:center;justify-content:center;${famCoverBG(chap.name)}">
       <span style="position:absolute;top:11px;left:12px;font-family:var(--mono);font-weight:700;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">Chapter</span>
       ${st.complete?'<span style="position:absolute;bottom:9px;right:10px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
@@ -1407,7 +1414,7 @@ function conceptPlayer(){ const ch=state.conceptSel; if(!ch) return ''; const an
     <div style="padding:13px 16px 15px">
       <div style="display:flex;gap:5px;margin-bottom:10px">${an.scenes.map((s,i)=>`<button data-act="animTo" data-arg="${i}" style="flex:1;height:5px;border-radius:99px;background:${i<=sc?'var(--accent)':'var(--surface2)'}"></button>`).join('')}</div>
       <div style="font-size:13.5px;color:var(--text);line-height:1.5;min-height:40px;font-weight:600">${esc(an.scenes[sc].cap)}</div>
-      <div style="display:flex;align-items:center;gap:8px;margin-top:9px"><button data-act="conceptReplay" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.16)">${iconSVG('volume',14)} ${playing?'Replay':'Watch & listen'}</button><span style="font-family:var(--mono);font-size:11px;color:var(--muted)">Scene ${sc+1}/${N}</span></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:9px"><button data-act="conceptReplay" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">${iconSVG('volume',14)} ${playing?'Replay':'Watch & listen'}</button><span style="font-family:var(--mono);font-size:11px;color:var(--muted)">Scene ${sc+1}/${N}</span></div>
     </div>
   </div>`; }
 function viewConceptDetail(){
@@ -1417,12 +1424,12 @@ function viewConceptDetail(){
   (csel.cards||[]).forEach(cc=>steps.push({kind:'card',title:cc.title,body:cc.body}));
   const total=steps.length; const idx=Math.min(Math.max(S.conceptStep||0,0),total-1); const step=steps[idx];
   const dots=steps.map((s,i)=>`<button data-act="conceptStepGo" data-arg="${i}" style="height:7px;border-radius:99px;flex:1;background:${i<=idx?'var(--accent)':'var(--surface2)'}" title="${s.kind==='anim'?'Animated explainer':escA(s.title||'')}"></button>`).join('');
-  const genericCard=(st)=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:24px;min-height:170px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.07)">
+  const genericCard=(st)=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:24px;min-height:170px;box-shadow:var(--sh-rest)">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><span style="width:30px;height:30px;flex-shrink:0;border-radius:9px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG(st.kind==='method'?'spark':'book',16)}</span><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.2">${esc(st.title||'')}</div></div>
       <div style="font-size:15px;line-height:1.65;color:var(--text);${st.kind==='method'?'white-space:pre-line':''}">${st.kind==='method'?st.html:esc(st.body||'')}</div>
     </div>`;
   const stepContent = step.kind==='anim' ? conceptPlayer() : genericCard(step);
-  const stepNav = (idx>0||idx<total-1) ? `<div style="display:flex;gap:10px;margin-bottom:14px">${idx>0?`<button data-act="conceptPrev" style="padding:12px 18px;border-radius:12px;background:var(--surface2);color:var(--text);font-weight:800;font-size:14.5px">← Back</button>`:''}${idx<total-1?`<button data-act="conceptNext" style="flex:1;padding:12px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">${idx===0?'Read more →':'Next card →'}</button>`:''}</div>` : '';
+  const stepNav = (idx>0||idx<total-1) ? `<div style="display:flex;gap:10px;margin-bottom:14px">${idx>0?`<button data-act="conceptPrev" style="padding:12px 18px;border-radius:12px;background:var(--surface2);color:var(--text);font-weight:800;font-size:14.5px">← Back</button>`:''}${idx<total-1?`<button data-act="conceptNext" style="flex:1;padding:12px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${idx===0?'Read more →':'Next card →'}</button>`:''}</div>` : '';
   return `<div style="animation:sb-rise .35s ease both;max-width:780px">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><button data-act="conceptBack" style="color:var(--muted);font-weight:700;font-size:14px">← All concepts</button></div>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700">${esc(csel.category)}</span><span style="${diffStyleFor(csel.difficulty)}">${(diffMap[csel.difficulty]||diffMap.medium)[0]}</span></div>
@@ -1437,7 +1444,7 @@ function viewConceptDetail(){
     </div>
     <button data-act="conceptWordsToggle" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:15px 18px;font-family:var(--display);font-weight:800;font-size:15px;color:var(--text);margin-bottom:12px"><span>${(S.conceptWordsOpen?'Hide word study':'Study the words one by one')+' · '+cw.length}</span><span style="color:var(--accent)">${S.conceptWordsOpen?'▲':'▼'}</span></button>
     ${S.conceptWordsOpen?`<div style="margin-bottom:22px;animation:sb-rise .3s ease both">${wordFlash(cw.map(x=>({w:x.w,d:x.def||'',s:x.ex||'',p:x.say||'',o:''})), S.conceptWordIdx, 'conceptWordNav', {})}</div>`:''}
-    <button data-act="practiseConcept" style="width:100%;padding:16px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);margin-top:12px">Practise these words →</button>
+    <button data-act="practiseConcept" style="width:100%;padding:16px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge);margin-top:12px">Practise these words →</button>
   </div>`;
 }
 
@@ -1458,7 +1465,7 @@ function sessionResults(){
   const c=active(); const lk=S.sessionListKey; let advBtn='';
   try{ if(lk && lk!=='__lesson__' && lk!=='__retry__' && !S.coachSession && stageComplete(c,lk) && listStageIdx(c,lk)<listStages(lk).length-1){
     const nextN=listStageIdx(c,lk)+2;
-    advBtn=`<button data-act="advanceStage" data-arg="${escA(lk)}" style="flex:1;min-width:100%;padding:15px;border-radius:14px;background:var(--good);color:#fff;font-weight:800;font-size:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">${iconSVG('check',16)} Level cleared — go to Level ${nextN} →</button>`;
+    advBtn=`<button data-act="advanceStage" data-arg="${escA(lk)}" style="flex:1;min-width:100%;padding:15px;border-radius:14px;background:var(--good);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">${iconSVG('check',16)} Level cleared — go to Level ${nextN} →</button>`;
   } }catch(e){}
   return `<div style="max-width:720px;margin:0 auto;animation:sb-rise .35s ease both">
     <div style="text-align:center;margin-bottom:18px"><div style="width:78px;height:86px;margin:0 auto 8px">${mascotSVG(mood)}</div>
@@ -1467,7 +1474,7 @@ function sessionResults(){
     <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px">${col('Spelled correctly',ok,true)}${col('Misspelt',bad,false)}</div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       ${advBtn}
-      ${bad.length?`<button data-act="drillMisspelt" style="flex:1;min-width:200px;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15.5px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Spell the ${bad.length} misspelt word${bad.length>1?'s':''} →</button>`:''}
+      ${bad.length?`<button data-act="drillMisspelt" style="flex:1;min-width:200px;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15.5px;box-shadow:var(--edge)">Spell the ${bad.length} misspelt word${bad.length>1?'s':''} →</button>`:''}
       <button data-act="restartSession" style="flex:1;min-width:160px;padding:14px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15.5px">${iconSVG('arrow',16)} Restart the list</button>
       <button data-act="exitTrain" style="padding:14px 18px;border-radius:14px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:15.5px">Done</button>
     </div>
@@ -1489,12 +1496,12 @@ function trainerCard(){
   const mascotAnim=st==='wrong'?'animation:sb-shake .45s ease':(st==='correct'?'animation:sb-pop .4s ease':'');
   return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow);text-align:center;position:relative">
       <div style="width:96px;height:108px;margin:0 auto 4px"><div style="${mascotAnim};width:96px;height:108px">${mascotSVG(S.mood)}</div></div>
-      <button data-act="speak" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);margin-bottom:18px">${iconSVG('volume',18)} Hear the word</button>
+      <button data-act="speak" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:18px">${iconSVG('volume',18)} Hear the word</button>
       <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:18px">${tchip(S.showDef,'Definition','toggleDef')}${tchip(S.showSent,'Sentence','toggleSent')}${tchip(S.showOrigin,'Origin','toggleOrigin')}</div>
       ${hints.length?`<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:left;font-size:14.5px;line-height:1.6;margin-bottom:18px">${hints.join('  ·  ')}</div>`:''}
       <input data-inp="onType" data-key="trainKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="spell it" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;text-align:center;padding:16px 14px;border-radius:15px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(20px,5vw,28px);letter-spacing:.14em;text-transform:lowercase;outline:none;margin-bottom:16px">
       ${showResult?`<div style="${resultStyle}">${esc(resultText)}</div>`:''}
-      <div style="display:flex;gap:10px"><button data-act="reveal" style="padding:14px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Show answer</button><button data-act="primary" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">${primaryLabel}</button></div>
+      <div style="display:flex;gap:10px"><button data-act="reveal" style="padding:14px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Show answer</button><button data-act="primary" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">${primaryLabel}</button></div>
     </div>`;
 }
 function viewTrain(){
@@ -1519,7 +1526,7 @@ function wordFlash(words, idx, navAct, opts){
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:clamp(20px,4vw,28px);box-shadow:var(--glow);text-align:center;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center">
       <div style="display:flex;align-items:center;justify-content:center;gap:11px">
         <div style="font-family:var(--display);font-weight:800;font-size:clamp(26px,5.5vw,36px);line-height:1.05">${esc(w.w)}</div>
-        <button data-act="say" data-arg="${escA(w.w)}" aria-label="Hear the word" title="Hear the word" style="width:42px;height:42px;flex-shrink:0;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">${iconSVG('volume',20)}</button>
+        <button data-act="say" data-arg="${escA(w.w)}" aria-label="Hear the word" title="Hear the word" style="width:42px;height:42px;flex-shrink:0;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',20)}</button>
       </div>
       ${w.sy?`<div style="font-family:var(--mono);font-size:12.5px;color:var(--accent);font-weight:700;letter-spacing:.04em;margin-top:3px">${esc(w.sy)}</div>`:''}
       <div style="font-size:15px;color:var(--text);line-height:1.5;margin-top:8px">${esc(w.d)}</div>
@@ -1533,7 +1540,7 @@ function wordFlash(words, idx, navAct, opts){
     </div>
     <div style="display:flex;align-items:center;gap:10px;margin-top:14px">
       <button data-act="${navAct}" data-arg="prev" style="padding:13px 18px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;${i<=0?'opacity:.4;pointer-events:none':''}">← Back</button>
-      <button data-act="${navAct}" data-arg="next" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);${i>=N-1?'opacity:.5;pointer-events:none':''}">${i>=N-1?'All done ✓':'Next →'}</button>
+      <button data-act="${navAct}" data-arg="next" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge);${i>=N-1?'opacity:.5;pointer-events:none':''}">${i>=N-1?'All done ✓':'Next →'}</button>
     </div>`;
 }
 // live progress heatmap of a word set — colours update as words are mastered/missed
@@ -1553,8 +1560,8 @@ function liveHeatmap(words, opts){
   const legend=[['var(--good)','Mastered'],['var(--bad)','Missed'],['var(--surface2)','New']].map(([c,l])=>`<span style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);font-weight:700"><span style="width:11px;height:11px;border-radius:3px;background:${c};display:inline-block"></span>${l}</span>`).join('');
   const pct=Math.round(m/N*100);
   const toggle=(anon?`<button data-act="toggleHeat" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:9px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12px;white-space:nowrap">${iconSVG(reveal?'eyeoff':'eye',14)} ${reveal?'Hide words':'Show words'}</button>`:'')
-    +(opts.print?`<button data-act="printOpen" title="Print this word list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:9px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12px;white-space:nowrap">🖨 Print</button>`:'');
-  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:18px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.06)">
+    +(opts.print?`<button data-act="printOpen" title="Print this word list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:9px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12px;white-space:nowrap">${SB_ICON('printer',{size:16})} Print</button>`:'');
+  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:18px;box-shadow:var(--sh-rest)">
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:11px"><div style="font-family:var(--display);font-weight:800;font-size:15px">Live progress</div><div style="flex:1;min-width:90px;height:7px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:99px;background:var(--accent);width:${pct}%;transition:width .35s"></div></div><div style="font-size:12.5px;color:var(--muted);font-weight:700;white-space:nowrap">${m}/${N} mastered${missed?(' · '+missed+' to review'):''}</div>${toggle}</div>
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">${cells}</div>
     <div style="display:flex;flex-wrap:wrap;gap:14px">${legend}</div>
@@ -1632,7 +1639,7 @@ function parentAnalytics(){ const s=parentSignals(); let rd=0; try{ rd=coachRead
   const tips=parentTips().map(t=>`<div style="display:flex;gap:11px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);border-radius:13px;background:var(--surface)">
       <span style="flex-shrink:0;margin-top:1px;padding:4px 9px;border-radius:99px;background:var(--chip);color:var(--accent);font-weight:800;font-size:10.5px;white-space:nowrap">${TIP_CAT_LABEL[t.cat]||t.cat}</span>
       <div style="min-width:0"><div style="font-size:13.5px;line-height:1.5;color:var(--text);font-weight:600">${esc(t.text)}</div><div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:3px">Why now: ${esc(t.why)}</div></div></div>`).join('');
-  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.06)">
+  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:var(--sh-rest)">
     <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px"><div style="font-family:var(--display);font-weight:800;font-size:16px">Parent analytics</div><span style="font-size:12px;color:var(--muted);font-weight:700">readiness across five signals</span></div>
     <p style="margin:0 0 14px;font-size:12.5px;color:var(--muted)">All computed on this device from the practice log — no internet, no AI.</p>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:16px">${bars}</div>
@@ -1668,7 +1675,7 @@ function viewBuilder(){ const S=state; const b=bldState(); const picked=bldPick(
   const preview=picked.slice(0,18).map(w=>`<span style="font-family:var(--mono);font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:7px;background:var(--surface2);border:1px solid var(--line)">${esc(w.w)}</span>`).join('');
   return `<div style="animation:sb-rise .35s ease both">
     ${pageHead('List Builder','pick · build · print','Build a custom word list with five taps — or pick a ready-made list below. Every list gets its own Level ladder.')}
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.06)">
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest)">
       ${row('1 · Difficulty','how hard the words are',['easy','medium','hard','champion','mixed'].map(d=>btn('diff',d,d[0].toUpperCase()+d.slice(1),b.diff)).join(''))}
       ${row('2 · List size','how many words',[24,60,120,240,480].map(s=>btn('size',String(s),s+' words',String(b.size))).join(''))}
       ${row('3 · Source','which word pool to draw from',srcs.map(([k,l])=>btn('src',k,l,b.src)).join(''))}
@@ -1680,9 +1687,9 @@ function viewBuilder(){ const S=state; const b=bldState(); const picked=bldPick(
         ${n&&n<b.size?`<div style="font-size:11.5px;color:var(--muted);font-weight:700">only ${n} match — loosen a filter for more</div>`:''}
       </div>
       ${n?`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px">${preview}${n>18?`<span style="font-size:11.5px;color:var(--muted);font-weight:700;align-self:center">+${n-18} more</span>`:''}</div>`:''}
-      <button data-act="bldCreate" ${n?'':'disabled'} style="width:100%;padding:14px;border-radius:13px;background:${n?'var(--accent)':'var(--surface2)'};color:${n?'#fff':'var(--muted)'};font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.15)">${n?('Create list & start training → ('+n+' words · '+lv+' '+(lv===1?'Level':'Levels')+')'):'No words match yet'}</button>
+      <button data-act="bldCreate" ${n?'':'disabled'} style="width:100%;padding:14px;border-radius:13px;background:${n?'var(--accent)':'var(--surface2)'};color:${n?'#fff':'var(--muted)'};font-weight:800;font-size:15px;box-shadow:var(--edge)">${n?('Create list & start training → ('+n+' words · '+lv+' '+(lv===1?'Level':'Levels')+')'):'No words match yet'}</button>
     </div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.06)">
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--sh-rest)">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px">…or pick a ready-made list</div>
       <p style="font-size:12.5px;color:var(--muted);margin:0 0 12px">North South Finals, Scripps winners, origin lists and more — includes paste-your-own in Setup & lists.</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -1739,7 +1746,7 @@ function viewQuest(){
       sub:'Bring or build your list', desc:'Train on any list — North South Finals, Scripps Winning Words, or paste your own words and we enrich them with meanings, sentences and origins.',
       points:['Every ready-made list','Paste your own words','Same Level ladder & games'] },
   ].map((p,i)=>{ const cur=qp===p.id; const t=CONCEPT_TEX[p.tex]||CONCEPT_TEX.stripes;
-    return `<button class="sb-cover-card" data-act="questPick" data-arg="${p.id}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 ${cur?'2px '+p.c1:'1px var(--line)'},0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">
+    return `<button class="sb-cover-card" data-act="questPick" data-arg="${p.id}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 ${cur?'2px '+p.c1:'1px var(--line)'},var(--sh-rest);display:flex;flex-direction:column">
       <div style="position:relative;height:112px;display:grid;place-items:center;background-color:${p.c1};background-image:${t[0]},linear-gradient(135deg,${p.c1},${p.c2});background-size:${t[1]},100% 100%">
         ${cur?'<span style="position:absolute;top:10px;right:11px;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.94);color:'+p.c1+';font-weight:900;font-size:11px">Current path ✓</span>':''}
         <div style="color:#fff">${journeyArtSVG(p.sc,54)}</div>
@@ -1749,7 +1756,7 @@ function viewQuest(){
         <div style="font-family:var(--mono);font-weight:700;font-size:12px;color:${p.c1};margin-top:3px">${p.sub}</div>
         <div style="font-family:var(--body);font-size:13px;line-height:1.5;color:var(--muted);margin:9px 0 11px">${p.desc}</div>
         <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:13px">${p.points.map(x=>`<span style="display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--text)"><span style="width:6px;height:6px;border-radius:50%;background:${p.c1};flex-shrink:0"></span>${x}</span>`).join('')}</div>
-        <span style="margin-top:auto;display:inline-flex;align-items:center;justify-content:center;padding:11px;border-radius:12px;font-weight:800;font-size:14px;${cur?('background:var(--surface2);color:'+p.c1):('background:'+p.c1+';color:#fff;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)')}">${cur?'Continue this path →':(qp?'Switch to this path →':'Choose this path →')}</span>
+        <span style="margin-top:auto;display:inline-flex;align-items:center;justify-content:center;padding:11px;border-radius:12px;font-weight:800;font-size:14px;${cur?('background:var(--surface2);color:'+p.c1):('background:'+p.c1+';color:#fff;box-shadow:var(--edge)')}">${cur?'Continue this path →':(qp?'Switch to this path →':'Choose this path →')}</span>
       </div></button>`; }).join('');
   return `<div style="animation:sb-rise .35s ease both">
     ${pageHead("Champion's Quest",'one quest · three paths','Pick the path that fits today — the other two stay one tap away in your list row, with all progress kept.')}
@@ -1760,7 +1767,7 @@ function viewQuest(){
 function viewProgress(){
   const c=active();
   const stats=[{v:(c.xp||124),k:'Words mastered'},{v:(c.acc||88)+'%',k:'Accuracy'},{v:c.streak||12,k:'Day streak'},{v:'Lv '+(c.level||9),k:'Current level'}]
-    .map(s=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:15px;padding:18px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.07)"><div style="font-family:var(--display);font-weight:800;font-size:26px;color:var(--accent)">${s.v}</div><div style="font-size:12.5px;color:var(--muted);font-weight:700">${s.k}</div></div>`).join('');
+    .map(s=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:15px;padding:18px;box-shadow:var(--sh-rest)"><div style="font-family:var(--display);font-weight:800;font-size:26px;color:var(--accent)">${s.v}</div><div style="font-size:12.5px;color:var(--muted);font-weight:700">${s.k}</div></div>`).join('');
   const wk=c.week&&c.week.length?c.week:[12,20,15,30,18,25,22]; const maxW=Math.max(...wk,1); const days=['M','T','W','T','F','S','S'];
   const week=wk.map((m,i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;height:100%;justify-content:flex-end"><div style="width:100%;border-radius:7px 7px 4px 4px;background:var(--accent);height:${Math.round((m/maxW)*100)}%;min-height:5px;opacity:${m?'1':'.3'}"></div><div style="font-size:11px;color:var(--muted);font-weight:700">${days[i]}</div></div>`).join('');
   // ---- real per-list heatmap: dropdown over activated lists, plus All ----
@@ -1792,12 +1799,13 @@ function viewProgress(){
   return `<div style="animation:sb-rise .35s ease both">
     ${pageHead('Progress','this week','Mastery, accuracy and streak at a glance — and where each word stands.')}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px">${stats}</div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.06)">
+    <div style="margin-bottom:18px">${streakCard()}</div>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:var(--sh-rest)">
       <div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:16px">This week</div>
       <div style="display:flex;align-items:flex-end;gap:9px;height:120px">${week}</div>
     </div>
     ${parentAnalytics()}
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.06)">
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--sh-rest)">
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:16px">Word heatmap <span style="color:var(--muted);font-weight:700;font-size:12.5px">· by list</span></div>${hDrop}</div>
       ${hBody}
       <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:14px">${legend}</div>
@@ -1807,8 +1815,8 @@ function viewProgress(){
 
 function parentReviseCard(){ const c=active(); const misses=(c.missed||[]); const top=misses.slice(0,14);
   const chips=top.map(m=>`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:99px;background:var(--surface2);border:1px solid var(--line);font-weight:700;font-size:12.5px"><span style="font-family:var(--mono)">${esc(m.w)}</span>${(m.n>1)?`<span style="color:var(--bad);font-weight:800">×${m.n}</span>`:''}</span>`).join('');
-  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-top:18px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.06)">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px"><div style="font-family:var(--display);font-weight:800;font-size:16px">Words to revise <span style="color:var(--muted);font-weight:700">· ${misses.length}</span></div>${misses.length?`<button data-act="reviseMisses" style="padding:9px 16px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Revise these →</button>`:''}</div>
+  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-top:18px;box-shadow:var(--sh-rest)">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px"><div style="font-family:var(--display);font-weight:800;font-size:16px">Words to revise <span style="color:var(--muted);font-weight:700">· ${misses.length}</span></div>${misses.length?`<button data-act="reviseMisses" style="padding:9px 16px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge)">Revise these →</button>`:''}</div>
     ${misses.length?`<div style="display:flex;flex-wrap:wrap;gap:7px">${chips}${misses.length>14?`<span style="padding:5px 10px;font-size:12.5px;color:var(--muted);font-weight:700">+${misses.length-14} more</span>`:''}</div>`:`<p style="margin:0;font-size:13.5px;color:var(--muted)">No misses logged yet — every word so far has been spelled right. 🎉</p>`}
   </div>`; }
 function parentActivityCard(){ const S=state; const c=active(); const acts=(c.activity||[]).slice(0,12);
@@ -1822,7 +1830,7 @@ function parentActivityCard(){ const S=state; const c=active(); const acts=(c.ac
       </button>
       ${(open&&hasDetail)?`<div style="padding:0 13px 12px;font-size:12.5px;color:var(--muted);line-height:1.6"><b style="color:var(--bad)">Missed:</b> <span style="font-family:var(--mono)">${a.misses.map(esc).join(', ')}</span></div>`:''}
     </div>`; }).join('');
-  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-top:18px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.06)">
+  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-top:18px;box-shadow:var(--sh-rest)">
     <div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:4px">Activity log</div>
     <div style="font-size:12.5px;color:var(--muted);margin-bottom:12px">Everything ${esc(c.name||'your speller')} has done — tap a row to see the missed words.</div>
     ${acts.length?rows:`<p style="margin:0;font-size:13.5px;color:var(--muted)">No activity yet. Play a game or a practice round and it’ll show up here.</p>`}
@@ -1832,8 +1840,8 @@ function viewParent(){
   const S=state;
   const sub=S.premium
     ? {ic:'crown',title:'Premium',body:'4 worlds, half the concepts & uncapped levels. Earn coins for the rest.',btn:'Manage',btnStyle:'padding:10px 16px;border-radius:12px;background:var(--surface2);color:var(--text);font-weight:800;font-size:14px',cardStyle:'background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 16%,var(--bg2)),var(--bg2));border:1px solid var(--accent);border-radius:18px;padding:20px;box-shadow:var(--glow)'}
-    : {ic:'spark',title:'Free plan',body:'2 worlds & Level-Up to Level 5. Earn 🪙 coins to unlock more, or go Premium.',btn:'Upgrade',btnStyle:'padding:10px 18px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)',cardStyle:'background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.06)'};
-  const kids=(S.children.length?S.children:[demo()]).map((k,i)=>`<div style="background:var(--bg2);border:1px solid ${i===S.activeIdx?'var(--accent)':'var(--line)'};border-radius:16px;padding:18px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.07)">
+    : {ic:'spark',title:'Free plan',body:'2 worlds & Level-Up to Level 5. Earn 🪙 coins to unlock more, or go Premium.',btn:'Upgrade',btnStyle:'padding:10px 18px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)',cardStyle:'background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--sh-rest)'};
+  const kids=(S.children.length?S.children:[demo()]).map((k,i)=>`<div style="background:var(--bg2);border:1px solid ${i===S.activeIdx?'var(--accent)':'var(--line)'};border-radius:16px;padding:18px;box-shadow:var(--sh-rest)">
       <div style="display:flex;align-items:center;gap:13px;margin-bottom:16px"><div style="width:48px;height:48px;border-radius:13px;background:var(--surface2);display:grid;place-items:center">${buddySVG(k.avatar,28)}</div>
         <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:17px">${esc(k.name)}</div><div style="font-size:12.5px;color:var(--muted);font-weight:600">Age ${k.age} · ${THEME_LABEL[k.theme]||'Spellbound'}</div></div>
         <button data-act="selectChild" data-arg="${i}" style="padding:7px 13px;border-radius:10px;font-weight:800;font-size:12.5px;${i===S.activeIdx?'background:var(--chip);color:var(--accent)':'background:var(--surface2);color:var(--text)'}">${i===S.activeIdx?'Active':'Switch'}</button>
@@ -1843,7 +1851,7 @@ function viewParent(){
         <div style="background:var(--surface);border-radius:11px;padding:11px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:18px">${k.acc||0}%</div><div style="font-size:10.5px;color:var(--muted);font-weight:700">ACCURACY</div></div>
         <div style="background:var(--surface);border-radius:11px;padding:11px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:18px">${k.streak||0}</div><div style="font-size:10.5px;color:var(--muted);font-weight:700">STREAK</div></div>
       </div></div>`).join('');
-  const parentBtns=`<button data-act="printReport" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:12px;background:var(--surface2);color:var(--text);font-weight:800;font-size:14px;border:1px solid var(--line)">${iconSVG('print',15)} Weekly report</button><button data-act="addChild" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">${iconSVG('plus',15)} Add child</button>`;
+  const parentBtns=`<button data-act="printReport" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:12px;background:var(--surface2);color:var(--text);font-weight:800;font-size:14px;border:1px solid var(--line)">${iconSVG('print',15)} Weekly report</button><button data-act="addChild" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">${iconSVG('plus',15)} Add child</button>`;
   return `<div style="animation:sb-rise .35s ease both">
     ${pageHead('Parent dashboard','',`Track ${esc(active().name||'your speller')}, manage spellers and print a weekly report.`,parentBtns)}
     <div style="${sub.cardStyle}"><div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="width:46px;height:46px;border-radius:13px;background:var(--chip);color:var(--accent);display:grid;place-items:center;flex-shrink:0">${iconSVG(sub.ic,26)}</div>
@@ -1853,7 +1861,7 @@ function viewParent(){
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">${kids}</div>
     ${parentReviseCard()}
     ${parentActivityCard()}
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-top:18px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.06)">
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-top:18px;box-shadow:var(--sh-rest)">
       <div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:6px">Countdown to the Finals</div>
       <div style="font-size:13.5px;color:var(--muted);margin-bottom:14px">North South Foundation National Finals</div>
       <div style="display:flex;align-items:baseline;gap:10px"><div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent)">${daysToBee()}</div><div style="font-size:14px;color:var(--muted);font-weight:700">days to go · 31 Jul 2026</div></div>
@@ -1891,7 +1899,7 @@ function lessonCoverCard(L){
     ${dn?'<span style="position:absolute;bottom:9px;right:10px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
     <div class="sb-theme-art" style="text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.16);animation-delay:${(L.n%9)*0.22}s"><div style="font-family:var(--display);color:#fff;line-height:1;letter-spacing:-.01em;font-style:italic;font-weight:700;font-size:${heroFont(hero)}px">${esc(hero)}</div></div>
   </div>`;
-  return `<button class="sb-cover-card" data-act="openLesson" data-arg="${L.n}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px var(--line),0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">
+  return `<button class="sb-cover-card" data-act="openLesson" data-arg="${L.n}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
     ${cover}
     <div style="padding:14px 15px 15px;display:flex;flex-direction:column;flex:1">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.18;color:var(--text)">${esc(L.title)}</div>
@@ -1916,7 +1924,7 @@ function lessonBigCard(L){ const dn=lessonComplete(L); const u=lessonUnits().fin
       <p style="font-size:14.5px;line-height:1.6;color:var(--text);margin:0 0 18px">${mdInline(trunc(L.bigIdea||L.story||'',200))}</p>
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
         <span style="padding:4px 11px;border-radius:99px;font-family:var(--body);font-weight:800;font-size:12px;color:#fff;background:${dc}">${L.diff?titleCase(L.diff):'Medium'}</span>
-        <button data-act="openLesson" data-arg="${L.n}" style="padding:12px 20px;border-radius:13px;background:${f.c};color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Open &amp; study · ${nW} words →</button>
+        <button data-act="openLesson" data-arg="${L.n}" style="padding:12px 20px;border-radius:13px;background:${f.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Open &amp; study · ${nW} words →</button>
       </div>
     </div>
   </div>`; }
@@ -1933,7 +1941,7 @@ function viewJourneys(){ const S=state; if(S.lessonSel) return viewLesson();
         <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 8px">Word Journeys</h2>
         <p style="color:var(--muted);font-size:14.5px;line-height:1.6;margin:0 0 18px">A 100‑lesson tour through the history &amp; geography of words — from Proto‑Indo‑European roots to Latin, Greek, Norse and beyond. Learn the stories behind spellings, then drill the words from each lesson.</p>
         <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:18px">${units.slice(0,5).map(u=>`<span style="padding:5px 11px;border-radius:99px;background:var(--surface2);font-size:12px;font-weight:700;color:var(--muted)">${esc(trunc(u.title,22))}</span>`).join('')}</div>
-        <button data-act="goPaywall" style="padding:14px 24px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Unlock with Premium 👑</button>
+        <button data-act="goPaywall" style="padding:14px 24px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">Unlock with Premium 👑</button>
       </div></div>`;
   }
   const guided=S.journeyView==='guided';
@@ -1944,7 +1952,7 @@ function viewJourneys(){ const S=state; if(S.lessonSel) return viewLesson();
     wrapStyle='max-width:680px;margin:0 auto';
     main=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><span style="font-size:12.5px;color:var(--muted);font-weight:700;white-space:nowrap">Lesson ${i+1} of ${N}</span><div style="flex:1;height:7px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:99px;background:var(--accent);width:${Math.round((i+1)/N*100)}%;transition:width .3s"></div></div></div>
       ${lessonBigCard(curL)}
-      <div style="display:flex;align-items:center;gap:10px;margin-top:14px"><button data-act="journeyPagePrev" style="padding:13px 18px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;${i<=0?'opacity:.4;pointer-events:none':''}">← Back</button><button data-act="journeyPageNext" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);${i>=N-1?'opacity:.5;pointer-events:none':''}">${i>=N-1?'End of the path ✓':'Next lesson →'}</button></div>`;
+      <div style="display:flex;align-items:center;gap:10px;margin-top:14px"><button data-act="journeyPagePrev" style="padding:13px 18px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;${i<=0?'opacity:.4;pointer-events:none':''}">← Back</button><button data-act="journeyPageNext" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge);${i>=N-1?'opacity:.5;pointer-events:none':''}">${i>=N-1?'End of the path ✓':'Next lesson →'}</button></div>`;
   } else {
     const gridStyle='display:grid;grid-template-columns:repeat(auto-fill,minmax(236px,1fr));gap:14px';
     headDesc='The history &amp; geography of words, in 10 eras — read a lesson, then practise its five words.';
@@ -2053,7 +2061,7 @@ function themeCard(t){ const c=active(); const cl=themeClusters().find(x=>x.id==
   const key=themeKey(t.id); const pinned=!!((c.pinnedLists||{})[key]); const st=themeStat(t.id);
   const lvl=listStageIdx(c,key)+1;
   const done=st.total>0 && st.m/st.total>=PATTERN_DONE_PCT;
-  return `<div class="sb-cover-card" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px ${pinned?cl.c:'var(--line)'},0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">
+  return `<div class="sb-cover-card" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px ${pinned?cl.c:'var(--line)'},var(--sh-rest);display:flex;flex-direction:column">
     <div style="position:relative;height:104px;display:flex;align-items:center;justify-content:center;padding:12px;${themeCoverBG(cl)}">
       <span style="position:absolute;top:10px;left:11px;font-family:var(--mono);font-weight:700;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(cl.label)}</span>
       ${done?'<span style="position:absolute;bottom:8px;right:9px;width:21px;height:21px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:12px">✓</span>':''}
@@ -2068,7 +2076,7 @@ function themeCard(t){ const c=active(); const cl=themeClusters().find(x=>x.id==
         <span style="font-family:var(--mono);font-size:10px;color:var(--muted);font-weight:700;white-space:nowrap">${st.m}/${fmtN(st.total)}</span>
       </div>
       <div style="margin-top:auto;padding-top:11px;display:flex;gap:7px">
-        <button data-act="themePractice" data-arg="${t.id}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:11px;background:${cl.c};color:#fff;font-weight:800;font-size:12.5px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.16)">${iconSVG('pencil',13)} Practice</button>
+        <button data-act="themePractice" data-arg="${t.id}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:11px;background:${cl.c};color:#fff;font-weight:800;font-size:12.5px;box-shadow:var(--edge)">${iconSVG('pencil',13)} Practice</button>
         <button data-act="addTheme" data-arg="${t.id}" title="${pinned?'In your lists — tap to open in Word Coach':'Add to your lists (top bar in Practice)'}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:11px;font-weight:800;font-size:12.5px;${pinned?`background:color-mix(in srgb,${cl.c} 13%,var(--bg2));border:1px solid ${cl.c};color:${cl.c}`:'background:var(--surface2);border:1px solid var(--line);color:var(--text)'}">${pinned?('✓ L'+lvl):'+ Add'}</button>
       </div>
     </div>
@@ -2113,15 +2121,15 @@ function viewLesson(){ const S=state; const L=S.lessonSel; const dn=lessonComple
   if(L.bigIdea) steps.push({tag:'Big idea',ic:'bulb',body:`<p style="margin:0;font-size:16px;line-height:1.62;font-weight:600;color:var(--text)">${mdInline(L.bigIdea)}</p>`});
   if(L.story) steps.push({tag:'The story',ic:'book',body:`<p style="margin:0;font-size:15px;line-height:1.68;color:var(--text)">${mdInline(L.story)}</p>`});
   if(L.pattern) steps.push({tag:'The pattern',ic:'search',body:`<p style="margin:0;font-size:15px;line-height:1.68;color:var(--text)">${mdInline(L.pattern)}</p>`});
-  steps.push({tag:'The five words',ic:'spark',body:`${wordCards}<button data-act="practiseLesson" style="width:100%;margin-top:6px;padding:13px;border-radius:13px;background:${f.c};color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Practise these 5 words →</button>`});
+  steps.push({tag:'The five words',ic:'spark',body:`${wordCards}<button data-act="practiseLesson" style="width:100%;margin-top:6px;padding:13px;border-radius:13px;background:${f.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Practise these 5 words →</button>`});
   if(L.connection) steps.push({tag:'The connection',ic:'link',body:`<p style="margin:0;font-size:15px;line-height:1.68;color:var(--text)">${mdInline(L.connection)}</p>`});
   if(practiceHTML) steps.push({tag:'Try with a grown-up',ic:'pencil',body:practiceHTML});
   const N=steps.length; const idx=Math.min(Math.max(S.lessonStep||0,0),N-1); const step=steps[idx];
   const dots=steps.map((s,i)=>`<button data-act="lessonStepGo" data-arg="${i}" style="height:7px;border-radius:99px;flex:1;background:${i<=idx?f.c:'var(--surface2)'}" title="${esc(s.tag)}"></button>`).join('');
   const last=idx>=N-1;
   const nextBtn=last
-    ? (L.n<100?`<button data-act="openLesson" data-arg="${L.n+1}" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Next lesson →</button>`:`<button data-act="lessonBack" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Finish ✓</button>`)
-    : `<button data-act="lessonStepNext" style="flex:1;padding:14px;border-radius:14px;background:${f.c};color:#fff;font-weight:800;font-size:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Next card →</button>`;
+    ? (L.n<100?`<button data-act="openLesson" data-arg="${L.n+1}" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">Next lesson →</button>`:`<button data-act="lessonBack" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">Finish ✓</button>`)
+    : `<button data-act="lessonStepNext" style="flex:1;padding:14px;border-radius:14px;background:${f.c};color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">Next card →</button>`;
   return `<div style="max-width:660px;margin:0 auto;animation:sb-rise .35s ease both">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><button data-act="lessonBack" style="color:var(--muted);font-weight:700;font-size:14px">← All lessons</button><span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:700"><span style="font-family:var(--mono)">${L.id}</span> · <span style="text-transform:capitalize">${L.diff}</span> <span style="width:9px;height:9px;border-radius:50%;background:${DIFF_DOT[L.diff]}"></span></span></div>
     <div style="font-family:var(--mono);font-weight:700;font-size:11.5px;color:${f.c};margin-bottom:3px">Chapter ${L.unit} · ${esc(capWords(u.title))}</div>
@@ -2159,7 +2167,7 @@ function viewEvoFeedback(){ const S=state; const themes=Object.keys(EV_NOMEN);
     return `<div style="margin-bottom:18px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:9px;display:flex;align-items:center;gap:8px"><span style="width:14px;height:14px;border-radius:4px;background:linear-gradient(135deg,${(EV_TC[t]||EV_TC.spellbound).a},${(EV_TC[t]||EV_TC.spellbound).b})"></span>${esc(THEME_LABEL[t]||t)}</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px">${tiles}</div></div>`;
   }).join('');
   return `<div style="max-width:760px;margin:0 auto">
-    <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:6px"><button data-act="goSettings" style="color:var(--muted);font-weight:700;font-size:14px">← Settings</button><span style="font-family:var(--display);font-weight:800;font-size:22px">Design feedback</span><span style="margin-left:auto;display:inline-flex;align-items:center;gap:10px"><span style="font-size:12.5px;color:var(--muted);font-weight:700">${reviewed}/80 reviewed</span><button data-act="evoExport" style="padding:9px 16px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Export →</button></span></div>
+    <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:6px"><button data-act="goSettings" style="color:var(--muted);font-weight:700;font-size:14px">← Settings</button><span style="font-family:var(--display);font-weight:800;font-size:22px">Design feedback</span><span style="margin-left:auto;display:inline-flex;align-items:center;gap:10px"><span style="font-size:12.5px;color:var(--muted);font-weight:700">${reviewed}/80 reviewed</span><button data-act="evoExport" style="padding:9px 16px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge)">Export →</button></span></div>
     <p style="margin:0 0 14px;color:var(--muted);font-size:14px">All 80 evolution tiles (8 worlds × 10 levels). Give per-tile feedback, then export it.</p>
     ${editor}${sections}
   </div>`; }
@@ -2174,10 +2182,10 @@ function viewSettings(){
   const _voices=enVoices();
   const _nat=(n)=>/natural|enhanced|premium|siri|google|neural|online/i.test(n);
   const voiceOpts=['<option value="">Auto · best available</option>'].concat(_voices.map(v=>`<option value="${escA(v.name)}"${VOICE.name===v.name?' selected':''}>${esc(v.name)}${_nat(v.name)?' ✨':''}</option>`)).join('');
-  const voiceCard=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.06)">
+  const voiceCard=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest)">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px">
         <div><div style="font-family:var(--display);font-weight:800;font-size:16px">Voice</div><div style="font-size:13px;color:var(--muted)">The voice that reads words &amp; sentences aloud</div></div>
-        <button data-act="voiceTest" style="padding:11px 18px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);white-space:nowrap">▶ Test</button>
+        <button data-act="voiceTest" style="padding:11px 18px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge);white-space:nowrap">▶ Test</button>
       </div>
       <div style="position:relative"><select data-chg="voiceSetDevice" style="width:100%;appearance:none;-webkit-appearance:none;padding:13px 36px 13px 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:14px;cursor:pointer">${voiceOpts}</select><span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--accent);font-size:11px">▼</span></div>
       <p style="font-size:12px;color:var(--muted);line-height:1.55;margin:12px 0 0">Spellbound picks the smoothest voice your device offers — no account or key, fully offline. Voices marked ✨ are the most natural. ${_voices.length?'':'<b style="color:var(--text)">Voices load a moment after opening</b> — reopen Settings to see the full list. '}</p>
@@ -2185,25 +2193,25 @@ function viewSettings(){
     </div>`;
   return `<div style="max-width:640px">
     <h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:0 0 16px">Settings</h2>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.06)">
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest)">
       <div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:3px">World</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Each world is a different look and a character that evolves as you level up.</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:11px">${themes}</div>
     </div>
     ${voiceCard}
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.06);display:flex;align-items:center;justify-content:space-between;gap:14px">
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
       <div><div style="font-family:var(--display);font-weight:800;font-size:16px">Background</div><div style="font-size:13px;color:var(--muted)">Tinted paper or pure white</div></div>
       <div style="display:flex;background:var(--surface2);border-radius:999px;padding:3px"><button data-act="setLight" style="${seg(S.mode==='light')}">Light</button><button data-act="setWhite" style="${seg(S.mode==='white')}">White</button></div>
     </div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.06);display:flex;align-items:center;justify-content:space-between;gap:14px">
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
       <div><div style="font-family:var(--display);font-weight:800;font-size:16px">Sound effects</div><div style="font-size:13px;color:var(--muted)">Dings, coins &amp; celebrations during games</div></div>
       <button data-act="toggleSound" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:12px;background:${S.sound?'var(--accent)':'var(--surface2)'};color:${S.sound?'#fff':'var(--muted)'};font-weight:800;font-size:14px">${S.sound?'🔊 On':'🔇 Off'}</button>
     </div>
-    <div style="background:var(--bg2);border:1px solid ${S.devUnlock?'var(--accent)':'var(--line)'};border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.06);display:flex;align-items:center;justify-content:space-between;gap:14px">
+    <div style="background:var(--bg2);border:1px solid ${S.devUnlock?'var(--accent)':'var(--line)'};border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
       <div style="min-width:0"><div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:16px">${iconSVG('lock',16)} Unlock everything <span style="font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:99px">testing</span></div><div style="font-size:13px;color:var(--muted)">Unlocks all concepts, lists, worlds &amp; every level — no coins or Premium needed.</div></div>
       <button data-act="toggleDevUnlock" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:12px;background:${S.devUnlock?'var(--accent)':'var(--surface2)'};color:${S.devUnlock?'#fff':'var(--muted)'};font-weight:800;font-size:14px">${S.devUnlock?'🔓 On':'Off'}</button>
     </div>
-    <button data-act="openEvoFeedback" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-radius:14px;background:var(--bg2);border:1px solid var(--line);box-shadow:inset 0 -3px 0 rgba(0,0,0,.06);margin-bottom:16px;color:var(--text)"><div style="text-align:left"><div style="font-family:var(--display);font-weight:800;font-size:16px">Design feedback</div><div style="font-size:12.5px;color:var(--muted)">Review the 80 evolution tiles &amp; export notes</div></div><span style="color:var(--accent)">${iconSVG('arrow',18)}</span></button>
+    <button data-act="openEvoFeedback" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-radius:14px;background:var(--bg2);border:1px solid var(--line);box-shadow:var(--sh-rest);margin-bottom:16px;color:var(--text)"><div style="text-align:left"><div style="font-family:var(--display);font-weight:800;font-size:16px">Design feedback</div><div style="font-size:12.5px;color:var(--muted)">Review the 80 evolution tiles &amp; export notes</div></div><span style="color:var(--accent)">${iconSVG('arrow',18)}</span></button>
     <button data-act="signOut" style="width:100%;padding:14px;border-radius:14px;background:var(--surface2);color:var(--bad);font-weight:800;font-size:15px">Sign out</button>
   </div>`;
 }
@@ -2256,17 +2264,17 @@ function coachTrain(){
         <span style="width:27px;height:27px;border-radius:8px;flex-shrink:0;background:linear-gradient(135deg,${cc},color-mix(in srgb,${cc} 70%,#1c1030 30%))"></span>
         <span style="min-width:0"><span style="display:block;font-weight:800;font-size:12.5px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(dockLabel(k))}</span><span style="font-size:10.5px;color:var(--muted);font-weight:700">Level ${listStageIdx(c,k)+1}</span></span></button>
       <button data-act="dockMenu" data-arg="${escA(k)}" aria-label="List options" style="flex-shrink:0;width:26px;height:26px;border-radius:7px;color:var(--muted);display:grid;place-items:center;background:${open?'var(--surface2)':'transparent'};font-weight:800;font-size:15px;line-height:1">⋯</button>
-      ${open?`<div style="position:absolute;top:calc(100% + 4px);right:4px;z-index:40;background:var(--bg2);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.2);padding:6px;min-width:170px;animation:sb-pop .18s ease both">
-        <button data-act="pauseList" data-arg="${escA(k)}" style="display:flex;align-items:baseline;gap:7px;width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-weight:800;font-size:12.5px;color:var(--text)">⏸ Pause <span style="color:var(--muted);font-weight:600;font-size:10.5px">keeps progress</span></button>
-        ${CORE_LISTS[k]?'':`<button data-act="dockRemove" data-arg="${escA(k)}" style="display:flex;align-items:center;gap:7px;width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-weight:800;font-size:12.5px;color:var(--bad)">✕ Remove <span style="color:var(--muted);font-weight:600;font-size:10.5px">re-add from Setup</span></button>`}
+      ${open?`<div style="position:absolute;top:calc(100% + 4px);right:4px;z-index:40;background:var(--bg2);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh-overlay);padding:6px;min-width:170px;animation:sb-pop .18s ease both">
+        <button data-act="pauseList" data-arg="${escA(k)}" style="display:flex;align-items:baseline;gap:7px;width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-weight:800;font-size:12.5px;color:var(--text)">${SB_ICON('pause',{size:16})} Pause <span style="color:var(--muted);font-weight:600;font-size:10.5px">keeps progress</span></button>
+        ${CORE_LISTS[k]?'':`<button data-act="dockRemove" data-arg="${escA(k)}" style="display:flex;align-items:center;gap:7px;width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-weight:800;font-size:12.5px;color:var(--bad)">${SB_ICON('x',{size:16})} Remove <span style="color:var(--muted);font-weight:600;font-size:10.5px">re-add from Setup</span></button>`}
       </div>`:''}
     </div>`; }).join('');
-  const pausedShelf=pausedKeys.length?`<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)"><span style="font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700">Paused</span>${pausedKeys.map(k=>`<button data-act="resumeList" data-arg="${escA(k)}" title="Tap to resume training this list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:99px;border:1px dashed var(--line);background:transparent;color:var(--muted);font-weight:700;font-size:11.5px">▶ ${esc(dockLabel(k))} <span style="font-size:10px">L${listStageIdx(c,k)+1}</span></button>`).join('')}</div>`:'';
+  const pausedShelf=pausedKeys.length?`<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)"><span style="font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700">Paused</span>${pausedKeys.map(k=>`<button data-act="resumeList" data-arg="${escA(k)}" title="Tap to resume training this list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:99px;border:1px dashed var(--line);background:transparent;color:var(--muted);font-weight:700;font-size:11.5px">${SB_ICON('play',{size:14})} ${esc(dockLabel(k))} <span style="font-size:10px">L${listStageIdx(c,k)+1}</span></button>`).join('')}</div>`:'';
   const addBtn=`<button data-act="coachSetupOpen" style="white-space:nowrap;padding:8px 13px;border-radius:11px;font-weight:800;font-size:13px;border:1px dashed var(--line);background:transparent;color:var(--accent)">+ Add list</button>`;
   const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:14px">← Home</button><span style="font-family:var(--display);font-weight:800;font-size:22px;margin-left:4px">Word Coach</span><button data-act="openQuestChooser" title="Change your quest path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} Quest path</button><span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">${iconSVG('target',14)} ${daysToBee()} days to the bee</span></div>`;
   const allWordsBtn=`<button data-act="luToggleWords" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:8px 13px;border-radius:11px;font-weight:800;font-size:13px;border:1px solid ${S.luWordsOpen?'var(--accent)':'var(--line)'};background:var(--surface2);color:var(--text)">${iconSVG('grid',14)} All words <span style="color:var(--muted);font-weight:700">${fullList.length}</span> ${S.luWordsOpen?'▴':'▾'}</button>`;
-  const newSetBtn = fullList.length>WORK_MAX ? `<button data-act="newBatch" title="Swap in a fresh set of words from this list" style="white-space:nowrap;padding:8px 13px;border-radius:11px;font-weight:800;font-size:13px;border:1px solid var(--line);background:var(--surface2);color:var(--text)">🔄 New set</button>` : '';
-  const chipsRow=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:12px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.05)">
+  const newSetBtn = fullList.length>WORK_MAX ? `<button data-act="newBatch" title="Swap in a fresh set of words from this list" style="white-space:nowrap;padding:8px 13px;border-radius:11px;font-weight:800;font-size:13px;border:1px solid var(--line);background:var(--surface2);color:var(--text)">${SB_ICON('retry',{size:16})} New set</button>` : '';
+  const chipsRow=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:12px;box-shadow:var(--sh-rest)">
     <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:stretch">${bigTile}<div style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:7px;justify-content:center">${smallTiles||'<div style="font-size:12px;color:var(--muted);font-weight:600;padding:4px 2px">Add another list to switch between quests — each keeps its own Level ladder.</div>'}</div></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">${addBtn}${allWordsBtn}${newSetBtn}</div>
     ${pausedShelf}
@@ -2282,13 +2290,13 @@ function coachTrain(){
     const prow=(t,btns)=>`<div style="margin-bottom:13px"><div style="font-size:12px;color:var(--muted);font-weight:800;margin-bottom:7px">${t}</div><div style="display:flex;gap:6px;flex-wrap:wrap">${btns}</div></div>`;
     const nWords=(p.scope==='level'?listWords(key):listFullWords(key)).length;
     return `<div style="position:fixed;inset:0;z-index:90;background:rgba(20,12,50,.45);display:grid;place-items:center;padding:18px" data-act="printClose">
-      <div data-act="noop" style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:22px;max-width:430px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);cursor:default">
-        <div style="display:flex;align-items:center;gap:9px;margin-bottom:4px"><span style="font-size:18px">🖨</span><span style="font-family:var(--display);font-weight:800;font-size:17px">Print word list</span><button data-act="printClose" style="margin-left:auto;color:var(--muted);font-weight:800">✕</button></div>
+      <div data-act="noop" style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:22px;max-width:430px;width:100%;box-shadow:var(--sh-overlay);cursor:default">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:4px"><span style="display:inline-flex;color:var(--action)">${SB_ICON('printer',{size:20})}</span><span style="font-family:var(--display);font-weight:800;font-size:17px">Print word list</span><button data-act="printClose" style="margin-left:auto;color:var(--muted);font-weight:800">✕</button></div>
         <p style="font-size:12.5px;color:var(--muted);margin:0 0 15px">${esc(listLabel(key).split(' · ')[0])} — opens a clean page you can print or save as PDF.</p>
         ${prow('What to include',[['words','Words only'],['say','Words + pronunciation'],['full','Words + pronunciation + meaning']].map(([v,l])=>pbtn('depth',v,l)).join(''))}
         ${prow('Page size',[['letter','Letter'],['a4','A4'],['a5','A5']].map(([v,l])=>pbtn('page',v,l)).join(''))}
         ${prow('Scope',[['level','This Level'],['all','Whole list']].map(([v,l])=>pbtn('scope',v,l)).join(''))}
-        <button data-act="printGo" style="width:100%;padding:13px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14.5px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Print ${nWords} words →</button>
+        <button data-act="printGo" style="width:100%;padding:13px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">Print ${nWords} words →</button>
       </div></div>`; })() : '';
   // ---- one Level header (Word→Set→Level→Champ→Library) ----
   const levelHeadline = isJourney
@@ -2301,13 +2309,13 @@ function coachTrain(){
   let advanceHTML;
   if(lastStage && stageDone){ advanceHTML=`<div style="margin-top:10px;font-size:12.5px;color:var(--good);font-weight:800">🏆 Every level cleared — legendary!</div>`; }
   else if(stageDone && libLocked){ advanceHTML=`<div style="margin-top:11px;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:11px 13px"><div style="font-weight:800;font-size:13px;margin-bottom:3px">🏆 You're a Spellbound Champ!</div><div style="font-size:11.5px;color:var(--muted);line-height:1.5;margin-bottom:9px">The Champion's Library — the other ${fmtN(journeyTotal()-champWordCount())} words — is Premium.</div><button data-act="goPaywall" style="padding:9px 15px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">Unlock the Library 👑</button></div>`; }
-  else if(stageDone){ advanceHTML=`<button data-act="advanceStage" data-arg="${escA(key)}" style="margin-top:11px;width:100%;padding:12px;border-radius:11px;background:var(--good);color:#fff;font-weight:800;font-size:14.5px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Level ${stage.n} cleared! Go to ${advanceTo} →</button>`; }
-  else { advanceHTML=`<div style="margin-top:11px"><button data-act="openChallenge" data-arg="${escA(key)}" style="width:100%;padding:12px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">⚡ Take the Level ${stage.n} Challenge</button></div><div style="margin-top:8px;font-size:11px;color:var(--muted);line-height:1.5">Master all ${stage.words.length} words to level up — or pass the Challenge to test out early.</div>`; }
+  else if(stageDone){ advanceHTML=`<button data-act="advanceStage" data-arg="${escA(key)}" style="margin-top:11px;width:100%;padding:12px;border-radius:11px;background:var(--good);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">Level ${stage.n} cleared! Go to ${advanceTo} →</button>`; }
+  else { advanceHTML=`<div style="margin-top:11px"><button data-act="openChallenge" data-arg="${escA(key)}" style="width:100%;padding:12px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">⚡ Take the Level ${stage.n} Challenge</button></div><div style="margin-top:8px;font-size:11px;color:var(--muted);line-height:1.5">Master all ${stage.words.length} words to level up — or pass the Challenge to test out early.</div>`; }
   const tracker = isJourney
     ? `<div style="display:flex;gap:3px;margin-top:11px">${Array.from({length:CHAMP_LEVELS},(_,i)=>`<span style="flex:1;height:5px;border-radius:99px;background:${(uiLevel>i+1||(uiLevel===i+1&&stageDone))?'var(--good)':(uiLevel===i+1?'var(--accent)':'var(--line)')}"></span>`).join('')}</div><div style="font-size:10px;color:var(--muted);margin-top:5px">20 levels to Spellbound Champ${uiLevel>CHAMP_LEVELS?' ✓ — now exploring the Library':''}</div>`
     : `<div style="display:flex;gap:4px;margin-top:11px">${stages.map((s,i)=>`<span style="flex:1;height:5px;border-radius:99px;background:${(i<sIdx||(i===sIdx&&stageDone))?'var(--good)':(i===sIdx?'var(--accent)':'var(--line)')}"></span>`).join('')}</div>`;
   const libMeter = isJourney ? `<div style="margin-top:11px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:7px"><span style="font-weight:800;color:var(--text)">Library explored</span> ${fmtN(journeyMastered(c))} / ${fmtN(journeyTotal())} words mastered</div>` : '';
-  const levelBlock=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.06)">
+  const levelBlock=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:16px;box-shadow:var(--sh-rest)">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px">${titleRow}<div style="font-size:12.5px;color:var(--muted);font-weight:700">You're <b style="color:var(--text)">${form}</b></div></div>
       <div style="background:var(--surface2);border:1px solid var(--line);border-radius:13px;padding:13px 15px;margin-bottom:12px">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:3px">${levelTag}<span style="font-size:11.5px;color:var(--muted);font-weight:700">${stageM}/${stage.words.length} mastered</span></div>
@@ -2366,7 +2374,7 @@ function listCoverBG(k){ const f=listCoverOf(k); const t=CONCEPT_TEX[f.tex]||CON
 function listCoverCard(k,label,sub,count,locked){ const c=active(); const on=(c.activeList||'default')===k; const f=listCoverOf(k); const act=locked?'buyList':'selectList';
   const lvl=(getList(c,k).stage||0)+1;
   const stMeta = (k==='journey') ? (' · Level '+(listStageIdx(c,'journey')+1)) : ((on && !locked) ? (' · Level '+(listStageIdx(c,k)+1)+'/'+listStages(k).length) : '');
-  return `<button class="sb-cover-card" data-act="${act}" data-arg="${k}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px ${on?f.c:'var(--line)'},0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">
+  return `<button class="sb-cover-card" data-act="${act}" data-arg="${k}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px ${on?f.c:'var(--line)'},var(--sh-rest);display:flex;flex-direction:column">
     <div style="position:relative;height:88px;display:flex;align-items:center;justify-content:center;padding:12px;${listCoverBG(k)}">
       <span style="position:absolute;top:10px;left:11px;font-family:var(--mono);font-weight:700;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(f.tag)}</span>
       ${on?'<span style="position:absolute;top:9px;right:10px;padding:2px 8px;border-radius:99px;background:rgba(255,255,255,.92);color:#1fa377;font-weight:900;font-size:9.5px">ACTIVE</span>':''}
@@ -2444,7 +2452,7 @@ function coachHub(){
         <div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:4px">Today's plan</div>
         <div style="font-size:12.5px;color:var(--muted);margin-bottom:6px">Target list: <b style="color:var(--text)">${esc(S.coachTargetLabel)}</b>${phaseTag}</div>
         <p style="font-size:14px;line-height:1.5;margin:0 0 12px">${planText}</p>
-        ${recMap?`<button data-act="coachRec" style="width:100%;padding:13px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">${recMap[0]}</button>`:''}
+        ${recMap?`<button data-act="coachRec" style="width:100%;padding:13px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${recMap[0]}</button>`:''}
       </div>
       <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:18px"><div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:12px">Training modes</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${modes}</div></div>`;
   } else if(S.coachTab==='setup'){
@@ -2457,7 +2465,7 @@ function coachHub(){
         <div style="display:flex;align-items:center;gap:8px;margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--surface2)"><span style="color:var(--accent)">${iconSVG('target',18)}</span><div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:14px">${esc(S.coachTargetLabel)} · ${cat?cat.count:0} words</div><div style="font-size:12px;color:var(--muted)">${cat?esc(cat.sub):''}</div></div></div></div>
       <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:4px;display:flex;align-items:center;gap:8px"><span style="color:var(--accent)">${iconSVG('spark',16)}</span> Smart list with AI</div><p style="font-size:12.5px;color:var(--muted);margin:0 0 12px">Describe what you want to drill and Coach AI builds a list from the word database.</p>
         <input data-inp="setAiPrompt" data-fkey="aiPrompt" value="${escA(S.aiPrompt)}" placeholder="e.g. tricky silent-letter words for a 5th grader" style="width:100%;padding:13px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:600;font-size:14px;margin-bottom:10px">
-        <button data-act="generateAiList" style="width:100%;padding:13px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">${S.aiLoading?'Thinking…':'Generate smart list →'}</button>
+        <button data-act="generateAiList" style="width:100%;padding:13px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${S.aiLoading?'Thinking…':'Generate smart list →'}</button>
         ${S.aiError?`<div style="font-size:12.5px;color:var(--bad);font-weight:700;margin-top:10px">${esc(S.aiError)}</div>`:''}</div>
       <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:18px"><div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:4px;display:flex;align-items:center;gap:8px"><span style="color:var(--accent)">${iconSVG('upload',18)}</span> Bring your own words</div><p style="font-size:12.5px;color:var(--muted);margin:0 0 12px">Paste words (commas or new lines). We enrich them with definitions, sentences and origins from the database.</p>
         <textarea data-inp="setCustomText" data-fkey="customText" placeholder="silhouette, bouquet, mnemonic" style="width:100%;min-height:84px;resize:vertical;padding:13px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:600;font-size:14px;line-height:1.5;margin-bottom:10px;font-family:var(--body)">${esc(S.customText)}</textarea>
@@ -2497,11 +2505,11 @@ function coachWritten(){
     <div style="height:7px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-bottom:22px"><div style="height:100%;background:var(--accent);border-radius:99px;width:${Math.round(wr.i/wr.list.length*100)}%;transition:width .4s"></div></div>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow);text-align:center">
       <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 14px">Listen and type — no answer shown till the end</p>
-      <button data-act="wrSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);margin-bottom:16px">${iconSVG('volume',18)} Hear the word</button>
+      <button data-act="wrSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:16px">${iconSVG('volume',18)} Hear the word</button>
       <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:16px"><button data-act="wrSaySlow" style="padding:9px 14px;border-radius:999px;background:var(--surface2);font-weight:700;font-size:13px;border:1px solid var(--line)">Slow</button>${infoChip(S.wrInfoKey==='def','Definition','wrInfoDef')}${infoChip(S.wrInfoKey==='sent','Sentence','wrInfoSent')}${infoChip(S.wrInfoKey==='orig','Origin','wrInfoOrig')}</div>
       ${S.wrInfoKey?`<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:left;font-size:14.5px;line-height:1.6;margin-bottom:16px">${infoHTML}</div>`:''}
       <input data-inp="onType" data-key="wrKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="type here" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;text-align:center;padding:16px 14px;border-radius:15px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(20px,5vw,28px);letter-spacing:.14em;text-transform:lowercase;outline:none;margin-bottom:16px">
-      <button data-act="wrNext" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">${(wr.i+1<wr.list.length)?'Next word →':'Finish & score →'}</button>
+      <button data-act="wrNext" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">${(wr.i+1<wr.list.length)?'Next word →':'Finish & score →'}</button>
     </div>
   </div>`;
 }
@@ -2511,7 +2519,7 @@ function coachWrDone(){
   return `<div style="max-width:680px;margin:0 auto">
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:30px;text-align:center;box-shadow:var(--glow);margin-bottom:14px"><h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:0 0 8px">${pct>=80?'Strong round! 🏆':pct>=60?'Good effort 💪':'Keep training 🌱'}</h2><div style="font-family:var(--display);font-weight:800;font-size:48px;color:var(--accent);line-height:1">${pct}%</div><p style="color:var(--muted);font-weight:700;margin-top:6px">${ok} of ${wr.ans.length} correct</p></div>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:10px">Round results</div><div style="display:flex;flex-direction:column;gap:7px">${rows}</div></div>
-    <div style="display:flex;gap:10px;justify-content:center"><button data-act="exitCoachMode" style="padding:13px 18px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Back to Coach</button><button data-act="coachWeakDrill" style="padding:13px 18px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Drill the misses →</button></div>
+    <div style="display:flex;gap:10px;justify-content:center"><button data-act="exitCoachMode" style="padding:13px 18px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Back to Coach</button><button data-act="coachWeakDrill" style="padding:13px 18px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Drill the misses →</button></div>
   </div>`;
 }
 function coachOral(){
@@ -2520,12 +2528,12 @@ function coachOral(){
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><div style="font-family:var(--mono);font-size:13px;color:var(--muted)">Oral elimination · Round ${or.round+1} · Best ${S.coachBestRounds||0}</div><button data-act="exitCoachMode" style="color:var(--muted);font-weight:700;font-size:14px">✕ Exit</button></div>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow);text-align:center">
       <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 14px">Spell it out loud, letter by letter</p>
-      <button data-act="orSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);margin-bottom:16px">${iconSVG('volume',18)} Hear the word</button>
+      <button data-act="orSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:16px">${iconSVG('volume',18)} Hear the word</button>
       <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:16px"><button data-act="orSaySlow" style="padding:9px 14px;border-radius:999px;background:var(--surface2);font-weight:700;font-size:13px;border:1px solid var(--line)">Slow</button>${infoChip(S.orInfoKey==='def','Definition','orInfoDef')}${infoChip(S.orInfoKey==='sent','Sentence','orInfoSent')}${infoChip(S.orInfoKey==='orig','Origin','orInfoOrig')}</div>
       ${S.orInfoKey?`<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:left;font-size:14.5px;line-height:1.6;margin-bottom:16px">${infoHTML}</div>`:''}
       <input data-inp="onType" data-key="orKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="…type the letters" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;text-align:center;padding:16px 14px;border-radius:15px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(20px,5vw,28px);letter-spacing:.14em;text-transform:lowercase;outline:none;margin-bottom:14px">
       ${S.orFeedback?`<div style="color:#1f9d57;font-weight:800;font-size:14px;margin-bottom:12px">${esc(S.orFeedback)}</div>`:''}
-      <button data-act="orJudge" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Judge</button>
+      <button data-act="orJudge" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">Judge</button>
     </div>
   </div>`;
 }
@@ -2533,7 +2541,7 @@ function coachOrGone(){
   const S=state; const or=S.or; const w=(or&&or.last)?or.last.w:'';
   return `<div style="max-width:680px;margin:0 auto">
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:30px;text-align:center;box-shadow:var(--glow);margin-bottom:14px"><h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:0 0 10px">Eliminated 🛑</h2><p style="color:var(--muted);font-weight:700;margin:0 0 4px">The word was</p><div style="font-family:var(--display);font-weight:800;font-size:36px;color:var(--accent);line-height:1">${esc(w)}</div><p style="font-family:var(--mono);font-size:13px;color:var(--muted);margin-top:8px;letter-spacing:.12em">${esc(w.split('').join(' '))}</p><p style="color:var(--muted);font-weight:700;margin-top:14px">You survived <b style="color:var(--text)">${or?or.round:0}</b> rounds · best ${S.coachBestRounds||0}</p></div>
-    <div style="display:flex;gap:10px;justify-content:center"><button data-act="exitCoachMode" style="padding:13px 18px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Back to Coach</button><button data-act="startOral" style="padding:13px 18px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Try again →</button></div>
+    <div style="display:flex;gap:10px;justify-content:center"><button data-act="exitCoachMode" style="padding:13px 18px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Back to Coach</button><button data-act="startOral" style="padding:13px 18px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Try again →</button></div>
   </div>`;
 }
 
@@ -2709,7 +2717,7 @@ function challengeConfig(){ const S=state; const key=S.challengeKey||activeListK
     <p style="margin:0 0 18px;color:var(--muted);font-size:14px">Pick your format and difficulty. Pass the <b>This Level</b> challenge to <b>test out</b> and jump straight to the next Level.</p>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:18px">
       ${fmtRow}${amtRow}${bandRow}
-      <button data-act="chStart" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Start Challenge →</button>
+      <button data-act="chStart" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">Start Challenge →</button>
       ${S.chBand==='level'?`<div style="font-size:11.5px;color:var(--muted);margin-top:10px;text-align:center">Testing out of <b>Level ${lvl}</b> of ${esc(listLabel(key).split(' · ')[0])}.</div>`:''}
     </div>
   </div>`; }
@@ -2718,7 +2726,7 @@ function champDone(){ const g=state.game; const done=g.right+g.wrong; const acc=
     <div style="font-size:54px;margin:8px 0">${g.pass?'⭐':'💪'}</div>
     <h2 style="font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 6px">${g.pass?'Challenge passed!':'Good effort!'}</h2>
     <div style="font-size:15px;color:var(--muted);margin-bottom:16px">${g.right} right${g.fmt==='count'?(' of '+done):''} · ${acc}% accuracy · +${g.bonus} ${iconSVG('coin',14)}</div>
-    ${g.canAdvance?`<button data-act="champAdvance" style="width:100%;padding:14px;border-radius:14px;background:var(--good);color:#fff;font-weight:800;font-size:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);margin-bottom:10px">🎉 Level cleared — advance →</button>`:''}
+    ${g.canAdvance?`<button data-act="champAdvance" style="width:100%;padding:14px;border-radius:14px;background:var(--good);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge);margin-bottom:10px">🎉 Level cleared — advance →</button>`:''}
     ${(!g.canAdvance&&g.pass&&g.band==='level')?`<div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Nice — that wasn't your current Level, so no skip this time.</div>`:''}
     <div style="display:flex;gap:10px"><button data-act="chStart" style="flex:1;padding:13px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">Try again</button><button data-act="chExit" style="flex:1;padding:13px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px">Done</button></div>
   </div>`; }
@@ -2803,11 +2811,11 @@ function magicView(){ const g=state.game; const S=state;
     if(q.k==='spell'){
       const fb = g.revealed ? (g.ok?`<div style="border-radius:13px;padding:12px 15px;margin-bottom:12px;font-weight:800;background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good);animation:sb-pop .3s ease both">✓ Correct!</div>`:`<div style="border-radius:13px;padding:12px 15px;margin-bottom:12px;font-weight:800;background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad);animation:sb-pop .3s ease both">✗ It's “${esc(q.w.w)}”</div>`) : '';
       body=`<div style="text-align:center">
-        <button data-act="magicHear" style="display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:999px;background:${cl.c};color:#fff;font-weight:800;font-size:14.5px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);margin-bottom:14px">${iconSVG('volume',17)} Hear it again</button>
+        <button data-act="magicHear" style="display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:999px;background:${cl.c};color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge);margin-bottom:14px">${iconSVG('volume',17)} Hear it again</button>
         ${q.w.d?`<div style="font-size:13.5px;color:var(--muted);line-height:1.55;margin-bottom:14px;max-width:40em;margin-left:auto;margin-right:auto"><b style="color:var(--text)">Meaning.</b> ${esc(q.w.d)}</div>`:''}
         ${fb}
         <input data-inp="onType" data-key="magicKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="spell it" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" ${g.revealed?'disabled':''} style="width:100%;text-align:center;padding:15px 14px;border-radius:15px;background:var(--surface);border:2px solid ${g.revealed?(g.ok?'var(--good)':'var(--bad)'):'var(--line)'};color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(19px,4.5vw,26px);letter-spacing:.13em;text-transform:lowercase;outline:none;margin-bottom:12px">
-        ${g.revealed?'':`<button data-act="magicSubmit" style="width:100%;padding:13px;border-radius:13px;background:${cl.c};color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Check ✓</button>`}
+        ${g.revealed?'':`<button data-act="magicSubmit" style="width:100%;padding:13px;border-radius:13px;background:${cl.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Check ✓</button>`}
       </div>`;
     } else {
       const btns=q.choices.map(c=>{ const isPick=g.picked===c; const isAns=nkey(c)===nkey(q.w.w);
@@ -2830,13 +2838,13 @@ function magicView(){ const g=state.game; const S=state;
     <h2 style="font-family:var(--display);font-weight:800;font-size:25px;margin:0 0 4px">${r.win?(g.celebr&&g.celebr.mega?'MAGIC SQUARE!':'Square claimed! ⭐'):'So close!'}</h2>
     <div style="font-size:14.5px;color:var(--muted);font-weight:700">${esc(cell.label)} — ${r.right}/5 right${r.coins?(' · +'+r.coins+' 🪙 bonus'):''}</div>
     ${celebr}
-    <div style="display:flex;gap:10px;margin-top:16px">${r.win?'':`<button data-act="magicCell" data-arg="${g.cell}" style="flex:1;padding:13px;border-radius:13px;background:${cl.c};color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Try again →</button>`}${g.squareDone
-      ? `<button data-act="magicNew" style="flex:1;padding:13px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Round ${(g.round||1)+1} — 9 new themes →</button><button data-act="exitGame" style="padding:13px 16px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">Done</button>`
-      : `<button data-act="magicBoard" style="flex:1;padding:13px;border-radius:13px;background:${r.win?'var(--accent)':'var(--surface2)'};color:${r.win?'#fff':'var(--text)'};font-weight:800;font-size:15px;${r.win?'box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)':'border:1px solid var(--line)'}">Back to the board</button>`}</div>
+    <div style="display:flex;gap:10px;margin-top:16px">${r.win?'':`<button data-act="magicCell" data-arg="${g.cell}" style="flex:1;padding:13px;border-radius:13px;background:${cl.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Try again →</button>`}${g.squareDone
+      ? `<button data-act="magicNew" style="flex:1;padding:13px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Round ${(g.round||1)+1} — 9 new themes →</button><button data-act="exitGame" style="padding:13px 16px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">Done</button>`
+      : `<button data-act="magicBoard" style="flex:1;padding:13px;border-radius:13px;background:${r.win?'var(--accent)':'var(--surface2)'};color:${r.win?'#fff':'var(--text)'};font-weight:800;font-size:15px;${r.win?'box-shadow:var(--edge)':'border:1px solid var(--line)'}">Back to the board</button>`}</div>
   </div>`; }
 function gamesHub(){ const S=state;
   const champCard=`<button data-act="openChallenge" data-arg="journey" style="grid-column:1/-1;text-align:left;border-radius:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 6px 18px rgba(43,27,94,.18)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">${iconSVG('bolt',32)}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">Set timed or counted · pick a difficulty</div><div style="font-family:var(--display);font-weight:800;font-size:18px;line-height:1.15">Champ Challenge</div><div style="font-size:12px;color:rgba(255,255,255,.9)">Beat the clock or a set number — pass your Level to test out.</div></div><span style="padding:9px 16px;border-radius:11px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Set it up →</span></div></button>`;
-  const cards=champCard+GAMES.map(gm=>`<button class="sb-cover-card" data-act="playGame" data-arg="${gm.type}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px var(--line),0 2px 6px rgba(43,27,94,.05);display:flex;flex-direction:column">
+  const cards=champCard+GAMES.map(gm=>`<button class="sb-cover-card" data-act="playGame" data-arg="${gm.type}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
       <div style="position:relative;height:108px;display:flex;align-items:center;justify-content:center;padding:14px;${gameCoverBG(gm)}">
         <span style="position:absolute;top:11px;left:12px;font-family:var(--mono);font-weight:700;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(gm.tag)}</span>
         <div style="color:#fff;display:grid;place-items:center">${gameArtSVG(gm.type,58)}</div>
@@ -2906,11 +2914,11 @@ function typedGame(){ const S=state; const g=S.game; const w=g.list[g.i]; let st
   let bossFb=''; if(g.type==='boss'&&g.last){ bossFb=g.last.ok?`<div style="color:#1f9d57;font-weight:800;font-size:14px;margin-bottom:12px">💥 Hit! Boss took damage.</div>`:`<div style="color:var(--bad);font-weight:800;font-size:14px;margin-bottom:12px">💔 Missed — it was <b>${esc(g.last.word)}</b></div>`; }
   const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:clamp(22px,5vw,32px);box-shadow:var(--glow);text-align:center">
       <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 14px">${g.type==='boss'?'Spell it to attack!':'Listen and type'}</p>
-      <button data-act="gSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);margin-bottom:14px">${iconSVG('volume',18)} Hear the word</button>
+      <button data-act="gSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">${iconSVG('volume',18)} Hear the word</button>
       <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px"><button data-act="gSaySlow" style="padding:9px 14px;border-radius:999px;background:var(--surface2);font-weight:700;font-size:13px;border:1px solid var(--line)">Slow</button><button data-act="gInfoToggle" style="padding:9px 14px;border-radius:999px;font-weight:700;font-size:13px;border:1px solid var(--line);${S.gInfo?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">💡 Hint</button></div>
       ${hint}${bossFb}
       <input data-inp="onType" data-key="gKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="type here" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;text-align:center;padding:16px 14px;border-radius:15px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(20px,5vw,28px);letter-spacing:.14em;text-transform:lowercase;outline:none;margin-bottom:14px">
-      <button data-act="gSubmit" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">${g.type==='boss'?'Attack! ⚔️':'Enter →'}</button>
+      <button data-act="gSubmit" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">${g.type==='boss'?'Attack! ⚔️':'Enter →'}</button>
     </div>`;
   return gameShell(statusBar, inner); }
 function typedDone(){ const S=state; const g=S.game; let title,big,sub;
@@ -2925,7 +2933,7 @@ function typedDone(){ const S=state; const g=S.game; let title,big,sub;
       <p style="color:var(--muted);font-weight:700;margin-top:6px">${sub}</p>
       <div style="display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 15px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:15px">${iconSVG('coin',15)} +${g.bonus||0} coins earned</div>
     </div>
-    <div style="display:flex;gap:10px;justify-content:center"><button data-act="exitGame" style="padding:13px 18px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">← Arcade</button><button data-act="gReplay" style="padding:13px 20px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Play again →</button></div>
+    <div style="display:flex;gap:10px;justify-content:center"><button data-act="exitGame" style="padding:13px 18px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">← Arcade</button><button data-act="gReplay" style="padding:13px 20px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Play again →</button></div>
   </div>`; }
 function mcGame(){ const S=state; const g=S.game; const q=g.qs[g.i]; const mono=q.kind==='spell';
   const statusBar=`<div style="font-family:var(--mono);font-size:13px;color:var(--muted)">${gameName(g.type)} · ${g.i+1}/${g.qs.length} · ✓ ${g.right}</div>`;
@@ -2951,7 +2959,7 @@ function mcDone(){ const g=state.game; const pct=Math.round(g.right/(g.qs.length
       <p style="color:var(--muted);font-weight:700;margin-top:6px">${pct}% correct</p>
       <div style="display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 15px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:15px">${iconSVG('coin',15)} +${g.bonus||0} coins earned</div>
     </div>
-    <div style="display:flex;gap:10px;justify-content:center"><button data-act="exitGame" style="padding:13px 18px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">← Arcade</button><button data-act="gReplay" style="padding:13px 20px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Play again →</button></div>
+    <div style="display:flex;gap:10px;justify-content:center"><button data-act="exitGame" style="padding:13px 18px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">← Arcade</button><button data-act="gReplay" style="padding:13px 20px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Play again →</button></div>
   </div>`; }
 
 
@@ -2972,7 +2980,7 @@ function overlays(){
           <button data-act="pickPlan" data-arg="year" style="${planStyle(S.plan==='year')}"><div style="font-size:11px;font-weight:800;color:var(--accent);letter-spacing:.04em">BEST VALUE · SAVE 38%</div><div style="font-family:var(--display);font-weight:800;font-size:22px">$59<span style="font-size:13px;color:var(--muted)">/yr</span></div><div style="font-size:12px;color:var(--muted)">$4.92 / month</div></button>
           <button data-act="pickPlan" data-arg="month" style="${planStyle(S.plan==='month')}"><div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.04em">MONTHLY</div><div style="font-family:var(--display);font-weight:800;font-size:22px">$7.99<span style="font-size:13px;color:var(--muted)">/mo</span></div><div style="font-size:12px;color:var(--muted)">billed monthly</div></button>
         </div>
-        <button data-act="upgrade" style="width:100%;padding:16px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)">Start 7-day free trial</button>
+        <button data-act="upgrade" style="width:100%;padding:16px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">Start 7-day free trial</button>
         <div style="text-align:center;margin-top:12px"><button data-act="closePaywall" style="color:var(--muted);font-size:13px;font-weight:600">Maybe later</button></div>
       </div></div>`;
   }
