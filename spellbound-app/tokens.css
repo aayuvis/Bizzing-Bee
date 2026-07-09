@@ -89,7 +89,7 @@
    opacity ≤ .05 in light, ≤ .035 in white — identity that survives both modes */
 [data-theme] { position: relative; }
 [data-theme]::before {
-  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .09;
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .13;
   background-image: radial-gradient(color-mix(in srgb, var(--action) 60%, transparent) 1.2px, transparent 1.3px);
   background-size: 26px 26px;
 }
@@ -128,7 +128,7 @@
   background-size: 52px 52px, 52px 52px;
   background-position: 0 0, 26px 26px;
 }
-[data-mode="white"][data-theme]::before { opacity: .032; }
+[data-mode="white"][data-theme]::before { opacity: .07; }
 
 /* ---- DUSK mode (optional third appearance — soft, kid-friendly dark for evening practice; never near-black) ---- */
 [data-mode="dusk"] {
@@ -198,3 +198,13 @@
   --mastered-tint:#2C4C42; --fix-tint:#553434;
   --surface: rgb(255 255 255 / .06); --surface2: rgb(255 255 255 / .10);
 }
+
+/* ---- page character: a soft world-accent wash over the motif (all modes) ---- */
+[data-theme]::after{ content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(62% 36% at 50% -6%, color-mix(in srgb, var(--action) 15%, transparent), transparent 72%),
+    radial-gradient(44% 32% at 94% 102%, color-mix(in srgb, var(--action) 10%, transparent), transparent 70%),
+    radial-gradient(30% 24% at 4% 88%, color-mix(in srgb, var(--treasure) 7%, transparent), transparent 70%);
+}
+[data-mode="white"][data-theme]::after{ opacity:.6 }
+[data-mode="dusk"][data-theme]::after{ opacity:.5 }
