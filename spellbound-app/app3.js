@@ -3214,7 +3214,7 @@ function viewShop(){ const S=state; const c=active(); ensureLists(c); const tab=
         <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:15px">${t.label}</div><div style="font-size:12px;color:var(--muted)">${WORLD_DEF[t.id]||(ev[0]+' → '+ev[9])}</div></div>${right}</button>`; }).join('');
     const unc=THEMES.filter(t=>isThemeUnlocked(t.id)).length;
     body=`<p style="font-size:13px;color:var(--muted);margin:0 0 12px">${unc}/${THEMES.length} worlds unlocked · 2 free, ${state.premium?'2 more with Premium, ':''}the rest with coins.</p>${rows}`;
-  }if(tab==='power'){
+  } else if(tab==='power'){
     const items=[
       {k:'freeze', ic:'timer', name:'Streak Freeze', desc:'Miss one day — your streak survives. Auto-used.', cost:80, own:(c.freezes||0)},
       {k:'time',   ic:'timer', name:'+15s Buzzer Time', desc:'Auto-boosts your next Beat the Buzzer round.', cost:40, own:((c.pow||{}).time||0)},
