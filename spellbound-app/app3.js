@@ -319,13 +319,7 @@ function voiceUpgradeTip(){
     <div style="font-size:12px;color:var(--text);line-height:1.6">${t[1]}</div>
   </div>`; }
 function speak(){ deviceSpeak(curWord().w, 0.9); }
-let _pronA=null;
-function pronSrc(text){ try{ const P=window.SB_PRON; if(!P||!P.size) return null; if(/\s/.test(String(text))) return null;
-  const k=String(text).toLowerCase().replace(/[^a-z]/g,''); return P.has(k)?('pron/'+k+'.mp3'):null; }catch(e){ return null; } }
-function say(text,rate){
-  if((!rate||rate>=0.9) && state.sound!==false){ const src=pronSrc(text);
-    if(src){ try{ if(_pronA){ _pronA.pause(); } _pronA=new Audio(src); _pronA.play(); return; }catch(e){} } }
-  deviceSpeak(text, rate||0.95); }
+function say(text,rate){ deviceSpeak(text, rate||0.95); }
 // split a sentence around its target word (and simple inflections) so we can read it aloud
 // WITHOUT speaking the answer — used by "Finish the Sentence"
 function maskParts(sentence, word){ const t=sentence||''; const w=(word||'').trim(); if(!w) return {before:t, after:'', matched:false};
@@ -1219,7 +1213,7 @@ function viewHome(){
     {goAct:'setNav', goArg:'concepts', ic:'grid', sc:'concept', c1:'#13A892',c2:'#0E8A78',accent:'#13A892', title:'Concepts', desc:'Spelling basics, patterns, prefixes, roots & tricky endings, in 11 short chapters.', pct:Math.round(cDone/(cTot||1)*100)+'%', badge:cChapDone+'/'+(conceptChapters().length||11)+' chapters', kind:'go'},
     {goAct:'openJourneys', ic:'book', sc:'book', c1:'#E0922E',c2:'#C8791B',accent:'#E0922E', title:'Word Journeys', desc:'The history & geography of words — roots, journeys & origins, in 10 chapters.', pct:Math.round((lChapTot?lChapDone/lChapTot:0)*100)+'%', badge:S.premium?(lChapDone+'/'+lChapTot+' chapters'):'Premium', kind:S.premium?'go':'lock'},
     {goAct:'openGames', ic:'joystick', sc:'joystick', festive:true, title:'Arcade', desc:'8 mini-games — Magic Squares, Champ Challenge, Boss Battle & more. Earn coins!', pct:Math.min(100,(c.streak||0)*10)+'%', badge:(c.coins||0)+' coins', kind:'go'},
-  ].filter(j=>focusedH?false:(j.sc==='coach'||j.festive)).map((j,ji)=>{
+  ].filter(j=>focusedH?(j.sc==='coach'||j.sc==='concept'||j.festive):(j.sc==='coach'||j.festive)).map((j,ji)=>{
     const arg=j.goArg?`data-arg="${j.goArg}"`:'';
     const wk=({coach:'quest',concept:'concepts',book:'journeys',joystick:'arcade',theme:'themes'})[j.sc]||'quest';
     const cid=({coach:'quest',concept:'concepts',book:'journeys',joystick:'arcade',theme:'themes'})[j.sc]||'quest';
@@ -1273,15 +1267,14 @@ function viewHome(){
 ${focusedH?(()=>{ const sg=parentSignals(); let rd=0; try{ rd=coachReadiness().ready||0; }catch(e){}
       const mini=[['Readiness',rd],['Accuracy',sg.acc],['Consistency',sg.consistency]].map(([l,v])=>{ v=Math.max(0,Math.min(100,Math.round(v||0)));
         return `<div style="flex:1;min-width:130px"><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:650;color:var(--muted);margin-bottom:5px"><span>${l}</span><span style="color:var(--ink,var(--text))">${v}%</span></div><div style="height:6px;border-radius:999px;background:var(--tint-deep,var(--surface2));overflow:hidden"><div style="height:100%;background:${v>=70?'var(--mastered,#178A4C)':'var(--action,var(--accent))'};width:${v}%"></div></div></div>`; }).join('');
-      const doors=['quest','concepts','journeys','arcade'].map((k,i)=>{ const w=WAYFIND[k]; const act=k==='quest'?'openCoach':k==='arcade'?'openGames':k==='journeys'?'openJourneys':'setNav'; const arg=k==='concepts'?'data-arg="concepts"':'';
-        return `<button data-act="${act}" ${arg} style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--paper,var(--bg2));box-shadow:var(--sh-rest)">${wayTile(k,34,i%2?2:-2)}<span style="font-weight:800;font-size:14px">${w.label}</span></button>`; }).join('');
+      const cont=`<button data-act="openCoach" class="sb-lift" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:12px;padding:14px 16px">
+          ${wayTile('quest',40,-2)}
+          <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--ui,var(--body));font-weight:650;font-size:15px">Continue training</span><span style="display:block;font-size:13px;color:var(--muted);margin-top:2px">${esc(listLabel(aKey).split(' · ')[0])} · Level ${listStageIdx(c,aKey)+1}</span></span>
+          <span style="color:var(--action,var(--accent));font-weight:800">→</span></button>`;
+      const traps=trapRadar()||`<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--sh-rest)"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px">No traps yet</div><p style="margin:0;font-size:13px;color:var(--muted)">Miss a few words and your weak-pattern radar lights up here.</p></div>`;
       return `<div style="display:flex;gap:16px;flex-wrap:wrap;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:14px;box-shadow:var(--sh-rest)">${mini}</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:14px">${trapRadar()||`<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--sh-rest)"><div style="font-family:var(--display);font-weight:800;font-size:17px;margin-bottom:4px">No traps yet</div><p style="margin:0;font-size:13px;color:var(--muted)">Miss a few words and your personal weak-pattern radar lights up here.</p></div>`}
-        <button data-act="openCoach" class="sb-lift" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0">
-          <div style="position:relative;width:100%">${SB_COVER(S.theme,'quest',{h:96,dark:S.mode==='dusk'})}</div>
-          <div style="padding:14px 16px 16px;width:100%"><div style="font-family:var(--ui,var(--body));font-weight:650;font-size:17px">Continue training</div><div style="font-size:13px;color:var(--muted);margin-top:3px">${esc(listLabel(aKey).split(' · ')[0])} · Level ${listStageIdx(c,aKey)+1}</div></div></button>
-      </div>
-      <div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:18px">${doors}</div>`; })()
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:14px">${journeys}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:18px;align-items:start">${cont}${traps}</div>`; })()
     :`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:4px 2px 12px">Keep going</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:18px">${journeys}</div>`}
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest)">
