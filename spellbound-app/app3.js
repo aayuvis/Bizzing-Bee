@@ -540,7 +540,8 @@ const app = {
   openDrawer:()=>set({drawerOpen:true}), closeDrawer:()=>set({drawerOpen:false}),
   drawer:(key)=>{ state.drawerOpen=false; const F={ home:()=>app.setNav('home'), levelup:()=>app.startLevelUp(), games:()=>app.openGames(), shop:()=>app.openShop(), concepts:()=>app.setNav('concepts'),
       coach:()=>app.openCoach(), journeys:()=>app.openJourneys(), study:()=>app.coachStudy(), written:()=>app.startWritten(), oral:()=>app.startOral(),
-      weak:()=>app.coachWeakDrill(), parentview:()=>{ app.openCoach(); state.coachTab='parent'; render(); }, settings:()=>app.setNav('settings'), themes:()=>app.setNav('themes') };
+      weak:()=>app.coachWeakDrill(), parentview:()=>{ app.openCoach(); state.coachTab='parent'; render(); }, settings:()=>app.setNav('settings'), themes:()=>app.setNav('themes'),
+      quest:()=>app.openQuestChooser(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore') };
     (F[key]||(()=>{}))(); },
   // coach
   openCoach:()=>{ const c=active(); ensureLists(c);
@@ -1003,39 +1004,51 @@ function viewApp(){
   </div>`;
 }
 
+// Side drawer — NOT a copy of the top nav. Identity + jump-back-in + colored Explore
+// shortcuts + training tools + family corner. The top nav answers "where am I";
+// the drawer answers "what can I do from here".
 function viewDrawer(){
   if(!state.drawerOpen) return '';
-  const items=[
-    {t:'item',label:'Home',ic:'home',key:'home',active:state.nav==='home'},
-    {t:'item',label:'Word Coach',ic:'steps',key:'levelup'},
-    {t:'item',label:'Arcade',ic:'joystick',key:'games',active:state.nav==='games'},
-    {t:'item',label:'Shop',ic:'crown',key:'shop',active:state.nav==='shop'},
-    {t:'item',label:'Concepts',ic:'grid',key:'concepts',active:state.nav==='concepts'},
-    {t:'item',label:'Word Journeys',ic:'book',key:'journeys',active:state.nav==='journeys'},
-    {t:'item',label:'Theme Journeys',ic:'palette',key:'themes',active:state.nav==='themes'},
-    {t:'label',label:'Word Coach · Bee Prep'},
-    {t:'item',label:'Coach overview',ic:'target',key:'coach',active:state.nav==='coach'},
-    {t:'sub',label:'Study',ic:'book',key:'study'},
-    {t:'sub',label:'Written round',ic:'pencil',key:'written'},
-    {t:'sub',label:'Oral elimination',ic:'volume',key:'oral'},
-    {t:'sub',label:'Weak-word drill',ic:'spark',key:'weak'},
-    {t:'sub',label:'Readiness · parent view',ic:'chart',key:'parentview'},
-    {t:'label',label:'More'},
-    {t:'item',label:'Theme & settings',ic:'gear',key:'settings',active:state.nav==='settings'},
-  ];
-  const nav=items.map(d=>{
-    if(d.t==='label') return `<div style="font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:800;padding:14px 12px 6px">${d.label}</div>`;
-    const indent=d.t==='sub'?'8px':'0';
-    if(d.active) return `<button data-act="drawer" data-arg="${d.key}" style="display:flex;align-items:center;gap:11px;width:100%;text-align:left;font-weight:800;font-size:15px;padding:11px 12px;border-radius:10px;background:var(--accent);color:#fff;margin-left:${indent}"><span style="display:inline-flex">${iconSVG(d.ic,d.t==='sub'?17:19)}</span>${d.label}</button>`;
-    return `<button data-act="drawer" data-arg="${d.key}" style="display:flex;align-items:center;gap:11px;width:100%;text-align:left;font-weight:${d.t==='sub'?700:700};font-size:15px;padding:11px 12px;border-radius:10px;background:transparent;color:var(--text);margin-left:${indent}"><span style="display:inline-flex;color:var(--muted)">${iconSVG(d.ic,d.t==='sub'?17:19)}</span>${d.label}</button>`;
-  }).join('');
+  const c=active(); ensureLists(c); const key=activeListKey();
+  const evoD=EVO[state.theme]||EVO.spellbound; const fiD=formIdx(listLevel(c,key));
+  const kick=(t)=>`<div style="font-family:var(--ui,var(--body));font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:650;padding:16px 12px 6px">${t}</div>`;
+  const row=(k,ic,label,sub,active)=>`<button data-act="drawer" data-arg="${k}" style="display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:10px 12px;border-radius:10px;${active?'background:var(--action,var(--accent));color:var(--action-ink,#fff)':'background:transparent;color:var(--text)'}">
+      <span style="display:inline-flex;flex-shrink:0;${active?'':'color:var(--muted)'}">${iconSVG(ic,18)}</span>
+      <span style="min-width:0"><span style="display:block;font-weight:800;font-size:15px;line-height:1.15">${label}</span>${sub?`<span style="display:block;font-size:12px;font-weight:650;${active?'opacity:.85':'color:var(--muted)'}">${sub}</span>`:''}</span></button>`;
+  const wayRow=(k,wkey,label,sub)=>`<button data-act="drawer" data-arg="${k}" style="display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:8px 12px;border-radius:10px;background:transparent;color:var(--text)">
+      ${wayTile(wkey,34,-2)}
+      <span style="min-width:0"><span style="display:block;font-weight:800;font-size:15px;line-height:1.15">${label}</span><span style="display:block;font-size:12px;font-weight:650;color:var(--muted)">${sub}</span></span></button>`;
+  const missedN=((c.missed)||[]).length;
   return `<div data-act="closeDrawer" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:55;animation:sb-fade .2s ease both"></div>
-    <aside data-act="noop" style="position:fixed;top:0;left:0;bottom:0;width:280px;max-width:84vw;background:var(--bg2);border-right:1px solid var(--line);z-index:56;display:flex;flex-direction:column;padding:16px 12px;overflow-y:auto;box-shadow:0 0 40px rgba(0,0,0,.18)">
-      <div style="display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:800;font-size:17px;padding:4px 6px 12px;border-bottom:1px solid var(--line);margin-bottom:8px">
-        <div style="width:26px;height:30px">${mascotSVG('happy')}</div>Spellbound
-        <button data-act="closeDrawer" aria-label="Close" style="margin-left:auto;width:32px;height:32px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text)">${iconSVG('close',18)}</button>
+    <aside data-act="noop" style="position:fixed;top:0;left:0;bottom:0;width:300px;max-width:86vw;background:var(--paper,var(--bg2));border-right:1px solid var(--line);z-index:56;display:flex;flex-direction:column;padding:14px 12px;overflow-y:auto;box-shadow:var(--sh-overlay)">
+      <div style="display:flex;align-items:center;gap:11px;padding:8px 8px 14px;border-bottom:1px solid var(--line);margin-bottom:4px">
+        <div style="width:44px;height:50px;flex-shrink:0">${mascotSVG('happy')}</div>
+        <div style="min-width:0;flex:1">
+          <div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.1">${esc(c.name||'Speller')}</div>
+          <div style="font-size:12px;color:var(--muted);font-weight:650">${evoD[fiD]} · Lv ${listLevel(c,key)} · <span style="color:var(--treasure-deep,#8A5B00);font-weight:800">${c.coins||0} coins</span></div>
+        </div>
+        <button data-act="closeDrawer" aria-label="Close" style="width:32px;height:32px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('close',18)}</button>
       </div>
-      <nav style="display:flex;flex-direction:column;gap:2px;overflow-y:auto">${nav}</nav>
+      <nav style="display:flex;flex-direction:column;gap:1px;overflow-y:auto">
+        ${row('levelup','steps','Continue practising','${LBL}'.replace('${LBL}',esc(listLabel(key).split(' · ')[0])+' · Level '+(listStageIdx(c,key)+1)),false)}
+        ${missedN?row('weak','spark','Revenge round',missedN+' missed words waiting',false):''}
+        ${kick('Explore')}
+        ${wayRow('games','arcade','Arcade','8 games · earn coins')}
+        ${wayRow('concepts','concepts','Concepts','121 concepts · 11 chapters')}
+        ${wayRow('journeys','journeys','Word Journeys','the history of words')}
+        ${wayRow('themes','themes','Theme Journeys',myThemes().length?myThemes().length+' worlds picked':'pick 3–5 worlds')}
+        ${kick('Training tools')}
+        ${row('quest','target',"Champion's Quest",'switch your path',state.nav==='quest')}
+        ${row('builder','pencil','List Builder','custom list in five taps',state.nav==='builder')}
+        ${row('written','pencil','Written round','type a scored sequence',false)}
+        ${row('oral','volume','Oral elimination','spell aloud, survive',false)}
+        ${kick('Family')}
+        ${row('progress','chart','Progress','streak, heatmap & analytics',state.nav==='progress')}
+        ${row('parentview','users','Parent dashboard','readiness & activity log',false)}
+        ${row('shop','crown','Shop','spend those coins',state.nav==='shop')}
+        ${kick('')}
+        ${row('settings','gear','Theme & settings','worlds, voice, style',state.nav==='settings')}
+      </nav>
     </aside>`;
 }
 

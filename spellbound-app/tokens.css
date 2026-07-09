@@ -169,10 +169,10 @@
 }
 /* Old world ids → v2 palettes (storage/JS still uses these ids; visual = new worlds).
    marquee→spotlight · aurora→galaxy · anime→blade · science→lab · pixel→arcade · avatar→elements */
-[data-theme="marquee"] { --action:#9C6A08; --tint:#F7F1E2; --tint-deep:#EEE4CD; --ink:#2A2114; --muted:#7C6E58; --line:#EAE0C9; }
+[data-theme="marquee"]:not([data-mode="dusk"]) { --action:#9C6A08; --tint:#F7F1E2; --tint-deep:#EEE4CD; --ink:#2A2114; --muted:#7C6E58; --line:#EAE0C9; }
 [data-theme="aurora"]  { --action:#4A5BD4; --tint:#F2F4FB; --tint-deep:#E5E9F6; --ink:#1D2138; --muted:#62688A; --line:#E5E8F3; }
 [data-theme="anime"]   { --action:#C43D5A; --tint:#FAF1F3; --tint-deep:#F3E2E7; --ink:#2C1B21; --muted:#85686F; --line:#F0DFE4; }
-[data-theme="science"] { --action:#0E8A78; --tint:#EFF6F3; --tint-deep:#E0EEE8; --ink:#17251F; --muted:#5E7169; --line:#DFEBE5; }
+[data-theme="science"]:not([data-mode="dusk"]) { --action:#0E8A78; --tint:#EFF6F3; --tint-deep:#E0EEE8; --ink:#17251F; --muted:#5E7169; --line:#DFEBE5; }
 [data-theme="pixel"]   { --action:#3B6FE0; --tint:#EFF3FA; --tint-deep:#E1E8F5; --ink:#182031; --muted:#5D6880; --line:#E3E9F4; }
 [data-theme="avatar"]  { --action:#2E8FB8; --tint:#EDF5F7; --tint-deep:#DEECF0; --ink:#16262C; --muted:#5B7078; --line:#DFECF0; }
 [data-theme="marquee"]::before { background-image: radial-gradient(circle at 50% 8px, color-mix(in srgb, var(--action) 70%, transparent) 1.6px, transparent 2.6px); background-size: 34px 20px; }
@@ -181,3 +181,19 @@
 [data-theme="science"]::before { background-image: linear-gradient(color-mix(in srgb, var(--action) 45%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--action) 45%, transparent) 1px, transparent 1px); background-size: 30px 30px; }
 [data-theme="pixel"]::before   { background-image: conic-gradient(color-mix(in srgb, var(--action) 40%, transparent) 90deg, transparent 90deg 180deg, color-mix(in srgb, var(--action) 40%, transparent) 180deg 270deg, transparent 270deg); background-size: 28px 28px; }
 [data-theme="avatar"]::before  { background-image: radial-gradient(color-mix(in srgb, var(--action) 60%, transparent) 1.3px, transparent 1.6px), radial-gradient(color-mix(in srgb, #C25A2E 45%, transparent) 1.3px, transparent 1.6px); background-size: 52px 52px, 52px 52px; background-position: 0 0, 26px 26px; }
+
+/* Dusk accents for legacy world ids (mirror spotlight/galaxy/blade/lab/arcade/elements) */
+[data-theme="marquee"][data-mode="dusk"]  { --action:#E3B23C; --action-ink:#2A2114; }
+[data-theme="aurora"][data-mode="dusk"]   { --action:#7D8CF0; }
+[data-theme="anime"][data-mode="dusk"]    { --action:#E76D88; }
+[data-theme="science"][data-mode="dusk"]  { --action:#3BC0AA; --action-ink:#0E2B25; }
+[data-theme="pixel"][data-mode="dusk"]    { --action:#7BA3F5; --action-ink:#101B33; }
+[data-theme="avatar"][data-mode="dusk"]   { --action:#6FC2E4; --action-ink:#0F2833; }
+/* Dusk, brightened one notch (kid-friendly evening — softer than the stock indigo) */
+[data-mode="dusk"] {
+  --tint:#332E52; --tint-deep:#2A2642; --paper:#413B68; --line:#544D80;
+  --ink:#F5F2FC; --muted:#BEB8D8;
+  --treasure-tint:#57482E; --treasure-deep:#F7CE63;
+  --mastered-tint:#2C4C42; --fix-tint:#553434;
+  --surface: rgb(255 255 255 / .06); --surface2: rgb(255 255 255 / .10);
+}

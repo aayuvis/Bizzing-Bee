@@ -13,10 +13,10 @@
 <style>
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
-  body{background:var(--bg1,#f3efff);transition:background .35s ease}
+  body{background:var(--bg1,#f3efff);color:var(--text,#241E33);transition:background .35s ease,color .35s ease}
   ::selection{background:color-mix(in srgb,var(--accent) 28%,transparent)}
   input,button,select,textarea{font-family:inherit}
-  button{cursor:pointer;border:0;background:none}
+  button{cursor:pointer;border:0;background:none;color:inherit}
   :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
   button:focus:not(:focus-visible){outline:none}
   /* concept animation engine */
