@@ -451,9 +451,28 @@ const app = {
   onbNext:()=>{ const S=state;
     if(S.onbStep===0 && !S.draft.name.trim()){ flash('Add a name to continue'); return; }
     if(S.onbStep<2){ set({onbStep:S.onbStep+1}); return; }
-    const kid={ name:S.draft.name.trim(), age:S.draft.age, avatar:S.draft.avatar, theme:S.theme, goal:S.draft.goal, level:1, streak:0, acc:0, xp:0, week:[0,0,0,0,0,0,0] };
-    const newIdx=S.children.length; state.children=[...S.children,kid]; state.activeIdx=newIdx; state.goalDone=0; state.addingMore=false;
-    set({screen:'app', nav:'home'}); flash('Profile ready — let’s spell! 🐝'); },
+    app._finishOnb(); set({screen:'app', nav:'home'}); flash('Profile ready — let’s spell! 🐝'); },
+  _finishOnb:()=>{ const S=state; const kid={ name:S.draft.name.trim()||'Speller', age:S.draft.age, avatar:S.draft.avatar, theme:S.theme, goal:S.draft.goal, level:1, streak:0, acc:0, xp:0, week:[0,0,0,0,0,0,0] };
+    const newIdx=S.children.length; state.children=[...S.children,kid]; state.activeIdx=newIdx; state.goalDone=0; state.addingMore=false; save(); },
+  startLevelTest:()=>{ if(state.screen==='onboarding'){ if(!state.draft.name.trim()){ flash('Add a name first'); return; } app._finishOnb(); }
+    const stages=journeyStages(); state.lt={ lvl:1, i:0, ok:0, fails:0, words:sample(stages[0].words,6), typed:'', placed:null };
+    set({screen:'app', nav:'leveltest'}); setTimeout(()=>{ const lt=state.lt; if(lt&&lt.words[0]) say(lt.words[0].w); },400); },
+  ltSay:()=>{ const lt=state.lt; if(lt&&lt.words[lt.i]) say(lt.words[lt.i].w); },
+  ltType:(v)=>{ state.lt.typed=v; },
+  ltKey:(e)=>{ if(e.key==='Enter'){ e.preventDefault(); app.ltEnter(); } },
+  ltSkip:()=>{ set({nav:'home', lt:null}); flash('No problem — starting at Level 1. You can climb fast!'); },
+  ltEnter:()=>{ const lt=state.lt; const w=lt.words[lt.i]; if(!w) return; const ok=nkey(lt.typed)===nkey(w.w);
+    if(ok){ lt.ok++; sfx('correct'); } else { lt.fails++; sfx('wrong'); }
+    lt.typed=''; lt.i++;
+    const stages=journeyStages(); const CAP=12;
+    if(lt.fails>=3){ lt.placed=Math.max(1,lt.lvl-1); app._ltFinish(); return; }
+    if(lt.ok>=3){ if(lt.lvl>=CAP){ lt.placed=CAP; app._ltFinish(); return; }
+      lt.lvl++; lt.i=0; lt.ok=0; lt.fails=0; lt.words=sample(stages[lt.lvl-1].words,6); render(); setTimeout(()=>say(lt.words[0].w),350); return; }
+    if(lt.i>=lt.words.length){ lt.placed=Math.max(1,lt.lvl-(lt.ok>=2?0:1)); app._ltFinish(); return; }
+    render(); setTimeout(()=>say(lt.words[lt.i].w),300); },
+  _ltFinish:()=>{ const lt=state.lt; const c=active(); ensureLists(c); getList(c,'journey').stage=Math.max(0,(lt.placed||1)-1); c.activeList='journey'; save();
+    sfx('win'); burstConfetti(110); lt.done=true; render(); },
+  ltGo:()=>{ set({nav:'home', lt:null}); },
   // theme / mode
   pickTheme:(id)=>{ if(!isThemeUnlocked(id)){ app.buyTheme(id); return; } const children=state.children.slice(); if(children[state.activeIdx]) children[state.activeIdx]={...children[state.activeIdx],theme:id}; set({theme:id, children}); },
   buyTheme:(id)=>{ if(isThemeUnlocked(id)) return app.pickTheme(id); if(spendCoins(COST.theme)){ const c=active(); c.unlockedThemes=[...(c.unlockedThemes||[]),id]; sfx('win'); burstConfetti(70); flash('New world unlocked! 🎨'); app.pickTheme(id); } else { flash('Need '+COST.theme+' 🪙 — play games to earn!'); } },
@@ -544,7 +563,7 @@ const app = {
   drawer:(key)=>{ state.drawerOpen=false; const F={ home:()=>app.setNav('home'), levelup:()=>app.startLevelUp(), games:()=>app.openGames(), shop:()=>app.openShop(), concepts:()=>app.setNav('concepts'),
       coach:()=>app.openCoach(), journeys:()=>app.openJourneys(), study:()=>app.coachStudy(), written:()=>app.startWritten(), oral:()=>app.startOral(),
       weak:()=>app.coachWeakDrill(), parentview:()=>{ app.openCoach(); state.coachTab='parent'; render(); }, settings:()=>app.setNav('settings'), themes:()=>app.setNav('themes'),
-      quest:()=>app.openQuestChooser(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore') };
+      quest:()=>app.openQuestChooser(), traps:()=>app.openTraps(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore') };
     (F[key]||(()=>{}))(); },
   // coach
   openCoach:()=>{ const c=active(); ensureLists(c);
@@ -663,6 +682,9 @@ const app = {
       g.phase='done'; const a=g.p[0].right,b=g.p[1].right; addCoins(a===b?8:12); sfx('win'); burstConfetti(120); render(); return; }
     render(); setTimeout(()=>{ const gg=state.game; if(gg&&gg.type==='duel'&&gg.phase==='play'&&gg.list[gg.i]) say(gg.list[gg.i].w); },300); },
   duelP2:()=>{ const g=state.game; g.turn=1; g.i=0; g.phase='play'; state.typed=''; render(); setTimeout(()=>{ const gg=state.game; if(gg&&gg.type==='duel'&&gg.phase==='play'&&gg.list[0]) say(gg.list[0].w); },350); },
+  openTraps:()=>{ try{ loadConcepts(); }catch(e){} set({nav:'traps', screen:'app', trapSel:null, conceptSel:null}); },
+  trapPick:(k)=>set({trapSel:k}),
+  trapBack:()=>set({trapSel:null}),
   drillTrap:(k)=>{ const ws=trapWords(k); if(!ws.length){ flash('No words for this trap right now'); return; }
     state.sessionWords=ws; state.sessionListKey='__trap__'; state.sessionLabel='Trap drill'; state.gi=0; state.coachSession=false; state.trainBack='home'; app.startTrain(); },
   gReveal:()=>{ const g=state.game; if(!g||g.type!=='boss') return; const c=active(); if(((c.pow||{}).reveal||0)<=0) return;
@@ -701,6 +723,7 @@ const app = {
     const ok=ans===nkey(w.w); logGameWord(nkey(w.w));
     if(ok){ markMastered(nkey(w.w)); clearMiss(w.w); sfx('correct'); }
     else { addMiss(w); sfx('wrong'); }
+    if(!g.rw) g.rw=[]; g.rw.push({w:w.w, ok});
     const advance=()=>{ g.i++; if(g.i>=g.list.length){ const fresh=pickFresh(gameWords(), g.list.length); g.list=fresh.length?fresh:sample(g.list); g.i=0; } state.typed=''; state.gInfo=false; setTimeout(()=>{ if(state.game&&state.game.list[state.game.i]) say(state.game.list[state.game.i].w); },180); };
     if(g.type==='buzz'){ g.ans.push({w,val:state.typed,ok}); if(ok){ g.right++; addCoins(1); gainXp(); } if(g.i+1<g.list.length){ advance(); render(); } else { gFinishBuzz(); } }
     else if(g.type==='beat'){ if(ok){ g.right++; addCoins(1); gainXp(); } else g.wrong++; advance(); render(); }
@@ -712,6 +735,7 @@ const app = {
     const spellingGame = q.kind!=='origin'; // origin tests language knowledge, not spelling mastery
     if(ok){ g.right++; addCoins(1); gainXp(); if(spellingGame){ markMastered(nkey(q.word)); clearMiss(q.word); } sfx('correct'); }
     else { sfx('wrong'); if(spellingGame && q.wordObj){ addMiss(q.wordObj); (g.miss=g.miss||[]).push(q.word); } }
+    if(!g.rw) g.rw=[]; g.rw.push({w:q.word, ok});
     render();
     setTimeout(()=>{ const G=state.game; if(!G) return; if(G.i+1<G.qs.length){ G.i++; G.picked=null; render(); mcSpeak(G.qs[G.i]); } else { gFinishMC(); } },950); },
   coachTab:(t)=>set({coachTab:t}),
@@ -937,7 +961,8 @@ function viewOnboarding(){
       <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">Set a daily goal</h2>
       <p style="margin:0 0 20px;color:var(--muted);font-size:13px">A small daily habit beats cramming. Pick a starting target.</p>
       <div style="display:grid;gap:11px">${goals}</div>
-      <div style="margin-top:16px">${voiceUpgradeTip()}</div></div>`;
+      <button data-act="startLevelTest" style="width:100%;margin-top:14px;display:flex;align-items:center;gap:11px;text-align:left;padding:13px 15px;border-radius:12px;border:1px dashed var(--accent);background:var(--chip);color:var(--text)"><span style="color:var(--accent)">${iconSVG('target',20)}</span><span style="min-width:0"><span style="display:block;font-weight:800;font-size:14px">Find my level first <span style="color:var(--muted);font-weight:650">(optional, ~3 min)</span></span><span style="display:block;font-size:12px;color:var(--muted)">A quick placement quiz — words get harder until we find your start.</span></span></button>
+      <div style="margin-top:14px">${voiceUpgradeTip()}</div></div>`;
   }
   return `<div style="position:relative;z-index:1;min-height:100dvh;display:grid;place-items:center;padding:24px">
     <div style="width:100%;max-width:560px">
@@ -956,6 +981,39 @@ function beeEmpty(mood,text){ return `<div style="display:flex;align-items:cente
 /* ---- Word Journeys as lore: one lesson unlocks per Level cleared (any list) ---- */
 function loreCount(c){ c=c||active(); try{ return Object.values(c.lists||{}).reduce((n,l)=>n+(l.stage||0),0); }catch(e){ return 0; } }
 function loreUnlocked(){ const n=loreCount(); return lessonsAll().slice(0,Math.min(n,lessonsAll().length)); }
+// Apple-Watch-style signal rings: Readiness (action) · Accuracy (green) · Consistency (gold)
+function signalRings(){ const sg=parentSignals(); let rd=0; try{ rd=coachReadiness().ready||0; }catch(e){}
+  const V=[[rd,'var(--action,#6C4FE0)','Readiness'],[sg.acc,'var(--mastered,#178A4C)','Accuracy'],[sg.consistency,'var(--treasure,#F0B429)','Consistency']];
+  const ring=(r,v,c)=>{ const C=2*Math.PI*r; const off=C*(1-Math.max(0,Math.min(100,v))/100);
+    return `<circle cx="44" cy="44" r="${r}" fill="none" stroke="${c}" stroke-opacity=".18" stroke-width="7"/>`
+      +`<circle cx="44" cy="44" r="${r}" fill="none" stroke="${c}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 44 44)"/>`; };
+  return `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0" title="Readiness ${Math.round(V[0][0])}% · Accuracy ${Math.round(V[1][0])}% · Consistency ${Math.round(V[2][0])}%">
+    <svg viewBox="0 0 88 88" width="88" height="88" aria-hidden="true">${ring(37,V[0][0],V[0][1])}${ring(27,V[1][0],V[1][1])}${ring(17,V[2][0],V[2][1])}</svg>
+    <div style="display:flex;gap:7px">${V.map(v=>`<span style="display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:800;color:var(--muted)"><span style="width:7px;height:7px;border-radius:99px;background:${v[1]};display:inline-block"></span>${Math.round(v[0])}%</span>`).join('')}</div>
+  </div>`; }
+// Tip of the day — pithy, rotating daily, banded to the speller's level:
+// Levels 1–4 draw only from the Spelling Bee Basics concepts + gentle habit tips;
+// 5–8 widen to easy/medium concepts and practice tips; 9+ open the full library + lore.
+function tipOfDay(){ const pool=[]; let lvl=1; try{ lvl=(getList(active(),'journey').stage||0)+1; }catch(e){}
+  try{ const chs=(state.conceptData||(window.SB_CONCEPTS&&SB_CONCEPTS.chapters)||[]);
+    const basics=chs.filter(ch=>ch.category==='Spelling Bee Basics');
+    const rest=lvl<=4?[]:chs.filter(ch=>ch.category!=='Spelling Bee Basics'&&(lvl>8||ch.difficulty!=='hard'));
+    basics.concat(rest).forEach(ch=>{ const first=String(ch.concept||'').split(/(?<=[.!?])\s/)[0]; if(first&&first.length>30) pool.push(first); });
+  }catch(e){}
+  try{ const T=window.SB_TIPS||{};
+    const cats=lvl<=4?['young','memory','motivation','review']
+      :lvl<=8?['memory','motivation','review','accuracy','consistency','oral']
+      :['memory','accuracy','oral','written','origin','difficult','nerves','beeday','plateau','review'];
+    cats.forEach(k=>(T[k]||[]).forEach(t=>pool.push(t)));
+  }catch(e){}
+  try{ if(lvl>4) lessonsAll().slice(0,40).forEach(L=>{ if(L.hook) pool.push(L.hook); }); }catch(e){}
+  if(!pool.length) return '';
+  const t=trunc(pool[dayNum()%pool.length],150);
+  return `<div style="position:relative;display:flex;align-items:flex-start;gap:13px;background:var(--paper,var(--bg2));border:1px solid var(--line);border-left:4px solid var(--treasure,#F0B429);border-radius:14px;padding:14px 18px;margin-bottom:14px;box-shadow:var(--sh-rest)">
+    <span style="flex-shrink:0;font-family:var(--display);font-weight:800;font-size:32px;line-height:.8;color:var(--treasure,#F0B429)">“</span>
+    <span style="min-width:0"><span style="display:block;font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:3px">Tip of the day</span>
+    <span style="display:block;font-size:15px;line-height:1.5;font-weight:650;color:var(--ink,var(--text))">${esc(t)}</span></span>
+  </div>`; }
 /* ---- Weak-pattern radar: the analytics engine aimed at the speller (12+) ---- */
 const TRAP_DEFS=[ ['double',/(.)\1/,'Double letters'], ['silent',/^(kn|wr|gn|ps|mn)|mb$|gh/i,'Silent letters'],
   ['ieei',/ie|ei/i,'ie / ei'], ['schwa',/(le|el|al|on|an|ar|er|or)$/i,'Schwa endings'],
@@ -967,13 +1025,14 @@ function missTraps(){ const c=active(); const ms=(c.missed||[]); if(!ms.length) 
     const o=(w.o||'').toLowerCase();
     if(/french/.test(o)) b.french=(b.french||0)+n; if(/greek/.test(o)) b.greek=(b.greek||0)+n; if(/latin/.test(o)) b.latin=(b.latin||0)+n; });
   const L={double:'Double letters',silent:'Silent letters',ieei:'ie / ei',schwa:'Schwa endings',endings:'Suffix endings',french:'French origin',greek:'Greek origin',latin:'Latin origin'};
-  return Object.keys(b).map(k=>({k,label:L[k],n:b[k]})).sort((a,x)=>x.n-a.n).slice(0,3); }
+  return Object.keys(b).map(k=>({k,label:L[k],n:b[k]})).sort((a,x)=>x.n-a.n); }
+function topTraps(n){ return missTraps().slice(0,n||3); }
 function trapWords(k){ const c=active(); const idx=wordIndex(); const def=TRAP_DEFS.find(t=>t[0]===k);
   const hit=(w)=>{ if(def) return def[1].test(w.w); const o=(w.o||'').toLowerCase(); return k==='french'?/french/.test(o):k==='greek'?/greek/.test(o):/latin/.test(o); };
   const mine=(c.missed||[]).map(m=>idx[nkey(m.w)]||{w:m.w}).filter(hit);
   const extra=journeySorted().filter(w=>hit(w)&&!state.luMastered[nkey(w.w)]&&!mine.some(x=>nkey(x.w)===nkey(w.w))).slice(0,Math.max(0,12-mine.length));
   return mine.concat(extra).slice(0,12); }
-function trapRadar(){ const traps=missTraps(); if(!traps.length) return '';
+function trapRadar(){ const traps=topTraps(3); if(!traps.length) return '';
   const rows=traps.map(t=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)">
       <span style="min-width:0;flex:1"><span style="display:block;font-weight:800;font-size:15px">${t.label}</span><span style="font-size:12px;color:var(--muted);font-weight:650">${t.n} miss${t.n>1?'es':''} traced here</span></span>
       <button data-act="drillTrap" data-arg="${t.k}" style="padding:8px 14px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:13px;box-shadow:var(--edge)">Drill →</button></div>`).join('');
@@ -1056,11 +1115,71 @@ function viewExplore(){ const c=active(); ensureLists(c);
     ${pageHead('Explore','four ways in','Games, concepts, word history and theme worlds — every road leads to better spelling.')}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px">${dests}</div>
   </div>`; }
+// Optional placement test: climb difficulty bands; three fails per level find your start
+function viewLevelTest(){ const lt=state.lt||{}; if(lt.done) return `<div style="max-width:520px;margin:0 auto;animation:sb-rise .35s ease both">
+    <div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;padding:32px;text-align:center;box-shadow:var(--sh-overlay)">
+      <div style="width:100px;height:110px;margin:0 auto 6px;animation:sb-bee-talk 1.6s ease-in-out infinite">${mascotAcc('excited')}</div>
+      <div style="font-family:var(--ui,var(--body));font-weight:650;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">Placement complete</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:32px;margin:6px 0 4px">You start at Level ${lt.placed}!</div>
+      <p style="font-size:15px;color:var(--muted);margin:0 0 18px">The Spellbound Journey is set to your level — words will grow with you from here.</p>
+      <button data-act="ltGo" style="width:100%;max-width:280px;padding:14px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Let's spell →</button>
+    </div></div>`;
+  const hearts='❤️'.repeat(Math.max(0,3-(lt.fails||0)))+'🖤'.repeat(Math.min(3,lt.fails||0));
+  return `<div style="max-width:520px;margin:0 auto;animation:sb-rise .35s ease both">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><span style="font-family:var(--display);font-weight:800;font-size:20px">Find my level</span><span style="margin-left:auto;font-size:13px">${hearts}</span></div>
+    <div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,30px);box-shadow:var(--sh-rest);text-align:center">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">Level ${lt.lvl}</span><span style="font-family:var(--mono);font-size:13px;color:var(--muted)">✓ ${lt.ok}/3 to climb</span></div>
+      <p style="font-size:13px;color:var(--muted);font-weight:650;margin:0 0 12px">Spell 3 right to climb a level. Three misses and we lock in your start.</p>
+      <button data-act="ltSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">${iconSVG('volume',18)} Hear the word</button>
+      <input data-inp="ltType" data-key="ltKey" data-fkey="ltType" value="${escA(lt.typed||'')}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type it…" style="width:100%;padding:15px;border-radius:12px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:20px;text-align:center;letter-spacing:.06em;margin-bottom:12px">
+      <button data-act="ltEnter" style="width:100%;padding:14px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Submit</button>
+      <button data-act="ltSkip" style="margin-top:12px;color:var(--muted);font-weight:700;font-size:13px;text-decoration:underline;text-underline-offset:3px">Skip — start at Level 1</button>
+    </div></div>`; }
+// Traps — the weak-pattern radar screen. Overview = radar; detail = tips + concepts first, then practice.
+const TRAP_CONCEPT_RE={ double:/Double Consonant/i, silent:/Silent kn|Silent -gh|Blends & Silent/i, ieei:/ie \/ ei/i, schwa:/Schwa/i, endings:/Suffix|-tion|able/i, french:/French Loanword/i, greek:/Greek (Prefixes|Root|Suffixes)/i, latin:/Latin (Prefixes|Root|Suffixes)/i };
+function viewTraps(){ const S=state; const traps=missTraps(); const sel=S.trapSel;
+  if(sel){ const t=traps.find(x=>x.k===sel)||{k:sel,label:(sel[0].toUpperCase()+sel.slice(1)),n:0};
+    const idx=wordIndex(); const ws=trapWords(sel); const mine=((active().missed)||[]).map(m=>idx[nkey(m.w)]||{w:m.w}).filter(w=>ws.some(x=>nkey(x.w)===nkey(w.w)));
+    const hooks=mine.slice(0,2).map(w=>w.h?`<div style="display:flex;gap:9px;align-items:flex-start;padding:11px 13px;border-radius:12px;background:var(--surface)"><span style="flex-shrink:0;color:var(--treasure-deep,#8A5B00)">${window.SB_ICON?SB_ICON('bulb',{size:16}):iconSVG('bulb',16)}</span><span style="font-size:13px;line-height:1.5">“<b>${esc(w.w)}</b>” — ${esc(w.h)}</span></div>`:'').join('');
+    const chs=(state.conceptData||(window.SB_CONCEPTS&&SB_CONCEPTS.chapters)||[]); const re=TRAP_CONCEPT_RE[sel];
+    const rel=re?chs.map((ch,i)=>({ch,i})).filter(x=>re.test(x.ch.title)||re.test(x.ch.category)).slice(0,3):[];
+    const relChips=rel.map(x=>`<button data-act="openConcept" data-arg="${x.i}" style="display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">${window.SB_ICON?SB_ICON('grid',{size:14}):iconSVG('grid',14)} ${esc(conceptShort(x.ch.title))}</button>`).join('');
+    const wordChips=ws.slice(0,12).map(w=>`<button data-act="say" data-arg="${escA(w.w)}" style="font-family:var(--mono);font-size:12px;font-weight:700;padding:6px 10px;border-radius:6px;background:var(--surface2)">${esc(w.w)}</button>`).join('');
+    return `<div style="max-width:640px;margin:0 auto;animation:sb-rise .35s ease both">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><button data-act="trapBack" style="color:var(--muted);font-weight:700;font-size:14px">← All traps</button></div>
+      ${pageHead(t.label, t.n?(t.n+' misses traced here'):'', 'Step 1: understand the pattern. Step 2: beat it in practice.')}
+      <div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--sh-rest);margin-bottom:14px">
+        <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:8px">The trick</div>
+        <p style="margin:0 0 10px;font-size:15px;line-height:1.55">${TRAP_TIP[sel]||'Meet each word, find its story, and the pattern loses its power.'}</p>
+        ${hooks?`<div style="display:flex;flex-direction:column;gap:7px">${hooks}</div>`:''}
+      </div>
+      ${relChips?`<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:var(--sh-rest);margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:9px">Learn it properly</div><div style="display:flex;gap:8px;flex-wrap:wrap">${relChips}</div></div>`:''}
+      <div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:var(--sh-rest);margin-bottom:16px">
+        <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:9px">Your battlefield · ${ws.length} words</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">${wordChips}</div>
+      </div>
+      <button data-act="drillTrap" data-arg="${sel}" style="width:100%;padding:15px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Free yourself — practice these →</button>
+    </div>`; }
+  const maxN=traps.length?traps[0].n:1;
+  const rows=traps.map((t,i)=>`<button data-act="trapPick" data-arg="${t.k}" class="sb-lift" style="display:flex;align-items:center;gap:13px;width:100%;text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--sh-rest)">
+      <span style="width:40px;height:40px;border-radius:12px;flex-shrink:0;display:grid;place-items:center;background:var(--fix-tint,#FBE9E7);color:var(--fix,#C4453C);font-weight:900;font-size:15px">${t.n}</span>
+      <span style="min-width:0;flex:1"><span style="display:block;font-weight:800;font-size:15px">${t.label}</span>
+        <span style="display:block;height:5px;border-radius:999px;background:var(--tint-deep,var(--surface2));overflow:hidden;margin-top:7px"><span style="display:block;height:100%;background:var(--fix,#C4453C);width:${Math.round(t.n/maxN*100)}%"></span></span></span>
+      <span style="color:var(--action,var(--accent));font-weight:800">→</span></button>`).join('');
+  return `<div style="max-width:640px;margin:0 auto;animation:sb-rise .35s ease both">
+    ${pageHead('Your Traps','the weak-pattern radar','Your misses, clustered by the pattern that caused them. Beat the pattern and whole families of words come free.')}
+    <div style="position:relative;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--sh-rest);margin-bottom:16px">
+      ${SB_COVER(state.theme,'traps',{h:110,dark:state.mode==='dusk'})}
+      <span style="position:absolute;left:14px;bottom:12px;font-family:var(--display);font-weight:800;font-size:20px;color:${state.mode==='dusk'?'var(--action,#6C4FE0)':'#fff'};text-shadow:0 1px 5px rgba(0,0,0,.3)">${traps.length?traps.length+' patterns on the radar':'Radar clear'}</span>
+    </div>
+    ${traps.length?`<div style="display:flex;flex-direction:column;gap:9px">${rows}</div>`
+      :beeEmpty('sleepy','Nothing on the radar — no misses to trace yet. The bee naps until you find a tricky word.')}
+  </div>`; }
 /* ===================== APP SHELL ===================== */
 function viewApp(){
   const S=state;
-  const EXPLORE_NAVS={explore:1,games:1,concepts:1,journeys:1,themes:1,shop:1};
-  const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['explore','Explore','compass'],['progress','Progress','chart'],['parent','Parent','users']].map(([key,label,ic])=>{
+  const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,shop:1};
+  const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['explore','Explore','compass'],['games','Arcade','joystick'],['traps','Traps','target'],['progress','Progress','chart'],['parent','Parent','users']].map(([key,label,ic])=>{
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:S.nav===key;
     const glyph=key==='explore'?(window.SB_ICON?SB_ICON('compass',{size:17}):iconSVG('grid',17)):iconSVG(ic,17);
     return `<button data-act="setNav" data-arg="${key}" style="display:inline-flex;align-items:center;gap:8px;white-space:nowrap;padding:10px 18px;border-radius:var(--r-pill,999px);font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.01em;${on?'background:var(--action,var(--accent));color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">${glyph} ${label}</button>`;
@@ -1074,6 +1193,8 @@ function viewApp(){
   else if(S.nav==='quest') content=viewQuest();
   else if(S.nav==='explore') content=viewExplore();
   else if(S.nav==='builder') content=viewBuilder();
+  else if(S.nav==='leveltest') content=viewLevelTest();
+  else if(S.nav==='traps') content=viewTraps();
   else if(S.nav==='games') content=viewGames();
   else if(S.nav==='shop') content=viewShop();
   else if(S.nav==='themes') content=viewThemes();
@@ -1153,6 +1274,7 @@ function viewDrawer(){
         ${wayRow('journeys','journeys','Word Journeys','the history of words')}
         ${wayRow('themes','themes','Theme Journeys',myThemes().length?myThemes().length+' worlds picked':'pick 3–5 worlds')}
         ${kick('Training tools')}
+        ${row('traps','target','Your Traps',missTraps().length?(missTraps().length+' weak patterns found'):'weak-pattern radar',state.nav==='traps')}
         ${row('quest','target',"Champion's Quest",'switch your path',state.nav==='quest')}
         ${row('builder','pencil','List Builder','custom list in five taps',state.nav==='builder')}
         ${row('written','pencil','Written round','type a scored sequence',false)}
@@ -1253,6 +1375,7 @@ function viewHome(){
             <div style="height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden"><div style="height:100%;border-radius:inherit;background:var(--treasure,#F0B429);width:${Math.min(100,Math.round((lf.into||0)/(lf.need||1)*100))}%"></div></div>
           </div>
         </div>
+        ${focusedH?signalRings():''}
       </div>
       <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:20px">
         <div style="width:136px;height:136px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(var(--action,var(--accent)) ${goalPctNum}%, var(--tint-deep,var(--surface2)) 0);box-shadow:var(--sh-rest)">
@@ -1265,21 +1388,8 @@ function viewHome(){
         </div>
       </div>
     </div>`; })()}
-${focusedH?(()=>{ const sg=parentSignals(); let rd=0; try{ rd=coachReadiness().ready||0; }catch(e){}
-      const mini=[['Readiness',rd],['Accuracy',sg.acc],['Consistency',sg.consistency]].map(([l,v])=>{ v=Math.max(0,Math.min(100,Math.round(v||0)));
-        return `<div style="flex:1;min-width:130px"><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:650;color:var(--muted);margin-bottom:5px"><span>${l}</span><span style="color:var(--ink,var(--text))">${v}%</span></div><div style="height:6px;border-radius:999px;background:var(--tint-deep,var(--surface2));overflow:hidden"><div style="height:100%;background:${v>=70?'var(--mastered,#178A4C)':'var(--action,var(--accent))'};width:${v}%"></div></div></div>`; }).join('');
-      const tr=missTraps(); const top=tr[0]; const _pd2=S.mode==='dusk';
-      const trapCard=`<button class="sb-lift" data-act="${top?'drillTrap':'openCoach'}" ${top?`data-arg="${top.k}"`:''} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0">
-        <div style="position:relative;width:100%">${SB_COVER(S.theme,'traps',{h:110,dark:_pd2})}
-          <span style="position:absolute;left:14px;bottom:-16px">${wayTile('traps',48,2.5)}</span></div>
-        <div style="padding:12px 14px 0 76px;min-height:30px;display:flex;align-items:center;justify-content:flex-end;width:100%"><span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;padding:4px 11px;border-radius:var(--r-pill,999px);font-size:11px;font-weight:800;letter-spacing:.02em;background:${_pd2?'#FFFFFF':'#241E33'};color:${_pd2?'#241E33':'#FFFFFF'};box-shadow:var(--sh-rest)">${top?(top.label+' × '+top.n):'all clear'}</span></div>
-        <div style="padding:2px 16px 16px;display:flex;flex-direction:column;flex:1;width:100%">
-          <div style="font-family:var(--ui,var(--body));font-weight:650;font-size:17px;line-height:1.2;color:var(--ink,var(--text))">Your Traps</div>
-          <div style="font-size:15px;color:var(--muted);line-height:1.5;margin:4px 0 14px">${tr.length?('Misses cluster at: '+tr.map(t=>t.label).join(', ')+'. Fix the pattern, not just the word.'):'Miss a few words and your weak-pattern radar lights up here.'}</div>
-          <div style="margin-top:auto;height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden"><div style="height:100%;background:var(--fix,#C4453C);width:${top?Math.min(100,top.n*20):0}%"></div></div>
-        </div></button>`;
-      return `<div style="display:flex;gap:16px;flex-wrap:wrap;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:14px;box-shadow:var(--sh-rest)">${mini}</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-bottom:18px">${journeys}${trapCard}</div>`; })()
+${focusedH?(()=>{ return `${tipOfDay()}
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:18px">${journeys}</div>`; })()
     :`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:4px 2px 12px">Keep going</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:18px">${journeys}</div>`}
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest)">
@@ -2475,7 +2585,7 @@ function coachTrain(){
     </div>`; }).join('');
   const pausedShelf=pausedKeys.length?`<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)"><span style="font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700">Paused</span>${pausedKeys.map(k=>`<button data-act="resumeList" data-arg="${escA(k)}" title="Tap to resume training this list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;border:1px dashed var(--line);background:transparent;color:var(--muted);font-weight:700;font-size:12px">${SB_ICON('play',{size:14})} ${esc(dockLabel(k))} <span style="font-size:12px">L${listStageIdx(c,k)+1}</span></button>`).join('')}</div>`:'';
   const addBtn=`<button data-act="coachSetupOpen" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px dashed var(--line);background:transparent;color:var(--accent)">+ Add list</button>`;
-  const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button><span style="font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">Word Coach</span><button data-act="openQuestChooser" title="Change your quest path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} Quest path</button><span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('target',14)} ${daysToBee()} days to the bee</span></div>`;
+  const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button><span style="font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">Word Coach</span><button data-act="openQuestChooser" title="Change your quest path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} Quest path</button>${(()=>{ const n=missTraps().length; return `<button data-act="openTraps" title="Your weak patterns" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${n?'var(--fix-tint,#FBE9E7)':'var(--surface2)'};border:1px solid ${n?'var(--fix,#C4453C)':'var(--line)'};color:${n?'var(--fix,#C4453C)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('target',13)} Traps${n?' · '+n:''}</button>`; })()}<span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('target',14)} ${daysToBee()} days to the bee</span></div>`;
   const allWordsBtn=`<button data-act="luToggleWords" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid ${S.luWordsOpen?'var(--accent)':'var(--line)'};background:var(--surface2);color:var(--text)">${iconSVG('grid',14)} All words <span style="color:var(--muted);font-weight:700">${fullList.length}</span> ${S.luWordsOpen?'▴':'▾'}</button>`;
   const newSetBtn = fullList.length>WORK_MAX ? `<button data-act="newBatch" title="Swap in a fresh set of words from this list" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid var(--line);background:var(--surface2);color:var(--text)">${SB_ICON('retry',{size:16})} New set</button>` : '';
   const chipsRow=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px;box-shadow:var(--sh-rest)">
@@ -2932,8 +3042,13 @@ function champDone(){ const g=state.game; const done=g.right+g.wrong; const acc=
     <div style="display:flex;gap:10px"><button data-act="chStart" style="flex:1;padding:13px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">Try again</button><button data-act="chExit" style="flex:1;padding:13px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px">Done</button></div>
   </div>`; }
 // dedupe + gather a fun mix: words you missed, curated tricky review, and your active list
-function gameWords(opts){ opts=opts||{}; const c=active(); const base=listWords(c.activeList||'default');
-  const pool=(state.missedWords||[]).concat(REVIEW).concat(base); const seen=new Set(); const out=[];
+function gameWords(opts){ opts=opts||{}; const c=active(); const key=c.activeList||'default';
+  const stages=listStages(key); const idx=listStageIdx(c,key);
+  const cur=(stages[idx]&&stages[idx].words)||listWords(key);        // this Level's words
+  const prev=(idx>0&&stages[idx-1]&&stages[idx-1].words)||[];        // last Level for review
+  const band=(idx+1)<=4?2:(idx+1)<=8?3:(idx+1)<=12?4:9;              // curated words capped to the speller's band
+  const rev=REVIEW.filter(w=>(w.y||3)<=band);
+  const pool=(state.missedWords||[]).concat(cur).concat(prev).concat(rev); const seen=new Set(); const out=[];
   pool.forEach(w=>{ if(!w||!w.w) return; const k=nkey(w.w); if(k&&!seen.has(k)){ seen.add(k); out.push(w); } });
   if(opts.needDef) return out.filter(w=>w.d&&w.d.length>4);
   if(opts.needSent) return out.filter(w=>w.s&&/[a-z]/i.test(w.s));
@@ -3175,6 +3290,29 @@ function typedGame(){ const S=state; const g=S.game; const w=g.list[g.i]; let st
       <button data-act="gSubmit" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${g.type==='boss'?'Attack! ⚔️':'Enter →'}</button>
     </div>`;
   return gameShell(statusBar, inner); }
+// End-of-game reveal: what was right, what was wrong, and coaching tips drawn from the words themselves
+const TRAP_TIP={ double:'Twin letters mark where syllables split — rab·bit, oc·cur·rence. Spell each half and keep both letters.',
+  silent:'Silent letters travel in families: kn-, wr-, -mb, gh. Learn the family once and a dozen words come free.',
+  ieei:'i before e except after c — and right after c it flips: receive, ceiling.',
+  schwa:'That mumbled “uh” hides a letter. Say it robot-style — choc-O-late, sep-A-rate — and the letter appears.',
+  endings:'Suffixes come in families (-tion, -ance/-ence, -able/-ible). Say a relative out loud — the family shares its spelling.',
+  french:'French words hide their endings — ballet, bouquet. When a word sounds fancy, ask its origin.',
+  greek:'Greek words love ph, y, and ch that sounds like k — photo, gym, chorus.',
+  latin:'Latin roots repeat everywhere — find the root, reuse its spelling.' };
+function gameReveal(g){ const rw=(g&&g.rw)||[]; if(!rw.length) return '';
+  const right=rw.filter(x=>x.ok), wrong=rw.filter(x=>!x.ok); const idx=wordIndex();
+  const chip=(w,ok)=>`<button data-act="say" data-arg="${escA(w)}" style="font-family:var(--mono);font-size:12px;font-weight:700;padding:5px 10px;border-radius:6px;background:${ok?'var(--mastered-tint,#E1F4E8)':'var(--fix-tint,#FBE9E7)'};color:${ok?'var(--mastered,#178A4C)':'var(--fix,#C4453C)'}">${esc(w)}</button>`;
+  // tips: each missed word's own hook first, then one pattern tip from the trap the misses share
+  const tips=[]; wrong.slice(0,3).forEach(x=>{ const w=idx[nkey(x.w)]; if(w&&w.h) tips.push({t:'“'+w.w+'” — '+w.h}); });
+  const b={}; wrong.forEach(x=>{ const w=idx[nkey(x.w)]||{w:x.w}; TRAP_DEFS.forEach(([k,re])=>{ if(re.test(w.w)) b[k]=(b[k]||0)+1; }); const o=((idx[nkey(x.w)]||{}).o||'').toLowerCase(); if(/french/.test(o))b.french=(b.french||0)+1; if(/greek/.test(o))b.greek=(b.greek||0)+1; });
+  const topTrap=Object.keys(b).sort((a,c)=>b[c]-b[a])[0];
+  if(topTrap&&TRAP_TIP[topTrap]) tips.push({t:TRAP_TIP[topTrap]});
+  const tipRows=tips.slice(0,3).map(t=>`<div style="display:flex;gap:9px;align-items:flex-start;text-align:left;padding:10px 12px;border-radius:12px;background:var(--surface)"><span style="flex-shrink:0;color:var(--treasure-deep,#8A5B00)">${window.SB_ICON?SB_ICON('bulb',{size:16}):iconSVG('bulb',16)}</span><span style="font-size:13px;line-height:1.5;color:var(--ink,var(--text))">${esc(t.t)}</span></div>`).join('');
+  return `<div style="text-align:left;margin:16px 0 4px">
+    ${right.length?`<div style="font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--mastered,#178A4C);margin-bottom:6px">Got right · ${right.length}</div><div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px">${right.map(x=>chip(x.w,true)).join('')}</div>`:''}
+    ${wrong.length?`<div style="font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--fix,#C4453C);margin-bottom:6px">To fix · ${wrong.length}</div><div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px">${wrong.map(x=>chip(x.w,false)).join('')}</div>`:''}
+    ${tipRows?`<div style="font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:2px 0 6px">Coach tips</div><div style="display:flex;flex-direction:column;gap:7px">${tipRows}</div>`:''}
+  </div>`; }
 function typedDone(){ const S=state; const g=S.game; let title,big,sub;
   if(g.type==='boss'){ title=g.status==='won'?'Boss defeated! 🏆':'You were beaten 👹'; big=g.status==='won'?'VICTORY':'TRY AGAIN'; sub=g.status==='won'?('You landed '+(g.right||0)+' hits'):('You landed '+(g.right||0)+' hits before falling'); }
   else if(g.type==='beat'){ title=g.right>=12?'Lightning speller! ⚡':'Time! ⏱'; big=g.right+' words'; sub='spelled in 60 seconds'; }
@@ -3186,6 +3324,7 @@ function typedDone(){ const S=state; const g=S.game; let title,big,sub;
       <div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent);line-height:1">${big}</div>
       <p style="color:var(--muted);font-weight:700;margin-top:6px">${sub}</p>
       <div style="display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 15px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:15px">${iconSVG('coin',15)} +${g.bonus||0} coins earned</div>
+      ${gameReveal(g)}
     </div>
     <div style="display:flex;gap:10px;justify-content:center"><button data-act="exitGame" style="padding:13px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">← Arcade</button><button data-act="gReplay" style="padding:13px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Play again →</button></div>
   </div>`; }
@@ -3212,6 +3351,7 @@ function mcDone(){ const g=state.game; const pct=Math.round(g.right/(g.qs.length
       <div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent);line-height:1">${g.right}/${g.qs.length}</div>
       <p style="color:var(--muted);font-weight:700;margin-top:6px">${pct}% correct</p>
       <div style="display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 15px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:15px">${iconSVG('coin',15)} +${g.bonus||0} coins earned</div>
+      ${gameReveal(g)}
     </div>
     <div style="display:flex;gap:10px;justify-content:center"><button data-act="exitGame" style="padding:13px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">← Arcade</button><button data-act="gReplay" style="padding:13px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Play again →</button></div>
   </div>`; }
