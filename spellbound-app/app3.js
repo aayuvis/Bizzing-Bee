@@ -555,6 +555,7 @@ const app = {
     else { app.openBuilder(); flash('⚔️ Quest set: your own list — pick one or build one in five taps'); } },
   progHeat:(v)=>set({progHeatKey:v}),
   progHeatPick:(k)=>set({progHeatKey:k}),
+  noop:()=>{},   // click-eater for dialog panels (delegation-safe alternative to stopPropagation)
   moreTips:()=>set({tipPage:(state.tipPage||0)+1}),
   dockMenu:(k)=>set({dockMenu:state.dockMenu===k?null:k}),
   pauseList:(k)=>{ const c=active(); ensureLists(c); if(!c.pausedLists) c.pausedLists={};
@@ -1551,7 +1552,8 @@ function liveHeatmap(words, opts){
   }).join('');
   const legend=[['var(--good)','Mastered'],['var(--bad)','Missed'],['var(--surface2)','New']].map(([c,l])=>`<span style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);font-weight:700"><span style="width:11px;height:11px;border-radius:3px;background:${c};display:inline-block"></span>${l}</span>`).join('');
   const pct=Math.round(m/N*100);
-  const toggle=anon?`<button data-act="toggleHeat" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:9px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12px;white-space:nowrap">${iconSVG(reveal?'eyeoff':'eye',14)} ${reveal?'Hide words':'Show words'}</button>`:'';
+  const toggle=(anon?`<button data-act="toggleHeat" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:9px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12px;white-space:nowrap">${iconSVG(reveal?'eyeoff':'eye',14)} ${reveal?'Hide words':'Show words'}</button>`:'')
+    +(opts.print?`<button data-act="printOpen" title="Print this word list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:9px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12px;white-space:nowrap">🖨 Print</button>`:'');
   return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:18px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.06)">
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:11px"><div style="font-family:var(--display);font-weight:800;font-size:15px">Live progress</div><div style="flex:1;min-width:90px;height:7px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:99px;background:var(--accent);width:${pct}%;transition:width .35s"></div></div><div style="font-size:12.5px;color:var(--muted);font-weight:700;white-space:nowrap">${m}/${N} mastered${missed?(' · '+missed+' to review'):''}</div>${toggle}</div>
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">${cells}</div>
@@ -1691,7 +1693,8 @@ function viewBuilder(){ const S=state; const b=bldState(); const picked=bldPick(
   </div>`; }
 /* ===================== Print a word list ===================== */
 function printDoc(key){ const p=state.prn||{}; const depth=p.depth||'full'; const page=p.page||'letter'; const scope=p.scope||'level';
-  const c=active(); const words=(scope==='level'?listWords(key):listFullWords(key)).filter(w=>w&&w.w);
+  const c=active(); let words=(scope==='level'?listWords(key):listFullWords(key)).filter(w=>w&&w.w);
+  const PRINT_CAP=2400; const total=words.length; if(words.length>PRINT_CAP) words=words.slice(0,PRINT_CAP);   // giant lists would hang the browser
   const label=listLabel(key).split(' · ')[0]; const sizes={letter:'letter',a4:'A4',a5:'A5'};
   const cols=depth==='words'?3:depth==='say'?2:1;
   const rows=words.map((w,i)=>{ const say=w.p||w.sy||'';
@@ -1710,7 +1713,7 @@ function printDoc(key){ const p=state.prn||{}; const depth=p.depth||'full'; cons
     .foot{margin-top:16px;font-size:10px;color:#888;text-align:center}
   </style></head><body>
     <h1>${esc(label)}</h1>
-    <div class="meta">${esc(c.name||'Speller')} · ${words.length} words · ${scope==='level'?('Level '+(listStageIdx(c,key)+1)):'whole list'} · printed ${new Date().toLocaleDateString()} · Spellbound</div>
+    <div class="meta">${esc(c.name||'Speller')} · ${words.length}${total>words.length?(' of '+total):''} words · ${scope==='level'?('Level '+(listStageIdx(c,key)+1)):'whole list'}${total>words.length?' (first '+PRINT_CAP+' shown — print a Level for a focused sheet)':''} · printed ${new Date().toLocaleDateString()} · Spellbound</div>
     <div class="grid">${rows}</div>
     <div class="foot">Say it → spell it → say it again. 🐝</div>
   </body></html>`; }
@@ -2273,13 +2276,13 @@ function coachTrain(){
     return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px;animation:sb-rise .3s ease both"><div style="font-family:var(--display);font-weight:800;font-size:14.5px;margin-bottom:10px">Level ${stage.n} words · ${esc(listLabel(key).split(' · ')[0])} · ${fullList.length}</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;max-height:360px;overflow-y:auto">${cells}</div>${fullList.length>cap?`<div style="font-size:11.5px;color:var(--muted);margin-top:8px">Showing the first ${cap} of ${fullList.length}.</div>`:''}</div>`; })() : '';
   const titleRow = (S.renameKey===key)
     ? `<div style="display:flex;align-items:center;gap:8px;flex:1;min-width:220px"><input data-inp="renameInput" data-fkey="renameInp" value="${escA(S.renameVal)}" maxlength="40" placeholder="List name" style="flex:1;min-width:120px;background:var(--surface2);border:1px solid var(--accent);border-radius:10px;padding:8px 11px;font-size:15px;font-weight:800;color:var(--text);font-family:var(--display)"><button data-act="saveRename" style="padding:8px 13px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">Save</button><button data-act="cancelRename" style="padding:8px 11px;border-radius:10px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:13px">✕</button></div>`
-    : `<div style="display:inline-flex;align-items:center;gap:8px;min-width:0"><span style="font-family:var(--display);font-weight:800;font-size:16px">${esc(listLabel(key))}</span><button data-act="startRename" data-arg="${escA(key)}" title="Rename this list" style="color:var(--muted);display:inline-flex">${iconSVG('pencil',15)}</button><button data-act="printOpen" title="Print this word list" style="color:var(--muted);display:inline-flex;font-size:14px">🖨</button><span style="font-size:13px;color:var(--muted);font-weight:700;white-space:nowrap">· Level ${uiLevel}</span></div>`;
+    : `<div style="display:inline-flex;align-items:center;gap:8px;min-width:0"><span style="font-family:var(--display);font-weight:800;font-size:16px">${esc(listLabel(key))}</span><button data-act="startRename" data-arg="${escA(key)}" title="Rename this list" style="color:var(--muted);display:inline-flex">${iconSVG('pencil',15)}</button><span style="font-size:13px;color:var(--muted);font-weight:700;white-space:nowrap">· Level ${uiLevel}</span></div>`;
   const printDlg = S.printOpen ? (()=>{ const p=S.prn||{depth:'full',page:'letter',scope:'level'};
     const pbtn=(g,v,l)=>`<button data-act="printSet" data-arg="${g}:${v}" style="padding:9px 13px;border-radius:10px;font-weight:800;font-size:12.5px;border:1px solid ${p[g]===v?'var(--accent)':'var(--line)'};${p[g]===v?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">${l}</button>`;
     const prow=(t,btns)=>`<div style="margin-bottom:13px"><div style="font-size:12px;color:var(--muted);font-weight:800;margin-bottom:7px">${t}</div><div style="display:flex;gap:6px;flex-wrap:wrap">${btns}</div></div>`;
     const nWords=(p.scope==='level'?listWords(key):listFullWords(key)).length;
     return `<div style="position:fixed;inset:0;z-index:90;background:rgba(20,12,50,.45);display:grid;place-items:center;padding:18px" data-act="printClose">
-      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:22px;max-width:430px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)" onclick="event.stopPropagation()">
+      <div data-act="noop" style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:22px;max-width:430px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);cursor:default">
         <div style="display:flex;align-items:center;gap:9px;margin-bottom:4px"><span style="font-size:18px">🖨</span><span style="font-family:var(--display);font-weight:800;font-size:17px">Print word list</span><button data-act="printClose" style="margin-left:auto;color:var(--muted);font-weight:800">✕</button></div>
         <p style="font-size:12.5px;color:var(--muted);margin:0 0 15px">${esc(listLabel(key).split(' · ')[0])} — opens a clean page you can print or save as PDF.</p>
         ${prow('What to include',[['words','Words only'],['say','Words + pronunciation'],['full','Words + pronunciation + meaning']].map(([v,l])=>pbtn('depth',v,l)).join(''))}
@@ -2321,10 +2324,11 @@ function coachTrain(){
   const act=(a,ic,t,d)=>`<button data-act="${a}" style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:13px"><span style="color:var(--accent)">${iconSVG(ic,18)}</span><span style="font-family:var(--display);font-weight:800;font-size:14px">${t}</span><span style="font-size:11.5px;color:var(--muted)">${d}</span></button>`;
   const actions=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:16px">${act('startBuzz','flame','Daily Buzz','Quick mixed round')}${act('startWritten','pencil','Written round','Type a sequence, scored')}${act('startOral','volume','Oral elimination','Spell aloud, survive')}${act('coachSetupOpen','gear','Setup &amp; lists','Date, goal, choose lists')}</div>`;
   const journeyPromo = (key!=='journey' && (getList(c,'journey').stage||0)===0) ? `<button data-act="startJourney" style="width:100%;text-align:left;border-radius:14px;margin-top:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 4px 14px rgba(43,27,94,.16)"><div style="padding:13px 16px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">★ Recommended path</div><div style="font-family:var(--display);font-weight:800;font-size:16px;line-height:1.15">The Spellbound Journey — 20 Levels to Champ</div></div><span style="padding:8px 14px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Start →</span></div></button>` : '';
-  return `<div style="max-width:760px;margin:0 auto">${printDlg}${topBar}${chipsRow}${allWordsPanel}
+  return `<div style="max-width:760px;margin:0 auto">${printDlg}${topBar}
     <div style="display:flex;gap:6px;background:var(--surface2);border-radius:13px;padding:5px;margin-bottom:16px">${tab('revise','Learn')}${tab('practice','Practice')}</div>
     ${body}
-    ${liveHeatmap(ws, {anon:S.luTab==='practice'})}
+    ${liveHeatmap(ws, {anon:S.luTab==='practice', print:true})}
+    ${chipsRow}${allWordsPanel}
     ${levelBlock}
     ${journeyPromo}
     ${actions}</div>`;
