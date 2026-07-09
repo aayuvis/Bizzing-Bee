@@ -73,7 +73,16 @@
     for(var i=0;i<4;i++){ var x=112+i*28; o+='<rect x="'+x+'" y="'+(46+(i%2?6:-6))+'" width="22" height="22" rx="'+((w==='pixel'||w==='arcade')?0:6)+'" fill="'+cs[i]+'" transform="rotate('+(i%2?3:-3)+' '+(x+11)+' 57)"/>'; }
     return o+'<path d="M108 88 H236" stroke="'+k.p1+'" stroke-width="2" stroke-dasharray="1 7" stroke-linecap="round"/>';
   }
-  var COMPS={ quest:trophy, concepts:bricks, journeys:route, arcade:cabinet, themes:swatches };
+  function radar(k,w){ // Traps — a radar sweep finding pattern blips
+    return '<circle cx="160" cy="58" r="34" fill="none" stroke="'+k.p1+'" stroke-width="2" opacity=".55"/>'
+      +'<circle cx="160" cy="58" r="22" fill="none" stroke="'+k.p1+'" stroke-width="2" opacity=".75"/>'
+      +'<circle cx="160" cy="58" r="10" fill="none" stroke="'+k.p1+'" stroke-width="2"/>'
+      +'<path d="M160 58 L189 41" stroke="'+k.a+'" stroke-width="3" stroke-linecap="round"/>'
+      +'<path d="M160 58 L192 44 A34 34 0 0 0 185 33 Z" fill="'+k.a+'" opacity=".25"/>'
+      +'<circle cx="143" cy="47" r="4.5" fill="'+k.p2+'"/><circle cx="174" cy="72" r="4.5" fill="'+k.p2+'"/><circle cx="150" cy="74" r="3.2" fill="'+k.p2+'" opacity=".8"/>'
+      +'<circle cx="160" cy="58" r="3" fill="'+k.a+'"/>';
+  }
+  var COMPS={ quest:trophy, concepts:bricks, journeys:route, arcade:cabinet, themes:swatches, traps:radar };
 
   // ---- extended compositions: practice hub, chapter covers (h150), game tiles ----
   function fan(k,w){ var o='',ang=[-14,-5,4,13]; for(var i=0;i<4;i++){ var x=120+i*20;

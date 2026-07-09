@@ -1031,7 +1031,8 @@ const WAYFIND={ quest:{c:'var(--action,#6C4FE0)',ic:'steps',sb:null,label:'Champ
   concepts:{c:'#0E8A78',ic:'grid',sb:'grid',label:'Concepts'},
   journeys:{c:'#C25A2E',ic:'book',sb:'book',label:'Word Journeys'},
   arcade:{c:'#E8458C',ic:'joystick',sb:'gamepad',label:'Arcade'},
-  themes:{c:'#B14FC4',ic:'palette',sb:'palette',label:'Theme Journeys'} };
+  themes:{c:'#B14FC4',ic:'palette',sb:'palette',label:'Theme Journeys'},
+  traps:{c:'#C4453C',ic:'spark',sb:'target',label:'Your Traps'} };
 function wayTile(key,size,tilt){ const w=WAYFIND[key]; size=size||48;
   const glyph=(w.sb&&window.SB_ICON)?SB_ICON(w.sb,{size:24}):iconSVG(w.ic,24,2.2);
   return `<span style="width:${size}px;height:${size}px;flex-shrink:0;display:grid;place-items:center;border-radius:14px;background:${w.c};color:#fff;box-shadow:var(--edge),var(--sh-rest);transform:rotate(${tilt||-2.5}deg)">${glyph}</span>`; }
@@ -1267,14 +1268,18 @@ function viewHome(){
 ${focusedH?(()=>{ const sg=parentSignals(); let rd=0; try{ rd=coachReadiness().ready||0; }catch(e){}
       const mini=[['Readiness',rd],['Accuracy',sg.acc],['Consistency',sg.consistency]].map(([l,v])=>{ v=Math.max(0,Math.min(100,Math.round(v||0)));
         return `<div style="flex:1;min-width:130px"><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:650;color:var(--muted);margin-bottom:5px"><span>${l}</span><span style="color:var(--ink,var(--text))">${v}%</span></div><div style="height:6px;border-radius:999px;background:var(--tint-deep,var(--surface2));overflow:hidden"><div style="height:100%;background:${v>=70?'var(--mastered,#178A4C)':'var(--action,var(--accent))'};width:${v}%"></div></div></div>`; }).join('');
-      const cont=`<button data-act="openCoach" class="sb-lift" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:12px;padding:14px 16px">
-          ${wayTile('quest',40,-2)}
-          <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--ui,var(--body));font-weight:650;font-size:15px">Continue training</span><span style="display:block;font-size:13px;color:var(--muted);margin-top:2px">${esc(listLabel(aKey).split(' · ')[0])} · Level ${listStageIdx(c,aKey)+1}</span></span>
-          <span style="color:var(--action,var(--accent));font-weight:800">→</span></button>`;
-      const traps=trapRadar()||`<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--sh-rest)"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px">No traps yet</div><p style="margin:0;font-size:13px;color:var(--muted)">Miss a few words and your weak-pattern radar lights up here.</p></div>`;
+      const tr=missTraps(); const top=tr[0]; const _pd2=S.mode==='dusk';
+      const trapCard=`<button class="sb-lift" data-act="${top?'drillTrap':'openCoach'}" ${top?`data-arg="${top.k}"`:''} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0">
+        <div style="position:relative;width:100%">${SB_COVER(S.theme,'traps',{h:110,dark:_pd2})}
+          <span style="position:absolute;left:14px;bottom:-16px">${wayTile('traps',48,2.5)}</span></div>
+        <div style="padding:12px 14px 0 76px;min-height:30px;display:flex;align-items:center;justify-content:flex-end;width:100%"><span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;padding:4px 11px;border-radius:var(--r-pill,999px);font-size:11px;font-weight:800;letter-spacing:.02em;background:${_pd2?'#FFFFFF':'#241E33'};color:${_pd2?'#241E33':'#FFFFFF'};box-shadow:var(--sh-rest)">${top?(top.label+' × '+top.n):'all clear'}</span></div>
+        <div style="padding:2px 16px 16px;display:flex;flex-direction:column;flex:1;width:100%">
+          <div style="font-family:var(--ui,var(--body));font-weight:650;font-size:17px;line-height:1.2;color:var(--ink,var(--text))">Your Traps</div>
+          <div style="font-size:15px;color:var(--muted);line-height:1.5;margin:4px 0 14px">${tr.length?('Misses cluster at: '+tr.map(t=>t.label).join(', ')+'. Fix the pattern, not just the word.'):'Miss a few words and your weak-pattern radar lights up here.'}</div>
+          <div style="margin-top:auto;height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden"><div style="height:100%;background:var(--fix,#C4453C);width:${top?Math.min(100,top.n*20):0}%"></div></div>
+        </div></button>`;
       return `<div style="display:flex;gap:16px;flex-wrap:wrap;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:14px;box-shadow:var(--sh-rest)">${mini}</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:14px">${journeys}</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:18px;align-items:start">${cont}${traps}</div>`; })()
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-bottom:18px">${journeys}${trapCard}</div>`; })()
     :`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:4px 2px 12px">Keep going</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:18px">${journeys}</div>`}
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest)">
