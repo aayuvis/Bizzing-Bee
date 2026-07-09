@@ -440,6 +440,8 @@ function _bandUpdate(c){ if(bandEvidence(c)<BAND_MIN_EV) return;
   for(let b=1;b<=9;b++){ const s=_bandAcc(c,b); if(s.w>=8 && s.acc>=BAND_UP) raw=b; }
   if(raw>cur) cur=raw; /* climb fast: proof promotes immediately */
   else { const s=_bandAcc(c,cur); if(s.w>=12 && s.acc<BAND_DOWN) cur=Math.max(1,cur-1); } /* fall slow: one bad game never demotes */
+  const was=c.band||0;
+  if(cur>was && was>0){ state.bandUp={band:cur,tier:bandTier(cur)}; try{ sfx('win'); burstConfetti(140); }catch(e){} }
   c.band=cur; }
 function bandTier(b){ return b<=2?'Classroom Speller':b<=4?'School-Bee Ready':b<=6?'Regional Ready':b<=8?'State & National':'Championship'; }
 function beeBand(c){ c=c||active(); const band=Math.max(1,Math.min(9,c.band||c.bandSeed||2));
@@ -475,8 +477,10 @@ const app = {
   pickAvatar:(id)=>set({draft:{...state.draft,avatar:id}}),
   pickGoal:(v)=>set({draft:{...state.draft,goal:+v}}),
   onbBack:()=>{ if(state.onbStep===0){ set({screen: state.addingMore?'app':'auth'}); } else set({onbStep:state.onbStep-1}); },
+  onbWorld:(id)=>{ state.draft.theme=id; state.theme=id; render(); },
   onbNext:()=>{ const S=state;
     if(S.onbStep===0 && !S.draft.name.trim()){ flash('Add a name to continue'); return; }
+    if(S.onbStep===1 && !S.draft.theme){ flash('Pick a world first — every speller chooses their own'); return; }
     if(S.onbStep<2){ set({onbStep:S.onbStep+1}); return; }
     app._finishOnb(); set({screen:'app', nav:'home'}); flash('Profile ready — let’s spell! 🐝'); },
   _finishOnb:()=>{ const S=state; const kid={ name:S.draft.name.trim()||'Speller', age:S.draft.age, avatar:S.draft.avatar, theme:S.theme, goal:S.draft.goal, level:1, streak:0, acc:0, xp:0, week:[0,0,0,0,0,0,0] };
@@ -888,6 +892,10 @@ const app = {
   setAgeMode:(m)=>{ const c=active(); c.ageMode=m; save(); render(); },
   setLight:()=>app.setMode('light'), setWhite:()=>app.setMode('white'), setDusk:()=>app.setMode('dusk'),
   cycleMode:()=>{ const o=['light','white','dusk']; app.setMode(o[(o.indexOf(state.mode)+1)%3]); },
+  landType:(v)=>{ state.landTyped=v; },
+  landKey:(e)=>{ if(e.key==='Enter'){ e.preventDefault(); app.landCheck(); } },
+  landCheck:()=>{ const w=LAND_WORDS[state.landIdx||0]; if((state.landTyped||'').trim().toLowerCase()===w){ state.landDone=true; state.landTyped=''; state.landIdx=((state.landIdx||0)+1)%LAND_WORDS.length; try{ sfx('correct'); burstConfetti(90); }catch(e){} render(); setTimeout(()=>{ state.landDone=false; render(); },2600); } else { flash('Almost — check it letter by letter!'); } },
+  bandUpClose:()=>set({bandUp:null}),
   voiceSetDevice:(v)=>{ VOICE.name=v||''; saveVoiceCfg(); loadVoices(); flash(VOICE.name?'Voice set ✨':'Using the best available voice'); },
   voiceTest:()=>{ say('Hi! I am your spelling buddy. Try this word: iridescent. The soap bubble had an iridescent shine.'); },
   noop:()=>{},
@@ -897,6 +905,7 @@ const app = {
 /*  View — builds the HTML for the current state                          */
 /* ===================================================================== */
 const diffMap = { easy:['Easy','#1f9d57'], medium:['Medium','#c08a00'], hard:['Hard','#d63a3a'] };
+const LAND_WORDS=['iridescent','bouquet','rhythm','marvelous'];
 const diffStyleFor = (d) => 'padding:3px 9px;border-radius:999px;font-size:12px;font-weight:800;color:#fff;background:'+(diffMap[d]||diffMap.medium)[1];
 const seg = (on) => 'padding:7px 15px;border-radius:999px;font-weight:800;font-size:13px;transition:.2s;'+(on?'background:var(--accent);color:#fff':'background:transparent;color:var(--muted)');
 const chip = (on) => 'padding:9px 14px;border-radius:999px;font-weight:700;font-size:13px;border:1px solid var(--line);transition:.2s;'+(on?'background:var(--accent);color:#fff;border-color:transparent':'background:var(--surface2);color:var(--text)');
@@ -932,12 +941,17 @@ function viewLanding(){
           <button data-act="goSignup" style="padding:15px 26px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge),0 8px 22px color-mix(in srgb,var(--accent) 40%,transparent)">Start free →</button>
           <button data-act="goSignin" style="padding:15px 24px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">I have an account</button>
         </div>
-        <div style="display:flex;align-items:center;gap:16px;color:var(--muted);font-size:13px;font-weight:600"><span>★★★★★ <b style="color:var(--text)">4.9</b> parents</span><span style="width:1px;height:14px;background:var(--line)"></span><span>No card to start</span></div>
+        <div style="display:flex;align-items:center;gap:16px;color:var(--muted);font-size:13px;font-weight:600"><span>🔒 100% offline — words never leave your device</span><span style="width:1px;height:14px;background:var(--line)"></span><span>No card to start</span></div>
       </div>
       <div style="position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,34px);box-shadow:var(--glow)">
         <div style="display:flex;justify-content:center;margin-bottom:6px"><div style="width:118px;height:132px;animation:sb-float 4s ease-in-out infinite">${mascotSVG('excited')}</div></div>
         <div style="text-align:center;font-family:var(--mono);font-size:13px;letter-spacing:.3em;color:var(--muted);margin-bottom:6px">SPELL THIS</div>
-        <div style="text-align:center;font-family:var(--display);font-weight:800;font-size:clamp(28px,5vw,40px);letter-spacing:.02em;margin-bottom:18px">iridescent</div>
+        <div style="text-align:center;font-family:var(--display);font-weight:800;font-size:clamp(28px,5vw,40px);letter-spacing:.02em;margin-bottom:12px">${LAND_WORDS[state.landIdx||0]}</div>
+        ${state.landDone?`<div style="text-align:center;font-weight:800;color:var(--good,#178A4C);font-size:15px;margin-bottom:12px;animation:sb-pop .4s ease both">⭐ Nailed it! That\u2019s how practice feels.</div>`:''}
+        <div style="display:flex;gap:8px;margin-bottom:18px">
+          <input data-inp="landType" data-key="landKey" data-fkey="landType" value="${escA(state.landTyped||'')}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type it here — try me!" style="flex:1;min-width:0;padding:12px 14px;border-radius:12px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry,inherit);font-weight:700;font-size:16px;text-align:center;letter-spacing:.05em">
+          <button data-act="landCheck" style="padding:12px 18px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">Check</button>
+        </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
           <div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px"><div style="font-size:12px;color:var(--muted);font-weight:700">Streak</div><div style="font-family:var(--display);font-weight:800;font-size:20px;display:flex;align-items:center;gap:6px">12 days <span style="color:#FF7A1A">${iconSVG('fire',18)}</span></div></div>
           <div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px"><div style="font-size:12px;color:var(--muted);font-weight:700">Form</div><div style="font-family:var(--display);font-weight:800;font-size:20px">Forager</div></div>
@@ -984,7 +998,7 @@ function viewOnboarding(){
       <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:10px">Pick a buddy</label>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:8px">${avatars}</div></div>`;
   } else if(S.onbStep===1){
-    const worldCards=THEMES.map(t=>worldHeroCard(t, t.id===S.theme, false, 'pickTheme')).join('');
+    const worldCards=THEMES.map(t=>worldHeroCard(t, t.id===S.draft.theme, false, 'onbWorld')).join('');
     card=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow)">
       <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">Choose a world</h2>
       <p style="margin:0 0 20px;color:var(--muted);font-size:13px">Each world is a different look <b style="color:var(--text)">and</b> a character that evolves as you level up — from its first form to its last. Pick the journey that excites your speller. You can change it any time.</p>
@@ -1021,24 +1035,24 @@ function loreUnlocked(){ const n=loreCount(); return lessonsAll().slice(0,Math.m
 // Tip of the day — pithy, rotating daily, banded to the speller's proven Bee Band:
 // Bands 1–2 draw only from the Spelling Bee Basics concepts + gentle habit tips;
 // 3–5 widen to easy/medium concepts and practice tips; 6+ open the full library + lore.
-function tipOfDay(){ const pool=[]; let band=2; try{ band=beeBand(active()).band; }catch(e){}
+function tipOfDay(kid){ const pool=[]; let band=2; try{ band=beeBand(active()).band; }catch(e){} if(kid) band=Math.min(band,2);
   try{ const chs=(state.conceptData||(window.SB_CONCEPTS&&SB_CONCEPTS.chapters)||[]);
     const basics=chs.filter(ch=>ch.category==='Spelling Bee Basics');
     const rest=band<=2?[]:chs.filter(ch=>ch.category!=='Spelling Bee Basics'&&(band>5||ch.difficulty!=='hard'));
     basics.concat(rest).forEach(ch=>{ const first=String(ch.concept||'').split(/(?<=[.!?])\s/)[0]; if(first&&first.length>30) pool.push(first); });
   }catch(e){}
-  try{ const T=window.SB_TIPS||{};
+  try{ const T=window.SB_TIPS||{}; if(!kid){
     const cats=band<=2?['young','memory','motivation','review']
       :band<=5?['memory','motivation','review','accuracy','consistency','oral']
       :['memory','accuracy','oral','written','origin','difficult','nerves','beeday','plateau','review'];
-    cats.forEach(k=>(T[k]||[]).forEach(t=>pool.push(t)));
+    cats.forEach(k=>(T[k]||[]).forEach(t=>pool.push(t))); }
   }catch(e){}
   try{ if(band>2) lessonsAll().slice(0,40).forEach(L=>{ if(L.hook) pool.push(L.hook); }); }catch(e){}
   if(!pool.length) return '';
   const t=trunc(pool[dayNum()%pool.length],150);
   return `<div style="position:relative;display:flex;align-items:flex-start;gap:13px;background:var(--paper,var(--bg2));border:1px solid var(--line);border-left:4px solid var(--treasure,#F0B429);border-radius:14px;padding:14px 18px;margin-bottom:14px">
     <span style="flex-shrink:0;font-family:var(--display);font-weight:800;font-size:32px;line-height:.8;color:var(--treasure,#F0B429)">“</span>
-    <span style="min-width:0"><span style="display:block;font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:3px">Tip of the day</span>
+    <span style="min-width:0"><span style="display:block;font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:3px">${kid?'Today\u2019s bee tip \ud83d\udc1d':'Tip of the day'}</span>
     <span style="display:block;font-size:15px;line-height:1.5;font-weight:650;color:var(--ink,var(--text))">${esc(t)}</span></span>
   </div>`; }
 /* ---- Weak-pattern radar: the analytics engine aimed at the speller (12+) ---- */
@@ -1258,7 +1272,17 @@ function viewApp(){
         <button data-act="celebrateClose" style="width:100%;padding:14px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Keep climbing →</button>
         <div style="font-size:12px;color:var(--muted);margin-top:10px">Screenshot this card to share it!</div>
       </div></div>`; })():'';
-  return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}
+  const bandUp=(S.bandUp && !S.game)?`<div style="position:fixed;inset:0;z-index:121;display:grid;place-items:center;padding:20px;background:color-mix(in srgb,var(--action) 26%,rgb(20 12 40 / .78))" data-act="bandUpClose">
+      <div data-act="noop" style="background:var(--paper,#fff);border-radius:20px;box-shadow:var(--sh-overlay);max-width:420px;width:100%;padding:32px 28px;text-align:center;animation:sb-pop .45s ease both">
+        <div style="width:110px;height:120px;margin:0 auto 6px;animation:sb-bee-talk 1.6s ease-in-out infinite">${mascotAcc('excited')}</div>
+        <div style="font-family:var(--ui);font-weight:650;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)">Band up!</div>
+        <div style="font-family:var(--display);font-weight:800;font-size:32px;line-height:1.08;margin:6px 0 4px">Band ${S.bandUp.band} — ${esc(S.bandUp.tier)}!</div>
+        <div style="font-size:15px;color:var(--muted);font-weight:450">Proven, not given — you earned this on Band ${S.bandUp.band} words. Your games and tips just levelled up with you.</div>
+        <div style="display:flex;justify-content:center;gap:4px;margin:16px 0 18px" aria-hidden="true">${[1,2,3,4,5,6,7,8,9].map(n=>`<span style="width:${n===S.bandUp.band?'13px':'8px'};height:${n===S.bandUp.band?'13px':'8px'};border-radius:99px;background:${n<=S.bandUp.band?'var(--accent)':'var(--tint-deep,var(--surface2))'}"></span>`).join('')}</div>
+        <button data-act="bandUpClose" style="width:100%;padding:14px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Keep buzzing →</button>
+        <div style="font-size:12px;color:var(--muted);margin-top:10px">Screenshot this card to share it!</div>
+      </div></div>`:'';
+  return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}${bandUp}
     <div style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
       <div style="max-width:1080px;margin:0 auto;padding:11px clamp(14px,3.5vw,32px);display:flex;align-items:center;gap:12px">
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
@@ -1334,6 +1358,9 @@ function viewDrawer(){
 
 // bee accessories — cosmetic overlays on the mascot (viewBox matches mascotSVG)
 function beeAccSVG(k){ if(!k) return '';
+  if(k==='goggles') return '<svg viewBox="0 0 240 270" width="100%" height="100%" style="display:block;overflow:visible;position:absolute;inset:0;pointer-events:none"><g fill="rgba(120,200,255,.30)" stroke="#2B1B5E" stroke-width="6"><circle cx="92" cy="132" r="31"/><circle cx="152" cy="132" r="31"/></g><path d="M123 132h-2M61 128l-22-6M183 128l22-6" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/></svg>';
+  if(k==='cape') return '<svg viewBox="0 0 240 270" width="100%" height="100%" style="display:block;overflow:visible;position:absolute;inset:0;pointer-events:none"><path d="M50 152 C22 190 12 224 4 248 C38 238 56 224 64 204 Z" fill="#D6453C" stroke="#A33232" stroke-width="3" stroke-linejoin="round"/><circle cx="54" cy="152" r="7" fill="#F0B429" stroke="#C8901B" stroke-width="2"/></svg>';
+  if(k==='bolt') return '<svg viewBox="0 0 240 270" width="100%" height="100%" style="display:block;overflow:visible;position:absolute;inset:0;pointer-events:none"><path d="M204 26 L178 72 L194 72 L170 118 L212 64 L194 64 L216 26 Z" fill="#FFD24D" stroke="#C8901B" stroke-width="3" stroke-linejoin="round"/></svg>';
   if(k==='crown') return '<svg viewBox="0 0 240 270" width="100%" height="100%" style="display:block;overflow:visible;position:absolute;inset:0;pointer-events:none"><path d="M84 30 L96 8 L112 24 L120 2 L128 24 L144 8 L156 30 Z" fill="#F0B429" stroke="#C8901B" stroke-width="3" stroke-linejoin="round"/><circle cx="96" cy="10" r="4" fill="#FFD34D"/><circle cx="120" cy="4" r="4" fill="#FFD34D"/><circle cx="144" cy="10" r="4" fill="#FFD34D"/></svg>';
   if(k==='bow') return '<svg viewBox="0 0 240 270" width="100%" height="100%" style="display:block;overflow:visible;position:absolute;inset:0;pointer-events:none"><g transform="translate(120,238)"><path d="M0 0 L-26 -14 Q-34 0 -26 14 Z" fill="#DC5B7E"/><path d="M0 0 L26 -14 Q34 0 26 14 Z" fill="#DC5B7E"/><circle cx="0" cy="0" r="7" fill="#C43D5A"/></g></svg>';
   if(k==='halo') return '<svg viewBox="0 0 240 270" width="100%" height="100%" style="display:block;overflow:visible;position:absolute;inset:0;pointer-events:none"><ellipse cx="120" cy="18" rx="46" ry="12" fill="none" stroke="#F0B429" stroke-width="5"/><circle cx="74" cy="18" r="4" fill="#FFD34D"/><circle cx="166" cy="18" r="4" fill="#FFD34D"/><circle cx="120" cy="6" r="4" fill="#FFD34D"/></svg>';
@@ -1399,17 +1426,17 @@ function viewHome(){
   }).join('');
   return `<div>
     ${(()=>{ const lp=getList(c,aKey); const lf=levelFromXp(lp.xp||0); const xpToNext=Math.max(0,(lf.need||1)-(lf.into||0));
-      const bub=goalPctNum>=100?'Goal smashed — bonus rounds are pure treasure!':('Spell '+Math.max(0,goalTarget-S.goalDone)+' more — let\'s buzz!');
+      const bub=(fIdx===0&&(lf.into||0)<5)?'Spell 5 words and I hatch! 🥚':(goalPctNum>=100?'Goal smashed — bonus rounds are pure treasure!':('Spell '+Math.max(0,goalTarget-S.goalDone)+' more — let\'s buzz!'));
       const evoPct=Math.min(100,Math.round((lf.into||0)/(lf.need||1)*100));
       const bb=beeBand(c);
-      const bandBanner=`<button data-act="setNav" data-arg="progress" title="Open Progress for the full band ladder" class="sb-card" style="width:100%;display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:linear-gradient(100deg,color-mix(in srgb,var(--action,var(--accent)) 14%,var(--paper,var(--bg2))),var(--paper,var(--bg2)) 62%);border-color:color-mix(in srgb,var(--action,var(--accent)) 35%,var(--line));border-radius:var(--r-lg,16px);padding:12px 18px;margin-bottom:14px;cursor:pointer">
+      const bandBanner=`<button data-act="${bb.calibrating?'startLevelTest':'setNav'}" data-arg="progress" title="${bb.calibrating?'A 3-minute placement quest':'Open Progress for the full band ladder'}" class="sb-card" style="width:100%;display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:linear-gradient(100deg,color-mix(in srgb,var(--action,var(--accent)) 14%,var(--paper,var(--bg2))),var(--paper,var(--bg2)) 62%);border-color:color-mix(in srgb,var(--action,var(--accent)) 35%,var(--line));border-radius:var(--r-lg,16px);padding:12px 18px;margin-bottom:14px;cursor:pointer">
         <span style="display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--action,var(--accent));color:var(--action-ink,#fff);flex-shrink:0">${iconSVG('target',22)}</span>
         <span style="min-width:0;flex:1">
-          <span class="sb-ct" style="display:block">${bb.calibrating?'Bee Band: calibrating…':('Bee Band '+bb.band+' · '+bb.tier)}</span>
-          <span class="sb-cn sb-bandsub" style="display:block">${bb.calibrating?'Your skill band appears after ~30 graded words — everything you spell counts.':'Skill — what you\u2019re ready to spell, proven by your words. Games and tips follow it.'}</span>
+          <span class="sb-ct" style="display:block">${bb.calibrating?'Find your Bee Band':('Bee Band '+bb.band+' · '+bb.tier)}</span>
+          <span class="sb-cn sb-bandsub" style="display:block">${bb.calibrating?'A 3-minute quest sets your words, games and tips exactly to you.':'Skill — what you’re ready to spell, proven by your words. Games and tips follow it.'}</span>
         </span>
         ${bb.calibrating?'':`<span style="flex-shrink:0;display:flex;gap:4px;align-items:center" aria-hidden="true">${[1,2,3,4,5,6,7,8,9].map(n=>`<span style="width:${n===bb.band?'11px':'7px'};height:${n===bb.band?'11px':'7px'};border-radius:99px;background:${n<=bb.band?'var(--action,var(--accent))':'var(--tint-deep,var(--surface2))'};${n===bb.band?'box-shadow:0 0 0 3px color-mix(in srgb,var(--action,var(--accent)) 25%,transparent);':''}"></span>`).join('')}</span>`}
-        <span class="sb-cl">details →</span>
+        <span class="sb-cl">${bb.calibrating?'Start →':'details →'}</span>
       </button>`;
       return `${bandBanner}<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:18px">
       <div class="sb-card" style="display:flex;align-items:center;gap:16px;min-height:156px">
@@ -1421,7 +1448,7 @@ function viewHome(){
           <div class="sb-cs">${greeting}</div>
           <div style="font-family:var(--display);font-weight:800;font-size:24px;line-height:1.1">${esc(c.name)}</div>
           <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px">
-            <span style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">${iconSVG('flame',14)} ${c.streak||0}-day streak</span>
+            ${(c.streak||0)>0?`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">${iconSVG('flame',14)} ${c.streak}-day streak</span>`:''}
           </div>
         </div>
       </div>
@@ -1452,7 +1479,7 @@ function viewHome(){
     </div>`; })()}
 ${focusedH?(()=>{ return `${tipOfDay()}
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:18px">${journeys}</div>`; })()
-    :`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:4px 2px 12px">Keep going</div>
+    :`${tipOfDay(true)}<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:4px 2px 12px">Keep going</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:18px">${journeys}</div>`}
   </div>`;
 }
@@ -1472,6 +1499,7 @@ function viewEvolution(){ const S=state; const c=active(); ensureLists(c); const
       </div>
       <div style="overflow-x:auto;padding:4px 0 2px"><div style="min-width:760px">${evoLadderHTML(theme,fIdx)}</div></div>
     </div>
+    ${(theme==='spellbound')?`<div class="sb-card" style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><span style="font-size:26px;flex-shrink:0">👑</span><span class="sb-cs"><b style="color:var(--text)">Why a Queen at the top?</b> Every hive is ruled by its Queen — the strongest, most protected bee alive. Reaching her means you outgrew every other bee in the hive.</span></div>`:''}
     ${beeEmpty('happy','Ten forms, one bee. Practise anywhere — Word Coach, the Arcade, Concepts — and the XP all feeds the same evolution.')}
   </div>`;
 }
@@ -2005,6 +2033,7 @@ function parentTips(){ const T=window.SB_TIPS||{}; const s=parentSignals(); cons
   const take=(cat,why)=>{ if(used.has(cat)) return; used.add(cat);
     if(cat==='pattern'||cat==='theme'||cat==='champword'||cat==='miss'){ const t=genTip(cat,seed+picks.length); if(t) picks.push({cat,why,text:t}); return; }
     const arr=T[cat]; if(!arr||!arr.length) return; picks.push({cat,why,text:arr[(seed+picks.length)%arr.length]}); };
+  if(!everPractised(s.c)){ take('young','the first session is ahead'); take('motivation','starting strong'); take('parenting','setting up the habit'); return picks; }
   if(s.daysSince>=3) take('reengage','no practice in '+s.daysSince+' days');
   if(s.active14<7) take('consistency','practised '+s.active14+' of the last 14 days');
   if(s.acc && s.acc<75) take('accuracy','accuracy at '+s.acc+'%');
@@ -2016,7 +2045,14 @@ function parentTips(){ const T=window.SB_TIPS||{}; const s=parentSignals(); cons
   ['motivation','memory','parenting','oral','written','origin','pattern','champword','theme','plateau'].forEach(cat=>{ if(picks.length<6) take(cat,'daily coaching rotation'); });
   return picks.slice(0,6); }
 const TIP_CAT_LABEL={reengage:'Re-engage',consistency:'Consistency',difficult:'Hard words',memory:'Memory science',accuracy:'Accuracy',oral:'Oral rounds',written:'Written rounds',beeday:'Bee day',nerves:'Nerves',motivation:'Motivation',parenting:'Parenting',young:'Young spellers',plateau:'Plateau',review:'Review',coverage:'Coverage',origin:'Origins',pattern:'Patterns',champword:'Champion words',theme:'Themes',miss:'Their words'};
+function everPractised(c){ c=c||active(); try{ return bandEvidence(c)>0 || masteredCount()>0 || (c.missed||[]).length>0 || Object.keys(state.coachHistory||{}).length>0; }catch(e){ return false; } }
 function parentAnalytics(){ const s=parentSignals(); let rd=0; try{ rd=coachReadiness().ready||0; }catch(e){}
+  if(!everPractised(s.c)) return `<div class="sb-card" style="display:flex;align-items:center;gap:16px">
+    <div style="width:64px;height:70px;flex-shrink:0">${mascotSVG('think')}</div>
+    <div style="min-width:0">
+      <div class="sb-ct" style="margin-bottom:3px">${esc(s.c.name||'Your speller')} hasn\u2019t practised yet</div>
+      <div class="sb-cs">Signals appear after the first session \u2014 you\u2019ll see <b>Consistency</b>, <b>Accuracy</b>, <b>Coverage</b>, <b>Review health</b> and <b>Readiness</b>, all computed on this device. The best first step: one 5-word session together today.</div>
+    </div></div>`;
   const meters=[['Consistency',s.consistency,'practised '+s.active14+'/14 days'],['Accuracy',s.acc,'across recent sessions'],['Coverage',s.coverage,'of words met on the active list'],['Review health',s.reviewHealth,s.missedN+' words waiting for revenge'],['Readiness',rd,'on the coach target list']];
   const bars=meters.map(([l,v,sub])=>{ v=Math.max(0,Math.min(100,Math.round(v||0))); const col=v>=70?'var(--good)':v>=40?'#c08a00':'var(--bad)';
     return `<div style="background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:13px 15px"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font-family:var(--display);font-weight:800;font-size:13px">${l}</span><span style="font-family:var(--mono);font-weight:700;font-size:13px;color:${col}">${v}%</span></div><div style="height:7px;border-radius:999px;background:var(--surface);overflow:hidden;margin:8px 0 6px"><div style="height:100%;border-radius:999px;background:${col};width:${v}%"></div></div><div style="font-size:12px;color:var(--muted);font-weight:600">${sub}</div></div>`; }).join('');
@@ -3324,6 +3360,9 @@ function viewShop(){ const S=state; const c=active(); ensureLists(c); const tab=
       {k:'crown', name:'Golden Crown', desc:'For royalty of the spelling stage.'},
       {k:'bow',   name:'Scarlet Bow', desc:'A dapper bow for word detectives.'},
       {k:'halo',  name:'Star Halo', desc:'Sparkles orbiting a champion.'},
+      {k:'goggles',name:'Flight Goggles', desc:'Built for speed spelling.'},
+      {k:'cape',  name:'Hero Cape', desc:'Every champion needs one.'},
+      {k:'bolt',  name:'Lightning Bolt', desc:'Crackling with word power.'},
     ].map(a=>{ const owned=!!((c.beeAcc||{})[a.k]); const on=c.accOn===a.k;
       return `<div style="display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:12px 14px;margin-bottom:9px">
         <div style="width:44px;height:48px;flex-shrink:0;position:relative">${mascotSVG('happy')}<div style="position:absolute;inset:0">${beeAccSVG(a.k)}</div></div>
