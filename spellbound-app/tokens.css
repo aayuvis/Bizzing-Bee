@@ -65,17 +65,17 @@
 [data-theme] { /* default = spellbound */
   --display: "Fraunces", Georgia, serif;   /* worlds override — headings only */
   --action: #6C4FE0; --action-ink: #FFFFFF;
-  --tint: #F6F4FC; --tint-deep: #ECE7F8;
+  --tint: #EFEBF8; --tint-deep: #E3DCF2;
   --ink: #241E33; --muted: #6A6478;
   --paper: #FFFFFF; --line: #E9E5F0;
 }
-[data-theme="spotlight"] { --display: "Abril Fatface", Georgia, serif; --action: #9C6A08; --tint: #F7F1E2; --tint-deep: #EEE4CD; --ink: #2A2114; --muted: #7C6E58; --line: #EAE0C9; }
-[data-theme="galaxy"]    { --display: "Space Grotesk", system-ui, sans-serif; --action: #4A5BD4; --tint: #F2F4FB; --tint-deep: #E5E9F6; --ink: #1D2138; --muted: #62688A; --line: #E5E8F3; }
-[data-theme="blade"]     { --display: "Rajdhani", system-ui, sans-serif; --action: #C43D5A; --tint: #FAF1F3; --tint-deep: #F3E2E7; --ink: #2C1B21; --muted: #85686F; --line: #F0DFE4; }
-[data-theme="lab"]       { --display: "Spline Sans Mono", monospace; --action: #0E8A78; --tint: #EFF6F3; --tint-deep: #E0EEE8; --ink: #17251F; --muted: #5E7169; --line: #DFEBE5; }
-[data-theme="origami"]   { --display: "Zen Maru Gothic", system-ui, sans-serif; --action: #C25A2E; --tint: #F8F2E8; --tint-deep: #F0E5D3; --ink: #292013; --muted: #83715C; --line: #EDE2CE; }
-[data-theme="arcade"]    { --display: "Silkscreen", monospace; --action: #3B6FE0; --tint: #EFF3FA; --tint-deep: #E1E8F5; --ink: #182031; --muted: #5D6880; --line: #E3E9F4; }
-[data-theme="elements"]  { --display: "Philosopher", system-ui, sans-serif; --action: #2E8FB8; --tint: #EDF5F7; --tint-deep: #DEECF0; --ink: #16262C; --muted: #5B7078; --line: #DFECF0; }
+[data-theme="spotlight"] { --display: "Abril Fatface", Georgia, serif; --action: #9C6A08; --tint: #F0E6CC; --tint-deep: #E6D8B8; --ink: #2A2114; --muted: #7C6E58; --line: #EAE0C9; }
+[data-theme="galaxy"]    { --display: "Space Grotesk", system-ui, sans-serif; --action: #4A5BD4; --tint: #E9EDF8; --tint-deep: #DBE1F2; --ink: #1D2138; --muted: #62688A; --line: #E5E8F3; }
+[data-theme="blade"]     { --display: "Rajdhani", system-ui, sans-serif; --action: #C43D5A; --tint: #F5E7EB; --tint-deep: #EDD6DD; --ink: #2C1B21; --muted: #85686F; --line: #F0DFE4; }
+[data-theme="lab"]       { --display: "Spline Sans Mono", monospace; --action: #0E8A78; --tint: #E6F0EB; --tint-deep: #D5E6DE; --ink: #17251F; --muted: #5E7169; --line: #DFEBE5; }
+[data-theme="origami"]   { --display: "Zen Maru Gothic", system-ui, sans-serif; --action: #C25A2E; --tint: #F2E9DA; --tint-deep: #E9DAC1; --ink: #292013; --muted: #83715C; --line: #EDE2CE; }
+[data-theme="arcade"]    { --display: "Bungee", system-ui, sans-serif; --action: #3B6FE0; --tint: #E7EDF8; --tint-deep: #D6E0F0; --ink: #182031; --muted: #5D6880; --line: #E3E9F4; }
+[data-theme="elements"]  { --display: "Philosopher", system-ui, sans-serif; --action: #2E8FB8; --tint: #E3EEF2; --tint-deep: #D2E4EA; --ink: #16262C; --muted: #5B7078; --line: #DFECF0; }
 
 /* ---- WHITE mode: pure paper. World survives via action + motif + hairlines. ---- */
 [data-mode="white"] {
@@ -89,7 +89,7 @@
    opacity ≤ .05 in light, ≤ .035 in white — identity that survives both modes */
 [data-theme] { position: relative; }
 [data-theme]::before {
-  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .045;
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .09;
   background-image: radial-gradient(color-mix(in srgb, var(--action) 60%, transparent) 1.2px, transparent 1.3px);
   background-size: 26px 26px;
 }
@@ -134,7 +134,7 @@
 [data-mode="dusk"] {
   --tint: #2B2740; --tint-deep: #232033;
   --paper: #353052; --line: #454060;
-  --ink: #F2EFFA; --muted: #A9A3C4;
+  --ink: #FFFFFF; --muted: #FFFFFF;
   --ink-rgb: 8 6 16;
   --treasure-tint: #4A3E2A; --treasure-deep: #F4C95B;
   --mastered-tint: #27423A; --mastered: #35B573;
@@ -170,12 +170,12 @@
 }
 /* Old world ids → v2 palettes (storage/JS still uses these ids; visual = new worlds).
    marquee→spotlight · aurora→galaxy · anime→blade · science→lab · pixel→arcade · avatar→elements */
-[data-theme="marquee"]:not([data-mode="dusk"]) { --display:"Abril Fatface", Georgia, serif; --action:#9C6A08; --tint:#F7F1E2; --tint-deep:#EEE4CD; --ink:#2A2114; --muted:#7C6E58; --line:#EAE0C9; }
-[data-theme="aurora"]  { --display:"Space Grotesk", system-ui, sans-serif; --action:#4A5BD4; --tint:#F2F4FB; --tint-deep:#E5E9F6; --ink:#1D2138; --muted:#62688A; --line:#E5E8F3; }
-[data-theme="anime"]   { --display:"Rajdhani", system-ui, sans-serif; --action:#C43D5A; --tint:#FAF1F3; --tint-deep:#F3E2E7; --ink:#2C1B21; --muted:#85686F; --line:#F0DFE4; }
-[data-theme="science"]:not([data-mode="dusk"]) { --display:"Spline Sans Mono", monospace; --action:#0E8A78; --tint:#EFF6F3; --tint-deep:#E0EEE8; --ink:#17251F; --muted:#5E7169; --line:#DFEBE5; }
-[data-theme="pixel"]   { --display:"Silkscreen", monospace; --action:#3B6FE0; --tint:#EFF3FA; --tint-deep:#E1E8F5; --ink:#182031; --muted:#5D6880; --line:#E3E9F4; }
-[data-theme="avatar"]  { --display:"Philosopher", system-ui, sans-serif; --action:#2E8FB8; --tint:#EDF5F7; --tint-deep:#DEECF0; --ink:#16262C; --muted:#5B7078; --line:#DFECF0; }
+[data-theme="marquee"]:not([data-mode="dusk"]) { --display:"Abril Fatface", Georgia, serif; --action:#9C6A08; --tint:#F0E6CC; --tint-deep:#E6D8B8; --ink:#2A2114; --muted:#7C6E58; --line:#EAE0C9; }
+[data-theme="aurora"]  { --display:"Space Grotesk", system-ui, sans-serif; --action:#4A5BD4; --tint:#E9EDF8; --tint-deep:#DBE1F2; --ink:#1D2138; --muted:#62688A; --line:#E5E8F3; }
+[data-theme="anime"]   { --display:"Rajdhani", system-ui, sans-serif; --action:#C43D5A; --tint:#F5E7EB; --tint-deep:#EDD6DD; --ink:#2C1B21; --muted:#85686F; --line:#F0DFE4; }
+[data-theme="science"]:not([data-mode="dusk"]) { --display:"Spline Sans Mono", monospace; --action:#0E8A78; --tint:#E6F0EB; --tint-deep:#D5E6DE; --ink:#17251F; --muted:#5E7169; --line:#DFEBE5; }
+[data-theme="pixel"]   { --display:"Bungee", system-ui, sans-serif; --action:#3B6FE0; --tint:#E7EDF8; --tint-deep:#D6E0F0; --ink:#182031; --muted:#5D6880; --line:#E3E9F4; }
+[data-theme="avatar"]  { --display:"Philosopher", system-ui, sans-serif; --action:#2E8FB8; --tint:#E3EEF2; --tint-deep:#D2E4EA; --ink:#16262C; --muted:#5B7078; --line:#DFECF0; }
 [data-theme="marquee"]::before { background-image: radial-gradient(circle at 50% 8px, color-mix(in srgb, var(--action) 70%, transparent) 1.6px, transparent 2.6px); background-size: 34px 20px; }
 [data-theme="aurora"]::before  { background-image: radial-gradient(color-mix(in srgb, var(--action) 75%, transparent) 1px, transparent 1.4px), radial-gradient(color-mix(in srgb, var(--action) 50%, transparent) .8px, transparent 1.2px); background-size: 64px 64px, 38px 38px; background-position: 0 0, 19px 23px; }
 [data-theme="anime"]::before   { background-image: repeating-linear-gradient(45deg, color-mix(in srgb, var(--action) 55%, transparent) 0 1px, transparent 1px 18px); }
@@ -192,8 +192,8 @@
 [data-theme="avatar"][data-mode="dusk"]   { --action:#6FC2E4; --action-ink:#0F2833; }
 /* Dusk, brightened one notch (kid-friendly evening — softer than the stock indigo) */
 [data-mode="dusk"] {
-  --tint:#332E52; --tint-deep:#2A2642; --paper:#413B68; --line:#544D80;
-  --ink:#F5F2FC; --muted:#BEB8D8;
+  --tint:#3D3766; --tint-deep:#332E52; --paper:#4C4578; --line:#5E5690;
+  --ink:#FFFFFF; --muted:#FFFFFF;
   --treasure-tint:#57482E; --treasure-deep:#F7CE63;
   --mastered-tint:#2C4C42; --fix-tint:#553434;
   --surface: rgb(255 255 255 / .06); --surface2: rgb(255 255 255 / .10);

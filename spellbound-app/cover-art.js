@@ -12,7 +12,7 @@
     anime:{ L:'#FAF1F3', D:'#2C1B21', a:'#C43D5A', p1:'#E76D88', p2:'#F3B2C0', lt:'#F3E2E7', face:"'Rajdhani',sans-serif", spark:petal('#E76D88'), motif:slash },
     science:{ L:'#EFF6F3', D:'#0C2A24', a:'#0E8A78', p1:'#3BC0AA', p2:'#7FD9C4', lt:'#E0EEE8', face:"'Spline Sans Mono',monospace", spark:ring('#7FD9C4'), motif:grid },
     origami:{ L:'#F8F2E8', D:'#3A2A16', a:'#C25A2E', p1:'#E88A5C', p2:'#F0C9A2', lt:'#F0E5D3', face:"'Zen Maru Gothic',sans-serif", spark:diamond('#C25A2E'), motif:folds },
-    pixel:{ L:'#EFF3FA', D:'#182031', a:'#3B6FE0', p1:'#7BA3F5', p2:'#FFD34D', lt:'#E1E8F5', face:"'Silkscreen',monospace", spark:pxplus('#7BA3F5'), motif:pixels },
+    pixel:{ L:'#EFF3FA', D:'#182031', a:'#3B6FE0', p1:'#7BA3F5', p2:'#FFD34D', lt:'#E1E8F5', face:"'Bungee',sans-serif", spark:pxplus('#7BA3F5'), motif:pixels },
     avatar:{ L:'#EDF5F7', D:'#16262C', a:'#2E8FB8', p1:'#6FC2E4', p2:'#F0B45B', lt:'#DEECF0', face:"'Philosopher',sans-serif", spark:dotring('#6FC2E4'), motif:arcs },
   };
   KIT.spotlight=KIT.marquee; KIT.galaxy=KIT.aurora; KIT.blade=KIT.anime; KIT.lab=KIT.science; KIT.arcade=KIT.pixel; KIT.elements=KIT.avatar;
@@ -98,20 +98,20 @@
     return cabinet(k,w);
   }
   COMPS.flashcards=fan; COMPS.spellit=mic; COMPS.coach=clip; COMPS.builder=checklist;
-  window.SB_CHAPTER=function(world,label,opt){ opt=opt||{}; var k=KIT[world]||KIT.spellbound; var dark=!!opt.dark; var bg=dark?k.D:k.L;
-    return '<svg viewBox="0 0 320 110" preserveAspectRatio="xMidYMid slice" width="100%" height="'+(opt.h||110)+'" style="display:block" aria-hidden="true"><rect width="320" height="110" fill="'+bg+'"/>'+k.motif(k,dark)+glyphChapter(k,world,label)+k.spark(288,20,7)+k.spark(36,86,5)+'</svg>'; };
-  window.SB_BACKDROP=function(world,opt){ opt=opt||{}; var k=KIT[world]||KIT.spellbound; var dark=!!opt.dark; var bg=dark?k.D:k.L;
-    return '<svg viewBox="0 0 320 110" preserveAspectRatio="xMidYMid slice" width="100%" height="100%" style="display:block;position:absolute;inset:0" aria-hidden="true"><rect width="320" height="110" fill="'+bg+'"/>'+k.motif(k,dark)+k.spark(292,18,7)+k.spark(30,80,5)+'</svg>'; };
-  window.SB_GAME=function(world,type,opt){ opt=opt||{}; var k=KIT[world]||KIT.spellbound; var dark=!!opt.dark; var bg=dark?k.D:k.L;
-    return '<svg viewBox="0 0 320 110" preserveAspectRatio="xMidYMid slice" width="100%" height="'+(opt.h||110)+'" style="display:block" aria-hidden="true"><rect width="320" height="110" fill="'+bg+'"/>'+k.motif(k,dark)+gameTile(k,world,type)+k.spark(290,18,7)+'</svg>'; };
+  window.SB_CHAPTER=function(world,label,opt){ opt=opt||{}; var k=KIT[world]||KIT.spellbound; var db=!opt.dark; var bg=db?k.D:k.L;
+    return '<svg viewBox="0 0 320 110" preserveAspectRatio="xMidYMid slice" width="100%" height="'+(opt.h||110)+'" style="display:block" aria-hidden="true"><rect width="320" height="110" fill="'+bg+'"/>'+k.motif(k,db)+glyphChapter(k,world,label)+k.spark(288,20,7)+k.spark(36,86,5)+'</svg>'; };
+  window.SB_BACKDROP=function(world,opt){ opt=opt||{}; var k=KIT[world]||KIT.spellbound; var db=!opt.dark; var bg=db?k.D:k.L;
+    return '<svg viewBox="0 0 320 110" preserveAspectRatio="xMidYMid slice" width="100%" height="100%" style="display:block;position:absolute;inset:0" aria-hidden="true"><rect width="320" height="110" fill="'+bg+'"/>'+k.motif(k,db)+k.spark(292,18,7)+k.spark(30,80,5)+'</svg>'; };
+  window.SB_GAME=function(world,type,opt){ opt=opt||{}; var k=KIT[world]||KIT.spellbound; var db=!opt.dark; var bg=db?k.D:k.L;
+    return '<svg viewBox="0 0 320 110" preserveAspectRatio="xMidYMid slice" width="100%" height="'+(opt.h||110)+'" style="display:block" aria-hidden="true"><rect width="320" height="110" fill="'+bg+'"/>'+k.motif(k,db)+gameTile(k,world,type)+k.spark(290,18,7)+'</svg>'; };
 
   var cache={};
   window.SB_COVER=function(world,card,opt){ opt=opt||{}; var h=opt.h||110, dark=!!opt.dark;
     var key=world+'|'+card+'|'+h+'|'+dark; if(cache[key]) return cache[key];
     var k=KIT[world]||KIT.spellbound; var comp=COMPS[card]||COMPS.quest;
-    var bg=dark?k.D:k.L;
+    var db=!dark; var bg=db?k.D:k.L;   /* visual contrast: dark art on light modes, light art in dusk */
     var sp=k.spark(292,18,7)+k.spark(30,64,5);
     var svg='<svg viewBox="0 0 320 110" preserveAspectRatio="xMidYMid slice" width="100%" height="'+h+'" style="display:block" aria-hidden="true">'
-      +'<rect width="320" height="110" fill="'+bg+'"/>'+k.motif(k,dark)+comp(k,world)+sp+'</svg>';
+      +'<rect width="320" height="110" fill="'+bg+'"/>'+k.motif(k,db)+comp(k,world)+sp+'</svg>';
     cache[key]=svg; return svg; };
 })();
