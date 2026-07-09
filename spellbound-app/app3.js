@@ -311,8 +311,8 @@ function voiceUpgradeTip(){
     other:['Tip:','Add a higher-quality English voice in your device’s text-to-speech settings and it will appear in the list above.']};
   const t=tips[os];
   if(hasPremium && os!=='other') return `<div style="margin-top:12px;font-size:12px;color:var(--good);font-weight:700">✓ A high-quality voice is installed on this device — pick a ✨ one above.</div>`;
-  return `<div style="margin-top:12px;background:color-mix(in srgb,var(--accent) 8%,var(--bg2));border:1px solid var(--line);border-radius:12px;padding:12px 14px">
-    <div style="display:inline-flex;align-items:center;gap:6px;font-family:var(--display);font-weight:800;font-size:12.5px;color:var(--accent);margin-bottom:4px">${iconSVG('spark',13)} Get a much nicer voice — ${esc(t[0])}</div>
+  return `<div style="margin-top:12px;background:color-mix(in srgb,var(--accent) 8%,var(--bg2));border:1px solid var(--line);border-radius:10px;padding:12px 14px">
+    <div style="display:inline-flex;align-items:center;gap:6px;font-family:var(--display);font-weight:800;font-size:12px;color:var(--accent);margin-bottom:4px">${iconSVG('spark',13)} Get a much nicer voice — ${esc(t[0])}</div>
     <div style="font-size:12px;color:var(--text);line-height:1.6">${t[1]}</div>
   </div>`; }
 function speak(){ deviceSpeak(curWord().w, 0.9); }
@@ -597,7 +597,7 @@ const app = {
     if(key==='journey' && (idx+1)>=CHAMP_LEVELS && !state.premium){ set({showPaywall:true}); return; }
     const champJustDone = (key==='journey' && idx+1===CHAMP_LEVELS);
     getList(c,key).stage=idx+1; state.sessionListKey=null; ensureCoachWords(key); sfx(champJustDone?'win':'level'); burstConfetti(champJustDone?170:100);
-    flash(champJustDone ? '🏆 You\'re a Spellbound Champ! The Library awaits.' : ('Level '+(idx+2)+' unlocked! 🎉')); render(); },
+    state.celebrate={ level:idx+2, list:listLabel(key).split(' · ')[0], champ:champJustDone, date:new Date().toLocaleDateString() }; render(); },
   // ----- The Spellbound Journey -----
   startJourney:()=>{ const c=active(); ensureLists(c); c.activeList='journey'; if(!c.lists.journey) c.lists.journey={xp:0};
     state.sessionListKey=null; ensureCoachWords('journey'); set({nav:'coach', screen:'app', coachMode:'hub', coachTab:'revise', luTab:'revise', status:'idle', typed:''});
@@ -725,7 +725,7 @@ const app = {
     if(!n){ flash('No feedback yet — tap a tile to rate or note it'); return; }
     const text='SPELLBOUND — evolution tile feedback ('+n+' tiles)\n\n'+lines.join('\n')+'\n\n--- raw json ---\n'+JSON.stringify(EVOFB);
     const w=window.open('','_blank'); if(!w){ flash('Allow pop-ups to export the feedback'); return; }
-    w.document.write('<!doctype html><meta charset="utf-8"><title>Tile feedback</title><body style="font-family:system-ui,Arial;padding:18px;max-width:760px;margin:0 auto"><h2 style="margin:0 0 4px">Evolution tile feedback</h2><p style="color:#666;margin:0 0 12px">Select all, copy, and paste this back to your developer.</p><textarea style="width:100%;height:78vh;font-family:monospace;font-size:13px;padding:10px;border:1px solid #ccc;border-radius:8px">'+text.replace(/</g,'&lt;')+'</textarea></body>'); w.document.close(); },
+    w.document.write('<!doctype html><meta charset="utf-8"><title>Tile feedback</title><body style="font-family:system-ui,Arial;padding:18px;max-width:760px;margin:0 auto"><h2 style="margin:0 0 4px">Evolution tile feedback</h2><p style="color:#666;margin:0 0 12px">Select all, copy, and paste this back to your developer.</p><textarea style="width:100%;height:78vh;font-family:monospace;font-size:13px;padding:10px;border:1px solid #ccc;border-radius:6px">'+text.replace(/</g,'&lt;')+'</textarea></body>'); w.document.close(); },
   printReport:()=>{ try{ const c=active(); ensureLists(c); const t=todayKey();
     const w=window.open('','_blank'); if(!w){ flash('Allow pop-ups to print the report'); return; }
     const played=new Set(c.daysPlayed||[]); const dn=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -739,10 +739,10 @@ const app = {
     const misses=(c.missed||[]).slice(0,24);
     const ov=overallLevel(c);
     const E=(s)=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    const dotRow=last7.map(d=>`<td style="text-align:center;padding:4px"><div style="width:30px;height:30px;border-radius:7px;margin:0 auto;background:${d.on?'#7C5CFF':'#e7e3f5'}"></div><div style="font-size:10px;color:#888;margin-top:3px">${d.label}</div></td>`).join('');
+    const dotRow=last7.map(d=>`<td style="text-align:center;padding:4px"><div style="width:30px;height:30px;border-radius:6px;margin:0 auto;background:${d.on?'#7C5CFF':'#e7e3f5'}"></div><div style="font-size:12px;color:#888;margin-top:3px">${d.label}</div></td>`).join('');
     const missChips=misses.length?misses.map(m=>`<span style="display:inline-block;border:1px solid #ddd;border-radius:20px;padding:3px 10px;margin:3px;font-size:12px;font-family:monospace">${E(m.w)}${m.n>1?(' ×'+m.n):''}</span>`).join(''):'<i style="color:#888">No misses — great week!</i>';
     const html='<!doctype html><html><head><meta charset="utf-8"><title>Spellbound — '+E(c.name)+'</title>'+
-      '<style>*{box-sizing:border-box}body{font-family:-apple-system,Segoe UI,Arial,sans-serif;color:#1a1530;max-width:740px;margin:0 auto;padding:28px}h1{font-size:24px;margin:0}h2{font-size:15px;text-transform:uppercase;letter-spacing:.05em;color:#7C5CFF;margin:26px 0 10px;border-bottom:2px solid #eee;padding-bottom:6px}.row{display:flex;gap:14px;flex-wrap:wrap}.stat{flex:1;min-width:120px;border:1px solid #eee;border-radius:12px;padding:14px;text-align:center}.stat b{display:block;font-size:26px}.stat span{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.04em}@media print{body{padding:0}button{display:none}}</style></head><body>'+
+      '<style>*{box-sizing:border-box}body{font-family:-apple-system,Segoe UI,Arial,sans-serif;color:#1a1530;max-width:740px;margin:0 auto;padding:28px}h1{font-size:24px;margin:0}h2{font-size:15px;text-transform:uppercase;letter-spacing:.05em;color:#7C5CFF;margin:26px 0 10px;border-bottom:2px solid #eee;padding-bottom:6px}.row{display:flex;gap:14px;flex-wrap:wrap}.stat{flex:1;min-width:120px;border:1px solid #eee;border-radius:10px;padding:14px;text-align:center}.stat b{display:block;font-size:24px}.stat span{font-size:12px;color:#888;text-transform:uppercase;letter-spacing:.04em}@media print{body{padding:0}button{display:none}}</style></head><body>'+
       '<div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #7C5CFF;padding-bottom:12px"><div><div style="font-size:13px;color:#7C5CFF;font-weight:800;letter-spacing:.08em">SPELLBOUND · WEEKLY REPORT</div><h1>'+E(c.name)+'</h1></div><div style="text-align:right;font-size:12px;color:#888">'+new Date().toLocaleDateString()+'<br>Age '+E(c.age||9)+'</div></div>'+
       '<h2>This week at a glance</h2><div class="row"><div class="stat"><b>'+daysThisWeek+'/7</b><span>Days practised</span></div><div class="stat"><b>'+(c.streak||0)+'</b><span>Day streak</span></div><div class="stat"><b>'+sessions+'</b><span>Sessions</span></div><div class="stat"><b>'+acc+'%</b><span>Accuracy</span></div></div>'+
       '<table style="width:100%;margin-top:16px;border-collapse:collapse"><tr>'+dotRow+'</tr></table>'+
@@ -750,7 +750,7 @@ const app = {
       '<h2>Words to revise ('+(c.missed||[]).length+')</h2><div>'+missChips+'</div>'+
       '<h2>Countdown</h2><p style="font-size:15px">North South Foundation National Finals — <b>'+daysToBee()+' days</b> to go (31 Jul 2026).</p>'+
       '<div style="margin-top:24px;text-align:center"><button onclick="window.print()" style="background:#7C5CFF;color:#fff;border:0;border-radius:10px;padding:12px 22px;font-weight:700;font-size:15px;cursor:pointer">🖨️ Print / Save as PDF</button></div>'+
-      '<p style="text-align:center;color:#aaa;font-size:11px;margin-top:18px">Generated by Spellbound · keep practising a little every day 🐝</p>'+
+      '<p style="text-align:center;color:#aaa;font-size:12px;margin-top:18px">Generated by Spellbound · keep practising a little every day 🐝</p>'+
       '</body></html>';
     w.document.write(html); w.document.close(); setTimeout(()=>{ try{ w.focus(); }catch(e){} }, 300);
   }catch(e){ flash('Could not open the report'); } },
@@ -784,7 +784,8 @@ const app = {
   goPaywall:()=>set({showPaywall:true}), closePaywall:()=>set({showPaywall:false}),
   pickPlan:(p)=>set({plan:p}), upgrade:()=>{ set({premium:true, showPaywall:false}); flash('Welcome to Premium! 👑'); },
   signOut:()=>set({screen:'landing', nav:'home', email:'', pw:''}),
-  setLight:()=>app.setMode('light'), setWhite:()=>app.setMode('white'),
+  celebrateClose:()=>set({celebrate:null}),
+  setLight:()=>app.setMode('light'), setWhite:()=>app.setMode('white'), setDusk:()=>app.setMode('dusk'),
   voiceSetDevice:(v)=>{ VOICE.name=v||''; saveVoiceCfg(); loadVoices(); flash(VOICE.name?'Voice set ✨':'Using the best available voice'); },
   voiceTest:()=>{ say('Hi! I am your spelling buddy. Try this word: iridescent. The soap bubble had an iridescent shine.'); },
   noop:()=>{},
@@ -794,9 +795,9 @@ const app = {
 /*  View — builds the HTML for the current state                          */
 /* ===================================================================== */
 const diffMap = { easy:['Easy','#1f9d57'], medium:['Medium','#c08a00'], hard:['Hard','#d63a3a'] };
-const diffStyleFor = (d) => 'padding:3px 9px;border-radius:99px;font-size:11px;font-weight:800;color:#fff;background:'+(diffMap[d]||diffMap.medium)[1];
+const diffStyleFor = (d) => 'padding:3px 9px;border-radius:999px;font-size:12px;font-weight:800;color:#fff;background:'+(diffMap[d]||diffMap.medium)[1];
 const seg = (on) => 'padding:7px 15px;border-radius:999px;font-weight:800;font-size:13px;transition:.2s;'+(on?'background:var(--accent);color:#fff':'background:transparent;color:var(--muted)');
-const chip = (on) => 'padding:9px 14px;border-radius:999px;font-weight:700;font-size:13.5px;border:1px solid var(--line);transition:.2s;'+(on?'background:var(--accent);color:#fff;border-color:transparent':'background:var(--surface2);color:var(--text)');
+const chip = (on) => 'padding:9px 14px;border-radius:999px;font-weight:700;font-size:13px;border:1px solid var(--line);transition:.2s;'+(on?'background:var(--accent);color:#fff;border-color:transparent':'background:var(--surface2);color:var(--text)');
 
 function view(){
   const S = state;
@@ -811,33 +812,33 @@ function viewLanding(){
     { ic:'volume', title:'Hears every word', body:'Real spoken pronunciation, definition, sentence and origin — like a true bee round.' },
     { ic:'sprout', title:'A character that evolves', body:'Ten forms per world. Every level visibly grows your speller’s buddy.' },
     { ic:'chart', title:'Parents see everything', body:'Accuracy, streaks, weak words and a finals countdown in one dashboard.' },
-  ].map(f=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:var(--sh-rest)">
-      <div style="width:46px;height:46px;border-radius:13px;background:var(--chip);color:var(--accent);display:grid;place-items:center;margin-bottom:13px">${iconSVG(f.ic,22)}</div>
+  ].map(f=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:var(--sh-rest)">
+      <div style="width:46px;height:46px;border-radius:14px;background:var(--chip);color:var(--accent);display:grid;place-items:center;margin-bottom:13px">${iconSVG(f.ic,22)}</div>
       <div style="font-family:var(--display);font-weight:700;font-size:17px;margin-bottom:6px">${f.title}</div>
-      <div style="font-size:14px;color:var(--muted);line-height:1.5">${f.body}</div></div>`).join('');
+      <div style="font-size:13px;color:var(--muted);line-height:1.5">${f.body}</div></div>`).join('');
   return `<div style="position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:22px clamp(18px,4vw,40px) 60px">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:clamp(28px,7vw,72px)">
       <div style="display:flex;align-items:center;gap:11px"><div style="width:44px;height:48px">${mascotSVG('happy')}</div><span style="font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:-.01em">Spellbound</span></div>
-      <button data-act="goSignin" style="padding:10px 18px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:700;font-size:14px">Sign in</button>
+      <button data-act="goSignin" style="padding:10px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:700;font-size:13px">Sign in</button>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(24px,5vw,56px);align-items:center">
       <div>
-        <div style="display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:18px">🐝 Built for spelling-bee champions</div>
+        <div style="display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:18px">🐝 Built for spelling-bee champions</div>
         <h1 style="font-family:var(--display);font-weight:800;font-size:clamp(34px,6.4vw,58px);line-height:1.03;letter-spacing:-.02em;margin:0 0 16px">Spell your way to the National&nbsp;Bee.</h1>
         <p style="font-size:clamp(16px,2.2vw,19px);line-height:1.55;color:var(--muted);max-width:30em;margin:0 0 26px">A daily spelling trainer that hears your child spell out loud, evolves a character with every win, and shows parents exactly where they stand — built around real championship words.</p>
         <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:24px">
-          <button data-act="goSignup" style="padding:15px 26px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge),0 8px 22px color-mix(in srgb,var(--accent) 40%,transparent)">Start free →</button>
-          <button data-act="goSignin" style="padding:15px 24px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:16px">I have an account</button>
+          <button data-act="goSignup" style="padding:15px 26px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge),0 8px 22px color-mix(in srgb,var(--accent) 40%,transparent)">Start free →</button>
+          <button data-act="goSignin" style="padding:15px 24px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">I have an account</button>
         </div>
-        <div style="display:flex;align-items:center;gap:16px;color:var(--muted);font-size:13.5px;font-weight:600"><span>★★★★★ <b style="color:var(--text)">4.9</b> parents</span><span style="width:1px;height:14px;background:var(--line)"></span><span>No card to start</span></div>
+        <div style="display:flex;align-items:center;gap:16px;color:var(--muted);font-size:13px;font-weight:600"><span>★★★★★ <b style="color:var(--text)">4.9</b> parents</span><span style="width:1px;height:14px;background:var(--line)"></span><span>No card to start</span></div>
       </div>
-      <div style="position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:24px;padding:clamp(20px,4vw,34px);box-shadow:var(--glow)">
+      <div style="position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,34px);box-shadow:var(--glow)">
         <div style="display:flex;justify-content:center;margin-bottom:6px"><div style="width:118px;height:132px;animation:sb-float 4s ease-in-out infinite">${mascotSVG('excited')}</div></div>
         <div style="text-align:center;font-family:var(--mono);font-size:13px;letter-spacing:.3em;color:var(--muted);margin-bottom:6px">SPELL THIS</div>
         <div style="text-align:center;font-family:var(--display);font-weight:800;font-size:clamp(28px,5vw,40px);letter-spacing:.02em;margin-bottom:18px">iridescent</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div style="background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:13px"><div style="font-size:12px;color:var(--muted);font-weight:700">Streak</div><div style="font-family:var(--display);font-weight:800;font-size:22px;display:flex;align-items:center;gap:6px">12 days <span style="color:#FF7A1A">${iconSVG('fire',18)}</span></div></div>
-          <div style="background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:13px"><div style="font-size:12px;color:var(--muted);font-weight:700">Form</div><div style="font-family:var(--display);font-weight:800;font-size:22px">Forager</div></div>
+          <div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px"><div style="font-size:12px;color:var(--muted);font-weight:700">Streak</div><div style="font-family:var(--display);font-weight:800;font-size:20px;display:flex;align-items:center;gap:6px">12 days <span style="color:#FF7A1A">${iconSVG('fire',18)}</span></div></div>
+          <div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px"><div style="font-size:12px;color:var(--muted);font-weight:700">Form</div><div style="font-family:var(--display);font-weight:800;font-size:20px">Forager</div></div>
         </div>
       </div>
     </div>
@@ -848,18 +849,18 @@ function viewLanding(){
 function viewAuth(){
   const S=state; const signup=S.authMode==='signup';
   return `<div style="position:relative;z-index:1;min-height:100dvh;display:grid;place-items:center;padding:24px">
-    <div style="width:100%;max-width:420px;background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:clamp(24px,5vw,36px);box-shadow:var(--glow)">
+    <div style="width:100%;max-width:420px;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(24px,5vw,36px);box-shadow:var(--glow)">
       <div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:22px">
         <div style="width:56px;height:62px">${mascotSVG('happy')}</div>
         <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0">${signup?'Create your account':'Welcome back'}</h2>
-        <p style="margin:0;color:var(--muted);font-size:14px;text-align:center">${signup?'Start free — no card needed.':'Sign in to keep your streak going.'}</p>
+        <p style="margin:0;color:var(--muted);font-size:13px;text-align:center">${signup?'Start free — no card needed.':'Sign in to keep your streak going.'}</p>
       </div>
       <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Parent email</label>
-      <input data-inp="onEmail" data-fkey="email" value="${escA(S.email)}" type="email" placeholder="you@email.com" autocomplete="off" style="width:100%;padding:13px 14px;border-radius:13px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:600;margin-bottom:14px;outline:none">
+      <input data-inp="onEmail" data-fkey="email" value="${escA(S.email)}" type="email" placeholder="you@email.com" autocomplete="off" style="width:100%;padding:13px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:600;margin-bottom:14px;outline:none">
       <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Password</label>
-      <input data-inp="onPw" data-fkey="pw" value="${escA(S.pw)}" type="password" placeholder="••••••••" autocomplete="off" style="width:100%;padding:13px 14px;border-radius:13px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:600;margin-bottom:20px;outline:none">
-      <button data-act="doAuth" style="width:100%;padding:15px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">${signup?'Create account':'Sign in'}</button>
-      <div style="text-align:center;margin-top:16px;font-size:14px;color:var(--muted)">${signup?'Already have an account?':'New to Spellbound?'} <button data-act="swapAuth" style="color:var(--accent);font-weight:800;font-size:14px">${signup?'Sign in':'Create one'}</button></div>
+      <input data-inp="onPw" data-fkey="pw" value="${escA(S.pw)}" type="password" placeholder="••••••••" autocomplete="off" style="width:100%;padding:13px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:600;margin-bottom:20px;outline:none">
+      <button data-act="doAuth" style="width:100%;padding:15px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${signup?'Create account':'Sign in'}</button>
+      <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--muted)">${signup?'Already have an account?':'New to Spellbound?'} <button data-act="swapAuth" style="color:var(--accent);font-weight:800;font-size:13px">${signup?'Sign in':'Create one'}</button></div>
       <div style="text-align:center;margin-top:18px"><button data-act="goLanding" style="color:var(--muted);font-size:13px;font-weight:600">← Back</button></div>
     </div>
   </div>`;
@@ -867,38 +868,38 @@ function viewAuth(){
 
 function viewOnboarding(){
   const S=state;
-  const dots=[0,1,2].map(i=>`<div style="width:${i===S.onbStep?'26px':'8px'};height:8px;border-radius:99px;transition:.25s;background:${i<=S.onbStep?'var(--accent)':'var(--surface2)'}"></div>`).join('');
+  const dots=[0,1,2].map(i=>`<div style="width:${i===S.onbStep?'26px':'8px'};height:8px;border-radius:999px;transition:.25s;background:${i<=S.onbStep?'var(--accent)':'var(--surface2)'}"></div>`).join('');
   let card='';
   if(S.onbStep===0){
-    const avatars=BUDDIES.map(id=>`<button data-act="pickAvatar" data-arg="${id}" style="aspect-ratio:1;border-radius:13px;display:grid;place-items:center;transition:.15s;background:var(--surface2);border:2px solid ${S.draft.avatar===id?'var(--accent)':'transparent'}">${buddySVG(id,30)}</button>`).join('');
-    card=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow)">
-      <h2 style="font-family:var(--display);font-weight:800;font-size:23px;margin:0 0 4px">Who's practising?</h2>
-      <p style="margin:0 0 20px;color:var(--muted);font-size:14px">Set up your speller's profile.</p>
+    const avatars=BUDDIES.map(id=>`<button data-act="pickAvatar" data-arg="${id}" style="aspect-ratio:1;border-radius:14px;display:grid;place-items:center;transition:.15s;background:var(--surface2);border:2px solid ${S.draft.avatar===id?'var(--accent)':'transparent'}">${buddySVG(id,30)}</button>`).join('');
+    card=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow)">
+      <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">Who's practising?</h2>
+      <p style="margin:0 0 20px;color:var(--muted);font-size:13px">Set up your speller's profile.</p>
       <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Name</label>
-      <input data-inp="onDraftName" data-fkey="draftName" value="${escA(S.draft.name)}" placeholder="e.g. Ahana" style="width:100%;padding:13px 14px;border-radius:13px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:700;margin-bottom:18px;outline:none">
+      <input data-inp="onDraftName" data-fkey="draftName" value="${escA(S.draft.name)}" placeholder="e.g. Ahana" style="width:100%;padding:13px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:700;margin-bottom:18px;outline:none">
       <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:8px">Age · <b style="color:var(--text)">${S.draft.age}</b></label>
       <input data-inp="onDraftAge" data-fkey="draftAge" type="range" min="5" max="15" step="1" value="${S.draft.age}" style="width:100%;accent-color:var(--accent);margin-bottom:20px">
       <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:10px">Pick a buddy</label>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:8px">${avatars}</div></div>`;
   } else if(S.onbStep===1){
     const worldCards=THEMES.map(t=>{ const ev=EVO[t.id]||EVO.spellbound; const sel=t.id===S.theme;
-      return `<button data-act="pickTheme" data-arg="${t.id}" style="text-align:left;border-radius:15px;overflow:hidden;cursor:pointer;transition:.16s;background:var(--surface2);border:2px solid ${sel?'var(--accent)':'transparent'}${sel?';box-shadow:0 8px 22px color-mix(in srgb,var(--accent) 26%,transparent)':''}">
+      return `<button data-act="pickTheme" data-arg="${t.id}" style="text-align:left;border-radius:14px;overflow:hidden;cursor:pointer;transition:.16s;background:var(--surface2);border:2px solid ${sel?'var(--accent)':'transparent'}${sel?';box-shadow:0 8px 22px color-mix(in srgb,var(--accent) 26%,transparent)':''}">
         <div style="height:78px;display:grid;place-items:center;background:linear-gradient(135deg,${t.c1},${t.c2})">${worldEmblemSVG(t.id,40)}</div>
-        <div style="padding:12px 13px 14px"><div style="font-family:var(--display);font-weight:800;font-size:16px;color:var(--text)">${t.label}</div>
+        <div style="padding:12px 13px 14px"><div style="font-family:var(--display);font-weight:800;font-size:15px;color:var(--text)">${t.label}</div>
           <div style="font-size:12px;color:var(--muted);line-height:1.45;margin:4px 0 9px;min-height:51px">${WORLD_DEF[t.id]||''}</div>
-          <div style="display:inline-flex;align-items:center;font-family:var(--mono);font-size:10px;letter-spacing:.02em;color:var(--accent);font-weight:700;background:var(--chip);padding:4px 9px;border-radius:99px">${ev[0]}  →  ${ev[9]}</div></div></button>`; }).join('');
-    card=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow)">
-      <h2 style="font-family:var(--display);font-weight:800;font-size:23px;margin:0 0 4px">Choose a world</h2>
-      <p style="margin:0 0 20px;color:var(--muted);font-size:14px">Each world is a different look <b style="color:var(--text)">and</b> a character that evolves as you level up — from its first form to its last. Pick the journey that excites your speller. You can change it any time.</p>
+          <div style="display:inline-flex;align-items:center;font-family:var(--mono);font-size:12px;letter-spacing:.02em;color:var(--accent);font-weight:700;background:var(--chip);padding:4px 9px;border-radius:999px">${ev[0]}  →  ${ev[9]}</div></div></button>`; }).join('');
+    card=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow)">
+      <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">Choose a world</h2>
+      <p style="margin:0 0 20px;color:var(--muted);font-size:13px">Each world is a different look <b style="color:var(--text)">and</b> a character that evolves as you level up — from its first form to its last. Pick the journey that excites your speller. You can change it any time.</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px">${worldCards}</div></div>`;
   } else {
     const goals=[{v:5,label:'5 words a day',sub:'Light & breezy',ic:'sprout'},{v:10,label:'10 words a day',sub:'Recommended',ic:'spark'},{v:15,label:'15 words a day',sub:'Bee-ready',ic:'flame'}]
       .map(g=>`<button data-act="pickGoal" data-arg="${g.v}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;border-radius:14px;padding:16px 18px;cursor:pointer;transition:.15s;background:var(--surface2);border:2px solid ${S.draft.goal===g.v?'var(--accent)':'transparent'}">
-        <div><div style="font-family:var(--display);font-weight:800;font-size:18px">${g.label}</div><div style="font-size:13px;color:var(--muted);font-weight:600">${g.sub}</div></div>
-        <div style="width:40px;height:40px;border-radius:11px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG(g.ic,20)}</div></button>`).join('');
-    card=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow)">
-      <h2 style="font-family:var(--display);font-weight:800;font-size:23px;margin:0 0 4px">Set a daily goal</h2>
-      <p style="margin:0 0 20px;color:var(--muted);font-size:14px">A small daily habit beats cramming. Pick a starting target.</p>
+        <div><div style="font-family:var(--display);font-weight:800;font-size:17px">${g.label}</div><div style="font-size:13px;color:var(--muted);font-weight:600">${g.sub}</div></div>
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG(g.ic,20)}</div></button>`).join('');
+    card=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow)">
+      <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">Set a daily goal</h2>
+      <p style="margin:0 0 20px;color:var(--muted);font-size:13px">A small daily habit beats cramming. Pick a starting target.</p>
       <div style="display:grid;gap:11px">${goals}</div></div>`;
   }
   return `<div style="position:relative;z-index:1;min-height:100dvh;display:grid;place-items:center;padding:24px">
@@ -906,8 +907,8 @@ function viewOnboarding(){
       <div style="display:flex;gap:7px;justify-content:center;margin-bottom:22px">${dots}</div>
       ${card}
       <div style="display:flex;justify-content:space-between;gap:12px;margin-top:18px">
-        <button data-act="onbBack" style="padding:13px 20px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:700;font-size:15px">${S.onbStep===0?'Cancel':'Back'}</button>
-        <button data-act="onbNext" style="flex:1;max-width:240px;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge);opacity:${(S.onbStep===0&&!S.draft.name.trim())?'.5':'1'}">${S.onbStep===2?'Start spelling →':'Continue'}</button>
+        <button data-act="onbBack" style="padding:13px 20px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:700;font-size:15px">${S.onbStep===0?'Cancel':'Back'}</button>
+        <button data-act="onbNext" style="flex:1;max-width:240px;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);opacity:${(S.onbStep===0&&!S.draft.name.trim())?'.5':'1'}">${S.onbStep===2?'Start spelling →':'Continue'}</button>
       </div>
     </div>
   </div>`;
@@ -918,7 +919,7 @@ function viewApp(){
   const S=state;
   const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['games','Arcade','joystick'],['concepts','Concepts','grid'],['journeys','Word Journeys','book'],['themes','Themes','palette'],['progress','Progress','chart'],['parent','Parent','users']].map(([key,label,ic])=>{
     const on=S.nav===key;
-    return `<button data-act="setNav" data-arg="${key}" style="display:inline-flex;align-items:center;gap:7px;white-space:nowrap;padding:9px 15px;border-radius:11px;font-weight:800;font-size:14px;${on?'background:var(--accent);color:#fff':'background:transparent;color:var(--muted)'}">${iconSVG(ic,17)} ${label}</button>`;
+    return `<button data-act="setNav" data-arg="${key}" style="display:inline-flex;align-items:center;gap:7px;white-space:nowrap;padding:9px 15px;border-radius:10px;font-weight:800;font-size:13px;${on?'background:var(--accent);color:#fff':'background:transparent;color:var(--muted)'}">${iconSVG(ic,17)} ${label}</button>`;
   }).join('');
   let content='';
   if(S.nav==='home') content=viewHome();
@@ -938,17 +939,28 @@ function viewApp(){
   else if(S.nav==='evofeedback') content=viewEvoFeedback();
   else content=viewHome();
   const lightOn=S.mode==='light';
-  return `<div style="min-height:100dvh;display:flex;flex-direction:column">
+  const celebrate=S.celebrate?(()=>{ const cb=S.celebrate; const c2=active(); const evo2=EVO[S.theme]||EVO.spellbound; const fi=formIdx(listLevel(c2,activeListKey()));
+    return `<div style="position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:20px;background:color-mix(in srgb,var(--action) 26%,rgb(20 12 40 / .78))" data-act="celebrateClose">
+      <div data-act="noop" style="background:var(--paper,#fff);border-radius:20px;box-shadow:var(--sh-overlay);max-width:420px;width:100%;padding:32px 28px;text-align:center;animation:sb-pop .45s ease both">
+        <div style="width:110px;height:120px;margin:0 auto 6px;animation:sb-bee-talk 1.6s ease-in-out infinite">${mascotSVG('excited')}</div>
+        <div style="font-family:var(--ui);font-weight:650;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">${cb.champ?'Champion unlocked':'Level cleared'}</div>
+        <div style="font-family:var(--display);font-weight:800;font-size:32px;line-height:1.08;margin:6px 0 4px">${cb.champ?'Spellbound Champ!':('Level '+cb.level+' unlocked!')}</div>
+        <div style="font-size:15px;color:var(--muted);font-weight:450">${esc(cb.list)} · ${esc(c2.name||'')} — ${evo2[fi]} · ${cb.date}</div>
+        <div style="display:flex;justify-content:center;gap:6px;margin:14px 0 18px">${[0,1,2].map(i=>`<span style="display:inline-block;width:12px;height:12px;border-radius:999px;background:var(--treasure,#F0B429);animation:sb-pop .4s ease ${(i*0.12).toFixed(2)}s both"></span>`).join('')}</div>
+        <button data-act="celebrateClose" style="width:100%;padding:14px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Keep climbing →</button>
+        <div style="font-size:12px;color:var(--muted);margin-top:10px">Screenshot this card to share it!</div>
+      </div></div>`; })():'';
+  return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}
     <div style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
       <div style="max-width:1080px;margin:0 auto;padding:11px clamp(14px,3.5vw,32px);display:flex;align-items:center;gap:12px">
-        <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:11px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
-        <div style="display:flex;align-items:center;gap:9px;margin-right:auto"><div style="width:34px;height:38px">${mascotSVG('happy')}</div><span style="font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:-.01em">Spellbound</span></div>
-        <button data-act="openShop" title="Your coins — tap to open the Shop" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13.5px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(active().coins||0,14)}</button>
+        <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
+        <div style="display:flex;align-items:center;gap:9px;margin-right:auto"><div style="width:34px;height:38px">${mascotSVG('happy')}</div><span style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em">Spellbound</span></div>
+        <button data-act="openShop" title="Your coins — tap to open the Shop" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(active().coins||0,14)}</button>
         <div style="display:flex;background:var(--surface2);border-radius:999px;padding:3px">
           <button data-act="setLight" aria-pressed="${lightOn}" style="padding:7px 15px;border-radius:999px;font-weight:800;font-size:13px;${lightOn?'background:var(--accent);color:#fff':'background:transparent;color:var(--muted)'}">Light</button>
-          <button data-act="setWhite" aria-pressed="${!lightOn}" style="padding:7px 15px;border-radius:999px;font-weight:800;font-size:13px;${!lightOn?'background:var(--accent);color:#fff':'background:transparent;color:var(--muted)'}">White</button>
+          <button data-act="setWhite" aria-pressed="${S.mode==='white'}" style="padding:7px 15px;border-radius:999px;font-weight:800;font-size:13px;${S.mode==='white'?'background:var(--accent);color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">White</button><button data-act="setDusk" aria-pressed="${S.mode==='dusk'}" style="padding:7px 15px;border-radius:999px;font-weight:800;font-size:13px;${S.mode==='dusk'?'background:var(--accent);color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">Dusk</button>
         </div>
-        <button data-act="goSettings" aria-label="Settings" style="width:38px;height:38px;border-radius:11px;background:var(--surface2);display:grid;place-items:center;color:var(--text)">${iconSVG('gear',17)}</button>
+        <button data-act="goSettings" aria-label="Settings" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text)">${iconSVG('gear',17)}</button>
       </div>
       <div style="max-width:1080px;margin:0 auto;padding:0 clamp(14px,3.5vw,32px) 9px;display:flex;gap:6px;overflow-x:auto">${navTabs}</div>
     </div>
@@ -978,16 +990,16 @@ function viewDrawer(){
     {t:'item',label:'Theme & settings',ic:'gear',key:'settings',active:state.nav==='settings'},
   ];
   const nav=items.map(d=>{
-    if(d.t==='label') return `<div style="font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:800;padding:14px 12px 6px">${d.label}</div>`;
+    if(d.t==='label') return `<div style="font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:800;padding:14px 12px 6px">${d.label}</div>`;
     const indent=d.t==='sub'?'8px':'0';
-    if(d.active) return `<button data-act="drawer" data-arg="${d.key}" style="display:flex;align-items:center;gap:11px;width:100%;text-align:left;font-weight:800;font-size:14.5px;padding:11px 12px;border-radius:12px;background:var(--accent);color:#fff;margin-left:${indent}"><span style="display:inline-flex">${iconSVG(d.ic,d.t==='sub'?17:19)}</span>${d.label}</button>`;
-    return `<button data-act="drawer" data-arg="${d.key}" style="display:flex;align-items:center;gap:11px;width:100%;text-align:left;font-weight:${d.t==='sub'?700:700};font-size:14.5px;padding:11px 12px;border-radius:12px;background:transparent;color:var(--text);margin-left:${indent}"><span style="display:inline-flex;color:var(--muted)">${iconSVG(d.ic,d.t==='sub'?17:19)}</span>${d.label}</button>`;
+    if(d.active) return `<button data-act="drawer" data-arg="${d.key}" style="display:flex;align-items:center;gap:11px;width:100%;text-align:left;font-weight:800;font-size:15px;padding:11px 12px;border-radius:10px;background:var(--accent);color:#fff;margin-left:${indent}"><span style="display:inline-flex">${iconSVG(d.ic,d.t==='sub'?17:19)}</span>${d.label}</button>`;
+    return `<button data-act="drawer" data-arg="${d.key}" style="display:flex;align-items:center;gap:11px;width:100%;text-align:left;font-weight:${d.t==='sub'?700:700};font-size:15px;padding:11px 12px;border-radius:10px;background:transparent;color:var(--text);margin-left:${indent}"><span style="display:inline-flex;color:var(--muted)">${iconSVG(d.ic,d.t==='sub'?17:19)}</span>${d.label}</button>`;
   }).join('');
   return `<div data-act="closeDrawer" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:55;animation:sb-fade .2s ease both"></div>
     <aside data-act="noop" style="position:fixed;top:0;left:0;bottom:0;width:280px;max-width:84vw;background:var(--bg2);border-right:1px solid var(--line);z-index:56;display:flex;flex-direction:column;padding:16px 12px;overflow-y:auto;box-shadow:0 0 40px rgba(0,0,0,.18)">
-      <div style="display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:800;font-size:18px;padding:4px 6px 12px;border-bottom:1px solid var(--line);margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:800;font-size:17px;padding:4px 6px 12px;border-bottom:1px solid var(--line);margin-bottom:8px">
         <div style="width:26px;height:30px">${mascotSVG('happy')}</div>Spellbound
-        <button data-act="closeDrawer" aria-label="Close" style="margin-left:auto;width:32px;height:32px;border-radius:9px;background:var(--surface2);display:grid;place-items:center;color:var(--text)">${iconSVG('close',18)}</button>
+        <button data-act="closeDrawer" aria-label="Close" style="margin-left:auto;width:32px;height:32px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text)">${iconSVG('close',18)}</button>
       </div>
       <nav style="display:flex;flex-direction:column;gap:2px;overflow-y:auto">${nav}</nav>
     </aside>`;
@@ -995,12 +1007,12 @@ function viewDrawer(){
 
 function streakCard(){ const c=active(); ensureLists(c); const t=todayKey(); const played=new Set(c.daysPlayed||[]);
   const days=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); days.push({on:played.has(k), today:k===t, dn:['S','M','T','W','T','F','S'][d.getDay()]}); }
-  const dots=days.map(d=>`<div style="display:flex;flex-direction:column;align-items:center;gap:3px"><span style="width:17px;height:17px;border-radius:5px;display:inline-block;background:${d.on?'var(--accent)':'var(--surface2)'};${d.today?'box-shadow:0 0 0 2px var(--accent)':''}"></span><span style="font-size:9px;color:var(--muted);font-weight:700">${d.dn}</span></div>`).join('');
+  const dots=days.map(d=>`<div style="display:flex;flex-direction:column;align-items:center;gap:3px"><span style="width:17px;height:17px;border-radius:6px;display:inline-block;background:${d.on?'var(--accent)':'var(--surface2)'};${d.today?'box-shadow:0 0 0 2px var(--accent)':''}"></span><span style="font-size:12px;color:var(--muted);font-weight:700">${d.dn}</span></div>`).join('');
   const playedToday=played.has(t); const next=[3,7,14,30].find(m=>m>(c.streak||0));
-  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--sh-rest)">
+  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest)">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
-      <div style="display:flex;align-items:center;gap:11px"><div style="width:42px;height:42px;border-radius:12px;background:color-mix(in srgb,#FF8A3D 18%,var(--bg2));color:#FF7A1A;display:grid;place-items:center">${iconSVG('fire',24)}</div><div><div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1">${c.streak||0}-day streak</div><div style="font-size:12px;color:var(--muted);font-weight:600">Best ${c.streakBest||c.streak||0} · ${playedToday?'practised today ✓':'practise today to keep it going'}</div></div></div>
-      ${next?`<div style="text-align:right"><div style="font-size:12px;color:var(--muted);font-weight:700">Next reward</div><div style="display:flex;align-items:center;gap:5px;justify-content:flex-end;font-weight:800;font-size:13.5px;color:var(--accent)">${next}-day · ${coinAmt(STREAK_REWARDS[next],12)}</div></div>`:'<div style="font-weight:800;font-size:13px;color:var(--accent)">All rewards earned ✓</div>'}
+      <div style="display:flex;align-items:center;gap:11px"><div style="width:42px;height:42px;border-radius:10px;background:color-mix(in srgb,#FF8A3D 18%,var(--bg2));color:#FF7A1A;display:grid;place-items:center">${iconSVG('fire',24)}</div><div><div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1">${c.streak||0}-day streak</div><div style="font-size:12px;color:var(--muted);font-weight:600">Best ${c.streakBest||c.streak||0} · ${playedToday?'practised today ✓':'practise today to keep it going'}</div></div></div>
+      ${next?`<div style="text-align:right"><div style="font-size:12px;color:var(--muted);font-weight:700">Next reward</div><div style="display:flex;align-items:center;gap:5px;justify-content:flex-end;font-weight:800;font-size:13px;color:var(--accent)">${next}-day · ${coinAmt(STREAK_REWARDS[next],12)}</div></div>`:'<div style="font-weight:800;font-size:13px;color:var(--accent)">All rewards earned ✓</div>'}
     </div>
     <div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:space-between">${dots}</div>
   </div>`; }
@@ -1009,7 +1021,7 @@ function streamers(){
   const R=[[9,16,'#FFD23F',22],[26,70,'#36E0C8',-26],[46,22,'#FFFFFF',40],[70,68,'#FFE27A',-16],[86,26,'#36E2FF',30],[60,46,'#FFFFFF',-22]];
   const D=[[16,44,'#fff'],[78,18,'#FFE27A'],[40,80,'#36E2FF']];
   return `<div style="position:absolute;inset:0;pointer-events:none;overflow:hidden">`+
-    R.map(([l,t,co,r],i)=>`<span style="position:absolute;left:${l}%;top:${t}%;width:5px;height:14px;background:${co};border-radius:2px;opacity:.8;--r:${r}deg;transform:rotate(${r}deg);animation:sb-confetti ${3+(i%3)}s ease-in-out ${(i*0.45).toFixed(2)}s infinite"></span>`).join('')+
+    R.map(([l,t,co,r],i)=>`<span style="position:absolute;left:${l}%;top:${t}%;width:5px;height:14px;background:${co};border-radius:6px;opacity:.8;--r:${r}deg;transform:rotate(${r}deg);animation:sb-confetti ${3+(i%3)}s ease-in-out ${(i*0.45).toFixed(2)}s infinite"></span>`).join('')+
     D.map(([l,t,co])=>`<span style="position:absolute;left:${l}%;top:${t}%;width:5px;height:5px;border-radius:50%;background:${co};opacity:.7"></span>`).join('')+
   `</div>`;
 }
@@ -1033,18 +1045,18 @@ function viewHome(){
     {goAct:'openGames', ic:'joystick', sc:'joystick', festive:true, title:'Arcade', desc:'8 mini-games — Magic Squares, Champ Challenge, Boss Battle & more. Earn coins!', pct:Math.min(100,(c.streak||0)*10)+'%', badge:(c.coins||0)+' coins', kind:'go'},
   ].map(j=>{
     const arg=j.goArg?`data-arg="${j.goArg}"`:'';
-    if(j.festive){ return `<button class="sb-arcade-card" data-act="${j.goAct}" ${arg} style="position:relative;overflow:hidden;text-align:left;border-radius:16px;padding:18px 20px;background-image:linear-gradient(120deg,#7C5CFF 0%,#FF5FA2 52%,#FFB23E 100%);box-shadow:0 8px 22px rgba(124,92,255,.32);color:#fff;display:flex;flex-direction:column">
+    if(j.festive){ return `<button class="sb-arcade-card" data-act="${j.goAct}" ${arg} style="position:relative;overflow:hidden;text-align:left;border-radius:14px;padding:18px 20px;background-image:linear-gradient(120deg,#7C5CFF 0%,#FF5FA2 52%,#FFB23E 100%);box-shadow:0 8px 22px rgba(124,92,255,.32);color:#fff;display:flex;flex-direction:column">
       ${streamers()}
-      <div style="position:relative;display:flex;justify-content:space-between;align-items:start;gap:8px;margin-bottom:13px"><div style="width:46px;height:46px;border-radius:13px;background:rgba(255,255,255,.24);display:grid;place-items:center;color:#fff;box-shadow:0 3px 10px rgba(0,0,0,.18)">${journeyArtSVG(j.sc,27)}</div><span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;padding:5px 12px;border-radius:99px;font-size:11.5px;font-weight:900;background:#fff;color:#7C5CFF;box-shadow:0 2px 6px rgba(0,0,0,.15)">${iconSVG('coin',12)}${c.coins||0} coins</span></div>
-      <div style="position:relative;font-family:var(--display);font-weight:800;font-size:18.5px;margin-bottom:4px;text-shadow:0 1px 5px rgba(0,0,0,.22)">Arcade 🎉</div>
+      <div style="position:relative;display:flex;justify-content:space-between;align-items:start;gap:8px;margin-bottom:13px"><div style="width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.24);display:grid;place-items:center;color:#fff;box-shadow:0 3px 10px rgba(0,0,0,.18)">${journeyArtSVG(j.sc,27)}</div><span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:900;background:#fff;color:#7C5CFF;box-shadow:0 2px 6px rgba(0,0,0,.15)">${iconSVG('coin',12)}${c.coins||0} coins</span></div>
+      <div style="position:relative;font-family:var(--display);font-weight:800;font-size:17px;margin-bottom:4px;text-shadow:0 1px 5px rgba(0,0,0,.22)">Arcade 🎉</div>
       <div style="position:relative;font-size:13px;color:rgba(255,255,255,.96);line-height:1.45;margin-bottom:14px">${j.desc}</div>
-      <div style="position:relative;margin-top:auto;height:7px;border-radius:99px;background:rgba(255,255,255,.3);overflow:hidden"><div style="height:100%;border-radius:99px;background:#fff;width:${j.pct}"></div></div></button>`; }
+      <div style="position:relative;margin-top:auto;height:7px;border-radius:999px;background:rgba(255,255,255,.3);overflow:hidden"><div style="height:100%;border-radius:999px;background:#fff;width:${j.pct}"></div></div></button>`; }
     const badgeStyle = j.kind==='lock' ? 'background:var(--surface2);color:var(--muted)' : ('background:color-mix(in srgb,'+j.accent+' 15%,transparent);color:'+j.accent);
-    return `<button class="sb-lift" data-act="${j.goAct}" ${arg} style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:var(--sh-rest);display:flex;flex-direction:column">
-      <div style="display:flex;justify-content:space-between;align-items:start;gap:8px;margin-bottom:13px"><div style="width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,${j.c1},${j.c2});color:#fff;display:grid;place-items:center;box-shadow:0 4px 12px color-mix(in srgb,${j.accent} 38%,transparent)">${journeyArtSVG(j.sc,26)}</div><span style="display:inline-flex;align-items:center;gap:4px;white-space:nowrap;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:800;${badgeStyle}">${j.kind==='lock'?iconSVG('lock',11,2.2):''}${esc(j.badge)}</span></div>
+    return `<button class="sb-lift" data-act="${j.goAct}" ${arg} style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:var(--sh-rest);display:flex;flex-direction:column">
+      <div style="display:flex;justify-content:space-between;align-items:start;gap:8px;margin-bottom:13px"><div style="width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,${j.c1},${j.c2});color:#fff;display:grid;place-items:center;box-shadow:0 4px 12px color-mix(in srgb,${j.accent} 38%,transparent)">${journeyArtSVG(j.sc,26)}</div><span style="display:inline-flex;align-items:center;gap:4px;white-space:nowrap;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800;${badgeStyle}">${j.kind==='lock'?iconSVG('lock',11,2.2):''}${esc(j.badge)}</span></div>
       <div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15;margin-bottom:4px">${j.title}</div>
       <div style="font-size:13px;color:var(--muted);line-height:1.45;margin-bottom:14px">${j.desc}</div>
-      <div style="margin-top:auto;height:7px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:99px;background:${j.accent};width:${j.pct}"></div></div></button>`;
+      <div style="margin-top:auto;height:7px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:${j.accent};width:${j.pct}"></div></div></button>`;
   }).join('');
   return `<div>
     ${(()=>{ const lp=getList(c,aKey); const lf=levelFromXp(lp.xp||0); const xpToNext=Math.max(0,(lf.need||1)-(lf.into||0));
@@ -1053,7 +1065,7 @@ function viewHome(){
       <div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:var(--r-xl,20px);padding:22px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:18px">
         <div style="position:relative;flex-shrink:0">
           <div style="width:84px;height:94px;animation:sb-bee-bob 3.4s ease-in-out infinite">${mascotSVG(S.mood)}</div>
-          <div style="position:absolute;left:64px;top:-16px;white-space:nowrap;background:var(--paper,#fff);border:1px solid var(--line);border-radius:12px;border-bottom-left-radius:3px;padding:6px 10px;font-size:12px;font-weight:650;color:var(--ink,var(--text));box-shadow:var(--sh-rest)">${bub}</div>
+          <div style="position:absolute;left:64px;top:-16px;white-space:nowrap;background:var(--paper,#fff);border:1px solid var(--line);border-radius:10px;border-bottom-left-radius:3px;padding:6px 10px;font-size:12px;font-weight:650;color:var(--ink,var(--text));box-shadow:var(--sh-rest)">${bub}</div>
         </div>
         <div style="min-width:0;flex:1">
           <div style="font-size:13px;color:var(--muted);font-weight:650">${greeting}</div>
@@ -1068,23 +1080,23 @@ function viewHome(){
           </div>
         </div>
       </div>
-      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:20px">
+      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:20px">
         <div style="width:92px;height:92px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(var(--accent) ${goalPctNum}%, var(--surface2) 0)">
-          <div style="width:70px;height:70px;border-radius:50%;background:var(--bg2);display:grid;place-items:center;text-align:center"><div><div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1">${S.goalDone}/${goalTarget}</div><div style="font-size:10px;color:var(--muted);font-weight:700">today</div></div></div>
+          <div style="width:70px;height:70px;border-radius:50%;background:var(--bg2);display:grid;place-items:center;text-align:center"><div><div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1">${S.goalDone}/${goalTarget}</div><div style="font-size:12px;color:var(--muted);font-weight:700">today</div></div></div>
         </div>
         <div style="min-width:0">
-          <div style="font-family:var(--display);font-weight:800;font-size:18px;margin-bottom:3px">Daily goal</div>
-          <div style="font-size:13.5px;color:var(--muted);line-height:1.45;margin-bottom:12px">${goalPctNum>=100?'Goal smashed for today — amazing!':('Spell '+Math.max(0,goalTarget-S.goalDone)+' more to hit today’s goal.')}</div>
-          <button data-act="openCoach" style="padding:11px 18px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">${S.goalDone>0?'Continue →':'Start practice →'}</button>
+          <div style="font-family:var(--display);font-weight:800;font-size:17px;margin-bottom:3px">Daily goal</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.45;margin-bottom:12px">${goalPctNum>=100?'Goal smashed for today — amazing!':('Spell '+Math.max(0,goalTarget-S.goalDone)+' more to hit today’s goal.')}</div>
+          <button data-act="openCoach" style="padding:11px 18px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${S.goalDone>0?'Continue →':'Start practice →'}</button>
         </div>
       </div>
     </div>`; })()}
-    <div style="font-family:var(--display);font-weight:800;font-size:16px;margin:4px 2px 12px">Keep going</div>
+    <div style="font-family:var(--display);font-weight:800;font-size:15px;margin:4px 2px 12px">Keep going</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:18px">${journeys}</div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--sh-rest)">
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest)">
       <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:6px;flex-wrap:wrap">
         <div style="font-family:var(--display);font-weight:800;font-size:17px">Your evolution</div>
-        <div style="font-size:12.5px;color:var(--muted);font-weight:600">You're <b style="color:var(--text)">${evo[fIdx]}</b> — ${fIdx>=9?'top form reached! 🎉':('next: '+evo[fIdx+1])}</div>
+        <div style="font-size:12px;color:var(--muted);font-weight:600">You're <b style="color:var(--text)">${evo[fIdx]}</b> — ${fIdx>=9?'top form reached! 🎉':('next: '+evo[fIdx+1])}</div>
       </div>
       <div style="overflow-x:auto;padding:4px 0 2px"><div style="min-width:760px">${evoLadderHTML(theme,fIdx)}</div></div>
     </div>
@@ -1162,7 +1174,7 @@ function conceptCardHTML(ch, allChs){
   const meaning=(paren||conceptRoots(ch.title)||'').trim();
   const mainStyle=`font-family:var(--display);color:#fff;line-height:1;letter-spacing:-.01em;font-size:${heroFont(main)}px;font-weight:${kind==='word'?700:800};${kind==='word'?'font-style:italic;':''}`;
   const cover=`<div style="position:relative;height:116px;display:flex;align-items:center;justify-content:center;padding:14px;${conceptCoverBG(ch)}">
-    <span style="position:absolute;top:11px;left:12px;font-family:var(--mono);font-weight:700;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(fam)}</span>
+    <span style="position:absolute;top:11px;left:12px;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(fam)}</span>
     <span style="position:absolute;top:12px;right:12px;width:9px;height:9px;border-radius:50%;background:${dc};box-shadow:0 0 0 3px rgba(255,255,255,.28)"></span>
     ${st.done?'<span style="position:absolute;bottom:9px;right:10px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
     <div class="sb-theme-art" style="text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.16);animation-delay:${(ci%9)*0.22}s${locked?';opacity:.92':''}">
@@ -1171,14 +1183,14 @@ function conceptCardHTML(ch, allChs){
     </div>
   </div>`;
   const footL = locked
-    ? `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:900;color:#a06a00;background:linear-gradient(135deg,#FFE08A,#F0B85C)">${iconSVG('lock',11,2.2)} ${coinAmt(COST.concept,11)}</span>`
-    : `<span style="padding:3px 9px;border-radius:99px;font-family:var(--body);font-weight:800;font-size:11px;color:#fff;background:${dc}">${(diffMap[ch.difficulty]||diffMap.medium)[0]}</span>`;
+    ? `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:900;color:#a06a00;background:linear-gradient(135deg,#FFE08A,#F0B85C)">${iconSVG('lock',11,2.2)} ${coinAmt(COST.concept,11)}</span>`
+    : `<span style="padding:3px 9px;border-radius:999px;font-family:var(--body);font-weight:800;font-size:12px;color:#fff;background:${dc}">${(diffMap[ch.difficulty]||diffMap.medium)[0]}</span>`;
   const footR=`<span style="font-family:var(--body);font-weight:800;font-size:12px;color:${f.c};white-space:nowrap">${locked?'Unlock':(nWords+' words')} →</span>`;
-  const prog=(!locked && !st.done && st.m>0)?`<div style="font-family:var(--mono);font-size:11px;color:${f.c};font-weight:700;margin-top:7px">${st.m}/${st.total} mastered</div>`:'';
-  return `<button class="sb-cover-card" data-act="${locked?'buyConcept':'openConcept'}" data-arg="${ci}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column;${locked?'opacity:.97':''}">
+  const prog=(!locked && !st.done && st.m>0)?`<div style="font-family:var(--mono);font-size:12px;color:${f.c};font-weight:700;margin-top:7px">${st.m}/${st.total} mastered</div>`:'';
+  return `<button class="sb-cover-card" data-act="${locked?'buyConcept':'openConcept'}" data-arg="${ci}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column;${locked?'opacity:.97':''}">
     ${cover}
     <div style="padding:14px 15px 15px;display:flex;flex-direction:column;flex:1">
-      <div style="font-family:var(--display);font-weight:800;font-size:16px;line-height:1.15;color:var(--text)">${esc(titleClean)}</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15;color:var(--text)">${esc(titleClean)}</div>
       ${meaning?`<div style="font-family:var(--mono);font-weight:700;font-size:12px;color:${f.c};margin-top:3px">${esc(trunc(meaning,42))}</div>`:''}
       <div style="font-family:var(--body);font-weight:600;font-size:12px;line-height:1.45;color:var(--muted);margin-top:8px">${trunc(ch.concept,96)}</div>
       ${prog}
@@ -1188,13 +1200,13 @@ function conceptCardHTML(ch, allChs){
 }
 function conceptBigCard(ch, allChs){
   const ci=allChs.indexOf(ch); const st=conceptStat(ch); const locked=!isConceptUnlocked(ci);
-  const tag=locked?`<span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;font-size:12px;font-weight:900;color:#a06a00;background:linear-gradient(135deg,#FFE08A,#F0B85C)">${iconSVG('lock',12,2.2)} Locked</span>`:`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:99px;font-size:12px;font-weight:800;background:${st.bg};color:${st.fg}">${st.done?'✓ Mastered':(st.label+(st.total?(' · '+st.m+'/'+st.total):''))}</span>`;
-  const cta=locked?`<button data-act="buyConcept" data-arg="${ci}" style="padding:12px 20px;border-radius:13px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.14)">🔓 Unlock · ${coinAmt(COST.concept,12)}</button>`:`<button data-act="openConcept" data-arg="${ci}" style="padding:12px 20px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Open &amp; study · ${st.total} words →</button>`;
-  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:clamp(20px,4vw,28px);box-shadow:var(--glow)">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px"><span style="font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700">${esc(catGroup(ch.category))}</span><span style="${diffStyleFor(ch.difficulty)}">${(diffMap[ch.difficulty]||diffMap.medium)[0]}</span></div>
+  const tag=locked?`<span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:900;color:#a06a00;background:linear-gradient(135deg,#FFE08A,#F0B85C)">${iconSVG('lock',12,2.2)} Locked</span>`:`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:800;background:${st.bg};color:${st.fg}">${st.done?'✓ Mastered':(st.label+(st.total?(' · '+st.m+'/'+st.total):''))}</span>`;
+  const cta=locked?`<button data-act="buyConcept" data-arg="${ci}" style="padding:12px 20px;border-radius:14px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.14)">🔓 Unlock · ${coinAmt(COST.concept,12)}</button>`:`<button data-act="openConcept" data-arg="${ci}" style="padding:12px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Open &amp; study · ${st.total} words →</button>`;
+  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,28px);box-shadow:var(--glow)">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px"><span style="font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700">${esc(catGroup(ch.category))}</span><span style="${diffStyleFor(ch.difficulty)}">${(diffMap[ch.difficulty]||diffMap.medium)[0]}</span></div>
     <div style="font-family:var(--display);font-weight:800;font-size:clamp(22px,4.5vw,28px);line-height:1.12;margin-bottom:4px;display:flex;align-items:center;gap:9px">${locked?`<span style="color:var(--muted);display:inline-flex">${iconSVG('lock',22,2.2)}</span>`:''}${esc(conceptShort(ch.title))}</div>
-    <div style="font-family:var(--mono);font-size:13.5px;color:var(--accent);font-weight:700;margin-bottom:13px">${esc(conceptRoots(ch.title))}</div>
-    <div style="font-size:14.5px;color:var(--text);line-height:1.6;margin-bottom:18px">${locked?'This concept is locked. Unlock it with coins to reveal its pattern, worked examples and word list.':esc(ch.concept||'')}</div>
+    <div style="font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:700;margin-bottom:13px">${esc(conceptRoots(ch.title))}</div>
+    <div style="font-size:15px;color:var(--text);line-height:1.6;margin-bottom:18px">${locked?'This concept is locked. Unlock it with coins to reveal its pattern, worked examples and word list.':esc(ch.concept||'')}</div>
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">${tag}${cta}</div>
   </div>`;
 }
@@ -1211,27 +1223,27 @@ function conceptChapters(){ const chs=state.conceptData||[]; if(state._cchap && 
   out._n=chs.length; state._cchap=out; return out; }
 function conceptChapterStat(chap){ const done=chap.items.filter(c=>conceptStat(c).done).length; return { done, total:chap.items.length, complete:done>=chap.items.length }; }
 function chapterCoverCard(chap){ const f=CONCEPT_FAM[chap.name]||CONCEPT_FAM.Advanced; const st=conceptChapterStat(chap); const pct=st.total?Math.round(st.done/st.total*100):0;
-  return `<button class="sb-cover-card" data-act="openConceptChapter" data-arg="${chap.n-1}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
+  return `<button class="sb-cover-card" data-act="openConceptChapter" data-arg="${chap.n-1}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
     <div style="position:relative;height:94px;display:flex;align-items:center;justify-content:center;${famCoverBG(chap.name)}">
-      <span style="position:absolute;top:11px;left:12px;font-family:var(--mono);font-weight:700;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">Chapter</span>
+      <span style="position:absolute;top:11px;left:12px;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">Chapter</span>
       ${st.complete?'<span style="position:absolute;bottom:9px;right:10px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
       <div class="sb-theme-art" style="font-family:var(--display);color:#fff;font-weight:800;font-size:44px;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,.2);animation-delay:${(chap.n%9)*0.22}s">${chap.n}</div>
     </div>
     <div style="padding:13px 15px 14px;display:flex;flex-direction:column;flex:1">
-      <div style="font-family:var(--display);font-weight:800;font-size:15.5px;color:var(--text)">Chapter ${chap.n}</div>
-      <div style="font-family:var(--mono);font-weight:700;font-size:11px;color:${f.c};margin-top:3px">${esc(chap.name)} · ${st.total} concepts</div>
-      <div style="margin-top:auto;padding-top:13px;display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:99px;background:${st.complete?'var(--good)':f.c};width:${pct}%;transition:width .4s"></div></div><span style="font-size:11px;color:var(--muted);font-weight:800;white-space:nowrap">${st.done}/${st.total}</span></div>
+      <div style="font-family:var(--display);font-weight:800;font-size:15px;color:var(--text)">Chapter ${chap.n}</div>
+      <div style="font-family:var(--mono);font-weight:700;font-size:12px;color:${f.c};margin-top:3px">${esc(chap.name)} · ${st.total} concepts</div>
+      <div style="margin-top:auto;padding-top:13px;display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:${st.complete?'var(--good)':f.c};width:${pct}%;transition:width .4s"></div></div><span style="font-size:12px;color:var(--muted);font-weight:800;white-space:nowrap">${st.done}/${st.total}</span></div>
     </div>
   </button>`; }
 // Shared page header — back link + display title + optional mono meta + muted subtitle.
 // Keeps every top-level view's header identical (the Concepts/Journeys reference treatment).
 function pageHead(title, meta, sub, right){
-  return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:14px">← Home</button></div>
+  return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button></div>
     <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px">
-      <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:0">${title}</h2>${meta?`<span style="font-family:var(--mono);font-size:12px;color:var(--muted)">${meta}</span>`:''}</div>
+      <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0">${title}</h2>${meta?`<span style="font-family:var(--mono);font-size:12px;color:var(--muted)">${meta}</span>`:''}</div>
       ${right?`<div style="display:flex;gap:8px;flex-wrap:wrap">${right}</div>`:''}
     </div>
-    ${sub?`<p style="margin:0 0 14px;color:var(--muted);font-size:14px;max-width:52em">${sub}</p>`:''}`;
+    ${sub?`<p style="margin:0 0 14px;color:var(--muted);font-size:13px;max-width:52em">${sub}</p>`:''}`;
 }
 function viewConceptList(){
   const S=state; const allChs=S.conceptData||[]; const loading=S.conceptLoading&&!S.conceptData;
@@ -1239,27 +1251,27 @@ function viewConceptList(){
   const masteredCount=allChs.filter(c=>conceptStat(c).done).length; const pct=allChs.length?Math.round(masteredCount/allChs.length*100):0;
   const gridStyle='display:grid;grid-template-columns:repeat(auto-fill,minmax(236px,1fr));gap:14px';
   const q=(S.conceptQuery||'').trim().toLowerCase();
-  const search=`<input data-inp="onConceptSearch" data-fkey="conceptSearch" value="${escA(S.conceptQuery)}" placeholder="Search any pattern, root or word…" style="width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:11px 15px;font-size:14px;color:var(--text);margin-bottom:14px">`;
+  const search=`<input data-inp="onConceptSearch" data-fkey="conceptSearch" value="${escA(S.conceptQuery)}" placeholder="Search any pattern, root or word…" style="width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:11px 15px;font-size:13px;color:var(--text);margin-bottom:14px">`;
   let mainContent='', headDesc='', backRow='';
   if(!loading){
     if(q){ const list=allChs.filter(ch=>(ch.title+' '+ch.category+' '+(ch.concept||'')).toLowerCase().includes(q));
       headDesc='Ten short chapters of spelling patterns — finish one, then the next.';
-      mainContent=`<div style="font-size:12.5px;color:var(--muted);font-weight:700;margin:0 2px 12px">${list.length} match${list.length===1?'':'es'} for “${esc(S.conceptQuery.trim())}”</div>`+(list.length?`<div style="${gridStyle}">${list.map(ch=>conceptCardHTML(ch,allChs)).join('')}</div>`:'<div style="padding:44px 0;text-align:center;color:var(--muted);font-weight:700">No matches.</div>');
+      mainContent=`<div style="font-size:12px;color:var(--muted);font-weight:700;margin:0 2px 12px">${list.length} match${list.length===1?'':'es'} for “${esc(S.conceptQuery.trim())}”</div>`+(list.length?`<div style="${gridStyle}">${list.map(ch=>conceptCardHTML(ch,allChs)).join('')}</div>`:'<div style="padding:44px 0;text-align:center;color:var(--muted);font-weight:700">No matches.</div>');
     } else if(S.conceptChapter!=null && chapters[S.conceptChapter]){ const chap=chapters[S.conceptChapter]; const st=conceptChapterStat(chap);
       headDesc='Ten short chapters of spelling patterns — finish one, then the next.';
-      backRow=`<button data-act="conceptChaptersBack" style="display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-weight:700;font-size:14px;margin-bottom:12px">← All chapters</button>`;
-      mainContent=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><span style="width:38px;height:38px;border-radius:11px;display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:800;font-size:19px;${famCoverBG(chap.name)}">${chap.n}</span><div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1.1">Chapter ${chap.n} · ${esc(chap.name)}</div><div style="font-size:12px;color:var(--muted);font-weight:700">${st.done}/${st.total} concepts done</div></div></div><div style="${gridStyle}">${chap.items.map(ch=>conceptCardHTML(ch,allChs)).join('')}</div>`;
+      backRow=`<button data-act="conceptChaptersBack" style="display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-weight:700;font-size:13px;margin-bottom:12px">← All chapters</button>`;
+      mainContent=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><span style="width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:800;font-size:20px;${famCoverBG(chap.name)}">${chap.n}</span><div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1.1">Chapter ${chap.n} · ${esc(chap.name)}</div><div style="font-size:12px;color:var(--muted);font-weight:700">${st.done}/${st.total} concepts done</div></div></div><div style="${gridStyle}">${chap.items.map(ch=>conceptCardHTML(ch,allChs)).join('')}</div>`;
     } else { headDesc='Ten short chapters — pick one and master the spelling patterns inside. A concept is yours once you nail 70% of its words.';
       mainContent=`<div style="${gridStyle}">${chapters.map(chapterCoverCard).join('')}</div>`; }
   }
   return `<div style="animation:sb-rise .35s ease both">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:14px">← Home</button></div>
-    <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px"><h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:0">Concepts</h2><span style="font-family:var(--mono);font-size:12px;color:var(--muted)">${conceptChapters().length||11} chapters</span></div>
-    <p style="margin:0 0 12px;color:var(--muted);font-size:14px;max-width:52em">${headDesc}</p>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button></div>
+    <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px"><h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0">Concepts</h2><span style="font-family:var(--mono);font-size:12px;color:var(--muted)">${conceptChapters().length||11} chapters</span></div>
+    <p style="margin:0 0 12px;color:var(--muted);font-size:13px;max-width:52em">${headDesc}</p>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin-bottom:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-      <span style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">${iconSVG('grid',15)} ${chaptersDone}/${conceptChapters().length||11} chapters</span>
-      <div style="flex:1;min-width:140px;height:7px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:99px;background:var(--accent);width:${pct}%;transition:width .4s"></div></div>
-      <span style="font-size:12.5px;color:var(--muted);font-weight:700">${pct}%</span>
+      <span style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('grid',15)} ${chaptersDone}/${conceptChapters().length||11} chapters</span>
+      <div style="flex:1;min-width:140px;height:7px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--accent);width:${pct}%;transition:width .4s"></div></div>
+      <span style="font-size:12px;color:var(--muted);font-weight:700">${pct}%</span>
     </div>
     ${backRow}${search}
     ${loading?'<div style="padding:60px 0;text-align:center;color:var(--muted);font-weight:700">Loading chapters…</div>':''}
@@ -1393,14 +1405,14 @@ function renderStage(s){ if(!s) return '';
   if(s.t==='build'){ const root=s.root||'',aff=s.affix||''; return s.side==='pre'?aRow(aTiles(aff,'affix','ca-sl')+aTiles(root,'root')):aRow(aTiles(root,'root')+aTiles(aff,'affix','ca-sr')); }
   if(s.t==='breakdown'){ const word=s.word||''; const parts=s.parts||[];
     const top=aGlow(aRow(wTiles(word,s.hi,false),4));
-    const chips=parts.map((pp,i)=>`<span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:99px;background:var(--surface2);font-family:var(--mono);font-size:12.5px;font-weight:700;animation:ca-up .45s ease ${(i*0.12).toFixed(2)}s both"><b style="color:var(--accent)">${esc(pp.txt)}</b><span style="color:var(--muted)">${pp.gloss?('= '+esc(pp.gloss)):''}</span></span>`).join('');
+    const chips=parts.map((pp,i)=>`<span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:var(--surface2);font-family:var(--mono);font-size:12px;font-weight:700;animation:ca-up .45s ease ${(i*0.12).toFixed(2)}s both"><b style="color:var(--accent)">${esc(pp.txt)}</b><span style="color:var(--muted)">${pp.gloss?('= '+esc(pp.gloss)):''}</span></span>`).join('');
     return `<div style="display:flex;flex-direction:column;gap:12px;align-items:center">${top}${parts.length?`<div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:center">${chips}</div>`:''}</div>`; }
   return ''; }
 function conceptAnimStage(an,sc){ const scn=an.scenes[Math.min(Math.max(sc,0),an.scenes.length-1)]; return renderStage(scn&&scn.stage); }
 function conceptPlayer(){ const ch=state.conceptSel; if(!ch) return ''; const an=conceptAnim(ch); const N=an.scenes.length; const sc=Math.min(Math.max(state.animScene||0,0),N-1); const playing=state.animOn;
   const voiceOn=state.sound!==false;
-  return `<div style="background:var(--bg2);border:1px solid var(--accent);border-radius:18px;overflow:hidden;box-shadow:var(--glow)">
-    <div style="display:flex;align-items:center;gap:8px;padding:11px 16px;border-bottom:1px solid var(--line)"><span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--display);font-weight:800;font-size:13.5px;color:var(--accent)">${iconSVG('spark',15)} Animated explainer</span><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:99px;background:var(--chip);color:var(--accent);font-weight:800;font-size:10.5px">${iconSVG('volume',12)} ${voiceOn?(hasVoicePack(ch)?'Narrated':'Voice on'):'Voice off'}</span><span style="margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">${esc(an.label)}</span></div>
+  return `<div style="background:var(--bg2);border:1px solid var(--accent);border-radius:20px;overflow:hidden;box-shadow:var(--glow)">
+    <div style="display:flex;align-items:center;gap:8px;padding:11px 16px;border-bottom:1px solid var(--line)"><span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--display);font-weight:800;font-size:13px;color:var(--accent)">${iconSVG('spark',15)} Animated explainer</span><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('volume',12)} ${voiceOn?(hasVoicePack(ch)?'Narrated':'Voice on'):'Voice off'}</span><span style="margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">${esc(an.label)}</span></div>
     <div style="position:relative;background:radial-gradient(120% 120% at 50% 0,color-mix(in srgb,var(--accent) 13%,var(--bg2)),var(--bg2));padding:22px clamp(74px,11%,100px);min-height:150px;display:flex;align-items:center">
       ${(()=>{ const raw=an.scenes[sc].mood||'happy'; const bmood=raw==='oops'?'think':raw;      // happy learning emotions only — no sad/angry bee
         const right=sc%2===1;                                                                    // the bee flies to the other side each scene
@@ -1409,12 +1421,12 @@ function conceptPlayer(){ const ch=state.conceptSel; if(!ch) return ''; const an
             <div class="sb-bee-presenter${playing?' talking':''}" style="width:100%;height:100%;filter:drop-shadow(0 6px 12px rgba(43,27,94,.18))">${mascotSVG(bmood)}</div>
           </div></div>`; })()}
       <div style="flex:1;min-width:0;display:flex;align-items:center;justify-content:center;min-height:100px">${conceptAnimStage(an,sc)}</div>
-      ${!playing?`<button data-act="conceptPlay" aria-label="Play" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;background:color-mix(in srgb,var(--bg2) 52%,transparent)"><span style="width:60px;height:60px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;padding-left:4px;font-size:23px;box-shadow:0 6px 18px rgba(0,0,0,.22)">▶</span><span style="font-weight:800;font-size:12.5px;color:var(--text)">Watch &amp; listen</span></button>`:''}
+      ${!playing?`<button data-act="conceptPlay" aria-label="Play" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;background:color-mix(in srgb,var(--bg2) 52%,transparent)"><span style="width:60px;height:60px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;padding-left:4px;font-size:24px;box-shadow:0 6px 18px rgba(0,0,0,.22)">▶</span><span style="font-weight:800;font-size:12px;color:var(--text)">Watch &amp; listen</span></button>`:''}
     </div>
     <div style="padding:13px 16px 15px">
-      <div style="display:flex;gap:5px;margin-bottom:10px">${an.scenes.map((s,i)=>`<button data-act="animTo" data-arg="${i}" style="flex:1;height:5px;border-radius:99px;background:${i<=sc?'var(--accent)':'var(--surface2)'}"></button>`).join('')}</div>
-      <div style="font-size:13.5px;color:var(--text);line-height:1.5;min-height:40px;font-weight:600">${esc(an.scenes[sc].cap)}</div>
-      <div style="display:flex;align-items:center;gap:8px;margin-top:9px"><button data-act="conceptReplay" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">${iconSVG('volume',14)} ${playing?'Replay':'Watch & listen'}</button><span style="font-family:var(--mono);font-size:11px;color:var(--muted)">Scene ${sc+1}/${N}</span></div>
+      <div style="display:flex;gap:5px;margin-bottom:10px">${an.scenes.map((s,i)=>`<button data-act="animTo" data-arg="${i}" style="flex:1;height:5px;border-radius:999px;background:${i<=sc?'var(--accent)':'var(--surface2)'}"></button>`).join('')}</div>
+      <div style="font-size:13px;color:var(--text);line-height:1.5;min-height:40px;font-weight:600">${esc(an.scenes[sc].cap)}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:9px"><button data-act="conceptReplay" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">${iconSVG('volume',14)} ${playing?'Replay':'Watch & listen'}</button><span style="font-family:var(--mono);font-size:12px;color:var(--muted)">Scene ${sc+1}/${N}</span></div>
     </div>
   </div>`; }
 function viewConceptDetail(){
@@ -1423,28 +1435,28 @@ function viewConceptDetail(){
   const steps=[{kind:'anim'}]; if(csel.method) steps.push({kind:'method',title:'How to crack it',html:csel.method});
   (csel.cards||[]).forEach(cc=>steps.push({kind:'card',title:cc.title,body:cc.body}));
   const total=steps.length; const idx=Math.min(Math.max(S.conceptStep||0,0),total-1); const step=steps[idx];
-  const dots=steps.map((s,i)=>`<button data-act="conceptStepGo" data-arg="${i}" style="height:7px;border-radius:99px;flex:1;background:${i<=idx?'var(--accent)':'var(--surface2)'}" title="${s.kind==='anim'?'Animated explainer':escA(s.title||'')}"></button>`).join('');
-  const genericCard=(st)=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:24px;min-height:170px;box-shadow:var(--sh-rest)">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><span style="width:30px;height:30px;flex-shrink:0;border-radius:9px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG(st.kind==='method'?'spark':'book',16)}</span><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.2">${esc(st.title||'')}</div></div>
+  const dots=steps.map((s,i)=>`<button data-act="conceptStepGo" data-arg="${i}" style="height:7px;border-radius:999px;flex:1;background:${i<=idx?'var(--accent)':'var(--surface2)'}" title="${s.kind==='anim'?'Animated explainer':escA(s.title||'')}"></button>`).join('');
+  const genericCard=(st)=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:24px;min-height:170px;box-shadow:var(--sh-rest)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><span style="width:30px;height:30px;flex-shrink:0;border-radius:10px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG(st.kind==='method'?'spark':'book',16)}</span><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.2">${esc(st.title||'')}</div></div>
       <div style="font-size:15px;line-height:1.65;color:var(--text);${st.kind==='method'?'white-space:pre-line':''}">${st.kind==='method'?st.html:esc(st.body||'')}</div>
     </div>`;
   const stepContent = step.kind==='anim' ? conceptPlayer() : genericCard(step);
-  const stepNav = (idx>0||idx<total-1) ? `<div style="display:flex;gap:10px;margin-bottom:14px">${idx>0?`<button data-act="conceptPrev" style="padding:12px 18px;border-radius:12px;background:var(--surface2);color:var(--text);font-weight:800;font-size:14.5px">← Back</button>`:''}${idx<total-1?`<button data-act="conceptNext" style="flex:1;padding:12px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${idx===0?'Read more →':'Next card →'}</button>`:''}</div>` : '';
+  const stepNav = (idx>0||idx<total-1) ? `<div style="display:flex;gap:10px;margin-bottom:14px">${idx>0?`<button data-act="conceptPrev" style="padding:12px 18px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">← Back</button>`:''}${idx<total-1?(idx===0?`<button data-act="conceptNext" style="flex:1;padding:12px;border-radius:10px;background:transparent;color:var(--accent);font-weight:800;font-size:15px;text-decoration:underline;text-underline-offset:3px">Read more →</button>`:`<button data-act="conceptNext" style="flex:1;padding:12px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next card →</button>`):''}</div>` : '';
   return `<div style="animation:sb-rise .35s ease both;max-width:780px">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><button data-act="conceptBack" style="color:var(--muted);font-weight:700;font-size:14px">← All concepts</button></div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700">${esc(csel.category)}</span><span style="${diffStyleFor(csel.difficulty)}">${(diffMap[csel.difficulty]||diffMap.medium)[0]}</span></div>
-    <h2 style="font-family:var(--display);font-weight:800;font-size:27px;line-height:1.1;margin:0 0 4px">${esc(conceptShort(csel.title))}</h2>
-    <div style="font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:700;margin-bottom:16px">${esc(conceptRoots(csel.title))}</div>
-    <p style="font-size:14.5px;line-height:1.55;color:var(--muted);margin:0 0 18px">${esc(csel.concept||'')}</p>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><button data-act="conceptBack" style="color:var(--muted);font-weight:700;font-size:13px">← All concepts</button></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700">${esc(csel.category)}</span><span style="${diffStyleFor(csel.difficulty)}">${(diffMap[csel.difficulty]||diffMap.medium)[0]}</span></div>
+    <h2 style="font-family:var(--display);font-weight:800;font-size:24px;line-height:1.1;margin:0 0 4px">${esc(conceptShort(csel.title))}</h2>
+    <div style="font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:700;margin-bottom:16px">${esc(conceptRoots(csel.title))}</div>
+    <p style="font-size:15px;line-height:1.55;color:var(--muted);margin:0 0 18px">${esc(csel.concept||'')}</p>
     <div style="margin-bottom:22px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span style="font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">Card ${idx+1} of ${total}${step.kind==='anim'?' · Watch':''}</span><div style="flex:1;height:6px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:99px;background:var(--accent);width:${Math.round((idx+1)/total*100)}%;transition:width .3s"></div></div></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span style="font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">Card ${idx+1} of ${total}${step.kind==='anim'?' · Watch':''}</span><div style="flex:1;height:6px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--accent);width:${Math.round((idx+1)/total*100)}%;transition:width .3s"></div></div></div>
       <div style="display:flex;gap:6px;margin-bottom:14px">${dots}</div>
       ${stepNav}
       ${stepContent}
     </div>
     <button data-act="conceptWordsToggle" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:15px 18px;font-family:var(--display);font-weight:800;font-size:15px;color:var(--text);margin-bottom:12px"><span>${(S.conceptWordsOpen?'Hide word study':'Study the words one by one')+' · '+cw.length}</span><span style="color:var(--accent)">${S.conceptWordsOpen?'▲':'▼'}</span></button>
     ${S.conceptWordsOpen?`<div style="margin-bottom:22px;animation:sb-rise .3s ease both">${wordFlash(cw.map(x=>({w:x.w,d:x.def||'',s:x.ex||'',p:x.say||'',o:''})), S.conceptWordIdx, 'conceptWordNav', {})}</div>`:''}
-    <button data-act="practiseConcept" style="width:100%;padding:16px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge);margin-top:12px">Practise these words →</button>
+    <button data-act="practiseConcept" style="width:100%;padding:16px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-top:12px">Practise these words →</button>
   </div>`;
 }
 
@@ -1455,9 +1467,9 @@ function autoAdvance(ms){ try{ clearTimeout(state._advTimer); }catch(e){}
 function sessionResults(){
   const S=state; const ok=S.sessionCorrect||[]; const bad=S.sessionWrong||[]; const total=ok.length+bad.length;
   const pct=total?Math.round(ok.length/total*100):0;
-  const chip=(w,good)=>`<span style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;background:${good?'color-mix(in srgb,var(--good) 15%,transparent)':'color-mix(in srgb,var(--bad) 14%,transparent)'};font-family:var(--display);font-weight:800;font-size:14px;color:${good?'var(--good)':'var(--bad)'}"><button data-act="say" data-arg="${escA(w.w)}" title="Hear it" style="display:inline-flex;color:inherit;opacity:.8">${iconSVG('volume',13)}</button>${esc(w.w)}</span>`;
-  const col=(title,arr,good)=>`<div style="flex:1;min-width:240px;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:16px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:${good?'color-mix(in srgb,var(--good) 20%,transparent)':'color-mix(in srgb,var(--bad) 18%,transparent)'};color:${good?'var(--good)':'var(--bad)'}">${iconSVG(good?'check':'close',15)}</span><span style="font-family:var(--display);font-weight:800;font-size:15px">${title} · ${arr.length}</span></div>
+  const chip=(w,good)=>`<span style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${good?'color-mix(in srgb,var(--good) 15%,transparent)':'color-mix(in srgb,var(--bad) 14%,transparent)'};font-family:var(--display);font-weight:800;font-size:13px;color:${good?'var(--good)':'var(--bad)'}"><button data-act="say" data-arg="${escA(w.w)}" title="Hear it" style="display:inline-flex;color:inherit;opacity:.8">${iconSVG('volume',13)}</button>${esc(w.w)}</span>`;
+  const col=(title,arr,good)=>`<div style="flex:1;min-width:240px;background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="width:26px;height:26px;border-radius:6px;display:grid;place-items:center;background:${good?'color-mix(in srgb,var(--good) 20%,transparent)':'color-mix(in srgb,var(--bad) 18%,transparent)'};color:${good?'var(--good)':'var(--bad)'}">${iconSVG(good?'check':'close',15)}</span><span style="font-family:var(--display);font-weight:800;font-size:15px">${title} · ${arr.length}</span></div>
       ${arr.length?`<div style="display:flex;flex-wrap:wrap;gap:7px">${arr.map(w=>chip(w,good)).join('')}</div>`:`<div style="font-size:13px;color:var(--muted)">${good?'None yet.':'None — perfect! 🎉'}</div>`}
     </div>`;
   const mood = pct>=80?'love':pct>=50?'happy':'think';   // encouraging, never sad
@@ -1465,7 +1477,7 @@ function sessionResults(){
   const c=active(); const lk=S.sessionListKey; let advBtn='';
   try{ if(lk && lk!=='__lesson__' && lk!=='__retry__' && !S.coachSession && stageComplete(c,lk) && listStageIdx(c,lk)<listStages(lk).length-1){
     const nextN=listStageIdx(c,lk)+2;
-    advBtn=`<button data-act="advanceStage" data-arg="${escA(lk)}" style="flex:1;min-width:100%;padding:15px;border-radius:14px;background:var(--good);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">${iconSVG('check',16)} Level cleared — go to Level ${nextN} →</button>`;
+    advBtn=`<button data-act="advanceStage" data-arg="${escA(lk)}" style="flex:1;min-width:100%;padding:15px;border-radius:14px;background:var(--good);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${iconSVG('check',16)} Level cleared — go to Level ${nextN} →</button>`;
   } }catch(e){}
   return `<div style="max-width:720px;margin:0 auto;animation:sb-rise .35s ease both">
     <div style="text-align:center;margin-bottom:18px"><div style="width:78px;height:86px;margin:0 auto 8px">${mascotSVG(mood)}</div>
@@ -1474,9 +1486,9 @@ function sessionResults(){
     <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px">${col('Spelled correctly',ok,true)}${col('Misspelt',bad,false)}</div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       ${advBtn}
-      ${bad.length?`<button data-act="drillMisspelt" style="flex:1;min-width:200px;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15.5px;box-shadow:var(--edge)">Spell the ${bad.length} misspelt word${bad.length>1?'s':''} →</button>`:''}
-      <button data-act="restartSession" style="flex:1;min-width:160px;padding:14px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15.5px">${iconSVG('arrow',16)} Restart the list</button>
-      <button data-act="exitTrain" style="padding:14px 18px;border-radius:14px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:15.5px">Done</button>
+      ${bad.length?`<button data-act="drillMisspelt" style="flex:1;min-width:200px;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Spell the ${bad.length} misspelt word${bad.length>1?'s':''} →</button>`:''}
+      <button data-act="restartSession" style="flex:1;min-width:160px;padding:14px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">${iconSVG('arrow',16)} Restart the list</button>
+      <button data-act="exitTrain" style="padding:14px 18px;border-radius:14px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:15px">Done</button>
     </div>
   </div>`;
 }
@@ -1492,23 +1504,23 @@ function trainerCard(){
   if(S.showDef){ hints.push('<b>Definition</b> — '+blankHTML(word.d,word.w)+'.'); if(word.h) hints.push('<span style="display:inline-flex;align-items:center;gap:5px;color:var(--accent)">'+iconSVG('bulb',14)+'</span> '+blankHTML(word.h,word.w)); }
   if(S.showSent) hints.push('<b>Sentence</b> — '+blankHTML(word.s,word.w));
   if(S.showOrigin) hints.push('<b>Origin</b> — '+esc(word.o||'—')+(word.r?('. '+esc(word.r)):'')+'.');
-  const tchip=(on,label,act)=>`<button data-act="${act}" style="padding:9px 14px;border-radius:999px;font-weight:700;font-size:13.5px;border:1px solid ${on?'var(--accent)':'var(--line)'};${on?'background:var(--accent);color:#fff':'background:transparent;color:var(--text)'}">${label}</button>`;
+  const tchip=(on,label,act)=>`<button data-act="${act}" style="padding:9px 14px;border-radius:999px;font-weight:700;font-size:13px;border:1px solid ${on?'var(--accent)':'var(--line)'};${on?'background:var(--accent);color:#fff':'background:transparent;color:var(--text)'}">${label}</button>`;
   const mascotAnim=st==='wrong'?'animation:sb-shake .45s ease':(st==='correct'?'animation:sb-pop .4s ease':'');
-  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow);text-align:center;position:relative">
+  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow);text-align:center;position:relative">
       <div style="width:96px;height:108px;margin:0 auto 4px"><div style="${mascotAnim};width:96px;height:108px">${mascotSVG(S.mood)}</div></div>
       <button data-act="speak" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:18px">${iconSVG('volume',18)} Hear the word</button>
       <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:18px">${tchip(S.showDef,'Definition','toggleDef')}${tchip(S.showSent,'Sentence','toggleSent')}${tchip(S.showOrigin,'Origin','toggleOrigin')}</div>
-      ${hints.length?`<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:left;font-size:14.5px;line-height:1.6;margin-bottom:18px">${hints.join('  ·  ')}</div>`:''}
-      <input data-inp="onType" data-key="trainKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="spell it" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;text-align:center;padding:16px 14px;border-radius:15px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(20px,5vw,28px);letter-spacing:.14em;text-transform:lowercase;outline:none;margin-bottom:16px">
+      ${hints.length?`<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:left;font-size:15px;line-height:1.6;margin-bottom:18px">${hints.join('  ·  ')}</div>`:''}
+      <input data-inp="onType" data-key="trainKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="spell it" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;text-align:center;padding:16px 14px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(20px,5vw,28px);letter-spacing:.14em;text-transform:lowercase;outline:none;margin-bottom:16px">
       ${showResult?`<div style="${resultStyle}">${esc(resultText)}</div>`:''}
-      <div style="display:flex;gap:10px"><button data-act="reveal" style="padding:14px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Show answer</button><button data-act="primary" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">${primaryLabel}</button></div>
+      <div style="display:flex;gap:10px"><button data-act="reveal" style="padding:14px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Show answer</button><button data-act="primary" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${primaryLabel}</button></div>
     </div>`;
 }
 function viewTrain(){
   const S=state; const goalTarget=active().goal||S.draft.goal||10; const goalPctNum=Math.min(100,Math.round((S.goalDone/goalTarget)*100));
   return `<div style="max-width:620px;margin:0 auto">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><button data-act="exitTrain" style="color:var(--muted);font-weight:700;font-size:14px">← Exit</button><div style="font-family:var(--mono);font-size:13px;color:var(--muted)">${S.sessionDone} done · ${S.sessionRight} correct</div></div>
-    <div style="height:7px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-bottom:22px"><div style="height:100%;background:var(--accent);border-radius:99px;width:${goalPctNum}%;transition:width .4s"></div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><button data-act="exitTrain" style="color:var(--muted);font-weight:700;font-size:13px">← Exit</button><div style="font-family:var(--mono);font-size:13px;color:var(--muted)">${S.sessionDone} done · ${S.sessionRight} correct</div></div>
+    <div style="height:7px;border-radius:999px;background:var(--surface2);overflow:hidden;margin-bottom:22px"><div style="height:100%;background:var(--accent);border-radius:999px;width:${goalPctNum}%;transition:width .4s"></div></div>
     ${trainerCard()}
     ${liveHeatmap(S.sessionWords&&S.sessionWords.length?S.sessionWords:WORDS, {anon:true})}
   </div>`;
@@ -1517,30 +1529,30 @@ function viewTrain(){
 function wordFlash(words, idx, navAct, opts){
   opts=opts||{}; const N=words.length||1; const i=Math.min(Math.max(idx||0,0),N-1); const w=words[i]||{w:'',d:'',s:'',p:'',o:''};
   const mastered=state.luMastered[nkey(w.w)]; const pct=Math.round((i+1)/N*100);
-  const chip=(t)=>`<span style="padding:4px 11px;border-radius:99px;background:var(--surface2);font-size:12px;color:var(--muted);font-weight:700">${t}</span>`;
+  const chip=(t)=>`<span style="padding:4px 11px;border-radius:999px;background:var(--surface2);font-size:12px;color:var(--muted);font-weight:700">${t}</span>`;
   return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-      <span style="font-size:12.5px;color:var(--muted);font-weight:700;white-space:nowrap">Card ${i+1} of ${N}</span>
-      <div style="flex:1;height:7px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:99px;background:var(--accent);width:${pct}%;transition:width .3s"></div></div>
-      ${mastered?'<span style="color:var(--good);font-weight:800;font-size:12.5px;white-space:nowrap">✓ Mastered</span>':''}
+      <span style="font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">Card ${i+1} of ${N}</span>
+      <div style="flex:1;height:7px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--accent);width:${pct}%;transition:width .3s"></div></div>
+      ${mastered?'<span style="color:var(--good);font-weight:800;font-size:12px;white-space:nowrap">✓ Mastered</span>':''}
     </div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:clamp(20px,4vw,28px);box-shadow:var(--glow);text-align:center;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center">
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,28px);box-shadow:var(--glow);text-align:center;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center">
       <div style="display:flex;align-items:center;justify-content:center;gap:11px">
         <div style="font-family:var(--display);font-weight:800;font-size:clamp(26px,5.5vw,36px);line-height:1.05">${esc(w.w)}</div>
         <button data-act="say" data-arg="${escA(w.w)}" aria-label="Hear the word" title="Hear the word" style="width:42px;height:42px;flex-shrink:0;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',20)}</button>
       </div>
-      ${w.sy?`<div style="font-family:var(--mono);font-size:12.5px;color:var(--accent);font-weight:700;letter-spacing:.04em;margin-top:3px">${esc(w.sy)}</div>`:''}
+      ${w.sy?`<div style="font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.04em;margin-top:3px">${esc(w.sy)}</div>`:''}
       <div style="font-size:15px;color:var(--text);line-height:1.5;margin-top:8px">${esc(w.d)}</div>
-      ${w.s?`<div style="font-size:13.5px;color:var(--muted);line-height:1.55;margin-top:9px"><b style="color:var(--text)">Sentence.</b> ${esc(w.s)}</div>`:''}
-      ${w.h?`<div style="display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text);line-height:1.5;margin-top:10px;background:var(--chip);border-radius:12px;padding:9px 13px;max-width:42em"><span style="color:var(--accent);margin-top:1px;flex-shrink:0">${iconSVG('bulb',15)}</span><span>${esc(w.h)}</span></div>`:''}
-      ${w.m?`<div style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--bad);font-weight:700;line-height:1.5;margin-top:9px">${iconSVG('alert',14)} Often misspelled “${esc(w.m)}”</div>`:''}
+      ${w.s?`<div style="font-size:13px;color:var(--muted);line-height:1.55;margin-top:9px"><b style="color:var(--text)">Sentence.</b> ${esc(w.s)}</div>`:''}
+      ${w.h?`<div style="display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text);line-height:1.5;margin-top:10px;background:var(--chip);border-radius:10px;padding:9px 13px;max-width:42em"><span style="color:var(--accent);margin-top:1px;flex-shrink:0">${iconSVG('bulb',15)}</span><span>${esc(w.h)}</span></div>`:''}
+      ${w.m?`<div style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--bad);font-weight:700;line-height:1.5;margin-top:9px">${iconSVG('alert',14)} Often misspelled “${esc(w.m)}”</div>`:''}
       <div style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:15px">
-        ${w.bp!=null?`<span title="Bee-probability score: ${w.bp}/100" style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:99px;background:var(--surface2);font-size:12px;color:var(--accent);font-weight:800">${iconSVG('target',13)} ${beeOdds(w.bp)}</span>`:''}
+        ${w.bp!=null?`<span title="Bee-probability score: ${w.bp}/100" style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:999px;background:var(--surface2);font-size:12px;color:var(--accent);font-weight:800">${iconSVG('target',13)} ${beeOdds(w.bp)}</span>`:''}
         ${w.p?chip('/ '+esc(w.p)+' /'):''}${w.o?chip(esc(w.o)):''}${w.ps?chip(esc(w.ps)):''}
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;margin-top:14px">
-      <button data-act="${navAct}" data-arg="prev" style="padding:13px 18px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;${i<=0?'opacity:.4;pointer-events:none':''}">← Back</button>
-      <button data-act="${navAct}" data-arg="next" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge);${i>=N-1?'opacity:.5;pointer-events:none':''}">${i>=N-1?'All done ✓':'Next →'}</button>
+      <button data-act="${navAct}" data-arg="prev" style="padding:13px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;${i<=0?'opacity:.4;pointer-events:none':''}">← Back</button>
+      <button data-act="${navAct}" data-arg="next" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);${i>=N-1?'opacity:.5;pointer-events:none':''}">${i>=N-1?'All done ✓':'Next →'}</button>
     </div>`;
 }
 // live progress heatmap of a word set — colours update as words are mastered/missed
@@ -1555,14 +1567,14 @@ function liveHeatmap(words, opts){
     if(!reveal){ // anonymized: a colored tile, no word text (so practice isn't spoiled)
       return `<span title="${mastered?'mastered':(miss?'to review':'new')}" style="width:22px;height:22px;border-radius:6px;background:${bg};display:inline-block;${isCur?'box-shadow:0 0 0 2px var(--accent)':''}"></span>`;
     }
-    return `<button data-act="say" data-arg="${escA(w.w)}" title="tap to hear" style="font-family:var(--mono);font-size:11px;font-weight:700;padding:5px 9px;border-radius:7px;color:${fg};background:${bg};${isCur?'box-shadow:0 0 0 2px var(--accent)':''}">${esc(w.w)}</button>`;
+    return `<button data-act="say" data-arg="${escA(w.w)}" title="tap to hear" style="font-family:var(--mono);font-size:12px;font-weight:700;padding:5px 9px;border-radius:6px;color:${fg};background:${bg};${isCur?'box-shadow:0 0 0 2px var(--accent)':''}">${esc(w.w)}</button>`;
   }).join('');
-  const legend=[['var(--good)','Mastered'],['var(--bad)','Missed'],['var(--surface2)','New']].map(([c,l])=>`<span style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);font-weight:700"><span style="width:11px;height:11px;border-radius:3px;background:${c};display:inline-block"></span>${l}</span>`).join('');
+  const legend=[['var(--good)','Mastered'],['var(--bad)','Missed'],['var(--surface2)','New']].map(([c,l])=>`<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:700"><span style="width:11px;height:11px;border-radius:6px;background:${c};display:inline-block"></span>${l}</span>`).join('');
   const pct=Math.round(m/N*100);
-  const toggle=(anon?`<button data-act="toggleHeat" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:9px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12px;white-space:nowrap">${iconSVG(reveal?'eyeoff':'eye',14)} ${reveal?'Hide words':'Show words'}</button>`:'')
-    +(opts.print?`<button data-act="printOpen" title="Print this word list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:9px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12px;white-space:nowrap">${SB_ICON('printer',{size:16})} Print</button>`:'');
-  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:18px;box-shadow:var(--sh-rest)">
-    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:11px"><div style="font-family:var(--display);font-weight:800;font-size:15px">Live progress</div><div style="flex:1;min-width:90px;height:7px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:99px;background:var(--accent);width:${pct}%;transition:width .35s"></div></div><div style="font-size:12.5px;color:var(--muted);font-weight:700;white-space:nowrap">${m}/${N} mastered${missed?(' · '+missed+' to review'):''}</div>${toggle}</div>
+  const toggle=(anon?`<button data-act="toggleHeat" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12px;white-space:nowrap">${iconSVG(reveal?'eyeoff':'eye',14)} ${reveal?'Hide words':'Show words'}</button>`:'')
+    +(opts.print?`<button data-act="printOpen" title="Print this word list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12px;white-space:nowrap">${SB_ICON('printer',{size:16})} Print</button>`:'');
+  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:18px;box-shadow:var(--sh-rest)">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:11px"><div style="font-family:var(--display);font-weight:800;font-size:15px">Live progress</div><div style="flex:1;min-width:90px;height:7px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--accent);width:${pct}%;transition:width .35s"></div></div><div style="font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">${m}/${N} mastered${missed?(' · '+missed+' to review'):''}</div>${toggle}</div>
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">${cells}</div>
     <div style="display:flex;flex-wrap:wrap;gap:14px">${legend}</div>
   </div>`;
@@ -1570,23 +1582,23 @@ function liveHeatmap(words, opts){
 function viewLevelUp(){
   const S=state; const c=active(); const theme=S.theme; const evo=EVO[theme]||EVO.spellbound; const fIdx=formIdx(c.level);
   const lw=listWords('default'); const N=lw.length||1; const mastered=lw.filter(w=>S.luMastered[nkey(w.w)]).length; const pos=(S.gi%N)+1;
-  const tab=(k,l)=>`<button data-act="luSetTab" data-arg="${k}" style="flex:1;padding:9px 8px;border-radius:9px;font-weight:800;font-size:13.5px;${S.luTab===k?'background:var(--bg2);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.08)':'background:transparent;color:var(--muted)'}">${l}</button>`;
+  const tab=(k,l)=>`<button data-act="luSetTab" data-arg="${k}" style="flex:1;padding:9px 8px;border-radius:10px;font-weight:800;font-size:13px;${S.luTab===k?'background:var(--bg2);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.08)':'background:transparent;color:var(--muted)'}">${l}</button>`;
   const header=`<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
-      <button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:14px">← Home</button>
-      <span style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">Level ${c.level||1} · ${evo[fIdx]}</span>
-      <span style="font-size:12.5px;color:var(--muted);font-weight:700">${S.luTab==='practice'?('Word '+pos+' of '+N+' · '):''}${mastered}/${N} mastered</span>
-      <button data-act="luToggleWords" style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:11px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">${iconSVG('grid',15)} Word list ${S.luWordsOpen?'▲':'▼'}</button>
+      <button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button>
+      <span style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">Level ${c.level||1} · ${evo[fIdx]}</span>
+      <span style="font-size:12px;color:var(--muted);font-weight:700">${S.luTab==='practice'?('Word '+pos+' of '+N+' · '):''}${mastered}/${N} mastered</span>
+      <button data-act="luToggleWords" style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">${iconSVG('grid',15)} Word list ${S.luWordsOpen?'▲':'▼'}</button>
     </div>
-    <div style="height:6px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-bottom:14px"><div style="height:100%;border-radius:99px;background:var(--accent);width:${Math.round(mastered/N*100)}%;transition:width .4s"></div></div>`;
-  const wordsPanel=S.luWordsOpen?`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:16px;animation:sb-rise .3s ease both">
+    <div style="height:6px;border-radius:999px;background:var(--surface2);overflow:hidden;margin-bottom:14px"><div style="height:100%;border-radius:999px;background:var(--accent);width:${Math.round(mastered/N*100)}%;transition:width .4s"></div></div>`;
+  const wordsPanel=S.luWordsOpen?`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px;animation:sb-rise .3s ease both">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:10px">Level word list · ${N}</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:9px">${lw.map(w=>`<div style="background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:11px 13px">${S.luMastered[nkey(w.w)]?'<span style="color:var(--good);font-weight:800;font-size:12px">✓ </span>':''}<span style="font-family:var(--display);font-weight:800;font-size:14.5px">${esc(w.w)}</span><div style="font-size:11.5px;color:var(--muted);line-height:1.4;margin-top:2px">${esc(w.d)}</div></div>`).join('')}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:9px">${lw.map(w=>`<div style="background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:11px 13px">${S.luMastered[nkey(w.w)]?'<span style="color:var(--good);font-weight:800;font-size:12px">✓ </span>':''}<span style="font-family:var(--display);font-weight:800;font-size:15px">${esc(w.w)}</span><div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px">${esc(w.d)}</div></div>`).join('')}</div>
     </div>`:'';
   let body;
   if(S.luTab==='practice') body=trainerCard();
   else body=wordFlash(lw, S.reviseIdx, 'reviseNav', { practise:true });
   return `<div style="max-width:760px;margin:0 auto">${header}
-    <div style="display:flex;gap:6px;background:var(--surface2);border-radius:13px;padding:5px;margin-bottom:16px">${tab('revise','Revise')}${tab('practice','Practice')}</div>
+    <div style="display:flex;gap:6px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:16px">${tab('revise','Revise')}${tab('practice','Practice')}</div>
     ${wordsPanel}${body}${liveHeatmap(lw, {anon:S.luTab==='practice'})}</div>`;
 }
 
@@ -1635,18 +1647,18 @@ const TIP_CAT_LABEL={reengage:'Re-engage',consistency:'Consistency',difficult:'H
 function parentAnalytics(){ const s=parentSignals(); let rd=0; try{ rd=coachReadiness().ready||0; }catch(e){}
   const meters=[['Consistency',s.consistency,'practised '+s.active14+'/14 days'],['Accuracy',s.acc,'across recent sessions'],['Coverage',s.coverage,'of words met on the active list'],['Review health',s.reviewHealth,s.missedN+' words waiting for revenge'],['Readiness',rd,'on the coach target list']];
   const bars=meters.map(([l,v,sub])=>{ v=Math.max(0,Math.min(100,Math.round(v||0))); const col=v>=70?'var(--good)':v>=40?'#c08a00':'var(--bad)';
-    return `<div style="background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:13px 15px"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font-family:var(--display);font-weight:800;font-size:13.5px">${l}</span><span style="font-family:var(--mono);font-weight:700;font-size:13px;color:${col}">${v}%</span></div><div style="height:7px;border-radius:99px;background:var(--surface);overflow:hidden;margin:8px 0 6px"><div style="height:100%;border-radius:99px;background:${col};width:${v}%"></div></div><div style="font-size:11.5px;color:var(--muted);font-weight:600">${sub}</div></div>`; }).join('');
-  const tips=parentTips().map(t=>`<div style="display:flex;gap:11px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);border-radius:13px;background:var(--surface)">
-      <span style="flex-shrink:0;margin-top:1px;padding:4px 9px;border-radius:99px;background:var(--chip);color:var(--accent);font-weight:800;font-size:10.5px;white-space:nowrap">${TIP_CAT_LABEL[t.cat]||t.cat}</span>
-      <div style="min-width:0"><div style="font-size:13.5px;line-height:1.5;color:var(--text);font-weight:600">${esc(t.text)}</div><div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:3px">Why now: ${esc(t.why)}</div></div></div>`).join('');
-  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:var(--sh-rest)">
-    <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px"><div style="font-family:var(--display);font-weight:800;font-size:16px">Parent analytics</div><span style="font-size:12px;color:var(--muted);font-weight:700">readiness across five signals</span></div>
-    <p style="margin:0 0 14px;font-size:12.5px;color:var(--muted)">All computed on this device from the practice log — no internet, no AI.</p>
+    return `<div style="background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:13px 15px"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font-family:var(--display);font-weight:800;font-size:13px">${l}</span><span style="font-family:var(--mono);font-weight:700;font-size:13px;color:${col}">${v}%</span></div><div style="height:7px;border-radius:999px;background:var(--surface);overflow:hidden;margin:8px 0 6px"><div style="height:100%;border-radius:999px;background:${col};width:${v}%"></div></div><div style="font-size:12px;color:var(--muted);font-weight:600">${sub}</div></div>`; }).join('');
+  const tips=parentTips().map(t=>`<div style="display:flex;gap:11px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--surface)">
+      <span style="flex-shrink:0;margin-top:1px;padding:4px 9px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px;white-space:nowrap">${TIP_CAT_LABEL[t.cat]||t.cat}</span>
+      <div style="min-width:0"><div style="font-size:13px;line-height:1.5;color:var(--text);font-weight:600">${esc(t.text)}</div><div style="font-size:12px;color:var(--muted);font-weight:700;margin-top:3px">Why now: ${esc(t.why)}</div></div></div>`).join('');
+  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:18px;box-shadow:var(--sh-rest)">
+    <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px"><div style="font-family:var(--display);font-weight:800;font-size:15px">Parent analytics</div><span style="font-size:12px;color:var(--muted);font-weight:700">readiness across five signals</span></div>
+    <p style="margin:0 0 14px;font-size:12px;color:var(--muted)">All computed on this device from the practice log — no internet, no AI.</p>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:16px">${bars}</div>
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px"><div style="font-family:var(--display);font-weight:800;font-size:15px">Coach's corner <span style="color:var(--muted);font-weight:700;font-size:12px">· picked for this week by the practice data</span></div>
-      <button data-act="moreTips" style="padding:8px 14px;border-radius:11px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12.5px">More tips ↻</button></div>
+      <button data-act="moreTips" style="padding:8px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">More tips ↻</button></div>
     <div style="display:flex;flex-direction:column;gap:8px">${tips}</div>
-    <div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:10px">Tip library: ${tipLibraryCount().toLocaleString()} coaching tips, matched to your speller's data.</div>
+    <div style="font-size:12px;color:var(--muted);font-weight:600;margin-top:10px">Tip library: ${tipLibraryCount().toLocaleString()} coaching tips, matched to your speller's data.</div>
   </div>`; }
 /* ===================== List Builder (button-based custom lists) ===================== */
 function builtWords(key){ const bl=(active().builtLists||{})[key]; if(!bl) return []; const idx=wordIndex(); return (bl.ws||[]).map(s=>idx[nkey(s)]||{w:s}).filter(Boolean); }
@@ -1669,32 +1681,32 @@ function bldPick(){ const b=bldState(); const pool=bldPool().sort((x,y)=>((x.y||
   const out=[]; const step=pool.length/n; for(let i=0;i<n;i++){ out.push(pool[Math.floor(i*step)]); } return out; } // even spread keeps the easy→hard ramp
 function bldLevels(n){ return n<=WORK_MAX?1:Math.max(2,Math.min(24,Math.round(n/50))); }
 function viewBuilder(){ const S=state; const b=bldState(); const picked=bldPick(); const n=picked.length; const lv=bldLevels(n); const per=n?Math.ceil(n/lv):0;
-  const btn=(group,val,label,cur)=>`<button data-act="bldSet" data-arg="${group}:${val}" style="padding:9px 14px;border-radius:11px;font-weight:800;font-size:13px;border:1px solid ${cur===val?'var(--accent)':'var(--line)'};${cur===val?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">${label}</button>`;
-  const row=(title,sub,btns)=>`<div style="margin-bottom:15px"><div style="font-family:var(--display);font-weight:800;font-size:14px">${title} <span style="color:var(--muted);font-weight:700;font-size:11.5px">· ${sub}</span></div><div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px">${btns}</div></div>`;
+  const btn=(group,val,label,cur)=>`<button data-act="bldSet" data-arg="${group}:${val}" style="padding:9px 14px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid ${cur===val?'var(--accent)':'var(--line)'};${cur===val?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">${label}</button>`;
+  const row=(title,sub,btns)=>`<div style="margin-bottom:15px"><div style="font-family:var(--display);font-weight:800;font-size:13px">${title} <span style="color:var(--muted);font-weight:700;font-size:12px">· ${sub}</span></div><div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px">${btns}</div></div>`;
   const srcs=[['core','Core library'],['scripps','Scripps winners'],['nsf','North South Finals'],['review','Tricky review'],['missed','My missed words']];
-  const preview=picked.slice(0,18).map(w=>`<span style="font-family:var(--mono);font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:7px;background:var(--surface2);border:1px solid var(--line)">${esc(w.w)}</span>`).join('');
+  const preview=picked.slice(0,18).map(w=>`<span style="font-family:var(--mono);font-size:12px;font-weight:700;padding:4px 9px;border-radius:6px;background:var(--surface2);border:1px solid var(--line)">${esc(w.w)}</span>`).join('');
   return `<div style="animation:sb-rise .35s ease both">
     ${pageHead('List Builder','pick · build · print','Build a custom word list with five taps — or pick a ready-made list below. Every list gets its own Level ladder.')}
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest)">
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest)">
       ${row('1 · Difficulty','how hard the words are',['easy','medium','hard','champion','mixed'].map(d=>btn('diff',d,d[0].toUpperCase()+d.slice(1),b.diff)).join(''))}
       ${row('2 · List size','how many words',[24,60,120,240,480].map(s=>btn('size',String(s),s+' words',String(b.size))).join(''))}
       ${row('3 · Source','which word pool to draw from',srcs.map(([k,l])=>btn('src',k,l,b.src)).join(''))}
       ${row('4 · Word length','short, medium or long words',[['any','Any'],['short','Short ≤6'],['medium','Medium 7–9'],['long','Long 10+']].map(([k,l])=>btn('len',k,l,b.len)).join(''))}
       ${row('5 · Tricky pattern','focus on one spelling trap',[['any','Any'],...Object.keys(BLD_PATS).map(k=>[k,BLD_PATS[k].label])].map(([k,l])=>btn('pat',k,l,b.pat)).join(''))}
       <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 16px;border-radius:14px;background:var(--chip);margin-bottom:14px">
-        <div><div style="font-family:var(--display);font-weight:800;font-size:22px;color:var(--accent)">${n} words</div><div style="font-size:11.5px;color:var(--muted);font-weight:700">match your five choices</div></div>
-        <div><div style="font-family:var(--display);font-weight:800;font-size:22px;color:var(--accent)">${n?lv:0} ${lv===1?'Level':'Levels'}</div><div style="font-size:11.5px;color:var(--muted);font-weight:700">${n?('to mastery · ~'+per+' words per Level, easy→hard'):'pick looser criteria'}</div></div>
-        ${n&&n<b.size?`<div style="font-size:11.5px;color:var(--muted);font-weight:700">only ${n} match — loosen a filter for more</div>`:''}
+        <div><div style="font-family:var(--display);font-weight:800;font-size:20px;color:var(--accent)">${n} words</div><div style="font-size:12px;color:var(--muted);font-weight:700">match your five choices</div></div>
+        <div><div style="font-family:var(--display);font-weight:800;font-size:20px;color:var(--accent)">${n?lv:0} ${lv===1?'Level':'Levels'}</div><div style="font-size:12px;color:var(--muted);font-weight:700">${n?('to mastery · ~'+per+' words per Level, easy→hard'):'pick looser criteria'}</div></div>
+        ${n&&n<b.size?`<div style="font-size:12px;color:var(--muted);font-weight:700">only ${n} match — loosen a filter for more</div>`:''}
       </div>
-      ${n?`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px">${preview}${n>18?`<span style="font-size:11.5px;color:var(--muted);font-weight:700;align-self:center">+${n-18} more</span>`:''}</div>`:''}
-      <button data-act="bldCreate" ${n?'':'disabled'} style="width:100%;padding:14px;border-radius:13px;background:${n?'var(--accent)':'var(--surface2)'};color:${n?'#fff':'var(--muted)'};font-weight:800;font-size:15px;box-shadow:var(--edge)">${n?('Create list & start training → ('+n+' words · '+lv+' '+(lv===1?'Level':'Levels')+')'):'No words match yet'}</button>
+      ${n?`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px">${preview}${n>18?`<span style="font-size:12px;color:var(--muted);font-weight:700;align-self:center">+${n-18} more</span>`:''}</div>`:''}
+      <button data-act="bldCreate" ${n?'':'disabled'} style="width:100%;padding:14px;border-radius:14px;background:${n?'var(--accent)':'var(--surface2)'};color:${n?'#fff':'var(--muted)'};font-weight:800;font-size:15px;box-shadow:var(--edge)">${n?('Create list & start training → ('+n+' words · '+lv+' '+(lv===1?'Level':'Levels')+')'):'No words match yet'}</button>
     </div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--sh-rest)">
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest)">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px">…or pick a ready-made list</div>
-      <p style="font-size:12.5px;color:var(--muted);margin:0 0 12px">North South Finals, Scripps winners, origin lists and more — includes paste-your-own in Setup & lists.</p>
+      <p style="font-size:12px;color:var(--muted);margin:0 0 12px">North South Finals, Scripps winners, origin lists and more — includes paste-your-own in Setup & lists.</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        ${coachCatalog().slice(0,8).map(o=>`<button data-act="selectList" data-arg="${escA(o.key)}" style="padding:9px 14px;border-radius:11px;font-weight:800;font-size:12.5px;border:1px solid var(--line);background:var(--surface2);color:var(--text)">${esc(o.label)} <span style="color:var(--muted);font-weight:700">${o.count}</span></button>`).join('')}
-        <button data-act="coachSetupOpen" style="padding:9px 14px;border-radius:11px;font-weight:800;font-size:12.5px;border:1px dashed var(--line);background:transparent;color:var(--accent)">All lists + paste your own →</button>
+        ${coachCatalog().slice(0,8).map(o=>`<button data-act="selectList" data-arg="${escA(o.key)}" style="padding:9px 14px;border-radius:10px;font-weight:800;font-size:12px;border:1px solid var(--line);background:var(--surface2);color:var(--text)">${esc(o.label)} <span style="color:var(--muted);font-weight:700">${o.count}</span></button>`).join('')}
+        <button data-act="coachSetupOpen" style="padding:9px 14px;border-radius:10px;font-weight:800;font-size:12px;border:1px dashed var(--line);background:transparent;color:var(--accent)">All lists + paste your own →</button>
       </div>
     </div>
   </div>`; }
@@ -1711,13 +1723,13 @@ function printDoc(key){ const p=state.prn||{}; const depth=p.depth||'full'; cons
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(label)} — Spellbound word list</title><style>
     @page{size:${sizes[page]||'letter'};margin:14mm} *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:Georgia,'Times New Roman',serif;color:#1c1633;padding:4px}
-    h1{font-size:19px;margin-bottom:2px} .meta{font-size:11px;color:#666;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #1c1633}
+    h1{font-size:20px;margin-bottom:2px} .meta{font-size:12px;color:#666;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #1c1633}
     .grid{display:grid;grid-template-columns:repeat(${cols},1fr);gap:4px 18px}
     .cell{display:flex;align-items:baseline;gap:8px;padding:4px 0;border-bottom:1px dotted #ccc;break-inside:avoid}
     .cell.full{display:block;padding:6px 0}
-    .n{font-size:9px;color:#999;min-width:20px;display:inline-block} .w{font-size:14px;font-weight:bold;letter-spacing:.02em}
-    .p{font-size:11px;color:#555;font-style:italic;margin-left:8px} .d{font-size:11px;color:#444;line-height:1.35;margin:2px 0 0 28px}
-    .foot{margin-top:16px;font-size:10px;color:#888;text-align:center}
+    .n{font-size:12px;color:#999;min-width:20px;display:inline-block} .w{font-size:13px;font-weight:bold;letter-spacing:.02em}
+    .p{font-size:12px;color:#555;font-style:italic;margin-left:8px} .d{font-size:12px;color:#444;line-height:1.35;margin:2px 0 0 28px}
+    .foot{margin-top:16px;font-size:12px;color:#888;text-align:center}
   </style></head><body>
     <h1>${esc(label)}</h1>
     <div class="meta">${esc(c.name||'Speller')} · ${words.length}${total>words.length?(' of '+total):''} words · ${scope==='level'?('Level '+(listStageIdx(c,key)+1)):'whole list'}${total>words.length?' (first '+PRINT_CAP+' shown — print a Level for a focused sheet)':''} · printed ${new Date().toLocaleDateString()} · Spellbound</div>
@@ -1746,17 +1758,17 @@ function viewQuest(){
       sub:'Bring or build your list', desc:'Train on any list — North South Finals, Scripps Winning Words, or paste your own words and we enrich them with meanings, sentences and origins.',
       points:['Every ready-made list','Paste your own words','Same Level ladder & games'] },
   ].map((p,i)=>{ const cur=qp===p.id; const t=CONCEPT_TEX[p.tex]||CONCEPT_TEX.stripes;
-    return `<button class="sb-cover-card" data-act="questPick" data-arg="${p.id}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 ${cur?'2px '+p.c1:'1px var(--line)'},var(--sh-rest);display:flex;flex-direction:column">
+    return `<button class="sb-cover-card" data-act="questPick" data-arg="${p.id}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 ${cur?'2px '+p.c1:'1px var(--line)'},var(--sh-rest);display:flex;flex-direction:column">
       <div style="position:relative;height:112px;display:grid;place-items:center;background-color:${p.c1};background-image:${t[0]},linear-gradient(135deg,${p.c1},${p.c2});background-size:${t[1]},100% 100%">
-        ${cur?'<span style="position:absolute;top:10px;right:11px;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.94);color:'+p.c1+';font-weight:900;font-size:11px">Current path ✓</span>':''}
+        ${cur?'<span style="position:absolute;top:10px;right:11px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.94);color:'+p.c1+';font-weight:900;font-size:12px">Current path ✓</span>':''}
         <div style="color:#fff">${journeyArtSVG(p.sc,54)}</div>
       </div>
       <div style="padding:15px 16px 16px;display:flex;flex-direction:column;flex:1">
-        <div style="font-family:var(--display);font-weight:800;font-size:17.5px;line-height:1.15">${p.title}</div>
+        <div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">${p.title}</div>
         <div style="font-family:var(--mono);font-weight:700;font-size:12px;color:${p.c1};margin-top:3px">${p.sub}</div>
         <div style="font-family:var(--body);font-size:13px;line-height:1.5;color:var(--muted);margin:9px 0 11px">${p.desc}</div>
-        <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:13px">${p.points.map(x=>`<span style="display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--text)"><span style="width:6px;height:6px;border-radius:50%;background:${p.c1};flex-shrink:0"></span>${x}</span>`).join('')}</div>
-        <span style="margin-top:auto;display:inline-flex;align-items:center;justify-content:center;padding:11px;border-radius:12px;font-weight:800;font-size:14px;${cur?('background:var(--surface2);color:'+p.c1):('background:'+p.c1+';color:#fff;box-shadow:var(--edge)')}">${cur?'Continue this path →':(qp?'Switch to this path →':'Choose this path →')}</span>
+        <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:13px">${p.points.map(x=>`<span style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--text)"><span style="width:6px;height:6px;border-radius:50%;background:${p.c1};flex-shrink:0"></span>${x}</span>`).join('')}</div>
+        <span style="margin-top:auto;display:inline-flex;align-items:center;justify-content:center;padding:11px;border-radius:10px;font-weight:800;font-size:13px;${cur?('background:var(--surface2);color:'+p.c1):('background:'+p.c1+';color:#fff;box-shadow:var(--edge)')}">${cur?'Continue this path →':(qp?'Switch to this path →':'Choose this path →')}</span>
       </div></button>`; }).join('');
   return `<div style="animation:sb-rise .35s ease both">
     ${pageHead("Champion's Quest",'one quest · three paths','Pick the path that fits today — the other two stay one tap away in your list row, with all progress kept.')}
@@ -1767,46 +1779,46 @@ function viewQuest(){
 function viewProgress(){
   const c=active();
   const stats=[{v:(c.xp||124),k:'Words mastered'},{v:(c.acc||88)+'%',k:'Accuracy'},{v:c.streak||12,k:'Day streak'},{v:'Lv '+(c.level||9),k:'Current level'}]
-    .map(s=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:15px;padding:18px;box-shadow:var(--sh-rest)"><div style="font-family:var(--display);font-weight:800;font-size:26px;color:var(--accent)">${s.v}</div><div style="font-size:12.5px;color:var(--muted);font-weight:700">${s.k}</div></div>`).join('');
+    .map(s=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--sh-rest)"><div style="font-family:var(--display);font-weight:800;font-size:24px;color:var(--accent)">${s.v}</div><div style="font-size:12px;color:var(--muted);font-weight:700">${s.k}</div></div>`).join('');
   const wk=c.week&&c.week.length?c.week:[12,20,15,30,18,25,22]; const maxW=Math.max(...wk,1); const days=['M','T','W','T','F','S','S'];
-  const week=wk.map((m,i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;height:100%;justify-content:flex-end"><div style="width:100%;border-radius:7px 7px 4px 4px;background:var(--accent);height:${Math.round((m/maxW)*100)}%;min-height:5px;opacity:${m?'1':'.3'}"></div><div style="font-size:11px;color:var(--muted);font-weight:700">${days[i]}</div></div>`).join('');
+  const week=wk.map((m,i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;height:100%;justify-content:flex-end"><div style="width:100%;border-radius:6px 7px 4px 4px;background:var(--accent);height:${Math.round((m/maxW)*100)}%;min-height:5px;opacity:${m?'1':'.3'}"></div><div style="font-size:12px;color:var(--muted);font-weight:700">${days[i]}</div></div>`).join('');
   // ---- real per-list heatmap: dropdown over activated lists, plus All ----
   const S=state; const hKeys=activatedListKeys(); const hSel=(S.progHeatKey&&(S.progHeatKey==='all'||hKeys.includes(S.progHeatKey)))?S.progHeatKey:'all';
   const hLabel=(k)=> k==='journey'?'Spellbound Journey':listLabel(k).split(' · ')[0];
   const hOpts=[`<option value="all"${hSel==='all'?' selected':''}>All lists</option>`,...hKeys.map(k=>`<option value="${escA(k)}"${hSel===k?' selected':''}>${esc(hLabel(k))} · L${listStageIdx(c,k)+1}</option>`)].join('');
-  const hDrop=`<div style="position:relative;margin-left:auto"><select data-chg="progHeat" style="appearance:none;-webkit-appearance:none;padding:9px 34px 9px 13px;border-radius:11px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-family:var(--display);font-weight:800;font-size:13px;cursor:pointer">${hOpts}</select><span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--accent);font-size:11px">▼</span></div>`;
+  const hDrop=`<div style="position:relative;margin-left:auto"><select data-chg="progHeat" style="appearance:none;-webkit-appearance:none;padding:9px 34px 9px 13px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-family:var(--display);font-weight:800;font-size:13px;cursor:pointer">${hOpts}</select><span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--accent);font-size:12px">▼</span></div>`;
   let hBody='';
   if(hSel==='all'){
     hBody=hKeys.map(k=>{ const ws=encounteredWords(k); const m=ws.filter(w=>state.luMastered[nkey(w.w)]).length;
       const miss=ws.filter(w=>!state.luMastered[nkey(w.w)] && (state.missedWords||[]).some(x=>nkey(x.w)===nkey(w.w))).length;
       const pct=ws.length?Math.round(m/ws.length*100):0;
-      const tiles=ws.slice(0,96).map(w=>{ const kk=nkey(w.w); const bg=state.luMastered[kk]?'var(--good)':((state.missedWords||[]).some(x=>nkey(x.w)===kk)?'var(--bad)':'var(--surface2)'); return `<span title="${escA(w.w)}" style="width:14px;height:14px;border-radius:4px;background:${bg};display:inline-block"></span>`; }).join('');
+      const tiles=ws.slice(0,96).map(w=>{ const kk=nkey(w.w); const bg=state.luMastered[kk]?'var(--good)':((state.missedWords||[]).some(x=>nkey(x.w)===kk)?'var(--bad)':'var(--surface2)'); return `<span title="${escA(w.w)}" style="width:14px;height:14px;border-radius:6px;background:${bg};display:inline-block"></span>`; }).join('');
       return `<button data-act="progHeatPick" data-arg="${escA(k)}" style="display:block;width:100%;text-align:left;border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:10px;background:var(--surface)">
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px"><span style="font-family:var(--display);font-weight:800;font-size:14.5px">${esc(hLabel(k))}</span><span style="font-size:11.5px;color:var(--muted);font-weight:700">L${listStageIdx(c,k)+1} · ${m}/${ws.length} mastered${miss?(' · '+miss+' to review'):''}</span><div style="flex:1;min-width:80px;height:6px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;background:var(--accent);width:${pct}%"></div></div><span style="font-size:12px;color:var(--accent);font-weight:800">${pct}%</span></div>
-        <div style="display:flex;flex-wrap:wrap;gap:4px">${tiles}${ws.length>96?`<span style="font-size:11px;color:var(--muted);font-weight:700;align-self:center">+${ws.length-96} more</span>`:''}</div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px"><span style="font-family:var(--display);font-weight:800;font-size:15px">${esc(hLabel(k))}</span><span style="font-size:12px;color:var(--muted);font-weight:700">L${listStageIdx(c,k)+1} · ${m}/${ws.length} mastered${miss?(' · '+miss+' to review'):''}</span><div style="flex:1;min-width:80px;height:6px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;background:var(--accent);width:${pct}%"></div></div><span style="font-size:12px;color:var(--accent);font-weight:800">${pct}%</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">${tiles}${ws.length>96?`<span style="font-size:12px;color:var(--muted);font-weight:700;align-self:center">+${ws.length-96} more</span>`:''}</div>
       </button>`; }).join('');
-    hBody=hBody||'<p style="margin:0;font-size:13.5px;color:var(--muted)">No lists activated yet — start practising to light this up.</p>';
+    hBody=hBody||'<p style="margin:0;font-size:13px;color:var(--muted)">No lists activated yet — start practising to light this up.</p>';
   } else {
     const ws=encounteredWords(hSel); const cap=400;
     hBody=ws.length?((()=>{ const shown=ws.slice(0,cap);
       const cells=shown.map(w=>{ const kk=nkey(w.w); const mstd=state.luMastered[kk]; const miss=!mstd&&(state.missedWords||[]).some(x=>nkey(x.w)===kk);
-        return `<button data-act="say" data-arg="${escA(w.w)}" title="tap to hear" style="font-family:var(--mono);font-size:11px;font-weight:700;padding:5px 9px;border-radius:7px;color:${(mstd||miss)?'#fff':'var(--muted)'};background:${mstd?'var(--good)':(miss?'var(--bad)':'var(--surface2)')}">${esc(w.w)}</button>`; }).join('');
+        return `<button data-act="say" data-arg="${escA(w.w)}" title="tap to hear" style="font-family:var(--mono);font-size:12px;font-weight:700;padding:5px 9px;border-radius:6px;color:${(mstd||miss)?'#fff':'var(--muted)'};background:${mstd?'var(--good)':(miss?'var(--bad)':'var(--surface2)')}">${esc(w.w)}</button>`; }).join('');
       const m=ws.filter(w=>state.luMastered[nkey(w.w)]).length;
-      return `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:11px"><span style="font-size:12.5px;color:var(--muted);font-weight:700">${m}/${ws.length} mastered — words met so far on this list (through Level ${listStageIdx(c,hSel)+1})</span></div><div style="display:flex;flex-wrap:wrap;gap:6px">${cells}</div>${ws.length>cap?`<div style="font-size:11.5px;color:var(--muted);margin-top:8px">Showing the first ${cap} of ${ws.length}.</div>`:''}`; })())
-      :'<p style="margin:0;font-size:13.5px;color:var(--muted)">No words met on this list yet.</p>';
+      return `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:11px"><span style="font-size:12px;color:var(--muted);font-weight:700">${m}/${ws.length} mastered — words met so far on this list (through Level ${listStageIdx(c,hSel)+1})</span></div><div style="display:flex;flex-wrap:wrap;gap:6px">${cells}</div>${ws.length>cap?`<div style="font-size:12px;color:var(--muted);margin-top:8px">Showing the first ${cap} of ${ws.length}.</div>`:''}`; })())
+      :'<p style="margin:0;font-size:13px;color:var(--muted)">No words met on this list yet.</p>';
   }
-  const legend=[['var(--good)','Mastered'],['var(--bad)','Needs work'],['var(--surface2)','Not yet mastered']].map(([cc,l])=>`<span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:600"><span style="width:12px;height:12px;border-radius:4px;background:${cc}"></span>${l}</span>`).join('');
+  const legend=[['var(--good)','Mastered'],['var(--bad)','Needs work'],['var(--surface2)','Not yet mastered']].map(([cc,l])=>`<span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:600"><span style="width:12px;height:12px;border-radius:6px;background:${cc}"></span>${l}</span>`).join('');
   return `<div style="animation:sb-rise .35s ease both">
     ${pageHead('Progress','this week','Mastery, accuracy and streak at a glance — and where each word stands.')}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px">${stats}</div>
     <div style="margin-bottom:18px">${streakCard()}</div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:var(--sh-rest)">
-      <div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:16px">This week</div>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:18px;box-shadow:var(--sh-rest)">
+      <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:16px">This week</div>
       <div style="display:flex;align-items:flex-end;gap:9px;height:120px">${week}</div>
     </div>
     ${parentAnalytics()}
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--sh-rest)">
-      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:16px">Word heatmap <span style="color:var(--muted);font-weight:700;font-size:12.5px">· by list</span></div>${hDrop}</div>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest)">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:15px">Word heatmap <span style="color:var(--muted);font-weight:700;font-size:12px">· by list</span></div>${hDrop}</div>
       ${hBody}
       <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:14px">${legend}</div>
     </div>
@@ -1814,57 +1826,57 @@ function viewProgress(){
 }
 
 function parentReviseCard(){ const c=active(); const misses=(c.missed||[]); const top=misses.slice(0,14);
-  const chips=top.map(m=>`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:99px;background:var(--surface2);border:1px solid var(--line);font-weight:700;font-size:12.5px"><span style="font-family:var(--mono)">${esc(m.w)}</span>${(m.n>1)?`<span style="color:var(--bad);font-weight:800">×${m.n}</span>`:''}</span>`).join('');
-  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-top:18px;box-shadow:var(--sh-rest)">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px"><div style="font-family:var(--display);font-weight:800;font-size:16px">Words to revise <span style="color:var(--muted);font-weight:700">· ${misses.length}</span></div>${misses.length?`<button data-act="reviseMisses" style="padding:9px 16px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge)">Revise these →</button>`:''}</div>
-    ${misses.length?`<div style="display:flex;flex-wrap:wrap;gap:7px">${chips}${misses.length>14?`<span style="padding:5px 10px;font-size:12.5px;color:var(--muted);font-weight:700">+${misses.length-14} more</span>`:''}</div>`:`<p style="margin:0;font-size:13.5px;color:var(--muted)">No misses logged yet — every word so far has been spelled right. 🎉</p>`}
+  const chips=top.map(m=>`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:700;font-size:12px"><span style="font-family:var(--mono)">${esc(m.w)}</span>${(m.n>1)?`<span style="color:var(--bad);font-weight:800">×${m.n}</span>`:''}</span>`).join('');
+  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-top:18px;box-shadow:var(--sh-rest)">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px"><div style="font-family:var(--display);font-weight:800;font-size:15px">Words to revise <span style="color:var(--muted);font-weight:700">· ${misses.length}</span></div>${misses.length?`<button data-act="reviseMisses" style="padding:9px 16px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">Revise these →</button>`:''}</div>
+    ${misses.length?`<div style="display:flex;flex-wrap:wrap;gap:7px">${chips}${misses.length>14?`<span style="padding:5px 10px;font-size:12px;color:var(--muted);font-weight:700">+${misses.length-14} more</span>`:''}</div>`:`<p style="margin:0;font-size:13px;color:var(--muted)">No misses logged yet — every word so far has been spelled right. 🎉</p>`}
   </div>`; }
 function parentActivityCard(){ const S=state; const c=active(); const acts=(c.activity||[]).slice(0,12);
   const rows=acts.map((a,i)=>{ const open=S.parentLogOpen===i; const label=ACT_LABEL[a.kind]||a.label||'Activity'; const acc=a.done?Math.round(a.right/a.done*100):0; const hasDetail=a.misses&&a.misses.length;
-    return `<div style="border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden">
+    return `<div style="border:1px solid var(--line);border-radius:10px;margin-bottom:8px;overflow:hidden">
       <button data-act="parentLogToggle" data-arg="${i}" style="display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:11px 13px;background:${open?'var(--surface2)':'transparent'}">
-        <span style="width:30px;height:30px;flex-shrink:0;border-radius:9px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG(actIcon(a.kind),16)}</span>
-        <span style="min-width:0;flex:1"><span style="font-weight:800;font-size:14px">${esc(label)}</span><span style="display:block;font-size:11.5px;color:var(--muted);font-weight:600">${fmtAgo(a.ts)}${a.coins?(' · '+coinAmt(a.coins,11)):''}</span></span>
-        <span style="font-family:var(--mono);font-size:12.5px;color:var(--muted);font-weight:700;white-space:nowrap">${a.right}/${a.done}${a.done?(' · '+acc+'%'):''}</span>
+        <span style="width:30px;height:30px;flex-shrink:0;border-radius:10px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG(actIcon(a.kind),16)}</span>
+        <span style="min-width:0;flex:1"><span style="font-weight:800;font-size:13px">${esc(label)}</span><span style="display:block;font-size:12px;color:var(--muted);font-weight:600">${fmtAgo(a.ts)}${a.coins?(' · '+coinAmt(a.coins,11)):''}</span></span>
+        <span style="font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">${a.right}/${a.done}${a.done?(' · '+acc+'%'):''}</span>
         ${hasDetail?`<span style="color:var(--accent);font-size:12px">${open?'▲':'▼'}</span>`:'<span style="width:12px"></span>'}
       </button>
-      ${(open&&hasDetail)?`<div style="padding:0 13px 12px;font-size:12.5px;color:var(--muted);line-height:1.6"><b style="color:var(--bad)">Missed:</b> <span style="font-family:var(--mono)">${a.misses.map(esc).join(', ')}</span></div>`:''}
+      ${(open&&hasDetail)?`<div style="padding:0 13px 12px;font-size:12px;color:var(--muted);line-height:1.6"><b style="color:var(--bad)">Missed:</b> <span style="font-family:var(--mono)">${a.misses.map(esc).join(', ')}</span></div>`:''}
     </div>`; }).join('');
-  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-top:18px;box-shadow:var(--sh-rest)">
-    <div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:4px">Activity log</div>
-    <div style="font-size:12.5px;color:var(--muted);margin-bottom:12px">Everything ${esc(c.name||'your speller')} has done — tap a row to see the missed words.</div>
-    ${acts.length?rows:`<p style="margin:0;font-size:13.5px;color:var(--muted)">No activity yet. Play a game or a practice round and it’ll show up here.</p>`}
+  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-top:18px;box-shadow:var(--sh-rest)">
+    <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px">Activity log</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Everything ${esc(c.name||'your speller')} has done — tap a row to see the missed words.</div>
+    ${acts.length?rows:`<p style="margin:0;font-size:13px;color:var(--muted)">No activity yet. Play a game or a practice round and it’ll show up here.</p>`}
   </div>`; }
 function actIcon(kind){ return ({practice:'pencil',buzz:'flame',beat:'target',boss:'crown',meaning:'book',spell:'spark',origin:'grid',written:'pencil',oral:'volume',concept:'grid'})[kind]||'spark'; }
 function viewParent(){
   const S=state;
   const sub=S.premium
-    ? {ic:'crown',title:'Premium',body:'4 worlds, half the concepts & uncapped levels. Earn coins for the rest.',btn:'Manage',btnStyle:'padding:10px 16px;border-radius:12px;background:var(--surface2);color:var(--text);font-weight:800;font-size:14px',cardStyle:'background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 16%,var(--bg2)),var(--bg2));border:1px solid var(--accent);border-radius:18px;padding:20px;box-shadow:var(--glow)'}
-    : {ic:'spark',title:'Free plan',body:'2 worlds & Level-Up to Level 5. Earn 🪙 coins to unlock more, or go Premium.',btn:'Upgrade',btnStyle:'padding:10px 18px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)',cardStyle:'background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--sh-rest)'};
-  const kids=(S.children.length?S.children:[demo()]).map((k,i)=>`<div style="background:var(--bg2);border:1px solid ${i===S.activeIdx?'var(--accent)':'var(--line)'};border-radius:16px;padding:18px;box-shadow:var(--sh-rest)">
-      <div style="display:flex;align-items:center;gap:13px;margin-bottom:16px"><div style="width:48px;height:48px;border-radius:13px;background:var(--surface2);display:grid;place-items:center">${buddySVG(k.avatar,28)}</div>
-        <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:17px">${esc(k.name)}</div><div style="font-size:12.5px;color:var(--muted);font-weight:600">Age ${k.age} · ${THEME_LABEL[k.theme]||'Spellbound'}</div></div>
-        <button data-act="selectChild" data-arg="${i}" style="padding:7px 13px;border-radius:10px;font-weight:800;font-size:12.5px;${i===S.activeIdx?'background:var(--chip);color:var(--accent)':'background:var(--surface2);color:var(--text)'}">${i===S.activeIdx?'Active':'Switch'}</button>
+    ? {ic:'crown',title:'Premium',body:'4 worlds, half the concepts & uncapped levels. Earn coins for the rest.',btn:'Manage',btnStyle:'padding:10px 16px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:13px',cardStyle:'background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 16%,var(--bg2)),var(--bg2));border:1px solid var(--accent);border-radius:20px;padding:20px;box-shadow:var(--glow)'}
+    : {ic:'spark',title:'Free plan',body:'2 worlds & Level-Up to Level 5. Earn 🪙 coins to unlock more, or go Premium.',btn:'Upgrade',btnStyle:'padding:10px 18px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)',cardStyle:'background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest)'};
+  const kids=(S.children.length?S.children:[demo()]).map((k,i)=>`<div style="background:var(--bg2);border:1px solid ${i===S.activeIdx?'var(--accent)':'var(--line)'};border-radius:14px;padding:18px;box-shadow:var(--sh-rest)">
+      <div style="display:flex;align-items:center;gap:13px;margin-bottom:16px"><div style="width:48px;height:48px;border-radius:14px;background:var(--surface2);display:grid;place-items:center">${buddySVG(k.avatar,28)}</div>
+        <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:17px">${esc(k.name)}</div><div style="font-size:12px;color:var(--muted);font-weight:600">Age ${k.age} · ${THEME_LABEL[k.theme]||'Spellbound'}</div></div>
+        <button data-act="selectChild" data-arg="${i}" style="padding:7px 13px;border-radius:10px;font-weight:800;font-size:12px;${i===S.activeIdx?'background:var(--chip);color:var(--accent)':'background:var(--surface2);color:var(--text)'}">${i===S.activeIdx?'Active':'Switch'}</button>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px">
-        <div style="background:var(--surface);border-radius:11px;padding:11px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:18px">${k.level||1}</div><div style="font-size:10.5px;color:var(--muted);font-weight:700">LEVEL</div></div>
-        <div style="background:var(--surface);border-radius:11px;padding:11px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:18px">${k.acc||0}%</div><div style="font-size:10.5px;color:var(--muted);font-weight:700">ACCURACY</div></div>
-        <div style="background:var(--surface);border-radius:11px;padding:11px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:18px">${k.streak||0}</div><div style="font-size:10.5px;color:var(--muted);font-weight:700">STREAK</div></div>
+        <div style="background:var(--surface);border-radius:10px;padding:11px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:17px">${k.level||1}</div><div style="font-size:12px;color:var(--muted);font-weight:700">LEVEL</div></div>
+        <div style="background:var(--surface);border-radius:10px;padding:11px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:17px">${k.acc||0}%</div><div style="font-size:12px;color:var(--muted);font-weight:700">ACCURACY</div></div>
+        <div style="background:var(--surface);border-radius:10px;padding:11px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:17px">${k.streak||0}</div><div style="font-size:12px;color:var(--muted);font-weight:700">STREAK</div></div>
       </div></div>`).join('');
-  const parentBtns=`<button data-act="printReport" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:12px;background:var(--surface2);color:var(--text);font-weight:800;font-size:14px;border:1px solid var(--line)">${iconSVG('print',15)} Weekly report</button><button data-act="addChild" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">${iconSVG('plus',15)} Add child</button>`;
+  const parentBtns=`<button data-act="printReport" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:13px;border:1px solid var(--line)">${iconSVG('print',15)} Weekly report</button><button data-act="addChild" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">${iconSVG('plus',15)} Add child</button>`;
   return `<div style="animation:sb-rise .35s ease both">
     ${pageHead('Parent dashboard','',`Track ${esc(active().name||'your speller')}, manage spellers and print a weekly report.`,parentBtns)}
-    <div style="${sub.cardStyle}"><div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="width:46px;height:46px;border-radius:13px;background:var(--chip);color:var(--accent);display:grid;place-items:center;flex-shrink:0">${iconSVG(sub.ic,26)}</div>
-      <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:18px">${sub.title}</div><div style="font-size:13.5px;color:var(--muted)">${sub.body}</div></div>
+    <div style="${sub.cardStyle}"><div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="width:46px;height:46px;border-radius:14px;background:var(--chip);color:var(--accent);display:grid;place-items:center;flex-shrink:0">${iconSVG(sub.ic,26)}</div>
+      <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:17px">${sub.title}</div><div style="font-size:13px;color:var(--muted)">${sub.body}</div></div>
       <button data-act="goPaywall" style="${sub.btnStyle}">${sub.btn}</button></div></div>
-    <div style="font-family:var(--display);font-weight:800;font-size:16px;margin:20px 2px 12px">Spellers</div>
+    <div style="font-family:var(--display);font-weight:800;font-size:15px;margin:20px 2px 12px">Spellers</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">${kids}</div>
     ${parentReviseCard()}
     ${parentActivityCard()}
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-top:18px;box-shadow:var(--sh-rest)">
-      <div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:6px">Countdown to the Finals</div>
-      <div style="font-size:13.5px;color:var(--muted);margin-bottom:14px">North South Foundation National Finals</div>
-      <div style="display:flex;align-items:baseline;gap:10px"><div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent)">${daysToBee()}</div><div style="font-size:14px;color:var(--muted);font-weight:700">days to go · 31 Jul 2026</div></div>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-top:18px;box-shadow:var(--sh-rest)">
+      <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:6px">Countdown to the Finals</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:14px">North South Foundation National Finals</div>
+      <div style="display:flex;align-items:baseline;gap:10px"><div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent)">${daysToBee()}</div><div style="font-size:13px;color:var(--muted);font-weight:700">days to go · 31 Jul 2026</div></div>
     </div>
   </div>`;
 }
@@ -1894,37 +1906,37 @@ function lessonCoverCard(L){
   const dn=lessonComplete(L); const u=lessonUnits().find(x=>x.n===L.unit)||{title:''}; const f=unitPal(L.unit);
   const dc=DIFF_DOT[L.diff]||DIFF_DOT.medium; const hero=lessonHero(L); const nW=(L.words||[]).filter(x=>x&&x.w).length;
   const uname=capWords(u.title); const cover=`<div style="position:relative;height:110px;display:flex;align-items:center;justify-content:center;padding:14px;${unitCoverBG(L.unit)}">
-    <span style="position:absolute;top:11px;left:12px;font-family:var(--mono);font-weight:700;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(L.id)}</span>
+    <span style="position:absolute;top:11px;left:12px;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(L.id)}</span>
     <span style="position:absolute;top:12px;right:12px;width:9px;height:9px;border-radius:50%;background:${dc};box-shadow:0 0 0 3px rgba(255,255,255,.28)"></span>
     ${dn?'<span style="position:absolute;bottom:9px;right:10px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
     <div class="sb-theme-art" style="text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.16);animation-delay:${(L.n%9)*0.22}s"><div style="font-family:var(--display);color:#fff;line-height:1;letter-spacing:-.01em;font-style:italic;font-weight:700;font-size:${heroFont(hero)}px">${esc(hero)}</div></div>
   </div>`;
-  return `<button class="sb-cover-card" data-act="openLesson" data-arg="${L.n}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
+  return `<button class="sb-cover-card" data-act="openLesson" data-arg="${L.n}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
     ${cover}
     <div style="padding:14px 15px 15px;display:flex;flex-direction:column;flex:1">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.18;color:var(--text)">${esc(L.title)}</div>
-      <div style="font-family:var(--mono);font-weight:700;font-size:11px;color:${f.c};margin-top:4px">Chapter ${L.unit} · ${esc(trunc(uname,26))}</div>
+      <div style="font-family:var(--mono);font-weight:700;font-size:12px;color:${f.c};margin-top:4px">Chapter ${L.unit} · ${esc(trunc(uname,26))}</div>
       <div style="font-family:var(--body);font-weight:600;font-size:12px;line-height:1.45;color:var(--muted);margin-top:8px">${trunc(L.bigIdea||L.story||'',92)}</div>
-      <div style="margin-top:auto;padding-top:12px;display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="padding:3px 9px;border-radius:99px;font-family:var(--body);font-weight:800;font-size:11px;color:#fff;background:${dc}">${L.diff?titleCase(L.diff):'Medium'}</span><span style="font-family:var(--body);font-weight:800;font-size:12px;color:${f.c};white-space:nowrap">${nW} words →</span></div>
+      <div style="margin-top:auto;padding-top:12px;display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="padding:3px 9px;border-radius:999px;font-family:var(--body);font-weight:800;font-size:12px;color:#fff;background:${dc}">${L.diff?titleCase(L.diff):'Medium'}</span><span style="font-family:var(--body);font-weight:800;font-size:12px;color:${f.c};white-space:nowrap">${nW} words →</span></div>
     </div>
   </button>`;
 }
 function lessonBigCard(L){ const dn=lessonComplete(L); const u=lessonUnits().find(x=>x.n===L.unit)||{title:''}; const f=unitPal(L.unit);
   const dc=DIFF_DOT[L.diff]||DIFF_DOT.medium; const hero=lessonHero(L); const nW=(L.words||[]).filter(x=>x&&x.w).length;
-  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--glow)">
+  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--glow)">
     <div style="position:relative;height:150px;display:flex;align-items:center;justify-content:center;padding:18px;${unitCoverBG(L.unit)}">
-      <span style="position:absolute;top:14px;left:15px;font-family:var(--mono);font-weight:700;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.85)">${esc(L.id)} · Chapter ${L.unit}</span>
+      <span style="position:absolute;top:14px;left:15px;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.85)">${esc(L.id)} · Chapter ${L.unit}</span>
       <span style="position:absolute;top:15px;right:15px;width:11px;height:11px;border-radius:50%;background:${dc};box-shadow:0 0 0 3px rgba(255,255,255,.28)"></span>
       ${dn?'<span style="position:absolute;bottom:13px;right:14px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:15px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
       <div style="text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.18)"><div style="font-family:var(--display);color:#fff;line-height:1;letter-spacing:-.01em;font-style:italic;font-weight:700;font-size:${Math.min(48,heroFont(hero)+8)}px">${esc(hero)}</div></div>
     </div>
     <div style="padding:clamp(18px,4vw,24px)">
-      <div style="font-family:var(--mono);font-weight:700;font-size:11.5px;color:${f.c};margin-bottom:6px">Chapter ${L.unit} · ${esc(capWords(u.title))}</div>
+      <div style="font-family:var(--mono);font-weight:700;font-size:12px;color:${f.c};margin-bottom:6px">Chapter ${L.unit} · ${esc(capWords(u.title))}</div>
       <div style="font-family:var(--display);font-weight:800;font-size:clamp(20px,4vw,25px);line-height:1.14;margin-bottom:8px">${esc(L.title)}</div>
-      <p style="font-size:14.5px;line-height:1.6;color:var(--text);margin:0 0 18px">${mdInline(trunc(L.bigIdea||L.story||'',200))}</p>
+      <p style="font-size:15px;line-height:1.6;color:var(--text);margin:0 0 18px">${mdInline(trunc(L.bigIdea||L.story||'',200))}</p>
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-        <span style="padding:4px 11px;border-radius:99px;font-family:var(--body);font-weight:800;font-size:12px;color:#fff;background:${dc}">${L.diff?titleCase(L.diff):'Medium'}</span>
-        <button data-act="openLesson" data-arg="${L.n}" style="padding:12px 20px;border-radius:13px;background:${f.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Open &amp; study · ${nW} words →</button>
+        <span style="padding:4px 11px;border-radius:999px;font-family:var(--body);font-weight:800;font-size:12px;color:#fff;background:${dc}">${L.diff?titleCase(L.diff):'Medium'}</span>
+        <button data-act="openLesson" data-arg="${L.n}" style="padding:12px 20px;border-radius:14px;background:${f.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Open &amp; study · ${nW} words →</button>
       </div>
     </div>
   </div>`; }
@@ -1935,13 +1947,13 @@ function viewJourneys(){ const S=state; if(S.lessonSel) return viewLesson();
   if(!all.length) return `<div style="max-width:680px;margin:0 auto;padding:60px 0;text-align:center;color:var(--muted);font-weight:700">Lessons are loading…</div>`;
   if(!S.premium){
     return `<div style="max-width:620px;margin:0 auto">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:14px">← Home</button></div>
-      <div style="background:var(--bg2);border:1px solid var(--accent);border-radius:22px;padding:30px;text-align:center;box-shadow:var(--glow)">
-        <div style="width:64px;height:64px;border-radius:16px;background:var(--chip);color:var(--accent);display:grid;place-items:center;margin:0 auto 14px">${iconSVG('book',32)}</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button></div>
+      <div style="background:var(--bg2);border:1px solid var(--accent);border-radius:20px;padding:30px;text-align:center;box-shadow:var(--glow)">
+        <div style="width:64px;height:64px;border-radius:14px;background:var(--chip);color:var(--accent);display:grid;place-items:center;margin:0 auto 14px">${iconSVG('book',32)}</div>
         <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 8px">Word Journeys</h2>
-        <p style="color:var(--muted);font-size:14.5px;line-height:1.6;margin:0 0 18px">A 100‑lesson tour through the history &amp; geography of words — from Proto‑Indo‑European roots to Latin, Greek, Norse and beyond. Learn the stories behind spellings, then drill the words from each lesson.</p>
-        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:18px">${units.slice(0,5).map(u=>`<span style="padding:5px 11px;border-radius:99px;background:var(--surface2);font-size:12px;font-weight:700;color:var(--muted)">${esc(trunc(u.title,22))}</span>`).join('')}</div>
-        <button data-act="goPaywall" style="padding:14px 24px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">Unlock with Premium 👑</button>
+        <p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0 0 18px">A 100‑lesson tour through the history &amp; geography of words — from Proto‑Indo‑European roots to Latin, Greek, Norse and beyond. Learn the stories behind spellings, then drill the words from each lesson.</p>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:18px">${units.slice(0,5).map(u=>`<span style="padding:5px 11px;border-radius:999px;background:var(--surface2);font-size:12px;font-weight:700;color:var(--muted)">${esc(trunc(u.title,22))}</span>`).join('')}</div>
+        <button data-act="goPaywall" style="padding:14px 24px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Unlock with Premium 👑</button>
       </div></div>`;
   }
   const guided=S.journeyView==='guided';
@@ -1950,9 +1962,9 @@ function viewJourneys(){ const S=state; if(S.lessonSel) return viewLesson();
     const N=all.length; const i=Math.min(Math.max(S.journeyPage||0,0),Math.max(0,N-1)); const curL=all[i];
     headDesc='Your guided path — one lesson at a time, in order. Step through, study, and practise.';
     wrapStyle='max-width:680px;margin:0 auto';
-    main=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><span style="font-size:12.5px;color:var(--muted);font-weight:700;white-space:nowrap">Lesson ${i+1} of ${N}</span><div style="flex:1;height:7px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:99px;background:var(--accent);width:${Math.round((i+1)/N*100)}%;transition:width .3s"></div></div></div>
+    main=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><span style="font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">Lesson ${i+1} of ${N}</span><div style="flex:1;height:7px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--accent);width:${Math.round((i+1)/N*100)}%;transition:width .3s"></div></div></div>
       ${lessonBigCard(curL)}
-      <div style="display:flex;align-items:center;gap:10px;margin-top:14px"><button data-act="journeyPagePrev" style="padding:13px 18px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;${i<=0?'opacity:.4;pointer-events:none':''}">← Back</button><button data-act="journeyPageNext" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge);${i>=N-1?'opacity:.5;pointer-events:none':''}">${i>=N-1?'End of the path ✓':'Next lesson →'}</button></div>`;
+      <div style="display:flex;align-items:center;gap:10px;margin-top:14px"><button data-act="journeyPagePrev" style="padding:13px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;${i<=0?'opacity:.4;pointer-events:none':''}">← Back</button><button data-act="journeyPageNext" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);${i>=N-1?'opacity:.5;pointer-events:none':''}">${i>=N-1?'End of the path ✓':'Next lesson →'}</button></div>`;
   } else {
     const gridStyle='display:grid;grid-template-columns:repeat(auto-fill,minmax(236px,1fr));gap:14px';
     headDesc='The history &amp; geography of words, in 10 eras — read a lesson, then practise its five words.';
@@ -1960,23 +1972,23 @@ function viewJourneys(){ const S=state; if(S.lessonSel) return viewLesson();
     main=units.map(u=>{ const ls=all.filter(L=>L.unit===u.n); if(!ls.length) return '';
       const f=unitPal(u.n); const dc=ls.filter(L=>lessonComplete(L)).length;
       const header=`<div style="display:flex;align-items:center;gap:12px;margin:24px 0 12px">
-        <span style="width:10px;height:10px;border-radius:3px;background:${f.c};flex-shrink:0"></span>
-        <h3 style="font-family:var(--display);font-weight:800;font-size:18px;margin:0;color:var(--text)">Chapter ${u.n} · ${esc(capWords(u.title))}</h3>
-        <span style="font-family:var(--mono);font-size:11.5px;color:var(--muted);white-space:nowrap">${dc}/${ls.length} done</span>
+        <span style="width:10px;height:10px;border-radius:6px;background:${f.c};flex-shrink:0"></span>
+        <h3 style="font-family:var(--display);font-weight:800;font-size:17px;margin:0;color:var(--text)">Chapter ${u.n} · ${esc(capWords(u.title))}</h3>
+        <span style="font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap">${dc}/${ls.length} done</span>
         <span style="flex:1;height:1px;background:var(--line)"></span>
       </div>`;
       return header+`<div style="${gridStyle}">${ls.map(lessonCoverCard).join('')}</div>`;
     }).join('');
   }
-  const pathBtn=`<button data-act="journeySetView" data-arg="${guided?'all':'guided'}" style="display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:11px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">${guided?('← Browse all '+iconSVG('grid',15)):('Guided path '+iconSVG('arrow',15))}</button>`;
+  const pathBtn=`<button data-act="journeySetView" data-arg="${guided?'all':'guided'}" style="display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">${guided?('← Browse all '+iconSVG('grid',15)):('Guided path '+iconSVG('arrow',15))}</button>`;
   return `<div style="${wrapStyle}">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:14px">← Home</button></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button></div>
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px"><div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0">Word Journeys</h2><span style="font-family:var(--mono);font-size:12px;color:var(--muted)">${chaptersTotal} chapters</span></div>${pathBtn}</div>
-    <p style="margin:0 0 8px;color:var(--muted);font-size:14px;max-width:52em">${headDesc}</p>
+    <p style="margin:0 0 8px;color:var(--muted);font-size:13px;max-width:52em">${headDesc}</p>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin:12px 0 4px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-      <span style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">${iconSVG('book',15)} ${chaptersDone}/${chaptersTotal} chapters</span>
-      <div style="flex:1;min-width:140px;height:7px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:99px;background:var(--accent);width:${Math.round(done)}%;transition:width .4s"></div></div>
-      <span style="font-size:12.5px;color:var(--muted);font-weight:700">${done}%</span>
+      <span style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('book',15)} ${chaptersDone}/${chaptersTotal} chapters</span>
+      <div style="flex:1;min-width:140px;height:7px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--accent);width:${Math.round(done)}%;transition:width .4s"></div></div>
+      <span style="font-size:12px;color:var(--muted);font-weight:700">${done}%</span>
     </div>
     ${main}</div>`; }
 /* ===== Theme Journeys view — pick themes you love; each becomes a staged journey ===== */
@@ -2061,23 +2073,23 @@ function themeCard(t){ const c=active(); const cl=themeClusters().find(x=>x.id==
   const key=themeKey(t.id); const pinned=!!((c.pinnedLists||{})[key]); const st=themeStat(t.id);
   const lvl=listStageIdx(c,key)+1;
   const done=st.total>0 && st.m/st.total>=PATTERN_DONE_PCT;
-  return `<div class="sb-cover-card" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px ${pinned?cl.c:'var(--line)'},var(--sh-rest);display:flex;flex-direction:column">
+  return `<div class="sb-cover-card" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px ${pinned?cl.c:'var(--line)'},var(--sh-rest);display:flex;flex-direction:column">
     <div style="position:relative;height:104px;display:flex;align-items:center;justify-content:center;padding:12px;${themeCoverBG(cl)}">
-      <span style="position:absolute;top:10px;left:11px;font-family:var(--mono);font-weight:700;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(cl.label)}</span>
+      <span style="position:absolute;top:10px;left:11px;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(cl.label)}</span>
       ${done?'<span style="position:absolute;bottom:8px;right:9px;width:21px;height:21px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:12px">✓</span>':''}
-      ${pinned?'<span style="position:absolute;top:9px;right:10px;padding:2px 8px;border-radius:99px;background:rgba(255,255,255,.92);color:#1fa377;font-weight:900;font-size:9px">MY THEME</span>':''}
+      ${pinned?'<span style="position:absolute;top:9px;right:10px;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.92);color:#1fa377;font-weight:900;font-size:12px">MY THEME</span>':''}
       <div class="sb-theme-art ${THEME_MOTION[t.id]||''}" style="animation-delay:${((t.id.length*137)%1800)/1000}s">${themeArtSVG(t.id,58,false)}</div>
     </div>
     <div style="padding:12px 14px 13px;display:flex;flex-direction:column;flex:1">
-      <div style="font-family:var(--display);font-weight:800;font-size:14.5px;line-height:1.18;color:var(--text)">${esc(t.label)}</div>
-      <div style="font-family:var(--body);font-weight:600;font-size:11.5px;line-height:1.4;color:var(--muted);margin-top:4px">${esc(t.sub)}</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.18;color:var(--text)">${esc(t.label)}</div>
+      <div style="font-family:var(--body);font-weight:600;font-size:12px;line-height:1.4;color:var(--muted);margin-top:4px">${esc(t.sub)}</div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
-        <div style="flex:1;height:6px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:99px;background:${done?'var(--good)':cl.c};width:${st.pct}%;transition:width .4s"></div></div>
-        <span style="font-family:var(--mono);font-size:10px;color:var(--muted);font-weight:700;white-space:nowrap">${st.m}/${fmtN(st.total)}</span>
+        <div style="flex:1;height:6px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:${done?'var(--good)':cl.c};width:${st.pct}%;transition:width .4s"></div></div>
+        <span style="font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">${st.m}/${fmtN(st.total)}</span>
       </div>
       <div style="margin-top:auto;padding-top:11px;display:flex;gap:7px">
-        <button data-act="themePractice" data-arg="${t.id}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:11px;background:${cl.c};color:#fff;font-weight:800;font-size:12.5px;box-shadow:var(--edge)">${iconSVG('pencil',13)} Practice</button>
-        <button data-act="addTheme" data-arg="${t.id}" title="${pinned?'In your lists — tap to open in Word Coach':'Add to your lists (top bar in Practice)'}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:11px;font-weight:800;font-size:12.5px;${pinned?`background:color-mix(in srgb,${cl.c} 13%,var(--bg2));border:1px solid ${cl.c};color:${cl.c}`:'background:var(--surface2);border:1px solid var(--line);color:var(--text)'}">${pinned?('✓ L'+lvl):'+ Add'}</button>
+        <button data-act="themePractice" data-arg="${t.id}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:10px;background:${cl.c};color:#fff;font-weight:800;font-size:12px;box-shadow:var(--edge)">${iconSVG('pencil',13)} Practice</button>
+        <button data-act="addTheme" data-arg="${t.id}" title="${pinned?'In your lists — tap to open in Word Coach':'Add to your lists (top bar in Practice)'}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:10px;font-weight:800;font-size:12px;${pinned?`background:color-mix(in srgb,${cl.c} 13%,var(--bg2));border:1px solid ${cl.c};color:${cl.c}`:'background:var(--surface2);border:1px solid var(--line);color:var(--text)'}">${pinned?('✓ L'+lvl):'+ Add'}</button>
       </div>
     </div>
   </div>`; }
@@ -2086,21 +2098,21 @@ function viewThemes(){ const S=state; const c=active(); ensureLists(c);
   const mastered=defs.reduce((a,t)=>a+themeStat(t.id).m,0);
   const doneThemes=defs.filter(t=>{ const st=themeStat(t.id); return st.total>0 && st.m/st.total>=PATTERN_DONE_PCT; }).length;
   const myRow = mine.length
-    ? `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px"><span style="font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700">My themes</span>${mine.map(t=>{ const cl=themeClusters().find(x=>x.id===t.cluster)||{}; return `<button data-act="selectList" data-arg="${themeKey(t.id)}" oncontextmenu="return sbDelList(event,'${themeKey(t.id)}')" title="Train · right-click to remove" style="display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:11px;border:1px solid ${cl.c};background:color-mix(in srgb,${cl.c} 12%,var(--bg2));color:var(--text);font-weight:800;font-size:12.5px">${esc(t.label)} <span style="opacity:.7;font-size:11px">L${listStageIdx(c,themeKey(t.id))+1}</span></button>`; }).join('')}</div>`
-    : `<div style="background:color-mix(in srgb,var(--accent) 9%,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin-bottom:16px;font-size:13.5px;color:var(--text)"><b>Pick 3–5 themes you love.</b> Words stick better when they live somewhere — a kitchen, a courtroom, the night sky. Each theme becomes its own level ladder, and it joins your top bar in Practice.</div>`;
+    ? `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px"><span style="font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700">My themes</span>${mine.map(t=>{ const cl=themeClusters().find(x=>x.id===t.cluster)||{}; return `<button data-act="selectList" data-arg="${themeKey(t.id)}" oncontextmenu="return sbDelList(event,'${themeKey(t.id)}')" title="Train · right-click to remove" style="display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:10px;border:1px solid ${cl.c};background:color-mix(in srgb,${cl.c} 12%,var(--bg2));color:var(--text);font-weight:800;font-size:12px">${esc(t.label)} <span style="opacity:.7;font-size:12px">L${listStageIdx(c,themeKey(t.id))+1}</span></button>`; }).join('')}</div>`
+    : `<div style="background:color-mix(in srgb,var(--accent) 9%,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin-bottom:16px;font-size:13px;color:var(--text)"><b>Pick 3–5 themes you love.</b> Words stick better when they live somewhere — a kitchen, a courtroom, the night sky. Each theme becomes its own level ladder, and it joins your top bar in Practice.</div>`;
   const grid='display:grid;grid-template-columns:repeat(auto-fill,minmax(224px,1fr));gap:13px';
   const sections=themeClusters().map(cl=>{ const ts=defs.filter(t=>t.cluster===cl.id); if(!ts.length) return '';
     return `<div style="display:flex;align-items:center;gap:12px;margin:24px 0 12px">
-      <span style="width:10px;height:10px;border-radius:3px;background:${cl.c};flex-shrink:0"></span>
-      <h3 style="font-family:var(--display);font-weight:800;font-size:18px;margin:0;color:var(--text)">${esc(cl.label)}</h3>
-      <span style="font-family:var(--mono);font-size:11.5px;color:var(--muted);white-space:nowrap">${ts.length} themes</span>
+      <span style="width:10px;height:10px;border-radius:6px;background:${cl.c};flex-shrink:0"></span>
+      <h3 style="font-family:var(--display);font-weight:800;font-size:17px;margin:0;color:var(--text)">${esc(cl.label)}</h3>
+      <span style="font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap">${ts.length} themes</span>
       <span style="flex:1;height:1px;background:var(--line)"></span>
     </div><div style="${grid}">${ts.map(themeCard).join('')}</div>`; }).join('');
   return `<div style="animation:sb-rise .35s ease both">
     ${pageHead('Theme Journeys', defs.length+' themes', 'Learn words by the worlds they live in — medicine, music, maps, mythology… Pick a theme and climb its levels; every word you master counts everywhere else too.')}
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin-bottom:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-      <span style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">${iconSVG('palette',15)} ${mine.length} picked · ${doneThemes} complete</span>
-      <span style="font-size:12.5px;color:var(--muted);font-weight:700">${fmtN(mastered)} themed words mastered</span>
+      <span style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('palette',15)} ${mine.length} picked · ${doneThemes} complete</span>
+      <span style="font-size:12px;color:var(--muted);font-weight:700">${fmtN(mastered)} themed words mastered</span>
     </div>
     ${myRow}
     ${sections}
@@ -2109,34 +2121,34 @@ function viewLesson(){ const S=state; const L=S.lessonSel; const dn=lessonComple
   const f=unitPal(L.unit); const u=lessonUnits().find(x=>x.n===L.unit)||{title:''};
   // Each of the 5 words as a rich sub-card: word · pronunciation · syllables · meaning · full etymology (every bullet kept).
   const wordCards=ws.map(w=>{ const ety=(w.etyArr&&w.etyArr.length)?w.etyArr:(w.r?[w.r]:[]);
-    return `<div style="background:var(--surface2);border:1px solid var(--line);border-radius:13px;padding:13px 15px;margin-bottom:10px">
-      <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:6px"><span style="font-family:var(--display);font-weight:800;font-size:17px;letter-spacing:.01em">${esc(w.w)}</span>${w.p?`<span style="font-family:var(--mono);font-size:11.5px;color:var(--accent);font-weight:700">/ ${esc(w.p)} /</span>`:''}${w.sy&&w.sy.toLowerCase()!==w.w.toLowerCase()?`<span style="font-size:11.5px;color:var(--muted);font-weight:700">${esc(w.sy)}</span>`:''}${state.luMastered[nkey(w.w)]?'<span style="color:var(--good);font-weight:800;font-size:11.5px">✓ mastered</span>':''}<button data-act="say" data-arg="${escA(w.w)}" title="Hear it" style="margin-left:auto;color:var(--accent)">${iconSVG('volume',16)}</button></div>
+    return `<div style="background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:6px"><span style="font-family:var(--display);font-weight:800;font-size:17px;letter-spacing:.01em">${esc(w.w)}</span>${w.p?`<span style="font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:700">/ ${esc(w.p)} /</span>`:''}${w.sy&&w.sy.toLowerCase()!==w.w.toLowerCase()?`<span style="font-size:12px;color:var(--muted);font-weight:700">${esc(w.sy)}</span>`:''}${state.luMastered[nkey(w.w)]?'<span style="color:var(--good);font-weight:800;font-size:12px">✓ mastered</span>':''}<button data-act="say" data-arg="${escA(w.w)}" title="Hear it" style="margin-left:auto;color:var(--accent)">${iconSVG('volume',16)}</button></div>
       ${w.d?`<div style="font-size:13px;color:var(--text);line-height:1.5;margin-bottom:${ety.length?'7':'0'}px">${esc(w.d)}</div>`:''}
-      ${ety.length?`<div style="border-top:1px dashed var(--line);padding-top:8px"><div style="font-family:var(--mono);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:5px">Etymology</div>${ety.map(e=>`<div style="display:flex;gap:7px;font-size:12.5px;color:var(--muted);line-height:1.55;margin-bottom:4px"><span style="color:${f.c};flex-shrink:0">•</span><span>${mdInline(e)}</span></div>`).join('')}</div>`:''}
+      ${ety.length?`<div style="border-top:1px dashed var(--line);padding-top:8px"><div style="font-family:var(--mono);font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:5px">Etymology</div>${ety.map(e=>`<div style="display:flex;gap:7px;font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:4px"><span style="color:${f.c};flex-shrink:0">•</span><span>${mdInline(e)}</span></div>`).join('')}</div>`:''}
     </div>`; }).join('');
-  const act=(label,txt)=>txt?`<div style="margin-bottom:10px"><span style="font-weight:800;font-size:13.5px;color:${f.c}">${label}.</span> <span style="font-size:13.5px;color:var(--text);line-height:1.55">${mdInline(txt)}</span></div>`:'';
+  const act=(label,txt)=>txt?`<div style="margin-bottom:10px"><span style="font-weight:800;font-size:13px;color:${f.c}">${label}.</span> <span style="font-size:13px;color:var(--text);line-height:1.55">${mdInline(txt)}</span></div>`:'';
   // Every lesson is a card flow (like Concepts): one section per card, no content dropped.
   const practiceHTML=(L.practice&&(L.practice.decode||L.practice.trace||L.practice.build))?`${act('Decode it',L.practice.decode)}${act('Trace it',L.practice.trace)}${act('Build it',L.practice.build)}`:'';
   const steps=[];
-  if(L.bigIdea) steps.push({tag:'Big idea',ic:'bulb',body:`<p style="margin:0;font-size:16px;line-height:1.62;font-weight:600;color:var(--text)">${mdInline(L.bigIdea)}</p>`});
+  if(L.bigIdea) steps.push({tag:'Big idea',ic:'bulb',body:`<p style="margin:0;font-size:15px;line-height:1.62;font-weight:600;color:var(--text)">${mdInline(L.bigIdea)}</p>`});
   if(L.story) steps.push({tag:'The story',ic:'book',body:`<p style="margin:0;font-size:15px;line-height:1.68;color:var(--text)">${mdInline(L.story)}</p>`});
   if(L.pattern) steps.push({tag:'The pattern',ic:'search',body:`<p style="margin:0;font-size:15px;line-height:1.68;color:var(--text)">${mdInline(L.pattern)}</p>`});
-  steps.push({tag:'The five words',ic:'spark',body:`${wordCards}<button data-act="practiseLesson" style="width:100%;margin-top:6px;padding:13px;border-radius:13px;background:${f.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Practise these 5 words →</button>`});
+  steps.push({tag:'The five words',ic:'spark',body:`${wordCards}<button data-act="practiseLesson" style="width:100%;margin-top:6px;padding:13px;border-radius:14px;background:${f.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Practise these 5 words →</button>`});
   if(L.connection) steps.push({tag:'The connection',ic:'link',body:`<p style="margin:0;font-size:15px;line-height:1.68;color:var(--text)">${mdInline(L.connection)}</p>`});
   if(practiceHTML) steps.push({tag:'Try with a grown-up',ic:'pencil',body:practiceHTML});
   const N=steps.length; const idx=Math.min(Math.max(S.lessonStep||0,0),N-1); const step=steps[idx];
-  const dots=steps.map((s,i)=>`<button data-act="lessonStepGo" data-arg="${i}" style="height:7px;border-radius:99px;flex:1;background:${i<=idx?f.c:'var(--surface2)'}" title="${esc(s.tag)}"></button>`).join('');
+  const dots=steps.map((s,i)=>`<button data-act="lessonStepGo" data-arg="${i}" style="height:7px;border-radius:999px;flex:1;background:${i<=idx?f.c:'var(--surface2)'}" title="${esc(s.tag)}"></button>`).join('');
   const last=idx>=N-1;
   const nextBtn=last
-    ? (L.n<100?`<button data-act="openLesson" data-arg="${L.n+1}" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">Next lesson →</button>`:`<button data-act="lessonBack" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">Finish ✓</button>`)
-    : `<button data-act="lessonStepNext" style="flex:1;padding:14px;border-radius:14px;background:${f.c};color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">Next card →</button>`;
+    ? (L.n<100?`<button data-act="openLesson" data-arg="${L.n+1}" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next lesson →</button>`:`<button data-act="lessonBack" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Finish ✓</button>`)
+    : `<button data-act="lessonStepNext" style="flex:1;padding:14px;border-radius:14px;background:${f.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next card →</button>`;
   return `<div style="max-width:660px;margin:0 auto;animation:sb-rise .35s ease both">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><button data-act="lessonBack" style="color:var(--muted);font-weight:700;font-size:14px">← All lessons</button><span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:700"><span style="font-family:var(--mono)">${L.id}</span> · <span style="text-transform:capitalize">${L.diff}</span> <span style="width:9px;height:9px;border-radius:50%;background:${DIFF_DOT[L.diff]}"></span></span></div>
-    <div style="font-family:var(--mono);font-weight:700;font-size:11.5px;color:${f.c};margin-bottom:3px">Chapter ${L.unit} · ${esc(capWords(u.title))}</div>
-    <h2 style="font-family:var(--display);font-weight:800;font-size:22px;line-height:1.15;margin:0 0 14px">${esc(L.title)}${dn?' <span style="color:var(--good);font-size:17px">✓</span>':''}</h2>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><button data-act="lessonBack" style="color:var(--muted);font-weight:700;font-size:13px">← All lessons</button><span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:700"><span style="font-family:var(--mono)">${L.id}</span> · <span style="text-transform:capitalize">${L.diff}</span> <span style="width:9px;height:9px;border-radius:50%;background:${DIFF_DOT[L.diff]}"></span></span></div>
+    <div style="font-family:var(--mono);font-weight:700;font-size:12px;color:${f.c};margin-bottom:3px">Chapter ${L.unit} · ${esc(capWords(u.title))}</div>
+    <h2 style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1.15;margin:0 0 14px">${esc(L.title)}${dn?' <span style="color:var(--good);font-size:17px">✓</span>':''}</h2>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span style="font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">Card ${idx+1} of ${N}</span><div style="display:flex;gap:5px;flex:1">${dots}</div></div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><button data-act="lessonStepPrev" style="padding:12px 18px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;${idx<=0?'opacity:.4;pointer-events:none':''}">← Back</button>${nextBtn}</div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--glow);animation:sb-rise .3s ease both">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><button data-act="lessonStepPrev" style="padding:12px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;${idx<=0?'opacity:.4;pointer-events:none':''}">← Back</button>${nextBtn}</div>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--glow);animation:sb-rise .3s ease both">
       <div style="height:6px;${unitCoverBG(L.unit)}"></div>
       <div style="padding:clamp(18px,4vw,24px)">
         <div style="display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:800;font-size:15px;color:${f.c};margin-bottom:12px">${iconSVG(step.ic,18)} ${step.tag}</div>
@@ -2149,69 +2161,69 @@ function viewEvoFeedback(){ const S=state; const themes=Object.keys(EV_NOMEN);
   const reviewed=Object.keys(EVOFB).filter(k=>EVOFB[k]&&(EVOFB[k].rate||EVOFB[k].note)).length;
   let editor='';
   if(S.evoSel){ const parts=S.evoSel.split(':'); const t=parts[0], i=+parts[1]; const nm=(EV_NOMEN[t]||[])[i]||''; const fb=EVOFB[S.evoSel]||{};
-    const rbtn=(r,label,col)=>`<button data-act="evoRate" data-arg="${r}" style="flex:1;padding:10px 8px;border-radius:11px;font-weight:800;font-size:13px;border:2px solid ${fb.rate===r?col:'var(--line)'};background:${fb.rate===r?col:'var(--surface2)'};color:${fb.rate===r?'#fff':'var(--text)'}">${label}</button>`;
-    editor=`<div style="position:sticky;top:64px;z-index:5;background:var(--bg2);border:1px solid var(--accent);border-radius:18px;padding:16px;margin-bottom:18px;box-shadow:var(--glow)">
+    const rbtn=(r,label,col)=>`<button data-act="evoRate" data-arg="${r}" style="flex:1;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;border:2px solid ${fb.rate===r?col:'var(--line)'};background:${fb.rate===r?col:'var(--surface2)'};color:${fb.rate===r?'#fff':'var(--text)'}">${label}</button>`;
+    editor=`<div style="position:sticky;top:64px;z-index:5;background:var(--bg2);border:1px solid var(--accent);border-radius:20px;padding:16px;margin-bottom:18px;box-shadow:var(--glow)">
       <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px">
-        <div style="width:64px;height:68px;flex-shrink:0;background:var(--surface2);border-radius:12px;display:grid;place-items:center">${evEmb(t,i)}</div>
+        <div style="width:64px;height:68px;flex-shrink:0;background:var(--surface2);border-radius:10px;display:grid;place-items:center">${evEmb(t,i)}</div>
         <div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:17px">${esc(THEME_LABEL[t]||t)} · Lv ${i+1}</div><div style="font-size:13px;color:var(--muted);font-weight:600">“${esc(nm)}”</div></div>
       </div>
       <div style="display:flex;gap:8px;margin-bottom:10px">${rbtn('keep','Keep','var(--good)')}${rbtn('tweak','Tweak','#E8A33A')}${rbtn('redo','Redo','var(--bad)')}</div>
-      <textarea data-inp="evoNote" data-fkey="evonote" placeholder="What should change? Colour, shape, clarity, vibe, how it reads at small size…" style="width:100%;min-height:64px;resize:vertical;padding:11px 13px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:600;font-size:14px;font-family:var(--body)">${esc(fb.note||'')}</textarea>
-      <div style="display:flex;justify-content:flex-end;margin-top:8px"><button data-act="evoClearTile" style="font-size:12.5px;color:var(--bad);font-weight:700">Clear this tile</button></div>
+      <textarea data-inp="evoNote" data-fkey="evonote" placeholder="What should change? Colour, shape, clarity, vibe, how it reads at small size…" style="width:100%;min-height:64px;resize:vertical;padding:11px 13px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:600;font-size:13px;font-family:var(--body)">${esc(fb.note||'')}</textarea>
+      <div style="display:flex;justify-content:flex-end;margin-top:8px"><button data-act="evoClearTile" style="font-size:12px;color:var(--bad);font-weight:700">Clear this tile</button></div>
     </div>`;
-  } else { editor=`<div style="background:var(--surface2);border:1px dashed var(--line);border-radius:14px;padding:14px 16px;margin-bottom:18px;font-size:13.5px;color:var(--muted)">Tap any tile below to rate it (Keep / Tweak / Redo) and add a note. Your feedback saves automatically — hit <b>Export</b> when done.</div>`; }
+  } else { editor=`<div style="background:var(--surface2);border:1px dashed var(--line);border-radius:14px;padding:14px 16px;margin-bottom:18px;font-size:13px;color:var(--muted)">Tap any tile below to rate it (Keep / Tweak / Redo) and add a note. Your feedback saves automatically — hit <b>Export</b> when done.</div>`; }
   const sections=themes.map(t=>{ const tiles=(EV_NOMEN[t]||[]).map((nm,i)=>{ const key=t+':'+i; const fb=EVOFB[key]||{}; const sel=S.evoSel===key;
       const dotCol=fb.rate?RC[fb.rate]:(fb.note?'#E8A33A':null);
       const dot=dotCol?`<span style="position:absolute;top:5px;right:5px;width:9px;height:9px;border-radius:50%;background:${dotCol};box-shadow:0 0 0 2px var(--bg2)"></span>`:'';
-      return `<button data-act="evoSelect" data-arg="${key}" style="position:relative;background:var(--bg2);border:2px solid ${sel?'var(--accent)':'var(--line)'};border-radius:12px;padding:8px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:2px">${dot}<div style="width:46px;height:50px;display:grid;place-items:center">${evEmb(t,i)}</div><div style="font-family:var(--mono);font-size:8px;color:var(--muted);font-weight:700">LV ${i+1}</div><div style="font-family:var(--display);font-weight:700;font-size:9.5px;text-align:center;line-height:1.05">${esc(nm)}</div></button>`; }).join('');
-    return `<div style="margin-bottom:18px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:9px;display:flex;align-items:center;gap:8px"><span style="width:14px;height:14px;border-radius:4px;background:linear-gradient(135deg,${(EV_TC[t]||EV_TC.spellbound).a},${(EV_TC[t]||EV_TC.spellbound).b})"></span>${esc(THEME_LABEL[t]||t)}</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px">${tiles}</div></div>`;
+      return `<button data-act="evoSelect" data-arg="${key}" style="position:relative;background:var(--bg2);border:2px solid ${sel?'var(--accent)':'var(--line)'};border-radius:10px;padding:8px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:2px">${dot}<div style="width:46px;height:50px;display:grid;place-items:center">${evEmb(t,i)}</div><div style="font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:700">LV ${i+1}</div><div style="font-family:var(--display);font-weight:700;font-size:12px;text-align:center;line-height:1.05">${esc(nm)}</div></button>`; }).join('');
+    return `<div style="margin-bottom:18px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:9px;display:flex;align-items:center;gap:8px"><span style="width:14px;height:14px;border-radius:6px;background:linear-gradient(135deg,${(EV_TC[t]||EV_TC.spellbound).a},${(EV_TC[t]||EV_TC.spellbound).b})"></span>${esc(THEME_LABEL[t]||t)}</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px">${tiles}</div></div>`;
   }).join('');
   return `<div style="max-width:760px;margin:0 auto">
-    <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:6px"><button data-act="goSettings" style="color:var(--muted);font-weight:700;font-size:14px">← Settings</button><span style="font-family:var(--display);font-weight:800;font-size:22px">Design feedback</span><span style="margin-left:auto;display:inline-flex;align-items:center;gap:10px"><span style="font-size:12.5px;color:var(--muted);font-weight:700">${reviewed}/80 reviewed</span><button data-act="evoExport" style="padding:9px 16px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge)">Export →</button></span></div>
-    <p style="margin:0 0 14px;color:var(--muted);font-size:14px">All 80 evolution tiles (8 worlds × 10 levels). Give per-tile feedback, then export it.</p>
+    <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:6px"><button data-act="goSettings" style="color:var(--muted);font-weight:700;font-size:13px">← Settings</button><span style="font-family:var(--display);font-weight:800;font-size:20px">Design feedback</span><span style="margin-left:auto;display:inline-flex;align-items:center;gap:10px"><span style="font-size:12px;color:var(--muted);font-weight:700">${reviewed}/80 reviewed</span><button data-act="evoExport" style="padding:9px 16px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">Export →</button></span></div>
+    <p style="margin:0 0 14px;color:var(--muted);font-size:13px">All 80 evolution tiles (8 worlds × 10 levels). Give per-tile feedback, then export it.</p>
     ${editor}${sections}
   </div>`; }
 function viewSettings(){
   const S=state;
   const themes=THEMES.map(t=>{ const ev=EVO[t.id]||EVO.spellbound; const on=t.id===S.theme; const locked=!isThemeUnlocked(t.id);
-    const badge=on?'<span style="margin-left:auto;font-size:11px;font-weight:800;color:var(--accent)">Active</span>':(locked?('<span style="margin-left:auto;font-size:11px;font-weight:900;color:#a06a00;background:linear-gradient(135deg,#FFE08A,#F0B85C);padding:3px 8px;border-radius:99px;white-space:nowrap">'+coinAmt(COST.theme,11)+'</span>'):'');
+    const badge=on?'<span style="margin-left:auto;font-size:12px;font-weight:800;color:var(--accent)">Active</span>':(locked?('<span style="margin-left:auto;font-size:12px;font-weight:900;color:#a06a00;background:linear-gradient(135deg,#FFE08A,#F0B85C);padding:3px 8px;border-radius:999px;white-space:nowrap">'+coinAmt(COST.theme,11)+'</span>'):'');
     return `<button data-act="pickTheme" data-arg="${t.id}" style="text-align:left;border-radius:14px;padding:13px;transition:.18s;background:var(--surface2);border:2px solid ${on?'var(--accent)':'transparent'}${on?';box-shadow:0 6px 18px color-mix(in srgb,var(--accent) 28%,transparent)':''};${locked?'opacity:.92':''}">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="width:34px;height:34px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(135deg,${t.c1},${t.c2});flex-shrink:0;color:#fff;${locked?'filter:grayscale(.55)':''}">${locked?iconSVG('lock',18,2.2):worldEmblemSVG(t.id,20)}</div>
-        <div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:14.5px;color:var(--text);line-height:1.05">${t.label}</div><div style="font-family:var(--mono);font-size:9.5px;letter-spacing:.02em;color:var(--accent);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${ev[0]} → ${ev[9]}</div></div>${badge}</div>
-      <div style="font-size:11.5px;color:var(--muted);line-height:1.4">${WORLD_DEF[t.id]||''}</div></button>`; }).join('');
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,${t.c1},${t.c2});flex-shrink:0;color:#fff;${locked?'filter:grayscale(.55)':''}">${locked?iconSVG('lock',18,2.2):worldEmblemSVG(t.id,20)}</div>
+        <div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:15px;color:var(--text);line-height:1.05">${t.label}</div><div style="font-family:var(--mono);font-size:12px;letter-spacing:.02em;color:var(--accent);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${ev[0]} → ${ev[9]}</div></div>${badge}</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.4">${WORLD_DEF[t.id]||''}</div></button>`; }).join('');
   const _voices=enVoices();
   const _nat=(n)=>/natural|enhanced|premium|siri|google|neural|online/i.test(n);
   const voiceOpts=['<option value="">Auto · best available</option>'].concat(_voices.map(v=>`<option value="${escA(v.name)}"${VOICE.name===v.name?' selected':''}>${esc(v.name)}${_nat(v.name)?' ✨':''}</option>`)).join('');
-  const voiceCard=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest)">
+  const voiceCard=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest)">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px">
-        <div><div style="font-family:var(--display);font-weight:800;font-size:16px">Voice</div><div style="font-size:13px;color:var(--muted)">The voice that reads words &amp; sentences aloud</div></div>
-        <button data-act="voiceTest" style="padding:11px 18px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge);white-space:nowrap">▶ Test</button>
+        <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Voice</div><div style="font-size:13px;color:var(--muted)">The voice that reads words &amp; sentences aloud</div></div>
+        <button data-act="voiceTest" style="padding:11px 18px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge);white-space:nowrap">▶ Test</button>
       </div>
-      <div style="position:relative"><select data-chg="voiceSetDevice" style="width:100%;appearance:none;-webkit-appearance:none;padding:13px 36px 13px 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:14px;cursor:pointer">${voiceOpts}</select><span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--accent);font-size:11px">▼</span></div>
+      <div style="position:relative"><select data-chg="voiceSetDevice" style="width:100%;appearance:none;-webkit-appearance:none;padding:13px 36px 13px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px;cursor:pointer">${voiceOpts}</select><span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--accent);font-size:12px">▼</span></div>
       <p style="font-size:12px;color:var(--muted);line-height:1.55;margin:12px 0 0">Spellbound picks the smoothest voice your device offers — no account or key, fully offline. Voices marked ✨ are the most natural. ${_voices.length?'':'<b style="color:var(--text)">Voices load a moment after opening</b> — reopen Settings to see the full list. '}</p>
       ${voiceUpgradeTip()}
     </div>`;
   return `<div style="max-width:640px">
-    <h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:0 0 16px">Settings</h2>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest)">
-      <div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:3px">World</div>
+    <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 16px">Settings</h2>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest)">
+      <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:3px">World</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Each world is a different look and a character that evolves as you level up.</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:11px">${themes}</div>
     </div>
     ${voiceCard}
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
-      <div><div style="font-family:var(--display);font-weight:800;font-size:16px">Background</div><div style="font-size:13px;color:var(--muted)">Tinted paper or pure white</div></div>
-      <div style="display:flex;background:var(--surface2);border-radius:999px;padding:3px"><button data-act="setLight" style="${seg(S.mode==='light')}">Light</button><button data-act="setWhite" style="${seg(S.mode==='white')}">White</button></div>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
+      <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Background</div><div style="font-size:13px;color:var(--muted)">Tinted paper or pure white</div></div>
+      <div style="display:flex;background:var(--surface2);border-radius:999px;padding:3px"><button data-act="setLight" style="${seg(S.mode==='light')}">Light</button><button data-act="setWhite" style="${seg(S.mode==='white')}">White</button><button data-act="setDusk" style="${seg(S.mode==='dusk')}">Dusk</button></div>
     </div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
-      <div><div style="font-family:var(--display);font-weight:800;font-size:16px">Sound effects</div><div style="font-size:13px;color:var(--muted)">Dings, coins &amp; celebrations during games</div></div>
-      <button data-act="toggleSound" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:12px;background:${S.sound?'var(--accent)':'var(--surface2)'};color:${S.sound?'#fff':'var(--muted)'};font-weight:800;font-size:14px">${S.sound?'🔊 On':'🔇 Off'}</button>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
+      <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Sound effects</div><div style="font-size:13px;color:var(--muted)">Dings, coins &amp; celebrations during games</div></div>
+      <button data-act="toggleSound" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:${S.sound?'var(--accent)':'var(--surface2)'};color:${S.sound?'#fff':'var(--muted)'};font-weight:800;font-size:13px">${S.sound?'🔊 On':'🔇 Off'}</button>
     </div>
-    <div style="background:var(--bg2);border:1px solid ${S.devUnlock?'var(--accent)':'var(--line)'};border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
-      <div style="min-width:0"><div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:16px">${iconSVG('lock',16)} Unlock everything <span style="font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:99px">testing</span></div><div style="font-size:13px;color:var(--muted)">Unlocks all concepts, lists, worlds &amp; every level — no coins or Premium needed.</div></div>
-      <button data-act="toggleDevUnlock" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:12px;background:${S.devUnlock?'var(--accent)':'var(--surface2)'};color:${S.devUnlock?'#fff':'var(--muted)'};font-weight:800;font-size:14px">${S.devUnlock?'🔓 On':'Off'}</button>
+    <div style="background:var(--bg2);border:1px solid ${S.devUnlock?'var(--accent)':'var(--line)'};border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
+      <div style="min-width:0"><div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:15px">${iconSVG('lock',16)} Unlock everything <span style="font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:999px">testing</span></div><div style="font-size:13px;color:var(--muted)">Unlocks all concepts, lists, worlds &amp; every level — no coins or Premium needed.</div></div>
+      <button data-act="toggleDevUnlock" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:${S.devUnlock?'var(--accent)':'var(--surface2)'};color:${S.devUnlock?'#fff':'var(--muted)'};font-weight:800;font-size:13px">${S.devUnlock?'🔓 On':'Off'}</button>
     </div>
-    <button data-act="openEvoFeedback" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-radius:14px;background:var(--bg2);border:1px solid var(--line);box-shadow:var(--sh-rest);margin-bottom:16px;color:var(--text)"><div style="text-align:left"><div style="font-family:var(--display);font-weight:800;font-size:16px">Design feedback</div><div style="font-size:12.5px;color:var(--muted)">Review the 80 evolution tiles &amp; export notes</div></div><span style="color:var(--accent)">${iconSVG('arrow',18)}</span></button>
+    <button data-act="openEvoFeedback" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-radius:14px;background:var(--bg2);border:1px solid var(--line);box-shadow:var(--sh-rest);margin-bottom:16px;color:var(--text)"><div style="text-align:left"><div style="font-family:var(--display);font-weight:800;font-size:15px">Design feedback</div><div style="font-size:12px;color:var(--muted)">Review the 80 evolution tiles &amp; export notes</div></div><span style="color:var(--accent)">${iconSVG('arrow',18)}</span></button>
     <button data-act="signOut" style="width:100%;padding:14px;border-radius:14px;background:var(--surface2);color:var(--bad);font-weight:800;font-size:15px">Sign out</button>
   </div>`;
 }
@@ -2254,86 +2266,86 @@ function coachTrain(){
     let h=0; for(const ch2 of String(k)) h=(h*31+ch2.charCodeAt(0))>>>0; return DOCK_PAL[h%DOCK_PAL.length]; };
   const bigC=dockColor(key);
   const bigTile=`<div style="flex:1.5;min-width:220px;display:flex;align-items:center;gap:13px;padding:14px 16px;border-radius:14px;background:linear-gradient(135deg,${bigC},color-mix(in srgb,${bigC} 74%,#1c1030 26%));color:#fff;box-shadow:0 6px 16px color-mix(in srgb,${bigC} 32%,transparent);animation:sb-pop .35s ease both">
-      <div style="width:54px;height:54px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(#fff ${stagePct}%,rgba(255,255,255,.25) 0)"><div style="width:41px;height:41px;border-radius:50%;background:color-mix(in srgb,${bigC} 82%,#1c1030 18%);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:11.5px">${stagePct}%</div></div>
-      <div style="min-width:0"><div style="font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;opacity:.85;font-weight:700">Now training</div>
+      <div style="width:54px;height:54px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(#fff ${stagePct}%,rgba(255,255,255,.25) 0)"><div style="width:41px;height:41px;border-radius:50%;background:color-mix(in srgb,${bigC} 82%,#1c1030 18%);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:12px">${stagePct}%</div></div>
+      <div style="min-width:0"><div style="font-family:var(--mono);font-size:12px;letter-spacing:.11em;text-transform:uppercase;opacity:.85;font-weight:700">Now training</div>
         <div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.12;text-shadow:0 1px 4px rgba(0,0,0,.16)">${esc(dockLabel(key))}</div>
-        <div style="font-size:11.5px;font-weight:700;opacity:.92">Level ${sIdx+1} of ${stages.length} · ${stageM}/${stage.words.length} mastered this Level</div></div></div>`;
+        <div style="font-size:12px;font-weight:700;opacity:.92">Level ${sIdx+1} of ${stages.length} · ${stageM}/${stage.words.length} mastered this Level</div></div></div>`;
   const smallTiles=liveKeys.filter(k=>k!==key).map(k=>{ const cc=dockColor(k); const open=S.dockMenu===k;
-    return `<div style="position:relative;display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:12px;border:1px solid var(--line);background:var(--surface)">
+    return `<div style="position:relative;display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:10px;border:1px solid var(--line);background:var(--surface)">
       <button data-act="selectList" data-arg="${escA(k)}" title="Switch to this list" style="display:flex;align-items:center;gap:9px;min-width:0;flex:1;text-align:left">
-        <span style="width:27px;height:27px;border-radius:8px;flex-shrink:0;background:linear-gradient(135deg,${cc},color-mix(in srgb,${cc} 70%,#1c1030 30%))"></span>
-        <span style="min-width:0"><span style="display:block;font-weight:800;font-size:12.5px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(dockLabel(k))}</span><span style="font-size:10.5px;color:var(--muted);font-weight:700">Level ${listStageIdx(c,k)+1}</span></span></button>
-      <button data-act="dockMenu" data-arg="${escA(k)}" aria-label="List options" style="flex-shrink:0;width:26px;height:26px;border-radius:7px;color:var(--muted);display:grid;place-items:center;background:${open?'var(--surface2)':'transparent'};font-weight:800;font-size:15px;line-height:1">⋯</button>
-      ${open?`<div style="position:absolute;top:calc(100% + 4px);right:4px;z-index:40;background:var(--bg2);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh-overlay);padding:6px;min-width:170px;animation:sb-pop .18s ease both">
-        <button data-act="pauseList" data-arg="${escA(k)}" style="display:flex;align-items:baseline;gap:7px;width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-weight:800;font-size:12.5px;color:var(--text)">${SB_ICON('pause',{size:16})} Pause <span style="color:var(--muted);font-weight:600;font-size:10.5px">keeps progress</span></button>
-        ${CORE_LISTS[k]?'':`<button data-act="dockRemove" data-arg="${escA(k)}" style="display:flex;align-items:center;gap:7px;width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-weight:800;font-size:12.5px;color:var(--bad)">${SB_ICON('x',{size:16})} Remove <span style="color:var(--muted);font-weight:600;font-size:10.5px">re-add from Setup</span></button>`}
+        <span style="width:27px;height:27px;border-radius:6px;flex-shrink:0;background:linear-gradient(135deg,${cc},color-mix(in srgb,${cc} 70%,#1c1030 30%))"></span>
+        <span style="min-width:0"><span style="display:block;font-weight:800;font-size:12px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(dockLabel(k))}</span><span style="font-size:12px;color:var(--muted);font-weight:700">Level ${listStageIdx(c,k)+1}</span></span></button>
+      <button data-act="dockMenu" data-arg="${escA(k)}" aria-label="List options" style="flex-shrink:0;width:26px;height:26px;border-radius:6px;color:var(--muted);display:grid;place-items:center;background:${open?'var(--surface2)':'transparent'};font-weight:800;font-size:15px;line-height:1">⋯</button>
+      ${open?`<div style="position:absolute;top:calc(100% + 4px);right:4px;z-index:40;background:var(--bg2);border:1px solid var(--line);border-radius:10px;box-shadow:var(--sh-overlay);padding:6px;min-width:170px;animation:sb-pop .18s ease both">
+        <button data-act="pauseList" data-arg="${escA(k)}" style="display:flex;align-items:baseline;gap:7px;width:100%;text-align:left;padding:8px 10px;border-radius:6px;font-weight:800;font-size:12px;color:var(--text)">${SB_ICON('pause',{size:16})} Pause <span style="color:var(--muted);font-weight:600;font-size:12px">keeps progress</span></button>
+        ${CORE_LISTS[k]?'':`<button data-act="dockRemove" data-arg="${escA(k)}" style="display:flex;align-items:center;gap:7px;width:100%;text-align:left;padding:8px 10px;border-radius:6px;font-weight:800;font-size:12px;color:var(--bad)">${SB_ICON('x',{size:16})} Remove <span style="color:var(--muted);font-weight:600;font-size:12px">re-add from Setup</span></button>`}
       </div>`:''}
     </div>`; }).join('');
-  const pausedShelf=pausedKeys.length?`<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)"><span style="font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700">Paused</span>${pausedKeys.map(k=>`<button data-act="resumeList" data-arg="${escA(k)}" title="Tap to resume training this list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:99px;border:1px dashed var(--line);background:transparent;color:var(--muted);font-weight:700;font-size:11.5px">${SB_ICON('play',{size:14})} ${esc(dockLabel(k))} <span style="font-size:10px">L${listStageIdx(c,k)+1}</span></button>`).join('')}</div>`:'';
-  const addBtn=`<button data-act="coachSetupOpen" style="white-space:nowrap;padding:8px 13px;border-radius:11px;font-weight:800;font-size:13px;border:1px dashed var(--line);background:transparent;color:var(--accent)">+ Add list</button>`;
-  const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:14px">← Home</button><span style="font-family:var(--display);font-weight:800;font-size:22px;margin-left:4px">Word Coach</span><button data-act="openQuestChooser" title="Change your quest path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} Quest path</button><span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">${iconSVG('target',14)} ${daysToBee()} days to the bee</span></div>`;
-  const allWordsBtn=`<button data-act="luToggleWords" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:8px 13px;border-radius:11px;font-weight:800;font-size:13px;border:1px solid ${S.luWordsOpen?'var(--accent)':'var(--line)'};background:var(--surface2);color:var(--text)">${iconSVG('grid',14)} All words <span style="color:var(--muted);font-weight:700">${fullList.length}</span> ${S.luWordsOpen?'▴':'▾'}</button>`;
-  const newSetBtn = fullList.length>WORK_MAX ? `<button data-act="newBatch" title="Swap in a fresh set of words from this list" style="white-space:nowrap;padding:8px 13px;border-radius:11px;font-weight:800;font-size:13px;border:1px solid var(--line);background:var(--surface2);color:var(--text)">${SB_ICON('retry',{size:16})} New set</button>` : '';
-  const chipsRow=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:12px;box-shadow:var(--sh-rest)">
+  const pausedShelf=pausedKeys.length?`<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)"><span style="font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700">Paused</span>${pausedKeys.map(k=>`<button data-act="resumeList" data-arg="${escA(k)}" title="Tap to resume training this list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;border:1px dashed var(--line);background:transparent;color:var(--muted);font-weight:700;font-size:12px">${SB_ICON('play',{size:14})} ${esc(dockLabel(k))} <span style="font-size:12px">L${listStageIdx(c,k)+1}</span></button>`).join('')}</div>`:'';
+  const addBtn=`<button data-act="coachSetupOpen" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px dashed var(--line);background:transparent;color:var(--accent)">+ Add list</button>`;
+  const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button><span style="font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">Word Coach</span><button data-act="openQuestChooser" title="Change your quest path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} Quest path</button><span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('target',14)} ${daysToBee()} days to the bee</span></div>`;
+  const allWordsBtn=`<button data-act="luToggleWords" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid ${S.luWordsOpen?'var(--accent)':'var(--line)'};background:var(--surface2);color:var(--text)">${iconSVG('grid',14)} All words <span style="color:var(--muted);font-weight:700">${fullList.length}</span> ${S.luWordsOpen?'▴':'▾'}</button>`;
+  const newSetBtn = fullList.length>WORK_MAX ? `<button data-act="newBatch" title="Swap in a fresh set of words from this list" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid var(--line);background:var(--surface2);color:var(--text)">${SB_ICON('retry',{size:16})} New set</button>` : '';
+  const chipsRow=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px;box-shadow:var(--sh-rest)">
     <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:stretch">${bigTile}<div style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:7px;justify-content:center">${smallTiles||'<div style="font-size:12px;color:var(--muted);font-weight:600;padding:4px 2px">Add another list to switch between quests — each keeps its own Level ladder.</div>'}</div></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">${addBtn}${allWordsBtn}${newSetBtn}</div>
     ${pausedShelf}
   </div>`;
   const allWordsPanel = S.luWordsOpen ? (()=>{ const cap=400; const shown=fullList.slice(0,cap);
-    const cells=shown.map(w=>`<div style="background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:10px 12px"><div style="display:flex;align-items:center;gap:6px"><span style="font-family:var(--display);font-weight:800;font-size:14px">${esc(w.w)}</span>${state.luMastered[nkey(w.w)]?'<span style="color:var(--good);font-weight:800;font-size:11px">✓</span>':''}<button data-act="say" data-arg="${escA(w.w)}" style="margin-left:auto;color:var(--accent)">${iconSVG('volume',14)}</button></div>${w.d?`<div style="font-size:11.5px;color:var(--muted);line-height:1.4;margin-top:3px">${esc(trunc(w.d,90))}</div>`:''}</div>`).join('');
-    return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px;animation:sb-rise .3s ease both"><div style="font-family:var(--display);font-weight:800;font-size:14.5px;margin-bottom:10px">Level ${stage.n} words · ${esc(listLabel(key).split(' · ')[0])} · ${fullList.length}</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;max-height:360px;overflow-y:auto">${cells}</div>${fullList.length>cap?`<div style="font-size:11.5px;color:var(--muted);margin-top:8px">Showing the first ${cap} of ${fullList.length}.</div>`:''}</div>`; })() : '';
+    const cells=shown.map(w=>`<div style="background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px"><div style="display:flex;align-items:center;gap:6px"><span style="font-family:var(--display);font-weight:800;font-size:13px">${esc(w.w)}</span>${state.luMastered[nkey(w.w)]?'<span style="color:var(--good);font-weight:800;font-size:12px">✓</span>':''}<button data-act="say" data-arg="${escA(w.w)}" style="margin-left:auto;color:var(--accent)">${iconSVG('volume',14)}</button></div>${w.d?`<div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:3px">${esc(trunc(w.d,90))}</div>`:''}</div>`).join('');
+    return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;animation:sb-rise .3s ease both"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:10px">Level ${stage.n} words · ${esc(listLabel(key).split(' · ')[0])} · ${fullList.length}</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;max-height:360px;overflow-y:auto">${cells}</div>${fullList.length>cap?`<div style="font-size:12px;color:var(--muted);margin-top:8px">Showing the first ${cap} of ${fullList.length}.</div>`:''}</div>`; })() : '';
   const titleRow = (S.renameKey===key)
     ? `<div style="display:flex;align-items:center;gap:8px;flex:1;min-width:220px"><input data-inp="renameInput" data-fkey="renameInp" value="${escA(S.renameVal)}" maxlength="40" placeholder="List name" style="flex:1;min-width:120px;background:var(--surface2);border:1px solid var(--accent);border-radius:10px;padding:8px 11px;font-size:15px;font-weight:800;color:var(--text);font-family:var(--display)"><button data-act="saveRename" style="padding:8px 13px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">Save</button><button data-act="cancelRename" style="padding:8px 11px;border-radius:10px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:13px">✕</button></div>`
-    : `<div style="display:inline-flex;align-items:center;gap:8px;min-width:0"><span style="font-family:var(--display);font-weight:800;font-size:16px">${esc(listLabel(key))}</span><button data-act="startRename" data-arg="${escA(key)}" title="Rename this list" style="color:var(--muted);display:inline-flex">${iconSVG('pencil',15)}</button><span style="font-size:13px;color:var(--muted);font-weight:700;white-space:nowrap">· Level ${uiLevel}</span></div>`;
+    : `<div style="display:inline-flex;align-items:center;gap:8px;min-width:0"><span style="font-family:var(--display);font-weight:800;font-size:15px">${esc(listLabel(key))}</span><button data-act="startRename" data-arg="${escA(key)}" title="Rename this list" style="color:var(--muted);display:inline-flex">${iconSVG('pencil',15)}</button><span style="font-size:13px;color:var(--muted);font-weight:700;white-space:nowrap">· Level ${uiLevel}</span></div>`;
   const printDlg = S.printOpen ? (()=>{ const p=S.prn||{depth:'full',page:'letter',scope:'level'};
-    const pbtn=(g,v,l)=>`<button data-act="printSet" data-arg="${g}:${v}" style="padding:9px 13px;border-radius:10px;font-weight:800;font-size:12.5px;border:1px solid ${p[g]===v?'var(--accent)':'var(--line)'};${p[g]===v?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">${l}</button>`;
+    const pbtn=(g,v,l)=>`<button data-act="printSet" data-arg="${g}:${v}" style="padding:9px 13px;border-radius:10px;font-weight:800;font-size:12px;border:1px solid ${p[g]===v?'var(--accent)':'var(--line)'};${p[g]===v?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">${l}</button>`;
     const prow=(t,btns)=>`<div style="margin-bottom:13px"><div style="font-size:12px;color:var(--muted);font-weight:800;margin-bottom:7px">${t}</div><div style="display:flex;gap:6px;flex-wrap:wrap">${btns}</div></div>`;
     const nWords=(p.scope==='level'?listWords(key):listFullWords(key)).length;
     return `<div style="position:fixed;inset:0;z-index:90;background:rgba(20,12,50,.45);display:grid;place-items:center;padding:18px" data-act="printClose">
-      <div data-act="noop" style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:22px;max-width:430px;width:100%;box-shadow:var(--sh-overlay);cursor:default">
+      <div data-act="noop" style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:22px;max-width:430px;width:100%;box-shadow:var(--sh-overlay);cursor:default">
         <div style="display:flex;align-items:center;gap:9px;margin-bottom:4px"><span style="display:inline-flex;color:var(--action)">${SB_ICON('printer',{size:20})}</span><span style="font-family:var(--display);font-weight:800;font-size:17px">Print word list</span><button data-act="printClose" style="margin-left:auto;color:var(--muted);font-weight:800">✕</button></div>
-        <p style="font-size:12.5px;color:var(--muted);margin:0 0 15px">${esc(listLabel(key).split(' · ')[0])} — opens a clean page you can print or save as PDF.</p>
+        <p style="font-size:12px;color:var(--muted);margin:0 0 15px">${esc(listLabel(key).split(' · ')[0])} — opens a clean page you can print or save as PDF.</p>
         ${prow('What to include',[['words','Words only'],['say','Words + pronunciation'],['full','Words + pronunciation + meaning']].map(([v,l])=>pbtn('depth',v,l)).join(''))}
         ${prow('Page size',[['letter','Letter'],['a4','A4'],['a5','A5']].map(([v,l])=>pbtn('page',v,l)).join(''))}
         ${prow('Scope',[['level','This Level'],['all','Whole list']].map(([v,l])=>pbtn('scope',v,l)).join(''))}
-        <button data-act="printGo" style="width:100%;padding:13px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">Print ${nWords} words →</button>
+        <button data-act="printGo" style="width:100%;padding:13px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Print ${nWords} words →</button>
       </div></div>`; })() : '';
   // ---- one Level header (Word→Set→Level→Champ→Library) ----
   const levelHeadline = isJourney
     ? (stage.champ ? ('Level '+stage.n+' of '+CHAMP_LEVELS+' to Champ') : ('Champion\'s Library · '+esc(stage.label)))
     : ('Level '+stage.n+' of '+stages.length);
   const levelTag = isJourney
-    ? (stage.champ ? `<span style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--accent)">SPELLBOUND CHAMP</span>` : `<span style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em;color:#C8901B">★ CHAMP · LIBRARY</span>`)
-    : `<span style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--muted)">${esc(listLabel(key).split(' · ')[0]).toUpperCase()}</span>`;
+    ? (stage.champ ? `<span style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--accent)">SPELLBOUND CHAMP</span>` : `<span style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.08em;color:#C8901B">★ CHAMP · LIBRARY</span>`)
+    : `<span style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--muted)">${esc(listLabel(key).split(' · ')[0]).toUpperCase()}</span>`;
   const advanceTo = isJourney ? (nextIsLibrary ? ('Library '+(stage.n-CHAMP_LEVELS+1)) : ('Level '+(stage.n+1))) : ('Level '+(stage.n+1));
   let advanceHTML;
-  if(lastStage && stageDone){ advanceHTML=`<div style="margin-top:10px;font-size:12.5px;color:var(--good);font-weight:800">🏆 Every level cleared — legendary!</div>`; }
-  else if(stageDone && libLocked){ advanceHTML=`<div style="margin-top:11px;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:11px 13px"><div style="font-weight:800;font-size:13px;margin-bottom:3px">🏆 You're a Spellbound Champ!</div><div style="font-size:11.5px;color:var(--muted);line-height:1.5;margin-bottom:9px">The Champion's Library — the other ${fmtN(journeyTotal()-champWordCount())} words — is Premium.</div><button data-act="goPaywall" style="padding:9px 15px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">Unlock the Library 👑</button></div>`; }
-  else if(stageDone){ advanceHTML=`<button data-act="advanceStage" data-arg="${escA(key)}" style="margin-top:11px;width:100%;padding:12px;border-radius:11px;background:var(--good);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">Level ${stage.n} cleared! Go to ${advanceTo} →</button>`; }
-  else { advanceHTML=`<div style="margin-top:11px"><button data-act="openChallenge" data-arg="${escA(key)}" style="width:100%;padding:12px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">⚡ Take the Level ${stage.n} Challenge</button></div><div style="margin-top:8px;font-size:11px;color:var(--muted);line-height:1.5">Master all ${stage.words.length} words to level up — or pass the Challenge to test out early.</div>`; }
+  if(lastStage && stageDone){ advanceHTML=`<div style="margin-top:10px;font-size:12px;color:var(--good);font-weight:800">🏆 Every level cleared — legendary!</div>`; }
+  else if(stageDone && libLocked){ advanceHTML=`<div style="margin-top:11px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:11px 13px"><div style="font-weight:800;font-size:13px;margin-bottom:3px">🏆 You're a Spellbound Champ!</div><div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:9px">The Champion's Library — the other ${fmtN(journeyTotal()-champWordCount())} words — is Premium.</div><button data-act="goPaywall" style="padding:9px 15px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">Unlock the Library 👑</button></div>`; }
+  else if(stageDone){ advanceHTML=`<button data-act="advanceStage" data-arg="${escA(key)}" style="margin-top:11px;width:100%;padding:12px;border-radius:10px;background:var(--good);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Level ${stage.n} cleared! Go to ${advanceTo} →</button>`; }
+  else { advanceHTML=`<div style="margin-top:11px"><button data-act="openChallenge" data-arg="${escA(key)}" style="width:100%;padding:12px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">⚡ Take the Level ${stage.n} Challenge</button></div><div style="margin-top:8px;font-size:12px;color:var(--muted);line-height:1.5">Master all ${stage.words.length} words to level up — or pass the Challenge to test out early.</div>`; }
   const tracker = isJourney
-    ? `<div style="display:flex;gap:3px;margin-top:11px">${Array.from({length:CHAMP_LEVELS},(_,i)=>`<span style="flex:1;height:5px;border-radius:99px;background:${(uiLevel>i+1||(uiLevel===i+1&&stageDone))?'var(--good)':(uiLevel===i+1?'var(--accent)':'var(--line)')}"></span>`).join('')}</div><div style="font-size:10px;color:var(--muted);margin-top:5px">20 levels to Spellbound Champ${uiLevel>CHAMP_LEVELS?' ✓ — now exploring the Library':''}</div>`
-    : `<div style="display:flex;gap:4px;margin-top:11px">${stages.map((s,i)=>`<span style="flex:1;height:5px;border-radius:99px;background:${(i<sIdx||(i===sIdx&&stageDone))?'var(--good)':(i===sIdx?'var(--accent)':'var(--line)')}"></span>`).join('')}</div>`;
-  const libMeter = isJourney ? `<div style="margin-top:11px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:7px"><span style="font-weight:800;color:var(--text)">Library explored</span> ${fmtN(journeyMastered(c))} / ${fmtN(journeyTotal())} words mastered</div>` : '';
-  const levelBlock=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:16px;box-shadow:var(--sh-rest)">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px">${titleRow}<div style="font-size:12.5px;color:var(--muted);font-weight:700">You're <b style="color:var(--text)">${form}</b></div></div>
-      <div style="background:var(--surface2);border:1px solid var(--line);border-radius:13px;padding:13px 15px;margin-bottom:12px">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:3px">${levelTag}<span style="font-size:11.5px;color:var(--muted);font-weight:700">${stageM}/${stage.words.length} mastered</span></div>
-        <div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:8px">${levelHeadline}</div>
-        <div style="display:flex;align-items:center;gap:10px"><div style="flex:1;height:9px;border-radius:99px;background:var(--bg2);overflow:hidden"><div style="height:100%;border-radius:99px;background:${stageDone?'var(--good)':'var(--accent)'};width:${stagePct}%;transition:width .4s"></div></div><span style="font-size:11.5px;color:var(--muted);font-weight:800">${stagePct}%</span></div>
+    ? `<div style="display:flex;gap:3px;margin-top:11px">${Array.from({length:CHAMP_LEVELS},(_,i)=>`<span style="flex:1;height:5px;border-radius:999px;background:${(uiLevel>i+1||(uiLevel===i+1&&stageDone))?'var(--good)':(uiLevel===i+1?'var(--accent)':'var(--line)')}"></span>`).join('')}</div><div style="font-size:12px;color:var(--muted);margin-top:5px">20 levels to Spellbound Champ${uiLevel>CHAMP_LEVELS?' ✓ — now exploring the Library':''}</div>`
+    : `<div style="display:flex;gap:4px;margin-top:11px">${stages.map((s,i)=>`<span style="flex:1;height:5px;border-radius:999px;background:${(i<sIdx||(i===sIdx&&stageDone))?'var(--good)':(i===sIdx?'var(--accent)':'var(--line)')}"></span>`).join('')}</div>`;
+  const libMeter = isJourney ? `<div style="margin-top:11px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:7px"><span style="font-weight:800;color:var(--text)">Library explored</span> ${fmtN(journeyMastered(c))} / ${fmtN(journeyTotal())} words mastered</div>` : '';
+  const levelBlock=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:16px;box-shadow:var(--sh-rest)">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px">${titleRow}<div style="font-size:12px;color:var(--muted);font-weight:700">You're <b style="color:var(--text)">${form}</b></div></div>
+      <div style="background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:3px">${levelTag}<span style="font-size:12px;color:var(--muted);font-weight:700">${stageM}/${stage.words.length} mastered</span></div>
+        <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:8px">${levelHeadline}</div>
+        <div style="display:flex;align-items:center;gap:10px"><div style="flex:1;height:9px;border-radius:999px;background:var(--bg2);overflow:hidden"><div style="height:100%;border-radius:999px;background:${stageDone?'var(--good)':'var(--accent)'};width:${stagePct}%;transition:width .4s"></div></div><span style="font-size:12px;color:var(--muted);font-weight:800">${stagePct}%</span></div>
         ${advanceHTML}
         ${tracker}
         ${libMeter}
       </div>
       <div style="overflow-x:auto;padding:2px 0"><div style="min-width:760px">${evoLadderHTML(theme, fIdx)}</div></div>
     </div>`;
-  const tab=(k,l)=>`<button data-act="luSetTab" data-arg="${k}" style="flex:1;padding:9px 8px;border-radius:9px;font-weight:800;font-size:13.5px;${S.luTab===k?'background:var(--bg2);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.08)':'background:transparent;color:var(--muted)'}">${l}</button>`;
+  const tab=(k,l)=>`<button data-act="luSetTab" data-arg="${k}" style="flex:1;padding:9px 8px;border-radius:10px;font-weight:800;font-size:13px;${S.luTab===k?'background:var(--bg2);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.08)':'background:transparent;color:var(--muted)'}">${l}</button>`;
   const body = S.luTab==='practice' ? trainerCard() : wordFlash(ws, S.reviseIdx, 'reviseNav', {});
-  const act=(a,ic,t,d)=>`<button data-act="${a}" style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:13px"><span style="color:var(--accent)">${iconSVG(ic,18)}</span><span style="font-family:var(--display);font-weight:800;font-size:14px">${t}</span><span style="font-size:11.5px;color:var(--muted)">${d}</span></button>`;
+  const act=(a,ic,t,d)=>`<button data-act="${a}" style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:13px"><span style="color:var(--accent)">${iconSVG(ic,18)}</span><span style="font-family:var(--display);font-weight:800;font-size:13px">${t}</span><span style="font-size:12px;color:var(--muted)">${d}</span></button>`;
   const actions=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:16px">${act('startBuzz','flame','Daily Buzz','Quick mixed round')}${act('startWritten','pencil','Written round','Type a sequence, scored')}${act('startOral','volume','Oral elimination','Spell aloud, survive')}${act('coachSetupOpen','gear','Setup &amp; lists','Date, goal, choose lists')}</div>`;
-  const journeyPromo = (key!=='journey' && (getList(c,'journey').stage||0)===0) ? `<button data-act="startJourney" style="width:100%;text-align:left;border-radius:14px;margin-top:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 4px 14px rgba(43,27,94,.16)"><div style="padding:13px 16px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">★ Recommended path</div><div style="font-family:var(--display);font-weight:800;font-size:16px;line-height:1.15">The Spellbound Journey — 20 Levels to Champ</div></div><span style="padding:8px 14px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Start →</span></div></button>` : '';
+  const journeyPromo = (key!=='journey' && (getList(c,'journey').stage||0)===0) ? `<button data-act="startJourney" style="width:100%;text-align:left;border-radius:14px;margin-top:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 4px 14px rgba(43,27,94,.16)"><div style="padding:13px 16px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">★ Recommended path</div><div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">The Spellbound Journey — 20 Levels to Champ</div></div><span style="padding:8px 14px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Start →</span></div></button>` : '';
   return `<div style="max-width:760px;margin:0 auto">${printDlg}${topBar}
-    <div style="display:flex;gap:6px;background:var(--surface2);border-radius:13px;padding:5px;margin-bottom:16px">${tab('revise','Learn')}${tab('practice','Practice')}</div>
+    <div style="display:flex;gap:6px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:16px">${tab('revise','Learn')}${tab('practice','Practice')}</div>
     ${body}
     ${liveHeatmap(ws, {anon:S.luTab==='practice', print:true})}
     ${chipsRow}${allWordsPanel}
@@ -2374,17 +2386,17 @@ function listCoverBG(k){ const f=listCoverOf(k); const t=CONCEPT_TEX[f.tex]||CON
 function listCoverCard(k,label,sub,count,locked){ const c=active(); const on=(c.activeList||'default')===k; const f=listCoverOf(k); const act=locked?'buyList':'selectList';
   const lvl=(getList(c,k).stage||0)+1;
   const stMeta = (k==='journey') ? (' · Level '+(listStageIdx(c,'journey')+1)) : ((on && !locked) ? (' · Level '+(listStageIdx(c,k)+1)+'/'+listStages(k).length) : '');
-  return `<button class="sb-cover-card" data-act="${act}" data-arg="${k}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px ${on?f.c:'var(--line)'},var(--sh-rest);display:flex;flex-direction:column">
+  return `<button class="sb-cover-card" data-act="${act}" data-arg="${k}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px ${on?f.c:'var(--line)'},var(--sh-rest);display:flex;flex-direction:column">
     <div style="position:relative;height:88px;display:flex;align-items:center;justify-content:center;padding:12px;${listCoverBG(k)}">
-      <span style="position:absolute;top:10px;left:11px;font-family:var(--mono);font-weight:700;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(f.tag)}</span>
-      ${on?'<span style="position:absolute;top:9px;right:10px;padding:2px 8px;border-radius:99px;background:rgba(255,255,255,.92);color:#1fa377;font-weight:900;font-size:9.5px">ACTIVE</span>':''}
+      <span style="position:absolute;top:10px;left:11px;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(f.tag)}</span>
+      ${on?'<span style="position:absolute;top:9px;right:10px;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.92);color:#1fa377;font-weight:900;font-size:12px">ACTIVE</span>':''}
       <div class="sb-theme-art" style="text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.16);animation-delay:${(k.length%9)*0.22}s">${locked?`<div style="display:flex;justify-content:center;color:#fff">${iconSVG('lock',34,2)}</div>`:`<div style="font-family:var(--display);color:#fff;line-height:1;letter-spacing:-.01em;font-weight:800;font-size:${heroFont(f.hero)}px">${esc(f.hero)}</div>`}</div>
     </div>
     <div style="padding:12px 14px 13px;display:flex;flex-direction:column;flex:1">
-      <div style="font-family:var(--display);font-weight:800;font-size:14.5px;line-height:1.18;color:var(--text)">${esc(label)}</div>
-      <div style="font-family:var(--body);font-weight:600;font-size:11.5px;line-height:1.4;color:var(--muted);margin-top:4px">${esc(trunc(sub,64))}</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.18;color:var(--text)">${esc(label)}</div>
+      <div style="font-family:var(--body);font-weight:600;font-size:12px;line-height:1.4;color:var(--muted);margin-top:4px">${esc(trunc(sub,64))}</div>
       <div style="margin-top:auto;padding-top:11px;display:flex;align-items:center;justify-content:space-between;gap:8px">
-        <span style="font-family:var(--mono);font-size:10.5px;color:var(--muted);font-weight:700">${count} words · L${lvl}${stMeta}</span>
+        <span style="font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:700">${count} words · L${lvl}${stMeta}</span>
         <span style="display:inline-flex;align-items:center;gap:4px;font-family:var(--body);font-weight:800;font-size:12px;color:${on?f.c:(locked?'#a06a00':f.c)};white-space:nowrap">${on?'Training':(locked?(iconSVG('lock',11,2.2)+' '+coinAmt(COST.list,11)):'Choose →')}</span>
       </div>
     </div>
@@ -2397,26 +2409,26 @@ function coachSetup(){
   const jc=listCoverOf('journey'); const jLvl=(getList(c,'journey').stage||0)+1; const jMast=journeyMastered(c);
   const jChampPct=Math.round(Math.min(1,(getList(c,'journey').stage||0)/CHAMP_LEVELS)*100); const jStarted=(getList(c,'journey').stage||0)>0 || jMast>0;
   const champLabel = jLvl>CHAMP_LEVELS ? 'Spellbound Champ 🏆 · exploring the Library' : ('Level '+Math.min(jLvl,CHAMP_LEVELS)+' of '+CHAMP_LEVELS+' to Champ');
-  const journeyBanner=`<button data-act="startJourney" style="position:relative;overflow:hidden;text-align:left;width:100%;border-radius:18px;margin-bottom:16px;${listCoverBG('journey')};box-shadow:0 8px 22px rgba(43,27,94,.18)">
+  const journeyBanner=`<button data-act="startJourney" style="position:relative;overflow:hidden;text-align:left;width:100%;border-radius:20px;margin-bottom:16px;${listCoverBG('journey')};box-shadow:0 8px 22px rgba(43,27,94,.18)">
     <div style="padding:18px 20px;color:#fff">
-      <span style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">★ Recommended path</span>
-      <div style="font-family:var(--display);font-weight:800;font-size:22px;line-height:1.1;margin:6px 0 4px">The Spellbound Journey</div>
+      <span style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">★ Recommended path</span>
+      <div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1.1;margin:6px 0 4px">The Spellbound Journey</div>
       <div style="font-size:13px;color:rgba(255,255,255,.9);line-height:1.5;margin-bottom:12px;max-width:46em">Climb <b>20 Levels</b> through the ~${fmtN(champWordCount())} highest-value bee words to become a <b>Spellbound Champ</b> — then unlock the full ${fmtN(journeyTotal())}-word Library. Words → Set of 24 → Level → Champ.</div>
-      <div style="height:8px;border-radius:99px;background:rgba(255,255,255,.25);overflow:hidden;margin-bottom:9px"><div style="height:100%;width:${jChampPct}%;background:#fff"></div></div>
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><span style="font-size:11.5px;font-weight:800;color:rgba(255,255,255,.92)">${champLabel} · ${fmtN(jMast)} mastered</span><span style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:11px;background:#fff;color:${jc.c};font-weight:800;font-size:14px">${jStarted?'Continue':'Start the Journey'} →</span></div>
+      <div style="height:8px;border-radius:999px;background:rgba(255,255,255,.25);overflow:hidden;margin-bottom:9px"><div style="height:100%;width:${jChampPct}%;background:#fff"></div></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><span style="font-size:12px;font-weight:800;color:rgba(255,255,255,.92)">${champLabel} · ${fmtN(jMast)} mastered</span><span style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:10px;background:#fff;color:${jc.c};font-weight:800;font-size:13px">${jStarted?'Continue':'Start the Journey'} →</span></div>
     </div></button>`;
   return `<div style="max-width:760px;margin:0 auto">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><button data-act="openCoach" style="color:var(--muted);font-weight:700;font-size:14px">← Back to Word Coach</button></div>
-    <h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:0 0 4px">Setup &amp; lists</h2>
-    <p style="margin:0 0 16px;color:var(--muted);font-size:14px">Pick the list you're training — each keeps its own level.${state.premium?'':' 🔒 lists unlock with Premium <b>or</b> 🪙 '+COST.list+' coins from playing.'}</p>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><button data-act="openCoach" style="color:var(--muted);font-weight:700;font-size:13px">← Back to Word Coach</button></div>
+    <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 4px">Setup &amp; lists</h2>
+    <p style="margin:0 0 16px;color:var(--muted);font-size:13px">Pick the list you're training — each keeps its own level.${state.premium?'':' 🔒 lists unlock with Premium <b>or</b> 🪙 '+COST.list+' coins from playing.'}</p>
     ${journeyBanner}
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px">
-      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end"><div style="flex:1;min-width:150px"><label style="display:block;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px">Bee day</label><input data-chg="setCoachDate" type="date" value="${escA(S.coachDate||'')}" style="width:100%;padding:11px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:14px"></div><div style="width:120px"><label style="display:block;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px">Daily goal</label><input data-chg="setCoachGoal" value="${escA(S.coachGoal)}" style="width:100%;padding:11px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:14px"></div></div>
-      <div style="font-size:11.5px;color:var(--muted);margin-top:8px">The daily goal is a target, not a limit — keep going as long as you like.</div></div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:12px">Choose a list</div><div style="${coverGrid}">${defCard}${others}</div></div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:16px"><div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:4px;display:flex;align-items:center;gap:8px"><span style="color:var(--accent)">${iconSVG('upload',18)}</span> Bring your own words</div><p style="font-size:12.5px;color:var(--muted);margin:0 0 10px">Paste words (commas or new lines) — we enrich them from the database.</p>
-      <textarea data-inp="setCustomText" data-fkey="customText" placeholder="silhouette, bouquet, mnemonic" style="width:100%;min-height:74px;resize:vertical;padding:12px 13px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:600;font-size:14px;margin-bottom:10px;font-family:var(--body)">${esc(S.customText)}</textarea>
-      <button data-act="enrichCustom" style="width:100%;padding:12px;border-radius:12px;background:var(--surface2);color:var(--text);font-weight:800;font-size:14.5px;border:1px solid var(--line)">Enrich &amp; train these →</button></div>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end"><div style="flex:1;min-width:150px"><label style="display:block;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px">Bee day</label><input data-chg="setCoachDate" type="date" value="${escA(S.coachDate||'')}" style="width:100%;padding:11px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px"></div><div style="width:120px"><label style="display:block;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px">Daily goal</label><input data-chg="setCoachGoal" value="${escA(S.coachGoal)}" style="width:100%;padding:11px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px"></div></div>
+      <div style="font-size:12px;color:var(--muted);margin-top:8px">The daily goal is a target, not a limit — keep going as long as you like.</div></div>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:12px">Choose a list</div><div style="${coverGrid}">${defCard}${others}</div></div>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:16px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px;display:flex;align-items:center;gap:8px"><span style="color:var(--accent)">${iconSVG('upload',18)}</span> Bring your own words</div><p style="font-size:12px;color:var(--muted);margin:0 0 10px">Paste words (commas or new lines) — we enrich them from the database.</p>
+      <textarea data-inp="setCustomText" data-fkey="customText" placeholder="silhouette, bouquet, mnemonic" style="width:100%;min-height:74px;resize:vertical;padding:12px 13px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:600;font-size:13px;margin-bottom:10px;font-family:var(--body)">${esc(S.customText)}</textarea>
+      <button data-act="enrichCustom" style="width:100%;padding:12px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;border:1px solid var(--line)">Enrich &amp; train these →</button></div>
   </div>`;
 }
 function viewCoach(){
@@ -2434,82 +2446,82 @@ function coachHub(){
   const S=state; const c=active();
   const cDays=coachDaysLeft(); const cPhase=coachPhase(); const cRd=coachReadiness();
   const tabs=[['train','Train'],['setup','Setup'],['heatmap','Heatmap'],['parent','Parent']].map(([k,l])=>{ const on=S.coachTab===k;
-    return `<button data-act="coachTab" data-arg="${k}" style="flex:1;padding:9px 8px;border-radius:9px;font-weight:800;font-size:13px;${on?'background:var(--bg2);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.08)':'background:transparent;color:var(--muted)'}">${l}</button>`; }).join('');
+    return `<button data-act="coachTab" data-arg="${k}" style="flex:1;padding:9px 8px;border-radius:10px;font-weight:800;font-size:13px;${on?'background:var(--bg2);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.08)':'background:transparent;color:var(--muted)'}">${l}</button>`; }).join('');
   let tabBody='';
   if(S.coachTab==='train'){
     const planText={breadth:'Breadth — cover the whole list. Study new words broadly to build coverage.',depth:'Depth — drill your misses and run reviews. Lock in the tricky ones.',sim:'Simulation — run full Written and Oral rounds at real competition difficulty.',none:'Set a target date in Setup to unlock your countdown and a day-by-day plan.',past:'Your target date has passed — set a new one in Setup to keep training.'}[cPhase.key];
     const recMap={breadth:['Study new words →'],depth:['Drill weak words →'],sim:['Start a written round →']}[cPhase.key];
     const phaseTag=cPhase.d!=null?(' · '+(cPhase.key==='breadth'?'more than 4 weeks out':cPhase.key==='depth'?'2–4 weeks out':'final 2 weeks')):'';
     const modes=[['Study','Learn + spaced repetition','book','coachStudy'],['Written round','Type a sequence, scored at end','pencil','startWritten'],['Oral elimination','Spell aloud, survive rounds','volume','startOral'],['Weak-word drill','Your most-missed words','spark','coachWeakDrill']]
-      .map(([name,desc,ic,act])=>`<button data-act="${act}" style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:14px"><span style="color:var(--accent)">${iconSVG(ic,20)}</span><span style="font-family:var(--display);font-weight:800;font-size:14.5px">${name}</span><span style="font-size:12px;color:var(--muted);line-height:1.35">${desc}</span></button>`).join('');
-    tabBody=`${cDays!=null?`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:18px;text-align:center;margin-bottom:14px;box-shadow:var(--glow)"><div style="font-family:var(--display);font-weight:800;font-size:46px;line-height:1;color:var(--accent)">${Math.abs(cDays)}</div><div style="font-size:13px;color:var(--muted);font-weight:700;margin-top:4px">${cDays<0?'days since your bee':'days to go'}</div></div>`:''}
+      .map(([name,desc,ic,act])=>`<button data-act="${act}" style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:14px"><span style="color:var(--accent)">${iconSVG(ic,20)}</span><span style="font-family:var(--display);font-weight:800;font-size:15px">${name}</span><span style="font-size:12px;color:var(--muted);line-height:1.35">${desc}</span></button>`).join('');
+    tabBody=`${cDays!=null?`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:18px;text-align:center;margin-bottom:14px;box-shadow:var(--glow)"><div style="font-family:var(--display);font-weight:800;font-size:46px;line-height:1;color:var(--accent)">${Math.abs(cDays)}</div><div style="font-size:13px;color:var(--muted);font-weight:700;margin-top:4px">${cDays<0?'days since your bee':'days to go'}</div></div>`:''}
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">
-        <div style="background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:22px">${cRd.size?(cRd.ready+'%'):'—'}</div><div style="font-size:12px;color:var(--muted);font-weight:700">Readiness</div></div>
-        <div style="background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:22px">${cRd.ms}</div><div style="font-size:12px;color:var(--muted);font-weight:700">Mastered</div></div>
-        <div style="background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:22px;display:flex;align-items:center;justify-content:center;gap:5px">${(c.streak||0)} <span style="color:#FF7A1A">${iconSVG('fire',16)}</span></div><div style="font-size:12px;color:var(--muted);font-weight:700">Streak</div></div>
+        <div style="background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:20px">${cRd.size?(cRd.ready+'%'):'—'}</div><div style="font-size:12px;color:var(--muted);font-weight:700">Readiness</div></div>
+        <div style="background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:20px">${cRd.ms}</div><div style="font-size:12px;color:var(--muted);font-weight:700">Mastered</div></div>
+        <div style="background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:20px;display:flex;align-items:center;justify-content:center;gap:5px">${(c.streak||0)} <span style="color:#FF7A1A">${iconSVG('fire',16)}</span></div><div style="font-size:12px;color:var(--muted);font-weight:700">Streak</div></div>
       </div>
-      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px">
-        <div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:4px">Today's plan</div>
-        <div style="font-size:12.5px;color:var(--muted);margin-bottom:6px">Target list: <b style="color:var(--text)">${esc(S.coachTargetLabel)}</b>${phaseTag}</div>
-        <p style="font-size:14px;line-height:1.5;margin:0 0 12px">${planText}</p>
-        ${recMap?`<button data-act="coachRec" style="width:100%;padding:13px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${recMap[0]}</button>`:''}
+      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px">
+        <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px">Today's plan</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Target list: <b style="color:var(--text)">${esc(S.coachTargetLabel)}</b>${phaseTag}</div>
+        <p style="font-size:13px;line-height:1.5;margin:0 0 12px">${planText}</p>
+        ${recMap?`<button data-act="coachRec" style="width:100%;padding:13px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${recMap[0]}</button>`:''}
       </div>
-      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:18px"><div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:12px">Training modes</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${modes}</div></div>`;
+      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:18px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:12px">Training modes</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${modes}</div></div>`;
   } else if(S.coachTab==='setup'){
     const cat=coachActiveCat(); const opts=coachCatalog().map(o=>`<option value="${o.key}"${o.key===S.coachTargetKey?' selected':''}>${esc(o.label)} (${o.count})</option>`).join('');
-    tabBody=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:12px">Bee day & daily goal</div>
-        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end"><div style="flex:1;min-width:160px"><label style="display:block;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px">Target date</label><input data-chg="setCoachDate" type="date" value="${escA(S.coachDate||'')}" style="width:100%;padding:11px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:14px"></div>
-          <div style="width:110px"><label style="display:block;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px">Daily goal</label><input data-chg="setCoachGoal" data-fkey="coachGoal" value="${escA(S.coachGoal)}" style="width:100%;padding:11px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:14px"></div></div></div>
-      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:4px">Choose your target list</div><p style="font-size:12.5px;color:var(--muted);margin:0 0 14px">This drives your plan, readiness and drills.</p>
-        <div style="position:relative"><select data-chg="setCoachTarget" style="width:100%;appearance:none;-webkit-appearance:none;padding:14px 38px 14px 14px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-family:var(--display);font-weight:800;font-size:15px;cursor:pointer">${opts}</select><span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--accent);font-size:12px">▼</span></div>
-        <div style="display:flex;align-items:center;gap:8px;margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--surface2)"><span style="color:var(--accent)">${iconSVG('target',18)}</span><div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:14px">${esc(S.coachTargetLabel)} · ${cat?cat.count:0} words</div><div style="font-size:12px;color:var(--muted)">${cat?esc(cat.sub):''}</div></div></div></div>
-      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:4px;display:flex;align-items:center;gap:8px"><span style="color:var(--accent)">${iconSVG('spark',16)}</span> Smart list with AI</div><p style="font-size:12.5px;color:var(--muted);margin:0 0 12px">Describe what you want to drill and Coach AI builds a list from the word database.</p>
-        <input data-inp="setAiPrompt" data-fkey="aiPrompt" value="${escA(S.aiPrompt)}" placeholder="e.g. tricky silent-letter words for a 5th grader" style="width:100%;padding:13px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:600;font-size:14px;margin-bottom:10px">
-        <button data-act="generateAiList" style="width:100%;padding:13px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${S.aiLoading?'Thinking…':'Generate smart list →'}</button>
-        ${S.aiError?`<div style="font-size:12.5px;color:var(--bad);font-weight:700;margin-top:10px">${esc(S.aiError)}</div>`:''}</div>
-      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:18px"><div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:4px;display:flex;align-items:center;gap:8px"><span style="color:var(--accent)">${iconSVG('upload',18)}</span> Bring your own words</div><p style="font-size:12.5px;color:var(--muted);margin:0 0 12px">Paste words (commas or new lines). We enrich them with definitions, sentences and origins from the database.</p>
-        <textarea data-inp="setCustomText" data-fkey="customText" placeholder="silhouette, bouquet, mnemonic" style="width:100%;min-height:84px;resize:vertical;padding:13px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:600;font-size:14px;line-height:1.5;margin-bottom:10px;font-family:var(--body)">${esc(S.customText)}</textarea>
-        <button data-act="enrichCustom" style="width:100%;padding:13px;border-radius:12px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;border:1px solid var(--line)">Enrich & set as target →</button>
-        ${S.enrichResult?`<div style="font-size:12.5px;color:var(--accent);font-weight:700;margin-top:10px">${esc(S.enrichResult)}</div>`:''}</div>`;
+    tabBody=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:12px">Bee day & daily goal</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end"><div style="flex:1;min-width:160px"><label style="display:block;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px">Target date</label><input data-chg="setCoachDate" type="date" value="${escA(S.coachDate||'')}" style="width:100%;padding:11px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px"></div>
+          <div style="width:110px"><label style="display:block;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px">Daily goal</label><input data-chg="setCoachGoal" data-fkey="coachGoal" value="${escA(S.coachGoal)}" style="width:100%;padding:11px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px"></div></div></div>
+      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px">Choose your target list</div><p style="font-size:12px;color:var(--muted);margin:0 0 14px">This drives your plan, readiness and drills.</p>
+        <div style="position:relative"><select data-chg="setCoachTarget" style="width:100%;appearance:none;-webkit-appearance:none;padding:14px 38px 14px 14px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-family:var(--display);font-weight:800;font-size:15px;cursor:pointer">${opts}</select><span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--accent);font-size:12px">▼</span></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--surface2)"><span style="color:var(--accent)">${iconSVG('target',18)}</span><div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:13px">${esc(S.coachTargetLabel)} · ${cat?cat.count:0} words</div><div style="font-size:12px;color:var(--muted)">${cat?esc(cat.sub):''}</div></div></div></div>
+      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px;display:flex;align-items:center;gap:8px"><span style="color:var(--accent)">${iconSVG('spark',16)}</span> Smart list with AI</div><p style="font-size:12px;color:var(--muted);margin:0 0 12px">Describe what you want to drill and Coach AI builds a list from the word database.</p>
+        <input data-inp="setAiPrompt" data-fkey="aiPrompt" value="${escA(S.aiPrompt)}" placeholder="e.g. tricky silent-letter words for a 5th grader" style="width:100%;padding:13px 14px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:600;font-size:13px;margin-bottom:10px">
+        <button data-act="generateAiList" style="width:100%;padding:13px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${S.aiLoading?'Thinking…':'Generate smart list →'}</button>
+        ${S.aiError?`<div style="font-size:12px;color:var(--bad);font-weight:700;margin-top:10px">${esc(S.aiError)}</div>`:''}</div>
+      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:18px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px;display:flex;align-items:center;gap:8px"><span style="color:var(--accent)">${iconSVG('upload',18)}</span> Bring your own words</div><p style="font-size:12px;color:var(--muted);margin:0 0 12px">Paste words (commas or new lines). We enrich them with definitions, sentences and origins from the database.</p>
+        <textarea data-inp="setCustomText" data-fkey="customText" placeholder="silhouette, bouquet, mnemonic" style="width:100%;min-height:84px;resize:vertical;padding:13px 14px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:600;font-size:13px;line-height:1.5;margin-bottom:10px;font-family:var(--body)">${esc(S.customText)}</textarea>
+        <button data-act="enrichCustom" style="width:100%;padding:13px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;border:1px solid var(--line)">Enrich & set as target →</button>
+        ${S.enrichResult?`<div style="font-size:12px;color:var(--accent);font-weight:700;margin-top:10px">${esc(S.enrichResult)}</div>`:''}</div>`;
   } else if(S.coachTab==='heatmap'){
     const cHeatC={mastered:'#1f9d57',review:'#c08a00',learning:'#e07a3a',new:'#b9bdc9'};
-    const cells=coachPool().slice(0,240).map(r=>{ const stt=srsState((S.coachSrs||{})[nkey(r.w)]); return `<button data-act="say" data-arg="${escA(r.w)}" style="font-family:var(--mono);font-size:12px;font-weight:700;padding:6px 10px;border-radius:8px;color:#fff;background:${cHeatC[stt]}">${esc(r.w)}</button>`; }).join('');
-    const legend=[['Mastered','mastered'],['Review','review'],['Learning','learning'],['New','new']].map(([l,k])=>`<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:700"><span style="width:11px;height:11px;border-radius:3px;display:inline-block;background:${cHeatC[k]}"></span>${l}</span>`).join('');
-    tabBody=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:18px"><div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:2px">Word heatmap</div><p style="font-size:12.5px;color:var(--muted);margin:0 0 14px">${esc(S.coachTargetLabel)} · ${coachReadiness().size} words · tap any word to hear it</p><div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px">${cells}</div><div style="display:flex;flex-wrap:wrap;gap:14px">${legend}</div></div>`;
+    const cells=coachPool().slice(0,240).map(r=>{ const stt=srsState((S.coachSrs||{})[nkey(r.w)]); return `<button data-act="say" data-arg="${escA(r.w)}" style="font-family:var(--mono);font-size:12px;font-weight:700;padding:6px 10px;border-radius:6px;color:#fff;background:${cHeatC[stt]}">${esc(r.w)}</button>`; }).join('');
+    const legend=[['Mastered','mastered'],['Review','review'],['Learning','learning'],['New','new']].map(([l,k])=>`<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:700"><span style="width:11px;height:11px;border-radius:6px;display:inline-block;background:${cHeatC[k]}"></span>${l}</span>`).join('');
+    tabBody=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:18px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:2px">Word heatmap</div><p style="font-size:12px;color:var(--muted);margin:0 0 14px">${esc(S.coachTargetLabel)} · ${coachReadiness().size} words · tap any word to hear it</p><div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px">${cells}</div><div style="display:flex;flex-wrap:wrap;gap:14px">${legend}</div></div>`;
   } else {
     const cRd2=coachReadiness(); const cProblems=coachTopProblems(10);
-    tabBody=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:18px"><div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:10px">Readiness</div>
-      <div style="height:9px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-bottom:8px"><div style="height:100%;background:var(--accent);border-radius:99px;width:${cRd2.coverage}%"></div></div>
-      <p style="font-size:12.5px;color:var(--muted);margin:0 0 14px">${cRd2.coverage}% of the list seen · ${cRd2.ready}% mastered · ${esc(S.coachTargetLabel)} (${cRd2.size} words)</p>
+    tabBody=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:18px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:10px">Readiness</div>
+      <div style="height:9px;border-radius:999px;background:var(--surface2);overflow:hidden;margin-bottom:8px"><div style="height:100%;background:var(--accent);border-radius:999px;width:${cRd2.coverage}%"></div></div>
+      <p style="font-size:12px;color:var(--muted);margin:0 0 14px">${cRd2.coverage}% of the list seen · ${cRd2.ready}% mastered · ${esc(S.coachTargetLabel)} (${cRd2.size} words)</p>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px">
-        <div style="text-align:center;background:var(--surface2);border-radius:12px;padding:12px 6px"><div style="font-family:var(--display);font-weight:800;font-size:20px">${cRd2.nw}</div><div style="font-size:11px;color:var(--muted);font-weight:700">New</div></div>
-        <div style="text-align:center;background:var(--surface2);border-radius:12px;padding:12px 6px"><div style="font-family:var(--display);font-weight:800;font-size:20px">${cRd2.lr}</div><div style="font-size:11px;color:var(--muted);font-weight:700">Learning</div></div>
-        <div style="text-align:center;background:var(--surface2);border-radius:12px;padding:12px 6px"><div style="font-family:var(--display);font-weight:800;font-size:20px">${cRd2.rv}</div><div style="font-size:11px;color:var(--muted);font-weight:700">Review</div></div>
-        <div style="text-align:center;background:var(--surface2);border-radius:12px;padding:12px 6px"><div style="font-family:var(--display);font-weight:800;font-size:20px">${cRd2.ms}</div><div style="font-size:11px;color:var(--muted);font-weight:700">Mastered</div></div>
+        <div style="text-align:center;background:var(--surface2);border-radius:10px;padding:12px 6px"><div style="font-family:var(--display);font-weight:800;font-size:20px">${cRd2.nw}</div><div style="font-size:12px;color:var(--muted);font-weight:700">New</div></div>
+        <div style="text-align:center;background:var(--surface2);border-radius:10px;padding:12px 6px"><div style="font-family:var(--display);font-weight:800;font-size:20px">${cRd2.lr}</div><div style="font-size:12px;color:var(--muted);font-weight:700">Learning</div></div>
+        <div style="text-align:center;background:var(--surface2);border-radius:10px;padding:12px 6px"><div style="font-family:var(--display);font-weight:800;font-size:20px">${cRd2.rv}</div><div style="font-size:12px;color:var(--muted);font-weight:700">Review</div></div>
+        <div style="text-align:center;background:var(--surface2);border-radius:10px;padding:12px 6px"><div style="font-family:var(--display);font-weight:800;font-size:20px">${cRd2.ms}</div><div style="font-size:12px;color:var(--muted);font-weight:700">Mastered</div></div>
       </div>
-      <p style="font-size:12.5px;color:var(--muted);line-height:1.55;margin:0 0 8px"><b style="color:var(--text)">Consistency.</b> Practised ${coachConsistency()} of the last 14 days · best oral run ${S.coachBestRounds||0} rounds.</p>
-      ${cProblems.length?`<p style="font-size:12.5px;color:var(--muted);line-height:1.55;margin:0"><b style="color:var(--text)">Top problem words.</b> ${esc(cProblems.map(p=>p.w+' ('+p.x.wrong+')').join(', '))}</p>`:''}</div>`;
+      <p style="font-size:12px;color:var(--muted);line-height:1.55;margin:0 0 8px"><b style="color:var(--text)">Consistency.</b> Practised ${coachConsistency()} of the last 14 days · best oral run ${S.coachBestRounds||0} rounds.</p>
+      ${cProblems.length?`<p style="font-size:12px;color:var(--muted);line-height:1.55;margin:0"><b style="color:var(--text)">Top problem words.</b> ${esc(cProblems.map(p=>p.w+' ('+p.x.wrong+')').join(', '))}</p>`:''}</div>`;
   }
   return `<div style="max-width:680px;margin:0 auto">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:14px">← Home</button><div style="display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px;letter-spacing:.04em;text-transform:uppercase">Bee Prep</div></div>
-    <h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:0 0 2px">Word Coach</h2>
-    <p style="margin:0 0 16px;color:var(--muted);font-size:14px">Competition training for a date you choose.</p>
-    <div style="display:flex;gap:6px;background:var(--surface2);border-radius:13px;padding:5px;margin-bottom:18px">${tabs}</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button><div style="display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px;letter-spacing:.04em;text-transform:uppercase">Bee Prep</div></div>
+    <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 2px">Word Coach</h2>
+    <p style="margin:0 0 16px;color:var(--muted);font-size:13px">Competition training for a date you choose.</p>
+    <div style="display:flex;gap:6px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:18px">${tabs}</div>
     ${tabBody}
   </div>`;
 }
 function coachWritten(){
   const S=state; const wr=S.wr; let infoHTML=''; if(wr){ const w=wr.list[wr.i]; if(S.wrInfoKey==='def') infoHTML='Meaning — '+blankHTML(w.d||'—',w.w); else if(S.wrInfoKey==='sent') infoHTML='Sentence — '+blankHTML(w.s||'—',w.w); else if(S.wrInfoKey==='orig') infoHTML='Origin — '+esc(w.o||'—')+(w.r?('. '+esc(w.r)):''); }
   return `<div style="max-width:680px;margin:0 auto">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><div style="font-family:var(--mono);font-size:13px;color:var(--muted)">Written round · Word ${wr.i+1}/${wr.list.length}</div><button data-act="exitCoachMode" style="color:var(--muted);font-weight:700;font-size:14px">✕ Exit</button></div>
-    <div style="height:7px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-bottom:22px"><div style="height:100%;background:var(--accent);border-radius:99px;width:${Math.round(wr.i/wr.list.length*100)}%;transition:width .4s"></div></div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow);text-align:center">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><div style="font-family:var(--mono);font-size:13px;color:var(--muted)">Written round · Word ${wr.i+1}/${wr.list.length}</div><button data-act="exitCoachMode" style="color:var(--muted);font-weight:700;font-size:13px">✕ Exit</button></div>
+    <div style="height:7px;border-radius:999px;background:var(--surface2);overflow:hidden;margin-bottom:22px"><div style="height:100%;background:var(--accent);border-radius:999px;width:${Math.round(wr.i/wr.list.length*100)}%;transition:width .4s"></div></div>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow);text-align:center">
       <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 14px">Listen and type — no answer shown till the end</p>
       <button data-act="wrSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:16px">${iconSVG('volume',18)} Hear the word</button>
       <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:16px"><button data-act="wrSaySlow" style="padding:9px 14px;border-radius:999px;background:var(--surface2);font-weight:700;font-size:13px;border:1px solid var(--line)">Slow</button>${infoChip(S.wrInfoKey==='def','Definition','wrInfoDef')}${infoChip(S.wrInfoKey==='sent','Sentence','wrInfoSent')}${infoChip(S.wrInfoKey==='orig','Origin','wrInfoOrig')}</div>
-      ${S.wrInfoKey?`<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:left;font-size:14.5px;line-height:1.6;margin-bottom:16px">${infoHTML}</div>`:''}
-      <input data-inp="onType" data-key="wrKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="type here" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;text-align:center;padding:16px 14px;border-radius:15px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(20px,5vw,28px);letter-spacing:.14em;text-transform:lowercase;outline:none;margin-bottom:16px">
-      <button data-act="wrNext" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">${(wr.i+1<wr.list.length)?'Next word →':'Finish & score →'}</button>
+      ${S.wrInfoKey?`<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:left;font-size:15px;line-height:1.6;margin-bottom:16px">${infoHTML}</div>`:''}
+      <input data-inp="onType" data-key="wrKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="type here" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;text-align:center;padding:16px 14px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(20px,5vw,28px);letter-spacing:.14em;text-transform:lowercase;outline:none;margin-bottom:16px">
+      <button data-act="wrNext" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${(wr.i+1<wr.list.length)?'Next word →':'Finish & score →'}</button>
     </div>
   </div>`;
 }
@@ -2517,31 +2529,31 @@ function coachWrDone(){
   const S=state; const wr=S.wr; const ok=wr.ans.filter(a=>a.ok).length, total=wr.ans.length||1, pct=Math.round(ok/total*100);
   const rows=wr.ans.map(a=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 13px;border-radius:10px;background:${a.ok?'color-mix(in srgb,#1f9d57 13%,transparent)':'color-mix(in srgb,var(--bad) 13%,transparent)'}"><span style="font-weight:800">${esc(a.w.w)}</span><span style="font-family:var(--mono);font-size:13px">${a.ok?'✓':(esc(a.val||'(blank)')+' ✗')}</span></div>`).join('');
   return `<div style="max-width:680px;margin:0 auto">
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:30px;text-align:center;box-shadow:var(--glow);margin-bottom:14px"><h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:0 0 8px">${pct>=80?'Strong round! 🏆':pct>=60?'Good effort 💪':'Keep training 🌱'}</h2><div style="font-family:var(--display);font-weight:800;font-size:48px;color:var(--accent);line-height:1">${pct}%</div><p style="color:var(--muted);font-weight:700;margin-top:6px">${ok} of ${wr.ans.length} correct</p></div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:10px">Round results</div><div style="display:flex;flex-direction:column;gap:7px">${rows}</div></div>
-    <div style="display:flex;gap:10px;justify-content:center"><button data-act="exitCoachMode" style="padding:13px 18px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Back to Coach</button><button data-act="coachWeakDrill" style="padding:13px 18px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Drill the misses →</button></div>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:30px;text-align:center;box-shadow:var(--glow);margin-bottom:14px"><h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 8px">${pct>=80?'Strong round! 🏆':pct>=60?'Good effort 💪':'Keep training 🌱'}</h2><div style="font-family:var(--display);font-weight:800;font-size:48px;color:var(--accent);line-height:1">${pct}%</div><p style="color:var(--muted);font-weight:700;margin-top:6px">${ok} of ${wr.ans.length} correct</p></div>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:10px">Round results</div><div style="display:flex;flex-direction:column;gap:7px">${rows}</div></div>
+    <div style="display:flex;gap:10px;justify-content:center"><button data-act="exitCoachMode" style="padding:13px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Back to Coach</button><button data-act="coachWeakDrill" style="padding:13px 18px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Drill the misses →</button></div>
   </div>`;
 }
 function coachOral(){
   const S=state; const or=S.or; let infoHTML=''; if(or&&or.pool[or.i]){ const w=or.pool[or.i]; if(S.orInfoKey==='def') infoHTML='Meaning — '+blankHTML(w.d||'—',w.w); else if(S.orInfoKey==='sent') infoHTML='Sentence — '+blankHTML(w.s||'—',w.w); else if(S.orInfoKey==='orig') infoHTML='Origin — '+esc(w.o||'—')+(w.r?('. '+esc(w.r)):''); }
   return `<div style="max-width:680px;margin:0 auto">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><div style="font-family:var(--mono);font-size:13px;color:var(--muted)">Oral elimination · Round ${or.round+1} · Best ${S.coachBestRounds||0}</div><button data-act="exitCoachMode" style="color:var(--muted);font-weight:700;font-size:14px">✕ Exit</button></div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow);text-align:center">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><div style="font-family:var(--mono);font-size:13px;color:var(--muted)">Oral elimination · Round ${or.round+1} · Best ${S.coachBestRounds||0}</div><button data-act="exitCoachMode" style="color:var(--muted);font-weight:700;font-size:13px">✕ Exit</button></div>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow);text-align:center">
       <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 14px">Spell it out loud, letter by letter</p>
       <button data-act="orSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:16px">${iconSVG('volume',18)} Hear the word</button>
       <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:16px"><button data-act="orSaySlow" style="padding:9px 14px;border-radius:999px;background:var(--surface2);font-weight:700;font-size:13px;border:1px solid var(--line)">Slow</button>${infoChip(S.orInfoKey==='def','Definition','orInfoDef')}${infoChip(S.orInfoKey==='sent','Sentence','orInfoSent')}${infoChip(S.orInfoKey==='orig','Origin','orInfoOrig')}</div>
-      ${S.orInfoKey?`<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:left;font-size:14.5px;line-height:1.6;margin-bottom:16px">${infoHTML}</div>`:''}
-      <input data-inp="onType" data-key="orKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="…type the letters" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;text-align:center;padding:16px 14px;border-radius:15px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(20px,5vw,28px);letter-spacing:.14em;text-transform:lowercase;outline:none;margin-bottom:14px">
-      ${S.orFeedback?`<div style="color:#1f9d57;font-weight:800;font-size:14px;margin-bottom:12px">${esc(S.orFeedback)}</div>`:''}
-      <button data-act="orJudge" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">Judge</button>
+      ${S.orInfoKey?`<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:left;font-size:15px;line-height:1.6;margin-bottom:16px">${infoHTML}</div>`:''}
+      <input data-inp="onType" data-key="orKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="…type the letters" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;text-align:center;padding:16px 14px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(20px,5vw,28px);letter-spacing:.14em;text-transform:lowercase;outline:none;margin-bottom:14px">
+      ${S.orFeedback?`<div style="color:#1f9d57;font-weight:800;font-size:13px;margin-bottom:12px">${esc(S.orFeedback)}</div>`:''}
+      <button data-act="orJudge" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Judge</button>
     </div>
   </div>`;
 }
 function coachOrGone(){
   const S=state; const or=S.or; const w=(or&&or.last)?or.last.w:'';
   return `<div style="max-width:680px;margin:0 auto">
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:30px;text-align:center;box-shadow:var(--glow);margin-bottom:14px"><h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:0 0 10px">Eliminated 🛑</h2><p style="color:var(--muted);font-weight:700;margin:0 0 4px">The word was</p><div style="font-family:var(--display);font-weight:800;font-size:36px;color:var(--accent);line-height:1">${esc(w)}</div><p style="font-family:var(--mono);font-size:13px;color:var(--muted);margin-top:8px;letter-spacing:.12em">${esc(w.split('').join(' '))}</p><p style="color:var(--muted);font-weight:700;margin-top:14px">You survived <b style="color:var(--text)">${or?or.round:0}</b> rounds · best ${S.coachBestRounds||0}</p></div>
-    <div style="display:flex;gap:10px;justify-content:center"><button data-act="exitCoachMode" style="padding:13px 18px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Back to Coach</button><button data-act="startOral" style="padding:13px 18px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Try again →</button></div>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:30px;text-align:center;box-shadow:var(--glow);margin-bottom:14px"><h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 10px">Eliminated 🛑</h2><p style="color:var(--muted);font-weight:700;margin:0 0 4px">The word was</p><div style="font-family:var(--display);font-weight:800;font-size:36px;color:var(--accent);line-height:1">${esc(w)}</div><p style="font-family:var(--mono);font-size:13px;color:var(--muted);margin-top:8px;letter-spacing:.12em">${esc(w.split('').join(' '))}</p><p style="color:var(--muted);font-weight:700;margin-top:14px">You survived <b style="color:var(--text)">${or?or.round:0}</b> rounds · best ${S.coachBestRounds||0}</p></div>
+    <div style="display:flex;gap:10px;justify-content:center"><button data-act="exitCoachMode" style="padding:13px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Back to Coach</button><button data-act="startOral" style="padding:13px 18px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Try again →</button></div>
   </div>`;
 }
 
@@ -2705,30 +2717,30 @@ function gFinishChamp(){ clearGTimer(); const g=state.game; g.status='done'; con
   logActivity('champ','Champ Challenge', {done, right:g.right, coins:bonus}, []); render(); }
 const BANDS=[['level','This Level'],['easy','Easy'],['medium','Medium'],['hard','Hard'],['champion','Champion'],['missed','My misses']];
 function challengeConfig(){ const S=state; const key=S.challengeKey||activeListKey(); const lvl=listStageIdx(active(),key)+1;
-  const seg=(f,v,label,cur)=>`<button data-act="chSet" data-arg="${f}:${v}" style="flex:1;min-width:64px;padding:11px 8px;border-radius:11px;font-weight:800;font-size:13.5px;border:1px solid ${cur?'var(--accent)':'var(--line)'};${cur?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">${label}</button>`;
+  const seg=(f,v,label,cur)=>`<button data-act="chSet" data-arg="${f}:${v}" style="flex:1;min-width:64px;padding:11px 8px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid ${cur?'var(--accent)':'var(--line)'};${cur?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">${label}</button>`;
   const fmtRow=`<div style="display:flex;gap:8px;margin-bottom:14px">${seg('fmt','count','🔢 Set number',S.chFmt==='count')}${seg('fmt','timed','⏱️ Beat the clock',S.chFmt==='timed')}</div>`;
   const amtRow = S.chFmt==='timed'
-    ? `<div style="font-size:12.5px;color:var(--muted);font-weight:700;margin-bottom:7px">How long?</div><div style="display:flex;gap:8px;margin-bottom:16px">${[60,90,120].map(t=>seg('time',t,t+'s',S.chTime===t)).join('')}</div>`
-    : `<div style="font-size:12.5px;color:var(--muted);font-weight:700;margin-bottom:7px">How many words?</div><div style="display:flex;gap:8px;margin-bottom:16px">${[10,15,20,30].map(n=>seg('count',n,String(n),S.chCount===n)).join('')}</div>`;
-  const bandRow=`<div style="font-size:12.5px;color:var(--muted);font-weight:700;margin-bottom:7px">Difficulty</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px">${BANDS.map(([v,l])=>seg('band',v,l,S.chBand===v)).join('')}</div>`;
+    ? `<div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:7px">How long?</div><div style="display:flex;gap:8px;margin-bottom:16px">${[60,90,120].map(t=>seg('time',t,t+'s',S.chTime===t)).join('')}</div>`
+    : `<div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:7px">How many words?</div><div style="display:flex;gap:8px;margin-bottom:16px">${[10,15,20,30].map(n=>seg('count',n,String(n),S.chCount===n)).join('')}</div>`;
+  const bandRow=`<div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:7px">Difficulty</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px">${BANDS.map(([v,l])=>seg('band',v,l,S.chBand===v)).join('')}</div>`;
   return `<div style="max-width:560px;margin:0 auto;animation:sb-rise .35s ease both">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px"><button data-act="chExit" style="color:var(--muted);font-weight:700;font-size:14px">← Back</button></div>
-    <h2 style="display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:800;font-size:23px;margin:0 0 4px">${iconSVG('bolt',22)} Champ Challenge</h2>
-    <p style="margin:0 0 18px;color:var(--muted);font-size:14px">Pick your format and difficulty. Pass the <b>This Level</b> challenge to <b>test out</b> and jump straight to the next Level.</p>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:18px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px"><button data-act="chExit" style="color:var(--muted);font-weight:700;font-size:13px">← Back</button></div>
+    <h2 style="display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">${iconSVG('bolt',22)} Champ Challenge</h2>
+    <p style="margin:0 0 18px;color:var(--muted);font-size:13px">Pick your format and difficulty. Pass the <b>This Level</b> challenge to <b>test out</b> and jump straight to the next Level.</p>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:18px">
       ${fmtRow}${amtRow}${bandRow}
-      <button data-act="chStart" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">Start Challenge →</button>
-      ${S.chBand==='level'?`<div style="font-size:11.5px;color:var(--muted);margin-top:10px;text-align:center">Testing out of <b>Level ${lvl}</b> of ${esc(listLabel(key).split(' · ')[0])}.</div>`:''}
+      <button data-act="chStart" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Start Challenge →</button>
+      ${S.chBand==='level'?`<div style="font-size:12px;color:var(--muted);margin-top:10px;text-align:center">Testing out of <b>Level ${lvl}</b> of ${esc(listLabel(key).split(' · ')[0])}.</div>`:''}
     </div>
   </div>`; }
 function champDone(){ const g=state.game; const done=g.right+g.wrong; const acc=done?Math.round(g.right/done*100):0;
   return `<div style="max-width:520px;margin:0 auto;text-align:center;animation:sb-pop .4s ease both">
     <div style="font-size:54px;margin:8px 0">${g.pass?'⭐':'💪'}</div>
-    <h2 style="font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 6px">${g.pass?'Challenge passed!':'Good effort!'}</h2>
+    <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 6px">${g.pass?'Challenge passed!':'Good effort!'}</h2>
     <div style="font-size:15px;color:var(--muted);margin-bottom:16px">${g.right} right${g.fmt==='count'?(' of '+done):''} · ${acc}% accuracy · +${g.bonus} ${iconSVG('coin',14)}</div>
-    ${g.canAdvance?`<button data-act="champAdvance" style="width:100%;padding:14px;border-radius:14px;background:var(--good);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge);margin-bottom:10px">🎉 Level cleared — advance →</button>`:''}
-    ${(!g.canAdvance&&g.pass&&g.band==='level')?`<div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Nice — that wasn't your current Level, so no skip this time.</div>`:''}
-    <div style="display:flex;gap:10px"><button data-act="chStart" style="flex:1;padding:13px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">Try again</button><button data-act="chExit" style="flex:1;padding:13px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px">Done</button></div>
+    ${g.canAdvance?`<button data-act="champAdvance" style="width:100%;padding:14px;border-radius:14px;background:var(--good);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:10px">🎉 Level cleared — advance →</button>`:''}
+    ${(!g.canAdvance&&g.pass&&g.band==='level')?`<div style="font-size:12px;color:var(--muted);margin-bottom:10px">Nice — that wasn't your current Level, so no skip this time.</div>`:''}
+    <div style="display:flex;gap:10px"><button data-act="chStart" style="flex:1;padding:13px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">Try again</button><button data-act="chExit" style="flex:1;padding:13px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px">Done</button></div>
   </div>`; }
 // dedupe + gather a fun mix: words you missed, curated tricky review, and your active list
 function gameWords(opts){ opts=opts||{}; const c=active(); const base=listWords(c.activeList||'default');
@@ -2790,135 +2802,135 @@ function viewGames(){ const g=state.game; if(!g) return gamesHub();
   return (g.status==='done'||g.status==='won'||g.status==='lost')?typedDone():typedGame(); }
 /* ---- Magic Squares view: board → 5-question cell → result (+ line celebrations) ---- */
 function magicView(){ const g=state.game; const S=state;
-  const head=`<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px"><button data-act="exitGame" style="color:var(--muted);font-weight:700;font-size:14px">← Arcade</button><span style="display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:800;font-size:22px;margin-left:4px">${iconSVG('palette',21)} Magic Squares</span><span style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px">${iconSVG('coin',14)} +${g.coins}</span></div>`;
+  const head=`<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px"><button data-act="exitGame" style="color:var(--muted);font-weight:700;font-size:13px">← Arcade</button><span style="display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">${iconSVG('palette',21)} Magic Squares</span><span style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px">${iconSVG('coin',14)} +${g.coins}</span></div>`;
   if(g.status==='board'){
     const tiles=g.board.map((cell,i)=>{ const cl=magicClusterOf(cell);
       const doneBG=`${themeCoverBG(cl)};color:#fff`;
-      return `<button class="sb-lift" data-act="magicCell" data-arg="${i}" style="position:relative;aspect-ratio:1;border-radius:15px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;border:2px solid ${cell.done?cl.c:'var(--line)'};${cell.done?doneBG:'background:var(--bg2)'};box-shadow:${cell.done?('0 6px 16px rgba(43,27,94,.2)'):'0 2px 6px rgba(43,27,94,.06)'}">
-        ${cell.done?`<div class="sb-theme-art" style="font-size:26px;line-height:1">⭐</div>`:`<div class="sb-theme-art" style="width:26px;height:26px;border-radius:8px;background:color-mix(in srgb,${cl.c} 16%,var(--bg2));color:${cl.c};display:grid;place-items:center;animation-delay:${(i%9)*0.22}s">${iconSVG('spark',15)}</div>`}
-        <div style="font-family:var(--display);font-weight:800;font-size:12.5px;line-height:1.15;${cell.done?'color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.25)':'color:var(--text)'}">${esc(cell.label)}</div>
-        ${(!cell.done&&cell.tried)?`<div style="font-size:10px;font-weight:800;color:var(--muted)">best ${cell.best}/5 · retry</div>`:''}
+      return `<button class="sb-lift" data-act="magicCell" data-arg="${i}" style="position:relative;aspect-ratio:1;border-radius:14px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;border:2px solid ${cell.done?cl.c:'var(--line)'};${cell.done?doneBG:'background:var(--bg2)'};box-shadow:${cell.done?('0 6px 16px rgba(43,27,94,.2)'):'0 2px 6px rgba(43,27,94,.06)'}">
+        ${cell.done?`<div class="sb-theme-art" style="font-size:24px;line-height:1">⭐</div>`:`<div class="sb-theme-art" style="width:26px;height:26px;border-radius:6px;background:color-mix(in srgb,${cl.c} 16%,var(--bg2));color:${cl.c};display:grid;place-items:center;animation-delay:${(i%9)*0.22}s">${iconSVG('spark',15)}</div>`}
+        <div style="font-family:var(--display);font-weight:800;font-size:12px;line-height:1.15;${cell.done?'color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.25)':'color:var(--text)'}">${esc(cell.label)}</div>
+        ${(!cell.done&&cell.tried)?`<div style="font-size:12px;font-weight:800;color:var(--muted)">best ${cell.best}/5 · retry</div>`:''}
       </button>`; }).join('');
     const doneN=g.board.filter(c=>c.done).length;
     return `<div style="max-width:560px;margin:0 auto">${head}
-      <p style="margin:0 0 14px;color:var(--muted);font-size:13.5px">Pick a square and ace <b>4 of 5</b> questions to claim it. Finish a <b>row +${MAGIC_BONUS.row}</b> 🪙, <b>column +${MAGIC_BONUS.col}</b>, <b>diagonal +${MAGIC_BONUS.diag}</b> — and the whole square for <b>+${MAGIC_BONUS.square}</b>!</p>
+      <p style="margin:0 0 14px;color:var(--muted);font-size:13px">Pick a square and ace <b>4 of 5</b> questions to claim it. Finish a <b>row +${MAGIC_BONUS.row}</b> 🪙, <b>column +${MAGIC_BONUS.col}</b>, <b>diagonal +${MAGIC_BONUS.diag}</b> — and the whole square for <b>+${MAGIC_BONUS.square}</b>!</p>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">${tiles}</div>
-      <div style="display:flex;align-items:center;gap:10px"><span style="font-size:12.5px;color:var(--muted);font-weight:700">Round ${g.round||1} · ${doneN}/9 squares</span><span style="flex:1"></span><button data-act="magicNew" style="padding:10px 16px;border-radius:11px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">🔄 New board</button></div>
+      <div style="display:flex;align-items:center;gap:10px"><span style="font-size:12px;color:var(--muted);font-weight:700">Round ${g.round||1} · ${doneN}/9 squares</span><span style="flex:1"></span><button data-act="magicNew" style="padding:10px 16px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">🔄 New board</button></div>
     </div>`; }
   if(g.status==='play'){ const q=g.qs[g.qi]; const cell=g.board[g.cell]; const cl=magicClusterOf(cell);
-    const dots=g.qs.map((_,i)=>`<span style="flex:1;height:6px;border-radius:99px;background:${i<g.qi?'var(--good)':(i===g.qi?cl.c:'var(--surface2)')}"></span>`).join('');
+    const dots=g.qs.map((_,i)=>`<span style="flex:1;height:6px;border-radius:999px;background:${i<g.qi?'var(--good)':(i===g.qi?cl.c:'var(--surface2)')}"></span>`).join('');
     let body='';
     if(q.k==='spell'){
-      const fb = g.revealed ? (g.ok?`<div style="border-radius:13px;padding:12px 15px;margin-bottom:12px;font-weight:800;background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good);animation:sb-pop .3s ease both">✓ Correct!</div>`:`<div style="border-radius:13px;padding:12px 15px;margin-bottom:12px;font-weight:800;background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad);animation:sb-pop .3s ease both">✗ It's “${esc(q.w.w)}”</div>`) : '';
+      const fb = g.revealed ? (g.ok?`<div style="border-radius:14px;padding:12px 15px;margin-bottom:12px;font-weight:800;background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good);animation:sb-pop .3s ease both">✓ Correct!</div>`:`<div style="border-radius:14px;padding:12px 15px;margin-bottom:12px;font-weight:800;background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad);animation:sb-pop .3s ease both">✗ It's “${esc(q.w.w)}”</div>`) : '';
       body=`<div style="text-align:center">
-        <button data-act="magicHear" style="display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:999px;background:${cl.c};color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge);margin-bottom:14px">${iconSVG('volume',17)} Hear it again</button>
-        ${q.w.d?`<div style="font-size:13.5px;color:var(--muted);line-height:1.55;margin-bottom:14px;max-width:40em;margin-left:auto;margin-right:auto"><b style="color:var(--text)">Meaning.</b> ${esc(q.w.d)}</div>`:''}
+        <button data-act="magicHear" style="display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:999px;background:${cl.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">${iconSVG('volume',17)} Hear it again</button>
+        ${q.w.d?`<div style="font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:14px;max-width:40em;margin-left:auto;margin-right:auto"><b style="color:var(--text)">Meaning.</b> ${esc(q.w.d)}</div>`:''}
         ${fb}
-        <input data-inp="onType" data-key="magicKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="spell it" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" ${g.revealed?'disabled':''} style="width:100%;text-align:center;padding:15px 14px;border-radius:15px;background:var(--surface);border:2px solid ${g.revealed?(g.ok?'var(--good)':'var(--bad)'):'var(--line)'};color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(19px,4.5vw,26px);letter-spacing:.13em;text-transform:lowercase;outline:none;margin-bottom:12px">
-        ${g.revealed?'':`<button data-act="magicSubmit" style="width:100%;padding:13px;border-radius:13px;background:${cl.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Check ✓</button>`}
+        <input data-inp="onType" data-key="magicKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="spell it" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" ${g.revealed?'disabled':''} style="width:100%;text-align:center;padding:15px 14px;border-radius:14px;background:var(--surface);border:2px solid ${g.revealed?(g.ok?'var(--good)':'var(--bad)'):'var(--line)'};color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(19px,4.5vw,26px);letter-spacing:.13em;text-transform:lowercase;outline:none;margin-bottom:12px">
+        ${g.revealed?'':`<button data-act="magicSubmit" style="width:100%;padding:13px;border-radius:14px;background:${cl.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Check ✓</button>`}
       </div>`;
     } else {
       const btns=q.choices.map(c=>{ const isPick=g.picked===c; const isAns=nkey(c)===nkey(q.w.w);
         let st='background:var(--surface2);border:1px solid var(--line);color:var(--text)';
         if(g.picked!=null){ if(isAns) st=`background:color-mix(in srgb,var(--good) 20%,transparent);border:1.5px solid var(--good);color:var(--good)`; else if(isPick) st=`background:color-mix(in srgb,var(--bad) 16%,transparent);border:1.5px solid var(--bad);color:var(--bad)`; else st+=';opacity:.55'; }
-        return `<button data-act="magicPick" data-arg="${escA(c)}" style="padding:14px 12px;border-radius:13px;font-family:var(--display);font-weight:800;font-size:16px;${st}">${esc(c)}</button>`; }).join('');
-      body=`<div style="font-size:14.5px;color:var(--text);line-height:1.6;margin-bottom:16px;text-align:center"><b>Which word means:</b><br>“${esc(q.w.d)}”</div>
+        return `<button data-act="magicPick" data-arg="${escA(c)}" style="padding:14px 12px;border-radius:14px;font-family:var(--display);font-weight:800;font-size:15px;${st}">${esc(c)}</button>`; }).join('');
+      body=`<div style="font-size:15px;color:var(--text);line-height:1.6;margin-bottom:16px;text-align:center"><b>Which word means:</b><br>“${esc(q.w.d)}”</div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">${btns}</div>`;
     }
     return `<div style="max-width:560px;margin:0 auto">${head}
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:99px;background:color-mix(in srgb,${cl.c} 14%,var(--bg2));color:${cl.c};font-weight:800;font-size:12px">${esc(cell.label)}</span><span style="font-family:var(--mono);font-size:11.5px;color:var(--muted)">Question ${g.qi+1}/5 · ${g.right} right</span></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;background:color-mix(in srgb,${cl.c} 14%,var(--bg2));color:${cl.c};font-weight:800;font-size:12px">${esc(cell.label)}</span><span style="font-family:var(--mono);font-size:12px;color:var(--muted)">Question ${g.qi+1}/5 · ${g.right} right</span></div>
       <div style="display:flex;gap:5px;margin-bottom:14px">${dots}</div>
-      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:clamp(16px,4vw,24px);box-shadow:var(--glow)">${body}</div>
+      <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(16px,4vw,24px);box-shadow:var(--glow)">${body}</div>
     </div>`; }
   // result
   const r=g.cellResult||{}; const cell=g.board[g.cell]||{}; const cl=magicClusterOf(cell);
   const celebr=g.celebr?`<div style="margin:14px 0;animation:sb-pop .45s ease both">${g.celebr.msgs.map(m=>`<div style="font-family:var(--display);font-weight:800;font-size:${g.celebr.mega?'26px':'19px'};color:var(--accent);margin-bottom:4px">🎉 ${esc(m)}</div>`).join('')}</div>`:'';
   return `<div style="max-width:520px;margin:0 auto;text-align:center;animation:sb-pop .4s ease both">${head}
     <div style="display:flex;justify-content:center;margin:6px 0 4px"><div style="width:84px;height:92px">${mascotSVG(r.win?(g.celebr?'excited':'happy'):'oops')}</div></div>
-    <h2 style="font-family:var(--display);font-weight:800;font-size:25px;margin:0 0 4px">${r.win?(g.celebr&&g.celebr.mega?'MAGIC SQUARE!':'Square claimed! ⭐'):'So close!'}</h2>
-    <div style="font-size:14.5px;color:var(--muted);font-weight:700">${esc(cell.label)} — ${r.right}/5 right${r.coins?(' · +'+r.coins+' 🪙 bonus'):''}</div>
+    <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">${r.win?(g.celebr&&g.celebr.mega?'MAGIC SQUARE!':'Square claimed! ⭐'):'So close!'}</h2>
+    <div style="font-size:15px;color:var(--muted);font-weight:700">${esc(cell.label)} — ${r.right}/5 right${r.coins?(' · +'+r.coins+' 🪙 bonus'):''}</div>
     ${celebr}
-    <div style="display:flex;gap:10px;margin-top:16px">${r.win?'':`<button data-act="magicCell" data-arg="${g.cell}" style="flex:1;padding:13px;border-radius:13px;background:${cl.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Try again →</button>`}${g.squareDone
-      ? `<button data-act="magicNew" style="flex:1;padding:13px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Round ${(g.round||1)+1} — 9 new themes →</button><button data-act="exitGame" style="padding:13px 16px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">Done</button>`
-      : `<button data-act="magicBoard" style="flex:1;padding:13px;border-radius:13px;background:${r.win?'var(--accent)':'var(--surface2)'};color:${r.win?'#fff':'var(--text)'};font-weight:800;font-size:15px;${r.win?'box-shadow:var(--edge)':'border:1px solid var(--line)'}">Back to the board</button>`}</div>
+    <div style="display:flex;gap:10px;margin-top:16px">${r.win?'':`<button data-act="magicCell" data-arg="${g.cell}" style="flex:1;padding:13px;border-radius:14px;background:${cl.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Try again →</button>`}${g.squareDone
+      ? `<button data-act="magicNew" style="flex:1;padding:13px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Round ${(g.round||1)+1} — 9 new themes →</button><button data-act="exitGame" style="padding:13px 16px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">Done</button>`
+      : `<button data-act="magicBoard" style="flex:1;padding:13px;border-radius:14px;background:${r.win?'var(--accent)':'var(--surface2)'};color:${r.win?'#fff':'var(--text)'};font-weight:800;font-size:15px;${r.win?'box-shadow:var(--edge)':'border:1px solid var(--line)'}">Back to the board</button>`}</div>
   </div>`; }
 function gamesHub(){ const S=state;
-  const champCard=`<button data-act="openChallenge" data-arg="journey" style="grid-column:1/-1;text-align:left;border-radius:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 6px 18px rgba(43,27,94,.18)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">${iconSVG('bolt',32)}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">Set timed or counted · pick a difficulty</div><div style="font-family:var(--display);font-weight:800;font-size:18px;line-height:1.15">Champ Challenge</div><div style="font-size:12px;color:rgba(255,255,255,.9)">Beat the clock or a set number — pass your Level to test out.</div></div><span style="padding:9px 16px;border-radius:11px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Set it up →</span></div></button>`;
-  const cards=champCard+GAMES.map(gm=>`<button class="sb-cover-card" data-act="playGame" data-arg="${gm.type}" style="text-align:left;background:var(--bg2);border:0;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
+  const champCard=`<button data-act="openChallenge" data-arg="journey" style="grid-column:1/-1;text-align:left;border-radius:14px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 6px 18px rgba(43,27,94,.18)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">${iconSVG('bolt',32)}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">Set timed or counted · pick a difficulty</div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Champ Challenge</div><div style="font-size:12px;color:rgba(255,255,255,.9)">Beat the clock or a set number — pass your Level to test out.</div></div><span style="padding:9px 16px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Set it up →</span></div></button>`;
+  const cards=champCard+GAMES.map(gm=>`<button class="sb-cover-card" data-act="playGame" data-arg="${gm.type}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
       <div style="position:relative;height:108px;display:flex;align-items:center;justify-content:center;padding:14px;${gameCoverBG(gm)}">
-        <span style="position:absolute;top:11px;left:12px;font-family:var(--mono);font-weight:700;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(gm.tag)}</span>
+        <span style="position:absolute;top:11px;left:12px;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(gm.tag)}</span>
         <div style="color:#fff;display:grid;place-items:center">${gameArtSVG(gm.type,58)}</div>
       </div>
       <div style="padding:14px 15px 15px;display:flex;flex-direction:column;flex:1">
-        <div style="font-family:var(--display);font-weight:800;font-size:16.5px;color:var(--text)">${gm.name}</div>
-        <div style="font-family:var(--body);font-weight:600;font-size:12.5px;color:var(--muted);line-height:1.45;margin-top:6px">${gm.blurb}</div>
-        <div style="margin-top:auto;padding-top:13px"><span style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:11px;background:${gm.c};color:#fff;font-weight:800;font-size:13px">${iconSVG('volume',14)} Play →</span></div>
+        <div style="font-family:var(--display);font-weight:800;font-size:17px;color:var(--text)">${gm.name}</div>
+        <div style="font-family:var(--body);font-weight:600;font-size:12px;color:var(--muted);line-height:1.45;margin-top:6px">${gm.blurb}</div>
+        <div style="margin-top:auto;padding-top:13px"><span style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;background:${gm.c};color:#fff;font-weight:800;font-size:13px">${iconSVG('volume',14)} Play →</span></div>
       </div></button>`).join('');
-  const store=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:18px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-family:var(--display);font-weight:800;font-size:16px">Coin store</span><span style="font-size:12px;color:var(--muted);font-weight:700">— spend what you earn</span></div>
-      <p style="font-size:12.5px;color:var(--muted);margin:0 0 12px">Play games, Word Coach and Concepts to collect 🪙. Then treat yourself:</p>
+  const store=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:18px;margin-top:18px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-family:var(--display);font-weight:800;font-size:15px">Coin store</span><span style="font-size:12px;color:var(--muted);font-weight:700">— spend what you earn</span></div>
+      <p style="font-size:12px;color:var(--muted);margin:0 0 12px">Play games, Word Coach and Concepts to collect 🪙. Then treat yourself:</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">
-        <button data-act="boostLevel" style="text-align:left;background:var(--surface2);border:1px solid var(--line);border-radius:13px;padding:13px"><div style="display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:14px;margin-bottom:3px;color:var(--accent)">${iconSVG('bolt',16)} Level boost</div><div style="font-size:11.5px;color:var(--muted)">+1 level on your list · ${coinAmt(COST.boost,12)}</div></button>
-        <button data-act="openShop" style="text-align:left;background:var(--surface2);border:1px solid var(--line);border-radius:13px;padding:13px"><div style="display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:14px;margin-bottom:3px;color:var(--accent)">${iconSVG('cart',16)} Open the Shop</div><div style="font-size:11.5px;color:var(--muted)">Worlds, word lists &amp; concepts</div></button>
-        <button data-act="goPaywall" style="text-align:left;background:var(--surface2);border:1px solid var(--line);border-radius:13px;padding:13px"><div style="display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:14px;margin-bottom:3px;color:var(--accent)">${iconSVG('crown',16)} Go Premium</div><div style="font-size:11.5px;color:var(--muted)">Unlock more, instantly</div></button>
+        <button data-act="boostLevel" style="text-align:left;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:13px"><div style="display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;margin-bottom:3px;color:var(--accent)">${iconSVG('bolt',16)} Level boost</div><div style="font-size:12px;color:var(--muted)">+1 level on your list · ${coinAmt(COST.boost,12)}</div></button>
+        <button data-act="openShop" style="text-align:left;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:13px"><div style="display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;margin-bottom:3px;color:var(--accent)">${iconSVG('cart',16)} Open the Shop</div><div style="font-size:12px;color:var(--muted)">Worlds, word lists &amp; concepts</div></button>
+        <button data-act="goPaywall" style="text-align:left;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:13px"><div style="display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;margin-bottom:3px;color:var(--accent)">${iconSVG('crown',16)} Go Premium</div><div style="font-size:12px;color:var(--muted)">Unlock more, instantly</div></button>
       </div></div>`;
   return `<div style="max-width:760px;margin:0 auto">
-    <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:14px">← Home</button><span style="margin-left:2px">${arcadeLogoSVG(38)}</span><span style="font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.01em">Arcade</span><span style="margin-left:auto">${coinChip()}</span></div>
-    <p style="margin:0 0 16px;color:var(--muted);font-size:14px">Eight ways to play — every correct word earns coins.</p>
+    <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button><span style="margin-left:2px">${arcadeLogoSVG(38)}</span><span style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em">Arcade</span><span style="margin-left:auto">${coinChip()}</span></div>
+    <p style="margin:0 0 16px;color:var(--muted);font-size:13px">Eight ways to play — every correct word earns coins.</p>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">${cards}</div>
     ${store}
   </div>`;
 }
 function viewShop(){ const S=state; const c=active(); ensureLists(c); const tab=S.shopTab||'worlds';
-  const tabBtn=(k,ic,l)=>`<button data-act="shopTab" data-arg="${k}" style="flex:1;min-width:96px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:11px;font-weight:800;font-size:13.5px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${iconSVG(ic,15)} ${l}</button>`;
+  const tabBtn=(k,ic,l)=>`<button data-act="shopTab" data-arg="${k}" style="flex:1;min-width:96px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${iconSVG(ic,15)} ${l}</button>`;
   let body='';
   if(tab==='worlds'){
     const rows=THEMES.map(t=>{ const on=t.id===S.theme; const un=isThemeUnlocked(t.id); const ev=EVO[t.id]||EVO.spellbound;
-      const right=on?'<span style="font-weight:800;font-size:12.5px;color:var(--accent)">Active</span>':(un?`<span style="font-weight:800;font-size:12.5px;color:var(--good)">Use</span>`:`<span style="font-weight:900;font-size:12.5px;color:#a06a00">${coinAmt(COST.theme,12)}</span>`);
-      return `<button data-act="${un?'pickTheme':'buyTheme'}" data-arg="${t.id}" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface2);border:1px solid ${on?'var(--accent)':'var(--line)'};border-radius:13px;padding:12px 14px;margin-bottom:9px">
+      const right=on?'<span style="font-weight:800;font-size:12px;color:var(--accent)">Active</span>':(un?`<span style="font-weight:800;font-size:12px;color:var(--good)">Use</span>`:`<span style="font-weight:900;font-size:12px;color:#a06a00">${coinAmt(COST.theme,12)}</span>`);
+      return `<button data-act="${un?'pickTheme':'buyTheme'}" data-arg="${t.id}" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface2);border:1px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:12px 14px;margin-bottom:9px">
         <div style="width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,${t.c1},${t.c2});flex-shrink:0;color:#fff;${un?'':'filter:grayscale(.5)'}">${un?worldEmblemSVG(t.id,21):iconSVG('lock',19,2.2)}</div>
-        <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:15px">${t.label}</div><div style="font-size:11.5px;color:var(--muted)">${WORLD_DEF[t.id]||(ev[0]+' → '+ev[9])}</div></div>${right}</button>`; }).join('');
+        <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:15px">${t.label}</div><div style="font-size:12px;color:var(--muted)">${WORLD_DEF[t.id]||(ev[0]+' → '+ev[9])}</div></div>${right}</button>`; }).join('');
     const unc=THEMES.filter(t=>isThemeUnlocked(t.id)).length;
     body=`<p style="font-size:13px;color:var(--muted);margin:0 0 12px">${unc}/${THEMES.length} worlds unlocked · 2 free, ${state.premium?'2 more with Premium, ':''}the rest with coins.</p>${rows}`;
   } else if(tab==='lists'){
     const cats=[{key:'default',label:'Default · Level-Up',sub:'Curated starter words',count:LEVEL_WORDS.length}].concat(coachCatalog().filter(o=>o.key!=='default').map(o=>({key:o.key,label:o.label,sub:o.sub,count:o.count})));
     const rows=cats.map(o=>{ const un=isListUnlocked(o.key); const on=(c.activeList||'default')===o.key;
-      const right=on?'<span style="font-weight:800;font-size:12.5px;color:var(--accent)">Active</span>':(un?'<span style="font-weight:800;font-size:12.5px;color:var(--good)">Train</span>':`<span style="font-weight:900;font-size:12.5px;color:#a06a00">${coinAmt(COST.list,12)}</span>`);
-      return `<button data-act="${un?'selectList':'buyList'}" data-arg="${o.key}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;background:var(--surface2);border:1px solid ${on?'var(--accent)':'var(--line)'};border-radius:13px;padding:12px 14px;margin-bottom:9px"><div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:14.5px;display:flex;align-items:center;gap:6px">${un?'':`<span style="color:var(--muted);display:inline-flex">${iconSVG('lock',14,2.2)}</span>`}${esc(o.label)}</div><div style="font-size:12px;color:var(--muted)">${esc(o.sub)} · ${o.count} words</div></div>${right}</button>`; }).join('');
+      const right=on?'<span style="font-weight:800;font-size:12px;color:var(--accent)">Active</span>':(un?'<span style="font-weight:800;font-size:12px;color:var(--good)">Train</span>':`<span style="font-weight:900;font-size:12px;color:#a06a00">${coinAmt(COST.list,12)}</span>`);
+      return `<button data-act="${un?'selectList':'buyList'}" data-arg="${o.key}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;background:var(--surface2);border:1px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:12px 14px;margin-bottom:9px"><div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:15px;display:flex;align-items:center;gap:6px">${un?'':`<span style="color:var(--muted);display:inline-flex">${iconSVG('lock',14,2.2)}</span>`}${esc(o.label)}</div><div style="font-size:12px;color:var(--muted)">${esc(o.sub)} · ${o.count} words</div></div>${right}</button>`; }).join('');
     const unc=cats.filter(o=>isListUnlocked(o.key)).length;
     body=`<p style="font-size:13px;color:var(--muted);margin:0 0 12px">${unc}/${cats.length} lists unlocked. Premium lists open with Premium or coins.</p>${rows}`;
   } else {
     const chs=S.conceptData||[]; const total=chs.length||110; const unc=chs.filter((ch,ci)=>isConceptUnlocked(ci)).length;
     const locked=chs.map((ch,ci)=>({ch,ci})).filter(x=>!isConceptUnlocked(x.ci)).slice(0,8);
-    const rows=locked.map(({ch,ci})=>`<button data-act="buyConcept" data-arg="${ci}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;background:var(--surface2);border:1px solid var(--line);border-radius:13px;padding:12px 14px;margin-bottom:9px"><div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:14.5px;display:flex;align-items:center;gap:6px"><span style="color:var(--muted);display:inline-flex">${iconSVG('lock',14,2.2)}</span>${esc(conceptShort(ch.title))}</div><div style="font-size:12px;color:var(--muted)">${esc(catGroup(ch.category))} · ${(diffMap[ch.difficulty]||diffMap.medium)[0]}</div></div><span style="font-weight:900;font-size:12.5px;color:#a06a00;white-space:nowrap">${coinAmt(COST.concept,12)}</span></button>`).join('');
+    const rows=locked.map(({ch,ci})=>`<button data-act="buyConcept" data-arg="${ci}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:9px"><div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:15px;display:flex;align-items:center;gap:6px"><span style="color:var(--muted);display:inline-flex">${iconSVG('lock',14,2.2)}</span>${esc(conceptShort(ch.title))}</div><div style="font-size:12px;color:var(--muted)">${esc(catGroup(ch.category))} · ${(diffMap[ch.difficulty]||diffMap.medium)[0]}</div></div><span style="font-weight:900;font-size:12px;color:#a06a00;white-space:nowrap">${coinAmt(COST.concept,12)}</span></button>`).join('');
     body=`<p style="font-size:13px;color:var(--muted);margin:0 0 12px">${unc}/${total} concepts unlocked. ${state.premium?'Premium opens the easier half — ':'All locked on the free plan — '}unlock more with coins.</p>
-      ${locked.length?rows:'<p style="font-size:13.5px;color:var(--muted)">Everything available is unlocked. 🎉</p>'}
-      <button data-act="goConcepts" style="width:100%;margin-top:6px;padding:13px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:800;font-size:14.5px;border:1px solid var(--line)">Browse all concepts →</button>`;
+      ${locked.length?rows:'<p style="font-size:13px;color:var(--muted)">Everything available is unlocked. 🎉</p>'}
+      <button data-act="goConcepts" style="width:100%;margin-top:6px;padding:13px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;border:1px solid var(--line)">Browse all concepts →</button>`;
   }
   return `<div style="max-width:680px;margin:0 auto">
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:14px">← Home</button><span style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:22px;margin-left:4px">${iconSVG('cart',21)} Shop</span><span style="margin-left:auto">${coinChip()}</span></div>
-    <p style="margin:0 0 14px;color:var(--muted);font-size:14px">Spend the coins you earn from games, Word Coach &amp; Concepts.</p>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button><span style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">${iconSVG('cart',21)} Shop</span><span style="margin-left:auto">${coinChip()}</span></div>
+    <p style="margin:0 0 14px;color:var(--muted);font-size:13px">Spend the coins you earn from games, Word Coach &amp; Concepts.</p>
     <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">${tabBtn('worlds','palette','Worlds')}${tabBtn('lists','book','Word lists')}${tabBtn('concepts','grid','Concepts')}</div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:16px">${body}</div>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px">${body}</div>
   </div>`; }
 function gameShell(statusBar, inner){ return `<div style="max-width:680px;margin:0 auto">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px">${statusBar}<div style="display:flex;align-items:center;gap:10px">${coinChip()}<button data-act="exitGame" style="color:var(--muted);font-weight:700;font-size:14px">✕ Exit</button></div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px">${statusBar}<div style="display:flex;align-items:center;gap:10px">${coinChip()}<button data-act="exitGame" style="color:var(--muted);font-weight:700;font-size:13px">✕ Exit</button></div></div>
     ${inner}</div>`; }
 function typedGame(){ const S=state; const g=S.game; const w=g.list[g.i]; let statusBar='';
   if(g.type==='beat'){ const low=g.timeLeft<=10; statusBar=`<div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--display);font-weight:900;font-size:20px;color:${low?'var(--bad)':'var(--accent)'};min-width:54px">⏱ ${g.timeLeft}s</span><span style="font-family:var(--mono);font-size:13px;color:var(--muted)">✓ ${g.right}</span></div>`; }
   else if(g.type==='boss'){ const hpPct=Math.round(g.hp/g.maxhp*100); const hearts='❤️'.repeat(g.lives)+'🖤'.repeat(g.maxlives-g.lives);
-    statusBar=`<div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><span style="font-size:20px">👹</span><div style="flex:1;height:11px;border-radius:99px;background:var(--surface2);overflow:hidden;max-width:220px"><div style="height:100%;border-radius:99px;background:linear-gradient(90deg,#FF4D8D,#d63a3a);width:${hpPct}%;transition:width .35s"></div></div><span style="font-size:13px">${hearts}</span></div></div>`; }
-  else if(g.type==='champ'){ const low=g.fmt==='timed'&&g.timeLeft<=10; statusBar=`<div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--display);font-weight:900;font-size:18px;color:var(--accent)">⚡ Challenge</span>${g.fmt==='timed'?`<span style="font-family:var(--display);font-weight:900;font-size:18px;color:${low?'var(--bad)':'var(--accent)'}">⏱ ${g.timeLeft}s</span>`:`<span style="font-family:var(--mono);font-size:13px;color:var(--muted)">${g.i+1}/${g.total}</span>`}<span style="font-family:var(--mono);font-size:13px;color:var(--muted)">✓ ${g.right}</span></div>`; }
+    statusBar=`<div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><span style="font-size:20px">👹</span><div style="flex:1;height:11px;border-radius:999px;background:var(--surface2);overflow:hidden;max-width:220px"><div style="height:100%;border-radius:999px;background:linear-gradient(90deg,#FF4D8D,#d63a3a);width:${hpPct}%;transition:width .35s"></div></div><span style="font-size:13px">${hearts}</span></div></div>`; }
+  else if(g.type==='champ'){ const low=g.fmt==='timed'&&g.timeLeft<=10; statusBar=`<div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--display);font-weight:900;font-size:17px;color:var(--accent)">⚡ Challenge</span>${g.fmt==='timed'?`<span style="font-family:var(--display);font-weight:900;font-size:17px;color:${low?'var(--bad)':'var(--accent)'}">⏱ ${g.timeLeft}s</span>`:`<span style="font-family:var(--mono);font-size:13px;color:var(--muted)">${g.i+1}/${g.total}</span>`}<span style="font-family:var(--mono);font-size:13px;color:var(--muted)">✓ ${g.right}</span></div>`; }
   else statusBar=`<div style="font-family:var(--mono);font-size:13px;color:var(--muted)">${gameName(g.type)} · ${g.i+1}/${g.list.length} · ✓ ${g.right}</div>`;
-  const hint = S.gInfo ? `<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 15px;text-align:left;font-size:14px;line-height:1.55;margin-bottom:14px">${w.d?('<b>Meaning</b> — '+blankHTML(w.d,w.w)):''}${w.d&&w.s?'<br>':''}${w.s?('<b>Sentence</b> — '+blankHTML(w.s,w.w)):''}${w.h?('<br><span style="display:inline-flex;align-items:center;gap:5px;color:var(--accent);vertical-align:middle">'+iconSVG('bulb',14)+'</span> '+blankHTML(w.h,w.w)):''}${(!w.d&&!w.s)?'No hint for this one — listen closely!':''}</div>` : '';
-  let bossFb=''; if(g.type==='boss'&&g.last){ bossFb=g.last.ok?`<div style="color:#1f9d57;font-weight:800;font-size:14px;margin-bottom:12px">💥 Hit! Boss took damage.</div>`:`<div style="color:var(--bad);font-weight:800;font-size:14px;margin-bottom:12px">💔 Missed — it was <b>${esc(g.last.word)}</b></div>`; }
-  const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:clamp(22px,5vw,32px);box-shadow:var(--glow);text-align:center">
+  const hint = S.gInfo ? `<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 15px;text-align:left;font-size:13px;line-height:1.55;margin-bottom:14px">${w.d?('<b>Meaning</b> — '+blankHTML(w.d,w.w)):''}${w.d&&w.s?'<br>':''}${w.s?('<b>Sentence</b> — '+blankHTML(w.s,w.w)):''}${w.h?('<br><span style="display:inline-flex;align-items:center;gap:5px;color:var(--accent);vertical-align:middle">'+iconSVG('bulb',14)+'</span> '+blankHTML(w.h,w.w)):''}${(!w.d&&!w.s)?'No hint for this one — listen closely!':''}</div>` : '';
+  let bossFb=''; if(g.type==='boss'&&g.last){ bossFb=g.last.ok?`<div style="color:#1f9d57;font-weight:800;font-size:13px;margin-bottom:12px">💥 Hit! Boss took damage.</div>`:`<div style="color:var(--bad);font-weight:800;font-size:13px;margin-bottom:12px">💔 Missed — it was <b>${esc(g.last.word)}</b></div>`; }
+  const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,32px);box-shadow:var(--glow);text-align:center">
       <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 14px">${g.type==='boss'?'Spell it to attack!':'Listen and type'}</p>
       <button data-act="gSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">${iconSVG('volume',18)} Hear the word</button>
       <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px"><button data-act="gSaySlow" style="padding:9px 14px;border-radius:999px;background:var(--surface2);font-weight:700;font-size:13px;border:1px solid var(--line)">Slow</button><button data-act="gInfoToggle" style="padding:9px 14px;border-radius:999px;font-weight:700;font-size:13px;border:1px solid var(--line);${S.gInfo?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">💡 Hint</button></div>
       ${hint}${bossFb}
-      <input data-inp="onType" data-key="gKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="type here" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;text-align:center;padding:16px 14px;border-radius:15px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(20px,5vw,28px);letter-spacing:.14em;text-transform:lowercase;outline:none;margin-bottom:14px">
-      <button data-act="gSubmit" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">${g.type==='boss'?'Attack! ⚔️':'Enter →'}</button>
+      <input data-inp="onType" data-key="gKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="type here" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;text-align:center;padding:16px 14px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(20px,5vw,28px);letter-spacing:.14em;text-transform:lowercase;outline:none;margin-bottom:14px">
+      <button data-act="gSubmit" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${g.type==='boss'?'Attack! ⚔️':'Enter →'}</button>
     </div>`;
   return gameShell(statusBar, inner); }
 function typedDone(){ const S=state; const g=S.game; let title,big,sub;
@@ -2926,20 +2938,20 @@ function typedDone(){ const S=state; const g=S.game; let title,big,sub;
   else if(g.type==='beat'){ title=g.right>=12?'Lightning speller! ⚡':'Time! ⏱'; big=g.right+' words'; sub='spelled in 60 seconds'; }
   else { const pct=Math.round(g.right/(g.ans.length||1)*100); title=pct>=80?'Strong round! 🏆':pct>=50?'Nice work 💪':'Keep training 🌱'; big=g.right+'/'+g.ans.length; sub=pct+'% correct'; }
   return `<div style="max-width:560px;margin:0 auto">
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:30px;text-align:center;box-shadow:var(--glow);margin-bottom:14px">
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:30px;text-align:center;box-shadow:var(--glow);margin-bottom:14px">
       <div style="display:flex;justify-content:center;margin-bottom:8px"><div style="width:74px;height:82px">${mascotSVG(g.status==='lost'?'oops':'love')}</div></div>
-      <h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:0 0 8px">${title}</h2>
+      <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 8px">${title}</h2>
       <div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent);line-height:1">${big}</div>
       <p style="color:var(--muted);font-weight:700;margin-top:6px">${sub}</p>
       <div style="display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 15px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:15px">${iconSVG('coin',15)} +${g.bonus||0} coins earned</div>
     </div>
-    <div style="display:flex;gap:10px;justify-content:center"><button data-act="exitGame" style="padding:13px 18px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">← Arcade</button><button data-act="gReplay" style="padding:13px 20px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Play again →</button></div>
+    <div style="display:flex;gap:10px;justify-content:center"><button data-act="exitGame" style="padding:13px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">← Arcade</button><button data-act="gReplay" style="padding:13px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Play again →</button></div>
   </div>`; }
 function mcGame(){ const S=state; const g=S.game; const q=g.qs[g.i]; const mono=q.kind==='spell';
   const statusBar=`<div style="font-family:var(--mono);font-size:13px;color:var(--muted)">${gameName(g.type)} · ${g.i+1}/${g.qs.length} · ✓ ${g.right}</div>`;
   const choices=q.choices.map((ch,idx)=>{ let bg='var(--surface2)',col='var(--text)',bd='var(--line)';
     if(g.picked!=null){ if(ch===q.answer){ bg='color-mix(in srgb,#1f9d57 20%,var(--bg2))'; col='var(--text)'; bd='#1f9d57'; } else if(idx===g.picked){ bg='color-mix(in srgb,var(--bad) 18%,var(--bg2))'; bd='var(--bad)'; } }
-    return `<button data-act="gPick" data-arg="${idx}" ${g.picked!=null?'disabled':''} style="text-align:${mono?'center':'left'};padding:15px 17px;border-radius:14px;background:${bg};border:2px solid ${bd};color:${col};font-family:${mono?'var(--mono)':'var(--display)'};font-weight:800;font-size:16px;${mono?'letter-spacing:.04em;':''}">${esc(ch)}</button>`; }).join('');
+    return `<button data-act="gPick" data-arg="${idx}" ${g.picked!=null?'disabled':''} style="text-align:${mono?'center':'left'};padding:15px 17px;border-radius:14px;background:${bg};border:2px solid ${bd};color:${col};font-family:${mono?'var(--mono)':'var(--display)'};font-weight:800;font-size:15px;${mono?'letter-spacing:.04em;':''}">${esc(ch)}</button>`; }).join('');
   const hearBtn=(label)=>`<button data-act="gSayQ" style="margin-top:12px;display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border-radius:999px;background:var(--surface2);font-weight:700;font-size:13px;border:1px solid var(--line)">${iconSVG('volume',15)} ${label}</button>`;
   const eyebrow=(t)=>`<div style="font-size:12px;color:var(--muted);font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">${t}</div>`;
   let prompt;
@@ -2947,19 +2959,19 @@ function mcGame(){ const S=state; const g=S.game; const q=g.qs[g.i]; const mono=
   else if(q.kind==='origin') prompt=`${eyebrow('Where does it come from?')}<div style="font-family:var(--display);font-size:clamp(20px,4.5vw,28px);font-weight:800">${q.prompt}</div>${hearBtn('Hear word')}`;
   else if(q.kind==='spell') prompt=`${eyebrow('Which spelling is correct?')}<div style="font-size:clamp(15px,3.4vw,19px);line-height:1.5;font-weight:600;color:var(--muted)">${q.prompt}</div>${hearBtn('Hear word')}`;
   else prompt=`${eyebrow('Which word means…')}<div style="font-size:clamp(17px,3.6vw,21px);line-height:1.55;font-weight:600">“${q.prompt}”</div>`;
-  const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:clamp(20px,4.5vw,30px);box-shadow:var(--glow);margin-bottom:14px;text-align:center">${prompt}</div>
+  const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4.5vw,30px);box-shadow:var(--glow);margin-bottom:14px;text-align:center">${prompt}</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:11px">${choices}</div>`;
   return gameShell(statusBar, inner); }
 function mcDone(){ const g=state.game; const pct=Math.round(g.right/(g.qs.length||1)*100);
   return `<div style="max-width:560px;margin:0 auto">
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:30px;text-align:center;box-shadow:var(--glow);margin-bottom:14px">
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:30px;text-align:center;box-shadow:var(--glow);margin-bottom:14px">
       <div style="display:flex;justify-content:center;margin-bottom:8px"><div style="width:74px;height:82px">${mascotSVG('love')}</div></div>
-      <h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:0 0 8px">${pct>=80?'Word wizard! 🧙':pct>=50?'Good thinking 💪':'Keep learning 🌱'}</h2>
+      <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 8px">${pct>=80?'Word wizard! 🧙':pct>=50?'Good thinking 💪':'Keep learning 🌱'}</h2>
       <div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent);line-height:1">${g.right}/${g.qs.length}</div>
       <p style="color:var(--muted);font-weight:700;margin-top:6px">${pct}% correct</p>
       <div style="display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 15px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:15px">${iconSVG('coin',15)} +${g.bonus||0} coins earned</div>
     </div>
-    <div style="display:flex;gap:10px;justify-content:center"><button data-act="exitGame" style="padding:13px 18px;border-radius:13px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">← Arcade</button><button data-act="gReplay" style="padding:13px 20px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Play again →</button></div>
+    <div style="display:flex;gap:10px;justify-content:center"><button data-act="exitGame" style="padding:13px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">← Arcade</button><button data-act="gReplay" style="padding:13px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Play again →</button></div>
   </div>`; }
 
 
@@ -2968,26 +2980,26 @@ function overlays(){
   const S=state; let h='';
   if(S.showPaywall){
     const perks=['4 worlds unlocked (2 more than free)','Spelling Basics free + half of all 121 concepts unlocked','Level up past Level 5 on every list','Premium word lists + full library','Earn 🪙 coins to unlock everything else']
-      .map(p=>`<div style="display:flex;align-items:center;gap:11px;font-size:14.5px;font-weight:600"><span style="width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:13px;flex-shrink:0">✓</span>${p}</div>`).join('');
+      .map(p=>`<div style="display:flex;align-items:center;gap:11px;font-size:15px;font-weight:600"><span style="width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:13px;flex-shrink:0">✓</span>${p}</div>`).join('');
     const planStyle=(on)=>'flex:1;text-align:left;border-radius:14px;padding:14px;cursor:pointer;background:var(--surface2);border:2px solid '+(on?'var(--accent)':'transparent');
     h+=`<div data-act="closePaywall" style="position:fixed;inset:0;z-index:60;background:rgba(10,8,20,.55);backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px">
-      <div data-act="noop" style="width:100%;max-width:460px;background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:clamp(24px,5vw,34px);box-shadow:var(--glow);animation:sb-pop .35s ease both;max-height:92dvh;overflow:auto">
+      <div data-act="noop" style="width:100%;max-width:460px;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(24px,5vw,34px);box-shadow:var(--glow);animation:sb-pop .35s ease both;max-height:92dvh;overflow:auto">
         <div style="display:flex;justify-content:center;margin-bottom:8px"><div style="width:70px;height:78px">${mascotSVG('love')}</div></div>
         <h2 style="font-family:var(--display);font-weight:800;font-size:24px;text-align:center;margin:0 0 4px">Go Premium</h2>
-        <p style="text-align:center;color:var(--muted);font-size:14px;margin:0 0 20px">Unlock 4 worlds, half the concepts, and uncapped levels — then earn coins for the rest.</p>
+        <p style="text-align:center;color:var(--muted);font-size:13px;margin:0 0 20px">Unlock 4 worlds, half the concepts, and uncapped levels — then earn coins for the rest.</p>
         <div style="display:grid;gap:9px;margin-bottom:20px">${perks}</div>
         <div style="display:flex;gap:10px;margin-bottom:16px">
-          <button data-act="pickPlan" data-arg="year" style="${planStyle(S.plan==='year')}"><div style="font-size:11px;font-weight:800;color:var(--accent);letter-spacing:.04em">BEST VALUE · SAVE 38%</div><div style="font-family:var(--display);font-weight:800;font-size:22px">$59<span style="font-size:13px;color:var(--muted)">/yr</span></div><div style="font-size:12px;color:var(--muted)">$4.92 / month</div></button>
-          <button data-act="pickPlan" data-arg="month" style="${planStyle(S.plan==='month')}"><div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.04em">MONTHLY</div><div style="font-family:var(--display);font-weight:800;font-size:22px">$7.99<span style="font-size:13px;color:var(--muted)">/mo</span></div><div style="font-size:12px;color:var(--muted)">billed monthly</div></button>
+          <button data-act="pickPlan" data-arg="year" style="${planStyle(S.plan==='year')}"><div style="font-size:12px;font-weight:800;color:var(--accent);letter-spacing:.04em">BEST VALUE · SAVE 38%</div><div style="font-family:var(--display);font-weight:800;font-size:20px">$59<span style="font-size:13px;color:var(--muted)">/yr</span></div><div style="font-size:12px;color:var(--muted)">$4.92 / month</div></button>
+          <button data-act="pickPlan" data-arg="month" style="${planStyle(S.plan==='month')}"><div style="font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.04em">MONTHLY</div><div style="font-family:var(--display);font-weight:800;font-size:20px">$7.99<span style="font-size:13px;color:var(--muted)">/mo</span></div><div style="font-size:12px;color:var(--muted)">billed monthly</div></button>
         </div>
-        <button data-act="upgrade" style="width:100%;padding:16px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">Start 7-day free trial</button>
+        <button data-act="upgrade" style="width:100%;padding:16px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Start 7-day free trial</button>
         <div style="text-align:center;margin-top:12px"><button data-act="closePaywall" style="color:var(--muted);font-size:13px;font-weight:600">Maybe later</button></div>
       </div></div>`;
   }
   if(S.fullLoading) h+=`<div style="position:fixed;inset:0;z-index:65;background:rgba(10,8,20,.5);backdrop-filter:blur(5px);display:grid;place-items:center;padding:20px">
       <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:28px 30px;text-align:center;box-shadow:var(--glow);max-width:340px">
         <div style="width:64px;height:72px;margin:0 auto 12px;animation:sb-float 2.5s ease-in-out infinite">${mascotSVG('happy')}</div>
-        <div style="font-family:var(--display);font-weight:800;font-size:18px;margin-bottom:6px">Loading the full library…</div>
+        <div style="font-family:var(--display);font-weight:800;font-size:17px;margin-bottom:6px">Loading the full library…</div>
         <div style="font-size:13px;color:var(--muted);line-height:1.5">All 128,000 words — this one-time load takes a few seconds.</div>
         <div style="width:28px;height:28px;margin:14px auto 0;border:3px solid var(--surface2);border-top-color:var(--accent);border-radius:50%;animation:sb-spin .8s linear infinite"></div>
       </div></div>`;
