@@ -8,7 +8,7 @@ const EVO = EV_NOMEN; // evolution nomenclature (shared with the emblem engine)
 /* ---------------- state ---------------- */
 const state = {
   screen:'landing', authMode:'signup', email:'', pw:'',
-  onbStep:0, draft:{ name:'', age:9, avatar:'bee', goal:10 }, addingMore:false,
+  onbStep:0, draft:{ name:'', age:9, avatar:'bizzy', goal:10 }, addingMore:false,
   children:[], activeIdx:0, theme:'spellbound', mode:'light', premium:false,
   nav:'home', plan:'year', showPaywall:false, toast:'',
   gi:0, typed:'', status:'idle', mood:'happy', sessionRight:0, sessionDone:0,
@@ -471,13 +471,14 @@ const app = {
   doAuth:()=>{ if(state.authMode==='signin'){ let ch=state.children;
       if(!ch.length) ch=[{ name:'Ahana', age:9, avatar:'fox', theme:'spellbound', level:9, streak:12, acc:88, goal:10, xp:124, week:[12,20,15,30,18,25,22] }];
       set({children:ch, activeIdx:0, theme:ch[0].theme||'spellbound', screen:'app', nav:'home'});
-    } else { set({screen:'onboarding', onbStep:0, addingMore:false, draft:{name:'',age:9,avatar:'bee',goal:10}}); } },
+    } else { set({screen:'onboarding', onbStep:0, addingMore:false, draft:{name:'',age:9,avatar:'bizzy',goal:10}}); } },
   // onboarding
   onDraftName:(v)=>set({draft:{...state.draft,name:v}}),
   onDraftAge:(v)=>set({draft:{...state.draft,age:+v}}),
   pickAvatar:(id)=>set({draft:{...state.draft,avatar:id}}),
   pickGoal:(v)=>set({draft:{...state.draft,goal:+v}}),
   onbBack:()=>{ if(state.onbStep===0){ set({screen: state.addingMore?'app':'auth'}); } else set({onbStep:state.onbStep-1}); },
+  pickAvatar:(id)=>{ if(window.SB_AVATARS&&SB_AVATARS.byId[id]&&SB_AVATARS.byId[id].rarity!=='free'&&state.screen==='onboarding'){ flash('🔒 '+SB_AVATARS.byId[id].name+' unlocks with coins — find it in your Collection later!'); return; } state.draft.avatar=id; render(); },
   onbWorld:(id)=>{ if(FREE_THEMES.indexOf(id)<0){ flash('▶ Play to unlock — start in Bizzing Bee or Spotlight and earn coins to open this world!'); return; } state.draft.theme=id; state.theme=id; render(); },
   onbNext:()=>{ const S=state;
     if(S.onbStep===0 && !S.draft.name.trim()){ flash('Add a name to continue'); return; }
@@ -604,7 +605,7 @@ const app = {
   drawer:(key)=>{ state.drawerOpen=false; const F={ home:()=>app.setNav('home'), levelup:()=>app.startLevelUp(), games:()=>app.openGames(), shop:()=>app.openShop(), concepts:()=>app.setNav('concepts'),
       coach:()=>app.openCoach(), journeys:()=>app.openJourneys(), study:()=>app.coachStudy(), written:()=>app.startWritten(), oral:()=>app.startOral(),
       weak:()=>app.coachWeakDrill(), parentview:()=>{ app.openCoach(); state.coachTab='parent'; render(); }, settings:()=>app.setNav('settings'), themes:()=>app.setNav('themes'),
-      quest:()=>app.openQuestChooser(), traps:()=>app.openTraps(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore') };
+      quest:()=>app.openQuestChooser(), traps:()=>app.openTraps(), collection:()=>app.openCollection(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore') };
     (F[key]||(()=>{}))(); },
   // coach
   openCoach:()=>{ const c=active(); ensureLists(c);
@@ -727,6 +728,15 @@ const app = {
   duelP2:()=>{ const g=state.game; g.turn=1; g.i=0; g.phase='play'; state.typed=''; render(); setTimeout(()=>{ const gg=state.game; if(gg&&gg.type==='duel'&&gg.phase==='play'&&gg.list[0]) say(gg.list[0].w); },350); },
   openTraps:()=>{ try{ loadConcepts(); }catch(e){} set({nav:'traps', screen:'app', trapSel:null, conceptSel:null}); },
   openEvo:()=>set({nav:'evolution', screen:'app'}),
+  openCollection:()=>set({nav:'collection', screen:'app'}),
+  collTab:(t)=>set({collTab:t}),
+  buyAvatar:(id)=>{ const c=active(); const a=SB_AVATARS.byId[id]; if(!a||avOwned(c,id)) return;
+    if(!spendCoins(a.price)){ flash('Need '+a.price+' 🪙 — play games and clear Levels to earn!'); return; }
+    (c.avOwned=c.avOwned||{})[id]=1; c.avatar=id; save(); sfx('win'); burstConfetti(120); flash('✨ '+a.name+' joined your collection!'); render(); },
+  sellAvatar:(id)=>{ const c=active(); const a=SB_AVATARS.byId[id]; if(!a||a.rarity==='free'||!((c.avOwned||{})[id])) return;
+    if(c.avatar===id){ flash('Pick a different avatar first — you can\'t sell the one you\'re wearing'); return; }
+    delete c.avOwned[id]; addCoins(a.sell); save(); sfx('coin'); flash('Sold '+a.name+' for '+a.sell+' 🪙'); render(); },
+  wearAv:(id)=>{ const c=active(); if(!avOwned(c,id)){ flash('Not collected yet'); return; } c.avatar=id; save(); sfx('correct'); render(); },
   trapPick:(k)=>set({trapSel:k}),
   trapBack:()=>set({trapSel:null}),
   drillTrap:(k)=>{ const ws=trapWords(k); if(!ws.length){ flash('No words for this trap right now'); return; }
@@ -1000,8 +1010,9 @@ function viewOnboarding(){
   const dots=[0,1,2].map(i=>`<div style="width:${i===S.onbStep?'26px':'8px'};height:8px;border-radius:999px;transition:.25s;background:${i<=S.onbStep?'var(--accent)':'var(--surface2)'}"></div>`).join('');
   let card='';
   if(S.onbStep===0){
-    const avatars=[4,7,9].map(fi=>THEMES.map(t=>{ const id='w:'+t.id+':'+fi;
-      return `<button data-act="pickAvatar" data-arg="${id}" title="${(EV_NOMEN[t.id]||EV_NOMEN.spellbound)[fi]} · ${THEME_LABEL[t.id]||t.id}" style="aspect-ratio:1;border-radius:14px;display:grid;place-items:center;transition:.15s;background:var(--surface2);border:2px solid ${S.draft.avatar===id?'var(--accent)':'transparent'};padding:4px"><span style="width:34px;height:37px;display:inline-block">${avatarSVG(id,34)}</span></button>`; }).join('')).join('');
+    const avatars=SB_AVATARS.packs.map(p=>{ const packAvs=SB_AVATARS.list.filter(a=>a.pack===p.id);
+      return `<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:8px">${packAvs.map(a=>{ const free=a.rarity==='free'; const on=S.draft.avatar===a.id;
+        return `<button data-act="pickAvatar" data-arg="${a.id}" title="${a.name} · ${p.label}${free?'':' · unlock later with coins'}" style="position:relative;aspect-ratio:1;border-radius:14px;display:grid;place-items:center;transition:.15s;background:var(--surface2);border:2px solid ${on?'var(--accent)':'transparent'};padding:5px;${free?'':'opacity:.45'}"><span style="width:40px;height:40px;display:inline-block">${avatarSVG(a.id,40)}</span>${free?'':`<span style="position:absolute;top:3px;right:4px;font-size:10px">🔒</span>`}</button>`; }).join('')}</div>`; }).join('');
     card=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow)">
       <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">Who's practising?</h2>
       <p style="margin:0 0 20px;color:var(--muted);font-size:13px">Set up your speller's profile.</p>
@@ -1261,6 +1272,7 @@ function viewApp(){
   else if(S.nav==='leveltest') content=viewLevelTest();
   else if(S.nav==='traps') content=viewTraps();
   else if(S.nav==='evolution') content=viewEvolution();
+  else if(S.nav==='collection') content=viewCollection();
   else if(S.nav==='games') content=viewGames();
   else if(S.nav==='shop') content=viewShop();
   else if(S.nav==='themes') content=viewThemes();
@@ -1356,6 +1368,7 @@ function viewDrawer(){
         ${wayRow('journeys','journeys','Word Journeys','the history of words')}
         ${wayRow('themes','themes','Theme Journeys',myThemes().length?myThemes().length+' worlds picked':'pick 3–5 worlds')}
         ${kick('Training tools')}
+        ${row('collection','crown','Collection',avOwnedCount(c)+'/30 avatars · badges',state.nav==='collection')}
         ${row('traps','target','Your Traps',missTraps().length?(missTraps().length+' weak patterns found'):'weak-pattern radar',state.nav==='traps')}
         ${row('quest','target',"Champion's Quest",'switch your path',state.nav==='quest')}
         ${row('builder','pencil','List Builder','custom list in five taps',state.nav==='builder')}
@@ -1456,7 +1469,7 @@ function viewHome(){
       return `${bandBanner}<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:18px">
       <div class="sb-card" style="display:flex;align-items:center;gap:16px;min-height:156px">
         <div style="position:relative;flex-shrink:0">
-          <div style="width:74px;height:84px;animation:sb-bee-bob 3.4s ease-in-out infinite">${mascotAcc(S.mood)}</div>
+          <div style="width:74px;height:84px;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center">${(c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar])?SB_AVATAR(c.avatar,72):mascotAcc(S.mood)}</div>
           <div class="sb-bubble" style="position:absolute;left:52px;top:-30px;white-space:nowrap;background:var(--paper,#fff);border:1px solid var(--line);border-radius:10px;border-bottom-left-radius:3px;padding:5px 9px;font-size:12px;font-weight:650;color:var(--ink,var(--text));box-shadow:var(--sh-rest);z-index:2">${bub}</div>
         </div>
         <div style="min-width:0;flex:1">
@@ -1499,9 +1512,63 @@ ${focusedH?(()=>{ return `${tipOfDay()}
   </div>`;
 }
 function avatarSVG(id,size){ size=size||30;
+  if(window.SB_AVATARS && SB_AVATARS.byId[id]) return SB_AVATAR(id,size);
   if(typeof id==='string' && id.slice(0,2)==='w:'){ const p=id.split(':'); try{ return evEmb(p[1],+p[2]).replace('width="54" height="58"','width="100%" height="100%"'); }catch(e){ return buddySVG('bee',size); } }
   return buddySVG(id,size); }
+function avOwned(c,id){ const a=window.SB_AVATARS&&SB_AVATARS.byId[id]; if(!a) return true; return a.rarity==='free' || !!((c.avOwned||{})[id]); }
+function avOwnedCount(c){ return SB_AVATARS.list.filter(a=>avOwned(c,a.id)).length; }
 function evArt(theme,i){ try{ return evEmb(theme,i).replace('width="54" height="58"','width="100%" height="100%"'); }catch(e){ return ''; } }
+function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageIdx(c,'journey')+1;
+  let concepts=0; try{ loadConcepts(); concepts=(state.conceptData||[]).filter(ch=>conceptStat(ch).done).length; }catch(e){}
+  const st=(n)=>((c.streak||0)>=n)||!!((c.streakRewards||{})[n]);
+  return [
+    { id:'hatched', name:'First Hatch', desc:'Reach Hatchling — your first evolution', ic:'sprout', done:listLevel(c,activeListKey())>=2 },
+    { id:'streak3', name:'3-Day Buzz', desc:'Practise 3 days in a row', ic:'flame', done:st(3) },
+    { id:'streak7', name:'Week of Wings', desc:'A 7-day streak', ic:'flame', done:st(7) },
+    { id:'streak14', name:'Fortnight Flyer', desc:'A 14-day streak', ic:'flame', done:st(14) },
+    { id:'streak30', name:'Iron Wings', desc:'A 30-day streak', ic:'flame', done:st(30) },
+    { id:'band5', name:'Regional Ready', desc:'Prove Bee Band 5', ic:'target', done:bb.band>=5 },
+    { id:'band7', name:'State & National', desc:'Prove Bee Band 7', ic:'target', done:bb.band>=7 },
+    { id:'band9', name:'Championship Band', desc:'Prove Bee Band 9', ic:'target', done:bb.band>=9 },
+    { id:'quest5', name:'Level 5 Climber', desc:'Reach Level 5 on any path', ic:'steps', done:jl>=5 },
+    { id:'quest10', name:'Level 10 Ace', desc:'Reach Level 10 on the Journey', ic:'steps', done:jl>=10 },
+    { id:'champ', name:'Bizzing Bee Champ', desc:'Clear all 20 Champ Levels', ic:'crown', done:isChampDone(c) },
+    { id:'scholar', name:'Pattern Scholar', desc:'Master 10 concepts', ic:'grid', done:concepts>=10 },
+    { id:'storyteller', name:'Storykeeper', desc:'Unlock 10 word-history tales', ic:'book', done:loreCount(c)>=10 },
+    { id:'collector', name:'Collector', desc:'Own 15 avatars', ic:'spark', done:avOwnedCount(c)>=15 },
+  ]; }
+function viewCollection(){ const S=state; const c=active(); const tab=S.collTab||'avatars';
+  const tabBtn=(k,l)=>`<button data-act="collTab" data-arg="${k}" style="flex:1;min-width:120px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${l}</button>`;
+  let body='';
+  if(tab==='avatars'){
+    body=SB_AVATARS.packs.map(p=>{ const avs=SB_AVATARS.list.filter(a=>a.pack===p.id); const ownedN=avs.filter(a=>avOwned(c,a.id)).length;
+      const tiles=avs.map(a=>{ const own=avOwned(c,a.id); const R=SB_AVATARS.rarities[a.rarity]; const on=c.avatar===a.id;
+        const action= on?`<span style="font-weight:800;font-size:11.5px;color:var(--good)">Wearing ✓</span>`
+          : own?`<span style="display:inline-flex;gap:6px"><button data-act="wearAv" data-arg="${a.id}" style="padding:6px 11px;border-radius:8px;background:var(--accent);color:#fff;font-weight:800;font-size:11.5px">Use</button>${a.rarity!=='free'?`<button data-act="sellAvatar" data-arg="${a.id}" title="Sell for ${a.sell} coins" style="padding:6px 9px;border-radius:8px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--muted)">Sell ${a.sell}🪙</button>`:''}</span>`
+          : `<button data-act="buyAvatar" data-arg="${a.id}" style="padding:6px 11px;border-radius:8px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:900;font-size:11.5px">${a.price} 🪙</button>`;
+        return `<div style="background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':own?'var(--line)':'var(--line)'};border-radius:14px;padding:11px 9px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;${own?'':'filter:grayscale(.35);opacity:.85'}">
+          <span style="width:56px;height:56px">${avatarSVG(a.id,56)}</span>
+          <span style="font-weight:800;font-size:12px;line-height:1.15">${a.name}</span>
+          <span style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:99px;color:#fff;background:${R.c}">${R.label}</span>
+          ${action}</div>`; }).join('');
+      return `<div class="sb-card" style="margin-bottom:14px">
+        <div style="display:flex;align-items:baseline;gap:9px;margin-bottom:11px"><span style="width:12px;height:12px;border-radius:4px;background:linear-gradient(135deg,${p.c1},${p.c2});display:inline-block"></span><span class="sb-ct" style="font-size:15px">${p.label}</span><span class="sb-cn">${ownedN}/${avs.length} collected</span></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:9px">${tiles}</div></div>`; }).join('');
+  } else {
+    const B=badgeDefs(); const won=B.filter(b=>b.done).length;
+    body=`<div class="sb-card"><div style="display:flex;align-items:baseline;gap:9px;margin-bottom:12px"><span class="sb-ct" style="font-size:15px">Badges</span><span class="sb-cn">${won}/${B.length} won — earned by playing, never bought</span></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px">${B.map(b=>`<div style="background:var(--paper,var(--bg2));border:1.5px solid ${b.done?'var(--treasure,#F0B429)':'var(--line)'};border-radius:14px;padding:13px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;${b.done?'':'opacity:.55;filter:grayscale(.6)'}">
+        <span style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:${b.done?'linear-gradient(135deg,#FFD24D,#F0A93C)':'var(--surface2)'};color:${b.done?'#5a3d00':'var(--muted)'};box-shadow:${b.done?'0 2px 8px rgba(240,180,41,.4)':'none'}">${iconSVG(b.ic,22)}</span>
+        <span style="font-weight:800;font-size:12.5px;line-height:1.15">${b.name}</span>
+        <span class="sb-cn" style="font-size:11px">${b.desc}</span>
+        <span style="font-weight:800;font-size:10.5px;color:${b.done?'var(--good)':'var(--muted)'}">${b.done?'WON ✓':'LOCKED'}</span></div>`).join('')}</div></div>`;
+  }
+  return `<div style="max-width:920px;margin:0 auto">
+    ${pageHead('Collection', avOwnedCount(c)+'/30 avatars', 'Collect avatars with coins, win badges by playing. Your avatar rides on the welcome card.',
+      `<span style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px">${coinAmt(c.coins||0,14)}</span>`)}
+    <div style="display:flex;gap:8px;margin-bottom:14px">${tabBtn('avatars','Avatars · '+avOwnedCount(c)+'/30')}${tabBtn('badges','Badges · '+badgeDefs().filter(b=>b.done).length+'/'+badgeDefs().length)}</div>
+    ${body}
+  </div>`; }
 /* ---- Evolution ladder as its own screen (Home shows only the compact card) ---- */
 function viewEvolution(){ const S=state; const c=active(); ensureLists(c); const theme=S.theme; const evo=EVO[theme]||EVO.spellbound;
   const aKey=activeListKey(); const aLevel=listLevel(c,aKey); const fIdx=formIdx(aLevel);
@@ -2643,8 +2710,8 @@ function viewSettings(){
   const _nat=(n)=>/natural|enhanced|premium|siri|google|neural|online/i.test(n);
   const voiceOpts=['<option value="">Auto · best available</option>'].concat(_voices.map(v=>`<option value="${escA(v.name)}"${VOICE.name===v.name?' selected':''}>${esc(v.name)}${_nat(v.name)?' ✨':''}</option>`)).join('');
   const _pc=active();
-  const _avRows=[4,7,9].map(fi=>`<div style="display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-bottom:8px">${THEMES.map(t=>{ const id='w:'+t.id+':'+fi;
-    return `<button data-act="profAvatar" data-arg="${id}" title="${(EV_NOMEN[t.id]||EV_NOMEN.spellbound)[fi]} · ${THEME_LABEL[t.id]||t.id}" style="aspect-ratio:1;border-radius:12px;display:grid;place-items:center;background:var(--surface2);border:2px solid ${_pc.avatar===id?'var(--accent)':'transparent'};padding:3px"><span style="width:30px;height:33px;display:inline-block">${avatarSVG(id,30)}</span></button>`; }).join('')}</div>`).join('');
+  const _avRows=SB_AVATARS.packs.map(p=>`<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:8px;max-width:340px">${SB_AVATARS.list.filter(a=>a.pack===p.id).map(a=>{ const own=avOwned(_pc,a.id);
+    return `<button data-act="${own?'profAvatar':'openCollection'}" data-arg="${a.id}" title="${a.name}${own?'':' · unlock in Collection'}" style="position:relative;aspect-ratio:1;border-radius:12px;display:grid;place-items:center;background:var(--surface2);border:2px solid ${_pc.avatar===a.id?'var(--accent)':'transparent'};padding:4px;${own?'':'opacity:.4'}"><span style="width:34px;height:34px;display:inline-block">${avatarSVG(a.id,34)}</span>${own?'':'<span style="position:absolute;top:2px;right:3px;font-size:10px">🔒</span>'}</button>`; }).join('')}</div>`).join('')+`<div style="margin-top:4px"><button data-act="openCollection" class="sb-cl" style="background:none;border:0;padding:0;cursor:pointer">Collect more in your Collection →</button></div>`;
   const profileCard=`<div class="sb-card" style="margin-bottom:16px">
       <div style="font-family:var(--display);font-weight:800;font-size:15px">Profile</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Pick your own display name and buddy — parents can adjust age and the daily goal here too.</div>
