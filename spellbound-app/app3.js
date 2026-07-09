@@ -1142,13 +1142,13 @@ function viewHome(){
     const wk=({coach:'quest',concept:'concepts',book:'journeys',joystick:'arcade',theme:'themes'})[j.sc]||'quest';
     const cid=({coach:'quest',concept:'concepts',book:'journeys',joystick:'arcade',theme:'themes'})[j.sc]||'quest';
     const _pd=S.mode==='dusk'; const pillBg=_pd?'#FFFFFF':'#241E33', pillFg=_pd?'#241E33':'#FFFFFF';
-    const meta=`<span style="display:inline-flex;align-items:center;gap:5px;align-self:flex-start;padding:5px 12px;border-radius:var(--r-pill,999px);font-size:12px;font-weight:800;background:${pillBg};color:${pillFg};box-shadow:var(--sh-rest)">${j.festive?iconSVG('coin',12):(j.kind==='lock'?iconSVG('lock',11,2.2):'')}${j.festive?((c.coins||0)+' coins'):esc(j.badge)}</span>`;
+    const meta=`<span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;padding:4px 11px;border-radius:var(--r-pill,999px);font-size:11px;font-weight:800;letter-spacing:.02em;background:${pillBg};color:${pillFg};box-shadow:var(--sh-rest)">${j.festive?iconSVG('coin',12):(j.kind==='lock'?iconSVG('lock',11,2.2):'')}${j.festive?((c.coins||0)+' coins'):esc(j.badge)}</span>`;
     return `<button class="sb-lift" data-act="${j.goAct}" ${arg} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0">
       <div style="position:relative;width:100%">
         ${SB_COVER(S.theme,cid,{h:110,dark:S.mode==='dusk'})}
         <span style="position:absolute;left:14px;bottom:-16px">${wayTile(wk,48,ji%2?2.5:-2.5)}</span>
       </div>
-      <div style="padding:12px 16px 16px 76px;min-height:34px;display:flex;align-items:center;width:100%">${meta}</div>
+      <div style="padding:12px 14px 0 76px;min-height:30px;display:flex;align-items:center;justify-content:flex-end;width:100%">${meta}</div>
       <div style="padding:2px 16px 16px;display:flex;flex-direction:column;flex:1;width:100%">
         <div style="font-family:var(--ui,var(--body));font-weight:650;font-size:17px;line-height:1.2;color:var(--ink,var(--text))">${j.title}</div>
         <div style="font-size:15px;color:var(--muted);line-height:1.5;margin:4px 0 14px">${j.desc}</div>
