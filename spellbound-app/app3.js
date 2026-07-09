@@ -884,12 +884,7 @@ function viewOnboarding(){
       <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:10px">Pick a buddy</label>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:8px">${avatars}</div></div>`;
   } else if(S.onbStep===1){
-    const worldCards=THEMES.map(t=>{ const ev=EVO[t.id]||EVO.spellbound; const sel=t.id===S.theme;
-      return `<button data-act="pickTheme" data-arg="${t.id}" style="text-align:left;border-radius:14px;overflow:hidden;cursor:pointer;transition:.16s;background:var(--surface2);border:2px solid ${sel?'var(--accent)':'transparent'}${sel?';box-shadow:0 8px 22px color-mix(in srgb,var(--accent) 26%,transparent)':''}">
-        <div style="height:78px;display:grid;place-items:center;background:linear-gradient(135deg,${t.c1},${t.c2})">${worldEmblemSVG(t.id,40)}</div>
-        <div style="padding:12px 13px 14px"><div style="font-family:var(--display);font-weight:800;font-size:15px;color:var(--text)">${t.label}</div>
-          <div style="font-size:12px;color:var(--muted);line-height:1.45;margin:4px 0 9px;min-height:51px">${WORLD_DEF[t.id]||''}</div>
-          <div style="display:inline-flex;align-items:center;font-family:var(--mono);font-size:12px;letter-spacing:.02em;color:var(--accent);font-weight:700;background:var(--chip);padding:4px 9px;border-radius:999px">${ev[0]}  →  ${ev[9]}</div></div></button>`; }).join('');
+    const worldCards=THEMES.map(t=>worldHeroCard(t, t.id===S.theme, false, 'pickTheme')).join('');
     card=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow)">
       <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">Choose a world</h2>
       <p style="margin:0 0 20px;color:var(--muted);font-size:13px">Each world is a different look <b style="color:var(--text)">and</b> a character that evolves as you level up — from its first form to its last. Pick the journey that excites your speller. You can change it any time.</p>
@@ -918,6 +913,50 @@ function viewOnboarding(){
 
 // Buddy empty states — the bee lives in every empty moment (spec §8)
 function beeEmpty(mood,text){ return `<div style="display:flex;align-items:center;gap:14px;padding:10px 4px"><div style="width:56px;height:62px;flex-shrink:0;opacity:.95">${mascotSVG(mood)}</div><p style="margin:0;font-size:15px;color:var(--muted);line-height:1.5">${text}</p></div>`; }
+/* ---- Worlds are worlds, not recolors: each world's hero card carries its own display
+   face, palette, tagline and hero imagery (photo-duotone for Spotlight; CSS/SVG
+   illustration for the rest). Body face & semantics never move. ---- */
+const WORLD_HERO={
+ spellbound:{ face:"'Fraunces',Georgia,serif", tag:'THE HIVE · SAY · SPELL · SAY', ink:'#fff',
+   bg:"background:radial-gradient(120% 130% at 20% 0%,#8B6FF0 0%,#4A32A8 55%,#2C1D6E 100%)",
+   art:'<svg viewBox="0 0 120 60" style="position:absolute;right:6px;top:6px;width:110px;opacity:.9"><circle cx="95" cy="18" r="1.6" fill="#FFD34D"/><circle cx="70" cy="10" r="1.1" fill="#fff" opacity=".8"/><circle cx="108" cy="38" r="1.2" fill="#fff" opacity=".6"/><g transform="translate(78,26) rotate(-8)"><ellipse cx="0" cy="0" rx="11" ry="9" fill="#FFC23D"/><rect x="-8" y="1.5" width="16" height="3" rx="1.5" fill="#3A2A8C"/><ellipse cx="-7" cy="-8" rx="5" ry="7" fill="#EDE7FF" opacity=".92" transform="rotate(-24)"/><ellipse cx="7" cy="-8" rx="5" ry="7" fill="#EDE7FF" opacity=".92" transform="rotate(24)"/><circle cx="-3" cy="-2" r="1.4" fill="#2B1B5E"/><circle cx="3" cy="-2" r="1.4" fill="#2B1B5E"/></g></svg>' },
+ marquee:{ face:"'Abril Fatface',Georgia,serif", tag:'TAKE THE STAGE · PLAYBILL & BRASS', ink:'#F7E9C8',
+   bg:"background-image:linear-gradient(180deg,rgba(20,12,4,.25),rgba(20,12,4,.62)),url('assets/spotlight-stage.png');background-size:cover;background-position:center", art:'' },
+ aurora:{ face:"'Space Grotesk',system-ui,sans-serif", tag:'CHART THE STARS · VOYAGE LOG', ink:'#EAF0FF',
+   bg:"background:radial-gradient(130% 140% at 80% -10%,#3D4FBF 0%,#232B66 55%,#141838 100%)",
+   art:'<svg viewBox="0 0 120 60" style="position:absolute;right:4px;top:4px;width:118px"><circle cx="88" cy="26" r="13" fill="#7D8CF0"/><circle cx="83" cy="21" r="4" fill="#A9B4F7" opacity=".8"/><ellipse cx="88" cy="27" rx="24" ry="7" fill="none" stroke="#A9B4F7" stroke-width="1.4" opacity=".75" transform="rotate(-14 88 27)"/><circle cx="30" cy="12" r="1.3" fill="#fff" opacity=".9"/><circle cx="52" cy="44" r="1" fill="#fff" opacity=".6"/><circle cx="18" cy="34" r="1.1" fill="#fff" opacity=".7"/></svg>' },
+ anime:{ face:"'Rajdhani',system-ui,sans-serif", tag:'TRAIN THE BLADE · DAWN DOJO', ink:'#FFEAF0',
+   bg:"background:linear-gradient(160deg,#D8566F 0%,#8E2C44 60%,#571526 100%)",
+   art:'<svg viewBox="0 0 120 60" style="position:absolute;right:0;top:0;width:120px"><circle cx="92" cy="24" r="15" fill="#F3B2C0" opacity=".85"/><path d="M10 52 L112 8" stroke="#FFD9E2" stroke-width="2" opacity=".55"/><path d="M26 56 L118 20" stroke="#FFD9E2" stroke-width="1.1" opacity=".35"/></svg>' },
+ science:{ face:"'Spline Sans Mono',monospace", tag:'RUN THE EXPERIMENT · FIELD NOTES', ink:'#DFF4EC',
+   bg:"background:linear-gradient(150deg,#127a6a 0%,#0B4C42 60%,#062B25 100%);background-image:linear-gradient(rgba(223,244,236,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(223,244,236,.10) 1px,transparent 1px),linear-gradient(150deg,#127a6a 0%,#0B4C42 60%,#062B25 100%);background-size:18px 18px,18px 18px,100% 100%",
+   art:'<svg viewBox="0 0 120 60" style="position:absolute;right:8px;top:6px;width:100px"><path d="M78 10v14L66 48a5 5 0 0 0 4.6 7h18.8A5 5 0 0 0 94 48L82 24V10" fill="none" stroke="#8FE0CC" stroke-width="2.4" stroke-linecap="round"/><path d="M74 10h12" stroke="#8FE0CC" stroke-width="2.4" stroke-linecap="round"/><circle cx="76" cy="44" r="2.2" fill="#8FE0CC"/><circle cx="84" cy="38" r="1.6" fill="#8FE0CC" opacity=".7"/></svg>' },
+ origami:{ face:"'Zen Maru Gothic',system-ui,sans-serif", tag:'FOLD A WORLD · PAPER & PATIENCE', ink:'#FFF6E8',
+   bg:"background:linear-gradient(150deg,#D97438 0%,#A64A1E 58%,#6E2E10 100%)",
+   art:'<svg viewBox="0 0 120 60" style="position:absolute;right:6px;top:4px;width:112px"><g transform="translate(84,28) rotate(-6)"><path d="M0 -16 L18 10 L0 4 Z" fill="#FFE8D0"/><path d="M0 -16 L-18 10 L0 4 Z" fill="#F7C9A4"/><path d="M0 4 L6 16 L-6 16 Z" fill="#EDA671"/></g><path d="M14 46 q10 -8 20 0" stroke="#FFE8D0" stroke-width="1.6" fill="none" opacity=".6"/></svg>' },
+ pixel:{ face:"'Silkscreen',monospace", tag:'INSERT COIN · PIXEL QUEST', ink:'#E4ECFF',
+   bg:"background:linear-gradient(160deg,#3E63C4 0%,#22377A 60%,#131E45 100%)",
+   art:'<svg viewBox="0 0 120 60" style="position:absolute;right:6px;top:6px;width:110px;image-rendering:pixelated"><g fill="#9DB8F8"><rect x="76" y="14" width="8" height="8"/><rect x="84" y="22" width="8" height="8"/><rect x="92" y="14" width="8" height="8"/><rect x="68" y="22" width="8" height="8"/><rect x="76" y="30" width="8" height="8" fill="#FFD34D"/><rect x="92" y="30" width="8" height="8"/></g><rect x="20" y="40" width="6" height="6" fill="#9DB8F8" opacity=".5"/></svg>' },
+ avatar:{ face:"'Philosopher',system-ui,sans-serif", tag:'BALANCE THE FOUR · WIND · WATER · FIRE · STONE', ink:'#E6F4F9',
+   bg:"background:linear-gradient(150deg,#2E8FB8 0%,#1D5E7C 58%,#103647 100%)",
+   art:'<svg viewBox="0 0 120 60" style="position:absolute;right:6px;top:4px;width:112px"><g fill="none" stroke="#BFE4F2" stroke-width="2"><circle cx="72" cy="18" r="7"/><circle cx="94" cy="18" r="7" stroke="#F0B45B"/><circle cx="72" cy="40" r="7" stroke="#9BD3B4"/><circle cx="94" cy="40" r="7" stroke="#E4E8EC"/></g></svg>' },
+};
+function worldHeroCard(t, on, locked, act){ const H=WORLD_HERO[t.id]||WORLD_HERO.spellbound; const ev=EVO[t.id]||EVO.spellbound;
+  const badge=on?'<span style="position:absolute;top:10px;right:10px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.94);color:#241E33;font-weight:800;font-size:12px;font-family:var(--ui,var(--body))">Active ✓</span>'
+    :(locked?('<span style="position:absolute;top:10px;right:10px;display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.92);color:#8A5B00;font-weight:900;font-size:12px">'+coinAmt(COST.theme,11)+'</span>'):'');
+  const dots=[t.c1,'#FFFFFF',t.c2,'#241E33'].map(cc=>`<span style="width:14px;height:14px;border-radius:999px;background:${cc};border:1px solid var(--line);display:inline-block"></span>`).join('');
+  return `<button data-act="${act||'pickTheme'}" data-arg="${t.id}" style="position:relative;text-align:left;border-radius:20px;overflow:hidden;background:var(--paper,var(--bg2));border:1px solid var(--line);box-shadow:${on?'0 0 0 2px '+t.c1+',var(--sh-raised)':'var(--sh-rest)'};${locked?'opacity:.94':''}">
+    <div style="position:relative;height:104px;${H.bg};${locked?'filter:grayscale(.5)':''}">
+      ${H.art}${badge}
+      <div style="position:absolute;left:16px;bottom:10px;right:12px">
+        <div style="font-family:${H.face};font-weight:800;font-size:26px;line-height:1;color:${H.ink};text-shadow:0 1px 6px rgba(0,0,0,.35)">${t.label}</div>
+        <div style="font-family:var(--ui,var(--body));font-weight:650;font-size:12px;letter-spacing:.08em;color:${H.ink};opacity:.85;margin-top:3px">${H.tag}</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;padding:11px 14px">
+      <span style="display:inline-flex;gap:5px">${dots}</span>
+      <span style="margin-left:auto;font-family:var(--ui,var(--body));font-size:12px;font-weight:650;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${ev[0]} → ${ev[9]}</span>
+    </div></button>`; }
 /* ---- Wayfinding tiles: destination color pops (spec §1). 48px solid tile, white icon,
    press edge, playful ±2–3° tilt. Colors are PLACE identity — stable across worlds. ---- */
 const WAYFIND={ quest:{c:'var(--action,#6C4FE0)',ic:'steps',sb:null,label:'Champion’s Quest'},
@@ -2231,12 +2270,7 @@ function viewEvoFeedback(){ const S=state; const themes=Object.keys(EV_NOMEN);
   </div>`; }
 function viewSettings(){
   const S=state;
-  const themes=THEMES.map(t=>{ const ev=EVO[t.id]||EVO.spellbound; const on=t.id===S.theme; const locked=!isThemeUnlocked(t.id);
-    const badge=on?'<span style="margin-left:auto;font-size:12px;font-weight:800;color:var(--accent)">Active</span>':(locked?('<span style="margin-left:auto;font-size:12px;font-weight:900;color:#a06a00;background:linear-gradient(135deg,#FFE08A,#F0B85C);padding:3px 8px;border-radius:999px;white-space:nowrap">'+coinAmt(COST.theme,11)+'</span>'):'');
-    return `<button data-act="pickTheme" data-arg="${t.id}" style="text-align:left;border-radius:14px;padding:13px;transition:.18s;background:var(--surface2);border:2px solid ${on?'var(--accent)':'transparent'}${on?';box-shadow:0 6px 18px color-mix(in srgb,var(--accent) 28%,transparent)':''};${locked?'opacity:.92':''}">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,${t.c1},${t.c2});flex-shrink:0;color:#fff;${locked?'filter:grayscale(.55)':''}">${locked?iconSVG('lock',18,2.2):worldEmblemSVG(t.id,20)}</div>
-        <div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:15px;color:var(--text);line-height:1.05">${t.label}</div><div style="font-family:var(--mono);font-size:12px;letter-spacing:.02em;color:var(--accent);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${ev[0]} → ${ev[9]}</div></div>${badge}</div>
-      <div style="font-size:12px;color:var(--muted);line-height:1.4">${WORLD_DEF[t.id]||''}</div></button>`; }).join('');
+  const themes=THEMES.map(t=>worldHeroCard(t, t.id===S.theme, !isThemeUnlocked(t.id), 'pickTheme')).join('');
   const _voices=enVoices();
   const _nat=(n)=>/natural|enhanced|premium|siri|google|neural|online/i.test(n);
   const voiceOpts=['<option value="">Auto · best available</option>'].concat(_voices.map(v=>`<option value="${escA(v.name)}"${VOICE.name===v.name?' selected':''}>${esc(v.name)}${_nat(v.name)?' ✨':''}</option>`)).join('');
