@@ -74,6 +74,37 @@
     return o+'<path d="M108 88 H236" stroke="'+k.p1+'" stroke-width="2" stroke-dasharray="1 7" stroke-linecap="round"/>';
   }
   var COMPS={ quest:trophy, concepts:bricks, journeys:route, arcade:cabinet, themes:swatches };
+
+  // ---- extended compositions: practice hub, chapter covers (h150), game tiles ----
+  function fan(k,w){ var o='',ang=[-14,-5,4,13]; for(var i=0;i<4;i++){ var x=120+i*20;
+    o+='<g transform="rotate('+ang[i]+' '+(x+22)+' 88)"><rect x="'+x+'" y="34" width="44" height="58" rx="'+((w==='pixel'||w==='arcade')?0:7)+'" fill="'+(i===3?k.a:k.lt)+'" stroke="'+k.p1+'" stroke-width="1.4"/>'+(i===3?'<text x="'+(x+22)+'" y="70" text-anchor="middle" font-family="'+k.face+'" font-weight="800" font-size="22" fill="#fff">A</text>':'')+'</g>'; } return o; }
+  function mic(k,w){ var t='';['S','A','Y'].forEach(function(L,i){ var x=176+i*38,y=36+(i%2?10:0);
+      t+='<g transform="rotate('+(i%2?4:-5)+' '+(x+14)+' '+(y+14)+')"><rect x="'+x+'" y="'+y+'" width="28" height="28" rx="'+((w==='pixel'||w==='arcade')?0:6)+'" fill="'+(i===1?k.a:k.p1)+'"/><text x="'+(x+14)+'" y="'+(y+20)+'" text-anchor="middle" font-family="'+k.face+'" font-weight="800" font-size="15" fill="#fff">'+L+'</text></g>'; });
+    return '<rect x="96" y="30" width="26" height="42" rx="13" fill="'+k.a+'"/><path d="M88 56 a21 21 0 0 0 42 0" fill="none" stroke="'+k.p1+'" stroke-width="4" stroke-linecap="round"/><path d="M109 78 V92 M96 92 h26" stroke="'+k.p1+'" stroke-width="4" stroke-linecap="round"/>'+t; }
+  function clip(k,w){ return '<rect x="128" y="24" width="64" height="72" rx="6" fill="'+k.lt+'" stroke="'+k.p1+'" stroke-width="2"/><rect x="146" y="18" width="28" height="12" rx="4" fill="'+k.a+'"/><path d="M138 46 h44 M138 60 h44 M138 74 h30" stroke="'+k.p1+'" stroke-width="3" stroke-linecap="round"/><circle cx="216" cy="76" r="12" fill="'+k.p2+'"/><path d="M216 70 v6 l5 4" stroke="'+(k.D)+'" stroke-width="2.4" fill="none" stroke-linecap="round"/>'; }
+  function checklist(k,w){ return '<rect x="118" y="26" width="70" height="66" rx="'+((w==='pixel'||w==='arcade')?0:8)+'" fill="'+k.lt+'" stroke="'+k.p1+'" stroke-width="2"/><path d="M128 44 l5 5 9-10 M128 64 l5 5 9-10" stroke="'+k.a+'" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M150 46 h28 M150 66 h22" stroke="'+k.p1+'" stroke-width="3" stroke-linecap="round"/><circle cx="206" cy="70" r="15" fill="'+k.a+'"/><path d="M206 63 v14 M199 70 h14" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/>'; }
+  function glyphChapter(k,w,label){ label=(label||'A').slice(0,6);
+    return '<g transform="rotate(-3 160 58)"><rect x="104" y="26" width="112" height="60" rx="'+((w==='pixel'||w==='arcade')?0:10)+'" fill="'+k.a+'"/><text x="160" y="68" text-anchor="middle" font-family="'+k.face+'" font-weight="800" font-size="30" fill="#fff">'+label+'</text></g>';
+  }
+  function gameTile(k,w,g){
+    if(g==='beat') return '<circle cx="160" cy="66" r="26" fill="none" stroke="'+k.p1+'" stroke-width="5"/><path d="M160 66 V46 M160 66 l14 10" stroke="'+k.a+'" stroke-width="4.6" stroke-linecap="round"/>';
+    if(g==='boss') return '<path d="M136 40 q24 -18 48 0 v22 q0 20 -24 30 q-24 -10 -24 -30 Z" fill="'+k.p1+'"/><circle cx="150" cy="60" r="4" fill="'+k.D+'"/><circle cx="170" cy="60" r="4" fill="'+k.D+'"/>';
+    if(g==='magic') { var o=''; for(var i=0;i<9;i++){ var x=132+(i%3)*20,y=38+((i/3)|0)*20; o+='<rect x="'+x+'" y="'+y+'" width="16" height="16" rx="3" fill="'+(i%2?k.a:k.p2)+'" opacity="'+(i%2?1:.85)+'"/>'; } return o; }
+    if(g==='buzz') return '<path d="M160 30 c4 12 -3 18 -9 24 -6 6 -12 13 -12 24 a21 21 0 0 0 42 0 c0 -8 -3 -14 -8 -19 -2 4 -4 7 -8 9 2 -12 -1 -27 -5 -38Z" fill="'+k.a+'"/>';
+    if(g==='meaning') return '<rect x="118" y="42" width="40" height="26" rx="6" fill="'+k.p1+'"/><rect x="166" y="42" width="40" height="26" rx="6" fill="'+k.a+'"/><path d="M158 55 h8" stroke="'+k.p2+'" stroke-width="4" stroke-linecap="round"/><path d="M140 84 l6 6 10-12" stroke="'+k.p2+'" stroke-width="4" fill="none" stroke-linecap="round"/>';
+    if(g==='spell') return '<circle cx="150" cy="56" r="20" fill="none" stroke="'+k.a+'" stroke-width="5"/><path d="M164 70 l16 16" stroke="'+k.a+'" stroke-width="5" stroke-linecap="round"/><text x="150" y="62" text-anchor="middle" font-family="'+k.face+'" font-weight="800" font-size="16" fill="'+k.p1+'">ab</text>';
+    if(g==='origin') return '<circle cx="160" cy="60" r="24" fill="none" stroke="'+k.a+'" stroke-width="4"/><path d="M136 60 h48 M160 36 c-8 8 -8 40 0 48 M160 36 c8 8 8 40 0 48" fill="none" stroke="'+k.p1+'" stroke-width="2.4"/>';
+    if(g==='champ') return '<path d="M148 30 h24 l-6 22 h14 l-32 40 8 -28 h-14 Z" fill="'+k.p2+'"/>';
+    return cabinet(k,w);
+  }
+  COMPS.flashcards=fan; COMPS.spellit=mic; COMPS.coach=clip; COMPS.builder=checklist;
+  window.SB_CHAPTER=function(world,label,opt){ opt=opt||{}; var k=KIT[world]||KIT.spellbound; var dark=!!opt.dark; var bg=dark?k.D:k.L;
+    return '<svg viewBox="0 0 320 110" preserveAspectRatio="xMidYMid slice" width="100%" height="'+(opt.h||110)+'" style="display:block" aria-hidden="true"><rect width="320" height="110" fill="'+bg+'"/>'+k.motif(k,dark)+glyphChapter(k,world,label)+k.spark(288,20,7)+k.spark(36,86,5)+'</svg>'; };
+  window.SB_BACKDROP=function(world,opt){ opt=opt||{}; var k=KIT[world]||KIT.spellbound; var dark=!!opt.dark; var bg=dark?k.D:k.L;
+    return '<svg viewBox="0 0 320 110" preserveAspectRatio="xMidYMid slice" width="100%" height="100%" style="display:block;position:absolute;inset:0" aria-hidden="true"><rect width="320" height="110" fill="'+bg+'"/>'+k.motif(k,dark)+k.spark(292,18,7)+k.spark(30,80,5)+'</svg>'; };
+  window.SB_GAME=function(world,type,opt){ opt=opt||{}; var k=KIT[world]||KIT.spellbound; var dark=!!opt.dark; var bg=dark?k.D:k.L;
+    return '<svg viewBox="0 0 320 110" preserveAspectRatio="xMidYMid slice" width="100%" height="'+(opt.h||110)+'" style="display:block" aria-hidden="true"><rect width="320" height="110" fill="'+bg+'"/>'+k.motif(k,dark)+gameTile(k,world,type)+k.spark(290,18,7)+'</svg>'; };
+
   var cache={};
   window.SB_COVER=function(world,card,opt){ opt=opt||{}; var h=opt.h||110, dark=!!opt.dark;
     var key=world+'|'+card+'|'+h+'|'+dark; if(cache[key]) return cache[key];

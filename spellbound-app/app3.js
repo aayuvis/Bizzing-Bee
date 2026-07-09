@@ -1315,10 +1315,10 @@ function conceptChapters(){ const chs=state.conceptData||[]; if(state._cchap && 
 function conceptChapterStat(chap){ const done=chap.items.filter(c=>conceptStat(c).done).length; return { done, total:chap.items.length, complete:done>=chap.items.length }; }
 function chapterCoverCard(chap){ const f=CONCEPT_FAM[chap.name]||CONCEPT_FAM.Advanced; const st=conceptChapterStat(chap); const pct=st.total?Math.round(st.done/st.total*100):0;
   return `<button class="sb-cover-card" data-act="openConceptChapter" data-arg="${chap.n-1}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
-    <div style="position:relative;height:94px;display:flex;align-items:center;justify-content:center;${famCoverBG(chap.name)}">
-      <span style="position:absolute;top:11px;left:12px;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">Chapter</span>
+    <div style="position:relative">
+      ${SB_CHAPTER(state.theme,'Ch '+chap.n,{h:94,dark:state.mode==='dusk'})}
+      <span style="position:absolute;top:10px;left:12px;font-family:var(--ui,var(--body));font-weight:650;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:6px;background:${state.mode==='dusk'?'rgba(255,255,255,.14);color:#fff':'rgba(255,255,255,.92);color:#241E33'}">Chapter</span>
       ${st.complete?'<span style="position:absolute;bottom:9px;right:10px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
-      <div class="sb-theme-art" style="font-family:var(--display);color:#fff;font-weight:800;font-size:44px;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,.2);animation-delay:${(chap.n%9)*0.22}s">${chap.n}</div>
     </div>
     <div style="padding:13px 15px 14px;display:flex;flex-direction:column;flex:1">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;color:var(--text)">Chapter ${chap.n}</div>
@@ -1996,11 +1996,11 @@ function lessonHero(L){ if(L._hero) return L._hero; const ws=(L.words||[]).map(x
 function lessonCoverCard(L){
   const dn=lessonComplete(L); const u=lessonUnits().find(x=>x.n===L.unit)||{title:''}; const f=unitPal(L.unit);
   const dc=DIFF_DOT[L.diff]||DIFF_DOT.medium; const hero=lessonHero(L); const nW=(L.words||[]).filter(x=>x&&x.w).length;
-  const uname=capWords(u.title); const cover=`<div style="position:relative;height:110px;display:flex;align-items:center;justify-content:center;padding:14px;${unitCoverBG(L.unit)}">
-    <span style="position:absolute;top:11px;left:12px;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(L.id)}</span>
+  const uname=capWords(u.title); const _dk=state.mode==='dusk'; const cover=`<div style="position:relative;height:110px;display:flex;align-items:center;justify-content:center;padding:14px;overflow:hidden;${unitCoverBG(L.unit)}">${SB_BACKDROP(state.theme,{dark:_dk})}
+    <span style="position:absolute;top:10px;left:12px;font-family:var(--ui,var(--body));font-weight:650;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:6px;background:${_dk?'rgba(255,255,255,.14)':'rgba(255,255,255,.92)'};color:${_dk?'#fff':'#241E33'}">${esc(L.id)}</span>
     <span style="position:absolute;top:12px;right:12px;width:9px;height:9px;border-radius:50%;background:${dc};box-shadow:0 0 0 3px rgba(255,255,255,.28)"></span>
     ${dn?'<span style="position:absolute;bottom:9px;right:10px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
-    <div class="sb-theme-art" style="text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.16);animation-delay:${(L.n%9)*0.22}s"><div style="font-family:var(--display);color:#fff;line-height:1;letter-spacing:-.01em;font-style:italic;font-weight:700;font-size:${heroFont(hero)}px">${esc(hero)}</div></div>
+    <div class="sb-theme-art" style="position:relative;text-align:center;animation-delay:${(L.n%9)*0.22}s"><div style="font-family:var(--display);color:${_dk?'#F5F2FC':'var(--action,#6C4FE0)'};line-height:1;letter-spacing:-.01em;font-style:italic;font-weight:700;font-size:${heroFont(hero)}px">${esc(hero)}</div></div>
   </div>`;
   return `<button class="sb-cover-card" data-act="openLesson" data-arg="${L.n}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
     ${cover}
@@ -2944,9 +2944,9 @@ function magicView(){ const g=state.game; const S=state;
 function gamesHub(){ const S=state;
   const champCard=`<button data-act="openChallenge" data-arg="journey" style="grid-column:1/-1;text-align:left;border-radius:14px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 6px 18px rgba(43,27,94,.18)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">${iconSVG('bolt',32)}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">Set timed or counted · pick a difficulty</div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Champ Challenge</div><div style="font-size:12px;color:rgba(255,255,255,.9)">Beat the clock or a set number — pass your Level to test out.</div></div><span style="padding:9px 16px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Set it up →</span></div></button>`;
   const cards=champCard+GAMES.map(gm=>`<button class="sb-cover-card" data-act="playGame" data-arg="${gm.type}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
-      <div style="position:relative;height:108px;display:flex;align-items:center;justify-content:center;padding:14px;${gameCoverBG(gm)}">
-        <span style="position:absolute;top:11px;left:12px;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(gm.tag)}</span>
-        <div style="color:#fff;display:grid;place-items:center">${gameArtSVG(gm.type,58)}</div>
+      <div style="position:relative">
+        ${SB_GAME(S.theme,gm.type,{h:108,dark:S.mode==='dusk'})}
+        <span style="position:absolute;top:10px;left:12px;font-family:var(--ui,var(--body));font-weight:650;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:6px;background:${S.mode==='dusk'?'rgba(255,255,255,.14);color:#fff':'rgba(255,255,255,.92);color:#241E33'}">${esc(gm.tag)}</span>
       </div>
       <div style="padding:14px 15px 15px;display:flex;flex-direction:column;flex:1">
         <div style="font-family:var(--display);font-weight:800;font-size:17px;color:var(--text)">${gm.name}</div>
