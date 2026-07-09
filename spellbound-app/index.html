@@ -120,6 +120,10 @@
   @keyframes ev-drift{0%,100%{transform:translate(-2px,1px)}50%{transform:translate(2px,-2px)}}
   @keyframes ev-wave{0%,100%{transform:translateX(-2.4px)}50%{transform:translateX(2.4px)}}
   @keyframes ev-flame{0%,100%{transform:scaleY(1) skewX(0deg)}50%{transform:scaleY(1.13) skewX(-5deg)}}
+  /* Age dial: Focused = calmer chrome for 12-16 (buddy at milestones only, no ambient motion) */
+  [data-age="focused"] .sb-theme-art{animation:none!important}
+  [data-age="focused"] .sb-bubble{display:none}
+  [data-age="focused"] .sb-bee-presenter{animation:none!important}
   @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important}}
 </style>
 </head>

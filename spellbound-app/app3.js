@@ -785,6 +785,7 @@ const app = {
   pickPlan:(p)=>set({plan:p}), upgrade:()=>{ set({premium:true, showPaywall:false}); flash('Welcome to Premium! 👑'); },
   signOut:()=>set({screen:'landing', nav:'home', email:'', pw:''}),
   celebrateClose:()=>set({celebrate:null}),
+  setAgeMode:(m)=>{ const c=active(); c.ageMode=m; save(); render(); },
   setLight:()=>app.setMode('light'), setWhite:()=>app.setMode('white'), setDusk:()=>app.setMode('dusk'),
   voiceSetDevice:(v)=>{ VOICE.name=v||''; saveVoiceCfg(); loadVoices(); flash(VOICE.name?'Voice set ✨':'Using the best available voice'); },
   voiceTest:()=>{ say('Hi! I am your spelling buddy. Try this word: iridescent. The soap bubble had an iridescent shine.'); },
@@ -914,12 +915,44 @@ function viewOnboarding(){
   </div>`;
 }
 
+// Buddy empty states — the bee lives in every empty moment (spec §8)
+function beeEmpty(mood,text){ return `<div style="display:flex;align-items:center;gap:14px;padding:10px 4px"><div style="width:56px;height:62px;flex-shrink:0;opacity:.95">${mascotSVG(mood)}</div><p style="margin:0;font-size:15px;color:var(--muted);line-height:1.5">${text}</p></div>`; }
+/* ---- Wayfinding tiles: destination color pops (spec §1). 48px solid tile, white icon,
+   press edge, playful ±2–3° tilt. Colors are PLACE identity — stable across worlds. ---- */
+const WAYFIND={ quest:{c:'var(--action,#6C4FE0)',ic:'steps',sb:null,label:'Champion’s Quest'},
+  concepts:{c:'#0E8A78',ic:'grid',sb:'grid',label:'Concepts'},
+  journeys:{c:'#C25A2E',ic:'book',sb:'book',label:'Word Journeys'},
+  arcade:{c:'#E8458C',ic:'joystick',sb:'gamepad',label:'Arcade'},
+  themes:{c:'#B14FC4',ic:'palette',sb:'palette',label:'Theme Journeys'} };
+function wayTile(key,size,tilt){ const w=WAYFIND[key]; size=size||48;
+  const glyph=(w.sb&&window.SB_ICON)?SB_ICON(w.sb,{size:24}):iconSVG(w.ic,24,2.2);
+  return `<span style="width:${size}px;height:${size}px;flex-shrink:0;display:grid;place-items:center;border-radius:14px;background:${w.c};color:#fff;box-shadow:var(--edge),var(--sh-rest);transform:rotate(${tilt||-2.5}deg)">${glyph}</span>`; }
+// Explore — the hub behind the 5-item nav: Arcade, Concepts, Word Journeys, Theme Journeys.
+function viewExplore(){ const c=active(); ensureLists(c);
+  const cAll=(state.conceptData||[]); const cDone=cAll.filter(ch=>conceptStat(ch).done).length;
+  const dests=[
+    {key:'arcade', act:'openGames', desc:'8 mini-games — Magic Squares, Champ Challenge, Boss Battle & more. Every correct word earns coins.', meta:(c.coins||0)+' coins'},
+    {key:'concepts', act:'setNav', arg:'concepts', desc:'Spelling basics, patterns, prefixes, roots & tricky endings — 121 concepts in 11 chapters.', meta:cDone+'/'+(cAll.length||121)+' mastered'},
+    {key:'journeys', act:'openJourneys', desc:'The history & geography of words — 100 lessons from ancient roots to championship linguistics.', meta:state.premium?'10 chapters':'Premium'},
+    {key:'themes', act:'setNav', arg:'themes', desc:'Learn words by their worlds — 52 themes from medicine to myths. Pick 3–5 you love.', meta:myThemes().length+' picked'},
+  ].map((d,i)=>{ const w=WAYFIND[d.key];
+    return `<button data-act="${d.act}" ${d.arg?`data-arg="${d.arg}"`:''} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest);display:flex;align-items:flex-start;gap:16px">
+      ${wayTile(d.key,48,i%2?2.5:-2.5)}
+      <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:20px;line-height:1.15">${w.label}</span>
+      <span style="display:block;font-size:15px;color:var(--muted);line-height:1.5;margin-top:5px">${d.desc}</span>
+      <span style="display:inline-block;margin-top:9px;font-size:13px;font-weight:650;color:var(--muted)">${esc(d.meta)} →</span></span></button>`; }).join('');
+  return `<div style="animation:sb-rise .35s ease both">
+    ${pageHead('Explore','four ways in','Games, concepts, word history and theme worlds — every road leads to better spelling.')}
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px">${dests}</div>
+  </div>`; }
 /* ===================== APP SHELL ===================== */
 function viewApp(){
   const S=state;
-  const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['games','Arcade','joystick'],['concepts','Concepts','grid'],['journeys','Word Journeys','book'],['themes','Themes','palette'],['progress','Progress','chart'],['parent','Parent','users']].map(([key,label,ic])=>{
-    const on=S.nav===key;
-    return `<button data-act="setNav" data-arg="${key}" style="display:inline-flex;align-items:center;gap:7px;white-space:nowrap;padding:9px 15px;border-radius:10px;font-weight:800;font-size:13px;${on?'background:var(--accent);color:#fff':'background:transparent;color:var(--muted)'}">${iconSVG(ic,17)} ${label}</button>`;
+  const EXPLORE_NAVS={explore:1,games:1,concepts:1,journeys:1,themes:1,shop:1};
+  const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['explore','Explore','compass'],['progress','Progress','chart'],['parent','Parent','users']].map(([key,label,ic])=>{
+    const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:S.nav===key;
+    const glyph=key==='explore'?(window.SB_ICON?SB_ICON('compass',{size:17}):iconSVG('grid',17)):iconSVG(ic,17);
+    return `<button data-act="setNav" data-arg="${key}" style="display:inline-flex;align-items:center;gap:7px;white-space:nowrap;padding:9px 15px;border-radius:var(--r-pill,999px);font-weight:800;font-size:13px;${on?'background:var(--action,var(--accent));color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">${glyph} ${label}</button>`;
   }).join('');
   let content='';
   if(S.nav==='home') content=viewHome();
@@ -928,6 +961,7 @@ function viewApp(){
   else if(S.nav==='train') content=viewTrain();
   else if(S.nav==='coach') content=viewCoach();
   else if(S.nav==='quest') content=viewQuest();
+  else if(S.nav==='explore') content=viewExplore();
   else if(S.nav==='builder') content=viewBuilder();
   else if(S.nav==='games') content=viewGames();
   else if(S.nav==='shop') content=viewShop();
@@ -1045,15 +1079,14 @@ function viewHome(){
     {goAct:'openGames', ic:'joystick', sc:'joystick', festive:true, title:'Arcade', desc:'8 mini-games — Magic Squares, Champ Challenge, Boss Battle & more. Earn coins!', pct:Math.min(100,(c.streak||0)*10)+'%', badge:(c.coins||0)+' coins', kind:'go'},
   ].map(j=>{
     const arg=j.goArg?`data-arg="${j.goArg}"`:'';
-    if(j.festive){ return `<button class="sb-arcade-card" data-act="${j.goAct}" ${arg} style="position:relative;overflow:hidden;text-align:left;border-radius:14px;padding:18px 20px;background-image:linear-gradient(120deg,#7C5CFF 0%,#FF5FA2 52%,#FFB23E 100%);box-shadow:0 8px 22px rgba(124,92,255,.32);color:#fff;display:flex;flex-direction:column">
-      ${streamers()}
-      <div style="position:relative;display:flex;justify-content:space-between;align-items:start;gap:8px;margin-bottom:13px"><div style="width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.24);display:grid;place-items:center;color:#fff;box-shadow:0 3px 10px rgba(0,0,0,.18)">${journeyArtSVG(j.sc,27)}</div><span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:900;background:#fff;color:#7C5CFF;box-shadow:0 2px 6px rgba(0,0,0,.15)">${iconSVG('coin',12)}${c.coins||0} coins</span></div>
-      <div style="position:relative;font-family:var(--display);font-weight:800;font-size:17px;margin-bottom:4px;text-shadow:0 1px 5px rgba(0,0,0,.22)">Arcade 🎉</div>
-      <div style="position:relative;font-size:13px;color:rgba(255,255,255,.96);line-height:1.45;margin-bottom:14px">${j.desc}</div>
-      <div style="position:relative;margin-top:auto;height:7px;border-radius:999px;background:rgba(255,255,255,.3);overflow:hidden"><div style="height:100%;border-radius:999px;background:#fff;width:${j.pct}"></div></div></button>`; }
+    if(j.festive){ return `<button class="sb-lift" data-act="${j.goAct}" ${arg} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:var(--sh-rest);display:flex;flex-direction:column">
+      <div style="display:flex;justify-content:space-between;align-items:start;gap:8px;margin-bottom:13px">${wayTile('arcade',48,2.5)}<span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;padding:5px 12px;border-radius:var(--r-pill,999px);font-size:12px;font-weight:800;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00)">${iconSVG('coin',12)}${c.coins||0} coins</span></div>
+      <div style="font-family:var(--display);font-weight:800;font-size:17px;margin-bottom:4px">Arcade</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.45;margin-bottom:14px">${j.desc}</div>
+      <div style="margin-top:auto;height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden"><div style="height:100%;background:var(--action,var(--accent));width:${j.pct}"></div></div></button>`; }
     const badgeStyle = j.kind==='lock' ? 'background:var(--surface2);color:var(--muted)' : ('background:color-mix(in srgb,'+j.accent+' 15%,transparent);color:'+j.accent);
     return `<button class="sb-lift" data-act="${j.goAct}" ${arg} style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:var(--sh-rest);display:flex;flex-direction:column">
-      <div style="display:flex;justify-content:space-between;align-items:start;gap:8px;margin-bottom:13px"><div style="width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,${j.c1},${j.c2});color:#fff;display:grid;place-items:center;box-shadow:0 4px 12px color-mix(in srgb,${j.accent} 38%,transparent)">${journeyArtSVG(j.sc,26)}</div><span style="display:inline-flex;align-items:center;gap:4px;white-space:nowrap;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800;${badgeStyle}">${j.kind==='lock'?iconSVG('lock',11,2.2):''}${esc(j.badge)}</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:start;gap:8px;margin-bottom:13px">${wayTile(({coach:'quest',concept:'concepts',book:'journeys',joystick:'arcade',theme:'themes'})[j.sc]||'quest',48,-2.5)}<span style="display:inline-flex;align-items:center;gap:4px;white-space:nowrap;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800;${badgeStyle}">${j.kind==='lock'?iconSVG('lock',11,2.2):''}${esc(j.badge)}</span></div>
       <div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15;margin-bottom:4px">${j.title}</div>
       <div style="font-size:13px;color:var(--muted);line-height:1.45;margin-bottom:14px">${j.desc}</div>
       <div style="margin-top:auto;height:7px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:${j.accent};width:${j.pct}"></div></div></button>`;
@@ -1065,7 +1098,7 @@ function viewHome(){
       <div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:var(--r-xl,20px);padding:22px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:18px">
         <div style="position:relative;flex-shrink:0">
           <div style="width:84px;height:94px;animation:sb-bee-bob 3.4s ease-in-out infinite">${mascotSVG(S.mood)}</div>
-          <div style="position:absolute;left:64px;top:-16px;white-space:nowrap;background:var(--paper,#fff);border:1px solid var(--line);border-radius:10px;border-bottom-left-radius:3px;padding:6px 10px;font-size:12px;font-weight:650;color:var(--ink,var(--text));box-shadow:var(--sh-rest)">${bub}</div>
+          <div class="sb-bubble" style="position:absolute;left:64px;top:-16px;white-space:nowrap;background:var(--paper,#fff);border:1px solid var(--line);border-radius:10px;border-bottom-left-radius:3px;padding:6px 10px;font-size:12px;font-weight:650;color:var(--ink,var(--text));box-shadow:var(--sh-rest)">${bub}</div>
         </div>
         <div style="min-width:0;flex:1">
           <div style="font-size:13px;color:var(--muted);font-weight:650">${greeting}</div>
@@ -1681,7 +1714,7 @@ function bldPick(){ const b=bldState(); const pool=bldPool().sort((x,y)=>((x.y||
   const out=[]; const step=pool.length/n; for(let i=0;i<n;i++){ out.push(pool[Math.floor(i*step)]); } return out; } // even spread keeps the easy→hard ramp
 function bldLevels(n){ return n<=WORK_MAX?1:Math.max(2,Math.min(24,Math.round(n/50))); }
 function viewBuilder(){ const S=state; const b=bldState(); const picked=bldPick(); const n=picked.length; const lv=bldLevels(n); const per=n?Math.ceil(n/lv):0;
-  const btn=(group,val,label,cur)=>`<button data-act="bldSet" data-arg="${group}:${val}" style="padding:9px 14px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid ${cur===val?'var(--accent)':'var(--line)'};${cur===val?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">${label}</button>`;
+  const btn=(group,val,label,cur)=>`<button data-act="bldSet" data-arg="${group}:${val}" style="padding:9px 14px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid ${cur===val?'var(--action,var(--accent))':'var(--line)'};${cur===val?'background:color-mix(in srgb,var(--action,var(--accent)) 12%,var(--paper,#fff));color:var(--action,var(--accent))':'background:var(--surface2);color:var(--text)'}">${label}</button>`;
   const row=(title,sub,btns)=>`<div style="margin-bottom:15px"><div style="font-family:var(--display);font-weight:800;font-size:13px">${title} <span style="color:var(--muted);font-weight:700;font-size:12px">· ${sub}</span></div><div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px">${btns}</div></div>`;
   const srcs=[['core','Core library'],['scripps','Scripps winners'],['nsf','North South Finals'],['review','Tricky review'],['missed','My missed words']];
   const preview=picked.slice(0,18).map(w=>`<span style="font-family:var(--mono);font-size:12px;font-weight:700;padding:4px 9px;border-radius:6px;background:var(--surface2);border:1px solid var(--line)">${esc(w.w)}</span>`).join('');
@@ -1797,7 +1830,7 @@ function viewProgress(){
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px"><span style="font-family:var(--display);font-weight:800;font-size:15px">${esc(hLabel(k))}</span><span style="font-size:12px;color:var(--muted);font-weight:700">L${listStageIdx(c,k)+1} · ${m}/${ws.length} mastered${miss?(' · '+miss+' to review'):''}</span><div style="flex:1;min-width:80px;height:6px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;background:var(--accent);width:${pct}%"></div></div><span style="font-size:12px;color:var(--accent);font-weight:800">${pct}%</span></div>
         <div style="display:flex;flex-wrap:wrap;gap:4px">${tiles}${ws.length>96?`<span style="font-size:12px;color:var(--muted);font-weight:700;align-self:center">+${ws.length-96} more</span>`:''}</div>
       </button>`; }).join('');
-    hBody=hBody||'<p style="margin:0;font-size:13px;color:var(--muted)">No lists activated yet — start practising to light this up.</p>';
+    hBody=hBody||beeEmpty('think','Nothing to map yet — start practising and this lights up like a hive.');
   } else {
     const ws=encounteredWords(hSel); const cap=400;
     hBody=ws.length?((()=>{ const shown=ws.slice(0,cap);
@@ -1805,7 +1838,7 @@ function viewProgress(){
         return `<button data-act="say" data-arg="${escA(w.w)}" title="tap to hear" style="font-family:var(--mono);font-size:12px;font-weight:700;padding:5px 9px;border-radius:6px;color:${(mstd||miss)?'#fff':'var(--muted)'};background:${mstd?'var(--good)':(miss?'var(--bad)':'var(--surface2)')}">${esc(w.w)}</button>`; }).join('');
       const m=ws.filter(w=>state.luMastered[nkey(w.w)]).length;
       return `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:11px"><span style="font-size:12px;color:var(--muted);font-weight:700">${m}/${ws.length} mastered — words met so far on this list (through Level ${listStageIdx(c,hSel)+1})</span></div><div style="display:flex;flex-wrap:wrap;gap:6px">${cells}</div>${ws.length>cap?`<div style="font-size:12px;color:var(--muted);margin-top:8px">Showing the first ${cap} of ${ws.length}.</div>`:''}`; })())
-      :'<p style="margin:0;font-size:13px;color:var(--muted)">No words met on this list yet.</p>';
+      :beeEmpty('happy','A fresh list! First practice fills this grid — clipboard ready.');
   }
   const legend=[['var(--good)','Mastered'],['var(--bad)','Needs work'],['var(--surface2)','Not yet mastered']].map(([cc,l])=>`<span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:600"><span style="width:12px;height:12px;border-radius:6px;background:${cc}"></span>${l}</span>`).join('');
   return `<div style="animation:sb-rise .35s ease both">
@@ -1829,7 +1862,7 @@ function parentReviseCard(){ const c=active(); const misses=(c.missed||[]); cons
   const chips=top.map(m=>`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:700;font-size:12px"><span style="font-family:var(--mono)">${esc(m.w)}</span>${(m.n>1)?`<span style="color:var(--bad);font-weight:800">×${m.n}</span>`:''}</span>`).join('');
   return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-top:18px;box-shadow:var(--sh-rest)">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px"><div style="font-family:var(--display);font-weight:800;font-size:15px">Words to revise <span style="color:var(--muted);font-weight:700">· ${misses.length}</span></div>${misses.length?`<button data-act="reviseMisses" style="padding:9px 16px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">Revise these →</button>`:''}</div>
-    ${misses.length?`<div style="display:flex;flex-wrap:wrap;gap:7px">${chips}${misses.length>14?`<span style="padding:5px 10px;font-size:12px;color:var(--muted);font-weight:700">+${misses.length-14} more</span>`:''}</div>`:`<p style="margin:0;font-size:13px;color:var(--muted)">No misses logged yet — every word so far has been spelled right. 🎉</p>`}
+    ${misses.length?`<div style="display:flex;flex-wrap:wrap;gap:7px">${chips}${misses.length>14?`<span style="padding:5px 10px;font-size:12px;color:var(--muted);font-weight:700">+${misses.length-14} more</span>`:''}</div>`:beeEmpty('sleepy','No misses to chase — the bee ate every tricky word. Nap time earned!')}
   </div>`; }
 function parentActivityCard(){ const S=state; const c=active(); const acts=(c.activity||[]).slice(0,12);
   const rows=acts.map((a,i)=>{ const open=S.parentLogOpen===i; const label=ACT_LABEL[a.kind]||a.label||'Activity'; const acc=a.done?Math.round(a.right/a.done*100):0; const hasDetail=a.misses&&a.misses.length;
@@ -2214,6 +2247,7 @@ function viewSettings(){
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
       <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Background</div><div style="font-size:13px;color:var(--muted)">Tinted paper or pure white</div></div>
       <div style="display:flex;background:var(--surface2);border-radius:999px;padding:3px"><button data-act="setLight" style="${seg(S.mode==='light')}">Light</button><button data-act="setWhite" style="${seg(S.mode==='white')}">White</button><button data-act="setDusk" style="${seg(S.mode==='dusk')}">Dusk</button></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:12px"><span style="font-size:13px;font-weight:650;color:var(--muted)">Style</span><div style="display:flex;background:var(--surface2);border-radius:999px;padding:3px"><button data-act="setAgeMode" data-arg="playful" style="${seg((active().ageMode||((active().age||9)<=11?'playful':'focused'))==='playful')}">Playful</button><button data-act="setAgeMode" data-arg="focused" style="${seg((active().ageMode||((active().age||9)<=11?'playful':'focused'))==='focused')}">Focused</button></div><span style="font-size:12px;color:var(--muted)">Playful = buddy everywhere & big celebrations · Focused = calmer, compact</span></div>
     </div>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
       <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Sound effects</div><div style="font-size:13px;color:var(--muted)">Dings, coins &amp; celebrations during games</div></div>
@@ -3015,6 +3049,7 @@ function render(){
   try{ if(a){ ss=a.selectionStart; se=a.selectionEnd; } }catch(e){}
   document.documentElement.setAttribute('data-theme', state.theme);
   document.documentElement.setAttribute('data-mode', state.mode);
+  try{ const _c=active(); document.documentElement.setAttribute('data-age', _c.ageMode||((_c.age||9)<=11?'playful':'focused')); }catch(e){}
   root.innerHTML = `<div style="min-height:100dvh;position:relative;z-index:1">${view()}</div>` + overlays();
   if(fkey){ const el=root.querySelector('[data-fkey="'+fkey+'"]'); if(el){ try{ el.focus(); if(ss!=null&&el.setSelectionRange) el.setSelectionRange(ss,se); }catch(e){} } }
   save();

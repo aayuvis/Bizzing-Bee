@@ -144,14 +144,14 @@ function worldEmblemSVG(id, size){
 
 /* ---- constants ---- */
 const THEMES = [
-  { id:'spellbound', label:'Spellbound', sub:'The bee', c1:'#7C5CFF', c2:'#FFC83D' },
-  { id:'marquee',    label:'Spotlight',  sub:'On stage', c1:'#E8B23A', c2:'#2e2838' },
-  { id:'aurora',     label:'Galaxy',     sub:'Cosmic',   c1:'#7C5CFF', c2:'#36D1FF' },
-  { id:'anime',      label:'Blade',      sub:'Dojo',     c1:'#FF4D8D', c2:'#36E2FF' },
-  { id:'science',    label:'Lab',        sub:'Neon lab', c1:'#39FF14', c2:'#18D6FF' },
-  { id:'origami',    label:'Origami',    sub:'Paper',    c1:'#D9694A', c2:'#5F8A6B' },
-  { id:'pixel',      label:'Arcade',     sub:'8-bit',    c1:'#36E0C8', c2:'#FF5D9E' },
-  { id:'avatar',     label:'Elements',   sub:'Elemental',c1:'#F3A13C', c2:'#2FA7D8' },
+  { id:'spellbound', label:'Spellbound', sub:'The bee',   c1:'#6C4FE0', c2:'#F6F4FC' },
+  { id:'marquee',    label:'Spotlight',  sub:'On stage',  c1:'#9C6A08', c2:'#F7F1E2' },
+  { id:'aurora',     label:'Galaxy',     sub:'Cosmic',    c1:'#4A5BD4', c2:'#F2F4FB' },
+  { id:'anime',      label:'Blade',      sub:'Dojo',      c1:'#C43D5A', c2:'#FAF1F3' },
+  { id:'science',    label:'Lab',        sub:'Field notes',c1:'#0E8A78', c2:'#EFF6F3' },
+  { id:'origami',    label:'Origami',    sub:'Paper',     c1:'#C25A2E', c2:'#F8F2E8' },
+  { id:'pixel',      label:'Arcade',     sub:'Game on',   c1:'#3B6FE0', c2:'#EFF3FA' },
+  { id:'avatar',     label:'Elements',   sub:'Elemental', c1:'#2E8FB8', c2:'#EDF5F7' },
 ];
 const THEME_LABEL = { spellbound:'Spellbound', marquee:'Spotlight', aurora:'Galaxy', anime:'Blade', science:'Lab', origami:'Origami', pixel:'Arcade', avatar:'Elements' };
 const WORLD_DEF = {
