@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#7c5cff">
-<meta name="description" content="BizzingBee — a spelling-bee trainer that hears your child spell, evolves a character with every win, and shows parents exactly where they stand.">
-<title>BizzingBee — spelling-bee trainer</title>
+<meta name="description" content="Bizzing Bee — a spelling-bee trainer that hears your child spell, evolves a character with every win, and shows parents exactly where they stand.">
+<title>Bizzing Bee — spelling-bee trainer</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%F0%9F%90%9D%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="fonts/fonts.css">
 <link rel="stylesheet" href="tokens.css">
@@ -19,6 +19,12 @@
   button{cursor:pointer;border:0;background:none;color:inherit}
   :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
   button:focus:not(:focus-visible){outline:none}
+  /* harmonized card type system — one voice per role, world tokens supply the face/palette */
+  .sb-card{background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:var(--r-xl,20px);box-shadow:var(--sh-rest);padding:18px 20px;text-align:left}
+  .sb-ct{font-family:var(--display);font-weight:800;font-size:17px;line-height:1.2;color:var(--ink,var(--text))}
+  .sb-cs{font-size:13px;color:var(--muted);font-weight:650;line-height:1.45}
+  .sb-cn{font-size:12px;color:var(--muted);font-weight:650;line-height:1.4}
+  .sb-cl{font-size:12px;color:var(--accent);font-weight:800;white-space:nowrap}
   /* concept animation engine */
   @keyframes ca-pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
   @keyframes ca-sl{0%{transform:translateX(-72px);opacity:0}100%{transform:translateX(0);opacity:1}}

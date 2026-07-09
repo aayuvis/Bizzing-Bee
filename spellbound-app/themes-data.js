@@ -1,4 +1,4 @@
-/* BizzingBee — Theme Journeys: 50 themes in 8 clusters.
+/* Bizzing Bee — Theme Journeys: 50 themes in 8 clusters.
    Each theme carries a classifier: `re` is matched against a word's DEFINITION (case-insensitive),
    `ore` (optional) against its origin, `wre` (optional) against the word itself. A word joins a
    theme if the definition matches — so themes assemble themselves from the 17k-word database. */

@@ -1,4 +1,4 @@
-/* BizzingBee — parent coaching tips library (fully offline; picked by analytics rules, never AI).
+/* Bizzing Bee — parent coaching tips library (fully offline; picked by analytics rules, never AI).
    Categories are matched to signals in parentTips(); the engine also composes tips from the
    121 concepts, 52 themes, word origins and the child's own missed words — 1,000+ distinct tips. */
 window.SB_TIPS = {
