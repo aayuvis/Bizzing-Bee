@@ -60,7 +60,7 @@
   .sb-theme-art.m-drive{animation:sb-m-drive 4.6s ease-in-out infinite}
   .sb-cover-card:hover .sb-theme-art,.sb-lift:hover .sb-theme-art,.sb-arcade-card:hover .sb-theme-art{animation:sb-art-wig .5s ease both}
   .sb-lift{transition:transform .16s ease,box-shadow .16s ease}
-  .sb-lift:hover{transform:translateY(-2px)}
+  .sb-lift:hover{transform:translateY(-2px);box-shadow:var(--sh-raised)!important}
   /* ==== game covers: little scenes. Timelines share one duration so parts stay in sync ==== */
   @keyframes sb-ga-press{0%,55%,100%{transform:translateY(0)}62%,72%{transform:translateY(7px)}80%{transform:translateY(0)}}
   @keyframes sb-ga-squash{0%,60%,100%{transform:scaleY(1)}64%,72%{transform:scaleY(.55)}82%{transform:scaleY(1)}}
@@ -130,6 +130,7 @@
 <body>
 <div id="root"></div>
 <script src="icons.js"></script>
+<script src="cover-art.js"></script>
 <script>try{SB_ICON_MOTION()}catch(e){}</script>
 <script src="words-data.js"></script>
 <script src="concepts-data.js"></script>

@@ -976,11 +976,13 @@ function viewExplore(){ const c=active(); ensureLists(c);
     {key:'journeys', act:'openJourneys', desc:'The history & geography of words — 100 lessons from ancient roots to championship linguistics.', meta:state.premium?'10 chapters':'Premium'},
     {key:'themes', act:'setNav', arg:'themes', desc:'Learn words by their worlds — 52 themes from medicine to myths. Pick 3–5 you love.', meta:myThemes().length+' picked'},
   ].map((d,i)=>{ const w=WAYFIND[d.key];
-    return `<button data-act="${d.act}" ${d.arg?`data-arg="${d.arg}"`:''} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest);display:flex;align-items:flex-start;gap:16px">
-      ${wayTile(d.key,48,i%2?2.5:-2.5)}
+    return `<button class="sb-lift" data-act="${d.act}" ${d.arg?`data-arg="${d.arg}"`:''} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0">
+      <div style="position:relative;width:100%">${SB_COVER(state.theme,d.key==='themes'?'themes':d.key,{h:110,dark:state.mode==='dusk'})}
+        <span style="position:absolute;left:14px;bottom:-16px">${wayTile(d.key,48,i%2?2.5:-2.5)}</span></div>
+      <div style="display:flex;align-items:flex-start;gap:16px;padding:24px 20px 18px;width:100%">
       <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:20px;line-height:1.15">${w.label}</span>
       <span style="display:block;font-size:15px;color:var(--muted);line-height:1.5;margin-top:5px">${d.desc}</span>
-      <span style="display:inline-block;margin-top:9px;font-size:13px;font-weight:650;color:var(--muted)">${esc(d.meta)} →</span></span></button>`; }).join('');
+      <span style="display:inline-block;margin-top:9px;font-size:13px;font-weight:650;color:var(--muted)">${esc(d.meta)} →</span></span></div></button>`; }).join('');
   return `<div style="animation:sb-rise .35s ease both">
     ${pageHead('Explore','four ways in','Games, concepts, word history and theme worlds — every road leads to better spelling.')}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px">${dests}</div>
@@ -1129,19 +1131,23 @@ function viewHome(){
     {goAct:'setNav', goArg:'concepts', ic:'grid', sc:'concept', c1:'#13A892',c2:'#0E8A78',accent:'#13A892', title:'Concepts', desc:'Spelling basics, patterns, prefixes, roots & tricky endings, in 11 short chapters.', pct:Math.round(cDone/(cTot||1)*100)+'%', badge:cChapDone+'/'+(conceptChapters().length||11)+' chapters', kind:'go'},
     {goAct:'openJourneys', ic:'book', sc:'book', c1:'#E0922E',c2:'#C8791B',accent:'#E0922E', title:'Word Journeys', desc:'The history & geography of words — roots, journeys & origins, in 10 chapters.', pct:Math.round((lChapTot?lChapDone/lChapTot:0)*100)+'%', badge:S.premium?(lChapDone+'/'+lChapTot+' chapters'):'Premium', kind:S.premium?'go':'lock'},
     {goAct:'openGames', ic:'joystick', sc:'joystick', festive:true, title:'Arcade', desc:'8 mini-games — Magic Squares, Champ Challenge, Boss Battle & more. Earn coins!', pct:Math.min(100,(c.streak||0)*10)+'%', badge:(c.coins||0)+' coins', kind:'go'},
-  ].map(j=>{
+  ].map((j,ji)=>{
     const arg=j.goArg?`data-arg="${j.goArg}"`:'';
-    if(j.festive){ return `<button class="sb-lift" data-act="${j.goAct}" ${arg} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:var(--sh-rest);display:flex;flex-direction:column">
-      <div style="display:flex;justify-content:space-between;align-items:start;gap:8px;margin-bottom:13px">${wayTile('arcade',48,2.5)}<span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;padding:5px 12px;border-radius:var(--r-pill,999px);font-size:12px;font-weight:800;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00)">${iconSVG('coin',12)}${c.coins||0} coins</span></div>
-      <div style="font-family:var(--display);font-weight:800;font-size:17px;margin-bottom:4px">Arcade</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.45;margin-bottom:14px">${j.desc}</div>
-      <div style="margin-top:auto;height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden"><div style="height:100%;background:var(--action,var(--accent));width:${j.pct}"></div></div></button>`; }
-    const badgeStyle = j.kind==='lock' ? 'background:var(--surface2);color:var(--muted)' : ('background:color-mix(in srgb,'+j.accent+' 15%,transparent);color:'+j.accent);
-    return `<button class="sb-lift" data-act="${j.goAct}" ${arg} style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:var(--sh-rest);display:flex;flex-direction:column">
-      <div style="display:flex;justify-content:space-between;align-items:start;gap:8px;margin-bottom:13px">${wayTile(({coach:'quest',concept:'concepts',book:'journeys',joystick:'arcade',theme:'themes'})[j.sc]||'quest',48,-2.5)}<span style="display:inline-flex;align-items:center;gap:4px;white-space:nowrap;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800;${badgeStyle}">${j.kind==='lock'?iconSVG('lock',11,2.2):''}${esc(j.badge)}</span></div>
-      <div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15;margin-bottom:4px">${j.title}</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.45;margin-bottom:14px">${j.desc}</div>
-      <div style="margin-top:auto;height:7px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:${j.accent};width:${j.pct}"></div></div></button>`;
+    const wk=({coach:'quest',concept:'concepts',book:'journeys',joystick:'arcade',theme:'themes'})[j.sc]||'quest';
+    const cid=({coach:'quest',concept:'concepts',book:'journeys',joystick:'arcade',theme:'themes'})[j.sc]||'quest';
+    const meta=j.festive?(`<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:var(--r-pill,999px);font-size:12px;font-weight:650;background:rgba(255,248,230,.94);color:#8A5B00">${iconSVG('coin',12)} ${c.coins||0} coins</span>`)
+      :(`<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:var(--r-pill,999px);font-size:12px;font-weight:650;background:rgba(255,255,255,.92);color:#241E33">${j.kind==='lock'?iconSVG('lock',11,2.2):''}${esc(j.badge)}</span>`);
+    return `<button class="sb-lift" data-act="${j.goAct}" ${arg} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0">
+      <div style="position:relative;width:100%">
+        ${SB_COVER(S.theme,cid,{h:110,dark:S.mode==='dusk'})}
+        <span style="position:absolute;top:10px;right:10px">${meta}</span>
+        <span style="position:absolute;left:14px;bottom:-16px">${wayTile(wk,48,ji%2?2.5:-2.5)}</span>
+      </div>
+      <div style="padding:24px 16px 16px;display:flex;flex-direction:column;flex:1;width:100%">
+        <div style="font-family:var(--ui,var(--body));font-weight:650;font-size:17px;line-height:1.2;color:var(--ink,var(--text))">${j.title}</div>
+        <div style="font-size:15px;color:var(--muted);line-height:1.5;margin:4px 0 14px">${j.desc}</div>
+        <div style="margin-top:auto;height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden"><div style="height:100%;background:${j.kind==='lock'?'var(--muted)':'var(--action,var(--accent))'};width:${j.pct}"></div></div>
+      </div></button>`;
   }).join('');
   return `<div>
     ${(()=>{ const lp=getList(c,aKey); const lf=levelFromXp(lp.xp||0); const xpToNext=Math.max(0,(lf.need||1)-(lf.into||0));
@@ -1166,8 +1172,8 @@ function viewHome(){
         </div>
       </div>
       <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:20px">
-        <div style="width:92px;height:92px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(var(--accent) ${goalPctNum}%, var(--surface2) 0)">
-          <div style="width:70px;height:70px;border-radius:50%;background:var(--bg2);display:grid;place-items:center;text-align:center"><div><div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1">${S.goalDone}/${goalTarget}</div><div style="font-size:12px;color:var(--muted);font-weight:700">today</div></div></div>
+        <div style="width:136px;height:136px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(var(--action,var(--accent)) ${goalPctNum}%, var(--tint-deep,var(--surface2)) 0);box-shadow:var(--sh-rest)">
+          <div style="width:106px;height:106px;border-radius:50%;background:var(--paper,var(--bg2));display:grid;place-items:center;text-align:center"><div><div style="font-family:var(--display);font-weight:800;font-size:32px;line-height:1">${S.goalDone}/${goalTarget}</div><div style="font-size:12px;color:var(--muted);font-weight:650;margin-top:2px">today</div></div></div>
         </div>
         <div style="min-width:0">
           <div style="font-family:var(--display);font-weight:800;font-size:17px;margin-bottom:3px">Daily goal</div>
