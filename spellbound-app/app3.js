@@ -556,6 +556,13 @@ const app = {
   progHeat:(v)=>set({progHeatKey:v}),
   progHeatPick:(k)=>set({progHeatKey:k}),
   moreTips:()=>set({tipPage:(state.tipPage||0)+1}),
+  dockMenu:(k)=>set({dockMenu:state.dockMenu===k?null:k}),
+  pauseList:(k)=>{ const c=active(); ensureLists(c); if(!c.pausedLists) c.pausedLists={};
+    if((c.activeList||'default')===k){ flash('Switch to another list first, then pause this one'); state.dockMenu=null; render(); return; }
+    c.pausedLists[k]=1; state.dockMenu=null; save(); flash('⏸ Paused — progress kept. Resume any time.'); render(); },
+  resumeList:(k)=>{ const c=active(); if(c.pausedLists) delete c.pausedLists[k]; state.dockMenu=null; save(); app.selectList(k); },
+  dockRemove:(k)=>{ state.dockMenu=null; const c=active(); if(c.pausedLists) delete c.pausedLists[k];
+    window.sbDelList({preventDefault(){},stopPropagation(){}},k); },
   openBuilder:()=>set({nav:'builder', screen:'app', conceptSel:null}),
   bldSet:(kv)=>{ const i=kv.indexOf(':'); const k=kv.slice(0,i); let v=kv.slice(i+1); if(k==='size') v=+v; bldState()[k]=v; render(); },
   bldCreate:()=>{ const b=bldState(); const words=bldPick(); if(!words.length) return; const c=active(); ensureLists(c);
@@ -2221,23 +2228,46 @@ function coachTrain(){
   const stageDone=stageComplete(c,key); const lastStage=sIdx>=stages.length-1;
   const nextIsLibrary = isJourney && stage.n>=CHAMP_LEVELS;      // advancing from here enters/continues the Library
   const libLocked = nextIsLibrary && !state.premium;
-  // Curated quick-switch row: Journey + the currently-selected list (if any other) + Tricky review + Missed words.
-  // Every other list lives in "Setup & lists".
-  const chipLabel=(k)=> k==='journey'?'Spellbound Journey':listLabel(k).split(' · ')[0];
-  // The 3 core lists always stay. Any other list the child has added shows here too and can be
-  // removed with a right-click (it just leaves the quick-switch — progress is kept, re-add from Setup).
-  const CORE_LISTS={journey:1,review:1,missed:1}; const pinned=c.pinnedLists||{};
+  // ---- List Dock: one clear "now training" tile + visual switching; pause/remove live in a ⋯ menu ----
+  const dockLabel=(k)=> k==='journey'?'Spellbound Journey':listLabel(k).split(' · ')[0];
+  const CORE_LISTS={journey:1,review:1,missed:1}; const pinned=c.pinnedLists||{}; const pausedL=c.pausedLists||{};
   let extras=Object.keys(pinned).filter(k=>!CORE_LISTS[k] && pinned[k]);   // only lists the user has added
   if(!CORE_LISTS[key] && !extras.includes(key)) extras.push(key);           // always show the one being trained
-  let chipKeys=['journey', ...extras, 'review','missed'];
-  chipKeys=chipKeys.filter((k,i)=>chipKeys.indexOf(k)===i);
-  const chips=chipKeys.map(k=>{ const on=k===key; const star=(k==='journey')?'★ ':''; const canDel=!CORE_LISTS[k];
-    return `<button data-act="selectList" data-arg="${k}"${canDel?` oncontextmenu="return sbDelList(event,'${escA(k)}')" title="Right-click to remove this list"`:''} style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:8px 13px;border-radius:11px;font-weight:800;font-size:13px;border:1px solid ${on?'var(--accent)':'var(--line)'};${on?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">${star}${esc(chipLabel(k))} <span style="opacity:.85;font-weight:700;font-size:11.5px">L${listStageIdx(c,k)+1}</span></button>`; }).join('');
-  const addBtn=`<button data-act="coachSetupOpen" style="white-space:nowrap;padding:8px 13px;border-radius:11px;font-weight:800;font-size:13px;border:1px dashed var(--line);background:transparent;color:var(--accent)">+ Lists</button>`;
+  let dockKeys=['journey', ...extras, 'review','missed'].filter((k,i,a)=>a.indexOf(k)===i);
+  const pausedKeys=dockKeys.filter(k=>pausedL[k] && k!==key);
+  const liveKeys=dockKeys.filter(k=>!pausedL[k] || k===key);
+  const DOCK_PAL=['#7C5CFF','#E0922E','#DC5B7E','#13A892','#3D7DF0','#B14FC4','#4F9E6A','#F0703C'];
+  const dockColor=(k)=>{ if(k==='journey') return '#7C5CFF'; if(k==='review') return '#E0922E'; if(k==='missed') return '#DC5B7E';
+    if(isThemeKey(k)){ try{ const t=themeOf(k.slice(3)); const cl=themeClusters().find(x=>x.id===t.cluster); if(cl&&cl.c) return cl.c; }catch(e){} }
+    if(String(k).startsWith('built_')) return '#13A892';
+    let h=0; for(const ch2 of String(k)) h=(h*31+ch2.charCodeAt(0))>>>0; return DOCK_PAL[h%DOCK_PAL.length]; };
+  const bigC=dockColor(key);
+  const bigTile=`<div style="flex:1.5;min-width:220px;display:flex;align-items:center;gap:13px;padding:14px 16px;border-radius:14px;background:linear-gradient(135deg,${bigC},color-mix(in srgb,${bigC} 74%,#1c1030 26%));color:#fff;box-shadow:0 6px 16px color-mix(in srgb,${bigC} 32%,transparent);animation:sb-pop .35s ease both">
+      <div style="width:54px;height:54px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(#fff ${stagePct}%,rgba(255,255,255,.25) 0)"><div style="width:41px;height:41px;border-radius:50%;background:color-mix(in srgb,${bigC} 82%,#1c1030 18%);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:11.5px">${stagePct}%</div></div>
+      <div style="min-width:0"><div style="font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;opacity:.85;font-weight:700">Now training</div>
+        <div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.12;text-shadow:0 1px 4px rgba(0,0,0,.16)">${esc(dockLabel(key))}</div>
+        <div style="font-size:11.5px;font-weight:700;opacity:.92">Level ${sIdx+1} of ${stages.length} · ${stageM}/${stage.words.length} mastered this Level</div></div></div>`;
+  const smallTiles=liveKeys.filter(k=>k!==key).map(k=>{ const cc=dockColor(k); const open=S.dockMenu===k;
+    return `<div style="position:relative;display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:12px;border:1px solid var(--line);background:var(--surface)">
+      <button data-act="selectList" data-arg="${escA(k)}" title="Switch to this list" style="display:flex;align-items:center;gap:9px;min-width:0;flex:1;text-align:left">
+        <span style="width:27px;height:27px;border-radius:8px;flex-shrink:0;background:linear-gradient(135deg,${cc},color-mix(in srgb,${cc} 70%,#1c1030 30%))"></span>
+        <span style="min-width:0"><span style="display:block;font-weight:800;font-size:12.5px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(dockLabel(k))}</span><span style="font-size:10.5px;color:var(--muted);font-weight:700">Level ${listStageIdx(c,k)+1}</span></span></button>
+      <button data-act="dockMenu" data-arg="${escA(k)}" aria-label="List options" style="flex-shrink:0;width:26px;height:26px;border-radius:7px;color:var(--muted);display:grid;place-items:center;background:${open?'var(--surface2)':'transparent'};font-weight:800;font-size:15px;line-height:1">⋯</button>
+      ${open?`<div style="position:absolute;top:calc(100% + 4px);right:4px;z-index:40;background:var(--bg2);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.2);padding:6px;min-width:170px;animation:sb-pop .18s ease both">
+        <button data-act="pauseList" data-arg="${escA(k)}" style="display:flex;align-items:baseline;gap:7px;width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-weight:800;font-size:12.5px;color:var(--text)">⏸ Pause <span style="color:var(--muted);font-weight:600;font-size:10.5px">keeps progress</span></button>
+        ${CORE_LISTS[k]?'':`<button data-act="dockRemove" data-arg="${escA(k)}" style="display:flex;align-items:center;gap:7px;width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-weight:800;font-size:12.5px;color:var(--bad)">✕ Remove <span style="color:var(--muted);font-weight:600;font-size:10.5px">re-add from Setup</span></button>`}
+      </div>`:''}
+    </div>`; }).join('');
+  const pausedShelf=pausedKeys.length?`<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)"><span style="font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700">Paused</span>${pausedKeys.map(k=>`<button data-act="resumeList" data-arg="${escA(k)}" title="Tap to resume training this list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:99px;border:1px dashed var(--line);background:transparent;color:var(--muted);font-weight:700;font-size:11.5px">▶ ${esc(dockLabel(k))} <span style="font-size:10px">L${listStageIdx(c,k)+1}</span></button>`).join('')}</div>`:'';
+  const addBtn=`<button data-act="coachSetupOpen" style="white-space:nowrap;padding:8px 13px;border-radius:11px;font-weight:800;font-size:13px;border:1px dashed var(--line);background:transparent;color:var(--accent)">+ Add list</button>`;
   const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:14px">← Home</button><span style="font-family:var(--display);font-weight:800;font-size:22px;margin-left:4px">Word Coach</span><button data-act="openQuestChooser" title="Change your quest path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} Quest path</button><span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">${iconSVG('target',14)} ${daysToBee()} days to the bee</span></div>`;
   const allWordsBtn=`<button data-act="luToggleWords" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:8px 13px;border-radius:11px;font-weight:800;font-size:13px;border:1px solid ${S.luWordsOpen?'var(--accent)':'var(--line)'};background:var(--surface2);color:var(--text)">${iconSVG('grid',14)} All words <span style="color:var(--muted);font-weight:700">${fullList.length}</span> ${S.luWordsOpen?'▴':'▾'}</button>`;
   const newSetBtn = fullList.length>WORK_MAX ? `<button data-act="newBatch" title="Swap in a fresh set of words from this list" style="white-space:nowrap;padding:8px 13px;border-radius:11px;font-weight:800;font-size:13px;border:1px solid var(--line);background:var(--surface2);color:var(--text)">🔄 New set</button>` : '';
-  const chipsRow=`<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px">${chips}${addBtn}${allWordsBtn}${newSetBtn}</div>`;
+  const chipsRow=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:12px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.05)">
+    <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:stretch">${bigTile}<div style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:7px;justify-content:center">${smallTiles||'<div style="font-size:12px;color:var(--muted);font-weight:600;padding:4px 2px">Add another list to switch between quests — each keeps its own Level ladder.</div>'}</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">${addBtn}${allWordsBtn}${newSetBtn}</div>
+    ${pausedShelf}
+  </div>`;
   const allWordsPanel = S.luWordsOpen ? (()=>{ const cap=400; const shown=fullList.slice(0,cap);
     const cells=shown.map(w=>`<div style="background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:10px 12px"><div style="display:flex;align-items:center;gap:6px"><span style="font-family:var(--display);font-weight:800;font-size:14px">${esc(w.w)}</span>${state.luMastered[nkey(w.w)]?'<span style="color:var(--good);font-weight:800;font-size:11px">✓</span>':''}<button data-act="say" data-arg="${escA(w.w)}" style="margin-left:auto;color:var(--accent)">${iconSVG('volume',14)}</button></div>${w.d?`<div style="font-size:11.5px;color:var(--muted);line-height:1.4;margin-top:3px">${esc(trunc(w.d,90))}</div>`:''}</div>`).join('');
     return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px;animation:sb-rise .3s ease both"><div style="font-family:var(--display);font-weight:800;font-size:14.5px;margin-bottom:10px">Level ${stage.n} words · ${esc(listLabel(key).split(' · ')[0])} · ${fullList.length}</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;max-height:360px;overflow-y:auto">${cells}</div>${fullList.length>cap?`<div style="font-size:11.5px;color:var(--muted);margin-top:8px">Showing the first ${cap} of ${fullList.length}.</div>`:''}</div>`; })() : '';
