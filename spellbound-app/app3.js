@@ -2354,7 +2354,7 @@ function coachTrain(){
         <p style="font-size:12px;color:var(--muted);margin:0 0 15px">${esc(listLabel(key).split(' · ')[0])} — opens a clean page you can print or save as PDF.</p>
         ${prow('What to include',[['words','Words only'],['say','Words + pronunciation'],['full','Words + pronunciation + meaning']].map(([v,l])=>pbtn('depth',v,l)).join(''))}
         ${prow('Page size',[['letter','Letter'],['a4','A4'],['a5','A5']].map(([v,l])=>pbtn('page',v,l)).join(''))}
-        ${prow('Scope',[['level','This Level'],['all','Whole list']].map(([v,l])=>pbtn('scope',v,l)).join(''))}
+        ${prow('What scope',[['level','Words in play · '+listWords(key).length],['all','Entire word list · '+listFullWords(key).length]].map(([v,l])=>pbtn('scope',v,l)).join(''))}
         <button data-act="printGo" style="width:100%;padding:13px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Print ${nWords} words →</button>
       </div></div>`; })() : '';
   // ---- one Level header (Word→Set→Level→Champ→Library) ----
