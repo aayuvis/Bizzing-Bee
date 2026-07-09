@@ -981,16 +981,6 @@ function beeEmpty(mood,text){ return `<div style="display:flex;align-items:cente
 /* ---- Word Journeys as lore: one lesson unlocks per Level cleared (any list) ---- */
 function loreCount(c){ c=c||active(); try{ return Object.values(c.lists||{}).reduce((n,l)=>n+(l.stage||0),0); }catch(e){ return 0; } }
 function loreUnlocked(){ const n=loreCount(); return lessonsAll().slice(0,Math.min(n,lessonsAll().length)); }
-// Apple-Watch-style signal rings: Readiness (action) · Accuracy (green) · Consistency (gold)
-function signalRings(){ const sg=parentSignals(); let rd=0; try{ rd=coachReadiness().ready||0; }catch(e){}
-  const V=[[rd,'var(--action,#6C4FE0)','Readiness'],[sg.acc,'var(--mastered,#178A4C)','Accuracy'],[sg.consistency,'var(--treasure,#F0B429)','Consistency']];
-  const ring=(r,v,c)=>{ const C=2*Math.PI*r; const off=C*(1-Math.max(0,Math.min(100,v))/100);
-    return `<circle cx="44" cy="44" r="${r}" fill="none" stroke="${c}" stroke-opacity=".18" stroke-width="7"/>`
-      +`<circle cx="44" cy="44" r="${r}" fill="none" stroke="${c}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 44 44)"/>`; };
-  return `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0" title="Readiness ${Math.round(V[0][0])}% · Accuracy ${Math.round(V[1][0])}% · Consistency ${Math.round(V[2][0])}%">
-    <svg viewBox="0 0 88 88" width="88" height="88" aria-hidden="true">${ring(37,V[0][0],V[0][1])}${ring(27,V[1][0],V[1][1])}${ring(17,V[2][0],V[2][1])}</svg>
-    <div style="display:flex;gap:7px">${V.map(v=>`<span style="display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:800;color:var(--muted)"><span style="width:7px;height:7px;border-radius:99px;background:${v[1]};display:inline-block"></span>${Math.round(v[0])}%</span>`).join('')}</div>
-  </div>`; }
 // Tip of the day — pithy, rotating daily, banded to the speller's level:
 // Levels 1–4 draw only from the Spelling Bee Basics concepts + gentle habit tips;
 // 5–8 widen to easy/medium concepts and practice tips; 9+ open the full library + lore.
@@ -1179,7 +1169,7 @@ function viewTraps(){ const S=state; const traps=missTraps(); const sel=S.trapSe
 function viewApp(){
   const S=state;
   const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,shop:1};
-  const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['explore','Explore','compass'],['games','Arcade','joystick'],['traps','Traps','target'],['progress','Progress','chart'],['parent','Parent','users']].map(([key,label,ic])=>{
+  const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['explore','Explore','compass'],['games','Arcade','joystick'],['progress','Progress','chart'],['parent','Parent','users']].map(([key,label,ic])=>{
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:S.nav===key;
     const glyph=key==='explore'?(window.SB_ICON?SB_ICON('compass',{size:17}):iconSVG('grid',17)):iconSVG(ic,17);
     return `<button data-act="setNav" data-arg="${key}" style="display:inline-flex;align-items:center;gap:8px;white-space:nowrap;padding:10px 18px;border-radius:var(--r-pill,999px);font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.01em;${on?'background:var(--action,var(--accent));color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">${glyph} ${label}</button>`;
@@ -1375,7 +1365,6 @@ function viewHome(){
             <div style="height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden"><div style="height:100%;border-radius:inherit;background:var(--treasure,#F0B429);width:${Math.min(100,Math.round((lf.into||0)/(lf.need||1)*100))}%"></div></div>
           </div>
         </div>
-        ${focusedH?signalRings():''}
       </div>
       <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:var(--sh-rest);display:flex;align-items:center;gap:20px">
         <div style="width:136px;height:136px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(var(--action,var(--accent)) ${goalPctNum}%, var(--tint-deep,var(--surface2)) 0);box-shadow:var(--sh-rest)">

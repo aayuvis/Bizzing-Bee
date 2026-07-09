@@ -206,5 +206,5 @@
     radial-gradient(44% 32% at 94% 102%, color-mix(in srgb, var(--action) 10%, transparent), transparent 70%),
     radial-gradient(30% 24% at 4% 88%, color-mix(in srgb, var(--treasure) 7%, transparent), transparent 70%);
 }
-[data-mode="white"][data-theme]::after{ opacity:.6 }
+[data-mode="white"][data-theme]::after{ display:none } /* white stays pure paper */
 [data-mode="dusk"][data-theme]::after{ opacity:.5 }
