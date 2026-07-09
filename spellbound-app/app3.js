@@ -477,7 +477,7 @@ const app = {
   pickAvatar:(id)=>set({draft:{...state.draft,avatar:id}}),
   pickGoal:(v)=>set({draft:{...state.draft,goal:+v}}),
   onbBack:()=>{ if(state.onbStep===0){ set({screen: state.addingMore?'app':'auth'}); } else set({onbStep:state.onbStep-1}); },
-  onbWorld:(id)=>{ state.draft.theme=id; state.theme=id; render(); },
+  onbWorld:(id)=>{ if(FREE_THEMES.indexOf(id)<0){ flash('▶ Play to unlock — start in Bizzing Bee or Spotlight and earn coins to open this world!'); return; } state.draft.theme=id; state.theme=id; render(); },
   onbNext:()=>{ const S=state;
     if(S.onbStep===0 && !S.draft.name.trim()){ flash('Add a name to continue'); return; }
     if(S.onbStep===1 && !S.draft.theme){ flash('Pick a world first — every speller chooses their own'); return; }
@@ -920,8 +920,8 @@ function view(){
 
 function viewLanding(){
   const features=[
-    { ic:'volume', title:'Hears every word', body:'Real spoken pronunciation, definition, sentence and origin — like a true bee round.' },
-    { ic:'sprout', title:'A character that evolves', body:'Ten forms per world. Every level visibly grows your speller’s buddy.' },
+    { ic:'volume', title:'The speller hears every word', body:'Real spoken pronunciation, definition, sentence and origin — like a true bee round.' },
+    { ic:'sprout', title:'Tested, gamified learning methods', body:'Evolution ladders, streaks, coins and quests — play-tested mechanics that make daily practice stick.' },
     { ic:'chart', title:'Parents see everything', body:'Accuracy, streaks, weak words and a finals countdown in one dashboard.' },
   ].map(f=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:22px">
       <div style="width:46px;height:46px;border-radius:14px;background:var(--chip);color:var(--accent);display:grid;place-items:center;margin-bottom:13px">${iconSVG(f.ic,22)}</div>
@@ -934,14 +934,18 @@ function viewLanding(){
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(24px,5vw,56px);align-items:center">
       <div>
-        <div style="display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:18px">🐝 Built for spelling-bee champions</div>
+        <div style="display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:18px"><span style="width:20px;height:22px;display:inline-block;flex-shrink:0">${mascotSVG('happy')}</span> Built for spelling-bee champions</div>
         <h1 style="font-family:var(--display);font-weight:800;font-size:clamp(34px,6.4vw,58px);line-height:1.03;letter-spacing:-.02em;margin:0 0 16px">Spell your way to the National&nbsp;Bee.</h1>
         <p style="font-size:clamp(16px,2.2vw,19px);line-height:1.55;color:var(--muted);max-width:30em;margin:0 0 26px">A daily spelling trainer that hears your child spell out loud, evolves a character with every win, and shows parents exactly where they stand — built around real championship words.</p>
         <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:24px">
           <button data-act="goSignup" style="padding:15px 26px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge),0 8px 22px color-mix(in srgb,var(--accent) 40%,transparent)">Start free →</button>
           <button data-act="goSignin" style="padding:15px 24px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">I have an account</button>
         </div>
-        <div style="display:flex;align-items:center;gap:16px;color:var(--muted);font-size:13px;font-weight:600"><span>🔒 100% offline — words never leave your device</span><span style="width:1px;height:14px;background:var(--line)"></span><span>No card to start</span></div>
+        <div style="display:flex;flex-direction:column;gap:10px;color:var(--muted);font-size:17px;font-weight:600;line-height:1.45;max-width:34em">
+          <span style="display:flex;align-items:center;gap:11px"><span style="color:var(--accent);flex-shrink:0">${iconSVG('lock',20)}</span>100% offline — words never leave your device</span>
+          <span style="display:flex;align-items:center;gap:11px"><span style="color:var(--accent);flex-shrink:0">${iconSVG('spark',20)}</span>No card to start</span>
+          <span style="display:flex;align-items:flex-start;gap:11px"><span style="color:var(--accent);flex-shrink:0;margin-top:2px">${iconSVG('users',20)}</span>Developed by an IIT/IIM couple with a national-level NSF spelling-bee finalist</span>
+        </div>
       </div>
       <div style="position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,34px);box-shadow:var(--glow)">
         <div style="display:flex;justify-content:center;margin-bottom:6px"><div style="width:118px;height:132px;animation:sb-float 4s ease-in-out infinite">${mascotSVG('excited')}</div></div>
@@ -987,7 +991,8 @@ function viewOnboarding(){
   const dots=[0,1,2].map(i=>`<div style="width:${i===S.onbStep?'26px':'8px'};height:8px;border-radius:999px;transition:.25s;background:${i<=S.onbStep?'var(--accent)':'var(--surface2)'}"></div>`).join('');
   let card='';
   if(S.onbStep===0){
-    const avatars=BUDDIES.map(id=>`<button data-act="pickAvatar" data-arg="${id}" style="aspect-ratio:1;border-radius:14px;display:grid;place-items:center;transition:.15s;background:var(--surface2);border:2px solid ${S.draft.avatar===id?'var(--accent)':'transparent'}">${buddySVG(id,30)}</button>`).join('');
+    const avatars=[4,7,9].map(fi=>THEMES.map(t=>{ const id='w:'+t.id+':'+fi;
+      return `<button data-act="pickAvatar" data-arg="${id}" title="${(EV_NOMEN[t.id]||EV_NOMEN.spellbound)[fi]} · ${THEME_LABEL[t.id]||t.id}" style="aspect-ratio:1;border-radius:14px;display:grid;place-items:center;transition:.15s;background:var(--surface2);border:2px solid ${S.draft.avatar===id?'var(--accent)':'transparent'};padding:4px"><span style="width:34px;height:37px;display:inline-block">${avatarSVG(id,34)}</span></button>`; }).join('')).join('');
     card=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow)">
       <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">Who's practising?</h2>
       <p style="margin:0 0 20px;color:var(--muted);font-size:13px">Set up your speller's profile.</p>
@@ -998,7 +1003,8 @@ function viewOnboarding(){
       <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:10px">Pick a buddy</label>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:8px">${avatars}</div></div>`;
   } else if(S.onbStep===1){
-    const worldCards=THEMES.map(t=>worldHeroCard(t, t.id===S.draft.theme, false, 'onbWorld')).join('');
+    const worldCards=THEMES.map(t=>{ const open=FREE_THEMES.indexOf(t.id)>=0; const card=worldHeroCard(t, t.id===S.draft.theme, false, 'onbWorld');
+      return open?card:card.replace('<div style="position:relative;height:104px',`<span style="position:absolute;top:10px;right:10px;z-index:2;display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:rgba(20,14,34,.72);color:#FFD24D;font-weight:800;font-size:11.5px;letter-spacing:.03em">▶ Play to unlock</span><div style="position:relative;height:104px;filter:saturate(.55)`); }).join('');
     card=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow)">
       <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">Choose a world</h2>
       <p style="margin:0 0 20px;color:var(--muted);font-size:13px">Each world is a different look <b style="color:var(--text)">and</b> a character that evolves as you level up — from its first form to its last. Pick the journey that excites your speller. You can change it any time.</p>
@@ -1483,6 +1489,9 @@ ${focusedH?(()=>{ return `${tipOfDay()}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:18px">${journeys}</div>`}
   </div>`;
 }
+function avatarSVG(id,size){ size=size||30;
+  if(typeof id==='string' && id.slice(0,2)==='w:'){ const p=id.split(':'); try{ return evEmb(p[1],+p[2]).replace('width="54" height="58"','width="100%" height="100%"'); }catch(e){ return buddySVG('bee',size); } }
+  return buddySVG(id,size); }
 function evArt(theme,i){ try{ return evEmb(theme,i).replace('width="54" height="58"','width="100%" height="100%"'); }catch(e){ return ''; } }
 /* ---- Evolution ladder as its own screen (Home shows only the compact card) ---- */
 function viewEvolution(){ const S=state; const c=active(); ensureLists(c); const theme=S.theme; const evo=EVO[theme]||EVO.spellbound;
@@ -2279,7 +2288,7 @@ function viewParent(){
     ? {ic:'crown',title:'Premium',body:'4 worlds, half the concepts & uncapped levels. Earn coins for the rest.',btn:'Manage',btnStyle:'padding:10px 16px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:13px',cardStyle:'background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 16%,var(--bg2)),var(--bg2));border:1px solid var(--accent);border-radius:20px;padding:20px;box-shadow:var(--glow)'}
     : {ic:'spark',title:'Free plan',body:'2 worlds & Level-Up to Level 5. Earn 🪙 coins to unlock more, or go Premium.',btn:'Upgrade',btnStyle:'padding:10px 18px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)',cardStyle:'background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest)'};
   const kids=(S.children.length?S.children:[demo()]).map((k,i)=>`<div style="background:var(--bg2);border:1px solid ${i===S.activeIdx?'var(--accent)':'var(--line)'};border-radius:14px;padding:18px">
-      <div style="display:flex;align-items:center;gap:13px;margin-bottom:16px"><div style="width:48px;height:48px;border-radius:14px;background:var(--surface2);display:grid;place-items:center">${buddySVG(k.avatar,28)}</div>
+      <div style="display:flex;align-items:center;gap:13px;margin-bottom:16px"><div style="width:48px;height:48px;border-radius:14px;background:var(--surface2);display:grid;place-items:center">${avatarSVG(k.avatar,28)}</div>
         <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:17px">${esc(k.name)}</div><div style="font-size:12px;color:var(--muted);font-weight:600">Age ${k.age} · ${THEME_LABEL[k.theme]||'Bizzing Bee'}</div></div>
         <button data-act="selectChild" data-arg="${i}" style="padding:7px 13px;border-radius:10px;font-weight:800;font-size:12px;${i===S.activeIdx?'background:var(--chip);color:var(--accent)':'background:var(--surface2);color:var(--text)'}">${i===S.activeIdx?'Active':'Switch'}</button>
       </div>
