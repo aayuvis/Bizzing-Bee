@@ -188,7 +188,9 @@ const demo = () => ({ name:'Speller', age:9, avatar:'bee', theme:'spellbound', l
 const active = () => { const c = state.children[state.activeIdx] || demo(); ensureLists(c); return c; };
 const curWord = () => { const L=(state.sessionWords&&state.sessionWords.length)?state.sessionWords:WORDS; return L[state.gi % L.length]; };
 const formIdx = (lvl) => Math.min(9, Math.max(0, Math.ceil((lvl||1)/2)-1));
-const daysToBee = () => { const d=Math.ceil((new Date('2026-07-31') - new Date())/86400000); return d>0?d:0; };
+const milestone = () => { const c=active(); let m=c.milestone; if((!m||!m.date) && state.coachDate) m={label:(m&&m.label)||'the bee', date:state.coachDate};
+  if(!m||!m.date) return null; const d=Math.ceil((new Date(m.date+'T00:00:00') - new Date())/86400000);
+  return d>=0?{ days:d, label:m.label||'the bee', date:m.date }:null; };
 /* ---- Lists (tracks): per-list XP/level; mastery stays global (word knowledge) ---- */
 const FREE_LEVEL_CAP = 5; const WORK_MAX = 40;
 /* Leveling curve: easy at first, then near-exponential — each level needs more XP than the last.
@@ -276,9 +278,12 @@ function beeOdds(bp){ const n=Math.max(1,Math.min(5,Math.round((bp||0)/20))); re
 function resetSessionScore(){ state.sessionOver=false; state.sessionCorrect=[]; state.sessionWrong=[]; state.sessionRight=0; state.sessionDone=0; }
 function ensureCoachWords(key){ if(state.sessionListKey!==key || !(state.sessionWords&&state.sessionWords.length)){
     state.sessionWords=workingSet(key); state.sessionListKey=key; state.sessionLabel=listLabel(key);
-    state.reviseIdx=Math.min(state.reviseIdx||0, Math.max(0,state.sessionWords.length-1)); state.gi=0; resetSessionScore(); }
+    state.reviseIdx=Math.min(state.reviseIdx||0, Math.max(0,state.sessionWords.length-1));
+    // resume where the speller left off in this list (persisted per list)
+    let gi0=0; try{ if(key&&key[0]!=='_'){ const st=getList(active(),key); gi0=(st.gi&&st.gi<state.sessionWords.length)?st.gi:0; } }catch(e){}
+    state.gi=gi0; resetSessionScore(); }
   return state.sessionWords; }
-function newCoachBatch(){ const key=state.sessionListKey||activeListKey(); state.sessionWords=workingSet(key); state.sessionListKey=key; state.reviseIdx=0; state.gi=0; resetSessionScore(); }
+function newCoachBatch(){ const key=state.sessionListKey||activeListKey(); state.sessionWords=workingSet(key); state.sessionListKey=key; state.reviseIdx=0; state.gi=0; try{ if(key&&key[0]!=='_') getList(active(),key).gi=0; }catch(e){} resetSessionScore(); }
 function gainXp(){ const c=active(); const key=activeListKey(); const lp=getList(c,key); const before=listLevel(c,key);
   lp.xp=(lp.xp||0)+1; const rawAfter=listLevelRaw(c,key); const after=Math.min(rawAfter, levelCap());
   if(after>before){ const form=formIdx(after); state.toast='Level '+after+'! Now '+((EVO[state.theme]||EVO.spellbound)[form])+' in '+listLabel(key)+' ✨'; scheduleToast(2600); addCoins(4); sfx('level'); burstConfetti(90); }
@@ -327,6 +332,9 @@ function maskParts(sentence, word){ const t=sentence||''; const w=(word||'').tri
   let re; try{ re=new RegExp('\\b'+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'[a-z]*\\b','i'); }catch(e){ return {before:t, after:'', matched:false}; }
   const m=t.match(re); if(!m) return {before:t, after:'', matched:false};
   return { before:t.slice(0,m.index).trim(), after:t.slice(m.index+m[0].length).trim(), matched:true }; }
+function maskTxt(text, word){ const t=text||''; const w=(word||'').trim(); if(!w) return t;
+  let re; try{ re=new RegExp('\\b'+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'[a-z]*\\b','ig'); }catch(e){ return t; }
+  return t.replace(re,'_____'); }
 function sayMasked(sentence, word){ try{ window.speechSynthesis.cancel(); }catch(e){}
   const parts=maskParts(sentence, word);
   if(!parts.matched){ const safe=(sentence||'').replace(new RegExp((word||'').replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'ig'),' beep '); deviceSpeak(safe||'beep',0.92); return; }
@@ -363,6 +371,15 @@ function loadFullLibrary(then){ if(window.SB_FULL){ _fullState='loaded'; state.f
   s.onload=()=>{ _fullState='loaded'; _wdb=null; state.fullLoading=false; state.fullLoaded=true; if(then) then(); render(); flash('Full library ready — 128,000 words 📚'); };
   s.onerror=()=>{ _fullState='error'; state.fullLoading=false; render(); flash('Couldn’t load words-full.js — keep it in the same folder'); };
   document.head.appendChild(s); }
+/* ---- Word Finder: search the whole library, open a learn card, add to lists ---- */
+function finderResults(q){ q=nkey((q||'').trim()); if(q.length<2) return [];
+  const seen=new Set(); const exact=[],starts=[],contains=[];
+  const scan=(pool)=>{ for(const r of pool){ if(!r||!r.w) continue; const k=nkey(r.w); if(seen.has(k)) continue;
+      if(k===q){ seen.add(k); exact.push(r); }
+      else if(k.startsWith(q)){ if(starts.length<40){ seen.add(k); starts.push(r); } }
+      else if(starts.length<8 && contains.length<12 && k.includes(q)){ seen.add(k); contains.push(r); } } };
+  scan((window.SB_DATA&&SB_DATA.nsf)||[]); if(window.SB_FULL) scan(window.SB_FULL);
+  return exact.concat(starts,contains).slice(0,24); }
 /* ---- word DB / coach ---- */
 let _wdb = null;
 function wordDB(){ if(_wdb) return _wdb; const m=new Map();
@@ -477,15 +494,17 @@ const app = {
   onDraftAge:(v)=>set({draft:{...state.draft,age:+v}}),
   pickAvatar:(id)=>set({draft:{...state.draft,avatar:id}}),
   pickGoal:(v)=>set({draft:{...state.draft,goal:+v}}),
+  onbBeeDate:(v)=>{ state.draft.beeDate=v||null; },
   onbBack:()=>{ if(state.onbStep===0){ set({screen: state.addingMore?'app':'auth'}); } else set({onbStep:state.onbStep-1}); },
   pickAvatar:(id)=>{ if(window.SB_AVATARS&&SB_AVATARS.byId[id]&&SB_AVATARS.byId[id].rarity!=='free'&&state.screen==='onboarding'){ flash('🔒 '+SB_AVATARS.byId[id].name+' unlocks with coins — find it in your Collection later!'); return; } state.draft.avatar=id; render(); },
-  onbWorld:(id)=>{ if(FREE_THEMES.indexOf(id)<0){ flash('▶ Play to unlock — start in Bizzing Bee or Spotlight and earn coins to open this world!'); return; } state.draft.theme=id; state.theme=id; render(); },
+  onbWorld:(id)=>{ if(FREE_THEMES.indexOf(id)<0){ flash('🔒 Locked — start in Bizzing Bee or Spotlight, then unlock this world for '+COST.theme+' 🪙'); return; } state.draft.theme=id; state.theme=id; render(); },
   onbNext:()=>{ const S=state;
     if(S.onbStep===0 && !S.draft.name.trim()){ flash('Add a name to continue'); return; }
     if(S.onbStep===1 && !S.draft.theme){ flash('Pick a world first — every speller chooses their own'); return; }
     if(S.onbStep<2){ set({onbStep:S.onbStep+1}); return; }
     app._finishOnb(); set({screen:'app', nav:'home'}); flash('Profile ready — let’s spell! 🐝'); },
   _finishOnb:()=>{ const S=state; const kid={ name:S.draft.name.trim()||'Speller', age:S.draft.age, avatar:S.draft.avatar, theme:S.theme, goal:S.draft.goal, level:1, streak:0, acc:0, xp:0, week:[0,0,0,0,0,0,0] };
+    if(S.draft.beeDate) kid.milestone={ label:(S.draft.beeLabel||'the bee'), date:S.draft.beeDate };
     const newIdx=S.children.length; state.children=[...S.children,kid]; state.activeIdx=newIdx; state.goalDone=0; state.addingMore=false; save(); },
   startLevelTest:()=>{ if(state.screen==='onboarding'){ if(!state.draft.name.trim()){ flash('Add a name first'); return; } app._finishOnb(); }
     /* The placement test walks the difficulty-band ladder itself (not stage lists), so its
@@ -535,7 +554,32 @@ const app = {
   onType:(v)=>{ state.typed=v; }, /* no per-keystroke render — a full re-render restarts tile animations (dock flicker) */
   trainKey:(e)=>{ if(e.key==='Enter'){ if(state.status==='idle') app.check(); else app.next(); } },
   toggleDef:()=>set({showDef:!state.showDef}),
-  toggleSent:()=>{ const on=!state.showSent; if(on){ const w=curWord(); if(w&&w.s) say(w.s); } set({showSent:on}); },
+  openFinder:()=>{ state.drawerOpen=false; set({nav:'finder', conceptSel:null}); },
+  finderQ:(v)=>{ state.finderQ=v||''; state.finderSel=null; render(); },
+  finderPick:(w)=>{ const r=finderResults(state.finderQ).find(x=>nkey(x.w)===nkey(w)) || wordDB().get(nkey(w)); if(r){ state.finderSel=r; try{window.scrollTo(0,0);}catch(e){} render(); } },
+  finderBack:()=>set({finderSel:null}),
+  finderLoadFull:()=>loadFullLibrary(()=>{}),
+  finderAddTo:(k)=>{ const c=active(); const w=state.finderSel; if(!w) return; c.builtLists=c.builtLists||{}; const bl=c.builtLists[k]; if(!bl) return;
+    if((bl.ws||[]).some(x=>nkey(x)===nkey(w.w))){ flash('“'+w.w+'” is already in '+bl.label); return; }
+    bl.ws=[...(bl.ws||[]),w.w]; bl.label=bl.label.replace(/\(\d+\)$/,'('+bl.ws.length+')'); save(); sfx('correct'); flash('Added “'+w.w+'” to '+bl.label+' ✓'); render(); },
+  finderName:(v)=>{ state.finderName=v||''; },
+  finderCreateAdd:()=>{ const c=active(); const w=state.finderSel; if(!w) return; const name=(state.finderName||'').trim()||'My words';
+    c.builtLists=c.builtLists||{}; const key='built_'+Date.now().toString(36);
+    c.builtLists[key]={ label:name, ws:[w.w] }; state.finderName=''; save(); sfx('win');
+    flash('New list “'+name+'” created with “'+w.w+'” — find it in Word Coach ✓'); render(); },
+  reportWord:(w)=>set({reportW:w}),
+  reportClose:()=>set({reportW:null}),
+  reportIssue:(issue)=>{ const w=state.reportW; if(!w) return; const r=wordDB().get(nkey(w))||{w};
+    state.wordReports=[...(state.wordReports||[]), { w:r.w||w, issue, d:r.d||'', s:r.s||'', when:new Date().toISOString().slice(0,10) }];
+    save(); set({reportW:null}); flash('Thanks — logged for review. Parents can export it from the Parent tab. ⚑'); },
+  copyReports:()=>{ const rs=state.wordReports||[]; if(!rs.length) return;
+    const txt=rs.map(r=>`${r.when} · ${r.w} · ${r.issue}${r.d?' · meaning: '+r.d:''}${r.s?' · sentence: '+r.s:''}`).join('\n');
+    try{ navigator.clipboard.writeText(txt).then(()=>flash('Copied '+rs.length+' report'+(rs.length>1?'s':'')+' 📋')); }
+    catch(e){ try{ const t=document.createElement('textarea'); t.value=txt; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); flash('Copied 📋'); }catch(e2){ flash('Couldn’t copy'); } } },
+  clearReports:()=>{ state.wordReports=[]; save(); render(); flash('Reports cleared'); },
+  wordCard:(w)=>{ const ws=state.sessionWords||[]; const i=ws.findIndex(x=>nkey(x.w)===nkey(w));
+    if(i>=0){ state.luTab='revise'; state.reviseIdx=i; try{window.scrollTo(0,0);}catch(e){} render(); } else { say(w); } },
+  toggleSent:()=>{ const on=!state.showSent; if(on){ const w=curWord(); if(w&&w.s) sayMasked(w.s,w.w); } set({showSent:on}); },
   toggleOrigin:()=>set({showOrigin:!state.showOrigin}),
   luSetTab:(t)=>{ set({luTab:t, heatReveal:false}); if(t==='practice') setTimeout(speak,250); },
   toggleHeat:()=>set({heatReveal:!state.heatReveal}),
@@ -573,9 +617,11 @@ const app = {
   next:()=>{ clearTimeout(state._advTimer); state._advTimer=null;
     const N=(state.sessionWords&&state.sessionWords.length)||0;
     if(N && state.gi>=N-1){ state.sessionOver=true;
+      try{ const k=state.sessionListKey; if(k&&k[0]!=='_') getList(active(),k).gi=0; }catch(e){}
       if((state.sessionDone||0)>0){ try{ logActivity(state.coachSession?'concept':'practice', state.sessionLabel||'Practice', {done:state.sessionDone,right:state.sessionRight}, (state.sessionWrong||[]).map(x=>x.w)); }catch(e){} }
       set({typed:'', status:'idle', mood:'happy', showDef:false, showSent:false, showOrigin:false}); return; }
-    state.gi+=1; set({typed:'', status:'idle', mood:'happy', showDef:false, showSent:false, showOrigin:false}); setTimeout(speak,250); },
+    state.gi+=1; try{ const k=state.sessionListKey; if(k&&k[0]!=='_'){ getList(active(),k).gi=state.gi; save(); } }catch(e){}
+    set({typed:'', status:'idle', mood:'happy', showDef:false, showSent:false, showOrigin:false}); setTimeout(speak,250); },
   restartSession:()=>{ state.sessionOver=false; state.sessionCorrect=[]; state.sessionWrong=[]; state.sessionRight=0; state.sessionDone=0; state.gi=0; set({typed:'', status:'idle', mood:'happy'}); setTimeout(speak,300); },
   drillMisspelt:()=>{ const wrong=(state.sessionWrong||[]).slice(); if(!wrong.length){ flash('Nothing to redo — all correct! 🎉'); return; } state.sessionWords=wrong; state.sessionLabel=(state.sessionLabel||'Practice').replace(/ · misspelt$/,'')+' · misspelt'; state.sessionOver=false; state.sessionCorrect=[]; state.sessionWrong=[]; state.sessionRight=0; state.sessionDone=0; state.gi=0; set({typed:'', status:'idle', mood:'happy'}); setTimeout(speak,300); },
   // concepts
@@ -605,7 +651,7 @@ const app = {
   drawer:(key)=>{ state.drawerOpen=false; const F={ home:()=>app.setNav('home'), levelup:()=>app.startLevelUp(), games:()=>app.openGames(), shop:()=>app.openShop(), concepts:()=>app.setNav('concepts'),
       coach:()=>app.openCoach(), journeys:()=>app.openJourneys(), study:()=>app.coachStudy(), written:()=>app.startWritten(), oral:()=>app.startOral(),
       weak:()=>app.coachWeakDrill(), parentview:()=>{ app.openCoach(); state.coachTab='parent'; render(); }, settings:()=>app.setNav('settings'), themes:()=>app.setNav('themes'),
-      quest:()=>app.openQuestChooser(), traps:()=>app.openTraps(), collection:()=>app.openCollection(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore') };
+      quest:()=>app.openQuestChooser(), traps:()=>app.openTraps(), collection:()=>app.openCollection(), finder:()=>app.openFinder(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore') };
     (F[key]||(()=>{}))(); },
   // coach
   openCoach:()=>{ const c=active(); ensureLists(c);
@@ -794,7 +840,7 @@ const app = {
     render();
     setTimeout(()=>{ const G=state.game; if(!G) return; if(G.i+1<G.qs.length){ G.i++; G.picked=null; render(); mcSpeak(G.qs[G.i]); } else { gFinishMC(); } },950); },
   coachTab:(t)=>set({coachTab:t}),
-  setCoachDate:(v)=>set({coachDate:v||null}),
+  setCoachDate:(v)=>{ const c=active(); c.milestone={ label:(c.milestone&&c.milestone.label)||'the bee', date:v||null }; if(!v) c.milestone=null; set({coachDate:v||null}); },
   setCoachGoal:(v)=>{ const n=parseInt(v,10); set({coachGoal:(n&&n>0)?n:20}); },
   setCoachTarget:(key)=>{ const cat=coachCatalog().find(c=>c.key===key); state.coachTargetKey=key; state.coachTargetLabel=cat?cat.label:key; if(cat) flash('Target list set: '+cat.label); else render(); },
   coachRec:()=>{ const k=coachPhase().key; if(k==='breadth') app.coachStudy(); else if(k==='depth') app.coachWeakDrill(); else if(k==='sim') app.startWritten(); },
@@ -861,7 +907,7 @@ const app = {
       '<table style="width:100%;margin-top:16px;border-collapse:collapse"><tr>'+dotRow+'</tr></table>'+
       '<h2>Progress</h2><div class="row"><div class="stat"><b>'+ov+'</b><span>Overall level</span></div><div class="stat"><b>'+mastered+'</b><span>Words mastered</span></div><div class="stat"><b>'+totRight+'</b><span>Correct this week</span></div><div class="stat"><b>'+(c.streak||0)+'</b><span>Day streak</span></div></div>'+
       '<h2>Words to revise ('+(c.missed||[]).length+')</h2><div>'+missChips+'</div>'+
-      '<h2>Countdown</h2><p style="font-size:15px">North South Foundation National Finals — <b>'+daysToBee()+' days</b> to go (31 Jul 2026).</p>'+
+      (milestone()?('<h2>Countdown</h2><p style="font-size:15px">'+esc(milestone().label)+' — <b>'+milestone().days+' days</b> to go.</p>'):'')+
       (function(){ try{ const sg=parentSignals(); let rd=0; try{ rd=coachReadiness().ready||0; }catch(e){}
         const rows=[['Consistency',sg.consistency],['Accuracy',sg.acc],['Coverage',sg.coverage],['Review health',sg.reviewHealth],['Readiness',rd]]
           .map(x=>'<td style="padding:6px 10px;border:1px solid #ddd;text-align:center"><b style="font-size:17px">'+Math.max(0,Math.min(100,Math.round(x[1]||0)))+'%</b><br><span style="font-size:11px;color:#666">'+x[0]+'</span></td>').join('');
@@ -911,6 +957,8 @@ const app = {
   profAge:(v)=>{ const c=active(); const n=parseInt(v,10); if(n>=5&&n<=18){ c.age=n; save(); render(); } },
   profGoal:(v)=>{ const c=active(); c.goal=+v||10; save(); render(); flash('Daily goal set to '+c.goal+' words'); },
   profAvatar:(id)=>{ const c=active(); c.avatar=id; save(); render(); },
+  profMsLabel:(v)=>{ const c=active(); if(c.milestone) c.milestone.label=(v||'').slice(0,30)||'the bee'; else c.milestone={ label:(v||'').slice(0,30)||'the bee', date:null }; save(); },
+  profMsDate:(v)=>{ const c=active(); if(!v){ c.milestone=null; } else { c.milestone={ label:(c.milestone&&c.milestone.label)||'the bee', date:v }; } save(); render(); },
   landType:(v)=>{ state.landTyped=v; },
   landKey:(e)=>{ if(e.key==='Enter'){ e.preventDefault(); app.landCheck(); } },
   landCheck:()=>{ const w=LAND_WORDS[state.landIdx||0]; if((state.landTyped||'').trim().toLowerCase()===w){ state.landDone=true; state.landTyped=''; state.landIdx=((state.landIdx||0)+1)%LAND_WORDS.length; try{ sfx('correct'); burstConfetti(90); }catch(e){} render(); setTimeout(()=>{ state.landDone=false; render(); },2600); } else { flash('Almost — check it letter by letter!'); } },
@@ -1026,8 +1074,8 @@ function viewOnboarding(){
       <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:10px">Pick a buddy</label>
       ${avatars}</div>`;
   } else if(S.onbStep===1){
-    const worldCards=THEMES.map(t=>{ const open=FREE_THEMES.indexOf(t.id)>=0; const card=worldHeroCard(t, t.id===S.draft.theme, false, 'onbWorld');
-      return open?card:card.replace('<div style="position:relative;height:104px',`<span style="position:absolute;top:10px;right:10px;z-index:2;display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:rgba(20,14,34,.72);color:#FFD24D;font-weight:800;font-size:11.5px;letter-spacing:.03em">▶ Play to unlock</span><div style="position:relative;height:104px;filter:saturate(.55)`); }).join('');
+    const worldCards=THEMES.map(t=>{ const open=FREE_THEMES.indexOf(t.id)>=0;
+      return worldHeroCard(t, t.id===S.draft.theme, !open, 'onbWorld'); }).join('');
     card=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow)">
       <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">Choose a world</h2>
       <p style="margin:0 0 20px;color:var(--muted);font-size:13px">Each world is a different look <b style="color:var(--text)">and</b> a character that evolves as you level up — from its first form to its last. Pick the journey that excites your speller. You can change it any time.</p>
@@ -1041,6 +1089,11 @@ function viewOnboarding(){
       <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">Set a daily goal</h2>
       <p style="margin:0 0 20px;color:var(--muted);font-size:13px">A small daily habit beats cramming. Pick a starting target.</p>
       <div style="display:grid;gap:11px">${goals}</div>
+      <div style="margin-top:18px">
+        <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:4px">Big bee day <span style="font-weight:600">(optional)</span></label>
+        <p style="margin:0 0 8px;font-size:12px;color:var(--muted)">A competition coming up? Add the date — the app counts down to it and paces practice. You can set or change it in Settings any time.</p>
+        <input type="date" data-chg="onbBeeDate" value="${escA(S.draft.beeDate||'')}" style="width:100%;max-width:220px;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:700;outline:none">
+      </div>
       <button data-act="startLevelTest" style="width:100%;margin-top:14px;display:flex;align-items:center;gap:11px;text-align:left;padding:13px 15px;border-radius:12px;border:1px dashed var(--accent);background:var(--chip);color:var(--text)"><span style="color:var(--accent)">${iconSVG('target',20)}</span><span style="min-width:0"><span style="display:block;font-weight:800;font-size:14px">Find my Bee Band first <span style="color:var(--muted);font-weight:650">(optional, ~3 min)</span></span><span style="display:block;font-size:12px;color:var(--muted)">Words climb band by band until we find what you're ready for — it sets your Band, your games and your Quest start in one go.</span></span></button>
       <div style="margin-top:14px">${voiceUpgradeTip()}</div></div>`;
   }
@@ -1114,45 +1167,43 @@ function trapRadar(){ const traps=topTraps(3); if(!traps.length) return '';
    face, palette, tagline and hero imagery (photo-duotone for Spotlight; CSS/SVG
    illustration for the rest). Body face & semantics never move. ---- */
 const WORLD_HERO={
- spellbound:{ face:"'Fraunces',Georgia,serif", tag:'THE HIVE · SAY · SPELL · SAY', ink:'#fff',
+ spellbound:{ face:"'Fraunces',Georgia,serif", tag:'THE HIVE', ink:'#fff',
    bg:"background:radial-gradient(120% 130% at 20% 0%,#8B6FF0 0%,#4A32A8 55%,#2C1D6E 100%)",
    art:'<svg viewBox="0 0 120 60" style="position:absolute;right:6px;top:6px;width:110px;opacity:.9"><circle cx="95" cy="18" r="1.6" fill="#FFD34D"/><circle cx="70" cy="10" r="1.1" fill="#fff" opacity=".8"/><circle cx="108" cy="38" r="1.2" fill="#fff" opacity=".6"/><g transform="translate(78,26) rotate(-8)"><ellipse cx="0" cy="0" rx="11" ry="9" fill="#FFC23D"/><rect x="-8" y="1.5" width="16" height="3" rx="1.5" fill="#3A2A8C"/><ellipse cx="-7" cy="-8" rx="5" ry="7" fill="#EDE7FF" opacity=".92" transform="rotate(-24)"/><ellipse cx="7" cy="-8" rx="5" ry="7" fill="#EDE7FF" opacity=".92" transform="rotate(24)"/><circle cx="-3" cy="-2" r="1.4" fill="#2B1B5E"/><circle cx="3" cy="-2" r="1.4" fill="#2B1B5E"/></g></svg>' },
- marquee:{ face:"'Abril Fatface',Georgia,serif", tag:'TAKE THE STAGE · PLAYBILL & BRASS', ink:'#F7E9C8',
+ marquee:{ face:"'Abril Fatface',Georgia,serif", tag:'TAKE THE STAGE', ink:'#F7E9C8',
    bg:"background-image:linear-gradient(180deg,rgba(20,12,4,.25),rgba(20,12,4,.62)),url('assets/spotlight-stage.png');background-size:cover;background-position:center", art:'' },
- aurora:{ face:"'Space Grotesk',system-ui,sans-serif", tag:'CHART THE STARS · VOYAGE LOG', ink:'#EAF0FF',
+ aurora:{ face:"'Space Grotesk',system-ui,sans-serif", tag:'CHART THE STARS', ink:'#EAF0FF',
    bg:"background:radial-gradient(130% 140% at 80% -10%,#3D4FBF 0%,#232B66 55%,#141838 100%)",
    art:'<svg viewBox="0 0 120 60" style="position:absolute;right:4px;top:4px;width:118px"><circle cx="88" cy="26" r="13" fill="#7D8CF0"/><circle cx="83" cy="21" r="4" fill="#A9B4F7" opacity=".8"/><ellipse cx="88" cy="27" rx="24" ry="7" fill="none" stroke="#A9B4F7" stroke-width="1.4" opacity=".75" transform="rotate(-14 88 27)"/><circle cx="30" cy="12" r="1.3" fill="#fff" opacity=".9"/><circle cx="52" cy="44" r="1" fill="#fff" opacity=".6"/><circle cx="18" cy="34" r="1.1" fill="#fff" opacity=".7"/></svg>' },
- anime:{ face:"'Rajdhani',system-ui,sans-serif", tag:'TRAIN THE BLADE · DAWN DOJO', ink:'#FFEAF0',
+ anime:{ face:"'Rajdhani',system-ui,sans-serif", tag:'DAWN DOJO', ink:'#FFEAF0',
    bg:"background:linear-gradient(160deg,#D8566F 0%,#8E2C44 60%,#571526 100%)",
    art:'<svg viewBox="0 0 120 60" style="position:absolute;right:0;top:0;width:120px"><circle cx="92" cy="24" r="15" fill="#F3B2C0" opacity=".85"/><path d="M10 52 L112 8" stroke="#FFD9E2" stroke-width="2" opacity=".55"/><path d="M26 56 L118 20" stroke="#FFD9E2" stroke-width="1.1" opacity=".35"/></svg>' },
- science:{ face:"'Spline Sans Mono',monospace", tag:'RUN THE EXPERIMENT · FIELD NOTES', ink:'#DFF4EC',
+ science:{ face:"'Spline Sans Mono',monospace", tag:'RUN THE EXPERIMENT', ink:'#DFF4EC',
    bg:"background:linear-gradient(150deg,#127a6a 0%,#0B4C42 60%,#062B25 100%);background-image:linear-gradient(rgba(223,244,236,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(223,244,236,.10) 1px,transparent 1px),linear-gradient(150deg,#127a6a 0%,#0B4C42 60%,#062B25 100%);background-size:18px 18px,18px 18px,100% 100%",
    art:'<svg viewBox="0 0 120 60" style="position:absolute;right:8px;top:6px;width:100px"><path d="M78 10v14L66 48a5 5 0 0 0 4.6 7h18.8A5 5 0 0 0 94 48L82 24V10" fill="none" stroke="#8FE0CC" stroke-width="2.4" stroke-linecap="round"/><path d="M74 10h12" stroke="#8FE0CC" stroke-width="2.4" stroke-linecap="round"/><circle cx="76" cy="44" r="2.2" fill="#8FE0CC"/><circle cx="84" cy="38" r="1.6" fill="#8FE0CC" opacity=".7"/></svg>' },
- origami:{ face:"'Zen Maru Gothic',system-ui,sans-serif", tag:'FOLD A WORLD · PAPER & PATIENCE', ink:'#FFF6E8',
+ origami:{ face:"'Zen Maru Gothic',system-ui,sans-serif", tag:'FOLD A WORLD', ink:'#FFF6E8',
    bg:"background:linear-gradient(150deg,#D97438 0%,#A64A1E 58%,#6E2E10 100%)",
    art:'<svg viewBox="0 0 120 60" style="position:absolute;right:6px;top:4px;width:112px"><g transform="translate(84,28) rotate(-6)"><path d="M0 -16 L18 10 L0 4 Z" fill="#FFE8D0"/><path d="M0 -16 L-18 10 L0 4 Z" fill="#F7C9A4"/><path d="M0 4 L6 16 L-6 16 Z" fill="#EDA671"/></g><path d="M14 46 q10 -8 20 0" stroke="#FFE8D0" stroke-width="1.6" fill="none" opacity=".6"/></svg>' },
- pixel:{ face:"'Bungee',sans-serif", tag:'INSERT COIN · PIXEL QUEST', ink:'#E4ECFF',
+ pixel:{ face:"'Bungee',sans-serif", tag:'INSERT COIN', ink:'#E4ECFF',
    bg:"background:linear-gradient(160deg,#3E63C4 0%,#22377A 60%,#131E45 100%)",
    art:'<svg viewBox="0 0 120 60" style="position:absolute;right:6px;top:6px;width:110px;image-rendering:pixelated"><g fill="#9DB8F8"><rect x="76" y="14" width="8" height="8"/><rect x="84" y="22" width="8" height="8"/><rect x="92" y="14" width="8" height="8"/><rect x="68" y="22" width="8" height="8"/><rect x="76" y="30" width="8" height="8" fill="#FFD34D"/><rect x="92" y="30" width="8" height="8"/></g><rect x="20" y="40" width="6" height="6" fill="#9DB8F8" opacity=".5"/></svg>' },
- avatar:{ face:"'Philosopher',system-ui,sans-serif", tag:'BALANCE THE FOUR · WIND · WATER · FIRE · STONE', ink:'#E6F4F9',
+ avatar:{ face:"'Philosopher',system-ui,sans-serif", tag:'BALANCE THE FOUR', ink:'#E6F4F9',
    bg:"background:linear-gradient(150deg,#2E8FB8 0%,#1D5E7C 58%,#103647 100%)",
    art:'<svg viewBox="0 0 120 60" style="position:absolute;right:6px;top:4px;width:112px"><g fill="none" stroke="#BFE4F2" stroke-width="2"><circle cx="72" cy="18" r="7"/><circle cx="94" cy="18" r="7" stroke="#F0B45B"/><circle cx="72" cy="40" r="7" stroke="#9BD3B4"/><circle cx="94" cy="40" r="7" stroke="#E4E8EC"/></g></svg>' },
 };
 function worldHeroCard(t, on, locked, act){ const H=WORLD_HERO[t.id]||WORLD_HERO.spellbound; const ev=EVO[t.id]||EVO.spellbound;
   const badge=on?'<span style="position:absolute;top:10px;right:10px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.94);color:#241E33;font-weight:800;font-size:12px;font-family:var(--ui,var(--body))">Active ✓</span>'
-    :(locked?('<span style="position:absolute;top:10px;right:10px;display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.92);color:#8A5B00;font-weight:900;font-size:12px">'+coinAmt(COST.theme,11)+'</span>'):'');
-  const dots=[t.c1,'#FFFFFF',t.c2,'#241E33'].map(cc=>`<span style="width:14px;height:14px;border-radius:999px;background:${cc};border:1px solid var(--line);display:inline-block"></span>`).join('');
+    :(locked?('<span style="position:absolute;top:10px;right:10px;display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.92);color:#8A5B00;font-weight:900;font-size:12px">🔒 '+coinAmt(COST.theme,11)+'</span>'):'');
   return `<button data-act="${act||'pickTheme'}" data-arg="${t.id}" style="position:relative;text-align:left;border-radius:20px;overflow:hidden;background:var(--paper,var(--bg2));border:1px solid var(--line);box-shadow:${on?'0 0 0 2px '+t.c1+',var(--sh-raised)':'var(--sh-rest)'};${locked?'opacity:.94':''}">
     <div style="position:relative;height:104px;${H.bg};${locked?'filter:grayscale(.5)':''}">
       ${H.art}${badge}
       <div style="position:absolute;left:16px;bottom:10px;right:12px">
         <div style="font-family:${H.face};font-weight:800;font-size:26px;line-height:1;color:${H.ink};text-shadow:0 1px 6px rgba(0,0,0,.35)">${t.label}</div>
-        <div style="font-family:var(--ui,var(--body));font-weight:650;font-size:12px;letter-spacing:.08em;color:${H.ink};opacity:.85;margin-top:3px">${H.tag}</div>
+        <div style="font-family:var(--ui,var(--body));font-weight:650;font-size:12px;letter-spacing:.08em;color:${H.ink};opacity:.85;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${H.tag}</div>
       </div>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;padding:11px 14px">
-      <span style="display:inline-flex;gap:5px">${dots}</span>
-      <span style="margin-left:auto;font-family:var(--ui,var(--body));font-size:12px;font-weight:650;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${ev[0]} → ${ev[9]}</span>
+    <div style="display:flex;align-items:center;padding:10px 14px">
+      <span style="font-family:var(--ui,var(--body));font-size:12px;font-weight:650;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${ev[0]} → ${ev[9]}</span>
     </div></button>`; }
 /* ---- Wayfinding tiles: destination color pops (spec §1). 48px solid tile, white icon,
    press edge, playful ±2–3° tilt. Colors are PLACE identity — stable across worlds. ---- */
@@ -1204,12 +1255,19 @@ function viewLevelTest(){ const lt=state.lt||{}; if(lt.done) return `<div style=
       <button data-act="ltGo" style="width:100%;max-width:280px;padding:14px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Let's spell →</button>
     </div></div>`;
   const hearts='❤️'.repeat(Math.max(0,3-(lt.fails||0)))+'🖤'.repeat(Math.min(3,lt.fails||0));
+  const ltw=(lt.words||[])[lt.i]||{};
+  const ltMeaning=ltw.d?`<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:12px;text-align:left">
+        <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:3px">Meaning</div>
+        <div style="font-size:13.5px;font-weight:650;color:var(--text);line-height:1.45">${esc(maskTxt(ltw.d,ltw.w))}</div>
+        ${ltw.s?`<div style="font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.45">“${esc(maskTxt(ltw.s,ltw.w))}”</div>`:''}
+      </div>`:'';
   return `<div style="max-width:520px;margin:0 auto;animation:sb-rise .35s ease both">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><span style="font-family:var(--display);font-weight:800;font-size:20px">Find my Bee Band</span><span style="margin-left:auto;font-size:13px">${hearts}</span></div>
     <div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,30px);box-shadow:var(--sh-rest);text-align:center">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">Band ${lt.band} · ${bandTier(lt.band||2)}</span><span style="font-family:var(--mono);font-size:13px;color:var(--muted)">✓ ${lt.ok}/3 to climb</span></div>
       <p style="font-size:13px;color:var(--muted);font-weight:650;margin:0 0 12px">Spell 3 right to climb a band. Three misses and we lock in your start.</p>
       <button data-act="ltSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">${iconSVG('volume',18)} Hear the word</button>
+      ${ltMeaning}
       <input data-inp="ltType" data-key="ltKey" data-fkey="ltType" value="${escA(lt.typed||'')}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type it…" style="width:100%;padding:15px;border-radius:12px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:20px;text-align:center;letter-spacing:.06em;margin-bottom:12px">
       <button data-act="ltEnter" style="width:100%;padding:14px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Submit</button>
       <button data-act="ltSkip" style="margin-top:12px;color:var(--muted);font-weight:700;font-size:13px;text-decoration:underline;text-underline-offset:3px">Skip — start at Level 1</button>
@@ -1276,6 +1334,7 @@ function viewApp(){
   else if(S.nav==='traps') content=viewTraps();
   else if(S.nav==='evolution') content=viewEvolution();
   else if(S.nav==='collection') content=viewCollection();
+  else if(S.nav==='finder') content=viewFinder();
   else if(S.nav==='games') content=viewGames();
   else if(S.nav==='shop') content=viewShop();
   else if(S.nav==='themes') content=viewThemes();
@@ -1317,7 +1376,7 @@ function viewApp(){
       <div style="max-width:1080px;margin:0 auto;padding:11px clamp(14px,3.5vw,32px);display:flex;align-items:center;gap:12px">
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
         <div style="display:flex;align-items:center;gap:9px;margin-right:auto"><div style="width:34px;height:38px;flex-shrink:0">${mascotSVG('happy')}</div><span class="sb-brand" style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i> Bee</span></div>
-        <button data-act="openShop" title="Your coins — tap to open the Shop" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(active().coins||0,14)}</button>
+        <button data-act="openEvo" title="XP — your practice record. One right word = 1 XP; it grows your evolution and is never spent." style="display:inline-flex;align-items:center;gap:4px;padding:6px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:900;font-size:13px">✦ ${fmtN(getList(active(),activeListKey()).xp||0)}</button><button data-act="openShop" title="Your coins — tap to open the Shop" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(active().coins||0,14)}</button>
         <div class="sb-modeswitch" style="display:flex;background:var(--surface2);border-radius:999px;padding:3px">
           <button data-act="setLight" aria-pressed="${lightOn}" style="padding:7px 15px;border-radius:999px;font-weight:800;font-size:13px;${lightOn?'background:var(--accent);color:#fff':'background:transparent;color:var(--muted)'}">Light</button>
           <button data-act="setWhite" aria-pressed="${S.mode==='white'}" style="padding:7px 15px;border-radius:999px;font-weight:800;font-size:13px;${S.mode==='white'?'background:var(--accent);color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">White</button><button data-act="setDusk" aria-pressed="${S.mode==='dusk'}" style="padding:7px 15px;border-radius:999px;font-weight:800;font-size:13px;${S.mode==='dusk'?'background:var(--accent);color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">Dusk</button>
@@ -1375,6 +1434,7 @@ function viewDrawer(){
         ${row('traps','target','Your Traps',missTraps().length?(missTraps().length+' weak patterns found'):'weak-pattern radar',state.nav==='traps')}
         ${row('quest','target',"Champion's Quest",'switch your path',state.nav==='quest')}
         ${row('builder','pencil','List Builder','custom list in five taps',state.nav==='builder')}
+        ${row('finder','book','Word Finder','search 128,000 words · add to lists',state.nav==='finder')}
         ${row('written','pencil','Written round','type a scored sequence',false)}
         ${row('oral','volume','Oral elimination','spell aloud, survive',false)}
         ${kick('Family')}
@@ -1457,7 +1517,6 @@ function viewHome(){
   }).join('');
   return `<div>
     ${(()=>{ const lp=getList(c,aKey); const lf=levelFromXp(lp.xp||0); const xpToNext=Math.max(0,(lf.need||1)-(lf.into||0));
-      const bub=(fIdx===0&&(lf.into||0)<5)?'Spell 5 words and I hatch! 🥚':(goalPctNum>=100?'Goal smashed — bonus rounds are pure treasure!':('Spell '+Math.max(0,goalTarget-S.goalDone)+' more — let\'s buzz!'));
       const evoPct=Math.min(100,Math.round((lf.into||0)/(lf.need||1)*100));
       const bb=beeBand(c);
       const bandBanner=`<button data-act="${bb.calibrating?'startLevelTest':'setNav'}" data-arg="progress" title="${bb.calibrating?'A 3-minute placement quest':'Open Progress for the full band ladder'}" class="sb-card" style="width:100%;display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:linear-gradient(100deg,color-mix(in srgb,var(--action,var(--accent)) 14%,var(--paper,var(--bg2))),var(--paper,var(--bg2)) 62%);border-color:color-mix(in srgb,var(--action,var(--accent)) 35%,var(--line));border-radius:var(--r-lg,16px);padding:12px 18px;margin-bottom:14px;cursor:pointer">
@@ -1473,7 +1532,6 @@ function viewHome(){
       <div class="sb-card" style="display:flex;align-items:center;gap:16px;min-height:156px">
         <div style="position:relative;flex-shrink:0">
           <div style="width:74px;height:84px;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center">${(c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar])?SB_AVATAR(c.avatar,72):mascotAcc(S.mood)}</div>
-          <div class="sb-bubble" style="position:absolute;left:52px;top:-30px;white-space:nowrap;background:var(--paper,#fff);border:1px solid var(--line);border-radius:10px;border-bottom-left-radius:3px;padding:5px 9px;font-size:12px;font-weight:650;color:var(--ink,var(--text));box-shadow:var(--sh-rest);z-index:2">${bub}</div>
         </div>
         <div style="min-width:0;flex:1">
           <div class="sb-cs">${greeting}</div>
@@ -1575,7 +1633,11 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
 /* ---- Evolution ladder as its own screen (Home shows only the compact card) ---- */
 function viewEvolution(){ const S=state; const c=active(); ensureLists(c); const theme=S.theme; const evo=EVO[theme]||EVO.spellbound;
   const aKey=activeListKey(); const aLevel=listLevel(c,aKey); const fIdx=formIdx(aLevel);
-  const lp=getList(c,aKey); const lf=levelFromXp(lp.xp||0); const xpToNext=Math.max(0,(lf.need||1)-(lf.into||0));
+  const lp=getList(c,aKey); const totalXp=lp.xp||0;
+  // XP needed to REACH each rung (stage i needs level 2i+1 → sum of the first 2i level costs)
+  const stageXp=(i)=>{ let t=0; for(let l=1;l<=i*2;l++) t+=xpToNext(l); return t; };
+  const rungMarks=Array.from({length:10},(_,i)=>i===0?'start':fmtN(stageXp(i))+' XP');
+  const xpToForm=Math.max(0, stageXp(Math.min(9,fIdx+1))-totalXp);
   return `<div style="max-width:900px;margin:0 auto">
     <button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px;margin-bottom:8px">← Home</button>
     <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 4px">Your evolution</h2><span style="font-size:13px;color:var(--muted);font-weight:650">how your bee grows</span></div>
@@ -1583,9 +1645,14 @@ function viewEvolution(){ const S=state; const c=active(); ensureLists(c); const
     <div class="sb-card" style="margin-bottom:14px">
       <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:6px;flex-wrap:wrap">
         <div style="font-family:var(--display);font-weight:800;font-size:17px">You're ${evo[fIdx]}</div>
-        <div style="font-size:12px;color:var(--muted);font-weight:600">${fIdx>=9?'Top form reached! 🎉':(xpToNext+' XP of practice to '+evo[fIdx+1])}</div>
+        <div style="font-size:12px;color:var(--muted);font-weight:600">${fIdx>=9?'Top form reached! 🎉':(fmtN(xpToForm)+' XP of practice to '+evo[fIdx+1])}</div>
       </div>
-      <div style="overflow-x:auto;padding:4px 0 2px"><div style="min-width:760px">${evoLadderHTML(theme,fIdx)}</div></div>
+      <div style="overflow-x:auto;padding:4px 0 2px"><div style="min-width:760px">${evoLadderHTML(theme,fIdx,rungMarks)}</div></div>
+      <div class="sb-cn" style="margin-top:6px">You have <b style="color:var(--text)">${fmtN(totalXp)} XP</b> in ${esc(listLabel(aKey).split(' · ')[0])} — each rung shows the total XP that unlocks it.</div>
+    </div>
+    <div class="sb-card" style="margin-bottom:14px">
+      <div class="sb-ct" style="font-size:15px;margin-bottom:6px">How XP works</div>
+      <div class="sb-cs" style="line-height:1.6">One word spelled right = <b style="color:var(--text)">1 XP</b> — in Word Coach, the Arcade, Concepts, anywhere. XP is your practice record: it only grows and is never spent.<br>Coins 🪙 are different — they're treasure you win and <i>spend</i> in the Shop on worlds, avatars and power-ups. Spending coins never touches your XP or your evolution.</div>
     </div>
     ${(theme==='spellbound')?`<div class="sb-card" style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><span style="font-size:26px;flex-shrink:0">👑</span><span class="sb-cs"><b style="color:var(--text)">Why a Queen at the top?</b> Every hive is ruled by its Queen — the strongest, most protected bee alive. Reaching her means you outgrew every other bee in the hive.</span></div>`:''}
     ${beeEmpty('happy','Ten forms, one bee. Practise anywhere — Word Coach, the Arcade, Concepts — and the XP all feeds the same evolution.')}
@@ -2045,7 +2112,13 @@ function wordFlash(words, idx, navAct, opts){
       <div style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:15px">
         ${w.bp!=null?`<span title="Bee-probability score: ${w.bp}/100" style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:999px;background:var(--surface2);font-size:12px;color:var(--accent);font-weight:800">${iconSVG('target',13)} ${beeOdds(w.bp)}</span>`:''}
         ${w.p?chip('/ '+esc(w.p)+' /'):''}${w.o?chip(esc(w.o)):''}${w.ps?chip(esc(w.ps)):''}
+        <button data-act="reportWord" data-arg="${escA(w.w)}" title="Meaning or sentence look wrong? Report it for review" style="padding:4px 11px;border-radius:999px;background:transparent;border:1px dashed var(--line);font-size:12px;color:var(--muted);font-weight:700">⚑ Report a fix</button>
       </div>
+      ${state.reportW===w.w?`<div style="margin-top:12px;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:12px;max-width:34em">
+        <div style="font-weight:800;font-size:13px;margin-bottom:8px">What looks wrong with “${esc(w.w)}”?</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">${['Meaning is wrong','Sentence is wrong','Meaning ↔ sentence mismatch','Pronunciation','Something else'].map(o=>`<button data-act="reportIssue" data-arg="${escA(o)}" style="padding:7px 12px;border-radius:999px;background:var(--bg2);border:1px solid var(--line);font-weight:700;font-size:12px;color:var(--text)">${o}</button>`).join('')}</div>
+        <button data-act="reportClose" style="margin-top:8px;color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:2px">Cancel</button>
+      </div>`:''}
     </div>
     <div style="display:flex;align-items:center;gap:10px;margin-top:14px">
       <button data-act="${navAct}" data-arg="prev" style="padding:13px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;${i<=0?'opacity:.4;pointer-events:none':''}">← Back</button>
@@ -2064,7 +2137,8 @@ function liveHeatmap(words, opts){
     if(!reveal){ // anonymized: a colored tile, no word text (so practice isn't spoiled)
       return `<span title="${mastered?'mastered':(miss?'to review':'new')}" style="width:22px;height:22px;border-radius:6px;background:${bg};display:inline-block;${isCur?'box-shadow:0 0 0 2px var(--accent)':''}"></span>`;
     }
-    return `<button data-act="say" data-arg="${escA(w.w)}" title="tap to hear" style="font-family:var(--mono);font-size:12px;font-weight:700;padding:5px 9px;border-radius:6px;color:${fg};background:${bg};${isCur?'box-shadow:0 0 0 2px var(--accent)':''}">${esc(w.w)}</button>`;
+    if(anon && isCur) return `<span title="current word — hidden" style="font-family:var(--mono);font-size:12px;font-weight:700;padding:5px 9px;border-radius:6px;color:var(--muted);background:var(--surface2);box-shadow:0 0 0 2px var(--accent)">•••</span>`;
+    return `<button data-act="wordCard" data-arg="${escA(w.w)}" title="open the learn card" style="font-family:var(--mono);font-size:12px;font-weight:700;padding:5px 9px;border-radius:6px;color:${fg};background:${bg};${isCur?'box-shadow:0 0 0 2px var(--accent)':''}">${esc(w.w)}</button>`;
   }).join('');
   const legend=[['var(--good)','Mastered'],['var(--bad)','Missed'],['var(--surface2)','New']].map(([c,l])=>`<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:700"><span style="width:11px;height:11px;border-radius:6px;background:${c};display:inline-block"></span>${l}</span>`).join('');
   const pct=Math.round(m/N*100);
@@ -2089,7 +2163,8 @@ function viewLevelUp(){
     <div style="height:6px;border-radius:999px;background:var(--surface2);overflow:hidden;margin-bottom:14px"><div style="height:100%;border-radius:999px;background:var(--accent);width:${Math.round(mastered/N*100)}%;transition:width .4s"></div></div>`;
   const wordsPanel=S.luWordsOpen?`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px;animation:sb-rise .3s ease both">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:10px">Level word list · ${N}</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:9px">${lw.map(w=>`<div style="background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:11px 13px">${S.luMastered[nkey(w.w)]?'<span style="color:var(--good);font-weight:800;font-size:12px">✓ </span>':''}<span style="font-family:var(--display);font-weight:800;font-size:15px">${esc(w.w)}</span><div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px">${esc(w.d)}</div></div>`).join('')}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:9px">${lw.map(w=>{ const hide=S.luTab==='practice'&&state.status==='idle'&&nkey((curWord()||{}).w||'')===nkey(w.w);
+        return `<div style="background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:11px 13px">${S.luMastered[nkey(w.w)]?'<span style="color:var(--good);font-weight:800;font-size:12px">✓ </span>':''}<span style="font-family:var(--display);font-weight:800;font-size:15px">${hide?'•••':esc(w.w)}</span><div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px">${esc(hide?maskTxt(w.d,w.w):w.d)}</div></div>`; }).join('')}</div>
     </div>`:'';
   let body;
   if(S.luTab==='practice') body=trainerCard();
@@ -2108,7 +2183,7 @@ function parentSignals(){ const c=active(); const played=(c.daysPlayed||[]).slic
   const cutoff=Date.now()-14*86400000; const active14=played.filter(k=>new Date(k+'T12:00').getTime()>=cutoff).length;
   const missedN=((c.missed)||[]).length; const key=activeListKey(); const enc=encounteredWords(key);
   const encM=enc.filter(w=>state.luMastered[nkey(w.w)]).length; const coverage=enc.length?Math.round(encM/enc.length*100):0;
-  return { c, daysSince, active14, acc:(c.acc||0), missedN, streak:(c.streak||0), toBee:daysToBee(), age:(c.age||9), coverage,
+  return { c, daysSince, active14, acc:(c.acc||0), missedN, streak:(c.streak||0), toBee:(milestone()||{days:9999}).days, age:(c.age||9), coverage,
     reviewHealth:Math.max(0,100-missedN*5), consistency:Math.round(active14/14*100) }; }
 // Generated tips multiply the authored library with real app data — every concept, theme,
 // champion-word hook and the child's own misses become concrete, presentable coaching tips.
@@ -2166,7 +2241,7 @@ function parentAnalytics(){ const s=parentSignals(); let rd=0; try{ rd=coachRead
     <div style="font-size:12px;color:var(--muted);font-weight:600;margin-top:10px">Tip library: ${tipLibraryCount().toLocaleString()} coaching tips, matched to your speller's data.</div>
   </div>`; }
 /* ===================== List Builder (button-based custom lists) ===================== */
-function builtWords(key){ const bl=(active().builtLists||{})[key]; if(!bl) return []; const idx=wordIndex(); return (bl.ws||[]).map(s=>idx[nkey(s)]||{w:s}).filter(Boolean); }
+function builtWords(key){ const bl=(active().builtLists||{})[key]; if(!bl) return []; const idx=wordIndex(); const db=wordDB(); return (bl.ws||[]).map(s=>idx[nkey(s)]||db.get(nkey(s))||{w:s}).filter(Boolean); }
 function bldState(){ const S=state; if(!S.bld) S.bld={diff:'mixed',size:120,src:'core',len:'any',pat:'any'}; return S.bld; }
 const BLD_PATS={ double:{re:/(.)\1/, label:'Double letters'}, silent:{re:/^(kn|wr|gn|ps|mn)|mb$|gh/i, label:'Silent letters'}, ieei:{re:/ie|ei/i, label:'ie / ei'}, endings:{re:/(tion|sion|ous|able|ible|ance|ence|ary|ery|ory)$/i, label:'Suffix endings'} };
 function bldPool(){ const b=bldState(); let pool;
@@ -2270,7 +2345,7 @@ function viewQuest(){
       </div>
       <div style="padding:15px 16px 16px;display:flex;flex-direction:column;flex:1">
         <div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">${p.title}</div>
-        <div style="font-family:var(--mono);font-weight:700;font-size:12px;color:${p.c1};margin-top:3px">${p.sub}</div>
+        <div style="font-family:var(--ui,var(--body));font-weight:800;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:${p.c1};margin-top:3px">${p.sub}</div>
         <div style="font-family:var(--body);font-size:13px;line-height:1.5;color:var(--muted);margin:9px 0 11px">${p.desc}</div>
         <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:13px">${p.points.map(x=>`<span style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--text)"><span style="width:6px;height:6px;border-radius:50%;background:${p.c1};flex-shrink:0"></span>${x}</span>`).join('')}</div>
         <span style="margin-top:auto;display:inline-flex;align-items:center;justify-content:center;padding:11px;border-radius:10px;font-weight:800;font-size:13px;${cur?('background:var(--surface2);color:'+p.c1):('background:'+p.c1+';color:#fff;box-shadow:var(--edge)')}">${cur?'Continue this path →':(qp?'Switch to this path →':'Choose this path →')}</span>
@@ -2370,6 +2445,37 @@ function parentActivityCard(){ const S=state; const c=active(); const acts=(c.ac
     ${acts.length?rows:`<p style="margin:0;font-size:13px;color:var(--muted)">No activity yet. Play a game or a practice round and it’ll show up here.</p>`}
   </div>`; }
 function actIcon(kind){ return ({practice:'pencil',buzz:'flame',beat:'target',boss:'crown',meaning:'book',spell:'spark',origin:'grid',written:'pencil',oral:'volume',concept:'grid'})[kind]||'spark'; }
+function viewFinder(){ const S=state; const c=active(); const q=S.finderQ||'';
+  const total=window.SB_FULL?'128,000':'40,000';
+  const loadBtn=(!window.SB_FULL)?`<button data-act="finderLoadFull" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${S.fullLoading?'Loading the full library…':'📚 Load all 128,000 words'}</button>`:'';
+  let body='';
+  if(S.finderSel){ const w=S.finderSel;
+    const lists=Object.entries(c.builtLists||{});
+    const addChips=lists.map(([k,bl])=>`<button data-act="finderAddTo" data-arg="${escA(k)}" style="padding:8px 13px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12.5px">＋ ${esc(bl.label)}</button>`).join('');
+    body=`<button data-act="finderBack" style="color:var(--muted);font-weight:700;font-size:13px;margin-bottom:10px">← Back to results</button>
+      <div class="sb-card" style="margin-bottom:12px">
+        <div class="sb-ct" style="font-size:14px;margin-bottom:8px">Add “${esc(w.w)}” to a list</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">${addChips}
+          <span style="display:inline-flex;gap:6px;align-items:center"><input data-inp="finderName" data-fkey="finderName" value="${escA(S.finderName||'')}" maxlength="30" placeholder="New list name…" style="width:150px;padding:8px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:12.5px;font-weight:700;outline:none"><button data-act="finderCreateAdd" style="padding:8px 14px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:12.5px">Create + add</button></span></div>
+        <div class="sb-cn" style="margin-top:8px">Lists live in Word Coach — practise them any time.</div>
+      </div>
+      ${wordFlash([w],0,'noop',{})}`;
+  } else {
+    const rs=finderResults(q);
+    const cells=rs.map(r=>`<button data-act="finderPick" data-arg="${escA(r.w)}" style="display:flex;flex-direction:column;gap:3px;text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px 14px">
+        <span style="display:flex;align-items:center;gap:8px;width:100%"><span style="font-family:var(--display);font-weight:800;font-size:15px">${esc(r.w)}</span>${state.luMastered[nkey(r.w)]?'<span style="color:var(--good);font-weight:800;font-size:11px">✓ mastered</span>':''}<span style="margin-left:auto;color:var(--accent)">${iconSVG('book',15)}</span></span>
+        ${r.d?`<span style="font-size:12px;color:var(--muted);line-height:1.4">${esc(trunc(r.d,110))}</span>`:''}</button>`).join('');
+    body = q.trim().length<2
+      ? `<div class="sb-card" style="text-align:center;padding:34px 20px"><div style="font-size:34px;margin-bottom:8px">🔎</div><div class="sb-ct">Type at least two letters</div><div class="sb-cs" style="margin-top:4px">Search the whole library — every word opens its learn card with meaning, sentence and pronunciation.</div></div>`
+      : (rs.length?`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px">${cells}</div>`
+        :`<div class="sb-card" style="text-align:center;padding:30px 20px"><div class="sb-ct">No matches for “${esc(q)}”</div><div class="sb-cs" style="margin-top:4px">${window.SB_FULL?'Try a different spelling.':'Try a different spelling — or load the full 128,000-word library below.'}</div><div style="margin-top:12px">${loadBtn}</div></div>`);
+  }
+  return `<div style="max-width:860px;margin:0 auto">
+    ${pageHead('Word Finder','search '+total+' words','Look up any word, study its learn card, and add it to one of your lists.',loadBtn)}
+    <div style="position:relative;margin-bottom:14px"><span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)">${iconSVG('book',18)}</span>
+      <input data-inp="finderQ" data-fkey="finderQ" value="${escA(q)}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type a word… e.g. iridescent" style="width:100%;padding:14px 16px 14px 44px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:17px;outline:none"></div>
+    ${body}
+  </div>`; }
 function viewParent(){
   const S=state;
   const sub=S.premium
@@ -2396,10 +2502,17 @@ function viewParent(){
     <div style="margin-top:18px">${parentAnalytics()}</div>
     ${parentReviseCard()}
     ${parentActivityCard()}
+    ${(()=>{ const rs=state.wordReports||[]; if(!rs.length) return '';
+      return `<div class="sb-card" style="margin-top:18px">
+        <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:6px"><span style="font-family:var(--display);font-weight:800;font-size:15px">⚑ Reported word fixes</span><span class="sb-cn">${rs.length} flagged by your speller</span>
+          <span style="margin-left:auto;display:inline-flex;gap:7px"><button data-act="copyReports" style="padding:7px 13px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:12px;color:var(--text)">Copy all</button><button data-act="clearReports" style="padding:7px 13px;border-radius:10px;background:transparent;border:1px solid var(--line);font-weight:800;font-size:12px;color:var(--muted)">Clear</button></span></div>
+        <div style="display:grid;gap:6px;max-height:220px;overflow-y:auto">${rs.slice().reverse().map(r=>`<div style="background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:12.5px"><b>${esc(r.w)}</b> — ${esc(r.issue)} <span style="color:var(--muted)">· ${esc(r.when)}</span>${r.d?`<div style="color:var(--muted);margin-top:2px">meaning: ${esc(trunc(r.d,110))}</div>`:''}</div>`).join('')}</div>
+        <div class="sb-cn" style="margin-top:8px">The app is fully offline — copy these and share them with us to get the dictionary corrected.</div>
+      </div>`; })()}
     <div class="sb-card" style="margin-top:18px">
-      <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:6px">Countdown to the Finals</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:14px">North South Foundation National Finals</div>
-      <div style="display:flex;align-items:baseline;gap:10px"><div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent)">${daysToBee()}</div><div style="font-size:13px;color:var(--muted);font-weight:700">days to go · 31 Jul 2026</div></div>
+      <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:6px">Countdown</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:14px">${(()=>{ const ms=milestone(); return ms?esc(ms.label):'Your next milestone'; })()}</div>
+      ${(()=>{ const ms=milestone(); return ms?`<div style="display:flex;align-items:baseline;gap:10px"><div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent)">${ms.days}</div><div style="font-size:13px;color:var(--muted);font-weight:700">days to ${esc(ms.label)} · ${esc(ms.date)}</div></div>`:`<div style="font-size:13px;color:var(--muted);font-weight:650;line-height:1.5">No milestone set. Add your bee day in <button data-act="setNav" data-arg="settings" style="color:var(--accent);font-weight:800;text-decoration:underline;text-underline-offset:2px">Settings</button> to see the countdown.</div>`; })()}
     </div>
   </div>`;
 }
@@ -2717,7 +2830,7 @@ function viewSettings(){
     `<button data-act="profAvatar" data-arg="${a.id}" title="${a.name}" style="position:relative;aspect-ratio:1;border-radius:12px;display:grid;place-items:center;background:var(--surface2);border:2px solid ${_pc.avatar===a.id?'var(--accent)':'transparent'};padding:4px"><span style="width:34px;height:34px;display:inline-block">${avatarSVG(a.id,34)}</span></button>`).join('')}</div>`+`<div style="margin-top:10px"><button data-act="openCollection" class="sb-cl" style="background:none;border:0;padding:0;cursor:pointer">Collect more in your Collection →</button></div>`;
   const profileCard=`<div class="sb-card" style="margin-bottom:16px">
       <div style="font-family:var(--display);font-weight:800;font-size:15px">Profile</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Pick your own display name and buddy — parents can adjust age and the daily goal here too.</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Pick your own display name and buddy — parents can adjust age, the daily goal and milestones here too.</div>
       <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Display name</label>
       <input data-inp="profName" data-fkey="profName" value="${escA(_pc.name||'')}" maxlength="24" placeholder="e.g. Ahana" autocomplete="off" style="width:100%;max-width:320px;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:700;margin-bottom:14px;outline:none">
       <div style="display:flex;gap:22px;flex-wrap:wrap;margin-bottom:14px">
@@ -2725,6 +2838,13 @@ function viewSettings(){
           <input type="range" min="5" max="18" value="${_pc.age||9}" data-inp="profAge" style="width:200px"></div>
         <div><label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Daily goal</label>
           <div style="display:flex;gap:7px">${[5,10,15].map(g=>`<button data-act="profGoal" data-arg="${g}" style="padding:9px 15px;border-radius:999px;font-weight:800;font-size:13px;${(_pc.goal||10)===g?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">${g} words</button>`).join('')}</div></div>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px">
+        <div><label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Milestone <span style="font-weight:600">(optional — e.g. NSF Finals)</span></label>
+          <input data-inp="profMsLabel" data-fkey="profMsLabel" value="${escA((_pc.milestone&&_pc.milestone.label)||'')}" maxlength="30" placeholder="e.g. NSF Finals" style="width:200px;padding:11px 13px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:700;outline:none"></div>
+        <div><label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Date</label>
+          <input type="date" data-chg="profMsDate" value="${escA((_pc.milestone&&_pc.milestone.date)||'')}" style="width:170px;padding:11px 13px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:700;outline:none"></div>
+        ${_pc.milestone&&_pc.milestone.date?`<div class="sb-cn" style="padding-bottom:12px">countdown shows in Word Coach & Progress</div>`:''}
       </div>
       <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:8px">Buddy</label>
       ${_avRows}</div>`;
@@ -2819,19 +2939,7 @@ function coachTrain(){
     </div>`; }).join('');
   const pausedShelf=pausedKeys.length?`<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)"><span style="font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700">Paused</span>${pausedKeys.map(k=>`<button data-act="resumeList" data-arg="${escA(k)}" title="Tap to resume training this list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;border:1px dashed var(--line);background:transparent;color:var(--muted);font-weight:700;font-size:12px">${SB_ICON('play',{size:14})} ${esc(dockLabel(k))} <span style="font-size:12px">L${listStageIdx(c,k)+1}</span></button>`).join('')}</div>`:'';
   const addBtn=`<button data-act="coachSetupOpen" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px dashed var(--line);background:transparent;color:var(--accent)">+ Add list</button>`;
-  const lvBanner=(()=>{ try{ const c2=active(); const k=activeListKey(); const stages=listStages(k); const i=listStageIdx(c2,k); const st=stages[i]; if(!st||!st.words.length) return '';
-    const m=st.words.filter(w=>state.luMastered[nkey(w.w)]).length; const done=m>=st.words.length; const last=i>=stages.length-1;
-    if(done&&last) return '';
-    if(done) return `<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:color-mix(in srgb,var(--good) 14%,var(--paper,var(--bg2)));border:1.5px solid var(--good);border-radius:14px;padding:12px 16px;margin-bottom:12px;animation:sb-rise .3s ease both">
-      <span style="font-size:20px">🏆</span><span style="min-width:0;flex:1;font-weight:800;font-size:14px">Level ${i+1} cleared — every word mastered!</span>
-      <button data-act="advanceStage" data-arg="${escA(k)}" style="padding:10px 16px;border-radius:10px;background:var(--good);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">Go to Level ${i+2} →</button></div>`;
-    const miss=st.words.filter(w=>!state.luMastered[nkey(w.w)]);
-    const missChips=miss.slice(0,10).map(w=>`<button data-act="say" data-arg="${escA(w.w)}" title="Tap to hear" style="font-family:var(--mono);font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:6px;background:var(--paper,var(--bg2));border:1px solid var(--line)">${esc(w.w)}</button>`).join('')+(miss.length>10?`<span class="sb-cn" style="align-self:center">+${miss.length-10} more</span>`:'');
-    return `<div class="sb-cn" style="background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:12px">
-      <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:${miss.length?'7px':'0'}"><span style="color:var(--accent);flex-shrink:0">${iconSVG('steps',14)}</span><span style="min-width:0"><b style="color:var(--ink,var(--text))">Level ${i+1}:</b> master all ${st.words.length} words to unlock Level ${i+2} — <b style="color:var(--accent)">${m}/${st.words.length} done</b> · or pass the ⚡ Challenge to test out</span></div>
-      ${miss.length?`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="font-weight:800;color:var(--ink,var(--text));flex-shrink:0">Still to master · ${miss.length}:</span>${missChips}</div>`:''}</div>`;
-  }catch(e){ return ''; } })();
-  const topBar=`${lvBanner}<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button><span style="font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">Word Coach</span><button data-act="openQuestChooser" title="Change your quest path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} Quest path</button>${(()=>{ const n=missTraps().length; return `<button data-act="openTraps" title="Your weak patterns" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${n?'var(--fix-tint,#FBE9E7)':'var(--surface2)'};border:1px solid ${n?'var(--fix,#C4453C)':'var(--line)'};color:${n?'var(--fix,#C4453C)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('target',13)} Traps${n?' · '+n:''}</button>`; })()}<span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('target',14)} ${daysToBee()} days to the bee</span></div>`;
+  const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button><span style="font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">Word Coach</span><button data-act="openQuestChooser" title="Change your quest path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} Quest path</button>${(()=>{ const n=missTraps().length; return `<button data-act="openTraps" title="Your weak patterns" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${n?'var(--fix-tint,#FBE9E7)':'var(--surface2)'};border:1px solid ${n?'var(--fix,#C4453C)':'var(--line)'};color:${n?'var(--fix,#C4453C)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('target',13)} Traps${n?' · '+n:''}</button>`; })()}${(()=>{ const ms=milestone(); return ms?`<span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('target',14)} ${ms.days} days to ${esc(ms.label)}</span>`:''; })()}</div>`;
   const allWordsBtn=`<button data-act="luToggleWords" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid ${S.luWordsOpen?'var(--accent)':'var(--line)'};background:var(--surface2);color:var(--text)">${iconSVG('grid',14)} All words <span style="color:var(--muted);font-weight:700">${fullList.length}</span> ${S.luWordsOpen?'▴':'▾'}</button>`;
   const newSetBtn = fullList.length>WORK_MAX ? `<button data-act="newBatch" title="Swap in a fresh set of words from this list" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid var(--line);background:var(--surface2);color:var(--text)">${SB_ICON('retry',{size:16})} New set</button>` : '';
   const chipsRow=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px">
@@ -2840,7 +2948,9 @@ function coachTrain(){
     ${pausedShelf}
   </div>`;
   const allWordsPanel = S.luWordsOpen ? (()=>{ const cap=400; const shown=fullList.slice(0,cap);
-    const cells=shown.map(w=>`<div style="background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px"><div style="display:flex;align-items:center;gap:6px"><span style="font-family:var(--display);font-weight:800;font-size:13px">${esc(w.w)}</span>${state.luMastered[nkey(w.w)]?'<span style="color:var(--good);font-weight:800;font-size:12px">✓</span>':''}<button data-act="say" data-arg="${escA(w.w)}" style="margin-left:auto;color:var(--accent)">${iconSVG('volume',14)}</button></div>${w.d?`<div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:3px">${esc(trunc(w.d,90))}</div>`:''}</div>`).join('');
+    const curK=(S.luTab==='practice'&&state.status==='idle')?nkey((curWord()||{}).w||''):'';
+    const cells=shown.map(w=>{ const hide=curK&&nkey(w.w)===curK;
+      return `<div style="background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px"><div style="display:flex;align-items:center;gap:6px"><span style="font-family:var(--display);font-weight:800;font-size:13px">${hide?'•••':esc(w.w)}</span>${state.luMastered[nkey(w.w)]?'<span style="color:var(--good);font-weight:800;font-size:12px">✓</span>':''}<button data-act="say" data-arg="${escA(w.w)}" style="margin-left:auto;color:var(--accent)">${iconSVG('volume',14)}</button></div>${w.d?`<div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:3px">${esc(trunc(hide?maskTxt(w.d,w.w):w.d,90))}</div>`:''}</div>`; }).join('');
     return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;animation:sb-rise .3s ease both"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:10px">Level ${stage.n} words · ${esc(listLabel(key).split(' · ')[0])} · ${fullList.length}</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;max-height:360px;overflow-y:auto">${cells}</div>${fullList.length>cap?`<div style="font-size:12px;color:var(--muted);margin-top:8px">Showing the first ${cap} of ${fullList.length}.</div>`:''}</div>`; })() : '';
   const titleRow = (S.renameKey===key)
     ? `<div style="display:flex;align-items:center;gap:8px;flex:1;min-width:220px"><input data-inp="renameInput" data-fkey="renameInp" value="${escA(S.renameVal)}" maxlength="40" placeholder="List name" style="flex:1;min-width:120px;background:var(--surface2);border:1px solid var(--accent);border-radius:10px;padding:8px 11px;font-size:15px;font-weight:800;color:var(--text);font-family:var(--display)"><button data-act="saveRename" style="padding:8px 13px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">Save</button><button data-act="cancelRename" style="padding:8px 11px;border-radius:10px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:13px">✕</button></div>`
@@ -2869,7 +2979,7 @@ function coachTrain(){
   let advanceHTML;
   if(lastStage && stageDone){ advanceHTML=`<div style="margin-top:10px;font-size:12px;color:var(--good);font-weight:800">🏆 Every level cleared — legendary!</div>`; }
   else if(stageDone && libLocked){ advanceHTML=`<div style="margin-top:11px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:11px 13px"><div style="font-weight:800;font-size:13px;margin-bottom:3px">🏆 You're a Bizzing Bee Champ!</div><div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:9px">The Champion's Library — the other ${fmtN(journeyTotal()-champWordCount())} words — is Premium.</div><button data-act="goPaywall" style="padding:9px 15px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">Unlock the Library 👑</button></div>`; }
-  else if(stageDone){ advanceHTML=`<button data-act="advanceStage" data-arg="${escA(key)}" style="margin-top:11px;width:100%;padding:12px;border-radius:10px;background:var(--good);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Level ${stage.n} cleared! Go to ${advanceTo} →</button>`; }
+  else if(stageDone){ advanceHTML=`<button data-act="advanceStage" data-arg="${escA(key)}" style="margin-top:11px;width:100%;padding:12px;border-radius:10px;background:var(--good);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Level ${stage.n} cleared! Go to ${advanceTo} →</button><button data-act="openChallenge" data-arg="${escA(key)}" style="margin-top:8px;width:100%;padding:11px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:13px">⚡ Take the Level ${stage.n} Challenge</button>`; }
   else { advanceHTML=`<div style="margin-top:11px"><button data-act="openChallenge" data-arg="${escA(key)}" style="width:100%;padding:12px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">⚡ Take the Level ${stage.n} Challenge</button></div><div style="margin-top:8px;font-size:12px;color:var(--muted);line-height:1.5">Master all ${stage.words.length} words to level up — or pass the Challenge to test out early.</div>`; }
   const tracker = isJourney
     ? `<div style="display:flex;gap:3px;margin-top:11px">${Array.from({length:CHAMP_LEVELS},(_,i)=>`<span style="flex:1;height:5px;border-radius:999px;background:${(uiLevel>i+1||(uiLevel===i+1&&stageDone))?'var(--good)':(uiLevel===i+1?'var(--accent)':'var(--line)')}"></span>`).join('')}</div><div style="font-size:12px;color:var(--muted);margin-top:5px">20 levels to Bizzing Bee Champ${uiLevel>CHAMP_LEVELS?' ✓ — now exploring the Library':''}</div>`
@@ -2882,8 +2992,6 @@ function coachTrain(){
         <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:8px">${levelHeadline}</div>
         <div style="display:flex;align-items:center;gap:10px"><div style="flex:1;height:9px;border-radius:999px;background:var(--bg2);overflow:hidden"><div style="height:100%;border-radius:999px;background:${stageDone?'var(--good)':'var(--accent)'};width:${stagePct}%;transition:width .4s"></div></div><span style="font-size:12px;color:var(--muted);font-weight:800">${stagePct}%</span></div>
         ${advanceHTML}
-        ${tracker}
-        ${libMeter}
       </div>
       <div style="overflow-x:auto;padding:2px 0"><div style="min-width:760px">${evoLadderHTML(theme, fIdx)}</div></div>
     </div>`;
@@ -3641,7 +3749,7 @@ function overlays(){
 
 /* ===================== render + events ===================== */
 const root = document.getElementById('root');
-function save(){ try{ localStorage.setItem('sb_saas_v2', JSON.stringify({ theme:state.theme, mode:state.mode, premium:state.premium, children:state.children, activeIdx:state.activeIdx, goalDone:state.goalDone, cN:(window.SB_CONCEPTS&&SB_CONCEPTS.chapters&&SB_CONCEPTS.chapters.length)||121, lu:state.luMastered, srs:state.coachSrs, chist:state.coachHistory })); }catch(e){} }
+function save(){ try{ localStorage.setItem('sb_saas_v2', JSON.stringify({ theme:state.theme, mode:state.mode, premium:state.premium, children:state.children, activeIdx:state.activeIdx, goalDone:state.goalDone, cN:(window.SB_CONCEPTS&&SB_CONCEPTS.chapters&&SB_CONCEPTS.chapters.length)||121, lu:state.luMastered, srs:state.coachSrs, chist:state.coachHistory, wr:state.wordReports||[] })); }catch(e){} }
 function render(){
   const a=document.activeElement; const fkey=a&&a.getAttribute&&a.getAttribute('data-fkey'); let ss=null,se=null;
   try{ if(a){ ss=a.selectionStart; se=a.selectionEnd; } }catch(e){}
@@ -3663,7 +3771,7 @@ root.addEventListener('keydown', e=>{ const el=e.target.closest('[data-key]'); i
   try{ const raw=localStorage.getItem('sb_saas_v2'); if(raw){ const s=JSON.parse(raw);
     state.theme=s.theme||'spellbound'; state.mode=s.mode||'light'; state.premium=!!s.premium;
     state.children=s.children||[]; state.activeIdx=s.activeIdx||0; state.goalDone=s.goalDone||0;
-    state.luMastered=s.lu||{}; state.coachSrs=s.srs||{}; state.coachHistory=s.chist||{};
+    state.luMastered=s.lu||{}; state.coachSrs=s.srs||{}; state.coachHistory=s.chist||{}; state.wordReports=s.wr||[];
     // Chapter 1 insert shifted concept indices by 11 — migrate index-keyed coin unlocks once
     try{ const shift=(((window.SB_CONCEPTS&&SB_CONCEPTS.chapters&&SB_CONCEPTS.chapters.length)||121))-(s.cN||110);
       if(shift>0) state.children.forEach(ch=>{ if(ch.unlockedConcepts){ const u={}; Object.keys(ch.unlockedConcepts).forEach(k=>{ u[+k+shift]=1; }); ch.unlockedConcepts=u; } }); }catch(e){}

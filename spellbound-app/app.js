@@ -256,14 +256,14 @@ function evEmb(id,s){
   const af=evAnimFor(id,s);
   return `<svg viewBox="0 0 48 52" width="54" height="58" aria-hidden="true" focusable="false" style="overflow:visible;animation:${af[0]};transform-origin:${af[1]}">${g}</svg>`;
 }
-function evoLadderHTML(theme,current){
+function evoLadderHTML(theme,current,marks){
   const C=EV_TC[theme]||EV_TC.spellbound; const names=EV_NOMEN[theme]||EV_NOMEN.spellbound;
   let cur=(current==null)?4:(typeof current==='string'?parseInt(current,10):current); if(isNaN(cur))cur=4;
   const cells=names.map((nm,i)=>{ const done=i<cur,isCur=i===cur;
     let wrap='flex:1;min-width:60px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 2px 7px;border-radius:10px;transition:background .2s;'+(isCur?`background:color-mix(in srgb,${C.a} 18%,transparent);box-shadow:inset 0 0 0 1.5px ${C.a};`:'')+(!done&&!isCur?'opacity:.78;':'');
     const badge=`font-family:var(--mono);font-size:12px;letter-spacing:.04em;font-weight:700;color:${isCur?C.ink:'rgba(70,64,90,.78)'}`; // dusk override via .sb-evotxt
     const nameStyle=`font-family:var(--body);font-weight:${isCur?800:700};font-size:12px;text-align:center;line-height:1.1;color:${isCur?C.ink:'rgba(50,44,68,.92)'}`;
-    return `<div style="${wrap}"><div class="sb-evotxt" style="${badge}">${isCur?'YOU':(done?'✓':'')}</div><div style="height:60px;display:grid;place-items:center"><div style="width:54px;height:58px">${evEmb(theme,i)}</div></div><div class="sb-evotxt" style="${nameStyle}">${nm}</div></div>`;
+    return `<div style="${wrap}"><div class="sb-evotxt" style="${badge}">${isCur?'YOU':(done?'✓':'')}</div><div style="height:60px;display:grid;place-items:center"><div style="width:54px;height:58px">${evEmb(theme,i)}</div></div><div class="sb-evotxt" style="${nameStyle}">${nm}</div>${(marks&&marks[i]!=null)?`<div class="sb-evotxt" style="font-family:var(--ui,var(--body));font-size:10.5px;font-weight:700;color:rgba(70,64,90,.72)">${marks[i]}</div>`:''}</div>`;
   }).join('');
   return `<div style="width:100%;display:flex;align-items:flex-start;gap:2px">${cells}</div>`;
 }
