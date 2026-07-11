@@ -182,16 +182,24 @@
 
   // 4-way hard drop-shadow = crisp enamel/sticker outline. Constant ~1.2px keeps
   // it readable at every size, exactly like the design contact sheet. On dark
-  // surfaces (opts.dark) the ink edge would vanish, so switch to a white glow
-  // edge — matching the design's "dusk tile" treatment.
+  // surfaces (opts.dark, or the app's dusk mode) epic & legendary avatars GLOW
+  // (design "dusk tile" spec); everything else gets a thin white edge instead
+  // of the ink outline, which would vanish on dark.
   window.SB_AVATAR = function(id, size, opts){ size=size||64; opts=opts||{};
     let inner = (window.SB_AVATAR_ART && window.SB_AVATAR_ART[id]) || (D[id] ? D[id]() : '');
     if(!inner) return '';
     const w = Math.max(1, Math.round(size/100 * 12)/10); // ~1.2px, scales gently
+    const dusk = !!opts.dark || (typeof state!=='undefined' && state && state.mode==='dusk');
     let outline='';
     if(opts.outline!==false){
-      if(opts.dark){ const g=Math.max(2, Math.round(size/16)); // white halo for dark bg
-        outline = `filter:drop-shadow(${w}px 0 0 #fff) drop-shadow(-${w}px 0 0 #fff) drop-shadow(0 ${w}px 0 #fff) drop-shadow(0 -${w}px 0 #fff) drop-shadow(0 0 ${g}px rgba(255,255,255,.45));`;
+      if(dusk){
+        const rar=(window.SB_AVATARS.byId[id]||{}).rarity;
+        if(rar==='epic'||rar==='legendary'){
+          const g=Math.max(4, Math.round(size/14));
+          outline = `filter:drop-shadow(0 0 ${g}px rgba(255,255,255,.65)) drop-shadow(0 0 2px rgba(255,255,255,.9));`;
+        } else {
+          outline = `filter:drop-shadow(${w}px 0 0 #fff) drop-shadow(-${w}px 0 0 #fff) drop-shadow(0 ${w}px 0 #fff) drop-shadow(0 -${w}px 0 #fff);`;
+        }
       } else { const ink = opts.ink || window.SB_AVATAR_INK(id);
         outline = `filter:drop-shadow(${w}px 0 0 ${ink}) drop-shadow(-${w}px 0 0 ${ink}) drop-shadow(0 ${w}px 0 ${ink}) drop-shadow(0 -${w}px 0 ${ink});`;
       }

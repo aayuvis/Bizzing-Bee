@@ -38,6 +38,9 @@
     .sb-tabbar button[aria-current="page"]{background:var(--chip,color-mix(in srgb,var(--accent) 12%,transparent))}
   }
   @media(max-width:480px){ .sb-bandsub{display:none!important} }
+  @media(max-width:560px){ .sb-search-lbl{display:none!important} }
+  /* drawer rows that duplicate the desktop top nav — mobile only */
+  @media(min-width:640px){ .sb-mob-only{display:none!important} }
   /* concept animation engine */
   @keyframes ca-pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
   @keyframes ca-sl{0%{transform:translateX(-72px);opacity:0}100%{transform:translateX(0);opacity:1}}

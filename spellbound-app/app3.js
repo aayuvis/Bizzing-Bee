@@ -538,8 +538,11 @@ const app = {
   setMode:(m)=>set({mode:m}),
   // nav
   setNav:(key)=>{ if(key==='train'){ app.startTrain(); return; } if(key==='coach'){ app.openCoach(); return; } if(key==='games'){ app.openGames(); return; } if(key==='shop'){ app.openShop(); return; } if(key==='journeys'){ app.openJourneys(); return; }
+    if(key==='parent'){ state.progTab='parent'; set({nav:'progress', screen:'app', mood:'happy', conceptSel:null}); return; }
+    if(key==='progress'&&state.progTab==null) state.progTab='me';
     if(key==='concepts'){ loadConcepts(); state.conceptView='all'; state.conceptTier=currentTier(); state.conceptPage=0; }
     set({nav:key, screen:'app', mood:'happy', conceptSel:null}); },
+  progTab:(k)=>set({progTab:k==='parent'?'parent':'me'}),
   goSettings:()=>app.setNav('settings'),
   goHome:()=>app.setNav('home'),
   goConcepts:()=>app.setNav('concepts'),
@@ -799,6 +802,20 @@ const app = {
   sellAvatar:(id)=>{ const c=active(); const a=SB_AVATARS.byId[id]; if(!a||a.rarity==='free'||!((c.avOwned||{})[id])) return;
     if(c.avatar===id){ flash('Pick a different avatar first — you can\'t sell the one you\'re wearing'); return; }
     delete c.avOwned[id]; addCoins(a.sell); save(); sfx('coin'); flash('Sold '+a.name+' for '+a.sell+' 🪙'); render(); },
+  // ----- avatar packs: probability drop (62% rare · 30% epic · 8% legendary, unowned only) -----
+  buyPack:(pk)=>{ const c=active(); const pool=SB_AVATARS.list.filter(a=>a.pack===pk&&!avOwned(c,a.id));
+    if(!pool.length){ flash('You own this whole pack! 🎉'); return; }
+    if(!spendCoins(150)){ flash('Need 150 🪙 — play games and clear Levels to earn!'); return; }
+    const tiers=[['rare',.62],['epic',.30],['legendary',.08]].filter(t=>pool.some(a=>a.rarity===t[0]));
+    const tot=tiers.reduce((s,t)=>s+t[1],0); let roll=Math.random()*tot; let tier=tiers[tiers.length-1][0];
+    for(const t of tiers){ if(roll<t[1]){ tier=t[0]; break; } roll-=t[1]; }
+    const cand=pool.filter(a=>a.rarity===tier); const win=cand[Math.floor(Math.random()*cand.length)];
+    (c.avOwned=c.avOwned||{})[win.id]=1; save();
+    sfx(win.rarity==='legendary'?'win':'coin'); burstConfetti(win.rarity==='legendary'?150:(win.rarity==='epic'?100:60));
+    set({packDrop:win.id}); },
+  packClose:()=>set({packDrop:null}),
+  packWear:()=>{ const id=state.packDrop; if(id){ const c=active(); c.avatar=id; save(); sfx('correct'); } set({packDrop:null}); },
+  openShopAvatars:()=>{ state.shopTab='avatars'; app.openShop(); },
   wearAv:(id)=>{ const c=active(); if(!avOwned(c,id)){ flash('Not collected yet'); return; } c.avatar=id; save(); sfx('correct'); render(); },
   trapPick:(k)=>set({trapSel:k}),
   trapBack:()=>set({trapSel:null}),
@@ -1094,10 +1111,10 @@ function viewOnboarding(){
   if(S.onbStep===0){
     const _freeAvs=SB_AVATARS.list.filter(a=>a.rarity==='free');
     const _legendAvs=SB_AVATARS.list.filter(a=>a.rarity==='legendary');
-    const avatars=`<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-width:380px">${_freeAvs.map(a=>{ const on=S.draft.avatar===a.id;
-        return `<button data-act="pickAvatar" data-arg="${a.id}" title="${a.name}" style="position:relative;aspect-ratio:1;border-radius:14px;display:grid;place-items:center;transition:.15s;background:var(--surface2);border:2px solid ${on?'var(--accent)':'transparent'};padding:5px"><span style="width:44px;height:44px;display:inline-block">${avatarSVG(a.id,44)}</span></button>`; }).join('')}</div>
-      <div style="margin-top:14px;font-size:12.5px;font-weight:700;color:var(--muted)">…and ${SB_AVATARS.list.length-_freeAvs.length} more to collect — earn coins by playing.</div>
-      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">${_legendAvs.map(a=>`<button data-act="pickAvatar" data-arg="${a.id}" title="${a.name} · legendary — unlock later with coins" style="position:relative;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--surface2);border:2px solid transparent;padding:4px;opacity:.45"><span style="width:32px;height:32px;display:inline-block">${avatarSVG(a.id,32)}</span><span style="position:absolute;top:1px;right:2px;font-size:9px">🔒</span></button>`).join('')}</div>`;
+    const avatars=`<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;max-width:460px;margin:0 auto;justify-items:center">${_freeAvs.map(a=>{ const on=S.draft.avatar===a.id;
+        return `<button data-act="pickAvatar" data-arg="${a.id}" title="${a.name}" style="position:relative;width:100%;aspect-ratio:1;border-radius:16px;display:grid;place-items:center;transition:.15s;background:var(--surface2);border:2.5px solid ${on?'var(--accent)':'transparent'};padding:7px;${on?'box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)':''}"><span style="width:60px;height:60px;display:inline-block">${avatarSVG(a.id,60)}</span></button>`; }).join('')}</div>
+      <div style="margin-top:14px;font-size:12.5px;font-weight:700;color:var(--muted);text-align:center">…and ${SB_AVATARS.list.length-_freeAvs.length} more to collect — earn coins by playing.</div>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;justify-content:center">${_legendAvs.map(a=>`<button data-act="pickAvatar" data-arg="${a.id}" title="${a.name} · legendary — unlock later with coins" style="position:relative;width:50px;height:50px;border-radius:12px;display:grid;place-items:center;background:var(--surface2);border:2px solid transparent;padding:4px;opacity:.45"><span style="width:38px;height:38px;display:inline-block">${avatarSVG(a.id,38)}</span><span style="position:absolute;top:1px;right:2px;font-size:9px">🔒</span></button>`).join('')}</div>`;
     card=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow)">
       <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">Who's practising?</h2>
       <p style="margin:0 0 20px;color:var(--muted);font-size:13px">Set up your speller's profile.</p>
@@ -1105,7 +1122,7 @@ function viewOnboarding(){
       <input data-inp="onDraftName" data-fkey="draftName" value="${escA(S.draft.name)}" placeholder="e.g. Ahana" style="width:100%;padding:13px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:700;margin-bottom:18px;outline:none">
       <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:8px">Age · <b style="color:var(--text)">${S.draft.age}</b></label>
       <input data-inp="onDraftAge" data-fkey="draftAge" type="range" min="5" max="15" step="1" value="${S.draft.age}" style="width:100%;accent-color:var(--accent);margin-bottom:20px">
-      <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:10px">Pick a buddy</label>
+      <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:10px;text-align:center">Pick a buddy</label>
       ${avatars}</div>`;
   } else if(S.onbStep===1){
     const worldCards=THEMES.map(t=>{ const open=FREE_THEMES.indexOf(t.id)>=0;
@@ -1350,7 +1367,7 @@ function viewTraps(){ const S=state; const traps=missTraps(); const sel=S.trapSe
 function viewApp(){
   const S=state;
   const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1};
-  const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['explore','Explore','compass'],['games','Arcade','joystick'],['shop','Store','cart'],['progress','Progress','chart'],['parent','Parent','users']].map(([key,label,ic])=>{
+  const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['explore','Explore','compass'],['games','Arcade','joystick'],['shop','Store','cart'],['progress','Progress','chart'],['collection','Collection','crown']].map(([key,label,ic])=>{
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:S.nav===key;
     const glyph=key==='explore'?(window.SB_ICON?SB_ICON('compass',{size:17}):iconSVG('grid',17)):iconSVG(ic,17);
     return `<button data-act="setNav" data-arg="${key}" style="display:inline-flex;align-items:center;gap:8px;white-space:nowrap;padding:10px 18px;border-radius:var(--r-pill,999px);font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.01em;${on?'background:var(--action,var(--accent));color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">${glyph} ${label}</button>`;
@@ -1373,8 +1390,8 @@ function viewApp(){
   else if(S.nav==='sq') content=(window.SQ?SQ.view():viewGames());
   else if(S.nav==='shop') content=viewShop();
   else if(S.nav==='themes') content=viewThemes();
-  else if(S.nav==='progress') content=viewProgress();
-  else if(S.nav==='parent') content=viewParent();
+  else if(S.nav==='progress') content=viewProgressShell();
+  else if(S.nav==='parent') content=viewProgressShell();
   else if(S.nav==='journeys') content=viewJourneys();
   else if(S.nav==='settings') content=viewSettings();
   else if(S.nav==='evofeedback') content=viewEvoFeedback();
@@ -1411,7 +1428,7 @@ function viewApp(){
       <div style="max-width:1080px;margin:0 auto;padding:11px clamp(14px,3.5vw,32px);display:flex;align-items:center;gap:12px">
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
         <div style="display:flex;align-items:center;gap:9px;margin-right:auto"><div style="width:34px;height:38px;flex-shrink:0">${mascotSVG('happy')}</div><span class="sb-brand" style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i> Bee</span></div>
-        <button data-act="openEvo" title="Karma — your practice record. One right word = 1 Karma; it grows your evolution and is never spent." style="display:inline-flex;align-items:center;gap:4px;padding:6px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:900;font-size:13px">✦ ${fmtN(getList(active(),activeListKey()).xp||0)}</button><button data-act="openShop" title="Your coins — tap to open the Store" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(active().coins||0,14)}</button>
+        <button data-act="openFinder" title="Word Finder — search 129,000 words, hear them, and add them to a list" aria-label="Search words" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:13px">${iconSVG('search',15)}<span class="sb-search-lbl">Search</span></button><button data-act="openEvo" title="Karma — your practice record. One right word = 1 Karma; it grows your evolution and is never spent." style="display:inline-flex;align-items:center;gap:4px;padding:6px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:900;font-size:13px">✦ ${fmtN(getList(active(),activeListKey()).xp||0)}</button><button data-act="openShop" title="Your coins — tap to open the Store" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(active().coins||0,14)}</button>
         <div class="sb-modeswitch" style="display:flex;background:var(--surface2);border-radius:999px;padding:3px">
           <button data-act="setLight" aria-pressed="${lightOn}" style="padding:7px 15px;border-radius:999px;font-weight:800;font-size:13px;${lightOn?'background:var(--accent);color:#fff':'background:transparent;color:var(--muted)'}">Light</button>
           <button data-act="setWhite" aria-pressed="${S.mode==='white'}" style="padding:7px 15px;border-radius:999px;font-weight:800;font-size:13px;${S.mode==='white'?'background:var(--accent);color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">White</button><button data-act="setDusk" aria-pressed="${S.mode==='dusk'}" style="padding:7px 15px;border-radius:999px;font-weight:800;font-size:13px;${S.mode==='dusk'?'background:var(--accent);color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">Dusk</button>
@@ -1460,22 +1477,15 @@ function viewDrawer(){
         ${row('levelup','steps','Continue practising','${LBL}'.replace('${LBL}',esc(listLabel(key).split(' · ')[0])+' · Level '+(listStageIdx(c,key)+1)),false)}
         ${missedN?row('weak','spark','Revenge round',missedN+' missed words waiting',false):''}
         ${kick('Explore')}
-        ${wayRow('games','arcade','Arcade','8 games · earn coins')}
         ${wayRow('concepts','concepts','Concepts','121 concepts · 11 chapters')}
         ${wayRow('journeys','journeys','Word Journeys','the history of words')}
         ${wayRow('themes','themes','Theme Journeys',myThemes().length?myThemes().length+' worlds picked':'pick 3–5 worlds')}
-        ${kick('Training tools')}
-        ${row('collection','crown','Collection',avOwnedCount(c)+'/'+SB_AVATARS.list.length+' avatars · badges',state.nav==='collection')}
-        ${row('traps','target','Your Traps',missTraps().length?(missTraps().length+' weak patterns found'):'weak-pattern radar',state.nav==='traps')}
-        ${row('quest','target',"Champion's Quest",'switch your path',state.nav==='quest')}
+        ${kick('Tools')}
         ${row('builder','pencil','List Builder','custom list in five taps',state.nav==='builder')}
-        ${row('finder','book','Word Finder','search 128,000 words · add to lists',state.nav==='finder')}
-        ${row('written','pencil','Written round','type a scored sequence',false)}
-        ${row('oral','volume','Oral elimination','spell aloud, survive',false)}
-        ${kick('Family')}
-        ${row('progress','chart','Progress','streak, heatmap & analytics',state.nav==='progress')}
-        ${row('parentview','users','Parent dashboard','readiness & activity log',false)}
-        ${row('shop','crown','Shop','spend those coins',state.nav==='shop')}
+        <div class="sb-mob-only" style="display:contents">
+        ${row('collection','crown','My Collection',avOwnedCount(c)+'/'+SB_AVATARS.list.length+' avatars · badges',state.nav==='collection')}
+        ${row('shop','cart','Store','avatar packs, worlds & artifacts',state.nav==='shop')}
+        </div>
         ${kick('')}
         ${row('settings','gear','Theme & settings','worlds, voice, style',state.nav==='settings')}
       </nav>
@@ -1566,7 +1576,7 @@ function viewHome(){
       return `${bandBanner}<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:18px">
       <div class="sb-card" style="display:flex;align-items:center;gap:16px;min-height:156px">
         <div style="position:relative;flex-shrink:0">
-          <div style="width:74px;height:84px;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center">${(c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar])?SB_AVATAR(c.avatar,72):mascotAcc(S.mood)}</div>
+          <div style="width:108px;height:112px;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center">${(c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar])?SB_AVATAR(c.avatar,104):mascotAcc(S.mood)}</div>
         </div>
         <div style="min-width:0;flex:1">
           <div class="sb-cs">${greeting}</div>
@@ -1611,58 +1621,141 @@ function avatarSVG(id,size){ size=size||30;
   if(window.SB_AVATARS && SB_AVATARS.byId[id]) return SB_AVATAR(id,size);
   if(typeof id==='string' && id.slice(0,2)==='w:'){ const p=id.split(':'); try{ return evEmb(p[1],+p[2]).replace('width="54" height="58"','width="100%" height="100%"'); }catch(e){ return buddySVG('bee',size); } }
   return buddySVG(id,size); }
-function avOwned(c,id){ const a=window.SB_AVATARS&&SB_AVATARS.byId[id]; if(!a) return true; return a.rarity==='free' || !!((c.avOwned||{})[id]); }
+function avOwned(c,id){ if(state.devUnlock) return true; const a=window.SB_AVATARS&&SB_AVATARS.byId[id]; if(!a) return true; return a.rarity==='free' || !!((c.avOwned||{})[id]); }
 function avOwnedCount(c){ return SB_AVATARS.list.filter(a=>avOwned(c,a.id)).length; }
 function evArt(theme,i){ try{ return evEmb(theme,i).replace('width="54" height="58"','width="100%" height="100%"'); }catch(e){ return ''; } }
 function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageIdx(c,'journey')+1;
   let concepts=0; try{ loadConcepts(); concepts=(state.conceptData||[]).filter(ch=>conceptStat(ch).done).length; }catch(e){}
   const st=(n)=>((c.streak||0)>=n)||!!((c.streakRewards||{})[n]);
+  const mast=masteredCount();
+  const owned=avOwnedCount(c);
+  const legs=SB_AVATARS.list.filter(a=>a.rarity==='legendary'&&avOwned(c,a.id)).length;
+  const epics=SB_AVATARS.list.filter(a=>a.rarity==='epic'&&avOwned(c,a.id)).length;
+  const karma=Object.values(c.lists||{}).reduce((s,l)=>s+(l.xp||0),0);
+  let seasons=0; try{ if(window.SQ) seasons=SB_AVATARS.packs.filter(p=>SQ.cleared(p.pack)>=5).length; }catch(e){}
+  const worlds=THEMES.filter(t=>isThemeUnlocked(t.id)).length;
+  const wkWords=(c.week||[]).reduce((a,b)=>a+(b||0),0);
+  const arts=((c.pow||{}).shield||0)+((c.pow||{}).reveal||0)+((c.pow||{}).time||0)+(c.freezes||0);
   return [
-    { id:'hatched', name:'First Hatch', desc:'Reach Hatchling — your first evolution', ic:'sprout', done:listLevel(c,activeListKey())>=2 },
-    { id:'streak3', name:'3-Day Buzz', desc:'Practise 3 days in a row', ic:'flame', done:st(3) },
-    { id:'streak7', name:'Week of Wings', desc:'A 7-day streak', ic:'flame', done:st(7) },
-    { id:'streak14', name:'Fortnight Flyer', desc:'A 14-day streak', ic:'flame', done:st(14) },
-    { id:'streak30', name:'Iron Wings', desc:'A 30-day streak', ic:'flame', done:st(30) },
-    { id:'band5', name:'Regional Ready', desc:'Prove Bee Band 5', ic:'target', done:bb.band>=5 },
-    { id:'band7', name:'State & National', desc:'Prove Bee Band 7', ic:'target', done:bb.band>=7 },
-    { id:'band9', name:'Championship Band', desc:'Prove Bee Band 9', ic:'target', done:bb.band>=9 },
-    { id:'quest5', name:'Level 5 Climber', desc:'Reach Level 5 on any path', ic:'steps', done:jl>=5 },
-    { id:'quest10', name:'Level 10 Ace', desc:'Reach Level 10 on the Journey', ic:'steps', done:jl>=10 },
-    { id:'champ', name:'Bizzing Bee Champ', desc:'Clear all 20 Champ Levels', ic:'crown', done:isChampDone(c) },
-    { id:'scholar', name:'Pattern Scholar', desc:'Master 10 concepts', ic:'grid', done:concepts>=10 },
-    { id:'storyteller', name:'Storykeeper', desc:'Unlock 10 word-history tales', ic:'book', done:loreCount(c)>=10 },
-    { id:'collector', name:'Collector', desc:'Own 25 avatars', ic:'spark', done:avOwnedCount(c)>=25 },
+    // Streaks
+    { g:'Streaks', id:'streak3', name:'3-Day Buzz', desc:'Practise 3 days in a row', ic:'flame', done:st(3) },
+    { g:'Streaks', id:'streak7', name:'Week of Wings', desc:'A 7-day streak', ic:'flame', done:st(7) },
+    { g:'Streaks', id:'streak14', name:'Fortnight Flyer', desc:'A 14-day streak', ic:'flame', done:st(14) },
+    { g:'Streaks', id:'streak30', name:'Iron Wings', desc:'A 30-day streak', ic:'fire', done:st(30) },
+    { g:'Streaks', id:'streak60', name:'Two-Month Torch', desc:'A 60-day streak', ic:'fire', done:st(60)||(c.streak||0)>=60 },
+    { g:'Streaks', id:'streak100', name:'Century Flame', desc:'A 100-day streak', ic:'fire', done:(c.streak||0)>=100 },
+    { g:'Streaks', id:'busyweek', name:'Busy Bee Week', desc:'100 words in one week', ic:'chart', done:wkWords>=100 },
+    // Word mastery
+    { g:'Word mastery', id:'mast10', name:'First Ten', desc:'Master 10 words', ic:'check', done:mast>=10 },
+    { g:'Word mastery', id:'mast50', name:'Half Century', desc:'Master 50 words', ic:'check', done:mast>=50 },
+    { g:'Word mastery', id:'mast100', name:'Word Hundredaire', desc:'Master 100 words', ic:'book', done:mast>=100 },
+    { g:'Word mastery', id:'mast250', name:'Lexicon Builder', desc:'Master 250 words', ic:'book', done:mast>=250 },
+    { g:'Word mastery', id:'mast500', name:'Word Wizard', desc:'Master 500 words', ic:'spark', done:mast>=500 },
+    { g:'Word mastery', id:'mast1000', name:'Walking Dictionary', desc:'Master 1,000 words', ic:'crown', done:mast>=1000 },
+    { g:'Word mastery', id:'acc90', name:'Sharp Speller', desc:'Keep accuracy at 90%+', ic:'target', done:(c.acc||0)>=90 },
+    // Bee Band
+    { g:'Bee Band', id:'placed', name:'On the Map', desc:'Finish your placement — find your Bee Band', ic:'search', done:!bb.calibrating },
+    { g:'Bee Band', id:'band3', name:'Classroom Champ', desc:'Prove Bee Band 3', ic:'target', done:bb.band>=3 },
+    { g:'Bee Band', id:'band5', name:'Regional Ready', desc:'Prove Bee Band 5', ic:'target', done:bb.band>=5 },
+    { g:'Bee Band', id:'band7', name:'State & National', desc:'Prove Bee Band 7', ic:'target', done:bb.band>=7 },
+    { g:'Bee Band', id:'band9', name:'Championship Band', desc:'Prove Bee Band 9', ic:'crown', done:bb.band>=9 },
+    // Levels & evolution
+    { g:'Levels', id:'hatched', name:'First Hatch', desc:'Reach Hatchling — your first evolution', ic:'sprout', done:listLevel(c,activeListKey())>=2 },
+    { g:'Levels', id:'quest5', name:'Level 5 Climber', desc:'Reach Level 5 on any path', ic:'steps', done:jl>=5 },
+    { g:'Levels', id:'quest10', name:'Level 10 Ace', desc:'Reach Level 10 on the Journey', ic:'steps', done:jl>=10 },
+    { g:'Levels', id:'quest15', name:'Level 15 Star', desc:'Reach Level 15 on the Journey', ic:'steps', done:jl>=15 },
+    { g:'Levels', id:'champ', name:'Bizzing Bee Champ', desc:'Clear all 20 Champ Levels', ic:'crown', done:isChampDone(c) },
+    { g:'Levels', id:'karma100', name:'Karma Kindler', desc:'Earn 100 Karma', ic:'bolt', done:karma>=100 },
+    { g:'Levels', id:'karma500', name:'Karma Keeper', desc:'Earn 500 Karma', ic:'bolt', done:karma>=500 },
+    { g:'Levels', id:'karma2000', name:'Karma Legend', desc:'Earn 2,000 Karma', ic:'bolt', done:karma>=2000 },
+    // Collection
+    { g:'Collection', id:'coll10', name:'Starter Set', desc:'Own 10 avatars', ic:'spark', done:owned>=10 },
+    { g:'Collection', id:'coll25', name:'Collector', desc:'Own 25 avatars', ic:'spark', done:owned>=25 },
+    { g:'Collection', id:'coll50', name:'Curator', desc:'Own 50 avatars', ic:'spark', done:owned>=50 },
+    { g:'Collection', id:'coll100', name:'Grand Curator', desc:'Own 100 avatars', ic:'crown', done:owned>=100 },
+    { g:'Collection', id:'coll150', name:'Completionist', desc:'Own every avatar', ic:'crown', done:owned>=SB_AVATARS.list.length },
+    { g:'Collection', id:'epic1', name:'Epic Find', desc:'Own an epic avatar', ic:'eye', done:epics>=1 },
+    { g:'Collection', id:'leg1', name:'Legendary!', desc:'Own a legendary avatar', ic:'crown', done:legs>=1 },
+    { g:'Collection', id:'leg5', name:'Hall of Legends', desc:'Own 5 legendary avatars', ic:'crown', done:legs>=5 },
+    { g:'Collection', id:'stylist', name:'Stylist', desc:'Dress your bee in an accessory', ic:'palette', done:Object.keys(c.beeAcc||{}).length>=1 },
+    { g:'Collection', id:'stocked', name:'Well Stocked', desc:'Hold 5 artifacts at once', ic:'cart', done:arts>=5 },
+    // Spelling Quest
+    { g:'Spelling Quest', id:'sq1', name:'First Season', desc:'Clear a Spelling Quest season', ic:'joystick', done:seasons>=1 },
+    { g:'Spelling Quest', id:'sq5', name:'Story Seeker', desc:'Clear 5 seasons', ic:'joystick', done:seasons>=5 },
+    { g:'Spelling Quest', id:'sq10', name:'Saga Speller', desc:'Clear 10 seasons', ic:'joystick', done:seasons>=10 },
+    { g:'Spelling Quest', id:'sq15', name:'World Ender', desc:'Clear all 15 seasons', ic:'crown', done:seasons>=15 },
+    // Learning
+    { g:'Learning', id:'concepts5', name:'Pattern Spotter', desc:'Master 5 concepts', ic:'grid', done:concepts>=5 },
+    { g:'Learning', id:'scholar', name:'Pattern Scholar', desc:'Master 10 concepts', ic:'grid', done:concepts>=10 },
+    { g:'Learning', id:'concepts25', name:'Rule Collector', desc:'Master 25 concepts', ic:'grid', done:concepts>=25 },
+    { g:'Learning', id:'concepts50', name:'Concept Champion', desc:'Master 50 concepts', ic:'bulb', done:concepts>=50 },
+    { g:'Learning', id:'story5', name:'Tale Finder', desc:'Unlock 5 word-history tales', ic:'book', done:loreCount(c)>=5 },
+    { g:'Learning', id:'storyteller', name:'Storykeeper', desc:'Unlock 10 word-history tales', ic:'book', done:loreCount(c)>=10 },
+    { g:'Learning', id:'story25', name:'Word Historian', desc:'Unlock 25 word-history tales', ic:'book', done:loreCount(c)>=25 },
+    // Explorer
+    { g:'Explorer', id:'worlds4', name:'Globe Trotter', desc:'Unlock 4 worlds', ic:'palette', done:worlds>=4 },
+    { g:'Explorer', id:'worldsAll', name:'World Master', desc:'Unlock every world', ic:'palette', done:worlds>=THEMES.length },
+    { g:'Explorer', id:'coins250', name:'Honey Saver', desc:'Hold 250 coins at once', ic:'coin', done:(c.coins||0)>=250 },
+    { g:'Explorer', id:'coins1000', name:'Honey Tycoon', desc:'Hold 1,000 coins at once', ic:'coin', done:(c.coins||0)>=1000 },
+    { g:'Explorer', id:'milestone', name:'Eye on the Prize', desc:'Set a bee-day milestone', ic:'pencil', done:!!(c.milestone&&c.milestone.date) },
   ]; }
-function viewCollection(){ const S=state; const c=active(); const tab=S.collTab||'avatars';
-  const tabBtn=(k,l)=>`<button data-act="collTab" data-arg="${k}" style="flex:1;min-width:120px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${l}</button>`;
+function viewCollection(){ const S=state; const c=active(); const tab=S.collTab||'badges';
+  const tabBtn=(k,ic,l)=>`<button data-act="collTab" data-arg="${k}" style="flex:1;min-width:96px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${iconSVG(ic,15)} ${l}</button>`;
   let body='';
   if(tab==='avatars'){
     body=SB_AVATARS.packs.map(p=>{ const avs=SB_AVATARS.list.filter(a=>a.pack===p.id); const ownedN=avs.filter(a=>avOwned(c,a.id)).length;
       const tiles=avs.map(a=>{ const own=avOwned(c,a.id); const R=SB_AVATARS.rarities[a.rarity]; const on=c.avatar===a.id;
         const action= on?`<span style="font-weight:800;font-size:11.5px;color:var(--good)">Wearing ✓</span>`
           : own?`<span style="display:inline-flex;gap:6px"><button data-act="wearAv" data-arg="${a.id}" style="padding:6px 11px;border-radius:8px;background:var(--accent);color:#fff;font-weight:800;font-size:11.5px">Use</button>${a.rarity!=='free'?`<button data-act="sellAvatar" data-arg="${a.id}" title="Sell for ${a.sell} coins" style="padding:6px 9px;border-radius:8px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--muted)">Sell ${a.sell}🪙</button>`:''}</span>`
-          : `<button data-act="buyAvatar" data-arg="${a.id}" style="padding:6px 11px;border-radius:8px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:900;font-size:11.5px">${a.price} 🪙</button>`;
-        return `<div style="background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':own?'var(--line)':'var(--line)'};border-radius:14px;padding:11px 9px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;${own?'':'filter:grayscale(.35);opacity:.85'}">
-          <span style="width:56px;height:56px">${avatarSVG(a.id,56)}</span>
+          : `<button data-act="openShopAvatars" title="Drops from a ${p.label} pack in the Store" style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--muted)">${iconSVG('lock',11,2.2)} Store pack</button>`;
+        return `<div style="background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':own?'var(--line)':'var(--line)'};border-radius:14px;padding:11px 9px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;${own?'':'filter:grayscale(.75);opacity:.72'}">
+          <span style="width:76px;height:76px">${avatarSVG(a.id,76)}</span>
           <span style="font-weight:800;font-size:12px;line-height:1.15">${a.name}</span>
           <span style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:99px;color:#fff;background:${R.c}">${R.label}</span>
           ${action}</div>`; }).join('');
       return `<div class="sb-card" style="margin-bottom:14px">
         <div style="display:flex;align-items:baseline;gap:9px;margin-bottom:11px"><span style="width:12px;height:12px;border-radius:4px;background:linear-gradient(135deg,${p.c1},${p.c2});display:inline-block"></span><span class="sb-ct" style="font-size:15px">${p.label}</span><span class="sb-cn">${ownedN}/${avs.length} collected</span></div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:9px">${tiles}</div></div>`; }).join('');
+  } else if(tab==='worlds'){
+    const rows=THEMES.map(t=>{ const on=t.id===S.theme; const un=isThemeUnlocked(t.id); const ev=EVO[t.id]||EVO.spellbound;
+      return `<div style="display:flex;align-items:center;gap:12px;background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:12px 14px;${un?'':'filter:grayscale(.6);opacity:.65'}">
+        <div style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,${t.c1},${t.c2});flex-shrink:0;color:#fff">${un?worldEmblemSVG(t.id,24):iconSVG('lock',20,2.2)}</div>
+        <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:15px">${t.label}</div><div style="font-size:12px;color:var(--muted)">${WORLD_DEF[t.id]||(ev[0]+' → '+ev[9])}</div></div>
+        ${on?'<span style="font-weight:800;font-size:12px;color:var(--accent)">Active ✓</span>':(un?`<button data-act="pickTheme" data-arg="${t.id}" style="padding:8px 14px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:12px">Use</button>`:`<button data-act="openShop" style="display:inline-flex;align-items:center;gap:5px;padding:8px 12px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:12px;color:var(--muted)">${iconSVG('lock',11,2.2)} Store</button>`)}
+      </div>`; }).join('');
+    const unc=THEMES.filter(t=>isThemeUnlocked(t.id)).length;
+    body=`<div class="sb-card"><div style="display:flex;align-items:baseline;gap:9px;margin-bottom:12px"><span class="sb-ct" style="font-size:15px">Worlds</span><span class="sb-cn">${unc}/${THEMES.length} unlocked — switch any time</span></div><div style="display:grid;gap:9px">${rows}</div></div>`;
+  } else if(tab==='artifacts'){
+    const inv=[
+      {k:'shield', ic:'crown', name:'Boss Shield 🛡️', desc:'Absorbs one wrong answer in Boss Battle.', own:((c.pow||{}).shield||0)},
+      {k:'reveal', ic:'bulb',  name:'Letter Reveal 💡', desc:'Reveals the next letter in Boss Battle.', own:((c.pow||{}).reveal||0)},
+      {k:'time',   ic:'timer', name:'Time Warp ⏱️', desc:'+15 seconds on your next Buzzer sprint.', own:((c.pow||{}).time||0)},
+      {k:'freeze', ic:'flame', name:'Streak Freeze 🧊', desc:'Miss a day — your streak survives.', own:(c.freezes||0)},
+    ].map(it=>`<div style="display:flex;align-items:center;gap:12px;background:var(--paper,var(--bg2));border:1.5px solid ${it.own?'var(--treasure,#F0B429)':'var(--line)'};border-radius:14px;padding:12px 14px;${it.own?'':'opacity:.6;filter:grayscale(.5)'}">
+        <div style="width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:var(--chip);color:var(--accent);flex-shrink:0">${iconSVG(it.ic,20)}</div>
+        <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:15px">${it.name}</div><div style="font-size:12px;color:var(--muted)">${it.desc}</div></div>
+        <span style="font-weight:900;font-size:14px;color:${it.own?'var(--good)':'var(--muted)'}">× ${it.own}</span></div>`).join('');
+    const accOwned=Object.keys(c.beeAcc||{});
+    const accs=accOwned.length?`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:16px 2px 10px">Bee style</div><div style="display:flex;gap:10px;flex-wrap:wrap">${accOwned.map(k=>`<div style="width:64px;height:70px;position:relative;background:var(--surface2);border-radius:14px;padding:8px;${c.accOn===k?'box-shadow:inset 0 0 0 2px var(--accent)':''}">${mascotSVG('happy')}<div style="position:absolute;inset:8px">${beeAccSVG(k)}</div></div>`).join('')}</div>`:'';
+    body=`<div class="sb-card"><div style="display:flex;align-items:baseline;gap:9px;margin-bottom:12px"><span class="sb-ct" style="font-size:15px">Artifacts</span><span class="sb-cn">your stash — stock up in the Store</span></div>${inv}${accs}
+      <button data-act="openShop" style="width:100%;margin-top:12px;padding:12px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:14px">Get more in the Store →</button></div>`;
   } else {
     const B=badgeDefs(); const won=B.filter(b=>b.done).length;
-    body=`<div class="sb-card"><div style="display:flex;align-items:baseline;gap:9px;margin-bottom:12px"><span class="sb-ct" style="font-size:15px">Badges</span><span class="sb-cn">${won}/${B.length} won — earned by playing, never bought</span></div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px">${B.map(b=>`<div style="background:var(--paper,var(--bg2));border:1.5px solid ${b.done?'var(--treasure,#F0B429)':'var(--line)'};border-radius:14px;padding:13px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;${b.done?'':'opacity:.55;filter:grayscale(.6)'}">
+    const groups=[...new Set(B.map(b=>b.g))];
+    body=groups.map(g=>{ const list=B.filter(b=>b.g===g); const w=list.filter(b=>b.done).length;
+      return `<div class="sb-card" style="margin-bottom:14px"><div style="display:flex;align-items:baseline;gap:9px;margin-bottom:12px"><span class="sb-ct" style="font-size:15px">${g}</span><span class="sb-cn">${w}/${list.length} won</span></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px">${list.map(b=>`<div style="background:var(--paper,var(--bg2));border:1.5px solid ${b.done?'var(--treasure,#F0B429)':'var(--line)'};border-radius:14px;padding:13px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;${b.done?'':'opacity:.55;filter:grayscale(.6)'}">
         <span style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:${b.done?'linear-gradient(135deg,#FFD24D,#F0A93C)':'var(--surface2)'};color:${b.done?'#5a3d00':'var(--muted)'};box-shadow:${b.done?'0 2px 8px rgba(240,180,41,.4)':'none'}">${iconSVG(b.ic,22)}</span>
         <span style="font-weight:800;font-size:12.5px;line-height:1.15">${b.name}</span>
         <span class="sb-cn" style="font-size:11px">${b.desc}</span>
-        <span style="font-weight:800;font-size:10.5px;color:${b.done?'var(--good)':'var(--muted)'}">${b.done?'WON ✓':'LOCKED'}</span></div>`).join('')}</div></div>`;
+        <span style="font-weight:800;font-size:10.5px;color:${b.done?'var(--good)':'var(--muted)'}">${b.done?'WON ✓':'LOCKED'}</span></div>`).join('')}</div></div>`; }).join('')
+      + `<div class="sb-cn" style="margin:4px 2px 0">${won}/${B.length} badges won — earned by playing, never bought.</div>`;
   }
+  const bAll=badgeDefs();
   return `<div style="max-width:920px;margin:0 auto">
-    ${pageHead('Collection', avOwnedCount(c)+'/'+SB_AVATARS.list.length+' avatars', 'Collect avatars with coins, win badges by playing. Your avatar rides on the welcome card.',
+    ${pageHead('My Collection', avOwnedCount(c)+'/'+SB_AVATARS.list.length+' avatars', 'Everything you\'ve earned and unlocked — badges, avatars, worlds and artifacts.',
       `<span style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px">${coinAmt(c.coins||0,14)}</span>`)}
-    <div style="display:flex;gap:8px;margin-bottom:14px">${tabBtn('avatars','Avatars · '+avOwnedCount(c)+'/'+SB_AVATARS.list.length)}${tabBtn('badges','Badges · '+badgeDefs().filter(b=>b.done).length+'/'+badgeDefs().length)}</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">${tabBtn('badges','crown','Badges · '+bAll.filter(b=>b.done).length+'/'+bAll.length)}${tabBtn('avatars','spark','Avatars · '+avOwnedCount(c)+'/'+SB_AVATARS.list.length)}${tabBtn('worlds','palette','Worlds · '+THEMES.filter(t=>isThemeUnlocked(t.id)).length+'/'+THEMES.length)}${tabBtn('artifacts','bolt','Artifacts')}</div>
     ${body}
   </div>`; }
 /* ---- Evolution ladder as its own screen (Home shows only the compact card) ---- */
@@ -2407,6 +2500,12 @@ function viewQuest(){
       </div>`; })()}
   </div>`;
 }
+/* Progress + Parent live under one nav: a segmented switch picks the view. */
+function viewProgressShell(){ const t=state.progTab==='parent'?'parent':'me';
+  const seg2=(k,ic,l)=>`<button data-act="progTab" data-arg="${k}" style="display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:999px;font-weight:800;font-size:13.5px;${t===k?'background:var(--accent);color:#fff;box-shadow:var(--edge)':'background:var(--surface2);color:var(--muted)'}">${iconSVG(ic,15)} ${l}</button>`;
+  return `<div style="max-width:920px;margin:0 auto">
+    <div style="display:flex;gap:8px;margin-bottom:16px">${seg2('me','chart','My progress')}${seg2('parent','users','Parent zone')}</div>
+    ${t==='parent'?viewParent():viewProgress()}</div>`; }
 function viewProgress(){
   const c=active();
   const bb=beeBand(c);
@@ -2526,7 +2625,7 @@ function viewParent(){
     ? {ic:'crown',title:'Premium',body:'4 worlds, half the concepts & uncapped levels. Earn coins for the rest.',btn:'Manage',btnStyle:'padding:10px 16px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:13px',cardStyle:'background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 16%,var(--bg2)),var(--bg2));border:1px solid var(--accent);border-radius:20px;padding:20px;box-shadow:var(--glow)'}
     : {ic:'spark',title:'Free plan',body:'2 worlds & Level-Up to Level 5. Earn 🪙 coins to unlock more, or go Premium.',btn:'Upgrade',btnStyle:'padding:10px 18px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)',cardStyle:'background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest)'};
   const kids=(S.children.length?S.children:[demo()]).map((k,i)=>`<div style="background:var(--bg2);border:1px solid ${i===S.activeIdx?'var(--accent)':'var(--line)'};border-radius:14px;padding:18px">
-      <div style="display:flex;align-items:center;gap:13px;margin-bottom:16px"><div style="width:48px;height:48px;border-radius:14px;background:var(--surface2);display:grid;place-items:center">${avatarSVG(k.avatar,28)}</div>
+      <div style="display:flex;align-items:center;gap:13px;margin-bottom:16px"><div style="width:60px;height:60px;border-radius:16px;background:var(--surface2);display:grid;place-items:center">${avatarSVG(k.avatar,44)}</div>
         <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:17px">${esc(k.name)}</div><div style="font-size:12px;color:var(--muted);font-weight:600">Age ${k.age} · ${THEME_LABEL[k.theme]||'Bizzing Bee'}</div></div>
         <button data-act="selectChild" data-arg="${i}" style="padding:7px 13px;border-radius:10px;font-weight:800;font-size:12px;${i===S.activeIdx?'background:var(--chip);color:var(--accent)':'background:var(--surface2);color:var(--text)'}">${i===S.activeIdx?'Active':'Switch'}</button>
       </div>
@@ -2871,7 +2970,7 @@ function viewSettings(){
   const voiceOpts=['<option value="">Auto · best available</option>'].concat(_voices.map(v=>`<option value="${escA(v.name)}"${VOICE.name===v.name?' selected':''}>${esc(v.name)}${_nat(v.name)?' ✨':''}</option>`)).join('');
   const _pc=active();
   const _avRows=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:8px;max-width:380px">${SB_AVATARS.list.filter(a=>avOwned(_pc,a.id)).map(a=>
-    `<button data-act="profAvatar" data-arg="${a.id}" title="${a.name}" style="position:relative;aspect-ratio:1;border-radius:12px;display:grid;place-items:center;background:var(--surface2);border:2px solid ${_pc.avatar===a.id?'var(--accent)':'transparent'};padding:4px"><span style="width:34px;height:34px;display:inline-block">${avatarSVG(a.id,34)}</span></button>`).join('')}</div>`+`<div style="margin-top:10px"><button data-act="openCollection" class="sb-cl" style="background:none;border:0;padding:0;cursor:pointer">Collect more in your Collection →</button></div>`;
+    `<button data-act="profAvatar" data-arg="${a.id}" title="${a.name}" style="position:relative;aspect-ratio:1;border-radius:12px;display:grid;place-items:center;background:var(--surface2);border:2px solid ${_pc.avatar===a.id?'var(--accent)':'transparent'};padding:4px"><span style="width:48px;height:48px;display:inline-block">${avatarSVG(a.id,48)}</span></button>`).join('')}</div>`+`<div style="margin-top:10px"><button data-act="openCollection" class="sb-cl" style="background:none;border:0;padding:0;cursor:pointer">Collect more in your Collection →</button></div>`;
   const profileCard=`<div class="sb-card" style="margin-bottom:16px">
       <div style="font-family:var(--display);font-weight:800;font-size:15px">Profile</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Pick your own display name and buddy — parents can adjust age, the daily goal and milestones here too.</div>
@@ -3646,10 +3745,25 @@ function gamesHub(){ const S=state;
     ${store}
   </div>`;
 }
-function viewShop(){ const S=state; const c=active(); ensureLists(c); const tab=S.shopTab||'worlds';
+function viewShop(){ const S=state; const c=active(); ensureLists(c); const tab=S.shopTab||'avatars';
   const tabBtn=(k,ic,l)=>`<button data-act="shopTab" data-arg="${k}" style="flex:1;min-width:96px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${iconSVG(ic,15)} ${l}</button>`;
   let body='';
-  if(tab==='worlds'){
+  if(tab==='avatars'){
+    const packs=SB_AVATARS.packs.map(p=>{ const avs=SB_AVATARS.list.filter(a=>a.pack===p.id); const ownedN=avs.filter(a=>avOwned(c,a.id)).length; const full=ownedN>=avs.length;
+      const leg=avs.find(a=>a.rarity==='legendary');
+      const preview=avs.filter(a=>avOwned(c,a.id)).slice(0,2).concat(leg?[leg]:[]).slice(0,3)
+        .map(a=>{ const own=avOwned(c,a.id); return `<span style="width:52px;height:52px;display:inline-grid;place-items:center;background:rgba(255,255,255,.85);border-radius:12px;${own?'':'filter:grayscale(1) brightness(.4);opacity:.8'}">${avatarSVG(a.id,44)}</span>`; }).join('');
+      return `<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column">
+        <div style="background:linear-gradient(135deg,${p.c1},${p.c2});padding:13px 14px;display:flex;align-items:center;gap:8px">${preview}<span style="flex:1"></span><span style="font-weight:900;font-size:12px;color:rgba(255,255,255,.95);background:rgba(0,0,0,.22);border-radius:99px;padding:4px 10px">${ownedN}/${avs.length}</span></div>
+        <div style="padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;flex:1">
+          <div style="font-family:var(--display);font-weight:800;font-size:15px">${p.label}</div>
+          ${full?`<div style="font-weight:800;font-size:13px;color:var(--good);margin-top:auto">Complete ✓ — every avatar collected</div>`
+            :`<button data-act="buyPack" data-arg="${p.id}" style="margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px;border-radius:11px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:900;font-size:13.5px">🎁 Open a pack · ${coinAmt(150,13)}</button>`}
+        </div></div>`; }).join('');
+    body=`<p style="font-size:13px;color:var(--muted);margin:0 0 6px">Every pack drop is a surprise avatar you don't own yet — <b>62% rare · 30% epic · 8% legendary</b>. Duplicates never drop.</p>
+      <p style="font-size:12px;color:var(--muted);margin:0 0 14px">Change your mind? Sell spare avatars back for coins from <button data-act="setNav" data-arg="collection" style="color:var(--accent);font-weight:800;background:none;border:0;padding:0;cursor:pointer">your Collection</button>.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px">${packs}</div>`;
+  } else if(tab==='worlds'){
     const rows=THEMES.map(t=>{ const on=t.id===S.theme; const un=isThemeUnlocked(t.id); const ev=EVO[t.id]||EVO.spellbound;
       const right=on?'<span style="font-weight:800;font-size:12px;color:var(--accent)">Active</span>':(un?`<span style="font-weight:800;font-size:12px;color:var(--good)">Use</span>`:`<span style="font-weight:900;font-size:12px;color:#a06a00">${coinAmt(COST.theme,12)}</span>`);
       return `<button data-act="${un?'pickTheme':'buyTheme'}" data-arg="${t.id}" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface2);border:1px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:12px 14px;margin-bottom:9px">
@@ -3704,9 +3818,25 @@ function viewShop(){ const S=state; const c=active(); ensureLists(c); const tab=
   return `<div style="max-width:680px;margin:0 auto">
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button><span style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">${iconSVG("cart",21)} Store</span><span style="margin-left:auto">${coinChip()}</span></div>
     <p style="margin:0 0 14px;color:var(--muted);font-size:13px">Spend the coins you earn from games, Word Coach &amp; Concepts.</p>
-    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">${tabBtn('power','spark','Artifacts')}${tabBtn('worlds','palette','Worlds')}${tabBtn('lists','book','Word lists')}${tabBtn('concepts','grid','Concepts')}</div>
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">${tabBtn('avatars','crown','Avatars')}${tabBtn('worlds','palette','Worlds')}${tabBtn('power','spark','Artifacts')}${tabBtn('lists','book','Word lists')}${tabBtn('concepts','grid','Concepts')}</div>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px">${body}</div>
+    ${packDropOverlay()}
   </div>`; }
+/* Pack-drop reveal: modal card over the Store after opening a pack. */
+function packDropOverlay(){ const id=state.packDrop; if(!id) return '';
+  const a=SB_AVATARS.byId[id]; if(!a) return ''; const R=SB_AVATARS.rarities[a.rarity]||{label:a.rarity,c:'#888'};
+  const leg=a.rarity==='legendary';
+  return `<div data-act="packClose" style="position:fixed;inset:0;background:rgba(20,14,40,.72);z-index:80;display:grid;place-items:center;padding:20px;animation:sb-pop .25s ease both">
+    <div data-act="noop" style="background:linear-gradient(160deg,#3A2F5C,#241A47);border:1px solid rgba(255,255,255,.2);border-radius:24px;padding:28px 34px;text-align:center;max-width:330px;width:100%;box-shadow:0 0 60px ${leg?'rgba(255,194,61,.45)':'rgba(233,225,255,.25)'}">
+      <div style="font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.16em;color:#C9BFEA;margin-bottom:12px">PACK OPENED</div>
+      <div style="width:150px;height:150px;margin:0 auto;animation:sb-pop .5s ease both">${SB_AVATAR(a.id,150,{dark:true})}</div>
+      <div style="display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:${R.c};border-radius:99px;padding:4px 12px;margin:14px 0 6px">${R.label}${leg?' ✦':''}</div>
+      <div style="font-family:var(--display);color:#fff;font-weight:800;font-size:22px">${esc(a.name)}</div>
+      <div style="display:flex;gap:9px;justify-content:center;margin-top:20px">
+        <button data-act="packWear" style="padding:12px 22px;border-radius:99px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px;box-shadow:0 4px 0 #C8891B">Wear now</button>
+        <button data-act="packClose" style="padding:12px 18px;border-radius:99px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#E9E1FF;font-weight:800;font-size:13px">Keep it</button>
+      </div>
+    </div></div>`; }
 function gameShell(statusBar, inner){ return `<div style="max-width:680px;margin:0 auto">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px">${statusBar}<div style="display:flex;align-items:center;gap:10px">${coinChip()}<button data-act="exitGame" style="color:var(--muted);font-weight:700;font-size:13px">✕ Exit</button></div></div>
     ${inner}</div>`; }

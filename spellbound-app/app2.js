@@ -78,19 +78,21 @@ function iconSVG(name, size, sw){
   return (M[name] || M.grid)();
 }
 
-/* ---- Arcade logo: a glowing cabinet badge with a joystick + buttons ---- */
+/* ---- Arcade logo: design-system tile — brand gradient, chunky joystick glyph
+   (same grammar as icons.js: 2.6 round strokes, honey-gold accent ball) ---- */
 function arcadeLogoSVG(size){ size=size||40;
-  return `<svg viewBox="0 0 48 48" width="${size}" height="${size}" aria-hidden="true" focusable="false" style="display:block;filter:drop-shadow(0 3px 7px rgba(124,92,255,.45))">
-    <defs><linearGradient id="sbArc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7C5CFF"/><stop offset=".55" stop-color="#9B6BFF"/><stop offset="1" stop-color="#36D1FF"/></linearGradient></defs>
-    <rect x="3" y="3" width="42" height="42" rx="13" fill="url(#sbArc)"/>
-    <rect x="10.5" y="11" width="27" height="15" rx="3.2" fill="#0f0a25" opacity=".88"/>
-    <text x="24" y="22.4" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-weight="900" font-size="9" fill="#FFD24D" letter-spacing="1.5">SB</text>
-    <circle cx="16" cy="35" r="3.6" fill="#0f0a25" opacity=".55"/>
-    <line x1="16" y1="35" x2="16" y2="29.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
-    <circle cx="16" cy="28.7" r="2.5" fill="#FF4D8D" stroke="#fff" stroke-width="1.1"/>
-    <circle cx="29.5" cy="33.5" r="2.5" fill="#FFD24D"/>
-    <circle cx="36" cy="33.5" r="2.5" fill="#36E0C8"/>
-    <circle cx="32.7" cy="38.4" r="2.5" fill="#FF8A3D"/>
+  return `<svg viewBox="0 0 48 48" width="${size}" height="${size}" aria-hidden="true" focusable="false" style="display:block">
+    <defs><linearGradient id="sbArc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7C5CFF"/><stop offset="1" stop-color="#5B3DD6"/></linearGradient></defs>
+    <rect x="2.5" y="2.5" width="43" height="43" rx="13" fill="url(#sbArc)"/>
+    <rect x="2.5" y="2.5" width="43" height="43" rx="13" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1"/>
+    <g fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 33.5 a10 5.5 0 0 1 20 0" fill="rgba(255,255,255,.14)"/>
+      <path d="M14 33.5 h20"/>
+      <path d="M24 28.5 V17.5"/>
+    </g>
+    <circle cx="24" cy="14.2" r="4.6" fill="#FFC23D" stroke="#fff" stroke-width="1.6"/>
+    <circle cx="34.5" cy="22.5" r="2.4" fill="#fff" opacity=".9"/>
+    <circle cx="13.5" cy="20" r="1.5" fill="#fff" opacity=".55"/>
   </svg>`; }
 
 /* ---- delight: sound effects (Web Audio, no files) + confetti ---- */
