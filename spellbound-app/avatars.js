@@ -170,8 +170,31 @@
     ['rally','Rally','turbo','free'],['turbo','Turbo','turbo','rare'],['crash','Crash','turbo','rare'],['airtime','Airtime','turbo','rare'],['striker','Striker','turbo','rare'],['champ','Champ','turbo','epic'],['hover','Hover','turbo','epic'],['nitro','Nitro','turbo','epic'],['mech','Mech','turbo','epic'],['titan','Titan','turbo','legendary'],
   ].map(([id,name,pack,rarity])=>({ id, name, pack, rarity, price:RAR[rarity].price, sell:RAR[rarity].sell }));
   window.SB_AVATARS = { list:AV, packs:PACKS, rarities:RAR, byId:Object.fromEntries(AV.map(a=>[a.id,a])) };
-  window.SB_AVATAR = function(id, size){ size=size||64;
+
+  /* Per-pack ink colour for the sticker outline (matches the design Contact Sheet). */
+  const INK = {
+    hive:'#7A4A08', dino:'#2B4A1E', cosmos:'#1E2A5C', stage:'#5C3A08', dojo:'#6E1F30',
+    lab:'#0F3A34', arcade:'#12234A', origami:'#6E3418', elements:'#123A52',
+    critter:'#5C2A10', vibe:'#2E1B52', enchanted:'#44205C', wildhearts:'#5C1F38',
+    legends:'#14402A', turbo:'#5A1410'
+  };
+  window.SB_AVATAR_INK = id => INK[(window.SB_AVATARS.byId[id]||{}).pack] || '#3A2A5C';
+
+  // 4-way hard drop-shadow = crisp enamel/sticker outline. Constant ~1.2px keeps
+  // it readable at every size, exactly like the design contact sheet. On dark
+  // surfaces (opts.dark) the ink edge would vanish, so switch to a white glow
+  // edge — matching the design's "dusk tile" treatment.
+  window.SB_AVATAR = function(id, size, opts){ size=size||64; opts=opts||{};
     let inner = (window.SB_AVATAR_ART && window.SB_AVATAR_ART[id]) || (D[id] ? D[id]() : '');
     if(!inner) return '';
-    return `<svg viewBox="0 0 120 120" width="${size}" height="${size}" aria-hidden="true" style="display:block;overflow:visible">${inner}</svg>`; };
+    const w = Math.max(1, Math.round(size/100 * 12)/10); // ~1.2px, scales gently
+    let outline='';
+    if(opts.outline!==false){
+      if(opts.dark){ const g=Math.max(2, Math.round(size/16)); // white halo for dark bg
+        outline = `filter:drop-shadow(${w}px 0 0 #fff) drop-shadow(-${w}px 0 0 #fff) drop-shadow(0 ${w}px 0 #fff) drop-shadow(0 -${w}px 0 #fff) drop-shadow(0 0 ${g}px rgba(255,255,255,.45));`;
+      } else { const ink = opts.ink || window.SB_AVATAR_INK(id);
+        outline = `filter:drop-shadow(${w}px 0 0 ${ink}) drop-shadow(-${w}px 0 0 ${ink}) drop-shadow(0 ${w}px 0 ${ink}) drop-shadow(0 -${w}px 0 ${ink});`;
+      }
+    }
+    return `<svg viewBox="0 0 120 120" width="${size}" height="${size}" aria-hidden="true" style="display:block;overflow:visible;${outline}">${inner}</svg>`; };
 })();
