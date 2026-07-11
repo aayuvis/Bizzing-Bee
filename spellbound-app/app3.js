@@ -683,9 +683,13 @@ const app = {
     c.builtLists[key]={ label:(diffL+patL+'Builder list ('+words.length+')').trim(), ws:words.map(w=>w.w) };
     save(); sfx('win'); burstConfetti(60); app.selectList(key);
     flash('List built — '+words.length+' words · '+bldLevels(words.length)+' Level'+(bldLevels(words.length)>1?'s':'')+' to mastery 🛠️'); },
-  printOpen:()=>{ if(!state.prn) state.prn={depth:'full',page:'letter',scope:'level'}; set({printOpen:true}); },
+  printOpen:()=>{ if(!state.prn||!state.prn.inc) state.prn={inc:{w:1,p:1,d:1},page:'letter',scope:'level',sort:'level',size:'normal'}; set({printOpen:true}); },
   printClose:()=>set({printOpen:false}),
-  printSet:(kv)=>{ const i=kv.indexOf(':'); if(!state.prn) state.prn={depth:'full',page:'letter',scope:'level'}; state.prn[kv.slice(0,i)]=kv.slice(i+1); render(); },
+  printSet:(kv)=>{ const i=kv.indexOf(':'); if(!state.prn||!state.prn.inc) state.prn={inc:{w:1,p:1,d:1},page:'letter',scope:'level',sort:'level',size:'normal'};
+    const g=kv.slice(0,i), v=kv.slice(i+1);
+    if(g==='inc'){ const inc=state.prn.inc; const on=Object.keys(inc).filter(k=>inc[k]).length;
+      if(inc[v]&&on<=1){ flash('Keep at least one thing on the page'); return; } inc[v]=inc[v]?0:1; }
+    else state.prn[g]=v; render(); },
   printGo:()=>{ try{ const w=window.open('','_blank'); if(!w){ flash('Pop-up blocked — allow pop-ups to print'); return; }
     w.document.write(printDoc(activeListKey())); w.document.close(); setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} },350); state.printOpen=false; render(); }catch(e){ flash('Could not open the print view'); } },
   addTheme:(id)=>{ const c=active(); ensureLists(c); const key=themeKey(id); const t=themeOf(id); if(!t) return;
@@ -1193,9 +1197,9 @@ const WORLD_HERO={
 };
 function worldHeroCard(t, on, locked, act){ const H=WORLD_HERO[t.id]||WORLD_HERO.spellbound; const ev=EVO[t.id]||EVO.spellbound;
   const badge=on?'<span style="position:absolute;top:10px;right:10px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.94);color:#241E33;font-weight:800;font-size:12px;font-family:var(--ui,var(--body))">Active ✓</span>'
-    :(locked?('<span style="position:absolute;top:10px;right:10px;display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.92);color:#8A5B00;font-weight:900;font-size:12px">🔒 '+coinAmt(COST.theme,11)+'</span>'):'');
+    :(locked?('<span style="position:absolute;top:10px;right:10px;left:auto;z-index:3;display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.94);color:#8A5B00;font-weight:900;font-size:12px;box-shadow:0 1px 4px rgba(0,0,0,.18)">🔒 '+coinAmt(COST.theme,11)+'</span>'):'');
   return `<button data-act="${act||'pickTheme'}" data-arg="${t.id}" style="position:relative;text-align:left;border-radius:20px;overflow:hidden;background:var(--paper,var(--bg2));border:1px solid var(--line);box-shadow:${on?'0 0 0 2px '+t.c1+',var(--sh-raised)':'var(--sh-rest)'};${locked?'opacity:.94':''}">
-    <div style="position:relative;height:104px;${H.bg};${locked?'filter:grayscale(.5)':''}">
+    <div style="position:relative;height:104px;${H.bg};${locked?'filter:grayscale(1) brightness(.96);opacity:.75':''}">
       ${H.art}${badge}
       <div style="position:absolute;left:16px;bottom:10px;right:12px">
         <div style="font-family:${H.face};font-weight:800;font-size:26px;line-height:1;color:${H.ink};text-shadow:0 1px 6px rgba(0,0,0,.35)">${t.label}</div>
@@ -2291,30 +2295,39 @@ function viewBuilder(){ const S=state; const b=bldState(); const picked=bldPick(
     </div>
   </div>`; }
 /* ===================== Print a word list ===================== */
-function printDoc(key){ const p=state.prn||{}; const depth=p.depth||'full'; const page=p.page||'letter'; const scope=p.scope||'level';
+function printDoc(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1,p:1,d:1},page:'letter',scope:'level',sort:'level',size:'normal'};
+  const inc=p.inc, page=p.page||'letter', scope=p.scope||'level', sort=p.sort||'level', compact=p.size==='compact';
   const c=active(); let words=(scope==='level'?listWords(key):listFullWords(key)).filter(w=>w&&w.w);
+  if(sort==='alpha') words=words.slice().sort((a,b)=>a.w.localeCompare(b.w));
+  else if(sort==='diff') words=words.slice().sort((a,b)=>((a.y||3)-(b.y||3))||((a.bp||0)-(b.bp||0))||a.w.localeCompare(b.w));
   const PRINT_CAP=2400; const total=words.length; if(words.length>PRINT_CAP) words=words.slice(0,PRINT_CAP);   // giant lists would hang the browser
   const label=listLabel(key).split(' · ')[0]; const sizes={letter:'letter',a4:'A4',a5:'A5'};
-  const cols=depth==='words'?3:depth==='say'?2:1;
+  let cols = inc.d ? 1 : ((inc.w?1:0)+(inc.p?1:0)>1 ? 2 : 3);
+  if(compact) cols += (inc.d?1:1);                                   // compact squeezes one extra column in
   const rows=words.map((w,i)=>{ const say=w.p||w.sy||'';
-    if(depth==='words') return `<div class="cell"><span class="n">${i+1}</span><span class="w">${esc(w.w)}</span></div>`;
-    if(depth==='say') return `<div class="cell"><span class="n">${i+1}</span><span class="w">${esc(w.w)}</span>${say?`<span class="p">${esc(say)}</span>`:''}</div>`;
-    return `<div class="cell full"><div><span class="n">${i+1}</span><span class="w">${esc(w.w)}</span>${say?`<span class="p">${esc(say)}</span>`:''}</div>${w.d?`<div class="d">${esc(w.d)}</div>`:''}</div>`; }).join('');
+    const wordBit = inc.w ? `<span class="w">${esc(w.w)}</span>` : `<span class="blank"></span>`;
+    const sayBit  = (inc.p&&say) ? `<span class="p">${esc(say)}</span>` : '';
+    const defBit  = (inc.d&&w.d) ? `<div class="d">${esc(inc.w?w.d:maskTxt(w.d,w.w))}</div>` : '';
+    if(inc.d) return `<div class="cell full"><div><span class="n">${i+1}</span>${wordBit}${sayBit}</div>${defBit}</div>`;
+    return `<div class="cell"><span class="n">${i+1}</span>${wordBit}${sayBit}</div>`; }).join('');
+  const sortNote = sort==='alpha'?' · A→Z' : sort==='diff'?' · easiest→hardest' : '';
+  const fz = compact ? {w:11,p:10,d:10,n:9.5,pad:'2px',dpad:'3px',gap:'2px 12px',mar:'9mm'} : {w:13,p:12,d:12,n:12,pad:'4px',dpad:'6px',gap:'4px 18px',mar:'14mm'};
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(label)} — Bizzing Bee word list</title><style>
-    @page{size:${sizes[page]||'letter'};margin:14mm} *{box-sizing:border-box;margin:0;padding:0}
+    @page{size:${sizes[page]||'letter'};margin:${fz.mar}} *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:Georgia,'Times New Roman',serif;color:#1c1633;padding:4px}
-    h1{font-size:20px;margin-bottom:2px} .meta{font-size:12px;color:#666;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #1c1633}
-    .grid{display:grid;grid-template-columns:repeat(${cols},1fr);gap:4px 18px}
-    .cell{display:flex;align-items:baseline;gap:8px;padding:4px 0;border-bottom:1px dotted #ccc;break-inside:avoid}
-    .cell.full{display:block;padding:6px 0}
-    .n{font-size:12px;color:#999;min-width:20px;display:inline-block} .w{font-size:13px;font-weight:bold;letter-spacing:.02em}
-    .p{font-size:12px;color:#555;font-style:italic;margin-left:8px} .d{font-size:12px;color:#444;line-height:1.35;margin:2px 0 0 28px}
-    .foot{margin-top:16px;font-size:12px;color:#888;text-align:center}
+    h1{font-size:${compact?16:20}px;margin-bottom:2px} .meta{font-size:${compact?10:12}px;color:#666;margin-bottom:${compact?8:14}px;padding-bottom:${compact?5:8}px;border-bottom:2px solid #1c1633}
+    .grid{display:grid;grid-template-columns:repeat(${cols},1fr);gap:${fz.gap}}
+    .cell{display:flex;align-items:baseline;gap:8px;padding:${fz.pad} 0;border-bottom:1px dotted #ccc;break-inside:avoid}
+    .cell.full{display:block;padding:${fz.dpad} 0}
+    .n{font-size:${fz.n}px;color:#999;min-width:${compact?16:20}px;display:inline-block} .w{font-size:${fz.w}px;font-weight:bold;letter-spacing:.02em}
+    .p{font-size:${fz.p}px;color:#555;font-style:italic;margin-left:8px} .d{font-size:${fz.d}px;color:#444;line-height:1.35;margin:2px 0 0 ${compact?22:28}px}
+    .blank{display:inline-block;min-width:${compact?90:120}px;border-bottom:1.4px solid #444;height:${compact?10:13}px}
+    .foot{margin-top:${compact?9:16}px;font-size:${compact?10:12}px;color:#888;text-align:center}
   </style></head><body>
-    <h1>${esc(label)}</h1>
-    <div class="meta">${esc(c.name||'Speller')} · ${words.length}${total>words.length?(' of '+total):''} words · ${scope==='level'?('Level '+(listStageIdx(c,key)+1)):'whole list'}${total>words.length?' (first '+PRINT_CAP+' shown — print a Level for a focused sheet)':''} · printed ${new Date().toLocaleDateString()} · Bizzing Bee</div>
+    <h1>${esc(label)}${inc.w?'':' — quiz sheet'}</h1>
+    <div class="meta">${esc(c.name||'Speller')} · ${words.length}${total>words.length?(' of '+total):''} words${sortNote} · ${scope==='level'?('Level '+(listStageIdx(c,key)+1)):'whole list'}${total>words.length?' (first '+PRINT_CAP+' shown — print a Level for a focused sheet)':''} · printed ${new Date().toLocaleDateString()} · Bizzing Bee</div>
     <div class="grid">${rows}</div>
-    <div class="foot">Say it → spell it → say it again. 🐝</div>
+    <div class="foot">${inc.w?'Say it → spell it → say it again. 🐝':'Read the clue, write the word — check together afterwards. 🐝'}</div>
   </body></html>`; }
 // Lists the child has activated: the 3 core lists + everything they pinned + whatever is being trained now.
 function activatedListKeys(){ const c=active(); ensureLists(c);
@@ -2955,15 +2968,18 @@ function coachTrain(){
   const titleRow = (S.renameKey===key)
     ? `<div style="display:flex;align-items:center;gap:8px;flex:1;min-width:220px"><input data-inp="renameInput" data-fkey="renameInp" value="${escA(S.renameVal)}" maxlength="40" placeholder="List name" style="flex:1;min-width:120px;background:var(--surface2);border:1px solid var(--accent);border-radius:10px;padding:8px 11px;font-size:15px;font-weight:800;color:var(--text);font-family:var(--display)"><button data-act="saveRename" style="padding:8px 13px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">Save</button><button data-act="cancelRename" style="padding:8px 11px;border-radius:10px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:13px">✕</button></div>`
     : `<div style="display:inline-flex;align-items:center;gap:8px;min-width:0"><span style="font-family:var(--display);font-weight:800;font-size:15px">${esc(listLabel(key))}</span><button data-act="startRename" data-arg="${escA(key)}" title="Rename this list" style="color:var(--muted);display:inline-flex">${iconSVG('pencil',15)}</button><span style="font-size:13px;color:var(--muted);font-weight:700;white-space:nowrap">· Level ${uiLevel}</span></div>`;
-  const printDlg = S.printOpen ? (()=>{ const p=S.prn||{depth:'full',page:'letter',scope:'level'};
+  const printDlg = S.printOpen ? (()=>{ const p=(S.prn&&S.prn.inc)?S.prn:{inc:{w:1,p:1,d:1},page:'letter',scope:'level',sort:'level',size:'normal'};
     const pbtn=(g,v,l)=>`<button data-act="printSet" data-arg="${g}:${v}" style="padding:9px 13px;border-radius:10px;font-weight:800;font-size:12px;border:1px solid ${p[g]===v?'var(--accent)':'var(--line)'};${p[g]===v?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">${l}</button>`;
+    const tbtn=(v,l)=>`<button data-act="printSet" data-arg="inc:${v}" style="padding:9px 13px;border-radius:10px;font-weight:800;font-size:12px;border:1px solid ${p.inc[v]?'var(--accent)':'var(--line)'};${p.inc[v]?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">${p.inc[v]?'✓ ':''}${l}</button>`;
     const prow=(t,btns)=>`<div style="margin-bottom:13px"><div style="font-size:12px;color:var(--muted);font-weight:800;margin-bottom:7px">${t}</div><div style="display:flex;gap:6px;flex-wrap:wrap">${btns}</div></div>`;
     const nWords=(p.scope==='level'?listWords(key):listFullWords(key)).length;
     return `<div style="position:fixed;inset:0;z-index:90;background:rgba(20,12,50,.45);display:grid;place-items:center;padding:18px" data-act="printClose">
       <div data-act="noop" style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:22px;max-width:430px;width:100%;box-shadow:var(--sh-overlay);cursor:default">
         <div style="display:flex;align-items:center;gap:9px;margin-bottom:4px"><span style="display:inline-flex;color:var(--action)">${SB_ICON('printer',{size:20})}</span><span style="font-family:var(--display);font-weight:800;font-size:17px">Print word list</span><button data-act="printClose" style="margin-left:auto;color:var(--muted);font-weight:800">✕</button></div>
         <p style="font-size:12px;color:var(--muted);margin:0 0 15px">${esc(listLabel(key).split(' · ')[0])} — opens a clean page you can print or save as PDF.</p>
-        ${prow('What to include',[['words','Words only'],['say','Words + pronunciation'],['full','Words + pronunciation + meaning']].map(([v,l])=>pbtn('depth',v,l)).join(''))}
+        ${prow('What to include — pick one, two or three',[tbtn('w','Words'),tbtn('p','Pronunciations'),tbtn('d','Meanings')].join('')+(p.inc.w?'':'<div style="flex-basis:100%;font-size:11.5px;color:var(--muted);font-weight:650;margin-top:2px">No words = a quiz sheet — each row gets a blank line to write on.</div>'))}
+        ${prow('Sort by',[['level','Level order'],['alpha','A → Z'],['diff','Easiest → hardest']].map(([v,l])=>pbtn('sort',v,l)).join(''))}
+        ${prow('Text size',[['normal','Normal'],['compact','Compact — less paper']].map(([v,l])=>pbtn('size',v,l)).join(''))}
         ${prow('Page size',[['letter','Letter'],['a4','A4'],['a5','A5']].map(([v,l])=>pbtn('page',v,l)).join(''))}
         ${prow('What scope',[['level','Words in play · '+listWords(key).length],['all','Entire word list · '+listFullWords(key).length]].map(([v,l])=>pbtn('scope',v,l)).join(''))}
         <button data-act="printGo" style="width:100%;padding:13px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Print ${nWords} words →</button>
