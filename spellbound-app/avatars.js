@@ -1,4 +1,4 @@
-/* Bizzing Bee — collectible avatars ("blooks"): 30 characters in 6 world packs.
+/* Bizzing Bee — collectible avatars ("blooks"): 150 characters in 15 packs (art in avatars-art.js).
    Blooket-style squircle characters drawn with the app's palette + duotone cheer.
    window.SB_AVATARS = defs (pack, rarity, price); window.SB_AVATAR(id, size) = SVG. */
 (function(){
@@ -15,6 +15,13 @@
     { id:'arcade', label:'Arcade Pack', world:'arcade',     c1:'#3B6FE0', c2:'#FF5D9E' },
     { id:'origami',label:'Origami Pack',world:'origami',    c1:'#C25A2E', c2:'#F2E9DA' },
     { id:'elements',label:'Elements Pack',world:'elements', c1:'#2E8FB8', c2:'#9BD3B4' },
+    { id:'critter', label:'Critter Crew',  world:'spellbound', c1:'#E8845C', c2:'#FFD9A8' },
+    { id:'vibe',    label:'Vibe Pack',     world:'galaxy',     c1:'#8A5CE8', c2:'#FF7FBE' },
+    { id:'dino',    label:'Dino Pack',     world:'lab',        c1:'#6CB454', c2:'#F0A82A' },
+    { id:'enchanted',label:'Enchanted Pack',world:'spellbound',c1:'#A05CC8', c2:'#FF9EC4' },
+    { id:'wildhearts',label:'Wildhearts Pack',world:'blade',   c1:'#E86A9A', c2:'#FFC0D8' },
+    { id:'legends', label:'Legends Pack',  world:'blade',      c1:'#4A7A5C', c2:'#7CFFB2' },
+    { id:'turbo',   label:'Turbo Pack',    world:'arcade',     c1:'#E05C3A', c2:'#FFC23D' },
   ];
   // shared drawing kit — every avatar is a 120x120 squircle character
   const SQ = (fill, extra) => `<rect x="10" y="14" width="100" height="96" rx="30" fill="${fill}"${extra||''}/>`;
@@ -154,8 +161,17 @@
     ['pixel','Pixel Pal','arcade','free'],['joy','Joy Stick','arcade','rare'],['ghost','Cabinet Ghost','arcade','rare'],['dpad','D-Pad','arcade','rare'],['tokeny','Tokeny','arcade','rare'],['bossbot','Boss Bot','arcade','epic'],['rainbow','Rainbow Cart','arcade','epic'],['glitch','Glitch','arcade','epic'],['hiscore','1-UP','arcade','epic'],['neonking','Neon King','arcade','legendary'],
     ['paperplane','Paper Plane','origami','free'],['cranefold','Crane','origami','rare'],['boatfold','Little Boat','origami','rare'],['hopfold','Hop Frog','origami','rare'],['fanfold','Fan Dancer','origami','rare'],['lotusfold','Lotus','origami','epic'],['koifold','Paper Koi','origami','epic'],['kabuto','Kabuto','origami','epic'],['flutterfold','Flutter','origami','epic'],['goldencrane','Golden Crane','origami','legendary'],
     ['pebble','Pebble','elements','free'],['breeze','Breeze','elements','free'],['droplet','Droplet','elements','rare'],['ember','Ember','elements','rare'],['leafy','Leafy','elements','rare'],['cloudy','Cloudy','elements','rare'],['wave','Big Wave','elements','epic'],['boulder','Boulder','elements','epic'],['zappy','Zappy','elements','epic'],['elemental','Elemental Prime','elements','legendary'],
+    ['froggy','Pond Star','critter','free'],['corg','Zoomies','critter','rare'],['sharky','Finn','critter','rare'],['slowmo','Slowmo','critter','rare'],['capy','Capy','critter','rare'],['narly','Narly','critter','epic'],['redpanda','Rusty','critter','epic'],['axo','Axo','critter','epic'],['rexy','Rexy','critter','epic'],['uni','Uni','critter','legendary'],
+    ['gg','GG','vibe','free'],['duckie','Duckie','vibe','rare'],['boba','Boba','vibe','rare'],['sprinkle','Sprinkle','vibe','rare'],['pengu','Pengu','vibe','rare'],['slimey','Slimey','vibe','epic'],['djbot','Beat Bot','vibe','epic'],['plushy','Plushy','vibe','epic'],['catlord','Catlord','vibe','epic'],['yeti','Frost','vibe','legendary'],
+    ['trice','Trice','dino','free'],['stego','Stego','dino','rare'],['raptor','Raptor','dino','rare'],['ptero','Ptero','dino','rare'],['bronto','Bronto','dino','rare'],['spino','Spino','dino','epic'],['ankylo','Ankylo','dino','epic'],['mosa','Mosa','dino','epic'],['fossil','Fossil','dino','epic'],['rexking','Rex King','dino','legendary'],
+    ['midnight','Midnight','enchanted','free'],['wisp','Wisp','enchanted','rare'],['lunamoth','Luna Moth','enchanted','rare'],['fae','Fae','enchanted','rare'],['crystal','Crystal','enchanted','rare'],['mer','Pearl','enchanted','epic'],['snowfox','Snowfox','enchanted','epic'],['briar','Briar','enchanted','epic'],['wish','Wish','enchanted','epic'],['starweaver','Starweaver','enchanted','legendary'],
+    ['monarch','Monarch','wildhearts','free'],['hoppy','Hoppy','wildhearts','rare'],['fawn','Fawn','wildhearts','rare'],['ottie','Ottie','wildhearts','rare'],['echo','Echo','wildhearts','rare'],['pounce','Pounce','wildhearts','epic'],['swan','Swan','wildhearts','epic'],['howl','Howl','wildhearts','epic'],['blaze','Blaze','wildhearts','epic'],['pegasus','Pegasus','wildhearts','legendary'],
+    ['squatch','Squatch','legends','free'],['nessie','Nessie','legends','rare'],['griff','Griff','legends','rare'],['golem','Golem','legends','rare'],['cyclo','Cyclo','legends','rare'],['fang','Fang','legends','epic'],['kraken','Kraken','legends','epic'],['mino','Mino','legends','epic'],['phantom','Phantom','legends','epic'],['hydra','Hydra','legends','legendary'],
+    ['rally','Rally','turbo','free'],['turbo','Turbo','turbo','rare'],['crash','Crash','turbo','rare'],['airtime','Airtime','turbo','rare'],['striker','Striker','turbo','rare'],['champ','Champ','turbo','epic'],['hover','Hover','turbo','epic'],['nitro','Nitro','turbo','epic'],['mech','Mech','turbo','epic'],['titan','Titan','turbo','legendary'],
   ].map(([id,name,pack,rarity])=>({ id, name, pack, rarity, price:RAR[rarity].price, sell:RAR[rarity].sell }));
   window.SB_AVATARS = { list:AV, packs:PACKS, rarities:RAR, byId:Object.fromEntries(AV.map(a=>[a.id,a])) };
-  window.SB_AVATAR = function(id, size){ size=size||64; const d=D[id]; if(!d) return '';
-    return `<svg viewBox="0 0 120 120" width="${size}" height="${size}" aria-hidden="true" style="display:block;overflow:visible">${d()}</svg>`; };
+  window.SB_AVATAR = function(id, size){ size=size||64;
+    let inner = (window.SB_AVATAR_ART && window.SB_AVATAR_ART[id]) || (D[id] ? D[id]() : '');
+    if(!inner) return '';
+    return `<svg viewBox="0 0 120 120" width="${size}" height="${size}" aria-hidden="true" style="display:block;overflow:visible">${inner}</svg>`; };
 })();
