@@ -758,6 +758,9 @@ const app = {
   sqNext:()=>{ if(window.SQ) SQ.next(); },
   sqRetry:()=>{ if(window.SQ) SQ.retry(); },
   sqHearLine:(a)=>{ if(window.SQ) SQ.hearLine(a); },
+  sqBeat:()=>{ if(window.SQ) SQ.beatNext(); },
+  sqHearBeat:(a)=>{ if(window.SQ) SQ.hearBeat(a); },
+  sqGoCh:(a)=>{ if(window.SQ) SQ.goCh(a); },
   // ----- Magic Squares -----
   magicCell:(i)=>{ const g=state.game; if(!g||g.type!=='magic') return; i=+i; if(g.board[i].done){ flash('That square is already yours ⭐'); return; }
     g.qs=magicBuildQs(g.board[i].id); if(g.qs.length<5){ flash('Not enough words in that theme yet'); return; }
@@ -836,20 +839,21 @@ const app = {
   toggleSound:()=>{ set({sound:!state.sound}); if(state.sound) sfx('coin'); },
   toggleDevUnlock:()=>{ const on=!state.devUnlock; state.devUnlock=on; state.premium=on?true:false; try{localStorage.setItem('sb_devunlock',on?'1':'0');}catch(e){} save(); flash(on?'🔓 All features & content unlocked (testing)':'🔒 Locked features restored'); render(); },
   playGame:(type)=>{ clearGTimer(); const c=active(); ensureLists(c); state.gInfo=false; state.typed='';
-    if(type==='buzz'){ const list=pickFresh(gameWords(),10); if(!list.length){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,right:0,ans:[],status:'idle'}; setTimeout(()=>{ if(state.game&&state.game.list[0]) say(state.game.list[0].w); },320); }
+    if(type==='buzz'){ const list=pickFresh(gameWordsD(),10); if(!list.length){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,right:0,ans:[],status:'idle'}; setTimeout(()=>{ if(state.game&&state.game.list[0]) say(state.game.list[0].w); },320); }
     else if(type==='beat'){ state.game={type:'beat',phase:'mode'}; set({nav:'games',screen:'app'}); return; }
     else if(type==='wordquiz'){ state.game={type:'wordquiz',phase:'pick'}; set({nav:'games',screen:'app'}); return; }
-    else if(type==='duel'){ const list=pickFresh(gameWords(),10); if(list.length<5){ flash('No words yet — try a list first'); return; }
+    else if(type==='duel'){ const list=pickFresh(gameWordsD(),10); if(list.length<5){ flash('No words yet — try a list first'); return; }
       state.game={type,list:list.slice(0,10),phase:'setup',p:[{name:c.name||'Player 1',right:0},{name:'Player 2',right:0}],turn:0,i:0,status:'play'}; state.typed=''; }
-    else if(type==='boss'){ const list=pickFresh((state.missedWords||[]).concat(REVIEW).concat(listWords(c.activeList||'default')), 60); if(list.length<3){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,hp:8,maxhp:8,lives:3,maxlives:3,right:0,status:'play',last:null}; setTimeout(()=>{ if(state.game&&state.game.list[0]) say(state.game.list[0].w); },320); }
+    else if(type==='boss'){ const list=pickFresh(diffSlice((state.missedWords||[]).concat(REVIEW).concat(listWords(c.activeList||'default'))), 60); if(list.length<3){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,hp:8,maxhp:8,lives:3,maxlives:3,right:0,status:'play',last:null}; setTimeout(()=>{ if(state.game&&state.game.list[0]) say(state.game.list[0].w); },320); }
     else if(type==='magic'){ magicNewBoard(); }
     else return;
     set({nav:'games', screen:'app'}); },
+  setGameDiff:(k)=>{ const c=active(); c.gameDiff=k; save(); render(); },
   exitGame:()=>{ clearGTimer(); set({game:null, gInfo:false, typed:''}); },
   // Beat the Buzzer now hosts a mode picker: a relaxed 10-word warm-up (the old
   // Buzz of the Day) or the 60-second sprint.
   beatStart:(mode)=>{ clearGTimer(); if(mode==='warmup'){ app.playGame('buzz'); return; }
-    const c=active(); const list=pickFresh(gameWords(),240); if(list.length<3){ flash('No words yet — try a list first'); return; }
+    const c=active(); const list=pickFresh(gameWordsD(),240); if(list.length<3){ flash('No words yet — try a list first'); return; }
     let _t=60; if(((c.pow||{}).time||0)>0){ c.pow.time--; _t=75; save(); setTimeout(()=>flash('⚡ +15s boost active!'),200); }
     state.game={type:'beat',mode:'sprint',list,i:0,right:0,wrong:0,timeLeft:_t,status:'play'}; startGTimer();
     setTimeout(()=>{ if(state.game&&state.game.list[0]) say(state.game.list[0].w); },320); set({nav:'games',screen:'app'}); },
@@ -873,7 +877,7 @@ const app = {
     if(ok){ markMastered(nkey(w.w)); clearMiss(w.w); sfx('correct'); }
     else { addMiss(w); sfx('wrong'); }
     if(!g.rw) g.rw=[]; g.rw.push({w:w.w, ok});
-    const advance=()=>{ g.i++; if(g.i>=g.list.length){ const fresh=pickFresh(gameWords(), g.list.length); g.list=fresh.length?fresh:sample(g.list); g.i=0; } state.typed=''; state.gInfo=false; setTimeout(()=>{ if(state.game&&state.game.list[state.game.i]) say(state.game.list[state.game.i].w); },180); };
+    const advance=()=>{ g.i++; if(g.i>=g.list.length){ const fresh=pickFresh(gameWordsD(), g.list.length); g.list=fresh.length?fresh:sample(g.list); g.i=0; } state.typed=''; state.gInfo=false; setTimeout(()=>{ if(state.game&&state.game.list[state.game.i]) say(state.game.list[state.game.i].w); },180); };
     if(g.type==='buzz'){ g.ans.push({w,val:state.typed,ok}); if(ok){ g.right++; addCoins(1); gainXp(); } if(g.i+1<g.list.length){ advance(); render(); } else { gFinishBuzz(); } }
     else if(g.type==='beat'){ if(ok){ g.right++; addCoins(1); gainXp(); } else g.wrong++; advance(); render(); }
     else if(g.type==='boss'){ if(ok){ g.hp=Math.max(0,g.hp-1); g.right++; addCoins(1); gainXp(); g.last={ok:true,word:w.w}; if(g.hp<=0){ gFinishBoss(true); return; } }
@@ -3359,6 +3363,9 @@ function coachOrGone(){
    (spell-it or pick-the-meaning). Complete rows, columns & diagonals for bonus coins;
    black out the whole square for the mega prize. ===== */
 const MAGIC_BONUS={cell:3,row:10,col:10,diag:15,square:40};
+function magicConceptCells(){ try{ loadConcepts(); }catch(e){}
+  return (state.conceptData||[]).map((ch,ci)=>({kind:'concept', id:'c:'+ci, label:conceptShort(ch.title), ci}))
+    .filter(x=>isConceptUnlocked(x.ci) && conceptWordsOf((state.conceptData||[])[x.ci]).length>=5); }
 function magicNewBoard(){ clearGTimer();
   const ok=t=>themeWords(t.id).length>=10;
   const used=state._magicUsed||(state._magicUsed=new Set());
@@ -3368,14 +3375,23 @@ function magicNewBoard(){ clearGTimer();
   let pool=myThemes().filter(fresh);
   pool=pool.concat(sample(themeDefs().filter(t=>fresh(t)&&!pool.some(p=>p.id===t.id)), 9-Math.min(pool.length,9)));
   if(pool.length<9) pool=pool.concat(sample(themeDefs().filter(t=>ok(t)&&!pool.some(p=>p.id===t.id)),9-pool.length));
-  const board=sample(pool,9).map(t=>({id:t.id,label:t.label,cluster:t.cluster,done:false,best:0,tried:0}));
+  // mix in up to 3 concept cells so the board teaches patterns too
+  const cCells=sample(magicConceptCells().filter(x=>!used.has(x.id)), 3);
+  let cells=sample(pool,9-cCells.length).map(t=>({kind:'theme',id:t.id,label:t.label,cluster:t.cluster}))
+    .concat(cCells.map(x=>({kind:'concept',id:x.id,label:x.label,ci:x.ci})));
+  const board=sample(cells,cells.length).slice(0,9).map(c=>({...c,done:false,best:0,tried:0}));
   board.forEach(c=>used.add(c.id));
   const round=((state.game&&state.game.type==='magic')?(state.game.round||1):0)+1;
   state.game={type:'magic',board,round,cell:null,qs:null,qi:0,right:0,picked:null,ok:null,revealed:false,
     lines:{r:[false,false,false],c:[false,false,false],d:[false,false]},squareDone:false,celebr:null,coins:0,status:'board'};
   state.typed=''; render(); }
-function magicClusterOf(cell){ return themeClusters().find(x=>x.id===cell.cluster)||themeClusters()[0]; }
-function magicBuildQs(id){ const all=themeWords(id).filter(w=>w.d&&w.d.length>4);
+function magicClusterOf(cell){ if(cell&&cell.kind==='concept') return {id:'concept',label:'Concept',c:'#0E8A78'};
+  return themeClusters().find(x=>x.id===cell.cluster)||themeClusters()[0]; }
+function magicCellWords(id){
+  if(String(id).slice(0,2)==='c:'){ const ch=(state.conceptData||[])[+String(id).slice(2)];
+    return conceptWordsOf(ch||{}).map(x=>({w:x.w, d:x.def||'', s:x.ex||''})); }
+  return themeWords(id); }
+function magicBuildQs(id){ const all=diffSlice(magicCellWords(id).filter(w=>w.d&&w.d.length>4));
   let ws=pickFresh(all,5); if(ws.length<5) ws=ws.concat(sample(all.filter(w=>!ws.some(x=>nkey(x.w)===nkey(w.w))),5-ws.length));
   return ws.slice(0,5).map(w=>{ logGameWord(nkey(w.w));
     if(Math.random()<0.5 && /^[a-z'\- ]+$/i.test(w.w)) return {k:'spell',w};
@@ -3549,6 +3565,17 @@ function gameWords(opts){ opts=opts||{}; const c=active(); const key=c.activeLis
   if(opts.needDef) return out.filter(w=>w.d&&w.d.length>4);
   if(opts.needSent) return out.filter(w=>w.s&&/[a-z]/i.test(w.s));
   return out; }
+/* ---- arcade difficulty: slice the speller's own pool by relative hardness, so
+   "hard" for a Level-3 speller differs from "hard" for a Level-12 one ---- */
+function wordDiffScore(w){ return (w.y||3)*2 + Math.min(3, Math.max(0, ((w.w||'').length-5)/2)); }
+function diffSlice(pool){ const d=(active().gameDiff)||'auto'; if(d==='auto'||pool.length<12) return pool;
+  const sorted=pool.slice().sort((a,b)=>wordDiffScore(a)-wordDiffScore(b)); const n=sorted.length;
+  if(d==='easy')   return sorted.slice(0, Math.max(10, Math.floor(n*0.40)));
+  if(d==='medium') { const s=Math.floor(n*0.25); return sorted.slice(s, Math.max(s+10, Math.floor(n*0.75))); }
+  if(d==='hard')   return sorted.slice(Math.min(n-10, Math.floor(n*0.55)));
+  return sorted.slice(Math.min(n-10, Math.floor(n*0.75)));   // champ: the top quarter
+}
+function gameWordsD(opts){ return diffSlice(gameWords(opts)); }
 /* ---- no-repeat log: don't re-serve a word until 150 others have been played ---- */
 const NO_REPEAT_WINDOW = 150;
 function recentGameKeys(c){ const log=(c&&c.gameLog)||[]; return new Set(log.slice(-NO_REPEAT_WINDOW)); }
@@ -3560,7 +3587,7 @@ function pickFresh(pool, n){ const c=active(); const recent=recentGameKeys(c); c
   if(fresh.length>=n) return sample(fresh, n);
   const used=valid.filter(w=>recent.has(nkey(w.w))).sort((a,b)=>log.lastIndexOf(nkey(a.w))-log.lastIndexOf(nkey(b.w)));
   return sample(fresh).concat(used).slice(0, n); }
-function buildMC(mode,n){ const all=gameWords();
+function buildMC(mode,n){ const all=gameWordsD();
   if(mode==='origin'){ const pool=all.filter(w=>w.o && MC_ORIGINS.indexOf(w.o)>=0); if(pool.length<4) return [];
     return pickFresh(pool, Math.min(n,pool.length)).map(w=>{
       const choices=sample([w.o].concat(sample(MC_ORIGINS.filter(o=>o!==w.o),3)));
@@ -3699,7 +3726,7 @@ function magicView(){ const g=state.game; const S=state;
     <div style="font-size:15px;color:var(--muted);font-weight:700">${esc(cell.label)} — ${r.right}/5 right${r.coins?(' · +'+r.coins+' 🪙 bonus'):''}</div>
     ${celebr}
     <div style="display:flex;gap:10px;margin-top:16px">${r.win?'':`<button data-act="magicCell" data-arg="${g.cell}" style="flex:1;padding:13px;border-radius:14px;background:${cl.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Try again →</button>`}${g.squareDone
-      ? `<button data-act="magicNew" style="flex:1;padding:13px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Round ${(g.round||1)+1} — 9 new themes →</button><button data-act="exitGame" style="padding:13px 16px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">Done</button>`
+      ? `<button data-act="magicNew" style="flex:1;padding:13px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Round ${(g.round||1)+1} — 9 new cells →</button><button data-act="exitGame" style="padding:13px 16px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">Done</button>`
       : `<button data-act="magicBoard" style="flex:1;padding:13px;border-radius:14px;background:${r.win?'var(--accent)':'var(--surface2)'};color:${r.win?'#fff':'var(--text)'};font-weight:800;font-size:15px;${r.win?'box-shadow:var(--edge)':'border:1px solid var(--line)'}">Back to the board</button>`}</div>
   </div>`; }
 function gamesHub(){ const S=state;
@@ -3719,7 +3746,7 @@ function gamesHub(){ const S=state;
       </div></button>`;
   })();
   const champCard=`<button data-act="openChallenge" data-arg="journey" style="grid-column:1/-1;text-align:left;border-radius:14px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 6px 18px rgba(43,27,94,.18)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">${iconSVG('bolt',32)}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">Set timed or counted · pick a difficulty</div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Champ Challenge</div><div style="font-size:12px;color:rgba(255,255,255,.9)">Beat the clock or a set number — pass your Level to test out.</div></div><span style="padding:9px 16px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Set it up →</span></div></button>`;
-  const magicCard=`<button data-act="playGame" data-arg="magic" style="grid-column:1/-1;text-align:left;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#B14FC4,#7E2E9E);box-shadow:0 6px 18px rgba(123,46,142,.24)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">${iconSVG('grid',30)}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">3×3 board · rows &amp; diagonals for bonus coins</div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Magic Squares</div><div style="font-size:12px;color:rgba(255,255,255,.9)">Clear cells by spelling — complete a line for a Magic Square bonus.</div></div><span style="padding:9px 16px;border-radius:10px;background:#fff;color:#7E2E9E;font-weight:800;font-size:13px;white-space:nowrap">Play →</span></div></button>`;
+  const magicCard=`<button data-act="playGame" data-arg="magic" style="grid-column:1/-1;text-align:left;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#B14FC4,#7E2E9E);box-shadow:0 6px 18px rgba(123,46,142,.24)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">${iconSVG('grid',30)}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">3×3 board of themes &amp; concepts · lines win bonus coins</div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Magic Squares</div><div style="font-size:12px;color:rgba(255,255,255,.9)">Clear theme and concept cells by spelling — complete a line for a Magic Square bonus.</div></div><span style="padding:9px 16px;border-radius:10px;background:#fff;color:#7E2E9E;font-weight:800;font-size:13px;white-space:nowrap">Play →</span></div></button>`;
   const cards=questCard+champCard+magicCard+GAMES.map(gm=>`<button class="sb-cover-card" data-act="playGame" data-arg="${gm.type}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
       <div style="position:relative">
         ${SB_GAME(S.theme,gm.type,{h:108,dark:S.mode==='dusk'})}
@@ -3740,7 +3767,13 @@ function gamesHub(){ const S=state;
       </div></div>`;
   return `<div style="max-width:760px;margin:0 auto">
     <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button><span style="margin-left:2px">${arcadeLogoSVG(38)}</span><span style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em">Arcade</span><span style="margin-left:auto">${coinChip()}</span></div>
-    <p style="margin:0 0 16px;color:var(--muted);font-size:13px">Play a story season or jump into a quick game — every correct word earns coins.</p>
+    <p style="margin:0 0 10px;color:var(--muted);font-size:13px">Play a story season or jump into a quick game — every correct word earns coins.</p>
+    <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:16px">
+      <span style="font-size:12px;font-weight:800;color:var(--muted)">Word difficulty</span>
+      ${[['auto','My level'],['easy','Easy'],['medium','Medium'],['hard','Hard'],['champ','Champ']].map(([k,l])=>{ const on=((active().gameDiff)||'auto')===k;
+        return `<button data-act="setGameDiff" data-arg="${k}" style="padding:7px 13px;border-radius:999px;font-weight:800;font-size:12.5px;${on?'background:var(--accent);color:#fff;box-shadow:var(--edge)':'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">${l}</button>`; }).join('')}
+      <span style="font-size:11.5px;color:var(--muted);font-weight:650">— how tough the words are in every game, scaled to your own level</span>
+    </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">${cards}</div>
     ${store}
   </div>`;

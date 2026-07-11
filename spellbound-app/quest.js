@@ -177,7 +177,8 @@
   function prog(){ try{ return JSON.parse(localStorage.getItem('sq_progress')||'{}'); }catch(e){ return {}; } }
   function saveProg(p){ try{ localStorage.setItem('sq_progress', JSON.stringify(p)); }catch(e){} }
   function cleared(pk){ return (prog()[pk]||{}).cleared||0; }              // chapters cleared 0..5
-  function seasonUnlocked(idx){ if(idx===0) return true; const S=seasons(); return cleared(S[idx-1].pack)>=5; }
+  function dev(){ return !!(typeof state!=='undefined' && state && state.devUnlock); }
+  function seasonUnlocked(idx){ if(dev()) return true; if(idx===0) return true; const S=seasons(); return cleared(S[idx-1].pack)>=5; }
   function starsFor(pk,ch){ return ((prog()[pk]||{}).stars||{})[ch]||0; }
   function recordClear(pk,ch,stars){ const p=prog(); const e=p[pk]||(p[pk]={cleared:0,stars:{}});
     e.cleared=Math.max(e.cleared, ch); e.stars=e.stars||{}; e.stars[ch]=Math.max(e.stars[ch]||0, stars); saveProg(p); }
@@ -202,9 +203,27 @@
     exit(){ clearInterval((state.sq||{}).timer); state.sq=null; if(typeof app!=='undefined'&&app.openGames) app.openGames(); else { state.nav='games'; render(); } },
     pickSeason(pk){ const S=seasonByPack(pk); if(!S) return; const idx=seasons().findIndex(s=>s.pack===pk);
       if(!seasonUnlocked(idx)){ if(typeof flash==='function') flash('🔒 Finish the season before to unlock '+S.title); return; }
-      const ch=Math.min(5, cleared(pk)+1); state.sq={ view:'chapter', pack:pk, ch }; render(); },
-    openChapter(pk,ch){ state.sq={ view:'chapter', pack:pk, ch:+ch }; render(); },
+      const ch=Math.min(5, cleared(pk)+1); state.sq={ view:'chapter', pack:pk, ch, beat:0 }; render(); },
+    openChapter(pk,ch){ state.sq={ view:'chapter', pack:pk, ch:+ch, beat:0 }; render(); },
+    // sequential story beats: three voiced lines that lead into the challenge
+    _beats(S,ch){ const chp=S.chapters[ch-1]; const cast=S.cast;
+      const a=cast[ch%cast.length], b=cast[(ch+2)%cast.length], c2=cast[(ch+4)%cast.length];
+      const react={
+        survival:'The clock is already ticking — six true words and we are through!',
+        accuracy:'Steady now. Seven of ten, no wild guesses — make every letter count.',
+        origins:'This gate only opens for spellers who know where words come from. Think roots!',
+        boss:S.boss+' is at the gate. Every word you spell true pushes it back!',
+        finale:S.boss+' is back — and stronger. Everything you have learned, one last stand!' }[chp.kind];
+      return [ {sp:a, t:chp.blurb}, {sp:b, t:react},
+        {sp:c2, t:'Ready when you are — I will be right beside you. Spell it true!'} ]; },
+    beatNext(){ const q=state.sq; const S=seasonByPack(q.pack); const bts=SQ._beats(S,q.ch);
+      q.beat=Math.min((q.beat||0)+1, bts.length); const b=bts[q.beat-1]; if(b) say2(b.t); render(); },
+    hearBeat(i){ const q=state.sq; const S=seasonByPack(q.pack); const b=SQ._beats(S,q.ch)[+i]; if(b) say2(b.t); },
+    goCh(i){ const q=state.sq; i=+i; if(!dev() && i>cleared(q.pack)+1){ if(typeof flash==='function') flash('🔒 Clear the chapters before it first'); return; }
+      state.sq={ view:'chapter', pack:q.pack, ch:i, beat:0 }; render(); },
     startChapter(){ const q=state.sq; const S=seasonByPack(q.pack); const chp=S.chapters[q.ch-1];
+      const bts=SQ._beats(S,q.ch);
+      if(!dev() && starsFor(q.pack,q.ch)===0 && (q.beat||0)<bts.length){ if(typeof flash==='function') flash('📖 Play the story first — tap Next!'); return; }
       if(chp.kind==='origins'){ SQ._startQuiz(S,q.ch); } else { SQ._startSpell(S,q.ch,chp.kind); } },
     // ---- typed spelling engine (survival / accuracy / boss / finale) ----
     _startSpell(S,ch,kind){ clearInterval((state.sq||{}).timer);
@@ -321,28 +340,43 @@
         </div>`;
       return SQ._shell(inner);
     },
-    _chapter(){ const q=state.sq; const S=seasonByPack(q.pack); const chp=S.chapters[q.ch-1]; const cast=S.cast;
-      const dots=S.chapters.map((c,i)=>`<span style="width:${i===q.ch-1?'12px':'10px'};height:${i===q.ch-1?'12px':'10px'};border-radius:50%;background:${i<q.ch-1?S.accent:(i===q.ch-1?'#fff':'rgba(255,255,255,.25)')};${i===q.ch-1?'box-shadow:0 0 8px #fff':''}"></span>`).join('');
-      const speakers=[cast[(q.ch)%cast.length], cast[(q.ch+2)%cast.length]];
-      const lines=['“'+chp.blurb+'”','Ready when you are — spell it true!'];
-      const bubbles=speakers.map((sp,i)=>`<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">
-          <span style="width:74px;height:74px;flex-shrink:0;background:#EFEBF8;border-radius:16px;display:grid;place-items:center">${av(sp.id,60)}</span>
-          <div style="position:relative;background:#fff;border-radius:14px;padding:10px 13px;font-size:13.5px;font-weight:700;color:#241E33;line-height:1.4;max-width:230px">
-            <span style="display:block;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#9C6A08;margin-bottom:2px">${esc2(sp.name)} <button data-act="sqHearLine" data-arg="${i}" style="color:#6C4FE0">▶</button></span>${esc2(lines[i])}</div>
-        </div>`).join('');
-      const kindLabel={survival:'Spell Survival · 6 words, 60s',accuracy:'Accuracy Gate · spell 7 of 10',origins:'Word Origins · 7 of 10',boss:'Boss Battle · defeat '+S.boss,finale:'Finale Boss · '+S.boss+' returns'}[chp.kind];
-      const inner=`<div style="position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:10px;padding:16px 20px">
+    _chapter(){ const q=state.sq; const S=seasonByPack(q.pack); const chp=S.chapters[q.ch-1];
+      const bts=SQ._beats(S,q.ch); const bi=Math.min(q.beat||0, bts.length);
+      const storyDone = bi>=bts.length || starsFor(q.pack,q.ch)>0 || dev();
+      const dots=S.chapters.map((c,i)=>{ const can=dev() || (i+1)<=cleared(q.pack)+1;
+        return `<button ${can?`data-act="sqGoCh" data-arg="${i+1}" title="Chapter ${i+1}: ${escA?escA(c.title):c.title}"`:''} style="width:${i===q.ch-1?'13px':'11px'};height:${i===q.ch-1?'13px':'11px'};border-radius:50%;border:0;padding:0;cursor:${can?'pointer':'default'};background:${i<q.ch-1?S.accent:(i===q.ch-1?'#fff':'rgba(255,255,255,.25)')};${i===q.ch-1?'box-shadow:0 0 8px #fff':''}"></button>`; }).join('');
+      // sequential story: beats played so far stack like a chat, newest highlighted
+      const played=bts.slice(0,bi).map((b,i)=>{ const last=i===bi-1;
+        return `<div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;${last?'':'opacity:.62'};animation:${last?'sb-pop .35s ease both':'none'}">
+          <span style="width:${last?'86px':'62px'};height:${last?'86px':'62px'};flex-shrink:0;background:#EFEBF8;border-radius:18px;display:grid;place-items:center">${av(b.sp.id,last?72:50)}</span>
+          <div style="background:#fff;border-radius:16px;padding:${last?'13px 17px':'9px 13px'};font-size:${last?'16px':'13px'};font-weight:700;color:#241E33;line-height:1.5;flex:1">
+            <span style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#9C6A08;margin-bottom:3px">${esc2(b.sp.name)} <button data-act="sqHearBeat" data-arg="${i}" style="color:#6C4FE0">▶</button></span>“${esc2(b.t)}”</div>
+        </div>`; }).join('');
+      const nextBtn = bi<bts.length
+        ? `<button data-act="sqBeat" style="display:block;margin:6px auto 0;background:#fff;color:#241E33;font-weight:800;font-size:15px;border-radius:99px;padding:12px 34px;box-shadow:0 4px 0 rgba(0,0,0,.3)">${bi===0?'▶ Play the story':'Next ▸'}</button>
+           <div style="text-align:center;color:#8A83A3;font-size:11.5px;font-weight:700;margin-top:8px">${bi}/${bts.length}</div>`
+        : `<div style="text-align:center;color:${S.accent};font-weight:800;font-size:14px;margin-top:6px;animation:sb-pop .35s ease both">The story is told — take the challenge! →</div>`;
+      const kindLabel={survival:'Spell Survival<br>6 words · 60s',accuracy:'Accuracy Gate<br>spell 7 of 10',origins:'Word Origins<br>7 of 10',boss:'Boss Battle<br>defeat '+esc2(S.boss),finale:'Finale Boss<br>'+esc2(S.boss)+' returns'}[chp.kind];
+      const challenge=`<div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:14px;text-align:center;${storyDone?'':'opacity:.55'}">
+          <div style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.12em;color:#C9BFEA;margin-bottom:6px">THE CHALLENGE</div>
+          <div style="color:#FFE49B;font-weight:800;font-size:12.5px;line-height:1.45;margin-bottom:11px">${kindLabel}</div>
+          <button data-act="sqStart" style="background:${storyDone?S.accent:'rgba(255,255,255,.15)'};color:${storyDone?'#241E33':'#8A83A3'};font-weight:800;font-size:13px;border-radius:99px;padding:10px 18px;${storyDone?'box-shadow:0 4px 0 rgba(0,0,0,.25)':''}">START →</button>
+          ${storyDone?'':'<div style="color:#8A83A3;font-size:10.5px;font-weight:700;margin-top:7px">story first</div>'}
+          ${dev()?`<button data-act="sqGoCh" data-arg="${Math.min(5,q.ch+1)}" style="display:block;margin:10px auto 0;background:none;border:0;color:#C9BFEA;font-weight:700;font-size:11px;text-decoration:underline;cursor:pointer">${q.ch>=5?'':'Skip chapter →'}</button>`:''}
+        </div>`;
+      const inner=`<div style="position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:10px;padding:16px 20px;z-index:2">
           <span style="background:rgba(255,255,255,.1);border-radius:99px;padding:6px 14px;color:#fff;font-weight:800;font-size:13px">${esc2(S.title)}</span>
           <span style="display:flex;gap:6px;align-items:center">${dots}</span><span style="flex:1"></span>${SQ._hudBtn()}</div>
-        <div style="padding:78px 30px 30px;display:flex;gap:24px;flex-wrap:wrap">
-          <div style="flex:1;min-width:280px">
-            <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:${S.accent};letter-spacing:.1em">CHAPTER ${String(q.ch).padStart(2,'0')}</div>
-            <div style="font-family:var(--display);font-weight:800;font-size:32px;color:#fff;margin:4px 0 12px">${esc2(chp.title)}</div>
-            <p style="color:#C9BFEA;font-size:15px;line-height:1.6;margin:0 0 18px">${esc2(chp.blurb)}</p>
-            <div style="background:rgba(255,194,61,.14);border:1px solid rgba(255,194,61,.4);border-radius:14px;padding:11px 15px;color:#FFE49B;font-weight:800;font-size:13.5px;margin-bottom:20px">${esc2(kindLabel)}</div>
-            <button data-act="sqStart" style="background:${S.accent};color:#241E33;font-weight:800;font-size:16px;border-radius:99px;padding:13px 30px;box-shadow:0 5px 0 rgba(0,0,0,.25)">START CHALLENGE →</button>
+        <div style="padding:72px 26px 30px;display:flex;gap:20px;flex-wrap:wrap;justify-content:center">
+          <div style="flex:1;min-width:300px;max-width:620px">
+            <div style="text-align:center;margin-bottom:14px">
+              <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:${S.accent};letter-spacing:.1em">CHAPTER ${String(q.ch).padStart(2,'0')} · ${bi>=bts.length?'READY':'STORY'}</div>
+              <div style="font-family:var(--display);font-weight:800;font-size:29px;color:#fff;margin-top:3px">${esc2(chp.title)}</div>
+            </div>
+            <div style="min-height:250px">${played||`<div style="text-align:center;color:#C9BFEA;font-size:14px;font-weight:650;padding:40px 10px 10px">The heroes of ${esc2(S.label)} have a story to tell…</div>`}</div>
+            ${nextBtn}
           </div>
-          <div style="width:290px">${bubbles}</div>
+          <div style="width:170px;flex-shrink:0;align-self:flex-start;margin-top:52px">${challenge}</div>
         </div>`;
       return SQ._shell(inner, S.accent);
     },
