@@ -761,6 +761,8 @@ const app = {
   sqBeat:()=>{ if(window.SQ) SQ.beatNext(); },
   sqHearBeat:(a)=>{ if(window.SQ) SQ.hearBeat(a); },
   sqGoCh:(a)=>{ if(window.SQ) SQ.goCh(a); },
+  sqBrief:()=>{ if(window.SQ) SQ.showBrief(); },
+  sqBegin:()=>{ if(window.SQ) SQ.beginSeason(); },
   // ----- Magic Squares -----
   magicCell:(i)=>{ const g=state.game; if(!g||g.type!=='magic') return; i=+i; if(g.board[i].done){ flash('That square is already yours ⭐'); return; }
     g.qs=magicBuildQs(g.board[i].id); if(g.qs.length<5){ flash('Not enough words in that theme yet'); return; }

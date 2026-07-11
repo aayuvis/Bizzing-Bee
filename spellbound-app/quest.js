@@ -193,6 +193,38 @@
     return out; }
   function shuf(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(((state&&state._sqr!==undefined?(state._sqr=(state._sqr*9301+49297)%233280):Math.floor(Date.now()%233280))/233280)*(i+1)); const t=a[i];a[i]=a[j];a[j]=t; } return a; }
   function esc2(s){ return (typeof esc==='function')?esc(s):String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  // authored story arcs from Claude Design (story-data.js) — setup log, 5 beats, cast roles
+  function arcOf(S){ return (window.SB_STORY_ARCS||[]).find(a=>a.pack===S.label)||null; }
+  // hand-written dialogue per chapter (packId → ch → [[castId, line], …]).
+  // Packs without an entry fall back to the arc's storybook action lines.
+  const DIALOG={
+    hive:{
+      1:[['queenhive','Bizzy — the meadow has gone silent. Every flower is shut tight, and the honey stores will not last the week.'],
+         ['bizzy','Then I will wake the First Flower before the Honey Moon rises. Just show me the way, my Queen!'],
+         ['queenhive','The wax map only reaches the meadow’s edge. Beyond that… you will need your words.']],
+      2:[['honeypot','I packed the emergency jar — one golden drop, for when it matters most.'],
+         ['drone','Leaf-glider is rigged and ready! Ten words of honey-fuel and she flies.'],
+         ['bumble','I will carry the heavy stuff. And the snacks. Mostly the snacks.']],
+      3:[['waggle','The wax runs out here — but my dance remembers the way. Watch my wings, not my feet!'],
+         ['clover','Left at the fork. Trust me — left is lucky today.']],
+      4:[['propolis','Thorns ahead! Shield up — every true word you spell makes the hexagon stronger.'],
+         ['blossom','Easy now, roses. My friends only wish to pass… mind your thorns, please.']],
+      5:[['bizzy','One drop left. Honey Pot… are you sure?'],
+         ['honeypot','Emergencies only — and this is the one. Pour it, Bizzy.'],
+         ['queenhive','The meadow wakes! Wing Guard — kneel. You have earned your crowns.']] },
+    stage:{
+      1:[['lumen','One bulb. That is all I have left — and one hour to curtain.'],
+         ['star','Then we do the show with one bulb. The curtain rises tonight.']],
+      2:[['maestro','New score! Softer, slower — music that GLOWS in the dark.'],
+         ['mic','And I will carry every note to the very last row. They came to hear us — they will hear us.']],
+      3:[['jester','Ladies and gentlebugs! While we wait — who wants to see me juggle the programme notes?'],
+         ['popcorn','Snacks down the rows! Waiting tastes better with butter.']],
+      4:[['diva','I said I would never sing again… but tonight, for this theatre? One. Last. Number.'],
+         ['melody','The song is not written yet — hand me that ticket stub. It will be, by the chorus.']],
+      5:[['lumen','One beam… through the mirror ball… now.'],
+         ['encore','ONE MORE! ONE MORE! Everybody, sing it with me!'],
+         ['goldlegend','In forty seasons I have never stood to applaud. Tonight — I stand.']] }
+  };
   function say2(t){ try{ if(typeof deviceSpeak==='function') deviceSpeak(t,0.92); else if(typeof say==='function') say(t); }catch(e){} }
   function av(id,s,dark){ try{ return (typeof SB_AVATAR==='function')?SB_AVATAR(id,s,dark?{dark:true}:undefined):''; }catch(e){ return ''; } }
   function callout(cast,i){ const c=cast[i%cast.length]; return c; }
@@ -203,19 +235,23 @@
     exit(){ clearInterval((state.sq||{}).timer); state.sq=null; if(typeof app!=='undefined'&&app.openGames) app.openGames(); else { state.nav='games'; render(); } },
     pickSeason(pk){ const S=seasonByPack(pk); if(!S) return; const idx=seasons().findIndex(s=>s.pack===pk);
       if(!seasonUnlocked(idx)){ if(typeof flash==='function') flash('🔒 Finish the season before to unlock '+S.title); return; }
+      if(cleared(pk)===0){ state.sq={ view:'brief', pack:pk }; render(); return; }   // first visit: mission briefing
       const ch=Math.min(5, cleared(pk)+1); state.sq={ view:'chapter', pack:pk, ch, beat:0 }; render(); },
+    showBrief(){ const q=state.sq; state.sq={ view:'brief', pack:q.pack }; render(); },
+    beginSeason(){ const q=state.sq; const ch=Math.min(5, cleared(q.pack)+1); state.sq={ view:'chapter', pack:q.pack, ch, beat:0 }; render(); },
     openChapter(pk,ch){ state.sq={ view:'chapter', pack:pk, ch:+ch, beat:0 }; render(); },
-    // sequential story beats: three voiced lines that lead into the challenge
-    _beats(S,ch){ const chp=S.chapters[ch-1]; const cast=S.cast;
-      const a=cast[ch%cast.length], b=cast[(ch+2)%cast.length], c2=cast[(ch+4)%cast.length];
-      const react={
-        survival:'The clock is already ticking — six true words and we are through!',
-        accuracy:'Steady now. Seven of ten, no wild guesses — make every letter count.',
-        origins:'This gate only opens for spellers who know where words come from. Think roots!',
-        boss:S.boss+' is at the gate. Every word you spell true pushes it back!',
-        finale:S.boss+' is back — and stronger. Everything you have learned, one last stand!' }[chp.kind];
-      return [ {sp:a, t:chp.blurb}, {sp:b, t:react},
-        {sp:c2, t:'Ready when you are — I will be right beside you. Spell it true!'} ]; },
+    // sequential story beats: narrator scene + character lines, from the authored arc
+    _beats(S,ch){ const arc=arcOf(S); const chp=S.chapters[ch-1];
+      if(arc && arc.beats && arc.beats[ch-1]){
+        const bt=arc.beats[ch-1]; const out=[{narr:true, t:bt.x}];
+        const dlg=(DIALOG[S.pack]||{})[ch];
+        if(dlg){ dlg.forEach(d=>{ const sp=S.cast.find(a=>a.id===d[0]); if(sp) out.push({sp, t:d[1]}); }); }
+        else{ (bt.c||[]).slice(0,3).forEach(id=>{ const sp=S.cast.find(a=>a.id===id); const ca=(arc.cast||[]).find(x=>x.id===id);
+          if(sp&&ca) out.push({sp, t:ca.a, act:true}); }); }
+        return out; }
+      // fallback if the arc data is missing
+      const cast=S.cast; const a=cast[ch%cast.length], b=cast[(ch+2)%cast.length];
+      return [ {sp:a, t:chp.blurb}, {sp:b, t:'Ready when you are — spell it true!'} ]; },
     beatNext(){ const q=state.sq; const S=seasonByPack(q.pack); const bts=SQ._beats(S,q.ch);
       q.beat=Math.min((q.beat||0)+1, bts.length); const b=bts[q.beat-1]; if(b) say2(b.t); render(); },
     hearBeat(i){ const q=state.sq; const S=seasonByPack(q.pack); const b=SQ._beats(S,q.ch)[+i]; if(b) say2(b.t); },
@@ -310,6 +346,7 @@
     // ============ RENDER ============
     view(){ const q=state.sq||{view:'map'};
       if(q.view==='map') return SQ._map();
+      if(q.view==='brief') return SQ._brief();
       if(q.view==='chapter') return SQ._chapter();
       if(q.view==='play') return SQ._play();
       if(q.view==='quiz') return SQ._quiz();
@@ -340,17 +377,41 @@
         </div>`;
       return SQ._shell(inner);
     },
+    // Mission briefing: what this season is about, who's coming, what's at stake
+    _brief(){ const q=state.sq; const S=seasonByPack(q.pack); const arc=arcOf(S);
+      const log=(arc&&arc.log)||('The heroes of '+S.label+' need a true speller.');
+      const crew=S.cast.slice(0,10).map(a=>{ const ca=arc&&(arc.cast||[]).find(x=>x.id===a.id);
+        return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;width:86px">
+          <span style="width:62px;height:62px;background:#EFEBF8;border-radius:16px;display:grid;place-items:center">${av(a.id,50)}</span>
+          <span style="color:#fff;font-weight:800;font-size:11px;line-height:1.1;text-align:center">${esc2(a.name)}</span>
+          ${ca?`<span style="color:#9C93B8;font-weight:700;font-size:9.5px;text-align:center">${esc2(ca.r)}</span>`:''}</div>`; }).join('');
+      const inner=`<div style="position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:10px;padding:16px 20px;z-index:2">
+          <button data-act="sqExit" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:99px;padding:6px 14px;color:#C9BFEA;font-weight:800;font-size:13px">← Season map</button>
+          <span style="flex:1"></span>${SQ._hudBtn()}</div>
+        <div style="padding:74px 30px 34px;text-align:center;max-width:640px;margin:0 auto">
+          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:${S.accent};letter-spacing:.14em">YOUR MISSION · ${esc2(S.label).toUpperCase()}</div>
+          <div style="font-family:var(--display);font-weight:800;font-size:36px;color:#fff;margin:6px 0 14px">${esc2(S.title)}</div>
+          <p style="color:#E9E1FF;font-size:16.5px;line-height:1.65;font-weight:650;margin:0 auto 18px;max-width:34em">${esc2(log)}</p>
+          <div style="display:inline-block;background:rgba(255,194,61,.12);border:1px solid rgba(255,194,61,.35);border-radius:14px;padding:11px 18px;color:#FFE49B;font-weight:800;font-size:13px;margin-bottom:22px">
+            Five chapters stand between you and ${esc2(S.boss)} — spell your way through each one to win <b>${esc2(S.legendary.name)}</b>, the legendary of this pack.</div>
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:24px">${crew}</div>
+          <button data-act="sqBegin" style="background:${S.accent};color:#241E33;font-weight:800;font-size:16px;border-radius:99px;padding:14px 34px;box-shadow:0 5px 0 rgba(0,0,0,.25)">BEGIN CHAPTER ${Math.min(5,cleared(q.pack)+1)} →</button>
+        </div>`;
+      return SQ._shell(inner, S.accent);
+    },
     _chapter(){ const q=state.sq; const S=seasonByPack(q.pack); const chp=S.chapters[q.ch-1];
+      const arc=arcOf(S); const chTitle=(arc&&arc.beats&&arc.beats[q.ch-1]&&arc.beats[q.ch-1].t)||chp.title;
       const bts=SQ._beats(S,q.ch); const bi=Math.min(q.beat||0, bts.length);
       const storyDone = bi>=bts.length || starsFor(q.pack,q.ch)>0 || dev();
       const dots=S.chapters.map((c,i)=>{ const can=dev() || (i+1)<=cleared(q.pack)+1;
         return `<button ${can?`data-act="sqGoCh" data-arg="${i+1}" title="Chapter ${i+1}: ${escA?escA(c.title):c.title}"`:''} style="width:${i===q.ch-1?'13px':'11px'};height:${i===q.ch-1?'13px':'11px'};border-radius:50%;border:0;padding:0;cursor:${can?'pointer':'default'};background:${i<q.ch-1?S.accent:(i===q.ch-1?'#fff':'rgba(255,255,255,.25)')};${i===q.ch-1?'box-shadow:0 0 8px #fff':''}"></button>`; }).join('');
       // sequential story: beats played so far stack like a chat, newest highlighted
       const played=bts.slice(0,bi).map((b,i)=>{ const last=i===bi-1;
+        if(b.narr) return `<div style="margin-bottom:14px;${last?'':'opacity:.62'};animation:${last?'sb-pop .35s ease both':'none'};background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:${last?'14px 20px':'10px 15px'};color:#E9E1FF;font-size:${last?'15.5px':'12.5px'};font-weight:650;font-style:italic;line-height:1.55;text-align:center">📖 ${esc2(b.t)} <button data-act="sqHearBeat" data-arg="${i}" style="color:#C4B4FF;font-style:normal">▶</button></div>`;
         return `<div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;${last?'':'opacity:.62'};animation:${last?'sb-pop .35s ease both':'none'}">
           <span style="width:${last?'86px':'62px'};height:${last?'86px':'62px'};flex-shrink:0;background:#EFEBF8;border-radius:18px;display:grid;place-items:center">${av(b.sp.id,last?72:50)}</span>
           <div style="background:#fff;border-radius:16px;padding:${last?'13px 17px':'9px 13px'};font-size:${last?'16px':'13px'};font-weight:700;color:#241E33;line-height:1.5;flex:1">
-            <span style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#9C6A08;margin-bottom:3px">${esc2(b.sp.name)} <button data-act="sqHearBeat" data-arg="${i}" style="color:#6C4FE0">▶</button></span>“${esc2(b.t)}”</div>
+            <span style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#9C6A08;margin-bottom:3px">${esc2(b.sp.name)} <button data-act="sqHearBeat" data-arg="${i}" style="color:#6C4FE0">▶</button></span>${b.act?('<i style="font-weight:650">'+esc2(b.t)+'</i>'):('“'+esc2(b.t)+'”')}</div>
         </div>`; }).join('');
       const nextBtn = bi<bts.length
         ? `<button data-act="sqBeat" style="display:block;margin:6px auto 0;background:#fff;color:#241E33;font-weight:800;font-size:15px;border-radius:99px;padding:12px 34px;box-shadow:0 4px 0 rgba(0,0,0,.3)">${bi===0?'▶ Play the story':'Next ▸'}</button>
@@ -365,13 +426,13 @@
           ${dev()?`<button data-act="sqGoCh" data-arg="${Math.min(5,q.ch+1)}" style="display:block;margin:10px auto 0;background:none;border:0;color:#C9BFEA;font-weight:700;font-size:11px;text-decoration:underline;cursor:pointer">${q.ch>=5?'':'Skip chapter →'}</button>`:''}
         </div>`;
       const inner=`<div style="position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:10px;padding:16px 20px;z-index:2">
-          <span style="background:rgba(255,255,255,.1);border-radius:99px;padding:6px 14px;color:#fff;font-weight:800;font-size:13px">${esc2(S.title)}</span>
+          <button data-act="sqBrief" title="The story so far" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);border-radius:99px;padding:6px 14px;color:#fff;font-weight:800;font-size:13px;cursor:pointer">📖 ${esc2(S.title)}</button>
           <span style="display:flex;gap:6px;align-items:center">${dots}</span><span style="flex:1"></span>${SQ._hudBtn()}</div>
         <div style="padding:72px 26px 30px;display:flex;gap:20px;flex-wrap:wrap;justify-content:center">
           <div style="flex:1;min-width:300px;max-width:620px">
             <div style="text-align:center;margin-bottom:14px">
               <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:${S.accent};letter-spacing:.1em">CHAPTER ${String(q.ch).padStart(2,'0')} · ${bi>=bts.length?'READY':'STORY'}</div>
-              <div style="font-family:var(--display);font-weight:800;font-size:29px;color:#fff;margin-top:3px">${esc2(chp.title)}</div>
+              <div style="font-family:var(--display);font-weight:800;font-size:29px;color:#fff;margin-top:3px">${esc2(chTitle)}</div>
             </div>
             <div style="min-height:250px">${played||`<div style="text-align:center;color:#C9BFEA;font-size:14px;font-weight:650;padding:40px 10px 10px">The heroes of ${esc2(S.label)} have a story to tell…</div>`}</div>
             ${nextBtn}
@@ -430,6 +491,11 @@
       return SQ._shell(inner, S.accent);
     },
     _victory(){ const q=state.sq; const S=seasonByPack(q.pack); const chp=S.chapters[q.ch-1];
+      const arc=arcOf(S); const bt=arc&&arc.beats&&arc.beats[q.ch-1];
+      const fc=bt&&(arc.cast||[]).find(x=>x.id===(bt.c||[])[0]);
+      const factCard=fc?`<div style="max-width:420px;margin:16px auto 0;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:11px 16px;display:flex;gap:11px;align-items:center;text-align:left">
+          <span style="width:44px;height:44px;flex-shrink:0;background:#EFEBF8;border-radius:12px;display:grid;place-items:center">${av(fc.id,36)}</span>
+          <span style="color:#E9E1FF;font-size:12.5px;font-weight:650;line-height:1.5"><b style="color:#FFD98A;font-size:10px;letter-spacing:.1em">💡 BUZZ FACT</b><br>${esc2(fc.f)}</span></div>`:'';
       const stars=Array.from({length:3},(_,i)=>`<span style="font-size:${i===1?40:32}px;color:${i<q.stars?'#FFC23D':'rgba(255,255,255,.2)'};${i===1?'margin-top:-6px':''}">★</span>`).join('');
       const nextLabel = q.ch>=5? 'BACK TO SEASON MAP' : ('NEXT · CHAPTER '+(q.ch+1)+': '+esc2(S.chapters[q.ch].title));
       const unlockCard = q.unlocked? `<div style="background:linear-gradient(160deg,#3A2F5C,#2B2148);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:18px 26px;text-align:center;box-shadow:0 0 40px rgba(233,225,255,.15);margin:18px auto 0;max-width:280px">
@@ -442,6 +508,7 @@
           <div style="font-family:var(--display);font-weight:800;font-size:32px;color:#fff;margin-top:6px">${q.finale?'Season Complete!':(esc2(chp.title)+' cleared!')}</div>
           <div style="color:#C9BFEA;font-weight:700;font-size:14px;margin-top:4px">${q.right}/${q.total||q.right} · <span style="color:#FFC23D">+${120+q.stars*20} 🍯</span></div>
           ${unlockCard}
+          ${factCard}
           <div style="margin-top:22px">
             <button data-act="sqNext" style="background:#FFC23D;color:#241E33;font-weight:800;font-size:15px;border-radius:99px;padding:13px 26px;box-shadow:0 5px 0 #C8891B">${nextLabel}</button>
             <button data-act="sqRetry" style="margin-left:8px;background:rgba(255,255,255,.1);color:#C9BFEA;border:1px solid rgba(255,255,255,.2);font-weight:800;font-size:13px;border-radius:99px;padding:11px 18px">Replay</button>
