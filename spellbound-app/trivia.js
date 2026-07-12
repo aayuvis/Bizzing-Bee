@@ -47,7 +47,8 @@
 
   /* ---- scoring shared by all formats ---- */
   function grade(g, q, pickIdx) { const ok = q.sh[pickIdx] === 0;   // data keeps correct at c[0]
-    const c = active(); const st = tStats(c); st.done++; if (ok) { st.right++; st.themes[q.th] = (st.themes[q.th] || 0) + 1; addCoins(1); sfx('correct'); } else sfx('wrong');
+    const c = active(); const st = tStats(c); st.done++; if (ok) { st.right++; st.themes[q.th] = (st.themes[q.th] || 0) + 1; addCoins(1); sfx('correct'); try { burstConfetti(26); } catch (e) {} } else sfx('wrong');
+    g.mood = ok ? 'party' : 'oops';
     g.right += ok ? 1 : 0; g.streak = ok ? (g.streak || 0) + 1 : 0;
     if (ok && g.streak > 0 && g.streak % 5 === 0) { addCoins(3); try { flash('🔥 ' + g.streak + ' in a row! +3 🪙'); } catch (e) {} }
     return ok; }
@@ -134,6 +135,15 @@
     _visual(q) { if (q.svg) return `<div style="display:flex;justify-content:center;margin:6px 0 10px">${q.svg}</div>`;
       if (q.v) return `<div style="text-align:center;font-size:clamp(58px,14vw,84px);line-height:1.15;margin:2px 0 8px;${q.sil ? 'filter:brightness(0) opacity(.82);' : ''}">${q.v}</div>`; return ''; },
 
+    _buddy(g) { try { const c = active();
+      const av = (c.avatar && window.SB_AVATARS && SB_AVATARS.byId[c.avatar]) ? SB_AVATAR(c.avatar, 78) : mascotAcc(g.mood === 'party' ? 'love' : g.mood === 'oops' ? 'oops' : 'happy');
+      const anim = g.picked == null ? 'sb-bee-bob 3.2s ease-in-out infinite' : (g.mood === 'party' ? 'sb-bee-talk .9s ease-in-out 2' : 'sb-m-shake 1.2s ease 1');
+      const bubble = g.picked == null ? '' : (g.mood === 'party' ? sample(['Yes!! 🎉','Brilliant! ⭐','Bzzz-tastic!','You got it! 💛','Genius! 🧠'], 1)[0] : sample(['Ooh, so close!','Now we know! 💡','Tricky one!','On to the next!'], 1)[0]);
+      return `<div style="position:relative;width:86px;flex-shrink:0;align-self:flex-end;text-align:center">
+        ${bubble ? `<div style="position:absolute;top:-34px;left:50%;transform:translateX(-50%);white-space:nowrap;background:var(--paper,#fff);border:1.5px solid ${g.mood === 'party' ? 'var(--treasure,#F0B429)' : 'var(--line)'};border-radius:12px;padding:5px 11px;font-weight:800;font-size:12px;box-shadow:var(--sh-rest);animation:sb-pop .3s ease both">${bubble}</div>` : ''}
+        <div style="width:80px;height:84px;margin:0 auto;animation:${anim}">${av}</div>
+        ${(g.streak || 0) >= 2 ? `<div style="font-weight:900;font-size:12.5px;color:#FF7A1A;animation:sb-pop .3s ease both">🔥 ×${g.streak}</div>` : ''}
+      </div>`; } catch (e) { return ''; } },
     _q(q, head) { const g = state.trv; const th = themeOf(q.th); const col = THC[q.th] || 'var(--accent)';
       const isAud = q.ty === 'aud';
       const choices = q.sh.map((ci, idx) => { let bg = 'var(--surface2)', bd = 'var(--line)';
@@ -143,19 +153,21 @@
       const fact = g.picked != null && q.f ? `<div style="background:var(--treasure-tint,#FFF3D6);border:1px solid var(--treasure,#F0B429);border-radius:12px;padding:11px 14px;margin-top:12px;font-size:13.5px;line-height:1.5;animation:sb-pop .3s ease both"><b style="color:var(--treasure-deep,#8A5B00)">💡 Did you know?</b> ${esc3(q.f)}</div>` : '';
       const wrongNote = wrong ? `<div style="background:var(--fix-tint,#FBE9E7);border:1.5px solid var(--fix,#C4453C);border-radius:12px;padding:10px 14px;margin-top:12px;font-weight:800;font-size:14px;animation:sb-pop .3s ease both">✗ The answer: <span style="color:var(--fix,#C4453C)">${esc3(q.c[0])}</span></div>` : '';
       return STV._shell(`
-        <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(18px,4.5vw,28px);box-shadow:var(--glow);text-align:center;margin-bottom:13px">
+        <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:13px">
+        ${STV._buddy(g)}
+        <div style="flex:1;min-width:0;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(18px,4.5vw,28px);box-shadow:var(--glow);text-align:center">
           <div style="display:inline-flex;align-items:center;gap:7px;padding:4px 13px;border-radius:999px;background:color-mix(in srgb,${col} 14%,transparent);color:${col};font-weight:800;font-size:12px;margin-bottom:10px">${th.e} ${esc3(th.label)} · L${q.lv}</div>
           ${STV._visual(q)}
           ${isAud ? `<div style="margin:4px 0 10px"><button data-act="trvHear" style="display:inline-flex;align-items:center;gap:9px;padding:13px 24px;border-radius:999px;background:${col};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${iconSVG('volume', 19)} Listen 🔊</button></div>` : ''}
           <div style="font-size:clamp(16px,3.6vw,20px);line-height:1.5;font-weight:700">${esc3(q.q)}</div>
           ${wrongNote}${fact}
-        </div>
+        </div></div>
         <div style="display:grid;grid-template-columns:${q.ty === 'tf' ? '1fr 1fr' : 'repeat(auto-fit,minmax(200px,1fr))'};gap:10px">${choices}</div>`, head); },
 
     _square() { const g = state.trv;
       if (g.sel != null) return STV._q(g.cells[g.sel].q, 'Cell ' + (g.sel + 1) + ' · ' + g.lines + ' lines');
       const cells = g.cells.map((c2, i) => { const th = themeOf(c2.th); const col = THC[c2.th] || '#7C5CFF';
-        const face = c2.st === 1 ? '⭐' : c2.st === 2 ? '❌' : th.e;
+        const face = c2.st === 1 ? '<span style="display:inline-block;animation:sb-bee-pop .5s ease both">⭐</span>' : c2.st === 2 ? '❌' : `<span style="display:inline-block;animation:sb-art-float 3.4s ease-in-out infinite;animation-delay:${(i % 5) * 0.35}s">${th.e}</span>`;
         return `<button data-act="trvCell" data-arg="${i}" ${c2.st > 0 ? 'disabled' : ''} style="aspect-ratio:1;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;font-size:clamp(28px,8vw,40px);background:${c2.st === 1 ? 'color-mix(in srgb,#1f9d57 22%,var(--bg2))' : c2.st === 2 ? 'color-mix(in srgb,var(--bad) 14%,var(--bg2))' : 'var(--bg2)'};border:2px solid ${c2.st === 1 ? '#1f9d57' : c2.st === 2 ? 'var(--bad)' : 'var(--line)'};box-shadow:var(--sh-rest)">${face}
           <span style="font-size:10.5px;font-weight:800;color:${c2.st > 0 ? 'var(--muted)' : col}">${esc3(th.label.split(' ')[0])}</span></button>`; }).join('');
       return STV._shell(`
@@ -165,9 +177,14 @@
         <div style="text-align:center;margin-top:12px;font-family:var(--mono);font-size:13px;color:var(--muted)">⭐ ${g.cells.filter(x => x.st === 1).length} · ❌ ${g.miss} · lines ${g.lines}</div>`,
         'lines ' + g.lines); },
 
-    _done(title, big, sub) { const g = state.trv;
+    _done(title, big, sub) { const g = state.trv; const c = active();
+      const hero = (c.avatar && window.SB_AVATARS && SB_AVATARS.byId[c.avatar]) ? SB_AVATAR(c.avatar, 92) : mascotSVG('love');
       return STV._shell(`<div style="max-width:520px;margin:0 auto;text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:var(--glow);animation:sb-pop .35s ease both">
-        <div style="display:flex;justify-content:center;margin-bottom:8px"><div style="width:74px;height:82px">${mascotSVG('love')}</div></div>
+        <div style="display:flex;justify-content:center;align-items:flex-end;gap:4px;margin-bottom:8px">
+          <span style="font-size:26px;animation:sb-m-swing 1.1s ease-in-out infinite">🎊</span>
+          <div style="width:92px;height:98px;animation:sb-bee-talk 1.4s ease-in-out infinite">${hero}</div>
+          <span style="font-size:26px;animation:sb-m-swing 1.1s ease-in-out infinite reverse">🎊</span>
+        </div>
         <h2 style="font-family:var(--display);font-weight:800;font-size:21px;margin:0 0 8px">${title}</h2>
         <div style="font-family:var(--display);font-weight:800;font-size:42px;color:var(--accent);line-height:1">${big}</div>
         <p style="color:var(--muted);font-weight:700;margin-top:6px">${sub}</p>
@@ -179,7 +196,7 @@
 
     _hub() { const g = state.trv; const c = active(); const st = tStats(c);
       const themes = [{ id: 'mix', label: 'Mega Mix', e: '🎲' }].concat(T().themes).map(t => { const on = g.th === t.id; const col = t.id === 'mix' ? '#7C5CFF' : (THC[t.id] || '#7C5CFF');
-        return `<button data-act="trvTh" data-arg="${t.id}" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 6px;border-radius:14px;background:${on ? 'color-mix(in srgb,' + col + ' 16%,var(--bg2))' : 'var(--bg2)'};border:2px solid ${on ? col : 'var(--line)'};min-width:0"><span style="font-size:26px">${t.e}</span><span style="font-size:10.5px;font-weight:800;line-height:1.15;text-align:center;color:${on ? col : 'var(--muted)'}">${esc3(t.label)}</span></button>`; }).join('');
+        return `<button data-act="trvTh" data-arg="${t.id}" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 6px;border-radius:14px;background:${on ? 'color-mix(in srgb,' + col + ' 16%,var(--bg2))' : 'var(--bg2)'};border:2px solid ${on ? col : 'var(--line)'};min-width:0"><span style="font-size:26px;display:inline-block;${on ? 'animation:sb-bee-talk 1.3s ease-in-out infinite' : ''}">${t.e}</span><span style="font-size:10.5px;font-weight:800;line-height:1.15;text-align:center;color:${on ? col : 'var(--muted)'}">${esc3(t.label)}</span></button>`; }).join('');
       const lvs = LV.map(l => { const on = g.lv === l.n;
         return `<button data-act="trvLv" data-arg="${l.n}" style="flex:1;min-width:86px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 6px;border-radius:12px;font-weight:800;${on ? 'background:var(--accent);color:#fff;box-shadow:var(--edge)' : 'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}"><span style="font-size:13px">${l.e} ${l.label}</span><span style="font-size:10px;font-weight:700;opacity:.85">${l.sub}</span></button>`; }).join('');
       const fmt = (act, e2, name, desc, col) => `<button data-act="${act}" style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:15px 16px;display:flex;align-items:center;gap:13px;box-shadow:var(--sh-rest)">
