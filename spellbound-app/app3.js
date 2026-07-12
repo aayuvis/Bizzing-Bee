@@ -556,6 +556,7 @@ const app = {
   buyConcept:(ci)=>{ ci=+ci; if(isConceptUnlocked(ci)) return app.openConcept(ci); if(!window.confirm('Unlock this concept for '+COST.concept+' coins?')) return; if(spendCoins(COST.concept)){ const c=active(); c.unlockedConcepts={...(c.unlockedConcepts||{}),[ci]:1}; sfx('win'); burstConfetti(70); flash('Concept unlocked! 🔓'); app.openConcept(ci); } else { flash('Need '+COST.concept+' 🪙 to unlock — earn by playing!'); } },
   setMode:(m)=>set({mode:m}),
   setTextSize:(k)=>set({textSize:k==='large'?'large':'normal'}),
+  toggleReadAloud:()=>{ state.readAloud=!state.readAloud; save(); if(state.readAloud) say('I will read the cards to you!'); render(); },
   setVoiceRate:(k)=>{ state.voiceRate=(k==='slow'?0.75:1); save(); say('Hello! I read the words like this.'); render(); },
   // nav
   setNav:(key)=>{ if(key==='train'){ app.startTrain(); return; } if(key==='coach'){ app.openCoach(); return; } if(key==='games'){ app.openGames(); return; } if(key==='shop'){ app.openShop(); return; } if(key==='journeys'){ app.openJourneys(); return; }
@@ -589,7 +590,9 @@ const app = {
   figSay:(t)=>say(t),
   figTab:(k)=>set({figTab:k}),
   figDeck:(id)=>{ const c=active(); const seen=((c.figSeen||{})[id]||0); set({figTab:'learn', figDeck:id, figIdx:Math.min(seen, Math.max(0,figDeckItems(id).length-1)), figFlip:false}); },
-  figFlip:()=>set({figFlip:!state.figFlip}),
+  figFlip:()=>{ const to=!state.figFlip;
+    if(to && state.readAloud){ const x=figDeckItems(state.figDeck)[state.figIdx||0]; if(x) say(x.p+'. '+(x.m||'')); }
+    set({figFlip:to}); },
   figNav:(dir)=>{ const items=figDeckItems(state.figDeck); let i=(state.figIdx||0)+(+dir);
     i=Math.max(0,Math.min(items.length-1,i));
     const c=active(); c.figSeen=c.figSeen||{};
@@ -601,7 +604,9 @@ const app = {
   openVocab:()=>{ set({nav:'vocab', screen:'app', vocDeck:null, conceptSel:null}); },
   vocDeck:(k)=>{ const words=vocDeckWords(k); if(words.length<5){ flash('Not enough words here yet — train a list first'); return; }
     set({vocDeck:k, vocWords:words, vocIdx:0, vocFlip:false}); setTimeout(()=>{ const w=state.vocWords[0]; if(w) say(w.w); },250); },
-  vocFlip:()=>set({vocFlip:!state.vocFlip}),
+  vocFlip:()=>{ const to=!state.vocFlip;
+    if(to && state.readAloud){ const w=(state.vocWords||[])[state.vocIdx||0]; if(w) say(w.w+'. '+(w.d||'')); }
+    set({vocFlip:to}); },
   vocNav:(dir)=>{ const n=(state.vocWords||[]).length; const prev=state.vocIdx||0; let i=prev+(+dir); i=Math.max(0,Math.min(n-1,i));
     if(+dir>0 && i===n-1 && prev<n-1 && n>=10){ const c=active(); c.vocDone=(c.vocDone||0)+1; addCoins(5); sfx('win'); burstConfetti(50); flash('📖 Vocabulary set complete! +5 🪙'); save(); }
     set({vocIdx:i, vocFlip:false});
@@ -912,7 +917,10 @@ const app = {
     const w=g.list[g.i]; if(!w) return; const cur=(state.typed||''); if(cur.length>=w.w.length) return;
     c.pow.reveal--; state.typed=w.w.slice(0,cur.length+1); save(); sfx('coin'); render();
     try{ document.querySelector('[data-fkey="gType"],[data-inp="gType"]')?.focus(); }catch(e){} },
-  buyPower:(k)=>{ const c=active(); const cost={freeze:80,shield:60,reveal:40,time:40}[k]||40; if(!window.confirm('Buy this power-up for '+cost+' coins?')) return;
+  buyPower:(k)=>{ const c=active(); const cost={freeze:80,shield:60,reveal:40,time:40,cheer:20}[k]||40; if(!window.confirm('Buy this power-up for '+cost+' coins?')) return;
+    if(k==='cheer'){ if(!spendCoins(20)){ flash('Need 20 🪙 — one warm-up round gets you there!'); return; }
+      save(); sfx('win'); burstConfetti(200); try{ say('Hip hip hooray for '+(c.name||'our speller')+'! You are amazing!'); }catch(e){}
+      flash('🎉 Bizzy cheers for '+(c.name||'you')+'!'); render(); return; }
     if(!spendCoins(cost)){ flash('Need '+cost+' 🪙 — play games to earn!'); return; }
     if(k==='freeze') c.freezes=(c.freezes||0)+1; else { if(!c.pow) c.pow={}; c.pow[k]=(c.pow[k]||0)+1; }
     save(); sfx('coin'); flash(k==='freeze'?'🧊 Streak Freeze stocked!':'🎒 Artifact stocked!'); render(); },
@@ -1603,7 +1611,7 @@ function viewTyping(){ const S=state; const c=active(); const st=tyStats(c);
   const lessons=TY_LESSONS.map((l,i)=>{ const acc=st.lessons[l.id];
     return `<button data-act="tyStart" data-arg="${l.id}" style="text-align:left;background:var(--paper,var(--bg2));border:1.5px solid ${acc>=90?'var(--treasure,#F0B429)':'var(--line)'};border-radius:14px;padding:13px 15px;display:flex;align-items:center;gap:12px">
       <span style="width:34px;height:34px;border-radius:10px;background:var(--chip);color:var(--accent);display:grid;place-items:center;font-weight:800;font-size:13px;flex-shrink:0">${i+1}</span>
-      <span style="min-width:0;flex:1"><span style="display:block;font-weight:800;font-size:14px">${esc(l.name)}</span>
+      <span style="min-width:0;flex:1"><span style="display:block;font-weight:800;font-size:14px">${esc(l.name)}${l.dyn?' <span style="font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);background:var(--treasure-tint,#FFF3D6);padding:2px 6px;border-radius:99px;vertical-align:middle">word bank</span>':''}</span>
       <span style="display:block;font-size:11.5px;color:var(--muted);font-weight:650">${acc!=null?('best accuracy '+acc+'%'+(acc>=90?' ✓':'')):'not tried yet'}</span></span></button>`; }).join('');
   return `<div style="max-width:920px;margin:0 auto">
     ${pageHead('Typing Trainer','⌨️ '+ (st.bestWpm?('best '+st.bestWpm+' WPM · '+st.bestAcc+'% acc'):'online bees are typed!'),'Learn to touch-type finger by finger — then race the 60-second Typing Test. NSF online rounds are typed, so speed is real bee prep.',
@@ -3455,6 +3463,10 @@ function viewSettings(){
         <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Voice speed</div><div style="font-size:13px;color:var(--muted)">How fast words &amp; sentences are read aloud</div></div>
         <div style="display:flex;background:var(--surface2);border-radius:999px;padding:3px"><button data-act="setVoiceRate" data-arg="slow" style="${seg((S.voiceRate||1)<1)}">Slow</button><button data-act="setVoiceRate" data-arg="normal" style="${seg((S.voiceRate||1)>=1)}">Normal</button></div>
       </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+        <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Read cards to me</div><div style="font-size:13px;color:var(--muted)">Bizzy reads every vocabulary &amp; idiom card aloud when it flips — great for reading together</div></div>
+        <button data-act="toggleReadAloud" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:${S.readAloud?'var(--accent)':'var(--surface2)'};color:${S.readAloud?'#fff':'var(--muted)'};font-weight:800;font-size:13px">${S.readAloud?'🐝 On':'Off'}</button>
+      </div>
     </div>
     <div class="sb-card" style="margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
       <div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:15px">🔐 Parent PIN</div><div style="font-size:13px;color:var(--muted)">${pinSet()?'Set — protects Settings, the Parent zone and purchases.':'Add a 4-digit PIN so only grown-ups can open Settings, the Parent zone and Premium.'}</div></div>
@@ -4231,6 +4243,7 @@ function viewShop(){ const S=state; const c=active(); ensureLists(c); const tab=
     body=`<p style="font-size:13px;color:var(--muted);margin:0 0 12px">${unc}/${THEMES.length} worlds unlocked · 2 free, ${state.premium?'2 more with Premium, ':''}the rest with coins.</p>${rows}`;
   } else if(tab==='power'){
     const items=[
+      {k:'cheer',  ic:'spark', name:'Bee Cheer 🎉', desc:'Bizzy shouts your name with a confetti storm — right now! A perfect first buy.', cost:20, own:0},
       {k:'shield', ic:'crown', name:'Boss Shield 🛡️', desc:'Absorbs one wrong answer in Boss Battle — keep all your lives.', cost:60, own:((c.pow||{}).shield||0)},
       {k:'reveal', ic:'bulb',  name:'Letter Reveal 💡', desc:'Reveals the next letter in Boss Battle. One use each.', cost:40, own:((c.pow||{}).reveal||0)},
       {k:'time',   ic:'timer', name:'Time Warp ⏱️', desc:'+15 seconds on your next Beat the Buzzer sprint. Auto-used.', cost:40, own:((c.pow||{}).time||0)},
@@ -4432,7 +4445,7 @@ function overlays(){
 
 /* ===================== render + events ===================== */
 const root = document.getElementById('root');
-function save(){ try{ localStorage.setItem('sb_saas_v2', JSON.stringify({ theme:state.theme, mode:state.mode, premium:state.premium, pin:state.parentPin||null, vr:state.voiceRate||1, tz:state.textSize||'normal', children:state.children, activeIdx:state.activeIdx, goalDone:state.goalDone, cN:(window.SB_CONCEPTS&&SB_CONCEPTS.chapters&&SB_CONCEPTS.chapters.length)||121, lu:state.luMastered, srs:state.coachSrs, chist:state.coachHistory, wr:state.wordReports||[] })); }catch(e){} }
+function save(){ try{ localStorage.setItem('sb_saas_v2', JSON.stringify({ theme:state.theme, mode:state.mode, premium:state.premium, pin:state.parentPin||null, vr:state.voiceRate||1, tz:state.textSize||'normal', ra:state.readAloud?1:0, children:state.children, activeIdx:state.activeIdx, goalDone:state.goalDone, cN:(window.SB_CONCEPTS&&SB_CONCEPTS.chapters&&SB_CONCEPTS.chapters.length)||121, lu:state.luMastered, srs:state.coachSrs, chist:state.coachHistory, wr:state.wordReports||[] })); }catch(e){} }
 function render(){
   const a=document.activeElement; const fkey=a&&a.getAttribute&&a.getAttribute('data-fkey'); let ss=null,se=null;
   try{ if(a){ ss=a.selectionStart; se=a.selectionEnd; } }catch(e){}
@@ -4465,7 +4478,7 @@ window.addEventListener('keydown', e=>{ try{
 /* ===================== init ===================== */
 (function init(){
   try{ const raw=localStorage.getItem('sb_saas_v2'); if(raw){ const s=JSON.parse(raw);
-    state.theme=s.theme||'spellbound'; state.mode=s.mode||'light'; state.premium=!!s.premium; state.parentPin=s.pin||null; state.voiceRate=s.vr||1; state.textSize=s.tz||'normal';
+    state.theme=s.theme||'spellbound'; state.mode=s.mode||'light'; state.premium=!!s.premium; state.parentPin=s.pin||null; state.voiceRate=s.vr||1; state.textSize=s.tz||'normal'; state.readAloud=!!s.ra;
     state.children=s.children||[]; state.activeIdx=s.activeIdx||0; state.goalDone=s.goalDone||0;
     state.luMastered=s.lu||{}; state.coachSrs=s.srs||{}; state.coachHistory=s.chist||{}; state.wordReports=s.wr||[];
     // Chapter 1 insert shifted concept indices by 11 — migrate index-keyed coin unlocks once
