@@ -117,7 +117,7 @@ function beep(){ try{ _tone(880,0,0.18,'square',0.17); _tone(620,0.17,0.18,'squa
 (function injectFX(){ try{ if(document.getElementById('sb-fx-style')) return; const st=document.createElement('style'); st.id='sb-fx-style';
   st.textContent='@keyframes sb-conf{0%{transform:translateY(-12vh) rotate(0);opacity:1}100%{transform:translateY(106vh) rotate(720deg);opacity:.85}}';
   document.head.appendChild(st); }catch(e){} })();
-function burstConfetti(n){ try{ n=n||90; const colors=['#7C5CFF','#FFC83D','#36D1FF','#FF4D8D','#39d98a','#FF8A3D'];
+function burstConfetti(n){ try{ const _c=(typeof active==='function')&&active(); if(_c && (_c.ageMode||((_c.age||9)<=11?'playful':'focused'))==='focused') return; n=n||90; const colors=['#7C5CFF','#FFC83D','#36D1FF','#FF4D8D','#39d98a','#FF8A3D'];
   const wrap=document.createElement('div'); wrap.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:90;overflow:hidden';
   for(let i=0;i<n;i++){ const d=document.createElement('div'); const c=colors[i%colors.length]; const left=Math.random()*100; const delay=Math.random()*0.3; const dur=1.1+Math.random()*1.2; const sz=6+Math.random()*7;
     d.style.cssText='position:absolute;top:-14px;left:'+left+'vw;width:'+sz+'px;height:'+(sz*0.6)+'px;background:'+c+';border-radius:6px;animation:sb-conf '+dur+'s '+delay+'s ease-in forwards';
