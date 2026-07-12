@@ -36,11 +36,15 @@
     .sb-tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;background:color-mix(in srgb,var(--paper,var(--bg2)) 94%,transparent);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:6px 6px calc(7px + env(safe-area-inset-bottom,0px))}
     .sb-tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;font-weight:800;padding:5px 2px;border-radius:10px;font-family:var(--ui,inherit)}
     .sb-tabbar button[aria-current="page"]{background:var(--chip,color-mix(in srgb,var(--accent) 12%,transparent))}
+    .sb-toast{bottom:calc(78px + env(safe-area-inset-bottom,0px))!important;max-width:92vw}
+    .sb-mob-hide{display:none!important}
   }
   @media(max-width:480px){ .sb-bandsub{display:none!important} }
   @media(max-width:560px){ .sb-search-lbl{display:none!important} }
   /* drawer rows that duplicate the desktop top nav — mobile only */
   @media(min-width:640px){ .sb-mob-only{display:none!important} }
+  /* accessibility: Large text mode scales the whole app */
+  :root[data-size="large"] #root{zoom:1.16}
   /* concept animation engine */
   @keyframes ca-pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
   @keyframes ca-sl{0%{transform:translateX(-72px);opacity:0}100%{transform:translateX(0);opacity:1}}

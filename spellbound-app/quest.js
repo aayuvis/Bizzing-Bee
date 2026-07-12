@@ -389,7 +389,9 @@
       const cast=S.cast; const a=cast[ch%cast.length], b=cast[(ch+2)%cast.length];
       return [ {sp:a, t:chp.blurb}, {sp:b, t:'Ready when you are — spell it true!'} ]; },
     beatNext(){ const q=state.sq; const S=seasonByPack(q.pack); const bts=SQ._beats(S,q.ch);
-      q.beat=Math.min((q.beat||0)+1, bts.length); const b=bts[q.beat-1]; if(b) say2(b.t); render(); },
+      q.beat=Math.min((q.beat||0)+1, bts.length); const b=bts[q.beat-1]; if(b) say2(b.t); render();
+      if(q.beat>=bts.length){ setTimeout(()=>{ try{ const el=document.getElementById('sq-challenge'); if(el) el.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){} }, 420); } },
+    toChallenge(){ try{ const el=document.getElementById('sq-challenge'); if(el) el.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){} },
     hearBeat(i){ const q=state.sq; const S=seasonByPack(q.pack); const b=SQ._beats(S,q.ch)[+i]; if(b) say2(b.t); },
     goCh(i){ const q=state.sq; i=+i; if(!dev() && i>cleared(q.pack)+1){ if(typeof flash==='function') flash('🔒 Clear the chapters before it first'); return; }
       state.sq={ view:'chapter', pack:q.pack, ch:i, beat:0 }; render(); },
@@ -576,9 +578,9 @@
       const nextBtn = bi<bts.length
         ? `<button data-act="sqBeat" style="display:block;margin:6px auto 0;background:#fff;color:#241E33;font-weight:800;font-size:15px;border-radius:99px;padding:12px 34px;box-shadow:0 4px 0 rgba(0,0,0,.3)">${bi===0?'▶ Play the story':'Next ▸'}</button>
            <div style="text-align:center;color:#8A83A3;font-size:11.5px;font-weight:700;margin-top:8px">${bi}/${bts.length}</div>`
-        : `<div style="text-align:center;color:${S.accent};font-weight:800;font-size:14px;margin-top:6px;animation:sb-pop .35s ease both">The story is told — take the challenge! →</div>`;
+        : `<button data-act="sqToChallenge" style="display:block;margin:6px auto 0;background:none;border:0;cursor:pointer;text-align:center;color:${S.accent};font-weight:800;font-size:14px;animation:sb-pop .35s ease both">The story is told — take the challenge! ↓</button>`;
       const kindLabel={survival:'Spell Survival<br>6 words · 60s',accuracy:'Accuracy Gate<br>spell 7 of 10',origins:'Word Origins<br>7 of 10',boss:'Boss Battle<br>defeat '+esc2(S.boss),finale:'Finale Boss<br>'+esc2(S.boss)+' returns'}[chp.kind];
-      const challenge=`<div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:14px;text-align:center;${storyDone?'':'opacity:.55'}">
+      const challenge=`<div id="sq-challenge" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:14px;text-align:center;${storyDone?'':'opacity:.55'}">
           <div style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.12em;color:#C9BFEA;margin-bottom:6px">THE CHALLENGE</div>
           <div style="color:#FFE49B;font-weight:800;font-size:12.5px;line-height:1.45;margin-bottom:11px">${kindLabel}</div>
           <button data-act="sqStart" style="background:${storyDone?S.accent:'rgba(255,255,255,.15)'};color:${storyDone?'#241E33':'#8A83A3'};font-weight:800;font-size:13px;border-radius:99px;padding:10px 18px;${storyDone?'box-shadow:0 4px 0 rgba(0,0,0,.25)':''}">START →</button>
@@ -603,7 +605,7 @@
     },
     _kbd(){ const rows=['QWERTYUIOP','ASDFGHJKL','ZXCVBNM'];
       return `<div style="display:flex;flex-direction:column;gap:6px;align-items:center">
-        ${rows.map((r,ri)=>`<div style="display:flex;gap:6px">${ri===2?'<button data-act="sqKey" data-arg="DEL" style="width:52px;height:42px;border-radius:9px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.14);color:#fff;font-weight:800;font-size:11px">DEL</button>':''}${r.split('').map(ch=>`<button data-act="sqKey" data-arg="${ch}" style="width:36px;height:42px;border-radius:9px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.14);color:#fff;font-weight:800;font-size:15px">${ch}</button>`).join('')}${ri===2?'<button data-act="sqKey" data-arg="GO" style="width:60px;height:42px;border-radius:9px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px">GO</button>':''}</div>`).join('')}
+        ${rows.map((r,ri)=>`<div style="display:flex;gap:6px">${ri===2?'<button data-act="sqKey" data-arg="DEL" style="width:clamp(38px,11vw,52px);height:42px;border-radius:9px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.14);color:#fff;font-weight:800;font-size:11px">DEL</button>':''}${r.split('').map(ch=>`<button data-act="sqKey" data-arg="${ch}" style="width:clamp(26px,8.4vw,36px);height:42px;border-radius:9px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.14);color:#fff;font-weight:800;font-size:15px">${ch}</button>`).join('')}${ri===2?'<button data-act="sqKey" data-arg="GO" style="width:clamp(44px,13vw,60px);height:42px;border-radius:9px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px">GO</button>':''}</div>`).join('')}
       </div>`; },
     _tiles(typed, len){ const arr=[]; for(let i=0;i<Math.max(len,typed.length);i++){ const ch=typed[i]; arr.push(`<span style="width:40px;height:46px;border-radius:10px;display:grid;place-items:center;font:800 22px var(--ui);color:#241E33;${ch?'background:#FBF7EC;box-shadow:inset 0 -4px 0 #E2D8C2':'background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)'}">${ch?ch.toUpperCase():''}</span>`); } return `<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap">${arr.join('')}</div>`; },
     _play(){ const g=state.sq; const S=seasonByPack(g.pack); const w=g.words[g.i]||{w:'',s:''}; const boss=g.mode==='boss';
