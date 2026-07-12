@@ -570,6 +570,21 @@ const app = {
   vocSayWord:()=>{ const w=(state.vocWords||[])[state.vocIdx||0]; if(w) say(w.w); },
   vocNewSet:()=>{ set({vocWords:vocDeckWords(state.vocDeck), vocIdx:0, vocFlip:false}); },
   vocBack:()=>set({vocDeck:null}),
+  // ----- Typing Trainer -----
+  openTyping:()=>{ tyStop(); set({nav:'typing', screen:'app', ty:null, conceptSel:null}); },
+  tyStart:(id)=>{ tyStop(); const l=TY_LESSONS.find(x=>x.id===id)||TY_LESSONS[0];
+    state.ty={mode:'lesson', lesson:l.id, title:l.name, tip:l.tip, seq:tySeqFor(l), pos:0, typed:0, errors:0, startT:0, done:false};
+    set({nav:'typing', screen:'app'}); app._tyArm(); },
+  tyTest:()=>{ tyStop(); const ws=diffSlice(gameWords()).filter(w=>/^[a-z]+$/.test(w.w)&&w.w.length<=10);
+    const seq=sample(ws, Math.min(45,ws.length)).map(w=>w.w).join(' ')||'the quick brown fox jumps over the lazy dog';
+    state.ty={mode:'test', title:'60-second Typing Test', tip:'', seq, pos:0, typed:0, errors:0, startT:0, done:false};
+    set({nav:'typing', screen:'app'}); app._tyArm(); },
+  _tyArm:()=>{ if(window._tyH) return; window._tyH=(e)=>{ const t=state.ty; if(!t||t.done||state.nav!=='typing') return;
+      if(e.metaKey||e.ctrlKey||e.altKey) return;
+      if(e.key==='Backspace'||e.key.length===1){ e.preventDefault(); tyProcess(e.key); } };
+    window.addEventListener('keydown', window._tyH, true); },
+  tyTap:(ch)=>{ tyProcess(ch); },
+  tyExit:()=>{ tyStop(); set({ty:null, nav:'typing'}); },
   goSettings:()=>app.setNav('settings'),
   goHome:()=>app.setNav('home'),
   goConcepts:()=>app.setNav('concepts'),
@@ -681,7 +696,7 @@ const app = {
   drawer:(key)=>{ state.drawerOpen=false; const F={ home:()=>app.setNav('home'), levelup:()=>app.startLevelUp(), games:()=>app.openGames(), shop:()=>app.openShop(), concepts:()=>app.setNav('concepts'),
       coach:()=>app.openCoach(), journeys:()=>app.openJourneys(), study:()=>app.coachStudy(), written:()=>app.startWritten(), oral:()=>app.startOral(),
       weak:()=>app.coachWeakDrill(), parentview:()=>{ app.openCoach(); state.coachTab='parent'; render(); }, settings:()=>app.setNav('settings'), themes:()=>app.setNav('themes'),
-      quest:()=>app.openQuestChooser(), traps:()=>app.openTraps(), collection:()=>app.openCollection(), finder:()=>app.openFinder(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore'), figurative:()=>app.setNav('figurative'), vocab:()=>app.openVocab() };
+      quest:()=>app.openQuestChooser(), traps:()=>app.openTraps(), collection:()=>app.openCollection(), finder:()=>app.openFinder(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore'), figurative:()=>app.setNav('figurative'), vocab:()=>app.openVocab(), typing:()=>app.openTyping() };
     (F[key]||(()=>{}))(); },
   // coach
   openCoach:()=>{ const c=active(); ensureLists(c);
@@ -1300,6 +1315,7 @@ const WAYFIND={ quest:{c:'var(--action,#6C4FE0)',ic:'steps',sb:null,label:'Champ
   themes:{c:'#B14FC4',ic:'palette',sb:'palette',label:'Theme Journeys'},
   figurative:{c:'#9C6A08',ic:'bulb',sb:'sparkle',label:'Idioms & Sayings'},
   vocab:{c:'#2E8FB8',ic:'book',sb:'book',label:'Vocabulary'},
+  typing:{c:'#5B3DD6',ic:'pencil',sb:'pencil',label:'Typing Trainer'},
   traps:{c:'#C4453C',ic:'spark',sb:'target',label:'Your Traps'} };
 function wayTile(key,size,tilt){ const w=WAYFIND[key]; size=size||48;
   const glyph=(w.sb&&window.SB_ICON)?SB_ICON(w.sb,{size:24}):iconSVG(w.ic,24,2.2);
@@ -1430,6 +1446,105 @@ function viewFigurative(){ const S=state;
       <button data-act="figPage" data-arg="${Math.min(pages-1,pg+1)}" style="padding:9px 16px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:13px;${pg>=pages-1?'opacity:.4':''}">Next →</button></div>`:''}
   </div>`;
 }
+/* ===== Typing Trainer — touch-typing lessons + 60s typing test (online bees are typed!) ===== */
+const TY_LESSONS=[
+  {id:'home1', name:'F & J — the bumps', seq:'fj fj jf fjf jfj ff jj fjfj jfjf fj', tip:'Rest your index fingers on F and J — feel the little bumps? Never look down!'},
+  {id:'home2', name:'D & K', seq:'dk dk kd dkd kdk fd jk dfk jkd dkfj', tip:'Middle fingers on D and K. Index fingers stay home on F and J.'},
+  {id:'home3', name:'S & L', seq:'sl sl ls sls lsl sd lk sdf lkj sldk', tip:'Ring fingers on S and L — they are the wobbliest, be patient with them.'},
+  {id:'home4', name:'A & ;', seq:'a; a; ;a a;a ;a; as ;l asdf jkl; aa;;', tip:'Pinkies on A and semicolon. The whole home row is yours now!'},
+  {id:'home5', name:'Home-row words', seq:'dad sad lad ask all fall lass salad flask', tip:'Real words, home keys only. Keep your eyes on the screen.'},
+  {id:'top1', name:'E & I', seq:'ed ik de ki die lie side like idea slide', tip:'Reach up with your middle fingers, then come straight home.'},
+  {id:'top2', name:'R & U', seq:'rf uj fur run rude sure lure user rule', tip:'Index fingers reach up for R and U.'},
+  {id:'top3', name:'W O T Y Q P', seq:'wow top yet toy quote power query type', tip:'The rest of the top row — pinkies get Q and P.'},
+  {id:'bot1', name:'V N C M', seq:'vn cm van can move nice mind cave once', tip:'Index and middle fingers dip down. Thumbs stay on the space bar.'},
+  {id:'bot2', name:'X Z and , .', seq:'zax mix, zoom. exact, prize. dozen fizz.', tip:'Pinkies and ring fingers dive for the corners.'},
+  {id:'caps', name:'Capitals with Shift', seq:'Fox Jam Kid Sun The Bee Wins Big Now', tip:'Hold Shift with the OPPOSITE pinky, then tap the letter.'},
+  {id:'words', name:'Common words', seq:'the and you that was for are with they have this from', tip:'The twelve most common words — type them until they flow.'},
+  {id:'bee', name:'Bee words at your level', dyn:true, tip:'Your own spelling words — type them fast AND right.'},
+];
+const TY_FINGER={q:'p',a:'p',z:'p',w:'r',s:'r',x:'r',e:'m',d:'m',c:'m',r:'i',f:'i',v:'i',t:'i',g:'i',b:'i',y:'I',h:'I',n:'I',u:'I',j:'I',m:'I',i:'M',k:'M',',':'M',o:'R',l:'R','.':'R',p:'P',';':'P'};
+const TY_FCOLOR={p:'#E8458C',r:'#F0A82A',m:'#13A892',i:'#3D7DF0',I:'#7B52E0',M:'#13A892',R:'#F0A82A',P:'#E8458C'};
+function tySeqFor(l){ if(!l.dyn) return l.seq;
+  const ws=diffSlice(gameWords()).filter(w=>/^[a-z]+$/.test(w.w)&&w.w.length<=9); return sample(ws,8).map(w=>w.w).join(' ')||'bee hive honey spell word queen'; }
+function tyStats(c){ return c.typing||(c.typing={bestWpm:0,bestAcc:0,tests:0,lessons:{}}); }
+function tyStop(){ if(window._tyH){ try{window.removeEventListener('keydown',window._tyH,true);}catch(e){} window._tyH=null; } const t=state.ty; if(t&&t.timer){ clearInterval(t.timer); t.timer=null; } }
+function tyProcess(ch){ const t=state.ty; if(!t||t.done) return;
+  if(!t.startT){ t.startT=Date.now();
+    if(t.mode==='test'){ t.timer=setInterval(()=>{ const tt=state.ty; if(!tt||tt.done){ return; }
+      const left=60-Math.floor((Date.now()-tt.startT)/1000);
+      const el=document.getElementById('ty-time'); if(el) el.textContent=Math.max(0,left)+'s';
+      if(left<=0) tyFinish(); },250); } }
+  const want=t.seq[t.pos];
+  if(ch==='Backspace'){ if(t.pos>0){ t.pos--; const sp=document.getElementById('ty-c'+t.pos); if(sp){ sp.style.color='var(--muted)'; sp.style.background='none'; sp.style.borderBottom='2px solid transparent'; } tyCursor(); } return; }
+  if(ch.length!==1) return;
+  const ok=ch===want; if(!ok) t.errors++;
+  const sp=document.getElementById('ty-c'+t.pos);
+  if(sp){ sp.style.color=ok?'var(--good,#1f9d57)':'#fff'; sp.style.background=ok?'none':'#E0483C'; sp.style.borderRadius='3px'; }
+  t.pos++; t.typed++;
+  if(t.pos>=t.seq.length){ tyFinish(); return; }
+  tyCursor();
+  const pr=document.getElementById('ty-prog'); if(pr) pr.style.width=Math.round(t.pos/t.seq.length*100)+'%';
+}
+function tyCursor(){ const t=state.ty; for(let i=Math.max(0,t.pos-2);i<=Math.min(t.seq.length-1,t.pos+2);i++){ const sp=document.getElementById('ty-c'+i); if(sp) sp.style.borderBottom=(i===t.pos)?'2px solid var(--accent)':'2px solid transparent'; }
+  document.querySelectorAll('[id^=ty-k-]').forEach(k=>{ k.style.outline='none'; k.style.transform='none'; });
+  const want=(t.seq[t.pos]||'').toLowerCase(); const key=document.getElementById('ty-k-'+(want===' '?'space':want));
+  if(key){ key.style.outline='3px solid var(--accent)'; key.style.transform='translateY(-2px)'; } }
+function tyFinish(){ const t=state.ty; if(!t||t.done) return; t.done=true; tyStop();
+  const mins=Math.max(0.05,(Date.now()-(t.startT||Date.now()))/60000);
+  const correct=t.typed-t.errors;
+  t.wpm=Math.max(0,Math.round((correct/5)/mins)); t.acc=t.typed?Math.round(correct/t.typed*100):0;
+  const c=active(); const st=tyStats(c);
+  if(t.mode==='test'){ st.tests=(st.tests||0)+1; const nb=t.wpm>(st.bestWpm||0);
+    if(nb) st.bestWpm=t.wpm; if(t.acc>(st.bestAcc||0)) st.bestAcc=t.acc;
+    const coins=Math.min(40,Math.max(3,Math.floor(t.wpm/2))); addCoins(coins); t.coins=coins;
+    sfx(nb?'win':'level'); if(nb) burstConfetti(90);
+  } else { st.lessons[t.lesson]=Math.max(st.lessons[t.lesson]||0, t.acc); addCoins(3); t.coins=3; sfx('correct'); }
+  save(); render(); }
+function tyKeyboardHTML(){ const rows=['qwertyuiop','asdfghjkl;','zxcvbnm,.'];
+  const key=(ch)=>{ const f=TY_FINGER[ch]; const col=f?TY_FCOLOR[f]:'#9A93AB';
+    return `<button data-act="tyTap" data-arg="${escA(ch)}" id="ty-k-${esc(ch)}" style="width:clamp(26px,3.4vw,40px);height:clamp(34px,4vw,46px);border-radius:8px;background:var(--surface2);border:1px solid var(--line);border-bottom:3px solid ${col};font-weight:800;font-size:14px;color:var(--text);transition:.1s">${ch===';'?';':ch.toUpperCase()}</button>`; };
+  return `<div style="display:flex;flex-direction:column;gap:5px;align-items:center;user-select:none">
+    ${rows.map(r=>`<div style="display:flex;gap:5px">${r.split('').map(key).join('')}</div>`).join('')}
+    <div style="display:flex;gap:5px"><button data-act="tyTap" data-arg=" " id="ty-k-space" style="width:min(46vw,300px);height:clamp(34px,4vw,44px);border-radius:8px;background:var(--surface2);border:1px solid var(--line);border-bottom:3px solid #9A93AB;font-weight:700;font-size:11px;color:var(--muted)">SPACE — thumbs</button></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:4px;font-size:10.5px;font-weight:700;color:var(--muted)">
+      ${[['#E8458C','pinky'],['#F0A82A','ring'],['#13A892','middle'],['#3D7DF0','left index'],['#7B52E0','right index']].map(x=>`<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:3px;background:${x[0]}"></span>${x[1]}</span>`).join('')}
+    </div></div>`; }
+function viewTyping(){ const S=state; const c=active(); const st=tyStats(c);
+  if(S.ty && !S.ty.done){ const t=S.ty;
+    const chars=t.seq.split('').map((ch,i)=>`<span id="ty-c${i}" style="color:${i<t.pos?'var(--good,#1f9d57)':'var(--muted)'};border-bottom:2px solid ${i===t.pos?'var(--accent)':'transparent'}">${ch===' '?'&nbsp;':esc(ch)}</span>`).join('');
+    return `<div style="max-width:760px;margin:0 auto;text-align:center">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><button data-act="tyExit" style="color:var(--muted);font-weight:700;font-size:13px">← Typing</button><span style="font-family:var(--display);font-weight:800;font-size:18px">${esc(t.title)}</span><span style="margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--muted)">${t.mode==='test'?`<span id="ty-time">60s</span>`:''}</span></div>
+      ${t.tip?`<p style="font-size:13px;color:var(--muted);margin:0 0 12px">💡 ${esc(t.tip)}</p>`:''}
+      <div style="height:6px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-bottom:16px"><div id="ty-prog" style="height:100%;background:var(--accent);width:${Math.round(t.pos/t.seq.length*100)}%"></div></div>
+      <div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:20px 22px;font-family:var(--mono);font-size:clamp(18px,3.4vw,26px);letter-spacing:.06em;line-height:2;word-break:break-word;text-align:left;margin-bottom:16px;box-shadow:var(--sh-rest)">${chars}</div>
+      ${tyKeyboardHTML()}
+      <p style="font-size:12px;color:var(--muted);margin-top:12px">Type on your keyboard${'ontouchstart' in window?' or tap the keys above':''} — ${t.mode==='test'?'the 60-second clock starts on your first key!':'accuracy first, speed follows.'}</p>
+    </div>`; }
+  if(S.ty && S.ty.done){ const t=S.ty;
+    return `<div style="max-width:520px;margin:0 auto;text-align:center;animation:sb-pop .35s ease both">
+      <div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:var(--glow)">
+        <div style="font-size:44px">${t.mode==='test'?(t.wpm>=(st.bestWpm||0)?'🏆':'⌨️'):'✅'}</div>
+        <h2 style="font-family:var(--display);font-weight:800;font-size:26px;margin:6px 0 14px">${t.mode==='test'?(t.wpm>=st.bestWpm?'New best!':'Test complete!'):'Exercise complete!'}</h2>
+        <div style="display:flex;gap:14px;justify-content:center;margin-bottom:14px">
+          <div style="background:var(--surface2);border-radius:14px;padding:14px 22px"><div style="font-family:var(--display);font-weight:800;font-size:30px;color:var(--accent)">${t.wpm}</div><div style="font-size:11px;color:var(--muted);font-weight:800">WPM</div></div>
+          <div style="background:var(--surface2);border-radius:14px;padding:14px 22px"><div style="font-family:var(--display);font-weight:800;font-size:30px;color:${t.acc>=90?'var(--good)':'var(--text)'}">${t.acc}%</div><div style="font-size:11px;color:var(--muted);font-weight:800">ACCURACY</div></div>
+        </div>
+        <div style="font-size:13px;font-weight:800;color:var(--treasure-deep,#8A5B00)">+${t.coins} 🪙</div>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:18px">
+          <button data-act="${t.mode==='test'?'tyTest':'tyStart'}" ${t.mode==='test'?'':`data-arg="${t.lesson}"`} style="padding:13px 22px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">${t.mode==='test'?'Test again →':'Once more →'}</button>
+          <button data-act="tyExit" style="padding:13px 20px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">All lessons</button>
+        </div></div></div>`; }
+  const lessons=TY_LESSONS.map((l,i)=>{ const acc=st.lessons[l.id];
+    return `<button data-act="tyStart" data-arg="${l.id}" style="text-align:left;background:var(--paper,var(--bg2));border:1.5px solid ${acc>=90?'var(--treasure,#F0B429)':'var(--line)'};border-radius:14px;padding:13px 15px;display:flex;align-items:center;gap:12px">
+      <span style="width:34px;height:34px;border-radius:10px;background:var(--chip);color:var(--accent);display:grid;place-items:center;font-weight:800;font-size:13px;flex-shrink:0">${i+1}</span>
+      <span style="min-width:0;flex:1"><span style="display:block;font-weight:800;font-size:14px">${esc(l.name)}</span>
+      <span style="display:block;font-size:11.5px;color:var(--muted);font-weight:650">${acc!=null?('best accuracy '+acc+'%'+(acc>=90?' ✓':'')):'not tried yet'}</span></span></button>`; }).join('');
+  return `<div style="max-width:920px;margin:0 auto">
+    ${pageHead('Typing Trainer','⌨️ '+ (st.bestWpm?('best '+st.bestWpm+' WPM · '+st.bestAcc+'% acc'):'online bees are typed!'),'Learn to touch-type finger by finger — then race the 60-second Typing Test. NSF online rounds are typed, so speed is real bee prep.',
+      `<button data-act="tyTest" style="padding:10px 18px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">⏱ 60-second Typing Test →</button>`)}
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px">${lessons}</div>
+  </div>`;
+}
 /* ===== Vocabulary — study decks + card player (NSF vocabulary-bee style) ===== */
 function viewVocab(){ const S=state; const c=active();
   if(S.vocDeck){ const ws=S.vocWords||[]; const i=Math.min(S.vocIdx||0,ws.length-1); const w=ws[i]; if(!w) return '<p style="color:var(--muted)">No words.</p>';
@@ -1481,6 +1596,7 @@ function viewExplore(){ const c=active(); ensureLists(c);
     {key:'themes', act:'setNav', arg:'themes', desc:'Learn words by their worlds — 52 themes from medicine to myths. Pick 3–5 you love.', meta:myThemes().length+' picked'},
     {key:'figurative', act:'setNav', arg:'figurative', desc:'2,000 idioms & 350 similes with true origin stories — learn deck by deck, card by card.', meta:'2,350 phrases'},
     {key:'vocab', act:'openVocab', desc:'Word → meaning, the vocabulary-bee way — study decks at your level, then take the Vocabulary round.', meta:'your level'},
+    {key:'typing', act:'openTyping', desc:'Touch-type finger by finger, then race the 60-second Typing Test — online bee rounds are typed!', meta:'⌨️ WPM'},
   ].map((d,i)=>{ const w=WAYFIND[d.key];
     return `<button class="sb-lift" data-act="${d.act}" ${d.arg?`data-arg="${d.arg}"`:''} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0">
       <div style="position:relative;width:100%">${SB_COVER(state.theme,d.key==='themes'?'themes':d.key,{h:110,dark:state.mode==='dusk'})}
@@ -1572,7 +1688,7 @@ function viewTraps(){ const S=state; const traps=missTraps(); const sel=S.trapSe
 /* ===================== APP SHELL ===================== */
 function viewApp(){
   const S=state;
-  const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1};
+  const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,typing:1};
   const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['explore','Explore','compass'],['games','Arcade','joystick'],['shop','Store','cart'],['progress','Progress','chart'],['collection','Collection','crown']].map(([key,label,ic])=>{
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:S.nav===key;
     const glyph=key==='explore'?(window.SB_ICON?SB_ICON('compass',{size:17}):iconSVG('grid',17)):iconSVG(ic,17);
@@ -1588,6 +1704,7 @@ function viewApp(){
   else if(S.nav==='explore') content=viewExplore();
   else if(S.nav==='figurative') content=viewFigurative();
   else if(S.nav==='vocab') content=viewVocab();
+  else if(S.nav==='typing') content=viewTyping();
   else if(S.nav==='builder') content=viewBuilder();
   else if(S.nav==='leveltest') content=viewLevelTest();
   else if(S.nav==='traps') content=viewTraps();
@@ -1690,6 +1807,7 @@ function viewDrawer(){
         ${wayRow('themes','themes','Theme Journeys',myThemes().length?myThemes().length+' worlds picked':'pick 3–5 worlds')}
         ${wayRow("figurative","figurative","Idioms & Sayings","2,350 phrases · true origin stories")}
         ${wayRow("vocab","vocab","Vocabulary","word → meaning, bee-style")}
+        ${wayRow("typing","typing","Typing Trainer","learn to type · 60s test")}
         ${kick('Tools')}
         ${row('builder','pencil','List Builder','custom list in five taps',state.nav==='builder')}
         <div class="sb-mob-only" style="display:contents">
@@ -1908,6 +2026,11 @@ function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageI
     { g:'Explorer', id:'coins250', name:'Honey Saver', desc:'Hold 250 coins at once', ic:'coin', done:(c.coins||0)>=250 },
     { g:'Explorer', id:'coins1000', name:'Honey Tycoon', desc:'Hold 1,000 coins at once', ic:'coin', done:(c.coins||0)>=1000 },
     { g:'Explorer', id:'milestone', name:'Eye on the Prize', desc:'Set a bee-day milestone', ic:'pencil', done:!!(c.milestone&&c.milestone.date) },
+    // Typing
+    { g:'Typing', id:'ty1', name:'Keys Found', desc:'Finish your first typing test', ic:'pencil', done:((c.typing||{}).tests||0)>=1 },
+    { g:'Typing', id:'ty15', name:'Steady Hands', desc:'Reach 15 WPM', ic:'pencil', done:((c.typing||{}).bestWpm||0)>=15 },
+    { g:'Typing', id:'ty25', name:'Quick Fingers', desc:'Reach 25 WPM', ic:'bolt', done:((c.typing||{}).bestWpm||0)>=25 },
+    { g:'Typing', id:'ty40', name:'Lightning Typist', desc:'Reach 40 WPM', ic:'bolt', done:((c.typing||{}).bestWpm||0)>=40 },
   ]; }
 function viewCollection(){ const S=state; const c=active(); const tab=S.collTab||'badges';
   const tabBtn=(k,ic,l)=>`<button data-act="collTab" data-arg="${k}" style="flex:1;min-width:96px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${iconSVG(ic,15)} ${l}</button>`;
