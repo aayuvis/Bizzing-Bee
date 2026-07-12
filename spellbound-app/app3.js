@@ -253,7 +253,7 @@ function logActivity(kind, label, stats, misses){ const c=active(); if(!c.activi
   if(c.activity.length>120) c.activity=c.activity.slice(0,120); }
 function fmtAgo(ts){ if(!ts) return ''; const s=Math.max(0,Math.floor((now()-ts)/1000));
   if(s<60) return 'just now'; const m=Math.floor(s/60); if(m<60) return m+'m ago'; const h=Math.floor(m/60); if(h<24) return h+'h ago'; const d=Math.floor(h/24); return d+'d ago'; }
-const ACT_LABEL = { practice:'Practice', buzz:'Buzz of the Day', beat:'Beat the Buzzer', boss:'Boss Battle', meaning:'Meaning Match', spell:'Spot the Spelling', origin:'Origin Detective', magic:'Magic Squares', written:'Written round', oral:'Oral elimination', concept:'Concept study' };
+const ACT_LABEL = { trivia:'Bee Trivia', practice:'Practice', buzz:'10-Word Warm-Up', beat:'Beat the Buzzer', boss:'Boss Battle', meaning:'Meaning Match', spell:'Spot the Spelling', origin:'Origin Detective', magic:'Magic Squares', written:'Written round', oral:'Oral elimination', concept:'Concept study' };
 function getList(c,key){ ensureLists(c); if(!c.lists[key]) c.lists[key]={xp:0}; return c.lists[key]; }
 function levelCap(){ return (state.premium||state.devUnlock) ? Infinity : FREE_LEVEL_CAP; }
 function listLevelRaw(c,key){ return levelFromXp(getList(c,key).xp||0).level; }
@@ -559,7 +559,7 @@ const app = {
   toggleReadAloud:()=>{ state.readAloud=!state.readAloud; save(); if(state.readAloud) say('I will read the cards to you!'); render(); },
   setVoiceRate:(k)=>{ state.voiceRate=(k==='slow'?0.75:1); save(); say('Hello! I read the words like this.'); render(); },
   // nav
-  setNav:(key)=>{ if(key==='train'){ app.startTrain(); return; } if(key==='coach'){ app.openCoach(); return; } if(key==='games'){ app.openGames(); return; } if(key==='shop'){ app.openShop(); return; } if(key==='journeys'){ app.openJourneys(); return; }
+  setNav:(key)=>{ if(key==='train'){ app.startTrain(); return; } if(key==='coach'){ app.openCoach(); return; } if(key==='games'){ app.openGames(); return; } if(key==='shop'){ app.openShop(); return; } if(key==='journeys'){ app.openJourneys(); return; } if(key==='trivia'){ app.openTrivia(); return; }
     if(key==='settings'){ pinGate(()=>set({nav:'settings', screen:'app', mood:'happy', conceptSel:null}),'Settings — grown-ups only'); return; }
     if(key==='parent'){ pinGate(()=>{ state.progTab='parent'; set({nav:'progress', screen:'app', mood:'happy', conceptSel:null}); },'Parent zone'); return; }
     if(key==='progress'&&state.progTab==null) state.progTab='me';
@@ -832,6 +832,17 @@ const app = {
   openGames:()=>{ clearGTimer(); const c=active(); ensureLists(c); set({nav:'games', screen:'app', game:null, gInfo:false, typed:'', mood:'happy', conceptSel:null}); },
   // ----- Spelling Quest (window.SQ) -----
   openQuest:()=>{ clearGTimer(); if(window.SQ) SQ.open(); },
+  // ----- Bee Trivia (window.STV) -----
+  openTrivia:()=>{ clearGTimer(); if(window.STV) STV.open(); },
+  trvTh:(a)=>{ if(window.STV) STV.setTh(a); },
+  trvLv:(a)=>{ if(window.STV) STV.setLv(a); },
+  trvQuiz:()=>{ if(window.STV) STV.startQuiz(); },
+  trvSquare:()=>{ if(window.STV) STV.startSquare(); },
+  trvClock:()=>{ if(window.STV) STV.startClock(); },
+  trvPick:(a)=>{ if(window.STV) STV.pick(a); },
+  trvCell:(a)=>{ if(window.STV) STV.cell(a); },
+  trvHear:()=>{ if(window.STV) STV.hear(); },
+  trvExit:()=>{ if(window.STV) STV.exit(); },
   sqExit:()=>{ if(window.SQ) SQ.exit(); },
   sqPickSeason:(a)=>{ if(window.SQ) SQ.pickSeason(a); },
   sqStart:()=>{ if(window.SQ) SQ.startChapter(); },
@@ -1788,6 +1799,7 @@ function viewApp(){
   else if(S.nav==='finder') content=viewFinder();
   else if(S.nav==='games') content=viewGames();
   else if(S.nav==='sq') content=(window.SQ?SQ.view():viewGames());
+  else if(S.nav==='trivia') content=(window.STV?STV.view():viewGames());
   else if(S.nav==='shop') content=viewShop();
   else if(S.nav==='themes') content=viewThemes();
   else if(S.nav==='progress') content=viewProgressShell();
@@ -1871,6 +1883,7 @@ function viewDrawer(){
         ${wayRow("figurative","figurative","Idioms & Sayings","2,350 phrases · true origin stories")}
         ${wayRow("vocab","vocab","Vocabulary","word → meaning, bee-style")}
         ${wayRow("typing","typing","Typing Trainer","learn to type · 60s test")}
+        ${row('trivia','bulb','Bee Trivia','5,000 questions · 20 themes',state.nav==='trivia')}
         ${kick('Tools')}
         ${row('builder','pencil','List Builder','custom list in five taps',state.nav==='builder')}
         <div class="sb-mob-only" style="display:contents">
@@ -2105,6 +2118,14 @@ function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageI
     { g:'Typing', id:'tybank5', name:'Sentence Smith', desc:'5 sentence or meaning typing sessions', ic:'book', done:((c.typing||{}).bank||0)>=5 },
     { g:'Typing', id:'tybank15', name:'Wordsmith Typist', desc:'15 word-bank typing sessions', ic:'book', done:((c.typing||{}).bank||0)>=15 },
     { g:'Typing', id:'tytests10', name:'Test Pilot', desc:'Run 10 timed typing tests', ic:'spark', done:((c.typing||{}).tests||0)>=10 },
+    // Bee Trivia
+    { g:'Trivia', id:'tr1', name:'Quiz Rookie', desc:'Finish your first trivia round', ic:'spark', done:((c.trivia||{}).rounds||0)+((c.trivia||{}).squares||0)>=1 },
+    { g:'Trivia', id:'tr100', name:'Fact Finder', desc:'Answer 100 trivia questions right', ic:'bulb', done:((c.trivia||{}).right||0)>=100 },
+    { g:'Trivia', id:'tr500', name:'Trivia Titan', desc:'500 right answers', ic:'bulb', done:((c.trivia||{}).right||0)>=500 },
+    { g:'Trivia', id:'trperf', name:'Perfect Ten', desc:'A flawless 10/10 classic round', ic:'target', done:((c.trivia||{}).perfect||0)>=1 },
+    { g:'Trivia', id:'trlines', name:'Line Judge', desc:'Score 10 lines in Trivia Squares', ic:'grid', done:((c.trivia||{}).lines||0)>=10 },
+    { g:'Trivia', id:'trclock15', name:'Quick Thinker', desc:'15+ right in one Beat the Clock', ic:'bolt', done:((c.trivia||{}).clockBest||0)>=15 },
+    { g:'Trivia', id:'trthemes', name:'Globe Trotter', desc:'Answer right in 15 different themes', ic:'crown', done:Object.keys((c.trivia||{}).themes||{}).length>=15 },
     // Vocabulary study
     { g:'Vocabulary', id:'voc1', name:'First Flip', desc:'Finish your first vocabulary set', ic:'book', done:(c.vocDone||0)>=1 },
     { g:'Vocabulary', id:'voc5', name:'Meaning Seeker', desc:'Finish 5 vocabulary sets', ic:'book', done:(c.vocDone||0)>=5 },
@@ -4044,7 +4065,7 @@ function buildMC(mode,n){ const all=gameWordsD();
   }); }
 function gMisses(g){ return (g.ans?g.ans.filter(a=>!a.ok).map(a=>a.w):[]); }
 function gFinishBuzz(){ const g=state.game; g.status='done'; const bonus=2+g.right; addCoins(bonus); g.bonus=bonus;
-  logActivity('buzz','Buzz of the Day', {done:g.ans.length,right:g.right,coins:bonus}, gMisses(g));
+  logActivity('buzz','10-Word Warm-Up', {done:g.ans.length,right:g.right,coins:bonus}, gMisses(g));
   if(g.right>=8){ sfx('win'); burstConfetti(120); } else sfx('level'); render(); }
 function gFinishBeat(){ const g=state.game; g.status='done'; const bonus=Math.round(g.right*1.5); addCoins(bonus); g.bonus=bonus;
   logActivity('beat','Beat the Buzzer', {done:g.right+g.wrong,right:g.right,coins:bonus}, []);
@@ -4186,7 +4207,11 @@ function gamesHub(){ const S=state;
   })();
   const champCard=`<button data-act="openChallenge" data-arg="journey" style="grid-column:1/-1;text-align:left;border-radius:14px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 6px 18px rgba(43,27,94,.18)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">${iconSVG('bolt',32)}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">Set timed or counted · pick a difficulty</div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Champ Challenge</div><div style="font-size:12px;color:rgba(255,255,255,.9)">Beat the clock or a set number — pass your Level to test out.</div></div><span style="padding:9px 16px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Set it up →</span></div></button>`;
   const magicCard=`<button data-act="playGame" data-arg="magic" style="grid-column:1/-1;text-align:left;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#B14FC4,#7E2E9E);box-shadow:0 6px 18px rgba(123,46,142,.24)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">${iconSVG('grid',30)}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">3×3 board of themes &amp; concepts · lines win bonus coins</div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Magic Squares</div><div style="font-size:12px;color:rgba(255,255,255,.9)">Clear theme and concept cells by spelling — complete a line for a Magic Square bonus.</div></div><span style="padding:9px 16px;border-radius:10px;background:#fff;color:#7E2E9E;font-weight:800;font-size:13px;white-space:nowrap">Play →</span></div></button>`;
-  const cards=questCard+champCard+magicCard+GAMES.map(gm=>`<button class="sb-cover-card" data-act="playGame" data-arg="${gm.type}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
+  const triviaCard=(function(){ if(!window.SB_TRIVIA) return '';
+    const st=(active().trivia)||{}; const nQ=(SB_TRIVIA.questions||[]).length;
+    return `<button data-act="openTrivia" style="grid-column:1/-1;text-align:left;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#F0A93C,#DC7A18);box-shadow:0 6px 18px rgba(200,122,20,.28)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;font-size:30px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">🧠</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.88)">${fmtN(nQ)} questions · 20 themes · 5 levels</div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Bee Trivia</div><div style="font-size:12px;color:rgba(255,255,255,.92)">Classic quiz, Trivia Squares board or Beat the Clock — with picture and listening rounds.</div></div><span style="padding:9px 16px;border-radius:10px;background:#fff;color:#C8791B;font-weight:800;font-size:13px;white-space:nowrap">${st.right?('Play → · '+fmtN(st.right)+' right'):'Play →'}</span></div></button>`;
+  })();
+  const cards=questCard+triviaCard+champCard+magicCard+GAMES.map(gm=>`<button class="sb-cover-card" data-act="playGame" data-arg="${gm.type}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
       <div style="position:relative">
         ${SB_GAME(S.theme,gm.type,{h:108,dark:S.mode==='dusk'})}
         <span style="position:absolute;top:10px;left:12px;font-family:var(--ui,var(--body));font-weight:650;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:6px;background:${S.mode==='dusk'?'rgba(36,30,51,.85);color:#fff':'rgba(255,255,255,.92);color:#241E33'}">${esc(gm.tag)}</span>
