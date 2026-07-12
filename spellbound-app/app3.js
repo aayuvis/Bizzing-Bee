@@ -543,6 +543,13 @@ const app = {
     if(key==='concepts'){ loadConcepts(); state.conceptView='all'; state.conceptTier=currentTier(); state.conceptPage=0; }
     set({nav:key, screen:'app', mood:'happy', conceptSel:null}); },
   progTab:(k)=>set({progTab:k==='parent'?'parent':'me'}),
+  // ----- Idioms & Sayings browser -----
+  figQ:(v)=>{ state.figQ=v||''; state.figPage=0; render(); },
+  figType:(k)=>set({figType:k, figPage:0}),
+  figTheme:(v)=>set({figTheme:v||'all', figPage:0}),
+  figWorld:()=>set({figWorld:!state.figWorld, figPage:0}),
+  figPage:(n)=>{ set({figPage:+n}); try{window.scrollTo(0,0);}catch(e){} },
+  figSay:(t)=>say(t),
   goSettings:()=>app.setNav('settings'),
   goHome:()=>app.setNav('home'),
   goConcepts:()=>app.setNav('concepts'),
@@ -654,7 +661,7 @@ const app = {
   drawer:(key)=>{ state.drawerOpen=false; const F={ home:()=>app.setNav('home'), levelup:()=>app.startLevelUp(), games:()=>app.openGames(), shop:()=>app.openShop(), concepts:()=>app.setNav('concepts'),
       coach:()=>app.openCoach(), journeys:()=>app.openJourneys(), study:()=>app.coachStudy(), written:()=>app.startWritten(), oral:()=>app.startOral(),
       weak:()=>app.coachWeakDrill(), parentview:()=>{ app.openCoach(); state.coachTab='parent'; render(); }, settings:()=>app.setNav('settings'), themes:()=>app.setNav('themes'),
-      quest:()=>app.openQuestChooser(), traps:()=>app.openTraps(), collection:()=>app.openCollection(), finder:()=>app.openFinder(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore') };
+      quest:()=>app.openQuestChooser(), traps:()=>app.openTraps(), collection:()=>app.openCollection(), finder:()=>app.openFinder(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore'), figurative:()=>app.setNav('figurative') };
     (F[key]||(()=>{}))(); },
   // coach
   openCoach:()=>{ const c=active(); ensureLists(c);
@@ -863,6 +870,7 @@ const app = {
   wqStart:(round)=>{ clearGTimer(); state.gInfo=false; state.typed='';
     let qs=[];
     if(round==='mixed'){ qs=[].concat(buildMC('meaning',4),buildMC('spell',3),buildMC('origin',3)); qs=sample(qs, Math.min(10,qs.length)); }
+    else if(round==='idiom'||round==='simile'){ qs=buildFigQs(round,10); }
     else { qs=buildMC(round,10); }
     if(qs.length<3){ flash(round==='origin'?'Need a few words with a known origin — train a list first':'Need a few more words for this round — train a list first'); return; }
     state.game={type:'wordquiz',round,qs,i:0,picked:null,right:0,status:'play'};
@@ -889,7 +897,7 @@ const app = {
       if(g.fmt==='count' && (g.i+1>=g.total || g.i+1>=g.list.length)){ gFinishChamp(); return; } advance(); render(); }
   },
   gPick:(idx)=>{ const g=state.game; if(!g||!g.qs||g.picked!=null) return; idx=+idx; const q=g.qs[g.i]; g.picked=idx; const ok=q.choices[idx]===q.answer; logGameWord(nkey(q.word));
-    const spellingGame = q.kind!=='origin'; // origin tests language knowledge, not spelling mastery
+    const spellingGame = ['origin','idiom','simile2'].indexOf(q.kind)<0; // knowledge rounds don't count as spelling mastery
     logBand(q.wordObj||q.word, ok, spellingGame?0.5:0);
     if(ok){ g.right++; addCoins(1); gainXp(); if(spellingGame){ markMastered(nkey(q.word)); clearMiss(q.word); } sfx('correct'); }
     else { sfx('wrong'); if(spellingGame && q.wordObj){ addMiss(q.wordObj); (g.miss=g.miss||[]).push(q.word); } }
@@ -1269,11 +1277,57 @@ const WAYFIND={ quest:{c:'var(--action,#6C4FE0)',ic:'steps',sb:null,label:'Champ
   journeys:{c:'#C25A2E',ic:'book',sb:'book',label:'Word Journeys'},
   arcade:{c:'#E8458C',ic:'joystick',sb:'gamepad',label:'Arcade'},
   themes:{c:'#B14FC4',ic:'palette',sb:'palette',label:'Theme Journeys'},
+  figurative:{c:'#9C6A08',ic:'bulb',sb:'sparkle',label:'Idioms & Sayings'},
   traps:{c:'#C4453C',ic:'spark',sb:'target',label:'Your Traps'} };
 function wayTile(key,size,tilt){ const w=WAYFIND[key]; size=size||48;
   const glyph=(w.sb&&window.SB_ICON)?SB_ICON(w.sb,{size:24}):iconSVG(w.ic,24,2.2);
   return `<span style="width:${size}px;height:${size}px;flex-shrink:0;display:grid;place-items:center;border-radius:14px;background:${w.c};color:#fff;box-shadow:var(--edge),var(--sh-rest);transform:rotate(${tilt||-2.5}deg)">${glyph}</span>`; }
 // Explore — the hub behind the 5-item nav: Arcade, Concepts, Word Journeys, Theme Journeys.
+/* ===== Idioms & Sayings — browse 2,350 figurative phrases with honest origin stories ===== */
+function figPool(){ if(!window.SB_FIG) return [];
+  if(!window._figAll) window._figAll=(SB_FIG.idioms||[]).concat(SB_FIG.similes||[]).filter(x=>x.kid!==false);
+  return window._figAll; }
+const FIG_OC={documented:['📜 True story','#0F5C3E','#EAF7F0'], disputed:['🤔 Best guess','#8A5B00','#FFF3D6'], folk:['🧚 Folk tale — busted!','#6E1F30','#FBEAE8']};
+function viewFigurative(){ const S=state;
+  const q=(S.figQ||'').trim().toLowerCase(); const ty=S.figType||'all'; const th=S.figTheme||'all'; const world=!!S.figWorld;
+  let list=figPool();
+  if(ty!=='all') list=list.filter(x=>x.t===ty);
+  if(th!=='all') list=list.filter(x=>(x.th||[]).indexOf(th)>=0);
+  if(world) list=list.filter(x=>x.lit);
+  if(q) list=list.filter(x=>x.p.toLowerCase().includes(q)||x.m.toLowerCase().includes(q));
+  const PER=24; const pages=Math.max(1,Math.ceil(list.length/PER)); const pg=Math.min(S.figPage||0,pages-1);
+  const themes=[...new Set(figPool().flatMap(x=>x.th||[]))].sort();
+  const seg=(k,l)=>`<button data-act="figType" data-arg="${k}" style="padding:8px 14px;border-radius:999px;font-weight:800;font-size:12.5px;${(S.figType||'all')===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">${l}</button>`;
+  const cards=list.slice(pg*PER,pg*PER+PER).map(x=>{ const oc=FIG_OC[x.oc]||FIG_OC.documented;
+    return `<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:15px 16px;display:flex;flex-direction:column;gap:7px">
+      <div style="display:flex;align-items:flex-start;gap:8px"><span style="font-family:var(--display);font-weight:800;font-size:16.5px;line-height:1.2;flex:1">${esc(x.p)}</span>
+        <button data-act="figSay" data-arg="${escA(x.p+'. '+x.m)}" title="Hear it" style="width:30px;height:30px;border-radius:9px;background:var(--chip);color:var(--accent);display:grid;place-items:center;flex-shrink:0">${iconSVG('volume',15)}</button></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+        <span style="font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:var(--surface2);color:var(--muted)">${x.t}</span>
+        <span style="font-size:10px;font-weight:800;padding:2px 9px;border-radius:99px;color:${oc[1]};background:${oc[2]}">${oc[0]}</span>
+        ${x.region&&x.region!=='global'?`<span style="font-size:10px;font-weight:800;padding:2px 9px;border-radius:99px;background:var(--chip);color:var(--accent)">🌍 ${esc(x.region)}</span>`:''}</div>
+      <div style="font-size:13.5px;font-weight:700">${esc(x.m)}</div>
+      ${x.lit?`<div style="font-size:12px;color:var(--muted)"><b>Literally:</b> ${esc(x.lit)}</div>`:''}
+      <div style="font-size:12px;color:var(--muted);line-height:1.5">${esc(x.os)}</div>
+      <div style="font-size:12px;font-style:italic;color:var(--text);opacity:.85">“${esc(x.ex)}”</div>
+      ${(x.eq&&x.eq.length)?`<div style="font-size:11.5px;color:var(--muted)"><b>Same idea elsewhere:</b> ${x.eq.map(e=>esc(e.lang)+': “'+esc(e.p)+'”'+(e.lit?' ('+esc(e.lit)+')':'')).join(' · ')}</div>`:''}
+    </div>`; }).join('');
+  return `<div style="max-width:980px;margin:0 auto">
+    ${pageHead('Idioms & Sayings', list.length+' of '+figPool().length+' phrases', 'Real meanings, true origin stories — and an honest flag when the famous story is a myth. Play the Idiom round in Word Quiz to test yourself.')}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+      <input data-inp="figQ" data-fkey="figQ" value="${escA(S.figQ||'')}" placeholder="Search phrases or meanings…" style="flex:1;min-width:200px;padding:11px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:14px;outline:none">
+      ${seg('all','All')}${seg('idiom','Idioms')}${seg('proverb','Proverbs')}${seg('simile','Similes')}
+      <button data-act="figWorld" style="padding:8px 14px;border-radius:999px;font-weight:800;font-size:12.5px;${world?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">🌍 World</button>
+      <select data-chg="figTheme" style="padding:9px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px">
+        <option value="all">All themes</option>${themes.map(t=>`<option value="${t}" ${th===t?'selected':''}>${t}</option>`).join('')}</select>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px">${cards||'<p style="color:var(--muted)">No matches — try a different search.</p>'}</div>
+    ${pages>1?`<div style="display:flex;gap:8px;justify-content:center;align-items:center;margin-top:16px">
+      <button data-act="figPage" data-arg="${Math.max(0,pg-1)}" style="padding:9px 16px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:13px;${pg===0?'opacity:.4':''}">← Prev</button>
+      <span style="font-size:13px;font-weight:700;color:var(--muted)">Page ${pg+1} / ${pages}</span>
+      <button data-act="figPage" data-arg="${Math.min(pages-1,pg+1)}" style="padding:9px 16px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:13px;${pg>=pages-1?'opacity:.4':''}">Next →</button></div>`:''}
+  </div>`;
+}
 function viewExplore(){ const c=active(); ensureLists(c);
   const cAll=(state.conceptData||[]); const cDone=cAll.filter(ch=>conceptStat(ch).done).length;
   const dests=[
@@ -1281,6 +1335,7 @@ function viewExplore(){ const c=active(); ensureLists(c);
     {key:'concepts', act:'setNav', arg:'concepts', desc:'Spelling basics, patterns, prefixes, roots & tricky endings — 121 concepts in 11 chapters.', meta:cDone+'/'+(cAll.length||121)+' mastered'},
     {key:'journeys', act:'openJourneys', desc:'The history & geography of words — 100 lessons from ancient roots to championship linguistics.', meta:state.premium?'10 chapters':'Premium'},
     {key:'themes', act:'setNav', arg:'themes', desc:'Learn words by their worlds — 52 themes from medicine to myths. Pick 3–5 you love.', meta:myThemes().length+' picked'},
+    {key:'figurative', act:'setNav', arg:'figurative', desc:'2,000 idioms & 350 similes with true origin stories — and honest flags when the famous story is a myth.', meta:'2,350 phrases'},
   ].map((d,i)=>{ const w=WAYFIND[d.key];
     return `<button class="sb-lift" data-act="${d.act}" ${d.arg?`data-arg="${d.arg}"`:''} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0">
       <div style="position:relative;width:100%">${SB_COVER(state.theme,d.key==='themes'?'themes':d.key,{h:110,dark:state.mode==='dusk'})}
@@ -1372,7 +1427,7 @@ function viewTraps(){ const S=state; const traps=missTraps(); const sel=S.trapSe
 /* ===================== APP SHELL ===================== */
 function viewApp(){
   const S=state;
-  const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1};
+  const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1};
   const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['explore','Explore','compass'],['games','Arcade','joystick'],['shop','Store','cart'],['progress','Progress','chart'],['collection','Collection','crown']].map(([key,label,ic])=>{
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:S.nav===key;
     const glyph=key==='explore'?(window.SB_ICON?SB_ICON('compass',{size:17}):iconSVG('grid',17)):iconSVG(ic,17);
@@ -1386,6 +1441,7 @@ function viewApp(){
   else if(S.nav==='coach') content=viewCoach();
   else if(S.nav==='quest') content=viewQuest();
   else if(S.nav==='explore') content=viewExplore();
+  else if(S.nav==='figurative') content=viewFigurative();
   else if(S.nav==='builder') content=viewBuilder();
   else if(S.nav==='leveltest') content=viewLevelTest();
   else if(S.nav==='traps') content=viewTraps();
@@ -1486,6 +1542,7 @@ function viewDrawer(){
         ${wayRow('concepts','concepts','Concepts','121 concepts · 11 chapters')}
         ${wayRow('journeys','journeys','Word Journeys','the history of words')}
         ${wayRow('themes','themes','Theme Journeys',myThemes().length?myThemes().length+' worlds picked':'pick 3–5 worlds')}
+        ${wayRow("figurative","figurative","Idioms & Sayings","2,350 phrases · true origin stories")}
         ${kick('Tools')}
         ${row('builder','pencil','List Builder','custom list in five taps',state.nav==='builder')}
         <div class="sb-mob-only" style="display:contents">
@@ -3508,7 +3565,7 @@ function misspellings(w, n){ const out=new Set();
     x=>x.replace(/cc/,'c'), x=>x.replace(/ss/,'s'), x=>x.replace(/ph/,'f') ];
   let t=0; while(out.size<n && t<50){ t++; const c=ops[Math.floor(Math.random()*ops.length)](w); if(c && c!==w && /^[a-z'\- ]+$/i.test(c)) out.add(c); }
   return [...out]; }
-function mcSpeak(q){ if(!q) return; if(q.kind==='sentence') sayMasked(q.say, q.word); else if(q.kind==='spell'||q.kind==='origin') say(q.word); /* 'meaning': stay silent so the word isn't given away */ }
+function mcSpeak(q){ if(!q) return; if(q.kind==='sentence') sayMasked(q.say, q.word); else if(q.kind==='spell'||q.kind==='origin') say(q.word); else if(q.kind==='idiom'||q.kind==='simile2') say(q.say); /* 'meaning': stay silent so the word isn't given away */ }
 const gameName=(t)=>{ const g=GAMES.find(x=>x.type===t); return g?g.name:'Game'; };
 let _gtimer=null;
 function clearGTimer(){ if(_gtimer){ clearInterval(_gtimer); _gtimer=null; } }
@@ -3589,6 +3646,19 @@ function pickFresh(pool, n){ const c=active(); const recent=recentGameKeys(c); c
   if(fresh.length>=n) return sample(fresh, n);
   const used=valid.filter(w=>recent.has(nkey(w.w))).sort((a,b)=>log.lastIndexOf(nkey(a.w))-log.lastIndexOf(nkey(b.w)));
   return sample(fresh).concat(used).slice(0, n); }
+/* Word Quiz rounds from the figurative dataset: idiom meanings + complete-the-simile. */
+function buildFigQs(mode,n){ const pool=figPool(); if(pool.length<8) return [];
+  if(mode==='idiom'){
+    const cand=sample(pool.filter(x=>x.t!=='simile'), n);
+    return cand.map(x=>{ const others=sample(pool.filter(y=>y!==x&&y.t!=='simile'&&y.m!==x.m),3).map(y=>y.m);
+      return {kind:'idiom', word:x.p, wordObj:{w:x.p,y:3}, answer:x.m, choices:sample([x.m].concat(others)), prompt:esc(x.p), say:x.p, os:x.os}; }); }
+  const sims=pool.filter(x=>x.t==='simile'&&x.vehicle&&x.p.toLowerCase().includes(x.vehicle.toLowerCase()));
+  const cand=sample(sims, Math.min(n,sims.length));
+  return cand.map(x=>{ const re=new RegExp(x.vehicle.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i');
+    const blanked=x.p.replace(re,'____');
+    const others=sample([...new Set(sims.filter(y=>y!==x&&y.vehicle.toLowerCase()!==x.vehicle.toLowerCase()).map(y=>y.vehicle))],3);
+    return {kind:'simile2', word:x.p, wordObj:{w:x.p,y:3}, answer:x.vehicle, choices:sample([x.vehicle].concat(others)), prompt:esc(blanked), say:blanked.replace('____','hmm'), m:x.m}; });
+}
 function buildMC(mode,n){ const all=gameWordsD();
   if(mode==='origin'){ const pool=all.filter(w=>w.o && MC_ORIGINS.indexOf(w.o)>=0); if(pool.length<4) return [];
     return pickFresh(pool, Math.min(n,pool.length)).map(w=>{
@@ -3647,6 +3717,8 @@ function wordQuizPicker(){ return gamePickerShell('Word Quiz','Choose a round �
   pickerCard('wqStart','meaning','#13A892','book','Meanings','Match a word to its meaning or fill the blank in a sentence.')+
   pickerCard('wqStart','spell','#3D7DF0','spark','Spellings','Pick the correctly-spelled word from look-alikes.')+
   pickerCard('wqStart','origin','#4F9E6A','grid','Origins','Guess each word’s language of origin.')+
+  pickerCard('wqStart','idiom','#9C6A08','bulb','Idioms','What does “break the ice” really mean? 2,000 phrases.')+
+  pickerCard('wqStart','simile','#E0922E','flame','Similes','Complete the simile — as busy as a … ?')+
   pickerCard('wqStart','mixed','#B14FC4','palette','Mixed','A little of everything — meanings, spellings and origins.')); }
 /* ---- Spelling Duel: pass-the-device, same 10 words, two spellers ---- */
 function duelView(){ const S=state; const g=S.game; const shell=(inner)=>`<div style="max-width:560px;margin:0 auto;animation:sb-rise .3s ease both">
@@ -3941,6 +4013,8 @@ function mcGame(){ const S=state; const g=S.game; const q=g.qs[g.i]; const mono=
   if(q.kind==='sentence') prompt=`${eyebrow('Fill the blank')}<div style="font-size:clamp(17px,3.6vw,21px);line-height:1.6;font-weight:600">${q.prompt}</div>${hearBtn('Hear sentence')}`;
   else if(q.kind==='origin') prompt=`${eyebrow('Where does it come from?')}<div style="font-family:var(--display);font-size:clamp(20px,4.5vw,28px);font-weight:800">${q.prompt}</div>${hearBtn('Hear word')}`;
   else if(q.kind==='spell') prompt=`${eyebrow('Which spelling is correct?')}<div style="font-size:clamp(15px,3.4vw,19px);line-height:1.5;font-weight:600;color:var(--muted)">${q.prompt}</div>${hearBtn('Hear word')}`;
+  else if(q.kind==='idiom') prompt=`${eyebrow('What does it mean?')}<div style="font-family:var(--display);font-size:clamp(18px,4vw,25px);font-weight:800;line-height:1.3">“${q.prompt}”</div>${hearBtn('Hear it')}`;
+  else if(q.kind==='simile2') prompt=`${eyebrow('Complete the simile')}<div style="font-family:var(--display);font-size:clamp(18px,4vw,25px);font-weight:800;line-height:1.3">${q.prompt}</div>${hearBtn('Hear it')}`;
   else prompt=`${eyebrow('Which word means…')}<div style="font-size:clamp(17px,3.6vw,21px);line-height:1.55;font-weight:600">“${q.prompt}”</div>`;
   const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4.5vw,30px);box-shadow:var(--glow);margin-bottom:14px;text-align:center">${prompt}</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:11px">${choices}</div>`;
