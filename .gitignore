@@ -7,3 +7,7 @@ ds-bundle/
 .design-sync/.cache/
 .design-sync/learnings/
 .design-sync/node_modules
+spellbound-app/AUDIT_BRIEF.md
+spellbound-app/audit_shots/
+spellbound-app/audit_*.mjs
+spellbound-app/v*.mjs
