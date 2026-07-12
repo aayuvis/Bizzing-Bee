@@ -550,6 +550,26 @@ const app = {
   figWorld:()=>set({figWorld:!state.figWorld, figPage:0}),
   figPage:(n)=>{ set({figPage:+n}); try{window.scrollTo(0,0);}catch(e){} },
   figSay:(t)=>say(t),
+  figTab:(k)=>set({figTab:k}),
+  figDeck:(id)=>{ const c=active(); const seen=((c.figSeen||{})[id]||0); set({figTab:'learn', figDeck:id, figIdx:Math.min(seen, Math.max(0,figDeckItems(id).length-1)), figFlip:false}); },
+  figFlip:()=>set({figFlip:!state.figFlip}),
+  figNav:(dir)=>{ const items=figDeckItems(state.figDeck); let i=(state.figIdx||0)+(+dir);
+    i=Math.max(0,Math.min(items.length-1,i));
+    const c=active(); c.figSeen=c.figSeen||{};
+    if(i>(c.figSeen[state.figDeck]||0)){ c.figSeen[state.figDeck]=i;
+      if(i===items.length-1 && !((c.figDone||{})[state.figDeck])){ (c.figDone=c.figDone||{})[state.figDeck]=1; addCoins(5); sfx('win'); burstConfetti(50); flash('📚 Deck complete! +5 🪙'); } save(); }
+    set({figIdx:i, figFlip:false}); },
+  figBackToDecks:()=>set({figDeck:null, figFlip:false}),
+  // ----- Vocabulary study (NSF vocabulary-bee style) -----
+  openVocab:()=>{ set({nav:'vocab', screen:'app', vocDeck:null, conceptSel:null}); },
+  vocDeck:(k)=>{ const words=vocDeckWords(k); if(words.length<5){ flash('Not enough words here yet — train a list first'); return; }
+    set({vocDeck:k, vocWords:words, vocIdx:0, vocFlip:false}); setTimeout(()=>{ const w=state.vocWords[0]; if(w) say(w.w); },250); },
+  vocFlip:()=>set({vocFlip:!state.vocFlip}),
+  vocNav:(dir)=>{ const n=(state.vocWords||[]).length; let i=(state.vocIdx||0)+(+dir); i=Math.max(0,Math.min(n-1,i)); set({vocIdx:i, vocFlip:false});
+    const w=(state.vocWords||[])[i]; if(w) setTimeout(()=>say(w.w),150); },
+  vocSayWord:()=>{ const w=(state.vocWords||[])[state.vocIdx||0]; if(w) say(w.w); },
+  vocNewSet:()=>{ set({vocWords:vocDeckWords(state.vocDeck), vocIdx:0, vocFlip:false}); },
+  vocBack:()=>set({vocDeck:null}),
   goSettings:()=>app.setNav('settings'),
   goHome:()=>app.setNav('home'),
   goConcepts:()=>app.setNav('concepts'),
@@ -661,7 +681,7 @@ const app = {
   drawer:(key)=>{ state.drawerOpen=false; const F={ home:()=>app.setNav('home'), levelup:()=>app.startLevelUp(), games:()=>app.openGames(), shop:()=>app.openShop(), concepts:()=>app.setNav('concepts'),
       coach:()=>app.openCoach(), journeys:()=>app.openJourneys(), study:()=>app.coachStudy(), written:()=>app.startWritten(), oral:()=>app.startOral(),
       weak:()=>app.coachWeakDrill(), parentview:()=>{ app.openCoach(); state.coachTab='parent'; render(); }, settings:()=>app.setNav('settings'), themes:()=>app.setNav('themes'),
-      quest:()=>app.openQuestChooser(), traps:()=>app.openTraps(), collection:()=>app.openCollection(), finder:()=>app.openFinder(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore'), figurative:()=>app.setNav('figurative') };
+      quest:()=>app.openQuestChooser(), traps:()=>app.openTraps(), collection:()=>app.openCollection(), finder:()=>app.openFinder(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore'), figurative:()=>app.setNav('figurative'), vocab:()=>app.openVocab() };
     (F[key]||(()=>{}))(); },
   // coach
   openCoach:()=>{ const c=active(); ensureLists(c);
@@ -871,6 +891,7 @@ const app = {
     let qs=[];
     if(round==='mixed'){ qs=[].concat(buildMC('meaning',4),buildMC('spell',3),buildMC('origin',3)); qs=sample(qs, Math.min(10,qs.length)); }
     else if(round==='idiom'||round==='simile'){ qs=buildFigQs(round,10); }
+    else if(round==='vocab'){ qs=buildVocabQs(10); }
     else { qs=buildMC(round,10); }
     if(qs.length<3){ flash(round==='origin'?'Need a few words with a known origin — train a list first':'Need a few more words for this round — train a list first'); return; }
     state.game={type:'wordquiz',round,qs,i:0,picked:null,right:0,status:'play'};
@@ -897,7 +918,7 @@ const app = {
       if(g.fmt==='count' && (g.i+1>=g.total || g.i+1>=g.list.length)){ gFinishChamp(); return; } advance(); render(); }
   },
   gPick:(idx)=>{ const g=state.game; if(!g||!g.qs||g.picked!=null) return; idx=+idx; const q=g.qs[g.i]; g.picked=idx; const ok=q.choices[idx]===q.answer; logGameWord(nkey(q.word));
-    const spellingGame = ['origin','idiom','simile2'].indexOf(q.kind)<0; // knowledge rounds don't count as spelling mastery
+    const spellingGame = ['origin','idiom','simile2','vocab'].indexOf(q.kind)<0; // knowledge rounds don't count as spelling mastery
     logBand(q.wordObj||q.word, ok, spellingGame?0.5:0);
     if(ok){ g.right++; addCoins(1); gainXp(); if(spellingGame){ markMastered(nkey(q.word)); clearMiss(q.word); } sfx('correct'); }
     else { sfx('wrong'); if(spellingGame && q.wordObj){ addMiss(q.wordObj); (g.miss=g.miss||[]).push(q.word); } }
@@ -1278,6 +1299,7 @@ const WAYFIND={ quest:{c:'var(--action,#6C4FE0)',ic:'steps',sb:null,label:'Champ
   arcade:{c:'#E8458C',ic:'joystick',sb:'gamepad',label:'Arcade'},
   themes:{c:'#B14FC4',ic:'palette',sb:'palette',label:'Theme Journeys'},
   figurative:{c:'#9C6A08',ic:'bulb',sb:'sparkle',label:'Idioms & Sayings'},
+  vocab:{c:'#2E8FB8',ic:'book',sb:'book',label:'Vocabulary'},
   traps:{c:'#C4453C',ic:'spark',sb:'target',label:'Your Traps'} };
 function wayTile(key,size,tilt){ const w=WAYFIND[key]; size=size||48;
   const glyph=(w.sb&&window.SB_ICON)?SB_ICON(w.sb,{size:24}):iconSVG(w.ic,24,2.2);
@@ -1288,7 +1310,87 @@ function figPool(){ if(!window.SB_FIG) return [];
   if(!window._figAll) window._figAll=(SB_FIG.idioms||[]).concat(SB_FIG.similes||[]).filter(x=>x.kid!==false);
   return window._figAll; }
 const FIG_OC={documented:['📜 True story','#0F5C3E','#EAF7F0'], disputed:['🤔 Best guess','#8A5B00','#FFF3D6'], folk:['🧚 Folk tale — busted!','#6E1F30','#FBEAE8']};
+/* Learning decks — idioms & similes organized like Concepts, played card by card. */
+function figDecks(){
+  if(window._figDecks) return window._figDecks;
+  const P=figPool(); const D=[];
+  const themed=[['animals','🐾 Animal idioms'],['body','💪 Body idioms'],['cuisine','🍰 Food & kitchen'],['emotions','💛 Feelings'],['sports','🏆 Games & sport'],['weather','⛅ Weather & sky'],['economics','🪙 Money & trade'],['war','🛡️ Battle words'],['seafaring','⚓ Sea & sailing'],['music','🎵 Music & stage'],['linguistics','✒️ Words about words']];
+  for(const [th,label] of themed){ const items=P.filter(x=>x.t==='idiom'&&(x.th||[]).indexOf(th)>=0); if(items.length>=12) D.push({id:'th:'+th,label,items:items.length}); }
+  const regions=[...new Set(P.filter(x=>x.lit&&x.region&&x.region!=='global').map(x=>x.region))];
+  const big=regions.map(r=>[r,P.filter(x=>x.lit&&x.region===r).length]).filter(x=>x[1]>=12).sort((a,b)=>b[1]-a[1]);
+  for(const [r,n] of big.slice(0,8)) D.push({id:'rg:'+r,label:'🌍 '+r,items:n});
+  D.push({id:'world',label:'🌍 Around the world (mixed)',items:P.filter(x=>x.lit).length});
+  D.push({id:'proverbs',label:'📜 Proverbs',items:P.filter(x=>x.t==='proverb').length});
+  D.push({id:'sim:asas',label:'🔍 Similes — as … as',items:P.filter(x=>x.t==='simile'&&x.pattern==='as-as').length});
+  D.push({id:'sim:like',label:'🔍 Similes — like a …',items:P.filter(x=>x.t==='simile'&&x.pattern==='like').length});
+  D.push({id:'folk',label:'🧚 Busted! Famous myth origins',items:P.filter(x=>x.oc==='folk').length});
+  window._figDecks=D.filter(d=>d.items>=8); return window._figDecks;
+}
+function figDeckItems(id){ if(!id) return [];
+  window._figDeckCache=window._figDeckCache||{}; if(window._figDeckCache[id]) return window._figDeckCache[id];
+  const P=figPool(); let items=[];
+  if(id.slice(0,3)==='th:') items=P.filter(x=>x.t==='idiom'&&(x.th||[]).indexOf(id.slice(3))>=0);
+  else if(id.slice(0,3)==='rg:') items=P.filter(x=>x.lit&&x.region===id.slice(3));
+  else if(id==='world') items=P.filter(x=>x.lit);
+  else if(id==='proverbs') items=P.filter(x=>x.t==='proverb');
+  else if(id==='sim:asas') items=P.filter(x=>x.t==='simile'&&x.pattern==='as-as');
+  else if(id==='sim:like') items=P.filter(x=>x.t==='simile'&&x.pattern==='like');
+  else if(id==='folk') items=P.filter(x=>x.oc==='folk');
+  const ord={easy:0,medium:1,hard:2};
+  items=items.slice().sort((a,b)=>(ord[a.diff]-ord[b.diff])||a.p.localeCompare(b.p)).slice(0,30);
+  window._figDeckCache[id]=items; return items;
+}
+/* Vocabulary decks: the speller's own words, NSF vocabulary-bee style. */
+function vocDeckWords(k){
+  let pool=gameWords({needDef:true});
+  if(k==='mix') return pickFresh(pool,20).length?pickFresh(pool,20):sample(pool,Math.min(20,pool.length));
+  if(['easy','medium','hard','champ'].indexOf(k)>=0){
+    const sorted=pool.slice().sort((a,b)=>wordDiffScore(a)-wordDiffScore(b)); const n=sorted.length;
+    const sl={easy:[0,.4],medium:[.25,.75],hard:[.55,1],champ:[.75,1]}[k];
+    const band=sorted.slice(Math.floor(n*sl[0]), Math.max(Math.floor(n*sl[0])+10, Math.floor(n*sl[1])));
+    return sample(band, Math.min(20,band.length)); }
+  if(k.slice(0,3)==='th:'){ const ws=themeWords(k.slice(3)).filter(w=>w.d&&w.d.length>4); return sample(ws,Math.min(20,ws.length)); }
+  return [];
+}
+function figTabsBar(on){ const b=(k,l)=>`<button data-act="figTab" data-arg="${k}" style="flex:1;min-width:120px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${on===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${l}</button>`;
+  return `<div style="display:flex;gap:8px;margin-bottom:14px">${b('learn','📚 Learn — deck by deck')}${b('browse','🔎 Browse all')}</div>`; }
+function figLearnView(){ const S=state; const c=active();
+  if(S.figDeck){ const items=figDeckItems(S.figDeck); const deck=figDecks().find(d=>d.id===S.figDeck)||{label:'Deck'};
+    const i=Math.min(S.figIdx||0, items.length-1); const x=items[i]; if(!x) return figTabsBar('learn')+'<p style="color:var(--muted)">Empty deck.</p>';
+    const oc=FIG_OC[x.oc]||FIG_OC.documented; const flip=!!S.figFlip;
+    const back=`<div style="display:flex;flex-direction:column;gap:9px;text-align:left;animation:sb-pop .3s ease both">
+        <div style="font-size:16px;font-weight:800">${esc(x.m)}</div>
+        ${x.lit?`<div style="font-size:13px;color:var(--muted)"><b>Literally:</b> ${esc(x.lit)}</div>`:''}
+        <div style="font-size:13px;color:var(--muted);line-height:1.55"><span style="font-size:10.5px;font-weight:800;padding:2px 9px;border-radius:99px;color:${oc[1]};background:${oc[2]}">${oc[0]}</span> ${esc(x.os)}</div>
+        <div style="font-size:13px;font-style:italic;opacity:.85">“${esc(x.ex)}”</div>
+        ${(x.eq&&x.eq.length)?`<div style="font-size:12px;color:var(--muted)"><b>Same idea elsewhere:</b> ${x.eq.map(e=>esc(e.lang)+': “'+esc(e.p)+'”').join(' · ')}</div>`:''}</div>`;
+    return `<div style="max-width:640px;margin:0 auto">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><button data-act="figBackToDecks" style="color:var(--muted);font-weight:700;font-size:13px">← All decks</button><span style="font-family:var(--display);font-weight:800;font-size:18px">${esc(deck.label)}</span><span style="margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted)">${i+1} / ${items.length}</span></div>
+      <div style="height:6px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-bottom:14px"><div style="height:100%;background:var(--accent);width:${Math.round((i+1)/items.length*100)}%"></div></div>
+      <button data-act="figFlip" style="display:block;width:100%;text-align:center;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--sh-rest);min-height:290px">
+        <div style="display:flex;gap:6px;justify-content:center;margin-bottom:10px"><span style="font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:var(--surface2);color:var(--muted)">${x.t}</span>${x.region&&x.region!=='global'?`<span style="font-size:10px;font-weight:800;padding:2px 9px;border-radius:99px;background:var(--chip);color:var(--accent)">🌍 ${esc(x.region)}</span>`:''}</div>
+        <div style="font-family:var(--display);font-weight:800;font-size:clamp(20px,4.6vw,28px);line-height:1.25;margin-bottom:12px">“${esc(x.p)}”</div>
+        ${flip?back:`<div style="color:var(--muted);font-weight:700;font-size:13px;margin-top:26px">Tap the card to reveal the meaning &amp; story ▾</div>`}
+      </button>
+      <div style="display:flex;gap:10px;align-items:center;justify-content:center;margin-top:14px">
+        <button data-act="figNav" data-arg="-1" style="padding:12px 20px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px;${i===0?'opacity:.4':''}">← Back</button>
+        <button data-act="figSay" data-arg="${escA(x.p+'. '+(flip?x.m:''))}" style="width:44px;height:44px;border-radius:12px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG('volume',19)}</button>
+        <button data-act="figNav" data-arg="1" style="padding:12px 24px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge);${i>=items.length-1?'opacity:.4':''}">Next →</button>
+      </div></div>`;
+  }
+  const decks=figDecks().map(d=>{ const items=figDeckItems(d.id); const seen=Math.min(((c.figSeen||{})[d.id]||0)+1, items.length); const done=!!((c.figDone||{})[d.id]);
+    return `<button data-act="figDeck" data-arg="${d.id}" style="text-align:left;background:var(--paper,var(--bg2));border:1.5px solid ${done?'var(--treasure,#F0B429)':'var(--line)'};border-radius:16px;padding:15px 16px;display:flex;flex-direction:column;gap:8px">
+      <span style="font-family:var(--display);font-weight:800;font-size:15.5px">${d.label} ${done?'✓':''}</span>
+      <span style="font-size:12px;color:var(--muted);font-weight:650">${items.length} cards${seen>1&&!done?' · resume at '+seen:''}</span>
+      <span style="height:5px;border-radius:99px;background:var(--surface2);overflow:hidden"><span style="display:block;height:100%;background:${done?'var(--treasure,#F0B429)':'var(--accent)'};width:${done?100:Math.round(seen/Math.max(1,items.length)*100)}%"></span></span></button>`; }).join('');
+  return `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px">${decks}</div>`;
+}
 function viewFigurative(){ const S=state;
+  if((S.figTab||'learn')==='learn'){
+    return `<div style="max-width:980px;margin:0 auto">
+      ${pageHead('Idioms & Sayings', figPool().length+' phrases', 'Learn deck by deck like Concepts — tap a card to reveal the meaning and its true origin story. Finish a deck for +5 🪙.')}
+      ${figTabsBar('learn')}${figLearnView()}</div>`;
+  }
   const q=(S.figQ||'').trim().toLowerCase(); const ty=S.figType||'all'; const th=S.figTheme||'all'; const world=!!S.figWorld;
   let list=figPool();
   if(ty!=='all') list=list.filter(x=>x.t===ty);
@@ -1328,6 +1430,48 @@ function viewFigurative(){ const S=state;
       <button data-act="figPage" data-arg="${Math.min(pages-1,pg+1)}" style="padding:9px 16px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:13px;${pg>=pages-1?'opacity:.4':''}">Next →</button></div>`:''}
   </div>`;
 }
+/* ===== Vocabulary — study decks + card player (NSF vocabulary-bee style) ===== */
+function viewVocab(){ const S=state; const c=active();
+  if(S.vocDeck){ const ws=S.vocWords||[]; const i=Math.min(S.vocIdx||0,ws.length-1); const w=ws[i]; if(!w) return '<p style="color:var(--muted)">No words.</p>';
+    const flip=!!S.vocFlip;
+    const back=`<div style="display:flex;flex-direction:column;gap:10px;text-align:left;animation:sb-pop .3s ease both">
+        <div style="font-size:16.5px;font-weight:800">${esc(w.d||'—')}</div>
+        ${w.s?`<div style="font-size:13.5px;font-style:italic;color:var(--muted);line-height:1.5">“${blankHTML(w.s,w.w)}”</div>`:''}
+        ${w.o?`<div style="font-size:12px;color:var(--muted)"><b>Origin:</b> ${esc(w.o)}${w.r?' · '+esc(w.r):''}</div>`:''}</div>`;
+    return `<div style="max-width:640px;margin:0 auto">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><button data-act="vocBack" style="color:var(--muted);font-weight:700;font-size:13px">← Decks</button><span style="font-family:var(--display);font-weight:800;font-size:18px">Vocabulary</span><span style="margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted)">${i+1} / ${ws.length}</span></div>
+      <div style="height:6px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-bottom:14px"><div style="height:100%;background:var(--accent);width:${Math.round((i+1)/ws.length*100)}%"></div></div>
+      <button data-act="vocFlip" style="display:block;width:100%;text-align:center;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--sh-rest);min-height:270px">
+        <div style="font-family:var(--display);font-weight:800;font-size:clamp(24px,5.5vw,34px);letter-spacing:.02em;margin-bottom:6px">${esc(w.w)}</div>
+        ${w.p?`<div style="font-family:var(--mono);font-size:13px;color:var(--muted);margin-bottom:4px">${esc(w.p)}</div>`:''}
+        ${w.sy?`<div style="font-size:12px;color:var(--muted);margin-bottom:10px">${esc(w.sy)}</div>`:''}
+        ${flip?back:`<div style="color:var(--muted);font-weight:700;font-size:13px;margin-top:22px">Tap to reveal the meaning ▾</div>`}
+      </button>
+      <div style="display:flex;gap:10px;align-items:center;justify-content:center;margin-top:14px">
+        <button data-act="vocNav" data-arg="-1" style="padding:12px 20px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px;${i===0?'opacity:.4':''}">← Back</button>
+        <button data-act="vocSayWord" style="width:44px;height:44px;border-radius:12px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG('volume',19)}</button>
+        <button data-act="vocNav" data-arg="1" style="padding:12px 24px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge);${i>=ws.length-1?'opacity:.4':''}">Next →</button>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:12px">
+        <button data-act="vocNewSet" style="padding:10px 16px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:12.5px;color:var(--muted)">🔄 New set of 20</button>
+        <button data-act="wqStart" data-arg="vocab" style="padding:10px 16px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12.5px">🎯 Play the Vocabulary round →</button>
+      </div></div>`;
+  }
+  const deckBtn=(k,label,sub)=>`<button data-act="vocDeck" data-arg="${k}" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:15px 16px;display:flex;flex-direction:column;gap:6px">
+      <span style="font-family:var(--display);font-weight:800;font-size:15.5px">${label}</span><span style="font-size:12px;color:var(--muted);font-weight:650">${sub}</span></button>`;
+  const themeDecks=myThemes().slice(0,6).map(t=>deckBtn('th:'+t.id,'🗂️ '+esc(t.label),'20 words from this theme')).join('');
+  return `<div style="max-width:980px;margin:0 auto">
+    ${pageHead('Vocabulary','word → meaning','Study words the vocabulary-bee way — hear the word, guess the meaning, flip the card. Then test yourself in the Vocabulary round of Word Quiz.',
+      `<button data-act="wqStart" data-arg="vocab" style="padding:9px 16px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">🎯 Vocabulary round →</button>`)}
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
+      ${deckBtn('mix','✨ My level mix','20 fresh words from your list, at your level')}
+      ${deckBtn('easy','🌱 Easy','the gentler end of your pool')}
+      ${deckBtn('medium','🌿 Medium','the middle band')}
+      ${deckBtn('hard','🔥 Hard','the tough end')}
+      ${deckBtn('champ','👑 Champ','the very hardest words you\'ve unlocked')}
+      ${themeDecks}
+    </div></div>`;
+}
 function viewExplore(){ const c=active(); ensureLists(c);
   const cAll=(state.conceptData||[]); const cDone=cAll.filter(ch=>conceptStat(ch).done).length;
   const dests=[
@@ -1335,7 +1479,8 @@ function viewExplore(){ const c=active(); ensureLists(c);
     {key:'concepts', act:'setNav', arg:'concepts', desc:'Spelling basics, patterns, prefixes, roots & tricky endings — 121 concepts in 11 chapters.', meta:cDone+'/'+(cAll.length||121)+' mastered'},
     {key:'journeys', act:'openJourneys', desc:'The history & geography of words — 100 lessons from ancient roots to championship linguistics.', meta:state.premium?'10 chapters':'Premium'},
     {key:'themes', act:'setNav', arg:'themes', desc:'Learn words by their worlds — 52 themes from medicine to myths. Pick 3–5 you love.', meta:myThemes().length+' picked'},
-    {key:'figurative', act:'setNav', arg:'figurative', desc:'2,000 idioms & 350 similes with true origin stories — and honest flags when the famous story is a myth.', meta:'2,350 phrases'},
+    {key:'figurative', act:'setNav', arg:'figurative', desc:'2,000 idioms & 350 similes with true origin stories — learn deck by deck, card by card.', meta:'2,350 phrases'},
+    {key:'vocab', act:'openVocab', desc:'Word → meaning, the vocabulary-bee way — study decks at your level, then take the Vocabulary round.', meta:'your level'},
   ].map((d,i)=>{ const w=WAYFIND[d.key];
     return `<button class="sb-lift" data-act="${d.act}" ${d.arg?`data-arg="${d.arg}"`:''} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0">
       <div style="position:relative;width:100%">${SB_COVER(state.theme,d.key==='themes'?'themes':d.key,{h:110,dark:state.mode==='dusk'})}
@@ -1427,7 +1572,7 @@ function viewTraps(){ const S=state; const traps=missTraps(); const sel=S.trapSe
 /* ===================== APP SHELL ===================== */
 function viewApp(){
   const S=state;
-  const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1};
+  const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1};
   const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['explore','Explore','compass'],['games','Arcade','joystick'],['shop','Store','cart'],['progress','Progress','chart'],['collection','Collection','crown']].map(([key,label,ic])=>{
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:S.nav===key;
     const glyph=key==='explore'?(window.SB_ICON?SB_ICON('compass',{size:17}):iconSVG('grid',17)):iconSVG(ic,17);
@@ -1442,6 +1587,7 @@ function viewApp(){
   else if(S.nav==='quest') content=viewQuest();
   else if(S.nav==='explore') content=viewExplore();
   else if(S.nav==='figurative') content=viewFigurative();
+  else if(S.nav==='vocab') content=viewVocab();
   else if(S.nav==='builder') content=viewBuilder();
   else if(S.nav==='leveltest') content=viewLevelTest();
   else if(S.nav==='traps') content=viewTraps();
@@ -1543,6 +1689,7 @@ function viewDrawer(){
         ${wayRow('journeys','journeys','Word Journeys','the history of words')}
         ${wayRow('themes','themes','Theme Journeys',myThemes().length?myThemes().length+' worlds picked':'pick 3–5 worlds')}
         ${wayRow("figurative","figurative","Idioms & Sayings","2,350 phrases · true origin stories")}
+        ${wayRow("vocab","vocab","Vocabulary","word → meaning, bee-style")}
         ${kick('Tools')}
         ${row('builder','pencil','List Builder','custom list in five taps',state.nav==='builder')}
         <div class="sb-mob-only" style="display:contents">
@@ -3565,7 +3712,7 @@ function misspellings(w, n){ const out=new Set();
     x=>x.replace(/cc/,'c'), x=>x.replace(/ss/,'s'), x=>x.replace(/ph/,'f') ];
   let t=0; while(out.size<n && t<50){ t++; const c=ops[Math.floor(Math.random()*ops.length)](w); if(c && c!==w && /^[a-z'\- ]+$/i.test(c)) out.add(c); }
   return [...out]; }
-function mcSpeak(q){ if(!q) return; if(q.kind==='sentence') sayMasked(q.say, q.word); else if(q.kind==='spell'||q.kind==='origin') say(q.word); else if(q.kind==='idiom'||q.kind==='simile2') say(q.say); /* 'meaning': stay silent so the word isn't given away */ }
+function mcSpeak(q){ if(!q) return; if(q.kind==='sentence') sayMasked(q.say, q.word); else if(q.kind==='spell'||q.kind==='origin') say(q.word); else if(q.kind==='idiom'||q.kind==='simile2'||q.kind==='vocab') say(q.say); /* 'meaning': stay silent so the word isn't given away */ }
 const gameName=(t)=>{ const g=GAMES.find(x=>x.type===t); return g?g.name:'Game'; };
 let _gtimer=null;
 function clearGTimer(){ if(_gtimer){ clearInterval(_gtimer); _gtimer=null; } }
@@ -3659,6 +3806,14 @@ function buildFigQs(mode,n){ const pool=figPool(); if(pool.length<8) return [];
     const others=sample([...new Set(sims.filter(y=>y!==x&&y.vehicle.toLowerCase()!==x.vehicle.toLowerCase()).map(y=>y.vehicle))],3);
     return {kind:'simile2', word:x.p, wordObj:{w:x.p,y:3}, answer:x.vehicle, choices:sample([x.vehicle].concat(others)), prompt:esc(blanked), say:blanked.replace('____','hmm'), m:x.m}; });
 }
+/* NSF vocabulary-bee round: hear/see the word, pick the meaning. */
+function buildVocabQs(n){ const pool=gameWordsD({needDef:true}); if(pool.length<8) return [];
+  const cand=pickFresh(pool,n); const ws=cand.length>=Math.min(n,5)?cand:sample(pool,Math.min(n,pool.length));
+  return ws.map(w=>{ logGameWord(nkey(w.w));
+    const near=pool.filter(x=>nkey(x.w)!==nkey(w.w)&&x.d&&Math.abs((x.y||3)-(w.y||3))<=1);
+    const others=sample(near.length>=3?near:pool.filter(x=>nkey(x.w)!==nkey(w.w)&&x.d),3).map(x=>x.d);
+    return {kind:'vocab', word:w.w, wordObj:w, answer:w.d, choices:sample([w.d].concat(others)), prompt:esc(w.w), say:w.w, p2:w.p||''}; });
+}
 function buildMC(mode,n){ const all=gameWordsD();
   if(mode==='origin'){ const pool=all.filter(w=>w.o && MC_ORIGINS.indexOf(w.o)>=0); if(pool.length<4) return [];
     return pickFresh(pool, Math.min(n,pool.length)).map(w=>{
@@ -3719,6 +3874,7 @@ function wordQuizPicker(){ return gamePickerShell('Word Quiz','Choose a round �
   pickerCard('wqStart','origin','#4F9E6A','grid','Origins','Guess each word’s language of origin.')+
   pickerCard('wqStart','idiom','#9C6A08','bulb','Idioms','What does “break the ice” really mean? 2,000 phrases.')+
   pickerCard('wqStart','simile','#E0922E','flame','Similes','Complete the simile — as busy as a … ?')+
+  pickerCard('wqStart','vocab','#2E8FB8','book','Vocabulary','Bee-style: hear the word, pick the right meaning.')+
   pickerCard('wqStart','mixed','#B14FC4','palette','Mixed','A little of everything — meanings, spellings and origins.')); }
 /* ---- Spelling Duel: pass-the-device, same 10 words, two spellers ---- */
 function duelView(){ const S=state; const g=S.game; const shell=(inner)=>`<div style="max-width:560px;margin:0 auto;animation:sb-rise .3s ease both">
@@ -4015,6 +4171,7 @@ function mcGame(){ const S=state; const g=S.game; const q=g.qs[g.i]; const mono=
   else if(q.kind==='spell') prompt=`${eyebrow('Which spelling is correct?')}<div style="font-size:clamp(15px,3.4vw,19px);line-height:1.5;font-weight:600;color:var(--muted)">${q.prompt}</div>${hearBtn('Hear word')}`;
   else if(q.kind==='idiom') prompt=`${eyebrow('What does it mean?')}<div style="font-family:var(--display);font-size:clamp(18px,4vw,25px);font-weight:800;line-height:1.3">“${q.prompt}”</div>${hearBtn('Hear it')}`;
   else if(q.kind==='simile2') prompt=`${eyebrow('Complete the simile')}<div style="font-family:var(--display);font-size:clamp(18px,4vw,25px);font-weight:800;line-height:1.3">${q.prompt}</div>${hearBtn('Hear it')}`;
+  else if(q.kind==='vocab') prompt=`${eyebrow('What does it mean?')}<div style="font-family:var(--display);font-size:clamp(22px,5vw,30px);font-weight:800;letter-spacing:.02em">${q.prompt}</div>${q.p2?`<div style=\"font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px\">${esc(q.p2)}</div>`:''}${hearBtn('Hear the word')}`;
   else prompt=`${eyebrow('Which word means…')}<div style="font-size:clamp(17px,3.6vw,21px);line-height:1.55;font-weight:600">“${q.prompt}”</div>`;
   const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4.5vw,30px);box-shadow:var(--glow);margin-bottom:14px;text-align:center">${prompt}</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:11px">${choices}</div>`;
