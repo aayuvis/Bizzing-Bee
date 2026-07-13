@@ -11,3 +11,5 @@ spellbound-app/AUDIT_BRIEF.md
 spellbound-app/audit_shots/
 spellbound-app/audit_*.mjs
 spellbound-app/v*.mjs
+spellbound-app/trivia-review.html
+spellbound-app/trivia-data.js.bak
