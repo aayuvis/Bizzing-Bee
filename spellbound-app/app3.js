@@ -953,8 +953,8 @@ const app = {
     if(!spendCoins(cost)){ flash('Need '+cost+' 🪙 — play games to earn!'); return; }
     if(k==='freeze') c.freezes=(c.freezes||0)+1; else { if(!c.pow) c.pow={}; c.pow[k]=(c.pow[k]||0)+1; }
     save(); sfx('coin'); flash(k==='freeze'?'🧊 Streak Freeze stocked!':'🎒 Artifact stocked!'); render(); },
-  buyAcc:(k)=>{ const c=active(); if(!window.confirm('Buy this accessory for 120 coins?')) return; if(!spendCoins(120)){ flash('Need 120 🪙 — play games to earn!'); return; }
-    if(!c.beeAcc) c.beeAcc={}; c.beeAcc[k]=1; c.accOn=k; save(); sfx('win'); burstConfetti(50); flash('New bee style! ✨'); render(); },
+  buyAcc:(k)=>{ const c=active(); const a=AV_ACC_BY[k]||{price:120,name:'accessory'}; if(!window.confirm('Buy '+a.name+' for '+a.price+' coins?')) return; if(!spendCoins(a.price)){ flash('Need '+a.price+' 🪙 — play games to earn!'); return; }
+    if(!c.beeAcc) c.beeAcc={}; c.beeAcc[k]=1; c.accOn=k; save(); sfx('win'); burstConfetti(50); flash('✨ '+a.name+' equipped!'); render(); },
   wearAcc:(k)=>{ const c=active(); c.accOn=(c.accOn===k?null:k); save(); render(); },
 
   toggleSound:()=>{ set({sound:!state.sound}); if(state.sound) sfx('coin'); },
@@ -2006,6 +2006,29 @@ function beeAccSVG(k){ if(!k) return '';
   if(k==='bow') return '<svg viewBox="0 0 240 270" width="100%" height="100%" style="display:block;overflow:visible;position:absolute;inset:0;pointer-events:none"><g transform="translate(120,238)"><path d="M0 0 L-26 -14 Q-34 0 -26 14 Z" fill="#DC5B7E"/><path d="M0 0 L26 -14 Q34 0 26 14 Z" fill="#DC5B7E"/><circle cx="0" cy="0" r="7" fill="#C43D5A"/></g></svg>';
   if(k==='halo') return '<svg viewBox="0 0 240 270" width="100%" height="100%" style="display:block;overflow:visible;position:absolute;inset:0;pointer-events:none"><ellipse cx="120" cy="18" rx="46" ry="12" fill="none" stroke="#F0B429" stroke-width="5"/><circle cx="74" cy="18" r="4" fill="#FFD34D"/><circle cx="166" cy="18" r="4" fill="#FFD34D"/><circle cx="120" cy="6" r="4" fill="#FFD34D"/></svg>';
   return ''; }
+/* Avatar accessories — additive sticker overlays drawn in the 120×120 avatar space,
+   so they layer on top of ANY of the 150 collectible avatars. */
+const AV_ACCS=[
+  {k:'crown',    name:'Golden Crown',   price:120, sell:60,  desc:'For the reigning champion.'},
+  {k:'halo',     name:'Angel Halo',     price:110, sell:55,  desc:'A little glow of good spelling.'},
+  {k:'bow',      name:'Ribbon Bow',     price:100, sell:50,  desc:'Cute and classic.'},
+  {k:'cape',     name:'Hero Cape',      price:150, sell:75,  desc:'Every champion needs one.'},
+  {k:'mustache', name:'Fancy Moustache',price:100, sell:50,  desc:'Distinguished. Very wise.'},
+  {k:'sceptre',  name:'Royal Sceptre',  price:180, sell:90,  desc:'Rule the word kingdom.'},
+  {k:'funbrella',name:'Funbrella',      price:160, sell:80,  desc:'Sunshine even in the rain.'},
+];
+const AV_ACC_BY=Object.fromEntries(AV_ACCS.map(a=>[a.k,a]));
+function avAccSVG(k){ if(!k) return '';
+  const A={
+    crown:'<g stroke="#B77908" stroke-width="3" stroke-linejoin="round"><path d="M34 30 L42 10 L52 24 L60 6 L68 24 L78 10 L86 30 Z" fill="#FCC846"/><rect x="34" y="29" width="52" height="8" rx="3" fill="#F0B429"/></g><circle cx="42" cy="13" r="3.2" fill="#FF5D8F"/><circle cx="60" cy="9" r="3.6" fill="#4FC3F7"/><circle cx="78" cy="13" r="3.2" fill="#7CFF9E"/>',
+    halo:'<ellipse cx="60" cy="9" rx="25" ry="7" fill="none" stroke="#F0B429" stroke-width="5"/><ellipse cx="60" cy="9" rx="25" ry="7" fill="none" stroke="#FFF0A8" stroke-width="1.7"/>',
+    bow:'<g stroke="#B12E52" stroke-width="2.6" stroke-linejoin="round"><path d="M60 16 L38 6 Q30 16 38 26 Z" fill="#FF6FA0"/><path d="M60 16 L82 6 Q90 16 82 26 Z" fill="#FF6FA0"/><circle cx="60" cy="16" r="7" fill="#E24D7F"/></g><path d="M56 13 Q60 11 64 13" stroke="#fff" stroke-width="2" fill="none" opacity=".6"/>',
+    mustache:'<path d="M60 75 Q50 67 40 71 Q32 74 34 81 Q40 77 48 78 Q55 79 60 75 Q65 79 72 78 Q80 77 86 81 Q88 74 80 71 Q70 67 60 75 Z" fill="#4A3524" stroke="#2A1B10" stroke-width="2" stroke-linejoin="round"/>',
+    cape:'<path d="M22 46 Q13 92 24 113 L41 109 Q34 74 44 48 Z" fill="#D6453C" stroke="#9E2F28" stroke-width="3" stroke-linejoin="round"/><path d="M98 46 Q107 92 96 113 L79 109 Q86 74 76 48 Z" fill="#D6453C" stroke="#9E2F28" stroke-width="3" stroke-linejoin="round"/><rect x="40" y="41" width="40" height="8" rx="4" fill="#F0B429" stroke="#C8901B" stroke-width="2"/>',
+    sceptre:'<rect x="97" y="44" width="6" height="60" rx="3" fill="#C8901B" stroke="#8A5B00" stroke-width="2"/><path d="M100 26 l3.4 6.9 7.5 1-5.4 5.3 1.3 7.5-6.8-3.6-6.8 3.6 1.3-7.5-5.4-5.3 7.5-1 z" fill="#FFD34D" stroke="#C8901B" stroke-width="2" stroke-linejoin="round"/>',
+    funbrella:'<path d="M28 27 Q60 -5 92 27 Q60 17 28 27 Z" fill="#3FA9F5" stroke="#1E6FB0" stroke-width="2.6" stroke-linejoin="round"/><path d="M44 25 Q60 3 60 3 L60 25 Z" fill="#FF5D8F"/><path d="M60 27 L60 41 Q60 47 53 47" fill="none" stroke="#7A4A1E" stroke-width="3" stroke-linecap="round"/><g fill="#8FD3FF"><circle cx="33" cy="44" r="2.3"/><circle cx="85" cy="42" r="2.3"/><circle cx="73" cy="56" r="2.3"/></g>',
+  };
+  return A[k]||''; }
 function mascotAcc(mood){ const c=active(); const acc=c&&c.accOn?beeAccSVG(c.accOn):'';
   return '<div style="position:relative;width:100%;height:100%">'+mascotSVG(mood)+acc+'</div>'; }
 function streakCard(){ const c=active(); ensureLists(c); const t=todayKey(); const played=new Set(c.daysPlayed||[]);
@@ -2124,10 +2147,16 @@ ${focusedH?(()=>{ return `
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:18px">${journeys}</div>`}
   </div>`;
 }
-function avatarSVG(id,size){ size=size||30;
-  if(window.SB_AVATARS && SB_AVATARS.byId[id]) return SB_AVATAR(id,size);
-  if(typeof id==='string' && id.slice(0,2)==='w:'){ const p=id.split(':'); try{ return evEmb(p[1],+p[2]).replace('width="54" height="58"','width="100%" height="100%"'); }catch(e){ return buddySVG('bee',size); } }
-  return buddySVG(id,size); }
+function avatarSVG(id,size,acc){ size=size||30;
+  let svg;
+  if(window.SB_AVATARS && SB_AVATARS.byId[id]) svg=SB_AVATAR(id,size);
+  else if(typeof id==='string' && id.slice(0,2)==='w:'){ const p=id.split(':'); try{ svg=evEmb(p[1],+p[2]).replace('width="54" height="58"','width="100%" height="100%"'); }catch(e){ svg=buddySVG('bee',size); } }
+  else svg=buddySVG(id,size);
+  // additive accessory overlay, drawn on top in the same 120×120 space (works on any avatar)
+  if(acc && typeof svg==='string'){ const ov=avAccSVG(acc); if(ov) svg=svg.replace(/<\/svg>\s*$/i, ov+'</svg>'); }
+  return svg; }
+// the child's own worn avatar, with their equipped accessory
+function myAvatar(size){ const c=active(); return avatarSVG(c.avatar||'bee', size, c.accOn); }
 function avOwned(c,id){ if(state.devUnlock) return true; const a=window.SB_AVATARS&&SB_AVATARS.byId[id]; if(!a) return true; return a.rarity==='free' || !!((c.avOwned||{})[id]); }
 function avOwnedCount(c){ return SB_AVATARS.list.filter(a=>avOwned(c,a.id)).length; }
 function evArt(theme,i){ try{ return evEmb(theme,i).replace('width="54" height="58"','width="100%" height="100%"'); }catch(e){ return ''; } }
@@ -2246,7 +2275,7 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
           : own?`<span style="display:inline-flex;gap:6px"><button data-act="wearAv" data-arg="${a.id}" style="padding:6px 11px;border-radius:8px;background:var(--accent);color:#fff;font-weight:800;font-size:11.5px">Use</button>${a.rarity!=='free'?`<button data-act="sellAvatar" data-arg="${a.id}" title="Sell for ${a.sell} coins" style="padding:6px 9px;border-radius:8px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--muted)">Sell ${a.sell}🪙</button>`:''}</span>`
           : `<button data-act="openShopAvatars" title="Drops from a ${p.label} pack in the Store" style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--muted)">${iconSVG('lock',11,2.2)} Store pack</button>`;
         return `<div style="background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':own?'var(--line)':'var(--line)'};border-radius:14px;padding:11px 9px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;${own?'':'filter:grayscale(.75);opacity:.72'}">
-          <span style="width:76px;height:76px">${avatarSVG(a.id,76)}</span>
+          <span style="width:76px;height:76px">${avatarSVG(a.id,76, on?c.accOn:null)}</span>
           <span style="font-weight:800;font-size:12px;line-height:1.15">${a.name}</span>
           <span style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:99px;color:#fff;background:${R.c}">${R.label}</span>
           ${action}</div>`; }).join('');
@@ -3187,7 +3216,7 @@ function viewParent(){
     ? {ic:'crown',title:'Premium',body:'4 worlds, half the concepts & uncapped levels. Earn coins for the rest.',btn:'Manage',btnStyle:'padding:10px 16px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:13px',cardStyle:'background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 16%,var(--bg2)),var(--bg2));border:1px solid var(--accent);border-radius:20px;padding:20px;box-shadow:var(--glow)'}
     : {ic:'spark',title:'Free plan',body:'2 worlds & Level-Up to Level 5. Earn 🪙 coins to unlock more, or go Premium.',btn:'Upgrade',btnStyle:'padding:10px 18px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)',cardStyle:'background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest)'};
   const kids=(S.children.length?S.children:[demo()]).map((k,i)=>`<div style="background:var(--bg2);border:1px solid ${i===S.activeIdx?'var(--accent)':'var(--line)'};border-radius:14px;padding:18px">
-      <div style="display:flex;align-items:center;gap:13px;margin-bottom:16px"><div style="width:60px;height:60px;border-radius:16px;background:var(--surface2);display:grid;place-items:center">${avatarSVG(k.avatar,44)}</div>
+      <div style="display:flex;align-items:center;gap:13px;margin-bottom:16px"><div style="width:60px;height:60px;border-radius:16px;background:var(--surface2);display:grid;place-items:center">${avatarSVG(k.avatar,44,k.accOn)}</div>
         <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:17px">${esc(k.name)}</div><div style="font-size:12px;color:var(--muted);font-weight:600">Age ${k.age} · ${THEME_LABEL[k.theme]||'Bizzing Bee'}</div></div>
         <button data-act="selectChild" data-arg="${i}" style="padding:7px 13px;border-radius:10px;font-weight:800;font-size:12px;${i===S.activeIdx?'background:var(--chip);color:var(--accent)':'background:var(--surface2);color:var(--text)'}">${i===S.activeIdx?'Active':'Switch'}</button>
       </div>
@@ -4391,23 +4420,18 @@ function viewShop(){ const S=state; const c=active(); ensureLists(c); const tab=
         <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:15px">${it.name} ${it.own?`<span style="font-size:12px;color:var(--good);font-weight:800">× ${it.own}</span>`:''}</div><div style="font-size:12px;color:var(--muted)">${it.desc}</div></div>
         <button data-act="buyPower" data-arg="${it.k}" style="padding:9px 14px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:900;font-size:13px;white-space:nowrap">${coinAmt(it.cost,12)}</button>
       </div>`).join('');
-    const accs=[
-      {k:'crown', name:'Golden Crown', desc:'For royalty of the spelling stage.'},
-      {k:'bow',   name:'Scarlet Bow', desc:'A dapper bow for word detectives.'},
-      {k:'halo',  name:'Star Halo', desc:'Sparkles orbiting a champion.'},
-      {k:'goggles',name:'Flight Goggles', desc:'Built for speed spelling.'},
-      {k:'cape',  name:'Hero Cape', desc:'Every champion needs one.'},
-      {k:'bolt',  name:'Lightning Bolt', desc:'Crackling with word power.'},
-    ].map(a=>{ const owned=!!((c.beeAcc||{})[a.k]); const on=c.accOn===a.k;
+    const avId=c.avatar||'bee';
+    const accs=AV_ACCS.map(a=>{ const owned=state.devUnlock||!!((c.beeAcc||{})[a.k]); const on=c.accOn===a.k;
       return `<div style="display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:12px 14px;margin-bottom:9px">
-        <div style="width:44px;height:48px;flex-shrink:0;position:relative">${mascotSVG('happy')}<div style="position:absolute;inset:0">${beeAccSVG(a.k)}</div></div>
+        <div style="width:52px;height:52px;flex-shrink:0;display:grid;place-items:center;background:rgba(255,255,255,.7);border-radius:13px">${avatarSVG(avId,44,a.k)}</div>
         <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:15px">${a.name}</div><div style="font-size:12px;color:var(--muted)">${a.desc}</div></div>
-        ${owned?`<button data-act="wearAcc" data-arg="${a.k}" style="padding:9px 14px;border-radius:10px;background:${on?'var(--action,var(--accent))':'var(--surface)'};color:${on?'var(--action-ink,#fff)':'var(--text)'};font-weight:800;font-size:13px">${on?'Wearing ✓':'Wear'}</button>`
-          :`<button data-act="buyAcc" data-arg="${a.k}" style="padding:9px 14px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:900;font-size:13px;white-space:nowrap">${coinAmt(120,12)}</button>`}
+        ${owned?`<button data-act="wearAcc" data-arg="${a.k}" style="display:inline-flex;align-items:center;gap:5px;padding:9px 14px;border-radius:10px;background:${on?'var(--action,var(--accent))':'var(--surface)'};color:${on?'var(--action-ink,#fff)':'var(--text)'};font-weight:800;font-size:13px">${on?SB_ICON('check',{size:14})+' Wearing':'Wear'}</button>`
+          :`<button data-act="buyAcc" data-arg="${a.k}" style="padding:9px 14px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:900;font-size:13px;white-space:nowrap">${coinAmt(a.price,12)}</button>`}
       </div>`; }).join('');
     body=`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:2px 2px 4px">Artifacts</div>
       <p style="font-size:13px;color:var(--muted);margin:0 0 12px">Spend coins on artifacts that give you an edge in the games.</p>${items}
-      <div style="font-family:var(--display);font-weight:800;font-size:15px;margin:16px 2px 10px">Bee style</div>${accs}`;
+      <div style="font-family:var(--display);font-weight:800;font-size:15px;margin:16px 2px 4px">Avatar style</div>
+      <p style="font-size:13px;color:var(--muted);margin:0 0 12px">Dress up your avatar — accessories layer onto whichever character you're wearing.${c.accOn?` <button data-act="wearAcc" data-arg="${c.accOn}" style="color:var(--accent);font-weight:800">Take it off</button>`:''}</p>${accs}`;
   }
   else if(tab==='lists'){
     const cats=[{key:'default',label:'Default · Level-Up',sub:'Curated starter words',count:LEVEL_WORDS.length}].concat(coachCatalog().filter(o=>o.key!=='default').map(o=>({key:o.key,label:o.label,sub:o.sub,count:o.count})));
