@@ -775,6 +775,13 @@ const app = {
     flash('List built — '+words.length+' words · '+bldLevels(words.length)+' Level'+(bldLevels(words.length)>1?'s':'')+' to mastery 🛠️'); },
   printOpen:()=>{ if(!state.prn||!state.prn.inc) state.prn={inc:{w:1,p:1,d:1},page:'letter',scope:'level',sort:'level',size:'normal'}; set({printOpen:true}); },
   printClose:()=>set({printOpen:false}),
+  // ----- View complete word list (browsable card view for any list) -----
+  openListView:(key)=>{ const k=key||activeListKey(); set({listView:k, lvQuery:'', lvY:'', lvShown:80}); },
+  closeListView:()=>set({listView:null}),
+  lvSearch:(v)=>{ state.lvQuery=(v||'').trim().toLowerCase(); state.lvShown=80; render(); },
+  lvY:(v)=>set({lvY:v||'', lvShown:80}),
+  lvMore:()=>set({lvShown:(state.lvShown||80)+80}),
+  lvSay:(w)=>{ try{ say(w); }catch(e){} },
   printSet:(kv)=>{ const i=kv.indexOf(':'); if(!state.prn||!state.prn.inc) state.prn={inc:{w:1,p:1,d:1},page:'letter',scope:'level',sort:'level',size:'normal'};
     const g=kv.slice(0,i), v=kv.slice(i+1);
     if(g==='inc'){ const inc=state.prn.inc; const on=Object.keys(inc).filter(k=>inc[k]).length;
@@ -2710,6 +2717,7 @@ function liveHeatmap(words, opts){
   const legend=[['var(--good)','Mastered'],['var(--bad)','Missed'],['var(--surface2)','New']].map(([c,l])=>`<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:700"><span style="width:11px;height:11px;border-radius:6px;background:${c};display:inline-block"></span>${l}</span>`).join('');
   const pct=Math.round(m/N*100);
   const toggle=(anon?`<button data-act="toggleHeat" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12px;white-space:nowrap">${iconSVG(reveal?'eyeoff':'eye',14)} ${reveal?'Hide words':'Show words'}</button>`:'')
+    +(opts.print?`<button data-act="openListView" title="See every word with meanings, pronunciations & hints" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12px;white-space:nowrap">${iconSVG('book',15)} View complete list</button>`:'')
     +(opts.print?`<button data-act="printOpen" title="Print this word list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12px;white-space:nowrap">${SB_ICON('printer',{size:16})} Print</button>`:'');
   return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:18px">
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:11px"><div style="font-family:var(--display);font-weight:800;font-size:15px">Live progress</div><div style="flex:1;min-width:90px;height:7px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--accent);width:${pct}%;transition:width .35s"></div></div><div style="font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">${m}/${N} mastered${missed?(' · '+missed+' to review'):''}</div>${toggle}</div>
@@ -4432,8 +4440,52 @@ function mcDone(){ const g=state.game; const pct=Math.round(g.right/(g.qs.length
 
 
 /* ===================== OVERLAYS ===================== */
+function fullListOverlay(){ const S=state; if(!S.listView) return '';
+  const key=S.listView; const label=(key==='journey'?'The Bizzing Bee Journey':listLabel(key).split(' · ')[0]);
+  let words=[]; try{ words=listFullWords(key)||[]; }catch(e){}
+  // dedupe + resolve enrichment from the word index for lists that store only bare words
+  const idx=(typeof wordIndex==='function')?wordIndex():{}; const seen=new Set(); const all=[];
+  for(const w of words){ if(!w||!w.w) continue; const k=nkey(w.w); if(seen.has(k)) continue; seen.add(k);
+    const full=(w.d&&w.d.length>3)?w:(idx[k]||w); all.push(full); }
+  const total=all.length;
+  const q=(S.lvQuery||''); const yf=(S.lvY||'');
+  let list=all.filter(w=>(!yf||String(w.y||3)===yf) && (!q||((w.w||'')+' '+(w.d||'')+' '+(w.h||'')+' '+(w.o||'')).toLowerCase().includes(q)));
+  // sort by difficulty then alpha for a stable, studyable order
+  list=list.slice().sort((a,b)=>((a.y||3)-(b.y||3))||String(a.w).localeCompare(String(b.w)));
+  const shown=Math.min(S.lvShown||80, list.length);
+  const mastered=(w)=>!!state.luMastered[nkey(w.w)];
+  const yPill=(v,l)=>`<button data-act="lvY" data-arg="${v}" style="padding:7px 12px;border-radius:999px;font-weight:800;font-size:12.5px;${yf===String(v)?'background:var(--accent);color:#fff;box-shadow:var(--edge)':'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">${l}</button>`;
+  const ylevels=[...new Set(all.map(w=>w.y||3))].sort();
+  const cards=list.slice(0,shown).map(w=>{ const done=mastered(w); const y=w.y||3;
+    return `<div style="background:var(--paper,var(--bg2));border:1px solid ${done?'var(--good,#1f9d57)':'var(--line)'};border-radius:14px;padding:13px 15px">
+      <div style="display:flex;align-items:baseline;gap:9px;flex-wrap:wrap">
+        <span style="font-family:var(--mono);font-size:18px;font-weight:800;letter-spacing:.01em">${esc(w.w)}</span>
+        ${w.p?`<span style="font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:700">${esc(w.p)}</span>`:''}
+        <button data-act="lvSay" data-arg="${escA(w.w)}" title="Hear it" style="width:28px;height:28px;border-radius:8px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG('volume',14)}</button>
+        <span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px">${done?`<span style="font-size:11px;font-weight:800;color:var(--good,#1f9d57)">✓ mastered</span>`:''}<span style="font-size:11px;font-weight:800;color:var(--muted);font-family:var(--mono)">L${y}</span></span>
+      </div>
+      ${w.d?`<div style="font-size:13.5px;color:var(--text);margin-top:6px;line-height:1.45">${esc(w.d)}</div>`:''}
+      <div style="font-size:12px;color:var(--muted);margin-top:5px;display:flex;gap:13px;flex-wrap:wrap">${w.o?`<span>${esc(w.o)}${w.ps?' · '+esc(w.ps):''}</span>`:''}${w.bp?`<span>bee-prob ${w.bp}</span>`:''}</div>
+      ${w.h?`<div style="margin-top:7px;font-size:12.5px;color:var(--muted);padding-left:11px;border-left:3px solid var(--treasure,#F0B429);line-height:1.45"><b style="color:var(--treasure-deep,#8A5B00)">Remember:</b> ${esc(w.h)}</div>`:(w.s?`<div style="margin-top:7px;font-size:12.5px;font-style:italic;color:var(--muted);line-height:1.45">“${esc(blankHTML?blankHTML(w.s,w.w):w.s)}”</div>`:'')}
+    </div>`; }).join('');
+  return `<div data-act="closeListView" style="position:fixed;inset:0;z-index:95;background:rgba(20,12,50,.5);backdrop-filter:blur(4px);display:flex;justify-content:center;padding:0">
+    <div data-act="noop" style="width:100%;max-width:740px;background:var(--bg1,var(--bg2));display:flex;flex-direction:column;max-height:100dvh;box-shadow:var(--sh-overlay)">
+      <div style="position:sticky;top:0;background:var(--bg1,var(--bg2));border-bottom:1px solid var(--line);padding:16px clamp(14px,4vw,26px) 12px;z-index:2">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span style="font-family:var(--display);font-weight:800;font-size:18px">${esc(label)}</span><span style="font-size:12px;color:var(--muted);font-weight:700">${fmtN(total)} words</span><button data-act="closeListView" style="margin-left:auto;width:32px;height:32px;border-radius:9px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:16px">✕</button></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <input data-inp="lvSearch" data-fkey="lvSearch" value="${escA(q)}" placeholder="Search words, meanings, hints…" autocomplete="off" style="flex:1;min-width:160px;padding:9px 13px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;outline:none">
+          ${ylevels.length>1?('<div style="display:flex;gap:6px;flex-wrap:wrap">'+yPill('','All')+ylevels.map(y=>yPill(y,'L'+y)).join('')+'</div>'):''}
+        </div>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:14px clamp(14px,4vw,26px) 30px">
+        <div style="font-size:12.5px;color:var(--muted);font-weight:600;margin-bottom:10px">${fmtN(list.length)} shown${(q||yf)?' · filtered':''} · sorted easiest → hardest</div>
+        <div style="display:grid;gap:10px">${cards||'<p style="color:var(--muted);text-align:center;padding:30px">No words match.</p>'}</div>
+        ${shown<list.length?`<button data-act="lvMore" style="display:block;margin:16px auto 0;background:var(--accent);color:#fff;border-radius:11px;padding:11px 26px;font-weight:800;font-size:14px;box-shadow:var(--edge)">Show more (${fmtN(list.length-shown)} left)</button>`:''}
+      </div>
+    </div></div>`;
+}
 function overlays(){
-  const S=state; let h='';
+  const S=state; let h=''; h+=fullListOverlay();
   if(S.showPaywall){
     const perks=['4 worlds unlocked (2 more than free)','Spelling Basics free + half of all 121 concepts unlocked','Level up past Level 5 on every list','Premium word lists + full library','Earn 🪙 coins to unlock everything else']
       .map(p=>`<div style="display:flex;align-items:center;gap:11px;font-size:15px;font-weight:600"><span style="width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:13px;flex-shrink:0">✓</span>${p}</div>`).join('');
