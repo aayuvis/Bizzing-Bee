@@ -7,6 +7,7 @@
   const esc4 = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const escA4 = (s) => esc4(s).replace(/"/g, '&quot;');
   const TIPS = () => (window.SB_ADV_TIPS || []);
+  const SBI = (n, s) => (window.SB_ICON ? SB_ICON(n, { size: s || 24 }) : '');
 
   /* ---- unlock ---- */
   function advLevel() { try { return listStageIdx(active(), 'journey') + 1; } catch (e) { return 1; } }
@@ -170,7 +171,7 @@
 
     _gate() { const lvl = advLevel(); const band = advBand();
       return `<div style="max-width:560px;margin:0 auto;text-align:center;animation:sb-rise .35s ease both">
-        <div style="font-size:56px;margin-bottom:6px">🎓</div>
+        <div style="display:flex;justify-content:center;color:var(--accent);margin-bottom:6px">${SBI('trophy', 52)}</div>
         <h2 style="font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 6px">Advanced Mode</h2>
         <p style="color:var(--muted);font-size:15px;line-height:1.55;margin:0 0 20px">National Spelling Bee prep, drawn from the full <b>128,000-word</b> library. Master the very hardest words with a 2-year sprint plan, mock bees, champion techniques and advanced games.</p>
         <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;text-align:left;margin-bottom:16px">
@@ -189,20 +190,20 @@
       const seg = (v, e, col, title, sub, meta) => `<button data-act="advGo" data-arg="${v}" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:18px;padding:0;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column">
         <div style="height:6px;background:${col}"></div>
         <div style="padding:16px 18px;display:flex;align-items:center;gap:14px">
-          <span style="width:52px;height:52px;border-radius:15px;flex-shrink:0;display:grid;place-items:center;font-size:27px;background:color-mix(in srgb,${col} 15%,transparent)">${e}</span>
+          ${(window.iconTile ? iconTile(e, col, { size: 52, radius: 15 }) : `<span style="width:52px;height:52px;border-radius:15px;flex-shrink:0;display:grid;place-items:center;color:${col};background:color-mix(in srgb,${col} 15%,transparent)">${SBI(e, 27)}</span>`)}
           <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">${title}</span>
             <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:600;margin-top:2px;line-height:1.4">${sub}</span></span>
           <span style="flex-shrink:0;text-align:right"><span style="display:block;font-size:11px;font-weight:800;color:${col}">${meta}</span><span style="color:${col};font-weight:800">→</span></span>
         </div></button>`;
       return `<div style="max-width:720px;margin:0 auto;animation:sb-rise .35s ease both">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button></div>
-        <div style="display:flex;align-items:center;gap:11px;margin:6px 0 4px"><span style="font-size:30px">🎓</span><h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0">Advanced Mode</h2></div>
+        <div style="display:flex;align-items:center;gap:11px;margin:6px 0 4px"><span style="display:inline-flex;color:#5B3FA6">${SBI('trophy', 30)}</span><h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0">Advanced Mode</h2></div>
         <p style="color:var(--muted);font-size:13.5px;margin:0 0 18px">National-bee prep from the 128,000-word library. Master the hardest words.</p>
         <div style="display:grid;gap:12px">
-          ${seg('ucj', '🚀', '#7C5CFF', 'Ultra Champions Journey', '2-year plan · 150–300 words a day, list after list, with the fast Sprint method.', 'Day ' + st.day)}
-          ${seg('mock', '🏅', '#C8901B', 'Mock Spelling Bee', 'Practice rounds — written, vocabulary & lightning — with a readiness benchmark.', 'best ' + (st.mockBest || 0))}
-          ${seg('tips', '🧠', '#13A892', 'Tips & Tricks', 'Memory, fast reading, etymology & bee-day tactics from champion methodology.', Object.keys(st.tipsRead || {}).length + ' read')}
-          ${seg('games', '🎮', '#E8458C', 'Advanced Games', 'Memory match & rapid dictation — the drills a national-level speller needs.', 'play')}
+          ${seg('ucj', 'compass', '#7C5CFF', 'Ultra Champions Journey', '2-year plan · 150–300 words a day, list after list, with the fast Sprint method.', 'Day ' + st.day)}
+          ${seg('mock', 'crown', '#C8901B', 'Mock Spelling Bee', 'Practice rounds — written, vocabulary & lightning — with a readiness benchmark.', 'best ' + (st.mockBest || 0))}
+          ${seg('tips', 'bulb', '#13A892', 'Tips & Tricks', 'Memory, fast reading, etymology & bee-day tactics from champion methodology.', Object.keys(st.tipsRead || {}).length + ' read')}
+          ${seg('games', 'gamepad', '#E8458C', 'Advanced Games', 'Memory match & rapid dictation — the drills a national-level speller needs.', 'play')}
         </div>
       </div>`; },
 
@@ -211,7 +212,7 @@
       const sizeBtn = (n) => `<button data-act="advSize" data-arg="${n}" style="flex:1;padding:10px;border-radius:11px;font-weight:800;font-size:13px;${st.size === n ? 'background:var(--accent);color:#fff;box-shadow:var(--edge)' : 'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">${n}/day</button>`;
       const preview = words.slice(0, 30).map(w => `<span style="font-family:var(--mono);font-size:12px;font-weight:700;padding:4px 9px;border-radius:6px;background:var(--surface2)">${esc4(w.w)}</span>`).join('');
       return ADV._shell(`
-        <div style="display:flex;align-items:center;gap:11px;margin-bottom:6px"><span style="font-size:26px">🚀</span><h2 style="font-family:var(--display);font-weight:800;font-size:21px;margin:0">Ultra Champions Journey</h2></div>
+        <div style="display:flex;align-items:center;gap:11px;margin-bottom:6px"><span style="display:inline-flex;color:#7C5CFF">${SBI('compass', 26)}</span><h2 style="font-family:var(--display);font-weight:800;font-size:21px;margin:0">Ultra Champions Journey</h2></div>
         <p style="color:var(--muted);font-size:13px;margin:0 0 16px">A two-year climb through the hardest ${fmtN(hardPool().length)} words. Each day is a fresh list — learn it fast with the Sprint method: <b>scan in bulk, drill only your gaps</b>, and let spaced repetition lock the rest.</p>
         <div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px">
           <div style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Words per day</div>
@@ -264,16 +265,16 @@
       if (!g || g.mode !== 'mock') { // picker
         const st = aStats(active());
         const card = (kind, e, name, desc) => `<button data-act="advMockPick" data-arg="${kind}" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:15px 16px;display:flex;align-items:center;gap:13px;box-shadow:var(--sh-rest)">
-          <span style="width:46px;height:46px;border-radius:13px;flex-shrink:0;display:grid;place-items:center;font-size:23px;background:color-mix(in srgb,#C8901B 15%,transparent)">${e}</span>
+          ${(window.iconTile ? iconTile(e, '#C8901B', { size: 46, radius: 13 }) : `<span style="width:46px;height:46px;border-radius:13px;flex-shrink:0;display:grid;place-items:center;color:#C8901B;background:color-mix(in srgb,#C8901B 15%,transparent)">${SBI(e, 23)}</span>`)}
           <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15.5px">${name}</span><span style="display:block;font-size:12px;color:var(--muted);font-weight:600">${desc}</span></span>
           <span style="color:#C8901B;font-weight:800">→</span></button>`;
         return ADV._shell(`
-          <div style="display:flex;align-items:center;gap:11px;margin-bottom:6px"><span style="font-size:26px">🏅</span><h2 style="font-family:var(--display);font-weight:800;font-size:21px;margin:0">Mock Spelling Bee</h2></div>
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:6px"><span style="display:inline-flex;color:#C8901B">${SBI('crown', 26)}</span><h2 style="font-family:var(--display);font-weight:800;font-size:21px;margin:0">Mock Spelling Bee</h2></div>
           <p style="color:var(--muted);font-size:13px;margin:0 0 16px">Simulate the real thing. Each round scores you against national-level words. ${st.mockBest ? '<b>Lightning best: ' + st.mockBest + '</b>' : ''}</p>
           <div style="display:grid;gap:11px">
-            ${card('written', '✍️', 'Written Round', '15 dictated words — hear, then spell. Scored at the end.')}
-            ${card('vocab', '📖', 'Vocabulary Round', '12 hard words — pick the correct meaning.')}
-            ${card('lightning', '⚡', 'Lightning Round', '60 seconds — spell as many as you can.')}
+            ${card('written', 'pencil', 'Written Round', '15 dictated words — hear, then spell. Scored at the end.')}
+            ${card('vocab', 'book', 'Vocabulary Round', '12 hard words — pick the correct meaning.')}
+            ${card('lightning', 'timer', 'Lightning Round', '60 seconds — spell as many as you can.')}
           </div>`, 'advBack'); }
       if (g.done) { const verdict = g.pct >= 85 ? ['🏆', 'National-ready', 'var(--good,#1f9d57)'] : g.pct >= 65 ? ['🥇', 'State level', '#C8901B'] : g.pct >= 45 ? ['🥈', 'Regional level', '#3D7DF0'] : ['🥉', 'Keep drilling', 'var(--muted)'];
         return ADV._shell(`<div style="max-width:520px;margin:0 auto;text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:32px;box-shadow:var(--glow);animation:sb-pop .35s ease both">
@@ -304,8 +305,8 @@
         </div>`, 'advExit'); },
 
     _tipsView() { const cat = state.advTipCat || 'memory';
-      const CATS = [['memory', '🧠', 'Memory'], ['speed', '⚡', 'Fast reading'], ['roots', '🌿', 'Etymology'], ['tactics', '🎯', 'Bee-day']];
-      const tabs = CATS.map(([k, e, l]) => `<button data-act="advTipCat" data-arg="${k}" style="padding:9px 13px;border-radius:999px;font-weight:800;font-size:12.5px;${cat === k ? 'background:var(--accent);color:#fff;box-shadow:var(--edge)' : 'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">${e} ${l}</button>`).join('');
+      const CATS = [['memory', 'bulb', 'Memory'], ['speed', 'timer', 'Fast reading'], ['roots', 'sparkle', 'Etymology'], ['tactics', 'target', 'Bee-day']];
+      const tabs = CATS.map(([k, e, l]) => `<button data-act="advTipCat" data-arg="${k}" style="display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border-radius:999px;font-weight:800;font-size:12.5px;${cat === k ? 'background:var(--accent);color:#fff;box-shadow:var(--edge)' : 'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">${SBI(e, 15)} ${l}</button>`).join('');
       const tips = TIPS().map((t, i) => ({ t, i })).filter(x => x.t.cat === cat);
       const cards = tips.map(({ t, i }) => { const read = (aStats(active()).tipsRead || {})[i];
         return `<button data-act="advOpenTip" data-arg="${i}" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid ${read ? 'var(--good,#1f9d57)' : 'var(--line)'};border-radius:15px;padding:14px 16px;display:flex;align-items:center;gap:13px;box-shadow:var(--sh-rest)">
@@ -313,7 +314,7 @@
           <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15px;line-height:1.2">${esc4(t.title)}</span><span style="display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:3px;line-height:1.4">${esc4(t.hook)}</span></span>
           <span style="color:var(--accent);font-weight:800;flex-shrink:0">${read ? '✓' : '→'}</span></button>`; }).join('');
       return ADV._shell(`
-        <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px"><span style="font-size:26px">🧠</span><h2 style="font-family:var(--display);font-weight:800;font-size:21px;margin:0">Tips &amp; Tricks</h2></div>
+        <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px"><span style="display:inline-flex;color:#13A892">${SBI('bulb', 26)}</span><h2 style="font-family:var(--display);font-weight:800;font-size:21px;margin:0">Tips &amp; Tricks</h2></div>
         <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px">${tabs}</div>
         <div style="display:grid;gap:10px">${cards || '<p style="color:var(--muted)">Loading techniques…</p>'}</div>`, 'advBack'); },
 
@@ -323,21 +324,21 @@
         <div style="text-align:center;margin-bottom:16px"><div style="font-size:48px">${t.ic}</div><h2 style="font-family:var(--display);font-weight:800;font-size:23px;margin:6px 0 4px">${esc4(t.title)}</h2><p style="color:var(--muted);font-size:14px;margin:0;line-height:1.5">${esc4(t.hook)}</p></div>
         <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:14px"><div style="font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:14px">How to do it</div>${steps}</div>
         ${t.example ? `<div style="background:var(--chip);border-radius:16px;padding:16px 18px;margin-bottom:14px"><div style="font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-bottom:6px">Worked example</div><div style="font-size:14px;line-height:1.55;color:var(--text)">${esc4(t.example)}</div></div>` : ''}
-        ${t.drill ? `<div style="display:flex;gap:10px;align-items:center;background:var(--treasure-tint,#FFF3D6);border-radius:14px;padding:13px 16px"><span style="font-size:20px">🎯</span><span style="font-size:13.5px;font-weight:700;color:var(--treasure-deep,#8A5B00)">${esc4(t.drill)}</span></div>` : ''}
+        ${t.drill ? `<div style="display:flex;gap:10px;align-items:center;background:var(--treasure-tint,#FFF3D6);border-radius:14px;padding:13px 16px"><span style="display:inline-flex;color:var(--treasure-deep,#8A5B00)">${SBI('target', 20)}</span><span style="font-size:13.5px;font-weight:700;color:var(--treasure-deep,#8A5B00)">${esc4(t.drill)}</span></div>` : ''}
         <button data-act="advGo" data-arg="tips" style="width:100%;margin-top:16px;padding:13px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">← More techniques</button>
       `, 'advBack'); },
 
     _gamesView() { const st = aStats(active());
       const card = (act, e, name, desc, best) => `<button data-act="${act}" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:15px 16px;display:flex;align-items:center;gap:13px;box-shadow:var(--sh-rest)">
-        <span style="width:46px;height:46px;border-radius:13px;flex-shrink:0;display:grid;place-items:center;font-size:23px;background:color-mix(in srgb,#E8458C 15%,transparent)">${e}</span>
+        ${(window.iconTile ? iconTile(e, '#E8458C', { size: 46, radius: 13 }) : `<span style="width:46px;height:46px;border-radius:13px;flex-shrink:0;display:grid;place-items:center;color:#E8458C;background:color-mix(in srgb,#E8458C 15%,transparent)">${SBI(e, 23)}</span>`)}
         <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15.5px">${name}</span><span style="display:block;font-size:12px;color:var(--muted);font-weight:600">${desc}</span></span>
         <span style="text-align:right;flex-shrink:0"><span style="display:block;font-size:11px;font-weight:800;color:#E8458C">${best}</span><span style="color:#E8458C;font-weight:800">→</span></span></button>`;
       return ADV._shell(`
-        <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px"><span style="font-size:26px">🎮</span><h2 style="font-family:var(--display);font-weight:800;font-size:21px;margin:0">Advanced Games</h2></div>
+        <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px"><span style="display:inline-flex;color:#E8458C">${SBI('gamepad', 26)}</span><h2 style="font-family:var(--display);font-weight:800;font-size:21px;margin:0">Advanced Games</h2></div>
         <p style="color:var(--muted);font-size:13px;margin:0 0 16px">Drills built for elite spellers — pattern memory and raw dictation speed.</p>
         <div style="display:grid;gap:11px">
-          ${card('advMemStart', '🃏', 'Memory Match', 'Pair hard words with their meanings — trains recall.', 'best ' + (st.memBest || 0))}
-          ${card('advDictStart', '⌨️', 'Rapid Dictation', '90 seconds — hear &amp; type as many as you can.', 'best ' + (st.dictBest || 0))}
+          ${card('advMemStart', 'grid', 'Memory Match', 'Pair hard words with their meanings — trains recall.', 'best ' + (st.memBest || 0))}
+          ${card('advDictStart', 'timer', 'Rapid Dictation', '90 seconds — hear &amp; type as many as you can.', 'best ' + (st.dictBest || 0))}
         </div>`, 'advBack'); },
 
     _memView() { const g = state.adv; if (!g || g.mode !== 'mem') { set({ advView: 'games' }); return ''; }

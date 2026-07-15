@@ -616,7 +616,7 @@
       const hpbar = boss? `<span style="display:flex;gap:4px">${Array.from({length:g.kind==='finale'?10:8},(_,i)=>`<span style="width:22px;height:11px;border-radius:6px;background:${i<g.hp?'#E0483C':'rgba(255,255,255,.15)'}"></span>`).join('')}</span>` : '';
       const cells = g.kind==='survival'? `<span style="display:flex;gap:5px">${Array.from({length:6},(_,i)=>`<span style="width:20px;height:22px;background:${i<g.right?'#FFC23D':'rgba(255,255,255,.15)'};clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)"></span>`).join('')}</span>`:'';
       const hud=`<div style="position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:12px;padding:16px 20px;z-index:3">
-        ${g.timed?`<span style="display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.1);border-radius:99px;padding:6px 14px;color:#fff;font-weight:800;font-size:15px">⏱ ${timeStr}</span>`:''}
+        ${g.timed?`<span style="display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.1);border-radius:99px;padding:6px 14px;color:#fff;font-weight:800;font-size:15px">${window.SB_ICON?SB_ICON('timer',{size:15}):'⏱'} ${timeStr}</span>`:''}
         ${boss?`<span style="color:#FF8AA8;font-weight:800;font-size:13px;letter-spacing:.06em">${esc2(S.boss).toUpperCase()}</span>${hpbar}`:`<span style="color:#C9BFEA;font-weight:800;font-size:12px">WORD ${Math.min(g.i+1,g.words.length)} OF ${g.words.length}</span>${cells}`}
         ${boss&&g.streak>=3?`<span style="color:#FFC23D;font-weight:800;font-size:13px;background:rgba(255,194,61,.12);border:1px solid rgba(255,194,61,.4);border-radius:99px;padding:4px 11px">STREAK ×${g.streak}</span>`:''}
         <span style="flex:1"></span>${SQ._hudBtn()}</div>`;

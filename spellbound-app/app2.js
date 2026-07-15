@@ -102,6 +102,20 @@ function _tone(freq,start,dur,type,gain){ const ac=audioCtx(); if(!ac) return; c
   o.type=type||'sine'; o.frequency.value=freq; const t0=ac.currentTime+start; o.connect(g); g.connect(ac.destination);
   g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(gain||0.16,t0+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
   o.start(t0); o.stop(t0+dur+0.03); }
+
+/* ---- Glossy "sticker" icon tile — a candy-gloss rounded chip with a white glyph,
+   top shine, inner bevel and a coloured drop shadow. The playful, dimensional look
+   that matches the avatars. Use for hub headers, game chips, mode tiles. ---- */
+function iconTile(name, col, opts){ opts=opts||{}; const size=opts.size||46; const r=opts.radius||(size*0.3);
+  const gi=Math.round(size*0.56);                                  // glyph size
+  const ico=(window.SB_ICON?SB_ICON(name,{size:gi}):(typeof iconSVG==='function'?iconSVG(name,gi,2.4):''));
+  const c2=`color-mix(in srgb, ${col} 62%, #14082e 38%)`;          // deep shade for the gradient base
+  return `<span style="position:relative;flex-shrink:0;width:${size}px;height:${size}px;border-radius:${r}px;display:grid;place-items:center;color:#fff;
+    background:linear-gradient(157deg, color-mix(in srgb,${col} 82%,#fff 18%) 0%, ${col} 46%, ${c2} 100%);
+    box-shadow: inset 0 ${Math.max(1,size*0.03)}px 0 rgba(255,255,255,.55), inset 0 -${Math.max(2,size*0.06)}px ${size*0.12}px rgba(0,0,0,.22), 0 ${size*0.11}px ${size*0.22}px color-mix(in srgb,${col} 45%,transparent), 0 1px 2px rgba(0,0,0,.18);">
+    <span aria-hidden="true" style="position:absolute;top:${size*0.09}px;left:${size*0.16}px;right:${size*0.16}px;height:${size*0.4}px;border-radius:999px;background:linear-gradient(rgba(255,255,255,.6),rgba(255,255,255,0));pointer-events:none"></span>
+    <span style="position:relative;display:grid;place-items:center;filter:drop-shadow(0 1px 1px rgba(0,0,0,.28))">${ico}</span>
+  </span>`; }
 function sfx(kind){ try{ if(typeof state!=='undefined' && state.sound===false) return;
   if(kind==='correct'){ _tone(660,0,0.12,'sine'); _tone(880,0.09,0.16,'sine'); }
   else if(kind==='coin'){ _tone(988,0,0.07,'square',0.11); _tone(1319,0.06,0.12,'square',0.11); }
