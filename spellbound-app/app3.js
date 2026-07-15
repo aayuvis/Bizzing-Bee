@@ -1726,7 +1726,7 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
   /* Each Explore destination as a compact clickable row inside its hub. */
   const row=(key,act,arg,sub)=>{ const w=WAYFIND[key]||{label:key,ic:'grid',c:'var(--accent)'};
     return `<button class="sb-lift" data-act="${act}" ${arg?`data-arg="${escA(arg)}"`:''} style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px 13px;box-shadow:var(--sh-rest)">
-      ${iconTile(w.sb||'grid', w.c==='var(--accent)'?'#7C5CFF':w.c, {size:38, radius:11})}
+      ${iconTile((window.SB_ICON_ART&&SB_ICON_ART[key])?key:(w.sb||'grid'), w.c==='var(--accent)'?'#7C5CFF':w.c, {size:40, radius:11})}
       <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">${esc(w.label)}</span>
         <span style="display:block;font-size:12px;color:var(--muted);font-weight:600;line-height:1.35;margin-top:1px">${esc(sub)}</span></span>
       <span style="color:${w.c};font-weight:800;flex-shrink:0">→</span></button>`; };
@@ -1739,13 +1739,13 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
       </div>
       ${inner}</section>`;
   // ---- LEARN ----
-  const learn=hub('Learn','book','#7C5CFF','Understand words deeply',
+  const learn=hub('Learn','learn','#7C5CFF','Understand words deeply',
     row('concepts','setNav','concepts','Spelling basics, roots & patterns · '+fmtDone)+
     row('journeys','openJourneys',null,'The history & geography of words'+(state.premium?'':' · Premium'))+
     row('figurative','setNav','figurative','2,350 idioms & sayings, card by card')+
     row('themes','setNav','themes','Words by their worlds · '+(myThemes().length||'pick 3–5')+' picked'));
   // ---- TRAIN ----
-  const train=hub('Train','target','#13A892','Sharpen your skills',
+  const train=hub('Train','train','#13A892','Sharpen your skills',
     row('typing','openTyping',null,'Touch-type, then race the 60s test')+
     row('vocab','openVocab',null,'Word → meaning, vocabulary-bee style')+
     row('traps','openTraps',null,'Beat your weak spelling patterns')+
@@ -1757,19 +1757,19 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
   const gchip=(act,arg,ic,label,col)=>`<button class="sb-lift" data-act="${act}" ${arg?`data-arg="${escA(arg)}"`:''} style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:12px 6px;border-radius:13px;background:var(--paper,var(--bg2));border:1px solid var(--line);box-shadow:var(--sh-rest);min-width:0">
       ${iconTile(ic, col, {size:40, radius:12})}<span style="font-size:11px;font-weight:800;color:${col};text-align:center;line-height:1.15">${esc(label)}</span></button>`;
   const games=[
-    ['openQuest',null,'compass','Spelling Quest','#6C4FE0'],
-    ['openTrivia',null,'bulb','Bee Trivia','#C8791B'],
-    ['playGame','magic','grid','Magic Squares','#B14FC4'],
-    ['openChallenge','journey','flame','Champ Challenge','#C8901B'],
-    ['beatStart','sprint','timer','Beat the Buzzer','#E8458C'],
-    ['wqStart','mixed','list','Word Quiz','#13A892'],
-    ['playGame','boss','crown','Boss Battle','#7B52E0'],
-    ['playGame','duel','swords','Spelling Duel','#C43D5A'],
+    ['openQuest',null,'spellingQuest','Spelling Quest','#6C4FE0'],
+    ['openTrivia',null,'beeTrivia','Bee Trivia','#C8791B'],
+    ['playGame','magic','magicSquares','Magic Squares','#B14FC4'],
+    ['openChallenge','journey','champChallenge','Champ Challenge','#C8901B'],
+    ['beatStart','sprint','beatBuzzer','Beat the Buzzer','#E8458C'],
+    ['wqStart','mixed','wordQuiz','Word Quiz','#13A892'],
+    ['playGame','boss','bossBattle','Boss Battle','#7B52E0'],
+    ['playGame','duel','spellingDuel','Spelling Duel','#C43D5A'],
   ].map(g=>gchip(g[0],g[1],g[2],g[3],g[4])).join('');
-  const play=hub('Play','gamepad','#F0703C','Learn by playing',
+  const play=hub('Play','play','#F0703C','Learn by playing',
     `<button class="sb-lift" data-act="openGames" style="text-align:left;width:100%;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#F0703C,#D8541F);box-shadow:0 6px 18px rgba(200,84,20,.28)">
       <div style="padding:15px 16px;color:#fff;display:flex;align-items:center;gap:12px">
-        <span style="display:grid;place-items:center;filter:drop-shadow(0 2px 5px rgba(0,0,0,.25))">${SB_ICON('gamepad',{size:30})}</span>
+        <span style="display:grid;place-items:center;line-height:0">${(window.SB_ICON_ART&&SB_ICON_ART.arcade)?SB_ICON_ART('arcade',{size:38}):SB_ICON('gamepad',{size:30})}</span>
         <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:17px">Open the Arcade</span><span style="display:block;font-size:12px;color:rgba(255,255,255,.92)">Story seasons, boss battles &amp; quick games</span></span>
         <span style="display:inline-flex;align-items:center;gap:4px;padding:7px 12px;border-radius:9px;background:#fff;color:#C8551A;font-weight:800;font-size:12.5px;white-space:nowrap">${SB_ICON('coin',{size:15})} ${(c.coins||0)}</span></div></button>
     <div style="font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:2px 2px -2px">Jump into a game</div>
@@ -1874,9 +1874,12 @@ function viewTraps(){ const S=state; const traps=missTraps(); const sel=S.trapSe
 function viewApp(){
   const S=state;
   const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,typing:1,adv:1};
+  const NAV_ART={home:'home',coach:'practice',explore:'explore',games:'arcade',shop:'store',progress:'progress',collection:'collection'};
   const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['explore','Explore','compass'],['games','Arcade','joystick'],['shop','Store','cart'],['progress','Progress','chart'],['collection','Collection','crown']].map(([key,label,ic])=>{
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:S.nav===key;
-    const glyph=key==='explore'?(window.SB_ICON?SB_ICON('compass',{size:17}):iconSVG('grid',17)):iconSVG(ic,17);
+    // inactive tabs get the colourful illustrated icon; the active pill keeps a white mono glyph so it tints
+    const art=NAV_ART[key];
+    const glyph=(!on && window.SB_ICON_ART && art && SB_ICON_ART[art]) ? `<span style="display:inline-flex;line-height:0;width:22px;height:22px">${SB_ICON_ART(art,{size:22})}</span>` : (key==='explore'?(window.SB_ICON?SB_ICON('compass',{size:17}):iconSVG('grid',17)):iconSVG(ic,17));
     return `<button data-act="setNav" data-arg="${key}" style="display:inline-flex;align-items:center;gap:8px;white-space:nowrap;padding:10px 18px;border-radius:var(--r-pill,999px);font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.01em;${on?'background:var(--action,var(--accent));color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">${glyph} ${label}</button>`;
   }).join('');
   let content='';
@@ -1941,8 +1944,9 @@ function viewApp(){
     ${viewDrawer()}
     <div class="sb-content" style="max-width:1080px;margin:0 auto;width:100%;padding:18px clamp(14px,3.5vw,32px) 60px">${content}</div>
     <nav class="sb-tabbar" aria-label="Primary">
-      ${[['home','Home','home'],['coach','Practice','pencil'],['games','Arcade','joystick'],['progress','Progress','chart']].map(([k,l,ic])=>{ const on=S.nav===k||(k==='coach'&&(S.nav==='train'||S.nav==='levelup'));
-        return `<button data-act="setNav" data-arg="${k}" aria-current="${on?'page':'false'}" style="${on?'color:var(--accent)':'color:var(--muted)'}">${iconSVG(ic,21)}<span>${l}</span></button>`; }).join('')}
+      ${[['home','Home','home','home'],['coach','Practice','pencil','practice'],['games','Arcade','joystick','arcade'],['progress','Progress','chart','progress']].map(([k,l,ic,art])=>{ const on=S.nav===k||(k==='coach'&&(S.nav==='train'||S.nav==='levelup'));
+        const gl=(!on && window.SB_ICON_ART && SB_ICON_ART[art])?`<span style="display:inline-flex;line-height:0;width:24px;height:24px">${SB_ICON_ART(art,{size:24})}</span>`:iconSVG(ic,21);
+        return `<button data-act="setNav" data-arg="${k}" aria-current="${on?'page':'false'}" style="${on?'color:var(--accent)':'color:var(--muted)'}">${gl}<span>${l}</span></button>`; }).join('')}
       <button data-act="openDrawer" style="color:var(--muted)">${iconSVG('menu',21)}<span>More</span></button>
     </nav>
   </div>`;
@@ -3033,13 +3037,13 @@ function viewQuest(){
   const c=active(); ensureLists(c); const qp=c.questPath;
   const lvlOf=(k)=>{ try{ return listStageIdx(c,k)+1; }catch(e){ return 1; } };
   const paths=[
-    { id:'journey', key:'journey', col:'#7C5CFF', e:'trophy', title:'Bizzing Bee Journey',
+    { id:'journey', key:'journey', col:'#7C5CFF', e:'questJourney', title:'Bizzing Bee Journey',
       desc:'The classic 20-Level champ ladder — the 1,600 highest-value bee words, ramped gently from easy to hard.',
       feat:'Clear a Level by mastering its words, or test out with a Champ Challenge.' },
-    { id:'themes',  key:'themes',  col:'#B14FC4', e:'compass', title:'Theme Journey',
+    { id:'themes',  key:'themes',  col:'#B14FC4', e:'questTheme', title:'Theme Journey',
       desc:'Learn words grouped by their worlds — animals, space, food, feelings and more.',
       feat:'Great for building vocabulary by topic. Pick 3–5 worlds to focus on.' },
-    { id:'own',     key:'own',     col:'#13A892', e:'pencil', title:'My Own List',
+    { id:'own',     key:'own',     col:'#13A892', e:'questOwn', title:'My Own List',
       desc:'Bring your school list, paste any words, or build a custom set in a few taps.',
       feat:'Perfect for this week’s spelling homework or a personal target list.' },
   ].map(p=>{ const cur=qp===p.id;
@@ -3058,7 +3062,7 @@ function viewQuest(){
   const aUnlocked=state.devUnlock||state.premium||!!c.advPaid||aLvl>=12||aBand>=7;
   const advCol='#5B3FA6';
   const advTile=`<button class="sb-lift" data-act="openAdvanced" style="display:flex;align-items:flex-start;gap:14px;width:100%;text-align:left;border-radius:18px;padding:16px 17px;box-shadow:0 6px 18px rgba(60,40,120,.22);border:1px solid ${aUnlocked?advCol:'var(--line)'};background:${aUnlocked?'linear-gradient(160deg,color-mix(in srgb,'+advCol+' 14%,var(--bg2)),var(--bg2) 60%)':'var(--paper,var(--bg2))'}">
-      ${iconTile('trophy', advCol, {size:54, radius:16})}
+      ${iconTile('advanced', advCol, {size:54, radius:16})}
       <span style="min-width:0;flex:1">
         <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Advanced Mode</span>${aUnlocked?`<span style="font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#0a7a44;background:color-mix(in srgb,#39d98a 30%,transparent);padding:2px 8px;border-radius:999px">Unlocked</span>`:`<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;color:var(--muted);background:var(--surface2);padding:2px 9px;border-radius:999px">${SB_ICON('lock',{size:12})} Locked</span>`}</span>
         <span style="display:block;font-size:13px;color:var(--text);font-weight:600;margin-top:5px;line-height:1.5">National Spelling Bee prep from the full <b>128,000-word</b> library — a 2-year sprint plan, mock bees, champion tips and advanced games.</span>
@@ -4221,7 +4225,7 @@ function gFinishMC(){ const g=state.game; g.status='done'; const bonus=2+g.right
   logActivity(g.type, ACT_LABEL[g.type]||'Quiz', {done:g.qs.length,right:g.right,coins:bonus}, g.miss||[]);
   if(g.right>=7){ sfx('win'); burstConfetti(110); } else sfx('level'); render(); }
 
-function coinAmt(n, sz){ return `<span style="display:inline-flex;align-items:center;gap:3px;white-space:nowrap">${SB_ICON('coin',{size:sz||14})} ${n}</span>`; }
+function coinAmt(n, sz){ const ic=(window.SB_ICON_ART&&SB_ICON_ART.coin)?SB_ICON_ART('coin',{size:sz||14}):SB_ICON('coin',{size:sz||14}); return `<span style="display:inline-flex;align-items:center;gap:3px;white-space:nowrap">${ic} ${n}</span>`; }
 function coinChip(){ return `<span style="display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(coinsOf(),14)}</span>`; }
 function viewGames(){ const g=state.game; if(!g) return gamesHub();
   if(g.type==='duel') return duelView();
@@ -4348,11 +4352,11 @@ function gamesHub(){ const S=state;
         </div>
       </div></button>`;
   })();
-  const champCard=`<button data-act="openChallenge" data-arg="journey" style="grid-column:1/-1;text-align:left;border-radius:14px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 6px 18px rgba(43,27,94,.18)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">${iconSVG('bolt',32)}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">Set timed or counted · pick a difficulty</div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Champ Challenge</div><div style="font-size:12px;color:rgba(255,255,255,.9)">Beat the clock or a set number — pass your Level to test out.</div></div><span style="padding:9px 16px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Set it up →</span></div></button>`;
-  const magicCard=`<button data-act="playGame" data-arg="magic" style="grid-column:1/-1;text-align:left;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#B14FC4,#7E2E9E);box-shadow:0 6px 18px rgba(123,46,142,.24)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">${iconSVG('grid',30)}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">3×3 board of themes &amp; concepts · lines win bonus coins</div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Magic Squares</div><div style="font-size:12px;color:rgba(255,255,255,.9)">Clear theme and concept cells by spelling — complete a line for a Magic Square bonus.</div></div><span style="padding:9px 16px;border-radius:10px;background:#fff;color:#7E2E9E;font-weight:800;font-size:13px;white-space:nowrap">Play →</span></div></button>`;
+  const champCard=`<button data-act="openChallenge" data-arg="journey" style="grid-column:1/-1;text-align:left;border-radius:14px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 6px 18px rgba(43,27,94,.18)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">${(window.SB_ICON_ART&&SB_ICON_ART.champChallenge)?SB_ICON_ART('champChallenge',{size:40}):iconSVG('bolt',32)}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">Set timed or counted · pick a difficulty</div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Champ Challenge</div><div style="font-size:12px;color:rgba(255,255,255,.9)">Beat the clock or a set number — pass your Level to test out.</div></div><span style="padding:9px 16px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Set it up →</span></div></button>`;
+  const magicCard=`<button data-act="playGame" data-arg="magic" style="grid-column:1/-1;text-align:left;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#B14FC4,#7E2E9E);box-shadow:0 6px 18px rgba(123,46,142,.24)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">${(window.SB_ICON_ART&&SB_ICON_ART.magicSquares)?SB_ICON_ART('magicSquares',{size:38}):iconSVG('grid',30)}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">3×3 board of themes &amp; concepts · lines win bonus coins</div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Magic Squares</div><div style="font-size:12px;color:rgba(255,255,255,.9)">Clear theme and concept cells by spelling — complete a line for a Magic Square bonus.</div></div><span style="padding:9px 16px;border-radius:10px;background:#fff;color:#7E2E9E;font-weight:800;font-size:13px;white-space:nowrap">Play →</span></div></button>`;
   const triviaCard=(function(){ if(!window.SB_TRIVIA) return '';
     const st=(active().trivia)||{}; const nQ=(SB_TRIVIA.questions||[]).length;
-    return `<button data-act="openTrivia" style="grid-column:1/-1;text-align:left;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#F0A93C,#DC7A18);box-shadow:0 6px 18px rgba(200,122,20,.28)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;font-size:30px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">🧠</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.88)">${fmtN(nQ)} questions · 20 themes · 5 levels</div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Bee Trivia</div><div style="font-size:12px;color:rgba(255,255,255,.92)">Classic quiz, Trivia Squares board or Beat the Clock — with picture and listening rounds.</div></div><span style="padding:9px 16px;border-radius:10px;background:#fff;color:#C8791B;font-weight:800;font-size:13px;white-space:nowrap">${st.right?('Play → · '+fmtN(st.right)+' right'):'Play →'}</span></div></button>`;
+    return `<button data-act="openTrivia" style="grid-column:1/-1;text-align:left;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#F0A93C,#DC7A18);box-shadow:0 6px 18px rgba(200,122,20,.28)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;line-height:0;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">${(window.SB_ICON_ART&&SB_ICON_ART.beeTrivia)?SB_ICON_ART("beeTrivia",{size:38}):"🧠"}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.88)">${fmtN(nQ)} questions · 20 themes · 5 levels</div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Bee Trivia</div><div style="font-size:12px;color:rgba(255,255,255,.92)">Classic quiz, Trivia Squares board or Beat the Clock — with picture and listening rounds.</div></div><span style="padding:9px 16px;border-radius:10px;background:#fff;color:#C8791B;font-weight:800;font-size:13px;white-space:nowrap">${st.right?('Play → · '+fmtN(st.right)+' right'):'Play →'}</span></div></button>`;
   })();
   const cards=questCard+triviaCard+champCard+magicCard+GAMES.map(gm=>`<button class="sb-cover-card" data-act="playGame" data-arg="${gm.type}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
       <div style="position:relative">

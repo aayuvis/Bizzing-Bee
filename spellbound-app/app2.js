@@ -107,6 +107,9 @@ function _tone(freq,start,dur,type,gain){ const ac=audioCtx(); if(!ac) return; c
    top shine, inner bevel and a coloured drop shadow. The playful, dimensional look
    that matches the avatars. Use for hub headers, game chips, mode tiles. ---- */
 function iconTile(name, col, opts){ opts=opts||{}; const size=opts.size||46; const r=opts.radius||(size*0.3);
+  // Prefer the Claude Design illustrated icon (self-coloured sticker) — render it directly, no gloss tile.
+  if(window.SB_ICON_ART && typeof SB_ICON_ART[name]==='string'){
+    return `<span style="display:inline-flex;flex-shrink:0;line-height:0;width:${size}px;height:${size}px">${SB_ICON_ART(name,{size:size})}</span>`; }
   const gi=Math.round(size*0.56);                                  // glyph size
   const ico=(window.SB_ICON?SB_ICON(name,{size:gi}):(typeof iconSVG==='function'?iconSVG(name,gi,2.4):''));
   const c2=`color-mix(in srgb, ${col} 62%, #14082e 38%)`;          // deep shade for the gradient base
