@@ -1026,6 +1026,35 @@ const app = {
   setCoachTarget:(key)=>{ const cat=coachCatalog().find(c=>c.key===key); state.coachTargetKey=key; state.coachTargetLabel=cat?cat.label:key; if(cat) flash('Target list set: '+cat.label); else render(); },
   coachRec:()=>{ const k=coachPhase().key; if(k==='breadth') app.coachStudy(); else if(k==='depth') app.coachWeakDrill(); else if(k==='sim') app.startWritten(); },
   say:(w)=>say(w),
+  /* ===== Advanced Mode (window.ADV, advanced.js) ===== */
+  openAdvanced:()=>{ if(!window.ADV) return; ADV.open();
+    if(state.advView!=='gate' && !window.SB_FULL) loadFullLibrary(()=>{ try{ render(); }catch(e){} }); },
+  advGo:(v)=>{ if(window.ADV) ADV.go(v); },
+  advBack:()=>{ if(window.ADV) ADV.back(); },
+  advExit:()=>{ if(window.ADV) ADV.exit(); },
+  advBuy:()=>{ if(window.ADV) ADV.buy(); },
+  advSize:(n)=>{ if(window.ADV) ADV.setSize(n); },
+  advDay:(n)=>{ if(window.ADV) ADV.setDay(n); },
+  advStartSprint:()=>{ if(window.ADV) ADV.startSprint(); },
+  advScanMark:(v)=>{ if(window.ADV) ADV.scanMark(String(v)==='1'); },
+  advDrillSubmit:()=>{ if(window.ADV) ADV.drillSubmit(); },
+  advSayCur:()=>{ if(window.ADV) ADV.sayCur(); },
+  advSaySlow:()=>{ if(window.ADV) ADV.saySlow(); },
+  advSayW:(w)=>{ if(w) say(w); },
+  advSayCurList:()=>{ const g=state.adv; if(!g||!g.list) return; const w=g.list[g.i]; if(w) say(w.w); },
+  advMockPick:(k)=>{ if(window.ADV) ADV.mockPick(k); },
+  advMockSubmit:()=>{ if(window.ADV) ADV.mockSubmit(); },
+  advMockVocab:(i)=>{ if(window.ADV) ADV.mockPickVocab(+i); },
+  advOpenTip:(i)=>{ if(window.ADV) ADV.openTip(+i); },
+  advTipCat:(c)=>{ if(window.ADV) ADV.tipCat(c); },
+  advMemStart:()=>{ if(window.ADV) ADV.memStart(); },
+  advMemFlip:(i)=>{ if(window.ADV) ADV.memFlip(+i); },
+  advDictStart:()=>{ if(window.ADV) ADV.dictStart(); },
+  advDictSubmit:()=>{ if(window.ADV) ADV.dictSubmit(); },
+  advKey:(e)=>{ if(e.key!=='Enter') return; e.preventDefault(); const v=state.advView;
+    if(v==='sprint') app.advDrillSubmit();
+    else if(v==='mock') app.advMockSubmit();
+    else if(v==='dict') app.advDictSubmit(); },
   setCustomText:(v)=>{ state.customText=v; render(); },
   enrichCustom:()=>{ const raw=state.customText||''; const words=raw.split(/[\n,]+/).map(s=>s.trim()).filter(Boolean);
     if(!words.length){ flash('Type or paste some words first'); return; }
@@ -1738,8 +1767,25 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">${games}</div>`);
   return `<div style="animation:sb-rise .35s ease both">
     ${pageHead('Explore','learn · train · play','Three ways in — build knowledge, sharpen skills, or just play. Every road leads to better spelling.')}
+    ${advBanner(c)}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;align-items:start">${learn}${train}${play}</div>
   </div>`; }
+/* Advanced Mode entry — a gated hero banner. Unlocks at Level 12, Bee Band 7, or by paying. */
+function advBanner(c){ const lvl=(function(){ try{ return listStageIdx(c,'journey')+1; }catch(e){ return 1; } })();
+  const band=(function(){ try{ return beeBand(c).band; }catch(e){ return 2; } })();
+  const unlocked=state.devUnlock||state.premium||!!c.advPaid||lvl>=12||band>=7;
+  const sub=unlocked
+    ? 'National-bee prep · 128,000-word library · 2-year plan, mock bees, champion tips & games'
+    : 'Unlock at Level 12, Bee Band 7, or for 600 🪙 — National-bee prep from the 128,000-word library';
+  return `<button class="sb-lift" data-act="openAdvanced" style="width:100%;text-align:left;border-radius:20px;overflow:hidden;margin-bottom:16px;background:linear-gradient(135deg,#241B4E,#3A2A72 60%,#5B3FA6);box-shadow:0 8px 22px rgba(60,40,120,.32);position:relative">
+    <div style="padding:17px 18px;display:flex;align-items:center;gap:14px;color:#fff">
+      <span style="width:52px;height:52px;border-radius:15px;flex-shrink:0;display:grid;place-items:center;font-size:28px;background:rgba(255,255,255,.14)">🎓</span>
+      <span style="min-width:0;flex:1">
+        <span style="display:flex;align-items:center;gap:8px"><span style="font-family:var(--display);font-weight:800;font-size:18px">Advanced Mode</span>${unlocked?'<span style="font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:#39d98a;color:#093">Unlocked</span>':'<span style="font-size:13px">🔒</span>'}</span>
+        <span style="display:block;font-size:12.5px;color:rgba(255,255,255,.9);font-weight:600;margin-top:3px;line-height:1.4">${esc(sub)}</span>
+      </span>
+      <span style="flex-shrink:0;padding:9px 15px;border-radius:11px;background:#fff;color:#3A2A72;font-weight:800;font-size:13px;white-space:nowrap">${unlocked?'Enter →':'View →'}</span>
+    </div></button>`; }
 // Optional placement test: climb difficulty bands; three fails per level find your start
 /* placement-test helpers: word pool per difficulty band + the Quest stage that matches a band */
 function ltBandPool(b){ const all=journeySorted().filter(w=>(w.y||3)===b);
@@ -1819,7 +1865,7 @@ function viewTraps(){ const S=state; const traps=missTraps(); const sel=S.trapSe
 /* ===================== APP SHELL ===================== */
 function viewApp(){
   const S=state;
-  const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,typing:1};
+  const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,typing:1,adv:1};
   const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['explore','Explore','compass'],['games','Arcade','joystick'],['shop','Store','cart'],['progress','Progress','chart'],['collection','Collection','crown']].map(([key,label,ic])=>{
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:S.nav===key;
     const glyph=key==='explore'?(window.SB_ICON?SB_ICON('compass',{size:17}):iconSVG('grid',17)):iconSVG(ic,17);
@@ -1845,6 +1891,7 @@ function viewApp(){
   else if(S.nav==='games') content=viewGames();
   else if(S.nav==='sq') content=(window.SQ?SQ.view():viewGames());
   else if(S.nav==='trivia') content=(window.STV?STV.view():viewGames());
+  else if(S.nav==='adv') content=(window.ADV?ADV.view():viewHome());
   else if(S.nav==='shop') content=viewShop();
   else if(S.nav==='themes') content=viewThemes();
   else if(S.nav==='progress') content=viewProgressShell();
