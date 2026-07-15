@@ -155,7 +155,10 @@ function journeyStages(){ if(_journeyStages) return _journeyStages;
     const fresh=scripps.filter(w=>w&&w.w&&!seen.has(nkey(w.w)));
     const startLvl=15, span=CHAMP_LEVELS-startLvl+1; // 15..20 → 6 levels
     fresh.forEach((w,ix)=>{ stages[startLvl-1+(ix%span)].words.push(w); }); }
-  for(let j=0;j<rest.length;j+=LIB_LEVEL_SIZE){ const n=stages.length+1; stages.push({ n, label:'Library '+(n-CHAMP_LEVELS), words:rest.slice(j,j+LIB_LEVEL_SIZE), champ:false }); }
+  // A sprinkled Scripps word can also live in the 40k library pool — drop it from the library so no word appears in two Levels.
+  const placed=new Set(); stages.forEach(s=>(s.words||[]).forEach(w=>placed.add(nkey(w.w))));
+  const lib=rest.filter(w=>!placed.has(nkey(w.w)));
+  for(let j=0;j<lib.length;j+=LIB_LEVEL_SIZE){ const n=stages.length+1; stages.push({ n, label:'Library '+(n-CHAMP_LEVELS), words:lib.slice(j,j+LIB_LEVEL_SIZE), champ:false }); }
   stages._n=journeySorted().length; _journeyStages=stages; return _journeyStages; }
 function journeyTotal(){ return journeySorted().length; }
 // avatar form (0–9) from a journey level: evolve across the 20 Champ levels, then hold at Champ form
@@ -826,7 +829,7 @@ const app = {
     pool=sample(pool, n);
     const g={ type:'champ', list:pool, i:0, right:0, wrong:0, ans:[], status:'play', fmt, champKey:key, champLevel:listStageIdx(c,key)+1, band:state.chBand, total:(fmt==='count'?n:0) };
     if(fmt==='timed') g.timeLeft=state.chTime||60;
-    state.game=g; state.typed=''; state.gInfo=false; render(); setTimeout(()=>{ if(state.game&&state.game.list[0]) say(state.game.list[0].w); },320); if(fmt==='timed') startGTimer(); },
+    state.game=g; state.typed=''; state.gInfo=false; render(); setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[0]) say(state.game.list[0].w); },320); if(fmt==='timed') startGTimer(); },
   champAdvance:()=>{ const g=state.game; if(!g||!g.canAdvance) return; const key=g.champKey; clearGTimer(); state.game=null; app.advanceStage(key); set({coachMode:'hub'}); },
   // ----- rename a list's display name (per child) -----
   startRename:(key)=>{ const c=active(); set({renameKey:key, renameVal:listLabel(key)}); },
@@ -953,12 +956,12 @@ const app = {
     if(state._devTaps>=7){ state._devTaps=0; state.devReveal=!state.devReveal; flash(state.devReveal?'🛠 Testing tools revealed':'🛠 Testing tools hidden'); render(); } },
   toggleDevUnlock:()=>{ const on=!state.devUnlock; state.devUnlock=on; state.premium=on?true:false; try{localStorage.setItem('sb_devunlock',on?'1':'0');}catch(e){} save(); flash(on?'🔓 All features & content unlocked (testing)':'🔒 Locked features restored'); render(); },
   playGame:(type)=>{ clearGTimer(); const c=active(); ensureLists(c); state.gInfo=false; state.typed='';
-    if(type==='buzz'){ const list=pickFresh(gameWordsD(),10); if(!list.length){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,right:0,ans:[],status:'idle'}; setTimeout(()=>{ if(state.game&&state.game.list[0]) say(state.game.list[0].w); },320); }
+    if(type==='buzz'){ const list=pickFresh(gameWordsD(),10); if(!list.length){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,right:0,ans:[],status:'idle'}; setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[0]) say(state.game.list[0].w); },320); }
     else if(type==='beat'){ state.game={type:'beat',phase:'mode'}; set({nav:'games',screen:'app'}); return; }
     else if(type==='wordquiz'){ state.game={type:'wordquiz',phase:'pick'}; set({nav:'games',screen:'app'}); return; }
     else if(type==='duel'){ const list=pickFresh(gameWordsD(),10); if(list.length<5){ flash('No words yet — try a list first'); return; }
       state.game={type,list:list.slice(0,10),phase:'setup',p:[{name:c.name||'Player 1',right:0},{name:'Player 2',right:0}],turn:0,i:0,status:'play'}; state.typed=''; }
-    else if(type==='boss'){ const list=pickFresh(gameWordsD(), 60); if(list.length<3){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,hp:8,maxhp:8,lives:3,maxlives:3,right:0,status:'play',last:null}; setTimeout(()=>{ if(state.game&&state.game.list[0]) say(state.game.list[0].w); },320); }
+    else if(type==='boss'){ const list=pickFresh(gameWordsD(), 60); if(list.length<3){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,hp:8,maxhp:8,lives:3,maxlives:3,right:0,status:'play',last:null}; setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[0]) say(state.game.list[0].w); },320); }
     else if(type==='magic'){ magicNewBoard(); }
     else return;
     set({nav:'games', screen:'app'}); },
@@ -967,7 +970,7 @@ const app = {
     const list=pickFresh(gameWordsD(),10); c.gameDiff=keep;
     if(list.length<3){ flash('Not enough champ words yet — play a little first'); return; }
     state.game={type:'buzz',list,i:0,right:0,ans:[],status:'idle'};
-    set({nav:'games', screen:'app'}); setTimeout(()=>{ if(state.game&&state.game.list[0]) say(state.game.list[0].w); },320); },
+    set({nav:'games', screen:'app'}); setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[0]) say(state.game.list[0].w); },320); },
   exitGame:()=>{ clearGTimer(); set({game:null, gInfo:false, typed:''}); },
   // Beat the Buzzer now hosts a mode picker: a relaxed 10-word warm-up (the old
   // Buzz of the Day) or the 60-second sprint.
@@ -975,7 +978,7 @@ const app = {
     const c=active(); const list=pickFresh(gameWordsD(),240); if(list.length<3){ flash('No words yet — try a list first'); return; }
     let _t=60; if(((c.pow||{}).time||0)>0){ c.pow.time--; _t=75; save(); setTimeout(()=>flash('⚡ +15s boost active!'),200); }
     state.game={type:'beat',mode:'sprint',list,i:0,right:0,wrong:0,timeLeft:_t,status:'play'}; startGTimer();
-    setTimeout(()=>{ if(state.game&&state.game.list[0]) say(state.game.list[0].w); },320); set({nav:'games',screen:'app'}); },
+    setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[0]) say(state.game.list[0].w); },320); set({nav:'games',screen:'app'}); },
   // Word Quiz hosts a round picker: Meanings / Spellings / Origins, or a Mixed set.
   wqStart:(round)=>{ clearGTimer(); state.gInfo=false; state.typed='';
     let qs=[];
@@ -998,7 +1001,7 @@ const app = {
     if(ok){ markMastered(nkey(w.w)); clearMiss(w.w); sfx('correct'); }
     else { addMiss(w); sfx('wrong'); }
     if(!g.rw) g.rw=[]; g.rw.push({w:w.w, ok});
-    const advance=()=>{ g.fb=null; g.wait=false; g.i++; if(g.i>=g.list.length){ const fresh=pickFresh(gameWordsD(), g.list.length); g.list=fresh.length?fresh:sample(g.list); g.i=0; } state.typed=''; state.gInfo=false; setTimeout(()=>{ if(state.game&&state.game.list[state.game.i]) say(state.game.list[state.game.i].w); },180); };
+    const advance=()=>{ g.fb=null; g.wait=false; g.i++; if(g.i>=g.list.length){ const fresh=pickFresh(gameWordsD(), g.list.length); g.list=fresh.length?fresh:sample(g.list); g.i=0; } state.typed=''; state.gInfo=false; setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[state.game.i]) say(state.game.list[state.game.i].w); },180); };
     // on a miss, EVERY game stops to show the word big and say it — that's how the word sticks
     const missPause=(fin,ms)=>{ g.fb={ok:false,word:w.w}; g.wait=true; try{ say(w.w); }catch(e){} render();
       setTimeout(()=>{ const G=state.game; if(G!==g) return; if(fin){ fin(); } else { advance(); render(); } }, ms); };
