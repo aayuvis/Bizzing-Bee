@@ -393,6 +393,7 @@ function catStatic(){ if(_catStatic) return _catStatic; const nsf=SB_DATA.nsf||[
   const byTier=(s)=>nsf.filter(r=>(r.nt||'').includes(s));
   const byOrigin=(kw)=>nsf.filter(r=>(r.o||'').toLowerCase().includes(kw));
   _catStatic={ finals:byTier('North South Finals'), primary:byTier('Primary'), junior:byTier('Junior'), senior:byTier('Senior'), advanced:byTier('Advanced'),
+    nsf500:((window.SB_NSF500&&SB_NSF500.words)||[]),
     likely:nsf.slice().sort((a,b)=>(b.bp||0)-(a.bp||0)),
     hardest:nsf.filter(r=>(r.y||3)>=6),
     latin:byOrigin('latin'), greek:byOrigin('greek'), french:byOrigin('french'), oe:byOrigin('old english'), norse:byOrigin('norse'),
@@ -409,6 +410,7 @@ function coachCatalog(){
     { key:'nsf_finals', label:'North South Finals',      sub:'The official finals word pool',         words:st.finals },
     { key:'nsf_primary',label:'NSF — Primary',           sub:'Primary-level NSF words',               words:st.primary },
     { key:'nsf_junior', label:'NSF — Junior',            sub:'Junior-level NSF words',                words:st.junior },
+    { key:'nsf500',     label:'Junior Finals 500 🐝',    sub:'500 high-probability finals words · your 15-day list', words:st.nsf500 },
     { key:'nsf_senior', label:'NSF — Senior',            sub:'Senior-level NSF words',                words:st.senior },
     { key:'nsf_advanced',label:'NSF — Advanced',         sub:'The hardest NSF words',                 words:st.advanced },
     { key:'nsf',        label:'Championship library',     sub:'17,000-word competition library',       words:nsf },
@@ -2741,7 +2743,7 @@ function viewLevelUp(){
 
 /* ===================== Parent analytics + offline tips engine (no AI) ===================== */
 let _wIdx=null;
-function wordIndex(){ if(_wIdx) return _wIdx; _wIdx={}; try{ journeySorted().forEach(w=>{ if(w&&w.w&&!_wIdx[nkey(w.w)]) _wIdx[nkey(w.w)]=w; }); (window.SB_SCRIPPS||[]).forEach(w=>{ if(w&&w.w&&!_wIdx[nkey(w.w)]) _wIdx[nkey(w.w)]=w; }); (typeof REVIEW!=='undefined'?REVIEW:[]).forEach(w=>{ if(w&&w.w&&!_wIdx[nkey(w.w)]) _wIdx[nkey(w.w)]=w; }); }catch(e){} return _wIdx; }
+function wordIndex(){ if(_wIdx) return _wIdx; _wIdx={}; try{ journeySorted().forEach(w=>{ if(w&&w.w&&!_wIdx[nkey(w.w)]) _wIdx[nkey(w.w)]=w; }); ((window.SB_NSF500&&SB_NSF500.words)||[]).forEach(w=>{ if(w&&w.w&&!_wIdx[nkey(w.w)]) _wIdx[nkey(w.w)]=w; }); (window.SB_SCRIPPS||[]).forEach(w=>{ if(w&&w.w&&!_wIdx[nkey(w.w)]) _wIdx[nkey(w.w)]=w; }); (typeof REVIEW!=='undefined'?REVIEW:[]).forEach(w=>{ if(w&&w.w&&!_wIdx[nkey(w.w)]) _wIdx[nkey(w.w)]=w; }); }catch(e){} return _wIdx; }
 function dayNum(){ const d=new Date(); return Math.floor(d.getTime()/86400000); }
 function parentSignals(){ const c=active(); const played=(c.daysPlayed||[]).slice().sort();
   let daysSince=999; if(played.length){ const last=new Date(played[played.length-1]+'T12:00'); daysSince=Math.max(0,Math.round((Date.now()-last.getTime())/86400000)); }
@@ -3504,7 +3506,7 @@ function viewSettings(){
 }
 
 /* ===================== WORD COACH ===================== */
-const FREE_LISTS = { default:1, review:1, missed:1, custom:1, ai:1, journey:1 };
+const FREE_LISTS = { default:1, review:1, missed:1, custom:1, ai:1, journey:1, nsf500:1 };
 function isPremiumList(key){ if(isThemeKey(key)) return false; if(String(key).startsWith('built_')) return false; return !FREE_LISTS[key]; }
 // Right-click a top-nav list chip to remove it (all but the core 3). Progress is kept; re-add from Setup.
 window.sbDelList = function(e,key){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
@@ -3640,6 +3642,7 @@ const LIST_COVER={
   nsf_finals :{c:'#C8901B',c2:'#A8760E',tex:'rings',hero:'Finals',tag:'NSF'},
   nsf_primary:{c:'#4F9E6A',c2:'#3C8455',tex:'grid',hero:'Primary',tag:'NSF'},
   nsf_junior :{c:'#13A892',c2:'#0E8A78',tex:'grid',hero:'Junior',tag:'NSF'},
+  nsf500     :{c:'#E0922E',c2:'#B26E12',tex:'rings',hero:'500',tag:'Finals'},
   nsf_senior :{c:'#3D7DF0',c2:'#2A63D6',tex:'grid',hero:'Senior',tag:'NSF'},
   nsf_advanced:{c:'#7B52E0',c2:'#5E39C4',tex:'grid',hero:'Advanced',tag:'NSF'},
   nsf        :{c:'#C8901B',c2:'#A8760E',tex:'rings',hero:'Champs',tag:'Library'},
