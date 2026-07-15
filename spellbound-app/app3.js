@@ -367,12 +367,18 @@ function loadConcepts(){
     .catch(()=>{ state.conceptLoading=false; state.conceptErr=true; render(); });
 }
 
+/* ---- kid-safety word filter — strips hate slurs & explicit sexual terms from any pool.
+   The 40k core list is cleaned at rest; this guards the premium 128k library too. ---- */
+const SB_UNSAFE_RE=/(nigger|nigga|faggot|niggard|currymuncher|towelhead|raghead|\bkike\b|\bchink|wetback|\bgook\b|\bcoon\b|darkie|\bwop\b|\bdago\b|beaner|\bspic\b|\bcunt|motherfuck|\bfuck|\bshit\b|fellat|cunniling|catamit|pederast|paedophil|pedophil|coprophil|klismaphil|frotteur|\bvoyeur|masturbat|onanis|ejaculat|copulat|fornicat|\bwhore|\bslut\b|bestialit|zoophil|necrophil|scatophil|analingus)/i;
+function safeWord(w){ if(!w||!w.w) return false; if(SB_UNSAFE_RE.test(w.w)) return false; if(w.d&&SB_UNSAFE_RE.test(w.d)) return false; return true; }
 /* ---- full library: 128k words live in words-full.js, loaded on demand (file too big for startup) ---- */
 let _fullState='idle'; // idle | loading | loaded | error
 function loadFullLibrary(then){ if(window.SB_FULL){ _fullState='loaded'; state.fullLoaded=true; if(then) then(); return; }
   if(_fullState==='loading') return; _fullState='loading'; state.fullLoading=true; render();
   const s=document.createElement('script'); s.src='words-full.js';
-  s.onload=()=>{ _fullState='loaded'; _wdb=null; state.fullLoading=false; state.fullLoaded=true; if(then) then(); render(); flash('Full library ready — 128,000 words 📚'); };
+  s.onload=()=>{ _fullState='loaded'; _wdb=null; state.fullLoading=false; state.fullLoaded=true;
+    try{ if(window.SB_FULL) window.SB_FULL=window.SB_FULL.filter(safeWord); }catch(e){}
+    if(then) then(); render(); flash('Full library ready — 128,000 words 📚'); };
   s.onerror=()=>{ _fullState='error'; state.fullLoading=false; render(); flash('Couldn’t load words-full.js — keep it in the same folder'); };
   document.head.appendChild(s); }
 /* ---- Word Finder: search the whole library, open a learn card, add to lists ---- */
