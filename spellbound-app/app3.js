@@ -1682,27 +1682,63 @@ function viewVocab(){ const S=state; const c=active();
       ${themeDecks}
     </div></div>`;
 }
-function viewExplore(){ const c=active(); ensureLists(c);
+function viewExplore(){ const c=active(); ensureLists(c); const S=state;
   const cAll=(state.conceptData||[]); const cDone=cAll.filter(ch=>conceptStat(ch).done).length;
-  const dests=[
-    {key:'arcade', act:'openGames', desc:'Story-mode Spelling Quest, Beat the Buzzer, Boss Battle & more — every correct word earns coins.', meta:(c.coins||0)+' coins'},
-    {key:'concepts', act:'setNav', arg:'concepts', desc:'Spelling basics, patterns, prefixes, roots & tricky endings — 121 concepts in 11 chapters.', meta:cDone+'/'+(cAll.length||121)+' mastered'},
-    {key:'journeys', act:'openJourneys', desc:'The history & geography of words — 100 lessons from ancient roots to championship linguistics.', meta:state.premium?'10 chapters':'Premium'},
-    {key:'themes', act:'setNav', arg:'themes', desc:'Learn words by their worlds — 52 themes from medicine to myths. Pick 3–5 you love.', meta:myThemes().length+' picked'},
-    {key:'figurative', act:'setNav', arg:'figurative', desc:'2,000 idioms & 350 similes with true origin stories — learn deck by deck, card by card.', meta:'2,350 phrases'},
-    {key:'vocab', act:'openVocab', desc:'Word → meaning, the vocabulary-bee way — study decks at your level, then take the Vocabulary round.', meta:'your level'},
-    {key:'typing', act:'openTyping', desc:'Touch-type finger by finger, then race the 60-second Typing Test — online bee rounds are typed!', meta:'⌨️ WPM'},
-  ].map((d,i)=>{ const w=WAYFIND[d.key];
-    return `<button class="sb-lift" data-act="${d.act}" ${d.arg?`data-arg="${d.arg}"`:''} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0">
-      <div style="position:relative;width:100%">${SB_COVER(state.theme,d.key==='themes'?'themes':d.key,{h:110,dark:state.mode==='dusk'})}
-        <span style="position:absolute;left:14px;bottom:-16px">${wayTile(d.key,48,i%2?2.5:-2.5)}</span></div>
-      <div style="display:flex;align-items:flex-start;gap:16px;padding:24px 20px 18px;width:100%">
-      <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:20px;line-height:1.15">${w.label}</span>
-      <span style="display:block;font-size:15px;color:var(--muted);line-height:1.5;margin-top:5px">${d.desc}</span>
-      <span style="display:inline-block;margin-top:9px;font-size:13px;font-weight:650;color:var(--muted)">${esc(d.meta)} →</span></span></div></button>`; }).join('');
+  const fmtDone=(cDone>0?cDone+'/'+(cAll.length||121)+' mastered':(cAll.length||121)+' concepts');
+  /* Each Explore destination as a compact clickable row inside its hub. */
+  const row=(key,act,arg,sub)=>{ const w=WAYFIND[key]||{label:key,ic:'grid',c:'var(--accent)'};
+    return `<button class="sb-lift" data-act="${act}" ${arg?`data-arg="${escA(arg)}"`:''} style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px 13px;box-shadow:var(--sh-rest)">
+      <span style="width:38px;height:38px;border-radius:11px;flex-shrink:0;display:grid;place-items:center;background:color-mix(in srgb,${w.c} 15%,transparent);color:${w.c}">${iconSVG(w.ic,19)}</span>
+      <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">${esc(w.label)}</span>
+        <span style="display:block;font-size:12px;color:var(--muted);font-weight:600;line-height:1.35;margin-top:1px">${esc(sub)}</span></span>
+      <span style="color:${w.c};font-weight:800;flex-shrink:0">→</span></button>`; };
+  /* the three hub columns */
+  const hub=(title,e,col,intro,inner)=>`<section style="background:linear-gradient(160deg,color-mix(in srgb,${col} 12%,var(--bg2)),var(--bg2) 55%);border:1px solid color-mix(in srgb,${col} 30%,var(--line));border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--sh-rest)">
+      <div style="display:flex;align-items:center;gap:11px">
+        <span style="width:46px;height:46px;border-radius:14px;flex-shrink:0;display:grid;place-items:center;font-size:24px;background:${col};box-shadow:0 4px 12px color-mix(in srgb,${col} 40%,transparent)">${e}</span>
+        <span><span style="display:block;font-family:var(--display);font-weight:800;font-size:19px;line-height:1;color:${col}">${title}</span>
+        <span style="display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:3px">${intro}</span></span>
+      </div>
+      ${inner}</section>`;
+  // ---- LEARN ----
+  const learn=hub('Learn','📚','#7C5CFF','Understand words deeply',
+    row('concepts','setNav','concepts','Spelling basics, roots & patterns · '+fmtDone)+
+    row('journeys','openJourneys',null,'The history & geography of words'+(state.premium?'':' · Premium'))+
+    row('figurative','setNav','figurative','2,350 idioms & sayings, card by card')+
+    row('themes','setNav','themes','Words by their worlds · '+(myThemes().length||'pick 3–5')+' picked'));
+  // ---- TRAIN ----
+  const train=hub('Train','🎯','#13A892','Sharpen your skills',
+    row('typing','openTyping',null,'Touch-type, then race the 60s test')+
+    row('vocab','openVocab',null,'Word → meaning, vocabulary-bee style')+
+    row('traps','openTraps',null,'Beat your weak spelling patterns')+
+    `<button class="sb-lift" data-act="openBuilder" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px 13px;box-shadow:var(--sh-rest)">
+      <span style="width:38px;height:38px;border-radius:11px;flex-shrink:0;display:grid;place-items:center;background:color-mix(in srgb,#0E8A78 15%,transparent);color:#0E8A78">${iconSVG('pencil',19)}</span>
+      <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15px">List Builder</span><span style="display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:1px">Build a custom list in five taps</span></span>
+      <span style="color:#0E8A78;font-weight:800">→</span></button>`);
+  // ---- PLAY ----  (arcade hero + small clickable game buttons beneath)
+  const gchip=(act,arg,e,label,col)=>`<button class="sb-lift" data-act="${act}" ${arg?`data-arg="${escA(arg)}"`:''} style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:11px 6px;border-radius:13px;background:var(--paper,var(--bg2));border:1px solid var(--line);box-shadow:var(--sh-rest);min-width:0">
+      <span style="font-size:22px;line-height:1">${e}</span><span style="font-size:11px;font-weight:800;color:${col};text-align:center;line-height:1.15">${esc(label)}</span></button>`;
+  const games=[
+    ['openQuest',null,'🗺️','Spelling Quest','#6C4FE0'],
+    ['openTrivia',null,'🧠','Bee Trivia','#C8791B'],
+    ['playGame','magic','🔢','Magic Squares','#B14FC4'],
+    ['openChallenge','journey','⚡','Champ Challenge','#C8901B'],
+    ['beatStart','sprint','⏱️','Beat the Buzzer','#E8458C'],
+    ['wqStart','mixed','📖','Word Quiz','#13A892'],
+    ['playGame','boss','👑','Boss Battle','#7B52E0'],
+    ['playGame','duel','⚔️','Spelling Duel','#C43D5A'],
+  ].map(g=>gchip(g[0],g[1],g[2],g[3],g[4])).join('');
+  const play=hub('Play','🎮','#F0703C','Learn by playing',
+    `<button class="sb-lift" data-act="openGames" style="text-align:left;width:100%;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#F0703C,#D8541F);box-shadow:0 6px 18px rgba(200,84,20,.28)">
+      <div style="padding:15px 16px;color:#fff;display:flex;align-items:center;gap:12px">
+        <span style="font-size:28px;filter:drop-shadow(0 2px 5px rgba(0,0,0,.25))">🕹️</span>
+        <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:17px">Open the Arcade</span><span style="display:block;font-size:12px;color:rgba(255,255,255,.92)">Story seasons, boss battles &amp; quick games</span></span>
+        <span style="padding:7px 13px;border-radius:9px;background:#fff;color:#C8551A;font-weight:800;font-size:12.5px;white-space:nowrap">${(c.coins||0)} 🪙</span></div></button>
+    <div style="font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:2px 2px -2px">Jump into a game</div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">${games}</div>`);
   return `<div style="animation:sb-rise .35s ease both">
-    ${pageHead('Explore','four ways in','Games, concepts, word history and theme worlds — every road leads to better spelling.')}
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px">${dests}</div>
+    ${pageHead('Explore','learn · train · play','Three ways in — build knowledge, sharpen skills, or just play. Every road leads to better spelling.')}
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;align-items:start">${learn}${train}${play}</div>
   </div>`; }
 // Optional placement test: climb difficulty bands; three fails per level find your start
 /* placement-test helpers: word pool per difficulty band + the Quest stage that matches a band */
