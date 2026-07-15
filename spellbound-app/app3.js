@@ -2947,40 +2947,31 @@ function encounteredWords(key){ try{ const c=active(); const stages=listStages(k
 // Champion's Quest — one quest, three paths. The chooser; the paths not picked stay a tap away as lists.
 function viewQuest(){
   const c=active(); ensureLists(c); const qp=c.questPath;
+  const lvlOf=(k)=>{ try{ return listStageIdx(c,k)+1; }catch(e){ return 1; } };
   const paths=[
-    { id:'journey', sc:'coach', c1:'#7C5CFF', c2:'#5A37D6', tex:'stripes', title:'Bizzing Bee Journey',
-      sub:'The classic champ ladder', desc:'~1,600 top bee words ramped easy→hard across 20 Levels. Master each Level (or pass its Champ Challenge) and evolve all the way to Bizzing Bee Champ.',
-      points:['20 Levels → Champ','Champ Challenge test-outs','The Champion’s Library beyond'] },
-    { id:'themes', sc:'theme', c1:'#B14FC4', c2:'#9438A8', tex:'rings', title:'Theme Journey',
-      sub:'Learn words by their worlds', desc:'Pick 3–5 worlds you love — medicine, music, maps, myths & 50 more. Each theme becomes its own Level ladder, and mastery flows back into every list.',
-      points:['52 themes in 8 worlds','Each theme = its own ladder','Feeds Magic Squares in the Arcade'] },
-    { id:'own', sc:'book', c1:'#13A892', c2:'#0E8A78', tex:'grid', title:'My Own List',
-      sub:'Bring or build your list', desc:'Train on any list — North South Finals, Scripps Winning Words, or paste your own words and we enrich them with meanings, sentences and origins.',
-      points:['Every ready-made list','Paste your own words','Same Level ladder & games'] },
-  ].map((p,i)=>{ const cur=qp===p.id; const t=CONCEPT_TEX[p.tex]||CONCEPT_TEX.stripes;
-    return `<button class="sb-cover-card" data-act="questPick" data-arg="${p.id}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 ${cur?'2px '+p.c1:'1px var(--line)'},var(--sh-rest);display:flex;flex-direction:column">
-      <div style="position:relative;height:112px;display:grid;place-items:center;background-color:${p.c1};background-image:${t[0]},linear-gradient(135deg,${p.c1},${p.c2});background-size:${t[1]},100% 100%">
-        ${cur?'<span style="position:absolute;top:10px;right:11px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.94);color:'+p.c1+';font-weight:900;font-size:12px">Current path ✓</span>':''}
-        <div style="color:#fff">${journeyArtSVG(p.sc,54)}</div>
-      </div>
-      <div style="padding:15px 16px 16px;display:flex;flex-direction:column;flex:1">
-        <div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">${p.title}</div>
-        <div style="font-family:var(--ui,var(--body));font-weight:800;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:${p.c1};margin-top:3px">${p.sub}</div>
-        <div style="font-family:var(--body);font-size:13px;line-height:1.5;color:var(--muted);margin:9px 0 11px">${p.desc}</div>
-        <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:13px">${p.points.map(x=>`<span style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--text)"><span style="width:6px;height:6px;border-radius:50%;background:${p.c1};flex-shrink:0"></span>${x}</span>`).join('')}</div>
-        <span style="margin-top:auto;display:inline-flex;align-items:center;justify-content:center;padding:11px;border-radius:10px;font-weight:800;font-size:13px;${cur?('background:var(--surface2);color:'+p.c1):('background:'+p.c1+';color:#fff;box-shadow:var(--edge)')}">${cur?'Continue this path →':(qp?'Switch to this path →':'Choose this path →')}</span>
-      </div></button>`; }).join('');
-  return `<div style="animation:sb-rise .35s ease both">
-    ${pageHead("Champion's Quest",'one quest · three paths','Pick the path that fits today — the other two stay one tap away in your list row, with all progress kept.')}
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:16px">${paths}</div>
-    <div style="display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:14px;background:var(--surface2);border:1px solid var(--line)"><span style="color:var(--accent)">${iconSVG('spark',17)}</span><span style="font-size:13px;color:var(--muted);font-weight:600">Switching paths never loses progress — every list keeps its own Level ladder, and you can hop between them from the Word Coach list row.</span></div>
-    ${(()=>{ const un=loreUnlocked(); const all=lessonsAll().length||100; const next=lessonsAll()[un.length];
-      const chips=un.slice(-8).map(L=>`<button data-act="openLesson" data-arg="${L.n}" style="display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12px">${window.SB_ICON?SB_ICON('book',{size:13}):iconSVG('book',13)} ${esc(trunc(L.title,26))}</button>`).join('');
-      return `<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-top:14px">
-        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px"><span style="font-family:var(--display);font-weight:800;font-size:17px">Story vault</span><span style="font-size:12px;color:var(--muted);font-weight:650">${un.length}/${all} word-history tales unlocked — one per Level you clear</span></div>
-        ${un.length?`<div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px">${chips}</div>`:`<p style="margin:6px 0 0;font-size:13px;color:var(--muted)">Clear your first Level to unlock a tale from the history of words.</p>`}
-        ${next?`<div style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12px;color:var(--muted);font-weight:650">${iconSVG('lock',13,2.2)} Next up: <b style="color:var(--ink,var(--text))">${esc(next.title)}</b> — clear a Level to open it</div>`:''}
-      </div>`; })()}
+    { id:'journey', key:'journey', sc:'coach', col:'#7C5CFF', e:'🏆', title:'Bizzing Bee Journey', sub:'The classic 20-Level champ ladder' },
+    { id:'themes',  key:'themes',  sc:'theme', col:'#B14FC4', e:'🌍', title:'Theme Journey',       sub:'Learn words by their worlds' },
+    { id:'own',     key:'own',     sc:'book',  col:'#13A892', e:'📝', title:'My Own List',          sub:'Bring, paste or pick any list' },
+  ].map(p=>{ const cur=qp===p.id;
+    const meta=cur?(p.id==='journey'?('Level '+lvlOf('journey')):(p.id==='themes'?((myThemes().length||0)+' worlds picked'):'Ready')):'';
+    return `<button class="sb-lift" data-act="questPick" data-arg="${p.id}" style="display:flex;align-items:center;gap:13px;width:100%;text-align:left;background:var(--paper,var(--bg2));border:1px solid ${cur?p.col:'var(--line)'};border-radius:16px;padding:14px 16px;box-shadow:var(--sh-rest)">
+      <span style="width:52px;height:52px;border-radius:15px;flex-shrink:0;display:grid;place-items:center;font-size:26px;background:color-mix(in srgb,${p.col} 16%,transparent)">${p.e}</span>
+      <span style="min-width:0;flex:1">
+        <span style="display:block;font-family:var(--display);font-weight:800;font-size:16.5px;line-height:1.15">${p.title}</span>
+        <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:600;margin-top:2px">${p.sub}</span>
+        ${cur&&meta?`<span style="display:inline-block;margin-top:5px;font-size:11px;font-weight:800;color:${p.col};background:color-mix(in srgb,${p.col} 14%,transparent);padding:2px 9px;border-radius:999px">${esc(meta)}</span>`:''}
+      </span>
+      <span style="flex-shrink:0;font-weight:800;font-size:12.5px;color:#fff;background:${cur?'var(--surface2)':p.col};color:${cur?p.col:'#fff'};padding:9px 14px;border-radius:10px;white-space:nowrap">${cur?'Continue →':(qp?'Switch →':'Choose →')}</span>
+    </button>`; }).join('');
+  const un=loreUnlocked(); const all=lessonsAll().length||100;
+  const vault=un.length?`<button data-act="openJourneys" style="display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:var(--treasure-tint,#FFF3D6);border:1px solid var(--treasure,#F0B429);border-radius:14px;padding:12px 15px;margin-top:14px">
+      <span style="font-size:22px">📖</span>
+      <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:14px;color:var(--treasure-deep,#8A5B00)">Story vault</span><span style="display:block;font-size:12px;color:var(--treasure-deep,#8A5B00);opacity:.85">${un.length} of ${all} word-history tales unlocked</span></span>
+      <span style="color:var(--treasure-deep,#8A5B00);font-weight:800">→</span></button>`:'';
+  return `<div style="animation:sb-rise .35s ease both;max-width:640px;margin:0 auto">
+    ${pageHead("Champion's Quest",'one quest · three paths','Pick a path — switch any time, all progress kept.')}
+    <div style="display:flex;flex-direction:column;gap:11px">${paths}</div>
+    ${vault}
   </div>`;
 }
 /* Progress + Parent live under one nav: a segmented switch picks the view. */
