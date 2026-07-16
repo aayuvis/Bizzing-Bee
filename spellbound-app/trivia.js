@@ -188,7 +188,7 @@
         <h2 style="font-family:var(--display);font-weight:800;font-size:21px;margin:0 0 8px">${title}</h2>
         <div style="font-family:var(--display);font-weight:800;font-size:42px;color:var(--accent);line-height:1">${big}</div>
         <p style="color:var(--muted);font-weight:700;margin-top:6px">${sub}</p>
-        <div style="display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 15px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:15px">${iconSVG('coin', 15)} +${g.bonus || 0} coins</div>
+        <div style="display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 15px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:15px">${(window.coinIc?coinIc(15):iconSVG('coin',15))} +${g.bonus || 0} coins</div>
         <div style="display:flex;gap:10px;justify-content:center;margin-top:18px">
           <button data-act="trvExit" style="padding:13px 18px;border-radius:14px;background:var(--surface2);font-weight:800;font-size:14px;border:1px solid var(--line)">All trivia</button>
           <button data-act="${g.view === 'square' ? 'trvSquare' : g.view === 'clock' ? 'trvClock' : 'trvQuiz'}" style="padding:13px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">Play again →</button>
