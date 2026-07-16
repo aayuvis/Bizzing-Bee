@@ -14,3 +14,5 @@ spellbound-app/v*.mjs
 spellbound-app/trivia-review.html
 spellbound-app/trivia-data.js.bak
 spellbound-app/*review.html
+# TEMP: Kokoro synthesis in progress — removed at final packaging commit
+spellbound-app/voice/w/
