@@ -43,8 +43,9 @@
   @media(max-width:560px){ .sb-search-lbl{display:none!important} }
   /* drawer rows that duplicate the desktop top nav — mobile only */
   @media(min-width:640px){ .sb-mob-only{display:none!important} }
-  /* accessibility: Large text mode scales the whole app */
-  :root[data-size="large"] #root{zoom:1.16}
+  /* comfortable default type: the whole app runs ~9% larger; Large text steps up further */
+  #root{zoom:1.09}
+  :root[data-size="large"] #root{zoom:1.28}
   /* concept animation engine */
   @keyframes ca-pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
   @keyframes ca-sl{0%{transform:translateX(-72px);opacity:0}100%{transform:translateX(0);opacity:1}}
