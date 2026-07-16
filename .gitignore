@@ -14,3 +14,5 @@ spellbound-app/v*.mjs
 spellbound-app/trivia-review.html
 spellbound-app/trivia-data.js.bak
 spellbound-app/*review.html
+# TEMP: Kokoro synthesis continuing — un-ignore + commit at next packaging
+spellbound-app/voice/w/
