@@ -1,14 +1,14 @@
-/* Spellbound fonts — bundled locally so the app renders identically offline (P0) */
-@font-face{font-family:'Fraunces';font-style:normal;font-weight:800;font-display:swap;src:url('fraunces-800.woff2') format('woff2')}
+/* Spellbound fonts — bundled locally so the app renders identically offline (P0).
+   Locked type system (FONT-HANDOVER): Hanken=body/UI · Sono=spelling tiles · one display face per world.
+   Single-weight faces declare a weight RANGE so any requested weight maps to the real file — no synthetic bold. */
 @font-face{font-family:'Hanken Grotesk';font-style:normal;font-weight:100 900;font-display:swap;src:url('hanken-var.woff2') format('woff2')}
-@font-face{font-family:'Space Mono';font-style:normal;font-weight:400;font-display:swap;src:url('spacemono-400.woff2') format('woff2')}
-@font-face{font-family:'Space Mono';font-style:normal;font-weight:700;font-display:swap;src:url('spacemono-700.woff2') format('woff2')}
-/* World display faces — headings only, one per world ("worlds are worlds") */
-@font-face{font-family:'Abril Fatface';font-style:normal;font-weight:400 800;font-display:swap;src:url('abril-400.woff2') format('woff2')}
-@font-face{font-family:'Space Grotesk';font-style:normal;font-weight:500 800;font-display:swap;src:url('spacegrotesk-700.woff2') format('woff2')}
-@font-face{font-family:'Rajdhani';font-style:normal;font-weight:500 800;font-display:swap;src:url('rajdhani-700.woff2') format('woff2')}
-@font-face{font-family:'Spline Sans Mono';font-style:normal;font-weight:500 800;font-display:swap;src:url('splinemono-700.woff2') format('woff2')}
-@font-face{font-family:'Zen Maru Gothic';font-style:normal;font-weight:500 900;font-display:swap;src:url('zenmaru-700.woff2') format('woff2')}
-@font-face{font-family:'Silkscreen';font-style:normal;font-weight:400 800;font-display:swap;src:url('silkscreen-700.woff2') format('woff2')}
-@font-face{font-family:'Philosopher';font-style:normal;font-weight:500 800;font-display:swap;src:url('philosopher-700.woff2') format('woff2')}
-@font-face{font-family:'Bungee';font-style:normal;font-weight:400 800;font-display:swap;src:url('bungee-400.woff2') format('woff2')}
+@font-face{font-family:'Sono';font-style:normal;font-weight:400 800;font-display:swap;src:url('sono-600.woff2') format('woff2')}
+/* World display faces — headings only, one per world */
+@font-face{font-family:'Fraunces';font-style:normal;font-weight:400 900;font-display:swap;src:url('fraunces-800.woff2') format('woff2')}
+@font-face{font-family:'Righteous';font-style:normal;font-weight:400 900;font-display:swap;src:url('righteous-400.woff2') format('woff2')}
+@font-face{font-family:'Baloo 2';font-style:normal;font-weight:400 900;font-display:swap;src:url('baloo2-800.woff2') format('woff2')}
+@font-face{font-family:'Bangers';font-style:normal;font-weight:400 900;font-display:swap;src:url('bangers-400.woff2') format('woff2')}
+@font-face{font-family:'Quicksand';font-style:normal;font-weight:400 900;font-display:swap;src:url('quicksand-700.woff2') format('woff2')}
+@font-face{font-family:'Fredoka';font-style:normal;font-weight:400 900;font-display:swap;src:url('fredoka-600.woff2') format('woff2')}
+@font-face{font-family:'Comfortaa';font-style:normal;font-weight:400 900;font-display:swap;src:url('comfortaa-700.woff2') format('woff2')}
+@font-face{font-family:'Bungee';font-style:normal;font-weight:400 900;font-display:swap;src:url('bungee-400.woff2') format('woff2')}

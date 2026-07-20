@@ -7,13 +7,13 @@
 (function(){
   var KIT={
     spellbound:{ L:'#F6F4FC', D:'#3D3455', a:'#6C4FE0', p1:'#8B6FF0', p2:'#FFC23D', lt:'#EDE7FF', face:"'Fraunces',Georgia,serif", spark:star4('#F0B429'), motif:hexes },
-    marquee:{ L:'#F3E9D2', D:'#4A3520', a:'#9C6A08', p1:'#C89A2B', p2:'#F0B429', lt:'#F7F1E2', face:"'Abril Fatface',Georgia,serif", spark:star5('#F7F1E2'), motif:beams },
-    aurora:{ L:'#F2F4FB', D:'#262E5E', a:'#4A5BD4', p1:'#7D8CF0', p2:'#A9B4F7', lt:'#E5E9F6', face:"'Space Grotesk',sans-serif", spark:cross('#8FA0F5'), motif:stars },
-    anime:{ L:'#FAF1F3', D:'#4A3038', a:'#C43D5A', p1:'#E76D88', p2:'#F3B2C0', lt:'#F3E2E7', face:"'Rajdhani',sans-serif", spark:petal('#E76D88'), motif:slash },
-    science:{ L:'#EFF6F3', D:'#1C4A40', a:'#0E8A78', p1:'#3BC0AA', p2:'#7FD9C4', lt:'#E0EEE8', face:"'Spline Sans Mono',monospace", spark:ring('#7FD9C4'), motif:grid },
-    origami:{ L:'#F8F2E8', D:'#584428', a:'#C25A2E', p1:'#E88A5C', p2:'#F0C9A2', lt:'#F0E5D3', face:"'Zen Maru Gothic',sans-serif", spark:diamond('#C25A2E'), motif:folds },
+    marquee:{ L:'#F3E9D2', D:'#4A3520', a:'#9C6A08', p1:'#C89A2B', p2:'#F0B429', lt:'#F7F1E2', face:"'Righteous',sans-serif", spark:star5('#F7F1E2'), motif:beams },
+    aurora:{ L:'#F2F4FB', D:'#262E5E', a:'#4A5BD4', p1:'#7D8CF0', p2:'#A9B4F7', lt:'#E5E9F6', face:"'Baloo 2',sans-serif", spark:cross('#8FA0F5'), motif:stars },
+    anime:{ L:'#FAF1F3', D:'#4A3038', a:'#C43D5A', p1:'#E76D88', p2:'#F3B2C0', lt:'#F3E2E7', face:"'Bangers',sans-serif", spark:petal('#E76D88'), motif:slash },
+    science:{ L:'#EFF6F3', D:'#1C4A40', a:'#0E8A78', p1:'#3BC0AA', p2:'#7FD9C4', lt:'#E0EEE8', face:"'Quicksand',sans-serif", spark:ring('#7FD9C4'), motif:grid },
+    origami:{ L:'#F8F2E8', D:'#584428', a:'#C25A2E', p1:'#E88A5C', p2:'#F0C9A2', lt:'#F0E5D3', face:"'Fredoka',sans-serif", spark:diamond('#C25A2E'), motif:folds },
     pixel:{ L:'#EFF3FA', D:'#2C3A55', a:'#3B6FE0', p1:'#7BA3F5', p2:'#FFD34D', lt:'#E1E8F5', face:"'Bungee',sans-serif", spark:pxplus('#7BA3F5'), motif:pixels },
-    avatar:{ L:'#EDF5F7', D:'#2C444E', a:'#2E8FB8', p1:'#6FC2E4', p2:'#F0B45B', lt:'#DEECF0', face:"'Philosopher',sans-serif", spark:dotring('#6FC2E4'), motif:arcs },
+    avatar:{ L:'#EDF5F7', D:'#2C444E', a:'#2E8FB8', p1:'#6FC2E4', p2:'#F0B45B', lt:'#DEECF0', face:"'Comfortaa',sans-serif", spark:dotring('#6FC2E4'), motif:arcs },
   };
   KIT.spotlight=KIT.marquee; KIT.galaxy=KIT.aurora; KIT.blade=KIT.anime; KIT.lab=KIT.science; KIT.arcade=KIT.pixel; KIT.elements=KIT.avatar;
   function star4(c){return function(x,y,s){return '<path d="M'+x+' '+(y-s)+'L'+(x+s*.28)+' '+(y-s*.28)+'L'+(x+s)+' '+y+'L'+(x+s*.28)+' '+(y+s*.28)+'L'+x+' '+(y+s)+'L'+(x-s*.28)+' '+(y+s*.28)+'L'+(x-s)+' '+y+'L'+(x-s*.28)+' '+(y-s*.28)+'Z" fill="'+c+'"/>';};}
