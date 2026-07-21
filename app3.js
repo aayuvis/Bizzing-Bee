@@ -3677,7 +3677,7 @@ function viewDebug(){
   if(!state.devUnlock) return viewSettings();
   const hubs=[
     {act:'openDaily',   arg:'', c:'#2E8B57', n:'Daily Buzz',      d:'Wordle-style daily word'},
-    {act:'openSaga',    arg:'', c:'#F0B429', n:'Saga Quest',      d:'7-chapter story + engines'},
+    {act:'openSaga',    arg:'', c:'#F0B429', n:'Saga Quest',      d:'9-chapter story + engines'},
     {act:'openQuest',   arg:'', c:'#7C5CFF', n:'Spelling Quest',  d:'Season map + chapters'},
     {act:'openTrivia',  arg:'', c:'#13A892', n:'Bee Trivia',      d:'Knowledge rounds'},
     {act:'openChallenge',arg:'journey', c:'#E0922E', n:'Champ Challenge', d:'Timed / counted'},
