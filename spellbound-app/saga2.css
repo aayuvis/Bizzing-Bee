@@ -55,3 +55,18 @@
 .sg-dbox p{margin:4px 0 0;font:400 17px/1.5 'Hanken',sans-serif}
 .sg-next{grid-column:2;justify-self:end;font-size:22px;border:none;background:var(--honey,#F0B429);color:#2B2117;border-radius:999px;width:44px;height:44px;cursor:pointer;margin-top:8px}
 .sg-gamehost{padding-top:8px}
+.sg-stage{background:#1A1430;border-radius:16px;padding:26px 12px;max-width:560px;margin:0 auto}
+.sg-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.sg-stile{aspect-ratio:1;font:800 24px 'Sono',monospace;background:#2A2244;color:#8F86B8;border:2px solid #3A3160;border-radius:12px;cursor:pointer}
+.sg-stile.lit{background:#F0B429;color:#2B2117;border-color:#FFE28A;box-shadow:0 0 18px #F0B42999}
+.sg-simonprompt{text-align:center;font:600 15px 'Hanken',sans-serif;padding:10px;color:var(--muted,#7A6E5C)}
+.sg-sky{background:linear-gradient(#101A38,#1E2A5C);border-radius:16px;padding:22px 12px;max-width:560px;margin:0 auto}
+.sg-stars{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;min-height:64px}
+.sg-star{width:52px;height:52px;font:800 20px 'Sono',monospace;background:radial-gradient(circle at 35% 30%,#FFF3C8,#F0B429);color:#2B2117;border:none;border-radius:50%;cursor:pointer;box-shadow:0 0 12px #F0B42966}
+.sg-star.set{opacity:.15}
+.sg-star.no{transform:translateX(3px);background:#C43D5A;color:#fff}
+.sg-star.lit{box-shadow:0 0 22px #FFF3C8;transform:scale(1.15)}
+.sg-answer{display:flex;gap:6px;justify-content:center;margin-top:18px}
+.sg-slot{width:34px;height:40px;border-bottom:3px solid #8FA0F5;font:800 22px 'Sono',monospace;color:#EAF0FF;text-align:center}
+.sg-slot.fill{border-color:#F0B429}
+.sg-hintbtn{font:600 14px 'Hanken',sans-serif;background:var(--panel,#fff);border:2px solid var(--honey,#F0B429);border-radius:999px;padding:7px 16px;cursor:pointer}
