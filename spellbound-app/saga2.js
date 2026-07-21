@@ -99,5 +99,96 @@
     return { destroy(){ over=true; removeEventListener('keydown',key); } };
   }
 
-  W().SB_SAGA_ENGINES = { honeycombRun };
+
+  /* ---------- ENGINE B · KEEP FLYING (flappy) ---------- */
+  function keepFlying(host, opts, done){
+    const Wd=Math.min(innerWidth-16,640), Ht=Math.min(innerHeight-180,440);
+    const diff=opts.diff||'medium';
+    const CFG={easy:{gap:170,speed:2.2,pots:8},medium:{gap:150,speed:2.6,pots:10},
+               hard:{gap:130,speed:3.0,pots:10},champ:{gap:115,speed:3.4,pots:12}}[diff];
+    host.innerHTML='<div class="sg-hud"><span id="sg-pots">🍯 0/'+CFG.pots+'</span><span id="sg-lives"></span></div><canvas id="sg-cv"></canvas><div id="sg-card"></div>';
+    const cv=host.querySelector('#sg-cv'); cv.width=Wd; cv.height=Ht; const cx=cv.getContext('2d');
+    let bee={y:Ht/2,vy:0}, obs=[], pot=null, potIn=0, banked=0, lives=3, t=0, over=false, card=null;
+    const words=pool(CFG.pots+4); let wi=0;
+    const flap=e=>{ if(e.type==='keydown'&&e.key!==' ')return; bee.vy=-5.4; e.preventDefault&&e.preventDefault(); };
+    addEventListener('keydown',flap); cv.addEventListener('pointerdown',flap);
+    function spawn(){ const g=CFG.gap, y=60+Math.random()*(Ht-120-g); obs.push({x:Wd+30,y,g}); }
+    function spellStop(){
+      const w=words[wi++%words.length]; card={w};
+      const el=host.querySelector('#sg-card');
+      el.innerHTML='<div class="sg-cardbox"><b>🍯 Honey pot! Spell to bank it</b><div class="sg-cardw">🔊</div><input id="sg-ci" autocomplete="off" autocapitalize="off"></div>';
+      el.style.display='grid'; try{ say(w.w); }catch(e){}
+      const inp=el.querySelector('#sg-ci'); inp.focus();
+      inp.onkeydown=e=>{ if(e.key==='Enter'){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase();
+        if(ok){ banked++; try{flash('🍯 Pot banked! '+banked+'/'+CFG.pots);}catch(_){}}else{ bee.y=Math.min(Ht-40,bee.y+60); try{flash('Almost! The pot floats ahead…');}catch(_){} }
+        el.style.display='none'; card=null;
+        if(banked>=CFG.pots){ over=true; finish(true); } } };
+    }
+    let last=0, spawnT=0, potT=4;
+    function frame(ts){ if(over) return;
+      if(card){ requestAnimationFrame(frame); return; }
+      const dt=Math.min(50,ts-last); last=ts; t+=dt/1000; spawnT+=dt/1000; potT-=dt/1000;
+      bee.vy+=0.28; bee.y+=bee.vy;
+      if(spawnT>1.9){ spawnT=0; spawn(); }
+      if(potT<=0&&!pot){ potT=8; pot={x:Wd+30,y:Ht-70}; }
+      obs.forEach(o=>o.x-=CFG.speed); if(pot) pot.x-=CFG.speed;
+      obs=obs.filter(o=>o.x>-40);
+      // collide
+      obs.forEach(o=>{ if(o.x<70&&o.x>10){ if(bee.y<o.y||bee.y>o.y+o.g){ hit(); o.x=-99; } } });
+      if(bee.y>Ht-14||bee.y<8) hit();
+      if(pot&&pot.x<70&&pot.x>10&&bee.y>Ht-110){ pot=null; spellStop(); }
+      if(pot&&pot.x<=-30) pot=null;
+      draw(); requestAnimationFrame(frame);
+    }
+    function hit(){ lives--; bee.y=Ht/2; bee.vy=0; if(lives<=0){ over=true; finish(false); } }
+    function draw(){
+      const grd=cx.createLinearGradient(0,0,0,Ht); grd.addColorStop(0,'#8FCBEF'); grd.addColorStop(1,'#DFF0FA');
+      cx.fillStyle=grd; cx.fillRect(0,0,Wd,Ht);
+      cx.fillStyle='#4A7A3A'; obs.forEach(o=>{ cx.fillRect(o.x,0,44,o.y); cx.fillRect(o.x,o.y+o.g,44,Ht-o.y-o.g); });
+      if(pot){ cx.font='30px serif'; cx.fillText('🍯',pot.x,pot.y+40); cx.fillStyle='#8A6A2A'; cx.fillRect(pot.x-8,Ht-24,52,10); }
+      cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(60,bee.y,15,0,7); cx.fill();
+      cx.fillStyle='#2B2117'; cx.fillRect(50,bee.y-2,20,4);
+      cx.fillStyle='#FFFFFFAA'; cx.beginPath(); cx.ellipse(66,bee.y-12,8,5,-0.6,0,7); cx.fill();
+      host.querySelector('#sg-pots').textContent='🍯 '+banked+'/'+CFG.pots;
+      host.querySelector('#sg-lives').textContent='❤'.repeat(Math.max(0,lives));
+    }
+    function finish(win){ removeEventListener('keydown',flap); done({win,score:banked*100,stars:win?(lives>=3?3:lives===2?2:1):0}); }
+    requestAnimationFrame(frame);
+    return { destroy(){ over=true; removeEventListener('keydown',flap); } };
+  }
+
+  /* ---------- ENGINE D · WORD HIVE (make words from a big word) ---------- */
+  function wordHive(host, opts, done){
+    const BIG=(opts.big||'THUNDERSTORM').toUpperCase();
+    const diff=opts.diff||'medium';
+    const CFG={easy:{target:12,time:360},medium:{target:20,time:300},hard:{target:24,time:300},champ:{target:28,time:270}}[diff];
+    const counts={}; BIG.split('').forEach(ch=>counts[ch]=(counts[ch]||0)+1);
+    const found=[]; let cells=0, t=CFG.time, over=false;
+    const dict=(()=>{ try{ const s=new Set(); (window.SB_FULL||[]).forEach(w=>{ if(typeof w==='string') s.add(w.toUpperCase()); else if(w&&w.w) s.add(w.w.toUpperCase()); }); return s; }catch(e){ return new Set(); } })();
+    host.innerHTML='<div class="sg-hud"><span id="sg-cells">🐝 0/'+CFG.target+' comb</span><span id="sg-time"></span></div>'+
+      '<div class="sg-bigword">'+BIG.split('').map(c=>'<span class="sg-tile">'+c+'</span>').join('')+'</div>'+
+      '<input id="sg-hi" placeholder="type a word + Enter" autocomplete="off" autocapitalize="off">'+
+      '<div id="sg-found" class="sg-found"></div>';
+    const inp=host.querySelector('#sg-hi'); inp.focus();
+    function canMake(w){ const c={...counts}; for(const ch of w){ if(!c[ch]) return false; c[ch]--; } return true; }
+    inp.onkeydown=e=>{ if(e.key!=='Enter') return; const w=inp.value.trim().toUpperCase(); inp.value='';
+      if(w.length<3) return note(w+' — too short (3+)');
+      if(w===BIG) return note('The big word itself doesn\u2019t count!');
+      if(found.includes(w)) return note(w+' — already found');
+      if(!canMake(w)) return note(w+' — letters aren\u2019t in '+BIG);
+      if(dict.size&&!dict.has(w)) return note(w+' — not in the dictionary');
+      found.push(w); const v=w.length>=5?3:w.length===4?2:1; cells+=v;
+      host.querySelector('#sg-found').innerHTML=found.map(f=>'<span class="sg-fw">'+f+'</span>').join('');
+      host.querySelector('#sg-cells').textContent='🐝 '+Math.min(cells,CFG.target)+'/'+CFG.target+' comb';
+      try{flash('+'+v+' comb — '+w);}catch(_){}
+      if(cells>=CFG.target){ over=true; finish(true); } };
+    function note(m){ try{flash(m);}catch(_){} }
+    const tick=setInterval(()=>{ if(over){ clearInterval(tick); return; } t--;
+      host.querySelector('#sg-time').textContent='⏳ '+Math.floor(t/60)+':'+String(t%60).padStart(2,'0');
+      if(t<=0){ over=true; clearInterval(tick); finish(cells>=CFG.target); } },1000);
+    function finish(win){ done({win,score:cells*20,stars:win?(t>CFG.time*0.4?3:t>CFG.time*0.15?2:1):0}); }
+    return { destroy(){ over=true; clearInterval(tick); } };
+  }
+
+  W().SB_SAGA_ENGINES = { honeycombRun, keepFlying, wordHive };
 })();
