@@ -1322,7 +1322,7 @@ function viewOnboarding(){
     const _freeAvs=SB_AVATARS.list.filter(a=>a.rarity==='free');
     const _legendAvs=SB_AVATARS.list.filter(a=>a.rarity==='legendary');
     const avatars=`<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;max-width:460px;margin:0 auto;justify-items:center">${_freeAvs.map(a=>{ const on=S.draft.avatar===a.id;
-        return `<button data-act="pickAvatar" data-arg="${a.id}" title="${a.name}" style="position:relative;width:100%;aspect-ratio:1;border-radius:16px;display:grid;place-items:center;transition:.15s;background:var(--surface2);border:2.5px solid ${on?'var(--accent)':'transparent'};padding:7px;${on?'box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)':''}"><span style="width:60px;height:60px;display:inline-block">${avatarSVG(a.id,60)}</span></button>`; }).join('')}</div>
+        return `<button data-act="pickAvatar" data-arg="${a.id}" title="${a.name}" style="position:relative;width:100%;aspect-ratio:1;border-radius:16px;display:grid;place-items:center;transition:.15s;background:var(--surface2);border:2.5px solid ${on?'var(--accent)':'transparent'};padding:7px;${on?'box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)':''}"><span style="width:78px;height:78px;display:inline-block">${avatarSVG(a.id,78)}</span></button>`; }).join('')}</div>
       <div style="margin-top:14px;font-size:12.5px;font-weight:700;color:var(--muted);text-align:center">…and ${SB_AVATARS.list.length-_freeAvs.length} more to collect — earn coins by playing.</div>
       <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;justify-content:center">${_legendAvs.map(a=>`<button data-act="pickAvatar" data-arg="${a.id}" title="${a.name} · legendary — unlock later with coins" style="position:relative;width:50px;height:50px;border-radius:12px;display:grid;place-items:center;background:var(--surface2);border:2px solid transparent;padding:4px;opacity:.45"><span style="width:38px;height:38px;display:inline-block">${avatarSVG(a.id,38)}</span><span style="position:absolute;top:1px;right:2px;font-size:9px">🔒</span></button>`).join('')}</div>`;
     card=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow)">
@@ -2174,7 +2174,7 @@ function viewHome(){
       return `${bandBanner}<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:18px">
       <div class="sb-card" style="display:flex;align-items:center;gap:16px;min-height:156px">
         <div style="position:relative;flex-shrink:0">
-          <div ${(()=>{ const l=(window.SB_AVATAR_LORE||{})[c.avatar]; return l?`title="${esc(l.greeting)}&#10;&#10;${esc(l.fact)}" style="cursor:help;`:'style="'; })()}width:108px;height:112px;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center">${(c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar])?SB_AVATAR(c.avatar,104):mascotAcc(S.mood)}</div>
+          <div ${(()=>{ const l=(window.SB_AVATAR_LORE||{})[c.avatar]; return l?`title="${esc(l.greeting)}&#10;&#10;${esc(l.fact)}" style="cursor:help;`:'style="'; })()}width:140px;height:146px;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center">${(c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar])?SB_AVATAR(c.avatar,135):mascotAcc(S.mood)}</div>
         </div>
         <div style="min-width:0;flex:1">
           <div class="sb-cs">${greeting}</div>
@@ -2348,7 +2348,7 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
         return `<div ${lore?`title="${esc(lore.greeting)}
 
 ${esc(lore.fact)}"`:''} style="background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':own?'var(--line)':'var(--line)'};border-radius:14px;padding:11px 9px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;${own?'':'opacity:.96'}">
-          <span style="width:76px;height:76px">${avatarSVG(a.id,76, on?c.accOn:null)}</span>
+          <span style="width:99px;height:99px">${avatarSVG(a.id,99, on?c.accOn:null)}</span>
           <span style="font-weight:800;font-size:12px;line-height:1.15">${a.name}</span>
           ${lore?`<span style="font-family:var(--body);font-style:italic;font-size:10.5px;line-height:1.25;color:var(--muted)">${esc(lore.tagline)}</span>`:''}
           <span style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:99px;color:#fff;background:${R.c}">${R.label}</span>
@@ -3643,7 +3643,7 @@ function viewSettings(){
   const voiceOpts=['<option value="">Auto · best available</option>'].concat(_voices.map(v=>`<option value="${escA(v.name)}"${VOICE.name===v.name?' selected':''}>${esc(v.name)}${_nat(v.name)?' ✨':''}</option>`)).join('');
   const _pc=active();
   const _avRows=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:8px;max-width:380px">${SB_AVATARS.list.filter(a=>avOwned(_pc,a.id)).map(a=>
-    `<button data-act="profAvatar" data-arg="${a.id}" title="${a.name}" style="position:relative;aspect-ratio:1;border-radius:12px;display:grid;place-items:center;background:var(--surface2);border:2px solid ${_pc.avatar===a.id?'var(--accent)':'transparent'};padding:4px"><span style="width:48px;height:48px;display:inline-block">${avatarSVG(a.id,48)}</span></button>`).join('')}</div>`+`<div style="margin-top:10px"><button data-act="openCollection" class="sb-cl" style="background:none;border:0;padding:0;cursor:pointer">Collect more in your Collection →</button></div>`;
+    `<button data-act="profAvatar" data-arg="${a.id}" title="${a.name}" style="position:relative;aspect-ratio:1;border-radius:12px;display:grid;place-items:center;background:var(--surface2);border:2px solid ${_pc.avatar===a.id?'var(--accent)':'transparent'};padding:4px"><span style="width:62px;height:62px;display:inline-block">${avatarSVG(a.id,62)}</span></button>`).join('')}</div>`+`<div style="margin-top:10px"><button data-act="openCollection" class="sb-cl" style="background:none;border:0;padding:0;cursor:pointer">Collect more in your Collection →</button></div>`;
   const profileCard=`<div class="sb-card" style="margin-bottom:16px">
       <div style="font-family:var(--display);font-weight:800;font-size:15px">Profile</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Pick your own display name and buddy — parents can adjust age, the daily goal and milestones here too.</div>
@@ -4490,7 +4490,7 @@ function viewShop(){ const S=state; const c=active(); ensureLists(c); const tab=
     const packs=SB_AVATARS.packs.map(p=>{ const avs=SB_AVATARS.list.filter(a=>a.pack===p.id); const ownedN=avs.filter(a=>avOwned(c,a.id)).length; const full=ownedN>=avs.length;
       const leg=avs.find(a=>a.rarity==='legendary');
       const preview=avs.filter(a=>avOwned(c,a.id)).slice(0,2).concat(leg?[leg]:[]).slice(0,3)
-        .map(a=>{ const own=avOwned(c,a.id); return `<span style="width:52px;height:52px;display:inline-grid;place-items:center;background:rgba(255,255,255,.85);border-radius:12px;${own?'':'opacity:.94'}">${avatarSVG(a.id,44)}</span>`; }).join('');
+        .map(a=>{ const own=avOwned(c,a.id); return `<span style="width:68px;height:68px;display:inline-grid;place-items:center;background:rgba(255,255,255,.85);border-radius:12px;${own?'':'opacity:.94'}">${avatarSVG(a.id,58)}</span>`; }).join('');
       return `<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column">
         <div style="background:linear-gradient(135deg,${p.c1},${p.c2});padding:13px 14px;display:flex;align-items:center;gap:8px">${preview}<span style="flex:1"></span><span style="font-weight:900;font-size:12px;color:rgba(255,255,255,.95);background:rgba(0,0,0,.22);border-radius:99px;padding:4px 10px">${ownedN}/${avs.length}</span></div>
         <div style="padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;flex:1">

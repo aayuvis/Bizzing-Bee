@@ -41,11 +41,24 @@
     // one royal jelly + dot bookkeeping
     let dots=0; MAZE.forEach(r=>r.forEach(v=>{ if(v===1) dots++; }));
     const J={c:11,r:9}; 
-    host.innerHTML='<div class="sg-hud"><span id="sg-score">0</span><span id="sg-time"></span><span id="sg-lives"></span></div><canvas id="sg-cv"></canvas><div id="sg-card"></div>';
+    host.innerHTML='<div class="sg-hud"><span id="sg-score">0</span><span id="sg-time"></span><span id="sg-lives"></span></div><canvas id="sg-cv"></canvas>'+
+      '<div class="sg-dpad" id="sg-dpad">'+
+        '<button class="sg-dbtn" data-d="up" aria-label="Up">▲</button>'+
+        '<div class="sg-dmid"><button class="sg-dbtn" data-d="left" aria-label="Left">◀</button>'+
+        '<button class="sg-dbtn" data-d="down" aria-label="Down">▼</button>'+
+        '<button class="sg-dbtn" data-d="right" aria-label="Right">▶</button></div>'+
+      '</div><div id="sg-card"></div>';
     const cv=host.querySelector('#sg-cv'); cv.width=COLS*CELL; cv.height=ROWS*CELL;
     const cx=cv.getContext('2d');
-    const key=e=>{ const m={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]}[e.key]; if(m){ bee.want=m; e.preventDefault(); } };
+    const DIR={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
+    const key=e=>{ const m={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],
+      w:[0,-1],s:[0,1],a:[-1,0],d:[1,0],W:[0,-1],S:[0,1],A:[-1,0],D:[1,0]}[e.key]; if(m){ bee.want=m; e.preventDefault(); } };
     addEventListener('keydown',key);
+    // on-screen D-pad — tablet controls (press-and-hold friendly)
+    const pad=host.querySelector('#sg-dpad');
+    const setDir=b=>{ const m=DIR[b&&b.dataset&&b.dataset.d]; if(m){ bee.want=m.slice(); } };
+    pad.addEventListener('click',e=>setDir(e.target.closest('.sg-dbtn')));
+    pad.addEventListener('pointerdown',e=>{ const b=e.target.closest('.sg-dbtn'); if(b){ setDir(b); e.preventDefault(); } },{passive:false});
     let tx=0,ty=0; cv.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
     cv.addEventListener('touchend',e=>{ const dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
       bee.want=Math.abs(dx)>Math.abs(dy)?[Math.sign(dx),0]:[0,Math.sign(dy)]; },{passive:true});

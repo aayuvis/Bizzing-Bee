@@ -154,14 +154,18 @@
   D.elemental=()=>GRAD('gel','#2E8FB8','#103647')+`<circle cx="60" cy="60" r="40" fill="url(#gel)"/><path d="M60 24 a36 36 0 0 1 0 72" fill="#FF9A3D" opacity=".85"/><path d="M60 36 a24 24 0 0 0 0 48" fill="#9BE34D" opacity=".85"/><circle cx="60" cy="60" r="13" fill="#F2F4FA"/>`+`<circle cx="55" cy="58" r="2.6" fill="#241E33"/><circle cx="65" cy="58" r="2.6" fill="#241E33"/><path d="M55 65 q5 4 10 0" stroke="#241E33" stroke-width="2.5" fill="none" stroke-linecap="round"/>`+CROWN(60,14,0.8)+SPARK(20,30,'#36D1FF')+SPARK(100,34,'#FF9A3D');
 
   // ---------- VILLAINS (saga antagonists — reuse the SAGA_ART sprites in a squircle) ----------
-  function sagaAv(name, gid, c1, c2){ return function(){
-    const bg = GRAD(gid,c1,c2)+SQ('url(#'+gid+')');
-    const a = (window.SAGA_ART||{})[name]; if(!a) return bg+EYES.dot(58)+MOUTH.flat(76);
+  function sagaAv(name){ return function(){
+    // Render the saga sprite as an open, full-bleed sticker (no dark box) so
+    // villains match the illustrated avatars. A soft tinted disc sits behind
+    // for legibility on light tiles; the ink outline (SB_AVATAR) rims it.
+    const a = (window.SAGA_ART||{})[name];
+    const disc = '<circle cx="60" cy="62" r="54" fill="#F4EFFA" opacity=".0"/>';
+    if(!a) return GRAD('gvf','#C9C2E6','#A99BD8')+SQ('url(#gvf)')+EYES.dot(58)+MOUTH.flat(76);
     const p = String(a.vb||'0 0 120 120').split(/\s+/).map(Number);
-    const vw=p[2]||120, vh=p[3]||120, box=82, s=box/Math.max(vw,vh);
-    const tx=(60 - s*(p[0]+vw/2)), ty=(62 - s*(p[1]+vh/2));
+    const vw=p[2]||120, vh=p[3]||120, box=118, s=box/Math.max(vw,vh);
+    const tx=(60 - s*(p[0]+vw/2)), ty=(60 - s*(p[1]+vh/2));
     const f=(a.frames&&a.frames[0])||a.svg||'';
-    return bg+'<g transform="translate('+tx.toFixed(1)+','+ty.toFixed(1)+') scale('+s.toFixed(3)+')">'+f+'</g>';
+    return disc+'<g transform="translate('+tx.toFixed(1)+','+ty.toFixed(1)+') scale('+s.toFixed(3)+')">'+f+'</g>';
   }; }
   D.vex        = sagaAv('vex-portrait','gvex','#5A2440','#C43D5A');
   D.smudge     = sagaAv('smudge-swarm','gsmg','#6B6560','#3E3A36');
