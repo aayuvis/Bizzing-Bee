@@ -889,7 +889,6 @@ const app = {
   openQuest:()=>{ clearGTimer(); if(window.SQ) SQ.open(); },
   openSaga:()=>{ clearGTimer(); if(window.SAGA2) SAGA2.open(); },
   openDaily:()=>{ clearGTimer(); if(window.SB_DAILY) SB_DAILY.open(); },
-  openSnake:()=>{ clearGTimer(); if(window.SB_SNAKE) SB_SNAKE.open(); },
   // ----- Debug / QC: launch one saga engine standalone in a full-screen overlay -----
   dbgSaga:(name)=>{ if(!window.SB_SAGA_ENGINES||!SB_SAGA_ENGINES[name]){ flash('Engine not loaded'); return; }
     const old=document.getElementById('dbg-eng'); if(old) old.remove();
@@ -3678,8 +3677,7 @@ function viewDebug(){
   if(!state.devUnlock) return viewSettings();
   const hubs=[
     {act:'openDaily',   arg:'', c:'#2E8B57', n:'Daily Buzz',      d:'Wordle-style daily word'},
-    {act:'openSnake',   arg:'', c:'#4FB06A', n:'Word Snake',      d:'Steer & spell in order'},
-    {act:'openSaga',    arg:'', c:'#F0B429', n:'Saga Quest',      d:'6-chapter story + engines'},
+    {act:'openSaga',    arg:'', c:'#F0B429', n:'Saga Quest',      d:'7-chapter story + engines'},
     {act:'openQuest',   arg:'', c:'#7C5CFF', n:'Spelling Quest',  d:'Season map + chapters'},
     {act:'openTrivia',  arg:'', c:'#13A892', n:'Bee Trivia',      d:'Knowledge rounds'},
     {act:'openChallenge',arg:'journey', c:'#E0922E', n:'Champ Challenge', d:'Timed / counted'},
@@ -3698,6 +3696,7 @@ function viewDebug(){
     ['spellShield','Spell Shield','🛡️ Boss defence'],
     ['spotlightSimon','Spotlight Simon','🌟 Memory sequence'],
     ['unscrambleStars','Unscramble Stars','⭐ Constellation'],
+    ['wordSnake','Word Snake','🐍 Steer &amp; spell in order'],
   ];
   const card=(o)=>`<button data-act="${o.act}"${o.arg?` data-arg="${o.arg}"`:''} style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-left:5px solid ${o.c};border-radius:12px;padding:13px 15px;box-shadow:var(--sh-rest);color:var(--text);cursor:pointer"><div style="font-family:var(--display);font-weight:800;font-size:15px">${o.n}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${o.d}</div></button>`;
   const eng=(e)=>`<button data-act="dbgSaga" data-arg="${e[0]}" style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-left:5px solid #F0B429;border-radius:12px;padding:13px 15px;box-shadow:var(--sh-rest);color:var(--text);cursor:pointer"><div style="font-family:var(--display);font-weight:800;font-size:15px">${e[1]}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${e[2]} · <span style="font-family:var(--mono)">${e[0]}</span></div></button>`;
@@ -4532,11 +4531,7 @@ function gamesHub(){ const S=state;
     const doneToday=st.day===today&&st.over; const streak=st.streak||0;
     return `<button data-act="openDaily" style="grid-column:1/-1;text-align:left;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#2FA35C,#1E7D45);box-shadow:0 6px 18px rgba(30,125,69,.28)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:grid;grid-template-columns:repeat(5,10px);gap:2px;flex-shrink:0">${['hit','near','miss','hit','near'].map(s=>`<span style="width:10px;height:10px;border-radius:2px;background:${s==='hit'?'#FFF':s==='near'?'#FFE28A':'rgba(255,255,255,.4)'}"></span>`).join('')}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.9)">One word a day · ${streak>0?streak+'-day streak 🔥':'start your streak'}</div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Daily Buzz</div><div style="font-size:12px;color:rgba(255,255,255,.92)">Six tries to spell today's mystery word. Green, amber, grey — then share your grid.</div></div><span style="padding:9px 16px;border-radius:10px;background:#fff;color:#1E7D45;font-weight:800;font-size:13px;white-space:nowrap">${doneToday?'Seen ✓':'Play →'}</span></div></button>`;
   })();
-  const snakeCard=(function(){ if(!window.SB_SNAKE) return '';
-    const seg=['#F0B429','#EEB833','#E7C24D','#DFA82A','#F0B429'];
-    return `<button data-act="openSnake" style="grid-column:1/-1;text-align:left;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#4FB06A,#2E8B57);box-shadow:0 6px 18px rgba(46,139,87,.28)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;gap:3px;flex-shrink:0">${seg.map((c,i)=>`<span style="width:14px;height:14px;border-radius:4px;background:${c};box-shadow:inset 0 0 0 1.5px rgba(43,33,23,.5);opacity:${1-i*0.12}"></span>`).join('')}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.9)">Steer &amp; spell · the word is the path</div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Word Snake 🐝</div><div style="font-size:12px;color:rgba(255,255,255,.92)">Swallow the letters in spelling order — the swarm grows longer with every word.</div></div><span style="padding:9px 16px;border-radius:10px;background:#fff;color:#2E8B57;font-weight:800;font-size:13px;white-space:nowrap">Play →</span></div></button>`;
-  })();
-  const cards=dailyCard+snakeCard+sagaCard+questCard+triviaCard+champCard+magicCard+GAMES.map(gm=>`<button class="sb-cover-card" data-act="playGame" data-arg="${gm.type}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
+  const cards=dailyCard+sagaCard+questCard+triviaCard+champCard+magicCard+GAMES.map(gm=>`<button class="sb-cover-card" data-act="playGame" data-arg="${gm.type}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
       <div style="position:relative">
         ${SB_GAME(S.theme,gm.type,{h:108,dark:S.mode==='dusk'})}
         <span style="position:absolute;top:10px;left:12px;font-family:var(--ui,var(--body));font-weight:650;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:6px;background:${S.mode==='dusk'?'rgba(36,30,51,.85);color:#fff':'rgba(255,255,255,.92);color:#241E33'}">${esc(gm.tag)}</span>
