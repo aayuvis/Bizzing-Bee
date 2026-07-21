@@ -299,5 +299,55 @@
     return { destroy(){ over=true; clearInterval(popT); clearInterval(tick); } };
   }
 
-  W().SB_SAGA_ENGINES = { honeycombRun, keepFlying, wordHive, beeGrandPrix, whackAMoth };
+
+  /* ---------- ENGINE F · SPELL-SHIELD (boss duel vs The Smudge) ---------- */
+  function spellShield(host, opts, done){
+    const diff=opts.diff||'medium';
+    const CFG={easy:{hexes:6,t:14},medium:{hexes:8,t:12},hard:{hexes:9,t:10},champ:{hexes:10,t:9}}[diff];
+    const words=pool(CFG.hexes+6).filter(w=>w.w.length>=4&&w.w.length<=10);
+    let phase=1, hexes=0, broken=0, wi=0, over=false, cur=null, timer=null;
+    host.innerHTML='<div class="sg-boss"><div class="sg-bossface" id="sg-bf">🦋🦋🦋<br>🦋🦋🦋🦋</div>'+
+      '<div class="sg-shieldwall" id="sg-sw"></div>'+
+      '<div class="sg-duel"><div id="sg-scramble" class="sg-scramble"></div>'+
+      '<input id="sg-di" autocomplete="off" autocapitalize="off" placeholder="type the word">'+
+      '<div id="sg-dt" class="sg-dtimer"></div></div></div>';
+    const sw=host.querySelector('#sg-sw');
+    function wall(){ sw.innerHTML=Array.from({length:CFG.hexes},(_,i)=>
+      '<span class="sg-hex'+(i<hexes?' up':'')+'">⬡</span>').join(''); }
+    function scramble(w){ const a=w.split(''); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+      const s=a.join(''); return s===w?scramble(w):s; }
+    function next(){
+      if(over) return;
+      if(phase===1 && hexes>=CFG.hexes){ phase=2; host.querySelector('#sg-bf').classList.add('dive'); try{flash('⚔️ The Smudge dives! Three words by ear alone!');}catch(_){} }
+      if(phase===2 && wi>=words.length-3+3){ /* handled in check */ }
+      cur=words[wi++]; if(!cur){ over=true; done({win:true,score:hexes*100,stars:3}); return; }
+      let t=CFG.t;
+      const sc=host.querySelector('#sg-scramble');
+      if(phase===1){ sc.textContent=scramble(cur.w.toLowerCase()); }
+      else { sc.textContent='🔊 listen…'; }
+      try{ say(cur.w); }catch(e){}
+      host.querySelector('#sg-dt').textContent=t;
+      clearInterval(timer);
+      timer=setInterval(()=>{ if(over){ clearInterval(timer); return; } t--; host.querySelector('#sg-dt').textContent=t;
+        if(t<=0){ clearInterval(timer); hit(); } },1000);
+    }
+    function hit(){ if(phase===1&&hexes>0){ hexes--; wall(); } broken++;
+      try{flash('💥 A shield hex shatters!');}catch(_){}
+      if(broken>=4){ over=true; clearInterval(timer); done({win:false,score:hexes*50,stars:0}); return; }
+      next(); }
+    const inp=host.querySelector('#sg-di'); inp.focus();
+    let p2right=0;
+    inp.onkeydown=e=>{ if(e.key!=='Enter'||over) return;
+      const ok=inp.value.trim().toLowerCase()===cur.w.toLowerCase(); inp.value='';
+      clearInterval(timer);
+      if(ok){ if(phase===1){ hexes++; wall(); try{flash('⬡ Shield hex forged!');}catch(_){} }
+        else { p2right++; try{flash('⚡ The Quill fires! '+p2right+'/3');}catch(_){}
+          if(p2right>=3){ over=true; done({win:true,score:hexes*100+300,stars:broken===0?3:broken<=2?2:1}); return; } } }
+      else hit();
+      if(!over) next(); };
+    wall(); next();
+    return { destroy(){ over=true; clearInterval(timer); } };
+  }
+
+  W().SB_SAGA_ENGINES = { honeycombRun, keepFlying, wordHive, beeGrandPrix, whackAMoth, spellShield };
 })();
