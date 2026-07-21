@@ -4428,7 +4428,22 @@ function gamesHub(){ const S=state;
     const st=(active().trivia)||{}; const nQ=(SB_TRIVIA.questions||[]).length;
     return `<button data-act="openTrivia" style="grid-column:1/-1;text-align:left;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#F0A93C,#DC7A18);box-shadow:0 6px 18px rgba(200,122,20,.28)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;line-height:0;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">${(window.SB_ICON_ART&&SB_ICON_ART.beeTrivia)?SB_ICON_ART("beeTrivia",{size:38}):"🧠"}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.88)">${fmtN(nQ)} questions · 20 themes · 5 levels</div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Bee Trivia</div><div style="font-size:12px;color:rgba(255,255,255,.92)">Classic quiz, Trivia Squares board or Beat the Clock — with picture and listening rounds.</div></div><span style="padding:9px 16px;border-radius:10px;background:#fff;color:#C8791B;font-weight:800;font-size:13px;white-space:nowrap">${st.right?('Play → · '+fmtN(st.right)+' right'):'Play →'}</span></div></button>`;
   })();
-  const cards=questCard+triviaCard+champCard+magicCard+GAMES.map(gm=>`<button class="sb-cover-card" data-act="playGame" data-arg="${gm.type}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
+  const sagaCard=(function(){ if(!window.SAGA2) return '';
+    let cl=0; try{ cl=(JSON.parse(localStorage.getItem('sb_saga2')||'{}').cleared)||0; }catch(e){}
+    const heroId=(function(){ try{ return SB_AVATARS.byId['bizzy']?'bizzy':((SB_AVATARS.list[0]||{}).id||null); }catch(e){ return null; } })();
+    return `<button data-act="openSaga" style="grid-column:1/-1;text-align:left;border-radius:16px;overflow:hidden;background:linear-gradient(150deg,#3B2A8C,#2A1E6E 60%,#1F1652);box-shadow:0 8px 24px rgba(43,27,94,.30);position:relative">
+      <div style="position:absolute;right:-6px;bottom:-10px;opacity:.95;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))">${heroId?SB_AVATAR(heroId,120,{dark:true}):''}</div>
+      <div style="padding:18px 20px;color:#fff;position:relative;max-width:78%">
+        <div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#FFD98A;background:rgba(255,194,61,.14);border:1px solid rgba(255,194,61,.35);border-radius:99px;padding:3px 11px;margin-bottom:8px">✦ New saga</div>
+        <div style="font-family:var(--display);font-weight:800;font-size:22px;line-height:1.1">Bizzy &amp; the Great Unspelling</div>
+        <div style="font-size:13px;color:#C9BFEA;line-height:1.45;margin-top:5px">A cinematic story adventure — fly, race and spell your way through the worlds to stop the word-eater.</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:12px">
+          <span style="padding:9px 18px;border-radius:10px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px">${cl>0?'Continue':'Begin Act I'} →</span>
+          <span style="font-size:12px;font-weight:800;color:#C9BFEA">${cl}/6 chapters cleared</span>
+        </div>
+      </div></button>`;
+  })();
+  const cards=sagaCard+questCard+triviaCard+champCard+magicCard+GAMES.map(gm=>`<button class="sb-cover-card" data-act="playGame" data-arg="${gm.type}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
       <div style="position:relative">
         ${SB_GAME(S.theme,gm.type,{h:108,dark:S.mode==='dusk'})}
         <span style="position:absolute;top:10px;left:12px;font-family:var(--ui,var(--body));font-weight:650;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:6px;background:${S.mode==='dusk'?'rgba(36,30,51,.85);color:#fff':'rgba(255,255,255,.92);color:#241E33'}">${esc(gm.tag)}</span>
