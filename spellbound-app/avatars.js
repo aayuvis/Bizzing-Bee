@@ -22,6 +22,7 @@
     { id:'wildhearts',label:'Wildhearts Pack',world:'blade',   c1:'#E86A9A', c2:'#FFC0D8' },
     { id:'legends', label:'Legends Pack',  world:'blade',      c1:'#4A7A5C', c2:'#7CFFB2' },
     { id:'turbo',   label:'Turbo Pack',    world:'arcade',     c1:'#E05C3A', c2:'#FFC23D' },
+    { id:'villains',label:'Villains Pack', world:'greysea',    c1:'#8B857B', c2:'#C43D5A' },
   ];
   // shared drawing kit — every avatar is a 120x120 squircle character
   const SQ = (fill, extra) => `<rect x="10" y="14" width="100" height="96" rx="30" fill="${fill}"${extra||''}/>`;
@@ -152,6 +153,27 @@
   D.zappy=()=>GRAD('gzp','#FFD34D','#FF9A3D')+`<path d="M70 6 l-38 54 h22 l-14 54 l48 -62 h-24 l20 -46z" fill="url(#gzp)" stroke="#C8901B" stroke-width="3" stroke-linejoin="round"/>`+`<circle cx="52" cy="46" r="4" fill="#241E33"/><circle cx="66" cy="44" r="4" fill="#241E33"/><path d="M54 56 q7 5 14 -1" stroke="#241E33" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
   D.elemental=()=>GRAD('gel','#2E8FB8','#103647')+`<circle cx="60" cy="60" r="40" fill="url(#gel)"/><path d="M60 24 a36 36 0 0 1 0 72" fill="#FF9A3D" opacity=".85"/><path d="M60 36 a24 24 0 0 0 0 48" fill="#9BE34D" opacity=".85"/><circle cx="60" cy="60" r="13" fill="#F2F4FA"/>`+`<circle cx="55" cy="58" r="2.6" fill="#241E33"/><circle cx="65" cy="58" r="2.6" fill="#241E33"/><path d="M55 65 q5 4 10 0" stroke="#241E33" stroke-width="2.5" fill="none" stroke-linecap="round"/>`+CROWN(60,14,0.8)+SPARK(20,30,'#36D1FF')+SPARK(100,34,'#FF9A3D');
 
+  // ---------- VILLAINS (saga antagonists — reuse the SAGA_ART sprites in a squircle) ----------
+  function sagaAv(name, gid, c1, c2){ return function(){
+    const bg = GRAD(gid,c1,c2)+SQ('url(#'+gid+')');
+    const a = (window.SAGA_ART||{})[name]; if(!a) return bg+EYES.dot(58)+MOUTH.flat(76);
+    const p = String(a.vb||'0 0 120 120').split(/\s+/).map(Number);
+    const vw=p[2]||120, vh=p[3]||120, box=82, s=box/Math.max(vw,vh);
+    const tx=(60 - s*(p[0]+vw/2)), ty=(62 - s*(p[1]+vh/2));
+    const f=(a.frames&&a.frames[0])||a.svg||'';
+    return bg+'<g transform="translate('+tx.toFixed(1)+','+ty.toFixed(1)+') scale('+s.toFixed(3)+')">'+f+'</g>';
+  }; }
+  D.vex        = sagaAv('vex-portrait','gvex','#5A2440','#C43D5A');
+  D.smudge     = sagaAv('smudge-swarm','gsmg','#6B6560','#3E3A36');
+  D.gnash      = sagaAv('gnash-standing','ggna','#7A5A3A','#4A3420');
+  D.vstatic    = sagaAv('static-idle','gsta','#3A4A6A','#1E2A44');
+  D.voidmaw    = sagaAv('void-maw','gvod','#2A2450','#120E2A');
+  D.glitchv    = sagaAv('glitch-corrupt-glee','gglv','#2E5A6A','#12303E');
+  D.gatekeeper = sagaAv('gatekeeper-roar','ggat','#6A3A2A','#3A1E14');
+  D.locust     = sagaAv('locust-trooper','gloc','#5A5A4A','#32322A');
+  D.greymoth   = sagaAv('grey-moth','ggmo','#9A948A','#5A5550');
+  D.wordeater  = sagaAv('word-eater','gwe','#5A1E2E','#2A0E16');
+
   const AV = [
     ['bizzy','Bizzy Bee','hive','free'],['honeypot','Honey Pot','hive','free'],['bumble','Bumble','hive','rare'],['waggle','Waggle','hive','rare'],['drone','Drone Dan','hive','rare'],['clover','Clover','hive','rare'],['blossom','Blossom','hive','epic'],['nectar','Nectar','hive','epic'],['propolis','Propolis','hive','epic'],['queenhive','Hive Queen','hive','legendary'],
     ['star','Center Star','stage','free'],['mic','Big Mic','stage','rare'],['maestro','Maestro','stage','rare'],['jester','Jester','stage','rare'],['lumen','Lumen the Light','stage','rare'],['diva','Diva','stage','epic'],['popcorn','Popcorn','stage','epic'],['melody','Melody','stage','epic'],['encore','Encore','stage','epic'],['goldlegend','Gold Legend','stage','legendary'],
@@ -168,6 +190,7 @@
     ['monarch','Monarch','wildhearts','free'],['hoppy','Hoppy','wildhearts','rare'],['fawn','Fawn','wildhearts','rare'],['ottie','Ottie','wildhearts','rare'],['echo','Echo','wildhearts','rare'],['pounce','Pounce','wildhearts','epic'],['swan','Swan','wildhearts','epic'],['howl','Howl','wildhearts','epic'],['blaze','Blaze','wildhearts','epic'],['pegasus','Pegasus','wildhearts','legendary'],
     ['squatch','Squatch','legends','free'],['nessie','Nessie','legends','rare'],['griff','Griff','legends','rare'],['golem','Golem','legends','rare'],['cyclo','Cyclo','legends','rare'],['fang','Fang','legends','epic'],['kraken','Kraken','legends','epic'],['mino','Mino','legends','epic'],['phantom','Phantom','legends','epic'],['hydra','Hydra','legends','legendary'],
     ['rally','Rally','turbo','free'],['turbo','Turbo','turbo','rare'],['crash','Crash','turbo','rare'],['airtime','Airtime','turbo','rare'],['striker','Striker','turbo','rare'],['champ','Champ','turbo','epic'],['hover','Hover','turbo','epic'],['nitro','Nitro','turbo','epic'],['mech','Mech','turbo','epic'],['titan','Titan','turbo','legendary'],
+    ['greymoth','Grey Moth','villains','free'],['locust','Locust Trooper','villains','rare'],['vstatic','Static','villains','rare'],['gnash','Gnash','villains','rare'],['glitchv','Glitch','villains','rare'],['smudge','The Smudge','villains','epic'],['voidmaw','The Void','villains','epic'],['gatekeeper','Gatekeeper','villains','epic'],['vex','Vex','villains','legendary'],['wordeater','The Word-Eater','villains','legendary'],
   ].map(([id,name,pack,rarity])=>({ id, name, pack, rarity, price:RAR[rarity].price, sell:RAR[rarity].sell }));
   window.SB_AVATARS = { list:AV, packs:PACKS, rarities:RAR, byId:Object.fromEntries(AV.map(a=>[a.id,a])) };
 
@@ -176,9 +199,47 @@
     hive:'#7A4A08', dino:'#2B4A1E', cosmos:'#1E2A5C', stage:'#5C3A08', dojo:'#6E1F30',
     lab:'#0F3A34', arcade:'#12234A', origami:'#6E3418', elements:'#123A52',
     critter:'#5C2A10', vibe:'#2E1B52', enchanted:'#44205C', wildhearts:'#5C1F38',
-    legends:'#14402A', turbo:'#5A1410'
+    legends:'#14402A', turbo:'#5A1410', villains:'#2A1620'
   };
   window.SB_AVATAR_INK = id => INK[(window.SB_AVATARS.byId[id]||{}).pack] || '#3A2A5C';
+
+  /* Villain lore — from "Bizzy & the Great Unspelling".
+     tagline  → shown on hover over the avatar tile in a pack / collection.
+     greeting → the villain's own voice; fact → a story detail. Both show on
+     hover over the equipped avatar on the Home greeting card. */
+  window.SB_AVATAR_LORE = {
+    vex:{ tagline:'The Hornet Who Unwrites the World',
+      greeting:'Ah — a speller. How quaint. I crossed out MEADOW before breakfast; shall I pencil you in?',
+      fact:'Once a bee of the Hive, Vex keeps a ledger of every word he has erased. He isn’t hungry for letters — he is building an army.' },
+    smudge:{ tagline:'A Thousand Moths Wearing One Grin',
+      greeting:'Namesss... sweet namesss... give usss just one letter and we’ll leave the ressst. We promissse.',
+      fact:'The Smudge isn’t one monster — it’s a swarm of grey moths that eats the first letter of anything it lands on, then the next, then the next.' },
+    gnash:{ tagline:'All Teeth, No Spelling',
+      greeting:'GNASH SMASH WORDS! ...wait, how do you spell “smash”? GNASH SMASH ANYWAY!',
+      fact:'Gnash chews through dictionaries for fun but has never spelled a word right in his life — which is exactly why Vex keeps him around.' },
+    vstatic:{ tagline:'The Sound Between the Words',
+      greeting:'bzzt— can you— bzzzt —hear me? the words keep— skhhht —cutting ou—',
+      fact:'Static lives in the gaps between letters, turning clear words into fuzzy noise. Spell loudly and clearly and it fades away.' },
+    voidmaw:{ tagline:'The Mouth at the End of the Sentence',
+      greeting:'...you may put your words in. I keep everything that goes in. I have never once given anything back.',
+      fact:'The Void swallowed a whole constellation once. Star-charts still can’t spell the Great Bear’s name without checking twice.' },
+    glitchv:{ tagline:'Traded Friends for Infinite Lives',
+      greeting:'Sorry, hero. The hornet offered me INFINITE continues. You’d have taken the deal too. ...Wouldn’t you?',
+      fact:'Glitch was the Arcade’s guardian until Vex promised a game that never ends. Now he corrupts the very letters he once protected.' },
+    gatekeeper:{ tagline:'Roars First, Asks Never',
+      greeting:'NONE SHALL PASS who cannot spell the password. The password is long. The password is “onomatopoeia.” Begin.',
+      fact:'The Gatekeeper guards each act’s gate and only opens it for a perfectly spelled word — no second guesses, no hints.' },
+    locust:{ tagline:'One of Ten Thousand',
+      greeting:'I march where the ledger points. I don’t read it. I’m not allowed to read it. Marching now.',
+      fact:'Locust Troopers are Vex’s foot soldiers, copied a thousand times over. Each one can only remember a single letter of its orders.' },
+    greymoth:{ tagline:'The First Nibble of the Unspelling',
+      greeting:'flutter... flutter... which letter is yours? just the one on the end. you won’t even miss it.',
+      fact:'A single grey moth is nearly harmless — it can grey out just one letter. It’s when thousands gather that whole names vanish.' },
+    wordeater:{ tagline:'Ten Hungry Heads, One Sad Secret',
+      greeting:'FEED US. FEED US EVERY WORD YOU KNOW. ...the little head in the middle says please.',
+      fact:'The Word-Eater is a great machine of ten serpent heads — but a small, sad face hides in its chest, and it remembers being someone else.' }
+  };
+  window.SB_AVATAR_TAGLINE = id => (window.SB_AVATAR_LORE[id]||{}).tagline || '';
 
   // 4-way hard drop-shadow = crisp enamel/sticker outline. Constant ~1.2px keeps
   // it readable at every size, exactly like the design contact sheet. On dark
