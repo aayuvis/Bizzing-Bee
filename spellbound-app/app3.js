@@ -2173,7 +2173,7 @@ function viewHome(){
       return `${bandBanner}<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:18px">
       <div class="sb-card" style="display:flex;align-items:center;gap:16px;min-height:156px">
         <div style="position:relative;flex-shrink:0">
-          <div style="width:108px;height:112px;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center">${(c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar])?SB_AVATAR(c.avatar,104):mascotAcc(S.mood)}</div>
+          <div ${(()=>{ const l=(window.SB_AVATAR_LORE||{})[c.avatar]; return l?`title="${esc(l.greeting)}&#10;&#10;${esc(l.fact)}" style="cursor:help;`:'style="'; })()}width:108px;height:112px;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center">${(c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar])?SB_AVATAR(c.avatar,104):mascotAcc(S.mood)}</div>
         </div>
         <div style="min-width:0;flex:1">
           <div class="sb-cs">${greeting}</div>
@@ -2343,9 +2343,13 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
         const action= on?`<span style="font-weight:800;font-size:11.5px;color:var(--good)">Wearing ✓</span>`
           : own?`<span style="display:inline-flex;gap:6px"><button data-act="wearAv" data-arg="${a.id}" style="padding:6px 11px;border-radius:8px;background:var(--accent);color:#fff;font-weight:800;font-size:11.5px">Use</button>${a.rarity!=='free'?`<button data-act="sellAvatar" data-arg="${a.id}" title="Sell for ${a.sell} coins" style="padding:6px 9px;border-radius:8px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--muted)">Sell ${a.sell}🪙</button>`:''}</span>`
           : `<button data-act="openShopAvatars" title="Drops from a ${p.label} pack in the Store" style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--muted)">${iconSVG('lock',11,2.2)} Store pack</button>`;
-        return `<div style="background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':own?'var(--line)':'var(--line)'};border-radius:14px;padding:11px 9px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;${own?'':'filter:grayscale(.75);opacity:.72'}">
+        const lore=(window.SB_AVATAR_LORE||{})[a.id];
+        return `<div ${lore?`title="${esc(lore.greeting)}
+
+${esc(lore.fact)}"`:''} style="background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':own?'var(--line)':'var(--line)'};border-radius:14px;padding:11px 9px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;${own?'':'filter:grayscale(.75);opacity:.72'}">
           <span style="width:76px;height:76px">${avatarSVG(a.id,76, on?c.accOn:null)}</span>
           <span style="font-weight:800;font-size:12px;line-height:1.15">${a.name}</span>
+          ${lore?`<span style="font-family:var(--body);font-style:italic;font-size:10.5px;line-height:1.25;color:var(--muted)">${esc(lore.tagline)}</span>`:''}
           <span style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:99px;color:#fff;background:${R.c}">${R.label}</span>
           ${action}</div>`; }).join('');
       return `<div class="sb-card" style="margin-bottom:14px">
