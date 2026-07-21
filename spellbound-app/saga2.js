@@ -27,6 +27,90 @@
   }
   function sgPreload(names){ (names||[]).forEach(sgImg); }
 
+  /* Rasterise a collectible AVATAR (window.SB_AVATAR) into a canvas-drawable <img>
+     (cached by id). This is how the games show the REAL characters — Bizzy, the
+     bee racers, the villains — instead of primitive blobs. */
+  const _avCache={};
+  function avImg(id){
+    if(!id) return null;
+    if(id in _avCache) return _avCache[id];
+    _avCache[id]=null;
+    try{
+      if(typeof window.SB_AVATAR!=='function') return null;
+      let svg=window.SB_AVATAR(id,120,{outline:false});   // outline via CSS filter doesn't rasterise reliably
+      if(!svg) { _avCache[id]=false; return null; }
+      if(!/xmlns=/.test(svg)) svg=svg.replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" ');
+      const img=new Image(120,120);
+      img.onload=()=>{ _avCache[id]=img; };
+      img.onerror=()=>{ _avCache[id]=false; };
+      img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+    }catch(e){ _avCache[id]=false; }
+    return null;
+  }
+  // The player's equipped avatar — but only if it actually has art; else Bizzy.
+  function heroAv(){ try{ const id=(typeof active==='function' && active() && active().avatar);
+    if(id && typeof window.SB_AVATAR==='function' && window.SB_AVATAR(id,40)) return id; }catch(e){}
+    return 'bizzy'; }
+
+  /* Rasterise a full WORLD_ART background plate (rich Claude Design illustration)
+     into a canvas-drawable <img>, cached by id. This is how a game gets a real
+     illustrated backdrop instead of a flat colour fill. */
+  const _wCache={};
+  function worldImg(id){
+    if(!id) return null;
+    if(id in _wCache) return _wCache[id];
+    _wCache[id]=null;
+    const a=(window.WORLD_ART||{})[id]; if(!a){ _wCache[id]=false; return null; }
+    const vb=a.vb||'0 0 320 180', p=String(vb).split(/\s+/), w=(+p[2])||320, h=(+p[3])||180;
+    const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'" viewBox="'+vb+'">'+(a.svg||'')+'</svg>';
+    const img=new Image(w,h);
+    img.onload=()=>{ _wCache[id]=img; };
+    img.onerror=()=>{ _wCache[id]=false; };
+    img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+    return null;
+  }
+  // Draw a world plate to fill a rect, cover-fit (crop, no distortion). Returns true if drawn.
+  function drawWorld(cx,id,x,y,w,h){
+    const im=worldImg(id); if(!im) return false;
+    try{ const ir=im.width/im.height, rr=w/h; let sw,sh,sx,sy;
+      if(ir>rr){ sh=im.height; sw=sh*rr; sx=(im.width-sw)/2; sy=0; }
+      else { sw=im.width; sh=sw/rr; sx=0; sy=(im.height-sh)/2; }
+      cx.drawImage(im,sx,sy,sw,sh,x,y,w,h); return true;
+    }catch(e){ return false; }
+  }
+
+  /* A polished vector moth drawn straight onto the canvas — dusty scalloped wings,
+     a fuzzy body, feathered antennae, and a soft blue glow when it's edible.
+     Far cleaner than an emoji or a flat triangle. */
+  function drawMoth(cx,x,y,size,edible,ph){
+    const cxp=x+size/2, cyp=y+size/2, s=size*0.5, flap=0.82+0.18*Math.sin((ph||0));
+    cx.save(); cx.translate(cxp,cyp);
+    if(edible){ const g=cx.createRadialGradient(0,0,2,0,0,s*1.15); g.addColorStop(0,'rgba(120,150,255,.55)'); g.addColorStop(1,'rgba(120,150,255,0)');
+      cx.fillStyle=g; cx.beginPath(); cx.arc(0,0,s*1.15,0,7); cx.fill(); }
+    const wing=edible?'#9DB0FF':'#B7ADA0', wing2=edible?'#7C93F5':'#948A7C', spot=edible?'#5B6FD8':'#6E655A';
+    // four wings (upper big, lower small), mirrored
+    for(const sgn of [-1,1]){ cx.save(); cx.scale(sgn*flap,1);
+      cx.fillStyle=wing; cx.beginPath();
+      cx.moveTo(0,-s*0.1); cx.bezierCurveTo(s*0.5,-s*0.95, s*1.05,-s*0.55, s*0.95,-s*0.02);
+      cx.bezierCurveTo(s*1.02,s*0.15, s*0.7,s*0.28, 0,s*0.12); cx.closePath(); cx.fill();
+      cx.fillStyle=wing2; cx.beginPath();
+      cx.moveTo(0,s*0.06); cx.bezierCurveTo(s*0.42,s*0.2, s*0.66,s*0.6, s*0.5,s*0.86);
+      cx.bezierCurveTo(s*0.34,s*0.98, s*0.12,s*0.6, 0,s*0.28); cx.closePath(); cx.fill();
+      cx.fillStyle=spot; cx.beginPath(); cx.arc(s*0.6,-s*0.42,s*0.13,0,7); cx.fill();
+      cx.restore(); }
+    // body
+    cx.fillStyle=edible?'#3D4EA8':'#4A423A';
+    cx.beginPath(); cx.ellipse(0,0,s*0.16,s*0.5,0,0,7); cx.fill();
+    // head + antennae
+    cx.beginPath(); cx.arc(0,-s*0.5,s*0.15,0,7); cx.fill();
+    cx.strokeStyle=edible?'#3D4EA8':'#4A423A'; cx.lineWidth=Math.max(1.4,s*0.05); cx.lineCap='round';
+    cx.beginPath(); cx.moveTo(-s*0.05,-s*0.58); cx.quadraticCurveTo(-s*0.34,-s*0.9,-s*0.42,-s*0.72);
+    cx.moveTo(s*0.05,-s*0.58); cx.quadraticCurveTo(s*0.34,-s*0.9,s*0.42,-s*0.72); cx.stroke();
+    // eyes
+    cx.fillStyle='#FFFFFF'; cx.beginPath(); cx.arc(-s*0.06,-s*0.52,s*0.045,0,7); cx.arc(s*0.06,-s*0.52,s*0.045,0,7); cx.fill();
+    cx.restore();
+  }
+
   /* ---------- ENGINE A · HONEYCOMB RUN (Pac-Man) ---------- */
   // grid maze; arrows/swipe; moth patrols; nectar dots; golden flower spell-cards.
   function honeycombRun(host, opts, done){
@@ -36,6 +120,7 @@
       "0111121111110","0101010101010","0111111111110","0101010101010","0111111111110","0000000000000"
     ].map(r=>r.split('').map(Number));
     const diff=opts.diff||'medium';
+    const world=opts.world||'meadow';   // rich Claude Design backdrop plate
     const CFG={easy:{moths:2,speed:2.0,target:900,time:150},medium:{moths:3,speed:2.6,target:1200,time:180},
                hard:{moths:4,speed:3.1,target:1500,time:180},champ:{moths:5,speed:3.6,target:1800,time:180}}[diff];
     let bee={c:6,r:5,px:6,py:5,dir:[0,0],want:[0,0]};
@@ -123,26 +208,29 @@
       }catch(err){ /* never let a render/logic error stop the loop — the bee must keep moving */ }
     }
     function draw(){
-      cx.clearRect(0,0,cv.width,cv.height);                 // transparent — the world plate shows through as ground
+      cx.clearRect(0,0,cv.width,cv.height);
       const rrect=(x,y,w,h,rad)=>{ if(cx.roundRect){ cx.beginPath(); cx.roundRect(x,y,w,h,rad); } else { cx.beginPath(); cx.moveTo(x+rad,y); cx.arcTo(x+w,y,x+w,y+h,rad); cx.arcTo(x+w,y+h,x,y+h,rad); cx.arcTo(x,y+h,x,y,rad); cx.arcTo(x,y,x+w,y,rad); cx.closePath(); } };
+      // rich illustrated backdrop (Claude Design world plate), softened so the maze reads on top
+      if(!drawWorld(cx,world,0,0,cv.width,cv.height)){ cx.fillStyle='#8FCF7A'; cx.fillRect(0,0,cv.width,cv.height); }
+      cx.fillStyle='rgba(30,22,60,.28)'; cx.fillRect(0,0,cv.width,cv.height);   // scrim for contrast
+      // walls as translucent honeycomb tiles; paths let the backdrop shine through
       for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){ const v=MAZE[r][c];
-        if(v===0){ const g=cx.createLinearGradient(c*CELL,r*CELL,c*CELL,r*CELL+CELL); g.addColorStop(0,'rgba(74,54,168,.5)'); g.addColorStop(1,'rgba(46,32,120,.5)');
-          cx.fillStyle=g; rrect(c*CELL+3,r*CELL+3,CELL-6,CELL-6,CELL*0.34); cx.fill();
-          cx.strokeStyle='rgba(255,214,110,.45)'; cx.lineWidth=2; cx.stroke(); }
+        if(v===0){ cx.fillStyle='rgba(240,180,41,.30)'; rrect(c*CELL+3,r*CELL+3,CELL-6,CELL-6,CELL*0.3); cx.fill();
+          cx.strokeStyle='rgba(255,214,110,.55)'; cx.lineWidth=1.5; cx.stroke(); }
         else if(v===1){ cx.fillStyle='#FFCF3F'; cx.beginPath(); cx.arc(c*CELL+CELL/2,r*CELL+CELL/2,3.6,0,7); cx.fill();
-          cx.fillStyle='rgba(255,255,255,.6)'; cx.beginPath(); cx.arc(c*CELL+CELL/2-1,r*CELL+CELL/2-1,1.2,0,7); cx.fill(); } }
-      if(!J.got){ cx.fillStyle='#FFE28A'; cx.beginPath(); cx.arc(J.c*CELL+CELL/2,J.r*CELL+CELL/2,8,0,7); cx.fill(); }
-      if(flower){ cx.font=(CELL*0.7)+'px serif'; cx.fillText('🌼',flower.c*CELL+CELL*0.15,flower.r*CELL+CELL*0.8); }
-      // moths — real grey-moth sprite (blue glow when edible), fallback triangle
-      const mi=sgImg('grey-moth');
-      moths.forEach(m=>{ const mx=m.px*CELL, my=m.py*CELL;
-        if(flee>0){ cx.fillStyle='rgba(143,160,245,.55)'; cx.beginPath(); cx.arc(mx+CELL/2,my+CELL/2,CELL*0.42,0,7); cx.fill(); }
-        let drew=false; if(mi){ try{ const s=CELL*0.92; cx.drawImage(mi,mx+(CELL-s)/2,my+(CELL-s)/2,s,s); drew=true; }catch(e){} }
-        if(!drew){ cx.fillStyle=flee>0?'#8FA0F5':'#A39B8E'; cx.beginPath();
-          cx.moveTo(mx+CELL/2,my+CELL*0.2); cx.lineTo(mx+CELL*0.2,my+CELL*0.8); cx.lineTo(mx+CELL*0.8,my+CELL*0.8); cx.fill(); } });
-      // bee — real Bizzy top-down sprite (gentle wing bob), fallback gold blob
-      const bi=sgImg('bizzy-top'), bx=bee.px*CELL, by=bee.py*CELL; let beeDrew=false;
-      if(bi){ try{ const bob=1+0.06*Math.sin(Date.now()/120), s=CELL*0.98*bob;
+          cx.fillStyle='rgba(255,255,255,.7)'; cx.beginPath(); cx.arc(c*CELL+CELL/2-1,r*CELL+CELL/2-1,1.2,0,7); cx.fill(); } }
+      if(!J.got){ cx.fillStyle='#FFE28A'; cx.beginPath(); cx.arc(J.c*CELL+CELL/2,J.r*CELL+CELL/2,8,0,7); cx.fill();
+        cx.strokeStyle='#F0B429'; cx.lineWidth=2; cx.stroke(); }
+      if(flower){ const fi=sgImg('env-meadow'); cx.font=(CELL*0.72)+'px serif'; cx.fillText('🌼',flower.c*CELL+CELL*0.14,flower.r*CELL+CELL*0.8); }
+      // moths — the delivered grey-moth sprite (blue glow when edible); vector moth as fallback
+      const mi=sgImg('grey-moth'), _ph=Date.now()/90;
+      moths.forEach((m,i)=>{ const mx=m.px*CELL, my=m.py*CELL;
+        if(flee>0){ cx.fillStyle='rgba(120,150,255,.45)'; cx.beginPath(); cx.arc(mx+CELL/2,my+CELL/2,CELL*0.44,0,7); cx.fill(); }
+        let md=false; if(mi){ try{ const s=CELL*0.96, bob=Math.sin(_ph+i)*CELL*0.03; cx.drawImage(mi,mx+(CELL-s)/2,my+(CELL-s)/2+bob,s,s); md=true; }catch(e){} }
+        if(!md) drawMoth(cx,mx+CELL*0.04,my+CELL*0.04,CELL*0.92,flee>0,_ph+i); });
+      // bee — the delivered Bizzy sprite (flips with direction); avatar then blob as fallback
+      const bi=sgImg('bizzy-side-fly')||avImg(heroAv())||avImg('bizzy'), bx=bee.px*CELL, by=bee.py*CELL; let beeDrew=false;
+      if(bi){ try{ const bob=1+0.05*Math.sin(Date.now()/110), s=CELL*1.12*bob;
         cx.save(); cx.translate(bx+CELL/2,by+CELL/2);
         if(bee.dir[0]<0) cx.scale(-1,1);              // flip when flying left
         cx.drawImage(bi,-s/2,-s/2,s,s); cx.restore(); beeDrew=true; }catch(e){ try{cx.restore();}catch(_){} } }
@@ -203,13 +291,23 @@
     }
     function hit(){ lives--; bee.y=Ht/2; bee.vy=0; if(lives<=0){ over=true; finish(false); } }
     function draw(){
-      const grd=cx.createLinearGradient(0,0,0,Ht); grd.addColorStop(0,'#8FCBEF'); grd.addColorStop(1,'#DFF0FA');
-      cx.fillStyle=grd; cx.fillRect(0,0,Wd,Ht);
-      cx.fillStyle='#4A7A3A'; obs.forEach(o=>{ cx.fillRect(o.x,0,44,o.y); cx.fillRect(o.x,o.y+o.g,44,Ht-o.y-o.g); });
-      if(pot){ cx.font='30px serif'; cx.fillText('🍯',pot.x,pot.y+40); cx.fillStyle='#8A6A2A'; cx.fillRect(pot.x-8,Ht-24,52,10); }
-      cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(60,bee.y,15,0,7); cx.fill();
-      cx.fillStyle='#2B2117'; cx.fillRect(50,bee.y-2,20,4);
-      cx.fillStyle='#FFFFFFAA'; cx.beginPath(); cx.ellipse(66,bee.y-12,8,5,-0.6,0,7); cx.fill();
+      // rich sky backdrop (Claude Design open-sky plate); gradient fallback
+      if(!drawWorld(cx,'opensky',0,0,Wd,Ht)){ const grd=cx.createLinearGradient(0,0,0,Ht); grd.addColorStop(0,'#8FCBEF'); grd.addColorStop(1,'#DFF0FA');
+        cx.fillStyle=grd; cx.fillRect(0,0,Wd,Ht); }
+      // honeycomb pillars instead of flat green pipes
+      obs.forEach(o=>{ const pil=(yy,hh)=>{ const g=cx.createLinearGradient(o.x,0,o.x+44,0); g.addColorStop(0,'#F0B429'); g.addColorStop(1,'#D89614');
+        cx.fillStyle=g; cx.fillRect(o.x,yy,44,hh); cx.fillStyle='rgba(255,255,255,.18)'; cx.fillRect(o.x,yy,7,hh);
+        cx.strokeStyle='rgba(120,80,10,.45)'; cx.lineWidth=2; cx.strokeRect(o.x,yy,44,hh); };
+        pil(0,o.y); pil(o.y+o.g,Ht-o.y-o.g); });
+      if(pot){ const pi=sgImg('artifact-quill-glow')||sgImg('gem-act1'); let pd=false;
+        if(pi){ try{ cx.drawImage(pi,pot.x-6,pot.y,44,44); pd=true; }catch(e){} }
+        if(!pd){ cx.font='30px serif'; cx.fillText('🍯',pot.x,pot.y+40); } }
+      // delivered Bizzy sprite (side-fly), tilts with vertical velocity
+      const bi=sgImg('bizzy-side-fly')||avImg(heroAv()); let bd=false;
+      if(bi){ try{ const s=42, tilt=Math.max(-0.5,Math.min(0.5,bee.vy/14));
+        cx.save(); cx.translate(60,bee.y); cx.rotate(tilt); cx.drawImage(bi,-s/2,-s/2,s,s); cx.restore(); bd=true; }catch(e){ try{cx.restore();}catch(_){} } }
+      if(!bd){ cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(60,bee.y,15,0,7); cx.fill();
+        cx.fillStyle='#2B2117'; cx.fillRect(50,bee.y-2,20,4); }
       host.querySelector('#sg-pots').textContent='🍯 '+banked+'/'+CFG.pots;
       host.querySelector('#sg-lives').textContent='❤'.repeat(Math.max(0,lives));
     }
@@ -268,10 +366,10 @@
       '<div class="sg-lanebtns"><button class="sg-dbtn" data-l="-1" aria-label="Move up a lane">▲</button><button class="sg-dbtn" data-l="1" aria-label="Move down a lane">▼</button></div>';
     const cv=host.querySelector('#sg-cv'); cv.width=Wd; cv.height=Ht; const cx=cv.getContext('2d');
     const racers=[
-      {name:'You', lane:1, x:0, spd:0, base:2.6, col:'#F0B429', you:true, nitro:0, boost:0},
-      {name:'Bumble', lane:0, x:0, spd:0, base:CFG.ai*0.98, col:'#E8912D'},
-      {name:'Waggle', lane:2, x:0, spd:0, base:CFG.ai*1.0, col:'#C8B26A'},
-      {name:'Drone Dan', lane:3, x:0, spd:0, base:CFG.ai*1.02, col:'#8A8A8A'}];
+      {name:'You', lane:1, x:0, spd:0, base:2.6, col:'#F0B429', you:true, nitro:0, boost:0, av:heroAv()},
+      {name:'Bumble', lane:0, x:0, spd:0, base:CFG.ai*0.98, col:'#E8912D', av:'bumble'},
+      {name:'Waggle', lane:2, x:0, spd:0, base:CFG.ai*1.0, col:'#C8B26A', av:'waggle'},
+      {name:'Drone Dan', lane:3, x:0, spd:0, base:CFG.ai*1.02, col:'#8A8A8A', av:'drone'}];
     const hazards=[]; for(let i=0;i<10;i++) hazards.push({x:400+i*300+Math.random()*120, lane:Math.floor(Math.random()*LANES)});
     const words=pool(12); let wi=0, curWord=null, typed='', over=false;
     const inp=host.querySelector('#sg-ri');
@@ -316,9 +414,16 @@
       // finish line each lap
       for(let lap=1;lap<=CFG.laps;lap++){ const fx=lap*TRACK-camX; if(fx>-10&&fx<Wd+10){ cx.fillStyle='#2B2117'; cx.fillRect(fx,40,6,LANES*LANE_H); } }
       racers.forEach(r=>{ const sx=r.x-camX, sy=40+r.lane*LANE_H+LANE_H/2;
-        if(sx>-40&&sx<Wd+40){ cx.fillStyle=r.col; cx.beginPath(); cx.arc(sx,sy,14,0,7); cx.fill();
-          cx.fillStyle='#2B2117'; cx.fillRect(sx-9,sy-2,18,4);
-          if(r.you&&r.boost>0){ cx.fillStyle='#36D1FF'; cx.fillRect(sx-26,sy-3,12,6); } } });
+        if(sx>-40&&sx<Wd+40){
+          if(r.you&&r.boost>0){ cx.fillStyle='#36D1FF'; cx.beginPath(); cx.ellipse(sx-24,sy,16,6,0,0,7); cx.fill();
+            cx.fillStyle='rgba(54,209,255,.4)'; cx.beginPath(); cx.ellipse(sx-34,sy,10,4,0,0,7); cx.fill(); }
+          // delivered kart sprites — Bizzy's kart for the player, rally kart for rivals
+          const ki=sgImg(r.you?'bizzy-kart':'kart-rally'); const sz=LANE_H*0.92;
+          let drew=false; if(ki){ try{ cx.drawImage(ki,sx-sz/2,sy-sz/2,sz,sz); drew=true; }catch(e){} }
+          if(!drew){ const ai=avImg(r.av); if(ai){ try{ cx.drawImage(ai,sx-20,sy-20,40,40); drew=true; }catch(e){} } }
+          if(!drew){ cx.fillStyle=r.col; cx.beginPath(); cx.arc(sx,sy,14,0,7); cx.fill();
+            cx.fillStyle='#2B2117'; cx.fillRect(sx-9,sy-2,18,4); }
+        } });
       const order=[...racers].sort((a,b)=>b.x-a.x); const pos=order.indexOf(me)+1;
       host.querySelector('#sg-lap').textContent='Lap '+Math.min(CFG.laps,1+Math.floor(me.x/TRACK))+'/'+CFG.laps;
       host.querySelector('#sg-pos').textContent=['🥇','🥈','🥉','4th'][pos-1];
@@ -691,7 +796,9 @@
     playMusic(meta.world);
     const diff=(active&&active().gameDiff)||'medium';
     const eng=W().SB_SAGA_ENGINES[meta.engine];
-    engineHandle=eng(b.querySelector('#sg-gh'), Object.assign({diff},meta.opts), res=>{
+    const WMAP={meadow:'meadow',sky:'opensky',hive:'hive','hive gates':'hive',stage:'stage',cosmos:'cosmos',carnival:'carnival'};
+    const wid=WMAP[String(meta.world||'').toLowerCase()]||'meadow';
+    engineHandle=eng(b.querySelector('#sg-gh'), Object.assign({diff,world:wid},meta.opts), res=>{
       engineHandle=null;
       if(res.win){
         const p=prog(); p.cleared=Math.max(p.cleared||0, meta.n);
