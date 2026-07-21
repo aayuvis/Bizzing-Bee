@@ -190,5 +190,114 @@
     return { destroy(){ over=true; clearInterval(tick); } };
   }
 
-  W().SB_SAGA_ENGINES = { honeycombRun, keepFlying, wordHive };
+
+  /* ---------- ENGINE C · BEE GRAND PRIX (side-view racer) ---------- */
+  function beeGrandPrix(host, opts, done){
+    const Wd=Math.min(innerWidth-16,640), Ht=340, LANES=4, LANE_H=64, TRACK=3200; // px per lap
+    const diff=opts.diff||'medium';
+    const CFG={easy:{ai:2.0,laps:2},medium:{ai:2.5,laps:3},hard:{ai:2.9,laps:3},champ:{ai:3.3,laps:3}}[diff];
+    host.innerHTML='<div class="sg-hud"><span id="sg-lap">Lap 1/'+CFG.laps+'</span><span id="sg-pos"></span><span id="sg-nitro"></span></div>'+
+      '<canvas id="sg-cv"></canvas><div class="sg-race-word" id="sg-rw"></div>';
+    const cv=host.querySelector('#sg-cv'); cv.width=Wd; cv.height=Ht; const cx=cv.getContext('2d');
+    const racers=[
+      {name:'You', lane:1, x:0, spd:0, base:2.6, col:'#F0B429', you:true, nitro:0, boost:0},
+      {name:'Bumble', lane:0, x:0, spd:0, base:CFG.ai*0.98, col:'#E8912D'},
+      {name:'Waggle', lane:2, x:0, spd:0, base:CFG.ai*1.0, col:'#C8B26A'},
+      {name:'Drone Dan', lane:3, x:0, spd:0, base:CFG.ai*1.02, col:'#8A8A8A'}];
+    const hazards=[]; for(let i=0;i<10;i++) hazards.push({x:400+i*300+Math.random()*120, lane:Math.floor(Math.random()*LANES)});
+    const words=pool(12); let wi=0, curWord=null, typed='', over=false;
+    function nextWord(){ curWord=words[wi++%words.length]; typed='';
+      host.querySelector('#sg-rw').innerHTML='🔊 <b>Spell for nitro:</b> <span id="sg-rt"></span>'; try{ say(curWord.w); }catch(e){} }
+    const key=e=>{ const me=racers[0];
+      if(e.key==='ArrowUp'){ me.lane=Math.max(0,me.lane-1); e.preventDefault(); }
+      else if(e.key==='ArrowDown'){ me.lane=Math.min(LANES-1,me.lane+1); e.preventDefault(); }
+      else if(e.key==='Enter'){ if(curWord && typed.trim().toLowerCase()===curWord.w.toLowerCase()){ me.nitro=Math.min(3,me.nitro+1); try{flash('⚡ Nitro banked!');}catch(_){} } nextWord(); }
+      else if(e.key===' '){ if(me.nitro>0){ me.nitro--; me.boost=1.6; } e.preventDefault(); }
+      else if(e.key==='Backspace'){ typed=typed.slice(0,-1); }
+      else if(/^[a-zA-Z-]$/.test(e.key)){ typed+=e.key; }
+      const rt=host.querySelector('#sg-rt'); if(rt) rt.textContent=typed; };
+    addEventListener('keydown',key);
+    cv.addEventListener('pointerdown',e=>{ const r=cv.getBoundingClientRect(); const y=e.clientY-r.top;
+      const me=racers[0]; me.lane=Math.max(0,Math.min(LANES-1,Math.floor(y/LANE_H))); });
+    nextWord();
+    let last=0;
+    function frame(ts){ if(over) return; const dt=Math.min(50,ts-last)/16.7; last=ts;
+      racers.forEach(r=>{
+        let sp=r.base;
+        if(r.you){ sp=2.6+(r.boost>0?2.2:0); r.boost=Math.max(0,r.boost-dt/60); }
+        else if(Math.random()<0.004) r.lane=Math.max(0,Math.min(LANES-1,r.lane+(Math.random()<0.5?-1:1)));
+        // rubber band
+        if(!r.you){ const lead=racers[0].x-r.x; sp+= lead>200?0.4: lead<-200?-0.3:0; }
+        // hazards slow
+        hazards.forEach(h=>{ const hx=h.x%TRACK; const rx=r.x%TRACK; if(Math.abs(hx-rx)<26 && h.lane===r.lane) sp*=0.45; });
+        r.x+=sp*dt; });
+      const me=racers[0];
+      if(me.x>=TRACK*CFG.laps){ over=true; finish(); return; }
+      draw(); requestAnimationFrame(frame); }
+    function draw(){
+      cx.fillStyle='#7FBF6A'; cx.fillRect(0,0,Wd,Ht);
+      for(let l=0;l<LANES;l++){ cx.fillStyle=l%2?'#8FCF7A':'#86C772'; cx.fillRect(0,40+l*LANE_H,Wd,LANE_H); }
+      cx.strokeStyle='#FFFFFF88'; for(let l=0;l<=LANES;l++){ cx.beginPath(); cx.moveTo(0,40+l*LANE_H); cx.lineTo(Wd,40+l*LANE_H); cx.stroke(); }
+      const me=racers[0], camX=me.x-120;
+      hazards.forEach(h=>{ for(let lap=0;lap<CFG.laps;lap++){ const sx=h.x+lap*TRACK-camX; if(sx>-30&&sx<Wd+30){ cx.font='22px serif'; cx.fillText('☁️',sx,40+h.lane*LANE_H+40); } } });
+      // finish line each lap
+      for(let lap=1;lap<=CFG.laps;lap++){ const fx=lap*TRACK-camX; if(fx>-10&&fx<Wd+10){ cx.fillStyle='#2B2117'; cx.fillRect(fx,40,6,LANES*LANE_H); } }
+      racers.forEach(r=>{ const sx=r.x-camX, sy=40+r.lane*LANE_H+LANE_H/2;
+        if(sx>-40&&sx<Wd+40){ cx.fillStyle=r.col; cx.beginPath(); cx.arc(sx,sy,14,0,7); cx.fill();
+          cx.fillStyle='#2B2117'; cx.fillRect(sx-9,sy-2,18,4);
+          if(r.you&&r.boost>0){ cx.fillStyle='#36D1FF'; cx.fillRect(sx-26,sy-3,12,6); } } });
+      const order=[...racers].sort((a,b)=>b.x-a.x); const pos=order.indexOf(me)+1;
+      host.querySelector('#sg-lap').textContent='Lap '+Math.min(CFG.laps,1+Math.floor(me.x/TRACK))+'/'+CFG.laps;
+      host.querySelector('#sg-pos').textContent=['🥇','🥈','🥉','4th'][pos-1];
+      host.querySelector('#sg-nitro').textContent='⚡'.repeat(me.nitro);
+    }
+    function finish(){ removeEventListener('keydown',key);
+      const order=[...racers].sort((a,b)=>b.x-a.x); const pos=order.indexOf(racers[0])+1;
+      done({win:pos===1, score:(5-pos)*250, stars:pos===1?3:pos===2?2:pos===3?1:0}); }
+    requestAnimationFrame(frame);
+    return { destroy(){ over=true; removeEventListener('keydown',key); } };
+  }
+
+  /* ---------- ENGINE E · WHACK-A-MOTH ---------- */
+  function whackAMoth(host, opts, done){
+    const diff=opts.diff||'medium';
+    const CFG={easy:{words:6,up:1500,time:90},medium:{words:8,up:1200,time:90},hard:{words:9,up:950,time:85},champ:{words:10,up:800,time:80}}[diff];
+    const words=pool(CFG.words+2).filter(w=>w.w.length<=9); let wi=0, cur=null, li=0, t=CFG.time, doneWords=0, over=false;
+    host.innerHTML='<div class="sg-hud"><span id="sg-w">Word 1/'+CFG.words+'</span><span id="sg-time"></span></div>'+
+      '<div class="sg-target" id="sg-target"></div><div class="sg-molegrid" id="sg-grid"></div>';
+    const grid=host.querySelector('#sg-grid');
+    for(let i=0;i<12;i++){ const c=document.createElement('button'); c.className='sg-cell'; c.dataset.i=i; grid.appendChild(c); }
+    function newWord(){ if(wi>=words.length||doneWords>=CFG.words){ over=true; finish(true); return; }
+      cur=words[wi++]; li=0; renderTarget(); try{ say(cur.w); }catch(e){} }
+    function renderTarget(){ host.querySelector('#sg-target').innerHTML=cur.w.split('').map((ch,i)=>
+      '<span class="sg-tl'+(i<li?' done':i===li?' next':'')+'">'+(i<li?ch.toUpperCase():'•')+'</span>').join('');
+      host.querySelector('#sg-w').textContent='Word '+(doneWords+1)+'/'+CFG.words; }
+    let pops=[];
+    function pop(){ if(over) return;
+      const need=cur.w[li]; const cells=[...grid.children].filter(c=>!c.dataset.on);
+      if(!cells.length) return;
+      const c=cells[Math.floor(Math.random()*cells.length)];
+      const golden=Math.random()<0.08;
+      const showNeed=Math.random()<0.45;
+      const ch=golden?'★':showNeed?need:String.fromCharCode(97+Math.floor(Math.random()*26));
+      c.dataset.on='1'; c.dataset.ch=ch; c.dataset.g=golden?'1':'';
+      c.innerHTML='<span class="sg-moth'+(golden?' gold':'')+'">🦋<b>'+ch.toUpperCase()+'</b></span>';
+      setTimeout(()=>{ if(c.dataset.on){ c.dataset.on=''; c.innerHTML=''; } }, CFG.up+(golden?400:0));
+    }
+    grid.onclick=e=>{ const c=e.target.closest('.sg-cell'); if(!c||!c.dataset.on||over) return;
+      const ch=c.dataset.ch, golden=c.dataset.g==='1';
+      c.dataset.on=''; c.innerHTML='💥';setTimeout(()=>{ if(c.innerHTML==='💥') c.innerHTML=''; },260);
+      if(golden){ t+=5; try{flash('★ Golden moth! +5s');}catch(_){} return; }
+      if(ch===cur.w[li]){ li++; if(li>=cur.w.length){ doneWords++; try{flash('✓ '+cur.w.toUpperCase());}catch(_){} newWord(); } else renderTarget(); }
+      else { t-=3; try{flash('Wrong moth! −3s');}catch(_){} } };
+    const popT=setInterval(pop, 520);
+    const tick=setInterval(()=>{ if(over){ clearInterval(tick); clearInterval(popT); return; } t--;
+      host.querySelector('#sg-time').textContent='⏱ '+t+'s';
+      if(t<=0){ over=true; clearInterval(tick); clearInterval(popT); finish(doneWords>=CFG.words); } },1000);
+    newWord();
+    function finish(win){ done({win,score:doneWords*100+t*2,stars:win?(t>25?3:t>10?2:1):0}); }
+    return { destroy(){ over=true; clearInterval(popT); clearInterval(tick); } };
+  }
+
+  W().SB_SAGA_ENGINES = { honeycombRun, keepFlying, wordHive, beeGrandPrix, whackAMoth };
 })();
