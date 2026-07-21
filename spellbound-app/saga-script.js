@@ -60,4 +60,66 @@ window.SB_SAGA_SCRIPT = {
       ['bizzy','Then welcome to the crew, Sting. First rule: nobody fights alone.','c6-b2'],
       ['narrator','One world saved. Fourteen greying. Somewhere far away, a hornet in gold pinstripes opened a ledger and crossed out the word MEADOW.','c6-n1']],
     lose:[['bizzy','The shield broke... but shields can be rebuilt. Letter by letter. Again!','c6-b3']] }
+  ,ch7: { title:'The Show Must Go On', world:'stage',
+    intro:[
+      ['narrator','Stage World. One hour to curtain — and the marquee letters were going out one by one.','c7-n1'],
+      ['melody','My sheet music! The notes are fine but the WORDS are fading — I can\u2019t remember my own opening line!','c7-m1'],
+      ['maestro','Sixty years of showbusiness. Fires. Floods. A juggling accident. But never... blank pages.','c7-ma1'],
+      ['bizzy','Then tonight\u2019s show has a new opening act. Light the stage tiles, Maestro — I\u2019ll spell your words back from memory.','c7-b1']],
+    win:[
+      ['melody','You remembered my whole song better than I did! The marquee — look — it\u2019s BLAZING again!','c7-m2'],
+      ['maestro','Kid, in this business we follow the star. And tonight, that\u2019s you. The Stage marches with the Hive!','c7-ma2']],
+    lose:[['maestro','A stumble on opening night? Happens to legends. From the top!','c7-ma3']] },
+  ch8: { title:'The Scrambled Constellations', world:'cosmos',
+    intro:[
+      ['narrator','Above Stage World, the night sky had gone... wrong. The constellations spelled nonsense.','c8-n1'],
+      ['astro','Mission log: the stars are all THERE — but somebody shuffled them. The Great Bear now spells B-R-G-E-A-T-A-E.','c8-a1'],
+      ['zib','On my planet we have a word for this. Actually we HAD a word for it. It got scrambled too.','c8-z1'],
+      ['bizzy','Then let\u2019s put the sky back in order. Star by star, letter by letter.','c8-b1']],
+    win:[
+      ['comet','Twelve constellations re-spelled! Navigation is BACK, baby!','c8-c1'],
+      ['astro','The Cosmos crew flies with you, Bizzy. And... we saw something out there. A shadow with a ledger, crossing out stars. He\u2019s heading for the Arcade.','c8-a2']],
+    lose:[['zib','The sky is patient. It waited a billion years — it can wait one more try.','c8-z2']] },
+  ch9: { title:'The Thousand Cuts', world:'dojo',
+    intro:[
+      ['sensei','So. The bee who spells worlds back together. Show me your focus, little one.','c9-se1'],
+      ['ninja','Letters will fly. Most are wrong. Some are traps. Strike ONLY what the word needs.','c9-ni1'],
+      ['bizzy','A true speller strikes only the right letter. I\u2019m ready, Sensei.','c9-b1']],
+    win:[
+      ['sensei','Clean cuts. Calm mind. The Dojo stands with the Hive — and Bizzy... when the dark night comes, remember: you fight the Unspelling. Not the unspelled.','c9-se2'],
+      ['ninja','...He only says that to students he believes in.','c9-ni2']],
+    lose:[['sensei','A slip is a lesson wearing a disguise. Breathe. Again.','c9-se3']] },
+  ch10: { title:'The Falling Formula', world:'lab',
+    intro:[
+      ['beaker','EMERGENCY! The Great Fizz is going FLAT! Every formula needs words and the words are raining down in PIECES!','c10-be1'],
+      ['brainiac','Hypothesis: catch the falling letters, assemble true words, restore the reaction. Confidence: 94.2 percent.','c10-br1'],
+      ['bizzy','And the other 5.8 percent?','c10-b1'],
+      ['brainiac','We get very, very sticky.','c10-br2']],
+    win:[
+      ['beaker','THE FIZZ! IT FIZZES! You beautiful spelling genius!','c10-be2'],
+      ['brainiac','Recalculating confidence in this crew: one hundred percent. The Lab is yours.','c10-br3']],
+    lose:[['beaker','Sticky! SO sticky! Okay okay — new batch, new try!','c10-be3']] },
+  ch11: { title:'The Hungry Garden', world:'critter',
+    intro:[
+      ['zoomies','BIZZY BIZZY BIZZY the pond words got scattered like seeds and the garden snake is TOO POLITE to eat them in the wrong order!','c11-zo1'],
+      ['capy','...She means: guide the snake. Letters, in order. No pressure.','c11-ca1'],
+      ['bizzy','A snake that spells. This is officially the best crew ever assembled.','c11-b1']],
+    win:[
+      ['zoomies','THE GARDEN GREW BACK! FLOWERS! EVERYWHERE! I\u2019M SO HAPPY I COULD ZOOM!','c11-zo2'],
+      ['capy','The Critters are in. Slowly. But in.','c11-ca2']],
+    lose:[['capy','The snake forgives you. The snake forgives everyone. Again?','c11-ca3']] },
+  ch12: { title:'BOSS: Glitch\u2019s Betrayal', world:'arcade',
+    intro:[
+      ['pixel','Welcome to the Arcade! Cabinets a little dim lately but— wait. Why is the boss music playing?','c12-p1'],
+      ['glitch','Sorry, Pixel. The hornet made an offer. Infinite lives. INFINITE. You\u2019d have taken it too.','c12-g1'],
+      ['bizzy','Glitch — he\u2019s not giving you lives. He\u2019s taking everyone else\u2019s!','c12-b1'],
+      ['glitch','...Then I guess I\u2019m the final boss now. INSERT COIN, little bee.','c12-g2']],
+    mid:[['glitch','Why. Won\u2019t. You. MISS!','c12-g3']],
+    win:[
+      ['glitch','This isn\u2019t over. The Master Token is his now — and the Engine is nearly fed. See you in the endgame, heroes.','c12-g4'],
+      ['joystick','He took the Arcade\u2019s heart... Pixel, we\u2019re going with them. All the way to the end.','c12-j1'],
+      ['vex','(from everywhere and nowhere) Did you feel that, little bee? That was a friend choosing me. There are always more doors than guards.','c12-v1'],
+      ['narrator','And for the first time, the crew understood: Vex wasn\u2019t just eating words. He was building an army.','c12-n1']],
+    lose:[['pixel','He\u2019s glitching the hitboxes! Reset and re-type — we\u2019ve got infinite continues where it counts: heart!','c12-p2']] }
+
 };
