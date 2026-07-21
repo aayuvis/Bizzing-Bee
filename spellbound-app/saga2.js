@@ -350,4 +350,82 @@
   }
 
   W().SB_SAGA_ENGINES = { honeycombRun, keepFlying, wordHive, beeGrandPrix, whackAMoth, spellShield };
+
+  /* ---------- SAGA CONTROLLER · map, chapter runner, dialogue player ---------- */
+  const CH_META=[
+    {n:1,title:'Escape from the Meadow of Challenges',world:'Meadow',engine:'honeycombRun',opts:{}},
+    {n:2,title:'The Long Sky',world:'Sky',engine:'keepFlying',opts:{}},
+    {n:3,title:'The Elders\u2019 Test: Bee Grand Prix',world:'Hive',engine:'beeGrandPrix',opts:{}},
+    {n:4,title:'The Queen\u2019s Riddle',world:'Hive',engine:'wordHive',opts:{big:'THUNDERSTORM'}},
+    {n:5,title:'Whack-the-Moths',world:'Hive',engine:'whackAMoth',opts:{}},
+    {n:6,title:'BOSS: The Smudge',world:'Hive Gates',engine:'spellShield',opts:{}}
+  ];
+  const FACE={bizzy:'🐝',bumble:'🐝',waggle:'🐝',drone:'🐝',queen:'👑',smudge:'🦋',sting:'🐝',narrator:'📖'};
+  const NAME={bizzy:'Bizzy',bumble:'Bumble',waggle:'Waggle',drone:'Drone Dan',queen:'Hive Queen',smudge:'The Smudge',sting:'Sting',narrator:''};
+  function prog(){ try{ return JSON.parse(localStorage.getItem('sb_saga2')||'{}'); }catch(e){ return {}; } }
+  function setProg(p){ localStorage.setItem('sb_saga2', JSON.stringify(p)); }
+  let overlay=null, engineHandle=null, curAudio=null;
+  function close(){ if(engineHandle){ try{engineHandle.destroy();}catch(e){} engineHandle=null; }
+    if(curAudio){ try{curAudio.pause();}catch(e){} curAudio=null; }
+    if(overlay){ overlay.remove(); overlay=null; } }
+  function shell(inner){ close();
+    overlay=document.createElement('div'); overlay.className='sg-overlay';
+    overlay.innerHTML='<div class="sg-top"><button class="sg-back" id="sg-back">← Saga</button><span class="sg-brand">Bizzy & the Great Unspelling</span></div><div class="sg-body" id="sg-body"></div>';
+    document.body.appendChild(overlay);
+    overlay.querySelector('#sg-back').onclick=()=>{ close(); SAGA2.open(); };
+    overlay.querySelector('#sg-body').innerHTML=inner;
+    return overlay.querySelector('#sg-body'); }
+  function map(){
+    const p=prog(); const cleared=p.cleared||0;
+    const nodes=CH_META.map(c=>{ const st=c.n<=cleared?'done':c.n===cleared+1?'open':'locked';
+      const stars=(p.stars||{})[c.n]||0;
+      return '<button class="sg-node '+st+'" data-ch="'+c.n+'" '+(st==='locked'?'disabled':'')+'>'+
+        '<span class="sg-nhex">'+(st==='done'?'★'.repeat(Math.max(1,stars)):c.n)+'</span>'+
+        '<b>'+c.title+'</b><i>'+c.world+'</i></button>'; }).join('');
+    const b=shell('<div class="sg-acthead"><span>ACT I</span><h3>The Scattering</h3><p>The meadow falls; the first crew forms. '+cleared+'/6 chapters cleared.</p></div><div class="sg-map">'+nodes+'</div>'+
+      '<p class="sg-note">🎨 Placeholder art — Claude Design drops swap in automatically.</p>');
+    b.querySelectorAll('.sg-node:not([disabled])').forEach(n=>n.onclick=()=>chapter(+n.dataset.ch));
+    overlay.querySelector('#sg-back').onclick=()=>close();
+  }
+  function beats(ch, phase, then){
+    const S=(window.SB_SAGA_SCRIPT||{})['ch'+ch]||{}; const lines=S[phase]||[];
+    if(!lines.length){ then(); return; }
+    let i=0;
+    const b=shell('<div class="sg-dlg"><div class="sg-dface" id="sg-df"></div><div class="sg-dbox"><b id="sg-dn"></b><p id="sg-dl"></p></div><button class="sg-next" id="sg-nx">▸</button></div>');
+    function show(){ const [spk,text,key]=lines[i];
+      b.querySelector('#sg-df').textContent=FACE[spk]||'🐝';
+      b.querySelector('#sg-dn').textContent=NAME[spk]||'';
+      b.querySelector('#sg-dl').textContent=text;
+      if(curAudio){ try{curAudio.pause();}catch(e){} }
+      curAudio=null;
+      try{ const a=new Audio('voice/d/'+key+'.mp3'); a.play().then(()=>{curAudio=a;}).catch(()=>{}); }catch(e){}
+    }
+    b.querySelector('#sg-nx').onclick=()=>{ i++; if(i>=lines.length) then(); else show(); };
+    show();
+  }
+  function chapter(ch){
+    const meta=CH_META[ch-1]; if(!meta) return;
+    beats(ch,'intro',()=>{ game(meta); });
+  }
+  function game(meta){
+    const b=shell('<div class="sg-gamehost" id="sg-gh"></div>');
+    const diff=(active&&active().gameDiff)||'medium';
+    const eng=W().SB_SAGA_ENGINES[meta.engine];
+    engineHandle=eng(b.querySelector('#sg-gh'), Object.assign({diff},meta.opts), res=>{
+      engineHandle=null;
+      if(res.win){
+        const p=prog(); p.cleared=Math.max(p.cleared||0, meta.n);
+        p.stars=p.stars||{}; p.stars[meta.n]=Math.max(p.stars[meta.n]||0, res.stars||1);
+        p.gems=(p.gems||0)+((p.gemsAt||{})[meta.n]?0:1); p.gemsAt=p.gemsAt||{}; p.gemsAt[meta.n]=1;
+        setProg(p);
+        try{ if(typeof logActivity==='function') logActivity('saga', {ch:meta.n, stars:res.stars}); }catch(e){}
+        try{ if(typeof addCoins==='function') addCoins(25+(res.stars||1)*10); }catch(e){}
+        beats(meta.n,'win',()=>{ map(); });
+      } else {
+        beats(meta.n,'lose',()=>{ game(meta); });
+      }
+    });
+  }
+  W().SAGA2={ open: map, close };
+
 })();
