@@ -480,8 +480,11 @@
     const diff=opts.diff||'medium';
     const CFG={easy:{words:6,up:1500,time:90},medium:{words:8,up:1200,time:90},hard:{words:9,up:950,time:85},champ:{words:10,up:800,time:80}}[diff];
     const words=pool(CFG.words+2).filter(w=>w.w.length<=9); let wi=0, cur=null, li=0, t=CFG.time, doneWords=0, over=false;
+    const art=(window.SGART&&SGART.ready());
+    const mothArt=art?SGART.sprite('grey-moth',{cls:'sg-mothimg'}):'🦋';
+    const plate=art?SGART.plateForWorld(opts.world||'Hive'):'';
     host.innerHTML='<div class="sg-hud"><span id="sg-w">Word 1/'+CFG.words+'</span><span id="sg-time"></span></div>'+
-      '<div class="sg-target" id="sg-target"></div><div class="sg-molegrid" id="sg-grid"></div>';
+      '<div class="sg-target" id="sg-target"></div><div class="sg-mothstage"><div class="sg-moth-bg">'+plate+'</div><div class="sg-molegrid" id="sg-grid"></div></div>';
     const grid=host.querySelector('#sg-grid');
     for(let i=0;i<12;i++){ const c=document.createElement('button'); c.className='sg-cell'; c.dataset.i=i; grid.appendChild(c); }
     function newWord(){ if(wi>=words.length||doneWords>=CFG.words){ over=true; finish(true); return; }
@@ -498,7 +501,7 @@
       const showNeed=Math.random()<0.45;
       const ch=golden?'★':showNeed?need:String.fromCharCode(97+Math.floor(Math.random()*26));
       c.dataset.on='1'; c.dataset.ch=ch; c.dataset.g=golden?'1':'';
-      c.innerHTML='<span class="sg-moth'+(golden?' gold':'')+'">🦋<b>'+ch.toUpperCase()+'</b></span>';
+      c.innerHTML='<span class="sg-moth'+(golden?' gold':'')+'">'+(golden?'⭐':mothArt)+'<b>'+ch.toUpperCase()+'</b></span>';
       setTimeout(()=>{ if(c.dataset.on){ c.dataset.on=''; c.innerHTML=''; } }, CFG.up+(golden?400:0));
     }
     grid.onclick=e=>{ const c=e.target.closest('.sg-cell'); if(!c||!c.dataset.on||over) return;
@@ -523,7 +526,12 @@
     const CFG={easy:{hexes:6,t:14},medium:{hexes:8,t:12},hard:{hexes:9,t:10},champ:{hexes:10,t:9}}[diff];
     const words=pool(CFG.hexes+6).filter(w=>w.w.length>=4&&w.w.length<=10);
     let phase=1, hexes=0, broken=0, wi=0, over=false, cur=null, timer=null;
-    host.innerHTML='<div class="sg-boss"><div class="sg-bossface" id="sg-bf">🦋🦋🦋<br>🦋🦋🦋🦋</div>'+
+    const art=(window.SGART&&SGART.ready());
+    const foe=opts.foe||'smudge-swarm';
+    const plate=art?SGART.plateForWorld(opts.world||'Hive Gates'):'';
+    const bossArt=art?SGART.sprite(foe,{cls:'sg-bossimg'}):'🦋🦋🦋<br>🦋🦋🦋🦋';
+    host.innerHTML='<div class="sg-boss"><div class="sg-boss-bg">'+plate+'</div>'+
+      '<div class="sg-bossface" id="sg-bf">'+bossArt+'</div>'+
       '<div class="sg-shieldwall" id="sg-sw"></div>'+
       '<div class="sg-duel"><div id="sg-scramble" class="sg-scramble"></div>'+
       '<div class="sg-inrow"><input id="sg-di" autocomplete="off" autocapitalize="off" placeholder="type the word">'+
