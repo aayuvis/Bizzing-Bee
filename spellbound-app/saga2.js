@@ -349,7 +349,103 @@
     return { destroy(){ over=true; clearInterval(timer); } };
   }
 
-  W().SB_SAGA_ENGINES = { honeycombRun, keepFlying, wordHive, beeGrandPrix, whackAMoth, spellShield };
+  W().SB_SAGA_ENGINES = { honeycombRun, keepFlying, wordHive, beeGrandPrix, whackAMoth, spellShield, spotlightSimon, unscrambleStars };
+
+
+  /* ---------- ENGINE G · SPOTLIGHT SIMON (memory sequence) ---------- */
+  function spotlightSimon(host, opts, done){
+    const diff=opts.diff||'medium';
+    const CFG={easy:{seqs:4,start:3},medium:{seqs:6,start:3},hard:{seqs:6,start:4},champ:{seqs:7,start:5}}[diff];
+    const words=pool(CFG.seqs+3).filter(w=>w.w.length>=CFG.start&&w.w.length<=9);
+    let si=0, seq=null, showing=false, tapIdx=0, over=false, misses=0;
+    host.innerHTML='<div class="sg-hud"><span id="sg-seq">Song 1/'+CFG.seqs+'</span><span id="sg-miss"></span></div>'+
+      '<div class="sg-stage"><div class="sg-tiles" id="sg-tiles"></div></div>'+
+      '<div class="sg-simonprompt" id="sg-sp"></div><div id="sg-card"></div>';
+    function newSeq(){
+      if(si>=CFG.seqs){ over=true; done({win:true,score:CFG.seqs*120-misses*20,stars:misses===0?3:misses<=2?2:1}); return; }
+      const w=words[si%words.length]; seq={w:w.w.toLowerCase(),i:0};
+      const tiles=host.querySelector('#sg-tiles'); tiles.innerHTML='';
+      const letters=[...new Set(seq.w.split(''))];
+      while(letters.length<8){ const c=String.fromCharCode(97+Math.floor(Math.random()*26)); if(!letters.includes(c)) letters.push(c); }
+      letters.sort(()=>Math.random()-0.5).forEach(ch=>{ const t=document.createElement('button');
+        t.className='sg-stile'; t.textContent=ch.toUpperCase(); t.dataset.ch=ch; tiles.appendChild(t); });
+      showSeq();
+    }
+    async function showSeq(){
+      showing=true; tapIdx=0;
+      host.querySelector('#sg-sp').textContent='👀 Watch the spotlights…';
+      await new Promise(r=>setTimeout(r,700));
+      for(const ch of seq.w){ if(over) return;
+        const t=[...host.querySelectorAll('.sg-stile')].find(x=>x.dataset.ch===ch);
+        t.classList.add('lit'); await new Promise(r=>setTimeout(r,520)); t.classList.remove('lit');
+        await new Promise(r=>setTimeout(r,160)); }
+      showing=false;
+      host.querySelector('#sg-sp').textContent='🎯 Your turn — repeat it!';
+    }
+    host.querySelector('#sg-tiles').onclick=e=>{
+      const t=e.target.closest('.sg-stile'); if(!t||showing||over) return;
+      if(t.dataset.ch===seq.w[tapIdx]){ t.classList.add('lit'); setTimeout(()=>t.classList.remove('lit'),200); tapIdx++;
+        if(tapIdx>=seq.w.length) recall(); }
+      else { misses++; host.querySelector('#sg-miss').textContent='✖'.repeat(misses);
+        if(misses>=4){ over=true; done({win:false,score:si*60,stars:0}); return; }
+        try{flash('Off-beat! Watch again…');}catch(_){} showSeq(); } };
+    function recall(){ // the sequence WAS a word — now spell it blind
+      const el=host.querySelector('#sg-card');
+      el.innerHTML='<div class="sg-cardbox"><b>🌟 That was a word! Spell it from memory</b><input id="sg-ci" autocomplete="off" autocapitalize="off"></div>';
+      el.style.display='grid';
+      [...host.querySelectorAll('.sg-stile')].forEach(t=>t.style.visibility='hidden');
+      const inp=el.querySelector('#sg-ci'); inp.focus();
+      inp.onkeydown=e=>{ if(e.key!=='Enter') return;
+        const ok=inp.value.trim().toLowerCase()===seq.w;
+        el.style.display='none'; [...host.querySelectorAll('.sg-stile')].forEach(t=>t.style.visibility='');
+        if(ok){ si++; host.querySelector('#sg-seq').textContent='Song '+Math.min(si+1,CFG.seqs)+'/'+CFG.seqs;
+          try{flash('✨ '+seq.w.toUpperCase()+' — the marquee brightens!');}catch(_){} newSeq(); }
+        else { misses++; host.querySelector('#sg-miss').textContent='✖'.repeat(misses);
+          if(misses>=4){ over=true; done({win:false,score:si*60,stars:0}); return; }
+          try{flash('Almost! Watch once more…');}catch(_){} showSeq(); } };
+    }
+    newSeq();
+    return { destroy(){ over=true; } };
+  }
+
+  /* ---------- ENGINE H · UNSCRAMBLE THE STARS ---------- */
+  function unscrambleStars(host, opts, done){
+    const diff=opts.diff||'medium';
+    const CFG={easy:{n:8},medium:{n:12},hard:{n:12},champ:{n:14}}[diff];
+    const words=pool(CFG.n+4).filter(w=>/^[a-z]+$/.test(w.w)&&w.w.length>=4&&w.w.length<=9).slice(0,CFG.n);
+    let i=0, hints=3, over=false;
+    host.innerHTML='<div class="sg-hud"><span id="sg-c">⭐ 1/'+CFG.n+'</span><span id="sg-h">💡 ×3</span></div>'+
+      '<div class="sg-sky"><div class="sg-stars" id="sg-stars"></div><div class="sg-answer" id="sg-ans"></div></div>'+
+      '<div class="sg-simonprompt"><button class="sg-hintbtn" id="sg-hint">💡 Zib\u2019s hint</button></div>';
+    function scr(w){ const a=w.split(''); do{ a.sort(()=>Math.random()-0.5); }while(a.join('')===w); return a; }
+    function newWord(){
+      if(i>=words.length){ over=true; done({win:true,score:CFG.n*100+hints*50,stars:hints>=2?3:hints===1?2:1}); return; }
+      const w=words[i].w.toLowerCase(); const letters=scr(w);
+      host.querySelector('#sg-c').textContent='⭐ '+(i+1)+'/'+CFG.n;
+      const st=host.querySelector('#sg-stars'); st.innerHTML='';
+      letters.forEach(ch=>{ const s=document.createElement('button'); s.className='sg-star'; s.textContent=ch.toUpperCase(); s.dataset.ch=ch; st.appendChild(s); });
+      host.querySelector('#sg-ans').innerHTML=w.split('').map(()=>'<span class="sg-slot"></span>').join('');
+      try{ say(words[i].w); }catch(e){}
+    }
+    let picked=[];
+    host.querySelector('#sg-stars').onclick=e=>{
+      const s=e.target.closest('.sg-star'); if(!s||s.disabled||over) return;
+      const w=words[i].w.toLowerCase();
+      if(s.dataset.ch===w[picked.length]){ s.disabled=true; s.classList.add('set');
+        const slot=host.querySelectorAll('.sg-slot')[picked.length]; slot.textContent=s.textContent; slot.classList.add('fill');
+        picked.push(s.dataset.ch);
+        if(picked.length===w.length){ i++; picked=[];
+          try{flash('🌌 Constellation restored!');}catch(_){}
+          setTimeout(newWord,600); } }
+      else { s.classList.add('no'); setTimeout(()=>s.classList.remove('no'),300); } };
+    host.querySelector('#sg-hint').onclick=()=>{ if(hints<=0||over) return; hints--;
+      host.querySelector('#sg-h').textContent='💡 ×'+hints;
+      const w=words[i].w.toLowerCase(); const need=w[picked.length];
+      const s=[...host.querySelectorAll('.sg-star')].find(x=>!x.disabled&&x.dataset.ch===need);
+      if(s){ s.classList.add('lit'); setTimeout(()=>s.classList.remove('lit'),900); } };
+    newWord();
+    return { destroy(){ over=true; } };
+  }
 
   /* ---------- SAGA CONTROLLER · map, chapter runner, dialogue player ---------- */
   const CH_META=[
