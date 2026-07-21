@@ -890,6 +890,26 @@ const app = {
   openSaga:()=>{ clearGTimer(); if(window.SAGA2) SAGA2.open(); },
   openDaily:()=>{ clearGTimer(); if(window.SB_DAILY) SB_DAILY.open(); },
   openSnake:()=>{ clearGTimer(); if(window.SB_SNAKE) SB_SNAKE.open(); },
+  // ----- Debug / QC: launch one saga engine standalone in a full-screen overlay -----
+  dbgSaga:(name)=>{ if(!window.SB_SAGA_ENGINES||!SB_SAGA_ENGINES[name]){ flash('Engine not loaded'); return; }
+    const old=document.getElementById('dbg-eng'); if(old) old.remove();
+    const ov=document.createElement('div'); ov.id='dbg-eng';
+    ov.style.cssText='position:fixed;inset:0;z-index:90;background:var(--bg,#FBF7EC);overflow:auto;display:flex;flex-direction:column';
+    ov.innerHTML='<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:2px solid var(--honey,#F0B429)">'
+      +'<button id="dbg-x" style="font:600 14px sans-serif;border:1px solid var(--line,#EADFC8);background:var(--panel,#fff);border-radius:999px;padding:6px 14px;cursor:pointer;color:inherit">‹ Debug</button>'
+      +'<span style="font-family:var(--display,serif);font-weight:800;font-size:16px">🐞 '+name+'</span>'
+      +'<span style="margin-left:auto;font:600 11px monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--honey,#B8860B)">medium · QC</span></div>'
+      +'<div id="dbg-host" style="flex:1;max-width:680px;width:100%;margin:0 auto;padding:14px"></div>';
+    document.body.appendChild(ov);
+    let handle=null;
+    const closeDbg=()=>{ try{ if(handle&&handle.destroy) handle.destroy(); }catch(e){} ov.remove(); };
+    ov.querySelector('#dbg-x').onclick=closeDbg;
+    try{ handle=SB_SAGA_ENGINES[name](ov.querySelector('#dbg-host'), {diff:'medium'}, (res)=>{
+      const h=ov.querySelector('#dbg-host');
+      if(h) h.innerHTML='<div style="text-align:center;padding:40px 16px"><div style="font-family:var(--display,serif);font-weight:800;font-size:22px;margin-bottom:8px">'+(res&&res.win?'✅ Win':'❌ Loss')+'</div><div style="color:var(--muted,#7A6E5C);font-size:14px">score '+((res&&res.score)||0)+' · stars '+((res&&res.stars)||0)+'</div><button id="dbg-again" style="margin-top:18px;padding:11px 20px;border-radius:12px;border:none;background:var(--honey,#F0B429);color:#2B2117;font-weight:800;cursor:pointer">Run again</button></div>';
+      const ag=ov.querySelector('#dbg-again'); if(ag) ag.onclick=()=>app.dbgSaga(name);
+    }); }catch(e){ flash('Engine error: '+e.message); }
+  },
   // ----- Bee Trivia (window.STV) -----
   openTrivia:()=>{ clearGTimer(); if(window.STV) STV.open(); },
   trvTh:(a)=>{ if(window.STV) STV.setTh(a); },
@@ -1968,6 +1988,7 @@ function viewApp(){
   else if(S.nav==='parent') content=viewProgressShell();
   else if(S.nav==='journeys') content=viewJourneys();
   else if(S.nav==='settings') content=viewSettings();
+  else if(S.nav==='debug') content=viewDebug();
   else if(S.nav==='evofeedback') content=viewEvoFeedback();
   else content=viewHome();
   const lightOn=S.mode==='light';
@@ -3652,6 +3673,45 @@ function viewEvoFeedback(){ const S=state; const themes=Object.keys(EV_NOMEN);
     <p style="margin:0 0 14px;color:var(--muted);font-size:13px">All 80 evolution tiles (8 worlds × 10 levels). Give per-tile feedback, then export it.</p>
     ${editor}${sections}
   </div>`; }
+/* ===================== DEBUG · QC GAMES (dev-unlock only) ===================== */
+function viewDebug(){
+  if(!state.devUnlock) return viewSettings();
+  const hubs=[
+    {act:'openDaily',   arg:'', c:'#2E8B57', n:'Daily Buzz',      d:'Wordle-style daily word'},
+    {act:'openSnake',   arg:'', c:'#4FB06A', n:'Word Snake',      d:'Steer & spell in order'},
+    {act:'openSaga',    arg:'', c:'#F0B429', n:'Saga Quest',      d:'6-chapter story + engines'},
+    {act:'openQuest',   arg:'', c:'#7C5CFF', n:'Spelling Quest',  d:'Season map + chapters'},
+    {act:'openTrivia',  arg:'', c:'#13A892', n:'Bee Trivia',      d:'Knowledge rounds'},
+    {act:'openChallenge',arg:'journey', c:'#E0922E', n:'Champ Challenge', d:'Timed / counted'},
+    {act:'playGame',    arg:'magic', c:'#B14FC4', n:'Magic Squares', d:'3×3 spell-a-line'},
+    {act:'playGame',    arg:'beat',  c:'#FF5FA2', n:'Beat the Buzzer', d:'60s sprint'},
+    {act:'playGame',    arg:'wordquiz', c:'#13A892', n:'Word Quiz', d:'Meaning / origin MC'},
+    {act:'playGame',    arg:'boss',  c:'#7B52E0', n:'Boss Battle', d:'HP boss'},
+    {act:'playGame',    arg:'duel',  c:'#C43D5A', n:'Spelling Duel', d:'Pass-the-device'},
+  ];
+  const engines=[
+    ['honeycombRun','Honeycomb Run','🌼 Pac-bee maze'],
+    ['keepFlying','Keep Flying','🍯 Flappy-bee'],
+    ['wordHive','Word Hive','🐝 Anagram builder'],
+    ['beeGrandPrix','Bee Grand Prix','🏁 Type-to-nitro race'],
+    ['whackAMoth','Whack-a-Moth','🔨 Tap letters'],
+    ['spellShield','Spell Shield','🛡️ Boss defence'],
+    ['spotlightSimon','Spotlight Simon','🌟 Memory sequence'],
+    ['unscrambleStars','Unscramble Stars','⭐ Constellation'],
+  ];
+  const card=(o)=>`<button data-act="${o.act}"${o.arg?` data-arg="${o.arg}"`:''} style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-left:5px solid ${o.c};border-radius:12px;padding:13px 15px;box-shadow:var(--sh-rest);color:var(--text);cursor:pointer"><div style="font-family:var(--display);font-weight:800;font-size:15px">${o.n}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${o.d}</div></button>`;
+  const eng=(e)=>`<button data-act="dbgSaga" data-arg="${e[0]}" style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-left:5px solid #F0B429;border-radius:12px;padding:13px 15px;box-shadow:var(--sh-rest);color:var(--text);cursor:pointer"><div style="font-family:var(--display);font-weight:800;font-size:15px">${e[1]}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${e[2]} · <span style="font-family:var(--mono)">${e[0]}</span></div></button>`;
+  const grid=(items)=>`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:8px 0 20px">${items}</div>`;
+  return `<div style="max-width:820px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:4px"><button data-act="goSettings" style="color:var(--muted);font-weight:700;font-size:13px">← Settings</button><span style="font-family:var(--display);font-weight:800;font-size:22px">🐞 Debug · QC games</span><span style="margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:3px 9px;border-radius:999px">dev only</span></div>
+    <p style="margin:0 0 12px;color:var(--muted);font-size:13px">One-tap launch for every game — for testing. Only visible while “Unlock everything” is on.</p>
+    <div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:4px 0 2px">Full games &amp; hubs</div>
+    ${grid(hubs.map(card).join(''))}
+    <div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:4px 0 2px">Saga engines · launch standalone</div>
+    ${grid(engines.map(eng).join(''))}
+  </div>`;
+}
+
 function viewSettings(){
   const S=state;
   const themes=THEMES.filter(t=>isThemeUnlocked(t.id)).map(t=>worldHeroCard(t, t.id===S.theme, false, 'pickTheme')).join('');
@@ -3731,6 +3791,7 @@ function viewSettings(){
       <div style="min-width:0"><div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:15px">${SB_ICON('lock',{size:16})} Unlock everything <span style="font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:999px">testing</span></div><div style="font-size:13px;color:var(--muted)">Unlocks all concepts, lists, worlds, Advanced Mode &amp; every level — no coins or Premium needed.</div></div>
       <button data-act="toggleDevUnlock" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:${S.devUnlock?'var(--accent)':'var(--surface2)'};color:${S.devUnlock?'#fff':'var(--muted)'};font-weight:800;font-size:13px">${S.devUnlock?SB_ICON('check',{size:15})+' On':'Off'}</button>
     </div>`}
+    ${state.devUnlock?`<button data-act="setNav" data-arg="debug" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-radius:14px;background:var(--bg2);border:1px solid var(--accent);box-shadow:var(--sh-rest);margin-bottom:16px;color:var(--text)"><div style="text-align:left"><div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:15px">🐞 Debug · QC games <span style="font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:999px">testing</span></div><div style="font-size:12px;color:var(--muted)">Jump straight into any game or saga engine to test</div></div><span style="color:var(--accent)">${iconSVG('arrow',18)}</span></button>`:''}
     ${state.devUnlock?`<button data-act="openEvoFeedback" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-radius:14px;background:var(--bg2);border:1px solid var(--line);box-shadow:var(--sh-rest);margin-bottom:16px;color:var(--text)"><div style="text-align:left"><div style="font-family:var(--display);font-weight:800;font-size:15px">Design feedback</div><div style="font-size:12px;color:var(--muted)">Review the 80 evolution tiles &amp; export notes</div></div><span style="color:var(--accent)">${iconSVG('arrow',18)}</span></button>`:''}
     <button data-act="signOut" style="width:100%;padding:14px;border-radius:14px;background:var(--surface2);color:var(--bad);font-weight:800;font-size:15px">Sign out</button>
     <button data-act="devTap" style="display:block;width:100%;text-align:center;background:none;border:0;cursor:default;margin-top:14px;font-size:11.5px;color:var(--muted);font-weight:650">Bizzing Bee · made with 🐝 for spellers</button>
