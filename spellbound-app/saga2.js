@@ -200,7 +200,8 @@
           step(bee,CFG.speed*1.25); moths.forEach(m=>step(m, flee>0?CFG.speed*0.6:CFG.speed));
           flee=Math.max(0,flee-dt/1000);
           const bc=Math.round(bee.px), br=Math.round(bee.py);
-          if(MAZE[br]&&MAZE[br][bc]===1){ MAZE[br][bc]=2; score+=10; }
+          if(MAZE[br]&&MAZE[br][bc]===1){ MAZE[br][bc]=2; score+=10; dots--;
+            if(dots<=0){ over=true; finish(true); return; } }          // maze cleared → win the round
           if(J.c===bc&&J.r===br&&!J.got){ J.got=true; flee=6; }
           if(flower && Math.round(flower.c)===bc && Math.round(flower.r)===br){ flower=null; spellCard(); }
           moths.forEach(m=>{ if(Math.abs(m.px-bee.px)<0.5&&Math.abs(m.py-bee.py)<0.5){
@@ -265,7 +266,20 @@
       host.querySelector('#sg-time').textContent='⏱ '+Math.floor(t/60)+':'+String(t%60).padStart(2,'0');
       host.querySelector('#sg-lives').textContent='❤'.repeat(Math.max(0,lives));
     }
-    function finish(win){ if(loop){ clearInterval(loop); loop=null; } removeEventListener('keydown',key); done({win, score, stars: win?(score>=CFG.target*1.5?3:score>=CFG.target*1.2?2:1):0}); }
+    function finish(win){ if(loop){ clearInterval(loop); loop=null; } removeEventListener('keydown',key);
+      const stars=win?(score>=CFG.target*1.5?3:score>=CFG.target*1.2?2:1):0; endCard(win,stars); }
+    function endCard(win,stars){
+      const el=host.querySelector('#sg-card'); if(!el){ done({win,score,stars}); return; }
+      el.innerHTML='<div class="sg-cardbox sg-endcard">'
+        +'<div style="font:800 26px var(--display,serif);margin-bottom:4px">'+(win?'🏆 Round clear!':'🌙 Out of time')+'</div>'
+        +'<div style="font-size:26px;letter-spacing:4px;margin:2px 0">'+('★'.repeat(stars)+'☆'.repeat(3-stars))+'</div>'
+        +'<div style="font-size:15px;color:var(--muted,#7A6E5C);margin-bottom:12px">🍯 '+score+' honey collected'+(win?' — the meadow is free!':'')+'</div>'
+        +'<div class="sg-inrow" style="max-width:340px"><button class="sg-rbtn" id="sg-again">↻ Play again</button>'
+        +'<button class="sg-rbtn go" id="sg-cont">'+(win?'Continue →':'Back to map')+'</button></div></div>';
+      el.style.display='grid';
+      el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; honeycombRun(host,opts,done); };
+      el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); };
+    }
     loop=setInterval(frame, 1000/60);
     return { destroy(){ over=true; if(loop){ clearInterval(loop); loop=null; } removeEventListener('keydown',key); } };
   }
