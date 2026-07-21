@@ -162,3 +162,18 @@
 .sg-dmid{display:flex;gap:6px}
 .sg-dbtn{width:54px;height:54px;border-radius:14px;border:none;background:var(--honey,#F0B429);color:#2B2117;font-size:20px;font-weight:800;cursor:pointer;box-shadow:0 3px 0 #C8901B;display:grid;place-items:center;-webkit-tap-highlight-color:transparent}
 .sg-dbtn:active{transform:translateY(2px);box-shadow:0 1px 0 #C8901B}
+
+/* Bee Grand Prix — spell-to-nitro race controls (keyboard + tablet) */
+.sg-race-word{display:flex;gap:6px;align-items:center;width:100%;max-width:520px;margin:0 auto}
+.sg-rin{flex:1;min-width:0;font:600 16px 'Sono',ui-monospace,monospace;padding:9px 12px;border:2px solid var(--honey,#F0B429);border-radius:12px;text-align:center;background:#FFFDF8;color:#2B2117;outline:none}
+.sg-rin:focus{border-color:#36D1FF;box-shadow:0 0 0 3px rgba(54,209,255,.25)}
+.sg-rbtn{flex:none;border:none;background:var(--honey,#F0B429);color:#2B2117;font-weight:800;font-size:15px;border-radius:12px;padding:9px 13px;cursor:pointer;box-shadow:0 3px 0 #C8901B;-webkit-tap-highlight-color:transparent}
+.sg-rbtn:active{transform:translateY(2px);box-shadow:0 1px 0 #C8901B}
+.sg-rbtn.boost{background:#36D1FF;box-shadow:0 3px 0 #1B9FC7}
+.sg-rbtn.boost:active{box-shadow:0 1px 0 #1B9FC7}
+.sg-lanebtns{display:flex;gap:10px;justify-content:center;margin-top:10px}
+
+/* Inline input + submit button row — tablet-friendly spelling submit */
+.sg-inrow{display:flex;gap:6px;align-items:stretch;width:100%;max-width:420px;margin:6px auto 0}
+.sg-inrow input{flex:1;min-width:0}
+.sg-inrow .sg-rbtn{flex:none;white-space:nowrap}
