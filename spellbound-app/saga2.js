@@ -873,7 +873,9 @@
     {n:4,title:'The Queen\u2019s Riddle',world:'Hive',engine:'wordHive',opts:{big:'THUNDERSTORM'}},
     {n:5,title:'Whack-the-Moths',world:'Hive',engine:'whackAMoth',opts:{}},
     {n:6,title:'BOSS: The Smudge',world:'Hive Gates',engine:'spellShield',opts:{}},
-    {n:7,title:'Word Snake: Trail of Letters',world:'Meadow',engine:'wordSnake',opts:{}}
+    {n:7,title:'Word Snake: Trail of Letters',world:'Meadow',engine:'wordSnake',opts:{}},
+    {n:8,title:'Spotlight Simon: The Marquee',world:'Stage',engine:'spotlightSimon',opts:{}},
+    {n:9,title:'Unscramble the Stars',world:'Cosmos',engine:'unscrambleStars',opts:{}}
   ];
   const FACE={bizzy:'🐝',bumble:'🐝',waggle:'🐝',drone:'🐝',queen:'👑',smudge:'🦋',sting:'🐝',narrator:'📖',melody:'🎵',maestro:'🎩',astro:'🚀',comet:'☄️',zib:'👽',sensei:'🐼',ninja:'🥷',beaker:'🧪',brainiac:'🧠',zoomies:'🐶',capy:'🦫',pixel:'👾',joystick:'🕹️',glitch:'😈',vex:'🐝'};
   const NAME={bizzy:'Bizzy',bumble:'Bumble',waggle:'Waggle',drone:'Drone Dan',queen:'Hive Queen',smudge:'The Smudge',sting:'Sting',narrator:'',melody:'Melody',maestro:'Maestro',astro:'Astro',comet:'Comet',zib:'Zib',sensei:'Panda Sensei',ninja:'Shadow Ninja',beaker:'Beaker',brainiac:'Brainiac',zoomies:'Zoomies',capy:'Capy',pixel:'Pixel Pal',joystick:'Joy Stick',glitch:'Glitch',vex:'Vex'};
