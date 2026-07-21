@@ -461,14 +461,20 @@
   function prog(){ try{ return JSON.parse(localStorage.getItem('sb_saga2')||'{}'); }catch(e){ return {}; } }
   function setProg(p){ localStorage.setItem('sb_saga2', JSON.stringify(p)); }
   let overlay=null, engineHandle=null, curAudio=null;
+  function music(){ return window.SAGA_MUSIC; }
+  function playMusic(world){ try{ if(music()) music().start(world); }catch(e){} }
   function close(){ if(engineHandle){ try{engineHandle.destroy();}catch(e){} engineHandle=null; }
     if(curAudio){ try{curAudio.pause();}catch(e){} curAudio=null; }
+    try{ if(music()) music().stop(); }catch(e){}
     if(overlay){ overlay.remove(); overlay=null; } }
+  function musicBtn(){ const m=music()&&music().isMuted(); return '<button class="sg-music'+(m?' off':'')+'" id="sg-music" title="Music" aria-label="Toggle music">'+(m?'🔇':'🎵')+'</button>'; }
   function shell(inner){ close();
     overlay=document.createElement('div'); overlay.className='sg-overlay';
-    overlay.innerHTML='<div class="sg-top"><button class="sg-back" id="sg-back">← Saga</button><span class="sg-brand">Bizzy & the Great Unspelling</span></div><div class="sg-body" id="sg-body"></div>';
+    overlay.innerHTML='<div class="sg-top"><button class="sg-back" id="sg-back">← Saga</button><span class="sg-brand">Bizzy & the Great Unspelling</span>'+musicBtn()+'</div><div class="sg-body" id="sg-body"></div>';
     document.body.appendChild(overlay);
     overlay.querySelector('#sg-back').onclick=()=>{ close(); SAGA2.open(); };
+    const mb=overlay.querySelector('#sg-music');
+    if(mb) mb.onclick=()=>{ const muted=music().toggleMute(); mb.classList.toggle('off',muted); mb.textContent=muted?'🔇':'🎵'; };
     overlay.querySelector('#sg-body').innerHTML=inner;
     return overlay.querySelector('#sg-body'); }
   function map(){
@@ -486,6 +492,7 @@
       '<div class="sg-actgem">'+SGART.sprite('gem-act1',{size:30,grey:cleared<6})+'<b>'+gems+'</b></div></div></div>'):
       ('<div class="sg-acthead"><span>ACT I</span><h3>The Scattering</h3><p>The meadow falls; the first crew forms. '+cleared+'/6 chapters cleared.</p></div>');
     const b=shell(banner+'<div class="sg-map">'+nodes+'</div>');
+    playMusic('Meadow');
     b.querySelectorAll('.sg-node:not([disabled])').forEach(n=>n.onclick=()=>chapter(+n.dataset.ch));
     overlay.querySelector('#sg-back').onclick=()=>close();
   }
@@ -497,6 +504,7 @@
     const art=(window.SGART&&SGART.ready());
     const banner=art?('<div class="sg-scenebanner">'+SGART.plateForWorld(meta.world, phase==='lose')+'</div>'):'';
     const b=shell(banner+'<div class="sg-dlg"><div class="sg-dface" id="sg-df"></div><div class="sg-dbox"><b id="sg-dn"></b><p id="sg-dl"></p></div><button class="sg-next" id="sg-nx">▸</button></div>');
+    playMusic(meta.world);
     function show(){ const [spk,text,key]=lines[i];
       const face=b.querySelector('#sg-df'); const port=art?SGART.portrait(spk):'';
       if(port){ face.innerHTML=port; face.classList.add('has-art'); }
@@ -505,7 +513,10 @@
       b.querySelector('#sg-dl').textContent=text;
       if(curAudio){ try{curAudio.pause();}catch(e){} }
       curAudio=null;
-      try{ const a=new Audio('voice/d/'+key+'.mp3'); a.play().then(()=>{curAudio=a;}).catch(()=>{}); }catch(e){}
+      const unduck=()=>{ try{ if(music()) music().duck(false); }catch(e){} };
+      try{ const a=new Audio('voice/d/'+key+'.mp3');
+        a.addEventListener('ended',unduck); a.addEventListener('error',unduck);
+        a.play().then(()=>{ curAudio=a; try{ if(music()) music().duck(true); }catch(e){} }).catch(unduck); }catch(e){ unduck(); }
     }
     b.querySelector('#sg-nx').onclick=()=>{ i++; if(i>=lines.length) then(); else show(); };
     show();
@@ -517,6 +528,7 @@
   function game(meta){
     const plate=(window.SGART&&SGART.ready())?SGART.plateForWorld(meta.world):'';
     const b=shell('<div class="sg-gameframe">'+plate+'<div class="sg-gamehost" id="sg-gh"></div></div>');
+    playMusic(meta.world);
     const diff=(active&&active().gameDiff)||'medium';
     const eng=W().SB_SAGA_ENGINES[meta.engine];
     engineHandle=eng(b.querySelector('#sg-gh'), Object.assign({diff},meta.opts), res=>{

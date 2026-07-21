@@ -94,3 +94,6 @@
 .sg-actgem{position:absolute;right:16px;bottom:14px;display:flex;align-items:center;gap:6px}
 .sg-actgem .sg-sprite{width:30px;height:30px}
 .sg-actgem b{font:800 18px 'Sono',monospace;color:#FFE28A}
+/* music toggle in the saga top bar */
+.sg-music{margin-left:auto;font-size:18px;line-height:1;border:1px solid var(--line,#EADFC8);background:var(--panel,#fff);border-radius:999px;width:40px;height:40px;cursor:pointer;display:grid;place-items:center}
+.sg-music.off{opacity:.55}
