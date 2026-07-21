@@ -84,14 +84,17 @@
     function spellCard(){
       if(wi>=words.length) wi=0; const w=words[wi++]; card={w,typed:'',t:12};
       const el=host.querySelector('#sg-card');
-      el.innerHTML='<div class="sg-cardbox"><b>🌼 Spell it to bloom — earn time &amp; coins!</b><div class="sg-cardw" id="sg-cw">🔊</div><input id="sg-ci" autocomplete="off" autocapitalize="off"><div id="sg-ct">12</div></div>';
+      el.innerHTML='<div class="sg-cardbox"><b>🌼 Spell it to bloom — earn time &amp; coins!</b><button class="sg-cardw" id="sg-cw">🔊</button><div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off"><button class="sg-rbtn go" id="sg-cgo">Bloom</button></div><div id="sg-ct">12</div></div>';
       el.style.display='grid'; try{ say(w.w); }catch(e){}
       const inp=el.querySelector('#sg-ci'); inp.focus();
-      inp.onkeydown=e=>{ if(e.key==='Enter'){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase();
+      function submit(){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase();
         if(ok){ score+=150; t+=15; try{ if(typeof addCoins==='function') addCoins(20); }catch(_){}
           try{flash('🌸 +150 · +15 seconds · +20 🪙 — the meadow blooms!');}catch(_){} }
         else { try{flash('Not quite — the moth got that one.');}catch(_){} }
-        el.style.display='none'; card=null; } };
+        el.style.display='none'; card=null; }
+      inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } };
+      el.querySelector('#sg-cgo').onclick=submit;
+      el.querySelector('#sg-cw').onclick=()=>{ try{ say(w.w); }catch(e){} };
       const tick=setInterval(()=>{ if(!card){ clearInterval(tick); return; } card.t--; el.querySelector('#sg-ct').textContent=card.t;
         if(card.t<=0){ clearInterval(tick); el.style.display='none'; card=null; } },1000);
     }
@@ -171,13 +174,16 @@
     function spellStop(){
       const w=words[wi++%words.length]; card={w};
       const el=host.querySelector('#sg-card');
-      el.innerHTML='<div class="sg-cardbox"><b>🍯 Honey pot! Spell to bank it</b><div class="sg-cardw">🔊</div><input id="sg-ci" autocomplete="off" autocapitalize="off"></div>';
+      el.innerHTML='<div class="sg-cardbox"><b>🍯 Honey pot! Spell to bank it</b><button class="sg-cardw" id="sg-cspk">🔊</button><div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off"><button class="sg-rbtn go" id="sg-cgo">Bank</button></div></div>';
       el.style.display='grid'; try{ say(w.w); }catch(e){}
       const inp=el.querySelector('#sg-ci'); inp.focus();
-      inp.onkeydown=e=>{ if(e.key==='Enter'){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase();
+      function submit(){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase();
         if(ok){ banked++; try{flash('🍯 Pot banked! '+banked+'/'+CFG.pots);}catch(_){}}else{ bee.y=Math.min(Ht-40,bee.y+60); try{flash('Almost! The pot floats ahead…');}catch(_){} }
         el.style.display='none'; card=null;
-        if(banked>=CFG.pots){ over=true; finish(true); } } };
+        if(banked>=CFG.pots){ over=true; finish(true); } }
+      inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } };
+      el.querySelector('#sg-cgo').onclick=submit;
+      el.querySelector('#sg-cspk').onclick=()=>{ try{ say(w.w); }catch(e){} };
     }
     let last=0, spawnT=0, potT=4;
     function frame(ts){ if(over) return;
@@ -222,11 +228,12 @@
     const dict=(()=>{ try{ const s=new Set(); (window.SB_FULL||[]).forEach(w=>{ if(typeof w==='string') s.add(w.toUpperCase()); else if(w&&w.w) s.add(w.w.toUpperCase()); }); return s; }catch(e){ return new Set(); } })();
     host.innerHTML='<div class="sg-hud"><span id="sg-cells">🐝 0/'+CFG.target+' comb</span><span id="sg-time"></span></div>'+
       '<div class="sg-bigword">'+BIG.split('').map(c=>'<span class="sg-tile">'+c+'</span>').join('')+'</div>'+
-      '<input id="sg-hi" placeholder="type a word + Enter" autocomplete="off" autocapitalize="off">'+
+      '<div class="sg-inrow"><input id="sg-hi" placeholder="type a word" autocomplete="off" autocapitalize="off">'+
+      '<button class="sg-rbtn go" id="sg-hgo">Add</button></div>'+
       '<div id="sg-found" class="sg-found"></div>';
     const inp=host.querySelector('#sg-hi'); inp.focus();
     function canMake(w){ const c={...counts}; for(const ch of w){ if(!c[ch]) return false; c[ch]--; } return true; }
-    inp.onkeydown=e=>{ if(e.key!=='Enter') return; const w=inp.value.trim().toUpperCase(); inp.value='';
+    function submit(){ const w=inp.value.trim().toUpperCase(); inp.value=''; try{inp.focus();}catch(e){}
       if(w.length<3) return note(w+' — too short (3+)');
       if(w===BIG) return note('The big word itself doesn\u2019t count!');
       if(found.includes(w)) return note(w+' — already found');
@@ -236,7 +243,9 @@
       host.querySelector('#sg-found').innerHTML=found.map(f=>'<span class="sg-fw">'+f+'</span>').join('');
       host.querySelector('#sg-cells').textContent='🐝 '+Math.min(cells,CFG.target)+'/'+CFG.target+' comb';
       try{flash('+'+v+' comb — '+w);}catch(_){}
-      if(cells>=CFG.target){ over=true; finish(true); } };
+      if(cells>=CFG.target){ over=true; finish(true); } }
+    inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } };
+    host.querySelector('#sg-hgo').onclick=submit;
     function note(m){ try{flash(m);}catch(_){} }
     const tick=setInterval(()=>{ if(over){ clearInterval(tick); return; } t--;
       host.querySelector('#sg-time').textContent='⏳ '+Math.floor(t/60)+':'+String(t%60).padStart(2,'0');
@@ -252,7 +261,11 @@
     const diff=opts.diff||'medium';
     const CFG={easy:{ai:2.0,laps:2},medium:{ai:2.5,laps:3},hard:{ai:2.9,laps:3},champ:{ai:3.3,laps:3}}[diff];
     host.innerHTML='<div class="sg-hud"><span id="sg-lap">Lap 1/'+CFG.laps+'</span><span id="sg-pos"></span><span id="sg-nitro"></span></div>'+
-      '<canvas id="sg-cv"></canvas><div class="sg-race-word" id="sg-rw"></div>';
+      '<canvas id="sg-cv"></canvas>'+
+      '<div class="sg-race-word" id="sg-rw"><button class="sg-rbtn" id="sg-rspk" aria-label="Hear the word">🔊</button>'+
+      '<input id="sg-ri" class="sg-rin" placeholder="type what you hear" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text">'+
+      '<button class="sg-rbtn go" id="sg-rgo">Go</button><button class="sg-rbtn boost" id="sg-rboost">⚡</button></div>'+
+      '<div class="sg-lanebtns"><button class="sg-dbtn" data-l="-1" aria-label="Move up a lane">▲</button><button class="sg-dbtn" data-l="1" aria-label="Move down a lane">▼</button></div>';
     const cv=host.querySelector('#sg-cv'); cv.width=Wd; cv.height=Ht; const cx=cv.getContext('2d');
     const racers=[
       {name:'You', lane:1, x:0, spd:0, base:2.6, col:'#F0B429', you:true, nitro:0, boost:0},
@@ -261,19 +274,24 @@
       {name:'Drone Dan', lane:3, x:0, spd:0, base:CFG.ai*1.02, col:'#8A8A8A'}];
     const hazards=[]; for(let i=0;i<10;i++) hazards.push({x:400+i*300+Math.random()*120, lane:Math.floor(Math.random()*LANES)});
     const words=pool(12); let wi=0, curWord=null, typed='', over=false;
-    function nextWord(){ curWord=words[wi++%words.length]; typed='';
-      host.querySelector('#sg-rw').innerHTML='🔊 <b>Spell for nitro:</b> <span id="sg-rt"></span>'; try{ say(curWord.w); }catch(e){} }
-    const key=e=>{ const me=racers[0];
-      if(e.key==='ArrowUp'){ me.lane=Math.max(0,me.lane-1); e.preventDefault(); }
-      else if(e.key==='ArrowDown'){ me.lane=Math.min(LANES-1,me.lane+1); e.preventDefault(); }
-      else if(e.key==='Enter'){ if(curWord && typed.trim().toLowerCase()===curWord.w.toLowerCase()){ me.nitro=Math.min(3,me.nitro+1); try{flash('⚡ Nitro banked!');}catch(_){} } nextWord(); }
-      else if(e.key===' '){ if(me.nitro>0){ me.nitro--; me.boost=1.6; } e.preventDefault(); }
-      else if(e.key==='Backspace'){ typed=typed.slice(0,-1); }
-      else if(/^[a-zA-Z-]$/.test(e.key)){ typed+=e.key; }
-      const rt=host.querySelector('#sg-rt'); if(rt) rt.textContent=typed; };
+    const inp=host.querySelector('#sg-ri');
+    function nextWord(){ curWord=words[wi++%words.length]; typed=''; if(inp) inp.value=''; try{ say(curWord.w); }catch(e){} }
+    function bank(){ const me=racers[0]; const val=(inp?inp.value:typed).trim().toLowerCase();
+      if(curWord && val===curWord.w.toLowerCase()){ me.nitro=Math.min(3,me.nitro+1); try{flash('⚡ Nitro banked!');}catch(_){} }
+      nextWord(); if(inp) inp.focus(); }
+    function boost(){ const me=racers[0]; if(me.nitro>0){ me.nitro--; me.boost=1.6; } }
+    function laneShift(d){ const me=racers[0]; me.lane=Math.max(0,Math.min(LANES-1,me.lane+d)); }
+    if(inp){ inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); bank(); } }; setTimeout(()=>{ try{inp.focus();}catch(e){} },60); }
+    host.querySelector('#sg-rgo').onclick=bank;
+    host.querySelector('#sg-rboost').onclick=boost;
+    host.querySelector('#sg-rspk').onclick=()=>{ try{ if(curWord) say(curWord.w); }catch(e){} };
+    host.querySelector('.sg-lanebtns').onclick=e=>{ const b=e.target.closest('[data-l]'); if(b) laneShift(+b.dataset.l); };
+    const key=e=>{ if(e.key==='ArrowUp'){ laneShift(-1); e.preventDefault(); }
+      else if(e.key==='ArrowDown'){ laneShift(1); e.preventDefault(); }
+      else if(e.key===' ' && e.target!==inp){ boost(); e.preventDefault(); } };
     addEventListener('keydown',key);
     cv.addEventListener('pointerdown',e=>{ const r=cv.getBoundingClientRect(); const y=e.clientY-r.top;
-      const me=racers[0]; me.lane=Math.max(0,Math.min(LANES-1,Math.floor(y/LANE_H))); });
+      const me=racers[0]; me.lane=Math.max(0,Math.min(LANES-1,Math.floor((y-40)/LANE_H))); });
     nextWord();
     let last=0;
     function frame(ts){ if(over) return; const dt=Math.min(50,ts-last)/16.7; last=ts;
@@ -364,7 +382,8 @@
     host.innerHTML='<div class="sg-boss"><div class="sg-bossface" id="sg-bf">🦋🦋🦋<br>🦋🦋🦋🦋</div>'+
       '<div class="sg-shieldwall" id="sg-sw"></div>'+
       '<div class="sg-duel"><div id="sg-scramble" class="sg-scramble"></div>'+
-      '<input id="sg-di" autocomplete="off" autocapitalize="off" placeholder="type the word">'+
+      '<div class="sg-inrow"><input id="sg-di" autocomplete="off" autocapitalize="off" placeholder="type the word">'+
+      '<button class="sg-rbtn go" id="sg-dgo">Cast</button></div>'+
       '<div id="sg-dt" class="sg-dtimer"></div></div></div>';
     const sw=host.querySelector('#sg-sw');
     function wall(){ sw.innerHTML=Array.from({length:CFG.hexes},(_,i)=>
@@ -392,14 +411,16 @@
       next(); }
     const inp=host.querySelector('#sg-di'); inp.focus();
     let p2right=0;
-    inp.onkeydown=e=>{ if(e.key!=='Enter'||over) return;
-      const ok=inp.value.trim().toLowerCase()===cur.w.toLowerCase(); inp.value='';
+    function cast(){ if(over) return;
+      const ok=inp.value.trim().toLowerCase()===cur.w.toLowerCase(); inp.value=''; try{inp.focus();}catch(e){}
       clearInterval(timer);
       if(ok){ if(phase===1){ hexes++; wall(); try{flash('⬡ Shield hex forged!');}catch(_){} }
         else { p2right++; try{flash('⚡ The Quill fires! '+p2right+'/3');}catch(_){}
           if(p2right>=3){ over=true; done({win:true,score:hexes*100+300,stars:broken===0?3:broken<=2?2:1}); return; } } }
       else hit();
-      if(!over) next(); };
+      if(!over) next(); }
+    inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); cast(); } };
+    host.querySelector('#sg-dgo').onclick=cast;
     wall(); next();
     return { destroy(){ over=true; clearInterval(timer); } };
   }
@@ -446,18 +467,20 @@
         try{flash('Off-beat! Watch again…');}catch(_){} showSeq(); } };
     function recall(){ // the sequence WAS a word — now spell it blind
       const el=host.querySelector('#sg-card');
-      el.innerHTML='<div class="sg-cardbox"><b>🌟 That was a word! Spell it from memory</b><input id="sg-ci" autocomplete="off" autocapitalize="off"></div>';
+      el.innerHTML='<div class="sg-cardbox"><b>🌟 That was a word! Spell it from memory</b><div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off"><button class="sg-rbtn go" id="sg-cgo">Sing</button></div></div>';
       el.style.display='grid';
       [...host.querySelectorAll('.sg-stile')].forEach(t=>t.style.visibility='hidden');
       const inp=el.querySelector('#sg-ci'); inp.focus();
-      inp.onkeydown=e=>{ if(e.key!=='Enter') return;
+      function submit(){
         const ok=inp.value.trim().toLowerCase()===seq.w;
         el.style.display='none'; [...host.querySelectorAll('.sg-stile')].forEach(t=>t.style.visibility='');
         if(ok){ si++; host.querySelector('#sg-seq').textContent='Song '+Math.min(si+1,CFG.seqs)+'/'+CFG.seqs;
           try{flash('✨ '+seq.w.toUpperCase()+' — the marquee brightens!');}catch(_){} newSeq(); }
         else { misses++; host.querySelector('#sg-miss').textContent='✖'.repeat(misses);
           if(misses>=4){ over=true; done({win:false,score:si*60,stars:0}); return; }
-          try{flash('Almost! Watch once more…');}catch(_){} showSeq(); } };
+          try{flash('Almost! Watch once more…');}catch(_){} showSeq(); } }
+      inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } };
+      el.querySelector('#sg-cgo').onclick=submit;
     }
     newSeq();
     return { destroy(){ over=true; } };
