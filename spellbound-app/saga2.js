@@ -15,9 +15,13 @@
     _imgCache[name]=null;
     const a=(window.SAGA_ART||{})[name]; if(!a) return null;
     const f=(a.frames&&a.frames[0])||a.svg||'';
-    const svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="'+(a.vb||'0 0 120 120')+'">'+f+'</svg>';
-    const img=new Image();
+    const vb=(a.vb||'0 0 120 120'), p=String(vb).split(/\s+/), w=(+p[2])||120, h=(+p[3])||120;
+    // width/height are REQUIRED — without them the SVG <img> has 0 intrinsic size
+    // and canvas drawImage() throws, which would kill the game loop.
+    const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'" viewBox="'+vb+'">'+f+'</svg>';
+    const img=new Image(w,h);
     img.onload=()=>{ _imgCache[name]=img; };
+    img.onerror=()=>{ _imgCache[name]=false; };  // never retry a broken sprite
     img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
     return null;
   }
@@ -64,7 +68,8 @@
       bee.want=Math.abs(dx)>Math.abs(dy)?[Math.sign(dx),0]:[0,Math.sign(dy)]; },{passive:true});
     function open(c,r){ return MAZE[r]&&MAZE[r][c]!==0; }
     function step(ent,sp){ // grid mover with desired-turn buffering
-      const atC=Math.abs(ent.px-Math.round(ent.px))<0.08 && Math.abs(ent.py-Math.round(ent.py))<0.08;
+      const spd=sp/60, thr=spd*0.6;   // snap window MUST be smaller than the per-frame step, or the bee vibrates in place
+      const atC=Math.abs(ent.px-Math.round(ent.px))<thr && Math.abs(ent.py-Math.round(ent.py))<thr;
       if(atC){ ent.px=Math.round(ent.px); ent.py=Math.round(ent.py);
         if(ent===bee && open(ent.px+bee.want[0], ent.py+bee.want[1])) ent.dir=bee.want.slice();
         if(!open(ent.px+ent.dir[0], ent.py+ent.dir[1])){ if(ent===bee) ent.dir=[0,0]; else {
@@ -72,7 +77,7 @@
           ent.dir=ops[Math.floor(Math.random()*ops.length)]||[-ent.dir[0],-ent.dir[1]]; } }
         if(ent!==bee && Math.random()<0.25){ const ops=[[1,0],[-1,0],[0,1],[0,-1]].filter(d=>open(ent.px+d[0],ent.py+d[1])&&!(d[0]===-ent.dir[0]&&d[1]===-ent.dir[1]));
           if(ops.length) ent.dir=ops[Math.floor(Math.random()*ops.length)]; } }
-      ent.px+=ent.dir[0]*sp/60; ent.py+=ent.dir[1]*sp/60;
+      ent.px+=ent.dir[0]*spd; ent.py+=ent.dir[1]*spd;
     }
     function spellCard(){
       if(wi>=words.length) return; const w=words[wi++]; card={w,typed:'',t:10};
@@ -85,26 +90,27 @@
       const tick=setInterval(()=>{ if(!card){ clearInterval(tick); return; } card.t--; el.querySelector('#sg-ct').textContent=card.t;
         if(card.t<=0){ clearInterval(tick); el.style.display='none'; card=null; } },1000);
     }
-    let last=0, dotTimer=0;
-    function frame(ts){
-      if(over) return;
-      if(card){ requestAnimationFrame(frame); return; } // paused during spell card
-      const dt=Math.min(50, ts-last); last=ts;
-      step(bee,CFG.speed*1.25); moths.forEach(m=>step(m, flee>0?CFG.speed*0.6:CFG.speed));
-      flee=Math.max(0,flee-dt/1000);
-      // collisions
-      const bc=Math.round(bee.px), br=Math.round(bee.py);
-      if(MAZE[br][bc]===1){ MAZE[br][bc]=2; score+=10; }
-      if(J.c===bc&&J.r===br&&!J.got){ J.got=true; flee=6; }
-      if(flower && Math.round(flower.c)===bc && Math.round(flower.r)===br){ flower=null; spellCard(); }
-      moths.forEach(m=>{ if(Math.abs(m.px-bee.px)<0.5&&Math.abs(m.py-bee.py)<0.5){
-        if(flee>0){ score+=50; m.px=6;m.py=1; } else { lives--; bee.px=6;bee.py=5;bee.dir=[0,0];
-          if(lives<=0){ over=true; finish(false); } } } });
-      // timers
-      dotTimer+=dt/1000; if(dotTimer>=1){ dotTimer=0; t--; flowerT--; if(flowerT<=0&&!flower){ flowerT=20;
-        let c,r; do{ c=1+Math.floor(Math.random()*(COLS-2)); r=1+Math.floor(Math.random()*(ROWS-2)); }while(!open(c,r));
-        flower={c,r}; } if(t<=0){ over=true; finish(score>=CFG.target); } }
-      draw(); requestAnimationFrame(frame);
+    let last=Date.now(), dotTimer=0, loop=null;
+    function frame(){
+      if(over){ if(loop){ clearInterval(loop); loop=null; } return; }
+      try{
+        if(!card){                                   // paused during a spell card
+          const now=Date.now(), dt=Math.min(50, now-last); last=now;
+          step(bee,CFG.speed*1.25); moths.forEach(m=>step(m, flee>0?CFG.speed*0.6:CFG.speed));
+          flee=Math.max(0,flee-dt/1000);
+          const bc=Math.round(bee.px), br=Math.round(bee.py);
+          if(MAZE[br]&&MAZE[br][bc]===1){ MAZE[br][bc]=2; score+=10; }
+          if(J.c===bc&&J.r===br&&!J.got){ J.got=true; flee=6; }
+          if(flower && Math.round(flower.c)===bc && Math.round(flower.r)===br){ flower=null; spellCard(); }
+          moths.forEach(m=>{ if(Math.abs(m.px-bee.px)<0.5&&Math.abs(m.py-bee.py)<0.5){
+            if(flee>0){ score+=50; m.px=6;m.py=1; } else { lives--; bee.px=6;bee.py=5;bee.dir=[0,0];
+              if(lives<=0){ over=true; finish(false); } } } });
+          dotTimer+=dt/1000; if(dotTimer>=1){ dotTimer=0; t--; flowerT--; if(flowerT<=0&&!flower){ flowerT=20;
+            let c,r,tries=0; do{ c=1+Math.floor(Math.random()*(COLS-2)); r=1+Math.floor(Math.random()*(ROWS-2)); }while(!open(c,r)&&++tries<50);
+            flower={c,r}; } if(t<=0){ over=true; finish(score>=CFG.target); } }
+          draw();
+        }
+      }catch(err){ /* never let a render/logic error stop the loop — the bee must keep moving */ }
     }
     function draw(){
       cx.clearRect(0,0,cv.width,cv.height);                 // transparent — the world plate shows through as ground
@@ -121,24 +127,24 @@
       const mi=sgImg('grey-moth');
       moths.forEach(m=>{ const mx=m.px*CELL, my=m.py*CELL;
         if(flee>0){ cx.fillStyle='rgba(143,160,245,.55)'; cx.beginPath(); cx.arc(mx+CELL/2,my+CELL/2,CELL*0.42,0,7); cx.fill(); }
-        if(mi){ const s=CELL*0.92; cx.drawImage(mi,mx+(CELL-s)/2,my+(CELL-s)/2,s,s); }
-        else { cx.fillStyle=flee>0?'#8FA0F5':'#A39B8E'; cx.beginPath();
+        let drew=false; if(mi){ try{ const s=CELL*0.92; cx.drawImage(mi,mx+(CELL-s)/2,my+(CELL-s)/2,s,s); drew=true; }catch(e){} }
+        if(!drew){ cx.fillStyle=flee>0?'#8FA0F5':'#A39B8E'; cx.beginPath();
           cx.moveTo(mx+CELL/2,my+CELL*0.2); cx.lineTo(mx+CELL*0.2,my+CELL*0.8); cx.lineTo(mx+CELL*0.8,my+CELL*0.8); cx.fill(); } });
       // bee — real Bizzy top-down sprite (gentle wing bob), fallback gold blob
-      const bi=sgImg('bizzy-top'), bx=bee.px*CELL, by=bee.py*CELL;
-      if(bi){ const bob=1+0.06*Math.sin(Date.now()/120), s=CELL*0.98*bob;
+      const bi=sgImg('bizzy-top'), bx=bee.px*CELL, by=bee.py*CELL; let beeDrew=false;
+      if(bi){ try{ const bob=1+0.06*Math.sin(Date.now()/120), s=CELL*0.98*bob;
         cx.save(); cx.translate(bx+CELL/2,by+CELL/2);
         if(bee.dir[0]<0) cx.scale(-1,1);              // flip when flying left
-        cx.drawImage(bi,-s/2,-s/2,s,s); cx.restore(); }
-      else { cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(bx+CELL/2,by+CELL/2,CELL*0.34,0,7); cx.fill();
+        cx.drawImage(bi,-s/2,-s/2,s,s); cx.restore(); beeDrew=true; }catch(e){ try{cx.restore();}catch(_){} } }
+      if(!beeDrew){ cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(bx+CELL/2,by+CELL/2,CELL*0.34,0,7); cx.fill();
         cx.fillStyle='#2B2117'; cx.fillRect(bx+CELL*0.3,by+CELL*0.34,CELL*0.4,CELL*0.09); }
       host.querySelector('#sg-score').textContent='🍯 '+score+' / '+CFG.target;
       host.querySelector('#sg-time').textContent='⏱ '+Math.floor(t/60)+':'+String(t%60).padStart(2,'0');
       host.querySelector('#sg-lives').textContent='❤'.repeat(Math.max(0,lives));
     }
-    function finish(win){ removeEventListener('keydown',key); done({win, score, stars: win?(score>=CFG.target*1.5?3:score>=CFG.target*1.2?2:1):0}); }
-    requestAnimationFrame(frame);
-    return { destroy(){ over=true; removeEventListener('keydown',key); } };
+    function finish(win){ if(loop){ clearInterval(loop); loop=null; } removeEventListener('keydown',key); done({win, score, stars: win?(score>=CFG.target*1.5?3:score>=CFG.target*1.2?2:1):0}); }
+    loop=setInterval(frame, 1000/60);
+    return { destroy(){ over=true; if(loop){ clearInterval(loop); loop=null; } removeEventListener('keydown',key); } };
   }
 
 
