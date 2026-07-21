@@ -476,6 +476,82 @@
     return { destroy(){ over=true; } };
   }
 
+  /* ================================================================
+     UNIFIED STORY ENGINE · SPELL SCENE
+     A fluid, illustrated spelling scene (no grid, no canvas). The world
+     backdrop is greyed by the Unspelling; spelling words sweeps colour
+     back, drives the villain back, and fills the restore meter. Themed
+     per chapter via opts {world, foe, hero, verb}.
+     ================================================================ */
+  function spellScene(host, opts, done){
+    const diff=opts.diff||'medium';
+    const CFG={easy:{n:6},medium:{n:8},hard:{n:10},champ:{n:12}}[diff]||{n:8};
+    const words=pool(CFG.n+6).filter(w=>w&&/^[a-z]+$/i.test(w.w||'')&&(w.w||'').length>=3&&(w.w||'').length<=12).slice(0,CFG.n);
+    if(!words.length){ done({win:true,score:0,stars:1}); return; }
+    const art=(window.SGART&&SGART.ready());
+    const plate=art?SGART.plateForWorld(opts.world||'Meadow'):'';
+    const heroSvg=art?SGART.sprite(opts.hero||'bizzy-base',{cls:'ss-sprite'}):'<span class="ss-emoji">🐝</span>';
+    const foeSvg=art?SGART.sprite(opts.foe||'grey-moth',{cls:'ss-sprite'}):'<span class="ss-emoji">🦋</span>';
+    host.innerHTML=
+      '<div class="ss-wrap">'+
+        '<div class="ss-bg" id="ss-bg">'+plate+'</div>'+
+        '<div class="ss-stage">'+
+          '<div class="ss-hero">'+heroSvg+'</div>'+
+          '<div class="ss-foe" id="ss-foe">'+foeSvg+'</div>'+
+        '</div>'+
+        '<div class="ss-meterwrap"><div class="ss-meter"><div class="ss-meter-fill" id="ss-fill"></div></div><span class="ss-mlbl" id="ss-mlbl">0 / '+words.length+'</span></div>'+
+        '<div class="ss-panel">'+
+          '<div class="ss-prompt"><button class="ss-say" id="ss-say" aria-label="Hear the word">🔊</button><span class="ss-hint" id="ss-hint"></span></div>'+
+          '<div class="ss-slots" id="ss-slots"></div>'+
+          '<div class="ss-key" id="ss-key"></div>'+
+        '</div>'+
+      '</div>';
+    let i=0, typed='', over=false, misses=0;
+    const bg=host.querySelector('#ss-bg'), foeEl=host.querySelector('#ss-foe'),
+          fill=host.querySelector('#ss-fill'), slotsEl=host.querySelector('#ss-slots'), mlbl=host.querySelector('#ss-mlbl');
+    function grey(p){ bg.style.filter='grayscale('+(0.92*(1-p)).toFixed(2)+') brightness('+(0.9+0.12*p).toFixed(2)+')'; }
+    grey(0);
+    const rows=['qwertyuiop','asdfghjkl','zxcvbnm'];
+    host.querySelector('#ss-key').innerHTML=rows.map(r=>'<div class="ss-krow">'+r.split('').map(ch=>'<button class="ss-kb" data-k="'+ch+'">'+ch+'</button>').join('')+'</div>').join('')+
+      '<div class="ss-krow"><button class="ss-kb ss-kwide" data-k="back">⌫</button><button class="ss-kb ss-kwide ss-kgo" data-k="enter">Enter</button></div>';
+    function renderSlots(flashWrong){ const w=words[i].w.toLowerCase();
+      slotsEl.innerHTML=w.split('').map((ch,ix)=>{ const on=ix<typed.length;
+        return '<span class="ss-slot'+(on?' fill':'')+(flashWrong?' wrong':'')+'">'+(on?typed[ix].toUpperCase():'')+'</span>'; }).join(''); }
+    function newWord(){ if(i>=words.length){ over=true; return win(); }
+      typed=''; const w=words[i];
+      host.querySelector('#ss-hint').textContent=w.d?('“'+String(w.d).slice(0,88)+'”'):'Spell the word you hear';
+      renderSlots(); try{ say(w.w); }catch(e){} }
+    function sparkle(){ const fx=document.createElement('div'); fx.className='ss-burst'; foeEl.appendChild(fx); setTimeout(()=>fx.remove(),720); }
+    function commit(){ const w=words[i].w.toLowerCase();
+      if(typed.toLowerCase()===w){ i++; const p=i/words.length;
+        fill.style.width=Math.round(p*100)+'%'; grey(p); mlbl.textContent=i+' / '+words.length;
+        foeEl.classList.remove('recoil'); void foeEl.offsetWidth; foeEl.classList.add('recoil'); sparkle();
+        try{ if(typeof sfx==='function') sfx('correct'); }catch(e){}
+        try{ flash('✨ '+w.toUpperCase()+' — the colour rushes back!'); }catch(e){}
+        setTimeout(newWord,700);
+      } else { misses++; typed='';
+        renderSlots(true); setTimeout(()=>renderSlots(),420);
+        slotsEl.classList.remove('shake'); void slotsEl.offsetWidth; slotsEl.classList.add('shake');
+        foeEl.classList.remove('gloat'); void foeEl.offsetWidth; foeEl.classList.add('gloat');
+        try{ flash('The Unspelling holds — listen again.'); }catch(e){} try{ say(words[i].w); }catch(e){}
+      } }
+    function type(ch){ if(over) return; const w=words[i].w.toLowerCase();
+      if(typed.length<w.length){ typed+=ch; renderSlots(); if(typed.length===w.length) setTimeout(commit,180); } }
+    function back(){ if(over) return; typed=typed.slice(0,-1); renderSlots(); }
+    const kb=e=>{ if(over) return; const k=e.key;
+      if(/^[a-zA-Z]$/.test(k)){ type(k.toLowerCase()); e.preventDefault(); }
+      else if(k==='Backspace'){ back(); e.preventDefault(); }
+      else if(k==='Enter'){ if(typed.length===words[i].w.length) commit(); e.preventDefault(); } };
+    addEventListener('keydown',kb);
+    host.querySelector('#ss-key').onclick=e=>{ const bt=e.target.closest('.ss-kb'); if(!bt) return;
+      const k=bt.dataset.k; if(k==='back') back(); else if(k==='enter'){ if(typed.length===words[i].w.length) commit(); } else type(k); };
+    host.querySelector('#ss-say').onclick=()=>{ try{ say(words[i].w); }catch(e){} };
+    function win(){ removeEventListener('keydown',kb); done({win:true, score:words.length*100-misses*15, stars:misses===0?3:misses<=2?2:1}); }
+    newWord();
+    return { destroy(){ over=true; removeEventListener('keydown',kb); } };
+  }
+  W().SB_SAGA_ENGINES = Object.assign(W().SB_SAGA_ENGINES||{}, { spellScene });
+
   /* ---------- SAGA CONTROLLER · map, chapter runner, dialogue player ---------- */
   const CH_META=[
     {n:1,title:'Escape from the Meadow of Challenges',world:'Meadow',engine:'honeycombRun',opts:{}},
