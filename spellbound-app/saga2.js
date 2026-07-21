@@ -478,8 +478,14 @@
       return '<button class="sg-node '+st+'" data-ch="'+c.n+'" '+(st==='locked'?'disabled':'')+'>'+
         '<span class="sg-nhex">'+(st==='done'?'★'.repeat(Math.max(1,stars)):c.n)+'</span>'+
         '<b>'+c.title+'</b><i>'+c.world+'</i></button>'; }).join('');
-    const b=shell('<div class="sg-acthead"><span>ACT I</span><h3>The Scattering</h3><p>The meadow falls; the first crew forms. '+cleared+'/6 chapters cleared.</p></div><div class="sg-map">'+nodes+'</div>'+
-      '<p class="sg-note">🎨 Placeholder art — Claude Design drops swap in automatically.</p>');
+    const art=(window.SGART&&SGART.ready());
+    const gems=(p.gems||0);
+    const banner=art?('<div class="sg-actbanner">'+SGART.plateForWorld('Meadow')+
+      '<div class="sg-actbanner-in"><span class="sg-actkick">ACT I</span><h3>The Scattering</h3>'+
+      '<p>The meadow falls; the first crew forms. '+cleared+'/6 chapters cleared.</p>'+
+      '<div class="sg-actgem">'+SGART.sprite('gem-act1',{size:30,grey:cleared<6})+'<b>'+gems+'</b></div></div></div>'):
+      ('<div class="sg-acthead"><span>ACT I</span><h3>The Scattering</h3><p>The meadow falls; the first crew forms. '+cleared+'/6 chapters cleared.</p></div>');
+    const b=shell(banner+'<div class="sg-map">'+nodes+'</div>');
     b.querySelectorAll('.sg-node:not([disabled])').forEach(n=>n.onclick=()=>chapter(+n.dataset.ch));
     overlay.querySelector('#sg-back').onclick=()=>close();
   }
@@ -487,9 +493,14 @@
     const S=(window.SB_SAGA_SCRIPT||{})['ch'+ch]||{}; const lines=S[phase]||[];
     if(!lines.length){ then(); return; }
     let i=0;
-    const b=shell('<div class="sg-dlg"><div class="sg-dface" id="sg-df"></div><div class="sg-dbox"><b id="sg-dn"></b><p id="sg-dl"></p></div><button class="sg-next" id="sg-nx">▸</button></div>');
+    const meta=CH_META[ch-1]||{};
+    const art=(window.SGART&&SGART.ready());
+    const banner=art?('<div class="sg-scenebanner">'+SGART.plateForWorld(meta.world, phase==='lose')+'</div>'):'';
+    const b=shell(banner+'<div class="sg-dlg"><div class="sg-dface" id="sg-df"></div><div class="sg-dbox"><b id="sg-dn"></b><p id="sg-dl"></p></div><button class="sg-next" id="sg-nx">▸</button></div>');
     function show(){ const [spk,text,key]=lines[i];
-      b.querySelector('#sg-df').textContent=FACE[spk]||'🐝';
+      const face=b.querySelector('#sg-df'); const port=art?SGART.portrait(spk):'';
+      if(port){ face.innerHTML=port; face.classList.add('has-art'); }
+      else { face.textContent=FACE[spk]||'🐝'; face.classList.remove('has-art'); }
       b.querySelector('#sg-dn').textContent=NAME[spk]||'';
       b.querySelector('#sg-dl').textContent=text;
       if(curAudio){ try{curAudio.pause();}catch(e){} }
@@ -504,7 +515,8 @@
     beats(ch,'intro',()=>{ game(meta); });
   }
   function game(meta){
-    const b=shell('<div class="sg-gamehost" id="sg-gh"></div>');
+    const plate=(window.SGART&&SGART.ready())?SGART.plateForWorld(meta.world):'';
+    const b=shell('<div class="sg-gameframe">'+plate+'<div class="sg-gamehost" id="sg-gh"></div></div>');
     const diff=(active&&active().gameDiff)||'medium';
     const eng=W().SB_SAGA_ENGINES[meta.engine];
     engineHandle=eng(b.querySelector('#sg-gh'), Object.assign({diff},meta.opts), res=>{
