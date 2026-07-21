@@ -60,6 +60,26 @@
 
   var overlay = null, loop = null, onKey = null, kokoro = null;
 
+  // Rasterise the player's collectible avatar (Bizzy by default) for the snake head.
+  var _avCache = {};
+  function avImg(id) {
+    if (!id) return null;
+    if (id in _avCache) return _avCache[id];
+    _avCache[id] = null;
+    try {
+      if (typeof window.SB_AVATAR !== 'function') return null;
+      var svg = window.SB_AVATAR(id, 120, { outline: false });
+      if (!svg) { _avCache[id] = false; return null; }
+      if (!/xmlns=/.test(svg)) svg = svg.replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ');
+      var img = new Image(120, 120);
+      img.onload = function () { _avCache[id] = img; };
+      img.onerror = function () { _avCache[id] = false; };
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    } catch (e) { _avCache[id] = false; }
+    return null;
+  }
+  function heroAv() { try { return (typeof active === 'function' && active() && active().avatar) || 'bizzy'; } catch (e) { return 'bizzy'; } }
+
   function pickWords(n) {
     var list = null;
     // Prefer the app's difficulty-aware word pool if it's reachable.
@@ -223,13 +243,18 @@
       for (var i = snake.length - 1; i >= 0; i--) {
         var s = snake[i], sx = s.x * CELL, sy = s.y * CELL;
         if (i === 0) {
-          cx.fillStyle = bonk > 0 ? '#E5533D' : '#F0B429';
-          roundRect(sx + 2, sy + 2, CELL - 4, CELL - 4, 9); cx.fill();
-          // stripes + eyes
-          cx.fillStyle = '#2B2117';
-          cx.fillRect(sx + CELL * 0.34, sy + 4, 3, CELL - 8);
-          cx.fillRect(sx + CELL * 0.56, sy + 4, 3, CELL - 8);
-          cx.beginPath(); cx.arc(sx + CELL * 0.72, sy + CELL * 0.32, 2.4, 0, 7); cx.fill();
+          if (bonk > 0) { cx.fillStyle = 'rgba(229,83,61,.5)'; roundRect(sx, sy, CELL, CELL, 10); cx.fill(); }
+          var av = avImg(heroAv());
+          var drew = false;
+          if (av) { try { cx.drawImage(av, sx - 1, sy - 2, CELL + 2, CELL + 2); drew = true; } catch (e) {} }
+          if (!drew) {
+            cx.fillStyle = bonk > 0 ? '#E5533D' : '#F0B429';
+            roundRect(sx + 2, sy + 2, CELL - 4, CELL - 4, 9); cx.fill();
+            cx.fillStyle = '#2B2117';
+            cx.fillRect(sx + CELL * 0.34, sy + 4, 3, CELL - 8);
+            cx.fillRect(sx + CELL * 0.56, sy + 4, 3, CELL - 8);
+            cx.beginPath(); cx.arc(sx + CELL * 0.72, sy + CELL * 0.32, 2.4, 0, 7); cx.fill();
+          }
         } else {
           var f = 1 - (i / snake.length) * 0.4;
           cx.fillStyle = 'rgba(240,180,41,' + f + ')';
