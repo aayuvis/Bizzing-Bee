@@ -124,7 +124,14 @@
     const CFG={easy:{moths:2,speed:2.0,target:900,time:150},medium:{moths:3,speed:2.6,target:1200,time:180},
                hard:{moths:4,speed:3.1,target:1500,time:180},champ:{moths:5,speed:3.6,target:1800,time:180}}[diff];
     let bee={c:6,r:5,px:6,py:5,dir:[0,0],want:[0,0]};
-    let moths=[], score=0, lives=3, t=CFG.time, jelly=null, flee=0, flower=null, flowerT=5, card=null, over=false;
+    let moths=[], score=0, lives=3, t=CFG.time, jelly=null, flee=0, flower=null, flowerT=5, card=null, over=false, fx=[];
+    // Celebratory splash — petal burst + shockwave ring + "+1 LIFE" pop, drawn in the loop.
+    function spawnSplash(){ const cw=cv.width, ch=cv.height, N=28, cols=['#F0B429','#FF7FB0','#8FA0F5','#4FC98A','#FFD13F'];
+      for(let i=0;i<N;i++){ const a=(i/N)*Math.PI*2+Math.random()*0.4, sp=2.4+Math.random()*4.2;
+        fx.push({x:cw/2,y:ch/2,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-1.4,rot:Math.random()*7,vr:(Math.random()-0.5)*0.4,life:1,col:cols[i%cols.length]}); }
+      fx.push({ring:true,x:cw/2,y:ch/2,r:8,life:1});
+      fx.push({ring:true,x:cw/2,y:ch/2,r:8,life:1.3,slow:1});
+      fx.push({text:'+1 LIFE  ❤',x:cw/2,y:ch/2-4,life:1.5}); }
     const words=pool(14); let wi=0;
     for(let i=0;i<CFG.moths;i++) moths.push({c:1+i*3%11,r:1,px:1+i*3%11,py:1,dir:[1,0]});
     // one royal jelly + dot bookkeeping
@@ -173,8 +180,9 @@
       el.style.display='grid'; try{ say(w.w); }catch(e){}
       const inp=el.querySelector('#sg-ci'); inp.focus();
       function submit(){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase();
-        if(ok){ score+=150; t+=15; try{ if(typeof addCoins==='function') addCoins(20); }catch(_){}
-          try{flash('🌸 +150 · +15 seconds · +20 🪙 — the meadow blooms!');}catch(_){} }
+        if(ok){ score+=150; t+=15; lives=Math.min(5,lives+1); try{ if(typeof addCoins==='function') addCoins(20); }catch(_){}
+          el.style.display='none'; card=null; spawnSplash();
+          try{flash('🌸 +1 life ❤ · +150 · +15 seconds · +20 🪙 — the meadow blooms!');}catch(_){} return; }
         else { try{flash('Not quite — the moth got that one.');}catch(_){} }
         el.style.display='none'; card=null; }
       inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } };
@@ -236,6 +244,23 @@
         cx.drawImage(bi,-s/2,-s/2,s,s); cx.restore(); beeDrew=true; }catch(e){ try{cx.restore();}catch(_){} } }
       if(!beeDrew){ cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(bx+CELL/2,by+CELL/2,CELL*0.34,0,7); cx.fill();
         cx.fillStyle='#2B2117'; cx.fillRect(bx+CELL*0.3,by+CELL*0.34,CELL*0.4,CELL*0.09); }
+      // celebratory splash particles (bloom burst on a correct spelling)
+      if(fx.length){
+        for(let i=fx.length-1;i>=0;i--){ const f=fx[i]; f.life-=0.025;
+          if(f.life<=0){ fx.splice(i,1); continue; }
+          if(f.ring){ f.r+=f.slow?4:8; cx.strokeStyle='rgba(255,209,63,'+Math.max(0,Math.min(1,f.life))+')'; cx.lineWidth=5;
+            cx.beginPath(); cx.arc(f.x,f.y,f.r,0,7); cx.stroke(); }
+          else if(f.text){ f.y-=1.3; const a=Math.max(0,Math.min(1,f.life));
+            cx.save(); cx.globalAlpha=a; cx.textAlign='center'; cx.textBaseline='middle';
+            cx.font='800 '+Math.floor(CELL*0.9)+'px Sono, ui-monospace, monospace';
+            cx.lineWidth=6; cx.strokeStyle='rgba(255,255,255,.95)'; cx.strokeText(f.text,f.x,f.y);
+            cx.fillStyle='#E5533D'; cx.fillText(f.text,f.x,f.y); cx.restore(); }
+          else { f.x+=f.vx; f.y+=f.vy; f.vy+=0.14; f.vx*=0.99; f.rot+=f.vr;
+            cx.save(); cx.globalAlpha=Math.max(0,Math.min(1,f.life)); cx.translate(f.x,f.y); cx.rotate(f.rot);
+            cx.fillStyle=f.col; cx.beginPath(); cx.ellipse(0,0,4.5,8,0,0,7); cx.fill();
+            cx.fillStyle='rgba(255,255,255,.5)'; cx.beginPath(); cx.ellipse(-1,-2,1.6,3,0,0,7); cx.fill(); cx.restore(); }
+        }
+      }
       host.querySelector('#sg-score').textContent='🍯 '+score+' / '+CFG.target;
       host.querySelector('#sg-time').textContent='⏱ '+Math.floor(t/60)+':'+String(t%60).padStart(2,'0');
       host.querySelector('#sg-lives').textContent='❤'.repeat(Math.max(0,lives));
