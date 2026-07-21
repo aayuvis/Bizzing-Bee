@@ -1,0 +1,388 @@
+{
+  "name": "Spellbound Design System",
+  "version": "2.0",
+  "description": "Tokens for Spellbound — a kids' spelling-bee trainer. Default identity is 'Marquee' (a theatrical playbill); ten additional theme skins re-map the same token names.",
+  "global": {
+    "font": {
+      "display": "'Fraunces','Georgia',serif",
+      "body": "'Hanken Grotesk','Segoe UI',sans-serif",
+      "mono": "'Space Mono',monospace",
+      "import": "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;600;700&family=Hanken+Grotesk:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@500;600;700&family=Orbitron:wght@600;700;800&family=Fredoka:wght@500;600;700&display=swap"
+    },
+    "radius": {
+      "sm": "8px",
+      "md": "12px",
+      "lg": "14px",
+      "xl": "16px",
+      "pill": "999px"
+    },
+    "space": {
+      "xs": "4px",
+      "sm": "8px",
+      "md": "12px",
+      "lg": "14px",
+      "xl": "18px",
+      "2xl": "24px"
+    },
+    "typeScale": {
+      "display-hero": "clamp(34px,9vw,52px)",
+      "h2": "22px",
+      "h3": "16px",
+      "body": "15px",
+      "tiny": "12px",
+      "mono-tile": "20px"
+    }
+  },
+  "semantic": {
+    "--bg1": {
+      "value": "#181222",
+      "use": "Page background (top of gradient)"
+    },
+    "--bg2": {
+      "value": "#211734",
+      "use": "Card / surface background"
+    },
+    "--bg3": {
+      "value": "#0f0a18",
+      "use": "Deep background (footer, wells)"
+    },
+    "--surface": {
+      "value": "rgba(255,255,255,.045)",
+      "use": "Subtle raised fill"
+    },
+    "--surface2": {
+      "value": "rgba(255,255,255,.075)",
+      "use": "Stronger raised fill (inputs, chips)"
+    },
+    "--line": {
+      "value": "rgba(232,178,58,.18)",
+      "use": "Hairline borders & dividers"
+    },
+    "--text": {
+      "value": "#f3ecdf",
+      "use": "Primary text"
+    },
+    "--muted": {
+      "value": "#b0a48e",
+      "use": "Secondary / caption text"
+    },
+    "--accent": {
+      "value": "#e8b23a",
+      "use": "Primary brand accent (buttons, active)"
+    },
+    "--accent2": {
+      "value": "#f0c668",
+      "use": "Secondary accent (highlights)"
+    },
+    "--accent3": {
+      "value": "#fff4d6",
+      "use": "Tertiary / glow accent"
+    },
+    "--good": {
+      "value": "#5fd1a0",
+      "use": "Success / mastered"
+    },
+    "--bad": {
+      "value": "#e2557a",
+      "use": "Error / missed"
+    },
+    "--display": {
+      "value": "'Fraunces','Georgia',serif",
+      "use": "Display typeface"
+    },
+    "--body": {
+      "value": "'Hanken Grotesk','Segoe UI',sans-serif",
+      "use": "Body typeface"
+    },
+    "--mono": {
+      "value": "'Space Mono',monospace",
+      "use": "Mono typeface (spelling tiles)"
+    },
+    "--glow": {
+      "value": "0 14px 50px rgba(0,0,0,.5)",
+      "use": "Ambient shadow/glow"
+    },
+    "--chip": {
+      "value": "rgba(232,178,58,.14)",
+      "use": "Chip / pill tint"
+    }
+  },
+  "themes": {
+    "sunset": {
+      "label": "Sunset",
+      "note": "Legacy warm orange/pink",
+      "displayFont": "—",
+      "tokens": {
+        "--bg1": "#1f1020",
+        "--bg2": "#33162a",
+        "--bg3": "#160a14",
+        "--surface": "rgba(255,255,255,.045)",
+        "--surface2": "rgba(255,255,255,.075)",
+        "--line": "rgba(232,178,58,.18)",
+        "--text": "#f3ecdf",
+        "--muted": "#b0a48e",
+        "--accent": "#ff6a3d",
+        "--accent2": "#ffb13d",
+        "--accent3": "#ff5d8f",
+        "--good": "#5fd1a0",
+        "--bad": "#e2557a",
+        "--display": "'Fraunces','Georgia',serif",
+        "--glow": "0 12px 40px rgba(255,106,61,.32)",
+        "--chip": "rgba(255,106,61,.16)"
+      }
+    },
+    "forest": {
+      "label": "Forest",
+      "note": "Legacy green",
+      "displayFont": "—",
+      "tokens": {
+        "--bg1": "#0c1a14",
+        "--bg2": "#10261c",
+        "--bg3": "#07120d",
+        "--surface": "rgba(255,255,255,.045)",
+        "--surface2": "rgba(255,255,255,.075)",
+        "--line": "rgba(232,178,58,.18)",
+        "--text": "#f3ecdf",
+        "--muted": "#b0a48e",
+        "--accent": "#2bd47a",
+        "--accent2": "#7ce0c0",
+        "--accent3": "#ffd23f",
+        "--good": "#5fd1a0",
+        "--bad": "#e2557a",
+        "--display": "'Fraunces','Georgia',serif",
+        "--glow": "0 12px 40px rgba(43,212,122,.3)",
+        "--chip": "rgba(43,212,122,.16)"
+      }
+    },
+    "aurora": {
+      "label": "Aurora",
+      "note": "Cosmic violet/cyan",
+      "displayFont": "Baloo 2",
+      "tokens": {
+        "--bg1": "#0f1226",
+        "--bg2": "#171a3a",
+        "--bg3": "#0b0d1f",
+        "--surface": "rgba(255,255,255,.06)",
+        "--surface2": "rgba(255,255,255,.10)",
+        "--line": "rgba(255,255,255,.14)",
+        "--text": "#eef1ff",
+        "--muted": "#a4abd6",
+        "--accent": "#7c5cff",
+        "--accent2": "#36d1ff",
+        "--accent3": "#ffd23f",
+        "--good": "#34e0a1",
+        "--bad": "#ff6b6b",
+        "--display": "'Baloo 2',cursive",
+        "--glow": "0 12px 40px rgba(124,92,255,.35)",
+        "--chip": "rgba(124,92,255,.16)"
+      }
+    },
+    "marquee": {
+      "label": "Marquee",
+      "note": "Theatrical playbill — default",
+      "displayFont": "Fraunces",
+      "tokens": {
+        "--bg1": "#181222",
+        "--bg2": "#211734",
+        "--bg3": "#0f0a18",
+        "--surface": "rgba(255,255,255,.045)",
+        "--surface2": "rgba(255,255,255,.075)",
+        "--line": "rgba(232,178,58,.18)",
+        "--text": "#f3ecdf",
+        "--muted": "#b0a48e",
+        "--accent": "#e8b23a",
+        "--accent2": "#f0c668",
+        "--accent3": "#fff4d6",
+        "--good": "#5fd1a0",
+        "--bad": "#e2557a",
+        "--display": "'Fraunces',serif",
+        "--glow": "0 14px 50px rgba(0,0,0,.5)",
+        "--chip": "rgba(232,178,58,.14)"
+      }
+    },
+    "anime": {
+      "label": "Anime",
+      "note": "Vivid pink/cyan (Naruto ranks)",
+      "displayFont": "Baloo 2",
+      "tokens": {
+        "--bg1": "#1a1030",
+        "--bg2": "#241640",
+        "--bg3": "#0e0820",
+        "--surface": "rgba(255,255,255,.06)",
+        "--surface2": "rgba(255,255,255,.10)",
+        "--line": "rgba(255,77,141,.20)",
+        "--text": "#fff0f7",
+        "--muted": "#c9a9d6",
+        "--accent": "#ff4d8d",
+        "--accent2": "#36e2ff",
+        "--accent3": "#ffd23f",
+        "--good": "#34e0a1",
+        "--bad": "#ff6b6b",
+        "--display": "'Baloo 2',cursive",
+        "--glow": "0 0 30px rgba(255,77,141,.45)",
+        "--chip": "rgba(255,77,141,.16)"
+      }
+    },
+    "blossom": {
+      "label": "Blossom",
+      "note": "Soft floral pink/purple",
+      "displayFont": "Fredoka",
+      "tokens": {
+        "--bg1": "#2a1230",
+        "--bg2": "#3a1840",
+        "--bg3": "#1a0a1f",
+        "--surface": "rgba(255,255,255,.06)",
+        "--surface2": "rgba(255,255,255,.10)",
+        "--line": "rgba(255,95,162,.20)",
+        "--text": "#fff2fb",
+        "--muted": "#d6a9cf",
+        "--accent": "#ff5fa2",
+        "--accent2": "#a06bff",
+        "--accent3": "#ffbf3f",
+        "--good": "#34e0a1",
+        "--bad": "#ff6b6b",
+        "--display": "'Fredoka',sans-serif",
+        "--glow": "0 0 28px rgba(255,95,162,.4)",
+        "--chip": "rgba(255,95,162,.16)"
+      }
+    },
+    "science": {
+      "label": "Science",
+      "note": "Neon lab green",
+      "displayFont": "Orbitron",
+      "tokens": {
+        "--bg1": "#0a1430",
+        "--bg2": "#0d1a3a",
+        "--bg3": "#060b1f",
+        "--surface": "rgba(255,255,255,.06)",
+        "--surface2": "rgba(255,255,255,.10)",
+        "--line": "rgba(57,255,20,.18)",
+        "--text": "#e9fff4",
+        "--muted": "#8fb6c8",
+        "--accent": "#39ff14",
+        "--accent2": "#18d6ff",
+        "--accent3": "#ffd23f",
+        "--good": "#39ff14",
+        "--bad": "#ff5d5d",
+        "--display": "'Orbitron',sans-serif",
+        "--glow": "0 0 30px rgba(57,255,20,.4)",
+        "--chip": "rgba(57,255,20,.14)"
+      }
+    },
+    "origami": {
+      "label": "Origami",
+      "note": "Warm terracotta & sage",
+      "displayFont": "Quicksand",
+      "tokens": {
+        "--bg1": "#241a14",
+        "--bg2": "#33271d",
+        "--bg3": "#160f0a",
+        "--surface": "rgba(255,255,255,.06)",
+        "--surface2": "rgba(255,255,255,.10)",
+        "--line": "rgba(217,105,74,.20)",
+        "--text": "#f7efe4",
+        "--muted": "#c9b39a",
+        "--accent": "#d9694a",
+        "--accent2": "#e0a458",
+        "--accent3": "#5f8a6b",
+        "--good": "#5f8a6b",
+        "--bad": "#d9694a",
+        "--display": "'Quicksand',sans-serif",
+        "--glow": "0 0 26px rgba(217,105,74,.35)",
+        "--chip": "rgba(217,105,74,.16)"
+      }
+    },
+    "bromic": {
+      "label": "Bromic Orange",
+      "note": "Heat orange",
+      "displayFont": "Baloo 2",
+      "tokens": {
+        "--bg1": "#17110c",
+        "--bg2": "#241811",
+        "--bg3": "#0e0a07",
+        "--surface": "rgba(255,255,255,.06)",
+        "--surface2": "rgba(255,255,255,.10)",
+        "--line": "rgba(255,160,90,.20)",
+        "--text": "#fff3e9",
+        "--muted": "#c9a98f",
+        "--accent": "#ff6a13",
+        "--accent2": "#ff9d4d",
+        "--accent3": "#ffce5a",
+        "--good": "#3fce9a",
+        "--bad": "#ff5d5d",
+        "--display": "'Baloo 2',cursive",
+        "--glow": "0 0 30px rgba(255,106,19,.5)",
+        "--chip": "rgba(255,106,19,.16)"
+      }
+    },
+    "masters": {
+      "label": "Masters of the Universe",
+      "note": "Heroic gold/violet",
+      "displayFont": "Orbitron",
+      "tokens": {
+        "--bg1": "#1b0f2b",
+        "--bg2": "#241141",
+        "--bg3": "#0c0820",
+        "--surface": "rgba(255,255,255,.07)",
+        "--surface2": "rgba(255,255,255,.11)",
+        "--line": "rgba(244,166,35,.22)",
+        "--text": "#fff7e6",
+        "--muted": "#c4a9e0",
+        "--accent": "#f4a623",
+        "--accent2": "#7b3ff2",
+        "--accent3": "#34d17a",
+        "--good": "#34d17a",
+        "--bad": "#ff5d5c",
+        "--display": "'Orbitron',sans-serif",
+        "--glow": "0 0 30px rgba(244,166,35,.5)",
+        "--chip": "rgba(123,63,242,.18)"
+      }
+    },
+    "avatar": {
+      "label": "Avatar · Airbender",
+      "note": "Elemental teal/amber",
+      "displayFont": "Quicksand",
+      "tokens": {
+        "--bg1": "#10202b",
+        "--bg2": "#16303f",
+        "--bg3": "#0a1620",
+        "--surface": "rgba(255,255,255,.07)",
+        "--surface2": "rgba(255,255,255,.11)",
+        "--line": "rgba(47,167,216,.22)",
+        "--text": "#eaf6ff",
+        "--muted": "#8fb6c8",
+        "--accent": "#f3a13c",
+        "--accent2": "#2fa7d8",
+        "--accent3": "#5fb87a",
+        "--good": "#5fb87a",
+        "--bad": "#e0533f",
+        "--display": "'Quicksand',sans-serif",
+        "--glow": "0 0 28px rgba(47,167,216,.42)",
+        "--chip": "rgba(243,161,60,.16)"
+      }
+    },
+    "slayer": {
+      "label": "Demon Slayer",
+      "note": "Green/red checker",
+      "displayFont": "Baloo 2",
+      "tokens": {
+        "--bg1": "#0e1412",
+        "--bg2": "#13201a",
+        "--bg3": "#080d0b",
+        "--surface": "rgba(255,255,255,.06)",
+        "--surface2": "rgba(255,255,255,.10)",
+        "--line": "rgba(43,191,122,.22)",
+        "--text": "#eafff4",
+        "--muted": "#8bbfa6",
+        "--accent": "#2bbf7a",
+        "--accent2": "#e8423b",
+        "--accent3": "#f2c14e",
+        "--good": "#2bbf7a",
+        "--bad": "#e8423b",
+        "--display": "'Baloo 2',cursive",
+        "--glow": "0 0 30px rgba(43,191,122,.45)",
+        "--chip": "rgba(232,66,59,.15)"
+      }
+    }
+  }
+}

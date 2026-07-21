@@ -1,0 +1,16 @@
+*.zip
+*.part
+app/
+Spellbound_concept_scripts.txt
+.ds-sync/
+ds-bundle/
+.design-sync/.cache/
+.design-sync/learnings/
+.design-sync/node_modules
+spellbound-app/AUDIT_BRIEF.md
+spellbound-app/audit_shots/
+spellbound-app/audit_*.mjs
+spellbound-app/v*.mjs
+spellbound-app/trivia-review.html
+spellbound-app/trivia-data.js.bak
+spellbound-app/*review.html
