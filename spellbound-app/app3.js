@@ -2346,7 +2346,7 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
         const lore=(window.SB_AVATAR_LORE||{})[a.id];
         return `<div ${lore?`title="${esc(lore.greeting)}
 
-${esc(lore.fact)}"`:''} style="background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':own?'var(--line)':'var(--line)'};border-radius:14px;padding:11px 9px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;${own?'':'filter:grayscale(.75);opacity:.72'}">
+${esc(lore.fact)}"`:''} style="background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':own?'var(--line)':'var(--line)'};border-radius:14px;padding:11px 9px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;${own?'':'opacity:.96'}">
           <span style="width:76px;height:76px">${avatarSVG(a.id,76, on?c.accOn:null)}</span>
           <span style="font-weight:800;font-size:12px;line-height:1.15">${a.name}</span>
           ${lore?`<span style="font-family:var(--body);font-style:italic;font-size:10.5px;line-height:1.25;color:var(--muted)">${esc(lore.tagline)}</span>`:''}
@@ -4483,7 +4483,7 @@ function viewShop(){ const S=state; const c=active(); ensureLists(c); const tab=
     const packs=SB_AVATARS.packs.map(p=>{ const avs=SB_AVATARS.list.filter(a=>a.pack===p.id); const ownedN=avs.filter(a=>avOwned(c,a.id)).length; const full=ownedN>=avs.length;
       const leg=avs.find(a=>a.rarity==='legendary');
       const preview=avs.filter(a=>avOwned(c,a.id)).slice(0,2).concat(leg?[leg]:[]).slice(0,3)
-        .map(a=>{ const own=avOwned(c,a.id); return `<span style="width:52px;height:52px;display:inline-grid;place-items:center;background:rgba(255,255,255,.85);border-radius:12px;${own?'':'filter:grayscale(1) brightness(.4);opacity:.8'}">${avatarSVG(a.id,44)}</span>`; }).join('');
+        .map(a=>{ const own=avOwned(c,a.id); return `<span style="width:52px;height:52px;display:inline-grid;place-items:center;background:rgba(255,255,255,.85);border-radius:12px;${own?'':'opacity:.94'}">${avatarSVG(a.id,44)}</span>`; }).join('');
       return `<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column">
         <div style="background:linear-gradient(135deg,${p.c1},${p.c2});padding:13px 14px;display:flex;align-items:center;gap:8px">${preview}<span style="flex:1"></span><span style="font-weight:900;font-size:12px;color:rgba(255,255,255,.95);background:rgba(0,0,0,.22);border-radius:99px;padding:4px 10px">${ownedN}/${avs.length}</span></div>
         <div style="padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;flex:1">

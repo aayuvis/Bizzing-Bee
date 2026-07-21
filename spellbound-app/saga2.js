@@ -6,6 +6,23 @@
   function dlg(key){ // play a dialogue clip if present, else nothing (text always shows)
     try{ const a=new Audio('voice/d/'+key+'.mp3'); a.play().catch(()=>{}); return a; }catch(e){ return null; } }
 
+  /* Rasterise a SAGA_ART sprite into a canvas-drawable <img> (cached). Returns the
+     loaded image, or null while it loads / if the sprite is missing. Lets the
+     canvas engines draw the real Claude Design art instead of primitive shapes. */
+  const _imgCache={};
+  function sgImg(name){
+    if(name in _imgCache) return _imgCache[name];
+    _imgCache[name]=null;
+    const a=(window.SAGA_ART||{})[name]; if(!a) return null;
+    const f=(a.frames&&a.frames[0])||a.svg||'';
+    const svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="'+(a.vb||'0 0 120 120')+'">'+f+'</svg>';
+    const img=new Image();
+    img.onload=()=>{ _imgCache[name]=img; };
+    img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+    return null;
+  }
+  function sgPreload(names){ (names||[]).forEach(sgImg); }
+
   /* ---------- ENGINE A · HONEYCOMB RUN (Pac-Man) ---------- */
   // grid maze; arrows/swipe; moth patrols; nectar dots; golden flower spell-cards.
   function honeycombRun(host, opts, done){
@@ -77,19 +94,31 @@
       draw(); requestAnimationFrame(frame);
     }
     function draw(){
-      cx.fillStyle='#173222'; cx.fillRect(0,0,cv.width,cv.height);
+      cx.clearRect(0,0,cv.width,cv.height);                 // transparent — the world plate shows through as ground
+      const rrect=(x,y,w,h,rad)=>{ if(cx.roundRect){ cx.beginPath(); cx.roundRect(x,y,w,h,rad); } else { cx.beginPath(); cx.moveTo(x+rad,y); cx.arcTo(x+w,y,x+w,y+h,rad); cx.arcTo(x+w,y+h,x,y+h,rad); cx.arcTo(x,y+h,x,y,rad); cx.arcTo(x,y,x+w,y,rad); cx.closePath(); } };
       for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){ const v=MAZE[r][c];
-        if(v===0){ cx.fillStyle='#0E2117'; cx.fillRect(c*CELL,r*CELL,CELL,CELL);
-          cx.strokeStyle='#F0B42933'; cx.strokeRect(c*CELL+2,r*CELL+2,CELL-4,CELL-4); }
-        else if(v===1){ cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(c*CELL+CELL/2,r*CELL+CELL/2,3,0,7); cx.fill(); } }
+        if(v===0){ const g=cx.createLinearGradient(c*CELL,r*CELL,c*CELL,r*CELL+CELL); g.addColorStop(0,'rgba(74,54,168,.5)'); g.addColorStop(1,'rgba(46,32,120,.5)');
+          cx.fillStyle=g; rrect(c*CELL+3,r*CELL+3,CELL-6,CELL-6,CELL*0.34); cx.fill();
+          cx.strokeStyle='rgba(255,214,110,.45)'; cx.lineWidth=2; cx.stroke(); }
+        else if(v===1){ cx.fillStyle='#FFCF3F'; cx.beginPath(); cx.arc(c*CELL+CELL/2,r*CELL+CELL/2,3.6,0,7); cx.fill();
+          cx.fillStyle='rgba(255,255,255,.6)'; cx.beginPath(); cx.arc(c*CELL+CELL/2-1,r*CELL+CELL/2-1,1.2,0,7); cx.fill(); } }
       if(!J.got){ cx.fillStyle='#FFE28A'; cx.beginPath(); cx.arc(J.c*CELL+CELL/2,J.r*CELL+CELL/2,8,0,7); cx.fill(); }
       if(flower){ cx.font=(CELL*0.7)+'px serif'; cx.fillText('🌼',flower.c*CELL+CELL*0.15,flower.r*CELL+CELL*0.8); }
-      // bee placeholder: gold circle w/ stripes
-      cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(bee.px*CELL+CELL/2,bee.py*CELL+CELL/2,CELL*0.34,0,7); cx.fill();
-      cx.fillStyle='#2B2117'; cx.fillRect(bee.px*CELL+CELL*0.3,bee.py*CELL+CELL*0.34,CELL*0.4,CELL*0.09);
-      moths.forEach(m=>{ cx.fillStyle=flee>0?'#8FA0F5':'#A39B8E'; cx.beginPath();
-        cx.moveTo(m.px*CELL+CELL/2,m.py*CELL+CELL*0.2); cx.lineTo(m.px*CELL+CELL*0.2,m.py*CELL+CELL*0.8);
-        cx.lineTo(m.px*CELL+CELL*0.8,m.py*CELL+CELL*0.8); cx.fill(); });
+      // moths — real grey-moth sprite (blue glow when edible), fallback triangle
+      const mi=sgImg('grey-moth');
+      moths.forEach(m=>{ const mx=m.px*CELL, my=m.py*CELL;
+        if(flee>0){ cx.fillStyle='rgba(143,160,245,.55)'; cx.beginPath(); cx.arc(mx+CELL/2,my+CELL/2,CELL*0.42,0,7); cx.fill(); }
+        if(mi){ const s=CELL*0.92; cx.drawImage(mi,mx+(CELL-s)/2,my+(CELL-s)/2,s,s); }
+        else { cx.fillStyle=flee>0?'#8FA0F5':'#A39B8E'; cx.beginPath();
+          cx.moveTo(mx+CELL/2,my+CELL*0.2); cx.lineTo(mx+CELL*0.2,my+CELL*0.8); cx.lineTo(mx+CELL*0.8,my+CELL*0.8); cx.fill(); } });
+      // bee — real Bizzy top-down sprite (gentle wing bob), fallback gold blob
+      const bi=sgImg('bizzy-top'), bx=bee.px*CELL, by=bee.py*CELL;
+      if(bi){ const bob=1+0.06*Math.sin(Date.now()/120), s=CELL*0.98*bob;
+        cx.save(); cx.translate(bx+CELL/2,by+CELL/2);
+        if(bee.dir[0]<0) cx.scale(-1,1);              // flip when flying left
+        cx.drawImage(bi,-s/2,-s/2,s,s); cx.restore(); }
+      else { cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(bx+CELL/2,by+CELL/2,CELL*0.34,0,7); cx.fill();
+        cx.fillStyle='#2B2117'; cx.fillRect(bx+CELL*0.3,by+CELL*0.34,CELL*0.4,CELL*0.09); }
       host.querySelector('#sg-score').textContent='🍯 '+score+' / '+CFG.target;
       host.querySelector('#sg-time').textContent='⏱ '+Math.floor(t/60)+':'+String(t%60).padStart(2,'0');
       host.querySelector('#sg-lives').textContent='❤'.repeat(Math.max(0,lives));
@@ -479,7 +508,8 @@
     return overlay.querySelector('#sg-body'); }
   function map(){
     const p=prog(); const cleared=p.cleared||0;
-    const nodes=CH_META.map(c=>{ const st=c.n<=cleared?'done':c.n===cleared+1?'open':'locked';
+    const dev=(()=>{ try{ return (window.state&&window.state.devUnlock)||localStorage.getItem('sb_devunlock')==='1'; }catch(e){ return false; } })();
+    const nodes=CH_META.map(c=>{ const st=dev?(c.n<=cleared?'done':'open'):(c.n<=cleared?'done':c.n===cleared+1?'open':'locked');
       const stars=(p.stars||{})[c.n]||0;
       return '<button class="sg-node '+st+'" data-ch="'+c.n+'" '+(st==='locked'?'disabled':'')+'>'+
         '<span class="sg-nhex">'+(st==='done'?'★'.repeat(Math.max(1,stars)):c.n)+'</span>'+
@@ -502,13 +532,18 @@
     let i=0;
     const meta=CH_META[ch-1]||{};
     const art=(window.SGART&&SGART.ready());
-    const banner=art?('<div class="sg-scenebanner">'+SGART.plateForWorld(meta.world, phase==='lose')+'</div>'):'';
-    const b=shell(banner+'<div class="sg-dlg"><div class="sg-dface" id="sg-df"></div><div class="sg-dbox"><b id="sg-dn"></b><p id="sg-dl"></p></div><button class="sg-next" id="sg-nx">▸</button></div>');
+    const plate=art?SGART.plateForWorld(meta.world, phase==='lose'):'';
+    const b=shell('<div class="sg-scene">'+
+      '<div class="sg-scene-bg">'+plate+'</div>'+
+      '<div class="sg-scene-char" id="sg-df"></div>'+
+      '<div class="sg-bubble"><b id="sg-dn"></b><p id="sg-dl"></p><button class="sg-next" id="sg-nx">▸</button></div>'+
+    '</div>');
     playMusic(meta.world);
     function show(){ const [spk,text,key]=lines[i];
       const face=b.querySelector('#sg-df'); const port=art?SGART.portrait(spk):'';
-      if(port){ face.innerHTML=port; face.classList.add('has-art'); }
-      else { face.textContent=FACE[spk]||'🐝'; face.classList.remove('has-art'); }
+      if(port){ face.innerHTML=port; face.className='sg-scene-char has-art'; }
+      else if(spk==='narrator'){ face.innerHTML=''; face.className='sg-scene-char narrator'; }
+      else { face.innerHTML='<span class="sg-scene-emoji">'+(FACE[spk]||'🐝')+'</span>'; face.className='sg-scene-char'; }
       b.querySelector('#sg-dn').textContent=NAME[spk]||'';
       b.querySelector('#sg-dl').textContent=text;
       if(curAudio){ try{curAudio.pause();}catch(e){} }
