@@ -185,3 +185,25 @@ Per-world 8-bar theme stings ×15 · Vex motif (elegant, minor, 4 notes) · Unsp
 - **P2 (Acts IV–V):** Grey Sea suite (Gatekeeper, strait, library, deer), leap/bridge/spiral/counsel suites, Astra seals, karts.
 - **P3 (Act VI):** Ten-Headed tableau, war field, Bow, fire rings, panorama (grey+color layers — the single most important art piece of the saga), homecoming lamps, credits frame.
 - SVG layered files, named as specified; sprite frames as sibling groups `f1…fN`; every environment delivered with its grey layer separable.
+
+## 8 · VOICE CASTING (all spoken audio = Kokoro, filters baked at synthesis; word pronunciations remain pure af_heart untouched)
+| Character | Kokoro voice | Filter chain |
+|---|---|---|
+| Bizzy (+ narrator) | af_heart | none (the app's own voice) |
+| Bumble | am_michael | pitch +1, +5% speed (eager) |
+| Melody | bf_emma | light plate reverb (stage) |
+| Maestro | bm_george | none |
+| Professor-types (Brainiac, Scopey) | am_adam | −5% speed |
+| Panda Sensei | am_adam | −12% speed, warm hall reverb |
+| Hive Queen | bf_isabella | slight hall |
+| Echo (parrot) | af_nicole | pitch +3, double-take echo tail |
+| Kid crew (Zoomies, Pengu, Hoppy…) | af_sarah | pitch +2, +8% speed |
+| VEX | am_onyx | pitch −2, dry close-mic, slow attack |
+| The Smudge | af_sky | whisper-gain, flutter tremolo |
+| Glitch | am_michael | bit-crush 8-bit + random sample drops |
+| Void | bm_lewis | pitch −4, long dark reverb |
+| General Gnash | am_onyx | pitch −1, distortion clip, snare-tight gate |
+| The Static | af_bella | ring-mod + bit-crush (broken speaker) |
+| The Sirens | af_bella + af_nicole + af_sky | same line layered; third voice detuned −30 cents |
+| The Gatekeeper | bm_lewis | pitch −5, cave reverb |
+| Ten-Headed heads | one voice per head from full set | per-head signature filter |
