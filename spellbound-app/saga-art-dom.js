@@ -45,7 +45,11 @@
     'Homecoming': 'homecoming', 'Origami': 'origami', 'Elements': 'elements', 'Vibe': 'vibe',
     'Hive Chakravyuha': 'chakravyuha', 'Chakravyuha': 'chakravyuha'
   };
-  function plateForWorld(world, grey) { return plate(WORLD_MAP[world] || 'meadow', grey); }
+  // Accepts either a world LABEL ('Hive') or a raw plate ID ('hive'); falls back to meadow.
+  function plateForWorld(world, grey) {
+    var id = WORLD_MAP[world] || (WA()[world] ? world : 'meadow');
+    return plate(id, grey);
+  }
 
   // dialogue speaker key → SAGA_ART portrait asset
   var PORTRAIT = {

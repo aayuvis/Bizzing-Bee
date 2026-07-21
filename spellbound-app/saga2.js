@@ -288,7 +288,7 @@
   /* ---------- ENGINE B · KEEP FLYING (flappy) ---------- */
   function keepFlying(host, opts, done){
     const Wd=Math.min(innerWidth-16,640), Ht=Math.min(innerHeight-180,440);
-    const diff=opts.diff||'medium';
+    const diff=opts.diff||'medium', world=opts.world||'opensky';
     const CFG={easy:{gap:170,speed:2.2,pots:8},medium:{gap:150,speed:2.6,pots:10},
                hard:{gap:130,speed:3.0,pots:10},champ:{gap:115,speed:3.4,pots:12}}[diff];
     host.innerHTML='<div class="sg-hud"><span id="sg-pots">🍯 0/'+CFG.pots+'</span><span id="sg-lives"></span></div><canvas id="sg-cv"></canvas><div id="sg-card"></div>';
@@ -332,8 +332,8 @@
     }
     function hit(){ lives--; bee.y=Ht/2; bee.vy=0; if(lives<=0){ over=true; finish(false); } }
     function draw(){
-      // rich sky backdrop (Claude Design open-sky plate); gradient fallback
-      if(!drawWorld(cx,'opensky',0,0,Wd,Ht)){ const grd=cx.createLinearGradient(0,0,0,Ht); grd.addColorStop(0,'#8FCBEF'); grd.addColorStop(1,'#DFF0FA');
+      // rich backdrop (Claude Design world plate for this chapter); gradient fallback
+      if(!drawWorld(cx,world,0,0,Wd,Ht)){ const grd=cx.createLinearGradient(0,0,0,Ht); grd.addColorStop(0,'#8FCBEF'); grd.addColorStop(1,'#DFF0FA');
         cx.fillStyle=grd; cx.fillRect(0,0,Wd,Ht); }
       // honeycomb pillars instead of flat green pipes
       obs.forEach(o=>{ const pil=(yy,hh)=>{ const g=cx.createLinearGradient(o.x,0,o.x+44,0); g.addColorStop(0,'#F0B429'); g.addColorStop(1,'#D89614');
@@ -877,7 +877,9 @@
   const ACTS=[
     {n:1,kick:'ACT I',title:'The Scattering',world:'Meadow',blurb:'The meadow falls; the first crew forms.',gem:'gem-act1'},
     {n:2,kick:'ACT II',title:'The Show Must Go On',world:'Stage',blurb:'The Unspelling reaches Stage World \u2014 and the marquee is going dark.',gem:'gem-act2'},
-    {n:3,kick:'ACT III',title:'The Scrambled Sky',world:'Cosmos',blurb:'Above the clouds, whole constellations have come loose from their names.',gem:'gem-act3'}
+    {n:3,kick:'ACT III',title:'The Scrambled Sky',world:'Cosmos',blurb:'Above the clouds, whole constellations have come loose from their names.',gem:'gem-act3'},
+    {n:4,kick:'ACT IV',title:'Into the Wilds',world:'Dojo',blurb:'The dojo, the lab, and the wild garden \u2014 three new lands, three new friends.',gem:'gem-act4'},
+    {n:5,kick:'ACT V',title:'The Arcade\u2019s Heart',world:'Arcade',blurb:'Glitch guards the last gate \u2014 and a friend must choose a side.',gem:'gem-act5'}
   ];
   const CH_META=[
     {n:1,act:1,title:'Escape from the Meadow of Challenges',world:'Meadow',engine:'honeycombRun',opts:{}},
@@ -888,7 +890,11 @@
     {n:6,act:1,title:'BOSS: The Smudge',world:'Hive Gates',engine:'spellShield',opts:{}},
     {n:7,act:1,title:'Word Snake: Trail of Letters',world:'Meadow',engine:'wordSnake',opts:{},script:'chSnake'},
     {n:8,act:2,title:'Spotlight Simon: The Marquee',world:'Stage',engine:'spotlightSimon',opts:{},script:'ch7'},
-    {n:9,act:3,title:'Unscramble the Stars',world:'Cosmos',engine:'unscrambleStars',opts:{},script:'ch8'}
+    {n:9,act:3,title:'Unscramble the Stars',world:'Cosmos',engine:'unscrambleStars',opts:{},script:'ch8'},
+    {n:10,act:4,title:'The Thousand Cuts',world:'Dojo',engine:'whackAMoth',opts:{},script:'ch9'},
+    {n:11,act:4,title:'The Falling Formula',world:'Lab',engine:'keepFlying',opts:{},script:'ch10'},
+    {n:12,act:4,title:'The Hungry Garden',world:'Forest',engine:'wordSnake',opts:{},script:'ch11'},
+    {n:13,act:5,title:'BOSS: Glitch\u2019s Betrayal',world:'Arcade',engine:'spellShield',opts:{foe:'vex-full'},script:'ch12'}
   ];
   const FACE={bizzy:'🐝',bumble:'🐝',waggle:'🐝',drone:'🐝',queen:'👑',smudge:'🦋',sting:'🐝',narrator:'📖',melody:'🎵',maestro:'🎩',astro:'🚀',comet:'☄️',zib:'👽',sensei:'🐼',ninja:'🥷',beaker:'🧪',brainiac:'🧠',zoomies:'🐶',capy:'🦫',pixel:'👾',joystick:'🕹️',glitch:'😈',vex:'🐝'};
   const NAME={bizzy:'Bizzy',bumble:'Bumble',waggle:'Waggle',drone:'Drone Dan',queen:'Hive Queen',smudge:'The Smudge',sting:'Sting',narrator:'',melody:'Melody',maestro:'Maestro',astro:'Astro',comet:'Comet',zib:'Zib',sensei:'Panda Sensei',ninja:'Shadow Ninja',beaker:'Beaker',brainiac:'Brainiac',zoomies:'Zoomies',capy:'Capy',pixel:'Pixel Pal',joystick:'Joy Stick',glitch:'Glitch',vex:'Vex'};
@@ -979,7 +985,7 @@
     playMusic(meta.world);
     const diff=(active&&active().gameDiff)||'medium';
     const eng=W().SB_SAGA_ENGINES[meta.engine];
-    const WMAP={meadow:'meadow',sky:'opensky',hive:'hive','hive gates':'hive',stage:'stage',cosmos:'cosmos',carnival:'carnival'};
+    const WMAP={meadow:'meadow',sky:'opensky',hive:'hive','hive gates':'hive',stage:'stage',cosmos:'cosmos',carnival:'carnival',dojo:'dojo',lab:'lab',forest:'forest',arcade:'arcade',pond:'pond',lotus:'lotus'};
     const wid=WMAP[String(meta.world||'').toLowerCase()]||'meadow';
     engineHandle=eng(b.querySelector('#sg-gh'), Object.assign({diff,world:wid},meta.opts), res=>{
       engineHandle=null;
