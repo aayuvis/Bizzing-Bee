@@ -569,7 +569,112 @@
     return { destroy(){ over=true; clearInterval(timer); } };
   }
 
-  W().SB_SAGA_ENGINES = { honeycombRun, keepFlying, wordHive, beeGrandPrix, whackAMoth, spellShield, spotlightSimon, unscrambleStars };
+  /* ---------- ENGINE I · WORD SNAKE (steer Bizzy to spell in order) ---------- */
+  function wordSnake(host, opts, done){
+    const COLS=15, ROWS=11, CELL=Math.min(42, Math.floor(Math.min(innerWidth-20,620)/COLS));
+    const world=opts.world||'meadow', diff=opts.diff||'medium';
+    const CFG={easy:{words:3,tick:210},medium:{words:4,tick:185},hard:{words:5,tick:160},champ:{words:6,tick:140}}[diff];
+    const bank=pool(CFG.words+8).map(w=>w.w).filter(w=>/^[a-z]+$/i.test(w)&&w.length>=3&&w.length<=8);
+    if(bank.length<1) bank.push('bloom','honey','flower','nectar');
+    host.innerHTML='<div class="sg-hud"><span id="sg-score">0</span><span id="sg-word"></span><span id="sg-lives"></span></div>'+
+      '<canvas id="sg-cv"></canvas>'+
+      '<div class="sg-dpad" id="sg-dpad"><button class="sg-dbtn" data-d="up" aria-label="Up">▲</button>'+
+      '<div class="sg-dmid"><button class="sg-dbtn" data-d="left" aria-label="Left">◀</button>'+
+      '<button class="sg-dbtn" data-d="down" aria-label="Down">▼</button>'+
+      '<button class="sg-dbtn" data-d="right" aria-label="Right">▶</button></div></div><div id="sg-card"></div>';
+    const cv=host.querySelector('#sg-cv'); cv.width=COLS*CELL; cv.height=ROWS*CELL; const cx=cv.getContext('2d');
+    let snake,dir,ndir,word='',spelled=0,tiles=[],wordsDone=0,score=0,lives=3,over=false,bonk=0,tick=CFG.tick,loop=null,fx=[];
+    function occupied(x,y,extra){ for(let i=0;i<snake.length;i++) if(snake[i].x===x&&snake[i].y===y) return true;
+      for(let i=0;i<(extra||[]).length;i++) if(extra[i].x===x&&extra[i].y===y) return true; return false; }
+    function layoutWord(){ word=bank[wordsDone%bank.length]; spelled=0; tiles=[];
+      const head=snake[0], ring=[]; for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++) ring.push({x:(head.x+dx+COLS)%COLS,y:(head.y+dy+ROWS)%ROWS});
+      for(let k=0;k<word.length;k++){ let x,y,tries=0; do{ x=Math.floor(Math.random()*COLS); y=Math.floor(Math.random()*ROWS); }
+        while((occupied(x,y,ring)||tiles.some(t=>t.x===x&&t.y===y))&&++tries<200);
+        tiles.push({x,y,ch:word[k],idx:k}); }
+      renderWord(); try{ say(word); }catch(e){} }
+    function renderWord(){ host.querySelector('#sg-word').innerHTML=word.split('').map((ch,i)=>
+      '<span style="font-family:var(--mono,monospace);font-weight:800;font-size:16px;letter-spacing:1px;color:'+(i<spelled?'#2FA35C':i===spelled?'#F0B429':'rgba(255,255,255,.5)')+'">'+(i<spelled?ch.toUpperCase():'·')+'</span>').join(''); }
+    function setHud(){ host.querySelector('#sg-score').textContent='⭐ '+score; host.querySelector('#sg-lives').textContent='❤'.repeat(Math.max(0,lives)); }
+    function reset(){ const cxm=Math.floor(COLS/2), cym=Math.floor(ROWS/2);
+      snake=[{x:cxm,y:cym},{x:cxm-1,y:cym},{x:cxm-2,y:cym}]; dir={x:1,y:0}; ndir={x:1,y:0}; layoutWord(); setHud(); }
+    function spawnSplash(txt){ const cw=cv.width, ch=cv.height, cols=['#F0B429','#FF7FB0','#8FA0F5','#4FC98A'];
+      for(let i=0;i<20;i++){ const a=(i/20)*Math.PI*2, sp=2+Math.random()*3.5;
+        fx.push({x:cw/2,y:ch/2,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-1,rot:0,vr:(Math.random()-0.5)*0.4,life:1,col:cols[i%4]}); }
+      fx.push({ring:true,x:cw/2,y:ch/2,r:8,life:1}); if(txt) fx.push({text:txt,x:cw/2,y:ch/2-4,life:1.4}); }
+    function loseLife(){ lives--; setHud(); if(lives<=0){ finish(false); return; }
+      bonk=3; const cxm=Math.floor(COLS/2), cym=Math.floor(ROWS/2); snake=[{x:cxm,y:cym},{x:cxm-1,y:cym},{x:cxm-2,y:cym}]; dir={x:1,y:0}; ndir={x:1,y:0}; }
+    function step(){ if(over) return; dir=ndir; const h=snake[0], nx=(h.x+dir.x+COLS)%COLS, ny=(h.y+dir.y+ROWS)%ROWS;
+      for(let i=0;i<snake.length-1;i++) if(snake[i].x===nx&&snake[i].y===ny){ loseLife(); return; }
+      snake.unshift({x:nx,y:ny}); let grew=false;
+      for(let t=0;t<tiles.length;t++){ if(tiles[t].x===nx&&tiles[t].y===ny){
+        if(tiles[t].idx===spelled){ spelled++; score+=15; grew=true; tiles.splice(t,1);
+          if(spelled>=word.length){ wordsDone++; score+=40; spawnSplash('✓ '+word.toUpperCase());
+            try{ if(typeof addCoins==='function') addCoins(10); }catch(e){}
+            if(wordsDone>=CFG.words){ finish(true); return; }
+            if(tick>110) tick-=8; layoutWord(); } else renderWord(); }
+        else { bonk=2; } break; } }
+      if(!grew) snake.pop(); setHud(); }
+    function roundRect(x,y,w,h,r){ cx.beginPath(); cx.moveTo(x+r,y); cx.arcTo(x+w,y,x+w,y+h,r); cx.arcTo(x+w,y+h,x,y+h,r); cx.arcTo(x,y+h,x,y,r); cx.arcTo(x,y,x+w,y,r); cx.closePath(); }
+    function draw(){
+      cx.clearRect(0,0,cv.width,cv.height);
+      if(!drawWorld(cx,world,0,0,cv.width,cv.height)){ cx.fillStyle='#8FCF7A'; cx.fillRect(0,0,cv.width,cv.height); }
+      cx.fillStyle='rgba(30,22,60,.24)'; cx.fillRect(0,0,cv.width,cv.height);
+      // letter tiles as honeycomb chips; next needed one glows
+      for(let t=0;t<tiles.length;t++){ const tl=tiles[t], px=tl.x*CELL, py=tl.y*CELL, isNext=tl.idx===spelled;
+        cx.fillStyle=isNext?'#F0B429':'rgba(255,247,226,.94)'; roundRect(px+3,py+3,CELL-6,CELL-6,8); cx.fill();
+        if(isNext){ cx.strokeStyle='#C8901B'; cx.lineWidth=2.5; cx.stroke(); }
+        cx.fillStyle=isNext?'#2B2117':'#8A7A55'; cx.font='800 '+Math.floor(CELL*0.56)+'px Sono, monospace';
+        cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText(tl.ch.toUpperCase(),px+CELL/2,py+CELL/2+1); }
+      cx.textAlign='left'; cx.textBaseline='alphabetic';
+      // snake body (honey segments) then head (Bizzy sprite)
+      for(let i=snake.length-1;i>=1;i--){ const s=snake[i], f=1-(i/snake.length)*0.45;
+        cx.fillStyle='rgba(240,180,41,'+f+')'; roundRect(s.x*CELL+4,s.y*CELL+4,CELL-8,CELL-8,7); cx.fill(); }
+      const hd=snake[0], hx=hd.x*CELL, hy=hd.y*CELL;
+      if(bonk>0){ cx.fillStyle='rgba(229,83,61,.5)'; roundRect(hx+1,hy+1,CELL-2,CELL-2,9); cx.fill(); bonk--; }
+      const bi=sgImg('bizzy-side-fly')||avImg(heroAv())||avImg('bizzy'); let bd=false;
+      if(bi){ try{ const s=CELL*1.06; cx.save(); cx.translate(hx+CELL/2,hy+CELL/2); if(dir.x<0) cx.scale(-1,1);
+        cx.drawImage(bi,-s/2,-s/2,s,s); cx.restore(); bd=true; }catch(e){ try{cx.restore();}catch(_){} } }
+      if(!bd){ cx.fillStyle='#F0B429'; roundRect(hx+3,hy+3,CELL-6,CELL-6,9); cx.fill(); }
+      // splash fx
+      for(let i=fx.length-1;i>=0;i--){ const f=fx[i]; f.life-=0.03; if(f.life<=0){ fx.splice(i,1); continue; }
+        if(f.ring){ f.r+=7; cx.strokeStyle='rgba(255,209,63,'+Math.max(0,f.life)+')'; cx.lineWidth=4; cx.beginPath(); cx.arc(f.x,f.y,f.r,0,7); cx.stroke(); }
+        else if(f.text){ f.y-=1.1; cx.save(); cx.globalAlpha=Math.max(0,f.life); cx.textAlign='center'; cx.textBaseline='middle';
+          cx.font='800 '+Math.floor(CELL*0.7)+'px Sono, monospace'; cx.lineWidth=5; cx.strokeStyle='#fff'; cx.strokeText(f.text,f.x,f.y);
+          cx.fillStyle='#2FA35C'; cx.fillText(f.text,f.x,f.y); cx.restore(); }
+        else { f.x+=f.vx; f.y+=f.vy; f.vy+=0.14; f.rot+=f.vr; cx.save(); cx.globalAlpha=Math.max(0,f.life);
+          cx.translate(f.x,f.y); cx.rotate(f.rot); cx.fillStyle=f.col; cx.beginPath(); cx.ellipse(0,0,4,7,0,0,7); cx.fill(); cx.restore(); } }
+    }
+    function frame(){ if(over){ if(loop){clearInterval(loop);loop=null;} return; }
+      try{ step(); if(!over) draw(); }catch(e){}
+      if(loop&&frame._t!==tick){ clearInterval(loop); frame._t=tick; loop=setInterval(frame,tick); } }
+    const DIR={up:{x:0,y:-1},down:{x:0,y:1},left:{x:-1,y:0},right:{x:1,y:0}};
+    function setDir(d){ if(over) return; const nd=DIR[d]; if(!nd) return; if(nd.x===-dir.x&&nd.y===-dir.y) return; ndir=nd; }
+    const key=e=>{ const m={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',w:'up',s:'down',a:'left',d:'right',W:'up',S:'down',A:'left',D:'right'}[e.key];
+      if(m){ setDir(m); e.preventDefault(); } };
+    addEventListener('keydown',key);
+    const pad=host.querySelector('#sg-dpad');
+    pad.addEventListener('click',e=>{ const b=e.target.closest('[data-d]'); if(b) setDir(b.dataset.d); });
+    pad.addEventListener('pointerdown',e=>{ const b=e.target.closest('[data-d]'); if(b){ setDir(b.dataset.d); e.preventDefault(); } },{passive:false});
+    let tx=0,ty=0; cv.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+    cv.addEventListener('touchend',e=>{ const dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
+      if(Math.abs(dx)<10&&Math.abs(dy)<10) return; setDir(Math.abs(dx)>Math.abs(dy)?(dx>0?'right':'left'):(dy>0?'down':'up')); },{passive:true});
+    function finish(win){ over=true; if(loop){ clearInterval(loop); loop=null; } removeEventListener('keydown',key);
+      const stars=win?(lives>=3?3:lives===2?2:1):0; const el=host.querySelector('#sg-card');
+      if(!el){ done({win,score,stars}); return; }
+      el.innerHTML='<div class="sg-cardbox sg-endcard"><div style="font:800 26px var(--display,serif);margin-bottom:4px">'+(win?'🏆 Words spelled!':'🌙 Tangled out')+'</div>'
+        +'<div style="font-size:26px;letter-spacing:4px;margin:2px 0">'+('★'.repeat(stars)+'☆'.repeat(3-stars))+'</div>'
+        +'<div style="font-size:15px;color:var(--muted,#7A6E5C);margin-bottom:12px">'+wordsDone+' word'+(wordsDone===1?'':'s')+' · ⭐ '+score+'</div>'
+        +'<div class="sg-inrow" style="max-width:340px"><button class="sg-rbtn" id="sg-again">↻ Play again</button>'
+        +'<button class="sg-rbtn go" id="sg-cont">'+(win?'Continue →':'Back to map')+'</button></div></div>';
+      el.style.display='grid';
+      el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; wordSnake(host,opts,done); };
+      el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); };
+    }
+    reset(); frame._t=tick; loop=setInterval(frame,tick); draw();
+    return { destroy(){ over=true; if(loop){ clearInterval(loop); loop=null; } removeEventListener('keydown',key); } };
+  }
+
+  W().SB_SAGA_ENGINES = { honeycombRun, keepFlying, wordHive, beeGrandPrix, whackAMoth, spellShield, spotlightSimon, unscrambleStars, wordSnake };
 
 
   /* ---------- ENGINE G · SPOTLIGHT SIMON (memory sequence) ---------- */
@@ -752,7 +857,8 @@
     {n:3,title:'The Elders\u2019 Test: Bee Grand Prix',world:'Hive',engine:'beeGrandPrix',opts:{}},
     {n:4,title:'The Queen\u2019s Riddle',world:'Hive',engine:'wordHive',opts:{big:'THUNDERSTORM'}},
     {n:5,title:'Whack-the-Moths',world:'Hive',engine:'whackAMoth',opts:{}},
-    {n:6,title:'BOSS: The Smudge',world:'Hive Gates',engine:'spellShield',opts:{}}
+    {n:6,title:'BOSS: The Smudge',world:'Hive Gates',engine:'spellShield',opts:{}},
+    {n:7,title:'Word Snake: Trail of Letters',world:'Meadow',engine:'wordSnake',opts:{}}
   ];
   const FACE={bizzy:'🐝',bumble:'🐝',waggle:'🐝',drone:'🐝',queen:'👑',smudge:'🦋',sting:'🐝',narrator:'📖',melody:'🎵',maestro:'🎩',astro:'🚀',comet:'☄️',zib:'👽',sensei:'🐼',ninja:'🥷',beaker:'🧪',brainiac:'🧠',zoomies:'🐶',capy:'🦫',pixel:'👾',joystick:'🕹️',glitch:'😈',vex:'🐝'};
   const NAME={bizzy:'Bizzy',bumble:'Bumble',waggle:'Waggle',drone:'Drone Dan',queen:'Hive Queen',smudge:'The Smudge',sting:'Sting',narrator:'',melody:'Melody',maestro:'Maestro',astro:'Astro',comet:'Comet',zib:'Zib',sensei:'Panda Sensei',ninja:'Shadow Ninja',beaker:'Beaker',brainiac:'Brainiac',zoomies:'Zoomies',capy:'Capy',pixel:'Pixel Pal',joystick:'Joy Stick',glitch:'Glitch',vex:'Vex'};
@@ -787,9 +893,9 @@
     const gems=(p.gems||0);
     const banner=art?('<div class="sg-actbanner">'+SGART.plateForWorld('Meadow')+
       '<div class="sg-actbanner-in"><span class="sg-actkick">ACT I</span><h3>The Scattering</h3>'+
-      '<p>The meadow falls; the first crew forms. '+cleared+'/6 chapters cleared.</p>'+
-      '<div class="sg-actgem">'+SGART.sprite('gem-act1',{size:30,grey:cleared<6})+'<b>'+gems+'</b></div></div></div>'):
-      ('<div class="sg-acthead"><span>ACT I</span><h3>The Scattering</h3><p>The meadow falls; the first crew forms. '+cleared+'/6 chapters cleared.</p></div>');
+      '<p>The meadow falls; the first crew forms. '+cleared+'/'+CH_META.length+' chapters cleared.</p>'+
+      '<div class="sg-actgem">'+SGART.sprite('gem-act1',{size:30,grey:cleared<CH_META.length})+'<b>'+gems+'</b></div></div></div>'):
+      ('<div class="sg-acthead"><span>ACT I</span><h3>The Scattering</h3><p>The meadow falls; the first crew forms. '+cleared+'/'+CH_META.length+' chapters cleared.</p></div>');
     const b=shell(banner+'<div class="sg-map">'+nodes+'</div>');
     playMusic('Meadow');
     b.querySelectorAll('.sg-node:not([disabled])').forEach(n=>n.onclick=()=>chapter(+n.dataset.ch));
