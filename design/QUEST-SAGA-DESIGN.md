@@ -1,3 +1,5 @@
+> NOTE: This is the earlier 30-chapter structure. CHAPTER STRUCTURE IS SUPERSEDED by CLAUDE-DESIGN-BRIEF-SAGA.md (36 chapters + 3 Side Roads). Use this document for GAME MECHANICS detail only.
+
 # BIZZY AND THE GREAT UNSPELLING
 ### The 30-chapter saga — 5 acts, 15 worlds, every chapter a real game.
 

@@ -51,14 +51,14 @@
 - `bizzy-leap` : crouched charge pose + stretched leap pose + tumble land (Ch 26)
 - Portrait emotion set (dialogue): determined / happy / worried / heartbroken / **faded** (letters visibly missing from her wing-name) / triumphant
 - `bizzy-quill`: hero pose holding the Stinger Quill aloft (finale key art)
-**Crew (per member — light set):** existing avatar art is the base; need per character: (a) **cheer pose** (arms up), (b) **grey-faded variant** — *can be generated programmatically via desaturation filter; only draw bespoke if the pose changes*, (c) dialogue portrait (one). Characters: Bumble, Waggle, Drone Dan, Hive Queen, Melody, Maestro, Astro, Comet, Zib, Panda Sensei, Shadow Ninja, Beaker, Brainiac, Zoomies, Capy, Pixel Pal, Joy Stick, Crane, Golden Crane, Beat Bot, Pengu, Boba, Rexy, Raptor, Wisp, Fae, Crystal, Monarch, Echo, Fawn, Breeze, Ember, Droplet, Zappy, Griff, Nessie, Pegasus, Hoppy.
+**Crew (per member — light set):** existing avatar art is the base; need per character: (a) **cheer pose** (arms up), (b) **grey-faded variant** — *can be generated programmatically via desaturation filter; only draw bespoke if the pose changes*, (c) dialogue portrait (one). Characters: Bumble, Waggle, Drone Dan, Hive Queen, Melody, Maestro, Astro, Comet, Zib, Panda Sensei, Shadow Ninja, Beaker, Brainiac, Zoomies, Capy, Pixel Pal, Joy Stick, Crane, Golden Crane, Beat Bot, Pengu, Boba, Rexy, Raptor, Wisp, Fae, Crystal, Monarch, Echo, Fawn, Breeze, Ember, Droplet, Zappy, Griff, Nessie, Pegasus, Hoppy, **Sting** (wasp defector, crew since Ch 6), **Scopey** (far-sight narrator, Acts IV–VI), Rally, Turbo, Nitro, Crash (out-of-kart portrait tiles needed for fade/wave scenes).
 **Special views:**
 - Melody `melody-captive`: held in a static-cage, defiant not helpless
 - Echo `echo-perch-speak`: beak open mid-sentence (idiom hint UI)
 - Panda Sensei `sensei-counsel`: seated, lantern-lit (Ch 29 key art)
 - Scopey `scopey-vision`: telescope eye projecting a vision ring (far-sight frame)
 - Hoppy `hoppy-leap`: mid-bound (Ch 26 cameo)
-- **Karts (Ch 22, 25, 32):** Rally, Turbo, Nitro, Crash as side-view karts with drivers, 2-frame wheel spin + drift-spark variant; plus Bizzy in a borrowed kart `bizzy-kart`.
+- **Karts (Side Road S1 + Ch 32 charge + Ch 36 cameo):** Rally, Turbo, Nitro, Crash as side-view karts with drivers, 2-frame wheel spin + drift-spark variant; plus Bizzy in a borrowed kart `bizzy-kart`.
 
 ### 1.2 Villains (NEW designs — same sticker style, villain palette)
 - **VEX** — hornet. Sleek, elegant, crimson-and-black with gold pinstripes (he loves beautiful things, including words). NOT hulking — precise. Views: portrait (charming smile / cold fury), full standing with cane-stinger, `vex-flight` 4-frame, `vex-duel` casting pose (letters swirling from his hand, greying as they leave), defeated-softened portrait (Ch 35 — he *remembers*).
@@ -100,7 +100,7 @@ Each world backdrop in two states: **full color** and **greying** (50% desaturat
 23. **The Engine** (Acts V–VI) — cathedral of grey machinery eating letter-streams; interior floors for maze/tetris hybrid; the core chamber
 24. **The Chakravyuha** (Ch 28) — top-down spiral fortress-maze, gates like closing petals
 25. **The War Field** (Act VI) — grey plain before the Engine, army silhouettes both sides
-26. **The Panorama** (Ch 34–36) — one wide mural of ALL worlds side by side, deliverable in grey + color layers, revealed slice by slice in the finale
+26. **The Panorama** (Ch 34–36) — one wide mural of the sixteen worlds grouped into **10 journey-order panels** (matching the 10 fire rings of Ch 35): 1 Meadow+Hive · 2 Sky · 3 Stage · 4 Cosmos · 5 Dojo+Lab · 6 Critter+Arcade · 7 Origami+Vibe · 8 Dino+Enchanted · 9 Wildhearts+Elements · 10 Legends+Turbo. Grey + color layer per panel.
 
 ---
 
@@ -108,12 +108,12 @@ Each world backdrop in two states: **full color** and **greying** (50% desaturat
 1. **The Stinger Quill** — Bizzy's weapon: a golden quill-stinger. States: normal / glowing / grey-dimmed.
 2. **Story Gems** — 36 total; six act designs (I amber hex, II star, III broken-die, IV wave-drop, V bridge-stone, VI flame) in the app gem style.
 3. **The Master Token** — the Arcade's stolen heart-coin (Glitch's price).
-4. **The Tailwind Satchel** — Odyssey bag-of-winds: stitched cloud-leather bag, straining at the seams; open/burst state.
+4. **The Tailwind Satchel** — Odyssey bag-of-winds, delivered in Ch 20 by a ghost-lamp herald of the Sunken Library (formal visit is Ch 22): stitched cloud-leather bag, straining at the seams; open/burst state.
 5. **The Ring Token** — the recognition token Bizzy carries on the Leap (a tiny hive-seal ring). Given/glowing states.
 6. **The Five Astra Words** — five seal-medallions earned in Tapasya (silent-K seal, double-L seal, root-🌿 seal, homophone-mask seal, schwa-drop seal) — each a lock-and-burst state (they detonate as word-power in the finale).
 7. **Setu Stones** — bridge stones each stamped with a friend's emblem (15 emblems needed — reuse pack icons).
 8. **The Lantern of Meaning** — Fae's lantern; lit/unlit.
-9. **The Bow of Spelling** (Ch 33) — a great bow strung with a ribbon of letters; unstrung/strung/drawn.
+9. **The Bow of Spelling** (Ch 33) — a great bow strung with a ribbon of letters; unstrung/strung/drawn/**singing** (name-glissando burst).
 10. Gameplay stickers: honey pot, golden flower (bloom 3-frame), royal jelly pellet, nectar dot, shield hex, egg + baby-dino hatch (3-frame), letter-star, paper plank, beat-note letter tile, dice pair (normal + LOADED reveal state), lotus flower, siren note-glyph, oil slick, item box, horn/shield/magnet pickups, grey brick + lit constellation, campfire, counsel lantern, fire ring (Ch 35), victory lamp string (Ch 36).
 
 ---
@@ -171,9 +171,16 @@ Each world backdrop in two states: **full color** and **greying** (50% desaturat
 
 ---
 
+## 4.5 · SIDE ROADS (three optional bonus chapters — unlock between acts, no renumbering)
+These restore three beloved game modes as full optional chapters on the saga map (branch nodes off the golden path; each awards a bonus gem).
+
+**S1 · THE JUNKYARD GRAND PRIX** 🏎️ *(unlocks after Act IV)* — the Turbo crew won't join the war until someone beats them on wheels. FULL 3-lap kart race vs **Rally, Turbo, Nitro, Crash**: drift zones, oil slicks, ramp jumps, item boxes (horn = word card → turbo; shield; magnet). Podium recruits the cars + war-rigs for Ch 32's charge. *Assets:* junkyard circuit tileset (straight/curve/drift/ramp/oil), 4 rival karts + bizzy-kart (2-frame wheels + drift sparks), item box + 3 pickups, checkered gate, podium tableau. *Backdrop:* scrap-metal canyon sunset, turbo scarlet accents; grey-state required.
+**S2 · THE BEAT STUDIO** 🎵 *(unlocks after Act III)* — Beat Bot's studio survived the greying; keep its rhythm alive. Beat Speller: 4-lane letter-note highway, tap on the beat to spell the scrolling word; PERFECT ×2 on-beat; 6 songs 90→140 BPM. *Assets:* studio stage backdrop, beat highway lanes, letter-note tile (approach/hit/perfect burst/miss static), Beat Bot DJ booth (2-frame bounce), Pengu+Boba dancers (2-frame).
+**S3 · THE WISP GROVE** ✨ *(unlocks after Act III)* — Word Wisp (Wordle): guess the hidden word in 6, green/gold/grey tile feedback, rounds of 5/6/7 letters; Wisp whispers the meaning after 3 misses. *Assets:* glow-grove backdrop, guess grid + flip tiles (3-state), on-screen keyboard skin, wisp-whisper animation (2-frame + trail).
+
 ## 5 · UI CHROME
 - **Saga Map:** one winding golden path across six act-lands (meadow→worlds→carnival/exile→grey sea→bridge/mountain→war field→home), 36 hex nodes (locked/current/cleared ★1-3), act medallion arches, grey-mist covering un-reached lands that recedes as you clear.
-- **Chapter card:** world label, engine tag chip, star row, gem slot. **Dialogue frame:** portrait left, name plate (Sono), text (Hanken), beat dots. **Boss bar:** ink-outline health bar with head/phase pips. **Gem shelf:** 6 act rows × 6 gems + badge center. **Choice wheel** (Ch 26 gauntlet-style pot choices): five art-icons (spell/trivia/idiom/type/unscramble).
+- **Chapter card:** world label, engine tag chip, star row, gem slot. **Dialogue frame:** portrait left, name plate (Sono), text (Hanken), beat dots. **Boss bar:** ink-outline health bar with head/phase pips. **Gem shelf:** 6 act rows × 6 gems + badge center. **Choice wheel** (Side Road S1–S3 entries + assist menus): five art-icons (spell/trivia/idiom/type/unscramble).
 - **FX set:** re-color bloom (radial saturation wipe), grey-creep (edge desaturation), letter-dissolve, letter-restore sparkle, confetti (exists), respell burst, drift sparks, on-beat pulse ring.
 
 ## 6 · AUDIO CUES (authored in-app with existing sound kit; listed for completeness)
@@ -206,4 +213,10 @@ Per-world 8-bar theme stings ×15 · Vex motif (elegant, minor, 4 notes) · Unsp
 | The Static | af_bella | ring-mod + bit-crush (broken speaker) |
 | The Sirens | af_bella + af_nicole + af_sky | same line layered; third voice detuned −30 cents |
 | The Gatekeeper | bm_lewis | pitch −5, cave reverb |
+| Sting | am_michael | pitch −1 (dry, clipped) |
+| Waggle | am_michael | pitch +2, +10% speed |
+| Drone Dan | bm_george | pitch −1 |
+| Scopey | am_adam | −5% speed, slight telescope resonance |
+| Ghost-lamp spellmasters | am_adam | per-master pitch −2/0/+2, watery hall reverb |
+| Any crew member not listed | am_michael (male) / af_sarah (kid or female) | bucket default |
 | Ten-Headed heads | one voice per head from full set | per-head signature filter |
