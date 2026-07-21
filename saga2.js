@@ -315,15 +315,17 @@
     let last=0, spawnT=0, potT=4;
     function frame(ts){ if(over) return;
       if(card){ requestAnimationFrame(frame); return; }
-      const dt=Math.min(50,ts-last); last=ts; t+=dt/1000; spawnT+=dt/1000; potT-=dt/1000;
-      bee.vy+=0.28; bee.y+=bee.vy;
+      const dt=Math.min(50,ts-last); last=ts; t+=dt/1000; potT-=dt/1000;
+      const GRACE=t<3;                                   // 3 s of free flight before gravity
+      if(GRACE){ bee.vy*=0.88; bee.y+=bee.vy; bee.y=Math.max(30,Math.min(Ht-40,bee.y)); }
+      else { spawnT+=dt/1000; bee.vy+=0.196; bee.y+=bee.vy; }   // gravity −30% (was 0.28)
       if(spawnT>1.9){ spawnT=0; spawn(); }
       if(potT<=0&&!pot){ potT=8; pot={x:Wd+30,y:Ht-70}; }
       obs.forEach(o=>o.x-=CFG.speed); if(pot) pot.x-=CFG.speed;
       obs=obs.filter(o=>o.x>-40);
-      // collide
-      obs.forEach(o=>{ if(o.x<70&&o.x>10){ if(bee.y<o.y||bee.y>o.y+o.g){ hit(); o.x=-99; } } });
-      if(bee.y>Ht-14||bee.y<8) hit();
+      // collide (no crashing during the grace window)
+      if(!GRACE){ obs.forEach(o=>{ if(o.x<70&&o.x>10){ if(bee.y<o.y||bee.y>o.y+o.g){ hit(); o.x=-99; } } });
+        if(bee.y>Ht-14||bee.y<8) hit(); }
       if(pot&&pot.x<70&&pot.x>10&&bee.y>Ht-110){ pot=null; spellStop(); }
       if(pot&&pot.x<=-30) pot=null;
       draw(); requestAnimationFrame(frame);
@@ -347,6 +349,12 @@
         cx.save(); cx.translate(60,bee.y); cx.rotate(tilt); cx.drawImage(bi,-s/2,-s/2,s,s); cx.restore(); bd=true; }catch(e){ try{cx.restore();}catch(_){} } }
       if(!bd){ cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(60,bee.y,15,0,7); cx.fill();
         cx.fillStyle='#2B2117'; cx.fillRect(50,bee.y-2,20,4); }
+      // grace-window cue: free flight, gravity counts in
+      if(t<3){ const n=Math.ceil(3-t);
+        cx.save(); cx.textAlign='center'; cx.globalAlpha=0.92;
+        cx.font='800 22px Fraunces, serif'; cx.fillStyle='#fff'; cx.strokeStyle='rgba(20,20,50,.55)'; cx.lineWidth=4;
+        cx.strokeText('Free flight — gravity in '+n, Wd/2, 42); cx.fillText('Free flight — gravity in '+n, Wd/2, 42);
+        cx.restore(); }
       host.querySelector('#sg-pots').textContent='🍯 '+banked+'/'+CFG.pots;
       host.querySelector('#sg-lives').textContent='❤'.repeat(Math.max(0,lives));
     }
