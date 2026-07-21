@@ -887,6 +887,7 @@ const app = {
   openGames:()=>{ clearGTimer(); const c=active(); ensureLists(c); set({nav:'games', screen:'app', game:null, gInfo:false, typed:'', mood:'happy', conceptSel:null}); },
   // ----- Spelling Quest (window.SQ) -----
   openQuest:()=>{ clearGTimer(); if(window.SQ) SQ.open(); },
+  openSaga:()=>{ clearGTimer(); if(window.SAGA2) SAGA2.open(); },
   // ----- Bee Trivia (window.STV) -----
   openTrivia:()=>{ clearGTimer(); if(window.STV) STV.open(); },
   trvTh:(a)=>{ if(window.STV) STV.setTh(a); },
@@ -1796,6 +1797,7 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
   const gchip=(act,arg,ic,label,col)=>`<button class="sb-lift" data-act="${act}" ${arg?`data-arg="${escA(arg)}"`:''} style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:12px 6px;border-radius:13px;background:var(--paper,var(--bg2));border:1px solid var(--line);box-shadow:var(--sh-rest);min-width:0">
       ${iconTile(ic, col, {size:40, radius:12})}<span style="font-size:11px;font-weight:800;color:${col};text-align:center;line-height:1.15">${esc(label)}</span></button>`;
   const games=[
+    ['openSaga',null,'spellingQuest','The Saga · NEW','#B8471B'],
     ['openQuest',null,'spellingQuest','Spelling Quest','#6C4FE0'],
     ['openTrivia',null,'beeTrivia','Bee Trivia','#C8791B'],
     ['playGame','magic','magicSquares','Magic Squares','#B14FC4'],
