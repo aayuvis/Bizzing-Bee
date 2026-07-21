@@ -888,6 +888,7 @@ const app = {
   // ----- Spelling Quest (window.SQ) -----
   openQuest:()=>{ clearGTimer(); if(window.SQ) SQ.open(); },
   openSaga:()=>{ clearGTimer(); if(window.SAGA2) SAGA2.open(); },
+  openDaily:()=>{ clearGTimer(); if(window.SB_DAILY) SB_DAILY.open(); },
   // ----- Bee Trivia (window.STV) -----
   openTrivia:()=>{ clearGTimer(); if(window.STV) STV.open(); },
   trvTh:(a)=>{ if(window.STV) STV.setTh(a); },
@@ -4447,7 +4448,13 @@ function gamesHub(){ const S=state;
         </div>
       </div></button>`;
   })();
-  const cards=sagaCard+questCard+triviaCard+champCard+magicCard+GAMES.map(gm=>`<button class="sb-cover-card" data-act="playGame" data-arg="${gm.type}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
+  const dailyCard=(function(){ if(!window.SB_DAILY) return '';
+    let st={}; try{ st=JSON.parse(localStorage.getItem('sb_daily')||'{}'); }catch(e){}
+    const today=(()=>{ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); })();
+    const doneToday=st.day===today&&st.over; const streak=st.streak||0;
+    return `<button data-act="openDaily" style="grid-column:1/-1;text-align:left;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#2FA35C,#1E7D45);box-shadow:0 6px 18px rgba(30,125,69,.28)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:grid;grid-template-columns:repeat(5,10px);gap:2px;flex-shrink:0">${['hit','near','miss','hit','near'].map(s=>`<span style="width:10px;height:10px;border-radius:2px;background:${s==='hit'?'#FFF':s==='near'?'#FFE28A':'rgba(255,255,255,.4)'}"></span>`).join('')}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.9)">One word a day · ${streak>0?streak+'-day streak 🔥':'start your streak'}</div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Daily Buzz</div><div style="font-size:12px;color:rgba(255,255,255,.92)">Six tries to spell today's mystery word. Green, amber, grey — then share your grid.</div></div><span style="padding:9px 16px;border-radius:10px;background:#fff;color:#1E7D45;font-weight:800;font-size:13px;white-space:nowrap">${doneToday?'Seen ✓':'Play →'}</span></div></button>`;
+  })();
+  const cards=dailyCard+sagaCard+questCard+triviaCard+champCard+magicCard+GAMES.map(gm=>`<button class="sb-cover-card" data-act="playGame" data-arg="${gm.type}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
       <div style="position:relative">
         ${SB_GAME(S.theme,gm.type,{h:108,dark:S.mode==='dusk'})}
         <span style="position:absolute;top:10px;left:12px;font-family:var(--ui,var(--body));font-weight:650;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:6px;background:${S.mode==='dusk'?'rgba(36,30,51,.85);color:#fff':'rgba(255,255,255,.92);color:#241E33'}">${esc(gm.tag)}</span>
