@@ -12,6 +12,8 @@
 - **Format:** SVG strongly preferred (app is vector, offline, zoom-safe). Sprite motion = SVG frame groups (frame-1…frame-N) or a horizontal PNG sheet @2x on transparent. Name files exactly as specified per asset.
 - **Tone:** warm, brave, funny-around-the-edges. Peril is real but never gory; the scariest thing in this world is *forgetting*.
 
+## 0.4 · ART QUALITY DIRECTIVE — see brief-acts/DESIGN-BRIEF-ART-QUALITY.md (MANDATORY: flowing artistic linework not assembled shapes; characters render big with presence; 3-plane depth in every world; fifteen per-world design dialects; acceptance bar per asset).
+
 ## 0.5 · EPIC THEME MAP (themes only — no named characters from the epics)
 | Source | Theme borrowed | Where it lands |
 |---|---|---|
