@@ -82,13 +82,16 @@
       ent.px+=ent.dir[0]*spd; ent.py+=ent.dir[1]*spd;
     }
     function spellCard(){
-      if(wi>=words.length) return; const w=words[wi++]; card={w,typed:'',t:10};
+      if(wi>=words.length) wi=0; const w=words[wi++]; card={w,typed:'',t:12};
       const el=host.querySelector('#sg-card');
-      el.innerHTML='<div class="sg-cardbox"><b>🌼 Spell to bloom!</b><div class="sg-cardw" id="sg-cw">🔊</div><input id="sg-ci" autocomplete="off" autocapitalize="off"><div id="sg-ct">10</div></div>';
+      el.innerHTML='<div class="sg-cardbox"><b>🌼 Spell it to bloom — earn time &amp; coins!</b><div class="sg-cardw" id="sg-cw">🔊</div><input id="sg-ci" autocomplete="off" autocapitalize="off"><div id="sg-ct">12</div></div>';
       el.style.display='grid'; try{ say(w.w); }catch(e){}
       const inp=el.querySelector('#sg-ci'); inp.focus();
       inp.onkeydown=e=>{ if(e.key==='Enter'){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase();
-        score+=ok?150:0; if(ok){ try{flash('🌸 +150 — the meadow blooms!');}catch(_){} } el.style.display='none'; card=null; } };
+        if(ok){ score+=150; t+=15; try{ if(typeof addCoins==='function') addCoins(20); }catch(_){}
+          try{flash('🌸 +150 · +15 seconds · +20 🪙 — the meadow blooms!');}catch(_){} }
+        else { try{flash('Not quite — the moth got that one.');}catch(_){} }
+        el.style.display='none'; card=null; } };
       const tick=setInterval(()=>{ if(!card){ clearInterval(tick); return; } card.t--; el.querySelector('#sg-ct').textContent=card.t;
         if(card.t<=0){ clearInterval(tick); el.style.display='none'; card=null; } },1000);
     }
@@ -109,7 +112,9 @@
               if(lives<=0){ over=true; finish(false); } } } });
           dotTimer+=dt/1000; if(dotTimer>=1){ dotTimer=0; t--; flowerT--; if(flowerT<=0&&!flower){ flowerT=9;
             let c,r,tries=0; do{ c=1+Math.floor(Math.random()*(COLS-2)); r=1+Math.floor(Math.random()*(ROWS-2)); }while(!open(c,r)&&++tries<50);
-            flower={c,r}; } if(t<=0){ over=true; finish(score>=CFG.target); } }
+            flower={c,r}; }
+            if(Math.random()<0.16 && moths.length<CFG.moths+6){ moths.push({c:6,r:1,px:6,py:1,dir:[[1,0],[-1,0]][Math.floor(Math.random()*2)]}); }  // random moth spam
+            if(t<=0){ over=true; finish(score>=CFG.target); } }
           draw();
         }
       }catch(err){ /* never let a render/logic error stop the loop — the bee must keep moving */ }
