@@ -62,6 +62,15 @@ window.SB_SAGA_SCRIPT = {
       ['bizzy','Then welcome to the crew, Sting. First rule, and it’s the only one that matters: nobody fights alone.','c6-b2'],
       ['narrator','One world saved. Fourteen more slowly greying. And far, far away, a hornet in gold pinstripes opened a great ledger, dipped his pen, and calmly crossed out the word MEADOW.','c6-n1']],
     lose:[['bizzy','The shield broke... but shields can always be rebuilt. Letter by letter, together. Again!','c6-b3']] }
+  ,chSnake: { title:'Word Snake: Trail of Letters', world:'meadow',
+    intro:[
+      ['narrator','With the Hive gates held, Bizzy slipped back to the meadow to check on the flowers — and found the moths had a cruel new trick.','cs-n1'],
+      ['bumble','Bizzy, look! The letters are all still here… but they’re scattered across the grass, every word shaken apart like beads off a broken string!','cs-bu1'],
+      ['bizzy','Then we gather them the way you cross a stream — one stone at a time, in the right order. Follow my tail, Bumble. I’ll swallow each word letter by letter until my trail spells it whole.','cs-b1']],
+    win:[
+      ['bizzy','Every word back in its right order — and look how LONG our little swarm grew! The meadow can spell itself again.','cs-b2'],
+      ['bumble','A snake made of letters and bees. Only you, Bizzy. Only you.','cs-bu2']],
+    lose:[['bizzy','Tangled up in my own trail — ha! Happens to the best of us. Shake it off, line the letters up, and off we go again!','cs-b3']] }
   ,ch7: { title:'The Show Must Go On', world:'stage',
     intro:[
       ['narrator','Stage World. One hour to curtain — and the marquee letters were going out one by one.','c7-n1'],
