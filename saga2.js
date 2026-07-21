@@ -866,16 +866,21 @@
   W().SB_SAGA_ENGINES = Object.assign(W().SB_SAGA_ENGINES||{}, { spellScene });
 
   /* ---------- SAGA CONTROLLER · map, chapter runner, dialogue player ---------- */
+  const ACTS=[
+    {n:1,kick:'ACT I',title:'The Scattering',world:'Meadow',blurb:'The meadow falls; the first crew forms.',gem:'gem-act1'},
+    {n:2,kick:'ACT II',title:'The Show Must Go On',world:'Stage',blurb:'The Unspelling reaches Stage World \u2014 and the marquee is going dark.',gem:'gem-act2'},
+    {n:3,kick:'ACT III',title:'The Scrambled Sky',world:'Cosmos',blurb:'Above the clouds, whole constellations have come loose from their names.',gem:'gem-act3'}
+  ];
   const CH_META=[
-    {n:1,title:'Escape from the Meadow of Challenges',world:'Meadow',engine:'honeycombRun',opts:{}},
-    {n:2,title:'The Long Sky',world:'Sky',engine:'keepFlying',opts:{}},
-    {n:3,title:'The Elders\u2019 Test: Bee Grand Prix',world:'Hive',engine:'beeGrandPrix',opts:{}},
-    {n:4,title:'The Queen\u2019s Riddle',world:'Hive',engine:'wordHive',opts:{big:'THUNDERSTORM'}},
-    {n:5,title:'Whack-the-Moths',world:'Hive',engine:'whackAMoth',opts:{}},
-    {n:6,title:'BOSS: The Smudge',world:'Hive Gates',engine:'spellShield',opts:{}},
-    {n:7,title:'Word Snake: Trail of Letters',world:'Meadow',engine:'wordSnake',opts:{}},
-    {n:8,title:'Spotlight Simon: The Marquee',world:'Stage',engine:'spotlightSimon',opts:{}},
-    {n:9,title:'Unscramble the Stars',world:'Cosmos',engine:'unscrambleStars',opts:{}}
+    {n:1,act:1,title:'Escape from the Meadow of Challenges',world:'Meadow',engine:'honeycombRun',opts:{}},
+    {n:2,act:1,title:'The Long Sky',world:'Sky',engine:'keepFlying',opts:{}},
+    {n:3,act:1,title:'The Elders\u2019 Test: Bee Grand Prix',world:'Hive',engine:'beeGrandPrix',opts:{}},
+    {n:4,act:1,title:'The Queen\u2019s Riddle',world:'Hive',engine:'wordHive',opts:{big:'THUNDERSTORM'}},
+    {n:5,act:1,title:'Whack-the-Moths',world:'Hive',engine:'whackAMoth',opts:{}},
+    {n:6,act:1,title:'BOSS: The Smudge',world:'Hive Gates',engine:'spellShield',opts:{}},
+    {n:7,act:1,title:'Word Snake: Trail of Letters',world:'Meadow',engine:'wordSnake',opts:{},script:'chSnake'},
+    {n:8,act:2,title:'Spotlight Simon: The Marquee',world:'Stage',engine:'spotlightSimon',opts:{},script:'ch7'},
+    {n:9,act:3,title:'Unscramble the Stars',world:'Cosmos',engine:'unscrambleStars',opts:{},script:'ch8'}
   ];
   const FACE={bizzy:'🐝',bumble:'🐝',waggle:'🐝',drone:'🐝',queen:'👑',smudge:'🦋',sting:'🐝',narrator:'📖',melody:'🎵',maestro:'🎩',astro:'🚀',comet:'☄️',zib:'👽',sensei:'🐼',ninja:'🥷',beaker:'🧪',brainiac:'🧠',zoomies:'🐶',capy:'🦫',pixel:'👾',joystick:'🕹️',glitch:'😈',vex:'🐝'};
   const NAME={bizzy:'Bizzy',bumble:'Bumble',waggle:'Waggle',drone:'Drone Dan',queen:'Hive Queen',smudge:'The Smudge',sting:'Sting',narrator:'',melody:'Melody',maestro:'Maestro',astro:'Astro',comet:'Comet',zib:'Zib',sensei:'Panda Sensei',ninja:'Shadow Ninja',beaker:'Beaker',brainiac:'Brainiac',zoomies:'Zoomies',capy:'Capy',pixel:'Pixel Pal',joystick:'Joy Stick',glitch:'Glitch',vex:'Vex'};
@@ -899,27 +904,35 @@
     overlay.querySelector('#sg-body').innerHTML=inner;
     return overlay.querySelector('#sg-body'); }
   function map(){
-    const p=prog(); const cleared=p.cleared||0;
+    const p=prog(); const cleared=p.cleared||0; const gems=(p.gems||0);
     const dev=(()=>{ try{ return (window.state&&window.state.devUnlock)||localStorage.getItem('sb_devunlock')==='1'; }catch(e){ return false; } })();
-    const nodes=CH_META.map(c=>{ const st=dev?(c.n<=cleared?'done':'open'):(c.n<=cleared?'done':c.n===cleared+1?'open':'locked');
+    const art=(window.SGART&&SGART.ready());
+    const node=(c)=>{ const st=dev?(c.n<=cleared?'done':'open'):(c.n<=cleared?'done':c.n===cleared+1?'open':'locked');
       const stars=(p.stars||{})[c.n]||0;
       return '<button class="sg-node '+st+'" data-ch="'+c.n+'" '+(st==='locked'?'disabled':'')+'>'+
         '<span class="sg-nhex">'+(st==='done'?'★'.repeat(Math.max(1,stars)):c.n)+'</span>'+
-        '<b>'+c.title+'</b><i>'+c.world+'</i></button>'; }).join('');
-    const art=(window.SGART&&SGART.ready());
-    const gems=(p.gems||0);
-    const banner=art?('<div class="sg-actbanner">'+SGART.plateForWorld('Meadow')+
-      '<div class="sg-actbanner-in"><span class="sg-actkick">ACT I</span><h3>The Scattering</h3>'+
-      '<p>The meadow falls; the first crew forms. '+cleared+'/'+CH_META.length+' chapters cleared.</p>'+
-      '<div class="sg-actgem">'+SGART.sprite('gem-act1',{size:30,grey:cleared<CH_META.length})+'<b>'+gems+'</b></div></div></div>'):
-      ('<div class="sg-acthead"><span>ACT I</span><h3>The Scattering</h3><p>The meadow falls; the first crew forms. '+cleared+'/'+CH_META.length+' chapters cleared.</p></div>');
-    const b=shell(banner+'<div class="sg-map">'+nodes+'</div>');
+        '<b>'+c.title+'</b><i>'+c.world+'</i></button>'; };
+    // one section per act: banner + its chapters. Later acts unlock as earlier chapters clear.
+    const sections=ACTS.map(A=>{
+      const chs=CH_META.filter(c=>c.act===A.n); if(!chs.length) return '';
+      const done=chs.filter(c=>c.n<=cleared).length; const first=chs[0].n;
+      const actLive=dev||cleared>=first-1;   // act opens once the chapter before its first is cleared
+      const banner=art?('<div class="sg-actbanner">'+SGART.plateForWorld(A.world)+
+        '<div class="sg-actbanner-in"><span class="sg-actkick">'+A.kick+'</span><h3>'+A.title+'</h3>'+
+        '<p>'+A.blurb+' '+done+'/'+chs.length+' cleared.</p>'+
+        '<div class="sg-actgem">'+SGART.sprite(A.gem||'gem-act1',{size:28,grey:done<chs.length})+'<b>'+gems+'</b></div></div></div>'):
+        ('<div class="sg-acthead"><span>'+A.kick+'</span><h3>'+A.title+'</h3><p>'+A.blurb+' '+done+'/'+chs.length+' cleared.</p></div>');
+      const lockNote=actLive?'':'<div class="sg-actlock">🔒 Clear Act '+(A.n-1)+' to raise the curtain.</div>';
+      return '<section class="sg-act">'+banner+lockNote+'<div class="sg-map">'+chs.map(node).join('')+'</div></section>';
+    }).join('');
+    const b=shell(sections);
     playMusic('Meadow');
     b.querySelectorAll('.sg-node:not([disabled])').forEach(n=>n.onclick=()=>chapter(+n.dataset.ch));
     overlay.querySelector('#sg-back').onclick=()=>close();
   }
   function beats(ch, phase, then){
-    const S=(window.SB_SAGA_SCRIPT||{})['ch'+ch]||{}; const lines=S[phase]||[];
+    const meta0=CH_META[ch-1]||{}; const skey=meta0.script||('ch'+ch);
+    const S=(window.SB_SAGA_SCRIPT||{})[skey]||{}; const lines=S[phase]||[];
     if(!lines.length){ then(); return; }
     let i=0;
     const meta=CH_META[ch-1]||{};

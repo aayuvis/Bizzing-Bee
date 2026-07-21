@@ -53,6 +53,8 @@
 .sg-acthead span{font:600 12px 'Sono',monospace;letter-spacing:.3em;color:var(--honey,#F0B429)}
 .sg-acthead h3{font:800 28px 'Fraunces',serif;margin:4px 0}
 .sg-map{display:grid;gap:10px;margin-top:14px}
+.sg-act{margin-bottom:26px}
+.sg-actlock{margin-top:10px;font:700 13px 'Hanken',sans-serif;color:var(--muted,#8A7F9E);background:rgba(140,120,170,.12);border:1px dashed var(--line,#d8cfe8);border-radius:12px;padding:10px 14px;text-align:center}
 .sg-node{display:grid;grid-template-columns:52px 1fr;grid-template-rows:auto auto;gap:2px 12px;align-items:center;text-align:left;background:var(--panel,#fff);border:2px solid var(--line,#EADFC8);border-radius:14px;padding:12px 14px;cursor:pointer}
 .sg-node .sg-nhex{grid-row:span 2;font:600 20px 'Sono',monospace;display:grid;place-items:center;width:48px;height:52px;background:var(--hexfill,#F6E7BF);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
 .sg-node b{font:800 16px 'Fraunces',serif}
