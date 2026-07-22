@@ -68,10 +68,14 @@ handlers. App lives in this folder; open `index.html` to run.
   `VOICE-PIPELINE.md`. **Match the library: 0.95× for normal words, 1.0× for ultra-short.**
 - After rebuild: add words to `SB_VOICE_REVIEW`; commit `voice/w/*.mp3` + `voice-review.js`.
 - You cannot audition audio here — the parent's **Re-review tab** is the quality gate.
-- **Interim state (2026-07-22):** ~870 clips (parent-flagged + scan-detected truncated —
-  see `voice/rebuild-queue.json`) are routed to device TTS via `WV_BAD` because the model
-  isn't fetchable in this sandbox. This is a stopgap, not a fix: rebuild each with Kokoro,
-  then remove it from `WV_BAD` and from the queue. `cog`/`tomb` were DSP tail-trimmed only.
+- **Model hosting:** the model files are attached to this repo's **`kokoro-model-v1`
+  release** — fetch via the GitHub API asset endpoints (in scope for any session on this
+  repo); no external allowlisting needed. `WV_BAD` is empty; keep it that way by
+  rebuilding defective clips rather than blocklisting.
+- **Kokoro is deterministic:** re-synthesizing a flagged word with identical input text/
+  speed reproduces the identical bad audio. When rebuilding a re-flagged word, change the
+  input (e.g. drop the trailing "." or shift speed ±0.03) and verify the output actually
+  differs (envelope correlation) before shipping — see `voice/pipeline/` QA scripts.
 
 ## Verify (headless)
 - `node -c app3.js && node -c saga2.js && node -c voice-review.js` after edits.
