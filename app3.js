@@ -319,9 +319,13 @@ function utter(text,rate){ const u=new SpeechSynthesisUtterance(text); if(_voice
    manifest in voice-words.js) — correct pronunciations, same voice as the bee.
    Anything without a clip (sentences, long-tail words) falls back to device TTS. */
 let _wvSet=null,_wvAudio=null;
+// Known-bad Kokoro clips (truncated or mis-synthesised) — skip the clip and let the
+// device voice say these correctly. Reported by testing; extend as more surface.
+const WV_BAD=new Set(['soda','stubble','cricket','january','olive','robin','feats','peach','pole']);
 function wordClip(text){ if(!window.SB_WVOICE) return null;
   if(!_wvSet){ try{ _wvSet=new Set(String(SB_WVOICE).split('|')); }catch(e){ _wvSet=new Set(); } }
   const k=nkey(text); if(!k||/\s/.test(k)) return null;
+  if(WV_BAD.has(k)) return null;                       // force device TTS for bad clips
   return _wvSet.has(k) ? ('voice/w/'+k.replace(/[^a-z0-9]/g,'-')+'.mp3') : null; }
 function deviceSpeak(text,rate){ try{
   const t=String(text==null?'':text).trim();
