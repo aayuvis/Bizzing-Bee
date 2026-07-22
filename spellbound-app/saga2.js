@@ -444,105 +444,228 @@
   }
 
 
-  /* ---------- ENGINE C · BEE GRAND PRIX (side-view racer) ---------- */
+  /* ---------- ENGINE C · BEE GRAND PRIX (pseudo-3D arcade racer) ----------
+     Kids race a real perspective track. Spelling words correctly earns POWER-UPS,
+     each doing something different (rocket, turbo, oil slick, gust, honey, shield).
+     Steer to hug the racing line and dodge oil patches. First past the flag wins. */
   function beeGrandPrix(host, opts, done){
-    const Wd=Math.min(innerWidth-16,640), Ht=340, LANES=4, LANE_H=64, TRACK=3200; // px per lap
+    const Wd=Math.min(innerWidth-16,640), Ht=Math.max(300,Math.min(Math.round(Wd*0.60),400));
     const diff=opts.diff||'medium';
-    const CFG={easy:{ai:2.0,laps:2},medium:{ai:2.5,laps:3},hard:{ai:2.9,laps:3},champ:{ai:3.3,laps:3}}[diff];
-    host.innerHTML='<div class="sg-hud"><span id="sg-lap">Lap 1/'+CFG.laps+'</span><span id="sg-pos"></span><span id="sg-nitro"></span></div>'+
-      '<canvas id="sg-cv"></canvas>'+
+    const CFG={easy:{laps:2,rivals:3,rival:0.80,haz:0.06},medium:{laps:3,rivals:3,rival:0.88,haz:0.09},
+               hard:{laps:3,rivals:4,rival:0.94,haz:0.12},champ:{laps:3,rivals:4,rival:1.0,haz:0.15}}[diff];
+    host.innerHTML='<div class="sg-hud"><span id="sg-lap">Lap 1/'+CFG.laps+'</span><span id="sg-pos">🥇 1st</span><span id="sg-spd"></span></div>'+
+      '<div class="sg-race3d"><canvas id="sg-cv"></canvas>'+
+      '<div class="sg-pwtray" id="sg-pw"></div>'+
+      '<div class="sg-steer"><button class="sg-sbtn" data-s="-1" aria-label="Steer left">◀</button><button class="sg-sbtn" data-s="1" aria-label="Steer right">▶</button></div></div>'+
       '<div class="sg-race-word" id="sg-rw"><button class="sg-rbtn" id="sg-rspk" aria-label="Hear the word">🔊</button>'+
-      '<input id="sg-ri" class="sg-rin" placeholder="type what you hear" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text">'+
-      '<button class="sg-rbtn go" id="sg-rgo">Go</button><button class="sg-rbtn boost" id="sg-rboost">⚡</button></div>'+
-      '<div id="sg-rmean" class="sg-race-mean"></div>'+
-      '<div class="sg-lanebtns"><button class="sg-dbtn" data-l="-1" aria-label="Move up a lane">▲</button><button class="sg-dbtn" data-l="1" aria-label="Move down a lane">▼</button></div>';
+      '<input id="sg-ri" class="sg-rin" placeholder="spell it for a power-up" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text">'+
+      '<button class="sg-rbtn go" id="sg-rgo">Go</button></div>'+
+      '<div id="sg-rmean" class="sg-race-mean"></div>';
     const cv=host.querySelector('#sg-cv'); cv.width=Wd; cv.height=Ht; const cx=cv.getContext('2d');
-    const racers=[
-      {name:'You', lane:1, x:0, spd:0, base:2.6, col:'#F0B429', you:true, nitro:0, boost:0, av:heroAv()},
-      {name:'Bumble', lane:0, x:0, spd:0, base:CFG.ai*0.98, col:'#E8912D', av:'bumble'},
-      {name:'Waggle', lane:2, x:0, spd:0, base:CFG.ai*1.0, col:'#C8B26A', av:'waggle'},
-      {name:'Drone Dan', lane:3, x:0, spd:0, base:CFG.ai*1.02, col:'#8A8A8A', av:'drone'}];
-    const hazards=[]; for(let i=0;i<10;i++) hazards.push({x:400+i*300+Math.random()*120, lane:Math.floor(Math.random()*LANES)});
-    const words=pool(12); let wi=0, curWord=null, typed='', over=false;
+
+    /* ---- pseudo-3D world ---- */
+    const segLen=200, roadW=2200, rumbleLen=3, drawDist=160, camH=1200, fov=100;
+    const camDepth=1/Math.tan((fov/2)*Math.PI/180);
+    const LIGHT={road:'#6C6C74',grass:'#7BC169',rumble:'#EDEDED',lane:'#FFFFFF'};
+    const DARK ={road:'#64646C',grass:'#72B461',rumble:'#C7413F',lane:''};
+    const segs=[];
+    const lastY=()=>segs.length?segs[segs.length-1].p2.world.y:0;
+    function addSeg(curve,y){ const n=segs.length;
+      segs.push({index:n, curve:curve,
+        p1:{world:{y:lastY(),z:n*segLen},camera:{},screen:{}},
+        p2:{world:{y:y,z:(n+1)*segLen},camera:{},screen:{}},
+        color:(Math.floor(n/rumbleLen)%2)?DARK:LIGHT, sprites:[]}); }
+    const eI=(a,b,p)=>a+(b-a)*Math.pow(p,2), eO=(a,b,p)=>a+(b-a)*(1-Math.pow(1-p,2)), eIO=(a,b,p)=>a+(b-a)*(-Math.cos(p*Math.PI)/2+0.5);
+    function road(enter,hold,leave,curve,hill){ const sY=lastY(), eY=sY+hill*segLen, tot=enter+hold+leave; let i;
+      for(i=0;i<enter;i++) addSeg(eI(0,curve,i/enter), eIO(sY,eY,i/tot));
+      for(i=0;i<hold;i++)  addSeg(curve,              eIO(sY,eY,(enter+i)/tot));
+      for(i=0;i<leave;i++) addSeg(eIO(curve,0,i/leave),eIO(sY,eY,(enter+hold+i)/tot)); }
+    // a lively little circuit: straights, sweepers, a couple of hills
+    road(20,20,20,0,0); road(16,20,16,-3,0); road(16,24,16,0,2.2); road(16,20,16,4,0);
+    road(14,18,14,2,-2.4); road(18,26,18,-4,0); road(16,20,16,0,1.8); road(20,24,20,0,0);
+    while(segs.length%rumbleLen!==0) addSeg(0,lastY());
+    const trackLen=segs.length*segLen;
+    // scatter roadside decoration + oil hazards
+    for(let n=10;n<segs.length;n+=6){ const side=(n%12<6)?-1:1; segs[n].sprites.push({kind:'flora',off:side*(1.15+Math.random()*0.9)}); }
+    const hazards=[]; for(let n=24;n<segs.length;n+=Math.floor(9+Math.random()*8)){ if(Math.random()<0.85){ hazards.push({seg:n,off:(Math.random()*1.6-0.8)}); } }
+
+    /* ---- racers ---- */
+    const maxV=segLen*62, accel=maxV/4.4, decel=-maxV/4, offDecel=-maxV/1.6, offLimit=maxV/3.2, centri=0.32;
+    let pos=0, playerX=0, v=0, lap=1, over=false, started=false;
+    let boostT=0, boostMul=1, shieldT=0, spinFlashT=0;
+    const heroKart=heroAv();
+    const rivals=[]; const rn=['Bumble','Waggle','Drone Dan','Sting'];
+    for(let i=0;i<CFG.rivals;i++) rivals.push({z:(i+1)*segLen*7, x:(i-1)*0.5, spd:maxV*CFG.rival*(0.9+i*0.03),
+      lap:1, name:rn[i], col:['#E8912D','#C8B26A','#8A8A8A','#7B5CE0'][i], av:['bumble','waggle','drone','sting'][i], spin:0, slow:0});
+    const totalOf=(z,lp)=>(lp-1)*trackLen+z;
+
+    /* ---- words → power-ups ---- */
+    const words=pool(14); let wi=0, curWord=null;
     const inp=host.querySelector('#sg-ri');
-    function nextWord(){ curWord=words[wi++%words.length]; typed=''; if(inp) inp.value='';
+    const POWERS=[
+      {id:'rocket',ic:'🚀',name:'Rocket boost',msg:'🚀 Rocket boost!',run(){ boostT=2.4; boostMul=1.7; }},
+      {id:'oil',   ic:'🛢️',name:'Oil slick',   msg:'🛢️ Oil slick — chaser spun out!',run(){ let best=null,bd=1e9; const my=totalOf(pos,lap);
+                     rivals.forEach(r=>{ const d=my-totalOf(r.z,r.lap); if(d>0&&d<bd){bd=d;best=r;} }); if(best){best.spin=2.6;} else { boostT=1.4;boostMul=1.4; } }},
+      {id:'turbo', ic:'💨',name:'Turbo',       msg:'💨 Turbo — hold on!',run(){ boostT=3.6; boostMul=1.42; }},
+      {id:'gust',  ic:'🌪️',name:'Gust push',   msg:'🌪️ Gust — shoved them wide!',run(){ let best=null,bd=1e9; const my=totalOf(pos,lap);
+                     rivals.forEach(r=>{ const d=totalOf(r.z,r.lap)-my; if(d>0&&d<bd){bd=d;best=r;} }); if(best){ best.x+=(best.x>=0?1:-1)*0.9; best.slow=1.8; } else { boostT=1.6;boostMul=1.4; } }},
+      {id:'honey', ic:'🍯',name:'Sticky honey', msg:'🍯 Honey — rivals ahead slowed!',run(){ const my=totalOf(pos,lap); rivals.forEach(r=>{ if(totalOf(r.z,r.lap)>my) r.slow=2.6; }); }},
+      {id:'shield',ic:'🛡️',name:'Bubble shield',msg:'🛡️ Shield up — oil can’t touch you!',run(){ shieldT=6; }}
+    ];
+    let pwi=0, nextPw=POWERS[0];
+    function renderTray(){ const t=host.querySelector('#sg-pw'); if(!t) return;
+      t.innerHTML='<span class="sg-pw-next">Next: '+nextPw.ic+' '+nextPw.name+'</span>'+
+        (boostT>0?'<span class="sg-pw-on">'+ (boostMul>1.5?'🚀':'💨') +'</span>':'')+(shieldT>0?'<span class="sg-pw-on">🛡️</span>':''); }
+    function nextWord(){ curWord=words[wi++%words.length]; if(inp) inp.value='';
       const mn=host.querySelector('#sg-rmean'); if(mn){ const m=meaningText(curWord); mn.textContent=m?('💡 '+m):''; }
       try{ say(curWord.w); }catch(e){} }
-    function bank(){ const me=racers[0]; const val=(inp?inp.value:typed).trim().toLowerCase();
-      if(curWord && val===curWord.w.toLowerCase()){ me.nitro=Math.min(3,me.nitro+1); try{flash('⚡ Nitro banked!');}catch(_){} }
-      nextWord(); if(inp) inp.focus(); }
-    function boost(){ const me=racers[0]; if(me.nitro>0){ me.nitro--; me.boost=1.6; } }
-    function laneShift(d){ const me=racers[0]; me.lane=Math.max(0,Math.min(LANES-1,me.lane+d)); }
-    if(inp){ inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); bank(); } }; setTimeout(()=>{ try{inp.focus();}catch(e){} },60); }
+    function bank(){ const val=(inp?inp.value:'').trim().toLowerCase();
+      if(curWord && val===curWord.w.toLowerCase()){ const p=nextPw; try{flash(p.msg);}catch(_){} try{p.run();}catch(e){}
+        pwi++; nextPw=POWERS[pwi%POWERS.length]; renderTray(); }
+      else { try{flash('Not quite — listen again for your power-up.');}catch(_){} try{ if(curWord) say(curWord.w); }catch(e){} }
+      nextWord(); if(inp){ try{inp.focus();}catch(e){} } }
+    if(inp){ inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); bank(); } }; }
     host.querySelector('#sg-rgo').onclick=bank;
-    host.querySelector('#sg-rboost').onclick=boost;
     host.querySelector('#sg-rspk').onclick=()=>{ try{ if(curWord) say(curWord.w); }catch(e){} };
-    host.querySelector('.sg-lanebtns').onclick=e=>{ const b=e.target.closest('[data-l]'); if(b) laneShift(+b.dataset.l); };
-    const key=e=>{ if(e.key==='ArrowUp'){ laneShift(-1); e.preventDefault(); }
-      else if(e.key==='ArrowDown'){ laneShift(1); e.preventDefault(); }
-      else if(e.key===' ' && e.target!==inp){ boost(); e.preventDefault(); } };
-    addEventListener('keydown',key);
-    cv.addEventListener('pointerdown',e=>{ const r=cv.getBoundingClientRect(); const y=e.clientY-r.top;
-      const me=racers[0]; me.lane=Math.max(0,Math.min(LANES-1,Math.floor((y-40)/LANE_H))); });
-    // --- How to play: explain the spell↔race loop before the flag drops ---
+
+    /* ---- steering ---- */
+    let steer=0;
+    const setSteer=s=>{ steer=s; };
+    host.querySelectorAll('.sg-sbtn').forEach(b=>{ const s=+b.dataset.s;
+      b.addEventListener('pointerdown',e=>{ setSteer(s); e.preventDefault&&e.preventDefault(); });
+      b.addEventListener('pointerup',()=>setSteer(0)); b.addEventListener('pointerleave',()=>setSteer(0)); });
+    const kd=e=>{ if(e.target===inp) return; if(e.key==='ArrowLeft'||e.key==='a'){ setSteer(-1); e.preventDefault(); }
+      else if(e.key==='ArrowRight'||e.key==='d'){ setSteer(1); e.preventDefault(); } };
+    const ku=e=>{ if(e.key==='ArrowLeft'||e.key==='a'||e.key==='ArrowRight'||e.key==='d') setSteer(0); };
+    addEventListener('keydown',kd); addEventListener('keyup',ku);
+    // drag on the canvas to steer too
+    cv.addEventListener('pointerdown',e=>{ const r=cv.getBoundingClientRect(); setSteer((e.clientX-r.left)<Wd/2?-1:1); });
+    cv.addEventListener('pointerup',()=>setSteer(0)); cv.addEventListener('pointerleave',()=>setSteer(0));
+
+    /* ---- projection + drawing ---- */
+    function project(p,camX,camY,camZ){ p.camera.x=(p.world.x||0)-camX; p.camera.y=(p.world.y||0)-camY; p.camera.z=(p.world.z||0)-camZ;
+      p.screen.scale=camDepth/p.camera.z;
+      p.screen.x=Math.round(Wd/2 + p.screen.scale*p.camera.x*Wd/2);
+      p.screen.y=Math.round(Ht/2 - p.screen.scale*p.camera.y*Ht/2);
+      p.screen.w=Math.round(p.screen.scale*roadW*Wd/2); }
+    function poly(x1,y1,x2,y2,x3,y3,x4,y4,col){ cx.fillStyle=col; cx.beginPath();
+      cx.moveTo(x1,y1); cx.lineTo(x2,y2); cx.lineTo(x3,y3); cx.lineTo(x4,y4); cx.closePath(); cx.fill(); }
+    function segMid(seg,off){ // screen pos of a point offset across the road at this segment
+      const s=seg.p1.screen; return {x:s.x + s.w*off, y:s.y, sc:s.scale}; }
+    function billboard(scale,sx,sy,drawer){ const w=scale*roadW*Wd/2*0.10; drawer(sx,sy,Math.max(14,w)); }
+
+    function drawBG(){
+      const g=cx.createLinearGradient(0,0,0,Ht*0.62); g.addColorStop(0,'#59B4E8'); g.addColorStop(1,'#CFEBF7');
+      cx.fillStyle=g; cx.fillRect(0,0,Wd,Ht);
+      cx.fillStyle='#8FD68A'; cx.beginPath(); cx.moveTo(0,Ht*0.42);
+      for(let i=0;i<=8;i++){ cx.lineTo(Wd*i/8, Ht*0.42 - 26*Math.sin(i*1.3+pos/900)); } cx.lineTo(Wd,Ht*0.62); cx.lineTo(0,Ht*0.62); cx.fill();
+    }
+    function draw(){
+      drawBG();
+      const base=segs[Math.floor(pos/segLen)%segs.length]; const basePct=(pos%segLen)/segLen;
+      let x=0, dx=-(base.curve*basePct), maxy=Ht;
+      const camX=playerX*roadW;
+      for(let n=0;n<drawDist;n++){ const seg=segs[(base.index+n)%segs.length]; const looped=seg.index<base.index; const cz=pos-(looped?trackLen:0);
+        project(seg.p1, camX - x,        camH, cz);
+        project(seg.p2, camX - x - dx,   camH, cz);
+        x+=dx; dx+=seg.curve;
+        seg._vis=false;
+        if(seg.p1.camera.z<=camDepth || seg.p2.screen.y>=seg.p1.screen.y || seg.p2.screen.y>=maxy) continue;
+        seg._vis=true; maxy=seg.p2.screen.y;
+        const s1=seg.p1.screen, s2=seg.p2.screen, c=seg.color;
+        poly(0,s1.y, 0,s2.y, Wd,s2.y, Wd,s1.y, c.grass);              // grass band
+        const r1=s1.w*0.18, r2=s2.w*0.18;
+        poly(s1.x-s1.w-r1,s1.y, s2.x-s2.w-r2,s2.y, s2.x-s2.w,s2.y, s1.x-s1.w,s1.y, c.rumble); // L rumble
+        poly(s1.x+s1.w+r1,s1.y, s2.x+s2.w+r2,s2.y, s2.x+s2.w,s2.y, s1.x+s1.w,s1.y, c.rumble); // R rumble
+        poly(s1.x-s1.w,s1.y, s2.x-s2.w,s2.y, s2.x+s2.w,s2.y, s1.x+s1.w,s1.y, c.road);         // road
+        if(c.lane){ const lw1=s1.w*0.03, lw2=s2.w*0.03; poly(s1.x-lw1,s1.y, s2.x-lw2,s2.y, s2.x+lw2,s2.y, s1.x+lw1,s1.y, c.lane); } // centre line
+      }
+      // sprites, hazards, rivals — far to near so nearer ones overlap
+      const order=[];
+      for(let n=drawDist-1;n>=0;n--){ const seg=segs[(base.index+n)%segs.length]; if(!seg._vis) continue; const sc=seg.p1.screen;
+        seg.sprites.forEach(sp=>{ if(sp.kind==='flora') order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*sp.off,sy:sc.y,t:'flora'}); });
+      }
+      hazards.forEach(h=>{ const seg=segs[h.seg]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*h.off,sy:sc.y,t:'oil'}); } });
+      rivals.forEach(r=>{ const sIdx=Math.floor(r.z/segLen)%segs.length; const seg=segs[sIdx]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*r.x,sy:sc.y,t:'rival',r:r}); } });
+      order.sort((a,b)=>a.y-b.y);
+      order.forEach(o=>{ const w=Math.max(12,o.scale*roadW*Wd/2*0.11);
+        if(o.t==='flora'){ cx.fillStyle='#3E9B54'; cx.beginPath(); cx.moveTo(o.sx,o.sy); cx.lineTo(o.sx-w*0.5,o.sy); cx.lineTo(o.sx,o.sy-w*1.7); cx.lineTo(o.sx+w*0.5,o.sy); cx.fill();
+          cx.fillStyle='#2C7B40'; cx.fillRect(o.sx-w*0.06,o.sy-w*0.5,w*0.12,w*0.5); }
+        else if(o.t==='oil'){ cx.fillStyle='rgba(20,18,26,.72)'; cx.beginPath(); cx.ellipse(o.sx,o.sy-w*0.12,w*0.9,w*0.32,0,0,7); cx.fill();
+          cx.fillStyle='rgba(120,90,180,.5)'; cx.beginPath(); cx.ellipse(o.sx-w*0.2,o.sy-w*0.16,w*0.35,w*0.12,0,0,7); cx.fill(); }
+        else { const r=o.r; const kw=w*2.0, kh=w*1.7; const img=sgImg('kart-rally')||avImg(r.av);
+          let drew=false; if(img){ try{ cx.drawImage(img,o.sx-kw/2,o.sy-kh,kw,kh); drew=true; }catch(e){} }
+          if(!drew){ cx.fillStyle=r.col; cx.beginPath(); cx.roundRect?cx.roundRect(o.sx-kw*0.32,o.sy-kh*0.7,kw*0.64,kh*0.6,6):cx.rect(o.sx-kw*0.32,o.sy-kh*0.7,kw*0.64,kh*0.6); cx.fill();
+            cx.fillStyle='#2B2117'; cx.fillRect(o.sx-kw*0.34,o.sy-kh*0.18,kw*0.68,kh*0.12); }
+          if(r.spin>0){ cx.font=Math.round(w*0.9)+'px serif'; cx.textAlign='center'; cx.fillText('💫',o.sx,o.sy-kh*0.9); cx.textAlign='left'; } }
+      });
+      // player kart (fixed, bottom centre; leans with steering)
+      const pw=Wd*0.15, ph=pw*1.0, px=Wd/2 + playerX*Wd*0.02 + steer*10, py=Ht-18;
+      if(boostT>0){ cx.fillStyle='rgba(90,200,255,.5)'; for(let i=0;i<3;i++){ cx.beginPath(); cx.ellipse(px, py+6+i*7, pw*(0.5-i*0.12), 6, 0,0,7); cx.fill(); } }
+      const pk=sgImg('bizzy-kart')||avImg(heroKart); let pd=false;
+      if(pk){ try{ cx.save(); cx.translate(px,py-ph/2); cx.rotate(steer*0.06); cx.drawImage(pk,-pw/2,-ph/2,pw,ph); cx.restore(); pd=true; }catch(e){ try{cx.restore();}catch(_){}}}
+      if(!pd){ cx.fillStyle='#F0B429'; cx.beginPath(); cx.ellipse(px,py-ph*0.4,pw*0.5,ph*0.36,0,0,7); cx.fill(); cx.fillStyle='#2B2117'; cx.fillRect(px-pw*0.4,py-ph*0.2,pw*0.8,ph*0.16); }
+      if(shieldT>0){ cx.strokeStyle='rgba(120,200,255,.8)'; cx.lineWidth=3; cx.beginPath(); cx.ellipse(px,py-ph*0.45,pw*0.72,ph*0.6,0,0,7); cx.stroke(); }
+      if(spinFlashT>0){ cx.save(); cx.globalAlpha=Math.min(0.5,spinFlashT); cx.fillStyle='#2A1E14'; cx.fillRect(0,0,Wd,Ht); cx.restore(); }
+      // HUD
+      const rank=[{t:totalOf(pos,lap)}].concat(rivals.map(r=>({t:totalOf(r.z,r.lap)}))).sort((a,b)=>b.t-a.t);
+      const place=rank.findIndex(o=>o.t===totalOf(pos,lap))+1;
+      host.querySelector('#sg-lap').textContent='Lap '+Math.min(CFG.laps,lap)+'/'+CFG.laps;
+      host.querySelector('#sg-pos').textContent=['🥇 1st','🥈 2nd','🥉 3rd','4th','5th'][place-1]||place+'th';
+      host.querySelector('#sg-spd').textContent='💨 '+Math.round(v/maxV*180)+' mph';
+    }
+
+    /* ---- loop ---- */
+    let last=0;
+    function frame(ts){ if(over) return; const dt=Math.min(0.05,(ts-last)/1000)||0.016; last=ts;
+      if(started){ update(dt); } draw(); requestAnimationFrame(frame); }
+    function update(dt){
+      boostT=Math.max(0,boostT-dt); if(boostT===0) boostMul=1; shieldT=Math.max(0,shieldT-dt); spinFlashT=Math.max(0,spinFlashT-dt);
+      const seg=segs[Math.floor(pos/segLen)%segs.length]; const spdPct=v/maxV;
+      // accelerate automatically; boosts raise the ceiling
+      v=Math.min(maxV*boostMul, v+accel*dt);
+      // steering + curve centrifugal
+      const dxs=dt*2.2*Math.max(0.35,spdPct);
+      playerX+=steer*dxs; playerX-= dxs*spdPct*seg.curve*centri;
+      // off-road grass drag
+      if((playerX<-1||playerX>1) && v>offLimit){ v+=offDecel*dt; }
+      playerX=Math.max(-2,Math.min(2,playerX));
+      // oil hazards
+      if(shieldT<=0){ hazards.forEach(h=>{ const hz=h.seg*segLen; const d=Math.abs(((pos-hz+trackLen)%trackLen)); if(d<segLen*1.2 && Math.abs(playerX-h.off)<0.5 && v>maxV*0.3){ v*=0.55; spinFlashT=0.5; try{flash('🛢️ Slipped on oil!');}catch(_){}} }); }
+      pos+=v*dt; while(pos>=trackLen){ pos-=trackLen; lap++; if(lap>CFG.laps){ over=true; return finish(); } }
+      // rivals
+      const my=totalOf(pos,lap);
+      rivals.forEach(r=>{ r.spin=Math.max(0,r.spin-dt); r.slow=Math.max(0,r.slow-dt);
+        let rs=r.spd; if(r.spin>0) rs*=0.28; else if(r.slow>0) rs*=0.55;
+        // gentle rubber-band so the pack stays close and catchable
+        const gap=my-totalOf(r.z,r.lap); rs+= gap>segLen*10?maxV*0.06: gap<-segLen*10?-maxV*0.05:0;
+        r.z+=Math.max(0,rs)*dt; if(r.z>=trackLen){ r.z-=trackLen; r.lap++; }
+        r.x+= (Math.sin((r.z+r.name.length*99)/1400)*0.6 - r.x)*dt*0.6; // drift toward a lane line
+      });
+    }
+    function finish(){ removeEventListener('keydown',kd); removeEventListener('keyup',ku);
+      const my=totalOf(pos,CFG.laps); const rank=[{t:my,me:true}].concat(rivals.map(r=>({t:totalOf(r.z,r.lap)}))).sort((a,b)=>b.t-a.t);
+      const place=rank.findIndex(o=>o.me)+1;
+      done({win:place===1, score:(6-place)*250, stars:place===1?3:place===2?2:place===3?1:0}); }
+
+    /* ---- how to play ---- */
     host.style.position='relative';
     const intro=document.createElement('div'); intro.className='sg-howto';
     intro.innerHTML='<div class="sg-howto-card">'+
       '<div class="sg-howto-h">🏁 Bee Grand Prix</div>'+
-      '<div class="sg-howto-sub">Spell words to fill your ⚡ nitro, then burn it to win the race.</div>'+
+      '<div class="sg-howto-sub">A real race — spell words to earn power-ups, each one does something different!</div>'+
       '<ol class="sg-howto-steps">'+
-      '<li><b>🔊 Hear &amp; type</b> the word, then <b>Go</b> — every correct spelling banks one ⚡.</li>'+
-      '<li><b>Tap ⚡</b> (or press Space) to blast forward with a nitro boost.</li>'+
-      '<li><b>▲ ▼</b> (or tap a lane) to swerve around the ☁️ clouds — they slow you down.</li>'+
-      '<li>First across <b>'+CFG.laps+' laps</b> takes the trophy. Finish 1st for ⭐⭐⭐.</li>'+
+      '<li>You <b>drive automatically</b> — use <b>◀ ▶</b> (or arrow keys / drag) to steer and dodge 🛢️ oil.</li>'+
+      '<li><b>🔊 Hear &amp; spell</b> the word, press <b>Go</b>. Each correct word fires the next power-up:</li>'+
+      '<li class="sg-pw-legend"><span>🚀 Rocket</span><span>💨 Turbo</span><span>🛢️ Oil chaser</span><span>🌪️ Gust</span><span>🍯 Honey</span><span>🛡️ Shield</span></li>'+
+      '<li>Finish <b>'+CFG.laps+' laps</b> in 1st for ⭐⭐⭐. Ready?</li>'+
       '</ol>'+
       '<button class="sg-rbtn go sg-howto-go" id="sg-howgo">Start race →</button></div>';
     host.appendChild(intro);
-    function begin(){ intro.remove(); nextWord(); if(inp){ try{inp.focus();}catch(e){} } requestAnimationFrame(frame); }
-    host.querySelector('#sg-howgo').onclick=begin;
-    let last=0;
-    function frame(ts){ if(over) return; const dt=Math.min(50,ts-last)/16.7; last=ts;
-      racers.forEach(r=>{
-        let sp=r.base;
-        if(r.you){ sp=2.6+(r.boost>0?2.2:0); r.boost=Math.max(0,r.boost-dt/60); }
-        else if(Math.random()<0.004) r.lane=Math.max(0,Math.min(LANES-1,r.lane+(Math.random()<0.5?-1:1)));
-        // rubber band
-        if(!r.you){ const lead=racers[0].x-r.x; sp+= lead>200?0.4: lead<-200?-0.3:0; }
-        // hazards slow
-        hazards.forEach(h=>{ const hx=h.x%TRACK; const rx=r.x%TRACK; if(Math.abs(hx-rx)<26 && h.lane===r.lane) sp*=0.45; });
-        r.x+=sp*dt; });
-      const me=racers[0];
-      if(me.x>=TRACK*CFG.laps){ over=true; finish(); return; }
-      draw(); requestAnimationFrame(frame); }
-    function draw(){
-      cx.fillStyle='#7FBF6A'; cx.fillRect(0,0,Wd,Ht);
-      for(let l=0;l<LANES;l++){ cx.fillStyle=l%2?'#8FCF7A':'#86C772'; cx.fillRect(0,40+l*LANE_H,Wd,LANE_H); }
-      cx.strokeStyle='#FFFFFF88'; for(let l=0;l<=LANES;l++){ cx.beginPath(); cx.moveTo(0,40+l*LANE_H); cx.lineTo(Wd,40+l*LANE_H); cx.stroke(); }
-      const me=racers[0], camX=me.x-120;
-      hazards.forEach(h=>{ for(let lap=0;lap<CFG.laps;lap++){ const sx=h.x+lap*TRACK-camX; if(sx>-30&&sx<Wd+30){ cx.font='22px serif'; cx.fillText('☁️',sx,40+h.lane*LANE_H+40); } } });
-      // finish line each lap
-      for(let lap=1;lap<=CFG.laps;lap++){ const fx=lap*TRACK-camX; if(fx>-10&&fx<Wd+10){ cx.fillStyle='#2B2117'; cx.fillRect(fx,40,6,LANES*LANE_H); } }
-      racers.forEach(r=>{ const sx=r.x-camX, sy=40+r.lane*LANE_H+LANE_H/2;
-        if(sx>-40&&sx<Wd+40){
-          if(r.you&&r.boost>0){ cx.fillStyle='#36D1FF'; cx.beginPath(); cx.ellipse(sx-24,sy,16,6,0,0,7); cx.fill();
-            cx.fillStyle='rgba(54,209,255,.4)'; cx.beginPath(); cx.ellipse(sx-34,sy,10,4,0,0,7); cx.fill(); }
-          // delivered kart sprites — Bizzy's kart for the player, rally kart for rivals
-          const ki=sgImg(r.you?'bizzy-kart':'kart-rally'); const sz=LANE_H*0.92;
-          let drew=false; if(ki){ try{ cx.drawImage(ki,sx-sz/2,sy-sz/2,sz,sz); drew=true; }catch(e){} }
-          if(!drew){ const ai=avImg(r.av); if(ai){ try{ cx.drawImage(ai,sx-20,sy-20,40,40); drew=true; }catch(e){} } }
-          if(!drew){ cx.fillStyle=r.col; cx.beginPath(); cx.arc(sx,sy,14,0,7); cx.fill();
-            cx.fillStyle='#2B2117'; cx.fillRect(sx-9,sy-2,18,4); }
-        } });
-      const order=[...racers].sort((a,b)=>b.x-a.x); const pos=order.indexOf(me)+1;
-      host.querySelector('#sg-lap').textContent='Lap '+Math.min(CFG.laps,1+Math.floor(me.x/TRACK))+'/'+CFG.laps;
-      host.querySelector('#sg-pos').textContent=['🥇','🥈','🥉','4th'][pos-1];
-      host.querySelector('#sg-nitro').textContent='⚡'.repeat(me.nitro);
-    }
-    function finish(){ removeEventListener('keydown',key);
-      const order=[...racers].sort((a,b)=>b.x-a.x); const pos=order.indexOf(racers[0])+1;
-      done({win:pos===1, score:(5-pos)*250, stars:pos===1?3:pos===2?2:pos===3?1:0}); }
-    // race starts from the How-to-play overlay (begin())
-    return { destroy(){ over=true; removeEventListener('keydown',key); } };
+    host.querySelector('#sg-howgo').onclick=()=>{ intro.remove(); started=true; nextWord(); renderTray(); if(inp){ try{inp.focus();}catch(e){} } };
+    renderTray();
+    requestAnimationFrame(frame);
+    return { destroy(){ over=true; removeEventListener('keydown',kd); removeEventListener('keyup',ku); } };
   }
 
   /* ---------- ENGINE E · WHACK-A-MOTH ---------- */
