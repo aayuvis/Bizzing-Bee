@@ -35,8 +35,10 @@ handlers. App lives in this folder; open `index.html` to run.
 - `app3.js` — main app: home, practice, settings, avatars, and the **voice layer**
   (`wordClip`/`deviceSpeak`/`WV_BAD`) + the **Word Voice Tester** (`viewVoiceTest`).
 - `saga2.js` — the story mode "Bizzy & the Great Unspelling": `ACTS` (6), `CH_META`
-  (chapters), and `SB_SAGA_ENGINES` (10 playable engines). `map()` renders acts→chapters
-  with stars; `game()` runs one; `beats()` plays dialogue.
+  (31 chapters), and `SB_SAGA_ENGINES` (13 playable engines incl. stageRhythm,
+  constellationConnect, typeBlaster, spellScene). `map()` renders acts→chapters
+  with stars; `game()` runs one; `beats()` plays dialogue. Progress is the v2
+  done-set model in `localStorage['sb_saga2']` (v1 saves auto-migrate).
 - `saga-script.js` — dialogue: `SB_SAGA_SCRIPT[key] = {title, world, intro/win/lose:
   [[speaker, "line", "audioKey"]]}`. `audioKey` → `voice/d/<key>.mp3` (clips optional).
 - `voice-words.js` — `SB_WVOICE`, pipe-joined manifest of ~41,143 voiced word keys.
@@ -49,10 +51,12 @@ handlers. App lives in this folder; open `index.html` to run.
 2. Add a `SB_SAGA_SCRIPT[script]` block (format above).
 3. Ensure the `world` label resolves in `WMAP`/`SGART.plateForWorld` (else it falls back).
 4. Reuse an engine (honeycombRun, keepFlying, beeGrandPrix, wordHive, whackAMoth,
-   spellShield, spotlightSimon, unscrambleStars, wordSnake, combCatcher) or author a new one
+   spellShield, spotlightSimon, unscrambleStars, wordSnake, combCatcher, stageRhythm,
+   constellationConnect, typeBlaster, spellScene) or author a new one
    (keyboard+touch!). Words come from `pool(n)` by difficulty.
-- **Current gap:** Acts II/III/V/VI have ~1 chapter each; fill each act to ~5 (see
-  `WIP-HANDOFF.md` if present, or ask the user).
+- **Status:** all six acts are built out (31 chapters). Future acts can use the spare
+  `WORLD_ART` plates (dino, library, junkyard, siren, origami, elements, vibe, engine,
+  greysea, strait, warfield, chakravyuha) — Vex still holds the Master Token.
 
 ## Voice: the feedback → Kokoro rebuild loop
 - Parent tests words in **Settings → Word voice tester** (walks the whole library in batches
@@ -64,6 +68,10 @@ handlers. App lives in this folder; open `index.html` to run.
   `VOICE-PIPELINE.md`. **Match the library: 0.95× for normal words, 1.0× for ultra-short.**
 - After rebuild: add words to `SB_VOICE_REVIEW`; commit `voice/w/*.mp3` + `voice-review.js`.
 - You cannot audition audio here — the parent's **Re-review tab** is the quality gate.
+- **Interim state (2026-07-22):** ~870 clips (parent-flagged + scan-detected truncated —
+  see `voice/rebuild-queue.json`) are routed to device TTS via `WV_BAD` because the model
+  isn't fetchable in this sandbox. This is a stopgap, not a fix: rebuild each with Kokoro,
+  then remove it from `WV_BAD` and from the queue. `cog`/`tomb` were DSP tail-trimmed only.
 
 ## Verify (headless)
 - `node -c app3.js && node -c saga2.js && node -c voice-review.js` after edits.
