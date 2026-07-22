@@ -303,7 +303,12 @@
     const CFG={easy:{gap:170,speed:2.2,pots:8},medium:{gap:150,speed:2.6,pots:10},
                hard:{gap:130,speed:3.0,pots:10},champ:{gap:115,speed:3.4,pots:12}}[diff];
     host.innerHTML='<div class="sg-hud"><span id="sg-pots">🍯 0/'+CFG.pots+'</span><span class="sg-flyprog"><i id="sg-fill"></i><b>⛩️</b></span><span id="sg-coins">🪙 0</span><span id="sg-lives"></span></div><canvas id="sg-cv"></canvas><div id="sg-card"></div>';
-    const cv=host.querySelector('#sg-cv'); cv.width=Wd; cv.height=Ht; const cx=cv.getContext('2d');
+    const cv=host.querySelector('#sg-cv');
+    // render at the device's real pixel density — crisp on tablets, no pixelation
+    const dpr=Math.min(2.5,window.devicePixelRatio||1);
+    cv.width=Math.round(Wd*dpr); cv.height=Math.round(Ht*dpr);
+    cv.style.width=Wd+'px'; cv.style.height=Ht+'px';
+    const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
     let bee={y:Ht/2,vy:0}, obs=[], pot=null, banked=0, lives=3, t=0, over=false, card=null, graceUntil=0, inv=0;
     let moths=[], coins=[], hearts=[], coinsGot=0, gate=null, started=false;
     const words=pool(CFG.pots+4); let wi=0;

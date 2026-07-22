@@ -89,8 +89,11 @@ handlers. App lives in this folder; open `index.html` to run.
 
 ## Ship
 - Commit to `main`. GitHub Pages serves from **`gh-pages`** (app minus `voice/`); voice is
-  served from `main` via `voice-cdn.js`. Update the 4 changed app files onto `gh-pages` via
+  served from `main` via `voice-cdn.js`. Update the changed app files onto `gh-pages` via
   a `git worktree`; leave mp3s on `main`. Verify a raw voice URL returns 200.
+- **Cache busting (do BOTH every deploy):** bump the `?v=` stamp on every asset URL in
+  `index.html` (one `sed -i 's/?v=OLD/?v=NEW/g'`) so devices never run stale JS, and bump
+  `SB_VOICE_VER` in `voice-review.js` whenever voice clips changed.
 - Commit trailer:
   ```
   Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
