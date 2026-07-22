@@ -711,7 +711,89 @@
     return { destroy(){ over=true; if(loop){ clearInterval(loop); loop=null; } removeEventListener('keydown',key); } };
   }
 
-  W().SB_SAGA_ENGINES = { honeycombRun, keepFlying, wordHive, beeGrandPrix, whackAMoth, spellShield, spotlightSimon, unscrambleStars, wordSnake };
+  /* ---------- ENGINE J · COMB CATCHER (catch the falling letters in order) ---------- */
+  function combCatcher(host, opts, done){
+    const Wd=Math.min(innerWidth-16,640), Ht=Math.min(innerHeight-200,440);
+    const world=opts.world||'meadow', diff=opts.diff||'medium';
+    const CFG={easy:{words:4,fall:1.3,rate:1.1},medium:{words:5,fall:1.7,rate:0.95},hard:{words:6,fall:2.1,rate:0.82},champ:{words:7,fall:2.5,rate:0.72}}[diff];
+    const bank=pool(CFG.words+6).map(w=>w).filter(w=>w&&/^[a-z]+$/i.test(w.w)&&w.w.length>=3&&w.w.length<=9);
+    if(!bank.length) bank.push({w:'bloom'},{w:'honey'},{w:'flower'});
+    host.innerHTML='<div class="sg-hud"><span id="sg-cc-w">Word 1/'+CFG.words+'</span><span id="sg-cc-lives"></span></div>'+
+      '<div class="sg-target" id="sg-cc-slots"></div><div id="sg-cc-mean" class="sg-cardmean"></div>'+
+      '<canvas id="sg-cv"></canvas>'+
+      '<div class="sg-lanebtns"><button class="sg-dbtn" data-d="left" aria-label="Left">◀</button><button class="sg-dbtn" data-d="right" aria-label="Right">▶</button></div>'+
+      '<div id="sg-card"></div>';
+    const cv=host.querySelector('#sg-cv'); cv.width=Wd; cv.height=Ht; const cx=cv.getContext('2d');
+    let word='',spelled=0,drops=[],basket=Wd/2,vx=0,wordsDone=0,lives=3,over=false,dropT=0,bonk=0,score=0,loop=null,last=0;
+    const BW=64;
+    function layout(){ word=bank[wordsDone%bank.length].w.toLowerCase(); spelled=0; drops=[];
+      host.querySelector('#sg-cc-slots').innerHTML=word.split('').map((ch,i)=>'<span class="sg-tl'+(i<spelled?' done':i===spelled?' next':'')+'">'+(i<spelled?ch.toUpperCase():'•')+'</span>').join('');
+      const mn=host.querySelector('#sg-cc-mean'); if(mn){ const m=meaningText(bank[wordsDone%bank.length]); mn.textContent=m?('💡 '+m):''; }
+      try{ say(word); }catch(e){} }
+    function renderSlots(){ host.querySelector('#sg-cc-slots').innerHTML=word.split('').map((ch,i)=>'<span class="sg-tl'+(i<spelled?' done':i===spelled?' next':'')+'">'+(i<spelled?ch.toUpperCase():'•')+'</span>').join(''); }
+    function setHud(){ host.querySelector('#sg-cc-w').textContent='Word '+(wordsDone+1)+'/'+CFG.words; host.querySelector('#sg-cc-lives').textContent='❤'.repeat(Math.max(0,lives)); }
+    function spawn(){ // 60% chance the needed letter, else a decoy; never let the queue starve the needed letter
+      const need=word[spelled]; const wantNeed=Math.random()<0.6 || !drops.some(d=>d.ch===need);
+      const ch=wantNeed?need:String.fromCharCode(97+Math.floor(Math.random()*26));
+      drops.push({x:26+Math.random()*(Wd-52),y:-20,ch,vy:CFG.fall*(0.85+Math.random()*0.4)}); }
+    function step(dt){ if(over) return;
+      basket=Math.max(BW/2,Math.min(Wd-BW/2,basket+vx*dt*0.35));
+      dropT+=dt/1000; if(dropT>=CFG.rate){ dropT=0; spawn(); }
+      for(let i=drops.length-1;i>=0;i--){ const d=drops[i]; d.y+=d.vy;
+        if(d.y>Ht-40 && Math.abs(d.x-basket)<BW/2+12){        // caught
+          drops.splice(i,1);
+          if(d.ch===word[spelled]){ spelled++; score+=15; renderSlots();
+            if(spelled>=word.length){ wordsDone++; score+=40; spawnSplash(); try{ if(typeof addCoins==='function') addCoins(8); }catch(e){}
+              if(wordsDone>=CFG.words){ finish(true); return; } layout(); setHud(); } }
+          else { bonk=3; }                                    // wrong letter — no penalty beyond the miss
+        } else if(d.y>Ht){ drops.splice(i,1); if(d.ch===word[spelled]){ /* missed the needed one */ } }
+      }
+    }
+    let fx=[]; function spawnSplash(){ for(let i=0;i<16;i++){ const a=(i/16)*Math.PI*2; fx.push({x:basket,y:Ht-30,vx:Math.cos(a)*3,vy:Math.sin(a)*3-1,life:1,col:['#F0B429','#FF7FB0','#8FA0F5'][i%3]}); } }
+    function draw(){
+      cx.clearRect(0,0,Wd,Ht);
+      if(!drawWorld(cx,world,0,0,Wd,Ht)){ cx.fillStyle='#8FCF7A'; cx.fillRect(0,0,Wd,Ht); }
+      cx.fillStyle='rgba(20,15,40,.18)'; cx.fillRect(0,0,Wd,Ht);
+      for(const d of drops){ cx.fillStyle=(d.ch===word[spelled])?'#F0B429':'#FFF7E2';
+        cx.beginPath(); cx.arc(d.x,d.y,15,0,7); cx.fill(); if(d.ch===word[spelled]){ cx.strokeStyle='#C8901B'; cx.lineWidth=2; cx.stroke(); }
+        cx.fillStyle=(d.ch===word[spelled])?'#2B2117':'#8A7A55'; cx.font='800 17px Sono,monospace'; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText(d.ch.toUpperCase(),d.x,d.y+1); }
+      cx.textAlign='left'; cx.textBaseline='alphabetic';
+      // basket = Bizzy sprite
+      const bi=sgImg('bizzy-side-fly')||avImg(heroAv()); const by=Ht-32;
+      if(bonk>0){ cx.fillStyle='rgba(229,83,61,.5)'; cx.beginPath(); cx.arc(basket,by,26,0,7); cx.fill(); bonk--; }
+      let bd=false; if(bi){ try{ cx.drawImage(bi,basket-24,by-24,48,48); bd=true; }catch(e){} }
+      if(!bd){ cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(basket,by,20,0,7); cx.fill(); }
+      for(let i=fx.length-1;i>=0;i--){ const f=fx[i]; f.life-=0.04; if(f.life<=0){ fx.splice(i,1); continue; }
+        f.x+=f.vx; f.y+=f.vy; f.vy+=0.15; cx.globalAlpha=Math.max(0,f.life); cx.fillStyle=f.col; cx.beginPath(); cx.arc(f.x,f.y,4,0,7); cx.fill(); cx.globalAlpha=1; }
+    }
+    function frame(){ if(over){ if(loop){clearInterval(loop);loop=null;} return; } const now=Date.now(), dt=Math.min(50,now-last); last=now;
+      try{ step(dt); if(!over) draw(); }catch(e){} }
+    const key=e=>{ if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A'){ vx=-6; e.preventDefault(); } else if(e.key==='ArrowRight'||e.key==='d'||e.key==='D'){ vx=6; e.preventDefault(); } };
+    const keyup=e=>{ if(['ArrowLeft','ArrowRight','a','A','d','D'].includes(e.key)) vx=0; };
+    addEventListener('keydown',key); addEventListener('keyup',keyup);
+    const pad=host.querySelector('.sg-lanebtns');
+    const hold=(dir)=>{ vx=dir*6; }; const rel=()=>{ vx=0; };
+    pad.addEventListener('pointerdown',e=>{ const b=e.target.closest('[data-d]'); if(b){ hold(b.dataset.d==='left'?-1:1); e.preventDefault(); } },{passive:false});
+    pad.addEventListener('pointerup',rel); pad.addEventListener('pointerleave',rel);
+    cv.addEventListener('pointerdown',e=>{ const r=cv.getBoundingClientRect(); basket=Math.max(BW/2,Math.min(Wd-BW/2,(e.clientX-r.left)*(Wd/r.width))); });
+    cv.addEventListener('pointermove',e=>{ if(e.buttons){ const r=cv.getBoundingClientRect(); basket=Math.max(BW/2,Math.min(Wd-BW/2,(e.clientX-r.left)*(Wd/r.width))); } });
+    function finish(win){ over=true; if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',key); removeEventListener('keyup',keyup);
+      const stars=win?(lives>=3?3:lives===2?2:1):0; const el=host.querySelector('#sg-card');
+      if(!el){ done({win,score,stars}); return; }
+      el.innerHTML='<div class="sg-cardbox sg-endcard"><div style="font:800 26px var(--display,serif);margin-bottom:4px">'+(win?'🍯 Words caught!':'🌙 Out of catches')+'</div>'
+        +'<div style="font-size:26px;letter-spacing:4px;margin:2px 0">'+('★'.repeat(stars)+'☆'.repeat(3-stars))+'</div>'
+        +'<div style="font-size:15px;color:var(--muted,#7A6E5C);margin-bottom:12px">'+wordsDone+' word'+(wordsDone===1?'':'s')+' · ⭐ '+score+'</div>'
+        +'<div class="sg-inrow" style="max-width:340px"><button class="sg-rbtn" id="sg-again">↻ Play again</button>'
+        +'<button class="sg-rbtn go" id="sg-cont">'+(win?'Continue →':'Back to map')+'</button></div></div>';
+      el.style.display='grid';
+      el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; combCatcher(host,opts,done); };
+      el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); };
+    }
+    layout(); setHud(); last=Date.now(); loop=setInterval(frame,1000/60); draw();
+    return { destroy(){ over=true; if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',key); removeEventListener('keyup',keyup); } };
+  }
+
+  W().SB_SAGA_ENGINES = { honeycombRun, keepFlying, wordHive, beeGrandPrix, whackAMoth, spellShield, spotlightSimon, unscrambleStars, wordSnake, combCatcher };
 
 
   /* ---------- ENGINE G · SPOTLIGHT SIMON (memory sequence) ---------- */
@@ -897,7 +979,8 @@
     {n:2,kick:'ACT II',title:'The Show Must Go On',world:'Stage',blurb:'The Unspelling reaches Stage World \u2014 and the marquee is going dark.',gem:'gem-act2'},
     {n:3,kick:'ACT III',title:'The Scrambled Sky',world:'Cosmos',blurb:'Above the clouds, whole constellations have come loose from their names.',gem:'gem-act3'},
     {n:4,kick:'ACT IV',title:'Into the Wilds',world:'Dojo',blurb:'The dojo, the lab, and the wild garden \u2014 three new lands, three new friends.',gem:'gem-act4'},
-    {n:5,kick:'ACT V',title:'The Arcade\u2019s Heart',world:'Arcade',blurb:'Glitch guards the last gate \u2014 and a friend must choose a side.',gem:'gem-act5'}
+    {n:5,kick:'ACT V',title:'The Arcade\u2019s Heart',world:'Arcade',blurb:'Glitch guards the last gate \u2014 and a friend must choose a side.',gem:'gem-act5'},
+    {n:6,kick:'ACT VI',title:'Homecoming',world:'Homecoming',blurb:'The Unspelling broken \u2014 for now. Catch the falling nectar and rest, little bee.',gem:'gem-act6'}
   ];
   const CH_META=[
     {n:1,act:1,title:'Escape from the Meadow of Challenges',world:'Meadow',engine:'honeycombRun',opts:{}},
@@ -912,7 +995,8 @@
     {n:10,act:4,title:'The Thousand Cuts',world:'Dojo',engine:'whackAMoth',opts:{},script:'ch9'},
     {n:11,act:4,title:'The Falling Formula',world:'Lab',engine:'keepFlying',opts:{},script:'ch10'},
     {n:12,act:4,title:'The Hungry Garden',world:'Forest',engine:'wordSnake',opts:{},script:'ch11'},
-    {n:13,act:5,title:'BOSS: Glitch\u2019s Betrayal',world:'Arcade',engine:'spellShield',opts:{foe:'vex-full'},script:'ch12'}
+    {n:13,act:5,title:'BOSS: Glitch\u2019s Betrayal',world:'Arcade',engine:'spellShield',opts:{foe:'vex-full'},script:'ch12'},
+    {n:14,act:6,title:'Nectar Catch',world:'Homecoming',engine:'combCatcher',opts:{}}
   ];
   const FACE={bizzy:'🐝',bumble:'🐝',waggle:'🐝',drone:'🐝',queen:'👑',smudge:'🦋',sting:'🐝',narrator:'📖',melody:'🎵',maestro:'🎩',astro:'🚀',comet:'☄️',zib:'👽',sensei:'🐼',ninja:'🥷',beaker:'🧪',brainiac:'🧠',zoomies:'🐶',capy:'🦫',pixel:'👾',joystick:'🕹️',glitch:'😈',vex:'🐝'};
   const NAME={bizzy:'Bizzy',bumble:'Bumble',waggle:'Waggle',drone:'Drone Dan',queen:'Hive Queen',smudge:'The Smudge',sting:'Sting',narrator:'',melody:'Melody',maestro:'Maestro',astro:'Astro',comet:'Comet',zib:'Zib',sensei:'Panda Sensei',ninja:'Shadow Ninja',beaker:'Beaker',brainiac:'Brainiac',zoomies:'Zoomies',capy:'Capy',pixel:'Pixel Pal',joystick:'Joy Stick',glitch:'Glitch',vex:'Vex'};
@@ -1003,7 +1087,7 @@
     playMusic(meta.world);
     const diff=(active&&active().gameDiff)||'medium';
     const eng=W().SB_SAGA_ENGINES[meta.engine];
-    const WMAP={meadow:'meadow',sky:'opensky',hive:'hive','hive gates':'hive',stage:'stage',cosmos:'cosmos',carnival:'carnival',dojo:'dojo',lab:'lab',forest:'forest',arcade:'arcade',pond:'pond',lotus:'lotus'};
+    const WMAP={meadow:'meadow',sky:'opensky',hive:'hive','hive gates':'hive',stage:'stage',cosmos:'cosmos',carnival:'carnival',dojo:'dojo',lab:'lab',forest:'forest',arcade:'arcade',pond:'pond',lotus:'lotus',homecoming:'homecoming'};
     const wid=WMAP[String(meta.world||'').toLowerCase()]||'meadow';
     engineHandle=eng(b.querySelector('#sg-gh'), Object.assign({diff,world:wid},meta.opts), res=>{
       engineHandle=null;

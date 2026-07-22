@@ -3695,7 +3695,7 @@ function viewDebug(){
   if(!state.devUnlock) return viewSettings();
   const hubs=[
     {act:'openDaily',   arg:'', c:'#2E8B57', n:'Daily Buzz',      d:'Wordle-style daily word'},
-    {act:'openSaga',    arg:'', c:'#F0B429', n:'Saga Quest',      d:'13-chapter story + engines'},
+    {act:'openSaga',    arg:'', c:'#F0B429', n:'Saga Quest',      d:'14-chapter story + engines'},
     {act:'openQuest',   arg:'', c:'#7C5CFF', n:'Spelling Quest',  d:'Season map + chapters'},
     {act:'openTrivia',  arg:'', c:'#13A892', n:'Bee Trivia',      d:'Knowledge rounds'},
     {act:'openChallenge',arg:'journey', c:'#E0922E', n:'Champ Challenge', d:'Timed / counted'},
@@ -3715,6 +3715,7 @@ function viewDebug(){
     ['spotlightSimon','Spotlight Simon','🌟 Memory sequence'],
     ['unscrambleStars','Unscramble Stars','⭐ Constellation'],
     ['wordSnake','Word Snake','🐍 Steer &amp; spell in order'],
+    ['combCatcher','Comb Catcher','🧺 Catch falling letters'],
   ];
   const card=(o)=>`<button data-act="${o.act}"${o.arg?` data-arg="${o.arg}"`:''} style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-left:5px solid ${o.c};border-radius:12px;padding:13px 15px;box-shadow:var(--sh-rest);color:var(--text);cursor:pointer"><div style="font-family:var(--display);font-weight:800;font-size:15px">${o.n}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${o.d}</div></button>`;
   const eng=(e)=>`<button data-act="dbgSaga" data-arg="${e[0]}" style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-left:5px solid #F0B429;border-radius:12px;padding:13px 15px;box-shadow:var(--sh-rest);color:var(--text);cursor:pointer"><div style="font-family:var(--display);font-weight:800;font-size:15px">${e[1]}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${e[2]} · <span style="font-family:var(--mono)">${e[0]}</span></div></button>`;
