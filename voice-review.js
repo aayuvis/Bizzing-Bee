@@ -17,15 +17,24 @@
 (function () {
   // Words Claude has processed since the last round — re-listen to confirm.
   // (Claude appends {w, note} entries here as it processes flag batches.)
-  // Batch 1 (2026-07-22): these short words were REBUILT in the same Kokoro voice as
-  // the rest of the library (the old clips were stretched at 0.92× speed, which added
-  // the trailing-vowel echoes and onset schwas). One consistent voice everywhere now —
-  // have a fresh listen and cross any that still sound off so they can be rebuilt again.
+  // Batch 2 (2026-07-22, overnight): processed the 33-word flag export WITHOUT the Kokoro
+  // model (not fetchable in the sandbox — see voice/rebuild-queue.json for the full
+  // rebuild list):
+  //   • cog + tomb — quiet trailing junk ("cog e", "tomb e") surgically trimmed off the
+  //     existing clips; the Kokoro audio is intact. LISTEN to confirm.
+  //   • the other 31 — clip defects are baked into the audio (attached echoes, missing
+  //     phonemes, truncation), so they now play in the device voice (WV_BAD) until the
+  //     next Kokoro rebuild round. A quick listen should confirm they at least say the
+  //     RIGHT word now.
+  //   • a full acoustic scan of all 41,136 clips also found ~840 truncated/garbled clips
+  //     (e.g. "hotel" was 0.09s long) — those are device-voiced + queued for rebuild too.
   window.SB_VOICE_REVIEW = (window.SB_VOICE_REVIEW || []).concat(
-    ["cap","soda","stubble","cricket","january","olive","robin","feats","peach","pole",
-     "arc","cop","dub","eve","hue","salmon","receipt","onion","giraffe","answer","won","win","who","use",
-     "tub","tip","tea","spa","six","sit","sip","she","set","see","sea","saw","sat","sap","paw","pub","pup","rag","raw","rub"]
-    .map(function(w){ return {w:w, note:"rebuilt in the Kokoro voice"}; })
+    [{w:"cog", note:"tail-trimmed — junk ' e' removed, confirm it sounds clean"},
+     {w:"tomb", note:"tail-trimmed — junk ' e' removed, confirm it sounds clean"}],
+    ["peach","pole","dub","eve","onion","won","who","tub","tip","spa","six","sip","saw",
+     "paw","pub","rub","olive","vegetable","yacht","umbrella","glue","grand","blank",
+     "brave","hotel","proof","raisin","forage","cuckoo","lionize","emperor"]
+    .map(function(w){ return {w:w, note:"device voice until Kokoro rebuild (clip was defective)"}; })
   );
 
   // Highest-priority QA queue. Short/plosive-initial/final-vowel words are the
