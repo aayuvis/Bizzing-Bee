@@ -319,9 +319,10 @@ function utter(text,rate){ const u=new SpeechSynthesisUtterance(text); if(_voice
    manifest in voice-words.js) — correct pronunciations, same voice as the bee.
    Anything without a clip (sentences, long-tail words) falls back to device TTS. */
 let _wvSet=null,_wvAudio=null;
-// Known-bad Kokoro clips (truncated or mis-synthesised) — skip the clip and let the
-// device voice say these correctly. Reported by testing; extend as more surface.
-const WV_BAD=new Set(['soda','stubble','cricket','january','olive','robin','feats','peach','pole']);
+// Every word uses one consistent Kokoro voice (mixing in the device voice sounded
+// unprofessional). Words reported as off get REBUILT in Kokoro and re-reviewed —
+// this stays empty unless a clip is ever pulled while a rebuild is pending.
+const WV_BAD=new Set([]);
 function wordClip(text){ if(!window.SB_WVOICE) return null;
   if(!_wvSet){ try{ _wvSet=new Set(String(SB_WVOICE).split('|')); }catch(e){ _wvSet=new Set(); } }
   const k=nkey(text); if(!k||/\s/.test(k)) return null;
@@ -679,7 +680,9 @@ const app = {
   // ----- Word Voice Tester (human-in-the-loop voice QA) -----
   openVoiceTest:()=>set({nav:'voicetest', screen:'app', vtTab:'test'}),
   vtTab:(t)=>set({vtTab:t}),
-  vtPlay:(k)=>{ try{ if(window._vtA){ try{window._vtA.pause();}catch(e){} } const a=new Audio('voice/w/'+String(k).replace(/[^a-z0-9]/g,'-')+'.mp3'); window._vtA=a; a.play().catch(()=>{ try{ if(typeof deviceSpeak==='function') deviceSpeak(k,0.9); }catch(e){} }); }catch(e){} },
+  vtPlay:(k)=>{ try{ k=nkey(k);
+    if(typeof WV_BAD!=='undefined' && WV_BAD.has(k)){ try{ if(typeof deviceSpeak==='function') deviceSpeak(k,0.9); }catch(e){} return; }  // blocklisted → device voice, exactly what the app plays
+    if(window._vtA){ try{window._vtA.pause();}catch(e){} } const a=new Audio('voice/w/'+String(k).replace(/[^a-z0-9]/g,'-')+'.mp3'); window._vtA=a; a.play().catch(()=>{ try{ if(typeof deviceSpeak==='function') deviceSpeak(k,0.9); }catch(e){} }); }catch(e){} },
   vtOk:(k)=>{ const f=vtLoad(); k=nkey(k); delete f.bad[k]; f.ok[k]=1; vtSave(f); render(); },
   vtBad:(k)=>{ const f=vtLoad(); k=nkey(k); delete f.ok[k]; if(!f.bad[k]) f.bad[k]={h:'',at:Date.now()}; vtSave(f); render(); },
   vtClear:(k)=>{ const f=vtLoad(); k=nkey(k); delete f.ok[k]; delete f.bad[k]; vtSave(f); render(); },
@@ -3742,19 +3745,27 @@ function vtSave(f){ try{ localStorage.setItem('sb_vflags', JSON.stringify({ok:f.
 function voiceFlagList(){ const f=vtLoad(); return Object.keys(f.bad).map(k=>({w:k,h:(f.bad[k]&&f.bad[k].h)||''})); }
 function voiceFlagCount(){ try{ return Object.keys(vtLoad().bad).length; }catch(e){ return 0; } }
 window.sbVTnote=function(k,val){ const f=vtLoad(); k=nkey(k); if(!f.bad[k]) f.bad[k]={h:'',at:Date.now()}; f.bad[k].h=String(val||'').slice(0,60); vtSave(f); };
-function voicePriorityList(){ const seen=new Set(), out=[];
+// Full test queue in priority order: hand-picked seed → the child's own study words
+// → the entire voiced corpus (all ~41k Kokoro clips). Cached; the tester batches it.
+function voicePriorityList(){ if(window._vtPriCache) return window._vtPriCache;
+  const seen=new Set(), out=[];
   const add=(w)=>{ const k=nkey(w); if(k && /^[a-z][a-z-]*$/.test(k) && !seen.has(k)){ seen.add(k); out.push(k); } };
   (window.SB_VOICE_PRIORITY||[]).forEach(add);
   try{ (gameWordsD()||[]).forEach(x=>add(x.w)); }catch(e){}
-  return out; }
+  try{ String(window.SB_WVOICE||'').split('|').forEach(add); }catch(e){}
+  window._vtPriCache=out; return out; }
+var VT_BATCH=20;
 function viewVoiceTest(){
   const S=state; const f=vtLoad(); const tab=S.vtTab||'test';
   const review=(window.SB_VOICE_REVIEW||[]).map(x=>nkey(x&&(x.w||x))).filter((v,i,a)=>v&&a.indexOf(v)===i);
   const flagged=Object.keys(f.bad);
-  let list, empty;
+  let list, empty, batchInfo='';
   if(tab==='flagged'){ list=flagged; empty='No words flagged yet. In “To test”, cross any word that sounds wrong.'; }
   else if(tab==='review'){ list=review; empty='Nothing to re-review yet. When Claude rebuilds your flagged words, they appear here for a fresh listen.'; }
-  else { list=voicePriorityList(); empty='No words available.'; }
+  else { const all=voicePriorityList(); const unrev=all.filter(k=>!f.ok[k]&&!f.bad[k]);
+    list=unrev.slice(0,VT_BATCH); empty='🎉 Every word tested — the whole library is done. Thank you!';
+    const doneAll=all.length-unrev.length;
+    batchInfo=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:11px 14px;margin-bottom:12px;font-size:13px;color:var(--text)"><b>Batch of ${Math.min(VT_BATCH,unrev.length)}</b> — hear each, tick or cross, then <b>Save &amp; export</b> and the next batch loads automatically. <span style="color:var(--muted)">${doneAll.toLocaleString()} of ${all.length.toLocaleString()} checked · ${unrev.length.toLocaleString()} left</span></div>`; }
   const row=(k)=>{ const okd=!!f.ok[k], bad=f.bad[k]; const note=(bad&&bad.h)||'';
     return `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--bg2);border:1px solid ${bad?'var(--bad,#C43D5A)':okd?'var(--good,#2FA35C)':'var(--line)'};border-radius:12px;padding:10px 12px;margin-bottom:8px">
       <button data-act="vtPlay" data-arg="${k}" aria-label="Play ${esc(k)}" style="width:42px;height:42px;border-radius:10px;background:var(--accent);color:#fff;font-size:18px;flex-shrink:0">🔊</button>
@@ -3774,6 +3785,7 @@ function viewVoiceTest(){
       <span style="font-size:12px;color:var(--muted);font-weight:700">${tested} checked · ${flagged.length} flagged</span>
       <button data-act="vtExport" style="padding:9px 16px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">💾 Save &amp; export</button>
     </div>
+    ${tab==='test'?batchInfo:''}
     ${rows}
   </div>`;
 }
