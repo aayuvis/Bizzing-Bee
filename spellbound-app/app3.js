@@ -3768,8 +3768,13 @@ function viewVoiceTest(){
   const review=reviewAll.filter(k=>!f.ok[k]);   // dynamically drop the ones already confirmed OK
   const flagged=Object.keys(f.bad);
   let list, empty, batchInfo='';
+  const frAll=(window.SB_VOICE_FRENCH?String(SB_VOICE_FRENCH).split('|'):[]);
+  const frLeft=frAll.filter(k=>!f.ok[k]&&!f.bad[k]);
   if(tab==='flagged'){ list=flagged; empty='No words flagged yet. In “To test”, cross any word that sounds wrong.'; }
   else if(tab==='review'){ list=review; empty=reviewAll.length?'🎉 Every rebuilt word confirmed — the whole batch sounds right. Thank you!':'Nothing to re-review yet. When Claude rebuilds your flagged words, they appear here for a fresh listen.'; }
+  else if(tab==='french'){ list=frLeft.slice(0,VT_BATCH); empty='🎉 Every French-origin word checked!';
+    const frDone=frAll.length-frLeft.length;
+    batchInfo=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:11px 14px;margin-bottom:12px;font-size:13px;color:var(--text)"><b>French-origin audit</b> — these words use French spelling patterns the voice model finds hardest, so they get their own lane. Double-tap 🔊 = right, ✗ = wrong. <span style="color:var(--muted)">${frDone.toLocaleString()} of ${frAll.length.toLocaleString()} checked · ${frLeft.length.toLocaleString()} left</span></div>`; }
   else { const all=voicePriorityList(); const unrev=all.filter(k=>!f.ok[k]&&!f.bad[k]);
     list=unrev.slice(0,VT_BATCH); empty='🎉 Every word tested — the whole library is done. Thank you!';
     const doneAll=all.length-unrev.length;
@@ -3785,12 +3790,12 @@ function viewVoiceTest(){
   return `<div style="max-width:640px;margin:0 auto">
     <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:4px"><button data-act="goSettings" style="color:var(--muted);font-weight:700;font-size:13px">← Settings</button><span style="font-family:var(--display);font-weight:800;font-size:22px">🎧 Word voice tester</span></div>
     <p style="margin:0 0 12px;color:var(--muted);font-size:13px">Tap 🔊 to hear a word — <b>double-tap 🔊 if it sounds right</b> (it turns green and the next word moves up). Tap ✗ if it sounds wrong, then type how it sounded (e.g. “soda” → “sod”); tap ✗ again to undo. Flags are saved permanently. Press <b>Save &amp; export</b> and share the file with Claude to rebuild them; rebuilt words come back under <b>Re-review</b>.</p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">${tabBtn('test','To test')}${tabBtn('flagged','Flagged · '+flagged.length)}${tabBtn('review','Re-review · '+review.length)}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">${tabBtn('test','To test')}${tabBtn('flagged','Flagged · '+flagged.length)}${tabBtn('review','Re-review · '+review.length)}${tabBtn('french','🇫🇷 French · '+frLeft.length)}</div>
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px">
       <span style="font-size:12px;color:var(--muted);font-weight:700">${tested} checked · ${flagged.length} flagged</span>
       <button data-act="vtExport" style="padding:9px 16px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">💾 Save &amp; export</button>
     </div>
-    ${tab==='test'?batchInfo:''}
+    ${(tab==='test'||tab==='french')?batchInfo:''}
     ${rows}
   </div>`;
 }

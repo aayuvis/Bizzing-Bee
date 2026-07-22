@@ -27,16 +27,22 @@
   //     every clip re-verified acoustically (speech span sane, no stray segments).
   //   • the 451-word legacy 0.92× short-word batch (cat, dog, sun…) — re-synthesized at
   //     current params so the whole library is one consistent voice and speed.
-  // Batch 4 (2026-07-22, round 3): 15 of batch 3 passed the parent's listen; the 18
-  // repeat offenders were rebuilt with stronger techniques — explicit IPA phonemes
-  // (fixes dropped/wrong sounds like lionize→"ionize", vegetable→"vege-able"),
-  // carrier-phrase excision (a following word suppresses the final-consonant release
-  // that made dub→"dubbbe"), and ±speed variants — each candidate auto-scored against
-  // never-flagged rhyme siblings (dub vs cub/hub, sip vs dip/lip…) before shipping.
+  // Batch 5 (2026-07-22, round 4): the 15 words that kept their artifact through three
+  // different af_heart inputs were rebuilt with VOICE-VECTOR BLENDS — Kokoro style
+  // interpolation, 70% af_heart + 30% of a sibling voice (bella/sarah/nova), chosen per
+  // word by automatic scoring against never-flagged rhyme siblings. They may sound very
+  // slightly different in timbre from the rest of the library; that is the trade for
+  // killing the artifact. The 12 newly flagged garbled words (enchantment "click click",
+  // moisture "ture"…) were re-synthesized normally, plus a library-wide garble scan
+  // rebuilt 97 more (mostly French-origin — see the new 🇫🇷 French tab to audit that
+  // whole cohort).
   window.SB_VOICE_REVIEW = (window.SB_VOICE_REVIEW || []).concat(
-    ["peach","dub","onion","tub","spa","sip","saw","paw","pub","rub","olive",
-     "vegetable","umbrella","brave","proof","cuckoo","lionize","emperor"]
-    .map(function(w){ return {w:w, note:"round-3 rebuild (IPA/carrier/speed) — fresh listen please"}; })
+    ["peach","dub","tub","spa","saw","paw","pub","rub","olive","vegetable","umbrella",
+     "brave","proof","cuckoo","emperor"]
+    .map(function(w){ return {w:w, note:"round-4: voice-blend rebuild — timbre may differ slightly"}; }),
+    ["blemish","chowder","furtive","pedigree","pilferer","moisture","companion",
+     "enchantment","dauntlessly","loyal","verve","gabled"]
+    .map(function(w){ return {w:w, note:"round-4: garbled clip re-synthesized"}; })
   );
 
   // Highest-priority QA queue. Short/plosive-initial/final-vowel words are the
