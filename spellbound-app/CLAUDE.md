@@ -23,9 +23,13 @@ handlers. App lives in this folder; open `index.html` to run.
 
 ## Hard rules (do not violate)
 - **Every game needs BOTH keyboard AND touch/tablet controls.** Non-negotiable.
-- **All word/concept audio is Kokoro** (one consistent voice). Never mix in device TTS as a
-  "fix" — rebuild the clip instead (see Voice below). Device TTS is only the silent fallback
-  for words with no clip.
+- **All word/concept audio is Kokoro** (one consistent voice). When a clip is flagged,
+  rebuild it — escalating per round: fresh synth → changed input (no-dot/speed — Kokoro is
+  deterministic) → explicit IPA / carrier-phrase excision → voice-vector blend (70/30
+  af_heart+sibling) → full sibling voice. **If a word still fails after the blend/swap
+  rounds, route it to device TTS via `WV_BAD` (owner's decision, 2026-07-22)** and leave it
+  in `voice/rebuild-queue.json` in case a better model shows up. Correct pronunciation
+  beats voice consistency; device TTS is also the silent fallback for words with no clip.
 - **Never leak the target spelling** in on-screen meaning/definition text (it's masked).
 - Games must look **professional** (not boxy/1990s). Use the delivered Claude Design art
   (`SAGA_ART`/`WORLD_ART`/`SB_AVATAR`); hand-drawn canvas is fine when richly shaded.
