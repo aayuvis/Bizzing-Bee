@@ -746,7 +746,8 @@
             if(spelled>=word.length){ wordsDone++; score+=40; spawnSplash(); try{ if(typeof addCoins==='function') addCoins(8); }catch(e){}
               if(wordsDone>=CFG.words){ finish(true); return; } layout(); setHud(); } }
           else { bonk=3; }                                    // wrong letter — no penalty beyond the miss
-        } else if(d.y>Ht){ drops.splice(i,1); if(d.ch===word[spelled]){ /* missed the needed one */ } }
+        } else if(d.y>Ht){ drops.splice(i,1);
+          if(d.ch===word[spelled]){ lives--; bonk=3; setHud(); if(lives<=0){ finish(false); return; } } }   // let the needed letter fall past → lose a heart
       }
     }
     let fx=[]; function spawnSplash(){ for(let i=0;i<16;i++){ const a=(i/16)*Math.PI*2; fx.push({x:basket,y:Ht-30,vx:Math.cos(a)*3,vy:Math.sin(a)*3-1,life:1,col:['#F0B429','#FF7FB0','#8FA0F5'][i%3]}); } }
