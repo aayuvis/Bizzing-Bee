@@ -681,10 +681,17 @@ const app = {
   openVoiceTest:()=>set({nav:'voicetest', screen:'app', vtTab:'test'}),
   vtTab:(t)=>set({vtTab:t}),
   vtPlay:(k)=>{ try{ k=nkey(k);
+    // double-tap the 🔊 = "sounds right": second tap within 400ms marks OK instead of replaying
+    const now=Date.now(), last=window._vtLastPlay;
+    if(last && last.k===k && (now-last.t)<400){ window._vtLastPlay=null; app.vtOk(k); return; }
+    window._vtLastPlay={k:k,t:now};
     if(typeof WV_BAD!=='undefined' && WV_BAD.has(k)){ try{ if(typeof deviceSpeak==='function') deviceSpeak(k,0.9); }catch(e){} return; }  // blocklisted → device voice, exactly what the app plays
     if(window._vtA){ try{window._vtA.pause();}catch(e){} } const a=new Audio('voice/w/'+String(k).replace(/[^a-z0-9]/g,'-')+'.mp3'); window._vtA=a; a.play().catch(()=>{ try{ if(typeof deviceSpeak==='function') deviceSpeak(k,0.9); }catch(e){} }); }catch(e){} },
-  vtOk:(k)=>{ const f=vtLoad(); k=nkey(k); delete f.bad[k]; f.ok[k]=1; vtSave(f); render(); },
-  vtBad:(k)=>{ const f=vtLoad(); k=nkey(k); delete f.ok[k]; if(!f.bad[k]) f.bad[k]={h:'',at:Date.now()}; vtSave(f); render(); },
+  vtOk:(k)=>{ const f=vtLoad(); k=nkey(k); delete f.bad[k]; f.ok[k]=1; vtSave(f); try{ flash('✓ '+k+' sounds right'); }catch(e){} render(); },
+  vtBad:(k)=>{ const f=vtLoad(); k=nkey(k); delete f.ok[k];
+    if(f.bad[k] && !f.bad[k].h){ delete f.bad[k]; }      // ✗ again on an un-annotated flag = undo
+    else if(!f.bad[k]) f.bad[k]={h:'',at:Date.now()};
+    vtSave(f); render(); },
   vtClear:(k)=>{ const f=vtLoad(); k=nkey(k); delete f.ok[k]; delete f.bad[k]; vtSave(f); render(); },
   vtExport:()=>{ const list=voiceFlagList(); if(!list.length){ flash('No flagged words yet — cross the ones that sound wrong first.'); return; }
     const payload={ app:'Bizzing Bee', kind:'voice-flags', at:new Date().toISOString(), count:list.length, words:list };
@@ -3757,29 +3764,27 @@ function voicePriorityList(){ if(window._vtPriCache) return window._vtPriCache;
 var VT_BATCH=20;
 function viewVoiceTest(){
   const S=state; const f=vtLoad(); const tab=S.vtTab||'test';
-  const review=(window.SB_VOICE_REVIEW||[]).map(x=>nkey(x&&(x.w||x))).filter((v,i,a)=>v&&a.indexOf(v)===i);
+  const reviewAll=(window.SB_VOICE_REVIEW||[]).map(x=>nkey(x&&(x.w||x))).filter((v,i,a)=>v&&a.indexOf(v)===i);
+  const review=reviewAll.filter(k=>!f.ok[k]);   // dynamically drop the ones already confirmed OK
   const flagged=Object.keys(f.bad);
   let list, empty, batchInfo='';
   if(tab==='flagged'){ list=flagged; empty='No words flagged yet. In “To test”, cross any word that sounds wrong.'; }
-  else if(tab==='review'){ list=review; empty='Nothing to re-review yet. When Claude rebuilds your flagged words, they appear here for a fresh listen.'; }
+  else if(tab==='review'){ list=review; empty=reviewAll.length?'🎉 Every rebuilt word confirmed — the whole batch sounds right. Thank you!':'Nothing to re-review yet. When Claude rebuilds your flagged words, they appear here for a fresh listen.'; }
   else { const all=voicePriorityList(); const unrev=all.filter(k=>!f.ok[k]&&!f.bad[k]);
     list=unrev.slice(0,VT_BATCH); empty='🎉 Every word tested — the whole library is done. Thank you!';
     const doneAll=all.length-unrev.length;
-    batchInfo=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:11px 14px;margin-bottom:12px;font-size:13px;color:var(--text)"><b>Batch of ${Math.min(VT_BATCH,unrev.length)}</b> — hear each, tick or cross, then <b>Save &amp; export</b> and the next batch loads automatically. <span style="color:var(--muted)">${doneAll.toLocaleString()} of ${all.length.toLocaleString()} checked · ${unrev.length.toLocaleString()} left</span></div>`; }
+    batchInfo=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:11px 14px;margin-bottom:12px;font-size:13px;color:var(--text)"><b>Batch of ${Math.min(VT_BATCH,unrev.length)}</b> — hear each: double-tap 🔊 = right, ✗ = wrong. Then <b>Save &amp; export</b> and the next batch loads automatically. <span style="color:var(--muted)">${doneAll.toLocaleString()} of ${all.length.toLocaleString()} checked · ${unrev.length.toLocaleString()} left</span></div>`; }
   const row=(k)=>{ const okd=!!f.ok[k], bad=f.bad[k]; const note=(bad&&bad.h)||'';
     return `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--bg2);border:1px solid ${bad?'var(--bad,#C43D5A)':okd?'var(--good,#2FA35C)':'var(--line)'};border-radius:12px;padding:10px 12px;margin-bottom:8px">
-      <button data-act="vtPlay" data-arg="${k}" aria-label="Play ${esc(k)}" style="width:42px;height:42px;border-radius:10px;background:var(--accent);color:#fff;font-size:18px;flex-shrink:0">🔊</button>
-      <div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-weight:800;font-size:16px;overflow-wrap:anywhere">${esc(k)}${bad&&bad.logged?' <span style="font-family:var(--body);font-size:10px;font-weight:800;color:var(--muted);background:var(--surface2);padding:1px 6px;border-radius:99px;vertical-align:middle">logged</span>':''}</div>${bad?`<input value="${escA(note)}" oninput="window.sbVTnote('${k}',this.value)" placeholder="how did it sound? e.g. sod" style="margin-top:5px;width:100%;font-size:12.5px;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface2);color:var(--text)">`:''}</div>
-      <div style="display:inline-flex;gap:6px;flex-shrink:0">
-        <button data-act="vtOk" data-arg="${k}" title="Sounds right" style="width:40px;height:40px;border-radius:10px;font-size:17px;background:${okd?'var(--good,#2FA35C)':'var(--surface2)'};color:${okd?'#fff':'var(--muted)'};border:1px solid var(--line)">✓</button>
-        <button data-act="vtBad" data-arg="${k}" title="Sounds wrong" style="width:40px;height:40px;border-radius:10px;font-size:17px;background:${bad?'var(--bad,#C43D5A)':'var(--surface2)'};color:${bad?'#fff':'var(--muted)'};border:1px solid var(--line)">✗</button>
-      </div></div>`; };
+      <button data-act="vtPlay" data-arg="${k}" aria-label="Play ${esc(k)} — double-tap if it sounds right" title="Tap: hear · double-tap: sounds right" style="width:42px;height:42px;border-radius:10px;background:${okd?'var(--good,#2FA35C)':'var(--accent)'};color:#fff;font-size:18px;flex-shrink:0;user-select:none;-webkit-user-select:none;position:relative">${okd?'✓':'🔊'}</button>
+      <button data-act="vtBad" data-arg="${k}" title="${bad?'Un-flag':'Sounds wrong'}" style="width:40px;height:40px;border-radius:10px;font-size:17px;background:${bad?'var(--bad,#C43D5A)':'var(--surface2)'};color:${bad?'#fff':'var(--muted)'};border:1px solid var(--line);flex-shrink:0;user-select:none;-webkit-user-select:none">✗</button>
+      <div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-weight:800;font-size:16px;overflow-wrap:anywhere">${esc(k)}${bad&&bad.logged?' <span style="font-family:var(--body);font-size:10px;font-weight:800;color:var(--muted);background:var(--surface2);padding:1px 6px;border-radius:99px;vertical-align:middle">logged</span>':''}</div>${bad?`<input value="${escA(note)}" oninput="window.sbVTnote('${k}',this.value)" placeholder="how did it sound? e.g. sod" style="margin-top:5px;width:100%;font-size:12.5px;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface2);color:var(--text)">`:''}</div></div>`; };
   const rows = list.length ? list.slice(0,400).map(row).join('') : `<div style="color:var(--muted);font-size:14px;padding:26px 16px;text-align:center">${empty}</div>`;
   const tested=Object.keys(f.ok).length+flagged.length;
   const tabBtn=(id,label)=>`<button data-act="vtTab" data-arg="${id}" style="padding:8px 14px;border-radius:999px;font-weight:800;font-size:13px;border:1px solid var(--line);background:${tab===id?'var(--accent)':'var(--surface2)'};color:${tab===id?'#fff':'var(--text)'}">${label}</button>`;
   return `<div style="max-width:640px;margin:0 auto">
     <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:4px"><button data-act="goSettings" style="color:var(--muted);font-weight:700;font-size:13px">← Settings</button><span style="font-family:var(--display);font-weight:800;font-size:22px">🎧 Word voice tester</span></div>
-    <p style="margin:0 0 12px;color:var(--muted);font-size:13px">Tap 🔊 to hear each word. Tick ✓ if it sounds right, cross ✗ if not — then type how it sounded (e.g. “soda” → “sod”). Flags are saved permanently and never erased. Press <b>Save &amp; export</b> and share the file with Claude to rebuild them; rebuilt words come back under <b>Re-review</b>.</p>
+    <p style="margin:0 0 12px;color:var(--muted);font-size:13px">Tap 🔊 to hear a word — <b>double-tap 🔊 if it sounds right</b> (it turns green and the next word moves up). Tap ✗ if it sounds wrong, then type how it sounded (e.g. “soda” → “sod”); tap ✗ again to undo. Flags are saved permanently. Press <b>Save &amp; export</b> and share the file with Claude to rebuild them; rebuilt words come back under <b>Re-review</b>.</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">${tabBtn('test','To test')}${tabBtn('flagged','Flagged · '+flagged.length)}${tabBtn('review','Re-review · '+review.length)}</div>
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px">
       <span style="font-size:12px;color:var(--muted);font-weight:700">${tested} checked · ${flagged.length} flagged</span>
