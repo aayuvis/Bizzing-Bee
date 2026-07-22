@@ -302,21 +302,34 @@
     const diff=opts.diff||'medium', world=opts.world||'opensky';
     const CFG={easy:{gap:170,speed:2.2,pots:8},medium:{gap:150,speed:2.6,pots:10},
                hard:{gap:130,speed:3.0,pots:10},champ:{gap:115,speed:3.4,pots:12}}[diff];
-    host.innerHTML='<div class="sg-hud"><span id="sg-pots">🍯 0/'+CFG.pots+'</span><span id="sg-lives"></span></div><canvas id="sg-cv"></canvas><div id="sg-card"></div>';
+    host.innerHTML='<div class="sg-hud"><span id="sg-pots">🍯 0/'+CFG.pots+'</span><span class="sg-flyprog"><i id="sg-fill"></i><b>⛩️</b></span><span id="sg-coins">🪙 0</span><span id="sg-lives"></span></div><canvas id="sg-cv"></canvas><div id="sg-card"></div>';
     const cv=host.querySelector('#sg-cv'); cv.width=Wd; cv.height=Ht; const cx=cv.getContext('2d');
-    let bee={y:Ht/2,vy:0}, obs=[], pot=null, potIn=0, banked=0, lives=3, t=0, over=false, card=null, graceUntil=0;
+    let bee={y:Ht/2,vy:0}, obs=[], pot=null, banked=0, lives=3, t=0, over=false, card=null, graceUntil=0, inv=0;
+    let moths=[], coins=[], hearts=[], coinsGot=0, gate=null, started=false;
     const words=pool(CFG.pots+4); let wi=0;
-    const isSky=(world==='opensky'||world==='sky');
-    // drifting clouds for the premium sky
-    const clouds=[]; for(let i=0;i<5;i++) clouds.push({x:Math.random()*Wd, y:16+Math.random()*(Ht*0.5), s:0.65+Math.random()*0.95, sp:0.12+Math.random()*0.28});
-    // controls: keyboard space = flap impulse; touch/mouse = hold to stay afloat
+    /* per-world premium palettes; anything unlisted uses its illustrated plate */
+    const PAL={
+      opensky:{top:'#3D8BD4',mid:'#7FC0EC',bot:'#E9F6FF',sun:['rgba(255,251,225,.95)','rgba(255,240,180,.42)'],sunCore:'rgba(255,252,235,.96)',hill:'#9CCB7A',hill2:'#7FB662',pill:['#F0B429','#D89614'],stars:0,birds:1},
+      sky:null, // alias, set below
+      flyway:{top:'#7A4FB0',mid:'#E88A5D',bot:'#FFD9A0',sun:['rgba(255,214,170,.98)','rgba(255,170,110,.5)'],sunCore:'rgba(255,236,200,.98)',hill:'#8A6AA8',hill2:'#6E4E8E',pill:['#E8A03C','#C67F1E'],stars:8,birds:1},
+      cosmos:{top:'#0B0B2E',mid:'#232366',bot:'#3A2E7A',sun:['rgba(190,170,255,.5)','rgba(140,120,255,.22)'],sunCore:'rgba(235,230,255,.95)',hill:'#1C1846',hill2:'#141034',pill:['#7B68D8','#5646AC'],stars:70,birds:0}};
+    PAL.sky=PAL.opensky;
+    const pal=PAL[world]||null;
+    const clouds=[]; for(let i=0;i<7;i++) clouds.push({x:Math.random()*Wd, y:12+Math.random()*(Ht*0.55), s:0.4+Math.random()*1.1, sp:0.1+Math.random()*0.3});
+    const stars=[]; if(pal&&pal.stars) for(let i=0;i<pal.stars;i++) stars.push({x:Math.random()*Wd,y:Math.random()*Ht*0.8,r:0.6+Math.random()*1.5,tw:Math.random()*7});
+    const birds=[]; 
     let holding=false;
     const flap=e=>{ if(e.key!==' ')return; bee.vy=-5.4; e.preventDefault&&e.preventDefault(); };
-    const pdown=e=>{ holding=true; if(bee.vy>-2.4) bee.vy=-3.2; e.preventDefault&&e.preventDefault(); };
+    const pdown=e=>{ if(e.target.closest&&e.target.closest('#sg-card,.sg-howto'))return; holding=true; if(bee.vy>-2.4) bee.vy=-3.2; e.preventDefault&&e.preventDefault(); };
     const pup=()=>{ holding=false; };
     addEventListener('keydown',flap);
     host.addEventListener('pointerdown',pdown); addEventListener('pointerup',pup); addEventListener('pointercancel',pup);
     function spawn(){ const g=CFG.gap, y=60+Math.random()*(Ht-120-g); obs.push({x:Wd+30,y,g}); }
+    function spawnMoth(){ const big=Math.random()<0.22;
+      moths.push({x:Wd+40,y:60+Math.random()*(Ht-140),ph:Math.random()*7,amp:14+Math.random()*26,sp:CFG.speed*(0.9+Math.random()*0.5),s:big?54:38,big}); }
+    function spawnCoins(){ const y0=70+Math.random()*(Ht-200), up=Math.random()<0.5;
+      for(let i=0;i<5;i++) coins.push({x:Wd+30+i*34, y:y0+(up?-1:1)*Math.sin(i/4*Math.PI)*42, ph:i*0.7}); }
+    function spawnHeart(){ hearts.push({x:Wd+30,y:80+Math.random()*(Ht-200),ph:0}); }
     function spellStop(){
       const w=words[wi++%words.length]; card={w};
       const el=host.querySelector('#sg-card');
@@ -325,86 +338,225 @@
       const inp=el.querySelector('#sg-ci'); inp.focus();
       function submit(){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase();
         if(ok){ banked++; try{flash('🍯 Pot banked! '+banked+'/'+CFG.pots);}catch(_){}}else{ bee.y=Math.min(Ht-40,bee.y+60); try{flash('Almost! The pot floats ahead…');}catch(_){} }
-        el.style.display='none'; card=null; bee.vy=0; graceUntil=t+2;   // 2 s calm after typing
-        if(banked>=CFG.pots){ over=true; finish(true); } }
+        el.style.display='none'; card=null; bee.vy=0; graceUntil=t+2;
+        if(banked>=CFG.pots&&!gate){ gate={x:Wd+80}; try{flash('⛩️ The Hive Gates appear — fly to them!');}catch(_){} } }
       inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } };
       el.querySelector('#sg-cgo').onclick=submit;
       el.querySelector('#sg-cspk').onclick=()=>{ try{ say(w.w); }catch(e){} };
     }
-    let last=0, spawnT=0, potT=4;
+    let last=0, spawnT=0, potT=4, mothT=6, coinT=3, heartT=16;
     function frame(ts){ if(over) return;
-      if(card){ requestAnimationFrame(frame); return; }
-      const dt=Math.min(50,ts-last); last=ts; t+=dt/1000; potT-=dt/1000;
-      const GRACE=(t<3)||(t<graceUntil);                 // 3 s free flight at start, 2 s calm after each spell
-      if(holding) bee.vy-=0.42;                          // touch/mouse hold keeps Bizzy afloat
+      if(card||!started){ last=ts; requestAnimationFrame(frame); return; }
+      const dt=Math.min(50,ts-last); last=ts; t+=dt/1000; potT-=dt/1000; mothT-=dt/1000; coinT-=dt/1000; heartT-=dt/1000;
+      const GRACE=(t<3)||(t<graceUntil);
+      if(holding) bee.vy-=0.42;
       if(GRACE){ bee.vy*=0.9; bee.y+=bee.vy; bee.y=Math.max(30,Math.min(Ht-40,bee.y)); }
-      else { spawnT+=dt/1000; bee.vy+=0.158; bee.y+=bee.vy; }   // gravity −43% total (0.28→…→0.158)
-      if(spawnT>1.9){ spawnT=0; spawn(); }
-      if(potT<=0&&!pot){ potT=8; pot={x:Wd+30,y:80+Math.random()*(Ht-220)}; }   // float pots at flight height, not on the floor
+      else { spawnT+=dt/1000; bee.vy+=0.158; bee.y+=bee.vy; }
+      if(!gate){
+        if(spawnT>1.9){ spawnT=0; spawn(); }
+        if(potT<=0&&!pot){ potT=8; pot={x:Wd+30,y:80+Math.random()*(Ht-220)}; }
+        if(mothT<=0){ mothT=3.4+Math.random()*2.6; spawnMoth(); }
+        if(coinT<=0){ coinT=6+Math.random()*5; spawnCoins(); }
+        if(heartT<=0){ heartT=13+Math.random()*8; if(lives<3) spawnHeart(); }
+      } else gate.x-=CFG.speed;
       obs.forEach(o=>o.x-=CFG.speed); if(pot) pot.x-=CFG.speed;
-      obs=obs.filter(o=>o.x>-40);
-      // collide (no crashing during the grace window)
-      if(!GRACE){ obs.forEach(o=>{ if(o.x<70&&o.x>10){ if(bee.y<o.y||bee.y>o.y+o.g){ hit(); o.x=-99; } } });
-        if(bee.y>Ht-14||bee.y<8) hit(); }
-      if(pot&&pot.x<74&&pot.x>6&&Math.abs(bee.y-(pot.y+18))<46){ pot=null; spellStop(); }   // collect near the pot itself
+      moths.forEach(m=>{ m.x-=m.sp; m.ph+=dt/130; m.y+=Math.sin(m.ph)*0.8*(m.amp/22); });
+      coins.forEach(c=>{ c.x-=CFG.speed; c.ph+=dt/240; });
+      hearts.forEach(h=>{ h.x-=CFG.speed*0.8; h.ph+=dt/300; });
+      obs=obs.filter(o=>o.x>-40); moths=moths.filter(m=>m.x>-70); coins=coins.filter(c=>c.x>-30); hearts=hearts.filter(h=>h.x>-30);
+      // collisions
+      bee.y=Math.max(24,Math.min(Ht-26,bee.y));            // sky edges are soft — they never hurt
+      if(bee.y<=24&&bee.vy<0) bee.vy=0; if(bee.y>=Ht-26&&bee.vy>0) bee.vy=0;
+      if(!GRACE&&t>inv){ obs.forEach(o=>{ if(o.x<70&&o.x>10){ if(bee.y<o.y||bee.y>o.y+o.g){ hit(); o.x=-99; } } });
+        moths.forEach(m=>{ if(Math.abs(m.x-60)<m.s*0.45&&Math.abs(m.y-bee.y)<m.s*0.45){ hit(); m.x=-99; } }); }
+      coins=coins.filter(c=>{ if(Math.abs(c.x-60)<26&&Math.abs(c.y-bee.y)<30){ coinsGot++; try{if(typeof sfx==='function')sfx('coin');}catch(e){} return false; } return true; });
+      hearts=hearts.filter(h=>{ if(Math.abs(h.x-60)<28&&Math.abs(h.y-bee.y)<32){ if(lives<3){lives++; try{flash('❤ Extra life!');}catch(_){}} return false; } return true; });
+      if(pot&&pot.x<74&&pot.x>6&&Math.abs(bee.y-(pot.y+18))<46){ pot=null; spellStop(); }
       if(pot&&pot.x<=-30) pot=null;
+      if(gate&&gate.x<86){ over=true; finish(true); return; }
       draw(); requestAnimationFrame(frame);
     }
-    function hit(){ lives--; bee.y=Ht/2; bee.vy=0; if(lives<=0){ over=true; finish(false); } }
+    function hit(){ lives--; inv=t+1.3; bee.vy=-2;
+      try{if(typeof sfx==='function')sfx('wrong');}catch(e){}
+      if(lives<=0){ over=true; finish(false); } }
     function puff(x,y,s){ cx.save(); cx.fillStyle='rgba(255,255,255,.92)';
       cx.shadowColor='rgba(120,155,195,.28)'; cx.shadowBlur=10*s; cx.shadowOffsetY=5;
       const e=(dx,dy,r)=>{ cx.beginPath(); cx.ellipse(x+dx*s,y+dy*s,r*s,r*s*0.72,0,0,7); cx.fill(); };
       e(0,0,27); e(25,5,20); e(-25,6,19); e(11,-11,18); e(-11,-8,16); cx.restore(); }
-    function drawSky(){
-      // premium layered sky — deep azure up top easing to a bright horizon
+    function drawBackdrop(){
       const g=cx.createLinearGradient(0,0,0,Ht);
-      g.addColorStop(0,'#3D8BD4'); g.addColorStop(0.5,'#7FC0EC'); g.addColorStop(1,'#E9F6FF');
+      g.addColorStop(0,pal.top); g.addColorStop(0.52,pal.mid); g.addColorStop(1,pal.bot);
       cx.fillStyle=g; cx.fillRect(0,0,Wd,Ht);
-      // warm sun with a soft glow, upper-right
+      stars.forEach(s=>{ s.tw+=0.03; cx.globalAlpha=0.45+0.55*Math.abs(Math.sin(s.tw));
+        cx.fillStyle='#FFF'; cx.beginPath(); cx.arc(s.x,s.y,s.r,0,7); cx.fill(); });
+      cx.globalAlpha=1;
       const sx=Wd*0.83, sy=Ht*0.19;
       const sg=cx.createRadialGradient(sx,sy,4,sx,sy,130);
-      sg.addColorStop(0,'rgba(255,251,225,.95)'); sg.addColorStop(0.4,'rgba(255,240,180,.42)'); sg.addColorStop(1,'rgba(255,240,180,0)');
+      sg.addColorStop(0,pal.sun[0]); sg.addColorStop(0.4,pal.sun[1]); sg.addColorStop(1,'rgba(255,240,180,0)');
       cx.fillStyle=sg; cx.fillRect(0,0,Wd,Ht);
-      cx.beginPath(); cx.arc(sx,sy,25,0,7); cx.fillStyle='rgba(255,252,235,.96)'; cx.fill();
-      // drifting clouds (parallax by size)
-      clouds.forEach(c=>{ if(!card){ c.x-=c.sp; if(c.x<-90*c.s){ c.x=Wd+80*c.s; c.y=15+Math.random()*(Ht*0.5); } } puff(c.x,c.y,c.s); });
+      cx.beginPath(); cx.arc(sx,sy,25,0,7); cx.fillStyle=pal.sunCore; cx.fill();
+      // far parallax cloud band + rolling hills silhouette
+      const cloudDim=pal===PAL.cosmos?0.45:1;
+      clouds.forEach(c=>{ if(!card){ c.x-=c.sp*(0.5+c.s*0.55); if(c.x<-90*c.s){ c.x=Wd+80*c.s; c.y=12+Math.random()*(Ht*0.55); } }
+        cx.globalAlpha=(0.35+0.6*Math.min(1,c.s))*cloudDim; puff(c.x,c.y,c.s); cx.globalAlpha=1; });
+      const hill=(col,h0,amp,ph)=>{ cx.fillStyle=col; cx.beginPath(); cx.moveTo(0,Ht);
+        for(let x=0;x<=Wd;x+=16) cx.lineTo(x,Ht-h0-Math.sin(x/95+ph+t*0.12)*amp);
+        cx.lineTo(Wd,Ht); cx.closePath(); cx.fill(); };
+      hill(pal.hill,26,9,1.7); hill(pal.hill2,13,6,4.2);
+      if(pal.birds&&Math.random()<0.002&&birds.length<3) birds.push({x:Wd+20,y:26+Math.random()*Ht*0.3,ph:0});
+      for(const b of birds){ b.x-=1.1; b.ph+=0.14;
+        cx.strokeStyle='rgba(40,60,90,.55)'; cx.lineWidth=1.6; cx.lineCap='round'; const f=Math.sin(b.ph)*3;
+        cx.beginPath(); cx.moveTo(b.x-6,b.y-f); cx.quadraticCurveTo(b.x-2,b.y+2,b.x,b.y);
+        cx.quadraticCurveTo(b.x+2,b.y+2,b.x+6,b.y-f); cx.stroke(); }
+      for(let i=birds.length-1;i>=0;i--) if(birds[i].x<-12) birds.splice(i,1);
     }
+    /* hand-drawn shaded bee with animated wings; the child's avatar rides on its back */
+    function drawFlyer(x,y,tilt){
+      const wf=Math.sin(t*26), s=1;
+      cx.save(); cx.translate(x,y); cx.rotate(tilt);
+      // wings behind body
+      for(const [dx,dy,rot,len] of [[-2,-14,-0.5-wf*0.35,20],[4,-13,-0.15-wf*0.3,15]]){
+        cx.save(); cx.translate(dx,dy); cx.rotate(rot);
+        const wg=cx.createLinearGradient(0,-len,0,0);
+        wg.addColorStop(0,'rgba(210,235,255,.9)'); wg.addColorStop(1,'rgba(160,200,255,.35)');
+        cx.fillStyle=wg; cx.beginPath(); cx.ellipse(0,-len/2,7,len/2,0,0,7); cx.fill();
+        cx.strokeStyle='rgba(120,170,230,.5)'; cx.lineWidth=1; cx.stroke(); cx.restore(); }
+      // body: fuzzy gradient capsule with stripes and a stinger
+      const bg=cx.createLinearGradient(0,-14,0,14);
+      bg.addColorStop(0,'#FFD95E'); bg.addColorStop(0.55,'#F5B32B'); bg.addColorStop(1,'#C98A12');
+      cx.fillStyle=bg; cx.beginPath(); cx.ellipse(-2,0,20,14,0,0,7); cx.fill();
+      cx.save(); cx.beginPath(); cx.ellipse(-2,0,20,14,0,0,7); cx.clip();   // stripes stay inside the body
+      cx.fillStyle='#3A2B10';
+      for(const bx of [-9,-1,7]){ cx.beginPath(); cx.ellipse(bx,0,3.4,13.4,0,0,7); cx.fill(); }
+      cx.restore();
+      cx.fillStyle='#3A2B10'; cx.beginPath(); cx.moveTo(-24,0); cx.lineTo(-19,-4); cx.lineTo(-19,4); cx.closePath(); cx.fill();
+      // head
+      cx.fillStyle='#F7BD37'; cx.beginPath(); cx.arc(15,-2,9.5,0,7); cx.fill();
+      cx.fillStyle='rgba(255,255,255,.35)'; cx.beginPath(); cx.ellipse(13,-6,4,2.4,-0.5,0,7); cx.fill();
+      cx.fillStyle='#FFF'; cx.beginPath(); cx.arc(18,-4,3.6,0,7); cx.fill();
+      cx.fillStyle='#241A0C'; cx.beginPath(); cx.arc(19,-4,1.9,0,7); cx.fill();
+      cx.fillStyle='#FFF'; cx.beginPath(); cx.arc(19.7,-4.8,0.7,0,7); cx.fill();
+      cx.strokeStyle='#241A0C'; cx.lineWidth=1.3; cx.lineCap='round';
+      cx.beginPath(); cx.arc(16,2,3,0.25,2.6); cx.stroke();
+      cx.beginPath(); cx.moveTo(13,-10); cx.quadraticCurveTo(11,-17,7,-18); cx.moveTo(17,-10); cx.quadraticCurveTo(17,-17,21,-18); cx.stroke();
+      cx.fillStyle='#241A0C'; cx.beginPath(); cx.arc(7,-18,1.6,0,7); cx.arc(21,-18,1.6,0,7); cx.fill();
+      // rider: the child's avatar, bobbing on the bee's back
+      const av=avImg(heroAv());
+      if(av){ try{ const bob=Math.sin(t*7)*1.3;
+        cx.save(); cx.beginPath(); cx.arc(-4,-16+bob,10,0,7); cx.clip();
+        cx.drawImage(av,-14,-26+bob,20,20); cx.restore();
+        cx.strokeStyle='rgba(60,40,10,.5)'; cx.lineWidth=1.2;
+        cx.beginPath(); cx.arc(-4,-16+bob,10,0,7); cx.stroke(); }catch(e){ try{cx.restore();}catch(_){}} }
+      cx.restore();
+      // grace sparkle trail
+      if(t<graceUntil||t<3){ for(let i=0;i<2;i++){ const a=Math.random();
+        cx.globalAlpha=0.5*a; cx.fillStyle='#FFE28A';
+        cx.beginPath(); cx.arc(x-24-a*22,y+(Math.random()-0.5)*16,1.5+a*2,0,7); cx.fill(); }
+        cx.globalAlpha=1; }
+    }
+    function drawCoin(c){ const sc=Math.abs(Math.cos(c.ph));
+      cx.save(); cx.translate(c.x,c.y); cx.scale(Math.max(0.15,sc),1);
+      const g=cx.createRadialGradient(-3,-3,1,0,0,11);
+      g.addColorStop(0,'#FFEFA8'); g.addColorStop(0.7,'#F5C33B'); g.addColorStop(1,'#C98F15');
+      cx.fillStyle=g; cx.beginPath(); cx.arc(0,0,11,0,7); cx.fill();
+      cx.strokeStyle='#8F6407'; cx.lineWidth=2; cx.stroke();
+      cx.fillStyle='#8F6407'; cx.font='800 11px Hanken,sans-serif'; cx.textAlign='center'; cx.fillText('★',0,4);
+      cx.restore(); }
+    function drawHeart(h){ const p=1+0.1*Math.sin(h.ph*4);
+      cx.save(); cx.translate(h.x,h.y); cx.scale(p,p);
+      const g=cx.createRadialGradient(-3,-4,1,0,0,14);
+      g.addColorStop(0,'#FF9DB0'); g.addColorStop(0.6,'#F04A6D'); g.addColorStop(1,'#C22B4C');
+      cx.fillStyle=g; cx.beginPath();
+      cx.moveTo(0,4); cx.bezierCurveTo(-14,-6,-8,-16,0,-8); cx.bezierCurveTo(8,-16,14,-6,0,4); cx.closePath(); cx.fill();
+      cx.fillStyle='rgba(255,255,255,.6)'; cx.beginPath(); cx.ellipse(-4,-8,2.6,1.6,-0.6,0,7); cx.fill();
+      cx.restore(); }
+    function drawGate(){ if(!gate) return; const gx=gate.x;
+      cx.save();
+      const glow=cx.createRadialGradient(gx+30,Ht/2,10,gx+30,Ht/2,180);
+      glow.addColorStop(0,'rgba(255,215,120,.35)'); glow.addColorStop(1,'rgba(255,215,120,0)');
+      cx.fillStyle=glow; cx.fillRect(gx-140,0,300,Ht);
+      const pillar=(px)=>{ const g=cx.createLinearGradient(px,0,px+26,0);
+        g.addColorStop(0,'#FFD86B'); g.addColorStop(1,'#C9911B');
+        cx.fillStyle=g; cx.fillRect(px,40,26,Ht-40);
+        cx.fillStyle='rgba(120,80,10,.5)'; cx.fillRect(px,40,26,6); };
+      pillar(gx); pillar(gx+66);
+      cx.fillStyle='#E8A93C'; cx.beginPath();
+      cx.moveTo(gx-12,52); cx.quadraticCurveTo(gx+46,8,gx+104,52); cx.lineTo(gx+104,40); cx.quadraticCurveTo(gx+46,-6,gx-12,40); cx.closePath(); cx.fill();
+      cx.fillStyle='#7A4A08'; cx.font='800 15px Fraunces,serif'; cx.textAlign='center';
+      cx.fillText('🐝 HIVE',gx+46,34);
+      cx.restore(); }
     function draw(){
-      // Long Sky gets a bespoke premium sky (no confusing sprites); other worlds use their plate
-      if(isSky){ drawSky(); }
-      else if(!drawWorld(cx,world,0,0,Wd,Ht)){ drawSky(); }
-      // honeycomb pillars instead of flat green pipes
-      obs.forEach(o=>{ const pil=(yy,hh)=>{ const g=cx.createLinearGradient(o.x,0,o.x+44,0); g.addColorStop(0,'#F0B429'); g.addColorStop(1,'#D89614');
+      if(pal){ drawBackdrop(); }
+      else if(!drawWorld(cx,world,0,0,Wd,Ht)){ const g=cx.createLinearGradient(0,0,0,Ht);
+        g.addColorStop(0,'#3D8BD4'); g.addColorStop(1,'#E9F6FF'); cx.fillStyle=g; cx.fillRect(0,0,Wd,Ht); }
+      const pc=(pal||PAL.opensky).pill;
+      obs.forEach(o=>{ const pil=(yy,hh)=>{ const g=cx.createLinearGradient(o.x,0,o.x+44,0); g.addColorStop(0,pc[0]); g.addColorStop(1,pc[1]);
         cx.fillStyle=g; cx.fillRect(o.x,yy,44,hh); cx.fillStyle='rgba(255,255,255,.18)'; cx.fillRect(o.x,yy,7,hh);
-        cx.strokeStyle='rgba(120,80,10,.45)'; cx.lineWidth=2; cx.strokeRect(o.x,yy,44,hh); };
+        cx.strokeStyle='rgba(60,40,10,.45)'; cx.lineWidth=2; cx.strokeRect(o.x,yy,44,hh);
+        cx.fillStyle='rgba(0,0,0,.12)';
+        for(let hy=yy+10;hy<yy+hh-8;hy+=22) for(let hx=o.x+8;hx<o.x+40;hx+=13){ cx.beginPath();
+          for(let k=0;k<6;k++){ const a=Math.PI/3*k+Math.PI/6; const px=hx+Math.cos(a)*5, py=hy+Math.sin(a)*5; k?cx.lineTo(px,py):cx.moveTo(px,py); }
+          cx.closePath(); cx.fill(); } };
         pil(0,o.y); pil(o.y+o.g,Ht-o.y-o.g); });
-      if(pot){ const pi=sgImg('artifact-quill-glow')||sgImg('gem-act1'); let pd=false;
-        if(pi){ try{ cx.drawImage(pi,pot.x-6,pot.y,44,44); pd=true; }catch(e){} }
-        if(!pd){ cx.font='30px serif'; cx.fillText('🍯',pot.x,pot.y+40); } }
-      // delivered Bizzy sprite (side-fly), tilts with vertical velocity
-      const bi=sgImg('bizzy-side-fly')||avImg(heroAv()); let bd=false;
-      if(bi){ try{ const s=42, tilt=Math.max(-0.5,Math.min(0.5,bee.vy/14));
-        cx.save(); cx.translate(60,bee.y); cx.rotate(tilt); cx.drawImage(bi,-s/2,-s/2,s,s); cx.restore(); bd=true; }catch(e){ try{cx.restore();}catch(_){} } }
-      if(!bd){ cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(60,bee.y,15,0,7); cx.fill();
-        cx.fillStyle='#2B2117'; cx.fillRect(50,bee.y-2,20,4); }
-      // grace-window cue: free flight at the start, calm moment after each spell
+      coins.forEach(drawCoin); hearts.forEach(drawHeart);
+      moths.forEach(m=>drawMoth(cx,m.x-m.s/2,m.y-m.s/2,m.s,false,m.ph*3));
+      if(pot){ const px=pot.x+16, py=pot.y+22, bobp=Math.sin(t*3)*3;
+        cx.save(); cx.translate(px,py+bobp);
+        const hg=cx.createRadialGradient(px*0,0,2,0,0,30);
+        hg.addColorStop(0,'rgba(255,220,120,.5)'); hg.addColorStop(1,'rgba(255,220,120,0)');
+        cx.fillStyle=hg; cx.beginPath(); cx.arc(0,0,30,0,7); cx.fill();
+        const jg=cx.createLinearGradient(-14,0,14,0);
+        jg.addColorStop(0,'#E8A93C'); jg.addColorStop(0.5,'#FFD073'); jg.addColorStop(1,'#C9861B');
+        cx.fillStyle=jg; cx.beginPath();
+        cx.moveTo(-11,-8); cx.bezierCurveTo(-16,-2,-16,10,-10,15); cx.lineTo(10,15);
+        cx.bezierCurveTo(16,10,16,-2,11,-8); cx.closePath(); cx.fill();
+        cx.strokeStyle='rgba(110,70,10,.55)'; cx.lineWidth=1.6; cx.stroke();
+        cx.fillStyle='#8A5A10'; cx.beginPath(); cx.ellipse(0,-9,12,4,0,0,7); cx.fill();
+        cx.fillStyle='#FFCF5C'; cx.beginPath(); cx.ellipse(0,-10.5,12,4,0,0,7); cx.fill();
+        cx.fillStyle='#F5B32B'; cx.beginPath();
+        cx.moveTo(-6,-8); cx.quadraticCurveTo(-4,0,-7,3); cx.quadraticCurveTo(-9,-1,-6,-8); cx.fill();
+        cx.fillStyle='rgba(255,255,255,.45)'; cx.beginPath(); cx.ellipse(-6,2,2.4,6,0.25,0,7); cx.fill();
+        cx.fillStyle='#7A4A08'; cx.font='800 8px Hanken,sans-serif'; cx.textAlign='center'; cx.fillText('HONEY',0,8);
+        cx.restore(); }
+      drawGate();
+      const blink=(t<inv)&&(Math.floor(t*10)%2===0);
+      if(!blink) drawFlyer(60,bee.y,Math.max(-0.5,Math.min(0.5,bee.vy/14)));
       let cueN=0, cueTxt='';
       if(t<3){ cueN=Math.ceil(3-t); cueTxt='Free flight — gravity in '+cueN; }
       else if(t<graceUntil){ cueN=Math.ceil(graceUntil-t); cueTxt='Nice! Fly on — '+cueN; }
+      else if(gate){ cueTxt='⛩️ The Hive Gates! Fly through!'; cueN=1; }
       if(cueN){ cx.save(); cx.textAlign='center'; cx.globalAlpha=0.92;
         cx.font='800 22px Fraunces, serif'; cx.fillStyle='#fff'; cx.strokeStyle='rgba(20,20,50,.55)'; cx.lineWidth=4;
         cx.strokeText(cueTxt, Wd/2, 42); cx.fillText(cueTxt, Wd/2, 42);
         cx.restore(); }
       host.querySelector('#sg-pots').textContent='🍯 '+banked+'/'+CFG.pots;
+      host.querySelector('#sg-coins').textContent='🪙 '+coinsGot;
+      host.querySelector('#sg-fill').style.width=Math.round(100*banked/CFG.pots)+'%';
       host.querySelector('#sg-lives').textContent='❤'.repeat(Math.max(0,lives));
     }
+    function howto(){
+      const el=host.querySelector('#sg-card');
+      el.innerHTML='<div class="sg-howto"><div class="sg-howto-card"><div class="sg-howto-h">☁️ The Long Sky</div>'+
+        '<div class="sg-howto-sub">Bank every honey pot to open the Hive Gates — then fly through them home!</div>'+
+        '<div class="sg-howto-steps">'+
+        '<div class="sg-pw-legend">👆 Hold the sky (or press Space) to fly up — let go to glide down</div>'+
+        '<div class="sg-pw-legend">🍯 Touch a honey pot, then spell the word to bank it ('+CFG.pots+' to win)</div>'+
+        '<div class="sg-pw-legend">🦋 Dodge the grey moths and honeycomb towers</div>'+
+        '<div class="sg-pw-legend">🪙 Grab coin trails · ❤ hearts patch you up</div>'+
+        '</div><button class="sg-rbtn go sg-howto-go" id="sg-howgo">Take off! →</button></div></div>';
+      el.style.display='grid';
+      el.querySelector('#sg-howgo').onclick=()=>{ el.style.display='none'; el.innerHTML=''; started=true; };
+    }
     function cleanup(){ removeEventListener('keydown',flap); removeEventListener('pointerup',pup); removeEventListener('pointercancel',pup); }
-    function finish(win){ cleanup(); done({win,score:banked*100,stars:win?(lives>=3?3:lives===2?2:1):0}); }
+    function finish(win){ cleanup();
+      if(coinsGot){ try{ if(typeof addCoins==='function') addCoins(coinsGot); }catch(e){} }
+      done({win,score:banked*100+coinsGot*5,stars:win?(lives>=3?3:lives===2?2:1):0}); }
+    howto();
+    if(window.SB_DEBUG) window._fly={ state:()=>({beeY:bee.y,pot:pot&&{x:pot.x,y:pot.y},banked,lives,coins:coinsGot,gate:!!gate,moths:moths.length,over,started}), steer:(y)=>{bee.y=y;bee.vy=0;} };
     requestAnimationFrame(frame);
     return { destroy(){ over=true; cleanup(); } };
   }
 
-  /* ---------- ENGINE D · WORD HIVE (make words from a big word) ---------- */
   function wordHive(host, opts, done){
     const BIG=(opts.big||'THUNDERSTORM').toUpperCase();
     const diff=opts.diff||'medium';

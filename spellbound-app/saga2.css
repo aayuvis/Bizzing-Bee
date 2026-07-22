@@ -280,3 +280,8 @@
 .sg-tbshield{position:absolute;left:6%;right:6%;bottom:38px;height:0;z-index:1;border-top:3px solid rgba(54,209,255,.75);box-shadow:0 0 14px rgba(54,209,255,.5);border-radius:99px}
 .sg-tbcannon{position:absolute;left:50%;bottom:2px;transform:translateX(-50%);z-index:2;font-size:30px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
 .sg-tbkey{max-width:560px;margin:10px auto 0}
+
+/* Long Sky v3: pot progress bar with the gate at the end */
+.sg-flyprog{position:relative;flex:1;min-width:70px;max-width:180px;height:12px;border-radius:99px;background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.4);overflow:visible}
+.sg-flyprog i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:linear-gradient(90deg,#FFE28A,#F0B429);width:0;transition:width .5s}
+.sg-flyprog b{position:absolute;right:-7px;top:-7px;font-size:15px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
