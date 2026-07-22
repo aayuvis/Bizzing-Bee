@@ -27,12 +27,16 @@
   //     every clip re-verified acoustically (speech span sane, no stray segments).
   //   • the 451-word legacy 0.92× short-word batch (cat, dog, sun…) — re-synthesized at
   //     current params so the whole library is one consistent voice and speed.
-  // The 33 below are the ones the parent flagged — give them a fresh listen first.
+  // Batch 4 (2026-07-22, round 3): 15 of batch 3 passed the parent's listen; the 18
+  // repeat offenders were rebuilt with stronger techniques — explicit IPA phonemes
+  // (fixes dropped/wrong sounds like lionize→"ionize", vegetable→"vege-able"),
+  // carrier-phrase excision (a following word suppresses the final-consonant release
+  // that made dub→"dubbbe"), and ±speed variants — each candidate auto-scored against
+  // never-flagged rhyme siblings (dub vs cub/hub, sip vs dip/lip…) before shipping.
   window.SB_VOICE_REVIEW = (window.SB_VOICE_REVIEW || []).concat(
-    ["peach","pole","dub","eve","onion","won","who","tub","tip","spa","six","sip","saw",
-     "paw","pub","rub","olive","cog","tomb","vegetable","yacht","umbrella","glue","grand",
-     "blank","brave","hotel","proof","raisin","forage","cuckoo","lionize","emperor"]
-    .map(function(w){ return {w:w, note:"rebuilt in the Kokoro voice (batch 3)"}; })
+    ["peach","dub","onion","tub","spa","sip","saw","paw","pub","rub","olive",
+     "vegetable","umbrella","brave","proof","cuckoo","lionize","emperor"]
+    .map(function(w){ return {w:w, note:"round-3 rebuild (IPA/carrier/speed) — fresh listen please"}; })
   );
 
   // Highest-priority QA queue. Short/plosive-initial/final-vowel words are the
