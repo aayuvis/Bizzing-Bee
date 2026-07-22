@@ -4,6 +4,8 @@
 #sg-card{display:none;position:fixed;inset:0;place-items:center;background:#0008;z-index:60}
 .sg-cardbox{background:var(--panel,#fff);border-radius:16px;padding:22px 26px;text-align:center;display:grid;gap:10px;min-width:260px}
 .sg-cardbox input{font:600 20px 'Sono',monospace;text-align:center;padding:8px;border:2px solid var(--honey,#F0B429);border-radius:10px}
+.sg-cardmean{font:600 13.5px 'Hanken',sans-serif;color:var(--muted,#7A6E5C);line-height:1.4;max-width:340px;margin:2px auto 0;text-align:center}
+.sg-race-mean{font:600 13px 'Hanken',sans-serif;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.5);text-align:center;margin-top:6px;max-width:480px}
 .sg-cardw{font-size:26px}
 .sg-hivestage{position:relative;border-radius:16px;overflow:hidden;padding:20px 10px;margin:12px auto;max-width:520px}
 .sg-hive-bg{position:absolute;inset:0;z-index:0}
