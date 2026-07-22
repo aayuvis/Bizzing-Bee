@@ -1021,7 +1021,192 @@
     return { destroy(){ over=true; if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',key); removeEventListener('keyup',keyup); } };
   }
 
-  W().SB_SAGA_ENGINES = { honeycombRun, keepFlying, wordHive, beeGrandPrix, whackAMoth, spellShield, spotlightSimon, unscrambleStars, wordSnake, combCatcher };
+  /* ---------- ENGINE K · STAGE RHYTHM (letter notes on the beat) ---------- */
+  function stageRhythm(host, opts, done){
+    const diff=opts.diff||'medium';
+    const CFG={easy:{words:4,fall:2.4,gap:950},medium:{words:5,fall:3.0,gap:800},hard:{words:6,fall:3.6,gap:680},champ:{words:7,fall:4.2,gap:580}}[diff]||{words:5,fall:3.0,gap:800};
+    const words=pool(CFG.words+5).filter(w=>w&&/^[a-z]+$/i.test(w.w||'')&&(w.w||'').length>=3&&(w.w||'').length<=8).slice(0,CFG.words);
+    if(!words.length){ done({win:true,score:0,stars:1}); return; }
+    const art=(window.SGART&&SGART.ready());
+    const plate=art?SGART.plateForWorld(opts.world||'Stage'):'';
+    host.innerHTML='<div class="sg-hud"><span id="sg-rw">🎵 1/'+CFG.words+'</span><span id="sg-rh"></span><span id="sg-rs">0</span></div>'+
+      '<div class="sg-rhythm" id="sg-rst"><div class="sg-rhythm-bg">'+plate+'</div>'+
+        '<div class="sg-rlanes" id="sg-rl">'+[0,1,2,3].map(l=>'<div class="sg-rlane" data-l="'+l+'"><span class="sg-rkey">'+['D','F','J','K'][l]+'</span></div>').join('')+'</div>'+
+        '<div class="sg-rhit" id="sg-rhit"></div></div>'+
+      '<div class="sg-rword"><button class="sg-sbtn" id="sg-rsay" aria-label="Hear the word">🔊</button><span id="sg-rslots"></span></div>'+
+      '<div class="sg-race-mean" id="sg-rmean"></div><div id="sg-card"></div>';
+    const stage=host.querySelector('#sg-rst'), laneEl=host.querySelector('#sg-rl');
+    let wi=0, li=0, hearts=4, score=0, notes=[], over=false, loop=null, spawnT=0, beatT=0;
+    function cur(){ return words[wi]; }
+    function need(){ return cur().w.toLowerCase()[li]; }
+    function renderSlots(){ const w=cur().w.toLowerCase();
+      host.querySelector('#sg-rslots').innerHTML=w.split('').map((ch,ix)=>'<span class="sg-slot'+(ix<li?' fill':ix===li?' next':'')+'">'+(ix<li?ch.toUpperCase():'')+'</span>').join('');
+      host.querySelector('#sg-rh').textContent='❤'.repeat(Math.max(0,hearts));
+      host.querySelector('#sg-rs').textContent='⭐ '+score; }
+    function newWord(){ li=0; const w=cur();
+      host.querySelector('#sg-rw').textContent='🎵 '+(wi+1)+'/'+CFG.words;
+      host.querySelector('#sg-rmean').innerHTML=meaningHTML(w);
+      renderSlots(); try{ say(w.w); }catch(e){} }
+    function spawn(){ const needed=Math.random()<0.55;
+      let ch=need(); if(!needed){ do{ ch=String.fromCharCode(97+Math.floor(Math.random()*26)); }while(ch===need()); }
+      const el=document.createElement('div'); el.className='sg-rnote'+(art?'':' plain'); el.textContent=ch.toUpperCase();
+      const lane=Math.floor(Math.random()*4); el.style.left=(lane*25+12.5)+'%';
+      stage.appendChild(el); notes.push({el,lane,ch,y:-8}); }
+    function bopLane(l){ if(over) return;
+      const H=stage.clientHeight, zone=notes.filter(n=>n.lane===l&&n.y>H-96&&n.y<H-10);
+      if(!zone.length) return;
+      const n=zone.sort((a,b)=>b.y-a.y)[0];
+      if(n.ch===need()){ n.el.classList.add('pop'); setTimeout(()=>n.el.remove(),180); notes=notes.filter(x=>x!==n);
+        li++; score+=15; try{ if(typeof sfx==='function') sfx('correct'); }catch(e){}
+        if(li>=cur().w.length){ score+=40; wi++;
+          try{ flash('🎶 '+words[wi-1].w.toUpperCase()+' — the marquee glows!'); }catch(e){}
+          if(wi>=CFG.words){ finish(true); return; }
+          newWord(); } else renderSlots(); }
+      else { n.el.classList.add('bad'); setTimeout(()=>n.el.remove(),220); notes=notes.filter(x=>x!==n);
+        hearts--; renderSlots(); try{ if(typeof sfx==='function') sfx('wrong'); }catch(e){}
+        if(hearts<=0) finish(false); } }
+    function frame(){ if(over) return;
+      const H=stage.clientHeight; spawnT+=16.7; beatT+=16.7;
+      if(spawnT>=CFG.gap){ spawnT=0; spawn(); }
+      if(beatT>=CFG.gap){ beatT=0; const hit=host.querySelector('#sg-rhit');
+        if(hit){ hit.classList.remove('pulse'); void hit.offsetWidth; hit.classList.add('pulse'); } }
+      for(const n of [...notes]){ n.y+=CFG.fall; n.el.style.top=n.y+'px';
+        if(n.y>H){ n.el.remove(); notes=notes.filter(x=>x!==n);
+          if(n.ch===need()){ hearts--; renderSlots();
+            try{ flash('The note slipped past — listen again!'); }catch(e){}
+            if(hearts<=0){ finish(false); return; } } } } }
+    const key=e=>{ if(over) return; const map={d:0,f:1,j:2,k:3,ArrowLeft:0,ArrowDown:1,ArrowUp:2,ArrowRight:3,'1':0,'2':1,'3':2,'4':3};
+      const l=map[e.key.length===1?e.key.toLowerCase():e.key]; if(l!==undefined){ bopLane(l); e.preventDefault(); } };
+    addEventListener('keydown',key);
+    laneEl.addEventListener('pointerdown',e=>{ const ln=e.target.closest('.sg-rlane'); if(ln) bopLane(+ln.dataset.l); });
+    host.querySelector('#sg-rsay').onclick=()=>{ try{ say(cur().w); }catch(e){} };
+    function finish(win){ over=true; if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',key);
+      done({win, score, stars:win?(hearts>=4?3:hearts>=2?2:1):0}); }
+    newWord(); loop=setInterval(frame,1000/60);
+    return { destroy(){ over=true; if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',key); } };
+  }
+
+  /* ---------- ENGINE L · CONSTELLATION CONNECT (draw words in the sky) ---------- */
+  function constellationConnect(host, opts, done){
+    const diff=opts.diff||'medium';
+    const CFG={easy:{n:4},medium:{n:5},hard:{n:6},champ:{n:7}}[diff]||{n:5};
+    const words=pool(CFG.n+4).filter(w=>w&&/^[a-z]+$/i.test(w.w||'')&&(w.w||'').length>=3&&(w.w||'').length<=8).slice(0,CFG.n);
+    if(!words.length){ done({win:true,score:0,stars:1}); return; }
+    const art=(window.SGART&&SGART.ready());
+    const plate=art?SGART.plateForWorld(opts.world||'Cosmos'):'';
+    let wi=0, li=0, misses=0, hints=3, over=false, starsPos=[];
+    host.innerHTML='<div class="sg-hud"><span id="sg-cw">✨ 1/'+CFG.n+'</span><span id="sg-cm"></span><button class="sg-hintbtn" id="sg-chint">💡 ×3</button></div>'+
+      '<div class="sg-consky" id="sg-csky"><div class="sg-consky-bg">'+plate+'</div>'+
+        '<svg class="sg-conlayer" id="sg-csvg" viewBox="0 0 100 62" preserveAspectRatio="none"><polyline id="sg-cline" points=""/></svg>'+
+        '<div id="sg-cstars"></div></div>'+
+      '<div class="sg-rword"><button class="sg-sbtn" id="sg-csay" aria-label="Hear the word">🔊</button><span id="sg-cslots"></span></div>'+
+      '<div class="sg-race-mean" id="sg-cmean"></div>';
+    const sky=host.querySelector('#sg-csky'), starsEl=host.querySelector('#sg-cstars'), line=host.querySelector('#sg-cline');
+    function cur(){ return words[wi]; }
+    function renderSlots(){ const w=cur().w.toLowerCase();
+      host.querySelector('#sg-cslots').innerHTML=w.split('').map((ch,ix)=>'<span class="sg-slot'+(ix<li?' fill':ix===li?' next':'')+'">'+(ix<li?ch.toUpperCase():'')+'</span>').join('');
+      host.querySelector('#sg-cm').textContent=misses?('✖'.repeat(Math.min(misses,8))):''; }
+    function scatter(){ const w=cur().w.toLowerCase(); starsPos=[];
+      const chars=w.split('').map((ch,ix)=>({ch,ix,decoy:false}));
+      let d=0; while(d<2){ const c=String.fromCharCode(97+Math.floor(Math.random()*26));
+        if(!w.includes(c)){ chars.push({ch:c,ix:-1,decoy:true}); d++; } }
+      const pts=[];
+      for(const c of chars){ let x,y,tries=0;
+        do{ x=8+Math.random()*84; y=8+Math.random()*46; tries++; }
+        while(tries<60&&pts.some(p=>Math.hypot(p.x-x,p.y-y)<13));
+        pts.push({x,y}); c.x=x; c.y=y; starsPos.push(c); }
+      starsEl.innerHTML=starsPos.map((s,i)=>'<button class="sg-constar" data-i="'+i+'" style="left:'+s.x+'%;top:'+(s.y/62*100)+'%"><span class="sg-conglow"></span>'+s.ch.toUpperCase()+'</button>').join('');
+      line.setAttribute('points',''); }
+    function newWord(){ li=0; const w=cur();
+      host.querySelector('#sg-cw').textContent='✨ '+(wi+1)+'/'+CFG.n;
+      host.querySelector('#sg-cmean').innerHTML=meaningHTML(w);
+      scatter(); renderSlots(); try{ say(w.w); }catch(e){} }
+    starsEl.onclick=e=>{ if(over) return; const bt=e.target.closest('.sg-constar'); if(!bt) return;
+      const s=starsPos[+bt.dataset.i]; const w=cur().w.toLowerCase();
+      if(bt.classList.contains('on')) return;
+      if(s.ch===w[li]&&!s.decoy){ bt.classList.add('on');
+        const p=line.getAttribute('points'); line.setAttribute('points',p+(p?' ':'')+s.x.toFixed(1)+','+s.y.toFixed(1));
+        li++; renderSlots(); try{ if(typeof sfx==='function') sfx('correct'); }catch(e){}
+        if(li>=w.length){ sky.classList.remove('lit'); void sky.offsetWidth; sky.classList.add('lit');
+          try{ flash('🌌 '+w.toUpperCase()+' — the constellation shines!'); }catch(e){}
+          wi++; if(wi>=CFG.n){ finish(true); return; } setTimeout(newWord,900); } }
+      else { misses++; bt.classList.remove('shake'); void bt.offsetWidth; bt.classList.add('shake');
+        renderSlots(); try{ if(typeof sfx==='function') sfx('wrong'); }catch(e){}
+        if(misses>=8){ finish(false); return; }
+        try{ flash('Not that star — listen once more!'); }catch(e){} try{ say(cur().w); }catch(e){} } };
+    host.querySelector('#sg-chint').onclick=()=>{ if(over||hints<=0) return; hints--;
+      host.querySelector('#sg-chint').textContent='💡 ×'+hints;
+      const w=cur().w.toLowerCase();
+      const i=starsPos.findIndex((s,ix)=>{ if(s.decoy||s.ch!==w[li]) return false;
+        const bt=starsEl.querySelector('[data-i="'+ix+'"]'); return bt&&!bt.classList.contains('on'); });
+      const bt=starsEl.querySelector('[data-i="'+i+'"]'); if(bt){ bt.classList.add('hintpulse'); setTimeout(()=>bt.classList.remove('hintpulse'),1600); } };
+    host.querySelector('#sg-csay').onclick=()=>{ try{ say(cur().w); }catch(e){} };
+    function finish(win){ over=true;
+      done({win, score:wi*100+hints*50-misses*10, stars:win?(hints>=2&&misses<=2?3:hints>=1?2:1):0}); }
+    newWord();
+    return { destroy(){ over=true; } };
+  }
+
+  /* ---------- ENGINE M · TYPE BLASTER (arcade dictation shooter) ---------- */
+  function typeBlaster(host, opts, done){
+    const diff=opts.diff||'medium';
+    const CFG={easy:{n:5,v:0.09},medium:{n:6,v:0.115},hard:{n:7,v:0.14},champ:{n:8,v:0.165}}[diff]||{n:6,v:0.115};
+    const words=pool(CFG.n+5).filter(w=>w&&/^[a-z]+$/i.test(w.w||'')&&(w.w||'').length>=3&&(w.w||'').length<=9).slice(0,CFG.n);
+    if(!words.length){ done({win:true,score:0,stars:1}); return; }
+    const art=(window.SGART&&SGART.ready());
+    const plate=art?SGART.plateForWorld(opts.world||'Arcade'):'';
+    const foeSvg=(art&&SGART.has('static-sprite'))?SGART.sprite('static-sprite',{cls:'sg-tbimg'}):'<span class="sg-tbemoji">👾</span>';
+    let wi=0, li=0, shield=3, score=0, foeY=0, over=false, loop=null;
+    host.innerHTML='<div class="sg-hud"><span id="sg-tw">👾 1/'+CFG.n+'</span><span id="sg-tsh"></span><span id="sg-ts">0</span></div>'+
+      '<div class="sg-tbstage" id="sg-tbs"><div class="sg-tbstage-bg">'+plate+'</div>'+
+        '<div class="sg-tbfoe" id="sg-tbf">'+foeSvg+'<div class="sg-tbslots" id="sg-tbslots"></div></div>'+
+        '<div class="sg-tbbeam" id="sg-tbbeam"></div>'+
+        '<div class="sg-tbshield" id="sg-tbshieldbar"></div>'+
+        '<div class="sg-tbcannon">🐝</div></div>'+
+      '<div class="sg-rword"><button class="sg-sbtn" id="sg-tsay" aria-label="Hear the word">🔊</button><span class="sg-race-mean" id="sg-tmean"></span></div>'+
+      '<div class="ss-key sg-tbkey" id="sg-tkey"></div>';
+    const stage=host.querySelector('#sg-tbs'), foe=host.querySelector('#sg-tbf'), beam=host.querySelector('#sg-tbbeam');
+    const rows=['qwertyuiop','asdfghjkl','zxcvbnm'];
+    host.querySelector('#sg-tkey').innerHTML=rows.map(r=>'<div class="ss-krow">'+r.split('').map(ch=>'<button class="ss-kb" data-k="'+ch+'">'+ch+'</button>').join('')+'</div>').join('');
+    function cur(){ return words[wi]; }
+    function renderSlots(){ const w=cur().w.toLowerCase();
+      host.querySelector('#sg-tbslots').innerHTML=w.split('').map((ch,ix)=>'<span class="sg-slot'+(ix<li?' fill':'')+'">'+(ix<li?ch.toUpperCase():'')+'</span>').join('');
+      host.querySelector('#sg-tsh').textContent='🛡'.repeat(Math.max(0,shield));
+      host.querySelector('#sg-ts').textContent='⭐ '+score; }
+    function newWord(){ li=0; foeY=0; const w=cur();
+      host.querySelector('#sg-tw').textContent='👾 '+(wi+1)+'/'+CFG.n;
+      host.querySelector('#sg-tmean').innerHTML=meaningHTML(w);
+      foe.style.top='0%'; renderSlots(); try{ say(w.w); }catch(e){} }
+    function zap(){ beam.classList.remove('fire'); void beam.offsetWidth; beam.classList.add('fire');
+      foe.classList.remove('hitfx'); void foe.offsetWidth; foe.classList.add('hitfx'); }
+    function type(ch){ if(over) return; const w=cur().w.toLowerCase();
+      if(ch===w[li]){ li++; score+=15; foeY=Math.max(0,foeY-7); zap(); renderSlots();
+        try{ if(typeof sfx==='function') sfx('correct'); }catch(e){}
+        if(li>=w.length){ score+=50; foe.classList.add('boom');
+          try{ flash('💥 '+w.toUpperCase()+' — glitch zapped!'); }catch(e){}
+          wi++; if(wi>=CFG.n){ finish(true); return; }
+          setTimeout(()=>{ foe.classList.remove('boom'); newWord(); },650); } }
+      else { score=Math.max(0,score-5); foeY+=3;
+        foe.classList.remove('gloatfx'); void foe.offsetWidth; foe.classList.add('gloatfx');
+        try{ if(typeof sfx==='function') sfx('wrong'); }catch(e){} } }
+    function frame(){ if(over) return;
+      if(foe.classList.contains('boom')) return;
+      foeY+=CFG.v; foe.style.top=Math.min(78,foeY)+'%';
+      if(foeY>=78){ shield--; foeY=0; foe.style.top='0%';
+        stage.classList.remove('breach'); void stage.offsetWidth; stage.classList.add('breach');
+        renderSlots(); try{ flash('⚡ The firewall took a hit — keep spelling!'); }catch(e){}
+        if(shield<=0){ finish(false); return; } } }
+    const kb=e=>{ if(over) return; if(/^[a-zA-Z]$/.test(e.key)){ type(e.key.toLowerCase()); e.preventDefault(); } };
+    addEventListener('keydown',kb);
+    host.querySelector('#sg-tkey').onclick=e=>{ const bt=e.target.closest('.ss-kb'); if(bt) type(bt.dataset.k); };
+    host.querySelector('#sg-tsay').onclick=()=>{ try{ say(cur().w); }catch(e){} };
+    function finish(win){ over=true; if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',kb);
+      done({win, score, stars:win?(shield>=3?3:shield===2?2:1):0}); }
+    newWord(); loop=setInterval(frame,1000/60);
+    return { destroy(){ over=true; if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',kb); } };
+  }
+
+  W().SB_SAGA_ENGINES = { honeycombRun, keepFlying, wordHive, beeGrandPrix, whackAMoth, spellShield, spotlightSimon, unscrambleStars, wordSnake, combCatcher, stageRhythm, constellationConnect, typeBlaster };
 
 
   /* ---------- ENGINE G · SPOTLIGHT SIMON (memory sequence) ---------- */
@@ -1211,6 +1396,7 @@
     {n:6,kick:'ACT VI',title:'Homecoming',world:'Homecoming',blurb:'The Unspelling broken \u2014 for now. Catch the falling nectar and rest, little bee.',gem:'gem-act6'}
   ];
   const CH_META=[
+    /* ---- ACT I \u00b7 The Scattering (7) ---- */
     {n:1,act:1,title:'Escape from the Meadow of Challenges',world:'Meadow',engine:'honeycombRun',opts:{}},
     {n:2,act:1,title:'The Long Sky',world:'Sky',engine:'keepFlying',opts:{}},
     {n:3,act:1,title:'The Elders\u2019 Test: Bee Grand Prix',world:'Hive',engine:'beeGrandPrix',opts:{}},
@@ -1218,18 +1404,54 @@
     {n:5,act:1,title:'Whack-the-Moths',world:'Hive',engine:'whackAMoth',opts:{}},
     {n:6,act:1,title:'BOSS: The Smudge',world:'Hive Gates',engine:'spellShield',opts:{}},
     {n:7,act:1,title:'Word Snake: Trail of Letters',world:'Meadow',engine:'wordSnake',opts:{},script:'chSnake'},
+    /* ---- ACT II \u00b7 The Show Must Go On (5) ---- */
     {n:8,act:2,title:'Spotlight Simon: The Marquee',world:'Stage',engine:'spotlightSimon',opts:{},script:'ch7'},
-    {n:9,act:3,title:'Unscramble the Stars',world:'Cosmos',engine:'unscrambleStars',opts:{},script:'ch8'},
-    {n:10,act:4,title:'The Thousand Cuts',world:'Dojo',engine:'whackAMoth',opts:{},script:'ch9'},
-    {n:11,act:4,title:'The Falling Formula',world:'Lab',engine:'keepFlying',opts:{},script:'ch10'},
-    {n:12,act:4,title:'The Hungry Garden',world:'Forest',engine:'wordSnake',opts:{},script:'ch11'},
-    {n:13,act:5,title:'BOSS: Glitch\u2019s Betrayal',world:'Arcade',engine:'spellShield',opts:{foe:'vex-full'},script:'ch12'},
-    {n:14,act:6,title:'Nectar Catch',world:'Homecoming',engine:'combCatcher',opts:{}}
+    {n:9,act:2,title:'Rhythm of the Footlights',world:'Stage',engine:'stageRhythm',opts:{},script:'chRhythm'},
+    {n:10,act:2,title:'The Carnival of Lost Letters',world:'Carnival',engine:'combCatcher',opts:{},script:'chCarnival'},
+    {n:11,act:2,title:'Echoes in the Wings',world:'Stage',engine:'spellScene',opts:{},script:'chWings'},
+    {n:12,act:2,title:'BOSS: The Phantom Conductor',world:'Stage',engine:'spellShield',opts:{},script:'chConductor'},
+    /* ---- ACT III \u00b7 The Scrambled Sky (5) ---- */
+    {n:13,act:3,title:'Unscramble the Stars',world:'Cosmos',engine:'unscrambleStars',opts:{},script:'ch8'},
+    {n:14,act:3,title:'Draw the Constellations',world:'Cosmos',engine:'constellationConnect',opts:{},script:'chConnect'},
+    {n:15,act:3,title:'Comet Chase',world:'Cosmos',engine:'keepFlying',opts:{},script:'chComet'},
+    {n:16,act:3,title:'The Nebula Riddle',world:'Cosmos',engine:'wordHive',opts:{big:'CONSTELLATION'},script:'chNebula'},
+    {n:17,act:3,title:'BOSS: The Star Serpent',world:'Cosmos',engine:'wordSnake',opts:{},script:'chSerpent'},
+    /* ---- ACT IV \u00b7 Into the Wilds (5) ---- */
+    {n:18,act:4,title:'The Thousand Cuts',world:'Dojo',engine:'whackAMoth',opts:{},script:'ch9'},
+    {n:19,act:4,title:'The Falling Formula',world:'Lab',engine:'keepFlying',opts:{},script:'ch10'},
+    {n:20,act:4,title:'The Pond of Patience',world:'Pond',engine:'combCatcher',opts:{},script:'chPond'},
+    {n:21,act:4,title:'The Lotus Riddle',world:'Lotus',engine:'wordHive',opts:{big:'DRAGONFLIES'},script:'chLotus'},
+    {n:22,act:4,title:'The Hungry Garden',world:'Forest',engine:'wordSnake',opts:{},script:'ch11'},
+    /* ---- ACT V \u00b7 The Arcade\u2019s Heart (5) ---- */
+    {n:23,act:5,title:'Insert Coin: The Maze Cabinet',world:'Arcade',engine:'honeycombRun',opts:{},script:'chCoin'},
+    {n:24,act:5,title:'Circuit Sprint',world:'Arcade',engine:'beeGrandPrix',opts:{},script:'chCircuit'},
+    {n:25,act:5,title:'The Firewall',world:'Arcade',engine:'typeBlaster',opts:{},script:'chFirewall'},
+    {n:26,act:5,title:'Static Storm',world:'Arcade',engine:'spellScene',opts:{foe:'static-sprite'},script:'chStatic'},
+    {n:27,act:5,title:'BOSS: Glitch\u2019s Betrayal',world:'Arcade',engine:'spellShield',opts:{foe:'vex-full'},script:'ch12'},
+    /* ---- ACT VI \u00b7 Homecoming (4) ---- */
+    {n:28,act:6,title:'The Long Flyway Home',world:'Flyway',engine:'keepFlying',opts:{},script:'chFlyway'},
+    {n:29,act:6,title:'Rebuilding the Comb',world:'Homecoming',engine:'wordHive',opts:{big:'CELEBRATION'},script:'chComb'},
+    {n:30,act:6,title:'The Great Respelling',world:'Homecoming',engine:'spellScene',opts:{foe:'vex-full'},script:'chRespell'},
+    {n:31,act:6,title:'Nectar Catch',world:'Homecoming',engine:'combCatcher',opts:{},script:'chNectar'}
   ];
   const FACE={bizzy:'🐝',bumble:'🐝',waggle:'🐝',drone:'🐝',queen:'👑',smudge:'🦋',sting:'🐝',narrator:'📖',melody:'🎵',maestro:'🎩',astro:'🚀',comet:'☄️',zib:'👽',sensei:'🐼',ninja:'🥷',beaker:'🧪',brainiac:'🧠',zoomies:'🐶',capy:'🦫',pixel:'👾',joystick:'🕹️',glitch:'😈',vex:'🐝'};
   const NAME={bizzy:'Bizzy',bumble:'Bumble',waggle:'Waggle',drone:'Drone Dan',queen:'Hive Queen',smudge:'The Smudge',sting:'Sting',narrator:'',melody:'Melody',maestro:'Maestro',astro:'Astro',comet:'Comet',zib:'Zib',sensei:'Panda Sensei',ninja:'Shadow Ninja',beaker:'Beaker',brainiac:'Brainiac',zoomies:'Zoomies',capy:'Capy',pixel:'Pixel Pal',joystick:'Joy Stick',glitch:'Glitch',vex:'Vex'};
-  function prog(){ try{ return JSON.parse(localStorage.getItem('sb_saga2')||'{}'); }catch(e){ return {}; } }
-  function setProg(p){ localStorage.setItem('sb_saga2', JSON.stringify(p)); }
+  /* v2 progress: {v:2, done:{n:1}, stars:{n:0-3}, gems, gemsAt:{n:1}, cleared:count}.
+     v1 saves (pre-expansion, 14 chapters) are migrated: old chapter numbers map to
+     their new positions so nobody loses stars — and the new mid-act chapters stay open. */
+  const OLDMAP={1:1,2:2,3:3,4:4,5:5,6:6,7:7,8:8,9:13,10:18,11:19,12:22,13:27,14:31};
+  function migrate(p){
+    if(p&&p.v>=2) return p;
+    const done={}, stars={}, gemsAt={};
+    const c=Math.min(p.cleared||0,14);
+    for(let o=1;o<=c;o++){ if(OLDMAP[o]) done[OLDMAP[o]]=1; }
+    Object.keys(p.stars||{}).forEach(k=>{ const nk=OLDMAP[k]||k; stars[nk]=p.stars[k]; });
+    Object.keys(p.gemsAt||{}).forEach(k=>{ const nk=OLDMAP[k]||k; gemsAt[nk]=p.gemsAt[k]; });
+    return {v:2, done, stars, gemsAt, gems:p.gems||0, cleared:Object.keys(done).length};
+  }
+  function prog(){ let p; try{ p=JSON.parse(localStorage.getItem('sb_saga2')||'{}'); }catch(e){ p={}; }
+    const m=migrate(p); if(p.v!==2&&(p.cleared||p.stars)) setProg(m); return m; }
+  function setProg(p){ p.cleared=Object.keys(p.done||{}).length; localStorage.setItem('sb_saga2', JSON.stringify(p)); }
   let overlay=null, engineHandle=null, curAudio=null;
   function music(){ return window.SAGA_MUSIC; }
   function playMusic(world){ try{ if(music()) music().start(world); }catch(e){} }
@@ -1248,10 +1470,11 @@
     overlay.querySelector('#sg-body').innerHTML=inner;
     return overlay.querySelector('#sg-body'); }
   function map(){
-    const p=prog(); const cleared=p.cleared||0; const gems=(p.gems||0);
+    const p=prog(); const doneSet=p.done||{}; const gems=(p.gems||0);
     const dev=(()=>{ try{ return (window.state&&window.state.devUnlock)||localStorage.getItem('sb_devunlock')==='1'; }catch(e){ return false; } })();
     const art=(window.SGART&&SGART.ready());
-    const node=(c)=>{ const st=dev?(c.n<=cleared?'done':'open'):(c.n<=cleared?'done':c.n===cleared+1?'open':'locked');
+    let nextOpen=CH_META.length+1; for(const c of CH_META){ if(!doneSet[c.n]){ nextOpen=c.n; break; } }
+    const node=(c)=>{ const st=doneSet[c.n]?'done':(dev||c.n===nextOpen)?'open':'locked';
       const stars=(p.stars||{})[c.n]||0;
       return '<button class="sg-node '+st+'" data-ch="'+c.n+'" '+(st==='locked'?'disabled':'')+'>'+
         '<span class="sg-nhex">'+(st==='done'?'★'.repeat(Math.max(1,stars)):c.n)+'</span>'+
@@ -1259,8 +1482,8 @@
     // one section per act: banner + its chapters. Later acts unlock as earlier chapters clear.
     const sections=ACTS.map(A=>{
       const chs=CH_META.filter(c=>c.act===A.n); if(!chs.length) return '';
-      const done=chs.filter(c=>c.n<=cleared).length; const first=chs[0].n;
-      const actLive=dev||cleared>=first-1;   // act opens once the chapter before its first is cleared
+      const done=chs.filter(c=>doneSet[c.n]).length; const first=chs[0].n;
+      const actLive=dev||first===1||!!doneSet[first-1];   // act opens once the chapter before its first is cleared
       const banner=art?('<div class="sg-actbanner">'+SGART.plateForWorld(A.world)+
         '<div class="sg-actbanner-in"><span class="sg-actkick">'+A.kick+'</span><h3>'+A.title+'</h3>'+
         '<p>'+A.blurb+' '+done+'/'+chs.length+' cleared.</p>'+
@@ -1315,12 +1538,12 @@
     playMusic(meta.world);
     const diff=(active&&active().gameDiff)||'medium';
     const eng=W().SB_SAGA_ENGINES[meta.engine];
-    const WMAP={meadow:'meadow',sky:'opensky',hive:'hive','hive gates':'hive',stage:'stage',cosmos:'cosmos',carnival:'carnival',dojo:'dojo',lab:'lab',forest:'forest',arcade:'arcade',pond:'pond',lotus:'lotus',homecoming:'homecoming'};
+    const WMAP={meadow:'meadow',sky:'opensky',hive:'hive','hive gates':'hive',stage:'stage',cosmos:'cosmos',carnival:'carnival',dojo:'dojo',lab:'lab',forest:'forest',arcade:'arcade',pond:'pond',lotus:'lotus',flyway:'flyway',homecoming:'homecoming'};
     const wid=WMAP[String(meta.world||'').toLowerCase()]||'meadow';
     engineHandle=eng(b.querySelector('#sg-gh'), Object.assign({diff,world:wid},meta.opts), res=>{
       engineHandle=null;
       if(res.win){
-        const p=prog(); p.cleared=Math.max(p.cleared||0, meta.n);
+        const p=prog(); p.done=p.done||{}; p.done[meta.n]=1;
         p.stars=p.stars||{}; p.stars[meta.n]=Math.max(p.stars[meta.n]||0, res.stars||1);
         p.gems=(p.gems||0)+((p.gemsAt||{})[meta.n]?0:1); p.gemsAt=p.gemsAt||{}; p.gemsAt[meta.n]=1;
         setProg(p);
@@ -1332,6 +1555,7 @@
       }
     });
   }
-  W().SAGA2={ open: map, close };
+  W().SAGA2={ open: map, close, total: CH_META.length,
+    cleared: function(){ try{ return Object.keys(prog().done||{}).length; }catch(e){ return 0; } } };
 
 })();
