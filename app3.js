@@ -676,6 +676,19 @@ const app = {
   tyTap:(ch)=>{ tyProcess(ch); },
   tyExit:()=>{ tyStop(); set({ty:null, nav:'typing'}); },
   goSettings:()=>app.setNav('settings'),
+  // ----- Word Voice Tester (human-in-the-loop voice QA) -----
+  openVoiceTest:()=>set({nav:'voicetest', screen:'app', vtTab:'test'}),
+  vtTab:(t)=>set({vtTab:t}),
+  vtPlay:(k)=>{ try{ if(window._vtA){ try{window._vtA.pause();}catch(e){} } const a=new Audio('voice/w/'+String(k).replace(/[^a-z0-9]/g,'-')+'.mp3'); window._vtA=a; a.play().catch(()=>{ try{ if(typeof deviceSpeak==='function') deviceSpeak(k,0.9); }catch(e){} }); }catch(e){} },
+  vtOk:(k)=>{ const f=vtLoad(); k=nkey(k); delete f.bad[k]; f.ok[k]=1; vtSave(f); render(); },
+  vtBad:(k)=>{ const f=vtLoad(); k=nkey(k); delete f.ok[k]; if(!f.bad[k]) f.bad[k]={h:'',at:Date.now()}; vtSave(f); render(); },
+  vtClear:(k)=>{ const f=vtLoad(); k=nkey(k); delete f.ok[k]; delete f.bad[k]; vtSave(f); render(); },
+  vtExport:()=>{ const list=voiceFlagList(); if(!list.length){ flash('No flagged words yet — cross the ones that sound wrong first.'); return; }
+    const payload={ app:'Bizzing Bee', kind:'voice-flags', at:new Date().toISOString(), count:list.length, words:list };
+    const txt=JSON.stringify(payload,null,2);
+    try{ const blob=new Blob([txt],{type:'application/json'}); const u=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=u; a.download='voice-flags.json'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),4000); }catch(e){}
+    try{ if(navigator.clipboard) navigator.clipboard.writeText(txt); }catch(e){}
+    flash('💾 '+list.length+' flag'+(list.length===1?'':'s')+' saved — share voice-flags.json with Claude to rebuild them.'); },
   goHome:()=>app.setNav('home'),
   goConcepts:()=>app.setNav('concepts'),
   journey:(i)=>{ i=+i; if(i===0) app.openCoach(); else if(i===1) app.setNav('concepts'); else if(i===2) app.openGames(); else app.openJourneys(); },
@@ -1992,6 +2005,7 @@ function viewApp(){
   else if(S.nav==='journeys') content=viewJourneys();
   else if(S.nav==='settings') content=viewSettings();
   else if(S.nav==='debug') content=viewDebug();
+  else if(S.nav==='voicetest') content=viewVoiceTest();
   else if(S.nav==='evofeedback') content=viewEvoFeedback();
   else content=viewHome();
   const lightOn=S.mode==='light';
@@ -2215,7 +2229,7 @@ function viewHome(){
       return `${bandBanner}<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:18px">
       <div class="sb-card" style="display:flex;align-items:center;gap:16px;min-height:156px">
         <div style="position:relative;flex-shrink:0">
-          <div ${(()=>{ const l=(window.SB_AVATAR_LORE||{})[c.avatar]; return l?`title="${esc(l.greeting)}&#10;&#10;${esc(l.fact)}" style="cursor:help;`:'style="'; })()}width:126px;height:131px;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center">${(c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar])?SB_AVATAR(c.avatar,122):mascotAcc(S.mood)}</div>
+          <div ${(()=>{ const l=(window.SB_AVATAR_LORE||{})[c.avatar]; return l?`title="${esc(l.greeting)}&#10;&#10;${esc(l.fact)}" style="cursor:help;`:'style="'; })()}width:126px;height:131px;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center">${(c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar])?avatarSVG(c.avatar,122,c.accOn):mascotAcc(S.mood)}</div>
         </div>
         <div style="min-width:0;flex:1">
           <div class="sb-cs">${greeting}</div>
@@ -3715,6 +3729,54 @@ function viewDebug(){
   </div>`;
 }
 
+/* ===================== WORD VOICE TESTER (human-in-the-loop QA) ===================== */
+// Flags live in a dedicated localStorage key that no reset touches, AND are seeded
+// from window.SB_VOICE_FLAGLOG — the git-committed permanent record — so a cache
+// clear can never lose feedback Claude has already logged.
+function vtLoad(){ let f; try{ f=JSON.parse(localStorage.getItem('sb_vflags')||'{}'); }catch(e){ f={}; }
+  f.ok=f.ok||{}; f.bad=f.bad||{};
+  try{ (window.SB_VOICE_FLAGLOG||[]).forEach(x=>{ const k=nkey(x&&(x.w||x)); if(k && !f.ok[k] && !f.bad[k]) f.bad[k]={h:(x&&x.h)||'',at:(x&&x.at)||0,logged:1}; }); }catch(e){}
+  return f; }
+function vtSave(f){ try{ localStorage.setItem('sb_vflags', JSON.stringify({ok:f.ok||{},bad:f.bad||{}})); }catch(e){} }
+function voiceFlagList(){ const f=vtLoad(); return Object.keys(f.bad).map(k=>({w:k,h:(f.bad[k]&&f.bad[k].h)||''})); }
+function voiceFlagCount(){ try{ return Object.keys(vtLoad().bad).length; }catch(e){ return 0; } }
+window.sbVTnote=function(k,val){ const f=vtLoad(); k=nkey(k); if(!f.bad[k]) f.bad[k]={h:'',at:Date.now()}; f.bad[k].h=String(val||'').slice(0,60); vtSave(f); };
+function voicePriorityList(){ const seen=new Set(), out=[];
+  const add=(w)=>{ const k=nkey(w); if(k && /^[a-z][a-z-]*$/.test(k) && !seen.has(k)){ seen.add(k); out.push(k); } };
+  (window.SB_VOICE_PRIORITY||[]).forEach(add);
+  try{ (gameWordsD()||[]).forEach(x=>add(x.w)); }catch(e){}
+  return out; }
+function viewVoiceTest(){
+  const S=state; const f=vtLoad(); const tab=S.vtTab||'test';
+  const review=(window.SB_VOICE_REVIEW||[]).map(x=>nkey(x&&(x.w||x))).filter((v,i,a)=>v&&a.indexOf(v)===i);
+  const flagged=Object.keys(f.bad);
+  let list, empty;
+  if(tab==='flagged'){ list=flagged; empty='No words flagged yet. In “To test”, cross any word that sounds wrong.'; }
+  else if(tab==='review'){ list=review; empty='Nothing to re-review yet. When Claude rebuilds your flagged words, they appear here for a fresh listen.'; }
+  else { list=voicePriorityList(); empty='No words available.'; }
+  const row=(k)=>{ const okd=!!f.ok[k], bad=f.bad[k]; const note=(bad&&bad.h)||'';
+    return `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--bg2);border:1px solid ${bad?'var(--bad,#C43D5A)':okd?'var(--good,#2FA35C)':'var(--line)'};border-radius:12px;padding:10px 12px;margin-bottom:8px">
+      <button data-act="vtPlay" data-arg="${k}" aria-label="Play ${esc(k)}" style="width:42px;height:42px;border-radius:10px;background:var(--accent);color:#fff;font-size:18px;flex-shrink:0">🔊</button>
+      <div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-weight:800;font-size:16px;overflow-wrap:anywhere">${esc(k)}${bad&&bad.logged?' <span style="font-family:var(--body);font-size:10px;font-weight:800;color:var(--muted);background:var(--surface2);padding:1px 6px;border-radius:99px;vertical-align:middle">logged</span>':''}</div>${bad?`<input value="${escA(note)}" oninput="window.sbVTnote('${k}',this.value)" placeholder="how did it sound? e.g. sod" style="margin-top:5px;width:100%;font-size:12.5px;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface2);color:var(--text)">`:''}</div>
+      <div style="display:inline-flex;gap:6px;flex-shrink:0">
+        <button data-act="vtOk" data-arg="${k}" title="Sounds right" style="width:40px;height:40px;border-radius:10px;font-size:17px;background:${okd?'var(--good,#2FA35C)':'var(--surface2)'};color:${okd?'#fff':'var(--muted)'};border:1px solid var(--line)">✓</button>
+        <button data-act="vtBad" data-arg="${k}" title="Sounds wrong" style="width:40px;height:40px;border-radius:10px;font-size:17px;background:${bad?'var(--bad,#C43D5A)':'var(--surface2)'};color:${bad?'#fff':'var(--muted)'};border:1px solid var(--line)">✗</button>
+      </div></div>`; };
+  const rows = list.length ? list.slice(0,400).map(row).join('') : `<div style="color:var(--muted);font-size:14px;padding:26px 16px;text-align:center">${empty}</div>`;
+  const tested=Object.keys(f.ok).length+flagged.length;
+  const tabBtn=(id,label)=>`<button data-act="vtTab" data-arg="${id}" style="padding:8px 14px;border-radius:999px;font-weight:800;font-size:13px;border:1px solid var(--line);background:${tab===id?'var(--accent)':'var(--surface2)'};color:${tab===id?'#fff':'var(--text)'}">${label}</button>`;
+  return `<div style="max-width:640px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:4px"><button data-act="goSettings" style="color:var(--muted);font-weight:700;font-size:13px">← Settings</button><span style="font-family:var(--display);font-weight:800;font-size:22px">🎧 Word voice tester</span></div>
+    <p style="margin:0 0 12px;color:var(--muted);font-size:13px">Tap 🔊 to hear each word. Tick ✓ if it sounds right, cross ✗ if not — then type how it sounded (e.g. “soda” → “sod”). Flags are saved permanently and never erased. Press <b>Save &amp; export</b> and share the file with Claude to rebuild them; rebuilt words come back under <b>Re-review</b>.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">${tabBtn('test','To test')}${tabBtn('flagged','Flagged · '+flagged.length)}${tabBtn('review','Re-review · '+review.length)}</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px">
+      <span style="font-size:12px;color:var(--muted);font-weight:700">${tested} checked · ${flagged.length} flagged</span>
+      <button data-act="vtExport" style="padding:9px 16px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">💾 Save &amp; export</button>
+    </div>
+    ${rows}
+  </div>`;
+}
+
 function viewSettings(){
   const S=state;
   const themes=THEMES.filter(t=>isThemeUnlocked(t.id)).map(t=>worldHeroCard(t, t.id===S.theme, false, 'pickTheme')).join('');
@@ -3795,7 +3857,7 @@ function viewSettings(){
       <button data-act="toggleDevUnlock" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:${S.devUnlock?'var(--accent)':'var(--surface2)'};color:${S.devUnlock?'#fff':'var(--muted)'};font-weight:800;font-size:13px">${S.devUnlock?SB_ICON('check',{size:15})+' On':'Off'}</button>
     </div>`}
     ${state.devUnlock?`<button data-act="setNav" data-arg="debug" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-radius:14px;background:var(--bg2);border:1px solid var(--accent);box-shadow:var(--sh-rest);margin-bottom:16px;color:var(--text)"><div style="text-align:left"><div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:15px">🐞 Debug · QC games <span style="font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:999px">testing</span></div><div style="font-size:12px;color:var(--muted)">Jump straight into any game or saga engine to test</div></div><span style="color:var(--accent)">${iconSVG('arrow',18)}</span></button>`:''}
-    ${state.devUnlock?`<button data-act="openEvoFeedback" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-radius:14px;background:var(--bg2);border:1px solid var(--line);box-shadow:var(--sh-rest);margin-bottom:16px;color:var(--text)"><div style="text-align:left"><div style="font-family:var(--display);font-weight:800;font-size:15px">Design feedback</div><div style="font-size:12px;color:var(--muted)">Review the 80 evolution tiles &amp; export notes</div></div><span style="color:var(--accent)">${iconSVG('arrow',18)}</span></button>`:''}
+    <button data-act="openVoiceTest" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-radius:14px;background:var(--bg2);border:1px solid var(--line);box-shadow:var(--sh-rest);margin-bottom:16px;color:var(--text)"><div style="text-align:left"><div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:15px">🎧 Word voice tester${(()=>{try{return voiceFlagCount()>0?` <span style="font-family:var(--mono);font-size:11px;color:#fff;background:var(--bad,#C43D5A);padding:1px 7px;border-radius:999px">${voiceFlagCount()} flagged</span>`:'';}catch(e){return '';}})()}</div><div style="font-size:12px;color:var(--muted)">Listen to each word — tick if it sounds right, cross if not. Saved for rebuilding.</div></div><span style="color:var(--accent)">${iconSVG('arrow',18)}</span></button>
     <button data-act="signOut" style="width:100%;padding:14px;border-radius:14px;background:var(--surface2);color:var(--bad);font-weight:800;font-size:15px">Sign out</button>
     <button data-act="devTap" style="display:block;width:100%;text-align:center;background:none;border:0;cursor:default;margin-top:14px;font-size:11.5px;color:var(--muted);font-weight:650">Bizzing Bee · made with 🐝 for spellers</button>
   </div>`;
