@@ -15,6 +15,9 @@
    shows them under Re-review for the parent to confirm.
    ============================================================ */
 (function () {
+  // Bumped every voice rebuild round — voice-cdn.js appends this to clip URLs so
+  // browsers and the raw CDN can never serve a stale clip after a deploy.
+  window.SB_VOICE_VER = 'r4-20260722';
   // Words Claude has processed since the last round — re-listen to confirm.
   // (Claude appends {w, note} entries here as it processes flag batches.)
   // Batch 3 (2026-07-22, overnight): FULL Kokoro rebuild — the model is now hosted on
