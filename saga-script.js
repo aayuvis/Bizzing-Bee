@@ -133,4 +133,179 @@ window.SB_SAGA_SCRIPT = {
       ['narrator','And for the first time, the crew understood: Vex wasn\u2019t just eating words. He was building an army.','c12-n1']],
     lose:[['pixel','He\u2019s glitching the hitboxes! Reset and re-type — we\u2019ve got infinite continues where it counts: heart!','c12-p2']] }
 
+  /* ================= ACT II · The Show Must Go On ================= */
+  ,chRhythm: { title:'Rhythm of the Footlights', world:'stage',
+    intro:[
+      ['melody','The marquee is lit again — but listen. The orchestra pit... the notes are coming up in the wrong ORDER. The whole overture is scrambled!','cry-m1'],
+      ['maestro','Sixty years I have conducted this pit. A show is just spelling you can dance to, kid — every note lands on its own beat, or the whole song falls apart.','cry-ma1'],
+      ['bizzy','Then hand me the baton, Maestro. I’ll catch every letter right on the downbeat — D, F, J, K, and don’t you dare rush me.','cry-b1']],
+    win:[
+      ['maestro','On beat. On key. On SPELLING. In sixty years I have seen exactly one performance like that — and I’m looking at her.','cry-ma2'],
+      ['melody','The overture’s back! Every word right where the music wants it. Encore! ENCORE!','cry-m2']],
+    lose:[['maestro','You rushed the tempo, kid. Even the best do. Deep breath — and a-one, a-two...','cry-ma3']] },
+  chCarnival: { title:'The Carnival of Lost Letters', world:'carnival',
+    intro:[
+      ['narrator','Behind the theatre, the carnival was still turning — but the prize booths had gone quiet. Every teddy bear’s name tag, every popcorn sign: blank.','cca-n1'],
+      ['melody','The Smudge shook the ferris wheel and all the letters spilled out of the signs! They’re raining down over the midway!','cca-m1'],
+      ['bizzy','Then grab me that prize basket — the big one. If the carnival’s letters are falling, I’m catching every single one in order. Step right up!','cca-b1']],
+    win:[
+      ['melody','She caught the whole midway! The signs are re-lighting — POPCORN, PRIZES, CAROUSEL — it all spells again!','cca-m2'],
+      ['narrator','And the carnival turned bright once more, its every bulb a letter, its every letter safely home.','cca-n2']],
+    lose:[['melody','The letters bounce right out if they’re not in order! Eyes up, basket ready — again!','cca-m3']] },
+  chWings: { title:'Echoes in the Wings', world:'stage',
+    intro:[
+      ['narrator','Deep backstage, past the ropes and pulleys, the Unspelling had pooled like spilled grey paint. Old posters. Old programs. Sixty years of showbills — fading.','cw-n1'],
+      ['maestro','My whole career is on these walls, kid. Every show I ever ran. I can’t... I can’t read a single title anymore.','cw-ma1'],
+      ['bizzy','Then we’ll spell them back, Maestro. One title at a time — and the colour will follow. It always follows.','cw-b1']],
+    win:[
+      ['maestro','...There it is. Opening night, 1962. I’d forgotten the NAME of the show that started it all. You gave me back my whole life in letters, kid.','cw-ma2'],
+      ['melody','Look at the wings — gold and crimson again! The whole backstage remembers itself!','cw-m2']],
+    lose:[['maestro','The grey is stubborn back here. So are we. Once more, from the top of the bill.','cw-ma3']] },
+  chConductor: { title:'BOSS: The Phantom Conductor', world:'stage',
+    intro:[
+      ['narrator','On opening night, the house lights died. In the conductor’s spotlight stood a figure of grey moths in a long tailcoat — swinging a baton of smoke.','cpc-n1'],
+      ['smudge','Every ssshow needsss a conductor, little bee. Tonight the orchestra playsss... sssilence.','cpc-s1'],
+      ['melody','It’s stealing the words right out of the songs — the whole audience is forgetting the show!','cpc-m1'],
+      ['bizzy','Not this stage. Not this show. Shields up, everyone — the only thing going dark tonight is THAT costume. Places!','cpc-b1']],
+    win:[
+      ['smudge','The Massster will hear of thisss... he isss already lissstening...','cpc-s2'],
+      ['maestro','It dropped the baton! The pit’s playing, the marquee’s blazing — THAT, kid, is what we call bringing down the house.','cpc-ma1'],
+      ['narrator','And as the applause shook the rafters, the Stage was safe. But far above the spotlights, one grey moth slipped away — carrying a single stolen word toward the stars.','cpc-n2']],
+    lose:[['melody','The song’s not over till WE say it’s over! Rebuild the shield — the show must go on!','cpc-m2']] },
+
+  /* ================= ACT III · The Scrambled Sky ================= */
+  chConnect: { title:'Draw the Constellations', world:'cosmos',
+    intro:[
+      ['astro','Mission log, day two: re-spelling the constellations worked — but the star-lines between them are still down. The sky’s all dots and no pictures.','ccn-a1'],
+      ['zib','On my planet we draw the sky fresh every night. You just need to know which star comes next. And which ones are... how do you say... imposters.','ccn-z1'],
+      ['bizzy','Letter by letter, star by star. Say the word, Astro — I’ll draw it across the whole sky.','ccn-b1']],
+    win:[
+      ['comet','The Great Bee Constellation is BACK ON THE MAP! Ha! Navigators everywhere just cheered and they don’t even know why!','ccn-c1'],
+      ['zib','You connect stars like a native. On my planet, that is the highest compliment. On this one too, probably.','ccn-z2']],
+    lose:[['astro','Careful — some of those stars are decoys the Unspelling hung up there. Listen to the word, then connect. Again!','ccn-a2']] },
+  chComet: { title:'Comet Chase', world:'cosmos',
+    intro:[
+      ['comet','Okay okay okay — I lost my TAIL. A comet without a tail is just a sad space rock. It came apart somewhere over the nebula — in PIECES!','cco-c1'],
+      ['astro','Tracking the pieces now: they’re drifting through the gap-fields. Somebody has to fly the gaps and gather them up.','cco-a1'],
+      ['bizzy','A bee CAN fly in space — if a friend believes hard enough and the words hold. Hang on, Comet. I’m bringing your sparkle home.','cco-b1']],
+    win:[
+      ['comet','MY TAIL! IT’S BACK! And it’s got MORE glitter than before! Bizzy, you’re officially my favourite non-comet in the universe!','cco-c2'],
+      ['astro','Trajectory restored. Next stop on the star-map... wait. The map shows something big coiled around the last constellation. Something hungry.','cco-a2']],
+    lose:[['comet','My pieces! Careful with the — okay it’s fine, it’s FINE, comets bounce. Let’s loop back and try again!','cco-c3']] },
+  chNebula: { title:'The Nebula Riddle', world:'cosmos',
+    intro:[
+      ['zib','This nebula is a word-cloud. Literally. One enormous word, thirteen letters long, holding a hundred little words inside it like stars inside a galaxy.','cnb-z1'],
+      ['astro','CONSTELLATION. If we can pull enough small words out of it, the nebula re-ignites and lights the whole sector.','cnb-a1'],
+      ['bizzy','A word made of words made of stars. This is the most beautiful homework I have ever been assigned. Let’s dig in.','cnb-b1']],
+    win:[
+      ['zib','The nebula is BLAZING. Every little word you found is a newborn star. You just... populated a galaxy. Casually.','cnb-z2'],
+      ['astro','Sector lit. And Bizzy — the light reached the far edge. We can finally see what’s been eating the stars out there. You should look. Now.','cnb-a2']],
+    lose:[['zib','The nebula dims... but it is patient. Stars take their time being born. Look deeper — the little words are in there.','cnb-z3']] },
+  chSerpent: { title:'BOSS: The Star Serpent', world:'cosmos',
+    intro:[
+      ['narrator','It uncoiled from between the constellations — a serpent of un-named stars, swallowing letters wherever the sky still spelled.','csp-n1'],
+      ['astro','It’s eating the alphabet out of the SKY. If it finishes, no star will ever have a name again.','csp-a1'],
+      ['bizzy','Then we don’t outfight it — we out-SPELL it. If it wants to be made of letters so badly, I’ll ride it myself and put every letter back in order. Tail on, everyone!','csp-b1']],
+    win:[
+      ['comet','She RODE the star snake! She rode it and it SPELLED THINGS! I’m never getting over this! EVER!','csp-c1'],
+      ['astro','The serpent’s calm now — it was just words with nowhere to go. The whole sky’s spelled true, crew. Cosmos secure.','csp-a2'],
+      ['narrator','And the serpent of stars curled itself into a new constellation — one that, from that night on, every sailor called The Speller.','csp-n2']],
+    lose:[['astro','It’s shedding scrambled stars everywhere — don’t chase your own tail! Steady. Order. Again!','csp-a3']] },
+
+  /* ================= ACT IV · Into the Wilds ================= */
+  chPond: { title:'The Pond of Patience', world:'pond',
+    intro:[
+      ['capy','Welcome to the pond. The dew here holds words. Every morning they rise off the water... and lately, they fall back down scattered.','cpd-ca1'],
+      ['zoomies','I TRIED to catch them but I catch EVERYTHING AT ONCE and that is apparently NOT how spelling works!','cpd-zo1'],
+      ['bizzy','It’s not how fast you catch, Zoomies — it’s catching the RIGHT drop at the right time. Watch. Patience is just spelling in slow motion.','cpd-b1']],
+    win:[
+      ['capy','...Every drop, in order, without one splash wasted. The pond remembers its words now. Stay for tea sometime. We have excellent reeds.','cpd-ca2'],
+      ['zoomies','I SAT STILL FOR THREE WHOLE MINUTES AND IT WORKED! Capy, did you SEE me being patient?! DID YOU SEE IT?!','cpd-zo2']],
+    lose:[['capy','The pond forgives a splash. The pond forgives everything. Breathe with the water... and again.','cpd-ca3']] },
+  chLotus: { title:'The Lotus Riddle', world:'lotus',
+    intro:[
+      ['sensei','Before you leave the wilds, one last lesson. This lotus blooms once a season — and this season, it bloomed grey.','clt-se1'],
+      ['ninja','Inside its name hide many smaller names. Sensei says: find them, and each one becomes a petal of colour.','clt-ni1'],
+      ['bizzy','DRAGONFLIES... there’s a whole pond of words sleeping in there. Alright, lotus — let’s wake you up petal by petal.','clt-b1']],
+    win:[
+      ['sensei','The lotus blooms in colour once more. You did not force it open — you invited it, word by word. That is mastery, little speller.','clt-se2'],
+      ['ninja','...He’s crying. He does that when students graduate. Don’t look. It embarrasses him.','clt-ni2']],
+    lose:[['sensei','The lotus closed again? Then it was not yet convinced. Small words first. Convince it. Again.','clt-se3']] },
+
+  /* ================= ACT V · The Arcade’s Heart ================= */
+  chCoin: { title:'Insert Coin: The Maze Cabinet', world:'arcade',
+    intro:[
+      ['pixel','Welcome BACK to the Arcade! Uh — ignore the flickering. And the buzzing. And the cabinet in the corner that’s been eating everyone’s tokens.','cac-p1'],
+      ['joystick','That’s the old Maze Cabinet. Glitch rigged it before he... before what happened. The nectar dots inside are real words — and the moths in there are FAST.','cac-j1'],
+      ['bizzy','A maze full of words with a high score on the line? Pixel, my friend... insert coin.','cac-b1']],
+    win:[
+      ['pixel','NEW HIGH SCORE! Three letters: B-E-E! The cabinet’s glowing gold again — you literally debugged it by SPELLING!','cac-p2'],
+      ['joystick','One cabinet down. But the deeper rooms are worse, Bizzy. Glitch knows you’re here now.','cac-j2']],
+    lose:[['pixel','GAME OVER — but this machine takes friendship instead of quarters! Continue? Continue!','cac-p3']] },
+  chCircuit: { title:'Circuit Sprint', world:'arcade',
+    intro:[
+      ['joystick','The service tunnels between cabinets — Glitch turned them into his private racetrack. Winner takes the access codes to the Firewall.','ccr-j1'],
+      ['glitch','Race YOU? Ha! My track, my rules, my oil slicks. But sure, little bee — losers do love trying.','ccr-g1'],
+      ['bizzy','Funny thing about your rules, Glitch: they’re all spelled. And spelling is MY racetrack. Grid up.','ccr-b1']],
+    win:[
+      ['glitch','...Nobody beats me on my own track. Nobody. Who ARE you people?!','ccr-g2'],
+      ['joystick','Access codes: OURS. The Firewall’s next, crew — and Glitch just learned your name, Bizzy. He won’t forget it.','ccr-j2']],
+    lose:[['joystick','He greased the last corner — of COURSE he did. Rev up, spell early, and take the rematch!','ccr-j3']] },
+  chFirewall: { title:'The Firewall', world:'arcade',
+    intro:[
+      ['pixel','This is it — the Firewall. The Arcade’s heart is behind it. Glitch flooded the approach with corrupted sprites: they descend, they crash, they DELETE.','cfw-p1'],
+      ['joystick','Only one thing zaps a corrupted word: the same word, spelled TRUE. Your stinger’s a laser now, kid. Aim with your letters.','cfw-j1'],
+      ['bizzy','Words coming down, words going up. Feels fair. Lock the shield, warm the cannon — let’s go full arcade.','cfw-b1']],
+    win:[
+      ['pixel','FIREWALL HOLDING! Every sprite un-corrupted! You type like you’ve got eight arms and I am SO here for it!','cfw-p2'],
+      ['joystick','The heart chamber’s open. Whatever Glitch is guarding in there... we end this tonight.','cfw-j2']],
+    lose:[['pixel','Shield down but not OUT — reroute, respell, re-EVERYTHING! One more wave!','cfw-p3']] },
+  chStatic: { title:'Static Storm', world:'arcade',
+    intro:[
+      ['narrator','Past the Firewall, the Arcade’s heart-room was drowning in static — every screen a blizzard of grey, every word dissolving into noise.','cst-n1'],
+      ['joystick','The static’s not weather, Bizzy. It’s HIM — Glitch, pouring the Unspelling straight into the mainframe. The Arcade is forgetting itself.','cst-j1'],
+      ['bizzy','Then we remind it. Screen by screen, word by word — colour back into every pixel. Cover me. I’m going in loud.','cst-b1']],
+    win:[
+      ['pixel','The screens! Look at the screens — every game remembers its name! ATTRACT MODE, BABY! The whole floor is SINGING!','cst-p1'],
+      ['narrator','And in the last un-greyed screen, a face of static watched the colour return — and for just one frame, it looked like it missed being on the other side.','cst-n2']],
+    lose:[['joystick','The static bites back — shake it off! Every word you land is a pixel saved. Go again!','cst-j2']] },
+
+  /* ================= ACT VI · Homecoming ================= */
+  chFlyway: { title:'The Long Flyway Home', world:'flyway',
+    intro:[
+      ['narrator','It was over. Almost. The crew turned for home along the great flyway — the sky-road every bee knows by heart — and found the waymarker clouds had lost their names too.','cfl-n1'],
+      ['bumble','Bizzy... after everything we just did, I could NOT tell you which way is home. The flyway’s blank. All of it.','cfl-bu1'],
+      ['bizzy','Then we’ll spell our way home the same way we spelled our way out. One waymarker at a time, crew. Last flight — make it a good one.','cfl-b1']],
+    win:[
+      ['bumble','There it is. THERE IT IS! The Meadow, the Hive — I can see the whole valley from here, and every bit of it has its name back!','cfl-bu2'],
+      ['narrator','And the flyway lit up behind them like a sentence finally finished — every cloud a word, every word pointing home.','cfl-n2']],
+    lose:[['bumble','Wrong turn at that grey cloud! It’s okay — home isn’t going anywhere. Again, together!','cfl-bu3']] },
+  chComb: { title:'Rebuilding the Comb', world:'homecoming',
+    intro:[
+      ['queen','You return with an army of friends and a valley of rescued words. But look — the great comb itself still bears the scars. Whole cells, blank.','ccb-q1'],
+      ['bizzy','Then here’s my last riddle of the war, Your Majesty. One word — CELEBRATION — and every little word inside it becomes a cell of new wax. We rebuild by spelling.','ccb-b1'],
+      ['queen','...She turns even the rebuilding into a game. Very well, child. Show the Hive how it’s done.','ccb-q2']],
+    win:[
+      ['queen','The comb is whole. More than whole — it is INSCRIBED. Every cell a word, every word a memory of this day. The Hive will read this wall for a hundred years.','ccb-q3'],
+      ['bumble','And they’re ALL party words! Look — TEA! TREAT! ELATION! Best. Wall. Ever.','ccb-bu1']],
+    lose:[['queen','Almost, little architect. The comb wants more words. It is greedy for them — like someone else I have come to admire. Again.','ccb-q4']] },
+  chRespell: { title:'The Great Respelling', world:'homecoming',
+    intro:[
+      ['narrator','On the last evening, the valley gathered — bees and stage folk and star folk, dojo and lab and pond and arcade — for the Great Respelling.','crs-n1'],
+      ['vex','(a whisper on the wind) Enjoy your little festival, bee. Ink fades. Ledgers reopen. And I have SO many pages left.','crs-v1'],
+      ['bizzy','I heard that, Vex. Hear THIS: every word we spell tonight is one you can never cross out again. Crew — for everything grey that’s left — SPELL WITH ME!','crs-b1']],
+    win:[
+      ['narrator','Colour rolled across the valley like sunrise. And when the last word settled, the crew stood together in a world that remembered every one of its names.','crs-n2'],
+      ['sting','The ledger’s closed, kid. Not burned — closed. He’ll try again someday. And when he does... he’ll find every one of us still here. Still spelling.','crs-st1'],
+      ['bizzy','Let him come. We’ve got the strongest magic there is — and now, so do you. Spell your world bright, friend. See you in the next adventure.','crs-b2']],
+    lose:[['bizzy','The grey pushes back hard tonight — it knows it’s the last dance. Everyone, together now — AGAIN!','crs-b3']] },
+  chNectar: { title:'Nectar Catch', world:'homecoming',
+    intro:[
+      ['bumble','Psst. Bizzy. The war’s won, the comb’s rebuilt, the party’s started... so WHY are you still hovering like something’s falling?','cnc-bu1'],
+      ['bizzy','Because something IS falling, Bumble — nectar! The flowers are so happy they’re overflowing! Grab a comb — last one to fill theirs does the dishes!','cnc-b1']],
+    win:[
+      ['bumble','Full comb! FULL COMB! Okay you win, I’ll do the dishes — this ONE time — champion.','cnc-bu2'],
+      ['narrator','And so the story rests — a meadow in colour, a hive in song, and one small bee who proved that a thing you can spell is a thing you can always, always bring home.','cnc-n1']],
+    lose:[['bumble','Sticky wings! Shake off, sweet tooth — the flowers aren’t done celebrating yet. One more round!','cnc-bu3']] }
+
 };

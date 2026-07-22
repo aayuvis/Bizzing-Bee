@@ -49,7 +49,8 @@
     junkyard: { root: -7, scale: 'minPent', wave: 'triangle', step: 560, cut: 1100, g: 0.75 },
     warfield: { root: -8, scale: 'minor',   wave: 'triangle', step: 600, cut: 1000, g: 0.75 },
     siren:    { root: -2, scale: 'minor',   wave: 'sine',     step: 820, cut: 1200, g: 0.85 },
-    homecoming:{ root: -3, scale: 'major',  wave: 'triangle', step: 700, cut: 1500, g: 1.0 }
+    homecoming:{ root: -3, scale: 'major',  wave: 'triangle', step: 700, cut: 1500, g: 1.0 },
+    flyway:   { root: -3, scale: 'majPent', wave: 'sine',     step: 680, cut: 1500, g: 0.95 }
   };
   // CH_META.world label / plate id → mood key
   var LABEL = {
@@ -57,7 +58,7 @@
     'Hive': 'hive', 'Hive Gates': 'hive', 'Marquee': 'stage', 'Stage': 'stage',
     'Carnival': 'carnival', 'Galaxy': 'cosmos', 'Cosmos': 'cosmos', 'Dojo': 'dojo',
     'Lotus': 'lotus', 'Lab': 'lab', 'Arcade': 'arcade', 'Critter': 'critter',
-    'Pond': 'pond', 'Forest': 'forest', 'Grey Sea': 'greysea', 'Engine': 'engine',
+    'Pond': 'pond', 'Forest': 'forest', 'Flyway': 'flyway', 'Grey Sea': 'greysea', 'Engine': 'engine',
     'Junkyard': 'junkyard', 'Warfield': 'warfield', 'Siren': 'siren', 'Homecoming': 'homecoming'
   };
   function moodFor(world) {
