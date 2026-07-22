@@ -3,6 +3,17 @@
 (function(){
   const W=()=>window;
   function pool(n){ try{ return pickFresh(gameWordsD(),n)||[]; }catch(e){ return []; } }
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  // A speller-safe "meaning" line: the definition with the target word blanked out so
+  // showing the clue never leaks its spelling. Returns '' if no usable definition.
+  function meaningText(wobj){
+    try{ const d=(wobj&&(wobj.d||wobj.def))||''; const w=(wobj&&wobj.w)||'';
+      if(!d || d.length<6) return '';
+      let m=d; if(w){ const re=new RegExp('\\b'+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(s|es|ing|ed)?\\b','ig'); m=m.replace(re,'•••'); }
+      return m;
+    }catch(e){ return ''; }
+  }
+  function meaningHTML(wobj){ const m=meaningText(wobj); return m?'<div class="sg-cardmean">💡 '+esc(m)+'</div>':''; }
   function dlg(key){ // play a dialogue clip if present, else nothing (text always shows)
     try{ const a=new Audio('voice/d/'+key+'.mp3'); a.play().catch(()=>{}); return a; }catch(e){ return null; } }
 
@@ -176,7 +187,7 @@
     function spellCard(){
       if(wi>=words.length) wi=0; const w=words[wi++]; card={w,typed:'',t:12};
       const el=host.querySelector('#sg-card');
-      el.innerHTML='<div class="sg-cardbox"><b>🌼 Spell it to bloom — earn time &amp; coins!</b><button class="sg-cardw" id="sg-cw">🔊</button><div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off"><button class="sg-rbtn go" id="sg-cgo">Bloom</button></div><div id="sg-ct">12</div></div>';
+      el.innerHTML='<div class="sg-cardbox"><b>🌼 Spell it to bloom — earn time &amp; coins!</b><button class="sg-cardw" id="sg-cw">🔊</button>'+meaningHTML(w)+'<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off"><button class="sg-rbtn go" id="sg-cgo">Bloom</button></div><div id="sg-ct">12</div></div>';
       el.style.display='grid'; try{ say(w.w); }catch(e){}
       const inp=el.querySelector('#sg-ci'); inp.focus();
       function submit(){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase();
@@ -301,7 +312,7 @@
     function spellStop(){
       const w=words[wi++%words.length]; card={w};
       const el=host.querySelector('#sg-card');
-      el.innerHTML='<div class="sg-cardbox"><b>🍯 Honey pot! Spell to bank it</b><button class="sg-cardw" id="sg-cspk">🔊</button><div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off"><button class="sg-rbtn go" id="sg-cgo">Bank</button></div></div>';
+      el.innerHTML='<div class="sg-cardbox"><b>🍯 Honey pot! Spell to bank it</b><button class="sg-cardw" id="sg-cspk">🔊</button>'+meaningHTML(w)+'<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off"><button class="sg-rbtn go" id="sg-cgo">Bank</button></div></div>';
       el.style.display='grid'; try{ say(w.w); }catch(e){}
       const inp=el.querySelector('#sg-ci'); inp.focus();
       function submit(){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase();
@@ -318,15 +329,15 @@
       const dt=Math.min(50,ts-last); last=ts; t+=dt/1000; potT-=dt/1000;
       const GRACE=t<3;                                   // 3 s of free flight before gravity
       if(GRACE){ bee.vy*=0.88; bee.y+=bee.vy; bee.y=Math.max(30,Math.min(Ht-40,bee.y)); }
-      else { spawnT+=dt/1000; bee.vy+=0.196; bee.y+=bee.vy; }   // gravity −30% (was 0.28)
+      else { spawnT+=dt/1000; bee.vy+=0.176; bee.y+=bee.vy; }   // gravity −37% total (0.28→0.196→0.176)
       if(spawnT>1.9){ spawnT=0; spawn(); }
-      if(potT<=0&&!pot){ potT=8; pot={x:Wd+30,y:Ht-70}; }
+      if(potT<=0&&!pot){ potT=8; pot={x:Wd+30,y:80+Math.random()*(Ht-220)}; }   // float pots at flight height, not on the floor
       obs.forEach(o=>o.x-=CFG.speed); if(pot) pot.x-=CFG.speed;
       obs=obs.filter(o=>o.x>-40);
       // collide (no crashing during the grace window)
       if(!GRACE){ obs.forEach(o=>{ if(o.x<70&&o.x>10){ if(bee.y<o.y||bee.y>o.y+o.g){ hit(); o.x=-99; } } });
         if(bee.y>Ht-14||bee.y<8) hit(); }
-      if(pot&&pot.x<70&&pot.x>10&&bee.y>Ht-110){ pot=null; spellStop(); }
+      if(pot&&pot.x<74&&pot.x>6&&Math.abs(bee.y-(pot.y+18))<46){ pot=null; spellStop(); }   // collect near the pot itself
       if(pot&&pot.x<=-30) pot=null;
       draw(); requestAnimationFrame(frame);
     }
@@ -413,6 +424,7 @@
       '<div class="sg-race-word" id="sg-rw"><button class="sg-rbtn" id="sg-rspk" aria-label="Hear the word">🔊</button>'+
       '<input id="sg-ri" class="sg-rin" placeholder="type what you hear" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text">'+
       '<button class="sg-rbtn go" id="sg-rgo">Go</button><button class="sg-rbtn boost" id="sg-rboost">⚡</button></div>'+
+      '<div id="sg-rmean" class="sg-race-mean"></div>'+
       '<div class="sg-lanebtns"><button class="sg-dbtn" data-l="-1" aria-label="Move up a lane">▲</button><button class="sg-dbtn" data-l="1" aria-label="Move down a lane">▼</button></div>';
     const cv=host.querySelector('#sg-cv'); cv.width=Wd; cv.height=Ht; const cx=cv.getContext('2d');
     const racers=[
@@ -423,7 +435,9 @@
     const hazards=[]; for(let i=0;i<10;i++) hazards.push({x:400+i*300+Math.random()*120, lane:Math.floor(Math.random()*LANES)});
     const words=pool(12); let wi=0, curWord=null, typed='', over=false;
     const inp=host.querySelector('#sg-ri');
-    function nextWord(){ curWord=words[wi++%words.length]; typed=''; if(inp) inp.value=''; try{ say(curWord.w); }catch(e){} }
+    function nextWord(){ curWord=words[wi++%words.length]; typed=''; if(inp) inp.value='';
+      const mn=host.querySelector('#sg-rmean'); if(mn){ const m=meaningText(curWord); mn.textContent=m?('💡 '+m):''; }
+      try{ say(curWord.w); }catch(e){} }
     function bank(){ const me=racers[0]; const val=(inp?inp.value:typed).trim().toLowerCase();
       if(curWord && val===curWord.w.toLowerCase()){ me.nitro=Math.min(3,me.nitro+1); try{flash('⚡ Nitro banked!');}catch(_){} }
       nextWord(); if(inp) inp.focus(); }
@@ -495,11 +509,13 @@
     const mothArt=art?SGART.sprite('grey-moth',{cls:'sg-mothimg'}):'🦋';
     const plate=art?SGART.plateForWorld(opts.world||'Hive'):'';
     host.innerHTML='<div class="sg-hud"><span id="sg-w">Word 1/'+CFG.words+'</span><span id="sg-time"></span></div>'+
-      '<div class="sg-target" id="sg-target"></div><div class="sg-mothstage"><div class="sg-moth-bg">'+plate+'</div><div class="sg-molegrid" id="sg-grid"></div></div>';
+      '<div class="sg-target" id="sg-target"></div><div id="sg-wmean" class="sg-cardmean"></div><div class="sg-mothstage"><div class="sg-moth-bg">'+plate+'</div><div class="sg-molegrid" id="sg-grid"></div></div>';
     const grid=host.querySelector('#sg-grid');
     for(let i=0;i<12;i++){ const c=document.createElement('button'); c.className='sg-cell'; c.dataset.i=i; grid.appendChild(c); }
     function newWord(){ if(wi>=words.length||doneWords>=CFG.words){ over=true; finish(true); return; }
-      cur=words[wi++]; li=0; renderTarget(); try{ say(cur.w); }catch(e){} }
+      cur=words[wi++]; li=0; renderTarget();
+      const mn=host.querySelector('#sg-wmean'); if(mn){ const m=meaningText(cur); mn.textContent=m?('💡 '+m):''; }
+      try{ say(cur.w); }catch(e){} }
     function renderTarget(){ host.querySelector('#sg-target').innerHTML=cur.w.split('').map((ch,i)=>
       '<span class="sg-tl'+(i<li?' done':i===li?' next':'')+'">'+(i<li?ch.toUpperCase():'•')+'</span>').join('');
       host.querySelector('#sg-w').textContent='Word '+(doneWords+1)+'/'+CFG.words; }
@@ -545,6 +561,7 @@
       '<div class="sg-bossface" id="sg-bf">'+bossArt+'</div>'+
       '<div class="sg-shieldwall" id="sg-sw"></div>'+
       '<div class="sg-duel"><div id="sg-scramble" class="sg-scramble"></div>'+
+      '<div id="sg-dmean" class="sg-cardmean"></div>'+
       '<div class="sg-inrow"><input id="sg-di" autocomplete="off" autocapitalize="off" placeholder="type the word">'+
       '<button class="sg-rbtn go" id="sg-dgo">Cast</button></div>'+
       '<div id="sg-dt" class="sg-dtimer"></div></div></div>';
@@ -562,6 +579,7 @@
       const sc=host.querySelector('#sg-scramble');
       if(phase===1){ sc.textContent=scramble(cur.w.toLowerCase()); }
       else { sc.textContent='🔊 listen…'; }
+      const mn=host.querySelector('#sg-dmean'); if(mn){ const m=meaningText(cur); mn.textContent=m?('💡 '+m):''; }
       try{ say(cur.w); }catch(e){}
       host.querySelector('#sg-dt').textContent=t;
       clearInterval(timer);
@@ -709,7 +727,7 @@
       '<div class="sg-simonprompt" id="sg-sp"></div><div id="sg-card"></div>';
     function newSeq(){
       if(si>=CFG.seqs){ over=true; done({win:true,score:CFG.seqs*120-misses*20,stars:misses===0?3:misses<=2?2:1}); return; }
-      const w=words[si%words.length]; seq={w:w.w.toLowerCase(),i:0};
+      const w=words[si%words.length]; seq={w:w.w.toLowerCase(),i:0,d:(w.d||w.def||'')};
       const tiles=host.querySelector('#sg-tiles'); tiles.innerHTML='';
       const letters=[...new Set(seq.w.split(''))];
       while(letters.length<8){ const c=String.fromCharCode(97+Math.floor(Math.random()*26)); if(!letters.includes(c)) letters.push(c); }
@@ -737,7 +755,7 @@
         try{flash('Off-beat! Watch again…');}catch(_){} showSeq(); } };
     function recall(){ // the sequence WAS a word — now spell it blind
       const el=host.querySelector('#sg-card');
-      el.innerHTML='<div class="sg-cardbox"><b>🌟 That was a word! Spell it from memory</b><div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off"><button class="sg-rbtn go" id="sg-cgo">Sing</button></div></div>';
+      el.innerHTML='<div class="sg-cardbox"><b>🌟 That was a word! Spell it from memory</b>'+meaningHTML({w:seq.w,d:seq.d})+'<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off"><button class="sg-rbtn go" id="sg-cgo">Sing</button></div></div>';
       el.style.display='grid';
       [...host.querySelectorAll('.sg-stile')].forEach(t=>t.style.visibility='hidden');
       const inp=el.querySelector('#sg-ci'); inp.focus();
