@@ -7,6 +7,14 @@
 .sg-cardbox b{overflow-wrap:anywhere}
 .sg-cardmean{font:600 13.5px 'Hanken',sans-serif;color:var(--muted,#7A6E5C);line-height:1.4;max-width:340px;margin:2px auto 0;text-align:center}
 .sg-race-mean{font:600 13px 'Hanken',sans-serif;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.5);text-align:center;margin-top:6px;max-width:480px}
+/* Bee Grand Prix — how-to-play overlay */
+.sg-howto{position:absolute;inset:0;display:grid;place-items:center;background:rgba(20,26,40,.62);backdrop-filter:blur(3px);z-index:40;border-radius:14px;padding:12px}
+.sg-howto-card{background:var(--panel,#fff);border-radius:18px;padding:20px 22px;max-width:min(94vw,400px);box-shadow:0 12px 40px rgba(0,0,0,.35);text-align:left}
+.sg-howto-h{font:800 22px 'Fraunces',serif;color:var(--ink,#2B2117);text-align:center}
+.sg-howto-sub{font:600 13.5px 'Hanken',sans-serif;color:var(--honey-d,#B8860B);text-align:center;margin:4px 0 12px}
+.sg-howto-steps{margin:0 0 14px;padding-left:20px;display:grid;gap:9px}
+.sg-howto-steps li{font:500 14px 'Hanken',sans-serif;color:var(--ink,#2B2117);line-height:1.42}
+.sg-howto-go{width:100%;font-size:16px;padding:12px}
 .sg-cardw{font-size:26px}
 .sg-hivestage{position:relative;border-radius:16px;overflow:hidden;padding:20px 10px;margin:12px auto;max-width:520px}
 .sg-hive-bg{position:absolute;inset:0;z-index:0}

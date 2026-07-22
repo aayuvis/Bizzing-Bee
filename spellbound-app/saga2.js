@@ -304,10 +304,18 @@
                hard:{gap:130,speed:3.0,pots:10},champ:{gap:115,speed:3.4,pots:12}}[diff];
     host.innerHTML='<div class="sg-hud"><span id="sg-pots">🍯 0/'+CFG.pots+'</span><span id="sg-lives"></span></div><canvas id="sg-cv"></canvas><div id="sg-card"></div>';
     const cv=host.querySelector('#sg-cv'); cv.width=Wd; cv.height=Ht; const cx=cv.getContext('2d');
-    let bee={y:Ht/2,vy:0}, obs=[], pot=null, potIn=0, banked=0, lives=3, t=0, over=false, card=null;
+    let bee={y:Ht/2,vy:0}, obs=[], pot=null, potIn=0, banked=0, lives=3, t=0, over=false, card=null, graceUntil=0;
     const words=pool(CFG.pots+4); let wi=0;
-    const flap=e=>{ if(e.type==='keydown'&&e.key!==' ')return; bee.vy=-5.4; e.preventDefault&&e.preventDefault(); };
-    addEventListener('keydown',flap); cv.addEventListener('pointerdown',flap);
+    const isSky=(world==='opensky'||world==='sky');
+    // drifting clouds for the premium sky
+    const clouds=[]; for(let i=0;i<5;i++) clouds.push({x:Math.random()*Wd, y:16+Math.random()*(Ht*0.5), s:0.65+Math.random()*0.95, sp:0.12+Math.random()*0.28});
+    // controls: keyboard space = flap impulse; touch/mouse = hold to stay afloat
+    let holding=false;
+    const flap=e=>{ if(e.key!==' ')return; bee.vy=-5.4; e.preventDefault&&e.preventDefault(); };
+    const pdown=e=>{ holding=true; if(bee.vy>-2.4) bee.vy=-3.2; e.preventDefault&&e.preventDefault(); };
+    const pup=()=>{ holding=false; };
+    addEventListener('keydown',flap);
+    host.addEventListener('pointerdown',pdown); addEventListener('pointerup',pup); addEventListener('pointercancel',pup);
     function spawn(){ const g=CFG.gap, y=60+Math.random()*(Ht-120-g); obs.push({x:Wd+30,y,g}); }
     function spellStop(){
       const w=words[wi++%words.length]; card={w};
@@ -317,7 +325,7 @@
       const inp=el.querySelector('#sg-ci'); inp.focus();
       function submit(){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase();
         if(ok){ banked++; try{flash('🍯 Pot banked! '+banked+'/'+CFG.pots);}catch(_){}}else{ bee.y=Math.min(Ht-40,bee.y+60); try{flash('Almost! The pot floats ahead…');}catch(_){} }
-        el.style.display='none'; card=null;
+        el.style.display='none'; card=null; bee.vy=0; graceUntil=t+2;   // 2 s calm after typing
         if(banked>=CFG.pots){ over=true; finish(true); } }
       inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } };
       el.querySelector('#sg-cgo').onclick=submit;
@@ -327,9 +335,10 @@
     function frame(ts){ if(over) return;
       if(card){ requestAnimationFrame(frame); return; }
       const dt=Math.min(50,ts-last); last=ts; t+=dt/1000; potT-=dt/1000;
-      const GRACE=t<3;                                   // 3 s of free flight before gravity
-      if(GRACE){ bee.vy*=0.88; bee.y+=bee.vy; bee.y=Math.max(30,Math.min(Ht-40,bee.y)); }
-      else { spawnT+=dt/1000; bee.vy+=0.176; bee.y+=bee.vy; }   // gravity −37% total (0.28→0.196→0.176)
+      const GRACE=(t<3)||(t<graceUntil);                 // 3 s free flight at start, 2 s calm after each spell
+      if(holding) bee.vy-=0.42;                          // touch/mouse hold keeps Bizzy afloat
+      if(GRACE){ bee.vy*=0.9; bee.y+=bee.vy; bee.y=Math.max(30,Math.min(Ht-40,bee.y)); }
+      else { spawnT+=dt/1000; bee.vy+=0.158; bee.y+=bee.vy; }   // gravity −43% total (0.28→…→0.158)
       if(spawnT>1.9){ spawnT=0; spawn(); }
       if(potT<=0&&!pot){ potT=8; pot={x:Wd+30,y:80+Math.random()*(Ht-220)}; }   // float pots at flight height, not on the floor
       obs.forEach(o=>o.x-=CFG.speed); if(pot) pot.x-=CFG.speed;
@@ -342,10 +351,28 @@
       draw(); requestAnimationFrame(frame);
     }
     function hit(){ lives--; bee.y=Ht/2; bee.vy=0; if(lives<=0){ over=true; finish(false); } }
+    function puff(x,y,s){ cx.save(); cx.fillStyle='rgba(255,255,255,.92)';
+      cx.shadowColor='rgba(120,155,195,.28)'; cx.shadowBlur=10*s; cx.shadowOffsetY=5;
+      const e=(dx,dy,r)=>{ cx.beginPath(); cx.ellipse(x+dx*s,y+dy*s,r*s,r*s*0.72,0,0,7); cx.fill(); };
+      e(0,0,27); e(25,5,20); e(-25,6,19); e(11,-11,18); e(-11,-8,16); cx.restore(); }
+    function drawSky(){
+      // premium layered sky — deep azure up top easing to a bright horizon
+      const g=cx.createLinearGradient(0,0,0,Ht);
+      g.addColorStop(0,'#3D8BD4'); g.addColorStop(0.5,'#7FC0EC'); g.addColorStop(1,'#E9F6FF');
+      cx.fillStyle=g; cx.fillRect(0,0,Wd,Ht);
+      // warm sun with a soft glow, upper-right
+      const sx=Wd*0.83, sy=Ht*0.19;
+      const sg=cx.createRadialGradient(sx,sy,4,sx,sy,130);
+      sg.addColorStop(0,'rgba(255,251,225,.95)'); sg.addColorStop(0.4,'rgba(255,240,180,.42)'); sg.addColorStop(1,'rgba(255,240,180,0)');
+      cx.fillStyle=sg; cx.fillRect(0,0,Wd,Ht);
+      cx.beginPath(); cx.arc(sx,sy,25,0,7); cx.fillStyle='rgba(255,252,235,.96)'; cx.fill();
+      // drifting clouds (parallax by size)
+      clouds.forEach(c=>{ if(!card){ c.x-=c.sp; if(c.x<-90*c.s){ c.x=Wd+80*c.s; c.y=15+Math.random()*(Ht*0.5); } } puff(c.x,c.y,c.s); });
+    }
     function draw(){
-      // rich backdrop (Claude Design world plate for this chapter); gradient fallback
-      if(!drawWorld(cx,world,0,0,Wd,Ht)){ const grd=cx.createLinearGradient(0,0,0,Ht); grd.addColorStop(0,'#8FCBEF'); grd.addColorStop(1,'#DFF0FA');
-        cx.fillStyle=grd; cx.fillRect(0,0,Wd,Ht); }
+      // Long Sky gets a bespoke premium sky (no confusing sprites); other worlds use their plate
+      if(isSky){ drawSky(); }
+      else if(!drawWorld(cx,world,0,0,Wd,Ht)){ drawSky(); }
       // honeycomb pillars instead of flat green pipes
       obs.forEach(o=>{ const pil=(yy,hh)=>{ const g=cx.createLinearGradient(o.x,0,o.x+44,0); g.addColorStop(0,'#F0B429'); g.addColorStop(1,'#D89614');
         cx.fillStyle=g; cx.fillRect(o.x,yy,44,hh); cx.fillStyle='rgba(255,255,255,.18)'; cx.fillRect(o.x,yy,7,hh);
@@ -360,18 +387,21 @@
         cx.save(); cx.translate(60,bee.y); cx.rotate(tilt); cx.drawImage(bi,-s/2,-s/2,s,s); cx.restore(); bd=true; }catch(e){ try{cx.restore();}catch(_){} } }
       if(!bd){ cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(60,bee.y,15,0,7); cx.fill();
         cx.fillStyle='#2B2117'; cx.fillRect(50,bee.y-2,20,4); }
-      // grace-window cue: free flight, gravity counts in
-      if(t<3){ const n=Math.ceil(3-t);
-        cx.save(); cx.textAlign='center'; cx.globalAlpha=0.92;
+      // grace-window cue: free flight at the start, calm moment after each spell
+      let cueN=0, cueTxt='';
+      if(t<3){ cueN=Math.ceil(3-t); cueTxt='Free flight — gravity in '+cueN; }
+      else if(t<graceUntil){ cueN=Math.ceil(graceUntil-t); cueTxt='Nice! Fly on — '+cueN; }
+      if(cueN){ cx.save(); cx.textAlign='center'; cx.globalAlpha=0.92;
         cx.font='800 22px Fraunces, serif'; cx.fillStyle='#fff'; cx.strokeStyle='rgba(20,20,50,.55)'; cx.lineWidth=4;
-        cx.strokeText('Free flight — gravity in '+n, Wd/2, 42); cx.fillText('Free flight — gravity in '+n, Wd/2, 42);
+        cx.strokeText(cueTxt, Wd/2, 42); cx.fillText(cueTxt, Wd/2, 42);
         cx.restore(); }
       host.querySelector('#sg-pots').textContent='🍯 '+banked+'/'+CFG.pots;
       host.querySelector('#sg-lives').textContent='❤'.repeat(Math.max(0,lives));
     }
-    function finish(win){ removeEventListener('keydown',flap); done({win,score:banked*100,stars:win?(lives>=3?3:lives===2?2:1):0}); }
+    function cleanup(){ removeEventListener('keydown',flap); removeEventListener('pointerup',pup); removeEventListener('pointercancel',pup); }
+    function finish(win){ cleanup(); done({win,score:banked*100,stars:win?(lives>=3?3:lives===2?2:1):0}); }
     requestAnimationFrame(frame);
-    return { destroy(){ over=true; removeEventListener('keydown',flap); } };
+    return { destroy(){ over=true; cleanup(); } };
   }
 
   /* ---------- ENGINE D · WORD HIVE (make words from a big word) ---------- */
@@ -454,7 +484,22 @@
     addEventListener('keydown',key);
     cv.addEventListener('pointerdown',e=>{ const r=cv.getBoundingClientRect(); const y=e.clientY-r.top;
       const me=racers[0]; me.lane=Math.max(0,Math.min(LANES-1,Math.floor((y-40)/LANE_H))); });
-    nextWord();
+    // --- How to play: explain the spell↔race loop before the flag drops ---
+    host.style.position='relative';
+    const intro=document.createElement('div'); intro.className='sg-howto';
+    intro.innerHTML='<div class="sg-howto-card">'+
+      '<div class="sg-howto-h">🏁 Bee Grand Prix</div>'+
+      '<div class="sg-howto-sub">Spell words to fill your ⚡ nitro, then burn it to win the race.</div>'+
+      '<ol class="sg-howto-steps">'+
+      '<li><b>🔊 Hear &amp; type</b> the word, then <b>Go</b> — every correct spelling banks one ⚡.</li>'+
+      '<li><b>Tap ⚡</b> (or press Space) to blast forward with a nitro boost.</li>'+
+      '<li><b>▲ ▼</b> (or tap a lane) to swerve around the ☁️ clouds — they slow you down.</li>'+
+      '<li>First across <b>'+CFG.laps+' laps</b> takes the trophy. Finish 1st for ⭐⭐⭐.</li>'+
+      '</ol>'+
+      '<button class="sg-rbtn go sg-howto-go" id="sg-howgo">Start race →</button></div>';
+    host.appendChild(intro);
+    function begin(){ intro.remove(); nextWord(); if(inp){ try{inp.focus();}catch(e){} } requestAnimationFrame(frame); }
+    host.querySelector('#sg-howgo').onclick=begin;
     let last=0;
     function frame(ts){ if(over) return; const dt=Math.min(50,ts-last)/16.7; last=ts;
       racers.forEach(r=>{
@@ -496,7 +541,7 @@
     function finish(){ removeEventListener('keydown',key);
       const order=[...racers].sort((a,b)=>b.x-a.x); const pos=order.indexOf(racers[0])+1;
       done({win:pos===1, score:(5-pos)*250, stars:pos===1?3:pos===2?2:pos===3?1:0}); }
-    requestAnimationFrame(frame);
+    // race starts from the How-to-play overlay (begin())
     return { destroy(){ over=true; removeEventListener('keydown',key); } };
   }
 
