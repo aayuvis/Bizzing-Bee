@@ -14,3 +14,6 @@ spellbound-app/v*.mjs
 spellbound-app/trivia-review.html
 spellbound-app/trivia-data.js.bak
 spellbound-app/*review.html
+
+# session-local voice QA scratch (scan intermediates, decoded wavs)
+.voicebuild/
