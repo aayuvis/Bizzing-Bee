@@ -22,7 +22,11 @@
     var Native = window.Audio;
     if (!Native) return;
     var Wrapped = function (src) {
-      if (typeof src === 'string' && src.slice(0, 6) === 'voice/') src = BASE + src;
+      if (typeof src === 'string' && src.slice(0, 6) === 'voice/') {
+        // version query busts browser + CDN caches on each voice deploy
+        // (SB_VOICE_VER is bumped in voice-review.js every rebuild round)
+        src = BASE + src + '?v=' + (window.SB_VOICE_VER || '0');
+      }
       return src === undefined ? new Native() : new Native(src);
     };
     Wrapped.prototype = Native.prototype;
