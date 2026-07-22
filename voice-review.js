@@ -15,9 +15,18 @@
    shows them under Re-review for the parent to confirm.
    ============================================================ */
 (function () {
-  // Words Claude has rebuilt since the last round — re-listen to confirm.
-  // (Claude appends {w, note, at} entries here as it processes flag batches.)
-  window.SB_VOICE_REVIEW = window.SB_VOICE_REVIEW || [];
+  // Words Claude has processed since the last round — re-listen to confirm.
+  // (Claude appends {w, note} entries here as it processes flag batches.)
+  // Batch 1 (2026-07-22): these short words were REBUILT in the same Kokoro voice as
+  // the rest of the library (the old clips were stretched at 0.92× speed, which added
+  // the trailing-vowel echoes and onset schwas). One consistent voice everywhere now —
+  // have a fresh listen and cross any that still sound off so they can be rebuilt again.
+  window.SB_VOICE_REVIEW = (window.SB_VOICE_REVIEW || []).concat(
+    ["cap","soda","stubble","cricket","january","olive","robin","feats","peach","pole",
+     "arc","cop","dub","eve","hue","salmon","receipt","onion","giraffe","answer","won","win","who","use",
+     "tub","tip","tea","spa","six","sit","sip","she","set","see","sea","saw","sat","sap","paw","pub","pup","rag","raw","rub"]
+    .map(function(w){ return {w:w, note:"rebuilt in the Kokoro voice"}; })
+  );
 
   // Highest-priority QA queue. Short/plosive-initial/final-vowel words are the
   // most prone to truncation, so they lead; then common tricky pronunciations.
