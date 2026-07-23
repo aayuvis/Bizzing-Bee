@@ -17,7 +17,7 @@
 (function () {
   // Bumped every voice rebuild round — voice-cdn.js appends this to clip URLs so
   // browsers and the raw CDN can never serve a stale clip after a deploy.
-  window.SB_VOICE_VER = 'r4-20260722';
+  window.SB_VOICE_VER = 'r5-20260723';
   // Words Claude has processed since the last round — re-listen to confirm.
   // (Claude appends {w, note} entries here as it processes flag batches.)
   // Batch 3 (2026-07-22, overnight): FULL Kokoro rebuild — the model is now hosted on
@@ -39,13 +39,19 @@
   // moisture "ture"…) were re-synthesized normally, plus a library-wide garble scan
   // rebuilt 97 more (mostly French-origin — see the new 🇫🇷 French tab to audit that
   // whole cohort).
+  // Batch 6 (2026-07-23, round 5 — the decisive round under the owner's policy):
+  //   • 13 words exhausted the whole rebuild ladder (variants, IPA, carrier, voice
+  //     blends) and STILL sounded wrong — they now play in the device voice, permanently
+  //     until a better model exists (voice/rebuild-queue.json keeps the list). A quick
+  //     listen should confirm each now says the RIGHT word, just in the device voice.
+  //   • 7 words got their one escalated IPA rebuild — fresh listen; if any is still
+  //     wrong, flag it and it goes to the device voice too.
   window.SB_VOICE_REVIEW = (window.SB_VOICE_REVIEW || []).concat(
-    ["peach","dub","tub","spa","saw","paw","pub","rub","olive","vegetable","umbrella",
-     "brave","proof","cuckoo","emperor"]
-    .map(function(w){ return {w:w, note:"round-4: voice-blend rebuild — timbre may differ slightly"}; }),
-    ["blemish","chowder","furtive","pedigree","pilferer","moisture","companion",
-     "enchantment","dauntlessly","loyal","verve","gabled"]
-    .map(function(w){ return {w:w, note:"round-4: garbled clip re-synthesized"}; })
+    ["peach","dub","tub","spa","paw","pub","rub","olive","vegetable","umbrella",
+     "brave","proof","emperor"]
+    .map(function(w){ return {w:w, note:"now in the device voice (rebuild ladder exhausted)"}; }),
+    ["furtive","verve","loyal","enchantment","companion","pilferer","pedigree"]
+    .map(function(w){ return {w:w, note:"round-5 IPA rebuild — flag again = device voice"}; })
   );
 
   // Highest-priority QA queue. Short/plosive-initial/final-vowel words are the
