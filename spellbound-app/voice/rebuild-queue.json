@@ -1,9 +1,9 @@
 {
  "app": "Bizzing Bee",
  "kind": "voice-rebuild-queue",
- "at": "2026-07-22T07:57:48Z",
- "status": "COMPLETE - all queued words re-synthesized with Kokoro af_heart on 2026-07-22",
- "note": "871 queued words + cog/tomb + the 451-word legacy 0.92x batch were rebuilt (1,324 clips). Flagged words whose deterministic re-synth reproduced the bad audio byte-for-byte were re-run with a no-dot input variant and verified to differ. WV_BAD is empty again. Queue new flags from the tester as usual.",
+ "at": "2026-07-23T00:13:41Z",
+ "status": "13 words on device TTS after exhausting the rebuild ladder (owner policy 2026-07-22); 7 words on IPA rebuild round awaiting parent confirmation",
+ "note": "The device-TTS words survived fresh synth, input variants, IPA, carrier excision and voice blends across 5 review rounds - af_heart cannot say them cleanly. Revisit if a better model becomes available; then rebuild and remove from WV_BAD in app3.js.",
  "flagged_history": [
   {
    "w": "peach",
@@ -138,5 +138,20 @@
    "heard": "empereh"
   }
  ],
- "queue": []
+ "queue": [],
+ "device_tts_active": [
+  "brave",
+  "dub",
+  "emperor",
+  "olive",
+  "paw",
+  "peach",
+  "proof",
+  "pub",
+  "rub",
+  "spa",
+  "tub",
+  "umbrella",
+  "vegetable"
+ ]
 }
