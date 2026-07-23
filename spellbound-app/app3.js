@@ -802,10 +802,12 @@ const app = {
       sfx('correct'); addCoins(1); gainXp(); clearMiss(target);
       if(streakRight>0 && streakRight%5===0){ addCoins(5); state.toast='🔥 '+streakRight+' in a row! +5 bonus coins'; scheduleToast(2200); burstConfetti(50); }
       state.status='correct'; state.mood=state.toast?'wow':mood; render();
+      autoAdvance(850);  // correct → already marked complete; move on, no click needed
     } else {
       addMiss(curWord());
       sfx('wrong'); const d=lev(ans,target); if(d>0 && d<=2 && target.length>=4){ state.toast='So close — '+d+' letter'+(d>1?'s':'')+' off! 💡'; scheduleToast(2400); }
       state.status='wrong'; state.mood='oops'; state.sessionDone+=1; state._run=0; render();
+      autoAdvance(2200);  // wrong → already saved for revision; move on, no click needed
     } },
   next:()=>{ clearTimeout(state._advTimer); state._advTimer=null;
     const N=(state.sessionWords&&state.sessionWords.length)||0;
@@ -2928,11 +2930,13 @@ function trainerCard(){
   const S=state; const word=curWord(); const st=S.status;
   let resultText='',resultStyle=''; const primaryLabel=(st==='idle')?'Check':'Check again'; const showResult=(st!=='idle');
   const rbase='border-radius:14px;padding:13px 16px;font-weight:800;font-size:15px;margin-bottom:16px;animation:sb-pop .3s ease both;';
-  if(st==='correct'){ resultText='✓ Correct! Nicely spelled — press Complete to move on.'; resultStyle=rbase+'background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good)'; }
-  else if(st==='wrong'){ resultText='✗ Not quite — it’s "'+word.w+'". Mark it for revision to see it again.'; resultStyle=rbase+'background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)'; }
-  else if(st==='revealed'){ resultText='The word is "'+word.w+'". Mark it for revision to practise it again.'; resultStyle=rbase+'background:var(--surface2);color:var(--text)'; }
-  // After checking, the two top buttons ARE the way forward — highlight the one that fits the result.
-  const completeHot=(st==='correct'), reviseHot=(st==='wrong'||st==='revealed');
+  if(st==='correct'){ resultText='✓ Correct! Nicely spelled — next word…'; resultStyle=rbase+'background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good)'; }
+  else if(st==='wrong'){ resultText='✗ Not quite — it’s "'+word.w+'". Saved for revision — next word…'; resultStyle=rbase+'background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)'; }
+  else if(st==='revealed'){ resultText='The word is "'+word.w+'".'; resultStyle=rbase+'background:var(--surface2);color:var(--text)'; }
+  // Correct/wrong now auto-advance (no click needed), so the manual buttons only show
+  // before a check (skip / defer) and after Show answer (to continue).
+  const showMarks=(st==='idle'||st==='revealed');
+  const completeHot=false, reviseHot=(st==='revealed');
   const completeStyle=completeHot
     ? 'background:var(--good);border:1px solid var(--good);color:#fff;box-shadow:0 4px 14px color-mix(in srgb,var(--good) 45%,transparent);animation:sb-pop .3s ease'
     : 'background:color-mix(in srgb,var(--good) 15%,transparent);border:1px solid var(--good);color:var(--good)';
@@ -2946,10 +2950,10 @@ function trainerCard(){
   const tchip=(on,label,act)=>`<button data-act="${act}" style="padding:9px 14px;border-radius:999px;font-weight:700;font-size:13px;border:1px solid ${on?'var(--accent)':'var(--line)'};${on?'background:var(--accent);color:#fff':'background:transparent;color:var(--text)'}">${label}</button>`;
   const mascotAnim=st==='wrong'?'animation:sb-shake .45s ease':(st==='correct'?'animation:sb-pop .4s ease':'');
   return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow);text-align:center;position:relative">
-      <div style="display:flex;justify-content:flex-end;flex-wrap:wrap;gap:7px;margin-bottom:8px">
-        <button data-act="completeWord" title="Got it — mark this word complete and move to the next" style="display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;${completeStyle};font-weight:800;font-size:12.5px">✓ Complete</button>
+      ${showMarks?`<div style="display:flex;justify-content:flex-end;flex-wrap:wrap;gap:7px;margin-bottom:8px">
+        <button data-act="completeWord" title="I know this — mark it complete and skip to the next" style="display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;${completeStyle};font-weight:800;font-size:12.5px">✓ Complete</button>
         <button data-act="reviseWord" title="Mark this word for revision and move to the next" style="display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;${reviseStyle};font-weight:800;font-size:12.5px">⚑ Mark for revision</button>
-      </div>
+      </div>`:'<div style="height:4px"></div>'}
       <div style="width:96px;height:108px;margin:0 auto 4px"><div style="${mascotAnim};width:96px;height:108px">${mascotSVG(S.mood)}</div></div>
       <button data-act="speak" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:18px">${iconSVG('volume',18)} Hear the word</button>
       <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:18px">${tchip(S.showDef,'Definition','toggleDef')}${tchip(S.showSent,'Sentence','toggleSent')}${tchip(S.showOrigin,'Origin','toggleOrigin')}</div>
