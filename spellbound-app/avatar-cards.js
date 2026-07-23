@@ -48,7 +48,8 @@
     legends:   ['Legends are made of letters, {name}. Prove it!', '{name} steps from the myths — spell your saga!', 'Only the bold spell like {name}. Begin!'],
     turbo:     ['Engines hot, {name}! Spell fast, spell first!', 'Green light! {name} floors it into the words!', '{name} is built for speed AND spelling. Go go go!'],
     villains:  ['So… you dare to spell against me, {name}? How bold.', '{name}. We meet across the board. Spell, if you can.', 'Every word you spell, {name}, I shall try to unwrite.'],
-    serpent:   ['Ssslither over here, {name} — let’s ssspell!', '{name} and me, coiled and ready. Ssstrike true!', 'One letter at a time, {name} — sssmooth and sssteady wins.']
+    serpent:   ['Ssslither over here, {name} — let’s ssspell!', '{name} and me, coiled and ready. Ssstrike true!', 'One letter at a time, {name} — sssmooth and sssteady wins.'],
+    bigbeasts: ['The biggest of all time says hi, {name}! Ready to spell BIG?', 'Small word, giant heart — let’s go, {name}!', '{name}, even the largest beasts learned one letter at a time.']
   };
   // pack persona → title suffix pool
   var PACK_TITLE = {
@@ -56,7 +57,7 @@
     lab:'of the Lab', arcade:'of the Arcade', origami:'of the Fold', elements:'of the Elements',
     critter:'of the Wild Pond', vibe:'of Good Vibes', dino:'of the Ancient World', enchanted:'of the Enchanted Wood',
     wildhearts:'of the Wildhearts', legends:'of Legend', turbo:'of the Speedway', villains:'of the Unspelling',
-    serpent:'of the Serpent Pack'
+    serpent:'of the Serpent Pack', bigbeasts:'of the Colossal Ages'
   };
   var RANK = { free:'Rookie', rare:'Speller', epic:'Champion', legendary:'Grandmaster' };
 
@@ -249,7 +250,18 @@
     boa:{lore:'A gentle giant with beautiful patterns.',fact:'Boa constrictors are born live, not hatched from eggs like most snakes.'},
     mamba:{lore:'The fastest speller in the grass.',fact:'The black mamba is one of the fastest snakes on Earth, gliding at up to 20 km/h.'},
     seasnake:{lore:'Glides through the waves, spelling as it swims.',fact:'Sea snakes can stay underwater for hours, taking in some oxygen straight through their skin.'},
-    naga:{lore:'The mythical serpent-guardian, wisest of the pack.',fact:'The Naga is a mighty serpent of Hindu and Buddhist legend, said to guard treasure, temples and rivers.'}
+    naga:{lore:'The mythical serpent-guardian, wisest of the pack.',fact:'The Naga is a mighty serpent of Hindu and Buddhist legend, said to guard treasure, temples and rivers.'},
+    // ---- BIG BEASTS (the largest animals that ever lived — no dinosaurs) ----
+    mammoth:{lore:'A woolly giant of the ice age, warm-hearted and huge.',fact:'The woolly mammoth was about the size of an African elephant, with curved tusks up to 4.5 metres long.'},
+    titanoboa:{lore:'The longest snake that ever lived — gentle for its size.',fact:'Titanoboa stretched about 42 feet — as long as a school bus — and lived 60 million years ago, after the dinosaurs.'},
+    megalodon:{lore:'The mega-shark of the ancient seas.',fact:'Megalodon was the biggest shark ever, up to 18 metres long, with teeth as big as your hand.'},
+    argentavis:{lore:'The greatest flyer the skies have ever seen.',fact:'Argentavis had a wingspan of about 7 metres — wider than a small plane — making it one of the largest flying birds ever.'},
+    megatherium:{lore:'A giant ground sloth, slow, huge and friendly.',fact:'Megatherium, the giant ground sloth, stood as tall as an elephant and reached leaves high in the trees with huge claws.'},
+    vasuki:{lore:'The colossal serpent named for the king of snakes.',fact:'Vasuki indicus, found in India in 2024, may have reached about 50 feet — and is named after Vasuki, the serpent-king of Hindu legend.'},
+    livyatan:{lore:'A whale that hunted other whales.',fact:'Livyatan was a giant predatory whale with teeth over 30 cm long — some of the biggest biting teeth of any animal ever.'},
+    gigantopithecus:{lore:'The largest ape that ever walked the Earth.',fact:'Gigantopithecus stood up to 3 metres tall — the biggest ape ever — and some think it inspired legends of Bigfoot.'},
+    dunkleo:{lore:'An armoured sea giant with slicing jaw-plates.',fact:'Dunkleosteus had no teeth — it sheared prey with self-sharpening bony jaw plates, and its bite was one of the strongest ever.'},
+    bluewhale:{lore:'The largest animal that has EVER lived — bigger than any dinosaur.',fact:'The blue whale can reach 30 metres and 180 tonnes — heavier than any dinosaur — and its heart alone is the size of a small car.'}
   };
 
   // fallback pool if an id somehow lacks authored lore
@@ -307,7 +319,9 @@
   ];
 
   // Villains live in the villains pack AND scattered through other packs.
-  var VILLAIN_EXTRA = { glitch:1, blackhole:1, oni:1, ghost:1, bossbot:1, kraken:1, hydra:1, mino:1, cyclo:1 };
+  var VILLAIN_EXTRA = { glitch:1, blackhole:1, oni:1, ghost:1, bossbot:1, kraken:1, hydra:1, mino:1, cyclo:1,
+    cobra:1, viper:1, mamba:1,                    // the venomous snakes are villains
+    megalodon:1, livyatan:1, dunkleo:1 };         // the ancient sea predators are villains
   function isVillain(a) { return a.pack === 'villains' || !!VILLAIN_EXTRA[a.id]; }
 
   window.SB_AV_CARD = function (id) {
