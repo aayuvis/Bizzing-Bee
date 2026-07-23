@@ -744,7 +744,13 @@ const app = {
   luToggleWords:()=>set({luWordsOpen:!state.luWordsOpen}),
   luPractice:(idx)=>{ state.gi=+idx; state.luTab='practice'; state.status='idle'; state.typed=''; state.mood='happy'; state.showDef=false; state.showSent=false; state.showOrigin=false; render(); setTimeout(speak,250); },
   reveal:()=>set({status:'revealed', mood:'sleepy'}),
-  primary:()=>{ if(state.status==='idle') app.check(); else app.next(); },
+  primary:()=>{ app.check(); },
+  // Self-directed advance: the two card buttons replace the old "Next" button.
+  completeWord:()=>{ const cw=curWord(); if(cw&&cw.w){ const t=cw.w.toLowerCase(); markMastered(t); clearMiss(t);
+      if(state.status==='idle'){ state.sessionDone=(state.sessionDone||0)+1; state.sessionRight=(state.sessionRight||0)+1; } }
+    sfx('correct'); app.next(); },
+  reviseWord:()=>{ const cw=curWord(); if(cw){ addMiss(cw); if(state.status==='idle') state.sessionDone=(state.sessionDone||0)+1; }
+    flash('Marked for revision ⚑'); app.next(); },
   speak,
   check:()=>{ const ans=(state.typed||'').trim().toLowerCase(); if(!ans){ flash('Type the word first'); return; }
     const cw=curWord(); const target=cw.w.toLowerCase();
@@ -770,12 +776,10 @@ const app = {
       sfx('correct'); addCoins(1); gainXp(); clearMiss(target);
       if(streakRight>0 && streakRight%5===0){ addCoins(5); state.toast='🔥 '+streakRight+' in a row! +5 bonus coins'; scheduleToast(2200); burstConfetti(50); }
       state.status='correct'; state.mood=state.toast?'wow':mood; render();
-      autoAdvance(850);
     } else {
       addMiss(curWord());
       sfx('wrong'); const d=lev(ans,target); if(d>0 && d<=2 && target.length>=4){ state.toast='So close — '+d+' letter'+(d>1?'s':'')+' off! 💡'; scheduleToast(2400); }
       state.status='wrong'; state.mood='oops'; state.sessionDone+=1; state._run=0; render();
-      autoAdvance(2200);
     } },
   next:()=>{ clearTimeout(state._advTimer); state._advTimer=null;
     const N=(state.sessionWords&&state.sessionWords.length)||0;
@@ -1455,10 +1459,11 @@ function tipOfDay(kid){ const pool=[]; let band=2; try{ band=beeBand(active()).b
   try{ if(band>2) lessonsAll().slice(0,40).forEach(L=>{ if(L.hook) pool.push(L.hook); }); }catch(e){}
   if(!pool.length) return '';
   const t=trunc(pool[dayNum()%pool.length],150);
-  return `<div style="position:relative;display:flex;align-items:flex-start;gap:13px;background:var(--paper,var(--bg2));border:1px solid var(--line);border-left:4px solid var(--treasure,#F0B429);border-radius:14px;padding:14px 18px;margin-bottom:14px">
-    <span style="flex-shrink:0;font-family:var(--display);font-weight:800;font-size:32px;line-height:.8;color:var(--treasure,#F0B429)">“</span>
-    <span style="min-width:0"><span style="display:block;font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:3px">${kid?'Today\u2019s bee tip \ud83d\udc1d':'Tip of the day'}</span>
-    <span style="display:block;font-size:15px;line-height:1.5;font-weight:650;color:var(--ink,var(--text))">${esc(t)}</span></span>
+  const face=(function(){ try{ return (WORLD_HERO[state.theme]||WORLD_HERO.spellbound).face; }catch(e){ return 'var(--display)'; } })();
+  return `<div style="position:relative;display:flex;align-items:center;gap:14px;background:var(--paper,var(--bg2));border:1px solid var(--line);border-left:4px solid var(--treasure,#F0B429);border-radius:14px;padding:14px 18px;margin-bottom:14px">
+    <span style="min-width:0;flex:1"><span style="display:block;font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:3px">${kid?'Today\u2019s bee tip':'Tip of the day'}</span>
+    <span style="display:block;font-family:${face};font-size:15px;line-height:1.5;font-weight:650;color:var(--ink,var(--text))">${esc(t)}</span></span>
+    <span aria-hidden="true" style="flex-shrink:0;width:42px;height:48px;align-self:flex-end">${mascotSVG('happy')}</span>
   </div>`; }
 /* ---- Weak-pattern radar: the analytics engine aimed at the speller (12+) ---- */
 const TRAP_DEFS=[ ['double',/(.)\1/,'Double letters'], ['silent',/^(kn|wr|gn|ps|mn)|mb$|gh/i,'Silent letters'],
@@ -2061,7 +2066,7 @@ function viewApp(){
   const bandUp='';
 
   return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}${bandUp}
-    <div style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
+    <div class="sb-header-sticky" style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
       <div style="max-width:1080px;margin:0 auto;padding:11px clamp(14px,3.5vw,32px);display:flex;align-items:center;gap:12px">
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
         <div style="display:flex;align-items:center;gap:9px;margin-right:auto"><div style="width:34px;height:38px;flex-shrink:0">${mascotSVG('happy')}</div><span class="sb-brand" style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i> Bee</span></div>
@@ -2895,7 +2900,7 @@ function sessionResults(){
 function trainerCard(){
   if(state.sessionOver) return sessionResults();
   const S=state; const word=curWord(); const st=S.status;
-  let resultText='',resultStyle=''; const primaryLabel=(st==='idle')?'Check':'Next word →'; const showResult=(st!=='idle');
+  let resultText='',resultStyle=''; const primaryLabel=(st==='idle')?'Check':'Check again'; const showResult=(st!=='idle');
   const rbase='border-radius:14px;padding:13px 16px;font-weight:800;font-size:15px;margin-bottom:16px;animation:sb-pop .3s ease both;';
   if(st==='correct'){ resultText='✓ Correct! Nicely spelled.'; resultStyle=rbase+'background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good)'; }
   else if(st==='wrong'){ resultText='✗ Not quite — it’s "'+word.w+'". Try the next one.'; resultStyle=rbase+'background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)'; }
@@ -2907,6 +2912,10 @@ function trainerCard(){
   const tchip=(on,label,act)=>`<button data-act="${act}" style="padding:9px 14px;border-radius:999px;font-weight:700;font-size:13px;border:1px solid ${on?'var(--accent)':'var(--line)'};${on?'background:var(--accent);color:#fff':'background:transparent;color:var(--text)'}">${label}</button>`;
   const mascotAnim=st==='wrong'?'animation:sb-shake .45s ease':(st==='correct'?'animation:sb-pop .4s ease':'');
   return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow);text-align:center;position:relative">
+      <div style="display:flex;justify-content:flex-end;flex-wrap:wrap;gap:7px;margin-bottom:8px">
+        <button data-act="completeWord" title="Got it — mark this word complete and move to the next" style="display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;background:color-mix(in srgb,var(--good) 15%,transparent);border:1px solid var(--good);color:var(--good);font-weight:800;font-size:12.5px">✓ Complete</button>
+        <button data-act="reviseWord" title="Mark this word for revision and move to the next" style="display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;background:color-mix(in srgb,var(--treasure,#F0B429) 16%,transparent);border:1px solid var(--treasure,#F0B429);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12.5px">⚑ Mark for revision</button>
+      </div>
       <div style="width:96px;height:108px;margin:0 auto 4px"><div style="${mascotAnim};width:96px;height:108px">${mascotSVG(S.mood)}</div></div>
       <button data-act="speak" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:18px">${iconSVG('volume',18)} Hear the word</button>
       <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:18px">${tchip(S.showDef,'Definition','toggleDef')}${tchip(S.showSent,'Sentence','toggleSent')}${tchip(S.showOrigin,'Origin','toggleOrigin')}</div>
@@ -2936,8 +2945,8 @@ function wordFlash(words, idx, navAct, opts){
       ${mastered?'<span style="color:var(--good);font-weight:800;font-size:12px;white-space:nowrap">✓ Mastered</span>':''}
     </div>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,28px);box-shadow:var(--glow);text-align:center;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center">
-      <div style="display:flex;align-items:center;justify-content:center;gap:11px">
-        <div style="font-family:var(--display);font-weight:800;font-size:clamp(26px,5.5vw,36px);line-height:1.05">${esc(w.w)}</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:11px;flex-wrap:wrap;max-width:100%">
+        <div style="font-family:var(--display);font-weight:800;font-size:clamp(22px,5.5vw,36px);line-height:1.08;min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:break-word;hyphens:auto">${esc(w.w)}</div>
         <button data-act="say" data-arg="${escA(w.w)}" aria-label="Hear the word" title="Hear the word" style="width:42px;height:42px;flex-shrink:0;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',20)}</button>
       </div>
       ${w.sy?`<div style="font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.04em;margin-top:3px">${esc(w.sy)}</div>`:''}
@@ -4010,14 +4019,14 @@ function coachTrain(){
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:11px">${act('startBuzz','flame','Daily Buzz','#E8845C')}${act('startWritten','pencil','Written','#7C5CFF')}${act('startOral','speaker','Oral round','#13A892')}${act('coachSetupOpen','sliders','Setup','#C8901B')}</div>`;
   const journeyPromo = (key!=='journey' && (getList(c,'journey').stage||0)===0) ? `<button data-act="startJourney" style="width:100%;text-align:left;border-radius:14px;margin-top:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 4px 14px rgba(43,27,94,.16)"><div style="padding:13px 16px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">★ Recommended path</div><div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">The Bizzing Bee Journey — 20 Levels to Champ</div></div><span style="padding:8px 14px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Start →</span></div></button>` : '';
   return `<div style="max-width:760px;margin:0 auto">${printDlg}${topBar}
-    ${advBanner(c)}
     <div style="display:flex;gap:6px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:16px">${tab('revise','Learn')}${tab('practice','Practice')}</div>
     ${body}
     ${liveHeatmap(ws, {anon:S.luTab==='practice', print:true})}
     ${chipsRow}${allWordsPanel}
     ${levelBlock}
     ${journeyPromo}
-    ${actions}</div>`;
+    ${actions}
+    ${advBanner(c)}</div>`;
 }
 const LIST_COVER={
   journey    :{c:'#6A47F5',c2:'#4F2FC8',tex:'rings',hero:'40k',tag:'1-Year Path'},
