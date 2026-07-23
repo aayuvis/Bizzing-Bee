@@ -11,6 +11,19 @@
     return { next(){ if(!q.length) q=pool(Math.max(14,n)).filter(f);
       return q.shift()||{w:'honey',d:'the sweet golden food that bees make'}; } }; }
 
+  /* Calm mode (Settings → Accessibility): gentler pacing, more time, no rush.
+     Scales the shared CFG knobs in a direction that always eases pressure. */
+  function calmCFG(cfg){ if(!window.SB_CALM||!cfg||typeof cfg!=='object') return cfg; const c={...cfg};
+    if(c.speed) c.speed=+(c.speed*0.66).toFixed(2);
+    if(c.fall) c.fall=+(c.fall*0.66).toFixed(2);
+    if(c.time) c.time=Math.round(c.time*1.5);
+    if(c.tick) c.tick=Math.round(c.tick*1.35);
+    if(c.up) c.up=Math.round(c.up*1.45);
+    if(c.gap) c.gap=Math.round(c.gap*1.25);
+    if(c.rate) c.rate=+(c.rate*1.4).toFixed(2);
+    if(c.haz) c.haz=+(c.haz*0.6).toFixed(4);
+    return c; }
+
   /* ===== Evolution ladders — every saga game shows the hero evolving as the speller
      progresses, and the "champion" form is the ACHIEVABLE endpoint that unlocks the
      next chapter. The round keeps going afterwards so kids can chase the top form. ===== */
@@ -612,7 +625,7 @@
   function wordHive(host, opts, done){
     const BIG=(opts.big||'THUNDERSTORM').toUpperCase();
     const diff=opts.diff||'medium';
-    const CFG={easy:{target:12,time:360},medium:{target:20,time:300},hard:{target:24,time:300},champ:{target:28,time:270}}[diff];
+    const CFG=calmCFG({easy:{target:12,time:360},medium:{target:20,time:300},hard:{target:24,time:300},champ:{target:28,time:270}}[diff]);
     const counts={}; BIG.split('').forEach(ch=>counts[ch]=(counts[ch]||0)+1);
     const found=[]; let cells=0, t=CFG.time, over=false;
     const dict=(()=>{ try{ const s=new Set(); (window.SB_FULL||[]).forEach(w=>{ if(typeof w==='string') s.add(w.toUpperCase()); else if(w&&w.w) s.add(w.w.toUpperCase()); }); return s; }catch(e){ return new Set(); } })();
@@ -656,10 +669,10 @@
     const Wd=Math.min(innerWidth-16,1280), Ht=Math.max(320,Math.min(innerHeight-190,Math.round(Wd*0.62)));
     const diff=opts.diff||'medium';
     // one epic point-to-point run - length ~= minutes of driving; boxes pace the spelling
-    const CFG={easy:{len:1800,laps:2,rivals:3,rival:0.84,haz:0.014,boxEvery:280},
+    const CFG=calmCFG({easy:{len:1800,laps:2,rivals:3,rival:0.84,haz:0.014,boxEvery:280},
                medium:{len:2300,laps:2,rivals:4,rival:0.90,haz:0.026,boxEvery:300},
                hard:{len:2800,laps:2,rivals:4,rival:0.96,haz:0.04,boxEvery:320},
-               champ:{len:3300,laps:2,rivals:4,rival:1.02,haz:0.055,boxEvery:340}}[diff];
+               champ:{len:3300,laps:2,rivals:4,rival:1.02,haz:0.055,boxEvery:340}}[diff]);
     host.innerHTML=
       '<div class="sg-racehud"><div class="sg-rh-row">'+
         '<span class="sg-rh-place" id="sg-pos">1st <i>/ '+(CFG.rivals+1)+'</i></span>'+
@@ -993,7 +1006,7 @@
 
   function whackAMoth(host, opts, done){
     const diff=opts.diff||'medium';
-    const CFG={easy:{words:6,up:1500,time:90},medium:{words:8,up:1200,time:90},hard:{words:9,up:950,time:85},champ:{words:10,up:800,time:80}}[diff];
+    const CFG=calmCFG({easy:{words:6,up:1500,time:90},medium:{words:8,up:1200,time:90},hard:{words:9,up:950,time:85},champ:{words:10,up:800,time:80}}[diff]);
     const words=pool(CFG.words+2).filter(w=>w.w.length<=9); let wi=0, cur=null, li=0, t=CFG.time, doneWords=0, over=false;
     const art=(window.SGART&&SGART.ready());
     const mothArt=art?SGART.sprite('grey-moth',{cls:'sg-mothimg'}):'🦋';
@@ -1040,7 +1053,7 @@
   /* ---------- ENGINE F · SPELL-SHIELD (boss duel vs The Smudge) ---------- */
   function spellShield(host, opts, done){
     const diff=opts.diff||'medium';
-    const CFG={easy:{hexes:6,t:14},medium:{hexes:8,t:12},hard:{hexes:9,t:10},champ:{hexes:10,t:9}}[diff];
+    const CFG=calmCFG({easy:{hexes:6,t:14},medium:{hexes:8,t:12},hard:{hexes:9,t:10},champ:{hexes:10,t:9}}[diff]);
     const words=pool(CFG.hexes+6).filter(w=>w.w.length>=4&&w.w.length<=10);
     let phase=1, hexes=0, broken=0, wi=0, over=false, cur=null, timer=null;
     const art=(window.SGART&&SGART.ready());
@@ -1100,7 +1113,7 @@
   function wordSnake(host, opts, done){
     const COLS=15, ROWS=11, CELL=Math.max(28,Math.min(58, Math.floor(Math.min(innerWidth-20,1120)/COLS), Math.floor((innerHeight-310)/ROWS)));
     const world=opts.world||'meadow', diff=opts.diff||'medium';
-    const CFG={easy:{words:3,tick:210},medium:{words:4,tick:185},hard:{words:5,tick:160},champ:{words:6,tick:140}}[diff];
+    const CFG=calmCFG({easy:{words:3,tick:210},medium:{words:4,tick:185},hard:{words:5,tick:160},champ:{words:6,tick:140}}[diff]);
     const feed=wordFeed(CFG.words+8,w=>w&&w.w&&/^[a-z]+$/i.test(w.w)&&w.w.length>=3&&w.w.length<=8);
     host.innerHTML='<div class="sg-hud"><span id="sg-score">0</span><span id="sg-word"></span><span id="sg-lives"></span></div>'+
       '<canvas id="sg-cv"></canvas>'+
@@ -1269,7 +1282,7 @@
   function combCatcher(host, opts, done){
     const Wd=Math.min(innerWidth-16,1120), Ht=Math.max(320,innerHeight-280);
     const world=opts.world||'meadow', diff=opts.diff||'medium';
-    const CFG={easy:{words:4,fall:1.3,rate:1.1},medium:{words:5,fall:1.7,rate:0.95},hard:{words:6,fall:2.1,rate:0.82},champ:{words:7,fall:2.5,rate:0.72}}[diff];
+    const CFG=calmCFG({easy:{words:4,fall:1.3,rate:1.1},medium:{words:5,fall:1.7,rate:0.95},hard:{words:6,fall:2.1,rate:0.82},champ:{words:7,fall:2.5,rate:0.72}}[diff]);
     const feed=wordFeed(CFG.words+6,w=>w&&w.w&&/^[a-z]+$/i.test(w.w)&&w.w.length>=3&&w.w.length<=9);
     let curW=null;
     host.innerHTML='<div class="sg-hud"><span id="sg-cc-w">Word 1/'+CFG.words+'</span><span id="sg-cc-lives"></span></div>'+
@@ -1355,7 +1368,7 @@
   /* ---------- ENGINE K · STAGE RHYTHM (letter notes on the beat) ---------- */
   function stageRhythm(host, opts, done){
     const diff=opts.diff||'medium';
-    const CFG={easy:{words:4,fall:2.4,gap:950},medium:{words:5,fall:3.0,gap:800},hard:{words:6,fall:3.6,gap:680},champ:{words:7,fall:4.2,gap:580}}[diff]||{words:5,fall:3.0,gap:800};
+    const CFG=calmCFG({easy:{words:4,fall:2.4,gap:950},medium:{words:5,fall:3.0,gap:800},hard:{words:6,fall:3.6,gap:680},champ:{words:7,fall:4.2,gap:580}}[diff]||{words:5,fall:3.0,gap:800});
     const words=pool(CFG.words+5).filter(w=>w&&/^[a-z]+$/i.test(w.w||'')&&(w.w||'').length>=3&&(w.w||'').length<=8).slice(0,CFG.words);
     if(!words.length){ done({win:true,score:0,stars:1}); return; }
     const art=(window.SGART&&SGART.ready());
@@ -1420,7 +1433,7 @@
   /* ---------- ENGINE L · CONSTELLATION CONNECT (draw words in the sky) ---------- */
   function constellationConnect(host, opts, done){
     const diff=opts.diff||'medium';
-    const CFG={easy:{n:4},medium:{n:5},hard:{n:6},champ:{n:7}}[diff]||{n:5};
+    const CFG=calmCFG({easy:{n:4},medium:{n:5},hard:{n:6},champ:{n:7}}[diff]||{n:5});
     const words=pool(CFG.n+4).filter(w=>w&&/^[a-z]+$/i.test(w.w||'')&&(w.w||'').length>=3&&(w.w||'').length<=8).slice(0,CFG.n);
     if(!words.length){ done({win:true,score:0,stars:1}); return; }
     const art=(window.SGART&&SGART.ready());
@@ -1481,7 +1494,7 @@
   /* ---------- ENGINE M · TYPE BLASTER (arcade dictation shooter) ---------- */
   function typeBlaster(host, opts, done){
     const diff=opts.diff||'medium';
-    const CFG={easy:{n:5,v:0.09},medium:{n:6,v:0.115},hard:{n:7,v:0.14},champ:{n:8,v:0.165}}[diff]||{n:6,v:0.115};
+    const CFG=calmCFG({easy:{n:5,v:0.09},medium:{n:6,v:0.115},hard:{n:7,v:0.14},champ:{n:8,v:0.165}}[diff]||{n:6,v:0.115});
     const words=pool(CFG.n+5).filter(w=>w&&/^[a-z]+$/i.test(w.w||'')&&(w.w||'').length>=3&&(w.w||'').length<=9).slice(0,CFG.n);
     if(!words.length){ done({win:true,score:0,stars:1}); return; }
     const art=(window.SGART&&SGART.ready());
@@ -1543,7 +1556,7 @@
   /* ---------- ENGINE G · SPOTLIGHT SIMON (memory sequence) ---------- */
   function spotlightSimon(host, opts, done){
     const diff=opts.diff||'medium';
-    const CFG={easy:{seqs:4,start:3},medium:{seqs:6,start:3},hard:{seqs:6,start:4},champ:{seqs:7,start:5}}[diff];
+    const CFG=calmCFG({easy:{seqs:4,start:3},medium:{seqs:6,start:3},hard:{seqs:6,start:4},champ:{seqs:7,start:5}}[diff]);
     const feed=wordFeed(CFG.seqs+5,w=>w&&w.w&&w.w.length>=CFG.start&&w.w.length<=9);
     let si=0, seq=null, showing=false, tapIdx=0, over=false, misses=0;
     const art=(window.SGART&&SGART.ready());
@@ -1603,7 +1616,7 @@
   /* ---------- ENGINE H · UNSCRAMBLE THE STARS ---------- */
   function unscrambleStars(host, opts, done){
     const diff=opts.diff||'medium';
-    const CFG={easy:{n:8},medium:{n:12},hard:{n:12},champ:{n:14}}[diff];
+    const CFG=calmCFG({easy:{n:8},medium:{n:12},hard:{n:12},champ:{n:14}}[diff]);
     const words=pool(CFG.n+4).filter(w=>/^[a-z]+$/.test(w.w)&&w.w.length>=4&&w.w.length<=9).slice(0,CFG.n);
     let i=0, hints=3, over=false;
     const art=(window.SGART&&SGART.ready());
@@ -1650,7 +1663,7 @@
      ================================================================ */
   function spellScene(host, opts, done){
     const diff=opts.diff||'medium';
-    const CFG={easy:{n:6},medium:{n:8},hard:{n:10},champ:{n:12}}[diff]||{n:8};
+    const CFG=calmCFG({easy:{n:6},medium:{n:8},hard:{n:10},champ:{n:12}}[diff]||{n:8});
     const words=pool(CFG.n+6).filter(w=>w&&/^[a-z]+$/i.test(w.w||'')&&(w.w||'').length>=3&&(w.w||'').length<=12).slice(0,CFG.n);
     if(!words.length){ done({win:true,score:0,stars:1}); return; }
     const art=(window.SGART&&SGART.ready());
