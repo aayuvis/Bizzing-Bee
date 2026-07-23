@@ -2239,7 +2239,7 @@ function viewHome(){
       <div class="sb-card" style="display:flex;align-items:center;gap:16px;min-height:156px">
         ${(()=>{ const hasCard=c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar]&&typeof SB_AV_CARD==='function';
           const art=hasCard?avatarSVG(c.avatar,122,c.accOn):mascotAcc(S.mood);
-          const inner=`<div style="width:126px;height:131px;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center;position:relative">${art}${hasCard?'<span style="position:absolute;right:-2px;bottom:2px;font-size:15px;background:var(--paper,#fff);border:1px solid var(--line);border-radius:99px;width:24px;height:24px;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.18)">🪪</span>':''}</div>`;
+          const inner=`<div style="width:126px;height:131px;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center;position:relative">${art}</div>`;
           return hasCard?`<button data-act="showAvCard" data-arg="${c.avatar}" title="See ${esc((SB_AVATARS.byId[c.avatar]||{}).name||'')}'s card" style="flex-shrink:0;background:none;border:0;padding:0;cursor:pointer">${inner}</button>`
                         :`<div style="position:relative;flex-shrink:0">${inner}</div>`; })()}
         <div style="min-width:0;flex:1">
@@ -2416,7 +2416,7 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
           : `<button data-act="openShopAvatars" title="Drops from a ${p.label} pack in the Store" style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--muted)">${iconSVG('lock',11,2.2)} Store pack</button>`;
         const card=(typeof SB_AV_CARD==='function')?SB_AV_CARD(a.id):null;
         return `<div style="background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:11px 9px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;${own?'':'opacity:.96'}">
-          <button data-act="showAvCard" data-arg="${a.id}" title="See ${esc(a.name)}'s card" style="background:none;border:0;padding:0;cursor:pointer;width:89px;height:89px;position:relative">${avatarSVG(a.id,89, on?c.accOn:null)}<span style="position:absolute;right:-3px;bottom:-3px;font-size:13px">🪪</span></button>
+          <button data-act="showAvCard" data-arg="${a.id}" title="See ${esc(a.name)}'s card" style="background:none;border:0;padding:0;cursor:pointer;width:89px;height:89px">${avatarSVG(a.id,89, on?c.accOn:null)}</button>
           <span style="font-weight:800;font-size:12px;line-height:1.15">${a.name}</span>
           ${card?`<span style="font-family:var(--mono);font-size:9.5px;font-weight:800;color:var(--muted)">OVR ${card.overall}</span>`:''}
           <span style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:99px;color:#fff;background:${R.c}">${R.label}</span>
