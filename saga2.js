@@ -1076,7 +1076,14 @@
     cv.width=Math.round(BW*dpr); cv.height=Math.round(BH*dpr);
     cv.style.width=BW+'px'; cv.style.height=BH+'px';
     const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
-    let snake,dir,ndir,word='',spelled=0,tiles=[],wordsDone=0,score=0,lives=3,over=false,bonk=0,tick=CFG.tick,loop=null,fx=[];
+    let snake,dir,ndir,word='',spelled=0,tiles=[],wordsDone=0,score=0,lives=3,over=false,bonk=0,tick=CFG.tick,loop=null,fx=[],tongueT=0;
+    /* the snake game IS a snake — coloured to the worn Serpent-pack avatar, else garden green */
+    const SERP_PAL={noodle:['#5FBE5A','#86D97F','#D6F0B8','#2C6E2C'],sunny:['#E9963C','#FFC07A','#FFDFB0','#9A5410'],
+      cobra:['#3E8D5C','#69B984','#DDF0BE','#1F5A38'],python:['#9A824C','#C2A972','#E9DBB4','#5A4620'],
+      rattler:['#B99154','#DDBA80','#EEDCB0','#6E4E24'],viper:['#6E9A3E','#97C066','#DCEAB0','#3E5A20'],
+      boa:['#8A6AB8','#B39AD8','#E6D9F0','#4A3072'],mamba:['#4A4A58','#6E6E80','#B8B8C4','#22222E'],
+      seasnake:['#2E9FB8','#5CC4D8','#BEEAF0','#14607A'],naga:['#C9A227','#F0D064','#F5E7B0','#7A5A10']};
+    const PAL=(function(){ const a=(typeof heroAv==='function')&&heroAv(); return SERP_PAL[a]||SERP_PAL.noodle; })();
     function occupied(x,y,extra){ for(let i=0;i<snake.length;i++) if(snake[i].x===x&&snake[i].y===y) return true;
       for(let i=0;i<(extra||[]).length;i++) if(extra[i].x===x&&extra[i].y===y) return true; return false; }
     function layoutWord(){ word=feed.next().w; spelled=0; tiles=[];
@@ -1110,8 +1117,15 @@
     function roundRect(x,y,w,h,r){ cx.beginPath(); cx.moveTo(x+r,y); cx.arcTo(x+w,y,x+w,y+h,r); cx.arcTo(x+w,y+h,x,y+h,r); cx.arcTo(x,y+h,x,y,r); cx.arcTo(x,y,x+w,y,r); cx.closePath(); }
     function draw(){
       cx.clearRect(0,0,BW,BH);
-      if(!drawWorld(cx,world,0,0,BW,BH)){ cx.fillStyle='#8FCF7A'; cx.fillRect(0,0,BW,BH); }
-      cx.fillStyle='rgba(30,22,60,.24)'; cx.fillRect(0,0,BW,BH);
+      // garden backdrop — soft grass gradient with a faint scale/leaf pattern (design-language, not a dark scrim)
+      const bg=cx.createLinearGradient(0,0,0,BH); bg.addColorStop(0,'#BFE8A0'); bg.addColorStop(1,'#7FC97A');
+      cx.fillStyle=bg; cx.fillRect(0,0,BW,BH);
+      cx.fillStyle='rgba(46,111,46,.08)';
+      for(let gy=0;gy<ROWS;gy++) for(let gx=0;gx<COLS;gx++){ if((gx+gy)%2) continue;
+        cx.beginPath(); cx.arc(gx*CELL+CELL/2,gy*CELL+CELL*0.7,CELL*0.26,Math.PI,0); cx.fill(); }
+      cx.strokeStyle='rgba(255,255,255,.14)'; cx.lineWidth=1;
+      for(let gx=1;gx<COLS;gx++){ cx.beginPath(); cx.moveTo(gx*CELL,0); cx.lineTo(gx*CELL,BH); cx.stroke(); }
+      for(let gy=1;gy<ROWS;gy++){ cx.beginPath(); cx.moveTo(0,gy*CELL); cx.lineTo(BW,gy*CELL); cx.stroke(); }
       // letter tiles as honeycomb chips; next needed one glows
       for(let t=0;t<tiles.length;t++){ const tl=tiles[t], px=tl.x*CELL, py=tl.y*CELL, isNext=tl.idx===spelled;
         cx.fillStyle=isNext?'#F0B429':'rgba(255,247,226,.94)'; roundRect(px+3,py+3,CELL-6,CELL-6,8); cx.fill();
@@ -1119,15 +1133,44 @@
         cx.fillStyle=isNext?'#2B2117':'#8A7A55'; cx.font='800 '+Math.floor(CELL*0.56)+'px Sono, monospace';
         cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText(tl.ch.toUpperCase(),px+CELL/2,py+CELL/2+1); }
       cx.textAlign='left'; cx.textBaseline='alphabetic';
-      // snake body (honey segments) then head (Bizzy sprite)
-      for(let i=snake.length-1;i>=1;i--){ const s=snake[i], f=1-(i/snake.length)*0.45;
-        cx.fillStyle='rgba(240,180,41,'+f+')'; roundRect(s.x*CELL+4,s.y*CELL+4,CELL-8,CELL-8,7); cx.fill(); }
-      const hd=snake[0], hx=hd.x*CELL, hy=hd.y*CELL;
-      if(bonk>0){ cx.fillStyle='rgba(229,83,61,.5)'; roundRect(hx+1,hy+1,CELL-2,CELL-2,9); cx.fill(); bonk--; }
-      const bi=sgImg('bizzy-side-fly')||avImg(heroAv())||avImg('bizzy'); let bd=false;
-      if(bi){ try{ const s=CELL*1.06; cx.save(); cx.translate(hx+CELL/2,hy+CELL/2); if(dir.x<0) cx.scale(-1,1);
-        cx.drawImage(bi,-s/2,-s/2,s,s); cx.restore(); bd=true; }catch(e){ try{cx.restore();}catch(_){} } }
-      if(!bd){ cx.fillStyle='#F0B429'; roundRect(hx+3,hy+3,CELL-6,CELL-6,9); cx.fill(); }
+      // ===== the snake — connected scaled body + a snake head (coloured to the worn Serpent avatar) =====
+      const cc=(s)=>({x:s.x*CELL+CELL/2, y:s.y*CELL+CELL/2});
+      // wrap-aware: skip segment links that jump across an edge, so the body reads clean
+      const near=(a,b)=>Math.abs(a.x-b.x)<=CELL*1.5 && Math.abs(a.y-b.y)<=CELL*1.5;
+      // body as a thick rounded stroke through the segment centres (outline then fill), tail tapers
+      const pts=snake.map(cc);
+      const drawRun=(w,col)=>{ cx.strokeStyle=col; cx.lineWidth=w; cx.lineCap='round'; cx.lineJoin='round';
+        cx.beginPath(); let started=false;
+        for(let i=0;i<pts.length;i++){ if(i>0 && !near(pts[i],pts[i-1])){ cx.stroke(); cx.beginPath(); started=false; }
+          if(!started){ cx.moveTo(pts[i].x,pts[i].y); started=true; } else cx.lineTo(pts[i].x,pts[i].y); }
+        cx.stroke(); };
+      drawRun(CELL*0.86, PAL[3]);              // dark outline
+      drawRun(CELL*0.66, PAL[0]);              // body colour
+      // belly highlight + scale dots along the body
+      cx.fillStyle=PAL[1];
+      for(let i=1;i<snake.length;i++){ const p=cc(snake[i]), t=1-(i/snake.length)*0.5;
+        cx.globalAlpha=0.5*t; cx.beginPath(); cx.arc(p.x,p.y,CELL*0.12,0,7); cx.fill(); }
+      cx.globalAlpha=1;
+      // head
+      const hd=snake[0], hcx=hd.x*CELL+CELL/2, hcy=hd.y*CELL+CELL/2;
+      cx.save(); cx.translate(hcx,hcy); cx.rotate(Math.atan2(dir.y,dir.x));
+      if(bonk>0){ cx.fillStyle='rgba(229,83,61,.5)'; cx.beginPath(); cx.arc(0,0,CELL*0.5,0,7); cx.fill(); bonk--; }
+      const hw=CELL*0.62, hh=CELL*0.46;
+      cx.fillStyle=PAL[3]; cx.beginPath(); cx.ellipse(2,0,hw+2,hh+2,0,0,7); cx.fill();      // outline
+      const hg=cx.createLinearGradient(0,-hh,0,hh); hg.addColorStop(0,PAL[1]); hg.addColorStop(1,PAL[0]);
+      cx.fillStyle=hg; cx.beginPath(); cx.ellipse(2,0,hw,hh,0,0,7); cx.fill();               // head
+      // flicking forked tongue out the front
+      tongueT+=0.2; const tl=CELL*(0.28+0.12*Math.max(0,Math.sin(tongueT)));
+      cx.strokeStyle='#E23B57'; cx.lineWidth=Math.max(1.5,CELL*0.05); cx.lineCap='round';
+      cx.beginPath(); cx.moveTo(hw,0); cx.lineTo(hw+tl,0); cx.moveTo(hw+tl,0); cx.lineTo(hw+tl+CELL*0.09,-CELL*0.07); cx.moveTo(hw+tl,0); cx.lineTo(hw+tl+CELL*0.09,CELL*0.07); cx.stroke();
+      // eyes (on top of the head, so they read whatever the direction)
+      const ex=hw*0.15, ey=hh*0.55, er=CELL*0.11;
+      [[ex,-ey],[ex,ey]].forEach(e=>{ cx.fillStyle='#fff'; cx.beginPath(); cx.arc(e[0],e[1],er,0,7); cx.fill();
+        cx.fillStyle='#241A0C'; cx.beginPath(); cx.arc(e[0]+er*0.3,e[1],er*0.55,0,7); cx.fill();
+        cx.fillStyle='#fff'; cx.beginPath(); cx.arc(e[0]-er*0.2,e[1]-er*0.3,er*0.25,0,7); cx.fill(); });
+      // nostrils
+      cx.fillStyle=PAL[3]; [[hw*0.8,-hh*0.3],[hw*0.8,hh*0.3]].forEach(n=>{ cx.beginPath(); cx.arc(n[0],n[1],CELL*0.03,0,7); cx.fill(); });
+      cx.restore();
       // splash fx
       for(let i=fx.length-1;i>=0;i--){ const f=fx[i]; f.life-=0.03; if(f.life<=0){ fx.splice(i,1); continue; }
         if(f.ring){ f.r+=7; cx.strokeStyle='rgba(255,209,63,'+Math.max(0,f.life)+')'; cx.lineWidth=4; cx.beginPath(); cx.arc(f.x,f.y,f.r,0,7); cx.stroke(); }
