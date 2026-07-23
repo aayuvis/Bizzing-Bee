@@ -1006,7 +1006,8 @@ const app = {
   collTab:(t)=>set({collTab:t}),
   buyAvatar:(id)=>{ const c=active(); const a=SB_AVATARS.byId[id]; if(!a||avOwned(c,id)) return;
     if(!spendCoins(a.price)){ flash('Need '+a.price+' 🪙 — play games and clear Levels to earn!'); return; }
-    (c.avOwned=c.avOwned||{})[id]=1; c.avatar=id; save(); sfx('win'); burstConfetti(120); flash('✨ '+a.name+' joined your collection!'); render(); },
+    (c.avOwned=c.avOwned||{})[id]=1; c.avatar=id; save(); sfx('win'); flash('✨ '+a.name+' joined your collection!'); render();
+    try{ app.showAvCard(id,{unlocked:true}); }catch(e){ burstConfetti(120); } },
   sellAvatar:(id)=>{ const c=active(); const a=SB_AVATARS.byId[id]; if(!a||a.rarity==='free'||!((c.avOwned||{})[id])) return;
     if(c.avatar===id){ flash('Pick a different avatar first — you can\'t sell the one you\'re wearing'); return; }
     delete c.avOwned[id]; addCoins(a.sell); save(); sfx('coin'); flash('Sold '+a.name+' for '+a.sell+' 🪙'); render(); },
@@ -1051,20 +1052,18 @@ const app = {
   toggleDevUnlock:()=>{ const on=!state.devUnlock; state.devUnlock=on; state.premium=on?true:false; try{localStorage.setItem('sb_devunlock',on?'1':'0');}catch(e){}
     if(on){ try{ const c=active(); c.coins=Math.max(c.coins||0, 5000000); }catch(e){} }
     save(); flash(on?'🔓 All unlocked · 5,000,000 coins for testing':'🔒 Locked features restored'); render(); },
-  avLore:(id)=>{ const l=(window.SB_AVATAR_LORE||{})[id]; if(!l) return; const a=(window.SB_AVATARS&&SB_AVATARS.byId[id])||{};
-    if(!document.getElementById('sb-lore-css')){ const st=document.createElement('style'); st.id='sb-lore-css';
-      st.textContent='.sb-lore-ov{position:fixed;inset:0;z-index:90;background:rgba(20,15,38,.6);display:grid;place-items:center;padding:22px;animation:sb-pop .2s ease both}'
-        +'.sb-lore-card{background:var(--panel,#fff);border:1px solid var(--line,#EADFC8);border-radius:22px;padding:22px 22px 18px;max-width:340px;text-align:center;box-shadow:0 20px 50px rgba(20,15,38,.5)}'
-        +'.sb-lore-card .av{width:110px;height:110px;margin:0 auto 6px}.sb-lore-card b{font:800 20px var(--display,serif);display:block}'
-        +'.sb-lore-card .g{font:italic 500 15px/1.45 var(--body,sans-serif);color:var(--text,#241E33);margin:8px 0}'
-        +'.sb-lore-card .f{font:400 13.5px/1.5 var(--body,sans-serif);color:var(--muted,#7A6E5C);margin:6px 0 14px}'
-        +'.sb-lore-card .x{font:700 14px var(--body,sans-serif);background:var(--honey,#F0B429);color:#2B2117;border:none;border-radius:999px;padding:10px 24px;cursor:pointer}';
-      document.head.appendChild(st); }
-    const ov=document.createElement('div'); ov.className='sb-lore-ov';
-    ov.innerHTML='<div class="sb-lore-card"><div class="av">'+SB_AVATAR(id,110)+'</div><b>'+esc(a.name||'')+'</b>'
-      +'<p class="g">“'+esc(l.greeting)+'”</p><p class="f">'+esc(l.fact)+'</p><button class="x">Got it</button></div>';
-    ov.onclick=e=>{ if(e.target===ov||e.target.closest('.x')) ov.remove(); };
-    document.body.appendChild(ov); },
+  avLore:(id)=>app.showAvCard(id),   // legacy alias
+  // Collectible trump card as a full-screen popup over the app.
+  showAvCard:(id,opts)=>{ opts=opts||{}; if(typeof window.SB_AV_CARD_HTML!=='function') return;
+    const c=active(); const owned=(typeof avOwned==='function')?avOwned(c,id):true; const wearing=c.avatar===id;
+    const ov=document.createElement('div'); ov.className='avc-ov';
+    const unlockBanner=opts.unlocked?'<div class="avc-unlock">✨ New card unlocked!</div>':'';
+    const actions=owned?(wearing?'<span class="avc-worn">Wearing ✓</span>':'<button class="avc-use" data-avc-use="'+id+'">Wear this avatar</button>'):'';
+    ov.innerHTML='<div class="avc-wrap">'+unlockBanner+SB_AV_CARD_HTML(id,{owned})+actions+'<button class="avc-x" aria-label="Close">Close</button></div>';
+    ov.onclick=e=>{ const useId=e.target.closest('[data-avc-use]'); if(useId){ app.wearAv(useId.getAttribute('data-avc-use')); ov.remove(); return; }
+      if(e.target===ov||e.target.closest('.avc-x')) ov.remove(); };
+    document.body.appendChild(ov);
+    try{ if(opts.unlocked&&typeof burstConfetti==='function') burstConfetti(120); }catch(e){} },
   playGame:(type)=>{ clearGTimer(); const c=active(); ensureLists(c); state.gInfo=false; state.typed='';
     if(type==='buzz'){ const list=pickFresh(gameWordsD(),10); if(!list.length){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,right:0,ans:[],status:'idle'}; setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[0]) say(state.game.list[0].w); },320); }
     else if(type==='beat'){ state.game={type:'beat',phase:'mode'}; set({nav:'games',screen:'app'}); return; }
@@ -2238,10 +2237,16 @@ function viewHome(){
       </button>`;
       return `${bandBanner}<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:18px">
       <div class="sb-card" style="display:flex;align-items:center;gap:16px;min-height:156px">
-        <div style="position:relative;flex-shrink:0">
-          <div ${(()=>{ const l=(window.SB_AVATAR_LORE||{})[c.avatar]; return l?`title="${esc(l.greeting)}&#10;&#10;${esc(l.fact)}" style="cursor:help;`:'style="'; })()}width:126px;height:131px;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center">${(c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar])?avatarSVG(c.avatar,122,c.accOn):mascotAcc(S.mood)}</div>
-        </div>
+        ${(()=>{ const hasCard=c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar]&&typeof SB_AV_CARD==='function';
+          const art=hasCard?avatarSVG(c.avatar,122,c.accOn):mascotAcc(S.mood);
+          const inner=`<div style="width:126px;height:131px;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center;position:relative">${art}${hasCard?'<span style="position:absolute;right:-2px;bottom:2px;font-size:15px;background:var(--paper,#fff);border:1px solid var(--line);border-radius:99px;width:24px;height:24px;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.18)">🪪</span>':''}</div>`;
+          return hasCard?`<button data-act="showAvCard" data-arg="${c.avatar}" title="See ${esc((SB_AVATARS.byId[c.avatar]||{}).name||'')}'s card" style="flex-shrink:0;background:none;border:0;padding:0;cursor:pointer">${inner}</button>`
+                        :`<div style="position:relative;flex-shrink:0">${inner}</div>`; })()}
         <div style="min-width:0;flex:1">
+          ${(()=>{ const hasCard=c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar]&&typeof SB_AV_CARD==='function';
+            const d=hasCard?SB_AV_CARD(c.avatar):null;
+            return d?`<div style="position:relative;background:var(--surface2,#f3eee3);border-radius:14px;border-bottom-left-radius:4px;padding:8px 12px;margin-bottom:8px;font:italic 600 13px/1.4 var(--body,sans-serif);color:var(--ink,var(--text))">“${esc(d.greeting)}”</div>`:'';
+          })()}
           <div class="sb-cs">${greeting}</div>
           <div style="font-family:var(--display);font-weight:800;font-size:24px;line-height:1.1">${esc(c.name)}</div>
           <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px">
@@ -2409,13 +2414,11 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
         const action= on?`<span style="font-weight:800;font-size:11.5px;color:var(--good)">Wearing ✓</span>`
           : own?`<span style="display:inline-flex;gap:6px"><button data-act="wearAv" data-arg="${a.id}" style="padding:6px 11px;border-radius:8px;background:var(--accent);color:#fff;font-weight:800;font-size:11.5px">Use</button>${a.rarity!=='free'?`<button data-act="sellAvatar" data-arg="${a.id}" title="Sell for ${a.sell} coins" style="padding:6px 9px;border-radius:8px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--muted)">Sell ${a.sell}🪙</button>`:''}</span>`
           : `<button data-act="openShopAvatars" title="Drops from a ${p.label} pack in the Store" style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--muted)">${iconSVG('lock',11,2.2)} Store pack</button>`;
-        const lore=(window.SB_AVATAR_LORE||{})[a.id];
-        return `<div ${lore?`title="${esc(lore.greeting)}
-
-${esc(lore.fact)}"`:''} style="background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':own?'var(--line)':'var(--line)'};border-radius:14px;padding:11px 9px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;${own?'':'opacity:.96'}">
-          <span ${lore?`data-act="avLore" data-arg="${a.id}" style="cursor:pointer;`:`style="`}width:89px;height:89px">${avatarSVG(a.id,89, on?c.accOn:null)}</span>
+        const card=(typeof SB_AV_CARD==='function')?SB_AV_CARD(a.id):null;
+        return `<div style="background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:11px 9px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;${own?'':'opacity:.96'}">
+          <button data-act="showAvCard" data-arg="${a.id}" title="See ${esc(a.name)}'s card" style="background:none;border:0;padding:0;cursor:pointer;width:89px;height:89px;position:relative">${avatarSVG(a.id,89, on?c.accOn:null)}<span style="position:absolute;right:-3px;bottom:-3px;font-size:13px">🪪</span></button>
           <span style="font-weight:800;font-size:12px;line-height:1.15">${a.name}</span>
-          ${lore?`<span style="font-family:var(--body);font-style:italic;font-size:10.5px;line-height:1.25;color:var(--muted)">${esc(lore.tagline)}</span>`:''}
+          ${card?`<span style="font-family:var(--mono);font-size:9.5px;font-weight:800;color:var(--muted)">OVR ${card.overall}</span>`:''}
           <span style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:99px;color:#fff;background:${R.c}">${R.label}</span>
           ${action}</div>`; }).join('');
       return `<div class="sb-card" style="margin-bottom:14px">

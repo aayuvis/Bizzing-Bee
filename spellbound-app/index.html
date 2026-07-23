@@ -7,8 +7,8 @@
 <meta name="description" content="Bizzing Bee — a spelling-bee trainer that hears your child spell, evolves a character with every win, and shows parents exactly where they stand.">
 <title>Bizzing Bee — spelling-bee trainer</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%F0%9F%90%9D%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="fonts/fonts.css?v=20260723h">
-<link rel="stylesheet" href="tokens.css?v=20260723h">
+<link rel="stylesheet" href="fonts/fonts.css?v=20260723i">
+<link rel="stylesheet" href="tokens.css?v=20260723i">
 
 <style>
   *{box-sizing:border-box}
@@ -153,48 +153,88 @@
   [data-age="focused"] .sb-bubble{display:none}
   [data-age="focused"] .sb-bee-presenter{animation:none!important}
   @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important}}
+  /* ===== Collectible avatar trump card ===== */
+  .avc-ov{position:fixed;inset:0;z-index:95;background:rgba(20,15,38,.66);display:grid;place-items:center;padding:20px;overflow:auto;animation:sb-pop .2s ease both}
+  .avc-wrap{display:grid;justify-items:center;gap:12px}
+  .avc-unlock{font:800 15px var(--display,serif);color:#5a3d00;background:linear-gradient(135deg,#FFD24D,#F0A93C);padding:7px 18px;border-radius:999px;box-shadow:0 4px 14px rgba(240,169,60,.5)}
+  .avc-card{position:relative;width:300px;max-width:86vw;border-radius:20px;padding:16px 16px 14px;overflow:hidden;
+    background:linear-gradient(160deg,color-mix(in srgb,var(--c1) 20%,#fff),#fff 45%);
+    border:3px solid var(--rc);box-shadow:0 22px 55px rgba(20,15,38,.55),inset 0 0 0 1px rgba(255,255,255,.6)}
+  :root[data-theme="dark"] .avc-card,[data-mode="dusk"] .avc-card{background:linear-gradient(160deg,color-mix(in srgb,var(--c1) 34%,#241E33),#2A2340 48%);box-shadow:0 22px 55px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.12)}
+  .avc-foil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.28) 48%,transparent 56%);mix-blend-mode:screen}
+  .avc-legendary .avc-foil{background:linear-gradient(115deg,transparent 34%,rgba(255,224,130,.55) 46%,rgba(255,255,255,.4) 50%,transparent 60%);animation:avcShine 3.2s linear infinite}
+  @keyframes avcShine{0%{transform:translateX(-40%)}100%{transform:translateX(40%)}}
+  .avc-top{position:relative;display:flex;justify-content:space-between;align-items:flex-start;z-index:1}
+  .avc-ovr{display:grid;justify-items:center;line-height:1;background:var(--rc);color:#fff;border-radius:12px;padding:6px 10px;box-shadow:0 3px 8px rgba(0,0,0,.25)}
+  .avc-ovr b{font:900 22px var(--display,serif)}.avc-ovr i{font:800 8px var(--mono,monospace);letter-spacing:.14em;font-style:normal;opacity:.9}
+  .avc-rar{font:800 10px var(--mono,monospace);letter-spacing:.1em;text-transform:uppercase;color:#fff;padding:4px 10px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+  .avc-art{position:relative;z-index:1;width:160px;height:160px;margin:2px auto 0;display:grid;place-items:center;
+    background:radial-gradient(circle at 50% 42%,color-mix(in srgb,var(--c2) 45%,transparent),transparent 68%)}
+  .avc-art.locked .avc-lock{font-size:64px;filter:grayscale(1);opacity:.5}
+  .avc-name{position:relative;z-index:1;text-align:center;font:800 21px var(--display,serif);color:var(--ink,#241E33);margin-top:2px}
+  :root[data-theme="dark"] .avc-name,[data-mode="dusk"] .avc-name{color:#fff}
+  .avc-title{position:relative;z-index:1;text-align:center;font:italic 600 12px/1.35 var(--body,sans-serif);color:var(--muted,#7A6E5C);margin:1px 6px 8px}
+  .avc-stats{position:relative;z-index:1;display:grid;gap:5px;background:rgba(255,255,255,.55);border-radius:12px;padding:9px 11px}
+  :root[data-theme="dark"] .avc-stats,[data-mode="dusk"] .avc-stats{background:rgba(0,0,0,.22)}
+  .avc-stat{display:grid;grid-template-columns:78px 1fr 26px;align-items:center;gap:7px}
+  .avc-stat-l{font:800 11px var(--body,sans-serif);color:var(--ink,#241E33)}
+  :root[data-theme="dark"] .avc-stat-l,[data-mode="dusk"] .avc-stat-l{color:#EFE9FF}
+  .avc-stat-bar{height:8px;border-radius:99px;background:rgba(0,0,0,.12);overflow:hidden}
+  .avc-stat-bar i{display:block;height:100%;border-radius:99px;transition:width .5s cubic-bezier(.2,1,.3,1)}
+  .avc-stat-v{font:900 13px var(--mono,monospace);text-align:right;color:var(--ink,#241E33)}
+  :root[data-theme="dark"] .avc-stat-v,[data-mode="dusk"] .avc-stat-v{color:#fff}
+  .avc-fact{position:relative;z-index:1;margin-top:9px;background:color-mix(in srgb,var(--c2) 22%,#fff);border:1px solid color-mix(in srgb,var(--c1) 30%,var(--line,#EADFC8));border-radius:12px;padding:9px 11px;font:500 12px/1.5 var(--body,sans-serif);color:var(--ink,#241E33)}
+  :root[data-theme="dark"] .avc-fact,[data-mode="dusk"] .avc-fact{background:rgba(0,0,0,.28);color:#EFE9FF}
+  .avc-fact-h{display:block;font:800 9px var(--mono,monospace);letter-spacing:.12em;color:var(--c1);margin-bottom:3px}
+  .avc-pack{position:relative;z-index:1;display:flex;align-items:center;gap:6px;justify-content:center;margin-top:9px;font:800 10px var(--mono,monospace);letter-spacing:.08em;text-transform:uppercase;color:var(--muted,#7A6E5C)}
+  .avc-dot{width:9px;height:9px;border-radius:3px;background:linear-gradient(135deg,var(--c1),var(--c2))}
+  .avc-use{font:800 14px var(--body,sans-serif);background:var(--honey,#F0B429);color:#2B2117;border:none;border-radius:999px;padding:11px 26px;cursor:pointer;box-shadow:0 4px 0 #C8901B}
+  .avc-use:active{transform:translateY(2px);box-shadow:0 2px 0 #C8901B}
+  .avc-worn{font:800 13px var(--body,sans-serif);color:#2FA35C}
+  .avc-x{font:700 13px var(--body,sans-serif);background:rgba(255,255,255,.85);color:#241E33;border:none;border-radius:999px;padding:9px 22px;cursor:pointer}
 </style>
-  <link rel="stylesheet" href="saga2.css?v=20260723h">
+  <link rel="stylesheet" href="saga2.css?v=20260723i">
 </head>
 <body>
 <div id="root"></div>
-<script src="icons.js?v=20260723h"></script>
-<script src="icons-art.js?v=20260723h"></script>
-<script src="cover-art.js?v=20260723h"></script>
+<script src="icons.js?v=20260723i"></script>
+<script src="icons-art.js?v=20260723i"></script>
+<script src="cover-art.js?v=20260723i"></script>
 <script>try{SB_ICON_MOTION()}catch(e){}</script>
-<script src="voice-cdn.js?v=20260723h"></script>
-<script src="words-data.js?v=20260723h"></script>
-<script src="concepts-data.js?v=20260723h"></script>
-<script src="lessons-data.js?v=20260723h"></script>
-<script src="scripps-data.js?v=20260723h"></script>
-<script src="themes-data.js?v=20260723h"></script>
-<script src="figurative-data.js?v=20260723h"></script>
-<script src="trivia-data.js?v=20260723h"></script>
-<script src="nsf-finals500-data.js?v=20260723h"></script>
-<script src="nsf-vocab26-data.js?v=20260723h"></script>
-<script src="adv-tips-data.js?v=20260723h"></script>
-<script src="concept-scripts.js?v=20260723h"></script>
-<script src="tips-data.js?v=20260723h"></script>
-<script src="voice-manifest.js?v=20260723h"></script>
-<script src="voice-words.js?v=20260723h"></script>
-<script src="voice-review.js?v=20260723h"></script>
-<script src="voice-french.js?v=20260723h"></script>
-<script src="app.js?v=20260723h"></script>
-<script src="avatars-art.js?v=20260723h"></script>
-<script src="avatars.js?v=20260723h"></script>
-<script src="app2.js?v=20260723h"></script>
-<script src="app3.js?v=20260723h"></script>
-<script src="story-data.js?v=20260723h"></script>
-<script src="quest.js?v=20260723h"></script>
-  <script src="games-daily.js?v=20260723h"></script>
-  <script src="saga-art/saga-art.js?v=20260723h"></script>
-  <script src="saga-art/saga-map.js?v=20260723h"></script>
-  <script src="saga-art/worlds-art.js?v=20260723h"></script>
-  <script src="saga-art-dom.js?v=20260723h"></script>
-  <script src="saga-music.js?v=20260723h"></script>
-  <script src="saga-script.js?v=20260723h"></script>
-  <script src="saga2.js?v=20260723h"></script>
-<script src="trivia.js?v=20260723h"></script>
-<script src="advanced.js?v=20260723h"></script>
+<script src="voice-cdn.js?v=20260723i"></script>
+<script src="words-data.js?v=20260723i"></script>
+<script src="concepts-data.js?v=20260723i"></script>
+<script src="lessons-data.js?v=20260723i"></script>
+<script src="scripps-data.js?v=20260723i"></script>
+<script src="themes-data.js?v=20260723i"></script>
+<script src="figurative-data.js?v=20260723i"></script>
+<script src="trivia-data.js?v=20260723i"></script>
+<script src="nsf-finals500-data.js?v=20260723i"></script>
+<script src="nsf-vocab26-data.js?v=20260723i"></script>
+<script src="adv-tips-data.js?v=20260723i"></script>
+<script src="concept-scripts.js?v=20260723i"></script>
+<script src="tips-data.js?v=20260723i"></script>
+<script src="voice-manifest.js?v=20260723i"></script>
+<script src="voice-words.js?v=20260723i"></script>
+<script src="voice-review.js?v=20260723i"></script>
+<script src="voice-french.js?v=20260723i"></script>
+<script src="app.js?v=20260723i"></script>
+<script src="avatars-art.js?v=20260723i"></script>
+<script src="avatars.js?v=20260723i"></script>
+<script src="avatar-cards.js?v=20260723i"></script>
+<script src="app2.js?v=20260723i"></script>
+<script src="app3.js?v=20260723i"></script>
+<script src="story-data.js?v=20260723i"></script>
+<script src="quest.js?v=20260723i"></script>
+  <script src="games-daily.js?v=20260723i"></script>
+  <script src="saga-art/saga-art.js?v=20260723i"></script>
+  <script src="saga-art/saga-map.js?v=20260723i"></script>
+  <script src="saga-art/worlds-art.js?v=20260723i"></script>
+  <script src="saga-art-dom.js?v=20260723i"></script>
+  <script src="saga-music.js?v=20260723i"></script>
+  <script src="saga-script.js?v=20260723i"></script>
+  <script src="saga2.js?v=20260723i"></script>
+<script src="trivia.js?v=20260723i"></script>
+<script src="advanced.js?v=20260723i"></script>
 </body>
 </html>
