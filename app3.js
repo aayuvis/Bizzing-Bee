@@ -707,6 +707,11 @@ const app = {
   newBatch:()=>{ newCoachBatch(); flash('Fresh set of words ✨'); },
   startLevelUp:()=>{ const c=active(); ensureLists(c); c.activeList='default'; app.openCoach(); },
   reviseNav:(dir)=>{ const N=(state.sessionWords&&state.sessionWords.length)||LEVEL_WORDS.length; let i=(state.reviseIdx||0)+(dir==='next'?1:-1); set({reviseIdx:Math.max(0,Math.min(N-1,i))}); },
+  // Learn-card self-mark: arg is "kind|navAct|word" — record the outcome, then advance via that nav.
+  flashMark:(arg)=>{ const p=String(arg).split('|'); const kind=p.shift(); const nav=p.shift(); const w=p.join('|');
+    if(kind==='done'){ if(w){ markMastered(w.toLowerCase()); clearMiss(w.toLowerCase()); } }
+    else { const ws=state.sessionWords||[]; const obj=ws.find(x=>nkey(x.w)===nkey(w))||{w:w,d:'',s:''}; addMiss(obj); flash('Marked for revision ⚑'); }
+    if(nav && typeof app[nav]==='function') app[nav]('next'); else render(); },
   conceptWordNav:(dir)=>{ const ws=((state.conceptSel&&state.conceptSel.words)||[]).filter(x=>x&&x.w); const N=ws.length||1; let i=(state.conceptWordIdx||0)+(dir==='next'?1:-1); set({conceptWordIdx:Math.max(0,Math.min(N-1,i))}); },
   exitTrain:()=>{ if((state.sessionDone||0)>0){ logActivity(state.coachSession?'concept':'practice', state.sessionLabel||'Practice', {done:state.sessionDone,right:state.sessionRight}, []); } if(state.coachSession){ state.coachSession=false; app.openCoach(); } else if(state.trainBack==='themes'){ state.trainBack=null; app.setNav('themes'); } else app.setNav('home'); },
   onType:(v)=>{ state.typed=v; }, /* no per-keystroke render — a full re-render restarts tile animations (dock flicker) */
@@ -2947,12 +2952,19 @@ function wordFlash(words, idx, navAct, opts){
   opts=opts||{}; const N=words.length||1; const i=Math.min(Math.max(idx||0,0),N-1); const w=words[i]||{w:'',d:'',s:'',p:'',o:''};
   const mastered=state.luMastered[nkey(w.w)]; const pct=Math.round((i+1)/N*100);
   const chip=(t)=>`<span style="padding:4px 11px;border-radius:999px;background:var(--surface2);font-size:12px;color:var(--muted);font-weight:700">${t}</span>`;
+  // Word Coach self-mark: two top-right buttons replace the Next button — either one advances.
+  const selfMark=!!opts.selfMark;
+  const markRow=selfMark?`<div style="display:flex;justify-content:flex-end;flex-wrap:wrap;gap:7px;align-self:stretch;width:100%;margin-bottom:6px">
+        <button data-act="flashMark" data-arg="${escA('done|'+navAct+'|'+w.w)}" title="Got it — mark this word complete and move to the next" style="display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;${mastered?'background:var(--good);border:1px solid var(--good);color:#fff':'background:color-mix(in srgb,var(--good) 15%,transparent);border:1px solid var(--good);color:var(--good)'};font-weight:800;font-size:12.5px">✓ Complete</button>
+        <button data-act="flashMark" data-arg="${escA('revise|'+navAct+'|'+w.w)}" title="Mark this word for revision and move to the next" style="display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;background:color-mix(in srgb,var(--treasure,#F0B429) 16%,transparent);border:1px solid var(--treasure,#F0B429);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12.5px">⚑ Mark for revision</button>
+      </div>`:'';
   return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
       <span style="font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">Card ${i+1} of ${N}</span>
       <div style="flex:1;height:7px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--accent);width:${pct}%;transition:width .3s"></div></div>
       ${mastered?'<span style="color:var(--good);font-weight:800;font-size:12px;white-space:nowrap">✓ Mastered</span>':''}
     </div>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,28px);box-shadow:var(--glow);text-align:center;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center">
+      ${markRow}
       <div style="display:flex;align-items:center;justify-content:center;gap:11px;flex-wrap:wrap;max-width:100%">
         <div style="font-family:var(--display);font-weight:800;font-size:clamp(22px,5.5vw,36px);line-height:1.08;min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:break-word;hyphens:auto">${esc(w.w)}</div>
         <button data-act="say" data-arg="${escA(w.w)}" aria-label="Hear the word" title="Hear the word" style="width:42px;height:42px;flex-shrink:0;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',20)}</button>
@@ -2973,10 +2985,13 @@ function wordFlash(words, idx, navAct, opts){
         <button data-act="reportClose" style="margin-top:8px;color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:2px">Cancel</button>
       </div>`:''}
     </div>
-    <div style="display:flex;align-items:center;gap:10px;margin-top:14px">
+    ${selfMark?`<div style="display:flex;align-items:center;gap:10px;margin-top:14px">
+      <button data-act="${navAct}" data-arg="prev" style="padding:12px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:14px;${i<=0?'opacity:.4;pointer-events:none':''}">← Back</button>
+      <span style="margin-left:auto;font-size:12px;color:var(--muted);font-weight:700;text-align:right">Pick <b style="color:var(--good)">Complete</b> or <b style="color:var(--treasure-deep,#8A5B00)">Mark for revision</b> above to continue</span>
+    </div>`:`<div style="display:flex;align-items:center;gap:10px;margin-top:14px">
       <button data-act="${navAct}" data-arg="prev" style="padding:13px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;${i<=0?'opacity:.4;pointer-events:none':''}">← Back</button>
       <button data-act="${navAct}" data-arg="next" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);${i>=N-1?'opacity:.5;pointer-events:none':''}">${i>=N-1?'All done ✓':'Next →'}</button>
-    </div>`;
+    </div>`}`;
 }
 // live progress heatmap of a word set — colours update as words are mastered/missed
 function liveHeatmap(words, opts){
@@ -4021,7 +4036,7 @@ function coachTrain(){
       <div style="overflow-x:auto;padding:2px 0"><div style="min-width:760px">${evoLadderHTML(theme, fIdx)}</div></div>
     </div>`;
   const tab=(k,l)=>`<button data-act="luSetTab" data-arg="${k}" style="flex:1;padding:9px 8px;border-radius:10px;font-weight:800;font-size:13px;${S.luTab===k?'background:var(--bg2);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.08)':'background:transparent;color:var(--muted)'}">${l}</button>`;
-  const body = S.luTab==='practice' ? trainerCard() : wordFlash(ws, S.reviseIdx, 'reviseNav', {});
+  const body = S.luTab==='practice' ? trainerCard() : wordFlash(ws, S.reviseIdx, 'reviseNav', {selfMark:true});
   const act=(a,ic,t,col)=>`<button data-act="${a}" class="sb-lift" style="display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:16px 10px;box-shadow:var(--sh-rest)">${iconTile(ic,col,{size:44,radius:13})}<span style="font-family:var(--display);font-weight:800;font-size:13.5px;color:${col};line-height:1.15">${t}</span></button>`;
   const actions=`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:18px 2px 10px">Quick practice</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:11px">${act('startBuzz','flame','Daily Buzz','#E8845C')}${act('startWritten','pencil','Written','#7C5CFF')}${act('startOral','speaker','Oral round','#13A892')}${act('coachSetupOpen','sliders','Setup','#C8901B')}</div>`;
