@@ -661,7 +661,6 @@
     while(segs.length%rumbleLen!==0) addSeg(0,lastY());
     const trackLen=segs.length*segLen, TOTAL=trackLen*CFG.laps, FINVIS=trackLen-segLen*8;
     for(let n=10;n<segs.length;n+=6){ const side=(n%12<6)?-1:1; segs[n].sprites.push({kind:'flora',off:side*(1.15+Math.random()*0.9)}); }
-    for(let n=180;n<segs.length;n+=Math.floor(420+Math.random()*260)){ segs[n].sprites.push({kind:'banner',off:0}); }  // overhead banners - a few per lap
     const hazards=[]; for(let n=60;n<segs.length-40;n+=Math.floor(20+Math.random()*16)){ if(Math.random()<CFG.haz*8){ hazards.push({seg:n,off:(Math.random()*1.6-0.8)}); } }
     const items=[]; for(let n=70;n<segs.length-60;n+=Math.floor(CFG.boxEvery*(0.8+Math.random()*0.5))){ items.push({seg:n,off:(Math.random()*1.1-0.55),gone:false,k:Math.random()*6}); }
 
@@ -749,9 +748,9 @@
     /* ---- projection + drawing ---- */
     function project(p,camX,camY,camZ){ p.camera.x=(p.world.x||0)-camX; p.camera.y=(p.world.y||0)-camY; p.camera.z=(p.world.z||0)-camZ;
       p.screen.scale=camDepth/p.camera.z;
-      p.screen.x=Math.round(Wd/2 + p.screen.scale*p.camera.x*Wd/2);
-      p.screen.y=Math.round(Ht/2 - p.screen.scale*p.camera.y*Ht/2);
-      p.screen.w=Math.round(p.screen.scale*roadW*Wd/2); }
+      p.screen.x=Wd/2 + p.screen.scale*p.camera.x*Wd/2;
+      p.screen.y=Ht/2 - p.screen.scale*p.camera.y*Ht/2;
+      p.screen.w=p.screen.scale*roadW*Wd/2; }
     function poly(x1,y1,x2,y2,x3,y3,x4,y4,col){ cx.fillStyle=col; cx.beginPath();
       cx.moveTo(x1,y1); cx.lineTo(x2,y2); cx.lineTo(x3,y3); cx.lineTo(x4,y4); cx.closePath(); cx.fill(); }
     function hx(c,f){ const n=parseInt(c.slice(1),16); let r=(n>>16)&255,g=(n>>8)&255,b=n&255;
@@ -836,21 +835,16 @@
       items.forEach(it=>{ if(it.gone) return; const seg=segs[it.seg]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*it.off,sy:sc.y,t:'item',it:it,clip:seg._clip,far:seg._far}); } });
       rivals.forEach(r=>{ const seg=segs[Math.floor((r.z%trackLen)/segLen)%segs.length]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*r.x,sy:sc.y,t:'rival',r:r,clip:seg._clip,far:seg._far}); } });
       order.sort((a,b)=>a.y-b.y);
-      order.forEach(o=>{ const w=Math.max(12,o.scale*roadW*Wd/2*0.11);
+      order.forEach(o=>{ if((o.far||0)>95) return;   // beyond this sprites are sub-pixel - skip instead of shimmering
+        const w=Math.max(6,o.scale*roadW*Wd/2*0.11);
         cx.save(); cx.beginPath(); cx.rect(0,0,Wd,o.clip||Ht); cx.clip();
-        cx.globalAlpha=Math.min(1,(drawDist-(o.far||0))/14);
+        cx.globalAlpha=Math.max(0,Math.min(1,(95-(o.far||0))/25));
         if(o.t==='flora'){
           cx.fillStyle='rgba(0,0,0,.18)'; cx.beginPath(); cx.ellipse(o.sx,o.sy,w*0.5,w*0.14,0,0,7); cx.fill();
           cx.fillStyle='#6b4a2a'; cx.fillRect(o.sx-w*0.09,o.sy-w*0.7,w*0.18,w*0.7);
           const tg=cx.createRadialGradient(o.sx-w*0.2,o.sy-w*1.5,2,o.sx,o.sy-w*1.3,w*0.95);
           tg.addColorStop(0,'#7ED07A'); tg.addColorStop(1,'#2F8A46'); cx.fillStyle=tg;
           cx.beginPath(); cx.arc(o.sx,o.sy-w*1.35,w*0.72,0,7); cx.arc(o.sx-w*0.5,o.sy-w*0.95,w*0.5,0,7); cx.arc(o.sx+w*0.5,o.sy-w*0.95,w*0.5,0,7); cx.fill(); }
-        else if(o.t==='banner'){ const bw2=o.w2*1.35, bh2=Math.max(5,w*0.5);
-          cx.fillStyle='#6b4a2a'; cx.fillRect(o.sx-bw2,o.sy-bh2*4.2,Math.max(2,w*0.12),bh2*4.2); cx.fillRect(o.sx+bw2-Math.max(2,w*0.12),o.sy-bh2*4.2,Math.max(2,w*0.12),bh2*4.2);
-          const bg2=cx.createLinearGradient(0,o.sy-bh2*4.2,0,o.sy-bh2*3.2); bg2.addColorStop(0,'#F0B429'); bg2.addColorStop(1,'#D89614');
-          cx.fillStyle=bg2; cx.fillRect(o.sx-bw2,o.sy-bh2*4.2,bw2*2,bh2);
-          if(w>16){ cx.fillStyle='#7A4A08'; cx.font='800 '+Math.round(bh2*0.7)+'px Fraunces,serif'; cx.textAlign='center';
-            cx.fillText('BEE GRAND PRIX',o.sx,o.sy-bh2*3.45); cx.textAlign='left'; } }
         else if(o.t==='oil'){ cx.fillStyle='rgba(18,16,24,.78)'; cx.beginPath(); cx.ellipse(o.sx,o.sy-w*0.1,w*0.95,w*0.32,0,0,7); cx.fill();
           cx.fillStyle='rgba(150,110,210,.55)'; cx.beginPath(); cx.ellipse(o.sx-w*0.22,o.sy-w*0.16,w*0.34,w*0.11,0,0,7); cx.fill();
           cx.fillStyle='rgba(90,200,255,.35)'; cx.beginPath(); cx.ellipse(o.sx+w*0.25,o.sy-w*0.06,w*0.22,w*0.07,0,0,7); cx.fill(); }
@@ -910,7 +904,7 @@
       const seg=segs[Math.min(segs.length-1,Math.floor(pos/segLen))]; const spdPct=v/maxV;
       v=Math.min(maxV*boostMul, v+accel*dt);
       const dxs=dt*2.2*Math.max(0.35,spdPct);
-      playerX+=steer*dxs; playerX-= dxs*spdPct*seg.curve*centri;
+      playerX+=steer*dxs;   // no centrifugal self-drift: unsteered, the kart tracks the road straight
       if((playerX<-1||playerX>1) && v>offLimit){ v+=offDecel*dt; }
       playerX=Math.max(-2,Math.min(2,playerX));
       const pm=pos%trackLen;
