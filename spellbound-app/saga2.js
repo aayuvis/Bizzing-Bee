@@ -48,10 +48,10 @@
     _avCache[id]=null;
     try{
       if(typeof window.SB_AVATAR!=='function') return null;
-      let svg=window.SB_AVATAR(id,360,{outline:false});   // hi-res raster: crisp on DPR canvases (was 120 - pixelated)
+      let svg=window.SB_AVATAR(id,512,{outline:false});   // hi-res raster: crisp on DPR canvases (was 120 - pixelated)
       if(!svg) { _avCache[id]=false; return null; }
       if(!/xmlns=/.test(svg)) svg=svg.replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" ');
-      const img=new Image(360,360);
+      const img=new Image(512,512);
       img.onload=()=>{ _avCache[id]=img; };
       img.onerror=()=>{ _avCache[id]=false; };
       img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
@@ -73,8 +73,8 @@
     _wCache[id]=null;
     const a=(window.WORLD_ART||{})[id]; if(!a){ _wCache[id]=false; return null; }
     const vb=a.vb||'0 0 320 180', p=String(vb).split(/\s+/), w=(+p[2])||320, h=(+p[3])||180;
-    const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'" viewBox="'+vb+'">'+(a.svg||'')+'</svg>';
-    const img=new Image(w,h);
+    const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+Math.round(w*2.5)+'" height="'+Math.round(h*2.5)+'" viewBox="'+vb+'">'+(a.svg||'')+'</svg>';
+    const img=new Image(Math.round(w*2.5),Math.round(h*2.5));   // 2.5x raster - crisp full-screen backdrops
     img.onload=()=>{ _wCache[id]=img; };
     img.onerror=()=>{ _wCache[id]=false; };
     img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
@@ -125,7 +125,7 @@
   /* ---------- ENGINE A · HONEYCOMB RUN (Pac-Man) ---------- */
   // grid maze; arrows/swipe; moth patrols; nectar dots; golden flower spell-cards.
   function honeycombRun(host, opts, done){
-    const COLS=13, ROWS=11, CELL=Math.min(46, Math.floor(Math.min(innerWidth-20,620)/COLS));
+    const COLS=13, ROWS=11, CELL=Math.max(30,Math.min(64, Math.floor(Math.min(innerWidth-20,1120)/COLS), Math.floor((innerHeight-290)/ROWS)));
     const MAZE=[ // 0 wall 1 dot 2 empty
       "0000000000000","0111111111110","0101010101010","0111111111110","0101010101010",
       "0111121111110","0101010101010","0111111111110","0101010101010","0111111111110","0000000000000"
@@ -137,7 +137,7 @@
     let bee={c:6,r:5,px:6,py:5,dir:[0,0],want:[0,0]};
     let moths=[], score=0, lives=3, t=CFG.time, jelly=null, flee=0, flower=null, flowerT=5, card=null, over=false, fx=[];
     // Celebratory splash — petal burst + shockwave ring + "+1 LIFE" pop, drawn in the loop.
-    function spawnSplash(){ const cw=cv.width, ch=cv.height, N=28, cols=['#F0B429','#FF7FB0','#8FA0F5','#4FC98A','#FFD13F'];
+    function spawnSplash(){ const cw=COLS*CELL, ch=ROWS*CELL, N=28, cols=['#F0B429','#FF7FB0','#8FA0F5','#4FC98A','#FFD13F'];
       for(let i=0;i<N;i++){ const a=(i/N)*Math.PI*2+Math.random()*0.4, sp=2.4+Math.random()*4.2;
         fx.push({x:cw/2,y:ch/2,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-1.4,rot:Math.random()*7,vr:(Math.random()-0.5)*0.4,life:1,col:cols[i%cols.length]}); }
       fx.push({ring:true,x:cw/2,y:ch/2,r:8,life:1});
@@ -155,8 +155,11 @@
         '<button class="sg-dbtn" data-d="down" aria-label="Down">▼</button>'+
         '<button class="sg-dbtn" data-d="right" aria-label="Right">▶</button></div>'+
       '</div><div id="sg-card"></div>';
-    const cv=host.querySelector('#sg-cv'); cv.width=COLS*CELL; cv.height=ROWS*CELL;
-    const cx=cv.getContext('2d');
+    const cv=host.querySelector('#sg-cv'); const BW=COLS*CELL, BH=ROWS*CELL;
+    const dpr=Math.min(2.5,window.devicePixelRatio||1);
+    cv.width=Math.round(BW*dpr); cv.height=Math.round(BH*dpr);
+    cv.style.width=BW+'px'; cv.style.height=BH+'px';
+    const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
     const DIR={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
     const key=e=>{ if(card) return;                       // spelling box open — let the letters through
       const tg=e.target; if(tg&&(tg.tagName==='INPUT'||tg.tagName==='TEXTAREA'||tg.isContentEditable)) return;
@@ -228,11 +231,11 @@
       }catch(err){ /* never let a render/logic error stop the loop — the bee must keep moving */ }
     }
     function draw(){
-      cx.clearRect(0,0,cv.width,cv.height);
+      cx.clearRect(0,0,BW,BH);
       const rrect=(x,y,w,h,rad)=>{ if(cx.roundRect){ cx.beginPath(); cx.roundRect(x,y,w,h,rad); } else { cx.beginPath(); cx.moveTo(x+rad,y); cx.arcTo(x+w,y,x+w,y+h,rad); cx.arcTo(x+w,y+h,x,y+h,rad); cx.arcTo(x,y+h,x,y,rad); cx.arcTo(x,y,x+w,y,rad); cx.closePath(); } };
       // rich illustrated backdrop (Claude Design world plate), softened so the maze reads on top
-      if(!drawWorld(cx,world,0,0,cv.width,cv.height)){ cx.fillStyle='#8FCF7A'; cx.fillRect(0,0,cv.width,cv.height); }
-      cx.fillStyle='rgba(30,22,60,.28)'; cx.fillRect(0,0,cv.width,cv.height);   // scrim for contrast
+      if(!drawWorld(cx,world,0,0,BW,BH)){ cx.fillStyle='#8FCF7A'; cx.fillRect(0,0,BW,BH); }
+      cx.fillStyle='rgba(30,22,60,.28)'; cx.fillRect(0,0,BW,BH);   // scrim for contrast
       // walls as translucent honeycomb tiles; paths let the backdrop shine through
       for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){ const v=MAZE[r][c];
         if(v===0){ cx.fillStyle='rgba(240,180,41,.30)'; rrect(c*CELL+3,r*CELL+3,CELL-6,CELL-6,CELL*0.3); cx.fill();
@@ -1057,7 +1060,7 @@
 
   /* ---------- ENGINE I · WORD SNAKE (steer Bizzy to spell in order) ---------- */
   function wordSnake(host, opts, done){
-    const COLS=15, ROWS=11, CELL=Math.min(42, Math.floor(Math.min(innerWidth-20,620)/COLS));
+    const COLS=15, ROWS=11, CELL=Math.max(28,Math.min(58, Math.floor(Math.min(innerWidth-20,1120)/COLS), Math.floor((innerHeight-310)/ROWS)));
     const world=opts.world||'meadow', diff=opts.diff||'medium';
     const CFG={easy:{words:3,tick:210},medium:{words:4,tick:185},hard:{words:5,tick:160},champ:{words:6,tick:140}}[diff];
     const bank=pool(CFG.words+8).map(w=>w.w).filter(w=>/^[a-z]+$/i.test(w)&&w.length>=3&&w.length<=8);
@@ -1068,7 +1071,11 @@
       '<div class="sg-dmid"><button class="sg-dbtn" data-d="left" aria-label="Left">◀</button>'+
       '<button class="sg-dbtn" data-d="down" aria-label="Down">▼</button>'+
       '<button class="sg-dbtn" data-d="right" aria-label="Right">▶</button></div></div><div id="sg-card"></div>';
-    const cv=host.querySelector('#sg-cv'); cv.width=COLS*CELL; cv.height=ROWS*CELL; const cx=cv.getContext('2d');
+    const cv=host.querySelector('#sg-cv'); const BW=COLS*CELL, BH=ROWS*CELL;
+    const dpr=Math.min(2.5,window.devicePixelRatio||1);
+    cv.width=Math.round(BW*dpr); cv.height=Math.round(BH*dpr);
+    cv.style.width=BW+'px'; cv.style.height=BH+'px';
+    const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
     let snake,dir,ndir,word='',spelled=0,tiles=[],wordsDone=0,score=0,lives=3,over=false,bonk=0,tick=CFG.tick,loop=null,fx=[];
     function occupied(x,y,extra){ for(let i=0;i<snake.length;i++) if(snake[i].x===x&&snake[i].y===y) return true;
       for(let i=0;i<(extra||[]).length;i++) if(extra[i].x===x&&extra[i].y===y) return true; return false; }
@@ -1083,7 +1090,7 @@
     function setHud(){ host.querySelector('#sg-score').textContent='⭐ '+score; host.querySelector('#sg-lives').textContent='❤'.repeat(Math.max(0,lives)); }
     function reset(){ const cxm=Math.floor(COLS/2), cym=Math.floor(ROWS/2);
       snake=[{x:cxm,y:cym},{x:cxm-1,y:cym},{x:cxm-2,y:cym}]; dir={x:1,y:0}; ndir={x:1,y:0}; layoutWord(); setHud(); }
-    function spawnSplash(txt){ const cw=cv.width, ch=cv.height, cols=['#F0B429','#FF7FB0','#8FA0F5','#4FC98A'];
+    function spawnSplash(txt){ const cw=COLS*CELL, ch=ROWS*CELL, cols=['#F0B429','#FF7FB0','#8FA0F5','#4FC98A'];
       for(let i=0;i<20;i++){ const a=(i/20)*Math.PI*2, sp=2+Math.random()*3.5;
         fx.push({x:cw/2,y:ch/2,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-1,rot:0,vr:(Math.random()-0.5)*0.4,life:1,col:cols[i%4]}); }
       fx.push({ring:true,x:cw/2,y:ch/2,r:8,life:1}); if(txt) fx.push({text:txt,x:cw/2,y:ch/2-4,life:1.4}); }
@@ -1102,9 +1109,9 @@
       if(!grew) snake.pop(); setHud(); }
     function roundRect(x,y,w,h,r){ cx.beginPath(); cx.moveTo(x+r,y); cx.arcTo(x+w,y,x+w,y+h,r); cx.arcTo(x+w,y+h,x,y+h,r); cx.arcTo(x,y+h,x,y,r); cx.arcTo(x,y,x+w,y,r); cx.closePath(); }
     function draw(){
-      cx.clearRect(0,0,cv.width,cv.height);
-      if(!drawWorld(cx,world,0,0,cv.width,cv.height)){ cx.fillStyle='#8FCF7A'; cx.fillRect(0,0,cv.width,cv.height); }
-      cx.fillStyle='rgba(30,22,60,.24)'; cx.fillRect(0,0,cv.width,cv.height);
+      cx.clearRect(0,0,BW,BH);
+      if(!drawWorld(cx,world,0,0,BW,BH)){ cx.fillStyle='#8FCF7A'; cx.fillRect(0,0,BW,BH); }
+      cx.fillStyle='rgba(30,22,60,.24)'; cx.fillRect(0,0,BW,BH);
       // letter tiles as honeycomb chips; next needed one glows
       for(let t=0;t<tiles.length;t++){ const tl=tiles[t], px=tl.x*CELL, py=tl.y*CELL, isNext=tl.idx===spelled;
         cx.fillStyle=isNext?'#F0B429':'rgba(255,247,226,.94)'; roundRect(px+3,py+3,CELL-6,CELL-6,8); cx.fill();
@@ -1162,7 +1169,7 @@
 
   /* ---------- ENGINE J · COMB CATCHER (catch the falling letters in order) ---------- */
   function combCatcher(host, opts, done){
-    const Wd=Math.min(innerWidth-16,640), Ht=Math.min(innerHeight-200,440);
+    const Wd=Math.min(innerWidth-16,1120), Ht=Math.max(320,innerHeight-280);
     const world=opts.world||'meadow', diff=opts.diff||'medium';
     const CFG={easy:{words:4,fall:1.3,rate:1.1},medium:{words:5,fall:1.7,rate:0.95},hard:{words:6,fall:2.1,rate:0.82},champ:{words:7,fall:2.5,rate:0.72}}[diff];
     const bank=pool(CFG.words+6).map(w=>w).filter(w=>w&&/^[a-z]+$/i.test(w.w)&&w.w.length>=3&&w.w.length<=9);
@@ -1172,7 +1179,11 @@
       '<canvas id="sg-cv"></canvas>'+
       '<div class="sg-lanebtns"><button class="sg-dbtn" data-d="left" aria-label="Left">◀</button><button class="sg-dbtn" data-d="right" aria-label="Right">▶</button></div>'+
       '<div id="sg-card"></div>';
-    const cv=host.querySelector('#sg-cv'); cv.width=Wd; cv.height=Ht; const cx=cv.getContext('2d');
+    const cv=host.querySelector('#sg-cv');
+    const dpr=Math.min(2.5,window.devicePixelRatio||1);
+    cv.width=Math.round(Wd*dpr); cv.height=Math.round(Ht*dpr);
+    cv.style.width=Wd+'px'; cv.style.height=Ht+'px';
+    const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
     let word='',spelled=0,drops=[],basket=Wd/2,vx=0,wordsDone=0,lives=3,over=false,dropT=0,bonk=0,score=0,loop=null,last=0;
     const BW=64;
     function layout(){ word=bank[wordsDone%bank.length].w.toLowerCase(); spelled=0; drops=[];
