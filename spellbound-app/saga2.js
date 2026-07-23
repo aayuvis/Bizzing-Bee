@@ -608,19 +608,27 @@
   function beeGrandPrix(host, opts, done){
     const Wd=Math.min(innerWidth-16,640), Ht=Math.max(300,Math.min(Math.round(Wd*0.60),400));
     const diff=opts.diff||'medium';
-    const CFG={easy:{laps:2,rivals:3,rival:0.80,haz:0.06},medium:{laps:3,rivals:3,rival:0.88,haz:0.09},
-               hard:{laps:3,rivals:4,rival:0.94,haz:0.12},champ:{laps:3,rivals:4,rival:1.0,haz:0.15}}[diff];
-    host.innerHTML='<div class="sg-hud"><span id="sg-lap">Lap 1/'+CFG.laps+'</span><span id="sg-pos">🥇 1st</span><span id="sg-spd"></span></div>'+
+    // one epic point-to-point run - length ~= minutes of driving; boxes pace the spelling
+    const CFG={easy:{len:3600,rivals:3,rival:0.84,haz:0.028,boxEvery:300},
+               medium:{len:4600,rivals:4,rival:0.90,haz:0.05,boxEvery:330},
+               hard:{len:5600,rivals:4,rival:0.96,haz:0.08,boxEvery:360},
+               champ:{len:6600,rivals:4,rival:1.02,haz:0.11,boxEvery:380}}[diff];
+    host.innerHTML=
+      '<div class="sg-racehud"><div class="sg-rh-row">'+
+        '<span class="sg-rh-place" id="sg-pos">1st <i>/ '+(CFG.rivals+1)+'</i></span>'+
+        '<div class="sg-posbar" id="sg-pb"><i class="sg-pb-road"></i><b class="sg-pb-flag">🏁</b></div>'+
+        '<span class="sg-rh-spd" id="sg-spd"></span></div></div>'+
       '<div class="sg-race3d"><canvas id="sg-cv"></canvas>'+
-      '<div class="sg-pwtray" id="sg-pw"></div>'+
+      '<button class="sg-hold" id="sg-hold" aria-label="Use power-up"><span class="sg-hold-empty">?</span></button>'+
       '<div class="sg-steer"><button class="sg-sbtn" data-s="-1" aria-label="Steer left">◀</button><button class="sg-sbtn" data-s="1" aria-label="Steer right">▶</button></div></div>'+
-      '<div class="sg-race-word" id="sg-rw"><button class="sg-rbtn" id="sg-rspk" aria-label="Hear the word">🔊</button>'+
-      '<input id="sg-ri" class="sg-rin" placeholder="spell it for a power-up" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text">'+
-      '<button class="sg-rbtn go" id="sg-rgo">Go</button></div>'+
-      '<div id="sg-rmean" class="sg-race-mean"></div>';
-    const cv=host.querySelector('#sg-cv'); cv.width=Wd; cv.height=Ht; const cx=cv.getContext('2d');
+      '<div id="sg-card"></div>';
+    const cv=host.querySelector('#sg-cv');
+    const dpr=Math.min(2.5,window.devicePixelRatio||1);
+    cv.width=Math.round(Wd*dpr); cv.height=Math.round(Ht*dpr);
+    cv.style.width=Wd+'px'; cv.style.height=Ht+'px';
+    const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
 
-    /* ---- pseudo-3D world ---- */
+    /* ---- pseudo-3D track ---- */
     const segLen=200, roadW=2200, rumbleLen=3, drawDist=160, camH=1200, fov=100;
     const camDepth=1/Math.tan((fov/2)*Math.PI/180);
     const LIGHT={road:'#6C6C74',grass:'#7BC169',rumble:'#EDEDED',lane:'#FFFFFF'};
@@ -632,59 +640,92 @@
         p1:{world:{y:lastY(),z:n*segLen},camera:{},screen:{}},
         p2:{world:{y:y,z:(n+1)*segLen},camera:{},screen:{}},
         color:(Math.floor(n/rumbleLen)%2)?DARK:LIGHT, sprites:[]}); }
-    const eI=(a,b,p)=>a+(b-a)*Math.pow(p,2), eO=(a,b,p)=>a+(b-a)*(1-Math.pow(1-p,2)), eIO=(a,b,p)=>a+(b-a)*(-Math.cos(p*Math.PI)/2+0.5);
+    const eI=(a,b,p)=>a+(b-a)*Math.pow(p,2), eIO=(a,b,p)=>a+(b-a)*(-Math.cos(p*Math.PI)/2+0.5);
     function road(enter,hold,leave,curve,hill){ const sY=lastY(), eY=sY+hill*segLen, tot=enter+hold+leave; let i;
       for(i=0;i<enter;i++) addSeg(eI(0,curve,i/enter), eIO(sY,eY,i/tot));
       for(i=0;i<hold;i++)  addSeg(curve,              eIO(sY,eY,(enter+i)/tot));
       for(i=0;i<leave;i++) addSeg(eIO(curve,0,i/leave),eIO(sY,eY,(enter+hold+i)/tot)); }
-    // a lively little circuit: straights, sweepers, a couple of hills
-    road(20,20,20,0,0); road(16,20,16,-3,0); road(16,24,16,0,2.2); road(16,20,16,4,0);
-    road(14,18,14,2,-2.4); road(18,26,18,-4,0); road(16,20,16,0,1.8); road(20,24,20,0,0);
-    while(segs.length%rumbleLen!==0) addSeg(0,lastY());
-    const trackLen=segs.length*segLen;
-    // scatter roadside decoration + oil hazards
-    for(let n=10;n<segs.length;n+=6){ const side=(n%12<6)?-1:1; segs[n].sprites.push({kind:'flora',off:side*(1.15+Math.random()*0.9)}); }
-    const hazards=[]; for(let n=24;n<segs.length;n+=Math.floor(9+Math.random()*8)){ if(Math.random()<0.85){ hazards.push({seg:n,off:(Math.random()*1.6-0.8)}); } }
-    const items=[]; for(let n=32;n<segs.length;n+=Math.floor(15+Math.random()*10)){ items.push({seg:n,off:(Math.random()*1.1-0.55),gone:0,k:Math.random()*6}); } // ? item boxes
-
-    /* ---- racers ---- */
-    const maxV=segLen*62, accel=maxV/4.4, decel=-maxV/4, offDecel=-maxV/1.6, offLimit=maxV/3.2, centri=0.32;
-    let pos=0, playerX=0, v=0, lap=1, over=false, started=false;
-    let boostT=0, boostMul=1, shieldT=0, spinFlashT=0;
-    const heroKart=heroAv();
-    const rivals=[]; const rn=['Bumble','Waggle','Drone Dan','Sting'];
-    for(let i=0;i<CFG.rivals;i++) rivals.push({z:(i+1)*segLen*7, x:(i-1)*0.5, spd:maxV*CFG.rival*(0.9+i*0.03),
-      lap:1, name:rn[i], col:['#E8912D','#C8B26A','#8A8A8A','#7B5CE0'][i], av:['bumble','waggle','drone','sting'][i], spin:0, slow:0});
-    const totalOf=(z,lp)=>(lp-1)*trackLen+z;
-
-    /* ---- words → power-ups ---- */
-    const words=pool(14); let wi=0, curWord=null;
-    const inp=host.querySelector('#sg-ri');
-    const POWERS=[
-      {id:'rocket',ic:'🚀',name:'Rocket boost',msg:'🚀 Rocket boost!',run(){ boostT=2.4; boostMul=1.7; }},
-      {id:'oil',   ic:'🛢️',name:'Oil slick',   msg:'🛢️ Oil slick — chaser spun out!',run(){ let best=null,bd=1e9; const my=totalOf(pos,lap);
-                     rivals.forEach(r=>{ const d=my-totalOf(r.z,r.lap); if(d>0&&d<bd){bd=d;best=r;} }); if(best){best.spin=2.6;} else { boostT=1.4;boostMul=1.4; } }},
-      {id:'turbo', ic:'💨',name:'Turbo',       msg:'💨 Turbo — hold on!',run(){ boostT=3.6; boostMul=1.42; }},
-      {id:'gust',  ic:'🌪️',name:'Gust push',   msg:'🌪️ Gust — shoved them wide!',run(){ let best=null,bd=1e9; const my=totalOf(pos,lap);
-                     rivals.forEach(r=>{ const d=totalOf(r.z,r.lap)-my; if(d>0&&d<bd){bd=d;best=r;} }); if(best){ best.x+=(best.x>=0?1:-1)*0.9; best.slow=1.8; } else { boostT=1.6;boostMul=1.4; } }},
-      {id:'honey', ic:'🍯',name:'Sticky honey', msg:'🍯 Honey — rivals ahead slowed!',run(){ const my=totalOf(pos,lap); rivals.forEach(r=>{ if(totalOf(r.z,r.lap)>my) r.slow=2.6; }); }},
-      {id:'shield',ic:'🛡️',name:'Bubble shield',msg:'🛡️ Shield up — oil can’t touch you!',run(){ shieldT=6; }}
+    // long varied grand tour: repeated themed sectors until CFG.len is reached
+    const SECTORS=[
+      ()=>{ road(20,24,20,0,0); road(16,22,16,-3,0); road(16,26,16,0,2.2); },
+      ()=>{ road(16,22,16,4,0); road(14,18,14,2,-2.4); road(18,28,18,-4,0); },
+      ()=>{ road(16,22,16,0,1.8); road(22,28,22,0,0); road(14,20,14,-2,1.2); },
+      ()=>{ road(16,20,16,3,-1.6); road(18,24,18,-5,0); road(20,26,20,0,0); },
+      ()=>{ road(14,18,14,5,1.4); road(16,22,16,0,-2); road(18,24,18,2,0); }
     ];
-    let pwi=0, nextPw=POWERS[0];
-    function renderTray(){ const t=host.querySelector('#sg-pw'); if(!t) return;
-      t.innerHTML='<span class="sg-pw-next">Next: '+nextPw.ic+' '+nextPw.name+'</span>'+
-        (boostT>0?'<span class="sg-pw-on">'+ (boostMul>1.5?'🚀':'💨') +'</span>':'')+(shieldT>0?'<span class="sg-pw-on">🛡️</span>':''); }
-    function nextWord(){ curWord=words[wi++%words.length]; if(inp) inp.value='';
-      const mn=host.querySelector('#sg-rmean'); if(mn){ const m=meaningText(curWord); mn.textContent=m?('💡 '+m):''; }
-      try{ say(curWord.w); }catch(e){} }
-    function bank(){ const val=(inp?inp.value:'').trim().toLowerCase();
-      if(curWord && val===curWord.w.toLowerCase()){ const p=nextPw; try{flash(p.msg);}catch(_){} try{p.run();}catch(e){}
-        pwi++; nextPw=POWERS[pwi%POWERS.length]; renderTray(); }
-      else { try{flash('Not quite — listen again for your power-up.');}catch(_){} try{ if(curWord) say(curWord.w); }catch(e){} }
-      nextWord(); if(inp){ try{inp.focus();}catch(e){} } }
-    if(inp){ inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); bank(); } }; }
-    host.querySelector('#sg-rgo').onclick=bank;
-    host.querySelector('#sg-rspk').onclick=()=>{ try{ if(curWord) say(curWord.w); }catch(e){} };
+    let si=0; while(segs.length<CFG.len){ SECTORS[si%SECTORS.length](); si++; }
+    while(segs.length%rumbleLen!==0) addSeg(0,lastY());
+    const trackLen=segs.length*segLen, FINISH=trackLen-segLen*8;
+    for(let n=10;n<segs.length;n+=6){ const side=(n%12<6)?-1:1; segs[n].sprites.push({kind:'flora',off:side*(1.15+Math.random()*0.9)}); }
+    for(let n=60;n<segs.length;n+=Math.floor(90+Math.random()*70)){ segs[n].sprites.push({kind:'banner',off:0}); }  // overhead banners
+    const hazards=[]; for(let n=40;n<segs.length-40;n+=Math.floor(11+Math.random()*10)){ if(Math.random()<CFG.haz*8){ hazards.push({seg:n,off:(Math.random()*1.6-0.8)}); } }
+    const items=[]; for(let n=70;n<segs.length-60;n+=Math.floor(CFG.boxEvery*(0.8+Math.random()*0.5))){ items.push({seg:n,off:(Math.random()*1.1-0.55),gone:false,k:Math.random()*6}); }
+
+    /* ---- racers: the villains ---- */
+    const maxV=segLen*46, accel=maxV/4.6, offDecel=-maxV/1.6, offLimit=maxV/3.2, centri=0.32;
+    let pos=0, playerX=0, v=0, over=false, mode='howto'; // howto -> count -> race -> spell -> done
+    let boostT=0, boostMul=1, shieldT=0, spinFlashT=0, countT=0, finishedRivals=0;
+    const heroKart=heroAv();
+    const VILL=[
+      {name:'The Smudge',col:'#8B8B96',glyph:'🦋',sprite:'smudge-swarm'},
+      {name:'Glitch',    col:'#7B5CE0',glyph:'👾',sprite:'glitch-corrupt-glee'},
+      {name:'Vex',       col:'#C9A227',glyph:'🐝',sprite:'vex-full'},
+      {name:'The Bramble',col:'#4A7A3A',glyph:'🌿',sprite:null}];
+    const rivals=[];
+    for(let i=0;i<CFG.rivals;i++){ const vd=VILL[i%VILL.length];
+      rivals.push({z:segLen*6*(i+1), x:(i-1.2)*0.5, spd:maxV*CFG.rival*(0.92+i*0.035),
+        name:vd.name, col:vd.col, glyph:vd.glyph, sprite:vd.sprite, spin:0, slow:0, fin:false}); }
+
+    /* ---- power-ups: spell a ? box to UNLOCK one, tap the slot (or Space) to FIRE ---- */
+    const PWSVG={
+      rocket:'<svg viewBox="0 0 40 40"><path d="M20 3c6 5 8 13 8 19l-4 5h-8l-4-5c0-6 2-14 8-19Z" fill="#E5484D"/><path d="M20 3c3 4 5 9 5 19h-5V3Z" fill="#FF8A8E" opacity=".7"/><circle cx="20" cy="15" r="3.4" fill="#BFE3FF" stroke="#2B3A67" stroke-width="1.2"/><path d="M12 24l-5 7 7-2M28 24l5 7-7-2" fill="#C43D5A"/><path d="M16 29h8l-1.6 6h-4.8Z" fill="#F5A623"/><path d="M17.5 35c.8 3 4.2 3 5 0l-2.5 4Z" fill="#FF6B35"/></svg>',
+      turbo:'<svg viewBox="0 0 40 40"><path d="M8 22 22 5l-4 12h9L13 35l4-13H8Z" fill="#36D1FF" stroke="#0E7EA8" stroke-width="1.6" stroke-linejoin="round"/><path d="M25 9l6 2-4 4M27 22l6 2-4 4" stroke="#9BE7FF" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>',
+      oil:'<svg viewBox="0 0 40 40"><g transform="rotate(-14 20 20)"><rect x="12" y="8" width="16" height="22" rx="3" fill="#2A2733"/><rect x="12" y="12" width="16" height="4" fill="#4A4657"/><rect x="12" y="22" width="16" height="4" fill="#4A4657"/><rect x="16" y="5" width="8" height="4" rx="1.4" fill="#17151D"/></g><path d="M28 30c3 2 5 4 4 6-1.4 2.4-5 1.4-5-1 0-1.6.4-3 1-5Z" fill="#171422"/><ellipse cx="14" cy="35" rx="7" ry="2.2" fill="#171422" opacity=".8"/></svg>',
+      gust:'<svg viewBox="0 0 40 40"><path d="M33 12c0 7-8 8-17 8m19 2c-2 6-11 7-18 5m14-19c-4-3-12-3-16 2" fill="none" stroke="#39C6A5" stroke-width="3.4" stroke-linecap="round"/><circle cx="9" cy="11" r="2" fill="#39C6A5"/><circle cx="12" cy="29" r="2" fill="#8FE8D2"/><circle cx="30" cy="33" r="2" fill="#8FE8D2"/></svg>',
+      honey:'<svg viewBox="0 0 40 40"><path d="M11 14c-3 3-3 12 1 16h16c4-4 4-13 1-16Z" fill="#F5B32B" stroke="#8A5A10" stroke-width="1.4"/><ellipse cx="20" cy="13" rx="10" ry="3.4" fill="#FFCF5C" stroke="#8A5A10" stroke-width="1.2"/><path d="M15 17c-1 3 0 7 1 9" stroke="#FFE49B" stroke-width="2.6" stroke-linecap="round"/><path d="M24 30c0 3 2 4 2 6 0 1.8-2.6 1.8-2.6 0 0-2 .6-3 .6-6Z" fill="#D89614"/></svg>',
+      shield:'<svg viewBox="0 0 40 40"><path d="M20 4l12 5v9c0 8-5 14-12 18-7-4-12-10-12-18V9Z" fill="#5AB5F7" opacity=".35" stroke="#2E86D1" stroke-width="2"/><path d="M20 9l8 3.4v6c0 5.4-3.4 9.6-8 12.4-4.6-2.8-8-7-8-12.4v-6Z" fill="none" stroke="#BFE3FF" stroke-width="1.8"/><path d="M15 19l4 4 7-8" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'};
+    const POWERS=[
+      {id:'rocket',name:'Rocket boost',msg:'🚀 ROCKET! Hold on!',run(){ boostT=2.6; boostMul=1.75; }},
+      {id:'turbo', name:'Turbo',msg:'⚡ TURBO!',run(){ boostT=4.0; boostMul=1.45; }},
+      {id:'oil',   name:'Oil slick',msg:'🛢️ Oil dropped — chaser spun out!',run(){ let best=null,bd=1e9;
+                     rivals.forEach(r=>{ const d=pos-r.z; if(d>0&&d<bd){bd=d;best=r;} }); if(best){best.spin=2.8;} else { boostT=1.5;boostMul=1.4; } }},
+      {id:'gust',  name:'Gust push',msg:'🌪️ Gust — shoved them wide!',run(){ let best=null,bd=1e9;
+                     rivals.forEach(r=>{ const d=r.z-pos; if(d>0&&d<bd){bd=d;best=r;} }); if(best){ best.x+=(best.x>=0?1:-1)*0.9; best.slow=2.0; } else { boostT=1.7;boostMul=1.4; } }},
+      {id:'honey', name:'Sticky honey',msg:'🍯 Honey — every racer ahead slowed!',run(){ rivals.forEach(r=>{ if(r.z>pos) r.slow=2.8; }); }},
+      {id:'shield',name:'Bubble shield',msg:'🛡️ Shield up!',run(){ shieldT=8; }}];
+    let held=null;
+    const holdBtn=host.querySelector('#sg-hold');
+    function renderHold(){ holdBtn.innerHTML=held?PWSVG[held.id]:'<span class="sg-hold-empty">?</span>';
+      holdBtn.classList.toggle('ready',!!held); }
+    function fireHeld(){ if(!held||mode!=='race') return; const p=held; held=null; renderHold();
+      try{flash(p.msg);}catch(_){ } try{p.run();}catch(e){} }
+    holdBtn.onclick=fireHeld;
+
+    /* ---- spelling gate: hitting a ? box pauses the race ---- */
+    const words=pool(24); let wi=0;
+    function spellGate(){
+      mode='spell';
+      const w=words[wi++%words.length];
+      const p=POWERS[Math.floor(Math.random()*POWERS.length)];
+      const el=host.querySelector('#sg-card');
+      el.innerHTML='<div class="sg-cardbox"><b>🎁 Item box! Spell to unlock the power-up</b>'+
+        '<button class="sg-cardw" id="sg-cspk">🔊</button>'+meaningHTML(w)+
+        '<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="sg-rbtn go" id="sg-cgo">Unlock</button></div></div>';
+      el.style.display='grid'; try{ say(w.w); }catch(e){}
+      const inp=el.querySelector('#sg-ci'); try{inp.focus();}catch(e){}
+      function submit(){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase();
+        el.style.display='none'; el.innerHTML='';
+        if(ok){ held=p; renderHold();
+          const uc=host.querySelector('#sg-card');
+          uc.innerHTML='<div class="sg-cardbox sg-unlock"><span class="sg-unlock-ic">'+PWSVG[p.id]+'</span><b>'+p.name+' unlocked!</b><i>tap the slot (or Space) to use it</i></div>';
+          uc.style.display='grid';
+          setTimeout(()=>{ uc.style.display='none'; uc.innerHTML=''; resume(); },1300);
+        } else { try{flash('The box fizzles… next one is coming!');}catch(_){ } resume(); } }
+      inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } };
+      el.querySelector('#sg-cgo').onclick=submit;
+      el.querySelector('#sg-cspk').onclick=()=>{ try{ say(w.w); }catch(e){} };
+    }
+    function resume(){ countT=1.0; mode='count'; }
 
     /* ---- steering ---- */
     let steer=0;
@@ -692,12 +733,13 @@
     host.querySelectorAll('.sg-sbtn').forEach(b=>{ const s=+b.dataset.s;
       b.addEventListener('pointerdown',e=>{ setSteer(s); e.preventDefault&&e.preventDefault(); });
       b.addEventListener('pointerup',()=>setSteer(0)); b.addEventListener('pointerleave',()=>setSteer(0)); });
-    const kd=e=>{ if(e.target===inp) return; if(e.key==='ArrowLeft'||e.key==='a'){ setSteer(-1); e.preventDefault(); }
-      else if(e.key==='ArrowRight'||e.key==='d'){ setSteer(1); e.preventDefault(); } };
+    const kd=e=>{ if(e.target&&e.target.tagName==='INPUT') return;
+      if(e.key==='ArrowLeft'||e.key==='a'){ setSteer(-1); e.preventDefault(); }
+      else if(e.key==='ArrowRight'||e.key==='d'){ setSteer(1); e.preventDefault(); }
+      else if(e.key===' '){ fireHeld(); e.preventDefault(); } };
     const ku=e=>{ if(e.key==='ArrowLeft'||e.key==='a'||e.key==='ArrowRight'||e.key==='d') setSteer(0); };
     addEventListener('keydown',kd); addEventListener('keyup',ku);
-    // drag on the canvas to steer too
-    cv.addEventListener('pointerdown',e=>{ const r=cv.getBoundingClientRect(); setSteer((e.clientX-r.left)<Wd/2?-1:1); });
+    cv.addEventListener('pointerdown',e=>{ if(mode!=='race'&&mode!=='count') return; const r=cv.getBoundingClientRect(); setSteer((e.clientX-r.left)<Wd/2?-1:1); });
     cv.addEventListener('pointerup',()=>setSteer(0)); cv.addEventListener('pointerleave',()=>setSteer(0));
 
     /* ---- projection + drawing ---- */
@@ -708,183 +750,193 @@
       p.screen.w=Math.round(p.screen.scale*roadW*Wd/2); }
     function poly(x1,y1,x2,y2,x3,y3,x4,y4,col){ cx.fillStyle=col; cx.beginPath();
       cx.moveTo(x1,y1); cx.lineTo(x2,y2); cx.lineTo(x3,y3); cx.lineTo(x4,y4); cx.closePath(); cx.fill(); }
-    function segMid(seg,off){ // screen pos of a point offset across the road at this segment
-      const s=seg.p1.screen; return {x:s.x + s.w*off, y:s.y, sc:s.scale}; }
-    function billboard(scale,sx,sy,drawer){ const w=scale*roadW*Wd/2*0.10; drawer(sx,sy,Math.max(14,w)); }
-    // shade a #rrggbb hex by factor (>1 lighter, <1 darker)
     function hx(c,f){ const n=parseInt(c.slice(1),16); let r=(n>>16)&255,g=(n>>8)&255,b=n&255;
       r=Math.max(0,Math.min(255,Math.round(r*f))); g=Math.max(0,Math.min(255,Math.round(g*f))); b=Math.max(0,Math.min(255,Math.round(b*f)));
       return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1); }
     function rrp(x,y,w,h,rad){ cx.beginPath(); if(cx.roundRect){ cx.roundRect(x,y,w,h,rad); } else { cx.rect(x,y,w,h); } }
-    // richly-shaded rear-view kart with driver, wheels, spoiler, shadow, boost flame
-    function drawKart(px,baseY,w,col,avId,o){ o=o||{}; const h=w*0.82;
-      cx.save(); cx.fillStyle='rgba(0,0,0,.28)'; cx.beginPath(); cx.ellipse(px,baseY-1,w*0.58,w*0.15,0,0,7); cx.fill(); cx.restore(); // ground shadow
+    function drawKart(px,baseY,w,col,rider,o){ o=o||{}; const h=w*0.82;
+      cx.save(); cx.fillStyle='rgba(0,0,0,.28)'; cx.beginPath(); cx.ellipse(px,baseY-1,w*0.58,w*0.15,0,0,7); cx.fill(); cx.restore();
       if(o.boost){ const fl=w*(0.55+Math.random()*0.3); const fg=cx.createLinearGradient(0,baseY-h*0.2,0,baseY+fl);
         fg.addColorStop(0,'#FFF6C0'); fg.addColorStop(.45,'#FF9E3D'); fg.addColorStop(1,'rgba(255,80,40,0)');
         cx.fillStyle=fg; cx.beginPath(); cx.moveTo(px-w*0.24,baseY-h*0.2); cx.quadraticCurveTo(px,baseY+fl,px+w*0.24,baseY-h*0.2); cx.closePath(); cx.fill(); }
-      const ww=w*0.30, wh=h*0.54, wy=baseY-wh;                                  // rear wheels
+      const ww=w*0.30, wh=h*0.54, wy=baseY-wh;
       [-1,1].forEach(s=>{ const wx=px+s*w*0.42;
         cx.fillStyle='#17151b'; rrp(wx-ww/2,wy,ww,wh,ww*0.34); cx.fill();
         cx.fillStyle='#39363f'; rrp(wx-ww/2+2,wy+wh*0.16,ww-4,wh*0.5,ww*0.28); cx.fill();
         cx.fillStyle='#7a7684'; cx.beginPath(); cx.ellipse(wx,wy+wh*0.4,ww*0.2,ww*0.2,0,0,7); cx.fill(); });
-      const bw=w*0.9, bh=h*0.5, by=baseY-h*0.6;                                 // spoiler behind body
+      const bw=w*0.9, bh=h*0.5, by=baseY-h*0.6;
       cx.fillStyle=hx(col,0.5); rrp(px-bw*0.52,by-h*0.18,bw*1.04,h*0.11,4); cx.fill();
       cx.fillStyle=hx(col,0.8); cx.fillRect(px-bw*0.4,by-h*0.18,w*0.07,h*0.2); cx.fillRect(px+bw*0.33,by-h*0.18,w*0.07,h*0.2);
-      const bg=cx.createLinearGradient(0,by-bh*0.2,0,by+bh);                     // body
+      const bg=cx.createLinearGradient(0,by-bh*0.2,0,by+bh);
       bg.addColorStop(0,hx(col,1.38)); bg.addColorStop(.5,col); bg.addColorStop(1,hx(col,0.68));
       cx.fillStyle=bg; rrp(px-bw/2,by,bw,bh,w*0.18); cx.fill();
-      cx.fillStyle=hx(col,0.52); rrp(px-bw/2,by+bh*0.6,bw,bh*0.42,w*0.12); cx.fill();  // lower pod
-      cx.fillStyle='#141018'; rrp(px-bw*0.46,baseY-h*0.15,bw*0.92,h*0.12,4); cx.fill(); // bumper
-      cx.fillStyle=hx(col,0.42); cx.beginPath(); cx.ellipse(px,by+bh*0.12,bw*0.26,bh*0.36,0,0,7); cx.fill(); // seat
-      const hd=w*0.6, av=avId&&avImg(avId);                                     // driver
-      if(av){ try{ cx.drawImage(av,px-hd/2,by-hd*0.66,hd,hd); }catch(e){} }
-      else { cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(px,by-hd*0.08,hd*0.32,0,7); cx.fill(); }
-      if(o.spin){ cx.font='700 '+Math.round(w*0.7)+'px serif'; cx.textAlign='center'; cx.fillText('💫',px,by-hd*0.7); cx.textAlign='left'; }
-      cx.restore&&cx.restore; }
+      cx.fillStyle=hx(col,0.52); rrp(px-bw/2,by+bh*0.6,bw,bh*0.42,w*0.12); cx.fill();
+      cx.fillStyle='#141018'; rrp(px-bw*0.46,baseY-h*0.15,bw*0.92,h*0.12,4); cx.fill();
+      cx.fillStyle=hx(col,0.42); cx.beginPath(); cx.ellipse(px,by+bh*0.12,bw*0.26,bh*0.36,0,0,7); cx.fill();
+      const hd=w*0.6;
+      let done_=false;
+      if(rider&&rider.av){ const im=avImg(rider.av); if(im){ try{ cx.drawImage(im,px-hd/2,by-hd*0.66,hd,hd); done_=true; }catch(e){} } }
+      if(!done_&&rider&&rider.sprite){ const im=sgImg(rider.sprite); if(im){ try{ cx.drawImage(im,px-hd/2,by-hd*0.66,hd,hd); done_=true; }catch(e){} } }
+      if(!done_&&rider&&rider.glyph){ cx.font=Math.round(hd*0.8)+'px serif'; cx.textAlign='center'; cx.fillText(rider.glyph,px,by-hd*0.05); cx.textAlign='left'; done_=true; }
+      if(!done_){ cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(px,by-hd*0.08,hd*0.32,0,7); cx.fill(); }
+      if(o.spin){ cx.font='700 '+Math.round(w*0.7)+'px serif'; cx.textAlign='center'; cx.fillText('💫',px,by-hd*0.7); cx.textAlign='left'; } }
 
     function drawBG(){
       const hz=Ht*0.5, sway=Math.sin(pos/2600)*34 - playerX*26;
       const g=cx.createLinearGradient(0,0,0,hz); g.addColorStop(0,'#3E7FD6'); g.addColorStop(.6,'#7FB8EC'); g.addColorStop(1,'#DEEFFB');
       cx.fillStyle=g; cx.fillRect(0,0,Wd,hz);
-      const sx=Wd*0.72, sy=hz*0.42;                                   // sun + glow
+      const sx=Wd*0.72, sy=hz*0.42;
       const sg=cx.createRadialGradient(sx,sy,3,sx,sy,95); sg.addColorStop(0,'rgba(255,251,224,.95)'); sg.addColorStop(.5,'rgba(255,238,170,.4)'); sg.addColorStop(1,'rgba(255,238,170,0)');
       cx.fillStyle=sg; cx.fillRect(0,0,Wd,hz);
       cx.fillStyle='rgba(255,252,236,.96)'; cx.beginPath(); cx.arc(sx,sy,20,0,7); cx.fill();
       function ridge(baseY,amp,col,seed){ cx.fillStyle=col; cx.beginPath(); cx.moveTo(-40,hz);
         for(let i=-1;i<=13;i++){ const xx=Wd*i/12+sway*(amp/46); cx.lineTo(xx, baseY-amp*Math.abs(Math.sin(i*0.8+seed))); }
         cx.lineTo(Wd+40,hz); cx.closePath(); cx.fill(); }
-      ridge(hz-4,48,'#93B9CB',0.5); ridge(hz,34,'#6FA487',1.7);       // distant + green ranges
-      cx.fillStyle='rgba(255,255,255,.88)';                           // clouds
-      for(let i=0;i<4;i++){ const cxp=((i*Wd/3 + pos/48) % (Wd+140))-70, cyp=hz*0.32+(i%2)*20;
+      ridge(hz-10,60,'#B9D2DE',0.2); ridge(hz-4,48,'#93B9CB',0.5); ridge(hz,34,'#6FA487',1.7);
+      cx.fillStyle='rgba(255,255,255,.88)';
+      for(let i=0;i<5;i++){ const cxp=((i*Wd/4 + pos/48) % (Wd+140))-70, cyp=hz*0.26+(i%3)*17;
         cx.beginPath(); cx.ellipse(cxp,cyp,28,12,0,0,7); cx.ellipse(cxp+24,cyp+4,21,10,0,0,7); cx.ellipse(cxp-22,cyp+5,18,9,0,0,7); cx.fill(); }
-      cx.fillStyle='#5FAE55'; cx.fillRect(0,hz,Wd,Ht-hz);             // ground
+      cx.fillStyle='#5FAE55'; cx.fillRect(0,hz,Wd,Ht-hz);
       const hg=cx.createLinearGradient(0,hz-18,0,hz+18); hg.addColorStop(0,'rgba(233,246,255,0)'); hg.addColorStop(.5,'rgba(233,246,255,.6)'); hg.addColorStop(1,'rgba(233,246,255,0)');
-      cx.fillStyle=hg; cx.fillRect(0,hz-18,Wd,36);                    // horizon haze
+      cx.fillStyle=hg; cx.fillRect(0,hz-18,Wd,36);
     }
     function draw(){
       drawBG();
-      const base=segs[Math.floor(pos/segLen)%segs.length]; const basePct=(pos%segLen)/segLen;
+      const base=segs[Math.min(segs.length-1,Math.floor(pos/segLen))]; const basePct=(pos%segLen)/segLen;
       let x=0, dx=-(base.curve*basePct), maxy=Ht;
       const camX=playerX*roadW;
-      for(let n=0;n<drawDist;n++){ const seg=segs[(base.index+n)%segs.length]; const looped=seg.index<base.index; const cz=pos-(looped?trackLen:0);
-        project(seg.p1, camX - x,        camH, cz);
-        project(seg.p2, camX - x - dx,   camH, cz);
+      for(let n=0;n<drawDist;n++){ const idx=base.index+n; if(idx>=segs.length) break; const seg=segs[idx];
+        project(seg.p1, camX - x,        camH, pos);
+        project(seg.p2, camX - x - dx,   camH, pos);
         x+=dx; dx+=seg.curve;
         seg._vis=false;
         if(seg.p1.camera.z<=camDepth || seg.p2.screen.y>=seg.p1.screen.y || seg.p2.screen.y>=maxy) continue;
         seg._vis=true; maxy=seg.p2.screen.y;
         const s1=seg.p1.screen, s2=seg.p2.screen, c=seg.color;
-        poly(0,s1.y, 0,s2.y, Wd,s2.y, Wd,s1.y, c.grass);              // grass band
+        poly(0,s1.y, 0,s2.y, Wd,s2.y, Wd,s1.y, c.grass);
         const r1=s1.w*0.18, r2=s2.w*0.18;
-        poly(s1.x-s1.w-r1,s1.y, s2.x-s2.w-r2,s2.y, s2.x-s2.w,s2.y, s1.x-s1.w,s1.y, c.rumble); // L rumble
-        poly(s1.x+s1.w+r1,s1.y, s2.x+s2.w+r2,s2.y, s2.x+s2.w,s2.y, s1.x+s1.w,s1.y, c.rumble); // R rumble
-        poly(s1.x-s1.w,s1.y, s2.x-s2.w,s2.y, s2.x+s2.w,s2.y, s1.x+s1.w,s1.y, c.road);         // road
-        if(c.lane){ const lw1=s1.w*0.03, lw2=s2.w*0.03; poly(s1.x-lw1,s1.y, s2.x-lw2,s2.y, s2.x+lw2,s2.y, s1.x+lw1,s1.y, c.lane); } // centre line
+        poly(s1.x-s1.w-r1,s1.y, s2.x-s2.w-r2,s2.y, s2.x-s2.w,s2.y, s1.x-s1.w,s1.y, c.rumble);
+        poly(s1.x+s1.w+r1,s1.y, s2.x+s2.w+r2,s2.y, s2.x+s2.w,s2.y, s1.x+s1.w,s1.y, c.rumble);
+        poly(s1.x-s1.w,s1.y, s2.x-s2.w,s2.y, s2.x+s2.w,s2.y, s1.x+s1.w,s1.y, c.road);
+        if(c.lane){ const lw1=s1.w*0.03, lw2=s2.w*0.03; poly(s1.x-lw1,s1.y, s2.x-lw2,s2.y, s2.x+lw2,s2.y, s1.x+lw1,s1.y, c.lane); }
+        // checkered finish strip
+        if(Math.abs(seg.index*segLen-FINISH)<segLen*2){ const cw=(s1.w*2)/10;
+          for(let k=0;k<10;k++){ cx.fillStyle=(k%2)?'#111':'#EEE'; cx.fillRect(s1.x-s1.w+k*cw,s1.y-3,cw,6); } }
       }
-      // sprites, hazards, item boxes, rivals — far to near so nearer ones overlap
       const order=[];
-      for(let n=drawDist-1;n>=0;n--){ const seg=segs[(base.index+n)%segs.length]; if(!seg._vis) continue; const sc=seg.p1.screen;
-        seg.sprites.forEach(sp=>{ if(sp.kind==='flora') order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*sp.off,sy:sc.y,t:'flora'}); });
-      }
-      hazards.forEach(h=>{ const seg=segs[h.seg]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*h.off,sy:sc.y,t:'oil'}); } });
-      items.forEach(it=>{ if(it.gone>0) return; const seg=segs[it.seg]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*it.off,sy:sc.y,t:'item',it:it}); } });
-      rivals.forEach(r=>{ const sIdx=Math.floor(r.z/segLen)%segs.length; const seg=segs[sIdx]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*r.x,sy:sc.y,t:'rival',r:r}); } });
+      for(let n=drawDist-1;n>=0;n--){ const idx=base.index+n; if(idx>=segs.length) continue; const seg=segs[idx]; if(!seg._vis) continue; const sc=seg.p1.screen;
+        seg.sprites.forEach(sp=>{ order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*(sp.off||0),sy:sc.y,t:sp.kind,w2:sc.w}); }); }
+      hazards.forEach(hh=>{ const seg=segs[hh.seg]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*hh.off,sy:sc.y,t:'oil'}); } });
+      items.forEach(it=>{ if(it.gone) return; const seg=segs[it.seg]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*it.off,sy:sc.y,t:'item',it:it}); } });
+      rivals.forEach(r=>{ const sIdx=Math.floor(r.z/segLen); const seg=segs[Math.min(segs.length-1,sIdx)]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*r.x,sy:sc.y,t:'rival',r:r}); } });
       order.sort((a,b)=>a.y-b.y);
       order.forEach(o=>{ const w=Math.max(12,o.scale*roadW*Wd/2*0.11);
-        if(o.t==='flora'){ // rounded shaded tree
+        if(o.t==='flora'){
           cx.fillStyle='rgba(0,0,0,.18)'; cx.beginPath(); cx.ellipse(o.sx,o.sy,w*0.5,w*0.14,0,0,7); cx.fill();
           cx.fillStyle='#6b4a2a'; cx.fillRect(o.sx-w*0.09,o.sy-w*0.7,w*0.18,w*0.7);
           const tg=cx.createRadialGradient(o.sx-w*0.2,o.sy-w*1.5,2,o.sx,o.sy-w*1.3,w*0.95);
           tg.addColorStop(0,'#7ED07A'); tg.addColorStop(1,'#2F8A46'); cx.fillStyle=tg;
           cx.beginPath(); cx.arc(o.sx,o.sy-w*1.35,w*0.72,0,7); cx.arc(o.sx-w*0.5,o.sy-w*0.95,w*0.5,0,7); cx.arc(o.sx+w*0.5,o.sy-w*0.95,w*0.5,0,7); cx.fill(); }
+        else if(o.t==='banner'){ const bw2=o.w2*1.35, bh2=Math.max(5,w*0.5);
+          cx.fillStyle='#6b4a2a'; cx.fillRect(o.sx-bw2,o.sy-bh2*4.2,Math.max(2,w*0.12),bh2*4.2); cx.fillRect(o.sx+bw2-Math.max(2,w*0.12),o.sy-bh2*4.2,Math.max(2,w*0.12),bh2*4.2);
+          const bg2=cx.createLinearGradient(0,o.sy-bh2*4.2,0,o.sy-bh2*3.2); bg2.addColorStop(0,'#F0B429'); bg2.addColorStop(1,'#D89614');
+          cx.fillStyle=bg2; cx.fillRect(o.sx-bw2,o.sy-bh2*4.2,bw2*2,bh2);
+          if(w>16){ cx.fillStyle='#7A4A08'; cx.font='800 '+Math.round(bh2*0.7)+'px Fraunces,serif'; cx.textAlign='center';
+            cx.fillText('BEE GRAND PRIX',o.sx,o.sy-bh2*3.45); cx.textAlign='left'; } }
         else if(o.t==='oil'){ cx.fillStyle='rgba(18,16,24,.78)'; cx.beginPath(); cx.ellipse(o.sx,o.sy-w*0.1,w*0.95,w*0.32,0,0,7); cx.fill();
           cx.fillStyle='rgba(150,110,210,.55)'; cx.beginPath(); cx.ellipse(o.sx-w*0.22,o.sy-w*0.16,w*0.34,w*0.11,0,0,7); cx.fill();
           cx.fillStyle='rgba(90,200,255,.35)'; cx.beginPath(); cx.ellipse(o.sx+w*0.25,o.sy-w*0.06,w*0.22,w*0.07,0,0,7); cx.fill(); }
         else if(o.t==='item'){ const s=Math.max(11,w*0.95), yy=o.sy-w*1.15-Math.sin(pos/180+o.it.k)*4;
-          cx.save(); cx.translate(o.sx,yy);
+          cx.save(); cx.translate(o.sx,yy); cx.rotate(Math.sin(pos/300+o.it.k)*0.12);
           cx.fillStyle='rgba(0,0,0,.16)'; cx.beginPath(); cx.ellipse(0,w*1.15,s*0.5,s*0.16,0,0,7); cx.fill();
           const ig=cx.createLinearGradient(0,-s,0,s); ig.addColorStop(0,'#8BE7FF'); ig.addColorStop(1,'#2E9BD6');
-          cx.fillStyle=ig; rrp(-s/2,-s/2,s,s,s*0.22); cx.fill(); cx.strokeStyle='#fff'; cx.lineWidth=Math.max(1.5,s*0.06); cx.stroke();
+          cx.fillStyle=ig; rrp(-s/2,-s/2,s,s,s*0.22); cx.fill();
+          cx.strokeStyle='#fff'; cx.lineWidth=Math.max(1.5,s*0.06); cx.stroke();
+          cx.fillStyle='rgba(255,255,255,.35)'; rrp(-s/2+2,-s/2+2,s-4,s*0.3,s*0.16); cx.fill();
           cx.fillStyle='#fff'; cx.font='800 '+Math.round(s*0.78)+'px Fraunces,serif'; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText('?',0,s*0.04);
           cx.textAlign='left'; cx.textBaseline='alphabetic'; cx.restore(); }
-        else { const r=o.r; drawKart(o.sx,o.sy,w*1.9,r.col,r.av,{spin:r.spin>0}); }
+        else { const r=o.r; drawKart(o.sx,o.sy,w*1.9,r.col,{sprite:r.sprite,glyph:r.glyph},{spin:r.spin>0}); }
       });
-      // player kart (fixed, bottom centre; leans with steering)
       const pw=Wd*0.30, px=Wd/2 + playerX*Wd*0.03 + steer*8, py=Ht-14;
       cx.save(); cx.translate(px,py); cx.rotate(steer*0.05);
-      drawKart(0,0,pw,'#F0B429',heroKart,{boost:boostT>0});
+      drawKart(0,0,pw,'#F0B429',{av:heroKart},{boost:boostT>0});
       cx.restore();
       if(shieldT>0){ cx.strokeStyle='rgba(120,205,255,.85)'; cx.lineWidth=3; cx.beginPath(); cx.ellipse(px,py-pw*0.34,pw*0.62,pw*0.5,0,0,7); cx.stroke();
         cx.fillStyle='rgba(150,215,255,.14)'; cx.fill(); }
-      if(boostT>0){ cx.save(); cx.strokeStyle='rgba(255,255,255,.4)'; cx.lineWidth=2;   // speed lines
+      if(boostT>0){ cx.save(); cx.strokeStyle='rgba(255,255,255,.4)'; cx.lineWidth=2;
         for(let i=0;i<12;i++){ const a=i/12*Math.PI*2, r0=Wd*0.16, r1=Wd*0.52;
           cx.beginPath(); cx.moveTo(Wd/2+Math.cos(a)*r0, Ht*0.46+Math.sin(a)*r0*0.7); cx.lineTo(Wd/2+Math.cos(a)*r1, Ht*0.46+Math.sin(a)*r1*0.7); cx.stroke(); } cx.restore(); }
       if(spinFlashT>0){ cx.save(); cx.globalAlpha=Math.min(0.5,spinFlashT); cx.fillStyle='#2A1E14'; cx.fillRect(0,0,Wd,Ht); cx.restore(); }
-      // HUD
-      const rank=[{t:totalOf(pos,lap)}].concat(rivals.map(r=>({t:totalOf(r.z,r.lap)}))).sort((a,b)=>b.t-a.t);
-      const place=rank.findIndex(o=>o.t===totalOf(pos,lap))+1;
-      host.querySelector('#sg-lap').textContent='Lap '+Math.min(CFG.laps,lap)+'/'+CFG.laps;
-      host.querySelector('#sg-pos').textContent=['🥇 1st','🥈 2nd','🥉 3rd','4th','5th'][place-1]||place+'th';
-      host.querySelector('#sg-spd').textContent='💨 '+Math.round(v/maxV*180)+' mph';
+      if(mode==='count'&&countT>0){ cx.save(); cx.textAlign='center';
+        cx.font='800 54px Fraunces,serif'; cx.fillStyle='#fff'; cx.strokeStyle='rgba(20,20,50,.6)'; cx.lineWidth=7;
+        const n=Math.ceil(countT*3/1.0); const txt=countT<0.33?'GO!':String(Math.ceil(countT*3));
+        cx.strokeText(txt,Wd/2,Ht*0.42); cx.fillText(txt,Wd/2,Ht*0.42); cx.restore(); }
+      updateHud();
+    }
+    /* position bar: everyone's progress at a glance */
+    function updateHud(){
+      const ahead=rivals.filter(r=>r.z>pos).length; const place=ahead+1;
+      host.querySelector('#sg-pos').innerHTML=['🥇 1st','🥈 2nd','🥉 3rd','4th','5th'][place-1]+' <i>/ '+(CFG.rivals+1)+'</i>';
+      host.querySelector('#sg-spd').textContent='💨 '+Math.round(v/maxV*180);
+      const pb=host.querySelector('#sg-pb');
+      let dots='<i class="sg-pb-road"></i><b class="sg-pb-flag">🏁</b>';
+      rivals.forEach((r,i)=>{ const pct=Math.min(99,r.z/FINISH*100);
+        dots+='<span class="sg-pb-dot" style="left:'+pct.toFixed(1)+'%;top:'+(i%2?72:28)+'%;background:'+r.col+'" title="'+r.name+'">'+r.glyph+'</span>'; });
+      dots+='<span class="sg-pb-dot me" style="left:'+Math.min(99,pos/FINISH*100).toFixed(1)+'%">🐝</span>';
+      pb.innerHTML=dots;
     }
 
     /* ---- loop ---- */
     let last=0;
     function frame(ts){ if(over) return; const dt=Math.min(0.05,(ts-last)/1000)||0.016; last=ts;
-      if(started){ update(dt); } draw(); requestAnimationFrame(frame); }
+      if(mode==='count'){ countT-=dt; if(countT<=0){ mode='race'; } }
+      if(mode==='race') update(dt);
+      draw(); requestAnimationFrame(frame); }
     function update(dt){
       boostT=Math.max(0,boostT-dt); if(boostT===0) boostMul=1; shieldT=Math.max(0,shieldT-dt); spinFlashT=Math.max(0,spinFlashT-dt);
-      const seg=segs[Math.floor(pos/segLen)%segs.length]; const spdPct=v/maxV;
-      // accelerate automatically; boosts raise the ceiling
+      const seg=segs[Math.min(segs.length-1,Math.floor(pos/segLen))]; const spdPct=v/maxV;
       v=Math.min(maxV*boostMul, v+accel*dt);
-      // steering + curve centrifugal
       const dxs=dt*2.2*Math.max(0.35,spdPct);
       playerX+=steer*dxs; playerX-= dxs*spdPct*seg.curve*centri;
-      // off-road grass drag
       if((playerX<-1||playerX>1) && v>offLimit){ v+=offDecel*dt; }
       playerX=Math.max(-2,Math.min(2,playerX));
-      // oil hazards
-      if(shieldT<=0){ hazards.forEach(h=>{ const hz=h.seg*segLen; const d=Math.abs(((pos-hz+trackLen)%trackLen)); if(d<segLen*1.2 && Math.abs(playerX-h.off)<0.5 && v>maxV*0.3){ v*=0.55; spinFlashT=0.5; try{flash('🛢️ Slipped on oil!');}catch(_){}} }); }
-      // ? item boxes — driving over one fires the next power-up too
-      items.forEach(it=>{ if(it.gone>0){ it.gone=Math.max(0,it.gone-dt); return; } const iz=it.seg*segLen; const d=((iz-pos+trackLen)%trackLen);
-        if(d<segLen*1.4 && Math.abs(playerX-it.off)<0.5){ it.gone=7; const p=nextPw; try{flash('🎁 '+p.msg);}catch(_){} try{p.run();}catch(e){} pwi++; nextPw=POWERS[pwi%POWERS.length]; renderTray(); } });
-      pos+=v*dt; while(pos>=trackLen){ pos-=trackLen; lap++; if(lap>CFG.laps){ over=true; return finish(); } }
-      // rivals
-      const my=totalOf(pos,lap);
+      if(shieldT<=0){ hazards.forEach(h=>{ const hz2=h.seg*segLen; const d=Math.abs(pos-hz2); if(d<segLen*1.2 && Math.abs(playerX-h.off)<0.5 && v>maxV*0.3){ v*=0.55; spinFlashT=0.5; try{flash('🛢️ Slipped on oil!');}catch(_){}} }); }
+      items.forEach(it=>{ if(it.gone) return; const iz=it.seg*segLen; const d=iz-pos;
+        if(d>-segLen*0.4&&d<segLen*1.4 && Math.abs(playerX-it.off)<0.5){ it.gone=true; spellGate(); } });
+      pos+=v*dt;
+      if(pos>=FINISH){ over=true; return finish(); }
       rivals.forEach(r=>{ r.spin=Math.max(0,r.spin-dt); r.slow=Math.max(0,r.slow-dt);
         let rs=r.spd; if(r.spin>0) rs*=0.28; else if(r.slow>0) rs*=0.55;
-        // gentle rubber-band so the pack stays close and catchable
-        const gap=my-totalOf(r.z,r.lap); rs+= gap>segLen*10?maxV*0.06: gap<-segLen*10?-maxV*0.05:0;
-        r.z+=Math.max(0,rs)*dt; if(r.z>=trackLen){ r.z-=trackLen; r.lap++; }
-        r.x+= (Math.sin((r.z+r.name.length*99)/1400)*0.6 - r.x)*dt*0.6; // drift toward a lane line
-      });
+        const gap=pos-r.z; rs+= gap>segLen*12?maxV*0.07: gap<-segLen*12?-maxV*0.06:0;
+        r.z+=Math.max(0,rs)*dt; if(r.z>=FINISH) r.fin=true;
+        r.x+= (Math.sin((r.z+r.name.length*99)/1400)*0.6 - r.x)*dt*0.6; });
     }
     function finish(){ removeEventListener('keydown',kd); removeEventListener('keyup',ku);
-      const my=totalOf(pos,CFG.laps); const rank=[{t:my,me:true}].concat(rivals.map(r=>({t:totalOf(r.z,r.lap)}))).sort((a,b)=>b.t-a.t);
-      const place=rank.findIndex(o=>o.me)+1;
-      done({win:place===1, score:(6-place)*250, stars:place===1?3:place===2?2:place===3?1:0}); }
+      const place=1+rivals.filter(r=>r.fin).length;
+      done({win:place===1, score:(6-place)*250+Math.round(pos/segLen), stars:place===1?3:place===2?2:place===3?1:0}); }
 
     /* ---- how to play ---- */
     host.style.position='relative';
     const intro=document.createElement('div'); intro.className='sg-howto';
     intro.innerHTML='<div class="sg-howto-card">'+
       '<div class="sg-howto-h">🏁 Bee Grand Prix</div>'+
-      '<div class="sg-howto-sub">A real race — spell words to earn power-ups, each one does something different!</div>'+
+      '<div class="sg-howto-sub">One epic race to the finish against the Unspelling’s crew — the Smudge, Glitch and Vex are on the grid!</div>'+
       '<ol class="sg-howto-steps">'+
-      '<li>You <b>drive automatically</b> — use <b>◀ ▶</b> (or arrow keys / drag) to steer and dodge 🛢️ oil.</li>'+
-      '<li><b>🔊 Hear &amp; spell</b> the word, press <b>Go</b>. Each correct word fires the next power-up:</li>'+
-      '<li class="sg-pw-legend"><span>🚀 Rocket</span><span>💨 Turbo</span><span>🛢️ Oil chaser</span><span>🌪️ Gust</span><span>🍯 Honey</span><span>🛡️ Shield</span></li>'+
-      '<li>Finish <b>'+CFG.laps+' laps</b> in 1st for ⭐⭐⭐. Ready?</li>'+
+      '<li>You <b>drive automatically</b> — steer with <b>◀ ▶</b> (arrows / tap the sides) and dodge 🛢️ oil.</li>'+
+      '<li>Drive into a <b>? box</b> — the race pauses while you <b>spell the word</b>.</li>'+
+      '<li>Spelling it right <b>unlocks a power-up</b> into your slot — tap the slot (or Space) to fire it when you need it!</li>'+
+      '<li>Watch the <b>track bar up top</b> to see where every racer is. First to the flag wins ⭐⭐⭐.</li>'+
       '</ol>'+
-      '<button class="sg-rbtn go sg-howto-go" id="sg-howgo">Start race →</button></div>';
+      '<button class="sg-rbtn go sg-howto-go" id="sg-howgo">To the grid! →</button></div>';
     host.appendChild(intro);
-    host.querySelector('#sg-howgo').onclick=()=>{ intro.remove(); started=true; nextWord(); renderTray(); if(inp){ try{inp.focus();}catch(e){} } };
-    renderTray();
+    intro.querySelector('#sg-howgo').onclick=()=>{ intro.remove(); countT=1.0; mode='count'; };
+    renderHold();
+    if(window.SB_DEBUG) window._race={ state:()=>({pos,FINISH,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over}),
+      steerTo:(x)=>{playerX=x;}, jump:(z)=>{pos=z;}, grant:(i)=>{held=POWERS[i||0];renderHold();} };
     requestAnimationFrame(frame);
     return { destroy(){ over=true; removeEventListener('keydown',kd); removeEventListener('keyup',ku); } };
   }
 
-  /* ---------- ENGINE E · WHACK-A-MOTH ---------- */
   function whackAMoth(host, opts, done){
     const diff=opts.diff||'medium';
     const CFG={easy:{words:6,up:1500,time:90},medium:{words:8,up:1200,time:90},hard:{words:9,up:950,time:85},champ:{words:10,up:800,time:80}}[diff];
