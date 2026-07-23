@@ -322,7 +322,7 @@ let _wvSet=null,_wvAudio=null;
 // Every word uses one consistent Kokoro voice (mixing in the device voice sounded
 // unprofessional). Words reported as off get REBUILT in Kokoro and re-reviewed —
 // this stays empty unless a clip is ever pulled while a rebuild is pending.
-const WV_BAD=new Set([]);
+const WV_BAD=new Set(["brave","dub","emperor","olive","paw","peach","proof","pub","rub","spa","tub","umbrella","vegetable"]);
 function wordClip(text){ if(!window.SB_WVOICE) return null;
   if(!_wvSet){ try{ _wvSet=new Set(String(SB_WVOICE).split('|')); }catch(e){ _wvSet=new Set(); } }
   const k=nkey(text); if(!k||/\s/.test(k)) return null;
