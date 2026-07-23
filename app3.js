@@ -315,14 +315,14 @@ function loadVoices(){ try{ const vs=window.speechSynthesis.getVoices()||[]; if(
   _voice=best||null;
 }catch(e){} }
 function utter(text,rate){ const u=new SpeechSynthesisUtterance(text); if(_voice) u.voice=_voice; u.rate=rate||0.9; u.pitch=1.0; u.volume=1; return u; }
-/* Studio word audio: single words prefer a bundled Kokoro clip (voice/w/*.mp3,
+/* Studio word audio: single words prefer a bundled Google TTS clip (voice/w/*.mp3,
    manifest in voice-words.js) — correct pronunciations, same voice as the bee.
    Anything without a clip (sentences, long-tail words) falls back to device TTS. */
 let _wvSet=null,_wvAudio=null;
 // Every word uses one consistent Kokoro voice (mixing in the device voice sounded
 // unprofessional). Words reported as off get REBUILT in Kokoro and re-reviewed —
 // this stays empty unless a clip is ever pulled while a rebuild is pending.
-const WV_BAD=new Set(["brave","dub","emperor","olive","paw","peach","proof","pub","rub","spa","tub","umbrella","vegetable"]);
+const WV_BAD=new Set([]);
 function wordClip(text){ if(!window.SB_WVOICE) return null;
   if(!_wvSet){ try{ _wvSet=new Set(String(SB_WVOICE).split('|')); }catch(e){ _wvSet=new Set(); } }
   const k=nkey(text); if(!k||/\s/.test(k)) return null;
