@@ -2902,9 +2902,17 @@ function trainerCard(){
   const S=state; const word=curWord(); const st=S.status;
   let resultText='',resultStyle=''; const primaryLabel=(st==='idle')?'Check':'Check again'; const showResult=(st!=='idle');
   const rbase='border-radius:14px;padding:13px 16px;font-weight:800;font-size:15px;margin-bottom:16px;animation:sb-pop .3s ease both;';
-  if(st==='correct'){ resultText='✓ Correct! Nicely spelled.'; resultStyle=rbase+'background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good)'; }
-  else if(st==='wrong'){ resultText='✗ Not quite — it’s "'+word.w+'". Try the next one.'; resultStyle=rbase+'background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)'; }
-  else if(st==='revealed'){ resultText='The word is "'+word.w+'".'; resultStyle=rbase+'background:var(--surface2);color:var(--text)'; }
+  if(st==='correct'){ resultText='✓ Correct! Nicely spelled — press Complete to move on.'; resultStyle=rbase+'background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good)'; }
+  else if(st==='wrong'){ resultText='✗ Not quite — it’s "'+word.w+'". Mark it for revision to see it again.'; resultStyle=rbase+'background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)'; }
+  else if(st==='revealed'){ resultText='The word is "'+word.w+'". Mark it for revision to practise it again.'; resultStyle=rbase+'background:var(--surface2);color:var(--text)'; }
+  // After checking, the two top buttons ARE the way forward — highlight the one that fits the result.
+  const completeHot=(st==='correct'), reviseHot=(st==='wrong'||st==='revealed');
+  const completeStyle=completeHot
+    ? 'background:var(--good);border:1px solid var(--good);color:#fff;box-shadow:0 4px 14px color-mix(in srgb,var(--good) 45%,transparent);animation:sb-pop .3s ease'
+    : 'background:color-mix(in srgb,var(--good) 15%,transparent);border:1px solid var(--good);color:var(--good)';
+  const reviseStyle=reviseHot
+    ? 'background:var(--treasure,#F0B429);border:1px solid var(--treasure,#F0B429);color:#3a2a00;box-shadow:0 4px 14px color-mix(in srgb,var(--treasure,#F0B429) 50%,transparent);animation:sb-pop .3s ease'
+    : 'background:color-mix(in srgb,var(--treasure,#F0B429) 16%,transparent);border:1px solid var(--treasure,#F0B429);color:var(--treasure-deep,#8A5B00)';
   const hints=[];
   if(S.showDef){ hints.push('<b>Definition</b> — '+blankHTML(word.d,word.w)+'.'); } // meaning only — spelling hints (word.h) teach letters, so they never show mid-spell
   if(S.showSent) hints.push('<b>Sentence</b> — '+blankHTML(word.s,word.w));
@@ -2913,8 +2921,8 @@ function trainerCard(){
   const mascotAnim=st==='wrong'?'animation:sb-shake .45s ease':(st==='correct'?'animation:sb-pop .4s ease':'');
   return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow);text-align:center;position:relative">
       <div style="display:flex;justify-content:flex-end;flex-wrap:wrap;gap:7px;margin-bottom:8px">
-        <button data-act="completeWord" title="Got it — mark this word complete and move to the next" style="display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;background:color-mix(in srgb,var(--good) 15%,transparent);border:1px solid var(--good);color:var(--good);font-weight:800;font-size:12.5px">✓ Complete</button>
-        <button data-act="reviseWord" title="Mark this word for revision and move to the next" style="display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;background:color-mix(in srgb,var(--treasure,#F0B429) 16%,transparent);border:1px solid var(--treasure,#F0B429);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12.5px">⚑ Mark for revision</button>
+        <button data-act="completeWord" title="Got it — mark this word complete and move to the next" style="display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;${completeStyle};font-weight:800;font-size:12.5px">✓ Complete</button>
+        <button data-act="reviseWord" title="Mark this word for revision and move to the next" style="display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;${reviseStyle};font-weight:800;font-size:12.5px">⚑ Mark for revision</button>
       </div>
       <div style="width:96px;height:108px;margin:0 auto 4px"><div style="${mascotAnim};width:96px;height:108px">${mascotSVG(S.mood)}</div></div>
       <button data-act="speak" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:18px">${iconSVG('volume',18)} Hear the word</button>
@@ -2922,7 +2930,7 @@ function trainerCard(){
       ${hints.length?`<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:left;font-size:15px;line-height:1.6;margin-bottom:18px">${hints.join('  ·  ')}</div>`:''}
       <input data-inp="onType" data-key="trainKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="spell it" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;text-align:center;padding:16px 14px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(20px,5vw,28px);letter-spacing:.14em;text-transform:lowercase;outline:none;margin-bottom:16px">
       ${showResult?`<div style="${resultStyle}">${esc(resultText)}</div>`:''}
-      <div style="display:flex;gap:10px"><button data-act="reveal" style="padding:14px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Show answer</button><button data-act="primary" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${primaryLabel}</button></div>
+      <div style="display:flex;gap:10px"><button data-act="reveal" style="padding:14px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Show answer</button><button data-act="primary" style="flex:1;padding:14px;border-radius:14px;${showResult?'background:var(--surface2);color:var(--text);border:1px solid var(--line)':'background:var(--accent);color:#fff;box-shadow:var(--edge)'};font-weight:800;font-size:15px">${primaryLabel}</button></div>
     </div>`;
 }
 function viewTrain(){
