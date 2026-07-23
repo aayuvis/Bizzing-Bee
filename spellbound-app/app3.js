@@ -398,6 +398,14 @@ function maskParts(sentence, word){ const t=sentence||''; const w=(word||'').tri
   return { before:t.slice(0,m.index).trim(), after:t.slice(m.index+m[0].length).trim(), matched:true }; }
 function maskTxt(text, word){ const t=text||''; const w=(word||'').trim(); if(!w) return t;
   try{ return _applyMasks(t, w, '_____'); }catch(e){ return t; } }
+// Alternate/other senses of a word (validated WordNet layer in window.SB_ALT).
+function altsFor(word){ try{ const m=window.SB_ALT; if(!m) return []; return m[nkey(word)]||[]; }catch(e){ return []; } }
+function altsHTML(word, mask){ const a=altsFor(word); if(!a||!a.length) return '';
+  const rows=a.slice(0,2).map(s=>`<div style="display:flex;gap:7px;align-items:flex-start;margin-top:7px">
+      <span style="flex-shrink:0;font-family:var(--mono);font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);background:var(--chip);padding:2px 7px;border-radius:999px;margin-top:2px">${esc(s.p||'also')}</span>
+      <span style="font-size:13.5px;color:var(--text);line-height:1.5">${mask?blankHTML(s.d,word):esc(s.d)}</span></div>`).join('');
+  return `<div style="margin-top:12px;padding-top:11px;border-top:1px dashed var(--line);text-align:left;max-width:40em;margin-left:auto;margin-right:auto">
+    <div style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:1px">📖 Other meanings</div>${rows}</div>`; }
 function sayMasked(sentence, word){ try{ window.speechSynthesis.cancel(); }catch(e){}
   const parts=maskParts(sentence, word);
   if(!parts.matched){ const safe=(sentence||'').replace(new RegExp((word||'').replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'ig'),' beep '); deviceSpeak(safe||'beep',0.92); return; }
@@ -3009,6 +3017,7 @@ function wordFlash(words, idx, navAct, opts){
       ${w.s?`<div style="font-size:13px;color:var(--muted);line-height:1.55;margin-top:9px"><b style="color:var(--text)">Sentence.</b> ${esc(w.s)}</div>`:''}
       ${w.h?`<div style="display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text);line-height:1.5;margin-top:10px;background:var(--chip);border-radius:10px;padding:9px 13px;max-width:42em"><span style="color:var(--accent);margin-top:1px;flex-shrink:0">${iconSVG('bulb',15)}</span><span>${esc(w.h)}</span></div>`:''}
       ${w.m?`<div style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--bad);font-weight:700;line-height:1.5;margin-top:9px">${iconSVG('alert',14)} Often misspelled “${esc(w.m)}”</div>`:''}
+      ${altsHTML(w.w,false)}
       <div style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:15px">
         ${w.bp!=null?`<span title="Bee-probability score: ${w.bp}/100" style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:999px;background:var(--surface2);font-size:12px;color:var(--accent);font-weight:800">${iconSVG('target',13)} ${beeOdds(w.bp)}</span>`:''}
         ${w.p?chip('/ '+esc(w.p)+' /'):''}${w.o?chip(esc(w.o)):''}${w.ps?chip(esc(w.ps)):''}
