@@ -23,13 +23,14 @@ handlers. App lives in this folder; open `index.html` to run.
 
 ## Hard rules (do not violate)
 - **Every game needs BOTH keyboard AND touch/tablet controls.** Non-negotiable.
-- **All word/concept audio is Kokoro** (one consistent voice). When a clip is flagged,
-  rebuild it — escalating per round: fresh synth → changed input (no-dot/speed — Kokoro is
-  deterministic) → explicit IPA / carrier-phrase excision → voice-vector blend (70/30
-  af_heart+sibling) → full sibling voice. **If a word still fails after the blend/swap
-  rounds, route it to device TTS via `WV_BAD` (owner's decision, 2026-07-22)** and leave it
-  in `voice/rebuild-queue.json` in case a better model shows up. Correct pronunciation
-  beats voice consistency; device TTS is also the silent fallback for words with no clip.
+- **Word audio is Google Cloud TTS** (voice `en-US-Neural2-F`, rate 0.95, MP3 24kHz) as of
+  2026-07-23 — the whole 41,136-word library was migrated off Kokoro (which had persistent
+  pronunciation artifacts, worst on French-origin words). `WV_BAD` is empty. To fix a
+  flagged word: re-gen just that word via Google TTS (SSML `<phoneme>` for deterministic
+  pronunciation), overwrite `voice/w/<slug>.mp3` (slug = `word.replace(/[^a-z0-9]/g,'-')`),
+  add it to `SB_VOICE_REVIEW`, bump `SB_VOICE_VER`. Needs a Google TTS API key (env `GKEY`).
+- **Saga dialogue / concept audio stays Kokoro** — the `voice/pipeline/` scripts + the
+  `kokoro-model-v1` GitHub release are kept for regenerating those (`voice/d/<key>.mp3`).
 - **Never leak the target spelling** in on-screen meaning/definition text (it's masked).
 - Games must look **professional** (not boxy/1990s). Use the delivered Claude Design art
   (`SAGA_ART`/`WORLD_ART`/`SB_AVATAR`); hand-drawn canvas is fine when richly shaded.
