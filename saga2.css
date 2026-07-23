@@ -285,3 +285,26 @@
 .sg-flyprog{position:relative;flex:1;min-width:70px;max-width:180px;height:12px;border-radius:99px;background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.4);overflow:visible}
 .sg-flyprog i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:linear-gradient(90deg,#FFE28A,#F0B429);width:0;transition:width .5s}
 .sg-flyprog b{position:absolute;right:-7px;top:-7px;font-size:15px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
+
+/* ===== Bee Grand Prix v2: readable light HUD + live position bar + held power-up ===== */
+.sg-racehud{background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.08);border-radius:14px;padding:8px 12px;margin:0 auto 8px;max-width:640px;box-shadow:0 3px 10px rgba(20,15,40,.15);backdrop-filter:blur(6px)}
+.sg-rh-row{display:flex;align-items:center;gap:12px}
+.sg-rh-place{font:800 20px 'Fraunces',serif;color:#241E33;white-space:nowrap}
+.sg-rh-place i{font:700 12px 'Hanken',sans-serif;color:#8A7F70;font-style:normal}
+.sg-rh-spd{font:800 13px 'Sono',monospace;color:#5C5140;white-space:nowrap;min-width:64px;text-align:right}
+.sg-posbar{position:relative;flex:1;height:26px;min-width:120px}
+.sg-pb-road{position:absolute;left:0;right:14px;top:50%;height:8px;transform:translateY(-50%);border-radius:99px;background:linear-gradient(90deg,#E8E2D4,#D8D0BE);border:1px solid rgba(0,0,0,.1)}
+.sg-pb-flag{position:absolute;right:-4px;top:50%;transform:translateY(-50%);font-size:16px}
+.sg-pb-dot{position:absolute;top:50%;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3);transition:left .3s linear}
+.sg-pb-dot.me{width:26px;height:26px;font-size:15px;background:#FFD34D;border:3px solid #fff;box-shadow:0 0 0 2px #F0B429,0 2px 6px rgba(0,0,0,.35);z-index:2}
+.sg-hold{position:absolute;right:10px;top:10px;z-index:5;width:58px;height:58px;border-radius:16px;background:rgba(255,255,255,.92);border:2px solid rgba(0,0,0,.12);box-shadow:0 3px 10px rgba(20,15,40,.25);display:grid;place-items:center;padding:7px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sg-hold svg{width:100%;height:100%}
+.sg-hold-empty{font:800 24px 'Fraunces',serif;color:#C9C0AE}
+.sg-hold.ready{border-color:#F0B429;animation:sgHoldPulse 1.2s ease-in-out infinite}
+@keyframes sgHoldPulse{50%{box-shadow:0 0 0 6px rgba(240,180,41,.25),0 3px 10px rgba(20,15,40,.25)}}
+.sg-unlock{display:grid;place-items:center;gap:6px;text-align:center}
+.sg-unlock-ic{width:74px;height:74px;display:block;animation:sgUnlockPop .5s cubic-bezier(.2,1.6,.4,1) both}
+.sg-unlock-ic svg{width:100%;height:100%}
+.sg-unlock b{font:800 20px 'Fraunces',serif}
+.sg-unlock i{font:650 12.5px 'Hanken',sans-serif;color:#8A7F70;font-style:normal}
+@keyframes sgUnlockPop{0%{transform:scale(.3) rotate(-14deg);opacity:0}100%{transform:scale(1) rotate(0)}}
