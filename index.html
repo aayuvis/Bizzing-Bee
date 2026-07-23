@@ -7,8 +7,8 @@
 <meta name="description" content="Bizzing Bee — a spelling-bee trainer that hears your child spell, evolves a character with every win, and shows parents exactly where they stand.">
 <title>Bizzing Bee — spelling-bee trainer</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%F0%9F%90%9D%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="fonts/fonts.css?v=20260723r">
-<link rel="stylesheet" href="tokens.css?v=20260723r">
+<link rel="stylesheet" href="fonts/fonts.css?v=20260723s">
+<link rel="stylesheet" href="tokens.css?v=20260723s">
 
 <style>
   *{box-sizing:border-box}
@@ -51,6 +51,14 @@
   /* comfortable default type: the whole app runs ~9% larger; Large text steps up further */
   #root{zoom:1.09}
   :root[data-size="large"] #root{zoom:1.28}
+  /* ---- accessibility modes (Settings → Accessibility) ---- */
+  :root[data-font="easy"]{--display:Verdana,Tahoma,ui-sans-serif,system-ui,sans-serif;--body:Verdana,Tahoma,ui-sans-serif,system-ui,sans-serif;--entry:Verdana,ui-monospace,monospace}
+  :root[data-font="easy"] body{letter-spacing:.035em;word-spacing:.08em;line-height:1.65}
+  :root[data-font="easy"] i,:root[data-font="easy"] em{font-style:normal!important}
+  :root[data-contrast="high"]{--text:#000;--ink:#000;--muted:#1a1a1a;--line:#000}
+  :root[data-contrast="high"][data-mode="dusk"]{--text:#fff;--ink:#fff;--muted:#f0f0f0;--line:#fff}
+  :root[data-contrast="high"] .sb-cs,:root[data-contrast="high"] .sb-cn{color:var(--text)}
+  :root[data-motion="off"] *,:root[data-motion="off"] *::before,:root[data-motion="off"] *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
   /* concept animation engine */
   @keyframes ca-pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
   @keyframes ca-sl{0%{transform:translateX(-72px);opacity:0}100%{transform:translateX(0);opacity:1}}
@@ -166,9 +174,14 @@
     background:linear-gradient(160deg,color-mix(in srgb,var(--c1) 20%,#fff),#fff 45%);
     border:3px solid var(--rc);box-shadow:0 22px 55px rgba(20,15,38,.55),inset 0 0 0 1px rgba(255,255,255,.6)}
   :root[data-theme="dark"] .avc-card,[data-mode="dusk"] .avc-card{background:linear-gradient(160deg,color-mix(in srgb,var(--c1) 34%,#241E33),#2A2340 48%);box-shadow:0 22px 55px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.12)}
-  .avc-foil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.28) 48%,transparent 56%);mix-blend-mode:screen}
+  .avc-foil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.32) 48%,transparent 56%);mix-blend-mode:screen;animation:avcShine 5s linear infinite}
   .avc-legendary .avc-foil{background:linear-gradient(115deg,transparent 34%,rgba(255,224,130,.55) 46%,rgba(255,255,255,.4) 50%,transparent 60%);animation:avcShine 3.2s linear infinite}
-  @keyframes avcShine{0%{transform:translateX(-40%)}100%{transform:translateX(40%)}}
+  @keyframes avcShine{0%{transform:translateX(-45%)}100%{transform:translateX(45%)}}
+  /* Hero cards get lighting too: a colored holo sheen crossing the white foil + a soft rarity glow. */
+  .avc-card:not(.avc-villain)::before{content:'';position:absolute;inset:-2px;pointer-events:none;z-index:0;border-radius:inherit;background:linear-gradient(125deg,transparent 43%,color-mix(in srgb,var(--c2) 62%,rgba(255,255,255,.55)) 50%,transparent 57%);mix-blend-mode:screen;opacity:.6;animation:avcShine 3.8s linear infinite reverse}
+  .avc-card:not(.avc-villain)::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;border-radius:inherit;box-shadow:inset 0 0 44px color-mix(in srgb,var(--c1) 24%,transparent);animation:avcPulse 3.1s ease-in-out infinite}
+  @keyframes avcPulse{0%,100%{opacity:.3}50%{opacity:.85}}
+  .avc-legendary:not(.avc-villain)::before{animation-duration:2.7s;background:linear-gradient(125deg,transparent 40%,rgba(255,231,150,.7) 49%,color-mix(in srgb,var(--c2) 55%,#fff) 52%,transparent 60%)}
   .avc-top{position:relative;display:flex;justify-content:space-between;align-items:flex-start;z-index:1}
   .avc-ovr{display:grid;justify-items:center;line-height:1;background:var(--rc);color:#fff;border-radius:12px;padding:6px 10px;box-shadow:0 3px 8px rgba(0,0,0,.25)}
   .avc-ovr b{font:900 22px var(--display,serif)}.avc-ovr i{font:800 8px var(--mono,monospace);letter-spacing:.14em;font-style:normal;opacity:.9}
@@ -213,48 +226,48 @@
   .avc-worn{font:800 13px var(--body,sans-serif);color:#2FA35C}
   .avc-x{font:700 13px var(--body,sans-serif);background:rgba(255,255,255,.85);color:#241E33;border:none;border-radius:999px;padding:9px 22px;cursor:pointer}
 </style>
-  <link rel="stylesheet" href="saga2.css?v=20260723r">
+  <link rel="stylesheet" href="saga2.css?v=20260723s">
 </head>
 <body>
 <div id="root"></div>
-<script src="icons.js?v=20260723r"></script>
-<script src="icons-art.js?v=20260723r"></script>
-<script src="cover-art.js?v=20260723r"></script>
+<script src="icons.js?v=20260723s"></script>
+<script src="icons-art.js?v=20260723s"></script>
+<script src="cover-art.js?v=20260723s"></script>
 <script>try{SB_ICON_MOTION()}catch(e){}</script>
-<script src="voice-cdn.js?v=20260723r"></script>
-<script src="words-data.js?v=20260723r"></script>
-<script src="concepts-data.js?v=20260723r"></script>
-<script src="lessons-data.js?v=20260723r"></script>
-<script src="scripps-data.js?v=20260723r"></script>
-<script src="themes-data.js?v=20260723r"></script>
-<script src="figurative-data.js?v=20260723r"></script>
-<script src="trivia-data.js?v=20260723r"></script>
-<script src="nsf-finals500-data.js?v=20260723r"></script>
-<script src="nsf-vocab26-data.js?v=20260723r"></script>
-<script src="adv-tips-data.js?v=20260723r"></script>
-<script src="concept-scripts.js?v=20260723r"></script>
-<script src="tips-data.js?v=20260723r"></script>
-<script src="voice-manifest.js?v=20260723r"></script>
-<script src="voice-words.js?v=20260723r"></script>
-<script src="voice-review.js?v=20260723r"></script>
-<script src="voice-french.js?v=20260723r"></script>
-<script src="app.js?v=20260723r"></script>
-<script src="avatars-art.js?v=20260723r"></script>
-<script src="avatars.js?v=20260723r"></script>
-<script src="avatar-cards.js?v=20260723r"></script>
-<script src="app2.js?v=20260723r"></script>
-<script src="app3.js?v=20260723r"></script>
-<script src="story-data.js?v=20260723r"></script>
-<script src="quest.js?v=20260723r"></script>
-  <script src="games-daily.js?v=20260723r"></script>
-  <script src="saga-art/saga-art.js?v=20260723r"></script>
-  <script src="saga-art/saga-map.js?v=20260723r"></script>
-  <script src="saga-art/worlds-art.js?v=20260723r"></script>
-  <script src="saga-art-dom.js?v=20260723r"></script>
-  <script src="saga-music.js?v=20260723r"></script>
-  <script src="saga-script.js?v=20260723r"></script>
-  <script src="saga2.js?v=20260723r"></script>
-<script src="trivia.js?v=20260723r"></script>
-<script src="advanced.js?v=20260723r"></script>
+<script src="voice-cdn.js?v=20260723s"></script>
+<script src="words-data.js?v=20260723s"></script>
+<script src="concepts-data.js?v=20260723s"></script>
+<script src="lessons-data.js?v=20260723s"></script>
+<script src="scripps-data.js?v=20260723s"></script>
+<script src="themes-data.js?v=20260723s"></script>
+<script src="figurative-data.js?v=20260723s"></script>
+<script src="trivia-data.js?v=20260723s"></script>
+<script src="nsf-finals500-data.js?v=20260723s"></script>
+<script src="nsf-vocab26-data.js?v=20260723s"></script>
+<script src="adv-tips-data.js?v=20260723s"></script>
+<script src="concept-scripts.js?v=20260723s"></script>
+<script src="tips-data.js?v=20260723s"></script>
+<script src="voice-manifest.js?v=20260723s"></script>
+<script src="voice-words.js?v=20260723s"></script>
+<script src="voice-review.js?v=20260723s"></script>
+<script src="voice-french.js?v=20260723s"></script>
+<script src="app.js?v=20260723s"></script>
+<script src="avatars-art.js?v=20260723s"></script>
+<script src="avatars.js?v=20260723s"></script>
+<script src="avatar-cards.js?v=20260723s"></script>
+<script src="app2.js?v=20260723s"></script>
+<script src="app3.js?v=20260723s"></script>
+<script src="story-data.js?v=20260723s"></script>
+<script src="quest.js?v=20260723s"></script>
+  <script src="games-daily.js?v=20260723s"></script>
+  <script src="saga-art/saga-art.js?v=20260723s"></script>
+  <script src="saga-art/saga-map.js?v=20260723s"></script>
+  <script src="saga-art/worlds-art.js?v=20260723s"></script>
+  <script src="saga-art-dom.js?v=20260723s"></script>
+  <script src="saga-music.js?v=20260723s"></script>
+  <script src="saga-script.js?v=20260723s"></script>
+  <script src="saga2.js?v=20260723s"></script>
+<script src="trivia.js?v=20260723s"></script>
+<script src="advanced.js?v=20260723s"></script>
 </body>
 </html>

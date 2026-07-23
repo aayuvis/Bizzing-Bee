@@ -628,6 +628,11 @@ const app = {
   buyConcept:(ci)=>{ ci=+ci; if(isConceptUnlocked(ci)) return app.openConcept(ci); if(!window.confirm('Unlock this concept for '+COST.concept+' coins?')) return; if(spendCoins(COST.concept)){ const c=active(); c.unlockedConcepts={...(c.unlockedConcepts||{}),[ci]:1}; sfx('win'); burstConfetti(70); flash('Concept unlocked! 🔓'); app.openConcept(ci); } else { flash('Need '+COST.concept+' 🪙 to unlock — earn by playing!'); } },
   setMode:(m)=>set({mode:m}),
   setTextSize:(k)=>set({textSize:k==='large'?'large':'normal'}),
+  // accessibility toggles
+  setA11yFont:(k)=>{ state.a11yFont=(k==='easy'?'easy':'std'); save(); render(); },
+  toggleContrast:()=>{ state.a11yContrast=!state.a11yContrast; save(); render(); },
+  toggleReduceMotion:()=>{ state.a11yMotion=!state.a11yMotion; save(); render(); },
+  toggleCalm:()=>{ state.calmMode=!state.calmMode; window.SB_CALM=state.calmMode; save(); flash(state.calmMode?'🌿 Calm mode on — games run gentler, no rush':'Calm mode off'); render(); },
   toggleReadAloud:()=>{ state.readAloud=!state.readAloud; save(); if(state.readAloud) say('I will read the cards to you!'); render(); },
   setVoiceRate:(k)=>{ state.voiceRate=(k==='slow'?0.75:1); save(); say('Hello! I read the words like this.'); render(); },
   // nav
@@ -3936,6 +3941,15 @@ function viewSettings(){
         <button data-act="toggleReadAloud" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:${S.readAloud?'var(--accent)':'var(--surface2)'};color:${S.readAloud?'#fff':'var(--muted)'};font-weight:800;font-size:13px">${S.readAloud?'🐝 On':'Off'}</button>
       </div>
     </div>
+    ${(()=>{ const tog=(act,on,onLbl,offLbl)=>`<button data-act="${act}" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:${on?'var(--accent)':'var(--surface2)'};color:${on?'#fff':'var(--muted)'};font-weight:800;font-size:13px;white-space:nowrap">${on?onLbl:offLbl}</button>`;
+      const row=(title,sub,ctrl)=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap"><div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:14px">${title}</div><div style="font-size:13px;color:var(--muted)">${sub}</div></div>${ctrl}</div>`;
+      return `<div class="sb-card" style="margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;flex-direction:column;gap:14px">
+      <div style="font-family:var(--display);font-weight:800;font-size:15px;display:flex;align-items:center;gap:7px">♿ Accessibility</div>
+      ${row('Easy-read font','Clearer letters with extra spacing — made for dyslexic readers',`<div style="display:flex;background:var(--surface2);border-radius:999px;padding:3px"><button data-act="setA11yFont" data-arg="std" style="${seg((S.a11yFont||'std')!=='easy')}">Standard</button><button data-act="setA11yFont" data-arg="easy" style="${seg(S.a11yFont==='easy')}">Easy-read</button></div>`)}
+      ${row('High contrast','Stronger text and outlines for easier reading',tog('toggleContrast',!!S.a11yContrast,'◐ On','Off'))}
+      ${row('Reduce motion','Turn off animations and moving effects',tog('toggleReduceMotion',!!S.a11yMotion,'🛑 On','Off'))}
+      ${row('Calm mode','Games run gentler — slower pace, no time pressure',tog('toggleCalm',!!S.calmMode,'🌿 On','Off'))}
+    </div>`; })()}
     <div class="sb-card" style="margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
       <div style="min-width:0"><div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:15px">${SB_ICON('lock',{size:16})} Parent PIN</div><div style="font-size:13px;color:var(--muted)">${pinSet()?'Set — protects Settings, the Parent zone and purchases.':'Add a 4-digit PIN so only grown-ups can open Settings, the Parent zone and Premium.'}</div></div>
       <button data-act="pinSetup" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:${pinSet()?'var(--surface2)':'var(--accent)'};color:${pinSet()?'var(--muted)':'#fff'};font-weight:800;font-size:13px;white-space:nowrap">${pinSet()?'Change / remove':'Set PIN'}</button>
@@ -3944,8 +3958,6 @@ function viewSettings(){
       <div style="min-width:0"><div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:15px">${SB_ICON('lock',{size:16})} Unlock everything <span style="font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:999px">testing</span></div><div style="font-size:13px;color:var(--muted)">Unlocks all concepts, lists, worlds, Advanced Mode &amp; every level — no coins or Premium needed.</div></div>
       <button data-act="toggleDevUnlock" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:${S.devUnlock?'var(--accent)':'var(--surface2)'};color:${S.devUnlock?'#fff':'var(--muted)'};font-weight:800;font-size:13px">${S.devUnlock?SB_ICON('check',{size:15})+' On':'Off'}</button>
     </div>`}
-    ${state.devUnlock?`<button data-act="setNav" data-arg="debug" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-radius:14px;background:var(--bg2);border:1px solid var(--accent);box-shadow:var(--sh-rest);margin-bottom:16px;color:var(--text)"><div style="text-align:left"><div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:15px">🐞 Debug · QC games <span style="font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:999px">testing</span></div><div style="font-size:12px;color:var(--muted)">Jump straight into any game or saga engine to test</div></div><span style="color:var(--accent)">${iconSVG('arrow',18)}</span></button>`:''}
-    <button data-act="openVoiceTest" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-radius:14px;background:var(--bg2);border:1px solid var(--line);box-shadow:var(--sh-rest);margin-bottom:16px;color:var(--text)"><div style="text-align:left"><div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:15px">🎧 Word voice tester${(()=>{try{return voiceFlagCount()>0?` <span style="font-family:var(--mono);font-size:11px;color:#fff;background:var(--bad,#C43D5A);padding:1px 7px;border-radius:999px">${voiceFlagCount()} flagged</span>`:'';}catch(e){return '';}})()}</div><div style="font-size:12px;color:var(--muted)">Listen to each word — tick if it sounds right, cross if not. Saved for rebuilding.</div></div><span style="color:var(--accent)">${iconSVG('arrow',18)}</span></button>
     <button data-act="signOut" style="width:100%;padding:14px;border-radius:14px;background:var(--surface2);color:var(--bad);font-weight:800;font-size:15px">Sign out</button>
     <button data-act="devTap" style="display:block;width:100%;text-align:center;background:none;border:0;cursor:default;margin-top:14px;font-size:11.5px;color:var(--muted);font-weight:650">Bizzing Bee · made with 🐝 for spellers</button>
   </div>`;
@@ -4983,13 +4995,18 @@ function overlays(){
 
 /* ===================== render + events ===================== */
 const root = document.getElementById('root');
-function save(){ try{ localStorage.setItem('sb_saas_v2', JSON.stringify({ theme:state.theme, mode:state.mode, premium:state.premium, pin:state.parentPin||null, vr:state.voiceRate||1, tz:state.textSize||'normal', ra:state.readAloud?1:0, children:state.children, activeIdx:state.activeIdx, goalDone:state.goalDone, cN:(window.SB_CONCEPTS&&SB_CONCEPTS.chapters&&SB_CONCEPTS.chapters.length)||121, lu:state.luMastered, srs:state.coachSrs, chist:state.coachHistory, wr:state.wordReports||[] })); }catch(e){} }
+function save(){ try{ localStorage.setItem('sb_saas_v2', JSON.stringify({ theme:state.theme, mode:state.mode, premium:state.premium, pin:state.parentPin||null, vr:state.voiceRate||1, tz:state.textSize||'normal', ra:state.readAloud?1:0, af:state.a11yFont||'std', ac:state.a11yContrast?1:0, am:state.a11yMotion?1:0, cm:state.calmMode?1:0, children:state.children, activeIdx:state.activeIdx, goalDone:state.goalDone, cN:(window.SB_CONCEPTS&&SB_CONCEPTS.chapters&&SB_CONCEPTS.chapters.length)||121, lu:state.luMastered, srs:state.coachSrs, chist:state.coachHistory, wr:state.wordReports||[] })); }catch(e){} }
 function render(){
   const a=document.activeElement; const fkey=a&&a.getAttribute&&a.getAttribute('data-fkey'); let ss=null,se=null;
   try{ if(a){ ss=a.selectionStart; se=a.selectionEnd; } }catch(e){}
   document.documentElement.setAttribute('data-theme', state.theme);
   document.documentElement.setAttribute('data-mode', state.mode);
   document.documentElement.setAttribute('data-size', state.textSize||'normal');
+  { const R=document.documentElement;
+    R.setAttribute('data-font', state.a11yFont==='easy'?'easy':'std');
+    if(state.a11yContrast) R.setAttribute('data-contrast','high'); else R.removeAttribute('data-contrast');
+    if(state.a11yMotion) R.setAttribute('data-motion','off'); else R.removeAttribute('data-motion');
+    window.SB_CALM=!!state.calmMode; }
   try{ const _c=active(); document.documentElement.setAttribute('data-age', _c.ageMode||((_c.age||9)<=11?'playful':'focused')); }catch(e){}
   root.innerHTML = `<div style="min-height:100dvh;position:relative;z-index:1">${view()}</div>` + overlays();
   if(fkey){ const el=root.querySelector('[data-fkey="'+fkey+'"]'); if(el){ try{ el.focus(); if(ss!=null&&el.setSelectionRange) el.setSelectionRange(ss,se); }catch(e){} } }
@@ -5016,7 +5033,7 @@ window.addEventListener('keydown', e=>{ try{
 /* ===================== init ===================== */
 (function init(){
   try{ const raw=localStorage.getItem('sb_saas_v2'); if(raw){ const s=JSON.parse(raw);
-    state.theme=s.theme||'spellbound'; state.mode=s.mode||'light'; state.premium=!!s.premium; state.parentPin=s.pin||null; state.voiceRate=s.vr||1; state.textSize=s.tz||'normal'; state.readAloud=!!s.ra;
+    state.theme=s.theme||'spellbound'; state.mode=s.mode||'light'; state.premium=!!s.premium; state.parentPin=s.pin||null; state.voiceRate=s.vr||1; state.textSize=s.tz||'normal'; state.readAloud=!!s.ra; state.a11yFont=s.af||'std'; state.a11yContrast=!!s.ac; state.a11yMotion=!!s.am; state.calmMode=!!s.cm; window.SB_CALM=!!s.cm;
     state.children=s.children||[]; state.activeIdx=s.activeIdx||0; state.goalDone=s.goalDone||0;
     state.luMastered=s.lu||{}; state.coachSrs=s.srs||{}; state.coachHistory=s.chist||{}; state.wordReports=s.wr||[];
     // Chapter 1 insert shifted concept indices by 11 — migrate index-keyed coin unlocks once
