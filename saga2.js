@@ -2,7 +2,14 @@
    Placeholder vector art (swaps for Claude Design drops). Words via gameWordsD/pickFresh; audio via voice/d + say(). */
 (function(){
   const W=()=>window;
-  function pool(n){ try{ return pickFresh(gameWordsD(),n)||[]; }catch(e){ return []; } }
+  function pool(n){ try{ const l=pickFresh(gameWordsD(),n)||[];
+    l.forEach(w=>{ try{ if(typeof logGameWord==='function'&&w&&w.w) logGameWord(nkey(w.w)); }catch(e){} });
+    return l; }catch(e){ return []; } }
+  /* refilling word source: never cycles the same small batch - when a game runs long
+     it draws a FRESH batch (still respecting the global 150-word no-repeat window). */
+  function wordFeed(n,filter){ const f=filter||(w=>w&&w.w); let q=pool(n).filter(f);
+    return { next(){ if(!q.length) q=pool(Math.max(14,n)).filter(f);
+      return q.shift()||{w:'honey',d:'the sweet golden food that bees make'}; } }; }
   function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   // A speller-safe "meaning" line: the definition with the target word blanked out so
   // showing the clue never leaks its spelling. Returns '' if no usable definition.
@@ -314,7 +321,7 @@
     const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
     let bee={y:Ht/2,vy:0}, obs=[], pot=null, banked=0, lives=3, t=0, over=false, card=null, graceUntil=0, inv=0;
     let moths=[], coins=[], hearts=[], coinsGot=0, gate=null, started=false;
-    const words=pool(CFG.pots+4); let wi=0;
+    const feed=wordFeed(CFG.pots+6);
     /* per-world premium palettes; anything unlisted uses its illustrated plate */
     const PAL={
       opensky:{top:'#3D8BD4',mid:'#7FC0EC',bot:'#E9F6FF',sun:['rgba(255,251,225,.95)','rgba(255,240,180,.42)'],sunCore:'rgba(255,252,235,.96)',hill:'#9CCB7A',hill2:'#7FB662',pill:['#F0B429','#D89614'],stars:0,birds:1},
@@ -339,7 +346,7 @@
       for(let i=0;i<5;i++) coins.push({x:Wd+30+i*34, y:y0+(up?-1:1)*Math.sin(i/4*Math.PI)*42, ph:i*0.7}); }
     function spawnHeart(){ hearts.push({x:Wd+30,y:80+Math.random()*(Ht-200),ph:0}); }
     function spellStop(){
-      const w=words[wi++%words.length]; card={w};
+      const w=feed.next(); card={w};
       const el=host.querySelector('#sg-card');
       el.innerHTML='<div class="sg-cardbox"><b>🍯 Honey pot! Spell to bank it</b><button class="sg-cardw" id="sg-cspk">🔊</button>'+meaningHTML(w)+'<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off"><button class="sg-rbtn go" id="sg-cgo">Bank</button></div></div>';
       el.style.display='grid'; try{ say(w.w); }catch(e){}
@@ -705,10 +712,10 @@
     holdBtn.onclick=fireHeld;
 
     /* ---- spelling gate: hitting a ? box pauses the race ---- */
-    const words=pool(24); let wi=0;
+    const feed=wordFeed(26);
     function spellGate(){
       mode='spell';
-      const w=words[wi++%words.length];
+      const w=feed.next();
       const p=POWERS[Math.floor(Math.random()*POWERS.length)];
       const el=host.querySelector('#sg-card');
       el.innerHTML='<div class="sg-cardbox"><b>🎁 Item box! Spell to unlock the power-up</b>'+
@@ -1057,8 +1064,7 @@
     const COLS=15, ROWS=11, CELL=Math.max(28,Math.min(58, Math.floor(Math.min(innerWidth-20,1120)/COLS), Math.floor((innerHeight-310)/ROWS)));
     const world=opts.world||'meadow', diff=opts.diff||'medium';
     const CFG={easy:{words:3,tick:210},medium:{words:4,tick:185},hard:{words:5,tick:160},champ:{words:6,tick:140}}[diff];
-    const bank=pool(CFG.words+8).map(w=>w.w).filter(w=>/^[a-z]+$/i.test(w)&&w.length>=3&&w.length<=8);
-    if(bank.length<1) bank.push('bloom','honey','flower','nectar');
+    const feed=wordFeed(CFG.words+8,w=>w&&w.w&&/^[a-z]+$/i.test(w.w)&&w.w.length>=3&&w.w.length<=8);
     host.innerHTML='<div class="sg-hud"><span id="sg-score">0</span><span id="sg-word"></span><span id="sg-lives"></span></div>'+
       '<canvas id="sg-cv"></canvas>'+
       '<div class="sg-dpad" id="sg-dpad"><button class="sg-dbtn" data-d="up" aria-label="Up">▲</button>'+
@@ -1073,7 +1079,7 @@
     let snake,dir,ndir,word='',spelled=0,tiles=[],wordsDone=0,score=0,lives=3,over=false,bonk=0,tick=CFG.tick,loop=null,fx=[];
     function occupied(x,y,extra){ for(let i=0;i<snake.length;i++) if(snake[i].x===x&&snake[i].y===y) return true;
       for(let i=0;i<(extra||[]).length;i++) if(extra[i].x===x&&extra[i].y===y) return true; return false; }
-    function layoutWord(){ word=bank[wordsDone%bank.length]; spelled=0; tiles=[];
+    function layoutWord(){ word=feed.next().w; spelled=0; tiles=[];
       const head=snake[0], ring=[]; for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++) ring.push({x:(head.x+dx+COLS)%COLS,y:(head.y+dy+ROWS)%ROWS});
       for(let k=0;k<word.length;k++){ let x,y,tries=0; do{ x=Math.floor(Math.random()*COLS); y=Math.floor(Math.random()*ROWS); }
         while((occupied(x,y,ring)||tiles.some(t=>t.x===x&&t.y===y))&&++tries<200);
@@ -1166,8 +1172,8 @@
     const Wd=Math.min(innerWidth-16,1120), Ht=Math.max(320,innerHeight-280);
     const world=opts.world||'meadow', diff=opts.diff||'medium';
     const CFG={easy:{words:4,fall:1.3,rate:1.1},medium:{words:5,fall:1.7,rate:0.95},hard:{words:6,fall:2.1,rate:0.82},champ:{words:7,fall:2.5,rate:0.72}}[diff];
-    const bank=pool(CFG.words+6).map(w=>w).filter(w=>w&&/^[a-z]+$/i.test(w.w)&&w.w.length>=3&&w.w.length<=9);
-    if(!bank.length) bank.push({w:'bloom'},{w:'honey'},{w:'flower'});
+    const feed=wordFeed(CFG.words+6,w=>w&&w.w&&/^[a-z]+$/i.test(w.w)&&w.w.length>=3&&w.w.length<=9);
+    let curW=null;
     host.innerHTML='<div class="sg-hud"><span id="sg-cc-w">Word 1/'+CFG.words+'</span><span id="sg-cc-lives"></span></div>'+
       '<div class="sg-target" id="sg-cc-slots"></div><div id="sg-cc-mean" class="sg-cardmean"></div>'+
       '<canvas id="sg-cv"></canvas>'+
@@ -1180,9 +1186,9 @@
     const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
     let word='',spelled=0,drops=[],basket=Wd/2,vx=0,wordsDone=0,lives=3,over=false,dropT=0,bonk=0,score=0,loop=null,last=0;
     const BW=64;
-    function layout(){ word=bank[wordsDone%bank.length].w.toLowerCase(); spelled=0; drops=[];
+    function layout(){ curW=feed.next(); word=curW.w.toLowerCase(); spelled=0; drops=[];
       host.querySelector('#sg-cc-slots').innerHTML=word.split('').map((ch,i)=>'<span class="sg-tl'+(i<spelled?' done':i===spelled?' next':'')+'">'+(i<spelled?ch.toUpperCase():'•')+'</span>').join('');
-      const mn=host.querySelector('#sg-cc-mean'); if(mn){ const m=meaningText(bank[wordsDone%bank.length]); mn.textContent=m?('💡 '+m):''; }
+      const mn=host.querySelector('#sg-cc-mean'); if(mn){ const m=meaningText(curW); mn.textContent=m?('💡 '+m):''; }
       try{ say(word); }catch(e){} }
     function renderSlots(){ host.querySelector('#sg-cc-slots').innerHTML=word.split('').map((ch,i)=>'<span class="sg-tl'+(i<spelled?' done':i===spelled?' next':'')+'">'+(i<spelled?ch.toUpperCase():'•')+'</span>').join(''); }
     function setHud(){ host.querySelector('#sg-cc-w').textContent='Word '+(wordsDone+1)+'/'+CFG.words; host.querySelector('#sg-cc-lives').textContent='❤'.repeat(Math.max(0,lives)); }
@@ -1440,7 +1446,7 @@
   function spotlightSimon(host, opts, done){
     const diff=opts.diff||'medium';
     const CFG={easy:{seqs:4,start:3},medium:{seqs:6,start:3},hard:{seqs:6,start:4},champ:{seqs:7,start:5}}[diff];
-    const words=pool(CFG.seqs+3).filter(w=>w.w.length>=CFG.start&&w.w.length<=9);
+    const feed=wordFeed(CFG.seqs+5,w=>w&&w.w&&w.w.length>=CFG.start&&w.w.length<=9);
     let si=0, seq=null, showing=false, tapIdx=0, over=false, misses=0;
     const art=(window.SGART&&SGART.ready());
     const plate=art?SGART.plateForWorld(opts.world||'Stage'):'';
@@ -1449,7 +1455,7 @@
       '<div class="sg-simonprompt" id="sg-sp"></div><div id="sg-card"></div>';
     function newSeq(){
       if(si>=CFG.seqs){ over=true; done({win:true,score:CFG.seqs*120-misses*20,stars:misses===0?3:misses<=2?2:1}); return; }
-      const w=words[si%words.length]; seq={w:w.w.toLowerCase(),i:0,d:(w.d||w.def||'')};
+      const w=feed.next(); seq={w:w.w.toLowerCase(),i:0,d:(w.d||w.def||'')};
       const tiles=host.querySelector('#sg-tiles'); tiles.innerHTML='';
       const letters=[...new Set(seq.w.split(''))];
       while(letters.length<8){ const c=String.fromCharCode(97+Math.floor(Math.random()*26)); if(!letters.includes(c)) letters.push(c); }
