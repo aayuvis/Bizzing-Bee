@@ -24,6 +24,7 @@
     { id:'turbo',   label:'Turbo Pack',    world:'arcade',     c1:'#E05C3A', c2:'#FFC23D' },
     { id:'villains',label:'Villains Pack', world:'greysea',    c1:'#8B857B', c2:'#C43D5A' },
     { id:'serpent', label:'Serpent Pack',  world:'blade',      c1:'#2E8F5B', c2:'#B6E34D' },
+    { id:'bigbeasts',label:'Big Beasts Pack',world:'lab',      c1:'#5E7F9E', c2:'#A4C4E0' },
   ];
   // shared drawing kit — every avatar is a 120x120 squircle character
   const SQ = (fill, extra) => `<rect x="10" y="14" width="100" height="96" rx="30" fill="${fill}"${extra||''}/>`;
@@ -197,6 +198,7 @@
     ['rally','Rally','turbo','free'],['turbo','Turbo','turbo','rare'],['crash','Crash','turbo','rare'],['airtime','Airtime','turbo','rare'],['striker','Striker','turbo','rare'],['champ','Champ','turbo','epic'],['hover','Hover','turbo','epic'],['nitro','Nitro','turbo','epic'],['mech','Mech','turbo','epic'],['titan','Titan','turbo','legendary'],
     ['greymoth','Grey Moth','villains','free'],['locust','Locust Trooper','villains','rare'],['vstatic','Static','villains','rare'],['gnash','Gnash','villains','rare'],['glitchv','Glitch','villains','rare'],['smudge','The Smudge','villains','epic'],['voidmaw','The Void','villains','epic'],['gatekeeper','Gatekeeper','villains','epic'],['vex','Vex','villains','legendary'],['wordeater','The Ten-Headed Word-Eater','villains','legendary'],
     ['noodle','Noodle','serpent','free'],['sunny','Sunny','serpent','free'],['cobra','King Cobra','serpent','rare'],['python','Python','serpent','rare'],['rattler','Rattles','serpent','rare'],['viper','Viper','serpent','rare'],['boa','Boa','serpent','epic'],['mamba','Mamba','serpent','epic'],['seasnake','Sea Serpent','serpent','epic'],['naga','Naga','serpent','legendary'],
+    ['mammoth','Mammoth','bigbeasts','free'],['titanoboa','Titanoboa','bigbeasts','rare'],['megalodon','Megalodon','bigbeasts','rare'],['argentavis','Argentavis','bigbeasts','rare'],['megatherium','Megatherium','bigbeasts','rare'],['vasuki','Vasuki','bigbeasts','epic'],['livyatan','Livyatan','bigbeasts','epic'],['gigantopithecus','Gigantopithecus','bigbeasts','epic'],['dunkleo','Dunkleosteus','bigbeasts','epic'],['bluewhale','Blue Whale','bigbeasts','legendary'],
   ].map(([id,name,pack,rarity])=>({ id, name, pack, rarity, price:RAR[rarity].price, sell:RAR[rarity].sell }));
   window.SB_AVATARS = { list:AV, packs:PACKS, rarities:RAR, byId:Object.fromEntries(AV.map(a=>[a.id,a])) };
 
@@ -205,7 +207,7 @@
     hive:'#7A4A08', dino:'#2B4A1E', cosmos:'#1E2A5C', stage:'#5C3A08', dojo:'#6E1F30',
     lab:'#0F3A34', arcade:'#12234A', origami:'#6E3418', elements:'#123A52',
     critter:'#5C2A10', vibe:'#2E1B52', enchanted:'#44205C', wildhearts:'#5C1F38',
-    legends:'#14402A', turbo:'#5A1410', villains:'#2A1620', serpent:'#154A32'
+    legends:'#14402A', turbo:'#5A1410', villains:'#2A1620', serpent:'#154A32', bigbeasts:'#2E455C'
   };
   window.SB_AVATAR_INK = id => INK[(window.SB_AVATARS.byId[id]||{}).pack] || '#3A2A5C';
 
