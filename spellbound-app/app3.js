@@ -192,7 +192,12 @@ function _maskRules(word){ const w=(word||'').trim(); if(!w) return [];
   out.push({re:/\b(?:plurals?|singular|past tense|present tense|past participle|present participle|comparatives?|superlatives?|gerund|third[- ]person singular|third[- ]person|inflection|conjugation|diminutive|abbreviations?|contraction|variant spelling|variant)\s+(?:form\s+)?of\s+([A-Za-z][A-Za-z'\-]*)/ig, grp:1});
   return out; }
 function _applyMasks(text, word, BLANK){ let t=text||'';
+  // grammatical-pointer bases in THIS text ("plural of aalii …") get blanked everywhere,
+  // not only right after "of", so a second mention later in the gloss can't leak the root.
+  const bases=new Set(); const ptr=/\b(?:plurals?|singular|past tense|present tense|past participle|present participle|comparatives?|superlatives?|gerund|inflection|conjugation|diminutive)\s+(?:form\s+)?of\s+([A-Za-z][A-Za-z'\-]{2,})/ig;
+  let mm; while((mm=ptr.exec(t))){ if(mm[1]) bases.add(mm[1].toLowerCase()); }
   _maskRules(word).forEach(({re,grp})=>{ t=t.replace(re,(m,g1)=>{ if(grp===1&&g1!=null) return m.slice(0,m.length-g1.length)+BLANK; return BLANK; }); });
+  bases.forEach(base=>{ if(base.length>=3){ try{ t=t.replace(new RegExp('\\b'+base.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'[a-z]*\\b','ig'),BLANK); }catch(e){} } });
   return t; }
 function blankHTML(text, word){
   const t = esc(text||''); const w = (word||'').trim(); if(!w) return t;
