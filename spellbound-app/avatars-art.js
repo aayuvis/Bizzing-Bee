@@ -2106,3 +2106,56 @@ titan: `<defs><radialGradient id="tbtt-a" cx="50%" cy="45%" r="55%"><stop offset
 
 });
 
+
+/* ===== SERPENT PACK — coiled-snake avatars, generated per species ===== */
+(function(){
+  function snake(cfg){
+    var body=cfg.body, belly=cfg.belly, line=cfg.line||'#154A32', eye=cfg.eye||'#241A0C';
+    var hood = cfg.hood ? (
+      '<path d="M60 40 q-30 2 -30 22 q0 8 30 8 q30 0 30 -8 q0 -20 -30 -22z" fill="'+cfg.hoodFill+'" stroke="'+line+'" stroke-width="3"/>'+
+      '<circle cx="46" cy="52" r="4" fill="'+belly+'"/><circle cx="74" cy="52" r="4" fill="'+belly+'"/>') : '';
+    var rattle = cfg.rattle ? '<g transform="translate(90 96)"><path d="M0 0 l7 -3 l0 8 z" fill="#C9B27A" stroke="'+line+'" stroke-width="2"/><path d="M6 -2 l7 -3 l0 8 z" fill="#E0CB94" stroke="'+line+'" stroke-width="2"/></g>' : '';
+    var horns = cfg.horns ? '<path d="M46 30 q-4 -12 2 -18 q3 6 4 15z" fill="'+cfg.horns+'" stroke="'+line+'" stroke-width="2"/><path d="M74 30 q4 -12 -2 -18 q-3 6 -4 15z" fill="'+cfg.horns+'" stroke="'+line+'" stroke-width="2"/>' : '';
+    var gem = cfg.gem ? '<path d="M60 24 l6 8 -6 8 -6 -8z" fill="'+cfg.gem+'" stroke="'+line+'" stroke-width="2"/>' : '';
+    var fins = cfg.fins ? '<path d="M60 34 q-2 -12 3 -16 q2 6 1 15z" fill="'+belly+'" opacity=".7"/><path d="M40 66 q-14 -4 -18 4 q10 4 18 2z" fill="'+belly+'" opacity=".55"/>' : '';
+    var pat = '';
+    if(cfg.pat==='diamond') for(var i=0;i<3;i++) pat+='<path d="M60 '+(70+i*11)+' l7 6 -7 6 -7 -6z" fill="'+line+'" opacity=".35"/>';
+    if(cfg.pat==='bands') for(var b=0;b<3;b++) pat+='<rect x="30" y="'+(72+b*12)+'" width="60" height="5" rx="2.5" fill="'+line+'" opacity=".3"/>';
+    if(cfg.pat==='spots') pat='<circle cx="44" cy="80" r="4" fill="'+line+'" opacity=".3"/><circle cx="76" cy="88" r="4" fill="'+line+'" opacity=".3"/><circle cx="60" cy="96" r="4" fill="'+line+'" opacity=".3"/>';
+    return ''
+      // coiled body base
+      +'<defs><radialGradient id="sn-'+cfg.k+'" cx="50%" cy="38%" r="70%"><stop offset="0" stop-color="'+(cfg.hi||body)+'"/><stop offset="1" stop-color="'+body+'"/></radialGradient></defs>'
+      +'<ellipse cx="60" cy="92" rx="42" ry="20" fill="url(#sn-'+cfg.k+')" stroke="'+line+'" stroke-width="3"/>'
+      +'<ellipse cx="60" cy="90" rx="30" ry="12" fill="'+belly+'" opacity=".55"/>'
+      +pat
+      // rising S-neck
+      +'<path d="M60 84 q-22 -6 -18 -26 q3 -16 18 -18" fill="none" stroke="'+line+'" stroke-width="16" stroke-linecap="round"/>'
+      +'<path d="M60 84 q-22 -6 -18 -26 q3 -16 18 -18" fill="none" stroke="url(#sn-'+cfg.k+')" stroke-width="11" stroke-linecap="round"/>'
+      +hood+horns+gem+fins
+      // head
+      +'<ellipse cx="60" cy="40" rx="20" ry="16" fill="url(#sn-'+cfg.k+')" stroke="'+line+'" stroke-width="3"/>'
+      +'<ellipse cx="60" cy="46" rx="12" ry="8" fill="'+belly+'" opacity=".6"/>'
+      // tongue
+      +'<path d="M60 54 q0 8 0 12 M60 66 l-4 5 M60 66 l4 5" fill="none" stroke="#E23B57" stroke-width="2.4" stroke-linecap="round"/>'
+      // eyes
+      +'<circle cx="50" cy="36" r="6" fill="#fff"/><circle cx="51" cy="37" r="3.2" fill="'+eye+'"/><circle cx="49.6" cy="35.4" r="1.1" fill="#fff"/>'
+      +'<circle cx="70" cy="36" r="6" fill="#fff"/><circle cx="71" cy="37" r="3.2" fill="'+eye+'"/><circle cx="69.6" cy="35.4" r="1.1" fill="#fff"/>'
+      // nostrils + smile
+      +'<circle cx="55" cy="46" r="1.3" fill="'+line+'"/><circle cx="65" cy="46" r="1.3" fill="'+line+'"/>'
+      +(cfg.fangs?'<path d="M54 50 l-1 5 M66 50 l1 5" stroke="#fff" stroke-width="2" stroke-linecap="round"/>':'');
+  }
+  var S={
+    noodle:{k:'noodle',body:'#5FBE5A',hi:'#86D97F',belly:'#D6F0B8',line:'#2C6E2C'},
+    sunny:{k:'sunny',body:'#E9963C',hi:'#FFC07A',belly:'#FFDFB0',line:'#9A5410',pat:'bands'},
+    cobra:{k:'cobra',body:'#3E8D5C',hi:'#69B984',belly:'#DDF0BE',line:'#1F5A38',hood:true,hoodFill:'#4FA26C',fangs:true},
+    python:{k:'python',body:'#9A824C',hi:'#C2A972',belly:'#E9DBB4',line:'#5A4620',pat:'spots'},
+    rattler:{k:'rattler',body:'#B99154',hi:'#DDBA80',belly:'#EEDCB0',line:'#6E4E24',rattle:true,pat:'diamond',fangs:true},
+    viper:{k:'viper',body:'#6E9A3E',hi:'#97C066',belly:'#DCEAB0',line:'#3E5A20',pat:'diamond',fangs:true},
+    boa:{k:'boa',body:'#8A6AB8',hi:'#B39AD8',belly:'#E6D9F0',line:'#4A3072',pat:'spots'},
+    mamba:{k:'mamba',body:'#4A4A58',hi:'#6E6E80',belly:'#B8B8C4',line:'#22222E',fangs:true},
+    seasnake:{k:'seasnake',body:'#2E9FB8',hi:'#5CC4D8',belly:'#BEEAF0',line:'#14607A',fins:true,pat:'bands'},
+    naga:{k:'naga',body:'#C9A227',hi:'#F0D064',belly:'#F5E7B0',line:'#7A5A10',horns:'#F0D064',gem:'#36D1FF',fangs:true}
+  };
+  var out={}; for(var k in S) out[k]=snake(S[k]);
+  window.SB_AVATAR_ART = Object.assign(window.SB_AVATAR_ART||{}, out);
+})();

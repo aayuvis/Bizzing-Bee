@@ -47,14 +47,16 @@
     wildhearts:['Run wild, spell brave — {name} leads the way!', '{name}’s heart is wild and its words are strong.', 'Free as the wind, sharp as a word. Ready, {name}?'],
     legends:   ['Legends are made of letters, {name}. Prove it!', '{name} steps from the myths — spell your saga!', 'Only the bold spell like {name}. Begin!'],
     turbo:     ['Engines hot, {name}! Spell fast, spell first!', 'Green light! {name} floors it into the words!', '{name} is built for speed AND spelling. Go go go!'],
-    villains:  ['So… you dare to spell against me, {name}? How bold.', '{name}. We meet across the board. Spell, if you can.', 'Every word you spell, {name}, I shall try to unwrite.']
+    villains:  ['So… you dare to spell against me, {name}? How bold.', '{name}. We meet across the board. Spell, if you can.', 'Every word you spell, {name}, I shall try to unwrite.'],
+    serpent:   ['Ssslither over here, {name} — let’s ssspell!', '{name} and me, coiled and ready. Ssstrike true!', 'One letter at a time, {name} — sssmooth and sssteady wins.']
   };
   // pack persona → title suffix pool
   var PACK_TITLE = {
     hive:'of the Hive', stage:'of the Spotlight', cosmos:'of the Cosmos', dojo:'of the Dojo',
     lab:'of the Lab', arcade:'of the Arcade', origami:'of the Fold', elements:'of the Elements',
     critter:'of the Wild Pond', vibe:'of Good Vibes', dino:'of the Ancient World', enchanted:'of the Enchanted Wood',
-    wildhearts:'of the Wildhearts', legends:'of Legend', turbo:'of the Speedway', villains:'of the Unspelling'
+    wildhearts:'of the Wildhearts', legends:'of Legend', turbo:'of the Speedway', villains:'of the Unspelling',
+    serpent:'of the Serpent Pack'
   };
   var RANK = { free:'Rookie', rare:'Speller', epic:'Champion', legendary:'Grandmaster' };
 
@@ -236,7 +238,18 @@
     voidmaw:{fact:'A black hole is a real “void” whose gravity is so strong that not even light can escape it.'},
     gatekeeper:{fact:'Ancient walled cities really had gatekeepers who challenged every stranger with a password.'},
     vex:{fact:'Hornets are the largest wasps; a single queen can build an entire colony from scratch each spring.'},
-    wordeater:{fact:'The Ten-Headed Word-Eater is inspired by Ravana, the ten-headed king of the Ramayana — each head said to master a different art and science, from music and medicine to war.'}
+    wordeater:{fact:'The Ten-Headed Word-Eater is inspired by Ravana, the ten-headed king of the Ramayana — each head said to master a different art and science, from music and medicine to war.'},
+    // ---- SERPENT ----
+    noodle:{lore:'The friendly garden snake who spells one letter at a time.',fact:'Snakes smell with their tongues — the forked flick picks up scent and feeds it to a special sense organ.'},
+    sunny:{lore:'A sunny corn snake, warm and easy-going.',fact:'Snakes are cold-blooded, so they bask in the sun to warm up and slither to the shade to cool down.'},
+    cobra:{lore:'Spreads its hood wide and stands tall to spell.',fact:'A king cobra can rear up a third of its body length to look a grown person right in the eye.'},
+    python:{lore:'Patient and powerful, never rushes a word.',fact:'Pythons don’t use venom — they squeeze, and can go months between meals after a big one.'},
+    rattler:{lore:'Shakes its tail to warn, then spells in a flash.',fact:'A rattlesnake’s rattle is made of loose, hollow segments of keratin — the same stuff as your fingernails.'},
+    viper:{lore:'Quick, sharp and always precise.',fact:'Vipers have heat-sensing pits on their faces that “see” the warmth of prey in total darkness.'},
+    boa:{lore:'A gentle giant with beautiful patterns.',fact:'Boa constrictors are born live, not hatched from eggs like most snakes.'},
+    mamba:{lore:'The fastest speller in the grass.',fact:'The black mamba is one of the fastest snakes on Earth, gliding at up to 20 km/h.'},
+    seasnake:{lore:'Glides through the waves, spelling as it swims.',fact:'Sea snakes can stay underwater for hours, taking in some oxygen straight through their skin.'},
+    naga:{lore:'The mythical serpent-guardian, wisest of the pack.',fact:'The Naga is a mighty serpent of Hindu and Buddhist legend, said to guard treasure, temples and rivers.'}
   };
 
   // fallback pool if an id somehow lacks authored lore
