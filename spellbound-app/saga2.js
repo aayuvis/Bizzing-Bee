@@ -29,8 +29,8 @@
     const vb=(a.vb||'0 0 120 120'), p=String(vb).split(/\s+/), w=(+p[2])||120, h=(+p[3])||120;
     // width/height are REQUIRED — without them the SVG <img> has 0 intrinsic size
     // and canvas drawImage() throws, which would kill the game loop.
-    const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'" viewBox="'+vb+'">'+f+'</svg>';
-    const img=new Image(w,h);
+    const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+(w*3)+'" height="'+(h*3)+'" viewBox="'+vb+'">'+f+'</svg>';
+    const img=new Image(w*3,h*3);   // 3x raster: crisp when games draw sprites large on DPR canvases
     img.onload=()=>{ _imgCache[name]=img; };
     img.onerror=()=>{ _imgCache[name]=false; };  // never retry a broken sprite
     img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
@@ -48,10 +48,10 @@
     _avCache[id]=null;
     try{
       if(typeof window.SB_AVATAR!=='function') return null;
-      let svg=window.SB_AVATAR(id,120,{outline:false});   // outline via CSS filter doesn't rasterise reliably
+      let svg=window.SB_AVATAR(id,360,{outline:false});   // hi-res raster: crisp on DPR canvases (was 120 - pixelated)
       if(!svg) { _avCache[id]=false; return null; }
       if(!/xmlns=/.test(svg)) svg=svg.replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" ');
-      const img=new Image(120,120);
+      const img=new Image(360,360);
       img.onload=()=>{ _avCache[id]=img; };
       img.onerror=()=>{ _avCache[id]=false; };
       img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
@@ -298,7 +298,7 @@
 
   /* ---------- ENGINE B · KEEP FLYING (flappy) ---------- */
   function keepFlying(host, opts, done){
-    const Wd=Math.min(innerWidth-16,640), Ht=Math.min(innerHeight-180,440);
+    const Wd=Math.min(innerWidth-16,1280), Ht=Math.max(320,innerHeight-210);
     const diff=opts.diff||'medium', world=opts.world||'opensky';
     const CFG={easy:{gap:170,speed:2.2,pots:8},medium:{gap:150,speed:2.6,pots:10},
                hard:{gap:130,speed:3.0,pots:10},champ:{gap:115,speed:3.4,pots:12}}[diff];
@@ -356,7 +356,7 @@
       const GRACE=(t<3)||(t<graceUntil);
       if(holding) bee.vy-=0.42;
       if(GRACE){ bee.vy*=0.9; bee.y+=bee.vy; bee.y=Math.max(30,Math.min(Ht-40,bee.y)); }
-      else { spawnT+=dt/1000; bee.vy+=0.158; bee.y+=bee.vy; }
+      else { spawnT+=dt/1000; bee.vy+=0.111; bee.y+=bee.vy; }   // gravity −30% (0.158→0.111) per parent tuning
       if(!gate){
         if(spawnT>1.9){ spawnT=0; spawn(); }
         if(potT<=0&&!pot){ potT=8; pot={x:Wd+30,y:80+Math.random()*(Ht-220)}; }
@@ -606,16 +606,17 @@
      each doing something different (rocket, turbo, oil slick, gust, honey, shield).
      Steer to hug the racing line and dodge oil patches. First past the flag wins. */
   function beeGrandPrix(host, opts, done){
-    const Wd=Math.min(innerWidth-16,640), Ht=Math.max(300,Math.min(Math.round(Wd*0.60),400));
+    const Wd=Math.min(innerWidth-16,1280), Ht=Math.max(320,Math.min(innerHeight-190,Math.round(Wd*0.62)));
     const diff=opts.diff||'medium';
     // one epic point-to-point run - length ~= minutes of driving; boxes pace the spelling
-    const CFG={easy:{len:3600,rivals:3,rival:0.84,haz:0.028,boxEvery:300},
-               medium:{len:4600,rivals:4,rival:0.90,haz:0.05,boxEvery:330},
-               hard:{len:5600,rivals:4,rival:0.96,haz:0.08,boxEvery:360},
-               champ:{len:6600,rivals:4,rival:1.02,haz:0.11,boxEvery:380}}[diff];
+    const CFG={easy:{len:1800,laps:2,rivals:3,rival:0.84,haz:0.014,boxEvery:280},
+               medium:{len:2300,laps:2,rivals:4,rival:0.90,haz:0.026,boxEvery:300},
+               hard:{len:2800,laps:2,rivals:4,rival:0.96,haz:0.04,boxEvery:320},
+               champ:{len:3300,laps:2,rivals:4,rival:1.02,haz:0.055,boxEvery:340}}[diff];
     host.innerHTML=
       '<div class="sg-racehud"><div class="sg-rh-row">'+
         '<span class="sg-rh-place" id="sg-pos">1st <i>/ '+(CFG.rivals+1)+'</i></span>'+
+        '<span class="sg-rh-lap" id="sg-lap">Lap 1/'+CFG.laps+'</span>'+
         '<div class="sg-posbar" id="sg-pb"><i class="sg-pb-road"></i><b class="sg-pb-flag">🏁</b></div>'+
         '<span class="sg-rh-spd" id="sg-spd"></span></div></div>'+
       '<div class="sg-race3d"><canvas id="sg-cv"></canvas>'+
@@ -623,7 +624,7 @@
       '<div class="sg-steer"><button class="sg-sbtn" data-s="-1" aria-label="Steer left">◀</button><button class="sg-sbtn" data-s="1" aria-label="Steer right">▶</button></div></div>'+
       '<div id="sg-card"></div>';
     const cv=host.querySelector('#sg-cv');
-    const dpr=Math.min(2.5,window.devicePixelRatio||1);
+    const dpr=Math.min(2,window.devicePixelRatio||1);
     cv.width=Math.round(Wd*dpr); cv.height=Math.round(Ht*dpr);
     cv.style.width=Wd+'px'; cv.style.height=Ht+'px';
     const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
@@ -655,15 +656,15 @@
     ];
     let si=0; while(segs.length<CFG.len){ SECTORS[si%SECTORS.length](); si++; }
     while(segs.length%rumbleLen!==0) addSeg(0,lastY());
-    const trackLen=segs.length*segLen, FINISH=trackLen-segLen*8;
+    const trackLen=segs.length*segLen, TOTAL=trackLen*CFG.laps, FINVIS=trackLen-segLen*8;
     for(let n=10;n<segs.length;n+=6){ const side=(n%12<6)?-1:1; segs[n].sprites.push({kind:'flora',off:side*(1.15+Math.random()*0.9)}); }
-    for(let n=60;n<segs.length;n+=Math.floor(90+Math.random()*70)){ segs[n].sprites.push({kind:'banner',off:0}); }  // overhead banners
-    const hazards=[]; for(let n=40;n<segs.length-40;n+=Math.floor(11+Math.random()*10)){ if(Math.random()<CFG.haz*8){ hazards.push({seg:n,off:(Math.random()*1.6-0.8)}); } }
+    for(let n=180;n<segs.length;n+=Math.floor(420+Math.random()*260)){ segs[n].sprites.push({kind:'banner',off:0}); }  // overhead banners - a few per lap
+    const hazards=[]; for(let n=60;n<segs.length-40;n+=Math.floor(20+Math.random()*16)){ if(Math.random()<CFG.haz*8){ hazards.push({seg:n,off:(Math.random()*1.6-0.8)}); } }
     const items=[]; for(let n=70;n<segs.length-60;n+=Math.floor(CFG.boxEvery*(0.8+Math.random()*0.5))){ items.push({seg:n,off:(Math.random()*1.1-0.55),gone:false,k:Math.random()*6}); }
 
     /* ---- racers: the villains ---- */
     const maxV=segLen*46, accel=maxV/4.6, offDecel=-maxV/1.6, offLimit=maxV/3.2, centri=0.32;
-    let pos=0, playerX=0, v=0, over=false, mode='howto'; // howto -> count -> race -> spell -> done
+    let pos=0, playerX=0, v=0, over=false, mode='howto', lap=1, hudT=1; // howto -> count -> race -> spell -> done
     let boostT=0, boostMul=1, shieldT=0, spinFlashT=0, countT=0, finishedRivals=0;
     const heroKart=heroAv();
     const VILL=[
@@ -802,14 +803,16 @@
     }
     function draw(){
       drawBG();
-      const base=segs[Math.min(segs.length-1,Math.floor(pos/segLen))]; const basePct=(pos%segLen)/segLen;
+      const posm=pos%trackLen;
+      const base=segs[Math.floor(posm/segLen)%segs.length]; const basePct=(posm%segLen)/segLen;
       let x=0, dx=-(base.curve*basePct), maxy=Ht;
       const camX=playerX*roadW;
-      for(let n=0;n<drawDist;n++){ const idx=base.index+n; if(idx>=segs.length) break; const seg=segs[idx];
-        project(seg.p1, camX - x,        camH, pos);
-        project(seg.p2, camX - x - dx,   camH, pos);
+      for(let n=0;n<drawDist;n++){ const seg=segs[(base.index+n)%segs.length];
+        const looped=seg.index<base.index; const cz=posm-(looped?trackLen:0);
+        project(seg.p1, camX - x,        camH, cz);
+        project(seg.p2, camX - x - dx,   camH, cz);
         x+=dx; dx+=seg.curve;
-        seg._vis=false;
+        seg._vis=false; seg._clip=maxy; seg._far=n;
         if(seg.p1.camera.z<=camDepth || seg.p2.screen.y>=seg.p1.screen.y || seg.p2.screen.y>=maxy) continue;
         seg._vis=true; maxy=seg.p2.screen.y;
         const s1=seg.p1.screen, s2=seg.p2.screen, c=seg.color;
@@ -820,17 +823,19 @@
         poly(s1.x-s1.w,s1.y, s2.x-s2.w,s2.y, s2.x+s2.w,s2.y, s1.x+s1.w,s1.y, c.road);
         if(c.lane){ const lw1=s1.w*0.03, lw2=s2.w*0.03; poly(s1.x-lw1,s1.y, s2.x-lw2,s2.y, s2.x+lw2,s2.y, s1.x+lw1,s1.y, c.lane); }
         // checkered finish strip
-        if(Math.abs(seg.index*segLen-FINISH)<segLen*2){ const cw=(s1.w*2)/10;
+        if(Math.abs(seg.index*segLen-FINVIS)<segLen*2){ const cw=(s1.w*2)/10;
           for(let k=0;k<10;k++){ cx.fillStyle=(k%2)?'#111':'#EEE'; cx.fillRect(s1.x-s1.w+k*cw,s1.y-3,cw,6); } }
       }
       const order=[];
-      for(let n=drawDist-1;n>=0;n--){ const idx=base.index+n; if(idx>=segs.length) continue; const seg=segs[idx]; if(!seg._vis) continue; const sc=seg.p1.screen;
-        seg.sprites.forEach(sp=>{ order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*(sp.off||0),sy:sc.y,t:sp.kind,w2:sc.w}); }); }
-      hazards.forEach(hh=>{ const seg=segs[hh.seg]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*hh.off,sy:sc.y,t:'oil'}); } });
-      items.forEach(it=>{ if(it.gone) return; const seg=segs[it.seg]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*it.off,sy:sc.y,t:'item',it:it}); } });
-      rivals.forEach(r=>{ const sIdx=Math.floor(r.z/segLen); const seg=segs[Math.min(segs.length-1,sIdx)]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*r.x,sy:sc.y,t:'rival',r:r}); } });
+      for(let n=drawDist-1;n>=0;n--){ const seg=segs[(base.index+n)%segs.length]; if(!seg._vis) continue; const sc=seg.p1.screen;
+        seg.sprites.forEach(sp=>{ order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*(sp.off||0),sy:sc.y,t:sp.kind,w2:sc.w,clip:seg._clip,far:seg._far}); }); }
+      hazards.forEach(hh=>{ const seg=segs[hh.seg]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*hh.off,sy:sc.y,t:'oil',clip:seg._clip,far:seg._far}); } });
+      items.forEach(it=>{ if(it.gone) return; const seg=segs[it.seg]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*it.off,sy:sc.y,t:'item',it:it,clip:seg._clip,far:seg._far}); } });
+      rivals.forEach(r=>{ const seg=segs[Math.floor((r.z%trackLen)/segLen)%segs.length]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*r.x,sy:sc.y,t:'rival',r:r,clip:seg._clip,far:seg._far}); } });
       order.sort((a,b)=>a.y-b.y);
       order.forEach(o=>{ const w=Math.max(12,o.scale*roadW*Wd/2*0.11);
+        cx.save(); cx.beginPath(); cx.rect(0,0,Wd,o.clip||Ht); cx.clip();
+        cx.globalAlpha=Math.min(1,(drawDist-(o.far||0))/14);
         if(o.t==='flora'){
           cx.fillStyle='rgba(0,0,0,.18)'; cx.beginPath(); cx.ellipse(o.sx,o.sy,w*0.5,w*0.14,0,0,7); cx.fill();
           cx.fillStyle='#6b4a2a'; cx.fillRect(o.sx-w*0.09,o.sy-w*0.7,w*0.18,w*0.7);
@@ -846,8 +851,11 @@
         else if(o.t==='oil'){ cx.fillStyle='rgba(18,16,24,.78)'; cx.beginPath(); cx.ellipse(o.sx,o.sy-w*0.1,w*0.95,w*0.32,0,0,7); cx.fill();
           cx.fillStyle='rgba(150,110,210,.55)'; cx.beginPath(); cx.ellipse(o.sx-w*0.22,o.sy-w*0.16,w*0.34,w*0.11,0,0,7); cx.fill();
           cx.fillStyle='rgba(90,200,255,.35)'; cx.beginPath(); cx.ellipse(o.sx+w*0.25,o.sy-w*0.06,w*0.22,w*0.07,0,0,7); cx.fill(); }
-        else if(o.t==='item'){ const s=Math.max(11,w*0.95), yy=o.sy-w*1.15-Math.sin(pos/180+o.it.k)*4;
+        else if(o.t==='item'){ const s=Math.max(14,w*1.3), yy=o.sy-w*1.25-Math.sin(pos/180+o.it.k)*4;
           cx.save(); cx.translate(o.sx,yy); cx.rotate(Math.sin(pos/300+o.it.k)*0.12);
+          const halo=cx.createRadialGradient(0,0,s*0.2,0,0,s*1.5);
+          halo.addColorStop(0,'rgba(140,230,255,.5)'); halo.addColorStop(1,'rgba(140,230,255,0)');
+          cx.fillStyle=halo; cx.beginPath(); cx.arc(0,0,s*1.5,0,7); cx.fill();
           cx.fillStyle='rgba(0,0,0,.16)'; cx.beginPath(); cx.ellipse(0,w*1.15,s*0.5,s*0.16,0,0,7); cx.fill();
           const ig=cx.createLinearGradient(0,-s,0,s); ig.addColorStop(0,'#8BE7FF'); ig.addColorStop(1,'#2E9BD6');
           cx.fillStyle=ig; rrp(-s/2,-s/2,s,s,s*0.22); cx.fill();
@@ -856,6 +864,7 @@
           cx.fillStyle='#fff'; cx.font='800 '+Math.round(s*0.78)+'px Fraunces,serif'; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText('?',0,s*0.04);
           cx.textAlign='left'; cx.textBaseline='alphabetic'; cx.restore(); }
         else { const r=o.r; drawKart(o.sx,o.sy,w*1.9,r.col,{sprite:r.sprite,glyph:r.glyph},{spin:r.spin>0}); }
+        cx.globalAlpha=1; cx.restore();
       });
       const pw=Wd*0.30, px=Wd/2 + playerX*Wd*0.03 + steer*8, py=Ht-14;
       cx.save(); cx.translate(px,py); cx.rotate(steer*0.05);
@@ -867,22 +876,23 @@
         for(let i=0;i<12;i++){ const a=i/12*Math.PI*2, r0=Wd*0.16, r1=Wd*0.52;
           cx.beginPath(); cx.moveTo(Wd/2+Math.cos(a)*r0, Ht*0.46+Math.sin(a)*r0*0.7); cx.lineTo(Wd/2+Math.cos(a)*r1, Ht*0.46+Math.sin(a)*r1*0.7); cx.stroke(); } cx.restore(); }
       if(spinFlashT>0){ cx.save(); cx.globalAlpha=Math.min(0.5,spinFlashT); cx.fillStyle='#2A1E14'; cx.fillRect(0,0,Wd,Ht); cx.restore(); }
+      hudT+=0.016; if(hudT>0.15){ hudT=0; updateHud(); }
       if(mode==='count'&&countT>0){ cx.save(); cx.textAlign='center';
         cx.font='800 54px Fraunces,serif'; cx.fillStyle='#fff'; cx.strokeStyle='rgba(20,20,50,.6)'; cx.lineWidth=7;
         const n=Math.ceil(countT*3/1.0); const txt=countT<0.33?'GO!':String(Math.ceil(countT*3));
         cx.strokeText(txt,Wd/2,Ht*0.42); cx.fillText(txt,Wd/2,Ht*0.42); cx.restore(); }
-      updateHud();
     }
     /* position bar: everyone's progress at a glance */
     function updateHud(){
       const ahead=rivals.filter(r=>r.z>pos).length; const place=ahead+1;
       host.querySelector('#sg-pos').innerHTML=['🥇 1st','🥈 2nd','🥉 3rd','4th','5th'][place-1]+' <i>/ '+(CFG.rivals+1)+'</i>';
+      host.querySelector('#sg-lap').textContent='Lap '+Math.min(CFG.laps,lap)+'/'+CFG.laps;
       host.querySelector('#sg-spd').textContent='💨 '+Math.round(v/maxV*180);
       const pb=host.querySelector('#sg-pb');
       let dots='<i class="sg-pb-road"></i><b class="sg-pb-flag">🏁</b>';
-      rivals.forEach((r,i)=>{ const pct=Math.min(99,r.z/FINISH*100);
+      rivals.forEach((r,i)=>{ const pct=Math.min(99,r.z/TOTAL*100);
         dots+='<span class="sg-pb-dot" style="left:'+pct.toFixed(1)+'%;top:'+(i%2?72:28)+'%;background:'+r.col+'" title="'+r.name+'">'+r.glyph+'</span>'; });
-      dots+='<span class="sg-pb-dot me" style="left:'+Math.min(99,pos/FINISH*100).toFixed(1)+'%">🐝</span>';
+      dots+='<span class="sg-pb-dot me" style="left:'+Math.min(99,pos/TOTAL*100).toFixed(1)+'%">🐝</span>';
       pb.innerHTML=dots;
     }
 
@@ -900,15 +910,18 @@
       playerX+=steer*dxs; playerX-= dxs*spdPct*seg.curve*centri;
       if((playerX<-1||playerX>1) && v>offLimit){ v+=offDecel*dt; }
       playerX=Math.max(-2,Math.min(2,playerX));
-      if(shieldT<=0){ hazards.forEach(h=>{ const hz2=h.seg*segLen; const d=Math.abs(pos-hz2); if(d<segLen*1.2 && Math.abs(playerX-h.off)<0.5 && v>maxV*0.3){ v*=0.55; spinFlashT=0.5; try{flash('🛢️ Slipped on oil!');}catch(_){}} }); }
-      items.forEach(it=>{ if(it.gone) return; const iz=it.seg*segLen; const d=iz-pos;
+      const pm=pos%trackLen;
+      if(shieldT<=0){ hazards.forEach(h=>{ const hz2=h.seg*segLen; let d=Math.abs(pm-hz2); d=Math.min(d,trackLen-d); if(d<segLen*1.2 && Math.abs(playerX-h.off)<0.5 && v>maxV*0.3){ v*=0.55; spinFlashT=0.5; try{flash('🛢️ Slipped on oil!');}catch(_){}} }); }
+      items.forEach(it=>{ if(it.gone) return; const iz=it.seg*segLen; const d=iz-pm;
         if(d>-segLen*0.4&&d<segLen*1.4 && Math.abs(playerX-it.off)<0.5){ it.gone=true; spellGate(); } });
       pos+=v*dt;
-      if(pos>=FINISH){ over=true; return finish(); }
+      const nl=1+Math.floor(pos/trackLen);
+      if(nl>lap&&nl<=CFG.laps){ lap=nl; items.forEach(it=>it.gone=false); try{flash('🏁 Lap '+lap+' of '+CFG.laps+'!');}catch(_){ } }
+      if(pos>=TOTAL){ over=true; return finish(); }
       rivals.forEach(r=>{ r.spin=Math.max(0,r.spin-dt); r.slow=Math.max(0,r.slow-dt);
         let rs=r.spd; if(r.spin>0) rs*=0.28; else if(r.slow>0) rs*=0.55;
         const gap=pos-r.z; rs+= gap>segLen*12?maxV*0.07: gap<-segLen*12?-maxV*0.06:0;
-        r.z+=Math.max(0,rs)*dt; if(r.z>=FINISH) r.fin=true;
+        r.z+=Math.max(0,rs)*dt; if(r.z>=TOTAL) r.fin=true;
         r.x+= (Math.sin((r.z+r.name.length*99)/1400)*0.6 - r.x)*dt*0.6; });
     }
     function finish(){ removeEventListener('keydown',kd); removeEventListener('keyup',ku);
@@ -931,7 +944,7 @@
     host.appendChild(intro);
     intro.querySelector('#sg-howgo').onclick=()=>{ intro.remove(); countT=1.0; mode='count'; };
     renderHold();
-    if(window.SB_DEBUG) window._race={ state:()=>({pos,FINISH,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over}),
+    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over}),
       steerTo:(x)=>{playerX=x;}, jump:(z)=>{pos=z;}, grant:(i)=>{held=POWERS[i||0];renderHold();} };
     requestAnimationFrame(frame);
     return { destroy(){ over=true; removeEventListener('keydown',kd); removeEventListener('keyup',ku); } };
