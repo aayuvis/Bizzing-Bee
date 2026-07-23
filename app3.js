@@ -172,10 +172,32 @@ function journeyReached(c){ c=c||active(); const st=journeyStages(); const idx=l
 const esc = (s) => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const escA = (s) => esc(s).replace(/"/g,'&quot;');
 // escape text, then hide the target word (and simple inflections) behind a fill-in blank
+/* ---- clue masking ----
+   Hide not just the exact target spelling but the base/root it is built from, so
+   an inflected entry never leaks its answer. "plural of cat" (cats), "past tense
+   of run" (ran), "jumped: past tense of jump" all become "… of ▁▁". */
+function _maskStem(word){ let s=(word||'').toLowerCase().trim();
+  if(/ies$/.test(s)&&s.length>4) s=s.slice(0,-3)+'y';
+  else if(/(ied)$/.test(s)&&s.length>4) s=s.slice(0,-3)+'y';
+  else if(/(ed|es|er|ly)$/.test(s)&&s.length>4) s=s.slice(0,-2);
+  else if(/ing$/.test(s)&&s.length>5) s=s.slice(0,-3);
+  else if(/s$/.test(s)&&!/(ss|us|is)$/.test(s)&&s.length>3) s=s.slice(0,-1);
+  s=s.replace(/([bcdfghjklmnpqrstvwxz])\1$/,'$1'); // running->runn->run, bigger->bigg->big
+  return s; }
+function _maskRules(word){ const w=(word||'').trim(); if(!w) return [];
+  const e=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); const out=[];
+  out.push({re:new RegExp('\\b'+e(w)+'[a-z]*\\b','ig'), grp:0});                 // word + forward inflections
+  const st=_maskStem(w); if(st&&st.length>=3&&st!==w.toLowerCase()) out.push({re:new RegExp('\\b'+e(st)+'[a-z]*\\b','ig'), grp:0}); // its root (cats->cat)
+  // grammatical pointers: blank the base that follows them (handles irregulars: ran->"past tense of ▁▁")
+  out.push({re:/\b(?:plurals?|singular|past tense|present tense|past participle|present participle|comparatives?|superlatives?|gerund|third[- ]person singular|third[- ]person|inflection|conjugation|diminutive|abbreviations?|contraction|variant spelling|variant)\s+(?:form\s+)?of\s+([A-Za-z][A-Za-z'\-]*)/ig, grp:1});
+  return out; }
+function _applyMasks(text, word, BLANK){ let t=text||'';
+  _maskRules(word).forEach(({re,grp})=>{ t=t.replace(re,(m,g1)=>{ if(grp===1&&g1!=null) return m.slice(0,m.length-g1.length)+BLANK; return BLANK; }); });
+  return t; }
 function blankHTML(text, word){
   const t = esc(text||''); const w = (word||'').trim(); if(!w) return t;
-  let re; try{ re = new RegExp('\\b'+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'[a-z]*\\b','gi'); }catch(e){ return t; }
-  return t.replace(re, '<span style="display:inline-block;min-width:58px;border-bottom:2px solid var(--accent);vertical-align:baseline">&nbsp;</span>');
+  const BLANK='<span style="display:inline-block;min-width:58px;border-bottom:2px solid var(--accent);vertical-align:baseline">&nbsp;</span>';
+  try{ return _applyMasks(t, w, BLANK); }catch(e){ return t; }
 }
 const trunc = (s,n) => { s=s||''; return s.length>n ? esc(s.slice(0,n).replace(/\s+\S*$/,''))+'…' : esc(s); };
 const fmtN = (n) => String(n==null?'':n).replace(/\B(?=(\d{3})+(?!\d))/g,',');
@@ -370,8 +392,7 @@ function maskParts(sentence, word){ const t=sentence||''; const w=(word||'').tri
   const m=t.match(re); if(!m) return {before:t, after:'', matched:false};
   return { before:t.slice(0,m.index).trim(), after:t.slice(m.index+m[0].length).trim(), matched:true }; }
 function maskTxt(text, word){ const t=text||''; const w=(word||'').trim(); if(!w) return t;
-  let re; try{ re=new RegExp('\\b'+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'[a-z]*\\b','ig'); }catch(e){ return t; }
-  return t.replace(re,'_____'); }
+  try{ return _applyMasks(t, w, '_____'); }catch(e){ return t; } }
 function sayMasked(sentence, word){ try{ window.speechSynthesis.cancel(); }catch(e){}
   const parts=maskParts(sentence, word);
   if(!parts.matched){ const safe=(sentence||'').replace(new RegExp((word||'').replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'ig'),' beep '); deviceSpeak(safe||'beep',0.92); return; }
@@ -2071,7 +2092,7 @@ function viewApp(){
   const bandUp='';
 
   return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}${bandUp}
-    <div class="sb-header-sticky" style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
+    <div class="sb-header-sticky${state.nav==='coach'?' sb-collapse-nav':''}" style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
       <div style="max-width:1080px;margin:0 auto;padding:11px clamp(14px,3.5vw,32px);display:flex;align-items:center;gap:12px">
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
         <div style="display:flex;align-items:center;gap:9px;margin-right:auto"><div style="width:34px;height:38px;flex-shrink:0">${mascotSVG('happy')}</div><span class="sb-brand" style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i> Bee</span></div>
@@ -4476,14 +4497,14 @@ function buildMC(mode,n){ const all=gameWordsD();
       misspellings(w.w, 5).forEach(x=>{ if(wrong.length<3 && !wrong.some(y=>nkey(y)===nkey(x)) && nkey(x)!==nkey(w.w)) wrong.push(x); });
       while(wrong.length<3) wrong.push(w.w.slice(0,-1)+w.w.slice(-1)+'e'); // last-resort filler
       const choices=sample([w.w].concat(wrong.slice(0,3)));
-      return { kind:'spell', word:w.w, wordObj:w, answer:w.w, choices, prompt:(w.d?('“'+esc(trunc(w.d,90))+'”'):'Which spelling is correct?'), say:w.w };
+      return { kind:'spell', word:w.w, wordObj:w, answer:w.w, choices, prompt:(w.d?('“'+blankHTML((w.d.length>90?w.d.slice(0,88).replace(/\s+\S*$/,'')+'…':w.d),w.w)+'”'):'Which spelling is correct?'), say:w.w };
     }); }
   // meaning (merged: half definition prompts, half sentence prompts)
   const pool=all.filter(w=>(w.d&&w.d.length>4)||(w.s&&/[a-z]/i.test(w.s))); if(pool.length<4) return [];
   return pickFresh(pool, Math.min(n,pool.length)).map(w=>{
     const useSent = w.s && /[a-z]/i.test(w.s) && Math.random()<0.5;
     const choices=sample([w.w].concat(sample(all.filter(x=>nkey(x.w)!==nkey(w.w)),3).map(x=>x.w)));
-    return { kind:(useSent?'sentence':'meaning'), word:w.w, wordObj:w, answer:w.w, choices, prompt:(useSent?blankHTML(w.s,w.w):esc(w.d)), say:(useSent?w.s:w.w) };
+    return { kind:(useSent?'sentence':'meaning'), word:w.w, wordObj:w, answer:w.w, choices, prompt:(useSent?blankHTML(w.s,w.w):blankHTML(w.d,w.w)), say:(useSent?w.s:w.w) };
   }); }
 function gMisses(g){ return (g.ans?g.ans.filter(a=>!a.ok).map(a=>a.w):[]); }
 function gFinishBuzz(){ const g=state.game; g.status='done'; const bonus=2+g.right; addCoins(bonus); g.bonus=bonus;
