@@ -10,6 +10,43 @@
   function wordFeed(n,filter){ const f=filter||(w=>w&&w.w); let q=pool(n).filter(f);
     return { next(){ if(!q.length) q=pool(Math.max(14,n)).filter(f);
       return q.shift()||{w:'honey',d:'the sweet golden food that bees make'}; } }; }
+
+  /* ===== Evolution ladders — every saga game shows the hero evolving as the speller
+     progresses, and the "champion" form is the ACHIEVABLE endpoint that unlocks the
+     next chapter. The round keeps going afterwards so kids can chase the top form. ===== */
+  const SG_EVO={
+    snake:{unlock:5,max:8,forms:[[0,'🌱','Grass Snake'],[1,'🐍','Cobra'],[2,'🐲','Python'],[3,'🌊','Sea Serpent'],[4,'✨','Naga'],[5,'🌌','VASUKI']]},
+    fly:{unlock:'pots',forms:[[0,'🐛','Grub'],[1,'🐝','Bee'],[2,'🦋','Flutter'],[3,'🦅','Sky Rider'],[4,'🌟','Sky King']]},
+    maze:{unlock:'target',forms:[[0,'🐝','Forager'],[1,'🍯','Gatherer'],[2,'👑','Nectar Lord']]},
+    race:{unlock:'place',forms:[[0,'🛵','Rookie'],[1,'🏍️','Racer'],[2,'🏎️','Ace'],[3,'🏆','Champion']]},
+    hive:{unlock:'target',forms:[[0,'🐝','Speller'],[1,'📖','Wordsmith'],[2,'👑','Riddle Queen']]},
+    moth:{unlock:'words',forms:[[0,'🔨','Tapper'],[1,'⚡','Quick Hands'],[2,'🌟','Moth Master']]},
+    shield:{unlock:'phase2',forms:[[0,'🛡️','Squire'],[1,'⚔️','Knight'],[2,'👑','Shield Champion']]},
+    catcher:{unlock:'words',forms:[[0,'🧺','Catcher'],[1,'🍯','Nimble'],[2,'🌟','Nectar Ace']]},
+    simon:{unlock:'seqs',forms:[[0,'🎵','Chorus'],[1,'🎤','Soloist'],[2,'⭐','Headliner']]},
+    stars:{unlock:'n',forms:[[0,'⭐','Stargazer'],[1,'🌟','Navigator'],[2,'🌌','Skyweaver']]},
+    rhythm:{unlock:'words',forms:[[0,'🎵','Tapper'],[1,'🥁','Drummer'],[2,'🎼','Maestro']]},
+    connect:{unlock:'n',forms:[[0,'✨','Stargazer'],[1,'🌟','Linker'],[2,'🌌','Constellation Master']]},
+    blaster:{unlock:'n',forms:[[0,'👾','Gunner'],[1,'🔫','Sharpshooter'],[2,'🌟','Firewall Ace']]}
+  };
+  function sgEvo(host, key){
+    const cfg=SG_EVO[key]||{forms:[[0,'⭐','Hero']]}; let cur=-1;
+    const hud=host.querySelector('.sg-hud')||host.querySelector('.sg-racehud .sg-rh-row');
+    let chip=null;
+    if(hud){ chip=document.createElement('span'); chip.className='sg-evochip'; hud.insertBefore(chip, hud.firstChild); }
+    function toast(f){ const t=document.createElement('div'); t.className='sg-evotoast';
+      t.innerHTML='<span class="sg-evotoast-ic">'+f[1]+'</span><b>Evolved!</b><i>'+f[2]+'</i>';
+      host.appendChild(t); setTimeout(()=>t.remove(),1700);
+      try{ if(typeof sfx==='function') sfx('correct'); }catch(e){} }
+    return { set(stage, onUnlock, unlockStage){
+      let idx=0; for(let i=0;i<cfg.forms.length;i++) if(stage>=cfg.forms[i][0]) idx=i;
+      if(idx!==cur){ const up=idx>cur; cur=idx; const f=cfg.forms[idx];
+        if(chip){ chip.innerHTML=f[1]+' <b>'+f[2]+'</b>'; chip.classList.remove('pop'); void chip.offsetWidth; chip.classList.add('pop'); }
+        if(up&&idx>0) toast(f); }
+      const uAt=(unlockStage!=null)?unlockStage:(cfg.forms.length-1);
+      if(stage>=uAt && onUnlock){ onUnlock(3); }
+    }, forms:cfg.forms };
+  }
   function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   // A speller-safe "meaning" line: the definition with the target word blanked out so
   // showing the clue never leaks its spelling. Returns '' if no usable definition.
@@ -1083,7 +1120,12 @@
       rattler:['#B99154','#DDBA80','#EEDCB0','#6E4E24'],viper:['#6E9A3E','#97C066','#DCEAB0','#3E5A20'],
       boa:['#8A6AB8','#B39AD8','#E6D9F0','#4A3072'],mamba:['#4A4A58','#6E6E80','#B8B8C4','#22222E'],
       seasnake:['#2E9FB8','#5CC4D8','#BEEAF0','#14607A'],naga:['#C9A227','#F0D064','#F5E7B0','#7A5A10']};
-    const PAL=(function(){ const a=(typeof heroAv==='function')&&heroAv(); return SERP_PAL[a]||SERP_PAL.noodle; })();
+    const wornSkin=(function(){ const a=(typeof heroAv==='function')&&heroAv(); return SERP_PAL[a]||(a==='titanoboa'?['#4E7F41','#74AC60','#DCEBC8','#2C4A24']:a==='vasuki'?['#63499E','#9179CE','#E6D9F5','#3A2560']:null); })();
+    // evolution ladder: the snake grows from a garden snake up to VASUKI as words are spelled
+    const EVO_PAL=[['#5FBE5A','#86D97F','#D6F0B8','#2C6E2C'],['#3E8D5C','#69B984','#DDF0BE','#1F5A38'],
+      ['#9A824C','#C2A972','#E9DBB4','#5A4620'],['#2E9FB8','#5CC4D8','#BEEAF0','#14607A'],
+      ['#C9A227','#F0D064','#F5E7B0','#7A5A10'],['#63499E','#9179CE','#E6D9F5','#3A2560']];
+    let PAL=wornSkin||EVO_PAL[0], evo=null, snakeStage=0, unlocked=false;
     function occupied(x,y,extra){ for(let i=0;i<snake.length;i++) if(snake[i].x===x&&snake[i].y===y) return true;
       for(let i=0;i<(extra||[]).length;i++) if(extra[i].x===x&&extra[i].y===y) return true; return false; }
     function layoutWord(){ word=feed.next().w; spelled=0; tiles=[];
@@ -1110,7 +1152,9 @@
         if(tiles[t].idx===spelled){ spelled++; score+=15; grew=true; tiles.splice(t,1);
           if(spelled>=word.length){ wordsDone++; score+=40; spawnSplash('✓ '+word.toUpperCase());
             try{ if(typeof addCoins==='function') addCoins(10); }catch(e){}
-            if(wordsDone>=CFG.words){ finish(true); return; }
+            // EVOLVE: grow the snake through the forms up to Vasuki (the achievable endpoint)
+            const ns=Math.min(5, Math.round(wordsDone/CFG.words*5));
+            if(ns!==snakeStage){ snakeStage=ns; if(!wornSkin) PAL=EVO_PAL[ns]; if(evo) evo.set(ns, ()=>onVasuki(), 5); }
             if(tick>110) tick-=8; layoutWord(); } else renderWord(); }
         else { bonk=2; } break; } }
       if(!grew) snake.pop(); setHud(); }
@@ -1195,9 +1239,13 @@
     cv.addEventListener('touchend',e=>{ const dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
       if(Math.abs(dx)<10&&Math.abs(dy)<10) return; setDir(Math.abs(dx)>Math.abs(dy)?(dx>0?'right':'left'):(dy>0?'down':'up')); },{passive:true});
     function finish(win){ over=true; if(loop){ clearInterval(loop); loop=null; } removeEventListener('keydown',key);
-      const stars=win?(lives>=3?3:lives===2?2:1):0; const el=host.querySelector('#sg-card');
+      win=win||unlocked;                                   // reaching Vasuki counts as a win, even if you tangle later
+      const fb=host.querySelector('.sg-finishbtn'); if(fb) fb.remove();
+      const form=(SG_EVO.snake.forms[snakeStage]||[])[2]||'Grass Snake';
+      const stars=win?(unlocked?3:lives>=3?3:lives===2?2:1):0; const el=host.querySelector('#sg-card');
       if(!el){ done({win,score,stars}); return; }
-      el.innerHTML='<div class="sg-cardbox sg-endcard"><div style="font:800 26px var(--display,serif);margin-bottom:4px">'+(win?'🏆 Words spelled!':'🌙 Tangled out')+'</div>'
+      el.innerHTML='<div class="sg-cardbox sg-endcard"><div style="font:800 26px var(--display,serif);margin-bottom:4px">'+(unlocked?'🌌 Became VASUKI!':win?'🏆 Words spelled!':'🌙 Tangled out')+'</div>'
+        +'<div style="font-size:13px;color:var(--muted,#7A6E5C);margin-bottom:2px">Evolved to '+form+' · '+wordsDone+' words</div>'
         +'<div style="font-size:26px;letter-spacing:4px;margin:2px 0">'+('★'.repeat(stars)+'☆'.repeat(3-stars))+'</div>'
         +'<div style="font-size:15px;color:var(--muted,#7A6E5C);margin-bottom:12px">'+wordsDone+' word'+(wordsDone===1?'':'s')+' · ⭐ '+score+'</div>'
         +'<div class="sg-inrow" style="max-width:340px"><button class="sg-rbtn" id="sg-again">↻ Play again</button>'
@@ -1206,6 +1254,13 @@
       el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; wordSnake(host,opts,done); };
       el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); };
     }
+    // the achievable endpoint: the snake becomes VASUKI — next chapter unlocks, but play goes on
+    function onVasuki(){ if(unlocked) return; unlocked=true;
+      try{ if(opts.onUnlock) opts.onUnlock(3); }catch(e){}
+      spawnSplash('🌌 VASUKI!');
+      const fb=document.createElement('button'); fb.className='sg-finishbtn'; fb.textContent='Finish ⭐';
+      fb.onclick=()=>finish(true); host.appendChild(fb); }
+    evo=sgEvo(host,'snake'); evo.set(0);
     reset(); frame._t=tick; loop=setInterval(frame,tick); draw();
     return { destroy(){ over=true; if(loop){ clearInterval(loop); loop=null; } removeEventListener('keydown',key); } };
   }
@@ -1816,15 +1871,21 @@
     const eng=W().SB_SAGA_ENGINES[meta.engine];
     const WMAP={meadow:'meadow',sky:'opensky',hive:'hive','hive gates':'hive',stage:'stage',cosmos:'cosmos',carnival:'carnival',dojo:'dojo',lab:'lab',forest:'forest',arcade:'arcade',pond:'pond',lotus:'lotus',flyway:'flyway',homecoming:'homecoming'};
     const wid=WMAP[String(meta.world||'').toLowerCase()]||'meadow';
-    engineHandle=eng(b.querySelector('#sg-gh'), Object.assign({diff,world:wid},meta.opts), res=>{
+    // idempotent mid-game unlock: the achievable endpoint clears the chapter + unlocks
+    // the next one WITHOUT ending the round, so a keen speller can keep playing.
+    let unlocked=false;
+    const onUnlock=(stars)=>{ if(unlocked) return; unlocked=true;
+      const p=prog(); p.done=p.done||{}; p.done[meta.n]=1;
+      p.stars=p.stars||{}; p.stars[meta.n]=Math.max(p.stars[meta.n]||0, stars||1);
+      p.gems=(p.gems||0)+((p.gemsAt||{})[meta.n]?0:1); p.gemsAt=p.gemsAt||{}; p.gemsAt[meta.n]=1;
+      setProg(p);
+      try{ if(typeof logActivity==='function') logActivity('saga', {ch:meta.n, stars:stars}); }catch(e){}
+      try{ if(typeof addCoins==='function') addCoins(25+(stars||1)*10); }catch(e){}
+      try{ flash('🎉 Chapter cleared — next unlocked! Keep playing, or tap ← Saga.'); }catch(e){} };
+    engineHandle=eng(b.querySelector('#sg-gh'), Object.assign({diff,world:wid,onUnlock},meta.opts), res=>{
       engineHandle=null;
       if(res.win){
-        const p=prog(); p.done=p.done||{}; p.done[meta.n]=1;
-        p.stars=p.stars||{}; p.stars[meta.n]=Math.max(p.stars[meta.n]||0, res.stars||1);
-        p.gems=(p.gems||0)+((p.gemsAt||{})[meta.n]?0:1); p.gemsAt=p.gemsAt||{}; p.gemsAt[meta.n]=1;
-        setProg(p);
-        try{ if(typeof logActivity==='function') logActivity('saga', {ch:meta.n, stars:res.stars}); }catch(e){}
-        try{ if(typeof addCoins==='function') addCoins(25+(res.stars||1)*10); }catch(e){}
+        onUnlock(res.stars);   // ensure cleared even if the engine didn't unlock mid-game
         beats(meta.n,'win',()=>{ map(); });
       } else {
         beats(meta.n,'lose',()=>{ game(meta); });
