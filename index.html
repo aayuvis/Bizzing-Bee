@@ -7,8 +7,8 @@
 <meta name="description" content="Bizzing Bee — a spelling-bee trainer that hears your child spell, evolves a character with every win, and shows parents exactly where they stand.">
 <title>Bizzing Bee — spelling-bee trainer</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%F0%9F%90%9D%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="fonts/fonts.css?v=20260723w">
-<link rel="stylesheet" href="tokens.css?v=20260723w">
+<link rel="stylesheet" href="fonts/fonts.css?v=20260723x">
+<link rel="stylesheet" href="tokens.css?v=20260723x">
 
 <style>
   *{box-sizing:border-box}
@@ -178,10 +178,16 @@
   .avc-foil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.32) 48%,transparent 56%);mix-blend-mode:screen;animation:avcShine 5s linear infinite}
   .avc-legendary .avc-foil{background:linear-gradient(115deg,transparent 34%,rgba(255,224,130,.55) 46%,rgba(255,255,255,.4) 50%,transparent 60%);animation:avcShine 3.2s linear infinite}
   @keyframes avcShine{0%{transform:translateX(-45%)}100%{transform:translateX(45%)}}
-  /* Hero cards get lighting too: a colored holo sheen crossing the white foil + a soft rarity glow. */
-  .avc-card:not(.avc-villain)::before{content:'';position:absolute;inset:-2px;pointer-events:none;z-index:0;border-radius:inherit;background:linear-gradient(125deg,transparent 43%,color-mix(in srgb,var(--c2) 62%,rgba(255,255,255,.55)) 50%,transparent 57%);mix-blend-mode:screen;opacity:.6;animation:avcShine 3.8s linear infinite reverse}
-  .avc-card:not(.avc-villain)::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;border-radius:inherit;box-shadow:inset 0 0 44px color-mix(in srgb,var(--c1) 24%,transparent);animation:avcPulse 3.1s ease-in-out infinite}
-  @keyframes avcPulse{0%,100%{opacity:.3}50%{opacity:.85}}
+  /* Hero cards: a BRIGHT glare sweep over the whole card + holographic shimmer + a pulsing rarity glow.
+     (screen-blend is invisible on a light card, so this uses an opaque white glare band + drop-shadow glow.) */
+  .avc-card:not(.avc-villain) .avc-foil{z-index:4;mix-blend-mode:normal;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.05) 42%,rgba(255,255,255,.9) 50%,rgba(255,255,255,.05) 58%,transparent 70%);opacity:.95;transform:translateX(-80%) skewX(-10deg);animation:avcSweep 3.4s ease-in-out infinite}
+  @keyframes avcSweep{0%{transform:translateX(-90%) skewX(-10deg)}58%,100%{transform:translateX(90%) skewX(-10deg)}}
+  .avc-card:not(.avc-villain)::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:3;border-radius:inherit;background:linear-gradient(125deg,rgba(255,60,120,.20),rgba(140,90,255,.18),rgba(50,200,255,.20),rgba(120,255,150,.18),rgba(255,205,70,.20));background-size:260% 260%;mix-blend-mode:overlay;opacity:.7;animation:avcHolo 4.5s ease-in-out infinite}
+  @keyframes avcHolo{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+  .avc-card:not(.avc-villain){animation:avcGlowPulse 2.6s ease-in-out infinite}
+  @keyframes avcGlowPulse{0%,100%{filter:drop-shadow(0 0 3px color-mix(in srgb,var(--c1) 25%,transparent))}50%{filter:drop-shadow(0 0 18px color-mix(in srgb,var(--c1) 75%,transparent))}}
+  .avc-legendary:not(.avc-villain) .avc-foil{animation-duration:2.6s;background:linear-gradient(115deg,transparent 28%,rgba(255,240,170,.4) 42%,rgba(255,255,255,.95) 50%,rgba(255,240,170,.4) 58%,transparent 72%)}
+  .avc-legendary:not(.avc-villain)::before{opacity:.9}
   .avc-legendary:not(.avc-villain)::before{animation-duration:2.7s;background:linear-gradient(125deg,transparent 40%,rgba(255,231,150,.7) 49%,color-mix(in srgb,var(--c2) 55%,#fff) 52%,transparent 60%)}
   .avc-top{position:relative;display:flex;justify-content:space-between;align-items:flex-start;z-index:1}
   .avc-ovr{display:grid;justify-items:center;line-height:1;background:var(--rc);color:#fff;border-radius:12px;padding:6px 10px;box-shadow:0 3px 8px rgba(0,0,0,.25)}
@@ -221,49 +227,49 @@
   .avc-worn{font:800 13px var(--body,sans-serif);color:#2FA35C}
   .avc-x{font:700 13px var(--body,sans-serif);background:rgba(255,255,255,.85);color:#241E33;border:none;border-radius:999px;padding:9px 22px;cursor:pointer}
 </style>
-  <link rel="stylesheet" href="saga2.css?v=20260723w">
+  <link rel="stylesheet" href="saga2.css?v=20260723x">
 </head>
 <body>
 <div id="root"></div>
-<script src="icons.js?v=20260723w"></script>
-<script src="icons-art.js?v=20260723w"></script>
-<script src="cover-art.js?v=20260723w"></script>
+<script src="icons.js?v=20260723x"></script>
+<script src="icons-art.js?v=20260723x"></script>
+<script src="cover-art.js?v=20260723x"></script>
 <script>try{SB_ICON_MOTION()}catch(e){}</script>
-<script src="voice-cdn.js?v=20260723w"></script>
-<script src="words-data.js?v=20260723w"></script>
-<script src="word-alternates.js?v=20260723w"></script>
-<script src="concepts-data.js?v=20260723w"></script>
-<script src="lessons-data.js?v=20260723w"></script>
-<script src="scripps-data.js?v=20260723w"></script>
-<script src="themes-data.js?v=20260723w"></script>
-<script src="figurative-data.js?v=20260723w"></script>
-<script src="trivia-data.js?v=20260723w"></script>
-<script src="nsf-finals500-data.js?v=20260723w"></script>
-<script src="nsf-vocab26-data.js?v=20260723w"></script>
-<script src="adv-tips-data.js?v=20260723w"></script>
-<script src="concept-scripts.js?v=20260723w"></script>
-<script src="tips-data.js?v=20260723w"></script>
-<script src="voice-manifest.js?v=20260723w"></script>
-<script src="voice-words.js?v=20260723w"></script>
-<script src="voice-review.js?v=20260723w"></script>
-<script src="voice-french.js?v=20260723w"></script>
-<script src="app.js?v=20260723w"></script>
-<script src="avatars-art.js?v=20260723w"></script>
-<script src="avatars.js?v=20260723w"></script>
-<script src="avatar-cards.js?v=20260723w"></script>
-<script src="app2.js?v=20260723w"></script>
-<script src="app3.js?v=20260723w"></script>
-<script src="story-data.js?v=20260723w"></script>
-<script src="quest.js?v=20260723w"></script>
-  <script src="games-daily.js?v=20260723w"></script>
-  <script src="saga-art/saga-art.js?v=20260723w"></script>
-  <script src="saga-art/saga-map.js?v=20260723w"></script>
-  <script src="saga-art/worlds-art.js?v=20260723w"></script>
-  <script src="saga-art-dom.js?v=20260723w"></script>
-  <script src="saga-music.js?v=20260723w"></script>
-  <script src="saga-script.js?v=20260723w"></script>
-  <script src="saga2.js?v=20260723w"></script>
-<script src="trivia.js?v=20260723w"></script>
-<script src="advanced.js?v=20260723w"></script>
+<script src="voice-cdn.js?v=20260723x"></script>
+<script src="words-data.js?v=20260723x"></script>
+<script src="word-alternates.js?v=20260723x"></script>
+<script src="concepts-data.js?v=20260723x"></script>
+<script src="lessons-data.js?v=20260723x"></script>
+<script src="scripps-data.js?v=20260723x"></script>
+<script src="themes-data.js?v=20260723x"></script>
+<script src="figurative-data.js?v=20260723x"></script>
+<script src="trivia-data.js?v=20260723x"></script>
+<script src="nsf-finals500-data.js?v=20260723x"></script>
+<script src="nsf-vocab26-data.js?v=20260723x"></script>
+<script src="adv-tips-data.js?v=20260723x"></script>
+<script src="concept-scripts.js?v=20260723x"></script>
+<script src="tips-data.js?v=20260723x"></script>
+<script src="voice-manifest.js?v=20260723x"></script>
+<script src="voice-words.js?v=20260723x"></script>
+<script src="voice-review.js?v=20260723x"></script>
+<script src="voice-french.js?v=20260723x"></script>
+<script src="app.js?v=20260723x"></script>
+<script src="avatars-art.js?v=20260723x"></script>
+<script src="avatars.js?v=20260723x"></script>
+<script src="avatar-cards.js?v=20260723x"></script>
+<script src="app2.js?v=20260723x"></script>
+<script src="app3.js?v=20260723x"></script>
+<script src="story-data.js?v=20260723x"></script>
+<script src="quest.js?v=20260723x"></script>
+  <script src="games-daily.js?v=20260723x"></script>
+  <script src="saga-art/saga-art.js?v=20260723x"></script>
+  <script src="saga-art/saga-map.js?v=20260723x"></script>
+  <script src="saga-art/worlds-art.js?v=20260723x"></script>
+  <script src="saga-art-dom.js?v=20260723x"></script>
+  <script src="saga-music.js?v=20260723x"></script>
+  <script src="saga-script.js?v=20260723x"></script>
+  <script src="saga2.js?v=20260723x"></script>
+<script src="trivia.js?v=20260723x"></script>
+<script src="advanced.js?v=20260723x"></script>
 </body>
 </html>
