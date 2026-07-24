@@ -389,7 +389,10 @@ function voiceUpgradeTip(){
     <div style="font-size:12px;color:var(--text);line-height:1.6">${t[1]}</div>
   </div>`; }
 function speak(){ deviceSpeak(curWord().w, 0.9); }
+function speakSlow(){ deviceSpeak(curWord().w, 0.55); } // tortoise: same clip/voice, slowed (pitch preserved)
 function say(text,rate){ deviceSpeak(text, (rate||0.95)*(state.voiceRate||1)); }
+// tortoise glyph for the "hear it slowly" button — inherits the button's currentColor
+function tortoiseSVG(sz){ sz=sz||24; return `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="display:block"><path d="M3.5 15 Q11 5 18.5 15 Z" fill="currentColor"/><ellipse cx="11" cy="15" rx="7.6" ry="1.5" fill="currentColor"/><rect x="5" y="14.6" width="2.2" height="3.4" rx="1.1" fill="currentColor"/><rect x="14.8" y="14.6" width="2.2" height="3.4" rx="1.1" fill="currentColor"/><circle cx="20.2" cy="12.8" r="2.3" fill="currentColor"/><circle cx="21" cy="12.3" r=".55" fill="#fff"/><path d="M6 11.6 Q11 6.6 16 11.6" stroke="#fff" stroke-width="1" fill="none" opacity=".45"/><path d="M8.4 13.4 h5.2 M9.4 15 h3.2" stroke="#fff" stroke-width=".9" opacity=".4" stroke-linecap="round"/></svg>`; }
 // split a sentence around its target word (and simple inflections) so we can read it aloud
 // WITHOUT speaking the answer — used by "Finish the Sentence"
 function maskParts(sentence, word){ const t=sentence||''; const w=(word||'').trim(); if(!w) return {before:t, after:'', matched:false};
@@ -796,6 +799,7 @@ const app = {
   reviseWord:()=>{ const cw=curWord(); if(cw){ addMiss(cw); if(state.status==='idle') state.sessionDone=(state.sessionDone||0)+1; }
     flash('Marked for revision ⚑'); app.next(); },
   speak,
+  speakSlow:()=>speakSlow(),
   check:()=>{ const ans=(state.typed||'').trim().toLowerCase(); if(!ans){ flash('Type the word first'); return; }
     const cw=curWord(); const target=cw.w.toLowerCase();
     if(state.coachSession) recordCoach(target, ans===target);
@@ -2968,7 +2972,7 @@ function trainerCard(){
   const hints=[];
   if(S.showDef){ hints.push('<b>Definition</b> — '+blankHTML(word.d,word.w)+'.'); } // meaning only — spelling hints (word.h) teach letters, so they never show mid-spell
   if(S.showSent) hints.push('<b>Sentence</b> — '+blankHTML(word.s,word.w));
-  if(S.showOrigin) hints.push('<b>Origin</b> — '+esc(word.o||'—')+(word.r?('. '+esc(word.r)):'')+'.');
+  if(S.showOrigin) hints.push('<b>Origin</b> — '+esc(word.o||'—')+'.'); // language of origin only — the full etymology (word.r) spells out the roots and would leak the answer
   const tchip=(on,label,act)=>`<button data-act="${act}" style="padding:9px 14px;border-radius:999px;font-weight:700;font-size:13px;border:1px solid ${on?'var(--accent)':'var(--line)'};${on?'background:var(--accent);color:#fff':'background:transparent;color:var(--text)'}">${label}</button>`;
   const mascotAnim=st==='wrong'?'animation:sb-shake .45s ease':(st==='correct'?'animation:sb-pop .4s ease':'');
   return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow);text-align:center;position:relative">
@@ -2977,7 +2981,10 @@ function trainerCard(){
         <button data-act="reviseWord" title="Mark this word for revision and move to the next" style="display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;${reviseStyle};font-weight:800;font-size:12.5px">⚑ Mark for revision</button>
       </div>`:'<div style="height:4px"></div>'}
       <div style="width:96px;height:108px;margin:0 auto 4px"><div style="${mascotAnim};width:96px;height:108px">${mascotSVG(S.mood)}</div></div>
-      <button data-act="speak" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:18px">${iconSVG('volume',18)} Hear the word</button>
+      <div style="display:flex;justify-content:center;gap:12px;margin-bottom:18px">
+        <button data-act="speak" aria-label="Hear the word" title="Hear the word" style="width:54px;height:54px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',24)}</button>
+        <button data-act="speakSlow" aria-label="Hear it slowly" title="Hear it slowly" style="width:54px;height:54px;border-radius:50%;background:var(--surface2);color:var(--accent);border:1px solid var(--line);display:grid;place-items:center">${tortoiseSVG(26)}</button>
+      </div>
       <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:18px">${tchip(S.showDef,'Definition','toggleDef')}${tchip(S.showSent,'Sentence','toggleSent')}${tchip(S.showOrigin,'Origin','toggleOrigin')}</div>
       ${hints.length?`<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:left;font-size:15px;line-height:1.6;margin-bottom:18px">${hints.join('  ·  ')}</div>`:''}
       <input data-inp="onType" data-key="trainKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="spell it" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;text-align:center;padding:16px 14px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(20px,5vw,28px);letter-spacing:.14em;text-transform:lowercase;outline:none;margin-bottom:16px">
