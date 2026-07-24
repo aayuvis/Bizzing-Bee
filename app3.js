@@ -913,6 +913,8 @@ const app = {
   printGo:()=>{ try{ const w=window.open('','_blank'); if(!w){ flash('Pop-up blocked — allow pop-ups to print'); return; }
     const key=activeListKey(); const cards=(state.prn&&state.prn.fmt==='cards');
     w.document.write(cards?printCards(key):printDoc(key)); w.document.close(); setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} },350); state.printOpen=false; render(); }catch(e){ flash('Could not open the print view'); } },
+  printAvCards:()=>{ try{ const w=window.open('','_blank'); if(!w){ flash('Pop-up blocked — allow pop-ups to print'); return; }
+    w.document.write(printAvCardsDoc()); w.document.close(); setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} },420); }catch(e){ flash('Could not open the print view'); } },
   addTheme:(id)=>{ const c=active(); ensureLists(c); const key=themeKey(id); const t=themeOf(id); if(!t) return;
     if(!(c.pinnedLists||{})[key]){ if(!c.pinnedLists) c.pinnedLists={}; c.pinnedLists[key]=1; if(!c.lists[key]) c.lists[key]={xp:0}; save(); sfx('coin'); flash('“'+t.label+'” added to your lists ✓'); render(); }
     else app.selectList(key); },
@@ -2461,7 +2463,8 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
   const tabBtn=(k,ic,l)=>`<button data-act="collTab" data-arg="${k}" style="flex:1;min-width:96px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${iconSVG(ic,15)} ${l}</button>`;
   let body='';
   if(tab==='avatars'){
-    body=SB_AVATARS.packs.map(p=>{ const avs=SB_AVATARS.list.filter(a=>a.pack===p.id); const ownedN=avs.filter(a=>avOwned(c,a.id)).length;
+    const printBar=`<div class="sb-card" style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><div style="min-width:0"><div class="sb-ct" style="font-size:15px">🃏 Your avatar cards</div><div class="sb-cn">Print your ${avOwnedCount(c)} collected avatars as cut-out trading cards — with a Bizzing Bee back.</div></div><button data-act="printAvCards" style="display:inline-flex;align-items:center;gap:7px;padding:11px 17px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge);white-space:nowrap">${SB_ICON('printer',{size:16})} Print my cards</button></div>`;
+    body=printBar+SB_AVATARS.packs.map(p=>{ const avs=SB_AVATARS.list.filter(a=>a.pack===p.id); const ownedN=avs.filter(a=>avOwned(c,a.id)).length;
       const tiles=avs.map(a=>{ const own=avOwned(c,a.id); const R=SB_AVATARS.rarities[a.rarity]; const on=c.avatar===a.id;
         const action= on?`<span style="font-weight:800;font-size:11.5px;color:var(--good)">Wearing ✓</span>`
           : own?`<span style="display:inline-flex;gap:6px"><button data-act="wearAv" data-arg="${a.id}" style="padding:6px 11px;border-radius:8px;background:var(--accent);color:#fff;font-weight:800;font-size:11.5px">Use</button>${a.rarity!=='free'?`<button data-act="sellAvatar" data-arg="${a.id}" title="Sell for ${a.sell} coins" style="padding:6px 9px;border-radius:8px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--muted)">Sell ${a.sell}🪙</button>`:''}</span>`
@@ -3313,6 +3316,67 @@ function printCards(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1
     .btitle{font-size:31px;font-weight:800;margin:2px 0 15px;text-shadow:0 2px 6px rgba(0,0,0,.28)} .btitle i{font-style:italic}
     .blvl{display:inline-block;font-weight:800;font-size:18px;letter-spacing:.02em;background:#FFCF3F;color:#6b4a00;border:3px solid #fff;border-radius:999px;padding:8px 22px;box-shadow:0 4px 10px rgba(0,0,0,.28)}
     .bword{margin-top:16px;font-size:17px;color:rgba(255,255,255,.85);letter-spacing:.08em;font-weight:800;text-transform:lowercase}
+  </style></head><body>${pages}</body></html>`; }
+// Printable avatar collectible cards (Collection) — front = the trump card, back = the same
+// fun Bizzy backdrop. 4 per page, backs mirrored for duplex printing, then cut out.
+function printAvCardsDoc(){ const c=active(); const owned=SB_AVATARS.list.filter(a=>avOwned(c,a.id));
+  if(!owned.length) return '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:sans-serif;padding:40px;color:#333">No avatars collected yet — open packs in the Store first! 🐝</body></html>';
+  const bar=(lab,val,col)=>`<div class="abar"><span class="al">${lab}</span><span class="at"><i style="width:${Math.max(6,val)}%;background:${col}"></i></span><b class="av">${val}</b></div>`;
+  const front=(a)=>{ const d=(typeof SB_AV_CARD==='function')?SB_AV_CARD(a.id):null; if(!d) return '<div class="card afront"></div>';
+    const art=avatarSVG(a.id,124); const vil=d.villain;
+    return `<div class="card afront${vil?' avil':''}" style="--c1:${d.c1};--c2:${d.c2};--rc:${d.rc}">
+      <div class="atop"><span class="aov"><b>${d.overall}</b><i>OVR</i></span><span class="abadges"><span class="akind ${vil?'kv':'kh'}">${vil?'😈 Villain':'⭐ Hero'}</span><span class="arar" style="background:${d.rc}">${esc(d.rarityLabel)}</span></span></div>
+      <div class="aart">${art}</div>
+      <div class="aname">${esc(d.name)}</div>
+      <div class="atitle">${esc(d.title)}</div>
+      <div class="astats">${bar('✨ Spark',d.stats.spark,d.c1)}${bar('📚 Wisdom',d.stats.wisdom,d.c1)}${bar('⚡ Speed',d.stats.speed,d.c1)}${bar('💪 Grit',d.stats.grit,d.c1)}</div>
+      <div class="afact"><b>💡 Inspired by</b> ${esc(d.fact)}</div>
+      <div class="apack">🐝 ${esc(d.packLabel)}</div>
+    </div>`; };
+  const conf=[[24,40,'#FFD34D',0],[172,50,'#fff',18],[40,210,'#FF7DB0',-12],[182,206,'#FFD34D',24],[100,26,'#8CE0FF',10],[16,140,'#fff',-20],[196,150,'#FFD34D',14],[120,232,'#8CE0FF',-8],[60,120,'#fff',30]]
+    .map(x=>`<rect x="${x[0]}" y="${x[1]}" width="7" height="11" rx="2" fill="${x[2]}" opacity=".85" transform="rotate(${x[3]} ${x[0]} ${x[1]})"/>`).join('');
+  const bizzy=(typeof mascotSVG==='function')?mascotSVG('happy'):'🐝';
+  const back=(a)=>{ const d=(typeof SB_AV_CARD==='function')?SB_AV_CARD(a.id):{c1:'#6C4FE0',c2:'#4A32A8',rarityLabel:'',packLabel:'',name:a.name}; return `<div class="card back" style="--c1:${d.c1};--c2:${d.c2}">
+      <div class="bsun"></div><svg class="bdeco" viewBox="0 0 200 260" preserveAspectRatio="xMidYMid slice">${conf}</svg>
+      <span class="bspark s1">✨</span><span class="bspark s2">⭐</span>
+      <div class="bmid"><div class="bmascot">${bizzy}</div><div class="btitle"><i>Bizzing</i> Bee</div>
+      <div class="blvl">★ ${esc(d.rarityLabel||'Collectible')}</div><div class="bword">${esc(d.name)}</div></div></div>`; };
+  let pages=''; for(let i=0;i<owned.length;i+=4){ const chunk=owned.slice(i,i+4);
+    pages+='<div class="page">'+chunk.map(front).join('')+'</div>';
+    const order=[1,0,3,2].filter(x=>x<chunk.length); pages+='<div class="page">'+order.map(x=>chunk[x]).filter(Boolean).map(back).join('')+'</div>'; }
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>My avatar cards — Bizzing Bee</title><style>
+    @page{size:letter;margin:8mm} *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Trebuchet MS','Segoe UI',Verdana,sans-serif;color:#241E33}
+    .page{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:7mm;min-height:272mm;page-break-after:always}
+    .card{border:2.5px solid var(--rc,var(--c1));border-radius:18px;overflow:hidden;position:relative;display:flex;flex-direction:column;background:linear-gradient(165deg,color-mix(in srgb,var(--c1) 22%,#fff),#fff 46%);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .afront{padding:12px 14px 10px}
+    .avil{background:linear-gradient(165deg,color-mix(in srgb,var(--c1) 42%,#1A1526),#17131F 55%)!important;color:#fff;border-color:var(--rc)}
+    .atop{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+    .aov{display:grid;justify-items:center;line-height:1;background:var(--rc);color:#fff;border-radius:11px;padding:5px 10px}
+    .aov b{font-size:22px;font-weight:800} .aov i{font-size:8px;font-style:normal;letter-spacing:.12em;opacity:.9}
+    .abadges{display:grid;gap:5px;justify-items:end}
+    .akind{font-size:10px;font-weight:800;padding:3px 9px;border-radius:99px} .kh{background:rgba(45,163,92,.16);color:#1f8a4c;border:1px solid rgba(45,163,92,.4)} .kv{background:rgba(196,61,90,.2);color:#ff9db0;border:1px solid rgba(196,61,90,.5)}
+    .arar{font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#fff;padding:3px 10px;border-radius:99px}
+    .aart{width:130px;height:130px;margin:4px auto 2px;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,color-mix(in srgb,var(--c2) 55%,transparent),transparent 68%)}
+    .aart svg{width:124px;height:124px}
+    .aname{text-align:center;font-size:24px;font-weight:800;line-height:1;margin-top:2px} .avil .aname{color:#fff}
+    .atitle{text-align:center;font-size:12px;font-style:italic;color:color-mix(in srgb,var(--c1) 70%,#333);margin:2px 6px 8px} .avil .atitle{color:#c9bce8}
+    .astats{display:grid;gap:5px;margin:0 2px 8px}
+    .abar{display:grid;grid-template-columns:74px 1fr 24px;align-items:center;gap:7px;font-size:11px;font-weight:700}
+    .abar .at{height:8px;border-radius:99px;background:rgba(120,110,150,.25);overflow:hidden} .abar .at i{display:block;height:100%;border-radius:99px} .abar .av{font-size:11px;font-weight:800;text-align:right}
+    .avil .abar .at{background:rgba(255,255,255,.18)}
+    .afact{font-size:11.5px;line-height:1.4;background:color-mix(in srgb,var(--c2) 20%,#fff);border:1px solid color-mix(in srgb,var(--c1) 28%,#ddd);border-radius:11px;padding:8px 10px;margin:auto 0 8px} .afact b{display:block;font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--c1);margin-bottom:2px}
+    .avil .afact{background:rgba(0,0,0,.35);border-color:color-mix(in srgb,var(--c1) 40%,#333);color:#e6def5} .avil .afact b{color:#ffb0c4}
+    .apack{text-align:center;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:color-mix(in srgb,var(--c1) 60%,#999)} .avil .apack{color:#b9aed0}
+    /* shared fun back */
+    .back{background:radial-gradient(130% 100% at 50% 8%,color-mix(in srgb,var(--c1) 78%,#fff),var(--c2));color:#fff;align-items:center;justify-content:center;text-align:center;border-color:var(--c2)}
+    .bsun{position:absolute;inset:0;background:repeating-conic-gradient(from 0deg at 50% 40%,rgba(255,255,255,.10) 0deg 7deg,transparent 7deg 14deg)}
+    .bdeco{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+    .bspark{position:absolute;z-index:1;font-size:24px;opacity:.9} .bspark.s1{top:16px;left:18px} .bspark.s2{top:22px;right:20px;font-size:19px}
+    .bmid{position:relative;z-index:2} .bmascot{width:128px;height:140px;margin:0 auto 6px;filter:drop-shadow(0 5px 10px rgba(0,0,0,.28))} .bmascot svg{width:100%;height:100%;display:block}
+    .btitle{font-size:31px;font-weight:800;margin:2px 0 15px;text-shadow:0 2px 6px rgba(0,0,0,.28)} .btitle i{font-style:italic}
+    .blvl{display:inline-block;font-weight:800;font-size:18px;background:#FFCF3F;color:#6b4a00;border:3px solid #fff;border-radius:999px;padding:8px 22px;box-shadow:0 4px 10px rgba(0,0,0,.28)}
+    .bword{margin-top:16px;font-size:17px;color:rgba(255,255,255,.85);letter-spacing:.08em;font-weight:800}
   </style></head><body>${pages}</body></html>`; }
 // Lists the child has activated: the 3 core lists + everything they pinned + whatever is being trained now.
 function activatedListKeys(){ const c=active(); ensureLists(c);
