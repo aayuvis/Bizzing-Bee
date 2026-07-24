@@ -3249,19 +3249,26 @@ function printCards(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1
   else if(sort==='diff') words=words.slice().sort((a,b)=>((a.y||3)-(b.y||3))||((a.bp||0)-(b.bp||0))||a.w.localeCompare(b.w));
   const CAP=400; const total=words.length; if(words.length>CAP) words=words.slice(0,CAP);
   const label=listLabel(key).split(' · ')[0]; const sizes={letter:'letter',a4:'A4',a5:'A5'};
-  const front=(w)=>{ const pron=w.p||w.sy||''; return `<div class="card front">
-      <div class="fhead"><div class="fw">${esc(w.w)}</div><span class="cbox"></span></div>
-      ${(pron||w.ps)?`<div class="fpron">${pron?esc(pron):''}${w.ps?(pron?' · ':'')+esc(w.ps):''}</div>`:''}
-      ${w.d?`<div class="frow"><b>Meaning</b> ${esc(w.d)}</div>`:''}
-      ${w.s?`<div class="frow"><b>Sentence</b> ${esc(w.s)}</div>`:''}
-      ${w.o?`<div class="frow"><b>Origin</b> ${esc(w.o)}${w.r?('. '+esc(w.r)):''}</div>`:''}
-      ${w.h?`<div class="fhint">💡 ${esc(w.h)}</div>`:''}
-      ${w.m?`<div class="fmis">Often misspelled “${esc(w.m)}”</div>`:''}
-      <div class="fnotes"><span class="nlab">Notes</span><span class="nl"></span><span class="nl"></span></div>
-    </div>`; };
-  const back=(w)=>`<div class="card back"><div class="bpat"></div>
-      <div class="bmid"><div class="bbee">🐝</div><div class="btitle"><i>Bizzing</i> Bee</div>
-      <div class="blvl">Level ${w.y||3}</div><div class="bword">${esc(w.w)}</div></div></div>`;
+  const LC=(y)=>{ y=y||3; return y<=1?['#3FA45C','#2E8F4C']:y===2?['#2E9FB8','#1B7C97']:y===3?['#7C5CFF','#6A47F5']:y===4?['#B14FC4','#8E39A8']:y===5?['#E8912E','#CC7714']:['#D6453A','#B8322A']; };
+  const front=(w)=>{ const pron=w.p||w.sy||''; const cc=LC(w.y); const meta=[pron?esc(pron):'',w.ps?esc(w.ps):''].filter(Boolean).join(' · ');
+    return `<div class="card front" style="--c1:${cc[0]};--c2:${cc[1]}">
+      <div class="fbanner"><span class="cbox"></span><div class="fw">${esc(w.w)}</div>${meta?`<div class="fmeta">${meta}</div>`:''}<span class="flvl">★ Level ${w.y||3}</span></div>
+      <div class="fbody">
+        ${w.d?`<div class="frow"><span class="ic">📖</span><div class="ftx"><b>Meaning</b>${esc(w.d)}</div></div>`:''}
+        ${w.s?`<div class="frow"><span class="ic">💬</span><div class="ftx"><b>In a sentence</b>${esc(w.s)}</div></div>`:''}
+        ${w.o?`<div class="frow"><span class="ic">🌍</span><div class="ftx"><b>Origin</b>${esc(w.o)}${w.r?('. '+esc(w.r)):''}</div></div>`:''}
+        ${w.h?`<div class="fhint"><span class="ic">💡</span><div><b>Memory trick</b>${esc(w.h)}</div></div>`:''}
+        ${w.m?`<div class="fmis">⚠️ Often misspelled “${esc(w.m)}”</div>`:''}
+        <div class="fnotes"><span class="nlab">✏️ My notes</span><span class="nl"></span><span class="nl"></span></div>
+      </div></div>`; };
+  const hexPts=(cx,cy,r)=>{ let s=''; for(let i=0;i<6;i++){ const a=Math.PI/180*(60*i-30); s+=(cx+r*Math.cos(a)).toFixed(1)+','+(cy+r*Math.sin(a)).toFixed(1)+' '; } return s.trim(); };
+  const deco=[[28,42,24],[170,54,33],[46,210,29],[180,216,20],[104,120,15],[14,148,13],[150,158,17],[196,140,22]].map(h=>`<polygon points="${hexPts(h[0],h[1],h[2])}"/>`).join('');
+  const bizzy=(typeof mascotSVG==='function')?mascotSVG('love'):'🐝';
+  const back=(w)=>{ const cc=LC(w.y); return `<div class="card back" style="--c1:${cc[0]};--c2:${cc[1]}">
+      <svg class="bdeco" viewBox="0 0 200 260" preserveAspectRatio="xMidYMid slice"><g fill="none" stroke="#fff" stroke-width="2.4" opacity=".16">${deco}</g></svg>
+      <span class="bspark s1">✨</span><span class="bspark s2">⭐</span><span class="bspark s3">🍯</span><span class="bspark s4">✨</span>
+      <div class="bmid"><div class="bmascot">${bizzy}</div><div class="btitle"><i>Bizzing</i> Bee</div>
+      <div class="blvl">★ Level ${w.y||3}</div><div class="bword">${esc(w.w)}</div></div></div>`; };
   let pages=''; for(let i=0;i<words.length;i+=4){ const chunk=words.slice(i,i+4);
     pages+='<div class="page">'+chunk.map(front).join('')+'</div>';
     // backs: mirror columns per row (0,1,2,3 -> 1,0,3,2) for duplex alignment
@@ -3269,24 +3276,36 @@ function printCards(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1
     pages+='<div class="page">'+bset.map(back).join('')+'</div>'; }
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(label)} — Bizzing Bee flashcards</title><style>
     @page{size:${sizes[p.page]||'letter'};margin:8mm} *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:Georgia,'Times New Roman',serif;color:#1c1633}
-    .page{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:6mm;height:calc(100vh - 0px);min-height:270mm;page-break-after:always}
-    .card{border:1.5px dashed #b9add8;border-radius:14px;padding:12px 14px;overflow:hidden;position:relative;display:flex;flex-direction:column}
-    .front .fhead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;border-bottom:2px solid #e6def5;padding-bottom:6px;margin-bottom:7px}
-    .fw{font-size:26px;font-weight:bold;letter-spacing:.01em;line-height:1.05;overflow-wrap:anywhere}
-    .cbox{flex-shrink:0;width:22px;height:22px;border:2.4px solid #7C5CFF;border-radius:5px;display:inline-block}
-    .fpron{font-size:12px;color:#6a5b9a;font-style:italic;margin-bottom:6px}
-    .frow{font-size:12px;color:#33304a;line-height:1.4;margin-bottom:5px} .frow b{color:#4a3a86;font-weight:bold}
-    .fhint{font-size:11.5px;color:#2a6b46;line-height:1.35;margin-bottom:5px;background:#eef7f0;border-radius:8px;padding:5px 8px}
-    .fmis{font-size:11px;color:#b23a4e;margin-bottom:5px}
-    .fnotes{margin-top:auto;padding-top:6px} .nlab{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#9a8fbf;font-family:Arial,sans-serif}
-    .nl{display:block;border-bottom:1.3px solid #cfc6e6;height:15px;margin-top:8px}
-    /* back — honeycomb Bizzing Bee backdrop */
-    .back{background:linear-gradient(160deg,#6C4FE0,#4A32A8);color:#fff;align-items:center;justify-content:center;text-align:center;border-color:#4A32A8;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .bpat{position:absolute;inset:0;opacity:.16;background-image:radial-gradient(circle at 10px 6px,#fff 2px,transparent 2.5px),radial-gradient(circle at 30px 22px,#fff 2px,transparent 2.5px);background-size:40px 32px}
-    .bmid{position:relative;z-index:1} .bbee{font-size:44px;line-height:1} .btitle{font-family:Georgia,serif;font-size:22px;font-weight:bold;margin:2px 0 12px} .btitle i{font-style:italic}
-    .blvl{display:inline-block;font-family:Arial,sans-serif;font-weight:bold;font-size:16px;letter-spacing:.04em;background:rgba(255,255,255,.22);border:1.5px solid rgba(255,255,255,.5);border-radius:999px;padding:6px 16px}
-    .bword{margin-top:12px;font-size:14px;color:rgba(255,255,255,.7);letter-spacing:.05em}
+    body{font-family:'Trebuchet MS','Segoe UI',Verdana,sans-serif;color:#241E33}
+    .page{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:7mm;min-height:272mm;page-break-after:always}
+    .card{border:2.5px solid var(--c1);border-radius:18px;overflow:hidden;position:relative;display:flex;flex-direction:column;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    /* front banner */
+    .fbanner{background:linear-gradient(135deg,var(--c1),var(--c2));color:#fff;padding:15px 18px 15px;position:relative}
+    .fw{font-size:38px;font-weight:800;line-height:1;letter-spacing:.005em;overflow-wrap:anywhere;text-shadow:0 1.5px 3px rgba(0,0,0,.18);padding-right:36px}
+    .fmeta{font-size:14px;font-style:italic;opacity:.96;margin-top:5px}
+    .cbox{position:absolute;top:14px;right:15px;width:30px;height:30px;border:3px solid #fff;border-radius:7px;background:rgba(255,255,255,.2)}
+    .flvl{position:absolute;bottom:-14px;left:18px;background:#FFCF3F;color:#6b4a00;font-weight:800;font-size:13px;padding:6px 14px;border-radius:999px;box-shadow:0 3px 7px rgba(0,0,0,.22);border:2.5px solid #fff}
+    /* front body */
+    .fbody{padding:20px 18px 14px;display:flex;flex-direction:column;flex:1}
+    .frow{display:flex;gap:10px;font-size:15px;line-height:1.42;color:#2a2740;margin-bottom:11px}
+    .frow .ic{font-size:19px;flex-shrink:0;line-height:1.2}
+    .ftx b,.fhint b{display:block;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--c1);font-weight:800;margin-bottom:2px}
+    .fhint{display:flex;gap:10px;font-size:14.5px;line-height:1.4;color:#1f6b41;background:#edf8f0;border:1.5px solid #bfe6cc;border-radius:12px;padding:10px 12px;margin-bottom:11px}
+    .fmis{font-size:13px;color:#b23a4e;font-weight:700;margin-bottom:11px}
+    .fnotes{margin-top:auto;padding-top:10px;border-top:2.5px dotted color-mix(in srgb,var(--c1) 45%,#fff)}
+    .nlab{font-size:12px;font-weight:800;color:var(--c1)}
+    .nl{display:block;border-bottom:1.6px solid #d8d0ea;height:19px;margin-top:11px}
+    /* back — fun honeycomb Bizzing Bee backdrop with Bizzy the mascot */
+    .back{background:radial-gradient(120% 90% at 50% 12%,color-mix(in srgb,var(--c1) 82%,#fff),var(--c2));color:#fff;align-items:center;justify-content:center;text-align:center;border-color:var(--c2)}
+    .bdeco{position:absolute;inset:0;width:100%;height:100%}
+    .bspark{position:absolute;z-index:1;font-size:24px;opacity:.9}
+    .bspark.s1{top:16px;left:18px} .bspark.s2{top:22px;right:20px;font-size:19px} .bspark.s3{bottom:20px;left:20px;font-size:22px} .bspark.s4{bottom:24px;right:22px;font-size:18px}
+    .bmid{position:relative;z-index:2}
+    .bmascot{width:128px;height:140px;margin:0 auto 6px;filter:drop-shadow(0 5px 10px rgba(0,0,0,.28))}
+    .bmascot svg{width:100%;height:100%;display:block}
+    .btitle{font-size:31px;font-weight:800;margin:2px 0 15px;text-shadow:0 2px 6px rgba(0,0,0,.28)} .btitle i{font-style:italic}
+    .blvl{display:inline-block;font-weight:800;font-size:18px;letter-spacing:.02em;background:#FFCF3F;color:#6b4a00;border:3px solid #fff;border-radius:999px;padding:8px 22px;box-shadow:0 4px 10px rgba(0,0,0,.28)}
+    .bword{margin-top:16px;font-size:17px;color:rgba(255,255,255,.85);letter-spacing:.08em;font-weight:800;text-transform:lowercase}
   </style></head><body>${pages}</body></html>`; }
 // Lists the child has activated: the 3 core lists + everything they pinned + whatever is being trained now.
 function activatedListKeys(){ const c=active(); ensureLists(c);
