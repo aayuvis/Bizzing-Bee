@@ -806,7 +806,10 @@ const app = {
   toggleHeat:()=>set({heatReveal:!state.heatReveal}),
   luToggleWords:()=>set({luWordsOpen:!state.luWordsOpen}),
   luPractice:(idx)=>{ state.gi=+idx; state.luTab='practice'; state.status='idle'; state.typed=''; state.mood='happy'; state.showDef=false; state.showSent=false; state.showOrigin=false; render(); setTimeout(speak,250); },
-  reveal:()=>set({status:'revealed', mood:'sleepy'}),
+  // Show answer = you didn't know it → save for revision and move on (no manual marking in Practice)
+  reveal:()=>{ if(state.status==='revealed') return; const cw=curWord(); if(cw&&cw.w){ addMiss(cw); state.sessionDone=(state.sessionDone||0)+1; state._run=0;
+      const rk=nkey(cw.w); state.sessionCorrect=(state.sessionCorrect||[]).filter(x=>nkey(x.w)!==rk); state.sessionWrong=(state.sessionWrong||[]).filter(x=>nkey(x.w)!==rk); state.sessionWrong.push(cw); }
+    set({status:'revealed', mood:'sleepy'}); autoAdvance(2400); },
   primary:()=>{ app.check(); },
   // Self-directed advance: the two card buttons replace the old "Next" button.
   completeWord:()=>{ const cw=curWord(); if(cw&&cw.w){ const t=cw.w.toLowerCase(); markMastered(t); clearMiss(t);
@@ -3072,11 +3075,7 @@ function trainerCard(){
   const tchip=(on,label,act)=>`<button data-act="${act}" style="padding:9px 14px;border-radius:999px;font-weight:700;font-size:13px;border:1px solid ${on?'var(--accent)':'var(--line)'};${on?'background:var(--accent);color:#fff':'background:transparent;color:var(--text)'}">${label}</button>`;
   const mascotAnim=st==='wrong'?'animation:sb-shake .45s ease':(st==='correct'?'animation:sb-pop .4s ease':'');
   return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow);text-align:center;position:relative">
-      <button data-act="toggleCardView" title="Switch to card view" aria-label="Switch to card view" style="position:absolute;top:12px;left:12px;z-index:4;width:38px;height:38px;border-radius:11px;background:var(--surface2);color:var(--accent);border:1px solid var(--line);display:grid;place-items:center">${cardsSVG(20)}</button>
-      ${showMarks?`<div style="display:flex;justify-content:flex-end;flex-wrap:wrap;gap:7px;margin-bottom:8px">
-        <button data-act="completeWord" title="I know this — mark it complete and skip to the next" style="display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;${completeStyle};font-weight:800;font-size:12.5px">✓ Complete</button>
-        <button data-act="reviseWord" title="Mark this word for revision and move to the next" style="display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;${reviseStyle};font-weight:800;font-size:12.5px">⚑ Mark for revision</button>
-      </div>`:'<div style="height:4px"></div>'}
+      <div style="height:6px"></div>
       <div style="width:96px;height:108px;margin:0 auto 4px"><div style="${mascotAnim};width:96px;height:108px">${mascotSVG(S.mood)}</div></div>
       <div style="display:flex;justify-content:center;gap:12px;margin-bottom:18px">
         <button data-act="speak" aria-label="Hear the word" title="Hear the word" style="width:54px;height:54px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',24)}</button>
