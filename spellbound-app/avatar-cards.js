@@ -49,7 +49,8 @@
     turbo:     ['Engines hot, {name}! Spell fast, spell first!', 'Green light! {name} floors it into the words!', '{name} is built for speed AND spelling. Go go go!'],
     villains:  ['So… you dare to spell against me, {name}? How bold.', '{name}. We meet across the board. Spell, if you can.', 'Every word you spell, {name}, I shall try to unwrite.'],
     serpent:   ['Ssslither over here, {name} — let’s ssspell!', '{name} and me, coiled and ready. Ssstrike true!', 'One letter at a time, {name} — sssmooth and sssteady wins.'],
-    bigbeasts: ['The biggest of all time says hi, {name}! Ready to spell BIG?', 'Small word, giant heart — let’s go, {name}!', '{name}, even the largest beasts learned one letter at a time.']
+    bigbeasts: ['The biggest of all time says hi, {name}! Ready to spell BIG?', 'Small word, giant heart — let’s go, {name}!', '{name}, even the largest beasts learned one letter at a time.'],
+    worldchangers: ['Great ideas start with a curious question, {name}. What will you learn today?', 'Every expert was once a beginner, {name}. Keep going!', 'You don’t have to be a genius to change the world, {name} — just never stop trying.']
   };
   // pack persona → title suffix pool
   var PACK_TITLE = {
@@ -57,7 +58,7 @@
     lab:'of the Lab', arcade:'of the Arcade', origami:'of the Fold', elements:'of the Elements',
     critter:'of the Wild Pond', vibe:'of Good Vibes', dino:'of the Ancient World', enchanted:'of the Enchanted Wood',
     wildhearts:'of the Wildhearts', legends:'of Legend', turbo:'of the Speedway', villains:'of the Unspelling',
-    serpent:'of the Serpent Pack', bigbeasts:'of the Colossal Ages'
+    serpent:'of the Serpent Pack', bigbeasts:'of the Colossal Ages', worldchangers:'of the Hall of Bright Ideas'
   };
   var RANK = { free:'Rookie', rare:'Speller', epic:'Champion', legendary:'Grandmaster' };
 
@@ -261,7 +262,18 @@
     livyatan:{lore:'A whale that hunted other whales.',fact:'Livyatan was a giant predatory whale with teeth over 30 cm long — some of the biggest biting teeth of any animal ever.'},
     gigantopithecus:{lore:'The largest ape that ever walked the Earth.',fact:'Gigantopithecus stood up to 3 metres tall — the biggest ape ever — and some think it inspired legends of Bigfoot.'},
     dunkleo:{lore:'An armoured sea giant with slicing jaw-plates.',fact:'Dunkleosteus had no teeth — it sheared prey with self-sharpening bony jaw plates, and its bite was one of the strongest ever.'},
-    bluewhale:{lore:'The largest animal that has EVER lived — bigger than any dinosaur.',fact:'The blue whale can reach 30 metres and 180 tonnes — heavier than any dinosaur — and its heart alone is the size of a small car.'}
+    bluewhale:{lore:'The largest animal that has EVER lived — bigger than any dinosaur.',fact:'The blue whale can reach 30 metres and 180 tonnes — heavier than any dinosaur — and its heart alone is the size of a small car.'},
+    // ---- WORLD CHANGERS (real geniuses & peacemakers — every fact is true and kid-checkable) ----
+    newton:{lore:'The genius who explained why apples fall and planets orbit.',fact:'Watching an apple fall in his garden set Isaac Newton thinking about gravity — the same force that keeps the Moon circling the Earth.'},
+    curie:{lore:'The fearless scientist who discovered glowing new elements.',fact:'Marie Curie is the only person ever to win a Nobel Prize in two different sciences — Physics and Chemistry.'},
+    mlk:{lore:'The peaceful leader who dreamed of fairness for all.',fact:'Dr. Martin Luther King Jr. gave his famous “I Have a Dream” speech to over 250,000 people in Washington in 1963.'},
+    gandhi:{lore:'The gentle leader who freed a nation without a single weapon.',fact:'Mahatma Gandhi led India to independence using only peaceful protest — an idea he called satyagraha, or “truth-force”.'},
+    gutenberg:{lore:'The inventor who taught machines to print, spreading books to the world.',fact:'Around 1440 Johannes Gutenberg built the printing press, so books could be copied by machine and ideas could reach everyone.'},
+    nightingale:{lore:'“The Lady with the Lamp” who made caring for the sick a science.',fact:'Florence Nightingale checked on wounded soldiers at night by lamplight, and proved that clean hospitals saved thousands of lives.'},
+    aryabhatta:{lore:'The ancient Indian stargazer who helped give the world zero.',fact:'Over 1,500 years ago Aryabhatta used a place-value system with zero and worked out that the Earth spins on its axis.'},
+    qinshihuang:{lore:'The first emperor who united China and built wonders.',fact:'Qin Shi Huang became China’s first emperor and was buried with an army of about 8,000 life-size terracotta soldiers.'},
+    buddha:{lore:'The awakened teacher of kindness, calm and wisdom.',fact:'“Buddha” means “the awakened one” — Siddhartha Gautama taught that kindness and a calm mind lead to true happiness.'},
+    einstein:{lore:'The wild-haired genius who reimagined space, time and light.',fact:'Albert Einstein’s equation E=mc² shows that a tiny amount of matter holds an enormous amount of energy.'}
   };
 
   // fallback pool if an id somehow lacks authored lore
