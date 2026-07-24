@@ -360,8 +360,10 @@
   function keepFlying(host, opts, done){
     const Wd=Math.min(innerWidth-16,1280), Ht=Math.max(320,innerHeight-210);
     const diff=opts.diff||'medium', world=opts.world||'opensky';
-    const CFG={easy:{gap:170,speed:2.2,pots:8},medium:{gap:150,speed:2.6,pots:10},
-               hard:{gap:130,speed:3.0,pots:10},champ:{gap:115,speed:3.4,pots:12}}[diff];
+    // Roomier gaps + gentler speeds — the towers were punishingly tight before.
+    const CFG={easy:{gap:245,speed:1.95,pots:8},medium:{gap:220,speed:2.25,pots:10},
+               hard:{gap:195,speed:2.6,pots:10},champ:{gap:175,speed:2.95,pots:12}}[diff];
+    const MAXLIVES=5;
     host.innerHTML='<div class="sg-hud"><span id="sg-pots">🍯 0/'+CFG.pots+'</span><span class="sg-flyprog"><i id="sg-fill"></i><b>⛩️</b></span><span id="sg-coins">🪙 0</span><span id="sg-lives"></span></div><canvas id="sg-cv"></canvas><div id="sg-card"></div>';
     const cv=host.querySelector('#sg-cv');
     // render at the device's real pixel density — crisp on tablets, no pixelation
@@ -390,7 +392,7 @@
     addEventListener('keydown',flap);
     host.addEventListener('pointerdown',pdown); addEventListener('pointerup',pup); addEventListener('pointercancel',pup);
     function spawn(){ const g=CFG.gap, y=60+Math.random()*(Ht-120-g); obs.push({x:Wd+30,y,g}); }
-    function spawnMoth(){ const big=Math.random()<0.22;
+    function spawnMoth(){ const big=Math.random()<0.14;
       moths.push({x:Wd+40,y:60+Math.random()*(Ht-140),ph:Math.random()*7,amp:14+Math.random()*26,sp:CFG.speed*(0.9+Math.random()*0.5),s:big?54:38,big}); }
     function spawnCoins(){ const y0=70+Math.random()*(Ht-200), up=Math.random()<0.5;
       for(let i=0;i<5;i++) coins.push({x:Wd+30+i*34, y:y0+(up?-1:1)*Math.sin(i/4*Math.PI)*42, ph:i*0.7}); }
@@ -402,8 +404,12 @@
       el.style.display='grid'; try{ say(w.w); }catch(e){}
       const inp=el.querySelector('#sg-ci'); inp.focus();
       function submit(){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase();
-        if(ok){ banked++; try{flash('🍯 Pot banked! '+banked+'/'+CFG.pots);}catch(_){}}else{ bee.y=Math.min(Ht-40,bee.y+60); try{flash('Almost! The pot floats ahead…');}catch(_){} }
-        el.style.display='none'; card=null; bee.vy=0; graceUntil=t+2;
+        if(ok){ banked++;
+          if(lives<MAXLIVES){ lives++; try{flash('🍯 Pot banked — ❤ Extra life! '+banked+'/'+CFG.pots);}catch(_){} }
+          else { try{flash('🍯 Pot banked! '+banked+'/'+CFG.pots+' (lives full)');}catch(_){} }
+          try{if(typeof sfx==='function')sfx('correct');}catch(_){}
+        } else { bee.y=Math.min(Ht-40,bee.y+40); try{flash('Almost! The pot floats ahead…');}catch(_){} }
+        el.style.display='none'; card=null; bee.vy=0; graceUntil=t+2.6;
         if(banked>=CFG.pots&&!gate){ gate={x:Wd+80}; try{flash('⛩️ The Hive Gates appear — fly to them!');}catch(_){} } }
       inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } };
       el.querySelector('#sg-cgo').onclick=submit;
@@ -416,13 +422,13 @@
       const GRACE=(t<3)||(t<graceUntil);
       if(holding) bee.vy-=0.42;
       if(GRACE){ bee.vy*=0.9; bee.y+=bee.vy; bee.y=Math.max(30,Math.min(Ht-40,bee.y)); }
-      else { spawnT+=dt/1000; bee.vy+=0.111; bee.y+=bee.vy; }   // gravity −30% (0.158→0.111) per parent tuning
+      else { spawnT+=dt/1000; bee.vy+=0.10; bee.y+=bee.vy; }   // gentler gravity for easier control
       if(!gate){
-        if(spawnT>1.9){ spawnT=0; spawn(); }
+        if(spawnT>2.4){ spawnT=0; spawn(); }                    // more room between towers
         if(potT<=0&&!pot){ potT=8; pot={x:Wd+30,y:80+Math.random()*(Ht-220)}; }
-        if(mothT<=0){ mothT=3.4+Math.random()*2.6; spawnMoth(); }
+        if(mothT<=0){ mothT=4.8+Math.random()*3.2; spawnMoth(); } // fewer moths
         if(coinT<=0){ coinT=6+Math.random()*5; spawnCoins(); }
-        if(heartT<=0){ heartT=13+Math.random()*8; if(lives<3) spawnHeart(); }
+        if(heartT<=0){ heartT=13+Math.random()*8; if(lives<MAXLIVES) spawnHeart(); }
       } else gate.x-=CFG.speed;
       obs.forEach(o=>o.x-=CFG.speed); if(pot) pot.x-=CFG.speed;
       moths.forEach(m=>{ m.x-=m.sp; m.ph+=dt/130; m.y+=Math.sin(m.ph)*0.8*(m.amp/22); });
@@ -435,13 +441,13 @@
       if(!GRACE&&t>inv){ obs.forEach(o=>{ if(o.x<70&&o.x>10){ if(bee.y<o.y||bee.y>o.y+o.g){ hit(); o.x=-99; } } });
         moths.forEach(m=>{ if(Math.abs(m.x-60)<m.s*0.45&&Math.abs(m.y-bee.y)<m.s*0.45){ hit(); m.x=-99; } }); }
       coins=coins.filter(c=>{ if(Math.abs(c.x-60)<26&&Math.abs(c.y-bee.y)<30){ coinsGot++; try{if(typeof sfx==='function')sfx('coin');}catch(e){} return false; } return true; });
-      hearts=hearts.filter(h=>{ if(Math.abs(h.x-60)<28&&Math.abs(h.y-bee.y)<32){ if(lives<3){lives++; try{flash('❤ Extra life!');}catch(_){}} return false; } return true; });
+      hearts=hearts.filter(h=>{ if(Math.abs(h.x-60)<28&&Math.abs(h.y-bee.y)<32){ if(lives<MAXLIVES){lives++; try{flash('❤ Extra life!');}catch(_){}} return false; } return true; });
       if(pot&&pot.x<74&&pot.x>6&&Math.abs(bee.y-(pot.y+18))<46){ pot=null; spellStop(); }
       if(pot&&pot.x<=-30) pot=null;
       if(gate&&gate.x<86){ over=true; finish(true); return; }
       draw(); requestAnimationFrame(frame);
     }
-    function hit(){ lives--; inv=t+1.3; bee.vy=-2;
+    function hit(){ lives--; inv=t+1.6; bee.vy=-2;
       try{if(typeof sfx==='function')sfx('wrong');}catch(e){}
       if(lives<=0){ over=true; finish(false); } }
     function puff(x,y,s){ cx.save(); cx.fillStyle='rgba(255,255,255,.92)';
@@ -606,7 +612,8 @@
         '<div class="sg-howto-steps">'+
         '<div class="sg-pw-legend">👆 Hold the sky (or press Space) to fly up — let go to glide down</div>'+
         '<div class="sg-pw-legend">🍯 Touch a honey pot, then spell the word to bank it ('+CFG.pots+' to win)</div>'+
-        '<div class="sg-pw-legend">🦋 Dodge the grey moths and honeycomb towers</div>'+
+        '<div class="sg-pw-legend">❤ Every pot you spell right earns an extra life (up to '+MAXLIVES+')</div>'+
+        '<div class="sg-pw-legend">🦋 Dodge the grey moths and honeycomb towers — the gaps are roomy now</div>'+
         '<div class="sg-pw-legend">🪙 Grab coin trails · ❤ hearts patch you up</div>'+
         '</div><button class="sg-rbtn go sg-howto-go" id="sg-howgo">Take off! →</button></div></div>';
       el.style.display='grid';
