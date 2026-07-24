@@ -651,8 +651,9 @@ const app = {
   toggleReadAloud:()=>{ state.readAloud=!state.readAloud; save(); if(state.readAloud) say('I will read the cards to you!'); render(); },
   setVoiceRate:(k)=>{ state.voiceRate=(k==='slow'?0.75:1); save(); say('Hello! I read the words like this.'); render(); },
   // nav
-  setNav:(key)=>{ if(key==='train'){ app.startTrain(); return; } if(key==='coach'){ app.openCoach(); return; } if(key==='games'){ app.openGames(); return; } if(key==='shop'){ app.openShop(); return; } if(key==='journeys'){ app.openJourneys(); return; } if(key==='trivia'){ app.openTrivia(); return; }
-    if(key==='settings'){ pinGate(()=>set({nav:'settings', screen:'app', mood:'happy', conceptSel:null}),'Settings — grown-ups only'); return; }
+  setNav:(key)=>{ if(state.settingsOpen && key!=='settings') state.settingsOpen=false;   // navigating away closes the Settings pop-up
+    if(key==='train'){ app.startTrain(); return; } if(key==='coach'){ app.openCoach(); return; } if(key==='games'){ app.openGames(); return; } if(key==='shop'){ app.openShop(); return; } if(key==='journeys'){ app.openJourneys(); return; } if(key==='trivia'){ app.openTrivia(); return; }
+    if(key==='settings'){ pinGate(()=>app.openSettings(),'Settings — grown-ups only'); return; }
     if(key==='parent'){ pinGate(()=>{ state.progTab='parent'; set({nav:'progress', screen:'app', mood:'happy', conceptSel:null}); },'Parent zone'); return; }
     if(key==='progress'&&state.progTab==null) state.progTab='me';
     if(key==='concepts'){ loadConcepts(); state.conceptView='all'; state.conceptTier=currentTier(); state.conceptPage=0; }
@@ -723,6 +724,16 @@ const app = {
   tyTap:(ch)=>{ tyProcess(ch); },
   tyExit:()=>{ tyStop(); set({ty:null, nav:'typing'}); },
   goSettings:()=>app.setNav('settings'),
+  // Settings opens as a pop-up over whatever you're doing — the running session/game/practice
+  // pauses underneath and resumes when you close it (✕).
+  openSettings:()=>{ try{ clearTimeout(state._advTimer); state._advTimer=null; }catch(e){}
+    try{ if(typeof clearGTimer==='function') clearGTimer(); }catch(e){}
+    try{ if(state.ty&&state.ty.timer){ clearInterval(state.ty.timer); state.ty.timer=null; } }catch(e){}
+    set({settingsOpen:true}); },
+  closeSettings:()=>{ state.settingsOpen=false;
+    try{ const g=state.game; if(g && (g.type==='beat'||g.type==='champ') && g.status==='play' && typeof startGTimer==='function') startGTimer(); }catch(e){}
+    try{ if(state.status && state.status!=='idle' && (state.nav==='train'||state.nav==='coach')) autoAdvance(1600); }catch(e){}
+    render(); },
   // ----- Word Voice Tester (human-in-the-loop voice QA) -----
   openVoiceTest:()=>set({nav:'voicetest', screen:'app', vtTab:'test'}),
   vtTab:(t)=>set({vtTab:t}),
@@ -3012,7 +3023,7 @@ function viewConceptDetail(){
 // After an answer is checked, glide to the next word automatically so one Enter is enough.
 // (Enter still works to skip the wait; navigating away cancels it.)
 function autoAdvance(ms){ try{ clearTimeout(state._advTimer); }catch(e){}
-  state._advTimer=setTimeout(()=>{ if(state.status && state.status!=='idle' && (state.nav==='train'||state.nav==='coach')){ try{ app.next(); }catch(e){} } }, ms||900); }
+  state._advTimer=setTimeout(()=>{ if(!state.settingsOpen && state.status && state.status!=='idle' && (state.nav==='train'||state.nav==='coach')){ try{ app.next(); }catch(e){} } }, ms||900); }
 function sessionResults(){
   const S=state; const ok=S.sessionCorrect||[]; const bad=S.sessionWrong||[]; const total=ok.length+bad.length;
   const pct=total?Math.round(ok.length/total*100):0;
@@ -4703,7 +4714,8 @@ const gameName=(t)=>{ const g=GAMES.find(x=>x.type===t); return g?g.name:'Game';
 let _gtimer=null;
 function clearGTimer(){ if(_gtimer){ clearInterval(_gtimer); _gtimer=null; } }
 function startGTimer(){ clearGTimer(); _gtimer=setInterval(gTick,1000); }
-function gTick(){ const g=state.game; if(!g||(g.type!=='beat'&&g.type!=='champ')||g.status!=='play'){ clearGTimer(); return; } g.timeLeft--; if(g.timeLeft<=3&&g.timeLeft>0) sfx('tick'); if(g.timeLeft<=0){ clearGTimer(); (g.type==='champ'?gFinishChamp:gFinishBeat)(); return; } render(); }
+function gTick(){ if(state.settingsOpen) return;   // Settings pop-up pauses the clock
+  const g=state.game; if(!g||(g.type!=='beat'&&g.type!=='champ')||g.status!=='play'){ clearGTimer(); return; } g.timeLeft--; if(g.timeLeft<=3&&g.timeLeft>0) sfx('tick'); if(g.timeLeft<=0){ clearGTimer(); (g.type==='champ'?gFinishChamp:gFinishBeat)(); return; } render(); }
 /* ----- Champ Challenge helpers ----- */
 function challengePool(){ const c=active(); const key=state.challengeKey||activeListKey(); const band=state.chBand||'level';
   if(band==='level') return (curStage(c,key).words||[]).slice();
@@ -5289,6 +5301,13 @@ function fullListOverlay(){ const S=state; if(!S.listView) return '';
 }
 function overlays(){
   const S=state; let h=''; h+=fullListOverlay(); h+=packRollOverlay(); h+=packDropOverlay();
+  if(S.settingsOpen){
+    h+=`<div data-act="closeSettings" style="position:fixed;inset:0;z-index:76;background:rgba(10,8,20,.55);backdrop-filter:blur(6px);display:grid;place-items:start center;padding:18px;overflow:auto">
+      <div data-act="noop" style="position:relative;width:100%;max-width:660px;background:var(--bg2);border:1px solid var(--line);border-radius:20px;box-shadow:var(--glow);padding:clamp(16px,4vw,26px) clamp(16px,4vw,26px) 24px;margin:20px 0;animation:sb-pop .3s ease both">
+        <button data-act="closeSettings" aria-label="Close settings" title="Close" style="position:absolute;top:14px;right:14px;z-index:3;width:38px;height:38px;border-radius:11px;background:var(--surface2);border:1px solid var(--line);color:var(--text);display:grid;place-items:center;font-weight:900;font-size:16px">✕</button>
+        ${viewSettings()}
+      </div></div>`;
+  }
   if(S.showPaywall){
     const perks=['4 worlds unlocked (2 more than free)','Spelling Basics free + half of all 121 concepts unlocked','Level up past Level 5 on every list','Premium word lists + full library','Earn 🪙 coins to unlock everything else']
       .map(p=>`<div style="display:flex;align-items:center;gap:11px;font-size:15px;font-weight:600"><span style="width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:13px;flex-shrink:0">✓</span>${p}</div>`).join('');
@@ -5357,14 +5376,14 @@ root.addEventListener('keydown', e=>{ const el=e.target.closest('[data-key]'); i
   root.addEventListener('touchend',e=>{ if(mode!=='coach') return; const p=e.changedTouches[0]; const dx=p.clientX-sx, dy=p.clientY-sy; mode=null;
     if(Date.now()-st>700) return; if(Math.abs(dx)<48 || Math.abs(dx)<Math.abs(dy)*1.3) return;
     e.preventDefault(); if(dx>0) app.cardNext(); else app.cardRevise(); },{passive:false}); })();
-window.addEventListener('keydown',e=>{ try{ if(!state.coachCardView||state.cardDone||state.pinDlg) return;
+window.addEventListener('keydown',e=>{ try{ if(!state.coachCardView||state.cardDone||state.pinDlg||state.settingsOpen) return;
   const t=e.target; if(t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)) return;
   if(e.key==='ArrowRight'){ e.preventDefault(); app.cardNext(); } else if(e.key==='ArrowLeft'){ e.preventDefault(); app.cardRevise(); } }catch(err){} });
 /* game hotkeys: 1–4 pick an answer, R repeats the word, D shows the hint (never while typing) */
 window.addEventListener('keydown', e=>{ try{
   if(e.metaKey||e.ctrlKey||e.altKey) return;
   const t=e.target; if(t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)) return;
-  const g=state.game; if(!g || state.nav!=='games' || state.pinDlg) return;
+  const g=state.game; if(!g || state.nav!=='games' || state.pinDlg || state.settingsOpen) return;
   if(g.qs && g.picked==null && g.status==='play'){
     if(e.key>='1'&&e.key<='4'){ const q=g.qs[g.i]; if(q && q.choices[+e.key-1]!=null){ e.preventDefault(); app.gPick(String(+e.key-1)); } return; }
     if(e.key==='r'||e.key==='R'){ e.preventDefault(); app.gSayQ(); return; } }
