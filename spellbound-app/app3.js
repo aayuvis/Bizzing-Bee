@@ -3886,8 +3886,12 @@ function viewSettings(){
   const _nat=(n)=>/natural|enhanced|premium|siri|google|neural|online/i.test(n);
   const voiceOpts=['<option value="">Auto · best available</option>'].concat(_voices.map(v=>`<option value="${escA(v.name)}"${VOICE.name===v.name?' selected':''}>${esc(v.name)}${_nat(v.name)?' ✨':''}</option>`)).join('');
   const _pc=active();
-  const _avRows=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:8px;max-width:380px">${SB_AVATARS.list.filter(a=>avOwned(_pc,a.id)).map(a=>
-    `<button data-act="profAvatar" data-arg="${a.id}" title="${a.name}" style="position:relative;aspect-ratio:1;border-radius:12px;display:grid;place-items:center;background:var(--surface2);border:2px solid ${_pc.avatar===a.id?'var(--accent)':'transparent'};padding:4px"><span style="width:56px;height:56px;display:inline-block">${avatarSVG(a.id,56)}</span></button>`).join('')}</div>`+`<div style="margin-top:10px"><button data-act="openCollection" class="sb-cl" style="background:none;border:0;padding:0;cursor:pointer">Collect more in your Collection →</button></div>`;
+  const _avActive=SB_AVATARS.byId[_pc.avatar]||{name:'Buddy'};
+  const _avRows=`<div style="display:flex;align-items:center;gap:14px">
+      <span style="width:66px;height:66px;flex-shrink:0;display:grid;place-items:center;background:var(--surface2);border-radius:14px;border:2px solid var(--accent);padding:5px"><span style="width:56px;height:56px;display:inline-block">${avatarSVG(_pc.avatar,56)}</span></span>
+      <div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:15px">${esc(_avActive.name||'Buddy')}</div>
+      <button data-act="openCollection" class="sb-cl" style="background:none;border:0;padding:0;cursor:pointer">Change or collect buddies in your Collection →</button></div>
+    </div>`;
   const profileCard=`<div class="sb-card" style="margin-bottom:16px">
       <div style="font-family:var(--display);font-weight:800;font-size:15px">Profile</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Pick your own display name and buddy — parents can adjust age, the daily goal and milestones here too.</div>
