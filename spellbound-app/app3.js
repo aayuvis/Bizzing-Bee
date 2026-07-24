@@ -2494,44 +2494,149 @@ function avatarSVG(id,size,acc){ size=size||30;
   return svg; }
 // the child's own worn avatar, with their equipped accessory
 function myAvatar(size){ const c=active(); return avatarSVG(c.avatar||'bee', size, c.accOn); }
-/* ---- Badge art, rendered like an avatar ------------------------------------
-   Each badge is Bizzy the mascot on a soft avatar-style roundel (same visual
-   language as the collectible avatars), with a themed mood and a small "prop"
-   sticker that says which badge it is. Reads as a cute character, not a medal.
-   `kind` = the badge's `ic` key; `size` in px; `won` false → greyed/locked. */
+/* ---- Badge art: a graphical emblem per badge, rendered at avatar quality ----
+   Each badge is a rich, dimensional icon of WHAT IT IS (a crown, a flame, a
+   book, a sprout…) — gradient-filled with highlights and a soft coloured
+   roundel behind it, the same polish as the collectible avatars, but NOT the
+   bee character. `kind` = the badge's `ic` key; `won` false → greyed + locked. */
+let _badgeUID=0;
+// ground = [light, deep] tint of the roundel, chosen to make each emblem pop.
+const BADGE_EMBLEM={
+  crown:{ g:['#C9B8FF','#7C5CFF'], art:(d)=>`
+    <linearGradient id="${d}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFEBAd"/><stop offset="1" stop-color="#EFA320"/></linearGradient>
+    <path d="M22 70 17 38 34 51 50 30 66 51 83 38 78 70Z" fill="url(#${d}a)" stroke="#B8791A" stroke-width="2.5" stroke-linejoin="round"/>
+    <rect x="23" y="68" width="54" height="12" rx="4" fill="url(#${d}a)" stroke="#B8791A" stroke-width="2.5"/>
+    <circle cx="50" cy="44" r="5.5" fill="#FF5D8F" stroke="#C93B6A" stroke-width="1.6"/>
+    <circle cx="26" cy="48" r="3.6" fill="#5AC8FF" stroke="#2E9FE0" stroke-width="1.3"/>
+    <circle cx="74" cy="48" r="3.6" fill="#5AC8FF" stroke="#2E9FE0" stroke-width="1.3"/>
+    <path d="M27 45 39 53" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".55"/>`},
+  flame:{ g:['#FFE3C4','#FFB877'], art:(d)=>`
+    <radialGradient id="${d}a" cx="50%" cy="70%" r="62%"><stop offset="0" stop-color="#FFE23A"/><stop offset=".5" stop-color="#FF9B29"/><stop offset="1" stop-color="#EA3B2E"/></radialGradient>
+    <path d="M50 20C58 37 76 44 76 61a26 26 0 0 1-52 0C24 50 31 44 38 49 36 38 44 31 50 20Z" fill="url(#${d}a)" stroke="#C22B22" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M50 44C55 52 61 57 61 65a11 11 0 0 1-22 0C39 58 46 52 50 44Z" fill="#FFE68A" opacity=".92"/>
+    <circle cx="42" cy="40" r="3" fill="#fff" opacity=".5"/>`},
+  star:{ g:['#BFE0FF','#5AA9F0'], art:(d)=>`
+    <linearGradient id="${d}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF3B0"/><stop offset="1" stop-color="#F0A93C"/></linearGradient>
+    <path d="M50 18 59.5 40 83 43 64.5 59 70 82 50 70 30 82 35.5 59 17 43 40.5 40Z" fill="url(#${d}a)" stroke="#D8931F" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M50 27 56 41 44 41Z" fill="#fff" opacity=".55"/>`},
+  check:{ g:['#C6F0D8','#4FCB85'], art:(d)=>`
+    <linearGradient id="${d}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7DEBAD"/><stop offset="1" stop-color="#1FA35A"/></linearGradient>
+    <circle cx="50" cy="50" r="30" fill="url(#${d}a)" stroke="#178a4a" stroke-width="2.5"/>
+    <path d="M30 40a30 30 0 0 1 22 -14" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity=".5"/>
+    <path d="M35 51 46 62 66 37" stroke="#fff" stroke-width="7.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`},
+  book:{ g:['#FFE3C4','#FFB877'], art:(d)=>`
+    <linearGradient id="${d}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6FB0F5"/><stop offset="1" stop-color="#2E6FD6"/></linearGradient>
+    <path d="M50 30C42 25 30 25 21 28V71C30 68 42 68 50 73Z" fill="#F4F8FF" stroke="#B9C4D6" stroke-width="1.6"/>
+    <path d="M50 30C58 25 70 25 79 28V71C70 68 58 68 50 73Z" fill="#FFFFFF" stroke="#B9C4D6" stroke-width="1.6"/>
+    <rect x="47" y="29" width="6" height="45" rx="2.5" fill="url(#${d}a)"/>
+    <path d="M27 39H44M27 47H44M27 55H43" stroke="#C6D2E4" stroke-width="2" stroke-linecap="round"/>
+    <path d="M56 39H73M56 47H73M57 55H73" stroke="#C6D2E4" stroke-width="2" stroke-linecap="round"/>
+    <path d="M63 26V42l4-3 4 3V26Z" fill="#FF5D8F" stroke="#C93B6A" stroke-width="1.2"/>`},
+  chart:{ g:['#CFEFF0','#6EDCE4'], art:(d)=>`
+    <linearGradient id="${d}a" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#1AA6B4"/><stop offset="1" stop-color="#5AD1D9"/></linearGradient>
+    <rect x="25" y="54" width="13" height="23" rx="3" fill="url(#${d}a)" stroke="#128793" stroke-width="1.5"/>
+    <rect x="43" y="44" width="13" height="33" rx="3" fill="url(#${d}a)" stroke="#128793" stroke-width="1.5"/>
+    <rect x="61" y="32" width="13" height="45" rx="3" fill="url(#${d}a)" stroke="#128793" stroke-width="1.5"/>
+    <path d="M24 47 40 38 54 43 74 24" fill="none" stroke="#FF6B3D" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M65 22H76V33" fill="none" stroke="#FF6B3D" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>`},
+  target:{ g:['#CFE0FF','#8AA0FF'], art:(d)=>`
+    <circle cx="47" cy="53" r="27" fill="#FF5D6C" stroke="#D6304F" stroke-width="2"/>
+    <circle cx="47" cy="53" r="19" fill="#fff"/>
+    <circle cx="47" cy="53" r="11" fill="#FF5D6C"/>
+    <circle cx="47" cy="53" r="4.5" fill="#fff"/>
+    <line x1="76" y1="27" x2="52" y2="49" stroke="#6C4FE0" stroke-width="4" stroke-linecap="round"/>
+    <path d="M52 49 59 49 55 43Z" fill="#F0A93C"/>
+    <path d="M76 27 83 24 80 31Z" fill="#F0A93C"/>`},
+  search:{ g:['#E0D6FF','#B49CFF'], art:(d)=>`
+    <radialGradient id="${d}a" cx="38%" cy="34%" r="72%"><stop offset="0" stop-color="#EAF4FF"/><stop offset="1" stop-color="#9CC4EA"/></radialGradient>
+    <line x1="60" y1="60" x2="79" y2="79" stroke="#5A5CE0" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="44" cy="44" r="22" fill="url(#${d}a)" stroke="#5A5CE0" stroke-width="6"/>
+    <path d="M34 38a14 14 0 0 1 12 -6" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity=".85"/>`},
+  sprout:{ g:['#D6EFFF','#9CC4FF'], art:(d)=>`
+    <linearGradient id="${d}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8CE06A"/><stop offset="1" stop-color="#2FA14E"/></linearGradient>
+    <path d="M50 73V45" stroke="#2FA14E" stroke-width="4.5" stroke-linecap="round"/>
+    <path d="M50 51C40 51 30 45 26 34 40 32 50 40 50 51Z" fill="url(#${d}a)" stroke="#1f8a3f" stroke-width="1.5"/>
+    <path d="M50 47C60 47 70 41 74 30 60 28 50 36 50 47Z" fill="url(#${d}a)" stroke="#1f8a3f" stroke-width="1.5"/>
+    <path d="M31 73a19 8 0 0 1 38 0Z" fill="#A9713E" stroke="#7d5128" stroke-width="1.5"/>
+    <path d="M30 44a10 10 0 0 1 8 -8" stroke="#fff" stroke-width="2.5" fill="none" opacity=".5" stroke-linecap="round"/>`},
+  steps:{ g:['#FFE3C4','#FFC078'], art:(d)=>`
+    <linearGradient id="${d}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8AA0FF"/><stop offset="1" stop-color="#5A5CE0"/></linearGradient>
+    <rect x="21" y="55" width="19" height="21" rx="3" fill="url(#${d}a)" stroke="#4548c0" stroke-width="1.5"/>
+    <rect x="40" y="43" width="19" height="33" rx="3" fill="url(#${d}a)" stroke="#4548c0" stroke-width="1.5"/>
+    <rect x="59" y="31" width="19" height="45" rx="3" fill="url(#${d}a)" stroke="#4548c0" stroke-width="1.5"/>
+    <path d="M68.5 21 71 27 77.5 27.5 72.5 31.5 74 38 68.5 34.5 63 38 64.5 31.5 59.5 27.5 66 27Z" fill="#FFD24D" stroke="#E8A020" stroke-width="1"/>`},
+  bolt:{ g:['#D8D0FF','#9E8CFF'], art:(d)=>`
+    <linearGradient id="${d}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE86A"/><stop offset="1" stop-color="#F0A030"/></linearGradient>
+    <path d="M57 17 29 55H46L41 83 73 41H53Z" fill="url(#${d}a)" stroke="#D6851C" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M52 24 39 50H49" fill="none" stroke="#fff" stroke-width="2.5" opacity=".5" stroke-linecap="round" stroke-linejoin="round"/>`},
+  eye:{ g:['#CFE8FF','#7FB0FF'], art:(d)=>`
+    <radialGradient id="${d}a" cx="42%" cy="38%" r="70%"><stop offset="0" stop-color="#7B4FD6"/><stop offset="1" stop-color="#4A2AA0"/></radialGradient>
+    <path d="M18 50Q50 24 82 50Q50 76 18 50Z" fill="#fff" stroke="#3D6FE0" stroke-width="2.5"/>
+    <circle cx="50" cy="50" r="14" fill="url(#${d}a)"/>
+    <circle cx="50" cy="50" r="6.5" fill="#1a1030"/>
+    <circle cx="45" cy="45" r="3" fill="#fff" opacity=".85"/>`},
+  palette:{ g:['#FFF0C4','#FFD86E'], art:(d)=>`
+    <radialGradient id="${d}a" cx="40%" cy="34%" r="75%"><stop offset="0" stop-color="#FFF7FA"/><stop offset="1" stop-color="#FFCFE4"/></radialGradient>
+    <path d="M50 23C69 23 81 37 81 52 81 62 73 65 66 65 61 65 60 71 62 75 50 79 25 71 21 50 18 33 31 23 50 23Z" fill="url(#${d}a)" stroke="#D68AB0" stroke-width="2"/>
+    <circle cx="40" cy="38" r="4.2" fill="#FF5D6C"/>
+    <circle cx="57" cy="36" r="4.2" fill="#5AC8FF"/>
+    <circle cx="65" cy="49" r="4.2" fill="#5AD98A"/>
+    <circle cx="37" cy="53" r="4.2" fill="#F0A93C"/>
+    <circle cx="35" cy="64" r="6" fill="#fff" stroke="#D68AB0" stroke-width="1.5"/>`},
+  cart:{ g:['#CFE8FF','#7FB0FF'], art:(d)=>`
+    <linearGradient id="${d}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B9793A"/><stop offset="1" stop-color="#8A5320"/></linearGradient>
+    <linearGradient id="${d}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C98B45"/><stop offset="1" stop-color="#A66A2E"/></linearGradient>
+    <rect x="24" y="49" width="52" height="27" rx="4" fill="url(#${d}a)" stroke="#6b4018" stroke-width="2"/>
+    <path d="M24 49a26 13 0 0 1 52 0Z" fill="url(#${d}b)" stroke="#6b4018" stroke-width="2"/>
+    <rect x="23" y="45" width="54" height="6" rx="2" fill="#F0C040" stroke="#c99a1e" stroke-width="1"/>
+    <rect x="45" y="51" width="10" height="10" rx="2" fill="#F0C040" stroke="#c99a1e" stroke-width="1.2"/>
+    <circle cx="33" cy="73" r="4" fill="#FFD24D" stroke="#E8A020" stroke-width="1"/>
+    <circle cx="41" cy="75" r="3.4" fill="#FFD24D" stroke="#E8A020" stroke-width="1"/>
+    <path d="M65 28 66.6 31.4 70 31.8 67.4 34.2 68.1 37.6 65 35.8 61.9 37.6 62.6 34.2 60 31.8 63.4 31.4Z" fill="#fff" opacity=".9"/>`},
+  joystick:{ g:['#FFD6E8','#FF9ED2'], art:(d)=>`
+    <linearGradient id="${d}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7B4FD6"/><stop offset="1" stop-color="#4A2AA0"/></linearGradient>
+    <radialGradient id="${d}b" cx="38%" cy="32%" r="70%"><stop offset="0" stop-color="#FF7A8F"/><stop offset="1" stop-color="#D6304F"/></radialGradient>
+    <ellipse cx="50" cy="73" rx="27" ry="8" fill="#3a2088"/>
+    <path d="M27 73C27 59 50 59 50 59 50 59 73 59 73 73Z" fill="url(#${d}a)"/>
+    <rect x="46" y="33" width="8" height="29" rx="4" fill="#C0C6D0" stroke="#8b93a0" stroke-width="1.2"/>
+    <circle cx="50" cy="30" r="12" fill="url(#${d}b)"/>
+    <circle cx="46" cy="26" r="3.5" fill="#fff" opacity=".8"/>
+    <circle cx="64" cy="69" r="4" fill="#FFD24D" stroke="#E8A020" stroke-width="1"/>`},
+  bulb:{ g:['#D6E4FF','#9CB4FF'], art:(d)=>`
+    <radialGradient id="${d}a" cx="42%" cy="36%" r="70%"><stop offset="0" stop-color="#FFF6B0"/><stop offset="1" stop-color="#F5C842"/></radialGradient>
+    <g stroke="#F0B429" stroke-width="3" stroke-linecap="round"><path d="M50 13V5"/><path d="M24 22 18.5 16.5"/><path d="M76 22 81.5 16.5"/><path d="M15 44H7"/><path d="M85 44H93"/></g>
+    <path d="M50 18a22 22 0 0 1 14 38c-3 3-3 6-3 9H39c0-3 0-6-3-9a22 22 0 0 1 14 -38Z" fill="url(#${d}a)" stroke="#E0A828" stroke-width="2"/>
+    <rect x="41" y="64" width="18" height="6" rx="2" fill="#B7BDC7" stroke="#8b93a0" stroke-width="1"/>
+    <rect x="43" y="70" width="14" height="5" rx="2" fill="#9AA1AC"/>
+    <path d="M45 48 50 40 55 48" fill="none" stroke="#E8892E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="43" cy="32" r="3" fill="#fff" opacity=".6"/>`},
+  timer:{ g:['#FFDCC4','#FFB088'], art:(d)=>`
+    <radialGradient id="${d}a" cx="40%" cy="34%" r="72%"><stop offset="0" stop-color="#F4F8FF"/><stop offset="1" stop-color="#C6D2E4"/></radialGradient>
+    <rect x="45" y="15" width="10" height="7" rx="2" fill="#2E9FE0"/>
+    <path d="M40 22H60" stroke="#2E9FE0" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="50" cy="54" r="26" fill="url(#${d}a)" stroke="#2E9FE0" stroke-width="3.5"/>
+    <g stroke="#8b93a0" stroke-width="2" stroke-linecap="round"><path d="M50 32V36"/><path d="M50 76V72"/><path d="M28 54H32"/><path d="M72 54H68"/></g>
+    <path d="M50 54 62 40" stroke="#FF5D6C" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="50" cy="54" r="3.5" fill="#2E9FE0"/>`}
+};
+BADGE_EMBLEM.fire=BADGE_EMBLEM.flame; BADGE_EMBLEM.spark=BADGE_EMBLEM.star;
 function badgeArtSVG(kind, size, won){
   size=size||96; if(won===undefined) won=true;
-  // Per-group ground colour — the roundel is white in the centre so the yellow bee always reads.
-  const PAL={
-    flame:['#FFB84D','#F08A2E'], fire:['#FF7A4D','#E23B2E'], spark:['#FFD86E','#F0A93C'],
-    star:['#FFD86E','#F0A93C'], crown:['#FFD24D','#E8A020'], check:['#6EDD9E','#1FA35A'],
-    book:['#7FC0FF','#2E6FD6'], chart:['#6EDCE4','#189AA6'], target:['#FF8AA6','#D6304F'],
-    search:['#9CC4FF','#3D6FE0'], sprout:['#93E070','#2FA14E'], steps:['#A4B4FF','#5A5CE0'],
-    bolt:['#FFDE6E','#F0A030'], eye:['#C6A4FF','#7B4FD6'], palette:['#FFB4DE','#E85AA8'],
-    cart:['#FFCB6E','#E88A20'], joystick:['#B49CFF','#6C4FE0'], bulb:['#FFEB8A','#F0B020'],
-    timer:['#8FD6FF','#2E9FE0']
-  };
-  const pc=PAL[kind]||['#FFD86E','#F0A93C'];
-  const t1=won?pc[0]:'#C3CBD4', t2=won?pc[1]:'#9AA4AF';
-  // mood picks a matching Bizzy expression per achievement family
-  const MOOD={ crown:'excited', spark:'excited', star:'excited', bolt:'excited', joystick:'excited',
-    flame:'excited', fire:'excited', sprout:'love', check:'happy', target:'think', book:'think',
-    chart:'think', search:'think', bulb:'think' };
-  const mood=MOOD[kind]||'happy';
-  const bee=(typeof mascotSVG==='function')?mascotSVG(mood):'';
-  // themed prop sticker (small disc, bottom-right) — the badge's own emblem
-  const s=size; const stkr=Math.round(s*0.40); const gi=Math.round(stkr*0.56);
-  const propIc=won ? iconSVG(kind,gi,2.4) : iconSVG('lock',gi,2.4);
-  const prop=`<span style="position:absolute;right:-3%;bottom:-3%;width:${stkr}px;height:${stkr}px;border-radius:50%;background:#fff;display:grid;place-items:center;color:${won?t2:'#8B95A1'};box-shadow:0 2px 6px rgba(20,10,40,.28);border:2px solid ${won?t2:'#B4BCC6'}">${propIc}</span>`;
-  return `<div style="position:relative;width:${s}px;height:${s}px;display:inline-block;${won?'':'filter:grayscale(.7) opacity(.9)'}">
-    <div style="position:absolute;inset:0;border-radius:50%;overflow:hidden;
-      background:radial-gradient(120% 120% at 50% 38%, #ffffff 0%, ${shade(t1,18)} 46%, ${t1} 66%, ${t2} 100%);
-      box-shadow:inset 0 -6px 14px rgba(0,0,0,.14), inset 0 3px 9px rgba(255,255,255,.6), 0 3px 9px rgba(20,10,40,.18);
-      border:2.5px solid ${won?'#fff':'#E7EBEF'}">
-      <div aria-hidden="true" style="position:absolute;left:11%;top:16%;width:78%;height:88%">${bee}</div>
-    </div>
-    ${prop}
-  </div>`;
+  const d='bg'+(_badgeUID++);
+  const EM=BADGE_EMBLEM[kind]||BADGE_EMBLEM.star;
+  const g=won?EM.g:['#D7DDE3','#AEB6BF'];
+  const lock=won?'':`<g><circle cx="76" cy="74" r="13" fill="#fff" stroke="#B4BCC6" stroke-width="2"/><rect x="71" y="73" width="10" height="8" rx="1.5" fill="#8B95A1"/><path d="M73 73v-2a3 3 0 0 1 6 0v2" fill="none" stroke="#8B95A1" stroke-width="2"/></g>`;
+  return `<svg viewBox="0 0 100 100" width="${size}" height="${size}" aria-hidden="true" style="display:block;overflow:visible;${won?'':'filter:grayscale(.62)'}">
+    <defs>
+      <radialGradient id="${d}gr" cx="50%" cy="40%" r="66%"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="${g[0]}"/><stop offset="1" stop-color="${g[1]}"/></radialGradient>
+      <radialGradient id="${d}gl" cx="38%" cy="24%" r="58%"><stop offset="0" stop-color="#fff" stop-opacity=".65"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    </defs>
+    <circle cx="50" cy="50" r="47.5" fill="url(#${d}gr)" stroke="${won?'#ffffff':'#E7EBEF'}" stroke-width="3"/>
+    <circle cx="50" cy="50" r="47.5" fill="none" stroke="rgba(20,10,40,.10)" stroke-width="1"/>
+    <ellipse cx="41" cy="27" rx="27" ry="15" fill="url(#${d}gl)"/>
+    ${EM.art(d)}
+    ${lock}
+  </svg>`;
 }
 // small colour shade helper (percent -100..100) for the badge metal tints
 function shade(hex, pct){ hex=String(hex||'#888').replace('#',''); if(hex.length===3) hex=hex.split('').map(c=>c+c).join('');
