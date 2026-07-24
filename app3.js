@@ -309,17 +309,12 @@ function listWords(key){ return stageWords(key); }            // current stage's
 function listFullWords(key){ if(key==='default') return defaultStages().reduce((a,s)=>a.concat(s.words),[]); return rawListWords(key); }
 function workingSet(key){ const ws=listWords(key);
   // a session is "what you still need": every unmastered word of this Level (up to 36),
-  // so finishing sessions always converges on the level-up — mastered words only return once none remain
+  // so finishing sessions always converges on the level-up — mastered words only return once none remain.
+  // Order is the list's own order, so Practice always starts at word 1 (first time) or resumes
+  // at the last-practiced word (persisted gi) — revise/mistakes live in their own flow, not here.
   const un=ws.filter(w=>!state.luMastered[nkey(w.w)]);
-  let base = un.length ? un.slice(0,36) : (ws.length<=36?ws.slice():sample(ws,36));
-  // Prioritise the child's revise / mistakes words: anything they got wrong or flagged for
-  // revision comes first (newest miss first), so RETURNING to Practice starts on what still
-  // needs work. A first-timer has no misses, so the order is untouched and they start at word 1.
-  try{ const miss=(active().missed)||[]; if(miss.length){ const rank={}; miss.forEach((m,i)=>{ rank[nkey(m.w)]=i; });
-    base = base.map((w,i)=>[w,i]).sort((a,b)=>{ const am=rank[nkey(a[0].w)], bm=rank[nkey(b[0].w)]; const aH=am!==undefined, bH=bm!==undefined;
-      if(aH&&bH) return am-bm; if(aH) return -1; if(bH) return 1; return a[1]-b[1]; }).map(x=>x[0]); }
-  }catch(e){}
-  return base; }
+  if(un.length) return un.slice(0,36);
+  return ws.length<=36?ws.slice():sample(ws,36); }
 // bee-likelihood as 5 dots (●●●○○) from a 0–100 probability score
 function beeOdds(bp){ const n=Math.max(1,Math.min(5,Math.round((bp||0)/20))); return '●'.repeat(n)+'○'.repeat(5-n); }
 // Build the Word Coach working set for a list ONCE and keep it stable while you navigate —
@@ -767,7 +762,12 @@ const app = {
   exitTrain:()=>{ if((state.sessionDone||0)>0){ logActivity(state.coachSession?'concept':'practice', state.sessionLabel||'Practice', {done:state.sessionDone,right:state.sessionRight}, []); } if(state.coachSession){ state.coachSession=false; app.openCoach(); } else if(state.trainBack==='revisions'){ state.trainBack=null; app.openRevisions(); } else if(state.trainBack==='themes'){ state.trainBack=null; app.setNav('themes'); } else app.setNav('home'); },
   // Revisions — the words you flagged to revise; complete them or drill them again
   openRevisions:()=>set({nav:'revisions', screen:'app'}),
-  reviseComplete:(word)=>{ markMastered(nkey(word)); clearMiss(word); flash('Completed ✓ — cleared from revisions'); render(); },
+  reviseComplete:(word)=>{ const c=active(); const m=(c.missed||[]).find(x=>nkey(x.w)===nkey(word)); markMastered(nkey(word));
+    if(m){ c.reviseHistory=c.reviseHistory||[]; if(!c.reviseHistory.some(x=>nkey(x.w)===nkey(word))) c.reviseHistory.unshift(Object.assign({},m,{doneTs:now()})); if(c.reviseHistory.length>300) c.reviseHistory=c.reviseHistory.slice(0,300); }
+    clearMiss(word); save(); flash('Completed ✓ — saved to Revise history'); render(); },
+  reviseHistoryAgain:(word)=>{ const c=active(); const m=(c.reviseHistory||[]).find(x=>nkey(x.w)===nkey(word)); if(!m) return;
+    addMiss(m); c.reviseHistory=(c.reviseHistory||[]).filter(x=>nkey(x.w)!==nkey(word)); save(); flash('Back on the revise list ⚑'); render(); },
+  revTab:(t)=>set({revTab:t}),
   practiceRevisions:()=>{ const c=active(); const list=(c.missed||[]).slice(0,30); if(!list.length){ flash('No revisions yet — nice work!'); return; }
     state.sessionWords=list.map(m=>({w:m.w,d:m.d||'',s:m.s||'',p:m.p||'',o:m.o||'',r:m.r||'',y:m.y||3,sy:m.sy||'',h:m.h||''})); state.sessionLabel='Revisions'; state.gi=0; state.coachSession=false; state.trainBack='revisions'; app.startTrain(); },
   reviseOne:(word)=>{ const c=active(); const m=(c.missed||[]).find(x=>nkey(x.w)===nkey(word)); const src=m||(wordDB().get(nkey(word))); if(!src){ flash('Word not found'); return; }
@@ -816,7 +816,23 @@ const app = {
     flash('Marked for revision ⚑'); app.next(); },
   // Word Coach card view: an icon toggles the spell card into a swipeable portrait flash-card
   // deck. Tap/swipe right = "got it" (completeWord), tap/swipe left = revise (reviseWord).
-  toggleCardView:()=>{ state.coachCardView=!state.coachCardView; set({typed:'', status:'idle', mood:'happy'}); if(state.coachCardView) setTimeout(speak,250); },
+  // Card view lives inside the Learn tab: the cards icon opens a deck starting on the word
+  // you're on and the words after it. Right (tap/swipe/→ key) = next; left = mark revise + next.
+  toggleCardView:()=>{ if(state.coachCardView){ set({coachCardView:false, cardDone:false}); return; }
+    const ws=learnWords(); state.cardIdx=Math.max(0,Math.min(state.reviseIdx||0, Math.max(0,ws.length-1))); state.cardDone=false;
+    set({coachCardView:true, typed:'', status:'idle', mood:'happy'}); setTimeout(()=>say(cardWordNow().w),250); },
+  cardSpeak:()=>deviceSpeak(cardWordNow().w,0.9),
+  cardSpeakSlow:()=>deviceSpeak(cardWordNow().w,0.55),
+  cardNext:()=>app.cardAdvance('next'),
+  cardRevise:()=>app.cardAdvance('revise'),
+  cardAdvance:(mode)=>{ const ws=learnWords(); const i=state.cardIdx||0; const w=ws[i];
+    if(mode==='revise' && w){ addMiss(w); flash('Marked for revision ⚑'); }
+    if(i>=ws.length-1){ set({cardDone:true}); }
+    else { state.cardIdx=i+1; state.reviseIdx=i+1; render(); setTimeout(()=>say(cardWordNow().w),250); } },
+  cardBack:()=>{ const i=state.cardIdx||0; if(i>0){ state.cardIdx=i-1; state.reviseIdx=i-1; render(); setTimeout(()=>say(cardWordNow().w),200); } },
+  cardRestart:()=>{ set({cardDone:false}); state.cardIdx=0; state.reviseIdx=0; render(); setTimeout(()=>say(cardWordNow().w),200); },
+  cardToPractice:()=>{ set({coachCardView:false, cardDone:false, luTab:'practice', typed:'', status:'idle', mood:'happy'}); setTimeout(speak,300); },
+  cardToRevise:()=>{ set({coachCardView:false, cardDone:false}); app.openRevisions(); },
   speak,
   speakSlow:()=>speakSlow(),
   check:()=>{ const ans=(state.typed||'').trim().toLowerCase(); if(!ans){ flash('Type the word first'); return; }
@@ -1087,13 +1103,13 @@ const app = {
   sellAvatar:(id)=>{ const c=active(); const a=SB_AVATARS.byId[id]; if(!a||a.rarity==='free'||!((c.avOwned||{})[id])) return;
     if(c.avatar===id){ flash('Pick a different avatar first — you can\'t sell the one you\'re wearing'); return; }
     delete c.avOwned[id]; addCoins(a.sell); save(); sfx('coin'); flash('Sold '+a.name+' for '+a.sell+' 🪙'); render(); },
-  // ----- avatar packs: probability drop (62% rare · 30% epic · 8% legendary, unowned only) -----
+  // ----- avatar packs: probability drop (70% rare · 24% epic · 6% legendary, unowned only) -----
   buyPack:(pk)=>{ const c=active(); const pool=SB_AVATARS.list.filter(a=>a.pack===pk&&!avOwned(c,a.id));
     if(!pool.length){ flash('You own this whole pack! 🎉'); return; }
     const P=SB_AVATARS.packs.find(p=>p.id===pk)||{}; const cost=packCost(pk);
     if(!window.confirm('Open the '+(P.label||'pack')+' for '+cost+' coins? You get one surprise avatar you don’t own yet.')) return;
     if(!spendCoins(cost)){ flash('Need '+cost+' 🪙 — play games and clear Levels to earn!'); return; }
-    const tiers=[['rare',.62],['epic',.30],['legendary',.08]].filter(t=>pool.some(a=>a.rarity===t[0]));
+    const tiers=[['rare',PACK_WEIGHTS.rare],['epic',PACK_WEIGHTS.epic],['legendary',PACK_WEIGHTS.legendary]].filter(t=>pool.some(a=>a.rarity===t[0]));
     const tot=tiers.reduce((s,t)=>s+t[1],0); let roll=Math.random()*tot; let tier=tiers[tiers.length-1][0];
     for(const t of tiers){ if(roll<t[1]){ tier=t[0]; break; } roll-=t[1]; }
     const cand=pool.filter(a=>a.rarity===tier); const win=cand[Math.floor(Math.random()*cand.length)];
@@ -2062,23 +2078,25 @@ function viewTraps(){ const S=state; const traps=missTraps(); const sel=S.trapSe
 // Revisions — words the child flagged "Mark for revision" in Word Coach. Each can be drilled
 // again (⚑ Revise) or cleared once mastered (✓ Complete). Companion to Your Traps.
 function viewRevisions(){
-  const c=active(); const list=(c.missed||[]);
-  const row=(m)=>{ const w=m.w;
+  const c=active(); const list=(c.missed||[]); const hist=(c.reviseHistory||[]); const tab=state.revTab||'todo';
+  const nameRow=(m,actBtn)=>{ const w=m.w;
     return `<div style="display:flex;align-items:center;gap:10px;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:11px 12px;box-shadow:var(--sh-rest)">
       <button data-act="say" data-arg="${escA(w)}" title="Hear it" style="width:38px;height:38px;flex-shrink:0;border-radius:10px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG('volume',17)}</button>
       <span style="min-width:0;flex:1">
         <span style="display:block;font-family:var(--display);font-weight:800;font-size:16px;line-height:1.15;overflow-wrap:anywhere">${esc(w)}</span>
         ${m.d?`<span style="display:block;font-size:12px;color:var(--muted);font-weight:600;line-height:1.35;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(m.d)}</span>`:''}
-      </span>
-      <button data-act="reviseOne" data-arg="${escA(w)}" title="Practice this word again" style="flex-shrink:0;padding:8px 11px;border-radius:999px;background:color-mix(in srgb,var(--treasure,#F0B429) 16%,transparent);border:1px solid var(--treasure,#F0B429);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12.5px">⚑ Revise</button>
-      <button data-act="reviseComplete" data-arg="${escA(w)}" title="I know it now — mark complete" style="flex-shrink:0;padding:8px 11px;border-radius:999px;background:color-mix(in srgb,var(--good) 15%,transparent);border:1px solid var(--good);color:var(--good);font-weight:800;font-size:12.5px">✓ Complete</button>
-    </div>`; };
+      </span>${actBtn}</div>`; };
+  const todoRow=(m)=>nameRow(m,`<button data-act="reviseOne" data-arg="${escA(m.w)}" title="Practice this word again" style="flex-shrink:0;padding:8px 11px;border-radius:999px;background:color-mix(in srgb,var(--treasure,#F0B429) 16%,transparent);border:1px solid var(--treasure,#F0B429);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12.5px">⚑ Revise</button><button data-act="reviseComplete" data-arg="${escA(m.w)}" title="I know it now — mark complete" style="flex-shrink:0;padding:8px 11px;border-radius:999px;background:color-mix(in srgb,var(--good) 15%,transparent);border:1px solid var(--good);color:var(--good);font-weight:800;font-size:12.5px">✓ Complete</button>`);
+  const histRow=(m)=>nameRow(m,`<span style="flex-shrink:0;color:var(--good);font-weight:800;font-size:12px">✓ done</span><button data-act="reviseHistoryAgain" data-arg="${escA(m.w)}" title="Put it back on the revise list" style="flex-shrink:0;padding:8px 11px;border-radius:999px;background:color-mix(in srgb,var(--treasure,#F0B429) 16%,transparent);border:1px solid var(--treasure,#F0B429);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12.5px">↻ Revise again</button>`);
+  const tabBtn=(k,l)=>`<button data-act="revTab" data-arg="${k}" style="flex:1;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--bg2);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.08)':'background:transparent;color:var(--muted)'}">${l}</button>`;
+  const body = tab==='history'
+    ? (hist.length?`<div style="display:flex;flex-direction:column;gap:9px">${hist.map(histRow).join('')}</div>`:beeEmpty('happy','No revise history yet. When you mark a revision word ✓ Complete, it moves here so you can revisit it any time.'))
+    : (list.length?`<div style="display:flex;gap:8px;margin-bottom:14px"><button data-act="practiceRevisions" style="flex:1;padding:13px;border-radius:12px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Practice all ${list.length} →</button></div><div style="display:flex;flex-direction:column;gap:9px">${list.map(todoRow).join('')}</div>`
+      :beeEmpty('happy','Nothing to revise — every flagged word is cleared! Mark a word for revision in Word Coach and it will show up here.'));
   return `<div style="max-width:640px;margin:0 auto;animation:sb-rise .35s ease both">
-    ${pageHead('Your Revisions','words you flagged to revise','Mark a word for revision in Word Coach and it lands here. Drill them again, or mark them complete once they stick.')}
-    ${list.length?`<div style="display:flex;gap:8px;margin-bottom:14px">
-      <button data-act="practiceRevisions" style="flex:1;padding:13px;border-radius:12px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Practice all ${list.length} →</button></div>
-    <div style="display:flex;flex-direction:column;gap:9px">${list.map(row).join('')}</div>`
-      :beeEmpty('happy','Nothing to revise — every flagged word is cleared! Mark a word for revision in Word Coach and it will show up here.')}
+    ${pageHead('Your Revisions','words you flagged to revise','Mark a word for revision in Word Coach and it lands here. Drill it, or mark it complete once it sticks — completed words move to Revise history so you can revisit them.')}
+    <div style="display:flex;gap:6px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:14px">${tabBtn('todo','To revise'+(list.length?' · '+list.length:''))}${tabBtn('history','Revise history'+(hist.length?' · '+hist.length:''))}</div>
+    ${body}
   </div>`;
 }
 /* ===================== APP SHELL ===================== */
@@ -2407,7 +2425,8 @@ function avatarSVG(id,size,acc){ size=size||30;
 function myAvatar(size){ const c=active(); return avatarSVG(c.avatar||'bee', size, c.accOn); }
 // Per-pack economy: price scales with the pack's contents (legendaries cost most), so every
 // pack costs something different. Drop weights are shared; odds are shown to kids per avatar.
-const PACK_WEIGHTS = { rare:.62, epic:.30, legendary:.08 };
+// drop probability is inverse to rarity — the rarer the tier, the lower its chance
+const PACK_WEIGHTS = { rare:.70, epic:.24, legendary:.06 };
 // Curated per-pack prices (cheap starter → premium legendary packs).
 const PACK_COST = { hive:50, stage:100, cosmos:150, dojo:175, lab:200, arcade:200, origami:200,
   elements:200, critter:300, vibe:300, dino:300, enchanted:300, wildhearts:300, legends:350,
@@ -3074,39 +3093,57 @@ function trainerCard(){
 // swipe the RIGHT half = "got it" → next (completeWord), the LEFT half = revise → next
 // (reviseWord). The top-left icon toggles back to the spelling card. Because the word itself
 // is shown here, meaning/sentence are not masked.
+// the word set the Learn tab / card deck iterate (the coach working set), and the current card
+function learnWords(){ return (state.sessionWords&&state.sessionWords.length)?state.sessionWords:(function(){ try{ return listWords(activeListKey())||[]; }catch(e){ return []; } })(); }
+function cardWordNow(){ const ws=learnWords(); if(!ws.length) return {w:''}; return ws[Math.min(Math.max(state.cardIdx||0,0),ws.length-1)]||{w:''}; }
+// finished the deck → next-step choices
+function cardDonePanel(){ const miss=((active().missed)||[]).length;
+  return `<div style="max-width:360px;margin:0 auto;background:var(--bg2);border:1px solid var(--line);border-radius:24px;box-shadow:var(--glow);padding:28px 26px;text-align:center;animation:sb-rise .3s ease both">
+    <div style="width:92px;height:104px;margin:0 auto 2px">${mascotSVG('excited')}</div>
+    <div style="font-family:var(--display);font-weight:800;font-size:22px">All cards learnt! 🎉</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.5;margin:6px 0 18px">You’ve been through every word in this set. What next?</div>
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <button data-act="cardToPractice" style="padding:14px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Practice &amp; test →</button>
+      ${miss?`<button data-act="cardToRevise" style="padding:14px;border-radius:12px;background:color-mix(in srgb,var(--treasure,#F0B429) 18%,transparent);border:1px solid var(--treasure,#F0B429);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:15px">⚑ Revise the ${miss} revision word${miss>1?'s':''}</button>`:''}
+      <div style="display:flex;gap:9px">
+        <button data-act="cardRestart" style="flex:1;padding:11px;border-radius:12px;background:var(--surface2);color:var(--text);font-weight:800;font-size:13px">↺ Cards again</button>
+        <button data-act="toggleCardView" style="flex:1;padding:11px;border-radius:12px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:13px">← Back to Learn</button>
+      </div>
+    </div></div>`;
+}
 function coachFlashCard(){
-  if(state.sessionOver) return sessionResults();
-  const S=state; const w=curWord()||{w:'',d:'',s:'',o:''};
-  const N=(S.sessionWords&&S.sessionWords.length)||1; const i=Math.min(Math.max(S.gi||0,0),N-1);
-  const pct=Math.round((i+1)/N*100); const mastered=state.luMastered&&state.luMastered[nkey(w.w)];
+  if(state.cardDone) return cardDonePanel();
+  const ws=learnWords(); const N=ws.length||1; const i=Math.min(Math.max(state.cardIdx||0,0),N-1); const w=ws[i]||{w:'',d:'',s:'',o:''};
+  const pct=Math.round((i+1)/N*100); const onRev=((active().missed)||[]).some(m=>nkey(m.w)===nkey(w.w));
   const chip=(t)=>`<span style="padding:4px 11px;border-radius:999px;background:var(--surface2);font-size:11.5px;color:var(--muted);font-weight:700">${t}</span>`;
   const revCol='var(--treasure-deep,#8A5B00)', okCol='var(--good)';
   return `
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
       <span style="font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">Card ${i+1} of ${N}</span>
       <div style="flex:1;height:7px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--accent);width:${pct}%;transition:width .3s"></div></div>
-      ${mastered?'<span style="color:var(--good);font-weight:800;font-size:12px;white-space:nowrap">✓ Got it</span>':''}
+      ${onRev?'<span style="color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12px;white-space:nowrap">⚑ On revise</span>':''}
     </div>
     <div data-swipe="coach" class="coach-card" style="position:relative;max-width:340px;margin:0 auto;height:min(72vh,470px);border-radius:24px;overflow:hidden;touch-action:pan-y;-webkit-user-select:none;user-select:none">
       <div class="coach-glimmer"></div>
-      <div data-act="reviseWord" title="Mark for revision → next word" style="position:absolute;top:0;left:0;bottom:0;width:50%;z-index:1;cursor:pointer"></div>
-      <div data-act="completeWord" title="Got it → next word" style="position:absolute;top:0;right:0;bottom:0;width:50%;z-index:1;cursor:pointer"></div>
-      <button data-act="toggleCardView" title="Back to spelling practice" aria-label="Back to spelling practice" style="position:absolute;top:12px;left:12px;z-index:4;width:38px;height:38px;border-radius:11px;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${cardsSVG(20)}</button>
+      <div data-act="cardRevise" title="Mark for revision → next word" style="position:absolute;top:0;left:0;bottom:0;width:50%;z-index:1;cursor:pointer"></div>
+      <div data-act="cardNext" title="Next word" style="position:absolute;top:0;right:0;bottom:0;width:50%;z-index:1;cursor:pointer"></div>
+      <button data-act="toggleCardView" title="Back to Learn" aria-label="Back to Learn" style="position:absolute;top:12px;left:12px;z-index:4;width:38px;height:38px;border-radius:11px;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${cardsSVG(20)}</button>
+      ${i>0?`<button data-act="cardBack" title="Previous card" aria-label="Previous card" style="position:absolute;top:12px;right:12px;z-index:4;width:34px;height:34px;border-radius:10px;background:var(--surface2);color:var(--muted);border:1px solid var(--line);display:grid;place-items:center;font-weight:900;font-size:15px">↺</button>`:''}
       <div style="position:absolute;left:0;top:0;bottom:26px;width:34px;z-index:3;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:linear-gradient(90deg,color-mix(in srgb,var(--treasure,#F0B429) 26%,transparent),transparent);color:${revCol}"><span style="font-size:15px;font-weight:900">‹</span><span style="font-size:9px;font-weight:800;writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.08em">REVISE</span></div>
-      <div style="position:absolute;right:0;top:0;bottom:26px;width:34px;z-index:3;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:linear-gradient(270deg,color-mix(in srgb,var(--good) 22%,transparent),transparent);color:${okCol}"><span style="font-size:15px;font-weight:900">›</span><span style="font-size:9px;font-weight:800;writing-mode:vertical-rl;letter-spacing:.08em">GOT IT</span></div>
-      <div style="position:relative;z-index:2;pointer-events:none;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:46px 34px 30px;overflow:auto">
+      <div style="position:absolute;right:0;top:0;bottom:26px;width:34px;z-index:3;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:linear-gradient(270deg,color-mix(in srgb,var(--good) 22%,transparent),transparent);color:${okCol}"><span style="font-size:15px;font-weight:900">›</span><span style="font-size:9px;font-weight:800;writing-mode:vertical-rl;letter-spacing:.08em">NEXT</span></div>
+      <div style="position:relative;z-index:2;pointer-events:none;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 34px 30px;overflow:auto">
         <div style="font-family:var(--display);font-weight:800;font-size:clamp(23px,7vw,33px);line-height:1.1;overflow-wrap:anywhere">${esc(w.w)}</div>
         ${w.sy&&w.sy.toLowerCase()!==(w.w||'').toLowerCase()?`<div style="font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.04em;margin-top:4px">${esc(w.sy)}</div>`:''}
         <div style="display:flex;gap:10px;justify-content:center;margin:13px 0 4px;pointer-events:auto">
-          <button data-act="speak" aria-label="Hear the word" title="Hear the word" style="width:46px;height:46px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',21)}</button>
-          <button data-act="speakSlow" aria-label="Hear it slowly" title="Hear it slowly" style="width:46px;height:46px;border-radius:50%;background:var(--surface2);color:var(--accent);border:1px solid var(--line);display:grid;place-items:center">${tortoiseSVG(23)}</button>
+          <button data-act="cardSpeak" aria-label="Hear the word" title="Hear the word" style="width:46px;height:46px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',21)}</button>
+          <button data-act="cardSpeakSlow" aria-label="Hear it slowly" title="Hear it slowly" style="width:46px;height:46px;border-radius:50%;background:var(--surface2);color:var(--accent);border:1px solid var(--line);display:grid;place-items:center">${tortoiseSVG(23)}</button>
         </div>
         ${w.d?`<div style="font-size:15px;color:var(--text);line-height:1.5;margin-top:8px">${esc(w.d)}</div>`:''}
         ${w.s?`<div style="font-size:12.5px;color:var(--muted);line-height:1.55;margin-top:9px"><b style="color:var(--text)">Sentence.</b> ${esc(w.s)}</div>`:''}
         ${w.h?`<div style="display:flex;align-items:flex-start;gap:7px;font-size:12.5px;color:var(--text);line-height:1.5;margin-top:10px;background:var(--chip);border-radius:10px;padding:8px 11px"><span style="color:var(--accent);margin-top:1px;flex-shrink:0">${iconSVG('bulb',14)}</span><span>${esc(w.h)}</span></div>`:''}
         <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:12px">${w.p?chip('/ '+esc(w.p)+' /'):''}${w.o?chip(esc(w.o)):''}${w.ps?chip(esc(w.ps)):''}</div>
       </div>
-      <div style="position:absolute;left:0;right:0;bottom:0;z-index:3;pointer-events:none;display:flex;justify-content:space-between;padding:8px 40px;font-size:10.5px;font-weight:800"><span style="color:${revCol}">‹ tap · swipe · Revise</span><span style="color:${okCol}">Got it · swipe · tap ›</span></div>
+      <div style="position:absolute;left:0;right:0;bottom:0;z-index:3;pointer-events:none;display:flex;justify-content:space-between;padding:8px 40px;font-size:10.5px;font-weight:800"><span style="color:${revCol}">‹ ← key · Revise</span><span style="color:${okCol}">Next · → key ›</span></div>
     </div>`;
 }
 function viewTrain(){
@@ -3210,10 +3247,9 @@ function viewLevelUp(){
   let body;
   if(S.coachCardView) body=coachFlashCard();
   else if(S.luTab==='practice') body=trainerCard();
-  else body=wordFlash(lw, S.reviseIdx, 'reviseNav', { practise:true });
-  const cardsTab=`<button data-act="toggleCardView" title="Flip through the words as a card deck" style="flex:1;padding:9px 8px;border-radius:10px;font-weight:800;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:6px;${S.coachCardView?'background:var(--bg2);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.08)':'background:transparent;color:var(--muted)'}">${cardsSVG(14)} Cards</button>`;
+  else body=`<div style="display:flex;margin-bottom:10px"><button data-act="toggleCardView" title="Card view — flip through these words, starting on this one" style="display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12.5px">${cardsSVG(15)} Card view</button></div>`+wordFlash(lw, S.reviseIdx, 'reviseNav', { practise:true });
   return `<div style="max-width:760px;margin:0 auto">${header}
-    <div style="display:flex;gap:6px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:16px">${tab('revise','Revise')}${tab('practice','Practice')}${cardsTab}</div>
+    <div style="display:flex;gap:6px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:16px">${tab('revise','Revise')}${tab('practice','Practice')}</div>
     ${S.coachCardView?'':wordsPanel}${body}${liveHeatmap(lw, {anon:S.luTab==='practice'})}</div>`;
 }
 
@@ -4361,14 +4397,14 @@ function coachTrain(){
       <div style="overflow-x:auto;padding:2px 0"><div style="min-width:760px">${evoLadderHTML(theme, fIdx)}</div></div>
     </div>`;
   const tab=(k,l)=>`<button data-act="luSetTab" data-arg="${k}" style="flex:1;padding:9px 8px;border-radius:10px;font-weight:800;font-size:13px;${S.luTab===k?'background:var(--bg2);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.08)':'background:transparent;color:var(--muted)'}">${l}</button>`;
-  const body = S.coachCardView ? coachFlashCard() : (S.luTab==='practice' ? trainerCard() : wordFlash(ws, S.reviseIdx, 'reviseNav', {selfMark:true}));
-  const cardsTab=`<button data-act="toggleCardView" title="Flip through the words as a card deck" style="flex:1;padding:9px 8px;border-radius:10px;font-weight:800;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:6px;${S.coachCardView?'background:var(--bg2);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.08)':'background:transparent;color:var(--muted)'}">${cardsSVG(14)} Cards</button>`;
+  const learnCardsBtn=`<div style="display:flex;margin-bottom:10px"><button data-act="toggleCardView" title="Card view — flip through these words, starting on this one" style="display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12.5px">${cardsSVG(15)} Card view</button></div>`;
+  const body = S.coachCardView ? coachFlashCard() : (S.luTab==='practice' ? trainerCard() : learnCardsBtn+wordFlash(ws, S.reviseIdx, 'reviseNav', {selfMark:true}));
   const act=(a,ic,t,col)=>`<button data-act="${a}" class="sb-lift" style="display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:16px 10px;box-shadow:var(--sh-rest)">${iconTile(ic,col,{size:44,radius:13})}<span style="font-family:var(--display);font-weight:800;font-size:13.5px;color:${col};line-height:1.15">${t}</span></button>`;
   const actions=`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:18px 2px 10px">Quick practice</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:11px">${act('startBuzz','flame','Daily Buzz','#E8845C')}${act('startWritten','pencil','Written','#7C5CFF')}${act('startOral','speaker','Oral round','#13A892')}${act('coachSetupOpen','sliders','Setup','#C8901B')}</div>`;
   const journeyPromo = (key!=='journey' && (getList(c,'journey').stage||0)===0) ? `<button data-act="startJourney" style="width:100%;text-align:left;border-radius:14px;margin-top:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 4px 14px rgba(43,27,94,.16)"><div style="padding:13px 16px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">★ Recommended path</div><div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">The Bizzing Bee Journey — 20 Levels to Champ</div></div><span style="padding:8px 14px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Start →</span></div></button>` : '';
   return `<div style="max-width:760px;margin:0 auto">${printDlg}${topBar}
-    <div style="display:flex;gap:6px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:16px">${tab('revise','Learn')}${tab('practice','Practice')}${cardsTab}</div>
+    <div style="display:flex;gap:6px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:16px">${tab('revise','Learn')}${tab('practice','Practice')}</div>
     ${body}
     ${liveHeatmap(ws, {anon:S.luTab==='practice', print:true})}
     ${chipsRow}${allWordsPanel}
@@ -5026,7 +5062,7 @@ function viewShop(){ const S=state; const c=active(); ensureLists(c); const tab=
           ${full?`<div style="font-weight:800;font-size:13px;color:var(--good);margin-top:auto">Complete ✓ — every avatar collected</div>`
             :`<button data-act="buyPack" data-arg="${p.id}" style="margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px;border-radius:11px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:900;font-size:13.5px">🎁 Open a pack · ${coinAmt(packCost(p.id),13)}</button>`}
         </div></div>`; }).join('');
-    body=`<p style="font-size:13px;color:var(--muted);margin:0 0 6px">Every pack drop is a surprise avatar you don't own yet — <b>62% rare · 30% epic · 8% legendary</b>. Each pack has its own price and its own odds — tap <b>🎲 Drop odds</b> to see every avatar's chance. Duplicates never drop.</p>
+    body=`<p style="font-size:13px;color:var(--muted);margin:0 0 6px">Every pack drop is a surprise avatar you don't own yet — <b>70% rare · 24% epic · 6% legendary</b>. Each pack has its own price and its own odds — tap <b>🎲 Drop odds</b> to see every avatar's chance. Duplicates never drop.</p>
       <p style="font-size:12px;color:var(--muted);margin:0 0 14px">Change your mind? Sell spare avatars back for coins from <button data-act="setNav" data-arg="collection" style="color:var(--accent);font-weight:800;background:none;border:0;padding:0;cursor:pointer">your Collection</button>.</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px">${packs}</div>`;
   } else if(tab==='worlds'){
@@ -5314,14 +5350,16 @@ root.addEventListener('click', e=>{ const el=e.target.closest('[data-act]'); if(
 root.addEventListener('input', e=>{ const el=e.target.closest('[data-inp]'); if(!el) return; callAct(el.getAttribute('data-inp'), el.value); });
 root.addEventListener('change', e=>{ const el=e.target.closest('[data-chg]'); if(!el) return; callAct(el.getAttribute('data-chg'), el.value); });
 root.addEventListener('keydown', e=>{ const el=e.target.closest('[data-key]'); if(!el) return; const fn=app[el.getAttribute('data-key')]; if(fn) fn(e); });
-/* Word Coach card view: horizontal swipe on the card. Swipe right = "got it" (completeWord),
-   swipe left = revise (reviseWord). preventDefault on a handled swipe suppresses the ghost
-   click so the tap-zone underneath doesn't also fire. */
+/* Word Coach card view: swipe OR arrow keys. Right = next word (cardNext), left = mark revise
+   (cardRevise). preventDefault on a handled swipe suppresses the ghost click. */
 (function(){ let sx=0,sy=0,st=0,mode=null;
   root.addEventListener('touchstart',e=>{ const t=e.target.closest('[data-swipe]'); mode=t?t.getAttribute('data-swipe'):null; if(!mode) return; const p=e.changedTouches[0]; sx=p.clientX; sy=p.clientY; st=Date.now(); },{passive:true});
   root.addEventListener('touchend',e=>{ if(mode!=='coach') return; const p=e.changedTouches[0]; const dx=p.clientX-sx, dy=p.clientY-sy; mode=null;
     if(Date.now()-st>700) return; if(Math.abs(dx)<48 || Math.abs(dx)<Math.abs(dy)*1.3) return;
-    e.preventDefault(); if(dx>0) app.completeWord(); else app.reviseWord(); },{passive:false}); })();
+    e.preventDefault(); if(dx>0) app.cardNext(); else app.cardRevise(); },{passive:false}); })();
+window.addEventListener('keydown',e=>{ try{ if(!state.coachCardView||state.cardDone||state.pinDlg) return;
+  const t=e.target; if(t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)) return;
+  if(e.key==='ArrowRight'){ e.preventDefault(); app.cardNext(); } else if(e.key==='ArrowLeft'){ e.preventDefault(); app.cardRevise(); } }catch(err){} });
 /* game hotkeys: 1–4 pick an answer, R repeats the word, D shows the hint (never while typing) */
 window.addEventListener('keydown', e=>{ try{
   if(e.metaKey||e.ctrlKey||e.altKey) return;
