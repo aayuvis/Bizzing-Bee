@@ -2494,71 +2494,44 @@ function avatarSVG(id,size,acc){ size=size||30;
   return svg; }
 // the child's own worn avatar, with their equipped accessory
 function myAvatar(size){ const c=active(); return avatarSVG(c.avatar||'bee', size, c.accOn); }
-/* ---- Premium badge medallions ---------------------------------------------
-   A rich, cast-metal medal: scalloped gold rim, gemstone face tinted per group,
-   a custom filled emblem, gloss + ribbon tails. Replaces the flat icon-in-a-circle.
-   `kind` = the badge's `ic` key; `size` in px; `won` false → dimmed silver/locked. */
-let _badgeUID=0;
+/* ---- Badge art, rendered like an avatar ------------------------------------
+   Each badge is Bizzy the mascot on a soft avatar-style roundel (same visual
+   language as the collectible avatars), with a themed mood and a small "prop"
+   sticker that says which badge it is. Reads as a cute character, not a medal.
+   `kind` = the badge's `ic` key; `size` in px; `won` false → greyed/locked. */
 function badgeArtSVG(kind, size, won){
   size=size||96; if(won===undefined) won=true;
-  const uid='bg'+(_badgeUID++);
-  // Per-emblem gemstone palette (face colour); the rim is always gold when won.
+  // Per-group ground colour — the roundel is white in the centre so the yellow bee always reads.
   const PAL={
-    flame:['#FF8A3D','#E8451F'], fire:['#FF6B3D','#D62828'], spark:['#FFD34D','#F0A93C'],
-    star:['#FFD34D','#F0A93C'], crown:['#FFCF4D','#E8A020'], check:['#5AD98A','#1FA35A'],
-    book:['#5AA9F0','#2E6FD6'], chart:['#5AD1D9','#189AA6'], target:['#FF6B8A','#D6304F'],
-    search:['#7FB0FF','#3D6FE0'], sprout:['#7ED957','#2FA14E'], steps:['#8AA0FF','#5A5CE0'],
-    bolt:['#FFD23D','#F0A030'], eye:['#B08CF0','#7B4FD6'], palette:['#FF9ED2','#E85AA8'],
-    cart:['#FFB84D','#E88A20'], joystick:['#9E7CFF','#6C4FE0'], bulb:['#FFE066','#F0B020'],
-    timer:['#6EC8FF','#2E9FE0'], crown2:['#FFCF4D','#E8A020']
+    flame:['#FFB84D','#F08A2E'], fire:['#FF7A4D','#E23B2E'], spark:['#FFD86E','#F0A93C'],
+    star:['#FFD86E','#F0A93C'], crown:['#FFD24D','#E8A020'], check:['#6EDD9E','#1FA35A'],
+    book:['#7FC0FF','#2E6FD6'], chart:['#6EDCE4','#189AA6'], target:['#FF8AA6','#D6304F'],
+    search:['#9CC4FF','#3D6FE0'], sprout:['#93E070','#2FA14E'], steps:['#A4B4FF','#5A5CE0'],
+    bolt:['#FFDE6E','#F0A030'], eye:['#C6A4FF','#7B4FD6'], palette:['#FFB4DE','#E85AA8'],
+    cart:['#FFCB6E','#E88A20'], joystick:['#B49CFF','#6C4FE0'], bulb:['#FFEB8A','#F0B020'],
+    timer:['#8FD6FF','#2E9FE0']
   };
-  const pc=PAL[kind]||['#FFD34D','#F0A93C'];
-  const gem1=won?pc[0]:'#C3CBD4', gem2=won?pc[1]:'#8B95A1';
-  // 24-point scalloped rim ring
-  let scallop=''; const R=41, cx=50, cy=50;
-  for(let i=0;i<24;i++){ const a=i/24*Math.PI*2; scallop+=`<circle cx="${(cx+Math.cos(a)*R).toFixed(2)}" cy="${(cy+Math.sin(a)*R).toFixed(2)}" r="3.4"/>`; }
-  // Custom filled emblems (glyph drawn in a dark tint of the gem for depth)
-  const glyphs={
-    crown:'M22 66 17 34l14 11L50 26l19 19 14-11-5 32z M22 71h56',
-    flame:'M50 20c3 12 12 17 12 28a12 12 0 0 1-24 0c0-2 .3-3.6.7-5C34 45 30 53 30 61a20 20 0 0 0 40 0c0-16-11-29-20-41z',
-    fire:'M50 20c3 12 12 17 12 28a12 12 0 0 1-24 0c0-2 .3-3.6.7-5C34 45 30 53 30 61a20 20 0 0 0 40 0c0-16-11-29-20-41z',
-    spark:'M50 18l6.5 20.5L78 45l-21.5 6.5L50 72l-6.5-20.5L22 45l21.5-6.5z',
-    star:'M50 18l6.5 20.5L78 45l-21.5 6.5L50 72l-6.5-20.5L22 45l21.5-6.5z',
-    check:'M30 51l12 12 28-28-6-6-22 22-6-6z',
-    book:'M28 28h30a5 5 0 0 1 5 5v39a4 4 0 0 0-4-4H28z M28 28v40 M63 33a5 5 0 0 0-5-5',
-    bolt:'M55 20 32 54h12l-6 26 25-36H50z',
-    target:'',
-    steps:'M26 68h9v-10h9v-10h9v-10h9v-10',
-    sprout:'M50 74V44 M50 44C50 32 41 24 26 24c0 12 9 20 24 20z M50 44c0-9 6-16 20-16 0 9-6 16-20 16z'
-  };
-  let emblem;
-  if(kind==='target'){
-    emblem=`<circle cx="50" cy="50" r="16" fill="none" stroke="${shade(gem2,-18)}" stroke-width="5"/><circle cx="50" cy="50" r="7.5" fill="none" stroke="${shade(gem2,-18)}" stroke-width="5"/><circle cx="50" cy="50" r="3" fill="${shade(gem2,-18)}"/>`;
-  } else if(glyphs[kind]){
-    const filled=['crown','flame','fire','spark','star','check','bolt'].indexOf(kind)>=0;
-    emblem=filled
-      ? `<path d="${glyphs[kind]}" fill="${shade(gem2,-14)}" stroke="${shade(gem1,10)}" stroke-width="1.4" stroke-linejoin="round"/>`
-      : `<path d="${glyphs[kind]}" fill="none" stroke="${shade(gem2,-16)}" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>`;
-  } else {
-    // fallback: recolour the line icon glyph, centred & enlarged
-    emblem=`<g transform="translate(29 29) scale(1.75)" style="color:${shade(gem2,-18)}">${(window.SB_ICON?SB_ICON(kind,{size:24}):iconSVG(kind,24,2.4))}</g>`;
-  }
-  const ribbon=won?`<g opacity=".95">
-    <path d="M30 78 22 98l12-6 12 6-6-18z" fill="#E3444F"/><path d="M70 78 78 98l-12-6-12 6 6-18z" fill="#C6303B"/></g>`:'';
-  return `<svg viewBox="0 0 100 106" width="${size}" height="${(size*1.06).toFixed(1)}" aria-hidden="true" style="display:block;overflow:visible;${won?'':'filter:grayscale(.5) opacity(.8)'}">
-    <defs>
-      <radialGradient id="${uid}f" cx="42%" cy="34%" r="75%"><stop offset="0" stop-color="${shade(gem1,26)}"/><stop offset=".55" stop-color="${gem1}"/><stop offset="1" stop-color="${gem2}"/></radialGradient>
-      <linearGradient id="${uid}r" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${won?'#FFE9A3':'#EDF1F4'}"/><stop offset=".5" stop-color="${won?'#F0B429':'#C3CBD4'}"/><stop offset="1" stop-color="${won?'#B57E12':'#8B95A1'}"/></linearGradient>
-      <radialGradient id="${uid}g" cx="38%" cy="26%" r="55%"><stop offset="0" stop-color="#fff" stop-opacity=".85"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-    </defs>
-    ${ribbon}
-    <g fill="url(#${uid}r)" stroke="${won?'#8A5B00':'#6B7681'}" stroke-width=".6">${scallop}</g>
-    <circle cx="50" cy="50" r="40" fill="url(#${uid}r)" stroke="${won?'#8A5B00':'#6B7681'}" stroke-width="1"/>
-    <circle cx="50" cy="50" r="33" fill="url(#${uid}f)" stroke="${shade(gem2,-22)}" stroke-width="1.5"/>
-    <circle cx="50" cy="50" r="33" fill="url(#${uid}g)"/>
-    ${emblem}
-    <path d="M27 33a33 33 0 0 1 30-11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".5"/>
-  </svg>`;
+  const pc=PAL[kind]||['#FFD86E','#F0A93C'];
+  const t1=won?pc[0]:'#C3CBD4', t2=won?pc[1]:'#9AA4AF';
+  // mood picks a matching Bizzy expression per achievement family
+  const MOOD={ crown:'excited', spark:'excited', star:'excited', bolt:'excited', joystick:'excited',
+    flame:'excited', fire:'excited', sprout:'love', check:'happy', target:'think', book:'think',
+    chart:'think', search:'think', bulb:'think' };
+  const mood=MOOD[kind]||'happy';
+  const bee=(typeof mascotSVG==='function')?mascotSVG(mood):'';
+  // themed prop sticker (small disc, bottom-right) — the badge's own emblem
+  const s=size; const stkr=Math.round(s*0.40); const gi=Math.round(stkr*0.56);
+  const propIc=won ? iconSVG(kind,gi,2.4) : iconSVG('lock',gi,2.4);
+  const prop=`<span style="position:absolute;right:-3%;bottom:-3%;width:${stkr}px;height:${stkr}px;border-radius:50%;background:#fff;display:grid;place-items:center;color:${won?t2:'#8B95A1'};box-shadow:0 2px 6px rgba(20,10,40,.28);border:2px solid ${won?t2:'#B4BCC6'}">${propIc}</span>`;
+  return `<div style="position:relative;width:${s}px;height:${s}px;display:inline-block;${won?'':'filter:grayscale(.7) opacity(.9)'}">
+    <div style="position:absolute;inset:0;border-radius:50%;overflow:hidden;
+      background:radial-gradient(120% 120% at 50% 38%, #ffffff 0%, ${shade(t1,18)} 46%, ${t1} 66%, ${t2} 100%);
+      box-shadow:inset 0 -6px 14px rgba(0,0,0,.14), inset 0 3px 9px rgba(255,255,255,.6), 0 3px 9px rgba(20,10,40,.18);
+      border:2.5px solid ${won?'#fff':'#E7EBEF'}">
+      <div aria-hidden="true" style="position:absolute;left:11%;top:16%;width:78%;height:88%">${bee}</div>
+    </div>
+    ${prop}
+  </div>`;
 }
 // small colour shade helper (percent -100..100) for the badge metal tints
 function shade(hex, pct){ hex=String(hex||'#888').replace('#',''); if(hex.length===3) hex=hex.split('').map(c=>c+c).join('');
