@@ -795,7 +795,7 @@ const app = {
     if(i>=0){ state.luTab='revise'; state.reviseIdx=i; try{window.scrollTo(0,0);}catch(e){} render(); } else { say(w); } },
   toggleSent:()=>{ const on=!state.showSent; if(on){ const w=curWord(); if(w&&w.s) sayMasked(w.s,w.w); } set({showSent:on}); },
   toggleOrigin:()=>set({showOrigin:!state.showOrigin}),
-  luSetTab:(t)=>{ set({luTab:t, heatReveal:false}); if(t==='practice') setTimeout(speak,250); },
+  luSetTab:(t)=>{ set({luTab:t, heatReveal:false, coachCardView:false}); if(t==='practice') setTimeout(speak,250); },
   toggleHeat:()=>set({heatReveal:!state.heatReveal}),
   luToggleWords:()=>set({luWordsOpen:!state.luWordsOpen}),
   luPractice:(idx)=>{ state.gi=+idx; state.luTab='practice'; state.status='idle'; state.typed=''; state.mood='happy'; state.showDef=false; state.showSent=false; state.showOrigin=false; render(); setTimeout(speak,250); },
@@ -1083,15 +1083,21 @@ const app = {
   // ----- avatar packs: probability drop (62% rare · 30% epic · 8% legendary, unowned only) -----
   buyPack:(pk)=>{ const c=active(); const pool=SB_AVATARS.list.filter(a=>a.pack===pk&&!avOwned(c,a.id));
     if(!pool.length){ flash('You own this whole pack! 🎉'); return; }
-    if(!window.confirm('Open this avatar pack for 150 coins? You get one surprise avatar you don’t own yet.')) return;
-    if(!spendCoins(150)){ flash('Need 150 🪙 — play games and clear Levels to earn!'); return; }
+    const P=SB_AVATARS.packs.find(p=>p.id===pk)||{}; const cost=packCost(pk);
+    if(!window.confirm('Open the '+(P.label||'pack')+' for '+cost+' coins? You get one surprise avatar you don’t own yet.')) return;
+    if(!spendCoins(cost)){ flash('Need '+cost+' 🪙 — play games and clear Levels to earn!'); return; }
     const tiers=[['rare',.62],['epic',.30],['legendary',.08]].filter(t=>pool.some(a=>a.rarity===t[0]));
     const tot=tiers.reduce((s,t)=>s+t[1],0); let roll=Math.random()*tot; let tier=tiers[tiers.length-1][0];
     for(const t of tiers){ if(roll<t[1]){ tier=t[0]; break; } roll-=t[1]; }
     const cand=pool.filter(a=>a.rarity===tier); const win=cand[Math.floor(Math.random()*cand.length)];
     (c.avOwned=c.avOwned||{})[win.id]=1; save();
-    sfx(win.rarity==='legendary'?'win':'coin'); burstConfetti(win.rarity==='legendary'?150:(win.rarity==='epic'?100:60));
-    set({packDrop:win.id}); },
+    const reveal=()=>{ state.packRoll=null; sfx(win.rarity==='legendary'?'win':'coin'); burstConfetti(win.rarity==='legendary'?150:(win.rarity==='epic'?100:60)); set({packDrop:win.id}); };
+    if(state.a11yMotion){ reveal(); return; }                // reduce-motion: skip the reel
+    state.packRoll={pk:pk, winId:win.id}; render();           // themed "calculating" reel…
+    clearTimeout(state._packTimer); state._packTimer=setTimeout(reveal, 2500); }, // …then the card drops
+  packSkip:()=>{ const r=state.packRoll; if(!r) return; clearTimeout(state._packTimer); state._packTimer=null; const win=SB_AVATARS.byId[r.winId]; state.packRoll=null;
+    if(win){ sfx(win.rarity==='legendary'?'win':'coin'); burstConfetti(win.rarity==='legendary'?150:(win.rarity==='epic'?100:60)); } set({packDrop:r.winId}); },
+  toggleOdds:(pk)=>{ state.oddsOpen=(state.oddsOpen===pk?null:pk); render(); },
   packClose:()=>set({packDrop:null}),
   packWear:()=>{ const id=state.packDrop; if(id){ const c=active(); c.avatar=id; save(); sfx('correct'); } set({packDrop:null}); },
   openShopAvatars:()=>{ state.shopTab='avatars'; app.openShop(); },
@@ -2392,6 +2398,34 @@ function avatarSVG(id,size,acc){ size=size||30;
   return svg; }
 // the child's own worn avatar, with their equipped accessory
 function myAvatar(size){ const c=active(); return avatarSVG(c.avatar||'bee', size, c.accOn); }
+// Per-pack economy: price scales with the pack's contents (legendaries cost most), so every
+// pack costs something different. Drop weights are shared; odds are shown to kids per avatar.
+const PACK_WEIGHTS = { rare:.62, epic:.30, legendary:.08 };
+function packCost(pk){ if(pk==='hive') return 50;   // the starter bee pack is the cheap on-ramp
+  if(pk==='gods') return 400;                        // the premium legendary pack tops the range
+  const avs=SB_AVATARS.list.filter(a=>a.pack===pk);
+  const legs=avs.filter(a=>a.rarity==='legendary').length, epics=avs.filter(a=>a.rarity==='epic').length, rares=avs.filter(a=>a.rarity==='rare').length;
+  // legendaries dominate the price; a deterministic per-pack spread keeps every pack a
+  // distinct number (many packs share the same rarity mix, so they'd otherwise tie).
+  let h=0; for(let i=0;i<pk.length;i++) h=(h*31+pk.charCodeAt(i))>>>0;
+  const c = 70 + legs*80 + epics*28 + rares*10 + (h%15)*5;
+  return Math.max(60, Math.min(390, Math.round(c/5)*5)); }
+function packOdds(pk){ const avs=SB_AVATARS.list.filter(a=>a.pack===pk);
+  const tiers=['rare','epic','legendary'].filter(t=>avs.some(a=>a.rarity===t));
+  const sum=tiers.reduce((s,t)=>s+PACK_WEIGHTS[t],0)||1; const out=[];
+  tiers.forEach(t=>{ const inTier=avs.filter(a=>a.rarity===t); const each=(PACK_WEIGHTS[t]/sum)/inTier.length*100;
+    inTier.forEach(a=>out.push({id:a.id,name:a.name,rarity:t,pct:each})); });
+  const ord={legendary:0,epic:1,rare:2}; out.sort((a,b)=>(ord[a.rarity]-ord[b.rarity])||a.name.localeCompare(b.name));
+  return out; }
+function oddsPct(p){ return p<1?p.toFixed(1):Math.round(p); }
+function oddsPanel(pk,c){ const rows=packOdds(pk).map(o=>{ const own=avOwned(c,o.id); const R=SB_AVATARS.rarities[o.rarity]||{c:'#888',label:o.rarity};
+    return `<div style="display:flex;align-items:center;gap:8px;padding:4px 2px">
+      <span style="width:30px;height:30px;flex-shrink:0;display:grid;place-items:center;background:var(--surface2);border-radius:8px;${own?'':'opacity:.55;filter:saturate(.5)'}">${avatarSVG(o.id,26)}</span>
+      <span style="flex:1;min-width:0;font-weight:700;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(o.name)}${own?' <span style="color:var(--good);font-weight:800">✓</span>':''}</span>
+      <span style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#fff;background:${R.c};border-radius:99px;padding:2px 7px">${esc(R.label)}</span>
+      <span style="font-family:var(--mono);font-size:12px;font-weight:800;color:var(--muted);min-width:36px;text-align:right">${oddsPct(o.pct)}%</span></div>`; }).join('');
+  return `<div style="margin-top:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:9px 11px">
+    <div style="font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Drop chances · ones you own (✓) won't drop again</div>${rows}</div>`; }
 function avOwned(c,id){ if(state.devUnlock) return true; const a=window.SB_AVATARS&&SB_AVATARS.byId[id]; if(!a) return true; return a.rarity==='free' || !!((c.avOwned||{})[id]); }
 function avOwnedCount(c){ return SB_AVATARS.list.filter(a=>avOwned(c,a.id)).length; }
 function evArt(theme,i){ try{ return evEmb(theme,i).replace('width="54" height="58"','width="100%" height="100%"'); }catch(e){ return ''; } }
@@ -2518,7 +2552,7 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
           <span style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:99px;color:#fff;background:${R.c}">${R.label}</span>
           ${action}</div>`; }).join('');
       return `<div class="sb-card" style="margin-bottom:14px">
-        <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px;flex-wrap:wrap"><span style="width:12px;height:12px;border-radius:4px;background:linear-gradient(135deg,${p.c1},${p.c2});display:inline-block"></span><span class="sb-ct" style="font-size:15px">${p.label}</span><span class="sb-cn">${ownedN}/${avs.length} collected</span>${ownedN<avs.length?`<button data-act="buyPack" data-arg="${p.id}" style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:999px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12px">🎁 Open pack · ${coinAmt(150,11)}</button>`:''}</div>
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px;flex-wrap:wrap"><span style="width:12px;height:12px;border-radius:4px;background:linear-gradient(135deg,${p.c1},${p.c2});display:inline-block"></span><span class="sb-ct" style="font-size:15px">${p.label}</span><span class="sb-cn">${ownedN}/${avs.length} collected</span>${ownedN<avs.length?`<button data-act="buyPack" data-arg="${p.id}" style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:999px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12px">🎁 Open pack · ${coinAmt(packCost(p.id),11)}</button>`:''}</div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:9px">${tiles}</div></div>`; }).join('');
   } else if(tab==='worlds'){
     const rows=THEMES.map(t=>{ const on=t.id===S.theme; const un=isThemeUnlocked(t.id); const ev=EVO[t.id]||EVO.spellbound;
@@ -3168,11 +3202,13 @@ function viewLevelUp(){
         return `<div style="background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:11px 13px">${S.luMastered[nkey(w.w)]?'<span style="color:var(--good);font-weight:800;font-size:12px">✓ </span>':''}<span style="font-family:var(--display);font-weight:800;font-size:15px">${hide?'•••':esc(w.w)}</span><div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px">${esc(hide?maskTxt(w.d,w.w):w.d)}</div></div>`; }).join('')}</div>
     </div>`:'';
   let body;
-  if(S.luTab==='practice') body=trainerCard();
+  if(S.coachCardView) body=coachFlashCard();
+  else if(S.luTab==='practice') body=trainerCard();
   else body=wordFlash(lw, S.reviseIdx, 'reviseNav', { practise:true });
+  const cardsTab=`<button data-act="toggleCardView" title="Flip through the words as a card deck" style="flex:1;padding:9px 8px;border-radius:10px;font-weight:800;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:6px;${S.coachCardView?'background:var(--bg2);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.08)':'background:transparent;color:var(--muted)'}">${cardsSVG(14)} Cards</button>`;
   return `<div style="max-width:760px;margin:0 auto">${header}
-    <div style="display:flex;gap:6px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:16px">${tab('revise','Revise')}${tab('practice','Practice')}</div>
-    ${wordsPanel}${body}${liveHeatmap(lw, {anon:S.luTab==='practice'})}</div>`;
+    <div style="display:flex;gap:6px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:16px">${tab('revise','Revise')}${tab('practice','Practice')}${cardsTab}</div>
+    ${S.coachCardView?'':wordsPanel}${body}${liveHeatmap(lw, {anon:S.luTab==='practice'})}</div>`;
 }
 
 /* ===================== Parent analytics + offline tips engine (no AI) ===================== */
@@ -4319,13 +4355,14 @@ function coachTrain(){
       <div style="overflow-x:auto;padding:2px 0"><div style="min-width:760px">${evoLadderHTML(theme, fIdx)}</div></div>
     </div>`;
   const tab=(k,l)=>`<button data-act="luSetTab" data-arg="${k}" style="flex:1;padding:9px 8px;border-radius:10px;font-weight:800;font-size:13px;${S.luTab===k?'background:var(--bg2);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.08)':'background:transparent;color:var(--muted)'}">${l}</button>`;
-  const body = S.luTab==='practice' ? trainerCard() : wordFlash(ws, S.reviseIdx, 'reviseNav', {selfMark:true});
+  const body = S.coachCardView ? coachFlashCard() : (S.luTab==='practice' ? trainerCard() : wordFlash(ws, S.reviseIdx, 'reviseNav', {selfMark:true}));
+  const cardsTab=`<button data-act="toggleCardView" title="Flip through the words as a card deck" style="flex:1;padding:9px 8px;border-radius:10px;font-weight:800;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:6px;${S.coachCardView?'background:var(--bg2);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.08)':'background:transparent;color:var(--muted)'}">${cardsSVG(14)} Cards</button>`;
   const act=(a,ic,t,col)=>`<button data-act="${a}" class="sb-lift" style="display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:16px 10px;box-shadow:var(--sh-rest)">${iconTile(ic,col,{size:44,radius:13})}<span style="font-family:var(--display);font-weight:800;font-size:13.5px;color:${col};line-height:1.15">${t}</span></button>`;
   const actions=`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:18px 2px 10px">Quick practice</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:11px">${act('startBuzz','flame','Daily Buzz','#E8845C')}${act('startWritten','pencil','Written','#7C5CFF')}${act('startOral','speaker','Oral round','#13A892')}${act('coachSetupOpen','sliders','Setup','#C8901B')}</div>`;
   const journeyPromo = (key!=='journey' && (getList(c,'journey').stage||0)===0) ? `<button data-act="startJourney" style="width:100%;text-align:left;border-radius:14px;margin-top:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 4px 14px rgba(43,27,94,.16)"><div style="padding:13px 16px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">★ Recommended path</div><div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">The Bizzing Bee Journey — 20 Levels to Champ</div></div><span style="padding:8px 14px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Start →</span></div></button>` : '';
   return `<div style="max-width:760px;margin:0 auto">${printDlg}${topBar}
-    <div style="display:flex;gap:6px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:16px">${tab('revise','Learn')}${tab('practice','Practice')}</div>
+    <div style="display:flex;gap:6px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:16px">${tab('revise','Learn')}${tab('practice','Practice')}${cardsTab}</div>
     ${body}
     ${liveHeatmap(ws, {anon:S.luTab==='practice', print:true})}
     ${chipsRow}${allWordsPanel}
@@ -4978,11 +5015,12 @@ function viewShop(){ const S=state; const c=active(); ensureLists(c); const tab=
       return `<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column">
         <div style="background:linear-gradient(135deg,${p.c1},${p.c2});padding:13px 14px;display:flex;align-items:center;gap:8px">${preview}<span style="flex:1"></span><span style="font-weight:900;font-size:12px;color:rgba(255,255,255,.95);background:rgba(0,0,0,.22);border-radius:99px;padding:4px 10px">${ownedN}/${avs.length}</span></div>
         <div style="padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;flex:1">
-          <div style="font-family:var(--display);font-weight:800;font-size:15px">${p.label}</div>
+          <div style="display:flex;align-items:center;gap:8px"><span style="font-family:var(--display);font-weight:800;font-size:15px;flex:1">${p.label}</span>${full?'':`<button data-act="toggleOdds" data-arg="${p.id}" style="font-size:11.5px;font-weight:800;color:var(--accent);background:none;padding:2px 0;white-space:nowrap">🎲 ${S.oddsOpen===p.id?'Hide odds':'Drop odds'}</button>`}</div>
+          ${S.oddsOpen===p.id?oddsPanel(p.id,c):''}
           ${full?`<div style="font-weight:800;font-size:13px;color:var(--good);margin-top:auto">Complete ✓ — every avatar collected</div>`
-            :`<button data-act="buyPack" data-arg="${p.id}" style="margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px;border-radius:11px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:900;font-size:13.5px">🎁 Open a pack · ${coinAmt(150,13)}</button>`}
+            :`<button data-act="buyPack" data-arg="${p.id}" style="margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px;border-radius:11px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:900;font-size:13.5px">🎁 Open a pack · ${coinAmt(packCost(p.id),13)}</button>`}
         </div></div>`; }).join('');
-    body=`<p style="font-size:13px;color:var(--muted);margin:0 0 6px">Every pack drop is a surprise avatar you don't own yet — <b>62% rare · 30% epic · 8% legendary</b>. Duplicates never drop.</p>
+    body=`<p style="font-size:13px;color:var(--muted);margin:0 0 6px">Every pack drop is a surprise avatar you don't own yet — <b>62% rare · 30% epic · 8% legendary</b>. Each pack has its own price and its own odds — tap <b>🎲 Drop odds</b> to see every avatar's chance. Duplicates never drop.</p>
       <p style="font-size:12px;color:var(--muted);margin:0 0 14px">Change your mind? Sell spare avatars back for coins from <button data-act="setNav" data-arg="collection" style="color:var(--accent);font-weight:800;background:none;border:0;padding:0;cursor:pointer">your Collection</button>.</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px">${packs}</div>`;
   } else if(tab==='worlds'){
@@ -5038,19 +5076,31 @@ function viewShop(){ const S=state; const c=active(); ensureLists(c); const tab=
     <p style="margin:0 0 14px;color:var(--muted);font-size:13px">Spend the coins you earn from games, Word Coach &amp; Concepts.</p>
     <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">${tabBtn('avatars','crown','Avatars')}${tabBtn('worlds','palette','Worlds')}${tabBtn('power','spark','Artifacts')}${tabBtn('lists','book','Word lists')}${tabBtn('concepts','grid','Concepts')}</div>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px">${body}</div>
-    ${packDropOverlay()}
   </div>`; }
-/* Pack-drop reveal: modal card over the Store after opening a pack. */
+/* Themed "calculating your drop" reel — plays while the app rolls, then the card drops. */
+function packRollOverlay(){ const r=state.packRoll; if(!r) return '';
+  const P=SB_AVATARS.packs.find(p=>p.id===r.pk)||{label:'Pack'};
+  const pool=SB_AVATARS.list.filter(a=>a.pack===r.pk);
+  const strip=pool.concat(pool).map(a=>`<span>${SB_AVATAR(a.id,72,{dark:true})}</span>`).join('');
+  return `<div class="pk-ov" data-act="packSkip"><div class="pk-card" data-act="noop">
+      <div style="font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.16em;color:color-mix(in srgb,var(--accent) 55%,#fff)">${esc(String(P.label||'').toUpperCase())}</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:20px;color:#fff;margin-top:6px">Calculating your drop<span class="pk-dots"></span></div>
+      <div class="pk-reelwin"><div class="pk-reel">${strip}</div></div>
+      <div class="pk-scan"><i></i></div>
+      <div style="font-size:11.5px;color:rgba(255,255,255,.62);font-weight:650;margin-top:12px">Shuffling the ${esc(P.label)} — tap to reveal</div>
+    </div></div>`; }
+/* Pack-drop reveal: modal card over the Store after opening a pack — the won card drops in. */
 function packDropOverlay(){ const id=state.packDrop; if(!id) return '';
   const a=SB_AVATARS.byId[id]; if(!a) return ''; const R=SB_AVATARS.rarities[a.rarity]||{label:a.rarity,c:'#888'};
-  const leg=a.rarity==='legendary';
-  return `<div data-act="packClose" style="position:fixed;inset:0;background:rgba(20,14,40,.72);z-index:80;display:grid;place-items:center;padding:20px;animation:sb-pop .25s ease both">
-    <div data-act="noop" style="background:linear-gradient(160deg,#3A2F5C,#241A47);border:1px solid rgba(255,255,255,.2);border-radius:24px;padding:28px 34px;text-align:center;max-width:330px;width:100%;box-shadow:0 0 60px ${leg?'rgba(255,194,61,.45)':'rgba(233,225,255,.25)'}">
-      <div style="font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.16em;color:#C9BFEA;margin-bottom:12px">PACK OPENED</div>
-      <div style="width:150px;height:150px;margin:0 auto;animation:sb-pop .5s ease both">${SB_AVATAR(a.id,150,{dark:true})}</div>
+  const leg=a.rarity==='legendary'; const od=(typeof packOdds==='function')?packOdds(a.pack).find(o=>o.id===id):null;
+  return `<div data-act="packClose" class="pk-ov" style="z-index:83">
+    <div data-act="noop" style="position:relative;background:linear-gradient(160deg,color-mix(in srgb,var(--accent) 20%,#3A2F5C),#241A47);border:1px solid rgba(255,255,255,.2);border-radius:24px;padding:26px 30px 28px;text-align:center;max-width:330px;width:100%;box-shadow:0 0 64px ${leg?'rgba(255,194,61,.5)':'color-mix(in srgb,var(--accent) 40%,transparent)'}">
+      <div style="font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.16em;color:#C9BFEA;margin-bottom:10px">✨ YOU GOT</div>
+      <div class="pk-drop" style="width:150px;height:150px;margin:0 auto">${SB_AVATAR(a.id,150,{dark:true})}</div>
       <div style="display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:${R.c};border-radius:99px;padding:4px 12px;margin:14px 0 6px">${R.label}${leg?' ✦':''}</div>
       <div style="font-family:var(--display);color:#fff;font-weight:800;font-size:22px">${esc(a.name)}</div>
-      <div style="display:flex;gap:9px;justify-content:center;margin-top:20px">
+      ${od?`<div style="font-size:11.5px;color:#C9BFEA;font-weight:700;margin-top:6px">🎲 ${oddsPct(od.pct)}% drop chance — nice roll!</div>`:''}
+      <div style="display:flex;gap:9px;justify-content:center;margin-top:18px">
         <button data-act="packWear" style="padding:12px 22px;border-radius:99px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px;box-shadow:0 4px 0 #C8891B">Wear now</button>
         <button data-act="packClose" style="padding:12px 18px;border-radius:99px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#E9E1FF;font-weight:800;font-size:13px">Keep it</button>
       </div>
@@ -5196,7 +5246,7 @@ function fullListOverlay(){ const S=state; if(!S.listView) return '';
     </div></div>`;
 }
 function overlays(){
-  const S=state; let h=''; h+=fullListOverlay();
+  const S=state; let h=''; h+=fullListOverlay(); h+=packRollOverlay(); h+=packDropOverlay();
   if(S.showPaywall){
     const perks=['4 worlds unlocked (2 more than free)','Spelling Basics free + half of all 121 concepts unlocked','Level up past Level 5 on every list','Premium word lists + full library','Earn 🪙 coins to unlock everything else']
       .map(p=>`<div style="display:flex;align-items:center;gap:11px;font-size:15px;font-weight:600"><span style="width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:13px;flex-shrink:0">✓</span>${p}</div>`).join('');
