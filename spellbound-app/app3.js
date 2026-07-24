@@ -3258,7 +3258,7 @@ function printCards(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1
   const cardAv=(word)=>{ if(!AVL.length) return ''; let h=0; const s=String(word); for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0; const id=AVL[h%AVL.length].id; try{ return avatarSVG(id,46); }catch(e){ return ''; } };
   const front=(w)=>{ const pron=w.p||w.sy||''; const cc=LC(w.y); const meta=[pron?esc(pron):'',w.ps?esc(w.ps):''].filter(Boolean).join(' · '); const av=cardAv(w.w);
     return `<div class="card front" style="--c1:${cc[0]};--c2:${cc[1]}">
-      <div class="fbanner"><span class="cbox"></span><div class="fw">${esc(w.w)}</div>${meta?`<div class="fmeta">${meta}</div>`:''}<span class="flvl">★ Level ${w.y||3}</span></div>
+      <div class="fbanner"><span class="cbox"></span><div class="fw">${esc(w.w)}</div>${meta?`<div class="fmeta">${meta}</div>`:''}</div>
       <div class="fbody">
         ${w.d?`<div class="frow"><span class="ic">📖</span><div class="ftx"><b>Meaning</b>${esc(w.d)}</div></div>`:''}
         ${w.s?`<div class="frow"><span class="ic">💬</span><div class="ftx"><b>In a sentence</b>${esc(w.s)}</div></div>`:''}
@@ -3282,7 +3282,7 @@ function printCards(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1
     const order=[1,0,3,2].filter(x=>x<chunk.length); const bset=order.map(x=>chunk[x]).filter(Boolean);
     pages+='<div class="page">'+bset.map(back).join('')+'</div>'; }
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(label)} — Bizzing Bee flashcards</title><style>
-    @page{size:${sizes[p.page]||'letter'};margin:8mm} *{box-sizing:border-box;margin:0;padding:0}
+    @page{size:${sizes[p.page]||'letter'} portrait;margin:8mm} *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Trebuchet MS','Segoe UI',Verdana,sans-serif;color:#241E33}
     .page{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:7mm;min-height:272mm;page-break-after:always}
     .card{border:2.5px solid var(--c1);border-radius:18px;overflow:hidden;position:relative;display:flex;flex-direction:column;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -3291,7 +3291,6 @@ function printCards(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1
     .fw{font-size:38px;font-weight:800;line-height:1;letter-spacing:.005em;overflow-wrap:anywhere;text-shadow:0 1.5px 3px rgba(0,0,0,.18);padding-right:36px}
     .fmeta{font-size:14px;font-style:italic;opacity:.96;margin-top:5px}
     .cbox{position:absolute;top:14px;right:15px;width:30px;height:30px;border:3px solid #fff;border-radius:7px;background:rgba(255,255,255,.2)}
-    .flvl{position:absolute;bottom:-14px;left:18px;background:#FFCF3F;color:#6b4a00;font-weight:800;font-size:13px;padding:6px 14px;border-radius:999px;box-shadow:0 3px 7px rgba(0,0,0,.22);border:2.5px solid #fff}
     /* front body */
     .fbody{padding:20px 18px 14px;display:flex;flex-direction:column;flex:1}
     .frow{display:flex;gap:10px;font-size:15px;line-height:1.42;color:#2a2740;margin-bottom:11px}
@@ -3345,7 +3344,7 @@ function printAvCardsDoc(){ const c=active(); const owned=SB_AVATARS.list.filter
     pages+='<div class="page">'+chunk.map(front).join('')+'</div>';
     const order=[1,0,3,2].filter(x=>x<chunk.length); pages+='<div class="page">'+order.map(x=>chunk[x]).filter(Boolean).map(back).join('')+'</div>'; }
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>My avatar cards — Bizzing Bee</title><style>
-    @page{size:letter;margin:8mm} *{box-sizing:border-box;margin:0;padding:0}
+    @page{size:letter portrait;margin:8mm} *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Trebuchet MS','Segoe UI',Verdana,sans-serif;color:#241E33}
     .page{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:7mm;min-height:272mm;page-break-after:always}
     .card{border:2.5px solid var(--rc,var(--c1));border-radius:18px;overflow:hidden;position:relative;display:flex;flex-direction:column;background:linear-gradient(165deg,color-mix(in srgb,var(--c1) 22%,#fff),#fff 46%);-webkit-print-color-adjust:exact;print-color-adjust:exact}
