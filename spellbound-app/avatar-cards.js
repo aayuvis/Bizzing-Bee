@@ -50,7 +50,8 @@
     villains:  ['So… you dare to spell against me, {name}? How bold.', '{name}. We meet across the board. Spell, if you can.', 'Every word you spell, {name}, I shall try to unwrite.'],
     serpent:   ['Ssslither over here, {name} — let’s ssspell!', '{name} and me, coiled and ready. Ssstrike true!', 'One letter at a time, {name} — sssmooth and sssteady wins.'],
     bigbeasts: ['The biggest of all time says hi, {name}! Ready to spell BIG?', 'Small word, giant heart — let’s go, {name}!', '{name}, even the largest beasts learned one letter at a time.'],
-    worldchangers: ['Great ideas start with a curious question, {name}. What will you learn today?', 'Every expert was once a beginner, {name}. Keep going!', 'You don’t have to be a genius to change the world, {name} — just never stop trying.']
+    worldchangers: ['Great ideas start with a curious question, {name}. What will you learn today?', 'Every expert was once a beginner, {name}. Keep going!', 'You don’t have to be a genius to change the world, {name} — just never stop trying.'],
+    gods: ['From the Pantheon Peaks I watch you rise, {name}. Spell like a legend!', 'Myths are made of words, {name} — go write your own.', 'Even the gods learned one word at a time, {name}. Begin!']
   };
   // pack persona → title suffix pool
   var PACK_TITLE = {
@@ -58,7 +59,8 @@
     lab:'of the Lab', arcade:'of the Arcade', origami:'of the Fold', elements:'of the Elements',
     critter:'of the Wild Pond', vibe:'of Good Vibes', dino:'of the Ancient World', enchanted:'of the Enchanted Wood',
     wildhearts:'of the Wildhearts', legends:'of Legend', turbo:'of the Speedway', villains:'of the Unspelling',
-    serpent:'of the Serpent Pack', bigbeasts:'of the Colossal Ages', worldchangers:'of the Hall of Bright Ideas'
+    serpent:'of the Serpent Pack', bigbeasts:'of the Colossal Ages', worldchangers:'of the Hall of Bright Ideas',
+    gods:'of the Pantheon Peaks'
   };
   var RANK = { free:'Rookie', rare:'Speller', epic:'Champion', legendary:'Grandmaster' };
 
@@ -273,7 +275,19 @@
     aryabhatta:{lore:'The ancient Indian stargazer who helped give the world zero.',fact:'Over 1,500 years ago Aryabhatta used a place-value system with zero and worked out that the Earth spins on its axis.'},
     qinshihuang:{lore:'The first emperor who united China and built wonders.',fact:'Qin Shi Huang became China’s first emperor and was buried with an army of about 8,000 life-size terracotta soldiers.'},
     buddha:{lore:'The awakened teacher of kindness, calm and wisdom.',fact:'“Buddha” means “the awakened one” — Siddhartha Gautama taught that kindness and a calm mind lead to true happiness.'},
-    einstein:{lore:'The wild-haired genius who reimagined space, time and light.',fact:'Albert Einstein’s equation E=mc² shows that a tiny amount of matter holds an enormous amount of energy.'}
+    einstein:{lore:'The wild-haired genius who reimagined space, time and light.',fact:'Albert Einstein’s equation E=mc² shows that a tiny amount of matter holds an enormous amount of energy.'},
+    // ---- GODS (myth-framed — every fact is “myth says…” or a true, kid-checkable echo of the myth) ----
+    thor:{lore:'Thunder in a good mood — swings first, spells later.',fact:'Thursday is literally Thor’s day — you say his name every week.'},
+    zeus:{lore:'King of Olympus, who grades every storm personally.',fact:'Mount Olympus is a real mountain in Greece — the tallest one.'},
+    poseidon:{lore:'Moody as the sea and twice as deep.',fact:'Myth says his trident could stir storms, calm the seas, and split rock into fresh-water springs.'},
+    ra:{lore:'The falcon-headed sun, who sails the sky by day.',fact:'Ancient Egyptians saw every sunrise as Ra’s boat setting sail across the heavens.'},
+    athena:{lore:'Born ready — in full armour. Strategy before spelling, always.',fact:'The city of Athens is named after her, and her owl still stands for “wisdom” today.'},
+    rama:{lore:'The hero-prince who keeps every promise; his aim never misses.',fact:'Rama is the hero of the Ramayana — an epic poem of about 24,000 verses.'},
+    hades:{lore:'Ruler of the quietest kingdom below — and great with dogs.',fact:'Myth says his three-headed dog Cerberus guards the gate — a very good boy, three times over.'},
+    odin:{lore:'Traded an eye for wisdom; his ravens read over your shoulder.',fact:'His ravens Huginn and Muninn mean “Thought” and “Memory” — and Wednesday is Odin’s day.'},
+    anubis:{lore:'The gentle guide with a jackal’s head, who weighs every heart kindly.',fact:'Egyptians pictured him weighing a person’s heart against a single feather of truth.'},
+    krishna:{lore:'Plays a flute so sweet the rivers stop to listen — the wisest smile in any world.',fact:'Krishna is the speaker of the Bhagavad Gita — and, as a child, famously loved butter.'},
+    shiva:{lore:'Stillness and storm in one being, meditating between cosmic dances.',fact:'Myth says his dance, the Tandava, sets the rhythm of the whole universe.'}
   };
 
   // fallback pool if an id somehow lacks authored lore

@@ -26,6 +26,7 @@
     { id:'serpent', label:'Serpent Pack',  world:'blade',      c1:'#2E8F5B', c2:'#B6E34D' },
     { id:'bigbeasts',label:'Big Beasts Pack',world:'lab',      c1:'#5E7F9E', c2:'#A4C4E0' },
     { id:'worldchangers',label:'World Changers Pack',world:'library', c1:'#B8862E', c2:'#E7D4A0' },
+    { id:'gods',   label:'Gods Pack',    world:'galaxy',     c1:'#C9A23A', c2:'#8FB8E8' },
   ];
   // shared drawing kit — every avatar is a 120x120 squircle character
   const SQ = (fill, extra) => `<rect x="10" y="14" width="100" height="96" rx="30" fill="${fill}"${extra||''}/>`;
@@ -201,6 +202,7 @@
     ['noodle','Noodle','serpent','free'],['sunny','Sunny','serpent','free'],['cobra','King Cobra','serpent','rare'],['python','Python','serpent','rare'],['rattler','Rattles','serpent','rare'],['viper','Viper','serpent','rare'],['boa','Boa','serpent','epic'],['mamba','Mamba','serpent','epic'],['seasnake','Sea Serpent','serpent','epic'],['naga','Naga','serpent','legendary'],
     ['mammoth','Mammoth','bigbeasts','free'],['titanoboa','Titanoboa','bigbeasts','rare'],['megalodon','Megalodon','bigbeasts','rare'],['argentavis','Argentavis','bigbeasts','rare'],['megatherium','Megatherium','bigbeasts','rare'],['vasuki','Vasuki','bigbeasts','epic'],['livyatan','Livyatan','bigbeasts','epic'],['gigantopithecus','Gigantopithecus','bigbeasts','epic'],['dunkleo','Dunkleosteus','bigbeasts','epic'],['bluewhale','Blue Whale','bigbeasts','legendary'],
     ['newton','Isaac Newton','worldchangers','free'],['curie','Marie Curie','worldchangers','rare'],['mlk','Martin Luther King Jr.','worldchangers','rare'],['gandhi','Mahatma Gandhi','worldchangers','rare'],['gutenberg','Johannes Gutenberg','worldchangers','rare'],['nightingale','Florence Nightingale','worldchangers','epic'],['aryabhatta','Aryabhatta','worldchangers','epic'],['qinshihuang','Qin Shi Huang','worldchangers','epic'],['buddha','Buddha','worldchangers','epic'],['einstein','Albert Einstein','worldchangers','legendary'],
+    ['thor','Thor','gods','free'],['zeus','Zeus','gods','rare'],['poseidon','Poseidon','gods','rare'],['ra','Ra','gods','rare'],['athena','Athena','gods','rare'],['rama','Rama','gods','epic'],['hades','Hades','gods','epic'],['odin','Odin','gods','epic'],['anubis','Anubis','gods','epic'],['krishna','Krishna','gods','legendary'],['shiva','Shiva','gods','legendary'],
   ].map(([id,name,pack,rarity])=>({ id, name, pack, rarity, price:RAR[rarity].price, sell:RAR[rarity].sell }));
   window.SB_AVATARS = { list:AV, packs:PACKS, rarities:RAR, byId:Object.fromEntries(AV.map(a=>[a.id,a])) };
 
@@ -209,7 +211,7 @@
     hive:'#7A4A08', dino:'#2B4A1E', cosmos:'#1E2A5C', stage:'#5C3A08', dojo:'#6E1F30',
     lab:'#0F3A34', arcade:'#12234A', origami:'#6E3418', elements:'#123A52',
     critter:'#5C2A10', vibe:'#2E1B52', enchanted:'#44205C', wildhearts:'#5C1F38',
-    legends:'#14402A', turbo:'#5A1410', villains:'#2A1620', serpent:'#154A32', bigbeasts:'#2E455C', worldchangers:'#4A3A16'
+    legends:'#14402A', turbo:'#5A1410', villains:'#2A1620', serpent:'#154A32', bigbeasts:'#2E455C', worldchangers:'#4A3A16', gods:'#2A2440'
   };
   window.SB_AVATAR_INK = id => INK[(window.SB_AVATARS.byId[id]||{}).pack] || '#3A2A5C';
 
