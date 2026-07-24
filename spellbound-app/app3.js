@@ -2401,15 +2401,14 @@ function myAvatar(size){ const c=active(); return avatarSVG(c.avatar||'bee', siz
 // Per-pack economy: price scales with the pack's contents (legendaries cost most), so every
 // pack costs something different. Drop weights are shared; odds are shown to kids per avatar.
 const PACK_WEIGHTS = { rare:.62, epic:.30, legendary:.08 };
-function packCost(pk){ if(pk==='hive') return 50;   // the starter bee pack is the cheap on-ramp
-  if(pk==='gods') return 400;                        // the premium legendary pack tops the range
-  const avs=SB_AVATARS.list.filter(a=>a.pack===pk);
+// Curated per-pack prices (cheap starter → premium legendary packs).
+const PACK_COST = { hive:50, stage:100, cosmos:150, dojo:175, lab:200, arcade:200, origami:200,
+  elements:200, critter:300, vibe:300, dino:300, enchanted:300, wildhearts:300, legends:350,
+  turbo:350, villains:400, serpent:400, bigbeasts:450, worldchangers:450, gods:500 };
+function packCost(pk){ if(PACK_COST[pk]!=null) return PACK_COST[pk];
+  const avs=SB_AVATARS.list.filter(a=>a.pack===pk);   // fallback for any future pack
   const legs=avs.filter(a=>a.rarity==='legendary').length, epics=avs.filter(a=>a.rarity==='epic').length, rares=avs.filter(a=>a.rarity==='rare').length;
-  // legendaries dominate the price; a deterministic per-pack spread keeps every pack a
-  // distinct number (many packs share the same rarity mix, so they'd otherwise tie).
-  let h=0; for(let i=0;i<pk.length;i++) h=(h*31+pk.charCodeAt(i))>>>0;
-  const c = 70 + legs*80 + epics*28 + rares*10 + (h%15)*5;
-  return Math.max(60, Math.min(390, Math.round(c/5)*5)); }
+  return Math.max(60, Math.round((70 + legs*80 + epics*28 + rares*10)/5)*5); }
 function packOdds(pk){ const avs=SB_AVATARS.list.filter(a=>a.pack===pk);
   const tiers=['rare','epic','legendary'].filter(t=>avs.some(a=>a.rarity===t));
   const sum=tiers.reduce((s,t)=>s+PACK_WEIGHTS[t],0)||1; const out=[];
