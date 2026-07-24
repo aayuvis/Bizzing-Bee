@@ -198,6 +198,22 @@
   --mastered-tint:#2C4C42; --fix-tint:#553434;
   --surface: rgb(255 255 255 / .06); --surface2: rgb(255 255 255 / .10);
 }
+/* Per-world DARK palettes — each world's dusk background is tinted toward its own hue,
+   so night mode feels different in every world (not one shared indigo). White ink stays. */
+[data-theme="spellbound"][data-mode="dusk"] { --tint:#2E2750; --tint-deep:#251F42; --paper:#39325E; --line:#4B4278; }
+[data-theme="spotlight"][data-mode="dusk"],
+[data-theme="marquee"][data-mode="dusk"]   { --tint:#3A3122; --tint-deep:#2E271A; --paper:#473C29; --line:#5C4F37; }
+[data-theme="galaxy"][data-mode="dusk"],
+[data-theme="aurora"][data-mode="dusk"]     { --tint:#232A50; --tint-deep:#1C2142; --paper:#2E3663; --line:#3E477B; }
+[data-theme="blade"][data-mode="dusk"],
+[data-theme="anime"][data-mode="dusk"]      { --tint:#3A2431; --tint-deep:#2E1C26; --paper:#48303D; --line:#5C3F4D; }
+[data-theme="lab"][data-mode="dusk"],
+[data-theme="science"][data-mode="dusk"]    { --tint:#1E3A34; --tint-deep:#182E29; --paper:#274A42; --line:#355D53; }
+[data-theme="origami"][data-mode="dusk"]    { --tint:#3A2A20; --tint-deep:#2E2119; --paper:#483729; --line:#5B4737; }
+[data-theme="arcade"][data-mode="dusk"],
+[data-theme="pixel"][data-mode="dusk"]      { --tint:#222C4F; --tint-deep:#1B2340; --paper:#2E3862; --line:#3E4977; }
+[data-theme="elements"][data-mode="dusk"],
+[data-theme="avatar"][data-mode="dusk"]     { --tint:#1F333E; --tint-deep:#192A33; --paper:#294450; --line:#375763; }
 
 /* ---- page character: a soft world-accent wash over the motif (all modes) ---- */
 [data-theme]::after{ content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
