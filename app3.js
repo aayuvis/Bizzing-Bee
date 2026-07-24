@@ -911,7 +911,8 @@ const app = {
       if(inc[v]&&on<=1){ flash('Keep at least one thing on the page'); return; } inc[v]=inc[v]?0:1; }
     else state.prn[g]=v; render(); },
   printGo:()=>{ try{ const w=window.open('','_blank'); if(!w){ flash('Pop-up blocked — allow pop-ups to print'); return; }
-    w.document.write(printDoc(activeListKey())); w.document.close(); setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} },350); state.printOpen=false; render(); }catch(e){ flash('Could not open the print view'); } },
+    const key=activeListKey(); const cards=(state.prn&&state.prn.fmt==='cards');
+    w.document.write(cards?printCards(key):printDoc(key)); w.document.close(); setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} },350); state.printOpen=false; render(); }catch(e){ flash('Could not open the print view'); } },
   addTheme:(id)=>{ const c=active(); ensureLists(c); const key=themeKey(id); const t=themeOf(id); if(!t) return;
     if(!(c.pinnedLists||{})[key]){ if(!c.pinnedLists) c.pinnedLists={}; c.pinnedLists[key]=1; if(!c.lists[key]) c.lists[key]={xp:0}; save(); sfx('coin'); flash('“'+t.label+'” added to your lists ✓'); render(); }
     else app.selectList(key); },
@@ -3238,6 +3239,81 @@ function printDoc(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1,p
     <div class="grid">${rows}</div>
     <div class="foot">${inc.w?'Say it → spell it → say it again. 🐝':'Read the clue, write the word — check together afterwards. 🐝'}</div>
   </body></html>`; }
+// Printable flashcards — one word per card (front = full detail + checkbox + note lines,
+// back = Bizzing Bee honeycomb backdrop with the word's level). 4 cards/page, backs mirrored
+// per row so they line up behind the fronts when duplex-printed.
+function printCards(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1,p:1,d:1},page:'letter',scope:'level',sort:'level',size:'normal'};
+  const scope=p.scope||'level', sort=p.sort||'level'; const c=active();
+  let words=(scope==='level'?listWords(key):listFullWords(key)).filter(w=>w&&w.w);
+  if(sort==='alpha') words=words.slice().sort((a,b)=>a.w.localeCompare(b.w));
+  else if(sort==='diff') words=words.slice().sort((a,b)=>((a.y||3)-(b.y||3))||((a.bp||0)-(b.bp||0))||a.w.localeCompare(b.w));
+  const CAP=400; const total=words.length; if(words.length>CAP) words=words.slice(0,CAP);
+  const label=listLabel(key).split(' · ')[0]; const sizes={letter:'letter',a4:'A4',a5:'A5'};
+  const LC=(y)=>{ y=y||3; return y<=1?['#35B6E8','#1E8FC4']:y===2?['#6C7CF0','#4F5CD8']:y===3?['#9B5CF0','#7C3FD8']:y===4?['#E45CB0','#C43A92']:y===5?['#F0913C','#D4711C']:['#E8503E','#C43222']; };
+  // a different avatar per card, picked deterministically from the word so it's stable
+  const AVL=(window.SB_AVATARS&&SB_AVATARS.list)||[];
+  const cardAv=(word)=>{ if(!AVL.length) return ''; let h=0; const s=String(word); for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0; const id=AVL[h%AVL.length].id; try{ return avatarSVG(id,46); }catch(e){ return ''; } };
+  const front=(w)=>{ const pron=w.p||w.sy||''; const cc=LC(w.y); const meta=[pron?esc(pron):'',w.ps?esc(w.ps):''].filter(Boolean).join(' · '); const av=cardAv(w.w);
+    return `<div class="card front" style="--c1:${cc[0]};--c2:${cc[1]}">
+      <div class="fbanner"><span class="cbox"></span><div class="fw">${esc(w.w)}</div>${meta?`<div class="fmeta">${meta}</div>`:''}<span class="flvl">★ Level ${w.y||3}</span></div>
+      <div class="fbody">
+        ${w.d?`<div class="frow"><span class="ic">📖</span><div class="ftx"><b>Meaning</b>${esc(w.d)}</div></div>`:''}
+        ${w.s?`<div class="frow"><span class="ic">💬</span><div class="ftx"><b>In a sentence</b>${esc(w.s)}</div></div>`:''}
+        ${w.o?`<div class="frow"><span class="ic">🌍</span><div class="ftx"><b>Origin</b>${esc(w.o)}${w.r?('. '+esc(w.r)):''}</div></div>`:''}
+        ${w.h?`<div class="fhint"><span class="ic">💡</span><div><b>Memory trick</b>${esc(w.h)}</div></div>`:''}
+        ${w.m?`<div class="fmis">⚠️ Often misspelled “${esc(w.m)}”</div>`:''}
+        <div class="fnotes"><span class="nlab">✏️ My notes</span><span class="nl"></span><span class="nl"></span></div>
+      </div>${av?`<div class="favatar">${av}</div>`:''}</div>`; };
+  const bizzy=(typeof mascotSVG==='function')?mascotSVG('happy'):'🐝';
+  const conf=[[24,40,'#FFD34D',0],[172,50,'#fff',18],[40,210,'#FF7DB0',-12],[182,206,'#FFD34D',24],[100,26,'#8CE0FF',10],[16,140,'#fff',-20],[196,150,'#FFD34D',14],[120,232,'#8CE0FF',-8],[60,120,'#fff',30]]
+    .map(c=>`<rect x="${c[0]}" y="${c[1]}" width="7" height="11" rx="2" fill="${c[2]}" opacity=".85" transform="rotate(${c[3]} ${c[0]} ${c[1]})"/>`).join('');
+  const back=(w)=>{ const cc=LC(w.y); return `<div class="card back" style="--c1:${cc[0]};--c2:${cc[1]}">
+      <div class="bsun"></div>
+      <svg class="bdeco" viewBox="0 0 200 260" preserveAspectRatio="xMidYMid slice">${conf}</svg>
+      <span class="bspark s1">✨</span><span class="bspark s2">⭐</span>
+      <div class="bmid"><div class="bmascot">${bizzy}</div><div class="btitle"><i>Bizzing</i> Bee</div>
+      <div class="blvl">★ Level ${w.y||3}</div><div class="bword">${esc(w.w)}</div></div></div>`; };
+  let pages=''; for(let i=0;i<words.length;i+=4){ const chunk=words.slice(i,i+4);
+    pages+='<div class="page">'+chunk.map(front).join('')+'</div>';
+    // backs: mirror columns per row (0,1,2,3 -> 1,0,3,2) for duplex alignment
+    const order=[1,0,3,2].filter(x=>x<chunk.length); const bset=order.map(x=>chunk[x]).filter(Boolean);
+    pages+='<div class="page">'+bset.map(back).join('')+'</div>'; }
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(label)} — Bizzing Bee flashcards</title><style>
+    @page{size:${sizes[p.page]||'letter'};margin:8mm} *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Trebuchet MS','Segoe UI',Verdana,sans-serif;color:#241E33}
+    .page{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:7mm;min-height:272mm;page-break-after:always}
+    .card{border:2.5px solid var(--c1);border-radius:18px;overflow:hidden;position:relative;display:flex;flex-direction:column;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    /* front banner */
+    .fbanner{background:linear-gradient(135deg,var(--c1),var(--c2));color:#fff;padding:15px 18px 15px;position:relative}
+    .fw{font-size:38px;font-weight:800;line-height:1;letter-spacing:.005em;overflow-wrap:anywhere;text-shadow:0 1.5px 3px rgba(0,0,0,.18);padding-right:36px}
+    .fmeta{font-size:14px;font-style:italic;opacity:.96;margin-top:5px}
+    .cbox{position:absolute;top:14px;right:15px;width:30px;height:30px;border:3px solid #fff;border-radius:7px;background:rgba(255,255,255,.2)}
+    .flvl{position:absolute;bottom:-14px;left:18px;background:#FFCF3F;color:#6b4a00;font-weight:800;font-size:13px;padding:6px 14px;border-radius:999px;box-shadow:0 3px 7px rgba(0,0,0,.22);border:2.5px solid #fff}
+    /* front body */
+    .fbody{padding:20px 18px 14px;display:flex;flex-direction:column;flex:1}
+    .frow{display:flex;gap:10px;font-size:15px;line-height:1.42;color:#2a2740;margin-bottom:11px}
+    .frow .ic{font-size:19px;flex-shrink:0;line-height:1.2}
+    .ftx b,.fhint b{display:block;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--c1);font-weight:800;margin-bottom:2px}
+    .fhint{display:flex;gap:10px;font-size:14.5px;line-height:1.4;color:#1f6b41;background:#edf8f0;border:1.5px solid #bfe6cc;border-radius:12px;padding:10px 12px;margin-bottom:11px}
+    .fmis{font-size:13px;color:#b23a4e;font-weight:700;margin-bottom:11px}
+    .fnotes{margin-top:auto;padding-top:10px;padding-right:56px;border-top:2.5px dotted color-mix(in srgb,var(--c1) 45%,#fff)}
+    .nlab{font-size:12px;font-weight:800;color:var(--c1)}
+    .nl{display:block;border-bottom:1.6px solid #d8d0ea;height:19px;margin-top:11px}
+    .favatar{position:absolute;bottom:12px;right:12px;width:54px;height:54px;border-radius:50%;background:color-mix(in srgb,var(--c1) 14%,#fff);border:2.5px solid var(--c1);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 7px rgba(0,0,0,.15)}
+    .favatar svg{width:44px;height:44px}
+    /* back — fun sunburst + confetti backdrop with Bizzy the mascot */
+    .back{background:radial-gradient(130% 100% at 50% 8%,color-mix(in srgb,var(--c1) 78%,#fff),var(--c2));color:#fff;align-items:center;justify-content:center;text-align:center;border-color:var(--c2)}
+    .bsun{position:absolute;inset:0;background:repeating-conic-gradient(from 0deg at 50% 40%,rgba(255,255,255,.10) 0deg 7deg,transparent 7deg 14deg)}
+    .bdeco{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+    .bspark{position:absolute;z-index:1;font-size:24px;opacity:.9}
+    .bspark.s1{top:16px;left:18px} .bspark.s2{top:22px;right:20px;font-size:19px} .bspark.s3{bottom:20px;left:20px;font-size:22px} .bspark.s4{bottom:24px;right:22px;font-size:18px}
+    .bmid{position:relative;z-index:2}
+    .bmascot{width:128px;height:140px;margin:0 auto 6px;filter:drop-shadow(0 5px 10px rgba(0,0,0,.28))}
+    .bmascot svg{width:100%;height:100%;display:block}
+    .btitle{font-size:31px;font-weight:800;margin:2px 0 15px;text-shadow:0 2px 6px rgba(0,0,0,.28)} .btitle i{font-style:italic}
+    .blvl{display:inline-block;font-weight:800;font-size:18px;letter-spacing:.02em;background:#FFCF3F;color:#6b4a00;border:3px solid #fff;border-radius:999px;padding:8px 22px;box-shadow:0 4px 10px rgba(0,0,0,.28)}
+    .bword{margin-top:16px;font-size:17px;color:rgba(255,255,255,.85);letter-spacing:.08em;font-weight:800;text-transform:lowercase}
+  </style></head><body>${pages}</body></html>`; }
 // Lists the child has activated: the 3 core lists + everything they pinned + whatever is being trained now.
 function activatedListKeys(){ const c=active(); ensureLists(c);
   const keys=['journey','review','missed', ...Object.keys(c.pinnedLists||{}).filter(k=>(c.pinnedLists||{})[k])];
@@ -4051,17 +4127,22 @@ function coachTrain(){
     const pbtn=(g,v,l)=>`<button data-act="printSet" data-arg="${g}:${v}" style="padding:9px 13px;border-radius:10px;font-weight:800;font-size:12px;border:1px solid ${p[g]===v?'var(--accent)':'var(--line)'};${p[g]===v?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">${l}</button>`;
     const tbtn=(v,l)=>`<button data-act="printSet" data-arg="inc:${v}" style="padding:9px 13px;border-radius:10px;font-weight:800;font-size:12px;border:1px solid ${p.inc[v]?'var(--accent)':'var(--line)'};${p.inc[v]?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">${p.inc[v]?'✓ ':''}${l}</button>`;
     const prow=(t,btns)=>`<div style="margin-bottom:13px"><div style="font-size:12px;color:var(--muted);font-weight:800;margin-bottom:7px">${t}</div><div style="display:flex;gap:6px;flex-wrap:wrap">${btns}</div></div>`;
+    const fmt=p.fmt==='cards'?'cards':'list';
     const nWords=(p.scope==='level'?listWords(key):listFullWords(key)).length;
+    const CARDCAP=400; const nCards=Math.min(nWords,CARDCAP);
     return `<div style="position:fixed;inset:0;z-index:90;background:rgba(20,12,50,.45);display:grid;place-items:center;padding:18px" data-act="printClose">
-      <div data-act="noop" style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:22px;max-width:430px;width:100%;box-shadow:var(--sh-overlay);cursor:default">
-        <div style="display:flex;align-items:center;gap:9px;margin-bottom:4px"><span style="display:inline-flex;color:var(--action)">${SB_ICON('printer',{size:20})}</span><span style="font-family:var(--display);font-weight:800;font-size:17px">Print word list</span><button data-act="printClose" style="margin-left:auto;color:var(--muted);font-weight:800">✕</button></div>
+      <div data-act="noop" style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:22px;max-width:430px;width:100%;box-shadow:var(--sh-overlay);cursor:default;max-height:90vh;overflow:auto">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:4px"><span style="display:inline-flex;color:var(--action)">${SB_ICON('printer',{size:20})}</span><span style="font-family:var(--display);font-weight:800;font-size:17px">Print</span><button data-act="printClose" style="margin-left:auto;color:var(--muted);font-weight:800">✕</button></div>
         <p style="font-size:12px;color:var(--muted);margin:0 0 15px">${esc(listLabel(key).split(' · ')[0])} — opens a clean page you can print or save as PDF.</p>
-        ${prow('What to include — pick one, two or three',[tbtn('w','Words'),tbtn('p','Pronunciations'),tbtn('d','Meanings')].join('')+(p.inc.w?'':'<div style="flex-basis:100%;font-size:11.5px;color:var(--muted);font-weight:650;margin-top:2px">No words = a quiz sheet — each row gets a blank line to write on.</div>'))}
+        ${prow('Format',[['list','📄 Word list'],['cards','🃏 Flashcards']].map(([v,l])=>pbtn('fmt',v,l)).join(''))}
+        ${fmt==='cards'
+          ? `<div style="font-size:11.5px;color:var(--muted);font-weight:650;line-height:1.5;background:var(--surface2);border-radius:10px;padding:10px 12px;margin-bottom:13px">One word per card with its meaning, sentence, origin & hint, a ✓ box and note lines. The back has a Bizzing Bee design with the word's level — print double-sided to get fronts &amp; backs, then cut out. 4 cards per page.</div>`
+          : prow('What to include — pick one, two or three',[tbtn('w','Words'),tbtn('p','Pronunciations'),tbtn('d','Meanings')].join('')+(p.inc.w?'':'<div style="flex-basis:100%;font-size:11.5px;color:var(--muted);font-weight:650;margin-top:2px">No words = a quiz sheet — each row gets a blank line to write on.</div>'))}
         ${prow('Sort by',[['level','Level order'],['alpha','A → Z'],['diff','Easiest → hardest']].map(([v,l])=>pbtn('sort',v,l)).join(''))}
-        ${prow('Text size',[['normal','Normal'],['compact','Compact — less paper']].map(([v,l])=>pbtn('size',v,l)).join(''))}
+        ${fmt==='cards'?'':prow('Text size',[['normal','Normal'],['compact','Compact — less paper']].map(([v,l])=>pbtn('size',v,l)).join(''))}
         ${prow('Page size',[['letter','Letter'],['a4','A4'],['a5','A5']].map(([v,l])=>pbtn('page',v,l)).join(''))}
         ${prow('What scope',[['level','Words in play · '+listWords(key).length],['all','Entire word list · '+listFullWords(key).length]].map(([v,l])=>pbtn('scope',v,l)).join(''))}
-        <button data-act="printGo" style="width:100%;padding:13px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Print ${nWords} words →</button>
+        <button data-act="printGo" style="width:100%;padding:13px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${fmt==='cards'?('Print '+nCards+' flashcard'+(nCards===1?'':'s')+' 🃏'):('Print '+nWords+' words →')}</button>
       </div></div>`; })() : '';
   // ---- one Level header (Word→Set→Level→Champ→Library) ----
   const levelHeadline = isJourney
