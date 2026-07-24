@@ -813,25 +813,37 @@ const app = {
     if(i>=0){ state.luTab='revise'; state.reviseIdx=i; try{window.scrollTo(0,0);}catch(e){} render(); } else { say(w); } },
   toggleSent:()=>{ const on=!state.showSent; if(on){ const w=curWord(); if(w&&w.s) sayMasked(w.s,w.w); } set({showSent:on}); },
   toggleOrigin:()=>set({showOrigin:!state.showOrigin}),
-  luSetTab:(t)=>{ if(t==='vocab' && !state.vp) app.vocabNewQ(); set({luTab:t, heatReveal:false, coachCardView:false}); if(t==='practice') setTimeout(speak,250); if(t==='vocab') setTimeout(()=>{ try{ if(state.vp) say(state.vp.w.w); }catch(e){} },250); },
+  luSetTab:(t)=>{ if(t==='vocab' && !state.vp && !state.vpAllDone) app.vocabNewQ(); set({luTab:t, heatReveal:false, coachCardView:false}); if(t==='practice') setTimeout(speak,250); if(t==='vocab') setTimeout(()=>{ try{ if(state.vp) say(state.vp.w.w); }catch(e){} },250); },
   // Practice Vocabulary — optional, no progression: pick the right meaning from 4 options,
   // earn a coin + karma for a correct pick. Distractors are other words' meanings from the list.
+  // Words never repeat within a run — once every word has been seen the run is done and the
+  // speller gets a confetti + avatar celebration. Returns true if a fresh question was built.
   vocabNewQ:()=>{ const pool=learnWords().filter(w=>w&&w.w&&String(w.d||'').trim());
-    if(pool.length<2){ state.vp=null; return; }
-    const seen=state._vpSeen||[]; let cand=pool.filter(w=>seen.indexOf(nkey(w.w))<0); if(cand.length<1){ state._vpSeen=[]; cand=pool.slice(); }
+    if(pool.length<2){ state.vp=null; state.vpAllDone=false; return false; }
+    const seen=state._vpSeen||[]; const cand=pool.filter(w=>seen.indexOf(nkey(w.w))<0);
+    if(cand.length<1){ state.vp=null; state.vpAllDone=true; return false; } // no repeats — whole list done
     const target=cand[Math.floor(Math.random()*cand.length)]; state._vpSeen=(state._vpSeen||[]).concat(nkey(target.w));
     const used={}; used[String(target.d).toLowerCase()]=1;
     const others=pool.filter(w=>nkey(w.w)!==nkey(target.w)).sort(()=>Math.random()-0.5); const distract=[];
     for(let j=0;j<others.length && distract.length<3;j++){ const dk=String(others[j].d).toLowerCase(); if(!used[dk]){ used[dk]=1; distract.push(others[j].d); } }
     const opts=[{d:target.d,correct:true}].concat(distract.map(d=>({d:d,correct:false}))).sort(()=>Math.random()-0.5);
-    state.vp={ w:target, opts:opts, picked:null }; },
+    state.vp={ w:target, opts:opts, picked:null, total:pool.length, idx:(state._vpSeen||[]).length }; state.vpAllDone=false; return true; },
   vocabSay:()=>{ if(state.vp) say(state.vp.w.w); },
   vocabPick:(i)=>{ i=+i; const vp=state.vp; if(!vp||vp.picked!=null) return; vp.picked=i; const ok=!!(vp.opts[i]&&vp.opts[i].correct);
     if(ok){ sfx('correct'); addCoins(1); const c=active(); c.karma=(c.karma||0)+1; state.vpRight=(state.vpRight||0)+1; state.toast='✓ +1 coin · +1 karma 🌟'; scheduleToast(1500); save(); }
     else { sfx('wrong'); }
     state.vpDone=(state.vpDone||0)+1; render();
-    clearTimeout(state._vpTimer); state._vpTimer=setTimeout(()=>{ if(state.luTab==='vocab' && state.vp && state.vp.picked!=null){ app.vocabNewQ(); render(); try{ if(state.vp) say(state.vp.w.w); }catch(e){} } }, ok?1150:2200); },
-  vocabNext:()=>{ clearTimeout(state._vpTimer); state._vpTimer=null; app.vocabNewQ(); render(); try{ if(state.vp) say(state.vp.w.w); }catch(e){} },
+    clearTimeout(state._vpTimer); state._vpTimer=setTimeout(()=>{ if(state.luTab==='vocab' && state.vp && state.vp.picked!=null){
+      const more=app.vocabNewQ();
+      if(more){ render(); try{ if(state.vp) say(state.vp.w.w); }catch(e){} }
+      else { // every word matched — big celebration with the child's avatar cheering
+        state.celebrate={kind:'vocab', right:state.vpRight||0, total:state.vpDone||0};
+        try{ sfx('win'); burstConfetti(240); }catch(e){}
+        render();
+      }
+    } }, ok?1150:2200); },
+  vocabNext:()=>{ clearTimeout(state._vpTimer); state._vpTimer=null; if(app.vocabNewQ()){ render(); try{ if(state.vp) say(state.vp.w.w); }catch(e){} } else render(); },
+  vocabRestart:()=>{ clearTimeout(state._vpTimer); state._vpTimer=null; state._vpSeen=[]; state.vpDone=0; state.vpRight=0; state.vpAllDone=false; if(app.vocabNewQ()){ render(); try{ if(state.vp) say(state.vp.w.w); }catch(e){} } else render(); },
   toggleHeat:()=>set({heatReveal:!state.heatReveal}),
   luToggleWords:()=>set({luWordsOpen:!state.luWordsOpen}),
   luPractice:(idx)=>{ state.gi=+idx; state.luTab='practice'; state.status='idle'; state.typed=''; state.mood='happy'; state.showDef=false; state.showSent=false; state.showOrigin=false; render(); setTimeout(speak,250); },
@@ -1111,6 +1123,11 @@ const app = {
   celebrateLore:(n)=>{ state.celebrate=null; app.openLesson(n); },
   celebrateNextSet:()=>{ state.celebrate=null; newCoachBatch(); state.luTab='practice'; state.status='idle'; state.typed=''; render(); setTimeout(speak,350); },
   celebrateBadges:()=>{ state.celebrate=null; app.setNav('collection'); },
+  celebrateVocabAgain:()=>{ state.celebrate=null; app.vocabRestart(); },
+  // Advance Today's tip — capped at 10 forward taps per day, resets at the day boundary
+  nextTip:()=>{ const c=active(); if(!c) return; const day=dayNum(); if(c.tipDay!==day){ c.tipDay=day; c.tipStep=0; }
+    if((c.tipStep||0)>=10){ flash('That’s all 10 tips for today — more tomorrow! 🐝'); return; }
+    c.tipStep=(c.tipStep||0)+1; save(); render(); },
   duelName:(v)=>{ state.game.p[1].name=(v||'Player 2').slice(0,16); },
   duelBegin:()=>{ const g=state.game; g.phase='play'; g.turn=0; g.i=0; state.typed=''; render(); setTimeout(()=>{ const gg=state.game; if(gg&&gg.type==='duel'&&gg.phase==='play'&&gg.list[0]) say(gg.list[0].w); },350); },
   duelSay:()=>{ const g=state.game; if(g&&g.list[g.i]) say(g.list[g.i].w); },
@@ -1584,12 +1601,19 @@ function tipOfDay(kid){ const pool=[]; let band=2; try{ band=beeBand(active()).b
   }catch(e){}
   try{ if(band>2) lessonsAll().slice(0,40).forEach(L=>{ if(L.hook) pool.push(L.hook); }); }catch(e){}
   if(!pool.length) return '';
-  const t=trunc(pool[dayNum()%pool.length],150);
+  // Up to 10 tips a day: a daily-resettable step lets the speller tap forward through more tips.
+  const c0=active(); const day=dayNum(); const MAXFWD=10;
+  if(c0){ if(c0.tipDay!==day){ c0.tipDay=day; c0.tipStep=0; } }
+  const step=Math.max(0,Math.min(MAXFWD,(c0&&c0.tipStep)||0));
+  const t=trunc(pool[(day+step)%pool.length],150);
   const face=(function(){ try{ return (WORLD_HERO[state.theme]||WORLD_HERO.spellbound).face; }catch(e){ return 'var(--display)'; } })();
-  return `<div style="position:relative;display:flex;align-items:center;gap:14px;background:var(--paper,var(--bg2));border:1px solid var(--line);border-left:4px solid var(--treasure,#F0B429);border-radius:14px;padding:14px 18px;margin-bottom:14px">
-    <span style="min-width:0;flex:1"><span style="display:block;font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:3px">${kid?'Today\u2019s bee tip':'Tip of the day'}</span>
+  const canFwd=step<MAXFWD;
+  const fwd=`<button data-act="nextTip" ${canFwd?'':'disabled'} title="${canFwd?'Next tip ('+(MAXFWD-step)+' left today)':'That\u2019s all 10 tips for today \u2014 back tomorrow!'}" aria-label="Next tip" style="flex-shrink:0;align-self:center;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:16px;box-shadow:var(--edge);border:0;${canFwd?'background:var(--treasure,#F0B429);color:#5a3d00;cursor:pointer':'background:var(--surface2);color:var(--muted);opacity:.55'}">\u2192</button>`;
+  return `<div style="position:relative;display:flex;align-items:center;gap:12px;background:var(--paper,var(--bg2));border:1px solid var(--line);border-left:4px solid var(--treasure,#F0B429);border-radius:14px;padding:14px 16px;margin-bottom:14px">
+    <span style="min-width:0;flex:1"><span style="display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:3px">${kid?'Today\u2019s bee tip':'Tip of the day'}${step>0?`<span style="letter-spacing:0;text-transform:none;font-weight:700;color:var(--muted)">\u00b7 ${step+1}/${MAXFWD+1}</span>`:''}</span>
     <span style="display:block;font-family:${face};font-size:15px;line-height:1.5;font-weight:650;color:var(--ink,var(--text))">${esc(t)}</span></span>
     <span aria-hidden="true" style="flex-shrink:0;width:42px;height:48px;align-self:flex-end">${mascotSVG('happy')}</span>
+    ${fwd}
   </div>`; }
 /* ---- Weak-pattern radar: the analytics engine aimed at the speller (12+) ---- */
 const TRAP_DEFS=[ ['double',/(.)\1/,'Double letters'], ['silent',/^(kn|wr|gn|ps|mn)|mb$|gh/i,'Silent letters'],
@@ -2187,24 +2211,39 @@ function viewApp(){
         <div aria-hidden="true" style="position:absolute;left:50%;top:96px;width:640px;height:640px;margin-left:-320px;background:repeating-conic-gradient(rgba(240,180,41,.15) 0 13deg,transparent 13deg 26deg);border-radius:50%;animation:sb-rays 26s linear infinite;pointer-events:none"></div>
         <div style="position:relative">${inner}</div>
       </div></div>`;
+    // the child's own avatar appears and cheers in every big celebration, with a speech bubble
+    const celeAvatar=(msg)=>`<div style="position:relative;width:150px;margin:0 auto 10px">
+        <div style="width:120px;height:120px;margin:0 auto;animation:sb-cele-bounce 1.5s ease-in-out infinite">${myAvatar(120)}</div>
+        ${msg?`<div style="position:absolute;top:4px;right:2px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:12.5px;padding:6px 12px;border-radius:14px 14px 3px 14px;box-shadow:var(--edge);white-space:nowrap;animation:sb-pop .5s ease .35s both">${esc(msg)}</div>`:''}
+      </div>`;
     if(cb.kind==='badge'){ const b=cb.badge||{};
       return shell(`
-        <div style="width:104px;height:104px;margin:0 auto 10px;border-radius:28px;display:grid;place-items:center;background:linear-gradient(150deg,#FFD24D,#F0A93C);box-shadow:inset 0 3px 0 rgba(255,255,255,.55), inset 0 -6px 12px rgba(0,0,0,.18), 0 10px 26px rgba(240,169,60,.5);color:#5a3d00;animation:sb-cele-bounce 1.5s ease-in-out infinite">${window.SB_ICON?SB_ICON(b.ic||'star',{size:56}):iconSVG(b.ic||'spark',56)}</div>
+        ${celeAvatar('Nice one!')}
+        <div style="width:96px;height:96px;margin:-2px auto 8px">${badgeArtSVG(b.ic||'star', 96)}</div>
         <div style="font-family:var(--ui);font-weight:650;font-size:12px;letter-spacing:.11em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">Badge earned!</div>
         <div style="font-family:var(--display);font-weight:800;font-size:34px;line-height:1.05;margin:6px 0 6px">${esc(b.name||'New badge')}</div>
         <div style="font-size:15px;color:var(--muted);font-weight:500">${esc(b.desc||'')}${cb.more>0?(' · <b>+'+cb.more+' more badge'+(cb.more>1?'s':'')+'!</b>'):''}</div>
         <div style="display:flex;gap:10px;margin-top:20px"><button data-act="celebrateBadges" style="flex:1;padding:14px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">See my badges</button>
         <button data-act="celebrateClose" style="flex:1;padding:14px;border-radius:12px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:14px;box-shadow:var(--edge)">Keep going →</button></div>`); }
+    if(cb.kind==='vocab'){
+      const total=cb.total||0, right=cb.right||0; const pct=total?Math.round(right/total*100):0;
+      return shell(`
+        ${celeAvatar('Brilliant!')}
+        <div style="font-family:var(--ui);font-weight:650;font-size:12px;letter-spacing:.11em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">Vocabulary complete!</div>
+        <div style="font-family:var(--display);font-weight:800;font-size:32px;line-height:1.05;margin:6px 0 6px">Every word — done! 🌟</div>
+        <div style="font-size:15px;color:var(--muted);font-weight:500">You matched <b style="color:var(--text)">${right}</b> of <b style="color:var(--text)">${total}</b> meanings${pct>=80?' — superb!':pct>=50?' — nicely done!':'.'}</div>
+        <div style="display:flex;gap:10px;margin-top:20px"><button data-act="celebrateVocabAgain" style="flex:1;padding:14px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">↺ Play again</button>
+        <button data-act="celebrateClose" style="flex:1;padding:14px;border-radius:12px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:14px;box-shadow:var(--edge)">Done →</button></div>`); }
     if(cb.kind==='set'){
       return shell(`
-        <div style="width:120px;height:120px;margin:0 auto 8px;animation:sb-cele-bounce 1.5s ease-in-out infinite">${myAvatar(120)}</div>
+        ${celeAvatar('You did it!')}
         <div style="font-family:var(--ui);font-weight:650;font-size:12px;letter-spacing:.11em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">Word set mastered!</div>
         <div style="font-family:var(--display);font-weight:800;font-size:34px;line-height:1.05;margin:6px 0 6px">Every word — nailed!</div>
         <div style="font-size:15px;color:var(--muted);font-weight:500">${esc(cb.sub||'')} A fresh set is ready — keep the streak rolling.</div>
         <button data-act="celebrateNextSet" style="width:100%;margin-top:20px;padding:15px;border-radius:12px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:16px;box-shadow:var(--edge)">Bring on the next set →</button>
         <button data-act="celebrateClose" style="margin-top:10px;color:var(--muted);font-weight:700;font-size:13px">Take a breather</button>`); }
     return shell(`
-        <div style="width:120px;height:120px;margin:0 auto 8px;animation:sb-cele-bounce 1.5s ease-in-out infinite">${myAvatar(120)}</div>
+        ${celeAvatar(cb.champ?'CHAMP! 🏆':'Level up!')}
         <div style="font-family:var(--ui);font-weight:650;font-size:12px;letter-spacing:.11em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">${cb.champ?'Champion unlocked':'Level cleared'}</div>
         <div style="font-family:var(--display);font-weight:800;font-size:36px;line-height:1.05;margin:6px 0 4px">${cb.champ?'Bizzing Bee Champ!':('Level '+cb.level+' unlocked!')}</div>
         <div style="font-size:15px;color:var(--muted);font-weight:450">${esc(cb.list)} · ${esc(c2.name||'')} — ${evo2[fi]} · ${cb.date}</div>
@@ -2455,6 +2494,76 @@ function avatarSVG(id,size,acc){ size=size||30;
   return svg; }
 // the child's own worn avatar, with their equipped accessory
 function myAvatar(size){ const c=active(); return avatarSVG(c.avatar||'bee', size, c.accOn); }
+/* ---- Premium badge medallions ---------------------------------------------
+   A rich, cast-metal medal: scalloped gold rim, gemstone face tinted per group,
+   a custom filled emblem, gloss + ribbon tails. Replaces the flat icon-in-a-circle.
+   `kind` = the badge's `ic` key; `size` in px; `won` false → dimmed silver/locked. */
+let _badgeUID=0;
+function badgeArtSVG(kind, size, won){
+  size=size||96; if(won===undefined) won=true;
+  const uid='bg'+(_badgeUID++);
+  // Per-emblem gemstone palette (face colour); the rim is always gold when won.
+  const PAL={
+    flame:['#FF8A3D','#E8451F'], fire:['#FF6B3D','#D62828'], spark:['#FFD34D','#F0A93C'],
+    star:['#FFD34D','#F0A93C'], crown:['#FFCF4D','#E8A020'], check:['#5AD98A','#1FA35A'],
+    book:['#5AA9F0','#2E6FD6'], chart:['#5AD1D9','#189AA6'], target:['#FF6B8A','#D6304F'],
+    search:['#7FB0FF','#3D6FE0'], sprout:['#7ED957','#2FA14E'], steps:['#8AA0FF','#5A5CE0'],
+    bolt:['#FFD23D','#F0A030'], eye:['#B08CF0','#7B4FD6'], palette:['#FF9ED2','#E85AA8'],
+    cart:['#FFB84D','#E88A20'], joystick:['#9E7CFF','#6C4FE0'], bulb:['#FFE066','#F0B020'],
+    timer:['#6EC8FF','#2E9FE0'], crown2:['#FFCF4D','#E8A020']
+  };
+  const pc=PAL[kind]||['#FFD34D','#F0A93C'];
+  const gem1=won?pc[0]:'#C3CBD4', gem2=won?pc[1]:'#8B95A1';
+  // 24-point scalloped rim ring
+  let scallop=''; const R=41, cx=50, cy=50;
+  for(let i=0;i<24;i++){ const a=i/24*Math.PI*2; scallop+=`<circle cx="${(cx+Math.cos(a)*R).toFixed(2)}" cy="${(cy+Math.sin(a)*R).toFixed(2)}" r="3.4"/>`; }
+  // Custom filled emblems (glyph drawn in a dark tint of the gem for depth)
+  const glyphs={
+    crown:'M22 66 17 34l14 11L50 26l19 19 14-11-5 32z M22 71h56',
+    flame:'M50 20c3 12 12 17 12 28a12 12 0 0 1-24 0c0-2 .3-3.6.7-5C34 45 30 53 30 61a20 20 0 0 0 40 0c0-16-11-29-20-41z',
+    fire:'M50 20c3 12 12 17 12 28a12 12 0 0 1-24 0c0-2 .3-3.6.7-5C34 45 30 53 30 61a20 20 0 0 0 40 0c0-16-11-29-20-41z',
+    spark:'M50 18l6.5 20.5L78 45l-21.5 6.5L50 72l-6.5-20.5L22 45l21.5-6.5z',
+    star:'M50 18l6.5 20.5L78 45l-21.5 6.5L50 72l-6.5-20.5L22 45l21.5-6.5z',
+    check:'M30 51l12 12 28-28-6-6-22 22-6-6z',
+    book:'M28 28h30a5 5 0 0 1 5 5v39a4 4 0 0 0-4-4H28z M28 28v40 M63 33a5 5 0 0 0-5-5',
+    bolt:'M55 20 32 54h12l-6 26 25-36H50z',
+    target:'',
+    steps:'M26 68h9v-10h9v-10h9v-10h9v-10',
+    sprout:'M50 74V44 M50 44C50 32 41 24 26 24c0 12 9 20 24 20z M50 44c0-9 6-16 20-16 0 9-6 16-20 16z'
+  };
+  let emblem;
+  if(kind==='target'){
+    emblem=`<circle cx="50" cy="50" r="16" fill="none" stroke="${shade(gem2,-18)}" stroke-width="5"/><circle cx="50" cy="50" r="7.5" fill="none" stroke="${shade(gem2,-18)}" stroke-width="5"/><circle cx="50" cy="50" r="3" fill="${shade(gem2,-18)}"/>`;
+  } else if(glyphs[kind]){
+    const filled=['crown','flame','fire','spark','star','check','bolt'].indexOf(kind)>=0;
+    emblem=filled
+      ? `<path d="${glyphs[kind]}" fill="${shade(gem2,-14)}" stroke="${shade(gem1,10)}" stroke-width="1.4" stroke-linejoin="round"/>`
+      : `<path d="${glyphs[kind]}" fill="none" stroke="${shade(gem2,-16)}" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+  } else {
+    // fallback: recolour the line icon glyph, centred & enlarged
+    emblem=`<g transform="translate(29 29) scale(1.75)" style="color:${shade(gem2,-18)}">${(window.SB_ICON?SB_ICON(kind,{size:24}):iconSVG(kind,24,2.4))}</g>`;
+  }
+  const ribbon=won?`<g opacity=".95">
+    <path d="M30 78 22 98l12-6 12 6-6-18z" fill="#E3444F"/><path d="M70 78 78 98l-12-6-12 6 6-18z" fill="#C6303B"/></g>`:'';
+  return `<svg viewBox="0 0 100 106" width="${size}" height="${(size*1.06).toFixed(1)}" aria-hidden="true" style="display:block;overflow:visible;${won?'':'filter:grayscale(.5) opacity(.8)'}">
+    <defs>
+      <radialGradient id="${uid}f" cx="42%" cy="34%" r="75%"><stop offset="0" stop-color="${shade(gem1,26)}"/><stop offset=".55" stop-color="${gem1}"/><stop offset="1" stop-color="${gem2}"/></radialGradient>
+      <linearGradient id="${uid}r" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${won?'#FFE9A3':'#EDF1F4'}"/><stop offset=".5" stop-color="${won?'#F0B429':'#C3CBD4'}"/><stop offset="1" stop-color="${won?'#B57E12':'#8B95A1'}"/></linearGradient>
+      <radialGradient id="${uid}g" cx="38%" cy="26%" r="55%"><stop offset="0" stop-color="#fff" stop-opacity=".85"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    </defs>
+    ${ribbon}
+    <g fill="url(#${uid}r)" stroke="${won?'#8A5B00':'#6B7681'}" stroke-width=".6">${scallop}</g>
+    <circle cx="50" cy="50" r="40" fill="url(#${uid}r)" stroke="${won?'#8A5B00':'#6B7681'}" stroke-width="1"/>
+    <circle cx="50" cy="50" r="33" fill="url(#${uid}f)" stroke="${shade(gem2,-22)}" stroke-width="1.5"/>
+    <circle cx="50" cy="50" r="33" fill="url(#${uid}g)"/>
+    ${emblem}
+    <path d="M27 33a33 33 0 0 1 30-11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+  </svg>`;
+}
+// small colour shade helper (percent -100..100) for the badge metal tints
+function shade(hex, pct){ hex=String(hex||'#888').replace('#',''); if(hex.length===3) hex=hex.split('').map(c=>c+c).join('');
+  let r=parseInt(hex.substr(0,2),16),g=parseInt(hex.substr(2,2),16),b=parseInt(hex.substr(4,2),16); const t=pct<0?0:255, p=Math.abs(pct)/100;
+  const m=v=>Math.round((t-v)*p+v); return '#'+[m(r),m(g),m(b)].map(v=>('0'+Math.max(0,Math.min(255,v)).toString(16)).slice(-2)).join(''); }
 // Per-pack economy: price scales with the pack's contents (legendaries cost most), so every
 // pack costs something different. Drop weights are shared; odds are shown to kids per avatar.
 // drop probability is inverse to rarity — the rarer the tier, the lower its chance
@@ -2640,7 +2749,7 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
     body=groups.map(g=>{ const list=B.filter(b=>b.g===g); const w=list.filter(b=>b.done).length;
       return `<div class="sb-card" style="margin-bottom:14px"><div style="display:flex;align-items:baseline;gap:9px;margin-bottom:12px"><span class="sb-ct" style="font-size:15px">${g}</span><span class="sb-cn">${w}/${list.length} won</span></div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px">${list.map(b=>`<div style="background:var(--paper,var(--bg2));border:1.5px solid ${b.done?'var(--treasure,#F0B429)':'var(--line)'};border-radius:14px;padding:13px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;${b.done?'':'opacity:.55;filter:grayscale(.6)'}">
-        <span style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:${b.done?'linear-gradient(135deg,#FFD24D,#F0A93C)':'var(--surface2)'};color:${b.done?'#5a3d00':'var(--muted)'};box-shadow:${b.done?'0 2px 8px rgba(240,180,41,.4)':'none'}">${iconSVG(b.ic,22)}</span>
+        <span style="width:62px;height:66px;display:grid;place-items:center">${badgeArtSVG(b.ic,58,b.done)}</span>
         <span style="font-weight:800;font-size:12.5px;line-height:1.15">${b.name}</span>
         <span class="sb-cn" style="font-size:11px">${b.desc}</span>
         <span style="font-weight:800;font-size:10.5px;color:${b.done?'var(--good)':'var(--muted)'}">${b.done?'WON ✓':'LOCKED'}</span></div>`).join('')}</div></div>`; }).join('')
@@ -3142,7 +3251,16 @@ function cardDonePanel(){ const miss=((active().missed)||[]).length;
 // Practice Vocabulary — a 4-option meaning quiz on the list's words. Optional (no level impact);
 // a correct pick earns a coin + a karma point.
 function vocabPracticeCard(){
-  if(!state.vp) app.vocabNewQ();
+  if(!state.vp && !state.vpAllDone) app.vocabNewQ();
+  // Whole list matched — a calm "all done" panel (the big celebration fires once, on completion)
+  if(state.vpAllDone && !state.vp){ const right=state.vpRight||0, total=state.vpDone||0; const pct=total?Math.round(right/total*100):0;
+    return `<div style="max-width:520px;margin:0 auto;text-align:center">
+      <div style="width:132px;height:132px;margin:6px auto 4px">${myAvatar(132)}</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:26px;margin:6px 0 4px">Every word — matched! 🌟</div>
+      <div style="font-size:14.5px;color:var(--muted);font-weight:500;margin-bottom:6px">You went through the whole list and matched <b style="color:var(--text)">${right}</b> of <b style="color:var(--text)">${total}</b> meanings${pct>=80?' — superb!':pct>=50?' — nicely done!':'.'}</div>
+      <div style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;color:var(--treasure-deep,#8A5B00);background:color-mix(in srgb,var(--treasure,#F0B429) 16%,transparent);border-radius:999px;padding:5px 13px;margin-bottom:16px">🌟 ${(active().karma)||0} karma</div>
+      <div><button data-act="vocabRestart" style="padding:13px 26px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">↺ Play the list again</button></div>
+    </div>`; }
   const vp=state.vp;
   if(!vp) return `<div style="max-width:520px;margin:0 auto">${beeEmpty('sleepy','No words with meanings in this list yet — pick a list with definitions and try again.')}</div>`;
   const w=vp.w; const karma=(active().karma)||0;
@@ -3154,6 +3272,7 @@ function vocabPracticeCard(){
     <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:12px">
       <span style="font-size:12px;color:var(--muted);font-weight:700">Optional — doesn’t change your level, but great practice (recommended!)</span>
       <span style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;color:var(--treasure-deep,#8A5B00);background:color-mix(in srgb,var(--treasure,#F0B429) 16%,transparent);border-radius:999px;padding:4px 11px">🌟 ${karma} karma</span>
+      ${vp.total?`<span style="font-family:var(--mono);font-size:12px;color:var(--muted)">Word ${vp.idx||1} of ${vp.total}</span>`:''}
       ${state.vpDone?`<span style="font-family:var(--mono);font-size:12px;color:var(--muted)">✓ ${state.vpRight||0}/${state.vpDone}</span>`:''}
     </div>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,28px);box-shadow:var(--glow)">
