@@ -7,8 +7,8 @@
 <meta name="description" content="Bizzing Bee — a spelling-bee trainer that hears your child spell, evolves a character with every win, and shows parents exactly where they stand.">
 <title>Bizzing Bee — spelling-bee trainer</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 viewBox%3D%220 0 64 64%22%3E%3Cellipse cx%3D%2215%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(-24 15 20)%22%2F%3E%3Cellipse cx%3D%2249%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(24 49 20)%22%2F%3E%3Cpath d%3D%22M27 17 Q23 7 21 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Cpath d%3D%22M37 17 Q41 7 43 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Ccircle cx%3D%2221%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Ccircle cx%3D%2243%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22 fill%3D%22%23FFC23D%22%2F%3E%3Cellipse cx%3D%2224%22 cy%3D%2230%22 rx%3D%2211%22 ry%3D%227%22 fill%3D%22%23FFD86E%22 opacity%3D%22.55%22%2F%3E%3CclipPath id%3D%22b%22%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22%2F%3E%3C%2FclipPath%3E%3Cg clip-path%3D%22url(%23b)%22%3E%3Crect x%3D%225%22 y%3D%2245%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3Crect x%3D%225%22 y%3D%2256%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3C%2Fg%3E%3Cellipse cx%3D%2217%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Cellipse cx%3D%2247%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Ccircle cx%3D%2224%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2225.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2224.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2240%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2241.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2240.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Cpath d%3D%22M26 49 Q32 55 40 49%22 fill%3D%22none%22 stroke%3D%22%233A1E5C%22 stroke-width%3D%222.8%22 stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E">
-<link rel="stylesheet" href="fonts/fonts.css?v=20260724f">
-<link rel="stylesheet" href="tokens.css?v=20260724f">
+<link rel="stylesheet" href="fonts/fonts.css?v=20260724g">
+<link rel="stylesheet" href="tokens.css?v=20260724g">
 
 <style>
   *{box-sizing:border-box}
@@ -195,6 +195,22 @@
   .avc-legendary:not(.avc-villain) .avc-foil{animation-duration:2.6s;background:linear-gradient(115deg,transparent 28%,rgba(255,240,170,.4) 42%,rgba(255,255,255,.95) 50%,rgba(255,240,170,.4) 58%,transparent 72%)}
   .avc-legendary:not(.avc-villain)::before{opacity:.9}
   .avc-legendary:not(.avc-villain)::before{animation-duration:2.7s;background:linear-gradient(125deg,transparent 40%,rgba(255,231,150,.7) 49%,color-mix(in srgb,var(--c2) 55%,#fff) 52%,transparent 60%)}
+  /* ===== Word Coach card-view: a cool glimmering study card, tuned for light & dark ===== */
+  .coach-card{background:linear-gradient(160deg,color-mix(in srgb,var(--accent) 7%,var(--bg2)) 0%,var(--bg2) 46%,color-mix(in srgb,var(--accent) 5%,var(--bg2)) 100%);border:1px solid color-mix(in srgb,var(--accent) 20%,var(--line));isolation:isolate;animation:coachGlow 4.5s ease-in-out infinite}
+  @keyframes coachGlow{0%,100%{box-shadow:0 8px 22px color-mix(in srgb,var(--accent) 10%,transparent),0 2px 8px rgba(0,0,0,.09),inset 0 1px 0 rgba(255,255,255,.42)}50%{box-shadow:0 11px 30px color-mix(in srgb,var(--accent) 18%,transparent),0 2px 9px rgba(0,0,0,.10),inset 0 1px 0 rgba(255,255,255,.5)}}
+  /* animated holographic sheen on the border (masked gradient ring) — subtle */
+  .coach-card::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1.4px;pointer-events:none;z-index:5;background:linear-gradient(125deg,rgba(255,90,140,.5),rgba(140,90,255,.45),rgba(60,200,255,.5),rgba(120,255,170,.45),rgba(255,205,80,.5));background-size:280% 280%;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.32;animation:coachHolo 7s ease-in-out infinite}
+  @keyframes coachHolo{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+  /* occasional diagonal light glint — gentle, so text stays crisp */
+  .coach-glimmer{position:absolute;inset:0;pointer-events:none;z-index:5;border-radius:inherit;overflow:hidden}
+  .coach-glimmer::after{content:'';position:absolute;top:-30%;left:-60%;width:32%;height:170%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.28),transparent);transform:rotate(8deg);animation:coachSweep 7.5s ease-in-out infinite}
+  @keyframes coachSweep{0%,18%{left:-60%}42%,100%{left:135%}}
+  /* dark mode: deeper base, a little accent glow, faint sweep */
+  [data-mode="dusk"] .coach-card{background:linear-gradient(160deg,color-mix(in srgb,var(--accent) 14%,var(--bg2)) 0%,var(--bg2) 48%,color-mix(in srgb,#000 12%,var(--bg2)) 100%);border-color:color-mix(in srgb,var(--accent) 30%,var(--line));animation:coachGlowDusk 4.5s ease-in-out infinite}
+  @keyframes coachGlowDusk{0%,100%{box-shadow:0 10px 26px color-mix(in srgb,var(--accent) 18%,transparent),0 0 0 1px rgba(255,255,255,.04),inset 0 1px 0 rgba(255,255,255,.07)}50%{box-shadow:0 13px 34px color-mix(in srgb,var(--accent) 30%,transparent),0 0 0 1px rgba(255,255,255,.05),inset 0 1px 0 rgba(255,255,255,.10)}}
+  [data-mode="dusk"] .coach-card::before{opacity:.44}
+  [data-mode="dusk"] .coach-glimmer::after{background:linear-gradient(100deg,transparent,rgba(255,255,255,.2),transparent)}
+  [data-motion="off"] .coach-card,[data-motion="off"] .coach-card::before,[data-motion="off"] .coach-glimmer::after{animation:none}
   .avc-top{position:relative;display:flex;justify-content:space-between;align-items:flex-start;z-index:1}
   .avc-ovr{display:grid;justify-items:center;line-height:1;background:var(--rc);color:#fff;border-radius:12px;padding:6px 10px;box-shadow:0 3px 8px rgba(0,0,0,.25)}
   .avc-ovr b{font:900 22px var(--display,serif)}.avc-ovr i{font:800 8px var(--mono,monospace);letter-spacing:.14em;font-style:normal;opacity:.9}
@@ -233,49 +249,49 @@
   .avc-worn{font:800 13px var(--body,sans-serif);color:#2FA35C}
   .avc-x{font:700 13px var(--body,sans-serif);background:rgba(255,255,255,.85);color:#241E33;border:none;border-radius:999px;padding:9px 22px;cursor:pointer}
 </style>
-  <link rel="stylesheet" href="saga2.css?v=20260724f">
+  <link rel="stylesheet" href="saga2.css?v=20260724g">
 </head>
 <body>
 <div id="root"></div>
-<script src="icons.js?v=20260724f"></script>
-<script src="icons-art.js?v=20260724f"></script>
-<script src="cover-art.js?v=20260724f"></script>
+<script src="icons.js?v=20260724g"></script>
+<script src="icons-art.js?v=20260724g"></script>
+<script src="cover-art.js?v=20260724g"></script>
 <script>try{SB_ICON_MOTION()}catch(e){}</script>
-<script src="voice-cdn.js?v=20260724f"></script>
-<script src="words-data.js?v=20260724f"></script>
-<script src="word-alternates.js?v=20260724f"></script>
-<script src="concepts-data.js?v=20260724f"></script>
-<script src="lessons-data.js?v=20260724f"></script>
-<script src="scripps-data.js?v=20260724f"></script>
-<script src="themes-data.js?v=20260724f"></script>
-<script src="figurative-data.js?v=20260724f"></script>
-<script src="trivia-data.js?v=20260724f"></script>
-<script src="nsf-finals500-data.js?v=20260724f"></script>
-<script src="nsf-vocab26-data.js?v=20260724f"></script>
-<script src="adv-tips-data.js?v=20260724f"></script>
-<script src="concept-scripts.js?v=20260724f"></script>
-<script src="tips-data.js?v=20260724f"></script>
-<script src="voice-manifest.js?v=20260724f"></script>
-<script src="voice-words.js?v=20260724f"></script>
-<script src="voice-review.js?v=20260724f"></script>
-<script src="voice-french.js?v=20260724f"></script>
-<script src="app.js?v=20260724f"></script>
-<script src="avatars-art.js?v=20260724f"></script>
-<script src="avatars.js?v=20260724f"></script>
-<script src="avatar-cards.js?v=20260724f"></script>
-<script src="app2.js?v=20260724f"></script>
-<script src="app3.js?v=20260724f"></script>
-<script src="story-data.js?v=20260724f"></script>
-<script src="quest.js?v=20260724f"></script>
-  <script src="games-daily.js?v=20260724f"></script>
-  <script src="saga-art/saga-art.js?v=20260724f"></script>
-  <script src="saga-art/saga-map.js?v=20260724f"></script>
-  <script src="saga-art/worlds-art.js?v=20260724f"></script>
-  <script src="saga-art-dom.js?v=20260724f"></script>
-  <script src="saga-music.js?v=20260724f"></script>
-  <script src="saga-script.js?v=20260724f"></script>
-  <script src="saga2.js?v=20260724f"></script>
-<script src="trivia.js?v=20260724f"></script>
-<script src="advanced.js?v=20260724f"></script>
+<script src="voice-cdn.js?v=20260724g"></script>
+<script src="words-data.js?v=20260724g"></script>
+<script src="word-alternates.js?v=20260724g"></script>
+<script src="concepts-data.js?v=20260724g"></script>
+<script src="lessons-data.js?v=20260724g"></script>
+<script src="scripps-data.js?v=20260724g"></script>
+<script src="themes-data.js?v=20260724g"></script>
+<script src="figurative-data.js?v=20260724g"></script>
+<script src="trivia-data.js?v=20260724g"></script>
+<script src="nsf-finals500-data.js?v=20260724g"></script>
+<script src="nsf-vocab26-data.js?v=20260724g"></script>
+<script src="adv-tips-data.js?v=20260724g"></script>
+<script src="concept-scripts.js?v=20260724g"></script>
+<script src="tips-data.js?v=20260724g"></script>
+<script src="voice-manifest.js?v=20260724g"></script>
+<script src="voice-words.js?v=20260724g"></script>
+<script src="voice-review.js?v=20260724g"></script>
+<script src="voice-french.js?v=20260724g"></script>
+<script src="app.js?v=20260724g"></script>
+<script src="avatars-art.js?v=20260724g"></script>
+<script src="avatars.js?v=20260724g"></script>
+<script src="avatar-cards.js?v=20260724g"></script>
+<script src="app2.js?v=20260724g"></script>
+<script src="app3.js?v=20260724g"></script>
+<script src="story-data.js?v=20260724g"></script>
+<script src="quest.js?v=20260724g"></script>
+  <script src="games-daily.js?v=20260724g"></script>
+  <script src="saga-art/saga-art.js?v=20260724g"></script>
+  <script src="saga-art/saga-map.js?v=20260724g"></script>
+  <script src="saga-art/worlds-art.js?v=20260724g"></script>
+  <script src="saga-art-dom.js?v=20260724g"></script>
+  <script src="saga-music.js?v=20260724g"></script>
+  <script src="saga-script.js?v=20260724g"></script>
+  <script src="saga2.js?v=20260724g"></script>
+<script src="trivia.js?v=20260724g"></script>
+<script src="advanced.js?v=20260724g"></script>
 </body>
 </html>
