@@ -393,6 +393,8 @@ function speakSlow(){ deviceSpeak(curWord().w, 0.55); } // tortoise: same clip/v
 function say(text,rate){ deviceSpeak(text, (rate||0.95)*(state.voiceRate||1)); }
 // tortoise glyph for the "hear it slowly" button — inherits the button's currentColor
 function tortoiseSVG(sz){ sz=sz||24; return `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="display:block"><path d="M3.5 15 Q11 5 18.5 15 Z" fill="currentColor"/><ellipse cx="11" cy="15" rx="7.6" ry="1.5" fill="currentColor"/><rect x="5" y="14.6" width="2.2" height="3.4" rx="1.1" fill="currentColor"/><rect x="14.8" y="14.6" width="2.2" height="3.4" rx="1.1" fill="currentColor"/><circle cx="20.2" cy="12.8" r="2.3" fill="currentColor"/><circle cx="21" cy="12.3" r=".55" fill="#fff"/><path d="M6 11.6 Q11 6.6 16 11.6" stroke="#fff" stroke-width="1" fill="none" opacity=".45"/><path d="M8.4 13.4 h5.2 M9.4 15 h3.2" stroke="#fff" stroke-width=".9" opacity=".4" stroke-linecap="round"/></svg>`; }
+// stacked-cards glyph for the Word Coach card-view toggle
+function cardsSVG(sz){ sz=sz||20; return `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block"><rect x="3.5" y="7.5" width="12" height="13" rx="2.4"/><path d="M8 7.5V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v9.5a2 2 0 0 1-2 2h-1.5"/></svg>`; }
 // split a sentence around its target word (and simple inflections) so we can read it aloud
 // WITHOUT speaking the answer — used by "Finish the Sentence"
 function maskParts(sentence, word){ const t=sentence||''; const w=(word||'').trim(); if(!w) return {before:t, after:'', matched:false};
@@ -798,6 +800,9 @@ const app = {
     sfx('correct'); app.next(); },
   reviseWord:()=>{ const cw=curWord(); if(cw){ addMiss(cw); if(state.status==='idle') state.sessionDone=(state.sessionDone||0)+1; }
     flash('Marked for revision ⚑'); app.next(); },
+  // Word Coach card view: an icon toggles the spell card into a swipeable portrait flash-card
+  // deck. Tap/swipe right = "got it" (completeWord), tap/swipe left = revise (reviseWord).
+  toggleCardView:()=>{ state.coachCardView=!state.coachCardView; set({typed:'', status:'idle', mood:'happy'}); if(state.coachCardView) setTimeout(speak,250); },
   speak,
   speakSlow:()=>speakSlow(),
   check:()=>{ const ans=(state.typed||'').trim().toLowerCase(); if(!ans){ flash('Type the word first'); return; }
@@ -2976,6 +2981,7 @@ function trainerCard(){
   const tchip=(on,label,act)=>`<button data-act="${act}" style="padding:9px 14px;border-radius:999px;font-weight:700;font-size:13px;border:1px solid ${on?'var(--accent)':'var(--line)'};${on?'background:var(--accent);color:#fff':'background:transparent;color:var(--text)'}">${label}</button>`;
   const mascotAnim=st==='wrong'?'animation:sb-shake .45s ease':(st==='correct'?'animation:sb-pop .4s ease':'');
   return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow);text-align:center;position:relative">
+      <button data-act="toggleCardView" title="Switch to card view" aria-label="Switch to card view" style="position:absolute;top:12px;left:12px;z-index:4;width:38px;height:38px;border-radius:11px;background:var(--surface2);color:var(--accent);border:1px solid var(--line);display:grid;place-items:center">${cardsSVG(20)}</button>
       ${showMarks?`<div style="display:flex;justify-content:flex-end;flex-wrap:wrap;gap:7px;margin-bottom:8px">
         <button data-act="completeWord" title="I know this — mark it complete and skip to the next" style="display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;${completeStyle};font-weight:800;font-size:12.5px">✓ Complete</button>
         <button data-act="reviseWord" title="Mark this word for revision and move to the next" style="display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;${reviseStyle};font-weight:800;font-size:12.5px">⚑ Mark for revision</button>
@@ -2992,12 +2998,50 @@ function trainerCard(){
       <div style="display:flex;gap:10px"><button data-act="reveal" style="padding:14px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Show answer</button><button data-act="primary" style="flex:1;padding:14px;border-radius:14px;${showResult?'background:var(--surface2);color:var(--text);border:1px solid var(--line)':'background:var(--accent);color:#fff;box-shadow:var(--edge)'};font-weight:800;font-size:15px">${primaryLabel}</button></div>
     </div>`;
 }
+// Word Coach CARD VIEW — a portrait flash-card deck. The word shows on a tall card; tap or
+// swipe the RIGHT half = "got it" → next (completeWord), the LEFT half = revise → next
+// (reviseWord). The top-left icon toggles back to the spelling card. Because the word itself
+// is shown here, meaning/sentence are not masked.
+function coachFlashCard(){
+  if(state.sessionOver) return sessionResults();
+  const S=state; const w=curWord()||{w:'',d:'',s:'',o:''};
+  const N=(S.sessionWords&&S.sessionWords.length)||1; const i=Math.min(Math.max(S.gi||0,0),N-1);
+  const pct=Math.round((i+1)/N*100); const mastered=state.luMastered&&state.luMastered[nkey(w.w)];
+  const chip=(t)=>`<span style="padding:4px 11px;border-radius:999px;background:var(--surface2);font-size:11.5px;color:var(--muted);font-weight:700">${t}</span>`;
+  const revCol='var(--treasure-deep,#8A5B00)', okCol='var(--good)';
+  return `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <span style="font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">Card ${i+1} of ${N}</span>
+      <div style="flex:1;height:7px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--accent);width:${pct}%;transition:width .3s"></div></div>
+      ${mastered?'<span style="color:var(--good);font-weight:800;font-size:12px;white-space:nowrap">✓ Got it</span>':''}
+    </div>
+    <div data-swipe="coach" style="position:relative;max-width:340px;margin:0 auto;height:min(72vh,470px);background:var(--bg2);border:1px solid var(--line);border-radius:24px;box-shadow:var(--glow);overflow:hidden;touch-action:pan-y;-webkit-user-select:none;user-select:none">
+      <div data-act="reviseWord" title="Mark for revision → next word" style="position:absolute;top:0;left:0;bottom:0;width:50%;z-index:1;cursor:pointer"></div>
+      <div data-act="completeWord" title="Got it → next word" style="position:absolute;top:0;right:0;bottom:0;width:50%;z-index:1;cursor:pointer"></div>
+      <button data-act="toggleCardView" title="Back to spelling practice" aria-label="Back to spelling practice" style="position:absolute;top:12px;left:12px;z-index:4;width:38px;height:38px;border-radius:11px;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${cardsSVG(20)}</button>
+      <div style="position:absolute;left:0;top:0;bottom:26px;width:34px;z-index:3;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:linear-gradient(90deg,color-mix(in srgb,var(--treasure,#F0B429) 26%,transparent),transparent);color:${revCol}"><span style="font-size:15px;font-weight:900">‹</span><span style="font-size:9px;font-weight:800;writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.08em">REVISE</span></div>
+      <div style="position:absolute;right:0;top:0;bottom:26px;width:34px;z-index:3;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:linear-gradient(270deg,color-mix(in srgb,var(--good) 22%,transparent),transparent);color:${okCol}"><span style="font-size:15px;font-weight:900">›</span><span style="font-size:9px;font-weight:800;writing-mode:vertical-rl;letter-spacing:.08em">GOT IT</span></div>
+      <div style="position:relative;z-index:2;pointer-events:none;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:46px 34px 30px;overflow:auto">
+        <div style="font-family:var(--display);font-weight:800;font-size:clamp(23px,7vw,33px);line-height:1.1;overflow-wrap:anywhere">${esc(w.w)}</div>
+        ${w.sy&&w.sy.toLowerCase()!==(w.w||'').toLowerCase()?`<div style="font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.04em;margin-top:4px">${esc(w.sy)}</div>`:''}
+        <div style="display:flex;gap:10px;justify-content:center;margin:13px 0 4px;pointer-events:auto">
+          <button data-act="speak" aria-label="Hear the word" title="Hear the word" style="width:46px;height:46px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',21)}</button>
+          <button data-act="speakSlow" aria-label="Hear it slowly" title="Hear it slowly" style="width:46px;height:46px;border-radius:50%;background:var(--surface2);color:var(--accent);border:1px solid var(--line);display:grid;place-items:center">${tortoiseSVG(23)}</button>
+        </div>
+        ${w.d?`<div style="font-size:15px;color:var(--text);line-height:1.5;margin-top:8px">${esc(w.d)}</div>`:''}
+        ${w.s?`<div style="font-size:12.5px;color:var(--muted);line-height:1.55;margin-top:9px"><b style="color:var(--text)">Sentence.</b> ${esc(w.s)}</div>`:''}
+        ${w.h?`<div style="display:flex;align-items:flex-start;gap:7px;font-size:12.5px;color:var(--text);line-height:1.5;margin-top:10px;background:var(--chip);border-radius:10px;padding:8px 11px"><span style="color:var(--accent);margin-top:1px;flex-shrink:0">${iconSVG('bulb',14)}</span><span>${esc(w.h)}</span></div>`:''}
+        <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:12px">${w.p?chip('/ '+esc(w.p)+' /'):''}${w.o?chip(esc(w.o)):''}${w.ps?chip(esc(w.ps)):''}</div>
+      </div>
+      <div style="position:absolute;left:0;right:0;bottom:0;z-index:3;pointer-events:none;display:flex;justify-content:space-between;padding:8px 40px;font-size:10.5px;font-weight:800"><span style="color:${revCol}">‹ tap · swipe · Revise</span><span style="color:${okCol}">Got it · swipe · tap ›</span></div>
+    </div>`;
+}
 function viewTrain(){
   const S=state; const goalTarget=active().goal||S.draft.goal||10; const goalDoneN=goalToday(); const goalPctNum=Math.min(100,Math.round((goalDoneN/goalTarget)*100));
   return `<div style="max-width:620px;margin:0 auto">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><button data-act="exitTrain" style="color:var(--muted);font-weight:700;font-size:13px">← Exit</button><div style="font-family:var(--mono);font-size:13px;color:var(--muted)">${S.sessionDone} done · ${S.sessionRight} correct</div></div>
     <div style="height:7px;border-radius:999px;background:var(--surface2);overflow:hidden;margin-bottom:22px"><div style="height:100%;background:var(--accent);border-radius:999px;width:${goalPctNum}%;transition:width .4s"></div></div>
-    ${trainerCard()}
+    ${(S.coachCardView&&!S.sessionOver)?coachFlashCard():trainerCard()}
     ${liveHeatmap(S.sessionWords&&S.sessionWords.length?S.sessionWords:WORDS, {anon:true})}
   </div>`;
 }
@@ -3291,8 +3335,8 @@ function printCards(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(label)} — Bizzing Bee flashcards</title><style>
     @page{size:${sizes[p.page]||'letter'} portrait;margin:8mm} *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Trebuchet MS','Segoe UI',Verdana,sans-serif;color:#241E33}
-    .page{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:7mm;min-height:272mm;page-break-after:always}
-    .card{border:2.5px solid var(--c1);border-radius:18px;overflow:hidden;position:relative;display:flex;flex-direction:column;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .page{display:flex;flex-wrap:wrap;gap:9mm 8mm;justify-content:center;align-content:flex-start;page-break-after:always}
+    .card{width:90mm;height:125mm;border:2.5px solid var(--c1);border-radius:18px;overflow:hidden;position:relative;display:flex;flex-direction:column;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
     /* front banner */
     .fbanner{background:linear-gradient(135deg,var(--c1),var(--c2));color:#fff;padding:15px 18px 15px;position:relative}
     .fw{font-size:38px;font-weight:800;line-height:1;letter-spacing:.005em;overflow-wrap:anywhere;text-shadow:0 1.5px 3px rgba(0,0,0,.18);padding-right:36px}
@@ -3353,8 +3397,8 @@ function printAvCardsDoc(){ const c=active(); const owned=SB_AVATARS.list.filter
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>My avatar cards — Bizzing Bee</title><style>
     @page{size:letter portrait;margin:8mm} *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Trebuchet MS','Segoe UI',Verdana,sans-serif;color:#241E33}
-    .page{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:7mm;min-height:272mm;page-break-after:always}
-    .card{border:2.5px solid var(--rc,var(--c1));border-radius:18px;overflow:hidden;position:relative;display:flex;flex-direction:column;background:linear-gradient(165deg,color-mix(in srgb,var(--c1) 22%,#fff),#fff 46%);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .page{display:flex;flex-wrap:wrap;gap:9mm 8mm;justify-content:center;align-content:flex-start;page-break-after:always}
+    .card{width:90mm;height:125mm;border:2.5px solid var(--rc,var(--c1));border-radius:18px;overflow:hidden;position:relative;display:flex;flex-direction:column;background:linear-gradient(165deg,color-mix(in srgb,var(--c1) 22%,#fff),#fff 46%);-webkit-print-color-adjust:exact;print-color-adjust:exact}
     .afront{padding:12px 14px 10px}
     .avil{background:linear-gradient(165deg,color-mix(in srgb,var(--c1) 42%,#1A1526),#17131F 55%)!important;color:#fff;border-color:var(--rc)}
     .atop{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
@@ -5181,6 +5225,14 @@ root.addEventListener('click', e=>{ const el=e.target.closest('[data-act]'); if(
 root.addEventListener('input', e=>{ const el=e.target.closest('[data-inp]'); if(!el) return; callAct(el.getAttribute('data-inp'), el.value); });
 root.addEventListener('change', e=>{ const el=e.target.closest('[data-chg]'); if(!el) return; callAct(el.getAttribute('data-chg'), el.value); });
 root.addEventListener('keydown', e=>{ const el=e.target.closest('[data-key]'); if(!el) return; const fn=app[el.getAttribute('data-key')]; if(fn) fn(e); });
+/* Word Coach card view: horizontal swipe on the card. Swipe right = "got it" (completeWord),
+   swipe left = revise (reviseWord). preventDefault on a handled swipe suppresses the ghost
+   click so the tap-zone underneath doesn't also fire. */
+(function(){ let sx=0,sy=0,st=0,mode=null;
+  root.addEventListener('touchstart',e=>{ const t=e.target.closest('[data-swipe]'); mode=t?t.getAttribute('data-swipe'):null; if(!mode) return; const p=e.changedTouches[0]; sx=p.clientX; sy=p.clientY; st=Date.now(); },{passive:true});
+  root.addEventListener('touchend',e=>{ if(mode!=='coach') return; const p=e.changedTouches[0]; const dx=p.clientX-sx, dy=p.clientY-sy; mode=null;
+    if(Date.now()-st>700) return; if(Math.abs(dx)<48 || Math.abs(dx)<Math.abs(dy)*1.3) return;
+    e.preventDefault(); if(dx>0) app.completeWord(); else app.reviseWord(); },{passive:false}); })();
 /* game hotkeys: 1–4 pick an answer, R repeats the word, D shows the hint (never while typing) */
 window.addEventListener('keydown', e=>{ try{
   if(e.metaKey||e.ctrlKey||e.altKey) return;
