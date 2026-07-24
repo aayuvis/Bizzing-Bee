@@ -757,7 +757,14 @@ const app = {
     else { const ws=state.sessionWords||[]; const obj=ws.find(x=>nkey(x.w)===nkey(w))||{w:w,d:'',s:''}; addMiss(obj); flash('Marked for revision ⚑'); }
     if(nav && typeof app[nav]==='function') app[nav]('next'); else render(); },
   conceptWordNav:(dir)=>{ const ws=((state.conceptSel&&state.conceptSel.words)||[]).filter(x=>x&&x.w); const N=ws.length||1; let i=(state.conceptWordIdx||0)+(dir==='next'?1:-1); set({conceptWordIdx:Math.max(0,Math.min(N-1,i))}); },
-  exitTrain:()=>{ if((state.sessionDone||0)>0){ logActivity(state.coachSession?'concept':'practice', state.sessionLabel||'Practice', {done:state.sessionDone,right:state.sessionRight}, []); } if(state.coachSession){ state.coachSession=false; app.openCoach(); } else if(state.trainBack==='themes'){ state.trainBack=null; app.setNav('themes'); } else app.setNav('home'); },
+  exitTrain:()=>{ if((state.sessionDone||0)>0){ logActivity(state.coachSession?'concept':'practice', state.sessionLabel||'Practice', {done:state.sessionDone,right:state.sessionRight}, []); } if(state.coachSession){ state.coachSession=false; app.openCoach(); } else if(state.trainBack==='revisions'){ state.trainBack=null; app.openRevisions(); } else if(state.trainBack==='themes'){ state.trainBack=null; app.setNav('themes'); } else app.setNav('home'); },
+  // Revisions — the words you flagged to revise; complete them or drill them again
+  openRevisions:()=>set({nav:'revisions', screen:'app'}),
+  reviseComplete:(word)=>{ markMastered(nkey(word)); clearMiss(word); flash('Completed ✓ — cleared from revisions'); render(); },
+  practiceRevisions:()=>{ const c=active(); const list=(c.missed||[]).slice(0,30); if(!list.length){ flash('No revisions yet — nice work!'); return; }
+    state.sessionWords=list.map(m=>({w:m.w,d:m.d||'',s:m.s||'',p:m.p||'',o:m.o||'',r:m.r||'',y:m.y||3,sy:m.sy||'',h:m.h||''})); state.sessionLabel='Revisions'; state.gi=0; state.coachSession=false; state.trainBack='revisions'; app.startTrain(); },
+  reviseOne:(word)=>{ const c=active(); const m=(c.missed||[]).find(x=>nkey(x.w)===nkey(word)); const src=m||(wordDB().get(nkey(word))); if(!src){ flash('Word not found'); return; }
+    state.sessionWords=[{w:src.w,d:src.d||'',s:src.s||'',p:src.p||'',o:src.o||'',r:src.r||'',y:src.y||3,sy:src.sy||'',h:src.h||''}]; state.sessionLabel='Revise: '+src.w; state.gi=0; state.coachSession=false; state.trainBack='revisions'; app.startTrain(); },
   onType:(v)=>{ state.typed=v; }, /* no per-keystroke render — a full re-render restarts tile animations (dock flicker) */
   trainKey:(e)=>{ if(e.key==='Enter'){ if(state.status==='idle') app.check(); else app.next(); } },
   toggleDef:()=>set({showDef:!state.showDef}),
@@ -1601,7 +1608,8 @@ const WAYFIND={ quest:{c:'var(--action,#6C4FE0)',ic:'steps',sb:null,label:'Champ
   figurative:{c:'#9C6A08',ic:'bulb',sb:'sparkle',label:'Idioms & Sayings'},
   vocab:{c:'#2E8FB8',ic:'book',sb:'book',label:'Vocabulary'},
   typing:{c:'#5B3DD6',ic:'pencil',sb:'pencil',label:'Typing Trainer'},
-  traps:{c:'#C4453C',ic:'spark',sb:'target',label:'Your Traps'} };
+  traps:{c:'#C4453C',ic:'spark',sb:'target',label:'Your Traps'},
+  revisions:{c:'#E0922E',ic:'book',sb:'target',label:'Your Revisions'} };
 function wayTile(key,size,tilt){ const w=WAYFIND[key]; size=size||48;
   const glyph=(w.sb&&window.SB_ICON)?SB_ICON(w.sb,{size:24}):iconSVG(w.ic,24,2.2);
   return `<span style="width:${size}px;height:${size}px;flex-shrink:0;display:grid;place-items:center;border-radius:14px;background:${w.c};color:#fff;box-shadow:var(--edge),var(--sh-rest);transform:rotate(${tilt||-2.5}deg)">${glyph}</span>`; }
@@ -1915,6 +1923,7 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
     row('typing','openTyping',null,'Touch-type, then race the 60s test')+
     row('vocab','openVocab',null,'Word → meaning, vocabulary-bee style')+
     row('traps','openTraps',null,'Beat your weak spelling patterns')+
+    row('revisions','openRevisions',null,'Redo the words you flagged to revise')+
     `<button class="sb-lift" data-act="openBuilder" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px 13px;box-shadow:var(--sh-rest)">
       ${iconTile('sliders', '#0E8A78', {size:38, radius:11})}
       <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15px">List Builder</span><span style="display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:1px">Build a custom list in five taps</span></span>
@@ -2037,10 +2046,32 @@ function viewTraps(){ const S=state; const traps=missTraps(); const sel=S.trapSe
     ${traps.length?`<div style="display:flex;flex-direction:column;gap:9px">${rows}</div>`
       :beeEmpty('sleepy','Nothing on the radar — no misses to trace yet. The bee naps until you find a tricky word.')}
   </div>`; }
+// Revisions — words the child flagged "Mark for revision" in Word Coach. Each can be drilled
+// again (⚑ Revise) or cleared once mastered (✓ Complete). Companion to Your Traps.
+function viewRevisions(){
+  const c=active(); const list=(c.missed||[]);
+  const row=(m)=>{ const w=m.w;
+    return `<div style="display:flex;align-items:center;gap:10px;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:11px 12px;box-shadow:var(--sh-rest)">
+      <button data-act="say" data-arg="${escA(w)}" title="Hear it" style="width:38px;height:38px;flex-shrink:0;border-radius:10px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG('volume',17)}</button>
+      <span style="min-width:0;flex:1">
+        <span style="display:block;font-family:var(--display);font-weight:800;font-size:16px;line-height:1.15;overflow-wrap:anywhere">${esc(w)}</span>
+        ${m.d?`<span style="display:block;font-size:12px;color:var(--muted);font-weight:600;line-height:1.35;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(m.d)}</span>`:''}
+      </span>
+      <button data-act="reviseOne" data-arg="${escA(w)}" title="Practice this word again" style="flex-shrink:0;padding:8px 11px;border-radius:999px;background:color-mix(in srgb,var(--treasure,#F0B429) 16%,transparent);border:1px solid var(--treasure,#F0B429);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12.5px">⚑ Revise</button>
+      <button data-act="reviseComplete" data-arg="${escA(w)}" title="I know it now — mark complete" style="flex-shrink:0;padding:8px 11px;border-radius:999px;background:color-mix(in srgb,var(--good) 15%,transparent);border:1px solid var(--good);color:var(--good);font-weight:800;font-size:12.5px">✓ Complete</button>
+    </div>`; };
+  return `<div style="max-width:640px;margin:0 auto;animation:sb-rise .35s ease both">
+    ${pageHead('Your Revisions','words you flagged to revise','Mark a word for revision in Word Coach and it lands here. Drill them again, or mark them complete once they stick.')}
+    ${list.length?`<div style="display:flex;gap:8px;margin-bottom:14px">
+      <button data-act="practiceRevisions" style="flex:1;padding:13px;border-radius:12px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Practice all ${list.length} →</button></div>
+    <div style="display:flex;flex-direction:column;gap:9px">${list.map(row).join('')}</div>`
+      :beeEmpty('happy','Nothing to revise — every flagged word is cleared! Mark a word for revision in Word Coach and it will show up here.')}
+  </div>`;
+}
 /* ===================== APP SHELL ===================== */
 function viewApp(){
   const S=state;
-  const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,typing:1,adv:1};
+  const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,typing:1,adv:1,traps:1,revisions:1};
   const NAV_ART={home:'home',coach:'practice',explore:'explore',games:'arcade',shop:'store',progress:'progress',collection:'collection'};
   const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['explore','Explore','compass'],['games','Arcade','joystick'],['shop','Store','cart'],['progress','Progress','chart'],['collection','Collection','crown']].map(([key,label,ic])=>{
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:S.nav===key;
@@ -2063,6 +2094,7 @@ function viewApp(){
   else if(S.nav==='builder') content=viewBuilder();
   else if(S.nav==='leveltest') content=viewLevelTest();
   else if(S.nav==='traps') content=viewTraps();
+  else if(S.nav==='revisions') content=viewRevisions();
   else if(S.nav==='evolution') content=viewEvolution();
   else if(S.nav==='collection') content=viewCollection();
   else if(S.nav==='finder') content=viewFinder();
@@ -3015,7 +3047,8 @@ function coachFlashCard(){
       <div style="flex:1;height:7px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--accent);width:${pct}%;transition:width .3s"></div></div>
       ${mastered?'<span style="color:var(--good);font-weight:800;font-size:12px;white-space:nowrap">✓ Got it</span>':''}
     </div>
-    <div data-swipe="coach" style="position:relative;max-width:340px;margin:0 auto;height:min(72vh,470px);background:var(--bg2);border:1px solid var(--line);border-radius:24px;box-shadow:var(--glow);overflow:hidden;touch-action:pan-y;-webkit-user-select:none;user-select:none">
+    <div data-swipe="coach" class="coach-card" style="position:relative;max-width:340px;margin:0 auto;height:min(72vh,470px);border-radius:24px;overflow:hidden;touch-action:pan-y;-webkit-user-select:none;user-select:none">
+      <div class="coach-glimmer"></div>
       <div data-act="reviseWord" title="Mark for revision → next word" style="position:absolute;top:0;left:0;bottom:0;width:50%;z-index:1;cursor:pointer"></div>
       <div data-act="completeWord" title="Got it → next word" style="position:absolute;top:0;right:0;bottom:0;width:50%;z-index:1;cursor:pointer"></div>
       <button data-act="toggleCardView" title="Back to spelling practice" aria-label="Back to spelling practice" style="position:absolute;top:12px;left:12px;z-index:4;width:38px;height:38px;border-radius:11px;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${cardsSVG(20)}</button>
