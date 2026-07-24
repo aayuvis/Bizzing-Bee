@@ -2317,3 +2317,104 @@ bluewhale: `<defs><radialGradient id="bbwha" cx="50%" cy="35%" r="75%"><stop off
 <g transform="translate(104 100)"><ellipse rx="4" ry="2.6" fill="#FF9E7A"/><circle cx="-1.5" cy="-.5" r=".8" fill="#3A2213"/></g>
 <circle cx="14" cy="52" r="3" fill="none" stroke="#8ADAFF" stroke-width="2"/><circle cx="108" cy="60" r="2.4" fill="none" stroke="#8ADAFF" stroke-width="2"/><circle cx="44" cy="58" r="8" fill="#fff"/><circle cx="45.3" cy="59.4" r="4" fill="#2E455C"/><circle cx="44.2" cy="58.2" r="1.44" fill="#fff"/><circle cx="72" cy="58" r="8" fill="#fff"/><circle cx="73.3" cy="59.4" r="4" fill="#2E455C"/><circle cx="72.2" cy="58.2" r="1.44" fill="#fff"/><ellipse cx="36" cy="68" rx="5" ry="3" fill="#FF9EB8" opacity=".85"/><ellipse cx="80" cy="68" rx="5" ry="3" fill="#FF9EB8" opacity=".85"/><path d="M50 72 q8 6 16 0" fill="none" stroke="#2E455C" stroke-width="3.5" stroke-linecap="round"/><path d="M12 26 l1.26 3.7800000000000002 3.7800000000000002 1.26 -3.7800000000000002 1.26 -1.26 3.7800000000000002 -1.26 -3.7800000000000002 -3.7800000000000002 -1.26 3.7800000000000002 -1.26 z" fill="#FFC83D"/><path d="M106 30 l1.19 3.57 3.57 1.19 -3.57 1.19 -1.19 3.57 -1.19 -3.57 -3.57 -1.19 3.57 -1.19 z" fill="#FFC83D"/>`,
 });
+
+/* ===== WORLD CHANGERS PACK — real geniuses & peacemakers as portrait avatars (pack 19).
+   Human-portrait formula: sculpted face path + neck + sloped shoulders; likeness in hair /
+   facial-hair beziers + period costume; prop secondary. 120x120. ===== */
+(function(){
+  var P='#2E455C';
+  function G(id,a,b){ return '<radialGradient id="'+id+'" cx="50%" cy="26%" r="82%"><stop offset="0" stop-color="'+a+'"/><stop offset="1" stop-color="'+b+'"/></radialGradient>'; }
+  function base(o){ var skin=o.skin, jaw=o.jaw, k=o.k;
+    var neck='<path d="M52 72 h16 v11 q-8 4 -16 0 z" fill="'+skin+'"/><path d="M52 74 q8 3.5 16 0" stroke="'+jaw+'" stroke-width="1.4" fill="none" opacity=".5"/>';
+    var shoulders='<path d="M22 120 Q25 93 60 86 Q95 93 98 120 Z" fill="url(#wg-'+k+')"/>';
+    var face='<path d="M38 46 Q37 25 60 23 Q83 25 82 46 Q82 63 72 73 Q66 80 60 80 Q54 80 48 73 Q38 63 38 46 Z" fill="'+skin+'"/>';
+    var ears='<ellipse cx="37" cy="54" rx="4.6" ry="6.8" fill="'+skin+'"/><path d="M35.6 52 q2 2 0 4.6" stroke="'+jaw+'" stroke-width="1.1" fill="none"/><ellipse cx="83" cy="54" rx="4.6" ry="6.8" fill="'+skin+'"/><path d="M84.4 52 q-2 2 0 4.6" stroke="'+jaw+'" stroke-width="1.1" fill="none"/>';
+    var jshade='<path d="M48 72 Q60 81 72 72 Q66 77 60 77 Q54 77 48 72 Z" fill="'+jaw+'" opacity=".32"/>';
+    var eyes = o.closed
+      ? '<path d="M46 53 q6 4.5 12 0" stroke="'+P+'" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M62 53 q6 4.5 12 0" stroke="'+P+'" stroke-width="2" fill="none" stroke-linecap="round"/>'
+      : '<ellipse cx="52" cy="52" rx="4.5" ry="5.3" fill="#fff"/><circle cx="52.6" cy="52.7" r="2.5" fill="'+P+'"/><circle cx="51.4" cy="51.2" r=".9" fill="#fff"/><ellipse cx="68" cy="52" rx="4.5" ry="5.3" fill="#fff"/><circle cx="68.6" cy="52.7" r="2.5" fill="'+P+'"/><circle cx="67.4" cy="51.2" r=".9" fill="#fff"/>';
+    var nose='<path d="M60 50 q-3.5 8 -1 12 q2.5 2.5 6 1.2" fill="none" stroke="'+jaw+'" stroke-width="1.3" opacity=".5"/>';
+    var cheeks='<circle cx="46" cy="62" r="3.6" fill="#FF9EB8" opacity=".6"/><circle cx="74" cy="62" r="3.6" fill="#FF9EB8" opacity=".6"/>';
+    var mouth = o.mouth || '<path d="M54 69 q6 3.4 12 0" stroke="'+jaw+'" stroke-width="2" fill="none" stroke-linecap="round"/>';
+    return {neck:neck,shoulders:shoulders,face:face,ears:ears,jshade:jshade,eyes:eyes,nose:nose,cheeks:cheeks,mouth:mouth};
+  }
+  var spark='<path d="M22 24 l1.2 2.6 l2.6 1.2 l-2.6 1.2 l-1.2 2.6 l-1.2 -2.6 l-2.6 -1.2 l2.6 -1.2z" fill="#FFC83D"/><path d="M99 20 l1.3 2.8 l2.8 1.3 l-2.8 1.3 l-1.3 2.8 l-1.3 -2.8 l-2.8 -1.3 l2.8 -1.3z" fill="#FFC83D"/><circle cx="103" cy="62" r="1.6" fill="#FFC83D"/>';
+  function fig(o){
+    var b=base(o);
+    return '<defs>'+G('wg-'+o.k,o.g1,o.g2)+(o.defs||'')+'</defs>'
+      +(o.backdrop||'')+b.neck+b.shoulders+(o.collar||'')+(o.behind||'')
+      +b.face+b.ears+b.jshade+(o.hairFront||'')+b.eyes+(o.spec||'')+b.nose+b.cheeks+(o.mouth?o.mouth:b.mouth)
+      +(o.facial||'')+(o.head||'')+(o.prop||'')+spark;
+  }
+  var A={};
+  // ---- Isaac Newton — long center-parted wig, crimson coat, white cravat, falling apple ----
+  A.newton=fig({k:'newton',skin:'#F2D4B8',jaw:'#D9B492',g1:'#B02A38',g2:'#7C1622',
+    prop:'<path d="M74 6 Q86 9 93 19" stroke="#6B4A2A" stroke-width="2.6" fill="none"/><path d="M82 10 q7 -3 11 2 q-6 3 -11 -2z" fill="#4E8A3A"/><circle cx="90" cy="27" r="5.6" fill="#D8352E"/><path d="M90 21.5 q0 -3 2.5 -4" stroke="#6B4A2A" stroke-width="1.5" fill="none"/><path d="M87.6 25 a5.6 5.6 0 0 1 3 -3.2" stroke="#F2836C" stroke-width="1.4" fill="none" opacity=".8"/>',
+    behind:'<path d="M32 40 Q22 64 31 92 Q37 98 43 92 Q35 70 41 50 Z" fill="#ECEAE4"/><path d="M88 40 Q98 64 89 92 Q83 98 77 92 Q85 70 79 50 Z" fill="#ECEAE4"/><path d="M35 60 q-4 14 0 26" stroke="#D2CEC5" stroke-width="1.4" fill="none"/><path d="M85 60 q4 14 0 26" stroke="#D2CEC5" stroke-width="1.4" fill="none"/>',
+    hairFront:'<path d="M36 46 Q33 22 60 20 Q87 22 84 46 Q79 30 68 27 Q64 25 60 25 Q56 25 52 27 Q41 30 36 46 Z" fill="#F4F2EE"/><path d="M60 21 L60 31" stroke="#CFCBC2" stroke-width="1.3"/><path d="M46 30 q-3 8 -2 14 M74 30 q3 8 2 14" stroke="#D8D4CB" stroke-width="1.2" fill="none"/>',
+    collar:'<path d="M40 120 Q42 96 60 90 L60 120 Z" fill="#8C1E2A"/><path d="M80 120 Q78 96 60 90 L60 120 Z" fill="#9C2531"/><path d="M55 84 Q60 98 65 84 Q66 92 60 100 Q54 92 55 84 Z" fill="#F5F2EB"/>' });
+  // ---- Marie Curie — swept-up bun, high black collar, glowing green radium vial ----
+  A.curie=fig({k:'curie',skin:'#F2D4B8',jaw:'#D9B492',g1:'#33333C',g2:'#1C1C22',
+    backdrop:'<circle cx="24" cy="98" r="14" fill="#39D98A" opacity=".28"/>',
+    behind:'<path d="M35 42 Q33 24 60 21 Q87 24 85 42 Q80 30 60 30 Q40 30 35 42 Z" fill="#463628"/>',
+    hairFront:'<path d="M37 45 Q35 27 60 26 Q85 27 83 45 Q78 33 60 33 Q42 33 37 45 Z" fill="#4E3C2C"/><ellipse cx="60" cy="20" rx="12.5" ry="8" fill="#463628"/><ellipse cx="60" cy="19" rx="6.5" ry="3.6" fill="#5C4634"/>',
+    collar:'<path d="M45 120 Q47 95 60 89 Q73 95 75 120 Z" fill="#26262E"/><path d="M52 90 q8 5 16 0 l0 5 q-8 5 -16 0z" fill="#EDEAE2"/>',
+    prop:'<rect x="15" y="84" width="10" height="24" rx="3.5" fill="#17492F"/><rect x="15" y="90" width="10" height="18" rx="3.5" fill="#3AD98A"/><ellipse cx="20" cy="84" rx="5" ry="2.2" fill="#8CF0C0"/><rect x="18.5" y="78" width="3" height="7" rx="1.4" fill="#C9C4BC"/>' });
+  // ---- Martin Luther King Jr. — short crop, thin mustache, suit + striped tie, gold speech waves ----
+  A.mlk=fig({k:'mlk',skin:'#9C6B44',jaw:'#7E5334',g1:'#2E323C',g2:'#20232B',
+    prop:'<path d="M92 34 q9 -6 9 -14 M94 44 q13 -8 13 -22 M90 24 q6 -4 6 -9" stroke="#FFC83D" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".9"/>',
+    hairFront:'<path d="M39 44 Q37 26 60 25 Q83 26 81 44 Q78 33 60 32 Q42 33 39 44 Z" fill="#221913"/><path d="M39 45 q-1 -3 1 -6 M81 45 q1 -3 -1 -6" stroke="#221913" stroke-width="3" fill="none"/>',
+    facial:'<path d="M53 65 q7 3 14 0" stroke="#221913" stroke-width="2.4" fill="none" stroke-linecap="round"/>',
+    collar:'<path d="M44 120 Q46 95 60 89 L60 120 Z" fill="#23262E"/><path d="M76 120 Q74 95 60 89 L60 120 Z" fill="#2C303A"/><path d="M53 90 q7 5 14 0 l-2 6 q-5 3 -10 0z" fill="#F2EFE8"/><path d="M58 96 L62 96 L64 120 L56 120 Z" fill="#C43A44"/><path d="M57 102 l6 0 M56.5 110 l7 0" stroke="#F2EFE8" stroke-width="1.6"/>' });
+  // ---- Mahatma Gandhi — bald, round glasses, white mustache, white shawl, spinning wheel ----
+  A.gandhi=fig({k:'gandhi',skin:'#C08F60',jaw:'#A0764A',g1:'#F1EEE6',g2:'#DAD5C8',
+    prop:'<circle cx="20" cy="100" r="11" fill="none" stroke="#9A7A4A" stroke-width="2"/><circle cx="20" cy="100" r="2.4" fill="#9A7A4A"/><path d="M20 89 L20 111 M9 100 L31 100 M12.3 92.3 L27.7 107.7 M27.7 92.3 L12.3 107.7" stroke="#9A7A4A" stroke-width="1.2"/>',
+    behind:'<path d="M40 42 Q40 34 46 32 M80 42 Q80 34 74 32" stroke="#7E5334" stroke-width="3" fill="none" opacity=".4"/>',
+    spec:'<circle cx="52" cy="52" r="7" fill="none" stroke="#5A5148" stroke-width="1.8"/><circle cx="68" cy="52" r="7" fill="none" stroke="#5A5148" stroke-width="1.8"/><path d="M59 52 h2 M45 51 l-6 -2 M75 51 l6 -2" stroke="#5A5148" stroke-width="1.6"/>',
+    facial:'<path d="M52 66 q8 4 16 0" stroke="#EDEAE2" stroke-width="3" fill="none" stroke-linecap="round"/>',
+    collar:'<path d="M44 120 Q46 96 60 90 Q74 96 76 120 Z" fill="#EFECE4"/><path d="M60 90 Q54 104 44 120 M60 90 Q66 104 76 120" stroke="#D8D2C4" stroke-width="1.6" fill="none"/>' });
+  // ---- Johannes Gutenberg — forked beard, chaperon hat, dark robe, flying letter tiles ----
+  A.gutenberg=fig({k:'gutenberg',skin:'#F2D4B8',jaw:'#D9B492',g1:'#3A322C',g2:'#282219',
+    prop:'<g font-family="Georgia,serif" font-weight="bold" font-size="9" fill="#6B4A2A"><rect x="86" y="16" width="12" height="12" rx="2" fill="#F0E6CE" stroke="#C9A96A" stroke-width="1"/><text x="92" y="25" text-anchor="middle">S</text><rect x="96" y="30" width="11" height="11" rx="2" fill="#F0E6CE" stroke="#C9A96A" stroke-width="1"/><text x="101.5" y="38.5" text-anchor="middle">P</text><rect x="10" y="24" width="11" height="11" rx="2" fill="#F0E6CE" stroke="#C9A96A" stroke-width="1"/><text x="15.5" y="32.5" text-anchor="middle">E</text></g>',
+    facial:'<path d="M42 58 Q44 78 54 82 Q58 74 60 82 Q62 74 66 82 Q76 78 78 58 Q70 70 60 70 Q50 70 42 58 Z" fill="#C9C4BC"/><path d="M44 56 q16 6 32 0" stroke="#B4AEA4" stroke-width="1.2" fill="none"/>',
+    head:'<path d="M34 40 Q32 18 60 18 Q88 18 86 40 Q80 26 60 26 Q40 26 34 40 Z" fill="#7A2530"/><path d="M84 34 Q98 36 96 50 Q90 58 82 52 Q88 44 84 34 Z" fill="#651E28"/><path d="M36 40 q24 -10 48 0" stroke="#8C2F3A" stroke-width="1.4" fill="none"/>',
+    collar:'<path d="M44 120 Q46 96 60 90 Q74 96 76 120 Z" fill="#332B24"/>' });
+  // ---- Florence Nightingale — white lace cap + chin ribbon, glowing lamp, crescent moon ----
+  A.nightingale=fig({k:'nightingale',skin:'#F2D4B8',jaw:'#D9B492',g1:'#36323E',g2:'#242029',
+    backdrop:'<path d="M96 20 a13 13 0 1 0 4 18 a10 10 0 1 1 -4 -18z" fill="#FBE9A8" opacity=".55"/>',
+    behind:'<path d="M34 40 Q32 22 60 20 Q88 22 86 40 Q80 28 60 28 Q40 28 34 40 Z" fill="#6E5A44"/>',
+    head:'<path d="M33 46 Q30 20 60 18 Q90 20 87 46 Q86 34 78 30 Q60 22 42 30 Q34 34 33 46 Z" fill="#F6F4EE"/><path d="M33 46 Q34 58 40 64 L44 60 Q38 54 38 46z" fill="#F6F4EE"/><path d="M87 46 Q86 58 80 64 L76 60 Q82 54 82 46z" fill="#F6F4EE"/><path d="M44 62 Q52 72 60 72 Q68 72 76 62" stroke="#E7E3D8" stroke-width="1.4" fill="none"/><path d="M40 30 q20 -8 40 0" stroke="#E1DCCF" stroke-width="1.2" fill="none"/>',
+    collar:'<path d="M44 120 Q46 96 60 90 Q74 96 76 120 Z" fill="#2C2A33"/><path d="M52 92 q8 4 16 0 l0 4 q-8 4 -16 0z" fill="#EFEAE0"/>',
+    prop:'<ellipse cx="20" cy="100" rx="6" ry="7" fill="#FBD24B"/><ellipse cx="20" cy="100" rx="6" ry="7" fill="#FFF0B0" opacity=".6"/><rect x="18.5" y="90" width="3" height="4" fill="#9A7A4A"/><path d="M14 100 q-6 -2 -6 -8 q3 4 6 4z" fill="#FBE9A8" opacity=".7"/>' });
+  // ---- Aryabhatta — topknot, red tilak, earrings, saffron robe, glowing zero ----
+  A.aryabhatta=fig({k:'aryabhatta',skin:'#C08F60',jaw:'#A0764A',g1:'#E68A2E',g2:'#C46A18',
+    backdrop:'<circle cx="98" cy="96" r="12" fill="#3D7DF0" opacity=".3"/><path d="M98 84 a12 12 0 0 1 0 24" stroke="#7FB0FF" stroke-width="1.6" fill="none"/>',
+    behind:'<path d="M35 44 Q33 26 60 24 Q87 26 85 44 Q80 32 60 32 Q40 32 35 44 Z" fill="#241A12"/>',
+    head:'<ellipse cx="60" cy="17" rx="7" ry="9" fill="#241A12"/><path d="M56 10 q4 -5 8 0" stroke="#241A12" stroke-width="3" fill="none"/>',
+    spec:'<circle cx="60" cy="38" r="2.4" fill="#D6362E"/>',
+    prop:'<ellipse cx="34" cy="60" rx="2" ry="3" fill="#F0C64A"/><ellipse cx="86" cy="60" rx="2" ry="3" fill="#F0C64A"/><text x="20" y="30" font-family="Georgia,serif" font-weight="bold" font-size="20" fill="#FFC83D">0</text>',
+    collar:'<path d="M44 120 Q46 95 60 88 Q74 95 76 120 Z" fill="#D67A1E"/><path d="M60 88 L52 120 M60 88 L60 120" stroke="#B85E10" stroke-width="2" fill="none"/><path d="M60 90 Q72 96 82 110" stroke="#F0A94C" stroke-width="5" fill="none"/>' });
+  // ---- Qin Shi Huang — mian crown with jade bead strands, drooping mustache + chin tuft ----
+  A.qinshihuang=fig({k:'qinshihuang',skin:'#F0D0A8',jaw:'#CFA878',g1:'#2A2446',g2:'#171334',
+    prop:'<g fill="#B9863A"><path d="M6 80 q3 -4 7 -2 q4 2 3 8 l-3 22 l-6 0 l-2 -22 q-1 -5 0 -6z"/><circle cx="9.5" cy="76" r="4.5"/></g><g fill="#B9863A"><path d="M104 82 q3 -4 7 -2 q4 2 3 8 l-3 22 l-6 0 l-2 -22 q-1 -5 0 -6z"/><circle cx="107.5" cy="78" r="4.5"/></g>',
+    facial:'<path d="M50 64 Q46 76 42 82 M70 64 Q74 76 78 82" stroke="#2A2018" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M56 72 q4 12 4 22 q0 -10 4 -22 q-4 3 -8 0z" fill="#2A2018"/>',
+    head:'<path d="M36 40 Q34 24 60 22 Q86 24 84 40 Q78 30 60 30 Q42 30 36 40 Z" fill="#161228"/><rect x="30" y="10" width="60" height="9" rx="2" fill="#20183A"/><rect x="28" y="8" width="64" height="4" rx="2" fill="#3A2E5E"/><g stroke="#C9B24A" stroke-width="1.2"><path d="M38 19 L38 30"/><path d="M50 19 L50 31"/><path d="M60 19 L60 32"/><path d="M70 19 L70 31"/><path d="M82 19 L82 30"/></g><g fill="#39D98A"><circle cx="38" cy="30" r="2"/><circle cx="50" cy="31" r="2"/><circle cx="60" cy="32" r="2"/><circle cx="70" cy="31" r="2"/><circle cx="82" cy="30" r="2"/></g>',
+    collar:'<path d="M42 120 Q44 94 60 87 Q76 94 78 120 Z" fill="#221C3E"/><path d="M60 87 L50 120 M60 87 L70 120" stroke="#C9A93A" stroke-width="2.4" fill="none"/>' });
+  // ---- Buddha — snail-curl hair + ushnisha, long earlobes, urna, closed eyes, gold halo ----
+  A.buddha=fig({k:'buddha',skin:'#E8B86A',jaw:'#C99A4E',g1:'#E0902E',g2:'#B96C16',closed:true,
+    mouth:'<path d="M54 69 q6 3 12 0" stroke="#B07A38" stroke-width="2" fill="none" stroke-linecap="round"/>',
+    backdrop:'<circle cx="60" cy="46" r="42" fill="#FFD86B" opacity=".35"/><circle cx="60" cy="46" r="42" fill="none" stroke="#FFC83D" stroke-width="1.6" opacity=".6"/>',
+    behind:'<path d="M34 46 Q32 20 60 18 Q88 20 86 46 Q86 30 60 28 Q34 30 34 46 Z" fill="#2E3A63"/><path d="M52 12 q8 -6 16 0 q-2 8 -8 8 q-6 0 -8 -8z" fill="#2E3A63"/>',
+    hairFront:'<g fill="#33406B"><circle cx="42" cy="34" r="3"/><circle cx="50" cy="29" r="3"/><circle cx="60" cy="27" r="3"/><circle cx="70" cy="29" r="3"/><circle cx="78" cy="34" r="3"/><circle cx="38" cy="42" r="3"/><circle cx="82" cy="42" r="3"/><circle cx="60" cy="15" r="3"/></g>',
+    spec:'<circle cx="60" cy="42" r="2" fill="#FFF0C0"/>',
+    prop:'<path d="M35 60 q-2 8 0 14 M85 60 q2 8 0 14" stroke="#C99A4E" stroke-width="2" fill="none"/><ellipse cx="35" cy="74" rx="2.6" ry="3.6" fill="#E8B86A"/><ellipse cx="85" cy="74" rx="2.6" ry="3.6" fill="#E8B86A"/>',
+    collar:'<path d="M40 120 Q44 92 60 86 Q76 92 80 120 Z" fill="#D6821E"/><path d="M60 86 Q52 104 46 120 M60 86 Q60 104 60 120" stroke="#B4661A" stroke-width="2" fill="none"/>' });
+  // ---- Albert Einstein — wild white hair halo, walrus mustache, cardigan, E=mc2 ----
+  A.einstein=fig({k:'einstein',skin:'#F2D4B8',jaw:'#D9B492',g1:'#6E6A62',g2:'#4E4A44',
+    prop:'<g stroke="#7FB0FF" stroke-width="1.2" fill="none" opacity=".8"><ellipse cx="100" cy="30" rx="11" ry="4.5"/><ellipse cx="100" cy="30" rx="11" ry="4.5" transform="rotate(60 100 30)"/><ellipse cx="100" cy="30" rx="11" ry="4.5" transform="rotate(120 100 30)"/></g><circle cx="100" cy="30" r="2" fill="#FFC83D"/><text x="6" y="34" font-family="Georgia,serif" font-style="italic" font-weight="bold" font-size="10" fill="#4A4A52">E=mc²</text>',
+    behind:'<g fill="#F0EEE9"><path d="M30 44 Q16 34 20 22 Q26 30 34 30 Q26 18 34 10 Q38 22 46 22 Q42 8 52 6 Q54 18 60 18 Q66 6 76 8 Q74 20 82 22 Q90 12 96 20 Q88 26 88 32 Q100 30 100 42 Q88 38 84 44z"/></g>',
+    hairFront:'<path d="M36 46 Q34 30 44 26 Q40 40 46 42 M84 46 Q86 30 76 26 Q80 40 74 42" fill="#F4F2ED"/><path d="M40 40 Q50 30 60 30 Q70 30 80 40 Q70 34 60 34 Q50 34 40 40z" fill="#F4F2ED"/>',
+    facial:'<path d="M46 64 Q52 74 60 74 Q68 74 74 64 Q66 70 60 70 Q54 70 46 64z" fill="#EDEBE6"/><path d="M47 63 q13 5 26 0" stroke="#D8D4CC" stroke-width="1.2" fill="none"/>',
+    collar:'<path d="M42 120 Q45 95 60 88 Q75 95 78 120 Z" fill="#5E5A54"/><path d="M52 90 q8 5 16 0 l0 30 l-16 0z" fill="#8A857C"/><path d="M60 92 L60 120" stroke="#4E4A44" stroke-width="1.6"/><circle cx="60" cy="102" r="1.4" fill="#3E3A34"/><circle cx="60" cy="112" r="1.4" fill="#3E3A34"/>' });
+  window.SB_AVATAR_ART = Object.assign(window.SB_AVATAR_ART||{}, A);
+})();
