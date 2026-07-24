@@ -3075,7 +3075,6 @@ function trainerCard(){
   const tchip=(on,label,act)=>`<button data-act="${act}" style="padding:9px 14px;border-radius:999px;font-weight:700;font-size:13px;border:1px solid ${on?'var(--accent)':'var(--line)'};${on?'background:var(--accent);color:#fff':'background:transparent;color:var(--text)'}">${label}</button>`;
   const mascotAnim=st==='wrong'?'animation:sb-shake .45s ease':(st==='correct'?'animation:sb-pop .4s ease':'');
   return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow);text-align:center;position:relative">
-      <button data-act="toggleCardView" title="Switch to card view" aria-label="Switch to card view" style="position:absolute;top:12px;left:12px;z-index:4;width:38px;height:38px;border-radius:11px;background:var(--surface2);color:var(--accent);border:1px solid var(--line);display:grid;place-items:center">${cardsSVG(20)}</button>
       <div style="height:6px"></div>
       <div style="width:96px;height:108px;margin:0 auto 4px"><div style="${mascotAnim};width:96px;height:108px">${mascotSVG(S.mood)}</div></div>
       <div style="display:flex;justify-content:center;gap:12px;margin-bottom:18px">
