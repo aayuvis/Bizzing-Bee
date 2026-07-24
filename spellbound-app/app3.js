@@ -813,7 +813,25 @@ const app = {
     if(i>=0){ state.luTab='revise'; state.reviseIdx=i; try{window.scrollTo(0,0);}catch(e){} render(); } else { say(w); } },
   toggleSent:()=>{ const on=!state.showSent; if(on){ const w=curWord(); if(w&&w.s) sayMasked(w.s,w.w); } set({showSent:on}); },
   toggleOrigin:()=>set({showOrigin:!state.showOrigin}),
-  luSetTab:(t)=>{ set({luTab:t, heatReveal:false, coachCardView:false}); if(t==='practice') setTimeout(speak,250); },
+  luSetTab:(t)=>{ if(t==='vocab' && !state.vp) app.vocabNewQ(); set({luTab:t, heatReveal:false, coachCardView:false}); if(t==='practice') setTimeout(speak,250); if(t==='vocab') setTimeout(()=>{ try{ if(state.vp) say(state.vp.w.w); }catch(e){} },250); },
+  // Practice Vocabulary — optional, no progression: pick the right meaning from 4 options,
+  // earn a coin + karma for a correct pick. Distractors are other words' meanings from the list.
+  vocabNewQ:()=>{ const pool=learnWords().filter(w=>w&&w.w&&String(w.d||'').trim());
+    if(pool.length<2){ state.vp=null; return; }
+    const seen=state._vpSeen||[]; let cand=pool.filter(w=>seen.indexOf(nkey(w.w))<0); if(cand.length<1){ state._vpSeen=[]; cand=pool.slice(); }
+    const target=cand[Math.floor(Math.random()*cand.length)]; state._vpSeen=(state._vpSeen||[]).concat(nkey(target.w));
+    const used={}; used[String(target.d).toLowerCase()]=1;
+    const others=pool.filter(w=>nkey(w.w)!==nkey(target.w)).sort(()=>Math.random()-0.5); const distract=[];
+    for(let j=0;j<others.length && distract.length<3;j++){ const dk=String(others[j].d).toLowerCase(); if(!used[dk]){ used[dk]=1; distract.push(others[j].d); } }
+    const opts=[{d:target.d,correct:true}].concat(distract.map(d=>({d:d,correct:false}))).sort(()=>Math.random()-0.5);
+    state.vp={ w:target, opts:opts, picked:null }; },
+  vocabSay:()=>{ if(state.vp) say(state.vp.w.w); },
+  vocabPick:(i)=>{ i=+i; const vp=state.vp; if(!vp||vp.picked!=null) return; vp.picked=i; const ok=!!(vp.opts[i]&&vp.opts[i].correct);
+    if(ok){ sfx('correct'); addCoins(1); const c=active(); c.karma=(c.karma||0)+1; state.vpRight=(state.vpRight||0)+1; state.toast='✓ +1 coin · +1 karma 🌟'; scheduleToast(1500); save(); }
+    else { sfx('wrong'); }
+    state.vpDone=(state.vpDone||0)+1; render();
+    clearTimeout(state._vpTimer); state._vpTimer=setTimeout(()=>{ if(state.luTab==='vocab' && state.vp && state.vp.picked!=null){ app.vocabNewQ(); render(); try{ if(state.vp) say(state.vp.w.w); }catch(e){} } }, ok?1150:2200); },
+  vocabNext:()=>{ clearTimeout(state._vpTimer); state._vpTimer=null; app.vocabNewQ(); render(); try{ if(state.vp) say(state.vp.w.w); }catch(e){} },
   toggleHeat:()=>set({heatReveal:!state.heatReveal}),
   luToggleWords:()=>set({luWordsOpen:!state.luWordsOpen}),
   luPractice:(idx)=>{ state.gi=+idx; state.luTab='practice'; state.status='idle'; state.typed=''; state.mood='happy'; state.showDef=false; state.showSent=false; state.showOrigin=false; render(); setTimeout(speak,250); },
@@ -3121,6 +3139,37 @@ function cardDonePanel(){ const miss=((active().missed)||[]).length;
       </div>
     </div></div>`;
 }
+// Practice Vocabulary — a 4-option meaning quiz on the list's words. Optional (no level impact);
+// a correct pick earns a coin + a karma point.
+function vocabPracticeCard(){
+  if(!state.vp) app.vocabNewQ();
+  const vp=state.vp;
+  if(!vp) return `<div style="max-width:520px;margin:0 auto">${beeEmpty('sleepy','No words with meanings in this list yet — pick a list with definitions and try again.')}</div>`;
+  const w=vp.w; const karma=(active().karma)||0;
+  const optBtn=(o,i)=>{ let bg='var(--surface2)',bd='var(--line)',col='var(--text)',mark='';
+    if(vp.picked!=null){ if(o.correct){ bg='color-mix(in srgb,var(--good) 16%,transparent)'; bd='var(--good)'; col='var(--good)'; mark=' ✓'; }
+      else if(i===vp.picked){ bg='color-mix(in srgb,var(--bad) 14%,transparent)'; bd='var(--bad)'; col='var(--bad)'; mark=' ✗'; } else { col='var(--muted)'; } }
+    return `<button data-act="vocabPick" data-arg="${i}" ${vp.picked!=null?'disabled':''} style="display:block;width:100%;text-align:left;padding:13px 15px;border-radius:14px;background:${bg};border:1.5px solid ${bd};color:${col};font-weight:700;font-size:14.5px;line-height:1.42;margin-bottom:9px">${esc(o.d)}${mark}</button>`; };
+  return `<div style="max-width:560px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:12px">
+      <span style="font-size:12px;color:var(--muted);font-weight:700">Optional — doesn’t change your level, but great practice (recommended!)</span>
+      <span style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;color:var(--treasure-deep,#8A5B00);background:color-mix(in srgb,var(--treasure,#F0B429) 16%,transparent);border-radius:999px;padding:4px 11px">🌟 ${karma} karma</span>
+      ${state.vpDone?`<span style="font-family:var(--mono);font-size:12px;color:var(--muted)">✓ ${state.vpRight||0}/${state.vpDone}</span>`:''}
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,28px);box-shadow:var(--glow)">
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">What does this word mean?</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:11px;flex-wrap:wrap">
+          <div style="font-family:var(--display);font-weight:800;font-size:clamp(24px,6vw,34px);overflow-wrap:anywhere">${esc(w.w)}</div>
+          <button data-act="vocabSay" title="Hear the word" aria-label="Hear the word" style="width:42px;height:42px;flex-shrink:0;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',20)}</button>
+        </div>
+        ${w.p?`<div style="font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:700;margin-top:4px">/ ${esc(w.p)} /</div>`:''}
+      </div>
+      ${vp.opts.map(optBtn).join('')}
+      ${vp.picked!=null?`<div style="display:flex;justify-content:flex-end;margin-top:4px"><button data-act="vocabNext" style="padding:10px 18px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">Next word →</button></div>`:''}
+    </div>
+  </div>`;
+}
 function coachFlashCard(){
   if(state.cardDone) return cardDonePanel();
   const ws=learnWords(); const N=ws.length||1; const i=Math.min(Math.max(state.cardIdx||0,0),N-1); const w=ws[i]||{w:'',d:'',s:'',o:''};
@@ -4407,17 +4456,20 @@ function coachTrain(){
       </div>
       <div style="overflow-x:auto;padding:2px 0"><div style="min-width:760px">${evoLadderHTML(theme, fIdx)}</div></div>
     </div>`;
-  const tab=(k,l)=>`<button data-act="luSetTab" data-arg="${k}" style="flex:1;padding:9px 8px;border-radius:10px;font-weight:800;font-size:13px;${S.luTab===k?'background:var(--bg2);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.08)':'background:transparent;color:var(--muted)'}">${l}</button>`;
+  const tab=(k,l)=>`<button data-act="luSetTab" data-arg="${k}" style="flex:1;padding:9px 6px;border-radius:10px;font-weight:800;font-size:12px;line-height:1.15;${S.luTab===k?'background:var(--bg2);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.08)':'background:transparent;color:var(--muted)'}">${l}</button>`;
   const learnCardsBtn=`<div style="display:flex;margin-bottom:10px"><button data-act="toggleCardView" title="Card view — flip through these words, starting on this one" style="display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12.5px">${cardsSVG(15)} Card view</button></div>`;
-  const body = S.coachCardView ? coachFlashCard() : (S.luTab==='practice' ? trainerCard() : learnCardsBtn+wordFlash(ws, S.reviseIdx, 'reviseNav', {selfMark:true}));
+  const body = S.coachCardView ? coachFlashCard()
+    : (S.luTab==='practice' ? trainerCard()
+      : S.luTab==='vocab' ? vocabPracticeCard()
+      : learnCardsBtn+wordFlash(ws, S.reviseIdx, 'reviseNav', {selfMark:true}));
   const act=(a,ic,t,col)=>`<button data-act="${a}" class="sb-lift" style="display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:16px 10px;box-shadow:var(--sh-rest)">${iconTile(ic,col,{size:44,radius:13})}<span style="font-family:var(--display);font-weight:800;font-size:13.5px;color:${col};line-height:1.15">${t}</span></button>`;
   const actions=`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:18px 2px 10px">Quick practice</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:11px">${act('startBuzz','flame','Daily Buzz','#E8845C')}${act('startWritten','pencil','Written','#7C5CFF')}${act('startOral','speaker','Oral round','#13A892')}${act('coachSetupOpen','sliders','Setup','#C8901B')}</div>`;
   const journeyPromo = (key!=='journey' && (getList(c,'journey').stage||0)===0) ? `<button data-act="startJourney" style="width:100%;text-align:left;border-radius:14px;margin-top:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 4px 14px rgba(43,27,94,.16)"><div style="padding:13px 16px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">★ Recommended path</div><div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">The Bizzing Bee Journey — 20 Levels to Champ</div></div><span style="padding:8px 14px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Start →</span></div></button>` : '';
   return `<div style="max-width:760px;margin:0 auto">${printDlg}${topBar}
-    <div style="display:flex;gap:6px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:16px">${tab('revise','Learn')}${tab('practice','Practice')}</div>
+    <div style="display:flex;gap:5px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:16px">${tab('revise','Learn')}${tab('practice','Practice Spelling')}${tab('vocab','Practice Vocabulary')}</div>
     ${body}
-    ${liveHeatmap(ws, {anon:S.luTab==='practice', print:true})}
+    ${S.luTab==='vocab'?'':liveHeatmap(ws, {anon:S.luTab==='practice', print:true})}
     ${chipsRow}${allWordsPanel}
     ${levelBlock}
     ${journeyPromo}
