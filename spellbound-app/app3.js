@@ -3490,7 +3490,8 @@ function printAvCardsDoc(){ const c=active(); const owned=SB_AVATARS.list.filter
       <div class="aart">${art}</div>
       <div class="aname">${esc(d.name)}</div>
       <div class="atitle">${esc(d.title)}</div>
-      <div class="astats">${bar('✨ Spark',d.stats.spark,d.c1)}${bar('📚 Wisdom',d.stats.wisdom,d.c1)}${bar('⚡ Speed',d.stats.speed,d.c1)}${bar('💪 Grit',d.stats.grit,d.c1)}</div>
+      <div class="astats">${bar('⚡ Stamina',d.stats.spark,d.c1)}${bar('🧠 Wisdom',d.stats.wisdom,d.c1)}${bar('💨 Speed',d.stats.speed,d.c1)}${bar('😎 Coolness',d.stats.grit,d.c1)}</div>
+      ${d.power?`<div class="afact" style="margin-bottom:6px"><b>⚡ Superpower</b> ${esc(d.power)}</div>`:''}
       <div class="afact"><b>💡 Inspired by</b> ${esc(d.fact)}</div>
       <div class="apack">🐝 ${esc(d.packLabel)}</div>
     </div>`; };

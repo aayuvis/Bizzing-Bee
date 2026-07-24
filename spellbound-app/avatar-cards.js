@@ -19,9 +19,26 @@
 
   // rarity → stat baseline + spread (higher rarity = stronger + a bit more spread)
   var TIER = { free:{base:52,spread:16}, rare:{base:62,spread:18}, epic:{base:72,spread:18}, legendary:{base:84,spread:14} };
-  var STAT_KEYS = [['spark','⚡','Spark'], ['wisdom','🧠','Wisdom'], ['speed','💨','Speed'], ['grit','🛡️','Grit']];
+  // Stat display: internal keys stay spark/grit; labels are Stamina / Wisdom / Speed / Coolness.
+  var STAT_KEYS = [['spark','⚡','Stamina'], ['wisdom','🧠','Wisdom'], ['speed','💨','Speed'], ['grit','😎','Coolness']];
 
+  // Curated stats for real people & deities so the numbers match who they are (spark=Stamina,
+  // grit=Coolness). Wisdom is high for the great minds — Einstein/Newton are never low on it.
+  var STATS_OVERRIDE = {
+    newton:{spark:72,wisdom:99,speed:74,grit:86}, einstein:{spark:70,wisdom:99,speed:82,grit:93},
+    curie:{spark:90,wisdom:97,speed:74,grit:90}, buddha:{spark:92,wisdom:99,speed:58,grit:99},
+    gandhi:{spark:94,wisdom:96,speed:56,grit:97}, mlk:{spark:86,wisdom:95,speed:80,grit:96},
+    gutenberg:{spark:82,wisdom:91,speed:84,grit:76}, nightingale:{spark:92,wisdom:93,speed:78,grit:84},
+    aryabhatta:{spark:76,wisdom:98,speed:88,grit:86}, qinshihuang:{spark:90,wisdom:88,speed:70,grit:92},
+    thor:{spark:96,wisdom:70,speed:86,grit:92}, zeus:{spark:94,wisdom:88,speed:82,grit:96},
+    poseidon:{spark:92,wisdom:82,speed:80,grit:90}, ra:{spark:90,wisdom:90,speed:80,grit:94},
+    athena:{spark:82,wisdom:99,speed:86,grit:92}, rama:{spark:90,wisdom:92,speed:92,grit:95},
+    hades:{spark:88,wisdom:88,speed:72,grit:92}, odin:{spark:86,wisdom:99,speed:76,grit:93},
+    anubis:{spark:84,wisdom:91,speed:82,grit:88}, krishna:{spark:88,wisdom:99,speed:92,grit:99},
+    shiva:{spark:97,wisdom:99,speed:82,grit:99}
+  };
   function statsFor(id, rarity) {
+    if (STATS_OVERRIDE[id]) return Object.assign({}, STATS_OVERRIDE[id]);
     var t = TIER[rarity] || TIER.free; var out = {};
     STAT_KEYS.forEach(function (k, i) {
       var v = t.base + Math.round((rnd(hash(id + ':' + k[0]) % 100000 + i) * 2 - 1) * t.spread);
@@ -29,6 +46,25 @@
     });
     return out;
   }
+  // Every card gets a named superpower — curated for real figures/deities, generated from the
+  // avatar's top stat for the rest.
+  var POWERS = {
+    newton:'Gravity Sense — spots the hidden rule behind everything', einstein:'Thought Experiment — bends space, time and tricky words',
+    curie:'Radiant Focus — glows through the hardest problem', buddha:'Perfect Calm — unshakeable under any pressure',
+    gandhi:'Quiet Strength — moves mountains without force', mlk:'Dream Speech — words that move the whole world',
+    gutenberg:'Mass Print — copies knowledge a thousandfold', nightingale:'Healing Light — turns care into cures',
+    aryabhatta:'Zero Point — invented the number that cracked math open', qinshihuang:'Great Unify — makes an empire spell as one',
+    thor:'Thunder Strike — one swing clears the board', zeus:'Lightning Bolt — rules the storm and the score',
+    poseidon:'Tidal Surge — commands every sea', ra:'Sun Boat — never late in 5,000 years',
+    athena:'Battle Wisdom — strategy before spelling, always', rama:'True Aim — an arrow that never misses',
+    hades:'Underworld Calm — rules the quietest kingdom', odin:'All-Sight — his ravens read every word',
+    anubis:'Heart Scale — weighs every answer fairly', krishna:'Flute Song — charms the hardest word into place',
+    shiva:'Cosmic Dance — sets the rhythm of the universe'
+  };
+  var POWER_BY_TOP = { spark:['Endless Engine','Second Wind','Power Core'], wisdom:['Big Brain','Mind Palace','Deep Knowing'], speed:['Quick Draw','Blink Step','Fast Forward'], grit:['Ice Cool','Unflappable','Steady Nerve'] };
+  function powerFor(id, stats) { if (POWERS[id]) return POWERS[id];
+    var top='spark', tv=-1; ['spark','wisdom','speed','grit'].forEach(function(k){ if(stats[k]>tv){ tv=stats[k]; top=k; } });
+    var pool = POWER_BY_TOP[top] || POWER_BY_TOP.spark; return pool[hash(id+'pw') % pool.length]; }
 
   // pack persona → greeting templates (name-filled). Chosen by hash for variety.
   var PACK_VOICE = {
@@ -368,7 +404,7 @@
     var overall = Math.round((stats.spark + stats.wisdom + stats.speed + stats.grit) / 4);
     return { id:id, name:a.name, pack:a.pack, packLabel:pack.label, rarity:a.rarity, rarityLabel:rar.label, rc:rar.c,
       c1:pack.c1, c2:pack.c2, title:title.trim(), greeting:greeting, lore:lore, fact:fact, stats:stats, overall:overall,
-      villain:villain, kind:villain ? 'villain' : 'hero' };
+      power:powerFor(id, stats), villain:villain, kind:villain ? 'villain' : 'hero' };
   };
 
   // Trading-card inner HTML. opts.owned=false renders a locked/silhouette variant.
@@ -396,6 +432,7 @@
       + '<div class="avc-title">' + esc(d.title) + '</div>'
       + '<div class="avc-lore">' + esc(d.lore) + '</div>'
       + '<div class="avc-stats">' + bars + '</div>'
+      + '<div class="avc-power" style="position:relative;z-index:1;margin-top:7px;font:600 11.5px/1.4 var(--body,sans-serif);color:var(--ink,#241E33)"><b style="color:var(--c1)">⚡ ' + esc((d.power||'').split(' — ')[0]) + '</b>' + ((d.power||'').indexOf(' — ')>=0 ? (' — ' + esc((d.power||'').split(' — ').slice(1).join(' — '))) : '') + '</div>'
       + '<div class="avc-fact"><span class="avc-fact-h">💡 Inspired by</span>' + esc(d.fact) + '</div>'
       + '<div class="avc-pack"><span class="avc-dot"></span>' + esc(d.packLabel) + '</div>'
       + '</div>';
