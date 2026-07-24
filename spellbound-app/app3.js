@@ -3249,8 +3249,11 @@ function printCards(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1
   else if(sort==='diff') words=words.slice().sort((a,b)=>((a.y||3)-(b.y||3))||((a.bp||0)-(b.bp||0))||a.w.localeCompare(b.w));
   const CAP=400; const total=words.length; if(words.length>CAP) words=words.slice(0,CAP);
   const label=listLabel(key).split(' · ')[0]; const sizes={letter:'letter',a4:'A4',a5:'A5'};
-  const LC=(y)=>{ y=y||3; return y<=1?['#3FA45C','#2E8F4C']:y===2?['#2E9FB8','#1B7C97']:y===3?['#7C5CFF','#6A47F5']:y===4?['#B14FC4','#8E39A8']:y===5?['#E8912E','#CC7714']:['#D6453A','#B8322A']; };
-  const front=(w)=>{ const pron=w.p||w.sy||''; const cc=LC(w.y); const meta=[pron?esc(pron):'',w.ps?esc(w.ps):''].filter(Boolean).join(' · ');
+  const LC=(y)=>{ y=y||3; return y<=1?['#35B6E8','#1E8FC4']:y===2?['#6C7CF0','#4F5CD8']:y===3?['#9B5CF0','#7C3FD8']:y===4?['#E45CB0','#C43A92']:y===5?['#F0913C','#D4711C']:['#E8503E','#C43222']; };
+  // a different avatar per card, picked deterministically from the word so it's stable
+  const AVL=(window.SB_AVATARS&&SB_AVATARS.list)||[];
+  const cardAv=(word)=>{ if(!AVL.length) return ''; let h=0; const s=String(word); for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0; const id=AVL[h%AVL.length].id; try{ return avatarSVG(id,46); }catch(e){ return ''; } };
+  const front=(w)=>{ const pron=w.p||w.sy||''; const cc=LC(w.y); const meta=[pron?esc(pron):'',w.ps?esc(w.ps):''].filter(Boolean).join(' · '); const av=cardAv(w.w);
     return `<div class="card front" style="--c1:${cc[0]};--c2:${cc[1]}">
       <div class="fbanner"><span class="cbox"></span><div class="fw">${esc(w.w)}</div>${meta?`<div class="fmeta">${meta}</div>`:''}<span class="flvl">★ Level ${w.y||3}</span></div>
       <div class="fbody">
@@ -3260,13 +3263,14 @@ function printCards(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1
         ${w.h?`<div class="fhint"><span class="ic">💡</span><div><b>Memory trick</b>${esc(w.h)}</div></div>`:''}
         ${w.m?`<div class="fmis">⚠️ Often misspelled “${esc(w.m)}”</div>`:''}
         <div class="fnotes"><span class="nlab">✏️ My notes</span><span class="nl"></span><span class="nl"></span></div>
-      </div></div>`; };
-  const hexPts=(cx,cy,r)=>{ let s=''; for(let i=0;i<6;i++){ const a=Math.PI/180*(60*i-30); s+=(cx+r*Math.cos(a)).toFixed(1)+','+(cy+r*Math.sin(a)).toFixed(1)+' '; } return s.trim(); };
-  const deco=[[28,42,24],[170,54,33],[46,210,29],[180,216,20],[104,120,15],[14,148,13],[150,158,17],[196,140,22]].map(h=>`<polygon points="${hexPts(h[0],h[1],h[2])}"/>`).join('');
-  const bizzy=(typeof mascotSVG==='function')?mascotSVG('love'):'🐝';
+      </div>${av?`<div class="favatar">${av}</div>`:''}</div>`; };
+  const bizzy=(typeof mascotSVG==='function')?mascotSVG('happy'):'🐝';
+  const conf=[[24,40,'#FFD34D',0],[172,50,'#fff',18],[40,210,'#FF7DB0',-12],[182,206,'#FFD34D',24],[100,26,'#8CE0FF',10],[16,140,'#fff',-20],[196,150,'#FFD34D',14],[120,232,'#8CE0FF',-8],[60,120,'#fff',30]]
+    .map(c=>`<rect x="${c[0]}" y="${c[1]}" width="7" height="11" rx="2" fill="${c[2]}" opacity=".85" transform="rotate(${c[3]} ${c[0]} ${c[1]})"/>`).join('');
   const back=(w)=>{ const cc=LC(w.y); return `<div class="card back" style="--c1:${cc[0]};--c2:${cc[1]}">
-      <svg class="bdeco" viewBox="0 0 200 260" preserveAspectRatio="xMidYMid slice"><g fill="none" stroke="#fff" stroke-width="2.4" opacity=".16">${deco}</g></svg>
-      <span class="bspark s1">✨</span><span class="bspark s2">⭐</span><span class="bspark s3">🍯</span><span class="bspark s4">✨</span>
+      <div class="bsun"></div>
+      <svg class="bdeco" viewBox="0 0 200 260" preserveAspectRatio="xMidYMid slice">${conf}</svg>
+      <span class="bspark s1">✨</span><span class="bspark s2">⭐</span>
       <div class="bmid"><div class="bmascot">${bizzy}</div><div class="btitle"><i>Bizzing</i> Bee</div>
       <div class="blvl">★ Level ${w.y||3}</div><div class="bword">${esc(w.w)}</div></div></div>`; };
   let pages=''; for(let i=0;i<words.length;i+=4){ const chunk=words.slice(i,i+4);
@@ -3292,12 +3296,15 @@ function printCards(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1
     .ftx b,.fhint b{display:block;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--c1);font-weight:800;margin-bottom:2px}
     .fhint{display:flex;gap:10px;font-size:14.5px;line-height:1.4;color:#1f6b41;background:#edf8f0;border:1.5px solid #bfe6cc;border-radius:12px;padding:10px 12px;margin-bottom:11px}
     .fmis{font-size:13px;color:#b23a4e;font-weight:700;margin-bottom:11px}
-    .fnotes{margin-top:auto;padding-top:10px;border-top:2.5px dotted color-mix(in srgb,var(--c1) 45%,#fff)}
+    .fnotes{margin-top:auto;padding-top:10px;padding-right:56px;border-top:2.5px dotted color-mix(in srgb,var(--c1) 45%,#fff)}
     .nlab{font-size:12px;font-weight:800;color:var(--c1)}
     .nl{display:block;border-bottom:1.6px solid #d8d0ea;height:19px;margin-top:11px}
-    /* back — fun honeycomb Bizzing Bee backdrop with Bizzy the mascot */
-    .back{background:radial-gradient(120% 90% at 50% 12%,color-mix(in srgb,var(--c1) 82%,#fff),var(--c2));color:#fff;align-items:center;justify-content:center;text-align:center;border-color:var(--c2)}
-    .bdeco{position:absolute;inset:0;width:100%;height:100%}
+    .favatar{position:absolute;bottom:12px;right:12px;width:54px;height:54px;border-radius:50%;background:color-mix(in srgb,var(--c1) 14%,#fff);border:2.5px solid var(--c1);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 7px rgba(0,0,0,.15)}
+    .favatar svg{width:44px;height:44px}
+    /* back — fun sunburst + confetti backdrop with Bizzy the mascot */
+    .back{background:radial-gradient(130% 100% at 50% 8%,color-mix(in srgb,var(--c1) 78%,#fff),var(--c2));color:#fff;align-items:center;justify-content:center;text-align:center;border-color:var(--c2)}
+    .bsun{position:absolute;inset:0;background:repeating-conic-gradient(from 0deg at 50% 40%,rgba(255,255,255,.10) 0deg 7deg,transparent 7deg 14deg)}
+    .bdeco{position:absolute;inset:0;width:100%;height:100%;z-index:1}
     .bspark{position:absolute;z-index:1;font-size:24px;opacity:.9}
     .bspark.s1{top:16px;left:18px} .bspark.s2{top:22px;right:20px;font-size:19px} .bspark.s3{bottom:20px;left:20px;font-size:22px} .bspark.s4{bottom:24px;right:22px;font-size:18px}
     .bmid{position:relative;z-index:2}
