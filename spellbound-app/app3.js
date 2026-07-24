@@ -911,7 +911,8 @@ const app = {
       if(inc[v]&&on<=1){ flash('Keep at least one thing on the page'); return; } inc[v]=inc[v]?0:1; }
     else state.prn[g]=v; render(); },
   printGo:()=>{ try{ const w=window.open('','_blank'); if(!w){ flash('Pop-up blocked — allow pop-ups to print'); return; }
-    w.document.write(printDoc(activeListKey())); w.document.close(); setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} },350); state.printOpen=false; render(); }catch(e){ flash('Could not open the print view'); } },
+    const key=activeListKey(); const cards=(state.prn&&state.prn.fmt==='cards');
+    w.document.write(cards?printCards(key):printDoc(key)); w.document.close(); setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} },350); state.printOpen=false; render(); }catch(e){ flash('Could not open the print view'); } },
   addTheme:(id)=>{ const c=active(); ensureLists(c); const key=themeKey(id); const t=themeOf(id); if(!t) return;
     if(!(c.pinnedLists||{})[key]){ if(!c.pinnedLists) c.pinnedLists={}; c.pinnedLists[key]=1; if(!c.lists[key]) c.lists[key]={xp:0}; save(); sfx('coin'); flash('“'+t.label+'” added to your lists ✓'); render(); }
     else app.selectList(key); },
@@ -3238,6 +3239,55 @@ function printDoc(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1,p
     <div class="grid">${rows}</div>
     <div class="foot">${inc.w?'Say it → spell it → say it again. 🐝':'Read the clue, write the word — check together afterwards. 🐝'}</div>
   </body></html>`; }
+// Printable flashcards — one word per card (front = full detail + checkbox + note lines,
+// back = Bizzing Bee honeycomb backdrop with the word's level). 4 cards/page, backs mirrored
+// per row so they line up behind the fronts when duplex-printed.
+function printCards(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1,p:1,d:1},page:'letter',scope:'level',sort:'level',size:'normal'};
+  const scope=p.scope||'level', sort=p.sort||'level'; const c=active();
+  let words=(scope==='level'?listWords(key):listFullWords(key)).filter(w=>w&&w.w);
+  if(sort==='alpha') words=words.slice().sort((a,b)=>a.w.localeCompare(b.w));
+  else if(sort==='diff') words=words.slice().sort((a,b)=>((a.y||3)-(b.y||3))||((a.bp||0)-(b.bp||0))||a.w.localeCompare(b.w));
+  const CAP=400; const total=words.length; if(words.length>CAP) words=words.slice(0,CAP);
+  const label=listLabel(key).split(' · ')[0]; const sizes={letter:'letter',a4:'A4',a5:'A5'};
+  const front=(w)=>{ const pron=w.p||w.sy||''; return `<div class="card front">
+      <div class="fhead"><div class="fw">${esc(w.w)}</div><span class="cbox"></span></div>
+      ${(pron||w.ps)?`<div class="fpron">${pron?esc(pron):''}${w.ps?(pron?' · ':'')+esc(w.ps):''}</div>`:''}
+      ${w.d?`<div class="frow"><b>Meaning</b> ${esc(w.d)}</div>`:''}
+      ${w.s?`<div class="frow"><b>Sentence</b> ${esc(w.s)}</div>`:''}
+      ${w.o?`<div class="frow"><b>Origin</b> ${esc(w.o)}${w.r?('. '+esc(w.r)):''}</div>`:''}
+      ${w.h?`<div class="fhint">💡 ${esc(w.h)}</div>`:''}
+      ${w.m?`<div class="fmis">Often misspelled “${esc(w.m)}”</div>`:''}
+      <div class="fnotes"><span class="nlab">Notes</span><span class="nl"></span><span class="nl"></span></div>
+    </div>`; };
+  const back=(w)=>`<div class="card back"><div class="bpat"></div>
+      <div class="bmid"><div class="bbee">🐝</div><div class="btitle"><i>Bizzing</i> Bee</div>
+      <div class="blvl">Level ${w.y||3}</div><div class="bword">${esc(w.w)}</div></div></div>`;
+  let pages=''; for(let i=0;i<words.length;i+=4){ const chunk=words.slice(i,i+4);
+    pages+='<div class="page">'+chunk.map(front).join('')+'</div>';
+    // backs: mirror columns per row (0,1,2,3 -> 1,0,3,2) for duplex alignment
+    const order=[1,0,3,2].filter(x=>x<chunk.length); const bset=order.map(x=>chunk[x]).filter(Boolean);
+    pages+='<div class="page">'+bset.map(back).join('')+'</div>'; }
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(label)} — Bizzing Bee flashcards</title><style>
+    @page{size:${sizes[p.page]||'letter'};margin:8mm} *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Georgia,'Times New Roman',serif;color:#1c1633}
+    .page{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:6mm;height:calc(100vh - 0px);min-height:270mm;page-break-after:always}
+    .card{border:1.5px dashed #b9add8;border-radius:14px;padding:12px 14px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+    .front .fhead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;border-bottom:2px solid #e6def5;padding-bottom:6px;margin-bottom:7px}
+    .fw{font-size:26px;font-weight:bold;letter-spacing:.01em;line-height:1.05;overflow-wrap:anywhere}
+    .cbox{flex-shrink:0;width:22px;height:22px;border:2.4px solid #7C5CFF;border-radius:5px;display:inline-block}
+    .fpron{font-size:12px;color:#6a5b9a;font-style:italic;margin-bottom:6px}
+    .frow{font-size:12px;color:#33304a;line-height:1.4;margin-bottom:5px} .frow b{color:#4a3a86;font-weight:bold}
+    .fhint{font-size:11.5px;color:#2a6b46;line-height:1.35;margin-bottom:5px;background:#eef7f0;border-radius:8px;padding:5px 8px}
+    .fmis{font-size:11px;color:#b23a4e;margin-bottom:5px}
+    .fnotes{margin-top:auto;padding-top:6px} .nlab{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#9a8fbf;font-family:Arial,sans-serif}
+    .nl{display:block;border-bottom:1.3px solid #cfc6e6;height:15px;margin-top:8px}
+    /* back — honeycomb Bizzing Bee backdrop */
+    .back{background:linear-gradient(160deg,#6C4FE0,#4A32A8);color:#fff;align-items:center;justify-content:center;text-align:center;border-color:#4A32A8;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .bpat{position:absolute;inset:0;opacity:.16;background-image:radial-gradient(circle at 10px 6px,#fff 2px,transparent 2.5px),radial-gradient(circle at 30px 22px,#fff 2px,transparent 2.5px);background-size:40px 32px}
+    .bmid{position:relative;z-index:1} .bbee{font-size:44px;line-height:1} .btitle{font-family:Georgia,serif;font-size:22px;font-weight:bold;margin:2px 0 12px} .btitle i{font-style:italic}
+    .blvl{display:inline-block;font-family:Arial,sans-serif;font-weight:bold;font-size:16px;letter-spacing:.04em;background:rgba(255,255,255,.22);border:1.5px solid rgba(255,255,255,.5);border-radius:999px;padding:6px 16px}
+    .bword{margin-top:12px;font-size:14px;color:rgba(255,255,255,.7);letter-spacing:.05em}
+  </style></head><body>${pages}</body></html>`; }
 // Lists the child has activated: the 3 core lists + everything they pinned + whatever is being trained now.
 function activatedListKeys(){ const c=active(); ensureLists(c);
   const keys=['journey','review','missed', ...Object.keys(c.pinnedLists||{}).filter(k=>(c.pinnedLists||{})[k])];
@@ -4051,17 +4101,22 @@ function coachTrain(){
     const pbtn=(g,v,l)=>`<button data-act="printSet" data-arg="${g}:${v}" style="padding:9px 13px;border-radius:10px;font-weight:800;font-size:12px;border:1px solid ${p[g]===v?'var(--accent)':'var(--line)'};${p[g]===v?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">${l}</button>`;
     const tbtn=(v,l)=>`<button data-act="printSet" data-arg="inc:${v}" style="padding:9px 13px;border-radius:10px;font-weight:800;font-size:12px;border:1px solid ${p.inc[v]?'var(--accent)':'var(--line)'};${p.inc[v]?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">${p.inc[v]?'✓ ':''}${l}</button>`;
     const prow=(t,btns)=>`<div style="margin-bottom:13px"><div style="font-size:12px;color:var(--muted);font-weight:800;margin-bottom:7px">${t}</div><div style="display:flex;gap:6px;flex-wrap:wrap">${btns}</div></div>`;
+    const fmt=p.fmt==='cards'?'cards':'list';
     const nWords=(p.scope==='level'?listWords(key):listFullWords(key)).length;
+    const CARDCAP=400; const nCards=Math.min(nWords,CARDCAP);
     return `<div style="position:fixed;inset:0;z-index:90;background:rgba(20,12,50,.45);display:grid;place-items:center;padding:18px" data-act="printClose">
-      <div data-act="noop" style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:22px;max-width:430px;width:100%;box-shadow:var(--sh-overlay);cursor:default">
-        <div style="display:flex;align-items:center;gap:9px;margin-bottom:4px"><span style="display:inline-flex;color:var(--action)">${SB_ICON('printer',{size:20})}</span><span style="font-family:var(--display);font-weight:800;font-size:17px">Print word list</span><button data-act="printClose" style="margin-left:auto;color:var(--muted);font-weight:800">✕</button></div>
+      <div data-act="noop" style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:22px;max-width:430px;width:100%;box-shadow:var(--sh-overlay);cursor:default;max-height:90vh;overflow:auto">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:4px"><span style="display:inline-flex;color:var(--action)">${SB_ICON('printer',{size:20})}</span><span style="font-family:var(--display);font-weight:800;font-size:17px">Print</span><button data-act="printClose" style="margin-left:auto;color:var(--muted);font-weight:800">✕</button></div>
         <p style="font-size:12px;color:var(--muted);margin:0 0 15px">${esc(listLabel(key).split(' · ')[0])} — opens a clean page you can print or save as PDF.</p>
-        ${prow('What to include — pick one, two or three',[tbtn('w','Words'),tbtn('p','Pronunciations'),tbtn('d','Meanings')].join('')+(p.inc.w?'':'<div style="flex-basis:100%;font-size:11.5px;color:var(--muted);font-weight:650;margin-top:2px">No words = a quiz sheet — each row gets a blank line to write on.</div>'))}
+        ${prow('Format',[['list','📄 Word list'],['cards','🃏 Flashcards']].map(([v,l])=>pbtn('fmt',v,l)).join(''))}
+        ${fmt==='cards'
+          ? `<div style="font-size:11.5px;color:var(--muted);font-weight:650;line-height:1.5;background:var(--surface2);border-radius:10px;padding:10px 12px;margin-bottom:13px">One word per card with its meaning, sentence, origin & hint, a ✓ box and note lines. The back has a Bizzing Bee design with the word's level — print double-sided to get fronts &amp; backs, then cut out. 4 cards per page.</div>`
+          : prow('What to include — pick one, two or three',[tbtn('w','Words'),tbtn('p','Pronunciations'),tbtn('d','Meanings')].join('')+(p.inc.w?'':'<div style="flex-basis:100%;font-size:11.5px;color:var(--muted);font-weight:650;margin-top:2px">No words = a quiz sheet — each row gets a blank line to write on.</div>'))}
         ${prow('Sort by',[['level','Level order'],['alpha','A → Z'],['diff','Easiest → hardest']].map(([v,l])=>pbtn('sort',v,l)).join(''))}
-        ${prow('Text size',[['normal','Normal'],['compact','Compact — less paper']].map(([v,l])=>pbtn('size',v,l)).join(''))}
+        ${fmt==='cards'?'':prow('Text size',[['normal','Normal'],['compact','Compact — less paper']].map(([v,l])=>pbtn('size',v,l)).join(''))}
         ${prow('Page size',[['letter','Letter'],['a4','A4'],['a5','A5']].map(([v,l])=>pbtn('page',v,l)).join(''))}
         ${prow('What scope',[['level','Words in play · '+listWords(key).length],['all','Entire word list · '+listFullWords(key).length]].map(([v,l])=>pbtn('scope',v,l)).join(''))}
-        <button data-act="printGo" style="width:100%;padding:13px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Print ${nWords} words →</button>
+        <button data-act="printGo" style="width:100%;padding:13px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${fmt==='cards'?('Print '+nCards+' flashcard'+(nCards===1?'':'s')+' 🃏'):('Print '+nWords+' words →')}</button>
       </div></div>`; })() : '';
   // ---- one Level header (Word→Set→Level→Champ→Library) ----
   const levelHeadline = isJourney
