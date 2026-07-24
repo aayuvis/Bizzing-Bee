@@ -311,8 +311,15 @@ function workingSet(key){ const ws=listWords(key);
   // a session is "what you still need": every unmastered word of this Level (up to 36),
   // so finishing sessions always converges on the level-up — mastered words only return once none remain
   const un=ws.filter(w=>!state.luMastered[nkey(w.w)]);
-  if(un.length) return un.slice(0,36);
-  return ws.length<=36?ws.slice():sample(ws,36); }
+  let base = un.length ? un.slice(0,36) : (ws.length<=36?ws.slice():sample(ws,36));
+  // Prioritise the child's revise / mistakes words: anything they got wrong or flagged for
+  // revision comes first (newest miss first), so RETURNING to Practice starts on what still
+  // needs work. A first-timer has no misses, so the order is untouched and they start at word 1.
+  try{ const miss=(active().missed)||[]; if(miss.length){ const rank={}; miss.forEach((m,i)=>{ rank[nkey(m.w)]=i; });
+    base = base.map((w,i)=>[w,i]).sort((a,b)=>{ const am=rank[nkey(a[0].w)], bm=rank[nkey(b[0].w)]; const aH=am!==undefined, bH=bm!==undefined;
+      if(aH&&bH) return am-bm; if(aH) return -1; if(bH) return 1; return a[1]-b[1]; }).map(x=>x[0]); }
+  }catch(e){}
+  return base; }
 // bee-likelihood as 5 dots (●●●○○) from a 0–100 probability score
 function beeOdds(bp){ const n=Math.max(1,Math.min(5,Math.round((bp||0)/20))); return '●'.repeat(n)+'○'.repeat(5-n); }
 // Build the Word Coach working set for a list ONCE and keep it stable while you navigate —
