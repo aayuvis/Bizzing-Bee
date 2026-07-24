@@ -2109,52 +2109,89 @@ titan: `<defs><radialGradient id="tbtt-a" cx="50%" cy="45%" r="55%"><stop offset
 
 /* ===== SERPENT PACK — coiled-snake avatars, generated per species ===== */
 (function(){
+  // Each species gets a distinct POSE (silhouette + view angle) and EXPRESSION (personality).
+  function face(cx,cy,rot,expr,cfg){
+    var line=cfg.line||'#154A32', belly=cfg.belly, eye=cfg.eye||'#241A0C', grad='url(#sn-'+cfg.k+')';
+    var e='';
+    if(expr==='friendly') // big bright round eyes, cheery
+      e='<circle cx="'+(cx-10)+'" cy="'+(cy-4)+'" r="6.2" fill="#fff"/><circle cx="'+(cx-8.6)+'" cy="'+(cy-2.6)+'" r="3.3" fill="'+eye+'"/><circle cx="'+(cx-11)+'" cy="'+(cy-5.4)+'" r="1.2" fill="#fff"/>'
+       +'<circle cx="'+(cx+10)+'" cy="'+(cy-4)+'" r="6.2" fill="#fff"/><circle cx="'+(cx+11.4)+'" cy="'+(cy-2.6)+'" r="3.3" fill="'+eye+'"/><circle cx="'+(cx+9)+'" cy="'+(cy-5.4)+'" r="1.2" fill="#fff"/>'
+       +'<path d="M'+(cx-6)+' '+(cy+8)+' q6 5 12 0" fill="none" stroke="'+line+'" stroke-width="2" stroke-linecap="round"/>';
+    else if(expr==='sleepy') // half-lidded, chill
+      e='<path d="M'+(cx-15)+' '+(cy-3)+' q5 5 10 0" fill="none" stroke="'+line+'" stroke-width="2.4" stroke-linecap="round"/><circle cx="'+(cx-10)+'" cy="'+(cy-1)+'" r="2" fill="'+eye+'"/>'
+       +'<path d="M'+(cx+5)+' '+(cy-3)+' q5 5 10 0" fill="none" stroke="'+line+'" stroke-width="2.4" stroke-linecap="round"/><circle cx="'+(cx+10)+'" cy="'+(cy-1)+'" r="2" fill="'+eye+'"/>'
+       +'<path d="M'+(cx-4)+' '+(cy+9)+' q4 2 8 0" fill="none" stroke="'+line+'" stroke-width="1.8" stroke-linecap="round"/>';
+    else if(expr==='fierce') // angry slit eyes + brow, menacing
+      e='<path d="M'+(cx-16)+' '+(cy-8)+' l12 3" stroke="'+line+'" stroke-width="2.6" stroke-linecap="round"/><path d="M'+(cx+16)+' '+(cy-8)+' l-12 3" stroke="'+line+'" stroke-width="2.6" stroke-linecap="round"/>'
+       +'<g transform="rotate(18 '+(cx-9)+' '+(cy-2)+')"><ellipse cx="'+(cx-9)+'" cy="'+(cy-2)+'" rx="5.5" ry="3" fill="#F5D742"/><ellipse cx="'+(cx-9)+'" cy="'+(cy-2)+'" rx="1.5" ry="3" fill="'+eye+'"/></g>'
+       +'<g transform="rotate(-18 '+(cx+9)+' '+(cy-2)+')"><ellipse cx="'+(cx+9)+'" cy="'+(cy-2)+'" rx="5.5" ry="3" fill="#F5D742"/><ellipse cx="'+(cx+9)+'" cy="'+(cy-2)+'" rx="1.5" ry="3" fill="'+eye+'"/></g>'
+       +'<path d="M'+(cx-7)+' '+(cy+10)+' q7 -3 14 0" fill="none" stroke="'+line+'" stroke-width="2" stroke-linecap="round"/>';
+    else // regal: almond eyes + lashes, calm confidence
+      e='<path d="M'+(cx-15)+' '+(cy-3)+' q5 -4 10 0 q-5 5 -10 0z" fill="#fff" stroke="'+line+'" stroke-width="1.3"/><circle cx="'+(cx-10)+'" cy="'+(cy-2)+'" r="2.4" fill="'+eye+'"/><path d="M'+(cx-16)+' '+(cy-4)+' l-3 -2" stroke="'+line+'" stroke-width="1.4" stroke-linecap="round"/>'
+       +'<path d="M'+(cx+5)+' '+(cy-3)+' q5 -4 10 0 q-5 5 -10 0z" fill="#fff" stroke="'+line+'" stroke-width="1.3"/><circle cx="'+(cx+10)+'" cy="'+(cy-2)+'" r="2.4" fill="'+eye+'"/><path d="M'+(cx+16)+' '+(cy-4)+' l3 -2" stroke="'+line+'" stroke-width="1.4" stroke-linecap="round"/>'
+       +'<path d="M'+(cx-5)+' '+(cy+9)+' q5 3 10 0" fill="none" stroke="'+line+'" stroke-width="1.8" stroke-linecap="round"/>';
+    var tongue = (expr==='fierce')
+      ? '<path d="M'+cx+' '+(cy+12)+' q0 7 0 11 M'+cx+' '+(cy+23)+' l-5 6 M'+cx+' '+(cy+23)+' l5 6" fill="none" stroke="#E23B57" stroke-width="2.6" stroke-linecap="round"/>'
+      : '<path d="M'+cx+' '+(cy+11)+' q0 5 0 9 M'+cx+' '+(cy+20)+' l-3 4 M'+cx+' '+(cy+20)+' l3 4" fill="none" stroke="#E23B57" stroke-width="2.2" stroke-linecap="round"/>';
+    var fangs = cfg.fangs ? '<path d="M'+(cx-5)+' '+(cy+11)+' l-1 5 M'+(cx+5)+' '+(cy+11)+' l1 5" stroke="#fff" stroke-width="2" stroke-linecap="round"/>' : '';
+    return '<g transform="rotate('+(rot||0)+' '+cx+' '+cy+')">'
+      + cfg.crown
+      + '<ellipse cx="'+cx+'" cy="'+cy+'" rx="20" ry="16.5" fill="'+grad+'" stroke="'+line+'" stroke-width="3"/>'
+      + '<ellipse cx="'+cx+'" cy="'+(cy+6)+'" rx="12" ry="8" fill="'+belly+'" opacity=".55"/>'
+      + '<circle cx="'+(cx-5)+'" cy="'+(cy+6)+'" r="1.2" fill="'+line+'"/><circle cx="'+(cx+5)+'" cy="'+(cy+6)+'" r="1.2" fill="'+line+'"/>'
+      + tongue + e + fangs + '</g>';
+  }
   function snake(cfg){
-    var body=cfg.body, belly=cfg.belly, line=cfg.line||'#154A32', eye=cfg.eye||'#241A0C';
-    var hood = cfg.hood ? (
-      '<path d="M60 40 q-30 2 -30 22 q0 8 30 8 q30 0 30 -8 q0 -20 -30 -22z" fill="'+cfg.hoodFill+'" stroke="'+line+'" stroke-width="3"/>'+
-      '<circle cx="46" cy="52" r="4" fill="'+belly+'"/><circle cx="74" cy="52" r="4" fill="'+belly+'"/>') : '';
-    var rattle = cfg.rattle ? '<g transform="translate(90 96)"><path d="M0 0 l7 -3 l0 8 z" fill="#C9B27A" stroke="'+line+'" stroke-width="2"/><path d="M6 -2 l7 -3 l0 8 z" fill="#E0CB94" stroke="'+line+'" stroke-width="2"/></g>' : '';
-    var horns = cfg.horns ? '<path d="M46 30 q-4 -12 2 -18 q3 6 4 15z" fill="'+cfg.horns+'" stroke="'+line+'" stroke-width="2"/><path d="M74 30 q4 -12 -2 -18 q-3 6 -4 15z" fill="'+cfg.horns+'" stroke="'+line+'" stroke-width="2"/>' : '';
-    var gem = cfg.gem ? '<path d="M60 24 l6 8 -6 8 -6 -8z" fill="'+cfg.gem+'" stroke="'+line+'" stroke-width="2"/>' : '';
-    var fins = cfg.fins ? '<path d="M60 34 q-2 -12 3 -16 q2 6 1 15z" fill="'+belly+'" opacity=".7"/><path d="M40 66 q-14 -4 -18 4 q10 4 18 2z" fill="'+belly+'" opacity=".55"/>' : '';
-    var pat = '';
-    if(cfg.pat==='diamond') for(var i=0;i<3;i++) pat+='<path d="M60 '+(70+i*11)+' l7 6 -7 6 -7 -6z" fill="'+line+'" opacity=".35"/>';
-    if(cfg.pat==='bands') for(var b=0;b<3;b++) pat+='<rect x="30" y="'+(72+b*12)+'" width="60" height="5" rx="2.5" fill="'+line+'" opacity=".3"/>';
-    if(cfg.pat==='spots') pat='<circle cx="44" cy="80" r="4" fill="'+line+'" opacity=".3"/><circle cx="76" cy="88" r="4" fill="'+line+'" opacity=".3"/><circle cx="60" cy="96" r="4" fill="'+line+'" opacity=".3"/>';
-    return ''
-      // coiled body base
-      +'<defs><radialGradient id="sn-'+cfg.k+'" cx="50%" cy="38%" r="70%"><stop offset="0" stop-color="'+(cfg.hi||body)+'"/><stop offset="1" stop-color="'+body+'"/></radialGradient></defs>'
-      +'<ellipse cx="60" cy="92" rx="42" ry="20" fill="url(#sn-'+cfg.k+')" stroke="'+line+'" stroke-width="3"/>'
-      +'<ellipse cx="60" cy="90" rx="30" ry="12" fill="'+belly+'" opacity=".55"/>'
-      +pat
-      // rising S-neck
-      +'<path d="M60 84 q-22 -6 -18 -26 q3 -16 18 -18" fill="none" stroke="'+line+'" stroke-width="16" stroke-linecap="round"/>'
-      +'<path d="M60 84 q-22 -6 -18 -26 q3 -16 18 -18" fill="none" stroke="url(#sn-'+cfg.k+')" stroke-width="11" stroke-linecap="round"/>'
-      +hood+horns+gem+fins
-      // head
-      +'<ellipse cx="60" cy="40" rx="20" ry="16" fill="url(#sn-'+cfg.k+')" stroke="'+line+'" stroke-width="3"/>'
-      +'<ellipse cx="60" cy="46" rx="12" ry="8" fill="'+belly+'" opacity=".6"/>'
-      // tongue
-      +'<path d="M60 54 q0 8 0 12 M60 66 l-4 5 M60 66 l4 5" fill="none" stroke="#E23B57" stroke-width="2.4" stroke-linecap="round"/>'
-      // eyes
-      +'<circle cx="50" cy="36" r="6" fill="#fff"/><circle cx="51" cy="37" r="3.2" fill="'+eye+'"/><circle cx="49.6" cy="35.4" r="1.1" fill="#fff"/>'
-      +'<circle cx="70" cy="36" r="6" fill="#fff"/><circle cx="71" cy="37" r="3.2" fill="'+eye+'"/><circle cx="69.6" cy="35.4" r="1.1" fill="#fff"/>'
-      // nostrils + smile
-      +'<circle cx="55" cy="46" r="1.3" fill="'+line+'"/><circle cx="65" cy="46" r="1.3" fill="'+line+'"/>'
-      +(cfg.fangs?'<path d="M54 50 l-1 5 M66 50 l1 5" stroke="#fff" stroke-width="2" stroke-linecap="round"/>':'');
+    var body=cfg.body, belly=cfg.belly, line=cfg.line||'#154A32', grad='url(#sn-'+cfg.k+')';
+    var defs='<defs><radialGradient id="sn-'+cfg.k+'" cx="50%" cy="35%" r="72%"><stop offset="0" stop-color="'+(cfg.hi||body)+'"/><stop offset="1" stop-color="'+body+'"/></radialGradient></defs>';
+    // crown / horns / hood / rattle / fins decorations (drawn relative to head or body)
+    cfg.crown = cfg.horns ? '<path d="M-14 -10 q-4 -14 2 -20 q4 7 5 17z" fill="'+cfg.horns+'" stroke="'+line+'" stroke-width="2" transform="translate('+ (cfg._hx||60) +' '+ (cfg._hy||40) +')"/><path d="M14 -10 q4 -14 -2 -20 q-4 7 -5 17z" fill="'+cfg.horns+'" stroke="'+line+'" stroke-width="2" transform="translate('+ (cfg._hx||60) +' '+ (cfg._hy||40) +')"/>' : '';
+    cfg.crown += cfg.gem ? '<path d="M0 -18 l6 8 -6 8 -6 -8z" fill="'+cfg.gem+'" stroke="'+line+'" stroke-width="1.6" transform="translate('+ (cfg._hx||60) +' '+ (cfg._hy||40) +')"/>' : '';
+    var body_svg, headX, headY, headRot;
+    if(cfg.pose==='strike'){            // upright, reared to strike — cobra/naga/rattler/viper/mamba
+      headX=60; headY=32; headRot=cfg.rot||0;
+      var hood = cfg.hood ? '<path d="M60 46 q-26 2 -26 20 q0 9 26 9 q26 0 26 -9 q0 -18 -26 -20z" fill="'+(cfg.hoodFill||body)+'" stroke="'+line+'" stroke-width="3"/><circle cx="47" cy="58" r="3.5" fill="'+belly+'"/><circle cx="73" cy="58" r="3.5" fill="'+belly+'"/>' : '';
+      body_svg='<ellipse cx="62" cy="104" rx="34" ry="14" fill="'+grad+'" stroke="'+line+'" stroke-width="3"/><ellipse cx="62" cy="103" rx="22" ry="8" fill="'+belly+'" opacity=".5"/>'
+        +'<path d="M62 100 q-30 -8 -8 -34 q10 -12 6 -30" fill="none" stroke="'+line+'" stroke-width="19" stroke-linecap="round"/>'
+        +'<path d="M62 100 q-30 -8 -8 -34 q10 -12 6 -30" fill="none" stroke="'+grad+'" stroke-width="13" stroke-linecap="round"/>'+hood;
+    } else if(cfg.pose==='coil'){       // stacked resting coils, head laid on top — python/boa
+      headX=74; headY=54; headRot=22;
+      body_svg='<ellipse cx="58" cy="98" rx="42" ry="16" fill="'+grad+'" stroke="'+line+'" stroke-width="3"/>'
+        +'<ellipse cx="64" cy="82" rx="36" ry="14" fill="'+grad+'" stroke="'+line+'" stroke-width="3"/>'
+        +'<ellipse cx="56" cy="68" rx="28" ry="12" fill="'+grad+'" stroke="'+line+'" stroke-width="3"/>'
+        +'<ellipse cx="58" cy="98" rx="28" ry="9" fill="'+belly+'" opacity=".4"/>'
+        +'<path d="M56 62 q10 -8 22 -6" fill="none" stroke="'+line+'" stroke-width="15" stroke-linecap="round"/><path d="M56 62 q10 -8 22 -6" fill="none" stroke="'+grad+'" stroke-width="10" stroke-linecap="round"/>';
+    } else if(cfg.pose==='swim'){       // flowing diagonal swim — seasnake
+      headX=80; headY=40; headRot=-24;
+      var fins='<path d="M60 78 q-4 -14 4 -18 q3 8 1 18z" fill="'+belly+'" opacity=".7"/><path d="M34 92 q-16 -2 -20 8 q12 4 20 -2z" fill="'+belly+'" opacity=".5"/>';
+      body_svg='<path d="M16 104 q22 -16 40 -6 q20 12 24 -18" fill="none" stroke="'+line+'" stroke-width="20" stroke-linecap="round"/>'
+        +'<path d="M16 104 q22 -16 40 -6 q20 12 24 -18" fill="none" stroke="'+grad+'" stroke-width="14" stroke-linecap="round"/>'+fins;
+    } else {                             // playful horizontal wiggle — noodle/sunny (body curls up to the head)
+      headX=42; headY=42; headRot=-14;
+      body_svg='<path d="M42 56 q-8 18 8 26 q16 8 30 -1 q14 -9 26 3" fill="none" stroke="'+line+'" stroke-width="18" stroke-linecap="round"/>'
+        +'<path d="M42 56 q-8 18 8 26 q16 8 30 -1 q14 -9 26 3" fill="none" stroke="'+grad+'" stroke-width="12" stroke-linecap="round"/>'
+        +'<circle cx="106" cy="86" r="5" fill="'+grad+'" stroke="'+line+'" stroke-width="2.5"/>';
+    }
+    // scale pattern along the visible body
+    var pat='';
+    if(cfg.pat==='diamond') for(var i=0;i<3;i++) pat+='<path d="M'+(50+i*6)+' '+(78+i*8)+' l6 5 -6 5 -6 -5z" fill="'+line+'" opacity=".32"/>';
+    if(cfg.pat==='bands') for(var b=0;b<3;b++) pat+='<path d="M'+(34+b*4)+' '+(84-b*10)+' q26 8 52 0" fill="none" stroke="'+line+'" stroke-width="4" opacity=".28"/>';
+    if(cfg.pat==='spots') pat='<circle cx="50" cy="86" r="4" fill="'+line+'" opacity=".28"/><circle cx="70" cy="80" r="4" fill="'+line+'" opacity=".28"/><circle cx="60" cy="96" r="3.6" fill="'+line+'" opacity=".28"/>';
+    var rattle = cfg.rattle ? '<g transform="translate(92 100)"><path d="M0 0 l7 -3 l0 8 z" fill="#C9B27A" stroke="'+line+'" stroke-width="2"/><path d="M6 -2 l7 -3 l0 8 z" fill="#E0CB94" stroke="'+line+'" stroke-width="2"/></g>' : '';
+    cfg._hx=headX; cfg._hy=headY;
+    return defs + body_svg + pat + rattle + face(headX, headY, headRot, cfg.expr, cfg);
   }
   var S={
-    noodle:{k:'noodle',body:'#5FBE5A',hi:'#86D97F',belly:'#D6F0B8',line:'#2C6E2C'},
-    sunny:{k:'sunny',body:'#E9963C',hi:'#FFC07A',belly:'#FFDFB0',line:'#9A5410',pat:'bands'},
-    cobra:{k:'cobra',body:'#3E8D5C',hi:'#69B984',belly:'#DDF0BE',line:'#1F5A38',hood:true,hoodFill:'#4FA26C',fangs:true},
-    python:{k:'python',body:'#9A824C',hi:'#C2A972',belly:'#E9DBB4',line:'#5A4620',pat:'spots'},
-    rattler:{k:'rattler',body:'#B99154',hi:'#DDBA80',belly:'#EEDCB0',line:'#6E4E24',rattle:true,pat:'diamond',fangs:true},
-    viper:{k:'viper',body:'#6E9A3E',hi:'#97C066',belly:'#DCEAB0',line:'#3E5A20',pat:'diamond',fangs:true},
-    boa:{k:'boa',body:'#8A6AB8',hi:'#B39AD8',belly:'#E6D9F0',line:'#4A3072',pat:'spots'},
-    mamba:{k:'mamba',body:'#4A4A58',hi:'#6E6E80',belly:'#B8B8C4',line:'#22222E',fangs:true},
-    seasnake:{k:'seasnake',body:'#2E9FB8',hi:'#5CC4D8',belly:'#BEEAF0',line:'#14607A',fins:true,pat:'bands'},
-    naga:{k:'naga',body:'#C9A227',hi:'#F0D064',belly:'#F5E7B0',line:'#7A5A10',horns:'#F0D064',gem:'#36D1FF',fangs:true}
+    noodle:  {k:'noodle',  pose:'wave',  expr:'friendly', body:'#5FBE5A',hi:'#86D97F',belly:'#D6F0B8',line:'#2C6E2C'},
+    sunny:   {k:'sunny',   pose:'wave',  expr:'sleepy',   body:'#E9963C',hi:'#FFC07A',belly:'#FFDFB0',line:'#9A5410',pat:'bands'},
+    cobra:   {k:'cobra',   pose:'strike',expr:'fierce',   body:'#3E8D5C',hi:'#69B984',belly:'#DDF0BE',line:'#1F5A38',hood:true,hoodFill:'#4FA26C',fangs:true},
+    python:  {k:'python',  pose:'coil',  expr:'sleepy',   body:'#9A824C',hi:'#C2A972',belly:'#E9DBB4',line:'#5A4620',pat:'spots'},
+    rattler: {k:'rattler', pose:'strike',expr:'fierce',   body:'#B99154',hi:'#DDBA80',belly:'#EEDCB0',line:'#6E4E24',rattle:true,pat:'diamond',fangs:true,rot:8},
+    viper:   {k:'viper',   pose:'strike',expr:'fierce',   body:'#6E9A3E',hi:'#97C066',belly:'#DCEAB0',line:'#3E5A20',pat:'diamond',fangs:true,rot:-6},
+    boa:     {k:'boa',     pose:'coil',  expr:'regal',    body:'#8A6AB8',hi:'#B39AD8',belly:'#E6D9F0',line:'#4A3072',pat:'spots'},
+    mamba:   {k:'mamba',   pose:'strike',expr:'fierce',   body:'#4A4A58',hi:'#6E6E80',belly:'#B8B8C4',line:'#22222E',fangs:true,rot:4},
+    seasnake:{k:'seasnake',pose:'swim',  expr:'friendly', body:'#2E9FB8',hi:'#5CC4D8',belly:'#BEEAF0',line:'#14607A',fins:true,pat:'bands'},
+    naga:    {k:'naga',    pose:'strike',expr:'regal',    body:'#C9A227',hi:'#F0D064',belly:'#F5E7B0',line:'#7A5A10',horns:'#F0D064',gem:'#36D1FF',hood:true,hoodFill:'#D8B43A',fangs:true}
   };
   var out={}; for(var k in S) out[k]=snake(S[k]);
   window.SB_AVATAR_ART = Object.assign(window.SB_AVATAR_ART||{}, out);
@@ -2162,17 +2199,7 @@ titan: `<defs><radialGradient id="tbtt-a" cx="50%" cy="45%" r="55%"><stop offset
 
 /* ===== BIG BEASTS PACK (ported from design handoff — 120x120, same renderer) ===== */
 window.SB_AVATAR_ART = Object.assign(window.SB_AVATAR_ART || {}, {
-mammoth: `<defs><radialGradient id="bbmam" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#C08F60"/><stop offset="1" stop-color="#93643A"/></radialGradient></defs><circle cx="16" cy="18" r="2.2" fill="#DCEBF6"/><circle cx="30" cy="10" r="1.6" fill="#DCEBF6"/><circle cx="98" cy="14" r="2" fill="#DCEBF6"/><circle cx="110" cy="30" r="1.5" fill="#DCEBF6"/><circle cx="8" cy="44" r="1.6" fill="#DCEBF6"/>
-<path d="M20 44 q-12 12 -4 24 q6 4 10 -2" fill="#93643A"/><path d="M100 44 q12 12 4 24 q-6 4 -10 -2" fill="#93643A"/>
-<ellipse cx="60" cy="64" rx="41" ry="38" fill="url(#bbmam)"/>
-<path d="M60 27 q-20 0 -27 13 q9 -7 27 -7 q18 0 27 7 q-7 -13 -27 -13 z" fill="#6E4823"/>
-<path d="M40 30 l3 8 M50 26 l2 9 M60 25 v9 M70 26 l-2 9 M80 30 l-3 8" stroke="#6E4823" stroke-width="3" stroke-linecap="round"/>
-<path d="M24 88 q-2 10 3 14 M34 96 q-1 8 3 11 M86 96 q1 8 -3 11 M96 88 q2 10 -3 14" stroke="#7E5330" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-<ellipse cx="46" cy="44" rx="15" ry="9" fill="#fff" opacity=".35"/>
-<path d="M40 86 q-16 8 -14 26 q5 4 10 0 q-1 -12 10 -18 z" fill="#F6F1E7" stroke="#D8CBB8" stroke-width="2.5"/>
-<path d="M80 86 q16 8 14 26 q-5 4 -10 0 q1 -12 -10 -18 z" fill="#F6F1E7" stroke="#D8CBB8" stroke-width="2.5"/>
-<path d="M60 78 q-4 12 -12 18 q-2 8 6 10 q7 2 10 -6 q-3 -10 -4 -22 z" fill="#93643A" stroke="#6E4823" stroke-width="2"/>
-<path d="M54 104 q-6 2 -6 6 q5 3 9 -2" fill="#6E4823"/><circle cx="46" cy="58" r="8" fill="#fff"/><circle cx="47.3" cy="59.4" r="4" fill="#2E455C"/><circle cx="46.2" cy="58.2" r="1.44" fill="#fff"/><circle cx="74" cy="58" r="8" fill="#fff"/><circle cx="75.3" cy="59.4" r="4" fill="#2E455C"/><circle cx="74.2" cy="58.2" r="1.44" fill="#fff"/><ellipse cx="39" cy="68" rx="5" ry="3" fill="#FF9EB8" opacity=".85"/><ellipse cx="81" cy="68" rx="5" ry="3" fill="#FF9EB8" opacity=".85"/><path d="M52 72 q8 6 16 0" fill="none" stroke="#2E455C" stroke-width="3.5" stroke-linecap="round"/><path d="M104 44 l1.26 3.7800000000000002 3.7800000000000002 1.26 -3.7800000000000002 1.26 -1.26 3.7800000000000002 -1.26 -3.7800000000000002 -3.7800000000000002 -1.26 3.7800000000000002 -1.26 z" fill="#FFC83D"/><path d="M12 66 l0.9799999999999999 2.94 2.94 0.9799999999999999 -2.94 0.9799999999999999 -0.9799999999999999 2.94 -0.9799999999999999 -2.94 -2.94 -0.9799999999999999 2.94 -0.9799999999999999 z" fill="#FFC83D"/>`,
+mammoth: `<defs><radialGradient id="bbmam" cx="50%" cy="30%" r="78%"><stop offset="0" stop-color="#C8996A"/><stop offset="1" stop-color="#835530"/></radialGradient></defs><circle cx="16" cy="18" r="2.2" fill="#DCEBF6"/><circle cx="30" cy="10" r="1.6" fill="#DCEBF6"/><circle cx="100" cy="14" r="2" fill="#DCEBF6"/><circle cx="110" cy="32" r="1.5" fill="#DCEBF6"/><circle cx="10" cy="46" r="1.6" fill="#DCEBF6"/><path d="M22 100 q-8 -46 22 -64 q16 -11 32 0 q30 18 22 64 z" fill="url(#bbmam)" stroke="#5E3A1E" stroke-width="3"/><path d="M42 44 q18 -18 36 0" fill="none" stroke="#D8AE82" stroke-width="4" opacity=".6"/><path d="M48 26 l3 7 l4 -6 l3 8 l5 -7 l4 8 l4 -6" fill="none" stroke="#5E3A1E" stroke-width="2" opacity=".55"/><ellipse cx="28" cy="58" rx="7" ry="11" fill="#9A6538" stroke="#5E3A1E" stroke-width="2.4"/><ellipse cx="92" cy="58" rx="7" ry="11" fill="#9A6538" stroke="#5E3A1E" stroke-width="2.4"/><path d="M24 96 l6 8 l6 -7 l7 8 l6 -8 l7 8 l6 -7 l7 8 l6 -8 l7 8 l6 -7" fill="none" stroke="#6E4522" stroke-width="3" opacity=".7"/><path d="M40 70 q2 14 0 26 M60 74 q0 14 0 24 M80 70 q-2 14 0 26" fill="none" stroke="#6E4522" stroke-width="2" opacity=".45"/><path d="M42 54 q6 -3 12 0 M66 54 q6 -3 12 0" fill="none" stroke="#5E3A1E" stroke-width="2.4" stroke-linecap="round"/><circle cx="48" cy="60" r="3.6" fill="#2A1B0E"/><circle cx="46.8" cy="58.8" r="1.1" fill="#fff"/><circle cx="72" cy="60" r="3.6" fill="#2A1B0E"/><circle cx="70.8" cy="58.8" r="1.1" fill="#fff"/><path d="M52 76 q-18 6 -24 28 q9 4 13 -5 q4 -15 17 -17z" fill="#F3ECD8" stroke="#CBBE98" stroke-width="1.6"/><path d="M68 76 q18 6 24 28 q-9 4 -13 -5 q-4 -15 -17 -17z" fill="#F3ECD8" stroke="#CBBE98" stroke-width="1.6"/><path d="M60 70 q-5 16 -7 27 q-2 10 7 11" fill="none" stroke="#5E3A1E" stroke-width="15" stroke-linecap="round"/><path d="M60 70 q-5 16 -7 27 q-2 10 7 11" fill="none" stroke="url(#bbmam)" stroke-width="10" stroke-linecap="round"/><path d="M55 82 q4 2 8 1 M53 92 q4 2 8 1" fill="none" stroke="#5E3A1E" stroke-width="1.6" opacity=".5"/>`,
 
 titanoboa: `<defs><radialGradient id="bbtit" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#74AC60"/><stop offset="1" stop-color="#4E7F41"/></radialGradient></defs><path d="M4 116 q14 -10 26 0 t26 0 t26 0 t26 0" fill="none" stroke="#5AC8FA" stroke-width="4" stroke-linecap="round" opacity=".7"/>
 <path d="M12 30 q-4 -12 4 -18 M12 30 q-10 -6 -10 -14 M12 30 q2 -14 -4 -20" stroke="#5FA53C" stroke-width="2.5" fill="none" stroke-linecap="round"/>
