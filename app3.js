@@ -470,6 +470,49 @@ function wordDB(){ if(_wdb) return _wdb; const m=new Map();
   const add=(arr)=>(arr||[]).forEach(r=>{ const k=nkey(r.w); if(k&&!m.has(k)) m.set(k,r); });
   add(SB_DATA.nsf); if(window.SB_FULL) add(window.SB_FULL); add(REVIEW); add(HINDI_WORDS);
   _wdb=m; return m; }
+// Pronunciation guide for a single word — used by the Quotes difficult-word popups.
+// Prefers the curated SB_PRON dictionary (respelling + syllables + part of speech),
+// then falls back to the core word engine. Returns null when nothing is known.
+function pronFor(w){ if(!w) return null; const k=nkey(w); if(/\s/.test(k)) return null;
+  let e=(window.SB_PRON&&window.SB_PRON[k])||null;
+  if(!e){ try{ const hit=wordDB().get(k); if(hit&&(hit.p||hit.sy||hit.ps||hit.o)) e={p:hit.p||'',sy:hit.sy||'',ps:hit.ps||'',o:hit.o||''}; }catch(_){} }
+  if(!e) return null;
+  const out={p:e.p||'',sy:e.sy||'',ps:e.ps||'',o:e.o||''};
+  return (out.p||out.sy||out.ps||out.o)?out:null; }
+// Word of the hour — a rich, difficult word that rotates every hour, deterministically,
+// so every speller on the same hour sees the same gem. Pool = hard, fully-described words.
+let _wohPool=null;
+function wohPool(){ if(_wohPool) return _wohPool; const src=(window.SB_DATA&&SB_DATA.nsf)||[]; const out=[];
+  for(const e of src){ if(!e||!e.w||!e.d||!e.p||!e.s) continue; if(/[^a-zA-Z]/.test(e.w)) continue;
+    const len=e.w.length; if(len<7||len>13) continue;
+    // Prefer vetted bee words (bee-probability score) at a challenging-but-real level.
+    const good=(e.bp&&e.bp>=60&&e.bp<=97)||(!e.bp&&e.y&&e.y>=3&&e.y<=4); if(good) out.push(e); }
+  _wohPool=out.length?out:src.filter(e=>e&&e.w&&e.d&&e.p&&e.w.length>=7); return _wohPool; }
+function wordOfHour(){ const pool=wohPool(); if(!pool.length) return null;
+  const hr=Math.floor(Date.now()/3600000); // hours since epoch — changes every hour
+  let h=((hr*2654435761)>>>0)%pool.length; return pool[h]||pool[0]; }
+function viewWordCardPop(){ const w=state.wordCard; if(!w) return '';
+  const pr=pronFor(w.w)||{p:w.p||'',sy:w.sy||'',ps:w.ps||'',o:w.o||''};
+  const OLAB={Latin:'Latin',Greek:'Greek',French:'French',Spanish:'Spanish',Italian:'Italian',German:'German',Arabic:'Arabic',Japanese:'Japanese','Old English':'Old English',Norse:'Old Norse',Hindi:'Hindi/Sanskrit'};
+  const tag=(t)=>`<span style="font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);background:var(--chip);padding:3px 9px;border-radius:999px">${esc(t)}</span>`;
+  const respell=pr&&pr.p?`<div style="font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:800;margin-bottom:2px">/ ${esc(pr.p)} /</div>`:'';
+  const syl=pr&&pr.sy&&pr.sy!==nkey(w.w)?`<div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px">${esc(pr.sy)}</div>`:'';
+  const chips=(pr&&(pr.ps||pr.o))?`<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:8px 0 12px">${pr.ps?tag(pr.ps):''}${pr.o?tag((OLAB[pr.o]||pr.o)+' origin'):''}</div>`:'<div style="height:6px"></div>';
+  const sent=w.s?`<div style="margin-top:12px;text-align:left;background:var(--surface2);border-radius:12px;padding:11px 13px;font-size:13.5px;line-height:1.55;color:var(--text)"><span style="font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px">In a sentence</span>${esc(w.s)}</div>`:'';
+  return `<div style="position:fixed;inset:0;z-index:130;display:grid;place-items:center;padding:22px;background:rgba(20,12,4,.5)" data-act="wordCardClose">
+    <div data-act="noop" style="background:var(--paper,#fff);border-radius:20px;max-width:380px;width:100%;padding:24px 22px;text-align:center;box-shadow:0 20px 60px rgba(20,10,30,.5);animation:sb-pop .35s cubic-bezier(.2,1.5,.4,1) both;max-height:88vh;overflow:auto">
+      <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:8px">⏳ Word of the hour</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:30px;line-height:1.05;overflow-wrap:anywhere;margin-bottom:${respell?'3px':'6px'}">${esc(w.w)}</div>
+      ${respell}${syl}
+      <button data-act="wordCardSay" data-arg="${escA(w.w)}" style="margin-top:4px;display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:12px;color:var(--muted)">${iconSVG('volume',14)} Say it</button>
+      ${chips}
+      <div style="font-size:15px;color:var(--text);line-height:1.5;font-weight:500;text-align:left">${esc(w.d||'')}</div>
+      ${sent}
+      <div style="display:flex;gap:8px;margin-top:18px">
+        <button data-act="wohPractise" data-arg="${escA(w.w)}" style="flex:1;padding:12px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">Practise this word →</button>
+        <button data-act="wordCardClose" style="padding:12px 16px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:14px">Close</button>
+      </div>
+    </div></div>`; }
 // memoize the heavy origin/tier filters — computed once over the core set, reused every render
 let _catStatic=null;
 function catStatic(){ if(_catStatic) return _catStatic; const nsf=SB_DATA.nsf||[];
@@ -696,9 +739,9 @@ const app = {
   // ----- Vocabulary study (NSF vocabulary-bee style) -----
   openVocab:()=>{ set({nav:'vocab', screen:'app', vocDeck:null, conceptSel:null}); },
   // ---- Quotes: a swipeable deck of kid-friendly quotations from famous people ----
-  openQuotes:()=>{ set({nav:'quotes', screen:'app', conceptSel:null, qi:(state.qi||0)}); setTimeout(()=>{ if(state.readAloud) app.qSpeak(); },220); },
-  qNav:(dir)=>{ const L=quoteList(); if(!L.length) return; let i=(state.qi||0)+(+dir); if(i<0)i=L.length-1; if(i>=L.length)i=0; set({qi:i}); if(state.readAloud) app.qSpeak(); },
-  qShuffle:()=>{ const L=quoteList(); if(!L.length) return; let i=state.qi||0; if(L.length>1){ while(i===(state.qi||0)) i=Math.floor(Math.random()*L.length); } set({qi:i}); if(state.readAloud) app.qSpeak(); },
+  openQuotes:()=>{ set({nav:'quotes', screen:'app', conceptSel:null, qi:(state.qi||0)}); markQuoteSeen(); setTimeout(()=>{ if(state.readAloud) app.qSpeak(); },220); },
+  qNav:(dir)=>{ const L=quoteList(); if(!L.length) return; let i=(state.qi||0)+(+dir); if(i<0)i=L.length-1; if(i>=L.length)i=0; set({qi:i}); markQuoteSeen(); if(state.readAloud) app.qSpeak(); },
+  qShuffle:()=>{ const L=quoteList(); if(!L.length) return; let i=state.qi||0; if(L.length>1){ while(i===(state.qi||0)) i=Math.floor(Math.random()*L.length); } set({qi:i}); markQuoteSeen(); if(state.readAloud) app.qSpeak(); },
   qSetCat:(cat)=>{ set({qCat:cat==='all'?null:cat, qi:0}); if(state.readAloud) setTimeout(app.qSpeak,150); },
   qSpeak:()=>{ const L=quoteList(); const x=L[state.qi||0]; if(x){ try{ say(x.q+' — '+x.a); }catch(e){} } },
   qFav:()=>{ const L=quoteList(); const x=L[state.qi||0]; if(!x) return; const c=active(); c.quoteFavs=c.quoteFavs||{}; const k=(x.q||'').slice(0,60); if(c.quoteFavs[k]) delete c.quoteFavs[k]; else { c.quoteFavs[k]=1; try{sfx('coin');}catch(e){} } save(); render(); },
@@ -706,6 +749,11 @@ const app = {
   qWord:(key)=>{ const m=(state._qHard||{})[String(key).toLowerCase()]; if(m){ set({qWord:m}); try{ say(m.w); }catch(e){} } },
   qWordSay:(w)=>{ try{ say(w); }catch(e){} },
   qWordClose:()=>set({qWord:null}),
+  // Word of the hour: open its learn card, hear it, or jump straight into practice.
+  openWordCard:()=>{ const w=wordOfHour(); if(!w){ flash('No word right now — try again soon'); return; } set({wordCard:w}); try{ say(w.w); }catch(e){} },
+  wordCardSay:(w)=>{ try{ say(w); }catch(e){} },
+  wordCardClose:()=>set({wordCard:null}),
+  wohPractise:(word)=>{ set({wordCard:null}); try{ app.reviseOne(word); }catch(e){ flash('Could not open practice'); } },
   qMeaning:()=>set({qMeaningOpen:!state.qMeaningOpen}),
   vocDeck:(k)=>{ const words=vocDeckWords(k); if(words.length<5){ flash('Not enough words here yet — train a list first'); return; }
     set({vocDeck:k, vocWords:words, vocIdx:0, vocFlip:false}); setTimeout(()=>{ const w=state.vocWords[0]; if(w) say(w.w); },250); },
@@ -1232,6 +1280,35 @@ const app = {
       if(e.target===ov||e.target.closest('.avc-x')) ov.remove(); };
     document.body.appendChild(ov);
     try{ if(opts.unlocked&&typeof burstConfetti==='function') burstConfetti(120); }catch(e){} },
+  // Avatar deck: tapping the home avatar fans out every card you own as a stack you
+  // can flip through (arrows / swipe / keyboard) and wear straight from the card.
+  openAvDeck:(startId)=>{ if(typeof window.SB_AV_CARD_HTML!=='function'||!window.SB_AVATARS){ try{ app.showAvCard(startId); }catch(e){} return; }
+    const c=active();
+    const ids=SB_AVATARS.list.filter(a=>avOwned(c,a.id)&&typeof SB_AV_CARD==='function'&&SB_AV_CARD(a.id)).map(a=>a.id);
+    if(!ids.length){ try{ app.showAvCard(startId||c.avatar); }catch(e){} return; }
+    let idx=ids.indexOf(startId||c.avatar); if(idx<0) idx=0;
+    const ov=document.createElement('div'); ov.className='avc-ov avdeck-ov';
+    function paint(){ const id=ids[idx]; const cc=active(); const wearing=cc.avatar===id; const multi=ids.length>1;
+      const nav=multi?'<button class="avd-nav avd-prev" data-avd="prev" aria-label="Previous card">‹</button><button class="avd-nav avd-next" data-avd="next" aria-label="Next card">›</button>':'';
+      const count=multi?'<div class="avd-count">'+(idx+1)+' / '+ids.length+' owned</div>':'';
+      const action=wearing?'<span class="avc-worn">Wearing ✓</span>':'<button class="avc-use" data-avd="wear">Wear this avatar</button>';
+      ov.innerHTML='<div class="avdeck-stage">'
+        +'<div class="avd-ghost avd-g3"></div><div class="avd-ghost avd-g2"></div><div class="avd-ghost avd-g1"></div>'
+        +'<div class="avc-wrap avd-live">'+SB_AV_CARD_HTML(id,{owned:true})+'</div>'+nav+'</div>'
+        +'<div class="avd-bar">'+count+action+'<button class="avc-x" data-avd="close">Close</button></div>'; }
+    function go(n){ idx=(idx+n+ids.length)%ids.length; paint(); }
+    function cleanup(){ document.removeEventListener('keydown',key); ov.remove(); }
+    function key(e){ if(e.key==='ArrowLeft') go(-1); else if(e.key==='ArrowRight') go(1); else if(e.key==='Escape') cleanup(); }
+    ov.onclick=e=>{ const t=e.target.closest('[data-avd]');
+      if(t){ const a=t.getAttribute('data-avd');
+        if(a==='prev') go(-1); else if(a==='next') go(1);
+        else if(a==='wear'){ try{ app.wearAv(ids[idx]); }catch(_){}
+          try{ if(typeof burstConfetti==='function') burstConfetti(90); }catch(_){} paint(); }
+        else if(a==='close') cleanup(); return; }
+      if(e.target===ov) cleanup(); };
+    let sx=null; ov.addEventListener('touchstart',e=>{ sx=e.touches[0].clientX; },{passive:true});
+    ov.addEventListener('touchend',e=>{ if(sx==null) return; const dx=e.changedTouches[0].clientX-sx; if(Math.abs(dx)>45) go(dx<0?1:-1); sx=null; },{passive:true});
+    document.addEventListener('keydown',key); paint(); document.body.appendChild(ov); },
   playGame:(type)=>{ clearGTimer(); const c=active(); ensureLists(c); state.gInfo=false; state.typed='';
     if(type==='buzz'){ const list=pickFresh(gameWordsD(),10); if(!list.length){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,right:0,ans:[],status:'idle'}; setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[0]) say(state.game.list[0].w); },320); }
     else if(type==='beat'){ state.game={type:'beat',phase:'mode'}; set({nav:'games',screen:'app'}); return; }
@@ -2014,6 +2091,9 @@ function quoteCatLabel(k){ return QUOTE_CAT_LABEL[k]||(String(k||'').charAt(0).t
 function quoteList(){ const all=(window.SB_QUOTES||[]); const cat=state.qCat;
   if(cat==='__fav'){ const f=(active().quoteFavs)||{}; return all.filter(x=>f[(x.q||'').slice(0,60)]); }
   if(!cat) return all; return all.filter(x=>x.c===cat); }
+// Track distinct quotes a speller has read, so Progress can show real engagement.
+function markQuoteSeen(){ try{ const L=quoteList(); const x=L[state.qi||0]; if(!x) return; const c=active(); if(!c) return;
+  c.qSeen=c.qSeen||{}; const k=(x.q||'').slice(0,44); if(!c.qSeen[k]){ c.qSeen[k]=1; save(); } }catch(e){} }
 function quoteCats(){ const all=(window.SB_QUOTES||[]); const seen={}; const ord=Object.keys(QUOTE_CAT_LABEL);
   all.forEach(x=>{ if(x.c) seen[x.c]=1; }); const inData=ord.filter(k=>seen[k]); Object.keys(seen).forEach(k=>{ if(inData.indexOf(k)<0) inData.push(k); }); return inData; }
 // render a quote's text, highlighting its "hard" words as tappable chips that open a word card.
@@ -2025,11 +2105,18 @@ function renderQuoteHTML(x){ let html=esc(x.q).replace(/\n/g,'<br>');
     html=html.replace(re,(m,pre,word)=>pre+'<button data-act="qWord" data-arg="'+escA(key)+'" class="q-hard">'+esc(word)+'</button>'); });
   return html; }
 function viewQuotesWordPop(){ const wp=state.qWord; if(!wp) return '';
+  const pr=pronFor(wp.w); const OLAB={Latin:'Latin',Greek:'Greek',French:'French',Spanish:'Spanish',Italian:'Italian',German:'German',Arabic:'Arabic',Japanese:'Japanese','Old English':'Old English',Norse:'Old Norse',Hindi:'Hindi/Sanskrit'};
+  const respell=pr&&pr.p?`<div style="font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:800;letter-spacing:.02em;margin-bottom:2px">/ ${esc(pr.p)} /</div>`:'';
+  const syl=pr&&pr.sy&&pr.sy!==wp.w?`<div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:8px">${esc(pr.sy)}</div>`:(respell?'<div style="margin-bottom:8px"></div>':'');
+  const tag=(t)=>`<span style="font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);background:var(--chip);padding:3px 9px;border-radius:999px">${esc(t)}</span>`;
+  const chips=pr?`<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:12px">${pr.ps?tag(pr.ps):''}${pr.o?tag((OLAB[pr.o]||pr.o)+' origin'):''}</div>`:'';
   return `<div style="position:fixed;inset:0;z-index:130;display:grid;place-items:center;padding:22px;background:rgba(20,12,4,.5)" data-act="qWordClose">
     <div data-act="noop" style="background:var(--paper,#fff);border-radius:20px;max-width:360px;width:100%;padding:24px 22px;text-align:center;box-shadow:0 20px 60px rgba(20,10,30,.5);animation:sb-pop .35s cubic-bezier(.2,1.5,.4,1) both">
       <div style="display:inline-flex;width:52px;height:52px;border-radius:14px;background:var(--chip);color:var(--accent);align-items:center;justify-content:center;margin-bottom:8px">${iconSVG('book',26)}</div>
-      <div style="font-family:var(--display);font-weight:800;font-size:26px;margin-bottom:6px">${esc(wp.w)}</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:26px;margin-bottom:${respell?'2px':'6px'}">${esc(wp.w)}</div>
+      ${respell}${syl}
       <button data-act="qWordSay" data-arg="${escA(wp.w)}" style="margin-bottom:12px;display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:12px;color:var(--muted)">${iconSVG('volume',14)} Say it</button>
+      ${chips}
       <div style="font-size:15px;color:var(--text);line-height:1.5;font-weight:500">${esc(wp.d||'A tricky word — say it aloud and try to spell it!')}</div>
       <button data-act="qWordClose" style="margin-top:18px;width:100%;padding:12px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">Got it ✓</button>
     </div></div>`; }
@@ -2335,7 +2422,7 @@ function viewApp(){
         <div style="font-size:12px;color:var(--muted);margin-top:10px">Screenshot this card to share it!</div>`); })():'';
   const bandUp='';
 
-  return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}${(S.qWord?viewQuotesWordPop():'')}${bandUp}
+  return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}${(S.qWord?viewQuotesWordPop():'')}${(S.wordCard?viewWordCardPop():'')}${bandUp}
     <div class="sb-header-sticky${state.nav==='coach'?' sb-collapse-nav':''}" style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
       <div style="max-width:1080px;margin:0 auto;padding:11px clamp(14px,3.5vw,32px);display:flex;align-items:center;gap:12px">
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
@@ -2488,13 +2575,13 @@ function viewHome(){
     const meta=`<span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;padding:4px 11px;border-radius:var(--r-pill,999px);font-size:11px;font-weight:800;letter-spacing:.02em;background:${pillBg};color:${pillFg}">${j.festive?coinIc(12):(j.kind==='lock'?iconSVG('lock',11,2.2):'')}${j.festive?((c.coins||0)+' coins'):esc(j.badge)}</span>`;
     return `<button class="sb-lift" data-act="${j.goAct}" ${arg} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0">
       <div style="position:relative;width:100%">
-        ${SB_COVER(S.theme,cid,{h:110,dark:S.mode==='dusk'})}
-        <span style="position:absolute;left:14px;bottom:-16px">${wayTile(wk,48,ji%2?2.5:-2.5)}</span>
+        ${SB_COVER(S.theme,cid,{h:66,dark:S.mode==='dusk'})}
+        <span style="position:absolute;left:14px;bottom:-13px">${wayTile(wk,40,ji%2?2.5:-2.5)}</span>
       </div>
-      <div style="padding:12px 14px 0 76px;min-height:30px;display:flex;align-items:center;justify-content:flex-end;width:100%">${meta}</div>
-      <div style="padding:2px 16px 16px;display:flex;flex-direction:column;flex:1;width:100%">
-        <div style="font-family:var(--ui,var(--body));font-weight:650;font-size:17px;line-height:1.2;color:var(--ink,var(--text))">${j.title}</div>
-        <div style="font-size:15px;color:var(--muted);line-height:1.5;margin:4px 0 14px">${j.desc}</div>
+      <div style="padding:8px 14px 0 62px;min-height:24px;display:flex;align-items:center;justify-content:flex-end;width:100%">${meta}</div>
+      <div style="padding:2px 15px 12px;display:flex;flex-direction:column;flex:1;width:100%">
+        <div style="font-family:var(--ui,var(--body));font-weight:650;font-size:15.5px;line-height:1.2;color:var(--ink,var(--text))">${j.title}</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.4;margin:3px 0 9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${trunc(j.desc,62)}</div>
         <div style="margin-top:auto;height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden"><div style="height:100%;background:${j.kind==='lock'?'var(--muted)':'var(--action,var(--accent))'};width:${j.pct}"></div></div>
       </div></button>`;
   }).join('');
@@ -2502,7 +2589,7 @@ function viewHome(){
     ${(()=>{ const lp=getList(c,aKey); const lf=levelFromXp(lp.xp||0); const xpToNext=Math.max(0,(lf.need||1)-(lf.into||0));
       const evoPct=Math.min(100,Math.round((lf.into||0)/(lf.need||1)*100));
       const bb=beeBand(c);
-      const bandBanner=`<button data-act="${bb.calibrating?'startLevelTest':'setNav'}" data-arg="progress" title="${bb.calibrating?'A 3-minute placement quest':'Open Progress for the full band ladder'}" class="sb-card" style="width:100%;display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:linear-gradient(100deg,color-mix(in srgb,var(--action,var(--accent)) 14%,var(--paper,var(--bg2))),var(--paper,var(--bg2)) 62%);border-color:color-mix(in srgb,var(--action,var(--accent)) 35%,var(--line));border-radius:var(--r-lg,16px);padding:12px 18px;margin-bottom:14px;cursor:pointer">
+      const bandBanner=`<button data-act="${bb.calibrating?'startLevelTest':'setNav'}" data-arg="progress" title="${bb.calibrating?'A 3-minute placement quest':'Open Progress for the full band ladder'}" class="sb-card" style="width:100%;display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:linear-gradient(100deg,color-mix(in srgb,var(--action,var(--accent)) 14%,var(--paper,var(--bg2))),var(--paper,var(--bg2)) 62%);border-color:color-mix(in srgb,var(--action,var(--accent)) 35%,var(--line));border-radius:var(--r-lg,16px);padding:11px 16px;cursor:pointer;min-height:64px">
         <span style="display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--action,var(--accent));color:var(--action-ink,#fff);flex-shrink:0">${iconSVG('target',22)}</span>
         <span style="min-width:0;flex:1">
           <span class="sb-ct" style="display:block">${bb.calibrating?'Find your Bee Band':('Bee Band '+bb.band+' · '+bb.tier)}</span>
@@ -2511,29 +2598,39 @@ function viewHome(){
         ${bb.calibrating?'':`<span style="flex-shrink:0;display:flex;gap:4px;align-items:center" aria-hidden="true">${[1,2,3,4,5,6,7,8,9].map(n=>`<span style="width:${n===bb.band?'11px':'7px'};height:${n===bb.band?'11px':'7px'};border-radius:99px;background:${n<=bb.band?'var(--action,var(--accent))':'var(--tint-deep,var(--surface2))'};${n===bb.band?'box-shadow:0 0 0 3px color-mix(in srgb,var(--action,var(--accent)) 25%,transparent);':''}"></span>`).join('')}</span>`}
         <span class="sb-cl">${bb.calibrating?'Start →':'details →'}</span>
       </button>`;
-      return `${bandBanner}<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:18px">
-      <div class="sb-card" style="display:flex;align-items:center;gap:16px;min-height:156px">
+      const woh=(typeof wordOfHour==='function')?wordOfHour():null; const wohPr=woh?pronFor(woh.w):null;
+      const wohTile=woh?`<button data-act="openWordCard" title="Tap for the full word card" class="sb-card" style="width:100%;display:flex;align-items:center;gap:12px;background:linear-gradient(100deg,color-mix(in srgb,var(--treasure,#F0B429) 18%,var(--paper,var(--bg2))),var(--paper,var(--bg2)) 62%);border-color:color-mix(in srgb,var(--treasure,#F0B429) 42%,var(--line));border-radius:var(--r-lg,16px);padding:11px 16px;cursor:pointer;text-align:left;min-height:64px">
+        <span style="display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--treasure,#F0B429);color:#2B2117;flex-shrink:0;font-size:19px">⏳</span>
+        <span style="min-width:0;flex:1">
+          <span class="sb-cn" style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">Word of the hour</span>
+          <span class="sb-ct" style="display:block;overflow-wrap:anywhere">${esc(woh.w)}</span>
+          ${(wohPr&&wohPr.p)?`<span class="sb-cn" style="display:block;font-family:var(--mono);color:var(--muted)">/ ${esc(wohPr.p)} /</span>`:''}
+        </span>
+        <span class="sb-cl">card →</span>
+      </button>`:'';
+      return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:12px">${bandBanner}${wohTile}</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:14px">
+      <div class="sb-card" style="display:flex;align-items:center;gap:14px;min-height:120px;padding:14px">
         ${(()=>{ const hasCard=c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar]&&typeof SB_AV_CARD==='function';
-          const art=hasCard?avatarSVG(c.avatar,122,c.accOn):mascotAcc(S.mood);
-          const inner=`<div style="width:126px;height:131px;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center;position:relative">${art}</div>`;
-          return hasCard?`<button data-act="showAvCard" data-arg="${c.avatar}" title="See ${esc((SB_AVATARS.byId[c.avatar]||{}).name||'')}'s card" style="flex-shrink:0;background:none;border:0;padding:0;cursor:pointer">${inner}</button>`
+          const art=hasCard?avatarSVG(c.avatar,94,c.accOn):mascotAcc(S.mood,84);
+          const inner=`<div style="width:96px;height:100px;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center;position:relative">${art}</div>`;
+          return hasCard?`<button data-act="openAvDeck" data-arg="${c.avatar}" title="Flip through your avatar cards" style="flex-shrink:0;background:none;border:0;padding:0;cursor:pointer">${inner}</button>`
                         :`<div style="position:relative;flex-shrink:0">${inner}</div>`; })()}
         <div style="min-width:0;flex:1">
           ${(()=>{ const hasCard=c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar]&&typeof SB_AV_CARD==='function';
             const d=hasCard?SB_AV_CARD(c.avatar):null;
-            return d?`<div style="position:relative;background:var(--surface2,#f3eee3);border-radius:14px;border-bottom-left-radius:4px;padding:8px 12px;margin-bottom:8px;font:italic 600 13px/1.4 var(--body,sans-serif);color:var(--ink,var(--text))">“${esc(d.greeting)}”</div>`:'';
+            return d?`<div style="position:relative;background:var(--surface2,#f3eee3);border-radius:12px;border-bottom-left-radius:4px;padding:6px 10px;margin-bottom:6px;font:italic 600 11px/1.35 var(--body,sans-serif);color:var(--ink,var(--text))">“${esc(trunc(d.greeting,90))}”</div>`:'';
           })()}
           <div class="sb-cs">${greeting}</div>
-          <div style="font-family:var(--display);font-weight:800;font-size:24px;line-height:1.1">${esc(c.name)}</div>
-          <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px">
+          <div style="font-family:var(--display);font-weight:800;font-size:21px;line-height:1.1">${esc(c.name)}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
             ${(c.streak||0)>0?`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">${iconSVG('flame',14)} ${c.streak}-day streak</span>`:''}
             ${(()=>{ const ms=milestone(); return (ms&&ms.days>=0)?`<button data-act="setNav" data-arg="progress" style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">🐝 ${ms.days} days to ${esc(trunc(ms.label,18))}</button>`:''; })()}
           </div>
         </div>
       </div>
-      <button data-act="openEvo" title="Open the full evolution ladder" class="sb-card" style="display:flex;align-items:stretch;gap:14px;cursor:pointer;min-height:156px">
+      <button data-act="openEvo" title="Open the full evolution ladder" class="sb-card" style="display:flex;align-items:stretch;gap:14px;cursor:pointer;min-height:120px;padding:14px">
         <div style="flex-shrink:0;text-align:center;align-self:center">
-          <div style="width:76px;height:82px">${evArt(theme,fIdx)}</div>
+          <div style="width:64px;height:70px">${evArt(theme,fIdx)}</div>
           <div class="sb-cn" style="font-weight:800;color:var(--ink,var(--text));margin-top:1px">${evo[fIdx]}</div>
         </div>
         <div style="min-width:0;flex:1;display:flex;flex-direction:column">
@@ -2545,22 +2642,22 @@ function viewHome(){
           <div style="margin-top:auto;text-align:right"><span class="sb-cl">See the ladder →</span></div>
         </div>
       </button>
-      <div class="sb-card" style="display:flex;align-items:center;gap:16px;min-height:156px">
-        <div style="width:112px;height:112px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(var(--action,var(--accent)) ${goalPctNum}%, var(--tint-deep,var(--surface2)) 0)">
-          <div style="width:94px;height:94px;border-radius:50%;background:var(--paper,var(--bg2));display:grid;place-items:center;text-align:center"><div><div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1">${goalDoneN}/${goalTarget}</div><div class="sb-cn" style="margin-top:2px">today</div></div></div>
+      <div class="sb-card" style="display:flex;align-items:center;gap:14px;min-height:120px;padding:14px">
+        <div style="width:90px;height:90px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(var(--action,var(--accent)) ${goalPctNum}%, var(--tint-deep,var(--surface2)) 0)">
+          <div style="width:74px;height:74px;border-radius:50%;background:var(--paper,var(--bg2));display:grid;place-items:center;text-align:center"><div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1">${goalDoneN}/${goalTarget}</div><div class="sb-cn" style="margin-top:2px">today</div></div></div>
         </div>
         <div style="min-width:0">
           <div class="sb-ct" style="margin-bottom:3px">Daily goal</div>
-          <div class="sb-cs" style="margin-bottom:11px">${goalPctNum>=100?'Goal smashed for today — amazing!':('Spell '+Math.max(0,goalTarget-goalDoneN)+' more to hit today\u2019s goal.')}</div>
+          <div class="sb-cs" style="margin-bottom:9px">${goalPctNum>=100?'Goal smashed for today — amazing!':('Spell '+Math.max(0,goalTarget-goalDoneN)+' more to hit today\u2019s goal.')}</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap"><button data-act="openCoach" style="padding:10px 17px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">${goalDoneN>0?'Continue →':'Start practice →'}</button>
           <button data-act="champTen" title="Ten championship-tier words — your daily stretch" style="padding:10px 14px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">🏆 Champ 10</button></div>
         </div>
       </div>
     </div>`; })()}
 ${focusedH?(()=>{ return `
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:18px">${journeys}</div>`; })()
-    :`${tipOfDay(true)}<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:4px 2px 12px">Keep going</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:18px">${journeys}</div>`}
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:8px">${journeys}</div>`; })()
+    :`${tipOfDay(true)}<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:2px 2px 9px">Keep going</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:8px">${journeys}</div>`}
   </div>`;
 }
 function avatarSVG(id,size,acc){ size=size||30;
@@ -3938,6 +4035,38 @@ function viewProgressShell(){ const t=state.progTab==='parent'?'parent':'me';
   return `<div style="max-width:920px;margin:0 auto">
     <div style="display:flex;gap:8px;margin-bottom:16px">${seg2('me','chart','My progress')}${seg2('parent','users','Parent zone')}</div>
     ${t==='parent'?viewParent():viewProgress()}</div>`; }
+// Overall Story-mode progress (shared across the device, stored in localStorage).
+function sagaFootprint(){ let p={}; try{ p=JSON.parse(localStorage.getItem('sb_saga2')||'{}'); }catch(e){}
+  const total=(window.SAGA2&&SAGA2.total)||0;
+  const cleared=Object.keys(p.done||{}).length;
+  const stars=Object.values(p.stars||{}).reduce((a,b)=>a+(+b||0),0);
+  return {total,cleared,stars,maxStars:total*4,gems:p.gems||0}; }
+// A snapshot of everything a speller explores beyond core spelling — used by both the
+// kid Progress screen and the Parent dashboard so the new surfaces (Quotes, Story mode,
+// Journeys, Typing, Idioms) are actually reflected in progress.
+function explorerTiles(c){
+  const tiles=[]; const qTotal=(window.SB_QUOTES||[]).length;
+  const sg=sagaFootprint();
+  if(sg.total) tiles.push({act:'openSaga',ic:'joystick',col:'#7C5CFF',label:'Story mode',v:sg.cleared+'/'+sg.total,sub:sg.stars+' ★ earned · '+sg.gems+' 💎'});
+  if(qTotal){ const favN=Object.keys(c.quoteFavs||{}).length; const seenN=Object.keys(c.qSeen||{}).length;
+    tiles.push({act:'openQuotes',ic:'quote',col:'#C8791B',label:'Quotes & poems',v:(seenN||favN||0)+'',sub:(favN?favN+' ❤ favourites · ':'')+fmtN(qTotal)+' to explore'}); }
+  try{ const lDone=lessonsDoneCount(); const lU=lessonUnits(); const lChap=lU.filter(u=>{ const ls=lessonsAll().filter(L=>L.unit===u.n); return ls.length&&ls.every(L=>lessonComplete(L)); }).length;
+    if(lU.length) tiles.push({act:'openJourneys',ic:'book',col:'#E0922E',label:'Word Journeys',v:lChap+'/'+(lU.length),sub:lDone+' lessons studied'}); }catch(e){}
+  try{ const cAll=(state.conceptData||(window.SB_CONCEPTS&&SB_CONCEPTS.chapters)||[]); const cDone=cAll.filter(ch=>conceptStat(ch).done).length;
+    if(cAll.length) tiles.push({act:'setNav',arg:'concepts',ic:'grid',col:'#13A892',label:'Concepts',v:cDone+'/'+cAll.length,sub:'patterns & rules learned'}); }catch(e){}
+  const ty=c.typing||{}; if(ty.tests) tiles.push({act:'openTyping',ic:'pencil',col:'#3D7DF0',label:'Typing',v:(ty.bestWpm||0)+' WPM',sub:'best · '+(ty.bestAcc||0)+'% accuracy'});
+  const figN=Object.keys(c.figDone||{}).length; if(figN) tiles.push({act:'setNav',arg:'figurative',ic:'spark',col:'#E8458C',label:'Idioms & similes',v:figN+'',sub:'decks completed'});
+  return tiles; }
+function explorerCard(c,opts){ opts=opts||{}; const tiles=explorerTiles(c); if(!tiles.length) return '';
+  const cell=t=>{ const arg=t.arg?`data-arg="${escA(t.arg)}"`:''; return `<button data-act="${t.act}" ${arg} style="text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 14px;display:flex;flex-direction:column;gap:6px">
+    <span style="display:flex;align-items:center;gap:8px"><span style="width:30px;height:30px;flex-shrink:0;border-radius:9px;background:color-mix(in srgb,${t.col} 16%,transparent);color:${t.col};display:grid;place-items:center">${iconSVG(t.ic,16)}</span><span style="font-family:var(--display);font-weight:800;font-size:13px;color:var(--text)">${esc(t.label)}</span></span>
+    <span style="font-family:var(--display);font-weight:800;font-size:20px;color:${t.col};line-height:1">${esc(t.v)}</span>
+    <span style="font-size:11.5px;color:var(--muted);font-weight:600;line-height:1.3">${esc(t.sub)}</span></button>`; };
+  return `<div class="sb-card" style="${opts.mt?'margin-top:18px':''}">
+    <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:3px">${opts.title||'Beyond spelling'}</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:13px">${opts.sub||'Everywhere '+esc(c.name||'your speller')+' is building language — story mode, quotes, journeys and more.'}</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">${tiles.map(cell).join('')}</div>
+  </div>`; }
 function viewProgress(){
   const c=active();
   const bb=beeBand(c);
@@ -3999,6 +4128,7 @@ function viewProgress(){
         <div style="display:flex;gap:8px;flex-wrap:wrap">${row}</div>
       </div>`; })()}
     <div style="margin-bottom:18px">${streakCard()}</div>
+    ${(()=>{ const ec=explorerCard(c,{title:'Your Bizzing Bee world',sub:'Everywhere you’re exploring — story mode, quotes, journeys, typing and more.'}); return ec?`<div style="margin-bottom:18px">${ec}</div>`:''; })()}
     <div class="sb-card" style="margin-bottom:18px">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:16px">This week</div>
       <div style="display:flex;align-items:flex-end;gap:9px;height:120px">${week}</div>
@@ -4094,6 +4224,7 @@ function viewParent(){
     <div style="font-family:var(--display);font-weight:800;font-size:15px;margin:20px 2px 12px">Spellers</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">${kids}</div>
     <div style="margin-top:18px">${parentAnalytics()}</div>
+    ${explorerCard(active(),{mt:true,title:'Beyond spelling',sub:'Enrichment and engagement across the whole app — not just word drills.'})}
     ${parentReviseCard()}
     ${parentActivityCard()}
     ${(()=>{ const rs=state.wordReports||[]; if(!rs.length) return '';
