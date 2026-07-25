@@ -479,6 +479,40 @@ function pronFor(w){ if(!w) return null; const k=nkey(w); if(/\s/.test(k)) retur
   if(!e) return null;
   const out={p:e.p||'',sy:e.sy||'',ps:e.ps||'',o:e.o||''};
   return (out.p||out.sy||out.ps||out.o)?out:null; }
+// Word of the hour — a rich, difficult word that rotates every hour, deterministically,
+// so every speller on the same hour sees the same gem. Pool = hard, fully-described words.
+let _wohPool=null;
+function wohPool(){ if(_wohPool) return _wohPool; const src=(window.SB_DATA&&SB_DATA.nsf)||[]; const out=[];
+  for(const e of src){ if(!e||!e.w||!e.d||!e.p||!e.s) continue; if(/[^a-zA-Z]/.test(e.w)) continue;
+    const len=e.w.length; if(len<7||len>13) continue;
+    // Prefer vetted bee words (bee-probability score) at a challenging-but-real level.
+    const good=(e.bp&&e.bp>=60&&e.bp<=97)||(!e.bp&&e.y&&e.y>=3&&e.y<=4); if(good) out.push(e); }
+  _wohPool=out.length?out:src.filter(e=>e&&e.w&&e.d&&e.p&&e.w.length>=7); return _wohPool; }
+function wordOfHour(){ const pool=wohPool(); if(!pool.length) return null;
+  const hr=Math.floor(Date.now()/3600000); // hours since epoch — changes every hour
+  let h=((hr*2654435761)>>>0)%pool.length; return pool[h]||pool[0]; }
+function viewWordCardPop(){ const w=state.wordCard; if(!w) return '';
+  const pr=pronFor(w.w)||{p:w.p||'',sy:w.sy||'',ps:w.ps||'',o:w.o||''};
+  const OLAB={Latin:'Latin',Greek:'Greek',French:'French',Spanish:'Spanish',Italian:'Italian',German:'German',Arabic:'Arabic',Japanese:'Japanese','Old English':'Old English',Norse:'Old Norse',Hindi:'Hindi/Sanskrit'};
+  const tag=(t)=>`<span style="font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);background:var(--chip);padding:3px 9px;border-radius:999px">${esc(t)}</span>`;
+  const respell=pr&&pr.p?`<div style="font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:800;margin-bottom:2px">/ ${esc(pr.p)} /</div>`:'';
+  const syl=pr&&pr.sy&&pr.sy!==nkey(w.w)?`<div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px">${esc(pr.sy)}</div>`:'';
+  const chips=(pr&&(pr.ps||pr.o))?`<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:8px 0 12px">${pr.ps?tag(pr.ps):''}${pr.o?tag((OLAB[pr.o]||pr.o)+' origin'):''}</div>`:'<div style="height:6px"></div>';
+  const sent=w.s?`<div style="margin-top:12px;text-align:left;background:var(--surface2);border-radius:12px;padding:11px 13px;font-size:13.5px;line-height:1.55;color:var(--text)"><span style="font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px">In a sentence</span>${esc(w.s)}</div>`:'';
+  return `<div style="position:fixed;inset:0;z-index:130;display:grid;place-items:center;padding:22px;background:rgba(20,12,4,.5)" data-act="wordCardClose">
+    <div data-act="noop" style="background:var(--paper,#fff);border-radius:20px;max-width:380px;width:100%;padding:24px 22px;text-align:center;box-shadow:0 20px 60px rgba(20,10,30,.5);animation:sb-pop .35s cubic-bezier(.2,1.5,.4,1) both;max-height:88vh;overflow:auto">
+      <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:8px">⏳ Word of the hour</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:30px;line-height:1.05;overflow-wrap:anywhere;margin-bottom:${respell?'3px':'6px'}">${esc(w.w)}</div>
+      ${respell}${syl}
+      <button data-act="wordCardSay" data-arg="${escA(w.w)}" style="margin-top:4px;display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:12px;color:var(--muted)">${iconSVG('volume',14)} Say it</button>
+      ${chips}
+      <div style="font-size:15px;color:var(--text);line-height:1.5;font-weight:500;text-align:left">${esc(w.d||'')}</div>
+      ${sent}
+      <div style="display:flex;gap:8px;margin-top:18px">
+        <button data-act="wohPractise" data-arg="${escA(w.w)}" style="flex:1;padding:12px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">Practise this word →</button>
+        <button data-act="wordCardClose" style="padding:12px 16px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:14px">Close</button>
+      </div>
+    </div></div>`; }
 // memoize the heavy origin/tier filters — computed once over the core set, reused every render
 let _catStatic=null;
 function catStatic(){ if(_catStatic) return _catStatic; const nsf=SB_DATA.nsf||[];
@@ -715,6 +749,11 @@ const app = {
   qWord:(key)=>{ const m=(state._qHard||{})[String(key).toLowerCase()]; if(m){ set({qWord:m}); try{ say(m.w); }catch(e){} } },
   qWordSay:(w)=>{ try{ say(w); }catch(e){} },
   qWordClose:()=>set({qWord:null}),
+  // Word of the hour: open its learn card, hear it, or jump straight into practice.
+  openWordCard:()=>{ const w=wordOfHour(); if(!w){ flash('No word right now — try again soon'); return; } set({wordCard:w}); try{ say(w.w); }catch(e){} },
+  wordCardSay:(w)=>{ try{ say(w); }catch(e){} },
+  wordCardClose:()=>set({wordCard:null}),
+  wohPractise:(word)=>{ set({wordCard:null}); try{ app.reviseOne(word); }catch(e){ flash('Could not open practice'); } },
   qMeaning:()=>set({qMeaningOpen:!state.qMeaningOpen}),
   vocDeck:(k)=>{ const words=vocDeckWords(k); if(words.length<5){ flash('Not enough words here yet — train a list first'); return; }
     set({vocDeck:k, vocWords:words, vocIdx:0, vocFlip:false}); setTimeout(()=>{ const w=state.vocWords[0]; if(w) say(w.w); },250); },
@@ -2380,7 +2419,7 @@ function viewApp(){
         <div style="font-size:12px;color:var(--muted);margin-top:10px">Screenshot this card to share it!</div>`); })():'';
   const bandUp='';
 
-  return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}${(S.qWord?viewQuotesWordPop():'')}${bandUp}
+  return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}${(S.qWord?viewQuotesWordPop():'')}${(S.wordCard?viewWordCardPop():'')}${bandUp}
     <div class="sb-header-sticky${state.nav==='coach'?' sb-collapse-nav':''}" style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
       <div style="max-width:1080px;margin:0 auto;padding:11px clamp(14px,3.5vw,32px);display:flex;align-items:center;gap:12px">
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
@@ -2533,13 +2572,13 @@ function viewHome(){
     const meta=`<span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;padding:4px 11px;border-radius:var(--r-pill,999px);font-size:11px;font-weight:800;letter-spacing:.02em;background:${pillBg};color:${pillFg}">${j.festive?coinIc(12):(j.kind==='lock'?iconSVG('lock',11,2.2):'')}${j.festive?((c.coins||0)+' coins'):esc(j.badge)}</span>`;
     return `<button class="sb-lift" data-act="${j.goAct}" ${arg} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0">
       <div style="position:relative;width:100%">
-        ${SB_COVER(S.theme,cid,{h:110,dark:S.mode==='dusk'})}
-        <span style="position:absolute;left:14px;bottom:-16px">${wayTile(wk,48,ji%2?2.5:-2.5)}</span>
+        ${SB_COVER(S.theme,cid,{h:66,dark:S.mode==='dusk'})}
+        <span style="position:absolute;left:14px;bottom:-13px">${wayTile(wk,40,ji%2?2.5:-2.5)}</span>
       </div>
-      <div style="padding:12px 14px 0 76px;min-height:30px;display:flex;align-items:center;justify-content:flex-end;width:100%">${meta}</div>
-      <div style="padding:2px 16px 16px;display:flex;flex-direction:column;flex:1;width:100%">
-        <div style="font-family:var(--ui,var(--body));font-weight:650;font-size:17px;line-height:1.2;color:var(--ink,var(--text))">${j.title}</div>
-        <div style="font-size:15px;color:var(--muted);line-height:1.5;margin:4px 0 14px">${j.desc}</div>
+      <div style="padding:8px 14px 0 62px;min-height:24px;display:flex;align-items:center;justify-content:flex-end;width:100%">${meta}</div>
+      <div style="padding:2px 15px 12px;display:flex;flex-direction:column;flex:1;width:100%">
+        <div style="font-family:var(--ui,var(--body));font-weight:650;font-size:15.5px;line-height:1.2;color:var(--ink,var(--text))">${j.title}</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.4;margin:3px 0 9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${trunc(j.desc,62)}</div>
         <div style="margin-top:auto;height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden"><div style="height:100%;background:${j.kind==='lock'?'var(--muted)':'var(--action,var(--accent))'};width:${j.pct}"></div></div>
       </div></button>`;
   }).join('');
@@ -2547,7 +2586,7 @@ function viewHome(){
     ${(()=>{ const lp=getList(c,aKey); const lf=levelFromXp(lp.xp||0); const xpToNext=Math.max(0,(lf.need||1)-(lf.into||0));
       const evoPct=Math.min(100,Math.round((lf.into||0)/(lf.need||1)*100));
       const bb=beeBand(c);
-      const bandBanner=`<button data-act="${bb.calibrating?'startLevelTest':'setNav'}" data-arg="progress" title="${bb.calibrating?'A 3-minute placement quest':'Open Progress for the full band ladder'}" class="sb-card" style="width:100%;display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:linear-gradient(100deg,color-mix(in srgb,var(--action,var(--accent)) 14%,var(--paper,var(--bg2))),var(--paper,var(--bg2)) 62%);border-color:color-mix(in srgb,var(--action,var(--accent)) 35%,var(--line));border-radius:var(--r-lg,16px);padding:12px 18px;margin-bottom:14px;cursor:pointer">
+      const bandBanner=`<button data-act="${bb.calibrating?'startLevelTest':'setNav'}" data-arg="progress" title="${bb.calibrating?'A 3-minute placement quest':'Open Progress for the full band ladder'}" class="sb-card" style="width:100%;display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:linear-gradient(100deg,color-mix(in srgb,var(--action,var(--accent)) 14%,var(--paper,var(--bg2))),var(--paper,var(--bg2)) 62%);border-color:color-mix(in srgb,var(--action,var(--accent)) 35%,var(--line));border-radius:var(--r-lg,16px);padding:11px 16px;cursor:pointer;min-height:64px">
         <span style="display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--action,var(--accent));color:var(--action-ink,#fff);flex-shrink:0">${iconSVG('target',22)}</span>
         <span style="min-width:0;flex:1">
           <span class="sb-ct" style="display:block">${bb.calibrating?'Find your Bee Band':('Bee Band '+bb.band+' · '+bb.tier)}</span>
@@ -2556,29 +2595,39 @@ function viewHome(){
         ${bb.calibrating?'':`<span style="flex-shrink:0;display:flex;gap:4px;align-items:center" aria-hidden="true">${[1,2,3,4,5,6,7,8,9].map(n=>`<span style="width:${n===bb.band?'11px':'7px'};height:${n===bb.band?'11px':'7px'};border-radius:99px;background:${n<=bb.band?'var(--action,var(--accent))':'var(--tint-deep,var(--surface2))'};${n===bb.band?'box-shadow:0 0 0 3px color-mix(in srgb,var(--action,var(--accent)) 25%,transparent);':''}"></span>`).join('')}</span>`}
         <span class="sb-cl">${bb.calibrating?'Start →':'details →'}</span>
       </button>`;
-      return `${bandBanner}<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:18px">
-      <div class="sb-card" style="display:flex;align-items:center;gap:16px;min-height:156px">
+      const woh=(typeof wordOfHour==='function')?wordOfHour():null; const wohPr=woh?pronFor(woh.w):null;
+      const wohTile=woh?`<button data-act="openWordCard" title="Tap for the full word card" class="sb-card" style="width:100%;display:flex;align-items:center;gap:12px;background:linear-gradient(100deg,color-mix(in srgb,var(--treasure,#F0B429) 18%,var(--paper,var(--bg2))),var(--paper,var(--bg2)) 62%);border-color:color-mix(in srgb,var(--treasure,#F0B429) 42%,var(--line));border-radius:var(--r-lg,16px);padding:11px 16px;cursor:pointer;text-align:left;min-height:64px">
+        <span style="display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--treasure,#F0B429);color:#2B2117;flex-shrink:0;font-size:19px">⏳</span>
+        <span style="min-width:0;flex:1">
+          <span class="sb-cn" style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">Word of the hour</span>
+          <span class="sb-ct" style="display:block;overflow-wrap:anywhere">${esc(woh.w)}</span>
+          ${(wohPr&&wohPr.p)?`<span class="sb-cn" style="display:block;font-family:var(--mono);color:var(--muted)">/ ${esc(wohPr.p)} /</span>`:''}
+        </span>
+        <span class="sb-cl">card →</span>
+      </button>`:'';
+      return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:12px">${bandBanner}${wohTile}</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:14px">
+      <div class="sb-card" style="display:flex;align-items:center;gap:14px;min-height:120px;padding:14px">
         ${(()=>{ const hasCard=c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar]&&typeof SB_AV_CARD==='function';
-          const art=hasCard?avatarSVG(c.avatar,122,c.accOn):mascotAcc(S.mood);
-          const inner=`<div style="width:126px;height:131px;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center;position:relative">${art}</div>`;
+          const art=hasCard?avatarSVG(c.avatar,94,c.accOn):mascotAcc(S.mood,84);
+          const inner=`<div style="width:96px;height:100px;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center;position:relative">${art}</div>`;
           return hasCard?`<button data-act="openAvDeck" data-arg="${c.avatar}" title="Flip through your avatar cards" style="flex-shrink:0;background:none;border:0;padding:0;cursor:pointer">${inner}</button>`
                         :`<div style="position:relative;flex-shrink:0">${inner}</div>`; })()}
         <div style="min-width:0;flex:1">
           ${(()=>{ const hasCard=c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar]&&typeof SB_AV_CARD==='function';
             const d=hasCard?SB_AV_CARD(c.avatar):null;
-            return d?`<div style="position:relative;background:var(--surface2,#f3eee3);border-radius:14px;border-bottom-left-radius:4px;padding:8px 12px;margin-bottom:8px;font:italic 600 13px/1.4 var(--body,sans-serif);color:var(--ink,var(--text))">“${esc(d.greeting)}”</div>`:'';
+            return d?`<div style="position:relative;background:var(--surface2,#f3eee3);border-radius:12px;border-bottom-left-radius:4px;padding:6px 10px;margin-bottom:6px;font:italic 600 11px/1.35 var(--body,sans-serif);color:var(--ink,var(--text))">“${esc(trunc(d.greeting,90))}”</div>`:'';
           })()}
           <div class="sb-cs">${greeting}</div>
-          <div style="font-family:var(--display);font-weight:800;font-size:24px;line-height:1.1">${esc(c.name)}</div>
-          <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px">
+          <div style="font-family:var(--display);font-weight:800;font-size:21px;line-height:1.1">${esc(c.name)}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
             ${(c.streak||0)>0?`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">${iconSVG('flame',14)} ${c.streak}-day streak</span>`:''}
             ${(()=>{ const ms=milestone(); return (ms&&ms.days>=0)?`<button data-act="setNav" data-arg="progress" style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">🐝 ${ms.days} days to ${esc(trunc(ms.label,18))}</button>`:''; })()}
           </div>
         </div>
       </div>
-      <button data-act="openEvo" title="Open the full evolution ladder" class="sb-card" style="display:flex;align-items:stretch;gap:14px;cursor:pointer;min-height:156px">
+      <button data-act="openEvo" title="Open the full evolution ladder" class="sb-card" style="display:flex;align-items:stretch;gap:14px;cursor:pointer;min-height:120px;padding:14px">
         <div style="flex-shrink:0;text-align:center;align-self:center">
-          <div style="width:76px;height:82px">${evArt(theme,fIdx)}</div>
+          <div style="width:64px;height:70px">${evArt(theme,fIdx)}</div>
           <div class="sb-cn" style="font-weight:800;color:var(--ink,var(--text));margin-top:1px">${evo[fIdx]}</div>
         </div>
         <div style="min-width:0;flex:1;display:flex;flex-direction:column">
@@ -2590,22 +2639,22 @@ function viewHome(){
           <div style="margin-top:auto;text-align:right"><span class="sb-cl">See the ladder →</span></div>
         </div>
       </button>
-      <div class="sb-card" style="display:flex;align-items:center;gap:16px;min-height:156px">
-        <div style="width:112px;height:112px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(var(--action,var(--accent)) ${goalPctNum}%, var(--tint-deep,var(--surface2)) 0)">
-          <div style="width:94px;height:94px;border-radius:50%;background:var(--paper,var(--bg2));display:grid;place-items:center;text-align:center"><div><div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1">${goalDoneN}/${goalTarget}</div><div class="sb-cn" style="margin-top:2px">today</div></div></div>
+      <div class="sb-card" style="display:flex;align-items:center;gap:14px;min-height:120px;padding:14px">
+        <div style="width:90px;height:90px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(var(--action,var(--accent)) ${goalPctNum}%, var(--tint-deep,var(--surface2)) 0)">
+          <div style="width:74px;height:74px;border-radius:50%;background:var(--paper,var(--bg2));display:grid;place-items:center;text-align:center"><div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1">${goalDoneN}/${goalTarget}</div><div class="sb-cn" style="margin-top:2px">today</div></div></div>
         </div>
         <div style="min-width:0">
           <div class="sb-ct" style="margin-bottom:3px">Daily goal</div>
-          <div class="sb-cs" style="margin-bottom:11px">${goalPctNum>=100?'Goal smashed for today — amazing!':('Spell '+Math.max(0,goalTarget-goalDoneN)+' more to hit today\u2019s goal.')}</div>
+          <div class="sb-cs" style="margin-bottom:9px">${goalPctNum>=100?'Goal smashed for today — amazing!':('Spell '+Math.max(0,goalTarget-goalDoneN)+' more to hit today\u2019s goal.')}</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap"><button data-act="openCoach" style="padding:10px 17px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">${goalDoneN>0?'Continue →':'Start practice →'}</button>
           <button data-act="champTen" title="Ten championship-tier words — your daily stretch" style="padding:10px 14px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">🏆 Champ 10</button></div>
         </div>
       </div>
     </div>`; })()}
 ${focusedH?(()=>{ return `
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:18px">${journeys}</div>`; })()
-    :`${tipOfDay(true)}<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:4px 2px 12px">Keep going</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:18px">${journeys}</div>`}
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:8px">${journeys}</div>`; })()
+    :`${tipOfDay(true)}<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:2px 2px 9px">Keep going</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:8px">${journeys}</div>`}
   </div>`;
 }
 function avatarSVG(id,size,acc){ size=size||30;
