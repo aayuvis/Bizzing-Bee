@@ -322,3 +322,20 @@
 .sg-evotoast i{font:700 16px 'Hanken',sans-serif;font-style:normal}
 @keyframes sgEvoToast{0%{transform:translateX(-50%) scale(.5) translateY(10px);opacity:0}15%{transform:translateX(-50%) scale(1.08) translateY(0);opacity:1}80%{transform:translateX(-50%) scale(1);opacity:1}100%{transform:translateX(-50%) scale(.95) translateY(-8px);opacity:0}}
 .sg-finishbtn{position:absolute;right:12px;bottom:12px;z-index:25;font:800 14px 'Hanken',sans-serif;color:#241E33;background:linear-gradient(135deg,#FFD24D,#F0A93C);border:none;border-radius:999px;padding:11px 20px;cursor:pointer;box-shadow:0 5px 16px rgba(240,169,60,.55);animation:sgEvoPop .5s cubic-bezier(.2,1.6,.4,1)}
+
+/* ---- chapter hardness picker (4 levels) ---- */
+.sg-diffpick{max-width:560px;margin:0 auto;text-align:center;padding:8px 6px}
+.sg-diffpick h3{font-family:var(--display,serif);font-weight:800;font-size:26px;margin:6px 0 6px;color:var(--ink,#2B2117)}
+.sg-diffpick>p{font-size:14px;color:var(--muted,#7A6E5C);line-height:1.5;margin:0 auto 18px;max-width:44ch}
+.sg-diffgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(max-width:520px){.sg-diffgrid{grid-template-columns:1fr}}
+.sg-diff{display:flex;flex-direction:column;align-items:center;gap:3px;background:var(--panel,#fff);border:2px solid var(--line,#EADFC8);border-radius:16px;padding:16px 12px 14px;cursor:pointer;transition:transform .12s ease,border-color .12s ease,box-shadow .12s ease}
+.sg-diff:hover,.sg-diff:focus{transform:translateY(-3px);border-color:var(--honey,#F0B429);box-shadow:0 8px 22px rgba(200,150,30,.22);outline:none}
+.sg-diff-stars{font-size:19px;letter-spacing:1px;color:#F0B429;line-height:1}
+.sg-diff-stars i{color:#D9C79A;font-style:normal}
+.sg-diff b{font-family:var(--display,serif);font-weight:800;font-size:18px;color:var(--ink,#2B2117);margin-top:4px}
+.sg-diff-sub{font-size:12px;color:var(--muted,#7A6E5C);font-weight:600}
+.sg-diff-tag{margin-top:6px;font-size:11px;font-weight:800;letter-spacing:.03em;padding:3px 10px;border-radius:999px;background:var(--chip,#FBEFCF);color:var(--honey-deep,#8A5B00)}
+.sg-diff.cleared{border-color:#7ED9A6}
+.sg-diff.cleared .sg-diff-tag{background:#E4F7EC;color:#1F8A52}
+.sg-diff-back{margin:18px auto 4px;display:block;background:none;border:0;color:var(--muted,#7A6E5C);font-weight:700;font-size:13px;cursor:pointer}
