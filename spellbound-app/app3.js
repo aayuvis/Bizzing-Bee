@@ -706,6 +706,7 @@ const app = {
   qWord:(key)=>{ const m=(state._qHard||{})[String(key).toLowerCase()]; if(m){ set({qWord:m}); try{ say(m.w); }catch(e){} } },
   qWordSay:(w)=>{ try{ say(w); }catch(e){} },
   qWordClose:()=>set({qWord:null}),
+  qMeaning:()=>set({qMeaningOpen:!state.qMeaningOpen}),
   vocDeck:(k)=>{ const words=vocDeckWords(k); if(words.length<5){ flash('Not enough words here yet — train a list first'); return; }
     set({vocDeck:k, vocWords:words, vocIdx:0, vocFlip:false}); setTimeout(()=>{ const w=state.vocWords[0]; if(w) say(w.w); },250); },
   vocFlip:()=>{ const to=!state.vocFlip;
@@ -2039,6 +2040,7 @@ function viewQuotes(){ const c=active(); const S=state; const all=(window.SB_QUO
       <div style="position:absolute;top:12px;left:16px;font-family:Georgia,serif;font-size:64px;line-height:1;color:rgba(200,150,30,.26);pointer-events:none">“</div>
       <div style="position:absolute;top:13px;right:16px;display:flex;gap:8px;z-index:2">
         <button data-act="qSpeak" title="Read aloud" aria-label="Read aloud" style="width:38px;height:38px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',18)}</button>
+        ${meaning?`<button data-act="qMeaning" title="What does it mean?" aria-label="Meaning" style="width:38px;height:38px;border-radius:50%;background:${S.qMeaningOpen?'#F0B429':'#fff'};color:${S.qMeaningOpen?'#5a3d00':'#B67B00'};border:1px solid ${S.qMeaningOpen?'transparent':'#EBD79A'};display:grid;place-items:center;font-size:18px;box-shadow:var(--edge)">💡</button>`:''}
         <button data-act="qFav" title="Save to favorites" aria-label="Favorite" style="width:38px;height:38px;border-radius:50%;background:${isFav?'#FF4D8D':'#fff'};color:${isFav?'#fff':'#C4453C'};border:1px solid ${isFav?'transparent':'#EBD79A'};display:grid;place-items:center;font-size:18px;box-shadow:var(--edge)">❤</button>
       </div>
       <div style="position:relative;z-index:1;margin-top:10px;${isLong?'max-height:min(52vh,440px);overflow:auto;text-align:left':''}">
@@ -2046,9 +2048,10 @@ function viewQuotes(){ const c=active(); const S=state; const all=(window.SB_QUO
         <div style="margin-top:18px;font-family:var(--ui);font-weight:800;font-size:16px;color:var(--treasure-deep,#8A5B00)">— ${esc(x.a)}</div>
         ${x.who?`<div style="margin-top:3px;font-size:12.5px;color:#8a7a4a;font-weight:600">${esc(x.who)}</div>`:''}
         ${x.c?`<div style="margin-top:12px"><span style="display:inline-block;padding:4px 12px;border-radius:999px;background:rgba(200,150,30,.16);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:11.5px">${quoteCatLabel(x.c)}</span></div>`:''}
-        ${meaning?`<div style="margin-top:16px;text-align:left;background:rgba(255,255,255,.6);border:1px solid #EBD79A;border-radius:14px;padding:13px 15px">
+        ${(meaning&&S.qMeaningOpen)?`<div style="margin-top:16px;text-align:left;background:rgba(255,255,255,.6);border:1px solid #EBD79A;border-radius:14px;padding:13px 15px;animation:sb-rise .25s ease both">
           <div style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:5px">💡 What it means</div>
-          <div style="font-size:14px;line-height:1.55;color:#3A3320;font-weight:500">${esc(meaning)}</div></div>`:''}
+          <div style="font-size:14px;line-height:1.55;color:#3A3320;font-weight:500">${esc(meaning)}</div></div>`
+          :meaning?`<div style="margin-top:14px;font-size:12px;color:#8a7a4a;font-weight:700">💡 Tap the lightbulb for what it means</div>`:''}
         ${(x.hard&&x.hard.length)?`<div style="margin-top:10px;font-size:11.5px;color:#8a7a4a;font-weight:700">👆 Tap a <span class="q-hard" style="pointer-events:none">highlighted</span> word to see its card</div>`:''}
       </div>
     </div>
