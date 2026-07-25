@@ -2036,7 +2036,7 @@ function viewQuotes(){ const c=active(); const S=state; const all=(window.SB_QUO
   const qsize=isLong?(qlen>600?'15px':'17px'):(qlen>170?'22px':qlen>110?'26px':qlen>60?'31px':'36px');
   const qHTML=renderQuoteHTML(x); const meaning=x.m||x.meaning||'';
   const body = total? `
-    <div data-swipe="quotes" class="coach-card" style="position:relative;max-width:640px;margin:0 auto;border-radius:24px;overflow:hidden;background:linear-gradient(160deg,#FFF9EC,#FBEFCF 60%,#F6E3B0);border:1px solid #EBD79A;box-shadow:0 12px 34px rgba(150,110,20,.18);padding:clamp(24px,5vw,38px) clamp(20px,5vw,36px);${isLong?'':'text-align:center;min-height:min(52vh,400px);display:flex;flex-direction:column;justify-content:center'}">
+    <div data-swipe="quotes" class="q-parchment" style="position:relative;max-width:640px;margin:0 auto;overflow:hidden;padding:clamp(26px,5vw,40px) clamp(22px,5vw,38px);${isLong?'':'text-align:center;min-height:min(52vh,400px);display:flex;flex-direction:column;justify-content:center'}">
       <div style="position:absolute;top:12px;left:16px;font-family:Georgia,serif;font-size:64px;line-height:1;color:rgba(200,150,30,.26);pointer-events:none">“</div>
       <div style="position:absolute;top:13px;right:16px;display:flex;gap:8px;z-index:2">
         <button data-act="qSpeak" title="Read aloud" aria-label="Read aloud" style="width:38px;height:38px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',18)}</button>
