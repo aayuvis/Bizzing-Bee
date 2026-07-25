@@ -697,7 +697,10 @@
     const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
 
     /* ---- pseudo-3D track ---- */
-    const segLen=200, roadW=2200, rumbleLen=3, drawDist=160, camH=1200, fov=100;
+    const segLen=200, roadW=2200, rumbleLen=3, drawDist=160, camH=1850, fov=100;
+    // Elevated chase-cam: taller camera + a horizon lifted above mid-screen so you
+    // look DOWN onto more of the track ahead instead of skimming it at ground level.
+    const horizonY=Math.round(Ht*0.40);
     const camDepth=1/Math.tan((fov/2)*Math.PI/180);
     const LIGHT={road:'#6C6C74',grass:'#7BC169',rumble:'#EDEDED',lane:'#FFFFFF'};
     const DARK ={road:'#64646C',grass:'#72B461',rumble:'#C7413F',lane:''};
@@ -813,7 +816,7 @@
     function project(p,camX,camY,camZ){ p.camera.x=(p.world.x||0)-camX; p.camera.y=(p.world.y||0)-camY; p.camera.z=(p.world.z||0)-camZ;
       p.screen.scale=camDepth/p.camera.z;
       p.screen.x=Wd/2 + p.screen.scale*p.camera.x*Wd/2;
-      p.screen.y=Ht/2 - p.screen.scale*p.camera.y*Ht/2;
+      p.screen.y=horizonY - p.screen.scale*p.camera.y*Ht/2;
       p.screen.w=p.screen.scale*roadW*Wd/2; }
     function poly(x1,y1,x2,y2,x3,y3,x4,y4,col){ cx.fillStyle=col; cx.beginPath();
       cx.moveTo(x1,y1); cx.lineTo(x2,y2); cx.lineTo(x3,y3); cx.lineTo(x4,y4); cx.closePath(); cx.fill(); }
@@ -849,7 +852,7 @@
       if(o.spin){ cx.font='700 '+Math.round(w*0.7)+'px serif'; cx.textAlign='center'; cx.fillText('💫',px,by-hd*0.7); cx.textAlign='left'; } }
 
     function drawBG(){
-      const hz=Ht*0.5, sway=Math.sin(pos/2600)*34 - playerX*26;
+      const hz=horizonY, sway=Math.sin(pos/2600)*34 - playerX*26;
       const g=cx.createLinearGradient(0,0,0,hz); g.addColorStop(0,'#3E7FD6'); g.addColorStop(.6,'#7FB8EC'); g.addColorStop(1,'#DEEFFB');
       cx.fillStyle=g; cx.fillRect(0,0,Wd,hz);
       const sx=Wd*0.72, sy=hz*0.42;
