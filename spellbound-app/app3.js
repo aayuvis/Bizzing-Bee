@@ -1241,6 +1241,35 @@ const app = {
       if(e.target===ov||e.target.closest('.avc-x')) ov.remove(); };
     document.body.appendChild(ov);
     try{ if(opts.unlocked&&typeof burstConfetti==='function') burstConfetti(120); }catch(e){} },
+  // Avatar deck: tapping the home avatar fans out every card you own as a stack you
+  // can flip through (arrows / swipe / keyboard) and wear straight from the card.
+  openAvDeck:(startId)=>{ if(typeof window.SB_AV_CARD_HTML!=='function'||!window.SB_AVATARS){ try{ app.showAvCard(startId); }catch(e){} return; }
+    const c=active();
+    const ids=SB_AVATARS.list.filter(a=>avOwned(c,a.id)&&typeof SB_AV_CARD==='function'&&SB_AV_CARD(a.id)).map(a=>a.id);
+    if(!ids.length){ try{ app.showAvCard(startId||c.avatar); }catch(e){} return; }
+    let idx=ids.indexOf(startId||c.avatar); if(idx<0) idx=0;
+    const ov=document.createElement('div'); ov.className='avc-ov avdeck-ov';
+    function paint(){ const id=ids[idx]; const cc=active(); const wearing=cc.avatar===id; const multi=ids.length>1;
+      const nav=multi?'<button class="avd-nav avd-prev" data-avd="prev" aria-label="Previous card">‹</button><button class="avd-nav avd-next" data-avd="next" aria-label="Next card">›</button>':'';
+      const count=multi?'<div class="avd-count">'+(idx+1)+' / '+ids.length+' owned</div>':'';
+      const action=wearing?'<span class="avc-worn">Wearing ✓</span>':'<button class="avc-use" data-avd="wear">Wear this avatar</button>';
+      ov.innerHTML='<div class="avdeck-stage">'
+        +'<div class="avd-ghost avd-g3"></div><div class="avd-ghost avd-g2"></div><div class="avd-ghost avd-g1"></div>'
+        +'<div class="avc-wrap avd-live">'+SB_AV_CARD_HTML(id,{owned:true})+'</div>'+nav+'</div>'
+        +'<div class="avd-bar">'+count+action+'<button class="avc-x" data-avd="close">Close</button></div>'; }
+    function go(n){ idx=(idx+n+ids.length)%ids.length; paint(); }
+    function cleanup(){ document.removeEventListener('keydown',key); ov.remove(); }
+    function key(e){ if(e.key==='ArrowLeft') go(-1); else if(e.key==='ArrowRight') go(1); else if(e.key==='Escape') cleanup(); }
+    ov.onclick=e=>{ const t=e.target.closest('[data-avd]');
+      if(t){ const a=t.getAttribute('data-avd');
+        if(a==='prev') go(-1); else if(a==='next') go(1);
+        else if(a==='wear'){ try{ app.wearAv(ids[idx]); }catch(_){}
+          try{ if(typeof burstConfetti==='function') burstConfetti(90); }catch(_){} paint(); }
+        else if(a==='close') cleanup(); return; }
+      if(e.target===ov) cleanup(); };
+    let sx=null; ov.addEventListener('touchstart',e=>{ sx=e.touches[0].clientX; },{passive:true});
+    ov.addEventListener('touchend',e=>{ if(sx==null) return; const dx=e.changedTouches[0].clientX-sx; if(Math.abs(dx)>45) go(dx<0?1:-1); sx=null; },{passive:true});
+    document.addEventListener('keydown',key); paint(); document.body.appendChild(ov); },
   playGame:(type)=>{ clearGTimer(); const c=active(); ensureLists(c); state.gInfo=false; state.typed='';
     if(type==='buzz'){ const list=pickFresh(gameWordsD(),10); if(!list.length){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,right:0,ans:[],status:'idle'}; setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[0]) say(state.game.list[0].w); },320); }
     else if(type==='beat'){ state.game={type:'beat',phase:'mode'}; set({nav:'games',screen:'app'}); return; }
@@ -2532,7 +2561,7 @@ function viewHome(){
         ${(()=>{ const hasCard=c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar]&&typeof SB_AV_CARD==='function';
           const art=hasCard?avatarSVG(c.avatar,122,c.accOn):mascotAcc(S.mood);
           const inner=`<div style="width:126px;height:131px;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center;position:relative">${art}</div>`;
-          return hasCard?`<button data-act="showAvCard" data-arg="${c.avatar}" title="See ${esc((SB_AVATARS.byId[c.avatar]||{}).name||'')}'s card" style="flex-shrink:0;background:none;border:0;padding:0;cursor:pointer">${inner}</button>`
+          return hasCard?`<button data-act="openAvDeck" data-arg="${c.avatar}" title="Flip through your avatar cards" style="flex-shrink:0;background:none;border:0;padding:0;cursor:pointer">${inner}</button>`
                         :`<div style="position:relative;flex-shrink:0">${inner}</div>`; })()}
         <div style="min-width:0;flex:1">
           ${(()=>{ const hasCard=c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar]&&typeof SB_AV_CARD==='function';

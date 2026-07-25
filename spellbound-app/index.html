@@ -284,6 +284,20 @@
   .avc-use:active{transform:translateY(2px);box-shadow:0 2px 0 #C8901B}
   .avc-worn{font:800 13px var(--body,sans-serif);color:#2FA35C}
   .avc-x{font:700 13px var(--body,sans-serif);background:rgba(255,255,255,.85);color:#241E33;border:none;border-radius:999px;padding:9px 22px;cursor:pointer}
+  /* Avatar deck — fanned stack you flip through from the home avatar */
+  .avdeck-ov{z-index:120}
+  .avdeck-stage{position:relative;display:grid;place-items:center;padding:0 12px}
+  .avdeck-stage .avd-ghost{position:absolute;top:50%;left:50%;width:min(300px,74vw);height:82%;border-radius:18px;background:linear-gradient(160deg,#fff,#efe7d6);box-shadow:0 12px 34px rgba(20,10,30,.34);transform-origin:center}
+  .avdeck-stage .avd-g1{transform:translate(-50%,-48%) rotate(-6deg) scale(.94);opacity:.55}
+  .avdeck-stage .avd-g2{transform:translate(-50%,-46%) rotate(6deg) scale(.90);opacity:.4}
+  .avdeck-stage .avd-g3{transform:translate(-50%,-44%) rotate(-11deg) scale(.86);opacity:.26}
+  .avdeck-stage .avd-live{position:relative;z-index:2;animation:sb-pop .28s cubic-bezier(.2,1.4,.4,1) both}
+  .avd-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;background:rgba(255,255,255,.92);color:#241E33;font:800 26px/1 var(--body,sans-serif);box-shadow:0 4px 14px rgba(20,10,30,.35);display:grid;place-items:center}
+  .avd-prev{left:-6px}.avd-next{right:-6px}
+  .avd-nav:active{transform:translateY(-50%) scale(.92)}
+  .avd-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+  .avd-count{font:800 12px var(--mono,monospace);letter-spacing:.06em;color:rgba(255,255,255,.9)}
+  @media(max-width:420px){ .avd-prev{left:-2px}.avd-next{right:-2px}.avd-nav{width:40px;height:40px;font-size:23px} }
 </style>
   <link rel="stylesheet" href="saga2.css?v=20260725e">
 </head>
