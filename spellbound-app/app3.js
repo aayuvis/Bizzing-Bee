@@ -739,9 +739,9 @@ const app = {
   // ----- Vocabulary study (NSF vocabulary-bee style) -----
   openVocab:()=>{ set({nav:'vocab', screen:'app', vocDeck:null, conceptSel:null}); },
   // ---- Quotes: a swipeable deck of kid-friendly quotations from famous people ----
-  openQuotes:()=>{ set({nav:'quotes', screen:'app', conceptSel:null, qi:(state.qi||0)}); setTimeout(()=>{ if(state.readAloud) app.qSpeak(); },220); },
-  qNav:(dir)=>{ const L=quoteList(); if(!L.length) return; let i=(state.qi||0)+(+dir); if(i<0)i=L.length-1; if(i>=L.length)i=0; set({qi:i}); if(state.readAloud) app.qSpeak(); },
-  qShuffle:()=>{ const L=quoteList(); if(!L.length) return; let i=state.qi||0; if(L.length>1){ while(i===(state.qi||0)) i=Math.floor(Math.random()*L.length); } set({qi:i}); if(state.readAloud) app.qSpeak(); },
+  openQuotes:()=>{ set({nav:'quotes', screen:'app', conceptSel:null, qi:(state.qi||0)}); markQuoteSeen(); setTimeout(()=>{ if(state.readAloud) app.qSpeak(); },220); },
+  qNav:(dir)=>{ const L=quoteList(); if(!L.length) return; let i=(state.qi||0)+(+dir); if(i<0)i=L.length-1; if(i>=L.length)i=0; set({qi:i}); markQuoteSeen(); if(state.readAloud) app.qSpeak(); },
+  qShuffle:()=>{ const L=quoteList(); if(!L.length) return; let i=state.qi||0; if(L.length>1){ while(i===(state.qi||0)) i=Math.floor(Math.random()*L.length); } set({qi:i}); markQuoteSeen(); if(state.readAloud) app.qSpeak(); },
   qSetCat:(cat)=>{ set({qCat:cat==='all'?null:cat, qi:0}); if(state.readAloud) setTimeout(app.qSpeak,150); },
   qSpeak:()=>{ const L=quoteList(); const x=L[state.qi||0]; if(x){ try{ say(x.q+' — '+x.a); }catch(e){} } },
   qFav:()=>{ const L=quoteList(); const x=L[state.qi||0]; if(!x) return; const c=active(); c.quoteFavs=c.quoteFavs||{}; const k=(x.q||'').slice(0,60); if(c.quoteFavs[k]) delete c.quoteFavs[k]; else { c.quoteFavs[k]=1; try{sfx('coin');}catch(e){} } save(); render(); },
@@ -2091,6 +2091,9 @@ function quoteCatLabel(k){ return QUOTE_CAT_LABEL[k]||(String(k||'').charAt(0).t
 function quoteList(){ const all=(window.SB_QUOTES||[]); const cat=state.qCat;
   if(cat==='__fav'){ const f=(active().quoteFavs)||{}; return all.filter(x=>f[(x.q||'').slice(0,60)]); }
   if(!cat) return all; return all.filter(x=>x.c===cat); }
+// Track distinct quotes a speller has read, so Progress can show real engagement.
+function markQuoteSeen(){ try{ const L=quoteList(); const x=L[state.qi||0]; if(!x) return; const c=active(); if(!c) return;
+  c.qSeen=c.qSeen||{}; const k=(x.q||'').slice(0,44); if(!c.qSeen[k]){ c.qSeen[k]=1; save(); } }catch(e){} }
 function quoteCats(){ const all=(window.SB_QUOTES||[]); const seen={}; const ord=Object.keys(QUOTE_CAT_LABEL);
   all.forEach(x=>{ if(x.c) seen[x.c]=1; }); const inData=ord.filter(k=>seen[k]); Object.keys(seen).forEach(k=>{ if(inData.indexOf(k)<0) inData.push(k); }); return inData; }
 // render a quote's text, highlighting its "hard" words as tappable chips that open a word card.
@@ -4032,6 +4035,38 @@ function viewProgressShell(){ const t=state.progTab==='parent'?'parent':'me';
   return `<div style="max-width:920px;margin:0 auto">
     <div style="display:flex;gap:8px;margin-bottom:16px">${seg2('me','chart','My progress')}${seg2('parent','users','Parent zone')}</div>
     ${t==='parent'?viewParent():viewProgress()}</div>`; }
+// Overall Story-mode progress (shared across the device, stored in localStorage).
+function sagaFootprint(){ let p={}; try{ p=JSON.parse(localStorage.getItem('sb_saga2')||'{}'); }catch(e){}
+  const total=(window.SAGA2&&SAGA2.total)||0;
+  const cleared=Object.keys(p.done||{}).length;
+  const stars=Object.values(p.stars||{}).reduce((a,b)=>a+(+b||0),0);
+  return {total,cleared,stars,maxStars:total*4,gems:p.gems||0}; }
+// A snapshot of everything a speller explores beyond core spelling — used by both the
+// kid Progress screen and the Parent dashboard so the new surfaces (Quotes, Story mode,
+// Journeys, Typing, Idioms) are actually reflected in progress.
+function explorerTiles(c){
+  const tiles=[]; const qTotal=(window.SB_QUOTES||[]).length;
+  const sg=sagaFootprint();
+  if(sg.total) tiles.push({act:'openSaga',ic:'joystick',col:'#7C5CFF',label:'Story mode',v:sg.cleared+'/'+sg.total,sub:sg.stars+' ★ earned · '+sg.gems+' 💎'});
+  if(qTotal){ const favN=Object.keys(c.quoteFavs||{}).length; const seenN=Object.keys(c.qSeen||{}).length;
+    tiles.push({act:'openQuotes',ic:'quote',col:'#C8791B',label:'Quotes & poems',v:(seenN||favN||0)+'',sub:(favN?favN+' ❤ favourites · ':'')+fmtN(qTotal)+' to explore'}); }
+  try{ const lDone=lessonsDoneCount(); const lU=lessonUnits(); const lChap=lU.filter(u=>{ const ls=lessonsAll().filter(L=>L.unit===u.n); return ls.length&&ls.every(L=>lessonComplete(L)); }).length;
+    if(lU.length) tiles.push({act:'openJourneys',ic:'book',col:'#E0922E',label:'Word Journeys',v:lChap+'/'+(lU.length),sub:lDone+' lessons studied'}); }catch(e){}
+  try{ const cAll=(state.conceptData||(window.SB_CONCEPTS&&SB_CONCEPTS.chapters)||[]); const cDone=cAll.filter(ch=>conceptStat(ch).done).length;
+    if(cAll.length) tiles.push({act:'setNav',arg:'concepts',ic:'grid',col:'#13A892',label:'Concepts',v:cDone+'/'+cAll.length,sub:'patterns & rules learned'}); }catch(e){}
+  const ty=c.typing||{}; if(ty.tests) tiles.push({act:'openTyping',ic:'pencil',col:'#3D7DF0',label:'Typing',v:(ty.bestWpm||0)+' WPM',sub:'best · '+(ty.bestAcc||0)+'% accuracy'});
+  const figN=Object.keys(c.figDone||{}).length; if(figN) tiles.push({act:'setNav',arg:'figurative',ic:'spark',col:'#E8458C',label:'Idioms & similes',v:figN+'',sub:'decks completed'});
+  return tiles; }
+function explorerCard(c,opts){ opts=opts||{}; const tiles=explorerTiles(c); if(!tiles.length) return '';
+  const cell=t=>{ const arg=t.arg?`data-arg="${escA(t.arg)}"`:''; return `<button data-act="${t.act}" ${arg} style="text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 14px;display:flex;flex-direction:column;gap:6px">
+    <span style="display:flex;align-items:center;gap:8px"><span style="width:30px;height:30px;flex-shrink:0;border-radius:9px;background:color-mix(in srgb,${t.col} 16%,transparent);color:${t.col};display:grid;place-items:center">${iconSVG(t.ic,16)}</span><span style="font-family:var(--display);font-weight:800;font-size:13px;color:var(--text)">${esc(t.label)}</span></span>
+    <span style="font-family:var(--display);font-weight:800;font-size:20px;color:${t.col};line-height:1">${esc(t.v)}</span>
+    <span style="font-size:11.5px;color:var(--muted);font-weight:600;line-height:1.3">${esc(t.sub)}</span></button>`; };
+  return `<div class="sb-card" style="${opts.mt?'margin-top:18px':''}">
+    <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:3px">${opts.title||'Beyond spelling'}</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:13px">${opts.sub||'Everywhere '+esc(c.name||'your speller')+' is building language — story mode, quotes, journeys and more.'}</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">${tiles.map(cell).join('')}</div>
+  </div>`; }
 function viewProgress(){
   const c=active();
   const bb=beeBand(c);
@@ -4093,6 +4128,7 @@ function viewProgress(){
         <div style="display:flex;gap:8px;flex-wrap:wrap">${row}</div>
       </div>`; })()}
     <div style="margin-bottom:18px">${streakCard()}</div>
+    ${(()=>{ const ec=explorerCard(c,{title:'Your Bizzing Bee world',sub:'Everywhere you’re exploring — story mode, quotes, journeys, typing and more.'}); return ec?`<div style="margin-bottom:18px">${ec}</div>`:''; })()}
     <div class="sb-card" style="margin-bottom:18px">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:16px">This week</div>
       <div style="display:flex;align-items:flex-end;gap:9px;height:120px">${week}</div>
@@ -4188,6 +4224,7 @@ function viewParent(){
     <div style="font-family:var(--display);font-weight:800;font-size:15px;margin:20px 2px 12px">Spellers</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">${kids}</div>
     <div style="margin-top:18px">${parentAnalytics()}</div>
+    ${explorerCard(active(),{mt:true,title:'Beyond spelling',sub:'Enrichment and engagement across the whole app — not just word drills.'})}
     ${parentReviseCard()}
     ${parentActivityCard()}
     ${(()=>{ const rs=state.wordReports||[]; if(!rs.length) return '';
