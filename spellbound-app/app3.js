@@ -470,6 +470,15 @@ function wordDB(){ if(_wdb) return _wdb; const m=new Map();
   const add=(arr)=>(arr||[]).forEach(r=>{ const k=nkey(r.w); if(k&&!m.has(k)) m.set(k,r); });
   add(SB_DATA.nsf); if(window.SB_FULL) add(window.SB_FULL); add(REVIEW); add(HINDI_WORDS);
   _wdb=m; return m; }
+// Pronunciation guide for a single word — used by the Quotes difficult-word popups.
+// Prefers the curated SB_PRON dictionary (respelling + syllables + part of speech),
+// then falls back to the core word engine. Returns null when nothing is known.
+function pronFor(w){ if(!w) return null; const k=nkey(w); if(/\s/.test(k)) return null;
+  let e=(window.SB_PRON&&window.SB_PRON[k])||null;
+  if(!e){ try{ const hit=wordDB().get(k); if(hit&&(hit.p||hit.sy||hit.ps||hit.o)) e={p:hit.p||'',sy:hit.sy||'',ps:hit.ps||'',o:hit.o||''}; }catch(_){} }
+  if(!e) return null;
+  const out={p:e.p||'',sy:e.sy||'',ps:e.ps||'',o:e.o||''};
+  return (out.p||out.sy||out.ps||out.o)?out:null; }
 // memoize the heavy origin/tier filters — computed once over the core set, reused every render
 let _catStatic=null;
 function catStatic(){ if(_catStatic) return _catStatic; const nsf=SB_DATA.nsf||[];
@@ -2025,11 +2034,18 @@ function renderQuoteHTML(x){ let html=esc(x.q).replace(/\n/g,'<br>');
     html=html.replace(re,(m,pre,word)=>pre+'<button data-act="qWord" data-arg="'+escA(key)+'" class="q-hard">'+esc(word)+'</button>'); });
   return html; }
 function viewQuotesWordPop(){ const wp=state.qWord; if(!wp) return '';
+  const pr=pronFor(wp.w); const OLAB={Latin:'Latin',Greek:'Greek',French:'French',Spanish:'Spanish',Italian:'Italian',German:'German',Arabic:'Arabic',Japanese:'Japanese','Old English':'Old English',Norse:'Old Norse',Hindi:'Hindi/Sanskrit'};
+  const respell=pr&&pr.p?`<div style="font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:800;letter-spacing:.02em;margin-bottom:2px">/ ${esc(pr.p)} /</div>`:'';
+  const syl=pr&&pr.sy&&pr.sy!==wp.w?`<div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:8px">${esc(pr.sy)}</div>`:(respell?'<div style="margin-bottom:8px"></div>':'');
+  const tag=(t)=>`<span style="font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);background:var(--chip);padding:3px 9px;border-radius:999px">${esc(t)}</span>`;
+  const chips=pr?`<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:12px">${pr.ps?tag(pr.ps):''}${pr.o?tag((OLAB[pr.o]||pr.o)+' origin'):''}</div>`:'';
   return `<div style="position:fixed;inset:0;z-index:130;display:grid;place-items:center;padding:22px;background:rgba(20,12,4,.5)" data-act="qWordClose">
     <div data-act="noop" style="background:var(--paper,#fff);border-radius:20px;max-width:360px;width:100%;padding:24px 22px;text-align:center;box-shadow:0 20px 60px rgba(20,10,30,.5);animation:sb-pop .35s cubic-bezier(.2,1.5,.4,1) both">
       <div style="display:inline-flex;width:52px;height:52px;border-radius:14px;background:var(--chip);color:var(--accent);align-items:center;justify-content:center;margin-bottom:8px">${iconSVG('book',26)}</div>
-      <div style="font-family:var(--display);font-weight:800;font-size:26px;margin-bottom:6px">${esc(wp.w)}</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:26px;margin-bottom:${respell?'2px':'6px'}">${esc(wp.w)}</div>
+      ${respell}${syl}
       <button data-act="qWordSay" data-arg="${escA(wp.w)}" style="margin-bottom:12px;display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:12px;color:var(--muted)">${iconSVG('volume',14)} Say it</button>
+      ${chips}
       <div style="font-size:15px;color:var(--text);line-height:1.5;font-weight:500">${esc(wp.d||'A tricky word — say it aloud and try to spell it!')}</div>
       <button data-act="qWordClose" style="margin-top:18px;width:100%;padding:12px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">Got it ✓</button>
     </div></div>`; }
