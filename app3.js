@@ -5127,6 +5127,13 @@ function gameArtSVG(type,size){ size=size||58;
   if(type==='origin') return W(
     `<circle cx="24" cy="24" r="13"/>`+P('M11 24h26M24 11c-4.5 3.5-6 8-6 13s1.5 9.5 6 13c4.5-3.5 6-8 6-13s-1.5-9.5-6-13z')+
     `<g style="animation:sb-ga-orbit 7s linear infinite;transform-origin:24px 24px"><g transform="translate(24,5)"><circle cx="0" cy="0" r="4.6"/>`+P('M3.4 3.4l4 4')+`</g></g>`);
+  if(type==='wordquiz') return W(
+    P('M13 9h22a3 3 0 0 1 3 3v16a3 3 0 0 1-3 3H24l-7 6v-6h-4a3 3 0 0 1-3-3V12a3 3 0 0 1 3-3z')+
+    `<g style="animation:sb-ga-press 2s ease-in-out infinite;transform-origin:24px 20px">`+P('M20 17.5a4 4 0 1 1 5.4 3.7c-1 .4-1.4 1-1.4 2v1',' stroke-opacity=".95"')+`<circle cx="24" cy="27" r="1.4" fill="#fff" stroke="none"/></g>`);
+  if(type==='duel') return W(
+    `<g style="animation:sb-ga-swing 2.2s ease-in-out infinite;transform-origin:12px 38px">`+P('M9 39l12-12M18 24l4 4M8 36l4 4')+`</g>`+
+    `<g style="animation:sb-ga-swing 2.2s ease-in-out infinite reverse;transform-origin:36px 38px">`+P('M39 39L27 27M30 24l-4 4M40 36l-4 4')+`</g>`+
+    `<g style="animation:sb-ga-spark 2.2s linear infinite;transform-origin:24px 22px">`+P('M24 15v-4M19 20h-4M20.5 16.5l-3-3M27.5 16.5l3-3',' stroke-opacity=".9"')+`</g>`);
   // fallback: existing icon set with float
   const gm=GAMES.find(g=>g.type===type);
   return `<div class="sb-theme-art">${iconSVG((gm&&gm.ic)||'spark',46,2)}</div>`; }
@@ -5445,75 +5452,61 @@ function magicView(){ const g=state.game; const S=state;
       ? `<button data-act="magicNew" style="flex:1;padding:13px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Round ${(g.round||1)+1} — 9 new cells →</button><button data-act="exitGame" style="padding:13px 16px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">Done</button>`
       : `<button data-act="magicBoard" style="flex:1;padding:13px;border-radius:14px;background:${r.win?'var(--accent)':'var(--surface2)'};color:${r.win?'#fff':'var(--text)'};font-weight:800;font-size:15px;${r.win?'box-shadow:var(--edge)':'border:1px solid var(--line)'}">Back to the board</button>`}</div>
   </div>`; }
-function gamesHub(){ const S=state;
-  const questCard=(function(){ if(!window.SQ) return '';
-    let done=0,total=0,legWon=0; try{ const ss=SQ.seasons(); total=ss.length; ss.forEach(s=>{ if(SQ.cleared(s.pack)>=5){done++; legWon++;} }); }catch(e){}
-    const c=active(); const heroId=(function(){ try{ return (SB_AVATARS.byId['queenhive']?'queenhive':(SB_AVATARS.list[0]||{}).id); }catch(e){ return 'queenhive'; } })();
-    return `<button data-act="openQuest" style="grid-column:1/-1;text-align:left;border-radius:16px;overflow:hidden;background:linear-gradient(150deg,#2E2258,#241A47 60%,#1C1438);box-shadow:0 8px 24px rgba(43,27,94,.28);position:relative">
-      <div style="position:absolute;right:-6px;bottom:-10px;opacity:.9;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))">${SB_AVATAR(heroId,120,{dark:true})}</div>
-      <div style="padding:18px 20px;color:#fff;position:relative;max-width:78%">
-        <div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#FFD98A;background:rgba(255,194,61,.14);border:1px solid rgba(255,194,61,.35);border-radius:99px;padding:3px 11px;margin-bottom:8px">★ Story mode</div>
-        <div style="font-family:var(--display);font-weight:800;font-size:22px;line-height:1.1">Spelling Quest</div>
-        <div style="font-size:13px;color:#C9BFEA;line-height:1.45;margin-top:5px">Play 15 story seasons — spell through five chapters to a boss and win its legendary avatar.</div>
-        <div style="display:flex;align-items:center;gap:10px;margin-top:12px">
-          <span style="padding:9px 18px;border-radius:10px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px">${done>0?'Continue':'Start Season 1'} →</span>
-          <span style="font-size:12px;font-weight:800;color:#C9BFEA">${done}/${total} seasons ${legWon?('· '+legWon+' legendary won'):'cleared'}</span>
-        </div>
-      </div></button>`;
-  })();
-  const champCard=`<button data-act="openChallenge" data-arg="journey" style="grid-column:1/-1;text-align:left;border-radius:14px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 6px 18px rgba(43,27,94,.18)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">${(window.SB_ICON_ART&&SB_ICON_ART.champChallenge)?SB_ICON_ART('champChallenge',{size:40}):iconSVG('bolt',32)}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">Set timed or counted · pick a difficulty</div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Champ Challenge</div><div style="font-size:12px;color:rgba(255,255,255,.9)">Beat the clock or a set number — pass your Level to test out.</div></div><span style="padding:9px 16px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Set it up →</span></div></button>`;
-  const magicCard=`<button data-act="playGame" data-arg="magic" style="grid-column:1/-1;text-align:left;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#B14FC4,#7E2E9E);box-shadow:0 6px 18px rgba(123,46,142,.24)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">${(window.SB_ICON_ART&&SB_ICON_ART.magicSquares)?SB_ICON_ART('magicSquares',{size:38}):iconSVG('grid',30)}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">3×3 board of themes &amp; concepts · lines win bonus coins</div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Magic Squares</div><div style="font-size:12px;color:rgba(255,255,255,.9)">Clear theme and concept cells by spelling — complete a line for a Magic Square bonus.</div></div><span style="padding:9px 16px;border-radius:10px;background:#fff;color:#7E2E9E;font-weight:800;font-size:13px;white-space:nowrap">Play →</span></div></button>`;
-  const triviaCard=(function(){ if(!window.SB_TRIVIA) return '';
-    const st=(active().trivia)||{}; const nQ=(SB_TRIVIA.questions||[]).length;
-    return `<button data-act="openTrivia" style="grid-column:1/-1;text-align:left;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#F0A93C,#DC7A18);box-shadow:0 6px 18px rgba(200,122,20,.28)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:flex;line-height:0;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))">${(window.SB_ICON_ART&&SB_ICON_ART.beeTrivia)?SB_ICON_ART("beeTrivia",{size:38}):"🧠"}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.88)">${fmtN(nQ)} questions · 20 themes · 5 levels</div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Bee Trivia</div><div style="font-size:12px;color:rgba(255,255,255,.92)">Classic quiz, Trivia Squares board or Beat the Clock — with picture and listening rounds.</div></div><span style="padding:9px 16px;border-radius:10px;background:#fff;color:#C8791B;font-weight:800;font-size:13px;white-space:nowrap">${st.right?('Play → · '+fmtN(st.right)+' right'):'Play →'}</span></div></button>`;
-  })();
-  const sagaCard=(function(){ if(!window.SAGA2) return '';
-    let cl=0; try{ cl=(window.SAGA2&&SAGA2.cleared)?SAGA2.cleared():((JSON.parse(localStorage.getItem('sb_saga2')||'{}').cleared)||0); }catch(e){}
-    const heroId=(function(){ try{ return SB_AVATARS.byId['bizzy']?'bizzy':((SB_AVATARS.list[0]||{}).id||null); }catch(e){ return null; } })();
-    return `<button data-act="openSaga" style="grid-column:1/-1;text-align:left;border-radius:16px;overflow:hidden;background:linear-gradient(150deg,#3B2A8C,#2A1E6E 60%,#1F1652);box-shadow:0 8px 24px rgba(43,27,94,.30);position:relative">
-      <div style="position:absolute;right:-6px;bottom:-10px;opacity:.95;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))">${heroId?SB_AVATAR(heroId,120,{dark:true}):''}</div>
-      <div style="padding:18px 20px;color:#fff;position:relative;max-width:78%">
-        <div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#FFD98A;background:rgba(255,194,61,.14);border:1px solid rgba(255,194,61,.35);border-radius:99px;padding:3px 11px;margin-bottom:8px">✦ New saga</div>
-        <div style="font-family:var(--display);font-weight:800;font-size:22px;line-height:1.1">Bizzy &amp; the Great Unspelling</div>
-        <div style="font-size:13px;color:#C9BFEA;line-height:1.45;margin-top:5px">A cinematic story adventure — fly, race and spell your way through the worlds to stop the word-eater.</div>
-        <div style="display:flex;align-items:center;gap:10px;margin-top:12px">
-          <span style="padding:9px 18px;border-radius:10px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px">${cl>0?'Continue':'Begin Act I'} →</span>
-          <span style="font-size:12px;font-weight:800;color:#C9BFEA">${cl}/6 chapters cleared</span>
-        </div>
-      </div></button>`;
-  })();
-  const dailyCard=(function(){ if(!window.SB_DAILY) return '';
-    let st={}; try{ st=JSON.parse(localStorage.getItem('sb_daily')||'{}'); }catch(e){}
+function gamesHub(){ const S=state; const c=active();
+  // ---- graphical tile helpers ----
+  const heroTile=(o)=>`<button data-act="${o.act}" ${o.arg?`data-arg="${escA(o.arg)}"`:''} class="arc-hero" ${o.span?'style="grid-column:span 2"':''}>
+      <span aria-hidden="true" style="position:absolute;inset:0;background:${o.grad}"></span>
+      ${o.art?`<span class="arc-hero-art">${o.art}</span>`:''}
+      <span class="arc-hero-in">
+        <span class="arc-tag" style="color:${o.tagC||'#FFD98A'};background:${o.tagBg||'rgba(255,194,61,.14)'};border:1px solid ${o.tagBd||'rgba(255,194,61,.35)'}">${o.tag}</span>
+        <span class="arc-hero-title" style="display:block">${esc(o.title)}</span>
+        <span class="arc-hero-blurb" style="display:block">${esc(o.blurb)}</span>
+        <span class="arc-hero-cta"><span class="arc-hero-go">${esc(o.cta)} →</span>${o.sub?`<span class="arc-hero-sub">${esc(o.sub)}</span>`:''}</span>
+      </span></button>`;
+  const tile=(o)=>`<button data-act="${o.act}" ${o.arg?`data-arg="${escA(o.arg)}"`:''} class="arc-tile">
+      <span class="arc-tile-top" style="background:${o.grad}">${o.badge?`<span class="arc-badge">${esc(o.badge)}</span>`:''}<span style="filter:drop-shadow(0 3px 7px rgba(0,0,0,.28))">${o.art}</span></span>
+      <span class="arc-tile-body">
+        <span class="arc-tile-title" style="display:block">${esc(o.title)}</span>
+        <span class="arc-tile-blurb" style="display:block">${esc(o.blurb)}</span>
+        <span class="arc-tile-foot"><span class="arc-cta" style="background:${o.cta||'var(--accent)'}">${iconSVG('joystick',14)} Play</span>${o.stat?`<span class="arc-stat">${esc(o.stat)}</span>`:''}</span>
+      </span></button>`;
+  const ART=(k,sz,fb)=>(window.SB_ICON_ART&&SB_ICON_ART[k])?SB_ICON_ART(k,{size:sz||44}):(fb||'');
+  // ---- HEROES: the two story adventures, side by side ----
+  const heroes=[];
+  if(window.SAGA2){ let cl=0; try{ cl=SAGA2.cleared?SAGA2.cleared():((JSON.parse(localStorage.getItem('sb_saga2')||'{}').cleared)||0); }catch(e){}
+    const hid=(function(){ try{ return SB_AVATARS.byId['bizzy']?'bizzy':((SB_AVATARS.list[0]||{}).id||null); }catch(e){ return null; } })();
+    heroes.push(heroTile({act:'openSaga',grad:'linear-gradient(150deg,#3B2A8C,#2A1E6E 60%,#1F1652)',art:hid?SB_AVATAR(hid,116,{dark:true}):'',tag:'✦ New saga',title:'Bizzy & the Great Unspelling',blurb:'A cinematic story — fly, race and spell through the worlds to stop the word-eater.',cta:cl>0?'Continue':'Begin Act I',sub:cl+'/6 chapters'})); }
+  if(window.SQ){ let done=0,total=0,legWon=0; try{ const ss=SQ.seasons(); total=ss.length; ss.forEach(s=>{ if(SQ.cleared(s.pack)>=5){done++; legWon++;} }); }catch(e){}
+    const hid=(function(){ try{ return (SB_AVATARS.byId['queenhive']?'queenhive':(SB_AVATARS.list[0]||{}).id); }catch(e){ return 'queenhive'; } })();
+    heroes.push(heroTile({act:'openQuest',grad:'linear-gradient(150deg,#2E2258,#241A47 60%,#1C1438)',art:SB_AVATAR(hid,116,{dark:true}),tag:'★ Story mode',title:'Spelling Quest',blurb:'Play 15 seasons — spell through five chapters to a boss and win its legendary avatar.',cta:done>0?'Continue':'Start Season 1',sub:done+'/'+total+' seasons'+(legWon?(' · '+legWon+' legendary'):'')})); }
+  // ---- FEATURE TILES: daily, trivia, champ, magic ----
+  const feats=[];
+  if(window.SB_DAILY){ let st={}; try{ st=JSON.parse(localStorage.getItem('sb_daily')||'{}'); }catch(e){}
     const today=(()=>{ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); })();
     const doneToday=st.day===today&&st.over; const streak=st.streak||0;
-    return `<button data-act="openDaily" style="grid-column:1/-1;text-align:left;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#2FA35C,#1E7D45);box-shadow:0 6px 18px rgba(30,125,69,.28)"><div style="padding:16px 18px;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="display:grid;grid-template-columns:repeat(5,10px);gap:2px;flex-shrink:0">${['hit','near','miss','hit','near'].map(s=>`<span style="width:10px;height:10px;border-radius:2px;background:${s==='hit'?'#FFF':s==='near'?'#FFE28A':'rgba(255,255,255,.4)'}"></span>`).join('')}</div><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.9)">One word a day · ${streak>0?streak+'-day streak 🔥':'start your streak'}</div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Daily Buzz</div><div style="font-size:12px;color:rgba(255,255,255,.92)">Six tries to spell today's mystery word. Green, amber, grey — then share your grid.</div></div><span style="padding:9px 16px;border-radius:10px;background:#fff;color:#1E7D45;font-weight:800;font-size:13px;white-space:nowrap">${doneToday?'Seen ✓':'Play →'}</span></div></button>`;
-  })();
-  const cards=dailyCard+sagaCard+questCard+triviaCard+champCard+magicCard+GAMES.map(gm=>`<button class="sb-cover-card" data-act="playGame" data-arg="${gm.type}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
-      <div style="position:relative">
-        ${SB_GAME(S.theme,gm.type,{h:108,dark:S.mode==='dusk'})}
-        <span style="position:absolute;top:10px;left:12px;font-family:var(--ui,var(--body));font-weight:650;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:6px;background:${S.mode==='dusk'?'rgba(36,30,51,.85);color:#fff':'rgba(255,255,255,.92);color:#241E33'}">${esc(gm.tag)}</span>
-      </div>
-      <div style="padding:14px 15px 15px;display:flex;flex-direction:column;flex:1">
-        <div style="font-family:var(--display);font-weight:800;font-size:17px;color:var(--text)">${gm.name}</div>
-        <div style="font-family:var(--body);font-weight:600;font-size:12px;color:var(--muted);line-height:1.45;margin-top:6px">${gm.blurb}</div>
-        <div style="margin-top:auto;padding-top:13px"><span style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;background:${gm.c};color:#fff;font-weight:800;font-size:13px">${iconSVG('volume',14)} Play →</span></div>
-      </div></button>`).join('');
-  const store=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:18px;margin-top:18px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-family:var(--display);font-weight:800;font-size:15px">Coin store</span><span style="font-size:12px;color:var(--muted);font-weight:700">— spend what you earn</span></div>
-      <p style="font-size:12px;color:var(--muted);margin:0 0 12px">Play games, Word Coach and Concepts to collect 🪙. Then treat yourself:</p>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">
-        <button data-act="openShop" style="text-align:left;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:13px"><div style="display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;margin-bottom:3px;color:var(--accent)">${iconSVG('cart',16)} Open the Store</div><div style="font-size:12px;color:var(--muted)">Avatar packs, worlds, power-ups</div></button>
-      </div></div>`;
-  return `<div style="max-width:760px;margin:0 auto">
+    const grid=`<span style="display:grid;grid-template-columns:repeat(5,13px);gap:3px">${['hit','near','miss','hit','near'].map(s=>`<span style="width:13px;height:13px;border-radius:3px;background:${s==='hit'?'#FFF':s==='near'?'#FFE28A':'rgba(255,255,255,.4)'}"></span>`).join('')}</span>`;
+    feats.push(tile({act:'openDaily',grad:'linear-gradient(135deg,#2FA35C,#1E7D45)',art:grid,badge:'Daily',title:'Daily Buzz',blurb:'Six tries to spell today’s mystery word — then share your grid.',cta:'#1E7D45',stat:doneToday?'Seen ✓':(streak>0?streak+'-day 🔥':'new')})); }
+  if(window.SB_TRIVIA){ const st=(c.trivia)||{}; const nQ=(SB_TRIVIA.questions||[]).length;
+    feats.push(tile({act:'openTrivia',grad:'linear-gradient(135deg,#F0A93C,#DC7A18)',art:ART('beeTrivia',44,'<span style=\"font-size:42px\">🧠</span>'),badge:'Quiz',title:'Bee Trivia',blurb:fmtN(nQ)+' questions · 20 themes · picture & listening rounds.',cta:'#C8791B',stat:st.right?fmtN(st.right)+' right':''})); }
+  feats.push(tile({act:'openChallenge',arg:'journey',grad:'linear-gradient(135deg,#7C5CFF,#5A37D6)',art:ART('champChallenge',42,iconSVG('bolt',36)),badge:'Timed',title:'Champ Challenge',blurb:'Beat the clock or a set number — pass your Level to test out.',cta:'#5A37D6',stat:''}));
+  feats.push(tile({act:'playGame',arg:'magic',grad:'linear-gradient(135deg,#B14FC4,#7E2E9E)',art:ART('magicSquares',42,gameArtSVG('magic',42)),badge:'Board',title:'Magic Squares',blurb:'Clear a 3×3 board of themes & concepts — lines win bonus coins.',cta:'#7E2E9E',stat:''}));
+  // ---- QUICK GAMES: the four arcade engines ----
+  const quick=GAMES.map(gm=>tile({act:'playGame',arg:gm.type,grad:gameCoverBG(gm),art:gameArtSVG(gm.type,48),badge:gm.tag,title:gm.name,blurb:gm.blurb,cta:gm.c,stat:''})).join('');
+  const store=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:16px 18px;margin-top:4px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <span style="width:44px;height:44px;flex-shrink:0;border-radius:12px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);display:grid;place-items:center">${iconSVG('cart',22)}</span>
+      <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15px">Coin store</span><span style="display:block;font-size:12px;color:var(--muted)">Spend your 🪙 on avatar packs, worlds and power-ups.</span></span>
+      <button data-act="openShop" style="padding:10px 16px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge);white-space:nowrap">Open the Store →</button></div>`;
+  return `<div style="max-width:860px;margin:0 auto">
     <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button><span style="margin-left:2px">${arcadeLogoSVG(38)}</span><span style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em">Arcade</span><span style="margin-left:auto">${coinChip()}</span></div>
-    <p style="margin:0 0 10px;color:var(--muted);font-size:13px">Play a story season or jump into a quick game — every correct word earns coins.</p>
     <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:16px">
       <span style="font-size:12px;font-weight:800;color:var(--muted)">Word difficulty</span>
-      ${[['auto','My level'],['easy','Easy'],['medium','Medium'],['hard','Hard'],['champ','Champ']].map(([k,l])=>{ const on=((active().gameDiff)||'auto')===k;
+      ${[['auto','My level'],['easy','Easy'],['medium','Medium'],['hard','Hard'],['champ','Champ']].map(([k,l])=>{ const on=((c.gameDiff)||'auto')===k;
         return `<button data-act="setGameDiff" data-arg="${k}" style="padding:7px 13px;border-radius:999px;font-weight:800;font-size:12.5px;${on?'background:var(--accent);color:#fff;box-shadow:var(--edge)':'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">${l}</button>`; }).join('')}
-      <span style="font-size:11.5px;color:var(--muted);font-weight:650">— how tough the words are in every game, scaled to your own level</span>
+      <span style="font-size:11.5px;color:var(--muted);font-weight:650">— scaled to your own level</span>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">${cards}</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:16px">${heroes.join('')}</div>
+    <div class="arc-sech">Games &amp; challenges</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin:8px 0 16px">${feats.join('')}${quick}</div>
     ${store}
   </div>`;
 }
