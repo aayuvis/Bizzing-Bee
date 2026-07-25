@@ -741,8 +741,8 @@ const app = {
   openSettings:()=>{ try{ clearTimeout(state._advTimer); state._advTimer=null; }catch(e){}
     try{ if(typeof clearGTimer==='function') clearGTimer(); }catch(e){}
     try{ if(state.ty&&state.ty.timer){ clearInterval(state.ty.timer); state.ty.timer=null; } }catch(e){}
-    set({settingsOpen:true}); },
-  closeSettings:()=>{ state.settingsOpen=false;
+    state._setOpened=false; set({settingsOpen:true}); },
+  closeSettings:()=>{ state.settingsOpen=false; state._setOpened=false;
     try{ const g=state.game; if(g && (g.type==='beat'||g.type==='champ') && g.status==='play' && typeof startGTimer==='function') startGTimer(); }catch(e){}
     try{ if(state.status && state.status!=='idle' && (state.nav==='train'||state.nav==='coach')) autoAdvance(1600); }catch(e){}
     render(); },
@@ -769,6 +769,15 @@ const app = {
     try{ if(navigator.clipboard) navigator.clipboard.writeText(txt); }catch(e){}
     flash('💾 '+list.length+' flag'+(list.length===1?'':'s')+' saved — share voice-flags.json with Claude to rebuild them.'); },
   goHome:()=>app.setNav('home'),
+  // 🎲 Surprise me — jump into a random learning resource
+  surpriseMe:()=>{ const R=a=>a[Math.floor(Math.random()*a.length)]; const opts=[];
+    if((window.SB_QUOTES||[]).length) opts.push(['a famous quote',()=>{ state.qCat=null; state.qi=Math.floor(Math.random()*window.SB_QUOTES.length); app.openQuotes(); }]);
+    try{ const decks=(typeof figDecks==='function')?figDecks():[]; if(decks.length) opts.push(['a saying',()=>{ const d=R(decks); set({nav:'figurative'}); try{app.figDeck(d.id);}catch(e){} }]); }catch(e){}
+    opts.push(['typing skills',()=>app.openTyping()]);
+    if((state.conceptData||[]).length) opts.push(['a word concept',()=>{ const uns=(state.conceptData||[]).map((_,i)=>i).filter(i=>{ try{return isConceptUnlocked(i);}catch(e){return false;} }); if(uns.length) app.openConcept(R(uns)); else app.setNav('concepts'); }]);
+    opts.push(['a word journey',()=>app.openJourneys()]);
+    opts.push(['a set to practise',()=>{ set({nav:'coach', luTab:'practice', status:'idle', typed:'', mood:'happy'}); try{ newCoachBatch(); }catch(e){} setTimeout(speak,350); }]);
+    const pick=R(opts); try{ sfx('coin'); }catch(e){} flash('🎲 Surprise — '+pick[0]+'!'); try{ pick[1](); }catch(e){ app.setNav('explore'); } },
   goConcepts:()=>app.setNav('concepts'),
   journey:(i)=>{ i=+i; if(i===0) app.openCoach(); else if(i===1) app.setNav('concepts'); else if(i===2) app.openGames(); else app.openJourneys(); },
   // train
@@ -2330,7 +2339,8 @@ function viewApp(){
     <div class="sb-header-sticky${state.nav==='coach'?' sb-collapse-nav':''}" style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
       <div style="max-width:1080px;margin:0 auto;padding:11px clamp(14px,3.5vw,32px);display:flex;align-items:center;gap:12px">
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
-        <div style="display:flex;align-items:center;gap:9px;margin-right:auto"><div style="width:34px;height:38px;flex-shrink:0">${mascotSVG('happy')}</div><span class="sb-brand" style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i> Bee</span></div>
+        <button data-act="goHome" title="Home" aria-label="Bizzing Bee — Home" style="display:flex;align-items:center;gap:9px;margin-right:auto;background:none;border:0;cursor:pointer"><div style="width:34px;height:38px;flex-shrink:0">${mascotSVG('happy')}</div><span class="sb-brand" style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i> Bee</span></button>
+        <button data-act="surpriseMe" class="sb-mob-hide" title="Surprise me — jump into a random learning resource" aria-label="Surprise me" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--chip);border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));color:var(--accent);font-weight:800;font-size:13px">🎲<span class="sb-search-lbl">Surprise me</span></button>
         <button data-act="openFinder" class="sb-mob-hide" title="Word Finder — search 129,000 words, hear them, and add them to a list" aria-label="Search words" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:13px">${iconSVG('search',15)}<span class="sb-search-lbl">Search</span></button><button data-act="openEvo" class="sb-mob-hide" title="Karma — your practice record. One right word = 1 Karma; it grows your evolution and is never spent." style="display:inline-flex;align-items:center;gap:4px;padding:6px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:900;font-size:13px">✦ ${fmtN(getList(active(),activeListKey()).xp||0)}</button><button data-act="openShop" title="Your coins — tap to open the Store" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(active().coins||0,14)}</button>
         <button data-act="cycleMode" aria-label="Switch look (Light / White / Dusk)" title="Light / White / Dusk" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);font-size:16px;line-height:1" class="sb-mob-hide">${S.mode==='light'?'☀':S.mode==='white'?'◻':'☾'}</button>
         <button data-act="goSettings" aria-label="Settings" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text)">${iconSVG('gear',17)}</button>
@@ -5620,8 +5630,8 @@ function fullListOverlay(){ const S=state; if(!S.listView) return '';
 function overlays(){
   const S=state; let h=''; h+=fullListOverlay(); h+=packRollOverlay(); h+=packDropOverlay();
   if(S.settingsOpen){
-    h+=`<div data-act="closeSettings" style="position:fixed;inset:0;z-index:76;background:rgba(10,8,20,.55);backdrop-filter:blur(6px);display:grid;place-items:start center;padding:18px;overflow:auto">
-      <div data-act="noop" style="position:relative;width:100%;max-width:660px;background:var(--bg2);border:1px solid var(--line);border-radius:20px;box-shadow:var(--glow);padding:clamp(16px,4vw,26px) clamp(16px,4vw,26px) 24px;margin:20px 0;animation:sb-pop .3s ease both">
+    h+=`<div id="sb-set-ov" data-act="closeSettings" style="position:fixed;inset:0;z-index:76;background:rgba(10,8,20,.55);backdrop-filter:blur(6px);display:grid;place-items:start center;padding:18px;overflow:auto">
+      <div data-act="noop" style="position:relative;width:100%;max-width:660px;background:var(--bg2);border:1px solid var(--line);border-radius:20px;box-shadow:var(--glow);padding:clamp(16px,4vw,26px) clamp(16px,4vw,26px) 24px;margin:20px 0;${state._setOpened?'':'animation:sb-pop .3s ease both'}">
         <button data-act="closeSettings" aria-label="Close settings" title="Close" style="position:absolute;top:14px;right:14px;z-index:3;width:38px;height:38px;border-radius:11px;background:var(--surface2);border:1px solid var(--line);color:var(--text);display:grid;place-items:center;font-weight:900;font-size:16px">✕</button>
         ${viewSettings()}
       </div></div>`;
@@ -5678,7 +5688,11 @@ function render(){
     if(state.a11yMotion) R.setAttribute('data-motion','off'); else R.removeAttribute('data-motion');
     window.SB_CALM=!!state.calmMode; }
   try{ const _c=active(); document.documentElement.setAttribute('data-age', _c.ageMode||((_c.age||9)<=11?'playful':'focused')); }catch(e){}
+  // preserve the Settings pop-up scroll position across re-renders so it never jumps
+  let _setScroll=null; try{ const so=document.getElementById('sb-set-ov'); if(so) _setScroll=so.scrollTop; }catch(e){}
   root.innerHTML = `<div style="min-height:100dvh;position:relative;z-index:1">${view()}</div>` + overlays();
+  if(_setScroll!=null){ try{ const so2=document.getElementById('sb-set-ov'); if(so2) so2.scrollTop=_setScroll; }catch(e){} }
+  if(state.settingsOpen) state._setOpened=true;
   if(fkey){ const el=root.querySelector('[data-fkey="'+fkey+'"]'); if(el){ try{ el.focus(); if(ss!=null&&el.setSelectionRange) el.setSelectionRange(ss,se); }catch(e){} } }
   save();
 }
