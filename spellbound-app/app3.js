@@ -1953,7 +1953,7 @@ function tySeqFor(l){ if(!l.dyn) return l.seq;
     if(picked.length) return picked.join('. ')+'.';
   }
   const ws=gameWordsD().filter(w=>/^[a-z]+$/.test(w.w)&&w.w.length<=9); return sample(ws,8).map(w=>w.w).join(' ')||'bee hive honey spell word queen'; }
-function tyStats(c){ return c.typing||(c.typing={bestWpm:0,bestAcc:0,tests:0,lessons:{}}); }
+function tyStats(c){ const t=c.typing||(c.typing={bestWpm:0,bestAcc:0,tests:0,lessons:{}}); if(!t.lessons) t.lessons={}; return t; }
 function tyStop(){ if(window._tyH){ try{window.removeEventListener('keydown',window._tyH,true);}catch(e){} window._tyH=null; } const t=state.ty; if(t&&t.timer){ clearInterval(t.timer); t.timer=null; } }
 function tyProcess(ch){ const t=state.ty; if(!t||t.done) return;
   if(!t.startT){ t.startT=Date.now();
@@ -2424,7 +2424,7 @@ function viewApp(){
 
   return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}${(S.qWord?viewQuotesWordPop():'')}${(S.wordCard?viewWordCardPop():'')}${bandUp}
     <div class="sb-header-sticky${state.nav==='coach'?' sb-collapse-nav':''}" style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
-      <div style="max-width:1080px;margin:0 auto;padding:11px clamp(14px,3.5vw,32px);display:flex;align-items:center;gap:12px">
+      <div style="max-width:1080px;margin:0 auto;padding:11px clamp(9px,3.2vw,32px);display:flex;align-items:center;gap:8px">
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
         <button data-act="goHome" title="Home" aria-label="Bizzing Bee — Home" style="display:flex;align-items:center;gap:9px;margin-right:auto;background:none;border:0;cursor:pointer"><div style="width:34px;height:38px;flex-shrink:0">${mascotSVG('happy')}</div><span class="sb-brand" style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i> Bee</span></button>
         <button data-act="surpriseMe" class="sb-mob-hide" title="Surprise me — jump into a random learning resource" aria-label="Surprise me" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--chip);border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));color:var(--accent);font-weight:800;font-size:13px">🎲<span class="sb-search-lbl">Surprise me</span></button>
@@ -4658,7 +4658,7 @@ function viewSettings(){
   const _avRows=`<div style="display:flex;align-items:center;gap:14px">
       <span style="width:66px;height:66px;flex-shrink:0;display:grid;place-items:center;background:var(--surface2);border-radius:14px;border:2px solid var(--accent);padding:5px"><span style="width:56px;height:56px;display:inline-block">${avatarSVG(_pc.avatar,56)}</span></span>
       <div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:15px">${esc(_avActive.name||'Buddy')}</div>
-      <button data-act="openCollection" class="sb-cl" style="background:none;border:0;padding:0;cursor:pointer">Change or collect buddies in your Collection →</button></div>
+      <button data-act="openCollection" class="sb-cl" style="background:none;border:0;padding:0;cursor:pointer;white-space:normal;text-align:left">Change or collect buddies in your Collection →</button></div>
     </div>`;
   const profileCard=`<div class="sb-card" style="margin-bottom:16px">
       <div style="font-family:var(--display);font-weight:800;font-size:15px">Profile</div>
@@ -4699,10 +4699,10 @@ function viewSettings(){
     </div>
     ${profileCard}
     ${voiceCard}
-    <div class="sb-card" style="margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
+    <div class="sb-card" style="margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
       <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Background</div><div style="font-size:13px;color:var(--muted)">Tinted paper or pure white</div></div>
       <div style="display:flex;background:var(--surface2);border-radius:999px;padding:3px"><button data-act="setLight" style="${seg(S.mode==='light')}">Light</button><button data-act="setWhite" style="${seg(S.mode==='white')}">White</button><button data-act="setDusk" style="${seg(S.mode==='dusk')}">Dusk</button></div>
-      <div style="display:flex;align-items:center;gap:10px;margin-top:12px"><span style="font-size:13px;font-weight:650;color:var(--muted)">Style</span><div style="display:flex;background:var(--surface2);border-radius:999px;padding:3px"><button data-act="setAgeMode" data-arg="playful" style="${seg((active().ageMode||((active().age||9)<=11?'playful':'focused'))==='playful')}">Playful</button><button data-act="setAgeMode" data-arg="focused" style="${seg((active().ageMode||((active().age||9)<=11?'playful':'focused'))==='focused')}">Focused</button></div><span style="font-size:12px;color:var(--muted)">Playful = buddy everywhere & big celebrations · Focused = calmer, compact</span></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px"><span style="font-size:13px;font-weight:650;color:var(--muted)">Style</span><div style="display:flex;background:var(--surface2);border-radius:999px;padding:3px"><button data-act="setAgeMode" data-arg="playful" style="${seg((active().ageMode||((active().age||9)<=11?'playful':'focused'))==='playful')}">Playful</button><button data-act="setAgeMode" data-arg="focused" style="${seg((active().ageMode||((active().age||9)<=11?'playful':'focused'))==='focused')}">Focused</button></div><span style="flex:1;min-width:180px;font-size:12px;color:var(--muted)">Playful = buddy everywhere & big celebrations · Focused = calmer, compact</span></div>
     </div>
     <div class="sb-card" style="margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
       <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Sound effects</div><div style="font-size:13px;color:var(--muted)">Dings, coins &amp; celebrations during games</div></div>
