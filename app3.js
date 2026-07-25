@@ -695,6 +695,17 @@ const app = {
   figBackToDecks:()=>set({figDeck:null, figFlip:false}),
   // ----- Vocabulary study (NSF vocabulary-bee style) -----
   openVocab:()=>{ set({nav:'vocab', screen:'app', vocDeck:null, conceptSel:null}); },
+  // ---- Quotes: a swipeable deck of kid-friendly quotations from famous people ----
+  openQuotes:()=>{ set({nav:'quotes', screen:'app', conceptSel:null, qi:(state.qi||0)}); setTimeout(()=>{ if(state.readAloud) app.qSpeak(); },220); },
+  qNav:(dir)=>{ const L=quoteList(); if(!L.length) return; let i=(state.qi||0)+(+dir); if(i<0)i=L.length-1; if(i>=L.length)i=0; set({qi:i}); if(state.readAloud) app.qSpeak(); },
+  qShuffle:()=>{ const L=quoteList(); if(!L.length) return; let i=state.qi||0; if(L.length>1){ while(i===(state.qi||0)) i=Math.floor(Math.random()*L.length); } set({qi:i}); if(state.readAloud) app.qSpeak(); },
+  qSetCat:(cat)=>{ set({qCat:cat==='all'?null:cat, qi:0}); if(state.readAloud) setTimeout(app.qSpeak,150); },
+  qSpeak:()=>{ const L=quoteList(); const x=L[state.qi||0]; if(x){ try{ say(x.q+' — '+x.a); }catch(e){} } },
+  qFav:()=>{ const L=quoteList(); const x=L[state.qi||0]; if(!x) return; const c=active(); c.quoteFavs=c.quoteFavs||{}; const k=(x.q||'').slice(0,60); if(c.quoteFavs[k]) delete c.quoteFavs[k]; else { c.quoteFavs[k]=1; try{sfx('coin');}catch(e){} } save(); render(); },
+  qFavsOnly:()=>{ set({qCat:'__fav',qi:0}); },
+  qWord:(key)=>{ const m=(state._qHard||{})[String(key).toLowerCase()]; if(m){ set({qWord:m}); try{ say(m.w); }catch(e){} } },
+  qWordSay:(w)=>{ try{ say(w); }catch(e){} },
+  qWordClose:()=>set({qWord:null}),
   vocDeck:(k)=>{ const words=vocDeckWords(k); if(words.length<5){ flash('Not enough words here yet — train a list first'); return; }
     set({vocDeck:k, vocWords:words, vocIdx:0, vocFlip:false}); setTimeout(()=>{ const w=state.vocWords[0]; if(w) say(w.w); },250); },
   vocFlip:()=>{ const to=!state.vocFlip;
@@ -947,7 +958,7 @@ const app = {
   drawer:(key)=>{ state.drawerOpen=false; const F={ home:()=>app.setNav('home'), levelup:()=>app.startLevelUp(), games:()=>app.openGames(), shop:()=>app.openShop(), concepts:()=>app.setNav('concepts'),
       coach:()=>app.openCoach(), journeys:()=>app.openJourneys(), study:()=>app.coachStudy(), written:()=>app.startWritten(), oral:()=>app.startOral(),
       weak:()=>app.coachWeakDrill(), parentview:()=>{ state.progTab='parent'; app.setNav('progress'); }, settings:()=>app.setNav('settings'), themes:()=>app.setNav('themes'),
-      quest:()=>app.openQuestChooser(), traps:()=>app.openTraps(), collection:()=>app.openCollection(), finder:()=>app.openFinder(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore'), figurative:()=>app.setNav('figurative'), vocab:()=>app.openVocab(), typing:()=>app.openTyping() };
+      quest:()=>app.openQuestChooser(), traps:()=>app.openTraps(), collection:()=>app.openCollection(), finder:()=>app.openFinder(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore'), figurative:()=>app.setNav('figurative'), vocab:()=>app.openVocab(), typing:()=>app.openTyping(), quotes:()=>app.openQuotes() };
     (F[key]||(()=>{}))(); },
   // coach
   openCoach:()=>{ const c=active(); ensureLists(c);
@@ -1686,13 +1697,15 @@ function worldHeroCard(t, on, locked, act){ const H=WORLD_HERO[t.id]||WORLD_HERO
 /* ---- Wayfinding tiles: destination color pops (spec §1). 48px solid tile, white icon,
    press edge, playful ±2–3° tilt. Colors are PLACE identity — stable across worlds. ---- */
 const WAYFIND={ quest:{c:'var(--action,#6C4FE0)',ic:'steps',sb:null,label:'Champion’s Quest'},
-  concepts:{c:'#0E8A78',ic:'grid',sb:'grid',label:'Concepts'},
-  journeys:{c:'#C25A2E',ic:'book',sb:'book',label:'Word Journeys'},
+  concepts:{c:'#0E8A78',ic:'grid',sb:'grid',label:'Word Concepts'},
+  journeys:{c:'#C25A2E',ic:'book',sb:'book',label:'Word Journey'},
+  builder:{c:'#7C5CFF',ic:'sliders',sb:'sliders',label:'List Builder'},
   arcade:{c:'#E8458C',ic:'joystick',sb:'gamepad',label:'Arcade'},
   themes:{c:'#B14FC4',ic:'palette',sb:'palette',label:'Theme Journeys'},
-  figurative:{c:'#9C6A08',ic:'bulb',sb:'sparkle',label:'Idioms & Sayings'},
+  figurative:{c:'#9C6A08',ic:'bulb',sb:'sparkle',label:'Idioms & Similes'},
   vocab:{c:'#2E8FB8',ic:'book',sb:'book',label:'Vocabulary'},
   typing:{c:'#5B3DD6',ic:'pencil',sb:'pencil',label:'Typing Trainer'},
+  quotes:{c:'#C8791B',ic:'quote',sb:'star',label:'Quotes'},
   traps:{c:'#C4453C',ic:'spark',sb:'target',label:'Your Traps'},
   revisions:{c:'#E0922E',ic:'book',sb:'target',label:'Your Revisions'} };
 function wayTile(key,size,tilt){ const w=WAYFIND[key]; size=size||48;
@@ -1979,6 +1992,79 @@ function viewVocab(){ const S=state; const c=active();
       ${themeDecks}
     </div></div>`;
 }
+/* ---- Quotes: kid-friendly quotations from famous people (SB_QUOTES) ---- */
+const QUOTE_CAT_LABEL={ courage:'💪 Courage', kindness:'💛 Kindness', perseverance:'🧗 Never give up',
+  learning:'📚 Learning', dreams:'✨ Dreams', friendship:'🤝 Friendship', honesty:'🕊️ Honesty',
+  curiosity:'🔍 Curiosity', teamwork:'🐝 Teamwork', imagination:'🎨 Imagination', gratitude:'🙏 Gratitude',
+  leadership:'🚩 Leadership', happiness:'😊 Happiness', hardwork:'🛠️ Hard work', believe:'🌟 Believe in yourself',
+  creativity:'💡 Creativity', nature:'🌿 Nature', change:'🔄 Making a difference', wisdom:'🦉 Wisdom',
+  humor:'😄 Fun & humor', science:'🔬 Science', sports:'🏅 Sports', reading:'📖 Reading & words',
+  poetry:'🎭 Poems & plays' };
+function quoteCatLabel(k){ return QUOTE_CAT_LABEL[k]||(String(k||'').charAt(0).toUpperCase()+String(k||'').slice(1)); }
+function quoteList(){ const all=(window.SB_QUOTES||[]); const cat=state.qCat;
+  if(cat==='__fav'){ const f=(active().quoteFavs)||{}; return all.filter(x=>f[(x.q||'').slice(0,60)]); }
+  if(!cat) return all; return all.filter(x=>x.c===cat); }
+function quoteCats(){ const all=(window.SB_QUOTES||[]); const seen={}; const ord=Object.keys(QUOTE_CAT_LABEL);
+  all.forEach(x=>{ if(x.c) seen[x.c]=1; }); const inData=ord.filter(k=>seen[k]); Object.keys(seen).forEach(k=>{ if(inData.indexOf(k)<0) inData.push(k); }); return inData; }
+// render a quote's text, highlighting its "hard" words as tappable chips that open a word card.
+function renderQuoteHTML(x){ let html=esc(x.q).replace(/\n/g,'<br>');
+  const hard=x.hard||[]; const map={}; state._qHard=map;
+  hard.forEach(h=>{ const w=(typeof h==='string')?h:h.w; const d=(typeof h==='string')?'':(h.d||''); if(!w) return; const key=w.toLowerCase(); map[key]={w:w,d:d};
+    // wrap the first whole-word match (case-insensitive) that isn't already inside a chip
+    const re=new RegExp('(^|[^A-Za-z<])('+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')(?![A-Za-z])','i');
+    html=html.replace(re,(m,pre,word)=>pre+'<button data-act="qWord" data-arg="'+escA(key)+'" class="q-hard">'+esc(word)+'</button>'); });
+  return html; }
+function viewQuotesWordPop(){ const wp=state.qWord; if(!wp) return '';
+  return `<div style="position:fixed;inset:0;z-index:130;display:grid;place-items:center;padding:22px;background:rgba(20,12,4,.5)" data-act="qWordClose">
+    <div data-act="noop" style="background:var(--paper,#fff);border-radius:20px;max-width:360px;width:100%;padding:24px 22px;text-align:center;box-shadow:0 20px 60px rgba(20,10,30,.5);animation:sb-pop .35s cubic-bezier(.2,1.5,.4,1) both">
+      <div style="display:inline-flex;width:52px;height:52px;border-radius:14px;background:var(--chip);color:var(--accent);align-items:center;justify-content:center;margin-bottom:8px">${iconSVG('book',26)}</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:26px;margin-bottom:6px">${esc(wp.w)}</div>
+      <button data-act="qWordSay" data-arg="${escA(wp.w)}" style="margin-bottom:12px;display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:12px;color:var(--muted)">${iconSVG('volume',14)} Say it</button>
+      <div style="font-size:15px;color:var(--text);line-height:1.5;font-weight:500">${esc(wp.d||'A tricky word — say it aloud and try to spell it!')}</div>
+      <button data-act="qWordClose" style="margin-top:18px;width:100%;padding:12px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">Got it ✓</button>
+    </div></div>`; }
+function viewQuotes(){ const c=active(); const S=state; const all=(window.SB_QUOTES||[]);
+  if(!all.length) return `<div style="max-width:640px;margin:0 auto">${pageHead('Quotes','famous people','Wise, funny and inspiring lines from people worth knowing.')}${beeEmpty('sleepy','The quote library is still loading — check back in a moment!')}</div>`;
+  const L=quoteList(); const total=L.length; let i=Math.min(Math.max(S.qi||0,0),Math.max(0,total-1));
+  const x=L[i]||all[0]; const favs=(c.quoteFavs)||{}; const isFav=!!favs[(x.q||'').slice(0,60)];
+  const catList=quoteCats(); const favN=all.filter(q=>favs[(q.q||'').slice(0,60)]).length;
+  const chip=(key,label,on)=>`<button data-act="qSetCat" data-arg="${escA(key)}" style="white-space:nowrap;padding:7px 13px;border-radius:999px;font-weight:800;font-size:12.5px;border:1px solid ${on?'transparent':'var(--line)'};${on?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${label}</button>`;
+  const chips=`<div style="display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;-webkit-overflow-scrolling:touch">
+    ${chip('all','All',!S.qCat)}${favN?chip('__fav','❤ Favorites · '+favN,S.qCat==='__fav'):''}${catList.map(k=>chip(k,quoteCatLabel(k),S.qCat===k)).join('')}</div>`;
+  const qlen=(x.q||'').length; const isLong=/\n/.test(x.q||'')||qlen>240;
+  const qsize=isLong?(qlen>600?'15px':'17px'):(qlen>170?'22px':qlen>110?'26px':qlen>60?'31px':'36px');
+  const qHTML=renderQuoteHTML(x); const meaning=x.m||x.meaning||'';
+  const body = total? `
+    <div data-swipe="quotes" class="coach-card" style="position:relative;max-width:640px;margin:0 auto;border-radius:24px;overflow:hidden;background:linear-gradient(160deg,#FFF9EC,#FBEFCF 60%,#F6E3B0);border:1px solid #EBD79A;box-shadow:0 12px 34px rgba(150,110,20,.18);padding:clamp(24px,5vw,38px) clamp(20px,5vw,36px);${isLong?'':'text-align:center;min-height:min(52vh,400px);display:flex;flex-direction:column;justify-content:center'}">
+      <div style="position:absolute;top:12px;left:16px;font-family:Georgia,serif;font-size:64px;line-height:1;color:rgba(200,150,30,.26);pointer-events:none">“</div>
+      <div style="position:absolute;top:13px;right:16px;display:flex;gap:8px;z-index:2">
+        <button data-act="qSpeak" title="Read aloud" aria-label="Read aloud" style="width:38px;height:38px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',18)}</button>
+        <button data-act="qFav" title="Save to favorites" aria-label="Favorite" style="width:38px;height:38px;border-radius:50%;background:${isFav?'#FF4D8D':'#fff'};color:${isFav?'#fff':'#C4453C'};border:1px solid ${isFav?'transparent':'#EBD79A'};display:grid;place-items:center;font-size:18px;box-shadow:var(--edge)">❤</button>
+      </div>
+      <div style="position:relative;z-index:1;margin-top:10px;${isLong?'max-height:min(52vh,440px);overflow:auto;text-align:left':''}">
+        <div style="font-family:${isLong?'Georgia,serif':'var(--display)'};font-weight:${isLong?'500':'800'};font-size:${qsize};line-height:${isLong?'1.7':'1.28'};color:#2A2410;overflow-wrap:anywhere;white-space:pre-line">${qHTML}</div>
+        <div style="margin-top:18px;font-family:var(--ui);font-weight:800;font-size:16px;color:var(--treasure-deep,#8A5B00)">— ${esc(x.a)}</div>
+        ${x.who?`<div style="margin-top:3px;font-size:12.5px;color:#8a7a4a;font-weight:600">${esc(x.who)}</div>`:''}
+        ${x.c?`<div style="margin-top:12px"><span style="display:inline-block;padding:4px 12px;border-radius:999px;background:rgba(200,150,30,.16);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:11.5px">${quoteCatLabel(x.c)}</span></div>`:''}
+        ${meaning?`<div style="margin-top:16px;text-align:left;background:rgba(255,255,255,.6);border:1px solid #EBD79A;border-radius:14px;padding:13px 15px">
+          <div style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:5px">💡 What it means</div>
+          <div style="font-size:14px;line-height:1.55;color:#3A3320;font-weight:500">${esc(meaning)}</div></div>`:''}
+        ${(x.hard&&x.hard.length)?`<div style="margin-top:10px;font-size:11.5px;color:#8a7a4a;font-weight:700">👆 Tap a <span class="q-hard" style="pointer-events:none">highlighted</span> word to see its card</div>`:''}
+      </div>
+    </div>
+    <div style="max-width:600px;margin:14px auto 0;display:flex;align-items:center;gap:10px">
+      <button data-act="qNav" data-arg="-1" style="padding:12px 18px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">←</button>
+      <button data-act="qShuffle" style="flex:1;padding:12px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">🔀 Surprise me</button>
+      <span style="font-family:var(--mono);font-size:12.5px;color:var(--muted);white-space:nowrap;min-width:74px;text-align:center">${fmtN(i+1)} / ${fmtN(total)}</span>
+      <button data-act="qNav" data-arg="1" style="padding:12px 22px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">→</button>
+    </div>
+    <div style="text-align:center;font-size:11.5px;color:var(--muted);margin-top:9px">Swipe or use ← → keys · tap ❤ to keep your favorites</div>`
+   : beeEmpty('sleepy','No quotes here yet — try another category or your favorites.');
+  return `<div style="animation:sb-rise .35s ease both;max-width:760px;margin:0 auto">
+    ${pageHead('Quotes','from famous people','Wise, funny and inspiring lines from people worth knowing — '+fmtN(all.length)+' to explore.')}
+    ${chips}
+    ${body}
+  </div>`; }
 function viewExplore(){ const c=active(); ensureLists(c); const S=state;
   const cAll=(state.conceptData||[]); const cDone=cAll.filter(ch=>conceptStat(ch).done).length;
   const fmtDone=(cDone>0?cDone+'/'+(cAll.length||121)+' mastered':(cAll.length||121)+' concepts');
@@ -1997,47 +2083,26 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
         <span style="display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:3px">${intro}</span></span>
       </div>
       ${inner}</section>`;
-  // ---- LEARN ----
+  const missN=((c.missed)||[]).length;
+  const qN=(window.SB_QUOTES&&SB_QUOTES.length)?SB_QUOTES.length:0;
+  // ---- LEARN ----  understand words deeply
   const learn=hub('Learn','learn','#7C5CFF','Understand words deeply',
     row('concepts','setNav','concepts','Spelling basics, roots & patterns · '+fmtDone)+
     row('journeys','openJourneys',null,'The history & geography of words'+(state.premium?'':' · Premium'))+
-    row('figurative','setNav','figurative','2,350 idioms & sayings, card by card')+
-    row('themes','setNav','themes','Words by their worlds · '+(myThemes().length||'pick 3–5')+' picked'));
-  // ---- TRAIN ----
+    row('builder','openBuilder',null,'Build a custom word list in five taps'));
+  // ---- TRAIN ----  sharpen your skills
   const train=hub('Train','train','#13A892','Sharpen your skills',
-    row('typing','openTyping',null,'Touch-type, then race the 60s test')+
+    row('figurative','setNav','figurative','2,350 idioms & similes, card by card')+
+    row('typing','openTyping',null,'Touch-type, then race the 60-second test')+
     row('vocab','openVocab',null,'Word → meaning, vocabulary-bee style')+
-    row('traps','openTraps',null,'Beat your weak spelling patterns')+
-    row('revisions','openRevisions',null,'Redo the words you flagged to revise')+
-    `<button class="sb-lift" data-act="openBuilder" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px 13px;box-shadow:var(--sh-rest)">
-      ${iconTile('sliders', '#0E8A78', {size:38, radius:11})}
-      <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15px">List Builder</span><span style="display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:1px">Build a custom list in five taps</span></span>
-      <span style="color:#0E8A78;font-weight:800">→</span></button>`);
-  // ---- PLAY ----  (arcade hero + small clickable game buttons beneath)
-  const gchip=(act,arg,ic,label,col)=>`<button class="sb-lift" data-act="${act}" ${arg?`data-arg="${escA(arg)}"`:''} style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:12px 6px;border-radius:13px;background:var(--paper,var(--bg2));border:1px solid var(--line);box-shadow:var(--sh-rest);min-width:0">
-      ${iconTile(ic, col, {size:40, radius:12})}<span style="font-size:11px;font-weight:800;color:${col};text-align:center;line-height:1.15">${esc(label)}</span></button>`;
-  const games=[
-    ['openSaga',null,'spellingQuest','The Saga · NEW','#B8471B'],
-    ['openQuest',null,'spellingQuest','Spelling Quest','#6C4FE0'],
-    ['openTrivia',null,'beeTrivia','Bee Trivia','#C8791B'],
-    ['playGame','magic','magicSquares','Magic Squares','#B14FC4'],
-    ['openChallenge','journey','champChallenge','Champ Challenge','#C8901B'],
-    ['beatStart','sprint','beatBuzzer','Beat the Buzzer','#E8458C'],
-    ['wqStart','mixed','wordQuiz','Word Quiz','#13A892'],
-    ['playGame','boss','bossBattle','Boss Battle','#7B52E0'],
-    ['playGame','duel','spellingDuel','Spelling Duel','#C43D5A'],
-  ].map(g=>gchip(g[0],g[1],g[2],g[3],g[4])).join('');
-  const play=hub('Play','play','#F0703C','Learn by playing',
-    `<button class="sb-lift" data-act="openGames" style="text-align:left;width:100%;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#F0703C,#D8541F);box-shadow:0 6px 18px rgba(200,84,20,.28)">
-      <div style="padding:15px 16px;color:#fff;display:flex;align-items:center;gap:12px">
-        <span style="display:grid;place-items:center;line-height:0">${(window.SB_ICON_ART&&SB_ICON_ART.arcade)?SB_ICON_ART('arcade',{size:38}):SB_ICON('gamepad',{size:30})}</span>
-        <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:17px">Open the Arcade</span><span style="display:block;font-size:12px;color:rgba(255,255,255,.92)">Story seasons, boss battles &amp; quick games</span></span>
-        <span style="display:inline-flex;align-items:center;gap:4px;padding:7px 12px;border-radius:9px;background:#fff;color:#C8551A;font-weight:800;font-size:12.5px;white-space:nowrap">${coinIc(15)} ${(c.coins||0)}</span></div></button>
-    <div style="font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:2px 2px -2px">Jump into a game</div>
-    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">${games}</div>`);
+    row('quotes','openQuotes',null,(qN?fmtN(qN)+' ':'')+'kid-friendly quotes from famous people'));
+  // ---- REVISE ----  fix what trips you up
+  const revise=hub('Revise','retry','#E0922E','Fix what trips you up',
+    row('revisions','openRevisions',null,'Redo the words you flagged to revise'+(missN?' · '+missN+' waiting':''))+
+    row('traps','openTraps',null,'Beat your weak spelling patterns'));
   return `<div style="animation:sb-rise .35s ease both">
-    ${pageHead('Explore','learn · train · play','Three ways in — build knowledge, sharpen skills, or just play. Every road leads to better spelling.')}
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;align-items:start">${learn}${train}${play}</div>
+    ${pageHead('Supercharge your English','learn · train · revise','Everything beyond spelling practice — build deep word knowledge, sharpen real skills, and clean up what trips you up.')}
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;align-items:start">${learn}${train}${revise}</div>
   </div>`; }
 /* Advanced Mode entry — a gated hero banner. Unlocks at Level 12, Bee Band 7, or by paying. */
 function advBanner(c){ const lvl=(function(){ try{ return listStageIdx(c,'journey')+1; }catch(e){ return 1; } })();
@@ -2158,9 +2223,9 @@ function viewRevisions(){
 /* ===================== APP SHELL ===================== */
 function viewApp(){
   const S=state;
-  const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,typing:1,adv:1,traps:1,revisions:1};
+  const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,quotes:1,typing:1,builder:1,adv:1,traps:1,revisions:1};
   const NAV_ART={home:'home',coach:'practice',explore:'explore',games:'arcade',shop:'store',progress:'progress',collection:'collection'};
-  const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['explore','Explore','compass'],['games','Arcade','joystick'],['shop','Store','cart'],['progress','Progress','chart'],['collection','Collection','crown']].map(([key,label,ic])=>{
+  const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['explore','Supercharge','compass'],['games','Arcade','joystick'],['shop','Store','cart'],['progress','Progress','chart'],['collection','Collection','crown']].map(([key,label,ic])=>{
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:S.nav===key;
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
     const art=NAV_ART[key];
@@ -2177,6 +2242,7 @@ function viewApp(){
   else if(S.nav==='explore') content=viewExplore();
   else if(S.nav==='figurative') content=viewFigurative();
   else if(S.nav==='vocab') content=viewVocab();
+  else if(S.nav==='quotes') content=viewQuotes();
   else if(S.nav==='typing') content=viewTyping();
   else if(S.nav==='builder') content=viewBuilder();
   else if(S.nav==='leveltest') content=viewLevelTest();
@@ -2257,7 +2323,7 @@ function viewApp(){
         <div style="font-size:12px;color:var(--muted);margin-top:10px">Screenshot this card to share it!</div>`); })():'';
   const bandUp='';
 
-  return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}${bandUp}
+  return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}${(S.qWord?viewQuotesWordPop():'')}${bandUp}
     <div class="sb-header-sticky${state.nav==='coach'?' sb-collapse-nav':''}" style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
       <div style="max-width:1080px;margin:0 auto;padding:11px clamp(14px,3.5vw,32px);display:flex;align-items:center;gap:12px">
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
@@ -5628,6 +5694,10 @@ root.addEventListener('keydown', e=>{ const el=e.target.closest('[data-key]'); i
 window.addEventListener('keydown',e=>{ try{ if(!state.coachCardView||state.cardDone||state.pinDlg||state.settingsOpen) return;
   const t=e.target; if(t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)) return;
   if(e.key==='ArrowRight'){ e.preventDefault(); app.cardNext(); } else if(e.key==='ArrowLeft'){ e.preventDefault(); app.cardRevise(); } }catch(err){} });
+/* Quotes deck: ← → to move between quotes */
+window.addEventListener('keydown',e=>{ try{ if(state.nav!=='quotes'||state.pinDlg||state.settingsOpen) return;
+  const t=e.target; if(t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)) return;
+  if(e.key==='ArrowRight'){ e.preventDefault(); app.qNav(1); } else if(e.key==='ArrowLeft'){ e.preventDefault(); app.qNav(-1); } }catch(err){} });
 /* game hotkeys: 1–4 pick an answer, R repeats the word, D shows the hint (never while typing) */
 window.addEventListener('keydown', e=>{ try{
   if(e.metaKey||e.ctrlKey||e.altKey) return;
