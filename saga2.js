@@ -182,16 +182,27 @@
   /* ---------- ENGINE A · HONEYCOMB RUN (Pac-Man) ---------- */
   // grid maze; arrows/swipe; moth patrols; nectar dots; golden flower spell-cards.
   function honeycombRun(host, opts, done){
-    const COLS=13, ROWS=11, CELL=Math.max(30,Math.min(64, Math.floor(Math.min(innerWidth-20,1120)/COLS), Math.floor((innerHeight-290)/ROWS)));
-    const MAZE=[ // 0 wall 1 dot 2 empty
-      "0000000000000","0111111111110","0101010101010","0111111111110","0101010101010",
-      "0111121111110","0101010101010","0111111111110","0101010101010","0111111111110","0000000000000"
-    ].map(r=>r.split('').map(Number));
     const diff=opts.diff||'medium';
     const world=opts.world||'meadow';   // rich Claude Design backdrop plate
+    // Gameplay hardness scales the MAZE itself: bigger grid at higher levels, and a
+    // staggered honeycomb wall pattern at Champion. (Spelling words still match the speller.)
+    const DIM={easy:[11,9,false],medium:[13,11,false],hard:[15,11,false],champ:[17,13,true]}[diff]||[13,11,false];
+    const COLS=DIM[0], ROWS=DIM[1], HEX=DIM[2];
+    const CELL=Math.max(24,Math.min(64, Math.floor(Math.min(innerWidth-20,1120)/COLS), Math.floor((innerHeight-290)/ROWS)));
+    function makeMaze(cols,rows,hex){ const M=[]; // 0 wall · 1 dot · 2 empty
+      for(let r=0;r<rows;r++){ const row=[];
+        for(let c=0;c<cols;c++){
+          if(r===0||r===rows-1||c===0||c===cols-1) row.push(0);        // border wall
+          else if(r%2===0){ const off=hex?((r/2)%2):0; row.push(((c+off)%2===0)?0:1); } // pillar row (staggered when hex)
+          else row.push(1);                                             // open corridor
+        } M.push(row); } return M; }
+    const MAZE=makeMaze(COLS,ROWS,HEX);
     const CFG={easy:{moths:2,speed:2.0,target:900,time:150},medium:{moths:3,speed:2.6,target:1200,time:180},
                hard:{moths:4,speed:3.1,target:1500,time:180},champ:{moths:5,speed:3.6,target:1800,time:180}}[diff];
-    let bee={c:6,r:5,px:6,py:5,dir:[0,0],want:[0,0]};
+    // bee starts on the centre corridor row (odd row = always open)
+    let scr=Math.floor(ROWS/2); if(scr%2===0) scr=Math.max(1,scr-1); let scc=Math.floor(COLS/2);
+    try{ if(MAZE[scr][scc]===0) scc=Math.max(1,scc-1); MAZE[scr][scc]=2; }catch(e){}
+    let bee={c:scc,r:scr,px:scc,py:scr,dir:[0,0],want:[0,0]};
     let moths=[], score=0, lives=3, t=CFG.time, jelly=null, flee=0, flower=null, flowerT=5, card=null, over=false, fx=[];
     // Celebratory splash — petal burst + shockwave ring + "+1 LIFE" pop, drawn in the loop.
     function spawnSplash(){ const cw=COLS*CELL, ch=ROWS*CELL, N=28, cols=['#F0B429','#FF7FB0','#8FA0F5','#4FC98A','#FFD13F'];
@@ -201,7 +212,7 @@
       fx.push({ring:true,x:cw/2,y:ch/2,r:8,life:1.3,slow:1});
       fx.push({text:'+1 LIFE  ❤',x:cw/2,y:ch/2-4,life:1.5}); }
     const words=pool(14); let wi=0;
-    for(let i=0;i<CFG.moths;i++) moths.push({c:1+i*3%11,r:1,px:1+i*3%11,py:1,dir:[1,0]});
+    for(let i=0;i<CFG.moths;i++){ const mc=1+(i*3)%(COLS-2); moths.push({c:mc,r:1,px:mc,py:1,dir:[1,0]}); }
     // one royal jelly + dot bookkeeping
     let dots=0; MAZE.forEach(r=>r.forEach(v=>{ if(v===1) dots++; }));
     const J={c:11,r:9}; 
@@ -281,7 +292,7 @@
           dotTimer+=dt/1000; if(dotTimer>=1){ dotTimer=0; t--; flowerT--; if(flowerT<=0&&!flower){ flowerT=9;
             let c,r,tries=0; do{ c=1+Math.floor(Math.random()*(COLS-2)); r=1+Math.floor(Math.random()*(ROWS-2)); }while(!open(c,r)&&++tries<50);
             flower={c,r}; }
-            if(Math.random()<0.16 && moths.length<CFG.moths+6){ moths.push({c:6,r:1,px:6,py:1,dir:[[1,0],[-1,0]][Math.floor(Math.random()*2)]}); }  // random moth spam
+            if(Math.random()<0.16 && moths.length<CFG.moths+6){ moths.push({c:scc,r:1,px:scc,py:1,dir:[[1,0],[-1,0]][Math.floor(Math.random()*2)]}); }  // random moth spam
             if(t<=0){ over=true; finish(score>=CFG.target); } }
           draw();
         }
@@ -1882,36 +1893,58 @@
     b.querySelector('#sg-nx').onclick=()=>{ i++; if(i>=lines.length) then(); else show(); };
     show();
   }
+  // ---- 4 hardness levels. Spelling words always match the speller's own level
+  // (gameWordsD); this dial only makes the GAME harder. Stars earned = level cleared. ----
+  const DIFFS=[['easy','🌱 Gentle',1,'Roomy and relaxed'],['medium','🐝 Steady',2,'A fair challenge'],
+               ['hard','🔥 Tricky',3,'Faster and tighter'],['champ','👑 Champion',4,'For true aces']];
+  const diffStars={easy:1,medium:2,hard:3,champ:4};
+  function pickDiff(meta, then){
+    const p=prog(); const best=(p.stars||{})[meta.n]||0;
+    const rows=DIFFS.map(function(d){ var k=d[0],label=d[1],st=d[2],sub=d[3]; var cleared=best>=st;
+      return '<button class="sg-diff'+(cleared?' cleared':'')+'" data-d="'+k+'">'
+        +'<span class="sg-diff-stars">'+'★'.repeat(st)+'<i>'+'☆'.repeat(4-st)+'</i></span>'
+        +'<b>'+label+'</b><span class="sg-diff-sub">'+sub+'</span>'
+        +'<span class="sg-diff-tag">'+(cleared?'Cleared ✓':(st+'★'))+'</span></button>'; }).join('');
+    const b=shell('<div class="sg-diffpick"><h3>Choose your challenge</h3>'
+      +'<p>Your spelling words always match <b>your</b> level. This dial sets how tough the <b>game</b> is — clear it to earn that many ★.</p>'
+      +'<div class="sg-diffgrid">'+rows+'</div>'
+      +'<button class="sg-diff-back" id="sg-dback">← Back to map</button></div>');
+    playMusic(meta.world);
+    b.querySelectorAll('.sg-diff').forEach(function(el){ el.onclick=function(){ then(el.dataset.d); }; });
+    var bk=b.querySelector('#sg-dback'); if(bk) bk.onclick=function(){ map(); };
+  }
   function chapter(ch){
     const meta=CH_META[ch-1]; if(!meta) return;
-    beats(ch,'intro',()=>{ game(meta); });
+    beats(ch,'intro',()=>{ pickDiff(meta,(d)=>game(meta,d)); });
   }
-  function game(meta){
+  function game(meta, diffKey){
     const plate=(window.SGART&&SGART.ready())?SGART.plateForWorld(meta.world):'';
     const b=shell('<div class="sg-gameframe">'+plate+'<div class="sg-gamehost" id="sg-gh"></div></div>');
     playMusic(meta.world);
-    const diff=(active&&active().gameDiff)||'medium';
+    const diff=diffKey||(active&&active().gameDiff)||'medium';
+    const earned=diffStars[diff]||1;
     const eng=W().SB_SAGA_ENGINES[meta.engine];
     const WMAP={meadow:'meadow',sky:'opensky',hive:'hive','hive gates':'hive',stage:'stage',cosmos:'cosmos',carnival:'carnival',dojo:'dojo',lab:'lab',forest:'forest',arcade:'arcade',pond:'pond',lotus:'lotus',flyway:'flyway',homecoming:'homecoming'};
     const wid=WMAP[String(meta.world||'').toLowerCase()]||'meadow';
     // idempotent mid-game unlock: the achievable endpoint clears the chapter + unlocks
     // the next one WITHOUT ending the round, so a keen speller can keep playing.
     let unlocked=false;
-    const onUnlock=(stars)=>{ if(unlocked) return; unlocked=true;
+    // Stars = the hardness level cleared (Gentle 1★ … Champion 4★), best kept.
+    const onUnlock=()=>{ if(unlocked) return; unlocked=true;
       const p=prog(); p.done=p.done||{}; p.done[meta.n]=1;
-      p.stars=p.stars||{}; p.stars[meta.n]=Math.max(p.stars[meta.n]||0, stars||1);
+      p.stars=p.stars||{}; const prev=p.stars[meta.n]||0; p.stars[meta.n]=Math.max(prev, earned);
       p.gems=(p.gems||0)+((p.gemsAt||{})[meta.n]?0:1); p.gemsAt=p.gemsAt||{}; p.gemsAt[meta.n]=1;
       setProg(p);
-      try{ if(typeof logActivity==='function') logActivity('saga', {ch:meta.n, stars:stars}); }catch(e){}
-      try{ if(typeof addCoins==='function') addCoins(25+(stars||1)*10); }catch(e){}
-      try{ flash('🎉 Chapter cleared — next unlocked! Keep playing, or tap ← Saga.'); }catch(e){} };
+      try{ if(typeof logActivity==='function') logActivity('saga', {ch:meta.n, stars:earned, diff:diff}); }catch(e){}
+      try{ if(typeof addCoins==='function') addCoins(25+earned*12); }catch(e){}
+      try{ flash('🎉 Chapter cleared — '+earned+'★! Next unlocked. Keep playing, or tap ← Saga.'); }catch(e){} };
     engineHandle=eng(b.querySelector('#sg-gh'), Object.assign({diff,world:wid,onUnlock},meta.opts), res=>{
       engineHandle=null;
       if(res.win){
-        onUnlock(res.stars);   // ensure cleared even if the engine didn't unlock mid-game
+        onUnlock();   // ensure cleared even if the engine didn't unlock mid-game
         beats(meta.n,'win',()=>{ map(); });
       } else {
-        beats(meta.n,'lose',()=>{ game(meta); });
+        beats(meta.n,'lose',()=>{ pickDiff(meta,(d)=>game(meta,d)); });   // retry lets you drop the level
       }
     });
   }
