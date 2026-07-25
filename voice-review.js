@@ -17,7 +17,7 @@
 (function () {
   // Bumped every voice rebuild round — voice-cdn.js appends this to clip URLs so
   // browsers and the raw CDN can never serve a stale clip after a deploy.
-  window.SB_VOICE_VER = 'g2-20260723';
+  window.SB_VOICE_VER = 'g2-20260725';
   // Words Claude has processed since the last round — re-listen to confirm.
   // (Claude appends {w, note} entries here as it processes flag batches.)
   // Batch 3 (2026-07-22, overnight): FULL Kokoro rebuild — the model is now hosted on
@@ -54,6 +54,97 @@
      "blemish","chowder","furtive","pedigree","pilferer","moisture","companion",
      "enchantment","dauntlessly","loyal","verve","gabled"]
     .map(function(w){ return {w:w, note:"now Google TTS (Neural2-F)"}; })
+  );
+
+  // === QUOTES ENRICHMENT VOICING (2026-07-25) ===
+  // 831 difficult words tapped in quote popups + new rare words (visagiste,
+  // petrichor, saudade…) were voiced with Google TTS (Neural2-F, 0.95). Listed here so a
+  // parent can victory-lap them under Re-review; flag any for a one-word SSML re-gen.
+  window.SB_VOICE_REVIEW = (window.SB_VOICE_REVIEW || []).concat(
+    [
+     "ablaze", "abound", "abroad", "absent", "absorb", "aching", "adapt", "adieu", "admire", "afoot", "agendas",
+     "aghast", "agony", "alderman", "algebraic", "algorithms", "alloy", "amber", "anchored", "anthill", "aplomb",
+     "apparelled", "apply", "apricity", "ardor", "arena", "arise", "ashes", "ashore", "aspect", "assault", "asset",
+     "assume", "athwart", "auld", "awake", "awareness", "azure", "babble", "balm", "bangle", "bankruptcy",
+     "banner", "bark", "barley", "barter", "beamish", "beams", "bears", "beast", "beehive", "befalls", "belittle",
+     "bell", "bend", "beset", "beside", "betray", "beware", "bield", "bill", "billow", "billows", "binds",
+     "birches", "bitter", "blanched", "blast", "blaw", "bleak", "blesseth", "blessing", "blessings", "blest",
+     "bliss", "blossoms", "bluebell", "blushes", "boards", "boisterous", "boldness", "bond", "bonny",
+     "bookkeepers", "borogoves", "bosom", "boughs", "bound", "boundless", "bower", "bowers", "bows", "breast",
+     "breeds", "brief", "brier", "brillig", "brine", "brocades", "broth", "brow", "bruxism", "buckles", "bugle",
+     "bund", "burdens", "burthen", "butting", "cabbages", "cackle", "camerado", "canoe", "canst", "canvas",
+     "careless", "carols", "carriage", "carven", "carves", "cast", "caution", "caverns", "cease", "ceasing",
+     "chaliced", "chamber", "charging", "cherish", "chervil", "chide", "chill", "chirping", "chortled",
+     "christened", "clasps", "climes", "cling", "clings", "cloak", "coaster", "cock", "cocked", "cocksure", "coco",
+     "cohorts", "collywobbles", "commence", "comrade", "conceive", "confine", "conflict", "conquer", "conserve",
+     "console", "constant", "consummation", "content", "conviction", "coral", "cornerstone", "coromandel", "couch",
+     "counselled", "counterpane", "coursers", "coward", "cowrin", "cowslip", "cradle", "cradles", "crag",
+     "crannied", "crannies", "creatures", "crept", "crimson", "critic", "crown", "crucial", "cunningly", "curl",
+     "curlew", "curtsied", "customs", "cypress", "dainties", "dale", "dales", "dame", "damsel", "dare", "dares",
+     "daring", "darkling", "dawn", "debates", "decay", "deck", "decree", "deeds", "defeats", "deferred",
+     "definiteness", "delight", "delights", "depth", "deride", "desire", "despise", "destined", "destiny",
+     "device", "dignity", "disguise", "disown", "distilled", "distort", "ditches", "diverge", "diverged",
+     "doleful", "doomed", "doozy", "dost", "doth", "downy", "dread", "dreary", "droppeth", "dumpling", "dwell",
+     "dwelling", "dwells", "dwelt", "ease", "echoes", "eddying", "eldritch", "emerald", "empower", "endure",
+     "endured", "engraved", "engraving", "ensnares", "entire", "envy", "enwrought", "err", "eternal", "ethical",
+     "eureka", "exacts", "exhausts", "exits", "faery", "fahrvergnugen", "fair", "false", "fancy", "fatal",
+     "fathom", "favor", "fell", "fernweh", "ferny", "ferry", "fervour", "festers", "fetch", "fetching", "fiddle",
+     "fiddlers", "fireflies", "flagons", "flake", "fleece", "fleeing", "fleets", "flibbertigibbet", "flight",
+     "flint", "flits", "flourish", "fluttering", "foam", "fold", "folds", "ford", "foretells", "forge", "forged",
+     "forlorn", "forsaking", "foster", "frabjous", "fragments", "frail", "frame", "frankness", "friction",
+     "fright", "frittered", "frontier", "frontiers", "frosty", "frothing", "froward", "frumious", "fulfilment",
+     "furry", "gate", "gatekeepers", "gay", "gazing", "gesundheit", "glaciers", "glade", "glee", "glens",
+     "glittering", "glitters", "glory", "goads", "gobblefunk", "goodly", "gouache", "graces", "grain", "granite",
+     "granted", "greed", "greenwood", "grief", "grit", "grumble", "gyre", "harbor", "hardly", "hardships", "hares",
+     "hark", "harness", "harvest", "hastens", "hath", "haunches", "heather", "hedges", "heed", "hemlock",
+     "heralds", "hindsight", "hiraeth", "hold", "homage", "honour", "hooked", "horn", "horrid", "host",
+     "hullabaloo", "humble", "humbly", "hump", "hush", "icicle", "ideals", "idleness", "impact", "impulse",
+     "inclined", "indulge", "inflate", "ingratitude", "inherit", "inspire", "intrudes", "isles", "jade", "jolted",
+     "jostling", "ken", "kerfuffle", "kindle", "kindled", "kindling", "kola", "kummerspeck", "labor", "ladles",
+     "ladybird", "lame", "lament", "lane", "lark", "larks", "lavish", "lea", "lease", "leave", "leerie", "legends",
+     "lengthen", "liberty", "lighthouse", "lilacs", "limbs", "limp", "limpid", "limping", "lo", "loaf", "loafe",
+     "loitering", "lollapalooza", "longing", "lore", "loveliness", "loveth", "lower", "lullaby", "luve", "maid",
+     "main", "majesty", "mare", "margin", "mariner", "marks", "marveled", "mastery", "mead", "meadow", "meanest",
+     "measureless", "mechanics", "melilot", "melodie", "mercies", "merely", "merrily", "merriment", "merry",
+     "mickle", "midnight", "milestones", "mimics", "mimsy", "mingle", "mingled", "mint", "mists", "misty", "moan",
+     "moccasins", "moisty", "moor", "morn", "mortals", "moss", "mossy", "motionless", "moulds", "mournfully",
+     "muckle", "mulberry", "muses", "musket", "muster", "mute", "nail", "native", "niche", "nightgown",
+     "nightingale", "nile", "nobler", "nonsense", "noonday", "norwich", "numberless", "numbers", "numinous",
+     "nursling", "nutmeg", "oaks", "obscures", "oft", "onward", "optimist", "ornithologist", "outgrabe",
+     "overalls", "overmatch", "overtops", "owlet", "pace", "pack", "pail", "pale", "palely", "pangs", "passion",
+     "passions", "pasture", "pastures", "pathless", "pause", "pawn", "pebble", "peered", "pent", "perch",
+     "perchance", "perches", "peril", "petrichor", "phoebus", "pied", "pieman", "piety", "pillars", "pine",
+     "pitcher", "placid", "players", "playfellows", "pleasanter", "pleasantest", "plods", "plum", "pobble",
+     "policy", "pondered", "poppy", "pouring", "prairies", "prancing", "prayeth", "precedes", "prest", "presume",
+     "prevails", "prick", "prized", "profoundness", "profuse", "proofs", "prosper", "protege", "purse", "pursue",
+     "pursuit", "quarrel", "quicken", "quince", "rack", "radical", "rage", "rages", "ranged", "rapping", "reap",
+     "reaping", "reaps", "reckoned", "reddens", "reed", "refrains", "regrets", "rehearsal", "reigns", "rejoice",
+     "rejoiced", "rejoices", "relief", "relished", "remedy", "rendered", "renders", "repay", "resolve", "restless",
+     "restore", "retired", "revels", "revery", "ripe", "ripening", "ripens", "ripples", "risque", "rites", "roam",
+     "rosy", "rounded", "roving", "rubles", "ruby", "rued", "rumpus", "runcible", "rural", "rusts", "rut", "sadhu",
+     "sages", "saudade", "save", "scale", "scan", "scarce", "scatter", "scattered", "scorn", "secretaire", "sedge",
+     "seeker", "seeketh", "sessions", "shackles", "shade", "shades", "shalt", "shattered", "sheath", "sheen",
+     "shell", "sheltered", "sheltering", "shimmering", "shoot", "shrink", "shun", "sift", "silk", "sinewy",
+     "sixpence", "skims", "slander", "sledges", "sleekit", "sling", "slings", "slithy", "slumbers", "smith",
+     "smorgasbord", "snaw", "snoring", "soaring", "solely", "solitude", "solitudes", "soothed", "sorrow", "sought",
+     "soul", "soundly", "source", "sparrow", "spears", "spied", "splendid", "splendour", "sport", "sprachgefuhl",
+     "spread", "sprightly", "springest", "sprite", "spur", "stalactite", "startling", "stately", "staunch",
+     "stedfast", "steeples", "steer", "steersmen", "still", "stingy", "stirring", "stockings", "stoop", "stray",
+     "strewn", "stricken", "strive", "striving", "struggle", "struggles", "stump", "subdued", "subject", "sublime",
+     "summits", "suppose", "surf", "surpass", "swallows", "swarm", "sways", "swift", "swiftly", "tact", "tadpole",
+     "tamed", "tangled", "tattered", "temperate", "tender", "thee", "thickset", "thine", "thirsting", "thistles",
+     "thorn", "thorns", "thou", "thoughtless", "threshold", "thrives", "thrust", "tidings", "tiller", "titania",
+     "toil", "token", "tolls", "torment", "toss", "touche", "trackless", "trade", "trailing", "traitors",
+     "traversed", "tread", "trembler", "trial", "trials", "triumph", "triumphs", "trunkless", "tumult", "tureen",
+     "twilight", "twinkle", "uffish", "unaware", "unconquerable", "underrate", "undertake", "undone", "unfurled",
+     "unheard", "union", "united", "unjust", "unmasked", "unpremeditated", "unraveling", "unruly", "unto",
+     "untrodden", "upright", "urgent", "usher", "utter", "uttered", "vacant", "vain", "vale", "vales", "vapours",
+     "varied", "vastness", "vats", "velleity", "venture", "ventures", "vernal", "verse", "vexes", "vibrates",
+     "vices", "vigor", "violet", "virtue", "virtues", "visagiste", "vital", "voila", "volumes", "wacky", "wafted",
+     "wagging", "wand", "waned", "ware", "wattles", "weave", "weeping", "wert", "whence", "whist", "whiting",
+     "wholesome", "whoso", "widdershins", "wigwam", "wilderness", "willpower", "wind", "winna", "wise", "woeful",
+     "wonder", "wondrous", "wood", "woods", "wool", "worth", "woven", "yawp", "ye", "yearnings", "yield", "yon",
+    ].map(function(w){ return {w:w, note:"quotes enrichment — Google TTS"}; })
   );
 
   // Highest-priority QA queue. Short/plosive-initial/final-vowel words are the
