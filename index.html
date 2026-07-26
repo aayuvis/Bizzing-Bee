@@ -7,8 +7,8 @@
 <meta name="description" content="Bizzing Bee — a spelling-bee trainer that hears your child spell, evolves a character with every win, and shows parents exactly where they stand.">
 <title>Bizzing Bee — spelling-bee trainer</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 viewBox%3D%220 0 64 64%22%3E%3Cellipse cx%3D%2215%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(-24 15 20)%22%2F%3E%3Cellipse cx%3D%2249%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(24 49 20)%22%2F%3E%3Cpath d%3D%22M27 17 Q23 7 21 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Cpath d%3D%22M37 17 Q41 7 43 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Ccircle cx%3D%2221%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Ccircle cx%3D%2243%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22 fill%3D%22%23FFC23D%22%2F%3E%3Cellipse cx%3D%2224%22 cy%3D%2230%22 rx%3D%2211%22 ry%3D%227%22 fill%3D%22%23FFD86E%22 opacity%3D%22.55%22%2F%3E%3CclipPath id%3D%22b%22%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22%2F%3E%3C%2FclipPath%3E%3Cg clip-path%3D%22url(%23b)%22%3E%3Crect x%3D%225%22 y%3D%2245%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3Crect x%3D%225%22 y%3D%2256%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3C%2Fg%3E%3Cellipse cx%3D%2217%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Cellipse cx%3D%2247%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Ccircle cx%3D%2224%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2225.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2224.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2240%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2241.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2240.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Cpath d%3D%22M26 49 Q32 55 40 49%22 fill%3D%22none%22 stroke%3D%22%233A1E5C%22 stroke-width%3D%222.8%22 stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E">
-<link rel="stylesheet" href="fonts/fonts.css?v=20260726m">
-<link rel="stylesheet" href="tokens.css?v=20260726m">
+<link rel="stylesheet" href="fonts/fonts.css?v=20260726n">
+<link rel="stylesheet" href="tokens.css?v=20260726n">
 
 <style>
   *{box-sizing:border-box}
@@ -77,6 +77,17 @@
   @keyframes ca-morph{0%{transform:rotateX(0)}42%{transform:rotateX(88deg);opacity:.2}60%{transform:rotateX(88deg);opacity:.2}100%{transform:rotateX(0);opacity:1}}
   @keyframes ca-glow{0%,100%{filter:none}50%{filter:brightness(1.12) drop-shadow(0 0 9px color-mix(in srgb,var(--accent) 55%,transparent))}}
   @keyframes sb-bee-bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-7px) rotate(3deg)}}
+  /* "Find your Bee Band" is the one thing a new speller must tap, so the header pill calls
+     for attention until the band is known — then it goes quiet for good. */
+  @keyframes sb-band-call{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 55%,transparent);transform:translateY(0)}
+    50%{box-shadow:0 0 0 7px color-mix(in srgb,var(--accent) 0%,transparent);transform:translateY(-1.5px)}}
+  @keyframes sb-band-sheen{0%{transform:translateX(-130%)}55%,100%{transform:translateX(240%)}}
+  .sb-band-call{position:relative;overflow:hidden;animation:sb-band-call 1.9s ease-in-out infinite;
+    background:linear-gradient(120deg,color-mix(in srgb,var(--accent) 22%,var(--chip)),color-mix(in srgb,var(--treasure,#F0B429) 26%,var(--chip)))!important}
+  .sb-band-call::after{content:"";position:absolute;top:0;bottom:0;width:38%;pointer-events:none;
+    background:linear-gradient(100deg,transparent,rgba(255,255,255,.62),transparent);animation:sb-band-sheen 2.6s ease-in-out infinite}
+  .sb-band-call .sb-band-spark{animation:sb-band-spark 1.9s ease-in-out infinite}
+  @keyframes sb-band-spark{0%,100%{transform:scale(1) rotate(0)}45%{transform:scale(1.22) rotate(14deg)}}
   /* livelier "talking" loop: hop, lean side to side, little scale pulses */
   @keyframes sb-bee-talk{0%{transform:translate(0,0) rotate(-5deg) scale(1)}20%{transform:translate(-3px,-9px) rotate(3deg) scale(1.05)}40%{transform:translate(2px,-2px) rotate(6deg) scale(1)}60%{transform:translate(4px,-8px) rotate(-2deg) scale(1.04)}80%{transform:translate(-2px,-1px) rotate(-6deg) scale(1)}100%{transform:translate(0,0) rotate(-5deg) scale(1)}}
   @keyframes sb-bee-pop{0%{transform:scale(.55) translateY(14px) rotate(-12deg);opacity:0}65%{transform:scale(1.12) translateY(-2px) rotate(4deg)}100%{transform:scale(1) translateY(0) rotate(0);opacity:1}}
@@ -373,58 +384,58 @@
   @keyframes lx-gleam{0%,100%{opacity:0;transform:translateY(-6px)}50%{opacity:1;transform:translateY(6px)}}
   @keyframes lx-string{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.7)}}
 </style>
-  <link rel="stylesheet" href="saga2.css?v=20260726m">
+  <link rel="stylesheet" href="saga2.css?v=20260726n">
 </head>
 <body>
 <div id="root"></div>
-<script src="icons.js?v=20260726m"></script>
-<script src="icons-art.js?v=20260726m"></script>
-<script src="cover-art.js?v=20260726m"></script>
+<script src="icons.js?v=20260726n"></script>
+<script src="icons-art.js?v=20260726n"></script>
+<script src="cover-art.js?v=20260726n"></script>
 <script>try{SB_ICON_MOTION()}catch(e){}</script>
-<script src="voice-cdn.js?v=20260726m"></script>
-<script src="words-data.js?v=20260726m"></script>
-<script src="words-extra.js?v=20260726m"></script>
-<script src="words-patch.js?v=20260726m"></script>
-<script src="word-alternates.js?v=20260726m"></script>
-<script src="concepts-data.js?v=20260726m"></script>
-<script src="lessons-data.js?v=20260726m"></script>
-<script src="scripps-data.js?v=20260726m"></script>
-<script src="themes-data.js?v=20260726m"></script>
-<script src="figurative-data.js?v=20260726m"></script>
-<script src="quotes.js?v=20260726m"></script>
-<script src="quotes-lib.js?v=20260726m"></script>
-<script src="word-pron.js?v=20260726m"></script>
-<script src="trivia-data.js?v=20260726m"></script>
-<script src="trivia-words.js?v=20260726m"></script>
-<script src="nsf-finals500-data.js?v=20260726m"></script>
-<script src="nsf-vocab26-data.js?v=20260726m"></script>
-<script src="adv-tips-data.js?v=20260726m"></script>
-<script src="concept-scripts.js?v=20260726m"></script>
-<script src="tips-data.js?v=20260726m"></script>
-<script src="voice-manifest.js?v=20260726m"></script>
-<script src="voice-words.js?v=20260726m"></script>
-<script src="voice-review.js?v=20260726m"></script>
-<script src="voice-french.js?v=20260726m"></script>
-<script src="app.js?v=20260726m"></script>
-<script src="avatars-art.js?v=20260726m"></script>
-<script src="avatars.js?v=20260726m"></script>
-<script src="avatar-greetings.js?v=20260726m"></script>
-<script src="avatar-cards.js?v=20260726m"></script>
-<script src="app2.js?v=20260726m"></script>
-<script src="pricing.js?v=20260726m"></script>
-<script src="auth.js?v=20260726m"></script>
-<script src="app3.js?v=20260726m"></script>
-<script src="story-data.js?v=20260726m"></script>
-<script src="quest.js?v=20260726m"></script>
-  <script src="games-daily.js?v=20260726m"></script>
-  <script src="saga-art/saga-art.js?v=20260726m"></script>
-  <script src="saga-art/saga-map.js?v=20260726m"></script>
-  <script src="saga-art/worlds-art.js?v=20260726m"></script>
-  <script src="saga-art-dom.js?v=20260726m"></script>
-  <script src="saga-music.js?v=20260726m"></script>
-  <script src="saga-script.js?v=20260726m"></script>
-  <script src="saga2.js?v=20260726m"></script>
-<script src="trivia.js?v=20260726m"></script>
-<script src="advanced.js?v=20260726m"></script>
+<script src="voice-cdn.js?v=20260726n"></script>
+<script src="words-data.js?v=20260726n"></script>
+<script src="words-extra.js?v=20260726n"></script>
+<script src="words-patch.js?v=20260726n"></script>
+<script src="word-alternates.js?v=20260726n"></script>
+<script src="concepts-data.js?v=20260726n"></script>
+<script src="lessons-data.js?v=20260726n"></script>
+<script src="scripps-data.js?v=20260726n"></script>
+<script src="themes-data.js?v=20260726n"></script>
+<script src="figurative-data.js?v=20260726n"></script>
+<script src="quotes.js?v=20260726n"></script>
+<script src="quotes-lib.js?v=20260726n"></script>
+<script src="word-pron.js?v=20260726n"></script>
+<script src="trivia-data.js?v=20260726n"></script>
+<script src="trivia-words.js?v=20260726n"></script>
+<script src="nsf-finals500-data.js?v=20260726n"></script>
+<script src="nsf-vocab26-data.js?v=20260726n"></script>
+<script src="adv-tips-data.js?v=20260726n"></script>
+<script src="concept-scripts.js?v=20260726n"></script>
+<script src="tips-data.js?v=20260726n"></script>
+<script src="voice-manifest.js?v=20260726n"></script>
+<script src="voice-words.js?v=20260726n"></script>
+<script src="voice-review.js?v=20260726n"></script>
+<script src="voice-french.js?v=20260726n"></script>
+<script src="app.js?v=20260726n"></script>
+<script src="avatars-art.js?v=20260726n"></script>
+<script src="avatars.js?v=20260726n"></script>
+<script src="avatar-greetings.js?v=20260726n"></script>
+<script src="avatar-cards.js?v=20260726n"></script>
+<script src="app2.js?v=20260726n"></script>
+<script src="pricing.js?v=20260726n"></script>
+<script src="auth.js?v=20260726n"></script>
+<script src="app3.js?v=20260726n"></script>
+<script src="story-data.js?v=20260726n"></script>
+<script src="quest.js?v=20260726n"></script>
+  <script src="games-daily.js?v=20260726n"></script>
+  <script src="saga-art/saga-art.js?v=20260726n"></script>
+  <script src="saga-art/saga-map.js?v=20260726n"></script>
+  <script src="saga-art/worlds-art.js?v=20260726n"></script>
+  <script src="saga-art-dom.js?v=20260726n"></script>
+  <script src="saga-music.js?v=20260726n"></script>
+  <script src="saga-script.js?v=20260726n"></script>
+  <script src="saga2.js?v=20260726n"></script>
+<script src="trivia.js?v=20260726n"></script>
+<script src="advanced.js?v=20260726n"></script>
 </body>
 </html>
