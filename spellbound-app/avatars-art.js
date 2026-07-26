@@ -2540,5 +2540,102 @@ bluewhale: `<defs><radialGradient id="bbwha" cx="50%" cy="35%" r="75%"><stop off
     top:'<ellipse cx="60" cy="10" rx="10" ry="12" fill="#2A2018"/><path d="M51 4 Q60 -6 69 4 Q64 0 60 0 Q56 0 51 4z" fill="#2A2018"/><path d="M50 6 Q39 4 33 12 Q42 12 47 16" fill="#EDEDED" stroke="#D0D0D0" stroke-width="1"/><path d="M56 12 Q45 22 50 40 Q52 28 59 24" fill="none" stroke="#6AB8E0" stroke-width="2.6" stroke-linecap="round"/><path d="M56 12 Q47 24 52 40" fill="none" stroke="#A8D8F0" stroke-width="1.1" stroke-linecap="round"/>',
     spec:'<path d="M56 34 h8 M55 37 h10 M56 40 h8" stroke="#E8E8E8" stroke-width="1.3" opacity=".7"/><path d="M60 33 q-2.8 3.5 0 7 q2.8 -3.5 0 -7z" fill="#D6362E"/><circle cx="60" cy="36.5" r="1.1" fill="#8A1810"/>',
     prop:'<g transform="translate(18 72)"><line x1="0" y1="-4" x2="0" y2="48" stroke="#C99A34" stroke-width="2.6"/><path d="M-9 -4 Q-9 -22 -7 -27 M9 -4 Q9 -22 7 -27 M0 -4 L0 -31 M-7 -27 L-7 -16 M7 -27 L7 -16 M0 -31 L0 -18" stroke="#E8C24A" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M-9 -4 Q0 0 9 -4" stroke="#E8C24A" stroke-width="2.4" fill="none"/></g><path d="M30 90 Q44 98 60 92 Q76 98 90 90" fill="none" stroke="#2E8A4E" stroke-width="4.2" stroke-linecap="round"/><path d="M90 90 q5 -2 4 -7 l-4 3z" fill="#2E8A4E"/><circle cx="92" cy="85" r=".9" fill="#FFD34D"/>' });
+  // ---- Ganesha — elephant head, tiny gold crown, tilak, modak sweet, halo ----
+  A.ganesha=fig({k:'ganesha',animal:true,skin:'#C6BBD4',jaw:'#A79ABA',g1:'#E85A4A',g2:'#C43A32',
+    backdrop:'<circle cx="60" cy="46" r="42" fill="#FFE08A" opacity=".28"/><circle cx="60" cy="46" r="42" fill="none" stroke="#FFC83D" stroke-width="1.3" opacity=".5"/>',
+    head:'<ellipse cx="28" cy="52" rx="15" ry="21" fill="#B9AEC6"/><ellipse cx="92" cy="52" rx="15" ry="21" fill="#B9AEC6"/>'
+      +'<ellipse cx="30" cy="52" rx="9" ry="14" fill="#A192B4"/><ellipse cx="90" cy="52" rx="9" ry="14" fill="#A192B4"/>'
+      +'<ellipse cx="60" cy="46" rx="30" ry="30" fill="#C6BBD4"/>'
+      +'<path d="M42 22 L48 13 L54 21 L60 11 L66 21 L72 13 L78 22 Z" fill="#E8C24A" stroke="#D4A82A" stroke-width="1"/><circle cx="60" cy="16" r="2.2" fill="#E85A6B"/>'
+      +'<ellipse cx="48" cy="45" rx="6" ry="7.4" fill="#fff"/><circle cx="49" cy="46.6" r="3.8" fill="#2E455C"/><circle cx="46.8" cy="43" r="1.6" fill="#fff"/>'
+      +'<ellipse cx="72" cy="45" rx="6" ry="7.4" fill="#fff"/><circle cx="73" cy="46.6" r="3.8" fill="#2E455C"/><circle cx="70.8" cy="43" r="1.6" fill="#fff"/>'
+      +'<path d="M60 52 Q57 70 49 78 Q44 82 49 87 Q56 85 55 79" fill="#C6BBD4" stroke="#A79ABA" stroke-width="1.1"/>'
+      +'<path d="M50 60 Q57 66 50 74 M70 60 Q63 66 70 74" fill="none" stroke="#F4EFE2" stroke-width="3.4" stroke-linecap="round"/>'
+      +'<path d="M60 33 v8" stroke="#D6362E" stroke-width="2.2" stroke-linecap="round"/>'
+      +'<circle cx="39" cy="60" r="4.4" fill="#FF9EB8" opacity=".5"/><circle cx="81" cy="60" r="4.4" fill="#FF9EB8" opacity=".5"/>',
+    prop:'<g transform="translate(20 98)"><circle cy="-2" r="14" fill="#FFD34D" opacity=".2"/><path d="M0 -11 Q-10 7 -13 11 L13 11 Q10 7 0 -11z" fill="#E8B84A" stroke="#C8952A" stroke-width="1.2"/><path d="M-6 4 q6 3 12 0" stroke="#C8952A" stroke-width="1" fill="none"/></g>',
+    garment:'<path d="M44 92 Q60 101 76 92" fill="none" stroke="#F0D24A" stroke-width="3.6"/><g fill="#FDE9A0"><circle cx="50" cy="98" r="2.2"/><circle cx="60" cy="101" r="2.4"/><circle cx="70" cy="98" r="2.2"/></g>' });
+  // ---- Durga — golden crown, third eye, trishul, tiger cub, fierce-kind ----
+  A.durga=fig({k:'durga',skin:'#F0C89E',jaw:'#D4A87C',g1:'#E8484E',g2:'#B4282E',
+    backdrop:'<circle cx="60" cy="44" r="43" fill="#FFD86B" opacity=".26"/><circle cx="60" cy="44" r="43" fill="none" stroke="#FFC83D" stroke-width="1.4" opacity=".5"/>',
+    behind:'<path d="M22 60 Q20 30 60 27 Q100 30 98 60 Q90 40 60 39 Q30 40 22 60 Z" fill="#1E1226"/>',
+    hair:'<path d="M30 40 Q28 14 60 12 Q92 14 90 40 Q82 24 60 24 Q38 24 30 40 Z" fill="#20142A"/>',
+    top:'<path d="M36 30 L40 12 L48 24 L54 8 L60 22 L66 8 L72 24 L80 12 L84 30 Z" fill="#F0CE52" stroke="#D4A82A" stroke-width="1"/><g fill="#E85A6B"><circle cx="48" cy="20" r="2"/><circle cx="60" cy="16" r="2.4"/><circle cx="72" cy="20" r="2"/></g><path d="M56 4 L64 4 L60 -4 Z" fill="#F0D24A"/>',
+    spec:'<path d="M60 33 v8" stroke="#D6362E" stroke-width="2.2" stroke-linecap="round"/><path d="M55 30 q5 -3 10 0" stroke="#D6362E" stroke-width="1.6" fill="none"/>',
+    prop:'<g transform="translate(17 84)"><line x1="0" y1="-14" x2="0" y2="40" stroke="#B4842A" stroke-width="2.6"/><path d="M-9 -14 Q-9 -30 -7 -34 M9 -14 Q9 -30 7 -34 M0 -14 L0 -37 M-7 -34 L-7 -22 M7 -34 L7 -22 M0 -37 L0 -24" stroke="#F0CE52" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M-9 -14 Q0 -10 9 -14" stroke="#F0CE52" stroke-width="2.4" fill="none"/></g>'
+      +'<g transform="translate(99 104)"><ellipse cx="0" cy="1" rx="9" ry="7" fill="#E8973A"/><path d="M-9 -2 l3 -4 2 3z M9 -2 l-3 -4 -2 3z" fill="#E8973A"/><path d="M-7 -1 h14 M-6 3 h12" stroke="#7A4A1A" stroke-width="1" opacity=".7"/><circle cx="-3.4" cy="-1" r="1.4" fill="#2A2018"/><circle cx="3.4" cy="-1" r="1.4" fill="#2A2018"/><path d="M-2 3 l2 2 2 -2z" fill="#C43A44"/></g>',
+    garment:'<path d="M45 90 Q60 100 75 90" fill="none" stroke="#F0CE52" stroke-width="3.6"/>' });
+  // ---- Saraswati — goddess of learning: pale sari, veena, swan, lotus, halo ----
+  A.saraswati=fig({k:'saraswati',skin:'#F4D8B8',jaw:'#DCBB94',g1:'#F3F0E6',g2:'#DAD3C2',
+    backdrop:'<circle cx="60" cy="44" r="43" fill="#FFF3D0" opacity=".4"/><circle cx="60" cy="44" r="43" fill="none" stroke="#F0D68A" stroke-width="1.3" opacity=".5"/>',
+    behind:'<path d="M24 58 Q22 30 60 27 Q98 30 96 58 Q88 38 60 37 Q32 38 24 58 Z" fill="#2A2440"/>',
+    hair:'<path d="M30 40 Q28 14 60 12 Q92 14 90 40 Q82 24 60 24 Q38 24 30 40 Z" fill="#2A2440"/>',
+    top:'<path d="M40 28 Q40 12 60 10 Q80 12 80 28 Q70 20 60 20 Q50 20 40 28 Z" fill="#EFE7D2" stroke="#D8CBA8" stroke-width="1"/><circle cx="60" cy="15" r="2.2" fill="#E8A0B4"/>',
+    spec:'<circle cx="60" cy="37" r="1.8" fill="#D6362E"/>',
+    prop:'<g transform="translate(15 86) rotate(20)"><rect x="0" y="0" width="42" height="4" rx="2" fill="#C98A44" stroke="#8A5E22" stroke-width=".8"/><ellipse cx="2" cy="2" rx="6" ry="7" fill="#C98A44"/><ellipse cx="40" cy="2" rx="4" ry="5" fill="#C98A44"/><g stroke="#6A4418" stroke-width=".7"><line x1="8" y1="0.6" x2="8" y2="3.4"/><line x1="16" y1="0.6" x2="16" y2="3.4"/><line x1="24" y1="0.6" x2="24" y2="3.4"/><line x1="32" y1="0.6" x2="32" y2="3.4"/></g></g>'
+      +'<g transform="translate(99 102)"><ellipse cx="0" cy="2" rx="9" ry="6.4" fill="#FBFBF6"/><path d="M6 -2 q6 -4 8 1 q-4 0 -6 3z" fill="#FBFBF6"/><circle cx="9" cy="-1" r="1.1" fill="#2A2018"/><path d="M13 0 l4 1 -4 1z" fill="#E8A94C"/></g>',
+    garment:'<path d="M45 90 Q60 99 75 90" fill="none" stroke="#E8A0B4" stroke-width="3.2"/><g fill="#F0CE52"><circle cx="52" cy="96" r="2"/><circle cx="60" cy="99" r="2.2"/><circle cx="68" cy="96" r="2"/></g>' });
+  // ---- Lakshmi — lotus crown, gold coins, pink-gold, halo ----
+  A.lakshmi=fig({k:'lakshmi',skin:'#F0C89E',jaw:'#D4A87C',g1:'#E85A8E',g2:'#C43A6A',
+    backdrop:'<circle cx="60" cy="44" r="43" fill="#FFE08A" opacity=".3"/><g fill="#F0CE52" opacity=".8"><circle cx="20" cy="30" r="2.4"/><circle cx="100" cy="30" r="2.4"/><circle cx="26" cy="86" r="2"/><circle cx="96" cy="84" r="2"/></g>',
+    behind:'<path d="M24 56 Q22 28 60 25 Q98 28 96 56 Q88 36 60 35 Q32 36 24 56 Z" fill="#241428"/>',
+    hair:'<path d="M30 40 Q28 14 60 12 Q92 14 90 40 Q82 24 60 24 Q38 24 30 40 Z" fill="#241428"/>',
+    top:'<g transform="translate(60 14)"><path d="M0 8 Q-9 -2 0 -12 Q9 -2 0 8z" fill="#E85A8E"/><path d="M0 6 Q-6 0 -10 -4 Q-4 -4 0 2z" fill="#F07AA6"/><path d="M0 6 Q6 0 10 -4 Q4 -4 0 2z" fill="#F07AA6"/><circle cy="-3" r="2.4" fill="#F0CE52"/></g>',
+    spec:'<circle cx="60" cy="37" r="1.6" fill="#D6362E"/>',
+    prop:'<g transform="translate(18 96)"><g fill="#F0CE52" stroke="#C8952A" stroke-width="1"><circle cx="0" cy="0" r="5"/><circle cx="-8" cy="6" r="4.4"/><circle cx="7" cy="7" r="4.4"/></g></g>',
+    garment:'<path d="M45 90 Q60 100 75 90" fill="none" stroke="#F0CE52" stroke-width="3.6"/><g fill="#FDE9A0"><circle cx="52" cy="96" r="2.2"/><circle cx="60" cy="99" r="2.4"/><circle cx="68" cy="96" r="2.2"/></g>' });
+  // ---- Hanuman — monkey face, gold crown, big mace (gada), devotion ----
+  A.hanuman=fig({k:'hanuman',animal:true,skin:'#E8A85A',jaw:'#C8863A',g1:'#E85A2A',g2:'#C43A18',
+    backdrop:'<circle cx="60" cy="46" r="42" fill="#FFD86B" opacity=".26"/>',
+    head:'<path d="M38 24 L44 16 L50 24 L60 14 L70 24 L76 16 L82 24 Z" fill="#F0CE52" stroke="#D4A82A" stroke-width="1"/><circle cx="60" cy="18" r="2.2" fill="#E85A6B"/>'
+      +'<ellipse cx="30" cy="50" rx="7" ry="9" fill="#E8A85A"/><ellipse cx="90" cy="50" rx="7" ry="9" fill="#E8A85A"/><ellipse cx="30" cy="50" rx="3.4" ry="5" fill="#D89A6A"/><ellipse cx="90" cy="50" rx="3.4" ry="5" fill="#D89A6A"/>'
+      +'<ellipse cx="60" cy="47" rx="30" ry="30" fill="#E8A85A"/>'
+      +'<ellipse cx="60" cy="60" rx="20" ry="18" fill="#F2D0A0"/>'
+      +'<ellipse cx="48" cy="46" rx="6" ry="7.4" fill="#fff"/><circle cx="49" cy="47.6" r="3.8" fill="#2E455C"/><circle cx="46.8" cy="44" r="1.6" fill="#fff"/>'
+      +'<ellipse cx="72" cy="46" rx="6" ry="7.4" fill="#fff"/><circle cx="73" cy="47.6" r="3.8" fill="#2E455C"/><circle cx="70.8" cy="44" r="1.6" fill="#fff"/>'
+      +'<ellipse cx="60" cy="58" rx="4.4" ry="3.4" fill="#C8863A"/><circle cx="58" cy="57" r="1" fill="#2A2018"/><circle cx="62" cy="57" r="1" fill="#2A2018"/>'
+      +'<path d="M52 66 q8 5 16 0" stroke="#B4742A" stroke-width="2" fill="none" stroke-linecap="round"/>'
+      +'<path d="M60 30 v7" stroke="#D6362E" stroke-width="2.2" stroke-linecap="round"/>',
+    prop:'<g transform="translate(18 92)"><line x1="0" y1="4" x2="0" y2="26" stroke="#8A5E2A" stroke-width="3"/><circle cx="0" cy="-6" r="11" fill="#F0CE52" stroke="#C8952A" stroke-width="1.6"/><circle cx="0" cy="-6" r="6" fill="none" stroke="#C8952A" stroke-width="1.2"/></g>',
+    garment:'<path d="M44 92 Q60 101 76 92" fill="none" stroke="#F0CE52" stroke-width="3.6"/>' });
+  // ---- Freya — golden braids, feather cloak, amber necklace, cat ----
+  A.freya=fig({k:'freya',skin:'#F2D6B4',jaw:'#DABB92',g1:'#5A8A6A',g2:'#3C6248',
+    backdrop:'<g fill="#C8A24A" opacity=".5"><path d="M8 30 q6 8 2 18 M14 26 q6 8 2 18"/></g>',
+    behind:'<path d="M22 60 Q20 28 60 26 Q100 28 98 60 Q88 40 60 39 Q32 40 22 60 Z" fill="#E8C24A"/>',
+    hair:'<path d="M28 42 Q26 14 60 12 Q94 14 92 42 Q84 24 60 24 Q36 24 28 42 Z" fill="#F0D26A"/><path d="M24 46 Q18 70 26 92 Q32 74 30 52z" fill="#E8C24A"/><path d="M96 46 Q102 70 94 92 Q88 74 90 52z" fill="#E8C24A"/><g stroke="#C8A24A" stroke-width="1" opacity=".7"><path d="M24 60 h8 M22 72 h8 M92 60 h8 M90 72 h8"/></g>',
+    top:'<path d="M40 24 L44 14 L52 22 L60 12 L68 22 L76 14 L80 24 Z" fill="#E8C24A" stroke="#C8952A" stroke-width="1"/><circle cx="60" cy="16" r="2.2" fill="#E8607A"/>',
+    garment:'<g><path d="M40 118 Q42 86 60 84 Q78 86 80 118 Z" fill="#5A8A6A"/><g fill="#E8A030"><circle cx="52" cy="94" r="2.4"/><circle cx="60" cy="97" r="2.6"/><circle cx="68" cy="94" r="2.4"/></g></g>',
+    prop:'<g transform="translate(99 104)"><ellipse cx="0" cy="2" rx="8" ry="6.4" fill="#8A7A5A"/><path d="M-7 -3 l-2 -5 4 3z M7 -3 l2 -5 -4 3z" fill="#8A7A5A"/><circle cx="-3" cy="-1" r="1.2" fill="#2E7A4E"/><circle cx="3" cy="-1" r="1.2" fill="#2E7A4E"/><path d="M-2 3 l2 2 2 -2z" fill="#3A2E22"/></g>' });
+  // ---- Loki — horned helmet, green & gold, sly grin ----
+  A.loki=fig({k:'loki',skin:'#DFE4C8',jaw:'#BFC4A8',g1:'#2E7A4E',g2:'#1C5232',
+    mouth:'<path d="M50 65 q10 6 20 -1" stroke="#7A8A5A" stroke-width="2.2" fill="none" stroke-linecap="round"/>',
+    backdrop:'<circle cx="24" cy="32" r="3.4" fill="#5AC88A" opacity=".5"/><circle cx="98" cy="30" r="3" fill="#5AC88A" opacity=".45"/>',
+    hair:'<path d="M30 44 Q28 20 60 18 Q92 20 90 44 Q82 30 60 30 Q38 30 30 44 Z" fill="#2A2A24"/>',
+    top:'<path d="M40 30 L36 8 Q30 12 34 26 Z" fill="#F0CE52" stroke="#C8952A" stroke-width="1"/><path d="M80 30 L84 8 Q90 12 86 26 Z" fill="#F0CE52" stroke="#C8952A" stroke-width="1"/><path d="M44 30 Q60 24 76 30 L74 22 Q60 18 46 22 Z" fill="#E8C24A"/>',
+    spec:'<path d="M42 47 q6 -3 11 0 M67 47 q5 -3 11 0" stroke="#7A8A5A" stroke-width="1.4" fill="none"/>',
+    garment:'<g fill="#E8C24A"><circle cx="54" cy="100" r="2"/><circle cx="60" cy="98" r="2"/><circle cx="66" cy="100" r="2"/></g>' });
+  // ---- Apollo — laurel wreath, golden curls, lyre, sun glow ----
+  A.apollo=fig({k:'apollo',skin:'#F4D6B0',jaw:'#DCBA90',g1:'#F0CE52',g2:'#D4A82A',
+    backdrop:'<circle cx="60" cy="42" r="44" fill="#FFE08A" opacity=".3"/><g stroke="#FFD34D" stroke-width="1.6" opacity=".55"><line x1="60" y1="-2" x2="60" y2="6"/><line x1="18" y1="12" x2="23" y2="18"/><line x1="102" y1="12" x2="97" y2="18"/></g>',
+    hair:'<path d="M28 42 Q26 14 60 12 Q94 14 92 42 Q90 30 82 26 Q80 34 74 30 Q76 22 60 21 Q44 22 46 30 Q40 34 38 26 Q30 30 28 42z" fill="#F0CE52"/><g fill="#E0B840"><circle cx="34" cy="34" r="4"/><circle cx="44" cy="27" r="4"/><circle cx="60" cy="24" r="4.4"/><circle cx="76" cy="27" r="4"/><circle cx="86" cy="34" r="4"/></g>',
+    top:'<g fill="#3E8A3A"><ellipse cx="34" cy="30" rx="3.6" ry="2.1" transform="rotate(-30 34 30)"/><ellipse cx="45" cy="24" rx="3.6" ry="2.1" transform="rotate(-14 45 24)"/><ellipse cx="60" cy="21" rx="3.6" ry="2.1"/><ellipse cx="75" cy="24" rx="3.6" ry="2.1" transform="rotate(14 75 24)"/><ellipse cx="86" cy="30" rx="3.6" ry="2.1" transform="rotate(30 86 30)"/></g>',
+    prop:'<g transform="translate(17 92)"><path d="M-9 -14 Q-16 0 -9 16 M9 -14 Q16 0 9 16" fill="none" stroke="#C8952A" stroke-width="3" stroke-linecap="round"/><path d="M-9 -14 Q0 -19 9 -14 M-9 16 Q0 21 9 16" fill="none" stroke="#8A5E22" stroke-width="2.4"/><g stroke="#F0E0A0" stroke-width="1.1"><line x1="-5" y1="-11" x2="-5" y2="13"/><line x1="0" y1="-12" x2="0" y2="14"/><line x1="5" y1="-11" x2="5" y2="13"/></g></g>',
+    garment:'<path d="M44 92 Q60 100 76 92" fill="none" stroke="#E8C24A" stroke-width="3.4"/>' });
+  // ---- Isis — throne/horns-disk crown, feathered wings, turquoise & gold ----
+  A.isis=fig({k:'isis',skin:'#D8A868',jaw:'#B8863E',g1:'#2E9AA6',g2:'#1A6670',
+    behind:'<g fill="#2E9AA6" opacity=".5"><path d="M24 58 Q6 66 2 92 Q22 78 30 66z"/><path d="M96 58 Q114 66 118 92 Q98 78 90 66z"/></g><g fill="#E8C24A" opacity=".55"><path d="M24 66 Q10 72 8 90 Q22 80 28 70z"/><path d="M96 66 Q110 72 112 90 Q98 80 92 70z"/></g>',
+    hair:'<path d="M28 46 Q26 20 60 18 Q94 20 92 46 L92 66 Q84 40 60 40 Q36 40 28 66 Z" fill="#1E2A34"/><g stroke="#2E9AA6" stroke-width="1.1" opacity=".7"><path d="M30 52 v14 M92 52 v14"/></g>',
+    top:'<g transform="translate(60 12)"><path d="M-10 6 Q-12 -8 -8 -14 Q-4 -8 -6 6z" fill="#E8C24A"/><path d="M10 6 Q12 -8 8 -14 Q4 -8 6 6z" fill="#E8C24A"/><circle cy="-2" r="6" fill="#E85A3A"/><circle cy="-2" r="6" fill="none" stroke="#F0CE52" stroke-width="1.4"/></g>',
+    spec:'<path d="M42 60 l-8 4 M78 60 l8 4" stroke="#2A2018" stroke-width="1.4" stroke-linecap="round"/>',
+    prop:'<g transform="translate(18 96)"><ellipse cx="0" cy="4" rx="4.4" ry="6.4" fill="none" stroke="#E8C24A" stroke-width="2.2"/><circle cx="0" cy="-4" r="4.4" fill="none" stroke="#E8C24A" stroke-width="2.2"/><line x1="0" y1="0" x2="0" y2="11" stroke="#E8C24A" stroke-width="2.2"/><line x1="-4" y1="8" x2="4" y2="8" stroke="#E8C24A" stroke-width="2.2"/></g>',
+    garment:'<path d="M42 92 Q60 101 78 92" stroke="#E8C24A" stroke-width="4" fill="none"/><path d="M41 99 Q60 108 79 99" stroke="#2E9AA6" stroke-width="4" fill="none"/>' });
+  // ---- Amaterasu — radiant sun halo, sacred mirror, white & red ----
+  A.amaterasu=fig({k:'amaterasu',skin:'#F6DCC0',jaw:'#E0BE9A',g1:'#F5F2EC',g2:'#E2D8CA',
+    backdrop:'<circle cx="60" cy="42" r="46" fill="#FFE08A" opacity=".34"/><g stroke="#FFB33A" stroke-width="2" opacity=".6" stroke-linecap="round"><line x1="60" y1="-4" x2="60" y2="8"/><line x1="16" y1="8" x2="24" y2="16"/><line x1="104" y1="8" x2="96" y2="16"/><line x1="2" y1="44" x2="12" y2="44"/><line x1="118" y1="44" x2="108" y2="44"/></g>',
+    behind:'<circle cx="60" cy="42" r="34" fill="#FFD86B" opacity=".5"/>',
+    hair:'<path d="M28 44 Q26 16 60 14 Q94 16 92 44 Q84 26 60 26 Q36 26 28 44 Z" fill="#2A2430"/><path d="M26 48 Q20 78 28 104 Q34 80 30 54z" fill="#221E2A"/><path d="M94 48 Q100 78 92 104 Q86 80 90 54z" fill="#221E2A"/>',
+    top:'<path d="M44 26 Q44 12 60 10 Q76 12 76 26 Q68 20 60 20 Q52 20 44 26 Z" fill="#E8484E" stroke="#C43A44" stroke-width="1"/><circle cx="60" cy="15" r="2.4" fill="#F0CE52"/>',
+    prop:'<g transform="translate(18 96)"><circle cx="0" cy="0" r="10" fill="#F0EEE6" stroke="#C8B27A" stroke-width="2"/><circle cx="0" cy="0" r="6" fill="#DCEAF0"/><circle cx="-2" cy="-2" r="2" fill="#fff" opacity=".9"/><path d="M0 10 l0 8" stroke="#C8B27A" stroke-width="2.4"/></g>',
+    garment:'<path d="M45 90 Q60 100 75 90" fill="none" stroke="#E8484E" stroke-width="3.4"/><g fill="#F0CE52"><circle cx="52" cy="96" r="2"/><circle cx="60" cy="99" r="2.2"/><circle cx="68" cy="96" r="2"/></g>' });
   window.SB_AVATAR_ART = Object.assign(window.SB_AVATAR_ART||{}, A);
 })();

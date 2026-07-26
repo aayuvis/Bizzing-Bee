@@ -2644,7 +2644,7 @@ function viewHome(){
         <div style="min-width:0;flex:1">
           ${(()=>{ const hasCard=c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar]&&typeof SB_AV_CARD==='function';
             const d=hasCard?SB_AV_CARD(c.avatar):null;
-            return d?`<div style="position:relative;background:var(--surface2,#f3eee3);border-radius:12px;border-bottom-left-radius:4px;padding:6px 10px;margin-bottom:6px;font:italic 600 11px/1.35 var(--body,sans-serif);color:var(--ink,var(--text))">“${esc(trunc(d.greeting,90))}”</div>`:'';
+            return d?`<div style="position:relative;background:var(--surface2,#f3eee3);border-radius:12px;border-bottom-left-radius:4px;padding:6px 10px;margin-bottom:6px;font:italic 600 11px/1.35 var(--body,sans-serif);color:var(--ink,var(--text))">“${esc(trunc((d.greeting||'').replace(/\{name\}/g, (c.name||'friend')),96))}”</div>`:'';
           })()}
           <div class="sb-cs">${greeting}</div>
           <div style="font-family:var(--display);font-weight:800;font-size:21px;line-height:1.1">${esc(c.name)}</div>
