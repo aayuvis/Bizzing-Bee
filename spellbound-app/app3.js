@@ -5261,6 +5261,9 @@ function gameCoverBG(gm){ const t=CONCEPT_TEX[gm.tex]||CONCEPT_TEX.stripes;
 /* Animated cover scene per game — each icon acts out its game (buzzer gets pressed, sword
    strikes shield, grid cells light up…). Parts share one timeline so the choreography syncs. */
 function gameArtSVG(type,size){ size=size||58;
+  // Arcade tiles get a character in the avatar house style; the line-art below still serves
+  // the game types that have no mascot yet.
+  if(window.SB_GAME_MASCOT){ const m=SB_GAME_MASCOT(type,Math.round(size*1.5)); if(m) return m; }
   const W=(inner)=>`<svg class="sb-ga" viewBox="0 0 48 48" width="${size}" height="${size}" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:block;overflow:visible;filter:drop-shadow(0 3px 6px rgba(0,0,0,.22))">${inner}</svg>`;
   const P=(d)=>`<path d="${d}"/>`;
   if(type==='beat') return W(
@@ -5982,6 +5985,22 @@ function ttDeck(th){ if(_ttCache[th]) return _ttCache[th];
   const deck=all.filter(q=>q.th===th).sort((a,b)=>(a.lv||3)-(b.lv||3));   // easy → hard
   _ttCache[th]=deck; return deck; }
 function ttThemes(){ return ((window.SB_TRIVIA||{}).themes)||[]; }
+/* Some questions only make sense with the options in front of you — "Which of these words…"
+   is unanswerable on a bare flashcard. Rather than reword them (which would only cover the
+   phrasings we happened to think of), show the choices on the front of exactly those cards.
+   Recall questions like "What does X mean?" stay option-free, because recognising an answer
+   is a weaker test than retrieving one. */
+const TT_NEEDS_OPTS=/\b(of these|of the following|of them|of the options|listed above|from the list|which one)\b/i;
+function ttOptions(q,i,col){
+  if(!q||!Array.isArray(q.c)||q.c.length<2||!TT_NEEDS_OPTS.test(q.q||'')) return '';
+  // rotate by the card index so the correct answer isn't parked in the same slot every time
+  const n=q.c.length; const r=i%n; const opts=q.c.slice(r).concat(q.c.slice(0,r));
+  const LET=['A','B','C','D','E'];
+  return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:7px;margin-top:14px;text-align:left">
+    ${opts.map((o,k)=>`<span style="display:flex;align-items:flex-start;gap:7px;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px;line-height:1.35;color:var(--text);font-weight:650">
+      <span style="flex-shrink:0;width:17px;height:17px;border-radius:5px;background:${col};color:#fff;font-size:10.5px;font-weight:800;display:grid;place-items:center;margin-top:1px">${LET[k]}</span>
+      <span style="min-width:0">${esc(o)}</span></span>`).join('')}
+  </div>`; }
 const TT_COL={animals:'#4F9E6A',bugs:'#E0922E',ocean:'#3D7DF0',space:'#7B52E0',body:'#E8458C',plants:'#3C8455',food:'#F0703C',sports:'#2A63D6',music:'#B14FC4',myth:'#9B59D0',world:'#13A892',history:'#C8901B',science:'#0E8A78',numbers:'#6A47F5',weather:'#36A3D9',machines:'#4A6B8A',art:'#DC5B7E',fest:'#D6453A',story:'#7C5CFF',words:'#C8791B',wroots:'#4F9E6A',wbreak:'#2A8FA8',wmeaning:'#7C5CFF',wstories:'#C8791B'};
 function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const ths=ttThemes();
   if(!ths.length) return `<div style="max-width:760px;margin:0 auto">${pageHead('Trivia Training','loading…','')}</div>`;
@@ -6021,6 +6040,7 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
         <div style="font-family:var(--display);font-weight:800;font-size:clamp(19px,4.4vw,25px);line-height:1.25;color:var(--text)">${esc(q.c[0])}</div>
         ${q.f?`<div style="margin-top:14px;text-align:left;background:var(--surface2);border-radius:13px;padding:12px 14px;font-size:13.5px;line-height:1.55;color:var(--text)"><span style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">💡 Did you know</span>${esc(q.f)}</div>`:''}</div>`
     : `<div style="font-family:var(--display);font-weight:800;font-size:clamp(18px,4.2vw,23px);line-height:1.35;color:var(--text)">${esc(q.q)}</div>
+       ${ttOptions(q,i,col)}
        <div style="font-size:12.5px;color:var(--muted);font-weight:700;margin-top:14px">Tap the card to reveal the answer</div>`;
   return `<div style="max-width:640px;margin:0 auto">
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">
