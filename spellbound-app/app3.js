@@ -3770,13 +3770,15 @@ function coachFlashCard(){
     </div>
     <div data-swipe="coach" class="coach-card" style="position:relative;max-width:340px;margin:0 auto;height:min(72vh,470px);border-radius:24px;overflow:hidden;touch-action:pan-y;-webkit-user-select:none;user-select:none">
       <div class="coach-glimmer"></div>
-      <div data-act="cardRevise" title="Mark for revision → next word" style="position:absolute;top:0;left:0;bottom:0;width:50%;z-index:1;cursor:pointer"></div>
-      <div data-act="cardNext" title="Next word" style="position:absolute;top:0;right:0;bottom:0;width:50%;z-index:1;cursor:pointer"></div>
-      <button data-act="toggleCardView" title="Back to Learn" aria-label="Back to Learn" style="position:absolute;top:12px;left:12px;z-index:4;width:38px;height:38px;border-radius:11px;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${cardsSVG(20)}</button>
-      ${i>0?`<button data-act="cardBack" title="Previous card" aria-label="Previous card" style="position:absolute;top:12px;right:12px;z-index:4;width:34px;height:34px;border-radius:10px;background:var(--surface2);color:var(--muted);border:1px solid var(--line);display:grid;place-items:center;font-weight:900;font-size:15px">↺</button>`:''}
-      <div style="position:absolute;left:0;top:0;bottom:26px;width:34px;z-index:3;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:linear-gradient(90deg,color-mix(in srgb,var(--treasure,#F0B429) 26%,transparent),transparent);color:${revCol}"><span style="font-size:15px;font-weight:900">‹</span><span style="font-size:9px;font-weight:800;writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.08em">REVISE</span></div>
-      <div style="position:absolute;right:0;top:0;bottom:26px;width:34px;z-index:3;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:linear-gradient(270deg,color-mix(in srgb,var(--good) 22%,transparent),transparent);color:${okCol}"><span style="font-size:15px;font-weight:900">›</span><span style="font-size:9px;font-weight:800;writing-mode:vertical-rl;letter-spacing:.08em">NEXT</span></div>
-      <div style="position:relative;z-index:2;pointer-events:none;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 34px 30px;overflow:auto">
+      <!-- One d-pad everywhere in the app: ← previous · ↑ deck · ↓ revise · → next.
+           Each edge is both a tap target and a label, and the arrow keys and swipes match. -->
+      <div data-act="cardBack" title="Previous card" style="position:absolute;top:34px;left:0;bottom:34px;width:50%;z-index:1;cursor:${i>0?'pointer':'default'}"></div>
+      <div data-act="cardNext" title="Next word" style="position:absolute;top:34px;right:0;bottom:34px;width:50%;z-index:1;cursor:pointer"></div>
+      <button data-act="cardBack" ${i>0?'':'disabled'} title="Previous card (← key)" aria-label="Previous card" style="position:absolute;left:0;top:34px;bottom:34px;width:34px;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border:0;background:linear-gradient(90deg,color-mix(in srgb,var(--accent) ${i>0?'22':'8'}%,transparent),transparent);color:${i>0?'var(--accent)':'var(--muted)'};${i>0?'':'opacity:.5'}"><span style="font-size:15px;font-weight:900">‹</span><span style="font-size:9px;font-weight:800;writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.08em">PREVIOUS</span></button>
+      <button data-act="cardNext" title="Next word (→ key)" aria-label="Next word" style="position:absolute;right:0;top:34px;bottom:34px;width:34px;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border:0;background:linear-gradient(270deg,color-mix(in srgb,var(--good) 22%,transparent),transparent);color:${okCol}"><span style="font-size:15px;font-weight:900">›</span><span style="font-size:9px;font-weight:800;writing-mode:vertical-rl;letter-spacing:.08em">NEXT</span></button>
+      <button data-act="toggleCardView" title="Back to the deck (↑ key)" aria-label="Back to the deck" style="position:absolute;left:0;right:0;top:0;height:34px;z-index:4;display:flex;align-items:center;justify-content:center;gap:7px;border:0;background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 20%,transparent),transparent);color:var(--accent);font-size:9.5px;font-weight:800;letter-spacing:.09em">↑ DECK</button>
+      <button data-act="cardRevise" title="Mark for revision (↓ key)" aria-label="Mark for revision" style="position:absolute;left:0;right:0;bottom:0;height:34px;z-index:4;display:flex;align-items:center;justify-content:center;gap:7px;border:0;background:linear-gradient(0deg,color-mix(in srgb,var(--treasure,#F0B429) 26%,transparent),transparent);color:${revCol};font-size:9.5px;font-weight:800;letter-spacing:.09em">↓ ${onRev?'ON REVISE':'REVISE'}</button>
+      <div style="position:relative;z-index:2;pointer-events:none;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:44px 40px 42px;overflow:auto">
         <div style="font-family:var(--display);font-weight:800;font-size:clamp(23px,7vw,33px);line-height:1.1;overflow-wrap:anywhere">${esc(w.w)}</div>
         ${w.sy&&w.sy.toLowerCase()!==(w.w||'').toLowerCase()?`<div style="font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.04em;margin-top:4px">${esc(w.sy)}</div>`:''}
         <div style="display:flex;gap:10px;justify-content:center;margin:13px 0 4px;pointer-events:auto">
@@ -3788,7 +3790,6 @@ function coachFlashCard(){
         ${w.h?`<div style="display:flex;align-items:flex-start;gap:7px;font-size:12.5px;color:var(--text);line-height:1.5;margin-top:10px;background:var(--chip);border-radius:10px;padding:8px 11px"><span style="color:var(--accent);margin-top:1px;flex-shrink:0">${iconSVG('bulb',14)}</span><span>${esc(w.h)}</span></div>`:''}
         <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:12px">${w.p?chip('/ '+esc(w.p)+' /'):''}${w.o?chip(esc(w.o)):''}${w.ps?chip(esc(w.ps)):''}</div>
       </div>
-      <div style="position:absolute;left:0;right:0;bottom:0;z-index:3;pointer-events:none;display:flex;justify-content:space-between;padding:8px 40px;font-size:10.5px;font-weight:800"><span style="color:${revCol}">‹ ← key · Revise</span><span style="color:${okCol}">Next · → key ›</span></div>
     </div>`;
 }
 function viewTrain(){
@@ -6193,7 +6194,8 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
        <div style="font-size:12.5px;color:var(--muted);font-weight:700;margin-top:14px">Tap the card to reveal the answer</div>`;
   const rec=ttRec(c, ttKey(q)); const cst=ttChapterStats(c, t.th);
   const stateChips=TT_STATES.map(([k,lab,scol,em])=>{ const on=rec.s===k;
-    return `<button data-act="ttMark" data-arg="${k}" title="Mark this card as ${lab.toLowerCase()}" style="flex:1;min-width:96px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:11px;font-weight:800;font-size:12.5px;border:1.5px solid ${on?scol:'var(--line)'};background:${on?scol:'var(--surface2)'};color:${on?'#fff':'var(--muted)'}">${em} ${lab}${on?' ✓':''}</button>`; }).join('');
+    return `<button data-act="ttMark" data-arg="${k}" title="Mark this card as ${lab.toLowerCase()}" style="flex:1;min-width:88px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:11px;font-weight:800;font-size:12.5px;border:1.5px solid ${on?scol:'var(--line)'};background:${on?scol:'var(--surface2)'};color:${on?'#fff':'var(--muted)'}">${em} ${lab}${on?' ✓':''}</button>`; }).join('')
+    +`<button data-act="ttRevise" title="Add this card to your revision pile" style="flex:1;min-width:88px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:11px;font-weight:800;font-size:12.5px;border:1.5px solid ${rec.r?'var(--treasure,#F0B429)':'var(--line)'};background:${rec.r?'var(--treasure,#F0B429)':'var(--surface2)'};color:${rec.r?'#5a3d00':'var(--muted)'}">⚑ Revise${rec.r?' ✓':''}</button>`;
   return `<div style="max-width:640px;margin:0 auto">
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
       <button data-act="ttBack" title="Back to the deck of chapters" style="color:var(--muted);font-weight:800;font-size:13px">← Chapters</button>
@@ -6219,7 +6221,7 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
     <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
       <button data-act="ttNav" data-arg="-1" title="Previous card (←)" style="padding:12px 16px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:15px">← Back</button>
       <button data-act="ttBack" title="Back into the deck of chapters (↑)" style="padding:12px 15px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">↑ Deck</button>
-      <button data-act="ttRevise" title="Add to your revision pile (↓)" style="padding:12px 15px;border-radius:12px;font-weight:800;font-size:14px;border:1.5px solid ${rec.r?'var(--treasure,#F0B429)':'var(--line)'};background:${rec.r?'var(--treasure-tint,#FFF3D6)':'var(--surface2)'};color:${rec.r?'var(--treasure-deep,#8A5B00)':'var(--muted)'}">↓ ${rec.r?'Revising':'Revise'}</button>
+      <button data-act="ttFlip" title="Reveal the answer (↓ or space)" style="padding:12px 15px;border-radius:12px;font-weight:800;font-size:14px;border:1.5px solid ${t.flip?col:'var(--line)'};background:${t.flip?'color-mix(in srgb,'+col+' 14%,var(--surface2))':'var(--surface2)'};color:${t.flip?col:'var(--muted)'}">↓ ${t.flip?'Hide':'Reveal'}</button>
       <button data-act="ttSay" title="Read the question aloud" style="padding:12px 15px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800">${iconSVG('volume',17)}</button>
       <button data-act="ttShuffle" title="Jump to a random card" style="padding:12px 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">🔀</button>
       <button data-act="ttNav" data-arg="1" title="Next card (→)" style="flex:1;min-width:96px;padding:12px 17px;border-radius:12px;background:${col};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next →</button></div>
@@ -6341,19 +6343,41 @@ root.addEventListener('click', e=>{ const el=e.target.closest('[data-act]'); if(
 root.addEventListener('input', e=>{ const el=e.target.closest('[data-inp]'); if(!el) return; callAct(el.getAttribute('data-inp'), el.value); });
 root.addEventListener('change', e=>{ const el=e.target.closest('[data-chg]'); if(!el) return; callAct(el.getAttribute('data-chg'), el.value); });
 root.addEventListener('keydown', e=>{ const el=e.target.closest('[data-key]'); if(!el) return; const fn=app[el.getAttribute('data-key')]; if(fn) fn(e); });
-/* Word Coach card view: swipe OR arrow keys. Right = next word (cardNext), left = mark revise
-   (cardRevise). preventDefault on a handled swipe suppresses the ghost click. */
+/* Word Coach card view: swipe OR arrow keys, both on the app-wide d-pad —
+   ← previous · ↑ deck · ↓ revise · → next. preventDefault on a handled swipe suppresses
+   the ghost click. */
 (function(){ let sx=0,sy=0,st=0,mode=null;
   root.addEventListener('touchstart',e=>{ const t=e.target.closest('[data-swipe]'); mode=t?t.getAttribute('data-swipe'):null; if(!mode) return; const p=e.changedTouches[0]; sx=p.clientX; sy=p.clientY; st=Date.now(); },{passive:true});
   root.addEventListener('touchend',e=>{ if(mode!=='coach') return; const p=e.changedTouches[0]; const dx=p.clientX-sx, dy=p.clientY-sy; mode=null;
-    if(Date.now()-st>700) return; if(Math.abs(dx)<48 || Math.abs(dx)<Math.abs(dy)*1.3) return;
-    e.preventDefault(); if(dx>0) app.cardNext(); else app.cardRevise(); },{passive:false}); })();
-window.addEventListener('keydown',e=>{ try{ if(!state.coachCardView||state.cardDone||state.pinDlg||state.settingsOpen) return;
+    if(Date.now()-st>700) return;
+    if(Math.abs(dx)>=48 && Math.abs(dx)>Math.abs(dy)*1.3){ e.preventDefault(); if(dx>0) app.cardNext(); else app.cardBack(); return; }
+    if(Math.abs(dy)>=54 && Math.abs(dy)>Math.abs(dx)*1.3){ e.preventDefault(); if(dy>0) app.cardRevise(); else app.toggleCardView(); } },{passive:false}); })();
+window.addEventListener('keydown',e=>{ try{ if(!state.coachCardView||state.cardDone||state.pinDlg||state.settingsOpen||state.showTiers) return;
+  if(e.metaKey||e.ctrlKey||e.altKey) return;
   const t=e.target; if(t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)) return;
-  if(e.key==='ArrowRight'){ e.preventDefault(); app.cardNext(); } else if(e.key==='ArrowLeft'){ e.preventDefault(); app.cardRevise(); } }catch(err){} });
+  const k=e.key;
+  if(k==='ArrowRight'){ e.preventDefault(); app.cardNext(); }
+  else if(k==='ArrowLeft'){ e.preventDefault(); app.cardBack(); }
+  else if(k==='ArrowUp'){ e.preventDefault(); app.toggleCardView(); }
+  else if(k==='ArrowDown'){ e.preventDefault(); app.cardRevise(); } }catch(err){} });
+/* The other two card decks — Vocabulary and Idioms & Similes — take the same d-pad:
+   ← previous · ↑ back to the deck · → next, space/enter to flip. (Neither has a revision
+   pile of its own, so ↓ is left alone there.) */
+window.addEventListener('keydown',e=>{ try{
+  if(state.pinDlg||state.settingsOpen||state.showTiers) return;
+  if(e.metaKey||e.ctrlKey||e.altKey) return;
+  const t=e.target; if(t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)) return;
+  const k=e.key; const inVoc=state.nav==='vocab'&&state.vocDeck; const inFig=state.nav==='figurative'&&state.figDeck;
+  if(!inVoc&&!inFig) return;
+  const nav=inVoc?app.vocNav:app.figNav, back=inVoc?app.vocBack:app.figBackToDecks, flip=inVoc?app.vocFlip:app.figFlip;
+  if(k==='ArrowLeft'){ e.preventDefault(); nav(-1); }
+  else if(k==='ArrowRight'){ e.preventDefault(); nav(1); }
+  else if(k==='ArrowUp'){ e.preventDefault(); back(); }
+  else if(k===' '||k==='Enter'){ e.preventDefault(); flip(); }
+}catch(err){} });
 /* Quotes deck: ← → to move between quotes */
-/* Trivia Training keys mirror the on-screen d-pad exactly: ← previous, ↑ deck, ↓ revise,
-   → next, space/enter flips. (Touch and keyboard both, always.) */
+/* Trivia Training keys mirror the on-screen d-pad exactly: ← previous, ↑ deck,
+   ↓ reveal the answer, → next. Space/enter also reveals. (Touch and keyboard both, always.) */
 window.addEventListener('keydown',e=>{ try{
   if(state.nav!=='trivtrain'||!state.tt||state.pinDlg||state.settingsOpen||state.showTiers) return;
   if(e.metaKey||e.ctrlKey||e.altKey) return;
@@ -6361,7 +6385,7 @@ window.addEventListener('keydown',e=>{ try{
   if(k==='ArrowLeft'){ e.preventDefault(); app.ttNav(-1); }
   else if(k==='ArrowRight'){ e.preventDefault(); app.ttNav(1); }
   else if(k==='ArrowUp'){ e.preventDefault(); app.ttBack(); }
-  else if(k==='ArrowDown'){ e.preventDefault(); app.ttRevise(); }
+  else if(k==='ArrowDown'){ e.preventDefault(); app.ttFlip(); }
   else if(k===' '||k==='Enter'){ e.preventDefault(); app.ttFlip(); }
 }catch(_){} });
 window.addEventListener('keydown',e=>{ try{ if(state.nav!=='quotes'||state.pinDlg||state.settingsOpen) return;
