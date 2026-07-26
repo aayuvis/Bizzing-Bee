@@ -339,3 +339,27 @@
 .sg-diff.cleared{border-color:#7ED9A6}
 .sg-diff.cleared .sg-diff-tag{background:#E4F7EC;color:#1F8A52}
 .sg-diff-back{margin:18px auto 4px;display:block;background:none;border:0;color:var(--muted,#7A6E5C);font-weight:700;font-size:13px;cursor:pointer}
+
+/* ---- The saga is a fixed-light stage ----------------------------------------------------
+   Every panel, plate, hex and card in Bizzy & the Great Unspelling is drawn on parchment and
+   stays parchment in Dusk — the artwork does not have a night variant. But the ink was still
+   following the app palette, so in Dusk it flipped to white and vanished on its own light
+   background. Re-pin the light tokens on the overlay and they cascade to everything inside:
+   elements that name var(--text)/var(--ink) get dark ink back, and bare <b>/<i>/<p> inherit
+   the dark `color` set here instead of the white one from <body>. */
+[data-mode="dusk"] .sg-overlay{
+  --tint:#F0EDF8; --tint-deep:#E4E0F0; --paper:#FFFFFF; --line:#E9E5F0;
+  --ink:#241E33; --muted:#6A6478; --text:#241E33;
+  --bg:#FBF7EC; --bg1:#F0EDF8; --bg2:#FFFFFF; --bg3:#E4E0F0;
+  --panel:#FFFFFF; --honey:#F0B429; --honey-d:#B8860B;
+  --surface:rgb(36 30 51 / .04); --surface2:rgb(36 30 51 / .07);
+  --treasure-tint:#FFF3D6; --treasure-deep:#8A5B00;
+  --mastered-tint:#E4F3EA; --fix-tint:#FBE7E7;
+  color:#241E33;
+}
+/* the word card is portalled to <body>, so it needs the same pinning on its own */
+[data-mode="dusk"] #sg-card{
+  --paper:#FFFFFF; --panel:#FFFFFF; --line:#E9E5F0; --ink:#241E33; --muted:#6A6478; --text:#241E33;
+  --surface2:rgb(36 30 51 / .07); --honey:#F0B429;
+  color:#241E33;
+}
