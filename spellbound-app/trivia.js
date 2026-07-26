@@ -12,7 +12,7 @@
     { n: 4, label: 'Whiz',     sub: 'age 11',   e: '⚡' },
     { n: 5, label: 'Champion', sub: 'age 12+',  e: '🏆' },
   ];
-  const THC = { animals:'#4F9E6A', bugs:'#E0922E', ocean:'#3D7DF0', space:'#7B52E0', body:'#E8458C', plants:'#3C8455', food:'#F0703C', sports:'#2A63D6', music:'#B14FC4', myth:'#9B59D0', world:'#13A892', history:'#C8901B', science:'#0E8A78', numbers:'#6A47F5', weather:'#36A3D9', machines:'#4A6B8A', art:'#DC5B7E', fest:'#D6453A', story:'#7C5CFF', words:'#C8791B', worigin:'#2A8FA8', wroots:'#4F9E6A', wmeaning:'#7C5CFF', wstories:'#C8791B' };
+  const THC = { animals:'#4F9E6A', bugs:'#E0922E', ocean:'#3D7DF0', space:'#7B52E0', body:'#E8458C', plants:'#3C8455', food:'#F0703C', sports:'#2A63D6', music:'#B14FC4', myth:'#9B59D0', world:'#13A892', history:'#C8901B', science:'#0E8A78', numbers:'#6A47F5', weather:'#36A3D9', machines:'#4A6B8A', art:'#DC5B7E', fest:'#D6453A', story:'#7C5CFF', words:'#C8791B', wroots:'#4F9E6A', wbreak:'#2A8FA8', wmeaning:'#7C5CFF', wstories:'#C8791B' };
   const esc3 = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const escA3 = (s) => esc3(s).replace(/"/g, '&quot;');
   const themeOf = (id) => T().themes.find(t => t.id === id) || { id, label: id, e: '🐝' };
@@ -67,7 +67,10 @@
 
     /* ---------- format starts ---------- */
     // pull from every selected theme (or all themes when 'mix')
-    _pool(v, n) { const ths = (v.ths && v.ths.length) ? v.ths : T().themes.map(t => t.id);
+    _pool(v, n) { const live = T().themes.map(t => t.id);
+      // a saved selection can name a theme that no longer exists — drop it rather than draw nothing
+      if (v.ths && v.ths.length) { v.ths = v.ths.filter(id => live.indexOf(id) >= 0); if (!v.ths.length) v.th = 'mix'; }
+      const ths = (v.ths && v.ths.length) ? v.ths : live;
       let all = []; ths.forEach(th => { all = all.concat(drawQs(th, v.lv, Math.ceil(n / ths.length) + 6)); });
       return sample(all, n); },
     startQuiz() { const v = state.trv; const qs = STV._pool(v, 10);

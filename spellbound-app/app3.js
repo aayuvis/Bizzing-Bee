@@ -499,6 +499,12 @@ function wohPool(){ if(_wohPool) return _wohPool; const src=(window.SB_DATA&&SB_
 function wordOfHour(){ const pool=wohPool(); if(!pool.length) return null;
   const hr=Math.floor(Date.now()/3600000); // hours since epoch — changes every hour
   let h=((hr*2654435761)>>>0)%pool.length; return pool[h]||pool[0]; }
+// Quote of the hour — same deterministic hourly rotation, a different mixing constant so the
+// quote and the word never move in lockstep. Returns the quote plus its index into SB_QUOTES.
+function quoteOfHour(){ const all=(window.SB_QUOTES||[]); if(!all.length) return null;
+  const hr=Math.floor(Date.now()/3600000);
+  const i=((hr*40503+1013904223)>>>0)%all.length; const q=all[i];
+  return q?{q, i}:null; }
 function viewWordCardPop(){ const w=state.wordCard; if(!w) return '';
   const pr=pronFor(w.w)||{p:w.p||'',sy:w.sy||'',ps:w.ps||'',o:w.o||''};
   const OLAB={Latin:'Latin',Greek:'Greek',French:'French',Spanish:'Spanish',Italian:'Italian',German:'German',Arabic:'Arabic',Japanese:'Japanese','Old English':'Old English',Norse:'Old Norse',Hindi:'Hindi/Sanskrit'};
@@ -747,6 +753,8 @@ const app = {
   // ----- Vocabulary study (NSF vocabulary-bee style) -----
   openVocab:()=>{ if(!gateFeature('trainTools','Vocab practice')) return; set({nav:'vocab', screen:'app', vocDeck:null, conceptSel:null}); },
   // ---- Quotes: a swipeable deck of kid-friendly quotations from famous people ----
+  // Quote of the hour on Home → the Quotes section, landing on that exact quote.
+  openQuoteHour:(i)=>{ const n=parseInt(i,10); state.qCat=null; if(n>=0) state.qi=n; app.openQuotes(); },
   openQuotes:()=>{ if(!gateFeature('trainTools','Quotes & poems')) return; set({nav:'quotes', screen:'app', conceptSel:null, qi:(state.qi||0)}); markQuoteSeen(); setTimeout(()=>{ if(state.readAloud) app.qSpeak(); },220); },
   qNav:(dir)=>{ const L=quoteList(); if(!L.length) return; let i=(state.qi||0)+(+dir); if(i<0)i=L.length-1; if(i>=L.length)i=0; set({qi:i}); markQuoteSeen(); if(state.readAloud) app.qSpeak(); },
   qShuffle:()=>{ const L=quoteList(); if(!L.length) return; let i=state.qi||0; if(L.length>1){ while(i===(state.qi||0)) i=Math.floor(Math.random()*L.length); } set({qi:i}); markQuoteSeen(); if(state.readAloud) app.qSpeak(); },
@@ -1726,7 +1734,7 @@ function loreUnlocked(){ const n=loreCount(); return lessonsAll().slice(0,Math.m
 // Tip of the day — pithy, rotating daily, banded to the speller's proven Bee Band:
 // Bands 1–2 draw only from the Spelling Bee Basics concepts + gentle habit tips;
 // 3–5 widen to easy/medium concepts and practice tips; 6+ open the full library + lore.
-function tipOfDay(kid){ const pool=[]; let band=2; try{ band=beeBand(active()).band; }catch(e){} if(kid) band=Math.min(band,2);
+function tipOfDay(kid,asCard){ const pool=[]; let band=2; try{ band=beeBand(active()).band; }catch(e){} if(kid) band=Math.min(band,2);
   try{ const chs=(state.conceptData||(window.SB_CONCEPTS&&SB_CONCEPTS.chapters)||[]);
     const basics=chs.filter(ch=>ch.category==='Spelling Bee Basics');
     const rest=band<=2?[]:chs.filter(ch=>ch.category!=='Spelling Bee Basics'&&(band>5||ch.difficulty!=='hard'));
@@ -1748,6 +1756,15 @@ function tipOfDay(kid){ const pool=[]; let band=2; try{ band=beeBand(active()).b
   const face=(function(){ try{ return (WORLD_HERO[state.theme]||WORLD_HERO.spellbound).face; }catch(e){ return 'var(--display)'; } })();
   const canFwd=step<MAXFWD;
   const fwd=`<button data-act="nextTip" ${canFwd?'':'disabled'} title="${canFwd?'Next tip ('+(MAXFWD-step)+' left today)':'That\u2019s all 10 tips for today \u2014 back tomorrow!'}" aria-label="Next tip" style="flex-shrink:0;align-self:center;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:16px;box-shadow:var(--edge);border:0;${canFwd?'background:var(--treasure,#F0B429);color:#5a3d00;cursor:pointer':'background:var(--surface2);color:var(--muted);opacity:.55'}">\u2192</button>`;
+  // Card form for the home grid: same content and same forward nav, sized to sit beside the other tiles.
+  if(asCard) return `<div class="sb-card" style="display:flex;align-items:center;gap:11px;min-height:128px;padding:14px;border-left:4px solid var(--treasure,#F0B429)">
+    <span style="min-width:0;flex:1">
+      <span style="display:flex;align-items:center;gap:8px;font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:4px">Today\u2019s bee tip${step>0?`<span style="letter-spacing:0;text-transform:none;font-weight:700;color:var(--muted)">\u00b7 ${step+1}/${MAXFWD+1}</span>`:''}</span>
+      <span style="display:block;font-family:${face};font-size:13.5px;line-height:1.45;font-weight:650;color:var(--ink,var(--text))">${esc(trunc(t,132))}</span>
+    </span>
+    <span aria-hidden="true" style="flex-shrink:0;width:36px;height:42px;align-self:flex-end">${mascotSVG('happy')}</span>
+    ${fwd}
+  </div>`;
   return `<div style="position:relative;display:flex;align-items:center;gap:12px;background:var(--paper,var(--bg2));border:1px solid var(--line);border-left:4px solid var(--treasure,#F0B429);border-radius:14px;padding:14px 16px;margin-bottom:14px">
     <span style="min-width:0;flex:1"><span style="display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:3px">${kid?'Today\u2019s bee tip':'Tip of the day'}${step>0?`<span style="letter-spacing:0;text-transform:none;font-weight:700;color:var(--muted)">\u00b7 ${step+1}/${MAXFWD+1}</span>`:''}</span>
     <span style="display:block;font-family:${face};font-size:15px;line-height:1.5;font-weight:650;color:var(--ink,var(--text))">${esc(t)}</span></span>
@@ -2231,12 +2248,12 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
   const learn=hub('Learn','learn','#7C5CFF','Understand words deeply',
     row('concepts','setNav','concepts','Spelling basics, roots & patterns · '+fmtDone)+
     row('journeys','openJourneys',null,'The history & geography of words'+(state.premium?'':' · Premium'))+
-    row('builder','openBuilder',null,'Build a custom word list in five taps'));
+    row('builder','openBuilder',null,'Build a custom word list in five taps')+
+    row('vocab','openVocab',null,'Word → meaning, vocabulary-bee style'));
   // ---- TRAIN ----  sharpen your skills
   const train=hub('Train','train','#13A892','Sharpen your skills',
     row('figurative','setNav','figurative','2,350 idioms & similes, card by card')+
     row('typing','openTyping',null,'Touch-type, then race the 60-second test')+
-    row('vocab','openVocab',null,'Word → meaning, vocabulary-bee style')+
     row('quotes','openQuotes',null,(qN?fmtN(qN)+' ':'')+'kid-friendly quotes from famous people')+
     row('trivtrain','openTrivTrain',null,'Trivia training — '+(tN?fmtN(tN)+' ':'')+'cards by chapter, then play the Arcade'));
   // ---- REVISE ----  fix what trips you up
@@ -2368,7 +2385,7 @@ function viewApp(){
   const S=state;
   const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,quotes:1,typing:1,builder:1,adv:1,traps:1,revisions:1,trivtrain:1};
   const NAV_ART={home:'home',coach:'practice',explore:'explore',games:'arcade',shop:'store',progress:'progress',collection:'collection'};
-  const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['explore','Supercharge','compass'],['games','Arcade','joystick'],['shop','Store','cart'],['progress','Progress','chart'],['collection','Collection','crown']].map(([key,label,ic])=>{
+  const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['explore','Supercharge','compass'],['games','Arcade','joystick'],['progress','Progress','chart'],['collection','Collection','crown'],['shop','Store','cart']].map(([key,label,ic])=>{
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:S.nav===key;
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
     const art=NAV_ART[key];
@@ -2472,8 +2489,19 @@ function viewApp(){
       <div style="max-width:1080px;margin:0 auto;padding:11px clamp(9px,3.2vw,32px);display:flex;align-items:center;gap:8px">
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
         <button data-act="goHome" title="Home" aria-label="Bizzing Bee — Home" style="display:flex;align-items:center;gap:9px;margin-right:auto;background:none;border:0;cursor:pointer"><div style="width:34px;height:38px;flex-shrink:0">${mascotSVG('happy')}</div><span class="sb-brand" style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i> Bee</span></button>
+        ${(()=>{ const bb=beeBand(active());
+          // Bee Band lives in the header as a pill: prompts calibration, then shows the band itself.
+          return `<button data-act="${bb.calibrating?'startLevelTest':'setNav'}" data-arg="progress" title="${bb.calibrating?'A 3-minute placement quest sets your words, games and tips exactly to you':'Bee Band '+bb.band+' · '+bb.tier+' — open Progress for the full ladder'}" aria-label="${bb.calibrating?'Find your Bee Band':'Bee Band '+bb.band}" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:color-mix(in srgb,var(--accent) 13%,var(--chip));border:1px solid color-mix(in srgb,var(--accent) 38%,var(--line));color:var(--accent);font-weight:800;font-size:13px;flex-shrink:0;max-width:none">
+            <span style="display:inline-flex;line-height:0;flex-shrink:0">${iconSVG('target',15)}</span>
+            <span class="sb-band-lbl" style="white-space:nowrap">${bb.calibrating?'Find your Bee Band':('Bee Band '+bb.band)}</span>
+            <span class="sb-band-mini" style="display:none;font-weight:900">${bb.calibrating?'?':bb.band}</span>
+          </button>`; })()}
         <button data-act="surpriseMe" class="sb-mob-hide" title="Surprise me — jump into a random learning resource" aria-label="Surprise me" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--chip);border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));color:var(--accent);font-weight:800;font-size:13px">🎲<span class="sb-search-lbl">Surprise me</span></button>
-        <button data-act="openFinder" class="sb-mob-hide" title="Word Finder — search 129,000 words, hear them, and add them to a list" aria-label="Search words" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:13px">${iconSVG('search',15)}<span class="sb-search-lbl">Search</span></button><button data-act="openEvo" class="sb-mob-hide" title="Karma — your practice record. One right word = 1 Karma; it grows your evolution and is never spent." style="display:inline-flex;align-items:center;gap:4px;padding:6px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:900;font-size:13px">✦ ${fmtN(getList(active(),activeListKey()).xp||0)}</button><button data-act="openShop" title="Your coins — tap to open the Store" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(active().coins||0,14)}</button>
+        <button data-act="openFinder" class="sb-mob-hide" title="Word Finder — search 129,000 words, hear them, and add them to a list" aria-label="Search words" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:13px">${iconSVG('search',15)}<span class="sb-search-lbl">Search</span></button>${(()=>{ const _xp=getList(active(),activeListKey()).xp||0; const _lf=levelFromXp(_xp);
+          return `<button data-act="openEvo" class="sb-mob-hide" title="Karma — your practice record. One right word = 1 Karma; it grows your evolution and is never spent." style="display:inline-flex;flex-direction:column;align-items:center;gap:0;padding:4px 12px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:900;font-size:13px;line-height:1.1">
+          <span>✦ ${fmtN(_xp)}</span>
+          <span style="font-size:9.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;opacity:.72">Karma L${_lf.level}</span>
+        </button>`; })()}<button data-act="openShop" title="Your coins — tap to open the Store" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(active().coins||0,14)}</button>
         <button data-act="cycleMode" aria-label="Switch look (Light / White / Dusk)" title="Light / White / Dusk" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);font-size:16px;line-height:1" class="sb-mob-hide">${S.mode==='light'?'☀':S.mode==='white'?'◻':'☾'}</button>
         <button data-act="goSettings" aria-label="Settings" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text)">${iconSVG('gear',17)}</button>
       </div>
@@ -2633,75 +2661,64 @@ function viewHome(){
   return `<div>
     ${(()=>{ const lp=getList(c,aKey); const lf=levelFromXp(lp.xp||0); const xpToNext=Math.max(0,(lf.need||1)-(lf.into||0));
       const evoPct=Math.min(100,Math.round((lf.into||0)/(lf.need||1)*100));
-      const bb=beeBand(c);
-      const bandBanner=`<button data-act="${bb.calibrating?'startLevelTest':'setNav'}" data-arg="progress" title="${bb.calibrating?'A 3-minute placement quest':'Open Progress for the full band ladder'}" class="sb-card" style="width:100%;display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:linear-gradient(100deg,color-mix(in srgb,var(--action,var(--accent)) 14%,var(--paper,var(--bg2))),var(--paper,var(--bg2)) 62%);border-color:color-mix(in srgb,var(--action,var(--accent)) 35%,var(--line));border-radius:var(--r-lg,16px);padding:11px 16px;cursor:pointer;min-height:64px">
-        <span style="display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--action,var(--accent));color:var(--action-ink,#fff);flex-shrink:0">${iconSVG('target',22)}</span>
-        <span style="min-width:0;flex:1">
-          <span class="sb-ct" style="display:block">${bb.calibrating?'Find your Bee Band':('Bee Band '+bb.band+' · '+bb.tier)}</span>
-          <span class="sb-cn sb-bandsub" style="display:block">${bb.calibrating?'A 3-minute quest sets your words, games and tips exactly to you.':'Skill — what you’re ready to spell, proven by your words. Games and tips follow it.'}</span>
-        </span>
-        ${bb.calibrating?'':`<span style="flex-shrink:0;display:flex;gap:4px;align-items:center" aria-hidden="true">${[1,2,3,4,5,6,7,8,9].map(n=>`<span style="width:${n===bb.band?'11px':'7px'};height:${n===bb.band?'11px':'7px'};border-radius:99px;background:${n<=bb.band?'var(--action,var(--accent))':'var(--tint-deep,var(--surface2))'};${n===bb.band?'box-shadow:0 0 0 3px color-mix(in srgb,var(--action,var(--accent)) 25%,transparent);':''}"></span>`).join('')}</span>`}
-        <span class="sb-cl">${bb.calibrating?'Start →':'details →'}</span>
-      </button>`;
       const woh=(typeof wordOfHour==='function')?wordOfHour():null; const wohPr=woh?pronFor(woh.w):null;
-      const wohTile=woh?`<button data-act="openWordCard" title="Tap for the full word card" class="sb-card" style="width:100%;display:flex;align-items:center;gap:12px;background:linear-gradient(100deg,color-mix(in srgb,var(--treasure,#F0B429) 18%,var(--paper,var(--bg2))),var(--paper,var(--bg2)) 62%);border-color:color-mix(in srgb,var(--treasure,#F0B429) 42%,var(--line));border-radius:var(--r-lg,16px);padding:11px 16px;cursor:pointer;text-align:left;min-height:64px">
-        <span style="display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--treasure,#F0B429);color:#2B2117;flex-shrink:0;font-size:19px">⏳</span>
+      const wohTile=woh?`<button data-act="openWordCard" title="Tap for the full word card" class="sb-card" style="width:100%;display:flex;align-items:center;gap:13px;background:linear-gradient(100deg,color-mix(in srgb,var(--treasure,#F0B429) 18%,var(--paper,var(--bg2))),var(--paper,var(--bg2)) 62%);border-color:color-mix(in srgb,var(--treasure,#F0B429) 42%,var(--line));border-radius:var(--r-lg,16px);padding:14px 16px;cursor:pointer;text-align:left;min-height:132px">
+        <span style="display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--treasure,#F0B429);color:#2B2117;flex-shrink:0;font-size:20px">⏳</span>
         <span style="min-width:0;flex:1">
           <span class="sb-cn" style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">Word of the hour</span>
-          <span class="sb-ct" style="display:block;overflow-wrap:anywhere">${esc(woh.w)}</span>
-          ${(wohPr&&wohPr.p)?`<span class="sb-cn" style="display:block;font-family:var(--mono);color:var(--muted)">/ ${esc(wohPr.p)} /</span>`:''}
+          <span style="display:block;font-family:var(--display);font-weight:800;font-size:20px;line-height:1.12;overflow-wrap:anywhere;margin:2px 0 1px;color:var(--ink,var(--text))">${esc(woh.w)}</span>
+          ${(wohPr&&wohPr.p)?`<span style="display:block;font-family:var(--mono);font-size:11.5px;color:var(--muted)">/ ${esc(wohPr.p)} /</span>`:''}
+          ${woh.d?`<span style="display:block;font-size:12px;line-height:1.4;color:var(--muted);margin-top:4px">${esc(trunc(woh.d,84))}</span>`:''}
+          <span class="sb-cl" style="display:block;margin-top:6px">card →</span>
         </span>
-        <span class="sb-cl">card →</span>
       </button>`:'';
-      return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:12px">${bandBanner}${wohTile}</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:14px">
-      <div class="sb-card" style="display:flex;align-items:center;gap:14px;min-height:120px;padding:14px">
+      const qoh=(typeof quoteOfHour==='function')?quoteOfHour():null;
+      const qohTile=qoh?`<button data-act="openQuoteHour" data-arg="${qoh.i}" title="Tap to open Quotes &amp; poems" class="sb-card" style="width:100%;display:flex;align-items:center;gap:13px;background:linear-gradient(100deg,color-mix(in srgb,#C8791B 15%,var(--paper,var(--bg2))),var(--paper,var(--bg2)) 62%);border-color:color-mix(in srgb,#C8791B 38%,var(--line));border-radius:var(--r-lg,16px);padding:14px 16px;cursor:pointer;text-align:left;min-height:132px">
+        <span style="display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#C8791B;color:#fff;flex-shrink:0;font-size:20px">${iconSVG('quote',20)}</span>
+        <span style="min-width:0;flex:1">
+          <span class="sb-cn" style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#8A5B00">Quote of the hour</span>
+          <span style="display:block;font:italic 650 13.5px/1.42 var(--body,serif);color:var(--ink,var(--text));margin:3px 0 4px">“${esc(trunc(qoh.q.q,132))}”</span>
+          <span style="display:block;font-size:11.5px;font-weight:800;color:var(--muted)">— ${esc(qoh.q.a||'Unknown')}</span>
+          <span class="sb-cl" style="display:block;margin-top:6px">more quotes →</span>
+        </span>
+      </button>`:'';
+      return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:12px">
+      ${tipOfDay(true,true)}
+      <div class="sb-card" style="display:flex;align-items:center;gap:14px;min-height:128px;padding:14px">
+        <div style="width:90px;height:90px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(var(--action,var(--accent)) ${goalPctNum}%, var(--tint-deep,var(--surface2)) 0)">
+          <div style="width:74px;height:74px;border-radius:50%;background:var(--paper,var(--bg2));display:grid;place-items:center;text-align:center"><div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1">${goalDoneN}/${goalTarget}</div><div class="sb-cn" style="margin-top:2px">today</div></div></div>
+        </div>
+        <div style="min-width:0">
+          <div class="sb-ct" style="margin-bottom:3px">Daily goal</div>
+          <div class="sb-cs" style="margin-bottom:9px">${goalPctNum>=100?'Goal smashed for today — amazing!':('Spell '+Math.max(0,goalTarget-goalDoneN)+' more to hit today’s goal.')}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><button data-act="openCoach" style="padding:10px 17px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">${goalDoneN>0?'Continue →':'Start practice →'}</button>
+          <button data-act="champTen" title="Ten championship-tier words — your daily stretch" style="padding:10px 14px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">🏆 Champ 10</button></div>
+        </div>
+      </div>
+      <div class="sb-card" style="display:flex;align-items:center;gap:14px;min-height:128px;padding:14px">
         ${(()=>{ const hasCard=c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar]&&typeof SB_AV_CARD==='function';
           const art=hasCard?avatarSVG(c.avatar,94,c.accOn):mascotAcc(S.mood,84);
           const inner=`<div style="width:96px;height:100px;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center;position:relative">${art}</div>`;
           return hasCard?`<button data-act="openAvDeck" data-arg="${c.avatar}" title="Flip through your avatar cards" style="flex-shrink:0;background:none;border:0;padding:0;cursor:pointer">${inner}</button>`
                         :`<div style="position:relative;flex-shrink:0">${inner}</div>`; })()}
         <div style="min-width:0;flex:1">
+          <div class="sb-cs">${greeting}</div>
+          <div style="font-family:var(--display);font-weight:800;font-size:21px;line-height:1.1;margin-bottom:6px">${esc(c.name)}</div>
           ${(()=>{ const hasCard=c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar]&&typeof SB_AV_CARD==='function';
             const d=hasCard?SB_AV_CARD(c.avatar):null;
-            return d?`<div style="position:relative;background:var(--surface2,#f3eee3);border-radius:12px;border-bottom-left-radius:4px;padding:6px 10px;margin-bottom:6px;font:italic 600 11px/1.35 var(--body,sans-serif);color:var(--ink,var(--text))">“${esc(trunc((d.greeting||'').replace(/\{name\}/g, (c.name||'friend')),96))}”</div>`:'';
+            return d?`<div style="position:relative;background:var(--surface2,#f3eee3);border-radius:12px;border-bottom-left-radius:4px;padding:6px 10px;font:italic 600 11px/1.35 var(--body,sans-serif);color:var(--ink,var(--text))">“${esc(trunc((d.greeting||'').replace(/\{name\}/g, (c.name||'friend')),96))}”</div>`:'';
           })()}
-          <div class="sb-cs">${greeting}</div>
-          <div style="font-family:var(--display);font-weight:800;font-size:21px;line-height:1.1">${esc(c.name)}</div>
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
             ${(c.streak||0)>0?`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">${iconSVG('flame',14)} ${c.streak}-day streak</span>`:''}
             ${(()=>{ const ms=milestone(); return (ms&&ms.days>=0)?`<button data-act="setNav" data-arg="progress" style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">🐝 ${ms.days} days to ${esc(trunc(ms.label,18))}</button>`:''; })()}
           </div>
         </div>
       </div>
-      <button data-act="openEvo" title="Open the full evolution ladder" class="sb-card" style="display:flex;align-items:stretch;gap:14px;cursor:pointer;min-height:120px;padding:14px">
-        <div style="flex-shrink:0;text-align:center;align-self:center">
-          <div style="width:64px;height:70px">${evArt(theme,fIdx)}</div>
-          <div class="sb-cn" style="font-weight:800;color:var(--ink,var(--text));margin-top:1px">${evo[fIdx]}</div>
-        </div>
-        <div style="min-width:0;flex:1;display:flex;flex-direction:column">
-          ${fIdx>=9
-            ?`<div class="sb-ct" style="margin-top:auto;margin-bottom:7px">Top form reached! 🎉</div>`
-            :`<div style="display:flex;align-items:center;gap:7px;margin-top:auto;margin-bottom:7px"><span class="sb-ct">${xpToNext} Karma to ${evo[fIdx+1]}</span><span style="width:22px;height:24px;flex-shrink:0;display:inline-block;overflow:hidden">${evArt(theme,fIdx+1)}</span></div>`}
-          <div style="height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden;margin-bottom:7px"><div style="height:100%;border-radius:inherit;background:var(--treasure,#F0B429);width:${evoPct}%"></div></div>
-          <div class="sb-cn">${fIdx>=9?'Queen of the hive 🐝':'+1 Karma per correct word — everything counts.'}</div>
-          <div style="margin-top:auto;text-align:right"><span class="sb-cl">See the ladder →</span></div>
-        </div>
-      </button>
-      <div class="sb-card" style="display:flex;align-items:center;gap:14px;min-height:120px;padding:14px">
-        <div style="width:90px;height:90px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(var(--action,var(--accent)) ${goalPctNum}%, var(--tint-deep,var(--surface2)) 0)">
-          <div style="width:74px;height:74px;border-radius:50%;background:var(--paper,var(--bg2));display:grid;place-items:center;text-align:center"><div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1">${goalDoneN}/${goalTarget}</div><div class="sb-cn" style="margin-top:2px">today</div></div></div>
-        </div>
-        <div style="min-width:0">
-          <div class="sb-ct" style="margin-bottom:3px">Daily goal</div>
-          <div class="sb-cs" style="margin-bottom:9px">${goalPctNum>=100?'Goal smashed for today — amazing!':('Spell '+Math.max(0,goalTarget-goalDoneN)+' more to hit today\u2019s goal.')}</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap"><button data-act="openCoach" style="padding:10px 17px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">${goalDoneN>0?'Continue →':'Start practice →'}</button>
-          <button data-act="champTen" title="Ten championship-tier words — your daily stretch" style="padding:10px 14px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">🏆 Champ 10</button></div>
-        </div>
-      </div>
-    </div>`; })()}
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:14px">${wohTile}${qohTile}</div>`; })()}
 ${focusedH?(()=>{ return `
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:8px">${journeys}</div>`; })()
-    :`${tipOfDay(true)}<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:2px 2px 9px">Keep going</div>
+    :`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:2px 2px 9px">Keep going</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:8px">${journeys}</div>`}
   </div>`;
 }
@@ -5965,13 +5982,13 @@ function ttDeck(th){ if(_ttCache[th]) return _ttCache[th];
   const deck=all.filter(q=>q.th===th).sort((a,b)=>(a.lv||3)-(b.lv||3));   // easy → hard
   _ttCache[th]=deck; return deck; }
 function ttThemes(){ return ((window.SB_TRIVIA||{}).themes)||[]; }
-const TT_COL={animals:'#4F9E6A',bugs:'#E0922E',ocean:'#3D7DF0',space:'#7B52E0',body:'#E8458C',plants:'#3C8455',food:'#F0703C',sports:'#2A63D6',music:'#B14FC4',myth:'#9B59D0',world:'#13A892',history:'#C8901B',science:'#0E8A78',numbers:'#6A47F5',weather:'#36A3D9',machines:'#4A6B8A',art:'#DC5B7E',fest:'#D6453A',story:'#7C5CFF',words:'#C8791B',worigin:'#2A8FA8',wroots:'#4F9E6A',wmeaning:'#7C5CFF',wstories:'#C8791B'};
+const TT_COL={animals:'#4F9E6A',bugs:'#E0922E',ocean:'#3D7DF0',space:'#7B52E0',body:'#E8458C',plants:'#3C8455',food:'#F0703C',sports:'#2A63D6',music:'#B14FC4',myth:'#9B59D0',world:'#13A892',history:'#C8901B',science:'#0E8A78',numbers:'#6A47F5',weather:'#36A3D9',machines:'#4A6B8A',art:'#DC5B7E',fest:'#D6453A',story:'#7C5CFF',words:'#C8791B',wroots:'#4F9E6A',wbreak:'#2A8FA8',wmeaning:'#7C5CFF',wstories:'#C8791B'};
 function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const ths=ttThemes();
   if(!ths.length) return `<div style="max-width:760px;margin:0 auto">${pageHead('Trivia Training','loading…','')}</div>`;
   // ---------- chapter grid ----------
   if(!t){
     const seen=c.ttSeen||{};
-    const wordThemes=['worigin','wroots','wmeaning','wstories'];
+    const wordThemes=['wroots','wbreak','wmeaning','wstories'];
     const card=(th)=>{ const deck=ttDeck(th.id); if(!deck.length) return '';
       const col=TT_COL[th.id]||'#7C5CFF'; const done=Math.min(seen[th.id]||0, deck.length);
       const pct=deck.length?Math.round(done/deck.length*100):0;
