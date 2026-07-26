@@ -2693,7 +2693,19 @@ function avatarSVG(id,size,acc){ size=size||30;
   else svg=buddySVG(id,size);
   // additive accessory overlay, drawn on top in the same 120×120 space (works on any avatar)
   if(acc && typeof svg==='string'){ const ov=avAccSVG(acc); if(ov) svg=svg.replace(/<\/svg>\s*$/i, ov+'</svg>'); }
+  // legendary avatars come alive — a rotating halo, twinkling sparkles and a gentle breathe
+  try{ const a=window.SB_AVATARS&&SB_AVATARS.byId[id]; if(a&&a.rarity==='legendary'&&typeof svg==='string') svg=legendaryAnim(svg); }catch(e){}
   return svg; }
+// Wrap a legendary avatar's SVG with premium idle animation (scales with the 0 0 120 120 viewBox).
+function legendaryAnim(svg){
+  // behind the character: a soft pulsing aura + a slow-spinning dashed gold halo
+  const behind='<circle cx="60" cy="60" r="46" fill="#FFD54A" opacity=".18" style="transform-origin:60px 60px;animation:sb-avaura 3s ease-in-out infinite"/>'
+    +'<circle cx="60" cy="60" r="55" fill="none" stroke="#FFD54A" stroke-width="1.6" stroke-dasharray="2.5 9" opacity=".55" style="transform-origin:60px 60px;animation:sb-avspin 11s linear infinite"/>';
+  // on top: four twinkling sparkles at the corners, staggered
+  const star=(x,y,d,s)=>'<path d="M'+x+' '+(y-s)+' l'+(s*0.3)+' '+(s*0.7)+' '+(s*0.7)+' '+(s*0.3)+' -'+(s*0.7)+' '+(s*0.3)+' -'+(s*0.3)+' '+(s*0.7)+' -'+(s*0.3)+' -'+(s*0.7)+' -'+(s*0.7)+' -'+(s*0.3)+' '+(s*0.7)+' -'+(s*0.3)+'z" fill="#FFE07A" style="transform-origin:'+x+'px '+y+'px;animation:sb-avtw 2.4s ease-in-out '+d+'s infinite"/>';
+  const sparks=star(20,22,0,5)+star(101,28,0.7,4)+star(97,95,1.3,4.4)+star(23,98,1.9,3.6);
+  return svg.replace(/(<svg\b[^>]*?)>/, '$1 class="sb-av-legend">'+behind)
+            .replace(/<\/svg>\s*$/i, sparks+'</svg>'); }
 // the child's own worn avatar, with their equipped accessory
 function myAvatar(size){ const c=active(); return avatarSVG(c.avatar||'bee', size, c.accOn); }
 /* ---- Badge art: a graphical emblem per badge, rendered at avatar quality ----
