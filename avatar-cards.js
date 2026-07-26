@@ -312,18 +312,29 @@
     qinshihuang:{lore:'The first emperor who united China and built wonders.',fact:'Qin Shi Huang became China’s first emperor and was buried with an army of about 8,000 life-size terracotta soldiers.'},
     buddha:{lore:'The awakened teacher of kindness, calm and wisdom.',fact:'“Buddha” means “the awakened one” — Siddhartha Gautama taught that kindness and a calm mind lead to true happiness.'},
     einstein:{lore:'The wild-haired genius who reimagined space, time and light.',fact:'Albert Einstein’s equation E=mc² shows that a tiny amount of matter holds an enormous amount of energy.'},
-    // ---- GODS (myth-framed — every fact is “myth says…” or a true, kid-checkable echo of the myth) ----
-    thor:{lore:'Thunder in a good mood — swings first, spells later.',fact:'Thursday is literally Thor’s day — you say his name every week.'},
-    zeus:{lore:'King of Olympus, who grades every storm personally.',fact:'Mount Olympus is a real mountain in Greece — the tallest one.'},
-    poseidon:{lore:'Moody as the sea and twice as deep.',fact:'Myth says his trident could stir storms, calm the seas, and split rock into fresh-water springs.'},
-    ra:{lore:'The falcon-headed sun, who sails the sky by day.',fact:'Ancient Egyptians saw every sunrise as Ra’s boat setting sail across the heavens.'},
-    athena:{lore:'Born ready — in full armour. Strategy before spelling, always.',fact:'The city of Athens is named after her, and her owl still stands for “wisdom” today.'},
-    rama:{lore:'The hero-prince who keeps every promise; his aim never misses.',fact:'Rama is the hero of the Ramayana — an epic poem of about 24,000 verses.'},
-    hades:{lore:'Ruler of the quietest kingdom below — and great with dogs.',fact:'Myth says his three-headed dog Cerberus guards the gate — a very good boy, three times over.'},
-    odin:{lore:'Traded an eye for wisdom; his ravens read over your shoulder.',fact:'His ravens Huginn and Muninn mean “Thought” and “Memory” — and Wednesday is Odin’s day.'},
-    anubis:{lore:'The gentle guide with a jackal’s head, who weighs every heart kindly.',fact:'Egyptians pictured him weighing a person’s heart against a single feather of truth.'},
-    krishna:{lore:'Plays a flute so sweet the rivers stop to listen — the wisest smile in any world.',fact:'Krishna is the speaker of the Bhagavad Gita — and, as a child, famously loved butter.'},
-    shiva:{lore:'Stillness and storm in one being, meditating between cosmic dances.',fact:'Myth says his dance, the Tandava, sets the rhythm of the whole universe.'}
+    // ---- GODS (myth-framed — every fact is “myth says…” or a true, kid-checkable echo of the myth.
+    //      greeting is IN-CHARACTER and uses {name} = the SPELLER's name, filled at display time) ----
+    thor:{greeting:'Swing big, {name}! No word is too heavy when you spell with thunder.',lore:'Thunder in a good mood — swings first, spells later.',fact:'Thursday is literally Thor’s day — you say his name every week.'},
+    zeus:{greeting:'Even the storms answer to me, {name} — but a word well spelled earns Olympus’ applause.',lore:'King of Olympus, who grades every storm personally.',fact:'Mount Olympus is a real mountain in Greece — the tallest one.'},
+    poseidon:{greeting:'Ride the wave, {name}. Let each letter roll in like the tide — steady and sure.',lore:'Moody as the sea and twice as deep.',fact:'Myth says his trident could stir storms, calm the seas, and split rock into fresh-water springs.'},
+    ra:{greeting:'As I sail the sky each dawn, {name}, rise up and light every word.',lore:'The falcon-headed sun, who sails the sky by day.',fact:'Ancient Egyptians saw every sunrise as Ra’s boat setting sail across the heavens.'},
+    athena:{greeting:'Wisdom is my weapon, {name}. Think first, spell true — and victory follows.',lore:'Born ready — in full armour. Strategy before spelling, always.',fact:'The city of Athens is named after her, and her owl still stands for “wisdom” today.'},
+    rama:{greeting:'A promise kept and an arrow true, {name} — spell with that same steady aim.',lore:'The hero-prince who keeps every promise; his aim never misses.',fact:'Rama is the hero of the Ramayana — an epic poem of about 24,000 verses.'},
+    hades:{greeting:'Down in the quiet, {name}, I learned patience spells more than haste ever could.',lore:'Ruler of the quietest kingdom below — and great with dogs.',fact:'Myth says his three-headed dog Cerberus guards the gate — a very good boy, three times over.'},
+    odin:{greeting:'I traded an eye for wisdom, {name}. You need only spend your focus — spell on.',lore:'Traded an eye for wisdom; his ravens read over your shoulder.',fact:'His ravens Huginn and Muninn mean “Thought” and “Memory” — and Wednesday is Odin’s day.'},
+    anubis:{greeting:'Weigh each word with care, {name}, and the scales will always tip your way.',lore:'The gentle guide with a jackal’s head, who weighs every heart kindly.',fact:'Egyptians pictured him weighing a person’s heart against a single feather of truth.'},
+    krishna:{greeting:'Let the tricky words dance, {name}. Meet them with a smile and they fall into place.',lore:'Plays a flute so sweet the rivers stop to listen — the wisest smile in any world.',fact:'Krishna is the speaker of the Bhagavad Gita — and, as a child, famously loved butter.'},
+    shiva:{greeting:'Myths are made of words, {name} — go write your own.',lore:'Stillness and storm in one being, meditating between cosmic dances.',fact:'Myth says his dance, the Tandava, sets the rhythm of the whole universe.'},
+    ganesha:{greeting:'I clear the path, {name} — no tricky word can block your way. Begin!',lore:'The gentle remover of obstacles, with an elephant’s head and a kind heart.',fact:'Ganesha is prayed to at the start of anything new — journeys, exams, even spelling bees.'},
+    durga:{greeting:'Fear nothing, {name}. Ride in brave and spell every challenge into the dust!',lore:'The fearless warrior goddess who rides a tiger and protects the good.',fact:'The festival of Navratri celebrates Durga across nine bright nights each year.'},
+    saraswati:{greeting:'Knowledge flows like my river, {name}. Let every word make you shine brighter.',lore:'The serene goddess of knowledge, music and learning — patron of every student.',fact:'Students honour Saraswati on Vasant Panchami, and she carries a veena, a book and a swan.'},
+    lakshmi:{greeting:'Fortune favours the diligent, {name} — spell with care and your riches of words will grow.',lore:'The graceful goddess of prosperity, seated on a blooming lotus.',fact:'Homes are lit with lamps for Lakshmi on Diwali, the festival of lights.'},
+    hanuman:{greeting:'Leap at it with all your heart, {name}! Courage spells every mountain small.',lore:'The mighty, devoted hero who can grow as large as a hill or leap the sea.',fact:'In the Ramayana, Hanuman leaps across the ocean to help rescue Sita.'},
+    freya:{greeting:'Wear your courage like gold, {name}. Spell boldly and let the world admire your shine.',lore:'The Norse goddess of love and gold, who flies in a falcon-feather cloak.',fact:'Friday may take its name from Freya — “Freya’s day”.'},
+    loki:{greeting:'A tricky word, {name}? My favourite kind. Outwit it — cleverness always finds a way.',lore:'The quick-witted Norse trickster — a shapeshifter who loves a clever puzzle.',fact:'In the myths Loki can change shape into a fish, a fly, even a horse.'},
+    apollo:{greeting:'Every word is a note, {name}. String them true and make music the Muses would envy.',lore:'The Greek god of the sun, music and poetry, lyre always in hand.',fact:'Apollo led the nine Muses, the spirits who inspire music, writing and learning.'},
+    isis:{greeting:'With a little magic and a lot of heart, {name}, there is no word you cannot master.',lore:'The wise Egyptian goddess of magic, healing and protection.',fact:'Myth says Isis knew words of power so strong they could heal and protect.'},
+    amaterasu:{greeting:'Step from the shadow, {name}, and let your spelling shine like the morning sun.',lore:'The radiant Japanese sun goddess whose light warms the whole world.',fact:'Myth says when Amaterasu hid in a cave the world went dark — until her light returned.'}
   };
 
   // fallback pool if an id somehow lacks authored lore
@@ -394,7 +405,10 @@
     var rar = (AVS().rarities || {})[a.rarity] || { label:a.rarity, c:'#7B8794' };
     var voices = PACK_VOICE[a.pack] || PACK_VOICE.hive;
     var villain = isVillain(a);
-    var greeting = slore ? slore.greeting : voices[hash(id + 'g') % voices.length].replace(/\{name\}/g, a.name);
+    // {name} stays a literal token here — the app fills it with the SPELLER's name at display
+    // time (not the avatar's). Prefer a hand-written per-avatar greeting, then the pack voice.
+    var greeting = (slore && slore.greeting) ? slore.greeting
+      : ((window.SB_AV_GREETINGS && window.SB_AV_GREETINGS[id]) || db.greeting || voices[hash(id + 'g') % voices.length]);
     var title = slore ? slore.tagline : (RANK[a.rarity] + ' ' + (PACK_TITLE[a.pack] || ''));
     // LORE line (character backstory shown up top). Villains use their saga backstory.
     var lore = slore ? slore.fact : (db.lore || (a.name + ' of the ' + pack.label + '.'));
