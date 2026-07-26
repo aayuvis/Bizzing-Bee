@@ -2715,14 +2715,14 @@ function legendFx(){ if(LEGEND_FX) return LEGEND_FX; LEGEND_FX={
   durga:   _fx(17,50,'fx-pulse',1.6,_star(6,'#FFE07A')),
   saraswati: _fx(34,80,'fx-rise',2.6,'<text font-size="12" fill="#C87A2A">♪</text>')+_fx(44,86,'fx-rise',2.6,'<text font-size="10" fill="#C87A2A">♫</text>',0.9),
   zeus:    _fx(16,88,'fx-flash',2.2,'<path d="M4 -12 l-8 11 5 1 -7 12" stroke="#FFF3A0" stroke-width="2.4" fill="none" stroke-linecap="round"/>'),
-  rama:    _fx(60,44,'fx-pulse',2.6,'<circle r="40" fill="none" stroke="#FFD86B" stroke-width="1.6"/>'),
+  rama:    _fx(30,42,'fx-shoot',2.4,'<path d="M-12 0 L10 0" stroke="#E8C24A" stroke-width="2.2" stroke-linecap="round"/><path d="M10 0 L5 -3.5 M10 0 L5 3.5 M-12 0 L-9 -3 M-12 0 L-9 3" stroke="#C8952A" stroke-width="1.8" fill="none" stroke-linecap="round"/>'),
   odin:    '<g transform="translate(100 96)"><g style="transform-box:fill-box;transform-origin:60% 60%;animation:fx-flutter .4s ease-in-out infinite"><path d="M0 0 Q-9 -6 -12 0 Q-7 3 0 2z" fill="#2A2A32"/></g></g>',
   // world changers
   einstein: _fx(88,27,'fx-rise',3.4,'<text text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="12" fill="#2E2A6E">E=mc²</text>'),
   gandhi:   _fx(20,96,'fx-spin',3.8,_wheel(11,'#E4DAC2')),
   curie:    _fx(60,46,'fx-spin',3,'<g fill="none" stroke="#5AC88A" stroke-width="1" opacity=".65"><ellipse rx="36" ry="13"/><ellipse rx="36" ry="13" transform="rotate(60)"/><ellipse rx="36" ry="13" transform="rotate(120)"/></g>'),
   aryabhatta: _fx(60,46,'fx-spin',5,'<circle r="36" fill="none" stroke="#8AB4E8" stroke-width="1" opacity=".5"/><circle cx="0" cy="-36" r="3.4" fill="#E88A3A"/>'),
-  buddha:   _fx(60,42,'fx-pulse',3,'<circle r="32" fill="none" stroke="#FFD86B" stroke-width="2"/>'),
+  buddha:   _fx(95,25,'fx-spin',5,_wheel(9,'#F0CE52'))+_fx(60,42,'fx-pulse',3.2,'<circle r="32" fill="none" stroke="#FFD86B" stroke-width="1.4"/>'),
   // mythic legends
   queenhive: _wings(),
   pegasus:   _wings(),
@@ -2733,16 +2733,16 @@ function legendFx(){ if(LEGEND_FX) return LEGEND_FX; LEGEND_FX={
   uni:       _fx(60,12,'fx-tw',1.8,_star(5,'#FFE07A')),
   yeti:      _fx(40,26,'fx-fall',2.6,'<circle r="2.2" fill="#EAF6FF"/>')+_fx(74,22,'fx-fall',2.6,'<circle r="2" fill="#EAF6FF"/>',0.9)+_fx(58,20,'fx-fall',2.6,'<circle r="1.8" fill="#EAF6FF"/>',1.7),
   rexking:   _fx(96,58,'fx-flash',1.6,'<g stroke="#E85A3A" stroke-width="2" stroke-linecap="round"><line x1="0" y1="-6" x2="9" y2="-9"/><line x1="0" y1="0" x2="11" y2="0"/><line x1="0" y1="6" x2="9" y2="9"/></g>'),
-  hydra:     _fx(38,20,'fx-sway',1.4,'<circle r="4" fill="#4FA86A"/>')+_fx(82,20,'fx-sway',1.4,'<circle r="4" fill="#4FA86A"/>',0.7),
-  titan:     _fx(60,54,'fx-pulse',2.4,'<circle r="42" fill="none" stroke="#E8A030" stroke-width="2"/>'),
-  vex:       _fx(60,47,'fx-pulse',2,'<circle r="38" fill="none" stroke="#8A4FE0" stroke-width="2"/>'),
+  hydra:     _fx(36,17,'fx-sway',1.3,'<path d="M0 7 Q-3.5 0 0 -5 Q3.5 0 0 7z" fill="#4FA86A"/><circle cx="-1" cy="-1" r=".9" fill="#122"/>')+_fx(60,12,'fx-sway',1.3,'<path d="M0 7 Q-3.5 0 0 -5 Q3.5 0 0 7z" fill="#5FB87A"/><circle cx="-1" cy="-1" r=".9" fill="#122"/>',0.4)+_fx(84,17,'fx-sway',1.3,'<path d="M0 7 Q-3.5 0 0 -5 Q3.5 0 0 7z" fill="#4FA86A"/><circle cx="-1" cy="-1" r=".9" fill="#122"/>',0.8),
+  titan:     _fx(17,50,'fx-flash',1.5,'<path d="M3 -9 l-6 9 4 0 -5 9" stroke="#FFD86B" stroke-width="2.2" fill="none" stroke-linecap="round"/>')+_fx(103,50,'fx-flash',1.5,'<path d="M-3 -9 l6 9 -4 0 5 9" stroke="#FFD86B" stroke-width="2.2" fill="none" stroke-linecap="round"/>',0.5),
+  vex:       _fx(42,20,'fx-fall',2.4,'<text font-size="10" fill="#9A6ED8" font-weight="800">?</text>')+_fx(76,22,'fx-fall',2.4,'<text font-size="9" fill="#7A3FD0" font-weight="800">\u2715</text>',1.1),
   wordeater: _fx(90,54,'fx-rise',2.2,'<text text-anchor="middle" font-weight="800" font-size="12" fill="#C43A5A">A</text>'),
   naga:      '<g transform="translate(60 70)"><g style="transform-box:fill-box;transform-origin:top center;animation:fx-sway 1s ease-in-out infinite"><path d="M0 0 L0 8 M0 8 L-2.5 12 M0 8 L2.5 12" stroke="#D6362E" stroke-width="1.8" fill="none" stroke-linecap="round"/></g></g>',
   bluewhale: _fx(60,16,'fx-rise',2.6,'<g stroke="#6FC8E0" stroke-width="2" fill="none" stroke-linecap="round"><path d="M0 4 L0 -8"/><path d="M-3 -2 L-4 -9 M3 -2 L4 -9"/></g>'),
   // gold / neon themed
   aurum:     _fx(24,30,'fx-rise',2.6,_star(4.4,'#FFD34D'))+_fx(96,34,'fx-rise',2.6,_star(3.6,'#FFE07A'),1.1),
   goldlegend:_fx(26,28,'fx-rise',2.6,_star(4.4,'#FFD34D'))+_fx(94,32,'fx-rise',2.6,_star(3.6,'#FFE07A'),1.2),
-  neonking:  _fx(60,47,'fx-flash',1.4,'<circle r="36" fill="none" stroke="#3DF0C8" stroke-width="1.8"/>'),
+  neonking:  _fx(60,13,'fx-flash',1.3,'<path d="M-12 6 L-12 -4 L-6 2 L0 -8 L6 2 L12 -4 L12 6 Z" fill="none" stroke="#3DF0C8" stroke-width="2" stroke-linejoin="round"/>'),
   elemental: _fx(60,47,'fx-spin',5,'<circle cx="0" cy="-37" r="3.4" fill="#4FA86A"/><circle cx="37" cy="0" r="3.4" fill="#3D8AE0"/><circle cx="0" cy="37" r="3.4" fill="#E8603A"/><circle cx="-37" cy="0" r="3.4" fill="#EADFC0"/>')
 }; return LEGEND_FX; }
 // Give a legendary its signature animation (falls back to twinkling sparkles).
