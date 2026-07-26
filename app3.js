@@ -240,11 +240,19 @@ const PREMIUM_THEMES = ['aurora','anime'];             // included with Premium
 function coinsOf(){ return active().coins||0; }
 function addCoins(n){ if(!n) return; const c=active(); c.coins=(c.coins||0)+n; sfx('coin'); }
 function spendCoins(n){ const c=active(); if((c.coins||0)<n) return false; c.coins-=n; return true; }
-function isThemeUnlocked(id){ if(state.devUnlock) return true; if(FREE_THEMES.indexOf(id)>=0) return true; if(state.premium && PREMIUM_THEMES.indexOf(id)>=0) return true; return (active().unlockedThemes||[]).indexOf(id)>=0; }
-function isListUnlocked(key){ if(state.devUnlock) return true; if(!isPremiumList(key)||state.premium) return true; return !!(active().unlockedLists||{})[key]; }
+function isThemeUnlocked(id){ if(state.devUnlock) return true; if((active().unlockedThemes||[]).indexOf(id)>=0) return true;
+  try{ if(window.SB_ENT){ const lim=SB_ENT.worldLimit(); if(lim==='all') return true; const idx=(typeof THEMES!=='undefined')?THEMES.findIndex(t=>t.id===id):-1; if(idx>=0 && idx<lim) return true; } }catch(e){}
+  if(FREE_THEMES.indexOf(id)>=0) return true; return false; }
+function isListUnlocked(key){ if(state.devUnlock) return true; try{ if(window.SB_ENT && SB_ENT.has('lists')) return true; }catch(e){} if(!isPremiumList(key)||state.premium) return true; return !!(active().unlockedLists||{})[key]; }
+// Entitlement guard for tier-locked features. Returns true if allowed; else opens the
+// tier/pricing sheet with an upsell and returns false. feature ∈ SB_TIERS[*].ent keys.
+function gateFeature(feature, label, needTier){
+  try{ if(!window.SB_ENT || SB_ENT.has(feature)) return true; }catch(e){ return true; }
+  try{ state.tierUpsell={feature:feature, label:label||feature, need:needTier||'regional'}; set({showTiers:true}); }catch(e){}
+  return false; }
 /* Concepts: all locked on free; Premium opens the easier 50%; the rest are coin-unlocks. */
 function conceptHalf(){ const n=(state.conceptData||SB_CONCEPTS.chapters||[]).length; return Math.ceil(n/2); }
-function isConceptUnlocked(ci){ if(state.devUnlock) return true; const ch=(state.conceptData||SB_CONCEPTS.chapters||[])[ci]; if(ch && catGroup(ch.category)==='Basics') return true; if((active().unlockedConcepts||{})[ci]) return true; if(state.premium && ci<conceptHalf()) return true; return false; }
+function isConceptUnlocked(ci){ if(state.devUnlock) return true; const ch=(state.conceptData||SB_CONCEPTS.chapters||[])[ci]; if(ch && catGroup(ch.category)==='Basics') return true; try{ if(window.SB_ENT && SB_ENT.has('concepts')) return true; }catch(e){} if((active().unlockedConcepts||{})[ci]) return true; if(state.premium && ci<conceptHalf()) return true; return false; }
 // Levenshtein distance (for "so close!" near-miss feedback)
 function lev(a,b){ a=a||''; b=b||''; const m=a.length,n=b.length; if(!m) return n; if(!n) return m; const d=Array.from({length:m+1},(_,i)=>[i].concat(new Array(n).fill(0)));
   for(let j=0;j<=n;j++) d[0][j]=j;
@@ -725,7 +733,7 @@ const app = {
   figPage:(n)=>{ set({figPage:+n}); try{window.scrollTo(0,0);}catch(e){} },
   figSay:(t)=>say(t),
   figTab:(k)=>set({figTab:k}),
-  figDeck:(id)=>{ const c=active(); const seen=((c.figSeen||{})[id]||0); set({figTab:'learn', figDeck:id, figIdx:Math.min(seen, Math.max(0,figDeckItems(id).length-1)), figFlip:false}); },
+  figDeck:(id)=>{ if(!gateFeature('trainTools','Idioms & Similes')) return; const c=active(); const seen=((c.figSeen||{})[id]||0); set({figTab:'learn', figDeck:id, figIdx:Math.min(seen, Math.max(0,figDeckItems(id).length-1)), figFlip:false}); },
   figFlip:()=>{ const to=!state.figFlip;
     if(to && state.readAloud){ const x=figDeckItems(state.figDeck)[state.figIdx||0]; if(x) say(x.p+'. '+(x.m||'')); }
     set({figFlip:to}); },
@@ -737,9 +745,9 @@ const app = {
     set({figIdx:i, figFlip:false}); },
   figBackToDecks:()=>set({figDeck:null, figFlip:false}),
   // ----- Vocabulary study (NSF vocabulary-bee style) -----
-  openVocab:()=>{ set({nav:'vocab', screen:'app', vocDeck:null, conceptSel:null}); },
+  openVocab:()=>{ if(!gateFeature('trainTools','Vocab practice')) return; set({nav:'vocab', screen:'app', vocDeck:null, conceptSel:null}); },
   // ---- Quotes: a swipeable deck of kid-friendly quotations from famous people ----
-  openQuotes:()=>{ set({nav:'quotes', screen:'app', conceptSel:null, qi:(state.qi||0)}); markQuoteSeen(); setTimeout(()=>{ if(state.readAloud) app.qSpeak(); },220); },
+  openQuotes:()=>{ if(!gateFeature('trainTools','Quotes & poems')) return; set({nav:'quotes', screen:'app', conceptSel:null, qi:(state.qi||0)}); markQuoteSeen(); setTimeout(()=>{ if(state.readAloud) app.qSpeak(); },220); },
   qNav:(dir)=>{ const L=quoteList(); if(!L.length) return; let i=(state.qi||0)+(+dir); if(i<0)i=L.length-1; if(i>=L.length)i=0; set({qi:i}); markQuoteSeen(); if(state.readAloud) app.qSpeak(); },
   qShuffle:()=>{ const L=quoteList(); if(!L.length) return; let i=state.qi||0; if(L.length>1){ while(i===(state.qi||0)) i=Math.floor(Math.random()*L.length); } set({qi:i}); markQuoteSeen(); if(state.readAloud) app.qSpeak(); },
   qSetCat:(cat)=>{ set({qCat:cat==='all'?null:cat, qi:0}); if(state.readAloud) setTimeout(app.qSpeak,150); },
@@ -754,6 +762,23 @@ const app = {
   wordCardSay:(w)=>{ try{ say(w); }catch(e){} },
   wordCardClose:()=>set({wordCard:null}),
   wohPractise:(word)=>{ set({wordCard:null}); try{ app.reviseOne(word); }catch(e){ flash('Could not open practice'); } },
+  // ===== Subscription tiers (PIN-gated from Settings) =====
+  openTiers:()=>{ if(typeof pinGate==='function'){ pinGate(()=>set({showTiers:true}),'Account & plan'); } else set({showTiers:true}); },
+  closeTiers:()=>set({showTiers:false, tierUpsell:null}),
+  chooseTier:(id)=>{ const c=active(); if(!window.SB_TIERS||!SB_TIERS[id]) return; SB_ENT.setTier(c,id); try{ state.premium=SB_ENT.isPaid(); }catch(e){} save(); try{ sfx(id==='free'?'tap':'win'); }catch(e){} if(id!=='free') burstConfetti(80); flash(id==='free'?'Switched to Free':('You’re on '+SB_TIERS[id].name+' 🎉')); render(); },
+  buyAddon:(k)=>{ const c=active(); if(!window.SB_ADDONS||!SB_ADDONS[k]) return; if(!SB_ADDONS[k].built){ flash('✨ Advanced Pack is coming soon — you’ll be first to know!'); return; } c.addons=c.addons||{}; c.addons[k]=1; save(); flash('Advanced Pack added'); render(); },
+  // ===== Parent account / auth (local scaffold; Supabase in Phase 2) =====
+  openAuth:(mode)=>set({authSheet:mode||'signin', authErr:null}),
+  closeAuth:()=>set({authSheet:null, authErr:null, authAdmin:false}),
+  authEmail:(v)=>{ state.auth_email=v; }, authPw:(v)=>{ state.auth_pw=v; }, authName:(v)=>{ state.auth_name=v; },
+  doSignIn:()=>{ const r=SB_AUTH.signIn(state.auth_email||'', state.auth_pw||''); if(r.error){ set({authErr:r.error}); return; } state.auth_pw=''; if(r.user.role==='admin'){ set({authSheet:null, authAdmin:false, screen:'admin'}); } else { set({authSheet:null}); flash('Signed in as '+esc(r.user.name)); } },
+  doSignUp:()=>{ const r=SB_AUTH.signUp(state.auth_email||'', state.auth_pw||'', state.auth_name||''); if(r.error){ set({authErr:r.error}); return; } state.auth_pw=''; set({authSheet:null}); flash('Account created — welcome!'); },
+  doSignOut:()=>{ SB_AUTH.signOut(); flash('Signed out'); render(); },
+  // ===== Admin console =====
+  openAdmin:()=>{ if(SB_AUTH.isAdmin()){ set({screen:'admin', adminTab:'users'}); } else { set({authSheet:'signin', authAdmin:true, authErr:null}); } },
+  closeAdmin:()=>set({screen:'app'}),
+  adminTab:(t)=>set({adminTab:t}),
+  adminSetTier:(arg)=>{ const p=String(arg).split('|'); const i=+p[0]; const c=(state.children||[])[i]; if(c&&window.SB_ENT){ SB_ENT.setTier(c,p[1]); save(); render(); } },
   qMeaning:()=>set({qMeaningOpen:!state.qMeaningOpen}),
   vocDeck:(k)=>{ const words=vocDeckWords(k); if(words.length<5){ flash('Not enough words here yet — train a list first'); return; }
     set({vocDeck:k, vocWords:words, vocIdx:0, vocFlip:false}); setTimeout(()=>{ const w=state.vocWords[0]; if(w) say(w.w); },250); },
@@ -769,7 +794,7 @@ const app = {
   vocNewSet:()=>{ set({vocWords:vocDeckWords(state.vocDeck), vocIdx:0, vocFlip:false}); },
   vocBack:()=>set({vocDeck:null}),
   // ----- Typing Trainer -----
-  openTyping:()=>{ tyStop(); set({nav:'typing', screen:'app', ty:null, conceptSel:null}); },
+  openTyping:()=>{ if(!gateFeature('trainTools','the Typing Trainer')) return; tyStop(); set({nav:'typing', screen:'app', ty:null, conceptSel:null}); },
   tyStart:(id)=>{ tyStop(); const l=TY_LESSONS.find(x=>x.id===id)||TY_LESSONS[0];
     state.ty={mode:'lesson', lesson:l.id, title:l.name, tip:l.tip, seq:tySeqFor(l), pos:0, typed:0, errors:0, startT:0, done:false};
     set({nav:'typing', screen:'app'}); app._tyArm(); },
@@ -1119,7 +1144,7 @@ const app = {
   openGames:()=>{ clearGTimer(); const c=active(); ensureLists(c); set({nav:'games', screen:'app', game:null, gInfo:false, typed:'', mood:'happy', conceptSel:null}); },
   // ----- Spelling Quest (window.SQ) -----
   openQuest:()=>{ clearGTimer(); if(window.SQ) SQ.open(); },
-  openSaga:()=>{ clearGTimer(); if(window.SAGA2) SAGA2.open(); },
+  openSaga:()=>{ if(!gateFeature('saga','Bizzy & the Great Unspelling')) return; clearGTimer(); if(window.SAGA2) SAGA2.open(); },
   openDaily:()=>{ clearGTimer(); if(window.SB_DAILY) SB_DAILY.open(); },
   // ----- Debug / QC: launch one saga engine standalone in a full-screen overlay -----
   dbgSaga:(name)=>{ if(!window.SB_SAGA_ENGINES||!SB_SAGA_ENGINES[name]){ flash('Engine not loaded'); return; }
@@ -1429,7 +1454,7 @@ const app = {
   reviseMisses:()=>{ const c=active(); const list=(c.missed||[]).slice(0,20); if(!list.length){ flash('No missed words yet — nice work!'); return; } state.sessionWords=list.map(m=>({w:m.w,d:m.d||'',s:m.s||'',p:m.p||'',o:m.o||'',r:m.r||'',y:m.y||3})); state.sessionLabel='Revise misses'; state.gi=0; state.coachSession=false; app.startTrain(); },
   parentLogToggle:(i)=>{ i=+i; set({parentLogOpen: state.parentLogOpen===i?null:i}); },
   // ===== Word Journeys (etymology lessons) =====
-  openJourneys:()=>{ set({nav:'journeys', screen:'app', lessonSel:null, conceptSel:null, game:null, mood:'happy'}); },
+  openJourneys:()=>{ if(!gateFeature('journeys','Word Journeys')) return; set({nav:'journeys', screen:'app', lessonSel:null, conceptSel:null, game:null, mood:'happy'}); },
   journeySetView:(v)=>set({journeyView:v, journeyPage:0}),
   journeyPagePrev:()=>set({journeyPage:Math.max(0,(state.journeyPage||0)-1)}),
   journeyPageNext:()=>set({journeyPage:(state.journeyPage||0)+1}),
@@ -1547,6 +1572,7 @@ const chip = (on) => 'padding:9px 14px;border-radius:999px;font-weight:700;font-
 
 function view(){
   const S = state;
+  if(S.screen==='admin') return viewAdmin();
   if(S.screen==='landing') return viewLanding();
   if(S.screen==='auth') return viewAuth();
   if(S.screen==='onboarding') return viewOnboarding();
@@ -2422,7 +2448,7 @@ function viewApp(){
         <div style="font-size:12px;color:var(--muted);margin-top:10px">Screenshot this card to share it!</div>`); })():'';
   const bandUp='';
 
-  return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}${(S.qWord?viewQuotesWordPop():'')}${(S.wordCard?viewWordCardPop():'')}${bandUp}
+  return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}${(S.qWord?viewQuotesWordPop():'')}${(S.wordCard?viewWordCardPop():'')}${(S.showTiers?viewTiersSheet():'')}${(S.authSheet?viewAuthSheet():'')}${bandUp}
     <div class="sb-header-sticky${state.nav==='coach'?' sb-collapse-nav':''}" style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
       <div style="max-width:1080px;margin:0 auto;padding:11px clamp(9px,3.2vw,32px);display:flex;align-items:center;gap:8px">
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
@@ -4689,8 +4715,21 @@ function viewSettings(){
       <p style="font-size:12px;color:var(--muted);line-height:1.55;margin:12px 0 0">Bizzing Bee picks the smoothest voice your device offers — no account or key, fully offline. Voices marked ✨ are the most natural. ${_voices.length?'':'<b style="color:var(--text)">Voices load a moment after opening</b> — reopen Settings to see the full list. '}</p>
       ${voiceUpgradeTip()}
     </div>`;
+  const _tierId=(window.SB_ENT)?SB_ENT.tierId():'free'; const _tier=(window.SB_TIERS&&SB_TIERS[_tierId])||{name:'Free',badge:'🐝'};
+  const _parent=(window.SB_AUTH)?SB_AUTH.current():null;
+  const accountCard=`<div class="sb-card" style="margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:11px"><span style="font-family:var(--display);font-weight:800;font-size:15px">Account &amp; subscription</span><span style="font-size:11px;color:var(--muted);font-weight:700;display:inline-flex;align-items:center;gap:4px">${iconSVG('lock',11,2.2)} Grown-ups only</span></div>
+    <div style="display:flex;align-items:center;gap:13px;flex-wrap:wrap">
+      <div style="min-width:0;flex:1"><div style="font-size:12.5px;color:var(--muted)">Current plan</div><div style="font-family:var(--display);font-weight:800;font-size:17px">${_tier.badge} ${esc(_tier.name)}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${_parent?('Signed in · '+esc(_parent.email)):'Not signed in · playing offline'}</div></div>
+      <button data-act="openTiers" style="padding:10px 16px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">Manage plan →</button>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;border-top:1px solid var(--line);padding-top:12px">
+      ${_parent?`<button data-act="doSignOut" style="padding:8px 13px;border-radius:9px;background:var(--surface2);color:var(--text);font-weight:800;font-size:12.5px">Sign out</button>`:`<button data-act="openAuth" data-arg="signin" style="padding:8px 13px;border-radius:9px;background:var(--surface2);color:var(--text);font-weight:800;font-size:12.5px">Parent sign in</button>`}
+      <button data-act="openAdmin" style="padding:8px 13px;border-radius:9px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:12.5px">🛡️ Admin console</button>
+    </div></div>`;
   return `<div style="max-width:640px">
     <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 16px">Settings</h2>
+    ${accountCard}
     <div class="sb-card" style="margin-bottom:16px">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:3px">World</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Each world is a different look and a character that evolves as you level up.</div>
@@ -5134,6 +5173,18 @@ function gameArtSVG(type,size){ size=size||58;
     `<g style="animation:sb-ga-swing 2.2s ease-in-out infinite;transform-origin:12px 38px">`+P('M9 39l12-12M18 24l4 4M8 36l4 4')+`</g>`+
     `<g style="animation:sb-ga-swing 2.2s ease-in-out infinite reverse;transform-origin:36px 38px">`+P('M39 39L27 27M30 24l-4 4M40 36l-4 4')+`</g>`+
     `<g style="animation:sb-ga-spark 2.2s linear infinite;transform-origin:24px 22px">`+P('M24 15v-4M19 20h-4M20.5 16.5l-3-3M27.5 16.5l3-3',' stroke-opacity=".9"')+`</g>`);
+  if(type==='daily'){ // five guess-squares light up in sequence, like a daily reveal
+    const sq=[0,1,2,3,4].map(i=>`<rect x="${8+i*7}" y="21" width="5.6" height="5.6" rx="1.4" fill="#fff" fill-opacity=".18" style="animation:sb-ga-cell 3s linear infinite;animation-delay:${(i*0.34).toFixed(2)}s"/>`).join('');
+    return W(sq+`<g style="animation:sb-jr-rise 3s ease-in-out infinite">`+P('M12 15h24',' stroke-opacity=".9"')+`</g>`); }
+  if(type==='trivia'){ // glowing lightbulb that pulses, sparks flicking off it
+    return W(
+      `<g style="animation:sb-ga-press 2.2s ease-in-out infinite;transform-origin:24px 22px">`+P('M24 8a10 10 0 0 0-6 18c1.2 1 1.7 1.8 1.8 3h8.4c.1-1.2.6-2 1.8-3a10 10 0 0 0-6-18z')+`</g>`+
+      P('M20 33h8M21 37h6')+
+      `<g style="animation:sb-ga-spark 2.2s linear infinite;transform-origin:24px 20px">`+P('M24 3v3M11 9l2 2M37 9l-2 2M6 20h3M39 20h-3',' stroke-opacity=".9"')+`</g>`); }
+  if(type==='champ'){ // a champion star that pulses with a lightning spark
+    return W(
+      `<g style="animation:sb-ga-star 2.4s ease-in-out infinite;transform-origin:24px 24px">`+P('M24 8l4.4 9.6 10.6 1-8 7 2.4 10.4L24 40l-9.4 6 2.4-10.4-8-7 10.6-1z').replace('<path','<path fill="rgba(255,255,255,.9)"')+`</g>`+
+      `<g style="animation:sb-ga-spark 2.4s linear infinite;transform-origin:24px 24px">`+P('M24 20l-3 5h4l-3 5',' fill="none" stroke="#FFC23D" stroke-width="2.6"')+`</g>`); }
   // fallback: existing icon set with float
   const gm=GAMES.find(g=>g.type===type);
   return `<div class="sb-theme-art">${iconSVG((gm&&gm.ic)||'spark',46,2)}</div>`; }
@@ -5484,12 +5535,11 @@ function gamesHub(){ const S=state; const c=active();
   if(window.SB_DAILY){ let st={}; try{ st=JSON.parse(localStorage.getItem('sb_daily')||'{}'); }catch(e){}
     const today=(()=>{ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); })();
     const doneToday=st.day===today&&st.over; const streak=st.streak||0;
-    const grid=`<span style="display:grid;grid-template-columns:repeat(5,13px);gap:3px">${['hit','near','miss','hit','near'].map(s=>`<span style="width:13px;height:13px;border-radius:3px;background:${s==='hit'?'#FFF':s==='near'?'#FFE28A':'rgba(255,255,255,.4)'}"></span>`).join('')}</span>`;
-    feats.push(tile({act:'openDaily',grad:'linear-gradient(135deg,#2FA35C,#1E7D45)',art:grid,badge:'Daily',title:'Daily Buzz',blurb:'Six tries to spell today’s mystery word — then share your grid.',cta:'#1E7D45',stat:doneToday?'Seen ✓':(streak>0?streak+'-day 🔥':'new')})); }
+    feats.push(tile({act:'openDaily',grad:'linear-gradient(135deg,#2FA35C,#1E7D45)',art:gameArtSVG('daily',48),badge:'Daily',title:'Daily Buzz',blurb:'Six tries to spell today’s mystery word — then share your grid.',cta:'#1E7D45',stat:doneToday?'Seen ✓':(streak>0?streak+'-day 🔥':'new')})); }
   if(window.SB_TRIVIA){ const st=(c.trivia)||{}; const nQ=(SB_TRIVIA.questions||[]).length;
-    feats.push(tile({act:'openTrivia',grad:'linear-gradient(135deg,#F0A93C,#DC7A18)',art:ART('beeTrivia',44,'<span style=\"font-size:42px\">🧠</span>'),badge:'Quiz',title:'Bee Trivia',blurb:fmtN(nQ)+' questions · 20 themes · picture & listening rounds.',cta:'#C8791B',stat:st.right?fmtN(st.right)+' right':''})); }
-  feats.push(tile({act:'openChallenge',arg:'journey',grad:'linear-gradient(135deg,#7C5CFF,#5A37D6)',art:ART('champChallenge',42,iconSVG('bolt',36)),badge:'Timed',title:'Champ Challenge',blurb:'Beat the clock or a set number — pass your Level to test out.',cta:'#5A37D6',stat:''}));
-  feats.push(tile({act:'playGame',arg:'magic',grad:'linear-gradient(135deg,#B14FC4,#7E2E9E)',art:ART('magicSquares',42,gameArtSVG('magic',42)),badge:'Board',title:'Magic Squares',blurb:'Clear a 3×3 board of themes & concepts — lines win bonus coins.',cta:'#7E2E9E',stat:''}));
+    feats.push(tile({act:'openTrivia',grad:'linear-gradient(135deg,#F0A93C,#DC7A18)',art:gameArtSVG('trivia',48),badge:'Quiz',title:'Bee Trivia',blurb:fmtN(nQ)+' questions · 20 themes · picture & listening rounds.',cta:'#C8791B',stat:st.right?fmtN(st.right)+' right':''})); }
+  feats.push(tile({act:'openChallenge',arg:'journey',grad:'linear-gradient(135deg,#7C5CFF,#5A37D6)',art:gameArtSVG('champ',48),badge:'Timed',title:'Champ Challenge',blurb:'Beat the clock or a set number — pass your Level to test out.',cta:'#5A37D6',stat:''}));
+  feats.push(tile({act:'playGame',arg:'magic',grad:'linear-gradient(135deg,#B14FC4,#7E2E9E)',art:gameArtSVG('magic',48),badge:'Board',title:'Magic Squares',blurb:'Clear a 3×3 board of themes & concepts — lines win bonus coins.',cta:'#7E2E9E',stat:''}));
   // ---- QUICK GAMES: the four arcade engines ----
   const quick=GAMES.map(gm=>tile({act:'playGame',arg:gm.type,grad:gameCoverBG(gm),art:gameArtSVG(gm.type,48),badge:gm.tag,title:gm.name,blurb:gm.blurb,cta:gm.c,stat:''})).join('');
   const store=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:16px 18px;margin-top:4px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
@@ -5797,10 +5847,97 @@ function overlays(){
   return h;
 }
 
+// ===== Subscription tier sheet (pricing) =====
+function tierEntRows(t){ const e=t.ent; const yes='✓', no='—';
+  const wc=e.words>=40000?'All 40,000 words':(fmtN(e.words)+' words');
+  const worlds=e.worlds==='all'?'All worlds':(e.worlds+' worlds');
+  const packs=e.avatarPacks==='all'?'All avatar packs':(e.avatarPacks?e.avatarPacks+' avatar packs':'Free avatars only');
+  const rows=[wc, (e.lists?yes:no)+' Word lists', (e.concepts?yes:no)+' Concepts', (e.trainTools?yes:no)+' Train tools (idioms, typing, vocab, quotes)', (e.games==='all'?'All games':'Basic games'), worlds, packs, (e.saga?yes:no)+' Bizzy & the Great Unspelling', (e.startCoins?('🪙 '+fmtN(e.startCoins)+' start coins'):'')];
+  return rows.filter(Boolean).map(r=>`<div style="font-size:12.5px;color:var(--text);padding:3px 0;line-height:1.4">${r.charAt(0)==='—'?'<span style="color:var(--muted)">'+esc(r)+'</span>':esc(r)}</div>`).join(''); }
+function viewTiersSheet(){ const S=state; const cur=(window.SB_ENT?SB_ENT.tierId():'free'); const up=S.tierUpsell;
+  const col=(id)=>{ const t=SB_TIERS[id]; const isCur=id===cur; const accent=id==='regional'?'#7C5CFF':id==='beginner'?'#E0922E':'#2FA35C';
+    const price=t.priceMo?('$'+t.priceMo.toFixed(2)+'/mo · $'+t.priceYr+'/yr'):'Free';
+    return `<div style="flex:1;min-width:210px;background:var(--paper,var(--bg2));border:2px solid ${isCur?accent:'var(--line)'};border-radius:16px;padding:16px 15px;display:flex;flex-direction:column;position:relative">
+      ${isCur?`<span style="position:absolute;top:-11px;left:15px;background:${accent};color:#fff;font-weight:800;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:99px">Your plan</span>`:''}
+      <div style="font-family:var(--display);font-weight:800;font-size:17px">${t.badge} ${esc(t.name)}</div>
+      <div style="font-weight:800;font-size:14px;color:${accent};margin:2px 0 3px">${price}</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-bottom:10px">${esc(t.blurb)}</div>
+      <div style="border-top:1px solid var(--line);padding-top:9px;margin-bottom:12px">${tierEntRows(t)}</div>
+      <div style="margin-top:auto">${isCur?`<div style="text-align:center;font-weight:800;font-size:13px;color:${accent};padding:10px">Current ✓</div>`:`<button data-act="chooseTier" data-arg="${id}" style="width:100%;padding:11px;border-radius:11px;background:${accent};color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge)">${id==='free'?'Switch to Free':'Choose '+esc(t.name)}</button>`}</div>
+    </div>`; };
+  const addon=SB_ADDONS.advanced;
+  return `<div style="position:fixed;inset:0;z-index:135;display:grid;place-items:center;padding:18px;background:rgba(20,12,4,.55);overflow:auto" data-act="closeTiers">
+    <div data-act="noop" style="background:var(--bg1,#f6f2ff);border-radius:22px;max-width:820px;width:100%;padding:22px;box-shadow:0 24px 70px rgba(20,10,30,.5);animation:sb-pop .3s ease both;max-height:92vh;overflow:auto">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px"><span style="font-family:var(--display);font-weight:800;font-size:20px">Choose your plan</span><button data-act="closeTiers" style="margin-left:auto;width:34px;height:34px;border-radius:10px;background:var(--surface2);color:var(--muted);font-weight:800">✕</button></div>
+      ${up?`<div style="font-size:13px;color:var(--accent);font-weight:700;margin-bottom:12px">🔒 ${esc(up.label)} is part of the ${esc((SB_TIERS[up.need]||{}).name||'a higher')} plan — upgrade to unlock it.</div>`:`<div style="font-size:12.5px;color:var(--muted);margin-bottom:12px">Prices in USD. Regional pricing applies at checkout (Phase 2). Change or cancel anytime.</div>`}
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px">${['free','beginner','regional'].map(col).join('')}</div>
+      <div style="background:var(--surface2);border:1px dashed var(--line);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <span style="width:40px;height:40px;flex-shrink:0;border-radius:11px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG('spark',22)}</span>
+        <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:14px">${esc(addon.name)} · +$${addon.priceYr}/yr</span><span style="display:block;font-size:12px;color:var(--muted)">${esc(addon.blurb)}</span></span>
+        <button data-act="buyAddon" data-arg="advanced" style="padding:9px 15px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12.5px">${addon.built?'Add':'Notify me'}</button>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:12px;text-align:center">Local preview — real billing (Stripe / Razorpay) connects in Phase 2. Plans are managed by a parent.</div>
+    </div></div>`; }
+// ===== Parent / admin auth sheet =====
+function viewAuthSheet(){ const S=state; const mode=S.authSheet; const signup=mode==='signup'; const adminHint=S.authAdmin;
+  return `<div style="position:fixed;inset:0;z-index:136;display:grid;place-items:center;padding:20px;background:rgba(20,12,4,.55)" data-act="closeAuth">
+    <div data-act="noop" style="background:var(--paper,#fff);border-radius:20px;max-width:380px;width:100%;padding:24px 22px;box-shadow:0 20px 60px rgba(20,10,30,.5);animation:sb-pop .3s ease both">
+      <div style="font-family:var(--display);font-weight:800;font-size:20px;margin-bottom:3px">${signup?'Create parent account':(adminHint?'Admin sign in':'Parent sign in')}</div>
+      <div style="font-size:12.5px;color:var(--muted);margin-bottom:16px">${adminHint?'Enter the admin credentials to open the console.':'Accounts are for grown-ups — kids just play. (Local preview; real accounts in Phase 2.)'}</div>
+      ${signup?`<input data-inp="authName" placeholder="Your name" autocomplete="off" style="width:100%;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:600;margin-bottom:10px;outline:none">`:''}
+      <input data-inp="authEmail" placeholder="${adminHint?'admin':'you@email.com'}" autocomplete="off" autocapitalize="off" style="width:100%;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:600;margin-bottom:10px;outline:none">
+      <input data-inp="authPw" type="password" placeholder="Password" autocomplete="off" style="width:100%;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:600;margin-bottom:${S.authErr?'8':'16'}px;outline:none">
+      ${S.authErr?`<div style="font-size:12.5px;color:var(--bad,#D6453A);font-weight:700;margin-bottom:14px">${esc(S.authErr)}</div>`:''}
+      <button data-act="${signup?'doSignUp':'doSignIn'}" style="width:100%;padding:13px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge);margin-bottom:10px">${signup?'Create account':'Sign in'}</button>
+      <div style="text-align:center;font-size:12.5px;color:var(--muted)">${signup?'Have an account?':'No account yet?'} <button data-act="openAuth" data-arg="${signup?'signin':'signup'}" style="color:var(--accent);font-weight:800;background:none;border:0;cursor:pointer">${signup?'Sign in':'Create one'}</button> · <button data-act="closeAuth" style="color:var(--muted);font-weight:700;background:none;border:0;cursor:pointer">Cancel</button></div>
+    </div></div>`; }
+// ===== Admin console (local support tool; Retool/RBAC in Phase 2) =====
+function viewAdmin(){ const S=state; const tab=S.adminTab||'users'; const me=SB_AUTH.current();
+  const tabBtn=(k,l)=>`<button data-act="adminTab" data-arg="${k}" style="padding:9px 15px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${l}</button>`;
+  let body='';
+  if(tab==='users'){
+    const kids=(S.children||[]).map((c,i)=>{ const t=(c.tier&&SB_TIERS[c.tier])?c.tier:'free';
+      const sel=['free','beginner','regional'].map(id=>`<button data-act="adminSetTier" data-arg="${i}|${id}" style="padding:6px 10px;border-radius:8px;font-weight:800;font-size:11.5px;${t===id?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">${SB_TIERS[id].name}</button>`).join('');
+      return `<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-bottom:9px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px"><span style="font-family:var(--display);font-weight:800;font-size:15px">${esc(c.name||'Speller '+(i+1))}</span><span style="font-size:12px;color:var(--muted)">age ${c.age||'?'} · 🪙 ${fmtN(c.coins||0)} · plan: <b style="color:var(--accent)">${esc(SB_TIERS[t].name)}</b></span></div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">${sel}</div></div>`; }).join('')||'<div style="color:var(--muted);font-size:13px">No child profiles on this device yet.</div>';
+    const accts=SB_AUTH.listUsers().map(u=>`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:99px;background:var(--surface2);border:1px solid var(--line);font-weight:700;font-size:12px">${u.role==='admin'?'🛡️':'👤'} ${esc(u.email)} <span style="color:var(--muted)">· ${esc(u.role)}</span></span>`).join(' ');
+    body=`<div class="sb-card" style="margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px">Child profiles &amp; plans</div><div style="font-size:12px;color:var(--muted);margin-bottom:12px">Set any speller's subscription tier (local — mirrors what a Stripe webhook will do in Phase 2).</div>${kids}</div>
+      <div class="sb-card"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:8px">Accounts</div><div style="display:flex;gap:7px;flex-wrap:wrap">${accts}</div></div>`;
+  } else if(tab==='promos'){
+    body=`<div class="sb-card"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:6px">Promotions &amp; feature flags</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.6">This is where promo banners, coupon codes, price experiments and tier changes are toggled <b>live, without an app redeploy</b>. In Phase 2 this panel is backed by a remote-config / feature-flag service (PostHog flags or Firebase Remote Config) + Stripe coupons. For now it's a placeholder wired to the same admin gate.</div>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><span style="padding:6px 12px;border-radius:99px;background:var(--surface2);border:1px dashed var(--line);font-weight:700;font-size:12px;color:var(--muted)">＋ New promo (Phase 2)</span><span style="padding:6px 12px;border-radius:99px;background:var(--surface2);border:1px dashed var(--line);font-weight:700;font-size:12px;color:var(--muted)">＋ Coupon code (Phase 2)</span></div></div>`;
+  } else if(tab==='content'){
+    const reports=(S.wordReports||[]).length;
+    body=`<div class="sb-card"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:6px">Content moderation</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.6">Word/quote fixes ship as data (the <code>words-patch.js</code> pattern). Parent-flagged words on this device: <b>${reports}</b>. In Phase 2 these flow to a shared moderation queue.</div></div>`;
+  } else {
+    let saga=0; try{ saga=(window.SAGA2&&SAGA2.cleared)?SAGA2.cleared():0; }catch(e){}
+    body=`<div class="sb-card"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:8px">Analytics (local snapshot)</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px">
+        ${[['Profiles',(S.children||[]).length],['Accounts',SB_AUTH.listUsers().length],['Quotes',(window.SB_QUOTES||[]).length],['Saga cleared',saga]].map(([l,v])=>`<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:22px;color:var(--accent)">${fmtN(v)}</div><div style="font-size:11.5px;color:var(--muted);font-weight:700">${l}</div></div>`).join('')}
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-top:12px">Real product analytics (PostHog) + revenue BI (warehouse + Metabase) connect in Phase 2 — see LAUNCH-READINESS.md.</div></div>`;
+  }
+  return `<div style="max-width:860px;margin:0 auto;padding:18px clamp(14px,3.5vw,32px) 60px">
+    <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:14px">
+      <span style="width:38px;height:38px;border-radius:11px;background:#241E33;color:#fff;display:grid;place-items:center;font-size:18px">🛡️</span>
+      <span style="font-family:var(--display);font-weight:800;font-size:20px">Admin console</span>
+      <span style="font-size:12px;color:var(--muted)">${me?esc(me.email):''}</span>
+      <span style="margin-left:auto;display:inline-flex;gap:8px"><button data-act="doSignOut" style="padding:9px 14px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:12.5px">Sign out</button><button data-act="closeAdmin" style="padding:9px 14px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:12.5px">← Back to app</button></span>
+    </div>
+    <div style="background:#FEF3C7;border:1px solid #F0C040;color:#7a5a00;border-radius:10px;padding:9px 13px;font-size:12px;font-weight:600;margin-bottom:14px">⚠️ Local dev console. This is not production security — real admin runs server-side (RBAC) in Phase 2.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">${tabBtn('users','Users & plans')}${tabBtn('promos','Promotions')}${tabBtn('content','Content')}${tabBtn('analytics','Analytics')}</div>
+    ${body}
+  </div>`; }
+
 /* ===================== render + events ===================== */
 const root = document.getElementById('root');
 function save(){ try{ localStorage.setItem('sb_saas_v2', JSON.stringify({ theme:state.theme, mode:state.mode, premium:state.premium, pin:state.parentPin||null, vr:state.voiceRate||1, tz:state.textSize||'normal', ra:state.readAloud?1:0, af:state.a11yFont||'std', ac:state.a11yContrast?1:0, am:state.a11yMotion?1:0, cm:state.calmMode?1:0, children:state.children, activeIdx:state.activeIdx, goalDone:state.goalDone, cN:(window.SB_CONCEPTS&&SB_CONCEPTS.chapters&&SB_CONCEPTS.chapters.length)||121, lu:state.luMastered, srs:state.coachSrs, chist:state.coachHistory, wr:state.wordReports||[] })); }catch(e){} }
 function render(){
+  // keep the legacy paid/free flag in lock-step with the active child's subscription tier
+  try{ if(window.SB_ENT && state.children && state.children.length) state.premium = SB_ENT.isPaid(); }catch(e){}
   const a=document.activeElement; const fkey=a&&a.getAttribute&&a.getAttribute('data-fkey'); let ss=null,se=null;
   try{ if(a){ ss=a.selectionStart; se=a.selectionEnd; } }catch(e){}
   document.documentElement.setAttribute('data-theme', state.theme);
