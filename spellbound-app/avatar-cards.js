@@ -407,7 +407,8 @@
     var villain = isVillain(a);
     // {name} stays a literal token here — the app fills it with the SPELLER's name at display
     // time (not the avatar's). Prefer a hand-written per-avatar greeting, then the pack voice.
-    var greeting = (slore && slore.greeting) ? slore.greeting : (db.greeting || voices[hash(id + 'g') % voices.length]);
+    var greeting = (slore && slore.greeting) ? slore.greeting
+      : ((window.SB_AV_GREETINGS && window.SB_AV_GREETINGS[id]) || db.greeting || voices[hash(id + 'g') % voices.length]);
     var title = slore ? slore.tagline : (RANK[a.rarity] + ' ' + (PACK_TITLE[a.pack] || ''));
     // LORE line (character backstory shown up top). Villains use their saga backstory.
     var lore = slore ? slore.fact : (db.lore || (a.name + ' of the ' + pack.label + '.'));
