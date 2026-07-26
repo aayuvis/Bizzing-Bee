@@ -77,6 +77,17 @@
   @keyframes ca-morph{0%{transform:rotateX(0)}42%{transform:rotateX(88deg);opacity:.2}60%{transform:rotateX(88deg);opacity:.2}100%{transform:rotateX(0);opacity:1}}
   @keyframes ca-glow{0%,100%{filter:none}50%{filter:brightness(1.12) drop-shadow(0 0 9px color-mix(in srgb,var(--accent) 55%,transparent))}}
   @keyframes sb-bee-bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-7px) rotate(3deg)}}
+  /* "Find your Bee Band" is the one thing a new speller must tap, so the header pill calls
+     for attention until the band is known — then it goes quiet for good. */
+  @keyframes sb-band-call{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 55%,transparent);transform:translateY(0)}
+    50%{box-shadow:0 0 0 7px color-mix(in srgb,var(--accent) 0%,transparent);transform:translateY(-1.5px)}}
+  @keyframes sb-band-sheen{0%{transform:translateX(-130%)}55%,100%{transform:translateX(240%)}}
+  .sb-band-call{position:relative;overflow:hidden;animation:sb-band-call 1.9s ease-in-out infinite;
+    background:linear-gradient(120deg,color-mix(in srgb,var(--accent) 22%,var(--chip)),color-mix(in srgb,var(--treasure,#F0B429) 26%,var(--chip)))!important}
+  .sb-band-call::after{content:"";position:absolute;top:0;bottom:0;width:38%;pointer-events:none;
+    background:linear-gradient(100deg,transparent,rgba(255,255,255,.62),transparent);animation:sb-band-sheen 2.6s ease-in-out infinite}
+  .sb-band-call .sb-band-spark{animation:sb-band-spark 1.9s ease-in-out infinite}
+  @keyframes sb-band-spark{0%,100%{transform:scale(1) rotate(0)}45%{transform:scale(1.22) rotate(14deg)}}
   /* livelier "talking" loop: hop, lean side to side, little scale pulses */
   @keyframes sb-bee-talk{0%{transform:translate(0,0) rotate(-5deg) scale(1)}20%{transform:translate(-3px,-9px) rotate(3deg) scale(1.05)}40%{transform:translate(2px,-2px) rotate(6deg) scale(1)}60%{transform:translate(4px,-8px) rotate(-2deg) scale(1.04)}80%{transform:translate(-2px,-1px) rotate(-6deg) scale(1)}100%{transform:translate(0,0) rotate(-5deg) scale(1)}}
   @keyframes sb-bee-pop{0%{transform:scale(.55) translateY(14px) rotate(-12deg);opacity:0}65%{transform:scale(1.12) translateY(-2px) rotate(4deg)}100%{transform:scale(1) translateY(0) rotate(0);opacity:1}}
