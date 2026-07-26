@@ -795,6 +795,38 @@ const app = {
   vocBack:()=>set({vocDeck:null}),
   // ----- Typing Trainer -----
   openTyping:()=>{ if(!gateFeature('trainTools','the Typing Trainer')) return; tyStop(); set({nav:'typing', screen:'app', ty:null, conceptSel:null}); },
+  // ===== Bizzing Readers — phonics & early reading (ages 5-7), voice-led =====
+  openReaders:()=>{ if(!gateFeature('trainTools','Bizzing Readers')) return; set({nav:'readers', screen:'app', conceptSel:null, rd:null}); },
+  rdMode:(m)=>{ const R=window.SB_READERS; if(!R) return;
+    if(m==='sounds'||m==='blend'){ state.rd={mode:m,right:0,done:0,q:null,picked:null}; rdNewQ(); }
+    else if(m==='family') state.rd={mode:m,fam:0};
+    else if(m==='sight') state.rd={mode:m,lvl:0,i:0,flip:false};
+    else state.rd=null;
+    render(); if(state.rd&&(m==='sounds'||m==='blend')) setTimeout(app.rdSay,320); },
+  rdBack:()=>set({rd:null}),
+  rdSay:()=>{ const r=state.rd; if(!r||!r.q) return; try{ say(r.q.say, r.q.slow?0.7:0.95); }catch(e){} },
+  rdSayWord:(w)=>{ try{ say(w); }catch(e){} },
+  // tap a phoneme chip to hear that sound, using a real example word as the cue
+  rdSayPart:(p)=>{ const R=window.SB_READERS; if(!R) return; const k=String(p).toLowerCase();
+    const hit=(R.letters||[]).concat(R.digraphs||[]).find(x=>x.l===k);
+    try{ say(hit?hit.ex[0]:k); }catch(e){} },
+  rdAnswer:(val)=>{ const r=state.rd; if(!r||!r.q||r.picked!=null) return;
+    const ok=String(val)===String(r.q.ans); r.picked=String(val); r.done=(r.done||0)+1;
+    if(ok){ r.right=(r.right||0)+1; try{ sfx('correct'); }catch(e){}
+      const c=active(); c.rd=c.rd||{sounds:0,blends:0,known:{}}; c.rd[r.mode==='sounds'?'sounds':'blends']=(c.rd[r.mode==='sounds'?'sounds':'blends']||0)+1;
+      addCoins(1); c.karma=(c.karma||0)+1; save();
+      if(r.done%5===0) burstConfetti(70);
+    } else { try{ sfx('wrong'); }catch(e){} }
+    render(); setTimeout(()=>{ if(state.rd&&state.rd.picked!=null){ rdNewQ(); render(); setTimeout(app.rdSay,260); } }, ok?1100:1900); },
+  rdFamily:(i)=>{ const r=state.rd; if(r){ r.fam=+i; render(); } },
+  rdSightLvl:(i)=>{ const r=state.rd; if(r){ r.lvl=+i; r.i=0; r.flip=false; render(); } },
+  rdSightNav:(d)=>{ const r=state.rd; const R=window.SB_READERS; if(!r||!R) return;
+    const list=(R.sight[r.lvl]||{}).words||[]; let i=(r.i||0)+(+d); if(i<0)i=list.length-1; if(i>=list.length)i=0;
+    r.i=i; r.flip=false; render(); setTimeout(()=>{ try{ say(list[i]); }catch(e){} },200); },
+  rdKnow:()=>{ const r=state.rd; const R=window.SB_READERS; if(!r||!R) return;
+    const list=(R.sight[r.lvl]||{}).words||[]; const w=list[r.i||0]; if(!w) return;
+    const c=active(); c.rd=c.rd||{sounds:0,blends:0,known:{}}; c.rd.known=c.rd.known||{};
+    c.rd.known[w]=1; addCoins(1); try{ sfx('correct'); }catch(e){} save(); app.rdSightNav(1); },
   tyStart:(id)=>{ tyStop(); const l=TY_LESSONS.find(x=>x.id===id)||TY_LESSONS[0];
     state.ty={mode:'lesson', lesson:l.id, title:l.name, tip:l.tip, seq:tySeqFor(l), pos:0, typed:0, errors:0, startT:0, done:false};
     set({nav:'typing', screen:'app'}); app._tyArm(); },
@@ -1819,6 +1851,7 @@ const WAYFIND={ quest:{c:'var(--action,#6C4FE0)',ic:'steps',sb:null,label:'Champ
   vocab:{c:'#2E8FB8',ic:'book',sb:'book',label:'Vocabulary'},
   typing:{c:'#5B3DD6',ic:'pencil',sb:'pencil',label:'Typing Trainer'},
   quotes:{c:'#C8791B',ic:'quote',sb:'star',label:'Quotes'},
+  readers:{c:'#2FA35C',ic:'book',sb:'book',label:'Bizzing Readers'},
   traps:{c:'#C4453C',ic:'spark',sb:'target',label:'Your Traps'},
   revisions:{c:'#E0922E',ic:'book',sb:'target',label:'Your Revisions'} };
 function wayTile(key,size,tilt){ const w=WAYFIND[key]; size=size||48;
@@ -2220,7 +2253,8 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
     row('figurative','setNav','figurative','2,350 idioms & similes, card by card')+
     row('typing','openTyping',null,'Touch-type, then race the 60-second test')+
     row('vocab','openVocab',null,'Word → meaning, vocabulary-bee style')+
-    row('quotes','openQuotes',null,(qN?fmtN(qN)+' ':'')+'kid-friendly quotes from famous people'));
+    row('quotes','openQuotes',null,(qN?fmtN(qN)+' ':'')+'kid-friendly quotes from famous people')+
+    row('readers','openReaders',null,'Phonics & first reading for ages 5-7 · sounds, blending, sight words'));
   // ---- REVISE ----  fix what trips you up
   const revise=hub('Revise','retry','#E0922E','Fix what trips you up',
     row('revisions','openRevisions',null,'Redo the words you flagged to revise'+(missN?' · '+missN+' waiting':''))+
@@ -2348,7 +2382,7 @@ function viewRevisions(){
 /* ===================== APP SHELL ===================== */
 function viewApp(){
   const S=state;
-  const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,quotes:1,typing:1,builder:1,adv:1,traps:1,revisions:1};
+  const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,quotes:1,typing:1,builder:1,adv:1,traps:1,revisions:1,readers:1};
   const NAV_ART={home:'home',coach:'practice',explore:'explore',games:'arcade',shop:'store',progress:'progress',collection:'collection'};
   const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['explore','Supercharge','compass'],['games','Arcade','joystick'],['shop','Store','cart'],['progress','Progress','chart'],['collection','Collection','crown']].map(([key,label,ic])=>{
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:S.nav===key;
@@ -2368,6 +2402,7 @@ function viewApp(){
   else if(S.nav==='figurative') content=viewFigurative();
   else if(S.nav==='vocab') content=viewVocab();
   else if(S.nav==='quotes') content=viewQuotes();
+  else if(S.nav==='readers') content=viewReaders();
   else if(S.nav==='typing') content=viewTyping();
   else if(S.nav==='builder') content=viewBuilder();
   else if(S.nav==='leveltest') content=viewLevelTest();
@@ -5936,6 +5971,124 @@ function overlays(){
   return h;
 }
 
+/* ===================== Bizzing Readers — phonics & early reading =====================
+   Voice-led for pre-readers: every prompt is spoken with the real word clips, and
+   answers are tapped (letters or pictures) so no reading or typing is required. */
+function rdPick(arr,n,not){ const pool=arr.filter(x=>x!==not); const out=[]; while(out.length<n&&pool.length){ out.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]); } return out; }
+function rdNewQ(){ const r=state.rd; const R=window.SB_READERS; if(!r||!R) return;
+  if(r.mode==='sounds'){
+    // "Which letter does <word> start with?" — plays a real word clip, shows 4 letter tiles
+    const pool=(R.letters||[]).concat(R.digraphs||[]);
+    const t=pool[Math.floor(Math.random()*pool.length)];
+    const wrong=rdPick(pool.map(x=>x.l),3,t.l);
+    r.q={kind:'sounds', ans:t.l, snd:t.snd, emo:t.emo, word:t.ex[0], say:t.ex[0],
+         opts:rdPick([t.l].concat(wrong),4).length===4?rdPick([t.l].concat(wrong),4):[t.l].concat(wrong)};
+    // guarantee the answer is present after shuffling
+    if(r.q.opts.indexOf(t.l)<0){ r.q.opts[Math.floor(Math.random()*r.q.opts.length)]=t.l; }
+  } else {
+    // Blend it: show c·a·t, hear the word, then tap the matching picture
+    const pool=R.cvc||[]; const t=pool[Math.floor(Math.random()*pool.length)];
+    const wrong=rdPick(pool,2,t); const opts=rdPick([t].concat(wrong),3);
+    if(opts.indexOf(t)<0) opts[Math.floor(Math.random()*opts.length)]=t;
+    r.q={kind:'blend', ans:t.w, word:t.w, parts:t.p, emo:t.emo, say:t.w, opts:opts};
+  }
+  r.picked=null; }
+function viewReaders(){ const S=state; const c=active(); const R=window.SB_READERS; const r=S.rd;
+  if(!R) return `<div style="max-width:760px;margin:0 auto">${pageHead('Bizzing Readers','loading…','')}</div>`;
+  const prog=c.rd||{sounds:0,blends:0,known:{}}; const knownN=Object.keys(prog.known||{}).length;
+  const back=`<button data-act="rdBack" style="display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-weight:800;font-size:13px;margin-bottom:12px">← All activities</button>`;
+  // ---------- activity picker ----------
+  if(!r){
+    const card=(m,emo,title,sub,col,stat)=>`<button class="sb-lift" data-act="rdMode" data-arg="${m}" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column">
+      <span style="height:76px;display:grid;place-items:center;font-size:40px;background:linear-gradient(135deg,${col},color-mix(in srgb,${col} 62%,#000))">${emo}</span>
+      <span style="padding:13px 15px 15px;display:block">
+        <span style="display:block;font-family:var(--display);font-weight:800;font-size:16px">${title}</span>
+        <span style="display:block;font-size:12.5px;color:var(--muted);line-height:1.4;margin-top:3px">${sub}</span>
+        ${stat?`<span style="display:inline-block;margin-top:9px;font-size:11.5px;font-weight:800;color:${col};background:color-mix(in srgb,${col} 14%,transparent);padding:3px 10px;border-radius:99px">${stat}</span>`:''}
+      </span></button>`;
+    return `<div style="max-width:820px;margin:0 auto">
+      ${pageHead('Bizzing Readers','learn to read · ages 5-7','Sounds, blending, rhyming families and sight words — every activity is read aloud, so a new reader can play on their own.')}
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px">
+        ${card('sounds','🔤','Letter Sounds','Hear a word — tap the letter it starts with.','#7C5CFF',prog.sounds?prog.sounds+' correct':'')}
+        ${card('blend','🧩','Blend It','Sound out c·a·t, then tap the right picture.','#13A892',prog.blends?prog.blends+' blended':'')}
+        ${card('family','🎵','Word Families','Words that rhyme — tap any word to hear it.','#E0922E',(R.families||[]).length+' families')}
+        ${card('sight','⭐','Sight Words','Tricky words you learn by sight.','#E8458C',knownN?knownN+' known':(R.sight||[]).reduce((n,s)=>n+s.words.length,0)+' words')}
+      </div>
+      <div class="sb-card" style="margin-top:16px;display:flex;align-items:center;gap:13px;flex-wrap:wrap">
+        <span style="font-size:26px">👂</span>
+        <span style="min-width:0;flex:1;font-size:12.5px;color:var(--muted);line-height:1.5">Everything here is spoken aloud with the same real voice as the spelling words — new readers tap pictures and letters, so they never have to read an instruction to play.</span>
+      </div></div>`; }
+  // ---------- sounds / blend quiz ----------
+  if(r.mode==='sounds'||r.mode==='blend'){
+    const q=r.q||{}; const isS=r.mode==='sounds'; const col=isS?'#7C5CFF':'#13A892';
+    const okPick=r.picked!=null&&String(r.picked)===String(q.ans);
+    const badPick=r.picked!=null&&!okPick;
+    const speaker=`<button data-act="rdSay" aria-label="Hear it again" style="width:74px;height:74px;border-radius:50%;background:${col};color:#fff;display:grid;place-items:center;box-shadow:var(--edge);flex-shrink:0">${iconSVG('volume',34)}</button>`;
+    let body='';
+    if(isS){
+      const tile=(L)=>{ const on=r.picked===L; const isAns=L===q.ans;
+        const bg=r.picked==null?'var(--surface)':(isAns?'var(--good)':(on?'var(--bad)':'var(--surface)'));
+        const fg=(r.picked!=null&&(isAns||on))?'#fff':'var(--text)';
+        return `<button data-act="rdAnswer" data-arg="${escA(L)}" ${r.picked!=null?'disabled':''} style="min-width:84px;height:84px;padding:0 14px;border-radius:18px;background:${bg};color:${fg};border:2px solid var(--line);font-family:var(--display);font-weight:800;font-size:34px;box-shadow:var(--sh-rest)">${esc(L)}</button>`; };
+      body=`<div style="text-align:center">
+        <div style="font-size:64px;line-height:1;margin-bottom:6px">${q.emo||'🔤'}</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:6px">${speaker}
+          <div style="text-align:left"><div style="font-family:var(--display);font-weight:800;font-size:26px">${esc(q.word||'')}</div>
+          <div style="font-size:12.5px;color:var(--muted);font-weight:700">Which letter does it start with?</div></div></div>
+        ${r.picked!=null?`<div style="font-family:var(--mono);font-weight:800;font-size:15px;color:${col};margin:8px 0 2px">${esc(q.ans)} says ${esc(q.snd||'')}</div>`:''}
+        <div style="display:flex;gap:11px;flex-wrap:wrap;justify-content:center;margin-top:14px">${(q.opts||[]).map(tile).join('')}</div>
+      </div>`;
+    } else {
+      const chips=(q.parts||[]).map((p,i)=>`<button data-act="rdSayPart" data-arg="${escA(p)}" style="min-width:56px;height:66px;border-radius:14px;background:var(--chip);color:var(--accent);border:2px dashed color-mix(in srgb,${col} 45%,var(--line));font-family:var(--display);font-weight:800;font-size:28px">${esc(p)}</button>`).join('<span style="align-self:center;color:var(--muted);font-weight:800;font-size:20px">·</span>');
+      const pic=(o)=>{ const on=r.picked===o.w; const isAns=o.w===q.ans;
+        const bd=r.picked==null?'var(--line)':(isAns?'var(--good)':(on?'var(--bad)':'var(--line)'));
+        return `<button data-act="rdAnswer" data-arg="${escA(o.w)}" ${r.picked!=null?'disabled':''} style="width:104px;height:104px;border-radius:18px;background:var(--surface);border:3px solid ${bd};display:grid;place-items:center;font-size:46px;box-shadow:var(--sh-rest)">${o.emo}</button>`; };
+      body=`<div style="text-align:center">
+        <div style="display:flex;gap:8px;justify-content:center;margin-bottom:12px">${chips}</div>
+        <div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:12px">Tap each sound, then listen and pick the picture</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:14px">${speaker}
+          ${r.picked!=null?`<div style="font-family:var(--display);font-weight:800;font-size:30px;color:${col}">${esc(q.word||'')}</div>`:'<div style="font-family:var(--display);font-weight:800;font-size:30px;color:var(--muted);letter-spacing:.12em">? ? ?</div>'}</div>
+        <div style="display:flex;gap:13px;flex-wrap:wrap;justify-content:center;margin-top:16px">${(q.opts||[]).map(pic).join('')}</div>
+      </div>`; }
+    const fb=okPick?`<div style="text-align:center;margin-top:14px;font-family:var(--display);font-weight:800;font-size:19px;color:var(--good)">🎉 Yes! +1 🪙</div>`
+      :badPick?`<div style="text-align:center;margin-top:14px;font-family:var(--display);font-weight:800;font-size:17px;color:var(--treasure-deep,#8A5B00)">Nearly — it's <b>${esc(q.ans)}</b>. Listen again!</div>`:'';
+    return `<div style="max-width:640px;margin:0 auto">${back}
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+        <span style="font-family:var(--display);font-weight:800;font-size:20px">${isS?'🔤 Letter Sounds':'🧩 Blend It'}</span>
+        <span style="margin-left:auto;font-size:12.5px;font-weight:800;color:var(--muted)">${r.right||0} / ${r.done||0} right</span></div>
+      <div class="sb-card" style="padding:22px 18px">${body}${fb}</div></div>`; }
+  // ---------- word families ----------
+  if(r.mode==='family'){
+    const fams=R.families||[]; const f=fams[r.fam||0]||fams[0];
+    const chips=fams.map((x,i)=>`<button data-act="rdFamily" data-arg="${i}" style="padding:8px 14px;border-radius:999px;font-family:var(--display);font-weight:800;font-size:14px;white-space:nowrap;${i===(r.fam||0)?'background:#E0922E;color:#fff;box-shadow:var(--edge)':'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">${esc(x.f)}</button>`).join('');
+    const cards=(f.words||[]).map(w=>`<button data-act="rdSayWord" data-arg="${escA(w)}" style="background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:14px 10px;text-align:center;box-shadow:var(--sh-rest)">
+      <div style="font-size:34px;line-height:1">${(f.emo||{})[w]||'🔊'}</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:20px;margin-top:5px"><span style="color:var(--muted)">${esc(w.slice(0,w.length-f.on.length))}</span><span style="color:#E0922E">${esc(f.on)}</span></div></button>`).join('');
+    return `<div style="max-width:700px;margin:0 auto">${back}
+      <div style="font-family:var(--display);font-weight:800;font-size:20px;margin-bottom:4px">🎵 Word Families</div>
+      <div style="font-size:12.5px;color:var(--muted);margin-bottom:12px">All these words end the same way — so they rhyme. Tap any word to hear it.</div>
+      <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;-webkit-overflow-scrolling:touch">${chips}</div>
+      <div class="sb-card"><div style="text-align:center;font-family:var(--display);font-weight:800;font-size:30px;color:#E0922E;margin-bottom:12px">${esc(f.f)}</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:11px">${cards}</div></div></div>`; }
+  // ---------- sight words ----------
+  const lv=R.sight||[]; const set0=lv[r.lvl||0]||lv[0]; const list=set0.words||[]; const i=Math.min(r.i||0,list.length-1); const w=list[i];
+  const known=!!((c.rd||{}).known||{})[w];
+  const tabs=lv.map((s,ix)=>`<button data-act="rdSightLvl" data-arg="${ix}" style="padding:8px 13px;border-radius:999px;font-weight:800;font-size:12.5px;white-space:nowrap;${ix===(r.lvl||0)?'background:#E8458C;color:#fff':'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">${esc(s.label)}</button>`).join('');
+  return `<div style="max-width:600px;margin:0 auto">${back}
+    <div style="font-family:var(--display);font-weight:800;font-size:20px;margin-bottom:4px">⭐ Sight Words</div>
+    <div style="font-size:12.5px;color:var(--muted);margin-bottom:12px">Some words don't sound out — you just learn them by sight. Listen, say it, then tick it off.</div>
+    <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:10px">${tabs}</div>
+    <div class="sb-card" style="text-align:center;padding:26px 18px">
+      <div style="font-family:var(--display);font-weight:800;font-size:clamp(44px,13vw,68px);line-height:1.05;color:${known?'var(--good)':'var(--text)'}">${esc(w||'')}</div>
+      ${known?'<div style="font-size:12.5px;font-weight:800;color:var(--good);margin-top:4px">✓ You know this one</div>':''}
+      <button data-act="rdSayWord" data-arg="${escA(w||'')}" style="margin:16px auto 0;width:70px;height:70px;border-radius:50%;background:#E8458C;color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',32)}</button>
+      <div style="display:flex;gap:9px;justify-content:center;margin-top:18px;flex-wrap:wrap">
+        <button data-act="rdSightNav" data-arg="-1" style="padding:12px 18px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:15px">←</button>
+        <button data-act="rdKnow" style="flex:1;min-width:150px;padding:12px 18px;border-radius:12px;background:var(--good,#2FA35C);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">I know it ✓ +1 🪙</button>
+        <button data-act="rdSightNav" data-arg="1" style="padding:12px 18px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:15px">→</button>
+      </div>
+      <div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:12px">${i+1} / ${list.length} · ${Object.keys((c.rd||{}).known||{}).length} known</div>
+    </div></div>`; }
 // ===== Subscription tier sheet (pricing) =====
 function tierEntRows(t){ const e=t.ent; const yes='✓', no='—';
   const wc=e.words>=40000?'All 40,000 words':(fmtN(e.words)+' words');
