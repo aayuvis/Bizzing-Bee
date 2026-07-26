@@ -240,12 +240,26 @@ const PREMIUM_THEMES = ['aurora','anime'];             // included with Premium
 function coinsOf(){ return active().coins||0; }
 function addCoins(n){ if(!n) return; const c=active(); c.coins=(c.coins||0)+n; sfx('coin'); }
 function spendCoins(n){ const c=active(); if((c.coins||0)<n) return false; c.coins-=n; return true; }
+/* Take the test coins away and give the child their real balance back. Safe to call twice. */
+function devCoinsOff(){ try{ const c=active(); if(!c||!c.devCoins) return;
+  c.coins=c.devCoinsBank||0; c.devCoins=0; delete c.devCoinsBank; }catch(e){} }
+/* Is this world even offered on the current plan? (Owning it already always counts.) */
+function themeInPlan(id){ if(state.devUnlock) return true;
+  try{ if((active().unlockedThemes||[]).indexOf(id)>=0) return true;
+    if(!window.SB_ENT) return true; const lim=SB_ENT.worldLimit(); if(lim==='all') return true;
+    const idx=(typeof THEMES!=='undefined')?THEMES.findIndex(t=>t.id===id):-1; return idx>=0 && idx<lim; }catch(e){ return true; } }
 function isThemeUnlocked(id){ if(state.devUnlock) return true; if((active().unlockedThemes||[]).indexOf(id)>=0) return true;
   try{ if(window.SB_ENT){ const lim=SB_ENT.worldLimit(); if(lim==='all') return true; const idx=(typeof THEMES!=='undefined')?THEMES.findIndex(t=>t.id===id):-1; if(idx>=0 && idx<lim) return true; } }catch(e){}
   if(FREE_THEMES.indexOf(id)>=0) return true; return false; }
 function isListUnlocked(key){ if(state.devUnlock) return true; try{ if(window.SB_ENT && SB_ENT.has('lists')) return true; }catch(e){} if(!isPremiumList(key)||state.premium) return true; return !!(active().unlockedLists||{})[key]; }
 // Entitlement guard for tier-locked features. Returns true if allowed; else opens the
 // tier/pricing sheet with an upsell and returns false. feature ∈ SB_TIERS[*].ent keys.
+/* Open the plan sheet with an upsell, unconditionally. Used where the entitlement is a
+   number (worlds, avatar packs) rather than a boolean, so gateFeature's truthiness test
+   would wave it straight through. */
+function openUpsell(feature, label, needTier){
+  try{ state.tierUpsell={feature:feature, label:label||feature, need:needTier||'regional'}; set({showTiers:true}); }catch(e){}
+  return false; }
 function gateFeature(feature, label, needTier){
   try{ if(!window.SB_ENT || SB_ENT.has(feature)) return true; }catch(e){ return true; }
   try{ state.tierUpsell={feature:feature, label:label||feature, need:needTier||'regional'}; set({showTiers:true}); }catch(e){}
@@ -695,7 +709,9 @@ const app = {
   ltGo:()=>{ set({nav:'home', lt:null}); },
   // theme / mode
   pickTheme:(id)=>{ if(!isThemeUnlocked(id)){ app.buyTheme(id); return; } const children=state.children.slice(); if(children[state.activeIdx]) children[state.activeIdx]={...children[state.activeIdx],theme:id}; set({theme:id, children}); },
-  buyTheme:(id)=>{ if(isThemeUnlocked(id)) return app.pickTheme(id); if(!window.confirm('Unlock this world for '+COST.theme+' coins?')) return; if(spendCoins(COST.theme)){ const c=active(); c.unlockedThemes=[...(c.unlockedThemes||[]),id]; sfx('win'); burstConfetti(70); flash('New world unlocked! 🎨'); app.pickTheme(id); } else { flash('Need '+COST.theme+' 🪙 — play games to earn!'); } },
+  buyTheme:(id)=>{ if(isThemeUnlocked(id)) return app.pickTheme(id);
+    if(!themeInPlan(id)){ const t=(typeof THEMES!=='undefined')&&THEMES.find(x=>x.id===id); openUpsell('worlds','The '+((t&&t.label)||'world')+' world', themePlanNeeded(id)); return; }
+    if(!window.confirm('Unlock this world for '+COST.theme+' coins?')) return; if(spendCoins(COST.theme)){ const c=active(); c.unlockedThemes=[...(c.unlockedThemes||[]),id]; sfx('win'); burstConfetti(70); flash('New world unlocked! 🎨'); app.pickTheme(id); } else { flash('Need '+COST.theme+' 🪙 — play games to earn!'); } },
   buyList:(key)=>{ if(isListUnlocked(key)) return app.selectList(key); if(!window.confirm('Unlock this list for '+COST.list+' coins?')) return; if(spendCoins(COST.list)){ const c=active(); c.unlockedLists={...(c.unlockedLists||{}),[key]:1}; sfx('win'); burstConfetti(70); flash('List unlocked! 🔓'); app.selectList(key); } else { flash('Need '+COST.list+' 🪙 to unlock — earn by playing!'); } },
   buyConcept:(ci)=>{ ci=+ci; if(isConceptUnlocked(ci)) return app.openConcept(ci); if(!window.confirm('Unlock this concept for '+COST.concept+' coins?')) return; if(spendCoins(COST.concept)){ const c=active(); c.unlockedConcepts={...(c.unlockedConcepts||{}),[ci]:1}; sfx('win'); burstConfetti(70); flash('Concept unlocked! 🔓'); app.openConcept(ci); } else { flash('Need '+COST.concept+' 🪙 to unlock — earn by playing!'); } },
   setMode:(m)=>set({mode:m}),
@@ -809,13 +825,30 @@ const app = {
   ttBack:()=>set({tt:null}),
   ttFlip:()=>{ const t=state.tt; if(!t) return; t.flip=!t.flip;
     if(t.flip){ const c=active(); c.ttSeen=c.ttSeen||{}; c.ttSeen[t.th]=Math.max(c.ttSeen[t.th]||0, t.i+1);
-      const k=t.th+':'+t.i; c.ttCards=c.ttCards||{}; if(!c.ttCards[k]){ c.ttCards[k]=1; addCoins(1); } save(); }
+      const q=ttDeck(t.th)[t.i||0]; const k=ttKey(q);
+      // Seeing the answer is the lightest state there is: the card counts as practised.
+      if(k){ const rec=ttRec(c,k); if(!rec.s){ rec.s='practised'; addCoins(1); } ttPut(c,k,rec); }
+      save(); }
     render(); },
   ttNav:(d)=>{ const t=state.tt; if(!t) return; const deck=ttDeck(t.th); if(!deck.length) return;
     let i=(t.i||0)+(+d); if(i<0)i=deck.length-1; if(i>=deck.length)i=0; t.i=i; t.flip=false; render(); },
   ttShuffle:()=>{ const t=state.tt; if(!t) return; const deck=ttDeck(t.th); if(deck.length<2) return;
     let i=t.i; while(i===t.i) i=Math.floor(Math.random()*deck.length); t.i=i; t.flip=false; render(); },
+  ttList:(st)=>set({ttList:st}),
+  ttListClose:()=>set({ttList:null}),
+  ttGoCard:(arg)=>{ const p=String(arg||'').split('|'); if(p.length<2) return;
+    set({ttList:null, nav:'trivtrain', screen:'app', tt:{th:p[0], i:parseInt(p[1],10)||0, flip:false}}); },
+  ttChapterFrom:(th)=>{ set({ttList:null, nav:'trivtrain', screen:'app'}); app.ttChapter(th); },
   ttSay:()=>{ const t=state.tt; if(!t) return; const q=ttDeck(t.th)[t.i||0]; if(q){ try{ say(q.q,0.95); }catch(e){} } },
+  // Mark where this card stands: practised → tested → mastered. Tapping the current state clears it.
+  ttMark:(st)=>{ const t=state.tt; if(!t) return; const c=active(); const q=ttDeck(t.th)[t.i||0]; const k=ttKey(q); if(!k) return;
+    const rec=ttRec(c,k); rec.s=(rec.s===st)?'':st; ttPut(c,k,rec);
+    if(rec.s==='mastered'){ try{ sfx('win'); burstConfetti(40); }catch(e){} }
+    save(); render(); },
+  // The down key is "put this one in my revision pile".
+  ttRevise:()=>{ const t=state.tt; if(!t) return; const c=active(); const q=ttDeck(t.th)[t.i||0]; const k=ttKey(q); if(!k) return;
+    const rec=ttRec(c,k); rec.r=rec.r?0:1; ttPut(c,k,rec); save();
+    flash(rec.r?'↓ Added to your revision pile':'Removed from revision'); render(); },
   // hand the speller straight to the Arcade, pre-tuned to this chapter's theme
   ttPlay:(th)=>{ try{ if(window.STV){ state.trv=state.trv||{}; state.trv.ths=[th]; state.trv.th=th; } app.openTrivia(); }catch(e){ app.openTrivia(); } },
   tyStart:(id)=>{ tyStop(); const l=TY_LESSONS.find(x=>x.id===id)||TY_LESSONS[0];
@@ -1271,6 +1304,7 @@ const app = {
     delete c.avOwned[id]; addCoins(a.sell); save(); sfx('coin'); flash('Sold '+a.name+' for '+a.sell+' 🪙'); render(); },
   // ----- avatar packs: probability drop (70% rare · 24% epic · 6% legendary, unowned only) -----
   buyPack:(pk)=>{ const c=active(); const pool=SB_AVATARS.list.filter(a=>a.pack===pk&&!avOwned(c,a.id));
+    if(!avPackUnlocked(pk)){ const P=SB_AVATARS.packs.find(p=>p.id===pk)||{}; openUpsell('avatarPacks','The '+(P.label||'avatar')+' pack', packPlanNeeded(pk)); return; }
     if(!pool.length){ flash('You own this whole pack! 🎉'); return; }
     const P=SB_AVATARS.packs.find(p=>p.id===pk)||{}; const cost=packCost(pk);
     if(!window.confirm('Open the '+(P.label||'pack')+' for '+cost+' coins? You get one surprise avatar you don’t own yet.')) return;
@@ -1313,9 +1347,20 @@ const app = {
   toggleSound:()=>{ set({sound:!state.sound}); if(state.sound) sfx('coin'); },
   devTap:()=>{ state._devTaps=(state._devTaps||0)+1;
     if(state._devTaps>=7){ state._devTaps=0; state.devReveal=!state.devReveal; flash(state.devReveal?'🛠 Testing tools revealed':'🛠 Testing tools hidden'); render(); } },
-  toggleDevUnlock:()=>{ const on=!state.devUnlock; state.devUnlock=on; state.premium=on?true:false; try{localStorage.setItem('sb_devunlock',on?'1':'0');}catch(e){}
-    if(on){ try{ const c=active(); c.coins=Math.max(c.coins||0, 5000000); }catch(e){} }
-    save(); flash(on?'🔓 All unlocked · 5,000,000 coins for testing':'🔒 Locked features restored'); render(); },
+  toggleDevUnlock:()=>{ pinGate(()=>{
+      const on=!state.devUnlock; state.devUnlock=on; state.premium=on?true:false;
+      try{localStorage.setItem('sb_devunlock',on?'1':'0');}catch(e){}
+      if(!on) devCoinsOff();                       // leaving testing always hands the real purse back
+      save(); flash(on?'🔓 All features unlocked for testing':'🔒 Locked features restored'); render();
+    },'Testing tools — grown-ups only'); },
+  // Test coins are a SEPARATE switch and are never real: the true balance is banked while they
+  // are on and restored the moment they go off (or testing mode ends).
+  toggleDevCoins:()=>{ pinGate(()=>{
+      const c=active(); if(!c) return;
+      if(c.devCoins){ devCoinsOff(); flash('🪙 Test coins removed — real balance restored'); }
+      else { c.devCoinsBank=c.coins||0; c.devCoins=1; c.coins=1000000; flash('🪙 1,000,000 test coins — temporary'); }
+      save(); render();
+    },'Testing tools — grown-ups only'); },
   avLore:(id)=>app.showAvCard(id),   // legacy alias
   // Collectible trump card as a full-screen popup over the app.
   showAvCard:(id,opts)=>{ opts=opts||{}; if(typeof window.SB_AV_CARD_HTML!=='function') return;
@@ -2484,7 +2529,7 @@ function viewApp(){
         <div style="font-size:12px;color:var(--muted);margin-top:10px">Screenshot this card to share it!</div>`); })():'';
   const bandUp='';
 
-  return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}${(S.qWord?viewQuotesWordPop():'')}${(S.wordCard?viewWordCardPop():'')}${(S.showTiers?viewTiersSheet():'')}${(S.authSheet?viewAuthSheet():'')}${bandUp}
+  return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}${bandUp}
     <div class="sb-header-sticky${state.nav==='coach'?' sb-collapse-nav':''}" style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
       <div style="max-width:1080px;margin:0 auto;padding:11px clamp(9px,3.2vw,32px);display:flex;align-items:center;gap:8px">
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
@@ -2998,6 +3043,16 @@ function oddsPanel(pk,c){ const rows=packOdds(pk).map(o=>{ const own=avOwned(c,o
   return `<div style="margin-top:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:9px 11px">
     <div style="font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Drop chances · ones you own (✓) won't drop again</div>${rows}</div>`; }
 function avOwned(c,id){ if(state.devUnlock) return true; const a=window.SB_AVATARS&&SB_AVATARS.byId[id]; if(!a) return true; return a.rarity==='free' || !!((c.avOwned||{})[id]); }
+/* The plan decides WHICH avatar packs exist for you; coins decide when you open them.
+   Packs beyond your plan's allowance are not for sale at any price — they come with the
+   upgrade. (Free-rarity avatars stay free everywhere; they are the starter bees.) */
+function avPackUnlocked(pk){ if(state.devUnlock) return true;
+  try{ if(!window.SB_ENT) return true; const lim=SB_ENT.avatarPackLimit(); if(lim==='all') return true;
+    const idx=SB_AVATARS.packs.findIndex(p=>p.id===pk); return idx>=0 && idx<lim; }catch(e){ return true; } }
+function packPlanNeeded(pk){ try{ const idx=SB_AVATARS.packs.findIndex(p=>p.id===pk);
+  const b=SB_TIERS.beginner.ent.avatarPacks; return (b!=='all'&&idx>=b)?'regional':'beginner'; }catch(e){ return 'regional'; } }
+function themePlanNeeded(id){ try{ const idx=THEMES.findIndex(t=>t.id===id);
+  const b=SB_TIERS.beginner.ent.worlds; return (b!=='all'&&idx>=b)?'regional':'beginner'; }catch(e){ return 'regional'; } }
 function avOwnedCount(c){ return SB_AVATARS.list.filter(a=>avOwned(c,a.id)).length; }
 function evArt(theme,i){ try{ return evEmb(theme,i).replace('width="54" height="58"','width="100%" height="100%"'); }catch(e){ return ''; } }
 function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageIdx(c,'journey')+1;
@@ -3111,19 +3166,26 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
   if(tab==='avatars'){
     const printBar=`<div class="sb-card" style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><div style="min-width:0"><div class="sb-ct" style="font-size:15px">🃏 Your avatar cards</div><div class="sb-cn">Print your ${avOwnedCount(c)} collected avatars as cut-out trading cards — with a Bizzing Bee back.</div></div><button data-act="printAvCards" style="display:inline-flex;align-items:center;gap:7px;padding:11px 17px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge);white-space:nowrap">${SB_ICON('printer',{size:16})} Print my cards</button></div>`;
     body=printBar+SB_AVATARS.packs.map(p=>{ const avs=SB_AVATARS.list.filter(a=>a.pack===p.id); const ownedN=avs.filter(a=>avOwned(c,a.id)).length;
+      const inPlan=avPackUnlocked(p.id);
       const tiles=avs.map(a=>{ const own=avOwned(c,a.id); const R=SB_AVATARS.rarities[a.rarity]; const on=c.avatar===a.id;
         const action= on?`<span style="font-weight:800;font-size:11.5px;color:var(--good)">Wearing ✓</span>`
           : own?`<span style="display:inline-flex;gap:6px"><button data-act="wearAv" data-arg="${a.id}" style="padding:6px 11px;border-radius:8px;background:var(--accent);color:#fff;font-weight:800;font-size:11.5px">Use</button>${a.rarity!=='free'?`<button data-act="sellAvatar" data-arg="${a.id}" title="Sell for ${a.sell} coins" style="padding:6px 9px;border-radius:8px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--muted)">Sell ${a.sell}🪙</button>`:''}</span>`
-          : `<button data-act="openShopAvatars" title="Drops from a ${p.label} pack in the Store" style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--muted)">${iconSVG('lock',11,2.2)} Store pack</button>`;
+          : inPlan?`<button data-act="openShopAvatars" title="Drops from a ${p.label} pack in the Store" style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--muted)">${iconSVG('lock',11,2.2)} Store pack</button>`
+          : `<button data-act="openTiers" title="Part of a paid plan" style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;background:var(--chip);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--accent)">${iconSVG('lock',11,2.2)} Plan</button>`;
         const card=(typeof SB_AV_CARD==='function')?SB_AV_CARD(a.id):null;
-        return `<div style="background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:11px 9px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;${own?'':'opacity:.96'}">
-          <button data-act="showAvCard" data-arg="${a.id}" title="See ${esc(a.name)}'s card" style="background:none;border:0;padding:0;cursor:pointer;width:89px;height:89px">${avatarSVG(a.id,89, on?c.accOn:null)}</button>
+        // Unowned avatars are drawn as silhouettes-in-waiting: desaturated and dimmed, so the
+        // collection reads at a glance as "mine" vs "still to win".
+        return `<div style="background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:11px 9px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;${own?'':'opacity:.62'}">
+          <button data-act="showAvCard" data-arg="${a.id}" title="See ${esc(a.name)}'s card" style="background:none;border:0;padding:0;cursor:pointer;width:89px;height:89px;${own?'':'filter:grayscale(1) contrast(.82) brightness(.96)'}">${avatarSVG(a.id,89, on?c.accOn:null)}</button>
           <span style="font-weight:800;font-size:12px;line-height:1.15">${a.name}</span>
           ${card?`<span style="font-family:var(--mono);font-size:9.5px;font-weight:800;color:var(--muted)">OVR ${card.overall}</span>`:''}
           <span style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:99px;color:#fff;background:${R.c}">${R.label}</span>
           ${action}</div>`; }).join('');
       return `<div class="sb-card" style="margin-bottom:14px">
-        <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px;flex-wrap:wrap"><span style="width:12px;height:12px;border-radius:4px;background:linear-gradient(135deg,${p.c1},${p.c2});display:inline-block"></span><span class="sb-ct" style="font-size:15px">${p.label}</span><span class="sb-cn">${ownedN}/${avs.length} collected</span>${ownedN<avs.length?`<button data-act="buyPack" data-arg="${p.id}" style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:999px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12px">🎁 Open pack · ${coinAmt(packCost(p.id),11)}</button>`:''}</div>
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px;flex-wrap:wrap"><span style="width:12px;height:12px;border-radius:4px;background:linear-gradient(135deg,${p.c1},${p.c2});display:inline-block"></span><span class="sb-ct" style="font-size:15px">${p.label}</span><span class="sb-cn">${ownedN}/${avs.length} collected</span>${!inPlan
+          ?`<button data-act="openTiers" style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('lock',11,2.2)} Comes with ${esc((SB_TIERS[packPlanNeeded(p.id)]||{}).name||'a paid plan')}</button>`
+          :(ownedN<avs.length?`<button data-act="buyPack" data-arg="${p.id}" style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:999px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12px">🎁 Open pack · ${coinAmt(packCost(p.id),11)}</button>`:'')}</div>
+        <div style="height:5px;border-radius:99px;background:var(--tint-deep,var(--surface2));overflow:hidden;margin-bottom:11px"><div style="height:100%;background:linear-gradient(90deg,${p.c1},${p.c2});width:${Math.round(ownedN/(avs.length||1)*100)}%"></div></div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:9px">${tiles}</div></div>`; }).join('');
   } else if(tab==='worlds'){
     const rows=THEMES.map(t=>{ const on=t.id===S.theme; const un=isThemeUnlocked(t.id); const ev=EVO[t.id]||EVO.spellbound;
@@ -4218,6 +4280,49 @@ function explorerCard(c,opts){ opts=opts||{}; const tiles=explorerTiles(c); if(!
     <div style="font-size:12px;color:var(--muted);margin-bottom:13px">${opts.sub||'Everywhere '+esc(c.name||'your speller')+' is building language — story mode, quotes, journeys and more.'}</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">${tiles.map(cell).join('')}</div>
   </div>`; }
+/* Study-card analytics: how the trivia cards are split across practised / tested / mastered /
+   revision, chapter by chapter — and tapping a state opens the actual list of those cards. */
+function ttAnalyticsCard(c){
+  const all=ttAllStats(c); if(!all.total) return '';
+  if(!all.touched) return `<div class="sb-card" style="margin-bottom:18px">
+    <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:3px">🃏 Study cards</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:11px">Nothing marked yet. Open <b style="color:var(--text)">Know the World of Words</b> and mark cards practised, tested or mastered — this fills in as you go.</div>
+    <button data-act="openTrivTrain" style="padding:10px 15px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">Start studying →</button></div>`;
+  const cells=[['mastered','Mastered','#2FA35C','🏆'],['tested','Tested','#E0922E','✍️'],['practised','Practised','#7C5CFF','📖'],['revise','To revise','#C8791B','↓']]
+    .map(([k,lab,col,em])=>`<button data-act="ttList" data-arg="${k}" style="text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 14px;display:flex;flex-direction:column;gap:5px">
+      <span style="display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800;color:var(--text)">${em} ${lab}</span>
+      <span style="font-family:var(--display);font-weight:800;font-size:22px;color:${col};line-height:1">${fmtN(all[k]||0)}</span>
+      <span style="font-size:11px;color:var(--muted);font-weight:700">${all.total?Math.round((all[k]||0)/all.total*100):0}% of ${fmtN(all.total)} · see the list →</span></button>`).join('');
+  const chapters=ttThemes().map(th=>{ const st=all.byTh[th.id]||{}; if(!st.touched) return '';
+    return `<button data-act="ttChapterFrom" data-arg="${escA(th.id)}" style="display:block;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px">
+      <span style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span>${th.e}</span><span style="font-weight:800;font-size:13px">${esc(th.label)}</span>
+      <span style="margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:700">${st.touched}/${fmtN(st.total)}</span></span>
+      ${ttBar(st,5)}</button>`; }).filter(Boolean).join('');
+  return `<div class="sb-card" style="margin-bottom:18px">
+    <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:3px">🃏 Study cards</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px">${fmtN(all.touched)} of ${fmtN(all.total)} cards marked. Tap any state to see exactly which cards are in it.</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px">${cells}</div>
+    ${chapters?`<div style="font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:7px">By chapter</div>${chapters}`:''}
+  </div>`; }
+/* The drill-down: every card in one state, grouped by chapter, each row jumping to that card. */
+function viewTtList(){ const st=state.ttList; if(!st) return ''; const c=active();
+  const LAB={mastered:['Mastered','#2FA35C','🏆'],tested:['Tested','#E0922E','✍️'],practised:['Practised','#7C5CFF','📖'],revise:['To revise','#C8791B','↓']}[st]||['Cards','#7C5CFF','🃏'];
+  const rows=ttCardsInState(c,st);
+  const body=rows.length?rows.slice(0,400).map(r=>`<button data-act="ttGoCard" data-arg="${escA(r.th+'|'+r.i)}" style="display:flex;gap:10px;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-bottom:7px">
+      <span style="flex-shrink:0">${r.e}</span>
+      <span style="min-width:0;flex:1"><span style="display:block;font-size:13px;font-weight:650;line-height:1.35;color:var(--text)">${esc(trunc(r.q.q,110))}</span>
+      <span style="display:block;font-size:11px;color:var(--muted);font-weight:700;margin-top:2px">${esc(r.label)}</span></span>
+      <span style="flex-shrink:0;color:var(--accent);font-weight:800;font-size:12px;align-self:center">→</span></button>`).join('')
+    : `<div style="font-size:13px;color:var(--muted);padding:14px 0">No cards in this state yet.</div>`;
+  return `<div style="position:fixed;inset:0;z-index:132;display:grid;place-items:start center;padding:18px;background:rgba(20,12,4,.55);overflow:auto" data-act="ttListClose">
+    <div data-act="noop" style="background:var(--paper,#fff);border-radius:20px;max-width:640px;width:100%;padding:20px;box-shadow:0 20px 60px rgba(20,10,30,.5);animation:sb-pop .3s ease both;margin:12px 0">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <span style="font-family:var(--display);font-weight:800;font-size:19px;color:${LAB[1]}">${LAB[2]} ${LAB[0]}</span>
+        <span style="font-size:12.5px;color:var(--muted);font-weight:700">${fmtN(rows.length)} card${rows.length===1?'':'s'}</span>
+        <button data-act="ttListClose" style="margin-left:auto;width:34px;height:34px;border-radius:10px;background:var(--surface2);color:var(--muted);font-weight:800">✕</button></div>
+      ${body}
+      ${rows.length>400?`<div style="font-size:12px;color:var(--muted);font-weight:700;padding:6px 0">Showing the first 400 of ${fmtN(rows.length)}.</div>`:''}
+    </div></div>`; }
 function viewProgress(){
   const c=active();
   const bb=beeBand(c);
@@ -4279,6 +4384,7 @@ function viewProgress(){
         <div style="display:flex;gap:8px;flex-wrap:wrap">${row}</div>
       </div>`; })()}
     <div style="margin-bottom:18px">${streakCard()}</div>
+    ${ttAnalyticsCard(c)}
     ${(()=>{ const ec=explorerCard(c,{title:'Your Bizzing Bee world',sub:'Everywhere you’re exploring — story mode, quotes, journeys, typing and more.'}); return ec?`<div style="margin-bottom:18px">${ec}</div>`:''; })()}
     <div class="sb-card" style="margin-bottom:18px">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:16px">This week</div>
@@ -4902,6 +5008,10 @@ function viewSettings(){
     ${`<div style="background:var(--bg2);border:1px solid ${S.devUnlock?'var(--accent)':'var(--line)'};border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
       <div style="min-width:0"><div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:15px">${SB_ICON('lock',{size:16})} Unlock everything <span style="font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:999px">testing</span></div><div style="font-size:13px;color:var(--muted)">Unlocks all concepts, lists, worlds, Advanced Mode &amp; every level — no coins or Premium needed.</div></div>
       <button data-act="toggleDevUnlock" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:${S.devUnlock?'var(--accent)':'var(--surface2)'};color:${S.devUnlock?'#fff':'var(--muted)'};font-weight:800;font-size:13px">${S.devUnlock?SB_ICON('check',{size:15})+' On':'Off'}</button>
+    </div>
+    <div style="background:var(--bg2);border:1px solid ${active()&&active().devCoins?'var(--treasure,#F0B429)':'var(--line)'};border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
+      <div style="min-width:0"><div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:15px">🪙 Test coins <span style="font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:999px">testing</span></div><div style="font-size:13px;color:var(--muted)">Tops the purse up to 1,000,000 so you can test the Store. Temporary — switching this (or testing mode) off puts the real balance back.</div></div>
+      <button data-act="toggleDevCoins" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:${active()&&active().devCoins?'var(--treasure,#F0B429)':'var(--surface2)'};color:${active()&&active().devCoins?'#5a3d00':'var(--muted)'};font-weight:800;font-size:13px;white-space:nowrap">${active()&&active().devCoins?SB_ICON('check',{size:15})+' On':'Off'}</button>
     </div>`}
     <button data-act="signOut" style="width:100%;padding:14px;border-radius:14px;background:var(--surface2);color:var(--bad);font-weight:800;font-size:15px">Sign out</button>
     <button data-act="devTap" style="display:block;width:100%;text-align:center;background:none;border:0;cursor:default;margin-top:14px;font-size:11.5px;color:var(--muted);font-weight:650">Bizzing Bee · made with 🐝 for spellers</button>
@@ -5931,6 +6041,15 @@ function fullListOverlay(){ const S=state; if(!S.listView) return '';
 }
 function overlays(){
   const S=state; let h=''; h+=fullListOverlay(); h+=packRollOverlay(); h+=packDropOverlay();
+  // These sheets live out here, not inside view(): render() wraps view() in a
+  // position:relative;z-index:1 box, which is a stacking context — anything drawn inside it
+  // is pinned below the overlays no matter how high its own z-index is. That is why
+  // Settings → Manage plan used to open *behind* Settings.
+  if(S.qWord) h+=viewQuotesWordPop();
+  if(S.wordCard) h+=viewWordCardPop();
+  if(S.ttList) h+=viewTtList();
+  if(S.showTiers) h+=viewTiersSheet();
+  if(S.authSheet) h+=viewAuthSheet();
   if(S.settingsOpen){
     h+=`<div id="sb-set-ov" data-act="closeSettings" style="position:fixed;inset:0;z-index:76;background:rgba(10,8,20,.55);backdrop-filter:blur(6px);display:grid;place-items:start center;padding:18px;overflow:auto">
       <div data-act="noop" style="position:relative;width:100%;max-width:660px;background:var(--bg2);border:1px solid var(--line);border-radius:20px;box-shadow:var(--glow);padding:clamp(16px,4vw,26px) clamp(16px,4vw,26px) 24px;margin:20px 0;${state._setOpened?'':'animation:sb-pop .3s ease both'}">
@@ -5985,6 +6104,36 @@ function ttDeck(th){ if(_ttCache[th]) return _ttCache[th];
   const deck=all.filter(q=>q.th===th).sort((a,b)=>(a.lv||3)-(b.lv||3));   // easy → hard
   _ttCache[th]=deck; return deck; }
 function ttThemes(){ return ((window.SB_TRIVIA||{}).themes)||[]; }
+/* ---- Per-card study record ----------------------------------------------------------
+   Keyed on the question's own id, not its position, so shuffling the deck never moves a
+   speller's progress onto a different card. Shape: {s:'practised'|'tested'|'mastered', r:0|1}.
+   Older saves stored a bare 1 (meaning "seen"); those read back as 'practised'. */
+const TT_STATES=[['practised','Practised','#7C5CFF','📖'],['tested','Tested','#E0922E','✍️'],['mastered','Mastered','#2FA35C','🏆']];
+function ttKey(q){ return (q&&(q.id||q.q))?String(q.id||q.q).slice(0,60):''; }
+function ttRec(c,k){ const m=c.ttCards||{}; const v=m[k];
+  if(!v) return {s:'',r:0};
+  if(typeof v!=='object') return {s:'practised',r:0};      // legacy "seen" flag
+  return {s:v.s||'',r:v.r?1:0}; }
+function ttPut(c,k,rec){ c.ttCards=c.ttCards||{};
+  if(!rec.s&&!rec.r) delete c.ttCards[k]; else c.ttCards[k]={s:rec.s||'',r:rec.r?1:0}; }
+/* Roll a chapter's cards up into counts — used by the deck header and the Progress analytics. */
+function ttChapterStats(c,th){ const deck=ttDeck(th); const out={total:deck.length,practised:0,tested:0,mastered:0,revise:0,touched:0};
+  for(const q of deck){ const r=ttRec(c,ttKey(q)); if(r.s){ out[r.s]=(out[r.s]||0)+1; out.touched++; } if(r.r) out.revise++; }
+  return out; }
+function ttAllStats(c){ const out={total:0,practised:0,tested:0,mastered:0,revise:0,touched:0,byTh:{}};
+  ttThemes().forEach(th=>{ const st=ttChapterStats(c,th.id); out.byTh[th.id]=st;
+    out.total+=st.total; out.practised+=st.practised; out.tested+=st.tested; out.mastered+=st.mastered;
+    out.revise+=st.revise; out.touched+=st.touched; });
+  return out; }
+/* Every card currently in a given state, across all chapters — the drill-down list. */
+function ttCardsInState(c,st){ const out=[];
+  ttThemes().forEach(th=>{ ttDeck(th.id).forEach((q,i)=>{ const r=ttRec(c,ttKey(q));
+    if(st==='revise'?r.r:(r.s===st)) out.push({q,th:th.id,label:th.label,e:th.e,i}); }); });
+  return out; }
+/* A slim segmented bar: mastered | tested | practised | untouched. */
+function ttBar(st,h){ const t=st.total||1; const seg=(n,col)=>n?`<span style="width:${(n/t*100).toFixed(2)}%;background:${col};display:block"></span>`:'';
+  return `<span style="display:flex;height:${h||6}px;border-radius:99px;overflow:hidden;background:var(--tint-deep,var(--surface2))">
+    ${seg(st.mastered,'#2FA35C')}${seg(st.tested,'#E0922E')}${seg(st.practised,'#7C5CFF')}</span>`; }
 /* Some questions only make sense with the options in front of you — "Which of these words…"
    is unanswerable on a bare flashcard. Rather than reword them (which would only cover the
    phrasings we happened to think of), show the choices on the front of exactly those cards.
@@ -6009,13 +6158,13 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
     const seen=c.ttSeen||{};
     const wordThemes=['wroots','wbreak','wmeaning','wstories'];
     const card=(th)=>{ const deck=ttDeck(th.id); if(!deck.length) return '';
-      const col=TT_COL[th.id]||'#7C5CFF'; const done=Math.min(seen[th.id]||0, deck.length);
-      const pct=deck.length?Math.round(done/deck.length*100):0;
+      const col=TT_COL[th.id]||'#7C5CFF'; const st=ttChapterStats(c,th.id);
       return `<button class="sb-lift" data-act="ttChapter" data-arg="${escA(th.id)}" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:13px 14px;box-shadow:var(--sh-rest);display:flex;flex-direction:column;gap:7px">
         <span style="display:flex;align-items:center;gap:9px"><span style="width:38px;height:38px;flex-shrink:0;border-radius:11px;background:color-mix(in srgb,${col} 16%,transparent);display:grid;place-items:center;font-size:20px">${th.e}</span>
           <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:14px;line-height:1.15">${esc(th.label)}</span>
-          <span style="display:block;font-size:11.5px;color:var(--muted);font-weight:700">${fmtN(deck.length)} cards${done?' · '+done+' studied':''}</span></span></span>
-        <span style="height:5px;border-radius:99px;background:var(--surface2);overflow:hidden;display:block"><span style="display:block;height:100%;width:${pct}%;background:${col}"></span></span></button>`; };
+          <span style="display:block;font-size:11.5px;color:var(--muted);font-weight:700">${fmtN(deck.length)} cards${st.touched?' · '+st.touched+' studied':''}</span></span></span>
+        ${ttBar(st,5)}
+        ${st.touched?`<span style="display:flex;gap:8px;font-size:10.5px;font-weight:800"><span style="color:#2FA35C">🏆 ${st.mastered}</span><span style="color:#E0922E">✍️ ${st.tested}</span><span style="color:#7C5CFF">📖 ${st.practised}</span>${st.revise?`<span style="color:var(--treasure-deep,#8A5B00);margin-left:auto">↓ ${st.revise}</span>`:''}</span>`:''}</button>`; };
     const grid=(ids)=>`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:11px">${ids.map(id=>{const th=ths.find(x=>x.id===id); return th?card(th):'';}).join('')}</div>`;
     const wordIds=wordThemes.filter(id=>ths.some(x=>x.id===id));
     const otherIds=ths.map(x=>x.id).filter(id=>wordIds.indexOf(id)<0);
@@ -6042,20 +6191,38 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
     : `<div style="font-family:var(--display);font-weight:800;font-size:clamp(18px,4.2vw,23px);line-height:1.35;color:var(--text)">${esc(q.q)}</div>
        ${ttOptions(q,i,col)}
        <div style="font-size:12.5px;color:var(--muted);font-weight:700;margin-top:14px">Tap the card to reveal the answer</div>`;
+  const rec=ttRec(c, ttKey(q)); const cst=ttChapterStats(c, t.th);
+  const stateChips=TT_STATES.map(([k,lab,scol,em])=>{ const on=rec.s===k;
+    return `<button data-act="ttMark" data-arg="${k}" title="Mark this card as ${lab.toLowerCase()}" style="flex:1;min-width:96px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:11px;font-weight:800;font-size:12.5px;border:1.5px solid ${on?scol:'var(--line)'};background:${on?scol:'var(--surface2)'};color:${on?'#fff':'var(--muted)'}">${em} ${lab}${on?' ✓':''}</button>`; }).join('');
   return `<div style="max-width:640px;margin:0 auto">
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">
-      <button data-act="ttBack" style="color:var(--muted);font-weight:800;font-size:13px">← Chapters</button>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+      <button data-act="ttBack" title="Back to the deck of chapters" style="color:var(--muted);font-weight:800;font-size:13px">← Chapters</button>
       <span style="font-family:var(--display);font-weight:800;font-size:17px">${th.e} ${esc(th.label)}</span>
       <span style="margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:700">${i+1} / ${fmtN(deck.length)}</span></div>
+    <!-- two progress bars: where you are in the deck, and how much of the set you have learned -->
+    <div style="margin-bottom:12px">
+      <div style="height:6px;border-radius:99px;background:var(--tint-deep,var(--surface2));overflow:hidden;margin-bottom:6px"><div style="height:100%;background:${col};width:${((i+1)/deck.length*100).toFixed(2)}%"></div></div>
+      ${ttBar(cst,6)}
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:5px;font-size:11px;font-weight:800;color:var(--muted)">
+        <span>Card ${i+1} of ${fmtN(deck.length)}</span>
+        <span style="margin-left:auto;display:inline-flex;gap:9px">
+          <span style="color:#2FA35C">🏆 ${cst.mastered}</span><span style="color:#E0922E">✍️ ${cst.tested}</span><span style="color:#7C5CFF">📖 ${cst.practised}</span>${cst.revise?`<span style="color:var(--treasure-deep,#8A5B00)">↓ ${cst.revise}</span>`:''}
+        </span></div>
+    </div>
     <button data-act="ttFlip" style="width:100%;text-align:center;background:var(--paper,var(--bg2));border:2px solid ${t.flip?col:'var(--line)'};border-radius:20px;padding:26px 20px;min-height:230px;display:flex;flex-direction:column;justify-content:center;box-shadow:var(--sh-rest);cursor:pointer">
       <div style="display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:12px">
         <span style="font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:${col};padding:3px 10px;border-radius:99px">${LVL[q.lv||3]||'Medium'}</span></div>
       ${face}</button>
-    <div style="display:flex;gap:9px;margin-top:13px;flex-wrap:wrap">
-      <button data-act="ttNav" data-arg="-1" style="padding:12px 17px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:15px">←</button>
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">${stateChips}</div>
+    <!-- a d-pad: back out of the card into the deck, up for the card before, down to revise,
+         forward for the next one. The same four arrow keys drive it. -->
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+      <button data-act="ttNav" data-arg="-1" title="Previous card (←)" style="padding:12px 16px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:15px">← Back</button>
+      <button data-act="ttBack" title="Back into the deck of chapters (↑)" style="padding:12px 15px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">↑ Deck</button>
+      <button data-act="ttRevise" title="Add to your revision pile (↓)" style="padding:12px 15px;border-radius:12px;font-weight:800;font-size:14px;border:1.5px solid ${rec.r?'var(--treasure,#F0B429)':'var(--line)'};background:${rec.r?'var(--treasure-tint,#FFF3D6)':'var(--surface2)'};color:${rec.r?'var(--treasure-deep,#8A5B00)':'var(--muted)'}">↓ ${rec.r?'Revising':'Revise'}</button>
       <button data-act="ttSay" title="Read the question aloud" style="padding:12px 15px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800">${iconSVG('volume',17)}</button>
-      <button data-act="ttShuffle" style="flex:1;min-width:120px;padding:12px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">🔀 Shuffle</button>
-      <button data-act="ttNav" data-arg="1" style="padding:12px 17px;border-radius:12px;background:${col};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">→</button></div>
+      <button data-act="ttShuffle" title="Jump to a random card" style="padding:12px 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">🔀</button>
+      <button data-act="ttNav" data-arg="1" title="Next card (→)" style="flex:1;min-width:96px;padding:12px 17px;border-radius:12px;background:${col};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next →</button></div>
     <button data-act="ttPlay" data-arg="${escA(t.th)}" class="sb-lift" style="width:100%;text-align:left;margin-top:13px;border-radius:14px;padding:13px 15px;background:linear-gradient(135deg,#F0A93C,#DC7A18);color:#fff;display:flex;align-items:center;gap:11px">
       <span style="font-size:21px">🎮</span><span style="min-width:0;flex:1;font-weight:800;font-size:14px">Play this chapter in the Arcade →</span></button>
   </div>`; }
@@ -6185,6 +6352,18 @@ window.addEventListener('keydown',e=>{ try{ if(!state.coachCardView||state.cardD
   const t=e.target; if(t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)) return;
   if(e.key==='ArrowRight'){ e.preventDefault(); app.cardNext(); } else if(e.key==='ArrowLeft'){ e.preventDefault(); app.cardRevise(); } }catch(err){} });
 /* Quotes deck: ← → to move between quotes */
+/* Trivia Training keys mirror the on-screen d-pad exactly: ← previous, ↑ deck, ↓ revise,
+   → next, space/enter flips. (Touch and keyboard both, always.) */
+window.addEventListener('keydown',e=>{ try{
+  if(state.nav!=='trivtrain'||!state.tt||state.pinDlg||state.settingsOpen||state.showTiers) return;
+  if(e.metaKey||e.ctrlKey||e.altKey) return;
+  const k=e.key;
+  if(k==='ArrowLeft'){ e.preventDefault(); app.ttNav(-1); }
+  else if(k==='ArrowRight'){ e.preventDefault(); app.ttNav(1); }
+  else if(k==='ArrowUp'){ e.preventDefault(); app.ttBack(); }
+  else if(k==='ArrowDown'){ e.preventDefault(); app.ttRevise(); }
+  else if(k===' '||k==='Enter'){ e.preventDefault(); app.ttFlip(); }
+}catch(_){} });
 window.addEventListener('keydown',e=>{ try{ if(state.nav!=='quotes'||state.pinDlg||state.settingsOpen) return;
   const t=e.target; if(t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)) return;
   if(e.key==='ArrowRight'){ e.preventDefault(); app.qNav(1); } else if(e.key==='ArrowLeft'){ e.preventDefault(); app.qNav(-1); } }catch(err){} });
@@ -6215,6 +6394,16 @@ window.addEventListener('keydown', e=>{ try{
     state.screen=(s.children&&s.children.length)?'app':'landing'; state.nav='home';
   } }catch(e){}
   try{ if(localStorage.getItem('sb_devunlock')==='1'){ state.devUnlock=true; state.premium=true; } }catch(e){}
+  /* Test coins never survive a reload, and neither does the legacy cheat: an earlier build
+     handed out 5,000,000 coins the instant testing mode was switched on — reachable by a
+     child tapping the Settings footer seven times. Give those profiles their plan's starting
+     purse back; no one earns a million coins by spelling. */
+  try{ (state.children||[]).forEach(ch=>{
+    if(ch.devCoins){ ch.coins=ch.devCoinsBank||0; ch.devCoins=0; delete ch.devCoinsBank; }
+    else if((ch.coins||0)>=1000000){
+      let base=400; try{ const t=window.SB_TIERS&&SB_TIERS[ch.tier||'free']; if(t&&t.ent&&t.ent.startCoins) base=t.ent.startCoins; }catch(e){}
+      ch.coins=base; ch.coinsReset=1; }
+  }); }catch(e){}
   try{ loadVoiceCfg(); }catch(e){}
   try{ loadEvoFB(); }catch(e){}
   try{ loadVoices(); window.speechSynthesis.onvoiceschanged=loadVoices; }catch(e){}
