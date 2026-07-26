@@ -12,7 +12,7 @@
     { n: 4, label: 'Whiz',     sub: 'age 11',   e: '⚡' },
     { n: 5, label: 'Champion', sub: 'age 12+',  e: '🏆' },
   ];
-  const THC = { animals:'#4F9E6A', bugs:'#E0922E', ocean:'#3D7DF0', space:'#7B52E0', body:'#E8458C', plants:'#3C8455', food:'#F0703C', sports:'#2A63D6', music:'#B14FC4', myth:'#9B59D0', world:'#13A892', history:'#C8901B', science:'#0E8A78', numbers:'#6A47F5', weather:'#36A3D9', machines:'#4A6B8A', art:'#DC5B7E', fest:'#D6453A', story:'#7C5CFF', words:'#C8791B' };
+  const THC = { animals:'#4F9E6A', bugs:'#E0922E', ocean:'#3D7DF0', space:'#7B52E0', body:'#E8458C', plants:'#3C8455', food:'#F0703C', sports:'#2A63D6', music:'#B14FC4', myth:'#9B59D0', world:'#13A892', history:'#C8901B', science:'#0E8A78', numbers:'#6A47F5', weather:'#36A3D9', machines:'#4A6B8A', art:'#DC5B7E', fest:'#D6453A', story:'#7C5CFF', words:'#C8791B', worigin:'#2A8FA8', wroots:'#4F9E6A', wmeaning:'#7C5CFF', wstories:'#C8791B' };
   const esc3 = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const escA3 = (s) => esc3(s).replace(/"/g, '&quot;');
   const themeOf = (id) => T().themes.find(t => t.id === id) || { id, label: id, e: '🐝' };
@@ -55,21 +55,40 @@
 
   const STV = {
     open() { stopAud(); state.trv = { view: 'hub', th: state.trv && state.trv.th || 'mix', lv: state.trv && state.trv.lv || autoLv() }; set({ nav: 'trivia', screen: 'app', conceptSel: null }); },
-    setTh(id) { state.trv.th = id; render(); },
+    // Theme selection is MULTI-select for Classic Quiz and Beat the Clock.
+    // 'mix' is exclusive (means every theme); picking a real theme clears mix.
+    setTh(id) { const v = state.trv; v.ths = v.ths || [];
+      if (id === 'mix') { v.ths = []; v.th = 'mix'; }
+      else { const i = v.ths.indexOf(id);
+        if (i >= 0) v.ths.splice(i, 1); else v.ths.push(id);
+        v.th = v.ths.length ? (v.ths.length === 1 ? v.ths[0] : 'multi') : 'mix'; }
+      render(); },
     setLv(n) { state.trv.lv = +n; render(); },
 
     /* ---------- format starts ---------- */
-    startQuiz() { const v = state.trv; const qs = drawQs(v.th, v.lv, 10);
+    // pull from every selected theme (or all themes when 'mix')
+    _pool(v, n) { const ths = (v.ths && v.ths.length) ? v.ths : T().themes.map(t => t.id);
+      let all = []; ths.forEach(th => { all = all.concat(drawQs(th, v.lv, Math.ceil(n / ths.length) + 6)); });
+      return sample(all, n); },
+    startQuiz() { const v = state.trv; const qs = STV._pool(v, 10);
       if (qs.length < 5) { flash('Not enough questions here yet — try Mix'); return; }
       markSeen(qs); state.trv = { ...v, view: 'quiz', qs, i: 0, right: 0, picked: null, streak: 0, done: false };
       render(); setTimeout(() => speakQ(qs[0]), 350); },
-    startSquare() { const v = state.trv; const ths = v.th === 'mix' ? sample(T().themes.map(t => t.id), 9) : Array(9).fill(v.th);
+    // Trivia Squares is always a MIXED board — 9 different themes, one per cell.
+    // (A single-theme 3x3 made every cell feel the same.) Selected themes are
+    // preferred, then topped up with random others so the board is always varied.
+    startSquare() { const v = state.trv;
+      const all = T().themes.map(t => t.id);
+      const picked = (v.ths && v.ths.length) ? v.ths.slice() : [];
+      let ths = sample(picked, Math.min(9, picked.length));
+      if (ths.length < 9) ths = ths.concat(sample(all.filter(t => ths.indexOf(t) < 0), 9 - ths.length));
+      ths = sample(ths, 9);
       const cells = ths.map(th => { const q = drawQs(th, v.lv, 1)[0]; return q ? { th, q, st: 0 } : null; }).filter(Boolean);
       if (cells.length < 9) { flash('Not enough questions — try Mix'); return; }
       markSeen(cells.map(x => x.q));
       state.trv = { ...v, view: 'square', cells, sel: null, picked: null, miss: 0, lines: 0, done: false, right: 0, streak: 0 };
       render(); },
-    startClock() { const v = state.trv; const qs = drawQs(v.th, v.lv, 60);
+    startClock() { const v = state.trv; const qs = STV._pool(v, 60);
       if (qs.length < 10) { flash('Not enough questions here yet — try Mix'); return; }
       markSeen(qs.slice(0, 25));
       state.trv = { ...v, view: 'clock', qs, i: 0, right: 0, wrong: 0, picked: null, streak: 0, timeLeft: 60, done: false };
@@ -195,8 +214,9 @@
         </div></div>`, ''); },
 
     _hub() { const g = state.trv; const c = active(); const st = tStats(c);
-      const themes = [{ id: 'mix', label: 'Mega Mix', e: '🎲' }].concat(T().themes).map(t => { const on = g.th === t.id; const col = t.id === 'mix' ? '#7C5CFF' : (THC[t.id] || '#7C5CFF');
-        return `<button data-act="trvTh" data-arg="${t.id}" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 6px;border-radius:14px;background:${on ? 'color-mix(in srgb,' + col + ' 16%,var(--bg2))' : 'var(--bg2)'};border:2px solid ${on ? col : 'var(--line)'};min-width:0"><span style="font-size:26px;display:inline-block;${on ? 'animation:sb-bee-talk 1.3s ease-in-out infinite' : ''}">${t.e}</span><span style="font-size:10.5px;font-weight:800;line-height:1.15;text-align:center;color:${on ? col : 'var(--muted)'}">${esc3(t.label)}</span></button>`; }).join('');
+      const sel = g.ths || [];
+      const themes = [{ id: 'mix', label: 'Mega Mix', e: '🎲' }].concat(T().themes).map(t => { const on = t.id === 'mix' ? sel.length === 0 : sel.indexOf(t.id) >= 0; const col = t.id === 'mix' ? '#7C5CFF' : (THC[t.id] || '#7C5CFF');
+        return `<button data-act="trvTh" data-arg="${t.id}" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 6px;border-radius:14px;background:${on ? 'color-mix(in srgb,' + col + ' 16%,var(--bg2))' : 'var(--bg2)'};border:2px solid ${on ? col : 'var(--line)'};min-width:0"><span style="position:relative;font-size:26px;display:inline-block;${on ? 'animation:sb-bee-talk 1.3s ease-in-out infinite' : ''}">${t.e}${on && t.id !== 'mix' ? '<span style="position:absolute;top:-3px;right:-9px;width:15px;height:15px;border-radius:50%;background:' + col + ';color:#fff;font-size:9px;line-height:15px;text-align:center;font-weight:900">✓</span>' : ''}</span><span style="font-size:10.5px;font-weight:800;line-height:1.15;text-align:center;color:${on ? col : 'var(--muted)'}">${esc3(t.label)}</span></button>`; }).join('');
       const lvs = LV.map(l => { const on = g.lv === l.n;
         return `<button data-act="trvLv" data-arg="${l.n}" style="flex:1;min-width:86px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 6px;border-radius:12px;font-weight:800;${on ? 'background:var(--accent);color:#fff;box-shadow:var(--edge)' : 'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}"><span style="font-size:13px">${l.e} ${l.label}</span><span style="font-size:10px;font-weight:700;opacity:.85">${l.sub}</span></button>`; }).join('');
       const fmt = (act, e2, name, desc, col) => `<button data-act="${act}" style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:15px 16px;display:flex;align-items:center;gap:13px;box-shadow:var(--sh-rest)">
@@ -206,15 +226,15 @@
           <span style="color:var(--accent);font-weight:800;font-size:13px;white-space:nowrap">Play →</span></button>`;
       const nQ = T().questions.length;
       return `<div style="max-width:860px;margin:0 auto">
-        ${pageHead('Bee Trivia', fmtN(nQ) + ' questions · 20 themes', 'Pick a theme and your level, then choose how to play. Every right answer earns a coin — and a fun fact.',
+        ${pageHead('Bee Trivia', fmtN(nQ) + ' questions · ' + T().themes.length + ' themes', 'Pick a theme and your level, then choose how to play. Every right answer earns a coin — and a fun fact.',
           st.right ? `<span style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">🧠 ${fmtN(st.right)} right · best clock ${st.clockBest || 0}</span>` : '')}
         <div style="margin-bottom:14px"><div style="font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px">Your level</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">${lvs}</div></div>
-        <div style="margin-bottom:16px"><div style="font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px">Theme</div>
+        <div style="margin-bottom:16px"><div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:8px"><span style="font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.05em;text-transform:uppercase">Themes</span><span style="font-size:11.5px;color:var(--muted);font-weight:650">pick as many as you like${sel.length ? ' · ' + sel.length + ' selected' : ' · all themes'}</span></div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px">${themes}</div></div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:11px">
           ${fmt('trvQuiz', '🎯', 'Classic Quiz', '10 questions, fun fact after every answer.', 'linear-gradient(135deg,#7C5CFF,#6A47F5)')}
-          ${fmt('trvSquare', '📐', 'Trivia Squares', 'Claim the 3×3 board — score the lines, magic-square style.', 'linear-gradient(135deg,#13A892,#0E8A78)')}
+          ${fmt('trvSquare', '📐', 'Trivia Squares', 'Claim the 3×3 board — 9 different themes, one per cell.', 'linear-gradient(135deg,#13A892,#0E8A78)')}
           ${fmt('trvClock', '⏱', 'Beat the Clock', '60 seconds, as many as you can. Streaks pay bonus coins.', 'linear-gradient(135deg,#F0703C,#D85A29)')}
         </div>
       </div>`; },
