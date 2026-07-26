@@ -1297,23 +1297,42 @@ const app = {
   collTab:(t)=>set({collTab:t}),
   buyAvatar:(id)=>{ const c=active(); const a=SB_AVATARS.byId[id]; if(!a||avOwned(c,id)) return;
     if(!spendCoins(a.price)){ flash('Need '+a.price+' 🪙 — play games and clear Levels to earn!'); return; }
-    (c.avOwned=c.avOwned||{})[id]=1; c.avatar=id; save(); sfx('win'); flash('✨ '+a.name+' joined your collection!'); render();
+    avGive(c,id,1); c.avatar=id; save(); sfx('win'); flash('✨ '+a.name+' joined your collection!'); render();
     try{ app.showAvCard(id,{unlocked:true}); }catch(e){ burstConfetti(120); } },
-  sellAvatar:(id)=>{ const c=active(); const a=SB_AVATARS.byId[id]; if(!a||a.rarity==='free'||!((c.avOwned||{})[id])) return;
-    if(c.avatar===id){ flash('Pick a different avatar first — you can\'t sell the one you\'re wearing'); return; }
-    delete c.avOwned[id]; addCoins(a.sell); save(); sfx('coin'); flash('Sold '+a.name+' for '+a.sell+' 🪙'); render(); },
-  // ----- avatar packs: probability drop (70% rare · 24% epic · 6% legendary, unowned only) -----
-  buyPack:(pk)=>{ const c=active(); const pool=SB_AVATARS.list.filter(a=>a.pack===pk&&!avOwned(c,a.id));
+  // Selling trades ONE copy. Spares go first and freely; parting with your last copy still
+  // requires that you are not wearing it.
+  sellAvatar:(id)=>{ const c=active(); const a=SB_AVATARS.byId[id]; if(!a||a.rarity==='free') return;
+    const n=avCount(c,id); if(n<1) return;
+    if(n===1 && c.avatar===id){ flash('Pick a different avatar first — you can\'t sell the one you\'re wearing'); return; }
+    if(n===1) delete c.avOwned[id]; else c.avOwned[id]=n-1;
+    addCoins(a.sell); save(); sfx('coin');
+    flash(n>1?('Sold a spare '+a.name+' for '+a.sell+' 🪙 · '+(n-1)+' left'):('Sold '+a.name+' for '+a.sell+' 🪙')); render(); },
+  // One tap to cash in every spare across the whole collection.
+  sellDupes:()=>{ const c=active(); const n=avDupeTotal(c); if(!n){ flash('No spare copies to sell'); return; }
+    const v=avDupeValue(c);
+    if(!window.confirm('Sell all '+n+' spare copies for '+v+' coins? You keep one of every avatar.')) return;
+    SB_AVATARS.list.forEach(a=>{ if(a.rarity==='free') return; const d=avDupes(c,a.id); if(d>0) c.avOwned[a.id]=1; });
+    addCoins(v); save(); sfx('coin'); burstConfetti(60); flash('Sold '+n+' spares for '+v+' 🪙'); render(); },
+  // ----- avatar packs: probability drop (70% rare · 24% epic · 6% legendary) -----
+  // Duplicates are real drops now, so a pack never runs dry and commons stack up into a
+  // sellable pile. A new avatar is still favoured 3:1 while any remain, so the set fills in
+  // at a decent clip instead of burying a child in repeats.
+  buyPack:(pk)=>{ const c=active(); const all=SB_AVATARS.list.filter(a=>a.pack===pk);
     if(!avPackUnlocked(pk)){ const P=SB_AVATARS.packs.find(p=>p.id===pk)||{}; openUpsell('avatarPacks','The '+(P.label||'avatar')+' pack', packPlanNeeded(pk)); return; }
-    if(!pool.length){ flash('You own this whole pack! 🎉'); return; }
+    if(!all.length) return;
     const P=SB_AVATARS.packs.find(p=>p.id===pk)||{}; const cost=packCost(pk);
-    if(!window.confirm('Open the '+(P.label||'pack')+' for '+cost+' coins? You get one surprise avatar you don’t own yet.')) return;
+    const missing=all.filter(a=>!avOwned(c,a.id)).length;
+    if(!window.confirm('Open the '+(P.label||'pack')+' for '+cost+' coins? You get one surprise avatar'+(missing?'':' — you have them all, so this will be a spare you can sell')+'.')) return;
     if(!spendCoins(cost)){ flash('Need '+cost+' 🪙 — play games and clear Levels to earn!'); return; }
-    const tiers=[['rare',PACK_WEIGHTS.rare],['epic',PACK_WEIGHTS.epic],['legendary',PACK_WEIGHTS.legendary]].filter(t=>pool.some(a=>a.rarity===t[0]));
+    const tiers=[['rare',PACK_WEIGHTS.rare],['epic',PACK_WEIGHTS.epic],['legendary',PACK_WEIGHTS.legendary]].filter(t=>all.some(a=>a.rarity===t[0]));
     const tot=tiers.reduce((s,t)=>s+t[1],0); let roll=Math.random()*tot; let tier=tiers[tiers.length-1][0];
     for(const t of tiers){ if(roll<t[1]){ tier=t[0]; break; } roll-=t[1]; }
-    const cand=pool.filter(a=>a.rarity===tier); const win=cand[Math.floor(Math.random()*cand.length)];
-    (c.avOwned=c.avOwned||{})[win.id]=1; save();
+    let cand=all.filter(a=>a.rarity===tier);
+    const fresh=cand.filter(a=>!avOwned(c,a.id));
+    if(fresh.length && Math.random()<0.75) cand=fresh;        // new-first bias
+    const win=cand[Math.floor(Math.random()*cand.length)];
+    const dupe=avCount(c,win.id)>0; avGive(c,win.id,1); save();
+    state.packDupe=dupe?avCount(c,win.id):0;
     const reveal=()=>{ state.packRoll=null; sfx(win.rarity==='legendary'?'win':'coin'); burstConfetti(win.rarity==='legendary'?150:(win.rarity==='epic'?100:60)); set({packDrop:win.id}); };
     if(state.a11yMotion){ reveal(); return; }                // reduce-motion: skip the reel
     state.packRoll={pk:pk, winId:win.id}; render();           // themed "calculating" reel…
@@ -1321,8 +1340,8 @@ const app = {
   packSkip:()=>{ const r=state.packRoll; if(!r) return; clearTimeout(state._packTimer); state._packTimer=null; const win=SB_AVATARS.byId[r.winId]; state.packRoll=null;
     if(win){ sfx(win.rarity==='legendary'?'win':'coin'); burstConfetti(win.rarity==='legendary'?150:(win.rarity==='epic'?100:60)); } set({packDrop:r.winId}); },
   toggleOdds:(pk)=>{ state.oddsOpen=(state.oddsOpen===pk?null:pk); render(); },
-  packClose:()=>set({packDrop:null}),
-  packWear:()=>{ const id=state.packDrop; if(id){ const c=active(); c.avatar=id; save(); sfx('correct'); } set({packDrop:null}); },
+  packClose:()=>set({packDrop:null, packDupe:0}),
+  packWear:()=>{ const id=state.packDrop; if(id){ const c=active(); c.avatar=id; save(); sfx('correct'); } set({packDrop:null, packDupe:0}); },
   openShopAvatars:()=>{ state.shopTab='avatars'; app.openShop(); },
   wearAv:(id)=>{ const c=active(); if(!avOwned(c,id)){ flash('Not collected yet'); return; } c.avatar=id; save(); sfx('correct'); render(); },
   trapPick:(k)=>set({trapSel:k}),
@@ -3034,15 +3053,23 @@ function packOdds(pk){ const avs=SB_AVATARS.list.filter(a=>a.pack===pk);
   const ord={legendary:0,epic:1,rare:2}; out.sort((a,b)=>(ord[a.rarity]-ord[b.rarity])||a.name.localeCompare(b.name));
   return out; }
 function oddsPct(p){ return p<1?p.toFixed(1):Math.round(p); }
-function oddsPanel(pk,c){ const rows=packOdds(pk).map(o=>{ const own=avOwned(c,o.id); const R=SB_AVATARS.rarities[o.rarity]||{c:'#888',label:o.rarity};
+function oddsPanel(pk,c){ const rows=packOdds(pk).map(o=>{ const own=avOwned(c,o.id); const n=avCount(c,o.id); const R=SB_AVATARS.rarities[o.rarity]||{c:'#888',label:o.rarity};
     return `<div style="display:flex;align-items:center;gap:8px;padding:4px 2px">
       <span style="width:30px;height:30px;flex-shrink:0;display:grid;place-items:center;background:var(--surface2);border-radius:8px;${own?'':'opacity:.55;filter:saturate(.5)'}">${avatarSVG(o.id,26)}</span>
-      <span style="flex:1;min-width:0;font-weight:700;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(o.name)}${own?' <span style="color:var(--good);font-weight:800">✓</span>':''}</span>
+      <span style="flex:1;min-width:0;font-weight:700;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(o.name)}${n>1?' <span style="font-family:var(--mono);color:var(--treasure-deep,#8A5B00);font-weight:800">×'+n+'</span>':(own?' <span style="color:var(--good);font-weight:800">✓</span>':'')}</span>
       <span style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#fff;background:${R.c};border-radius:99px;padding:2px 7px">${esc(R.label)}</span>
       <span style="font-family:var(--mono);font-size:12px;font-weight:800;color:var(--muted);min-width:36px;text-align:right">${oddsPct(o.pct)}%</span></div>`; }).join('');
   return `<div style="margin-top:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:9px 11px">
-    <div style="font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Drop chances · ones you own (✓) won't drop again</div>${rows}</div>`; }
-function avOwned(c,id){ if(state.devUnlock) return true; const a=window.SB_AVATARS&&SB_AVATARS.byId[id]; if(!a) return true; return a.rarity==='free' || !!((c.avOwned||{})[id]); }
+    <div style="font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Drop chances · new ones come up first; repeats become spares you can sell</div>${rows}</div>`; }
+/* c.avOwned[id] is a COUNT, not a flag — duplicates are collectable and sellable.
+   Old saves stored a bare 1, which reads back as a single copy. */
+function avCount(c,id){ const v=(c&&c.avOwned||{})[id]; const n=(typeof v==='number')?v:(v?1:0); return n>0?n:0; }
+function avOwned(c,id){ if(state.devUnlock) return true; const a=window.SB_AVATARS&&SB_AVATARS.byId[id]; if(!a) return true; return a.rarity==='free' || avCount(c,id)>0; }
+function avGive(c,id,n){ c.avOwned=c.avOwned||{}; c.avOwned[id]=avCount(c,id)+(n||1); }
+/* Spare copies: everything above the one you keep. This is what the Sell button trades. */
+function avDupes(c,id){ return Math.max(0, avCount(c,id)-1); }
+function avDupeTotal(c){ let n=0; SB_AVATARS.list.forEach(a=>{ if(a.rarity!=='free') n+=avDupes(c,a.id); }); return n; }
+function avDupeValue(c){ let v=0; SB_AVATARS.list.forEach(a=>{ if(a.rarity!=='free') v+=avDupes(c,a.id)*(a.sell||0); }); return v; }
 /* The plan decides WHICH avatar packs exist for you; coins decide when you open them.
    Packs beyond your plan's allowance are not for sale at any price — they come with the
    upgrade. (Free-rarity avatars stay free everywhere; they are the starter bees.) */
@@ -3164,18 +3191,23 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
   const tabBtn=(k,ic,l)=>`<button data-act="collTab" data-arg="${k}" style="flex:1;min-width:96px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${iconSVG(ic,15)} ${l}</button>`;
   let body='';
   if(tab==='avatars'){
-    const printBar=`<div class="sb-card" style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><div style="min-width:0"><div class="sb-ct" style="font-size:15px">🃏 Your avatar cards</div><div class="sb-cn">Print your ${avOwnedCount(c)} collected avatars as cut-out trading cards — with a Bizzing Bee back.</div></div><button data-act="printAvCards" style="display:inline-flex;align-items:center;gap:7px;padding:11px 17px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge);white-space:nowrap">${SB_ICON('printer',{size:16})} Print my cards</button></div>`;
+    const dupN=avDupeTotal(c); const dupV=avDupeValue(c);
+    const dupBar=dupN?`<div class="sb-card" style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-color:var(--treasure,#F0B429)"><div style="min-width:0"><div class="sb-ct" style="font-size:15px">🪙 ${dupN} spare ${dupN===1?'copy':'copies'}</div><div class="sb-cn">Duplicates from packs. Sell them all for ${fmtN(dupV)} coins — you keep one of every avatar.</div></div><button data-act="sellDupes" style="padding:11px 17px;border-radius:10px;background:var(--treasure,#F0B429);color:#5a3d00;font-weight:800;font-size:13px;box-shadow:var(--edge);white-space:nowrap">Sell spares · ${fmtN(dupV)}🪙</button></div>`:'';
+    const printBar=dupBar+`<div class="sb-card" style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><div style="min-width:0"><div class="sb-ct" style="font-size:15px">🃏 Your avatar cards</div><div class="sb-cn">Print your ${avOwnedCount(c)} collected avatars as cut-out trading cards — with a Bizzing Bee back.</div></div><button data-act="printAvCards" style="display:inline-flex;align-items:center;gap:7px;padding:11px 17px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge);white-space:nowrap">${SB_ICON('printer',{size:16})} Print my cards</button></div>`;
     body=printBar+SB_AVATARS.packs.map(p=>{ const avs=SB_AVATARS.list.filter(a=>a.pack===p.id); const ownedN=avs.filter(a=>avOwned(c,a.id)).length;
       const inPlan=avPackUnlocked(p.id);
       const tiles=avs.map(a=>{ const own=avOwned(c,a.id); const R=SB_AVATARS.rarities[a.rarity]; const on=c.avatar===a.id;
-        const action= on?`<span style="font-weight:800;font-size:11.5px;color:var(--good)">Wearing ✓</span>`
-          : own?`<span style="display:inline-flex;gap:6px"><button data-act="wearAv" data-arg="${a.id}" style="padding:6px 11px;border-radius:8px;background:var(--accent);color:#fff;font-weight:800;font-size:11.5px">Use</button>${a.rarity!=='free'?`<button data-act="sellAvatar" data-arg="${a.id}" title="Sell for ${a.sell} coins" style="padding:6px 9px;border-radius:8px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--muted)">Sell ${a.sell}🪙</button>`:''}</span>`
+        const n=avCount(c,a.id); const dup=Math.max(0,n-1);
+        const sellBtn=(a.rarity!=='free')?`<button data-act="sellAvatar" data-arg="${a.id}" title="${dup?('Sell one of your '+n+' copies for '+a.sell+' coins'):('Sell for '+a.sell+' coins')}" style="padding:6px 9px;border-radius:8px;background:${dup?'var(--treasure-tint,#FFF3D6)':'var(--surface2)'};border:1px solid ${dup?'var(--treasure,#F0B429)':'var(--line)'};font-weight:800;font-size:11.5px;color:${dup?'var(--treasure-deep,#8A5B00)':'var(--muted)'}">Sell ${a.sell}🪙</button>`:'';
+        const action= on?`<span style="display:inline-flex;gap:6px;align-items:center"><span style="font-weight:800;font-size:11.5px;color:var(--good)">Wearing ✓</span>${dup?sellBtn:''}</span>`
+          : own?`<span style="display:inline-flex;gap:6px"><button data-act="wearAv" data-arg="${a.id}" style="padding:6px 11px;border-radius:8px;background:var(--accent);color:#fff;font-weight:800;font-size:11.5px">Use</button>${sellBtn}</span>`
           : inPlan?`<button data-act="openShopAvatars" title="Drops from a ${p.label} pack in the Store" style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--muted)">${iconSVG('lock',11,2.2)} Store pack</button>`
           : `<button data-act="openTiers" title="Part of a paid plan" style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;background:var(--chip);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--accent)">${iconSVG('lock',11,2.2)} Plan</button>`;
         const card=(typeof SB_AV_CARD==='function')?SB_AV_CARD(a.id):null;
         // Unowned avatars are drawn as silhouettes-in-waiting: desaturated and dimmed, so the
         // collection reads at a glance as "mine" vs "still to win".
-        return `<div style="background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:11px 9px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;${own?'':'opacity:.62'}">
+        return `<div style="position:relative;background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:11px 9px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;${own?'':'opacity:.62'}">
+          ${n>1?`<span title="You have ${n} copies of ${esc(a.name)}" style="position:absolute;top:7px;right:7px;z-index:2;font-family:var(--mono);font-weight:800;font-size:11px;color:#5a3d00;background:var(--treasure,#F0B429);border-radius:99px;padding:2px 8px;box-shadow:0 1px 3px rgba(0,0,0,.18)">×${n}</span>`:''}
           <button data-act="showAvCard" data-arg="${a.id}" title="See ${esc(a.name)}'s card" style="background:none;border:0;padding:0;cursor:pointer;width:89px;height:89px;${own?'':'filter:grayscale(1) contrast(.82) brightness(.96)'}">${avatarSVG(a.id,89, on?c.accOn:null)}</button>
           <span style="font-weight:800;font-size:12px;line-height:1.15">${a.name}</span>
           ${card?`<span style="font-family:var(--mono);font-size:9.5px;font-weight:800;color:var(--muted)">OVR ${card.overall}</span>`:''}
@@ -5890,11 +5922,12 @@ function packDropOverlay(){ const id=state.packDrop; if(!id) return '';
   const leg=a.rarity==='legendary'; const od=(typeof packOdds==='function')?packOdds(a.pack).find(o=>o.id===id):null;
   return `<div data-act="packClose" class="pk-ov" style="z-index:83">
     <div data-act="noop" style="position:relative;background:linear-gradient(160deg,color-mix(in srgb,var(--accent) 20%,#3A2F5C),#241A47);border:1px solid rgba(255,255,255,.2);border-radius:24px;padding:26px 30px 28px;text-align:center;max-width:330px;width:100%;box-shadow:0 0 64px ${leg?'rgba(255,194,61,.5)':'color-mix(in srgb,var(--accent) 40%,transparent)'}">
-      <div style="font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.16em;color:#C9BFEA;margin-bottom:10px">✨ YOU GOT</div>
+      <div style="font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.16em;color:${state.packDupe?'#FFD98A':'#C9BFEA'};margin-bottom:10px">${state.packDupe?('🪙 SPARE · YOU NOW HAVE ×'+state.packDupe):'✨ YOU GOT'}</div>
       <div class="pk-drop" style="width:150px;height:150px;margin:0 auto">${SB_AVATAR(a.id,150,{dark:true})}</div>
       <div style="display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:${R.c};border-radius:99px;padding:4px 12px;margin:14px 0 6px">${R.label}${leg?' ✦':''}</div>
       <div style="font-family:var(--display);color:#fff;font-weight:800;font-size:22px">${esc(a.name)}</div>
-      ${od?`<div style="font-size:11.5px;color:#C9BFEA;font-weight:700;margin-top:6px">🎲 ${oddsPct(od.pct)}% drop chance — nice roll!</div>`:''}
+      ${state.packDupe?`<div style="font-size:11.5px;color:#FFD98A;font-weight:700;margin-top:6px">A repeat — sell the spare for ${a.sell} 🪙 in your Collection.</div>`
+        :(od?`<div style="font-size:11.5px;color:#C9BFEA;font-weight:700;margin-top:6px">🎲 ${oddsPct(od.pct)}% drop chance — nice roll!</div>`:'')}
       <div style="display:flex;gap:9px;justify-content:center;margin-top:18px">
         <button data-act="packWear" style="padding:12px 22px;border-radius:99px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px;box-shadow:0 4px 0 #C8891B">Wear now</button>
         <button data-act="packClose" style="padding:12px 18px;border-radius:99px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#E9E1FF;font-weight:800;font-size:13px">Keep it</button>
