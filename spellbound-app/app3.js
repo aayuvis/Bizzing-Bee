@@ -2707,43 +2707,76 @@ function _wings(f,s){ f=f||'#EAF2FF'; s=s||'#B8D2F0';
   return '<g transform="translate(30 42)"><g style="transform-box:fill-box;transform-origin:100% 55%;animation:fx-flutter .42s ease-in-out infinite"><path d="M0 0 Q-22 -12 -24 3 Q-18 14 0 9 Z" fill="'+f+'" opacity=".5" stroke="'+s+'" stroke-width="1"/></g></g>'
     +'<g transform="translate(90 42)"><g style="transform-box:fill-box;transform-origin:0% 55%;animation:fx-flutterR .42s ease-in-out infinite"><path d="M0 0 Q22 -12 24 3 Q18 14 0 9 Z" fill="'+f+'" opacity=".5" stroke="'+s+'" stroke-width="1"/></g></g>'; }
 let LEGEND_FX=null;
-function legendFx(){ if(LEGEND_FX) return LEGEND_FX; LEGEND_FX={
-  // gods
-  krishna: _fx(99,46,'fx-spin',2.6,_wheel(11,'#FFD34D')+'<circle r="4.4" fill="none" stroke="#FFD34D" stroke-width="1.6"/>'),
-  shiva:   _fx(60,36.5,'fx-pulse',1.7,'<circle r="3.2" fill="#FF5A2E"/><circle r="6" fill="none" stroke="#FF7A4A" stroke-width="1" opacity=".7"/>'),
-  ganesha: _fx(94,28,'fx-rise',3.2,'<text text-anchor="middle" font-weight="800" font-size="15" fill="#E8973A">ॐ</text>'),
-  durga:   _fx(17,50,'fx-pulse',1.6,_star(6,'#FFE07A')),
-  saraswati: _fx(34,80,'fx-rise',2.6,'<text font-size="12" fill="#C87A2A">♪</text>')+_fx(44,86,'fx-rise',2.6,'<text font-size="10" fill="#C87A2A">♫</text>',0.9),
-  zeus:    _fx(16,88,'fx-flash',2.2,'<path d="M4 -12 l-8 11 5 1 -7 12" stroke="#FFF3A0" stroke-width="2.4" fill="none" stroke-linecap="round"/>'),
-  rama:    _fx(30,42,'fx-shoot',2.4,'<path d="M-12 0 L10 0" stroke="#E8C24A" stroke-width="2.2" stroke-linecap="round"/><path d="M10 0 L5 -3.5 M10 0 L5 3.5 M-12 0 L-9 -3 M-12 0 L-9 3" stroke="#C8952A" stroke-width="1.8" fill="none" stroke-linecap="round"/>'),
-  odin:    '<g transform="translate(100 96)"><g style="transform-box:fill-box;transform-origin:60% 60%;animation:fx-flutter .4s ease-in-out infinite"><path d="M0 0 Q-9 -6 -12 0 Q-7 3 0 2z" fill="#2A2A32"/></g></g>',
-  // world changers
-  einstein: _fx(88,27,'fx-rise',3.4,'<text text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="12" fill="#2E2A6E">E=mc²</text>'),
-  gandhi:   _fx(20,96,'fx-spin',3.8,_wheel(11,'#E4DAC2')),
-  curie:    _fx(60,46,'fx-spin',3,'<g fill="none" stroke="#5AC88A" stroke-width="1" opacity=".65"><ellipse rx="36" ry="13"/><ellipse rx="36" ry="13" transform="rotate(60)"/><ellipse rx="36" ry="13" transform="rotate(120)"/></g>'),
-  aryabhatta: _fx(60,46,'fx-spin',5,'<circle r="36" fill="none" stroke="#8AB4E8" stroke-width="1" opacity=".5"/><circle cx="0" cy="-36" r="3.4" fill="#E88A3A"/>'),
-  buddha:   _fx(95,25,'fx-spin',5,_wheel(9,'#F0CE52'))+_fx(60,42,'fx-pulse',3.2,'<circle r="32" fill="none" stroke="#FFD86B" stroke-width="1.4"/>'),
-  // mythic legends
-  queenhive: _wings(),
-  pegasus:   _wings(),
-  goldencrane: _wings('#FFF6E0','#E8C24A'),
-  starweaver: _fx(60,46,'fx-spin',6,'<g transform="translate(0 -35)">'+_star(5,'#FFE07A')+'</g><g transform="translate(30 18)">'+_star(3.6,'#FFD34D')+'</g><g transform="translate(-30 18)">'+_star(3.6,'#FFF0B0')+'</g>'),
-  nebula:    _fx(95,25,'fx-spin',6,'<path d="M0 -11 Q8 -4 0 0 Q-8 4 0 11 Q8 4 0 0 Q-8 -4 0 -11" fill="none" stroke="#C4A0F0" stroke-width="1.6"/>'+_star(2.4,'#E8D8FF')),
-  dragonmaster: '<g transform="translate(93 82)"><g style="transform-box:fill-box;transform-origin:center bottom;animation:fx-pulse 1.1s ease-in-out infinite"><path d="M0 0 C-6 -7 -2 -14 0 -18 C4 -12 7 -9 3 -2 C2 -5 1 -6 0 -7 C0 -3 -2 -1 0 0z" fill="#FF7A2A"/><path d="M0 -2 C-3 -6 -1 -10 0 -12 C2 -8 3 -6 1 -2z" fill="#FFC83D"/></g></g>',
-  uni:       _fx(60,12,'fx-tw',1.8,_star(5,'#FFE07A')),
-  yeti:      _fx(40,26,'fx-fall',2.6,'<circle r="2.2" fill="#EAF6FF"/>')+_fx(74,22,'fx-fall',2.6,'<circle r="2" fill="#EAF6FF"/>',0.9)+_fx(58,20,'fx-fall',2.6,'<circle r="1.8" fill="#EAF6FF"/>',1.7),
-  rexking:   _fx(96,58,'fx-flash',1.6,'<g stroke="#E85A3A" stroke-width="2" stroke-linecap="round"><line x1="0" y1="-6" x2="9" y2="-9"/><line x1="0" y1="0" x2="11" y2="0"/><line x1="0" y1="6" x2="9" y2="9"/></g>'),
-  hydra:     _fx(36,17,'fx-sway',1.3,'<path d="M0 7 Q-3.5 0 0 -5 Q3.5 0 0 7z" fill="#4FA86A"/><circle cx="-1" cy="-1" r=".9" fill="#122"/>')+_fx(60,12,'fx-sway',1.3,'<path d="M0 7 Q-3.5 0 0 -5 Q3.5 0 0 7z" fill="#5FB87A"/><circle cx="-1" cy="-1" r=".9" fill="#122"/>',0.4)+_fx(84,17,'fx-sway',1.3,'<path d="M0 7 Q-3.5 0 0 -5 Q3.5 0 0 7z" fill="#4FA86A"/><circle cx="-1" cy="-1" r=".9" fill="#122"/>',0.8),
-  titan:     _fx(17,50,'fx-flash',1.5,'<path d="M3 -9 l-6 9 4 0 -5 9" stroke="#FFD86B" stroke-width="2.2" fill="none" stroke-linecap="round"/>')+_fx(103,50,'fx-flash',1.5,'<path d="M-3 -9 l6 9 -4 0 5 9" stroke="#FFD86B" stroke-width="2.2" fill="none" stroke-linecap="round"/>',0.5),
-  vex:       _fx(42,20,'fx-fall',2.4,'<text font-size="10" fill="#9A6ED8" font-weight="800">?</text>')+_fx(76,22,'fx-fall',2.4,'<text font-size="9" fill="#7A3FD0" font-weight="800">\u2715</text>',1.1),
-  wordeater: _fx(90,54,'fx-rise',2.2,'<text text-anchor="middle" font-weight="800" font-size="12" fill="#C43A5A">A</text>'),
-  naga:      '<g transform="translate(60 70)"><g style="transform-box:fill-box;transform-origin:top center;animation:fx-sway 1s ease-in-out infinite"><path d="M0 0 L0 8 M0 8 L-2.5 12 M0 8 L2.5 12" stroke="#D6362E" stroke-width="1.8" fill="none" stroke-linecap="round"/></g></g>',
-  bluewhale: _fx(60,16,'fx-rise',2.6,'<g stroke="#6FC8E0" stroke-width="2" fill="none" stroke-linecap="round"><path d="M0 4 L0 -8"/><path d="M-3 -2 L-4 -9 M3 -2 L4 -9"/></g>'),
-  // gold / neon themed
-  aurum:     _fx(24,30,'fx-rise',2.6,_star(4.4,'#FFD34D'))+_fx(96,34,'fx-rise',2.6,_star(3.6,'#FFE07A'),1.1),
-  goldlegend:_fx(26,28,'fx-rise',2.6,_star(4.4,'#FFD34D'))+_fx(94,32,'fx-rise',2.6,_star(3.6,'#FFE07A'),1.2),
-  neonking:  _fx(60,13,'fx-flash',1.3,'<path d="M-12 6 L-12 -4 L-6 2 L0 -8 L6 2 L12 -4 L12 6 Z" fill="none" stroke="#3DF0C8" stroke-width="2" stroke-linejoin="round"/>'),
-  elemental: _fx(60,47,'fx-spin',5,'<circle cx="0" cy="-37" r="3.4" fill="#4FA86A"/><circle cx="37" cy="0" r="3.4" fill="#3D8AE0"/><circle cx="0" cy="37" r="3.4" fill="#E8603A"/><circle cx="-37" cy="0" r="3.4" fill="#EADFC0"/>')
+/* Each legendary gets ONE bespoke effect that means something for that character.
+   Authored in the avatar's 0 0 120 120 viewBox. `_a` = animate a positioned group. */
+function _a(x,y,anim,dur,content,delay,ease,extra){
+  return '<g transform="translate('+x+' '+y+')"><g style="transform-box:fill-box;transform-origin:'+(extra||'center')+';animation:'+anim+' '+dur+'s '+(ease||'ease-in-out')+' '+(delay||0)+'s infinite">'+content+'</g></g>'; }
+function _rot(x,y,dur,content){ return '<g transform="translate('+x+' '+y+')"><g style="animation:lx-orbit '+dur+'s linear infinite">'+content+'</g></g>'; }
+function legendFx(){ if(LEGEND_FX) return LEGEND_FX; const S=(s,c)=>_star(s,c); LEGEND_FX={
+  // 1 Queen Hive — wings flutter + a worker bee orbits her crown
+  queenhive: _wings('#EAF2FF','#B8D2F0') + _rot(60,20,3.4,'<g transform="translate(0 -16)"><ellipse rx="3.2" ry="2.4" fill="#FFC83D"/><path d="M-1 0h2M-2 1h4" stroke="#3A2A8C" stroke-width=".7"/><ellipse cx="-2" cy="-2" rx="2.2" ry="1.4" fill="#fff" opacity=".8"/></g>'),
+  // 2 Gold Legend — marquee bulbs chase around the frame
+  goldlegend: [[16,18],[60,10],[104,18],[110,60],[104,102],[60,110],[16,102],[10,60]].map((p,i)=>_a(p[0],p[1],'lx-chase',1.8,'<circle r="3.1" fill="#FFE07A"/>',i*0.22)).join(''),
+  // 3 Nebula Drake — star-dust swirls inward and condenses into a new star
+  nebula: [[-30,-24],[28,-26],[32,22],[-28,24]].map((d,i)=>'<g transform="translate(60 46)"><g style="--dx:'+(-d[0])+'px;--dy:'+(-d[1])+'px;animation:lx-condense 2.6s ease-in '+(i*0.45)+'s infinite"><g transform="translate('+d[0]+' '+d[1]+')">'+S(3.4,'#D8C0FF')+'</g></g></g>').join('') + _a(60,46,'lx-glowpair',2.6,S(5,'#FFF0B0'),1.6),
+  // 4 Dragon Master — rain streaks fall, a river ripple crosses below
+  dragonmaster: [[26,16],[46,10],[78,12],[96,18]].map((p,i)=>_a(p[0],p[1],'lx-rain',1.9,'<path d="M0 0 v9" stroke="#7FC8E8" stroke-width="1.7" stroke-linecap="round"/>',i*0.34,'linear')).join('') + _a(60,108,'lx-wave',2.4,'<path d="M-34 0 q9 -4 18 0 t18 0 t18 0" fill="none" stroke="#5AA8D0" stroke-width="2" opacity=".75"/>'),
+  // 5 Aurum Formula — flask bubbles rise and the liquid turns gold
+  aurum: [[-4,0],[2,2],[6,-1]].map((p,i)=>_a(18+p[0],96+p[1],'lx-bubble',1.7,'<circle r="2.3" fill="#FFE07A"/>',i*0.5)).join('') + _a(18,100,'lx-glowpair',1.7,'<ellipse rx="8" ry="4" fill="#FFD34D" opacity=".55"/>',0.3),
+  // 6 Neon King — neon crown tubes flicker on in sequence
+  neonking: [[-12,0],[-4,-7],[4,-7],[12,0]].map((p,i)=>_a(60+p[0],14+p[1],'lx-tube',1.6,'<path d="M0 6 V-5" stroke="#3DF0C8" stroke-width="2.6" stroke-linecap="round"/>',i*0.2)).join(''),
+  // 7 Golden Crane — the paper unfolds and refolds
+  goldencrane: _a(60,60,'lx-fold',2.8,'<path d="M-26 12 L0 -18 L26 12 Z" fill="none" stroke="#F0CE52" stroke-width="1.6" opacity=".8"/>'),
+  // 8 Elemental Prime — four element orbs cycle earth→water→air→fire
+  elemental: [['#4FA86A',0,-38],['#3D8AE0',38,0],['#EADFC0',0,38],['#E8603A',-38,0]].map((e,i)=>_a(60+e[1],47+e[2],'lx-elem',3.2,'<circle r="4.6" fill="'+e[0]+'"/>',i*0.8)).join(''),
+  // 9 Uni — a rainbow arc sweeps out from the horn
+  uni: _a(60,26,'lx-arc',2.6,'<path d="M-30 6 A30 30 0 0 1 30 6" fill="none" stroke="#FF7FBE" stroke-width="2.4" stroke-dasharray="70" stroke-linecap="round"/>',0,'linear') + _a(60,26,'lx-arc',2.6,'<path d="M-24 8 A24 24 0 0 1 24 8" fill="none" stroke="#7FD8FF" stroke-width="2.2" stroke-dasharray="70" stroke-linecap="round"/>',0.25,'linear'),
+  // 10 Frost — breath fogs out and snowflakes settle on the shoulders
+  yeti: _a(84,64,'lx-breath',2.6,'<ellipse rx="6" ry="4" fill="#EAF6FF" opacity=".8"/>') + [[40,26],[74,22],[58,18]].map((p,i)=>_a(p[0],p[1],'fx-fall',3,'<circle r="2" fill="#EAF6FF"/>',i*0.9,'linear')).join(''),
+  // 11 Rex King — a roar shockwave rings out
+  rexking: [0,0.6,1.2].map(d=>_a(94,58,'lx-roar',1.8,'<circle r="9" fill="none" stroke="#E8603A" stroke-width="2"/>',d,'ease-out')).join(''),
+  // 12 Starweaver — a thread draws star to star, forming a constellation
+  starweaver: '<g transform="translate(60 46)"><path d="M-30 -18 L-8 6 L16 -14 L32 12" fill="none" stroke="#FFE07A" stroke-width="1.5" stroke-dasharray="60" style="animation:lx-thread 3.4s ease-in-out infinite"/></g>' + [[-30,-18],[-8,6],[16,-14],[32,12]].map((p,i)=>_a(60+p[0],46+p[1],'fx-tw',3.4,S(3.4,'#FFF0B0'),i*0.7)).join(''),
+  // 13 Pegasus — wings beat and cloud puffs trail behind
+  pegasus: _wings('#F2F6FF','#C8D8F0') + [0,0.8].map(d=>_a(96,88,'lx-puff',2.4,'<ellipse rx="6" ry="4" fill="#fff" opacity=".85"/>',d)).join(''),
+  // 14 Hydra — a head is cut, then two regrow
+  hydra: _a(36,17,'lx-strike',2.8,'<path d="M0 7 Q-3.5 0 0 -5 Q3.5 0 0 7z" fill="#4FA86A"/><circle cx="-1" cy="-1" r=".9" fill="#122"/>') + [[72,15],[88,20]].map((p,i)=>_a(p[0],p[1],'lx-regrow',2.8,'<path d="M0 7 Q-3.2 0 0 -5 Q3.2 0 0 7z" fill="#5FB87A"/><circle cx="-1" cy="-1" r=".8" fill="#122"/>',i*0.25)).join(''),
+  // 15 Titan — the checkered flag waves over speed lines
+  titan: _a(97,26,'lx-wave',1.1,'<g><rect x="0" y="0" width="18" height="12" fill="#fff"/><g fill="#241E33"><rect x="0" y="0" width="4.5" height="4"/><rect x="9" y="0" width="4.5" height="4"/><rect x="4.5" y="4" width="4.5" height="4"/><rect x="13.5" y="4" width="4.5" height="4"/><rect x="0" y="8" width="4.5" height="4"/><rect x="9" y="8" width="4.5" height="4"/></g></g>','0','ease-in-out','left center') + [[14,52],[12,62],[16,72]].map((p,i)=>_a(p[0],p[1],'fx-shoot',1.2,'<path d="M0 0 h13" stroke="#FFD34D" stroke-width="2" stroke-linecap="round"/>',i*0.18,'linear')).join(''),
+  // 16 Vex — letters are struck from his ledger
+  vex: '<g transform="translate(92 26)"><rect x="-11" y="-9" width="22" height="20" rx="2" fill="#F4EFE2" stroke="#7A5AD0" stroke-width="1.2"/><g font-size="7" font-weight="800" fill="#5A3AA0"><text x="-7" y="-2">A</text><text x="1" y="-2">B</text><text x="-7" y="7">C</text><text x="1" y="7">D</text></g><path d="M-9 -4 h18" stroke="#C43A5A" stroke-width="1.8" style="animation:lx-strike 2.2s steps(1) infinite"/><path d="M-9 5 h18" stroke="#C43A5A" stroke-width="1.8" style="animation:lx-strike 2.2s steps(1) 1.1s infinite"/></g>',
+  // 17 Word-Eater — a serpent head chomps a letter down
+  wordeater: _a(94,44,'lx-chomp',1.5,'<path d="M-9 0 Q0 -8 10 -2 L10 3 Q0 6 -9 4z" fill="#3A7A4E"/><circle cx="4" cy="-1" r="1.1" fill="#FFD34D"/>',0,'ease-in-out','right center') + _a(96,58,'fx-fall',1.5,'<text text-anchor="middle" font-size="9" font-weight="800" fill="#E8E0C8">E</text>',0.4,'ease-in'),
+  // 18 Naga — the coils undulate and the hood flares
+  naga: _a(60,96,'lx-coil',1.6,'<path d="M-22 0 q11 -6 22 0 t22 0" fill="none" stroke="#2E8A5E" stroke-width="4" stroke-linecap="round"/>') + _a(60,20,'lx-elem',2.6,'<path d="M-14 6 Q-14 -8 0 -8 Q14 -8 14 6 Q0 1 -14 6z" fill="#3FA86E" opacity=".55"/>'),
+  // 19 Blue Whale — the blow-spout puffs and the fluke sweeps
+  bluewhale: [0,0.7].map(d=>_a(60,18,'lx-spout',2.4,'<path d="M0 6 V-6 M-4 2 V-4 M4 2 V-4" stroke="#8FD8F0" stroke-width="2" fill="none" stroke-linecap="round"/>',d)).join('') + _a(22,100,'lx-wave',2.4,'<path d="M0 0 q-9 -6 -14 -1 q6 3 14 1z" fill="#3D7DAE"/>'),
+  // 20 Marie Curie — two glowing elements pulse in the phial
+  curie: _a(20,92,'lx-glowpair',1.5,'<circle r="5" fill="#7FE8A0" opacity=".85"/>') + _a(20,92,'lx-glowpair',1.5,'<circle r="9" fill="none" stroke="#5AC88A" stroke-width="1.4"/>',0.5) + _a(99,34,'lx-glowpair',1.5,'<circle r="3.4" fill="#B8F0C8"/>',0.9),
+  // 21 Gandhi — the charkha turns, drawing a thread of yarn
+  gandhi: _rot(20,96,3.6,_wheel(11,'#E4DAC2')) + '<g transform="translate(20 96)"><path d="M11 0 q14 -8 26 -20" fill="none" stroke="#E8DCC0" stroke-width="1.5" stroke-dasharray="34" style="animation:lx-yarn 3.6s linear infinite"/></g>',
+  // 22 Aryabhatta — a zero is written, then planets orbit it
+  aryabhatta: _a(96,30,'lx-zero',3,'<text text-anchor="middle" font-family="Georgia,serif" font-size="15" font-weight="700" fill="#2E5AA0">0</text>') + _rot(60,46,5.5,'<circle cx="0" cy="-36" r="3.2" fill="#E88A3A"/>') + _rot(60,46,8,'<circle cx="32" cy="0" r="2.4" fill="#8AB4E8"/>'),
+  // 23 Buddha — a bodhi leaf falls into a single calm ripple
+  buddha: _a(88,22,'lx-leaf',3.4,'<path d="M0 0 Q6 5 0 11 Q-6 5 0 0z" fill="#6FBF7A"/>',0,'ease-in') + _a(60,110,'lx-roar',3.4,'<ellipse rx="10" ry="3" fill="none" stroke="#B8D8C0" stroke-width="1.4"/>',1.4,'ease-out'),
+  // 24 Einstein — E=mc² writes itself, chalk-style
+  einstein: '<g transform="translate(88 26)"><text text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="700" fill="none" stroke="#2E2A6E" stroke-width="1.1" stroke-dasharray="90" style="animation:lx-write 3.4s ease-in-out infinite">E=mc²</text></g>',
+  // 25 Zeus — lightning strikes down with a flash
+  zeus: _a(16,86,'lx-bolt',2.2,'<path d="M5 -16 l-10 15 6 1 -8 15" stroke="#FFF3A0" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',0,'steps(1)') + _a(16,86,'lx-bolt',2.2,'<circle r="15" fill="#FFF3A0" opacity=".3"/>',0,'steps(1)'),
+  // 26 Rama — the bow draws, then the arrow looses
+  rama: _a(18,84,'lx-draw',2.4,'<path d="M0 -30 Q-12 0 0 30" fill="none" stroke="#EDE7D6" stroke-width="1.5"/>') + _a(30,84,'fx-shoot',2.4,'<path d="M-12 0 L12 0" stroke="#E8C24A" stroke-width="2.2" stroke-linecap="round"/><path d="M12 0 L7 -3.5 M12 0 L7 3.5" stroke="#C8952A" stroke-width="1.8" fill="none" stroke-linecap="round"/>',0.45,'ease-out'),
+  // 27 Odin — a raven flies across and his eye gleams
+  odin: _a(104,86,'lx-fly',3.2,'<g><ellipse rx="7" ry="4.6" fill="#2A2A32"/><path d="M4 -3 l5 -1 -3 3z" fill="#3A3A42"/><path d="M-3 -3 q4 -5 8 -1" fill="#22222A"/></g>',0,'ease-in-out') + _a(48,54,'lx-glowpair',2.4,'<circle r="3" fill="#FFE07A" opacity=".75"/>',0.8),
+  // 28 Krishna — the chakra spins and flute notes drift away
+  krishna: _rot(99,46,2.4,_wheel(11,'#FFD34D')+'<circle r="4.4" fill="none" stroke="#FFD34D" stroke-width="1.6"/>') + [0,1.1].map(d=>_a(30,80,'lx-note',2.6,'<text font-size="10" fill="#E8C24A">♪</text>',d)).join(''),
+  // 29 Shiva — the third eye opens, damaru pulses ring out
+  shiva: '<g transform="translate(60 36.5)"><g style="transform-box:fill-box;transform-origin:center;animation:lx-eye 3.2s ease-in-out infinite"><ellipse rx="4.6" ry="3" fill="#FF5A2E"/><circle r="1.3" fill="#FFF0C0"/></g></g>' + [0,0.9].map(d=>_a(60,36.5,'lx-roar',3.2,'<circle r="7" fill="none" stroke="#FF8A5A" stroke-width="1.3"/>',1.8+d,'ease-out')).join(''),
+  // 30 Ganesha — the obstacle stone cracks apart and Om rises
+  ganesha: _a(20,104,'lx-crack',3.2,'<path d="M-8 6 L-3 -4 L2 3 L7 -6" fill="none" stroke="#8A6A4A" stroke-width="2" stroke-linecap="round"/>') + _a(94,28,'fx-rise',3.2,'<text text-anchor="middle" font-weight="800" font-size="15" fill="#E8973A">ॐ</text>',0.6),
+  // 31 Durga — the trishul gleams, a tiger-stripe flashes
+  durga: _a(17,54,'lx-gleam',2.2,'<path d="M-7 0 L7 0" stroke="#FFF3B0" stroke-width="2.4" stroke-linecap="round" opacity=".9"/>') + _a(99,104,'lx-glowpair',2.2,'<g stroke="#7A4A1A" stroke-width="1.4" opacity=".85"><path d="M-6 -2 h12"/><path d="M-5 2 h10"/></g>',0.7),
+  // 32 Saraswati — the veena strings vibrate and notes float over water
+  saraswati: [[26,84],[32,86],[38,88]].map((p,i)=>_a(p[0],p[1],'lx-string',0.9,'<path d="M0 -3 v6" stroke="#F0E0A0" stroke-width="1.4" stroke-linecap="round"/>',i*0.12)).join('') + [0,1.2].map(d=>_a(44,80,'lx-note',2.8,'<text font-size="11" fill="#C87A2A">♫</text>',d)).join('')
 }; return LEGEND_FX; }
 // Give a legendary its signature animation (falls back to twinkling sparkles).
 function legendaryAnim(svg,id){
