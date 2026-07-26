@@ -795,6 +795,21 @@ const app = {
   vocBack:()=>set({vocDeck:null}),
   // ----- Typing Trainer -----
   openTyping:()=>{ if(!gateFeature('trainTools','the Typing Trainer')) return; tyStop(); set({nav:'typing', screen:'app', ty:null, conceptSel:null}); },
+  // ===== Trivia Training — study the whole question bank as flip-cards, by chapter =====
+  openTrivTrain:()=>{ if(!gateFeature('trainTools','Trivia Training')) return; set({nav:'trivtrain', screen:'app', conceptSel:null, tt:null}); },
+  ttChapter:(th)=>{ const c=active(); const seen=((c.ttSeen||{})[th])||0; set({tt:{th:th, i:Math.min(seen, Math.max(0,ttDeck(th).length-1)), flip:false}}); },
+  ttBack:()=>set({tt:null}),
+  ttFlip:()=>{ const t=state.tt; if(!t) return; t.flip=!t.flip;
+    if(t.flip){ const c=active(); c.ttSeen=c.ttSeen||{}; c.ttSeen[t.th]=Math.max(c.ttSeen[t.th]||0, t.i+1);
+      const k=t.th+':'+t.i; c.ttCards=c.ttCards||{}; if(!c.ttCards[k]){ c.ttCards[k]=1; addCoins(1); } save(); }
+    render(); },
+  ttNav:(d)=>{ const t=state.tt; if(!t) return; const deck=ttDeck(t.th); if(!deck.length) return;
+    let i=(t.i||0)+(+d); if(i<0)i=deck.length-1; if(i>=deck.length)i=0; t.i=i; t.flip=false; render(); },
+  ttShuffle:()=>{ const t=state.tt; if(!t) return; const deck=ttDeck(t.th); if(deck.length<2) return;
+    let i=t.i; while(i===t.i) i=Math.floor(Math.random()*deck.length); t.i=i; t.flip=false; render(); },
+  ttSay:()=>{ const t=state.tt; if(!t) return; const q=ttDeck(t.th)[t.i||0]; if(q){ try{ say(q.q,0.95); }catch(e){} } },
+  // hand the speller straight to the Arcade, pre-tuned to this chapter's theme
+  ttPlay:(th)=>{ try{ if(window.STV){ state.trv=state.trv||{}; state.trv.ths=[th]; state.trv.th=th; } app.openTrivia(); }catch(e){ app.openTrivia(); } },
   tyStart:(id)=>{ tyStop(); const l=TY_LESSONS.find(x=>x.id===id)||TY_LESSONS[0];
     state.ty={mode:'lesson', lesson:l.id, title:l.name, tip:l.tip, seq:tySeqFor(l), pos:0, typed:0, errors:0, startT:0, done:false};
     set({nav:'typing', screen:'app'}); app._tyArm(); },
@@ -1819,6 +1834,7 @@ const WAYFIND={ quest:{c:'var(--action,#6C4FE0)',ic:'steps',sb:null,label:'Champ
   vocab:{c:'#2E8FB8',ic:'book',sb:'book',label:'Vocabulary'},
   typing:{c:'#5B3DD6',ic:'pencil',sb:'pencil',label:'Typing Trainer'},
   quotes:{c:'#C8791B',ic:'quote',sb:'star',label:'Quotes'},
+  trivtrain:{c:'#DC7A18',ic:'bulb',sb:'sparkle',label:'Know the World of Words'},
   traps:{c:'#C4453C',ic:'spark',sb:'target',label:'Your Traps'},
   revisions:{c:'#E0922E',ic:'book',sb:'target',label:'Your Revisions'} };
 function wayTile(key,size,tilt){ const w=WAYFIND[key]; size=size||48;
@@ -2210,6 +2226,7 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
       ${inner}</section>`;
   const missN=((c.missed)||[]).length;
   const qN=(window.SB_QUOTES&&SB_QUOTES.length)?SB_QUOTES.length:0;
+  const tN=(window.SB_TRIVIA&&SB_TRIVIA.questions)?SB_TRIVIA.questions.length:0;
   // ---- LEARN ----  understand words deeply
   const learn=hub('Learn','learn','#7C5CFF','Understand words deeply',
     row('concepts','setNav','concepts','Spelling basics, roots & patterns · '+fmtDone)+
@@ -2220,7 +2237,8 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
     row('figurative','setNav','figurative','2,350 idioms & similes, card by card')+
     row('typing','openTyping',null,'Touch-type, then race the 60-second test')+
     row('vocab','openVocab',null,'Word → meaning, vocabulary-bee style')+
-    row('quotes','openQuotes',null,(qN?fmtN(qN)+' ':'')+'kid-friendly quotes from famous people'));
+    row('quotes','openQuotes',null,(qN?fmtN(qN)+' ':'')+'kid-friendly quotes from famous people')+
+    row('trivtrain','openTrivTrain',null,'Trivia training — '+(tN?fmtN(tN)+' ':'')+'cards by chapter, then play the Arcade'));
   // ---- REVISE ----  fix what trips you up
   const revise=hub('Revise','retry','#E0922E','Fix what trips you up',
     row('revisions','openRevisions',null,'Redo the words you flagged to revise'+(missN?' · '+missN+' waiting':''))+
@@ -2348,7 +2366,7 @@ function viewRevisions(){
 /* ===================== APP SHELL ===================== */
 function viewApp(){
   const S=state;
-  const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,quotes:1,typing:1,builder:1,adv:1,traps:1,revisions:1};
+  const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,quotes:1,typing:1,builder:1,adv:1,traps:1,revisions:1,trivtrain:1};
   const NAV_ART={home:'home',coach:'practice',explore:'explore',games:'arcade',shop:'store',progress:'progress',collection:'collection'};
   const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['explore','Supercharge','compass'],['games','Arcade','joystick'],['shop','Store','cart'],['progress','Progress','chart'],['collection','Collection','crown']].map(([key,label,ic])=>{
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:S.nav===key;
@@ -2368,6 +2386,7 @@ function viewApp(){
   else if(S.nav==='figurative') content=viewFigurative();
   else if(S.nav==='vocab') content=viewVocab();
   else if(S.nav==='quotes') content=viewQuotes();
+  else if(S.nav==='trivtrain') content=viewTrivTrain();
   else if(S.nav==='typing') content=viewTyping();
   else if(S.nav==='builder') content=viewBuilder();
   else if(S.nav==='leveltest') content=viewLevelTest();
@@ -5936,6 +5955,73 @@ function overlays(){
   return h;
 }
 
+/* ============ Trivia Training — "Know the World of Words" ============
+   The whole trivia bank as study material: one chapter per theme, each a deck of
+   flip-cards (question on the front, answer + fun fact on the back). Studying is
+   Low-pressure — no timer, no scoring — and each chapter hands off to the Arcade. */
+let _ttCache={};
+function ttDeck(th){ if(_ttCache[th]) return _ttCache[th];
+  const all=((window.SB_TRIVIA||{}).questions)||[];
+  const deck=all.filter(q=>q.th===th).sort((a,b)=>(a.lv||3)-(b.lv||3));   // easy → hard
+  _ttCache[th]=deck; return deck; }
+function ttThemes(){ return ((window.SB_TRIVIA||{}).themes)||[]; }
+const TT_COL={animals:'#4F9E6A',bugs:'#E0922E',ocean:'#3D7DF0',space:'#7B52E0',body:'#E8458C',plants:'#3C8455',food:'#F0703C',sports:'#2A63D6',music:'#B14FC4',myth:'#9B59D0',world:'#13A892',history:'#C8901B',science:'#0E8A78',numbers:'#6A47F5',weather:'#36A3D9',machines:'#4A6B8A',art:'#DC5B7E',fest:'#D6453A',story:'#7C5CFF',words:'#C8791B',worigin:'#2A8FA8',wroots:'#4F9E6A',wmeaning:'#7C5CFF',wstories:'#C8791B'};
+function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const ths=ttThemes();
+  if(!ths.length) return `<div style="max-width:760px;margin:0 auto">${pageHead('Trivia Training','loading…','')}</div>`;
+  // ---------- chapter grid ----------
+  if(!t){
+    const seen=c.ttSeen||{};
+    const wordThemes=['worigin','wroots','wmeaning','wstories'];
+    const card=(th)=>{ const deck=ttDeck(th.id); if(!deck.length) return '';
+      const col=TT_COL[th.id]||'#7C5CFF'; const done=Math.min(seen[th.id]||0, deck.length);
+      const pct=deck.length?Math.round(done/deck.length*100):0;
+      return `<button class="sb-lift" data-act="ttChapter" data-arg="${escA(th.id)}" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:13px 14px;box-shadow:var(--sh-rest);display:flex;flex-direction:column;gap:7px">
+        <span style="display:flex;align-items:center;gap:9px"><span style="width:38px;height:38px;flex-shrink:0;border-radius:11px;background:color-mix(in srgb,${col} 16%,transparent);display:grid;place-items:center;font-size:20px">${th.e}</span>
+          <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:14px;line-height:1.15">${esc(th.label)}</span>
+          <span style="display:block;font-size:11.5px;color:var(--muted);font-weight:700">${fmtN(deck.length)} cards${done?' · '+done+' studied':''}</span></span></span>
+        <span style="height:5px;border-radius:99px;background:var(--surface2);overflow:hidden;display:block"><span style="display:block;height:100%;width:${pct}%;background:${col}"></span></span></button>`; };
+    const grid=(ids)=>`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:11px">${ids.map(id=>{const th=ths.find(x=>x.id===id); return th?card(th):'';}).join('')}</div>`;
+    const wordIds=wordThemes.filter(id=>ths.some(x=>x.id===id));
+    const otherIds=ths.map(x=>x.id).filter(id=>wordIds.indexOf(id)<0);
+    const total=((window.SB_TRIVIA||{}).questions||[]).length;
+    const studied=Object.values(seen).reduce((a,b)=>a+b,0);
+    return `<div style="max-width:860px;margin:0 auto">
+      ${pageHead('Know the World of Words','trivia training · '+fmtN(total)+' cards','Study the whole trivia bank at your own pace — question on the front, answer and a fun fact on the back. No timer, no score. Then take it to the Arcade.',
+        studied?`<span style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">📚 ${fmtN(studied)} cards studied</span>`:'')}
+      ${wordIds.length?`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:2px 2px 9px">🐝 Word chapters <span style="font-size:12px;color:var(--muted);font-weight:700">— built from the spelling library</span></div>${grid(wordIds)}`:''}
+      <div style="font-family:var(--display);font-weight:800;font-size:15px;margin:18px 2px 9px">🌍 World chapters</div>${grid(otherIds)}
+      <button data-act="openTrivia" class="sb-lift" style="width:100%;text-align:left;margin-top:16px;border-radius:16px;padding:15px 17px;background:linear-gradient(135deg,#F0A93C,#DC7A18);color:#fff;display:flex;align-items:center;gap:13px;box-shadow:var(--sh-rest)">
+        <span style="font-size:26px">🎮</span><span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:16px">Ready to play?</span>
+        <span style="display:block;font-size:12.5px;opacity:.92">Take what you've studied into Bee Trivia in the Arcade.</span></span><span style="font-weight:800">→</span></button>
+    </div>`; }
+  // ---------- flip-card deck ----------
+  const th=ths.find(x=>x.id===t.th)||ths[0]; const deck=ttDeck(t.th); const col=TT_COL[t.th]||'#7C5CFF';
+  if(!deck.length) return `<div style="max-width:640px;margin:0 auto"><button data-act="ttBack" style="color:var(--muted);font-weight:800;font-size:13px">← Chapters</button>${beeEmpty('think','No cards in this chapter yet.')}</div>`;
+  const i=Math.min(t.i||0, deck.length-1); const q=deck[i]; const LVL=['','Starter','Easy','Medium','Hard','Champion'];
+  const face=t.flip
+    ? `<div style="animation:sb-pop .28s ease both">
+        <div style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:${col};margin-bottom:7px">Answer</div>
+        <div style="font-family:var(--display);font-weight:800;font-size:clamp(19px,4.4vw,25px);line-height:1.25;color:var(--text)">${esc(q.c[0])}</div>
+        ${q.f?`<div style="margin-top:14px;text-align:left;background:var(--surface2);border-radius:13px;padding:12px 14px;font-size:13.5px;line-height:1.55;color:var(--text)"><span style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">💡 Did you know</span>${esc(q.f)}</div>`:''}</div>`
+    : `<div style="font-family:var(--display);font-weight:800;font-size:clamp(18px,4.2vw,23px);line-height:1.35;color:var(--text)">${esc(q.q)}</div>
+       <div style="font-size:12.5px;color:var(--muted);font-weight:700;margin-top:14px">Tap the card to reveal the answer</div>`;
+  return `<div style="max-width:640px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+      <button data-act="ttBack" style="color:var(--muted);font-weight:800;font-size:13px">← Chapters</button>
+      <span style="font-family:var(--display);font-weight:800;font-size:17px">${th.e} ${esc(th.label)}</span>
+      <span style="margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:700">${i+1} / ${fmtN(deck.length)}</span></div>
+    <button data-act="ttFlip" style="width:100%;text-align:center;background:var(--paper,var(--bg2));border:2px solid ${t.flip?col:'var(--line)'};border-radius:20px;padding:26px 20px;min-height:230px;display:flex;flex-direction:column;justify-content:center;box-shadow:var(--sh-rest);cursor:pointer">
+      <div style="display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:12px">
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:${col};padding:3px 10px;border-radius:99px">${LVL[q.lv||3]||'Medium'}</span></div>
+      ${face}</button>
+    <div style="display:flex;gap:9px;margin-top:13px;flex-wrap:wrap">
+      <button data-act="ttNav" data-arg="-1" style="padding:12px 17px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:15px">←</button>
+      <button data-act="ttSay" title="Read the question aloud" style="padding:12px 15px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800">${iconSVG('volume',17)}</button>
+      <button data-act="ttShuffle" style="flex:1;min-width:120px;padding:12px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">🔀 Shuffle</button>
+      <button data-act="ttNav" data-arg="1" style="padding:12px 17px;border-radius:12px;background:${col};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">→</button></div>
+    <button data-act="ttPlay" data-arg="${escA(t.th)}" class="sb-lift" style="width:100%;text-align:left;margin-top:13px;border-radius:14px;padding:13px 15px;background:linear-gradient(135deg,#F0A93C,#DC7A18);color:#fff;display:flex;align-items:center;gap:11px">
+      <span style="font-size:21px">🎮</span><span style="min-width:0;flex:1;font-weight:800;font-size:14px">Play this chapter in the Arcade →</span></button>
+  </div>`; }
 // ===== Subscription tier sheet (pricing) =====
 function tierEntRows(t){ const e=t.ent; const yes='✓', no='—';
   const wc=e.words>=40000?'All 40,000 words':(fmtN(e.words)+' words');
