@@ -1760,14 +1760,14 @@ function tipOfDay(kid,asCard){ const pool=[]; let band=2; try{ band=beeBand(acti
   if(asCard) return `<div class="sb-card" style="display:flex;align-items:center;gap:11px;min-height:128px;padding:14px;border-left:4px solid var(--treasure,#F0B429)">
     <span style="min-width:0;flex:1">
       <span style="display:flex;align-items:center;gap:8px;font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:4px">Today\u2019s bee tip${step>0?`<span style="letter-spacing:0;text-transform:none;font-weight:700;color:var(--muted)">\u00b7 ${step+1}/${MAXFWD+1}</span>`:''}</span>
-      <span style="display:block;font-family:${face};font-size:13.5px;line-height:1.45;font-weight:650;color:var(--ink,var(--text))">${esc(trunc(t,132))}</span>
+      <span style="display:block;font-family:${face};font-size:13.5px;line-height:1.5;font-weight:400;color:var(--ink,var(--text))">${esc(trunc(t,132))}</span>
     </span>
     <span aria-hidden="true" style="flex-shrink:0;width:36px;height:42px;align-self:flex-end">${mascotSVG('happy')}</span>
     ${fwd}
   </div>`;
   return `<div style="position:relative;display:flex;align-items:center;gap:12px;background:var(--paper,var(--bg2));border:1px solid var(--line);border-left:4px solid var(--treasure,#F0B429);border-radius:14px;padding:14px 16px;margin-bottom:14px">
     <span style="min-width:0;flex:1"><span style="display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:3px">${kid?'Today\u2019s bee tip':'Tip of the day'}${step>0?`<span style="letter-spacing:0;text-transform:none;font-weight:700;color:var(--muted)">\u00b7 ${step+1}/${MAXFWD+1}</span>`:''}</span>
-    <span style="display:block;font-family:${face};font-size:15px;line-height:1.5;font-weight:650;color:var(--ink,var(--text))">${esc(t)}</span></span>
+    <span style="display:block;font-family:${face};font-size:15px;line-height:1.55;font-weight:400;color:var(--ink,var(--text))">${esc(t)}</span></span>
     <span aria-hidden="true" style="flex-shrink:0;width:42px;height:48px;align-self:flex-end">${mascotSVG('happy')}</span>
     ${fwd}
   </div>`; }
@@ -2683,18 +2683,6 @@ function viewHome(){
         </span>
       </button>`:'';
       return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:12px">
-      ${tipOfDay(true,true)}
-      <div class="sb-card" style="display:flex;align-items:center;gap:14px;min-height:128px;padding:14px">
-        <div style="width:90px;height:90px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(var(--action,var(--accent)) ${goalPctNum}%, var(--tint-deep,var(--surface2)) 0)">
-          <div style="width:74px;height:74px;border-radius:50%;background:var(--paper,var(--bg2));display:grid;place-items:center;text-align:center"><div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1">${goalDoneN}/${goalTarget}</div><div class="sb-cn" style="margin-top:2px">today</div></div></div>
-        </div>
-        <div style="min-width:0">
-          <div class="sb-ct" style="margin-bottom:3px">Daily goal</div>
-          <div class="sb-cs" style="margin-bottom:9px">${goalPctNum>=100?'Goal smashed for today — amazing!':('Spell '+Math.max(0,goalTarget-goalDoneN)+' more to hit today’s goal.')}</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap"><button data-act="openCoach" style="padding:10px 17px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">${goalDoneN>0?'Continue →':'Start practice →'}</button>
-          <button data-act="champTen" title="Ten championship-tier words — your daily stretch" style="padding:10px 14px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">🏆 Champ 10</button></div>
-        </div>
-      </div>
       <div class="sb-card" style="display:flex;align-items:center;gap:14px;min-height:128px;padding:14px">
         ${(()=>{ const hasCard=c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar]&&typeof SB_AV_CARD==='function';
           const art=hasCard?avatarSVG(c.avatar,94,c.accOn):mascotAcc(S.mood,84);
@@ -2714,6 +2702,18 @@ function viewHome(){
           </div>
         </div>
       </div>
+      <div class="sb-card" style="display:flex;align-items:center;gap:14px;min-height:128px;padding:14px">
+        <div style="width:90px;height:90px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(var(--action,var(--accent)) ${goalPctNum}%, var(--tint-deep,var(--surface2)) 0)">
+          <div style="width:74px;height:74px;border-radius:50%;background:var(--paper,var(--bg2));display:grid;place-items:center;text-align:center"><div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1">${goalDoneN}/${goalTarget}</div><div class="sb-cn" style="margin-top:2px">today</div></div></div>
+        </div>
+        <div style="min-width:0">
+          <div class="sb-ct" style="margin-bottom:3px">Daily goal</div>
+          <div class="sb-cs" style="margin-bottom:9px">${goalPctNum>=100?'Goal smashed for today — amazing!':('Spell '+Math.max(0,goalTarget-goalDoneN)+' more to hit today’s goal.')}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><button data-act="openCoach" style="padding:10px 17px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">${goalDoneN>0?'Continue →':'Start practice →'}</button>
+          <button data-act="champTen" title="Ten championship-tier words — your daily stretch" style="padding:10px 14px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">🏆 Champ 10</button></div>
+        </div>
+      </div>
+      ${tipOfDay(true,true)}
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:14px">${wohTile}${qohTile}</div>`; })()}
 ${focusedH?(()=>{ return `
