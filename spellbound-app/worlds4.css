@@ -93,7 +93,7 @@
 @keyframes w4-eyeblink{0%,88%,100%{opacity:1}92%,96%{opacity:0}}
 [data-theme="dino"] .w4-haze{inset:0;background:linear-gradient(180deg,rgba(246,220,138,.28),transparent 40%,rgba(46,68,22,.3))}
 /* majesty: the brachiosaurus stands, filling the corner, neck sweeping as it grazes */
-[data-theme="dino"] .w4-brachio{bottom:-6px;left:-2vw;width:min(44vw,540px);aspect-ratio:300/210;opacity:.85;filter:drop-shadow(0 8px 18px rgba(20,30,8,.35))}
+[data-theme="dino"] .w4-brachio{bottom:-6px;left:0;width:min(60vw,760px);aspect-ratio:300/210;opacity:.9;filter:drop-shadow(0 8px 18px rgba(20,30,8,.35));animation:w4-walk 130s linear infinite}
 [data-theme="dino"] .w4-ptero{top:9vh;left:0;width:88px;animation:w4-fly 44s linear infinite;opacity:.5}
 [data-theme="dino"] .w4-fern{bottom:0;width:120px;transform-origin:50% 100%;animation:w4-sway4 6s ease-in-out infinite;opacity:.6}
 [data-theme="dino"] .w4-tree{bottom:0;aspect-ratio:90/240;height:auto!important;transform-origin:50% 100%;animation:w4-sway4 11s ease-in-out infinite}
@@ -309,3 +309,34 @@
 [data-theme="pixel"] .w4o-tstack{left:0;right:0;bottom:0;height:54px;opacity:.5}
 @keyframes w4-pixhop{0%,100%{transform:translateY(0) scaleY(.9)}32%{transform:translateY(-9vh) scaleY(1.06)}52%{transform:translateY(-10vh) scaleY(1)}}
 [data-theme="pixel"] .w4o-hopper{animation:w4-pixhop 1.15s ease-in-out infinite;transform-origin:50% 100%}
+
+
+
+/* ===== Dino Era: the full cast, and a Pandora night ======================================= */
+/* the resident giant: parked in the right gutter, neck rising clear of the cards */
+[data-theme="dino"] .w4-brachstill{right:-7vw;bottom:-6px;width:min(38vw,470px);aspect-ratio:300/210;opacity:.5;transform:scaleX(-1)}
+[data-theme="dino"] .w4-ptero{aspect-ratio:2/1}
+@keyframes w4-flap{0%,100%{transform:rotate(16deg)}50%{transform:rotate(-18deg)}}
+@keyframes w4-flapR{0%,100%{transform:rotate(-16deg)}50%{transform:rotate(18deg)}}
+[data-theme="dino"] .w4-ptero .wingL{transform-box:fill-box;transform-origin:right center;animation:w4-flap .9s ease-in-out infinite}
+[data-theme="dino"] .w4-ptero .wingR{transform-box:fill-box;transform-origin:left center;animation:w4-flapR .9s ease-in-out infinite}
+@keyframes w4-raptorbob{0%,100%{transform:translateY(0) rotate(-1.4deg)}50%{transform:translateY(-7px) rotate(1.8deg)}}
+@keyframes w4-legkick{0%,100%{transform:rotate(20deg)}50%{transform:rotate(-24deg)}}
+@keyframes w4-legkickB{0%,100%{transform:rotate(-24deg)}50%{transform:rotate(20deg)}}
+[data-theme="dino"] .w4-raptor .rap{transform-box:fill-box;transform-origin:center;animation:w4-raptorbob .42s ease-in-out infinite}
+[data-theme="dino"] .w4-raptor .legA{transform-box:fill-box;transform-origin:top center;animation:w4-legkick .42s ease-in-out infinite}
+[data-theme="dino"] .w4-raptor .legB{transform-box:fill-box;transform-origin:top center;animation:w4-legkickB .42s ease-in-out infinite}
+[data-theme="dino"] .w4-spore{bottom:-10px;border-radius:50%;background:#BFE8D0;opacity:.3;animation:w4-motes linear infinite}
+/* ---- night on Pandora ---- */
+[data-theme="dino"][data-mode="dusk"] .w4-bg{background:radial-gradient(130% 110% at 30% 0%,#12343A 0%,#0C2430 48%,#071820 100%)}
+[data-theme="dino"][data-mode="dusk"] .w4-haze{background:radial-gradient(120% 80% at 50% 110%,rgba(64,224,208,.20),transparent 60%),linear-gradient(180deg,rgba(120,80,220,.12),transparent 40%)}
+[data-theme="dino"][data-mode="dusk"] .w4-fern{opacity:.95;filter:brightness(1.7) saturate(1.6) hue-rotate(95deg) drop-shadow(0 0 16px rgba(111,231,220,.55))}
+[data-theme="dino"][data-mode="dusk"] .w4-tree{filter:brightness(1.4) saturate(1.4) hue-rotate(80deg) drop-shadow(0 0 14px rgba(111,231,220,.35))}
+[data-theme="dino"][data-mode="dusk"] .w4-brachio,
+[data-theme="dino"][data-mode="dusk"] .w4-brachstill{filter:brightness(1.3) drop-shadow(0 0 20px rgba(111,231,220,.45))}
+[data-theme="dino"][data-mode="dusk"] .w4-raptor{filter:brightness(1.35) drop-shadow(0 0 10px rgba(111,231,220,.5))}
+[data-theme="dino"][data-mode="dusk"] .w4-ptero{filter:brightness(1.4) drop-shadow(0 0 12px rgba(199,125,255,.55))}
+[data-theme="dino"][data-mode="dusk"] .w4-spore{opacity:1;background:radial-gradient(circle,#D8FFF4 0 30%,#6FE7DC 60%,transparent 75%);
+  box-shadow:0 0 12px 4px rgba(111,231,220,.65),0 0 30px 10px rgba(199,125,255,.25)}
+[data-theme="dino"][data-mode="dusk"] .w4-spore:nth-of-type(3n){background:radial-gradient(circle,#F2E4FF 0 30%,#C77DFF 60%,transparent 75%);
+  box-shadow:0 0 12px 4px rgba(199,125,255,.6),0 0 30px 10px rgba(111,231,220,.25)}
