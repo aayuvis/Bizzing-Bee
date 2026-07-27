@@ -5954,7 +5954,7 @@ function gamesHub(){ const S=state; const c=active();
     <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:16px">
       <span style="font-size:12px;font-weight:800;color:var(--muted)">Word difficulty</span>
       ${[['auto','My level'],['easy','Easy'],['medium','Medium'],['hard','Hard'],['champ','Champ']].map(([k,l])=>{ const on=((c.gameDiff)||'auto')===k;
-        return `<button data-act="setGameDiff" data-arg="${k}" style="padding:7px 13px;border-radius:999px;font-weight:800;font-size:12.5px;${on?'background:var(--accent);color:#fff;box-shadow:var(--edge)':'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">${l}</button>`; }).join('')}
+        return `<button data-act="setGameDiff" data-arg="${k}" style="padding:7px 13px;border-radius:999px;font-weight:800;font-size:12.5px;${on?'background:var(--accent);color:var(--action-ink,#fff);box-shadow:var(--edge)':'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">${l}</button>`; }).join('')}
       <span style="font-size:11.5px;color:var(--muted);font-weight:650">— scaled to your own level</span>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:16px">${heroes.join('')}</div>
