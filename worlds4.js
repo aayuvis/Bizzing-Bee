@@ -237,58 +237,100 @@
    (background, not foreground), the toggle lives in the header, the choice persists, and
    the music STOPS on the focus screens and when the tab is hidden. */
 (function(){
-  var AC=null, master=null, timer=null, nextT=0, step=0, playingWorld=null;
+  var AC=null, master=null, wet=null, timer=null, nextT=0, step=0, playingWorld=null;
   var enabled=(function(){ try{ return localStorage.getItem('sb_w4_music')!=='0'; }catch(e){ return true; } })();
   function midi(n){ return 440*Math.pow(2,(n-69)/12); }
+  /* r root · sc scale · bpm · st style · g gain. 'chip' (Arcade) stays deliberately retro;
+     every other style plays through warm detuned voices, soft envelopes, a low-pass and a
+     feedback delay, with a sustained chord pad underneath so the notes blend. */
   var CFG={
-    spellbound:{r:64,sc:[0,2,4,7,9],bpm:104,w:'triangle',bw:'sine',g:.05,st:'walk'},
-    marquee:{r:62,sc:[0,2,4,5,7,9,11],bpm:112,w:'triangle',bw:'triangle',g:.045,st:'swing'},
-    aurora:{r:69,sc:[0,2,4,7,9,11],bpm:60,w:'sine',bw:'sine',g:.05,st:'ambient'},
-    anime:{r:64,sc:[0,2,5,7,10],bpm:96,w:'sawtooth',bw:'sine',g:.032,st:'pluck'},
-    science:{r:67,sc:[0,2,4,6,7,11],bpm:120,w:'square',bw:'sine',g:.028,st:'blip'},
-    origami:{r:76,sc:[0,2,4,7,9],bpm:84,w:'triangle',bw:'sine',g:.045,st:'box'},
-    pixel:{r:64,sc:[0,3,5,7,10],bpm:132,w:'square',bw:'square',g:.03,st:'chip'},
-    avatar:{r:62,sc:[0,2,5,7,9],bpm:72,w:'sine',bw:'sine',g:.05,st:'ambient'},
-    godly:{r:57,sc:[0,4,7,12],bpm:52,w:'sine',bw:'sine',g:.055,st:'bell'},
-    serpent:{r:52,sc:[0,1,4,5,7,8],bpm:80,w:'sine',bw:'sine',g:.05,st:'walk'},
-    race:{r:52,sc:[0,3,5,6,7,10],bpm:144,w:'square',bw:'sawtooth',g:.03,st:'drive'},
-    dino:{r:45,sc:[0,3,5,7,10],bpm:66,w:'triangle',bw:'sine',g:.055,st:'drums'}
+    spellbound:{r:64,sc:[0,2,4,7,9],bpm:96,st:'keys',g:.05},
+    marquee:{r:62,sc:[0,2,4,5,7,9,11],bpm:104,st:'keys',g:.045},
+    aurora:{r:69,sc:[0,2,4,7,9,11],bpm:58,st:'pad',g:.05},
+    anime:{r:64,sc:[0,2,5,7,10],bpm:88,st:'pluck',g:.04},
+    science:{r:67,sc:[0,2,4,6,7,11],bpm:108,st:'keys',g:.038},
+    origami:{r:76,sc:[0,2,4,7,9],bpm:76,st:'box',g:.04},
+    pixel:{r:64,sc:[0,3,5,7,10],bpm:132,st:'chip',g:.03},
+    avatar:{r:62,sc:[0,2,5,7,9],bpm:66,st:'pad',g:.05},
+    godly:{r:57,sc:[0,4,7,12],bpm:50,st:'bell',g:.055},
+    serpent:{r:52,sc:[0,1,4,5,7,8],bpm:74,st:'pluck',g:.045},
+    race:{r:52,sc:[0,3,5,6,7,10],bpm:138,st:'drive',g:.032},
+    dino:{r:45,sc:[0,3,5,7,10],bpm:62,st:'drums',g:.055}
   };
   function ensureAC(){ var A=window.AudioContext||window.webkitAudioContext; if(!A) return false;
-    if(!AC){ AC=new A(); master=AC.createGain(); master.gain.value=1; master.connect(AC.destination); }
+    if(!AC){ AC=new A();
+      master=AC.createGain(); master.gain.value=1;
+      var lp=AC.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=3400; lp.Q.value=.4;
+      /* one feedback delay = instant room; the notes melt into each other */
+      var dly=AC.createDelay(1); dly.delayTime.value=.31;
+      var fb=AC.createGain(); fb.gain.value=.34; wet=AC.createGain(); wet.gain.value=.28;
+      master.connect(lp); lp.connect(AC.destination);
+      lp.connect(dly); dly.connect(fb); fb.connect(dly); dly.connect(wet); wet.connect(AC.destination);
+    }
     if(AC.state==='suspended') AC.resume(); return true; }
-  function tone(f,at,dur,type,vol,slide){ var o=AC.createOscillator(),g=AC.createGain();
+  /* a warm voice: two detuned oscillators + a per-note low-pass, soft attack, long release */
+  function note(f,at,dur,o){ o=o||{};
+    var type=o.type||'triangle', vol=o.vol||.05, att=o.att!=null?o.att:.06, rel=o.rel!=null?o.rel:.5;
+    var det=o.det!=null?o.det:5, g=AC.createGain(), flt=AC.createBiquadFilter();
+    flt.type='lowpass'; flt.frequency.value=o.cut||2600; flt.Q.value=.5;
+    g.gain.setValueAtTime(0.0001,at);
+    g.gain.linearRampToValueAtTime(vol,at+att);
+    g.gain.setValueAtTime(vol,at+Math.max(att,dur*.6));
+    g.gain.exponentialRampToValueAtTime(0.0001,at+dur+rel);
+    [ -det, det ].forEach(function(d){ var osc=AC.createOscillator(); osc.type=type;
+      osc.frequency.setValueAtTime(f,at); osc.detune.value=d;
+      if(o.slide) osc.frequency.exponentialRampToValueAtTime(o.slide,at+dur);
+      osc.connect(flt); osc.start(at); osc.stop(at+dur+rel+.05); });
+    flt.connect(g); g.connect(master); }
+  /* the retro voice, kept ONLY for Arcade */
+  function bleep(f,at,dur,type,vol){ var o=AC.createOscillator(),g=AC.createGain();
     o.type=type; o.frequency.setValueAtTime(f,at);
-    if(slide) o.frequency.exponentialRampToValueAtTime(slide,at+dur);
     g.gain.setValueAtTime(0.0001,at); g.gain.exponentialRampToValueAtTime(vol,at+0.02);
     g.gain.exponentialRampToValueAtTime(0.0001,at+dur);
     o.connect(g); g.connect(master); o.start(at); o.stop(at+dur+0.05); }
-  var walkPos=2;
+  var walkPos=2, PROG=[0,5,3,4], barOf=0;
+  function chord(c,t,dur,vol){ var base=PROG[barOf%PROG.length];
+    [0,2,4].forEach(function(k,i){ var d=c.sc[(base+k)%c.sc.length]+12*Math.floor((base+k)/c.sc.length);
+      note(midi(c.r+d),t+i*.06,dur,{type:'sine',vol:vol,att:.7,rel:1.6,cut:1600,det:7}); }); }
   function scheduleStep(c,t,i){
     var beat=60/c.bpm, deg;
-    if(c.st==='bell'){ if(i%8===0){ tone(midi(c.r),t,beat*6,'sine',c.g); tone(midi(c.r+7),t+.05,beat*5,'sine',c.g*.6); tone(midi(c.r+12),t+.1,beat*4,'sine',c.g*.35); } return; }
-    if(c.st==='drums'){ if(i%4===0) tone(60,t,.3,'sine',c.g*1.4,40);
-      if(i%8===4) tone(48,t,.4,'sine',c.g*1.2,36);
-      if(i%2===0&&Math.random()<.3) tone(midi(c.r+12+c.sc[(Math.random()*c.sc.length)|0]),t,beat*.8,'triangle',c.g*.5); return; }
-    if(c.st==='ambient'){ if(i%16===0){ deg=c.sc[(Math.random()*c.sc.length)|0];
-        tone(midi(c.r+deg),t,beat*14,'sine',c.g*.7); tone(midi(c.r+deg+7),t+.3,beat*12,'sine',c.g*.4); }
-      if(i%4===2&&Math.random()<.5) tone(midi(c.r+12+c.sc[(Math.random()*c.sc.length)|0]),t,beat*1.6,'sine',c.g*.5); return; }
-    if(i%4===0) tone(midi(c.r-12),t,beat*(c.st==='drive'?.4:.9),c.bw,c.g*.8);
-    if(c.st==='drive'&&i%2===1) tone(midi(c.r-12+((i%8===5)?3:0)),t,beat*.3,c.bw,c.g*.55);
-    var play=(c.st==='box'||c.st==='pluck')?(i%2===0&&Math.random()<.75):(Math.random()<.85);
-    if(play&&i%2===0){ walkPos+=(Math.random()<.5?-1:1); if(Math.random()<.15) walkPos+=(Math.random()<.5?-2:2);
+    if(c.st==='chip'){ /* Arcade: proudly 80s */
+      if(i%4===0) bleep(midi(c.r-12),t,beat*.5,'square',c.g*.8);
+      if(i%2===0&&Math.random()<.85){ walkPos+=(Math.random()<.5?-1:1);
+        walkPos=Math.max(0,Math.min(c.sc.length*2-1,walkPos));
+        deg=c.sc[walkPos%c.sc.length]+12*Math.floor(walkPos/c.sc.length);
+        bleep(midi(c.r+deg),t,beat*.35,'square',c.g); }
+      return; }
+    if(i%16===0){ chord(c,t,beat*8,(c.st==='pad'?c.g*.75:c.g*.45)); barOf++; }
+    if(c.st==='bell'){ if(i%8===0){ note(midi(c.r),t,beat*5,{type:'sine',vol:c.g,att:.02,rel:2.4,cut:2200});
+        note(midi(c.r+7),t+.06,beat*4,{type:'sine',vol:c.g*.55,att:.02,rel:2,cut:2000}); } return; }
+    if(c.st==='drums'){ if(i%4===0) note(56,t,.4,{type:'sine',vol:c.g*1.3,att:.005,rel:.3,slide:38,cut:900});
+      if(i%8===4) note(46,t,.5,{type:'sine',vol:c.g*1.1,att:.005,rel:.4,slide:34,cut:700});
+      if(i%4===2&&Math.random()<.4){ deg=c.sc[(Math.random()*c.sc.length)|0];
+        note(midi(c.r+12+deg),t,beat*1.4,{type:'triangle',vol:c.g*.4,att:.1,rel:.9,cut:1800}); }
+      return; }
+    if(c.st==='pad'){ if(i%4===2&&Math.random()<.55){ deg=c.sc[(Math.random()*c.sc.length)|0];
+        note(midi(c.r+12+deg),t,beat*2.4,{type:'sine',vol:c.g*.6,att:.3,rel:1.6,cut:2200}); } return; }
+    if(c.st==='drive'){ if(i%2===0) note(midi(c.r-12+((i%16===10)?3:0)),t,beat*.9,{type:'sawtooth',vol:c.g*.6,att:.02,rel:.25,cut:1500,det:8});
+      if(i%4===2&&Math.random()<.7){ walkPos+=(Math.random()<.5?-1:1);
+        walkPos=Math.max(0,Math.min(c.sc.length-1,walkPos));
+        note(midi(c.r+12+c.sc[walkPos]),t,beat*1.1,{type:'sawtooth',vol:c.g*.55,att:.04,rel:.5,cut:2200,det:6}); }
+      return; }
+    /* keys · pluck · box: a gentle bass and a legato melody that overlaps itself */
+    if(i%8===0) note(midi(c.r-12),t,beat*3.4,{type:'sine',vol:c.g*.5,att:.1,rel:1,cut:1100});
+    var chance=(c.st==='box')?.6:.75;
+    if(i%2===0&&Math.random()<chance){ walkPos+=(Math.random()<.5?-1:1); if(Math.random()<.12) walkPos+=(Math.random()<.5?-2:2);
       walkPos=Math.max(0,Math.min(c.sc.length*2-1,walkPos));
       deg=c.sc[walkPos%c.sc.length]+12*Math.floor(walkPos/c.sc.length);
-      var dur=beat*(c.st==='blip'||c.st==='chip'?.35:(c.st==='swing'?.5:.9));
-      tone(midi(c.r+deg),t,dur,c.w,c.g);
-      if(c.st==='swing'&&Math.random()<.4) tone(midi(c.r+deg+4),t+beat*.66,dur*.6,c.w,c.g*.6); }
+      var att=(c.st==='pluck')?.015:.09, dur=beat*((c.st==='pluck')?1.3:2.1);
+      note(midi(c.r+deg),t,dur,{type:'triangle',vol:c.g,att:att,rel:1.3,cut:2400,det:5}); }
   }
   function loop(){ if(!AC||!playingWorld) return; var c=CFG[playingWorld]; if(!c) return;
     var sub=(60/c.bpm)/2;
-    while(nextT<AC.currentTime+0.7){ scheduleStep(c,Math.max(nextT,AC.currentTime+.02),step); step++; nextT+=sub; } }
+    while(nextT<AC.currentTime+0.8){ scheduleStep(c,Math.max(nextT,AC.currentTime+.02),step); step++; nextT+=sub; } }
   function start(world){ if(!CFG[world]||!ensureAC()) return;
     if(playingWorld===world&&timer) return;
-    stop(); playingWorld=world; step=0; walkPos=2; nextT=AC.currentTime+0.1;
+    stop(); playingWorld=world; step=0; walkPos=2; barOf=0; nextT=AC.currentTime+0.1;
     timer=setInterval(loop,250); }
   function stop(){ if(timer){ clearInterval(timer); timer=null; } playingWorld=null; }
   window.SB_W4_MUSIC={
@@ -309,6 +351,7 @@
   document.addEventListener('pointerdown',function(){ if(armed) return; armed=true;
     setTimeout(function(){ try{ window.SB_W4_MUSIC.sync(); }catch(e){} },200); },{capture:true});
 })();
+
 
 /* ============================ the living backdrop + race chrome ============================
    Mounted as a sibling of #root so a re-render never wipes it, and lifted behind #root by the
@@ -377,6 +420,24 @@
   var PLANET=PLANET2('#7D8CF0','#A9B4F7','#A9B4F7',null);
   var PETAL='<svg viewBox="0 0 20 20" width="100%" height="100%"><path d="M10 1 q7 5 5 12 q-2 6 -5 6 q-3 0 -5 -6 q-2 -7 5 -12z" fill="#F3B2C0"/></svg>';
   var TORII='<svg viewBox="0 0 160 110" width="100%" height="100%"><g fill="#8E2C44" opacity=".9"><path d="M6 18 q74 -14 148 0 l-4 12 h-140 z"/><rect x="24" y="30" width="112" height="8" rx="3"/><rect x="34" y="30" width="12" height="80"/><rect x="114" y="30" width="12" height="80"/></g></svg>';
+  /* a beaker of coloured liquid, fizzing */
+  function BEAKER(c,lv){ lv=lv||34;
+    return '<svg viewBox="0 0 60 74" width="100%" height="100%">'
+      +'<path d="M14 4 h32 M18 4 v50 q0 14 12 14 q12 0 12 -14 v-50" fill="none" stroke="#5E7A8A" stroke-width="3" stroke-linecap="round"/>'
+      +'<path d="M19 '+(68-lv)+' h22 v'+(lv-14)+' q0 12 -11 12 q-11 0 -11 -12 z" fill="'+c+'" opacity=".8" transform="translate(1 0)"/>'
+      +'<ellipse cx="31" cy="'+(68-lv)+'" rx="11" ry="2.6" fill="#fff" opacity=".35"/>'
+      +'<g class="fizz" fill="'+c+'"><circle cx="26" cy="'+(64-lv)+'" r="2.2"/><circle cx="34" cy="'+(66-lv)+'" r="1.7"/><circle cx="30" cy="'+(62-lv)+'" r="1.4"/></g>'
+      +'</svg>'; }
+  /* the pouring rig: a tilted flask streaming into a catch beaker, reaction bubbles at the join */
+  var POUR='<svg viewBox="0 0 150 150" width="100%" height="100%">'
+    +'<g transform="rotate(38 96 30)"><path d="M88 6 h16 v14 l10 24 q2 7 -5 7 h-26 q-7 0 -5 -7 l10 -24 z" fill="none" stroke="#0E8A78" stroke-width="3"/>'
+    +'<path d="M84 38 h24 l3 7 q1 5 -4 5 h-22 q-5 0 -4 -5 z" fill="#B14FC4" opacity=".75"/></g>'
+    +'<path class="stream" d="M78 52 q-2 26 -4 44" stroke="#B14FC4" stroke-width="3.4" fill="none" stroke-linecap="round"/>'
+    +'<path d="M52 96 h44 M56 96 v28 q0 12 16 12 q16 0 16 -12 v-28" fill="none" stroke="#5E7A8A" stroke-width="3" stroke-linecap="round"/>'
+    +'<path d="M58 112 h28 v12 q0 10 -14 10 q-14 0 -14 -10 z" fill="#3BC0AA" opacity=".8" transform="translate(1 0)"/>'
+    +'<g class="fizz" fill="#B14FC4"><circle cx="68" cy="108" r="2.4"/><circle cx="78" cy="104" r="1.8"/><circle cx="73" cy="100" r="1.5"/></g>'
+    +'</svg>';
+  var REACT='<svg viewBox="0 0 60 60" width="100%" height="100%"><path d="M30 4 l6 14 l15 2 l-11 11 l3 15 l-13 -8 l-13 8 l3 -15 L9 20 l15 -2 z" fill="#F0A93C" opacity=".85"/><circle cx="30" cy="30" r="7" fill="#FFE07A"/></svg>';
   var FLASK='<svg viewBox="0 0 60 70" width="100%" height="100%"><path d="M24 4 h12 v20 l14 34 q3 8 -6 8 h-28 q-9 0 -6 -8 l14 -34 z" fill="none" stroke="#3BC0AA" stroke-width="3"/><path d="M17 48 h26 l5 12 q2 6 -4 6 h-28 q-6 0 -4 -6 z" fill="#3BC0AA" opacity=".55"/></svg>';
   var PLANE='<svg viewBox="0 0 60 34" width="100%" height="100%"><path d="M2 20 L58 2 L34 32 L26 22 z" fill="#F0C9A2"/><path d="M26 22 L58 2 L30 18 z" fill="#E88A5C"/></svg>';
   var CRANE='<svg viewBox="0 0 70 56" width="100%" height="100%"><path d="M8 44 L30 20 L40 34 L64 40 L40 44 L30 52 z" fill="#E88A5C"/><path d="M30 20 L36 4 L42 22 z" fill="#F0C9A2"/><path d="M30 20 L40 34 L40 44 L30 52 z" fill="#C25A2E"/></svg>';
@@ -454,6 +515,11 @@
       layer.appendChild(el('','right:3vw;bottom:0;width:min(20vw,180px);height:auto;aspect-ratio:160/110;opacity:.45', TORII));
       for(var pt=0;pt<15;pt++) layer.appendChild(el('w4o-fall','left:'+rnd(2,98).toFixed(1)+'vw;width:'+rnd(10,17).toFixed(0)+'px;height:'+rnd(10,17).toFixed(0)+'px;opacity:.7;animation-duration:'+rnd(9,17).toFixed(1)+'s,'+rnd(2.4,4).toFixed(1)+'s;animation-delay:-'+rnd(0,14).toFixed(1)+'s,-'+rnd(0,3).toFixed(1)+'s', PETAL));
     } else if(world==='science'){
+      layer.appendChild(el('w4o-pour','right:8vw;bottom:2vh;width:min(17vw,180px);aspect-ratio:1', POUR));
+      [['8vw','#3BC0AA',34,74],['20vw','#B14FC4',26,58],['46vw','#F0A93C',38,66],['68vw','#2E8FB8',22,52]]
+        .forEach(function(bk,i){ layer.appendChild(el('w4o-beaker','left:'+bk[0]+';width:'+bk[3]+'px;aspect-ratio:60/74;opacity:.'+(6+i%3), BEAKER(bk[1],bk[2]))); });
+      layer.appendChild(el('w4o-react','left:22vw;bottom:16vh;width:34px;aspect-ratio:1', REACT));
+      layer.appendChild(el('w4o-react','right:24vw;bottom:20vh;width:26px;aspect-ratio:1;animation-delay:-2.6s', REACT));
       layer.appendChild(el('w4o-graph')); layer.appendChild(el('w4o-mol','', '<svg viewBox="0 0 100 100" width="100%" height="100%"><g stroke="#3BC0AA" stroke-width="2.4" fill="none"><line x1="50" y1="50" x2="18" y2="30"/><line x1="50" y1="50" x2="82" y2="30"/><line x1="50" y1="50" x2="50" y2="86"/></g><circle cx="50" cy="50" r="9" fill="#0E8A78"/><circle cx="18" cy="30" r="7" fill="#3BC0AA"/><circle cx="82" cy="30" r="7" fill="#3BC0AA"/><circle cx="50" cy="86" r="7" fill="#7FD9C4"/></svg>'));
       layer.appendChild(el('','left:2vw;bottom:-6px;width:84px;height:auto;aspect-ratio:60/70;opacity:.5', FLASK));
       layer.appendChild(el('','right:3vw;bottom:-6px;width:52px;height:auto;aspect-ratio:60/70;opacity:.3;transform:scaleX(-1)', FLASK));
