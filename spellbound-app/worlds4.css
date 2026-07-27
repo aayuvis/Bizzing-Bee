@@ -226,7 +226,7 @@
 @keyframes w4-ribbon{0%,100%{transform:skewX(-12deg) translateX(-4vw);opacity:.5}50%{transform:skewX(-12deg) translateX(4vw);opacity:.85}}
 @keyframes w4-huerot{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(40deg)}}
 /* Bizzing Bee: a whole honeycomb wall, slowly drifting, plus a warm hive glow */
-[data-theme="spellbound"] .w4o-comb{inset:0;opacity:.14;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2056%2064%22%3E%3Cpath%20d%3D%22M28%202%20L52%2016%20L52%2046%20L28%2060%20L4%2046%20L4%2016%20Z%22%20fill%3D%22none%22%20stroke%3D%22%23F0B429%22%20stroke-width%3D%222.5%22/%3E%3C/svg%3E") 0 0/56px 64px repeat;animation:w4-bgdrift 60s linear infinite}
+[data-theme="spellbound"] .w4o-comb{inset:0;opacity:.16;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2048.00%2027.71%22%3E%3Cpolygon%20points%3D%22-16.00%2C0.00%20-8.00%2C-13.86%208.00%2C-13.86%2016.00%2C0.00%208.00%2C13.86%20-8.00%2C13.86%22%20fill%3D%22none%22%20stroke%3D%22%23F0B429%22%20stroke-width%3D%222%22/%3E%3Cpolygon%20points%3D%2232.00%2C0.00%2040.00%2C-13.86%2056.00%2C-13.86%2064.00%2C0.00%2056.00%2C13.86%2040.00%2C13.86%22%20fill%3D%22none%22%20stroke%3D%22%23F0B429%22%20stroke-width%3D%222%22/%3E%3Cpolygon%20points%3D%228.00%2C13.86%2016.00%2C0.00%2032.00%2C0.00%2040.00%2C13.86%2032.00%2C27.71%2016.00%2C27.71%22%20fill%3D%22none%22%20stroke%3D%22%23F0B429%22%20stroke-width%3D%222%22/%3E%3Cpolygon%20points%3D%22-16.00%2C27.71%20-8.00%2C13.86%208.00%2C13.86%2016.00%2C27.71%208.00%2C41.57%20-8.00%2C41.57%22%20fill%3D%22none%22%20stroke%3D%22%23F0B429%22%20stroke-width%3D%222%22/%3E%3Cpolygon%20points%3D%2232.00%2C27.71%2040.00%2C13.86%2056.00%2C13.86%2064.00%2C27.71%2056.00%2C41.57%2040.00%2C41.57%22%20fill%3D%22none%22%20stroke%3D%22%23F0B429%22%20stroke-width%3D%222%22/%3E%3Cpolygon%20points%3D%228.00%2C41.57%2016.00%2C27.71%2032.00%2C27.71%2040.00%2C41.57%2032.00%2C55.43%2016.00%2C55.43%22%20fill%3D%22none%22%20stroke%3D%22%23F0B429%22%20stroke-width%3D%222%22/%3E%3Cpolygon%20points%3D%228.00%2C-13.86%2016.00%2C-27.71%2032.00%2C-27.71%2040.00%2C-13.86%2032.00%2C0.00%2016.00%2C0.00%22%20fill%3D%22none%22%20stroke%3D%22%23F0B429%22%20stroke-width%3D%222%22/%3E%3C/svg%3E") 0 0/96.00px 55.43px repeat;animation:w4-bgdrift 60s linear infinite}
 [data-theme="spellbound"] .w4o-hiveglow{left:50%;bottom:-30vh;width:90vmax;height:70vmax;margin-left:-45vmax;border-radius:50%;background:radial-gradient(circle,rgba(255,194,61,.30),transparent 65%);animation:w4-gleam 8s ease-in-out infinite}
 /* Spotlight: a lit stage floor and a bulb string across the top */
 [data-theme="marquee"] .w4o-stagefloor{left:0;right:0;bottom:0;height:34vh;background:linear-gradient(180deg,transparent,rgba(240,180,41,.30))}
@@ -340,3 +340,12 @@
   box-shadow:0 0 12px 4px rgba(111,231,220,.65),0 0 30px 10px rgba(199,125,255,.25)}
 [data-theme="dino"][data-mode="dusk"] .w4-spore:nth-of-type(3n){background:radial-gradient(circle,#F2E4FF 0 30%,#C77DFF 60%,transparent 75%);
   box-shadow:0 0 12px 4px rgba(199,125,255,.6),0 0 30px 10px rgba(111,231,220,.25)}
+
+
+/* ===== the night hive shimmers: a real close-packed lattice, one cell lighting after
+   another in a travelling wave. Day mode never mounts the cost (display:none). ===== */
+[data-theme="spellbound"] .w4-hexcell{display:none}
+@keyframes w4-hexglow{0%,80%,100%{opacity:.05}86%{opacity:.95}92%{opacity:.3}}
+[data-theme="spellbound"][data-mode="dusk"] .w4-hexcell{display:block;opacity:.05;
+  animation:w4-hexglow 6.8s linear infinite;filter:drop-shadow(0 0 9px rgba(255,211,77,.75))}
+[data-theme="spellbound"][data-mode="dusk"] .w4o-comb{opacity:.22}
