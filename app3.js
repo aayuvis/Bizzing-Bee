@@ -619,10 +619,65 @@ function logBand(w, ok, wt){ try{ wt=(wt==null)?1:wt; if(!wt) return; const c=ac
 /* real accuracy: weighted % over the last 120 graded attempts (null until 5 attempts of evidence) */
 function realAcc(c){ c=c||active(); const at=(c.attempts||[]).slice(-120); const W=at.reduce((s,a)=>s+a.wt,0);
   if(W<5) return null; return Math.round(at.reduce((s,a)=>s+a.ok*a.wt,0)/W*100); }
+/* ================= Daily targets: app time · practice time · words =================
+   Three numbers the speller sets for themselves, each measured per day and kept for 120
+   days so Progress can chart them. Time is stored in SECONDS, targets in MINUTES.
+   "Practice time" deliberately means words only — the clock stops in the Arcade, the saga,
+   trivia and every other feature, so the number can't be inflated by playing games. */
+const TGT_DEF={app:30, prac:15};                       // minutes/day out of the box
+const PRACTICE_NAVS=['coach','train','levelup','revisions'];
+function targets(c){ c=c||active(); c.tgt=c.tgt||{};
+  return { app:Math.max(1, c.tgt.app||TGT_DEF.app), prac:Math.max(1, c.tgt.prac||TGT_DEF.prac),
+           words:Math.max(1, c.goal||state.draft.goal||10) }; }
+function dayLog(c,key){ c=c||active(); if(!c) return {app:0,prac:0,words:0};
+  c.dayLog=c.dayLog||{}; const k=key||todayKey();
+  if(!c.dayLog[k]) c.dayLog[k]={app:0,prac:0,words:0};
+  const d=c.dayLog[k]; if(d.app==null)d.app=0; if(d.prac==null)d.prac=0; if(d.words==null)d.words=0;
+  return d; }
+function dayLogTrim(c){ try{ const ks=Object.keys(c.dayLog||{}); if(ks.length>140){
+  ks.sort(); ks.slice(0,ks.length-120).forEach(k=>{ delete c.dayLog[k]; }); } }catch(e){} }
+/* Is the speller practising WORDS right now? Games and the rest of the app don't count. */
+function inPracticeNow(){ try{ if(state.screen!=='app') return false;
+  if(state.settingsOpen||state.pinDlg||state.showTiers) return false;
+  return PRACTICE_NAVS.indexOf(state.nav)>=0; }catch(e){ return false; } }
+/* The clock. Ticks only while the tab is actually being looked at, so a forgotten tab
+   left open overnight doesn't invent hours of "app time". */
+const METRIC_TICK=15;
+function metricTick(){ try{
+  if(typeof document!=='undefined' && document.visibilityState!=='visible') return;
+  const c=active(); if(!c) return;
+  if(state.screen!=='app' && state.screen!=='onboard') return;
+  const d=dayLog(c); d.app+=METRIC_TICK; if(inPracticeNow()) d.prac+=METRIC_TICK;
+  dayLogTrim(c);
+  if(state._metricSaveT) return;                       // batch the writes: one save per minute
+  state._metricSaveT=setTimeout(()=>{ state._metricSaveT=null; try{ save(); }catch(e){} }, 60000);
+}catch(e){} }
+function todayMetrics(c){ c=c||active(); const d=dayLog(c); const t=targets(c);
+  return { app:d.app||0, prac:d.prac||0, words:goalToday(),
+           tApp:t.app*60, tPrac:t.prac*60, tWords:t.words,
+           pApp:(d.app||0)/(t.app*60), pPrac:(d.prac||0)/(t.prac*60), pWords:goalToday()/t.words }; }
+/* Three nested rings, Apple-Watch style: no numbers inside, and going past the target draws
+   a second lap in a brighter shade rather than stopping at full. */
+const RING_COL=[['#E8458C','#FF8FC0'],['#2FA35C','#6FD48F'],['#3D7DF0','#8FB6FF']];
+function ringsSVG(size,vals){ size=size||104;
+  const cx=60, cy=60, R=[52,39,26], W=13;
+  let out='<svg viewBox="0 0 120 120" width="'+size+'" height="'+size+'" aria-hidden="true" style="display:block;transform:rotate(-90deg)">';
+  vals.forEach((v,i)=>{ const r=R[i], C=2*Math.PI*r, pct=Math.max(0,v||0);
+    const base=Math.min(1,pct), over=Math.max(0,Math.min(1,pct-1));
+    const col=RING_COL[i][0], lite=RING_COL[i][1];
+    out+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+col+'" stroke-opacity=".18" stroke-width="'+W+'"/>';
+    if(base>0) out+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+col+'" stroke-width="'+W+'" stroke-linecap="round" stroke-dasharray="'+(C*base).toFixed(2)+' '+C.toFixed(2)+'"/>';
+    if(over>0) out+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+lite+'" stroke-width="'+(W-4)+'" stroke-linecap="round" stroke-dasharray="'+(C*over).toFixed(2)+' '+C.toFixed(2)+'"/>';
+  });
+  return out+'</svg>'; }
+function fmtMins(sec){ sec=Math.max(0,Math.round(sec||0)); const m=Math.floor(sec/60);
+  if(m<60) return m+'m'; return Math.floor(m/60)+'h '+(m%60)+'m'; }
 /* daily goal: per-child, resets each day automatically */
 function goalState(c){ c=c||active(); const t=todayKey(); if(!c.goalD||c.goalD.d!==t) c.goalD={d:t,n:0}; return c.goalD; }
 function goalToday(){ try{ return goalState().n||0; }catch(e){ return 0; } }
-function goalBump(){ try{ const g=goalState(); g.n=(g.n||0)+1; state.goalDone=g.n; }catch(e){} }
+function goalBump(){ try{ const g=goalState(); g.n=(g.n||0)+1; state.goalDone=g.n;
+  const c=active(); if(c){ dayLog(c).words=g.n; }                    // keep the 30-day history in step
+}catch(e){} }
 function _bandAcc(c,b){ const at=(c.attempts||[]).filter(a=>a.b===b).slice(-BAND_WIN);
   const W=at.reduce((s,a)=>s+a.wt,0); return { w:W, acc:W?at.reduce((s,a)=>s+a.ok*a.wt,0)/W:0 }; }
 function bandEvidence(c){ return (c.attempts||[]).reduce((s,a)=>s+a.wt,0); }
@@ -1636,6 +1691,14 @@ const app = {
   profName:(v)=>{ const c=active(); c.name=(v||'').slice(0,24); save(); }, /* no per-key render (input keeps its own value) */
   profAge:(v)=>{ const c=active(); const n=parseInt(v,10); if(n>=5&&n<=18){ c.age=n; save(); render(); } },
   profGoal:(v)=>{ const c=active(); c.goal=+v||10; save(); render(); flash('Daily goal set to '+c.goal+' words'); },
+  // The three self-set daily targets behind the Home rings.
+  setTgtApp:(v)=>{ const c=active(); c.tgt=c.tgt||{}; c.tgt.app=Math.max(1,Math.min(600,parseInt(v,10)||TGT_DEF.app)); save(); render(); },
+  setTgtPrac:(v)=>{ const c=active(); c.tgt=c.tgt||{}; c.tgt.prac=Math.max(1,Math.min(600,parseInt(v,10)||TGT_DEF.prac)); save(); render(); },
+  setTgtWords:(v)=>{ const c=active(); c.goal=Math.max(1,Math.min(500,parseInt(v,10)||10)); save(); render(); },
+  // Home rings → the 30-day chart on Progress.
+  openMetrics:()=>{ set({nav:'progress', screen:'app', progTab:'me', conceptSel:null});
+    setTimeout(()=>{ try{ const el=document.getElementById('sb-metrics'); if(el) el.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){} },240); },
+  metricPick:(k)=>set({metricSel:k}),
   profAvatar:(id)=>{ const c=active(); c.avatar=id; save(); render(); },
   profMsLabel:(v)=>{ const c=active(); if(c.milestone) c.milestone.label=(v||'').slice(0,30)||'the bee'; else c.milestone={ label:(v||'').slice(0,30)||'the bee', date:null }; save(); },
   profMsDate:(v)=>{ const c=active(); if(!v){ c.milestone=null; } else { c.milestone={ label:(c.milestone&&c.milestone.label)||'the bee', date:v }; } save(); render(); },
@@ -2766,17 +2829,22 @@ function viewHome(){
           </div>
         </div>
       </div>
-      <div class="sb-card" style="display:flex;align-items:center;gap:14px;min-height:128px;padding:14px">
-        <div style="width:90px;height:90px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(var(--action,var(--accent)) ${goalPctNum}%, var(--tint-deep,var(--surface2)) 0)">
-          <div style="width:74px;height:74px;border-radius:50%;background:var(--paper,var(--bg2));display:grid;place-items:center;text-align:center"><div><div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1">${goalDoneN}/${goalTarget}</div><div class="sb-cn" style="margin-top:2px">today</div></div></div>
-        </div>
-        <div style="min-width:0">
-          <div class="sb-ct" style="margin-bottom:3px">Daily goal</div>
-          <div class="sb-cs" style="margin-bottom:9px">${goalPctNum>=100?'Goal smashed for today — amazing!':('Spell '+Math.max(0,goalTarget-goalDoneN)+' more to hit today’s goal.')}</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap"><button data-act="openCoach" style="padding:10px 17px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">${goalDoneN>0?'Continue →':'Start practice →'}</button>
-          <button data-act="champTen" title="Ten championship-tier words — your daily stretch" style="padding:10px 14px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">🏆 Champ 10</button></div>
-        </div>
-      </div>
+      ${(()=>{ const m=todayMetrics(c); const allDone=m.pApp>=1&&m.pPrac>=1&&m.pWords>=1;
+        const line=(lab,col,val,tgt)=>`<div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:800;line-height:1.35">
+          <span style="width:8px;height:8px;border-radius:3px;background:${col};flex-shrink:0"></span>
+          <span style="color:var(--muted)">${lab}</span>
+          <span style="margin-left:auto;font-family:var(--mono);color:var(--ink,var(--text));white-space:nowrap">${val}<span style="color:var(--muted)">/${tgt}</span></span></div>`;
+        return `<button data-act="openMetrics" title="See the last 30 days in Progress" class="sb-card" style="display:flex;align-items:center;gap:13px;min-height:128px;padding:14px;text-align:left;cursor:pointer;width:100%">
+        <span style="flex-shrink:0;width:104px;height:104px;display:grid;place-items:center">${ringsSVG(104,[m.pApp,m.pPrac,m.pWords])}</span>
+        <span style="min-width:0;flex:1">
+          <span class="sb-ct" style="display:block;margin-bottom:6px">Daily goal${allDone?' ✓':''}</span>
+          <span style="display:flex;flex-direction:column;gap:4px">
+            ${line('App time', RING_COL[0][0], fmtMins(m.app), targets(c).app+'m')}
+            ${line('Practise time', RING_COL[1][0], fmtMins(m.prac), targets(c).prac+'m')}
+            ${line('Word count', RING_COL[2][0], m.words, m.tWords)}
+          </span>
+          <span class="sb-cl" style="display:block;margin-top:8px">${allDone?'All three rings closed — brilliant!':'last 30 days →'}</span>
+        </span></button>`; })()}
       ${tipOfDay(true,true)}
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:14px">${wohTile}${qohTile}</div>`; })()}
@@ -4313,6 +4381,54 @@ function explorerCard(c,opts){ opts=opts||{}; const tiles=explorerTiles(c); if(!
     <div style="font-size:12px;color:var(--muted);margin-bottom:13px">${opts.sub||'Everywhere '+esc(c.name||'your speller')+' is building language — story mode, quotes, journeys and more.'}</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">${tiles.map(cell).join('')}</div>
   </div>`; }
+/* ---- Daily-target history: one metric at a time, 30 days of bars against the target line ---- */
+const METRICS=[['app','App time',RING_COL[0][0]],['prac','Practise time',RING_COL[1][0]],['words','Word count',RING_COL[2][0]]];
+function metricDays(c,n){ n=n||30; const out=[]; const d=new Date();
+  for(let i=n-1;i>=0;i--){ const x=new Date(d.getFullYear(),d.getMonth(),d.getDate()-i);
+    const k=x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');
+    const rec=(c.dayLog||{})[k]||{}; const isToday=(k===todayKey());
+    out.push({k, day:x.getDate(), dow:x.getDay(), app:rec.app||0, prac:rec.prac||0,
+      words: isToday?goalToday():(rec.words||0) }); }
+  return out; }
+function metricsCard(c){
+  const sel=(['app','prac','words'].indexOf(state.metricSel)>=0)?state.metricSel:'app';
+  const meta=METRICS.find(m=>m[0]===sel); const col=meta[2];
+  const t=targets(c); const tgt=(sel==='words')?t.words:(sel==='app'?t.app*60:t.prac*60);
+  const days=metricDays(c,30);
+  const vals=days.map(d=>d[sel]);
+  // headroom above the target so an over-target day is visibly over
+  const top=Math.max(tgt*1.25, ...vals, 1);
+  const fmt=(v)=>sel==='words'?String(v):fmtMins(v);
+  const hit=vals.filter(v=>v>=tgt).length;
+  const tot=vals.reduce((a,b)=>a+b,0); const avg=Math.round(tot/days.length);
+  const H=132, tgtY=(1-tgt/top)*H;
+  const bars=days.map((d,i)=>{ const v=d[sel]; const h=Math.max(v>0?3:0, Math.round(v/top*H));
+    const over=v>=tgt; const wk=d.dow===0||d.dow===6;
+    return `<span title="${d.k} · ${fmt(v)}" style="flex:1;min-width:5px;display:flex;flex-direction:column;justify-content:flex-end;height:${H}px">
+      <span style="display:block;height:${h}px;border-radius:3px 3px 2px 2px;background:${over?col:'color-mix(in srgb,'+col+' 34%,transparent)'};${wk&&!over?'opacity:.8':''}"></span></span>`; }).join('');
+  const ticks=days.map((d,i)=>`<span style="flex:1;min-width:5px;text-align:center;font-size:8.5px;color:var(--muted);font-weight:700">${(i%5===0||i===days.length-1)?d.day:''}</span>`).join('');
+  const drop=`<div style="position:relative;display:inline-block">
+    <select data-chg="metricPick" aria-label="Choose a metric" style="appearance:none;-webkit-appearance:none;padding:10px 36px 10px 14px;border-radius:10px;background:var(--surface2);border:1.5px solid ${col};color:var(--text);font-family:var(--display);font-weight:800;font-size:13.5px;cursor:pointer">
+      ${METRICS.map(([k,lab])=>`<option value="${k}"${sel===k?' selected':''}>${lab}</option>`).join('')}
+    </select><span style="position:absolute;right:13px;top:50%;transform:translateY(-50%);pointer-events:none;color:${col};font-size:11px">▼</span></div>`;
+  return `<div class="sb-card" id="sb-metrics" style="margin-bottom:18px">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:3px">
+      <span style="flex-shrink:0">${ringsSVG(46,[todayMetrics(c).pApp,todayMetrics(c).pPrac,todayMetrics(c).pWords])}</span>
+      <span style="min-width:0"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15px">Daily targets · last 30 days</span>
+      <span style="display:block;font-size:12px;color:var(--muted)">Pick a metric. The dashed line is your target; solid bars are the days you reached it.</span></span></div>
+    <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:12px 0 14px">${drop}<span style="font-size:11.5px;color:var(--muted);font-weight:700">— 30 days, one bar a day</span></div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px">
+      ${[['Target',fmt(tgt)],['Today',fmt(vals[vals.length-1]||0)],['Daily average',fmt(avg)],['Days on target',hit+'/'+days.length]]
+        .map(([l,v])=>`<span style="min-width:78px"><span style="display:block;font-family:var(--display);font-weight:800;font-size:17px;color:${col}">${esc(String(v))}</span><span style="display:block;font-size:11px;color:var(--muted);font-weight:700">${l}</span></span>`).join('')}
+    </div>
+    <div style="position:relative;padding-right:4px">
+      <div style="position:absolute;left:0;right:0;top:${tgtY.toFixed(1)}px;border-top:2px dashed ${col};opacity:.85;pointer-events:none"></div>
+      <div style="position:absolute;left:0;top:${Math.max(0,tgtY-15).toFixed(1)}px;font-size:9.5px;font-weight:800;color:${col};background:var(--paper,var(--bg2));padding:0 5px 0 0;pointer-events:none">target ${fmt(tgt)}</div>
+      <div style="display:flex;align-items:flex-end;gap:2px;height:${H}px">${bars}</div>
+    </div>
+    <div style="display:flex;gap:2px;margin-top:4px">${ticks}</div>
+    <div style="font-size:11.5px;color:var(--muted);font-weight:650;margin-top:8px">${sel==='prac'?'Practice time counts Word Coach and revisions only — the clock stops in the Arcade and everywhere else.':(sel==='app'?'Every minute spent anywhere in Bizzing Bee, counted only while the app is on screen.':'Every word you spell right, wherever you spell it.')}</div>
+  </div>`; }
 /* Study-card analytics: how the trivia cards are split across practised / tested / mastered /
    revision, chapter by chapter — and tapping a state opens the actual list of those cards. */
 function ttAnalyticsCard(c){
@@ -4417,6 +4533,7 @@ function viewProgress(){
         <div style="display:flex;gap:8px;flex-wrap:wrap">${row}</div>
       </div>`; })()}
     <div style="margin-bottom:18px">${streakCard()}</div>
+    ${metricsCard(c)}
     ${ttAnalyticsCard(c)}
     ${(()=>{ const ec=explorerCard(c,{title:'Your Bizzing Bee world',sub:'Everywhere you’re exploring — story mode, quotes, journeys, typing and more.'}); return ec?`<div style="margin-bottom:18px">${ec}</div>`:''; })()}
     <div class="sb-card" style="margin-bottom:18px">
@@ -4961,6 +5078,21 @@ function viewSettings(){
         <div><label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Daily goal</label>
           <div style="display:flex;gap:7px">${[5,10,15].map(g=>`<button data-act="profGoal" data-arg="${g}" style="padding:9px 15px;border-radius:999px;font-weight:800;font-size:13px;${(_pc.goal||10)===g?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">${g} words</button>`).join('')}</div></div>
       </div>
+      ${(()=>{ const t=targets(_pc);
+        const num=(lab,col,act,val,unit,hint)=>`<div style="flex:1;min-width:150px">
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px"><span style="width:9px;height:9px;border-radius:3px;background:${col};flex-shrink:0"></span>${lab}</label>
+          <div style="display:flex;align-items:center;gap:7px">
+            <input type="number" min="1" max="600" data-chg="${act}" value="${val}" style="width:82px;padding:11px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:14px;outline:none">
+            <span style="font-size:12.5px;color:var(--muted);font-weight:700">${unit}</span></div>
+          <div style="font-size:11.5px;color:var(--muted);font-weight:600;margin-top:4px;line-height:1.35">${hint}</div></div>`;
+        return `<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px">
+          <div style="display:flex;align-items:center;gap:9px;margin-bottom:3px"><span style="flex-shrink:0">${ringsSVG(34,[1,1,1])}</span><span style="font-family:var(--display);font-weight:800;font-size:15px">Your three daily targets</span></div>
+          <div style="font-size:12.5px;color:var(--muted);margin-bottom:12px;line-height:1.45">Set them yourself — they draw the three rings on the Home card. Going past a target is encouraged; the ring keeps filling.</div>
+          <div style="display:flex;gap:14px;flex-wrap:wrap">
+            ${num('Total time on the app', RING_COL[0][0], 'setTgtApp', t.app, 'min / day', 'Everything you do in Bizzing Bee.')}
+            ${num('Time practising words', RING_COL[1][0], 'setTgtPrac', t.prac, 'min / day', 'Word Coach and revisions only — the clock stops in games.')}
+            ${num('Words practised', RING_COL[2][0], 'setTgtWords', t.words, 'words / day', 'Same as the daily goal above.')}
+          </div></div>`; })()}
       <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px">
         <div><label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Milestone <span style="font-weight:600">(optional — e.g. NSF Finals)</span></label>
           <input data-inp="profMsLabel" data-fkey="profMsLabel" value="${escA((_pc.milestone&&_pc.milestone.label)||'')}" maxlength="30" placeholder="e.g. NSF Finals" style="width:200px;padding:11px 13px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:700;outline:none"></div>
@@ -6467,5 +6599,12 @@ window.addEventListener('keydown', e=>{ try{
   // Back-button trap: a kid pressing Back mid-game goes Home instead of leaving the app
   try{ history.pushState({sb:1},''); window.addEventListener('popstate',()=>{ try{ history.pushState({sb:1},'');
     if(state.screen==='app' && state.nav!=='home'){ state.game=null; state.sq=null; tyStop&&tyStop(); state.nav='home'; render(); } }catch(e){} }); }catch(e){}
+  /* Start the daily-target clock. It self-gates on tab visibility, and flushes on the way
+     out so the last partial minute isn't lost. */
+  try{ setInterval(metricTick, METRIC_TICK*1000);
+    document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden'){
+      try{ if(state._metricSaveT){ clearTimeout(state._metricSaveT); state._metricSaveT=null; } save(); }catch(e){} } });
+    window.addEventListener('pagehide',()=>{ try{ save(); }catch(e){} });
+  }catch(e){}
   render();
 })();
