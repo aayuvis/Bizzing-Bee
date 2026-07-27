@@ -1419,6 +1419,7 @@ const app = {
   wearAcc:(k)=>{ const c=active(); c.accOn=(c.accOn===k?null:k); save(); render(); },
 
   toggleSound:()=>{ set({sound:!state.sound}); if(state.sound) sfx('coin'); },
+  toggleMusic:()=>{ try{ if(window.SB_W4_MUSIC){ const on=SB_W4_MUSIC.toggle(); flash(on?'🎵 World music on':'World music off'); } }catch(e){} render(); },
   devTap:()=>{ state._devTaps=(state._devTaps||0)+1;
     if(state._devTaps>=7){ state._devTaps=0; state.devReveal=!state.devReveal; flash(state.devReveal?'🛠 Testing tools revealed':'🛠 Testing tools hidden'); render(); } },
   toggleDevUnlock:()=>{ pinGate(()=>{
@@ -2629,6 +2630,7 @@ function viewApp(){
           <span>✦ ${fmtN(_xp)}</span>
           <span style="font-size:9.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;opacity:.72">Karma L${_lf.level}</span>
         </button>`; })()}<button data-act="openShop" title="Your coins — tap to open the Store" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(active().coins||0,14)}</button>
+        <button data-act="toggleMusic" class="sb-mob-hide" aria-label="World music on/off" title="World music — every world has its own tune" style="width:38px;height:38px;border-radius:10px;background:${(window.SB_W4_MUSIC&&SB_W4_MUSIC.on())?'var(--chip)':'var(--surface2)'};display:grid;place-items:center;color:${(window.SB_W4_MUSIC&&SB_W4_MUSIC.on())?'var(--accent)':'var(--muted)'};font-size:16px;line-height:1">${(window.SB_W4_MUSIC&&SB_W4_MUSIC.on())?'🎵':'🎵̸'}</button>
         <button data-act="cycleMode" aria-label="Switch look (Light / White / Dusk)" title="Light / White / Dusk" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);font-size:16px;line-height:1" class="sb-mob-hide">${S.mode==='light'?'☀':S.mode==='white'?'◻':'☾'}</button>
         <button data-act="goSettings" aria-label="Settings" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text)">${iconSVG('gear',17)}</button>
       </div>
