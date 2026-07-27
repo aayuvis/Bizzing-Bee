@@ -569,9 +569,15 @@
       (function(){ var W=(window.innerWidth||1280), H=(window.innerHeight||900);
         var ang=-(Math.atan2(H,W)*180/Math.PI).toFixed(1);
         layer.appendChild(el('w4o-milkyway','transform:translate(-50%,-50%) rotate('+ang+'deg)'));
-        layer.appendChild(el('w4o-mwcore','transform:translate(-50%,-50%) rotate('+ang+'deg)'));
-        for(var md=0;md<48;md++){ var t=Math.random(), off=(Math.random()*14-7);
-          layer.appendChild(el('w4o-mwstar','left:calc('+(t*100).toFixed(1)+'vw + '+off.toFixed(1)+'vmin);top:calc('+(100-t*100).toFixed(1)+'vh + '+off.toFixed(1)+'vmin);width:'+rnd(1.4,3.4).toFixed(1)+'px;height:'+rnd(1.4,3.4).toFixed(1)+'px;animation-duration:'+rnd(1.8,4.6).toFixed(1)+'s;animation-delay:-'+rnd(0,4).toFixed(1)+'s')); }
+        /* The band itself is STARS: hundreds of grains, gaussian-clustered about the axis so
+           the middle is dense and the edges thin out — a river of stars, not a ribbon. */
+        var TINT=['#FFF6E0','#FFFFFF','#DFE9F8','#FFEFC2'];
+        for(var md=0;md<250;md++){ var t=Math.random();
+          var off=((Math.random()+Math.random()+Math.random())-1.5)*9;   // ~gaussian, vmin
+          var sz=(Math.random()<.82)?rnd(1,2.2):rnd(2.2,3.6);
+          layer.appendChild(el('w4o-mwstar','left:calc('+(t*100).toFixed(1)+'vw + '+off.toFixed(1)+'vmin);top:calc('+(100-t*100).toFixed(1)+'vh + '+off.toFixed(1)+'vmin);width:'+sz.toFixed(1)+'px;height:'+sz.toFixed(1)+'px;background:'+TINT[md%4]+';opacity:'+rnd(.35,.85).toFixed(2)+';animation-duration:'+rnd(1.8,5.2).toFixed(1)+'s;animation-delay:-'+rnd(0,4).toFixed(1)+'s')); }
+        for(var mb=0;mb<12;mb++){ var tb=Math.random(), ob=((Math.random()+Math.random())-1)*7;
+          layer.appendChild(el('w4o-mwstar w4o-mwbright','left:calc('+(tb*100).toFixed(1)+'vw + '+ob.toFixed(1)+'vmin);top:calc('+(100-tb*100).toFixed(1)+'vh + '+ob.toFixed(1)+'vmin);width:'+rnd(3.4,5).toFixed(1)+'px;height:'+rnd(3.4,5).toFixed(1)+'px;animation-duration:'+rnd(2.2,4.4).toFixed(1)+'s;animation-delay:-'+rnd(0,4).toFixed(1)+'s')); }
       })();
       layer.appendChild(el('w4o-vg w4o-vgswirl','left:4vw;top:7vh;width:min(52vw,620px);aspect-ratio:2/1', VG_SWIRL));
       layer.appendChild(el('w4o-vg w4o-vgswirl w4o-vgswirl2','right:2vw;top:34vh;width:min(30vw,340px);aspect-ratio:2/1;animation-delay:-11s', VG_SWIRL));

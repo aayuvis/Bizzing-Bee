@@ -350,15 +350,12 @@
 
 
 /* ===== the Milky Way: corner to corner through the centre ================================= */
-[data-theme="aurora"] .w4o-milkyway{left:50%;top:50%;width:220vmax;height:30vmin;border-radius:50%;
-  background:
-    radial-gradient(55% 100% at 50% 50%, rgba(255,255,255,.16), transparent 72%),
-    linear-gradient(180deg, transparent 0%, rgba(159,184,232,.14) 24%, rgba(223,233,248,.30) 48%, rgba(185,140,255,.16) 72%, transparent 100%);
-  filter:blur(7px);opacity:.65}
-[data-theme="aurora"] .w4o-mwcore{left:50%;top:50%;width:220vmax;height:7vmin;border-radius:50%;
-  background:linear-gradient(90deg, transparent, rgba(255,250,235,.34) 18%, rgba(255,250,235,.5) 50%, rgba(255,250,235,.34) 82%, transparent);
-  filter:blur(4px);opacity:.6}
+[data-theme="aurora"] .w4o-milkyway{left:50%;top:50%;width:220vmax;height:26vmin;border-radius:50%;
+  background:radial-gradient(55% 100% at 50% 50%, rgba(223,233,248,.10), transparent 74%);
+  filter:blur(9px);opacity:.7}
 [data-theme="aurora"] .w4o-mwstar{border-radius:50%;background:#FFF6E0;opacity:.6;animation-name:w4-twk;animation-timing-function:ease-in-out;animation-iteration-count:infinite}
 [data-theme="aurora"][data-mode="dusk"] .w4o-milkyway{opacity:1}
-[data-theme="aurora"][data-mode="dusk"] .w4o-mwcore{opacity:.95}
 [data-theme="aurora"][data-mode="dusk"] .w4o-mwstar{opacity:.95;box-shadow:0 0 7px 2px rgba(255,246,224,.55)}
+
+[data-theme="aurora"] .w4o-mwbright{box-shadow:0 0 8px 3px rgba(255,246,224,.5)}
+[data-theme="aurora"][data-mode="dusk"] .w4o-mwbright{box-shadow:0 0 12px 4px rgba(255,246,224,.75),0 0 30px 10px rgba(159,184,232,.3)}
