@@ -116,6 +116,7 @@
     return '<svg viewBox="0 0 320 110" preserveAspectRatio="xMidYMid slice" width="100%" height="'+(opt.h||110)+'" style="display:block" aria-hidden="true"><rect width="320" height="110" fill="'+bg+'"/>'+k.motif(k,db)+gameTile(k,world,type)+k.spark(290,18,7)+'</svg>'; };
 
   var cache={};
+  window.SB_COVER_KIT=KIT;              // later worlds register their own motif kit here
   window.SB_COVER=function(world,card,opt){ opt=opt||{}; var h=opt.h||110, dark=!!opt.dark;
     var key=world+'|'+card+'|'+h+'|'+dark; if(cache[key]) return cache[key];
     var k=KIT[world]||KIT.spellbound; var comp=COMPS[card]||COMPS.quest;

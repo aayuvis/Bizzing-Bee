@@ -1,0 +1,113 @@
+/* worlds4.css — the look and the motion for the four later worlds.
+   Each world gets (a) a living backdrop behind the whole app and (b) a treatment on every
+   .sb-card, so choosing a world changes the room the speller is sitting in — not just the
+   accent colour. Everything here is decorative and pointer-events:none, and the app-wide
+   "Reduce motion" switch stops all of it (see the block at the very bottom). */
+
+/* ---------- the shared backdrop layer ---------- */
+.w4-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.w4-bg>*{position:absolute;pointer-events:none}
+/* the app already sits in a z-index:1 wrapper, so the backdrop reads behind everything */
+
+/* ================= 1. GOD'S ABODE — gold light, slow-turning rays, gilded cards ========== */
+@keyframes w4-godray{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+@keyframes w4-motes{0%{transform:translateY(0);opacity:.0}12%{opacity:.85}100%{transform:translateY(-92vh);opacity:0}}
+@keyframes w4-gleam{0%,100%{opacity:.35}50%{opacity:.9}}
+[data-theme="godly"] .w4-godrays{left:50%;top:-40vh;width:180vmax;height:180vmax;margin-left:-90vmax;
+  background:repeating-conic-gradient(from 0deg,rgba(240,194,74,.16) 0deg 6deg,transparent 6deg 22deg);
+  animation:w4-godray 120s linear infinite}
+[data-theme="godly"] .w4-glow{left:50%;top:-26vh;width:80vmax;height:80vmax;margin-left:-40vmax;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,243,208,.5),rgba(255,243,208,0) 68%);animation:w4-gleam 7s ease-in-out infinite}
+[data-theme="godly"] .w4-mote{bottom:-10px;width:5px;height:5px;border-radius:50%;background:#F6DC8A;
+  box-shadow:0 0 8px 2px rgba(246,220,138,.75);animation:w4-motes linear infinite}
+/* gilded card: a double gold inset and a lit top edge */
+[data-theme="godly"] .sb-card{position:relative;
+  box-shadow:inset 0 0 0 1px rgba(184,134,11,.55),inset 0 0 0 5px color-mix(in srgb,#F6DC8A 26%,transparent),var(--sh-rest);
+  border-color:color-mix(in srgb,#B8860B 42%,var(--line))}
+[data-theme="godly"] .sb-card::before{content:"";position:absolute;left:14px;right:14px;top:0;height:2px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(246,220,138,.95),transparent)}
+
+/* ================= 2. SERPENT'S LAIR — drifting crawlies, vine-wrapped cards ============= */
+@keyframes w4-slither{0%{transform:translateX(-18vw) rotate(-2deg)}100%{transform:translateX(118vw) rotate(2deg)}}
+@keyframes w4-crawl{0%{transform:translate(-8vw,0) rotate(0)}50%{transform:translate(52vw,-3vh) rotate(8deg)}100%{transform:translate(112vw,0) rotate(0)}}
+@keyframes w4-breathe4{0%,100%{opacity:.16}50%{opacity:.34}}
+[data-theme="serpent"] .w4-fog{inset:0;background:radial-gradient(120% 90% at 50% 110%,rgba(63,168,106,.3),transparent 62%);animation:w4-breathe4 9s ease-in-out infinite}
+[data-theme="serpent"] .w4-snake{left:0;width:44vw;height:60px;animation:w4-slither linear infinite}
+[data-theme="serpent"] .w4-bug{left:0;width:26px;height:26px;animation:w4-crawl linear infinite;opacity:.5}
+/* vine-wrapped card: a thick stem down the left, tendrils at the corners */
+[data-theme="serpent"] .sb-card{position:relative;overflow:hidden;
+  border-color:color-mix(in srgb,#2E7D52 40%,var(--line))}
+[data-theme="serpent"] .sb-card::before{content:"";position:absolute;left:0;top:-8%;width:9px;height:116%;pointer-events:none;
+  background:repeating-linear-gradient(180deg,#2E7D52 0 14px,#3FA86A 14px 26px);
+  border-radius:0 6px 6px 0;opacity:.85}
+[data-theme="serpent"] .sb-card::after{content:"";position:absolute;left:-6px;top:12px;width:34px;height:34px;pointer-events:none;
+  border:4px solid #3FA86A;border-radius:50%;border-right-color:transparent;border-top-color:transparent;opacity:.6;
+  transform:rotate(-18deg)}
+
+/* ================= 3. RACE ZONE — cars zooming past, wheels on the cards ================= */
+@keyframes w4-zoom{0%{transform:translateX(-24vw) scaleX(1)}100%{transform:translateX(124vw) scaleX(1)}}
+@keyframes w4-speedline{0%{transform:translateX(110vw);opacity:0}8%{opacity:.55}100%{transform:translateX(-30vw);opacity:0}}
+@keyframes w4-spin4{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+@keyframes w4-flagwave{0%,100%{transform:translateX(0)}50%{transform:translateX(-14px)}}
+[data-theme="race"] .w4-asphalt{left:0;right:0;bottom:0;height:26vh;
+  background:linear-gradient(180deg,transparent,rgba(44,58,85,.22))}
+[data-theme="race"] .w4-chequer{left:0;right:0;top:0;height:14px;
+  background:repeating-linear-gradient(90deg,rgba(44,58,85,.5) 0 14px,rgba(255,255,255,.5) 14px 28px);
+  animation:w4-flagwave 1.6s linear infinite}
+[data-theme="race"] .w4-car{left:0;animation:w4-zoom linear infinite}
+[data-theme="race"] .w4-line{right:0;height:3px;border-radius:2px;background:linear-gradient(90deg,transparent,#E0453A);
+  animation:w4-speedline linear infinite}
+/* wheeled card: a wheel at each bottom corner, and a lap stripe up the right edge */
+[data-theme="race"] .sb-card{position:relative;border-color:color-mix(in srgb,#D8342A 38%,var(--line))}
+[data-theme="race"] .sb-card::before,[data-theme="race"] .sb-card::after{content:"";position:absolute;bottom:-8px;width:22px;height:22px;
+  border-radius:50%;background:radial-gradient(circle at 50% 50%,#D8DEE9 0 22%,#2C3A55 23% 74%,#1A2438 75%);
+  box-shadow:0 2px 5px rgba(0,0,0,.28);pointer-events:none;animation:w4-spin4 1.1s linear infinite}
+[data-theme="race"] .sb-card::before{left:18px}
+[data-theme="race"] .sb-card::after{right:18px}
+/* the countdown chrome the world puts on every screen */
+@keyframes w4-cd{0%{transform:scale(.6);opacity:0}25%{transform:scale(1.15);opacity:1}70%{transform:scale(1);opacity:1}100%{transform:scale(1.5);opacity:0}}
+.w4-countdown{position:fixed;inset:0;z-index:70;display:grid;place-items:center;pointer-events:none}
+.w4-countdown b{font-family:"Bungee",system-ui,sans-serif;font-size:clamp(64px,18vw,190px);color:#FFC83D;
+  text-shadow:0 6px 0 #8E1C14,0 10px 26px rgba(0,0,0,.4);animation:w4-cd .75s ease-out forwards}
+.w4-lights{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:70;display:flex;gap:9px;pointer-events:none}
+.w4-lights i{width:15px;height:15px;border-radius:50%;background:rgba(255,255,255,.22);box-shadow:inset 0 0 0 2px rgba(0,0,0,.25)}
+.w4-lights i.on{background:#FFC83D;box-shadow:0 0 12px 3px rgba(255,200,61,.75)}
+
+/* ================= 4. DINO ERA — a grazing brachiosaurus, ferns, dinos on the cards ====== */
+@keyframes w4-walk{0%{transform:translateX(-30vw)}100%{transform:translateX(120vw)}}
+@keyframes w4-graze{0%,100%{transform:rotate(0)}50%{transform:rotate(9deg)}}
+@keyframes w4-fly{0%{transform:translate(-12vw,0)}50%{transform:translate(55vw,-4vh)}100%{transform:translate(118vw,0)}}
+@keyframes w4-sway4{0%,100%{transform:rotate(-2.5deg)}50%{transform:rotate(2.5deg)}}
+[data-theme="dino"] .w4-haze{inset:0;background:linear-gradient(180deg,rgba(246,220,138,.22),transparent 42%,rgba(62,90,28,.2))}
+[data-theme="dino"] .w4-brachio{bottom:0;left:0;width:min(46vw,520px);animation:w4-walk 78s linear infinite}
+[data-theme="dino"] .w4-ptero{top:12vh;left:0;width:74px;animation:w4-fly 44s linear infinite;opacity:.55}
+[data-theme="dino"] .w4-fern{bottom:0;width:120px;transform-origin:50% 100%;animation:w4-sway4 6s ease-in-out infinite;opacity:.55}
+/* dino-flanked card: a silhouette standing at the side, scute ridge along the top */
+[data-theme="dino"] .sb-card{position:relative;border-color:color-mix(in srgb,#5E7A2E 40%,var(--line))}
+/* a row of scutes riding the card's own top edge, fading out at both ends */
+[data-theme="dino"] .sb-card::before{content:"";position:absolute;left:10%;right:10%;top:-1px;height:9px;pointer-events:none;
+  background:
+    radial-gradient(circle at 50% 100%, #6F9438 0 42%, transparent 43%) 0 0/16px 9px repeat-x;
+  -webkit-mask:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent);
+          mask:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent);opacity:.85}
+[data-theme="dino"] .sb-card::after{content:"";position:absolute;right:8px;bottom:8px;width:58px;height:58px;pointer-events:none;
+  opacity:.3;background-repeat:no-repeat;background-size:contain;background-position:bottom right;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cpath d='M6 54 q7 -20 23 -20 q15 0 17 16 l6 3 z' fill='%235E7A2E'/%3E%3Cpath d='M28 35 q-3 -17 8 -24 q9 -6 12 1 q3 6 -5 9 q-8 3 -7 14 z' fill='%235E7A2E'/%3E%3Cellipse cx='47' cy='11' rx='6' ry='4' fill='%235E7A2E'/%3E%3C/svg%3E")}
+
+/* ---------- accessibility: the app's Reduce-motion switch stops every world effect ---------- */
+:root[data-motion="off"] .w4-bg *,
+:root[data-motion="off"] [data-theme] .sb-card::before,
+:root[data-motion="off"] [data-theme] .sb-card::after,
+:root[data-motion="off"] .w4-countdown b,
+:root[data-motion="off"] .w4-lights i{animation:none!important}
+:root[data-motion="off"] .w4-bg{display:none}
+/* small screens: keep the moving furniture light so the text stays the point */
+@media(max-width:560px){
+  [data-theme="race"] .sb-card::before,[data-theme="race"] .sb-card::after{width:19px;height:19px;bottom:-8px}
+  [data-theme="dino"] .sb-card::after{width:38px;height:38px}
+  [data-theme="godly"] .sb-card{box-shadow:inset 0 0 0 1px rgba(184,134,11,.5),inset 0 0 0 4px color-mix(in srgb,#F6DC8A 22%,transparent),var(--sh-rest)}
+}
+
+/* The backdrop is a sibling of #root, so #root must be lifted above it while a later world
+   is active (it is otherwise a non-positioned box, and positioned siblings would paint over). */
+.w4-on #root{position:relative;z-index:1}

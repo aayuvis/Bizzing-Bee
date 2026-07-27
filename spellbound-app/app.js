@@ -74,7 +74,9 @@ const EV_NOMEN = {
   avatar:['Pebble','Breeze','Gust','Droplet','Wave','Stone','Boulder','Ember','Flame','Elemental'],
 };
 function evStar(cx,cy,R,fill,stroke){ let p=''; for(let i=0;i<10;i++){const ang=-Math.PI/2+i*Math.PI/5;const rr=i%2?R*0.44:R;p+=(i?'L':'M')+(cx+Math.cos(ang)*rr).toFixed(1)+' '+(cy+Math.sin(ang)*rr).toFixed(1);} return `<path d="${p}Z" fill="${fill}"${stroke?` stroke="${stroke}" stroke-width="1"`:''}/>`; }
-function evAnimFor(id,s){ const A={
+function evAnimFor(id,s){
+  try{ if(window.SB_W4 && SB_W4.anim && SB_W4.anim[id]) return SB_W4.anim[id][s]||SB_W4.anim[id][0]; }catch(e){}
+  const A={
   spellbound:[['ev-wobble 2.2s ease-in-out infinite','50% 82%'],['ev-wobble 1.5s ease-in-out infinite','50% 82%'],['ev-crawl 1.5s ease-in-out infinite','50% 62%'],['ev-crawl 1.2s ease-in-out infinite','50% 62%'],['ev-breathe 2.6s ease-in-out infinite','50% 50%'],['ev-wobble 1.8s ease-in-out infinite','50% 82%'],['ev-hover .8s ease-in-out infinite','50% 50%'],['ev-hover .7s ease-in-out infinite','50% 50%'],['ev-hover .8s ease-in-out infinite','50% 50%'],['ev-hover 1s ease-in-out infinite','50% 50%']],
   marquee:[['ev-twinkle 1.2s ease-in-out infinite','50% 50%'],['ev-flicker .5s steps(2,end) infinite','50% 50%'],['ev-pulse 1.4s ease-in-out infinite','50% 60%'],['ev-bob 2.4s ease-in-out infinite','50% 60%'],['ev-twinkle 1.4s ease-in-out infinite','50% 60%'],['ev-twinkle 1.6s ease-in-out infinite','50% 50%'],['ev-twinkle 1.8s ease-in-out infinite','50% 50%'],['ev-twinkle 1.6s ease-in-out infinite','50% 50%'],['ev-sweep 3s ease-in-out infinite','82% 26%'],['ev-sweep 2.6s ease-in-out infinite','82% 26%']],
   aurora:[['ev-drift 4s ease-in-out infinite','50% 50%'],['ev-drift 4.6s ease-in-out infinite','50% 50%'],['ev-spin 16s linear infinite','50% 60%'],['ev-spin 10s linear infinite','50% 62%'],['ev-twinkle 1.3s ease-in-out infinite','50% 60%'],['ev-twinkle 1.7s ease-in-out infinite','50% 60%'],['ev-pulse 1s ease-in-out infinite','50% 60%'],['ev-drift 4s ease-in-out infinite','50% 50%'],['ev-spin 6s linear infinite','50% 62%'],['ev-spin 13s linear infinite','50% 62%']],
@@ -85,6 +87,13 @@ function evAnimFor(id,s){ const A={
   avatar:[['ev-wobble 2s ease-in-out infinite','50% 88%'],['ev-drift 3.4s ease-in-out infinite','50% 50%'],['ev-spin 5s linear infinite','50% 50%'],['ev-bob 1.5s ease-in-out infinite','50% 20%'],['ev-wave 2.2s ease-in-out infinite','50% 50%'],['ev-bob 3s ease-in-out infinite','50% 90%'],['ev-bob 3.2s ease-in-out infinite','50% 90%'],['ev-flame 1s ease-in-out infinite','50% 90%'],['ev-flame .8s ease-in-out infinite','50% 90%'],['ev-breathe 2.4s ease-in-out infinite','50% 50%']],
 }; return (A[id]&&A[id][s])||['ev-bob 2.6s ease-in-out infinite','50% 60%']; }
 function evEmb(id,s){
+  // Worlds added after launch register their own 10-form ladder (see worlds4.js) rather than
+  // extending the if-chain below.
+  try{ if(window.SB_W4 && SB_W4.emb && SB_W4.emb[id]){
+    const g2=SB_W4.emb[id](s, EV_TC[id]||{a:'#7C5CFF',b:'#FFC83D',c:'#FF5FA2',ink:'#5a3fd0'});
+    const af2=evAnimFor(id,s);
+    return `<svg viewBox="0 0 48 52" width="54" height="58" aria-hidden="true" focusable="false" style="overflow:visible;animation:${af2[0]};transform-origin:${af2[1]}">${g2}</svg>`;
+  } }catch(e){}
   const C=EV_TC[id]; let g='';
   if(id==='spellbound'){
     if(s===0){ g+=`<ellipse cx="24" cy="30" rx="7" ry="10" fill="#FFE6A8" stroke="${C.ink}" stroke-width="1.5"/><path d="M21 27 q3 1.5 5 0" fill="none" stroke="${C.ink}" stroke-width=".8" opacity=".35"/>`; }

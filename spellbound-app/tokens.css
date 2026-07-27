@@ -224,3 +224,21 @@
 }
 [data-mode="white"][data-theme]::after{ display:none } /* white stays pure paper */
 [data-mode="dusk"][data-theme]::after{ opacity:.5 }
+
+/* ================= Four later worlds: God's Abode · Serpent's Lair · Race Zone · Dino Era =====
+   Same token contract as the originals: a display face, an action colour, a tint/paper/line
+   family and an ink. Light first, then the per-world dusk palette. */
+[data-theme="godly"]:not([data-mode="dusk"])   { --display:"Fraunces", Georgia, serif;      --action:#B8860B; --tint:#FBF3DC; --tint-deep:#F2E4BE; --ink:#3B2C08; --muted:#7C6A3E; --line:#EADFBE; }
+[data-theme="serpent"]:not([data-mode="dusk"]) { --display:"Fredoka", system-ui, sans-serif; --action:#2E7D52; --tint:#EAF4EC; --tint-deep:#D8E9DC; --ink:#16281D; --muted:#5A7264; --line:#DCEAE0; }
+[data-theme="race"]:not([data-mode="dusk"])    { --display:"Bungee", system-ui, sans-serif;  --action:#D8342A; --tint:#F7EFEE; --tint-deep:#EEDCD9; --ink:#2A1512; --muted:#7E6360; --line:#F0DEDB; }
+[data-theme="dino"]:not([data-mode="dusk"])    { --display:"Baloo 2", system-ui, sans-serif; --action:#5E7A2E; --tint:#F2F2E2; --tint-deep:#E4E5CD; --ink:#20260F; --muted:#6B7154; --line:#E5E6D0; }
+
+[data-theme="godly"][data-mode="dusk"]   { --tint:#3A2E10; --tint-deep:#2E240C; --paper:#4A3A16; --line:#5E4A1E; --action:#F0C24A; --action-ink:#2B1F04;  --ink:#FFF6E2; --muted:#E8D9AE; }
+[data-theme="serpent"][data-mode="dusk"] { --tint:#1B3325; --tint-deep:#15291E; --paper:#24422F; --line:#33573D; --action:#5FD08C; --action-ink:#082314;  --ink:#EAF7EE; --muted:#BFDCC8; }
+[data-theme="race"][data-mode="dusk"]    { --tint:#331714; --tint-deep:#2A1210; --paper:#42201C; --line:#5A2C26; --action:#FF7A6E; --action-ink:#2E0B07;  --ink:#FFECE9; --muted:#F0C4BE; }
+[data-theme="dino"][data-mode="dusk"]    { --tint:#2A3318; --tint-deep:#212912; --paper:#374223; --line:#48562F; --action:#A8C86A; --action-ink:#1A2209;  --ink:#F2F5E4; --muted:#CBD6AC; }
+/* the world's face and dusk sub-palette (mode-independent bits) */
+[data-theme="godly"]   { --display:"Fraunces", Georgia, serif; }
+[data-theme="serpent"] { --display:"Fredoka", system-ui, sans-serif; }
+[data-theme="race"]    { --display:"Bungee", system-ui, sans-serif; }
+[data-theme="dino"]    { --display:"Baloo 2", system-ui, sans-serif; }
