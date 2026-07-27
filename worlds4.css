@@ -34,15 +34,23 @@
 [data-theme="serpent"] .w4-fog{inset:0;background:radial-gradient(120% 90% at 50% 110%,rgba(63,168,106,.3),transparent 62%);animation:w4-breathe4 9s ease-in-out infinite}
 [data-theme="serpent"] .w4-snake{left:0;width:44vw;height:60px;animation:w4-slither linear infinite}
 [data-theme="serpent"] .w4-bug{left:0;width:26px;height:26px;animation:w4-crawl linear infinite;opacity:.5}
-/* vine-wrapped card: a thick stem down the left, tendrils at the corners */
-[data-theme="serpent"] .sb-card{position:relative;overflow:hidden;
-  border-color:color-mix(in srgb,#2E7D52 40%,var(--line))}
-[data-theme="serpent"] .sb-card::before{content:"";position:absolute;left:0;top:-8%;width:9px;height:116%;pointer-events:none;
-  background:repeating-linear-gradient(180deg,#2E7D52 0 14px,#3FA86A 14px 26px);
-  border-radius:0 6px 6px 0;opacity:.85}
-[data-theme="serpent"] .sb-card::after{content:"";position:absolute;left:-6px;top:12px;width:34px;height:34px;pointer-events:none;
-  border:4px solid #3FA86A;border-radius:50%;border-right-color:transparent;border-top-color:transparent;opacity:.6;
-  transform:rotate(-18deg)}
+/* Serpent-wrapped cards: the border IS a snake — a scaled body running the whole ring
+   (border-image 9-slice), with the head resting on the top-right corner. Cards cycle
+   through three serpents from the lair: a green tree-snake, a golden python and a
+   hooded cobra, so neighbouring cards are wrapped by different snakes. */
+[data-theme="serpent"] .sb-card{position:relative;border:6px solid transparent;
+  border-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2060%2060%22%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%2256%22%20height%3D%2256%22%20rx%3D%2210%22%20fill%3D%22none%22%20stroke%3D%22%232E7D52%22%20stroke-width%3D%227%22/%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%2256%22%20height%3D%2256%22%20rx%3D%2210%22%20fill%3D%22none%22%20stroke%3D%22%233FA86A%22%20stroke-width%3D%227%22%20stroke-dasharray%3D%227%208%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E") 7 round}
+[data-theme="serpent"] .sb-card::after{content:"";position:absolute;top:-15px;right:6px;width:46px;height:34px;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2046%2034%22%3E%3Cpath%20d%3D%22M4%2018%20q4%20-9%2016%20-9%20l10%200%20q12%201%2012%209%20q0%208%20-12%209%20l-10%200%20q-12%200%20-16%20-9%20z%22%20fill%3D%22%233FA86A%22/%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2214%22%20r%3D%222.6%22%20fill%3D%22%23FFE07A%22/%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2222%22%20r%3D%222.6%22%20fill%3D%22%23FFE07A%22/%3E%3Ccircle%20cx%3D%2230.8%22%20cy%3D%2214.5%22%20r%3D%221.1%22%20fill%3D%22%231E2B14%22/%3E%3Ccircle%20cx%3D%2230.8%22%20cy%3D%2222.5%22%20r%3D%221.1%22%20fill%3D%22%231E2B14%22/%3E%3Cpath%20d%3D%22M42%2018%20h6%20M48%2018%20l4%20-3%20M48%2018%20l4%203%22%20stroke%3D%22%23E0453A%22%20stroke-width%3D%221.7%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M12%2012%20q4%20-4%209%20-3%22%20stroke%3D%22%238FD9A8%22%20stroke-width%3D%221.6%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E") no-repeat center/contain;
+  filter:drop-shadow(0 2px 3px rgba(10,30,16,.3))}
+[data-theme="serpent"] .sb-card.w4-sn2{border-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2060%2060%22%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%2256%22%20height%3D%2256%22%20rx%3D%2210%22%20fill%3D%22none%22%20stroke%3D%22%238A6B1E%22%20stroke-width%3D%227%22/%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%2256%22%20height%3D%2256%22%20rx%3D%2210%22%20fill%3D%22none%22%20stroke%3D%22%23C8A96A%22%20stroke-width%3D%227%22%20stroke-dasharray%3D%227%208%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E") 7 round}
+[data-theme="serpent"] .sb-card.w4-sn2::after{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2046%2034%22%3E%3Cpath%20d%3D%22M4%2018%20q4%20-9%2016%20-9%20l10%200%20q12%201%2012%209%20q0%208%20-12%209%20l-10%200%20q-12%200%20-16%20-9%20z%22%20fill%3D%22%23C8A96A%22/%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2214%22%20r%3D%222.6%22%20fill%3D%22%23FFE07A%22/%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2222%22%20r%3D%222.6%22%20fill%3D%22%23FFE07A%22/%3E%3Ccircle%20cx%3D%2230.8%22%20cy%3D%2214.5%22%20r%3D%221.1%22%20fill%3D%22%231E2B14%22/%3E%3Ccircle%20cx%3D%2230.8%22%20cy%3D%2222.5%22%20r%3D%221.1%22%20fill%3D%22%231E2B14%22/%3E%3Cpath%20d%3D%22M42%2018%20h6%20M48%2018%20l4%20-3%20M48%2018%20l4%203%22%20stroke%3D%22%23E0453A%22%20stroke-width%3D%221.7%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M12%2012%20q4%20-4%209%20-3%22%20stroke%3D%22%238A6B1E%22%20stroke-width%3D%221.6%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E")}
+[data-theme="serpent"] .sb-card.w4-sn3{border-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2060%2060%22%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%2256%22%20height%3D%2256%22%20rx%3D%2210%22%20fill%3D%22none%22%20stroke%3D%22%231E5B4A%22%20stroke-width%3D%227%22/%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%2256%22%20height%3D%2256%22%20rx%3D%2210%22%20fill%3D%22none%22%20stroke%3D%22%233FA8A0%22%20stroke-width%3D%227%22%20stroke-dasharray%3D%227%208%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E") 7 round}
+[data-theme="serpent"] .sb-card.w4-sn3::after{top:-19px;width:44px;height:40px;
+  background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2046%2040%22%3E%3Cpath%20d%3D%22M8%2020%20q0%20-16%2015%20-16%20q15%200%2015%2016%20q0%2014%20-15%2014%20q-15%200%20-15%20-14%20z%22%20fill%3D%22%231E5B4A%22/%3E%3Cpath%20d%3D%22M13%2020%20q0%20-10%2010%20-10%20q10%200%2010%2010%20q0%209%20-10%209%20q-10%200%20-10%20-9%20z%22%20fill%3D%22%233FA8A0%22/%3E%3Ccircle%20cx%3D%2219%22%20cy%3D%2218%22%20r%3D%222.4%22%20fill%3D%22%23FFE07A%22/%3E%3Ccircle%20cx%3D%2227%22%20cy%3D%2218%22%20r%3D%222.4%22%20fill%3D%22%23FFE07A%22/%3E%3Ccircle%20cx%3D%2219.6%22%20cy%3D%2218.5%22%20r%3D%221%22%20fill%3D%22%231E2B14%22/%3E%3Ccircle%20cx%3D%2227.6%22%20cy%3D%2218.5%22%20r%3D%221%22%20fill%3D%22%231E2B14%22/%3E%3Cpath%20d%3D%22M23%2026%20v5%20l-3%202%20M23%2031%20l3%202%22%20stroke%3D%22%23E0453A%22%20stroke-width%3D%221.5%22%20fill%3D%22none%22/%3E%3Cpath%20d%3D%22M16%2012%20q7%20-4%2014%200%22%20stroke%3D%22%231E5B4A%22%20stroke-width%3D%221.4%22%20fill%3D%22none%22/%3E%3C/svg%3E")}
+/* the tail tip curls off the bottom-left corner on every card */
+[data-theme="serpent"] .sb-card::before{content:"";position:absolute;left:-9px;bottom:-9px;width:30px;height:22px;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2030%2022%22%3E%3Cpath%20d%3D%22M28%206%20q-14%20-2%20-20%206%20q-5%207%203%209%22%20fill%3D%22none%22%20stroke%3D%22%232E7D52%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M11%2021%20q-6%20-1%20-8%20-6%22%20fill%3D%22none%22%20stroke%3D%22%232E7D52%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E") no-repeat center/contain;opacity:.9}
 
 /* ================= 3. RACE ZONE — cars zooming past, wheels on the cards ================= */
 @keyframes w4-zoom{0%{transform:translateX(-24vw) scaleX(1)}100%{transform:translateX(124vw) scaleX(1)}}
@@ -78,10 +86,34 @@
 @keyframes w4-graze{0%,100%{transform:rotate(0)}50%{transform:rotate(9deg)}}
 @keyframes w4-fly{0%{transform:translate(-12vw,0)}50%{transform:translate(55vw,-4vh)}100%{transform:translate(118vw,0)}}
 @keyframes w4-sway4{0%,100%{transform:rotate(-2.5deg)}50%{transform:rotate(2.5deg)}}
-[data-theme="dino"] .w4-haze{inset:0;background:linear-gradient(180deg,rgba(246,220,138,.22),transparent 42%,rgba(62,90,28,.2))}
-[data-theme="dino"] .w4-brachio{bottom:0;left:0;width:min(46vw,520px);animation:w4-walk 78s linear infinite}
-[data-theme="dino"] .w4-ptero{top:12vh;left:0;width:74px;animation:w4-fly 44s linear infinite;opacity:.55}
-[data-theme="dino"] .w4-fern{bottom:0;width:120px;transform-origin:50% 100%;animation:w4-sway4 6s ease-in-out infinite;opacity:.55}
+@keyframes w4-creep{0%{transform:translateX(-24vw)}100%{transform:translateX(120vw)}}
+@keyframes w4-creepR{0%{transform:translateX(120vw) scaleX(-1)}100%{transform:translateX(-24vw) scaleX(-1)}}
+@keyframes w4-cotton{0%{transform:translateY(-6vh)}100%{transform:translateY(108vh)}}
+@keyframes w4-cotdrift{0%,100%{margin-left:0}50%{margin-left:34px}}
+@keyframes w4-eyeblink{0%,88%,100%{opacity:1}92%,96%{opacity:0}}
+[data-theme="dino"] .w4-haze{inset:0;background:linear-gradient(180deg,rgba(246,220,138,.28),transparent 40%,rgba(46,68,22,.3))}
+/* majesty: the brachiosaurus stands, filling the corner, neck sweeping as it grazes */
+[data-theme="dino"] .w4-brachio{bottom:-6px;left:-2vw;width:min(44vw,540px);aspect-ratio:300/210;opacity:.85;filter:drop-shadow(0 8px 18px rgba(20,30,8,.35))}
+[data-theme="dino"] .w4-ptero{top:9vh;left:0;width:88px;animation:w4-fly 44s linear infinite;opacity:.5}
+[data-theme="dino"] .w4-fern{bottom:0;width:120px;transform-origin:50% 100%;animation:w4-sway4 6s ease-in-out infinite;opacity:.6}
+[data-theme="dino"] .w4-tree{bottom:0;aspect-ratio:90/240;height:auto!important;transform-origin:50% 100%;animation:w4-sway4 11s ease-in-out infinite}
+[data-theme="dino"] .w4-raptor{aspect-ratio:170/80;animation:w4-creep linear infinite;opacity:.8}
+[data-theme="dino"] .w4-raptor-b{animation:w4-creepR linear infinite;opacity:.7}
+/* floating cottonwood — soft glowing seeds, falling and drifting on two timelines */
+[data-theme="dino"] .w4-cotton{top:0;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,252,238,.95) 0 28%,rgba(255,250,228,.35) 60%,transparent 72%);
+  box-shadow:0 0 8px 2px rgba(255,248,220,.5);
+  animation-name:w4-cotton,w4-cotdrift;animation-timing-function:linear,ease-in-out;animation-iteration-count:infinite,infinite}
+/* one broad late-afternoon sunbeam across the scene */
+[data-theme="dino"] .w4-beam{left:-10vw;top:-16vh;width:70vw;height:150vh;transform:rotate(18deg);
+  background:linear-gradient(90deg,transparent,rgba(246,220,138,.16) 42%,rgba(246,220,138,.28) 50%,rgba(246,220,138,.16) 58%,transparent);
+  animation:w4-gleam 11s ease-in-out infinite}
+/* night in the valley: the creatures' eyes catch the light and shine */
+[data-theme="dino"][data-mode="dusk"] .w4-eye{fill:#FFE07A;animation:w4-eyeblink 5s linear infinite;
+  filter:drop-shadow(0 0 5px rgba(255,224,122,.95)) drop-shadow(0 0 12px rgba(255,224,122,.6))}
+[data-theme="dino"][data-mode="dusk"] .w4-cotton{box-shadow:0 0 10px 3px rgba(255,248,220,.65)}
+[data-theme="dino"][data-mode="dusk"] .w4-beam{background:linear-gradient(90deg,transparent,rgba(200,214,255,.10) 42%,rgba(200,214,255,.18) 50%,rgba(200,214,255,.10) 58%,transparent)}
+[data-theme="dino"][data-mode="dusk"] .w4-haze{background:linear-gradient(180deg,rgba(60,74,130,.3),transparent 40%,rgba(10,18,4,.5))}
 /* dino-flanked card: a silhouette standing at the side, scute ridge along the top */
 [data-theme="dino"] .sb-card{position:relative;border-color:color-mix(in srgb,#5E7A2E 40%,var(--line))}
 /* a row of scutes riding the card's own top edge, fading out at both ends */
@@ -111,3 +143,11 @@
 /* The backdrop is a sibling of #root, so #root must be lifted above it while a later world
    is active (it is otherwise a non-positioned box, and positioned siblings would paint over). */
 .w4-on #root{position:relative;z-index:1}
+
+/* ---------- focus screens: no moving scenery where the speller is working ----------
+   Practice (Word Coach, training, revisions) and Supercharge are for concentration —
+   the runtime marks them with .w4-calm on <html>, which parks the backdrop entirely
+   and freezes the card decorations. Home, Arcade, Progress etc. keep the show. */
+.w4-calm .w4-bg{display:none}
+.w4-calm [data-theme] .sb-card::before,
+.w4-calm [data-theme] .sb-card::after{animation:none!important}

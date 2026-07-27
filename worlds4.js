@@ -243,7 +243,34 @@
   var SNAKE='<svg viewBox="0 0 200 60" width="100%" height="100%"><path d="M0 40 q25 -22 50 0 q25 22 50 0 q25 -22 50 0 q25 22 50 0" fill="none" stroke="#2E7D52" stroke-width="13" stroke-linecap="round"/><path d="M0 40 q25 -22 50 0 q25 22 50 0 q25 -22 50 0 q25 22 50 0" fill="none" stroke="#8FD9A8" stroke-width="3" stroke-linecap="round" opacity=".45"/><ellipse cx="196" cy="40" rx="13" ry="10" fill="#3FA86A"/><circle cx="193" cy="37" r="2.2" fill="#FFE07A"/><circle cx="199" cy="37" r="2.2" fill="#FFE07A"/><path d="M196 49 l0 6 l-4 3 M196 55 l4 3" stroke="#E0453A" stroke-width="1.6" fill="none"/></svg>';
   var BUG='<svg viewBox="0 0 30 30" width="100%" height="100%"><ellipse cx="15" cy="17" rx="8" ry="9" fill="#2E7D52"/><circle cx="15" cy="8" r="4.5" fill="#3FA86A"/><path d="M7 12 l-6 -4 M23 12 l6 -4 M6 18 h-6 M24 18 h6 M8 24 l-5 5 M22 24 l5 5" stroke="#1E5B39" stroke-width="1.8" stroke-linecap="round"/><circle cx="13" cy="7" r="1.2" fill="#FFE07A"/><circle cx="17" cy="7" r="1.2" fill="#FFE07A"/></svg>';
   function carSVG(c){ return '<svg viewBox="0 0 120 46" width="100%" height="100%"><path d="M4 32 h110 l-8 -12 l-26 -3 l-14 -9 h-34 z" fill="'+c+'"/><path d="M60 12 h14 l9 8 h-23 z" fill="#BFE3F5" opacity=".85"/><circle cx="30" cy="34" r="9" fill="#2C3A55"/><circle cx="30" cy="34" r="3.6" fill="#D8DEE9"/><circle cx="92" cy="34" r="9" fill="#2C3A55"/><circle cx="92" cy="34" r="3.6" fill="#D8DEE9"/><path d="M0 22 h-10 M0 27 h-14" stroke="#FFC83D" stroke-width="2.4" stroke-linecap="round"/></svg>'; }
-  var BRACHIO='<svg viewBox="0 0 300 200" width="100%" height="100%"><g fill="#3E5A1C"><path d="M20 196 q22 -70 92 -70 q66 0 74 62 l26 8 z"/><path d="M150 128 q-10 -78 34 -110 q34 -25 46 4 q10 26 -22 34 q-38 10 -30 72 z"/><ellipse cx="232" cy="20" rx="26" ry="17"/><path d="M20 196 q-18 6 -24 22" stroke="#3E5A1C" stroke-width="20" fill="none" stroke-linecap="round"/><path d="M52 196 v14 M96 198 v12 M150 196 v14" stroke="#3E5A1C" stroke-width="15" stroke-linecap="round"/></g><g style="transform-box:fill-box;transform-origin:8% 60%;animation:w4-graze 6s ease-in-out infinite"><ellipse cx="232" cy="20" rx="26" ry="17" fill="#4E6E26"/><circle cx="245" cy="14" r="3.4" fill="#fff"/><circle cx="245.8" cy="14.4" r="1.6" fill="#20260F"/></g></svg>';
+  /* The brachiosaurus is the world's monument: a two-tone body with a lit back, a neck that
+     sweeps as it grazes, and a slow tail. Painted big and left standing (no walk) — a
+     mountain does not commute. */
+  var BRACHIO='<svg viewBox="0 0 300 210" width="100%" height="100%">'
+    +'<g fill="#2E4416"><path d="M14 206 q24 -78 98 -78 q70 0 80 66 l30 10 z"/>'
+    +'<path d="M40 206 v-14 q0 -6 8 -6 q8 0 8 6 v14 z M96 208 v-12 q0 -6 8 -6 q8 0 8 6 v12 z M152 206 v-13 q0 -6 8 -6 q8 0 8 6 v13 z"/>'
+    +'<path d="M14 206 q-16 4 -26 18" stroke="#2E4416" stroke-width="22" fill="none" stroke-linecap="round"/></g>'
+    +'<path d="M20 158 q30 -44 84 -40" stroke="#4E6E26" stroke-width="9" fill="none" stroke-linecap="round" opacity=".7"/>'
+    +'<g style="transform-box:fill-box;transform-origin:20% 96%;animation:w4-graze 9s ease-in-out infinite">'
+    +'<path d="M158 132 q-14 -84 30 -116 q34 -24 48 2 q10 22 -20 30 q-36 10 -26 84 z" fill="#3E5A1C"/>'
+    +'<path d="M168 120 q-8 -70 26 -100" stroke="#4E6E26" stroke-width="6" fill="none" stroke-linecap="round" opacity=".8"/>'
+    +'<ellipse cx="224" cy="16" rx="24" ry="15" fill="#4E6E26"/>'
+    +'<circle cx="236" cy="11" r="3.4" fill="#F6ECC8"/><circle cx="236.9" cy="11.5" r="1.7" fill="#20260F"/>'
+    +'<path d="M244 20 q6 2 8 6" stroke="#2E4416" stroke-width="2.4" fill="none" stroke-linecap="round"/></g>'
+    +'</svg>';
+  /* a creeping raptor — long balanced tail, S-neck carried low, open jaw, bent legs */
+  var RAPTOR='<svg viewBox="0 0 170 80" width="100%" height="100%">'
+    +'<g fill="#33481A">'
+    +'<path d="M4 30 q26 -6 48 8 q8 5 16 6 q14 2 22 -2 q6 -10 16 -12 q14 -3 22 4 l14 -5 q7 -2 9 2 l-9 8 l8 6 q-6 4 -14 1 l-10 -5 q-6 8 -18 9 q-16 2 -28 -3 q-12 -5 -24 -6 q-24 -2 -52 -11 z"/>'
+    +'<path d="M78 46 q-2 10 -8 14 l10 0 q5 -6 6 -13 z M104 44 q0 10 -5 15 l10 0 q4 -7 4 -14 z"/>'
+    +'</g>'
+    +'<circle class="w4-eye" cx="138" cy="30" r="2.8" fill="#F6ECC8"/></svg>';
+  /* a tall conifer: layered triangular boughs on a bare trunk, Jurassic scale */
+  function TREE(h){ return '<svg viewBox="0 0 90 '+h+'" width="100%" height="100%" preserveAspectRatio="xMidYMax meet">'
+    +'<rect x="41" y="'+(h-46)+'" width="8" height="46" rx="3" fill="#3A2E18"/>'
+    +[0,1,2,3,4,5].map(function(i){ var w=76-i*11, y=h-52-i*26;
+      return '<path d="M'+(45-w/2)+' '+y+' L45 '+(y-30)+' L'+(45+w/2)+' '+y+' q-'+(w/2)+' 8 -'+w+' 0z" fill="'+(i%2?'#2E4416':'#3E5A1C')+'"/>'; }).join('')
+    +'<path d="M45 '+(h-52-6*26)+' L45 '+(h-52-6*26-18)+'" stroke="#3E5A1C" stroke-width="5" stroke-linecap="round"/></svg>'; }
   var PTERO='<svg viewBox="0 0 90 40" width="100%" height="100%"><path d="M4 22 q20 -18 41 -4 q21 -14 41 4 q-20 8 -41 2 q-21 6 -41 -2z" fill="#3E5A1C"/><path d="M45 18 l14 -12 l-3 8 z" fill="#4E6E26"/></svg>';
   /* one base, seven curved blades fanning out — drawn as stroked arcs so nothing can blob */
   var FERN=(function(){ var o='<svg viewBox="0 0 120 160" width="100%" height="100%"><g fill="none" stroke="#3E5A1C" stroke-linecap="round">';
@@ -276,10 +303,20 @@
       for(var li=0;li<10;li++) layer.appendChild(el('w4-line','top:'+rnd(6,92).toFixed(1)+'vh;width:'+rnd(60,190).toFixed(0)+'px;animation-duration:'+rnd(1.1,2.6).toFixed(2)+'s;animation-delay:-'+rnd(0,2).toFixed(2)+'s'));
     } else if(world==='dino'){
       layer.appendChild(el('w4-haze'));
+      // a treeline of tall conifers, back row hazier than the front
+      [['4vw','30vh',.30,'-2s'],['16vw','24vh',.22,'-4s'],['70vw','34vh',.34,'-1s'],['84vw','26vh',.24,'-5s'],['92vw','20vh',.18,'-3s']]
+        .forEach(function(t){ layer.appendChild(el('w4-tree','left:'+t[0]+';height:'+t[1]+';width:calc('+t[1]+' * .42);opacity:'+t[2]+';animation-delay:'+t[3], TREE(240))); });
       layer.appendChild(el('w4-fern','left:-14px;animation-delay:-1s', FERN));
       layer.appendChild(el('w4-fern','right:-18px;animation-delay:-3s;width:150px', FERN));
       layer.appendChild(el('w4-ptero','animation-delay:-12s', PTERO));
-      layer.appendChild(el('w4-brachio','', BRACHIO));     // the big one, grazing as it walks
+      // raptors creeping through the undergrowth, one each way
+      layer.appendChild(el('w4-raptor','bottom:2vh;width:120px;animation-duration:52s;animation-delay:-8s', RAPTOR));
+      layer.appendChild(el('w4-raptor w4-raptor-b','bottom:8vh;width:88px;animation-duration:64s;animation-delay:-30s', RAPTOR));
+      // movie-light: cottonwood seeds drifting through the sunbeams
+      for(var cw=0;cw<12;cw++) layer.appendChild(el('w4-cotton','left:'+rnd(2,98).toFixed(1)+'vw;animation-duration:'+rnd(14,26).toFixed(1)+'s,'+rnd(3,5).toFixed(1)+'s;animation-delay:-'+rnd(0,24).toFixed(1)+'s,-'+rnd(0,4).toFixed(1)+'s;width:'+rnd(5,9).toFixed(0)+'px;height:'+rnd(5,9).toFixed(0)+'px'));
+      // a wide golden sunbeam across the canopy
+      layer.appendChild(el('w4-beam'));
+      layer.appendChild(el('w4-brachio','', BRACHIO));     // the monument
     }
     document.body.insertBefore(layer, document.body.firstChild);
   }
@@ -321,8 +358,12 @@
     }catch(e){}
   }
 
+  var CALM_NAVS=['coach','train','levelup','revisions','explore','concepts','vocab','typing','figurative','trivtrain','journeys','quotes'];
   function sync(){
     try{
+      // working screens get stillness: no backdrop, no moving card chrome
+      var calm=false; try{ calm=state && state.screen==='app' && CALM_NAVS.indexOf(state.nav)>=0; }catch(e){}
+      document.documentElement.classList.toggle('w4-calm', !!calm);
       var w=(typeof state!=='undefined' && state && state.theme)||null;
       var mine=window.SB_W4.ids.indexOf(w)>=0;
       if(!mine){ if(layer){ layer.remove(); layer=null; } document.documentElement.classList.remove('w4-on'); raceStop(); CUR=null; return; }
@@ -335,7 +376,21 @@
         if(w==='race') raceCountdown(); }
     }catch(e){}
   }
+  /* The lair cycles its three serpents across the cards. Cards are re-created on every
+     render and are not same-tag siblings, so CSS structural selectors can't do this —
+     a MutationObserver stamps w4-sn2/w4-sn3 onto every second and third card instead. */
+  function stampSnakes(){
+    try{ if(!state || state.theme!=='serpent') return;
+      var i=0; document.querySelectorAll('.sb-card').forEach(function(c){
+        c.classList.remove('w4-sn2','w4-sn3');
+        if(i%3===1) c.classList.add('w4-sn2'); else if(i%3===2) c.classList.add('w4-sn3');
+        i++; }); }catch(e){}
+  }
+  try{ var mo=new MutationObserver(function(){ stampSnakes(); });
+    var boot=function(){ var r=document.getElementById('root'); if(r) mo.observe(r,{childList:true}); stampSnakes(); };
+    if(document.readyState!=='loading') boot(); else document.addEventListener('DOMContentLoaded',boot);
+  }catch(e){}
   window.SB_W4_SYNC=sync;
   if(document.readyState!=='loading') setTimeout(sync,300); else document.addEventListener('DOMContentLoaded',function(){ setTimeout(sync,300); });
-  setInterval(sync, 900);              // the app has no theme-change event; a cheap poll is enough
+  setInterval(sync, 400);              // the app has no theme-change event; a cheap poll is enough
 })();

@@ -5056,7 +5056,8 @@ function viewVoiceTest(){
 
 function viewSettings(){
   const S=state;
-  const themes=THEMES.filter(t=>isThemeUnlocked(t.id)).map(t=>worldHeroCard(t, t.id===S.theme, false, 'pickTheme')).join('');
+  const themes=THEMES.map(t=>{ const un=isThemeUnlocked(t.id);
+    return worldHeroCard(t, t.id===S.theme, !un, un?'pickTheme':'buyTheme'); }).join('');
   const _voices=enVoices();
   const _nat=(n)=>/natural|enhanced|premium|siri|google|neural|online/i.test(n);
   const voiceOpts=['<option value="">Auto · best available</option>'].concat(_voices.map(v=>`<option value="${escA(v.name)}"${VOICE.name===v.name?' selected':''}>${esc(v.name)}${_nat(v.name)?' ✨':''}</option>`)).join('');
@@ -5130,7 +5131,7 @@ function viewSettings(){
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:3px">World</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Each world is a different look and a character that evolves as you level up.</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:11px">${themes}</div>
-      ${THEMES.some(t=>!isThemeUnlocked(t.id))?`<button data-act="openShop" class="sb-cl" style="background:none;border:0;padding:10px 0 0;cursor:pointer">🔒 ${THEMES.filter(t=>!isThemeUnlocked(t.id)).length} more worlds to unlock — visit the Store →</button>`:''}
+      ${THEMES.some(t=>!isThemeUnlocked(t.id))?`<div class="sb-cn" style="padding-top:10px">🔒 Locked worlds come with a bigger plan or coins — tap one to see.</div>`:''}
     </div>
     ${profileCard}
     ${voiceCard}
