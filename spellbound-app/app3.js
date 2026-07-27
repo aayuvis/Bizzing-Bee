@@ -5081,14 +5081,12 @@ function viewSettings(){
     </div>`;
   const profileCard=`<div class="sb-card" style="margin-bottom:16px">
       <div style="font-family:var(--display);font-weight:800;font-size:15px">Profile</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Pick your own display name and buddy — parents can adjust age, the daily goal and milestones here too.</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Pick your own display name and buddy — parents can adjust age, the daily targets and milestones here too.</div>
       <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Display name</label>
       <input data-inp="profName" data-fkey="profName" value="${escA(_pc.name||'')}" maxlength="24" placeholder="e.g. Ahana" autocomplete="off" style="width:100%;max-width:320px;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:700;margin-bottom:14px;outline:none">
       <div style="display:flex;gap:22px;flex-wrap:wrap;margin-bottom:14px">
         <div><label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Age · <b style="color:var(--text)">${_pc.age||9}</b></label>
           <input type="range" min="5" max="18" value="${_pc.age||9}" data-inp="profAge" style="width:200px"></div>
-        <div><label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Daily goal</label>
-          <div style="display:flex;gap:7px">${[5,10,15].map(g=>`<button data-act="profGoal" data-arg="${g}" style="padding:9px 15px;border-radius:999px;font-weight:800;font-size:13px;${(_pc.goal||10)===g?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">${g} words</button>`).join('')}</div></div>
       </div>
       ${(()=>{ const t=targets(_pc);
         const num=(lab,col,act,val,unit,hint)=>`<div style="flex:1;min-width:150px">
@@ -5103,7 +5101,7 @@ function viewSettings(){
           <div style="display:flex;gap:14px;flex-wrap:wrap">
             ${num('Total time on the app', RING_COL[0][0], 'setTgtApp', t.app, 'min / day', 'Everything you do in Bizzing Bee.')}
             ${num('Time practising words', RING_COL[1][0], 'setTgtPrac', t.prac, 'min / day', 'Word Coach and revisions only — the clock stops in games.')}
-            ${num('Words practised', RING_COL[2][0], 'setTgtWords', t.words, 'words / day', 'Same as the daily goal above.')}
+            ${num('Words practised', RING_COL[2][0], 'setTgtWords', t.words, 'words / day', 'Your daily word goal — used all across the app.')}
           </div></div>`; })()}
       <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px">
         <div><label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Milestone <span style="font-weight:600">(optional — e.g. NSF Finals)</span></label>
