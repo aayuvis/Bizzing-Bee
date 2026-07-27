@@ -2630,7 +2630,12 @@ function viewApp(){
           <span>✦ ${fmtN(_xp)}</span>
           <span style="font-size:9.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;opacity:.72">Karma L${_lf.level}</span>
         </button>`; })()}<button data-act="openShop" title="Your coins — tap to open the Store" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(active().coins||0,14)}</button>
-        <button data-act="toggleMusic" class="sb-mob-hide" aria-label="World music on/off" title="World music — every world has its own tune" style="width:38px;height:38px;border-radius:10px;background:${(window.SB_W4_MUSIC&&SB_W4_MUSIC.on())?'var(--chip)':'var(--surface2)'};display:grid;place-items:center;color:${(window.SB_W4_MUSIC&&SB_W4_MUSIC.on())?'var(--accent)':'var(--muted)'};font-size:16px;line-height:1">${(window.SB_W4_MUSIC&&SB_W4_MUSIC.on())?'🎵':'🎵̸'}</button>
+        ${(()=>{ const _mon=!!(window.SB_W4_MUSIC&&SB_W4_MUSIC.on());
+          // a drawn note, not an emoji: emoji glyphs go monochrome-or-missing on some
+          // platforms in dark mode, but currentColor SVG shows everywhere
+          return `<button data-act="toggleMusic" class="sb-mob-hide" aria-label="World music on/off" title="World music — every world has its own tune" style="width:38px;height:38px;border-radius:10px;background:${_mon?'var(--chip)':'var(--surface2)'};display:grid;place-items:center;color:${_mon?'var(--accent)':'var(--muted)'}">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>${_mon?'':'<line x1="3" y1="4" x2="21" y2="20"/>'}</svg>
+          </button>`; })()}
         <button data-act="cycleMode" aria-label="Switch look (Light / White / Dusk)" title="Light / White / Dusk" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);font-size:16px;line-height:1" class="sb-mob-hide">${S.mode==='light'?'☀':S.mode==='white'?'◻':'☾'}</button>
         <button data-act="goSettings" aria-label="Settings" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text)">${iconSVG('gear',17)}</button>
       </div>
