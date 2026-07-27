@@ -242,3 +242,14 @@
 [data-theme="serpent"] { --display:"Fredoka", system-ui, sans-serif; }
 [data-theme="race"]    { --display:"Bungee", system-ui, sans-serif; }
 [data-theme="dino"]    { --display:"Baloo 2", system-ui, sans-serif; }
+
+/* ---- WHITE MODE, restored across every world -------------------------------------------
+   The per-theme palette blocks either come later in the file or carry two attribute
+   selectors, so plain [data-mode="white"] never won and no world actually showed white
+   paper. This block matches every theme at (0,2,0) AND sits last, so white finally wins:
+   pure paper, hairline lines, the world keeps only its accent + face. */
+[data-mode="white"][data-theme]{
+  --tint:#FFFFFF; --tint-deep:#F4F3F6; --paper:#FFFFFF; --line:#E7E5EC;
+  --ink:#1B1822; --muted:#66626F;
+  --sh-rest:0 0 0 0 transparent;
+}
