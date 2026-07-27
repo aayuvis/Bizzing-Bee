@@ -876,10 +876,12 @@ const app = {
   openTyping:()=>{ if(!gateFeature('trainTools','the Typing Trainer')) return; tyStop(); set({nav:'typing', screen:'app', ty:null, conceptSel:null}); },
   // ===== Trivia Training — study the whole question bank as flip-cards, by chapter =====
   openTrivTrain:()=>{ if(!gateFeature('trainTools','Trivia Training')) return; set({nav:'trivtrain', screen:'app', conceptSel:null, tt:null}); },
-  ttChapter:(th)=>{ const c=active(); const seen=((c.ttSeen||{})[th])||0; set({tt:{th:th, i:Math.min(seen, Math.max(0,ttDeck(th).length-1)), flip:false}}); },
+  ttChapter:(th)=>{ const c=active(); const seen=((c.ttSeen||{})[ttSeenKey(th)])||0; set({tt:{th:th, i:Math.min(seen, Math.max(0,ttDeck(th).length-1)), flip:false}}); },
+  // level picker on the training hub: 0 = automatic, 1–5 pin a band
+  ttSetBand:(n)=>{ const c=active(); c.ttLvSel=(+n>=1&&+n<=5)?+n:0; save(); set({tt:null}); },
   ttBack:()=>set({tt:null}),
   ttFlip:()=>{ const t=state.tt; if(!t) return; t.flip=!t.flip;
-    if(t.flip){ const c=active(); c.ttSeen=c.ttSeen||{}; c.ttSeen[t.th]=Math.max(c.ttSeen[t.th]||0, t.i+1);
+    if(t.flip){ const c=active(); c.ttSeen=c.ttSeen||{}; const sk=ttSeenKey(t.th); c.ttSeen[sk]=Math.max(c.ttSeen[sk]||0, t.i+1);
       const q=ttDeck(t.th)[t.i||0]; const k=ttKey(q);
       // Seeing the answer is the lightest state there is: the card counts as practised.
       if(k){ const rec=ttRec(c,k); if(!rec.s){ rec.s='practised'; addCoins(1); } ttPut(c,k,rec); }
@@ -6275,10 +6277,30 @@ function overlays(){
    flip-cards (question on the front, answer + fun fact on the back). Studying is
    Low-pressure — no timer, no scoring — and each chapter hands off to the Arcade. */
 let _ttCache={};
-function ttDeck(th){ if(_ttCache[th]) return _ttCache[th];
+/* ---- The trivia band: which of the five question levels this speller should see. ----
+   Mirrors how the spelling engine meets a child where they are: age gives the base
+   (five groups), spelling prowess shifts it, and recent trivia accuracy at that band
+   fine-tunes it. A manual pick (c.ttLvSel 1–5) always wins; 0/unset = automatic. */
+function ttAgeBand(age){ return age<=8?1: age<=10?2: age<=12?3: age<=14?4: 5; }
+function ttBand(c){ c=c||active(); if(!c) return 3;
+  const sel=+(c.ttLvSel||0); if(sel>=1&&sel<=5) return sel;
+  let b=ttAgeBand(+c.age||9);
+  try{ const hl=heroLevel(c); if(hl>=14) b+=1; else if(hl<=3) b-=1; }catch(e){}
+  try{ const s=(((c.trivia||{}).bands)||{})[Math.max(1,Math.min(5,b))]||{r:0,d:0};
+    if(s.d>=20){ const a=s.r/s.d; if(a>=.85) b+=1; else if(a<.45) b-=1; } }catch(e){}
+  return Math.max(1,Math.min(5,b)); }
+function ttBandNote(c){ c=c||active(); return (+(c.ttLvSel||0)>=1)?'your pick':'matched to age & spelling level'; }
+window.ttBand=ttBand; window.ttAgeBand=ttAgeBand;
+/* Every answered arcade question feeds back into the band (decayed so old rounds fade). */
+window.ttBandRecord=(band,right)=>{ try{ const c=active(); const t=c.trivia||(c.trivia={});
+  const B=t.bands||(t.bands={}); const s=B[band]||(B[band]={r:0,d:0}); s.d++; if(right) s.r++;
+  if(s.d>200){ s.r=Math.round(s.r/2); s.d=100; } save(); }catch(e){} };
+function ttDeck(th,lv){ lv=lv||ttBand(); const ck=th+'|'+lv; if(_ttCache[ck]) return _ttCache[ck];
   const all=((window.SB_TRIVIA||{}).questions)||[];
-  const deck=all.filter(q=>q.th===th).sort((a,b)=>(a.lv||3)-(b.lv||3));   // easy → hard
-  _ttCache[th]=deck; return deck; }
+  let deck=all.filter(q=>q.th===th && (q.lv||3)===lv);
+  if(deck.length<12) deck=all.filter(q=>q.th===th && Math.abs((q.lv||3)-lv)<=1).sort((a,b)=>(a.lv||3)-(b.lv||3));
+  _ttCache[ck]=deck; return deck; }
+function ttSeenKey(th){ return th+'|'+ttBand(); }
 function ttThemes(){ return ((window.SB_TRIVIA||{}).themes)||[]; }
 /* ---- Per-card study record ----------------------------------------------------------
    Keyed on the question's own id, not its position, so shuffling the deck never moves a
@@ -6344,11 +6366,18 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
     const grid=(ids)=>`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:11px">${ids.map(id=>{const th=ths.find(x=>x.id===id); return th?card(th):'';}).join('')}</div>`;
     const wordIds=wordThemes.filter(id=>ths.some(x=>x.id===id));
     const otherIds=ths.map(x=>x.id).filter(id=>wordIds.indexOf(id)<0);
-    const total=((window.SB_TRIVIA||{}).questions||[]).length;
+    const bandNow=ttBand(c); const LVN=['','Starter','Easy','Medium','Hard','Champion'];
+    const total=ths.reduce((a,th)=>a+ttDeck(th.id).length,0);
     const studied=Object.values(seen).reduce((a,b)=>a+b,0);
+    const bchip=(n,lab,on)=>`<button data-act="ttSetBand" data-arg="${n}" title="${n?'Study level '+n+' — '+LVN[n]:'Match my age & spelling level automatically'}" style="padding:7px 11px;border-radius:9px;font-weight:800;font-size:12px;border:1.5px solid ${on?'var(--accent)':'var(--line)'};background:${on?'var(--accent)':'var(--surface2)'};color:${on?'#fff':'var(--muted)'}">${lab}</button>`;
+    const bandStrip=`<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:11px 13px;margin:2px 0 14px;box-shadow:var(--sh-rest)">
+      <span style="font-weight:800;font-size:13.5px">🎚 Level ${bandNow} · ${LVN[bandNow]}</span>
+      <span style="font-size:11.5px;color:var(--muted);font-weight:700">${ttBandNote(c)}</span>
+      <span style="margin-left:auto;display:inline-flex;gap:5px;flex-wrap:wrap">${bchip(0,'Auto',!(+(c.ttLvSel||0)))}${[1,2,3,4,5].map(n=>bchip(n,'L'+n,+(c.ttLvSel||0)===n)).join('')}</span></div>`;
     return `<div style="max-width:860px;margin:0 auto">
-      ${pageHead('Know the World of Words','trivia training · '+fmtN(total)+' cards','Study the whole trivia bank at your own pace — question on the front, answer and a fun fact on the back. No timer, no score. Then take it to the Arcade.',
+      ${pageHead('Know the World of Words','trivia training · '+fmtN(total)+' cards at your level','Study the trivia bank at your own pace — question on the front, answer and a fun fact on the back. Cards match your age and spelling level; change the level any time. No timer, no score.',
         studied?`<span style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">📚 ${fmtN(studied)} cards studied</span>`:'')}
+      ${bandStrip}
       ${wordIds.length?`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:2px 2px 9px">🐝 Word chapters <span style="font-size:12px;color:var(--muted);font-weight:700">— built from the spelling library</span></div>${grid(wordIds)}`:''}
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin:18px 2px 9px">🌍 World chapters</div>${grid(otherIds)}
       <button data-act="openTrivia" class="sb-lift" style="width:100%;text-align:left;margin-top:16px;border-radius:16px;padding:15px 17px;background:linear-gradient(135deg,#F0A93C,#DC7A18);color:#fff;display:flex;align-items:center;gap:13px;box-shadow:var(--sh-rest)">
@@ -6375,6 +6404,7 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
       <button data-act="ttBack" title="Back to the deck of chapters" style="color:var(--muted);font-weight:800;font-size:13px">← Chapters</button>
       <span style="font-family:var(--display);font-weight:800;font-size:17px">${th.e} ${esc(th.label)}</span>
+      <span style="display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;background:${col}22;color:${col};font-weight:800;font-size:11px">L${ttBand(c)} · ${LVL[ttBand(c)]}</span>
       <span style="margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:700">${i+1} / ${fmtN(deck.length)}</span></div>
     <!-- two progress bars: where you are in the deck, and how much of the set you have learned -->
     <div style="margin-bottom:12px">

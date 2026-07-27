@@ -18,7 +18,8 @@
   const themeOf = (id) => T().themes.find(t => t.id === id) || { id, label: id, e: '🐝' };
 
   /* ---- kid-appropriate default level from age/band ---- */
-  function autoLv() { try { const c = active(); const age = c.age || 9;
+  function autoLv() { try { if (window.ttBand) return ttBand(active());
+    const c = active(); const age = c.age || 9;
     return age <= 7 ? 1 : age <= 8 ? 2 : age <= 10 ? 3 : age <= 11 ? 4 : 5; } catch (e) { return 3; } }
   function tStats(c) { return c.trivia || (c.trivia = { right: 0, done: 0, rounds: 0, squares: 0, lines: 0, clockBest: 0, perfect: 0, themes: {} }); }
 
@@ -48,6 +49,7 @@
   /* ---- scoring shared by all formats ---- */
   function grade(g, q, pickIdx) { const ok = q.sh[pickIdx] === 0;   // data keeps correct at c[0]
     const c = active(); const st = tStats(c); st.done++; if (ok) { st.right++; st.themes[q.th] = (st.themes[q.th] || 0) + 1; addCoins(1); sfx('correct'); try { burstConfetti(26); } catch (e) {} } else sfx('wrong');
+    try { if (window.ttBandRecord) ttBandRecord(q.lv || 3, ok); } catch (e) {}   // feeds the auto-band
     g.mood = ok ? 'party' : 'oops';
     g.right += ok ? 1 : 0; g.streak = ok ? (g.streak || 0) + 1 : 0;
     if (ok && g.streak > 0 && g.streak % 5 === 0) { addCoins(3); try { flash('🔥 ' + g.streak + ' in a row! +3 🪙'); } catch (e) {} }
