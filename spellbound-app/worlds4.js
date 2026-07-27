@@ -564,11 +564,19 @@
     } else if(world==='aurora'){
       /* Van Gogh's Starry Night: the double swirl rolling across the sky, halo stars,
          the blazing crescent, the cypress flame on the left, hills on the horizon */
+      // the Milky Way: a luminous band from bottom-left corner to top-right, through centre,
+      // angled to THIS screen's diagonal; star-dust scattered along its length
+      (function(){ var W=(window.innerWidth||1280), H=(window.innerHeight||900);
+        var ang=-(Math.atan2(H,W)*180/Math.PI).toFixed(1);
+        layer.appendChild(el('w4o-milkyway','transform:translate(-50%,-50%) rotate('+ang+'deg)'));
+        layer.appendChild(el('w4o-mwcore','transform:translate(-50%,-50%) rotate('+ang+'deg)'));
+        for(var md=0;md<48;md++){ var t=Math.random(), off=(Math.random()*14-7);
+          layer.appendChild(el('w4o-mwstar','left:calc('+(t*100).toFixed(1)+'vw + '+off.toFixed(1)+'vmin);top:calc('+(100-t*100).toFixed(1)+'vh + '+off.toFixed(1)+'vmin);width:'+rnd(1.4,3.4).toFixed(1)+'px;height:'+rnd(1.4,3.4).toFixed(1)+'px;animation-duration:'+rnd(1.8,4.6).toFixed(1)+'s;animation-delay:-'+rnd(0,4).toFixed(1)+'s')); }
+      })();
       layer.appendChild(el('w4o-vg w4o-vgswirl','left:4vw;top:7vh;width:min(52vw,620px);aspect-ratio:2/1', VG_SWIRL));
       layer.appendChild(el('w4o-vg w4o-vgswirl w4o-vgswirl2','right:2vw;top:34vh;width:min(30vw,340px);aspect-ratio:2/1;animation-delay:-11s', VG_SWIRL));
       layer.appendChild(el('w4o-vg w4o-vgmoon','right:5vw;top:5vh;width:min(17vw,200px);aspect-ratio:1', VG_MOON));
       layer.appendChild(el('w4o-vghills','', VG_HILLS));
-      layer.appendChild(el('w4o-vg w4o-vgcypress','left:2vw;bottom:0;width:min(11vw,120px);aspect-ratio:90/240', VG_CYPRESS));
       for(var st=0;st<13;st++){ var sz=rnd(8,22);
         layer.appendChild(el('w4o-vgstar','left:'+rnd(3,94).toFixed(1)+'vw;top:'+rnd(3,60).toFixed(1)+'vh;width:'+sz.toFixed(0)+'px;height:'+sz.toFixed(0)+'px;animation-duration:'+rnd(2.4,5.5).toFixed(1)+'s;animation-delay:-'+rnd(0,4).toFixed(1)+'s')); }
       layer.appendChild(el('w4o-shoot','right:26vw;top:14vh;animation-delay:-6s'));
