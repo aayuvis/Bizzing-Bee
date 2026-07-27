@@ -1,13 +1,13 @@
 /* Bizzing Bee trivia — core index. Questions live in trivia-q1..q5.js and are
    fetched only for the level a speller is actually playing: a whole bank would be
-   1.2MB of
+   7.4MB of
    JavaScript at boot, and nobody plays five levels at once. */
 window.SB_TRIVIA={
   themes:[{"id":"animals","label":"Amazing Animals","e":"🦁"},{"id":"bugs","label":"Birds & Bugs","e":"🦋"},{"id":"ocean","label":"Ocean Life","e":"🌊"},{"id":"space","label":"Space & Stars","e":"🚀"},{"id":"body","label":"The Human Body","e":"🫀"},{"id":"plants","label":"Plants & Trees","e":"🌿"},{"id":"food","label":"Food & Cooking","e":"🍕"},{"id":"sports","label":"Sports & Games","e":"⚽"},{"id":"music","label":"Music & Dance","e":"🎵"},{"id":"myth","label":"Myths & Legends","e":"🐉"},{"id":"world","label":"Our World","e":"🗺️"},{"id":"history","label":"Long Ago","e":"🏛️"},{"id":"science","label":"Science Lab","e":"🧪"},{"id":"numbers","label":"Numbers & Logic","e":"🔢"},{"id":"weather","label":"Weather & Sky","e":"🌈"},{"id":"machines","label":"Machines & Movers","e":"🚂"},{"id":"art","label":"Art & Color","e":"🎨"},{"id":"fest","label":"Festivals & Family","e":"🎉"},{"id":"story","label":"Storybooks & Poems","e":"📚"},{"id":"words","label":"Word Wizardry","e":"🪄"},{"id":"lit","label":"Classic Literature","e":"📚"},{"id":"ent","label":"Stage & Screen","e":"🎬"},{"id":"brands","label":"Brands & Inventions","e":"🏷️"},{"id":"quotes","label":"Famous Quotes","e":"💬"},{"id":"india","label":"Incredible India","e":"🇮🇳"},{"id":"code","label":"Computers & Code","e":"💻"},{"id":"langs","label":"Languages of the World","e":"🗣️"},{"id":"explore","label":"Explorers & Records","e":"🧭"}],
   questions:[],
-  version:1,
-  count:5000,
-  byLevel:{"1":1067,"2":1333,"3":1260,"4":721,"5":619},
+  version:2,
+  count:30044,
+  byLevel:{"1":5206,"2":5756,"3":6280,"4":6306,"5":6496},
   _L:{}, _wait:{},
   loaded:function(lv){ return !!this._L[lv]; },
   /* Push a shard in and tell the app its caches are stale. */
