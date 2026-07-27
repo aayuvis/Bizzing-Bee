@@ -264,3 +264,17 @@
 [data-theme="marquee"][data-mode="dusk"] .w4o-swing{filter:brightness(1.9) drop-shadow(0 0 30px rgba(246,220,138,.85));mix-blend-mode:screen}
 [data-theme="marquee"][data-mode="dusk"] .w4o-bulbs{filter:brightness(1.6) drop-shadow(0 0 12px rgba(246,220,138,.95))}
 [data-theme="marquee"][data-mode="dusk"] .w4o-stagefloor{background:linear-gradient(180deg,transparent,rgba(246,220,138,.22))}
+
+
+/* ===== Lab, upgraded: pouring, bubbling, reacting ========================================= */
+@keyframes w4-pourflow{to{stroke-dashoffset:-22}}
+@keyframes w4-liquid{0%,100%{filter:hue-rotate(0deg)}50%{filter:hue-rotate(50deg)}}
+@keyframes w4-react{0%,64%{opacity:0;transform:scale(.4)}72%{opacity:1;transform:scale(1.25)}84%{opacity:.6;transform:scale(1)}100%{opacity:0;transform:scale(1.5)}}
+@keyframes w4-fizz{0%{transform:translateY(0);opacity:.9}100%{transform:translateY(-46px);opacity:0}}
+[data-theme="science"] .w4o-pour{animation:w4-liquid 12s ease-in-out infinite}
+[data-theme="science"] .w4o-pour .stream{stroke-dasharray:5 5;animation:w4-pourflow .5s linear infinite}
+[data-theme="science"] .w4o-beaker{bottom:-4px}
+[data-theme="science"] .w4o-beaker .fizz circle{animation:w4-fizz 2.2s ease-out infinite}
+[data-theme="science"] .w4o-beaker .fizz circle:nth-child(2){animation-delay:-.7s}
+[data-theme="science"] .w4o-beaker .fizz circle:nth-child(3){animation-delay:-1.4s}
+[data-theme="science"] .w4o-react{animation:w4-react 5s ease-out infinite}
