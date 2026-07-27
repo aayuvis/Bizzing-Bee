@@ -213,3 +213,37 @@
 .w4-calm .sb-band-call{animation:none!important;background:var(--chip)!important}
 .w4-calm .sb-band-call::after{display:none!important}
 .w4-calm .sb-band-call .sb-band-spark{animation:none!important}
+
+
+/* ===== BIG ambient signatures for the original eight — the layer you cannot miss ========= */
+@keyframes w4-bgdrift{0%{background-position:0 0}100%{background-position:224px 128px}}
+@keyframes w4-ribbon{0%,100%{transform:skewX(-12deg) translateX(-4vw);opacity:.5}50%{transform:skewX(-12deg) translateX(4vw);opacity:.85}}
+@keyframes w4-huerot{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(40deg)}}
+/* Bizzing Bee: a whole honeycomb wall, slowly drifting, plus a warm hive glow */
+[data-theme="spellbound"] .w4o-comb{inset:0;opacity:.14;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2056%2064%22%3E%3Cpath%20d%3D%22M28%202%20L52%2016%20L52%2046%20L28%2060%20L4%2046%20L4%2016%20Z%22%20fill%3D%22none%22%20stroke%3D%22%23F0B429%22%20stroke-width%3D%222.5%22/%3E%3C/svg%3E") 0 0/56px 64px repeat;animation:w4-bgdrift 60s linear infinite}
+[data-theme="spellbound"] .w4o-hiveglow{left:50%;bottom:-30vh;width:90vmax;height:70vmax;margin-left:-45vmax;border-radius:50%;background:radial-gradient(circle,rgba(255,194,61,.30),transparent 65%);animation:w4-gleam 8s ease-in-out infinite}
+/* Spotlight: a lit stage floor and a bulb string across the top */
+[data-theme="marquee"] .w4o-stagefloor{left:0;right:0;bottom:0;height:34vh;background:linear-gradient(180deg,transparent,rgba(240,180,41,.30))}
+[data-theme="marquee"] .w4o-bulbs{left:0;right:0;top:0;height:16px;background:radial-gradient(circle at 50% 55%,#F6DC8A 0 4px,rgba(246,220,138,.25) 5px,transparent 7px) 0 0/44px 16px repeat-x;animation:w4-gleam 3.6s ease-in-out infinite}
+/* Galaxy: a full aurora ribbon sweeping the sky, hue slowly turning */
+[data-theme="aurora"] .w4o-ribbon{left:-10vw;top:6vh;width:120vw;height:34vh;border-radius:50%;
+  background:linear-gradient(100deg,transparent,rgba(125,140,240,.4) 30%,rgba(54,209,255,.35) 55%,rgba(185,140,255,.4) 75%,transparent);
+  filter:blur(18px);animation:w4-ribbon 14s ease-in-out infinite, w4-huerot 26s linear infinite alternate}
+[data-theme="aurora"] .w4o-nebula{right:-14vw;bottom:-16vh;width:70vmax;height:52vmax;border-radius:50%;background:radial-gradient(circle,rgba(125,140,240,.28),transparent 62%)}
+/* Blade: the rising sun and the ridge under it */
+[data-theme="anime"] .w4o-sun{right:8vw;top:6vh;width:34vmin;height:34vmin;border-radius:50%;background:radial-gradient(circle,#F3B2C0 0 58%,rgba(243,178,192,.4) 70%,transparent 74%);animation:w4-gleam 9s ease-in-out infinite}
+[data-theme="anime"] .w4o-ridge{left:0;right:0;bottom:0;height:26vh;background:linear-gradient(180deg,transparent,rgba(142,44,68,.30));
+  clip-path:polygon(0 62%,16% 34%,30% 58%,48% 22%,64% 52%,80% 30%,100% 56%,100% 100%,0 100%)}
+/* Lab: graph paper everywhere + a slow-turning molecule */
+[data-theme="science"] .w4o-graph{inset:0;opacity:.5;background:linear-gradient(rgba(59,192,170,.12) 1px,transparent 1px) 0 0/26px 26px,linear-gradient(90deg,rgba(59,192,170,.12) 1px,transparent 1px) 0 0/26px 26px}
+[data-theme="science"] .w4o-mol{right:4vw;top:12vh;width:130px;height:130px;opacity:.5;animation:w4-spin4 40s linear infinite}
+/* Origami: giant paper facets folding across the corner */
+[data-theme="origami"] .w4o-facets{right:-6vw;top:-6vh;width:56vmin;height:56vmin;opacity:.28;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2080%2080%22%3E%3Cpath%20d%3D%22M0%200%20L80%200%20L0%2080%20z%22%20fill%3D%22%23E88A5C%22%20opacity%3D%22.5%22/%3E%3Cpath%20d%3D%22M80%200%20L80%2080%20L0%2080%20z%22%20fill%3D%22%23F0C9A2%22%20opacity%3D%22.4%22/%3E%3C/svg%3E") 0 0/80px 80px repeat;transform:rotate(14deg)}
+/* Arcade: scanlines + a CRT glow rising from the floor */
+[data-theme="pixel"] .w4o-scan{inset:0;opacity:.5;background:repeating-linear-gradient(180deg,rgba(59,111,224,.10) 0 2px,transparent 2px 5px)}
+[data-theme="pixel"] .w4o-crt{left:0;right:0;bottom:0;height:36vh;background:linear-gradient(180deg,transparent,rgba(59,111,224,.28));animation:w4-gleam 5s ease-in-out infinite}
+/* Elements: the four powers hold the corners */
+[data-theme="avatar"] .w4o-el1{left:-14vmin;bottom:-14vmin;width:52vmin;height:52vmin;border-radius:50%;background:radial-gradient(circle,rgba(243,161,60,.35),transparent 62%);animation:w4-gleam 6s ease-in-out infinite}
+[data-theme="avatar"] .w4o-el2{right:-14vmin;bottom:-14vmin;width:52vmin;height:52vmin;border-radius:50%;background:radial-gradient(circle,rgba(47,167,216,.35),transparent 62%);animation:w4-gleam 7s ease-in-out infinite}
+[data-theme="avatar"] .w4o-el3{right:-12vmin;top:-12vmin;width:44vmin;height:44vmin;border-radius:50%;background:radial-gradient(circle,rgba(95,184,122,.32),transparent 62%);animation:w4-gleam 8s ease-in-out infinite}
+[data-theme="avatar"] .w4o-el4{left:-12vmin;top:-12vmin;width:44vmin;height:44vmin;border-radius:50%;background:radial-gradient(circle,rgba(150,150,160,.30),transparent 62%);animation:w4-gleam 9s ease-in-out infinite}
