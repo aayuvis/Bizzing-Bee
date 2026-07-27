@@ -16,6 +16,26 @@ tests, and revises. Internal persona UAT scores it **8.4/10** with an average wi
 pay of **~$11.6/mo (≈$99/yr family)** — strongest on safety, voice, and ease-of-use, exactly
 where a paid kids' product must win.
 
+**Craft is a scored dimension, not a finishing touch.** UAT carries an eleventh parameter,
+**Visual craft (typography & iconography)**, weighted alongside the original ten. The reason
+is empirical: in live sessions the child testers flag a mismatched font or a placeholder
+emoji *before* they flag a wrong answer, and they read those defects as "this app is cheap"
+rather than "this screen has a bug". Two failure modes recur and both are now explicit gates
+in the testing protocol (§7 Visual craft, §8.10–8.11, §10):
+
+- **A face that does not follow the world.** Every theme changes the display font; any card
+  whose heading changes but whose numbers stay pinned to one face reads to a child as the
+  app breaking. Numbers wear the world's font with tabular figures; the monospace face is
+  reserved for letters only — spelling tiles, respellings, typing, word chips.
+- **Emoji standing in for iconography.** Emoji render differently on every device, ignore
+  the palette, and have no dark-mode behaviour. Structural iconography is drawn SVG in the
+  house sticker style, with ink and shadow driven by variables so one drawing serves both
+  light and dusk.
+
+The commercial read: a competitive-bee parent paying ~$100/yr is buying a product their child
+*chooses* to open daily. Craft defects do not lose a feature comparison — they lose the child,
+and the renewal follows the child.
+
 **The wedge is cultural, not just pedagogical.** For two decades the Scripps National Spelling
 Bee has been dominated by Indian-American children, and a parallel ecosystem — North South
 Foundation (NSF), the South Asian Spelling Bee, regional bees — reflects a diaspora that

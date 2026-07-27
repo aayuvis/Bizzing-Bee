@@ -133,6 +133,35 @@ A feature **passes** only if it works **touch-only AND keyboard-only**, on **all
 - [ ] On Pages/bizzingbee.com, audio loads (voice-cdn host check).
 - [ ] Airplane mode: bundled features work; streamed word audio breaks (expected — note it).
 
+**Visual craft — typography & iconography**
+
+A nine-year-old spots a wrong font or a cheap icon before she spots a wrong answer. These
+are not polish items; they are the first thing a child judges the app on.
+
+- [ ] **No generic fallback faces anywhere.** Every rendered element resolves to one of the
+      ten self-hosted families (or the Verdana pair in `data-font="easy"`). A screen showing
+      Times/Arial/generic-monospace means a face failed to load or a rule bypassed the tokens.
+- [ ] **Every face flows from a theme variable.** No hardcoded family names in app UI —
+      only `var(--display)`, `var(--ui)`, `var(--body)`, `var(--mono)`, `var(--entry)`.
+      Generated export/print documents are the sole exception (no tokens to inherit).
+- [ ] **`--mono` (Sono) is for LETTERS ONLY** — spelling tiles, phonetic respellings, the
+      typing trainer, tappable word chips. Numbers, counters, percentages, ratings and
+      uppercase labels use `var(--display)` with `font-variant-numeric:tabular-nums`, so
+      figures stay column-aligned while wearing the world's face.
+- [ ] **Switch worlds and re-look.** Headings *and* numeric readouts must both change face
+      with the theme. A card whose title changes but whose figures do not is the classic
+      regression — it reads to a child as the app breaking.
+- [ ] **Iconography is drawn, not typed.** No emoji as primary UI iconography (chapter
+      cards, nav, tiles, buttons). Use the glossy-sticker SVG family: 64×64 viewBox, ink
+      outline, one gloss highlight, contact shadow, flat fills, no gradient ids.
+- [ ] **Every icon has a dark-mode story.** Outlines and contact shadows use
+      `var(--ico-ink,…)` / `var(--ico-shadow,…)` so dusk swaps them; no icon relies on a
+      near-black main mass, which disappears on a dark card.
+- [ ] **Squint test at true size.** Icons ship at 34–40px: the silhouette must read at that
+      size, and detail finer than ~2px must be removed rather than shrunk.
+- [ ] Icons carry no real company logo, no real person's likeness, and no single-culture
+      stand-in for a broad theme.
+
 ## 8. Regression suite (re-run after ANY change)
 1. App boots, **0 console/pageerror** (headless).
 2. Start + finish **one game per engine** (all 14), touch + keyboard.
@@ -143,6 +172,10 @@ A feature **passes** only if it works **touch-only AND keyboard-only**, on **all
 7. Light/White/Dusk × phone/tablet/laptop layout intact, **no horizontal overflow**.
 8. Nav + back resolve everywhere (no dead screens); top-nav collapse is coach-only.
 9. Word Coach auto-advance: correct→complete→next, wrong→revision→next.
+10. **Font sweep:** in ≥3 worlds × light/dusk, no element resolves to a generic family, and
+    the Daily-goal figures wear the same face as the card's heading.
+11. **Icon sweep:** no emoji in chapter cards or nav; every chapter icon renders its SVG in
+    both light and dusk, and none vanishes against the dark card.
 
 ## 9. Release / sign-off
 - [ ] Phases 0–5 complete; §4 exit met.
@@ -177,6 +210,22 @@ Checks (all implemented in `scratchpad/deeptest*.cjs`, keep them as the regressi
 - **PIN:** set `state.parentPin='1234'`; `app.setNav('settings')`/`'parent'`; assert `state.pinDlg` set.
 - **Coach auto-advance:** seed `state.sessionWords`, set `state.typed`=word, `app.check()`;
   assert `state.gi` advances and status returns to idle.
+- **Font resolution:** `await document.fonts.ready`, then walk `#root *` with text and read
+  `getComputedStyle(el).fontFamily`; assert the FIRST family of every element is one of the
+  ten self-hosted names (or the `data-font="easy"` Verdana pair). Any other first-family —
+  `Times`, `Arial`, bare `monospace`, `serif` — is a failure, not a warning. Repeat after
+  `app.pickTheme()` for at least three worlds, since faces load lazily per theme.
+- **Theme-font coupling:** on the Home card, assert the "Daily goal" heading and the metric
+  values resolve to the *same* family, and that this family changes when the world changes.
+  This catches the exact regression where a card's title follows the theme but its numbers
+  stay pinned to one face.
+- **Icon integrity:** for every id in `SB_TT_ICON_ART`, assert the string starts with
+  `<svg viewBox="0 0 64 64"`, contains `var(--ico-ink,`, contains no `<style`, no `url(`,
+  and no `id="` (ids collide when dozens are inlined on one page). Then render the chapter
+  grid in light and dusk and assert each card contains an `<svg>`, not an emoji text node.
+- **No stray emoji in structural UI:** assert chapter cards and the nav contain no
+  emoji-range characters as their icon slot. (Emoji remain fine inside prose and flash
+  messages — the rule is about iconography.)
 
 Run §10 on every change **before** manual persona testing (Phases 0/1).
 
