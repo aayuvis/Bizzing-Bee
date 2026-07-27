@@ -875,10 +875,16 @@ const app = {
   // ----- Typing Trainer -----
   openTyping:()=>{ if(!gateFeature('trainTools','the Typing Trainer')) return; tyStop(); set({nav:'typing', screen:'app', ty:null, conceptSel:null}); },
   // ===== Trivia Training — study the whole question bank as flip-cards, by chapter =====
-  openTrivTrain:()=>{ if(!gateFeature('trainTools','Trivia Training')) return; set({nav:'trivtrain', screen:'app', conceptSel:null, tt:null}); },
+  openTrivTrain:()=>{ if(!gateFeature('trainTools','Trivia Training')) return;
+    const lv=ttBand(); const ready=ttLevelReady(lv);
+    set({nav:'trivtrain', screen:'app', conceptSel:null, tt:null, ttLoading:!ready});
+    if(!ready) ttNeed(lv,(ok)=>{ state.ttLoading=false; state.ttLoadErr=!ok; render(); }); },
   ttChapter:(th)=>{ const c=active(); const seen=((c.ttSeen||{})[ttSeenKey(th)])||0; set({tt:{th:th, i:Math.min(seen, Math.max(0,ttDeck(th).length-1)), flip:false}}); },
   // level picker on the training hub: 0 = automatic, 1–5 pin a band
-  ttSetBand:(n)=>{ const c=active(); c.ttLvSel=(+n>=1&&+n<=5)?+n:0; save(); set({tt:null}); },
+  ttSetBand:(n)=>{ const c=active(); c.ttLvSel=(+n>=1&&+n<=5)?+n:0; save();
+    const lv=ttBand(c); const ready=ttLevelReady(lv);
+    set({tt:null, ttLoading:!ready, ttLoadErr:false});
+    if(!ready) ttNeed(lv,(ok)=>{ state.ttLoading=false; state.ttLoadErr=!ok; render(); }); },
   ttBack:()=>set({tt:null}),
   ttFlip:()=>{ const t=state.tt; if(!t) return; t.flip=!t.flip;
     if(t.flip){ const c=active(); c.ttSeen=c.ttSeen||{}; const sk=ttSeenKey(t.th); c.ttSeen[sk]=Math.max(c.ttSeen[sk]||0, t.i+1);
@@ -6293,6 +6299,18 @@ window.ttBand=ttBand; window.ttAgeBand=ttAgeBand;
 window.ttBandRecord=(band,right)=>{ try{ const c=active(); const t=c.trivia||(c.trivia={});
   const B=t.bands||(t.bands={}); const s=B[band]||(B[band]={r:0,d:0}); s.d++; if(right) s.r++;
   if(s.d>200){ s.r=Math.round(s.r/2); s.d=100; } save(); }catch(e){} };
+/* The bank is sharded by level and fetched on demand (a 6MB boot payload is no way to
+   treat a tablet). Everything below reads SB_TRIVIA.questions synchronously, so the rule
+   is simple: make sure a level is in memory BEFORE rendering anything that shows it. */
+window.SB_TRIVIA_ONLOAD=function(){ _ttCache={}; try{ render(); }catch(e){} };
+function ttNeed(lv,cb){ try{
+    if(window.SB_TRIVIA && typeof SB_TRIVIA.need==='function'){ SB_TRIVIA.need(lv,cb); return; }
+  }catch(e){}
+  if(cb) cb(true); }                       // un-sharded data: everything is already here
+function ttLevelReady(lv){ try{ return !(window.SB_TRIVIA&&SB_TRIVIA.loaded) || SB_TRIVIA.loaded(lv); }catch(e){ return true; } }
+window.ttNeed=ttNeed; window.ttLevelReady=ttLevelReady;
+/* How many cards a chapter holds at a level — answerable from the index alone, so the
+   hub can show real numbers while a shard is still in flight. */
 function ttDeck(th,lv){ lv=lv||ttBand(); const ck=th+'|'+lv; if(_ttCache[ck]) return _ttCache[ck];
   const all=((window.SB_TRIVIA||{}).questions)||[];
   let deck=all.filter(q=>q.th===th && (q.lv||3)===lv);
@@ -6349,6 +6367,19 @@ function ttOptions(q,i,col){
 const TT_COL={animals:'#4F9E6A',bugs:'#E0922E',ocean:'#3D7DF0',space:'#7B52E0',body:'#E8458C',plants:'#3C8455',food:'#F0703C',sports:'#2A63D6',music:'#B14FC4',myth:'#9B59D0',world:'#13A892',history:'#C8901B',science:'#0E8A78',numbers:'#6A47F5',weather:'#36A3D9',machines:'#4A6B8A',art:'#DC5B7E',fest:'#D6453A',story:'#7C5CFF',words:'#C8791B',india:'#E07A18',code:'#3B6FE0',langs:'#0E8A78',explore:'#B8860B',lit:'#8A5BD6',ent:'#E0567A',brands:'#2E8FB8',quotes:'#C8791B',wroots:'#4F9E6A',wbreak:'#2A8FA8',wmeaning:'#7C5CFF',wstories:'#C8791B'};
 function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const ths=ttThemes();
   if(!ths.length) return `<div style="max-width:760px;margin:0 auto">${pageHead('Trivia Training','loading…','')}</div>`;
+  // this level's cards are still on the wire — say so rather than drawing empty chapters
+  if(S.ttLoading||S.ttLoadErr){ const lv=ttBand(c); const LVN=['','Starter','Easy','Medium','Hard','Champion'];
+    const n=((window.SB_TRIVIA||{}).byLevel||{})[lv]||0;
+    return `<div style="max-width:760px;margin:0 auto">
+      ${pageHead('Know the World of Words','trivia training','')}
+      <div class="sb-card" style="text-align:center;padding:34px 20px">
+        <div style="width:56px;height:64px;margin:0 auto 12px">${mascotAcc(S.ttLoadErr?'oops':'think')}</div>
+        <div style="font-family:var(--display);font-weight:800;font-size:17px;margin-bottom:6px">${S.ttLoadErr?'Couldn’t load those cards':'Fetching your Level '+lv+' cards…'}</div>
+        <div style="font-size:13px;color:var(--muted);font-weight:650;line-height:1.5">${S.ttLoadErr
+          ?'Check that trivia-q'+lv+'.js sits beside index.html, then try again.'
+          :(n?fmtN(n)+' questions at '+LVN[lv]+' level — ':'')+'this happens once per level.'}</div>
+        ${S.ttLoadErr?`<button data-act="openTrivTrain" class="sb-lift" style="margin-top:14px;padding:10px 18px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">Try again</button>`:''}
+      </div></div>`; }
   // ---------- chapter grid ----------
   if(!t){
     const seen=c.ttSeen||{};

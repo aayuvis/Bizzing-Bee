@@ -56,7 +56,11 @@
     return ok; }
 
   const STV = {
-    open() { stopAud(); state.trv = { view: 'hub', th: state.trv && state.trv.th || 'mix', lv: state.trv && state.trv.lv || autoLv() }; set({ nav: 'trivia', screen: 'app', conceptSel: null }); },
+    open() { stopAud(); const lv = state.trv && state.trv.lv || autoLv();
+      state.trv = { view: 'hub', th: state.trv && state.trv.th || 'mix', lv: lv };
+      // the bank is sharded per level — pull this one in before any round can draw from it
+      try { if (window.ttNeed) ttNeed(lv, function () { try { render(); } catch (e) {} }); } catch (e) {}
+      set({ nav: 'trivia', screen: 'app', conceptSel: null }); },
     // Theme selection is MULTI-select for Classic Quiz and Beat the Clock.
     // 'mix' is exclusive (means every theme); picking a real theme clears mix.
     setTh(id) { const v = state.trv; v.ths = v.ths || [];
@@ -65,7 +69,9 @@
         if (i >= 0) v.ths.splice(i, 1); else v.ths.push(id);
         v.th = v.ths.length ? (v.ths.length === 1 ? v.ths[0] : 'multi') : 'mix'; }
       render(); },
-    setLv(n) { state.trv.lv = +n; render(); },
+    setLv(n) { state.trv.lv = +n;
+      try { if (window.ttNeed) ttNeed(+n, function () { try { render(); } catch (e) {} }); } catch (e) {}
+      render(); },
 
     /* ---------- format starts ---------- */
     // pull from every selected theme (or all themes when 'mix')
