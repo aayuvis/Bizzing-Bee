@@ -237,100 +237,80 @@
    (background, not foreground), the toggle lives in the header, the choice persists, and
    the music STOPS on the focus screens and when the tab is hidden. */
 (function(){
-  var AC=null, master=null, wet=null, timer=null, nextT=0, step=0, playingWorld=null;
+  var AC=null, master=null, timer=null, nextT=0, step=0, playingWorld=null;
   var enabled=(function(){ try{ return localStorage.getItem('sb_w4_music')!=='0'; }catch(e){ return true; } })();
   function midi(n){ return 440*Math.pow(2,(n-69)/12); }
-  /* r root · sc scale · bpm · st style · g gain. 'chip' (Arcade) stays deliberately retro;
-     every other style plays through warm detuned voices, soft envelopes, a low-pass and a
-     feedback delay, with a sustained chord pad underneath so the notes blend. */
+  /* The ORIGINAL tunes — same keys, tempos, patterns and note density as the first engine —
+     but every note now plays through a smooth voice: a detuned pair, rounded attack, singing
+     release, per-note low-pass, and a light delay room on the master. Arcade stays crisp. */
   var CFG={
-    spellbound:{r:64,sc:[0,2,4,7,9],bpm:96,st:'keys',g:.05},
-    marquee:{r:62,sc:[0,2,4,5,7,9,11],bpm:104,st:'keys',g:.045},
-    aurora:{r:69,sc:[0,2,4,7,9,11],bpm:58,st:'pad',g:.05},
-    anime:{r:64,sc:[0,2,5,7,10],bpm:88,st:'pluck',g:.04},
-    science:{r:67,sc:[0,2,4,6,7,11],bpm:108,st:'keys',g:.038},
-    origami:{r:76,sc:[0,2,4,7,9],bpm:76,st:'box',g:.04},
-    pixel:{r:64,sc:[0,3,5,7,10],bpm:132,st:'chip',g:.03},
-    avatar:{r:62,sc:[0,2,5,7,9],bpm:66,st:'pad',g:.05},
-    godly:{r:57,sc:[0,4,7,12],bpm:50,st:'bell',g:.055},
-    serpent:{r:52,sc:[0,1,4,5,7,8],bpm:74,st:'pluck',g:.045},
-    race:{r:52,sc:[0,3,5,6,7,10],bpm:138,st:'drive',g:.032},
-    dino:{r:45,sc:[0,3,5,7,10],bpm:62,st:'drums',g:.055}
+    spellbound:{r:64,sc:[0,2,4,7,9],bpm:104,w:'triangle',bw:'sine',g:.05,st:'walk'},
+    marquee:{r:62,sc:[0,2,4,5,7,9,11],bpm:112,w:'triangle',bw:'triangle',g:.045,st:'swing'},
+    aurora:{r:69,sc:[0,2,4,7,9,11],bpm:60,w:'sine',bw:'sine',g:.05,st:'ambient'},
+    anime:{r:64,sc:[0,2,5,7,10],bpm:96,w:'triangle',bw:'sine',g:.04,st:'pluck'},
+    science:{r:67,sc:[0,2,4,6,7,11],bpm:120,w:'triangle',bw:'sine',g:.035,st:'blip'},
+    origami:{r:76,sc:[0,2,4,7,9],bpm:84,w:'triangle',bw:'sine',g:.045,st:'box'},
+    pixel:{r:64,sc:[0,3,5,7,10],bpm:132,w:'square',bw:'square',g:.03,st:'chip'},
+    avatar:{r:62,sc:[0,2,5,7,9],bpm:72,w:'sine',bw:'sine',g:.05,st:'ambient'},
+    godly:{r:57,sc:[0,4,7,12],bpm:52,w:'sine',bw:'sine',g:.055,st:'bell'},
+    serpent:{r:52,sc:[0,1,4,5,7,8],bpm:80,w:'sine',bw:'sine',g:.05,st:'walk'},
+    race:{r:52,sc:[0,3,5,6,7,10],bpm:144,w:'sawtooth',bw:'sawtooth',g:.03,st:'drive'},
+    dino:{r:45,sc:[0,3,5,7,10],bpm:66,w:'triangle',bw:'sine',g:.055,st:'drums'}
   };
   function ensureAC(){ var A=window.AudioContext||window.webkitAudioContext; if(!A) return false;
     if(!AC){ AC=new A();
       master=AC.createGain(); master.gain.value=1;
-      var lp=AC.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=3400; lp.Q.value=.4;
-      /* one feedback delay = instant room; the notes melt into each other */
-      var dly=AC.createDelay(1); dly.delayTime.value=.31;
-      var fb=AC.createGain(); fb.gain.value=.34; wet=AC.createGain(); wet.gain.value=.28;
+      var lp=AC.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=3800; lp.Q.value=.3;
+      var dly=AC.createDelay(1); dly.delayTime.value=.29;
+      var fb=AC.createGain(); fb.gain.value=.28; var wet=AC.createGain(); wet.gain.value=.2;
       master.connect(lp); lp.connect(AC.destination);
       lp.connect(dly); dly.connect(fb); fb.connect(dly); dly.connect(wet); wet.connect(AC.destination);
     }
     if(AC.state==='suspended') AC.resume(); return true; }
-  /* a warm voice: two detuned oscillators + a per-note low-pass, soft attack, long release */
-  function note(f,at,dur,o){ o=o||{};
-    var type=o.type||'triangle', vol=o.vol||.05, att=o.att!=null?o.att:.06, rel=o.rel!=null?o.rel:.5;
-    var det=o.det!=null?o.det:5, g=AC.createGain(), flt=AC.createBiquadFilter();
-    flt.type='lowpass'; flt.frequency.value=o.cut||2600; flt.Q.value=.5;
+  function tone(f,at,dur,type,vol,slide){
+    if(type==='square'){ /* Arcade keeps its edges */
+      var o=AC.createOscillator(),q=AC.createGain(); o.type=type; o.frequency.setValueAtTime(f,at);
+      if(slide) o.frequency.exponentialRampToValueAtTime(slide,at+dur);
+      q.gain.setValueAtTime(0.0001,at); q.gain.exponentialRampToValueAtTime(vol,at+0.02);
+      q.gain.exponentialRampToValueAtTime(0.0001,at+dur);
+      o.connect(q); q.connect(master); o.start(at); o.stop(at+dur+0.05); return; }
+    var rel=Math.max(.4,dur*.8), g=AC.createGain(), flt=AC.createBiquadFilter();
+    flt.type='lowpass'; flt.frequency.value=2800; flt.Q.value=.4;
     g.gain.setValueAtTime(0.0001,at);
-    g.gain.linearRampToValueAtTime(vol,at+att);
-    g.gain.setValueAtTime(vol,at+Math.max(att,dur*.6));
+    g.gain.linearRampToValueAtTime(vol,at+Math.min(.05,dur*.3));
+    g.gain.setValueAtTime(vol,at+dur*.55);
     g.gain.exponentialRampToValueAtTime(0.0001,at+dur+rel);
-    [ -det, det ].forEach(function(d){ var osc=AC.createOscillator(); osc.type=type;
+    [-4,4].forEach(function(d){ var osc=AC.createOscillator(); osc.type=type;
       osc.frequency.setValueAtTime(f,at); osc.detune.value=d;
-      if(o.slide) osc.frequency.exponentialRampToValueAtTime(o.slide,at+dur);
+      if(slide) osc.frequency.exponentialRampToValueAtTime(slide,at+dur);
       osc.connect(flt); osc.start(at); osc.stop(at+dur+rel+.05); });
     flt.connect(g); g.connect(master); }
-  /* the retro voice, kept ONLY for Arcade */
-  function bleep(f,at,dur,type,vol){ var o=AC.createOscillator(),g=AC.createGain();
-    o.type=type; o.frequency.setValueAtTime(f,at);
-    g.gain.setValueAtTime(0.0001,at); g.gain.exponentialRampToValueAtTime(vol,at+0.02);
-    g.gain.exponentialRampToValueAtTime(0.0001,at+dur);
-    o.connect(g); g.connect(master); o.start(at); o.stop(at+dur+0.05); }
-  var walkPos=2, PROG=[0,5,3,4], barOf=0;
-  function chord(c,t,dur,vol){ var base=PROG[barOf%PROG.length];
-    [0,2,4].forEach(function(k,i){ var d=c.sc[(base+k)%c.sc.length]+12*Math.floor((base+k)/c.sc.length);
-      note(midi(c.r+d),t+i*.06,dur,{type:'sine',vol:vol,att:.7,rel:1.6,cut:1600,det:7}); }); }
+  var walkPos=2;
   function scheduleStep(c,t,i){
     var beat=60/c.bpm, deg;
-    if(c.st==='chip'){ /* Arcade: proudly 80s */
-      if(i%4===0) bleep(midi(c.r-12),t,beat*.5,'square',c.g*.8);
-      if(i%2===0&&Math.random()<.85){ walkPos+=(Math.random()<.5?-1:1);
-        walkPos=Math.max(0,Math.min(c.sc.length*2-1,walkPos));
-        deg=c.sc[walkPos%c.sc.length]+12*Math.floor(walkPos/c.sc.length);
-        bleep(midi(c.r+deg),t,beat*.35,'square',c.g); }
-      return; }
-    if(i%16===0){ chord(c,t,beat*8,(c.st==='pad'?c.g*.75:c.g*.45)); barOf++; }
-    if(c.st==='bell'){ if(i%8===0){ note(midi(c.r),t,beat*5,{type:'sine',vol:c.g,att:.02,rel:2.4,cut:2200});
-        note(midi(c.r+7),t+.06,beat*4,{type:'sine',vol:c.g*.55,att:.02,rel:2,cut:2000}); } return; }
-    if(c.st==='drums'){ if(i%4===0) note(56,t,.4,{type:'sine',vol:c.g*1.3,att:.005,rel:.3,slide:38,cut:900});
-      if(i%8===4) note(46,t,.5,{type:'sine',vol:c.g*1.1,att:.005,rel:.4,slide:34,cut:700});
-      if(i%4===2&&Math.random()<.4){ deg=c.sc[(Math.random()*c.sc.length)|0];
-        note(midi(c.r+12+deg),t,beat*1.4,{type:'triangle',vol:c.g*.4,att:.1,rel:.9,cut:1800}); }
-      return; }
-    if(c.st==='pad'){ if(i%4===2&&Math.random()<.55){ deg=c.sc[(Math.random()*c.sc.length)|0];
-        note(midi(c.r+12+deg),t,beat*2.4,{type:'sine',vol:c.g*.6,att:.3,rel:1.6,cut:2200}); } return; }
-    if(c.st==='drive'){ if(i%2===0) note(midi(c.r-12+((i%16===10)?3:0)),t,beat*.9,{type:'sawtooth',vol:c.g*.6,att:.02,rel:.25,cut:1500,det:8});
-      if(i%4===2&&Math.random()<.7){ walkPos+=(Math.random()<.5?-1:1);
-        walkPos=Math.max(0,Math.min(c.sc.length-1,walkPos));
-        note(midi(c.r+12+c.sc[walkPos]),t,beat*1.1,{type:'sawtooth',vol:c.g*.55,att:.04,rel:.5,cut:2200,det:6}); }
-      return; }
-    /* keys · pluck · box: a gentle bass and a legato melody that overlaps itself */
-    if(i%8===0) note(midi(c.r-12),t,beat*3.4,{type:'sine',vol:c.g*.5,att:.1,rel:1,cut:1100});
-    var chance=(c.st==='box')?.6:.75;
-    if(i%2===0&&Math.random()<chance){ walkPos+=(Math.random()<.5?-1:1); if(Math.random()<.12) walkPos+=(Math.random()<.5?-2:2);
+    if(c.st==='bell'){ if(i%8===0){ tone(midi(c.r),t,beat*6,'sine',c.g); tone(midi(c.r+7),t+.05,beat*5,'sine',c.g*.6); tone(midi(c.r+12),t+.1,beat*4,'sine',c.g*.35); } return; }
+    if(c.st==='drums'){ if(i%4===0) tone(60,t,.3,'sine',c.g*1.4,40);
+      if(i%8===4) tone(48,t,.4,'sine',c.g*1.2,36);
+      if(i%2===0&&Math.random()<.3) tone(midi(c.r+12+c.sc[(Math.random()*c.sc.length)|0]),t,beat*.8,'triangle',c.g*.5); return; }
+    if(c.st==='ambient'){ if(i%16===0){ deg=c.sc[(Math.random()*c.sc.length)|0];
+        tone(midi(c.r+deg),t,beat*14,'sine',c.g*.7); tone(midi(c.r+deg+7),t+.3,beat*12,'sine',c.g*.4); }
+      if(i%4===2&&Math.random()<.5) tone(midi(c.r+12+c.sc[(Math.random()*c.sc.length)|0]),t,beat*1.6,'sine',c.g*.5); return; }
+    if(i%4===0) tone(midi(c.r-12),t,beat*(c.st==='drive'?.4:.9),c.bw,c.g*.8);
+    if(c.st==='drive'&&i%2===1) tone(midi(c.r-12+((i%8===5)?3:0)),t,beat*.3,c.bw,c.g*.55);
+    var play=(c.st==='box'||c.st==='pluck')?(i%2===0&&Math.random()<.75):(Math.random()<.85);
+    if(play&&i%2===0){ walkPos+=(Math.random()<.5?-1:1); if(Math.random()<.15) walkPos+=(Math.random()<.5?-2:2);
       walkPos=Math.max(0,Math.min(c.sc.length*2-1,walkPos));
       deg=c.sc[walkPos%c.sc.length]+12*Math.floor(walkPos/c.sc.length);
-      var att=(c.st==='pluck')?.015:.09, dur=beat*((c.st==='pluck')?1.3:2.1);
-      note(midi(c.r+deg),t,dur,{type:'triangle',vol:c.g,att:att,rel:1.3,cut:2400,det:5}); }
+      var dur=beat*(c.st==='blip'||c.st==='chip'?.35:(c.st==='swing'?.5:.9));
+      tone(midi(c.r+deg),t,dur,c.w,c.g);
+      if(c.st==='swing'&&Math.random()<.4) tone(midi(c.r+deg+4),t+beat*.66,dur*.6,c.w,c.g*.6); }
   }
   function loop(){ if(!AC||!playingWorld) return; var c=CFG[playingWorld]; if(!c) return;
     var sub=(60/c.bpm)/2;
-    while(nextT<AC.currentTime+0.8){ scheduleStep(c,Math.max(nextT,AC.currentTime+.02),step); step++; nextT+=sub; } }
+    while(nextT<AC.currentTime+0.7){ scheduleStep(c,Math.max(nextT,AC.currentTime+.02),step); step++; nextT+=sub; } }
   function start(world){ if(!CFG[world]||!ensureAC()) return;
     if(playingWorld===world&&timer) return;
-    stop(); playingWorld=world; step=0; walkPos=2; barOf=0; nextT=AC.currentTime+0.1;
+    stop(); playingWorld=world; step=0; walkPos=2; nextT=AC.currentTime+0.1;
     timer=setInterval(loop,250); }
   function stop(){ if(timer){ clearInterval(timer); timer=null; } playingWorld=null; }
   window.SB_W4_MUSIC={
