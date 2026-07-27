@@ -205,8 +205,10 @@
   border-left:22px solid color-mix(in srgb,#E88A5C 40%,var(--paper,#fff));border-bottom:22px solid transparent;filter:drop-shadow(-2px 2px 2px rgba(90,50,20,.18))}
 [data-theme="pixel"] .sb-card{border-radius:0;border:3px solid color-mix(in srgb,#3B6FE0 55%,var(--line));
   box-shadow:6px 6px 0 color-mix(in srgb,#3B6FE0 22%,transparent)}
-[data-theme="avatar"] .sb-card{border-radius:28px 12px 24px 14px;border-color:color-mix(in srgb,#2E8FB8 42%,var(--line));
+[data-theme="avatar"] .sb-card{position:relative;border-radius:28px 12px 24px 14px;border-color:color-mix(in srgb,#2E8FB8 42%,var(--line));
   box-shadow:inset 0 -14px 24px -18px color-mix(in srgb,#2E8FB8 35%,transparent),var(--sh-rest)}
+[data-theme="avatar"] .sb-card::after{content:"";position:absolute;top:9px;right:14px;width:50px;height:9px;pointer-events:none;opacity:.85;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 9'%3E%3Ccircle cx='4.5' cy='4.5' r='3.6' fill='%23AEDDE4'/%3E%3Ccircle cx='19' cy='4.5' r='3.6' fill='%233FA9D8'/%3E%3Ccircle cx='33.5' cy='4.5' r='3.6' fill='%235FB87A'/%3E%3Ccircle cx='48' cy='4.5' r='3.6' fill='%23F3A13C'/%3E%3C/svg%3E") no-repeat center/contain}
 
 /* ================= TOTAL CALM on Practice & Supercharge ====================================
    Focus screens strip everything the worlds add: the scene freezes to a faint still, the
@@ -248,11 +250,11 @@
 /* Arcade: scanlines + a CRT glow rising from the floor */
 [data-theme="pixel"] .w4o-scan{inset:0;opacity:.5;background:repeating-linear-gradient(180deg,rgba(59,111,224,.10) 0 2px,transparent 2px 5px)}
 [data-theme="pixel"] .w4o-crt{left:0;right:0;bottom:0;height:36vh;background:linear-gradient(180deg,transparent,rgba(59,111,224,.28));animation:w4-gleam 5s ease-in-out infinite}
-/* Elements: the four powers hold the corners */
-[data-theme="avatar"] .w4o-el1{left:-14vmin;bottom:-14vmin;width:52vmin;height:52vmin;border-radius:50%;background:radial-gradient(circle,rgba(243,161,60,.35),transparent 62%);animation:w4-gleam 6s ease-in-out infinite}
-[data-theme="avatar"] .w4o-el2{right:-14vmin;bottom:-14vmin;width:52vmin;height:52vmin;border-radius:50%;background:radial-gradient(circle,rgba(47,167,216,.35),transparent 62%);animation:w4-gleam 7s ease-in-out infinite}
-[data-theme="avatar"] .w4o-el3{right:-12vmin;top:-12vmin;width:44vmin;height:44vmin;border-radius:50%;background:radial-gradient(circle,rgba(95,184,122,.32),transparent 62%);animation:w4-gleam 8s ease-in-out infinite}
-[data-theme="avatar"] .w4o-el4{left:-12vmin;top:-12vmin;width:44vmin;height:44vmin;border-radius:50%;background:radial-gradient(circle,rgba(150,150,160,.30),transparent 62%);animation:w4-gleam 9s ease-in-out infinite}
+/* Elements: the four powers hold the corners — each aura sits under its own medallion */
+[data-theme="avatar"] .w4o-el1{left:-14vmin;bottom:-14vmin;width:52vmin;height:52vmin;border-radius:50%;background:radial-gradient(circle,rgba(95,184,122,.32),transparent 62%);animation:w4-gleam 6s ease-in-out infinite}
+[data-theme="avatar"] .w4o-el2{right:-14vmin;bottom:-14vmin;width:52vmin;height:52vmin;border-radius:50%;background:radial-gradient(circle,rgba(243,161,60,.35),transparent 62%);animation:w4-gleam 7s ease-in-out infinite}
+[data-theme="avatar"] .w4o-el3{right:-12vmin;top:-12vmin;width:44vmin;height:44vmin;border-radius:50%;background:radial-gradient(circle,rgba(47,167,216,.34),transparent 62%);animation:w4-gleam 8s ease-in-out infinite}
+[data-theme="avatar"] .w4o-el4{left:-12vmin;top:-12vmin;width:44vmin;height:44vmin;border-radius:50%;background:radial-gradient(circle,rgba(174,221,228,.32),transparent 62%);animation:w4-gleam 9s ease-in-out infinite}
 
 
 /* Spotlight's room: full-height proscenium curtains frame the stage */
@@ -359,3 +361,83 @@
 
 [data-theme="aurora"] .w4o-mwbright{box-shadow:0 0 8px 3px rgba(255,246,224,.5)}
 [data-theme="aurora"][data-mode="dusk"] .w4o-mwbright{box-shadow:0 0 12px 4px rgba(255,246,224,.75),0 0 30px 10px rgba(159,184,232,.3)}
+
+/* ===== Origami: the sheet that folds itself into a crane ================================== */
+[data-theme="origami"] .w4o-foldstage{right:5vw;bottom:8vh;width:min(24vw,260px);aspect-ratio:1;perspective:900px}
+[data-theme="origami"] .fs-fold{position:absolute;inset:12%;transform-style:preserve-3d;animation:w4-fspack 14s ease-in-out infinite}
+[data-theme="origami"] .fs-sheet{position:absolute;inset:0;background:linear-gradient(135deg,#F8F0DF,#EFE2C8);box-shadow:0 6px 18px rgba(90,60,30,.18);border-radius:2px}
+[data-theme="origami"] .fs-corner{position:absolute;width:50%;height:50%;background:linear-gradient(135deg,#F2E7D0,#E8D8BA);backface-visibility:visible}
+[data-theme="origami"] .fs-tl{left:0;top:0;clip-path:polygon(0 0,100% 0,0 100%);transform-origin:50% 50%;animation:w4-ftl 14s ease-in-out infinite}
+[data-theme="origami"] .fs-tr{right:0;top:0;clip-path:polygon(0 0,100% 0,100% 100%);transform-origin:50% 50%;animation:w4-ftr 14s ease-in-out infinite}
+[data-theme="origami"] .fs-bl{left:0;bottom:0;clip-path:polygon(0 0,0 100%,100% 100%);transform-origin:50% 50%;animation:w4-fbl 14s ease-in-out infinite}
+[data-theme="origami"] .fs-br{right:0;bottom:0;clip-path:polygon(100% 0,100% 100%,0 100%);transform-origin:50% 50%;animation:w4-fbr 14s ease-in-out infinite}
+@keyframes w4-ftl{0%,6%{transform:rotate3d(-1,1,0,0deg)}12%,80%{transform:rotate3d(-1,1,0,-179deg)}88%,100%{transform:rotate3d(-1,1,0,0deg)}}
+@keyframes w4-ftr{0%,13%{transform:rotate3d(1,1,0,0deg)}19%,80%{transform:rotate3d(1,1,0,179deg)}88%,100%{transform:rotate3d(1,1,0,0deg)}}
+@keyframes w4-fbl{0%,20%{transform:rotate3d(1,1,0,0deg)}26%,80%{transform:rotate3d(1,1,0,-179deg)}88%,100%{transform:rotate3d(1,1,0,0deg)}}
+@keyframes w4-fbr{0%,27%{transform:rotate3d(-1,1,0,0deg)}33%,80%{transform:rotate3d(-1,1,0,179deg)}88%,100%{transform:rotate3d(-1,1,0,0deg)}}
+@keyframes w4-fspack{0%,34%{transform:rotateZ(0) scale(1);opacity:1}
+  42%{transform:rotateZ(45deg) scale(.5);opacity:1}46%{transform:rotateZ(45deg) scale(.42);opacity:0}
+  82%{transform:rotateZ(45deg) scale(.42);opacity:0}86%{transform:rotateZ(10deg) scale(.9);opacity:1}92%,100%{transform:rotateZ(0) scale(1);opacity:1}}
+[data-theme="origami"] .fs-crane{position:absolute;inset:6%;opacity:0;animation:w4-fscrane 14s ease-in-out infinite}
+@keyframes w4-fscrane{0%,42%{opacity:0;transform:scale(.3) translateY(8%)}
+  48%{opacity:1;transform:scale(1.06) translateY(-2%)}52%{transform:scale(1) translateY(0)}
+  60%{transform:scale(1) translateY(-5%)}68%{transform:scale(1) translateY(0)}76%{transform:scale(1) translateY(-4%)}
+  80%{opacity:1;transform:scale(1) translateY(0)}86%,100%{opacity:0;transform:scale(.4) translateY(6%)}}
+@keyframes w4-cflapL{0%,100%{transform:rotate(10deg)}50%{transform:rotate(-26deg)}}
+@keyframes w4-cflapR{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(26deg)}}
+[data-theme="origami"] .fs-crane .cwL{transform-box:fill-box;transform-origin:right bottom;animation:w4-cflapL 1s ease-in-out infinite}
+[data-theme="origami"] .fs-crane .cwR{transform-box:fill-box;transform-origin:left bottom;animation:w4-cflapR 1s ease-in-out infinite}
+/* falling paper squares fold over in the air as they drift down */
+@keyframes w4-flippaper{0%{transform:rotateY(0) rotateX(8deg)}50%{transform:rotateY(178deg) rotateX(-8deg);filter:brightness(.86)}100%{transform:rotateY(356deg) rotateX(8deg)}}
+[data-theme="origami"] .w4o-flippaper{animation:w4-flippaper 2.6s ease-in-out infinite;box-shadow:0 2px 5px rgba(90,60,30,.2)}
+/* night: paper lanterns — the fold glows warm from within */
+[data-theme="origami"][data-mode="dusk"] .fs-sheet,
+[data-theme="origami"][data-mode="dusk"] .fs-corner{filter:brightness(1.08);box-shadow:0 0 22px rgba(240,180,90,.4)}
+[data-theme="origami"][data-mode="dusk"] .fs-crane{filter:drop-shadow(0 0 16px rgba(240,180,90,.55))}
+[data-theme="origami"][data-mode="dusk"] .w4o-flippaper{box-shadow:0 0 10px rgba(240,180,90,.45)}
+
+/* ================= Elements: the four-nations sky ==========================================
+   Air holds the top-left, water the top-right, earth the bottom-left, fire the bottom-right.
+   Two bending streams arc corner to corner, earth islands hover mid-air, a koi pair circles
+   its pond, and at dusk the whole world crosses into the spirit realm. */
+[data-theme="avatar"] .w4o-elmed{width:min(11vw,104px);aspect-ratio:1;opacity:.8}
+[data-theme="avatar"] .w4o-elmed .med-ring{transform-box:fill-box;transform-origin:center;animation:w4-spin4 26s linear infinite}
+[data-theme="avatar"] .med-air .med-ring{animation-duration:19s}
+[data-theme="avatar"] .med-earth .med-ring{animation-direction:reverse}
+[data-theme="avatar"] .med-water .med-ring{animation-duration:31s;animation-direction:reverse}
+[data-theme="avatar"] .w4o-bend{inset:0}
+@keyframes w4-bendflow{0%{stroke-dashoffset:0}100%{stroke-dashoffset:-44}}
+[data-theme="avatar"] .bend-flow{stroke-dasharray:5 6;stroke-linecap:round;animation:w4-bendflow 3.2s linear infinite}
+[data-theme="avatar"] .bend-lag{stroke-dasharray:3 8;animation-duration:4.1s}
+@keyframes w4-islefloat{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-14px) rotate(1.5deg)}}
+[data-theme="avatar"] .w4o-isle{animation:w4-islefloat 7s ease-in-out infinite;filter:drop-shadow(0 12px 10px rgba(40,30,10,.16))}
+@keyframes w4-peb{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+[data-theme="avatar"] .isle-peb{transform-box:fill-box;animation:w4-peb 3.4s ease-in-out infinite}
+[data-theme="avatar"] .isle-peb2{transform-box:fill-box;animation:w4-peb 4.2s ease-in-out infinite reverse}
+[data-theme="avatar"] .w4o-ember{background:radial-gradient(circle,#FFE07A 0 30%,#F3A13C 60%,transparent 75%)}
+[data-theme="avatar"] .w4o-wisp{display:none;background:radial-gradient(circle,#D8FFF4 0 28%,#6FE7DC 58%,transparent 75%)}
+[data-theme="avatar"] .w4o-pond{left:18vw;bottom:2vh;width:16vmin;height:16vmin;border-radius:50%;opacity:.85;
+  background:radial-gradient(circle at 40% 35%,rgba(143,208,236,.55),rgba(46,143,184,.4) 62%,rgba(38,64,78,.45));
+  box-shadow:inset 0 0 18px rgba(20,60,80,.35)}
+[data-theme="avatar"] .w4o-koiring{position:absolute;inset:9%;animation:w4-spin4 15s linear infinite}
+[data-theme="avatar"] .w4o-temple{right:15vw;bottom:0;width:min(11vw,108px);aspect-ratio:90/130;opacity:.5}
+[data-theme="avatar"] .temple-win{opacity:0}
+/* dusk: the spirit world opens — teal night, every element burning with its own light */
+[data-theme="avatar"][data-mode="dusk"] .w4-bg{background:radial-gradient(130% 110% at 60% 0%,#123A44 0%,#0C2A34 50%,#071C24 100%)}
+[data-theme="avatar"][data-mode="dusk"] .w4o-elmed{opacity:1}
+[data-theme="avatar"][data-mode="dusk"] .med-air{filter:drop-shadow(0 0 14px rgba(174,221,228,.75))}
+[data-theme="avatar"][data-mode="dusk"] .med-water{filter:drop-shadow(0 0 14px rgba(63,169,216,.8))}
+[data-theme="avatar"][data-mode="dusk"] .med-earth{filter:drop-shadow(0 0 14px rgba(95,184,122,.75))}
+[data-theme="avatar"][data-mode="dusk"] .med-fire{filter:drop-shadow(0 0 16px rgba(243,161,60,.85))}
+[data-theme="avatar"][data-mode="dusk"] .w4o-bend{mix-blend-mode:screen;filter:brightness(1.7) drop-shadow(0 0 8px rgba(111,231,220,.4))}
+[data-theme="avatar"][data-mode="dusk"] .w4o-bendwater path{stroke:#6FE7DC}
+[data-theme="avatar"][data-mode="dusk"] .w4o-isle{filter:brightness(1.15) drop-shadow(0 0 14px rgba(111,231,220,.4))}
+[data-theme="avatar"][data-mode="dusk"] .w4o-ember{box-shadow:0 0 10px 3px rgba(243,161,60,.55)}
+[data-theme="avatar"][data-mode="dusk"] .w4o-wisp{display:block;box-shadow:0 0 12px 4px rgba(111,231,220,.5)}
+[data-theme="avatar"][data-mode="dusk"] .w4o-pond{opacity:1;
+  background:radial-gradient(circle at 40% 35%,rgba(143,236,228,.6),rgba(46,143,184,.5) 62%,rgba(18,44,58,.6));
+  box-shadow:0 0 26px 8px rgba(111,231,220,.35),inset 0 0 18px rgba(20,60,80,.35)}
+[data-theme="avatar"][data-mode="dusk"] .w4o-koiring{filter:drop-shadow(0 0 8px rgba(245,242,232,.55))}
+[data-theme="avatar"][data-mode="dusk"] .w4o-temple{opacity:.8;filter:brightness(.72)}
+[data-theme="avatar"][data-mode="dusk"] .temple-win{opacity:1;filter:drop-shadow(0 0 6px rgba(246,220,138,.9));animation:w4-gleam 4s ease-in-out infinite}
+[data-theme="avatar"][data-mode="dusk"] .w4o-bendfire{filter:brightness(1.45) drop-shadow(0 0 8px rgba(243,161,60,.55))}

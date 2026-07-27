@@ -610,9 +610,27 @@
       for(var bu=0;bu<11;bu++) layer.appendChild(el('w4o-rise','left:'+rnd(2,98).toFixed(1)+'vw;width:'+rnd(5,11).toFixed(0)+'px;height:'+rnd(5,11).toFixed(0)+'px;background:transparent;border:2px solid rgba(59,192,170,.55);animation-duration:'+rnd(9,18).toFixed(1)+'s;animation-delay:-'+rnd(0,16).toFixed(1)+'s'));
     } else if(world==='origami'){
       layer.appendChild(el('w4o-facets'));
+      /* the centrepiece: a sheet of paper folds itself — four corners in sequence, the
+         packet condenses, a crane springs out and flaps, then it all unfolds and repeats */
+      var CRANE2='<svg viewBox="0 0 120 90" width="100%" height="100%" style="overflow:visible">'
+        +'<path class="cwL" d="M52 46 L14 12 L46 40 z" fill="#E88A5C"/>'
+        +'<path class="cwR" d="M64 46 L106 14 L72 42 z" fill="#DE7A48"/>'
+        +'<path d="M38 62 L58 34 L70 48 L96 54 L70 60 L54 76 z" fill="#C25A2E"/>'
+        +'<path d="M58 34 L66 16 L72 30 L70 48 z" fill="#F0C9A2"/>'
+        +'<path d="M66 16 L78 12 L72 24 z" fill="#E88A5C"/>'
+        +'<circle cx="68" cy="21" r="1.4" fill="#3A2417"/></svg>';
+      var stage=el('w4o-foldstage','',
+        '<div class="fs-fold">'
+        +'<div class="fs-sheet"></div>'
+        +'<div class="fs-corner fs-tl"></div><div class="fs-corner fs-tr"></div>'
+        +'<div class="fs-corner fs-bl"></div><div class="fs-corner fs-br"></div>'
+        +'</div>'
+        +'<div class="fs-crane">'+CRANE2+'</div>');
+      layer.appendChild(stage);
       for(var pl=0;pl<4;pl++) layer.appendChild(el('w4o-across','top:'+rnd(10,60).toFixed(1)+'vh;width:'+rnd(38,60).toFixed(0)+'px;animation-duration:'+rnd(26,44).toFixed(1)+'s;animation-delay:-'+rnd(0,30).toFixed(1)+'s;opacity:.6', PLANE));
       layer.appendChild(el('','left:3vw;bottom:0;width:76px;height:auto;aspect-ratio:70/56;opacity:.4', CRANE));
-      for(var sq=0;sq<6;sq++) layer.appendChild(el('w4o-fall','left:'+rnd(4,96).toFixed(1)+'vw;width:'+rnd(8,13).toFixed(0)+'px;height:'+rnd(8,13).toFixed(0)+'px;background:'+(sq%2?'#E88A5C':'#F0C9A2')+';opacity:.5;animation-duration:'+rnd(11,20).toFixed(1)+'s,'+rnd(3,5).toFixed(1)+'s;animation-delay:-'+rnd(0,16).toFixed(1)+'s,0s'));
+      for(var sq=0;sq<8;sq++) layer.appendChild(el('w4o-fall','left:'+rnd(4,96).toFixed(1)+'vw;width:'+rnd(9,15).toFixed(0)+'px;height:'+rnd(9,15).toFixed(0)+'px;opacity:.6;animation-duration:'+rnd(11,20).toFixed(1)+'s,'+rnd(3,5).toFixed(1)+'s;animation-delay:-'+rnd(0,16).toFixed(1)+'s,0s',
+        '<div class="w4o-flippaper" style="width:100%;height:100%;background:'+(sq%2?'#E88A5C':'#F0C9A2')+';animation-delay:-'+rnd(0,2).toFixed(1)+'s"></div>'));
     } else if(world==='pixel'){
       layer.appendChild(el('w4o-scan')); layer.appendChild(el('w4o-crt'));
       // tetromino rain — every classic piece, falling and turning at its own pace
@@ -623,11 +641,64 @@
       layer.appendChild(el('w4o-across','bottom:7vh;width:56px;aspect-ratio:72/66;animation-duration:24s;opacity:.9','<div class="w4o-hopper" style="width:100%;height:100%">'+PIXBEE+'</div>'));
       layer.appendChild(el('w4o-across','top:9vh;width:40px;animation-duration:48s;animation-delay:-22s;opacity:.4', INVADER));
     } else if(world==='avatar'){
+      /* Four nations, one sky. Corner auras stay as underglow; on top of each sits a
+         carved element medallion, two bending streams arc the whole viewport, earth
+         islands hover, a koi pair circles its pond, and a temple watches from a spire. */
       ['w4o-el1','w4o-el2','w4o-el3','w4o-el4'].forEach(function(c){ layer.appendChild(el(c)); });
-      for(var lf=0;lf<5;lf++) layer.appendChild(el('w4o-across','top:'+rnd(12,74).toFixed(1)+'vh;width:'+rnd(18,28).toFixed(0)+'px;animation-duration:'+rnd(18,34).toFixed(1)+'s;animation-delay:-'+rnd(0,26).toFixed(1)+'s;opacity:.6', LEAF_E));
-      for(var dr=0;dr<4;dr++) layer.appendChild(el('w4o-fall','left:'+rnd(4,96).toFixed(1)+'vw;width:'+rnd(12,18).toFixed(0)+'px;height:auto;aspect-ratio:22/30;opacity:.55;animation-duration:'+rnd(9,15).toFixed(1)+'s,'+rnd(3,5).toFixed(1)+'s;animation-delay:-'+rnd(0,10).toFixed(1)+'s,0s', DROP_E));
-      layer.appendChild(el('w4o-gleam','left:3vw;bottom:0;width:30px;height:auto;aspect-ratio:26/34', FLAME_E));
-      layer.appendChild(el('w4o-gleam','right:4vw;bottom:0;width:24px;height:auto;aspect-ratio:26/34;animation-delay:-4s', FLAME_E));
+      var MED=function(ring,glyph){ return '<svg viewBox="0 0 90 90" width="100%" height="100%" style="overflow:visible">'
+        +'<circle cx="45" cy="45" r="41" fill="none" stroke="'+ring+'" stroke-width="3.4" opacity=".85"/>'
+        +'<circle class="med-ring" cx="45" cy="45" r="33" fill="none" stroke="'+ring+'" stroke-width="1.6" stroke-dasharray="6 7" opacity=".7"/>'
+        +glyph+'</svg>'; };
+      var G_AIR='<path d="M45 24 a19 19 0 1 1 -19 19 a14 14 0 1 0 14 -14 a8.5 8.5 0 1 1 -8.5 8.5 a4 4 0 1 0 4 -4" fill="none" stroke="#AEDDE4" stroke-width="4" stroke-linecap="round"/>';
+      var G_WATER='<path d="M27 55 q3 -19 18 -24 q13 -4 19 5 q-8 -2 -13 3 q10 1 12 11 q-8 -7 -17 -3 q-11 5 -19 8z" fill="#3FA9D8"/><circle cx="59" cy="53" r="3.4" fill="#8FD0EC"/><circle cx="66" cy="47" r="2.2" fill="#8FD0EC"/>';
+      var G_EARTH='<path d="M25 58 h40 l-8 -13 h-8 l-6 -10 -9 10 h-3 z" fill="#5FB87A"/><path d="M52 58 l6 -9 6 9z" fill="#4C9A64"/><rect x="30" y="30" width="7" height="7" rx="1.4" fill="#8A7A62" transform="rotate(12 33 33)"/>';
+      var G_FIRE='<path d="M45 24 q10 12 7.5 24 a8.6 8.6 0 0 1 -15 0 q-2.5 -12 7.5 -24z" fill="#F3A13C"/><path d="M45 38 q4.6 7 2.4 12 a4.2 4.2 0 0 1 -4.8 0 q-2.2 -5 2.4 -12z" fill="#FFE07A"/>';
+      [['w4o-elmed med-air','left:3vw;top:9vh',MED('#AEDDE4',G_AIR)],
+       ['w4o-elmed med-water','right:3vw;top:9vh',MED('#3FA9D8',G_WATER)],
+       ['w4o-elmed med-earth','left:3vw;bottom:6vh',MED('#5FB87A',G_EARTH)],
+       ['w4o-elmed med-fire','right:3vw;bottom:6vh',MED('#F3A13C',G_FIRE)]]
+        .forEach(function(m){ layer.appendChild(el(m[0],m[1],m[2])); });
+      // bending streams: energy flowing along two opposing arcs, drawn edge to edge
+      layer.appendChild(el('w4o-bend w4o-bendwater','',
+        '<svg viewBox="0 0 100 60" width="100%" height="100%" preserveAspectRatio="none">'
+        +'<path d="M-4 54 C 18 34, 42 50, 62 30 S 92 16, 104 6" fill="none" stroke="#2FA7D8" stroke-width="1.1" opacity=".5" pathLength="100" class="bend-flow"/>'
+        +'<path d="M-4 57 C 19 38, 43 53, 63 34 S 93 20, 104 10" fill="none" stroke="#8FD0EC" stroke-width=".55" opacity=".4" pathLength="100" class="bend-flow bend-lag"/></svg>'));
+      layer.appendChild(el('w4o-bend w4o-bendfire','',
+        '<svg viewBox="0 0 100 60" width="100%" height="100%" preserveAspectRatio="none">'
+        +'<path d="M104 52 C 82 30, 56 46, 38 26 S 10 14, -4 5" fill="none" stroke="#F3A13C" stroke-width="1.1" opacity=".5" pathLength="100" class="bend-flow"/>'
+        +'<path d="M104 55 C 83 34, 57 49, 39 30 S 11 18, -4 9" fill="none" stroke="#FFE07A" stroke-width=".55" opacity=".4" pathLength="100" class="bend-flow bend-lag"/></svg>'));
+      // floating earthbent islands, each with a stray pebble trailing under it
+      var ISLE='<svg viewBox="0 0 90 72" width="100%" height="100%" style="overflow:visible">'
+        +'<path d="M12 26 h66 l-11 30 q-6 12 -22 12 q-16 0 -22 -12 z" fill="#8A7A62"/>'
+        +'<path d="M12 26 h66 l-4 9 h-58 z" fill="#6B5D49"/>'
+        +'<path d="M9 26 q36 -13 72 0 q-36 9 -72 0z" fill="#5FB87A"/>'
+        +'<path d="M30 19 q4 -9 8 0z" fill="#4C9A64"/><path d="M52 18 q4 -10 9 0z" fill="#4C9A64"/>'
+        +'<circle class="isle-peb" cx="24" cy="64" r="3.4" fill="#8A7A62"/><circle class="isle-peb2" cx="66" cy="68" r="2.6" fill="#6B5D49"/></svg>';
+      layer.appendChild(el('w4o-isle','left:1.5vw;top:30vh;width:min(13vw,120px);aspect-ratio:90/72', ISLE));
+      layer.appendChild(el('w4o-isle','right:2vw;top:44vh;width:min(9vw,86px);aspect-ratio:90/72;animation-delay:-3.4s', ISLE));
+      // air: spiral gusts riding across, leaves caught in them
+      var GUST='<svg viewBox="0 0 60 34" width="100%" height="100%"><path d="M2 24 q20 -14 34 -6 q10 6 -2 9 q-9 2 -7 -5 M40 12 q10 -6 16 -1" fill="none" stroke="#AEDDE4" stroke-width="2.6" stroke-linecap="round" opacity=".8"/></svg>';
+      for(var gu=0;gu<3;gu++) layer.appendChild(el('w4o-across','top:'+rnd(10,58).toFixed(1)+'vh;width:'+rnd(44,66).toFixed(0)+'px;aspect-ratio:60/34;animation-duration:'+rnd(20,32).toFixed(1)+'s;animation-delay:-'+rnd(0,26).toFixed(1)+'s;opacity:.55', GUST));
+      for(var lf=0;lf<4;lf++) layer.appendChild(el('w4o-across','top:'+rnd(12,70).toFixed(1)+'vh;width:'+rnd(16,24).toFixed(0)+'px;animation-duration:'+rnd(16,28).toFixed(1)+'s;animation-delay:-'+rnd(0,24).toFixed(1)+'s;opacity:.6', LEAF_E));
+      // fire: embers climbing the night air
+      for(var em=0;em<8;em++) layer.appendChild(el('w4o-rise w4o-ember','left:'+rnd(3,97).toFixed(1)+'vw;width:'+rnd(4,8).toFixed(0)+'px;height:'+rnd(4,8).toFixed(0)+'px;animation-duration:'+rnd(8,15).toFixed(1)+'s;animation-delay:-'+rnd(0,13).toFixed(1)+'s'));
+      // spirit wisps: invisible by day, they surface in the dusk spirit-world
+      for(var wi=0;wi<7;wi++) layer.appendChild(el('w4o-rise w4o-wisp','left:'+rnd(4,96).toFixed(1)+'vw;width:'+rnd(6,11).toFixed(0)+'px;height:'+rnd(6,11).toFixed(0)+'px;animation-duration:'+rnd(11,19).toFixed(1)+'s;animation-delay:-'+rnd(0,17).toFixed(1)+'s'));
+      // the koi pair, forever circling their pond
+      layer.appendChild(el('w4o-pond','',
+        '<div class="w4o-koiring"><svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow:visible">'
+        +'<g transform="translate(50 12)"><path d="M0 -8 q9 4 9 12 q0 9 -9 13 q-9 -4 -9 -13 q0 -8 9 -12z" fill="#F5F2E8" transform="rotate(90)"/>'
+        +'<path d="M-14 0 l-9 -6 q3 6 0 12z" fill="#F5F2E8"/><circle cx="4" cy="0" r="4.2" fill="#E88A5C"/><circle cx="12" cy="-3" r="1.3" fill="#26404E"/></g>'
+        +'<g transform="translate(50 88)"><path d="M0 -8 q9 4 9 12 q0 9 -9 13 q-9 -4 -9 -13 q0 -8 9 -12z" fill="#26404E" transform="rotate(-90)"/>'
+        +'<path d="M14 0 l9 -6 q-3 6 0 12z" fill="#26404E"/><circle cx="-4" cy="0" r="4.2" fill="#F5F2E8"/><circle cx="-12" cy="3" r="1.3" fill="#F5F2E8"/></g></svg></div>'));
+      // an air temple keeping watch from its mountain spire
+      layer.appendChild(el('w4o-temple','',
+        '<svg viewBox="0 0 90 130" width="100%" height="100%"><g fill="#7C8898">'
+        +'<path d="M10 130 L34 62 h22 L80 130z" opacity=".55"/>'
+        +'<path d="M45 8 l3 10 h-6z"/><path d="M28 30 q17 -8 34 0 l-5 6 h-24z"/><rect x="38" y="36" width="14" height="8"/>'
+        +'<path d="M22 52 q23 -10 46 0 l-6 7 h-34z"/><rect x="34" y="59" width="22" height="10"/>'
+        +'<path d="M16 76 q29 -12 58 0 l-7 8 h-44z"/><rect x="30" y="84" width="30" height="14"/></g>'
+        +'<circle cx="45" cy="90" r="3.4" fill="#F6DC8A" class="temple-win"/></svg>'));
     }
     document.body.insertBefore(layer, document.body.firstChild);
   }
