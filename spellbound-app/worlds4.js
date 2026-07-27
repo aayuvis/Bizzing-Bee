@@ -332,6 +332,17 @@
     setTimeout(function(){ try{ window.SB_W4_MUSIC.sync(); }catch(e){} },200); },{capture:true});
 })();
 
+/* Focus: one header switch that quiets the whole app — music silenced and the world
+   backdrop held as a faint still — on every screen, not just Practice/Supercharge.
+   It rides the same w4-calm rail those screens use, so one contract rules both. */
+window.SB_W4_FOCUS={
+  on:function(){ try{ return localStorage.getItem('sb_w4_focus')==='1'; }catch(e){ return false; } },
+  toggle:function(){ var v=!window.SB_W4_FOCUS.on();
+    try{ localStorage.setItem('sb_w4_focus', v?'1':'0'); }catch(e){}
+    try{ if(window.SB_W4_SYNC) SB_W4_SYNC(); }catch(e){}
+    return v; }
+};
+
 
 /* ============================ the living backdrop + race chrome ============================
    Mounted as a sibling of #root so a re-render never wipes it, and lifted behind #root by the
@@ -745,6 +756,7 @@
     try{
       // working screens get stillness: no backdrop, no moving card chrome
       var calm=false; try{ calm=state && state.screen==='app' && CALM_NAVS.indexOf(state.nav)>=0; }catch(e){}
+      try{ if(window.SB_W4_FOCUS && SB_W4_FOCUS.on()) calm=true; }catch(e){}
       document.documentElement.classList.toggle('w4-calm', !!calm);
       try{ if(window.SB_W4_MUSIC) SB_W4_MUSIC.sync(); }catch(e){}
       var w=(typeof state!=='undefined' && state && state.theme)||null;
