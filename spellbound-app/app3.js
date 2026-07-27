@@ -6318,11 +6318,30 @@ function ttDeck(th,lv){ lv=lv||ttBand(); const ck=th+'|'+lv; if(_ttCache[ck]) re
   _ttCache[ck]=deck; return deck; }
 function ttSeenKey(th){ return th+'|'+ttBand(); }
 function ttThemes(){ return ((window.SB_TRIVIA||{}).themes)||[]; }
+/* Chapter icon: a drawn sticker from SB_TT_ICON_ART, falling back to the theme's emoji
+   only if the art file is missing. The SVG carries no colour of its own for the ink or
+   the contact shadow — those come from --ico-ink / --ico-shadow, which dusk redefines,
+   so one drawing serves both modes. */
+function ttIcon(th,size){ size=size||30;
+  const art=(window.SB_TT_ICON_ART||{})[th.id];
+  if(!art) return th.e||'🐝';
+  return `<span style="width:${size}px;height:${size}px;display:block" aria-hidden="true">${art.replace('<svg ','<svg width="100%" height="100%" ')}</span>`; }
+/* Inline glyph for headings and chips. Nothing in this screen falls back to an emoji —
+   emoji pick up the system font, which is exactly the "wrong font" the design forbids,
+   and a few (🎚) have no glyph at all on Android and render as tofu. */
+function ttGlyph(art,size){ size=size||16;
+  const svg=(window.SB_ICON_ART&&SB_ICON_ART[art])?SB_ICON_ART(art,{size:size}):'';
+  if(!svg) return '';
+  return `<span style="display:inline-flex;line-height:0;width:${size}px;height:${size}px;vertical-align:-2px;flex-shrink:0" aria-hidden="true">${svg}</span>`; }
+/* Same glyph, but on a pale plate when the chip behind it is filled with its own colour —
+   the art is full-colour and would otherwise sit violet-on-violet. */
+function ttPlate(art,size,on){ const g=ttGlyph(art,size); if(!g) return '';
+  return on?`<span style="display:inline-flex;padding:3px;border-radius:7px;background:rgba(255,255,255,.9)">${g}</span>`:g; }
 /* ---- Per-card study record ----------------------------------------------------------
    Keyed on the question's own id, not its position, so shuffling the deck never moves a
    speller's progress onto a different card. Shape: {s:'practised'|'tested'|'mastered', r:0|1}.
    Older saves stored a bare 1 (meaning "seen"); those read back as 'practised'. */
-const TT_STATES=[['practised','Practised','#7C5CFF','📖'],['tested','Tested','#E0922E','✍️'],['mastered','Mastered','#2FA35C','🏆']];
+const TT_STATES=[['practised','Practised','#7C5CFF','book'],['tested','Tested','#E0922E','target'],['mastered','Mastered','#2FA35C','trophy']];
 function ttKey(q){ return (q&&(q.id||q.q))?String(q.id||q.q).slice(0,60):''; }
 function ttRec(c,k){ const m=c.ttCards||{}; const v=m[k];
   if(!v) return {s:'',r:0};
@@ -6387,11 +6406,11 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
     const card=(th)=>{ const deck=ttDeck(th.id); if(!deck.length) return '';
       const col=TT_COL[th.id]||'#7C5CFF'; const st=ttChapterStats(c,th.id);
       return `<button class="sb-lift" data-act="ttChapter" data-arg="${escA(th.id)}" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:13px 14px;box-shadow:var(--sh-rest);display:flex;flex-direction:column;gap:7px">
-        <span style="display:flex;align-items:center;gap:9px"><span style="width:38px;height:38px;flex-shrink:0;border-radius:11px;background:color-mix(in srgb,${col} 16%,transparent);display:grid;place-items:center;font-size:20px">${th.e}</span>
+        <span style="display:flex;align-items:center;gap:9px"><span style="width:38px;height:38px;flex-shrink:0;border-radius:11px;background:color-mix(in srgb,${col} 16%,transparent);display:grid;place-items:center;font-size:20px">${ttIcon(th,30)}</span>
           <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:14px;line-height:1.15">${esc(th.label)}</span>
           <span style="display:block;font-size:11.5px;color:var(--muted);font-weight:700">${fmtN(deck.length)} cards${st.touched?' · '+st.touched+' studied':''}</span></span></span>
         ${ttBar(st,5)}
-        ${st.touched?`<span style="display:flex;gap:8px;font-size:10.5px;font-weight:800"><span style="color:#2FA35C">🏆 ${st.mastered}</span><span style="color:#E0922E">✍️ ${st.tested}</span><span style="color:#7C5CFF">📖 ${st.practised}</span>${st.revise?`<span style="color:var(--treasure-deep,#8A5B00);margin-left:auto">↓ ${st.revise}</span>`:''}</span>`:''}</button>`; };
+        ${st.touched?`<span style="display:flex;gap:9px;font-size:10.5px;font-weight:800;align-items:center"><span style="color:#2FA35C;display:inline-flex;align-items:center;gap:3px">${ttGlyph('trophy',13)}${st.mastered}</span><span style="color:#E0922E;display:inline-flex;align-items:center;gap:3px">${ttGlyph('target',13)}${st.tested}</span><span style="color:#7C5CFF;display:inline-flex;align-items:center;gap:3px">${ttGlyph('book',13)}${st.practised}</span>${st.revise?`<span style="color:var(--treasure-deep,#8A5B00);margin-left:auto">↓ ${st.revise}</span>`:''}</span>`:''}</button>`; };
     const grid=(ids)=>`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:11px">${ids.map(id=>{const th=ths.find(x=>x.id===id); return th?card(th):'';}).join('')}</div>`;
     const wordIds=wordThemes.filter(id=>ths.some(x=>x.id===id));
     const otherIds=ths.map(x=>x.id).filter(id=>wordIds.indexOf(id)<0);
@@ -6400,17 +6419,17 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
     const studied=Object.values(seen).reduce((a,b)=>a+b,0);
     const bchip=(n,lab,on)=>`<button data-act="ttSetBand" data-arg="${n}" title="${n?'Study level '+n+' — '+LVN[n]:'Match my age & spelling level automatically'}" style="padding:7px 11px;border-radius:9px;font-weight:800;font-size:12px;border:1.5px solid ${on?'var(--accent)':'var(--line)'};background:${on?'var(--accent)':'var(--surface2)'};color:${on?'#fff':'var(--muted)'}">${lab}</button>`;
     const bandStrip=`<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:11px 13px;margin:2px 0 14px;box-shadow:var(--sh-rest)">
-      <span style="font-weight:800;font-size:13.5px">🎚 Level ${bandNow} · ${LVN[bandNow]}</span>
+      <span style="font-weight:800;font-size:13.5px;display:inline-flex;align-items:center;gap:6px">${ttGlyph('sliders',16)}Level ${bandNow} · ${LVN[bandNow]}</span>
       <span style="font-size:11.5px;color:var(--muted);font-weight:700">${ttBandNote(c)}</span>
       <span style="margin-left:auto;display:inline-flex;gap:5px;flex-wrap:wrap">${bchip(0,'Auto',!(+(c.ttLvSel||0)))}${[1,2,3,4,5].map(n=>bchip(n,'L'+n,+(c.ttLvSel||0)===n)).join('')}</span></div>`;
     return `<div style="max-width:860px;margin:0 auto">
       ${pageHead('Know the World of Words','trivia training · '+fmtN(total)+' cards at your level','Study the trivia bank at your own pace — question on the front, answer and a fun fact on the back. Cards match your age and spelling level; change the level any time. No timer, no score.',
-        studied?`<span style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">📚 ${fmtN(studied)} cards studied</span>`:'')}
+        studied?`<span style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">${ttGlyph('book',15)}${fmtN(studied)} cards studied</span>`:'')}
       ${bandStrip}
-      ${wordIds.length?`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:2px 2px 9px">🐝 Word chapters <span style="font-size:12px;color:var(--muted);font-weight:700">— built from the spelling library</span></div>${grid(wordIds)}`:''}
-      <div style="font-family:var(--display);font-weight:800;font-size:15px;margin:18px 2px 9px">🌍 World chapters</div>${grid(otherIds)}
+      ${wordIds.length?`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:2px 2px 9px;display:flex;align-items:center;gap:7px">${ttGlyph('bee',18)}Word chapters <span style="font-size:12px;color:var(--muted);font-weight:700">— built from the spelling library</span></div>${grid(wordIds)}`:''}
+      <div style="font-family:var(--display);font-weight:800;font-size:15px;margin:18px 2px 9px;display:flex;align-items:center;gap:7px"><span style="width:18px;height:18px;flex-shrink:0">${ttIcon({id:'world'},18)}</span>World chapters</div>${grid(otherIds)}
       <button data-act="openTrivia" class="sb-lift" style="width:100%;text-align:left;margin-top:16px;border-radius:16px;padding:15px 17px;background:linear-gradient(135deg,#F0A93C,#DC7A18);color:#fff;display:flex;align-items:center;gap:13px;box-shadow:var(--sh-rest)">
-        <span style="font-size:26px">🎮</span><span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:16px">Ready to play?</span>
+        <span style="width:30px;height:30px;flex-shrink:0;display:inline-flex">${(window.SB_ICON_ART&&SB_ICON_ART.arcade)?SB_ICON_ART('arcade',{size:30}):''}</span><span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:16px">Ready to play?</span>
         <span style="display:block;font-size:12.5px;opacity:.92">Take what you've studied into Bee Trivia in the Arcade.</span></span><span style="font-weight:800">→</span></button>
     </div>`; }
   // ---------- flip-card deck ----------
@@ -6421,18 +6440,18 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
     ? `<div style="animation:sb-pop .28s ease both">
         <div style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:${col};margin-bottom:7px">Answer</div>
         <div style="font-family:var(--display);font-weight:800;font-size:clamp(19px,4.4vw,25px);line-height:1.25;color:var(--text)">${esc(q.c[0])}</div>
-        ${q.f?`<div style="margin-top:14px;text-align:left;background:var(--surface2);border-radius:13px;padding:12px 14px;font-size:13.5px;line-height:1.55;color:var(--text)"><span style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">💡 Did you know</span>${esc(q.f)}</div>`:''}</div>`
+        ${q.f?`<div style="margin-top:14px;text-align:left;background:var(--surface2);border-radius:13px;padding:12px 14px;font-size:13.5px;line-height:1.55;color:var(--text)"><span style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;display:flex;align-items:center;gap:5px">${ttGlyph('bulb',13)}Did you know</span>${esc(q.f)}</div>`:''}</div>`
     : `<div style="font-family:var(--display);font-weight:800;font-size:clamp(18px,4.2vw,23px);line-height:1.35;color:var(--text)">${esc(q.q)}</div>
        ${ttOptions(q,i,col)}
        <div style="font-size:12.5px;color:var(--muted);font-weight:700;margin-top:14px">Tap the card to reveal the answer</div>`;
   const rec=ttRec(c, ttKey(q)); const cst=ttChapterStats(c, t.th);
   const stateChips=TT_STATES.map(([k,lab,scol,em])=>{ const on=rec.s===k;
-    return `<button data-act="ttMark" data-arg="${k}" title="Mark this card as ${lab.toLowerCase()}" style="flex:1;min-width:88px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:11px;font-weight:800;font-size:12.5px;border:1.5px solid ${on?scol:'var(--line)'};background:${on?scol:'var(--surface2)'};color:${on?'#fff':'var(--muted)'}">${em} ${lab}${on?' ✓':''}</button>`; }).join('')
-    +`<button data-act="ttRevise" title="Add this card to your revision pile" style="flex:1;min-width:88px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:11px;font-weight:800;font-size:12.5px;border:1.5px solid ${rec.r?'var(--treasure,#F0B429)':'var(--line)'};background:${rec.r?'var(--treasure,#F0B429)':'var(--surface2)'};color:${rec.r?'#5a3d00':'var(--muted)'}">⚑ Revise${rec.r?' ✓':''}</button>`;
+    return `<button data-act="ttMark" data-arg="${k}" title="Mark this card as ${lab.toLowerCase()}" style="flex:1;min-width:88px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:11px;font-weight:800;font-size:12.5px;border:1.5px solid ${on?scol:'var(--line)'};background:${on?scol:'var(--surface2)'};color:${on?'#fff':'var(--muted)'}">${ttPlate(em,15,on)} ${lab}${on?' ✓':''}</button>`; }).join('')
+    +`<button data-act="ttRevise" title="Add this card to your revision pile" style="flex:1;min-width:88px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:11px;font-weight:800;font-size:12.5px;border:1.5px solid ${rec.r?'var(--treasure,#F0B429)':'var(--line)'};background:${rec.r?'var(--treasure,#F0B429)':'var(--surface2)'};color:${rec.r?'#5a3d00':'var(--muted)'}">${ttPlate('list',15,rec.r)} Revise${rec.r?' ✓':''}</button>`;
   return `<div style="max-width:640px;margin:0 auto">
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
       <button data-act="ttBack" title="Back to the deck of chapters" style="color:var(--muted);font-weight:800;font-size:13px">← Chapters</button>
-      <span style="font-family:var(--display);font-weight:800;font-size:17px">${th.e} ${esc(th.label)}</span>
+      <span style="font-family:var(--display);font-weight:800;font-size:17px;display:inline-flex;align-items:center;gap:7px"><span style="width:22px;height:22px;flex-shrink:0">${ttIcon(th,22)}</span>${esc(th.label)}</span>
       <span style="display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;background:${col}22;color:${col};font-weight:800;font-size:11px">L${ttBand(c)} · ${LVL[ttBand(c)]}</span>
       <span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);font-weight:700">${i+1} / ${fmtN(deck.length)}</span></div>
     <!-- two progress bars: where you are in the deck, and how much of the set you have learned -->
@@ -6442,7 +6461,7 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:5px;font-size:11px;font-weight:800;color:var(--muted)">
         <span>Card ${i+1} of ${fmtN(deck.length)}</span>
         <span style="margin-left:auto;display:inline-flex;gap:9px">
-          <span style="color:#2FA35C">🏆 ${cst.mastered}</span><span style="color:#E0922E">✍️ ${cst.tested}</span><span style="color:#7C5CFF">📖 ${cst.practised}</span>${cst.revise?`<span style="color:var(--treasure-deep,#8A5B00)">↓ ${cst.revise}</span>`:''}
+          <span style="color:#2FA35C;display:inline-flex;align-items:center;gap:4px">${ttGlyph('trophy',14)}${cst.mastered}</span><span style="color:#E0922E;display:inline-flex;align-items:center;gap:4px">${ttGlyph('target',14)}${cst.tested}</span><span style="color:#7C5CFF;display:inline-flex;align-items:center;gap:4px">${ttGlyph('book',14)}${cst.practised}</span>${cst.revise?`<span style="color:var(--treasure-deep,#8A5B00)">↓ ${cst.revise}</span>`:''}
         </span></div>
     </div>
     <button data-act="ttFlip" style="width:100%;text-align:center;background:var(--paper,var(--bg2));border:2px solid ${t.flip?col:'var(--line)'};border-radius:20px;padding:26px 20px;min-height:230px;display:flex;flex-direction:column;justify-content:center;box-shadow:var(--sh-rest);cursor:pointer">
@@ -6457,10 +6476,10 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
       <button data-act="ttBack" title="Back into the deck of chapters (↑)" style="padding:12px 15px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">↑ Deck</button>
       <button data-act="ttFlip" title="Reveal the answer (↓ or space)" style="padding:12px 15px;border-radius:12px;font-weight:800;font-size:14px;border:1.5px solid ${t.flip?col:'var(--line)'};background:${t.flip?'color-mix(in srgb,'+col+' 14%,var(--surface2))':'var(--surface2)'};color:${t.flip?col:'var(--muted)'}">↓ ${t.flip?'Hide':'Reveal'}</button>
       <button data-act="ttSay" title="Read the question aloud" style="padding:12px 15px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800">${iconSVG('volume',17)}</button>
-      <button data-act="ttShuffle" title="Jump to a random card" style="padding:12px 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">🔀</button>
+      <button data-act="ttShuffle" title="Jump to a random card" style="padding:12px 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px;display:inline-flex;align-items:center;justify-content:center">${ttGlyph('retry',17)}</button>
       <button data-act="ttNav" data-arg="1" title="Next card (→)" style="flex:1;min-width:96px;padding:12px 17px;border-radius:12px;background:${col};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next →</button></div>
     <button data-act="ttPlay" data-arg="${escA(t.th)}" class="sb-lift" style="width:100%;text-align:left;margin-top:13px;border-radius:14px;padding:13px 15px;background:linear-gradient(135deg,#F0A93C,#DC7A18);color:#fff;display:flex;align-items:center;gap:11px">
-      <span style="font-size:21px">🎮</span><span style="min-width:0;flex:1;font-weight:800;font-size:14px">Play this chapter in the Arcade →</span></button>
+      <span style="width:24px;height:24px;flex-shrink:0;display:inline-flex">${(window.SB_ICON_ART&&SB_ICON_ART.arcade)?SB_ICON_ART('arcade',{size:24}):''}</span><span style="min-width:0;flex:1;font-weight:800;font-size:14px">Play this chapter in the Arcade →</span></button>
   </div>`; }
 // ===== Subscription tier sheet (pricing) =====
 function tierEntRows(t){ const e=t.ent; const yes='✓', no='—';

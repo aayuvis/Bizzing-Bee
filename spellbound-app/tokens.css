@@ -253,3 +253,12 @@
   --ink:#1B1822; --muted:#66626F;
   --sh-rest:0 0 0 0 transparent;
 }
+
+/* ---- Illustrated icon ink -------------------------------------------------------------
+   The drawn chapter stickers keep their colourful fills in every mode, but their outline
+   and contact shadow are variables. In daylight the ink is the house purple-black and the
+   shadow is a soft dark ellipse. At dusk a dark ellipse under a sticker is invisible, so it
+   becomes a faint light halo, and the ink deepens slightly to hold its edge against the
+   bright fills. One drawing, two moods — no second copy of the artwork to keep in sync. */
+:root, [data-mode="light"], [data-mode="white"]{ --ico-ink:#2A1B4A; --ico-shadow:#2A1B4A; }
+[data-mode="dusk"]{ --ico-ink:#160D2B; --ico-shadow:#EAE2FF; }
