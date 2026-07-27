@@ -278,3 +278,34 @@
 [data-theme="science"] .w4o-beaker .fizz circle:nth-child(2){animation-delay:-.7s}
 [data-theme="science"] .w4o-beaker .fizz circle:nth-child(3){animation-delay:-1.4s}
 [data-theme="science"] .w4o-react{animation:w4-react 5s ease-out infinite}
+
+/* ===== Galaxy = Van Gogh's Starry Night ====================================================
+   The sky rolls: the double swirl drifts and breathes, stars burn inside painted halos, the
+   crescent blazes top-right, the cypress flames on the left, hills hold the horizon.
+   Light mode is the painting by day; DARK MODE IS THE PAINTING — everything turns up. */
+@keyframes w4-vgroll{0%,100%{transform:translateX(0) rotate(-1.2deg)}50%{transform:translateX(3vw) rotate(1.2deg)}}
+@keyframes w4-vgflame{0%,100%{transform:skewX(0) scaleY(1)}50%{transform:skewX(2.2deg) scaleY(1.015)}}
+@keyframes w4-vgburn{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.18)}}
+[data-theme="aurora"] .w4o-vgswirl{opacity:.5;animation:w4-vgroll 22s ease-in-out infinite}
+[data-theme="aurora"] .w4o-vgswirl2{opacity:.38}
+[data-theme="aurora"] .w4o-vgmoon{opacity:.75;animation:w4-gleam 9s ease-in-out infinite}
+[data-theme="aurora"] .w4o-vgcypress{opacity:.5;transform-origin:50% 100%;animation:w4-vgflame 7s ease-in-out infinite}
+[data-theme="aurora"] .w4o-vghills{left:0;right:0;bottom:0;height:12vh;opacity:.4}
+[data-theme="aurora"] .w4o-vgstar{border-radius:50%;animation-name:w4-vgburn;animation-timing-function:ease-in-out;animation-iteration-count:infinite;
+  background:radial-gradient(circle,#FFF8D8 0 26%,#F5D76E 52%,rgba(245,215,110,.25) 72%,transparent 78%);
+  box-shadow:0 0 10px 3px rgba(245,215,110,.35)}
+/* night: the real thing */
+[data-theme="aurora"][data-mode="dusk"] .w4o-vgswirl{opacity:.95}
+[data-theme="aurora"][data-mode="dusk"] .w4o-vgswirl2{opacity:.75}
+[data-theme="aurora"][data-mode="dusk"] .w4o-vgmoon{opacity:1;filter:drop-shadow(0 0 26px rgba(240,201,74,.55))}
+[data-theme="aurora"][data-mode="dusk"] .w4o-vgcypress{opacity:.96}
+[data-theme="aurora"][data-mode="dusk"] .w4o-vghills{opacity:.85}
+[data-theme="aurora"][data-mode="dusk"] .w4o-vgstar{box-shadow:0 0 16px 6px rgba(245,215,110,.6),0 0 40px 14px rgba(125,140,240,.3)}
+[data-theme="aurora"][data-mode="dusk"] .w4-bg{background:radial-gradient(120% 100% at 70% 0%,#25316B 0%,#1B2450 52%,#131A38 100%)}
+
+/* ===== Arcade: tetromino rain + the pixel hero ============================================ */
+@keyframes w4-tetfall{0%{transform:translateY(-16vh) rotate(0)}100%{transform:translateY(116vh) rotate(180deg)}}
+[data-theme="pixel"] .w4o-tet{top:0;animation:w4-tetfall linear infinite}
+[data-theme="pixel"] .w4o-tstack{left:0;right:0;bottom:0;height:54px;opacity:.5}
+@keyframes w4-pixhop{0%,100%{transform:translateY(0) scaleY(.9)}32%{transform:translateY(-9vh) scaleY(1.06)}52%{transform:translateY(-10vh) scaleY(1)}}
+[data-theme="pixel"] .w4o-hopper{animation:w4-pixhop 1.15s ease-in-out infinite;transform-origin:50% 100%}

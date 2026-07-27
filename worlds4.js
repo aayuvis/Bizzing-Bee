@@ -389,6 +389,34 @@
 
   /* ---- props for the original eight (small, silhouette-grade) ---- */
   var BEE_S='<svg viewBox="0 0 40 30" width="100%" height="100%"><ellipse cx="20" cy="18" rx="11" ry="8.5" fill="#FFC23D"/><rect x="14" y="14" width="12" height="2.6" rx="1.3" fill="#3A2A8C"/><rect x="14" y="19" width="12" height="2.6" rx="1.3" fill="#3A2A8C"/><ellipse cx="13" cy="8" rx="5" ry="7" fill="#EDE7FF" opacity=".9" transform="rotate(-24 13 8)"/><ellipse cx="27" cy="8" rx="5" ry="7" fill="#EDE7FF" opacity=".9" transform="rotate(24 27 8)"/><circle cx="26" cy="16" r="1.7" fill="#2B1B5E"/></svg>';
+  /* ---- Starry Night props: the swirl, the cypress, the moon, the hills ---- */
+  function VG_STROKES(paths){ return paths.map(function(pr){
+    return '<path d="'+pr[0]+'" fill="none" stroke="'+pr[1]+'" stroke-width="'+pr[2]+'" stroke-linecap="round" opacity="'+pr[3]+'"/>'; }).join(''); }
+  var VG_SWIRL='<svg viewBox="0 0 340 170" width="100%" height="100%">'
+    +VG_STROKES([
+      ['M8 96 C 60 30 142 16 198 44 C 244 66 248 108 212 122 C 180 134 150 116 153 88 C 156 64 182 56 198 70 C 210 80 206 98 190 100','#3D5490',13,'.9'],
+      ['M8 96 C 60 30 142 16 198 44 C 244 66 248 108 212 122 C 180 134 150 116 153 88 C 156 64 182 56 198 70 C 210 80 206 98 190 100','#6C8FD4',7,'.9'],
+      ['M12 88 C 64 26 140 12 196 38 C 238 58 242 100 210 114','#9FB8E8',3.4,'.85'],
+      ['M198 44 C 252 18 306 26 334 54','#3D5490',11,'.8'],
+      ['M198 44 C 252 18 306 26 334 54','#6C8FD4',5.5,'.85'],
+      ['M202 40 C 254 14 304 22 330 48','#DFE9F8',2.6,'.7'],
+      ['M40 118 C 80 96 120 100 150 118','#6C8FD4',6,'.5'],
+      ['M40 118 C 80 96 120 100 150 118','#9FB8E8',2.8,'.55']])
+    +'</svg>';
+  var VG_CYPRESS='<svg viewBox="0 0 90 240" width="100%" height="100%">'
+    +'<path d="M45 238 C30 200 34 170 26 140 C18 108 30 78 38 54 C42 40 40 20 45 4 C50 20 48 40 52 54 C60 78 72 108 64 140 C56 170 60 200 45 238 z" fill="#0F1D14"/>'
+    +'<path d="M45 220 C36 190 40 160 34 132 M45 210 C52 184 50 150 56 124 M45 60 C42 44 43 26 45 12" stroke="#1C3324" stroke-width="3" fill="none" opacity=".8"/>'
+    +'</svg>';
+  var VG_MOON='<svg viewBox="0 0 120 120" width="100%" height="100%">'
+    +'<circle cx="66" cy="56" r="50" fill="#F5D76E" opacity=".10"/><circle cx="66" cy="56" r="38" fill="#F5D76E" opacity=".16"/>'
+    +'<circle cx="66" cy="56" r="27" fill="#F5D76E" opacity=".3"/>'
+    +'<path d="M78 30 A30 30 0 1 0 78 82 A23 23 0 1 1 78 30 z" fill="#F0C94A"/>'
+    +'<path d="M60 36 A24 24 0 0 0 58 74" stroke="#E8A33D" stroke-width="3" fill="none" opacity=".7"/>'
+    +'</svg>';
+  var VG_HILLS='<svg viewBox="0 0 320 60" width="100%" height="100%" preserveAspectRatio="none">'
+    +'<path d="M0 60 L0 38 C 40 22 70 34 110 26 C 150 18 190 34 230 28 C 270 22 300 32 320 26 L320 60 z" fill="#17223C"/>'
+    +'<path d="M0 44 C 60 30 120 40 180 32 C 240 24 290 36 320 30" stroke="#2C4066" stroke-width="3" fill="none" opacity=".7"/>'
+    +'</svg>';
   /* a family of planets: body + polar highlight, optional ring, optional cloud bands */
   function PLANET2(body,lite,ring,bands){
     var o='<svg viewBox="0 0 60 44" width="100%" height="100%">';
@@ -421,6 +449,40 @@
   var FLASK='<svg viewBox="0 0 60 70" width="100%" height="100%"><path d="M24 4 h12 v20 l14 34 q3 8 -6 8 h-28 q-9 0 -6 -8 l14 -34 z" fill="none" stroke="#3BC0AA" stroke-width="3"/><path d="M17 48 h26 l5 12 q2 6 -4 6 h-28 q-6 0 -4 -6 z" fill="#3BC0AA" opacity=".55"/></svg>';
   var PLANE='<svg viewBox="0 0 60 34" width="100%" height="100%"><path d="M2 20 L58 2 L34 32 L26 22 z" fill="#F0C9A2"/><path d="M26 22 L58 2 L30 18 z" fill="#E88A5C"/></svg>';
   var CRANE='<svg viewBox="0 0 70 56" width="100%" height="100%"><path d="M8 44 L30 20 L40 34 L64 40 L40 44 L30 52 z" fill="#E88A5C"/><path d="M30 20 L36 4 L42 22 z" fill="#F0C9A2"/><path d="M30 20 L40 34 L40 44 L30 52 z" fill="#C25A2E"/></svg>';
+  /* classic tetrominoes: bevelled cells, authentic colours */
+  function TET(shape){
+    var SH={ I:[[0,0],[1,0],[2,0],[3,0],'#36C6E0'], O:[[0,0],[1,0],[0,1],[1,1],'#FFD34D'],
+             T:[[0,0],[1,0],[2,0],[1,1],'#B14FC4'], L:[[0,0],[0,1],[0,2],[1,2],'#F0A93C'],
+             S:[[1,0],[2,0],[0,1],[1,1],'#2FD08C'], Z:[[0,0],[1,0],[1,1],[2,1],'#E0453A'],
+             J:[[1,0],[1,1],[1,2],[0,2],'#3B6FE0'] };
+    var d=SH[shape]||SH.O, col=d[4], C=18, o='';
+    for(var i=0;i<4;i++){ var x=d[i][0]*C, y=d[i][1]*C;
+      o+='<rect x="'+x+'" y="'+y+'" width="'+C+'" height="'+C+'" fill="'+col+'" stroke="#1A2438" stroke-width="2"/>'
+        +'<rect x="'+(x+3)+'" y="'+(y+3)+'" width="5" height="5" fill="#fff" opacity=".55"/>'; }
+    return '<svg viewBox="0 0 72 54" width="100%" height="100%" style="overflow:visible">'+o+'</svg>'; }
+  /* the settled stack along the floor, mid-game, gaps and all */
+  var TSTACK=(function(){ var cols=['#36C6E0','#FFD34D','#B14FC4','#F0A93C','#2FD08C','#E0453A','#3B6FE0'];
+    var o='<svg viewBox="0 0 340 54" width="100%" height="100%" preserveAspectRatio="none">';
+    var map=[[0,2,1,1,3,0,5,2,2,6,0,4,4,1,0,3,3,0,5],[2,2,0,4,3,3,0,1,1,6,6,0,4,5,5,0,3,2,0]];
+    for(var r=0;r<2;r++) for(var c=0;c<19;c++){ var v=map[r][c]; if(!v&&v!==0) continue; if(map[r][c]===0) continue;
+      o+='<rect x="'+(c*18)+'" y="'+(r*18+18)+'" width="18" height="18" fill="'+cols[map[r][c]%7]+'" stroke="#1A2438" stroke-width="2"/>'; }
+    return o+'</svg>'; })();
+  /* the 8-bit hero bouncing through the level — our own pixel bee, cape and all */
+  var PIXBEE=(function(){ var px=6, o='', P=function(x,y,c){ o+='<rect x="'+(x*px)+'" y="'+(y*px)+'" width="'+px+'" height="'+px+'" fill="'+c+'"/>'; };
+    var Y='#FFC23D', D='#3A2A8C', W='#EDE7FF', K='#2B1B5E', R='#FF7FBE';
+    P(3,0,K);P(8,0,K); P(4,1,K);P(7,1,K);
+    P(1,2,W);P(2,2,W);P(9,2,W);P(10,2,W);
+    P(0,3,W);P(1,3,W);P(2,3,W);P(9,3,W);P(10,3,W);P(11,3,W);
+    for(var x=3;x<=8;x++) P(x,2,Y);
+    for(var x2=2;x2<=9;x2++) P(x2,3,Y);
+    P(3,4,Y);P(4,4,K);P(5,4,Y);P(6,4,Y);P(7,4,K);P(8,4,Y);P(2,4,Y);P(9,4,Y);
+    for(var x3=2;x3<=9;x3++) P(x3,5,Y);
+    P(2,6,R);P(9,6,R); for(var x4=3;x4<=8;x4++) P(x4,6,Y);
+    for(var x5=2;x5<=9;x5++) P(x5,7,D);
+    for(var x6=3;x6<=8;x6++) P(x6,8,Y);
+    for(var x7=3;x7<=8;x7++) P(x7,9,D);
+    P(4,10,K);P(5,10,K);P(7,10,K);P(8,10,K);
+    return '<svg viewBox="0 0 72 66" width="100%" height="100%" shape-rendering="crispEdges">'+o+'</svg>'; })();
   var INVADER='<svg viewBox="0 0 44 32" width="100%" height="100%"><g fill="#7BA3F5"><rect x="8" y="0" width="4" height="4"/><rect x="32" y="0" width="4" height="4"/><rect x="12" y="4" width="4" height="4"/><rect x="28" y="4" width="4" height="4"/><rect x="8" y="8" width="28" height="4"/><rect x="4" y="12" width="10" height="4"/><rect x="18" y="12" width="8" height="4"/><rect x="30" y="12" width="10" height="4"/><rect x="0" y="16" width="44" height="4"/><rect x="0" y="20" width="4" height="8"/><rect x="40" y="20" width="4" height="8"/><rect x="10" y="24" width="6" height="4"/><rect x="28" y="24" width="6" height="4"/></g></svg>';
   var LEAF_E='<svg viewBox="0 0 26 26" width="100%" height="100%"><path d="M3 23 q0 -18 20 -20 q-2 20 -20 20z" fill="#5FB87A"/><path d="M3 23 q8 -10 16 -14" stroke="#3C8455" stroke-width="1.6" fill="none"/></svg>';
   var FLAME_E='<svg viewBox="0 0 26 34" width="100%" height="100%"><path d="M13 2 q8 10 6 20 a7 7 0 0 1 -12 0 q-2 -10 6 -20z" fill="#F3A13C"/><path d="M13 14 q4 6 2 10 a3.5 3.5 0 0 1 -4 0 q-2 -4 2 -10z" fill="#FFE07A"/></svg>';
@@ -478,10 +540,16 @@
       layer.appendChild(el('w4o-swing','right:12vw;top:-4vh;width:26vw;height:70vh;animation-delay:-4.5s', SPOT('#F7E9C8')));
       for(var m2=0;m2<9;m2++) layer.appendChild(el('w4o-rise','left:'+rnd(8,92).toFixed(1)+'vw;width:4px;height:4px;background:#F6DC8A;box-shadow:0 0 6px 2px rgba(246,220,138,.55);animation-duration:'+rnd(13,24).toFixed(1)+'s;animation-delay:-'+rnd(0,20).toFixed(1)+'s'));
     } else if(world==='aurora'){
-      layer.appendChild(el('w4o-nebula')); layer.appendChild(el('w4o-ribbon'));
-      for(var st=0;st<26;st++) layer.appendChild(el('w4o-twk','left:'+rnd(2,98).toFixed(1)+'vw;top:'+rnd(2,88).toFixed(1)+'vh;width:'+rnd(2,4).toFixed(1)+'px;height:'+rnd(2,4).toFixed(1)+'px;animation-duration:'+rnd(1.6,4).toFixed(1)+'s;animation-delay:-'+rnd(0,3).toFixed(1)+'s'));
-      layer.appendChild(el('w4o-shoot','right:6vw;top:12vh;animation-delay:-2s'));
-      layer.appendChild(el('w4o-shoot','right:34vw;top:30vh;animation-delay:-6s'));
+      /* Van Gogh's Starry Night: the double swirl rolling across the sky, halo stars,
+         the blazing crescent, the cypress flame on the left, hills on the horizon */
+      layer.appendChild(el('w4o-vg w4o-vgswirl','left:4vw;top:7vh;width:min(52vw,620px);aspect-ratio:2/1', VG_SWIRL));
+      layer.appendChild(el('w4o-vg w4o-vgswirl w4o-vgswirl2','right:2vw;top:34vh;width:min(30vw,340px);aspect-ratio:2/1;animation-delay:-11s', VG_SWIRL));
+      layer.appendChild(el('w4o-vg w4o-vgmoon','right:5vw;top:5vh;width:min(17vw,200px);aspect-ratio:1', VG_MOON));
+      layer.appendChild(el('w4o-vghills','', VG_HILLS));
+      layer.appendChild(el('w4o-vg w4o-vgcypress','left:2vw;bottom:0;width:min(11vw,120px);aspect-ratio:90/240', VG_CYPRESS));
+      for(var st=0;st<13;st++){ var sz=rnd(8,22);
+        layer.appendChild(el('w4o-vgstar','left:'+rnd(3,94).toFixed(1)+'vw;top:'+rnd(3,60).toFixed(1)+'vh;width:'+sz.toFixed(0)+'px;height:'+sz.toFixed(0)+'px;animation-duration:'+rnd(2.4,5.5).toFixed(1)+'s;animation-delay:-'+rnd(0,4).toFixed(1)+'s')); }
+      layer.appendChild(el('w4o-shoot','right:26vw;top:14vh;animation-delay:-6s'));
       // a whole solar neighbourhood, drifting at different depths and speeds
       [[PLANET2('#7D8CF0','#A9B4F7','#A9B4F7',null),'16vh',110,'90s','.7','0s'],
        [PLANET2('#E0885A','#F0B48A','#F6DC8A',null),'8vh',72,'130s','.55','-40s'],
@@ -511,9 +579,13 @@
       for(var sq=0;sq<6;sq++) layer.appendChild(el('w4o-fall','left:'+rnd(4,96).toFixed(1)+'vw;width:'+rnd(8,13).toFixed(0)+'px;height:'+rnd(8,13).toFixed(0)+'px;background:'+(sq%2?'#E88A5C':'#F0C9A2')+';opacity:.5;animation-duration:'+rnd(11,20).toFixed(1)+'s,'+rnd(3,5).toFixed(1)+'s;animation-delay:-'+rnd(0,16).toFixed(1)+'s,0s'));
     } else if(world==='pixel'){
       layer.appendChild(el('w4o-scan')); layer.appendChild(el('w4o-crt'));
-      for(var px=0;px<14;px++) layer.appendChild(el('w4o-fall','left:'+rnd(2,98).toFixed(1)+'vw;width:9px;height:9px;background:'+(px%3===0?'#7BA3F5':(px%3===1?'#FFD34D':'#36E0C8'))+';opacity:.55;animation-duration:'+rnd(8,16).toFixed(1)+'s,'+rnd(3,5).toFixed(1)+'s;animation-delay:-'+rnd(0,12).toFixed(1)+'s,0s'));
-      layer.appendChild(el('w4o-across','top:8vh;width:46px;animation-duration:38s;opacity:.5', INVADER));
-      layer.appendChild(el('w4o-across','top:22vh;width:34px;animation-duration:54s;animation-delay:-20s;opacity:.35', INVADER));
+      // tetromino rain — every classic piece, falling and turning at its own pace
+      var SHAPES=['I','O','T','L','S','Z','J','O','T','I'];
+      for(var tt=0;tt<10;tt++) layer.appendChild(el('w4o-tet','left:'+rnd(2,92).toFixed(1)+'vw;width:'+rnd(34,58).toFixed(0)+'px;aspect-ratio:72/54;opacity:'+rnd(.45,.7).toFixed(2)+';animation-duration:'+rnd(9,20).toFixed(1)+'s;animation-delay:-'+rnd(0,18).toFixed(1)+'s', TET(SHAPES[tt])));
+      layer.appendChild(el('w4o-tstack','', TSTACK));
+      // the pixel hero bounding across the level
+      layer.appendChild(el('w4o-across','bottom:7vh;width:56px;aspect-ratio:72/66;animation-duration:24s;opacity:.9','<div class="w4o-hopper" style="width:100%;height:100%">'+PIXBEE+'</div>'));
+      layer.appendChild(el('w4o-across','top:9vh;width:40px;animation-duration:48s;animation-delay:-22s;opacity:.4', INVADER));
     } else if(world==='avatar'){
       ['w4o-el1','w4o-el2','w4o-el3','w4o-el4'].forEach(function(c){ layer.appendChild(el(c)); });
       for(var lf=0;lf<5;lf++) layer.appendChild(el('w4o-across','top:'+rnd(12,74).toFixed(1)+'vh;width:'+rnd(18,28).toFixed(0)+'px;animation-duration:'+rnd(18,34).toFixed(1)+'s;animation-delay:-'+rnd(0,26).toFixed(1)+'s;opacity:.6', LEAF_E));
