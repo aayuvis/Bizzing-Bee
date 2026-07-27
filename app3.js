@@ -1419,7 +1419,7 @@ const app = {
   wearAcc:(k)=>{ const c=active(); c.accOn=(c.accOn===k?null:k); save(); render(); },
 
   toggleSound:()=>{ set({sound:!state.sound}); if(state.sound) sfx('coin'); },
-  toggleMusic:()=>{ try{ if(window.SB_W4_MUSIC){ const on=SB_W4_MUSIC.toggle(); flash(on?'🎵 World music on':'World music off'); } }catch(e){} render(); },
+  toggleFocus:()=>{ try{ if(window.SB_W4_FOCUS){ const on=SB_W4_FOCUS.toggle(); flash(on?'🎯 Focus on — music off, world held still':'Focus off — the world wakes up'); } }catch(e){} render(); },
   devTap:()=>{ state._devTaps=(state._devTaps||0)+1;
     if(state._devTaps>=7){ state._devTaps=0; state.devReveal=!state.devReveal; flash(state.devReveal?'🛠 Testing tools revealed':'🛠 Testing tools hidden'); render(); } },
   toggleDevUnlock:()=>{ pinGate(()=>{
@@ -2630,11 +2630,11 @@ function viewApp(){
           <span>✦ ${fmtN(_xp)}</span>
           <span style="font-size:9.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;opacity:.72">Karma L${_lf.level}</span>
         </button>`; })()}<button data-act="openShop" title="Your coins — tap to open the Store" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(active().coins||0,14)}</button>
-        ${(()=>{ const _mon=!!(window.SB_W4_MUSIC&&SB_W4_MUSIC.on());
-          // a drawn note, not an emoji: emoji glyphs go monochrome-or-missing on some
+        ${(()=>{ const _fon=!!(window.SB_W4_FOCUS&&SB_W4_FOCUS.on());
+          // a drawn reticle, not an emoji: emoji glyphs go monochrome-or-missing on some
           // platforms in dark mode, but currentColor SVG shows everywhere
-          return `<button data-act="toggleMusic" class="sb-mob-hide" aria-label="World music on/off" title="World music — every world has its own tune" style="width:38px;height:38px;border-radius:10px;background:${_mon?'var(--chip)':'var(--surface2)'};display:grid;place-items:center;color:${_mon?'var(--accent)':'var(--muted)'}">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>${_mon?'':'<line x1="3" y1="4" x2="21" y2="20"/>'}</svg>
+          return `<button data-act="toggleFocus" class="sb-mob-hide" aria-label="Focus mode: music off, still background" title="Focus — switches off the music and holds the world still" style="width:38px;height:38px;border-radius:10px;background:${_fon?'var(--chip)':'var(--surface2)'};display:grid;place-items:center;color:${_fon?'var(--accent)':'var(--muted)'}">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="${_fon?'2.4':'1'}" fill="currentColor" stroke="none"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
           </button>`; })()}
         <button data-act="cycleMode" aria-label="Switch look (Light / White / Dusk)" title="Light / White / Dusk" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);font-size:16px;line-height:1" class="sb-mob-hide">${S.mode==='light'?'☀':S.mode==='white'?'◻':'☾'}</button>
         <button data-act="goSettings" aria-label="Settings" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text)">${iconSVG('gear',17)}</button>
