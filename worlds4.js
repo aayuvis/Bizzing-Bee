@@ -536,6 +536,16 @@
     /* ---- the original eight get lighter scenes in the same voice ---- */
     else if(world==='spellbound'){
       layer.appendChild(el('w4o-comb')); layer.appendChild(el('w4o-hiveglow'));
+      // the shimmer lattice: individually addressable cells in true close packing;
+      // CSS shows them only at night, each flashing on its own delay so the glow travels
+      (function(){ var s0=34, hh=Math.round(Math.sqrt(3)*s0), dx=Math.round(1.5*s0);
+        var HEXCELL='<svg viewBox="0 0 68 59" width="100%" height="100%"><polygon points="17,0 51,0 68,29.5 51,59 17,59 0,29.5" fill="rgba(255,211,77,.16)" stroke="#F0B429" stroke-width="2.4"/></svg>';
+        var W=(window.innerWidth||1280), H=(window.innerHeight||900), k=0;
+        for(var ci=0;ci<Math.ceil(W/dx)+2 && k<360;ci++)
+          for(var ri=0;ri<Math.ceil(H/hh)+2 && k<360;ri++){ k++;
+            var x=ci*dx-s0, y=ri*hh+((ci%2)?hh/2:0)-hh/2;
+            layer.appendChild(el('w4-hexcell','left:'+x+'px;top:'+y+'px;width:'+(2*s0)+'px;height:'+hh+'px;animation-delay:'+(((ci*2+ri*5)%29)*0.23).toFixed(2)+'s', HEXCELL)); }
+      })();
       // the bees crossing the meadow are the app's own bee avatars, not stand-in doodles
       var hive=['bizzy','bumble','waggle','dronedan','queenhive','clover'];
       try{ if(window.SB_AVATARS) hive=hive.filter(function(id){ return SB_AVATARS.byId[id]; }); }catch(e){}
