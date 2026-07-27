@@ -11,7 +11,7 @@
   var W = [
     { id:'godly',   label:"God's Abode", sub:'Divine',   c1:'#B8860B', c2:'#FBF3DC' },
     { id:'serpent', label:"Serpent's Lair", sub:'Creepy', c1:'#2E7D52', c2:'#EEF6EE' },
-    { id:'race',    label:'Race Zone',   sub:'Full throttle', c1:'#D8342A', c2:'#F7EFEE' },
+    { id:'race',    label:'Race Zone',   sub:'Full throttle', c1:'#2456D6', c2:'#EEF3FA' },
     { id:'dino',    label:'Dino Era',    sub:'Prehistoric',   c1:'#5E7A2E', c2:'#F3F2E4' }
   ];
 
@@ -31,7 +31,7 @@
   try{
     EV_TC.godly   = { a:'#E0A82E', b:'#F6DC8A', c:'#B8860B', ink:'#8A5B00' };
     EV_TC.serpent = { a:'#3FA86A', b:'#8FD9A8', c:'#2E7D52', ink:'#1E5B39' };
-    EV_TC.race    = { a:'#E0453A', b:'#FFC83D', c:'#2C3A55', ink:'#8E1C14' };
+    EV_TC.race    = { a:'#3D7DF0', b:'#FFC83D', c:'#2C3A55', ink:'#14337A' };
     EV_TC.dino    = { a:'#6F9438', b:'#A8C86A', c:'#C25A2E', ink:'#3F5A1C' };
 
     EV_NOMEN.godly   = ['Mortal','Seeker','Acolyte','Devotee','Oracle','Priest','Demigod','Deity','Ascendant','Godhead'];
@@ -159,7 +159,7 @@
         return o; }
       K.godly   = { L:'#FBF3DC', D:'#4A3A12', a:'#B8860B', p1:'#E0A82E', p2:'#F6DC8A', lt:'#F7ECCB', face:"'Fraunces',Georgia,serif", spark:sun('#F6DC8A'), motif:pillars };
       K.serpent = { L:'#EEF6EE', D:'#1E3B2A', a:'#2E7D52', p1:'#3FA86A', p2:'#8FD9A8', lt:'#DCEFE1', face:"'Fredoka',sans-serif", spark:leaf('#8FD9A8'), motif:vines };
-      K.race    = { L:'#F7EFEE', D:'#3A1512', a:'#D8342A', p1:'#E0453A', p2:'#FFC83D', lt:'#F3DEDB', face:"'Bungee',sans-serif", spark:chequer('#FFC83D'), motif:trackm };
+      K.race    = { L:'#EEF3FA', D:'#0F1729', a:'#2456D6', p1:'#4A8CFF', p2:'#FFC83D', lt:'#DBE5F3', face:"'Bungee',sans-serif", spark:chequer('#FFC83D'), motif:trackm };
       K.dino    = { L:'#F3F2E4', D:'#33401A', a:'#5E7A2E', p1:'#6F9438', p2:'#A8C86A', lt:'#E6E7CE', face:"'Baloo 2',sans-serif", spark:bone('#A8C86A'), motif:ferns };
     }
   }catch(e){}
@@ -557,7 +557,7 @@ window.SB_W4_FOCUS={
     } else if(world==='race'){
       layer.appendChild(el('w4-chequer'));
       layer.appendChild(el('w4-asphalt'));
-      var cols=['#E0453A','#FFC83D','#3B6FE0','#2FA35C'];
+      var cols=['#3B6FE0','#FFC83D','#2456D6','#2FA35C'];
       for(var ci=0;ci<4;ci++) layer.appendChild(el('w4-car','bottom:'+rnd(3,20).toFixed(1)+'vh;width:'+rnd(90,180).toFixed(0)+'px;animation-duration:'+rnd(4.5,9).toFixed(1)+'s;animation-delay:-'+rnd(0,8).toFixed(1)+'s;opacity:'+rnd(.4,.72).toFixed(2), carSVG(cols[ci%cols.length])));
       for(var li=0;li<10;li++) layer.appendChild(el('w4-line','top:'+rnd(6,92).toFixed(1)+'vh;width:'+rnd(60,190).toFixed(0)+'px;animation-duration:'+rnd(1.1,2.6).toFixed(2)+'s;animation-delay:-'+rnd(0,2).toFixed(2)+'s'));
     } else if(world==='dino'){
