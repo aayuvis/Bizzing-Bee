@@ -431,7 +431,7 @@ function maskTxt(text, word){ const t=text||''; const w=(word||'').trim(); if(!w
 function altsFor(word){ try{ const m=window.SB_ALT; if(!m) return []; return m[nkey(word)]||[]; }catch(e){ return []; } }
 function altsHTML(word, mask){ const a=altsFor(word); if(!a||!a.length) return '';
   const rows=a.slice(0,2).map(s=>`<div style="display:flex;gap:7px;align-items:flex-start;margin-top:7px">
-      <span style="flex-shrink:0;font-family:var(--mono);font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);background:var(--chip);padding:2px 7px;border-radius:999px;margin-top:2px">${esc(s.p||'also')}</span>
+      <span style="flex-shrink:0;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);background:var(--chip);padding:2px 7px;border-radius:999px;margin-top:2px">${esc(s.p||'also')}</span>
       <span style="font-size:13.5px;color:var(--text);line-height:1.5">${mask?blankHTML(s.d,word):esc(s.d)}</span></div>`).join('');
   return `<div style="margin-top:12px;padding-top:11px;border-top:1px dashed var(--line);text-align:left;max-width:40em;margin-left:auto;margin-right:auto">
     <div style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:1px">📖 Other meanings</div>${rows}</div>`; }
@@ -2052,10 +2052,10 @@ function figLearnView(){ const S=state; const c=active();
         <div style="font-size:13px;font-style:italic;opacity:.85">“${esc(x.ex)}”</div>
         ${(x.eq&&x.eq.length)?`<div style="font-size:12px;color:var(--muted)"><b>Same idea elsewhere:</b> ${x.eq.map(e=>esc(e.lang)+': “'+esc(e.p)+'”').join(' · ')}</div>`:''}</div>`;
     return `<div style="max-width:640px;margin:0 auto">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><button data-act="figBackToDecks" style="color:var(--muted);font-weight:700;font-size:13px">← All decks</button><span style="font-family:var(--display);font-weight:800;font-size:18px">${esc(deck.label)}</span><span style="margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted)">${i+1} / ${items.length}</span></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><button data-act="figBackToDecks" style="color:var(--muted);font-weight:700;font-size:13px">← All decks</button><span style="font-family:var(--display);font-weight:800;font-size:18px">${esc(deck.label)}</span><span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">${i+1} / ${items.length}</span></div>
       <div style="height:6px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-bottom:14px"><div style="height:100%;background:var(--accent);width:${Math.round((i+1)/items.length*100)}%"></div></div>
       <button data-act="figFlip" style="display:block;width:100%;text-align:center;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--sh-rest);min-height:290px">
-        <div style="display:flex;gap:6px;justify-content:center;margin-bottom:10px"><span style="font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:var(--surface2);color:var(--muted)">${x.t}</span>${x.region&&x.region!=='global'?`<span style="font-size:10px;font-weight:800;padding:2px 9px;border-radius:99px;background:var(--chip);color:var(--accent)">🌍 ${esc(x.region)}</span>`:''}</div>
+        <div style="display:flex;gap:6px;justify-content:center;margin-bottom:10px"><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:var(--surface2);color:var(--muted)">${x.t}</span>${x.region&&x.region!=='global'?`<span style="font-size:10px;font-weight:800;padding:2px 9px;border-radius:99px;background:var(--chip);color:var(--accent)">🌍 ${esc(x.region)}</span>`:''}</div>
         <div style="font-family:var(--display);font-weight:800;font-size:clamp(20px,4.6vw,28px);line-height:1.25;margin-bottom:12px">“${esc(x.p)}”</div>
         ${flip?back:`<div style="color:var(--muted);font-weight:700;font-size:13px;margin-top:26px">Tap the card to reveal the meaning &amp; story ▾</div>`}
       </button>
@@ -2092,7 +2092,7 @@ function viewFigurative(){ const S=state;
       <div style="display:flex;align-items:flex-start;gap:8px"><span style="font-family:var(--display);font-weight:800;font-size:16.5px;line-height:1.2;flex:1">${esc(x.p)}</span>
         <button data-act="figSay" data-arg="${escA(x.p+'. '+x.m)}" title="Hear it" style="width:30px;height:30px;border-radius:9px;background:var(--chip);color:var(--accent);display:grid;place-items:center;flex-shrink:0">${iconSVG('volume',15)}</button></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
-        <span style="font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:var(--surface2);color:var(--muted)">${x.t}</span>
+        <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:var(--surface2);color:var(--muted)">${x.t}</span>
         <span style="font-size:10px;font-weight:800;padding:2px 9px;border-radius:99px;color:${oc[1]};background:${oc[2]}">${oc[0]}</span>
         ${x.region&&x.region!=='global'?`<span style="font-size:10px;font-weight:800;padding:2px 9px;border-radius:99px;background:var(--chip);color:var(--accent)">🌍 ${esc(x.region)}</span>`:''}</div>
       <div style="font-size:13.5px;font-weight:700">${esc(x.m)}</div>
@@ -2223,7 +2223,7 @@ function viewTyping(){ const S=state; const c=active(); const st=tyStats(c);
   const lessons=TY_LESSONS.map((l,i)=>{ const acc=st.lessons[l.id];
     return `<button data-act="tyStart" data-arg="${l.id}" style="text-align:left;background:var(--paper,var(--bg2));border:1.5px solid ${acc>=90?'var(--treasure,#F0B429)':'var(--line)'};border-radius:14px;padding:13px 15px;display:flex;align-items:center;gap:12px">
       <span style="width:34px;height:34px;border-radius:10px;background:var(--chip);color:var(--accent);display:grid;place-items:center;font-weight:800;font-size:13px;flex-shrink:0">${i+1}</span>
-      <span style="min-width:0;flex:1"><span style="display:block;font-weight:800;font-size:14px">${esc(l.name)}${l.dyn?' <span style="font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);background:var(--treasure-tint,#FFF3D6);padding:2px 6px;border-radius:99px;vertical-align:middle">word bank</span>':''}</span>
+      <span style="min-width:0;flex:1"><span style="display:block;font-weight:800;font-size:14px">${esc(l.name)}${l.dyn?' <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);background:var(--treasure-tint,#FFF3D6);padding:2px 6px;border-radius:99px;vertical-align:middle">word bank</span>':''}</span>
       <span style="display:block;font-size:11.5px;color:var(--muted);font-weight:650">${acc!=null?('best accuracy '+acc+'%'+(acc>=90?' ✓':'')):'not tried yet'}</span></span></button>`; }).join('');
   return `<div style="max-width:920px;margin:0 auto">
     ${pageHead('Typing Trainer','⌨️ '+ (st.bestWpm?('best '+st.bestWpm+' WPM · '+st.bestAcc+'% acc'):'online bees are typed!'),'Learn to touch-type finger by finger — then race the 60-second Typing Test. NSF online rounds are typed, so speed is real bee prep.',
@@ -2240,11 +2240,11 @@ function viewVocab(){ const S=state; const c=active();
         ${w.s?`<div style="font-size:13.5px;font-style:italic;color:var(--muted);line-height:1.5">“${blankHTML(w.s,w.w)}”</div>`:''}
         ${w.o?`<div style="font-size:12px;color:var(--muted)"><b>Origin:</b> ${esc(w.o)}${w.r?' · '+esc(w.r):''}</div>`:''}</div>`;
     return `<div style="max-width:640px;margin:0 auto">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><button data-act="vocBack" style="color:var(--muted);font-weight:700;font-size:13px">← Decks</button><span style="font-family:var(--display);font-weight:800;font-size:18px">Vocabulary</span><span style="margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted)">${i+1} / ${ws.length}</span></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><button data-act="vocBack" style="color:var(--muted);font-weight:700;font-size:13px">← Decks</button><span style="font-family:var(--display);font-weight:800;font-size:18px">Vocabulary</span><span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">${i+1} / ${ws.length}</span></div>
       <div style="height:6px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-bottom:14px"><div style="height:100%;background:var(--accent);width:${Math.round((i+1)/ws.length*100)}%"></div></div>
       <button data-act="vocFlip" style="display:block;width:100%;text-align:center;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--sh-rest);min-height:270px">
         <div style="font-family:var(--display);font-weight:800;font-size:clamp(24px,5.5vw,34px);letter-spacing:.02em;margin-bottom:6px">${esc(w.w)}</div>
-        ${w.p?`<div style="font-family:var(--mono);font-size:13px;color:var(--muted);margin-bottom:4px">${esc(w.p)}</div>`:''}
+        ${w.p?`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted);margin-bottom:4px">${esc(w.p)}</div>`:''}
         ${w.sy?`<div style="font-size:12px;color:var(--muted);margin-bottom:10px">${esc(w.sy)}</div>`:''}
         ${flip?back:`<div style="color:var(--muted);font-weight:700;font-size:13px;margin-top:22px">Tap to reveal the meaning ▾</div>`}
       </button>
@@ -2328,14 +2328,14 @@ function viewQuotes(){ const c=active(); const S=state; const all=(window.SB_QUO
   const qHTML=renderQuoteHTML(x); const meaning=x.m||x.meaning||'';
   const body = total? `
     <div data-swipe="quotes" class="q-parchment" style="position:relative;max-width:640px;margin:0 auto;overflow:hidden;padding:clamp(26px,5vw,40px) clamp(22px,5vw,38px);${isLong?'':'text-align:center;min-height:min(52vh,400px);display:flex;flex-direction:column;justify-content:center'}">
-      <div style="position:absolute;top:12px;left:16px;font-family:Georgia,serif;font-size:64px;line-height:1;color:rgba(200,150,30,.26);pointer-events:none">“</div>
+      <div style="position:absolute;top:12px;left:16px;font-family:var(--display);font-size:64px;line-height:1;color:rgba(200,150,30,.26);pointer-events:none">“</div>
       <div style="position:absolute;top:13px;right:16px;display:flex;gap:8px;z-index:2">
         <button data-act="qSpeak" title="Read aloud" aria-label="Read aloud" style="width:38px;height:38px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',18)}</button>
         ${meaning?`<button data-act="qMeaning" title="What does it mean?" aria-label="Meaning" style="width:38px;height:38px;border-radius:50%;background:${S.qMeaningOpen?'#F0B429':'#fff'};color:${S.qMeaningOpen?'#5a3d00':'#B67B00'};border:1px solid ${S.qMeaningOpen?'transparent':'#EBD79A'};display:grid;place-items:center;font-size:18px;box-shadow:var(--edge)">💡</button>`:''}
         <button data-act="qFav" title="Save to favorites" aria-label="Favorite" style="width:38px;height:38px;border-radius:50%;background:${isFav?'#FF4D8D':'#fff'};color:${isFav?'#fff':'#C4453C'};border:1px solid ${isFav?'transparent':'#EBD79A'};display:grid;place-items:center;font-size:18px;box-shadow:var(--edge)">❤</button>
       </div>
       <div style="position:relative;z-index:1;margin-top:10px;${isLong?'max-height:min(52vh,440px);overflow:auto;text-align:left':''}">
-        <div style="font-family:${isLong?'Georgia,serif':'var(--display)'};font-weight:${isLong?'500':'800'};font-size:${qsize};line-height:${isLong?'1.7':'1.28'};color:#2A2410;overflow-wrap:anywhere;white-space:pre-line">${qHTML}</div>
+        <div style="font-family:${isLong?'var(--ui)':'var(--display)'};font-weight:${isLong?'500':'800'};font-size:${qsize};line-height:${isLong?'1.7':'1.28'};color:#2A2410;overflow-wrap:anywhere;white-space:pre-line">${qHTML}</div>
         <div style="margin-top:18px;font-family:var(--ui);font-weight:800;font-size:16px;color:#8A5B00">— ${esc(x.a)}</div>
         ${x.who?`<div style="margin-top:3px;font-size:12.5px;color:#8a7a4a;font-weight:600">${esc(x.who)}</div>`:''}
         ${x.c?`<div style="margin-top:12px"><span style="display:inline-block;padding:4px 12px;border-radius:999px;background:rgba(200,150,30,.16);color:#8A5B00;font-weight:800;font-size:11.5px">${quoteCatLabel(x.c)}</span></div>`:''}
@@ -2349,7 +2349,7 @@ function viewQuotes(){ const c=active(); const S=state; const all=(window.SB_QUO
     <div style="max-width:600px;margin:14px auto 0;display:flex;align-items:center;gap:10px">
       <button data-act="qNav" data-arg="-1" style="padding:12px 18px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">←</button>
       <button data-act="qShuffle" style="flex:1;padding:12px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">🔀 Surprise me</button>
-      <span style="font-family:var(--mono);font-size:12.5px;color:var(--muted);white-space:nowrap;min-width:74px;text-align:center">${fmtN(i+1)} / ${fmtN(total)}</span>
+      <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12.5px;color:var(--muted);white-space:nowrap;min-width:74px;text-align:center">${fmtN(i+1)} / ${fmtN(total)}</span>
       <button data-act="qNav" data-arg="1" style="padding:12px 22px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">→</button>
     </div>
     <div style="text-align:center;font-size:11.5px;color:var(--muted);margin-top:9px">Swipe or use ← → keys · tap ❤ to keep your favorites</div>`
@@ -2444,7 +2444,7 @@ function viewLevelTest(){ const lt=state.lt||{}; if(lt.done) return `<div style=
   return `<div style="max-width:520px;margin:0 auto;animation:sb-rise .35s ease both">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><span style="font-family:var(--display);font-weight:800;font-size:20px">Find my Bee Band</span><span style="margin-left:auto;font-size:13px">${hearts}</span></div>
     <div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,30px);box-shadow:var(--sh-rest);text-align:center">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">Band ${lt.band} · ${bandTier(lt.band||2)}</span><span style="font-family:var(--mono);font-size:13px;color:var(--muted)">✓ ${lt.ok}/3 to climb</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">Band ${lt.band} · ${bandTier(lt.band||2)}</span><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">✓ ${lt.ok}/3 to climb</span></div>
       <p style="font-size:13px;color:var(--muted);font-weight:650;margin:0 0 12px">Spell 3 right to climb a band. Three misses and we lock in your start.</p>
       <button data-act="ltSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">${iconSVG('volume',18)} Hear the word</button>
       ${ltMeaning}
@@ -2850,7 +2850,7 @@ function viewHome(){
         const line=(lab,col,val,tgt)=>`<div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:800;line-height:1.35">
           <span style="width:8px;height:8px;border-radius:3px;background:${col};flex-shrink:0"></span>
           <span style="color:var(--muted)">${lab}</span>
-          <span style="margin-left:auto;font-family:var(--mono);color:var(--ink,var(--text));white-space:nowrap">${val}<span style="color:var(--muted)">/${tgt}</span></span></div>`;
+          <span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;color:var(--ink,var(--text));white-space:nowrap">${val}<span style="color:var(--muted)">/${tgt}</span></span></div>`;
         return `<button data-act="openMetrics" title="See the last 30 days in Progress" class="sb-card" style="display:flex;align-items:center;gap:13px;min-height:128px;padding:14px;text-align:left;cursor:pointer;width:100%">
         <span style="flex-shrink:0;width:104px;height:104px;display:grid;place-items:center">${ringsSVG(104,[m.pApp,m.pPrac,m.pWords])}</span>
         <span style="min-width:0;flex:1">
@@ -3141,9 +3141,9 @@ function oddsPct(p){ return p<1?p.toFixed(1):Math.round(p); }
 function oddsPanel(pk,c){ const rows=packOdds(pk).map(o=>{ const own=avOwned(c,o.id); const n=avCount(c,o.id); const R=SB_AVATARS.rarities[o.rarity]||{c:'#888',label:o.rarity};
     return `<div style="display:flex;align-items:center;gap:8px;padding:4px 2px">
       <span style="width:30px;height:30px;flex-shrink:0;display:grid;place-items:center;background:var(--surface2);border-radius:8px;${own?'':'opacity:.55;filter:saturate(.5)'}">${avatarSVG(o.id,26)}</span>
-      <span style="flex:1;min-width:0;font-weight:700;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(o.name)}${n>1?' <span style="font-family:var(--mono);color:var(--treasure-deep,#8A5B00);font-weight:800">×'+n+'</span>':(own?' <span style="color:var(--good);font-weight:800">✓</span>':'')}</span>
+      <span style="flex:1;min-width:0;font-weight:700;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(o.name)}${n>1?' <span style="font-family:var(--display);font-variant-numeric:tabular-nums;color:var(--treasure-deep,#8A5B00);font-weight:800">×'+n+'</span>':(own?' <span style="color:var(--good);font-weight:800">✓</span>':'')}</span>
       <span style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#fff;background:${R.c};border-radius:99px;padding:2px 7px">${esc(R.label)}</span>
-      <span style="font-family:var(--mono);font-size:12px;font-weight:800;color:var(--muted);min-width:36px;text-align:right">${oddsPct(o.pct)}%</span></div>`; }).join('');
+      <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:800;color:var(--muted);min-width:36px;text-align:right">${oddsPct(o.pct)}%</span></div>`; }).join('');
   return `<div style="margin-top:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:9px 11px">
     <div style="font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Drop chances · new ones come up first; repeats become spares you can sell</div>${rows}</div>`; }
 /* c.avOwned[id] is a COUNT, not a flag — duplicates are collectable and sellable.
@@ -3292,11 +3292,11 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
         // Unowned avatars are drawn as silhouettes-in-waiting: desaturated and dimmed, so the
         // collection reads at a glance as "mine" vs "still to win".
         return `<div style="position:relative;background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:11px 9px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;${own?'':'opacity:.62'}">
-          ${n>1?`<span title="You have ${n} copies of ${esc(a.name)}" style="position:absolute;top:7px;right:7px;z-index:2;font-family:var(--mono);font-weight:800;font-size:11px;color:#5a3d00;background:var(--treasure,#F0B429);border-radius:99px;padding:2px 8px;box-shadow:0 1px 3px rgba(0,0,0,.18)">×${n}</span>`:''}
+          ${n>1?`<span title="You have ${n} copies of ${esc(a.name)}" style="position:absolute;top:7px;right:7px;z-index:2;font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:800;font-size:11px;color:#5a3d00;background:var(--treasure,#F0B429);border-radius:99px;padding:2px 8px;box-shadow:0 1px 3px rgba(0,0,0,.18)">×${n}</span>`:''}
           <button data-act="showAvCard" data-arg="${a.id}" title="See ${esc(a.name)}'s card" style="background:none;border:0;padding:0;cursor:pointer;width:89px;height:89px;${own?'':'filter:grayscale(1) contrast(.82) brightness(.96)'}">${avatarSVG(a.id,89, on?c.accOn:null)}</button>
           <span style="font-weight:800;font-size:12px;line-height:1.15">${a.name}</span>
-          ${card?`<span style="font-family:var(--mono);font-size:9.5px;font-weight:800;color:var(--muted)">OVR ${card.overall}</span>`:''}
-          <span style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:99px;color:#fff;background:${R.c}">${R.label}</span>
+          ${card?`<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:9.5px;font-weight:800;color:var(--muted)">OVR ${card.overall}</span>`:''}
+          <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:99px;color:#fff;background:${R.c}">${R.label}</span>
           ${action}</div>`; }).join('');
       return `<div class="sb-card" style="margin-bottom:14px">
         <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px;flex-wrap:wrap"><span style="width:12px;height:12px;border-radius:4px;background:linear-gradient(135deg,${p.c1},${p.c2});display:inline-block"></span><span class="sb-ct" style="font-size:15px">${p.label}</span><span class="sb-cn">${ownedN}/${avs.length} collected</span>${!inPlan
@@ -3446,24 +3446,24 @@ function conceptCardHTML(ch, allChs){
   const meaning=(paren||conceptRoots(ch.title)||'').trim();
   const mainStyle=`font-family:var(--display);color:#fff;line-height:1;letter-spacing:-.01em;font-size:${heroFont(main)}px;font-weight:${kind==='word'?700:800};${kind==='word'?'font-style:italic;':''}`;
   const cover=`<div style="position:relative;height:116px;display:flex;align-items:center;justify-content:center;padding:14px;${conceptCoverBG(ch)}">
-    <span style="position:absolute;top:11px;left:12px;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(fam)}</span>
+    <span style="position:absolute;top:11px;left:12px;font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(fam)}</span>
     <span style="position:absolute;top:12px;right:12px;width:9px;height:9px;border-radius:50%;background:${dc};box-shadow:0 0 0 3px rgba(255,255,255,.28)"></span>
     ${st.done?'<span style="position:absolute;bottom:9px;right:10px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
     <div class="sb-theme-art" style="text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.16);animation-delay:${(ci%9)*0.22}s${locked?';opacity:.92':''}">
       ${locked?`<div style="display:flex;justify-content:center;color:#fff">${iconSVG('lock',42,2)}</div>`:`<div style="${mainStyle}">${esc(main)}</div>`}
-      ${(!locked&&rest.length)?`<div style="font-family:var(--mono);font-weight:700;font-size:13px;color:rgba(255,255,255,.85);margin-top:6px;letter-spacing:.04em">${rest.map(esc).join('&nbsp;&nbsp;&nbsp;')}</div>`:''}
+      ${(!locked&&rest.length)?`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:13px;color:rgba(255,255,255,.85);margin-top:6px;letter-spacing:.04em">${rest.map(esc).join('&nbsp;&nbsp;&nbsp;')}</div>`:''}
     </div>
   </div>`;
   const footL = locked
     ? `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:900;color:#a06a00;background:linear-gradient(135deg,#FFE08A,#F0B85C)">${iconSVG('lock',11,2.2)} ${coinAmt(COST.concept,11)}</span>`
     : `<span style="padding:3px 9px;border-radius:999px;font-family:var(--body);font-weight:800;font-size:12px;color:#fff;background:${dc}">${(diffMap[ch.difficulty]||diffMap.medium)[0]}</span>`;
   const footR=`<span style="font-family:var(--body);font-weight:800;font-size:12px;color:${f.c};white-space:nowrap">${locked?'Unlock':(nWords+' words')} →</span>`;
-  const prog=(!locked && !st.done && st.m>0)?`<div style="font-family:var(--mono);font-size:12px;color:${f.c};font-weight:700;margin-top:7px">${st.m}/${st.total} mastered</div>`:'';
+  const prog=(!locked && !st.done && st.m>0)?`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:${f.c};font-weight:700;margin-top:7px">${st.m}/${st.total} mastered</div>`:'';
   return `<button class="sb-cover-card" data-act="${locked?'buyConcept':'openConcept'}" data-arg="${ci}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column;${locked?'opacity:.97':''}">
     ${cover}
     <div style="padding:14px 15px 15px;display:flex;flex-direction:column;flex:1">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15;color:var(--text)">${esc(titleClean)}</div>
-      ${meaning?`<div style="font-family:var(--mono);font-weight:700;font-size:12px;color:${f.c};margin-top:3px">${esc(trunc(meaning,42))}</div>`:''}
+      ${meaning?`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:12px;color:${f.c};margin-top:3px">${esc(trunc(meaning,42))}</div>`:''}
       <div style="font-family:var(--body);font-weight:600;font-size:12px;line-height:1.45;color:var(--muted);margin-top:8px">${trunc(ch.concept,96)}</div>
       ${prog}
       <div style="margin-top:auto;padding-top:12px;display:flex;align-items:center;justify-content:space-between;gap:8px">${footL}${footR}</div>
@@ -3475,9 +3475,9 @@ function conceptBigCard(ch, allChs){
   const tag=locked?`<span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:900;color:#a06a00;background:linear-gradient(135deg,#FFE08A,#F0B85C)">${iconSVG('lock',12,2.2)} Locked</span>`:`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:800;background:${st.bg};color:${st.fg}">${st.done?'✓ Mastered':(st.label+(st.total?(' · '+st.m+'/'+st.total):''))}</span>`;
   const cta=locked?`<button data-act="buyConcept" data-arg="${ci}" style="padding:12px 20px;border-radius:14px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.14)">🔓 Unlock · ${coinAmt(COST.concept,12)}</button>`:`<button data-act="openConcept" data-arg="${ci}" style="padding:12px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Open &amp; study · ${st.total} words →</button>`;
   return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,28px);box-shadow:var(--glow)">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px"><span style="font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700">${esc(catGroup(ch.category))}</span><span style="${diffStyleFor(ch.difficulty)}">${(diffMap[ch.difficulty]||diffMap.medium)[0]}</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px"><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700">${esc(catGroup(ch.category))}</span><span style="${diffStyleFor(ch.difficulty)}">${(diffMap[ch.difficulty]||diffMap.medium)[0]}</span></div>
     <div style="font-family:var(--display);font-weight:800;font-size:clamp(22px,4.5vw,28px);line-height:1.12;margin-bottom:4px;display:flex;align-items:center;gap:9px">${locked?`<span style="color:var(--muted);display:inline-flex">${iconSVG('lock',22,2.2)}</span>`:''}${esc(conceptShort(ch.title))}</div>
-    <div style="font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:700;margin-bottom:13px">${esc(conceptRoots(ch.title))}</div>
+    <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--accent);font-weight:700;margin-bottom:13px">${esc(conceptRoots(ch.title))}</div>
     <div style="font-size:15px;color:var(--text);line-height:1.6;margin-bottom:18px">${locked?'This concept is locked. Unlock it with coins to reveal its pattern, worked examples and word list.':esc(ch.concept||'')}</div>
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">${tag}${cta}</div>
   </div>`;
@@ -3497,12 +3497,12 @@ function conceptChapterStat(chap){ const done=chap.items.filter(c=>conceptStat(c
 function chapterCoverCard(chap){ const f=CONCEPT_FAM[chap.name]||CONCEPT_FAM.Advanced; const st=conceptChapterStat(chap); const pct=st.total?Math.round(st.done/st.total*100):0;
   return `<button class="sb-cover-card" data-act="openConceptChapter" data-arg="${chap.n-1}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
     <div style="position:relative;height:94px;display:flex;align-items:center;justify-content:center;padding:12px 14px;${famCoverBG(chap.name)}">
-      <span style="position:absolute;top:9px;left:11px;font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.09em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:rgba(0,0,0,.28);color:#fff">Ch ${chap.n}</span>
+      <span style="position:absolute;top:9px;left:11px;font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:11px;letter-spacing:.09em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:rgba(0,0,0,.28);color:#fff">Ch ${chap.n}</span>
       <span style="font-family:var(--display);font-weight:800;font-size:24px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.3);text-align:center;line-height:1.05">${esc(chap.name)}</span>
       ${st.complete?'<span style="position:absolute;bottom:9px;right:10px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
     </div>
     <div style="padding:13px 15px 14px;display:flex;flex-direction:column;flex:1">
-      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px"><span class="sb-ct" style="font-size:15px">Chapter ${chap.n}</span><span style="font-family:var(--mono);font-weight:700;font-size:12px;color:${f.c}">${st.total} concepts</span></div>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px"><span class="sb-ct" style="font-size:15px">Chapter ${chap.n}</span><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:12px;color:${f.c}">${st.total} concepts</span></div>
       <div style="margin-top:auto;padding-top:13px;display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:${st.complete?'var(--good)':f.c};width:${pct}%;transition:width .4s"></div></div><span style="font-size:12px;color:var(--muted);font-weight:800;white-space:nowrap">${st.done}/${st.total}</span></div>
     </div>
   </button>`; }
@@ -3511,7 +3511,7 @@ function chapterCoverCard(chap){ const f=CONCEPT_FAM[chap.name]||CONCEPT_FAM.Adv
 function pageHead(title, meta, sub, right){
   return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button></div>
     <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px">
-      <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0">${title}</h2>${meta?`<span style="font-family:var(--mono);font-size:12px;color:var(--muted)">${meta}</span>`:''}</div>
+      <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0">${title}</h2>${meta?`<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">${meta}</span>`:''}</div>
       ${right?`<div style="display:flex;gap:8px;flex-wrap:wrap">${right}</div>`:''}
     </div>
     ${sub?`<p style="margin:0 0 14px;color:var(--muted);font-size:13px;max-width:52em">${sub}</p>`:''}`;
@@ -3537,7 +3537,7 @@ function viewConceptList(){
   }
   return `<div style="animation:sb-rise .35s ease both">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button></div>
-    <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px"><h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0">Concepts</h2><span style="font-family:var(--mono);font-size:12px;color:var(--muted)">${conceptChapters().length||11} chapters</span></div>
+    <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px"><h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0">Concepts</h2><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">${conceptChapters().length||11} chapters</span></div>
     <p style="margin:0 0 12px;color:var(--muted);font-size:13px;max-width:52em">${headDesc}</p>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin-bottom:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
       <span style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('grid',15)} ${chaptersDone}/${conceptChapters().length||11} chapters</span>
@@ -3670,20 +3670,20 @@ function aTiles(str,kind,anim,sm){ return String(str).split('').map((c,i)=>aTile
 function aGlow(html){ return `<div style="animation:ca-glow 1.4s ease 1">${html}</div>`; }
 function wTiles(word,hi,dim,sm){ let t=''; for(let i=0;i<word.length;i++){ const on=hi&&i>=hi[0]&&i<hi[0]+hi[1]; const kind=on?(dim?'dim':'affix'):'root'; t+=aTile(word[i],kind,'ca-pop .42s ease '+(i*0.05).toFixed(2)+'s both',sm); } return t; }
 function renderStage(s){ if(!s) return '';
-  if(s.t==='glyph') return `<div style="text-align:center">${aRow(aTiles(s.text,'affix','ca-pop'))}${s.sub?`<div style="margin-top:13px;font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:700;letter-spacing:.02em">${esc(s.sub)}</div>`:''}</div>`;
+  if(s.t==='glyph') return `<div style="text-align:center">${aRow(aTiles(s.text,'affix','ca-pop'))}${s.sub?`<div style="margin-top:13px;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--accent);font-weight:700;letter-spacing:.02em">${esc(s.sub)}</div>`:''}</div>`;
   if(s.t==='word') return aGlow(aRow(wTiles(s.word,s.hi,s.dim)));
   if(s.t==='list') return `<div style="display:flex;flex-direction:column;gap:9px;align-items:center">${s.items.map(it=>aRow(wTiles(it.word,it.hi,it.dim,true),4)).join('')}</div>`;
   if(s.t==='build'){ const root=s.root||'',aff=s.affix||''; return s.side==='pre'?aRow(aTiles(aff,'affix','ca-sl')+aTiles(root,'root')):aRow(aTiles(root,'root')+aTiles(aff,'affix','ca-sr')); }
   if(s.t==='breakdown'){ const word=s.word||''; const parts=s.parts||[];
     const top=aGlow(aRow(wTiles(word,s.hi,false),4));
-    const chips=parts.map((pp,i)=>`<span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:var(--surface2);font-family:var(--mono);font-size:12px;font-weight:700;animation:ca-up .45s ease ${(i*0.12).toFixed(2)}s both"><b style="color:var(--accent)">${esc(pp.txt)}</b><span style="color:var(--muted)">${pp.gloss?('= '+esc(pp.gloss)):''}</span></span>`).join('');
+    const chips=parts.map((pp,i)=>`<span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:var(--surface2);font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;animation:ca-up .45s ease ${(i*0.12).toFixed(2)}s both"><b style="color:var(--accent)">${esc(pp.txt)}</b><span style="color:var(--muted)">${pp.gloss?('= '+esc(pp.gloss)):''}</span></span>`).join('');
     return `<div style="display:flex;flex-direction:column;gap:12px;align-items:center">${top}${parts.length?`<div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:center">${chips}</div>`:''}</div>`; }
   return ''; }
 function conceptAnimStage(an,sc){ const scn=an.scenes[Math.min(Math.max(sc,0),an.scenes.length-1)]; return renderStage(scn&&scn.stage); }
 function conceptPlayer(){ const ch=state.conceptSel; if(!ch) return ''; const an=conceptAnim(ch); const N=an.scenes.length; const sc=Math.min(Math.max(state.animScene||0,0),N-1); const playing=state.animOn;
   const voiceOn=state.sound!==false;
   return `<div style="background:var(--bg2);border:1px solid var(--accent);border-radius:20px;overflow:hidden;box-shadow:var(--glow)">
-    <div style="display:flex;align-items:center;gap:8px;padding:11px 16px;border-bottom:1px solid var(--line)"><span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--display);font-weight:800;font-size:13px;color:var(--accent)">${iconSVG('spark',15)} Animated explainer</span><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('volume',12)} ${voiceOn?(hasVoicePack(ch)?'Narrated':'Voice on'):'Voice off'}</span><span style="margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">${esc(an.label)}</span></div>
+    <div style="display:flex;align-items:center;gap:8px;padding:11px 16px;border-bottom:1px solid var(--line)"><span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--display);font-weight:800;font-size:13px;color:var(--accent)">${iconSVG('spark',15)} Animated explainer</span><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('volume',12)} ${voiceOn?(hasVoicePack(ch)?'Narrated':'Voice on'):'Voice off'}</span><span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">${esc(an.label)}</span></div>
     <div style="position:relative;background:radial-gradient(120% 120% at 50% 0,color-mix(in srgb,var(--accent) 13%,var(--bg2)),var(--bg2));padding:22px clamp(74px,11%,100px);min-height:150px;display:flex;align-items:center">
       ${(()=>{ const raw=an.scenes[sc].mood||'happy'; const bmood=raw==='oops'?'think':raw;      // happy learning emotions only — no sad/angry bee
         const right=sc%2===1;                                                                    // the bee flies to the other side each scene
@@ -3697,7 +3697,7 @@ function conceptPlayer(){ const ch=state.conceptSel; if(!ch) return ''; const an
     <div style="padding:13px 16px 15px">
       <div style="display:flex;gap:5px;margin-bottom:10px">${an.scenes.map((s,i)=>`<button data-act="animTo" data-arg="${i}" style="flex:1;height:5px;border-radius:999px;background:${i<=sc?'var(--accent)':'var(--surface2)'}"></button>`).join('')}</div>
       <div style="font-size:13px;color:var(--text);line-height:1.5;min-height:40px;font-weight:600">${esc(an.scenes[sc].cap)}</div>
-      <div style="display:flex;align-items:center;gap:8px;margin-top:9px"><button data-act="conceptReplay" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">${iconSVG('volume',14)} ${playing?'Replay':'Watch & listen'}</button><span style="font-family:var(--mono);font-size:12px;color:var(--muted)">Scene ${sc+1}/${N}</span></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:9px"><button data-act="conceptReplay" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">${iconSVG('volume',14)} ${playing?'Replay':'Watch & listen'}</button><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">Scene ${sc+1}/${N}</span></div>
     </div>
   </div>`; }
 function viewConceptDetail(){
@@ -3715,9 +3715,9 @@ function viewConceptDetail(){
   const stepNav = (idx>0||idx<total-1) ? `<div style="display:flex;gap:10px;margin-bottom:14px">${idx>0?`<button data-act="conceptPrev" style="padding:12px 18px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">← Back</button>`:''}${idx<total-1?(idx===0?`<button data-act="conceptNext" style="flex:1;padding:12px;border-radius:10px;background:transparent;color:var(--accent);font-weight:800;font-size:15px;text-decoration:underline;text-underline-offset:3px">Read more →</button>`:`<button data-act="conceptNext" style="flex:1;padding:12px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next card →</button>`):''}</div>` : '';
   return `<div style="animation:sb-rise .35s ease both;max-width:780px">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><button data-act="conceptBack" style="color:var(--muted);font-weight:700;font-size:13px">← All concepts</button></div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700">${esc(csel.category)}</span><span style="${diffStyleFor(csel.difficulty)}">${(diffMap[csel.difficulty]||diffMap.medium)[0]}</span></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700">${esc(csel.category)}</span><span style="${diffStyleFor(csel.difficulty)}">${(diffMap[csel.difficulty]||diffMap.medium)[0]}</span></div>
     <h2 style="font-family:var(--display);font-weight:800;font-size:24px;line-height:1.1;margin:0 0 4px">${esc(conceptShort(csel.title))}</h2>
-    <div style="font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:700;margin-bottom:16px">${esc(conceptRoots(csel.title))}</div>
+    <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--accent);font-weight:700;margin-bottom:16px">${esc(conceptRoots(csel.title))}</div>
     <p style="font-size:15px;line-height:1.55;color:var(--muted);margin:0 0 18px">${esc(csel.concept||'')}</p>
     <div style="margin-bottom:22px">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span style="font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">Card ${idx+1} of ${total}${step.kind==='anim'?' · Watch':''}</span><div style="flex:1;height:6px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--accent);width:${Math.round((idx+1)/total*100)}%;transition:width .3s"></div></div></div>
@@ -3856,8 +3856,8 @@ function vocabPracticeCard(){
     <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:12px">
       <span style="font-size:12px;color:var(--muted);font-weight:700">Optional — doesn’t change your level, but great practice (recommended!)</span>
       <span style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;color:var(--treasure-deep,#8A5B00);background:color-mix(in srgb,var(--treasure,#F0B429) 16%,transparent);border-radius:999px;padding:4px 11px">🌟 ${karma} karma</span>
-      ${vp.total?`<span style="font-family:var(--mono);font-size:12px;color:var(--muted)">Word ${vp.idx||1} of ${vp.total}</span>`:''}
-      ${state.vpDone?`<span style="font-family:var(--mono);font-size:12px;color:var(--muted)">✓ ${state.vpRight||0}/${state.vpDone}</span>`:''}
+      ${vp.total?`<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">Word ${vp.idx||1} of ${vp.total}</span>`:''}
+      ${state.vpDone?`<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">✓ ${state.vpRight||0}/${state.vpDone}</span>`:''}
     </div>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,28px);box-shadow:var(--glow)">
       <div style="text-align:center;margin-bottom:16px">
@@ -3897,7 +3897,7 @@ function coachFlashCard(){
       <button data-act="cardRevise" title="Mark for revision (↓ key)" aria-label="Mark for revision" style="position:absolute;left:0;right:0;bottom:0;height:34px;z-index:4;display:flex;align-items:center;justify-content:center;gap:7px;border:0;background:linear-gradient(0deg,color-mix(in srgb,var(--treasure,#F0B429) 26%,transparent),transparent);color:${revCol};font-size:9.5px;font-weight:800;letter-spacing:.09em">↓ ${onRev?'ON REVISE':'REVISE'}</button>
       <div style="position:relative;z-index:2;pointer-events:none;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:44px 40px 42px;overflow:auto">
         <div style="font-family:var(--display);font-weight:800;font-size:clamp(23px,7vw,33px);line-height:1.1;overflow-wrap:anywhere">${esc(w.w)}</div>
-        ${w.sy&&w.sy.toLowerCase()!==(w.w||'').toLowerCase()?`<div style="font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.04em;margin-top:4px">${esc(w.sy)}</div>`:''}
+        ${w.sy&&w.sy.toLowerCase()!==(w.w||'').toLowerCase()?`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.04em;margin-top:4px">${esc(w.sy)}</div>`:''}
         <div style="display:flex;gap:10px;justify-content:center;margin:13px 0 4px;pointer-events:auto">
           <button data-act="cardSpeak" aria-label="Hear the word" title="Hear the word" style="width:46px;height:46px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',21)}</button>
           <button data-act="cardSpeakSlow" aria-label="Hear it slowly" title="Hear it slowly" style="width:46px;height:46px;border-radius:50%;background:var(--surface2);color:var(--accent);border:1px solid var(--line);display:grid;place-items:center">${tortoiseSVG(23)}</button>
@@ -3912,7 +3912,7 @@ function coachFlashCard(){
 function viewTrain(){
   const S=state; const goalTarget=active().goal||S.draft.goal||10; const goalDoneN=goalToday(); const goalPctNum=Math.min(100,Math.round((goalDoneN/goalTarget)*100));
   return `<div style="max-width:620px;margin:0 auto">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><button data-act="exitTrain" style="color:var(--muted);font-weight:700;font-size:13px">← Exit</button><div style="font-family:var(--mono);font-size:13px;color:var(--muted)">${S.sessionDone} done · ${S.sessionRight} correct</div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><button data-act="exitTrain" style="color:var(--muted);font-weight:700;font-size:13px">← Exit</button><div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${S.sessionDone} done · ${S.sessionRight} correct</div></div>
     <div style="height:7px;border-radius:999px;background:var(--surface2);overflow:hidden;margin-bottom:22px"><div style="height:100%;background:var(--accent);border-radius:999px;width:${goalPctNum}%;transition:width .4s"></div></div>
     ${(S.coachCardView&&!S.sessionOver)?coachFlashCard():trainerCard()}
     ${liveHeatmap(S.sessionWords&&S.sessionWords.length?S.sessionWords:WORDS, {anon:true})}
@@ -3940,7 +3940,7 @@ function wordFlash(words, idx, navAct, opts){
         <div style="font-family:var(--display);font-weight:800;font-size:clamp(22px,5.5vw,36px);line-height:1.08;min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:break-word;hyphens:auto">${esc(w.w)}</div>
         <button data-act="say" data-arg="${escA(w.w)}" aria-label="Hear the word" title="Hear the word" style="width:42px;height:42px;flex-shrink:0;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',20)}</button>
       </div>
-      ${w.sy?`<div style="font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.04em;margin-top:3px">${esc(w.sy)}</div>`:''}
+      ${w.sy?`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.04em;margin-top:3px">${esc(w.sy)}</div>`:''}
       <div style="font-size:15px;color:var(--text);line-height:1.5;margin-top:8px">${esc(w.d)}</div>
       ${w.s?`<div style="font-size:13px;color:var(--muted);line-height:1.55;margin-top:9px"><b style="color:var(--text)">Sentence.</b> ${esc(w.s)}</div>`:''}
       ${w.h?`<div style="display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text);line-height:1.5;margin-top:10px;background:var(--chip);border-radius:10px;padding:9px 13px;max-width:42em"><span style="color:var(--accent);margin-top:1px;flex-shrink:0">${iconSVG('bulb',15)}</span><span>${esc(w.h)}</span></div>`:''}
@@ -3977,8 +3977,8 @@ function liveHeatmap(words, opts){
     if(!reveal){ // anonymized: a colored tile, no word text (so practice isn't spoiled)
       return `<span title="${mastered?'mastered':(miss?'to review':'new')}" style="width:22px;height:22px;border-radius:6px;background:${bg};display:inline-block;${isCur?'box-shadow:0 0 0 2px var(--accent)':''}"></span>`;
     }
-    if(anon && isCur) return `<span title="current word — hidden" style="font-family:var(--mono);font-size:12px;font-weight:700;padding:5px 9px;border-radius:6px;color:var(--muted);background:var(--surface2);box-shadow:0 0 0 2px var(--accent)">•••</span>`;
-    return `<button data-act="wordCard" data-arg="${escA(w.w)}" title="open the learn card" style="font-family:var(--mono);font-size:12px;font-weight:700;padding:5px 9px;border-radius:6px;color:${fg};background:${bg};${isCur?'box-shadow:0 0 0 2px var(--accent)':''}">${esc(w.w)}</button>`;
+    if(anon && isCur) return `<span title="current word — hidden" style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;padding:5px 9px;border-radius:6px;color:var(--muted);background:var(--surface2);box-shadow:0 0 0 2px var(--accent)">•••</span>`;
+    return `<button data-act="wordCard" data-arg="${escA(w.w)}" title="open the learn card" style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;padding:5px 9px;border-radius:6px;color:${fg};background:${bg};${isCur?'box-shadow:0 0 0 2px var(--accent)':''}">${esc(w.w)}</button>`;
   }).join('');
   const legend=[['var(--good)','Mastered'],['var(--bad)','Missed'],['var(--surface2)','New']].map(([c,l])=>`<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:700"><span style="width:11px;height:11px;border-radius:6px;background:${c};display:inline-block"></span>${l}</span>`).join('');
   const pct=Math.round(m/N*100);
@@ -4069,7 +4069,7 @@ function parentAnalytics(){ const s=parentSignals(); let rd=0; try{ rd=coachRead
     </div></div>`;
   const meters=[['Consistency',s.consistency,'practised '+s.active14+'/14 days'],['Accuracy',s.acc,'across recent sessions'],['Coverage',s.coverage,'of words met on the active list'],['Review health',s.reviewHealth,s.missedN+' words waiting for revenge'],['Readiness',rd,'on the coach target list']];
   const bars=meters.map(([l,v,sub])=>{ v=Math.max(0,Math.min(100,Math.round(v||0))); const col=v>=70?'var(--good)':v>=40?'#c08a00':'var(--bad)';
-    return `<div style="background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:13px 15px"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font-family:var(--display);font-weight:800;font-size:13px">${l}</span><span style="font-family:var(--mono);font-weight:700;font-size:13px;color:${col}">${v}%</span></div><div style="height:7px;border-radius:999px;background:var(--surface);overflow:hidden;margin:8px 0 6px"><div style="height:100%;border-radius:999px;background:${col};width:${v}%"></div></div><div style="font-size:12px;color:var(--muted);font-weight:600">${sub}</div></div>`; }).join('');
+    return `<div style="background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:13px 15px"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font-family:var(--display);font-weight:800;font-size:13px">${l}</span><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:13px;color:${col}">${v}%</span></div><div style="height:7px;border-radius:999px;background:var(--surface);overflow:hidden;margin:8px 0 6px"><div style="height:100%;border-radius:999px;background:${col};width:${v}%"></div></div><div style="font-size:12px;color:var(--muted);font-weight:600">${sub}</div></div>`; }).join('');
   const tips=parentTips().map(t=>`<div style="display:flex;gap:11px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--surface)">
       <span style="flex-shrink:0;margin-top:1px;padding:4px 9px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px;white-space:nowrap">${TIP_CAT_LABEL[t.cat]||t.cat}</span>
       <div style="min-width:0"><div style="font-size:13px;line-height:1.5;color:var(--text);font-weight:600">${esc(t.text)}</div><div style="font-size:12px;color:var(--muted);font-weight:700;margin-top:3px">Why now: ${esc(t.why)}</div></div></div>`).join('');
@@ -4106,7 +4106,7 @@ function viewBuilder(){ const S=state; const b=bldState(); const picked=bldPick(
   const btn=(group,val,label,cur)=>`<button data-act="bldSet" data-arg="${group}:${val}" style="padding:9px 14px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid ${cur===val?'var(--action,var(--accent))':'var(--line)'};${cur===val?'background:color-mix(in srgb,var(--action,var(--accent)) 12%,var(--paper,#fff));color:var(--action,var(--accent))':'background:var(--surface2);color:var(--text)'}">${label}</button>`;
   const row=(title,sub,btns)=>`<div style="margin-bottom:15px"><div style="font-family:var(--display);font-weight:800;font-size:13px">${title} <span style="color:var(--muted);font-weight:700;font-size:12px">· ${sub}</span></div><div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px">${btns}</div></div>`;
   const srcs=[['core','Core library'],['scripps','Scripps winners'],['nsf','North South Finals'],['review','Tricky review'],['missed','My missed words']];
-  const preview=picked.slice(0,18).map(w=>`<span style="font-family:var(--mono);font-size:12px;font-weight:700;padding:4px 9px;border-radius:6px;background:var(--surface2);border:1px solid var(--line)">${esc(w.w)}</span>`).join('');
+  const preview=picked.slice(0,18).map(w=>`<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;padding:4px 9px;border-radius:6px;background:var(--surface2);border:1px solid var(--line)">${esc(w.w)}</span>`).join('');
   return `<div style="animation:sb-rise .35s ease both">
     ${pageHead('List Builder','pick · build · print','Build a custom word list with five taps — or pick a ready-made list below. Every list gets its own Level ladder.')}
     <div class="sb-card" style="margin-bottom:16px">
@@ -4542,7 +4542,7 @@ function viewProgress(){
     ${(()=>{ const tiers=[[1,2,'Classroom Speller'],[3,4,'School-Bee Ready'],[5,6,'Regional Ready'],[7,8,'State & National'],[9,9,'Championship']];
       const row=tiers.map(([a,b2,label])=>{ const on=bb.band>=a&&bb.band<=b2;
         return `<div style="flex:1;min-width:96px;text-align:center;padding:10px 6px;border-radius:12px;${on?'background:var(--chip);box-shadow:inset 0 0 0 1.5px var(--accent)':'background:var(--surface);opacity:.75'}">
-          <div style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--muted)">${a===b2?('Band '+a):('Bands '+a+'–'+b2)}</div>
+          <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:11px;font-weight:700;color:var(--muted)">${a===b2?('Band '+a):('Bands '+a+'–'+b2)}</div>
           <div style="font-size:12px;font-weight:800;line-height:1.15;margin-top:3px;${on?'color:var(--accent)':''}">${label}</div></div>`; }).join('');
       return `<div class="sb-card" style="margin-bottom:18px">
         <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px"><span style="font-family:var(--display);font-weight:800;font-size:15px">Your Bee Band</span><span style="font-size:12px;color:var(--muted);font-weight:650">${bb.calibrating?'calibrating — appears after ~30 graded words':('Band '+bb.band+' · '+bb.tier+(bb.n>=2?(' · '+bb.acc+'% right at this band'):''))}</span></div>
@@ -4566,7 +4566,7 @@ function viewProgress(){
 }
 
 function parentReviseCard(){ const c=active(); const misses=(c.missed||[]); const top=misses.slice(0,14);
-  const chips=top.map(m=>`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:700;font-size:12px"><span style="font-family:var(--mono)">${esc(m.w)}</span>${(m.n>1)?`<span style="color:var(--bad);font-weight:800">×${m.n}</span>`:''}</span>`).join('');
+  const chips=top.map(m=>`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:700;font-size:12px"><span style="font-family:var(--display);font-variant-numeric:tabular-nums">${esc(m.w)}</span>${(m.n>1)?`<span style="color:var(--bad);font-weight:800">×${m.n}</span>`:''}</span>`).join('');
   return `<div class="sb-card" style="margin-top:18px">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px"><div style="font-family:var(--display);font-weight:800;font-size:15px">Words to revise <span style="color:var(--muted);font-weight:700">· ${misses.length}</span></div>${misses.length?`<button data-act="reviseMisses" style="padding:9px 16px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">Revise these →</button>`:''}</div>
     ${misses.length?`<div style="display:flex;flex-wrap:wrap;gap:7px">${chips}${misses.length>14?`<span style="padding:5px 10px;font-size:12px;color:var(--muted);font-weight:700">+${misses.length-14} more</span>`:''}</div>`:beeEmpty('sleepy','No misses to chase — the bee ate every tricky word. Nap time earned!')}
@@ -4577,10 +4577,10 @@ function parentActivityCard(){ const S=state; const c=active(); const acts=(c.ac
       <button data-act="parentLogToggle" data-arg="${i}" style="display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:11px 13px;background:${open?'var(--surface2)':'transparent'}">
         <span style="width:30px;height:30px;flex-shrink:0;border-radius:10px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG(actIcon(a.kind),16)}</span>
         <span style="min-width:0;flex:1"><span style="font-weight:800;font-size:13px">${esc(label)}</span><span style="display:block;font-size:12px;color:var(--muted);font-weight:600">${fmtAgo(a.ts)}${a.coins?(' · '+coinAmt(a.coins,11)):''}</span></span>
-        <span style="font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">${a.right}/${a.done}${a.done?(' · '+acc+'%'):''}</span>
+        <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">${a.right}/${a.done}${a.done?(' · '+acc+'%'):''}</span>
         ${hasDetail?`<span style="color:var(--accent);font-size:12px">${open?'▲':'▼'}</span>`:'<span style="width:12px"></span>'}
       </button>
-      ${(open&&hasDetail)?`<div style="padding:0 13px 12px;font-size:12px;color:var(--muted);line-height:1.6"><b style="color:var(--bad)">Missed:</b> <span style="font-family:var(--mono)">${a.misses.map(esc).join(', ')}</span></div>`:''}
+      ${(open&&hasDetail)?`<div style="padding:0 13px 12px;font-size:12px;color:var(--muted);line-height:1.6"><b style="color:var(--bad)">Missed:</b> <span style="font-family:var(--display);font-variant-numeric:tabular-nums">${a.misses.map(esc).join(', ')}</span></div>`:''}
     </div>`; }).join('');
   return `<div class="sb-card" style="margin-top:18px">
     <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px">Activity log</div>
@@ -4700,7 +4700,7 @@ function lessonCoverCard(L){
     ${cover}
     <div style="padding:14px 15px 15px;display:flex;flex-direction:column;flex:1">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.18;color:var(--text)">${esc(L.title)}</div>
-      <div style="font-family:var(--mono);font-weight:700;font-size:12px;color:${f.c};margin-top:4px">Chapter ${L.unit} · ${esc(trunc(uname,26))}</div>
+      <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:12px;color:${f.c};margin-top:4px">Chapter ${L.unit} · ${esc(trunc(uname,26))}</div>
       <div style="font-family:var(--body);font-weight:600;font-size:12px;line-height:1.45;color:var(--muted);margin-top:8px">${trunc(L.bigIdea||L.story||'',92)}</div>
       <div style="margin-top:auto;padding-top:12px;display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="padding:3px 9px;border-radius:999px;font-family:var(--body);font-weight:800;font-size:12px;color:#fff;background:${dc}">${L.diff?titleCase(L.diff):'Medium'}</span><span style="font-family:var(--body);font-weight:800;font-size:12px;color:${f.c};white-space:nowrap">${nW} words →</span></div>
     </div>
@@ -4710,13 +4710,13 @@ function lessonBigCard(L){ const dn=lessonComplete(L); const u=lessonUnits().fin
   const dc=DIFF_DOT[L.diff]||DIFF_DOT.medium; const hero=lessonHero(L); const nW=(L.words||[]).filter(x=>x&&x.w).length;
   return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--glow)">
     <div style="position:relative;height:150px;display:flex;align-items:center;justify-content:center;padding:18px;${unitCoverBG(L.unit)}">
-      <span style="position:absolute;top:14px;left:15px;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.85)">${esc(L.id)} · Chapter ${L.unit}</span>
+      <span style="position:absolute;top:14px;left:15px;font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.85)">${esc(L.id)} · Chapter ${L.unit}</span>
       <span style="position:absolute;top:15px;right:15px;width:11px;height:11px;border-radius:50%;background:${dc};box-shadow:0 0 0 3px rgba(255,255,255,.28)"></span>
       ${dn?'<span style="position:absolute;bottom:13px;right:14px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:15px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
       <div style="text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.18)"><div style="font-family:var(--display);color:#fff;line-height:1;letter-spacing:-.01em;font-style:italic;font-weight:700;font-size:${Math.min(48,heroFont(hero)+8)}px">${esc(hero)}</div></div>
     </div>
     <div style="padding:clamp(18px,4vw,24px)">
-      <div style="font-family:var(--mono);font-weight:700;font-size:12px;color:${f.c};margin-bottom:6px">Chapter ${L.unit} · ${esc(capWords(u.title))}</div>
+      <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:12px;color:${f.c};margin-bottom:6px">Chapter ${L.unit} · ${esc(capWords(u.title))}</div>
       <div style="font-family:var(--display);font-weight:800;font-size:clamp(20px,4vw,25px);line-height:1.14;margin-bottom:8px">${esc(L.title)}</div>
       <p style="font-size:15px;line-height:1.6;color:var(--text);margin:0 0 18px">${mdInline(trunc(L.bigIdea||L.story||'',200))}</p>
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
@@ -4759,7 +4759,7 @@ function viewJourneys(){ const S=state; if(S.lessonSel) return viewLesson();
       const header=`<div style="display:flex;align-items:center;gap:12px;margin:24px 0 12px">
         <span style="width:10px;height:10px;border-radius:6px;background:${f.c};flex-shrink:0"></span>
         <h3 style="font-family:var(--display);font-weight:800;font-size:17px;margin:0;color:var(--text)">Chapter ${u.n} · ${esc(capWords(u.title))}</h3>
-        <span style="font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap">${dc}/${ls.length} done</span>
+        <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);white-space:nowrap">${dc}/${ls.length} done</span>
         <span style="flex:1;height:1px;background:var(--line)"></span>
       </div>`;
       return header+`<div style="${gridStyle}">${ls.map(lessonCoverCard).join('')}</div>`;
@@ -4768,7 +4768,7 @@ function viewJourneys(){ const S=state; if(S.lessonSel) return viewLesson();
   const pathBtn=`<button data-act="journeySetView" data-arg="${guided?'all':'guided'}" style="display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">${guided?('← Browse all '+iconSVG('grid',15)):('Guided path '+iconSVG('arrow',15))}</button>`;
   return `<div style="${wrapStyle}">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px"><div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0">Word Journeys</h2><span style="font-family:var(--mono);font-size:12px;color:var(--muted)">${chaptersTotal} chapters</span></div>${pathBtn}</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px"><div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0">Word Journeys</h2><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">${chaptersTotal} chapters</span></div>${pathBtn}</div>
     <p style="margin:0 0 8px;color:var(--muted);font-size:13px;max-width:52em">${headDesc}</p>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin:12px 0 4px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
       <span style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('book',15)} ${chaptersDone}/${chaptersTotal} chapters</span>
@@ -4860,7 +4860,7 @@ function themeCard(t){ const c=active(); const cl=themeClusters().find(x=>x.id==
   const done=st.total>0 && st.m/st.total>=PATTERN_DONE_PCT;
   return `<div class="sb-cover-card" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px ${pinned?cl.c:'var(--line)'},var(--sh-rest);display:flex;flex-direction:column">
     <div style="position:relative;height:104px;display:flex;align-items:center;justify-content:center;padding:12px;${themeCoverBG(cl)}">
-      <span style="position:absolute;top:10px;left:11px;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(cl.label)}</span>
+      <span style="position:absolute;top:10px;left:11px;font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(cl.label)}</span>
       ${done?'<span style="position:absolute;bottom:8px;right:9px;width:21px;height:21px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:12px">✓</span>':''}
       ${pinned?'<span style="position:absolute;top:9px;right:10px;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.92);color:#1fa377;font-weight:900;font-size:12px">MY THEME</span>':''}
       <div class="sb-theme-art ${THEME_MOTION[t.id]||''}" style="animation-delay:${((t.id.length*137)%1800)/1000}s">${themeArtSVG(t.id,58,false)}</div>
@@ -4870,7 +4870,7 @@ function themeCard(t){ const c=active(); const cl=themeClusters().find(x=>x.id==
       <div style="font-family:var(--body);font-weight:600;font-size:12px;line-height:1.4;color:var(--muted);margin-top:4px">${esc(t.sub)}</div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
         <div style="flex:1;height:6px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:${done?'var(--good)':cl.c};width:${st.pct}%;transition:width .4s"></div></div>
-        <span style="font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">${st.m}/${fmtN(st.total)}</span>
+        <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">${st.m}/${fmtN(st.total)}</span>
       </div>
       <div style="margin-top:auto;padding-top:11px;display:flex;gap:7px">
         <button data-act="themePractice" data-arg="${t.id}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:10px;background:${cl.c};color:#fff;font-weight:800;font-size:12px;box-shadow:var(--edge)">${iconSVG('pencil',13)} Practice</button>
@@ -4883,14 +4883,14 @@ function viewThemes(){ const S=state; const c=active(); ensureLists(c);
   const mastered=defs.reduce((a,t)=>a+themeStat(t.id).m,0);
   const doneThemes=defs.filter(t=>{ const st=themeStat(t.id); return st.total>0 && st.m/st.total>=PATTERN_DONE_PCT; }).length;
   const myRow = mine.length
-    ? `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px"><span style="font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700">My themes</span>${mine.map(t=>{ const cl=themeClusters().find(x=>x.id===t.cluster)||{}; return `<button data-act="selectList" data-arg="${themeKey(t.id)}" oncontextmenu="return sbDelList(event,'${themeKey(t.id)}')" title="Train · right-click to remove" style="display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:10px;border:1px solid ${cl.c};background:color-mix(in srgb,${cl.c} 12%,var(--bg2));color:var(--text);font-weight:800;font-size:12px">${esc(t.label)} <span style="opacity:.7;font-size:12px">L${listStageIdx(c,themeKey(t.id))+1}</span></button>`; }).join('')}</div>`
+    ? `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px"><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700">My themes</span>${mine.map(t=>{ const cl=themeClusters().find(x=>x.id===t.cluster)||{}; return `<button data-act="selectList" data-arg="${themeKey(t.id)}" oncontextmenu="return sbDelList(event,'${themeKey(t.id)}')" title="Train · right-click to remove" style="display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:10px;border:1px solid ${cl.c};background:color-mix(in srgb,${cl.c} 12%,var(--bg2));color:var(--text);font-weight:800;font-size:12px">${esc(t.label)} <span style="opacity:.7;font-size:12px">L${listStageIdx(c,themeKey(t.id))+1}</span></button>`; }).join('')}</div>`
     : `<div style="background:color-mix(in srgb,var(--accent) 9%,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin-bottom:16px;font-size:13px;color:var(--text)"><b>Pick 3–5 themes you love.</b> Words stick better when they live somewhere — a kitchen, a courtroom, the night sky. Each theme becomes its own level ladder, and it joins your top bar in Practice.</div>`;
   const grid='display:grid;grid-template-columns:repeat(auto-fill,minmax(224px,1fr));gap:13px';
   const sections=themeClusters().map(cl=>{ const ts=defs.filter(t=>t.cluster===cl.id); if(!ts.length) return '';
     return `<div style="display:flex;align-items:center;gap:12px;margin:24px 0 12px">
       <span style="width:10px;height:10px;border-radius:6px;background:${cl.c};flex-shrink:0"></span>
       <h3 style="font-family:var(--display);font-weight:800;font-size:17px;margin:0;color:var(--text)">${esc(cl.label)}</h3>
-      <span style="font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap">${ts.length} themes</span>
+      <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);white-space:nowrap">${ts.length} themes</span>
       <span style="flex:1;height:1px;background:var(--line)"></span>
     </div><div style="${grid}">${ts.map(themeCard).join('')}</div>`; }).join('');
   return `<div style="animation:sb-rise .35s ease both">
@@ -4909,7 +4909,7 @@ function viewLesson(){ const S=state; const L=S.lessonSel; const dn=lessonComple
     return `<div style="background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:10px">
       <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:6px"><span style="font-family:var(--display);font-weight:800;font-size:17px;letter-spacing:.01em">${esc(w.w)}</span>${w.p?`<span style="font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:700">/ ${esc(w.p)} /</span>`:''}${w.sy&&w.sy.toLowerCase()!==w.w.toLowerCase()?`<span style="font-size:12px;color:var(--muted);font-weight:700">${esc(w.sy)}</span>`:''}${state.luMastered[nkey(w.w)]?'<span style="color:var(--good);font-weight:800;font-size:12px">✓ mastered</span>':''}<button data-act="say" data-arg="${escA(w.w)}" title="Hear it" style="margin-left:auto;color:var(--accent)">${iconSVG('volume',16)}</button></div>
       ${w.d?`<div style="font-size:13px;color:var(--text);line-height:1.5;margin-bottom:${ety.length?'7':'0'}px">${esc(w.d)}</div>`:''}
-      ${ety.length?`<div style="border-top:1px dashed var(--line);padding-top:8px"><div style="font-family:var(--mono);font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:5px">Etymology</div>${ety.map(e=>`<div style="display:flex;gap:7px;font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:4px"><span style="color:${f.c};flex-shrink:0">•</span><span>${mdInline(e)}</span></div>`).join('')}</div>`:''}
+      ${ety.length?`<div style="border-top:1px dashed var(--line);padding-top:8px"><div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:5px">Etymology</div>${ety.map(e=>`<div style="display:flex;gap:7px;font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:4px"><span style="color:${f.c};flex-shrink:0">•</span><span>${mdInline(e)}</span></div>`).join('')}</div>`:''}
     </div>`; }).join('');
   const act=(label,txt)=>txt?`<div style="margin-bottom:10px"><span style="font-weight:800;font-size:13px;color:${f.c}">${label}.</span> <span style="font-size:13px;color:var(--text);line-height:1.55">${mdInline(txt)}</span></div>`:'';
   // Every lesson is a card flow (like Concepts): one section per card, no content dropped.
@@ -4931,8 +4931,8 @@ function viewLesson(){ const S=state; const L=S.lessonSel; const dn=lessonComple
           `<button data-act="openCoach" style="flex:1;padding:14px;border-radius:14px;background:${nextOpen?'var(--surface2)':'var(--accent)'};color:${nextOpen?'var(--text)':'#fff'};font-weight:800;font-size:15px;${nextOpen?'border:1px solid var(--line)':'box-shadow:var(--edge)'}">Back to Practice →</button>`; })()
     : `<button data-act="lessonStepNext" style="flex:1;padding:14px;border-radius:14px;background:${f.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next card →</button>`;
   return `<div style="max-width:660px;margin:0 auto;animation:sb-rise .35s ease both">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><button data-act="lessonBack" style="color:var(--muted);font-weight:700;font-size:13px">← All lessons</button><span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:700"><span style="font-family:var(--mono)">${L.id}</span> · <span style="text-transform:capitalize">${L.diff}</span> <span style="width:9px;height:9px;border-radius:50%;background:${DIFF_DOT[L.diff]}"></span></span></div>
-    <div style="font-family:var(--mono);font-weight:700;font-size:12px;color:${f.c};margin-bottom:3px">Chapter ${L.unit} · ${esc(capWords(u.title))}</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><button data-act="lessonBack" style="color:var(--muted);font-weight:700;font-size:13px">← All lessons</button><span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:700"><span style="font-family:var(--display);font-variant-numeric:tabular-nums">${L.id}</span> · <span style="text-transform:capitalize">${L.diff}</span> <span style="width:9px;height:9px;border-radius:50%;background:${DIFF_DOT[L.diff]}"></span></span></div>
+    <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:12px;color:${f.c};margin-bottom:3px">Chapter ${L.unit} · ${esc(capWords(u.title))}</div>
     <h2 style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1.15;margin:0 0 14px">${esc(L.title)}${dn?' <span style="color:var(--good);font-size:17px">✓</span>':''}</h2>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span style="font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">Card ${idx+1} of ${N}</span><div style="display:flex;gap:5px;flex:1">${dots}</div></div>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><button data-act="lessonStepPrev" style="padding:12px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;${idx<=0?'opacity:.4;pointer-events:none':''}">← Back</button>${nextBtn}</div>
@@ -4963,7 +4963,7 @@ function viewEvoFeedback(){ const S=state; const themes=Object.keys(EV_NOMEN);
   const sections=themes.map(t=>{ const tiles=(EV_NOMEN[t]||[]).map((nm,i)=>{ const key=t+':'+i; const fb=EVOFB[key]||{}; const sel=S.evoSel===key;
       const dotCol=fb.rate?RC[fb.rate]:(fb.note?'#E8A33A':null);
       const dot=dotCol?`<span style="position:absolute;top:5px;right:5px;width:9px;height:9px;border-radius:50%;background:${dotCol};box-shadow:0 0 0 2px var(--bg2)"></span>`:'';
-      return `<button data-act="evoSelect" data-arg="${key}" style="position:relative;background:var(--bg2);border:2px solid ${sel?'var(--accent)':'var(--line)'};border-radius:10px;padding:8px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:2px">${dot}<div style="width:46px;height:50px;display:grid;place-items:center">${evEmb(t,i)}</div><div style="font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:700">LV ${i+1}</div><div style="font-family:var(--display);font-weight:700;font-size:12px;text-align:center;line-height:1.05">${esc(nm)}</div></button>`; }).join('');
+      return `<button data-act="evoSelect" data-arg="${key}" style="position:relative;background:var(--bg2);border:2px solid ${sel?'var(--accent)':'var(--line)'};border-radius:10px;padding:8px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:2px">${dot}<div style="width:46px;height:50px;display:grid;place-items:center">${evEmb(t,i)}</div><div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);font-weight:700">LV ${i+1}</div><div style="font-family:var(--display);font-weight:700;font-size:12px;text-align:center;line-height:1.05">${esc(nm)}</div></button>`; }).join('');
     return `<div style="margin-bottom:18px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:9px;display:flex;align-items:center;gap:8px"><span style="width:14px;height:14px;border-radius:6px;background:linear-gradient(135deg,${(EV_TC[t]||EV_TC.spellbound).a},${(EV_TC[t]||EV_TC.spellbound).b})"></span>${esc(THEME_LABEL[t]||t)}</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px">${tiles}</div></div>`;
   }).join('');
   return `<div style="max-width:760px;margin:0 auto">
@@ -4999,14 +4999,14 @@ function viewDebug(){
     ['combCatcher','Comb Catcher','🧺 Catch falling letters'],
   ];
   const card=(o)=>`<button data-act="${o.act}"${o.arg?` data-arg="${o.arg}"`:''} style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-left:5px solid ${o.c};border-radius:12px;padding:13px 15px;box-shadow:var(--sh-rest);color:var(--text);cursor:pointer"><div style="font-family:var(--display);font-weight:800;font-size:15px">${o.n}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${o.d}</div></button>`;
-  const eng=(e)=>`<button data-act="dbgSaga" data-arg="${e[0]}" style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-left:5px solid #F0B429;border-radius:12px;padding:13px 15px;box-shadow:var(--sh-rest);color:var(--text);cursor:pointer"><div style="font-family:var(--display);font-weight:800;font-size:15px">${e[1]}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${e[2]} · <span style="font-family:var(--mono)">${e[0]}</span></div></button>`;
+  const eng=(e)=>`<button data-act="dbgSaga" data-arg="${e[0]}" style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-left:5px solid #F0B429;border-radius:12px;padding:13px 15px;box-shadow:var(--sh-rest);color:var(--text);cursor:pointer"><div style="font-family:var(--display);font-weight:800;font-size:15px">${e[1]}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${e[2]} · <span style="font-family:var(--display);font-variant-numeric:tabular-nums">${e[0]}</span></div></button>`;
   const grid=(items)=>`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:8px 0 20px">${items}</div>`;
   return `<div style="max-width:820px;margin:0 auto">
-    <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:4px"><button data-act="goSettings" style="color:var(--muted);font-weight:700;font-size:13px">← Settings</button><span style="font-family:var(--display);font-weight:800;font-size:22px">🐞 Debug · QC games</span><span style="margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:3px 9px;border-radius:999px">dev only</span></div>
+    <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:4px"><button data-act="goSettings" style="color:var(--muted);font-weight:700;font-size:13px">← Settings</button><span style="font-family:var(--display);font-weight:800;font-size:22px">🐞 Debug · QC games</span><span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:3px 9px;border-radius:999px">dev only</span></div>
     <p style="margin:0 0 12px;color:var(--muted);font-size:13px">One-tap launch for every game — for testing. Only visible while “Unlock everything” is on.</p>
-    <div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:4px 0 2px">Full games &amp; hubs</div>
+    <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:4px 0 2px">Full games &amp; hubs</div>
     ${grid(hubs.map(card).join(''))}
-    <div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:4px 0 2px">Saga engines · launch standalone</div>
+    <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:4px 0 2px">Saga engines · launch standalone</div>
     ${grid(engines.map(eng).join(''))}
   </div>`;
 }
@@ -5054,7 +5054,7 @@ function viewVoiceTest(){
     return `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--bg2);border:1px solid ${bad?'var(--bad,#C43D5A)':okd?'var(--good,#2FA35C)':'var(--line)'};border-radius:12px;padding:10px 12px;margin-bottom:8px">
       <button data-act="vtPlay" data-arg="${k}" aria-label="Play ${esc(k)} — double-tap if it sounds right" title="Tap: hear · double-tap: sounds right" style="width:42px;height:42px;border-radius:10px;background:${okd?'var(--good,#2FA35C)':'var(--accent)'};color:#fff;font-size:18px;flex-shrink:0;user-select:none;-webkit-user-select:none;position:relative">${okd?'✓':'🔊'}</button>
       <button data-act="vtBad" data-arg="${k}" title="${bad?'Un-flag':'Sounds wrong'}" style="width:40px;height:40px;border-radius:10px;font-size:17px;background:${bad?'var(--bad,#C43D5A)':'var(--surface2)'};color:${bad?'#fff':'var(--muted)'};border:1px solid var(--line);flex-shrink:0;user-select:none;-webkit-user-select:none">✗</button>
-      <div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-weight:800;font-size:16px;overflow-wrap:anywhere">${esc(k)}${bad&&bad.logged?' <span style="font-family:var(--body);font-size:10px;font-weight:800;color:var(--muted);background:var(--surface2);padding:1px 6px;border-radius:99px;vertical-align:middle">logged</span>':''}</div>${bad?`<input value="${escA(note)}" oninput="window.sbVTnote('${k}',this.value)" placeholder="how did it sound? e.g. sod" style="margin-top:5px;width:100%;font-size:12.5px;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface2);color:var(--text)">`:''}</div></div>`; };
+      <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:800;font-size:16px;overflow-wrap:anywhere">${esc(k)}${bad&&bad.logged?' <span style="font-family:var(--body);font-size:10px;font-weight:800;color:var(--muted);background:var(--surface2);padding:1px 6px;border-radius:99px;vertical-align:middle">logged</span>':''}</div>${bad?`<input value="${escA(note)}" oninput="window.sbVTnote('${k}',this.value)" placeholder="how did it sound? e.g. sod" style="margin-top:5px;width:100%;font-size:12.5px;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface2);color:var(--text)">`:''}</div></div>`; };
   const rows = list.length ? list.slice(0,400).map(row).join('') : `<div style="color:var(--muted);font-size:14px;padding:26px 16px;text-align:center">${empty}</div>`;
   const tested=Object.keys(f.ok).length+flagged.length;
   const tabBtn=(id,label)=>`<button data-act="vtTab" data-arg="${id}" style="padding:8px 14px;border-radius:999px;font-weight:800;font-size:13px;border:1px solid var(--line);background:${tab===id?'var(--accent)':'var(--surface2)'};color:${tab===id?'#fff':'var(--text)'}">${label}</button>`;
@@ -5187,11 +5187,11 @@ function viewSettings(){
       <button data-act="pinSetup" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:${pinSet()?'var(--surface2)':'var(--accent)'};color:${pinSet()?'var(--muted)':'#fff'};font-weight:800;font-size:13px;white-space:nowrap">${pinSet()?'Change / remove':'Set PIN'}</button>
     </div>
     ${`<div style="background:var(--bg2);border:1px solid ${S.devUnlock?'var(--accent)':'var(--line)'};border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
-      <div style="min-width:0"><div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:15px">${SB_ICON('lock',{size:16})} Unlock everything <span style="font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:999px">testing</span></div><div style="font-size:13px;color:var(--muted)">Unlocks all concepts, lists, worlds, Advanced Mode &amp; every level — no coins or Premium needed.</div></div>
+      <div style="min-width:0"><div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:15px">${SB_ICON('lock',{size:16})} Unlock everything <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:999px">testing</span></div><div style="font-size:13px;color:var(--muted)">Unlocks all concepts, lists, worlds, Advanced Mode &amp; every level — no coins or Premium needed.</div></div>
       <button data-act="toggleDevUnlock" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:${S.devUnlock?'var(--accent)':'var(--surface2)'};color:${S.devUnlock?'#fff':'var(--muted)'};font-weight:800;font-size:13px">${S.devUnlock?SB_ICON('check',{size:15})+' On':'Off'}</button>
     </div>
     <div style="background:var(--bg2);border:1px solid ${active()&&active().devCoins?'var(--treasure,#F0B429)':'var(--line)'};border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
-      <div style="min-width:0"><div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:15px">🪙 Test coins <span style="font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:999px">testing</span></div><div style="font-size:13px;color:var(--muted)">Tops the purse up to 1,000,000 so you can test the Store. Temporary — switching this (or testing mode) off puts the real balance back.</div></div>
+      <div style="min-width:0"><div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:15px">🪙 Test coins <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:999px">testing</span></div><div style="font-size:13px;color:var(--muted)">Tops the purse up to 1,000,000 so you can test the Store. Temporary — switching this (or testing mode) off puts the real balance back.</div></div>
       <button data-act="toggleDevCoins" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:${active()&&active().devCoins?'var(--treasure,#F0B429)':'var(--surface2)'};color:${active()&&active().devCoins?'#5a3d00':'var(--muted)'};font-weight:800;font-size:13px;white-space:nowrap">${active()&&active().devCoins?SB_ICON('check',{size:15})+' On':'Off'}</button>
     </div>`}
     <button data-act="signOut" style="width:100%;padding:14px;border-radius:14px;background:var(--surface2);color:var(--bad);font-weight:800;font-size:15px">Sign out</button>
@@ -5238,7 +5238,7 @@ function coachTrain(){
   const bigC=dockColor(key);
   const bigTile=`<div style="flex:1.5;min-width:220px;display:flex;align-items:center;gap:13px;padding:14px 16px;border-radius:14px;background:linear-gradient(135deg,${bigC},color-mix(in srgb,${bigC} 74%,#1c1030 26%));color:#fff;box-shadow:0 6px 16px color-mix(in srgb,${bigC} 32%,transparent);animation:sb-pop .35s ease both">
       <div style="width:54px;height:54px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(#fff ${stagePct}%,rgba(255,255,255,.25) 0)"><div style="width:41px;height:41px;border-radius:50%;background:color-mix(in srgb,${bigC} 82%,#1c1030 18%);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:12px">${stagePct}%</div></div>
-      <div style="min-width:0"><div style="font-family:var(--mono);font-size:12px;letter-spacing:.11em;text-transform:uppercase;opacity:.85;font-weight:700">Now training</div>
+      <div style="min-width:0"><div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.11em;text-transform:uppercase;opacity:.85;font-weight:700">Now training</div>
         <div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.12;text-shadow:0 1px 4px rgba(0,0,0,.16)">${esc(dockLabel(key))}</div>
         <div style="font-size:12px;font-weight:700;opacity:.92">${isJourney?(stage.champ!==false&&sIdx<CHAMP_LEVELS?('Level '+(sIdx+1)+' of '+CHAMP_LEVELS+' to Champ'):('Champion’s Library · '+esc(stage.label||('Library '+(sIdx+1-CHAMP_LEVELS))))):('Level '+(sIdx+1)+' of '+stages.length)} · ${stageM}/${stage.words.length} mastered this Level</div></div></div>`;
   const smallTiles=liveKeys.filter(k=>k!==key).map(k=>{ const cc=dockColor(k); const open=S.dockMenu===k;
@@ -5252,7 +5252,7 @@ function coachTrain(){
         ${CORE_LISTS[k]?'':`<button data-act="dockRemove" data-arg="${escA(k)}" style="display:flex;align-items:center;gap:7px;width:100%;text-align:left;padding:8px 10px;border-radius:6px;font-weight:800;font-size:12px;color:var(--bad)">${SB_ICON('x',{size:16})} Remove <span style="color:var(--muted);font-weight:600;font-size:12px">re-add from Setup</span></button>`}
       </div>`:''}
     </div>`; }).join('');
-  const pausedShelf=pausedKeys.length?`<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)"><span style="font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700">Paused</span>${pausedKeys.map(k=>`<button data-act="resumeList" data-arg="${escA(k)}" title="Tap to resume training this list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;border:1px dashed var(--line);background:transparent;color:var(--muted);font-weight:700;font-size:12px">${SB_ICON('play',{size:14})} ${esc(dockLabel(k))} <span style="font-size:12px">L${listStageIdx(c,k)+1}</span></button>`).join('')}</div>`:'';
+  const pausedShelf=pausedKeys.length?`<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)"><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700">Paused</span>${pausedKeys.map(k=>`<button data-act="resumeList" data-arg="${escA(k)}" title="Tap to resume training this list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;border:1px dashed var(--line);background:transparent;color:var(--muted);font-weight:700;font-size:12px">${SB_ICON('play',{size:14})} ${esc(dockLabel(k))} <span style="font-size:12px">L${listStageIdx(c,k)+1}</span></button>`).join('')}</div>`:'';
   const addBtn=`<button data-act="coachSetupOpen" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px dashed var(--line);background:transparent;color:var(--accent)">+ Add list</button>`;
   const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button><span style="font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">Word Coach</span><button data-act="openQuestChooser" title="Change your quest path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} Quest path</button>${(()=>{ const n=missTraps().length; return `<button data-act="openTraps" title="Your weak patterns" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${n?'var(--fix-tint,#FBE9E7)':'var(--surface2)'};border:1px solid ${n?'var(--fix,#C4453C)':'var(--line)'};color:${n?'var(--fix,#C4453C)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('target',13)} Traps${n?' · '+n:''}</button>`; })()}${(()=>{ const r=((active().missed)||[]).length; return `<button data-act="openRevisions" title="Words you marked to revise" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${r?'color-mix(in srgb,var(--treasure,#F0B429) 18%,transparent)':'var(--surface2)'};border:1px solid ${r?'var(--treasure,#F0B429)':'var(--line)'};color:${r?'var(--treasure-deep,#8A5B00)':'var(--muted)'};font-weight:800;font-size:12px">⚑ Revise${r?' · '+r:''}</button>`; })()}${(()=>{ const ms=milestone(); return ms?`<span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('target',14)} ${ms.days} days to ${esc(ms.label)}</span>`:''; })()}</div>`;
   const allWordsBtn=`<button data-act="luToggleWords" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid ${S.luWordsOpen?'var(--accent)':'var(--line)'};background:var(--surface2);color:var(--text)">${iconSVG('grid',14)} All words <span style="color:var(--muted);font-weight:700">${fullList.length}</span> ${S.luWordsOpen?'▴':'▾'}</button>`;
@@ -5296,8 +5296,8 @@ function coachTrain(){
     ? (stage.champ ? ('Level '+stage.n+' of '+CHAMP_LEVELS+' to Champ') : ('Champion\'s Library · '+esc(stage.label)))
     : ('Level '+stage.n+' of '+stages.length);
   const levelTag = isJourney
-    ? (stage.champ ? `<span style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--accent)">BIZZING BEE CHAMP</span>` : `<span style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.08em;color:#C8901B">★ CHAMP · LIBRARY</span>`)
-    : `<span style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--muted)">${esc(listLabel(key).split(' · ')[0]).toUpperCase()}</span>`;
+    ? (stage.champ ? `<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--accent)">BIZZING BEE CHAMP</span>` : `<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.08em;color:#C8901B">★ CHAMP · LIBRARY</span>`)
+    : `<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--muted)">${esc(listLabel(key).split(' · ')[0]).toUpperCase()}</span>`;
   const advanceTo = isJourney ? (nextIsLibrary ? ('Library '+(stage.n-CHAMP_LEVELS+1)) : ('Level '+(stage.n+1))) : ('Level '+(stage.n+1));
   let advanceHTML;
   if(lastStage && stageDone){ advanceHTML=`<div style="margin-top:10px;font-size:12px;color:var(--good);font-weight:800">🏆 Every level cleared — legendary!</div>`; }
@@ -5327,7 +5327,7 @@ function coachTrain(){
   const act=(a,ic,t,col)=>`<button data-act="${a}" class="sb-lift" style="display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:16px 10px;box-shadow:var(--sh-rest)">${iconTile(ic,col,{size:44,radius:13})}<span style="font-family:var(--display);font-weight:800;font-size:13.5px;color:${col};line-height:1.15">${t}</span></button>`;
   const actions=`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:18px 2px 10px">Quick practice</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:11px">${act('startBuzz','flame','Daily Buzz','#E8845C')}${act('startWritten','pencil','Written','#7C5CFF')}${act('startOral','speaker','Oral round','#13A892')}${act('coachSetupOpen','sliders','Setup','#C8901B')}</div>`;
-  const journeyPromo = (key!=='journey' && (getList(c,'journey').stage||0)===0) ? `<button data-act="startJourney" style="width:100%;text-align:left;border-radius:14px;margin-top:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 4px 14px rgba(43,27,94,.16)"><div style="padding:13px 16px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><div style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">★ Recommended path</div><div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">The Bizzing Bee Journey — 20 Levels to Champ</div></div><span style="padding:8px 14px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Start →</span></div></button>` : '';
+  const journeyPromo = (key!=='journey' && (getList(c,'journey').stage||0)===0) ? `<button data-act="startJourney" style="width:100%;text-align:left;border-radius:14px;margin-top:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 4px 14px rgba(43,27,94,.16)"><div style="padding:13px 16px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">★ Recommended path</div><div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">The Bizzing Bee Journey — 20 Levels to Champ</div></div><span style="padding:8px 14px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Start →</span></div></button>` : '';
   return `<div style="max-width:760px;margin:0 auto">${printDlg}${topBar}
     <div style="display:flex;gap:5px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:16px">${tab('revise','Learn')}${tab('practice','Practice Spelling')}${tab('vocab','Practice Vocabulary')}</div>
     ${body}
@@ -5375,7 +5375,7 @@ function listCoverCard(k,label,sub,count,locked){ const c=active(); const on=(c.
   const stMeta = (k==='journey') ? (' · Level '+(listStageIdx(c,'journey')+1)) : ((on && !locked) ? (' · Level '+(listStageIdx(c,k)+1)+'/'+listStages(k).length) : '');
   return `<button class="sb-cover-card" data-act="${act}" data-arg="${k}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px ${on?f.c:'var(--line)'},var(--sh-rest);display:flex;flex-direction:column">
     <div style="position:relative;height:88px;display:flex;align-items:center;justify-content:center;padding:12px;${listCoverBG(k)}">
-      <span style="position:absolute;top:10px;left:11px;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(f.tag)}</span>
+      <span style="position:absolute;top:10px;left:11px;font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(f.tag)}</span>
       ${on?'<span style="position:absolute;top:9px;right:10px;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.92);color:#1fa377;font-weight:900;font-size:12px">ACTIVE</span>':''}
       <div class="sb-theme-art" style="text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.16);animation-delay:${(k.length%9)*0.22}s">${locked?`<div style="display:flex;justify-content:center;color:#fff">${iconSVG('lock',34,2)}</div>`:`<div style="font-family:var(--display);color:#fff;line-height:1;letter-spacing:-.01em;font-weight:800;font-size:${heroFont(f.hero)}px">${esc(f.hero)}</div>`}</div>
     </div>
@@ -5383,7 +5383,7 @@ function listCoverCard(k,label,sub,count,locked){ const c=active(); const on=(c.
       <div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.18;color:var(--text)">${esc(label)}</div>
       <div style="font-family:var(--body);font-weight:600;font-size:12px;line-height:1.4;color:var(--muted);margin-top:4px">${esc(trunc(sub,64))}</div>
       <div style="margin-top:auto;padding-top:11px;display:flex;align-items:center;justify-content:space-between;gap:8px">
-        <span style="font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:700">${count} words · L${lvl}${stMeta}</span>
+        <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);font-weight:700">${count} words · L${lvl}${stMeta}</span>
         <span style="display:inline-flex;align-items:center;gap:4px;font-family:var(--body);font-weight:800;font-size:12px;color:${on?f.c:(locked?'#a06a00':f.c)};white-space:nowrap">${on?'Training':(locked?(iconSVG('lock',11,2.2)+' '+coinAmt(COST.list,11)):'Choose →')}</span>
       </div>
     </div>
@@ -5398,7 +5398,7 @@ function coachSetup(){
   const champLabel = jLvl>CHAMP_LEVELS ? 'Bizzing Bee Champ 🏆 · exploring the Library' : ('Level '+Math.min(jLvl,CHAMP_LEVELS)+' of '+CHAMP_LEVELS+' to Champ');
   const journeyBanner=`<button data-act="startJourney" style="position:relative;overflow:hidden;text-align:left;width:100%;border-radius:20px;margin-bottom:16px;${listCoverBG('journey')};box-shadow:0 8px 22px rgba(43,27,94,.18)">
     <div style="padding:18px 20px;color:#fff">
-      <span style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">${(active().activeList||'default')==='journey'?'Your path':'★ Recommended path'}</span>
+      <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">${(active().activeList||'default')==='journey'?'Your path':'★ Recommended path'}</span>
       <div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1.1;margin:6px 0 4px">The Bizzing Bee Journey</div>
       <div style="font-size:13px;color:rgba(255,255,255,.9);line-height:1.5;margin-bottom:12px;max-width:46em">Climb <b>20 Levels</b> through the ~${fmtN(champWordCount())} highest-value bee words to become a <b>Bizzing Bee Champ</b> — then unlock the full ${fmtN(journeyTotal())}-word Library. Words → Set of 24 → Level → Champ.</div>
       <div style="height:8px;border-radius:999px;background:rgba(255,255,255,.25);overflow:hidden;margin-bottom:9px"><div style="height:100%;width:${jChampPct}%;background:#fff"></div></div>
@@ -5432,7 +5432,7 @@ function infoChip(on,label,act){ return `<button data-act="${act}" style="paddin
 function coachWritten(){
   const S=state; const wr=S.wr; let infoHTML=''; if(wr){ const w=wr.list[wr.i]; if(S.wrInfoKey==='def') infoHTML='Meaning — '+blankHTML(w.d||'—',w.w); else if(S.wrInfoKey==='sent') infoHTML='Sentence — '+blankHTML(w.s||'—',w.w); else if(S.wrInfoKey==='orig') infoHTML='Origin — '+esc(w.o||'—')+(w.r?('. '+esc(w.r)):''); }
   return `<div style="max-width:680px;margin:0 auto">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><div style="font-family:var(--mono);font-size:13px;color:var(--muted)">Written round · Word ${wr.i+1}/${wr.list.length}</div><button data-act="exitCoachMode" style="color:var(--muted);font-weight:700;font-size:13px">✕ Exit</button></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">Written round · Word ${wr.i+1}/${wr.list.length}</div><button data-act="exitCoachMode" style="color:var(--muted);font-weight:700;font-size:13px">✕ Exit</button></div>
     <div style="height:7px;border-radius:999px;background:var(--surface2);overflow:hidden;margin-bottom:22px"><div style="height:100%;background:var(--accent);border-radius:999px;width:${Math.round(wr.i/wr.list.length*100)}%;transition:width .4s"></div></div>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow);text-align:center">
       <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 14px">Listen and type — no answer shown till the end</p>
@@ -5446,7 +5446,7 @@ function coachWritten(){
 }
 function coachWrDone(){
   const S=state; const wr=S.wr; const ok=wr.ans.filter(a=>a.ok).length, total=wr.ans.length||1, pct=Math.round(ok/total*100);
-  const rows=wr.ans.map(a=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 13px;border-radius:10px;background:${a.ok?'color-mix(in srgb,#1f9d57 13%,transparent)':'color-mix(in srgb,var(--bad) 13%,transparent)'}"><span style="font-weight:800">${esc(a.w.w)}</span><span style="font-family:var(--mono);font-size:13px">${a.ok?'✓':(esc(a.val||'(blank)')+' ✗')}</span></div>`).join('');
+  const rows=wr.ans.map(a=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 13px;border-radius:10px;background:${a.ok?'color-mix(in srgb,#1f9d57 13%,transparent)':'color-mix(in srgb,var(--bad) 13%,transparent)'}"><span style="font-weight:800">${esc(a.w.w)}</span><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px">${a.ok?'✓':(esc(a.val||'(blank)')+' ✗')}</span></div>`).join('');
   return `<div style="max-width:680px;margin:0 auto">
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:30px;text-align:center;box-shadow:var(--glow);margin-bottom:14px"><h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 8px">${pct>=80?'Strong round! 🏆':pct>=60?'Good effort 💪':'Keep training 🌱'}</h2><div style="font-family:var(--display);font-weight:800;font-size:48px;color:var(--accent);line-height:1">${pct}%</div><p style="color:var(--muted);font-weight:700;margin-top:6px">${ok} of ${wr.ans.length} correct</p></div>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:10px">Round results</div><div style="display:flex;flex-direction:column;gap:7px">${rows}</div></div>
@@ -5456,7 +5456,7 @@ function coachWrDone(){
 function coachOral(){
   const S=state; const or=S.or; let infoHTML=''; if(or&&or.pool[or.i]){ const w=or.pool[or.i]; if(S.orInfoKey==='def') infoHTML='Meaning — '+blankHTML(w.d||'—',w.w); else if(S.orInfoKey==='sent') infoHTML='Sentence — '+blankHTML(w.s||'—',w.w); else if(S.orInfoKey==='orig') infoHTML='Origin — '+esc(w.o||'—')+(w.r?('. '+esc(w.r)):''); }
   return `<div style="max-width:680px;margin:0 auto">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><div style="font-family:var(--mono);font-size:13px;color:var(--muted)">Oral elimination · Round ${or.round+1} · Best ${S.coachBestRounds||0}</div><button data-act="exitCoachMode" style="color:var(--muted);font-weight:700;font-size:13px">✕ Exit</button></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">Oral elimination · Round ${or.round+1} · Best ${S.coachBestRounds||0}</div><button data-act="exitCoachMode" style="color:var(--muted);font-weight:700;font-size:13px">✕ Exit</button></div>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow);text-align:center">
       <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 14px">Spell it out loud, letter by letter</p>
       <button data-act="orSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:16px">${iconSVG('volume',18)} Hear the word</button>
@@ -5471,7 +5471,7 @@ function coachOral(){
 function coachOrGone(){
   const S=state; const or=S.or; const w=(or&&or.last)?or.last.w:'';
   return `<div style="max-width:680px;margin:0 auto">
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:30px;text-align:center;box-shadow:var(--glow);margin-bottom:14px"><h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 10px">Eliminated 🛑</h2><p style="color:var(--muted);font-weight:700;margin:0 0 4px">The word was</p><div style="font-family:var(--display);font-weight:800;font-size:36px;color:var(--accent);line-height:1">${esc(w)}</div><p style="font-family:var(--mono);font-size:13px;color:var(--muted);margin-top:8px;letter-spacing:.12em">${esc(w.split('').join(' '))}</p><p style="color:var(--muted);font-weight:700;margin-top:14px">You survived <b style="color:var(--text)">${or?or.round:0}</b> rounds · best ${S.coachBestRounds||0}</p></div>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:30px;text-align:center;box-shadow:var(--glow);margin-bottom:14px"><h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 10px">Eliminated 🛑</h2><p style="color:var(--muted);font-weight:700;margin:0 0 4px">The word was</p><div style="font-family:var(--display);font-weight:800;font-size:36px;color:var(--accent);line-height:1">${esc(w)}</div><p style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted);margin-top:8px;letter-spacing:.12em">${esc(w.split('').join(' '))}</p><p style="color:var(--muted);font-weight:700;margin-top:14px">You survived <b style="color:var(--text)">${or?or.round:0}</b> rounds · best ${S.coachBestRounds||0}</p></div>
     <div style="display:flex;gap:10px;justify-content:center"><button data-act="exitCoachMode" style="padding:13px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Back to Coach</button><button data-act="startOral" style="padding:13px 18px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Try again →</button></div>
   </div>`;
 }
@@ -5862,7 +5862,7 @@ function duelView(){ const S=state; const g=S.game; const shell=(inner)=>`<div s
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button data-act="playGame" data-arg="duel" style="padding:13px 22px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:14px;box-shadow:var(--edge)">Rematch →</button><button data-act="exitGame" style="padding:13px 22px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:14px">Back to Arcade</button></div></div>`); }
   const pl=g.p[g.turn]; const w=g.list[g.i];
   return shell(`<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,30px);box-shadow:var(--sh-rest);text-align:center">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="font-weight:800;font-size:14px;color:var(--action,var(--accent))">${esc(pl.name)}'s turn</span><span style="font-family:var(--mono);font-size:13px;color:var(--muted)">${g.i+1}/10 · ✓ ${pl.right}</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="font-weight:800;font-size:14px;color:var(--action,var(--accent))">${esc(pl.name)}'s turn</span><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${g.i+1}/10 · ✓ ${pl.right}</span></div>
       <button data-act="duelSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">${iconSVG('volume',18)} Hear the word</button>
       <input data-inp="duelType" data-key="duelKey" data-fkey="duelType" value="${escA(S.typed)}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type it…" style="width:100%;padding:15px;border-radius:12px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:20px;text-align:center;letter-spacing:.06em;margin-bottom:12px">
       <button data-act="duelEnter" style="width:100%;padding:14px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Submit</button></div>`);
@@ -5906,7 +5906,7 @@ function magicView(){ const g=state.game; const S=state;
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">${btns}</div>`;
     }
     return `<div style="max-width:560px;margin:0 auto">${head}
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;background:color-mix(in srgb,${cl.c} 14%,var(--bg2));color:${cl.c};font-weight:800;font-size:12px">${esc(cell.label)}</span><span style="font-family:var(--mono);font-size:12px;color:var(--muted)">Question ${g.qi+1}/5 · ${g.right} right</span></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;background:color-mix(in srgb,${cl.c} 14%,var(--bg2));color:${cl.c};font-weight:800;font-size:12px">${esc(cell.label)}</span><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">Question ${g.qi+1}/5 · ${g.right} right</span></div>
       <div style="display:flex;gap:5px;margin-bottom:14px">${dots}</div>
       <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(16px,4vw,24px);box-shadow:var(--glow)">${body}</div>
     </div>`; }
@@ -6058,7 +6058,7 @@ function packRollOverlay(){ const r=state.packRoll; if(!r) return '';
   const pool=SB_AVATARS.list.filter(a=>a.pack===r.pk);
   const strip=pool.concat(pool).map(a=>`<span>${SB_AVATAR(a.id,72,{dark:true})}</span>`).join('');
   return `<div class="pk-ov" data-act="packSkip"><div class="pk-card" data-act="noop">
-      <div style="font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.16em;color:color-mix(in srgb,var(--accent) 55%,#fff)">${esc(String(P.label||'').toUpperCase())}</div>
+      <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:11px;font-weight:700;letter-spacing:.16em;color:color-mix(in srgb,var(--accent) 55%,#fff)">${esc(String(P.label||'').toUpperCase())}</div>
       <div style="font-family:var(--display);font-weight:800;font-size:20px;color:#fff;margin-top:6px">Calculating your drop<span class="pk-dots"></span></div>
       <div class="pk-reelwin"><div class="pk-reel">${strip}</div></div>
       <div class="pk-scan"><i></i></div>
@@ -6070,7 +6070,7 @@ function packDropOverlay(){ const id=state.packDrop; if(!id) return '';
   const leg=a.rarity==='legendary'; const od=(typeof packOdds==='function')?packOdds(a.pack).find(o=>o.id===id):null;
   return `<div data-act="packClose" class="pk-ov" style="z-index:83">
     <div data-act="noop" style="position:relative;background:linear-gradient(160deg,color-mix(in srgb,var(--accent) 20%,#3A2F5C),#241A47);border:1px solid rgba(255,255,255,.2);border-radius:24px;padding:26px 30px 28px;text-align:center;max-width:330px;width:100%;box-shadow:0 0 64px ${leg?'rgba(255,194,61,.5)':'color-mix(in srgb,var(--accent) 40%,transparent)'}">
-      <div style="font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.16em;color:${state.packDupe?'#FFD98A':'#C9BFEA'};margin-bottom:10px">${state.packDupe?('🪙 SPARE · YOU NOW HAVE ×'+state.packDupe):'✨ YOU GOT'}</div>
+      <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:11px;font-weight:700;letter-spacing:.16em;color:${state.packDupe?'#FFD98A':'#C9BFEA'};margin-bottom:10px">${state.packDupe?('🪙 SPARE · YOU NOW HAVE ×'+state.packDupe):'✨ YOU GOT'}</div>
       <div class="pk-drop" style="width:150px;height:150px;margin:0 auto">${SB_AVATAR(a.id,150,{dark:true})}</div>
       <div style="display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:${R.c};border-radius:99px;padding:4px 12px;margin:14px 0 6px">${R.label}${leg?' ✦':''}</div>
       <div style="font-family:var(--display);color:#fff;font-weight:800;font-size:22px">${esc(a.name)}</div>
@@ -6085,11 +6085,11 @@ function gameShell(statusBar, inner){ return `<div style="max-width:680px;margin
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px">${statusBar}<div style="display:flex;align-items:center;gap:10px">${coinChip()}<button data-act="exitGame" style="color:var(--muted);font-weight:700;font-size:13px">✕ Exit</button></div></div>
     ${inner}</div>`; }
 function typedGame(){ const S=state; const g=S.game; const w=g.list[g.i]; let statusBar='';
-  if(g.type==='beat'){ const low=g.timeLeft<=10; statusBar=`<div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--display);font-weight:900;font-size:20px;color:${low?'var(--bad)':'var(--accent)'};min-width:54px">⏱ ${g.timeLeft}s</span><span style="font-family:var(--mono);font-size:13px;color:var(--muted)">✓ ${g.right}</span></div>`; }
+  if(g.type==='beat'){ const low=g.timeLeft<=10; statusBar=`<div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--display);font-weight:900;font-size:20px;color:${low?'var(--bad)':'var(--accent)'};min-width:54px">⏱ ${g.timeLeft}s</span><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">✓ ${g.right}</span></div>`; }
   else if(g.type==='boss'){ const hpPct=Math.round(g.hp/g.maxhp*100); const hearts='❤️'.repeat(g.lives)+'🖤'.repeat(g.maxlives-g.lives); const sh=(active().pow||{}).shield||0;
     statusBar=`<div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><span style="font-size:20px">👹</span><div style="flex:1;height:11px;border-radius:999px;background:var(--surface2);overflow:hidden;max-width:220px"><div style="height:100%;border-radius:999px;background:linear-gradient(90deg,#FF4D8D,#d63a3a);width:${hpPct}%;transition:width .35s"></div></div><span style="font-size:13px">${hearts}${sh?' <span title="Boss Shields — each absorbs one miss">🛡️×'+sh+'</span>':''}</span></div></div>`; }
-  else if(g.type==='champ'){ const low=g.fmt==='timed'&&g.timeLeft<=10; statusBar=`<div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--display);font-weight:900;font-size:17px;color:var(--accent)">⚡ Challenge</span>${g.fmt==='timed'?`<span style="font-family:var(--display);font-weight:900;font-size:17px;color:${low?'var(--bad)':'var(--accent)'}">⏱ ${g.timeLeft}s</span>`:`<span style="font-family:var(--mono);font-size:13px;color:var(--muted)">${g.i+1}/${g.total}</span>`}<span style="font-family:var(--mono);font-size:13px;color:var(--muted)">✓ ${g.right}</span></div>`; }
-  else statusBar=`<div style="font-family:var(--mono);font-size:13px;color:var(--muted)">${gameName(g.type)} · ${g.i+1}/${g.list.length} · ✓ ${g.right}</div>`;
+  else if(g.type==='champ'){ const low=g.fmt==='timed'&&g.timeLeft<=10; statusBar=`<div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--display);font-weight:900;font-size:17px;color:var(--accent)">⚡ Challenge</span>${g.fmt==='timed'?`<span style="font-family:var(--display);font-weight:900;font-size:17px;color:${low?'var(--bad)':'var(--accent)'}">⏱ ${g.timeLeft}s</span>`:`<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${g.i+1}/${g.total}</span>`}<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">✓ ${g.right}</span></div>`; }
+  else statusBar=`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${gameName(g.type)} · ${g.i+1}/${g.list.length} · ✓ ${g.right}</div>`;
   const hint = S.gInfo ? `<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 15px;text-align:left;font-size:13px;line-height:1.55;margin-bottom:14px">${w.d?('<b>Meaning</b> — '+blankHTML(w.d,w.w)):''}${w.d&&w.s?'<br>':''}${w.s?('<b>Sentence</b> — '+blankHTML(w.s,w.w)):''}${w.h?('<br><span style="display:inline-flex;align-items:center;gap:5px;color:var(--accent);vertical-align:middle">'+iconSVG('bulb',14)+'</span> '+blankHTML(w.h,w.w)):''}${(!w.d&&!w.s)?'No hint for this one — listen closely!':''}</div>` : '';
   let bossFb=''; if(g.type==='boss'&&g.last&&g.last.ok&&!g.fb){ bossFb=`<div style="color:#1f9d57;font-weight:800;font-size:13px;margin-bottom:12px">💥 Hit! Boss took damage.</div>`; }
   if(g.fb&&!g.fb.ok){ bossFb=`<div style="background:var(--fix-tint,#FBE9E7);border:1.5px solid var(--fix,#C4453C);border-radius:14px;padding:14px;margin-bottom:14px;animation:sb-pop .3s ease both">
@@ -6143,7 +6143,7 @@ function typedDone(){ const S=state; const g=S.game; let title,big,sub;
     <div style="display:flex;gap:10px;justify-content:center"><button data-act="exitGame" style="padding:13px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">← Arcade</button><button data-act="gReplay" style="padding:13px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Play again →</button></div>
   </div>`; }
 function mcGame(){ const S=state; const g=S.game; const q=g.qs[g.i]; const mono=q.kind==='spell';
-  const statusBar=`<div style="font-family:var(--mono);font-size:13px;color:var(--muted)">${gameName(g.type)} · ${g.i+1}/${g.qs.length} · ✓ ${g.right} <span class="sb-mob-hide" style="opacity:.7">· keys 1–4 pick · R repeat</span></div>`;
+  const statusBar=`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${gameName(g.type)} · ${g.i+1}/${g.qs.length} · ✓ ${g.right} <span class="sb-mob-hide" style="opacity:.7">· keys 1–4 pick · R repeat</span></div>`;
   const choices=q.choices.map((ch,idx)=>{ let bg='var(--surface2)',col='var(--text)',bd='var(--line)';
     if(g.picked!=null){ if(ch===q.answer){ bg='color-mix(in srgb,#1f9d57 20%,var(--bg2))'; col='var(--text)'; bd='#1f9d57'; } else if(idx===g.picked){ bg='color-mix(in srgb,var(--bad) 18%,var(--bg2))'; bd='var(--bad)'; } }
     return `<button data-act="gPick" data-arg="${idx}" ${g.picked!=null?'disabled':''} style="text-align:${mono?'center':'left'};padding:15px 17px;border-radius:14px;background:${bg};border:2px solid ${bd};color:${col};font-family:${mono?'var(--mono)':'var(--display)'};font-weight:800;font-size:15px;${mono?'letter-spacing:.04em;':''}">${esc(ch)}</button>`; }).join('');
@@ -6155,7 +6155,7 @@ function mcGame(){ const S=state; const g=S.game; const q=g.qs[g.i]; const mono=
   else if(q.kind==='spell') prompt=`${eyebrow('Which spelling is correct?')}<div style="font-size:clamp(15px,3.4vw,19px);line-height:1.5;font-weight:600;color:var(--muted)">${q.prompt}</div>${hearBtn('Hear word')}`;
   else if(q.kind==='idiom') prompt=`${eyebrow('What does it mean?')}<div style="font-family:var(--display);font-size:clamp(18px,4vw,25px);font-weight:800;line-height:1.3">“${q.prompt}”</div>${hearBtn('Hear it')}`;
   else if(q.kind==='simile2') prompt=`${eyebrow('Complete the simile')}<div style="font-family:var(--display);font-size:clamp(18px,4vw,25px);font-weight:800;line-height:1.3">${q.prompt}</div>${hearBtn('Hear it')}`;
-  else if(q.kind==='vocab') prompt=`${eyebrow('What does it mean?')}<div style="font-family:var(--display);font-size:clamp(22px,5vw,30px);font-weight:800;letter-spacing:.02em">${q.prompt}</div>${q.p2?`<div style=\"font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px\">${esc(q.p2)}</div>`:''}${hearBtn('Hear the word')}`;
+  else if(q.kind==='vocab') prompt=`${eyebrow('What does it mean?')}<div style="font-family:var(--display);font-size:clamp(22px,5vw,30px);font-weight:800;letter-spacing:.02em">${q.prompt}</div>${q.p2?`<div style=\"font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);margin-top:4px\">${esc(q.p2)}</div>`:''}${hearBtn('Hear the word')}`;
   else prompt=`${eyebrow('Which word means…')}<div style="font-size:clamp(17px,3.6vw,21px);line-height:1.55;font-weight:600">“${q.prompt}”</div>`;
   const wrongPick=g.picked!=null && q.choices[g.picked]!==q.answer;
   const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4.5vw,30px);box-shadow:var(--glow);margin-bottom:14px;text-align:center">${prompt}</div>
@@ -6196,10 +6196,10 @@ function fullListOverlay(){ const S=state; if(!S.listView) return '';
   const cards=list.slice(0,shown).map(w=>{ const done=mastered(w); const y=w.y||3;
     return `<div style="background:var(--paper,var(--bg2));border:1px solid ${done?'var(--good,#1f9d57)':'var(--line)'};border-radius:14px;padding:13px 15px">
       <div style="display:flex;align-items:baseline;gap:9px;flex-wrap:wrap">
-        <span style="font-family:var(--mono);font-size:18px;font-weight:800;letter-spacing:.01em">${esc(w.w)}</span>
-        ${w.p?`<span style="font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:700">${esc(w.p)}</span>`:''}
+        <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:18px;font-weight:800;letter-spacing:.01em">${esc(w.w)}</span>
+        ${w.p?`<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--accent);font-weight:700">${esc(w.p)}</span>`:''}
         <button data-act="lvSay" data-arg="${escA(w.w)}" title="Hear it" style="width:28px;height:28px;border-radius:8px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG('volume',14)}</button>
-        <span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px">${done?`<span style="font-size:11px;font-weight:800;color:var(--good,#1f9d57)">✓ mastered</span>`:''}<span style="font-size:11px;font-weight:800;color:var(--muted);font-family:var(--mono)">L${y}</span></span>
+        <span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px">${done?`<span style="font-size:11px;font-weight:800;color:var(--good,#1f9d57)">✓ mastered</span>`:''}<span style="font-size:11px;font-weight:800;color:var(--muted);font-family:var(--display);font-variant-numeric:tabular-nums">L${y}</span></span>
       </div>
       ${w.d?`<div style="font-size:13.5px;color:var(--text);margin-top:6px;line-height:1.45">${esc(w.d)}</div>`:''}
       <div style="font-size:12px;color:var(--muted);margin-top:5px;display:flex;gap:13px;flex-wrap:wrap">${w.o?`<span>${esc(w.o)}${w.ps?' · '+esc(w.ps):''}</span>`:''}${w.bp?`<span>bee-prob ${w.bp}</span>`:''}</div>
@@ -6318,11 +6318,30 @@ function ttDeck(th,lv){ lv=lv||ttBand(); const ck=th+'|'+lv; if(_ttCache[ck]) re
   _ttCache[ck]=deck; return deck; }
 function ttSeenKey(th){ return th+'|'+ttBand(); }
 function ttThemes(){ return ((window.SB_TRIVIA||{}).themes)||[]; }
+/* Chapter icon: a drawn sticker from SB_TT_ICON_ART, falling back to the theme's emoji
+   only if the art file is missing. The SVG carries no colour of its own for the ink or
+   the contact shadow — those come from --ico-ink / --ico-shadow, which dusk redefines,
+   so one drawing serves both modes. */
+function ttIcon(th,size){ size=size||30;
+  const art=(window.SB_TT_ICON_ART||{})[th.id];
+  if(!art) return th.e||'🐝';
+  return `<span style="width:${size}px;height:${size}px;display:block" aria-hidden="true">${art.replace('<svg ','<svg width="100%" height="100%" ')}</span>`; }
+/* Inline glyph for headings and chips. Nothing in this screen falls back to an emoji —
+   emoji pick up the system font, which is exactly the "wrong font" the design forbids,
+   and a few (🎚) have no glyph at all on Android and render as tofu. */
+function ttGlyph(art,size){ size=size||16;
+  const svg=(window.SB_ICON_ART&&SB_ICON_ART[art])?SB_ICON_ART(art,{size:size}):'';
+  if(!svg) return '';
+  return `<span style="display:inline-flex;line-height:0;width:${size}px;height:${size}px;vertical-align:-2px;flex-shrink:0" aria-hidden="true">${svg}</span>`; }
+/* Same glyph, but on a pale plate when the chip behind it is filled with its own colour —
+   the art is full-colour and would otherwise sit violet-on-violet. */
+function ttPlate(art,size,on){ const g=ttGlyph(art,size); if(!g) return '';
+  return on?`<span style="display:inline-flex;padding:3px;border-radius:7px;background:rgba(255,255,255,.9)">${g}</span>`:g; }
 /* ---- Per-card study record ----------------------------------------------------------
    Keyed on the question's own id, not its position, so shuffling the deck never moves a
    speller's progress onto a different card. Shape: {s:'practised'|'tested'|'mastered', r:0|1}.
    Older saves stored a bare 1 (meaning "seen"); those read back as 'practised'. */
-const TT_STATES=[['practised','Practised','#7C5CFF','📖'],['tested','Tested','#E0922E','✍️'],['mastered','Mastered','#2FA35C','🏆']];
+const TT_STATES=[['practised','Practised','#7C5CFF','book'],['tested','Tested','#E0922E','target'],['mastered','Mastered','#2FA35C','trophy']];
 function ttKey(q){ return (q&&(q.id||q.q))?String(q.id||q.q).slice(0,60):''; }
 function ttRec(c,k){ const m=c.ttCards||{}; const v=m[k];
   if(!v) return {s:'',r:0};
@@ -6387,11 +6406,11 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
     const card=(th)=>{ const deck=ttDeck(th.id); if(!deck.length) return '';
       const col=TT_COL[th.id]||'#7C5CFF'; const st=ttChapterStats(c,th.id);
       return `<button class="sb-lift" data-act="ttChapter" data-arg="${escA(th.id)}" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:13px 14px;box-shadow:var(--sh-rest);display:flex;flex-direction:column;gap:7px">
-        <span style="display:flex;align-items:center;gap:9px"><span style="width:38px;height:38px;flex-shrink:0;border-radius:11px;background:color-mix(in srgb,${col} 16%,transparent);display:grid;place-items:center;font-size:20px">${th.e}</span>
+        <span style="display:flex;align-items:center;gap:9px"><span style="width:38px;height:38px;flex-shrink:0;border-radius:11px;background:color-mix(in srgb,${col} 16%,transparent);display:grid;place-items:center;font-size:20px">${ttIcon(th,30)}</span>
           <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:14px;line-height:1.15">${esc(th.label)}</span>
           <span style="display:block;font-size:11.5px;color:var(--muted);font-weight:700">${fmtN(deck.length)} cards${st.touched?' · '+st.touched+' studied':''}</span></span></span>
         ${ttBar(st,5)}
-        ${st.touched?`<span style="display:flex;gap:8px;font-size:10.5px;font-weight:800"><span style="color:#2FA35C">🏆 ${st.mastered}</span><span style="color:#E0922E">✍️ ${st.tested}</span><span style="color:#7C5CFF">📖 ${st.practised}</span>${st.revise?`<span style="color:var(--treasure-deep,#8A5B00);margin-left:auto">↓ ${st.revise}</span>`:''}</span>`:''}</button>`; };
+        ${st.touched?`<span style="display:flex;gap:9px;font-size:10.5px;font-weight:800;align-items:center"><span style="color:#2FA35C;display:inline-flex;align-items:center;gap:3px">${ttGlyph('trophy',13)}${st.mastered}</span><span style="color:#E0922E;display:inline-flex;align-items:center;gap:3px">${ttGlyph('target',13)}${st.tested}</span><span style="color:#7C5CFF;display:inline-flex;align-items:center;gap:3px">${ttGlyph('book',13)}${st.practised}</span>${st.revise?`<span style="color:var(--treasure-deep,#8A5B00);margin-left:auto">↓ ${st.revise}</span>`:''}</span>`:''}</button>`; };
     const grid=(ids)=>`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:11px">${ids.map(id=>{const th=ths.find(x=>x.id===id); return th?card(th):'';}).join('')}</div>`;
     const wordIds=wordThemes.filter(id=>ths.some(x=>x.id===id));
     const otherIds=ths.map(x=>x.id).filter(id=>wordIds.indexOf(id)<0);
@@ -6400,17 +6419,17 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
     const studied=Object.values(seen).reduce((a,b)=>a+b,0);
     const bchip=(n,lab,on)=>`<button data-act="ttSetBand" data-arg="${n}" title="${n?'Study level '+n+' — '+LVN[n]:'Match my age & spelling level automatically'}" style="padding:7px 11px;border-radius:9px;font-weight:800;font-size:12px;border:1.5px solid ${on?'var(--accent)':'var(--line)'};background:${on?'var(--accent)':'var(--surface2)'};color:${on?'#fff':'var(--muted)'}">${lab}</button>`;
     const bandStrip=`<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:11px 13px;margin:2px 0 14px;box-shadow:var(--sh-rest)">
-      <span style="font-weight:800;font-size:13.5px">🎚 Level ${bandNow} · ${LVN[bandNow]}</span>
+      <span style="font-weight:800;font-size:13.5px;display:inline-flex;align-items:center;gap:6px">${ttGlyph('sliders',16)}Level ${bandNow} · ${LVN[bandNow]}</span>
       <span style="font-size:11.5px;color:var(--muted);font-weight:700">${ttBandNote(c)}</span>
       <span style="margin-left:auto;display:inline-flex;gap:5px;flex-wrap:wrap">${bchip(0,'Auto',!(+(c.ttLvSel||0)))}${[1,2,3,4,5].map(n=>bchip(n,'L'+n,+(c.ttLvSel||0)===n)).join('')}</span></div>`;
     return `<div style="max-width:860px;margin:0 auto">
       ${pageHead('Know the World of Words','trivia training · '+fmtN(total)+' cards at your level','Study the trivia bank at your own pace — question on the front, answer and a fun fact on the back. Cards match your age and spelling level; change the level any time. No timer, no score.',
-        studied?`<span style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">📚 ${fmtN(studied)} cards studied</span>`:'')}
+        studied?`<span style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">${ttGlyph('book',15)}${fmtN(studied)} cards studied</span>`:'')}
       ${bandStrip}
-      ${wordIds.length?`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:2px 2px 9px">🐝 Word chapters <span style="font-size:12px;color:var(--muted);font-weight:700">— built from the spelling library</span></div>${grid(wordIds)}`:''}
-      <div style="font-family:var(--display);font-weight:800;font-size:15px;margin:18px 2px 9px">🌍 World chapters</div>${grid(otherIds)}
+      ${wordIds.length?`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:2px 2px 9px;display:flex;align-items:center;gap:7px">${ttGlyph('bee',18)}Word chapters <span style="font-size:12px;color:var(--muted);font-weight:700">— built from the spelling library</span></div>${grid(wordIds)}`:''}
+      <div style="font-family:var(--display);font-weight:800;font-size:15px;margin:18px 2px 9px;display:flex;align-items:center;gap:7px"><span style="width:18px;height:18px;flex-shrink:0">${ttIcon({id:'world'},18)}</span>World chapters</div>${grid(otherIds)}
       <button data-act="openTrivia" class="sb-lift" style="width:100%;text-align:left;margin-top:16px;border-radius:16px;padding:15px 17px;background:linear-gradient(135deg,#F0A93C,#DC7A18);color:#fff;display:flex;align-items:center;gap:13px;box-shadow:var(--sh-rest)">
-        <span style="font-size:26px">🎮</span><span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:16px">Ready to play?</span>
+        <span style="width:30px;height:30px;flex-shrink:0;display:inline-flex">${(window.SB_ICON_ART&&SB_ICON_ART.arcade)?SB_ICON_ART('arcade',{size:30}):''}</span><span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:16px">Ready to play?</span>
         <span style="display:block;font-size:12.5px;opacity:.92">Take what you've studied into Bee Trivia in the Arcade.</span></span><span style="font-weight:800">→</span></button>
     </div>`; }
   // ---------- flip-card deck ----------
@@ -6421,20 +6440,20 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
     ? `<div style="animation:sb-pop .28s ease both">
         <div style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:${col};margin-bottom:7px">Answer</div>
         <div style="font-family:var(--display);font-weight:800;font-size:clamp(19px,4.4vw,25px);line-height:1.25;color:var(--text)">${esc(q.c[0])}</div>
-        ${q.f?`<div style="margin-top:14px;text-align:left;background:var(--surface2);border-radius:13px;padding:12px 14px;font-size:13.5px;line-height:1.55;color:var(--text)"><span style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">💡 Did you know</span>${esc(q.f)}</div>`:''}</div>`
+        ${q.f?`<div style="margin-top:14px;text-align:left;background:var(--surface2);border-radius:13px;padding:12px 14px;font-size:13.5px;line-height:1.55;color:var(--text)"><span style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;display:flex;align-items:center;gap:5px">${ttGlyph('bulb',13)}Did you know</span>${esc(q.f)}</div>`:''}</div>`
     : `<div style="font-family:var(--display);font-weight:800;font-size:clamp(18px,4.2vw,23px);line-height:1.35;color:var(--text)">${esc(q.q)}</div>
        ${ttOptions(q,i,col)}
        <div style="font-size:12.5px;color:var(--muted);font-weight:700;margin-top:14px">Tap the card to reveal the answer</div>`;
   const rec=ttRec(c, ttKey(q)); const cst=ttChapterStats(c, t.th);
   const stateChips=TT_STATES.map(([k,lab,scol,em])=>{ const on=rec.s===k;
-    return `<button data-act="ttMark" data-arg="${k}" title="Mark this card as ${lab.toLowerCase()}" style="flex:1;min-width:88px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:11px;font-weight:800;font-size:12.5px;border:1.5px solid ${on?scol:'var(--line)'};background:${on?scol:'var(--surface2)'};color:${on?'#fff':'var(--muted)'}">${em} ${lab}${on?' ✓':''}</button>`; }).join('')
-    +`<button data-act="ttRevise" title="Add this card to your revision pile" style="flex:1;min-width:88px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:11px;font-weight:800;font-size:12.5px;border:1.5px solid ${rec.r?'var(--treasure,#F0B429)':'var(--line)'};background:${rec.r?'var(--treasure,#F0B429)':'var(--surface2)'};color:${rec.r?'#5a3d00':'var(--muted)'}">⚑ Revise${rec.r?' ✓':''}</button>`;
+    return `<button data-act="ttMark" data-arg="${k}" title="Mark this card as ${lab.toLowerCase()}" style="flex:1;min-width:88px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:11px;font-weight:800;font-size:12.5px;border:1.5px solid ${on?scol:'var(--line)'};background:${on?scol:'var(--surface2)'};color:${on?'#fff':'var(--muted)'}">${ttPlate(em,15,on)} ${lab}${on?' ✓':''}</button>`; }).join('')
+    +`<button data-act="ttRevise" title="Add this card to your revision pile" style="flex:1;min-width:88px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:11px;font-weight:800;font-size:12.5px;border:1.5px solid ${rec.r?'var(--treasure,#F0B429)':'var(--line)'};background:${rec.r?'var(--treasure,#F0B429)':'var(--surface2)'};color:${rec.r?'#5a3d00':'var(--muted)'}">${ttPlate('list',15,rec.r)} Revise${rec.r?' ✓':''}</button>`;
   return `<div style="max-width:640px;margin:0 auto">
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
       <button data-act="ttBack" title="Back to the deck of chapters" style="color:var(--muted);font-weight:800;font-size:13px">← Chapters</button>
-      <span style="font-family:var(--display);font-weight:800;font-size:17px">${th.e} ${esc(th.label)}</span>
+      <span style="font-family:var(--display);font-weight:800;font-size:17px;display:inline-flex;align-items:center;gap:7px"><span style="width:22px;height:22px;flex-shrink:0">${ttIcon(th,22)}</span>${esc(th.label)}</span>
       <span style="display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;background:${col}22;color:${col};font-weight:800;font-size:11px">L${ttBand(c)} · ${LVL[ttBand(c)]}</span>
-      <span style="margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:700">${i+1} / ${fmtN(deck.length)}</span></div>
+      <span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);font-weight:700">${i+1} / ${fmtN(deck.length)}</span></div>
     <!-- two progress bars: where you are in the deck, and how much of the set you have learned -->
     <div style="margin-bottom:12px">
       <div style="height:6px;border-radius:99px;background:var(--tint-deep,var(--surface2));overflow:hidden;margin-bottom:6px"><div style="height:100%;background:${col};width:${((i+1)/deck.length*100).toFixed(2)}%"></div></div>
@@ -6442,7 +6461,7 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:5px;font-size:11px;font-weight:800;color:var(--muted)">
         <span>Card ${i+1} of ${fmtN(deck.length)}</span>
         <span style="margin-left:auto;display:inline-flex;gap:9px">
-          <span style="color:#2FA35C">🏆 ${cst.mastered}</span><span style="color:#E0922E">✍️ ${cst.tested}</span><span style="color:#7C5CFF">📖 ${cst.practised}</span>${cst.revise?`<span style="color:var(--treasure-deep,#8A5B00)">↓ ${cst.revise}</span>`:''}
+          <span style="color:#2FA35C;display:inline-flex;align-items:center;gap:4px">${ttGlyph('trophy',14)}${cst.mastered}</span><span style="color:#E0922E;display:inline-flex;align-items:center;gap:4px">${ttGlyph('target',14)}${cst.tested}</span><span style="color:#7C5CFF;display:inline-flex;align-items:center;gap:4px">${ttGlyph('book',14)}${cst.practised}</span>${cst.revise?`<span style="color:var(--treasure-deep,#8A5B00)">↓ ${cst.revise}</span>`:''}
         </span></div>
     </div>
     <button data-act="ttFlip" style="width:100%;text-align:center;background:var(--paper,var(--bg2));border:2px solid ${t.flip?col:'var(--line)'};border-radius:20px;padding:26px 20px;min-height:230px;display:flex;flex-direction:column;justify-content:center;box-shadow:var(--sh-rest);cursor:pointer">
@@ -6457,10 +6476,10 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
       <button data-act="ttBack" title="Back into the deck of chapters (↑)" style="padding:12px 15px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">↑ Deck</button>
       <button data-act="ttFlip" title="Reveal the answer (↓ or space)" style="padding:12px 15px;border-radius:12px;font-weight:800;font-size:14px;border:1.5px solid ${t.flip?col:'var(--line)'};background:${t.flip?'color-mix(in srgb,'+col+' 14%,var(--surface2))':'var(--surface2)'};color:${t.flip?col:'var(--muted)'}">↓ ${t.flip?'Hide':'Reveal'}</button>
       <button data-act="ttSay" title="Read the question aloud" style="padding:12px 15px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800">${iconSVG('volume',17)}</button>
-      <button data-act="ttShuffle" title="Jump to a random card" style="padding:12px 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">🔀</button>
+      <button data-act="ttShuffle" title="Jump to a random card" style="padding:12px 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px;display:inline-flex;align-items:center;justify-content:center">${ttGlyph('retry',17)}</button>
       <button data-act="ttNav" data-arg="1" title="Next card (→)" style="flex:1;min-width:96px;padding:12px 17px;border-radius:12px;background:${col};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next →</button></div>
     <button data-act="ttPlay" data-arg="${escA(t.th)}" class="sb-lift" style="width:100%;text-align:left;margin-top:13px;border-radius:14px;padding:13px 15px;background:linear-gradient(135deg,#F0A93C,#DC7A18);color:#fff;display:flex;align-items:center;gap:11px">
-      <span style="font-size:21px">🎮</span><span style="min-width:0;flex:1;font-weight:800;font-size:14px">Play this chapter in the Arcade →</span></button>
+      <span style="width:24px;height:24px;flex-shrink:0;display:inline-flex">${(window.SB_ICON_ART&&SB_ICON_ART.arcade)?SB_ICON_ART('arcade',{size:24}):''}</span><span style="min-width:0;flex:1;font-weight:800;font-size:14px">Play this chapter in the Arcade →</span></button>
   </div>`; }
 // ===== Subscription tier sheet (pricing) =====
 function tierEntRows(t){ const e=t.ent; const yes='✓', no='—';

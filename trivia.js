@@ -160,7 +160,7 @@
     _shell(inner, head) { return `<div style="max-width:720px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
         <button data-act="trvExit" style="color:var(--muted);font-weight:700;font-size:13px">← Bee Trivia</button>
-        <span style="margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--muted)">${head || ''}</span></div>${inner}</div>`; },
+        <span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${head || ''}</span></div>${inner}</div>`; },
 
     _visual(q) { if (q.svg) return `<div style="display:flex;justify-content:center;margin:6px 0 10px">${q.svg}</div>`;
       if (q.v) return `<div style="text-align:center;font-size:clamp(58px,14vw,84px);line-height:1.15;margin:2px 0 8px;${q.sil ? 'filter:brightness(0) opacity(.82);' : ''}">${q.v}</div>`; return ''; },
@@ -204,7 +204,7 @@
         <div style="text-align:center;margin-bottom:12px"><div style="font-family:var(--display);font-weight:800;font-size:20px">Trivia Squares</div>
         <div style="font-size:12.5px;color:var(--muted);font-weight:650">Answer to claim a cell ⭐ — finish rows, columns or diagonals for +5 🪙 a line.</div></div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:440px;margin:0 auto">${cells}</div>
-        <div style="text-align:center;margin-top:12px;font-family:var(--mono);font-size:13px;color:var(--muted)">⭐ ${g.cells.filter(x => x.st === 1).length} · ❌ ${g.miss} · lines ${g.lines}</div>`,
+        <div style="text-align:center;margin-top:12px;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">⭐ ${g.cells.filter(x => x.st === 1).length} · ❌ ${g.miss} · lines ${g.lines}</div>`,
         'lines ' + g.lines); },
 
     _done(title, big, sub) { const g = state.trv; const c = active();
