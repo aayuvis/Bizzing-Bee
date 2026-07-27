@@ -50,6 +50,35 @@ handlers. App lives in this folder; open `index.html` to run.
 - `voice-review.js` — `SB_VOICE_REVIEW` (Re-review queue) + `SB_VOICE_PRIORITY`.
 - `voice-cdn.js` — on `*.github.io`, rewrites `voice/…` → raw.githubusercontent of `main`.
 - Saga engines: `engine(host, opts, done)` → `done({win, score, stars})`.
+- `trivia.js` — the Arcade quiz (`STV`); `app3.js` holds Trivia Training
+  ("Know the World of Words", `viewTrivTrain`).
+
+## Trivia: levels, sharding, and the authoring pipeline
+- **Five levels, one band per speller.** `ttBand(c)` (app3.js) picks 1–5: base from age
+  (≤8→1, ≤10→2, ≤12→3, ≤14→4, else 5), shifted by spelling `heroLevel`, then nudged by
+  recent per-band accuracy (`c.trivia.bands[lv]={r,d}`, fed by `ttBandRecord` from
+  `grade()` in trivia.js). `c.ttLvSel` 1–5 pins a level manually; 0 = automatic.
+  `STV.autoLv()` defers to the same function, so training and Arcade always agree.
+- **The bank is sharded by level and lazy-loaded.** `trivia-data.js` is a ~4KB index
+  (themes, `byLevel` counts, loader). Questions live in `trivia-q1.js`…`trivia-q5.js`,
+  injected by `SB_TRIVIA.need(lv, cb)`; the 2.2MB generated word bank
+  (`trivia-words.js`) loads as a prerequisite of the first fetch and is **not** in
+  index.html. Never add it back — that was 3.5MB of boot payload.
+  `SB_TRIVIA_ONLOAD` clears `_ttCache` and re-renders as shards arrive.
+- **Any new screen that reads questions must gate on its level first** — call
+  `ttNeed(lv, cb)` and render a waiting state, or the deck comes back empty.
+- **Canonical data is `trivia-all.json`** (not shipped). Pipeline:
+  author `out-<theme>.json` files → `merge.js` (schema/dedup/banned-phrasing checks,
+  assigns ids, writes trivia-all.json) → `shard.js` (writes the core + five shards).
+  Both scripts live with the session scratchpad; re-run `shard.js` after any merge.
+- **Question shape:** `{th, lv, ty:'mc'|'tf', q, c:[…], f, id}` with **`c[0]` always the
+  correct answer** (the UI shuffles). `mc` has 4 choices, `tf` has 2.
+- **House style for questions:** never ask "which language gave us X" — make the root
+  meaning or word breakdown the question and put the source language in `f`. lv4 is
+  Millionaire-upper-ladder grade; lv5 is quiz-final grade and at least half of it is
+  *breadcrumb* style (2–3 independently-true clues from different angles, hardest first,
+  converging on one hard-to-guess answer). Never clue with the answer's most famous
+  fact — that belongs in `f`.
 
 ## Adding a saga chapter
 1. Append to `CH_META`: `{n, act, title, world, engine, opts, script}` (sequential `n`).
