@@ -63,10 +63,10 @@
   background:repeating-linear-gradient(90deg,rgba(44,58,85,.5) 0 14px,rgba(255,255,255,.5) 14px 28px);
   animation:w4-flagwave 1.6s linear infinite}
 [data-theme="race"] .w4-car{left:0;animation:w4-zoom linear infinite}
-[data-theme="race"] .w4-line{right:0;height:3px;border-radius:2px;background:linear-gradient(90deg,transparent,#E0453A);
+[data-theme="race"] .w4-line{right:0;height:3px;border-radius:2px;background:linear-gradient(90deg,transparent,#4A8CFF);
   animation:w4-speedline linear infinite}
 /* wheeled card: a wheel at each bottom corner, and a lap stripe up the right edge */
-[data-theme="race"] .sb-card{position:relative;border-color:color-mix(in srgb,#D8342A 38%,var(--line))}
+[data-theme="race"] .sb-card{position:relative;border-color:color-mix(in srgb,#2456D6 38%,var(--line))}
 [data-theme="race"] .sb-card::before,[data-theme="race"] .sb-card::after{content:"";position:absolute;bottom:-8px;width:22px;height:22px;
   border-radius:50%;background:radial-gradient(circle at 50% 50%,#D8DEE9 0 22%,#2C3A55 23% 74%,#1A2438 75%);
   box-shadow:0 2px 5px rgba(0,0,0,.28);pointer-events:none;animation:w4-spin4 1.1s linear infinite}
@@ -76,7 +76,7 @@
 @keyframes w4-cd{0%{transform:scale(.6);opacity:0}25%{transform:scale(1.15);opacity:1}70%{transform:scale(1);opacity:1}100%{transform:scale(1.5);opacity:0}}
 .w4-countdown{position:fixed;inset:0;z-index:70;display:grid;place-items:center;pointer-events:none}
 .w4-countdown b{font-family:"Bungee",system-ui,sans-serif;font-size:clamp(64px,18vw,190px);color:#FFC83D;
-  text-shadow:0 6px 0 #8E1C14,0 10px 26px rgba(0,0,0,.4);animation:w4-cd .75s ease-out forwards}
+  text-shadow:0 6px 0 #14337A,0 10px 26px rgba(0,0,0,.4);animation:w4-cd .75s ease-out forwards}
 .w4-lights{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:70;display:flex;gap:9px;pointer-events:none}
 .w4-lights i{width:15px;height:15px;border-radius:50%;background:rgba(255,255,255,.22);box-shadow:inset 0 0 0 2px rgba(0,0,0,.25)}
 .w4-lights i.on{background:#FFC83D;box-shadow:0 0 12px 3px rgba(255,200,61,.75)}
