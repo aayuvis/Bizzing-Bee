@@ -359,27 +359,64 @@ window.SB_W4_FOCUS={
   /* The brachiosaurus is the world's monument: a two-tone body with a lit back, a neck that
      sweeps as it grazes, and a slow tail. Painted big and left standing (no walk) — a
      mountain does not commute. */
-  var BRACHIO='<svg viewBox="0 0 300 210" width="100%" height="100%">'
-    +'<g fill="#2E4416"><path d="M14 206 q24 -78 98 -78 q70 0 80 66 l30 10 z"/>'
-    +'<path d="M40 206 v-14 q0 -6 8 -6 q8 0 8 6 v14 z M96 208 v-12 q0 -6 8 -6 q8 0 8 6 v12 z M152 206 v-13 q0 -6 8 -6 q8 0 8 6 v13 z"/>'
-    +'<path d="M14 206 q-16 4 -26 18" stroke="#2E4416" stroke-width="22" fill="none" stroke-linecap="round"/></g>'
-    +'<path d="M20 158 q30 -44 84 -40" stroke="#4E6E26" stroke-width="9" fill="none" stroke-linecap="round" opacity=".7"/>'
+  /* the brachiosaur, properly built: countershaded barrel body, columnar legs with
+     toenails, a scalloped back ridge, skin folds and mottling, the grazing neck kept
+     on its original hinge so the sweep animation carries over untouched */
+  var BRACHIO='<svg viewBox="0 0 300 210" width="100%" height="100%" style="overflow:visible">'
+    +'<defs><linearGradient id="bqB" x1="0" y1="0" x2="0" y2="1">'
+    +'<stop offset="0" stop-color="#57732C"/><stop offset=".5" stop-color="#3E5A1C"/><stop offset="1" stop-color="#243611"/></linearGradient>'
+    +'<linearGradient id="bqN" x1="0" y1="0" x2="1" y2="0">'
+    +'<stop offset="0" stop-color="#4E6E26"/><stop offset="1" stop-color="#324A16"/></linearGradient></defs>'
+    +'<ellipse cx="130" cy="204" rx="112" ry="6" fill="#101A08" opacity=".3"/>'
+    +'<path d="M62 148 l20 4 -3 52 h-14 q-5 0 -5 -6 z" fill="#22350F"/>'
+    +'<path d="M152 150 l20 2 -2 52 h-14 q-5 0 -5 -6 z" fill="#22350F"/>'
+    +'<path d="M66 134 Q30 148 8 172 Q-6 188 2 202 Q10 188 30 178 Q58 164 80 158 q10 -14 -14 -24z" fill="url(#bqB)"/>'
+    +'<path d="M52 176 q-14 -56 40 -74 q54 -18 104 2 q28 12 28 44 q0 22 -20 30 q-56 16 -120 10 q-26 -3 -32 -12z" fill="url(#bqB)"/>'
+    +'<path d="M96 102 q8 -8 16 0 q8 -8 16 0 q8 -8 16 0 q8 -8 16 0 q8 -8 16 0 q8 -8 16 0" stroke="#2A3F12" stroke-width="4.6" fill="none" stroke-linecap="round" opacity=".65"/>'
+    +'<path d="M64 172 q64 18 142 4" stroke="#8FA35C" stroke-width="7" fill="none" stroke-linecap="round" opacity=".3"/>'
+    +'<path d="M98 118 q10 26 6 48 M134 112 q8 30 4 56" stroke="#22350F" stroke-width="3" fill="none" opacity=".4" stroke-linecap="round"/>'
+    +'<g fill="#2A3F12" opacity=".5"><ellipse cx="120" cy="130" rx="9" ry="6"/><ellipse cx="160" cy="122" rx="7" ry="5"/><ellipse cx="188" cy="136" rx="8" ry="5.4"/><ellipse cx="100" cy="152" rx="6" ry="4.4"/></g>'
+    +'<path d="M76 152 q16 -4 28 2 l-2 44 q0 8 -8 8 h-12 q-7 0 -7 -8 z" fill="url(#bqN)"/>'
+    +'<path d="M172 154 q16 -4 28 2 l-2 42 q0 8 -8 8 h-12 q-7 0 -7 -8 z" fill="url(#bqN)"/>'
+    +'<g fill="#E3DBB4"><path d="M78 206 l5 -7 5 7z"/><path d="M90 206 l5 -7 5 7z"/><path d="M174 206 l5 -7 5 7z"/><path d="M186 206 l5 -7 5 7z"/></g>'
     +'<g style="transform-box:fill-box;transform-origin:20% 96%;animation:w4-graze 9s ease-in-out infinite">'
-    +'<path d="M158 132 q-14 -84 30 -116 q34 -24 48 2 q10 22 -20 30 q-36 10 -26 84 z" fill="#3E5A1C"/>'
-    +'<path d="M168 120 q-8 -70 26 -100" stroke="#4E6E26" stroke-width="6" fill="none" stroke-linecap="round" opacity=".8"/>'
-    +'<ellipse cx="224" cy="16" rx="24" ry="15" fill="#4E6E26"/>'
-    +'<circle cx="236" cy="11" r="3.4" fill="#F6ECC8"/><circle cx="236.9" cy="11.5" r="1.7" fill="#20260F"/>'
-    +'<path d="M244 20 q6 2 8 6" stroke="#2E4416" stroke-width="2.4" fill="none" stroke-linecap="round"/></g>'
-    +'</svg>';
-  /* a creeping raptor — long balanced tail, S-neck carried low, open jaw, bent legs */
-  var RAPTOR='<svg viewBox="0 0 170 80" width="100%" height="100%" style="overflow:visible"><g class="rap">'
-    +'<path d="M2 36 Q30 28 56 32 Q76 36 88 30 Q100 24 106 15 Q110 7 122 5 L148 9 L143 15 L126 14 Q120 26 110 31 Q98 39 80 42 Q56 46 32 43 Q14 41 2 36 z" fill="#2E4416"/>'
-    +'<path d="M122 5 L148 9 L143 15 L124 13 z" fill="#3E5A1C"/>'
-    +'<path d="M136 11 l10 4" stroke="#1C2B0E" stroke-width="1.8" stroke-linecap="round"/>'
-    +'<circle cx="121" cy="10" r="2" fill="#F6ECC8"/>'
-    +'<path class="legA" d="M70 40 Q82 48 78 58 Q72 64 78 74 L92 76 L80 68 Q86 58 88 48 z" fill="#243611"/>'
-    +'<path class="legB" d="M50 42 Q60 52 54 62 Q50 68 56 76 L68 78 L58 70 Q64 60 64 48 z" fill="#2E4416"/>'
-    +'<path d="M94 32 l7 8 l8 -2 M96 34 l5 8" stroke="#243611" stroke-width="2.6" fill="none" stroke-linecap="round"/>'
+    +'<path d="M176 136 Q166 62 216 20 Q232 6 250 13 Q262 19 256 33 Q250 43 236 40 Q214 50 210 96 Q208 120 216 138 z" fill="url(#bqN)"/>'
+    +'<path d="M184 126 Q176 64 222 24" stroke="#2A3F12" stroke-width="4" fill="none" opacity=".5" stroke-linecap="round"/>'
+    +'<path d="M214 104 Q211 70 234 40" stroke="#8FA35C" stroke-width="4" fill="none" opacity=".22" stroke-linecap="round"/>'
+    +'<path d="M233 35 q-6 -17 9 -25 q14 -7 25 1 q9 7 4 15 q-6 10 -19 10 q-13 1 -19 -1z" fill="#4E6E26"/>'
+    +'<path d="M241 12 q8 -8 15 -2 q5 5 0 9 q-8 -5 -15 -7z" fill="#57732C"/>'
+    +'<circle cx="253" cy="15.6" r="1.5" fill="#20300D"/>'
+    +'<circle cx="252" cy="25" r="3.6" fill="#F6ECC8"/><circle cx="253" cy="25.6" r="1.9" fill="#20260F"/><circle cx="253.8" cy="24.6" r=".7" fill="#FFFDF2"/>'
+    +'<path d="M252 34 q8 2 13 -2" stroke="#20300D" stroke-width="2" fill="none" stroke-linecap="round"/>'
+    +'</g></svg>';
+  /* the raptor rebuilt: countershaded fusiform body, banded stiff tail, folded arm,
+     sickle-clawed feet, and a real head — brow ridge, slit-pupil eye, open toothed jaw.
+     Same skeleton for the animator: g.rap bobs, legA/legB kick from their hips. */
+  var RAPTOR='<svg viewBox="0 0 170 80" width="100%" height="100%" style="overflow:visible">'
+    +'<defs><linearGradient id="rpB" x1="0" y1="0" x2="0" y2="1">'
+    +'<stop offset="0" stop-color="#4E6E26"/><stop offset=".6" stop-color="#3E5A1C"/><stop offset="1" stop-color="#2A3F12"/></linearGradient></defs>'
+    +'<g class="rap">'
+    +'<path d="M2 30 Q30 24 56 30 L72 36 Q62 42 42 42 Q18 42 2 35 z" fill="url(#rpB)"/>'
+    +'<path d="M14 31 l2 8 M28 30 l2 9.4 M42 31 l1.6 9.4 M56 33 l1.4 8" stroke="#243611" stroke-width="2.8" stroke-linecap="round" opacity=".7"/>'
+    +'<g class="legB"><path d="M52 38 q13 -2 16 9 q2 9 -7 12 q-9 3 -12 -5 q-3 -10 3 -16z" fill="#243611"/>'
+    +'<path d="M60 56 l-3 11 q-1 4 3 5.4 l9 2 -1 3 -11 -1.4 q-5 -3 -3.6 -9 l2 -12z" fill="#1E2E0C"/>'
+    +'<path d="M64 72 q-1 -6 4.6 -8 q-3.6 5.4 -1 8z" fill="#B8B294"/></g>'
+    +'<path d="M50 28 Q68 17 90 21 Q104 24 110 19 L118 10 L123 15 Q117 30 106 37 Q92 47 73 45 Q55 43 48 35 z" fill="url(#rpB)"/>'
+    +'<path d="M66 23 l-2.4 10 M78 21 l-2.4 11 M90 22 l-2.4 10.4 M100 24 l-2 8" stroke="#243611" stroke-width="3" stroke-linecap="round" opacity=".65"/>'
+    +'<path d="M58 40 Q78 49 100 37" stroke="#9AAD62" stroke-width="4.6" fill="none" stroke-linecap="round" opacity=".45"/>'
+    +'<path d="M92 28 q7 7 3 13 l7 4 -2.6 2.6 -9 -4 q-4 -8 -2 -15z" fill="#2A3F12"/>'
+    +'<path d="M97 43 l4 3 M99 41.4 l4.6 2.4" stroke="#B8B294" stroke-width="1.6" stroke-linecap="round"/>'
+    +'<g class="legA"><path d="M72 36 q16 -2 19 11 q2 10 -8 14 q-10 3 -14 -6 q-3 -12 3 -19z" fill="url(#rpB)"/>'
+    +'<path d="M82 58 l-3 12 q-1 4 3.4 5.4 l10 2.2 -1 3.2 -12.4 -1.6 q-5.6 -3 -4 -9.6 l2.4 -13z" fill="#2A3F12"/>'
+    +'<path d="M87 75 q-1.2 -7 5.4 -9 q-4.2 6 -1.2 9z" fill="#D8D2B4"/></g>'
+    +'<path d="M102 30 Q111 25 114 14 L122 17 Q118 29 109 36z" fill="#4E6E26"/>'
+    +'<path d="M111 21 Q111 7 124 4.6 L152 8 Q156 9 155 12 L129 14 Q122 15 119 21 z" fill="#4E6E26"/>'
+    +'<path d="M111 15 L127 10.6 L128 14 L112 18z" fill="#243611" opacity=".5"/>'
+    +'<path d="M119 23 L145 20 L140 26 L122 28 Q118 27 118 24 z" fill="#3E5A1C"/>'
+    +'<g fill="#EFE9CE"><path d="M131 14 l1.8 3.6 1.8 -3.4z"/><path d="M137 13.4 l1.8 3.6 1.8 -3.4z"/><path d="M143 12.8 l1.8 3.4 1.8 -3.2z"/><path d="M132 20.6 l1.6 -3 1.6 3.2z"/><path d="M138 20 l1.6 -3 1.6 3.2z"/></g>'
+    +'<path d="M113 8.6 l8 -1.6" stroke="#243611" stroke-width="2.2" stroke-linecap="round"/>'
+    +'<circle cx="119" cy="12" r="2.7" fill="#F0C441"/><rect x="118.3" y="9.8" width="1.4" height="4.4" rx=".7" fill="#1A230C"/>'
+    +'<circle cx="150" cy="9.6" r="1" fill="#1A230C"/>'
     +'</g></svg>';
   /* a tall conifer: layered triangular boughs on a bare trunk, Jurassic scale */
   function TREE(h){ return '<svg viewBox="0 0 90 '+h+'" width="100%" height="100%" preserveAspectRatio="xMidYMax meet">'
@@ -672,12 +709,12 @@ window.SB_W4_FOCUS={
       // bending streams: energy flowing along two opposing arcs, drawn edge to edge
       layer.appendChild(el('w4o-bend w4o-bendwater','',
         '<svg viewBox="0 0 100 60" width="100%" height="100%" preserveAspectRatio="none">'
-        +'<path d="M-4 54 C 18 34, 42 50, 62 30 S 92 16, 104 6" fill="none" stroke="#2FA7D8" stroke-width="1.1" opacity=".5" pathLength="100" class="bend-flow"/>'
-        +'<path d="M-4 57 C 19 38, 43 53, 63 34 S 93 20, 104 10" fill="none" stroke="#8FD0EC" stroke-width=".55" opacity=".4" pathLength="100" class="bend-flow bend-lag"/></svg>'));
+        +'<path d="M-4 54 C 18 34, 42 50, 62 30 S 92 16, 104 6" fill="none" stroke="#8FC9E2" stroke-width=".55" opacity=".3" pathLength="100" class="bend-flow"/>'
+        +'<path d="M-4 57 C 19 38, 43 53, 63 34 S 93 20, 104 10" fill="none" stroke="#BFE3F2" stroke-width=".3" opacity=".2" pathLength="100" class="bend-flow bend-lag"/></svg>'));
       layer.appendChild(el('w4o-bend w4o-bendfire','',
         '<svg viewBox="0 0 100 60" width="100%" height="100%" preserveAspectRatio="none">'
-        +'<path d="M104 52 C 82 30, 56 46, 38 26 S 10 14, -4 5" fill="none" stroke="#F3A13C" stroke-width="1.1" opacity=".5" pathLength="100" class="bend-flow"/>'
-        +'<path d="M104 55 C 83 34, 57 49, 39 30 S 11 18, -4 9" fill="none" stroke="#FFE07A" stroke-width=".55" opacity=".4" pathLength="100" class="bend-flow bend-lag"/></svg>'));
+        +'<path d="M104 52 C 82 30, 56 46, 38 26 S 10 14, -4 5" fill="none" stroke="#F2C989" stroke-width=".55" opacity=".3" pathLength="100" class="bend-flow"/>'
+        +'<path d="M104 55 C 83 34, 57 49, 39 30 S 11 18, -4 9" fill="none" stroke="#F6DFAE" stroke-width=".3" opacity=".2" pathLength="100" class="bend-flow bend-lag"/></svg>'));
       // floating earthbent islands, each with a stray pebble trailing under it
       var ISLE='<svg viewBox="0 0 90 72" width="100%" height="100%" style="overflow:visible">'
         +'<path d="M12 26 h66 l-11 30 q-6 12 -22 12 q-16 0 -22 -12 z" fill="#8A7A62"/>'
