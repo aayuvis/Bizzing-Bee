@@ -361,19 +361,27 @@
     +'<path d="M244 20 q6 2 8 6" stroke="#2E4416" stroke-width="2.4" fill="none" stroke-linecap="round"/></g>'
     +'</svg>';
   /* a creeping raptor — long balanced tail, S-neck carried low, open jaw, bent legs */
-  var RAPTOR='<svg viewBox="0 0 170 80" width="100%" height="100%">'
-    +'<g fill="#33481A">'
-    +'<path d="M4 30 q26 -6 48 8 q8 5 16 6 q14 2 22 -2 q6 -10 16 -12 q14 -3 22 4 l14 -5 q7 -2 9 2 l-9 8 l8 6 q-6 4 -14 1 l-10 -5 q-6 8 -18 9 q-16 2 -28 -3 q-12 -5 -24 -6 q-24 -2 -52 -11 z"/>'
-    +'<path d="M78 46 q-2 10 -8 14 l10 0 q5 -6 6 -13 z M104 44 q0 10 -5 15 l10 0 q4 -7 4 -14 z"/>'
-    +'</g>'
-    +'<circle class="w4-eye" cx="138" cy="30" r="2.8" fill="#F6ECC8"/></svg>';
+  var RAPTOR='<svg viewBox="0 0 170 80" width="100%" height="100%" style="overflow:visible"><g class="rap">'
+    +'<path d="M2 36 Q30 28 56 32 Q76 36 88 30 Q100 24 106 15 Q110 7 122 5 L148 9 L143 15 L126 14 Q120 26 110 31 Q98 39 80 42 Q56 46 32 43 Q14 41 2 36 z" fill="#2E4416"/>'
+    +'<path d="M122 5 L148 9 L143 15 L124 13 z" fill="#3E5A1C"/>'
+    +'<path d="M136 11 l10 4" stroke="#1C2B0E" stroke-width="1.8" stroke-linecap="round"/>'
+    +'<circle cx="121" cy="10" r="2" fill="#F6ECC8"/>'
+    +'<path class="legA" d="M70 40 Q82 48 78 58 Q72 64 78 74 L92 76 L80 68 Q86 58 88 48 z" fill="#243611"/>'
+    +'<path class="legB" d="M50 42 Q60 52 54 62 Q50 68 56 76 L68 78 L58 70 Q64 60 64 48 z" fill="#2E4416"/>'
+    +'<path d="M94 32 l7 8 l8 -2 M96 34 l5 8" stroke="#243611" stroke-width="2.6" fill="none" stroke-linecap="round"/>'
+    +'</g></svg>';
   /* a tall conifer: layered triangular boughs on a bare trunk, Jurassic scale */
   function TREE(h){ return '<svg viewBox="0 0 90 '+h+'" width="100%" height="100%" preserveAspectRatio="xMidYMax meet">'
     +'<rect x="41" y="'+(h-46)+'" width="8" height="46" rx="3" fill="#3A2E18"/>'
     +[0,1,2,3,4,5].map(function(i){ var w=76-i*11, y=h-52-i*26;
       return '<path d="M'+(45-w/2)+' '+y+' L45 '+(y-30)+' L'+(45+w/2)+' '+y+' q-'+(w/2)+' 8 -'+w+' 0z" fill="'+(i%2?'#2E4416':'#3E5A1C')+'"/>'; }).join('')
     +'<path d="M45 '+(h-52-6*26)+' L45 '+(h-52-6*26-18)+'" stroke="#3E5A1C" stroke-width="5" stroke-linecap="round"/></svg>'; }
-  var PTERO='<svg viewBox="0 0 90 40" width="100%" height="100%"><path d="M4 22 q20 -18 41 -4 q21 -14 41 4 q-20 8 -41 2 q-21 6 -41 -2z" fill="#3E5A1C"/><path d="M45 18 l14 -12 l-3 8 z" fill="#4E6E26"/></svg>';
+  var PTERO='<svg viewBox="0 0 180 90" width="100%" height="100%" style="overflow:visible">'
+    +'<path class="wingL" d="M82 46 Q52 16 8 24 Q42 40 80 56 z" fill="#33481B"/>'
+    +'<path class="wingR" d="M98 46 Q128 16 172 24 Q138 40 100 56 z" fill="#33481B"/>'
+    +'<path d="M76 44 Q90 38 104 44 L120 38 L138 30 L118 32 L104 36 Q90 32 76 40 L58 52 L74 50 z" fill="#3E5A1C"/>'
+    +'<path d="M120 38 L134 24 L126 36 z" fill="#4E6E26"/>'
+    +'<circle cx="112" cy="38" r="1.6" fill="#EEF2DA"/></svg>';
   /* one base, seven curved blades fanning out — drawn as stroked arcs so nothing can blob */
   var FERN=(function(){ var o='<svg viewBox="0 0 120 160" width="100%" height="100%"><g fill="none" stroke="#3E5A1C" stroke-linecap="round">';
     var ang=[-62,-42,-22,0,22,42,62];
@@ -512,6 +520,10 @@
       layer.appendChild(el('w4-fern','left:-14px;animation-delay:-1s', FERN));
       layer.appendChild(el('w4-fern','right:-18px;animation-delay:-3s;width:150px', FERN));
       layer.appendChild(el('w4-ptero','animation-delay:-12s', PTERO));
+      layer.appendChild(el('w4-ptero','top:4vh;width:132px;animation-duration:56s;animation-delay:-33s;opacity:.65', PTERO));
+      layer.appendChild(el('w4-ptero','top:24vh;width:58px;animation-duration:92s;animation-delay:-70s;opacity:.4', PTERO));
+      for(var sp=0;sp<14;sp++) layer.appendChild(el('w4-spore','left:'+rnd(2,98).toFixed(1)+'vw;width:'+rnd(4,9).toFixed(0)+'px;height:'+rnd(4,9).toFixed(0)+'px;animation-duration:'+rnd(16,30).toFixed(1)+'s;animation-delay:-'+rnd(0,26).toFixed(1)+'s'));
+      layer.appendChild(el('w4-brachstill','', BRACHIO));
       // raptors creeping through the undergrowth, one each way
       layer.appendChild(el('w4-raptor','bottom:2vh;width:120px;animation-duration:52s;animation-delay:-8s', RAPTOR));
       layer.appendChild(el('w4-raptor w4-raptor-b','bottom:8vh;width:88px;animation-duration:64s;animation-delay:-30s', RAPTOR));
