@@ -366,7 +366,15 @@
 
   /* ---- props for the original eight (small, silhouette-grade) ---- */
   var BEE_S='<svg viewBox="0 0 40 30" width="100%" height="100%"><ellipse cx="20" cy="18" rx="11" ry="8.5" fill="#FFC23D"/><rect x="14" y="14" width="12" height="2.6" rx="1.3" fill="#3A2A8C"/><rect x="14" y="19" width="12" height="2.6" rx="1.3" fill="#3A2A8C"/><ellipse cx="13" cy="8" rx="5" ry="7" fill="#EDE7FF" opacity=".9" transform="rotate(-24 13 8)"/><ellipse cx="27" cy="8" rx="5" ry="7" fill="#EDE7FF" opacity=".9" transform="rotate(24 27 8)"/><circle cx="26" cy="16" r="1.7" fill="#2B1B5E"/></svg>';
-  var PLANET='<svg viewBox="0 0 60 44" width="100%" height="100%"><circle cx="30" cy="22" r="14" fill="#7D8CF0"/><circle cx="25" cy="17" r="4.5" fill="#A9B4F7" opacity=".85"/><ellipse cx="30" cy="23" rx="26" ry="7" fill="none" stroke="#A9B4F7" stroke-width="2.4" opacity=".8" transform="rotate(-14 30 23)"/></svg>';
+  /* a family of planets: body + polar highlight, optional ring, optional cloud bands */
+  function PLANET2(body,lite,ring,bands){
+    var o='<svg viewBox="0 0 60 44" width="100%" height="100%">';
+    if(ring) o+='<ellipse cx="30" cy="23" rx="27" ry="7.5" fill="none" stroke="'+ring+'" stroke-width="2.6" opacity=".55" transform="rotate(-14 30 23)"/>';
+    o+='<circle cx="30" cy="22" r="14" fill="'+body+'"/><circle cx="25" cy="17" r="4.5" fill="'+lite+'" opacity=".9"/>';
+    if(bands) o+='<path d="M17 19 q13 -4 26 0 M16 25 q14 4 28 0" stroke="'+bands+'" stroke-width="2.2" fill="none" opacity=".7" clip-path="circle(14px at 30px 22px)"/>';
+    if(ring) o+='<path d="M4.6 29.4 A27 7.5 -14 0 0 55.4 16.6" fill="none" stroke="'+ring+'" stroke-width="2.6" opacity=".9" transform="rotate(0)"/>';
+    return o+'</svg>'; }
+  var PLANET=PLANET2('#7D8CF0','#A9B4F7','#A9B4F7',null);
   var PETAL='<svg viewBox="0 0 20 20" width="100%" height="100%"><path d="M10 1 q7 5 5 12 q-2 6 -5 6 q-3 0 -5 -6 q-2 -7 5 -12z" fill="#F3B2C0"/></svg>';
   var TORII='<svg viewBox="0 0 160 110" width="100%" height="100%"><g fill="#8E2C44" opacity=".9"><path d="M6 18 q74 -14 148 0 l-4 12 h-140 z"/><rect x="24" y="30" width="112" height="8" rx="3"/><rect x="34" y="30" width="12" height="80"/><rect x="114" y="30" width="12" height="80"/></g></svg>';
   var FLASK='<svg viewBox="0 0 60 70" width="100%" height="100%"><path d="M24 4 h12 v20 l14 34 q3 8 -6 8 h-28 q-9 0 -6 -8 l14 -34 z" fill="none" stroke="#3BC0AA" stroke-width="3"/><path d="M17 48 h26 l5 12 q2 6 -4 6 h-28 q-6 0 -4 -6 z" fill="#3BC0AA" opacity=".55"/></svg>';
@@ -413,9 +421,17 @@
     /* ---- the original eight get lighter scenes in the same voice ---- */
     else if(world==='spellbound'){
       layer.appendChild(el('w4o-comb')); layer.appendChild(el('w4o-hiveglow'));
-      for(var b1=0;b1<6;b1++) layer.appendChild(el('w4o-across','top:'+rnd(8,72).toFixed(1)+'vh;width:'+rnd(26,44).toFixed(0)+'px;animation-duration:'+rnd(22,40).toFixed(1)+'s;animation-delay:-'+rnd(0,30).toFixed(1)+'s;opacity:.55', BEE_S));
+      // the bees crossing the meadow are the app's own bee avatars, not stand-in doodles
+      var hive=['bizzy','bumble','waggle','dronedan','queenhive','clover'];
+      try{ if(window.SB_AVATARS) hive=hive.filter(function(id){ return SB_AVATARS.byId[id]; }); }catch(e){}
+      for(var b1=0;b1<6;b1++){
+        var art=BEE_S;
+        try{ if(typeof SB_AVATAR==='function' && hive.length) art=SB_AVATAR(hive[b1%hive.length], Math.round(rnd(40,62))); }catch(e){}
+        layer.appendChild(el('w4o-across','top:'+rnd(8,72).toFixed(1)+'vh;animation-duration:'+rnd(24,44).toFixed(1)+'s;animation-delay:-'+rnd(0,34).toFixed(1)+'s;opacity:.85', art));
+      }
       for(var m1=0;m1<8;m1++) layer.appendChild(el('w4o-rise','left:'+rnd(2,98).toFixed(1)+'vw;width:5px;height:5px;background:#FFD34D;box-shadow:0 0 7px 2px rgba(255,211,77,.6);animation-duration:'+rnd(12,22).toFixed(1)+'s;animation-delay:-'+rnd(0,20).toFixed(1)+'s'));
     } else if(world==='marquee'){
+      layer.appendChild(el('w4o-drape w4o-drapeL')); layer.appendChild(el('w4o-drape w4o-drapeR'));
       layer.appendChild(el('w4o-stagefloor')); layer.appendChild(el('w4o-bulbs'));
       layer.appendChild(el('w4o-swing','left:12vw;top:-4vh;width:26vw;height:70vh', SPOT('#F0B429')));
       layer.appendChild(el('w4o-swing','right:12vw;top:-4vh;width:26vw;height:70vh;animation-delay:-4.5s', SPOT('#F7E9C8')));
@@ -425,7 +441,14 @@
       for(var st=0;st<26;st++) layer.appendChild(el('w4o-twk','left:'+rnd(2,98).toFixed(1)+'vw;top:'+rnd(2,88).toFixed(1)+'vh;width:'+rnd(2,4).toFixed(1)+'px;height:'+rnd(2,4).toFixed(1)+'px;animation-duration:'+rnd(1.6,4).toFixed(1)+'s;animation-delay:-'+rnd(0,3).toFixed(1)+'s'));
       layer.appendChild(el('w4o-shoot','right:6vw;top:12vh;animation-delay:-2s'));
       layer.appendChild(el('w4o-shoot','right:34vw;top:30vh;animation-delay:-6s'));
-      layer.appendChild(el('w4o-across','top:16vh;width:70px;animation-duration:90s;opacity:.6', PLANET));
+      // a whole solar neighbourhood, drifting at different depths and speeds
+      [[PLANET2('#7D8CF0','#A9B4F7','#A9B4F7',null),'16vh',110,'90s','.7','0s'],
+       [PLANET2('#E0885A','#F0B48A','#F6DC8A',null),'8vh',72,'130s','.55','-40s'],
+       [PLANET2('#4FC2B0','#9BE3D6',null,'#2E8FA0'),'34vh',56,'75s','.6','-22s'],
+       [PLANET2('#B98CFF','#D6BEFF',null,'#8A5CD8'),'52vh',44,'105s','.45','-70s'],
+       [PLANET2('#C8CCD8','#EEF0F6',null,null),'26vh',26,'60s','.5','-12s'],
+       [PLANET2('#5A6ED0','#8FA0F5','#F0B48A','#3D4FBF'),'66vh',88,'150s','.4','-95s']]
+      .forEach(function(pl){ layer.appendChild(el('w4o-across','top:'+pl[1]+';width:'+pl[2]+'px;animation-duration:'+pl[3]+';opacity:'+pl[4]+';animation-delay:'+pl[5], pl[0])); });
     } else if(world==='anime'){
       layer.appendChild(el('w4o-sun')); layer.appendChild(el('w4o-ridge'));
       layer.appendChild(el('','right:3vw;bottom:0;width:min(20vw,180px);height:auto;aspect-ratio:160/110;opacity:.45', TORII));
