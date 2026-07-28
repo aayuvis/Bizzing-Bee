@@ -6383,7 +6383,7 @@ function ttOptions(q,i,col){
       <span style="flex-shrink:0;width:17px;height:17px;border-radius:5px;background:${col};color:#fff;font-size:10.5px;font-weight:800;display:grid;place-items:center;margin-top:1px">${LET[k]}</span>
       <span style="min-width:0">${esc(o)}</span></span>`).join('')}
   </div>`; }
-const TT_COL={animals:'#4F9E6A',bugs:'#E0922E',ocean:'#3D7DF0',space:'#7B52E0',body:'#E8458C',plants:'#3C8455',food:'#F0703C',sports:'#2A63D6',music:'#B14FC4',myth:'#9B59D0',world:'#13A892',history:'#C8901B',science:'#0E8A78',numbers:'#6A47F5',weather:'#36A3D9',machines:'#4A6B8A',art:'#DC5B7E',fest:'#D6453A',story:'#7C5CFF',words:'#C8791B',india:'#E07A18',code:'#3B6FE0',langs:'#0E8A78',explore:'#B8860B',lit:'#8A5BD6',ent:'#E0567A',brands:'#2E8FB8',quotes:'#C8791B',wroots:'#4F9E6A',wbreak:'#2A8FA8',wmeaning:'#7C5CFF',wstories:'#C8791B'};
+const TT_COL={animals:'#4F9E6A',bugs:'#E0922E',ocean:'#3D7DF0',space:'#7B52E0',body:'#E8458C',plants:'#3C8455',food:'#F0703C',sports:'#2A63D6',music:'#B14FC4',myth:'#9B59D0',world:'#13A892',history:'#C8901B',science:'#0E8A78',numbers:'#6A47F5',weather:'#36A3D9',machines:'#4A6B8A',art:'#DC5B7E',fest:'#D6453A',story:'#7C5CFF',words:'#C8791B',india:'#E07A18',code:'#3B6FE0',langs:'#0E8A78',explore:'#B8860B',lit:'#8A5BD6',ent:'#E0567A',brands:'#2E8FB8',quotes:'#C8791B',wroots:'#4F9E6A',wbreak:'#2A8FA8',wmeaning:'#7C5CFF',wstories:'#C8791B',eponyms:'#A8763C'};
 function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const ths=ttThemes();
   if(!ths.length) return `<div style="max-width:760px;margin:0 auto">${pageHead('Trivia Training','loading…','')}</div>`;
   // this level's cards are still on the wire — say so rather than drawing empty chapters
