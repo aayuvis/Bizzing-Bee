@@ -6,14 +6,10 @@
   "why": "Clinical syndrome sharing features of Parkinson's disease.",
   "mean": "Group of movement disorders",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "James Parkinson called it the shaking palsy in 1817 and noted he had studied some of his cases only by watching them in the street. His name was attached decades later by a French neurologist who thought he deserved it.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Alzheimer Disease",
@@ -22,14 +18,10 @@
   "why": "First described progressive dementia in 1906.",
   "mean": "Neurodegenerative disease",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Alois Alzheimer's first case was a woman named Auguste Deter, who told him: I have lost myself. He kept her file, and when he examined her brain after death he found the plaques and tangles that still define the disease.",
+  "lv": 4,
+  "_todo": []
  },
  {
   "e": "Hodgkin Lymphoma",
@@ -38,14 +30,10 @@
   "why": "Identified a unique lymphatic cancer.",
   "mean": "Lymphatic cancer",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Thomas Hodgkin described seven cases in 1832 and nobody noticed for thirty years. Another doctor read the paper later, confirmed it, and insisted the disease carry Hodgkin's name — a rare act of credit in medical history.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Non-Hodgkin Lymphoma",
@@ -54,14 +42,10 @@
   "why": "Lymphomas other than Hodgkin's disease.",
   "mean": "Group of blood cancers",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "An entire family of cancers defined by what they are not. Once Hodgkin's type could be identified under a microscope, every other lymphoma had to be grouped somewhere — and got a name built out of a negative.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Crohn Disease",
@@ -70,14 +54,10 @@
   "why": "Chronic inflammatory bowel disease described in 1932.",
   "mean": "Intestinal inflammatory disorder",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Burrill Crohn published with two colleagues in 1932, and the paper listed authors alphabetically. Crohn came first. His two co-authors, Ginzburg and Oppenheimer, did the same work and are remembered by almost nobody.",
+  "lv": 4,
+  "_todo": []
  },
  {
   "e": "Cushing Syndrome",
@@ -86,14 +66,10 @@
   "why": "Described symptoms of excess cortisol.",
   "mean": "Endocrine disorder",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Harvey Cushing essentially invented brain surgery as a survivable procedure, cutting mortality from around 90 per cent to under 10. The hormone disorder named after him is a footnote in a career mostly spent elsewhere.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Down Syndrome",
@@ -102,14 +78,10 @@
   "why": "First clinical description of the condition.",
   "mean": "Chromosomal disorder",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "John Langdon Down wrote the first careful clinical description in 1866. His original name for it was withdrawn in the 1960s as both inaccurate and offensive, and the condition was renamed for the doctor instead.",
+  "lv": 3,
+  "_todo": []
  },
  {
   "e": "Huntington Disease",
@@ -118,14 +90,10 @@
   "why": "Described inherited neurodegenerative disease.",
   "mean": "Genetic neurological disorder",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "George Huntington described the disease at twenty-two, in the only medical paper he ever published. He had seen it in families on Long Island, where his father and grandfather had also practised — three generations of doctors watching the same households.",
+  "lv": 4,
+  "_todo": []
  },
  {
   "e": "Graves Disease",
@@ -134,14 +102,10 @@
   "why": "Autoimmune hyperthyroidism.",
   "mean": "Thyroid disorder",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Robert Graves was an Irish physician who also introduced the radical idea that feverish patients should be given food and water rather than starved. He suggested his epitaph should read: he fed fevers.",
+  "lv": 4,
+  "_todo": []
  },
  {
   "e": "Hashimoto Disease",
@@ -150,14 +114,10 @@
   "why": "Autoimmune thyroiditis first described in 1912.",
   "mean": "Thyroid disease",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Hakaru Hashimoto published his findings in German in 1912, as a young doctor, and then returned to rural Japan to run a country practice. His work was overlooked for twenty years before anyone realised what he had found.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Addison Disease",
@@ -166,14 +126,10 @@
   "why": "Adrenal insufficiency described in 1855.",
   "mean": "Hormonal disorder",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Thomas Addison worked out that the small glands sitting on top of the kidneys were essential to life — before anyone knew what hormones were. Colleagues found him difficult; patients found him extraordinary.",
+  "lv": 4,
+  "_todo": []
  },
  {
   "e": "Bright Disease",
@@ -182,14 +138,10 @@
   "why": "Early term for kidney disease.",
   "mean": "Kidney disease (historical)",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Richard Bright discovered he could detect kidney disease by heating a patient's urine over a candle and watching for a cloud of albumin. It was one of the first bedside chemical tests in medicine.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Paget Disease",
@@ -198,14 +150,10 @@
   "why": "Bone remodeling disorder.",
   "mean": "Bone disease",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "James Paget has two different diseases named after him, plus a professorship and a hospital ward. He also worked out, as a student, that the tiny specks in bad pork were a parasite — a finding his professors ignored.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Ménière Disease",
@@ -214,14 +162,10 @@
   "why": "Disorder of the inner ear causing vertigo.",
   "mean": "Inner ear disorder",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Prosper Meniere showed that vertigo could come from the inner ear rather than the brain, which overturned the standard view. He published it in 1861 and died the following year, before the profession accepted it.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Wilson Disease",
@@ -230,14 +174,10 @@
   "why": "Copper metabolism disorder.",
   "mean": "Genetic metabolic disease",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Kinnier Wilson described a disease in which copper builds up in the body until it damages the liver and brain. It is one of the few inherited neurological disorders that can be treated — if it is caught in time.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Bell's Palsy",
@@ -246,14 +186,10 @@
   "why": "Facial nerve paralysis.",
   "mean": "Facial paralysis",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Charles Bell mapped which nerves carry movement and which carry sensation, work so foundational that a whole law of neurology carries his name too. The sudden facial paralysis is what most people know him for.",
+  "lv": 3,
+  "_todo": []
  },
  {
   "e": "Hodgkin Sign",
@@ -262,14 +198,10 @@
   "why": "Clinical sign named after him.",
   "mean": "Medical sign",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Thomas Hodgkin's name attaches to a lymphoma, a clinical sign, and a form of anaemia. He was also a Quaker campaigner who lost a hospital post partly for his outspoken views on the treatment of indigenous peoples.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Babinski Sign",
@@ -278,14 +210,10 @@
   "why": "Reflex indicating upper motor neuron lesion.",
   "mean": "Neurological reflex",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Stroke the sole of an adult's foot and the toes curl down. If they fan upward instead, something is wrong with the pathway from the brain. Babinski found a whole diagnosis hiding in one reflex.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Romberg Test",
@@ -294,14 +222,10 @@
   "why": "Test for proprioception and balance.",
   "mean": "Neurological examination",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Stand with your feet together and close your eyes. If you sway, you were relying on sight to stay upright rather than on your body's own position sense. Romberg turned that into a test in the 1840s.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Brudzinski Sign",
@@ -310,14 +234,10 @@
   "why": "Sign of meningeal irritation.",
   "mean": "Clinical sign",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Jozef Brudzinski found that lifting the head of a patient with meningitis makes the knees pull up involuntarily — the body protecting inflamed membranes. He described several such signs; this is the one that kept his name.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Kernig Sign",
@@ -326,14 +246,10 @@
   "why": "Another test for meningitis.",
   "mean": "Clinical sign",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Vladimir Kernig noticed that patients with meningitis could not have their leg straightened once the hip was bent. Paired with Brudzinski's sign, it gave doctors a bedside test decades before spinal taps were routine.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Murphy Sign",
@@ -342,14 +258,10 @@
   "why": "Pain on inspiration suggesting gallbladder inflammation.",
   "mean": "Diagnostic sign",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Press under the ribs on the right and ask the patient to breathe in. If they stop short from the pain, the gallbladder is inflamed. John Murphy was a Chicago surgeon known for tests that needed no equipment at all.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "McBurney Point",
@@ -358,14 +270,10 @@
   "why": "Point of tenderness in appendicitis.",
   "mean": "Anatomical landmark",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Charles McBurney worked out that appendicitis pain settles at one specific spot, about two-thirds of the way from the navel to the hip bone. Surgeons still press exactly there, and still call it McBurney's point.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Apgar Score",
@@ -374,14 +282,10 @@
   "why": "Rapid assessment of newborn health.",
   "mean": "Neonatal scoring system",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Virginia Apgar sketched five checks on a scrap of paper in a hospital cafeteria after a student asked how to judge a newborn quickly. It is now done on virtually every baby born in a hospital.",
+  "lv": 4,
+  "_todo": []
  },
  {
   "e": "Heimlich Maneuver",
@@ -390,14 +294,10 @@
   "why": "Emergency technique for choking victims.",
   "mean": "First-aid procedure",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Henry Heimlich published the technique in 1974 and it was saving lives within weeks. He was ninety-six when he reportedly used it in a real emergency for the first time, on a fellow resident of his retirement home.",
+  "lv": 3,
+  "_todo": []
  },
  {
   "e": "Foley Catheter",
@@ -406,14 +306,10 @@
   "why": "Inflatable urinary catheter.",
   "mean": "Urinary catheter",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Frederic Foley's design added a small balloon that inflates once the catheter is in place, so it stays put without strapping. He lost the patent fight to a rival, but kept the name.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Pap Smear",
@@ -422,14 +318,10 @@
   "why": "Cervical cancer screening test.",
   "mean": "Diagnostic test",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "George Papanicolaou spent twenty years being ignored. His test could catch cervical cancer before symptoms appeared, and the profession did not want it. Once adopted, deaths from the disease fell by around seventy per cent.",
+  "lv": 4,
+  "_todo": []
  },
  {
   "e": "Koch's Postulates",
@@ -438,14 +330,10 @@
   "why": "Criteria linking pathogens to disease.",
   "mean": "Principles of microbiology",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Robert Koch set out four conditions that must all hold before you can blame a specific microbe for a specific disease. It is a rule for not fooling yourself, and it ended centuries of guesswork about contagion.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Gram Stain",
@@ -454,14 +342,10 @@
   "why": "Differential staining technique for bacteria.",
   "mean": "Laboratory stain",
   "cat": "Microbiology",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Hans Christian Gram published his staining method in 1884 and wrote that it was imperfect and would surely be improved by others. It has not been. Bacteria are still sorted into Gram-positive and Gram-negative today.",
+  "lv": 4,
+  "_todo": []
  },
  {
   "e": "Ziehl–Neelsen Stain",
@@ -470,14 +354,10 @@
   "why": "Acid-fast staining for tuberculosis bacteria.",
   "mean": "Microbiological stain",
   "cat": "Microbiology",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Tuberculosis bacteria have a waxy coat that shrugs off ordinary dyes. Ziehl and Neelsen worked out how to force the stain in with heat and acid, making the bacteria visible as bright red rods under the microscope.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Giemsa Stain",
@@ -486,14 +366,10 @@
   "why": "Stain used for blood cells and parasites.",
   "mean": "Laboratory stain",
   "cat": "Microbiology",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Gustav Giemsa refined a dye mixture that colours the nucleus and cytoplasm of blood cells differently. It is still the standard way of finding malaria parasites in a drop of blood.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "ELISA (Engvall & Perlmann)",
@@ -502,14 +378,10 @@
   "why": "Immunological assay developed in 1971.",
   "mean": "Diagnostic test",
   "cat": "Medicine",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Engvall and Perlmann built a test that uses an enzyme to make an invisible immune reaction visible as a colour change. It underpins pregnancy tests, HIV screening, and most rapid tests you have ever used.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Boyden Chamber",
@@ -518,14 +390,10 @@
   "why": "Device for studying cell migration.",
   "mean": "Laboratory apparatus",
   "cat": "Biology",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Stephen Boyden put a porous membrane between two fluid compartments so he could watch cells crawl through it toward a chemical signal. It is a simple piece of equipment that turned cell migration into something measurable.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Petri Dish",
@@ -534,14 +402,10 @@
   "why": "Invented shallow culture dish.",
   "mean": "Laboratory dish",
   "cat": "Biology",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Before Petri, cultures were grown under bell jars that had to be lifted, letting in whatever was floating past. His two-part dish with an overlapping lid solved contamination with no moving parts at all.",
+  "lv": 3,
+  "_todo": []
  },
  {
   "e": "Erlenmeyer Flask",
@@ -550,14 +414,10 @@
   "why": "Designed conical laboratory flask.",
   "mean": "Laboratory flask",
   "cat": "Chemistry",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Emil Erlenmeyer gave the flask sloping sides and a narrow neck, so it can be swirled hard without spilling and stoppered easily. It is the shape everyone draws when asked to draw a chemistry flask.",
+  "lv": 4,
+  "_todo": []
  },
  {
   "e": "Büchner Funnel",
@@ -566,14 +426,10 @@
   "why": "Funnel for vacuum filtration.",
   "mean": "Laboratory equipment",
   "cat": "Chemistry",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Ernst Buchner's funnel has a flat perforated plate instead of a cone, so suction can pull liquid through a filter fast. It is the difference between filtering in minutes and filtering overnight.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Dewar Flask",
@@ -582,14 +438,10 @@
   "why": "Double-walled vacuum flask.",
   "mean": "Vacuum-insulated container",
   "cat": "Chemistry",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "James Dewar built a double-walled vessel with a vacuum between the layers to hold liquid gases. He never patented it. A German glassware firm did, sold it as the Thermos, and made the fortune.",
+  "lv": 4,
+  "_todo": []
  },
  {
   "e": "Pasteur Pipette",
@@ -598,14 +450,10 @@
   "why": "Glass pipette associated with microbiology.",
   "mean": "Transfer pipette",
   "cat": "Laboratory",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "A glass tube drawn to a fine point, plugged with cotton, sterilised by flame — Pasteur's answer to moving liquid without carrying microbes along with it. The plastic version in every lab still carries his name.",
+  "lv": 4,
+  "_todo": []
  },
  {
   "e": "Geiger Counter",
@@ -614,14 +462,10 @@
   "why": "Detects ionizing radiation.",
   "mean": "Radiation detector",
   "cat": "Physics",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Geiger's early detectors had to be watched, hour after hour, counting faint flashes on a screen in a darkened room. He built the clicking tube partly so physicists could stop staring and start listening.",
+  "lv": 3,
+  "_todo": []
  },
  {
   "e": "Doppler Effect",
@@ -630,14 +474,10 @@
   "why": "Frequency shift due to relative motion.",
   "mean": "Wave frequency phenomenon",
   "cat": "Physics",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Christian Doppler predicted the effect in 1842 using starlight. Three years later a Dutch scientist tested it by hiring a train, filling an open carriage with trumpeters, and having musicians on the platform write down what they heard.",
+  "lv": 3,
+  "_todo": []
  },
  {
   "e": "Hall Effect",
@@ -646,14 +486,10 @@
   "why": "Voltage produced across a conductor in a magnetic field.",
   "mean": "Electromagnetic phenomenon",
   "cat": "Physics",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Edwin Hall found that a magnetic field pushes a current sideways inside a conductor, producing a small voltage across it. He was a graduate student at the time, testing something Maxwell had said was impossible.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Coriolis Effect",
@@ -662,14 +498,10 @@
   "why": "Apparent deflection caused by Earth's rotation.",
   "mean": "Rotational phenomenon",
   "cat": "Physics",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "On a spinning planet, anything moving in a straight line appears to curve. It steers hurricanes and long-range artillery. It does not steer water down a plughole — that scale is far too small, whatever you have been told.",
+  "lv": 4,
+  "_todo": []
  },
  {
   "e": "Magnus Effect",
@@ -678,14 +510,10 @@
   "why": "Spinning object experiences sideways force.",
   "mean": "Aerodynamic effect",
   "cat": "Physics",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "A spinning ball drags air around with it, and the uneven airflow pushes it sideways. Heinrich Magnus was investigating why cannonballs curved off target; footballers have been exploiting the same physics ever since.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Bernoulli Effect",
@@ -694,14 +522,10 @@
   "why": "Pressure decreases as fluid speed increases.",
   "mean": "Fluid dynamics principle",
   "cat": "Physics",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Daniel Bernoulli found that fast-moving fluid exerts less pressure than slow-moving fluid. He came from a family of mathematicians so competitive that his own father, jealous of a prize, threw him out of the house.",
+  "lv": 4,
+  "_todo": []
  },
  {
   "e": "Doppler Radar",
@@ -710,14 +534,10 @@
   "why": "Radar using the Doppler effect to measure velocity.",
   "mean": "Weather and speed radar",
   "cat": "Physics",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Bounce a radio wave off something moving and it comes back at a shifted frequency — so you can measure speed, not just position. It is why forecasters can see a storm rotating before a tornado forms.",
+  "lv": 4,
+  "_todo": []
  },
  {
   "e": "Kelvin Scale",
@@ -726,14 +546,10 @@
   "why": "Absolute temperature scale.",
   "mean": "Temperature scale",
   "cat": "Physics",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "William Thomson worked out there is a coldest possible temperature, where molecular motion stops, and built a scale starting there. He was made Lord Kelvin after the river running past his Glasgow laboratory.",
+  "lv": 3,
+  "_todo": []
  },
  {
   "e": "Celsius Scale",
@@ -742,14 +558,10 @@
   "why": "Temperature scale based on water's freezing and boiling points.",
   "mean": "Temperature scale",
   "cat": "Physics",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Anders Celsius put 0 at boiling and 100 at freezing — the exact reverse of today's scale. It was flipped after his death, and the version everyone now uses is upside down from the one he actually proposed.",
+  "lv": 2,
+  "_todo": []
  },
  {
   "e": "Fahrenheit Scale",
@@ -758,14 +570,10 @@
   "why": "Mercury thermometer and temperature scale.",
   "mean": "Temperature scale",
   "cat": "Physics",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Fahrenheit set his zero at the coldest temperature he could reliably reproduce: a mixture of ice, water and salt. That is why the scale's landmarks look so arbitrary — they were pinned to what he could make in a bucket.",
+  "lv": 3,
+  "_todo": []
  },
  {
   "e": "Beaufort Scale",
@@ -774,14 +582,10 @@
   "why": "Standardized wind-force measurement.",
   "mean": "Wind scale",
   "cat": "Meteorology",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Beaufort's scale needs no instruments — each step is defined by what the sea and the sails are doing. Force 12 was originally described as that which no canvas could withstand.",
+  "lv": 4,
+  "_todo": []
  },
  {
   "e": "Halley's Comet",
@@ -790,14 +594,10 @@
   "why": "Calculated that several historical comet sightings were the same periodic comet and predicted its return.",
   "mean": "Famous periodic comet",
   "cat": "Astronomy",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Halley noticed that comets seen in 1531, 1607 and 1682 followed the same path, decided they were one object, and predicted its return in 1758. He died in 1742. It arrived on Christmas night, sixteen years after his death.",
+  "lv": 2,
+  "_todo": []
  },
  {
   "e": "Hubble Constant",
@@ -806,14 +606,10 @@
   "why": "Discovered that galaxies recede from each other, leading to the expanding universe model.",
   "mean": "Rate of cosmic expansion",
   "cat": "Astronomy",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Hubble measured how fast galaxies are moving away and found the farther ones move faster — which means the universe is expanding. Astronomers still cannot agree on the exact number, and the disagreement has a name: the Hubble tension.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Hubble Space Telescope",
@@ -822,14 +618,10 @@
   "why": "Named in honor of Hubble's contributions to cosmology.",
   "mean": "Orbiting space telescope",
   "cat": "Astronomy",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Launched in 1990 with a mirror ground to the wrong shape by an amount thinner than a human hair. Astronauts flew up in 1993 and fitted it with corrective optics — effectively giving a telescope a pair of spectacles.",
+  "lv": 3,
+  "_todo": []
  },
  {
   "e": "Kepler's Laws",
@@ -838,14 +630,10 @@
   "why": "Three laws describing planetary motion around the Sun.",
   "mean": "Planetary motion laws",
   "cat": "Astronomy",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Kepler spent years trying to fit Mars's orbit to a circle and failing by an eight-minute discrepancy he refused to ignore. Those eight minutes broke two thousand years of circular astronomy and gave him the ellipse.",
+  "lv": 4,
+  "_todo": []
  },
  {
   "e": "Copernican Revolution",
@@ -854,14 +642,10 @@
   "why": "Shift from geocentric to heliocentric worldview.",
   "mean": "Fundamental conceptual change",
   "cat": "Astronomy",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Copernicus reportedly received the first printed copy of his book on the day he died. Moving the Sun to the centre was not just astronomy — it was the moment humanity stopped being the centre of anything.",
+  "lv": 4,
+  "_todo": []
  },
  {
   "e": "Cassini Division",
@@ -870,14 +654,10 @@
   "why": "Large gap separating Saturn's rings.",
   "mean": "Ring gap",
   "cat": "Astronomy",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Giovanni Cassini spotted a dark gap in Saturn's rings in 1675 — the first hint that the rings were not one solid sheet. The spacecraft sent to Saturn three centuries later was named after him.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Oort Cloud",
@@ -886,14 +666,10 @@
   "why": "Proposed distant reservoir of long-period comets.",
   "mean": "Hypothetical comet cloud",
   "cat": "Astronomy",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Jan Oort proposed an enormous shell of icy bodies surrounding the solar system, a thousand times farther out than Pluto, purely from the way long-period comets arrive. Nobody has ever seen it.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Kuiper Belt",
@@ -902,14 +678,10 @@
   "why": "Region of icy bodies beyond Neptune.",
   "mean": "Trans-Neptunian belt",
   "cat": "Astronomy",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "A ring of icy bodies beyond Neptune, and the reason Pluto was reclassified — once astronomers found Pluto had thousands of neighbours out there, it looked less like a planet and more like the largest of a crowd.",
+  "lv": 4,
+  "_todo": []
  },
  {
   "e": "Hertzsprung–Russell Diagram",
@@ -918,14 +690,10 @@
   "why": "Classifies stars by luminosity and temperature.",
   "mean": "Stellar classification chart",
   "cat": "Astronomy",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Two astronomers independently plotted stars by brightness against temperature and found they do not scatter randomly — they fall into a narrow band. That band is the life story of a star, drawn on one chart.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Chandrasekhar Limit",
@@ -934,14 +702,10 @@
   "why": "Maximum mass of a stable white dwarf (~1.4 solar masses).",
   "mean": "White dwarf mass limit",
   "cat": "Astronomy",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Chandrasekhar calculated the limit at nineteen, on the boat to England. Eddington, the most famous astronomer alive, publicly ridiculed it. He was right and Eddington was wrong, and he received the Nobel Prize fifty-three years later.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Hubble Sequence",
@@ -950,14 +714,10 @@
   "why": "Classification system for galaxies.",
   "mean": "Galaxy classification",
   "cat": "Astronomy",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Hubble sorted galaxies by shape into a diagram shaped like a tuning fork — ellipticals on the handle, spirals branching into two prongs. He thought it showed how galaxies evolve. It does not, but the classification stuck.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Messier Objects",
@@ -966,14 +726,10 @@
   "why": "Catalog of nebulae, clusters, and galaxies to avoid confusing them with comets.",
   "mean": "Astronomical catalog",
   "cat": "Astronomy",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Charles Messier was hunting comets and kept being fooled by fuzzy things that turned out not to be comets. He catalogued them as a list of objects to ignore — and that list of annoyances is now the most-used catalogue in amateur astronomy.",
+  "lv": 4,
+  "_todo": []
  },
  {
   "e": "Caldwell Catalogue",
@@ -982,14 +738,10 @@
   "why": "Companion catalog to Messier objects.",
   "mean": "Deep-sky object catalog",
   "cat": "Astronomy",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Patrick Moore noticed Messier's catalogue missed many fine objects, so he made a companion list. He could not use M for Moore, since Messier had it — so he used the other half of his surname, Caldwell.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Roche Limit",
@@ -998,14 +750,10 @@
   "why": "Minimum distance before tidal forces destroy an orbiting body.",
   "mean": "Orbital stability limit",
   "cat": "Astronomy",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Get close enough to a planet and its gravity pulls harder on your near side than your far side, until the difference tears you apart. Saturn's rings sit inside Saturn's Roche limit, which is very likely how they formed.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Roche Lobe",
@@ -1014,14 +762,10 @@
   "why": "Region around a star where orbiting matter remains gravitationally bound.",
   "mean": "Binary star concept",
   "cat": "Astronomy",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Around each star in a close pair is a teardrop-shaped region where its gravity still wins. Fill that region and matter spills across to the companion — which is how some stars slowly eat each other.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Bode's Law",
@@ -1030,14 +774,10 @@
   "why": "Empirical rule approximating planetary distances.",
   "mean": "Planetary spacing rule",
   "cat": "Astronomy",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "A numerical pattern that seemed to predict planetary distances, and even pointed to a gap where the asteroid belt was later found. Then Neptune was discovered in the wrong place and the whole thing collapsed. It was never a law.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Hohmann Transfer Orbit",
@@ -1046,14 +786,10 @@
   "why": "Most fuel-efficient orbital transfer between two circular orbits.",
   "mean": "Orbital maneuver",
   "cat": "Spaceflight",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Walter Hohmann worked out the cheapest route between two orbits in 1925 — two engine burns and a long coast. Every mission to Mars still uses it, which is why launch windows come round only every twenty-six months.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Lagrange Point",
@@ -1062,14 +798,10 @@
   "why": "Positions where gravitational forces balance.",
   "mean": "Stable orbital points",
   "cat": "Astronomy",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Five spots where the pull of two large bodies balances so a small object can sit still relative to both. The James Webb telescope parks at one of them, a million miles out, permanently shaded from the Sun.",
+  "lv": 4,
+  "_todo": []
  },
  {
   "e": "Kirkwood Gaps",
@@ -1078,14 +810,10 @@
   "why": "Gaps in the asteroid belt caused by Jupiter's gravity.",
   "mean": "Asteroid belt gaps",
   "cat": "Astronomy",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "Daniel Kirkwood noticed empty lanes in the asteroid belt and worked out why: any asteroid orbiting in a simple ratio with Jupiter gets a repeated nudge at the same point until it is flung out. Resonance clears the road.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Jeans Instability",
@@ -1094,14 +822,10 @@
   "why": "Criterion for collapse of gas clouds into stars.",
   "mean": "Star formation principle",
   "cat": "Astrophysics",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "A gas cloud is a contest between gravity pulling in and pressure pushing out. James Jeans worked out the mass at which gravity wins — and that threshold is where every star in the universe begins.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Eddington Limit",
@@ -1110,14 +834,10 @@
   "why": "Maximum luminosity before radiation pressure overcomes gravity.",
   "mean": "Stellar luminosity limit",
   "cat": "Astrophysics",
-  "kind": "",
-  "story": "",
-  "lv": 0,
-  "_todo": [
-   "story",
-   "lv",
-   "kind"
-  ]
+  "kind": "person",
+  "story": "A star can only be so bright before its own light blows its outer layers off. Eddington calculated the ceiling — the same Eddington who told the young Chandrasekhar his white-dwarf limit was nonsense.",
+  "lv": 5,
+  "_todo": []
  },
  {
   "e": "Schwarzschild Radius",
@@ -1661,7 +1381,8 @@
    "story",
    "lv",
    "kind"
-  ]
+  ],
+  "alias_of": "Kelvin Scale"
  },
  {
   "e": "Farad",
@@ -2829,7 +2550,8 @@
    "story",
    "lv",
    "kind"
-  ]
+  ],
+  "alias_of": "Jacuzzi Effect"
  },
  {
   "e": "Damoclean (Sword of Damocles)",
@@ -6813,7 +6535,8 @@
    "story",
    "lv",
    "kind"
-  ]
+  ],
+  "alias_of": "Celsius Scale"
  },
  {
   "e": "Chauvinism",
@@ -6845,7 +6568,8 @@
    "story",
    "lv",
    "kind"
-  ]
+  ],
+  "alias_of": "Doppler Effect"
  },
  {
   "e": "Fahrenheit",
@@ -6861,7 +6585,8 @@
    "story",
    "lv",
    "kind"
-  ]
+  ],
+  "alias_of": "Fahrenheit Scale"
  },
  {
   "e": "Galvanize",
@@ -11271,7 +10996,8 @@
   "kind": "person",
   "lv": 3,
   "story": "Geiger's first counters had to be watched, hour after hour, counting flashes on a screen in a dark room. He built the clicking tube partly so that physicists could stop staring and start listening.",
-  "_todo": []
+  "_todo": [],
+  "alias_of": "Geiger Counter"
  },
  {
   "e": "richter",
@@ -11283,7 +11009,8 @@
   "kind": "person",
   "lv": 3,
   "story": "Each whole step up the Richter scale is about thirty-two times more energy released — so a magnitude 7 is not slightly worse than a 6, it is thirty-two times worse. Richter built his scale for California and it went worldwide.",
-  "_todo": []
+  "_todo": [],
+  "alias_of": "Richter Scale"
  },
  {
   "e": "decibel",
@@ -11319,7 +11046,8 @@
   "kind": "person",
   "lv": 3,
   "story": "Before Petri, cultures were grown on plates under bell jars that had to be lifted, letting in whatever was floating past. His two-part dish with an overlapping lid solved contamination with almost no moving parts.",
-  "_todo": []
+  "_todo": [],
+  "alias_of": "Petri Dish"
  },
  {
   "e": "lynch",
@@ -11679,7 +11407,8 @@
   "kind": "person",
   "lv": 4,
   "story": "Faraday left school at thirteen and worked as a bookbinder, reading the books he was binding. He became the greatest experimentalist of the century, and turned down both a knighthood and the presidency of the Royal Society.",
-  "_todo": []
+  "_todo": [],
+  "alias_of": "Faraday Effect"
  },
  {
   "e": "maxwell",
@@ -11739,7 +11468,8 @@
   "kind": "person",
   "lv": 4,
   "story": "Beaufort's scale needed no instruments at all — each step is described by what the sea and the sails are doing. Force 12 was originally defined as that which no canvas could withstand.",
-  "_todo": []
+  "_todo": [],
+  "alias_of": "Beaufort Scale"
  },
  {
   "e": "salk",
@@ -11763,7 +11493,8 @@
   "kind": "person",
   "lv": 3,
   "story": "Heimlich published the technique in 1974 and it was in use within weeks. He was ninety-six when he reportedly used it himself for the first time in an emergency, on a fellow resident of his retirement home.",
-  "_todo": []
+  "_todo": [],
+  "alias_of": "Heimlich Maneuver"
  },
  {
   "e": "apgar",
@@ -11775,7 +11506,8 @@
   "kind": "person",
   "lv": 4,
   "story": "Apgar wrote her five checks on a scrap of paper in a hospital cafeteria when a student asked how to assess a newborn quickly. It is now performed on virtually every baby born in a hospital anywhere.",
-  "_todo": []
+  "_todo": [],
+  "alias_of": "Apgar Score"
  },
  {
   "e": "venn",

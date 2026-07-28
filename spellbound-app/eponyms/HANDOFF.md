@@ -19,10 +19,13 @@ origin story.
 
 | Group | Count | State |
 |---|---|---|
-| Original master (from the CSV) | 442 | src/who/why/mean/cat present; **`story`, `lv`, `kind` owed** |
+| Original master (from the CSV) | 442 | **70 done**; 372 still owe `story`, `lv`, `kind` |
 | Enriched bare entries | 296 | complete except `kind` on 222 of them |
 | New accessible eponyms | 66 | complete |
 | **Still to write from scratch** | **196** | to reach 1,000 |
+
+**424 entries are question-ready** and 1,606 questions currently generate from them.
+The chapter is live; every batch you add just grows it.
 
 ## Field meanings
 
@@ -73,3 +76,39 @@ because the origin is genuinely disputed: *mayonnaise* (Mahón vs Bayonne),
 Keep the hedge; don't tidy it into false certainty. `bogus` and `teflon` were
 dropped from the candidate list for exactly this reason — disputed and
 not-an-eponym respectively.
+
+
+## Rebuild and redeploy (the whole loop, four commands)
+
+Run from `spellbound-app/` after adding entries to `eponyms-master.json`:
+
+```sh
+node eponyms/build-eponyms.js                 # master -> out-eponyms.json + library-patch.json
+cp eponyms/out-eponyms.json out-eponyms.json && node pipeline/sb-merge.js && rm out-eponyms.json
+node pipeline/sb-shard.js                     # rebuilds trivia-data.js + trivia-q1..5.js
+sed -i 's/?v=OLD/?v=NEW/g' index.html         # bump the cache stamp
+```
+
+**Before re-merging, strip the previous eponym questions** or they double up:
+
+```js
+const T=JSON.parse(fs.readFileSync('trivia-all.json','utf8'));
+T.questions=T.questions.filter(q=>q.th!=='eponyms');
+fs.writeFileSync('trivia-all.json',JSON.stringify(T));
+```
+
+Then the library tag pass (idempotent — re-run it, it only touches completed entries),
+then deploy `app3.js index.html trivia-icons.js trivia-data.js trivia-q1..5.js
+words-full.js` to `gh-pages` via a worktree.
+
+## Two things to know about the data
+
+- **`alias_of`** marks a short form that duplicates a longer term — `petri` vs
+  `Petri Dish`, `richter` vs `Richter Scale`, twelve pairs in all. Both stay in the
+  bank (the short form is the spelling word), but only the long form generates
+  questions, or the chapter asks the same thing twice.
+- **Question phrasing is Mastermind style**: describe the source by role, never by
+  name. *"Which word meaning 'extreme strictness' comes from an Athenian lawmaker?"*
+  — not naming Draco, who is the answer. The generator drops any clue containing its
+  own answer (131 currently), so a badly-shaped template fails loudly rather than
+  shipping a giveaway.

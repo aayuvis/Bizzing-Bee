@@ -13,7 +13,10 @@ const path = require('path');
 const DIR = __dirname;
 
 const master = JSON.parse(fs.readFileSync(path.join(DIR, 'eponyms-master.json'), 'utf8'));
-const ready = master.filter(m => m.story && m.lv && !m.skip);
+/* alias_of marks a short form that duplicates a longer term (petri / Petri Dish).
+   Keep it in the library patch but never generate a second set of questions for it. */
+const ready = master.filter(m => m.story && m.lv && !m.skip && !m.alias_of);
+const forLibrary = master.filter(m => m.story && m.lv && !m.skip);
 
 const norm = s => String(s || '').trim();
 const bare = s => norm(s).replace(/\s*\([^)]*\)\s*/g, '').trim();   // drop "(1820-1890)"
@@ -134,7 +137,7 @@ ready.forEach((m, idx) => {
 
 /* ---- spelling-library patch -------------------------------------------------
    Single-token, alphabetic eponyms only — the library is one word per record. */
-const single = ready.filter(m => /^[A-Za-z][A-Za-z'-]*$/.test(m.e));
+const single = forLibrary.filter(m => /^[A-Za-z][A-Za-z'-]*$/.test(m.e));
 const patch = single.map(m => ({
   w: m.e.toLowerCase(), mean: m.mean, story: m.story, cat: m.cat, lv: m.lv, src: bare(m.src),
 }));
