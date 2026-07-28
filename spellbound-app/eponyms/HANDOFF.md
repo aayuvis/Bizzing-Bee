@@ -1,12 +1,12 @@
-# Eponyms — work in progress
+# Eponyms — complete
 
-Goal: a 1,000-entry eponym bank feeding two things — an `eponyms` tag on the
-spelling library, and a new trivia chapter where each card carries the word's
+A 1,000-entry eponym bank feeding two things — an `eponyms` word list on the
+spelling library, and a trivia chapter where every card carries the word's
 origin story.
 
-## Where it stands
+## Where it stands — DONE
 
-`eponyms-master.json` — **804 of 1,000 entries.** Every record has this shape:
+`eponyms-master.json` — **1,000 of 1,000 entries, every one complete.** Record shape:
 
 ```json
 {"e":"sideburns","src":"Ambrose Burnside","who":"American Civil War general (1824-1881)",
@@ -15,17 +15,33 @@ origin story.
  "cat":"Clothing","kind":"person","lv":2,"story":"…40 words…","_todo":[]}
 ```
 
-`_todo` lists the fields still owed on that record. Filter on it to find work.
+`_todo` is empty on every record. Level spread: lv1×30, lv2×109, lv3×246,
+lv4×308, lv5×307.
 
-| Group | Count | State |
+| Output | Count | Where |
 |---|---|---|
-| Original master (from the CSV) | 442 | **70 done**; 372 still owe `story`, `lv`, `kind` |
-| Enriched bare entries | 296 | complete except `kind` on 222 of them |
-| New accessible eponyms | 66 | complete |
-| **Still to write from scratch** | **196** | to reach 1,000 |
+| Trivia questions | **4,093** | `trivia-q1..5.js`, theme `eponyms` |
+| Word-list words tagged | **671** | `t:["eponyms"]` in `words-data.js` **and** `words-full.js` |
+| New word records authored | **124** | `eponyms/lib-add-85.json`, `eponyms/lib-add-40.json` |
+| Records lifted 128k → 40k core | **313** | core is now 40,902 words |
 
-**424 entries are question-ready** and 1,606 questions currently generate from them.
-The chapter is live; every batch you add just grows it.
+### Where each surface lives
+
+- **Word list**: `SB_THEMES.themes` in `themes-data.js` carries an `eponyms` entry
+  (`label: "Named After Someone"`, cluster `mind`). `themeWords('eponyms')`
+  returns the tagged words, so it rides the same Level ladder as every other list.
+  Its glyph is in the `M` map inside `themeArtSVG()` in `app3.js`.
+- **Trivia chapter**: grouped under **Word chapters**, not World — the
+  `wordThemes` array in `viewTrivTrain` (`app3.js`) includes `'eponyms'`.
+  Icon in `trivia-icons.js`, colour in `TT_COL`.
+
+### The ~90 entries deliberately kept out of the spelling library
+
+Coined derived adjectives — *Kochian, Ismenean, Clothoic, Avicennaian, Buffonian*
+and about eighty-five more — are **trivia-only on purpose**. They are not
+dictionary headwords and would lower the quality of the spelling library. Any
+future pass that adds words should apply the same test: lowercase common noun,
+adjective or verb attested in a standard dictionary.
 
 ## Field meanings
 
@@ -37,46 +53,14 @@ The chapter is live; every batch you add just grows it.
   they make good "which of these is **not** named after a person?" questions.
 - `lv` difficulty 1–5, matching the trivia band system in `CLAUDE.md`
 - `story` ~40 words, the card back. Origin narrative, not a definition.
-- `skip:true` marks entries excluded from kid-facing cards (currently only *Priapic*).
+- `skip:true` marks entries excluded from kid-facing cards.
 
-## What's left, in order
+## Still owed
 
-1. **196 new eponyms.** Weight them to **levels 1–3** — the bank is still
-   top-heavy (current spread of the 362 written: lv1×10, lv2×26, lv3×72,
-   lv4×126, lv5×128). The original CSV skewed hard to Medicine and Physics.
-   Untapped accessible veins: brand names (*jacuzzi*, *biro*, *thermos*,
-   *linoleum*, *tarmac*, *plimsoll*), carriages (*pullman*, *hansom*, *landau*,
-   *brougham*), hats (*stetson*, *homburg*, *trilby*, *bowler*, *borsalino*),
-   toys and games (*frisbee*, *slinky*, *rubik*, *lego*), food dishes
-   (*melba*, *beef wellington*, *eggs benedict*, *caesar salad*, *bellini*),
-   place-words (*bolivia*, *colombia*, *philippines*, *tasmania*, *seychelles*),
-   and more mathematics (*euler*, *markov*, *mandelbrot*, *abelian*).
-2. **442 stories + levels** for the original CSV rows.
-3. **`kind`** on the 222 enriched entries that lack it.
-
-## Then the integration (not started)
-
-- **Spelling library**: 382 of the 553 single-token eponyms already exist in
-  `words-full.js` (128,067 words) — those just need `t:["eponyms"]` added to the
-  existing `t` array. 171 single-token eponyms are absent and would need full new
-  word records (definition, sentence, respelling, tier) **plus voice clips**,
-  which needs Google TTS and the `GKEY` env var. 185 entries are multiword
-  (*Hodgkin Lymphoma*) and can never be spelling words — trivia only.
-- **Trivia chapter**: register an `eponyms` theme, add a `TT_COL` colour and a
-  glossy-sticker icon in `trivia-icons.js`, generate leveled questions with
-  `story` on the card back, re-run `pipeline/sb-merge.js` then `sb-shard.js`,
-  verify headlessly, bump the `?v=` stamp, deploy.
-
-## Accuracy notes
-
-Brand and food etymologies are folklore-dense — the earlier trivia audit found a
-21% defect rate in that category. Several stories here are deliberately hedged
-because the origin is genuinely disputed: *mayonnaise* (Mahón vs Bayonne),
-*gauze* (Gaza vs Arabic), *organdy* (Urgench), *oscar* (three rival claimants).
-Keep the hedge; don't tidy it into false certainty. `bogus` and `teflon` were
-dropped from the candidate list for exactly this reason — disputed and
-not-an-eponym respectively.
-
+**Voice clips for the 124 new spelling words.** `deviceSpeak` falls back to
+browser speech synthesis when `wordClip()` returns null, so the words are usable
+today; a Google TTS pass (env `GKEY`) would give them library-quality audio and
+should bump `SB_VOICE_VER`.
 
 ## Rebuild and redeploy (the whole loop, four commands)
 
