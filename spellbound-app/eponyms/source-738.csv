@@ -1,0 +1,739 @@
+﻿ID,Eponym,Derived From / Source,Who/What,Historical / Mythological Rationale,Meaning,Category,Type,Action,Source Batch,Record Status
+1,Parkinsonism,James Parkinson,English physician,Clinical syndrome sharing features of Parkinson's disease.,Group of movement disorders,Medicine,Original entry,Review,Original master,Existing
+2,Alzheimer Disease,Alois Alzheimer,German neurologist,First described progressive dementia in 1906.,Neurodegenerative disease,Medicine,Original entry,Review,Original master,Existing
+3,Hodgkin Lymphoma,Thomas Hodgkin,English physician,Identified a unique lymphatic cancer.,Lymphatic cancer,Medicine,Original entry,Review,Original master,Existing
+4,Non-Hodgkin Lymphoma,Thomas Hodgkin,English physician,Lymphomas other than Hodgkin's disease.,Group of blood cancers,Medicine,Original entry,Review,Original master,Existing
+5,Crohn Disease,Burrill Crohn,American physician,Chronic inflammatory bowel disease described in 1932.,Intestinal inflammatory disorder,Medicine,Original entry,Review,Original master,Existing
+6,Cushing Syndrome,Harvey Cushing,American neurosurgeon,Described symptoms of excess cortisol.,Endocrine disorder,Medicine,Original entry,Review,Original master,Existing
+7,Down Syndrome,John Langdon Down,English physician,First clinical description of the condition.,Chromosomal disorder,Medicine,Original entry,Review,Original master,Existing
+8,Huntington Disease,George Huntington,American physician,Described inherited neurodegenerative disease.,Genetic neurological disorder,Medicine,Original entry,Review,Original master,Existing
+9,Graves Disease,Robert Graves,Irish physician,Autoimmune hyperthyroidism.,Thyroid disorder,Medicine,Original entry,Review,Original master,Existing
+10,Hashimoto Disease,Hakaru Hashimoto,Japanese physician,Autoimmune thyroiditis first described in 1912.,Thyroid disease,Medicine,Original entry,Review,Original master,Existing
+11,Addison Disease,Thomas Addison,English physician,Adrenal insufficiency described in 1855.,Hormonal disorder,Medicine,Original entry,Review,Original master,Existing
+12,Bright Disease,Richard Bright,English physician,Early term for kidney disease.,Kidney disease (historical),Medicine,Original entry,Review,Original master,Existing
+13,Paget Disease,Sir James Paget,English surgeon,Bone remodeling disorder.,Bone disease,Medicine,Original entry,Review,Original master,Existing
+14,Ménière Disease,Prosper Ménière,French physician,Disorder of the inner ear causing vertigo.,Inner ear disorder,Medicine,Original entry,Review,Original master,Existing
+15,Wilson Disease,Samuel Alexander Kinnier Wilson,British neurologist,Copper metabolism disorder.,Genetic metabolic disease,Medicine,Original entry,Review,Original master,Existing
+16,Bell's Palsy,Sir Charles Bell,Scottish surgeon,Facial nerve paralysis.,Facial paralysis,Medicine,Original entry,Review,Original master,Existing
+17,Hodgkin Sign,Thomas Hodgkin,English physician,Clinical sign named after him.,Medical sign,Medicine,Original entry,Review,Original master,Existing
+18,Babinski Sign,Joseph Babinski,French neurologist,Reflex indicating upper motor neuron lesion.,Neurological reflex,Medicine,Original entry,Review,Original master,Existing
+19,Romberg Test,Moritz Romberg,German neurologist,Test for proprioception and balance.,Neurological examination,Medicine,Original entry,Review,Original master,Existing
+20,Brudzinski Sign,Józef Brudziński,Polish physician,Sign of meningeal irritation.,Clinical sign,Medicine,Original entry,Review,Original master,Existing
+21,Kernig Sign,Vladimir Kernig,Russian physician,Another test for meningitis.,Clinical sign,Medicine,Original entry,Review,Original master,Existing
+22,Murphy Sign,John Benjamin Murphy,American surgeon,Pain on inspiration suggesting gallbladder inflammation.,Diagnostic sign,Medicine,Original entry,Review,Original master,Existing
+23,McBurney Point,Charles McBurney,American surgeon,Point of tenderness in appendicitis.,Anatomical landmark,Medicine,Original entry,Review,Original master,Existing
+24,Apgar Score,Virginia Apgar,American anesthesiologist,Rapid assessment of newborn health.,Neonatal scoring system,Medicine,Original entry,Review,Original master,Existing
+25,Heimlich Maneuver,Henry Heimlich,American surgeon,Emergency technique for choking victims.,First-aid procedure,Medicine,Original entry,Review,Original master,Existing
+26,Foley Catheter,Frederic Foley,American urologist,Inflatable urinary catheter.,Urinary catheter,Medicine,Original entry,Review,Original master,Existing
+27,Pap Smear,George Papanicolaou,Greek physician,Cervical cancer screening test.,Diagnostic test,Medicine,Original entry,Review,Original master,Existing
+28,Koch's Postulates,Robert Koch,German microbiologist,Criteria linking pathogens to disease.,Principles of microbiology,Medicine,Original entry,Review,Original master,Existing
+29,Gram Stain,Hans Christian Gram,Danish bacteriologist,Differential staining technique for bacteria.,Laboratory stain,Microbiology,Original entry,Review,Original master,Existing
+30,Ziehl–Neelsen Stain,Franz Ziehl & Friedrich Neelsen,German scientists,Acid-fast staining for tuberculosis bacteria.,Microbiological stain,Microbiology,Original entry,Review,Original master,Existing
+31,Giemsa Stain,Gustav Giemsa,German chemist,Stain used for blood cells and parasites.,Laboratory stain,Microbiology,Original entry,Review,Original master,Existing
+32,ELISA (Engvall & Perlmann),Eva Engvall & Peter Perlmann,Swedish scientists,Immunological assay developed in 1971.,Diagnostic test,Medicine,Original entry,Review,Original master,Existing
+33,Boyden Chamber,Stephen Boyden,British scientist,Device for studying cell migration.,Laboratory apparatus,Biology,Original entry,Review,Original master,Existing
+34,Petri Dish,Julius Richard Petri,German bacteriologist,Invented shallow culture dish.,Laboratory dish,Biology,Original entry,Review,Original master,Existing
+35,Erlenmeyer Flask,Emil Erlenmeyer,German chemist,Designed conical laboratory flask.,Laboratory flask,Chemistry,Original entry,Review,Original master,Existing
+36,Büchner Funnel,Ernst Büchner,German chemist,Funnel for vacuum filtration.,Laboratory equipment,Chemistry,Original entry,Review,Original master,Existing
+37,Dewar Flask,James Dewar,Scottish chemist,Double-walled vacuum flask.,Vacuum-insulated container,Chemistry,Original entry,Review,Original master,Existing
+38,Pasteur Pipette,Louis Pasteur,French scientist,Glass pipette associated with microbiology.,Transfer pipette,Laboratory,Original entry,Review,Original master,Existing
+39,Geiger Counter,Hans Geiger,German physicist,Detects ionizing radiation.,Radiation detector,Physics,Original entry,Review,Original master,Existing
+40,Doppler Effect,Christian Doppler,Austrian physicist,Frequency shift due to relative motion.,Wave frequency phenomenon,Physics,Original entry,Review,Original master,Existing
+41,Hall Effect,Edwin Hall,American physicist,Voltage produced across a conductor in a magnetic field.,Electromagnetic phenomenon,Physics,Original entry,Review,Original master,Existing
+42,Coriolis Effect,Gaspard-Gustave Coriolis,French engineer,Apparent deflection caused by Earth's rotation.,Rotational phenomenon,Physics,Original entry,Review,Original master,Existing
+43,Magnus Effect,Heinrich Magnus,German physicist,Spinning object experiences sideways force.,Aerodynamic effect,Physics,Original entry,Review,Original master,Existing
+44,Bernoulli Effect,Daniel Bernoulli,Swiss mathematician,Pressure decreases as fluid speed increases.,Fluid dynamics principle,Physics,Original entry,Review,Original master,Existing
+45,Doppler Radar,Christian Doppler,Austrian physicist,Radar using the Doppler effect to measure velocity.,Weather and speed radar,Physics,Original entry,Review,Original master,Existing
+46,Kelvin Scale,Lord Kelvin,William Thomson,Absolute temperature scale.,Temperature scale,Physics,Original entry,Review,Original master,Existing
+47,Celsius Scale,Anders Celsius,Swedish astronomer,Temperature scale based on water's freezing and boiling points.,Temperature scale,Physics,Original entry,Review,Original master,Existing
+48,Fahrenheit Scale,Daniel Fahrenheit,German physicist,Mercury thermometer and temperature scale.,Temperature scale,Physics,Original entry,Review,Original master,Existing
+49,Beaufort Scale,Francis Beaufort,British admiral,Standardized wind-force measurement.,Wind scale,Meteorology,Original entry,Review,Original master,Existing
+50,Halley's Comet,Edmond Halley,English astronomer,Calculated that several historical comet sightings were the same periodic comet and predicted its return.,Famous periodic comet,Astronomy,Original entry,Review,Original master,Existing
+51,Hubble Constant,Edwin Hubble,American astronomer,"Discovered that galaxies recede from each other, leading to the expanding universe model.",Rate of cosmic expansion,Astronomy,Original entry,Review,Original master,Existing
+52,Hubble Space Telescope,Edwin Hubble,Astronomer,Named in honor of Hubble's contributions to cosmology.,Orbiting space telescope,Astronomy,Original entry,Review,Original master,Existing
+53,Kepler's Laws,Johannes Kepler,German astronomer,Three laws describing planetary motion around the Sun.,Planetary motion laws,Astronomy,Original entry,Review,Original master,Existing
+54,Copernican Revolution,Nicolaus Copernicus,Polish astronomer,Shift from geocentric to heliocentric worldview.,Fundamental conceptual change,Astronomy,Original entry,Review,Original master,Existing
+55,Cassini Division,Giovanni Cassini,Italian astronomer,Large gap separating Saturn's rings.,Ring gap,Astronomy,Original entry,Review,Original master,Existing
+56,Oort Cloud,Jan Oort,Dutch astronomer,Proposed distant reservoir of long-period comets.,Hypothetical comet cloud,Astronomy,Original entry,Review,Original master,Existing
+57,Kuiper Belt,Gerard Kuiper,Dutch-American astronomer,Region of icy bodies beyond Neptune.,Trans-Neptunian belt,Astronomy,Original entry,Review,Original master,Existing
+58,Hertzsprung–Russell Diagram,Ejnar Hertzsprung & Henry Norris Russell,Astronomers,Classifies stars by luminosity and temperature.,Stellar classification chart,Astronomy,Original entry,Review,Original master,Existing
+59,Chandrasekhar Limit,Subrahmanyan Chandrasekhar,Indian-American astrophysicist,Maximum mass of a stable white dwarf (~1.4 solar masses).,White dwarf mass limit,Astronomy,Original entry,Review,Original master,Existing
+60,Hubble Sequence,Edwin Hubble,Astronomer,Classification system for galaxies.,Galaxy classification,Astronomy,Original entry,Review,Original master,Existing
+61,Messier Objects,Charles Messier,French astronomer,"Catalog of nebulae, clusters, and galaxies to avoid confusing them with comets.",Astronomical catalog,Astronomy,Original entry,Review,Original master,Existing
+62,Caldwell Catalogue,"Patrick Moore (""Caldwell"")",British astronomer,Companion catalog to Messier objects.,Deep-sky object catalog,Astronomy,Original entry,Review,Original master,Existing
+63,Roche Limit,Édouard Roche,French astronomer,Minimum distance before tidal forces destroy an orbiting body.,Orbital stability limit,Astronomy,Original entry,Review,Original master,Existing
+64,Roche Lobe,Édouard Roche,Astronomer,Region around a star where orbiting matter remains gravitationally bound.,Binary star concept,Astronomy,Original entry,Review,Original master,Existing
+65,Bode's Law,Johann Elert Bode,German astronomer,Empirical rule approximating planetary distances.,Planetary spacing rule,Astronomy,Original entry,Review,Original master,Existing
+66,Hohmann Transfer Orbit,Walter Hohmann,German engineer,Most fuel-efficient orbital transfer between two circular orbits.,Orbital maneuver,Spaceflight,Original entry,Review,Original master,Existing
+67,Lagrange Point,Joseph-Louis Lagrange,French mathematician,Positions where gravitational forces balance.,Stable orbital points,Astronomy,Original entry,Review,Original master,Existing
+68,Kirkwood Gaps,Daniel Kirkwood,American astronomer,Gaps in the asteroid belt caused by Jupiter's gravity.,Asteroid belt gaps,Astronomy,Original entry,Review,Original master,Existing
+69,Jeans Instability,Sir James Jeans,British physicist,Criterion for collapse of gas clouds into stars.,Star formation principle,Astrophysics,Original entry,Review,Original master,Existing
+70,Eddington Limit,Arthur Eddington,English astrophysicist,Maximum luminosity before radiation pressure overcomes gravity.,Stellar luminosity limit,Astrophysics,Original entry,Review,Original master,Existing
+71,Schwarzschild Radius,Karl Schwarzschild,German physicist,Radius defining the event horizon of a non-rotating black hole.,Black hole radius,Relativity,Original entry,Review,Original master,Existing
+72,Kerr Black Hole,Roy Kerr,New Zealand mathematician,Solution describing rotating black holes.,Rotating black hole,Relativity,Original entry,Review,Original master,Existing
+73,Hawking Radiation,Stephen Hawking,British physicist,Theoretical radiation emitted by black holes due to quantum effects.,Black hole evaporation,Physics,Original entry,Review,Original master,Existing
+74,Penrose Process,Roger Penrose,British mathematician,Method of extracting energy from a rotating black hole.,Energy extraction mechanism,Physics,Original entry,Review,Original master,Existing
+75,Penrose Triangle,Roger Penrose,Mathematician,Impossible geometric figure.,Optical illusion,Mathematics,Original entry,Review,Original master,Existing
+76,Lorentz Transformation,Hendrik Lorentz,Dutch physicist,Mathematical basis of special relativity.,Relativity equations,Physics,Original entry,Review,Original master,Existing
+77,Lorentz Force,Hendrik Lorentz,Physicist,Force on a charged particle in electric and magnetic fields.,Electromagnetic force,Physics,Original entry,Review,Original master,Existing
+78,Maxwell's Equations,James Clerk Maxwell,Scottish physicist,"Unified electricity, magnetism, and light.",Fundamental EM equations,Physics,Original entry,Review,Original master,Existing
+79,Faraday Cage,Michael Faraday,English scientist,Conductive enclosure blocking external electric fields.,Electromagnetic shield,Physics,Original entry,Review,Original master,Existing
+80,Faraday Effect,Michael Faraday,Scientist,Rotation of polarized light by a magnetic field.,Magneto-optic effect,Physics,Original entry,Review,Original master,Existing
+81,Fermi Paradox,Enrico Fermi,Italian physicist,Contradiction between high probability of extraterrestrial life and lack of evidence.,SETI paradox,Astronomy,Original entry,Review,Original master,Existing
+82,Fermi Energy,Enrico Fermi,Physicist,Highest occupied energy level at absolute zero.,Quantum energy level,Physics,Original entry,Review,Original master,Existing
+83,Fermi Golden Rule,Enrico Fermi,Physicist,Calculates quantum transition probabilities.,Quantum mechanics principle,Physics,Original entry,Review,Original master,Existing
+84,Feynman Diagram,Richard Feynman,American physicist,Visual representation of particle interactions.,Particle physics diagram,Physics,Original entry,Review,Original master,Existing
+85,Feynman Technique,Richard Feynman,Physicist,Learning method based on simple explanations.,Study technique,Education,Original entry,Review,Original master,Existing
+86,Dirac Equation,Paul Dirac,British physicist,Relativistic equation describing electrons.,Quantum equation,Physics,Original entry,Review,Original master,Existing
+87,Bose–Einstein Condensate,Satyendra Nath Bose & Albert Einstein,Physicists,Predicted fifth state of matter at extremely low temperatures.,Quantum state of matter,Physics,Original entry,Review,Original master,Existing
+88,Bose Gas,Satyendra Nath Bose,Indian physicist,Gas composed of bosons obeying Bose-Einstein statistics.,Quantum gas,Physics,Original entry,Review,Original master,Existing
+89,Boson,Satyendra Nath Bose,Indian physicist,Family of particles named in Bose's honor.,Force-carrying particle,Physics,Original entry,Review,Original master,Existing
+90,Higgs Boson,Peter Higgs,British physicist,Particle associated with the Higgs field giving mass to elementary particles.,Elementary particle,Physics,Original entry,Review,Original master,Existing
+91,Higgs Field,Peter Higgs,Physicist,Quantum field responsible for particle mass.,Quantum field,Physics,Original entry,Review,Original master,Existing
+92,Raman Effect,C. V. Raman,Indian physicist,Inelastic scattering of light by molecules.,Spectroscopic phenomenon,Physics,Original entry,Review,Original master,Existing
+93,Raman Spectroscopy,C. V. Raman,Physicist,Analytical technique based on Raman scattering.,Chemical analysis method,Chemistry,Original entry,Review,Original master,Existing
+94,Mössbauer Effect,Rudolf Mössbauer,German physicist,Recoil-free emission and absorption of gamma rays.,Nuclear physics phenomenon,Physics,Original entry,Review,Original master,Existing
+95,Zeeman Effect,Pieter Zeeman,Dutch physicist,Splitting of spectral lines in magnetic fields.,Spectral phenomenon,Physics,Original entry,Review,Original master,Existing
+96,Stark Effect,Johannes Stark,German physicist,Splitting of spectral lines in electric fields.,Spectral phenomenon,Physics,Original entry,Review,Original master,Existing
+97,Compton Effect,Arthur Compton,American physicist,X-ray scattering demonstrating particle nature of light.,Photon scattering,Physics,Original entry,Review,Original master,Existing
+98,Hall–Petch Relationship,E. O. Hall & N. J. Petch,Metallurgists,Grain refinement increases metal strength.,Materials science principle,Engineering,Original entry,Review,Original master,Existing
+99,Volt,Alessandro Volta,Italian physicist,Invented the first practical electric battery in 1800.,Unit of electric potential,Physics,Original entry,Review,Original master,Existing
+100,Ohm,Georg Ohm,German physicist,"Formulated Ohm's Law relating voltage, current, and resistance.",Unit of electrical resistance,Physics,Original entry,Review,Original master,Existing
+101,Pascal,Blaise Pascal,French mathematician,Pioneer of probability and fluid mechanics.,Unit of pressure,Physics,Original entry,Review,Original master,Existing
+102,Newton,Isaac Newton,English physicist,Defined laws of motion and gravitation.,Unit of force,Physics,Original entry,Review,Original master,Existing
+103,Joule,James Prescott Joule,English physicist,Established relationship between heat and mechanical work.,Unit of energy,Physics,Original entry,Review,Original master,Existing
+104,Kelvin,Lord Kelvin,William Thomson,Developed the absolute temperature scale.,Absolute temperature scale,Physics,Original entry,Review,Original master,Existing
+105,Farad,Michael Faraday,English scientist,Pioneer of electromagnetism and electrochemistry.,Unit of capacitance,Physics,Original entry,Review,Original master,Existing
+106,Henry,Joseph Henry,American physicist,Discovered electromagnetic induction independently of Faraday.,Unit of inductance,Physics,Original entry,Review,Original master,Existing
+107,Hertz,Heinrich Hertz,German physicist,Demonstrated electromagnetic waves experimentally.,Unit of frequency,Physics,Original entry,Review,Original master,Existing
+108,Becquerel,Henri Becquerel,French physicist,Discovered natural radioactivity.,Unit of radioactivity,Physics,Original entry,Review,Original master,Existing
+109,Curie,Marie & Pierre Curie,Scientists,Pioneers in radioactivity research.,Unit of radioactivity (historical),Physics,Original entry,Review,Original master,Existing
+110,Roentgen,Wilhelm Röntgen,German physicist,Discovered X-rays in 1895.,Unit of radiation exposure,Physics,Original entry,Review,Original master,Existing
+111,Gauss,Carl Friedrich Gauss,German mathematician,Major contributions to mathematics and magnetism.,Unit of magnetic flux density (CGS),Mathematics,Original entry,Review,Original master,Existing
+112,Weber,Wilhelm Weber,German physicist,Collaborated with Gauss on electromagnetism.,Unit of magnetic flux,Physics,Original entry,Review,Original master,Existing
+113,Siemens,Werner von Siemens,German engineer,Pioneer in electrical engineering.,Unit of electrical conductance,Engineering,Original entry,Review,Original master,Existing
+114,Diesel,Rudolf Diesel,German engineer,Invented compression ignition engine.,Diesel engine/fuel,Engineering,Original entry,Review,Original master,Existing
+115,Otis,Elisha Otis,American inventor,Invented elevator safety brake.,Elevator brand that became synonymous with elevators,Engineering,Original entry,Review,Original master,Existing
+116,Gatling Gun,Richard Gatling,American inventor,Developed rapid-fire mechanical gun.,Early machine gun,Military,Original entry,Review,Original master,Existing
+117,Colt,Samuel Colt,American inventor,Perfected the revolver.,Revolver,Firearms,Original entry,Review,Original master,Existing
+118,Winchester,Oliver Winchester,Industrialist,Company popularized repeating rifles.,Lever-action rifle,Firearms,Original entry,Review,Original master,Existing
+119,Derringer,Henry Deringer,Gunsmith,Small concealable pistol named after him.,Pocket pistol,Firearms,Original entry,Review,Original master,Existing
+120,Bowdlerize,Thomas Bowdler,English editor,Published expurgated Shakespeare editions.,Remove offensive material,Literature,Original entry,Review,Original master,Existing
+121,Mesmerize,Franz Mesmer,Austrian physician,"Proposed ""animal magnetism.""",Hypnotize; fascinate,Medicine,Original entry,Review,Original master,Existing
+122,Nicotine,Jean Nicot,French diplomat,Introduced tobacco to the French court.,Tobacco alkaloid,Botany,Original entry,Review,Original master,Existing
+123,Nicotiana,Jean Nicot,Diplomat,Tobacco genus named after him.,Tobacco plant,Botany,Original entry,Review,Original master,Existing
+124,Dahlia,Anders Dahl,Swedish botanist,Student of Linnaeus.,Flower,Botany,Original entry,Review,Original master,Existing
+125,Fuchsia,Leonhart Fuchs,German botanist,Honored by Linnaeus.,Flower,Botany,Original entry,Review,Original master,Existing
+126,Magnolia,Pierre Magnol,French botanist,Pioneer of plant classification.,Flowering tree,Botany,Original entry,Review,Original master,Existing
+127,Gardenia,Alexander Garden,Scottish botanist,American naturalist.,Flower,Botany,Original entry,Review,Original master,Existing
+128,Camellia,Georg Kamel,Jesuit botanist,Missionary who studied Asian flora.,Flower,Botany,Original entry,Review,Original master,Existing
+129,Begonia,Michel Bégon,French governor,Patron of botany.,Flower,Botany,Original entry,Review,Original master,Existing
+130,Poinsettia,Joel Poinsett,American diplomat,Introduced the Mexican plant to the U.S.,Christmas flower,Botany,Original entry,Review,Original master,Existing
+131,Forsythia,William Forsyth,Scottish horticulturist,Royal gardener.,Flowering shrub,Botany,Original entry,Review,Original master,Existing
+132,Zinnia,Johann Zinn,German botanist,Described many flowering plants.,Flower,Botany,Original entry,Review,Original master,Existing
+133,Wisteria,Caspar Wistar,American physician,Anatomist and educator.,Climbing vine,Botany,Original entry,Review,Original master,Existing
+134,Philodendron,—,Greek roots (not an eponym),Often mistaken for an eponym but derived from Greek words.,Tropical plant,Not an eponym,Original entry,Review,Original master,Existing
+135,Graham Cracker,Sylvester Graham,American minister,Promoted vegetarian diets and whole grains.,Whole-wheat cracker,Food,Original entry,Review,Original master,Existing
+136,Graham Flour,Sylvester Graham,Health reformer,Developed coarse whole-wheat flour.,Whole-wheat flour,Food,Original entry,Review,Original master,Existing
+137,Caesar Salad,Caesar Cardini,Italian-American restaurateur,Created the salad in Tijuana in 1924.,Salad,Food,Original entry,Review,Original master,Existing
+138,Beef Wellington,Duke of Wellington,British general,Dish allegedly named in his honor.,Beef entrée,Food,Original entry,Review,Original master,Existing
+139,Nachos,"Ignacio ""Nacho"" Anaya",Mexican chef,Improvised snack for customers.,Tortilla chips with toppings,Food,Original entry,Review,Original master,Existing
+140,Margherita Pizza,Queen Margherita,Queen of Italy,Pizza colors honored the Italian flag and queen.,Pizza variety,Food,Original entry,Review,Original master,Existing
+141,Pavlova,Anna Pavlova,Russian ballerina,Dessert created in her honor.,Meringue dessert,Food,Original entry,Review,Original master,Existing
+142,Sacher Torte,Franz Sacher,Austrian chef,Invented Vienna's famous chocolate cake.,Chocolate cake,Food,Original entry,Review,Original master,Existing
+143,Beef Stroganoff,Count Stroganov,Russian nobleman,Dish created for his household.,Beef dish,Food,Original entry,Review,Original master,Existing
+144,Earl Grey Tea,Earl Grey,British Prime Minister,Tea blend reputedly created for him.,Flavored tea,Beverage,Original entry,Review,Original master,Existing
+145,Americano,American soldiers,WWII Italy,Soldiers diluted espresso with water.,Coffee drink,Beverage,Original entry,Review,Original master,Existing
+146,Martini,Martinez (disputed),Cocktail origin debated,"One theory traces it to Martinez, California.",Cocktail,Beverage,Original entry,Review,Original master,Existing
+147,Wellington Boot,Duke of Wellington,Military commander,Modified riding boots became fashionable.,Waterproof boot,Clothing,Original entry,Review,Original master,Existing
+148,Raglan Sleeve,Lord Raglan,British field marshal,Coat designed after he lost an arm.,Sleeve style,Clothing,Original entry,Review,Original master,Existing
+149,Bunsen Burner,Robert Bunsen,German chemist,Designed an efficient laboratory gas burner for clean combustion.,Laboratory burner,Chemistry,Original entry,Review,Original master,Existing
+150,Avogadro Number,Amedeo Avogadro,Italian physicist,Proposed that equal volumes of gases contain equal numbers of molecules.,Number of particles in one mole,Chemistry,Original entry,Review,Original master,Existing
+151,Boyle's Law,Robert Boyle,Anglo-Irish chemist,Established inverse relationship between gas pressure and volume.,Gas law,Chemistry,Original entry,Review,Original master,Existing
+152,Charles' Law,Jacques Charles,French physicist,Demonstrated relationship between gas volume and temperature.,Gas law,Chemistry,Original entry,Review,Original master,Existing
+153,Dalton,John Dalton,English chemist,Developed modern atomic theory.,Atomic mass unit (historical); color blindness term,Chemistry,Original entry,Review,Original master,Existing
+154,Avogadrite,Amedeo Avogadro,Scientist,Mineral named in his honor.,Mineral,Geology,Original entry,Review,Original master,Existing
+155,Mohs Scale,Friedrich Mohs,German mineralogist,Created hardness scale from 1–10.,Mineral hardness scale,Geology,Original entry,Review,Original master,Existing
+156,Richter Scale,Charles Richter,American seismologist,Developed logarithmic earthquake magnitude scale.,Earthquake magnitude,Geology,Original entry,Review,Original master,Existing
+157,Mercalli Scale,Giuseppe Mercalli,Italian volcanologist,Developed earthquake intensity scale based on observed effects.,Earthquake intensity,Geology,Original entry,Review,Original master,Existing
+158,Saffir–Simpson Scale,Herbert Saffir & Robert Simpson,Engineer & Meteorologist,Categorized hurricanes by destructive potential.,Hurricane intensity scale,Meteorology,Original entry,Review,Original master,Existing
+159,Hubble Telescope,Edwin Hubble,Astronomer,Space telescope named to honor his discoveries.,Space observatory,Astronomy,Original entry,Review,Original master,Existing
+160,Copernican,Nicolaus Copernicus,Polish astronomer,Proposed heliocentric model of the Solar System.,Radical conceptual change,Astronomy,Original entry,Review,Original master,Existing
+161,Parkinson Disease,James Parkinson,English physician,"Described ""shaking palsy"" in 1817.",Movement disorder,Medicine,Original entry,Review,Original master,Existing
+162,Asperger Syndrome*,Hans Asperger,Austrian pediatrician,Described a pattern of autistic traits; terminology has largely been replaced by autism spectrum disorder in modern clinical practice.,Historical diagnostic term,Medicine,Original entry,Review,Original master,Existing
+163,Tourette Syndrome,Georges Gilles de la Tourette,French neurologist,Identified neurological tic disorder.,Tic disorder,Medicine,Original entry,Review,Original master,Existing
+164,Pasteurization,Louis Pasteur,French chemist,Demonstrated heat could kill harmful microbes without spoiling food.,Heat treatment of food,Food Science,Original entry,Review,Original master,Existing
+165,Caesarean Section,Julius Caesar (traditional association),Roman leader,"Traditionally associated with Caesar's birth, though historians dispute this origin.",Surgical childbirth,Medicine,Original entry,Review,Original master,Existing
+166,Bloomers,Amelia Bloomer,American women's rights advocate,Popularized practical loose trousers for women in dress reform.,Loose undergarments/trousers,Clothing,Original entry,Review,Original master,Existing
+167,Fedora,Princess Fedora,Fictional character,Hat became fashionable after actresses wore it in the play *Fédora*.,Soft felt hat,Clothing,Original entry,Review,Original master,Existing
+168,Stetson,John B. Stetson,American hatmaker,Produced the iconic cowboy hat.,Wide-brimmed hat,Clothing,Original entry,Review,Original master,Existing
+169,Mackintosh,Charles Macintosh,Scottish chemist,Invented waterproof rubberized fabric.,Waterproof raincoat,Clothing,Original entry,Review,Original master,Existing
+170,Balaclava,Battle of Balaclava,Crimean War battle,Knitted headgear worn by soldiers during the battle.,Woolen face covering,Clothing,Original entry,Review,Original master,Existing
+171,Bikini,Bikini Atoll,Pacific atoll,"Swimwear named after the atomic test site to suggest an ""explosive"" impact.",Two-piece swimsuit,Clothing,Original entry,Review,Original master,Existing
+172,Chesterfield,Earl of Chesterfield,British statesman,Sofa style associated with aristocratic taste.,Leather sofa,Furniture,Original entry,Review,Original master,Existing
+173,Murphy Bed,William Murphy,American inventor,Created a fold-away bed to maximize living space.,Folding bed,Furniture,Original entry,Review,Original master,Existing
+174,Mason Jar,John Mason,American tinsmith,Patented threaded glass jar for home canning.,Glass preserving jar,Household,Original entry,Review,Original master,Existing
+175,Biro,László Bíró,Hungarian journalist,Invented the modern ballpoint pen.,Ballpoint pen,Writing,Original entry,Review,Original master,Existing
+176,Tupperware,Earl Tupper,American inventor,Developed airtight plastic food containers.,Plastic food containers,Household,Original entry,Review,Original master,Existing
+177,Jacuzzi,Candido Jacuzzi,Italian-American inventor,Hydrotherapy pump designed for his son's arthritis became the modern whirlpool spa.,Whirlpool bath,Household/Engineering,Original entry,Review,Original master,Existing
+178,Damoclean (Sword of Damocles),Damocles,Courtier of Dionysius I of Syracuse,"Damocles envied the ruler's fortune until he sat beneath a sword suspended by a single horsehair, symbolizing the constant danger faced by those in power.",Ever-present danger despite success,Greek History,Original entry,Review,Original master,Existing
+179,Sisyphean,Sisyphus,Mythical king of Corinth,"Condemned by the gods to roll a boulder uphill forever, only for it to roll back each time.","Endless, futile labor",Greek Mythology,Original entry,Review,Original master,Existing
+180,Tantalize,Tantalus,King punished in Hades,Forced to stand in water beneath fruit that always receded whenever he tried to eat or drink.,To tease with something unattainable,Greek Mythology,Original entry,Review,Original master,Existing
+181,Narcissism,Narcissus,Beautiful youth,Fell in love with his own reflection and wasted away beside a pool.,Excessive self-love,Greek Mythology,Original entry,Review,Original master,Existing
+182,Oedipal,Oedipus,King of Thebes,"Unknowingly killed his father and married his mother, inspiring Freud's psychological theory.",Relating to the Oedipus complex,Psychology,Original entry,Review,Original master,Existing
+183,Pandora's Box,Pandora,First woman in Greek mythology,"Opened a forbidden jar releasing all evils into the world, leaving only hope inside.",Source of unforeseen troubles,Greek Mythology,Original entry,Review,Original master,Existing
+184,Procrustean,Procrustes,Mythical bandit,Forced travelers to fit his iron bed by stretching or amputating them.,Rigidly forcing conformity,Greek Mythology,Original entry,Review,Original master,Existing
+185,Pygmalion Effect,Pygmalion,Cypriot sculptor,His statue came to life after Aphrodite answered his prayers; later adapted in psychology to describe self-fulfilling expectations.,Expectations influencing performance,Psychology,Original entry,Review,Original master,Existing
+186,Midas Touch,King Midas,Phrygian king,"Granted the power to turn everything he touched into gold, which became a curse.",Ability to generate wealth or success,Greek Mythology,Original entry,Review,Original master,Existing
+187,Mentor,Mentor,Friend of Odysseus,Entrusted with guiding Telemachus while Odysseus was away; Athena often appeared in his form.,Trusted adviser or guide,Greek Mythology,Original entry,Review,Original master,Existing
+188,Odyssey,Odysseus,Hero of Homer's *Odyssey*,His ten-year journey home after the Trojan War became synonymous with a long adventurous voyage.,Long journey full of challenges,Literature,Original entry,Review,Original master,Existing
+189,Herculean,Hercules (Heracles),Greek hero,Completed the Twelve Labors requiring extraordinary strength and endurance.,Requiring immense effort,Greek Mythology,Original entry,Review,Original master,Existing
+190,Chimera,Chimera,Fire-breathing monster,"Composite creature with lion, goat, and serpent parts.",Impossible dream or hybrid,Greek Mythology,Original entry,Review,Original master,Existing
+191,Cerberus,Cerberus,Three-headed hound,Guarded the entrance to the Underworld to prevent escape.,Fierce guardian,Greek Mythology,Original entry,Review,Original master,Existing
+192,Janus-faced,Janus,Roman god of beginnings,Depicted with two faces looking to the past and future simultaneously.,Two-faced; having dual aspects,Roman Mythology,Original entry,Review,Original master,Existing
+193,Vulcanize,Vulcan,Roman god of fire,Charles Goodyear named the rubber-hardening process after the god associated with fire and metalworking.,Strengthen rubber with sulfur and heat,Engineering,Original entry,Review,Original master,Existing
+194,Mercury,Mercury,Roman messenger god,Fast-moving planet named after the swift deity; the element inherited the classical name.,Planet or chemical element,Roman Mythology,Original entry,Review,Original master,Existing
+195,Martial,Mars,Roman god of war,"Derived from Mars, representing warfare and soldiers.",Relating to war or the military,Roman Mythology,Original entry,Review,Original master,Existing
+196,Jovial,Jupiter (Jove),King of the Roman gods,Medieval astrology associated Jupiter with optimism and cheerful temperament.,Cheerful and good-humored,Roman Mythology,Original entry,Review,Original master,Existing
+197,Venereal,Venus,Roman goddess of love,Historically associated with love and sexuality.,Relating to sexual transmission,Roman Mythology,Original entry,Review,Original master,Existing
+198,Panic,Pan,Greek god of shepherds,His sudden terrifying cries were believed to cause irrational fear in travelers.,Sudden overwhelming fear,Greek Mythology,Original entry,Review,Original master,Existing
+199,Echo,Echo,Mountain nymph,Cursed to repeat only the last words spoken to her after distracting Hera.,Reflected sound,Greek Mythology,Original entry,Review,Original master,Existing
+200,Iris,Iris,Goddess of the rainbow,Messenger of the gods whose rainbow linked heaven and earth.,Flower; colored part of the eye,Greek Mythology,Original entry,Review,Original master,Existing
+201,Flora,Flora,Roman goddess of flowers,Goddess of springtime and blossoms.,Plant life of a region,Roman Mythology,Original entry,Review,Original master,Existing
+202,Fauna,Faunus,Roman god of forests,Originally referring to animals associated with Faunus.,Animal life of a region,Roman Mythology,Original entry,Review,Original master,Existing
+203,Hymen,Hymen,Greek god of marriage,Associated with weddings and the marriage ceremony.,Membrane at vaginal opening; marriage deity,Greek Mythology,Original entry,Review,Original master,Existing
+204,Hymeneal,Hymen,Greek god of marriage,Wedding songs invoked Hymen for blessings.,Relating to marriage,Greek Mythology,Original entry,Review,Original master,Existing
+205,Cupid,Cupid (Eros),God of love,Depicted shooting arrows that inspired love.,Symbol of romantic love,Roman Mythology,Original entry,Review,Original master,Existing
+206,Erebus,Erebus,Primordial deity,Personification of darkness in Greek cosmology.,Complete darkness,Greek Mythology,Original entry,Review,Original master,Existing
+207,Morpheus,Morpheus,God of dreams,Brought dreams to sleeping mortals by taking human forms.,"Associated with dreams; source of ""morphine""",Greek Mythology,Original entry,Review,Original master,Existing
+208,Morphine,Morpheus,God of dreams,The narcotic induces sleep and dream-like states.,Powerful opioid analgesic,Medicine,Original entry,Review,Original master,Existing
+209,Hypnosis,Hypnos,Greek god of sleep,Named after the deity representing sleep.,Artificially induced trance,Psychology,Original entry,Review,Original master,Existing
+210,Thanatology,Thanatos,Greek personification of death,Named after the god of peaceful death.,Scientific study of death,Medicine,Original entry,Review,Original master,Existing
+211,Hebephrenia,Hebe,Goddess of youth,Early psychiatric term derived from the youthful goddess.,Historical psychiatric diagnosis,Medicine,Original entry,Review,Original master,Existing
+212,Mnemonic,Mnemosyne,Goddess of memory,Mother of the Muses and embodiment of memory.,Memory aid,Education,Original entry,Review,Original master,Existing
+213,Museum,Muses,Nine daughters of Mnemosyne,Ancient institutions dedicated to the Muses became centers of learning.,Institution preserving knowledge and art,Culture,Original entry,Review,Original master,Existing
+214,Music,Muses,Patron goddesses of the arts,Originally referred to arts inspired by the Muses.,Art of organized sound,Arts,Original entry,Review,Original master,Existing
+215,Hygiene,Hygieia,Goddess of health,Daughter of Asclepius associated with cleanliness and prevention of disease.,Cleanliness promoting health,Medicine,Original entry,Review,Original master,Existing
+216,Asclepiad,Asclepius,Greek god of medicine,Ancient physicians claimed descent from Asclepius.,Physician (historical usage),Medicine,Original entry,Review,Original master,Existing
+217,Esculapian,Aesculapius,Roman equivalent of Asclepius,Used to describe doctors or medicine.,Medical; physician-related,Medicine,Original entry,Review,Original master,Existing
+218,Hermaphrodite,Hermaphroditus,Child of Hermes and Aphrodite,Merged with the nymph Salmacis into one body possessing both sexes.,Individual with both male and female sexual characteristics (historical term),Greek Mythology,Original entry,Review,Original master,Existing
+219,Hermetic,Hermes Trismegistus,Legendary sage,Secret writings attributed to him gave rise to the idea of being tightly sealed or esoteric.,Airtight; esoteric,Philosophy,Original entry,Review,Original master,Existing
+220,Atlas Vertebra,Atlas,Titan,First cervical vertebra supports the skull just as Atlas supported the heavens.,First cervical vertebra,Anatomy,Original entry,Review,Original master,Existing
+221,Achilles Tendon,Achilles,Greek hero,Tendon attached to the heel associated with Achilles' only vulnerable point.,Largest tendon in the body,Anatomy,Original entry,Review,Original master,Existing
+222,Caesarian (historical adjective),Julius Caesar,Roman leader,"Describes matters relating to Caesar or imperial authority; distinct from the debated origin of ""Caesarean section.""",Relating to Caesar,History,Original entry,Review,Original master,Existing
+223,August,Augustus Caesar,First Roman Emperor,Month renamed in his honor by the Roman Senate in 8 BC.,Eighth month of the year,Roman History,Original entry,Review,Original master,Existing
+224,July,Julius Caesar,Roman dictator,Month renamed to honor his calendar reforms and political legacy.,Seventh month of the year,Roman History,Original entry,Review,Original master,Existing
+225,Nicotism,Jean Nicot,French diplomat,Historical term referring to nicotine poisoning or dependence.,Nicotine intoxication (historical),Medicine,Original entry,Review,Original master,Existing
+226,Orwellian,George Orwell,English novelist,"Inspired by *Nineteen Eighty-Four*, depicting surveillance, propaganda, and authoritarian control.",Oppressively authoritarian,Literature,Original entry,Review,Original master,Existing
+227,Darwinism,Charles Darwin,English naturalist,Based on Darwin's theory of evolution by natural selection published in *On the Origin of Species* (1859).,Theory of biological evolution,Biology,Original entry,Review,Original master,Existing
+228,Darwinian,Charles Darwin,Naturalist,Describes processes involving natural selection and adaptation.,Relating to evolution or competitive selection,Biology,Original entry,Review,Original master,Existing
+229,Mendelian,Gregor Mendel,Austrian monk,Father of genetics whose pea plant experiments established inheritance laws.,Relating to classical genetics,Biology,Original entry,Review,Original master,Existing
+230,Lamarckism,Jean-Baptiste Lamarck,French biologist,Early evolutionary theory proposing inheritance of acquired characteristics.,Historical evolutionary theory,Biology,Original entry,Review,Original master,Existing
+231,Pasteurian,Louis Pasteur,French chemist,Refers to principles or methods associated with Pasteur's work.,Relating to microbiology,Biology,Original entry,Review,Original master,Existing
+232,Kochian,Robert Koch,German microbiologist,Pertaining to Koch's work on bacteriology.,Relating to bacteriology,Biology,Original entry,Review,Original master,Existing
+233,Mendelism,Gregor Mendel,Geneticist,Classical inheritance principles.,Genetics,Biology,Original entry,Review,Original master,Existing
+234,Linnaean,Carl Linnaeus,Swedish botanist,Creator of binomial nomenclature.,Relating to biological classification,Taxonomy,Original entry,Review,Original master,Existing
+235,Cuvierian,Georges Cuvier,French naturalist,Founder of comparative anatomy and paleontology.,Relating to comparative anatomy,Biology,Original entry,Review,Original master,Existing
+236,Buffonian,Comte de Buffon,French naturalist,Early theorist on Earth's natural history.,Relating to natural history,Biology,Original entry,Review,Original master,Existing
+237,Freudian,Sigmund Freud,Austrian neurologist,Based on Freud's theories of the unconscious mind.,Relating to psychoanalysis,Psychology,Original entry,Review,Original master,Existing
+238,Jungian,Carl Gustav Jung,Swiss psychiatrist,Based on archetypes and the collective unconscious.,Relating to Jung's psychology,Psychology,Original entry,Review,Original master,Existing
+239,Adlerian,Alfred Adler,Austrian psychologist,"Focuses on inferiority, social interest, and striving.",Adler's school of psychology,Psychology,Original entry,Review,Original master,Existing
+240,Pavlovian,Ivan Pavlov,Russian physiologist,Classical conditioning demonstrated through experiments with dogs.,Automatic conditioned response,Psychology,Original entry,Review,Original master,Existing
+241,Skinnerian,B. F. Skinner,American psychologist,Developed operant conditioning and behaviorism.,Relating to reinforcement learning,Psychology,Original entry,Review,Original master,Existing
+242,Piagetian,Jean Piaget,Swiss psychologist,Theory of cognitive development in children.,Relating to developmental psychology,Psychology,Original entry,Review,Original master,Existing
+243,Maslowian,Abraham Maslow,American psychologist,Hierarchy of needs culminating in self-actualization.,Relating to human motivation,Psychology,Original entry,Review,Original master,Existing
+244,Cartesian,René Descartes,French philosopher,"""Cogito, ergo sum""; Cartesian coordinates and dualism.",Relating to Descartes,Philosophy,Original entry,Review,Original master,Existing
+245,Platonic,Plato,Greek philosopher,Associated with ideal forms; also describes non-romantic affection.,Ideal or non-romantic,Philosophy,Original entry,Review,Original master,Existing
+246,Aristotelian,Aristotle,Greek philosopher,Based on Aristotle's philosophy and logic.,Classical philosophical approach,Philosophy,Original entry,Review,Original master,Existing
+247,Socratic,Socrates,Greek philosopher,Method of questioning to stimulate critical thinking.,Using guided questioning,Philosophy,Original entry,Review,Original master,Existing
+248,Epicurean,Epicurus,Greek philosopher,"Advocated rational pleasure and freedom from fear, later popularly associated with refined enjoyment.",Lover of fine food and pleasure,Philosophy,Original entry,Review,Original master,Existing
+249,Stoic,Zeno of Citium / Stoics,Greek philosophy,"Emphasized self-control, resilience, and acceptance.",Enduring hardship without complaint,Philosophy,Original entry,Review,Original master,Existing
+250,Cynic,Diogenes / Cynics,Greek philosophy,Rejected social conventions and material possessions.,Distrustful or skeptical,Philosophy,Original entry,Review,Original master,Existing
+251,Diogenes Syndrome,Diogenes (attributed),Greek philosopher,Modern medical term referring to severe self-neglect and hoarding; the association with Diogenes is debated.,Self-neglect disorder,Medicine,Original entry,Review,Original master,Existing
+252,Euclidean,Euclid,Greek mathematician,Father of geometry.,Relating to classical geometry,Mathematics,Original entry,Review,Original master,Existing
+253,Pythagorean,Pythagoras,Greek mathematician,Famous for the theorem bearing his name.,Relating to right triangles,Mathematics,Original entry,Review,Original master,Existing
+254,Archimedean,Archimedes,Greek mathematician,"Discoveries in geometry, mechanics, and buoyancy.",Relating to Archimedes' principles,Mathematics,Original entry,Review,Original master,Existing
+255,Gaussian,Carl Friedrich Gauss,German mathematician,Normal distribution and Gaussian elimination.,Normally distributed; relating to Gauss,Mathematics,Original entry,Review,Original master,Existing
+256,Boolean,George Boole,English mathematician,"Developed Boolean algebra, foundation of digital logic.",Binary logic,Computing,Original entry,Review,Original master,Existing
+257,Turing Machine,Alan Turing,British mathematician,Abstract computing model underpinning computer science.,Theoretical computing device,Computing,Original entry,Review,Original master,Existing
+258,Turing Test,Alan Turing,Computer scientist,Proposed a test of machine intelligence.,AI benchmark,Computing,Original entry,Review,Original master,Existing
+259,Von Neumann Architecture,John von Neumann,Hungarian-American mathematician,Stored-program computer architecture.,Computer architecture,Computing,Original entry,Review,Original master,Existing
+260,Fibonacci,Leonardo Fibonacci,Italian mathematician,Introduced Hindu-Arabic numerals to Europe; famous sequence named after him.,Number sequence,Mathematics,Original entry,Review,Original master,Existing
+261,Euclid Algorithm,Euclid,Greek mathematician,Method for finding the greatest common divisor.,GCD algorithm,Mathematics,Original entry,Review,Original master,Existing
+262,Möbius Strip,August Ferdinand Möbius,German mathematician,One-sided surface discovered in 1858.,Non-orientable surface,Mathematics,Original entry,Review,Original master,Existing
+263,Klein Bottle,Felix Klein,German mathematician,Closed non-orientable surface.,Topological object,Mathematics,Original entry,Review,Original master,Existing
+264,Banach Space,Stefan Banach,Polish mathematician,Fundamental concept in functional analysis.,Complete normed vector space,Mathematics,Original entry,Review,Original master,Existing
+265,Riemannian Geometry,Bernhard Riemann,German mathematician,Generalized geometry underlying Einstein's relativity.,Curved-space geometry,Mathematics,Original entry,Review,Original master,Existing
+266,Eulerian,Leonhard Euler,Swiss mathematician,Major contributions across mathematics and mechanics.,Relating to Euler,Mathematics,Original entry,Review,Original master,Existing
+267,Laplacian,Pierre-Simon Laplace,French mathematician,Differential operator central to physics.,Mathematical operator,Mathematics,Original entry,Review,Original master,Existing
+268,Fourier Series,Joseph Fourier,French mathematician,Represented periodic functions as sums of sine and cosine waves.,Mathematical decomposition,Mathematics,Original entry,Review,Original master,Existing
+269,Bernoulli Principle,Daniel Bernoulli,Swiss mathematician,Relationship between fluid speed and pressure.,Fluid dynamics principle,Physics,Original entry,Review,Original master,Existing
+270,Bayes' Theorem,Thomas Bayes,English statistician,Foundation of Bayesian probability.,Probability theorem,Statistics,Original entry,Review,Original master,Existing
+271,Pareto Principle,Vilfredo Pareto,Italian economist,Observed that roughly 80% of outcomes often arise from 20% of causes.,80/20 rule,Economics,Original entry,Review,Original master,Existing
+272,Nash Equilibrium,John Nash,American mathematician,Stable outcome in game theory where no player benefits from changing strategy alone.,Game theory equilibrium,Economics,Original entry,Review,Original master,Existing
+273,Keynesian,John Maynard Keynes,British economist,Advocated government intervention to stabilize economies.,Demand-side economics,Economics,Original entry,Review,Original master,Existing
+274,Ricardian,David Ricardo,British economist,Comparative advantage in international trade.,Economic theory,Economics,Original entry,Review,Original master,Existing
+275,Malthusian,Thomas Malthus,English economist,Predicted population growth would outstrip food supply.,Population pressure theory,Economics,Original entry,Review,Original master,Existing
+276,Marxian,Karl Marx,German philosopher,Pertaining specifically to Marx's original economic and philosophical writings.,Relating to Marx's work,Economics,Original entry,Review,Original master,Existing
+277,Marxist,Karl Marx,German philosopher,Political and economic ideology derived from Marx's theories.,Marxist ideology,Politics,Original entry,Review,Original master,Existing
+278,Leninism,Vladimir Lenin,Russian revolutionary,"Adapted Marxism to the conditions of the Russian Revolution, emphasizing a disciplined vanguard party.",Communist political ideology,Politics,Original entry,Review,Original master,Existing
+279,Stalinism,Joseph Stalin,Soviet leader,"Characterized by centralized authority, forced collectivization, and extensive state control.",Authoritarian communist doctrine,Politics,Original entry,Review,Original master,Existing
+280,Maoism,Mao Zedong,Chinese revolutionary,Adapted Marxism-Leninism with emphasis on the peasantry and prolonged revolutionary struggle.,Mao's political ideology,Politics,Original entry,Review,Original master,Existing
+281,Trotskyism,Leon Trotsky,Russian revolutionary,"Advocated ""permanent revolution"" and opposed Stalin's policies.",Marxist political doctrine,Politics,Original entry,Review,Original master,Existing
+282,Gandhian,Mahatma Gandhi,Indian independence leader,"Based on satyagraha, nonviolence, and civil disobedience.",Relating to Gandhi's philosophy,Politics,Original entry,Review,Original master,Existing
+283,Thatcherism,Margaret Thatcher,British Prime Minister,"Associated with privatization, deregulation, and free-market reforms.",Conservative economic policy,Politics,Original entry,Review,Original master,Existing
+284,Reaganomics,Ronald Reagan,U.S. President,Popular term for supply-side economics pursued during the 1980s.,Supply-side economic policy,Economics,Original entry,Review,Original master,Existing
+285,Bonapartism,Napoleon Bonaparte,French emperor,Strong centralized rule justified through popular support and military prestige.,Authoritarian populism,Politics,Original entry,Review,Original master,Existing
+286,Bismarckian,Otto von Bismarck,German chancellor,"Associated with Realpolitik, German unification, and the modern welfare state.",Pragmatic statecraft,Politics,Original entry,Review,Original master,Existing
+287,Kafkaesque,Franz Kafka,Czech writer,His fiction portrays bewildering bureaucracy and existential anxiety.,Surreally bureaucratic or oppressive,Literature,Original entry,Review,Original master,Existing
+288,Dickensian,Charles Dickens,English novelist,"Evokes grim poverty, child labor, and Victorian urban hardship.","Harsh, impoverished conditions",Literature,Original entry,Review,Original master,Existing
+289,Shakespearean,William Shakespeare,English playwright,"Characteristic of Shakespeare's language, drama, or themes.",Dramatic; poetic,Literature,Original entry,Review,Original master,Existing
+290,Homeric,Homer,Ancient Greek poet,Refers to the style or epic grandeur of the *Iliad* and *Odyssey*.,Epic in scale,Literature,Original entry,Review,Original master,Existing
+291,Miltonic,John Milton,English poet,Style associated with *Paradise Lost* and elevated blank verse.,"Grand, elevated literary style",Literature,Original entry,Review,Original master,Existing
+292,Chaucerian,Geoffrey Chaucer,English poet,Pertaining to Middle English literature and *The Canterbury Tales*.,Relating to Chaucer,Literature,Original entry,Review,Original master,Existing
+293,Swiftian,Jonathan Swift,Irish satirist,Sharp political and social satire modeled on *Gulliver's Travels*.,Bitingly satirical,Literature,Original entry,Review,Original master,Existing
+294,Byronic,Lord Byron,English poet,"Romantic, rebellious, melancholic hero archetype.",Darkly charismatic,Literature,Original entry,Review,Original master,Existing
+295,Kafka Trap,Franz Kafka,Writer,Modern expression describing situations where denial itself is treated as evidence of guilt.,Self-validating accusation,Literature/Philosophy,Original entry,Review,Original master,Existing
+296,Quixotic,Don Quixote,Cervantes' fictional knight,Pursued noble ideals despite obvious impracticality.,Impractically idealistic,Literature,Original entry,Review,Original master,Existing
+297,Scrooge,Ebenezer Scrooge,Dickens character,Miser transformed through moral awakening.,Miserly person,Literature,Original entry,Review,Original master,Existing
+298,Pollyanna,Pollyanna,Eleanor H. Porter's heroine,Character known for relentless optimism.,Excessively optimistic person,Literature,Original entry,Review,Original master,Existing
+299,Lothario,Lothario,Character in *The Fair Penitent*,Charming seducer of women.,Womanizer,Literature,Original entry,Review,Original master,Existing
+300,Casanova,Giacomo Casanova,Venetian adventurer,Famous for numerous romantic affairs documented in his memoirs.,Seductive man,History,Original entry,Review,Original master,Existing
+301,Romeo,Romeo Montague,Shakespeare character,Archetypal passionate young lover.,Romantic male lover,Literature,Original entry,Review,Original master,Existing
+302,Don Juan,Legendary libertine,Spanish literary character,Became the universal symbol of a seducer.,Habitual seducer,Literature,Original entry,Review,Original master,Existing
+303,Svengali,Svengali,Character in *Trilby*,Manipulated others through psychological domination.,Controlling mentor,Literature,Original entry,Review,Original master,Existing
+304,Gargantuan,Gargantua,Giant in Rabelais' novels,Famous for enormous appetite and size.,Enormous,Literature,Original entry,Review,Original master,Existing
+305,Panglossian,Dr. Pangloss,Voltaire's *Candide*,Absurdly optimistic philosopher believing everything happens for the best.,Naively optimistic,Literature,Original entry,Review,Original master,Existing
+306,Rip Van Winkle,Washington Irving character,Slept for twenty years and awoke to a changed world.,Someone unaware of current events,Literature,,Original entry,Review,Original master,Existing
+307,Sherlockian,Sherlock Holmes,Conan Doyle detective,Characterized by keen observation and deductive reasoning.,Highly analytical,Literature,Original entry,Review,Original master,Existing
+308,Watsonian,Dr. Watson,Holmes' companion,Explanation from within a fictional universe.,In-universe explanation,Literature,Original entry,Review,Original master,Existing
+309,Moriarty,Professor Moriarty,Holmes' adversary,Criminal mastermind opposing the detective.,Mastermind villain,Literature,Original entry,Review,Original master,Existing
+310,Hobbesian,Thomas Hobbes,English philosopher,Belief in strong centralized authority to prevent chaos.,Relating to Hobbes,Philosophy,Original entry,Review,Original master,Existing
+311,Lockean,John Locke,English philosopher,Emphasized natural rights and government by consent.,Liberal political philosophy,Philosophy,Original entry,Review,Original master,Existing
+312,Rousseauian,Jean-Jacques Rousseau,French philosopher,"Advocated the ""general will"" and natural human goodness.",Romantic naturalism,Philosophy,Original entry,Review,Original master,Existing
+313,Confucian,Confucius,Chinese philosopher,"Ethics emphasizing duty, family, and education.",Relating to Confucian philosophy,Philosophy,Original entry,Review,Original master,Existing
+314,Taoist,Laozi,Chinese philosopher,"Based on harmony with the Tao (""the Way"").",Following Taoism,Philosophy,Original entry,Review,Original master,Existing
+315,Buddhist,Gautama Buddha,Religious teacher,Teachings centered on the Four Noble Truths and Eightfold Path.,Relating to Buddhism,Religion,Original entry,Review,Original master,Existing
+316,Christian,Jesus Christ,Founder of Christianity,Followers identified with Christ.,Relating to Christianity,Religion,Original entry,Review,Original master,Existing
+317,Mohammedan *(historical)*,Prophet Muhammad,Historical English term,"Former English term for Muslims; now considered outdated because Muslims worship God, not Muhammad.",Historical usage only,Religion,Original entry,Review,Original master,Existing
+318,Lutheran,Martin Luther,German reformer,Originated during the Protestant Reformation.,Protestant denomination,Religion,Original entry,Review,Original master,Existing
+319,Calvinist,John Calvin,French theologian,Emphasized predestination and divine sovereignty.,Protestant theology,Religion,Original entry,Review,Original master,Existing
+320,Wesleyan,John Wesley,English theologian,Founder of Methodism emphasizing personal holiness.,Relating to Methodism,Religion,Original entry,Review,Original master,Existing
+321,Benedictine,St. Benedict,Christian monk,Monastic order following the Rule of St. Benedict.,Monastic order,Religion,Original entry,Review,Original master,Existing
+322,Dominican,St. Dominic,Spanish priest,Founded the Order of Preachers.,Religious order,Religion,Original entry,Review,Original master,Existing
+323,Franciscan,St. Francis of Assisi,Italian saint,"Order emphasizing poverty, simplicity, and charity.",Religious order,Religion,Original entry,Review,Original master,Existing
+324,Jesuit,Ignatius of Loyola,Spanish priest,Society of Jesus devoted to education and missionary work.,Member of the Society of Jesus,Religion,Original entry,Review,Original master,Existing
+325,Augustinian,St. Augustine,Christian theologian,Philosophy and theology derived from Augustine's writings.,Relating to Augustine,Theology,Original entry,Review,Original master,Existing
+326,Thomistic,Thomas Aquinas,Medieval philosopher,Scholastic philosophy integrating Aristotle with Christian theology.,Philosophy of Aquinas,Theology,Original entry,Review,Original master,Existing
+327,Machiavellian,Niccolò Machiavelli,Italian political philosopher,"*The Prince* advocated pragmatic, often ruthless statecraft.","Cunning, manipulative politics",Politics,Original entry,Review,Original master,Existing
+328,Quisling,Vidkun Quisling,Norwegian politician,Collaborated with Nazi Germany during WWII.,Traitor; collaborator,History,Original entry,Review,Original master,Existing
+329,Boycott,Charles Boycott,Irish land agent,Ostracized by Irish tenants during the Land War.,Organized refusal to deal with someone,History,Original entry,Review,Original master,Existing
+330,Lynching,William Lynch* (traditional attribution),Virginia landowner (attribution debated),"The term likely derives from extrajudicial punishment associated with ""Lynch's Law.""",Mob execution without trial,History,Original entry,Review,Original master,Existing
+331,Gerrymander,Elbridge Gerry,Governor of Massachusetts,Approved an oddly shaped electoral district resembling a salamander.,Manipulation of electoral boundaries,Politics,Original entry,Review,Original master,Existing
+332,Silhouette,Étienne de Silhouette,French finance minister,Cheap profile portraits mocked his austere economic policies.,Outline profile image,Art,Original entry,Review,Original master,Existing
+333,Maverick,Samuel Maverick,Texas rancher,"Refused to brand his cattle, making them identifiable as independent.",Independent-minded person,American History,Original entry,Review,Original master,Existing
+334,Guillotine,Joseph-Ignace Guillotin,French physician,Promoted a standardized execution device during the French Revolution.,Execution machine,History,Original entry,Review,Original master,Existing
+335,Leotard,Jules Léotard,French trapeze artist,Performed wearing the close-fitting garment that now bears his name.,One-piece athletic garment,Clothing,Original entry,Review,Original master,Existing
+336,Cardigan,"James Brudenell, 7th Earl of Cardigan",British general,Officers wore knitted jackets during the Crimean War.,Knitted sweater,Clothing,Original entry,Review,Original master,Existing
+337,Wellington,Duke of Wellington,British general,Popularized riding boots later adapted as waterproof boots.,Waterproof boot,Clothing,Original entry,Review,Original master,Existing
+338,Raglan,Lord Raglan,British field marshal,Sleeve style designed to accommodate his amputated arm.,Sleeve design,Clothing,Original entry,Review,Original master,Existing
+339,Hoover,William Henry Hoover,American businessman,Vacuum cleaner brand became generic in the UK.,Vacuum cleaner,Household,Original entry,Review,Original master,Existing
+340,Xerox,Xerox Corporation,Company,Brand became synonymous with photocopying.,Photocopy,Business,Original entry,Review,Original master,Existing
+341,Kleenex,Kimberly-Clark brand,Company,Facial tissue brand became generic.,Facial tissue,Business,Original entry,Review,Original master,Existing
+342,Thermos,Thermos GmbH,Company,Vacuum flask brand became generic in many countries.,Vacuum flask,Business,Original entry,Review,Original master,Existing
+343,Escalator,Otis Elevator Co. (original trademark),Company,Trademark eventually became generic.,Moving staircase,Engineering,Original entry,Review,Original master,Existing
+344,Aspirin,Bayer (brand),Company,Trademark became generic in many jurisdictions.,Acetylsalicylic acid,Medicine,Original entry,Review,Original master,Existing
+345,Yo-Yo,Duncan Toys (popularized),Company,Trademark became generic in the U.S.,Toy,Toys,Original entry,Review,Original master,Existing
+346,Frisbee,Wham-O,Company,Flying disc originally marketed under the brand.,Flying disc,Toys,Original entry,Review,Original master,Existing
+347,Ping-Pong,Parker Brothers,Company,Trademark for table tennis.,Table tennis,Sports,Original entry,Review,Original master,Existing
+348,Velcro,Velcro Companies,Company,Hook-and-loop fastener brand.,Hook-and-loop fastening,Household,Original entry,Review,Original master,Existing
+349,Google (verb),Google,Technology company,"Brand name evolved into a verb meaning ""search online.""",Search the internet,Computing,Original entry,Review,Original master,Existing
+350,Photoshop (verb),Adobe Photoshop,Software,Program name became synonymous with digital image editing.,Digitally alter an image,Computing,Original entry,Review,Original master,Existing
+351,Jacuzzi Effect,Candido Jacuzzi,Inventor,Whirlpool technology became associated with relaxation and hydrotherapy.,Spa-like massage,Engineering,Original entry,Review,Original master,Existing
+352,Sisyphusian *(variant)*,Sisyphus,Mythological king,Alternate adjective occasionally used instead of *Sisyphean*.,"Futile, repetitive effort",Greek Mythology,Original entry,Review,Original master,Existing
+353,Draconian,Draco,Athenian lawgiver,Extremely severe legal code.,Excessively harsh,Ancient Greece,Original entry,Review,Original master,Existing
+354,Solomonic,King Solomon,Biblical king,Celebrated for wisdom and fair judgment.,Wise and balanced,Biblical,Original entry,Review,Original master,Existing
+355,Judaic,Judah,Son of Jacob,Refers to Jewish tradition and heritage.,Relating to Judaism,Biblical,Original entry,Review,Original master,Existing
+356,Aaronic,Aaron,Brother of Moses,Pertains to the hereditary priesthood descended from Aaron.,Priestly,Biblical,Original entry,Review,Original master,Existing
+357,Mosaic,Moses,Biblical prophet,Pertaining to Mosaic Law or the teachings of Moses.,Relating to Moses,Biblical,Original entry,Review,Original master,Existing
+358,Davidic,King David,Biblical king,Refers to the royal lineage of David.,Pertaining to David or his dynasty,Biblical,Original entry,Review,Original master,Existing
+359,Goliath,Goliath,Philistine giant,Defeated by David despite overwhelming size.,Giant opponent,Biblical,Original entry,Review,Original master,Existing
+360,Job-like,Job,Biblical figure,Endured immense suffering while remaining faithful.,Exceptionally patient under suffering,Biblical,Original entry,Review,Original master,Existing
+361,Judas,Judas Iscariot,Disciple of Jesus,Betrayed Jesus for thirty pieces of silver.,Betrayer,Biblical,Original entry,Review,Original master,Existing
+362,Samaritan,Good Samaritan,Biblical parable,Stranger who compassionately aided an injured traveler.,"Helpful, charitable person",Biblical,Original entry,Review,Original master,Existing
+363,Benedict Arnold,Benedict Arnold,American general,Defected to the British during the American Revolution.,Traitor,American History,Original entry,Review,Original master,Existing
+364,Juliet Balcony,Juliet,Shakespeare character,Balcony scene became symbolic of romance.,Romantic balcony,Literature,Original entry,Review,Original master,Existing
+365,Frankenstein,Victor Frankenstein,Mary Shelley's scientist,The creator's name is often mistakenly applied to the monster.,Creator of something dangerous,Literature,Original entry,Review,Original master,Existing
+366,Atlas,Atlas,Titan,Condemned to support the heavens forever.,Book of maps,Greek Mythology,Original entry,Review,Original master,Existing
+367,Achilles' Heel,Achilles,Greek warrior,His only vulnerable point.,Fatal weakness,Greek Mythology,Original entry,Review,Original master,Existing
+368,Hygieia,Hygieia,Goddess of health,Associated with disease prevention and cleanliness.,"Source of ""hygiene""",Greek Mythology,Original entry,Review,Original master,Existing
+369,Thanatos,Thanatos,Personification of death,"Inspired medical term ""thanatology.""",Death,Greek Mythology,Original entry,Review,Original master,Existing
+370,Titanic,Titans,Greek primordial gods,Enormous size associated with the Titans.,Massive; gigantic,Greek Mythology,Original entry,Review,Original master,Existing
+371,Olympian,Mount Olympus,Home of Greek gods,"Associated with greatness, calmness, or elite competition.",Majestic; relating to the Olympics,Greek Mythology,Original entry,Review,Original master,Existing
+372,Amazon,Amazons,Mythical warrior women,Tribe of female warriors in Greek mythology.,Powerful female warrior; company name,Greek Mythology,Original entry,Review,Original master,Existing
+373,Spartan,Sparta,Greek city-state,Famous for discipline and austere lifestyle.,Austere; disciplined,Ancient Greece,Original entry,Review,Original master,Existing
+374,Corinthian,Corinth,Ancient Greek city,Renowned for ornate architecture and capitals.,Ornate architectural style,Architecture,Original entry,Review,Original master,Existing
+375,Ionic,Ionia,Ancient Greek region,One of the classical Greek architectural orders.,Architectural style,Architecture,Original entry,Review,Original master,Existing
+376,Doric,Dorians,Ancient Greek people,Simplest classical column order.,Architectural style,Architecture,Original entry,Review,Original master,Existing
+377,Corinthian Order,Corinth,Greek city,Most elaborate classical architectural order.,Architectural column style,Architecture,Original entry,Review,Original master,Existing
+378,Byzantine,Byzantium,Ancient city,Associated with the Eastern Roman Empire's complex politics and architecture.,Intricate or excessively complex,History,Original entry,Review,Original master,Existing
+379,Philistine,Philistines,Ancient people,Seen by later writers as lacking appreciation for culture.,Uncultured person,History,Original entry,Review,Original master,Existing
+380,Spartan Diet,Sparta,Greek city-state,Reflects austere Spartan lifestyle.,Extremely simple lifestyle,History,Original entry,Review,Original master,Existing
+381,Delphic,Delphi,Greek sanctuary,Home of Apollo's oracle known for ambiguous prophecies.,Mysterious or ambiguous,Greek History,Original entry,Review,Original master,Existing
+382,Pyrrhic Victory,King Pyrrhus,King of Epirus,Victory achieved at devastating cost.,Costly victory,Ancient History,Original entry,Review,Original master,Existing
+383,Laconic,Laconia (Sparta),Greek region,"Spartans were famous for brief, direct speech.",Using very few words,Ancient Greece,Original entry,Review,Original master,Existing
+384,Adam's Apple,Adam,Biblical first man,Medieval legend claimed the forbidden fruit lodged in Adam's throat.,Laryngeal prominence,Biblical,Original entry,Review,Original master,Existing
+385,Adamic,Adam,Biblical figure,Pertaining to mankind's earliest state.,Primitive; relating to mankind,Biblical,Original entry,Review,Original master,Existing
+386,Noahic,Noah,Biblical patriarch,Pertaining to the Flood or Noah's covenant.,Relating to Noah,Biblical,Original entry,Review,Original master,Existing
+387,Abrahamic,Abraham,Biblical patriarch,"Common heritage of Judaism, Christianity, and Islam.",Relating to Abraham,Religion,Original entry,Review,Original master,Existing
+388,Lazarus,Lazarus of Bethany,Biblical figure,Raised from the dead by Jesus.,One restored from apparent death,Biblical,Original entry,Review,Original master,Existing
+389,Thomas (Doubting Thomas),Apostle Thomas,Disciple of Jesus,Refused to believe the Resurrection without evidence.,Skeptic,Biblical,Original entry,Review,Original master,Existing
+390,Prodigal,Prodigal Son,Biblical parable,Son returned repentant after wasting his inheritance.,Wastefully extravagant; returning after absence,Biblical,Original entry,Review,Original master,Existing
+391,Magdalen,Mary Magdalene,Biblical follower of Jesus,Historically associated (incorrectly in tradition) with penitence.,Penitent woman (historical usage),Biblical,Original entry,Review,Original master,Existing
+392,Pharisaic,Pharisees,Jewish religious sect,New Testament portrayal emphasized legalism and hypocrisy.,Self-righteous,Biblical,Original entry,Review,Original master,Existing
+393,Sadducee,Sadducees,Jewish priestly sect,Influential group in Second Temple Judaism.,Member of the Sadducees,Biblical,Original entry,Review,Original master,Existing
+394,Babylonian,Babylon,Ancient Mesopotamian city,"Symbol of grandeur, decadence, and exile in biblical tradition.",Luxurious or decadent,Ancient History,Original entry,Review,Original master,Existing
+395,Babel,Tower of Babel,Biblical story,Human pride resulted in the confusion of languages.,Confused mixture of voices or languages,Biblical,Original entry,Review,Original master,Existing
+396,Caesar,Julius Caesar,Roman ruler,Became synonymous with emperor.,Emperor or absolute ruler,Roman History,Original entry,Review,Original master,Existing
+397,Kaiser,Julius Caesar,Via German *Kaiser*,German imperial title derived from Caesar.,German emperor,Roman History,Original entry,Review,Original master,Existing
+398,Tsar/Czar,Julius Caesar,Via Latin *Caesar*,Slavic imperial title ultimately derived from Caesar.,Russian emperor,Roman History,Original entry,Review,Original master,Existing
+399,Julian Calendar,Julius Caesar,Roman dictator,Introduced sweeping calendar reform in 45 BC.,Solar calendar,Roman History,Original entry,Review,Original master,Existing
+400,Gregorian Calendar,Pope Gregory XIII,Pope,Introduced calendar reform in 1582 to correct Julian drift.,Modern civil calendar,Religion,Original entry,Review,Original master,Existing
+401,Fabian Strategy,Quintus Fabius Maximus,Roman general,Avoided pitched battles to wear Hannibal down gradually.,War of attrition; cautious strategy,Military,Original entry,Review,Original master,Existing
+402,Cincinnatus,Lucius Quinctius Cincinnatus,Roman statesman,Returned to farming after serving as dictator.,Citizen who relinquishes power voluntarily,Roman History,Original entry,Review,Original master,Existing
+403,Pyrrhonism,Pyrrho,Greek philosopher,Founded the school of philosophical skepticism.,Radical skepticism,Philosophy,Original entry,Review,Original master,Existing
+404,Stoicism,Zeno of Citium,Greek philosopher,"Taught virtue, reason, and emotional resilience.",Philosophy of endurance,Philosophy,Original entry,Review,Original master,Existing
+405,Cynicism,Diogenes & Cynics,Greek philosophers,Rejected wealth and social convention.,Distrustful outlook,Philosophy,Original entry,Review,Original master,Existing
+406,Sophistry,Sophists,Greek teachers,"Known for persuasive rhetoric, sometimes regardless of truth.",Plausible but misleading argument,Philosophy,Original entry,Review,Original master,Existing
+407,Socratic Method,Socrates,Greek philosopher,Teaching through disciplined questioning.,Question-based teaching,Education,Original entry,Review,Original master,Existing
+408,Euclidean Geometry,Euclid,Greek mathematician,Classical geometry based on Euclid's *Elements*.,Plane geometry,Mathematics,Original entry,Review,Original master,Existing
+409,Archimedean Screw,Archimedes,Greek inventor,Device for raising water.,Water-lifting mechanism,Engineering,Original entry,Review,Original master,Existing
+410,Pythagorean Theorem,Pythagoras,Greek mathematician,Relationship between the sides of a right triangle.,Fundamental geometry theorem,Mathematics,Original entry,Review,Original master,Existing
+411,Eratosthenes Sieve,Eratosthenes,Greek mathematician,Efficient method for identifying prime numbers.,Prime-number algorithm,Mathematics,Original entry,Review,Original master,Existing
+412,Euclidean Algorithm,Euclid,Greek mathematician,Ancient algorithm for finding the greatest common divisor.,GCD algorithm,Mathematics,Original entry,Review,Original master,Existing
+413,Hippocratic Oath,Hippocrates,Greek physician,Ethical pledge for physicians since antiquity.,Medical ethical oath,Medicine,Original entry,Review,Original master,Existing
+414,Hippocratic Face,Hippocrates,Greek physician,Classical description of facial appearance before death.,Medical diagnostic sign,Medicine,Original entry,Review,Original master,Existing
+415,Galenic,Galen,Greek physician,Medical practices based on Galen's teachings.,Relating to Galenic medicine,Medicine,Original entry,Review,Original master,Existing
+416,Avicennaian,Avicenna (Ibn Sina),Persian physician,Based on the influential *Canon of Medicine*.,Relating to Avicenna,Medicine,Original entry,Review,Original master,Existing
+417,Vesalian,Andreas Vesalius,Flemish anatomist,Founder of modern human anatomy.,Relating to anatomy,Medicine,Original entry,Review,Original master,Existing
+418,Harveyan,William Harvey,English physician,Discovered systemic blood circulation.,Relating to circulation,Medicine,Original entry,Review,Original master,Existing
+419,Listerism,Joseph Lister,British surgeon,Introduced antiseptic surgical techniques.,Antiseptic principles,Medicine,Original entry,Review,Original master,Existing
+420,Parkinsonian,James Parkinson,English physician,Exhibiting features of Parkinson's disease.,Parkinson-like symptoms,Medicine,Original entry,Review,Original master,Existing
+421,Adonis,Adonis,Beautiful youth loved by Aphrodite,Renowned for extraordinary beauty; his name became synonymous with a handsome man.,Exceptionally handsome man,Greek Mythology,Original entry,Review,Original master,Existing
+422,Algorithm,Al-Khwarizmi,Persian mathematician,"His Latinized name, *Algoritmi*, became associated with systematic calculation and computation.",Step-by-step computational procedure,Mathematics,Original entry,Review,Original master,Existing
+423,Ampere,André-Marie Ampère,French physicist,SI unit of electric current named in recognition of his work in electrodynamics.,Unit of electric current,Science,Original entry,Review,Original master,Existing
+424,Aphrodisiac,Aphrodite,Greek goddess of love,Anything believed to arouse love or desire was associated with Aphrodite.,Substance that stimulates sexual desire,Greek Mythology,Original entry,Review,Original master,Existing
+425,Braille,Louis Braille,French educator,Invented the raised-dot writing system for blind readers.,Tactile writing system,Education,Original entry,Review,Original master,Existing
+426,Celsius,Anders Celsius,Swedish astronomer,Temperature scale named in his honor.,Temperature scale,Science,Original entry,Review,Original master,Existing
+427,Chauvinism,Nicolas Chauvin,Legendary Napoleonic soldier,Said to have displayed blind patriotic devotion to Napoleon.,"Excessive or fanatical patriotism; later broadened to prejudice (e.g., male chauvinism)",History,Original entry,Review,Original master,Existing
+428,Doppler,Christian Doppler,Austrian physicist,Explained the apparent frequency shift of waves from moving sources.,Frequency shift of waves,Physics,Original entry,Review,Original master,Existing
+429,Fahrenheit,Daniel Fahrenheit,German physicist,Developed the Fahrenheit temperature scale.,Temperature scale,Science,Original entry,Review,Original master,Existing
+430,Galvanize,Luigi Galvani,Italian physician,Experiments on frog muscles linked electricity with muscular contraction.,Stimulate into action,Science,Original entry,Review,Original master,Existing
+431,Macadam,John Loudon McAdam,Scottish engineer,Revolutionized road-building with compacted crushed stone.,Hard road surface,Engineering,Original entry,Review,Original master,Existing
+432,Martinet,Jean Martinet,French military officer,Known for relentless drilling and strict discipline.,Strict disciplinarian,Military,Original entry,Review,Original master,Existing
+433,Mausoleum,Mausolus,Ruler of Caria,His monumental tomb at Halicarnassus became one of the Seven Wonders.,Grand tomb,Ancient History,Original entry,Review,Original master,Existing
+434,Nemesis,Nemesis,Greek goddess of retribution,Punished hubris and restored balance.,Arch-rival; agent of downfall,Greek Mythology,Original entry,Review,Original master,Existing
+435,Panacea,Panacea,Daughter of Asclepius,Represented universal healing in Greek mythology.,Universal remedy,Greek Mythology,Original entry,Review,Original master,Existing
+436,Sandwich,Earl of Sandwich,British nobleman,Requested meat between slices of bread so he could continue gambling uninterrupted.,Sandwich,Food,Original entry,Review,Original master,Existing
+437,Saxophone,Adolphe Sax,Belgian instrument maker,Invented and patented the instrument in 1846.,Musical instrument,Music,Original entry,Review,Original master,Existing
+438,Stentorian,Stentor,Greek herald,His voice was said by Homer to equal that of fifty ordinary men.,Extremely loud voice,Greek Mythology,Original entry,Review,Original master,Existing
+439,Sybaritic,Sybaris,Wealthy Greek colony,"Celebrated for luxury, pleasure, and extravagance.",Luxurious; pleasure-loving,Ancient Greece,Original entry,Review,Original master,Existing
+440,Tesla,Nikola Tesla,Serbian-American inventor,SI unit of magnetic flux density named in his honor.,Unit of magnetic field strength,Physics,Original entry,Review,Original master,Existing
+441,Watt,James Watt,Scottish engineer,Improved the steam engine; SI unit of power named after him.,Unit of power,Engineering,Original entry,Review,Original master,Existing
+442,Zeppelin,Count Ferdinand von Zeppelin,German airship pioneer,Developed rigid airships that became associated with his name.,Rigid airship,Aviation,Original entry,Review,Original master,Existing
+443,Babbitt,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+444,Becky Sharp,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+445,Benthamite,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+446,Bovarism,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+447,Brobdingnagian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+448,Bunyanesque,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+449,Candide,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+450,Cassandra,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+451,Circean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+452,Ciceronian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+453,Dantesque,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+454,Demosthenic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+455,Dionysian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+456,El Dorado,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+457,Euhemerism,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+458,Falstaffian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+459,Faustian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+460,Galahad,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+461,Gordian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+462,Hamletic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+463,Harpy,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+464,Hectoring,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+465,Herostratic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+466,Holmesian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+467,Hyperion,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+468,Icarian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+469,Iscariot,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+470,Jekyll-and-Hyde,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+471,Jezebel,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+472,Kafkaism,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+473,Lear-like,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+474,Lucullan,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+475,Machiavel,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+476,Malapropism,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+477,Mentorless,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+478,Merlinic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+479,Miltonian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+480,Momism,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+481,Morphean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+482,Odyssean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+483,Penelopean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+484,Pickwickian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+485,Protean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+486,Rabelaisian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+487,Salomonic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+488,Shylockian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+489,Utopian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+490,Voltaic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 1,New candidate
+491,Alcibiadean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+492,Antigonean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+493,Argus-eyed,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+494,Ariadne's Thread,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+495,Bacchic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+496,Belisarian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+497,Bellerophontic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+498,Briarean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+499,Burkean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+500,Caesarian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+501,Caligulan,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+502,Calypsoan,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+503,Catonian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+504,Cerberian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+505,Charybdean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+506,Clytemnestran,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+507,Croesian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+508,Daedalian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+509,Diomedean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+510,Electra Complex,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+511,Erasmian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+512,Euclideanism,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+513,Fabian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+514,Florentine,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+515,Galilean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+516,Galatean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+517,Gorgonize,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+518,Hamadryad,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+519,Horatian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+520,Irenic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+521,Ismenean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+522,Jovian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+523,Lucianic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+524,Lycurgan,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+525,Medusan,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+526,Minervan,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+527,Myrmidon,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+528,Nereid,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+529,Niobean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+530,Orphic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+531,Ozymandian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+532,Periclean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+533,Phoenician,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+534,Plutonian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+535,Priapic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+536,Promethean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+537,Sapphic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+538,Saturnine,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+539,Thesean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+540,Theban,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 2,New candidate
+541,Aeolian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+542,Agamemnonian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+543,Ajax,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+544,Andromedan,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+545,Antaean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+546,Apollonian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+547,Arachnean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+548,Areopagitic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+549,Argonaut,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+550,Aristophanic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+551,Aristotelism,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+552,Bacchanal,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+553,Brutus-like,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+554,Cadmean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+555,Calliopean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+556,Caryatid,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+557,Charonic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+558,Clio-esque,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+559,Clothoic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+560,Cronian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+561,Eleusinian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+562,Elysian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+563,Eumenidean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+564,Eurydicean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+565,Hebraic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+566,Hecatean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+567,Helenic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+568,Hephaestean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+569,Hyacinthine,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+570,Iliadic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+571,Iphigenian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+572,Lethean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+573,Lycian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+574,Medean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+575,Melpomenean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+576,Mnemosynic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+577,Nemesian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+578,Oceanic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+579,Olympiad,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+580,Persean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+581,Philomelian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+582,Rhadamanthine,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+583,Selenic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+584,Terpsichorean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+585,Vulcanian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 3,New candidate
+586,Adrian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+587,Aenean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+588,Agape,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+589,Alcestian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+590,Amphitryonic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+591,Anchisean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+592,Anacreontic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+593,Anchoretic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+594,Augustan,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+595,Boeotian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+596,Cervantic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+597,Columbian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+598,Coriolanian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+599,Cressidan,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+600,Cyranoesque,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+601,Dantescan,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+602,Diogenic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+603,Donquixotism,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+604,Dorian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+605,Euclidian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+606,Evangelical,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+607,Gregorian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+608,Gulliverian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+609,Hobsonian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+610,Johnsonian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+611,Kantian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+612,Lilliputian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+613,Luciferian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+614,Newtonian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+615,Petrarchan,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+616,Robinsonade,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+617,Victorian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 4,New candidate
+618,Abderian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+619,Acadian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+620,Adonic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+621,Aeolianism,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+622,Aesopian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+623,Alcinoan,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+624,Alcuinian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+625,Amalthean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+626,Ammonian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+627,Antonine,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+628,Apician,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+629,Apollinairean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+630,Aristarchian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+631,Arnoldian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+632,Athenean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+633,Attic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+634,Barmecidal,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+635,Beatrician,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+636,Benthamism,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+637,Boethian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+638,Brueghelian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+639,Brunonian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+640,Carolingian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+641,Cassandric,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+642,Catullan,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+643,Chaldean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+644,Cicerone,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+645,Claudian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+646,Coleridgean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+647,Corneillean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+648,Cromwellian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+649,Delian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+650,Dionysiac,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+651,Draconism,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+652,Edwardian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+653,Elizabethan,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+654,Fabianism,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+655,Fenian,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+656,Gallican,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+657,Jacobin,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+658,Jacobean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+659,Judaean,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+660,Napoleonic,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+661,Pauline,,,,,,Candidate lexical/eponymous loanword,Verify,Expansion 5,New candidate
+662,daguerreotype,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 1,New candidate
+663,mansard,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 1,New candidate
+664,morse,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 1,New candidate
+665,jacquard,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 1,New candidate
+666,doberman,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 1,New candidate
+667,pompadour,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 1,New candidate
+668,béchamel,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 1,New candidate
+669,camembert,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 1,New candidate
+670,roquefort,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 1,New candidate
+671,cognac,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 1,New candidate
+672,champagne,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 1,New candidate
+673,burgundy,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 1,New candidate
+674,china,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 1,New candidate
+675,damask,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 1,New candidate
+676,denim,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 1,New candidate
+677,cashmere,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 1,New candidate
+678,angora,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 1,New candidate
+679,muslin,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 1,New candidate
+680,calico,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 1,New candidate
+681,marocain,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 1,New candidate
+682,cordovan,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 1,New candidate
+683,suede,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 1,New candidate
+684,gentian,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+685,lobelia,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+686,euonymus,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+687,petunia,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+688,jersey,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+689,holland,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+690,georgette,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+691,valenciennes,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+692,arras,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+693,damascene,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+694,damson,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+695,mayonnaise,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+696,bologna,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+697,parmesan,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+698,provolone,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+699,madeira,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+700,madeira cake,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+701,havana,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+702,meerschaum,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+703,frankfurter,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+704,wiener,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+705,pilsner,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+706,münster,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+707,limburger,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+708,edam,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+709,gouda,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+710,cheddar,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+711,stilton,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+712,worcestershire,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+713,tabasco,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+714,angostura,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+715,cologne,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+716,eau de Cologne,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+717,magenta,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+718,solferino,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+719,bermuda,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 2,New candidate
+720,jean,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 3,New candidate
+721,chintz,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 3,New candidate
+722,gingham,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 3,New candidate
+723,kersey,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 3,New candidate
+724,worsted,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 3,New candidate
+725,mohair,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 3,New candidate
+726,morocco,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 3,New candidate
+727,tulle,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 3,New candidate
+728,gauze,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 3,New candidate
+729,organdy,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 3,New candidate
+730,delft,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 3,New candidate
+731,majolica,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 3,New candidate
+732,faience,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 3,New candidate
+733,porter,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 3,New candidate
+734,marsala,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 3,New candidate
+735,sherry,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 3,New candidate
+736,claret,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 3,New candidate
+737,armagnac,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 3,New candidate
+738,panama,,,,,,Candidate lexical/eponymous loanword,Verify,Eponymous Loanwords 3,New candidate
