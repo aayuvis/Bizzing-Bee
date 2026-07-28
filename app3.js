@@ -4852,6 +4852,8 @@ function themeArtSVG(id,size,sketch){ size=size||54; const fid='skf'+(++_artN);
   wordwords:P('M8 12h24a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H20l-8 7v-7h-4z')+P('M14 19h16M14 25h10')+P('M36 20h4a2 2 0 0 1 2 2v16l-5-4h-9'),
   time:C(24,24,15)+P('M24 13v11l8 5')+P('M24 6v3M42 24h-3M24 42v-3M6 24h3'),
   colors:P('M24 6c4 7 12 15 12 24a12 12 0 0 1-24 0c0-9 8-17 12-24z')+P('M18 30a6 6 0 0 0 6 6')+C(30,17,1.6,1),
+  // a signed name plate hanging from a ribbon — the word that carries a person's name
+  eponyms:P('M18 6l6 7 6-7')+P('M24 13v4')+'<rect x="7" y="17" width="34" height="23" rx="5"/>'+P('M13 25h9M13 31h6')+P('M27 34c1.5-4 3-6 4.4-6s1.6 2 .6 4 .4 2.6 2 1.2 2.4-3 3-5.6')+C(24,17,1.4,1),
   };
   return W(M[id]||M.wordwords); }
 function themeCard(t){ const c=active(); const cl=themeClusters().find(x=>x.id===t.cluster)||themeClusters()[0];
@@ -6402,7 +6404,7 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
   // ---------- chapter grid ----------
   if(!t){
     const seen=c.ttSeen||{};
-    const wordThemes=['wroots','wbreak','wmeaning','wstories'];
+    const wordThemes=['wroots','wbreak','wmeaning','wstories','eponyms'];
     const card=(th)=>{ const deck=ttDeck(th.id); if(!deck.length) return '';
       const col=TT_COL[th.id]||'#7C5CFF'; const st=ttChapterStats(c,th.id);
       return `<button class="sb-lift" data-act="ttChapter" data-arg="${escA(th.id)}" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:13px 14px;box-shadow:var(--sh-rest);display:flex;flex-direction:column;gap:7px">
