@@ -1,6 +1,6 @@
 /* ============================================================
    VOICE-CDN.js — when the app is served from GitHub Pages
-   (*.github.io), the 342 MB voice corpus isn't bundled (Pages
+   (*.github.io), the 1.4 GB voice corpus isn't bundled (Pages
    can't host 41k files). Instead we fetch each clip on demand
    from raw.githubusercontent.com, which serves individual repo
    files fine. Locally / offline (file://, or a full download
