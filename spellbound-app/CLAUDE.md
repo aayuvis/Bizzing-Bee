@@ -24,7 +24,7 @@ handlers. App lives in this folder; open `index.html` to run.
 ## Hard rules (do not violate)
 - **Every game needs BOTH keyboard AND touch/tablet controls.** Non-negotiable.
 - **Word audio is Google Cloud TTS** (voice `en-US-Neural2-F`, rate 0.95, MP3 24kHz) as of
-  2026-07-23 — the whole 41,136-word library was migrated off Kokoro (which had persistent
+  2026-07-23 — the whole word library was migrated off Kokoro (which had persistent
   pronunciation artifacts, worst on French-origin words). `WV_BAD` is empty. To fix a
   flagged word: re-gen just that word via Google TTS (SSML `<phoneme>` for deterministic
   pronunciation), overwrite `voice/w/<slug>.mp3` (slug = `word.replace(/[^a-z0-9]/g,'-')`),
@@ -46,7 +46,8 @@ handlers. App lives in this folder; open `index.html` to run.
   done-set model in `localStorage['sb_saga2']` (v1 saves auto-migrate).
 - `saga-script.js` — dialogue: `SB_SAGA_SCRIPT[key] = {title, world, intro/win/lose:
   [[speaker, "line", "audioKey"]]}`. `audioKey` → `voice/d/<key>.mp3` (clips optional).
-- `voice-words.js` — `SB_WVOICE`, pipe-joined manifest of ~41,143 voiced word keys.
+- `voice-words.js` — `SB_WVOICE`, pipe-joined manifest of 128,491 voiced word keys — every word in
+  both `words-data.js` (40,907) and `words-full.js` (128,196) has a clip.
 - `voice-review.js` — `SB_VOICE_REVIEW` (Re-review queue) + `SB_VOICE_PRIORITY`.
 - `voice-cdn.js` — on `*.github.io`, rewrites `voice/…` → raw.githubusercontent of `main`.
 - Saga engines: `engine(host, opts, done)` → `done({win, score, stars})`.
