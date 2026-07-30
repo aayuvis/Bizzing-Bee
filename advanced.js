@@ -242,10 +242,11 @@
           ${read[i] ? `<span style="flex-shrink:0;color:${col};font-weight:900;font-size:13px">✓</span>` : ''}
         </span>
         <span style="font-size:12px;color:var(--muted);font-weight:600;line-height:1.45">${esc4(String(ch.concept).split('. ')[0])}.</span>
-        <span style="font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:${col}">${esc4(ch.difficulty)} · ${(ch.cards || []).length} cards · narrated</span></button>`;
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:${col}">${(ch.cards || []).length} cards · ${(ch.words || []).length} words · narrated</span></button>`;
       return ADV._shell(`<div style="max-width:720px;margin:0 auto;animation:sb-rise .35s ease both">
         <div style="display:flex;align-items:center;gap:11px;margin:0 0 4px"><span style="display:inline-flex;color:${col}">${SBI('advanced', 26)}</span><h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:0">Advanced Concepts</h2></div>
-        <p style="color:var(--muted);font-size:13px;margin:0 0 16px;line-height:1.5">Decision procedures, not word parts. These teach what to do with a word you have never heard — and they are narrated in a slower register than the main lessons.</p>
+        <p style="color:var(--muted);font-size:13px;margin:0 0 16px;line-height:1.5">${chs.length} expert chapters — the championship decision procedures, the orthographic patterns with real inventory behind them, the origin groups the main course never covered, and the machinery that builds long words. Every one is narrated in a slower register than the main lessons, and every one carries its own drill list.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin:0 0 18px">${Object.keys(groups).map(g => `<span style="font-size:11px;font-weight:800;padding:5px 10px;border-radius:999px;background:color-mix(in srgb,${col} 12%,transparent);color:${col}">${esc4(g)} · ${groups[g].length}</span>`).join('')}</div>
         ${Object.keys(groups).map(g => `<div style="margin-bottom:16px">
           <div style="font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">${esc4(g)}</div>
           <div style="display:grid;gap:9px">${groups[g].map(card).join('')}</div></div>`).join('')}
