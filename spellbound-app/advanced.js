@@ -65,6 +65,12 @@
     open() { if (!advActive()) { set({ nav: 'adv', screen: 'app', advView: 'gate', conceptSel: null }); return; }
       set({ nav: 'adv', screen: 'app', advView: 'ucj', conceptSel: null }); },
     active() { return advActive(); },
+    /* The hardest-first pool, exposed so the ordinary list machinery can drive the Ultra
+       Champions Journey. Registering it as a LIST is what gives it the same shell as the
+       Bizzing Bee Journey -- Practice/Test/Revise tabs, word cards, vocab, heatmap --
+       without reimplementing any of it. */
+    pool() { return hardPool(); },
+    daySize() { try { return aStats(active()).size || 200; } catch (e) { return 200; } },
     ready() { return advReady(); },
     owned() { return advOwned(); },
     activate() { return advActivate(); },
