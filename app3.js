@@ -1468,7 +1468,7 @@ const app = {
   wearAcc:(k)=>{ const c=active(); c.accOn=(c.accOn===k?null:k); save(); render(); },
 
   toggleSound:()=>{ set({sound:!state.sound}); if(state.sound) sfx('coin'); },
-  toggleFocus:()=>{ try{ if(window.SB_W4_FOCUS){ const on=SB_W4_FOCUS.toggle(); flash(on?'Focus on — music off, world held still, tabs tucked away':'Focus off — the world wakes up'); } }catch(e){} render(); },
+  toggleFocus:()=>{ try{ if(window.SB_W4_FOCUS){ const on=SB_W4_FOCUS.toggle(); flash(on?'Focus on — music off, world held still':'Focus off — the world wakes up'); } }catch(e){} render(); },
   devTap:()=>{ state._devTaps=(state._devTaps||0)+1;
     if(state._devTaps>=7){ state._devTaps=0; state.devReveal=!state.devReveal; flash(state.devReveal?'🛠 Testing tools revealed':'🛠 Testing tools hidden'); render(); } },
   toggleDevUnlock:()=>{ pinGate(()=>{
@@ -2105,8 +2105,9 @@ function hwSpell(w,max){ const L=String(w||'').length; max=max||32;
 function journeyName(){ return advModeOn()?'The Advanced Spelling Journey':'The Bizzing Bee Journey'; }
 /* ---- Focus mode in Supercharge ---------------------------------------------------
    Supercharge and everything it leads to is the deep-learning half of the app, so it runs
-   in Focus: music off, background still, nav tabs tucked away with hover to reveal. We
-   only ever undo what we switched on ourselves, so a manual toggle elsewhere is respected. */
+   in Focus: music off and background held still. It does NOT touch the nav — the top nav is
+   never collapsed. We only ever undo what we switched on ourselves, so a manual toggle
+   elsewhere is respected. */
 const FOCUS_NAVS=new Set(['explore','concepts','journeys','builder','vocab','figurative',
   'typing','quotes','trivtrain','revisions','traps','adv']);
 function focusAutoSync(){ try{ const F=window.SB_W4_FOCUS; if(!F) return;
@@ -2863,7 +2864,10 @@ function viewApp(){
 
   const advReveal=S.advReveal?advTourCard():'';
   return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}${advReveal}${bandUp}
-    <div class="sb-header-sticky${(window.SB_W4_FOCUS&&SB_W4_FOCUS.on())?' sb-collapse-nav':''}" style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
+    <!-- The top nav is never collapsed or hidden on desktop. Focus mode used to tuck it
+         away behind a hover, which made the app feel like it had lost its navigation.
+         Focus still kills the music and holds the background still; the tabs stay put. -->
+    <div class="sb-header-sticky" style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
       <div style="max-width:1080px;margin:0 auto;padding:11px clamp(9px,3.2vw,32px);display:flex;align-items:center;gap:8px">
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
         <button data-act="goHome" title="Home" aria-label="Bizzing Bee — Home" style="display:flex;align-items:center;gap:9px;margin-right:auto;background:none;border:0;cursor:pointer"><div style="width:34px;height:38px;flex-shrink:0">${mascotSVG('happy')}</div><span class="sb-brand" style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i> Bee</span></button>

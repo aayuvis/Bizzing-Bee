@@ -32,6 +32,10 @@ handlers. App lives in this folder; open `index.html` to run.
 - **Saga dialogue / concept audio stays Kokoro** — the `voice/pipeline/` scripts + the
   `kokoro-model-v1` GitHub release are kept for regenerating those (`voice/d/<key>.mp3`).
 - **Never leak the target spelling** in on-screen meaning/definition text (it's masked).
+- **Never collapse or hide the desktop top nav.** No screen, no mode, no hover-reveal.
+  Focus mode may switch off the music and still the background, but the nav tabs stay
+  visible. (Below 640px the top nav is replaced by the fixed bottom tab bar — that is the
+  intended mobile layout, not a collapse.)
 - Games must look **professional** (not boxy/1990s). Use the delivered Claude Design art
   (`SAGA_ART`/`WORLD_ART`/`SB_AVATAR`); hand-drawn canvas is fine when richly shaded.
 - **Never** put a real model identifier in commits, PRs, code, or any pushed artifact.
