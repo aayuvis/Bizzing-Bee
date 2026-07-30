@@ -1574,16 +1574,22 @@ const app = {
   advConcept:(i)=>{ if(window.ADV) ADV.openConcept(i); },
   /* Deep links from the ordinary hubs straight into an Advanced Mode segment. ADV.open()
      first so the module owns nav and the full library starts loading, then jump. */
+  /* Advanced features have no hub — each is opened from the ordinary workflow that owns it
+     and returns there. ADV_HOME records which one, so Back is never a dead end. */
   advJump:(seg)=>{ if(!window.ADV) return; app.openAdvanced();
-    // openAdvanced() lands on the gate when Advanced Mode is not active; do not jump past it
+    // openAdvanced() lands on the gate when the pack is not active; do not jump past it
     if(ADV.active&&!ADV.active()) return;
+    const ADV_HOME={concepts:'explore',tips:'explore',mock:'explore',games:'games',ucj:'coach'};
+    state.advHome=ADV_HOME[seg]||'explore';
     ADV.go(seg); },
+  openAdvJourney:()=>app.advJump('ucj'),
   openAdvConcepts:()=>app.advJump('concepts'),
   openAdvTips:()=>app.advJump('tips'),
   openAdvMock:()=>app.advJump('mock'),
   openAdvGames:()=>app.advJump('games'),
   advRevealClose:()=>{ set({advReveal:false}); },
   advRevealGo:(seg)=>{ set({advReveal:false}); app.advJump(seg); },
+  
   advBack:()=>{ if(window.ADV) ADV.back(); },
   advExit:()=>{ if(window.ADV) ADV.exit(); },
   advBuy:()=>{ if(window.ADV) ADV.buy(); },
@@ -2035,7 +2041,7 @@ const ADV_PLACES=[
   ['advconcepts','Advanced Concepts','in Learn, just under Word Concepts','concepts','#5B3FA6'],
   ['advtips','Advanced Tips & Tricks','added to Revise, in Supercharge','tips','#0E8A78'],
   ['arcade','Advanced Games','leading the Arcade','games','#E8458C'],
-  ['quest','The Advanced Spelling Journey','your Journey, renamed and drawing on all 128,000 words','ucj','#6C4FE0'] ];
+  ['quest','Ultra Champions Journey','under the Journey on Setup & lists — all 128,000 words','ucj','#6C4FE0'] ];
 function advCheckUnlock(){ try{ const c=active(); if(!c) return;
     if(!advModeOn(c)) return; if(c.advAnnounced) return;
     c.advAnnounced=1; save();
@@ -2061,7 +2067,6 @@ function advRevealCard(){
       <p style="font-size:13px;color:var(--muted);font-weight:650;line-height:1.5;margin:0 0 17px">National-bee preparation, drawn from the full 128,000-word library. Five things just appeared around the app.</p>
       <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:17px">${ADV_PLACES.map(row).join('')}</div>
       <button data-act="advRevealClose" style="width:100%;padding:14px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Got it</button>
-      <button data-act="openAdvanced" style="width:100%;margin-top:8px;padding:11px;border-radius:12px;background:transparent;color:var(--muted);font-weight:750;font-size:13px">Open Advanced Mode →</button>
     </div></div>`; }
 function wayTile(key,size,tilt){ const w=WAYFIND[key]; size=size||48;
   const glyph=(w.sb&&window.SB_ICON)?SB_ICON(w.sb,{size:24}):iconSVG(w.ic,24,2.2);
@@ -2436,6 +2441,14 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state; const a
   const cAll=(state.conceptData||[]); const cDone=cAll.filter(ch=>conceptStat(ch).done).length;
   const fmtDone=(cDone>0?cDone+'/'+(cAll.length||121)+' mastered':(cAll.length||121)+' concepts');
   /* Each Explore destination as a compact clickable row inside its hub. */
+  /* Locked advanced row. Sits in exactly the position it will occupy once the pack is
+     bought, so the feature unlocks in place rather than appearing from nowhere. */
+  const lockRow=(key,sub)=>{ const w=WAYFIND[key]||{label:key,ic:'grid',c:'var(--accent)'};
+    return `<button class="sb-lift" data-act="openAdvanced" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface2);border:1px dashed var(--line);border-radius:14px;padding:11px 12px;opacity:.9">
+      <span style="width:40px;height:40px;flex-shrink:0;border-radius:11px;background:color-mix(in srgb,${w.c} 12%,transparent);color:${w.c};display:grid;place-items:center;opacity:.75">${(window.SB_ICON_ART&&SB_ICON_ART[key])?SB_ICON_ART(key,{size:22}):iconSVG(w.ic||'grid',22)}</span>
+      <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15;color:var(--muted)">${esc(w.label)}</span>
+        <span style="display:block;font-size:12px;color:var(--muted);font-weight:600;line-height:1.35;margin-top:1px">${esc(sub)}</span></span>
+      <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:11px;white-space:nowrap">${iconSVG('lock',12)||''} $${(window.ADV&&ADV.price)?ADV.price():49}/yr</span></button>`; };
   const row=(key,act,arg,sub)=>{ const w=WAYFIND[key]||{label:key,ic:'grid',c:'var(--accent)'};
     return `<button class="sb-lift" data-act="${act}" ${arg?`data-arg="${escA(arg)}"`:''} style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px 13px;box-shadow:var(--sh-rest)">
       ${iconTile((window.SB_ICON_ART&&SB_ICON_ART[key])?key:(w.sb||'grid'), w.c==='var(--accent)'?'#7C5CFF':w.c, {size:40, radius:11})}
@@ -2456,13 +2469,15 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state; const a
   // ---- LEARN ----  understand words deeply
   const learn=hub('Learn','learn','#7C5CFF','Understand words deeply',
     row('concepts','setNav','concepts','Spelling basics, roots & patterns · '+fmtDone)+
-    (advOn?row('advconcepts','openAdvConcepts',null,'Schwa rescue, stress shift & the origin tree · narrated'):'')+
+    (advOn?row('advconcepts','openAdvConcepts',null,'Schwa rescue, stress shift & the origin tree · narrated')
+          :lockRow('advconcepts','Schwa rescue, stress shift & the origin tree · Advanced Pack'))+
     row('journeys','openJourneys',null,'The history & geography of words'+(state.premium?'':' · Premium'))+
     row('builder','openBuilder',null,'Build a custom word list in five taps')+
     row('vocab','openVocab',null,'Word → meaning, vocabulary-bee style'));
   // ---- TRAIN ----  sharpen your skills
   const train=hub('Train','train','#13A892','Sharpen your skills',
-    (advOn?row('advmock','openAdvMock',null,'Benchmark rounds — written, vocabulary & lightning'):'')+
+    (advOn?row('advmock','openAdvMock',null,'Benchmark rounds — written, vocabulary & lightning')
+          :lockRow('advmock','Benchmark rounds — written, vocabulary & lightning · Advanced Pack'))+
     row('figurative','setNav','figurative','2,350 idioms & similes, card by card')+
     row('typing','openTyping',null,'Touch-type, then race the 60-second test')+
     row('quotes','openQuotes',null,(qN?fmtN(qN)+' ':'')+'kid-friendly quotes from famous people')+
@@ -2471,13 +2486,19 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state; const a
   const revise=hub('Revise','retry','#E0922E','Fix what trips you up',
     row('revisions','openRevisions',null,'Redo the words you flagged to revise'+(missN?' · '+missN+' waiting':''))+
     row('traps','openTraps',null,'Beat your weak spelling patterns')+
-    (advOn?row('advtips','openAdvTips',null,'36 champion techniques — memory, speed, roots & bee-day tactics'):''));
+    (advOn?row('advtips','openAdvTips',null,'36 champion techniques — memory, speed, roots & bee-day tactics')
+          :lockRow('advtips','36 champion techniques — memory, speed, roots & tactics · Advanced Pack')));
   return `<div style="animation:sb-rise .35s ease both">
     ${pageHead('Supercharge your English','learn · train · revise','Everything beyond spelling practice — build deep word knowledge, sharpen real skills, and clean up what trips you up.')}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;align-items:start">${learn}${train}${revise}</div>
   </div>`; }
 /* Advanced Mode entry — a gated hero banner. Unlocks at Level 12, Bee Band 7, or by paying. */
-function advBanner(c){ const lvl=(function(){ try{ return listStageIdx(c,'journey')+1; }catch(e){ return 1; } })();
+function advBanner(c){
+  /* Only ever an offer. Once the pack is active its five features live in Supercharge,
+     the Arcade and Practice, so a banner pointing at a hub would be a second, redundant
+     route to things already on screen. */
+  if(advModeOn(c)) return '';
+  const lvl=(function(){ try{ return listStageIdx(c,'journey')+1; }catch(e){ return 1; } })();
   const band=(function(){ try{ return beeBand(c).band; }catch(e){ return 2; } })();
   const on=advModeOn(c);                                   // owns the Advanced Pack
   const ready=(window.ADV&&ADV.ready)?ADV.ready():(lvl>=12||band>=7);
@@ -5560,6 +5581,15 @@ function coachSetup(){
     <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 4px">Setup &amp; lists</h2>
     <p style="margin:0 0 16px;color:var(--muted);font-size:13px">Pick the list you're training — each keeps its own level.${state.premium?'':' 🔒 lists unlock with Premium <b>or</b> 🪙 '+COST.list+' coins from playing.'}</p>
     ${journeyBanner}
+    ${advModeOn(c)?`<button class="sb-lift" data-act="openAdvJourney" style="width:100%;text-align:left;border-radius:16px;margin:-4px 0 16px;overflow:hidden;background:linear-gradient(135deg,#241B4E,#3A2A72 60%,#5B3FA6);box-shadow:0 6px 18px rgba(36,27,78,.28)">
+      <div style="padding:14px 17px;display:flex;align-items:center;gap:13px;color:#fff;flex-wrap:wrap">
+        <span style="width:42px;height:42px;flex-shrink:0;border-radius:12px;background:rgba(255,255,255,.14);display:grid;place-items:center;color:#fff">${SB_ICON?SB_ICON('trophy',{size:22}):iconSVG('trophy',22)}</span>
+        <span style="min-width:0;flex:1">
+          <span style="display:block;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.8)">Advanced Pack</span>
+          <span style="display:block;font-family:var(--display);font-weight:800;font-size:16px;line-height:1.15">Ultra Champions Journey</span>
+          <span style="display:block;font-size:12px;color:rgba(255,255,255,.88);font-weight:600;margin-top:2px;line-height:1.4">2-year plan · 150–300 words a day from all ${fmtN(128196)} words, with the Sprint method.</span></span>
+        <span style="flex-shrink:0;padding:8px 14px;border-radius:10px;background:#fff;color:#3A2A72;font-weight:800;font-size:12.5px;white-space:nowrap">Day ${((c.adv&&c.adv.day)||1)} →</span>
+      </div></button>`:''}
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px">
       <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end"><div style="flex:1;min-width:150px"><label style="display:block;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px">Bee day</label><input data-chg="setCoachDate" type="date" value="${escA(S.coachDate||'')}" style="width:100%;padding:11px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px"></div><div style="width:120px"><label style="display:block;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px">Daily goal</label><input data-chg="setCoachGoal" value="${escA(S.coachGoal)}" style="width:100%;padding:11px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px"></div></div>
       <div style="font-size:12px;color:var(--muted);margin-top:8px">The daily goal is a target, not a limit — keep going as long as you like.</div></div>
@@ -6666,7 +6696,10 @@ function viewTiersSheet(){ const S=state; const cur=(window.SB_ENT?SB_ENT.tierId
       <div style="background:var(--surface2);border:1px dashed var(--line);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
         <span style="width:40px;height:40px;flex-shrink:0;border-radius:11px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG('spark',22)}</span>
         <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:14px">${esc(addon.name)} · +$${addon.priceYr}/yr</span><span style="display:block;font-size:12px;color:var(--muted)">${esc(addon.blurb)}</span></span>
-        <button data-act="buyAddon" data-arg="advanced" style="padding:9px 15px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12.5px">${addon.built?'Add':'Notify me'}</button>
+        ${(()=>{ const owned=(()=>{ try{ return !!SB_ENT.hasAddon('advanced'); }catch(e){ return false; } })();
+          if(owned) return `<span style="padding:9px 15px;border-radius:10px;background:var(--mastered-tint,#E1F4E8);color:var(--good,#1f9d57);font-weight:800;font-size:12.5px;white-space:nowrap">Active &#10003;</span>`;
+          if(!addon.built) return `<button data-act="buyAddon" data-arg="advanced" style="padding:9px 15px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12.5px">Notify me</button>`;
+          return `<button data-act="buyAddon" data-arg="advanced" style="padding:11px 17px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;white-space:nowrap;box-shadow:var(--edge)">Unlock &middot; $${addon.priceYr}/yr</button>`; })()}
       </div>
       <div style="font-size:11px;color:var(--muted);margin-top:12px;text-align:center">Local preview — real billing (Stripe / Razorpay) connects in Phase 2. Plans are managed by a parent.</div>
     </div></div>`; }

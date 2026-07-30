@@ -59,7 +59,7 @@
     /* Every route into Advanced Mode lands on the gate until it has been activated --
        the banner, the deep links, anything added later. */
     open() { if (!advActive()) { set({ nav: 'adv', screen: 'app', advView: 'gate', conceptSel: null }); return; }
-      set({ nav: 'adv', screen: 'app', advView: 'hub', conceptSel: null }); },
+      set({ nav: 'adv', screen: 'app', advView: 'ucj', conceptSel: null }); },
     active() { return advActive(); },
     ready() { return advReady(); },
     owned() { return advOwned(); },
@@ -71,7 +71,9 @@
       try { state.tierUpsell = { feature:'advanced', label:'Advanced Mode', need:'addon' }; }catch(e){}
       if (window.app && app.openTiers) app.openTiers(); else set({ showTiers:true }); },
     go(v) { set({ advView: v }); },
-    back() { set({ advView: 'hub' }); },
+    /* Back goes to the workflow the segment was opened from, not to a hub. */
+    back() { const home = state.advHome || 'explore';
+      set({ nav: home, advView: null, screen: 'app', conceptSel: null }); },
 
     /* ============ ① ULTRA CHAMPIONS JOURNEY — the sprint method ============ */
     setSize(n) { const st = aStats(active()); st.size = +n; save(); render(); },
@@ -185,11 +187,16 @@
     _dictDone() { const g = state.adv; if (g.done) return; g.done = true; if (g.timer) clearInterval(g.timer);
       const c = active(); const st = aStats(c); if (g.right > (st.dictBest || 0)) st.dictBest = g.right;
       addCoins(3 + Math.floor(g.right / 2)); try { sfx('win'); if (g.right >= 15) burstConfetti(110); logActivity('practice', 'Rapid dictation sprint', { done: g.i, right: g.right }, []); } catch (e) {} save(); render(); },
-    exit() { const g = state.adv; if (g && g.timer) clearInterval(g.timer); state.adv = null; set({ advView: 'hub' }); },
+    exit() { const g = state.adv; if (g && g.timer) clearInterval(g.timer); state.adv = null; ADV.back(); },
 
     /* ============ VIEWS ============ */
-    view() { const v = state.advView || (advUnlocked() ? 'hub' : 'gate');
+    /* There is no hub. Once the pack is active, all five features live in the ordinary
+       workflows -- Supercharge, Arcade, Practice -- so a separate Advanced Mode screen
+       would just be a second place to find the same things. Segments are opened from
+       their in-workflow cards and return to them. */
+    view() { const v = state.advView || (advUnlocked() ? 'ucj' : 'gate');
       if (v === 'gate' || (!advUnlocked() && v !== 'gate')) return ADV._gate();
+      if (v === 'hub') return ADV._ucjView();          // legacy state -> the advanced journey
       /* An open advanced chapter takes over the whole Advanced Mode view. The shared
          concept player is normally reached through nav==='concepts', which we are not
          in, so without this the chapter is selected but nothing on screen changes. */
