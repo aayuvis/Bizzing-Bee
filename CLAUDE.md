@@ -71,6 +71,23 @@ handlers. App lives in this folder; open `index.html` to run.
 - `trivia.js` — the Arcade quiz (`STV`); `app3.js` holds Trivia Training
   ("Know the World of Words", `viewTrivTrain`).
 
+## Vocabulary progression (separate from spelling)
+- Vocab has its **own ladder**, stored on the child at `c.vocab` and **never** on
+  `c.lists[key]`. Shape: `{lv, revise, seen, cur, carry, last}`, all keyed by deck
+  (`mix`/`easy`/`medium`/`hard`/`champ`/`th:<id>`), so each deck levels independently.
+- Flow: study a set of 20 → **Check what you've learned** (one meaning MCQ per word) →
+  `VOC_PASS` (**0.8**) or better unlocks the next set of NEW words. Below it, the missed
+  words go to `revise[deck]` and `vocNewSet` refuses to serve new words, diverting to a
+  revision round instead. A word leaves the queue the first time it is answered correctly
+  in a revision round, so the loop always terminates.
+- Passing with a few wrong still progresses; those go to `carry[deck]` and are seeded into
+  the next set rather than dropped. `seen[deck]` keeps new sets genuinely new.
+- **The check must never touch spelling progress.** It does not call `markMastered`,
+  `addMiss` or `gainXp`, so a vocabulary session cannot move the spelling stage, spelling
+  XP or the Bee Band. If you add scoring to vocab, keep that separation — there is a
+  headless test that snapshots `lists`/`xp`/`band`/`luMastered`/`missed` around a full
+  vocab session and asserts it is byte-identical.
+
 ## Trivia: levels, sharding, and the authoring pipeline
 - **Five levels, one band per speller.** `ttBand(c)` (app3.js) picks 1–5: base from age
   (≤8→1, ≤10→2, ≤12→3, ≤14→4, else 5), shifted by spelling `heroLevel`, then nudged by
