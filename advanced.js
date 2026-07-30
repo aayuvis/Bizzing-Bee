@@ -125,6 +125,17 @@
     openTip(i) { const c = active(); (aStats(c).tipsRead = aStats(c).tipsRead || {})[i] = 1; save(); set({ advView: 'tip', advTip: +i }); },
     tipCat(cat) { set({ advTipCat: cat }); },
 
+    /* Open an advanced chapter in the shared concept player. state.conceptSel drives
+       that player, and it reads narration and clips off ch.adv, so nothing else has
+       to change. advBack returns here rather than to the general concept list. */
+    openConcept(i) { i = +i; const chs = ADV._advChapters(); const ch = chs[i]; if (!ch) return;
+      const c = active(); (aStats(c).conceptsRead = aStats(c).conceptsRead || {})[i] = 1; save();
+      try { clearAnimTimer(); stopNarration(); } catch (e) {}
+      state.conceptSel = ch; state.conceptStep = 0; state.conceptWordsOpen = false; state.conceptWordIdx = 0;
+      state.animOn = false; state.animScene = 0; state.advReturn = 'concepts';
+      try { window.scrollTo(0, 0); } catch (e) {}
+      render(); },
+
     /* ============ ④ ADVANCED GAMES ============ */
     memStart() { const pool = hardPool().slice(0, 3000); const words = sample(pool.filter(w => w.d && w.d.length > 8 && w.d.length < 90), 6);
       const cards = []; words.forEach((w, k) => { cards.push({ id: k, t: 'w', label: w.w }); cards.push({ id: k, t: 'd', label: trunc(w.d, 60) }); });
@@ -164,7 +175,35 @@
       if (v === 'games') return ADV._gamesView();
       if (v === 'mem') return ADV._memView();
       if (v === 'dict') return ADV._dictView();
+      if (v === 'concepts') return ADV._conceptsView();
       return ADV._hub(); },
+
+    /* ---- Advanced Concepts: the decision procedures, gated to this mode only.
+       Chapters live in SB_ADV_CONCEPTS (never in state.conceptData, so they cannot
+       leak into the general concept list) and are narrated by am_michael. ---- */
+    _advChapters() { const A = window.SB_ADV_CONCEPTS; return (A && A.chapters) || []; },
+    _conceptsView() {
+      const c = active(); const st = aStats(c); const read = st.conceptsRead || (st.conceptsRead = {});
+      const chs = ADV._advChapters();
+      if (!chs.length) return ADV._shell(`<div style="max-width:520px;margin:0 auto;text-align:center;padding:30px;color:var(--muted);font-weight:700">Advanced concepts are still loading.</div>`, 'advExit');
+      const groups = {};
+      chs.forEach((ch, i) => { (groups[ch.category] = groups[ch.category] || []).push([ch, i]); });
+      const col = '#5B3FA6';
+      const card = ([ch, i]) => `<button data-act="advConcept" data-arg="${i}" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid ${read[i] ? col : 'var(--line)'};border-radius:15px;padding:14px 15px;box-shadow:var(--sh-rest);display:flex;flex-direction:column;gap:6px">
+        <span style="display:flex;align-items:center;gap:9px">
+          <span style="width:30px;height:30px;border-radius:9px;flex-shrink:0;display:grid;place-items:center;background:color-mix(in srgb,${col} 15%,transparent);color:${col};font-family:var(--display);font-weight:900;font-size:13px">${i + 1}</span>
+          <span style="min-width:0;flex:1;font-family:var(--display);font-weight:800;font-size:14.5px;line-height:1.2">${esc4(ch.title)}</span>
+          ${read[i] ? `<span style="flex-shrink:0;color:${col};font-weight:900;font-size:13px">✓</span>` : ''}
+        </span>
+        <span style="font-size:12px;color:var(--muted);font-weight:600;line-height:1.45">${esc4(String(ch.concept).split('. ')[0])}.</span>
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:${col}">${esc4(ch.difficulty)} · ${(ch.cards || []).length} cards · narrated</span></button>`;
+      return ADV._shell(`<div style="max-width:720px;margin:0 auto;animation:sb-rise .35s ease both">
+        <div style="display:flex;align-items:center;gap:11px;margin:0 0 4px"><span style="display:inline-flex;color:${col}">${SBI('advanced', 26)}</span><h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:0">Advanced Concepts</h2></div>
+        <p style="color:var(--muted);font-size:13px;margin:0 0 16px;line-height:1.5">Decision procedures, not word parts. These teach what to do with a word you have never heard — and they are narrated in a slower register than the main lessons.</p>
+        ${Object.keys(groups).map(g => `<div style="margin-bottom:16px">
+          <div style="font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">${esc4(g)}</div>
+          <div style="display:grid;gap:9px">${groups[g].map(card).join('')}</div></div>`).join('')}
+      </div>`, 'advExit'); },
 
     _shell(inner, back) { return `<div style="max-width:720px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><button data-act="${back || 'advBack'}" style="color:var(--muted);font-weight:700;font-size:13px">← ${back === 'advExit' ? 'Quit' : 'Advanced'}</button></div>${inner}</div>`; },
@@ -203,6 +242,7 @@
           ${seg('ucj', 'ultraJourney', '#7C5CFF', 'Ultra Champions Journey', '2-year plan · 150–300 words a day, list after list, with the fast Sprint method.', 'Day ' + st.day)}
           ${seg('mock', 'mockBee', '#C8901B', 'Mock Spelling Bee', 'Practice rounds — written, vocabulary & lightning — with a readiness benchmark.', 'best ' + (st.mockBest || 0))}
           ${seg('tips', 'advTips', '#13A892', 'Tips & Tricks', 'Memory, fast reading, etymology & bee-day tactics from champion methodology.', Object.keys(st.tipsRead || {}).length + ' read')}
+          ${seg('concepts', 'advanced', '#5B3FA6', 'Advanced Concepts', 'Schwa rescue, stress shift, the origin tree & question strategy — narrated.', Object.keys(st.conceptsRead || {}).length + '/' + ADV._advChapters().length)}
           ${seg('games', 'advGames', '#E8458C', 'Advanced Games', 'Memory match & rapid dictation — the drills a national-level speller needs.', 'play')}
         </div>
       </div>`; },
@@ -236,7 +276,7 @@
         <div style="display:flex;gap:10px;justify-content:center;margin-top:18px"><button data-act="advGo" data-arg="ucj" style="padding:13px 22px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800">Next day →</button></div></div>`, 'advExit');
       if (g.mode === 'scan') { const w = g.words[g.i]; const n = g.words.length;
         return ADV._shell(`
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:700">SCAN ${g.i + 1}/${n}</span><span style="font-size:12px;color:var(--muted)">· tap what you already know</span><span style="margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--good,#1f9d57)">✓ ${g.know.length} · gaps ${g.gaps.length}</span></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);font-weight:700">SCAN ${g.i + 1}/${n}</span><span style="font-size:12px;color:var(--muted)">· tap what you already know</span><span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--good,#1f9d57)">✓ ${g.know.length} · gaps ${g.gaps.length}</span></div>
           <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:26px 22px;box-shadow:var(--glow);text-align:center;margin-bottom:14px">
             <div style="font-family:var(--display);font-weight:800;font-size:clamp(26px,7vw,40px);letter-spacing:.01em">${esc4(w.w)}</div>
             <div style="display:flex;gap:8px;justify-content:center;margin:10px 0"><button data-act="advSayCur" style="padding:8px 14px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">${iconSVG('volume', 15)} Hear</button><button data-act="advSaySlow" style="padding:8px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:12.5px">Slow</button></div>
@@ -250,7 +290,7 @@
       const w = g.gaps[g.drillIdx]; const dn = g.gaps.length;
       const fb = g.lastOk != null ? (g.lastOk ? `<div style="color:var(--good,#1f9d57);font-weight:800;font-size:14px;margin-bottom:10px">✓ Locked in!</div>` : `<div style="background:var(--fix-tint,#FBE9E7);border:1.5px solid var(--fix,#C4453C);border-radius:12px;padding:11px;margin-bottom:12px"><div style="font-size:11px;font-weight:800;text-transform:uppercase;color:var(--fix,#C4453C)">The spelling</div><div style="font-family:var(--entry);font-weight:800;font-size:24px;letter-spacing:.14em">${esc4(g.lastWord)}</div></div>`) : '';
       return ADV._shell(`
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:800">DRILL YOUR GAPS ${g.drillIdx + 1}/${dn}</span><span style="margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--good,#1f9d57)">✓ ${g.right}</span></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--accent);font-weight:800">DRILL YOUR GAPS ${g.drillIdx + 1}/${dn}</span><span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--good,#1f9d57)">✓ ${g.right}</span></div>
         <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:var(--glow);text-align:center">
           <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 12px">Hear it, then spell it</p>
           <button data-act="advSayCur" style="display:inline-flex;align-items:center;gap:9px;padding:12px 22px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:8px">${iconSVG('volume', 18)} Hear the word</button>
@@ -289,12 +329,12 @@
         const choices = q.choices.map((ch, idx) => { let bg = 'var(--surface2)', bd = 'var(--line)';
           if (g.picked != null) { if (ch === q.answer) { bg = 'color-mix(in srgb,#1f9d57 20%,var(--bg2))'; bd = '#1f9d57'; } else if (idx === g.picked) { bg = 'color-mix(in srgb,var(--bad) 18%,var(--bg2))'; bd = 'var(--bad)'; } }
           return `<button data-act="advMockVocab" data-arg="${idx}" ${g.picked != null ? 'disabled' : ''} style="text-align:left;padding:13px 15px;border-radius:12px;background:${bg};border:2px solid ${bd};font-weight:700;font-size:13.5px;line-height:1.4">${esc4(ch)}</button>`; }).join('');
-        return ADV._shell(`<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:10px">VOCABULARY ${g.i + 1}/${g.qs.length} · ✓ ${g.right}</div>
+        return ADV._shell(`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);margin-bottom:10px">VOCABULARY ${g.i + 1}/${g.qs.length} · ✓ ${g.right}</div>
           <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:26px;box-shadow:var(--glow);text-align:center;margin-bottom:13px"><div style="font-size:11px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">What does it mean?</div><div style="font-family:var(--display);font-weight:800;font-size:clamp(22px,5.5vw,30px)">${esc4(q.prompt)}</div><button data-act="advSayW" data-arg="${escA4(q.w.w)}" style="margin-top:10px;padding:8px 15px;border-radius:999px;background:var(--surface2);font-weight:700;font-size:12.5px">${iconSVG('volume', 14)} Hear</button></div>
           <div style="display:grid;gap:9px">${choices}</div>`, 'advExit'); }
       // written / lightning
       const w = g.list[g.i];
-      const head = g.round === 'lightning' ? `<span style="font-family:var(--display);font-weight:900;font-size:19px;color:${g.timeLeft <= 10 ? 'var(--bad)' : 'var(--accent)'}"><span id="adv-clock">${g.timeLeft}s</span></span><span style="font-family:var(--mono);font-size:13px;color:var(--muted);margin-left:10px">✓ ${g.right}</span>` : `<span style="font-family:var(--mono);font-size:13px;color:var(--muted)">WRITTEN ${g.i + 1}/${g.list.length} · ✓ ${g.right}</span>`;
+      const head = g.round === 'lightning' ? `<span style="font-family:var(--display);font-weight:900;font-size:19px;color:${g.timeLeft <= 10 ? 'var(--bad)' : 'var(--accent)'}"><span id="adv-clock">${g.timeLeft}s</span></span><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted);margin-left:10px">✓ ${g.right}</span>` : `<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">WRITTEN ${g.i + 1}/${g.list.length} · ✓ ${g.right}</span>`;
       return ADV._shell(`<div style="margin-bottom:12px">${head}</div>
         <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:var(--glow);text-align:center">
           <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 12px">Listen and spell</p>
@@ -345,12 +385,12 @@
       if (g.done) return ADV._shell(`<div style="max-width:460px;margin:0 auto;text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:32px;box-shadow:var(--glow);animation:sb-pop .35s ease both"><div style="font-size:48px">🃏</div><h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:8px 0 2px">All matched!</h2><p style="color:var(--muted);font-size:14px">Solved in ${g.moves} moves.</p><div style="display:flex;gap:10px;justify-content:center;margin-top:18px"><button data-act="advGo" data-arg="games" style="padding:12px 20px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800">Back</button><button data-act="advMemStart" style="padding:12px 20px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800">Again →</button></div></div>`, 'advExit');
       const cells = g.cards.map((c, i) => { const shown = g.open.includes(i) || g.matched.includes(i); const done = g.matched.includes(i);
         return `<button data-act="advMemFlip" data-arg="${i}" ${done ? 'disabled' : ''} style="aspect-ratio:1;border-radius:13px;display:grid;place-items:center;padding:8px;text-align:center;font-weight:700;font-size:${c.t === 'w' ? '13px' : '10.5px'};line-height:1.25;background:${shown ? (done ? 'color-mix(in srgb,#1f9d57 18%,var(--bg2))' : 'var(--paper,var(--bg2))') : 'linear-gradient(135deg,#E8458C,#B14FC4)'};border:1px solid ${done ? '#1f9d57' : 'var(--line)'};color:${shown ? 'var(--text)' : '#fff'};overflow:hidden">${shown ? esc4(c.label) : '🐝'}</button>`; }).join('');
-      return ADV._shell(`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-family:var(--display);font-weight:800;font-size:17px">Memory Match</span><span style="font-size:12px;color:var(--muted);font-weight:700">match word ↔ meaning</span><span style="margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--muted)">${g.moves} moves</span></div>
+      return ADV._shell(`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-family:var(--display);font-weight:800;font-size:17px">Memory Match</span><span style="font-size:12px;color:var(--muted);font-weight:700">match word ↔ meaning</span><span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${g.moves} moves</span></div>
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:9px">${cells}</div>`, 'advExit'); },
 
     _dictView() { const g = state.adv; if (!g || g.mode !== 'dict') { set({ advView: 'games' }); return ''; }
       if (g.done) return ADV._shell(`<div style="max-width:460px;margin:0 auto;text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:32px;box-shadow:var(--glow);animation:sb-pop .35s ease both"><div style="font-size:48px">⌨️</div><h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:8px 0 2px">Time!</h2><div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent)">${g.right}</div><p style="color:var(--muted);font-size:13px">words in 90 seconds</p><div style="display:flex;gap:10px;justify-content:center;margin-top:18px"><button data-act="advGo" data-arg="games" style="padding:12px 20px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800">Back</button><button data-act="advDictStart" style="padding:12px 20px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800">Again →</button></div></div>`, 'advExit');
-      return ADV._shell(`<div style="margin-bottom:12px"><span style="font-family:var(--display);font-weight:900;font-size:19px;color:${g.timeLeft <= 15 ? 'var(--bad)' : 'var(--accent)'}"><span id="adv-clock">${g.timeLeft}s</span></span><span style="font-family:var(--mono);font-size:13px;color:var(--muted);margin-left:10px">✓ ${g.right}</span></div>
+      return ADV._shell(`<div style="margin-bottom:12px"><span style="font-family:var(--display);font-weight:900;font-size:19px;color:${g.timeLeft <= 15 ? 'var(--bad)' : 'var(--accent)'}"><span id="adv-clock">${g.timeLeft}s</span></span><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted);margin-left:10px">✓ ${g.right}</span></div>
         <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:var(--glow);text-align:center">
           <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 12px">Hear it, type it, go!</p>
           <button data-act="advSayCurList" style="display:inline-flex;align-items:center;gap:9px;padding:12px 22px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">${iconSVG('volume', 18)} Replay</button>
