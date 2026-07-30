@@ -74,7 +74,13 @@ handlers. App lives in this folder; open `index.html` to run.
 ## Vocabulary progression (separate from spelling)
 - Vocab has its **own ladder**, stored on the child at `c.vocab` and **never** on
   `c.lists[key]`. Shape: `{lv, revise, seen, cur, carry, last}`, all keyed by deck
-  (`mix`/`easy`/`medium`/`hard`/`champ`/`th:<id>`), so each deck levels independently.
+  (`mix`/`easy`/`medium`/`hard`/`champ`/`th:<id>`/`list:<catalogue key>`), so each deck
+  levels independently.
+- **Any list can be studied as vocabulary.** `vocListCats()` maps `coachCatalog()` — the
+  curated lists, NSF tiers, origin lists, plus List Builder / pasted / AI lists — keeping
+  only words that carry a meaning, and only lists with **8+** of them (below that a fair
+  4-option quiz cannot be built). They appear under "Your word lists" in the picker as
+  `list:<key>` decks and are sorted hardest-first.
 - Flow: study a set of 20 → **Check what you've learned** (one meaning MCQ per word) →
   `VOC_PASS` (**0.8**) or better unlocks the next set of NEW words. Below it, the missed
   words go to `revise[deck]` and `vocNewSet` refuses to serve new words, diverting to a
