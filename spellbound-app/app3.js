@@ -1565,6 +1565,7 @@ const app = {
   openAdvanced:()=>{ if(!window.ADV) return; ADV.open();
     if(state.advView!=='gate' && !window.SB_FULL) loadFullLibrary(()=>{ try{ render(); }catch(e){} }); },
   advGo:(v)=>{ if(window.ADV) ADV.go(v); },
+  advConcept:(i)=>{ if(window.ADV) ADV.openConcept(i); },
   advBack:()=>{ if(window.ADV) ADV.back(); },
   advExit:()=>{ if(window.ADV) ADV.exit(); },
   advBuy:()=>{ if(window.ADV) ADV.buy(); },
@@ -3559,7 +3560,14 @@ function canSpeak(){ try{ return !!window.speechSynthesis; }catch(e){ return fal
 function stopClip(){ try{ if(_vAudio){ _vAudio.onended=null; _vAudio.onerror=null; _vAudio.pause(); _vAudio.src=''; _vAudio=null; } }catch(e){} }
 function stopNarration(){ try{ window.speechSynthesis.cancel(); }catch(e){} stopClip(); }
 // Pre-rendered AI-voice clip for a concept scene (embedded, fully offline). Falls back to Web Speech if absent.
-function voiceClip(ch,i){ try{ const V=window.SB_VOICE; if(!V||!V.dur) return null; const ci=(state.conceptData||[]).indexOf(ch); if(ci<0) return null; const arr=V.dur[ci]; if(!arr||i>=arr.length) return null; return { url:(V.base||'voice/')+'c'+ci+'-'+i+'.mp3', ms:Math.round(((arr[i]||2)+0.25)*1000) }; }catch(e){ return null; } }
+/* Advanced chapters live in their own array with their own narration and their own
+   voice (am_michael, not af_heart), so both lookups branch on ch.adv. */
+function advIdx(ch){ try{ const A=window.SB_ADV_CONCEPTS; return (A&&A.chapters)?A.chapters.indexOf(ch):-1; }catch(e){ return -1; } }
+function voiceClip(ch,i){ try{
+    if(ch&&ch.adv){ const V=window.SB_ADV_VOICE; if(!V||!V.dur) return null; const ai=advIdx(ch); if(ai<0) return null;
+      const arr=V.dur[ai]; if(!arr||i>=arr.length) return null;
+      return { url:(V.base||'voice/')+'a'+ai+'-'+i+'.mp3', ms:Math.round(((arr[i]||2)+0.25)*1000) }; }
+    const V=window.SB_VOICE; if(!V||!V.dur) return null; const ci=(state.conceptData||[]).indexOf(ch); if(ci<0) return null; const arr=V.dur[ci]; if(!arr||i>=arr.length) return null; return { url:(V.base||'voice/')+'c'+ci+'-'+i+'.mp3', ms:Math.round(((arr[i]||2)+0.25)*1000) }; }catch(e){ return null; } }
 function hasVoicePack(ch){ try{ const V=window.SB_VOICE; return !!(V&&V.dur&&V.dur[(state.conceptData||[]).indexOf(ch)]); }catch(e){ return false; } }
 function narrate(text,onend){ try{ window.speechSynthesis.cancel(); const u=utter(text,0.96); u.onend=onend||null; u.onerror=onend||null; window.speechSynthesis.speak(u); }catch(e){ if(onend) setTimeout(onend,1200); } }
 function spokenScene(s){ let t=String((s&&(s.say||s.cap))||'');
@@ -3597,7 +3605,8 @@ const capFirst=(s)=>String(s||'').replace(/^([a-z])/,(m,c)=>c.toUpperCase());
 // Each scene carries: stage (visual), cap (on-screen caption), say (the spoken NARRATION SCRIPT — speech-ready).
 function conceptAnim(ch){ if(ch._anim) return ch._anim;
   // Authored explanation script (the bee teaches the concept) takes priority over the pattern templates.
-  try{ const ci=(state.conceptData||[]).indexOf(ch); const auth=window.SB_CSCRIPT&&window.SB_CSCRIPT[ci];
+  try{ const ci=(ch&&ch.adv)?advIdx(ch):(state.conceptData||[]).indexOf(ch);
+    const auth=(ch&&ch.adv)?(window.SB_ADV_CSCRIPT&&window.SB_ADV_CSCRIPT[ci]):(window.SB_CSCRIPT&&window.SB_CSCRIPT[ci]);
     if(auth&&auth.scenes&&auth.scenes.length){ const scenes=auth.scenes.map(s=>({stage:s.show,cap:s.cap,say:s.say,mood:s.mood||'happy',dur:s.dur||3000}));
       const r={label:auth.label||catGroup(ch.category),scenes,authored:true}; ch._anim=r; return r; } }catch(e){}
   const fam=catGroup(ch.category); const lc=(ch.title+' '+(ch.category||'')+' '+(ch.concept||'')).toLowerCase();
@@ -3680,6 +3689,56 @@ function renderStage(s){ if(!s) return '';
     const top=aGlow(aRow(wTiles(word,s.hi,false),4));
     const chips=parts.map((pp,i)=>`<span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:var(--surface2);font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;animation:ca-up .45s ease ${(i*0.12).toFixed(2)}s both"><b style="color:var(--accent)">${esc(pp.txt)}</b><span style="color:var(--muted)">${pp.gloss?('= '+esc(pp.gloss)):''}</span></span>`).join('');
     return `<div style="display:flex;flex-direction:column;gap:12px;align-items:center">${top}${parts.length?`<div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:center">${chips}</div>`:''}</div>`; }
+  /* ---- Advanced Mode stages. The general chapters teach word parts, so tiles are
+     enough. The advanced ones teach where the STRESS sits and which spelling an
+     ORIGIN implies, and neither of those is a letter you can highlight — so they
+     get their own stages. ---- */
+  if(s.t==='shift'){ // stress moving under derivation: one row per family member
+    const row=(r)=>{ const syl=r.syl||[];
+      return `<div style="display:flex;align-items:flex-end;gap:5px;justify-content:center;opacity:${r.dim?.45:1};transition:opacity .3s">
+        ${syl.map((y,i)=>{ const on=i===r.on;
+          return `<span style="display:flex;flex-direction:column;align-items:center;gap:3px">
+            <span style="height:9px;font-size:11px;line-height:1;color:var(--accent);font-weight:900">${on?'&#9679;':''}</span>
+            <span style="padding:${on?'7px 10px':'5px 9px'};border-radius:8px;font-family:var(--display);font-weight:${on?900:700};font-size:${on?'17px':'14px'};
+              background:${on?'var(--accent)':'var(--surface2)'};color:${on?'#fff':'var(--muted)'}">${esc(y)}</span></span>`; }).join('')}
+        <span style="margin-left:8px;font-family:var(--body);font-size:11.5px;font-weight:700;color:var(--muted);align-self:center">${esc(r.label||'')}</span></div>`; };
+    return `<div style="display:flex;flex-direction:column;gap:10px;align-items:center">${(s.rows||[]).map(row).join('')}</div>`; }
+  if(s.t==='rescue'){ // an unreadable schwa, and the relative that exposes it
+    const u=s.unclear||{}, c=s.clear;
+    const un=`<div style="display:flex;flex-direction:column;align-items:center;gap:5px">
+      ${aRow(String(u.word||'').split('').map((ch,i)=>aTile(ch,i===u.at?'dim':'root','ca-pop .4s ease '+(i*0.04).toFixed(2)+'s both',true)).join(''),4)}
+      <span style="font-family:var(--body);font-size:11.5px;font-weight:700;color:var(--muted)">unstressed &mdash; any vowel fits</span></div>`;
+    if(!c) return un;
+    const syl=c.syl||[];
+    const cl=`<div style="display:flex;flex-direction:column;align-items:center;gap:5px">
+      <div style="display:flex;gap:4px;align-items:center">${syl.map((y,i)=>`<span style="padding:${i===c.on?'7px 10px':'5px 9px'};border-radius:8px;font-family:var(--display);font-weight:${i===c.on?900:700};font-size:${i===c.on?'17px':'14px'};background:${i===c.on?'var(--accent)':'var(--surface2)'};color:${i===c.on?'#fff':'var(--muted)'}">${esc(y)}</span>`).join('')}</div>
+      <span style="font-family:var(--body);font-size:11.5px;font-weight:700;color:var(--accent)">stressed &mdash; the vowel is readable</span></div>`;
+    return `<div style="display:flex;flex-direction:column;gap:9px;align-items:center">${un}
+      <span style="font-size:17px;color:var(--accent);font-weight:900;animation:ca-up .4s ease .2s both">&#8595;</span>${cl}</div>`; }
+  if(s.t==='tree'){ // one heard sound, candidate spellings ranked by origin
+    return `<div style="display:flex;flex-direction:column;gap:9px;align-items:center;width:100%">
+      <span style="padding:6px 14px;border-radius:999px;background:var(--accent);color:#fff;font-family:var(--display);font-weight:900;font-size:15px">${esc(s.sound||'')}</span>
+      <div style="display:flex;flex-direction:column;gap:5px;width:100%;max-width:320px">
+        ${(s.branches||[]).map((b,i)=>`<div style="display:flex;align-items:center;gap:8px;animation:ca-up .4s ease ${(i*0.09).toFixed(2)}s both">
+          <span style="min-width:44px;text-align:center;padding:4px 8px;border-radius:7px;background:var(--surface2);font-family:var(--display);font-weight:900;font-size:14px;color:var(--accent)">${esc(b.sp)}</span>
+          <span style="font-family:var(--body);font-size:11.5px;font-weight:800;color:var(--text)">${esc(b.org)}</span>
+          ${b.ex?`<span style="margin-left:auto;font-family:var(--body);font-size:11px;font-weight:650;color:var(--muted)">${esc(b.ex)}</span>`:''}
+        </div>`).join('')}
+      </div></div>`; }
+  if(s.t==='pair'){ // two words, one root, two routes
+    const side=(w)=>`<span style="padding:7px 12px;border-radius:9px;background:var(--surface2);font-family:var(--display);font-weight:800;font-size:16px;color:var(--text)">${esc(w)}</span>`;
+    return `<div style="display:flex;flex-direction:column;gap:9px;align-items:center;text-align:center">
+      <div style="display:flex;gap:10px;align-items:center">${side(s.left)}<span style="color:var(--muted);font-weight:900">&#8596;</span>${side(s.right)}</div>
+      ${s.root?`<span style="font-family:var(--body);font-size:12px;font-weight:800;color:var(--accent)">${esc(s.root)}</span>`:''}
+      ${s.note?`<span style="font-family:var(--body);font-size:11.5px;font-weight:650;color:var(--muted);max-width:30em;line-height:1.45">${esc(s.note)}</span>`:''}</div>`; }
+  if(s.t==='ask'){ // a question at the mic and what it eliminates
+    return `<div style="display:flex;flex-direction:column;gap:10px;align-items:center;width:100%">
+      <span style="padding:7px 15px;border-radius:999px;background:var(--accent);color:#fff;font-family:var(--display);font-weight:800;font-size:14px;text-align:center">${esc(s.q||'')}</span>
+      <div style="display:flex;flex-direction:column;gap:5px;max-width:340px">
+        ${(s.rules||[]).map((r,i)=>`<div style="display:flex;gap:7px;align-items:flex-start;animation:ca-up .4s ease ${(i*0.09).toFixed(2)}s both">
+          <span style="color:var(--accent);font-weight:900;font-size:12px;line-height:1.5">&#8250;</span>
+          <span style="font-family:var(--body);font-size:12px;font-weight:700;color:var(--text);line-height:1.5">${esc(r)}</span></div>`).join('')}
+      </div></div>`; }
   return ''; }
 function conceptAnimStage(an,sc){ const scn=an.scenes[Math.min(Math.max(sc,0),an.scenes.length-1)]; return renderStage(scn&&scn.stage); }
 function conceptPlayer(){ const ch=state.conceptSel; if(!ch) return ''; const an=conceptAnim(ch); const N=an.scenes.length; const sc=Math.min(Math.max(state.animScene||0,0),N-1); const playing=state.animOn;

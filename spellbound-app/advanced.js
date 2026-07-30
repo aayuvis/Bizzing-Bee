@@ -125,6 +125,17 @@
     openTip(i) { const c = active(); (aStats(c).tipsRead = aStats(c).tipsRead || {})[i] = 1; save(); set({ advView: 'tip', advTip: +i }); },
     tipCat(cat) { set({ advTipCat: cat }); },
 
+    /* Open an advanced chapter in the shared concept player. state.conceptSel drives
+       that player, and it reads narration and clips off ch.adv, so nothing else has
+       to change. advBack returns here rather than to the general concept list. */
+    openConcept(i) { i = +i; const chs = ADV._advChapters(); const ch = chs[i]; if (!ch) return;
+      const c = active(); (aStats(c).conceptsRead = aStats(c).conceptsRead || {})[i] = 1; save();
+      try { clearAnimTimer(); stopNarration(); } catch (e) {}
+      state.conceptSel = ch; state.conceptStep = 0; state.conceptWordsOpen = false; state.conceptWordIdx = 0;
+      state.animOn = false; state.animScene = 0; state.advReturn = 'concepts';
+      try { window.scrollTo(0, 0); } catch (e) {}
+      render(); },
+
     /* ============ ④ ADVANCED GAMES ============ */
     memStart() { const pool = hardPool().slice(0, 3000); const words = sample(pool.filter(w => w.d && w.d.length > 8 && w.d.length < 90), 6);
       const cards = []; words.forEach((w, k) => { cards.push({ id: k, t: 'w', label: w.w }); cards.push({ id: k, t: 'd', label: trunc(w.d, 60) }); });
@@ -164,7 +175,35 @@
       if (v === 'games') return ADV._gamesView();
       if (v === 'mem') return ADV._memView();
       if (v === 'dict') return ADV._dictView();
+      if (v === 'concepts') return ADV._conceptsView();
       return ADV._hub(); },
+
+    /* ---- Advanced Concepts: the decision procedures, gated to this mode only.
+       Chapters live in SB_ADV_CONCEPTS (never in state.conceptData, so they cannot
+       leak into the general concept list) and are narrated by am_michael. ---- */
+    _advChapters() { const A = window.SB_ADV_CONCEPTS; return (A && A.chapters) || []; },
+    _conceptsView() {
+      const c = active(); const st = aStats(c); const read = st.conceptsRead || (st.conceptsRead = {});
+      const chs = ADV._advChapters();
+      if (!chs.length) return ADV._shell(`<div style="max-width:520px;margin:0 auto;text-align:center;padding:30px;color:var(--muted);font-weight:700">Advanced concepts are still loading.</div>`, 'advExit');
+      const groups = {};
+      chs.forEach((ch, i) => { (groups[ch.category] = groups[ch.category] || []).push([ch, i]); });
+      const col = '#5B3FA6';
+      const card = ([ch, i]) => `<button data-act="advConcept" data-arg="${i}" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid ${read[i] ? col : 'var(--line)'};border-radius:15px;padding:14px 15px;box-shadow:var(--sh-rest);display:flex;flex-direction:column;gap:6px">
+        <span style="display:flex;align-items:center;gap:9px">
+          <span style="width:30px;height:30px;border-radius:9px;flex-shrink:0;display:grid;place-items:center;background:color-mix(in srgb,${col} 15%,transparent);color:${col};font-family:var(--display);font-weight:900;font-size:13px">${i + 1}</span>
+          <span style="min-width:0;flex:1;font-family:var(--display);font-weight:800;font-size:14.5px;line-height:1.2">${esc4(ch.title)}</span>
+          ${read[i] ? `<span style="flex-shrink:0;color:${col};font-weight:900;font-size:13px">✓</span>` : ''}
+        </span>
+        <span style="font-size:12px;color:var(--muted);font-weight:600;line-height:1.45">${esc4(String(ch.concept).split('. ')[0])}.</span>
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:${col}">${esc4(ch.difficulty)} · ${(ch.cards || []).length} cards · narrated</span></button>`;
+      return ADV._shell(`<div style="max-width:720px;margin:0 auto;animation:sb-rise .35s ease both">
+        <div style="display:flex;align-items:center;gap:11px;margin:0 0 4px"><span style="display:inline-flex;color:${col}">${SBI('advanced', 26)}</span><h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:0">Advanced Concepts</h2></div>
+        <p style="color:var(--muted);font-size:13px;margin:0 0 16px;line-height:1.5">Decision procedures, not word parts. These teach what to do with a word you have never heard — and they are narrated in a slower register than the main lessons.</p>
+        ${Object.keys(groups).map(g => `<div style="margin-bottom:16px">
+          <div style="font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">${esc4(g)}</div>
+          <div style="display:grid;gap:9px">${groups[g].map(card).join('')}</div></div>`).join('')}
+      </div>`, 'advExit'); },
 
     _shell(inner, back) { return `<div style="max-width:720px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><button data-act="${back || 'advBack'}" style="color:var(--muted);font-weight:700;font-size:13px">← ${back === 'advExit' ? 'Quit' : 'Advanced'}</button></div>${inner}</div>`; },
@@ -203,6 +242,7 @@
           ${seg('ucj', 'ultraJourney', '#7C5CFF', 'Ultra Champions Journey', '2-year plan · 150–300 words a day, list after list, with the fast Sprint method.', 'Day ' + st.day)}
           ${seg('mock', 'mockBee', '#C8901B', 'Mock Spelling Bee', 'Practice rounds — written, vocabulary & lightning — with a readiness benchmark.', 'best ' + (st.mockBest || 0))}
           ${seg('tips', 'advTips', '#13A892', 'Tips & Tricks', 'Memory, fast reading, etymology & bee-day tactics from champion methodology.', Object.keys(st.tipsRead || {}).length + ' read')}
+          ${seg('concepts', 'advanced', '#5B3FA6', 'Advanced Concepts', 'Schwa rescue, stress shift, the origin tree & question strategy — narrated.', Object.keys(st.conceptsRead || {}).length + '/' + ADV._advChapters().length)}
           ${seg('games', 'advGames', '#E8458C', 'Advanced Games', 'Memory match & rapid dictation — the drills a national-level speller needs.', 'play')}
         </div>
       </div>`; },
