@@ -2385,7 +2385,29 @@ function vocBuildCheck(words){ const pool=gameWordsD({needDef:true});
     const others=sample(src,3).map(x=>x.d).filter(Boolean);
     return { w, answer:w.d, choices:sample([w.d].concat(others)) }; }); }
 
+/* Every list in the coach catalogue — the curated ones, the NSF tiers, the origin lists,
+   plus anything the speller built with the List Builder, pasted in, or generated — can be
+   studied as a vocabulary deck. Only words that actually carry a meaning are usable, since
+   the whole deck is word → meaning. */
+function vocListCats(){ try{
+    return coachCatalog().map(cat=>{
+      const defs=(cat.words||[]).filter(w=>w&&w.w&&String(w.d||'').trim().length>3);
+      return { key:cat.key, label:cat.label, sub:cat.sub, words:defs, n:defs.length }; })
+      .filter(cat=>cat.n>=8);            // below this a 4-option quiz cannot be built fairly
+  }catch(e){ return []; } }
+function vocListCat(key){ return vocListCats().find(c=>c.key===key)||null; }
+/* A deck key is 'list:<catalogue key>' so it cannot collide with the level or theme decks,
+   and so each list keeps its own vocabulary level in c.vocab. */
+function vocDeckLabel(k){ k=String(k||'');
+  if(k.slice(0,5)==='list:'){ const cat=vocListCat(k.slice(5)); return cat?cat.label:'List'; }
+  if(k.slice(0,3)==='th:'){ const t=(myThemes()||[]).find(x=>x.id===k.slice(3)); return t?t.label:'Theme'; }
+  return ({mix:'My level mix',easy:'Easy',medium:'Medium',hard:'Hard',champ:'Champ'})[k]||'Vocabulary'; }
 function vocDeckWords(k){
+  if(String(k).slice(0,5)==='list:'){ const cat=vocListCat(String(k).slice(5));
+    if(!cat) return [];
+    /* hardest-first so a long list front-loads the words worth learning, then a stable
+       order — vocBuildSet does the slicing and remembers what has been served */
+    return cat.words.slice().sort((a,b)=>(b.y||3)-(a.y||3)||a.w.localeCompare(b.w)); }
   if(['easy','medium','hard','champ'].indexOf(k)>=0){
     const r=diffRange(active(),k); const ws=corpusSlice(r[0],r[1],600);
     return sample(ws, Math.min(20,ws.length)); }
@@ -2655,7 +2677,7 @@ function viewVocab(){ const S=state; const c=active();
         ${w.s?`<div style="font-size:13.5px;font-style:italic;color:var(--muted);line-height:1.5">“${blankHTML(w.s,w.w)}”</div>`:''}
         ${w.o?`<div style="font-size:12px;color:var(--muted)"><b>Origin:</b> ${esc(w.o)}${w.r?' · '+esc(w.r):''}</div>`:''}</div>`;
     return `<div style="max-width:640px;margin:0 auto">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><button data-act="vocBack" style="color:var(--muted);font-weight:700;font-size:13px">← Decks</button><span style="font-family:var(--display);font-weight:800;font-size:18px">Vocabulary</span><span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">${i+1} / ${ws.length}</span></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><button data-act="vocBack" style="color:var(--muted);font-weight:700;font-size:13px">← Decks</button><span style="font-family:var(--display);font-weight:800;font-size:18px">${esc(vocDeckLabel(S.vocDeck))}</span><span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">${i+1} / ${ws.length}</span></div>
       <div style="height:6px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-bottom:14px"><div style="height:100%;background:var(--accent);width:${Math.round((i+1)/ws.length*100)}%"></div></div>
       <button data-act="vocFlip" style="display:block;width:100%;text-align:center;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--sh-rest);min-height:270px">
         <div style="font-family:var(--display);font-weight:800;letter-spacing:.02em;${hwStyle(w.w,34)};margin-bottom:6px">${esc(w.w)}</div>
@@ -2712,7 +2734,19 @@ function viewVocab(){ const S=state; const c=active();
       ${deckBtn('hard','🔥 Hard','a band above you — the stretch zone')}
       ${deckBtn('champ','👑 Champ','real championship-tier words')}
       ${themeDecks}
-    </div></div>`;
+    </div>
+    ${(()=>{ /* every list the speller has — curated, NSF, origin, built, pasted or AI —
+                is also a vocabulary deck, each with its own vocabulary level */
+      const cats=vocListCats(); if(!cats.length) return '';
+      return `<div style="margin-top:26px">
+        <div style="display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-bottom:4px">
+          <h3 style="font-family:var(--display);font-weight:800;font-size:17px;margin:0">Your word lists</h3>
+          <span style="font-size:12px;color:var(--muted);font-weight:650">${cats.length} list${cats.length===1?'':'s'} with meanings — study any of them as vocabulary</span>
+        </div>
+        <p style="font-size:12px;color:var(--muted);font-weight:650;margin:0 0 12px;line-height:1.5">Each list keeps its own vocabulary level, and none of them touch your spelling levels.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
+          ${cats.map(cat=>deckBtn('list:'+cat.key,'📋 '+esc(cat.label), fmtN(cat.n)+' words with meanings')).join('')}
+        </div></div>`; })()}</div>`;
 }
 /* ---- Quotes: kid-friendly quotations from famous people (SB_QUOTES) ---- */
 const QUOTE_CAT_LABEL={ courage:'💪 Courage', kindness:'💛 Kindness', perseverance:'🧗 Never give up',
