@@ -259,7 +259,9 @@
   };
   function ensureAC(){ var A=window.AudioContext||window.webkitAudioContext; if(!A) return false;
     if(!AC){ AC=new A();
-      master=AC.createGain(); master.gain.value=1;
+      // background music trimmed to 30% of its old level (was 1) — SFX are on a
+      // separate context and unaffected
+      master=AC.createGain(); master.gain.value=0.3;
       var lp=AC.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=3800; lp.Q.value=.3;
       var dly=AC.createDelay(1); dly.delayTime.value=.29;
       var fb=AC.createGain(); fb.gain.value=.28; var wet=AC.createGain(); wet.gain.value=.2;

@@ -37,10 +37,14 @@
   let _hard = null, _hardFull = false;
   function hardWord(w) { const L = (w.w || '').length; const rare = 100 - Math.min(100, w.bp || 0);
     return L * 3 + rare * 0.5 + (w.y || 3) * 4; }  // long + rare + high-tier = hardest
-  function hardPool() { const haveFull = !!(window.SB_FULL && SB_FULL.length);
+  function hardPool() {
+    // SB_FULL arrives as a JSON string; fullWords() parses and caches it as an array.
+    // Without that this iterated the string's characters and built an empty pool.
+    const full = (typeof fullWords === 'function') ? fullWords() : (Array.isArray(window.SB_FULL) ? window.SB_FULL : null);
+    const haveFull = !!(full && full.length);
     if (_hard && _hardFull === haveFull) return _hard;   // rebuild once the 128k library loads in
     _hardFull = haveFull;
-    const src = haveFull ? SB_FULL : ((window.SB_DATA && SB_DATA.nsf) || []);
+    const src = haveFull ? full : ((window.SB_DATA && SB_DATA.nsf) || []);
     const seen = new Set(); const pool = [];
     for (const w of src) { if (!w || !w.w) continue; if (!/^[a-z]+$/i.test(w.w)) continue; if (w.w.length < 6) continue;
       if (!(w.d && w.d.length > 6)) continue; const k = nkey(w.w); if (seen.has(k)) continue; seen.add(k); pool.push(w); }

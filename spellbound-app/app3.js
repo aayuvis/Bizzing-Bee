@@ -469,11 +469,23 @@ const SB_UNSAFE_RE=/(nigger|nigga|faggot|niggard|currymuncher|towelhead|raghead|
 function safeWord(w){ if(!w||!w.w) return false; if(SB_UNSAFE_RE.test(w.w)) return false; if(w.d&&SB_UNSAFE_RE.test(w.d)) return false; return true; }
 /* ---- full library: 128k words live in words-full.js, loaded on demand (file too big for startup) ---- */
 let _fullState='idle'; // idle | loading | loaded | error
-function loadFullLibrary(then){ if(window.SB_FULL){ _fullState='loaded'; state.fullLoaded=true; if(then) then(); return; }
+/* words-full.js defines SB_FULL as a JSON STRING (it always has, including on main), but
+   every caller wants an array — loadFullLibrary called .filter() on it and threw into a
+   silent catch, so it stayed a string and anything iterating it walked characters instead
+   of records. Normalise once, in place, and hand back the same array afterwards. */
+function fullWords(){ try{
+    if(Array.isArray(window.SB_FULL)) return window.SB_FULL;
+    if(typeof window.SB_FULL!=='string' || !window.SB_FULL) return null;
+    let v=JSON.parse(window.SB_FULL);
+    if(!Array.isArray(v)) return null;
+    try{ v=v.filter(safeWord); }catch(e){}
+    window.SB_FULL=v; _wdb=null;                     // drop any index built off the string
+    return v; }catch(e){ return null; } }
+function loadFullLibrary(then){ if(window.SB_FULL){ fullWords(); _fullState='loaded'; state.fullLoaded=true; if(then) then(); return; }
   if(_fullState==='loading') return; _fullState='loading'; state.fullLoading=true; render();
   const s=document.createElement('script'); s.src='words-full.js';
   s.onload=()=>{ _fullState='loaded'; _wdb=null; state.fullLoading=false; state.fullLoaded=true;
-    try{ if(window.SB_FULL) window.SB_FULL=window.SB_FULL.filter(safeWord); }catch(e){}
+    fullWords();                                     // JSON string -> filtered array
     if(then) then(); render(); flash('Full library ready — 128,000 words 📚'); };
   s.onerror=()=>{ _fullState='error'; state.fullLoading=false; render(); flash('Couldn’t load words-full.js — keep it in the same folder'); };
   document.head.appendChild(s); }
@@ -1587,8 +1599,21 @@ const app = {
   openAdvTips:()=>app.advJump('tips'),
   openAdvMock:()=>app.advJump('mock'),
   openAdvGames:()=>app.advJump('games'),
-  advRevealClose:()=>{ set({advReveal:false}); },
-  advRevealGo:(seg)=>{ set({advReveal:false}); app.advJump(seg); },
+  advRevealClose:()=>{ advTourClear(); set({advReveal:false, advTour:0}); },
+  /* Turn the pack on or off. Off clears the announce flag too, so switching it back on
+     replays the guided tour rather than silently changing five screens again. */
+  toggleAdvPack:()=>{ const c=active(); if(!c) return;
+    if(advModeOn(c)){ c.addons=c.addons||{}; delete c.addons.advanced; c.advOn=false; c.advPaid=false; c.advAnnounced=0;
+      advTourClear(); state.advReveal=false; state.advTour=0; state.advView=null;
+      if(state.nav==='adv') state.nav='home';
+      save(); flash('Advanced Pack off'); render(); return; }
+    c.addons=c.addons||{}; c.addons.advanced=1; c.advOn=true; save();
+    try{ if(window.ADV&&ADV.activate) ADV.activate(); }catch(e){}
+    render(); },
+  advTourNext:()=>{ state.advTour=Math.min(ADV_TOUR.length-1,(state.advTour||0)+1); render(); advTourTick(); },
+  advTourPrev:()=>{ state.advTour=Math.max(0,(state.advTour||0)-1); render(); advTourTick(); },
+  advTourStep:(i)=>{ state.advTour=Math.max(0,Math.min(ADV_TOUR.length-1,+i)); render(); advTourTick(); },
+  advTourGo:(seg)=>{ advTourClear(); set({advReveal:false, advTour:0}); app.advJump(seg); },
   
   advBack:()=>{ if(window.ADV) ADV.back(); },
   advExit:()=>{ if(window.ADV) ADV.exit(); },
@@ -2032,41 +2057,109 @@ function advModeOn(c){ c=c||active(); if(!c) return false;
 /* The Journey is renamed once Advanced Mode is on — same ladder, but it now draws on the
    128k library, so calling it the beginner name undersells it. */
 function journeyName(){ return advModeOn()?'The Advanced Spelling Journey':'The Bizzing Bee Journey'; }
+/* ---- Focus mode in Supercharge ---------------------------------------------------
+   Supercharge and everything it leads to is the deep-learning half of the app, so it runs
+   in Focus: music off, background still, nav tabs tucked away with hover to reveal. We
+   only ever undo what we switched on ourselves, so a manual toggle elsewhere is respected. */
+const FOCUS_NAVS=new Set(['explore','concepts','journeys','builder','vocab','figurative',
+  'typing','quotes','trivtrain','revisions','traps','adv']);
+function focusAutoSync(){ try{ const F=window.SB_W4_FOCUS; if(!F) return;
+    const want=FOCUS_NAVS.has(state.nav);
+    if(want && !F.on()){ F.toggle(); state._focusAuto=1; }
+    else if(!want && F.on() && state._focusAuto){ F.toggle(); state._focusAuto=0; }
+    else if(want) state._focusAuto=state._focusAuto||0;
+  }catch(e){} }
+
 /* ---- Advanced Mode activation ----------------------------------------------------
    Advanced Mode can switch on three ways: paying coins, reaching Level 12, or reaching
    Bee Band 7. The last two happen mid-session with no ceremony at all, and five things
    appear in five different places, so the speller needs telling. Fire once per child. */
-const ADV_PLACES=[
-  ['advmock','Mock Spelling Bee','now at the top of Train, in Supercharge','mock','#C8901B'],
-  ['advconcepts','Advanced Concepts','in Learn, just under Word Concepts','concepts','#5B3FA6'],
-  ['advtips','Advanced Tips & Tricks','added to Revise, in Supercharge','tips','#0E8A78'],
-  ['arcade','Advanced Games','leading the Arcade','games','#E8458C'],
-  ['quest','Ultra Champions Journey','under the Journey on Setup & lists — all 128,000 words','ucj','#6C4FE0'] ];
+/* One step per upgrade. `screen`/`rows`/`at` describe the destination well enough to
+   redraw it in miniature, so the tour SHOWS where each feature landed rather than
+   describing it — you watch the new row slide into the position it now occupies. */
+const ADV_TOUR=[
+  { art:'ultraJourney', col:'#6C4FE0', title:'Ultra Champions Journey', seg:'ucj',
+    where:'At the top of Practice',
+    screen:'Practice', rows:['Ultra Champions Journey','Practice · Test · Revise','Your level and words','Quick practice'], at:0,
+    note:'A two-year plan at 150–300 words a day, drawn from all 128,196 words.' },
+  { art:'mockBee', col:'#C8901B', title:'Mock Spelling Bee', seg:'mock',
+    where:'Supercharge → Train, at the top',
+    screen:'Supercharge · Train', rows:['Mock Spelling Bee','Idioms & Similes','Typing Trainer','Quotes'], at:0,
+    note:'Written, vocabulary and lightning rounds, with a readiness benchmark.' },
+  { art:'concepts', col:'#5B3FA6', title:'Advanced Concepts', seg:'concepts',
+    where:'Supercharge → Learn, just under Word Concepts',
+    screen:'Supercharge · Learn', rows:['Word Concepts','Advanced Concepts','Word Journey','List Builder'], at:1,
+    note:'Six narrated lessons: schwa rescue, stress shift, the origin tree, question strategy.' },
+  { art:'advTips', col:'#0E8A78', title:'Advanced Tips & Tricks', seg:'tips',
+    where:'Supercharge → Revise',
+    screen:'Supercharge · Revise', rows:['Your Revisions','Your Traps','Advanced Tips & Tricks'], at:2,
+    note:'36 champion techniques across memory, speed, etymology and bee-day tactics.' },
+  { art:'advGames', col:'#E8458C', title:'Advanced Games', seg:'games',
+    where:'The Arcade, leading the screen',
+    screen:'Arcade', rows:['Advanced Games','Spelling Saga','Daily Buzz','Bee Trivia'], at:0,
+    note:'Memory match and rapid dictation, built on the hardest words in the library.' } ];
+
 function advCheckUnlock(){ try{ const c=active(); if(!c) return;
     if(!advModeOn(c)) return; if(c.advAnnounced) return;
     c.advAnnounced=1; save();
-    state.advReveal=true;
+    state.advReveal=true; state.advTour=0;
     try{ sfx('win'); burstConfetti(150); }catch(e){}
-    try{ flash('Advanced Mode unlocked'); }catch(e){}
-    try{ logActivity('unlock','Advanced Mode unlocked',{},[]); }catch(e){}
+    try{ flash('Advanced Pack active'); }catch(e){}
+    try{ logActivity('unlock','Advanced Pack activated',{},[]); }catch(e){}
+    advTourTick();
   }catch(e){} }
-/* The reveal card: what was added, and where to find it. Rows stagger in so it reads as
-   a list being filled rather than a wall of text appearing at once. */
-function advRevealCard(){
-  const row=([key,label,where,seg,col],i)=>`<button data-act="advRevealGo" data-arg="${escA(seg)}" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface2);border:1px solid var(--line);border-radius:13px;padding:11px 12px;animation:sb-rise .5s ease ${(0.18+i*0.11).toFixed(2)}s both">
-      ${iconTile((window.SB_ICON_ART&&SB_ICON_ART[key])?key:'grid',col,{size:38,radius:11})}
-      <span style="min-width:0;flex:1">
-        <span style="display:block;font-family:var(--display);font-weight:800;font-size:14.5px;line-height:1.15">${esc(label)}</span>
-        <span style="display:block;font-size:11.5px;color:var(--muted);font-weight:650;line-height:1.4;margin-top:1px">${esc(where)}</span></span>
-      <span style="flex-shrink:0;color:${col};font-weight:800">→</span></button>`;
-  return `<div data-act="advRevealClose" style="position:fixed;inset:0;z-index:80;background:rgba(20,14,42,.72);backdrop-filter:blur(5px);display:grid;place-items:center;padding:18px;overflow:auto">
-    <div onclick="event.stopPropagation()" style="width:100%;max-width:420px;background:var(--bg2);border:1px solid var(--line);border-radius:24px;padding:24px 22px;box-shadow:0 22px 60px rgba(0,0,0,.4);animation:sb-pop .45s cubic-bezier(.2,1.3,.4,1) both;text-align:center">
-      <div style="width:74px;height:74px;margin:0 auto 12px;border-radius:22px;background:linear-gradient(135deg,#3A2A72,#5B3FA6);display:grid;place-items:center;color:#fff;box-shadow:0 10px 26px rgba(58,42,114,.45);animation:ca-glow 1.6s ease 2">${SB_ICON?SB_ICON('trophy',{size:38}):iconSVG('trophy',38)}</div>
-      <div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:5px">Unlocked</div>
-      <h2 style="font-family:var(--display);font-weight:800;font-size:23px;line-height:1.12;margin:0 0 7px">Advanced Mode is on</h2>
-      <p style="font-size:13px;color:var(--muted);font-weight:650;line-height:1.5;margin:0 0 17px">National-bee preparation, drawn from the full 128,000-word library. Five things just appeared around the app.</p>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:17px">${ADV_PLACES.map(row).join('')}</div>
-      <button data-act="advRevealClose" style="width:100%;padding:14px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Got it</button>
+/* Auto-advance, so it plays as a guided tour rather than waiting to be clicked through.
+   Any manual step resets the timer; the last step stops it and waits. */
+let _advTourTimer=null;
+function advTourClear(){ try{ clearTimeout(_advTourTimer); }catch(e){} _advTourTimer=null; }
+function advTourTick(){ advTourClear();
+  if(!state.advReveal) return;
+  if((state.advTour||0)>=ADV_TOUR.length-1) return;          // rest on the last step
+  _advTourTimer=setTimeout(()=>{ if(!state.advReveal) return;
+    state.advTour=Math.min(ADV_TOUR.length-1,(state.advTour||0)+1); render(); advTourTick(); }, 4600); }
+
+/* The guided tour. A miniature of each destination screen, with the new row arriving in
+   place and everything around it dimmed, so the answer to "where is it now?" is visual. */
+function advTourCard(){
+  const n=ADV_TOUR.length; const i=Math.min(Math.max(state.advTour||0,0),n-1); const st=ADV_TOUR[i];
+  const last=i===n-1;
+  const art=(k,sz)=>(window.SB_ICON_ART&&SB_ICON_ART[k])?SB_ICON_ART(k,{size:sz}):(window.SB_ICON?SB_ICON('grid',{size:sz}):'');
+  // the miniature destination screen
+  const mock=`<div style="background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:11px 11px 12px">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:9px">
+        <span style="width:5px;height:5px;border-radius:50%;background:${st.col}"></span>
+        <span style="font-family:var(--display);font-weight:800;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">${esc(st.screen)}</span></div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        ${st.rows.map((r,ri)=>{ const isNew=ri===st.at;
+          if(isNew) return `<div key="${i}-${ri}" style="display:flex;align-items:center;gap:9px;background:var(--paper,var(--bg2));border:1.5px solid ${st.col};border-radius:10px;padding:8px 9px;box-shadow:0 4px 14px color-mix(in srgb,${st.col} 28%,transparent);animation:advt-in .62s cubic-bezier(.2,1.25,.35,1) .32s both">
+              <span style="width:26px;height:26px;flex-shrink:0;border-radius:8px;background:color-mix(in srgb,${st.col} 16%,transparent);color:${st.col};display:grid;place-items:center">${art(st.art,16)}</span>
+              <span style="min-width:0;flex:1;font-family:var(--display);font-weight:800;font-size:12px;color:var(--text)">${esc(r)}</span>
+              <span style="flex-shrink:0;font-size:9px;font-weight:900;letter-spacing:.08em;color:#fff;background:${st.col};padding:2px 6px;border-radius:999px">NEW</span></div>`;
+          return `<div style="display:flex;align-items:center;gap:9px;border-radius:10px;padding:8px 9px;opacity:.4">
+              <span style="width:26px;height:26px;flex-shrink:0;border-radius:8px;background:var(--line)"></span>
+              <span style="min-width:0;flex:1;font-family:var(--body);font-weight:700;font-size:11.5px;color:var(--muted)">${esc(r)}</span></div>`; }).join('')}
+      </div></div>`;
+  const dots=ADV_TOUR.map((s,di)=>`<button data-act="advTourStep" data-arg="${di}" title="${escA(s.title)}" style="height:5px;flex:1;border-radius:999px;background:${di<=i?s.col:'var(--line)'};transition:background .3s"></button>`).join('');
+  return `<div data-act="advRevealClose" style="position:fixed;inset:0;z-index:80;background:rgba(20,14,42,.74);backdrop-filter:blur(6px);display:grid;place-items:center;padding:16px;overflow:auto">
+    <div onclick="event.stopPropagation()" style="width:100%;max-width:400px;background:var(--bg2);border:1px solid var(--line);border-radius:24px;padding:20px 20px 18px;box-shadow:0 24px 64px rgba(0,0,0,.45);animation:sb-pop .4s cubic-bezier(.2,1.3,.4,1) both">
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:3px">
+        <span style="width:30px;height:30px;flex-shrink:0;border-radius:9px;background:linear-gradient(135deg,#3A2A72,#5B3FA6);display:grid;place-items:center;color:#fff">${art('advanced',17)}</span>
+        <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:14px;line-height:1.1">Your app just got bigger</span>
+        <span style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:1px">Upgrade ${i+1} of ${n}</span></span>
+        <button data-act="advRevealClose" style="flex-shrink:0;color:var(--muted);font-weight:700;font-size:12px;padding:4px 6px">Skip</button></div>
+      <div style="display:flex;gap:4px;margin:10px 0 14px">${dots}</div>
+      <div style="text-align:center;margin-bottom:13px">
+        <div style="width:56px;height:56px;margin:0 auto 9px;border-radius:17px;background:color-mix(in srgb,${st.col} 15%,transparent);color:${st.col};display:grid;place-items:center;animation:sb-pop .45s cubic-bezier(.2,1.3,.4,1) both,ca-glow 1.5s ease .4s 1">${art(st.art,30)}</div>
+        <div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1.15;animation:ca-up .45s ease .08s both">${esc(st.title)}</div>
+        <div style="font-family:var(--body);font-size:12.5px;font-weight:700;color:${st.col};margin-top:3px;animation:ca-up .45s ease .16s both">${esc(st.where)}</div>
+      </div>
+      ${mock}
+      <div style="font-size:11.5px;color:var(--muted);font-weight:650;line-height:1.5;text-align:center;margin:11px 2px 14px;animation:ca-up .45s ease .5s both">${esc(st.note)}</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        ${i>0?`<button data-act="advTourPrev" style="padding:13px 15px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">&larr;</button>`:''}
+        <button data-act="advTourGo" data-arg="${escA(st.seg)}" style="padding:13px 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:${st.col};font-weight:800;font-size:13px;white-space:nowrap">Show me</button>
+        <button data-act="${last?'advRevealClose':'advTourNext'}" style="flex:1;padding:13px;border-radius:12px;background:${last?'var(--accent)':st.col};color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">${last?'Start exploring':'Next &rarr;'}</button>
+      </div>
     </div></div>`; }
 function wayTile(key,size,tilt){ const w=WAYFIND[key]; size=size||48;
   const glyph=(w.sb&&window.SB_ICON)?SB_ICON(w.sb,{size:24}):iconSVG(w.ic,24,2.2);
@@ -2722,7 +2815,7 @@ function viewApp(){
         <div style="font-size:12px;color:var(--muted);margin-top:10px">Screenshot this card to share it!</div>`); })():'';
   const bandUp='';
 
-  const advReveal=S.advReveal?advRevealCard():'';
+  const advReveal=S.advReveal?advTourCard():'';
   return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}${advReveal}${bandUp}
     <div class="sb-header-sticky${(window.SB_W4_FOCUS&&SB_W4_FOCUS.on())?' sb-collapse-nav':''}" style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
       <div style="max-width:1080px;margin:0 auto;padding:11px clamp(9px,3.2vw,32px);display:flex;align-items:center;gap:8px">
@@ -5310,9 +5403,23 @@ function viewSettings(){
       ${_parent?`<button data-act="doSignOut" style="padding:8px 13px;border-radius:9px;background:var(--surface2);color:var(--text);font-weight:800;font-size:12.5px">Sign out</button>`:`<button data-act="openAuth" data-arg="signin" style="padding:8px 13px;border-radius:9px;background:var(--surface2);color:var(--text);font-weight:800;font-size:12.5px">Parent sign in</button>`}
       <button data-act="openAdmin" style="padding:8px 13px;border-radius:9px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:12.5px">🛡️ Admin console</button>
     </div></div>`;
+  /* Advanced Pack switch. Billing is still a local preview, so a parent needs a way to turn
+     the pack off again — for trying it, and for seeing the locked app as a buyer would. */
+  const _ac=active()||{}; const _advOn=advModeOn(_ac);
+  const advCard=`<div class="sb-card" style="margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap">
+      <span style="width:40px;height:40px;flex-shrink:0;border-radius:12px;background:linear-gradient(135deg,#3A2A72,#5B3FA6);display:grid;place-items:center;color:#fff">${(window.SB_ICON_ART&&SB_ICON_ART.advanced)?SB_ICON_ART('advanced',{size:22}):(SB_ICON?SB_ICON('trophy',{size:20}):'')}</span>
+      <div style="min-width:0;flex:1">
+        <div style="font-family:var(--display);font-weight:800;font-size:15px">Advanced Pack</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.45">${_advOn?'On — the 128,000-word library, mock bees, advanced concepts, tips and games are live across the app.':'Off — $'+((window.ADV&&ADV.price)?ADV.price():49)+'/yr adds national-bee prep. Turn on to preview it.'}</div>
+      </div>
+      <button data-act="toggleAdvPack" role="switch" aria-checked="${_advOn?'true':'false'}" style="flex-shrink:0;width:52px;height:30px;border-radius:999px;background:${_advOn?'var(--accent)':'var(--line)'};position:relative;transition:background .2s">
+        <span style="position:absolute;top:3px;left:${_advOn?'25px':'3px'};width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.24);transition:left .2s"></span></button>
+    </div></div>`;
   return `<div style="max-width:640px">
     <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 16px">Settings</h2>
     ${accountCard}
+    ${advCard}
     <div class="sb-card" style="margin-bottom:16px">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:3px">World</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Each world is a different look and a character that evolves as you level up.</div>
@@ -5394,7 +5501,7 @@ function coachTrain(){
   const nextIsLibrary = isJourney && stage.n>=CHAMP_LEVELS;      // advancing from here enters/continues the Library
   const libLocked = nextIsLibrary && !state.premium;
   // ---- List Dock: one clear "now training" tile + visual switching; pause/remove live in a ⋯ menu ----
-  const dockLabel=(k)=> k==='journey'?'Bizzing Bee Journey':listLabel(k).split(' · ')[0];
+  const dockLabel=(k)=> k==='journey'?journeyName().replace(/^The /,''):listLabel(k).split(' · ')[0];
   const CORE_LISTS={journey:1,review:1,missed:1}; const pinned=c.pinnedLists||{}; const pausedL=c.pausedLists||{};
   let extras=Object.keys(pinned).filter(k=>!CORE_LISTS[k] && pinned[k]);   // only lists the user has added
   if(!CORE_LISTS[key] && !extras.includes(key)) extras.push(key);           // always show the one being trained
@@ -5499,7 +5606,16 @@ function coachTrain(){
   const actions=`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:18px 2px 10px">Quick practice</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:11px">${act('startBuzz','flame','Daily Buzz','#E8845C')}${act('startWritten','pencil','Written','#7C5CFF')}${act('startOral','speaker','Oral round','#13A892')}${act('coachSetupOpen','sliders','Setup','#C8901B')}</div>`;
   const journeyPromo = (key!=='journey' && (getList(c,'journey').stage||0)===0) ? `<button data-act="startJourney" style="width:100%;text-align:left;border-radius:14px;margin-top:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 4px 14px rgba(43,27,94,.16)"><div style="padding:13px 16px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">★ Recommended path</div><div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">${journeyName()} — 20 Levels to Champ</div></div><span style="padding:8px 14px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Start →</span></div></button>` : '';
-  return `<div style="max-width:760px;margin:0 auto">${printDlg}${topBar}
+  const advJourney = advModeOn(c) ? `<button class="sb-lift" data-act="openAdvJourney" style="width:100%;text-align:left;border-radius:18px;margin-bottom:16px;overflow:hidden;background:linear-gradient(135deg,#241B4E,#3A2A72 58%,#5B3FA6);box-shadow:0 8px 22px rgba(36,27,78,.3)">
+      <div style="padding:16px 18px;display:flex;align-items:center;gap:14px;color:#fff;flex-wrap:wrap">
+        <span style="width:48px;height:48px;flex-shrink:0;border-radius:14px;background:rgba(255,255,255,.14);display:grid;place-items:center;color:#fff">${(window.SB_ICON_ART&&SB_ICON_ART.ultraJourney)?SB_ICON_ART('ultraJourney',{size:27}):(SB_ICON?SB_ICON('trophy',{size:25}):'')}</span>
+        <span style="min-width:0;flex:1">
+          <span style="display:block;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.82)">Advanced Pack</span>
+          <span style="display:block;font-family:var(--display);font-weight:800;font-size:18px;line-height:1.15">Ultra Champions Journey</span>
+          <span style="display:block;font-size:12.5px;color:rgba(255,255,255,.9);font-weight:600;margin-top:3px;line-height:1.45">150–300 words a day from all ${fmtN(128196)} words, with the Sprint method.</span></span>
+        <span style="flex-shrink:0;padding:10px 16px;border-radius:11px;background:#fff;color:#3A2A72;font-weight:800;font-size:13px;white-space:nowrap">Day ${((c.adv&&c.adv.day)||1)} &rarr;</span>
+      </div></button>` : '';
+  return `<div style="max-width:760px;margin:0 auto">${printDlg}${topBar}${advJourney}
     <div style="display:flex;gap:5px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:16px">${tab('revise','Learn')}${tab('practice','Practice Spelling')}${tab('vocab','Practice Vocabulary')}</div>
     ${body}
     ${S.luTab==='vocab'?'':liveHeatmap(ws, {anon:S.luTab==='practice', print:true})}
@@ -6127,7 +6243,7 @@ function gamesHub(){ const S=state; const c=active();
   /* Advanced Games leads the Arcade once Advanced Mode is on — it is the hardest content
      here, so it sits above the saga rather than buried with the quick games. */
   if(advModeOn(c)&&window.ADV){ const st=(c.adv)||{};
-    heroes.push(heroTile({act:'openAdvGames',grad:'linear-gradient(150deg,#241B4E,#3A2A72 60%,#5B3FA6)',
+    heroes.push(heroTile({act:'openAdvGames',span:true,grad:'linear-gradient(150deg,#241B4E,#3A2A72 60%,#5B3FA6)',
       art:ART('advanced',112)||gameArtSVG('champ',112),tag:'◆ Advanced',tagC:'#D8C9FF',tagBg:'rgba(180,150,255,.16)',tagBd:'rgba(180,150,255,.4)',
       title:'Advanced Games',blurb:'Memory match and rapid dictation, drawn from the hardest words in the 128,000-word library.',
       cta:'Play',sub:(st.dictBest?st.dictBest+' best dictation':'national-bee drills')})); }
@@ -6766,6 +6882,7 @@ function render(){
   // Advanced Mode can switch on from a level-up mid-session, so check on every render.
   // advCheckUnlock() is a no-op after the first time for a given child.
   try{ if(state.screen==='app' && !state.advReveal) advCheckUnlock(); }catch(e){}
+  try{ if(state.screen==='app') focusAutoSync(); }catch(e){}
   const a=document.activeElement; const fkey=a&&a.getAttribute&&a.getAttribute('data-fkey'); let ss=null,se=null;
   try{ if(a){ ss=a.selectionStart; se=a.selectionEnd; } }catch(e){}
   document.documentElement.setAttribute('data-theme', state.theme);
