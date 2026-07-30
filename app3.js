@@ -847,7 +847,13 @@ const app = {
   openTiers:()=>{ if(typeof pinGate==='function'){ pinGate(()=>set({showTiers:true}),'Account & plan'); } else set({showTiers:true}); },
   closeTiers:()=>set({showTiers:false, tierUpsell:null}),
   chooseTier:(id)=>{ const c=active(); if(!window.SB_TIERS||!SB_TIERS[id]) return; SB_ENT.setTier(c,id); try{ state.premium=SB_ENT.isPaid(); }catch(e){} save(); try{ sfx(id==='free'?'tap':'win'); }catch(e){} if(id!=='free') burstConfetti(80); flash(id==='free'?'Switched to Free':('You’re on '+SB_TIERS[id].name+' 🎉')); render(); },
-  buyAddon:(k)=>{ const c=active(); if(!window.SB_ADDONS||!SB_ADDONS[k]) return; if(!SB_ADDONS[k].built){ flash('✨ Advanced Pack is coming soon — you’ll be first to know!'); return; } c.addons=c.addons||{}; c.addons[k]=1; save(); flash('Advanced Pack added'); render(); },
+  buyAddon:(k)=>{ const c=active(); if(!window.SB_ADDONS||!SB_ADDONS[k]) return;
+    if(!SB_ADDONS[k].built){ flash(SB_ADDONS[k].name+' is coming soon — you’ll be first to know'); return; }
+    c.addons=c.addons||{}; c.addons[k]=1; save();
+    // the advanced pack IS Advanced Mode; owning it switches the mode on, and the reveal
+    // card then fires from render() off c.advOn
+    if(k==='advanced'){ try{ if(window.ADV&&ADV.activate) ADV.activate(); }catch(e){} set({showTiers:false, tierUpsell:null}); return; }
+    flash(SB_ADDONS[k].name+' added'); render(); },
   // ===== Parent account / auth (local scaffold; Supabase in Phase 2) =====
   openAuth:(mode)=>set({authSheet:mode||'signin', authErr:null}),
   closeAuth:()=>set({authSheet:null, authErr:null, authAdmin:false}),
@@ -2473,14 +2479,15 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state; const a
 /* Advanced Mode entry — a gated hero banner. Unlocks at Level 12, Bee Band 7, or by paying. */
 function advBanner(c){ const lvl=(function(){ try{ return listStageIdx(c,'journey')+1; }catch(e){ return 1; } })();
   const band=(function(){ try{ return beeBand(c).band; }catch(e){ return 2; } })();
-  const on=advModeOn(c);                                   // explicitly activated
-  const elig=(window.ADV&&ADV.eligible)?ADV.eligible():(state.devUnlock||state.premium||lvl>=12||band>=7);
+  const on=advModeOn(c);                                   // owns the Advanced Pack
+  const ready=(window.ADV&&ADV.ready)?ADV.ready():(lvl>=12||band>=7);
+  const price=(window.ADV&&ADV.price)?ADV.price():49;
   const unlocked=on;
   const sub=on
     ? 'National-bee prep · 128,000-word library · 2-year plan, mock bees, champion tips & games'
-    : elig
-      ? 'You have qualified — tap to switch on national-bee prep from the 128,000-word library'
-      : 'Unlock at Level 12, Bee Band 7, or for 600 coins — National-bee prep from the 128,000-word library';
+    : ready
+      ? 'You are ready for this — the Advanced Pack adds the full 128,000-word library, mock bees and narrated advanced lessons · $'+price+'/yr'
+      : 'Advanced Pack · $'+price+'/yr — the full 128,000-word library, mock bees, narrated advanced lessons and champion techniques';
   return `<button class="sb-lift" data-act="openAdvanced" style="width:100%;text-align:left;border-radius:20px;overflow:hidden;margin-bottom:16px;background:linear-gradient(135deg,#241B4E,#3A2A72 60%,#5B3FA6);box-shadow:0 8px 22px rgba(60,40,120,.32);position:relative">
     <div style="padding:17px 18px;display:flex;align-items:center;gap:14px;color:#fff">
       <span style="width:52px;height:52px;border-radius:15px;flex-shrink:0;display:grid;place-items:center;color:#fff;background:rgba(255,255,255,.14)">${SB_ICON('trophy',{size:29})}</span>
@@ -2488,7 +2495,7 @@ function advBanner(c){ const lvl=(function(){ try{ return listStageIdx(c,'journe
         <span style="display:flex;align-items:center;gap:8px"><span style="font-family:var(--display);font-weight:800;font-size:18px">Advanced Mode</span>${unlocked?'<span style="font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:#39d98a;color:#093">Unlocked</span>':'<span style="display:inline-flex;color:rgba(255,255,255,.9)">'+SB_ICON('lock',{size:15})+'</span>'}</span>
         <span style="display:block;font-size:12.5px;color:rgba(255,255,255,.9);font-weight:600;margin-top:3px;line-height:1.4">${esc(sub)}</span>
       </span>
-      <span style="flex-shrink:0;padding:9px 15px;border-radius:11px;background:#fff;color:#3A2A72;font-weight:800;font-size:13px;white-space:nowrap">${on?'Enter →':(elig?'Activate →':'View →')}</span>
+      <span style="flex-shrink:0;padding:9px 15px;border-radius:11px;background:#fff;color:#3A2A72;font-weight:800;font-size:13px;white-space:nowrap">${on?'Enter →':'See the pack →'}</span>
     </div></button>`; }
 // Optional placement test: climb difficulty bands; three fails per level find your start
 /* placement-test helpers: word pool per difficulty band + the Quest stage that matches a band */

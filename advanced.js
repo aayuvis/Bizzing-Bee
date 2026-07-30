@@ -12,20 +12,24 @@
   /* ---- unlock ---- */
   function advLevel() { try { return listStageIdx(active(), 'journey') + 1; } catch (e) { return 1; } }
   function advBand() { try { return beeBand(active()).band; } catch (e) { return 2; } }
-  /* Eligibility and activation are separate, deliberately. Reaching Level 12 or Bee Band 7
-     makes you ELIGIBLE; it does not switch Advanced Mode on. Activation is always an
-     explicit tap, because switching it on renames the Journey and adds five things in five
-     places — that should never happen to someone silently mid-session. */
-  function advEligible() { return state.devUnlock || state.premium || advLevel() >= 12 || advBand() >= 7; }
-  function advActive() { const c = active(); return !!(c && (c.advOn || c.advPaid)); }   // advPaid = pre-existing buyers
+  /* Advanced Mode IS the Advanced Pack add-on: $49/yr in pricing.js, sitting on top of any
+     tier. No tier grants it — not even Regional Speller — and it is not purchasable with
+     coins, which are earned by playing and would undercut the price. So ownership of the
+     add-on is the only gate, and SB_ENT.hasAddon is the only place that is decided.
+       owned  the add-on is paid for (or dev unlock). This is what gates everything.
+       ready  Level 12 / Bee Band 7 — a READINESS signal used only to change how the offer
+              is pitched. It never grants access. */
+  function advOwned() { try { if (window.SB_ENT) return !!SB_ENT.hasAddon('advanced'); }catch(e){}
+    return !!state.devUnlock; }
+  function advReady() { return advLevel() >= 12 || advBand() >= 7; }
+  /* c.advOn / c.advPaid grandfather anyone who unlocked under the old coin rule. */
+  function advActive() { const c = active(); return advOwned() || !!(c && (c.advOn || c.advPaid)); }
   function advUnlocked() { return advActive(); }
-  const ADV_COST = 600;
-  /* One activation path for every route in: free when eligible, 600 coins otherwise.
-     Sets advOn, and the reveal card fires off that flag from render(). */
-  function advActivate(paid) { const c = active(); if (!c || advActive()) return true;
-    if (!paid && !advEligible()) return false;
-    c.advOn = true; if (paid) c.advPaid = true;
-    save();
+  const ADV_PRICE = (function(){ try { return SB_ADDONS.advanced.priceYr; } catch(e){ return 49; } })();
+  /* Called after the add-on is purchased. Marks the mode live so the reveal card fires from
+     render(), and starts pulling the 128k library the pack pays for. */
+  function advActivate() { const c = active(); if (!c) return false;
+    c.advOn = true; save();
     try { if (!window.SB_FULL && typeof loadFullLibrary === 'function') loadFullLibrary(function () { try { render(); } catch (e) {} }); } catch (e) {}
     return true; }
 
@@ -57,13 +61,15 @@
     open() { if (!advActive()) { set({ nav: 'adv', screen: 'app', advView: 'gate', conceptSel: null }); return; }
       set({ nav: 'adv', screen: 'app', advView: 'hub', conceptSel: null }); },
     active() { return advActive(); },
-    eligible() { return advEligible(); },
-    buy() { const c = active(); if (!c) return;
-      if (advActive()) { ADV.open(); return; }
-      if (advEligible()) { advActivate(false); set({ advView: 'hub' }); return; }   // qualified -> free
-      if (!window.confirm('Unlock Advanced Mode — National Bee prep — for ' + ADV_COST + ' coins?')) return;
-      if ((c.coins || 0) < ADV_COST) { flash('Need ' + ADV_COST + ' coins — or reach Level 12 / Bee Band 7 to unlock free'); return; }
-      c.coins -= ADV_COST; advActivate(true); set({ advView: 'hub' }); },
+    ready() { return advReady(); },
+    owned() { return advOwned(); },
+    activate() { return advActivate(); },
+    price() { return ADV_PRICE; },
+    /* The only way in is buying the add-on, so the gate hands off to the plans sheet.
+       A parent PIN sits on that sheet already, which is where a purchase belongs. */
+    buy() { if (advActive()) { ADV.open(); return; }
+      try { state.tierUpsell = { feature:'advanced', label:'Advanced Mode', need:'addon' }; }catch(e){}
+      if (window.app && app.openTiers) app.openTiers(); else set({ showTiers:true }); },
     go(v) { set({ advView: v }); },
     back() { set({ advView: 'hub' }); },
 
@@ -231,45 +237,45 @@
     _shell(inner, back) { return `<div style="max-width:720px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><button data-act="${back || 'advBack'}" style="color:var(--muted);font-weight:700;font-size:13px">← ${back === 'advExit' ? 'Quit' : 'Advanced'}</button></div>${inner}</div>`; },
 
-    /* The gate is the only way in. It shows one of two faces: QUALIFIED, where activation
-       is a free tap, or LOCKED, where it lists the three routes. Either way the speller
-       chooses -- Advanced Mode never switches itself on. */
-    _gate() { const lvl = advLevel(); const band = advBand(); const c = active();
-      const elig = advEligible(); const coins = (c && c.coins) || 0;
-      const why = state.devUnlock ? 'developer unlock' : state.premium ? 'your Premium plan'
-        : lvl >= 12 ? ('Level ' + lvl + ' on the Journey') : ('Bee Band ' + band);
-      const reqRow = (e, t, m, done) => `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line2,var(--line))">
-          <span style="width:30px;height:30px;flex-shrink:0;border-radius:9px;display:grid;place-items:center;background:${done ? 'var(--mastered-tint,#E1F4E8)' : 'var(--surface2)'};color:${done ? 'var(--good,#1f9d57)' : 'var(--muted)'}">${SBI(e, 17) || ''}</span>
-          <span style="flex:1;font-weight:700;font-size:14px">${t}</span>
-          <span style="font-size:12px;font-weight:800;color:${done ? 'var(--good,#1f9d57)' : 'var(--muted)'}">${done ? 'done' : m}</span></div>`;
+    /* The gate is the only way in, and the only way through it is owning the add-on.
+       Two faces, and neither of them grants access:
+         READY   Level 12 or Bee Band 7 reached — pitch it as earned, still $49/yr.
+         EARLY   not there yet — show the progress, and let a parent buy anyway. */
+    _gate() { const lvl = advLevel(); const band = advBand();
+      const ready = advReady(); const price = ADV_PRICE;
+      const progRow = (ic, t, m, done) => `<div style="display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--line2,var(--line))">
+          <span style="width:28px;height:28px;flex-shrink:0;border-radius:9px;display:grid;place-items:center;background:${done ? 'var(--mastered-tint,#E1F4E8)' : 'var(--surface2)'};color:${done ? 'var(--good,#1f9d57)' : 'var(--muted)'}">${SBI(ic, 16) || ''}</span>
+          <span style="flex:1;font-weight:700;font-size:13.5px">${t}</span>
+          <span style="font-size:12px;font-weight:800;color:${done ? 'var(--good,#1f9d57)' : 'var(--muted)'}">${done ? 'ready' : m}</span></div>`;
       const whatYouGet = [
+        ['quest', 'The full 128,000-word library', 'every word, with audio — up from 40,000'],
         ['advmock', 'Mock Spelling Bee', 'written, vocabulary & lightning rounds'],
-        ['advconcepts', 'Advanced Concepts', 'schwa rescue, stress shift & the origin tree'],
+        ['advconcepts', 'Advanced Concepts', 'six narrated lessons — schwa rescue, stress shift, the origin tree'],
         ['advtips', 'Advanced Tips & Tricks', '36 champion techniques'],
         ['arcade', 'Advanced Games', 'memory match & rapid dictation'],
-        ['quest', 'The Advanced Spelling Journey', 'all 128,000 words, 150-300 a day'],
-      ].map(([k, t, d], i) => `<div style="display:flex;align-items:center;gap:11px;padding:8px 0;animation:sb-rise .45s ease ${(0.05 + i * 0.07).toFixed(2)}s both">
-          <span style="color:var(--accent);flex-shrink:0;display:inline-flex">${SBI(k, 20) || ''}</span>
+      ].map(([k, t, d], i) => `<div style="display:flex;align-items:flex-start;gap:11px;padding:8px 0;animation:sb-rise .45s ease ${(0.05 + i * 0.07).toFixed(2)}s both">
+          <span style="color:var(--accent);flex-shrink:0;display:inline-flex;margin-top:1px">${SBI(k, 20) || ''}</span>
           <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:13.5px;line-height:1.2">${t}</span>
-          <span style="display:block;font-size:11.5px;color:var(--muted);font-weight:650;margin-top:1px">${d}</span></span></div>`).join('');
+          <span style="display:block;font-size:11.5px;color:var(--muted);font-weight:650;margin-top:1px;line-height:1.4">${d}</span></span></div>`).join('');
       return `<div style="max-width:560px;margin:0 auto;animation:sb-rise .35s ease both">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">&larr; Home</button></div>
         <div style="text-align:center">
           <div style="width:78px;height:78px;margin:0 auto 12px;border-radius:23px;background:linear-gradient(135deg,#241B4E,#5B3FA6);display:grid;place-items:center;color:#fff;box-shadow:0 12px 30px rgba(58,42,114,.42)">${SBI('advanced', 40) || ''}</div>
-          ${elig ? `<div style="display:inline-block;padding:5px 13px;border-radius:999px;background:var(--mastered-tint,#E1F4E8);color:var(--good,#1f9d57);font-weight:800;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">You have qualified</div>` : ''}
-          <h2 style="font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 6px">Advanced Mode</h2>
-          <p style="color:var(--muted);font-size:14.5px;line-height:1.55;margin:0 0 18px">National Spelling Bee preparation, drawn from the full <b>128,000-word</b> library.${elig ? ' Unlocked by ' + why + ' &mdash; switch it on when you are ready.' : ''}</p>
+          ${ready ? `<div style="display:inline-block;padding:5px 13px;border-radius:999px;background:var(--mastered-tint,#E1F4E8);color:var(--good,#1f9d57);font-weight:800;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">Ready for this &mdash; ${lvl >= 12 ? 'Level ' + lvl : 'Bee Band ' + band}</div>` : ''}
+          <h2 style="font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 4px">Advanced Mode</h2>
+          <div style="font-family:var(--display);font-weight:800;font-size:15px;color:var(--accent);margin-bottom:7px">Advanced Pack &middot; $${price}/year</div>
+          <p style="color:var(--muted);font-size:14px;line-height:1.55;margin:0 0 18px">National Spelling Bee preparation. An add-on that sits on top of whichever plan you are on.</p>
         </div>
         <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:16px 18px;text-align:left;margin-bottom:14px">
-          <div style="font-weight:800;font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">What it adds</div>
+          <div style="font-weight:800;font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">What the pack includes</div>
           ${whatYouGet}</div>
-        ${elig ? '' : `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:16px 18px;text-align:left;margin-bottom:14px">
-          <div style="font-weight:800;font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Unlock any one way</div>
-          ${reqRow('trophy', 'Reach Level 12 on the Journey', 'Level ' + lvl + ' / 12', lvl >= 12)}
-          ${reqRow('target', 'Prove Bee Band 7 or higher', 'Band ' + band + ' / 7', band >= 7)}
-          ${reqRow('coin', 'Unlock now for ' + ADV_COST + ' coins', coins + ' coins', false)}</div>`}
-        <button data-act="advBuy" style="width:100%;padding:16px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">${elig ? 'Activate Advanced Mode' : (coins >= ADV_COST ? 'Unlock for ' + ADV_COST + ' coins' : 'Keep climbing to unlock')}</button>
-        <p style="text-align:center;color:var(--muted);font-size:11.5px;font-weight:650;margin:10px 0 0">${elig ? 'Nothing changes until you tap. You can explore the rest of the app exactly as before.' : 'Level 12 or Bee Band 7 unlocks it free.'}</p>
+        ${ready ? '' : `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:16px 18px;text-align:left;margin-bottom:14px">
+          <div style="font-weight:800;font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Recommended once you reach</div>
+          ${progRow('trophy', 'Level 12 on the Journey', 'Level ' + lvl + ' / 12', lvl >= 12)}
+          ${progRow('target', 'Bee Band 7', 'Band ' + band + ' / 7', band >= 7)}
+          <div style="font-size:11.5px;color:var(--muted);font-weight:650;line-height:1.45;padding-top:9px">These are guidance, not gates. The pack works at any level &mdash; it is simply hardest-first material.</div></div>`}
+        <button data-act="advBuy" style="width:100%;padding:16px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">Get the Advanced Pack &mdash; $${price}/yr</button>
+        <p style="text-align:center;color:var(--muted);font-size:11.5px;font-weight:650;margin:10px 0 0;line-height:1.5">A grown-up completes the purchase. Nothing in the app changes until the pack is active.</p>
       </div>`; },
 
     _hub() { const c = active(); const st = aStats(c);
