@@ -69,7 +69,7 @@
 
   var master = null, pad = null, running = false, timer = null;
   var nextTime = 0, stepIdx = 0, mood = MOODS.meadow, duckAmt = 1;
-  var TARGET = 0.055; // background level — deliberately quiet
+  var TARGET = 0.0165; // background level — 30% of the previous 0.055
 
   function muted() { try { return localStorage.getItem('sb_saga_music') === 'off'; } catch (e) { return false; } }
 
