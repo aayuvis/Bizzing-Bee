@@ -3653,7 +3653,7 @@ function playScene(i){ const ch=state.conceptSel; if(!ch) return; const an=conce
     }catch(e){ if(canSpeak()) narrate(txt,go); }
     _animTimer=setTimeout(go, clip.ms+2500); /* safety net if 'ended' never fires */ }
   else if(state.sound!==false && canSpeak()){ narrate(txt, go); _animTimer=setTimeout(go, est); }
-  else { _animTimer=setTimeout(advance, an.scenes[i].dur||2300); } }
+  else { _animTimer=setTimeout(advance, an.scenes[i].dur||2300); } }   // dur is now script-length aware
 function firstDef(ch,w){ const e=conceptWordsOf(ch).find(x=>nkey(x.w)===nkey(w)); return (e&&(e.def||e.d||''))||''; }
 function conceptMeaning(ch){ const p=(String(ch.title).match(/\(([^)]*)\)/)||[])[1]; return (p||conceptRoots(ch.title)||'').trim(); }
 function conceptWordList(ch){ return conceptWordsOf(ch).map(x=>x.w).filter(w=>w && /^[a-z]+$/i.test(w)); }
@@ -3672,7 +3672,15 @@ function conceptAnim(ch){ if(ch._anim) return ch._anim;
   // Authored explanation script (the bee teaches the concept) takes priority over the pattern templates.
   try{ const ci=(ch&&ch.adv)?advIdx(ch):(state.conceptData||[]).indexOf(ch);
     const auth=(ch&&ch.adv)?(window.SB_ADV_CSCRIPT&&window.SB_ADV_CSCRIPT[ci]):(window.SB_CSCRIPT&&window.SB_CSCRIPT[ci]);
-    if(auth&&auth.scenes&&auth.scenes.length){ const scenes=auth.scenes.map(s=>({stage:s.show,cap:s.cap,say:s.say,mood:s.mood||'happy',dur:s.dur||3000}));
+    if(auth&&auth.scenes&&auth.scenes.length){
+      /* Pace each scene by how long its narration actually is. A flat 3s default was fine
+         for the short general scripts but ran the advanced ones (15-23s of speech) far
+         faster than anyone could follow whenever the clip was unavailable. Prefer the
+         MEASURED clip length from the voice manifest; fall back to a reading-speed
+         estimate from the script text; never go below 3s. */
+      const measured=(i)=>{ try{ const c=voiceClip(ch,i); return c?c.ms:0; }catch(e){ return 0; } };
+      const scenes=auth.scenes.map((s,i)=>({stage:s.show,cap:s.cap,say:s.say,mood:s.mood||'happy',
+        dur:s.dur || measured(i) || Math.max(3000, 900+String(s.say||s.cap||'').length*70)}));
       const r={label:auth.label||catGroup(ch.category),scenes,authored:true}; ch._anim=r; return r; } }catch(e){}
   const fam=catGroup(ch.category); const lc=(ch.title+' '+(ch.category||'')+' '+(ch.concept||'')).toLowerCase();
   const ho=conceptHero(ch); const heroArr=(ho.hero||[]).filter(Boolean); const mean=conceptMeaning(ch)||'';
