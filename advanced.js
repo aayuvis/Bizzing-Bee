@@ -185,6 +185,8 @@
     /* ---- Advanced Concepts: the decision procedures, gated to this mode only.
        Chapters live in SB_ADV_CONCEPTS (never in state.conceptData, so they cannot
        leak into the general concept list) and are narrated by am_michael. ---- */
+    /* the single source of truth for "is Advanced Mode on" — app3's advModeOn() defers here */
+    unlocked() { return advUnlocked(); },
     _advChapters() { const A = window.SB_ADV_CONCEPTS; return (A && A.chapters) || []; },
     _conceptsView() {
       const c = active(); const st = aStats(c); const read = st.conceptsRead || (st.conceptsRead = {});
