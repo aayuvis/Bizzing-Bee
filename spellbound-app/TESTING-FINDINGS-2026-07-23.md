@@ -80,7 +80,8 @@ is bundled and works. This is expected — flag it in release notes, not a bug.
   revision → next; no click needed. Verified (gi advances, mastered/missed recorded).
 - **Word Coach Learn cards** carry Complete / Mark-for-revision, no Next button; concept &
   single-word previews keep normal navigation.
-- **Top nav** collapses (hover-reveal) **only** in the Word Coach; home/games/etc. stay normal.
+- **Top nav** collapsed (hover-reveal) in the Word Coach. **Removed 2026-07-30** — the top
+  nav is now always visible on desktop; Focus mode no longer touches it.
 - **Bee tip** shows Bizzy at the end in the selected world's font.
 - **Arcade word quiz** meaning prompt is now masked (was raw).
 

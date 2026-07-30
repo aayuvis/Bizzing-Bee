@@ -234,8 +234,9 @@ give cards fixed mm dimensions so they stay portrait regardless of the print dia
     resuming on close. Navigating elsewhere closes it.
 - **Toasts:** bottom-center accent chip, `sb-pop`, auto-dismiss (`scheduleToast`).
 - **Nav:** 7 destinations (Home · Practice · Explore · Arcade · Store · Progress · Collection)
-  as illustrated-icon pills on desktop; a bottom tab bar on mobile; the top nav collapses to
-  hover-reveal *only inside the Word Coach*.
+  as illustrated-icon pills on desktop; a bottom tab bar on mobile. **The desktop top nav is
+  always visible** — never collapsed, never hidden behind a hover, on any screen or in any
+  mode. Focus mode dims the world and kills the music; it does not touch the nav.
 - **Empty states:** `beeEmpty(mood, text)` — Bizzy + a kind line. Never a bare "No data."
 
 ---

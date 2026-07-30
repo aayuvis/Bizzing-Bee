@@ -90,7 +90,9 @@ A feature **passes** only if it works **touch-only AND keyboard-only**, on **all
 - [ ] Complete / Mark-for-revision buttons show only when idle (skip/defer) or after Show answer.
 - [ ] **Learn** cards carry Complete / Mark-for-revision, **no Next button** (Back kept); concept
       cards + single-word preview keep normal Next navigation.
-- [ ] Top nav **collapses/hover-reveals only inside the Word Coach**; every other screen is normal.
+- [ ] Top nav is **always visible on desktop** — no screen and no mode may collapse it or
+      hide it behind a hover. (Under 640px it is replaced by the bottom tab bar, which is
+      the intended mobile layout, not a collapse.)
 - [ ] Today's bee tip shows **Bizzy at the end** in the **selected world's font**.
 - [ ] Long words (e.g. *supercalifragilisticexpialidocious*) wrap inside the card, no overflow.
 
@@ -170,7 +172,7 @@ are not polish items; they are the first thing a child judges the app on.
 5. Parent PIN + purchase confirm still gate (theme, power-up, list).
 6. Difficulty picker (`setGameDiff`) changes word hardness.
 7. Light/White/Dusk × phone/tablet/laptop layout intact, **no horizontal overflow**.
-8. Nav + back resolve everywhere (no dead screens); top-nav collapse is coach-only.
+8. Nav + back resolve everywhere (no dead screens); the top nav never collapses.
 9. Word Coach auto-advance: correct→complete→next, wrong→revision→next.
 10. **Font sweep:** in ≥3 worlds × light/dusk, no element resolves to a generic family, and
     the Daily-goal figures wear the same face as the card's heading.
