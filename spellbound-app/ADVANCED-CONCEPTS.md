@@ -4,6 +4,37 @@ What the concept engine already teaches, what serious competitors actually study
 and what our word data can support. Written as a build spec: every candidate
 carries its library inventory, so nothing here is aspirational.
 
+## Build status — all 43 chapters shipped
+
+Every Tier A, B, C and D candidate below is now built and live in the Advanced Pack
+(`adv-concepts-data.js`, `SB_ADV_CONCEPTS` version 2):
+
+| Tier | Chapters | Category shown in-app |
+| --- | --- | --- |
+| A | 4 | Championship Procedure |
+| B | 19 | Advanced Orthography |
+| C | 11 | Origins Beyond the Big Four |
+| D | 9 | How Words Are Built |
+| **Total** | **43** | 258 narrated scenes, 1,022 drill words |
+
+Each chapter carries four teaching cards, a worked microphone example, six narrated
+scenes (`am_michael`, `voice/a<chapter>-<scene>.mp3`) and its own drill list. Drill
+words are looked up from `words-data.js` / `words-full.js` by the build script, so a
+chapter can never promise a word the speller cannot practise — 642 of the 1,022 come
+from the core competition list.
+
+**D9 (diacritics) was deliberately not built as a chapter.** The core library carries
+zero diacritic-bearing headwords, so it is a data-sourcing job first. That remains open.
+
+Two findings worth recording from the build:
+
+- **The `o` origin field is unreliable for blends and coinages.** It tags `spooktacular`
+  and `rockumentary` as Dutch and `champagneless` as Portuguese. The Tier C word lists
+  are therefore hand-curated from etymology and verified present in the library, not
+  filtered on `o`. Do not mine origin chapters from that field.
+- **The `r` etymology field contains mislabelled generated text** — e.g. `hyperbolicity`
+  carries `"Dutch: -icus (Dutch)"`. Never match origins against `r`.
+
 ## Where the existing curriculum stands
 
 `concepts-data.js` — **121 chapters**, difficulty split **easy 20 / medium 87 / hard 14**.
@@ -164,6 +195,10 @@ Extends the three existing chapters (contronyms, eponyms, homophones).
 
 Total: roughly **44 new chapters**, which would take the curriculum from 121 to
 165 and lift the *hard* count from 14 to around 50.
+
+**Built:** 43 of them (everything except D9, which needs word data first). The general
+course stays at 121 chapters; these 43 live in a separate Advanced Pack list so they
+cannot leak into the free curriculum.
 
 ## Sources consulted
 

@@ -50,6 +50,19 @@ handlers. App lives in this folder; open `index.html` to run.
   both `words-data.js` (40,907) and `words-full.js` (128,196) has a clip.
 - `voice-review.js` — `SB_VOICE_REVIEW` (Re-review queue) + `SB_VOICE_PRIORITY`.
 - `voice-cdn.js` — on `*.github.io`, rewrites `voice/…` → raw.githubusercontent of `main`.
+  Concept narration (`voice/c*`, `voice/a*`) is exempt: it is bundled on `gh-pages` and
+  served same-origin, so it never depends on those clips reaching `main`.
+- `advanced.js` + `adv-concepts-data.js` — the **Advanced Pack** ($49/yr add-on, gated by
+  `SB_ENT.hasAddon('advanced')` only). `SB_ADV_CONCEPTS` holds **43 expert chapters** in
+  four categories, `SB_ADV_CSCRIPT` their 258 narrated scenes. These live entirely outside
+  `state.conceptData`, so they cannot leak into the free 121-chapter course. Narration is
+  **`am_michael` @0.95** (a coach register) at `voice/a<chapter>-<scene>.mp3`, indexed by
+  chapter position — so **never reorder `SB_ADV_CONCEPTS.chapters`**, or every clip
+  mismaps. Append only. Durations live in `voice-adv-manifest.js`.
+  Regenerate the data file from authored prose with the tier scripts + `advbuild.js`
+  (session scratchpad): drill words are looked up from the word libraries at build time,
+  so no chapter can list a word the speller cannot practise. See `ADVANCED-CONCEPTS.md`
+  for the curriculum map and two data-quality warnings about the `o` and `r` fields.
 - Saga engines: `engine(host, opts, done)` → `done({win, score, stars})`.
 - `trivia.js` — the Arcade quiz (`STV`); `app3.js` holds Trivia Training
   ("Know the World of Words", `viewTrivTrain`).
