@@ -900,8 +900,11 @@ const app = {
   adminTab:(t)=>set({adminTab:t}),
   adminSetTier:(arg)=>{ const p=String(arg).split('|'); const i=+p[0]; const c=(state.children||[])[i]; if(c&&window.SB_ENT){ SB_ENT.setTier(c,p[1]); save(); render(); } },
   qMeaning:()=>set({qMeaningOpen:!state.qMeaningOpen}),
-  vocDeck:(k)=>{ const words=vocDeckWords(k); if(words.length<5){ flash('Not enough words here yet — train a list first'); return; }
-    set({vocDeck:k, vocWords:words, vocIdx:0, vocFlip:false}); setTimeout(()=>{ const w=state.vocWords[0]; if(w) say(w.w); },250); },
+  vocDeck:(k)=>{ state.vocDeck=k;
+    /* the set persists per deck, so leaving mid-way and coming back does not reshuffle
+       the words the speller is part-way through learning */
+    const words=vocCurrentSet(k); if(words.length<5){ state.vocDeck=null; flash('Not enough words here yet — train a list first'); return; }
+    set({vocDeck:k, vocWords:words, vocIdx:0, vocFlip:false, vocCheck:null}); setTimeout(()=>{ const w=state.vocWords[0]; if(w) say(w.w); },250); },
   vocFlip:()=>{ const to=!state.vocFlip;
     if(to && state.readAloud){ const w=(state.vocWords||[])[state.vocIdx||0]; if(w) say(w.w+'. '+(w.d||'')); }
     set({vocFlip:to}); },
@@ -911,8 +914,35 @@ const app = {
     const w=(state.vocWords||[])[i]; if(w) setTimeout(()=>say(w.w),150); },
   vocSayWord:()=>{ const w=(state.vocWords||[])[state.vocIdx||0]; if(w) say(w.w); },
   vocSayCard:()=>{ const w=(state.vocWords||[])[state.vocIdx||0]; if(w){ if(!state.vocFlip) state.vocFlip=true; say(w.w+'. '+(w.d||'')); render(); } },
-  vocNewSet:()=>{ set({vocWords:vocDeckWords(state.vocDeck), vocIdx:0, vocFlip:false}); },
-  vocBack:()=>set({vocDeck:null}),
+  /* ---- the vocabulary check and its gate ---- */
+  vocCheck:(mode)=>{ const deck=state.vocDeck; if(!deck) return;
+    const words=(mode==='revise')?vocWordsByKeys(vocRevise(deck)):(state.vocWords||[]);
+    const qs=vocBuildCheck(words);
+    if(qs.length<3){ flash('Not enough words with meanings here to check yet'); return; }
+    set({vocCheck:{deck,mode,qs,i:0,picked:null,ok:null,right:0,missed:[],done:false}});
+    setTimeout(()=>{ const g=state.vocCheck; if(g) say(g.qs[0].w.w); },260); },
+  vocPick:(idx)=>{ const g=state.vocCheck; if(!g||g.done||g.picked!=null) return;
+    const q=g.qs[g.i]; const chosen=q.choices[+idx];
+    g.picked=+idx; g.ok=(chosen===q.answer);
+    if(g.ok){ g.right++; sfx('correct'); }
+    else { sfx('wrong'); g.missed.push(nkey(q.w.w)); }
+    render(); },
+  vocNext:()=>{ const g=state.vocCheck; if(!g||g.picked==null) return;
+    if(g.i>=g.qs.length-1){ vocFinishCheck(); return; }
+    g.i++; g.picked=null; g.ok=null; render();
+    const q=g.qs[g.i]; if(q) setTimeout(()=>say(q.w.w),160); },
+  vocSayQ:()=>{ const g=state.vocCheck; if(g&&g.qs[g.i]) say(g.qs[g.i].w.w); },
+  vocCheckClose:()=>set({vocCheck:null}),
+  /* New words are refused while anything is waiting to be revised — that is the whole
+     point of the gate. The button explains itself rather than silently doing nothing. */
+  vocNewSet:()=>{ const deck=state.vocDeck; if(!deck) return;
+    if(vocLocked(deck)){
+      flash('Revise your missed words first — then the next set unlocks');
+      app.vocCheck('revise'); return; }
+    const ws=vocBuildSet(deck);
+    set({vocWords:ws, vocIdx:0, vocFlip:false, vocCheck:null});
+    setTimeout(()=>{ const w=(state.vocWords||[])[0]; if(w) say(w.w); },250); },
+  vocBack:()=>set({vocDeck:null, vocCheck:null}),
   // ----- Typing Trainer -----
   openTyping:()=>{ if(!gateFeature('trainTools','the Typing Trainer')) return; tyStop(); set({nav:'typing', screen:'app', ty:null, conceptSel:null}); },
   // ===== Trivia Training — study the whole question bank as flip-cards, by chapter =====
@@ -2259,6 +2289,102 @@ function figDeckItems(id){ if(!id) return [];
   window._figDeckCache[id]=items; return items;
 }
 /* Vocabulary decks: the speller's own words, NSF vocabulary-bee style. */
+/* ---- Vocabulary progression -------------------------------------------------------
+   Vocab used to be an ungraded flashcard browser: "New set of 20" reshuffled the deck
+   whether or not the speller had learned anything. It now has its own ladder.
+
+   Study the set → Check yourself on those exact words → 80% or better unlocks the next
+   set of NEW words. Below 80%, the words you missed go into a revision queue and the
+   next set stays locked until that queue is empty. A word leaves the queue the first
+   time you answer it correctly in a revision round, so the loop always terminates.
+
+   Passing with a few wrong (say 17/20) still progresses, but those few are carried into
+   the next set rather than quietly dropped — you meet them again.
+
+   This ladder is deliberately SEPARATE from spelling. It writes only to c.vocab, and the
+   check never calls markMastered/addMiss/gainXp, so a vocabulary session cannot move the
+   spelling stage, the spelling XP or the Bee Band. Spelling progresses on its own. */
+const VOC_PASS = 0.8;            // the bar for unlocking a new set
+function vocProg(c){ c=c||active(); if(!c) return null;
+  if(!c.vocab) c.vocab={};
+  const v=c.vocab;
+  v.lv=v.lv||{}; v.revise=v.revise||{}; v.seen=v.seen||{}; v.cur=v.cur||{};
+  v.carry=v.carry||{}; v.last=v.last||{};
+  return v; }
+function vocLevel(deck,c){ const v=vocProg(c); return (v&&v.lv[deck])||0; }
+function vocRevise(deck,c){ const v=vocProg(c); return (v&&v.revise[deck])||[]; }
+/* The next set is locked while anything is waiting to be revised. */
+function vocLocked(deck,c){ return vocRevise(deck,c).length>0; }
+function vocWordsByKeys(keys){ const db=wordDB();
+  return (keys||[]).map(k=>db.get(k)).filter(Boolean); }
+
+/* Serve the current set. Persisted by key so leaving the deck and coming back does not
+   silently reshuffle the words the speller is part-way through learning. */
+function vocCurrentSet(deck){ const c=active(); const v=vocProg(c); if(!v) return [];
+  const saved=vocWordsByKeys(v.cur[deck]);
+  if(saved.length>=5) return saved;
+  return vocBuildSet(deck); }
+
+/* Build the next set: carried-over misses first, then words this deck has not served
+   before, falling back to any words if the deck runs dry. */
+function vocBuildSet(deck){ const c=active(); const v=vocProg(c); if(!v) return [];
+  const carry=vocWordsByKeys(v.carry[deck]).slice(0,6);
+  const seen=new Set((v.seen[deck]||[]).concat(carry.map(w=>nkey(w.w))));
+  const pool=vocDeckWords(deck);
+  const fresh=pool.filter(w=>!seen.has(nkey(w.w)));
+  const want=20-carry.length;
+  let picked=fresh.slice(0,want);
+  if(picked.length<want){ // deck exhausted — allow repeats rather than serve a short set
+    const rest=pool.filter(w=>picked.indexOf(w)<0&&carry.indexOf(w)<0);
+    picked=picked.concat(sample(rest, Math.min(want-picked.length, rest.length))); }
+  const set=carry.concat(picked);
+  v.cur[deck]=set.map(w=>nkey(w.w));
+  v.carry[deck]=[];
+  v.seen[deck]=(v.seen[deck]||[]).concat(set.map(w=>nkey(w.w))).slice(-400);
+  save();
+  return set; }
+
+/* The check: one multiple-choice meaning question per word in the set. Distractors are
+   other real definitions at a similar difficulty, so the answer cannot be guessed by
+   register alone. */
+/* Apply the 80% rule. Two paths, and neither of them touches spelling progress:
+   pass  → level up, next set of new words unlocks, any few misses are carried forward
+   fail  → the missed words go into the revision queue and the next set stays locked
+   In a revision round a word leaves the queue the first time it is answered correctly,
+   so repeated rounds always shrink the queue and the loop terminates. */
+function vocFinishCheck(){ const g=state.vocCheck; if(!g) return;
+  const c=active(); const v=vocProg(c); const deck=g.deck;
+  const total=g.qs.length, right=g.right, pct=total?right/total:0;
+  g.done=true; g.pct=pct;
+  if(g.mode==='revise'){
+    // clear every queued word that was answered correctly this round
+    const stillWrong=new Set(g.missed);
+    v.revise[deck]=(v.revise[deck]||[]).filter(k=>stillWrong.has(k));
+    g.cleared=total-g.missed.length;
+    g.remaining=v.revise[deck].length;
+  } else {
+    v.last[deck]={right,total,at:Date.now()};
+    if(pct>=VOC_PASS){
+      v.lv[deck]=(v.lv[deck]||0)+1;
+      v.revise[deck]=[];
+      // passing with a few wrong still progresses, but those few come back next set
+      v.carry[deck]=g.missed.slice(0,6);
+      g.passed=true;
+    } else {
+      v.revise[deck]=g.missed.slice();
+      g.passed=false;
+    }
+  }
+  try{ if(g.passed) sfx('win'); }catch(e){}
+  save(); render(); }
+
+function vocBuildCheck(words){ const pool=gameWordsD({needDef:true});
+  return (words||[]).filter(w=>w&&w.d).map(w=>{
+    const near=pool.filter(x=>nkey(x.w)!==nkey(w.w)&&x.d&&Math.abs((x.y||3)-(w.y||3))<=1);
+    const src=near.length>=3?near:pool.filter(x=>nkey(x.w)!==nkey(w.w)&&x.d);
+    const others=sample(src,3).map(x=>x.d).filter(Boolean);
+    return { w, answer:w.d, choices:sample([w.d].concat(others)) }; }); }
+
 function vocDeckWords(k){
   if(['easy','medium','hard','champ'].indexOf(k)>=0){
     const r=diffRange(active(),k); const ws=corpusSlice(r[0],r[1],600);
@@ -2461,7 +2587,67 @@ function viewTyping(){ const S=state; const c=active(); const st=tyStats(c);
   </div>`;
 }
 /* ===== Vocabulary — study decks + card player (NSF vocabulary-bee style) ===== */
+/* The check screen. Multiple choice on meaning, one question per word in the set, with the
+   word spoken aloud — the same shape as a real vocabulary round. Keyboard 1-4 and Enter
+   work alongside tapping, because every screen in this app needs both. */
+function viewVocCheck(){ const g=state.vocCheck; if(!g) return '';
+  const total=g.qs.length;
+  if(g.done){
+    const pct=Math.round((g.pct||0)*100);
+    if(g.mode==='revise'){
+      const left=g.remaining||0;
+      return `<div style="max-width:560px;margin:0 auto;text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:var(--glow);animation:sb-pop .35s ease both">
+        <div style="font-size:44px">${left?'💪':'🎉'}</div>
+        <h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:8px 0">${left?'Getting there':'Revision cleared!'}</h2>
+        <p style="color:var(--muted);font-size:14px;line-height:1.55">You cleared <b>${g.cleared||0}</b> of ${total}.
+          ${left?`<b>${left}</b> still to go — clear them and your next set of new words unlocks.`:'Your next set of new words is unlocked.'}</p>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap">
+          ${left?`<button data-act="vocCheck" data-arg="revise" style="padding:13px 20px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800">Revise the last ${left} →</button>`
+                :`<button data-act="vocNewSet" style="padding:13px 20px;border-radius:13px;background:var(--good,#1f9d57);color:#fff;font-weight:800">Next 20 new words →</button>`}
+          <button data-act="vocCheckClose" style="padding:13px 20px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);font-weight:800">Back to the cards</button>
+        </div></div>`;
+    }
+    const passed=!!g.passed; const missed=g.missed.length;
+    return `<div style="max-width:560px;margin:0 auto;text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:var(--glow);animation:sb-pop .35s ease both">
+      <div style="font-size:44px">${passed?'🏆':'📚'}</div>
+      <h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:8px 0">${g.right} of ${total} · ${pct}%</h2>
+      <div style="height:10px;border-radius:99px;background:var(--surface2);overflow:hidden;margin:14px 0 6px"><div style="height:100%;width:${pct}%;background:${passed?'var(--good,#1f9d57)':'var(--bad,#C4453C)'}"></div></div>
+      <div style="font-size:11.5px;color:var(--muted);font-weight:700;margin-bottom:12px">80% unlocks the next set</div>
+      <p style="color:var(--muted);font-size:14px;line-height:1.55">${passed
+        ? (missed?`Passed — next set unlocked. The ${missed} you missed will come back in it, so you meet them again.`
+                 :'A clean sweep. Next set unlocked.')
+        : `Not quite 80% yet. Revise the <b>${missed}</b> you missed and the next set unlocks — no new words until then.`}</p>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap">
+        ${passed?`<button data-act="vocNewSet" style="padding:13px 20px;border-radius:13px;background:var(--good,#1f9d57);color:#fff;font-weight:800">Next 20 new words →</button>`
+                :`<button data-act="vocCheck" data-arg="revise" style="padding:13px 20px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800">Revise the ${missed} →</button>`}
+        <button data-act="vocCheckClose" style="padding:13px 20px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);font-weight:800">Back to the cards</button>
+      </div></div>`;
+  }
+  const q=g.qs[g.i]; if(!q) return '';
+  const picked=g.picked;
+  const choice=(d,idx)=>{ const isPicked=picked===idx; const isAns=d===q.answer;
+    const bg=picked==null?'var(--surface2)':(isAns?'var(--mastered-tint,#E1F4E8)':(isPicked?'var(--fix-tint,#FBE9E7)':'var(--surface2)'));
+    const bd=picked==null?'var(--line)':(isAns?'var(--good,#1f9d57)':(isPicked?'var(--fix,#C4453C)':'var(--line)'));
+    return `<button data-act="vocPick" data-arg="${idx}" ${picked!=null?'disabled':''} style="display:block;width:100%;text-align:left;padding:13px 15px;border-radius:13px;background:${bg};border:1.5px solid ${bd};font-weight:650;font-size:14px;line-height:1.45;margin-bottom:9px;color:var(--text)">
+      <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:800;color:var(--muted);margin-right:9px">${idx+1}</span>${esc(d)}</button>`; };
+  return `<div style="max-width:600px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px">
+      <button data-act="vocCheckClose" style="color:var(--muted);font-weight:700;font-size:13px">← Cards</button>
+      <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:800;color:var(--accent)">${g.mode==='revise'?'REVISION':'CHECK'} ${g.i+1}/${total}</span>
+      <span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:800;color:var(--good,#1f9d57)">✓ ${g.right}</span></div>
+    <div style="height:6px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-bottom:14px"><div style="height:100%;background:var(--accent);width:${Math.round((g.i+1)/total*100)}%"></div></div>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:var(--glow);text-align:center;margin-bottom:14px">
+      <div style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">What does it mean?</div>
+      <div style="font-family:var(--display);font-weight:800;${hwStyle(q.w.w,32)}">${esc(q.w.w)}</div>
+      <button data-act="vocSayQ" style="margin-top:11px;padding:8px 15px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">${iconSVG('volume',15)} Hear it</button>
+    </div>
+    <div>${q.choices.map(choice).join('')}</div>
+    ${picked!=null?`<button data-act="vocNext" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-top:4px">${g.i>=total-1?'See your score →':'Next word →'}</button>`
+      :`<p style="text-align:center;font-size:11.5px;color:var(--muted);margin-top:8px">Tap a meaning, or press 1–4</p>`}
+  </div>`; }
+
 function viewVocab(){ const S=state; const c=active();
+  if(S.vocCheck) return viewVocCheck();
   if(S.vocDeck){ const ws=S.vocWords||[]; const i=Math.min(S.vocIdx||0,ws.length-1); const w=ws[i]; if(!w) return '<p style="color:var(--muted)">No words.</p>';
     const flip=!!S.vocFlip;
     const back=`<div style="display:flex;flex-direction:column;gap:10px;text-align:left;animation:sb-pop .3s ease both">
@@ -2483,16 +2669,41 @@ function viewVocab(){ const S=state; const c=active();
         <button data-act="vocSayCard" title="Hear the word and its meaning" style="height:44px;padding:0 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:12.5px">${iconSVG('volume',15)} + meaning</button>
         <button data-act="vocNav" data-arg="1" style="padding:12px 24px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge);${i>=ws.length-1?'opacity:.4':''}">Next →</button>
       </div>
+      ${(()=>{ /* the gate: the check is the only way to a new set, and the button says so */
+        const _lk=vocLocked(S.vocDeck), _rv=vocRevise(S.vocDeck).length, _lv=vocLevel(S.vocDeck);
+        const _last=(vocProg(c).last||{})[S.vocDeck];
+        return `<div style="margin-top:16px;background:var(--bg2);border:1px solid ${_lk?'var(--fix,#C4453C)':'var(--line)'};border-radius:16px;padding:14px 16px">
+          <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:9px">
+            <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--accent)">Vocabulary set ${_lv+1}</span>
+            ${_last?`<span style="font-size:11.5px;color:var(--muted);font-weight:700">last check ${_last.right}/${_last.total}</span>`:''}
+            ${_lk?`<span style="margin-left:auto;font-size:11.5px;font-weight:800;color:var(--fix,#C4453C)">${_rv} to revise</span>`:''}
+          </div>
+          <div style="display:flex;gap:9px;flex-wrap:wrap">
+            <button data-act="vocCheck" style="flex:1;min-width:170px;padding:12px 16px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge)">✓ Check what you've learned</button>
+            ${_lk
+              ? `<button data-act="vocCheck" data-arg="revise" style="flex:1;min-width:150px;padding:12px 16px;border-radius:12px;background:var(--fix-tint,#FBE9E7);color:var(--fix,#C4453C);border:1.5px solid var(--fix,#C4453C);font-weight:800;font-size:13.5px">Revise ${_rv} first</button>`
+              : `<button data-act="vocNewSet" style="flex:1;min-width:150px;padding:12px 16px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:13.5px;color:var(--text)">🔄 Next 20 new words</button>`}
+          </div>
+          <div style="font-size:11.5px;color:var(--muted);font-weight:650;margin-top:9px;line-height:1.5">${_lk
+            ? 'New words are locked until you have revised the ones you missed.'
+            : 'Score 80% on the check and the next set of new words unlocks. Vocabulary levels up on its own — your spelling levels are separate.'}</div>
+        </div>`; })()}
       <div style="display:flex;gap:10px;justify-content:center;margin-top:12px">
-        <button data-act="vocNewSet" style="padding:10px 16px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:12.5px;color:var(--muted)">🔄 New set of 20</button>
         <button data-act="wqStart" data-arg="vocab" style="padding:10px 16px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12.5px">🎯 Play the Vocabulary round →</button>
       </div></div>`;
   }
   const deckBtn=(k,label,sub)=>`<button data-act="vocDeck" data-arg="${k}" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:15px 16px;display:flex;flex-direction:column;gap:6px">
-      <span style="font-family:var(--display);font-weight:800;font-size:15.5px">${label}</span><span style="font-size:12px;color:var(--muted);font-weight:650">${sub}</span></button>`;
+      <span style="font-family:var(--display);font-weight:800;font-size:15.5px">${label}</span><span style="font-size:12px;color:var(--muted);font-weight:650">${sub}</span>
+      ${(()=>{ /* each deck keeps its own vocabulary level and revision queue */
+        const _lv=vocLevel(k), _rv=vocRevise(k).length;
+        if(!_lv&&!_rv) return '';
+        return `<span style="display:inline-flex;align-items:center;gap:7px;margin-top:7px">
+          <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--chip);color:var(--accent)">Set ${_lv+1}</span>
+          ${_rv?`<span style="font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:999px;background:var(--fix-tint,#FBE9E7);color:var(--fix,#C4453C)">${_rv} to revise</span>`:''}</span>`; })()}
+      </button>`;
   const themeDecks=myThemes().slice(0,6).map(t=>deckBtn('th:'+t.id,'🗂️ '+esc(t.label),'20 words from this theme')).join('');
   return `<div style="max-width:980px;margin:0 auto">
-    ${pageHead('Vocabulary','word → meaning','Study words the vocabulary-bee way — hear the word, guess the meaning, flip the card. Then test yourself in the Vocabulary round of Word Quiz.',
+    ${pageHead('Vocabulary','word → meaning','Study a set of 20 the vocabulary-bee way — hear the word, guess the meaning, flip the card. Then check yourself: score 80% and the next set of new words unlocks, or revise the ones you missed first. Vocabulary levels up on its own — your spelling levels are separate.',
       `<button data-act="wqStart" data-arg="vocab" style="padding:9px 16px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">🎯 Vocabulary round →</button>`)}
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
       ${deckBtn('mix','✨ My level mix','20 fresh words from your list, at your level')}
@@ -6984,7 +7195,16 @@ window.addEventListener('keydown',e=>{ try{
   if(state.pinDlg||state.settingsOpen||state.showTiers) return;
   if(e.metaKey||e.ctrlKey||e.altKey) return;
   const t=e.target; if(t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)) return;
-  const k=e.key; const inVoc=state.nav==='vocab'&&state.vocDeck; const inFig=state.nav==='figurative'&&state.figDeck;
+  const k=e.key;
+  /* the vocabulary check owns the keyboard while it is open: 1-4 pick a meaning, Enter
+     advances, Escape returns to the cards. Card navigation must not fire underneath it. */
+  if(state.nav==='vocab'&&state.vocCheck){ const g=state.vocCheck;
+    if(k==='Escape'){ e.preventDefault(); app.vocCheckClose(); return; }
+    if(g.done) return;
+    if(/^[1-4]$/.test(k)){ e.preventDefault(); app.vocPick(+k-1); return; }
+    if(k==='Enter'||k===' '){ e.preventDefault(); if(g.picked!=null) app.vocNext(); return; }
+    return; }
+  const inVoc=state.nav==='vocab'&&state.vocDeck; const inFig=state.nav==='figurative'&&state.figDeck;
   if(!inVoc&&!inFig) return;
   const nav=inVoc?app.vocNav:app.figNav, back=inVoc?app.vocBack:app.figBackToDecks, flip=inVoc?app.vocFlip:app.figFlip;
   if(k==='ArrowLeft'){ e.preventDefault(); nav(-1); }
