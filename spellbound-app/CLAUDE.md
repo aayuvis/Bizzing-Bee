@@ -81,6 +81,10 @@ handlers. App lives in this folder; open `index.html` to run.
   only words that carry a meaning, and only lists with **8+** of them (below that a fair
   4-option quiz cannot be built). They appear under "Your word lists" in the picker as
   `list:<key>` decks and are sorted hardest-first.
+- **Three modes share one 4-option multiple-choice screen** (`state.vocCheck.mode`):
+  `practice` — replayable, pays a coin + karma per correct answer, but scores nothing and
+  neither locks nor unlocks anything; `check` — the graded run that applies the gate;
+  `revise` — only the words the last check missed.
 - Flow: study a set of 20 → **Check what you've learned** (one meaning MCQ per word) →
   `VOC_PASS` (**0.8**) or better unlocks the next set of NEW words. Below it, the missed
   words go to `revise[deck]` and `vocNewSet` refuses to serve new words, diverting to a

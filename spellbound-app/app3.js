@@ -915,8 +915,14 @@ const app = {
   vocSayWord:()=>{ const w=(state.vocWords||[])[state.vocIdx||0]; if(w) say(w.w); },
   vocSayCard:()=>{ const w=(state.vocWords||[])[state.vocIdx||0]; if(w){ if(!state.vocFlip) state.vocFlip=true; say(w.w+'. '+(w.d||'')); render(); } },
   /* ---- the vocabulary check and its gate ---- */
+  /* Three modes share one 4-option multiple-choice screen:
+       practice — play the set as often as you like; scores nothing, unlocks nothing
+       check    — the graded run that applies the 80% gate
+       revise   — only the words the last check missed                                   */
   vocCheck:(mode)=>{ const deck=state.vocDeck; if(!deck) return;
-    const words=(mode==='revise')?vocWordsByKeys(vocRevise(deck)):(state.vocWords||[]);
+    const words=(mode==='revise')?vocWordsByKeys(vocRevise(deck))
+              :(mode==='practice')?sample(state.vocWords||[], (state.vocWords||[]).length)
+              :(state.vocWords||[]);
     const qs=vocBuildCheck(words);
     if(qs.length<3){ flash('Not enough words with meanings here to check yet'); return; }
     set({vocCheck:{deck,mode,qs,i:0,picked:null,ok:null,right:0,missed:[],done:false}});
@@ -924,7 +930,9 @@ const app = {
   vocPick:(idx)=>{ const g=state.vocCheck; if(!g||g.done||g.picked!=null) return;
     const q=g.qs[g.i]; const chosen=q.choices[+idx];
     g.picked=+idx; g.ok=(chosen===q.answer);
-    if(g.ok){ g.right++; sfx('correct'); }
+    if(g.ok){ g.right++; sfx('correct');
+      if(g.mode==='practice'){ addCoins(1); const c=active(); c.karma=(c.karma||0)+1;
+        state.toast='✓ +1 coin · +1 karma 🌟'; scheduleToast(1400); save(); } }
     else { sfx('wrong'); g.missed.push(nkey(q.w.w)); }
     render(); },
   vocNext:()=>{ const g=state.vocCheck; if(!g||g.picked==null) return;
@@ -2356,6 +2364,10 @@ function vocFinishCheck(){ const g=state.vocCheck; if(!g) return;
   const c=active(); const v=vocProg(c); const deck=g.deck;
   const total=g.qs.length, right=g.right, pct=total?right/total:0;
   g.done=true; g.pct=pct;
+  /* Practice is exactly that — it scores nothing, unlocks nothing and locks nothing. It
+     exists so a speller can drill the meanings as often as they like without the graded
+     run hanging over them. */
+  if(g.mode==='practice'){ save(); render(); return; }
   if(g.mode==='revise'){
     // clear every queued word that was answered correctly this round
     const stillWrong=new Set(g.missed);
@@ -2616,6 +2628,17 @@ function viewVocCheck(){ const g=state.vocCheck; if(!g) return '';
   const total=g.qs.length;
   if(g.done){
     const pct=Math.round((g.pct||0)*100);
+    if(g.mode==='practice'){
+      return `<div style="max-width:560px;margin:0 auto;text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:var(--glow);animation:sb-pop .35s ease both">
+        <div style="width:120px;height:120px;margin:0 auto 4px">${myAvatar(120)}</div>
+        <h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:6px 0">${g.right} of ${total} · ${pct}%</h2>
+        <div style="height:10px;border-radius:99px;background:var(--surface2);overflow:hidden;margin:12px auto 8px;max-width:320px"><div style="height:100%;width:${pct}%;background:var(--accent)"></div></div>
+        <p style="color:var(--muted);font-size:14px;line-height:1.55">Practice run — nothing counted, nothing unlocked. Play it as many times as you like, then take the check when you are ready.</p>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap">
+          <button data-act="vocCheck" data-arg="practice" style="padding:13px 20px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);font-weight:800">↺ Practise again</button>
+          <button data-act="vocCheck" style="padding:13px 20px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800">Take the check →</button>
+          <button data-act="vocCheckClose" style="padding:13px 20px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);font-weight:800">Back to the cards</button>
+        </div></div>`; }
     if(g.mode==='revise'){
       const left=g.remaining||0;
       return `<div style="max-width:560px;margin:0 auto;text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:var(--glow);animation:sb-pop .35s ease both">
@@ -2655,9 +2678,10 @@ function viewVocCheck(){ const g=state.vocCheck; if(!g) return '';
   return `<div style="max-width:600px;margin:0 auto">
     <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px">
       <button data-act="vocCheckClose" style="color:var(--muted);font-weight:700;font-size:13px">← Cards</button>
-      <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:800;color:var(--accent)">${g.mode==='revise'?'REVISION':'CHECK'} ${g.i+1}/${total}</span>
+      <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:800;color:var(--accent)">${g.mode==='revise'?'REVISION':g.mode==='practice'?'PRACTICE':'CHECK'} ${g.i+1}/${total}</span>
       <span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:800;color:var(--good,#1f9d57)">✓ ${g.right}</span></div>
-    <div style="height:6px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-bottom:14px"><div style="height:100%;background:var(--accent);width:${Math.round((g.i+1)/total*100)}%"></div></div>
+    <div style="height:6px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-bottom:8px"><div style="height:100%;background:var(--accent);width:${Math.round((g.i+1)/total*100)}%"></div></div>
+    <div style="font-size:11.5px;color:var(--muted);font-weight:650;text-align:center;margin-bottom:12px">${g.mode==='practice'?'Practice — this run does not count towards anything':g.mode==='revise'?'Clear these and your next set of new words unlocks':'80% unlocks your next set of new words'}</div>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:var(--glow);text-align:center;margin-bottom:14px">
       <div style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">What does it mean?</div>
       <div style="font-family:var(--display);font-weight:800;${hwStyle(q.w.w,32)}">${esc(q.w.w)}</div>
@@ -2701,14 +2725,15 @@ function viewVocab(){ const S=state; const c=active();
             ${_lk?`<span style="margin-left:auto;font-size:11.5px;font-weight:800;color:var(--fix,#C4453C)">${_rv} to revise</span>`:''}
           </div>
           <div style="display:flex;gap:9px;flex-wrap:wrap">
+            <button data-act="vocCheck" data-arg="practice" style="flex:1;min-width:170px;padding:12px 16px;border-radius:12px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);border:1.5px solid var(--treasure,#F0B429);font-weight:800;font-size:13.5px">🎯 Practise — pick the meaning</button>
             <button data-act="vocCheck" style="flex:1;min-width:170px;padding:12px 16px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge)">✓ Check what you've learned</button>
             ${_lk
               ? `<button data-act="vocCheck" data-arg="revise" style="flex:1;min-width:150px;padding:12px 16px;border-radius:12px;background:var(--fix-tint,#FBE9E7);color:var(--fix,#C4453C);border:1.5px solid var(--fix,#C4453C);font-weight:800;font-size:13.5px">Revise ${_rv} first</button>`
               : `<button data-act="vocNewSet" style="flex:1;min-width:150px;padding:12px 16px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:13.5px;color:var(--text)">🔄 Next 20 new words</button>`}
           </div>
-          <div style="font-size:11.5px;color:var(--muted);font-weight:650;margin-top:9px;line-height:1.5">${_lk
-            ? 'New words are locked until you have revised the ones you missed.'
-            : 'Score 80% on the check and the next set of new words unlocks. Vocabulary levels up on its own — your spelling levels are separate.'}</div>
+          <div style="font-size:11.5px;color:var(--muted);font-weight:650;margin-top:9px;line-height:1.5">Practise is a four-option meaning quiz you can replay as often as you like — it counts for nothing. ${_lk
+            ? 'New words stay locked until you have revised the ones you missed.'
+            : 'The check is the graded run: score 80% and the next set of new words unlocks. Vocabulary levels up on its own — your spelling levels are separate.'}</div>
         </div>`; })()}
       <div style="display:flex;gap:10px;justify-content:center;margin-top:12px">
         <button data-act="wqStart" data-arg="vocab" style="padding:10px 16px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12.5px">🎯 Play the Vocabulary round →</button>
