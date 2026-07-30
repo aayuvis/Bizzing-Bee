@@ -553,7 +553,8 @@ function catStatic(){ if(_catStatic) return _catStatic; const nsf=SB_DATA.nsf||[
     hardest:nsf.filter(r=>(r.y||3)>=6),
     latin:byOrigin('latin'), greek:byOrigin('greek'), french:byOrigin('french'), oe:byOrigin('old english'), norse:byOrigin('norse'),
     spanish:byOrigin('spanish'), italian:byOrigin('italian'), german:byOrigin('german'), arabic:byOrigin('arabic'), japanese:byOrigin('japanese'),
-    hindi:nsf.filter(r=>/hindi|sanskrit|urdu|tamil|marathi|punjabi/i.test(r.o||'')).concat(HINDI_WORDS) };
+    hindi:nsf.filter(r=>/hindi|sanskrit|urdu|tamil|marathi|punjabi/i.test(r.o||'')).concat(HINDI_WORDS),
+    eponyms:nsf.filter(r=>(r.t||[]).indexOf('eponyms')>=0) };
   return _catStatic; }
 function coachCatalog(){
   const S=state; const st=catStatic(); const nsf=SB_DATA.nsf||[];
@@ -583,6 +584,7 @@ function coachCatalog(){
     { key:'arabic',     label:'Arabic origin',           sub:'Loanwords from Arabic',                 words:st.arabic },
     { key:'japanese',   label:'Japanese origin',         sub:'Loanwords from Japanese',               words:st.japanese },
     { key:'hindi',      label:'Hindi / Sanskrit origin', sub:'Indian-language loanwords',             words:st.hindi },
+    { key:'eponyms',    label:'Named After Someone',     sub:'Eponyms — words born from real names',  words:st.eponyms },
   ].filter(c=>(c.words&&c.words.length) || c.key==='missed');
   if(S.customWords&&S.customWords.length) cats.push({ key:'custom', label:'My custom list', sub:'Words you pasted in', words:S.customWords });
   try{ const bl=(active().builtLists)||{}; Object.keys(bl).forEach(k=>cats.push({ key:k, label:bl[k].label, sub:'Built with the List Builder', words:builtWords(k) })); }catch(e){}
@@ -1427,7 +1429,7 @@ const app = {
   wearAcc:(k)=>{ const c=active(); c.accOn=(c.accOn===k?null:k); save(); render(); },
 
   toggleSound:()=>{ set({sound:!state.sound}); if(state.sound) sfx('coin'); },
-  toggleFocus:()=>{ try{ if(window.SB_W4_FOCUS){ const on=SB_W4_FOCUS.toggle(); flash(on?'🎯 Focus on — music off, world held still':'Focus off — the world wakes up'); } }catch(e){} render(); },
+  toggleFocus:()=>{ try{ if(window.SB_W4_FOCUS){ const on=SB_W4_FOCUS.toggle(); flash(on?'Focus on — music off, world held still, tabs tucked away':'Focus off — the world wakes up'); } }catch(e){} render(); },
   devTap:()=>{ state._devTaps=(state._devTaps||0)+1;
     if(state._devTaps>=7){ state._devTaps=0; state.devReveal=!state.devReveal; flash(state.devReveal?'🛠 Testing tools revealed':'🛠 Testing tools hidden'); render(); } },
   toggleDevUnlock:()=>{ pinGate(()=>{
@@ -2621,7 +2623,7 @@ function viewApp(){
   const bandUp='';
 
   return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}${bandUp}
-    <div class="sb-header-sticky${state.nav==='coach'?' sb-collapse-nav':''}" style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
+    <div class="sb-header-sticky${(window.SB_W4_FOCUS&&SB_W4_FOCUS.on())?' sb-collapse-nav':''}" style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
       <div style="max-width:1080px;margin:0 auto;padding:11px clamp(9px,3.2vw,32px);display:flex;align-items:center;gap:8px">
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
         <button data-act="goHome" title="Home" aria-label="Bizzing Bee — Home" style="display:flex;align-items:center;gap:9px;margin-right:auto;background:none;border:0;cursor:pointer"><div style="width:34px;height:38px;flex-shrink:0">${mascotSVG('happy')}</div><span class="sb-brand" style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i> Bee</span></button>
@@ -5367,6 +5369,7 @@ const LIST_COVER={
   arabic     :{c:'#C8901B',c2:'#A8760E',tex:'rings',hero:'Arabic',tag:'Origin'},
   japanese   :{c:'#F0703C',c2:'#D85A29',tex:'rings',hero:'Japanese',tag:'Origin'},
   hindi      :{c:'#9B59D0',c2:'#7E3FB8',tex:'cross',hero:'Hindi',tag:'Origin'},
+  eponyms    :{c:'#A8763C',c2:'#8A5F2A',tex:'dots',hero:'Eponyms',tag:'Named After'},
   custom     :{c:'#13A892',c2:'#0E8A78',tex:'rings',hero:'Custom',tag:'Yours'},
   ai         :{c:'#7C5CFF',c2:'#6A47F5',tex:'stripes',hero:'AI',tag:'Smart'} };
 const listCoverOf=(k)=>LIST_COVER[k]||{c:'#4F9E6A',c2:'#3C8455',tex:'stripes',hero:'List',tag:'Words'};
