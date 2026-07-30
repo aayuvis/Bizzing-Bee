@@ -551,13 +551,13 @@ function viewWordCardPop(){ const w=state.wordCard; if(!w) return '';
   const OLAB={Latin:'Latin',Greek:'Greek',French:'French',Spanish:'Spanish',Italian:'Italian',German:'German',Arabic:'Arabic',Japanese:'Japanese','Old English':'Old English',Norse:'Old Norse',Hindi:'Hindi/Sanskrit'};
   const tag=(t)=>`<span style="font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);background:var(--chip);padding:3px 9px;border-radius:999px">${esc(t)}</span>`;
   const respell=pr&&pr.p?`<div style="font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:800;margin-bottom:2px">/ ${esc(pr.p)} /</div>`:'';
-  const syl=pr&&pr.sy&&pr.sy!==nkey(w.w)?`<div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px">${esc(pr.sy)}</div>`:'';
+  const syl=pr&&pr.sy&&pr.sy!==nkey(w.w)?`<div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px;overflow-wrap:anywhere;word-break:break-word">${esc(pr.sy)}</div>`:'';
   const chips=(pr&&(pr.ps||pr.o))?`<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:8px 0 12px">${pr.ps?tag(pr.ps):''}${pr.o?tag((OLAB[pr.o]||pr.o)+' origin'):''}</div>`:'<div style="height:6px"></div>';
   const sent=w.s?`<div style="margin-top:12px;text-align:left;background:var(--surface2);border-radius:12px;padding:11px 13px;font-size:13.5px;line-height:1.55;color:var(--text)"><span style="font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px">In a sentence</span>${esc(w.s)}</div>`:'';
   return `<div style="position:fixed;inset:0;z-index:130;display:grid;place-items:center;padding:22px;background:rgba(20,12,4,.5)" data-act="wordCardClose">
     <div data-act="noop" style="background:var(--paper,#fff);border-radius:20px;max-width:380px;width:100%;padding:24px 22px;text-align:center;box-shadow:0 20px 60px rgba(20,10,30,.5);animation:sb-pop .35s cubic-bezier(.2,1.5,.4,1) both;max-height:88vh;overflow:auto">
       <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:8px">⏳ Word of the hour</div>
-      <div style="font-family:var(--display);font-weight:800;font-size:30px;line-height:1.05;overflow-wrap:anywhere;margin-bottom:${respell?'3px':'6px'}">${esc(w.w)}</div>
+      <div style="font-family:var(--display);font-weight:800;${hwStyle(w.w,30)};margin-bottom:${respell?'3px':'6px'}">${esc(w.w)}</div>
       ${respell}${syl}
       <button data-act="wordCardSay" data-arg="${escA(w.w)}" style="margin-top:4px;display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:12px;color:var(--muted)">${iconSVG('volume',14)} Say it</button>
       ${chips}
@@ -2082,6 +2082,26 @@ function advModeOn(c){ c=c||active(); if(!c) return false;
     return !!(state.devUnlock||state.premium||c.advPaid||lvl>=12||band>=7); }catch(e){ return false; } }
 /* The Journey is renamed once Advanced Mode is on — same ladder, but it now draws on the
    128k library, so calling it the beginner name undersells it. */
+/* Headword sizing. A 58-letter word (Llanfairpwllgwyngyll...) has to shrink and wrap or it
+   runs straight off the card. One helper so every headword behaves the same: step the size
+   down by length, allow breaking anywhere, and report a wider container for long words. */
+function hwStyle(w,max){ const L=String(w||'').length; max=max||40;
+  const px = L<=10?max : L<=14?Math.round(max*0.84) : L<=20?Math.round(max*0.66)
+           : L<=30?Math.round(max*0.50) : L<=44?Math.round(max*0.40) : Math.round(max*0.32);
+  const min = Math.max(15,Math.round(px*0.66));
+  return `font-size:clamp(${min}px,${(px/5).toFixed(1)}vw,${px}px);line-height:1.1;overflow-wrap:anywhere;word-break:break-word`; }
+/* Long words get a roomier card so the wrap has somewhere to go. */
+function hwWide(w,base){ const L=String(w||'').length; base=base||620;
+  return L>34?Math.round(base*1.5):L>22?Math.round(base*1.25):base; }
+/* The "here's how it's spelled" reveals use the entry font with wide letter-spacing, which
+   costs roughly another 0.15em per character — so they overflow sooner than a plain
+   headword. Shrink harder AND relax the tracking as the word grows. */
+function hwSpell(w,max){ const L=String(w||'').length; max=max||32;
+  const px = L<=8?max : L<=12?Math.round(max*0.82) : L<=16?Math.round(max*0.66)
+           : L<=22?Math.round(max*0.52) : L<=32?Math.round(max*0.42) : Math.round(max*0.34);
+  const ls = L<=12?'.14em' : L<=20?'.09em' : L<=30?'.05em' : '.02em';
+  const min = Math.max(14,Math.round(px*0.68));
+  return `font-size:clamp(${min}px,${(px/5).toFixed(1)}vw,${px}px);letter-spacing:${ls};line-height:1.15;overflow-wrap:anywhere;word-break:break-word`; }
 function journeyName(){ return advModeOn()?'The Advanced Spelling Journey':'The Bizzing Bee Journey'; }
 /* ---- Focus mode in Supercharge ---------------------------------------------------
    Supercharge and everything it leads to is the deep-learning half of the app, so it runs
@@ -2178,8 +2198,8 @@ function advTourCard(){
         <span style="width:5px;height:5px;border-radius:50%;background:${st.col}"></span>${esc(st.screen)}</span>
     </div>`; }
   const dots=ADV_TOUR.map((sx,di)=>`<button data-act="advTourStep" data-arg="${di}" title="${escA(sx.title)}" style="height:5px;flex:1;border-radius:999px;background:${di<=i?sx.col:'var(--line)'};transition:background .3s"></button>`).join('');
-  return `<div data-act="advRevealClose" style="position:fixed;inset:0;z-index:80;background:rgba(20,14,42,.76);backdrop-filter:blur(6px);display:grid;place-items:center;padding:14px;overflow:auto">
-    <div onclick="event.stopPropagation()" style="width:100%;max-width:430px;background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:16px 16px 15px;box-shadow:0 24px 64px rgba(0,0,0,.45);animation:sb-pop .4s cubic-bezier(.2,1.3,.4,1) both">
+  return `<div data-act="advRevealClose" style="position:fixed;inset:0;z-index:96;background:rgba(20,14,42,.76);backdrop-filter:blur(6px);display:grid;place-items:center;padding:14px;overflow:auto">
+    <div data-act="noop" style="width:100%;max-width:430px;background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:16px 16px 15px;box-shadow:0 24px 64px rgba(0,0,0,.45);animation:sb-pop .4s cubic-bezier(.2,1.3,.4,1) both">
       <div style="display:flex;align-items:center;gap:9px;margin-bottom:9px">
         <span style="width:28px;height:28px;flex-shrink:0;border-radius:9px;background:linear-gradient(135deg,#3A2A72,#5B3FA6);display:grid;place-items:center;color:#fff">${art('advanced',16)}</span>
         <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:13.5px;line-height:1.1">Where your new features live</span>
@@ -2451,7 +2471,7 @@ function viewVocab(){ const S=state; const c=active();
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><button data-act="vocBack" style="color:var(--muted);font-weight:700;font-size:13px">← Decks</button><span style="font-family:var(--display);font-weight:800;font-size:18px">Vocabulary</span><span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">${i+1} / ${ws.length}</span></div>
       <div style="height:6px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-bottom:14px"><div style="height:100%;background:var(--accent);width:${Math.round((i+1)/ws.length*100)}%"></div></div>
       <button data-act="vocFlip" style="display:block;width:100%;text-align:center;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--sh-rest);min-height:270px">
-        <div style="font-family:var(--display);font-weight:800;font-size:clamp(24px,5.5vw,34px);letter-spacing:.02em;margin-bottom:6px">${esc(w.w)}</div>
+        <div style="font-family:var(--display);font-weight:800;letter-spacing:.02em;${hwStyle(w.w,34)};margin-bottom:6px">${esc(w.w)}</div>
         ${w.p?`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted);margin-bottom:4px">${esc(w.p)}</div>`:''}
         ${w.sy?`<div style="font-size:12px;color:var(--muted);margin-bottom:10px">${esc(w.sy)}</div>`:''}
         ${flip?back:`<div style="color:var(--muted);font-weight:700;font-size:13px;margin-top:22px">Tap to reveal the meaning ▾</div>`}
@@ -4151,7 +4171,7 @@ function vocabPracticeCard(){
       <div style="text-align:center;margin-bottom:16px">
         <div style="font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">What does this word mean?</div>
         <div style="display:flex;align-items:center;justify-content:center;gap:11px;flex-wrap:wrap">
-          <div style="font-family:var(--display);font-weight:800;font-size:clamp(24px,6vw,34px);overflow-wrap:anywhere">${esc(w.w)}</div>
+          <div style="font-family:var(--display);font-weight:800;${hwStyle(w.w,34)}">${esc(w.w)}</div>
           <button data-act="vocabSay" title="Hear the word" aria-label="Hear the word" style="width:42px;height:42px;flex-shrink:0;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',20)}</button>
         </div>
         ${w.p?`<div style="font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:700;margin-top:4px">/ ${esc(w.p)} /</div>`:''}
@@ -4184,7 +4204,7 @@ function coachFlashCard(){
       <button data-act="toggleCardView" title="Back to the deck (↑ key)" aria-label="Back to the deck" style="position:absolute;left:0;right:0;top:0;height:34px;z-index:4;display:flex;align-items:center;justify-content:center;gap:7px;border:0;background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 20%,transparent),transparent);color:var(--accent);font-size:9.5px;font-weight:800;letter-spacing:.09em">↑ DECK</button>
       <button data-act="cardRevise" title="Mark for revision (↓ key)" aria-label="Mark for revision" style="position:absolute;left:0;right:0;bottom:0;height:34px;z-index:4;display:flex;align-items:center;justify-content:center;gap:7px;border:0;background:linear-gradient(0deg,color-mix(in srgb,var(--treasure,#F0B429) 26%,transparent),transparent);color:${revCol};font-size:9.5px;font-weight:800;letter-spacing:.09em">↓ ${onRev?'ON REVISE':'REVISE'}</button>
       <div style="position:relative;z-index:2;pointer-events:none;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:44px 40px 42px;overflow:auto">
-        <div style="font-family:var(--display);font-weight:800;font-size:clamp(23px,7vw,33px);line-height:1.1;overflow-wrap:anywhere">${esc(w.w)}</div>
+        <div style="font-family:var(--display);font-weight:800;${hwStyle(w.w,33)}">${esc(w.w)}</div>
         ${w.sy&&w.sy.toLowerCase()!==(w.w||'').toLowerCase()?`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.04em;margin-top:4px">${esc(w.sy)}</div>`:''}
         <div style="display:flex;gap:10px;justify-content:center;margin:13px 0 4px;pointer-events:auto">
           <button data-act="cardSpeak" aria-label="Hear the word" title="Hear the word" style="width:46px;height:46px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',21)}</button>
@@ -4225,7 +4245,7 @@ function wordFlash(words, idx, navAct, opts){
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,28px);box-shadow:var(--glow);text-align:center;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center">
       ${markRow}
       <div style="display:flex;align-items:center;justify-content:center;gap:11px;flex-wrap:wrap;max-width:100%">
-        <div style="font-family:var(--display);font-weight:800;font-size:clamp(22px,5.5vw,36px);line-height:1.08;min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:break-word;hyphens:auto">${esc(w.w)}</div>
+        <div style="font-family:var(--display);font-weight:800;min-width:0;max-width:100%;hyphens:auto;${hwStyle(w.w,36)}">${esc(w.w)}</div>
         <button data-act="say" data-arg="${escA(w.w)}" aria-label="Hear the word" title="Hear the word" style="width:42px;height:42px;flex-shrink:0;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',20)}</button>
       </div>
       ${w.sy?`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.04em;margin-top:3px">${esc(w.sy)}</div>`:''}
@@ -4266,7 +4286,9 @@ function liveHeatmap(words, opts){
       return `<span title="${mastered?'mastered':(miss?'to review':'new')}" style="width:22px;height:22px;border-radius:6px;background:${bg};display:inline-block;${isCur?'box-shadow:0 0 0 2px var(--accent)':''}"></span>`;
     }
     if(anon && isCur) return `<span title="current word — hidden" style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;padding:5px 9px;border-radius:6px;color:var(--muted);background:var(--surface2);box-shadow:0 0 0 2px var(--accent)">•••</span>`;
-    return `<button data-act="wordCard" data-arg="${escA(w.w)}" title="open the learn card" style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;padding:5px 9px;border-radius:6px;color:${fg};background:${bg};${isCur?'box-shadow:0 0 0 2px var(--accent)':''}">${esc(w.w)}</button>`;
+    /* A 58-letter word made this chip wider than a phone screen and pushed the whole page
+       sideways — cap it at the row width and let it wrap inside itself. */
+    return `<button data-act="wordCard" data-arg="${escA(w.w)}" title="open the learn card" style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;padding:5px 9px;border-radius:6px;max-width:100%;min-width:0;text-align:left;overflow-wrap:anywhere;word-break:break-word;line-height:1.25;color:${fg};background:${bg};${isCur?'box-shadow:0 0 0 2px var(--accent)':''}">${esc(w.w)}</button>`;
   }).join('');
   const legend=[['var(--good)','Mastered'],['var(--bad)','Missed'],['var(--surface2)','New']].map(([c,l])=>`<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:700"><span style="width:11px;height:11px;border-radius:6px;background:${c};display:inline-block"></span>${l}</span>`).join('');
   const pct=Math.round(m/N*100);
@@ -4480,20 +4502,10 @@ function printCards(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1
         ${w.m?`<div class="fmis">⚠️ Often misspelled “${esc(w.m)}”</div>`:''}
         <div class="fnotes"><span class="nlab">✏️ My notes</span><span class="nl"></span><span class="nl"></span></div>
       </div>${av?`<div class="favatar">${av}</div>`:''}</div>`; };
-  const bizzy=(typeof mascotSVG==='function')?mascotSVG('happy'):'🐝';
-  const conf=[[24,40,'#FFD34D',0],[172,50,'#fff',18],[40,210,'#FF7DB0',-12],[182,206,'#FFD34D',24],[100,26,'#8CE0FF',10],[16,140,'#fff',-20],[196,150,'#FFD34D',14],[120,232,'#8CE0FF',-8],[60,120,'#fff',30]]
-    .map(c=>`<rect x="${c[0]}" y="${c[1]}" width="7" height="11" rx="2" fill="${c[2]}" opacity=".85" transform="rotate(${c[3]} ${c[0]} ${c[1]})"/>`).join('');
-  const back=(w)=>{ const cc=LC(w.y); return `<div class="card back" style="--c1:${cc[0]};--c2:${cc[1]}">
-      <div class="bsun"></div>
-      <svg class="bdeco" viewBox="0 0 200 260" preserveAspectRatio="xMidYMid slice">${conf}</svg>
-      <span class="bspark s1">✨</span><span class="bspark s2">⭐</span>
-      <div class="bmid"><div class="bmascot">${bizzy}</div><div class="btitle"><i>Bizzing</i> Bee</div>
-      <div class="blvl">★ Level ${w.y||3}</div><div class="bword">${esc(w.w)}</div></div></div>`; };
-  let pages=''; for(let i=0;i<words.length;i+=4){ const chunk=words.slice(i,i+4);
-    pages+='<div class="page">'+chunk.map(front).join('')+'</div>';
-    // backs: mirror columns per row (0,1,2,3 -> 1,0,3,2) for duplex alignment
-    const order=[1,0,3,2].filter(x=>x<chunk.length); const bset=order.map(x=>chunk[x]).filter(Boolean);
-    pages+='<div class="page">'+bset.map(back).join('')+'</div>'; }
+  /* Fronts only. The decorative back sheet doubled the paper for no teaching value, and
+     duplex mirroring made it fragile on any printer that feeds differently. */
+  let pages=''; for(let i=0;i<words.length;i+=4){
+    pages+='<div class="page">'+words.slice(i,i+4).map(front).join('')+'</div>'; }
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(label)} — Bizzing Bee flashcards</title><style>
     @page{size:${sizes[p.page]||'letter'} portrait;margin:8mm} *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Trebuchet MS','Segoe UI',Verdana,sans-serif;color:#241E33}
@@ -4517,20 +4529,10 @@ function printCards(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1
     .favatar{position:absolute;bottom:12px;right:12px;width:54px;height:54px;border-radius:50%;background:color-mix(in srgb,var(--c1) 14%,#fff);border:2.5px solid var(--c1);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 7px rgba(0,0,0,.15)}
     .favatar svg{width:44px;height:44px}
     /* back — fun sunburst + confetti backdrop with Bizzy the mascot */
-    .back{background:radial-gradient(130% 100% at 50% 8%,color-mix(in srgb,var(--c1) 78%,#fff),var(--c2));color:#fff;align-items:center;justify-content:center;text-align:center;border-color:var(--c2)}
-    .bsun{position:absolute;inset:0;background:repeating-conic-gradient(from 0deg at 50% 40%,rgba(255,255,255,.10) 0deg 7deg,transparent 7deg 14deg)}
-    .bdeco{position:absolute;inset:0;width:100%;height:100%;z-index:1}
-    .bspark{position:absolute;z-index:1;font-size:24px;opacity:.9}
-    .bspark.s1{top:16px;left:18px} .bspark.s2{top:22px;right:20px;font-size:19px} .bspark.s3{bottom:20px;left:20px;font-size:22px} .bspark.s4{bottom:24px;right:22px;font-size:18px}
-    .bmid{position:relative;z-index:2}
-    .bmascot{width:128px;height:140px;margin:0 auto 6px;filter:drop-shadow(0 5px 10px rgba(0,0,0,.28))}
-    .bmascot svg{width:100%;height:100%;display:block}
-    .btitle{font-size:31px;font-weight:800;margin:2px 0 15px;text-shadow:0 2px 6px rgba(0,0,0,.28)} .btitle i{font-style:italic}
-    .blvl{display:inline-block;font-weight:800;font-size:18px;letter-spacing:.02em;background:#FFCF3F;color:#6b4a00;border:3px solid #fff;border-radius:999px;padding:8px 22px;box-shadow:0 4px 10px rgba(0,0,0,.28)}
-    .bword{margin-top:16px;font-size:17px;color:rgba(255,255,255,.85);letter-spacing:.08em;font-weight:800;text-transform:lowercase}
   </style></head><body>${pages}</body></html>`; }
-// Printable avatar collectible cards (Collection) — front = the trump card, back = the same
-// fun Bizzy backdrop. 4 per page, backs mirrored for duplex printing, then cut out.
+// Printable avatar collectible cards (Collection) — the trump-card front only, 4 per page,
+// then cut out. Backs were dropped: they doubled the paper for decoration, and the duplex
+// mirroring came out misaligned on any printer that feeds differently.
 function printAvCardsDoc(){ const c=active(); const owned=SB_AVATARS.list.filter(a=>avOwned(c,a.id));
   if(!owned.length) return '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:sans-serif;padding:40px;color:#333">No avatars collected yet — open packs in the Store first! 🐝</body></html>';
   const bar=(lab,val,col)=>`<div class="abar"><span class="al">${lab}</span><span class="at"><i style="width:${Math.max(6,val)}%;background:${col}"></i></span><b class="av">${val}</b></div>`;
@@ -4546,17 +4548,8 @@ function printAvCardsDoc(){ const c=active(); const owned=SB_AVATARS.list.filter
       <div class="afact"><b>💡 Inspired by</b> ${esc(d.fact)}</div>
       <div class="apack">🐝 ${esc(d.packLabel)}</div>
     </div>`; };
-  const conf=[[24,40,'#FFD34D',0],[172,50,'#fff',18],[40,210,'#FF7DB0',-12],[182,206,'#FFD34D',24],[100,26,'#8CE0FF',10],[16,140,'#fff',-20],[196,150,'#FFD34D',14],[120,232,'#8CE0FF',-8],[60,120,'#fff',30]]
-    .map(x=>`<rect x="${x[0]}" y="${x[1]}" width="7" height="11" rx="2" fill="${x[2]}" opacity=".85" transform="rotate(${x[3]} ${x[0]} ${x[1]})"/>`).join('');
-  const bizzy=(typeof mascotSVG==='function')?mascotSVG('happy'):'🐝';
-  const back=(a)=>{ const d=(typeof SB_AV_CARD==='function')?SB_AV_CARD(a.id):{c1:'#6C4FE0',c2:'#4A32A8',rarityLabel:'',packLabel:'',name:a.name}; return `<div class="card back" style="--c1:${d.c1};--c2:${d.c2}">
-      <div class="bsun"></div><svg class="bdeco" viewBox="0 0 200 260" preserveAspectRatio="xMidYMid slice">${conf}</svg>
-      <span class="bspark s1">✨</span><span class="bspark s2">⭐</span>
-      <div class="bmid"><div class="bmascot">${bizzy}</div><div class="btitle"><i>Bizzing</i> Bee</div>
-      <div class="blvl">★ ${esc(d.rarityLabel||'Collectible')}</div><div class="bword">${esc(d.name)}</div></div></div>`; };
-  let pages=''; for(let i=0;i<owned.length;i+=4){ const chunk=owned.slice(i,i+4);
-    pages+='<div class="page">'+chunk.map(front).join('')+'</div>';
-    const order=[1,0,3,2].filter(x=>x<chunk.length); pages+='<div class="page">'+order.map(x=>chunk[x]).filter(Boolean).map(back).join('')+'</div>'; }
+  let pages=''; for(let i=0;i<owned.length;i+=4){
+    pages+='<div class="page">'+owned.slice(i,i+4).map(front).join('')+'</div>'; }
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>My avatar cards — Bizzing Bee</title><style>
     @page{size:letter portrait;margin:8mm} *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Trebuchet MS','Segoe UI',Verdana,sans-serif;color:#241E33}
@@ -4582,14 +4575,6 @@ function printAvCardsDoc(){ const c=active(); const owned=SB_AVATARS.list.filter
     .avil .afact{background:rgba(0,0,0,.35);border-color:color-mix(in srgb,var(--c1) 40%,#333);color:#e6def5} .avil .afact b{color:#ffb0c4}
     .apack{text-align:center;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:color-mix(in srgb,var(--c1) 60%,#999)} .avil .apack{color:#b9aed0}
     /* shared fun back */
-    .back{background:radial-gradient(130% 100% at 50% 8%,color-mix(in srgb,var(--c1) 78%,#fff),var(--c2));color:#fff;align-items:center;justify-content:center;text-align:center;border-color:var(--c2)}
-    .bsun{position:absolute;inset:0;background:repeating-conic-gradient(from 0deg at 50% 40%,rgba(255,255,255,.10) 0deg 7deg,transparent 7deg 14deg)}
-    .bdeco{position:absolute;inset:0;width:100%;height:100%;z-index:1}
-    .bspark{position:absolute;z-index:1;font-size:24px;opacity:.9} .bspark.s1{top:16px;left:18px} .bspark.s2{top:22px;right:20px;font-size:19px}
-    .bmid{position:relative;z-index:2} .bmascot{width:128px;height:140px;margin:0 auto 6px;filter:drop-shadow(0 5px 10px rgba(0,0,0,.28))} .bmascot svg{width:100%;height:100%;display:block}
-    .btitle{font-size:31px;font-weight:800;margin:2px 0 15px;text-shadow:0 2px 6px rgba(0,0,0,.28)} .btitle i{font-style:italic}
-    .blvl{display:inline-block;font-weight:800;font-size:18px;background:#FFCF3F;color:#6b4a00;border:3px solid #fff;border-radius:999px;padding:8px 22px;box-shadow:0 4px 10px rgba(0,0,0,.28)}
-    .bword{margin-top:16px;font-size:17px;color:rgba(255,255,255,.85);letter-spacing:.08em;font-weight:800}
   </style></head><body>${pages}</body></html>`; }
 // Lists the child has activated: the 3 core lists + everything they pinned + whatever is being trained now.
 function activatedListKeys(){ const c=active(); ensureLists(c);
@@ -5035,7 +5020,8 @@ function viewJourneys(){ const S=state; if(S.lessonSel) return viewLesson();
   const chaptersTotal=units.length||10;
   if(!all.length) return `<div style="max-width:680px;margin:0 auto;padding:60px 0;text-align:center;color:var(--muted);font-weight:700">Lessons are loading…</div>`;
   if(!S.premium){
-    return `<div style="max-width:620px;margin:0 auto">
+    const _hw=(words[Math.max(0,Math.min(idx||0,words.length-1))]||{}).w||'';
+  return `<div style="max-width:${hwWide(_hw,620)}px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button></div>
       <div style="background:var(--bg2);border:1px solid var(--accent);border-radius:20px;padding:30px;text-align:center;box-shadow:var(--glow)">
         <div style="width:64px;height:64px;border-radius:14px;background:var(--chip);color:var(--accent);display:grid;place-items:center;margin:0 auto 14px">${iconSVG('book',32)}</div>
@@ -5603,7 +5589,7 @@ function coachTrain(){
         <p style="font-size:12px;color:var(--muted);margin:0 0 15px">${esc(listLabel(key).split(' · ')[0])} — opens a clean page you can print or save as PDF.</p>
         ${prow('Format',[['list','📄 Word list'],['cards','🃏 Flashcards']].map(([v,l])=>pbtn('fmt',v,l)).join(''))}
         ${fmt==='cards'
-          ? `<div style="font-size:11.5px;color:var(--muted);font-weight:650;line-height:1.5;background:var(--surface2);border-radius:10px;padding:10px 12px;margin-bottom:13px">One word per card with its meaning, sentence, origin & hint, a ✓ box and note lines. The back has a Bizzing Bee design with the word's level — print double-sided to get fronts &amp; backs, then cut out. 4 cards per page.</div>`
+          ? `<div style="font-size:11.5px;color:var(--muted);font-weight:650;line-height:1.5;background:var(--surface2);border-radius:10px;padding:10px 12px;margin-bottom:13px">One word per card with its meaning, sentence, origin &amp; hint, a ✓ box and note lines. 4 cards per page, single-sided — print and cut out.</div>`
           : prow('What to include — pick one, two or three',[tbtn('w','Words'),tbtn('p','Pronunciations'),tbtn('d','Meanings')].join('')+(p.inc.w?'':'<div style="flex-basis:100%;font-size:11.5px;color:var(--muted);font-weight:650;margin-top:2px">No words = a quiz sheet — each row gets a blank line to write on.</div>'))}
         ${prow('Sort by',[['level','Level order'],['alpha','A → Z'],['diff','Easiest → hardest']].map(([v,l])=>pbtn('sort',v,l)).join(''))}
         ${fmt==='cards'?'':prow('Text size',[['normal','Normal'],['compact','Compact — less paper']].map(([v,l])=>pbtn('size',v,l)).join(''))}
@@ -6456,7 +6442,7 @@ function typedGame(){ const S=state; const g=S.game; const w=g.list[g.i]; let st
   let bossFb=''; if(g.type==='boss'&&g.last&&g.last.ok&&!g.fb){ bossFb=`<div style="color:#1f9d57;font-weight:800;font-size:13px;margin-bottom:12px">💥 Hit! Boss took damage.</div>`; }
   if(g.fb&&!g.fb.ok){ bossFb=`<div style="background:var(--fix-tint,#FBE9E7);border:1.5px solid var(--fix,#C4453C);border-radius:14px;padding:14px;margin-bottom:14px;animation:sb-pop .3s ease both">
       <div style="font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--fix,#C4453C)">Look &amp; listen — it's spelled</div>
-      <div style="font-family:var(--entry);font-weight:800;font-size:clamp(24px,6vw,32px);letter-spacing:.16em;color:var(--text);margin-top:4px">${esc(g.fb.word)}</div></div>`; }
+      <div style="font-family:var(--entry);font-weight:800;color:var(--text);margin-top:4px;${hwSpell(g.fb.word,32)}">${esc(g.fb.word)}</div></div>`; }
   const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,32px);box-shadow:var(--glow);text-align:center">
       <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 14px">${g.type==='boss'?'Spell it to attack!':'Listen and type'}</p>
       <button data-act="gSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">${iconSVG('volume',18)} Hear the word</button>
@@ -6634,7 +6620,7 @@ function overlays(){
       <div style="display:flex;gap:9px;justify-content:center;margin-bottom:16px">${[0,1,2,3].map(i=>`<span style="width:15px;height:15px;border-radius:50%;border:2px solid var(--accent);display:inline-block;background:${i<S.pinDlg.typed.length?'var(--accent)':'transparent'}"></span>`).join('')}</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${['1','2','3','4','5','6','7','8','9','del','0','x'].map(k=>k==='x'?`<button data-act="pinCancel" style="padding:13px 0;border-radius:12px;background:var(--surface2);font-weight:800;font-size:13px;color:var(--muted)">Cancel</button>`:`<button data-act="pinKey" data-arg="${k}" style="padding:13px 0;border-radius:12px;background:${k==='del'?'var(--surface2)':'var(--chip)'};font-weight:800;font-size:${k==='del'?'12px':'17px'};color:${k==='del'?'var(--muted)':'var(--accent)'}">${k==='del'?'⌫':k}</button>`).join('')}</div>
     </div></div>`;
-  if(S.toast) h+=`<div class="sb-toast" style="position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:70;background:var(--accent);color:#fff;font-weight:800;font-size:15px;padding:13px 22px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.3);animation:sb-pop .35s ease both;display:flex;align-items:center;gap:9px">${esc(S.toast)}</div>`;
+  if(S.toast) h+=`<div class="sb-toast" style="position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:70;pointer-events:none;background:var(--accent);color:#fff;font-weight:800;font-size:15px;padding:13px 22px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.3);animation:sb-pop .35s ease both;display:flex;align-items:center;gap:9px">${esc(S.toast)}</div>`;
   return h;
 }
 
@@ -6958,6 +6944,8 @@ function render(){
   if(_setScroll!=null){ try{ const so2=document.getElementById('sb-set-ov'); if(so2) so2.scrollTop=_setScroll; }catch(e){} }
   if(state.settingsOpen) state._setOpened=true;
   if(fkey){ const el=root.querySelector('[data-fkey="'+fkey+'"]'); if(el){ try{ el.focus(); if(ss!=null&&el.setSelectionRange) el.setSelectionRange(ss,se); }catch(e){} } }
+  // the evolution rail scrolls on narrow screens — park it on the speller's current stage
+  try{ if(window.evoLadderSync) evoLadderSync(); }catch(e){}
   save();
 }
 function callAct(act, arg, ev){ const fn=app[act]; if(typeof fn==='function') fn(arg, ev); }
