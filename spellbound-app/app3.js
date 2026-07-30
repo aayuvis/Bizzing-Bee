@@ -325,7 +325,7 @@ function listLevel(c,key){ return Math.min(listLevelRaw(c,key), levelCap()); }
 function activeListKey(){ return (active().activeList)||'default'; }
 function heroLevel(c){ ensureLists(c); const ls=Object.keys(c.lists||{}).map(k=>listLevel(c,k)); return Math.max(1, ...(ls.length?ls:[1])); } // evolution never demotes when you switch lists
 function overallLevel(c){ ensureLists(c); const ks=Object.keys(c.lists||{}); if(!ks.length) return 1; const ls=ks.map(k=>listLevel(c,k)); const best=Math.max(...ls); const avg=ls.reduce((a,b)=>a+b,0)/ls.length; return Math.max(1, Math.round(best*0.6 + avg*0.4)); }
-function listBaseLabel(key){ if(key==='default') return 'Default · Level-Up'; if(key==='journey') return 'The Bizzing Bee Journey'; if(isThemeKey(key)){ const t=themeOf(key.slice(3)); if(t) return t.label; } const cat=coachCatalog().find(c=>c.key===key); return cat?cat.label:key; }
+function listBaseLabel(key){ if(key==='default') return 'Default · Level-Up'; if(key==='journey') return journeyName(); if(isThemeKey(key)){ const t=themeOf(key.slice(3)); if(t) return t.label; } const cat=coachCatalog().find(c=>c.key===key); return cat?cat.label:key; }
 function listLabel(key){ const custom=((active().listNames)||{})[key]; return custom||listBaseLabel(key); }
 function listWords(key){ return stageWords(key); }            // current stage's words (staged progression)
 function listFullWords(key){ if(key==='default') return defaultStages().reduce((a,s)=>a.concat(s.words),[]); return rawListWords(key); }
@@ -1566,6 +1566,15 @@ const app = {
     if(state.advView!=='gate' && !window.SB_FULL) loadFullLibrary(()=>{ try{ render(); }catch(e){} }); },
   advGo:(v)=>{ if(window.ADV) ADV.go(v); },
   advConcept:(i)=>{ if(window.ADV) ADV.openConcept(i); },
+  /* Deep links from the ordinary hubs straight into an Advanced Mode segment. ADV.open()
+     first so the module owns nav and the full library starts loading, then jump. */
+  advJump:(seg)=>{ if(!window.ADV) return; app.openAdvanced(); ADV.go(seg); },
+  openAdvConcepts:()=>app.advJump('concepts'),
+  openAdvTips:()=>app.advJump('tips'),
+  openAdvMock:()=>app.advJump('mock'),
+  openAdvGames:()=>app.advJump('games'),
+  advRevealClose:()=>{ set({advReveal:false}); },
+  advRevealGo:(seg)=>{ set({advReveal:false}); app.advJump(seg); },
   advBack:()=>{ if(window.ADV) ADV.back(); },
   advExit:()=>{ if(window.ADV) ADV.exit(); },
   advBuy:()=>{ if(window.ADV) ADV.buy(); },
@@ -1992,7 +2001,59 @@ const WAYFIND={ quest:{c:'var(--action,#6C4FE0)',ic:'steps',sb:null,label:'Champ
   quotes:{c:'#C8791B',ic:'quote',sb:'star',label:'Quotes'},
   trivtrain:{c:'#DC7A18',ic:'bulb',sb:'sparkle',label:'Know the World of Words'},
   traps:{c:'#C4453C',ic:'spark',sb:'target',label:'Your Traps'},
-  revisions:{c:'#E0922E',ic:'book',sb:'target',label:'Your Revisions'} };
+  revisions:{c:'#E0922E',ic:'book',sb:'target',label:'Your Revisions'},
+  /* Advanced Mode destinations. These rows only render once Advanced Mode is on, and
+     they deliberately sit inside the ordinary hubs rather than only behind the banner —
+     an unlocked speller should meet them where they already look for that kind of work. */
+  advconcepts:{c:'#5B3FA6',ic:'grid',sb:'grid',label:'Advanced Concepts'},
+  advtips:{c:'#0E8A78',ic:'bulb',sb:'sparkle',label:'Advanced Tips & Tricks'},
+  advmock:{c:'#C8901B',ic:'trophy',sb:'trophy',label:'Mock Spelling Bee'} };
+/* One predicate for "is Advanced Mode on", so every surface agrees. Mirrors advUnlocked()
+   inside advanced.js and falls back to the same arithmetic if that module has not loaded. */
+function advModeOn(c){ c=c||active(); if(!c) return false;
+  try{ if(window.ADV&&ADV.unlocked) return !!ADV.unlocked(); }catch(e){}
+  try{ const lvl=listStageIdx(c,'journey')+1; const band=beeBand(c).band;
+    return !!(state.devUnlock||state.premium||c.advPaid||lvl>=12||band>=7); }catch(e){ return false; } }
+/* The Journey is renamed once Advanced Mode is on — same ladder, but it now draws on the
+   128k library, so calling it the beginner name undersells it. */
+function journeyName(){ return advModeOn()?'The Advanced Spelling Journey':'The Bizzing Bee Journey'; }
+/* ---- Advanced Mode activation ----------------------------------------------------
+   Advanced Mode can switch on three ways: paying coins, reaching Level 12, or reaching
+   Bee Band 7. The last two happen mid-session with no ceremony at all, and five things
+   appear in five different places, so the speller needs telling. Fire once per child. */
+const ADV_PLACES=[
+  ['advmock','Mock Spelling Bee','now at the top of Train, in Supercharge','mock','#C8901B'],
+  ['advconcepts','Advanced Concepts','in Learn, just under Word Concepts','concepts','#5B3FA6'],
+  ['advtips','Advanced Tips & Tricks','added to Revise, in Supercharge','tips','#0E8A78'],
+  ['arcade','Advanced Games','leading the Arcade','games','#E8458C'],
+  ['quest','The Advanced Spelling Journey','your Journey, renamed and drawing on all 128,000 words','ucj','#6C4FE0'] ];
+function advCheckUnlock(){ try{ const c=active(); if(!c) return;
+    if(!advModeOn(c)) return; if(c.advAnnounced) return;
+    c.advAnnounced=1; save();
+    state.advReveal=true;
+    try{ sfx('win'); burstConfetti(150); }catch(e){}
+    try{ flash('Advanced Mode unlocked'); }catch(e){}
+    try{ logActivity('unlock','Advanced Mode unlocked',{},[]); }catch(e){}
+  }catch(e){} }
+/* The reveal card: what was added, and where to find it. Rows stagger in so it reads as
+   a list being filled rather than a wall of text appearing at once. */
+function advRevealCard(){
+  const row=([key,label,where,seg,col],i)=>`<button data-act="advRevealGo" data-arg="${escA(seg)}" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface2);border:1px solid var(--line);border-radius:13px;padding:11px 12px;animation:sb-rise .5s ease ${(0.18+i*0.11).toFixed(2)}s both">
+      ${iconTile((window.SB_ICON_ART&&SB_ICON_ART[key])?key:'grid',col,{size:38,radius:11})}
+      <span style="min-width:0;flex:1">
+        <span style="display:block;font-family:var(--display);font-weight:800;font-size:14.5px;line-height:1.15">${esc(label)}</span>
+        <span style="display:block;font-size:11.5px;color:var(--muted);font-weight:650;line-height:1.4;margin-top:1px">${esc(where)}</span></span>
+      <span style="flex-shrink:0;color:${col};font-weight:800">→</span></button>`;
+  return `<div data-act="advRevealClose" style="position:fixed;inset:0;z-index:80;background:rgba(20,14,42,.72);backdrop-filter:blur(5px);display:grid;place-items:center;padding:18px;overflow:auto">
+    <div onclick="event.stopPropagation()" style="width:100%;max-width:420px;background:var(--bg2);border:1px solid var(--line);border-radius:24px;padding:24px 22px;box-shadow:0 22px 60px rgba(0,0,0,.4);animation:sb-pop .45s cubic-bezier(.2,1.3,.4,1) both;text-align:center">
+      <div style="width:74px;height:74px;margin:0 auto 12px;border-radius:22px;background:linear-gradient(135deg,#3A2A72,#5B3FA6);display:grid;place-items:center;color:#fff;box-shadow:0 10px 26px rgba(58,42,114,.45);animation:ca-glow 1.6s ease 2">${SB_ICON?SB_ICON('trophy',{size:38}):iconSVG('trophy',38)}</div>
+      <div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:5px">Unlocked</div>
+      <h2 style="font-family:var(--display);font-weight:800;font-size:23px;line-height:1.12;margin:0 0 7px">Advanced Mode is on</h2>
+      <p style="font-size:13px;color:var(--muted);font-weight:650;line-height:1.5;margin:0 0 17px">National-bee preparation, drawn from the full 128,000-word library. Five things just appeared around the app.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:17px">${ADV_PLACES.map(row).join('')}</div>
+      <button data-act="advRevealClose" style="width:100%;padding:14px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Got it</button>
+      <button data-act="openAdvanced" style="width:100%;margin-top:8px;padding:11px;border-radius:12px;background:transparent;color:var(--muted);font-weight:750;font-size:13px">Open Advanced Mode →</button>
+    </div></div>`; }
 function wayTile(key,size,tilt){ const w=WAYFIND[key]; size=size||48;
   const glyph=(w.sb&&window.SB_ICON)?SB_ICON(w.sb,{size:24}):iconSVG(w.ic,24,2.2);
   return `<span style="width:${size}px;height:${size}px;flex-shrink:0;display:grid;place-items:center;border-radius:14px;background:${w.c};color:#fff;box-shadow:var(--edge),var(--sh-rest);transform:rotate(${tilt||-2.5}deg)">${glyph}</span>`; }
@@ -2362,7 +2423,7 @@ function viewQuotes(){ const c=active(); const S=state; const all=(window.SB_QUO
     ${chips}
     ${body}
   </div>`; }
-function viewExplore(){ const c=active(); ensureLists(c); const S=state;
+function viewExplore(){ const c=active(); ensureLists(c); const S=state; const advOn=advModeOn(c);
   const cAll=(state.conceptData||[]); const cDone=cAll.filter(ch=>conceptStat(ch).done).length;
   const fmtDone=(cDone>0?cDone+'/'+(cAll.length||121)+' mastered':(cAll.length||121)+' concepts');
   /* Each Explore destination as a compact clickable row inside its hub. */
@@ -2386,11 +2447,13 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
   // ---- LEARN ----  understand words deeply
   const learn=hub('Learn','learn','#7C5CFF','Understand words deeply',
     row('concepts','setNav','concepts','Spelling basics, roots & patterns · '+fmtDone)+
+    (advOn?row('advconcepts','openAdvConcepts',null,'Schwa rescue, stress shift & the origin tree · narrated'):'')+
     row('journeys','openJourneys',null,'The history & geography of words'+(state.premium?'':' · Premium'))+
     row('builder','openBuilder',null,'Build a custom word list in five taps')+
     row('vocab','openVocab',null,'Word → meaning, vocabulary-bee style'));
   // ---- TRAIN ----  sharpen your skills
   const train=hub('Train','train','#13A892','Sharpen your skills',
+    (advOn?row('advmock','openAdvMock',null,'Benchmark rounds — written, vocabulary & lightning'):'')+
     row('figurative','setNav','figurative','2,350 idioms & similes, card by card')+
     row('typing','openTyping',null,'Touch-type, then race the 60-second test')+
     row('quotes','openQuotes',null,(qN?fmtN(qN)+' ':'')+'kid-friendly quotes from famous people')+
@@ -2398,7 +2461,8 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
   // ---- REVISE ----  fix what trips you up
   const revise=hub('Revise','retry','#E0922E','Fix what trips you up',
     row('revisions','openRevisions',null,'Redo the words you flagged to revise'+(missN?' · '+missN+' waiting':''))+
-    row('traps','openTraps',null,'Beat your weak spelling patterns'));
+    row('traps','openTraps',null,'Beat your weak spelling patterns')+
+    (advOn?row('advtips','openAdvTips',null,'36 champion techniques — memory, speed, roots & bee-day tactics'):''));
   return `<div style="animation:sb-rise .35s ease both">
     ${pageHead('Supercharge your English','learn · train · revise','Everything beyond spelling practice — build deep word knowledge, sharpen real skills, and clean up what trips you up.')}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;align-items:start">${learn}${train}${revise}</div>
@@ -2623,7 +2687,8 @@ function viewApp(){
         <div style="font-size:12px;color:var(--muted);margin-top:10px">Screenshot this card to share it!</div>`); })():'';
   const bandUp='';
 
-  return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}${bandUp}
+  const advReveal=S.advReveal?advRevealCard():'';
+  return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}${advReveal}${bandUp}
     <div class="sb-header-sticky${(window.SB_W4_FOCUS&&SB_W4_FOCUS.on())?' sb-collapse-nav':''}" style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
       <div style="max-width:1080px;margin:0 auto;padding:11px clamp(9px,3.2vw,32px);display:flex;align-items:center;gap:8px">
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
@@ -5390,7 +5455,7 @@ function coachTrain(){
   const act=(a,ic,t,col)=>`<button data-act="${a}" class="sb-lift" style="display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:16px 10px;box-shadow:var(--sh-rest)">${iconTile(ic,col,{size:44,radius:13})}<span style="font-family:var(--display);font-weight:800;font-size:13.5px;color:${col};line-height:1.15">${t}</span></button>`;
   const actions=`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:18px 2px 10px">Quick practice</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:11px">${act('startBuzz','flame','Daily Buzz','#E8845C')}${act('startWritten','pencil','Written','#7C5CFF')}${act('startOral','speaker','Oral round','#13A892')}${act('coachSetupOpen','sliders','Setup','#C8901B')}</div>`;
-  const journeyPromo = (key!=='journey' && (getList(c,'journey').stage||0)===0) ? `<button data-act="startJourney" style="width:100%;text-align:left;border-radius:14px;margin-top:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 4px 14px rgba(43,27,94,.16)"><div style="padding:13px 16px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">★ Recommended path</div><div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">The Bizzing Bee Journey — 20 Levels to Champ</div></div><span style="padding:8px 14px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Start →</span></div></button>` : '';
+  const journeyPromo = (key!=='journey' && (getList(c,'journey').stage||0)===0) ? `<button data-act="startJourney" style="width:100%;text-align:left;border-radius:14px;margin-top:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 4px 14px rgba(43,27,94,.16)"><div style="padding:13px 16px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">★ Recommended path</div><div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">${journeyName()} — 20 Levels to Champ</div></div><span style="padding:8px 14px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Start →</span></div></button>` : '';
   return `<div style="max-width:760px;margin:0 auto">${printDlg}${topBar}
     <div style="display:flex;gap:5px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:16px">${tab('revise','Learn')}${tab('practice','Practice Spelling')}${tab('vocab','Practice Vocabulary')}</div>
     ${body}
@@ -5463,7 +5528,7 @@ function coachSetup(){
   const journeyBanner=`<button data-act="startJourney" style="position:relative;overflow:hidden;text-align:left;width:100%;border-radius:20px;margin-bottom:16px;${listCoverBG('journey')};box-shadow:0 8px 22px rgba(43,27,94,.18)">
     <div style="padding:18px 20px;color:#fff">
       <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">${(active().activeList||'default')==='journey'?'Your path':'★ Recommended path'}</span>
-      <div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1.1;margin:6px 0 4px">The Bizzing Bee Journey</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1.1;margin:6px 0 4px">${journeyName()}</div>
       <div style="font-size:13px;color:rgba(255,255,255,.9);line-height:1.5;margin-bottom:12px;max-width:46em">Climb <b>20 Levels</b> through the ~${fmtN(champWordCount())} highest-value bee words to become a <b>Bizzing Bee Champ</b> — then unlock the full ${fmtN(journeyTotal())}-word Library. Words → Set of 24 → Level → Champ.</div>
       <div style="height:8px;border-radius:999px;background:rgba(255,255,255,.25);overflow:hidden;margin-bottom:9px"><div style="height:100%;width:${jChampPct}%;background:#fff"></div></div>
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><span style="font-size:12px;font-weight:800;color:rgba(255,255,255,.92)">${champLabel} · ${fmtN(jMast)} mastered</span><span style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:10px;background:#fff;color:${jc.c};font-weight:800;font-size:13px">${jStarted?'Continue':'Start the Journey'} →</span></div>
@@ -6007,6 +6072,13 @@ function gamesHub(){ const S=state; const c=active();
   const ART=(k,sz,fb)=>(window.SB_ICON_ART&&SB_ICON_ART[k])?SB_ICON_ART(k,{size:sz||44}):(fb||'');
   // ---- HEROES: the two story adventures, side by side ----
   const heroes=[];
+  /* Advanced Games leads the Arcade once Advanced Mode is on — it is the hardest content
+     here, so it sits above the saga rather than buried with the quick games. */
+  if(advModeOn(c)&&window.ADV){ const st=(c.adv)||{};
+    heroes.push(heroTile({act:'openAdvGames',grad:'linear-gradient(150deg,#241B4E,#3A2A72 60%,#5B3FA6)',
+      art:ART('advanced',112)||gameArtSVG('champ',112),tag:'◆ Advanced',tagC:'#D8C9FF',tagBg:'rgba(180,150,255,.16)',tagBd:'rgba(180,150,255,.4)',
+      title:'Advanced Games',blurb:'Memory match and rapid dictation, drawn from the hardest words in the 128,000-word library.',
+      cta:'Play',sub:(st.dictBest?st.dictBest+' best dictation':'national-bee drills')})); }
   if(window.SAGA2){ let cl=0; try{ cl=SAGA2.cleared?SAGA2.cleared():((JSON.parse(localStorage.getItem('sb_saga2')||'{}').cleared)||0); }catch(e){}
     const hid=(function(){ try{ return SB_AVATARS.byId['bizzy']?'bizzy':((SB_AVATARS.list[0]||{}).id||null); }catch(e){ return null; } })();
     heroes.push(heroTile({act:'openSaga',grad:'linear-gradient(150deg,#3B2A8C,#2A1E6E 60%,#1F1652)',art:hid?SB_AVATAR(hid,116,{dark:true}):'',tag:'✦ New saga',title:'Bizzy & the Great Unspelling',blurb:'A cinematic story — fly, race and spell through the worlds to stop the word-eater.',cta:cl>0?'Continue':'Begin Act I',sub:cl+'/6 chapters'})); }
@@ -6242,7 +6314,7 @@ function mcDone(){ const g=state.game; const pct=Math.round(g.right/(g.qs.length
 
 /* ===================== OVERLAYS ===================== */
 function fullListOverlay(){ const S=state; if(!S.listView) return '';
-  const key=S.listView; const label=(key==='journey'?'The Bizzing Bee Journey':listLabel(key).split(' · ')[0]);
+  const key=S.listView; const label=(key==='journey'?journeyName():listLabel(key).split(' · ')[0]);
   let words=[]; try{ words=listFullWords(key)||[]; }catch(e){}
   // dedupe + resolve enrichment from the word index for lists that store only bare words
   const idx=(typeof wordIndex==='function')?wordIndex():{}; const seen=new Set(); const all=[];
@@ -6636,6 +6708,9 @@ function save(){ try{ localStorage.setItem('sb_saas_v2', JSON.stringify({ theme:
 function render(){
   // keep the legacy paid/free flag in lock-step with the active child's subscription tier
   try{ if(window.SB_ENT && state.children && state.children.length) state.premium = SB_ENT.isPaid(); }catch(e){}
+  // Advanced Mode can switch on from a level-up mid-session, so check on every render.
+  // advCheckUnlock() is a no-op after the first time for a given child.
+  try{ if(state.screen==='app' && !state.advReveal) advCheckUnlock(); }catch(e){}
   const a=document.activeElement; const fkey=a&&a.getAttribute&&a.getAttribute('data-fkey'); let ss=null,se=null;
   try{ if(a){ ss=a.selectionStart; se=a.selectionEnd; } }catch(e){}
   document.documentElement.setAttribute('data-theme', state.theme);
