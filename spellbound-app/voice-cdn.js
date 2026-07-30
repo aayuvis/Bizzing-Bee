@@ -21,8 +21,15 @@
     var BASE = 'https://raw.githubusercontent.com/aayuvis/Bizzing-Bee/main/spellbound-app/';
     var Native = window.Audio;
     if (!Native) return;
+    /* Concept + advanced-concept NARRATION is bundled on Pages and served same-origin.
+       It is 641 files and 25 MB, so unlike the 128,491-file / 1.4 GB word corpus it fits
+       comfortably. Keeping it local matters for two reasons: raw.githubusercontent
+       rate-limits unauthenticated requests, and narration is the most-played audio in the
+       app; and it removes the dependency on those clips having reached `main`.
+       voice/c<n>-<n>.mp3 = the 121 general chapters, voice/a<n>-<n>.mp3 = advanced. */
+    var LOCAL = /^voice\/[ca]\d+-\d+\.mp3$/i;
     var Wrapped = function (src) {
-      if (typeof src === 'string' && src.slice(0, 6) === 'voice/') {
+      if (typeof src === 'string' && src.slice(0, 6) === 'voice/' && !LOCAL.test(src)) {
         // version query busts browser + CDN caches on each voice deploy
         // (SB_VOICE_VER is bumped in voice-review.js every rebuild round)
         src = BASE + src + '?v=' + (window.SB_VOICE_VER || '0');
