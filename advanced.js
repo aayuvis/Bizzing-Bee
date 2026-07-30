@@ -167,6 +167,10 @@
     /* ============ VIEWS ============ */
     view() { const v = state.advView || (advUnlocked() ? 'hub' : 'gate');
       if (v === 'gate' || (!advUnlocked() && v !== 'gate')) return ADV._gate();
+      /* An open advanced chapter takes over the whole Advanced Mode view. The shared
+         concept player is normally reached through nav==='concepts', which we are not
+         in, so without this the chapter is selected but nothing on screen changes. */
+      if (state.conceptSel && state.conceptSel.adv && typeof viewConceptDetail === 'function') return viewConceptDetail();
       if (v === 'sprint') return ADV._sprintView();
       if (v === 'mock') return ADV._mockView();
       if (v === 'ucj') return ADV._ucjView();
