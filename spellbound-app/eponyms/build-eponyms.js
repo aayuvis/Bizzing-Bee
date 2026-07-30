@@ -62,12 +62,12 @@ let dropped = { dup: 0, leak: 0, thin: 0 };
    here because so many eponyms ARE the person's surname (Babbitt, Medusa,
    Cassandra). Check every mc before keeping it. */
 const leaks = (q, ans) => new RegExp(`\\b${ans.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'i').test(q);
-const add = (m, ty, q, c, extra) => {
+const add = (m, ty, q, c, extra, tpl) => {
   if (!c || c.some(x => !norm(x))) { dropped.thin++; return; }
   const seen = new Set(c.map(lower));
   if (seen.size !== c.length) { dropped.dup++; return; }           // duplicate option
   if (ty === 'mc' && leaks(q, c[0])) { dropped.leak++; return; }   // answer visible in clue
-  Q.push(Object.assign({ th: 'eponyms', lv: m.lv, ty, q, c, f: m.story }, extra || {}));
+  Q.push(Object.assign({ th: 'eponyms', lv: m.lv, ty, q, c, f: m.story, _e: m.e, _tpl: tpl }, extra || {}));
 };
 
 /* Mastermind house style: describe the source by ROLE, never by name — "the Greek
@@ -110,20 +110,20 @@ ready.forEach((m, idx) => {
   const noun = /\s/.test(m.e) ? 'name or term' : 'word';
 
   // 1. THE core Mastermind shape: meaning + role, source never named.
-  if (p.words && who) add(m, 'mc', `Which ${noun} meaning "${shortMean(m.mean)}" comes from ${role}?`, [m.e, ...p.words]);
+  if (p.words && who) add(m, 'mc', `Which ${noun} meaning "${shortMean(m.mean)}" comes from ${role}?`, [m.e, ...p.words], null, 'meaning');
 
   // 2. word -> source.
-  if (p.srcs) add(m, 'mc', `The word "${m.e}" is named after…?`, [src, ...p.srcs]);
+  if (p.srcs) add(m, 'mc', `The word "${m.e}" is named after…?`, [src, ...p.srcs], null, 'source');
 
   // 3. word -> meaning.  Skip at lv1-2 where the meaning is often obvious.
-  if (p.means && m.lv >= 3) add(m, 'mc', `What does "${m.e}" mean?`, [m.mean, ...p.means]);
+  if (p.means && m.lv >= 3) add(m, 'mc', `What does "${m.e}" mean?`, [m.mean, ...p.means], null, 'define');
 
   // 4. person-or-place true/false, only where `kind` is known and unambiguous.
   if (m.kind === 'person' || m.kind === 'place') {
     const claim = idx % 2 === 0;                                   // alternate polarity
     const asks = claim ? 'a place' : 'a person';
     const truth = claim ? (m.kind === 'place') : (m.kind === 'person');
-    add(m, 'tf', `"${m.e}" is named after ${asks}.`, truth ? ['True', 'False'] : ['False', 'True']);
+    add(m, 'tf', `"${m.e}" is named after ${asks}.`, truth ? ['True', 'False'] : ['False', 'True'], null, 'kind');
   }
 
   // 5. breadcrumb at lv4-5: two independently true clues, hardest first, and the
@@ -131,9 +131,39 @@ ready.forEach((m, idx) => {
   if (m.lv >= 4 && p.words && who) {
     const why = stripEnd(m.why);
     const clue = `There was ${role}. ${why.charAt(0).toUpperCase() + why.slice(1)}. Which ${noun} grew out of it?`;
-    add(m, 'mc', clue, [m.e, ...p.words]);
+    add(m, 'mc', clue, [m.e, ...p.words], null, 'breadcrumb');
   }
 });
+
+
+/* ---- one subject, one card ---------------------------------------------------
+   Every entry can yield five templates. Shipping all five meant a player at
+   level 4 met Crohn Disease five times in one sitting. Two still read as a
+   repeat, so the rule is one question per eponym: the strongest shape available,
+   ranked breadcrumb > meaning > define > source > kind. Deck size now equals the
+   number of question-ready entries, and growth comes from the bank, not from
+   re-asking the same subject. */
+const TPL_RANK = { breadcrumb: 0, meaning: 1, define: 2, source: 3, kind: 4 };
+const CAP = 1;
+const bySubject = new Map();
+Q.forEach(q => { const k = lower(q._e);
+  if (!bySubject.has(k)) bySubject.set(k, []); bySubject.get(k).push(q); });
+
+const kept = [];
+let capped = 0, si = 0;
+for (const [, list] of bySubject) {
+  si++;
+  list.sort((a, b) => (TPL_RANK[a._tpl] ?? 9) - (TPL_RANK[b._tpl] ?? 9));
+  // Every seventh subject keeps a true/false instead of its top mc, so the theme
+  // lands near the ~7% tf share the rest of the bank runs at rather than 0%.
+  const tf = si % 7 === 0 ? list.find(q => q.ty === 'tf') : null;
+  const pick = tf || list[0];
+  capped += list.length - CAP;
+  kept.push(pick);
+}
+Q.length = 0; Q.push(...kept);
+Q.forEach(q => { delete q._e; delete q._tpl; });
+dropped.capped = capped;
 
 /* ---- spelling-library patch -------------------------------------------------
    Single-token, alphabetic eponyms only — the library is one word per record. */
