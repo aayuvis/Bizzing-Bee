@@ -9,7 +9,9 @@
                                         4 worlds · 5 avatar packs · Saga LOCKED · 400 start coins
      Regional Speller  $9.99 / $99     40k words · ALL worlds/avatars/games · ALL Supercharge ·
                                         Saga UNLOCKED · 1,500 start coins
-     + Advanced Pack   +$49/yr add-on  advanced word pack + advanced coaching (to be built)
+     + Advanced Pack   +$49/yr add-on  128k library + Advanced Mode coaching (BUILT 2026-07-29).
+                                        Sits ON TOP of any tier, including Regional Speller —
+                                        no tier grants it, and it cannot be bought with coins.
 
    Assumptions flagged for confirmation: Beginner keeps 'basic' games (spec unspecified);
    Free = 2 worlds / 0 avatar packs (carried from the old free plan). */
@@ -35,8 +37,8 @@
     }
   };
   var ADDONS = {
-    advanced: { id: 'advanced', name: 'Advanced Pack + Coaching', priceYr: 49, built: false,
-                blurb: 'Advanced word pack and 1:1-style advanced coaching (coming soon).' }
+    advanced: { id: 'advanced', name: 'Advanced Pack + Coaching', priceYr: 49, built: true,
+                blurb: 'The full 128,000-word library, six narrated advanced-concept lessons, mock spelling bees, champion techniques and advanced games.' }
   };
   var ORDER = ['free', 'beginner', 'regional'];
 
