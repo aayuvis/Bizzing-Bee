@@ -76,6 +76,15 @@ handlers. App lives in this folder; open `index.html` to run.
   `c.lists[key]`. Shape: `{lv, revise, seen, cur, carry, last}`, all keyed by deck
   (`mix`/`easy`/`medium`/`hard`/`champ`/`th:<id>`/`list:<catalogue key>`), so each deck
   levels independently.
+- **The Vocabulary section wears the Word Coach shell**: the same List Dock (one big
+  "now studying" tile with a progress ring, small tiles to switch, "+ Add a list"), the
+  same three-tab bar (Cards / Practise / Check), the same all-words panel. It lands
+  straight on a list — there is no separate deck-picker screen.
+- **One chooser, two sections.** `state.vocPick` puts `coachSetup()` into vocabulary mode:
+  its cards dispatch `vocSelectList` instead of `selectList` and report the vocabulary set.
+  Selection writes **`c.vocabList`, never `c.activeList`** — choosing what to study for
+  meaning must not change what is being trained for spelling. In vocabulary mode
+  `listCoverCard` also avoids `getList()`, which lazily creates spelling-list records.
 - **Any list can be studied as vocabulary.** `vocListCats()` maps `coachCatalog()` — the
   curated lists, NSF tiers, origin lists, plus List Builder / pasted / AI lists — keeping
   only words that carry a meaning, and only lists with **8+** of them (below that a fair
