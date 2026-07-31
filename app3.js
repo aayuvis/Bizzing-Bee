@@ -951,6 +951,20 @@ const app = {
     set({vocWords:ws, vocIdx:0, vocFlip:false, vocCheck:null});
     setTimeout(()=>{ const w=(state.vocWords||[])[0]; if(w) say(w.w); },250); },
   vocBack:()=>set({vocDeck:null, vocCheck:null}),
+  /* Selecting a list here writes c.vocabList only — the spelling list (c.activeList) is
+     never touched, so what you study for meaning and what you train for spelling stay
+     independent. Reuses the coach's chooser via state.vocPick. */
+  vocSelectList:(key)=>{ if(!isListUnlocked(key)){ set({showPaywall:true}); return; }
+    const c=active(); c.vocabList=key; save();
+    state.vocPick=false; state.coachMode=null; state.vocCheck=null; state.vocWordsOpen=false;
+    state.nav='vocab'; state.screen='app';          // the chooser may have been opened from coach
+    app.vocDeck('list:'+key); },
+  vocSetupOpen:()=>{ set({vocPick:true, nav:'coach', screen:'app', coachMode:'setup', coachTab:'train'}); },
+  vocSetTab:(t)=>{ state.vocTab=t; state.vocCheck=null;
+    if(t==='practice') app.vocCheck('practice');
+    else if(t==='check') app.vocCheck(vocLocked(state.vocDeck)?'revise':undefined);
+    else render(); },
+  vocToggleWords:()=>set({vocWordsOpen:!state.vocWordsOpen}),
   // ----- Typing Trainer -----
   openTyping:()=>{ if(!gateFeature('trainTools','the Typing Trainer')) return; tyStop(); set({nav:'typing', screen:'app', ty:null, conceptSel:null}); },
   // ===== Trivia Training — study the whole question bank as flip-cards, by chapter =====
@@ -1302,7 +1316,7 @@ const app = {
     state.sessionListKey=null; ensureCoachWords(key); set({nav:'coach', screen:'app', coachMode:'hub', coachTab:'train', luTab:'revise', status:'idle', typed:''});
     if(key==='all' && !window.SB_FULL){ loadFullLibrary(()=>{ state.sessionListKey=null; ensureCoachWords('all'); render(); }); }
     flash('Now training: '+listLabel(key)); },
-  coachSetupOpen:()=>{ const c=active(); ensureLists(c); set({nav:'coach', screen:'app', coachMode:'setup', coachTab:'train', status:'idle', typed:''}); },
+  coachSetupOpen:()=>{ const c=active(); ensureLists(c); set({vocPick:false, nav:'coach', screen:'app', coachMode:'setup', coachTab:'train', status:'idle', typed:''}); },
   // ----- Level ladder: advance to the next Level of the active list -----
   advanceStage:(key)=>{ const c=active(); ensureLists(c); key=key||activeListKey(); const stages=listStages(key); const idx=listStageIdx(c,key);
     if(idx>=stages.length-1){ sfx('win'); burstConfetti(140); flash('🏆 Every level cleared — incredible!'); return; }
@@ -2402,10 +2416,17 @@ function vocBuildCheck(words){ const pool=gameWordsD({needDef:true});
    studied as a vocabulary deck. Only words that actually carry a meaning are usable, since
    the whole deck is word → meaning. */
 function vocListCats(){ try{
-    return coachCatalog().map(cat=>{
+    /* coachCatalog() covers the curated and built lists but not the ladder lists the dock
+       defaults to, so seed those first. */
+    const seed=[];
+    [['journey',journeyName().replace(/^The /,''),'Your main spelling journey'],
+     ['default','Level-Up','The 20-stage default ladder']].forEach(([k,label,sub])=>{
+      try{ const ws=listFullWords(k)||[]; if(ws.length) seed.push({key:k,label,sub,words:ws}); }catch(e){} });
+    return seed.concat(coachCatalog()).map(cat=>{
       const defs=(cat.words||[]).filter(w=>w&&w.w&&String(w.d||'').trim().length>3);
       return { key:cat.key, label:cat.label, sub:cat.sub, words:defs, n:defs.length }; })
-      .filter(cat=>cat.n>=8);            // below this a 4-option quiz cannot be built fairly
+      .filter(cat=>cat.n>=8)             // below this a 4-option quiz cannot be built fairly
+      .filter((cat,i,a)=>a.findIndex(x=>x.key===cat.key)===i);
   }catch(e){ return []; } }
 function vocListCat(key){ return vocListCats().find(c=>c.key===key)||null; }
 /* A deck key is 'list:<catalogue key>' so it cannot collide with the level or theme decks,
@@ -2624,6 +2645,80 @@ function viewTyping(){ const S=state; const c=active(); const st=tyStats(c);
 /* The check screen. Multiple choice on meaning, one question per word in the set, with the
    word spoken aloud — the same shape as a real vocabulary round. Keyboard 1-4 and Enter
    work alongside tapping, because every screen in this app needs both. */
+/* ---- Vocabulary shell: the Word Coach layout, driven by the vocabulary ladder --------
+   Same List Dock (one big "now studying" tile with a progress ring, small tiles to switch,
+   "+ Add a list" opening the SAME chooser), same tab bar, same all-words panel. The only
+   differences are the ones that must differ: the ring shows the vocabulary set rather than
+   the spelling level, and picking a list here writes c.vocabList, never c.activeList — so
+   choosing what to study for meaning cannot move what is being trained for spelling. */
+function vocListKey(){ const c=active(); const want=c.vocabList||c.activeList||'journey';
+  const cats=vocListCats(); if(!cats.length) return want;
+  return cats.some(x=>x.key===want) ? want : cats[0].key; }
+function vocDeckOfList(){ return 'list:'+vocListKey(); }
+/* Lists worth offering: anything in the catalogue with enough defined words to build a
+   fair 4-option quiz. Falls back to the level decks when a list has none. */
+function vocDockKeys(){ const c=active(); const key=vocListKey();
+  const usable=new Set(vocListCats().map(x=>x.key));
+  const CORE={journey:1,review:1,missed:1};
+  const pinned=c.pinnedLists||{};
+  let extras=Object.keys(pinned).filter(k=>!CORE[k]&&pinned[k]&&usable.has(k));
+  if(!CORE[key]&&extras.indexOf(key)<0) extras.push(key);
+  return ['journey',...extras,'review','missed']
+    .filter((k,i,a)=>a.indexOf(k)===i)
+    .filter(k=>usable.has(k)||k===key); }
+function vocDockColor(k){ if(k==='journey') return '#7C5CFF'; if(k==='review') return '#E0922E'; if(k==='missed') return '#DC5B7E';
+  if(String(k).indexOf('built_')===0) return '#13A892';
+  let h=0; for(const ch of String(k)) h=(h*31+ch.charCodeAt(0))>>>0;
+  return ['#7C5CFF','#E0922E','#DC5B7E','#13A892','#3D7DF0','#B14FC4','#4F9E6A','#F0703C'][h%8]; }
+/* The Word Coach shell, reused: back link + title row, the List Dock, the tab bar, then
+   whatever the active tab renders. Everything inside a tab is unchanged — only the frame
+   around it now matches the coach. */
+function vocShell(inner){ const c=active(); const key=vocListKey(); const deck=vocDeckOfList();
+  const cat=vocListCat(key);
+  const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+    <button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button>
+    <span style="font-family:var(--display);font-weight:800;font-size:15px">Vocabulary</span>
+    <span style="font-size:12px;color:var(--muted);font-weight:650">word → meaning</span>
+    <span style="margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:700">Vocabulary levels are separate from spelling</span></div>`;
+  const words=(state.vocWords||[]);
+  const wordsPanel = state.vocWordsOpen ? `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;animation:sb-rise .3s ease both">
+      <div style="font-family:var(--display);font-weight:800;font-size:14px;margin-bottom:9px">This set · ${words.length} words</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:9px">${words.map(w=>
+        `<div style="background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px">
+          <div style="font-family:var(--display);font-weight:800;font-size:13.5px;overflow-wrap:anywhere">${esc(w.w)}</div>
+          <div style="font-size:11.5px;color:var(--muted);font-weight:650;line-height:1.4;margin-top:2px">${esc(trunc(w.d||'',90))}</div></div>`).join('')}</div></div>` : '';
+  return `<div style="max-width:980px;margin:0 auto">${topBar}${vocDock()}${wordsPanel}${vocTabs()}${inner}</div>`; }
+
+function vocDock(){ const c=active(); const key=vocListKey(); const deck=vocDeckOfList();
+  const cat=vocListCat(key); const total=cat?cat.n:0;
+  const lv=vocLevel(deck), rv=vocRevise(deck).length;
+  const set=(state.vocWords||[]).length;
+  const donePct=total?Math.min(100,Math.round((lv*20)/total*100)):0;
+  const bigC=vocDockColor(key);
+  const label=(k)=> k==='journey'?journeyName().replace(/^The /,''):listLabel(k).split(' · ')[0];
+  const bigTile=`<div style="flex:1.5;min-width:220px;display:flex;align-items:center;gap:13px;padding:14px 16px;border-radius:14px;background:linear-gradient(135deg,${bigC},color-mix(in srgb,${bigC} 62%,#1c1030 38%));color:#fff">
+      <div style="width:54px;height:54px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(#fff ${donePct}%,rgba(255,255,255,.25) 0)">
+        <span style="width:42px;height:42px;border-radius:50%;background:${bigC};display:grid;place-items:center;font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:900;font-size:15px">${lv+1}</span></div>
+      <div style="min-width:0"><div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.11em;text-transform:uppercase;opacity:.85">Studying meanings</div>
+        <div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.12;text-shadow:0 1px 4px rgba(0,0,0,.16);overflow-wrap:anywhere">${esc(label(key))}</div>
+        <div style="font-size:12px;font-weight:700;opacity:.92">Set ${lv+1} · ${set} words${total?(' of '+fmtN(total)):''}${rv?(' · '+rv+' to revise'):''}</div></div></div>`;
+  const smallTiles=vocDockKeys().filter(k=>k!==key).map(k=>{ const cc=vocDockColor(k); const kd='list:'+k;
+    return `<button data-act="vocSelectList" data-arg="${escA(k)}" title="Study this list's meanings" style="display:flex;align-items:center;gap:9px;width:100%;text-align:left;padding:8px 9px;border-radius:10px;border:1px solid var(--line);background:var(--surface)">
+      <span style="width:27px;height:27px;border-radius:6px;flex-shrink:0;background:linear-gradient(135deg,${cc},color-mix(in srgb,${cc} 70%,#1c1030 30%))"></span>
+      <span style="min-width:0;flex:1"><span style="display:block;font-weight:800;font-size:12px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(label(k))}</span>
+        <span style="display:block;font-size:11px;color:var(--muted);font-weight:700">Set ${vocLevel(kd)+1}${vocRevise(kd).length?(' · '+vocRevise(kd).length+' to revise'):''}</span></span></button>`; }).join('');
+  const addBtn=`<button data-act="vocSetupOpen" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px dashed var(--line);background:transparent;color:var(--muted)">＋ Add a list</button>`;
+  const wordsBtn=`<button data-act="vocToggleWords" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid var(--line);background:var(--surface2);color:var(--text)">${state.vocWordsOpen?'Hide':'All'} words in this set</button>`;
+  const newBtn=`<button data-act="vocNewSet" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid var(--line);background:var(--surface2);color:${vocLocked(deck)?'var(--fix,#C4453C)':'var(--text)'}">${vocLocked(deck)?('Revise '+rv+' first'):'Next 20 new words'}</button>`;
+  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px">
+    <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:stretch">${bigTile}<div style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:7px;justify-content:center">${smallTiles||'<span style="font-size:12px;color:var(--muted);font-weight:650">Add a list to switch between them</span>'}</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">${addBtn}${wordsBtn}${newBtn}</div>
+  </div>`; }
+/* Same three-tab bar shape as the Word Coach. */
+function vocTabs(){ const t=state.vocTab||'cards';
+  const tab=(k,l)=>`<button data-act="vocSetTab" data-arg="${k}" style="flex:1;padding:9px 8px;border-radius:10px;font-weight:800;font-size:13px;${t===k?'background:var(--bg2);color:var(--text);box-shadow:var(--sh-rest)':'color:var(--muted)'}">${l}</button>`;
+  return `<div style="display:flex;gap:6px;background:var(--surface2);border-radius:12px;padding:5px;margin-bottom:14px">${tab('cards','📇 Cards')}${tab('practice','🎯 Practise')}${tab('check','✓ Check')}</div>`; }
+
 function viewVocCheck(){ const g=state.vocCheck; if(!g) return '';
   const total=g.qs.length;
   if(g.done){
@@ -2693,15 +2788,21 @@ function viewVocCheck(){ const g=state.vocCheck; if(!g) return '';
   </div>`; }
 
 function viewVocab(){ const S=state; const c=active();
-  if(S.vocCheck) return viewVocCheck();
+  /* Land straight on the current list, exactly as the Word Coach lands on the list being
+     trained. There is no separate "pick a deck" screen any more — the List Dock does the
+     switching and "+ Add a list" opens the same chooser the coach uses. */
+  /* Derive the opening deck inline. Calling app.vocDeck() here would re-enter render()
+     from inside a view and leave this pass reading stale state. */
+  if(!S.vocDeck){ const k=vocDeckOfList();
+    if(vocListCat(vocListKey())){ S.vocDeck=k; S.vocWords=vocCurrentSet(k); S.vocIdx=0; S.vocFlip=false; } }
+  if(S.vocCheck) return vocShell(viewVocCheck());
   if(S.vocDeck){ const ws=S.vocWords||[]; const i=Math.min(S.vocIdx||0,ws.length-1); const w=ws[i]; if(!w) return '<p style="color:var(--muted)">No words.</p>';
     const flip=!!S.vocFlip;
     const back=`<div style="display:flex;flex-direction:column;gap:10px;text-align:left;animation:sb-pop .3s ease both">
         <div style="font-size:16.5px;font-weight:800">${esc(w.d||'—')}</div>
         ${w.s?`<div style="font-size:13.5px;font-style:italic;color:var(--muted);line-height:1.5">“${blankHTML(w.s,w.w)}”</div>`:''}
         ${w.o?`<div style="font-size:12px;color:var(--muted)"><b>Origin:</b> ${esc(w.o)}${w.r?' · '+esc(w.r):''}</div>`:''}</div>`;
-    return `<div style="max-width:640px;margin:0 auto">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><button data-act="vocBack" style="color:var(--muted);font-weight:700;font-size:13px">← Decks</button><span style="font-family:var(--display);font-weight:800;font-size:18px">${esc(vocDeckLabel(S.vocDeck))}</span><span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">${i+1} / ${ws.length}</span></div>
+    return vocShell(`<div style="max-width:640px;margin:0 auto">
       <div style="height:6px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-bottom:14px"><div style="height:100%;background:var(--accent);width:${Math.round((i+1)/ws.length*100)}%"></div></div>
       <button data-act="vocFlip" style="display:block;width:100%;text-align:center;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--sh-rest);min-height:270px">
         <div style="font-family:var(--display);font-weight:800;letter-spacing:.02em;${hwStyle(w.w,34)};margin-bottom:6px">${esc(w.w)}</div>
@@ -2715,29 +2816,10 @@ function viewVocab(){ const S=state; const c=active();
         <button data-act="vocSayCard" title="Hear the word and its meaning" style="height:44px;padding:0 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:12.5px">${iconSVG('volume',15)} + meaning</button>
         <button data-act="vocNav" data-arg="1" style="padding:12px 24px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge);${i>=ws.length-1?'opacity:.4':''}">Next →</button>
       </div>
-      ${(()=>{ /* the gate: the check is the only way to a new set, and the button says so */
-        const _lk=vocLocked(S.vocDeck), _rv=vocRevise(S.vocDeck).length, _lv=vocLevel(S.vocDeck);
-        const _last=(vocProg(c).last||{})[S.vocDeck];
-        return `<div style="margin-top:16px;background:var(--bg2);border:1px solid ${_lk?'var(--fix,#C4453C)':'var(--line)'};border-radius:16px;padding:14px 16px">
-          <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:9px">
-            <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--accent)">Vocabulary set ${_lv+1}</span>
-            ${_last?`<span style="font-size:11.5px;color:var(--muted);font-weight:700">last check ${_last.right}/${_last.total}</span>`:''}
-            ${_lk?`<span style="margin-left:auto;font-size:11.5px;font-weight:800;color:var(--fix,#C4453C)">${_rv} to revise</span>`:''}
-          </div>
-          <div style="display:flex;gap:9px;flex-wrap:wrap">
-            <button data-act="vocCheck" data-arg="practice" style="flex:1;min-width:170px;padding:12px 16px;border-radius:12px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);border:1.5px solid var(--treasure,#F0B429);font-weight:800;font-size:13.5px">🎯 Practise — pick the meaning</button>
-            <button data-act="vocCheck" style="flex:1;min-width:170px;padding:12px 16px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge)">✓ Check what you've learned</button>
-            ${_lk
-              ? `<button data-act="vocCheck" data-arg="revise" style="flex:1;min-width:150px;padding:12px 16px;border-radius:12px;background:var(--fix-tint,#FBE9E7);color:var(--fix,#C4453C);border:1.5px solid var(--fix,#C4453C);font-weight:800;font-size:13.5px">Revise ${_rv} first</button>`
-              : `<button data-act="vocNewSet" style="flex:1;min-width:150px;padding:12px 16px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:13.5px;color:var(--text)">🔄 Next 20 new words</button>`}
-          </div>
-          <div style="font-size:11.5px;color:var(--muted);font-weight:650;margin-top:9px;line-height:1.5">Practise is a four-option meaning quiz you can replay as often as you like — it counts for nothing. ${_lk
-            ? 'New words stay locked until you have revised the ones you missed.'
-            : 'The check is the graded run: score 80% and the next set of new words unlocks. Vocabulary levels up on its own — your spelling levels are separate.'}</div>
-        </div>`; })()}
+
       <div style="display:flex;gap:10px;justify-content:center;margin-top:12px">
         <button data-act="wqStart" data-arg="vocab" style="padding:10px 16px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12.5px">🎯 Play the Vocabulary round →</button>
-      </div></div>`;
+      </div></div>`);
   }
   const deckBtn=(k,label,sub)=>`<button data-act="vocDeck" data-arg="${k}" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:15px 16px;display:flex;flex-direction:column;gap:6px">
       <span style="font-family:var(--display);font-weight:800;font-size:15.5px">${label}</span><span style="font-size:12px;color:var(--muted);font-weight:650">${sub}</span>
@@ -5974,9 +6056,17 @@ const LIST_COVER={
 const listCoverOf=(k)=>LIST_COVER[k]||{c:'#4F9E6A',c2:'#3C8455',tex:'stripes',hero:'List',tag:'Words'};
 function listCoverBG(k){ const f=listCoverOf(k); const t=CONCEPT_TEX[f.tex]||CONCEPT_TEX.stripes;
   return `background-color:${f.c};background-image:${t[0]},linear-gradient(135deg,${f.c},${f.c2});background-size:${t[1]},100% 100%;background-position:center`; }
-function listCoverCard(k,label,sub,count,locked){ const c=active(); const on=(c.activeList||'default')===k; const f=listCoverOf(k); const act=locked?'buyList':'selectList';
-  const lvl=(getList(c,k).stage||0)+1;
-  const stMeta = (k==='journey') ? (' · Level '+(listStageIdx(c,'journey')+1)) : ((on && !locked) ? (' · Level '+(listStageIdx(c,k)+1)+'/'+listStages(k).length) : '');
+/* One chooser, two sections. In vocabulary mode the cards select the VOCABULARY list
+   (c.vocabList) and report the vocabulary level, so picking a list to study for meaning
+   never changes which list the speller is training for spelling. */
+function listCoverCard(k,label,sub,count,locked){ const c=active(); const voc=!!state.vocPick;
+  const on=voc?((c.vocabList||c.activeList||'default')===k):((c.activeList||'default')===k);
+  const f=listCoverOf(k); const act=locked?'buyList':(voc?'vocSelectList':'selectList');
+  /* getList() lazily creates a spelling-list record, so in vocabulary mode we must not call
+     it — browsing lists to read should never write anything into the spelling data. */
+  const lvl = voc ? (vocLevel('list:'+k)+1) : ((getList(c,k).stage||0)+1);
+  const stMeta = voc ? (' · Vocab set '+(vocLevel('list:'+k)+1))
+    : (k==='journey') ? (' · Level '+(listStageIdx(c,'journey')+1)) : ((on && !locked) ? (' · Level '+(listStageIdx(c,k)+1)+'/'+listStages(k).length) : '');
   return `<button class="sb-cover-card" data-act="${act}" data-arg="${k}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px ${on?f.c:'var(--line)'},var(--sh-rest);display:flex;flex-direction:column">
     <div style="position:relative;height:88px;display:flex;align-items:center;justify-content:center;padding:12px;${listCoverBG(k)}">
       <span style="position:absolute;top:10px;left:11px;font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(f.tag)}</span>
