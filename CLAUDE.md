@@ -113,6 +113,22 @@ handlers. App lives in this folder; open `index.html` to run.
   headless test that snapshots `lists`/`xp`/`band`/`luMastered`/`missed` around a full
   vocab session and asserts it is byte-identical.
 
+## Privacy / COPPA
+- `privacy.html` is the app's **COPPA online notice** (16 CFR Part 312). It is linked
+  "clearly and prominently" from four places — keep all four working: the **home screen
+  footer**, the **onboarding name/age step** (the point of collection), **Settings**
+  (account card), and the **Parent Zone** (privacy card).
+- The policy's claims are load-bearing facts about the codebase: **no analytics/trackers,
+  no external scripts, no accounts, nothing transmitted** — child name/age/progress live
+  in localStorage only. The headless suite greps index.html for external scripts and
+  tracker strings; if you add any network feature, update `privacy.html` FIRST (and its
+  effective date), and re-check COPPA notice/consent duties before shipping.
+- Hosting IPs (GitHub Pages / raw.githubusercontent) are disclosed in the policy under
+  COPPA's "support for internal operations" exception.
+- Before any **commercial launch**: the policy must carry the operator's full legal name,
+  mailing address and phone (placeholder noted in §1), and if real payments are added the
+  purchase flow must stay parent-only (behind the PIN) with notice/consent revisited.
+
 ## Trivia: levels, sharding, and the authoring pipeline
 - **Five levels, one band per speller.** `ttBand(c)` (app3.js) picks 1–5: base from age
   (≤8→1, ≤10→2, ≤12→3, ≤14→4, else 5), shifted by spelling `heroLevel`, then nudged by
