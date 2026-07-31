@@ -2687,7 +2687,10 @@ function vocShell(inner){ const c=active(); const key=vocListKey(); const deck=v
         `<div style="background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px">
           <div style="font-family:var(--display);font-weight:800;font-size:13.5px;overflow-wrap:anywhere">${esc(w.w)}</div>
           <div style="font-size:11.5px;color:var(--muted);font-weight:650;line-height:1.4;margin-top:2px">${esc(trunc(w.d||'',90))}</div></div>`).join('')}</div></div>` : '';
-  return `<div style="max-width:980px;margin:0 auto">${topBar}${vocDock()}${wordsPanel}${vocTabs()}${inner}</div>`; }
+  /* Order: the activity first, list management last. The tabs and whatever they render sit
+     right at the top so a speller lands on the cards/quiz; the List Dock (and its all-words
+     panel, whose toggle lives in the dock) sits underneath the Cards/Practise/Check area. */
+  return `<div style="max-width:980px;margin:0 auto">${topBar}${vocTabs()}${inner}${vocDock()}${wordsPanel}</div>`; }
 
 function vocDock(){ const c=active(); const key=vocListKey(); const deck=vocDeckOfList();
   const cat=vocListCat(key); const total=cat?cat.n:0;
