@@ -90,6 +90,11 @@ handlers. App lives in this folder; open `index.html` to run.
   only words that carry a meaning, and only lists with **8+** of them (below that a fair
   4-option quiz cannot be built). They appear under "Your word lists" in the picker as
   `list:<key>` decks and are sorted hardest-first.
+- **The heatmap** (`vocHeatmap`, under the dock) mirrors the coach's "Live progress":
+  anonymized coloured tiles with a tap-to-reveal eye toggle; revealed chips jump to that
+  card. It draws from `v.known`/`v.miss` (+ the revision queue), which every answered
+  question updates in any mode — knowledge display only; the gate still moves only on a
+  graded check. It never reads or writes `luMastered`/`missedWords`.
 - **Three modes share one 4-option multiple-choice screen** (`state.vocCheck.mode`):
   `practice` — replayable, pays a coin + karma per correct answer, but scores nothing and
   neither locks nor unlocks anything; `check` — the graded run that applies the gate;
