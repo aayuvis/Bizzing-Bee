@@ -2339,6 +2339,7 @@ function figDeckItems(id){ if(!id) return [];
    check never calls markMastered/addMiss/gainXp, so a vocabulary session cannot move the
    spelling stage, the spelling XP or the Bee Band. Spelling progresses on its own. */
 const VOC_PASS = 0.8;            // the bar for unlocking a new set
+const VOC_SET  = 50;             // words per vocabulary set
 function vocProg(c){ c=c||active(); if(!c) return null;
   if(!c.vocab) c.vocab={};
   const v=c.vocab;
@@ -2363,11 +2364,11 @@ function vocCurrentSet(deck){ const c=active(); const v=vocProg(c); if(!v) retur
 /* Build the next set: carried-over misses first, then words this deck has not served
    before, falling back to any words if the deck runs dry. */
 function vocBuildSet(deck){ const c=active(); const v=vocProg(c); if(!v) return [];
-  const carry=vocWordsByKeys(v.carry[deck]).slice(0,6);
+  const carry=vocWordsByKeys(v.carry[deck]).slice(0,10);
   const seen=new Set((v.seen[deck]||[]).concat(carry.map(w=>nkey(w.w))));
   const pool=vocDeckWords(deck);
   const fresh=pool.filter(w=>!seen.has(nkey(w.w)));
-  const want=20-carry.length;
+  const want=VOC_SET-carry.length;
   let picked=fresh.slice(0,want);
   if(picked.length<want){ // deck exhausted — allow repeats rather than serve a short set
     const rest=pool.filter(w=>picked.indexOf(w)<0&&carry.indexOf(w)<0);
@@ -2407,7 +2408,7 @@ function vocFinishCheck(){ const g=state.vocCheck; if(!g) return;
       v.lv[deck]=(v.lv[deck]||0)+1;
       v.revise[deck]=[];
       // passing with a few wrong still progresses, but those few come back next set
-      v.carry[deck]=g.missed.slice(0,6);
+      v.carry[deck]=g.missed.slice(0,10);
       g.passed=true;
     } else {
       v.revise[deck]=g.missed.slice();
@@ -2456,10 +2457,10 @@ function vocDeckWords(k){
     return cat.words.slice().sort((a,b)=>(b.y||3)-(a.y||3)||a.w.localeCompare(b.w)); }
   if(['easy','medium','hard','champ'].indexOf(k)>=0){
     const r=diffRange(active(),k); const ws=corpusSlice(r[0],r[1],600);
-    return sample(ws, Math.min(20,ws.length)); }
+    return sample(ws, Math.min(VOC_SET,ws.length)); }
   const pool=gameWordsD({needDef:true});
-  if(k==='mix'){ const f=pickFresh(pool,20); return f.length?f:sample(pool,Math.min(20,pool.length)); }
-  if(k.slice(0,3)==='th:'){ const ws=themeWords(k.slice(3)).filter(w=>w.d&&w.d.length>4); return sample(ws,Math.min(20,ws.length)); }
+  if(k==='mix'){ const f=pickFresh(pool,VOC_SET); return f.length?f:sample(pool,Math.min(VOC_SET,pool.length)); }
+  if(k.slice(0,3)==='th:'){ const ws=themeWords(k.slice(3)).filter(w=>w.d&&w.d.length>4); return sample(ws,Math.min(VOC_SET,ws.length)); }
   return [];
 }
 function figTabsBar(on){ const b=(k,l)=>`<button data-act="figTab" data-arg="${k}" style="flex:1;min-width:120px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${on===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${l}</button>`;
@@ -2743,7 +2744,7 @@ function vocDock(){ const c=active(); const key=vocListKey(); const deck=vocDeck
   const cat=vocListCat(key); const total=cat?cat.n:0;
   const lv=vocLevel(deck), rv=vocRevise(deck).length;
   const set=(state.vocWords||[]).length;
-  const donePct=total?Math.min(100,Math.round((lv*20)/total*100)):0;
+  const donePct=total?Math.min(100,Math.round((lv*VOC_SET)/total*100)):0;
   const bigC=vocDockColor(key);
   const label=(k)=> k==='journey'?journeyName().replace(/^The /,''):listLabel(k).split(' · ')[0];
   const bigTile=`<div style="flex:1.5;min-width:220px;display:flex;align-items:center;gap:13px;padding:14px 16px;border-radius:14px;background:linear-gradient(135deg,${bigC},color-mix(in srgb,${bigC} 62%,#1c1030 38%));color:#fff">
@@ -2759,7 +2760,7 @@ function vocDock(){ const c=active(); const key=vocListKey(); const deck=vocDeck
         <span style="display:block;font-size:11px;color:var(--muted);font-weight:700">Set ${vocLevel(kd)+1}${vocRevise(kd).length?(' · '+vocRevise(kd).length+' to revise'):''}</span></span></button>`; }).join('');
   const addBtn=`<button data-act="vocSetupOpen" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px dashed var(--line);background:transparent;color:var(--muted)">＋ Add a list</button>`;
   const wordsBtn=`<button data-act="vocToggleWords" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid var(--line);background:var(--surface2);color:var(--text)">${state.vocWordsOpen?'Hide':'All'} words in this set</button>`;
-  const newBtn=`<button data-act="vocNewSet" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid var(--line);background:var(--surface2);color:${vocLocked(deck)?'var(--fix,#C4453C)':'var(--text)'}">${vocLocked(deck)?('Revise '+rv+' first'):'Next 20 new words'}</button>`;
+  const newBtn=`<button data-act="vocNewSet" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid var(--line);background:var(--surface2);color:${vocLocked(deck)?'var(--fix,#C4453C)':'var(--text)'}">${vocLocked(deck)?('Revise '+rv+' first'):('Next '+VOC_SET+' new words')}</button>`;
   return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px">
     <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:stretch">${bigTile}<div style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:7px;justify-content:center">${smallTiles||'<span style="font-size:12px;color:var(--muted);font-weight:650">Add a list to switch between them</span>'}</div></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">${addBtn}${wordsBtn}${newBtn}</div>
@@ -2793,7 +2794,7 @@ function viewVocCheck(){ const g=state.vocCheck; if(!g) return '';
           ${left?`<b>${left}</b> still to go — clear them and your next set of new words unlocks.`:'Your next set of new words is unlocked.'}</p>
         <div style="display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap">
           ${left?`<button data-act="vocCheck" data-arg="revise" style="padding:13px 20px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800">Revise the last ${left} →</button>`
-                :`<button data-act="vocNewSet" style="padding:13px 20px;border-radius:13px;background:var(--good,#1f9d57);color:#fff;font-weight:800">Next 20 new words →</button>`}
+                :`<button data-act="vocNewSet" style="padding:13px 20px;border-radius:13px;background:var(--good,#1f9d57);color:#fff;font-weight:800">Next ${VOC_SET} new words →</button>`}
           <button data-act="vocCheckClose" style="padding:13px 20px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);font-weight:800">Back to the cards</button>
         </div></div>`;
     }
@@ -2808,7 +2809,7 @@ function viewVocCheck(){ const g=state.vocCheck; if(!g) return '';
                  :'A clean sweep. Next set unlocked.')
         : `Not quite 80% yet. Revise the <b>${missed}</b> you missed and the next set unlocks — no new words until then.`}</p>
       <div style="display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap">
-        ${passed?`<button data-act="vocNewSet" style="padding:13px 20px;border-radius:13px;background:var(--good,#1f9d57);color:#fff;font-weight:800">Next 20 new words →</button>`
+        ${passed?`<button data-act="vocNewSet" style="padding:13px 20px;border-radius:13px;background:var(--good,#1f9d57);color:#fff;font-weight:800">Next ${VOC_SET} new words →</button>`
                 :`<button data-act="vocCheck" data-arg="revise" style="padding:13px 20px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800">Revise the ${missed} →</button>`}
         <button data-act="vocCheckClose" style="padding:13px 20px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);font-weight:800">Back to the cards</button>
       </div></div>`;
@@ -2880,9 +2881,9 @@ function viewVocab(){ const S=state; const c=active();
           <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--chip);color:var(--accent)">Set ${_lv+1}</span>
           ${_rv?`<span style="font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:999px;background:var(--fix-tint,#FBE9E7);color:var(--fix,#C4453C)">${_rv} to revise</span>`:''}</span>`; })()}
       </button>`;
-  const themeDecks=myThemes().slice(0,6).map(t=>deckBtn('th:'+t.id,'🗂️ '+esc(t.label),'20 words from this theme')).join('');
+  const themeDecks=myThemes().slice(0,6).map(t=>deckBtn('th:'+t.id,'🗂️ '+esc(t.label),VOC_SET+' words from this theme')).join('');
   return `<div style="max-width:980px;margin:0 auto">
-    ${pageHead('Vocabulary','word → meaning','Study a set of 20 the vocabulary-bee way — hear the word, guess the meaning, flip the card. Then check yourself: score 80% and the next set of new words unlocks, or revise the ones you missed first. Vocabulary levels up on its own — your spelling levels are separate.',
+    ${pageHead('Vocabulary','word → meaning','Study a set of '+VOC_SET+' the vocabulary-bee way — hear the word, guess the meaning, flip the card. Then check yourself: score 80% and the next set of new words unlocks, or revise the ones you missed first. Vocabulary levels up on its own — your spelling levels are separate.',
       `<button data-act="wqStart" data-arg="vocab" style="padding:9px 16px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">🎯 Vocabulary round →</button>`)}
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
       ${deckBtn('mix','✨ My level mix','20 fresh words from your list, at your level')}
@@ -4859,13 +4860,15 @@ function printDoc(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1,p
   else if(sort==='diff') words=words.slice().sort((a,b)=>((a.y||3)-(b.y||3))||((a.bp||0)-(b.bp||0))||a.w.localeCompare(b.w));
   const PRINT_CAP=2400; const total=words.length; if(words.length>PRINT_CAP) words=words.slice(0,PRINT_CAP);   // giant lists would hang the browser
   const label=listLabel(key).split(' · ')[0]; const sizes={letter:'letter',a4:'A4',a5:'A5'};
-  let cols = inc.d ? 1 : ((inc.w?1:0)+(inc.p?1:0)>1 ? 2 : 3);
-  if(compact) cols += (inc.d?1:1);                                   // compact squeezes one extra column in
+  const wide = inc.d || inc.s;                       // meanings or sentences need the full row
+  let cols = wide ? 1 : ((inc.w?1:0)+(inc.p?1:0)>1 ? 2 : 3);
+  if(compact) cols += 1;                                             // compact squeezes one extra column in
   const rows=words.map((w,i)=>{ const say=w.p||w.sy||'';
     const wordBit = inc.w ? `<span class="w">${esc(w.w)}</span>` : `<span class="blank"></span>`;
     const sayBit  = (inc.p&&say) ? `<span class="p">${esc(say)}</span>` : '';
     const defBit  = (inc.d&&w.d) ? `<div class="d">${esc(inc.w?w.d:maskTxt(w.d,w.w))}</div>` : '';
-    if(inc.d) return `<div class="cell full"><div><span class="n">${i+1}</span>${wordBit}${sayBit}</div>${defBit}</div>`;
+    const sentBit = (inc.s&&w.s) ? `<div class="s">“${esc(inc.w?w.s:maskTxt(w.s,w.w))}”</div>` : '';
+    if(wide) return `<div class="cell full"><div><span class="n">${i+1}</span>${wordBit}${sayBit}</div>${defBit}${sentBit}</div>`;
     return `<div class="cell"><span class="n">${i+1}</span>${wordBit}${sayBit}</div>`; }).join('');
   const sortNote = sort==='alpha'?' · A→Z' : sort==='diff'?' · easiest→hardest' : '';
   const fz = compact ? {w:11,p:10,d:10,n:9.5,pad:'2px',dpad:'3px',gap:'2px 12px',mar:'9mm'} : {w:13,p:12,d:12,n:12,pad:'4px',dpad:'6px',gap:'4px 18px',mar:'14mm'};
@@ -4878,6 +4881,7 @@ function printDoc(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1,p
     .cell.full{display:block;padding:${fz.dpad} 0}
     .n{font-size:${fz.n}px;color:#999;min-width:${compact?16:20}px;display:inline-block} .w{font-size:${fz.w}px;font-weight:bold;letter-spacing:.02em}
     .p{font-size:${fz.p}px;color:#555;font-style:italic;margin-left:8px} .d{font-size:${fz.d}px;color:#444;line-height:1.35;margin:2px 0 0 ${compact?22:28}px}
+    .s{font-size:${fz.d}px;color:#666;font-style:italic;line-height:1.35;margin:2px 0 0 ${compact?22:28}px}
     .blank{display:inline-block;min-width:${compact?90:120}px;border-bottom:1.4px solid #444;height:${compact?10:13}px}
     .foot{margin-top:${compact?9:16}px;font-size:${compact?10:12}px;color:#888;text-align:center}
   </style></head><body>
@@ -5999,7 +6003,7 @@ function coachTrain(){
         ${prow('Format',[['list','📄 Word list'],['cards','🃏 Flashcards']].map(([v,l])=>pbtn('fmt',v,l)).join(''))}
         ${fmt==='cards'
           ? `<div style="font-size:11.5px;color:var(--muted);font-weight:650;line-height:1.5;background:var(--surface2);border-radius:10px;padding:10px 12px;margin-bottom:13px">One word per card with its meaning, sentence, origin &amp; hint, a ✓ box and note lines. 4 cards per page, single-sided — print and cut out.</div>`
-          : prow('What to include — pick one, two or three',[tbtn('w','Words'),tbtn('p','Pronunciations'),tbtn('d','Meanings')].join('')+(p.inc.w?'':'<div style="flex-basis:100%;font-size:11.5px;color:var(--muted);font-weight:650;margin-top:2px">No words = a quiz sheet — each row gets a blank line to write on.</div>'))}
+          : prow('What to include — e.g. word · meaning · sentence',[tbtn('w','Words'),tbtn('p','Pronunciations'),tbtn('d','Meanings'),tbtn('s','Sentences')].join('')+(p.inc.w?'':'<div style="flex-basis:100%;font-size:11.5px;color:var(--muted);font-weight:650;margin-top:2px">No words = a quiz sheet — each row gets a blank line to write on.</div>'))}
         ${prow('Sort by',[['level','Level order'],['alpha','A → Z'],['diff','Easiest → hardest']].map(([v,l])=>pbtn('sort',v,l)).join(''))}
         ${fmt==='cards'?'':prow('Text size',[['normal','Normal'],['compact','Compact — less paper']].map(([v,l])=>pbtn('size',v,l)).join(''))}
         ${prow('Page size',[['letter','Letter'],['a4','A4'],['a5','A5']].map(([v,l])=>pbtn('page',v,l)).join(''))}
