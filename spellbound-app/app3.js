@@ -1967,7 +1967,8 @@ function viewOnboarding(){
       <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:8px">Age · <b style="color:var(--text)">${S.draft.age}</b></label>
       <input data-inp="onDraftAge" data-fkey="draftAge" type="range" min="5" max="15" step="1" value="${S.draft.age}" style="width:100%;accent-color:var(--accent);margin-bottom:20px">
       <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:10px;text-align:center">Pick a buddy</label>
-      ${avatars}</div>`;
+      ${avatars}
+      <p style="margin:18px 0 0;font-size:12px;color:var(--muted);font-weight:650;text-align:center;line-height:1.5">A nickname works great. The name and age stay on this device — nothing is sent anywhere.<br><a href="privacy.html" style="color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:3px">Privacy &amp; Parents' Notice</a></p></div>`;
   } else if(S.onbStep===1){
     const worldCards=THEMES.map(t=>{ const open=FREE_THEMES.indexOf(t.id)>=0;
       return worldHeroCard(t, t.id===S.draft.theme, !open, 'onbWorld'); }).join('');
@@ -3517,6 +3518,7 @@ ${focusedH?(()=>{ return `
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:8px">${journeys}</div>`; })()
     :`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:2px 2px 9px">Keep going</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:8px">${journeys}</div>`}
+    <div style="text-align:center;margin-top:26px;padding-top:14px;border-top:1px solid var(--line)"><a href="privacy.html" style="color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:3px">Privacy &amp; Parents' Notice</a></div>
   </div>`;
 }
 function avatarSVG(id,size,acc){ size=size||30;
@@ -5360,6 +5362,11 @@ function viewParent(){
         <div class="sb-cn" style="margin-top:8px">The app is fully offline — copy these and share them with us to get the dictionary corrected.</div>
       </div>`; })()}
     <div class="sb-card" style="margin-top:18px">
+      <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:6px">🔒 Privacy — your child's data</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:10px">Everything in this app — names, ages, progress, scores — lives only in this browser on this device. Nothing is ever sent anywhere: no accounts, no analytics, no ads, no third parties. You can review it all right here, and deleting a profile (or clearing this site's browser data) erases it permanently.</div>
+      <a href="privacy.html" style="display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12.5px;text-decoration:none">Read the full Privacy &amp; Parents' Notice →</a>
+    </div>
+    <div class="sb-card" style="margin-top:18px">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:6px">Countdown</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:14px">${(()=>{ const ms=milestone(); return ms?esc(ms.label):'Your next milestone'; })()}</div>
       ${(()=>{ const ms=milestone(); return ms?`<div style="display:flex;align-items:baseline;gap:10px"><div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent)">${ms.days}</div><div style="font-size:13px;color:var(--muted);font-weight:700">days to ${esc(ms.label)} · ${esc(ms.date)}</div></div>`:`<div style="font-size:13px;color:var(--muted);font-weight:650;line-height:1.5">No milestone set. Add your bee day in <button data-act="setNav" data-arg="settings" style="color:var(--accent);font-weight:800;text-decoration:underline;text-underline-offset:2px">Settings</button> to see the countdown.</div>`; })()}
@@ -5842,6 +5849,7 @@ function viewSettings(){
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;border-top:1px solid var(--line);padding-top:12px">
       ${_parent?`<button data-act="doSignOut" style="padding:8px 13px;border-radius:9px;background:var(--surface2);color:var(--text);font-weight:800;font-size:12.5px">Sign out</button>`:`<button data-act="openAuth" data-arg="signin" style="padding:8px 13px;border-radius:9px;background:var(--surface2);color:var(--text);font-weight:800;font-size:12.5px">Parent sign in</button>`}
       <button data-act="openAdmin" style="padding:8px 13px;border-radius:9px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:12.5px">🛡️ Admin console</button>
+      <a href="privacy.html" style="display:inline-flex;align-items:center;padding:8px 13px;border-radius:9px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:12.5px;text-decoration:none">🔒 Privacy &amp; Parents' Notice</a>
     </div></div>`;
   /* Advanced Pack switch. Billing is still a local preview, so a parent needs a way to turn
      the pack off again — for trying it, and for seeing the locked app as a buyer would. */
