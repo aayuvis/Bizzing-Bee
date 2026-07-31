@@ -930,6 +930,14 @@ const app = {
   vocPick:(idx)=>{ const g=state.vocCheck; if(!g||g.done||g.picked!=null) return;
     const q=g.qs[g.i]; const chosen=q.choices[+idx];
     g.picked=+idx; g.ok=(chosen===q.answer);
+    /* Per-word knowledge for the heatmap. This is informational — the 80% gate still moves
+       only on a graded check — so practice may colour it without "counting". */
+    try{ const v=vocProg(active()); const dk=g.deck; const wk=nkey(q.w.w);
+      v.known[dk]=v.known[dk]||[]; v.miss[dk]=v.miss[dk]||[];
+      if(g.ok){ if(v.known[dk].indexOf(wk)<0) v.known[dk].push(wk); v.miss[dk]=v.miss[dk].filter(x=>x!==wk); }
+      else { if(v.miss[dk].indexOf(wk)<0) v.miss[dk].push(wk); v.known[dk]=v.known[dk].filter(x=>x!==wk); }
+      v.known[dk]=v.known[dk].slice(-800); v.miss[dk]=v.miss[dk].slice(-200);
+    }catch(e){}
     if(g.ok){ g.right++; sfx('correct');
       if(g.mode==='practice'){ addCoins(1); const c=active(); c.karma=(c.karma||0)+1;
         state.toast='✓ +1 coin · +1 karma 🌟'; scheduleToast(1400); save(); } }
@@ -965,6 +973,10 @@ const app = {
     else if(t==='check') app.vocCheck(vocLocked(state.vocDeck)?'revise':undefined);
     else render(); },
   vocToggleWords:()=>set({vocWordsOpen:!state.vocWordsOpen}),
+  vocToggleHeat:()=>set({vocHeatReveal:!state.vocHeatReveal}),
+  vocJump:(i)=>{ state.vocTab='cards'; state.vocCheck=null;
+    set({vocIdx:Math.max(0,Math.min((state.vocWords||[]).length-1,+i)), vocFlip:false});
+    const w=(state.vocWords||[])[state.vocIdx]; if(w) setTimeout(()=>say(w.w),150); },
   // ----- Typing Trainer -----
   openTyping:()=>{ if(!gateFeature('trainTools','the Typing Trainer')) return; tyStop(); set({nav:'typing', screen:'app', ty:null, conceptSel:null}); },
   // ===== Trivia Training — study the whole question bank as flip-cards, by chapter =====
@@ -2332,6 +2344,7 @@ function vocProg(c){ c=c||active(); if(!c) return null;
   const v=c.vocab;
   v.lv=v.lv||{}; v.revise=v.revise||{}; v.seen=v.seen||{}; v.cur=v.cur||{};
   v.carry=v.carry||{}; v.last=v.last||{};
+  v.known=v.known||{}; v.miss=v.miss||{};    // per-word knowledge, drawn by the heatmap
   return v; }
 function vocLevel(deck,c){ const v=vocProg(c); return (v&&v.lv[deck])||0; }
 function vocRevise(deck,c){ const v=vocProg(c); return (v&&v.revise[deck])||[]; }
@@ -2673,6 +2686,40 @@ function vocDockColor(k){ if(k==='journey') return '#7C5CFF'; if(k==='review') r
 /* The Word Coach shell, reused: back link + title row, the List Dock, the tab bar, then
    whatever the active tab renders. Everything inside a tab is unchanged — only the frame
    around it now matches the coach. */
+/* The coach's "Live progress" heatmap, drawn from the VOCABULARY ladder: green = meaning
+   answered correctly (any mode), red = answered wrong or waiting in the revision queue,
+   grey = not asked yet. Anonymized coloured tiles by default with the same tap-to-reveal
+   eye toggle the coach uses; a revealed chip jumps to that word's card. Reads and writes
+   nothing in luMastered/missedWords — spelling's heatmap stays its own. */
+function vocHeatmap(){ const deck=state.vocDeck; const words=state.vocWords||[];
+  if(!deck||!words.length) return '';
+  const v=vocProg(active());
+  const known=new Set((v.known&&v.known[deck])||[]);
+  const missSet=new Set(((v.miss&&v.miss[deck])||[]).concat(vocRevise(deck)));
+  const reveal=!!state.vocHeatReveal;
+  const curIdx=(state.vocTab||'cards')==='cards'&&!state.vocCheck?Math.min(state.vocIdx||0,words.length-1):-1;
+  const N=words.length;
+  const m=words.filter(w=>known.has(nkey(w.w))).length;
+  const missN=words.filter(w=>!known.has(nkey(w.w))&&missSet.has(nkey(w.w))).length;
+  const pct=Math.round(m/N*100);
+  const cells=words.map((w,i)=>{ const k=nkey(w.w); const ok=known.has(k); const miss=!ok&&missSet.has(k);
+    const isCur=i===curIdx;
+    const bg=ok?'var(--good)':(miss?'var(--bad)':'var(--surface2)'); const fg=(ok||miss)?'#fff':'var(--muted)';
+    if(!reveal) return `<span title="${ok?'meaning known':(miss?'to revise':'not asked yet')}" style="width:22px;height:22px;border-radius:6px;background:${bg};display:inline-block;${isCur?'box-shadow:0 0 0 2px var(--accent)':''}"></span>`;
+    return `<button data-act="vocJump" data-arg="${i}" title="open this card" style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;padding:5px 9px;border-radius:6px;max-width:100%;min-width:0;text-align:left;overflow-wrap:anywhere;word-break:break-word;line-height:1.25;color:${fg};background:${bg};${isCur?'box-shadow:0 0 0 2px var(--accent)':''}">${esc(w.w)}</button>`;
+  }).join('');
+  const legend=[['var(--good)','Known'],['var(--bad)','To revise'],['var(--surface2)','New']].map(([c2,l])=>`<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:700"><span style="width:11px;height:11px;border-radius:6px;background:${c2};display:inline-block"></span>${l}</span>`).join('');
+  const toggle=`<button data-act="vocToggleHeat" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12px">${iconSVG(reveal?'eyeoff':'eye',15)} ${reveal?'Hide words':'Tap to reveal'}</button>`;
+  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:14px">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:11px">
+      <div style="font-family:var(--display);font-weight:800;font-size:15px">Live progress · meanings</div>
+      <div style="flex:1;min-width:90px;height:7px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;background:var(--good);width:${pct}%"></div></div>
+      <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:800;color:var(--muted)">${m}/${N} known${missN?(' · '+missN+' to revise'):''}</span>
+      ${toggle}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-bottom:10px">${cells}</div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap">${legend}</div>
+  </div>`; }
+
 function vocShell(inner){ const c=active(); const key=vocListKey(); const deck=vocDeckOfList();
   const cat=vocListCat(key);
   const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
@@ -2690,7 +2737,7 @@ function vocShell(inner){ const c=active(); const key=vocListKey(); const deck=v
   /* Order: the activity first, list management last. The tabs and whatever they render sit
      right at the top so a speller lands on the cards/quiz; the List Dock (and its all-words
      panel, whose toggle lives in the dock) sits underneath the Cards/Practise/Check area. */
-  return `<div style="max-width:980px;margin:0 auto">${topBar}${vocTabs()}${inner}${vocDock()}${wordsPanel}</div>`; }
+  return `<div style="max-width:980px;margin:0 auto">${topBar}${vocTabs()}${inner}${vocDock()}${wordsPanel}${vocHeatmap()}</div>`; }
 
 function vocDock(){ const c=active(); const key=vocListKey(); const deck=vocDeckOfList();
   const cat=vocListCat(key); const total=cat?cat.n:0;
