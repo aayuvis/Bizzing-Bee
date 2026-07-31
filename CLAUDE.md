@@ -99,7 +99,8 @@ handlers. App lives in this folder; open `index.html` to run.
   `practice` — replayable, pays a coin + karma per correct answer, but scores nothing and
   neither locks nor unlocks anything; `check` — the graded run that applies the gate;
   `revise` — only the words the last check missed.
-- Flow: study a set of 20 → **Check what you've learned** (one meaning MCQ per word) →
+- Flow: study a set of **`VOC_SET` (50)** words → **Check what you've learned** (one
+  meaning MCQ per word) →
   `VOC_PASS` (**0.8**) or better unlocks the next set of NEW words. Below it, the missed
   words go to `revise[deck]` and `vocNewSet` refuses to serve new words, diverting to a
   revision round instead. A word leaves the queue the first time it is answered correctly
