@@ -71,6 +71,26 @@ handlers. App lives in this folder; open `index.html` to run.
 - `trivia.js` — the Arcade quiz (`STV`); `app3.js` holds Trivia Training
   ("Know the World of Words", `viewTrivTrain`).
 
+## Difficulty = spelling trickiness, not rarity
+- **A "difficult" word is one whose spelling the sound does not give away** — silent
+  letters, sound-alike endings, donor-language patterns, name-based spellings — not a
+  rare or long one. `trickAnal(w)` (app3.js) scores this from the word itself plus its
+  recorded common misspelling, and names the concept family (`epon/silent/fr/gk/end/
+  dbl/vow/plain`). `spellDiff(w)` is the ramp key: trickiness dominates; rarity `y` and
+  length are minor terms. Exposed as `window.SB_TRICK` for other files (advanced.js
+  `hardWord` uses it — the Ultra Champions Journey is trickiest-first, not longest-first).
+- The Bizzing Bee Journey ramps its Levels by `spellDiff`, and `clusterLevel` sits
+  concept-mates together inside each Level (study order `TRICK_RANK`: phonics-adjacent
+  first, story-words last). Any new difficulty ramp or "hardest" selection should use
+  `spellDiff`/`trickScore`, not `y`/length alone.
+- **Eponyms are clustered by the donor language of the name** (`eponymStages`): the
+  "Named After Someone" list's Levels ARE the clusters (Greek myth, Latin & Roman,
+  French, Italian & Spanish, German & Nordic, English & Celtic, World names) — a Greek
+  hero's name and a French inventor's name break in different places. The eponym `o`
+  field is reliable for this; the blends warning in ADVANCED-CONCEPTS.md is about blends.
+- Word cards show a "why tricky" chip (`trickLabel`); named stages surface their label
+  in the coach dock.
+
 ## Vocabulary progression (separate from spelling)
 - Vocab has its **own ladder**, stored on the child at `c.vocab` and **never** on
   `c.lists[key]`. Shape: `{lv, revise, seen, cur, carry, last}`, all keyed by deck

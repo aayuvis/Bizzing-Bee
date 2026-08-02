@@ -118,10 +118,36 @@ function ultraStages(){
   if(!out.length) out.push({ n:1, label:'Day 1', words:[] });
   out._ck=ck; out._n=pool.length; _ultraStages=out; return out; }
 let _ultraStages=null;
+/* Eponyms are one concept ("the spelling follows a name") but many spelling systems —
+   a Greek hero's name and a French inventor's name break in different places. So the
+   eponym list's Levels ARE the clusters: one Level per donor-language group, each ramped
+   easy→hard by trickiness inside. */
+const EPON_CLUSTERS=[
+  ['Greek myth & names',        /greek/i],
+  ['Latin & Roman names',       /latin/i],
+  ['French names',              /french|anglo-norman/i],
+  ['Italian & Spanish names',   /italian|spanish|portuguese/i],
+  ['German & Nordic names',     /german|dutch|norse|danish|swedish|norwegian|finnish/i],
+  ['English & Celtic names',    /english|scots|irish/i] ];
+let _eponStages=null;
+function eponymStages(){ const ws=catStatic().eponyms||[];
+  if(_eponStages&&_eponStages._n===ws.length) return _eponStages;
+  const used=new Set(); const stages=[];
+  for(const [label,re] of EPON_CLUSTERS){
+    const grp=ws.filter(w=>!used.has(nkey(w.w))&&re.test(w.o||''));
+    if(grp.length>=8){ grp.forEach(w=>used.add(nkey(w.w)));
+      grp.sort((a,b)=>(spellDiff(a)-spellDiff(b))||((b.bp||0)-(a.bp||0)));
+      stages.push({ n:stages.length+1, label, words:grp }); } }
+  const rest=ws.filter(w=>!used.has(nkey(w.w)));   // unknown or tiny origins gather here
+  if(rest.length){ rest.sort((a,b)=>(spellDiff(a)-spellDiff(b))||((b.bp||0)-(a.bp||0)));
+    stages.push({ n:stages.length+1, label:'World names', words:rest }); }
+  if(!stages.length) stages.push({ n:1, label:'Eponyms', words:[] });
+  stages._n=ws.length; _eponStages=stages; return stages; }
 function listStages(key){
   if(key==='default') return defaultStages();
   if(key==='journey') return journeyStages();
   if(key==='ultra') return ultraStages();
+  if(key==='eponyms') return eponymStages();
   const raw=rawListWords(key); const cached=_stageCache[key];
   if(!_DYNAMIC_LISTS[key] && cached && cached._n===raw.length) return cached;
   const sorted=raw.filter(w=>w&&w.w).sort((a,b)=> ((a.y||3)-(b.y||3)) || (a.w.length-b.w.length) || ((b.bp||0)-(a.bp||0)) );
@@ -136,8 +162,54 @@ function stageWords(key){ const s=curStage(active(),key); return (s&&s.words)||W
 function stageComplete(c,key){ c=c||active(); const s=curStage(c,key); return s && s.words.length>0 && s.words.every(w=>state.luMastered[nkey(w.w)]); }
 function stagesDone(c,key){ c=c||active(); return listStageIdx(c,key) + (stageComplete(c,key)?1:0); }
 
+/* ===== Spelling trickiness — the difficulty that matters in a bee. =====
+   A difficult word is not a rare or long one: it is a word whose spelling the SOUND does
+   not give away — silent letters, sound-alike endings, donor-language patterns, spellings
+   inherited from a person's name. trickAnal reads only the word itself (plus its recorded
+   common misspelling) and returns how much of the spelling must be KNOWN rather than
+   heard, and which concept family explains it. Ramps and clusters are built on this;
+   rarity (y) and length survive only as minor terms inside spellDiff. */
+const TRICK_LABELS={ epon:'Named after someone', silent:'Silent letters', fr:'French patterns', gk:'Greek patterns', end:'Sound-alike ending', dbl:'Double letters', vow:'Tricky vowels', plain:'Straight spelling' };
+const TRICK_RANK={plain:0,dbl:1,vow:2,end:3,silent:4,gk:5,fr:6,epon:7};   // study order: phonics-adjacent first, story-words last
+function trickAnal(w){ if(w._tk) return w._tk;
+  const s=String(w.w||'').toLowerCase(), p=String(w.p||'');
+  const f={epon:0,silent:0,fr:0,gk:0,end:0,dbl:0,vow:0};
+  if((w.t||[]).indexOf('eponyms')>=0) f.epon=12;
+  if(/^(pn|ps|pt|mn|gn|kn|wr|rh|x)/.test(s)) f.silent+=10;
+  if(/(mb|mn|gn)$/.test(s)) f.silent+=8;
+  if(/gh/.test(s)&&!/ough|augh/.test(s)) f.silent+=6;
+  if(/(stle|sten|ften)$/.test(s)) f.silent+=8;
+  if(/eau|oux|oir|ille|esque$|que$|gue$|ette$/.test(s)) f.fr+=9;
+  if(/et$/.test(s)&&/ay$/i.test(p)) f.fr+=9;
+  if(/ph|rrh|chn|(?:^|[bcdfgklmnprstz])y[bcdfgklmnprstz]/.test(s)) f.gk+=8;
+  if(/ch/.test(s)&&/k/i.test(p)&&!/ch/i.test(p)) f.gk+=8;
+  if(/ae|oe(?!ver)/.test(s)) f.gk+=6;
+  if(/(able|ible)$/.test(s)) f.end+=8;
+  if(/(ance|ence|ancy|ency|ant|ent)$/.test(s)) f.end+=7;
+  if(/(ary|ery|ory|ury)$/.test(s)) f.end+=6;
+  if(/(cede|ceed|sede)$/.test(s)) f.end+=10;
+  if(/(eous|ious|uous)$/.test(s)) f.end+=6;
+  const dbl=s.match(/([bcdfghjklmnpqrstvz])\1/g); if(dbl) f.dbl+=Math.min(10,5*new Set(dbl).size);
+  if(/ei|ie/.test(s)) f.vow+=4;
+  if(/ough|augh/.test(s)) f.vow+=9;
+  if(/[aeiou]{3}/.test(s)) f.vow+=5;
+  let score=0; for(const k in f) score+=f[k];
+  if(w.m&&String(w.m).toLowerCase()!==s) score+=7;   // a recorded common misspelling is evidence in itself
+  score=Math.min(60,score);
+  let cls='plain',best=4; for(const k in f){ if(f[k]>best){best=f[k];cls=k;} }
+  if(f.epon) cls='epon';                             // the name-story concept outranks its side-effects
+  try{ w._tk={score,cls}; }catch(e){}
+  return {score,cls}; }
+function trickScore(w){ return trickAnal(w).score; }
+function trickLabel(w){ const a=trickAnal(w); return (a.cls!=='plain'&&a.score>=10)?TRICK_LABELS[a.cls]:null; }
+function spellDiff(w){ return trickAnal(w).score*2 + (w.y||3)*5 + Math.min(14,String(w.w||'').length)*0.5; }
+// inside one Level, sit concept-mates together (stable within each cluster, so the ramp holds)
+function clusterLevel(ws){ return ws.map((w,i)=>({w,i,r:TRICK_RANK[trickAnal(w).cls]||0})).sort((a,b)=>(a.r-b.r)||(a.i-b.i)).map(x=>x.w); }
+window.SB_TRICK={score:trickScore,label:trickLabel,diff:spellDiff,anal:trickAnal};
+
 /* ===== The Bizzing Bee Journey — ONE Level ladder.
-   Levels 1–20 = "Bizzing Bee Champ": the ~1,600 highest-value bee words, ramped easy→hard.
+   Levels 1–20 = "Bizzing Bee Champ": the ~1,600 highest-value bee words, ramped easy→hard
+   by spelling trickiness (see above), not rarity.
    Levels 21+  = "The Champion's Library": the rest of the 40,000, 120 a level (Premium).
    You climb a Level by mastering its words OR passing its Champ Challenge (test-out). ===== */
 const CHAMP_LEVELS = 20;
@@ -149,14 +221,14 @@ let _journeySorted = null;
 function journeySorted(){ if(_journeySorted) return _journeySorted;
   const src=(window.SB_DATA&&SB_DATA.nsf)||[]; const seen=new Set(); const pool=[];
   for(const w of src){ if(!w||!w.w) continue; const k=nkey(w.w); if(seen.has(k)) continue; seen.add(k); pool.push(w); }
-  pool.sort((a,b)=> ((a.y||3)-(b.y||3)) || ((b.bp||0)-(a.bp||0)) || (a.w.length-b.w.length) ); // easy→hard
+  pool.sort((a,b)=> (spellDiff(a)-spellDiff(b)) || ((b.bp||0)-(a.bp||0)) ); // easy→hard by trickiness
   _journeySorted=pool; return pool; }
 let _journeyOrder = null;
 function journeyOrder(){ if(_journeyOrder) return _journeyOrder;
   const all=journeySorted();
-  const byBp=all.slice().sort((a,b)=> ((b.bp||0)-(a.bp||0)) || ((a.y||3)-(b.y||3)) ); // most bee-relevant first
+  const byBp=all.slice().sort((a,b)=> ((b.bp||0)-(a.bp||0)) || (spellDiff(b)-spellDiff(a)) ); // most bee-relevant first
   const champ=byBp.slice(0, champWordCount());
-  champ.sort((a,b)=> ((a.y||3)-(b.y||3)) || (a.w.length-b.w.length) || ((b.bp||0)-(a.bp||0)) ); // ramp the champ band easy→hard
+  champ.sort((a,b)=> (spellDiff(a)-spellDiff(b)) || ((b.bp||0)-(a.bp||0)) ); // ramp the champ band easy→hard by trickiness
   const champSet=new Set(champ.map(w=>nkey(w.w)));
   const rest=all.filter(w=>!champSet.has(nkey(w.w)));     // already easy→hard
   _journeyOrder={champ,rest}; return _journeyOrder; }
@@ -174,6 +246,7 @@ function journeyStages(){ if(_journeyStages) return _journeyStages;
   const placed=new Set(); stages.forEach(s=>(s.words||[]).forEach(w=>placed.add(nkey(w.w))));
   const lib=rest.filter(w=>!placed.has(nkey(w.w)));
   for(let j=0;j<lib.length;j+=LIB_LEVEL_SIZE){ const n=stages.length+1; stages.push({ n, label:'Library '+(n-CHAMP_LEVELS), words:lib.slice(j,j+LIB_LEVEL_SIZE), champ:false }); }
+  stages.forEach(s=>{ s.words=clusterLevel(s.words); });   // concept-mates study together inside a Level
   stages._n=journeySorted().length; _journeyStages=stages; return _journeyStages; }
 function journeyTotal(){ return journeySorted().length; }
 // avatar form (0–9) from a journey level: evolve across the 20 Champ levels, then hold at Champ form
@@ -578,6 +651,7 @@ function catStatic(){ if(_catStatic) return _catStatic; const nsf=SB_DATA.nsf||[
     vocab26:((window.SB_VOCAB26&&SB_VOCAB26.words)||[]),
     likely:nsf.slice().sort((a,b)=>(b.bp||0)-(a.bp||0)),
     hardest:nsf.filter(r=>(r.y||3)>=6),
+    trickiest:nsf.filter(r=>trickScore(r)>=20).sort((a,b)=>(trickScore(b)-trickScore(a))||((b.bp||0)-(a.bp||0))),
     latin:byOrigin('latin'), greek:byOrigin('greek'), french:byOrigin('french'), oe:byOrigin('old english'), norse:byOrigin('norse'),
     spanish:byOrigin('spanish'), italian:byOrigin('italian'), german:byOrigin('german'), arabic:byOrigin('arabic'), japanese:byOrigin('japanese'),
     hindi:nsf.filter(r=>/hindi|sanskrit|urdu|tamil|marathi|punjabi/i.test(r.o||'')).concat(HINDI_WORDS),
@@ -600,6 +674,7 @@ function coachCatalog(){
     { key:'nsf',        label:'Championship library',     sub:'17,000-word competition library',       words:nsf },
     { key:'all',        label:'Entire library',           sub:'Every word · 128,000 (loads on first use)', words:(window.SB_FULL||nsf) },
     { key:'hardest',    label:'Toughest words',          sub:'Highest-difficulty spellers + Scripps champions', words:st.hardest.concat(window.SB_SCRIPPS||[]) },
+    { key:'trickiest',  label:'Trickiest spellings',     sub:'The sound hides the spelling — pattern words, not just rare ones', words:st.trickiest },
     { key:'latin',      label:'Latin origin',            sub:'Roots from Latin',                      words:st.latin },
     { key:'greek',      label:'Greek origin',            sub:'Roots from Greek',                      words:st.greek },
     { key:'french',     label:'French origin',           sub:'Loanwords from French',                 words:st.french },
@@ -611,7 +686,7 @@ function coachCatalog(){
     { key:'arabic',     label:'Arabic origin',           sub:'Loanwords from Arabic',                 words:st.arabic },
     { key:'japanese',   label:'Japanese origin',         sub:'Loanwords from Japanese',               words:st.japanese },
     { key:'hindi',      label:'Hindi / Sanskrit origin', sub:'Indian-language loanwords',             words:st.hindi },
-    { key:'eponyms',    label:'Named After Someone',     sub:'Eponyms — words born from real names',  words:st.eponyms },
+    { key:'eponyms',    label:'Named After Someone',     sub:'Eponyms clustered by the name’s language — each Level is one cluster',  words:st.eponyms },
   ].filter(c=>(c.words&&c.words.length) || c.key==='missed');
   /* The advanced journey is a first-class list once the pack is on, so it inherits the
      whole Practice shell. Unshifted to the front so it sits ABOVE the Bizzing Bee
@@ -4667,7 +4742,7 @@ function wordFlash(words, idx, navAct, opts){
       ${altsHTML(w.w,false)}
       <div style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:15px">
         ${w.bp!=null?`<span title="Bee-probability score: ${w.bp}/100" style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:999px;background:var(--surface2);font-size:12px;color:var(--accent);font-weight:800">${iconSVG('target',13)} ${beeOdds(w.bp)}</span>`:''}
-        ${w.p?chip('/ '+esc(w.p)+' /'):''}${w.o?chip(esc(w.o)):''}${w.ps?chip(esc(w.ps)):''}
+        ${w.p?chip('/ '+esc(w.p)+' /'):''}${w.o?chip(esc(w.o)):''}${w.ps?chip(esc(w.ps)):''}${(()=>{try{const tl=trickLabel(w);return tl?`<span title="Why this word is tricky" style="padding:4px 11px;border-radius:999px;background:var(--chip);font-size:12px;color:var(--accent);font-weight:800">🧩 ${esc(tl)}</span>`:'';}catch(e){return '';}})()}
         <button data-act="reportWord" data-arg="${escA(w.w)}" title="Meaning or sentence look wrong? Report it for review" style="padding:4px 11px;border-radius:999px;background:transparent;border:1px dashed var(--line);font-size:12px;color:var(--muted);font-weight:700">⚑ Report a fix</button>
       </div>
       ${state.reportW===w.w?`<div style="margin-top:12px;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:12px;max-width:34em">
@@ -5966,7 +6041,7 @@ function coachTrain(){
       <div style="width:54px;height:54px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(#fff ${stagePct}%,rgba(255,255,255,.25) 0)"><div style="width:41px;height:41px;border-radius:50%;background:color-mix(in srgb,${bigC} 82%,#1c1030 18%);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:12px">${stagePct}%</div></div>
       <div style="min-width:0"><div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.11em;text-transform:uppercase;opacity:.85;font-weight:700">Now training</div>
         <div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.12;text-shadow:0 1px 4px rgba(0,0,0,.16)">${esc(dockLabel(key))}</div>
-        <div style="font-size:12px;font-weight:700;opacity:.92">${isJourney?(stage.champ!==false&&sIdx<CHAMP_LEVELS?('Level '+(sIdx+1)+' of '+CHAMP_LEVELS+' to Champ'):('Champion’s Library · '+esc(stage.label||('Library '+(sIdx+1-CHAMP_LEVELS))))):('Level '+(sIdx+1)+' of '+stages.length)} · ${stageM}/${stage.words.length} mastered this Level</div></div></div>`;
+        <div style="font-size:12px;font-weight:700;opacity:.92">${isJourney?(stage.champ!==false&&sIdx<CHAMP_LEVELS?('Level '+(sIdx+1)+' of '+CHAMP_LEVELS+' to Champ'):('Champion’s Library · '+esc(stage.label||('Library '+(sIdx+1-CHAMP_LEVELS))))):('Level '+(sIdx+1)+' of '+stages.length+(stage.label&&!/^Stage \d+$/.test(stage.label)?' · '+esc(stage.label):''))} · ${stageM}/${stage.words.length} mastered this Level</div></div></div>`;
   const smallTiles=liveKeys.filter(k=>k!==key).map(k=>{ const cc=dockColor(k); const open=S.dockMenu===k;
     return `<div style="position:relative;display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:10px;border:1px solid var(--line);background:var(--surface)">
       <button data-act="selectList" data-arg="${escA(k)}" title="Switch to this list" style="display:flex;align-items:center;gap:9px;min-width:0;flex:1;text-align:left">
