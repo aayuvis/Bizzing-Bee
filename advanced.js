@@ -36,7 +36,8 @@
   /* ---- the hardest-word library, built once from the 128k corpus ---- */
   let _hard = null, _hardFull = false;
   function hardWord(w) { const L = (w.w || '').length; const rare = 100 - Math.min(100, w.bp || 0);
-    return L * 3 + rare * 0.5 + (w.y || 3) * 4; }  // long + rare + high-tier = hardest
+    const trick = (window.SB_TRICK ? SB_TRICK.score(w) : 0);
+    return trick * 3 + L * 2 + rare * 0.4 + (w.y || 3) * 4; }  // tricky-to-spell first; long/rare/high-tier follow
   function hardPool() {
     // SB_FULL arrives as a JSON string; fullWords() parses and caches it as an array.
     // Without that this iterated the string's characters and built an empty pool.
