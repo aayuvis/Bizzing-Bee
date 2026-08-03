@@ -110,6 +110,12 @@ handlers. App lives in this folder; open `index.html` to run.
 - Coach catalogue lists: `homophones` / `altpron` / `diacritics`, built by `soundLists()`
   which rebuilds once the 128k library loads (hardPool pattern). Homonym words carry the
   `hom` trick class, so they cluster together inside journey Levels.
+- **Reading Diacritics trainer** (Supercharge → Train, `nav:'diatrain'`): Learn grid of
+  the 7 marks (`DIA_MARKS`) + three 10-question drills — name the mark, pick the true
+  marked spelling (decoys via combining-mark swaps in `diaDecoys`; the definition shown
+  is `maskTxt`-masked because the options ARE spellings), choose the pronunciation.
+  Audio is the library's existing Google-TTS word clips via `say()`. Keyboard 1–4/R/Enter
+  + touch. A coin per correct via `addCoins(1)`; no spelling-progress writes.
 
 ## Vocabulary progression (separate from spelling)
 - Vocab has its **own ladder**, stored on the child at `c.vocab` and **never** on
