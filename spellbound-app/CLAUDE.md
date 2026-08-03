@@ -110,12 +110,17 @@ handlers. App lives in this folder; open `index.html` to run.
 - Coach catalogue lists: `homophones` / `altpron` / `diacritics`, built by `soundLists()`
   which rebuilds once the 128k library loads (hardPool pattern). Homonym words carry the
   `hom` trick class, so they cluster together inside journey Levels.
-- **Reading Diacritics trainer** (Supercharge → Train, `nav:'diatrain'`): Learn grid of
-  the 7 marks (`DIA_MARKS`) + three 10-question drills — name the mark, pick the true
-  marked spelling (decoys via combining-mark swaps in `diaDecoys`; the definition shown
-  is `maskTxt`-masked because the options ARE spellings), choose the pronunciation.
-  Audio is the library's existing Google-TTS word clips via `say()`. Keyboard 1–4/R/Enter
-  + touch. A coin per correct via `addCoins(1)`; no spelling-progress writes.
+- **The Sound Alphabet — IPA trainer** (Supercharge → Train, `nav:'ipatrain'`): a Learn
+  grid of 24 IPA symbols + the stress mark (`IPA_SOUNDS`) with spoken bee-word samples,
+  then three 10-question drills — read a transcription and pick the word, pick the true
+  transcription (decoys via confusable-pair swaps in `ipaDecoys`), find the word carrying
+  a sound. `SB_IPA` (sounds-data.js, regenerate with `voice/pipeline/ipa-gen.py`) holds
+  800+ bee words converted from CMUdict. Audio is the library's Google-TTS clips via
+  `say()`. Keyboard 1–4/R/Enter + touch; a coin per correct; no spelling-progress writes.
+- **Every word card shows IPA** beside the friendly respelling: `ipaOf(w,p)` prefers the
+  exact `SB_IPA` entry and otherwise derives IPA from the `p` respelling with `pToIPA`
+  (98.6% agreement with CMU on the exact set; where they differ the card follows `p`,
+  which is the point — the two notations on a card must agree with each other).
 
 ## Vocabulary progression (separate from spelling)
 - Vocab has its **own ladder**, stored on the child at `c.vocab` and **never** on
