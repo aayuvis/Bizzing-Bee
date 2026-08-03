@@ -91,6 +91,26 @@ handlers. App lives in this folder; open `index.html` to run.
 - Word cards show a "why tricky" chip (`trickLabel`); named stages surface their label
   in the coach dock.
 
+## Homonyms, alternate pronunciations & diacritics (`sounds-data.js`)
+- `SB_HOM` = homophone groups (curated bee classics ∪ a filtered sweep of all 130k
+  pronunciations — same normalized `p`, definition-dissimilar, spelling-variant pairs
+  excluded). `SB_ALT_PRON[word]={a,b,s,n}` = both written pronunciations, a speakable
+  respelling for TTS, and a note (heteronym meanings or "both are correct").
+  `SB_DIACRITICS[word]={m,n}` = the true marked spelling and the mark's name.
+  Regenerate with the session build script (`sounds-build.js` pattern), never by hand.
+- Runtime: `homIndex()/homPartners()/altPron()/diacritic()` in app3.js. **Lookups must
+  stay prototype-safe** (`Object.create(null)` / `hasOwnProperty`) — "constructor" is a
+  real library word and will phantom-match a plain object.
+- Word cards render three extra rows: sounds-like partners ("ask for the meaning"),
+  both written pronunciations + a **second voice button** (`sayAlt`), and the full-dress
+  diacritic spelling ("plain letters are accepted at the bee").
+- `sayAlt` plays `voice/ap/<slug>.mp3` (Google TTS, **not yet generated — needs `GKEY`**;
+  clips belong on `main` like word clips, the voice-cdn Audio wrapper resolves them) and
+  falls back to device TTS reading the speakable respelling until the clips exist.
+- Coach catalogue lists: `homophones` / `altpron` / `diacritics`, built by `soundLists()`
+  which rebuilds once the 128k library loads (hardPool pattern). Homonym words carry the
+  `hom` trick class, so they cluster together inside journey Levels.
+
 ## Vocabulary progression (separate from spelling)
 - Vocab has its **own ladder**, stored on the child at `c.vocab` and **never** on
   `c.lists[key]`. Shape: `{lv, revise, seen, cur, carry, last}`, all keyed by deck
