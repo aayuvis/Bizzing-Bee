@@ -6,94 +6,126 @@
   @font-face{font-family:'Fredoka';src:url('../fonts/fredoka-600.woff2') format('woff2');font-weight:600}
   @font-face{font-family:'Hanken Grotesk';src:url('../fonts/hanken-var.woff2') format('woff2');font-weight:100 900}
   *{box-sizing:border-box;margin:0;padding:0}
-  :root{--ink:#241E33;--paper:#FFFDF6;--c:#F59E0B;--c2:#B45309;--tint:color-mix(in srgb,#F59E0B 12%,white)}
-  html{background:#e9e4f5}
-  body{font-family:'Hanken Grotesk',sans-serif;color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  :root{--bg1:#f3efff;--bg2:#fff;--line:#ddd4f2;--chip:#e6defc;--chipInk:#4a3aa0;--text:#241E33;--muted:#6b6482;
+    --treasure:#F0B429;--treasure-tint:#FFF3D6;--treasure-deep:#8A5B00;--good:#2E8B57;--c:#F0B429;--c2:#C8791B;
+    --tint:color-mix(in srgb,#F0B429 10%,white)}
+  html{background:#e5dff2}
+  body{font-family:'Hanken Grotesk',sans-serif;color:var(--text);letter-spacing:.02em;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   @page{size:8.5in 11in;margin:0}
-  .pg{width:8.5in;height:11in;background:var(--paper);position:relative;overflow:hidden;padding:.62in .66in;page-break-after:always;break-after:page}
-  @media screen{.pg{margin:24px auto;box-shadow:0 10px 40px rgba(30,20,60,.18)}}
-  .bee{width:1.1in;height:auto}
-  .hexes{position:absolute;inset:0;width:100%;height:100%;opacity:.5}
+  .pg{width:8.5in;height:11in;background:var(--bg1);position:relative;overflow:hidden;padding:.58in .62in;page-break-after:always;break-after:page}
+  @media screen{.pg{margin:24px auto;box-shadow:0 10px 40px rgba(30,20,60,.18);border-radius:4px}}
   h1,h2,h3,.disp{font-family:'Baloo 2';font-weight:800}
-  .kicker{font-family:'Fredoka';font-weight:600;font-size:10.5pt;letter-spacing:.14em;text-transform:uppercase;color:var(--c2)}
-  .foot{position:absolute;bottom:.35in;left:.66in;right:.66in;display:flex;justify-content:space-between;font-size:8.5pt;color:#8b83a3;font-weight:600}
-  .badge{display:inline-grid;place-items:center;width:.62in;height:.62in;border-radius:16px;background:var(--c);color:#fff;font-family:'Baloo 2';font-size:17pt}
-  .concept{background:var(--tint);border-left:6px solid var(--c);border-radius:12px;padding:.14in .18in;font-size:10.6pt;line-height:1.5;margin:.12in 0}
-  .method{background:#241E33;color:#FFF7E0;border-radius:14px;padding:.15in .19in;font-size:9.7pt;line-height:1.52;margin:.1in 0}
-  .method b{color:#FFC93C}
-  .method div{margin:3px 0}
+  .kicker{font-family:'Fredoka';font-weight:600;font-size:10pt;letter-spacing:.13em;text-transform:uppercase;color:var(--c2)}
+  .foot{position:absolute;bottom:.32in;left:.62in;right:.62in;display:flex;justify-content:space-between;font-size:8.5pt;color:var(--muted);font-weight:600}
+  .panel{background:var(--bg2);border:1px solid var(--line);border-radius:16px;box-shadow:0 4px 14px rgba(108,79,224,.08)}
+  .badge{display:inline-grid;place-items:center;width:.58in;height:.58in;border-radius:15px;background:linear-gradient(135deg,var(--c),var(--c2));color:#fff;font-family:'Baloo 2';font-size:16pt;box-shadow:0 3px 8px color-mix(in srgb,var(--c) 40%,transparent)}
+  .chip{display:inline-block;background:var(--chip);color:var(--chipInk);font-weight:700;font-size:9pt;border-radius:999px;padding:3px 11px}
+  .concept{background:var(--tint);border:1px solid color-mix(in srgb,var(--c) 30%,white);border-left:6px solid var(--c);border-radius:14px;padding:.13in .17in;font-size:10.4pt;line-height:1.5;margin:.1in 0}
+  .method{background:#241E33;color:#F4EFFF;border-radius:16px;padding:.14in .18in;font-size:9.6pt;line-height:1.5;margin:.1in 0;box-shadow:0 5px 14px rgba(36,30,51,.28)}
+  .method b{color:var(--treasure)} .method div{margin:3px 0}
   .method .trick,.method [class]{font-family:'Baloo 2';font-size:12pt;letter-spacing:.05em}
-  .cards{display:grid;grid-template-columns:1fr 1fr;gap:.11in;margin-top:.12in}
-  .card{background:#fff;border:2px solid var(--c);border-radius:12px;padding:.1in .12in;box-shadow:3px 3px 0 var(--c)}
-  .card:nth-child(even){transform:rotate(.5deg)} .card:nth-child(odd){transform:rotate(-.5deg)}
-  .card h3{font-size:10pt;color:var(--c2);margin-bottom:3px}
-  .card p{font-size:8.7pt;line-height:1.4}
-  .wgrid{display:grid;grid-template-columns:1fr 1fr;gap:.14in}
-  .wd{border:1.5px solid #E4DDF2;border-radius:12px;padding:.12in .14in;background:#fff}
-  .wd .w{font-family:'Baloo 2';font-size:14.5pt;color:var(--c2)}
-  .wd .say{font-family:'Fredoka';font-size:9pt;color:#8b83a3;margin-left:6px}
-  .wd .d{font-size:9pt;line-height:1.4;margin-top:2px}
-  .wd .h{font-size:8.6pt;line-height:1.35;margin-top:4px;color:#5a4d84;background:var(--tint);border-radius:7px;padding:4px 7px}
-  .wd .line{border-bottom:2px dashed #C9BFE6;height:.24in;margin-top:6px}
-  .rr{columns:2;column-gap:.3in;font-size:9.2pt;line-height:1.45}
-  .dense .concept{font-size:9.6pt;line-height:1.42}
-  .dense .method{font-size:8.9pt;line-height:1.45}
-  .dense .card p{font-size:8pt;line-height:1.34} .dense .card h3{font-size:9.2pt}
-  .rr div{break-inside:avoid;padding:3px 0;border-bottom:1px dotted #DDD4F2}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:.1in;margin-top:.1in}
+  .card{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:.1in .12in;box-shadow:0 3px 10px rgba(108,79,224,.07)}
+  .card h3{font-size:9.8pt;color:var(--c2);margin-bottom:3px}
+  .card p{font-size:8.6pt;line-height:1.38;color:var(--text)}
+  .dense .concept{font-size:9.4pt;line-height:1.42}
+  .dense .method{font-size:8.8pt;line-height:1.44}
+  .dense .card p{font-size:7.9pt;line-height:1.32} .dense .card h3{font-size:9pt}
+  .wgrid{display:grid;grid-template-columns:1fr 1fr;gap:.12in}
+  .wd{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:.11in .13in;box-shadow:0 3px 10px rgba(108,79,224,.06)}
+  .wd .w{font-family:'Baloo 2';font-size:14pt;color:var(--c2)}
+  .wd .say{font-family:'Fredoka';font-size:8.8pt;color:var(--muted);margin-left:6px}
+  .wd .d{font-size:8.8pt;line-height:1.38;margin-top:2px}
+  .wd .h{font-size:8.4pt;line-height:1.32;margin-top:4px;color:var(--chipInk);background:var(--chip);border-radius:8px;padding:4px 7px}
+  .wd .line{border-bottom:2px dashed #C9BFE6;height:.22in;margin-top:6px}
+  .rr{columns:2;column-gap:.28in;font-size:9pt;line-height:1.42}
+  .rr>div{break-inside:avoid;padding:4px 6px;margin-bottom:4px;background:var(--bg2);border:1px solid var(--line);border-radius:9px}
   .rr b{font-family:'Fredoka';color:var(--c2)}
-  .biglist{columns:4;column-gap:.22in;font-size:8.7pt;line-height:1.62}
+  .biglist{columns:4;column-gap:.2in;font-size:8.6pt;line-height:1.6}
   .biglist div{break-inside:avoid}
-  .biglist span{display:inline-block;width:.14in;height:.14in;border:1.6px solid var(--c);border-radius:50%;margin-right:5px;vertical-align:-2px}
-  </style></head><body><div class="pg" style="background:linear-gradient(160deg,var(--c),var(--c2));color:#fff;display:flex;flex-direction:column;justify-content:space-between">
-    <svg class="hexes" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-  <defs><pattern id="hx" width="56" height="97" patternUnits="userSpaceOnUse">
-    <path d="M28 0 L56 16 L56 48 L28 64 L0 48 L0 16 Z M28 64 L56 80 L56 97 M28 64 L0 80 L0 97" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="2"/>
-  </pattern></defs><rect width="400" height="400" fill="url(#hx)"/></svg>
+  .biglist span{display:inline-block;width:.13in;height:.13in;border:1.6px solid var(--c);border-radius:50%;margin-right:5px;vertical-align:-2px;background:var(--bg2)}
+  .bb{display:flex;gap:.12in;align-items:flex-start;background:var(--treasure-tint);border:1px solid var(--treasure);border-radius:14px;padding:.11in .14in;margin-top:.14in}
+  .bb .bbi{font-size:15pt} .bb .bbl{font-family:'Fredoka';font-size:8.4pt;letter-spacing:.1em;text-transform:uppercase;color:var(--treasure-deep);font-weight:600}
+  .bb .bbb{font-size:9.8pt;line-height:1.4;margin-top:2px} .bb .bbt{font-size:8.6pt;color:var(--muted);margin-top:2px}
+  .bubble{position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:.13in .17in;font-size:10.5pt;line-height:1.5;box-shadow:0 4px 14px rgba(108,79,224,.08)}
+  .bubble:after{content:'';position:absolute;left:-9px;top:24px;width:16px;height:16px;background:var(--bg2);border-left:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
+  .cwwrap{display:flex;justify-content:center}
+  .cw{border-collapse:collapse} .cw td{width:.30in;height:.30in;position:relative}
+  .cw .cwc{background:var(--bg2);border:1.4px solid var(--chipInk)}
+  .cw .cwc i{position:absolute;top:1px;left:2px;font-style:normal;font-size:5.6pt;color:var(--muted)}
+  .cw .cwx{background:transparent}
+  .clues{display:grid;grid-template-columns:1fr 1fr;gap:.2in;margin-top:.14in;font-size:8.6pt;line-height:1.45}
+  .clues .clueh{font-family:'Baloo 2';font-size:10.5pt;color:var(--c2);margin-bottom:3px}
+  .clues b{color:var(--chipInk)}
+  .ws{border-collapse:collapse;margin:0 auto} .ws td{width:.27in;height:.27in;text-align:center;font-family:'Fredoka';font-size:10pt;background:var(--bg2);border:1px solid var(--line)}
+  .wsl{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:.14in}
+  .gtwo{display:grid;grid-template-columns:1fr 1fr;gap:.2in}
+  .g1{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:.12in .14in}
+  .g1 .gw{font-family:'Fredoka';font-size:11pt;letter-spacing:.16em;color:var(--c2)}
+  .g1 .gl{border-bottom:2px dashed #C9BFE6;height:.24in;margin-top:5px}
+  .key{columns:3;column-gap:.2in;font-size:8.4pt;line-height:1.55}
+  .key h3{column-span:all;font-size:11pt;color:var(--c2);margin:.06in 0 .04in}
+  </style></head><body><div class="pg" style="background:linear-gradient(160deg,var(--c),var(--c2));color:#fff;display:flex;flex-direction:column;justify-content:space-between;padding:.55in">
+    <svg style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true"><circle cx="82%" cy="18%" r="70" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none"/><circle cx="82%" cy="18%" r="110" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none"/><circle cx="82%" cy="18%" r="150" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none"/><circle cx="10%" cy="92%" r="60" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none"/><circle cx="10%" cy="92%" r="95" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none"/></svg>
     <div style="position:relative;display:flex;justify-content:space-between;align-items:center">
-      <span style="font-family:'Fredoka';font-weight:600;letter-spacing:.16em;font-size:11pt">BIZZING BEE LIBRARY</span>
-      <span class="disp" style="background:#241E33;padding:.08in .22in;border-radius:999px;font-size:13pt">Vol. 1</span>
+      <span style="font-family:'Fredoka';font-weight:600;letter-spacing:.16em;font-size:10.5pt">BIZZING BEE LIBRARY</span>
+      <span class="disp" style="background:rgba(0,0,0,.3);padding:.07in .2in;border-radius:999px;font-size:12.5pt">Vol. 1</span>
     </div>
     <div style="position:relative;text-align:center">
-      <svg viewBox="0 0 120 100" class="bee" aria-hidden="true">
-  <ellipse cx="44" cy="34" rx="17" ry="26" fill="#DCEFFF" opacity=".85" transform="rotate(-28 44 34)"/>
-  <ellipse cx="76" cy="34" rx="17" ry="26" fill="#EAF5FF" opacity=".85" transform="rotate(28 76 34)"/>
-  <ellipse cx="60" cy="60" rx="34" ry="27" fill="#FFC93C"/>
-  <path d="M44 37 a34 27 0 0 0 -6 14 l14 0 a1 1 0 0 1 0 -14 z M64 34 l0 53 a34 27 0 0 0 14 -5 l0 -43 a34 27 0 0 0 -14 -5 z" fill="#241E33"/>
-  <circle cx="49" cy="56" r="3.6" fill="#241E33"/>
-  <path d="M45 68 q8 7 16 1" stroke="#241E33" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <path d="M52 34 q-4 -12 -12 -14 M68 34 q4 -12 12 -14" stroke="#241E33" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <circle cx="40" cy="19" r="4" fill="#241E33"/><circle cx="80" cy="19" r="4" fill="#241E33"/>
-</svg>
-      <h1 style="font-size:46pt;line-height:1.02;margin:.2in 0 .12in;text-shadow:0 3px 0 rgba(0,0,0,.18)">Lift-Off!</h1>
-      <p style="font-family:'Fredoka';font-size:14pt;max-width:5.6in;margin:0 auto">Bee basics from first buzz to first trophy</p>
+      <svg viewBox="0 0 120 120" style="width:1.7in;height:1.7in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="hp-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#F2B95A"/><stop offset="1" stop-color="#C8791B"/></radialGradient></defs>
+<path d="M26 52 q-7 5 -7 13 q0 8 7 12 q-3 30 34 30 q37 0 34 -30 q7 -4 7 -12 q0 -8 -7 -13 z" fill="url(#hp-g)"/>
+<path d="M26 52 q0 -14 34 -14 q34 0 34 14 q0 8 -34 8 q-34 0 -34 -8 z" fill="#FFCC5C"/>
+<path d="M44 44 q-2 12 3 16 q5 -3 2 -16 z" fill="#FFCC5C"/>
+<path d="M60 30 q-3 8 0 14 q6 -2 4 -12 q-1 -5 -4 -2 z" fill="#F2B95A"/>
+<ellipse cx="38" cy="102" rx="7" ry="5" fill="#A85F12"/><ellipse cx="82" cy="102" rx="7" ry="5" fill="#A85F12"/>
+<circle cx="46" cy="72" r="10" fill="#fff"/><circle cx="48" cy="74" r="5" fill="#2B1B5E"/><circle cx="46.5" cy="72.5" r="1.8" fill="#fff"/>
+<circle cx="74" cy="72" r="10" fill="#fff"/><circle cx="76" cy="74" r="5" fill="#2B1B5E"/><circle cx="74.5" cy="72.5" r="1.8" fill="#fff"/>
+<ellipse cx="34" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/><ellipse cx="86" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/>
+<path d="M52 86 q8 8 16 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg>
+      <h1 style="font-size:44pt;line-height:1.02;margin:.14in 0 .1in;text-shadow:0 3px 0 rgba(0,0,0,.2)">Lift-Off!</h1>
+      <p style="font-family:'Fredoka';font-size:13.5pt;max-width:5.8in;margin:0 auto">Bee basics from first buzz to first trophy</p>
+      <p style="font-family:'Fredoka';font-size:10pt;margin-top:.12in;opacity:.9">with Honeypot, your guide</p>
     </div>
-    <div style="position:relative;display:flex;gap:.16in;justify-content:center">
-      <div style="background:rgba(0,0,0,.22);border-radius:14px;padding:.14in .3in;text-align:center"><div class="disp" style="font-size:19pt">11</div><div style="font-family:'Fredoka';font-size:9.5pt">chapters</div></div><div style="background:rgba(0,0,0,.22);border-radius:14px;padding:.14in .3in;text-align:center"><div class="disp" style="font-size:19pt">110</div><div style="font-family:'Fredoka';font-size:9.5pt">practice words</div></div><div style="background:rgba(0,0,0,.22);border-radius:14px;padding:.14in .3in;text-align:center"><div class="disp" style="font-size:19pt">✏️</div><div style="font-family:'Fredoka';font-size:9.5pt">write-in pages</div></div>
+    <div style="position:relative;display:flex;gap:.14in;justify-content:center">
+      <div style="background:rgba(0,0,0,.24);border-radius:14px;padding:.12in .28in;text-align:center"><div class="disp" style="font-size:17pt">11</div><div style="font-family:'Fredoka';font-size:9pt">chapters</div></div><div style="background:rgba(0,0,0,.24);border-radius:14px;padding:.12in .28in;text-align:center"><div class="disp" style="font-size:17pt">110</div><div style="font-family:'Fredoka';font-size:9pt">practice words</div></div><div style="background:rgba(0,0,0,.24);border-radius:14px;padding:.12in .28in;text-align:center"><div class="disp" style="font-size:17pt">🎲</div><div style="font-family:'Fredoka';font-size:9pt">puzzles & games</div></div>
     </div></div>
 <div class="pg">
     <div class="kicker">How this book works</div>
-    <h1 style="font-size:26pt;margin:.08in 0 .2in">Five moves, no fluff.</h1>
-    <div style="display:flex;gap:.18in;margin-bottom:.22in;align-items:flex-start">
+    <h1 style="font-size:24pt;margin:.06in 0 .16in">Five moves, no fluff.</h1>
+    <div style="display:flex;gap:.16in;align-items:flex-start;margin-bottom:.2in">
+      <svg viewBox="0 0 120 120" style="width:1in;height:1in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="hp-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#F2B95A"/><stop offset="1" stop-color="#C8791B"/></radialGradient></defs>
+<path d="M26 52 q-7 5 -7 13 q0 8 7 12 q-3 30 34 30 q37 0 34 -30 q7 -4 7 -12 q0 -8 -7 -13 z" fill="url(#hp-g)"/>
+<path d="M26 52 q0 -14 34 -14 q34 0 34 14 q0 8 -34 8 q-34 0 -34 -8 z" fill="#FFCC5C"/>
+<path d="M44 44 q-2 12 3 16 q5 -3 2 -16 z" fill="#FFCC5C"/>
+<path d="M60 30 q-3 8 0 14 q6 -2 4 -12 q-1 -5 -4 -2 z" fill="#F2B95A"/>
+<ellipse cx="38" cy="102" rx="7" ry="5" fill="#A85F12"/><ellipse cx="82" cy="102" rx="7" ry="5" fill="#A85F12"/>
+<circle cx="46" cy="72" r="10" fill="#fff"/><circle cx="48" cy="74" r="5" fill="#2B1B5E"/><circle cx="46.5" cy="72.5" r="1.8" fill="#fff"/>
+<circle cx="74" cy="72" r="10" fill="#fff"/><circle cx="76" cy="74" r="5" fill="#2B1B5E"/><circle cx="74.5" cy="72.5" r="1.8" fill="#fff"/>
+<ellipse cx="34" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/><ellipse cx="86" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/>
+<path d="M52 86 q8 8 16 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg>
+      <div class="bubble">Hi! I'm <b>Honeypot</b>. Bee basics from first buzz to first trophy — that's our whole mission. Bring a pencil; I'll bring the words. Deal?</div>
+    </div>
+    <div style="display:flex;gap:.16in;margin-bottom:.16in;align-items:flex-start">
       <span class="badge">1</span>
-      <div><h3 style="font-size:13.5pt;color:var(--c2)">Read the Big Idea</h3><p style="font-size:11pt;line-height:1.55;max-width:5.6in">Every chapter starts with one idea that explains a whole family of words. Read it out loud. Twice is better.</p></div></div><div style="display:flex;gap:.18in;margin-bottom:.22in;align-items:flex-start">
+      <div class="panel" style="flex:1;padding:.1in .15in"><h3 style="font-size:12.5pt;color:var(--c2)">Read the Big Idea</h3><p style="font-size:10pt;line-height:1.5">One idea per chapter, and it explains a whole family of words. Read it out loud. Twice is better.</p></div></div><div style="display:flex;gap:.16in;margin-bottom:.16in;align-items:flex-start">
       <span class="badge">2</span>
-      <div><h3 style="font-size:13.5pt;color:var(--c2)">Steal the pro move</h3><p style="font-size:11pt;line-height:1.55;max-width:5.6in">The dark box is how a champion actually thinks on stage. It works on words you have never seen.</p></div></div><div style="display:flex;gap:.18in;margin-bottom:.22in;align-items:flex-start">
+      <div class="panel" style="flex:1;padding:.1in .15in"><h3 style="font-size:12.5pt;color:var(--c2)">Steal the pro move</h3><p style="font-size:10pt;line-height:1.5">The dark box is how a champion thinks on stage. It works on words you have never met.</p></div></div><div style="display:flex;gap:.16in;margin-bottom:.16in;align-items:flex-start">
       <span class="badge">3</span>
-      <div><h3 style="font-size:13.5pt;color:var(--c2)">Flip the sticky notes</h3><p style="font-size:11pt;line-height:1.55;max-width:5.6in">The note cards are the chapter in tiny pieces. Cover one, say it from memory, check yourself.</p></div></div><div style="display:flex;gap:.18in;margin-bottom:.22in;align-items:flex-start">
+      <div class="panel" style="flex:1;padding:.1in .15in"><h3 style="font-size:12.5pt;color:var(--c2)">Spell in the boxes</h3><p style="font-size:10pt;line-height:1.5">Say it, spell it OUT LOUD, then write it. Hand and mouth together beat eyes alone.</p></div></div><div style="display:flex;gap:.16in;margin-bottom:.16in;align-items:flex-start">
       <span class="badge">4</span>
-      <div><h3 style="font-size:13.5pt;color:var(--c2)">Spell in the boxes</h3><p style="font-size:11pt;line-height:1.55;max-width:5.6in">Every practice word has a write-in line. Say it, spell it OUT LOUD, then write it. Hand and mouth together beat eyes alone.</p></div></div><div style="display:flex;gap:.18in;margin-bottom:.22in;align-items:flex-start">
+      <div class="panel" style="flex:1;padding:.1in .15in"><h3 style="font-size:12.5pt;color:var(--c2)">Play the puzzle</h3><p style="font-size:10pt;line-height:1.5">Every chapter ends in a game — crossword, word search or scramble. Sneaky practice is still practice.</p></div></div><div style="display:flex;gap:.16in;margin-bottom:.16in;align-items:flex-start">
       <span class="badge">5</span>
-      <div><h3 style="font-size:13.5pt;color:var(--c2)">Hunt the Big List</h3><p style="font-size:11pt;line-height:1.55;max-width:5.6in">The back of the book has every word in one place. Circle the bubbles you own. Come back for the empty ones.</p></div></div>
-    <div class="concept" style="margin-top:.25in"><b>Grown-ups:</b> this book pairs with the Bizzing Bee app — the same chapters are narrated there, and every word here has real recorded audio in the app's Word Coach.</div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Part of the 122-chapter course</span></div></div>
+      <div class="panel" style="flex:1;padding:.1in .15in"><h3 style="font-size:12.5pt;color:var(--c2)">Hunt the Big List</h3><p style="font-size:10pt;line-height:1.5">The back of the book holds every word. Circle the bubbles you own. Come back for the empty ones.</p></div></div>
+    <div class="concept" style="margin-top:.15in"><b>Grown-ups:</b> this book pairs with the Bizzing Bee app — the same chapters are narrated there, and every word has real recorded audio in the Word Coach.</div>
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Part of the 122-chapter course</span></div></div>
 <div class="pg dense">
-    <div style="display:flex;align-items:center;gap:.16in">
+    <div style="display:flex;align-items:center;gap:.14in">
       <span class="badge">1</span>
       <div><div class="kicker">Spelling Bee Basics</div>
-      <h2 style="font-size:20pt;line-height:1.08">The Champion's Routine — say, spell, say</h2></div></div>
-    <div class="kicker" style="margin-top:.2in">The big idea</div>
+      <h2 style="font-size:19pt;line-height:1.08">The Champion's Routine — say, spell, say</h2></div></div>
+    <div class="kicker" style="margin-top:.16in">The big idea</div>
     <div class="concept">Every champion spells the same way: SAY the word, SPELL it letter by letter, then SAY it again. Saying it first proves your ears heard right; saying it after proves your letters match the sound.</div>
-    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>REMEMBER</b></div>
+    <div class="kicker" style="margin-top:.08in">The pro move</div><div class="method"><div class='trick'><b>REMEMBER</b></div>
 <b>Say it.</b> rih-MEM-ber
 <b>Spell it.</b> R · E · M · E · M · B · E · R
 <b>Say it again.</b> rih-MEM-ber
@@ -103,10 +135,11 @@
 <b>Origin.</b> Latin
 <b>Root.</b> Latin re- = again + memor = mindful</div>
     <div class="cards"><div class="card"><h3>The Core</h3><p>Champions never blurt letters. The routine is always the same three beats: SAY the word out loud, SPELL it at a steady pace, SAY it again. Say–spell–say. It works for a 4-letter word and a 14-letter word.</p></div><div class="card"><h3>Why say it first?</h3><p>You cannot spell a word you heard wrong. Saying it back checks your ears: if the judge says 'remember' and you say 'remender', you just caught a mistake before it cost you. Your mouth is your first spell-checker.</p></div><div class="card"><h3>Spell it steady</h3><p>Letters come out at a drumbeat — R…E…M…E…M…B…E…R — never in a rush. A steady beat keeps your place in the word, and at a real bee it lets the judges hear every letter clearly.</p></div><div class="card"><h3>Why say it again?</h3><p>The final say seals the word. You just heard yourself spell it; saying the whole word confirms the letters you gave add up to the word you meant. If it feels wrong in your mouth, something was off.</p></div><div class="card"><h3>Make it automatic</h3><p>Use the routine on every practice word in this app — easy ones too. When say–spell–say is a habit, your brain saves all its energy for the hard part: the letters.</p></div></div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 1</span></div></div>
+    
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 1</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · The Champion's Routine — say, spell, say</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">remember</span><span class="say">/ rih-MEM-ber /</span>
       <div class="d">to keep something in your mind; to not forget</div><div class="h">💡 re + MEM + ber — the MEM in the middle comes from memory.</div><div class="line"></div></div><div class="wd"><span class="w">practice</span><span class="say">/ PRAK-tis /</span>
       <div class="d">to do something again and again to get better at it</div><div class="h">💡 PRACT + ICE — practice makes the tricky parts feel like smooth ice.</div><div class="line"></div></div><div class="wd"><span class="w">together</span><span class="say">/ tuh-GEH-ther /</span>
@@ -116,20 +149,37 @@
       <div class="d">a device that makes your voice louder</div><div class="h">💡 micro (small) + phone (sound) — a small-sound helper. PH says /f/.</div><div class="line"></div></div><div class="wd"><span class="w">routine</span><span class="say">/ roo-TEEN /</span>
       <div class="d">a set of steps done the same way every time</div><div class="h">💡 rout + INE — the machine-like -INE ending, like engine.</div><div class="line"></div></div><div class="wd"><span class="w">steady</span><span class="say">/ STEH-dee /</span>
       <div class="d">even and regular; not shaky or rushed</div><div class="h">💡 STEAD + Y — EA makes the short e sound, like in bread.</div><div class="line"></div></div></div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 1 practice</span></div></div>
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 1 practice</span></div></div>
 <div class="pg">
       <div class="kicker">Rapid round · The Champion's Routine — say, spell, say</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
-      <div class="rr"><div><b>clearly</b> <span style="color:#8b83a3;font-size:8.4pt">/ KLEER-lee /</span><br>in a way that is easy to hear or see</div><div><b>confirm</b> <span style="color:#8b83a3;font-size:8.4pt">/ kun-FURM /</span><br>to check that something is true or correct</div></div>
-      <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 1 extras</span></div></div>
+      <h2 style="font-size:16pt;margin:.04in 0 .14in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>clearly</b> <span style="color:var(--muted);font-size:8.2pt">/ KLEER-lee /</span><br>in a way that is easy to hear or see</div><div><b>confirm</b> <span style="color:var(--muted);font-size:8.2pt">/ kun-FURM /</span><br>to check that something is true or correct</div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 1 extras</span></div></div>
+<div class="pg">
+      <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="hp-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#F2B95A"/><stop offset="1" stop-color="#C8791B"/></radialGradient></defs>
+<path d="M26 52 q-7 5 -7 13 q0 8 7 12 q-3 30 34 30 q37 0 34 -30 q7 -4 7 -12 q0 -8 -7 -13 z" fill="url(#hp-g)"/>
+<path d="M26 52 q0 -14 34 -14 q34 0 34 14 q0 8 -34 8 q-34 0 -34 -8 z" fill="#FFCC5C"/>
+<path d="M44 44 q-2 12 3 16 q5 -3 2 -16 z" fill="#FFCC5C"/>
+<path d="M60 30 q-3 8 0 14 q6 -2 4 -12 q-1 -5 -4 -2 z" fill="#F2B95A"/>
+<ellipse cx="38" cy="102" rx="7" ry="5" fill="#A85F12"/><ellipse cx="82" cy="102" rx="7" ry="5" fill="#A85F12"/>
+<circle cx="46" cy="72" r="10" fill="#fff"/><circle cx="48" cy="74" r="5" fill="#2B1B5E"/><circle cx="46.5" cy="72.5" r="1.8" fill="#fff"/>
+<circle cx="74" cy="72" r="10" fill="#fff"/><circle cx="76" cy="74" r="5" fill="#2B1B5E"/><circle cx="74.5" cy="72.5" r="1.8" fill="#fff"/>
+<ellipse cx="34" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/><ellipse cx="86" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/>
+<path d="M52 86 q8 8 16 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg>
+        <div><div class="kicker">Honeypot's puzzle page · The Champion's Routine — say, spell, say</div>
+        <h2 style="font-size:16pt">Crossword</h2></div></div>
+      <div class="cwwrap"><table class="cw"><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>1</i></td><td class="cwx"></td><td class="cwc"><i>2</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>3</i></td><td class="cwc"><i>4</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>5</i></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>6</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>7</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwc"><i>8</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwc"><i>9</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr></table></div>
+    <div class="clues"><div><div class="clueh">Across</div><div><b>2.</b> to check that something is true or correct</div><div><b>3.</b> even and regular; not shaky or rushed</div><div><b>6.</b> a device that makes your voice louder</div><div><b>7.</b> to keep something in your mind; to not forget</div><div><b>8.</b> in a way that is easy to hear or see</div><div><b>9.</b> a set of steps done the same way every time</div></div>
+    <div><div class="clueh">Down</div><div><b>1.</b> to do something again and again to get better at it</div><div><b>2.</b> the winner of a competition; the very best</div><div><b>4.</b> with each other; joined as one group</div><div><b>5.</b> mattering a lot; having great value</div></div></div><div class="bb"><span class="bbi">🎈</span><div><div class="bbl">Bee Break · idiom to drop at dinner</div><div class="bbb"><b>have it both ways</b></div><div class="bbt">to enjoy two opposite advantages at once</div></div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 1 game</span></div></div>
 <div class="pg dense">
-    <div style="display:flex;align-items:center;gap:.16in">
+    <div style="display:flex;align-items:center;gap:.14in">
       <span class="badge">2</span>
       <div><div class="kicker">Spelling Bee Basics</div>
-      <h2 style="font-size:20pt;line-height:1.08">Alphabet Sounds — cat, city, goat, giant</h2></div></div>
-    <div class="kicker" style="margin-top:.2in">The big idea</div>
+      <h2 style="font-size:19pt;line-height:1.08">Alphabet Sounds — cat, city, goat, giant</h2></div></div>
+    <div class="kicker" style="margin-top:.16in">The big idea</div>
     <div class="concept">Letters are not their names: B says /b/, not 'bee'. Most letters keep one sound, but c and g each have two — hard before a, o, u and soft before e, i, y. Know what each letter SAYS and you can catch its sound in any word.</div>
-    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>CIRCUS</b></div>
+    <div class="kicker" style="margin-top:.08in">The pro move</div><div class="method"><div class='trick'><b>CIRCUS</b></div>
 <b>Say it.</b> SUR-kus
 <b>Spell it.</b> C · I · R · C · U · S
 <b>Say it again.</b> SUR-kus
@@ -139,10 +189,11 @@
 <b>Origin.</b> Latin
 <b>Root.</b> Latin circus = ring, circle</div>
     <div class="cards"><div class="card"><h3>The Core</h3><p>A letter's name and a letter's sound are different things. The letter B is named 'bee' but it says /b/, as in bat. When you spell by sound, always think about what the letter SAYS, never what it is called.</p></div><div class="card"><h3>Two faces of c</h3><p>C is a copycat with two voices. Before a, o, u it is HARD and says /k/: cat, coat, cup. Before e, i, y it is SOFT and says /s/: city, cent, cycle. The next letter decides — look one letter ahead.</p></div><div class="card"><h3>Two faces of g</h3><p>G plays the same game. Hard g before a, o, u: goat, game, gum. Soft g before e, i, y: giant, gentle, gym — it says /j/. (English keeps a few rebels like 'give' and 'girl', so listen first.)</p></div><div class="card"><h3>The team players</h3><p>Q never works alone — it always brings u, and qu says /kw/: queen, quick, quiet. X is two sounds in one letter: /ks/, as in fox and exact. Spot them and you will never write 'qeen' or 'foks'.</p></div><div class="card"><h3>Use it at the mic</h3><p>When you hear /s/, ask: is it S, or a soft C? (city, not sity). When you hear /j/, ask: is it J, or a soft G? (giant, not jiant). The word's origin often decides — and you can ask for it at the bee!</p></div></div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 2</span></div></div>
+    
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 2</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Alphabet Sounds — cat, city, goat, giant</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">circus</span><span class="say">/ SUR-kus /</span>
       <div class="d">a traveling show with acrobats, clowns, and animals</div><div class="h">💡 Both c sounds in one word: soft CIR /s/, hard CUS /k/.</div><div class="line"></div></div><div class="wd"><span class="w">city</span><span class="say">/ SIH-tee /</span>
       <div class="d">a large town where many people live</div><div class="h">💡 Soft c before i — CITY starts with /s/ but is spelled with C.</div><div class="line"></div></div><div class="wd"><span class="w">cycle</span><span class="say">/ SY-kul /</span>
@@ -152,20 +203,36 @@
       <div class="d">a piece of ground where flowers or vegetables grow</div><div class="h">💡 Hard g before a — g keeps its true /g/ voice.</div><div class="line"></div></div><div class="wd"><span class="w">guitar</span><span class="say">/ gih-TAR /</span>
       <div class="d">a musical instrument with six strings</div><div class="h">💡 The u after g is a bodyguard keeping g hard — GUI, not GI.</div><div class="line"></div></div><div class="wd"><span class="w">quick</span><span class="say">/ KWIK /</span>
       <div class="d">fast; done in a short time</div><div class="h">💡 Q always brings U — QU says /kw/.</div><div class="line"></div></div></div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 2 practice</span></div></div>
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 2 practice</span></div></div>
 <div class="pg">
       <div class="kicker">Rapid round · Alphabet Sounds — cat, city, goat, giant</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
-      <div class="rr"><div><b>queen</b> <span style="color:#8b83a3;font-size:8.4pt">/ KWEEN /</span><br>a woman who rules a country</div><div><b>expect</b> <span style="color:#8b83a3;font-size:8.4pt">/ ek-SPEKT /</span><br>to think something will happen</div></div>
-      <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 2 extras</span></div></div>
+      <h2 style="font-size:16pt;margin:.04in 0 .14in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>queen</b> <span style="color:var(--muted);font-size:8.2pt">/ KWEEN /</span><br>a woman who rules a country</div><div><b>expect</b> <span style="color:var(--muted);font-size:8.2pt">/ ek-SPEKT /</span><br>to think something will happen</div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 2 extras</span></div></div>
+<div class="pg">
+      <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="hp-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#F2B95A"/><stop offset="1" stop-color="#C8791B"/></radialGradient></defs>
+<path d="M26 52 q-7 5 -7 13 q0 8 7 12 q-3 30 34 30 q37 0 34 -30 q7 -4 7 -12 q0 -8 -7 -13 z" fill="url(#hp-g)"/>
+<path d="M26 52 q0 -14 34 -14 q34 0 34 14 q0 8 -34 8 q-34 0 -34 -8 z" fill="#FFCC5C"/>
+<path d="M44 44 q-2 12 3 16 q5 -3 2 -16 z" fill="#FFCC5C"/>
+<path d="M60 30 q-3 8 0 14 q6 -2 4 -12 q-1 -5 -4 -2 z" fill="#F2B95A"/>
+<ellipse cx="38" cy="102" rx="7" ry="5" fill="#A85F12"/><ellipse cx="82" cy="102" rx="7" ry="5" fill="#A85F12"/>
+<circle cx="46" cy="72" r="10" fill="#fff"/><circle cx="48" cy="74" r="5" fill="#2B1B5E"/><circle cx="46.5" cy="72.5" r="1.8" fill="#fff"/>
+<circle cx="74" cy="72" r="10" fill="#fff"/><circle cx="76" cy="74" r="5" fill="#2B1B5E"/><circle cx="74.5" cy="72.5" r="1.8" fill="#fff"/>
+<ellipse cx="34" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/><ellipse cx="86" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/>
+<path d="M52 86 q8 8 16 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg>
+        <div><div class="kicker">Honeypot's puzzle page · Alphabet Sounds — cat, city, goat, giant</div>
+        <h2 style="font-size:16pt">Word search</h2></div></div>
+      <table class="ws"><tr><td>A</td><td>G</td><td>E</td><td>J</td><td>P</td><td>X</td><td>H</td><td>F</td><td>F</td><td>N</td><td>H</td><td>U</td><td>D</td></tr><tr><td>G</td><td>I</td><td>J</td><td>L</td><td>X</td><td>J</td><td>K</td><td>G</td><td>W</td><td>P</td><td>L</td><td>B</td><td>M</td></tr><tr><td>U</td><td>A</td><td>P</td><td>N</td><td>C</td><td>N</td><td>U</td><td>S</td><td>Z</td><td>X</td><td>E</td><td>J</td><td>A</td></tr><tr><td>I</td><td>N</td><td>K</td><td>O</td><td>V</td><td>Y</td><td>U</td><td>E</td><td>R</td><td>C</td><td>X</td><td>O</td><td>S</td></tr><tr><td>T</td><td>T</td><td>Q</td><td>N</td><td>H</td><td>C</td><td>C</td><td>D</td><td>I</td><td>Q</td><td>S</td><td>L</td><td>N</td></tr><tr><td>A</td><td>H</td><td>F</td><td>K</td><td>R</td><td>T</td><td>S</td><td>P</td><td>V</td><td>J</td><td>A</td><td>Q</td><td>B</td></tr><tr><td>R</td><td>N</td><td>T</td><td>I</td><td>B</td><td>G</td><td>E</td><td>L</td><td>T</td><td>N</td><td>E</td><td>G</td><td>T</td></tr><tr><td>U</td><td>E</td><td>C</td><td>X</td><td>B</td><td>A</td><td>C</td><td>K</td><td>C</td><td>I</td><td>U</td><td>Q</td><td>Z</td></tr><tr><td>G</td><td>E</td><td>E</td><td>W</td><td>C</td><td>R</td><td>C</td><td>O</td><td>K</td><td>A</td><td>C</td><td>T</td><td>D</td></tr><tr><td>X</td><td>U</td><td>P</td><td>N</td><td>K</td><td>D</td><td>C</td><td>A</td><td>U</td><td>Q</td><td>I</td><td>G</td><td>L</td></tr><tr><td>E</td><td>Q</td><td>X</td><td>Q</td><td>F</td><td>E</td><td>M</td><td>K</td><td>B</td><td>P</td><td>T</td><td>N</td><td>J</td></tr><tr><td>Z</td><td>S</td><td>E</td><td>V</td><td>P</td><td>N</td><td>P</td><td>A</td><td>Y</td><td>K</td><td>Y</td><td>S</td><td>D</td></tr><tr><td>P</td><td>W</td><td>E</td><td>T</td><td>L</td><td>S</td><td>D</td><td>T</td><td>S</td><td>H</td><td>W</td><td>O</td><td>W</td></tr></table>
+  <div class="wsl"><span class="chip">circus</span><span class="chip">city</span><span class="chip">cycle</span><span class="chip">giant</span><span class="chip">gentle</span><span class="chip">garden</span><span class="chip">guitar</span><span class="chip">quick</span><span class="chip">queen</span><span class="chip">expect</span></div><p style="text-align:center;font-size:8.6pt;color:var(--muted);margin-top:.08in">Words run in every direction — even backwards.</p><div class="bb"><span class="bbi">💬</span><div><div class="bbl">Bee Break · someone said it better</div><div class="bbb">“Equipped with his five senses, man explores the universe around him and calls the adventure science.”</div><div class="bbt">— Edwin Hubble, astronomer</div></div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 2 game</span></div></div>
 <div class="pg dense">
-    <div style="display:flex;align-items:center;gap:.16in">
+    <div style="display:flex;align-items:center;gap:.14in">
       <span class="badge">3</span>
       <div><div class="kicker">Spelling Bee Basics</div>
-      <h2 style="font-size:20pt;line-height:1.08">Vowels &amp; Magic E — cap, cape</h2></div></div>
-    <div class="kicker" style="margin-top:.2in">The big idea</div>
+      <h2 style="font-size:19pt;line-height:1.08">Vowels &amp; Magic E — cap, cape</h2></div></div>
+    <div class="kicker" style="margin-top:.16in">The big idea</div>
     <div class="concept">A, e, i, o, u each have a short voice (cap, pet, sit, hop, cub) and a long voice that says the letter's own name (cape, Pete, kite, hope, cube). A silent e at the end is the magic switch that turns the short voice long.</div>
-    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>MISTAKE</b></div>
+    <div class="kicker" style="margin-top:.08in">The pro move</div><div class="method"><div class='trick'><b>MISTAKE</b></div>
 <b>Say it.</b> mih-STAYK
 <b>Spell it.</b> M · I · S · T · A · K · E
 <b>Say it again.</b> mih-STAYK
@@ -175,10 +242,11 @@
 <b>Origin.</b> Old Norse
 <b>Root.</b> mis- = wrongly + taka = to take</div>
     <div class="cards"><div class="card"><h3>The Core</h3><p>Every vowel has two voices. The SHORT voice is quick: a as in cap, e as in pet, i as in sit, o as in hop, u as in cub. The LONG voice simply says the letter's name: cape, Pete, kite, hope, cube.</p></div><div class="card"><h3>The magic e</h3><p>Add a silent e to the end and the vowel before it goes long: cap→cape, kit→kite, hop→hope, cub→cube, plan→plane. The e itself says nothing — it reaches back over one consonant and flips the switch.</p></div><div class="card"><h3>Closed = short</h3><p>When a consonant closes in a vowel with no magic e, the vowel stays short: cat, bed, fish, pond, drum. One vowel, shut in by consonants — expect the short sound. This is the most common syllable in English.</p></div><div class="card"><h3>Open = long</h3><p>When a syllable ENDS on its vowel, the vowel is free to say its name: go, me, hi, ba·by, mu·sic, pa·per. Spot where the syllable ends and you can predict the vowel sound before you spell it.</p></div><div class="card"><h3>Y the substitute</h3><p>Y jumps in as a vowel when a, e, i, o, u are missing: gym (short i sound), sky (long i), happy (long e). If you hear a vowel sound but see no vowel, look for y doing the job.</p></div></div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 3</span></div></div>
+    
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 3</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Vowels &amp; Magic E — cap, cape</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">mistake</span><span class="say">/ mih-STAYK /</span>
       <div class="d">something done wrong; an error</div><div class="h">💡 Magic e turns TAK into TAKE — the a says its name.</div><div class="line"></div></div><div class="wd"><span class="w">escape</span><span class="say">/ eh-SKAYP /</span>
       <div class="d">to get away from a place or danger</div><div class="h">💡 ES + CAPE — magic e makes cap into cape.</div><div class="line"></div></div><div class="wd"><span class="w">invite</span><span class="say">/ in-VYT /</span>
@@ -188,20 +256,38 @@
       <div class="d">clothes worn to look like someone or something else</div><div class="h">💡 Magic e turns the u long: cos + TUME.</div><div class="line"></div></div><div class="wd"><span class="w">baby</span><span class="say">/ BAY-bee /</span>
       <div class="d">a very young child</div><div class="h">💡 Open syllable BA — the a is free, so it says its name.</div><div class="line"></div></div><div class="wd"><span class="w">music</span><span class="say">/ MYOO-zik /</span>
       <div class="d">sounds arranged to be beautiful to hear</div><div class="h">💡 Open MU = long u; closed SIC = short i.</div><div class="line"></div></div></div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 3 practice</span></div></div>
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 3 practice</span></div></div>
 <div class="pg">
       <div class="kicker">Rapid round · Vowels &amp; Magic E — cap, cape</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
-      <div class="rr"><div><b>gym</b> <span style="color:#8b83a3;font-size:8.4pt">/ JIM /</span><br>a room or building for exercise and sports</div><div><b>sky</b> <span style="color:#8b83a3;font-size:8.4pt">/ SKY /</span><br>the space above the earth where clouds and stars appear</div></div>
-      <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 3 extras</span></div></div>
+      <h2 style="font-size:16pt;margin:.04in 0 .14in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>gym</b> <span style="color:var(--muted);font-size:8.2pt">/ JIM /</span><br>a room or building for exercise and sports</div><div><b>sky</b> <span style="color:var(--muted);font-size:8.2pt">/ SKY /</span><br>the space above the earth where clouds and stars appear</div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 3 extras</span></div></div>
+<div class="pg">
+      <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="hp-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#F2B95A"/><stop offset="1" stop-color="#C8791B"/></radialGradient></defs>
+<path d="M26 52 q-7 5 -7 13 q0 8 7 12 q-3 30 34 30 q37 0 34 -30 q7 -4 7 -12 q0 -8 -7 -13 z" fill="url(#hp-g)"/>
+<path d="M26 52 q0 -14 34 -14 q34 0 34 14 q0 8 -34 8 q-34 0 -34 -8 z" fill="#FFCC5C"/>
+<path d="M44 44 q-2 12 3 16 q5 -3 2 -16 z" fill="#FFCC5C"/>
+<path d="M60 30 q-3 8 0 14 q6 -2 4 -12 q-1 -5 -4 -2 z" fill="#F2B95A"/>
+<ellipse cx="38" cy="102" rx="7" ry="5" fill="#A85F12"/><ellipse cx="82" cy="102" rx="7" ry="5" fill="#A85F12"/>
+<circle cx="46" cy="72" r="10" fill="#fff"/><circle cx="48" cy="74" r="5" fill="#2B1B5E"/><circle cx="46.5" cy="72.5" r="1.8" fill="#fff"/>
+<circle cx="74" cy="72" r="10" fill="#fff"/><circle cx="76" cy="74" r="5" fill="#2B1B5E"/><circle cx="74.5" cy="72.5" r="1.8" fill="#fff"/>
+<ellipse cx="34" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/><ellipse cx="86" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/>
+<path d="M52 86 q8 8 16 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg>
+        <div><div class="kicker">Honeypot's puzzle page · Vowels &amp; Magic E — cap, cape</div>
+        <h2 style="font-size:16pt">Scramble & rescue</h2></div></div>
+      <div class="gtwo"><div><div class="kicker" style="margin-bottom:.08in">Unscramble</div>
+      <div class="g1" style="margin-bottom:.09in"><span class="gw">seatmik</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">epacse</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">bayb</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">lmeocetp</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">csumi</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">inviet</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">uctesom</span><div class="gl"></div></div></div>
+      <div><div class="kicker" style="margin-bottom:.08in">Rescue the vowels</div>
+      <div class="g1" style="margin-bottom:.09in"><span class="gw">b_by</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">_nv_t_</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">c_mpl_t_</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">_l_n_</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">m_s_c</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">m_st_k_</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">_sc_p_</span><div class="gl"></div></div></div></div><div class="bb"><span class="bbi">✨</span><div><div class="bbl">Bee Break · simile of the page</div><div class="bbb"><b>as blind as a mole</b></div><div class="bbt">seeing very poorly</div></div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 3 game</span></div></div>
 <div class="pg dense">
-    <div style="display:flex;align-items:center;gap:.16in">
+    <div style="display:flex;align-items:center;gap:.14in">
       <span class="badge">4</span>
       <div><div class="kicker">Spelling Bee Basics</div>
-      <h2 style="font-size:20pt;line-height:1.08">Syllables — re, mem, ber</h2></div></div>
-    <div class="kicker" style="margin-top:.2in">The big idea</div>
+      <h2 style="font-size:19pt;line-height:1.08">Syllables — re, mem, ber</h2></div></div>
+    <div class="kicker" style="margin-top:.16in">The big idea</div>
     <div class="concept">A syllable is one beat of a word, and every beat has exactly one vowel sound. Long words are just short words holding hands: re·mem·ber is three easy pieces, not one scary one. Break the word into beats and spell one beat at a time.</div>
-    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>FANTASTIC</b></div>
+    <div class="kicker" style="margin-top:.08in">The pro move</div><div class="method"><div class='trick'><b>FANTASTIC</b></div>
 <b>Say it.</b> fan-TAS-tik
 <b>Spell it.</b> F · A · N · T · A · S · T · I · C
 <b>Say it again.</b> fan-TAS-tik
@@ -211,10 +297,11 @@
 <b>Origin.</b> Greek
 <b>Root.</b> Greek phantastikos = able to imagine</div>
     <div class="cards"><div class="card"><h3>The Core</h3><p>Say 'remember' and clap: re–mem–ber. Three claps, three syllables, three small spelling jobs. A syllable is one push of your voice, and each push carries exactly one vowel sound.</p></div><div class="card"><h3>Find the beats</h3><p>Three easy ways to count beats: clap them, hum the word (each hum-bump is a beat), or rest your hand under your chin — your jaw drops once per syllable. Try 'umbrella': um–brel–la. Three drops.</p></div><div class="card"><h3>Twin consonants split</h3><p>When two of the same consonant sit in the middle, the syllables split between them: rab·bit, sum·mer, les·son. That's why the word keeps both letters — each syllable owns one. Hear rab + bit, write both b's.</p></div><div class="card"><h3>Spell beat by beat</h3><p>Never spell a long word in one gulp. Say the first syllable, spell it. Say the next, spell it. cal·en·dar = CAL + EN + DAR. Each piece is kid-sized, and the word spells itself.</p></div><div class="card"><h3>Every beat needs a vowel</h3><p>No syllable exists without a vowel sound — so if you spelled a syllable with no vowel letter, you dropped something. This one check catches missing-letter mistakes: cas-tle, lit-tle — the -le hides its vowel but always writes one.</p></div></div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 4</span></div></div>
+    
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 4</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Syllables — re, mem, ber</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">fantastic</span><span class="say">/ fan-TAS-tik /</span>
       <div class="d">wonderful; extremely good</div><div class="h">💡 Three beats: fan + tas + tic — spell them one at a time.</div><div class="line"></div></div><div class="wd"><span class="w">rabbit</span><span class="say">/ RAB-it /</span>
       <div class="d">a small animal with long ears that hops</div><div class="h">💡 Twin b’s split the beats: rab + bit — each syllable keeps one b.</div><div class="line"></div></div><div class="wd"><span class="w">summer</span><span class="say">/ SUM-er /</span>
@@ -224,20 +311,37 @@
       <div class="d">a folding cover that keeps rain off you</div><div class="h">💡 um + brel + la — three beats, twin l’s at the split.</div><div class="line"></div></div><div class="wd"><span class="w">wonderful</span><span class="say">/ WUN-der-ful /</span>
       <div class="d">amazing; very good</div><div class="h">💡 won + der + ful — full loses an l when it becomes -ful.</div><div class="line"></div></div><div class="wd"><span class="w">hospital</span><span class="say">/ HOS-pih-tul /</span>
       <div class="d">a place where sick or hurt people are cared for</div><div class="h">💡 hos + pi + tal — three beats, spell each one alone.</div><div class="line"></div></div></div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 4 practice</span></div></div>
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 4 practice</span></div></div>
 <div class="pg">
       <div class="kicker">Rapid round · Syllables — re, mem, ber</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
-      <div class="rr"><div><b>calendar</b> <span style="color:#8b83a3;font-size:8.4pt">/ KAL-un-der /</span><br>a chart of the days, weeks, and months of a year</div><div><b>celebrate</b> <span style="color:#8b83a3;font-size:8.4pt">/ SEL-uh-brayt /</span><br>to do something fun for a special occasion</div></div>
-      <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 4 extras</span></div></div>
+      <h2 style="font-size:16pt;margin:.04in 0 .14in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>calendar</b> <span style="color:var(--muted);font-size:8.2pt">/ KAL-un-der /</span><br>a chart of the days, weeks, and months of a year</div><div><b>celebrate</b> <span style="color:var(--muted);font-size:8.2pt">/ SEL-uh-brayt /</span><br>to do something fun for a special occasion</div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 4 extras</span></div></div>
+<div class="pg">
+      <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="hp-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#F2B95A"/><stop offset="1" stop-color="#C8791B"/></radialGradient></defs>
+<path d="M26 52 q-7 5 -7 13 q0 8 7 12 q-3 30 34 30 q37 0 34 -30 q7 -4 7 -12 q0 -8 -7 -13 z" fill="url(#hp-g)"/>
+<path d="M26 52 q0 -14 34 -14 q34 0 34 14 q0 8 -34 8 q-34 0 -34 -8 z" fill="#FFCC5C"/>
+<path d="M44 44 q-2 12 3 16 q5 -3 2 -16 z" fill="#FFCC5C"/>
+<path d="M60 30 q-3 8 0 14 q6 -2 4 -12 q-1 -5 -4 -2 z" fill="#F2B95A"/>
+<ellipse cx="38" cy="102" rx="7" ry="5" fill="#A85F12"/><ellipse cx="82" cy="102" rx="7" ry="5" fill="#A85F12"/>
+<circle cx="46" cy="72" r="10" fill="#fff"/><circle cx="48" cy="74" r="5" fill="#2B1B5E"/><circle cx="46.5" cy="72.5" r="1.8" fill="#fff"/>
+<circle cx="74" cy="72" r="10" fill="#fff"/><circle cx="76" cy="74" r="5" fill="#2B1B5E"/><circle cx="74.5" cy="72.5" r="1.8" fill="#fff"/>
+<ellipse cx="34" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/><ellipse cx="86" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/>
+<path d="M52 86 q8 8 16 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg>
+        <div><div class="kicker">Honeypot's puzzle page · Syllables — re, mem, ber</div>
+        <h2 style="font-size:16pt">Crossword</h2></div></div>
+      <div class="cwwrap"><table class="cw"><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>1</i></td><td class="cwx"></td><td class="cwc"><i>2</i></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>3</i></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwc"><i>4</i></td><td class="cwx"></td><td class="cwc"><i>5</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwc"><i>6</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"><i>7</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td></tr><tr><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>8</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>9</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr></table></div>
+    <div class="clues"><div><div class="clueh">Across</div><div><b>5.</b> a large frightening imaginary creature</div><div><b>6.</b> the warmest season of the year</div><div><b>7.</b> a small animal with long ears that hops</div><div><b>8.</b> wonderful; extremely good</div><div><b>9.</b> a chart of the days, weeks, and months of a year</div></div>
+    <div><div class="clueh">Down</div><div><b>1.</b> a folding cover that keeps rain off you</div><div><b>2.</b> to do something fun for a special occasion</div><div><b>3.</b> amazing; very good</div><div><b>4.</b> a container woven from strips, with a handle</div></div></div><div class="bb"><span class="bbi">🎈</span><div><div class="bbl">Bee Break · idiom to drop at dinner</div><div class="bbb"><b>nothing to write home about</b></div><div class="bbt">ordinary; not especially good</div></div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 4 game</span></div></div>
 <div class="pg dense">
-    <div style="display:flex;align-items:center;gap:.16in">
+    <div style="display:flex;align-items:center;gap:.14in">
       <span class="badge">5</span>
       <div><div class="kicker">Spelling Bee Basics</div>
-      <h2 style="font-size:20pt;line-height:1.08">Sounds to Letters — stretch, spell</h2></div></div>
-    <div class="kicker" style="margin-top:.2in">The big idea</div>
+      <h2 style="font-size:19pt;line-height:1.08">Sounds to Letters — stretch, spell</h2></div></div>
+    <div class="kicker" style="margin-top:.16in">The big idea</div>
     <div class="concept">Inside each syllable live single sounds. Stretch the syllable like a rubber band — /s/…/t/…/a/…/m/…/p/ — and write each sound in the order you hear it. Nothing skipped, nothing guessed: that is spelling by sound.</div>
-    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>SPLASH</b></div>
+    <div class="kicker" style="margin-top:.08in">The pro move</div><div class="method"><div class='trick'><b>SPLASH</b></div>
 <b>Say it.</b> SPLASH
 <b>Spell it.</b> S · P · L · A · S · H
 <b>Say it again.</b> SPLASH
@@ -247,10 +351,11 @@
 <b>Origin.</b> English
 <b>Root.</b> imitative — the word sounds like the thing it means</div>
     <div class="cards"><div class="card"><h3>The Core</h3><p>Take one syllable and stretch it slowly: 'stamp' becomes sss–t–aaa–mmm–p. Five sounds. Now write them in order: S, T, A, M, P. Every sound gets a letter; every letter earns its place.</p></div><div class="card"><h3>Stretch like a band</h3><p>Say the word in slow motion, as if your voice were a rubber band being pulled. Sounds you rush past at normal speed — the n in 'plant', the r in 'crisp' — pop out clearly when stretched. What you can hear, you can spell.</p></div><div class="card"><h3>Count first, then write</h3><p>Before writing, count the sounds on your fingers: /t/ /r/ /u/ /s/ /t/ — five. If your spelling has fewer letters than sounds, you dropped one. 'Trust' with four letters is missing something.</p></div><div class="card"><h3>The order is the spelling</h3><p>Sounds come out in a line, and letters follow the same line. If you hear /d/ /r/ /i/ /f/ /t/, you write d-r-i-f-t. Swapping the order — 'dirft' — is the #1 slip, so touch a finger per sound as you write.</p></div><div class="card"><h3>When teams join in</h3><p>Some sounds need two letters (sh, ch, th — next concept!), and some vowel sounds need teams too. But the stretch-and-spell habit stays the same: one sound at a time, in order, every sound accounted for.</p></div></div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 5</span></div></div>
+    
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 5</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Sounds to Letters — stretch, spell</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">splash</span><span class="say">/ SPLASH /</span>
       <div class="d">to hit water so it flies around</div><div class="h">💡 Stretch it: s-p-l-a-sh — five sounds, six letters.</div><div class="line"></div></div><div class="wd"><span class="w">stamp</span><span class="say">/ STAMP /</span>
       <div class="d">a small paper square stuck on mail; to press your foot down</div><div class="h">💡 s-t-a-m-p — do not lose the quiet m before p.</div><div class="line"></div></div><div class="wd"><span class="w">blend</span><span class="say">/ BLEND /</span>
@@ -260,20 +365,39 @@
       <div class="d">to be carried slowly by water or air</div><div class="h">💡 d-r-i-f-t — keep the order; dirft is the classic slip.</div><div class="line"></div></div><div class="wd"><span class="w">trust</span><span class="say">/ TRUST /</span>
       <div class="d">to believe someone is honest and reliable</div><div class="h">💡 t-r-u-s-t — five sounds on five fingers.</div><div class="line"></div></div><div class="wd"><span class="w">twist</span><span class="say">/ TWIST /</span>
       <div class="d">to turn something around and around</div><div class="h">💡 t-w-i-s-t — the w is a real sound, not a decoration.</div><div class="line"></div></div></div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 5 practice</span></div></div>
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 5 practice</span></div></div>
 <div class="pg">
       <div class="kicker">Rapid round · Sounds to Letters — stretch, spell</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
-      <div class="rr"><div><b>grasp</b> <span style="color:#8b83a3;font-size:8.4pt">/ GRASP /</span><br>to grab firmly; to understand</div><div><b>strap</b> <span style="color:#8b83a3;font-size:8.4pt">/ STRAP /</span><br>a strip of material used to fasten or hold things</div></div>
-      <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 5 extras</span></div></div>
+      <h2 style="font-size:16pt;margin:.04in 0 .14in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>grasp</b> <span style="color:var(--muted);font-size:8.2pt">/ GRASP /</span><br>to grab firmly; to understand</div><div><b>strap</b> <span style="color:var(--muted);font-size:8.2pt">/ STRAP /</span><br>a strip of material used to fasten or hold things</div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 5 extras</span></div></div>
+<div class="pg">
+      <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="hp-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#F2B95A"/><stop offset="1" stop-color="#C8791B"/></radialGradient></defs>
+<path d="M26 52 q-7 5 -7 13 q0 8 7 12 q-3 30 34 30 q37 0 34 -30 q7 -4 7 -12 q0 -8 -7 -13 z" fill="url(#hp-g)"/>
+<path d="M26 52 q0 -14 34 -14 q34 0 34 14 q0 8 -34 8 q-34 0 -34 -8 z" fill="#FFCC5C"/>
+<path d="M44 44 q-2 12 3 16 q5 -3 2 -16 z" fill="#FFCC5C"/>
+<path d="M60 30 q-3 8 0 14 q6 -2 4 -12 q-1 -5 -4 -2 z" fill="#F2B95A"/>
+<ellipse cx="38" cy="102" rx="7" ry="5" fill="#A85F12"/><ellipse cx="82" cy="102" rx="7" ry="5" fill="#A85F12"/>
+<circle cx="46" cy="72" r="10" fill="#fff"/><circle cx="48" cy="74" r="5" fill="#2B1B5E"/><circle cx="46.5" cy="72.5" r="1.8" fill="#fff"/>
+<circle cx="74" cy="72" r="10" fill="#fff"/><circle cx="76" cy="74" r="5" fill="#2B1B5E"/><circle cx="74.5" cy="72.5" r="1.8" fill="#fff"/>
+<ellipse cx="34" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/><ellipse cx="86" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/>
+<path d="M52 86 q8 8 16 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg>
+        <div><div class="kicker">Honeypot's puzzle page · Sounds to Letters — stretch, spell</div>
+        <h2 style="font-size:16pt">Word search</h2></div></div>
+      <table class="ws"><tr><td>T</td><td>S</td><td>U</td><td>R</td><td>T</td><td>K</td><td>Z</td><td>Q</td><td>E</td><td>U</td><td>Z</td><td>D</td><td>N</td></tr><tr><td>B</td><td>D</td><td>N</td><td>E</td><td>L</td><td>B</td><td>V</td><td>T</td><td>Z</td><td>L</td><td>L</td><td>G</td><td>Q</td></tr><tr><td>P</td><td>O</td><td>U</td><td>K</td><td>V</td><td>Z</td><td>E</td><td>W</td><td>W</td><td>T</td><td>M</td><td>U</td><td>E</td></tr><tr><td>J</td><td>K</td><td>C</td><td>H</td><td>K</td><td>H</td><td>N</td><td>H</td><td>T</td><td>S</td><td>H</td><td>D</td><td>Q</td></tr><tr><td>C</td><td>R</td><td>I</td><td>S</td><td>P</td><td>L</td><td>G</td><td>D</td><td>G</td><td>I</td><td>S</td><td>J</td><td>A</td></tr><tr><td>S</td><td>J</td><td>M</td><td>V</td><td>N</td><td>C</td><td>R</td><td>P</td><td>P</td><td>W</td><td>P</td><td>K</td><td>I</td></tr><tr><td>N</td><td>U</td><td>U</td><td>L</td><td>T</td><td>P</td><td>A</td><td>F</td><td>M</td><td>T</td><td>L</td><td>Y</td><td>X</td></tr><tr><td>J</td><td>G</td><td>V</td><td>D</td><td>N</td><td>B</td><td>S</td><td>P</td><td>A</td><td>O</td><td>A</td><td>L</td><td>T</td></tr><tr><td>O</td><td>P</td><td>P</td><td>T</td><td>A</td><td>P</td><td>P</td><td>H</td><td>T</td><td>N</td><td>S</td><td>O</td><td>F</td></tr><tr><td>B</td><td>T</td><td>T</td><td>E</td><td>L</td><td>W</td><td>V</td><td>Q</td><td>S</td><td>D</td><td>H</td><td>F</td><td>I</td></tr><tr><td>Z</td><td>A</td><td>C</td><td>T</td><td>P</td><td>N</td><td>T</td><td>D</td><td>U</td><td>S</td><td>M</td><td>E</td><td>R</td></tr><tr><td>R</td><td>P</td><td>A</td><td>R</td><td>T</td><td>S</td><td>Y</td><td>W</td><td>J</td><td>B</td><td>X</td><td>B</td><td>D</td></tr><tr><td>P</td><td>V</td><td>L</td><td>X</td><td>Q</td><td>E</td><td>V</td><td>B</td><td>F</td><td>T</td><td>I</td><td>F</td><td>K</td></tr></table>
+  <div class="wsl"><span class="chip">splash</span><span class="chip">stamp</span><span class="chip">blend</span><span class="chip">crisp</span><span class="chip">plant</span><span class="chip">drift</span><span class="chip">trust</span><span class="chip">twist</span><span class="chip">grasp</span><span class="chip">strap</span></div><p style="text-align:center;font-size:8.6pt;color:var(--muted);margin-top:.08in">Words run in every direction — even backwards.</p><div class="bb"><span class="bbi">💬</span><div><div class="bbl">Bee Break · someone said it better</div><div class="bbb">“Row, row, row your boat,
+Gently down the stream.
+Merrily, merrily, merrily, merrily,
+Life is but a dream.”</div><div class="bbt">— Traditional nursery rhyme, classic singing rhyme</div></div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 5 game</span></div></div>
 <div class="pg dense">
-    <div style="display:flex;align-items:center;gap:.16in">
+    <div style="display:flex;align-items:center;gap:.14in">
       <span class="badge">6</span>
       <div><div class="kicker">Spelling Bee Basics</div>
-      <h2 style="font-size:20pt;line-height:1.08">Letter Teams — sh, ch, th, ph</h2></div></div>
-    <div class="kicker" style="margin-top:.2in">The big idea</div>
+      <h2 style="font-size:19pt;line-height:1.08">Letter Teams — sh, ch, th, ph</h2></div></div>
+    <div class="kicker" style="margin-top:.16in">The big idea</div>
     <div class="concept">Some sounds are spelled by two letters working as one team: sh in shark, ch in chest, th in thumb, wh in whale, ph in phone, ck in duck, ng in ring. One sound, two letters — spot the team and spell it as a unit.</div>
-    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>WHISPER</b></div>
+    <div class="kicker" style="margin-top:.08in">The pro move</div><div class="method"><div class='trick'><b>WHISPER</b></div>
 <b>Say it.</b> WIS-per
 <b>Spell it.</b> W · H · I · S · P · E · R
 <b>Say it again.</b> WIS-per
@@ -283,10 +407,11 @@
 <b>Origin.</b> Old English
 <b>Root.</b> Old English hwisprian = to murmur</div>
     <div class="cards"><div class="card"><h3>The Core</h3><p>Stretch 'shark': /sh/–/ar/–/k/. That first sound is ONE sound, but no single letter says it — S and H team up. English is full of these letter teams; treat each team as a single spelling piece.</p></div><div class="card"><h3>The big four</h3><p>SH as in shine and brush. CH as in chest and lunch. TH as in thumb and bath. WH as in whale and whisper. When you hear these sounds, your pencil writes two letters but your mind counts one.</p></div><div class="card"><h3>Two kinds of th</h3><p>TH whispers in thin, thumb, math — and buzzes in this, that, brother. Put your fingers on your throat: the buzzing kind vibrates. Both are spelled the same way — T-H — so this trap costs nothing once you know it.</p></div><div class="card"><h3>ch wears costumes</h3><p>CH usually says /ch/ (chest, lunch), but in Greek words it says /k/ — chorus, echo, school — and in French words it says /sh/ — chef, machine. If /k/ or /sh/ shows up in a fancy word, suspect CH and ask about the origin.</p></div><div class="card"><h3>End-of-word teams</h3><p>CK ends short-vowel words: duck, clock, stick — never 'duk'. NG holds the ringing sound in ring, king, strong. PH is the Greek team for /f/: phone, graph, dolphin. Hear /f/ in a science-y word? Think PH.</p></div></div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 6</span></div></div>
+    
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 6</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Letter Teams — sh, ch, th, ph</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">whisper</span><span class="say">/ WIS-per /</span>
       <div class="d">to speak very softly and quietly</div><div class="h">💡 WH team starts it — whisper, whale, what.</div><div class="line"></div></div><div class="wd"><span class="w">shark</span><span class="say">/ SHARK /</span>
       <div class="d">a large ocean fish with sharp teeth</div><div class="h">💡 SH is one sound, one team — sh + ark.</div><div class="line"></div></div><div class="wd"><span class="w">chest</span><span class="say">/ CHEST /</span>
@@ -296,20 +421,38 @@
       <div class="d">a device used to talk to people far away</div><div class="h">💡 PH is the Greek /f/ team — phone, photo, graph.</div><div class="line"></div></div><div class="wd"><span class="w">dolphin</span><span class="say">/ DOL-fin /</span>
       <div class="d">a friendly sea animal that clicks and whistles</div><div class="h">💡 The /f/ in the middle is PH — dol + PHin.</div><div class="line"></div></div><div class="wd"><span class="w">kitchen</span><span class="say">/ KIH-chin /</span>
       <div class="d">the room where food is cooked</div><div class="h">💡 kit + CHen — TCH ch sound after a short vowel keeps the t.</div><div class="line"></div></div></div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 6 practice</span></div></div>
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 6 practice</span></div></div>
 <div class="pg">
       <div class="kicker">Rapid round · Letter Teams — sh, ch, th, ph</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
-      <div class="rr"><div><b>string</b> <span style="color:#8b83a3;font-size:8.4pt">/ STRING /</span><br>a thin rope for tying things</div><div><b>clock</b> <span style="color:#8b83a3;font-size:8.4pt">/ KLOK /</span><br>a machine that shows the time</div></div>
-      <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 6 extras</span></div></div>
+      <h2 style="font-size:16pt;margin:.04in 0 .14in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>string</b> <span style="color:var(--muted);font-size:8.2pt">/ STRING /</span><br>a thin rope for tying things</div><div><b>clock</b> <span style="color:var(--muted);font-size:8.2pt">/ KLOK /</span><br>a machine that shows the time</div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 6 extras</span></div></div>
+<div class="pg">
+      <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="hp-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#F2B95A"/><stop offset="1" stop-color="#C8791B"/></radialGradient></defs>
+<path d="M26 52 q-7 5 -7 13 q0 8 7 12 q-3 30 34 30 q37 0 34 -30 q7 -4 7 -12 q0 -8 -7 -13 z" fill="url(#hp-g)"/>
+<path d="M26 52 q0 -14 34 -14 q34 0 34 14 q0 8 -34 8 q-34 0 -34 -8 z" fill="#FFCC5C"/>
+<path d="M44 44 q-2 12 3 16 q5 -3 2 -16 z" fill="#FFCC5C"/>
+<path d="M60 30 q-3 8 0 14 q6 -2 4 -12 q-1 -5 -4 -2 z" fill="#F2B95A"/>
+<ellipse cx="38" cy="102" rx="7" ry="5" fill="#A85F12"/><ellipse cx="82" cy="102" rx="7" ry="5" fill="#A85F12"/>
+<circle cx="46" cy="72" r="10" fill="#fff"/><circle cx="48" cy="74" r="5" fill="#2B1B5E"/><circle cx="46.5" cy="72.5" r="1.8" fill="#fff"/>
+<circle cx="74" cy="72" r="10" fill="#fff"/><circle cx="76" cy="74" r="5" fill="#2B1B5E"/><circle cx="74.5" cy="72.5" r="1.8" fill="#fff"/>
+<ellipse cx="34" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/><ellipse cx="86" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/>
+<path d="M52 86 q8 8 16 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg>
+        <div><div class="kicker">Honeypot's puzzle page · Letter Teams — sh, ch, th, ph</div>
+        <h2 style="font-size:16pt">Scramble & rescue</h2></div></div>
+      <div class="gtwo"><div><div class="kicker" style="margin-bottom:.08in">Unscramble</div>
+      <div class="g1" style="margin-bottom:.09in"><span class="gw">dhnpoil</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">grsnti</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">ccolk</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">bmuth</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">tncekih</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">poneh</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">harsk</span><div class="gl"></div></div></div>
+      <div><div class="kicker" style="margin-bottom:.08in">Rescue the vowels</div>
+      <div class="g1" style="margin-bottom:.09in"><span class="gw">th_mb</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">ch_st</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">ph_n_</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">wh_sp_r</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">cl_ck</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">d_lph_n</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">str_ng</span><div class="gl"></div></div></div></div><div class="bb"><span class="bbi">✨</span><div><div class="bbl">Bee Break · simile of the page</div><div class="bbb"><b>live like a king</b></div><div class="bbt">to live in great comfort and luxury</div></div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 6 game</span></div></div>
 <div class="pg dense">
-    <div style="display:flex;align-items:center;gap:.16in">
+    <div style="display:flex;align-items:center;gap:.14in">
       <span class="badge">7</span>
       <div><div class="kicker">Spelling Bee Basics</div>
-      <h2 style="font-size:20pt;line-height:1.08">Vowel Teams — ai, ay, ee, oa</h2></div></div>
-    <div class="kicker" style="margin-top:.2in">The big idea</div>
+      <h2 style="font-size:19pt;line-height:1.08">Vowel Teams — ai, ay, ee, oa</h2></div></div>
+    <div class="kicker" style="margin-top:.16in">The big idea</div>
     <div class="concept">Long vowel sounds are usually spelled by two vowels teaming up: ai/ay for long a, ee/ea for long e, oa/ow for long o, oi/oy and au/aw for the twisty sounds. Position picks the team: ay, oy, ow like the END of words; ai, oi, oa work INSIDE.</div>
-    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>RAINBOW</b></div>
+    <div class="kicker" style="margin-top:.08in">The pro move</div><div class="method"><div class='trick'><b>RAINBOW</b></div>
 <b>Say it.</b> RAYN-boh
 <b>Spell it.</b> R · A · I · N · B · O · W
 <b>Say it again.</b> RAYN-boh
@@ -319,10 +462,11 @@
 <b>Origin.</b> Old English
 <b>Root.</b> regn = rain + boga = bow, arch</div>
     <div class="cards"><div class="card"><h3>The Core</h3><p>Hear the long a in 'paint'? No magic e in sight — instead two vowels team up: AI. Vowel teams are the second great way English spells long vowels, and each team has a favorite seat in the word.</p></div><div class="card"><h3>The position rule</h3><p>Teams ending in Y or W love the END of a word: play, stay, boy, enjoy, snow, grow. Their twins work INSIDE: paint, rain, coin, point, coat, road. Same sound, different seat — pl-AY but p-AI-nt.</p></div><div class="card"><h3>Long e twins</h3><p>EE and EA both say long e: sweet, green — and eat, reason, team. There is no perfect rule for choosing, so meet each word once and let the hook stick: you EAT a pEAch; you SEE a bEE. (EA sometimes goes short: bread, head.)</p></div><div class="card"><h3>The whiny sounds</h3><p>OI/OY is the 'annoyed' sound: coin, voice — boy, royal. OU/OW is the 'ouch' sound: loud, house — cow, tower. AU/AW is the 'awe' sound: author, because — saw, awesome. End of word? Pick the Y or W twin.</p></div><div class="card"><h3>Spell the team, not letters</h3><p>When you stretch a word and hit a long vowel, do not write one letter — ask WHICH TEAM spells it here. r-ai-n. b-oa-t. pl-ay. The team is a single spelling piece, exactly like sh or ch.</p></div></div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 7</span></div></div>
+    
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 7</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Vowel Teams — ai, ay, ee, oa</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">rainbow</span><span class="say">/ RAYN-boh /</span>
       <div class="d">an arch of colors in the sky after rain</div><div class="h">💡 AI inside, OW at the end — two teams, both in position.</div><div class="line"></div></div><div class="wd"><span class="w">crayon</span><span class="say">/ KRAY-on /</span>
       <div class="d">a stick of colored wax for drawing</div><div class="h">💡 AY ends its syllable: cray + on.</div><div class="line"></div></div><div class="wd"><span class="w">paint</span><span class="say">/ PAYNT /</span>
@@ -332,20 +476,37 @@
       <div class="d">the land along the edge of the sea</div><div class="h">💡 OA works inside: c-oa-st.</div><div class="line"></div></div><div class="wd"><span class="w">window</span><span class="say">/ WIN-doh /</span>
       <div class="d">an opening in a wall filled with glass</div><div class="h">💡 OW takes the end seat: wind + ow.</div><div class="line"></div></div><div class="wd"><span class="w">voyage</span><span class="say">/ VOY-ij /</span>
       <div class="d">a long journey by sea or through space</div><div class="h">💡 OY ends its syllable: voy + age.</div><div class="line"></div></div></div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 7 practice</span></div></div>
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 7 practice</span></div></div>
 <div class="pg">
       <div class="kicker">Rapid round · Vowel Teams — ai, ay, ee, oa</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
-      <div class="rr"><div><b>poison</b> <span style="color:#8b83a3;font-size:8.4pt">/ POY-zun /</span><br>something that can make you sick if swallowed</div><div><b>author</b> <span style="color:#8b83a3;font-size:8.4pt">/ AW-thur /</span><br>a person who writes books or stories</div></div>
-      <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 7 extras</span></div></div>
+      <h2 style="font-size:16pt;margin:.04in 0 .14in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>poison</b> <span style="color:var(--muted);font-size:8.2pt">/ POY-zun /</span><br>something that can make you sick if swallowed</div><div><b>author</b> <span style="color:var(--muted);font-size:8.2pt">/ AW-thur /</span><br>a person who writes books or stories</div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 7 extras</span></div></div>
+<div class="pg">
+      <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="hp-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#F2B95A"/><stop offset="1" stop-color="#C8791B"/></radialGradient></defs>
+<path d="M26 52 q-7 5 -7 13 q0 8 7 12 q-3 30 34 30 q37 0 34 -30 q7 -4 7 -12 q0 -8 -7 -13 z" fill="url(#hp-g)"/>
+<path d="M26 52 q0 -14 34 -14 q34 0 34 14 q0 8 -34 8 q-34 0 -34 -8 z" fill="#FFCC5C"/>
+<path d="M44 44 q-2 12 3 16 q5 -3 2 -16 z" fill="#FFCC5C"/>
+<path d="M60 30 q-3 8 0 14 q6 -2 4 -12 q-1 -5 -4 -2 z" fill="#F2B95A"/>
+<ellipse cx="38" cy="102" rx="7" ry="5" fill="#A85F12"/><ellipse cx="82" cy="102" rx="7" ry="5" fill="#A85F12"/>
+<circle cx="46" cy="72" r="10" fill="#fff"/><circle cx="48" cy="74" r="5" fill="#2B1B5E"/><circle cx="46.5" cy="72.5" r="1.8" fill="#fff"/>
+<circle cx="74" cy="72" r="10" fill="#fff"/><circle cx="76" cy="74" r="5" fill="#2B1B5E"/><circle cx="74.5" cy="72.5" r="1.8" fill="#fff"/>
+<ellipse cx="34" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/><ellipse cx="86" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/>
+<path d="M52 86 q8 8 16 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg>
+        <div><div class="kicker">Honeypot's puzzle page · Vowel Teams — ai, ay, ee, oa</div>
+        <h2 style="font-size:16pt">Crossword</h2></div></div>
+      <div class="cwwrap"><table class="cw"><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>1</i></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>2</i></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>3</i></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>4</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>5</i></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>6</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"><i>7</i></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwc"><i>8</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"><i>9</i></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>10</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr></table></div>
+    <div class="clues"><div><div class="clueh">Across</div><div><b>4.</b> why something happens; a cause</div><div><b>6.</b> an arch of colors in the sky after rain</div><div><b>8.</b> tasting like sugar; very pleasant</div><div><b>10.</b> something that can make you sick if swallowed</div></div>
+    <div><div class="clueh">Down</div><div><b>1.</b> a person who writes books or stories</div><div><b>2.</b> the land along the edge of the sea</div><div><b>3.</b> a stick of colored wax for drawing</div><div><b>5.</b> a long journey by sea or through space</div><div><b>7.</b> an opening in a wall filled with glass</div><div><b>9.</b> colored liquid you brush onto things</div></div></div><div class="bb"><span class="bbi">🎈</span><div><div class="bbl">Bee Break · idiom to drop at dinner</div><div class="bbb"><b>batten down the hatches</b></div><div class="bbt">prepare for coming trouble</div></div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 7 game</span></div></div>
 <div class="pg dense">
-    <div style="display:flex;align-items:center;gap:.16in">
+    <div style="display:flex;align-items:center;gap:.14in">
       <span class="badge">8</span>
       <div><div class="kicker">Spelling Bee Basics</div>
-      <h2 style="font-size:20pt;line-height:1.08">Blends &amp; Silent Letters — kn, wr, mb</h2></div></div>
-    <div class="kicker" style="margin-top:.2in">The big idea</div>
+      <h2 style="font-size:19pt;line-height:1.08">Blends &amp; Silent Letters — kn, wr, mb</h2></div></div>
+    <div class="kicker" style="margin-top:.16in">The big idea</div>
     <div class="concept">In a blend, every letter still speaks — st, str, spl: just spell what you hear, in order. Silent letters are the opposite: leftover letters from old English that went quiet — the k in knee, w in write, b in climb. Blends you hear; silents you remember.</div>
-    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>KNIGHT</b></div>
+    <div class="kicker" style="margin-top:.08in">The pro move</div><div class="method"><div class='trick'><b>KNIGHT</b></div>
 <b>Say it.</b> NYT
 <b>Spell it.</b> K · N · I · G · H · T
 <b>Say it again.</b> NYT
@@ -355,10 +516,11 @@
 <b>Origin.</b> Old English
 <b>Root.</b> Old English cniht = boy, servant, warrior</div>
     <div class="cards"><div class="card"><h3>The Core</h3><p>Two kinds of letter clusters, opposite rules. BLENDS: every letter sounds — /s//t/ in stop, /s//t//r/ in strong. Stretch and spell. SILENT LETTERS: a letter sits in the word saying nothing — knee starts with /n/ but writes KN.</p></div><div class="card"><h3>Blends: trust your ears</h3><p>st, sp, sk, bl, cl, fr, gr, str, spl, scr — in all of these, each letter earns its sound. Stretch 'splash': /s/ /p/ /l/… every sound is there. Blends never need memorizing; they need careful ears.</p></div><div class="card"><h3>Silents: little ghosts</h3><p>Hundreds of years ago, people really said the k in knee and the w in write. Speech moved on; spelling stayed. So the silent letters are ghosts of old pronunciations — invisible to your ears, required by your pencil.</p></div><div class="card"><h3>The ghost families</h3><p>KN- says /n/: knee, knight, knock, know. WR- says /r/: write, wrist, wrong. -MB says /m/: climb, thumb, lamb, comb. Learn them as families and one memory covers a dozen words.</p></div><div class="card"><h3>Which is it?</h3><p>Hear /n/ at the start? It might be N or KN. Hear /r/? Maybe WR. The meaning helps: writing words take WR (write, wrote); knowing-and-body words often take KN (know, knee, knuckle). At the bee, the definition question is your friend.</p></div></div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 8</span></div></div>
+    
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 8</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Blends &amp; Silent Letters — kn, wr, mb</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">knight</span><span class="say">/ NYT /</span>
       <div class="d">a warrior in armor who served a king</div><div class="h">💡 Silent k, silent gh — six letters, three sounds.</div><div class="line"></div></div><div class="wd"><span class="w">knee</span><span class="say">/ NEE /</span>
       <div class="d">the joint in the middle of your leg</div><div class="h">💡 KN family — the k is a ghost from old English.</div><div class="line"></div></div><div class="wd"><span class="w">knock</span><span class="say">/ NOK /</span>
@@ -368,20 +530,36 @@
       <div class="d">to go up using your hands and feet</div><div class="h">💡 -MB family — the b is silent: clim(b).</div><div class="line"></div></div><div class="wd"><span class="w">lamb</span><span class="say">/ LAM /</span>
       <div class="d">a young sheep</div><div class="h">💡 Silent b: lam(b), like thumb and comb.</div><div class="line"></div></div><div class="wd"><span class="w">ghost</span><span class="say">/ GOHST /</span>
       <div class="d">the spirit of a dead person in stories</div><div class="h">💡 GH up front is not silent here — /g/ + host.</div><div class="line"></div></div></div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 8 practice</span></div></div>
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 8 practice</span></div></div>
 <div class="pg">
       <div class="kicker">Rapid round · Blends &amp; Silent Letters — kn, wr, mb</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
-      <div class="rr"><div><b>strong</b> <span style="color:#8b83a3;font-size:8.4pt">/ STRONG /</span><br>having great power; not weak</div><div><b>island</b> <span style="color:#8b83a3;font-size:8.4pt">/ EYE-lund /</span><br>land with water all around it</div></div>
-      <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 8 extras</span></div></div>
+      <h2 style="font-size:16pt;margin:.04in 0 .14in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>strong</b> <span style="color:var(--muted);font-size:8.2pt">/ STRONG /</span><br>having great power; not weak</div><div><b>island</b> <span style="color:var(--muted);font-size:8.2pt">/ EYE-lund /</span><br>land with water all around it</div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 8 extras</span></div></div>
+<div class="pg">
+      <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="hp-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#F2B95A"/><stop offset="1" stop-color="#C8791B"/></radialGradient></defs>
+<path d="M26 52 q-7 5 -7 13 q0 8 7 12 q-3 30 34 30 q37 0 34 -30 q7 -4 7 -12 q0 -8 -7 -13 z" fill="url(#hp-g)"/>
+<path d="M26 52 q0 -14 34 -14 q34 0 34 14 q0 8 -34 8 q-34 0 -34 -8 z" fill="#FFCC5C"/>
+<path d="M44 44 q-2 12 3 16 q5 -3 2 -16 z" fill="#FFCC5C"/>
+<path d="M60 30 q-3 8 0 14 q6 -2 4 -12 q-1 -5 -4 -2 z" fill="#F2B95A"/>
+<ellipse cx="38" cy="102" rx="7" ry="5" fill="#A85F12"/><ellipse cx="82" cy="102" rx="7" ry="5" fill="#A85F12"/>
+<circle cx="46" cy="72" r="10" fill="#fff"/><circle cx="48" cy="74" r="5" fill="#2B1B5E"/><circle cx="46.5" cy="72.5" r="1.8" fill="#fff"/>
+<circle cx="74" cy="72" r="10" fill="#fff"/><circle cx="76" cy="74" r="5" fill="#2B1B5E"/><circle cx="74.5" cy="72.5" r="1.8" fill="#fff"/>
+<ellipse cx="34" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/><ellipse cx="86" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/>
+<path d="M52 86 q8 8 16 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg>
+        <div><div class="kicker">Honeypot's puzzle page · Blends &amp; Silent Letters — kn, wr, mb</div>
+        <h2 style="font-size:16pt">Word search</h2></div></div>
+      <table class="ws"><tr><td>K</td><td>C</td><td>K</td><td>O</td><td>V</td><td>H</td><td>D</td><td>D</td><td>B</td><td>F</td><td>T</td><td>N</td><td>U</td></tr><tr><td>P</td><td>X</td><td>N</td><td>S</td><td>T</td><td>T</td><td>M</td><td>V</td><td>R</td><td>F</td><td>O</td><td>G</td><td>H</td></tr><tr><td>W</td><td>U</td><td>I</td><td>Y</td><td>S</td><td>Z</td><td>S</td><td>J</td><td>C</td><td>W</td><td>N</td><td>P</td><td>G</td></tr><tr><td>A</td><td>R</td><td>G</td><td>L</td><td>O</td><td>D</td><td>H</td><td>I</td><td>R</td><td>O</td><td>M</td><td>M</td><td>F</td></tr><tr><td>N</td><td>I</td><td>H</td><td>I</td><td>H</td><td>U</td><td>Y</td><td>I</td><td>R</td><td>D</td><td>I</td><td>A</td><td>T</td></tr><tr><td>K</td><td>D</td><td>T</td><td>Q</td><td>G</td><td>R</td><td>T</td><td>T</td><td>A</td><td>W</td><td>Q</td><td>N</td><td>D</td></tr><tr><td>N</td><td>D</td><td>X</td><td>T</td><td>R</td><td>E</td><td>S</td><td>S</td><td>C</td><td>L</td><td>I</td><td>C</td><td>N</td></tr><tr><td>E</td><td>P</td><td>X</td><td>V</td><td>N</td><td>T</td><td>H</td><td>J</td><td>I</td><td>M</td><td>N</td><td>B</td><td>A</td></tr><tr><td>E</td><td>A</td><td>D</td><td>W</td><td>G</td><td>R</td><td>K</td><td>Z</td><td>L</td><td>Y</td><td>U</td><td>G</td><td>L</td></tr><tr><td>N</td><td>N</td><td>R</td><td>V</td><td>Z</td><td>B</td><td>M</td><td>A</td><td>L</td><td>N</td><td>X</td><td>L</td><td>S</td></tr><tr><td>G</td><td>H</td><td>I</td><td>A</td><td>Q</td><td>U</td><td>F</td><td>J</td><td>O</td><td>G</td><td>R</td><td>O</td><td>I</td></tr><tr><td>C</td><td>L</td><td>I</td><td>M</td><td>B</td><td>O</td><td>S</td><td>K</td><td>C</td><td>O</td><td>N</td><td>K</td><td>B</td></tr><tr><td>K</td><td>G</td><td>I</td><td>C</td><td>T</td><td>D</td><td>A</td><td>K</td><td>B</td><td>C</td><td>Z</td><td>D</td><td>B</td></tr></table>
+  <div class="wsl"><span class="chip">knight</span><span class="chip">knee</span><span class="chip">knock</span><span class="chip">write</span><span class="chip">wrist</span><span class="chip">climb</span><span class="chip">lamb</span><span class="chip">ghost</span><span class="chip">strong</span><span class="chip">island</span></div><p style="text-align:center;font-size:8.6pt;color:var(--muted);margin-top:.08in">Words run in every direction — even backwards.</p><div class="bb"><span class="bbi">💬</span><div><div class="bbl">Bee Break · someone said it better</div><div class="bbb">“When it comes to life the critical thing is whether you take things for granted or take them with gratitude.”</div><div class="bbt">— G. K. Chesterton, English writer</div></div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 8 game</span></div></div>
 <div class="pg dense">
-    <div style="display:flex;align-items:center;gap:.16in">
+    <div style="display:flex;align-items:center;gap:.14in">
       <span class="badge">9</span>
       <div><div class="kicker">Spelling Bee Basics</div>
-      <h2 style="font-size:20pt;line-height:1.08">Stress — find the loud beat</h2></div></div>
-    <div class="kicker" style="margin-top:.2in">The big idea</div>
+      <h2 style="font-size:19pt;line-height:1.08">Stress — find the loud beat</h2></div></div>
+    <div class="kicker" style="margin-top:.16in">The big idea</div>
     <div class="concept">Every word with two or more beats has one beat that shouts: ba-NA-na, to-MOR-row, va-CA-tion. Stressed syllables are spelled the way they sound; the quiet ones are where letters hide. Find the loud beat first — then guard the quiet ones.</div>
-    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>DELICIOUS</b></div>
+    <div class="kicker" style="margin-top:.08in">The pro move</div><div class="method"><div class='trick'><b>DELICIOUS</b></div>
 <b>Say it.</b> dih-LIH-shus
 <b>Spell it.</b> D · E · L · I · C · I · O · U · S
 <b>Say it again.</b> dih-LIH-shus
@@ -391,10 +569,11 @@
 <b>Origin.</b> Latin
 <b>Root.</b> Latin deliciae = delight</div>
     <div class="cards"><div class="card"><h3>The Core</h3><p>Say 'banana' three ways: BA-na-na, ba-NA-na, ba-na-NA. Only one sounds right — the middle one. That loud beat is the STRESS, and every long word has exactly one main stress. Your ears already know where it is.</p></div><div class="card"><h3>Find it fast</h3><p>Call the word like you’re shouting it across a playground — the syllable you naturally lean on is the stress. Or hum the word: the loudest hum is the stressed beat. va-CA-tion. to-MA-to. mu-SE-um.</p></div><div class="card"><h3>Loud beats are honest</h3><p>Stressed syllables say their vowels clearly: the CA in vacation is a clean long a; the MOR in tomorrow is a clear or. Whatever you hear in the loud beat, you can trust — spell it exactly as it sounds.</p></div><div class="card"><h3>Quiet beats tell lies</h3><p>Unstressed syllables get mumbled — the first a in 'banana' and the last two sound like lazy 'uh'. That mumble is where spellers slip. Rule: trust the loud beat, double-check every quiet one. (The mumble has a name — meet the schwa, next concept.)</p></div><div class="card"><h3>Stress can move</h3><p>In word families the stress hops around: PHO-to, pho-TOG-ra-phy. When it hops, hidden vowels come out to speak. Can’t hear a vowel in one word? Say its relative — the same letters get loud somewhere else.</p></div></div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 9</span></div></div>
+    
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 9</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Stress — find the loud beat</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">delicious</span><span class="say">/ dih-LIH-shus /</span>
       <div class="d">tasting extremely good</div><div class="h">💡 Stress on LI — the quiet -cious tail hides five letters.</div><div class="line"></div></div><div class="wd"><span class="w">banana</span><span class="say">/ buh-NAN-uh /</span>
       <div class="d">a long curved yellow fruit</div><div class="h">💡 Only the middle NA is loud — the other two a’s mumble.</div><div class="line"></div></div><div class="wd"><span class="w">tomato</span><span class="say">/ tuh-MAY-toh /</span>
@@ -404,20 +583,38 @@
       <div class="d">the day after today</div><div class="h">💡 Stress on MOR — one m in the quiet start, two r’s at the loud middle.</div><div class="line"></div></div><div class="wd"><span class="w">museum</span><span class="say">/ myoo-ZEE-um /</span>
       <div class="d">a building where interesting objects are shown</div><div class="h">💡 mu-SE-um — the loud ZEE is a plain SE.</div><div class="line"></div></div><div class="wd"><span class="w">eleven</span><span class="say">/ ih-LEV-un /</span>
       <div class="d">the number after ten</div><div class="h">💡 e-LEV-en — trust the loud LEV; the ends mumble.</div><div class="line"></div></div></div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 9 practice</span></div></div>
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 9 practice</span></div></div>
 <div class="pg">
       <div class="kicker">Rapid round · Stress — find the loud beat</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
-      <div class="rr"><div><b>gorilla</b> <span style="color:#8b83a3;font-size:8.4pt">/ guh-RIL-uh /</span><br>the largest kind of ape</div><div><b>important</b> <span style="color:#8b83a3;font-size:8.4pt">/ im-POR-tunt /</span><br>mattering a lot</div></div>
-      <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 9 extras</span></div></div>
+      <h2 style="font-size:16pt;margin:.04in 0 .14in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>gorilla</b> <span style="color:var(--muted);font-size:8.2pt">/ guh-RIL-uh /</span><br>the largest kind of ape</div><div><b>important</b> <span style="color:var(--muted);font-size:8.2pt">/ im-POR-tunt /</span><br>mattering a lot</div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 9 extras</span></div></div>
+<div class="pg">
+      <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="hp-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#F2B95A"/><stop offset="1" stop-color="#C8791B"/></radialGradient></defs>
+<path d="M26 52 q-7 5 -7 13 q0 8 7 12 q-3 30 34 30 q37 0 34 -30 q7 -4 7 -12 q0 -8 -7 -13 z" fill="url(#hp-g)"/>
+<path d="M26 52 q0 -14 34 -14 q34 0 34 14 q0 8 -34 8 q-34 0 -34 -8 z" fill="#FFCC5C"/>
+<path d="M44 44 q-2 12 3 16 q5 -3 2 -16 z" fill="#FFCC5C"/>
+<path d="M60 30 q-3 8 0 14 q6 -2 4 -12 q-1 -5 -4 -2 z" fill="#F2B95A"/>
+<ellipse cx="38" cy="102" rx="7" ry="5" fill="#A85F12"/><ellipse cx="82" cy="102" rx="7" ry="5" fill="#A85F12"/>
+<circle cx="46" cy="72" r="10" fill="#fff"/><circle cx="48" cy="74" r="5" fill="#2B1B5E"/><circle cx="46.5" cy="72.5" r="1.8" fill="#fff"/>
+<circle cx="74" cy="72" r="10" fill="#fff"/><circle cx="76" cy="74" r="5" fill="#2B1B5E"/><circle cx="74.5" cy="72.5" r="1.8" fill="#fff"/>
+<ellipse cx="34" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/><ellipse cx="86" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/>
+<path d="M52 86 q8 8 16 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg>
+        <div><div class="kicker">Honeypot's puzzle page · Stress — find the loud beat</div>
+        <h2 style="font-size:16pt">Scramble & rescue</h2></div></div>
+      <div class="gtwo"><div><div class="kicker" style="margin-bottom:.08in">Unscramble</div>
+      <div class="g1" style="margin-bottom:.09in"><span class="gw">ttoaop</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">worormto</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">aananb</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">natortpim</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">iecoisuld</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">levene</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">tnoaavic</span><div class="gl"></div></div></div>
+      <div><div class="kicker" style="margin-bottom:.08in">Rescue the vowels</div>
+      <div class="g1" style="margin-bottom:.09in"><span class="gw">p_t_t_</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">g_r_ll_</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">b_n_n_</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">t_m_t_</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">_mp_rt_nt</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">t_m_rr_w</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">v_c_t__n</span><div class="gl"></div></div></div></div><div class="bb"><span class="bbi">✨</span><div><div class="bbl">Bee Break · simile of the page</div><div class="bbb"><b>as red as a beet</b></div><div class="bbt">flushed deep red (from embarrassment)</div></div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 9 game</span></div></div>
 <div class="pg dense">
-    <div style="display:flex;align-items:center;gap:.16in">
+    <div style="display:flex;align-items:center;gap:.14in">
       <span class="badge">10</span>
       <div><div class="kicker">Spelling Bee Basics</div>
-      <h2 style="font-size:20pt;line-height:1.08">The Sneaky Schwa — the mumbled uh</h2></div></div>
-    <div class="kicker" style="margin-top:.2in">The big idea</div>
+      <h2 style="font-size:19pt;line-height:1.08">The Sneaky Schwa — the mumbled uh</h2></div></div>
+    <div class="kicker" style="margin-top:.16in">The big idea</div>
     <div class="concept">In quiet syllables, English mumbles every vowel into the same lazy 'uh': the a in about, the o in lemon, the i in pencil. That mumble is the schwa — the #1 spelling trap in the language, because ANY vowel letter can hide behind it.</div>
-    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>CHOCOLATE</b></div>
+    <div class="kicker" style="margin-top:.08in">The pro move</div><div class="method"><div class='trick'><b>CHOCOLATE</b></div>
 <b>Say it.</b> CHOK-lut
 <b>Spell it.</b> C · H · O · C · O · L · A · T · E
 <b>Say it again.</b> CHOK-lut
@@ -427,10 +624,11 @@
 <b>Origin.</b> Spanish, from Nahuatl
 <b>Root.</b> Nahuatl xocolatl = bitter water</div>
     <div class="cards"><div class="card"><h3>The Core</h3><p>Say 'about'. That first sound is not a clean /a/ — it’s a lazy 'uh'. Say 'lemon' — the o mumbles to 'uh' too. Same mumble, different letters! This shy little sound is the SCHWA, and it lives in almost every long English word.</p></div><div class="card"><h3>Why it is dangerous</h3><p>The schwa erases the clue. If you hear 'uh', the letter could be A (about), E (taken), I (pencil), O (lemon), or U (circus). Your ears alone cannot pick — which is exactly why quiet syllables cause most misspellings.</p></div><div class="card"><h3>Trick 1: robot voice</h3><p>Say the word the way it is SPELLED, like a robot: choc-O-late. sep-A-rate. def-I-nite. Champions call this spelling pronunciation. Store the robot voice in your head, and the hidden letter is never hidden again.</p></div><div class="card"><h3>Trick 2: call a relative</h3><p>Can’t hear the vowel in defin_tion? Call its relative: deFINE — there’s the i, loud and clear. Family words share letters, and the stress moves around the family, so some relative usually shouts the vowel you need.</p></div><div class="card"><h3>Schwa radar</h3><p>Before spelling a long word, mark the quiet beats — that’s where schwas hide. Loud beats: trust your ears. Quiet beats: use robot voice, call a relative, or ask for the word’s origin. Radar on, trap disarmed.</p></div></div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 10</span></div></div>
+    
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 10</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · The Sneaky Schwa — the mumbled uh</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">chocolate</span><span class="say">/ CHOK-lut /</span>
       <div class="d">a sweet food made from cacao beans</div><div class="h">💡 Robot voice: choc-O-LATE — the middle o and the a-e are mumbled.</div><div class="line"></div></div><div class="wd"><span class="w">about</span><span class="say">/ uh-BOWT /</span>
       <div class="d">concerning; on the subject of</div><div class="h">💡 The opening ‘uh’ is the letter A — a-bout.</div><div class="line"></div></div><div class="wd"><span class="w">lemon</span><span class="say">/ LEM-un /</span>
@@ -440,20 +638,37 @@
       <div class="d">a device for taking photographs</div><div class="h">💡 Robot voice: cam-E-ra — a hidden e lives in the middle.</div><div class="line"></div></div><div class="wd"><span class="w">animal</span><span class="say">/ AN-ih-mul /</span>
       <div class="d">a living creature that can move on its own</div><div class="h">💡 an-i-MAL — the last a mumbles; robot voice saves it.</div><div class="line"></div></div><div class="wd"><span class="w">purpose</span><span class="say">/ PUR-pus /</span>
       <div class="d">the reason something is done</div><div class="h">💡 pur-POSE — the quiet o hides in -pose.</div><div class="line"></div></div></div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 10 practice</span></div></div>
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 10 practice</span></div></div>
 <div class="pg">
       <div class="kicker">Rapid round · The Sneaky Schwa — the mumbled uh</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
-      <div class="rr"><div><b>magazine</b> <span style="color:#8b83a3;font-size:8.4pt">/ mag-uh-ZEEN /</span><br>a thin book with articles and pictures, published regularly</div><div><b>definition</b> <span style="color:#8b83a3;font-size:8.4pt">/ def-uh-NIH-shun /</span><br>the meaning of a word</div></div>
-      <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 10 extras</span></div></div>
+      <h2 style="font-size:16pt;margin:.04in 0 .14in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>magazine</b> <span style="color:var(--muted);font-size:8.2pt">/ mag-uh-ZEEN /</span><br>a thin book with articles and pictures, published regularly</div><div><b>definition</b> <span style="color:var(--muted);font-size:8.2pt">/ def-uh-NIH-shun /</span><br>the meaning of a word</div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 10 extras</span></div></div>
+<div class="pg">
+      <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="hp-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#F2B95A"/><stop offset="1" stop-color="#C8791B"/></radialGradient></defs>
+<path d="M26 52 q-7 5 -7 13 q0 8 7 12 q-3 30 34 30 q37 0 34 -30 q7 -4 7 -12 q0 -8 -7 -13 z" fill="url(#hp-g)"/>
+<path d="M26 52 q0 -14 34 -14 q34 0 34 14 q0 8 -34 8 q-34 0 -34 -8 z" fill="#FFCC5C"/>
+<path d="M44 44 q-2 12 3 16 q5 -3 2 -16 z" fill="#FFCC5C"/>
+<path d="M60 30 q-3 8 0 14 q6 -2 4 -12 q-1 -5 -4 -2 z" fill="#F2B95A"/>
+<ellipse cx="38" cy="102" rx="7" ry="5" fill="#A85F12"/><ellipse cx="82" cy="102" rx="7" ry="5" fill="#A85F12"/>
+<circle cx="46" cy="72" r="10" fill="#fff"/><circle cx="48" cy="74" r="5" fill="#2B1B5E"/><circle cx="46.5" cy="72.5" r="1.8" fill="#fff"/>
+<circle cx="74" cy="72" r="10" fill="#fff"/><circle cx="76" cy="74" r="5" fill="#2B1B5E"/><circle cx="74.5" cy="72.5" r="1.8" fill="#fff"/>
+<ellipse cx="34" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/><ellipse cx="86" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/>
+<path d="M52 86 q8 8 16 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg>
+        <div><div class="kicker">Honeypot's puzzle page · The Sneaky Schwa — the mumbled uh</div>
+        <h2 style="font-size:16pt">Crossword</h2></div></div>
+      <div class="cwwrap"><table class="cw"><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>1</i></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>2</i></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"><i>3</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwc"><i>4</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>5</i></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>6</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>7</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>8</i></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>9</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>10</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr></table></div>
+    <div class="clues"><div><div class="clueh">Across</div><div><b>3.</b> a device for taking photographs</div><div><b>4.</b> a sour yellow fruit</div><div><b>6.</b> the meaning of a word</div><div><b>7.</b> concerning; on the subject of</div><div><b>9.</b> a living creature that can move on its own</div><div><b>10.</b> a writing tool with a graphite center</div></div>
+    <div><div class="clueh">Down</div><div><b>1.</b> the reason something is done</div><div><b>2.</b> a thin book with articles and pictures, published regularly</div><div><b>5.</b> a sweet food made from cacao beans</div><div><b>8.</b> a four-wheeled cart pulled by hand or horses</div></div></div><div class="bb"><span class="bbi">🎈</span><div><div class="bbl">Bee Break · idiom to drop at dinner</div><div class="bbb"><b>a shot across the bow</b></div><div class="bbt">a warning before serious action is taken</div></div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 10 game</span></div></div>
 <div class="pg dense">
-    <div style="display:flex;align-items:center;gap:.16in">
+    <div style="display:flex;align-items:center;gap:.14in">
       <span class="badge">11</span>
       <div><div class="kicker">Spelling Bee Basics</div>
-      <h2 style="font-size:20pt;line-height:1.08">Ask the Right Questions — be a word detective</h2></div></div>
-    <div class="kicker" style="margin-top:.2in">The big idea</div>
+      <h2 style="font-size:19pt;line-height:1.08">Ask the Right Questions — be a word detective</h2></div></div>
+    <div class="kicker" style="margin-top:.16in">The big idea</div>
     <div class="concept">At the bee you may ask: the definition, the language of origin, the part of speech, the sentence, and other pronunciations. Each answer is a clue — French origin hints at -eau and ch=/sh/; the sentence separates flour from flower. Champions never spell blind.</div>
-    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>BOUQUET</b></div>
+    <div class="kicker" style="margin-top:.08in">The pro move</div><div class="method"><div class='trick'><b>BOUQUET</b></div>
 <b>Say it.</b> boo-KAY
 <b>Spell it.</b> B · O · U · Q · U · E · T
 <b>Say it again.</b> boo-KAY
@@ -463,10 +678,11 @@
 <b>Origin.</b> French
 <b>Root.</b> French bosquet = little wood, bunch</div>
     <div class="cards"><div class="card"><h3>The Core</h3><p>On stage you are a detective, and questions are free. 'May I have the definition? The language of origin? The part of speech? Could you use it in a sentence? Are there alternate pronunciations?' Every answer narrows down the spelling.</p></div><div class="card"><h3>Origin is the master clue</h3><p>French words love silent endings and soft sounds: ballet, bouquet, machine. Greek words use ph, y, and ch=/k/: photo, gym, chorus. Spanish brings canyon and tornado; Japanese brings karate. Hear the origin, predict the letters.</p></div><div class="card"><h3>The sentence saves you</h3><p>Hear /FLOW-er/ — is it flour or flower? You cannot know until the sentence: 'The baker sifted the ___.' Homophones sound identical, so the sentence question is not politeness — it is the only way to pick the right word.</p></div><div class="card"><h3>Definition &amp; part of speech</h3><p>The definition connects the word to relatives you can already spell ('it means to see ahead' → fore-, like forecast). The part of speech picks endings: the noun is 'practice', and in many spellings the verb is 'practise' — small grammar, real letters.</p></div><div class="card"><h3>Alternate pronunciations</h3><p>Some words are said two ways — and the second way often reveals a hidden vowel or letter the first way mumbles. It costs nothing to ask. Detectives collect every clue before they write a single letter.</p></div></div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 11</span></div></div>
+    
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 11</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Ask the Right Questions — be a word detective</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">bouquet</span><span class="say">/ boo-KAY /</span>
       <div class="d">a bunch of flowers arranged nicely</div><div class="h">💡 French: silent-t ending -QUET says /kay/.</div><div class="line"></div></div><div class="wd"><span class="w">ballet</span><span class="say">/ ba-LAY /</span>
       <div class="d">a graceful kind of dance that tells a story</div><div class="h">💡 French: the final /ay/ is -ET with a silent t.</div><div class="line"></div></div><div class="wd"><span class="w">chorus</span><span class="say">/ KOR-us /</span>
@@ -476,33 +692,52 @@
       <div class="d">simple, with nothing added; flat open land</div><div class="h">💡 Homophone of plane — ask for a sentence!</div><div class="line"></div></div><div class="wd"><span class="w">canyon</span><span class="say">/ KAN-yun /</span>
       <div class="d">a deep valley with steep rocky sides</div><div class="h">💡 Spanish: the /ny/ sound is spelled NY — can-yon.</div><div class="line"></div></div><div class="wd"><span class="w">karate</span><span class="say">/ kuh-RAH-tee /</span>
       <div class="d">a Japanese way of fighting using hands and feet</div><div class="h">💡 Japanese: every vowel is said — ka-ra-te ends in a clean e.</div><div class="line"></div></div></div>
-    <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 11 practice</span></div></div>
+    <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 11 practice</span></div></div>
 <div class="pg">
       <div class="kicker">Rapid round · Ask the Right Questions — be a word detective</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
-      <div class="rr"><div><b>waffle</b> <span style="color:#8b83a3;font-size:8.4pt">/ WAH-ful /</span><br>a crisp breakfast cake with a grid of squares</div><div><b>suite</b> <span style="color:#8b83a3;font-size:8.4pt">/ SWEET /</span><br>a set of connected rooms; a matching set</div></div>
-      <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>Chapter 11 extras</span></div></div>
+      <h2 style="font-size:16pt;margin:.04in 0 .14in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>waffle</b> <span style="color:var(--muted);font-size:8.2pt">/ WAH-ful /</span><br>a crisp breakfast cake with a grid of squares</div><div><b>suite</b> <span style="color:var(--muted);font-size:8.2pt">/ SWEET /</span><br>a set of connected rooms; a matching set</div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 11 extras</span></div></div>
+<div class="pg">
+      <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="hp-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#F2B95A"/><stop offset="1" stop-color="#C8791B"/></radialGradient></defs>
+<path d="M26 52 q-7 5 -7 13 q0 8 7 12 q-3 30 34 30 q37 0 34 -30 q7 -4 7 -12 q0 -8 -7 -13 z" fill="url(#hp-g)"/>
+<path d="M26 52 q0 -14 34 -14 q34 0 34 14 q0 8 -34 8 q-34 0 -34 -8 z" fill="#FFCC5C"/>
+<path d="M44 44 q-2 12 3 16 q5 -3 2 -16 z" fill="#FFCC5C"/>
+<path d="M60 30 q-3 8 0 14 q6 -2 4 -12 q-1 -5 -4 -2 z" fill="#F2B95A"/>
+<ellipse cx="38" cy="102" rx="7" ry="5" fill="#A85F12"/><ellipse cx="82" cy="102" rx="7" ry="5" fill="#A85F12"/>
+<circle cx="46" cy="72" r="10" fill="#fff"/><circle cx="48" cy="74" r="5" fill="#2B1B5E"/><circle cx="46.5" cy="72.5" r="1.8" fill="#fff"/>
+<circle cx="74" cy="72" r="10" fill="#fff"/><circle cx="76" cy="74" r="5" fill="#2B1B5E"/><circle cx="74.5" cy="72.5" r="1.8" fill="#fff"/>
+<ellipse cx="34" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/><ellipse cx="86" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/>
+<path d="M52 86 q8 8 16 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg>
+        <div><div class="kicker">Honeypot's puzzle page · Ask the Right Questions — be a word detective</div>
+        <h2 style="font-size:16pt">Word search</h2></div></div>
+      <table class="ws"><tr><td>H</td><td>Z</td><td>F</td><td>T</td><td>T</td><td>E</td><td>U</td><td>Q</td><td>U</td><td>O</td><td>B</td><td>L</td><td>U</td></tr><tr><td>P</td><td>E</td><td>T</td><td>I</td><td>U</td><td>S</td><td>C</td><td>A</td><td>Y</td><td>R</td><td>B</td><td>U</td><td>E</td></tr><tr><td>O</td><td>K</td><td>T</td><td>T</td><td>E</td><td>L</td><td>L</td><td>A</td><td>B</td><td>I</td><td>D</td><td>Y</td><td>L</td></tr><tr><td>U</td><td>H</td><td>V</td><td>K</td><td>Q</td><td>U</td><td>U</td><td>W</td><td>N</td><td>S</td><td>B</td><td>C</td><td>F</td></tr><tr><td>E</td><td>V</td><td>C</td><td>R</td><td>U</td><td>O</td><td>L</td><td>F</td><td>U</td><td>Y</td><td>C</td><td>G</td><td>F</td></tr><tr><td>K</td><td>M</td><td>I</td><td>E</td><td>A</td><td>E</td><td>G</td><td>R</td><td>N</td><td>B</td><td>O</td><td>H</td><td>A</td></tr><tr><td>W</td><td>I</td><td>V</td><td>A</td><td>P</td><td>C</td><td>O</td><td>R</td><td>F</td><td>W</td><td>I</td><td>N</td><td>W</td></tr><tr><td>O</td><td>K</td><td>U</td><td>A</td><td>N</td><td>H</td><td>A</td><td>L</td><td>C</td><td>Z</td><td>D</td><td>E</td><td>D</td></tr><tr><td>E</td><td>F</td><td>B</td><td>N</td><td>C</td><td>I</td><td>B</td><td>U</td><td>H</td><td>O</td><td>W</td><td>N</td><td>O</td></tr><tr><td>M</td><td>D</td><td>L</td><td>D</td><td>Q</td><td>T</td><td>A</td><td>N</td><td>V</td><td>D</td><td>S</td><td>Q</td><td>M</td></tr><tr><td>I</td><td>A</td><td>A</td><td>V</td><td>G</td><td>X</td><td>O</td><td>L</td><td>M</td><td>E</td><td>Q</td><td>X</td><td>H</td></tr><tr><td>S</td><td>G</td><td>R</td><td>X</td><td>N</td><td>G</td><td>L</td><td>V</td><td>P</td><td>H</td><td>F</td><td>R</td><td>X</td></tr><tr><td>C</td><td>S</td><td>F</td><td>Z</td><td>W</td><td>K</td><td>A</td><td>R</td><td>A</td><td>T</td><td>E</td><td>V</td><td>D</td></tr></table>
+  <div class="wsl"><span class="chip">bouquet</span><span class="chip">ballet</span><span class="chip">chorus</span><span class="chip">echo</span><span class="chip">flour</span><span class="chip">plain</span><span class="chip">canyon</span><span class="chip">karate</span><span class="chip">waffle</span><span class="chip">suite</span></div><p style="text-align:center;font-size:8.6pt;color:var(--muted);margin-top:.08in">Words run in every direction — even backwards.</p><div class="bb"><span class="bbi">💬</span><div><div class="bbl">Bee Break · someone said it better</div><div class="bbb">“You'll get mixed up, of course, as you already know. You'll get mixed up with many strange birds as you go.”</div><div class="bbt">— Dr. Seuss, author of Oh, the Places You'll Go!</div></div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Chapter 11 game</span></div></div>
 <div class="pg">
       <div class="kicker">The big list 1 of 2</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .18in">Every word in this book. Circle what you own.</h2>
+      <h2 style="font-size:16pt;margin:.04in 0 .16in">Every word in this book. Circle what you own.</h2>
       <div class="biglist"><div><span></span>about</div><div><span></span>alone</div><div><span></span>animal</div><div><span></span>author</div><div><span></span>baby</div><div><span></span>ballet</div><div><span></span>banana</div><div><span></span>basket</div><div><span></span>blend</div><div><span></span>bouquet</div><div><span></span>calendar</div><div><span></span>camera</div><div><span></span>canyon</div><div><span></span>celebrate</div><div><span></span>champion</div><div><span></span>chest</div><div><span></span>chocolate</div><div><span></span>chorus</div><div><span></span>circus</div><div><span></span>city</div><div><span></span>clearly</div><div><span></span>climb</div><div><span></span>clock</div><div><span></span>coast</div><div><span></span>complete</div><div><span></span>confirm</div><div><span></span>costume</div><div><span></span>crayon</div><div><span></span>crisp</div><div><span></span>cycle</div><div><span></span>definition</div><div><span></span>delicious</div><div><span></span>dolphin</div><div><span></span>drift</div><div><span></span>echo</div><div><span></span>eleven</div><div><span></span>escape</div><div><span></span>expect</div><div><span></span>fantastic</div><div><span></span>flour</div><div><span></span>garden</div><div><span></span>gentle</div><div><span></span>ghost</div><div><span></span>giant</div><div><span></span>gorilla</div><div><span></span>grasp</div><div><span></span>guitar</div><div><span></span>gym</div><div><span></span>hospital</div><div><span></span>important</div><div><span></span>invite</div><div><span></span>island</div><div><span></span>karate</div><div><span></span>kitchen</div><div><span></span>knee</div><div><span></span>knight</div><div><span></span>knock</div><div><span></span>lamb</div><div><span></span>lemon</div><div><span></span>magazine</div><div><span></span>microphone</div><div><span></span>mistake</div><div><span></span>monster</div><div><span></span>museum</div><div><span></span>music</div><div><span></span>paint</div><div><span></span>pencil</div><div><span></span>phone</div><div><span></span>plain</div><div><span></span>plant</div><div><span></span>poison</div><div><span></span>potato</div><div><span></span>practice</div><div><span></span>purpose</div><div><span></span>queen</div><div><span></span>quick</div><div><span></span>rabbit</div><div><span></span>rainbow</div><div><span></span>reason</div><div><span></span>remember</div><div><span></span>routine</div><div><span></span>shark</div><div><span></span>sky</div><div><span></span>splash</div><div><span></span>stamp</div><div><span></span>steady</div><div><span></span>strap</div><div><span></span>string</div><div><span></span>strong</div><div><span></span>suite</div><div><span></span>summer</div><div><span></span>sweet</div><div><span></span>thumb</div><div><span></span>together</div><div><span></span>tomato</div><div><span></span>tomorrow</div><div><span></span>trust</div><div><span></span>twist</div><div><span></span>umbrella</div><div><span></span>vacation</div></div>
-      <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>109 words</span></div></div>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>109 words</span></div></div>
 <div class="pg">
       <div class="kicker">The big list 2 of 2</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .18in">Every word in this book. Circle what you own.</h2>
+      <h2 style="font-size:16pt;margin:.04in 0 .16in">Every word in this book. Circle what you own.</h2>
       <div class="biglist"><div><span></span>voyage</div><div><span></span>waffle</div><div><span></span>wagon</div><div><span></span>whale</div><div><span></span>whisper</div><div><span></span>window</div><div><span></span>wonderful</div><div><span></span>wrist</div><div><span></span>write</div></div>
-      <div class="foot"><span>Lift-Off! · Bizzing Bee Press</span><span>109 words</span></div></div>
-<div class="pg" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
-    <svg viewBox="0 0 120 100" class="bee" aria-hidden="true">
-  <ellipse cx="44" cy="34" rx="17" ry="26" fill="#DCEFFF" opacity=".85" transform="rotate(-28 44 34)"/>
-  <ellipse cx="76" cy="34" rx="17" ry="26" fill="#EAF5FF" opacity=".85" transform="rotate(28 76 34)"/>
-  <ellipse cx="60" cy="60" rx="34" ry="27" fill="#FFC93C"/>
-  <path d="M44 37 a34 27 0 0 0 -6 14 l14 0 a1 1 0 0 1 0 -14 z M64 34 l0 53 a34 27 0 0 0 14 -5 l0 -43 a34 27 0 0 0 -14 -5 z" fill="#241E33"/>
-  <circle cx="49" cy="56" r="3.6" fill="#241E33"/>
-  <path d="M45 68 q8 7 16 1" stroke="#241E33" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <path d="M52 34 q-4 -12 -12 -14 M68 34 q4 -12 12 -14" stroke="#241E33" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <circle cx="40" cy="19" r="4" fill="#241E33"/><circle cx="80" cy="19" r="4" fill="#241E33"/>
-</svg>
-    <h2 style="font-size:18pt;margin:.14in 0">You finished a whole book. Bees everywhere are impressed.</h2>
-    <p style="font-size:11pt;max-width:5.4in;margin:0 auto .3in;line-height:1.6">Every word in here is also inside the Bizzing Bee app, with real audio, games and a coach that remembers what you miss. Paper for the muscles, app for the ears.</p>
-    <p style="font-size:8.6pt;color:#8b83a3;max-width:5.8in;margin:0 auto;line-height:1.6">Bizzing Bee Press · an independent study project. Bizzing Bee is not affiliated with, sponsored by, or endorsed by the Scripps National Spelling Bee, the North South Foundation, or Merriam-Webster. Competition names appear only to describe which bees the practice material relates to. Definitions, sentences and hints are written for this project. Typefaces are open-licensed (SIL OFL).</p></div></body></html>
+      <div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>109 words</span></div></div>
+<div class="pg"><div class="kicker">No peeking until you've tried</div>
+      <h2 style="font-size:16pt;margin:.04in 0 .14in">Answer key</h2>
+      <div class="key"><div><b>Ch. 1 crossword</b> — Across: 2 confirm, 3 steady, 6 microphone, 7 remember, 8 clearly, 9 routine · Down: 1 practice, 2 champion, 4 together, 5 important</div><div><b>Ch. 3 scramble</b> — seatmik=mistake, epacse=escape, bayb=baby, lmeocetp=complete, csumi=music, inviet=invite, uctesom=costume · vowels: baby, invite, complete, alone, music, mistake, escape</div><div><b>Ch. 4 crossword</b> — Across: 5 monster, 6 summer, 7 rabbit, 8 fantastic, 9 calendar · Down: 1 umbrella, 2 celebrate, 3 wonderful, 4 basket</div><div><b>Ch. 6 scramble</b> — dhnpoil=dolphin, grsnti=string, ccolk=clock, bmuth=thumb, tncekih=kitchen, poneh=phone, harsk=shark · vowels: thumb, chest, phone, whisper, clock, dolphin, string</div><div><b>Ch. 7 crossword</b> — Across: 4 reason, 6 rainbow, 8 sweet, 10 poison · Down: 1 author, 2 coast, 3 crayon, 5 voyage, 7 window, 9 paint</div><div><b>Ch. 9 scramble</b> — ttoaop=potato, worormto=tomorrow, aananb=banana, natortpim=important, iecoisuld=delicious, levene=eleven, tnoaavic=vacation · vowels: potato, gorilla, banana, tomato, important, tomorrow, vacation</div><div><b>Ch. 10 crossword</b> — Across: 3 camera, 4 lemon, 6 definition, 7 about, 9 animal, 10 pencil · Down: 1 purpose, 2 magazine, 5 chocolate, 8 wagon</div></div><div class="foot"><span>Lift-Off! · Bizzing Bee</span><span>Answers</span></div></div>
+<div class="pg" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
+    <svg viewBox="0 0 120 120" style="width:1.4in;height:1.4in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="hp-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#F2B95A"/><stop offset="1" stop-color="#C8791B"/></radialGradient></defs>
+<path d="M26 52 q-7 5 -7 13 q0 8 7 12 q-3 30 34 30 q37 0 34 -30 q7 -4 7 -12 q0 -8 -7 -13 z" fill="url(#hp-g)"/>
+<path d="M26 52 q0 -14 34 -14 q34 0 34 14 q0 8 -34 8 q-34 0 -34 -8 z" fill="#FFCC5C"/>
+<path d="M44 44 q-2 12 3 16 q5 -3 2 -16 z" fill="#FFCC5C"/>
+<path d="M60 30 q-3 8 0 14 q6 -2 4 -12 q-1 -5 -4 -2 z" fill="#F2B95A"/>
+<ellipse cx="38" cy="102" rx="7" ry="5" fill="#A85F12"/><ellipse cx="82" cy="102" rx="7" ry="5" fill="#A85F12"/>
+<circle cx="46" cy="72" r="10" fill="#fff"/><circle cx="48" cy="74" r="5" fill="#2B1B5E"/><circle cx="46.5" cy="72.5" r="1.8" fill="#fff"/>
+<circle cx="74" cy="72" r="10" fill="#fff"/><circle cx="76" cy="74" r="5" fill="#2B1B5E"/><circle cx="74.5" cy="72.5" r="1.8" fill="#fff"/>
+<ellipse cx="34" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/><ellipse cx="86" cy="84" rx="6" ry="3.5" fill="#FF7FBE" opacity=".85"/>
+<path d="M52 86 q8 8 16 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg>
+    <h2 style="font-size:18pt;margin:.12in 0">Honeypot says: that's a whole book. Respect.</h2>
+    <p style="font-size:10.5pt;max-width:5.4in;margin:0 auto .28in;line-height:1.6">Every word in here also lives in the Bizzing Bee app, with real audio, games and a coach that remembers what you miss. Paper for the muscles, app for the ears.</p>
+    <p style="font-size:8.4pt;color:var(--muted);max-width:5.8in;margin:0 auto;line-height:1.6">Bizzing Bee · an independent study project. Not affiliated with, sponsored by, or endorsed by the Scripps National Spelling Bee, the North South Foundation, or Merriam-Webster. Competition names appear only to describe which bees the practice material relates to. Definitions, sentences and hints are written for this project. Typefaces are open-licensed (SIL OFL).</p></div></body></html>
