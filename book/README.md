@@ -2,7 +2,7 @@
 
 **24 Laws of Leadership for Those Who Wear the Crown** · by Aayush Vishnoi
 
-- `kings-playbook.html` — the full book as a single self-contained scrollable page (embedded fonts, no external requests). Open in any browser; use the floating **☰ The Laws** button to jump between laws.
+- `kings-playbook.html` — the book as a **PDF-style pager**: opens as fixed 6in×9.6in sheets on a dark backdrop (paginated in-browser via Paged.js), every page shown in full with page numbers, a zoom toolbar (−/+, Fit width, Fit page), pinch-zoom on mobile, and the ☰ law navigator. Identical page layout on every device. Append `?nopaged` to read as a plain scrolling document instead.
 - `kings-playbook.pdf` — print edition, 6in × 9.6in, 282 pages, generated from the HTML.
 
 ## What this edition contains
