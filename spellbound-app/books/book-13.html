@@ -1,0 +1,419 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Letters Behaving Badly — Bizzing Bee Advanced Library Vol. 13</title>
+<style>
+  @font-face{font-family:'Baloo 2';src:url('../fonts/baloo2-800.woff2') format('woff2');font-weight:800}
+  @font-face{font-family:'Fredoka';src:url('../fonts/fredoka-600.woff2') format('woff2');font-weight:600}
+  @font-face{font-family:'Hanken Grotesk';src:url('../fonts/hanken-var.woff2') format('woff2');font-weight:100 900}
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--ink:#241E33;--paper:#FFFDF6;--c:#B8322A;--c2:#7E1E18;--tint:color-mix(in srgb,#B8322A 12%,white)}
+  html{background:#e9e4f5}
+  body{font-family:'Hanken Grotesk',sans-serif;color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  @page{size:8.5in 11in;margin:0}
+  .pg{width:8.5in;height:11in;background:var(--paper);position:relative;overflow:hidden;padding:.62in .66in;page-break-after:always;break-after:page}
+  @media screen{.pg{margin:24px auto;box-shadow:0 10px 40px rgba(30,20,60,.18)}}
+  .bee{width:1.1in;height:auto}
+  .hexes{position:absolute;inset:0;width:100%;height:100%;opacity:.5}
+  h1,h2,h3,.disp{font-family:'Baloo 2';font-weight:800}
+  .kicker{font-family:'Fredoka';font-weight:600;font-size:10.5pt;letter-spacing:.14em;text-transform:uppercase;color:var(--c2)}
+  .foot{position:absolute;bottom:.35in;left:.66in;right:.66in;display:flex;justify-content:space-between;font-size:8.5pt;color:#8b83a3;font-weight:600}
+  .badge{display:inline-grid;place-items:center;width:.62in;height:.62in;border-radius:16px;background:var(--c);color:#fff;font-family:'Baloo 2';font-size:17pt}
+  .concept{background:var(--tint);border-left:6px solid var(--c);border-radius:12px;padding:.14in .18in;font-size:10.6pt;line-height:1.5;margin:.12in 0}
+  .method{background:#241E33;color:#FFF7E0;border-radius:14px;padding:.15in .19in;font-size:9.7pt;line-height:1.52;margin:.1in 0}
+  .method b{color:#FFC93C}
+  .method div{margin:3px 0}
+  .method .trick,.method [class]{font-family:'Baloo 2';font-size:12pt;letter-spacing:.05em}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:.11in;margin-top:.12in}
+  .card{background:#fff;border:2px solid var(--c);border-radius:12px;padding:.1in .12in;box-shadow:3px 3px 0 var(--c)}
+  .card:nth-child(even){transform:rotate(.5deg)} .card:nth-child(odd){transform:rotate(-.5deg)}
+  .card h3{font-size:10pt;color:var(--c2);margin-bottom:3px}
+  .card p{font-size:8.7pt;line-height:1.4}
+  .wgrid{display:grid;grid-template-columns:1fr 1fr;gap:.14in}
+  .wd{border:1.5px solid #E4DDF2;border-radius:12px;padding:.12in .14in;background:#fff}
+  .wd .w{font-family:'Baloo 2';font-size:14.5pt;color:var(--c2)}
+  .wd .say{font-family:'Fredoka';font-size:9pt;color:#8b83a3;margin-left:6px}
+  .wd .d{font-size:9pt;line-height:1.4;margin-top:2px}
+  .wd .h{font-size:8.6pt;line-height:1.35;margin-top:4px;color:#5a4d84;background:var(--tint);border-radius:7px;padding:4px 7px}
+  .wd .line{border-bottom:2px dashed #C9BFE6;height:.24in;margin-top:6px}
+  .rr{columns:2;column-gap:.3in;font-size:9.2pt;line-height:1.45}
+  .dense .concept{font-size:9.6pt;line-height:1.42}
+  .dense .method{font-size:8.9pt;line-height:1.45}
+  .dense .card p{font-size:8pt;line-height:1.34} .dense .card h3{font-size:9.2pt}
+  .rr div{break-inside:avoid;padding:3px 0;border-bottom:1px dotted #DDD4F2}
+  .rr b{font-family:'Fredoka';color:var(--c2)}
+  .biglist{columns:4;column-gap:.22in;font-size:8.7pt;line-height:1.62}
+  .biglist div{break-inside:avoid}
+  .biglist span{display:inline-block;width:.14in;height:.14in;border:1.6px solid var(--c);border-radius:50%;margin-right:5px;vertical-align:-2px}
+  </style></head><body><div class="pg" style="background:linear-gradient(160deg,var(--c),var(--c2));color:#fff;display:flex;flex-direction:column;justify-content:space-between">
+    <svg class="hexes" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <defs><pattern id="hx" width="56" height="97" patternUnits="userSpaceOnUse">
+    <path d="M28 0 L56 16 L56 48 L28 64 L0 48 L0 16 Z M28 64 L56 80 L56 97 M28 64 L0 80 L0 97" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="2"/>
+  </pattern></defs><rect width="400" height="400" fill="url(#hx)"/></svg>
+    <div style="position:relative;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-family:'Fredoka';font-weight:600;letter-spacing:.16em;font-size:11pt">BIZZING BEE ADVANCED LIBRARY</span>
+      <span class="disp" style="background:#241E33;padding:.08in .22in;border-radius:999px;font-size:13pt">Vol. 13</span>
+    </div>
+    <div style="position:relative;text-align:center">
+      <svg viewBox="0 0 120 100" class="bee" aria-hidden="true">
+  <ellipse cx="44" cy="34" rx="17" ry="26" fill="#DCEFFF" opacity=".85" transform="rotate(-28 44 34)"/>
+  <ellipse cx="76" cy="34" rx="17" ry="26" fill="#EAF5FF" opacity=".85" transform="rotate(28 76 34)"/>
+  <ellipse cx="60" cy="60" rx="34" ry="27" fill="#FFC93C"/>
+  <path d="M44 37 a34 27 0 0 0 -6 14 l14 0 a1 1 0 0 1 0 -14 z M64 34 l0 53 a34 27 0 0 0 14 -5 l0 -43 a34 27 0 0 0 -14 -5 z" fill="#241E33"/>
+  <circle cx="49" cy="56" r="3.6" fill="#241E33"/>
+  <path d="M45 68 q8 7 16 1" stroke="#241E33" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M52 34 q-4 -12 -12 -14 M68 34 q4 -12 12 -14" stroke="#241E33" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <circle cx="40" cy="19" r="4" fill="#241E33"/><circle cx="80" cy="19" r="4" fill="#241E33"/>
+</svg>
+      <h1 style="font-size:46pt;line-height:1.02;margin:.2in 0 .12in;text-shadow:0 3px 0 rgba(0,0,0,.18)">Letters Behaving Badly</h1>
+      <p style="font-family:'Fredoka';font-size:14pt;max-width:5.6in;margin:0 auto">Doubles, silents and sounds that lie</p>
+    </div>
+    <div style="position:relative;display:flex;gap:.16in;justify-content:center">
+      <div style="background:rgba(0,0,0,.22);border-radius:14px;padding:.14in .3in;text-align:center"><div class="disp" style="font-size:19pt">7</div><div style="font-family:'Fredoka';font-size:9.5pt">expert chapters</div></div><div style="background:rgba(0,0,0,.22);border-radius:14px;padding:.14in .3in;text-align:center"><div class="disp" style="font-size:19pt">127</div><div style="font-family:'Fredoka';font-size:9.5pt">practice words</div></div><div style="background:rgba(0,0,0,.22);border-radius:14px;padding:.14in .3in;text-align:center"><div class="disp" style="font-size:19pt">✏️</div><div style="font-family:'Fredoka';font-size:9.5pt">write-in pages</div></div>
+    </div></div>
+<div class="pg">
+    <div class="kicker">How this book works</div>
+    <h1 style="font-size:26pt;margin:.08in 0 .2in">Five moves, no fluff.</h1>
+    <div style="display:flex;gap:.18in;margin-bottom:.22in;align-items:flex-start">
+      <span class="badge">1</span>
+      <div><h3 style="font-size:13.5pt;color:var(--c2)">Read the Big Idea</h3><p style="font-size:11pt;line-height:1.55;max-width:5.6in">Every chapter starts with one idea that explains a whole family of words. Read it out loud. Twice is better.</p></div></div><div style="display:flex;gap:.18in;margin-bottom:.22in;align-items:flex-start">
+      <span class="badge">2</span>
+      <div><h3 style="font-size:13.5pt;color:var(--c2)">Steal the pro move</h3><p style="font-size:11pt;line-height:1.55;max-width:5.6in">The dark box is how a champion actually thinks on stage. It works on words you have never seen.</p></div></div><div style="display:flex;gap:.18in;margin-bottom:.22in;align-items:flex-start">
+      <span class="badge">3</span>
+      <div><h3 style="font-size:13.5pt;color:var(--c2)">Flip the sticky notes</h3><p style="font-size:11pt;line-height:1.55;max-width:5.6in">The note cards are the chapter in tiny pieces. Cover one, say it from memory, check yourself.</p></div></div><div style="display:flex;gap:.18in;margin-bottom:.22in;align-items:flex-start">
+      <span class="badge">4</span>
+      <div><h3 style="font-size:13.5pt;color:var(--c2)">Spell in the boxes</h3><p style="font-size:11pt;line-height:1.55;max-width:5.6in">Every practice word has a write-in line. Say it, spell it OUT LOUD, then write it. Hand and mouth together beat eyes alone.</p></div></div><div style="display:flex;gap:.18in;margin-bottom:.22in;align-items:flex-start">
+      <span class="badge">5</span>
+      <div><h3 style="font-size:13.5pt;color:var(--c2)">Hunt the Big List</h3><p style="font-size:11pt;line-height:1.55;max-width:5.6in">The back of the book has every word in one place. Circle the bubbles you own. Come back for the empty ones.</p></div></div>
+    <div class="concept" style="margin-top:.25in"><b>Grown-ups:</b> this book pairs with the Bizzing Bee app — the same chapters are narrated there, and every word here has real recorded audio in the app's Word Coach.</div>
+    <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Advanced Pack material</span></div></div>
+<div class="pg dense">
+    <div style="display:flex;align-items:center;gap:.16in">
+      <span class="badge">1</span>
+      <div><div class="kicker">Advanced Orthography</div>
+      <h2 style="font-size:20pt;line-height:1.08">Silent finishes — words ending -gm and -gn</h2></div></div>
+    <div class="kicker" style="margin-top:.2in">The big idea</div>
+    <div class="concept">A small set of words ends in a written g you cannot hear: paradigm, phlegm, benign, campaign, impugn. The g is not decoration — it was pronounced in Latin and Greek, and it comes back the moment a suffix is added. That is the whole strategy for this pattern. If you can find a relative in which the g is audible, the g belongs in the base word, and if you cannot, it probably does not.</div>
+    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'>PARADIGM</div>
+<b>Heard.</b> PAIR-uh-dime — the final g is silent
+<b>Test.</b> say the adjective — paradigmatic, and the g comes back
+<b>Verdict.</b> the audible g in the relative proves the silent g in the base
+<b>Spell.</b> P A R A D I G M
+<b>Family.</b> paradigmatic, paradigmatically</div>
+    <div class="cards"><div class="card"><h3>The derivative test</h3><p>This is the only tool you need. Paradigm hides its g, but paradigmatic says it. Phlegm hides it, phlegmatic says it. Diaphragm hides it, diaphragmatic says it. Malign hides it, malignant says it. Benign hides it, benignity says it. Sign hides it, signature and signal say it. Resign hides it, resignation says it.</p></div><div class="card"><h3>The -gm group</h3><p>The -gm words are Greek, from roots where gamma and mu sat together: paradigm from paradeigma, an example; phlegm from phlegma, inflammation; diaphragm from diaphragma, a partition; apothegm from apophthegma, a terse saying; borborygm from borborygmos, a rumbling of the stomach. All silent, all recoverable by adding -atic.</p></div><div class="card"><h3>The -gn group</h3><p>The -gn words are mostly Latin. Benign and malign from benignus and malignus. Deign from dignare, to think worthy. Feign from fingere, to shape. Impugn and oppugn from pugnare, to fight. Arraign from ad rationem, to call to account. Campaign from campus, a field. Sovereign is the odd one out — its g was never pronounced at all, and it was inserted by scribes who wrongly linked it to reign.</p></div><div class="card"><h3>Sovereign and foreign are traps</h3><p>Two words in the group have a g that is historically fake. Sovereign comes from Latin super and had no g; foreign comes from foras, outdoors, and had no g either. Scribes added the g to both by false analogy with reign. So the derivative test fails for these — sovereignty keeps the silent g, and there is no relative that pronounces it. Those two you memorise. Twenty-four of these words are in the core library and 66 in the full library.</p></div></div>
+    <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 1</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · Silent finishes — words ending -gm and -gn · 1</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">paradigm</span><span class="say">/ PEH-ruh-deyem /</span>
+      <div class="d">systematic arrangement of all the inflected forms of a word</div><div class="h">💡 The g is silent at the end but speaks again when a suffix follows: paradigm but paradigmatic, malign but malignan…</div><div class="line"></div></div><div class="wd"><span class="w">diaphragm</span><span class="say">/ d-AY-uh-f-r-a-m /</span>
+      <div class="d">a part of the human body</div><div class="h">💡 The g is silent at the end but speaks again when a suffix follows: paradigm but paradigmatic, malign but malignan…</div><div class="line"></div></div><div class="wd"><span class="w">apothegm</span><span class="say">/ AP-uh-them /</span>
+      <div class="d">a short pithy instructive saying</div><div class="h">💡 The g is silent at the end but speaks again when a suffix follows: paradigm but paradigmatic, malign but malignan…</div><div class="line"></div></div><div class="wd"><span class="w">phlegm</span><span class="say">/ FLEHM /</span>
+      <div class="d">apathy demonstrated by an absence of emotional reactions</div><div class="h">💡 The g is silent at the end but speaks again when a suffix follows: paradigm but paradigmatic, malign but malignan…</div><div class="line"></div></div><div class="wd"><span class="w">borborygm</span><span class="say">/ BOR-boh-rigm /</span>
+      <div class="d">A rumbling or gurgling noise produced by gas moving through the intestines; the technical ter…</div><div class="h">💡 The g is silent at the end but speaks again when a suffix follows: paradigm but paradigmatic, malign but malignan…</div><div class="line"></div></div><div class="wd"><span class="w">benign</span><span class="say">/ b-ih-n-AY-n /</span>
+      <div class="d">is having a kindly disposition</div><div class="h">💡 The g is silent at the end but speaks again when a suffix follows: paradigm but paradigmatic, malign but malignan…</div><div class="line"></div></div><div class="wd"><span class="w">malign</span><span class="say">/ m-uh-l-AY-n /</span>
+      <div class="d">is to speak harmful untruths about</div><div class="h">💡 The g is silent at the end but speaks again when a suffix follows: paradigm but paradigmatic, malign but malignan…</div><div class="line"></div></div><div class="wd"><span class="w">condign</span><span class="say">/ kun-DYNE /</span>
+      <div class="d">fitting or appropriate and deserved; used especially of punishment</div><div class="h">💡 The g is silent at the end but speaks again when a suffix follows: paradigm but paradigmatic, malign but malignan…</div><div class="line"></div></div></div>
+    <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 1 practice</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · Silent finishes — words ending -gm and -gn · 2</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">deign</span><span class="say">/ d-AY-n /</span>
+      <div class="d">to think fit or to condescend</div><div class="h">💡 The g is silent at the end but speaks again when a suffix follows: paradigm but paradigmatic, malign but malignan…</div><div class="line"></div></div><div class="wd"><span class="w">feign</span><span class="say">/ f-AY-n /</span>
+      <div class="d">is to represent fictitiously</div><div class="h">💡 The g is silent at the end but speaks again when a suffix follows: paradigm but paradigmatic, malign but malignan…</div><div class="line"></div></div><div class="wd"><span class="w">impugn</span><span class="say">/ ih-MPYOON /</span>
+      <div class="d">attack as false or wrong</div><div class="h">💡 The g is silent at the end but speaks again when a suffix follows: paradigm but paradigmatic, malign but malignan…</div><div class="line"></div></div><div class="wd"><span class="w">oppugn</span><span class="say">/ uh-PYOON /</span>
+      <div class="d">challenge the accuracy, probity, or propriety of</div><div class="h">💡 The g is silent at the end but speaks again when a suffix follows: paradigm but paradigmatic, malign but malignan…</div><div class="line"></div></div><div class="wd"><span class="w">eloign</span><span class="say">/ ih-LOIN /</span>
+      <div class="d">To remove or carry away to a distance; in legal contexts, to convey property or a person beyo…</div><div class="h">💡 The g is silent at the end but speaks again when a suffix follows: paradigm but paradigmatic, malign but malignan…</div><div class="line"></div></div><div class="wd"><span class="w">arraign</span><span class="say">/ er-AYN /</span>
+      <div class="d">call before a court to answer an indictment</div><div class="h">💡 The g is silent at the end but speaks again when a suffix follows: paradigm but paradigmatic, malign but malignan…</div><div class="line"></div></div><div class="wd"><span class="w">campaign</span><span class="say">/ k-a-m-p-AY-n /</span>
+      <div class="d">a military operation for a specific objective</div><div class="h">💡 The g is silent at the end but speaks again when a suffix follows: paradigm but paradigmatic, malign but malignan…</div><div class="line"></div></div><div class="wd"><span class="w">ensign</span><span class="say">/ EH-n-s-uh-n /</span>
+      <div class="d">a flag or banner</div><div class="h">💡 The g is silent at the end but speaks again when a suffix follows: paradigm but paradigmatic, malign but malignan…</div><div class="line"></div></div></div>
+    <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 1 practice</span></div></div>
+<div class="pg">
+      <div class="kicker">Rapid round · Silent finishes — words ending -gm and -gn</div>
+      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>countersign</b> <span style="color:#8b83a3;font-size:8.4pt">/ KOWN-ter-syne /</span><br>a secret word or phrase known only to a restricted group</div><div><b>sovereign</b> <span style="color:#8b83a3;font-size:8.4pt">/ s-AH-v-r-uh-n /</span><br>a monarch or a king</div><div><b>foreign</b> <span style="color:#8b83a3;font-size:8.4pt">/ FAW-ruhn /</span><br>of concern to or concerning the affairs of other nations (other than y</div><div><b>reassign</b> <span style="color:#8b83a3;font-size:8.4pt">/ ree-uh-SEYEN /</span><br>transfer somebody to a different position or location of work</div></div>
+      <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 1 extras</span></div></div>
+<div class="pg dense">
+    <div style="display:flex;align-items:center;gap:.16in">
+      <span class="badge">2</span>
+      <div><div class="kicker">Advanced Orthography</div>
+      <h2 style="font-size:20pt;line-height:1.08">-cide — the killing words</h2></div></div>
+    <div class="kicker" style="margin-top:.2in">The big idea</div>
+    <div class="concept">Latin caedere meant to cut down, and by extension to kill. English uses -cide both for the act and for the agent that does it, joined to the root with an i. The adjective is regularly -cidal. The single real confusion is that a different Latin verb, cadere, to fall, produces the same letters in words like coincide and decide, where nothing is being killed at all — and those words never take a -cidal form.</div>
+    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'>MOLLUSCICIDE</div>
+<b>Heard.</b> muh-LUSS-ih-side — a substance that kills molluscs
+<b>Parse.</b> mollusc + i + cide
+<b>Trap.</b> the c of mollusc stays, so there are two c letters before the ending
+<b>Spell.</b> M O L L U S C I C I D E
+<b>Family.</b> molluscicidal, mollusc, molluscan</div>
+    <div class="cards"><div class="card"><h3>Agent or act</h3><p>The same ending does two jobs. As an act: regicide the killing of a king, matricide of a mother, patricide of a father, parricide of a close relative, fratricide of a brother, liberticide of liberty. As a substance that kills: pesticide, herbicide, fungicide, insecticide, germicide, larvicide, vermicide, acaricide, molluscicide. The ending is identical either way.</p></div><div class="card"><h3>The joint is i</h3><p>Latin joined the root to caedere with an i, and that i is the letter to watch. Herbicide, not herbacide. Fungicide, not fungacide. Larvicide, not larvacide. Acaricide, from acarus, a mite. Vermicide, from vermis, a worm. When you build one of these, put an i before the c.</p></div><div class="card"><h3>The adjective is -cidal</h3><p>Add -al and the c stays soft because the i is still there: homicidal, suicidal, genocidal, fungicidal, herbicidal, bactericidal, germicidal, molluscicidal, barmecidal. There is no -cideal and no -cidial. Just drop the final e and add al.</p></div><div class="card"><h3>The other -cide</h3><p>Latin cadere, to fall, is a different verb entirely, and it gives coincide, to fall together, and decide, to cut off deliberation — plus incident, accident and occident, which are all about falling. Coincide and decide have no -cidal form, and nothing in them is killed. If the definition has no victim, you are looking at cadere, not caedere. Twenty-six killing words sit in the core library and 56 in the full library.</p></div></div>
+    <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 2</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · -cide — the killing words · 1</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">molluscicide</span><span class="say">/ moh-LUS-ih-syd /</span>
+      <div class="d">A chemical substance or agent used to kill mollusks, such as snails and slugs, particularly t…</div><div class="h">💡 Latin caedere = to cut down or kill. The joint is i, the noun is -cide, the adjective -cidal. Do not confuse it w…</div><div class="line"></div></div><div class="wd"><span class="w">liberticide</span><span class="say">/ lih-BER-tih-syd /</span>
+      <div class="d">The destruction or killing of liberty; also, a person who destroys or suppresses the freedoms…</div><div class="h">💡 Latin caedere = to cut down or kill. The joint is i, the noun is -cide, the adjective -cidal. Do not confuse it w…</div><div class="line"></div></div><div class="wd"><span class="w">parasiticide</span><span class="say">/ pair-uh-SIT-ih-syd /</span>
+      <div class="d">A substance or agent that destroys parasites; any chemical, drug, or treatment used to kill p…</div><div class="h">💡 Latin caedere = to cut down or kill. The joint is i, the noun is -cide, the adjective -cidal. Do not confuse it w…</div><div class="line"></div></div><div class="wd"><span class="w">cancericidal</span><span class="say">/ kan-SAIR-ih-SY-dul /</span>
+      <div class="d">Capable of destroying or killing cancer cells; describing an agent or treatment that acts dir…</div><div class="h">💡 Latin caedere = to cut down or kill. The joint is i, the noun is -cide, the adjective -cidal. Do not confuse it w…</div><div class="line"></div></div><div class="wd"><span class="w">barmecidal</span><span class="say">/ bar-mih-SY-duhl /</span>
+      <div class="d">generous in appearance but giving nothing at all</div><div class="h">💡 Latin caedere = to cut down or kill. The joint is i, the noun is -cide, the adjective -cidal. Do not confuse it w…</div><div class="line"></div></div><div class="wd"><span class="w">monosilicide</span><span class="say">/ mon-oh-SIL-ih-syd /</span>
+      <div class="d">a compound of one silicon atom joined to one metal atom</div><div class="h">💡 Latin caedere = to cut down or kill. The joint is i, the noun is -cide, the adjective -cidal. Do not confuse it w…</div><div class="line"></div></div><div class="wd"><span class="w">insecticide</span><span class="say">/ ih-NSEH-ktuh-seyed /</span>
+      <div class="d">a chemical used to kill insects</div><div class="h">💡 Latin caedere = to cut down or kill. The joint is i, the noun is -cide, the adjective -cidal. Do not confuse it w…</div><div class="line"></div></div><div class="wd"><span class="w">pesticide</span><span class="say">/ p-EH-s-t-uh-s-ay-d /</span>
+      <div class="d">a chemical preparation to destroy pests</div><div class="h">💡 Latin caedere = to cut down or kill. The joint is i, the noun is -cide, the adjective -cidal. Do not confuse it w…</div><div class="line"></div></div></div>
+    <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 2 practice</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · -cide — the killing words · 2</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">acaricide</span><span class="say">/ uh-KAR-ih-syd /</span>
+      <div class="d">a chemical agent used to kill mites</div><div class="h">💡 Latin caedere = to cut down or kill. The joint is i, the noun is -cide, the adjective -cidal. Do not confuse it w…</div><div class="line"></div></div><div class="wd"><span class="w">vermicide</span><span class="say">/ VUR-mih-syd /</span>
+      <div class="d">an agent that kills worms (especially those in the intestines)</div><div class="h">💡 Latin caedere = to cut down or kill. The joint is i, the noun is -cide, the adjective -cidal. Do not confuse it w…</div><div class="line"></div></div><div class="wd"><span class="w">fungicide</span><span class="say">/ FUH-njuh-seyed /</span>
+      <div class="d">any agent that destroys or prevents the growth of fungi</div><div class="h">💡 Latin caedere = to cut down or kill. The joint is i, the noun is -cide, the adjective -cidal. Do not confuse it w…</div><div class="line"></div></div><div class="wd"><span class="w">germicide</span><span class="say">/ JUR-muh-seyed /</span>
+      <div class="d">an agent (as heat or radiation or a chemical) that destroys microorganisms that might carry d…</div><div class="h">💡 Latin caedere = to cut down or kill. The joint is i, the noun is -cide, the adjective -cidal. Do not confuse it w…</div><div class="line"></div></div><div class="wd"><span class="w">herbicide</span><span class="say">/ HUR-bih-seyed /</span>
+      <div class="d">a chemical agent that destroys plants or inhibits their growth</div><div class="h">💡 Latin caedere = to cut down or kill. The joint is i, the noun is -cide, the adjective -cidal. Do not confuse it w…</div><div class="line"></div></div><div class="wd"><span class="w">larvicide</span><span class="say">/ LAR-vuh-syd /</span>
+      <div class="d">a chemical used to kill larval pests</div><div class="h">💡 Latin caedere = to cut down or kill. The joint is i, the noun is -cide, the adjective -cidal. Do not confuse it w…</div><div class="line"></div></div><div class="wd"><span class="w">matricide</span><span class="say">/ MAY-truh-syd /</span>
+      <div class="d">a person who murders their mother</div><div class="h">💡 Latin caedere = to cut down or kill. The joint is i, the noun is -cide, the adjective -cidal. Do not confuse it w…</div><div class="line"></div></div><div class="wd"><span class="w">parricide</span><span class="say">/ PAIR-ih-syde /</span>
+      <div class="d">someone who kills his or her parent</div><div class="h">💡 Latin caedere = to cut down or kill. The joint is i, the noun is -cide, the adjective -cidal. Do not confuse it w…</div><div class="line"></div></div></div>
+    <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 2 practice</span></div></div>
+<div class="pg">
+      <div class="kicker">Rapid round · -cide — the killing words</div>
+      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>patricide</b> <span style="color:#8b83a3;font-size:8.4pt">/ PAY-trih-syd /</span><br>a person who murders their father</div><div><b>regicide</b> <span style="color:#8b83a3;font-size:8.4pt">/ REJ-ih-syd /</span><br>The killing of a king, or the person who kills one.</div><div><b>lousicide</b> <span style="color:#8b83a3;font-size:8.4pt">/ LOO-sih-syd /</span><br>A chemical agent or treatment designed to kill lice.</div><div><b>coincide</b> <span style="color:#8b83a3;font-size:8.4pt">/ koh-ih-NSEYED /</span><br>go with, fall together</div></div>
+      <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 2 extras</span></div></div>
+<div class="pg dense">
+    <div style="display:flex;align-items:center;gap:.16in">
+      <span class="badge">3</span>
+      <div><div class="kicker">Advanced Orthography</div>
+      <h2 style="font-size:20pt;line-height:1.08">-phagous and -phagy — the eating words</h2></div></div>
+    <div class="kicker" style="margin-top:.2in">The big idea</div>
+    <div class="concept">Greek phagein, to eat, produces a family of four related endings that spellers routinely swap. The adjective describing a diet is -phagous. The name of the habit is -phagy. A medical condition of swallowing is -phagia. A thing that eats is -phage. All four spell the f sound p-h, because the Greek letter was phi, and all four join to the root with an o.</div>
+    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'>MYRMECOPHAGY</div>
+<b>Heard.</b> mur-muh-COFF-uh-jee — the habit of eating ants
+<b>Parse.</b> myrmex = ant, plus o, plus phagy = eating
+<b>Rule.</b> the f sound is p h; the habit ends -phagy
+<b>Spell.</b> M Y R M E C O P H A G Y
+<b>Family.</b> myrmecophagous, myrmecophage, myrmecology</div>
+    <div class="cards"><div class="card"><h3>Four endings, four jobs</h3><p>-phagous is the adjective: saprophagous eats decaying matter, arachnophagous eats spiders, geophagous eats earth. -phagy is the habit: entomophagy, mycophagy, geophagy, autophagy. -phagia is the medical condition: dysphagia difficult swallowing, aphagia inability to swallow, hyperphagia excessive eating. -phage is the eater itself: macrophage, coliphage, bacteriophage.</p></div><div class="card"><h3>The ph is not optional</h3><p>Greek phi is always written p-h in English, never f. Phagein, phone, photo, physics, philosophy, sphere, graph. So the eating words are phagous and phagy, never fagous or fagy. If a word is Greek and you hear an f, reach for p-h first.</p></div><div class="card"><h3>What is being eaten</h3><p>The root is the diet. Sapros rotten gives saprophagous. Entomon insect gives entomophagy. Mykes fungus gives mycophagy. Ge earth gives geophagy. Xylon wood gives xylophagy. Ophis snake gives ophiophagy. Ichthys fish gives ichthyophagy. Anthropos man gives anthropophagy, the technical word for cannibalism. Autos self gives autophagy, the cell's recycling of its own parts.</p></div><div class="card"><h3>The medical -phagia group</h3><p>In medicine the ending is -phagia and it names a swallowing disorder rather than a diet. Dysphagia, difficulty swallowing. Aphagia, inability to swallow. Odynophagia, painful swallowing. Hyperphagia, eating far too much. Aerophagia, swallowing air. If the definition sounds clinical, the ending is i a. Seventeen of these words are in core and 36 in the full library.</p></div></div>
+    <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 3</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · -phagous and -phagy — the eating words · 1</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">myrmecophagy</span><span class="say">/ mur-meh-KOF-uh-jee /</span>
+      <div class="d">The dietary practice or habit of feeding on ants, characteristic of various animals such as a…</div><div class="h">💡 Greek phagein = to eat. Adjective -phagous, the habit -phagy, a disorder -phagia, an eater -phage. The ph is a Gr…</div><div class="line"></div></div><div class="wd"><span class="w">myrmecophage</span><span class="say">/ MUR-meh-koh-fayj /</span>
+      <div class="d">An animal that feeds primarily or exclusively on ants and termites, such as an anteater or aa…</div><div class="h">💡 Greek phagein = to eat. Adjective -phagous, the habit -phagy, a disorder -phagia, an eater -phage. The ph is a Gr…</div><div class="line"></div></div><div class="wd"><span class="w">arachnophagous</span><span class="say">/ uh-RAK-nuh-fay-guhs /</span>
+      <div class="d">Describing an organism that feeds on spiders and other arachnids as a regular part of its diet.</div><div class="h">💡 Greek phagein = to eat. Adjective -phagous, the habit -phagy, a disorder -phagia, an eater -phage. The ph is a Gr…</div><div class="line"></div></div><div class="wd"><span class="w">saprophagous</span><span class="say">/ sap-ROF-ah-gus /</span>
+      <div class="d">(of certain animals) feeding on dead or decaying animal matter</div><div class="h">💡 Greek phagein = to eat. Adjective -phagous, the habit -phagy, a disorder -phagia, an eater -phage. The ph is a Gr…</div><div class="line"></div></div><div class="wd"><span class="w">entomophagy</span><span class="say">/ en-toh-MOF-uh-jee /</span>
+      <div class="d">The practice of eating insects as food, which is common in many cultures around the world and…</div><div class="h">💡 Greek phagein = to eat. Adjective -phagous, the habit -phagy, a disorder -phagia, an eater -phage. The ph is a Gr…</div><div class="line"></div></div><div class="wd"><span class="w">heterophagy</span><span class="say">/ het-er-OF-uh-jee /</span>
+      <div class="d">The process by which a cell digests material taken in from outside itself, such as food parti…</div><div class="h">💡 Greek phagein = to eat. Adjective -phagous, the habit -phagy, a disorder -phagia, an eater -phage. The ph is a Gr…</div><div class="line"></div></div><div class="wd"><span class="w">glottophagy</span><span class="say">/ glot-OF-uh-jee /</span>
+      <div class="d">The process by which dominant languages absorb, suppress, or cause the extinction of smaller …</div><div class="h">💡 Greek phagein = to eat. Adjective -phagous, the habit -phagy, a disorder -phagia, an eater -phage. The ph is a Gr…</div><div class="line"></div></div><div class="wd"><span class="w">omophagia</span><span class="say">/ oh-moh-FAY-jee-ah /</span>
+      <div class="d">the eating of raw food</div><div class="h">💡 Greek phagein = to eat. Adjective -phagous, the habit -phagy, a disorder -phagia, an eater -phage. The ph is a Gr…</div><div class="line"></div></div></div>
+    <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 3 practice</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · -phagous and -phagy — the eating words · 2</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">dysphagia</span><span class="say">/ dis-FAY-jee-uh /</span>
+      <div class="d">condition in which swallowing is difficult or painful</div><div class="h">💡 Greek phagein = to eat. Adjective -phagous, the habit -phagy, a disorder -phagia, an eater -phage. The ph is a Gr…</div><div class="line"></div></div><div class="wd"><span class="w">mycophagy</span><span class="say">/ my-KOF-uh-jee /</span>
+      <div class="d">the practice of eating fungi (especially mushrooms collected in the wild)</div><div class="h">💡 Greek phagein = to eat. Adjective -phagous, the habit -phagy, a disorder -phagia, an eater -phage. The ph is a Gr…</div><div class="line"></div></div><div class="wd"><span class="w">aphagia</span><span class="say">/ ay-FAY-jee-uh /</span>
+      <div class="d">loss of the ability to swallow</div><div class="h">💡 Greek phagein = to eat. Adjective -phagous, the habit -phagy, a disorder -phagia, an eater -phage. The ph is a Gr…</div><div class="line"></div></div><div class="wd"><span class="w">hyperphagia</span><span class="say">/ hy-per-FAY-jee-uh /</span>
+      <div class="d">An abnormal and excessive increase in appetite and food intake, often caused by a medical con…</div><div class="h">💡 Greek phagein = to eat. Adjective -phagous, the habit -phagy, a disorder -phagia, an eater -phage. The ph is a Gr…</div><div class="line"></div></div><div class="wd"><span class="w">autophagy</span><span class="say">/ aw-TOF-uh-jee /</span>
+      <div class="d">The biological process by which a cell breaks down and recycles its own damaged or unnecessar…</div><div class="h">💡 Greek phagein = to eat. Adjective -phagous, the habit -phagy, a disorder -phagia, an eater -phage. The ph is a Gr…</div><div class="line"></div></div><div class="wd"><span class="w">macrophage</span><span class="say">/ MA-kroh-fayj /</span>
+      <div class="d">a large phagocyte; some are fixed and other circulate in the blood stream</div><div class="h">💡 Greek phagein = to eat. Adjective -phagous, the habit -phagy, a disorder -phagia, an eater -phage. The ph is a Gr…</div><div class="line"></div></div><div class="wd"><span class="w">geophagia</span><span class="say">/ jee-oh-FAY-jee-uh /</span>
+      <div class="d">eating earth, clay, chalk; occurs in some primitive tribes, sometimes in cases of nutritional…</div><div class="h">💡 Greek phagein = to eat. Adjective -phagous, the habit -phagy, a disorder -phagia, an eater -phage. The ph is a Gr…</div><div class="line"></div></div><div class="wd"><span class="w">coliphage</span><span class="say">/ KOH-lih-fayj /</span>
+      <div class="d">a bacteriophage that infects the bacterium Escherichia coli</div><div class="h">💡 Greek phagein = to eat. Adjective -phagous, the habit -phagy, a disorder -phagia, an eater -phage. The ph is a Gr…</div><div class="line"></div></div></div>
+    <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 3 practice</span></div></div>
+<div class="pg">
+      <div class="kicker">Rapid round · -phagous and -phagy — the eating words</div>
+      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>geophagy</b> <span style="color:#8b83a3;font-size:8.4pt">/ jee-OF-uh-jee /</span><br>eating earth, clay, chalk; occurs in some primitive tribes, sometimes </div><div><b>oligophagy</b> <span style="color:#8b83a3;font-size:8.4pt">/ ol-ih-GOF-ah-jee /</span><br>The habit or condition of feeding on only a limited variety of foods, </div><div><b>ophiophagy</b> <span style="color:#8b83a3;font-size:8.4pt">/ oh-fee-OF-ah-jee /</span><br>The practice or habit of eating snakes, whether by animals such as sec</div><div><b>xerophagy</b> <span style="color:#8b83a3;font-size:8.4pt">/ zeer-OF-ah-jee /</span><br>A strict religious diet of only dry, uncooked food and water.</div></div>
+      <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 3 extras</span></div></div>
+<div class="pg dense">
+    <div style="display:flex;align-items:center;gap:.16in">
+      <span class="badge">4</span>
+      <div><div class="kicker">Advanced Orthography</div>
+      <h2 style="font-size:20pt;line-height:1.08">-latry — worship of anything</h2></div></div>
+    <div class="kicker" style="margin-top:.2in">The big idea</div>
+    <div class="concept">Greek latreia meant service, especially religious service, and English uses -latry to name the worship of whatever is in the root. It is a compact and very regular family: joint of o, adjective in -latrous, worshipper in -later. The only real hazard is that a handful of unrelated words end in -later because they are agent nouns from Latin verbs, and those follow different rules entirely.</div>
+    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'>ICHTHYOLATRY</div>
+<b>Heard.</b> ick-thee-OL-uh-tree — worship of fish
+<b>Parse.</b> ichthys = fish, plus o, plus latreia = worship
+<b>Trap.</b> ichthys begins i-c-h-t-h — two h letters, both silent-ish
+<b>Spell.</b> I C H T H Y O L A T R Y
+<b>Family.</b> ichthyolatrous, ichthyology, ichthyosaur</div>
+    <div class="cards"><div class="card"><h3>The three forms</h3><p>The practice is -latry: idolatry, zoolatry, pyrolatry, bardolatry. The adjective is -latrous: idolatrous, monolatrous, ichthyolatrous. The person is -later: idolater. Note the vowel change — the noun has -latry with no e, but the person has -later. Idolatry and idolater, never idolatry and idolatrer.</p></div><div class="card"><h3>The objects of worship</h3><p>The root is what is worshipped. Eidolon an image gives idolatry. Zoon an animal gives zoolatry. Pyr fire gives pyrolatry. Ichthys fish gives ichthyolatry. Helios sun gives heliolatry. Lithos stone gives litholatry. Nekros the dead gives necrolatry. Kyon a dog gives cynolatry. Autos self gives autolatry. And Bardolatry, coined for the worship of Shakespeare, uses the English word bard.</p></div><div class="card"><h3>Idolatry loses a syllable</h3><p>Idolatry looks as if it should be idololatry, from eidolon plus latreia, and in fact that longer form exists in older writing. English contracted it, dropping one of the o-l sequences. So the modern spelling is i-d-o-l-a-t-r-y with a single l — the commonest error is doubling it to idollatry by analogy with idol plus latry.</p></div><div class="card"><h3>The -later imposters</h3><p>Several words end in -later without belonging to this family, because they are simply agent nouns from Latin verbs. Electroplater plates things. Desolater desolates. Inflater inflates. Dilater dilates. None of them worships anything, and none takes a -latrous adjective. Fourteen genuine worship words are in the core library and 30 in the full library.</p></div></div>
+    <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 4</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · -latry — worship of anything · 1</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">ichthyolatry</span><span class="say">/ ik-thee-OL-uh-tree /</span>
+      <div class="d">the worship of fish</div><div class="h">💡 Greek latreia = worship or service. The joint is o, the worshipper is -later, the adjective -latrous. Watch out f…</div><div class="line"></div></div><div class="wd"><span class="w">martyrolatry</span><span class="say">/ mar-tih-ROL-ah-tree /</span>
+      <div class="d">The excessive veneration or worship of martyrs, often criticized as going beyond proper relig…</div><div class="h">💡 Greek latreia = worship or service. The joint is o, the worshipper is -later, the adjective -latrous. Watch out f…</div><div class="line"></div></div><div class="wd"><span class="w">demonolatry</span><span class="say">/ deh-mon-OL-uh-tree /</span>
+      <div class="d">the acts or rites of worshiping devils</div><div class="h">💡 Greek latreia = worship or service. The joint is o, the worshipper is -later, the adjective -latrous. Watch out f…</div><div class="line"></div></div><div class="wd"><span class="w">bardolatry</span><span class="say">/ bar-DOL-uh-tree /</span>
+      <div class="d">the idolization of William Shakespeare</div><div class="h">💡 Greek latreia = worship or service. The joint is o, the worshipper is -later, the adjective -latrous. Watch out f…</div><div class="line"></div></div><div class="wd"><span class="w">idolatrous</span><span class="say">/ eye-DAH-luh-truhs /</span>
+      <div class="d">relating to or practicing idolatry</div><div class="h">💡 Greek latreia = worship or service. The joint is o, the worshipper is -later, the adjective -latrous. Watch out f…</div><div class="line"></div></div><div class="wd"><span class="w">idiolatry</span><span class="say">/ id-ee-OL-uh-tree /</span>
+      <div class="d">the worship of yourself</div><div class="h">💡 Greek latreia = worship or service. The joint is o, the worshipper is -later, the adjective -latrous. Watch out f…</div><div class="line"></div></div><div class="wd"><span class="w">autolatry</span><span class="say">/ aw-TOL-uh-tree /</span>
+      <div class="d">the worship of yourself</div><div class="h">💡 Greek latreia = worship or service. The joint is o, the worshipper is -later, the adjective -latrous. Watch out f…</div><div class="line"></div></div><div class="wd"><span class="w">monolatry</span><span class="say">/ moh-NOL-ah-tree /</span>
+      <div class="d">the worship of a single god but without claiming that it is the only god</div><div class="h">💡 Greek latreia = worship or service. The joint is o, the worshipper is -later, the adjective -latrous. Watch out f…</div><div class="line"></div></div></div>
+    <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 4 practice</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · -latry — worship of anything · 2</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">pyrolatry</span><span class="say">/ py-ROL-uh-tree /</span>
+      <div class="d">the worship of fire</div><div class="h">💡 Greek latreia = worship or service. The joint is o, the worshipper is -later, the adjective -latrous. Watch out f…</div><div class="line"></div></div><div class="wd"><span class="w">zoolatry</span><span class="say">/ zoh-OL-uh-tree /</span>
+      <div class="d">the worship of animals</div><div class="h">💡 Greek latreia = worship or service. The joint is o, the worshipper is -later, the adjective -latrous. Watch out f…</div><div class="line"></div></div><div class="wd"><span class="w">idolatry</span><span class="say">/ eye-DAH-luh-tree /</span>
+      <div class="d">religious zeal; the willingness to serve God</div><div class="h">💡 Greek latreia = worship or service. The joint is o, the worshipper is -later, the adjective -latrous. Watch out f…</div><div class="line"></div></div><div class="wd"><span class="w">idolater</span><span class="say">/ eye-DOL-uh-ter /</span>
+      <div class="d">a person who worships idols</div><div class="h">💡 Greek latreia = worship or service. The joint is o, the worshipper is -later, the adjective -latrous. Watch out f…</div><div class="line"></div></div><div class="wd"><span class="w">heliolatry</span><span class="say">/ hee-lee-OL-uh-tree /</span>
+      <div class="d">the worship of the sun</div><div class="h">💡 Greek latreia = worship or service. The joint is o, the worshipper is -later, the adjective -latrous. Watch out f…</div><div class="line"></div></div><div class="wd"><span class="w">litholatry</span><span class="say">/ lih-THOL-ah-tree /</span>
+      <div class="d">The worship of stones or rocks, practiced in certain ancient or indigenous religions that reg…</div><div class="h">💡 Greek latreia = worship or service. The joint is o, the worshipper is -later, the adjective -latrous. Watch out f…</div><div class="line"></div></div><div class="wd"><span class="w">necrolatry</span><span class="say">/ neh-KROL-uh-tree /</span>
+      <div class="d">The worship of or excessive reverence for the dead, including rituals, practices, or beliefs …</div><div class="h">💡 Greek latreia = worship or service. The joint is o, the worshipper is -later, the adjective -latrous. Watch out f…</div><div class="line"></div></div><div class="wd"><span class="w">cynolatry</span><span class="say">/ sy-NOL-uh-tree /</span>
+      <div class="d">The worship or excessive devotion to dogs, treating them as sacred or divine beings; extreme …</div><div class="h">💡 Greek latreia = worship or service. The joint is o, the worshipper is -later, the adjective -latrous. Watch out f…</div><div class="line"></div></div></div>
+    <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 4 practice</span></div></div>
+<div class="pg">
+      <div class="kicker">Rapid round · -latry — worship of anything</div>
+      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>hierolatry</b> <span style="color:#8b83a3;font-size:8.4pt">/ hy-er-OL-ah-tree /</span><br>the worship of saints</div><div><b>goniolatry</b> <span style="color:#8b83a3;font-size:8.4pt">/ goh-nee-OL-uh-tree /</span><br>The worship of or excessive reverence for angles; an obsessive devotio</div><div><b>electroplater</b> <span style="color:#8b83a3;font-size:8.4pt">/ ih-LEK-troh-play-ter /</span><br>a plater who uses electrolysis</div><div><b>desolater</b> <span style="color:#8b83a3;font-size:8.4pt">/ DEZ-uh-lay-ter /</span><br>providing no shelter or sustenance</div></div>
+      <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 4 extras</span></div></div>
+<div class="pg dense">
+    <div style="display:flex;align-items:center;gap:.16in">
+      <span class="badge">5</span>
+      <div><div class="kicker">Advanced Orthography</div>
+      <h2 style="font-size:20pt;line-height:1.08">Old English trades — monger, wright and smith</h2></div></div>
+    <div class="kicker" style="margin-top:.2in">The big idea</div>
+    <div class="concept">Amid a curriculum dominated by Latin and Greek, this family is entirely native. Old English mangere meant a trader, wryhta meant a maker or worker, and smitha meant one who works metal. All three still form compounds, and they behave completely unlike classical endings: no connecting vowel, no hyphen, and the first element is a plain English noun. Recognising that a word is Germanic rather than classical is itself the spelling decision.</div>
+    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'>WHEELWRIGHT</div>
+<b>Heard.</b> WEEL-rite — a maker of wheels
+<b>Origin.</b> Old English hweol plus wryhta, a maker
+<b>Trap.</b> the maker ending is w-r-i-g-h-t, not r-i-t-e or w-r-i-t-e
+<b>Spell.</b> W H E E L W R I G H T
+<b>Family.</b> cartwright, playwright, shipwright, wainwright</div>
+    <div class="cards"><div class="card"><h3>No connecting vowel</h3><p>This is the giveaway. Latin and Greek compounds need a joint — cupriferous, ochlocracy, myrmecophagy. Old English compounds simply push the two words together. Wheelwright. Playwright. Blacksmith. Coppersmith. Fishmonger. Scandalmonger. If you find yourself wanting to insert an o or an i, you are treating a Germanic word as a classical one.</p></div><div class="card"><h3>-wright is not -write</h3><p>A wright is a maker, from wryhta, and it is spelled w-r-i-g-h-t. A playwright makes plays; the word has nothing to do with writing them, which is why playwrite is always wrong. Cartwright, wheelwright, shipwright, wainwright, millwright. The gh is a fossil of a sound English stopped making centuries ago.</p></div><div class="card"><h3>-monger carries a sneer</h3><p>Mangere just meant trader, and the neutral sense survives in fishmonger, ironmonger and costermonger. But English gradually made the ending disapproving, so most modern coinages are hostile: scandalmonger, warmonger, rumourmonger, phrasemonger, meritmonger, powermonger, statemonger, poisonmonger. The spelling is always m-o-n-g-e-r, with the e.</p></div><div class="card"><h3>-smith outlived its metal</h3><p>A smith worked metal — blacksmith with iron, goldsmith, silversmith, coppersmith, whitesmith with tin. Then the ending broke free of the forge and now means simply a skilled maker: wordsmith, tunesmith, jokesmith, gunsmith, locksmith. Eleven of these three endings are in the core library and 32 in the full library.</p></div></div>
+    <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 5</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · Old English trades — monger, wright and smith · 1</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">wheelwright</span><span class="say">/ w-EE-l-r-ay-t /</span>
+      <div class="d">a person whose trade is to make wheels</div><div class="h">💡 Three native agent endings: mangere a trader, wryhta a maker, smitha a metalworker. Old English compounds join wi…</div><div class="line"></div></div><div class="wd"><span class="w">playwright</span><span class="say">/ PLAY-reyet /</span>
+      <div class="d">someone who writes plays</div><div class="h">💡 Three native agent endings: mangere a trader, wryhta a maker, smitha a metalworker. Old English compounds join wi…</div><div class="line"></div></div><div class="wd"><span class="w">cartwright</span><span class="say">/ KAH-rtreyet /</span>
+      <div class="d">English clergyman who invented the power loom (1743-1823)</div><div class="h">💡 Three native agent endings: mangere a trader, wryhta a maker, smitha a metalworker. Old English compounds join wi…</div><div class="line"></div></div><div class="wd"><span class="w">wagonwright</span><span class="say">/ WAG-un-ryt /</span>
+      <div class="d">a wagon maker</div><div class="h">💡 Three native agent endings: mangere a trader, wryhta a maker, smitha a metalworker. Old English compounds join wi…</div><div class="line"></div></div><div class="wd"><span class="w">coppersmith</span><span class="say">/ KAH-per-smihth /</span>
+      <div class="d">someone who makes articles from copper</div><div class="h">💡 Three native agent endings: mangere a trader, wryhta a maker, smitha a metalworker. Old English compounds join wi…</div><div class="line"></div></div><div class="wd"><span class="w">blacksmith</span><span class="say">/ BLA-ksmihth /</span>
+      <div class="d">a smith who forges and shapes iron with a hammer and anvil</div><div class="h">💡 Three native agent endings: mangere a trader, wryhta a maker, smitha a metalworker. Old English compounds join wi…</div><div class="line"></div></div><div class="wd"><span class="w">arrowsmith</span><span class="say">/ A-roh-smihth /</span>
+      <div class="d">a maker of arrows</div><div class="h">💡 Three native agent endings: mangere a trader, wryhta a maker, smitha a metalworker. Old English compounds join wi…</div><div class="line"></div></div><div class="wd"><span class="w">jewelsmith</span><span class="say">/ JOO-ul-smith /</span>
+      <div class="d">A craftsperson who makes or works with jewels and fine jewelry; a jeweler skilled in metalwor…</div><div class="h">💡 Three native agent endings: mangere a trader, wryhta a maker, smitha a metalworker. Old English compounds join wi…</div><div class="line"></div></div></div>
+    <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 5 practice</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · Old English trades — monger, wright and smith · 2</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">tunesmith</span><span class="say">/ TYOON-smith /</span>
+      <div class="d">A person who composes or writes tunes and melodies, especially popular or commercial songs; a…</div><div class="h">💡 Three native agent endings: mangere a trader, wryhta a maker, smitha a metalworker. Old English compounds join wi…</div><div class="line"></div></div><div class="wd"><span class="w">jokesmith</span><span class="say">/ JOHK-smith /</span>
+      <div class="d">A person who is skilled at crafting or inventing jokes; someone who creates humor professiona…</div><div class="h">💡 Three native agent endings: mangere a trader, wryhta a maker, smitha a metalworker. Old English compounds join wi…</div><div class="line"></div></div><div class="wd"><span class="w">wordsmith</span><span class="say">/ WUR-dsmihth /</span>
+      <div class="d">a fluent and prolific writer</div><div class="h">💡 Three native agent endings: mangere a trader, wryhta a maker, smitha a metalworker. Old English compounds join wi…</div><div class="line"></div></div><div class="wd"><span class="w">scandalmonger</span><span class="say">/ SKAN-dl-mung-ger /</span>
+      <div class="d">a person who spreads malicious gossip</div><div class="h">💡 Three native agent endings: mangere a trader, wryhta a maker, smitha a metalworker. Old English compounds join wi…</div><div class="line"></div></div><div class="wd"><span class="w">carpetmonger</span><span class="say">/ KAR-pet-mung-ger /</span>
+      <div class="d">A person who deals in or sells carpets, or one who meddles excessively in carpet trade affairs.</div><div class="h">💡 Three native agent endings: mangere a trader, wryhta a maker, smitha a metalworker. Old English compounds join wi…</div><div class="line"></div></div><div class="wd"><span class="w">poisonmonger</span><span class="say">/ POY-zun-mung-gur /</span>
+      <div class="d">A person who deals in, spreads, or promotes poison, either literally or figuratively, such as…</div><div class="h">💡 Three native agent endings: mangere a trader, wryhta a maker, smitha a metalworker. Old English compounds join wi…</div><div class="line"></div></div><div class="wd"><span class="w">phrasemonger</span><span class="say">/ FRAYZ-mung-ger /</span>
+      <div class="d">A person who uses showy, empty, or overused phrases rather than expressing genuine or origina…</div><div class="h">💡 Three native agent endings: mangere a trader, wryhta a maker, smitha a metalworker. Old English compounds join wi…</div><div class="line"></div></div><div class="wd"><span class="w">barbermonger</span><span class="say">/ BAR-bur-mung-gur /</span>
+      <div class="d">A person excessively devoted to visiting barbers or obsessively concerned with personal groom…</div><div class="h">💡 Three native agent endings: mangere a trader, wryhta a maker, smitha a metalworker. Old English compounds join wi…</div><div class="line"></div></div></div>
+    <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 5 practice</span></div></div>
+<div class="pg">
+      <div class="kicker">Rapid round · Old English trades — monger, wright and smith</div>
+      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>meritmonger</b> <span style="color:#8b83a3;font-size:8.4pt">/ MAIR-it-mung-ger /</span><br>A person who boasts excessively about their own merits, achievements, </div><div><b>powermonger</b> <span style="color:#8b83a3;font-size:8.4pt">/ POW-ur-mung-gur /</span><br>A person who aggressively seeks to gain, expand, or manipulate power o</div><div><b>statemonger</b> <span style="color:#8b83a3;font-size:8.4pt">/ STAYT-mung-gur /</span><br>A person who deals excessively or manipulatively in political affairs,</div><div><b>fishmonger</b> <span style="color:#8b83a3;font-size:8.4pt">/ FIH-shmah-ngger /</span><br>someone who sells fish</div></div>
+      <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 5 extras</span></div></div>
+<div class="pg dense">
+    <div style="display:flex;align-items:center;gap:.16in">
+      <span class="badge">6</span>
+      <div><div class="kicker">Advanced Orthography</div>
+      <h2 style="font-size:20pt;line-height:1.08">-gogue and -gogy — the leading words</h2></div></div>
+    <div class="kicker" style="margin-top:.2in">The big idea</div>
+    <div class="concept">Greek agein meant to lead, and agogos meant leading. English keeps three forms: the person is a -gogue, with a silent u-e borrowed through French; the practice is -gogy; and the adjective is -gogic. It is a tiny family, but every member is a trap, because the silent ue in gogue looks wrong, the gy in gogy looks wrong, and the two g letters can each be doubled by mistake.</div>
+    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'>PEDAGOGUE</div>
+<b>Heard.</b> PED-uh-gog — a teacher
+<b>Origin.</b> Greek pais, a child, plus agogos, leading — one who leads children
+<b>Trap.</b> the word ends in a silent u-e that French added on the way in
+<b>Spell.</b> P E D A G O G U E
+<b>Family.</b> pedagogy, pedagogic, pedagogical</div>
+    <div class="cards"><div class="card"><h3>Person, practice, adjective</h3><p>The person ends -gogue: pedagogue, demagogue, synagogue. The practice ends -gogy: pedagogy, demagogy. The adjective ends -gogic: pedagogic, demagogic, anagogic, hypnagogic. Three shapes, and you need all three, because a bee will ask for whichever one is least familiar.</p></div><div class="card"><h3>The silent ue is French</h3><p>Greek had no u-e on the end. It arrived when these words came through French, which used -gue to keep the g hard before a final e. The same thing gives us catalogue, dialogue, monologue, epilogue, analogue, fatigue, intrigue and vogue. So the ue is not decoration — without it the g would go soft.</p></div><div class="card"><h3>What each one leads</h3><p>Pais, a child, gives pedagogue, one who leads children. Demos, the people, gives demagogue, one who leads the mob. Syn, together, gives synagogue, a leading-together, hence a place of assembly. Ana, up, gives anagogic, leading the mind upward to spiritual meaning. Hypnos, sleep, gives hypnagogic, leading into sleep. Sialon, saliva, gives sialagogue, a substance that brings on saliva.</p></div><div class="card"><h3>A tiny family, entirely learnable</h3><p>Only eight of these are in the core library and 12 in the full, which makes this the smallest pattern in the course. That is precisely why it is worth a chapter — a set this small can be learned completely, and then it is simply never a risk again. Note synagogue in particular: the syn- prefix means it has no e after the n.</p></div></div>
+    <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 6</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · -gogue and -gogy — the leading words · 1</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">pedagogue</span><span class="say">/ PED-uh-gog /</span>
+      <div class="d">someone who educates young people</div><div class="h">💡 Greek agogos = leading. The person ends -gogue with a silent ue; the practice ends -gogy; the adjective -gogic. A…</div><div class="line"></div></div><div class="wd"><span class="w">demagogue</span><span class="say">/ DEH-muh-gahg /</span>
+      <div class="d">a political leader who seeks support by appealing to popular passions and prejudices</div><div class="h">💡 Greek agogos = leading. The person ends -gogue with a silent ue; the practice ends -gogy; the adjective -gogic. A…</div><div class="line"></div></div><div class="wd"><span class="w">synagogue</span><span class="say">/ SIH-nuh-gawg /</span>
+      <div class="d">(Judaism) the place of worship for a Jewish congregation</div><div class="h">💡 Greek agogos = leading. The person ends -gogue with a silent ue; the practice ends -gogy; the adjective -gogic. A…</div><div class="line"></div></div><div class="wd"><span class="w">pedagogy</span><span class="say">/ PEH-duh-goh-jee /</span>
+      <div class="d">the principles and methods of instruction</div><div class="h">💡 Greek agogos = leading. The person ends -gogue with a silent ue; the practice ends -gogy; the adjective -gogic. A…</div><div class="line"></div></div><div class="wd"><span class="w">demagogy</span><span class="say">/ DEH-muh-gah-jee /</span>
+      <div class="d">impassioned appeals to the prejudices and emotions of the populace</div><div class="h">💡 Greek agogos = leading. The person ends -gogue with a silent ue; the practice ends -gogy; the adjective -gogic. A…</div><div class="line"></div></div><div class="wd"><span class="w">pedagogic</span><span class="say">/ ped-uh-GOJ-ik /</span>
+      <div class="d">of or relating to pedagogy</div><div class="h">💡 Greek agogos = leading. The person ends -gogue with a silent ue; the practice ends -gogy; the adjective -gogic. A…</div><div class="line"></div></div><div class="wd"><span class="w">demagogic</span><span class="say">/ deh-muh-GAH-jihk /</span>
+      <div class="d">characteristic of or resembling a demagogue</div><div class="h">💡 Greek agogos = leading. The person ends -gogue with a silent ue; the practice ends -gogy; the adjective -gogic. A…</div><div class="line"></div></div><div class="wd"><span class="w">anagogic</span><span class="say">/ an-ah-GOJ-ik /</span>
+      <div class="d">based on or exemplifying anagoge</div><div class="h">💡 Greek agogos = leading. The person ends -gogue with a silent ue; the practice ends -gogy; the adjective -gogic. A…</div><div class="line"></div></div></div>
+    <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 6 practice</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · -gogue and -gogy — the leading words · 2</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">hypnagogic</span><span class="say">/ hip-nuh-GOJ-ik /</span>
+      <div class="d">sleep inducing</div><div class="h">💡 Greek agogos = leading. The person ends -gogue with a silent ue; the practice ends -gogy; the adjective -gogic. A…</div><div class="line"></div></div><div class="wd"><span class="w">ochlagogue</span><span class="say">/ OK-luh-gog /</span>
+      <div class="d">A leader or agitator who stirs up, guides, or incites a mob or crowd, often for disruptive or…</div><div class="h">💡 Greek agogos = leading. The person ends -gogue with a silent ue; the practice ends -gogy; the adjective -gogic. A…</div><div class="line"></div></div><div class="wd"><span class="w">agogic</span><span class="say">/ uh-GOJ-ik /</span>
+      <div class="d">Relating to slight changes in speed or emphasis used to bring out a piece of music's rhythm.</div><div class="h">💡 Greek agogos = leading. The person ends -gogue with a silent ue; the practice ends -gogy; the adjective -gogic. A…</div><div class="line"></div></div><div class="wd"><span class="w">antisialagogue</span><span class="say">/ an-tee-sy-AL-uh-gog /</span>
+      <div class="d">A substance that reduces or inhibits the production and flow of saliva.</div><div class="h">💡 Greek agogos = leading. The person ends -gogue with a silent ue; the practice ends -gogy; the adjective -gogic. A…</div><div class="line"></div></div></div>
+    <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 6 practice</span></div></div>
+<div class="pg dense">
+    <div style="display:flex;align-items:center;gap:.16in">
+      <span class="badge">7</span>
+      <div><div class="kicker">Advanced Orthography</div>
+      <h2 style="font-size:20pt;line-height:1.08">-cede, -ceed, -sede — three, one and one</h2></div></div>
+    <div class="kicker" style="margin-top:.2in">The big idea</div>
+    <div class="concept">One of the most quoted spelling problems in English, and one of the most completely solvable. All of these words come from Latin cedere, to go or to yield, so the default is -cede. Exactly three verbs took a doubled e in English — succeed, proceed and exceed — and exactly one word is spelled with an s, supersede, because it comes from a different Latin verb altogether. Learn four words and the whole family is safe forever.</div>
+    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'>SUPERSEDE</div>
+<b>Heard.</b> soo-per-SEED — to take the place of
+<b>Trap.</b> every relative is spelled c-e-d-e, so c looks right
+<b>Origin.</b> not cedere but sedere, to sit — to sit above, hence to replace
+<b>Spell.</b> S U P E R S E D E
+<b>Family.</b> supersession, supersedure — both keep the s</div>
+    <div class="cards"><div class="card"><h3>The default is -cede</h3><p>Precede, recede, secede, concede, accede, intercede, antecede, retrocede, cede itself. All from Latin cedere, to go or yield, and all spelled c-e-d-e. If you have no specific reason to think otherwise, this is the answer, and it is the answer most of the time.</p></div><div class="card"><h3>Three take -ceed</h3><p>Succeed, proceed, exceed. That is the complete list. There is no rule behind it — they simply came into English through French forms that had a doubled e, and the spelling stuck. Three words, worth memorising as a trio: succeed, proceed, exceed.</p></div><div class="card"><h3>One takes -sede, and here is why</h3><p>Supersede is not from cedere at all. It is from Latin sedere, to sit — super plus sedere, to sit above, hence to take the place of. Different verb, different letter. That is why supercede, which looks so reasonable, is wrong: it would mean yielding above rather than sitting above. The related nouns keep the s too: supersession, supersedure.</p></div><div class="card"><h3>What the nouns do</h3><p>The nouns are the last piece and they are irregular in a helpful way. Precede gives precession and precedence. Succeed gives succession. Proceed gives procession and procedure — note that procedure loses the second e, so it is not proceedure. Exceed gives excess. Recede gives recession. If you know the noun you can usually work back to the verb.</p></div></div>
+    <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 7</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · -cede, -ceed, -sede — three, one and one · 1</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">supersede</span><span class="say">/ s-oo-p-ur-s-EE-d /</span>
+      <div class="d">is to replace in power or acceptance</div><div class="h">💡 Latin cedere = to go or yield. Only succeed, proceed and exceed take -ceed; only supersede takes -sede; everythin…</div><div class="line"></div></div><div class="wd"><span class="w">intercede</span><span class="say">/ ih-n-t-ur-s-EE-d /</span>
+      <div class="d">is to act in behalf of someone in difficulty</div><div class="h">💡 Latin cedere = to go or yield. Only succeed, proceed and exceed take -ceed; only supersede takes -sede; everythin…</div><div class="line"></div></div><div class="wd"><span class="w">antecede</span><span class="say">/ an-tih-SEED /</span>
+      <div class="d">be earlier in time; go back further</div><div class="h">💡 Latin cedere = to go or yield. Only succeed, proceed and exceed take -ceed; only supersede takes -sede; everythin…</div><div class="line"></div></div><div class="wd"><span class="w">precede</span><span class="say">/ p-r-ih-s-EE-d /</span>
+      <div class="d">is to go before</div><div class="h">💡 Latin cedere = to go or yield. Only succeed, proceed and exceed take -ceed; only supersede takes -sede; everythin…</div><div class="line"></div></div><div class="wd"><span class="w">concede</span><span class="say">/ kuhn-SEED /</span>
+      <div class="d">to admit something is true, or to give in and accept defeat</div><div class="h">💡 Latin cedere = to go or yield. Only succeed, proceed and exceed take -ceed; only supersede takes -sede; everythin…</div><div class="line"></div></div><div class="wd"><span class="w">recede</span><span class="say">/ r-ih-s-EE-d /</span>
+      <div class="d">to move back or away to withdraw</div><div class="h">💡 Latin cedere = to go or yield. Only succeed, proceed and exceed take -ceed; only supersede takes -sede; everythin…</div><div class="line"></div></div><div class="wd"><span class="w">secede</span><span class="say">/ s-ih-s-EE-d /</span>
+      <div class="d">is to withdraw formally from an alliance</div><div class="h">💡 Latin cedere = to go or yield. Only succeed, proceed and exceed take -ceed; only supersede takes -sede; everythin…</div><div class="line"></div></div><div class="wd"><span class="w">succeed</span><span class="say">/ suh-KSEED /</span>
+      <div class="d">attain success or reach a desired goal</div><div class="h">💡 Latin cedere = to go or yield. Only succeed, proceed and exceed take -ceed; only supersede takes -sede; everythin…</div><div class="line"></div></div></div>
+    <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 7 practice</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · -cede, -ceed, -sede — three, one and one · 2</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">proceed</span><span class="say">/ pruh-SEED /</span>
+      <div class="d">continue talking;  he continued,</div><div class="h">💡 Latin cedere = to go or yield. Only succeed, proceed and exceed take -ceed; only supersede takes -sede; everythin…</div><div class="line"></div></div><div class="wd"><span class="w">exceed</span><span class="say">/ ih-KSEED /</span>
+      <div class="d">be greater in scope or size than some standard</div><div class="h">💡 Latin cedere = to go or yield. Only succeed, proceed and exceed take -ceed; only supersede takes -sede; everythin…</div><div class="line"></div></div><div class="wd"><span class="w">accede</span><span class="say">/ a-KSEED /</span>
+      <div class="d">yield to another's wish or opinion</div><div class="h">💡 Latin cedere = to go or yield. Only succeed, proceed and exceed take -ceed; only supersede takes -sede; everythin…</div><div class="line"></div></div><div class="wd"><span class="w">cede</span><span class="say">/ SEED /</span>
+      <div class="d">give over; surrender or relinquish to the physical control of another</div><div class="h">💡 Latin cedere = to go or yield. Only succeed, proceed and exceed take -ceed; only supersede takes -sede; everythin…</div><div class="line"></div></div><div class="wd"><span class="w">epicede</span><span class="say">/ EP-ih-seed /</span>
+      <div class="d">A funeral song, elegy, or poem composed and performed in honor of a deceased person; a mournf…</div><div class="h">💡 Latin cedere = to go or yield. Only succeed, proceed and exceed take -ceed; only supersede takes -sede; everythin…</div><div class="line"></div></div><div class="wd"><span class="w">supercede</span><span class="say">/ soo-per-SEED /</span>
+      <div class="d">take the place or move into the position of</div><div class="h">💡 Latin cedere = to go or yield. Only succeed, proceed and exceed take -ceed; only supersede takes -sede; everythin…</div><div class="line"></div></div><div class="wd"><span class="w">unconcede</span><span class="say">/ un-kun-SEED /</span>
+      <div class="d">To retract or take back a concession that was previously made; to reverse an earlier agreemen…</div><div class="h">💡 Latin cedere = to go or yield. Only succeed, proceed and exceed take -ceed; only supersede takes -sede; everythin…</div><div class="line"></div></div></div>
+    <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>Chapter 7 practice</span></div></div>
+<div class="pg">
+      <div class="kicker">The big list 1 of 2</div>
+      <h2 style="font-size:16.5pt;margin:.04in 0 .18in">Every word in this book. Circle what you own.</h2>
+      <div class="biglist"><div><span></span>acaricide</div><div><span></span>accede</div><div><span></span>agogic</div><div><span></span>anagogic</div><div><span></span>antecede</div><div><span></span>antisialagogue</div><div><span></span>aphagia</div><div><span></span>apothegm</div><div><span></span>arachnophagous</div><div><span></span>arraign</div><div><span></span>arrowsmith</div><div><span></span>autolatry</div><div><span></span>autophagy</div><div><span></span>barbermonger</div><div><span></span>bardolatry</div><div><span></span>barmecidal</div><div><span></span>benign</div><div><span></span>blacksmith</div><div><span></span>borborygm</div><div><span></span>campaign</div><div><span></span>cancericidal</div><div><span></span>carpetmonger</div><div><span></span>cartwright</div><div><span></span>cede</div><div><span></span>coincide</div><div><span></span>coliphage</div><div><span></span>concede</div><div><span></span>condign</div><div><span></span>coppersmith</div><div><span></span>countersign</div><div><span></span>cynolatry</div><div><span></span>deign</div><div><span></span>demagogic</div><div><span></span>demagogue</div><div><span></span>demagogy</div><div><span></span>demonolatry</div><div><span></span>desolater</div><div><span></span>diaphragm</div><div><span></span>dysphagia</div><div><span></span>electroplater</div><div><span></span>eloign</div><div><span></span>ensign</div><div><span></span>entomophagy</div><div><span></span>epicede</div><div><span></span>exceed</div><div><span></span>feign</div><div><span></span>fishmonger</div><div><span></span>foreign</div><div><span></span>fungicide</div><div><span></span>geophagia</div><div><span></span>geophagy</div><div><span></span>germicide</div><div><span></span>glottophagy</div><div><span></span>goniolatry</div><div><span></span>heliolatry</div><div><span></span>herbicide</div><div><span></span>heterophagy</div><div><span></span>hierolatry</div><div><span></span>hyperphagia</div><div><span></span>hypnagogic</div><div><span></span>ichthyolatry</div><div><span></span>idiolatry</div><div><span></span>idolater</div><div><span></span>idolatrous</div><div><span></span>idolatry</div><div><span></span>impugn</div><div><span></span>insecticide</div><div><span></span>intercede</div><div><span></span>jewelsmith</div><div><span></span>jokesmith</div><div><span></span>larvicide</div><div><span></span>liberticide</div><div><span></span>litholatry</div><div><span></span>lousicide</div><div><span></span>macrophage</div><div><span></span>malign</div><div><span></span>martyrolatry</div><div><span></span>matricide</div><div><span></span>meritmonger</div><div><span></span>molluscicide</div><div><span></span>monolatry</div><div><span></span>monosilicide</div><div><span></span>mycophagy</div><div><span></span>myrmecophage</div><div><span></span>myrmecophagy</div><div><span></span>necrolatry</div><div><span></span>ochlagogue</div><div><span></span>oligophagy</div><div><span></span>omophagia</div><div><span></span>ophiophagy</div><div><span></span>oppugn</div><div><span></span>paradigm</div><div><span></span>parasiticide</div><div><span></span>parricide</div><div><span></span>patricide</div><div><span></span>pedagogic</div><div><span></span>pedagogue</div><div><span></span>pedagogy</div><div><span></span>pesticide</div><div><span></span>phlegm</div></div>
+      <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>127 words</span></div></div>
+<div class="pg">
+      <div class="kicker">The big list 2 of 2</div>
+      <h2 style="font-size:16.5pt;margin:.04in 0 .18in">Every word in this book. Circle what you own.</h2>
+      <div class="biglist"><div><span></span>phrasemonger</div><div><span></span>playwright</div><div><span></span>poisonmonger</div><div><span></span>powermonger</div><div><span></span>precede</div><div><span></span>proceed</div><div><span></span>pyrolatry</div><div><span></span>reassign</div><div><span></span>recede</div><div><span></span>regicide</div><div><span></span>saprophagous</div><div><span></span>scandalmonger</div><div><span></span>secede</div><div><span></span>sovereign</div><div><span></span>statemonger</div><div><span></span>succeed</div><div><span></span>supercede</div><div><span></span>supersede</div><div><span></span>synagogue</div><div><span></span>tunesmith</div><div><span></span>unconcede</div><div><span></span>vermicide</div><div><span></span>wagonwright</div><div><span></span>wheelwright</div><div><span></span>wordsmith</div><div><span></span>xerophagy</div><div><span></span>zoolatry</div></div>
+      <div class="foot"><span>Letters Behaving Badly · Bizzing Bee Press</span><span>127 words</span></div></div>
+<div class="pg" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
+    <svg viewBox="0 0 120 100" class="bee" aria-hidden="true">
+  <ellipse cx="44" cy="34" rx="17" ry="26" fill="#DCEFFF" opacity=".85" transform="rotate(-28 44 34)"/>
+  <ellipse cx="76" cy="34" rx="17" ry="26" fill="#EAF5FF" opacity=".85" transform="rotate(28 76 34)"/>
+  <ellipse cx="60" cy="60" rx="34" ry="27" fill="#FFC93C"/>
+  <path d="M44 37 a34 27 0 0 0 -6 14 l14 0 a1 1 0 0 1 0 -14 z M64 34 l0 53 a34 27 0 0 0 14 -5 l0 -43 a34 27 0 0 0 -14 -5 z" fill="#241E33"/>
+  <circle cx="49" cy="56" r="3.6" fill="#241E33"/>
+  <path d="M45 68 q8 7 16 1" stroke="#241E33" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M52 34 q-4 -12 -12 -14 M68 34 q4 -12 12 -14" stroke="#241E33" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <circle cx="40" cy="19" r="4" fill="#241E33"/><circle cx="80" cy="19" r="4" fill="#241E33"/>
+</svg>
+    <h2 style="font-size:18pt;margin:.14in 0">You finished a whole book. Bees everywhere are impressed.</h2>
+    <p style="font-size:11pt;max-width:5.4in;margin:0 auto .3in;line-height:1.6">Every word in here is also inside the Bizzing Bee app, with real audio, games and a coach that remembers what you miss. Paper for the muscles, app for the ears.</p>
+    <p style="font-size:8.6pt;color:#8b83a3;max-width:5.8in;margin:0 auto;line-height:1.6">Bizzing Bee Press · an independent study project. Bizzing Bee is not affiliated with, sponsored by, or endorsed by the Scripps National Spelling Bee, the North South Foundation, or Merriam-Webster. Competition names appear only to describe which bees the practice material relates to. Definitions, sentences and hints are written for this project. Typefaces are open-licensed (SIL OFL).</p></div></body></html>
