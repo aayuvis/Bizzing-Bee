@@ -6,104 +6,145 @@
   @font-face{font-family:'Fredoka';src:url('../fonts/fredoka-600.woff2') format('woff2');font-weight:600}
   @font-face{font-family:'Hanken Grotesk';src:url('../fonts/hanken-var.woff2') format('woff2');font-weight:100 900}
   *{box-sizing:border-box;margin:0;padding:0}
-  :root{--ink:#241E33;--paper:#FFFDF6;--c:#3C8455;--c2:#245236;--tint:color-mix(in srgb,#3C8455 12%,white)}
-  html{background:#e9e4f5}
-  body{font-family:'Hanken Grotesk',sans-serif;color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  :root{--bg1:#f3efff;--bg2:#fff;--line:#ddd4f2;--chip:#e6defc;--chipInk:#4a3aa0;--text:#241E33;--muted:#6b6482;
+    --treasure:#F0B429;--treasure-tint:#FFF3D6;--treasure-deep:#8A5B00;--good:#2E8B57;--c:#4F9E6A;--c2:#3C8455;
+    --tint:color-mix(in srgb,#4F9E6A 10%,white)}
+  html{background:#e5dff2}
+  body{font-family:'Hanken Grotesk',sans-serif;color:var(--text);letter-spacing:.02em;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   @page{size:8.5in 11in;margin:0}
-  .pg{width:8.5in;height:11in;background:var(--paper);position:relative;overflow:hidden;padding:.62in .66in;page-break-after:always;break-after:page}
-  @media screen{.pg{margin:24px auto;box-shadow:0 10px 40px rgba(30,20,60,.18)}}
-  .bee{width:1.1in;height:auto}
-  .hexes{position:absolute;inset:0;width:100%;height:100%;opacity:.5}
+  .pg{width:8.5in;height:11in;background:var(--bg1);position:relative;overflow:hidden;padding:.58in .62in;page-break-after:always;break-after:page}
+  @media screen{.pg{margin:24px auto;box-shadow:0 10px 40px rgba(30,20,60,.18);border-radius:4px}}
   h1,h2,h3,.disp{font-family:'Baloo 2';font-weight:800}
-  .kicker{font-family:'Fredoka';font-weight:600;font-size:10.5pt;letter-spacing:.14em;text-transform:uppercase;color:var(--c2)}
-  .foot{position:absolute;bottom:.35in;left:.66in;right:.66in;display:flex;justify-content:space-between;font-size:8.5pt;color:#8b83a3;font-weight:600}
-  .badge{display:inline-grid;place-items:center;width:.62in;height:.62in;border-radius:16px;background:var(--c);color:#fff;font-family:'Baloo 2';font-size:17pt}
-  .concept{background:var(--tint);border-left:6px solid var(--c);border-radius:12px;padding:.14in .18in;font-size:10.6pt;line-height:1.5;margin:.12in 0}
-  .method{background:#241E33;color:#FFF7E0;border-radius:14px;padding:.15in .19in;font-size:9.7pt;line-height:1.52;margin:.1in 0}
-  .method b{color:#FFC93C}
-  .method div{margin:3px 0}
+  .kicker{font-family:'Fredoka';font-weight:600;font-size:10pt;letter-spacing:.13em;text-transform:uppercase;color:var(--c2)}
+  .foot{position:absolute;bottom:.32in;left:.62in;right:.62in;display:flex;justify-content:space-between;font-size:8.5pt;color:var(--muted);font-weight:600}
+  .panel{background:var(--bg2);border:1px solid var(--line);border-radius:16px;box-shadow:0 4px 14px rgba(108,79,224,.08)}
+  .badge{display:inline-grid;place-items:center;width:.58in;height:.58in;border-radius:15px;background:linear-gradient(135deg,var(--c),var(--c2));color:#fff;font-family:'Baloo 2';font-size:16pt;box-shadow:0 3px 8px color-mix(in srgb,var(--c) 40%,transparent)}
+  .chip{display:inline-block;background:var(--chip);color:var(--chipInk);font-weight:700;font-size:9pt;border-radius:999px;padding:3px 11px}
+  .concept{background:var(--tint);border:1px solid color-mix(in srgb,var(--c) 30%,white);border-left:6px solid var(--c);border-radius:14px;padding:.13in .17in;font-size:10.4pt;line-height:1.5;margin:.1in 0}
+  .method{background:#241E33;color:#F4EFFF;border-radius:16px;padding:.14in .18in;font-size:9.6pt;line-height:1.5;margin:.1in 0;box-shadow:0 5px 14px rgba(36,30,51,.28)}
+  .method b{color:var(--treasure)} .method div{margin:3px 0}
   .method .trick,.method [class]{font-family:'Baloo 2';font-size:12pt;letter-spacing:.05em}
-  .cards{display:grid;grid-template-columns:1fr 1fr;gap:.11in;margin-top:.12in}
-  .card{background:#fff;border:2px solid var(--c);border-radius:12px;padding:.1in .12in;box-shadow:3px 3px 0 var(--c)}
-  .card:nth-child(even){transform:rotate(.5deg)} .card:nth-child(odd){transform:rotate(-.5deg)}
-  .card h3{font-size:10pt;color:var(--c2);margin-bottom:3px}
-  .card p{font-size:8.7pt;line-height:1.4}
-  .wgrid{display:grid;grid-template-columns:1fr 1fr;gap:.14in}
-  .wd{border:1.5px solid #E4DDF2;border-radius:12px;padding:.12in .14in;background:#fff}
-  .wd .w{font-family:'Baloo 2';font-size:14.5pt;color:var(--c2)}
-  .wd .say{font-family:'Fredoka';font-size:9pt;color:#8b83a3;margin-left:6px}
-  .wd .d{font-size:9pt;line-height:1.4;margin-top:2px}
-  .wd .h{font-size:8.6pt;line-height:1.35;margin-top:4px;color:#5a4d84;background:var(--tint);border-radius:7px;padding:4px 7px}
-  .wd .line{border-bottom:2px dashed #C9BFE6;height:.24in;margin-top:6px}
-  .rr{columns:2;column-gap:.3in;font-size:9.2pt;line-height:1.45}
-  .dense .concept{font-size:9.6pt;line-height:1.42}
-  .dense .method{font-size:8.9pt;line-height:1.45}
-  .dense .card p{font-size:8pt;line-height:1.34} .dense .card h3{font-size:9.2pt}
-  .rr div{break-inside:avoid;padding:3px 0;border-bottom:1px dotted #DDD4F2}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:.1in;margin-top:.1in}
+  .card{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:.1in .12in;box-shadow:0 3px 10px rgba(108,79,224,.07)}
+  .card h3{font-size:9.8pt;color:var(--c2);margin-bottom:3px}
+  .card p{font-size:8.6pt;line-height:1.38;color:var(--text)}
+  .dense .concept{font-size:9.4pt;line-height:1.42}
+  .dense .method{font-size:8.8pt;line-height:1.44}
+  .dense .card p{font-size:7.9pt;line-height:1.32} .dense .card h3{font-size:9pt}
+  .wgrid{display:grid;grid-template-columns:1fr 1fr;gap:.12in}
+  .wd{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:.11in .13in;box-shadow:0 3px 10px rgba(108,79,224,.06)}
+  .wd .w{font-family:'Baloo 2';font-size:14pt;color:var(--c2)}
+  .wd .say{font-family:'Fredoka';font-size:8.8pt;color:var(--muted);margin-left:6px}
+  .wd .d{font-size:8.8pt;line-height:1.38;margin-top:2px}
+  .wd .h{font-size:8.4pt;line-height:1.32;margin-top:4px;color:var(--chipInk);background:var(--chip);border-radius:8px;padding:4px 7px}
+  .wd .line{border-bottom:2px dashed #C9BFE6;height:.22in;margin-top:6px}
+  .rr{columns:2;column-gap:.28in;font-size:9pt;line-height:1.42}
+  .rr>div{break-inside:avoid;padding:4px 6px;margin-bottom:4px;background:var(--bg2);border:1px solid var(--line);border-radius:9px}
   .rr b{font-family:'Fredoka';color:var(--c2)}
-  .biglist{columns:4;column-gap:.22in;font-size:8.7pt;line-height:1.62}
+  .biglist{columns:4;column-gap:.2in;font-size:8.6pt;line-height:1.6}
   .biglist div{break-inside:avoid}
-  .biglist span{display:inline-block;width:.14in;height:.14in;border:1.6px solid var(--c);border-radius:50%;margin-right:5px;vertical-align:-2px}
-  </style></head><body><div class="pg" style="background:linear-gradient(160deg,var(--c),var(--c2));color:#fff;display:flex;flex-direction:column;justify-content:space-between">
-    <svg class="hexes" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-  <defs><pattern id="hx" width="56" height="97" patternUnits="userSpaceOnUse">
-    <path d="M28 0 L56 16 L56 48 L28 64 L0 48 L0 16 Z M28 64 L56 80 L56 97 M28 64 L0 80 L0 97" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="2"/>
-  </pattern></defs><rect width="400" height="400" fill="url(#hx)"/></svg>
+  .biglist span{display:inline-block;width:.13in;height:.13in;border:1.6px solid var(--c);border-radius:50%;margin-right:5px;vertical-align:-2px;background:var(--bg2)}
+  .bb{display:flex;gap:.12in;align-items:flex-start;background:var(--treasure-tint);border:1px solid var(--treasure);border-radius:14px;padding:.11in .14in;margin-top:.14in}
+  .bb .bbi{font-size:15pt} .bb .bbl{font-family:'Fredoka';font-size:8.4pt;letter-spacing:.1em;text-transform:uppercase;color:var(--treasure-deep);font-weight:600}
+  .bb .bbb{font-size:9.8pt;line-height:1.4;margin-top:2px} .bb .bbt{font-size:8.6pt;color:var(--muted);margin-top:2px}
+  .bubble{position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:.13in .17in;font-size:10.5pt;line-height:1.5;box-shadow:0 4px 14px rgba(108,79,224,.08)}
+  .bubble:after{content:'';position:absolute;left:-9px;top:24px;width:16px;height:16px;background:var(--bg2);border-left:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
+  .cwwrap{display:flex;justify-content:center}
+  .cw{border-collapse:collapse} .cw td{width:.30in;height:.30in;position:relative}
+  .cw .cwc{background:var(--bg2);border:1.4px solid var(--chipInk)}
+  .cw .cwc i{position:absolute;top:1px;left:2px;font-style:normal;font-size:5.6pt;color:var(--muted)}
+  .cw .cwx{background:transparent}
+  .clues{display:grid;grid-template-columns:1fr 1fr;gap:.2in;margin-top:.14in;font-size:8.6pt;line-height:1.45}
+  .clues .clueh{font-family:'Baloo 2';font-size:10.5pt;color:var(--c2);margin-bottom:3px}
+  .clues b{color:var(--chipInk)}
+  .ws{border-collapse:collapse;margin:0 auto} .ws td{width:.27in;height:.27in;text-align:center;font-family:'Fredoka';font-size:10pt;background:var(--bg2);border:1px solid var(--line)}
+  .wsl{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:.14in}
+  .gtwo{display:grid;grid-template-columns:1fr 1fr;gap:.2in}
+  .g1{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:.12in .14in}
+  .g1 .gw{font-family:'Fredoka';font-size:11pt;letter-spacing:.16em;color:var(--c2)}
+  .g1 .gl{border-bottom:2px dashed #C9BFE6;height:.24in;margin-top:5px}
+  .key{columns:3;column-gap:.2in;font-size:8.4pt;line-height:1.55}
+  .key h3{column-span:all;font-size:11pt;color:var(--c2);margin:.06in 0 .04in}
+  </style></head><body><div class="pg" style="background:linear-gradient(160deg,var(--c),var(--c2));color:#fff;display:flex;flex-direction:column;justify-content:space-between;padding:.55in">
+    <svg style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true"><path d="M-80 620 L240 -40" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none" stroke-width="14" stroke="rgba(255,255,255,.08)"/><path d="M10 620 L330 -40" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none" stroke-width="14" stroke="rgba(255,255,255,.08)"/><path d="M100 620 L420 -40" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none" stroke-width="14" stroke="rgba(255,255,255,.08)"/><path d="M190 620 L510 -40" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none" stroke-width="14" stroke="rgba(255,255,255,.08)"/><path d="M280 620 L600 -40" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none" stroke-width="14" stroke="rgba(255,255,255,.08)"/><path d="M370 620 L690 -40" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none" stroke-width="14" stroke="rgba(255,255,255,.08)"/></svg>
     <div style="position:relative;display:flex;justify-content:space-between;align-items:center">
-      <span style="font-family:'Fredoka';font-weight:600;letter-spacing:.16em;font-size:11pt">BIZZING BEE ADVANCED LIBRARY</span>
-      <span class="disp" style="background:#241E33;padding:.08in .22in;border-radius:999px;font-size:13pt">Vol. 15</span>
+      <span style="font-family:'Fredoka';font-weight:600;letter-spacing:.16em;font-size:10.5pt">BIZZING BEE ADVANCED LIBRARY</span>
+      <span class="disp" style="background:rgba(0,0,0,.3);padding:.07in .2in;border-radius:999px;font-size:12.5pt">Vol. 15</span>
     </div>
     <div style="position:relative;text-align:center">
-      <svg viewBox="0 0 120 100" class="bee" aria-hidden="true">
-  <ellipse cx="44" cy="34" rx="17" ry="26" fill="#DCEFFF" opacity=".85" transform="rotate(-28 44 34)"/>
-  <ellipse cx="76" cy="34" rx="17" ry="26" fill="#EAF5FF" opacity=".85" transform="rotate(28 76 34)"/>
-  <ellipse cx="60" cy="60" rx="34" ry="27" fill="#FFC93C"/>
-  <path d="M44 37 a34 27 0 0 0 -6 14 l14 0 a1 1 0 0 1 0 -14 z M64 34 l0 53 a34 27 0 0 0 14 -5 l0 -43 a34 27 0 0 0 -14 -5 z" fill="#241E33"/>
-  <circle cx="49" cy="56" r="3.6" fill="#241E33"/>
-  <path d="M45 68 q8 7 16 1" stroke="#241E33" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <path d="M52 34 q-4 -12 -12 -14 M68 34 q4 -12 12 -14" stroke="#241E33" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <circle cx="40" cy="19" r="4" fill="#241E33"/><circle cx="80" cy="19" r="4" fill="#241E33"/>
-</svg>
-      <h1 style="font-size:46pt;line-height:1.02;margin:.2in 0 .12in;text-shadow:0 3px 0 rgba(0,0,0,.18)">The Word Factory</h1>
-      <p style="font-family:'Fredoka';font-size:14pt;max-width:5.6in;margin:0 auto">How English builds, borrows and bolts words together</p>
+      <svg viewBox="0 0 120 120" style="width:1.7in;height:1.7in;flex-shrink:0" aria-hidden="true"><circle cx="34" cy="38" r="10" fill="#E8E4F0"/><circle cx="86" cy="38" r="10" fill="#E8E4F0"/><circle cx="30" cy="48" r="8" fill="#E8E4F0"/><circle cx="90" cy="48" r="8" fill="#E8E4F0"/>
+<circle cx="60" cy="52" r="26" fill="#FFD9A8"/>
+<path d="M40 40 q8 -12 20 -12 q12 0 20 12 q-8 -6 -20 -6 q-12 0 -20 6 z" fill="#E8E4F0"/>
+<path d="M46 50 q4 -4 9 -2 M74 50 q-4 -4 -9 -2" fill="none" stroke="#5C4A32" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M48 58 q3 3 6 0 M66 58 q3 3 6 0" fill="none" stroke="#2B2B3E" stroke-width="3" stroke-linecap="round"/>
+<ellipse cx="44" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/><ellipse cx="76" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/>
+<path d="M54 68 q6 6 12 0" fill="none" stroke="#5C3A1E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M38 84 q22 -12 44 0 l-3 20 q-19 8 -38 0 z" fill="#2B2B3E"/>
+<path d="M60 80 l-7 9 l7 9 l7 -9 z" fill="#fff"/>
+<path d="M52 82 l8 7 8 -7 l-4 -4 h-8 z" fill="#fff"/><path d="M56 80 h8 l3 4 l-7 6 l-7 -6 z" fill="#F4F4FA"/>
+<rect x="56" y="84" width="8" height="6" rx="2" fill="#C43D5A"/>
+<path d="M88 76 L106 52" stroke="#8A5B2E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M100 40 q6 5 10 4 M96 32 q4 3 8 2" stroke="#C9C9DD" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+<circle cx="18" cy="70" r="2.2" fill="#FFC83D"/></svg>
+      <h1 style="font-size:44pt;line-height:1.02;margin:.14in 0 .1in;text-shadow:0 3px 0 rgba(0,0,0,.2)">The Word Factory</h1>
+      <p style="font-family:'Fredoka';font-size:13.5pt;max-width:5.8in;margin:0 auto">How English builds, borrows and bolts words together, piece by piece</p>
+      <p style="font-family:'Fredoka';font-size:10pt;margin-top:.12in;opacity:.9">with Maestro, your guide</p>
     </div>
-    <div style="position:relative;display:flex;gap:.16in;justify-content:center">
-      <div style="background:rgba(0,0,0,.22);border-radius:14px;padding:.14in .3in;text-align:center"><div class="disp" style="font-size:19pt">9</div><div style="font-family:'Fredoka';font-size:9.5pt">expert chapters</div></div><div style="background:rgba(0,0,0,.22);border-radius:14px;padding:.14in .3in;text-align:center"><div class="disp" style="font-size:19pt">220</div><div style="font-family:'Fredoka';font-size:9.5pt">practice words</div></div><div style="background:rgba(0,0,0,.22);border-radius:14px;padding:.14in .3in;text-align:center"><div class="disp" style="font-size:19pt">✏️</div><div style="font-family:'Fredoka';font-size:9.5pt">write-in pages</div></div>
+    <div style="position:relative;display:flex;gap:.14in;justify-content:center">
+      <div style="background:rgba(0,0,0,.24);border-radius:14px;padding:.12in .28in;text-align:center"><div class="disp" style="font-size:17pt">9</div><div style="font-family:'Fredoka';font-size:9pt">expert chapters</div></div><div style="background:rgba(0,0,0,.24);border-radius:14px;padding:.12in .28in;text-align:center"><div class="disp" style="font-size:17pt">220</div><div style="font-family:'Fredoka';font-size:9pt">practice words</div></div><div style="background:rgba(0,0,0,.24);border-radius:14px;padding:.12in .28in;text-align:center"><div class="disp" style="font-size:17pt">🎲</div><div style="font-family:'Fredoka';font-size:9pt">puzzles & games</div></div>
     </div></div>
 <div class="pg">
     <div class="kicker">How this book works</div>
-    <h1 style="font-size:26pt;margin:.08in 0 .2in">Five moves, no fluff.</h1>
-    <div style="display:flex;gap:.18in;margin-bottom:.22in;align-items:flex-start">
+    <h1 style="font-size:24pt;margin:.06in 0 .16in">Five moves, no fluff.</h1>
+    <div style="display:flex;gap:.16in;align-items:flex-start;margin-bottom:.2in">
+      <svg viewBox="0 0 120 120" style="width:1in;height:1in;flex-shrink:0" aria-hidden="true"><circle cx="34" cy="38" r="10" fill="#E8E4F0"/><circle cx="86" cy="38" r="10" fill="#E8E4F0"/><circle cx="30" cy="48" r="8" fill="#E8E4F0"/><circle cx="90" cy="48" r="8" fill="#E8E4F0"/>
+<circle cx="60" cy="52" r="26" fill="#FFD9A8"/>
+<path d="M40 40 q8 -12 20 -12 q12 0 20 12 q-8 -6 -20 -6 q-12 0 -20 6 z" fill="#E8E4F0"/>
+<path d="M46 50 q4 -4 9 -2 M74 50 q-4 -4 -9 -2" fill="none" stroke="#5C4A32" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M48 58 q3 3 6 0 M66 58 q3 3 6 0" fill="none" stroke="#2B2B3E" stroke-width="3" stroke-linecap="round"/>
+<ellipse cx="44" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/><ellipse cx="76" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/>
+<path d="M54 68 q6 6 12 0" fill="none" stroke="#5C3A1E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M38 84 q22 -12 44 0 l-3 20 q-19 8 -38 0 z" fill="#2B2B3E"/>
+<path d="M60 80 l-7 9 l7 9 l7 -9 z" fill="#fff"/>
+<path d="M52 82 l8 7 8 -7 l-4 -4 h-8 z" fill="#fff"/><path d="M56 80 h8 l3 4 l-7 6 l-7 -6 z" fill="#F4F4FA"/>
+<rect x="56" y="84" width="8" height="6" rx="2" fill="#C43D5A"/>
+<path d="M88 76 L106 52" stroke="#8A5B2E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M100 40 q6 5 10 4 M96 32 q4 3 8 2" stroke="#C9C9DD" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+<circle cx="18" cy="70" r="2.2" fill="#FFC83D"/></svg>
+      <div class="bubble">Hi! I'm <b>Maestro</b>. How English builds, borrows and bolts words together, piece by piece — that's our whole mission. Bring a pencil; I'll bring the words. Deal?</div>
+    </div>
+    <div style="display:flex;gap:.16in;margin-bottom:.16in;align-items:flex-start">
       <span class="badge">1</span>
-      <div><h3 style="font-size:13.5pt;color:var(--c2)">Read the Big Idea</h3><p style="font-size:11pt;line-height:1.55;max-width:5.6in">Every chapter starts with one idea that explains a whole family of words. Read it out loud. Twice is better.</p></div></div><div style="display:flex;gap:.18in;margin-bottom:.22in;align-items:flex-start">
+      <div class="panel" style="flex:1;padding:.1in .15in"><h3 style="font-size:12.5pt;color:var(--c2)">Read the Big Idea</h3><p style="font-size:10pt;line-height:1.5">One idea per chapter, and it explains a whole family of words. Read it out loud. Twice is better.</p></div></div><div style="display:flex;gap:.16in;margin-bottom:.16in;align-items:flex-start">
       <span class="badge">2</span>
-      <div><h3 style="font-size:13.5pt;color:var(--c2)">Steal the pro move</h3><p style="font-size:11pt;line-height:1.55;max-width:5.6in">The dark box is how a champion actually thinks on stage. It works on words you have never seen.</p></div></div><div style="display:flex;gap:.18in;margin-bottom:.22in;align-items:flex-start">
+      <div class="panel" style="flex:1;padding:.1in .15in"><h3 style="font-size:12.5pt;color:var(--c2)">Steal the pro move</h3><p style="font-size:10pt;line-height:1.5">The dark box is how a champion thinks on stage. It works on words you have never met.</p></div></div><div style="display:flex;gap:.16in;margin-bottom:.16in;align-items:flex-start">
       <span class="badge">3</span>
-      <div><h3 style="font-size:13.5pt;color:var(--c2)">Flip the sticky notes</h3><p style="font-size:11pt;line-height:1.55;max-width:5.6in">The note cards are the chapter in tiny pieces. Cover one, say it from memory, check yourself.</p></div></div><div style="display:flex;gap:.18in;margin-bottom:.22in;align-items:flex-start">
+      <div class="panel" style="flex:1;padding:.1in .15in"><h3 style="font-size:12.5pt;color:var(--c2)">Spell in the boxes</h3><p style="font-size:10pt;line-height:1.5">Say it, spell it OUT LOUD, then write it. Hand and mouth together beat eyes alone.</p></div></div><div style="display:flex;gap:.16in;margin-bottom:.16in;align-items:flex-start">
       <span class="badge">4</span>
-      <div><h3 style="font-size:13.5pt;color:var(--c2)">Spell in the boxes</h3><p style="font-size:11pt;line-height:1.55;max-width:5.6in">Every practice word has a write-in line. Say it, spell it OUT LOUD, then write it. Hand and mouth together beat eyes alone.</p></div></div><div style="display:flex;gap:.18in;margin-bottom:.22in;align-items:flex-start">
+      <div class="panel" style="flex:1;padding:.1in .15in"><h3 style="font-size:12.5pt;color:var(--c2)">Play the puzzle</h3><p style="font-size:10pt;line-height:1.5">Every chapter ends in a game — crossword, word search or scramble. Sneaky practice is still practice.</p></div></div><div style="display:flex;gap:.16in;margin-bottom:.16in;align-items:flex-start">
       <span class="badge">5</span>
-      <div><h3 style="font-size:13.5pt;color:var(--c2)">Hunt the Big List</h3><p style="font-size:11pt;line-height:1.55;max-width:5.6in">The back of the book has every word in one place. Circle the bubbles you own. Come back for the empty ones.</p></div></div>
-    <div class="concept" style="margin-top:.25in"><b>Grown-ups:</b> this book pairs with the Bizzing Bee app — the same chapters are narrated there, and every word here has real recorded audio in the app's Word Coach.</div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Advanced Pack material</span></div></div>
+      <div class="panel" style="flex:1;padding:.1in .15in"><h3 style="font-size:12.5pt;color:var(--c2)">Hunt the Big List</h3><p style="font-size:10pt;line-height:1.5">The back of the book holds every word. Circle the bubbles you own. Come back for the empty ones.</p></div></div>
+    <div class="concept" style="margin-top:.15in"><b>Grown-ups:</b> this book pairs with the Bizzing Bee app — the same chapters are narrated there, and every word has real recorded audio in the Word Coach.</div>
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Advanced Pack material</span></div></div>
 <div class="pg dense">
-    <div style="display:flex;align-items:center;gap:.16in">
+    <div style="display:flex;align-items:center;gap:.14in">
       <span class="badge">1</span>
       <div><div class="kicker">How Words Are Built</div>
-      <h2 style="font-size:20pt;line-height:1.08">Assimilation — why prefixes change their last letter</h2></div></div>
-    <div class="kicker" style="margin-top:.2in">The big idea</div>
+      <h2 style="font-size:19pt;line-height:1.08">Assimilation — why prefixes change their last letter</h2></div></div>
+    <div class="kicker" style="margin-top:.16in">The big idea</div>
     <div class="concept">The general course teaches this for ad- alone, but the same machinery governs every Latin prefix, and it explains most of the doubled letters in English. When a prefix ending in a consonant meets a root starting with a different one, Latin reshaped the prefix's final letter to match — and the result is two identical letters. Once you can see the prefix, you know exactly which letter doubles and why, instead of memorising each word.</div>
-    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'>IMMARCESCIBLE</div>
+    <div class="kicker" style="margin-top:.08in">The pro move</div><div class="method"><div class='trick'>IMMARCESCIBLE</div>
 <b>Heard.</b> im-ar-SESS-ih-bul — unfading
 <b>Parse.</b> in- (not) + marcescere (to wither) + -ible
 <b>Assimilation.</b> in- before m becomes im-, so the two m letters are prefix plus root
 <b>Spell.</b> I M M A R C E S C I B L E
 <b>Family.</b> marcescent — withering, from the same root</div>
     <div class="cards"><div class="card"><h3>The four families</h3><p>in- meaning not or into becomes im- before b, m, p (impossible, immature), il- before l (illegible, illuminate), ir- before r (irregular, irascible). sub- becomes suc- suf- sug- sup- sur- (succumb, sufficient, suggestion, suppress, surreptitious). ad- becomes ac- af- ag- al- an- ap- ar- as- at- (accommodate, affinity, aggregate, alliteration, annihilate, apparatus, arrogate, assiduous, attenuate). con- becomes col- cor- com- (collateral, corroborate, commiserate).</p></div><div class="card"><h3>This is where doubled letters come from</h3><p>Almost every awkward double in a Latin-derived word is a prefix meeting a root. Accommodate is ad plus commodus, so the double c is the assimilated prefix and the double m belongs to the root — which is exactly why it has two of each. Annihilate is ad plus nihil, nothing. Aggregate is ad plus grex, a flock. Once you see the seam, the doubling is not arbitrary.</p></div><div class="card"><h3>Why some words do not double</h3><p>The prefix only assimilates when it has to. Before a vowel it stays whole: adapt, adopt, adequate, inept, inane. Before certain consonants it simply drops its final letter without doubling: aspire is ad plus spirare, not adspire or asspire. So the absence of a double is information too — it tells you the root began with a vowel or an awkward cluster.</p></div><div class="card"><h3>Using it at the microphone</h3><p>This is the single most useful structural insight in the course, because it turns spelling into arithmetic. Hear a long Latin word, find the prefix, find the root, and the join tells you the doubling. Our core library holds 1,356 words that begin with an assimilated prefix and the full library 1,898 — more than any other pattern here.</p></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 1</span></div></div>
+    
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 1</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Assimilation — why prefixes change their last letter · 1</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">immarcescible</span><span class="say">/ ih-mar-SES-ih-bul /</span>
       <div class="d">Incapable of withering or fading; not subject to decay or deterioration; everlasting in fresh…</div><div class="h">💡 A prefix reshapes its final consonant to match what follows. in- becomes im- il- ir-, sub- becomes suc- suf- sug-…</div><div class="line"></div></div><div class="wd"><span class="w">surreptitious</span><span class="say">/ sur-uh-PTIH-shuhs /</span>
       <div class="d">marked by quiet and caution and secrecy; taking pains to avoid being observed</div><div class="h">💡 A prefix reshapes its final consonant to match what follows. in- becomes im- il- ir-, sub- becomes suc- suf- sug-…</div><div class="line"></div></div><div class="wd"><span class="w">accommodate</span><span class="say">/ uh-k-AH-m-uh-d-ay-t /</span>
@@ -113,10 +154,10 @@
       <div class="d">to feel or express sympathy or compassion</div><div class="h">💡 A prefix reshapes its final consonant to match what follows. in- becomes im- il- ir-, sub- becomes suc- suf- sug-…</div><div class="line"></div></div><div class="wd"><span class="w">annihilate</span><span class="say">/ uh-NEYE-uh-layt /</span>
       <div class="d">kill in large numbers</div><div class="h">💡 A prefix reshapes its final consonant to match what follows. in- becomes im- il- ir-, sub- becomes suc- suf- sug-…</div><div class="line"></div></div><div class="wd"><span class="w">irascible</span><span class="say">/ ih-r-A-s-ih-b-uh-l /</span>
       <div class="d">is easily provoked to anger</div><div class="h">💡 A prefix reshapes its final consonant to match what follows. in- becomes im- il- ir-, sub- becomes suc- suf- sug-…</div><div class="line"></div></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 1 practice</span></div></div>
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 1 practice</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Assimilation — why prefixes change their last letter · 2</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">illuminate</span><span class="say">/ ih-LOO-mih-niht /</span>
       <div class="d">make lighter or brighter</div><div class="h">💡 A prefix reshapes its final consonant to match what follows. in- becomes im- il- ir-, sub- becomes suc- suf- sug-…</div><div class="line"></div></div><div class="wd"><span class="w">illegible</span><span class="say">/ ih-l-EH-j-uh-b-uh-l /</span>
       <div class="d">is hard to read or decipher because of poor handwriting</div><div class="h">💡 A prefix reshapes its final consonant to match what follows. in- becomes im- il- ir-, sub- becomes suc- suf- sug-…</div><div class="line"></div></div><div class="wd"><span class="w">collateral</span><span class="say">/ kuh-LA-ter-uhl /</span>
@@ -126,30 +167,52 @@
       <div class="d">equipment designed to serve a specific function</div><div class="h">💡 A prefix reshapes its final consonant to match what follows. in- becomes im- il- ir-, sub- becomes suc- suf- sug-…</div><div class="line"></div></div><div class="wd"><span class="w">assiduous</span><span class="say">/ uh-SIH-dwuhs /</span>
       <div class="d">marked by care and persistent effort</div><div class="h">💡 A prefix reshapes its final consonant to match what follows. in- becomes im- il- ir-, sub- becomes suc- suf- sug-…</div><div class="line"></div></div><div class="wd"><span class="w">attenuate</span><span class="say">/ uh-TEH-nyoo-ayt /</span>
       <div class="d">weaken the consistency of (a chemical substance)</div><div class="h">💡 A prefix reshapes its final consonant to match what follows. in- becomes im- il- ir-, sub- becomes suc- suf- sug-…</div><div class="line"></div></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 1 practice</span></div></div>
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 1 practice</span></div></div>
 <div class="pg">
       <div class="kicker">Rapid round · Assimilation — why prefixes change their last letter</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
-      <div class="rr"><div><b>aggregate</b> <span style="color:#8b83a3;font-size:8.4pt">/ A-gruh-guht /</span><br>the whole amount</div><div><b>suggestion</b> <span style="color:#8b83a3;font-size:8.4pt">/ suh-JEH-schuhn /</span><br>an idea that is suggested</div><div><b>sufficient</b> <span style="color:#8b83a3;font-size:8.4pt">/ suh-FIH-shuhnt /</span><br>of a quantity that can fulfill a need or requirement but without being</div><div><b>suppress</b> <span style="color:#8b83a3;font-size:8.4pt">/ suh-PREHS /</span><br>to put down by force or authority</div><div><b>succumb</b> <span style="color:#8b83a3;font-size:8.4pt">/ suh-KUHM /</span><br>consent reluctantly</div><div><b>affinity</b> <span style="color:#8b83a3;font-size:8.4pt">/ uh-FIH-nuh-tee /</span><br>(immunology) the attraction between an antigen and an antibody</div><div><b>arrogate</b> <span style="color:#8b83a3;font-size:8.4pt">/ A-roh-gayt /</span><br>demand as being one's due or property; assert one's right or title to</div><div><b>opponent</b> <span style="color:#8b83a3;font-size:8.4pt">/ uh-POH-nuhnt /</span><br>a contestant that you are matched against</div><div><b>immanent</b> <span style="color:#8b83a3;font-size:8.4pt">/ IH-muh-nuhnt /</span><br>of a mental act performed entirely within the mind</div></div>
-      <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 1 extras</span></div></div>
+      <h2 style="font-size:16pt;margin:.04in 0 .14in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>aggregate</b> <span style="color:var(--muted);font-size:8.2pt">/ A-gruh-guht /</span><br>the whole amount</div><div><b>suggestion</b> <span style="color:var(--muted);font-size:8.2pt">/ suh-JEH-schuhn /</span><br>an idea that is suggested</div><div><b>sufficient</b> <span style="color:var(--muted);font-size:8.2pt">/ suh-FIH-shuhnt /</span><br>of a quantity that can fulfill a need or requirement but without being</div><div><b>suppress</b> <span style="color:var(--muted);font-size:8.2pt">/ suh-PREHS /</span><br>to put down by force or authority</div><div><b>succumb</b> <span style="color:var(--muted);font-size:8.2pt">/ suh-KUHM /</span><br>consent reluctantly</div><div><b>affinity</b> <span style="color:var(--muted);font-size:8.2pt">/ uh-FIH-nuh-tee /</span><br>(immunology) the attraction between an antigen and an antibody</div><div><b>arrogate</b> <span style="color:var(--muted);font-size:8.2pt">/ A-roh-gayt /</span><br>demand as being one's due or property; assert one's right or title to</div><div><b>opponent</b> <span style="color:var(--muted);font-size:8.2pt">/ uh-POH-nuhnt /</span><br>a contestant that you are matched against</div><div><b>immanent</b> <span style="color:var(--muted);font-size:8.2pt">/ IH-muh-nuhnt /</span><br>of a mental act performed entirely within the mind</div></div>
+      <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 1 extras</span></div></div>
+<div class="pg">
+      <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><circle cx="34" cy="38" r="10" fill="#E8E4F0"/><circle cx="86" cy="38" r="10" fill="#E8E4F0"/><circle cx="30" cy="48" r="8" fill="#E8E4F0"/><circle cx="90" cy="48" r="8" fill="#E8E4F0"/>
+<circle cx="60" cy="52" r="26" fill="#FFD9A8"/>
+<path d="M40 40 q8 -12 20 -12 q12 0 20 12 q-8 -6 -20 -6 q-12 0 -20 6 z" fill="#E8E4F0"/>
+<path d="M46 50 q4 -4 9 -2 M74 50 q-4 -4 -9 -2" fill="none" stroke="#5C4A32" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M48 58 q3 3 6 0 M66 58 q3 3 6 0" fill="none" stroke="#2B2B3E" stroke-width="3" stroke-linecap="round"/>
+<ellipse cx="44" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/><ellipse cx="76" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/>
+<path d="M54 68 q6 6 12 0" fill="none" stroke="#5C3A1E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M38 84 q22 -12 44 0 l-3 20 q-19 8 -38 0 z" fill="#2B2B3E"/>
+<path d="M60 80 l-7 9 l7 9 l7 -9 z" fill="#fff"/>
+<path d="M52 82 l8 7 8 -7 l-4 -4 h-8 z" fill="#fff"/><path d="M56 80 h8 l3 4 l-7 6 l-7 -6 z" fill="#F4F4FA"/>
+<rect x="56" y="84" width="8" height="6" rx="2" fill="#C43D5A"/>
+<path d="M88 76 L106 52" stroke="#8A5B2E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M100 40 q6 5 10 4 M96 32 q4 3 8 2" stroke="#C9C9DD" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+<circle cx="18" cy="70" r="2.2" fill="#FFC83D"/></svg>
+        <div><div class="kicker">Maestro's puzzle page · Assimilation — why prefixes change their last letter</div>
+        <h2 style="font-size:16pt">Crossword</h2></div></div>
+      <div class="cwwrap"><table class="cw"><tr><td class="cwc"><i>1</i></td><td class="cwc"></td><td class="cwc"><i>2</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>3</i></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"><i>4</i></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>5</i></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>6</i></td><td class="cwx"></td></tr><tr><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td></tr><tr><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td></tr><tr><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td></tr><tr><td class="cwc"></td><td class="cwx"></td><td class="cwc"><i>7</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>8</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td></tr></table></div>
+    <div class="clues"><div><div class="clueh">Across</div><div><b>1.</b> is easily provoked to anger</div><div><b>7.</b> use of the same consonant at the beginning of each stressed syllable in a line</div><div><b>8.</b> to feel or express sympathy or compassion</div></div>
+    <div><div class="clueh">Down</div><div><b>1.</b> is hard to read or decipher because of poor handwriting</div><div><b>2.</b> is to do a kindness or a favor to oblige</div><div><b>3.</b> make lighter or brighter</div><div><b>4.</b> kill in large numbers</div><div><b>5.</b> a security pledged for the repayment of a loan</div><div><b>6.</b> establish or strengthen as with new evidence or facts</div></div></div><div class="bb"><span class="bbi">✨</span><div><div class="bbl">Bee Break · simile of the page</div><div class="bbb"><b>as silly as a goose</b></div><div class="bbt">harmlessly foolish</div></div></div>
+      <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 1 game</span></div></div>
 <div class="pg dense">
-    <div style="display:flex;align-items:center;gap:.16in">
+    <div style="display:flex;align-items:center;gap:.14in">
       <span class="badge">2</span>
       <div><div class="kicker">How Words Are Built</div>
-      <h2 style="font-size:20pt;line-height:1.08">Stacking combining forms — how the longest words are built</h2></div></div>
-    <div class="kicker" style="margin-top:.2in">The big idea</div>
+      <h2 style="font-size:19pt;line-height:1.08">Stacking combining forms — how the longest words are built</h2></div></div>
+    <div class="kicker" style="margin-top:.16in">The big idea</div>
     <div class="concept">The longest words in the library are not harder than short ones; they are just longer. They are chains of combining forms, each with a fixed spelling, joined by a connecting vowel — o for Greek, i for Latin. The entire skill is finding the joints. Once a word is broken at its joints, you are spelling six familiar pieces in sequence rather than forty-five arbitrary letters, and the pieces recur across hundreds of other words.</div>
-    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'>OTORHINOLARYNGOLOGY</div>
+    <div class="kicker" style="margin-top:.08in">The pro move</div><div class="method"><div class='trick'>OTORHINOLARYNGOLOGY</div>
 <b>Heard.</b> oh-toh-rye-noh-lar-in-GOL-uh-jee
 <b>Joints.</b> ot / o / rhin / o / laryng / o / logy
 <b>Parts.</b> ous ear, rhis nose, larynx throat, logos study
 <b>Spell.</b> O T O R H I N O L A R Y N G O L O G Y
 <b>Family.</b> otology, rhinoplasty, laryngitis — every piece reappears</div>
     <div class="cards"><div class="card"><h3>Find the joints first</h3><p>Never spell a long word left to right. Break it at the connecting vowels first. Otorhinolaryngology becomes ot-o-rhin-o-laryng-o-logy: ear, nose, throat, study. Electroencephalogram becomes electr-o-en-cephal-o-gram. Psychopharmacology becomes psych-o-pharmac-o-logy. Six short familiar pieces beat one long unfamiliar string every time.</p></div><div class="card"><h3>Greek joins with o, Latin with i</h3><p>This is the rule that decides the connectors. Greek compounds use o: ochlocracy, myrmecophagy, thermometer, dendrochronology. Latin compounds use i: fossiliferous, cupriferous, insecticide, verisimilitude. So if the pieces are Greek, put an o at each joint; if Latin, put an i. A mixed word takes the vowel belonging to the piece before the joint.</p></div><div class="card"><h3>The showpieces come apart too</h3><p>Pneumonoultramicroscopicsilicovolcanoconiosis is pneumon-o-ultra-microscopic-silic-o-volcan-o-coni-osis: lung, beyond, tiny, silica, volcanic, dust, condition. Floccinaucinihilipilification is flocci-nauci-nihili-pili-fication, four Latin words for something worthless plus making. Hippopotomonstrosesquippedaliophobia stacks horse, river, monster, a foot and a half long, and fear. All buildable.</p></div><div class="card"><h3>The pieces pay you back</h3><p>The reason this is worth practising is reuse. Learn cephal, head, and you have cephalic, encephalogram, hydrocephalus, cephalopod, acephalous, cephalomancy. Learn laryng and you have laryngitis, laryngology, laryngoscope. Our core library holds 2,871 words whose syllable count is six or more, and nearly all of them are stacks. Every piece you learn appears in dozens.</p></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 2</span></div></div>
+    
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 2</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Stacking combining forms — how the longest words are built · 1</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">pneumonoultramicroscopicsilicovolcanoconiosis</span><span class="say">/ noo-muh-noh-ul-truh-my-kruh-skop-ik-sil-uh-koh-vol-kay-noh-koh-nee-OH-sis /</span>
       <div class="d">a lung disease caused by breathing very fine volcanic silica dust</div><div class="h">💡 Long scientific words are chains of morphemes, not memorised strings. Greek joins with o, Latin with i. Find the …</div><div class="line"></div></div><div class="wd"><span class="w">hippopotomonstrosesquippedaliophobia</span><span class="say">/ hip-oh-pot-oh-mon-stroh-ses-kwip-uh-day-lee-oh-FOH-bee-uh /</span>
       <div class="d">a humorous name for the fear of very long words</div><div class="h">💡 Long scientific words are chains of morphemes, not memorised strings. Greek joins with o, Latin with i. Find the …</div><div class="line"></div></div><div class="wd"><span class="w">floccinaucinihilipilification</span><span class="say">/ flok-suh-naw-suh-ny-hil-uh-pil-uh-fuh-KAY-shun /</span>
@@ -159,10 +222,10 @@
       <div class="d">A surgical procedure in which the uterus is removed through an incision in the abdominal wall…</div><div class="h">💡 Long scientific words are chains of morphemes, not memorised strings. Greek joins with o, Latin with i. Find the …</div><div class="line"></div></div><div class="wd"><span class="w">immunoelectrophoresis</span><span class="say">/ ih-myoo-noh-ih-lek-troh-fuh-REE-sis /</span>
       <div class="d">electrophoresis to separate antigens and antibodies</div><div class="h">💡 Long scientific words are chains of morphemes, not memorised strings. Greek joins with o, Latin with i. Find the …</div><div class="line"></div></div><div class="wd"><span class="w">psychopharmacology</span><span class="say">/ sy-koh-fahr-muh-KOL-uh-jee /</span>
       <div class="d">the study of drugs that affect the mind</div><div class="h">💡 Long scientific words are chains of morphemes, not memorised strings. Greek joins with o, Latin with i. Find the …</div><div class="line"></div></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 2 practice</span></div></div>
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 2 practice</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Stacking combining forms — how the longest words are built · 2</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">kakorrhaphiophobia</span><span class="say">/ kak-uh-raf-ee-uh-FOH-bee-uh /</span>
       <div class="d">an abnormal fear of failure</div><div class="h">💡 Long scientific words are chains of morphemes, not memorised strings. Greek joins with o, Latin with i. Find the …</div><div class="line"></div></div><div class="wd"><span class="w">arachibutyrophobia</span><span class="say">/ uh-rak-uh-byoo-tuh-roh-FOH-bee-uh /</span>
       <div class="d">a humorous name for the fear of peanut butter sticking to the roof of your mouth</div><div class="h">💡 Long scientific words are chains of morphemes, not memorised strings. Greek joins with o, Latin with i. Find the …</div><div class="line"></div></div><div class="wd"><span class="w">thermoluminescence</span><span class="say">/ ther-moh-loo-mih-NES-unts /</span>
@@ -172,25 +235,48 @@
       <div class="d">an irresistible urge to pull out your own hair</div><div class="h">💡 Long scientific words are chains of morphemes, not memorised strings. Greek joins with o, Latin with i. Find the …</div><div class="line"></div></div><div class="wd"><span class="w">radioimmunoassay</span><span class="say">/ ray-dee-oh-ih-myoo-noh-AS-ay /</span>
       <div class="d">immunoassay of a substance that has been radioactively labeled</div><div class="h">💡 Long scientific words are chains of morphemes, not memorised strings. Greek joins with o, Latin with i. Find the …</div><div class="line"></div></div><div class="wd"><span class="w">zenzizenzizenzic</span><span class="say">/ zen-zee-zen-zee-ZEN-zik /</span>
       <div class="d">the eighth power of a number, in old arithmetic books</div><div class="h">💡 Long scientific words are chains of morphemes, not memorised strings. Greek joins with o, Latin with i. Find the …</div><div class="line"></div></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 2 practice</span></div></div>
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 2 practice</span></div></div>
+<div class="pg">
+      <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><circle cx="34" cy="38" r="10" fill="#E8E4F0"/><circle cx="86" cy="38" r="10" fill="#E8E4F0"/><circle cx="30" cy="48" r="8" fill="#E8E4F0"/><circle cx="90" cy="48" r="8" fill="#E8E4F0"/>
+<circle cx="60" cy="52" r="26" fill="#FFD9A8"/>
+<path d="M40 40 q8 -12 20 -12 q12 0 20 12 q-8 -6 -20 -6 q-12 0 -20 6 z" fill="#E8E4F0"/>
+<path d="M46 50 q4 -4 9 -2 M74 50 q-4 -4 -9 -2" fill="none" stroke="#5C4A32" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M48 58 q3 3 6 0 M66 58 q3 3 6 0" fill="none" stroke="#2B2B3E" stroke-width="3" stroke-linecap="round"/>
+<ellipse cx="44" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/><ellipse cx="76" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/>
+<path d="M54 68 q6 6 12 0" fill="none" stroke="#5C3A1E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M38 84 q22 -12 44 0 l-3 20 q-19 8 -38 0 z" fill="#2B2B3E"/>
+<path d="M60 80 l-7 9 l7 9 l7 -9 z" fill="#fff"/>
+<path d="M52 82 l8 7 8 -7 l-4 -4 h-8 z" fill="#fff"/><path d="M56 80 h8 l3 4 l-7 6 l-7 -6 z" fill="#F4F4FA"/>
+<rect x="56" y="84" width="8" height="6" rx="2" fill="#C43D5A"/>
+<path d="M88 76 L106 52" stroke="#8A5B2E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M100 40 q6 5 10 4 M96 32 q4 3 8 2" stroke="#C9C9DD" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+<circle cx="18" cy="70" r="2.2" fill="#FFC83D"/></svg>
+        <div><div class="kicker">Maestro's puzzle page · Stacking combining forms — how the longest words are built</div>
+        <h2 style="font-size:16pt">Scramble & rescue</h2></div></div>
+      <div class="gtwo"><div><div class="kicker" style="margin-bottom:.08in">Unscramble</div>
+      </div>
+      <div><div class="kicker" style="margin-bottom:.08in">Rescue the vowels</div>
+      </div></div><div class="bb"><span class="bbi">🎈</span><div><div class="bbl">Bee Break · idiom to drop at dinner</div><div class="bbb"><b>foregone conclusion</b></div><div class="bbt">a result everyone already knows before it happens</div></div></div>
+      <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 2 game</span></div></div>
 <div class="pg dense">
-    <div style="display:flex;align-items:center;gap:.16in">
+    <div style="display:flex;align-items:center;gap:.14in">
       <span class="badge">3</span>
       <div><div class="kicker">How Words Are Built</div>
-      <h2 style="font-size:20pt;line-height:1.08">Hyphens, spaces and closed compounds</h2></div></div>
-    <div class="kicker" style="margin-top:.2in">The big idea</div>
+      <h2 style="font-size:19pt;line-height:1.08">Hyphens, spaces and closed compounds</h2></div></div>
+    <div class="kicker" style="margin-top:.16in">The big idea</div>
     <div class="concept">On a bee stage a hyphen is a letter: you have to say it, and getting it wrong loses the word. The rules are conventional rather than logical, but they are learnable. Borrowed French and Italian phrases keep the hyphens they arrived with. The prefix self- always takes one. English compounds tend to start open, become hyphenated, then close up entirely, so the answer depends on how old the compound is — and the dictionary of record decides.</div>
-    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'>MILLE-FEUILLE</div>
+    <div class="kicker" style="margin-top:.08in">The pro move</div><div class="method"><div class='trick'>MILLE-FEUILLE</div>
 <b>Heard.</b> meel-FOY — a layered pastry
 <b>Origin.</b> French mille feuilles, a thousand leaves
 <b>Rule.</b> a borrowed French phrase keeps its hyphen; you must say hyphen aloud
 <b>Spell.</b> M I L L E hyphen F E U I L L E
 <b>Family.</b> porte-monnaie, carton-pierre — same rule</div>
     <div class="cards"><div class="card"><h3>Say the hyphen</h3><p>This is the practical point that matters most. At the microphone you spell a hyphenated word by naming it: m-i-l-l-e-hyphen-f-e-u-i-l-l-e. If you run the letters together without saying hyphen, you have misspelled the word. Practise saying it aloud, because it feels unnatural and that is exactly when people forget.</p></div><div class="card"><h3>Borrowed phrases keep their hyphens</h3><p>French and Italian phrases that entered English as units keep the punctuation they came with. Porte-monnaie, mille-feuille, carton-pierre, loup-garou, cul-de-sac, avant-gardism, mezzo-soprano, privat-docent from German. If the word is a phrase in its own language and English took the whole phrase, expect a hyphen.</p></div><div class="card"><h3>self- always, and the life cycle</h3><p>The prefix self- is reliably hyphenated: self-conscious, self-portrait, self-sabotage, self-mastery, self-sterile, self-support. Beyond that, English compounds age. They start as two words, acquire a hyphen, and finally close up — to day became to-day became today. So the newer the compound, the more likely the hyphen; the older, the more likely it has closed.</p></div><div class="card"><h3>When you genuinely cannot tell</h3><p>Sometimes there is no derivable answer and the dictionary simply rules. In that case use what you do know: is it a foreign phrase? Then hyphen. Does it start with self-? Then hyphen. Is it an old, everyday English compound? Then probably closed. Is it a technical modifier before a noun? Then probably hyphenated. Our core library holds 111 hyphenated or open forms and the full library 752.</p></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 3</span></div></div>
+    
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 3</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Hyphens, spaces and closed compounds · 1</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">self-conscious</span><span class="say">/ S EH2 L F K AA1 N SH AH0 S /</span>
       <div class="d">aware of yourself as an individual or of your own being and actions and thoughts</div><div class="h">💡 You must say the hyphen out loud. French phrase borrowings keep their hyphens; English compounds usually lose the…</div><div class="line"></div></div><div class="wd"><span class="w">absent-minded</span><span class="say">/ AB-snt-MYN-did /</span>
       <div class="d">Tending to forget things or not pay attention to what is happening around you because your th…</div><div class="h">💡 You must say the hyphen out loud. French phrase borrowings keep their hyphens; English compounds usually lose the…</div><div class="line"></div></div><div class="wd"><span class="w">avant-gardism</span><span class="say">/ ah-vahn-GARD-iz-um /</span>
@@ -200,34 +286,57 @@
       <div class="d">A type of papier-mâché material made from paper pulp, chalk, and other substances, molded to …</div><div class="h">💡 You must say the hyphen out loud. French phrase borrowings keep their hyphens; English compounds usually lose the…</div><div class="line"></div></div><div class="wd"><span class="w">mille-feuille</span><span class="say">/ meel-FOY /</span>
       <div class="d">A classic French pastry made of many thin, flaky layers of puff pastry alternated with cream …</div><div class="h">💡 You must say the hyphen out loud. French phrase borrowings keep their hyphens; English compounds usually lose the…</div><div class="line"></div></div><div class="wd"><span class="w">privat-docent</span><span class="say">/ prih-VAHT-doh-sent /</span>
       <div class="d">In European universities, especially in German-speaking countries, an unsalaried lecturer who…</div><div class="h">💡 You must say the hyphen out loud. French phrase borrowings keep their hyphens; English compounds usually lose the…</div><div class="line"></div></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 3 practice</span></div></div>
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 3 practice</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Hyphens, spaces and closed compounds · 2</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">hsaing-waing</span><span class="say">/ SAING-waing /</span>
       <div class="d">A traditional Burmese percussion ensemble centered around a circle of tuned drums, used to ac…</div><div class="h">💡 You must say the hyphen out loud. French phrase borrowings keep their hyphens; English compounds usually lose the…</div><div class="line"></div></div><div class="wd"><span class="w">loup-garou</span><span class="say">/ loo-gah-ROO /</span>
       <div class="d">a monster able to change appearance from human to wolf and back again</div><div class="h">💡 You must say the hyphen out loud. French phrase borrowings keep their hyphens; English compounds usually lose the…</div><div class="line"></div></div><div class="wd"><span class="w">hunky-dory</span><span class="say">/ HUNK-ee-DOR-ee /</span>
       <div class="d">being satisfactory or in satisfactory condition</div><div class="h">💡 You must say the hyphen out loud. French phrase borrowings keep their hyphens; English compounds usually lose the…</div><div class="line"></div></div><div class="wd"><span class="w">cul-de-sac</span><span class="say">/ K AH1 L D IH0 S AE2 K /</span>
       <div class="d">a passage with access only at one end</div><div class="h">💡 You must say the hyphen out loud. French phrase borrowings keep their hyphens; English compounds usually lose the…</div><div class="line"></div></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 3 practice</span></div></div>
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 3 practice</span></div></div>
+<div class="pg">
+      <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><circle cx="34" cy="38" r="10" fill="#E8E4F0"/><circle cx="86" cy="38" r="10" fill="#E8E4F0"/><circle cx="30" cy="48" r="8" fill="#E8E4F0"/><circle cx="90" cy="48" r="8" fill="#E8E4F0"/>
+<circle cx="60" cy="52" r="26" fill="#FFD9A8"/>
+<path d="M40 40 q8 -12 20 -12 q12 0 20 12 q-8 -6 -20 -6 q-12 0 -20 6 z" fill="#E8E4F0"/>
+<path d="M46 50 q4 -4 9 -2 M74 50 q-4 -4 -9 -2" fill="none" stroke="#5C4A32" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M48 58 q3 3 6 0 M66 58 q3 3 6 0" fill="none" stroke="#2B2B3E" stroke-width="3" stroke-linecap="round"/>
+<ellipse cx="44" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/><ellipse cx="76" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/>
+<path d="M54 68 q6 6 12 0" fill="none" stroke="#5C3A1E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M38 84 q22 -12 44 0 l-3 20 q-19 8 -38 0 z" fill="#2B2B3E"/>
+<path d="M60 80 l-7 9 l7 9 l7 -9 z" fill="#fff"/>
+<path d="M52 82 l8 7 8 -7 l-4 -4 h-8 z" fill="#fff"/><path d="M56 80 h8 l3 4 l-7 6 l-7 -6 z" fill="#F4F4FA"/>
+<rect x="56" y="84" width="8" height="6" rx="2" fill="#C43D5A"/>
+<path d="M88 76 L106 52" stroke="#8A5B2E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M100 40 q6 5 10 4 M96 32 q4 3 8 2" stroke="#C9C9DD" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+<circle cx="18" cy="70" r="2.2" fill="#FFC83D"/></svg>
+        <div><div class="kicker">Maestro's puzzle page · Hyphens, spaces and closed compounds</div>
+        <h2 style="font-size:16pt">Scramble & rescue</h2></div></div>
+      <div class="gtwo"><div><div class="kicker" style="margin-bottom:.08in">Unscramble</div>
+      </div>
+      <div><div class="kicker" style="margin-bottom:.08in">Rescue the vowels</div>
+      </div></div><div class="bb"><span class="bbi">💬</span><div><div class="bbl">Bee Break · someone said it better</div><div class="bbb">“A single grateful thought raised to heaven is the most perfect prayer.”</div><div class="bbt">— Doris Lessing, British-Zimbabwean novelist</div></div></div>
+      <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 3 game</span></div></div>
 <div class="pg dense">
-    <div style="display:flex;align-items:center;gap:.16in">
+    <div style="display:flex;align-items:center;gap:.14in">
       <span class="badge">4</span>
       <div><div class="kicker">How Words Are Built</div>
-      <h2 style="font-size:20pt;line-height:1.08">Doublets — one root, two arrivals, two spellings</h2></div></div>
-    <div class="kicker" style="margin-top:.2in">The big idea</div>
+      <h2 style="font-size:19pt;line-height:1.08">Doublets — one root, two arrivals, two spellings</h2></div></div>
+    <div class="kicker" style="margin-top:.16in">The big idea</div>
     <div class="concept">English borrowed from French for six hundred years, and French itself changed during that time — so the same Latin root frequently arrived twice, at different dates, wearing different clothes. These pairs are called doublets, and they explain a great deal that otherwise looks random. Northern Norman French kept a w and a hard c; central Parisian French turned those into gu and ch. So one root produced guard and ward, guarantee and warranty, chief and chef.</div>
-    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'>CHATTEL</div>
+    <div class="kicker" style="margin-top:.08in">The pro move</div><div class="method"><div class='trick'>CHATTEL</div>
 <b>Heard.</b> CHAT-ul — a movable possession
 <b>Doublet.</b> cattle is the same Latin word, capitale, meaning property
 <b>Rule.</b> Parisian French turned Latin c into ch, so cattle and chattel split
 <b>Spell.</b> C H A T T E L
 <b>Family.</b> capital, cattle, chattel — all from capitale</div>
     <div class="cards"><div class="card"><h3>The w and gu pairs</h3><p>Norman French kept a Germanic w; Parisian French wrote gu instead. So English got both. Ward and guard. Warranty and guarantee. Wile and guile. Warden and guardian. Wallop and gallop. William and Guillaume. If you meet a word with an unexpected gu, look for a w-partner — and if it has a w, look for the gu one.</p></div><div class="card"><h3>The c and ch pairs</h3><p>Latin c before a became ch in Parisian French and stayed c in Norman. Cattle and chattel, from capitale. Catch and chase, from captiare. Cap and chief and chef, all from caput, a head. Castle kept its c; chateau took ch. Canal and channel. Cant and chant. Two spellings, one root, arriving a century apart.</p></div><div class="card"><h3>The learned versus popular pairs</h3><p>A third kind of doublet: one form worn down by centuries of speech, the other taken straight from written Latin much later. Frail and fragile, both from fragilis. Sure and secure, from securus. Poison and potion, from potio. Reason and ration. Blame and blaspheme. Spice and species. The short one is the old spoken route, the long one the later scholarly borrowing.</p></div><div class="card"><h3>Why this helps you spell</h3><p>Doublets are a memory device with a reason inside it. If you know chattel is cattle, the double t stops being arbitrary. If you know guarantee is warranty, the gu makes sense. And when a pronouncer gives you the rarer member of a pair, the common one is your route in — hostel and hotel, corps and corpse, shirt and skirt, gentle and genteel.</p></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 4</span></div></div>
+    
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 4</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Doublets — one root, two arrivals, two spellings · 1</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">chattel</span><span class="say">/ ch-A-t-uh-l /</span>
       <div class="d">a movable item of personal property</div><div class="h">💡 The same Latin word often entered English twice: once through Norman French with a w or a hard c, once through Pa…</div><div class="line"></div></div><div class="wd"><span class="w">guarantee</span><span class="say">/ geh-ruh-NTEE /</span>
       <div class="d">a written assurance that some product or service will be provided or will meet certain specif…</div><div class="h">💡 The same Latin word often entered English twice: once through Norman French with a w or a hard c, once through Pa…</div><div class="line"></div></div><div class="wd"><span class="w">warranty</span><span class="say">/ w-AW-r-uh-n-t-ee /</span>
@@ -237,10 +346,10 @@
       <div class="d">an inherited pattern of thought or action</div><div class="h">💡 The same Latin word often entered English twice: once through Norman French with a w or a hard c, once through Pa…</div><div class="line"></div></div><div class="wd"><span class="w">treason</span><span class="say">/ TREE-zuhn /</span>
       <div class="d">a crime that undermines the offender's government</div><div class="h">💡 The same Latin word often entered English twice: once through Norman French with a w or a hard c, once through Pa…</div><div class="line"></div></div><div class="wd"><span class="w">regard</span><span class="say">/ rih-GARD /</span>
       <div class="d">To think of or consider someone or something in a certain way</div><div class="h">💡 The same Latin word often entered English twice: once through Norman French with a w or a hard c, once through Pa…</div><div class="line"></div></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 4 practice</span></div></div>
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 4 practice</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Doublets — one root, two arrivals, two spellings · 2</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">guard</span><span class="say">/ GAHRD /</span>
       <div class="d">a person who keeps watch over something or someone</div><div class="h">💡 The same Latin word often entered English twice: once through Norman French with a w or a hard c, once through Pa…</div><div class="line"></div></div><div class="wd"><span class="w">ward</span><span class="say">/ WAWRD /</span>
       <div class="d">a person who is under the protection or in the custody of another</div><div class="h">💡 The same Latin word often entered English twice: once through Norman French with a w or a hard c, once through Pa…</div><div class="line"></div></div><div class="wd"><span class="w">chief</span><span class="say">/ CHEEF /</span>
@@ -250,30 +359,52 @@
       <div class="d">domesticated bovine animals as a group regardless of sex or age</div><div class="h">💡 The same Latin word often entered English twice: once through Norman French with a w or a hard c, once through Pa…</div><div class="line"></div></div><div class="wd"><span class="w">reward</span><span class="say">/ rih-WAWRD /</span>
       <div class="d">a recompense for worthy acts or retribution for wrongdoing</div><div class="h">💡 The same Latin word often entered English twice: once through Norman French with a w or a hard c, once through Pa…</div><div class="line"></div></div><div class="wd"><span class="w">wile</span><span class="say">/ WEYEL /</span>
       <div class="d">the use of tricks to deceive someone (usually to extract money from them)</div><div class="h">💡 The same Latin word often entered English twice: once through Norman French with a w or a hard c, once through Pa…</div><div class="line"></div></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 4 practice</span></div></div>
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 4 practice</span></div></div>
 <div class="pg">
       <div class="kicker">Rapid round · Doublets — one root, two arrivals, two spellings</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
-      <div class="rr"><div><b>guile</b> <span style="color:#8b83a3;font-size:8.4pt">/ GEYEL /</span><br>shrewdness as demonstrated by being skilled in deception</div><div><b>catch</b> <span style="color:#8b83a3;font-size:8.4pt">/ KACH /</span><br>a drawback or difficulty that is not readily evident</div><div><b>chase</b> <span style="color:#8b83a3;font-size:8.4pt">/ CHAYS /</span><br>the act of pursuing in an effort to overtake or capture</div><div><b>royal</b> <span style="color:#8b83a3;font-size:8.4pt">/ ROY-uhl /</span><br>belonging to or having to do with a king or queen</div><div><b>regal</b> <span style="color:#8b83a3;font-size:8.4pt">/ REE-guhl /</span><br>belonging to or befitting a supreme ruler</div><div><b>gentle</b> <span style="color:#8b83a3;font-size:8.4pt">/ JEH-ntuhl /</span><br>cause to be more favorably inclined; gain the good will of</div><div><b>poison</b> <span style="color:#8b83a3;font-size:8.4pt">/ POY-zuhn /</span><br>any substance that causes injury or illness or death of a living organ</div><div><b>potion</b> <span style="color:#8b83a3;font-size:8.4pt">/ POH-shuhn /</span><br>a medicinal or magical or poisonous beverage</div><div><b>secure</b> <span style="color:#8b83a3;font-size:8.4pt">/ sih-KYUUR /</span><br>get by special effort</div><div><b>sure</b> <span style="color:#8b83a3;font-size:8.4pt">/ SHUUR /</span><br>having or feeling no doubt or uncertainty; confident and assured</div><div><b>hostel</b> <span style="color:#8b83a3;font-size:8.4pt">/ HAH-stuhl /</span><br>a hotel providing overnight lodging for travelers</div><div><b>hotel</b> <span style="color:#8b83a3;font-size:8.4pt">/ hoh-TEHL /</span><br>a building where travelers can pay for lodging and meals and other ser</div><div><b>corps</b> <span style="color:#8b83a3;font-size:8.4pt">/ KAWR /</span><br>an army unit usually consisting of two or more divisions and their sup</div><div><b>shirt</b> <span style="color:#8b83a3;font-size:8.4pt">/ SHURT /</span><br>a garment worn on the upper half of the body</div><div><b>skirt</b> <span style="color:#8b83a3;font-size:8.4pt">/ SKURT /</span><br>cloth covering that forms the part of a garment below the waist</div><div><b>shatter</b> <span style="color:#8b83a3;font-size:8.4pt">/ SHA-ter /</span><br>break into many pieces</div><div><b>scatter</b> <span style="color:#8b83a3;font-size:8.4pt">/ SKA-ter /</span><br>a haphazard distribution in all directions</div></div>
-      <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 4 extras</span></div></div>
+      <h2 style="font-size:16pt;margin:.04in 0 .14in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>guile</b> <span style="color:var(--muted);font-size:8.2pt">/ GEYEL /</span><br>shrewdness as demonstrated by being skilled in deception</div><div><b>catch</b> <span style="color:var(--muted);font-size:8.2pt">/ KACH /</span><br>a drawback or difficulty that is not readily evident</div><div><b>chase</b> <span style="color:var(--muted);font-size:8.2pt">/ CHAYS /</span><br>the act of pursuing in an effort to overtake or capture</div><div><b>royal</b> <span style="color:var(--muted);font-size:8.2pt">/ ROY-uhl /</span><br>belonging to or having to do with a king or queen</div><div><b>regal</b> <span style="color:var(--muted);font-size:8.2pt">/ REE-guhl /</span><br>belonging to or befitting a supreme ruler</div><div><b>gentle</b> <span style="color:var(--muted);font-size:8.2pt">/ JEH-ntuhl /</span><br>cause to be more favorably inclined; gain the good will of</div><div><b>poison</b> <span style="color:var(--muted);font-size:8.2pt">/ POY-zuhn /</span><br>any substance that causes injury or illness or death of a living organ</div><div><b>potion</b> <span style="color:var(--muted);font-size:8.2pt">/ POH-shuhn /</span><br>a medicinal or magical or poisonous beverage</div><div><b>secure</b> <span style="color:var(--muted);font-size:8.2pt">/ sih-KYUUR /</span><br>get by special effort</div><div><b>sure</b> <span style="color:var(--muted);font-size:8.2pt">/ SHUUR /</span><br>having or feeling no doubt or uncertainty; confident and assured</div><div><b>hostel</b> <span style="color:var(--muted);font-size:8.2pt">/ HAH-stuhl /</span><br>a hotel providing overnight lodging for travelers</div><div><b>hotel</b> <span style="color:var(--muted);font-size:8.2pt">/ hoh-TEHL /</span><br>a building where travelers can pay for lodging and meals and other ser</div><div><b>corps</b> <span style="color:var(--muted);font-size:8.2pt">/ KAWR /</span><br>an army unit usually consisting of two or more divisions and their sup</div><div><b>shirt</b> <span style="color:var(--muted);font-size:8.2pt">/ SHURT /</span><br>a garment worn on the upper half of the body</div><div><b>skirt</b> <span style="color:var(--muted);font-size:8.2pt">/ SKURT /</span><br>cloth covering that forms the part of a garment below the waist</div><div><b>shatter</b> <span style="color:var(--muted);font-size:8.2pt">/ SHA-ter /</span><br>break into many pieces</div><div><b>scatter</b> <span style="color:var(--muted);font-size:8.2pt">/ SKA-ter /</span><br>a haphazard distribution in all directions</div></div>
+      <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 4 extras</span></div></div>
+<div class="pg">
+      <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><circle cx="34" cy="38" r="10" fill="#E8E4F0"/><circle cx="86" cy="38" r="10" fill="#E8E4F0"/><circle cx="30" cy="48" r="8" fill="#E8E4F0"/><circle cx="90" cy="48" r="8" fill="#E8E4F0"/>
+<circle cx="60" cy="52" r="26" fill="#FFD9A8"/>
+<path d="M40 40 q8 -12 20 -12 q12 0 20 12 q-8 -6 -20 -6 q-12 0 -20 6 z" fill="#E8E4F0"/>
+<path d="M46 50 q4 -4 9 -2 M74 50 q-4 -4 -9 -2" fill="none" stroke="#5C4A32" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M48 58 q3 3 6 0 M66 58 q3 3 6 0" fill="none" stroke="#2B2B3E" stroke-width="3" stroke-linecap="round"/>
+<ellipse cx="44" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/><ellipse cx="76" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/>
+<path d="M54 68 q6 6 12 0" fill="none" stroke="#5C3A1E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M38 84 q22 -12 44 0 l-3 20 q-19 8 -38 0 z" fill="#2B2B3E"/>
+<path d="M60 80 l-7 9 l7 9 l7 -9 z" fill="#fff"/>
+<path d="M52 82 l8 7 8 -7 l-4 -4 h-8 z" fill="#fff"/><path d="M56 80 h8 l3 4 l-7 6 l-7 -6 z" fill="#F4F4FA"/>
+<rect x="56" y="84" width="8" height="6" rx="2" fill="#C43D5A"/>
+<path d="M88 76 L106 52" stroke="#8A5B2E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M100 40 q6 5 10 4 M96 32 q4 3 8 2" stroke="#C9C9DD" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+<circle cx="18" cy="70" r="2.2" fill="#FFC83D"/></svg>
+        <div><div class="kicker">Maestro's puzzle page · Doublets — one root, two arrivals, two spellings</div>
+        <h2 style="font-size:16pt">Crossword</h2></div></div>
+      <div class="cwwrap"><table class="cw"><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>1</i></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>2</i></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>3</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td></tr><tr><td class="cwc"><i>4</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"><i>5</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td></tr><tr><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwc"></td><td class="cwx"></td><td class="cwc"><i>6</i></td><td class="cwc"></td><td class="cwc"><i>7</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td></tr><tr><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwc"></td><td class="cwx"></td><td class="cwc"><i>8</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td></tr><tr><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwc"><i>9</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr></table></div>
+    <div class="clues"><div><div class="clueh">Across</div><div><b>3.</b> a person who keeps watch over something or someone</div><div><b>4.</b> a written assurance that some product or service will be provided or will meet</div><div><b>6.</b> is assurance</div><div><b>8.</b> a movable item of personal property</div><div><b>9.</b> a person who is under the protection or in the custody of another</div></div>
+    <div><div class="clueh">Down</div><div><b>1.</b> a crime that undermines the offender's government</div><div><b>2.</b> easily broken or damaged or destroyed</div><div><b>4.</b> marked by refinement in taste and manners</div><div><b>5.</b> an inherited pattern of thought or action</div><div><b>7.</b> To think of or consider someone or something in a certain way</div></div></div><div class="bb"><span class="bbi">✨</span><div><div class="bbl">Bee Break · simile of the page</div><div class="bbb"><b>like a thief in the night</b></div><div class="bbt">arriving silently and without warning</div></div></div>
+      <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 4 game</span></div></div>
 <div class="pg dense">
-    <div style="display:flex;align-items:center;gap:.16in">
+    <div style="display:flex;align-items:center;gap:.14in">
       <span class="badge">5</span>
       <div><div class="kicker">How Words Are Built</div>
-      <h2 style="font-size:20pt;line-height:1.08">Heteronyms — same spelling, two pronunciations</h2></div></div>
-    <div class="kicker" style="margin-top:.2in">The big idea</div>
+      <h2 style="font-size:19pt;line-height:1.08">Heteronyms — same spelling, two pronunciations</h2></div></div>
+    <div class="kicker" style="margin-top:.16in">The big idea</div>
     <div class="concept">Heteronyms are the mirror image of homophones: same spelling, different sound and sense. They matter on a bee stage for one specific reason — the pronunciation you are given may not match the word you are thinking of, and the fix is to ask for the part of speech and the definition. English marks most of these pairs by stress, and there is a rule behind it: nouns take stress on the first syllable, verbs on the second.</div>
-    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'>SEPARATE</div>
+    <div class="kicker" style="margin-top:.08in">The pro move</div><div class="method"><div class='trick'>SEPARATE</div>
 <b>Heard.</b> SEP-uh-rut (adjective) or SEP-uh-rate (verb)
 <b>Same spelling.</b> both are s-e-p-a-r-a-t-e
 <b>Strategy.</b> the pronunciation differs but the spelling does not — so relax, and confirm the definition anyway
 <b>Spell.</b> S E P A R A T E
 <b>Family.</b> separation, separately</div>
     <div class="cards"><div class="card"><h3>The stress rule</h3><p>For dozens of two-syllable pairs, the noun stresses the first syllable and the verb the second. CON-duct the noun, con-DUCT the verb. RE-cord and re-CORD. PRO-ject and pro-JECT. SUB-ject and sub-JECT. PRE-sent and pre-SENT. RE-fuse the rubbish and re-FUSE to go. This is regular enough to predict, and it tells you the word is the same either way.</p></div><div class="card"><h3>The -ate words</h3><p>A large family of words ending -ate has a full vowel as a verb and a reduced one as an adjective or noun. SEP-uh-rate the verb against SEP-uh-rut the adjective. Also moderate, deliberate, intimate, laminate, alternate, appropriate, associate, estimate, graduate, predicate, syndicate, advocate, delegate. The spelling never changes, which is the reassuring part.</p></div><div class="card"><h3>The unrelated pairs</h3><p>Some heteronyms are two entirely different words that collided. Tear the eye-water and tear the rip. Wind the air and wind the clock. Bow the ribbon and bow the greeting. Sow the seed and sow the pig. Lead the metal and lead the way. Dove the bird and dove into the pool. Live the adjective and live the verb. Close the door and stand close.</p></div><div class="card"><h3>What to do at the microphone</h3><p>This is a question strategy, not a spelling rule. If the pronunciation sounds wrong for the word you have in mind, ask for the part of speech and then for the definition. For the -ate and stress pairs the spelling is identical anyway, so nothing is at risk. The danger is only when you assume a different word entirely and spell that instead.</p></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 5</span></div></div>
+    
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 5</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Heteronyms — same spelling, two pronunciations · 1</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">separate</span><span class="say">/ SEH-per-ayt /</span>
       <div class="d">a separately printed article that originally appeared in a larger publication</div><div class="h">💡 One spelling, two words. Stress usually marks the difference: a noun stresses the first syllable, a verb the seco…</div><div class="line"></div></div><div class="wd"><span class="w">moderate</span><span class="say">/ MAH-der-uht /</span>
       <div class="d">a person who takes a position in the political center</div><div class="h">💡 One spelling, two words. Stress usually marks the difference: a noun stresses the first syllable, a verb the seco…</div><div class="line"></div></div><div class="wd"><span class="w">deliberate</span><span class="say">/ dih-LIH-ber-uht /</span>
@@ -283,10 +414,10 @@
       <div class="d">someone who takes the place of another person</div><div class="h">💡 One spelling, two words. Stress usually marks the difference: a noun stresses the first syllable, a verb the seco…</div><div class="line"></div></div><div class="wd"><span class="w">appropriate</span><span class="say">/ uh-PROH-pree-uht /</span>
       <div class="d">give or assign a resource to a particular person or cause</div><div class="h">💡 One spelling, two words. Stress usually marks the difference: a noun stresses the first syllable, a verb the seco…</div><div class="line"></div></div><div class="wd"><span class="w">associate</span><span class="say">/ uh-SOH-see-uht /</span>
       <div class="d">a person who joins with others in some activity or endeavor</div><div class="h">💡 One spelling, two words. Stress usually marks the difference: a noun stresses the first syllable, a verb the seco…</div><div class="line"></div></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 5 practice</span></div></div>
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 5 practice</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Heteronyms — same spelling, two pronunciations · 2</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">estimate</span><span class="say">/ EH-stuh-muht /</span>
       <div class="d">an approximate calculation of quantity or degree or worth</div><div class="h">💡 One spelling, two words. Stress usually marks the difference: a noun stresses the first syllable, a verb the seco…</div><div class="line"></div></div><div class="wd"><span class="w">graduate</span><span class="say">/ g-r-A-j-uh-w-uh-t /</span>
       <div class="d">one that has received an academic degree a diploma or a certificate</div><div class="h">💡 One spelling, two words. Stress usually marks the difference: a noun stresses the first syllable, a verb the seco…</div><div class="line"></div></div><div class="wd"><span class="w">predicate</span><span class="say">/ PREH-duh-kayt /</span>
@@ -296,30 +427,51 @@
       <div class="d">Extremely small; tiny.</div><div class="h">💡 One spelling, two words. Stress usually marks the difference: a noun stresses the first syllable, a verb the seco…</div><div class="line"></div></div><div class="wd"><span class="w">august</span><span class="say">/ AH-guhst /</span>
       <div class="d">the month following July and preceding September</div><div class="h">💡 One spelling, two words. Stress usually marks the difference: a noun stresses the first syllable, a verb the seco…</div><div class="line"></div></div><div class="wd"><span class="w">invalid</span><span class="say">/ IH-nvuh-luhd /</span>
       <div class="d">someone who is incapacitated by a chronic illness or injury</div><div class="h">💡 One spelling, two words. Stress usually marks the difference: a noun stresses the first syllable, a verb the seco…</div><div class="line"></div></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 5 practice</span></div></div>
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 5 practice</span></div></div>
 <div class="pg">
       <div class="kicker">Rapid round · Heteronyms — same spelling, two pronunciations</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
-      <div class="rr"><div><b>conduct</b> <span style="color:#8b83a3;font-size:8.4pt">/ KAH-nduhkt /</span><br>manner of acting or controlling yourself</div><div><b>refuse</b> <span style="color:#8b83a3;font-size:8.4pt">/ ruh-FYOOZ /</span><br>food that is discarded (as from a kitchen)</div><div><b>produce</b> <span style="color:#8b83a3;font-size:8.4pt">/ pruh-DOOS /</span><br>fresh fruits and vegetable grown for the market</div><div><b>content</b> <span style="color:#8b83a3;font-size:8.4pt">/ KAH-ntehnt /</span><br>everything that is included in a collection and that is held or includ</div><div><b>object</b> <span style="color:#8b83a3;font-size:8.4pt">/ AH-bjehkt /</span><br>a tangible and visible entity; an entity that can cast a shadow</div><div><b>subject</b> <span style="color:#8b83a3;font-size:8.4pt">/ suh-BJEHKT /</span><br>The topic or thing that people are talking, writing, or learning about</div><div><b>project</b> <span style="color:#8b83a3;font-size:8.4pt">/ PRAH-jehkt /</span><br>any piece of work that is undertaken or attempted</div><div><b>record</b> <span style="color:#8b83a3;font-size:8.4pt">/ ruh-KAWRD /</span><br>information kept or saved so people can remember what happened</div><div><b>polish</b> <span style="color:#8b83a3;font-size:8.4pt">/ PAH-lihsh /</span><br>the property of being smooth and shiny</div><div><b>tear</b> <span style="color:#8b83a3;font-size:8.4pt">/ TEHR /</span><br>a drop of the clear salty saline solution secreted by the lacrimal gla</div><div><b>wind</b> <span style="color:#8b83a3;font-size:8.4pt">/ WEYEND /</span><br>air moving (sometimes with considerable force) from an area of high pr</div><div><b>bow</b> <span style="color:#8b83a3;font-size:8.4pt">/ b-OW /</span><br>a knot formed by doubling a string into two loops</div><div><b>sow</b> <span style="color:#8b83a3;font-size:8.4pt">/ SOW /</span><br>an adult female hog</div><div><b>lead</b> <span style="color:#8b83a3;font-size:8.4pt">/ LEED /</span><br>To guide people or show the way.</div><div><b>live</b> <span style="color:#8b83a3;font-size:8.4pt">/ LEYEV /</span><br>To be alive; not dead; having life or existence as opposed to being de</div><div><b>close</b> <span style="color:#8b83a3;font-size:8.4pt">/ KLOHS /</span><br>the temporal end; the concluding time</div><div><b>dove</b> <span style="color:#8b83a3;font-size:8.4pt">/ DUHV /</span><br>any of numerous small pigeons</div><div><b>wound</b> <span style="color:#8b83a3;font-size:8.4pt">/ WOWND /</span><br>an injury to living tissue (especially an injury involving a cut or br</div></div>
-      <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 5 extras</span></div></div>
+      <h2 style="font-size:16pt;margin:.04in 0 .14in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>conduct</b> <span style="color:var(--muted);font-size:8.2pt">/ KAH-nduhkt /</span><br>manner of acting or controlling yourself</div><div><b>refuse</b> <span style="color:var(--muted);font-size:8.2pt">/ ruh-FYOOZ /</span><br>food that is discarded (as from a kitchen)</div><div><b>produce</b> <span style="color:var(--muted);font-size:8.2pt">/ pruh-DOOS /</span><br>fresh fruits and vegetable grown for the market</div><div><b>content</b> <span style="color:var(--muted);font-size:8.2pt">/ KAH-ntehnt /</span><br>everything that is included in a collection and that is held or includ</div><div><b>object</b> <span style="color:var(--muted);font-size:8.2pt">/ AH-bjehkt /</span><br>a tangible and visible entity; an entity that can cast a shadow</div><div><b>subject</b> <span style="color:var(--muted);font-size:8.2pt">/ suh-BJEHKT /</span><br>The topic or thing that people are talking, writing, or learning about</div><div><b>project</b> <span style="color:var(--muted);font-size:8.2pt">/ PRAH-jehkt /</span><br>any piece of work that is undertaken or attempted</div><div><b>record</b> <span style="color:var(--muted);font-size:8.2pt">/ ruh-KAWRD /</span><br>information kept or saved so people can remember what happened</div><div><b>polish</b> <span style="color:var(--muted);font-size:8.2pt">/ PAH-lihsh /</span><br>the property of being smooth and shiny</div><div><b>tear</b> <span style="color:var(--muted);font-size:8.2pt">/ TEHR /</span><br>a drop of the clear salty saline solution secreted by the lacrimal gla</div><div><b>wind</b> <span style="color:var(--muted);font-size:8.2pt">/ WEYEND /</span><br>air moving (sometimes with considerable force) from an area of high pr</div><div><b>bow</b> <span style="color:var(--muted);font-size:8.2pt">/ b-OW /</span><br>a knot formed by doubling a string into two loops</div><div><b>sow</b> <span style="color:var(--muted);font-size:8.2pt">/ SOW /</span><br>an adult female hog</div><div><b>lead</b> <span style="color:var(--muted);font-size:8.2pt">/ LEED /</span><br>To guide people or show the way.</div><div><b>live</b> <span style="color:var(--muted);font-size:8.2pt">/ LEYEV /</span><br>To be alive; not dead; having life or existence as opposed to being de</div><div><b>close</b> <span style="color:var(--muted);font-size:8.2pt">/ KLOHS /</span><br>the temporal end; the concluding time</div><div><b>dove</b> <span style="color:var(--muted);font-size:8.2pt">/ DUHV /</span><br>any of numerous small pigeons</div><div><b>wound</b> <span style="color:var(--muted);font-size:8.2pt">/ WOWND /</span><br>an injury to living tissue (especially an injury involving a cut or br</div></div>
+      <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 5 extras</span></div></div>
+<div class="pg">
+      <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><circle cx="34" cy="38" r="10" fill="#E8E4F0"/><circle cx="86" cy="38" r="10" fill="#E8E4F0"/><circle cx="30" cy="48" r="8" fill="#E8E4F0"/><circle cx="90" cy="48" r="8" fill="#E8E4F0"/>
+<circle cx="60" cy="52" r="26" fill="#FFD9A8"/>
+<path d="M40 40 q8 -12 20 -12 q12 0 20 12 q-8 -6 -20 -6 q-12 0 -20 6 z" fill="#E8E4F0"/>
+<path d="M46 50 q4 -4 9 -2 M74 50 q-4 -4 -9 -2" fill="none" stroke="#5C4A32" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M48 58 q3 3 6 0 M66 58 q3 3 6 0" fill="none" stroke="#2B2B3E" stroke-width="3" stroke-linecap="round"/>
+<ellipse cx="44" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/><ellipse cx="76" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/>
+<path d="M54 68 q6 6 12 0" fill="none" stroke="#5C3A1E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M38 84 q22 -12 44 0 l-3 20 q-19 8 -38 0 z" fill="#2B2B3E"/>
+<path d="M60 80 l-7 9 l7 9 l7 -9 z" fill="#fff"/>
+<path d="M52 82 l8 7 8 -7 l-4 -4 h-8 z" fill="#fff"/><path d="M56 80 h8 l3 4 l-7 6 l-7 -6 z" fill="#F4F4FA"/>
+<rect x="56" y="84" width="8" height="6" rx="2" fill="#C43D5A"/>
+<path d="M88 76 L106 52" stroke="#8A5B2E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M100 40 q6 5 10 4 M96 32 q4 3 8 2" stroke="#C9C9DD" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+<circle cx="18" cy="70" r="2.2" fill="#FFC83D"/></svg>
+        <div><div class="kicker">Maestro's puzzle page · Heteronyms — same spelling, two pronunciations</div>
+        <h2 style="font-size:16pt">Word search</h2></div></div>
+      <table class="ws"><tr><td>K</td><td>A</td><td>X</td><td>D</td><td>S</td><td>E</td><td>P</td><td>A</td><td>R</td><td>A</td><td>T</td><td>E</td><td>D</td></tr><tr><td>I</td><td>L</td><td>L</td><td>A</td><td>M</td><td>I</td><td>N</td><td>A</td><td>T</td><td>E</td><td>L</td><td>E</td><td>E</td></tr><tr><td>T</td><td>T</td><td>I</td><td>E</td><td>Z</td><td>N</td><td>C</td><td>Y</td><td>D</td><td>Q</td><td>L</td><td>T</td><td>O</td></tr><tr><td>P</td><td>E</td><td>Y</td><td>S</td><td>G</td><td>Z</td><td>G</td><td>M</td><td>O</td><td>I</td><td>A</td><td>A</td><td>C</td></tr><tr><td>M</td><td>R</td><td>M</td><td>T</td><td>Q</td><td>V</td><td>B</td><td>P</td><td>B</td><td>R</td><td>E</td><td>I</td><td>O</td></tr><tr><td>I</td><td>N</td><td>T</td><td>I</td><td>M</td><td>A</td><td>T</td><td>E</td><td>E</td><td>K</td><td>T</td><td>R</td><td>M</td></tr><tr><td>V</td><td>A</td><td>W</td><td>M</td><td>T</td><td>C</td><td>R</td><td>D</td><td>A</td><td>M</td><td>A</td><td>P</td><td>H</td></tr><tr><td>R</td><td>T</td><td>Q</td><td>A</td><td>W</td><td>A</td><td>O</td><td>K</td><td>A</td><td>J</td><td>U</td><td>O</td><td>J</td></tr><tr><td>G</td><td>E</td><td>P</td><td>T</td><td>T</td><td>M</td><td>S</td><td>K</td><td>X</td><td>U</td><td>D</td><td>R</td><td>H</td></tr><tr><td>N</td><td>Z</td><td>X</td><td>E</td><td>L</td><td>O</td><td>F</td><td>O</td><td>R</td><td>R</td><td>A</td><td>P</td><td>Y</td></tr><tr><td>X</td><td>L</td><td>A</td><td>D</td><td>W</td><td>R</td><td>T</td><td>O</td><td>U</td><td>Y</td><td>R</td><td>P</td><td>Q</td></tr><tr><td>N</td><td>H</td><td>J</td><td>F</td><td>M</td><td>C</td><td>C</td><td>V</td><td>N</td><td>S</td><td>G</td><td>A</td><td>Z</td></tr><tr><td>A</td><td>S</td><td>S</td><td>O</td><td>C</td><td>I</td><td>A</td><td>T</td><td>E</td><td>G</td><td>H</td><td>H</td><td>T</td></tr></table>
+  <div class="wsl"><span class="chip">separate</span><span class="chip">moderate</span><span class="chip">deliberate</span><span class="chip">intimate</span><span class="chip">laminate</span><span class="chip">alternate</span><span class="chip">appropriate</span><span class="chip">associate</span><span class="chip">estimate</span><span class="chip">graduate</span></div><p style="text-align:center;font-size:8.6pt;color:var(--muted);margin-top:.08in">Words run in every direction — even backwards.</p><div class="bb"><span class="bbi">🎈</span><div><div class="bbl">Bee Break · idiom to drop at dinner</div><div class="bbb"><b>get someone's goat</b></div><div class="bbt">to annoy someone deliberately</div></div></div>
+      <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 5 game</span></div></div>
 <div class="pg dense">
-    <div style="display:flex;align-items:center;gap:.16in">
+    <div style="display:flex;align-items:center;gap:.14in">
       <span class="badge">6</span>
       <div><div class="kicker">How Words Are Built</div>
-      <h2 style="font-size:20pt;line-height:1.08">Metathesis — the sounds that swapped places</h2></div></div>
-    <div class="kicker" style="margin-top:.2in">The big idea</div>
+      <h2 style="font-size:19pt;line-height:1.08">Metathesis — the sounds that swapped places</h2></div></div>
+    <div class="kicker" style="margin-top:.16in">The big idea</div>
     <div class="concept">Metathesis is the swapping of two sounds within a word, and it is one of the commonest ways English spellings drift away from their origins. It happens most around r and l. Sometimes the swap won and became the standard spelling, which is why some words look scrambled compared to their relatives. Sometimes it is still in progress, which is why the pronunciations people are corrected for — nucular, comfterble — are the same process caught in the act.</div>
-    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'>NOSTRIL</div>
+    <div class="kicker" style="margin-top:.08in">The pro move</div><div class="method"><div class='trick'>NOSTRIL</div>
 <b>Heard.</b> NOSS-trul
 <b>Origin.</b> Old English nosthyrl — nose plus thyrel, a hole
 <b>What happened.</b> the th and the r traded places and the word compressed
 <b>Spell.</b> N O S T R I L
 <b>Family.</b> nose, thrill — thrill is the same thyrel, meaning to pierce</div>
     <div class="cards"><div class="card"><h3>Swaps that won</h3><p>Old English bridd became bird. thridda became third. hros became horse. Old English wæps became wasp. hæps became hasp. And nosthyrl became nostril. In each case the r or s moved and the new order became correct. So a word can look nothing like its own history, and its relatives are your only clue.</p></div><div class="card"><h3>Doublets made by metathesis</h3><p>Sometimes both orders survived as separate words. Through and thorough are the same Old English word, thurh, with different vowel and stress development. Curd and crud are one word split by a swapped r. Tinsel and scintilla share a root. Wattle and waddle. When two words feel oddly related and their letters seem shuffled, metathesis is usually why.</p></div><div class="card"><h3>The swaps still in progress</h3><p>The pronunciations people get corrected for are metathesis happening now. Nuclear said as nucular. Comfortable as comfterble. Integral as intregal. Cavalry as calvary. Asterisk as asterix. Espresso as expresso. Sherbet as sherbert. Jewelry as jewelery. Prescription as perscription. Every one is two sounds trading places, exactly as bird and horse did.</p></div><div class="card"><h3>Why a speller must care</h3><p>Because the pronouncer will say the word correctly and your ear may still hear the swapped version. Nuclear is n-u-c-l-e-a-r, and if you have said nucular all your life you will want to write it that way. Cavalry is horsemen, Calvary is the hill — the swap changes the word entirely. Learn the ones you personally swap, because those are the ones that will cost you.</p></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 6</span></div></div>
+    
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 6</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Metathesis — the sounds that swapped places · 1</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">nostril</span><span class="say">/ NAH-strihl /</span>
       <div class="d">either one of the two external openings to the nasal cavity in the nose</div><div class="h">💡 Two sounds trade places over time, usually around an r. That is why through and thorough differ, why nostril hide…</div><div class="line"></div></div><div class="wd"><span class="w">thorough</span><span class="say">/ THUR-oh /</span>
       <div class="d">painstakingly careful and accurate</div><div class="h">💡 Two sounds trade places over time, usually around an r. That is why through and thorough differ, why nostril hide…</div><div class="line"></div></div><div class="wd"><span class="w">through</span><span class="say">/ THROO /</span>
@@ -329,10 +481,10 @@
       <div class="d">(weapons) deriving destructive energy from the release of atomic energy</div><div class="h">💡 Two sounds trade places over time, usually around an r. That is why through and thorough differ, why nostril hide…</div><div class="line"></div></div><div class="wd"><span class="w">interpret</span><span class="say">/ ih-NTUR-pruht /</span>
       <div class="d">make sense of; assign a meaning to</div><div class="h">💡 Two sounds trade places over time, usually around an r. That is why through and thorough differ, why nostril hide…</div><div class="line"></div></div><div class="wd"><span class="w">asterisk</span><span class="say">/ A-ster-ihsk /</span>
       <div class="d">a star-shaped character * used in printing</div><div class="h">💡 Two sounds trade places over time, usually around an r. That is why through and thorough differ, why nostril hide…</div><div class="line"></div></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 6 practice</span></div></div>
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 6 practice</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Metathesis — the sounds that swapped places · 2</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">cavalry</span><span class="say">/ KA-vuh-lree /</span>
       <div class="d">troops trained to fight on horseback</div><div class="h">💡 Two sounds trade places over time, usually around an r. That is why through and thorough differ, why nostril hide…</div><div class="line"></div></div><div class="wd"><span class="w">espresso</span><span class="say">/ eh-SPREH-soh /</span>
       <div class="d">strong black coffee brewed by forcing hot water under pressure through finely ground coffee b…</div><div class="h">💡 Two sounds trade places over time, usually around an r. That is why through and thorough differ, why nostril hide…</div><div class="line"></div></div><div class="wd"><span class="w">sherbet</span><span class="say">/ SHUR-buht /</span>
@@ -342,30 +494,53 @@
       <div class="d">a reflex motion caused by cold or fear or excitement</div><div class="h">💡 Two sounds trade places over time, usually around an r. That is why through and thorough differ, why nostril hide…</div><div class="line"></div></div><div class="wd"><span class="w">tinsel</span><span class="say">/ TIH-nsuhl /</span>
       <div class="d">a showy decoration that is basically valueless</div><div class="h">💡 Two sounds trade places over time, usually around an r. That is why through and thorough differ, why nostril hide…</div><div class="line"></div></div><div class="wd"><span class="w">modern</span><span class="say">/ MAH-dern /</span>
       <div class="d">a contemporary person</div><div class="h">💡 Two sounds trade places over time, usually around an r. That is why through and thorough differ, why nostril hide…</div><div class="line"></div></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 6 practice</span></div></div>
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 6 practice</span></div></div>
 <div class="pg">
       <div class="kicker">Rapid round · Metathesis — the sounds that swapped places</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
-      <div class="rr"><div><b>hundred</b> <span style="color:#8b83a3;font-size:8.4pt">/ HUH-ndruhd /</span><br>the number equal to ten times ten, written 100</div><div><b>fringe</b> <span style="color:#8b83a3;font-size:8.4pt">/ FRIHNJ /</span><br>the outside boundary or surface of something</div><div><b>wasp</b> <span style="color:#8b83a3;font-size:8.4pt">/ WAHSP /</span><br>a white person of Anglo-Saxon ancestry who belongs to a Protestant den</div><div><b>hasp</b> <span style="color:#8b83a3;font-size:8.4pt">/ HASP /</span><br>a fastener for a door or lid; a hinged metal plate is fitted over a st</div><div><b>clasp</b> <span style="color:#8b83a3;font-size:8.4pt">/ KLASP /</span><br>a fastener (as a buckle or hook) that is used to hold two things toget</div><div><b>grasp</b> <span style="color:#8b83a3;font-size:8.4pt">/ GRASP /</span><br>understanding of the nature or meaning or quality or magnitude of some</div><div><b>curd</b> <span style="color:#8b83a3;font-size:8.4pt">/ KURD /</span><br>the soft, white lumps that form when milk thickens or sours</div><div><b>crud</b> <span style="color:#8b83a3;font-size:8.4pt">/ KRUHD /</span><br>heavy wet snow that is unsuitable for skiing</div><div><b>bird</b> <span style="color:#8b83a3;font-size:8.4pt">/ BURD /</span><br>warm-blooded egg-laying vertebrates characterized by feathers and fore</div><div><b>third</b> <span style="color:#8b83a3;font-size:8.4pt">/ THURD /</span><br>one of three equal parts of a divisible whole</div><div><b>pretty</b> <span style="color:#8b83a3;font-size:8.4pt">/ PRIH-tee /</span><br>pleasing by delicacy or grace; not imposing</div></div>
-      <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 6 extras</span></div></div>
+      <h2 style="font-size:16pt;margin:.04in 0 .14in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>hundred</b> <span style="color:var(--muted);font-size:8.2pt">/ HUH-ndruhd /</span><br>the number equal to ten times ten, written 100</div><div><b>fringe</b> <span style="color:var(--muted);font-size:8.2pt">/ FRIHNJ /</span><br>the outside boundary or surface of something</div><div><b>wasp</b> <span style="color:var(--muted);font-size:8.2pt">/ WAHSP /</span><br>a white person of Anglo-Saxon ancestry who belongs to a Protestant den</div><div><b>hasp</b> <span style="color:var(--muted);font-size:8.2pt">/ HASP /</span><br>a fastener for a door or lid; a hinged metal plate is fitted over a st</div><div><b>clasp</b> <span style="color:var(--muted);font-size:8.2pt">/ KLASP /</span><br>a fastener (as a buckle or hook) that is used to hold two things toget</div><div><b>grasp</b> <span style="color:var(--muted);font-size:8.2pt">/ GRASP /</span><br>understanding of the nature or meaning or quality or magnitude of some</div><div><b>curd</b> <span style="color:var(--muted);font-size:8.2pt">/ KURD /</span><br>the soft, white lumps that form when milk thickens or sours</div><div><b>crud</b> <span style="color:var(--muted);font-size:8.2pt">/ KRUHD /</span><br>heavy wet snow that is unsuitable for skiing</div><div><b>bird</b> <span style="color:var(--muted);font-size:8.2pt">/ BURD /</span><br>warm-blooded egg-laying vertebrates characterized by feathers and fore</div><div><b>third</b> <span style="color:var(--muted);font-size:8.2pt">/ THURD /</span><br>one of three equal parts of a divisible whole</div><div><b>pretty</b> <span style="color:var(--muted);font-size:8.2pt">/ PRIH-tee /</span><br>pleasing by delicacy or grace; not imposing</div></div>
+      <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 6 extras</span></div></div>
+<div class="pg">
+      <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><circle cx="34" cy="38" r="10" fill="#E8E4F0"/><circle cx="86" cy="38" r="10" fill="#E8E4F0"/><circle cx="30" cy="48" r="8" fill="#E8E4F0"/><circle cx="90" cy="48" r="8" fill="#E8E4F0"/>
+<circle cx="60" cy="52" r="26" fill="#FFD9A8"/>
+<path d="M40 40 q8 -12 20 -12 q12 0 20 12 q-8 -6 -20 -6 q-12 0 -20 6 z" fill="#E8E4F0"/>
+<path d="M46 50 q4 -4 9 -2 M74 50 q-4 -4 -9 -2" fill="none" stroke="#5C4A32" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M48 58 q3 3 6 0 M66 58 q3 3 6 0" fill="none" stroke="#2B2B3E" stroke-width="3" stroke-linecap="round"/>
+<ellipse cx="44" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/><ellipse cx="76" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/>
+<path d="M54 68 q6 6 12 0" fill="none" stroke="#5C3A1E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M38 84 q22 -12 44 0 l-3 20 q-19 8 -38 0 z" fill="#2B2B3E"/>
+<path d="M60 80 l-7 9 l7 9 l7 -9 z" fill="#fff"/>
+<path d="M52 82 l8 7 8 -7 l-4 -4 h-8 z" fill="#fff"/><path d="M56 80 h8 l3 4 l-7 6 l-7 -6 z" fill="#F4F4FA"/>
+<rect x="56" y="84" width="8" height="6" rx="2" fill="#C43D5A"/>
+<path d="M88 76 L106 52" stroke="#8A5B2E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M100 40 q6 5 10 4 M96 32 q4 3 8 2" stroke="#C9C9DD" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+<circle cx="18" cy="70" r="2.2" fill="#FFC83D"/></svg>
+        <div><div class="kicker">Maestro's puzzle page · Metathesis — the sounds that swapped places</div>
+        <h2 style="font-size:16pt">Scramble & rescue</h2></div></div>
+      <div class="gtwo"><div><div class="kicker" style="margin-bottom:.08in">Unscramble</div>
+      <div class="g1" style="margin-bottom:.09in"><span class="gw">cdur</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">spaw</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">rmoedn</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">yprtet</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">thdir</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">eertlmb</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">urcd</span><div class="gl"></div></div></div>
+      <div><div class="kicker" style="margin-bottom:.08in">Rescue the vowels</div>
+      <div class="g1" style="margin-bottom:.09in"><span class="gw">sp_gh_tt_</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">b_rd</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">_spr_ss_</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">w_sp</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">c_rd</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">th_r__gh</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">n_str_l</span><div class="gl"></div></div></div></div><div class="bb"><span class="bbi">💬</span><div><div class="bbl">Bee Break · someone said it better</div><div class="bbb">“Nothing is permanent in this world, not even our troubles.”</div><div class="bbt">— Charlie Chaplin, actor and film maker</div></div></div>
+      <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 6 game</span></div></div>
 <div class="pg dense">
-    <div style="display:flex;align-items:center;gap:.16in">
+    <div style="display:flex;align-items:center;gap:.14in">
       <span class="badge">7</span>
       <div><div class="kicker">How Words Are Built</div>
-      <h2 style="font-size:20pt;line-height:1.08">Clipping, blending, back-formation, reduplication</h2></div></div>
-    <div class="kicker" style="margin-top:.2in">The big idea</div>
+      <h2 style="font-size:19pt;line-height:1.08">Clipping, blending, back-formation, reduplication</h2></div></div>
+    <div class="kicker" style="margin-top:.16in">The big idea</div>
     <div class="concept">Not every word is inherited. English manufactures words, and it does so in four recognisable ways. Clipping cuts a long word short. Blending fuses two words into one. Back-formation invents a shorter word by removing an ending that was never a suffix at all. Reduplication repeats a syllable with a change. Each method leaves spelling fingerprints, and knowing which one produced a word tells you whether to keep the original letters or the new ones.</div>
-    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'>CHORTLE</div>
+    <div class="kicker" style="margin-top:.08in">The pro move</div><div class="method"><div class='trick'>CHORTLE</div>
 <b>Heard.</b> CHOR-tul — to laugh with glee
 <b>Origin.</b> a blend of chuckle and snort, invented by Lewis Carroll
 <b>Rule.</b> a blend keeps the start of the first word and the end of the second
 <b>Spell.</b> C H O R T L E
 <b>Family.</b> galumph — Carroll's other surviving blend</div>
     <div class="cards"><div class="card"><h3>Clipping</h3><p>Cut a long word short and keep the spelling of the part you kept. Flu from influenza, so it is f-l-u with no e. Fridge from refrigerator — and note that fridge gained a d the original never had, because English needed it to keep the g soft. Bus from omnibus, cab from cabriolet, gym from gymnasium, hippo, rhino, memo, zoo, exam, photo.</p></div><div class="card"><h3>Blending</h3><p>Fuse two words and keep the front of one and the back of the other. Brunch from breakfast and lunch. Smog from smoke and fog. Motel from motor and hotel. Chortle from chuckle and snort. Galumph from gallop and triumph. Workaholic, emoticon, infomercial, staycation, telethon, spork. The seam is invisible, which is why you must know both parents.</p></div><div class="card"><h3>Back-formation</h3><p>The strangest method. English sees a word, wrongly assumes part of it is a suffix, removes it, and creates a shorter word that never existed. Editor came first and edit was carved out of it. Pease was already singular and pea was cut from it. Cherise gave cherry the same way. Burgle came from burglar, and burger from hamburger — which was named for Hamburg and never contained ham.</p></div><div class="card"><h3>Reduplication</h3><p>Repeat a syllable, usually with one sound changed. Rhyming: hocus-pocus, razzle-dazzle, hunky-dory, namby-pamby. Vowel-changing: zigzag, flimflam, riffraff, knickknack, dillydally, wishy-washy, chitchat. English strongly prefers i in the first half and a or o in the second — never zagzig or flamflim. That preference is a real spelling rule.</p></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 7</span></div></div>
+    
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 7</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Clipping, blending, back-formation, reduplication · 1</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">infomercial</span><span class="say">/ IH-nfoh-mer-shuh-l /</span>
       <div class="d">a television commercial presented in the form of a short documentary</div><div class="h">💡 Four ways English makes short words: cut one down, fuse two, invent a root by removing a suffix that was never th…</div><div class="line"></div></div><div class="wd"><span class="w">workaholic</span><span class="say">/ wur-kuh-HAH-lihk /</span>
       <div class="d">person with a compulsive need to work</div><div class="h">💡 Four ways English makes short words: cut one down, fuse two, invent a root by removing a suffix that was never th…</div><div class="line"></div></div><div class="wd"><span class="w">staycation</span><span class="say">/ stay-KAY-shun /</span>
@@ -375,10 +550,10 @@
       <div class="d">a swindle in which you cheat at gambling or persuade a person to buy worthless property</div><div class="h">💡 Four ways English makes short words: cut one down, fuse two, invent a root by removing a suffix that was never th…</div><div class="line"></div></div><div class="wd"><span class="w">riffraff</span><span class="say">/ RIH-fraf /</span>
       <div class="d">disparaging terms for the common people</div><div class="h">💡 Four ways English makes short words: cut one down, fuse two, invent a root by removing a suffix that was never th…</div><div class="line"></div></div><div class="wd"><span class="w">emoticon</span><span class="say">/ uh-MOH-tuh-kah-n /</span>
       <div class="d">a representation of a facial expression (as a smile or frown) created by typing a sequence of…</div><div class="h">💡 Four ways English makes short words: cut one down, fuse two, invent a root by removing a suffix that was never th…</div><div class="line"></div></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 7 practice</span></div></div>
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 7 practice</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Clipping, blending, back-formation, reduplication · 2</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">galumph</span><span class="say">/ guh-LUMF /</span>
       <div class="d">move around heavily and clumsily</div><div class="h">💡 Four ways English makes short words: cut one down, fuse two, invent a root by removing a suffix that was never th…</div><div class="line"></div></div><div class="wd"><span class="w">chortle</span><span class="say">/ CHAW-rtuhl /</span>
       <div class="d">a soft, partly suppressed laugh expressing pleasure or amusement; a blend of chuckle and snort</div><div class="h">💡 Four ways English makes short words: cut one down, fuse two, invent a root by removing a suffix that was never th…</div><div class="line"></div></div><div class="wd"><span class="w">brunch</span><span class="say">/ BRUHNCH /</span>
@@ -388,30 +563,52 @@
       <div class="d">a motor hotel</div><div class="h">💡 Four ways English makes short words: cut one down, fuse two, invent a root by removing a suffix that was never th…</div><div class="line"></div></div><div class="wd"><span class="w">smog</span><span class="say">/ SMAHG /</span>
       <div class="d">air pollution by a mixture of smoke and fog</div><div class="h">💡 Four ways English makes short words: cut one down, fuse two, invent a root by removing a suffix that was never th…</div><div class="line"></div></div><div class="wd"><span class="w">burger</span><span class="say">/ BUR-ger /</span>
       <div class="d">United States jurist appointed chief justice of the United States Supreme Court by Richard Ni…</div><div class="h">💡 Four ways English makes short words: cut one down, fuse two, invent a root by removing a suffix that was never th…</div><div class="line"></div></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 7 practice</span></div></div>
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 7 practice</span></div></div>
 <div class="pg">
       <div class="kicker">Rapid round · Clipping, blending, back-formation, reduplication</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
-      <div class="rr"><div><b>cherry</b> <span style="color:#8b83a3;font-size:8.4pt">/ CHEH-ree /</span><br>a tree that gives small red fruit and reddish wood used in furniture</div><div><b>hippo</b> <span style="color:#8b83a3;font-size:8.4pt">/ HIH-poh /</span><br>an ancient Numidian town in northwestern Africa adjoining present-day </div><div><b>rhino</b> <span style="color:#8b83a3;font-size:8.4pt">/ REYE-noh /</span><br>massive powerful herbivorous odd-toed ungulate of southeast Asia and A</div><div><b>memo</b> <span style="color:#8b83a3;font-size:8.4pt">/ MEH-moh /</span><br>a written proposal or reminder</div><div><b>edit</b> <span style="color:#8b83a3;font-size:8.4pt">/ EH-duht /</span><br>prepare for publication or presentation by correcting, revising, or ad</div><div><b>flu</b> <span style="color:#8b83a3;font-size:8.4pt">/ FLOO /</span><br>an acute febrile highly contagious viral disease</div><div><b>gym</b> <span style="color:#8b83a3;font-size:8.4pt">/ JIHM /</span><br>athletic facility equipped for sports or physical training</div><div><b>cab</b> <span style="color:#8b83a3;font-size:8.4pt">/ KAB /</span><br>a compartment at the front of a motor vehicle or locomotive where driv</div><div><b>bus</b> <span style="color:#8b83a3;font-size:8.4pt">/ BUHS /</span><br>a vehicle carrying many passengers; used for public transport</div><div><b>pea</b> <span style="color:#8b83a3;font-size:8.4pt">/ PEE /</span><br>A small, round, green seed eaten as a vegetable.</div><div><b>zoo</b> <span style="color:#8b83a3;font-size:8.4pt">/ ZOO /</span><br>the facility where wild animals are housed for exhibition</div></div>
-      <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 7 extras</span></div></div>
+      <h2 style="font-size:16pt;margin:.04in 0 .14in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>cherry</b> <span style="color:var(--muted);font-size:8.2pt">/ CHEH-ree /</span><br>a tree that gives small red fruit and reddish wood used in furniture</div><div><b>hippo</b> <span style="color:var(--muted);font-size:8.2pt">/ HIH-poh /</span><br>an ancient Numidian town in northwestern Africa adjoining present-day </div><div><b>rhino</b> <span style="color:var(--muted);font-size:8.2pt">/ REYE-noh /</span><br>massive powerful herbivorous odd-toed ungulate of southeast Asia and A</div><div><b>memo</b> <span style="color:var(--muted);font-size:8.2pt">/ MEH-moh /</span><br>a written proposal or reminder</div><div><b>edit</b> <span style="color:var(--muted);font-size:8.2pt">/ EH-duht /</span><br>prepare for publication or presentation by correcting, revising, or ad</div><div><b>flu</b> <span style="color:var(--muted);font-size:8.2pt">/ FLOO /</span><br>an acute febrile highly contagious viral disease</div><div><b>gym</b> <span style="color:var(--muted);font-size:8.2pt">/ JIHM /</span><br>athletic facility equipped for sports or physical training</div><div><b>cab</b> <span style="color:var(--muted);font-size:8.2pt">/ KAB /</span><br>a compartment at the front of a motor vehicle or locomotive where driv</div><div><b>bus</b> <span style="color:var(--muted);font-size:8.2pt">/ BUHS /</span><br>a vehicle carrying many passengers; used for public transport</div><div><b>pea</b> <span style="color:var(--muted);font-size:8.2pt">/ PEE /</span><br>A small, round, green seed eaten as a vegetable.</div><div><b>zoo</b> <span style="color:var(--muted);font-size:8.2pt">/ ZOO /</span><br>the facility where wild animals are housed for exhibition</div></div>
+      <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 7 extras</span></div></div>
+<div class="pg">
+      <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><circle cx="34" cy="38" r="10" fill="#E8E4F0"/><circle cx="86" cy="38" r="10" fill="#E8E4F0"/><circle cx="30" cy="48" r="8" fill="#E8E4F0"/><circle cx="90" cy="48" r="8" fill="#E8E4F0"/>
+<circle cx="60" cy="52" r="26" fill="#FFD9A8"/>
+<path d="M40 40 q8 -12 20 -12 q12 0 20 12 q-8 -6 -20 -6 q-12 0 -20 6 z" fill="#E8E4F0"/>
+<path d="M46 50 q4 -4 9 -2 M74 50 q-4 -4 -9 -2" fill="none" stroke="#5C4A32" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M48 58 q3 3 6 0 M66 58 q3 3 6 0" fill="none" stroke="#2B2B3E" stroke-width="3" stroke-linecap="round"/>
+<ellipse cx="44" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/><ellipse cx="76" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/>
+<path d="M54 68 q6 6 12 0" fill="none" stroke="#5C3A1E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M38 84 q22 -12 44 0 l-3 20 q-19 8 -38 0 z" fill="#2B2B3E"/>
+<path d="M60 80 l-7 9 l7 9 l7 -9 z" fill="#fff"/>
+<path d="M52 82 l8 7 8 -7 l-4 -4 h-8 z" fill="#fff"/><path d="M56 80 h8 l3 4 l-7 6 l-7 -6 z" fill="#F4F4FA"/>
+<rect x="56" y="84" width="8" height="6" rx="2" fill="#C43D5A"/>
+<path d="M88 76 L106 52" stroke="#8A5B2E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M100 40 q6 5 10 4 M96 32 q4 3 8 2" stroke="#C9C9DD" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+<circle cx="18" cy="70" r="2.2" fill="#FFC83D"/></svg>
+        <div><div class="kicker">Maestro's puzzle page · Clipping, blending, back-formation, reduplication</div>
+        <h2 style="font-size:16pt">Crossword</h2></div></div>
+      <div class="cwwrap"><table class="cw"><tr><td class="cwx"></td><td class="cwc"><i>1</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"><i>2</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwc"><i>3</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>4</i></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"><i>5</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwc"><i>6</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwc"><i>7</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr><tr><td class="cwx"></td><td class="cwc"><i>8</i></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwc"></td><td class="cwx"></td><td class="cwx"></td><td class="cwx"></td></tr></table></div>
+    <div class="clues"><div><div class="clueh">Across</div><div><b>1.</b> disparaging terms for the common people</div><div><b>3.</b> a representation of a facial expression (as a smile or frown) created by typin</div><div><b>5.</b> a soft, partly suppressed laugh expressing pleasure or amusement; a blend of c</div><div><b>6.</b> a television commercial presented in the form of a short documentary</div><div><b>7.</b> A vacation spent at home or in one's local area rather than traveling to a dis</div><div><b>8.</b> a small inexpensive mass-produced article</div></div>
+    <div><div class="clueh">Down</div><div><b>2.</b> a swindle in which you cheat at gambling or persuade a person to buy worthless</div><div><b>4.</b> person with a compulsive need to work</div></div></div><div class="bb"><span class="bbi">✨</span><div><div class="bbl">Bee Break · simile of the page</div><div class="bbb"><b>as gentle as a dove</b></div><div class="bbt">very mild and peaceful</div></div></div>
+      <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 7 game</span></div></div>
 <div class="pg dense">
-    <div style="display:flex;align-items:center;gap:.16in">
+    <div style="display:flex;align-items:center;gap:.14in">
       <span class="badge">8</span>
       <div><div class="kicker">How Words Are Built</div>
-      <h2 style="font-size:20pt;line-height:1.08">Folk etymology — wrong guesses that became correct</h2></div></div>
-    <div class="kicker" style="margin-top:.2in">The big idea</div>
+      <h2 style="font-size:19pt;line-height:1.08">Folk etymology — wrong guesses that became correct</h2></div></div>
+    <div class="kicker" style="margin-top:.16in">The big idea</div>
     <div class="concept">When a borrowed or archaic word contained an element speakers no longer understood, they reshaped it to resemble something familiar — and often the reshaping stuck and became the dictionary spelling. This explains a whole class of words whose letters contradict their history: an island with an s it never had, a bridegroom with no groom in it, a hangnail that never hung. Knowing the real origin is what lets you remember the illogical spelling.</div>
-    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'>ISLAND</div>
+    <div class="kicker" style="margin-top:.08in">The pro move</div><div class="method"><div class='trick'>ISLAND</div>
 <b>Heard.</b> EYE-lund
 <b>Origin.</b> Old English igland — ig meant island already, land was added
 <b>What happened.</b> the s was inserted by scribes copying French isle, from Latin insula
 <b>Verdict.</b> the s is a mistake that became compulsory
 <b>Spell.</b> I S L A N D</div>
     <div class="cards"><div class="card"><h3>Letters inserted by mistake</h3><p>Island had no s: Old English igland was respelled to match French isle. Could had no l: Old English cuthe gained one by analogy with should and would. Ptarmigan had no p: Gaelic tarmachan was given a Greek-looking p by a scholar who thought it looked more learned. In each case a wrong guess is now the only correct spelling.</p></div><div class="card"><h3>Words reshaped to look familiar</h3><p>Bridegroom was Old English brydguma, bride-man — guma meant man, and when that word died English replaced it with groom, which then meant a boy. Coleslaw is Dutch koolsalade, cabbage salad, respelled as though it were cold slaw. Hangnail was angnail, from ang meaning painful, and had nothing to do with hanging. Cockroach was Spanish cucaracha, reshaped into cock and roach.</p></div><div class="card"><h3>Belfry had no bell</h3><p>Belfry is the finest example. It was berfrey, a movable siege tower, from Old French berfrei. Since towers held bells, English heard bell in the first syllable and respelled it. Similarly penthouse was apentis, an attached lean-to, from the same root as append — nothing to do with houses. Titmouse ends in mose, an Old English word for a small bird, not mouse.</p></div><div class="card"><h3>How to use this</h3><p>These words cannot be derived, so the origin story is the memory aid. You will not deduce the s in island, but you will remember that scribes put it there to match isle. Posthumous gained its h because scholars linked it to humus, earth, when it is really postumus, last. Carat, rosemary, liquorice, asparagus and curmudgeon all carry similar scars.</p></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 8</span></div></div>
+    
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 8</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Folk etymology — wrong guesses that became correct · 1</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">bridegroom</span><span class="say">/ BREYE-dgroom /</span>
       <div class="d">a man who has recently been married</div><div class="h">💡 When a word stopped making sense, English respelled it to look like words it did recognise. Those wrong guesses a…</div><div class="line"></div></div><div class="wd"><span class="w">posthumous</span><span class="say">/ p-AH-s-ch-uh-m-uh-s /</span>
       <div class="d">is arising occurring or continuing after one's death</div><div class="h">💡 When a word stopped making sense, English respelled it to look like words it did recognise. Those wrong guesses a…</div><div class="line"></div></div><div class="wd"><span class="w">curmudgeon</span><span class="say">/ k-ur-m-UH-j-ih-n /</span>
@@ -421,10 +618,10 @@
       <div class="d">widely cultivated for its fragrant grey-green leaves used in cooking and in perfumery</div><div class="h">💡 When a word stopped making sense, English respelled it to look like words it did recognise. Those wrong guesses a…</div><div class="line"></div></div><div class="wd"><span class="w">cockroach</span><span class="say">/ KAH-krohch /</span>
       <div class="d">any of numerous chiefly nocturnal insects; some are domestic pests</div><div class="h">💡 When a word stopped making sense, English respelled it to look like words it did recognise. Those wrong guesses a…</div><div class="line"></div></div><div class="wd"><span class="w">penthouse</span><span class="say">/ PEH-nthows /</span>
       <div class="d">an apartment located on the top floors of a building</div><div class="h">💡 When a word stopped making sense, English respelled it to look like words it did recognise. Those wrong guesses a…</div><div class="line"></div></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 8 practice</span></div></div>
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 8 practice</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Folk etymology — wrong guesses that became correct · 2</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">hangnail</span><span class="say">/ HANG-nayl /</span>
       <div class="d">a loose narrow strip of skin near the base of a fingernail; tearing it produces a painful sor…</div><div class="h">💡 When a word stopped making sense, English respelled it to look like words it did recognise. Those wrong guesses a…</div><div class="line"></div></div><div class="wd"><span class="w">coleslaw</span><span class="say">/ KOH-lslah /</span>
       <div class="d">basically shredded cabbage</div><div class="h">💡 When a word stopped making sense, English respelled it to look like words it did recognise. Those wrong guesses a…</div><div class="line"></div></div><div class="wd"><span class="w">muskrat</span><span class="say">/ MUH-skrat /</span>
@@ -434,30 +631,51 @@
       <div class="d">any of numerous short-stemmed plants of the genus Primula having tufted basal leaves and show…</div><div class="h">💡 When a word stopped making sense, English respelled it to look like words it did recognise. Those wrong guesses a…</div><div class="line"></div></div><div class="wd"><span class="w">sirloin</span><span class="say">/ SUR-loyn /</span>
       <div class="d">the portion of the loin (especially of beef) just in front of the rump</div><div class="h">💡 When a word stopped making sense, English respelled it to look like words it did recognise. Those wrong guesses a…</div><div class="line"></div></div><div class="wd"><span class="w">hiccough</span><span class="say">/ HIH-kuhp /</span>
       <div class="d">(usually plural) the state of having reflex spasms of the diaphragm accompanied by a rapid cl…</div><div class="h">💡 When a word stopped making sense, English respelled it to look like words it did recognise. Those wrong guesses a…</div><div class="line"></div></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 8 practice</span></div></div>
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 8 practice</span></div></div>
 <div class="pg">
       <div class="kicker">Rapid round · Folk etymology — wrong guesses that became correct</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
-      <div class="rr"><div><b>belfry</b> <span style="color:#8b83a3;font-size:8.4pt">/ BEH-lfree /</span><br>a bell tower; usually stands alone unattached to a building</div><div><b>island</b> <span style="color:#8b83a3;font-size:8.4pt">/ EYE-luhnd /</span><br>a land mass (smaller than a continent) that is surrounded by water</div><div><b>carat</b> <span style="color:#8b83a3;font-size:8.4pt">/ KEH-ruht /</span><br>a unit of weight for precious stones = 200 mg</div><div><b>chaise</b> <span style="color:#8b83a3;font-size:8.4pt">/ SHAYZ /</span><br>a long chair; for reclining</div><div><b>pickax</b> <span style="color:#8b83a3;font-size:8.4pt">/ PIK-aks /</span><br>a heavy iron tool with a wooden handle and a curved head that is point</div><div><b>helpmate</b> <span style="color:#8b83a3;font-size:8.4pt">/ HELP-mayt /</span><br>a helpful partner</div></div>
-      <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 8 extras</span></div></div>
+      <h2 style="font-size:16pt;margin:.04in 0 .14in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>belfry</b> <span style="color:var(--muted);font-size:8.2pt">/ BEH-lfree /</span><br>a bell tower; usually stands alone unattached to a building</div><div><b>island</b> <span style="color:var(--muted);font-size:8.2pt">/ EYE-luhnd /</span><br>a land mass (smaller than a continent) that is surrounded by water</div><div><b>carat</b> <span style="color:var(--muted);font-size:8.2pt">/ KEH-ruht /</span><br>a unit of weight for precious stones = 200 mg</div><div><b>chaise</b> <span style="color:var(--muted);font-size:8.2pt">/ SHAYZ /</span><br>a long chair; for reclining</div><div><b>pickax</b> <span style="color:var(--muted);font-size:8.2pt">/ PIK-aks /</span><br>a heavy iron tool with a wooden handle and a curved head that is point</div><div><b>helpmate</b> <span style="color:var(--muted);font-size:8.2pt">/ HELP-mayt /</span><br>a helpful partner</div></div>
+      <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 8 extras</span></div></div>
+<div class="pg">
+      <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><circle cx="34" cy="38" r="10" fill="#E8E4F0"/><circle cx="86" cy="38" r="10" fill="#E8E4F0"/><circle cx="30" cy="48" r="8" fill="#E8E4F0"/><circle cx="90" cy="48" r="8" fill="#E8E4F0"/>
+<circle cx="60" cy="52" r="26" fill="#FFD9A8"/>
+<path d="M40 40 q8 -12 20 -12 q12 0 20 12 q-8 -6 -20 -6 q-12 0 -20 6 z" fill="#E8E4F0"/>
+<path d="M46 50 q4 -4 9 -2 M74 50 q-4 -4 -9 -2" fill="none" stroke="#5C4A32" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M48 58 q3 3 6 0 M66 58 q3 3 6 0" fill="none" stroke="#2B2B3E" stroke-width="3" stroke-linecap="round"/>
+<ellipse cx="44" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/><ellipse cx="76" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/>
+<path d="M54 68 q6 6 12 0" fill="none" stroke="#5C3A1E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M38 84 q22 -12 44 0 l-3 20 q-19 8 -38 0 z" fill="#2B2B3E"/>
+<path d="M60 80 l-7 9 l7 9 l7 -9 z" fill="#fff"/>
+<path d="M52 82 l8 7 8 -7 l-4 -4 h-8 z" fill="#fff"/><path d="M56 80 h8 l3 4 l-7 6 l-7 -6 z" fill="#F4F4FA"/>
+<rect x="56" y="84" width="8" height="6" rx="2" fill="#C43D5A"/>
+<path d="M88 76 L106 52" stroke="#8A5B2E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M100 40 q6 5 10 4 M96 32 q4 3 8 2" stroke="#C9C9DD" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+<circle cx="18" cy="70" r="2.2" fill="#FFC83D"/></svg>
+        <div><div class="kicker">Maestro's puzzle page · Folk etymology — wrong guesses that became correct</div>
+        <h2 style="font-size:16pt">Word search</h2></div></div>
+      <table class="ws"><tr><td>C</td><td>E</td><td>N</td><td>S</td><td>J</td><td>A</td><td>J</td><td>K</td><td>Z</td><td>F</td><td>L</td><td>C</td><td>J</td></tr><tr><td>B</td><td>C</td><td>O</td><td>X</td><td>A</td><td>S</td><td>T</td><td>U</td><td>L</td><td>W</td><td>I</td><td>D</td><td>L</td></tr><tr><td>R</td><td>I</td><td>E</td><td>P</td><td>G</td><td>P</td><td>F</td><td>K</td><td>H</td><td>Z</td><td>A</td><td>A</td><td>Y</td></tr><tr><td>I</td><td>R</td><td>G</td><td>G</td><td>Z</td><td>A</td><td>S</td><td>C</td><td>X</td><td>S</td><td>N</td><td>C</td><td>R</td></tr><tr><td>D</td><td>O</td><td>D</td><td>P</td><td>N</td><td>R</td><td>V</td><td>N</td><td>U</td><td>I</td><td>G</td><td>C</td><td>O</td></tr><tr><td>E</td><td>U</td><td>U</td><td>W</td><td>O</td><td>A</td><td>H</td><td>O</td><td>L</td><td>D</td><td>N</td><td>O</td><td>S</td></tr><tr><td>G</td><td>Q</td><td>M</td><td>N</td><td>W</td><td>G</td><td>M</td><td>V</td><td>J</td><td>W</td><td>A</td><td>C</td><td>E</td></tr><tr><td>R</td><td>I</td><td>R</td><td>M</td><td>Z</td><td>U</td><td>N</td><td>K</td><td>R</td><td>P</td><td>H</td><td>K</td><td>M</td></tr><tr><td>O</td><td>L</td><td>U</td><td>Z</td><td>H</td><td>S</td><td>X</td><td>F</td><td>I</td><td>M</td><td>X</td><td>R</td><td>A</td></tr><tr><td>O</td><td>I</td><td>C</td><td>T</td><td>C</td><td>F</td><td>R</td><td>E</td><td>W</td><td>X</td><td>K</td><td>O</td><td>R</td></tr><tr><td>M</td><td>E</td><td>S</td><td>W</td><td>A</td><td>L</td><td>S</td><td>E</td><td>L</td><td>O</td><td>C</td><td>A</td><td>Y</td></tr><tr><td>V</td><td>O</td><td>Z</td><td>C</td><td>G</td><td>Q</td><td>F</td><td>X</td><td>T</td><td>N</td><td>Q</td><td>C</td><td>I</td></tr><tr><td>P</td><td>E</td><td>S</td><td>U</td><td>O</td><td>H</td><td>T</td><td>N</td><td>E</td><td>P</td><td>P</td><td>H</td><td>L</td></tr></table>
+  <div class="wsl"><span class="chip">bridegroom</span><span class="chip">posthumous</span><span class="chip">curmudgeon</span><span class="chip">liquorice</span><span class="chip">asparagus</span><span class="chip">rosemary</span><span class="chip">cockroach</span><span class="chip">penthouse</span><span class="chip">hangnail</span><span class="chip">coleslaw</span></div><p style="text-align:center;font-size:8.6pt;color:var(--muted);margin-top:.08in">Words run in every direction — even backwards.</p><div class="bb"><span class="bbi">🎈</span><div><div class="bbl">Bee Break · idiom to drop at dinner</div><div class="bbb"><b>lose ground</b></div><div class="bbt">to fall behind or lose an advantage</div></div></div>
+      <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 8 game</span></div></div>
 <div class="pg dense">
-    <div style="display:flex;align-items:center;gap:.16in">
+    <div style="display:flex;align-items:center;gap:.14in">
       <span class="badge">9</span>
       <div><div class="kicker">How Words Are Built</div>
-      <h2 style="font-size:20pt;line-height:1.08">Tautonyms — words that repeat themselves exactly</h2></div></div>
-    <div class="kicker" style="margin-top:.2in">The big idea</div>
+      <h2 style="font-size:19pt;line-height:1.08">Tautonyms — words that repeat themselves exactly</h2></div></div>
+    <div class="kicker" style="margin-top:.16in">The big idea</div>
     <div class="concept">A tautonym is a word made of the same element twice with nothing altered — unlike reduplication, where a vowel changes. They are unusually easy competition words once you recognise the shape, because you only need to spell half of it and then repeat exactly. The reason they exist is that many languages use repetition as grammar, marking a plural or an intensity, and English borrowed the doubled form whole.</div>
-    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'>BERIBERI</div>
+    <div class="kicker" style="margin-top:.08in">The pro move</div><div class="method"><div class='trick'>BERIBERI</div>
 <b>Heard.</b> berry-BERRY — a disease caused by lack of thiamine
 <b>Origin.</b> Sinhalese beri, weakness, said twice for emphasis
 <b>Rule.</b> the halves are identical, so spell b-e-r-i once and repeat it
 <b>Spell.</b> B E R I B E R I
 <b>Family.</b> laulau, mahimahi — the same doubling</div>
     <div class="cards"><div class="card"><h3>Repetition as grammar</h3><p>In many languages, saying a word twice does real grammatical work: it makes a plural, an intensive, or a diminutive. Sinhalese beri, weakness, doubled becomes beriberi, great weakness. Malay and Hawaiian use doubling constantly. So the doubled form is the actual word in the source language, not an English decoration.</p></div><div class="card"><h3>The Pacific set</h3><p>Hawaiian and Polynesian languages give the largest group. Laulau, a wrapped dish. Mahimahi, the dolphinfish. Lavalava, a wrapped garment. Makomako and poroporo, New Zealand plants. Muumuu, the dress. All obey the Hawaiian rules from the origins chapter too — thirteen letters, every syllable ending in a vowel — so they are doubly predictable.</p></div><div class="card"><h3>The rest of the world</h3><p>Couscous is Berber. Tsetse is Tswana. Juju is West African. Dodo is Portuguese doudo, a simpleton. Chowchow, greegree, quiaquia, caracara, gang-gang, boubou. And the French pairs: bonbon, froufrou, cancan, tutu. Notice that these are food, animals, clothing and music — concrete things that got their names by repetition.</p></div><div class="card"><h3>Do not confuse them with near-doubles</h3><p>A true tautonym repeats exactly. Words like murmur, tartar, tartan and dumdum look similar but are not all the same thing — murmur is Latin murmurare, imitating a sound, and tartar has a complicated Greek and Arabic history. And zigzag, flimflam and riffraff change the vowel, which makes them reduplications, not tautonyms. Only three true ones sit in the core library, and 42 in the full library.</p></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 9</span></div></div>
+    
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 9</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Tautonyms — words that repeat themselves exactly · 1</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">beriberi</span><span class="say">/ BEHR-ee-behr-ee /</span>
       <div class="d">a disease caused by a vitamin B1 deficiency</div><div class="h">💡 A tautonym repeats a syllable with no change at all: beriberi, laulau, couscous. Most come from languages where r…</div><div class="line"></div></div><div class="wd"><span class="w">mahimahi</span><span class="say">/ mah-hee-MAH-hee /</span>
       <div class="d">the lean flesh of a saltwater fish found in warm waters (especially in Hawaii)</div><div class="h">💡 A tautonym repeats a syllable with no change at all: beriberi, laulau, couscous. Most come from languages where r…</div><div class="line"></div></div><div class="wd"><span class="w">caracara</span><span class="say">/ kah-ruh-KAH-ruh /</span>
@@ -467,10 +685,10 @@
       <div class="d">an African amulet</div><div class="h">💡 A tautonym repeats a syllable with no change at all: beriberi, laulau, couscous. Most come from languages where r…</div><div class="line"></div></div><div class="wd"><span class="w">lavalava</span><span class="say">/ lah-vah-LAH-vah /</span>
       <div class="d">a skirt consisting of a rectangle of calico or printed cotton; worn by Polynesians (especiall…</div><div class="h">💡 A tautonym repeats a syllable with no change at all: beriberi, laulau, couscous. Most come from languages where r…</div><div class="line"></div></div><div class="wd"><span class="w">makomako</span><span class="say">/ mah-koh-MAH-koh /</span>
       <div class="d">graceful deciduous shrub or small tree having attractive foliage and small red berries that t…</div><div class="h">💡 A tautonym repeats a syllable with no change at all: beriberi, laulau, couscous. Most come from languages where r…</div><div class="line"></div></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 9 practice</span></div></div>
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 9 practice</span></div></div>
 <div class="pg">
     <div class="kicker">Practice hive · Tautonyms — words that repeat themselves exactly · 2</div>
-    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <h2 style="font-size:16pt;margin:.04in 0 .14in">Say it. Spell it out loud. Then write it.</h2>
     <div class="wgrid"><div class="wd"><span class="w">poroporo</span><span class="say">/ por-oh-POR-oh /</span>
       <div class="d">Australian annual sometimes cultivated for its racemes of purple flowers and edible yellow eg…</div><div class="h">💡 A tautonym repeats a syllable with no change at all: beriberi, laulau, couscous. Most come from languages where r…</div><div class="line"></div></div><div class="wd"><span class="w">quiaquia</span><span class="say">/ kwee-AH-kwee-ah /</span>
       <div class="d">small fusiform fish of western Atlantic</div><div class="h">💡 A tautonym repeats a syllable with no change at all: beriberi, laulau, couscous. Most come from languages where r…</div><div class="line"></div></div><div class="wd"><span class="w">gang-gang</span><span class="say">/ GANG-gang /</span>
@@ -480,38 +698,67 @@
       <div class="d">bloodsucking African fly; transmits sleeping sickness etc.</div><div class="h">💡 A tautonym repeats a syllable with no change at all: beriberi, laulau, couscous. Most come from languages where r…</div><div class="line"></div></div><div class="wd"><span class="w">froufrou</span><span class="say">/ FROO-froo /</span>
       <div class="d">elaborate or excessive ornamentation, frills, or fussiness in clothing or decoration; also us…</div><div class="h">💡 A tautonym repeats a syllable with no change at all: beriberi, laulau, couscous. Most come from languages where r…</div><div class="line"></div></div><div class="wd"><span class="w">bonbon</span><span class="say">/ BON-bon /</span>
       <div class="d">a candy that usually has a center of fondant or fruit or nuts coated in chocolate</div><div class="h">💡 A tautonym repeats a syllable with no change at all: beriberi, laulau, couscous. Most come from languages where r…</div><div class="line"></div></div></div>
-    <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 9 practice</span></div></div>
+    <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 9 practice</span></div></div>
 <div class="pg">
       <div class="kicker">Rapid round · Tautonyms — words that repeat themselves exactly</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
-      <div class="rr"><div><b>cancan</b> <span style="color:#8b83a3;font-size:8.4pt">/ KA-nkan /</span><br>a high-kicking dance of French origin performed by a female chorus lin</div><div><b>dumdum</b> <span style="color:#8b83a3;font-size:8.4pt">/ DUM-dum /</span><br>a soft-nosed small-arms bullet that expands when it hits a target and </div><div><b>atlatl</b> <span style="color:#8b83a3;font-size:8.4pt">/ AT-latl /</span><br>A device, typically a flat board or stick with a hooked end, used to h</div><div><b>murmur</b> <span style="color:#8b83a3;font-size:8.4pt">/ MUR-mer /</span><br>a low continuous indistinct sound; often accompanied by movement of th</div><div><b>tartar</b> <span style="color:#8b83a3;font-size:8.4pt">/ TAH-rter /</span><br>a salt used especially in baking powder</div><div><b>juju</b> <span style="color:#8b83a3;font-size:8.4pt">/ JOO-joo /</span><br>A magic charm or power in some West African beliefs.</div><div><b>dodo</b> <span style="color:#8b83a3;font-size:8.4pt">/ DOH-doh /</span><br>someone whose style is out of fashion</div><div><b>tutu</b> <span style="color:#8b83a3;font-size:8.4pt">/ TOO-too /</span><br>South African prelate and leader of the antiapartheid struggle (born i</div></div>
-      <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>Chapter 9 extras</span></div></div>
+      <h2 style="font-size:16pt;margin:.04in 0 .14in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>cancan</b> <span style="color:var(--muted);font-size:8.2pt">/ KA-nkan /</span><br>a high-kicking dance of French origin performed by a female chorus lin</div><div><b>dumdum</b> <span style="color:var(--muted);font-size:8.2pt">/ DUM-dum /</span><br>a soft-nosed small-arms bullet that expands when it hits a target and </div><div><b>atlatl</b> <span style="color:var(--muted);font-size:8.2pt">/ AT-latl /</span><br>A device, typically a flat board or stick with a hooked end, used to h</div><div><b>murmur</b> <span style="color:var(--muted);font-size:8.2pt">/ MUR-mer /</span><br>a low continuous indistinct sound; often accompanied by movement of th</div><div><b>tartar</b> <span style="color:var(--muted);font-size:8.2pt">/ TAH-rter /</span><br>a salt used especially in baking powder</div><div><b>juju</b> <span style="color:var(--muted);font-size:8.2pt">/ JOO-joo /</span><br>A magic charm or power in some West African beliefs.</div><div><b>dodo</b> <span style="color:var(--muted);font-size:8.2pt">/ DOH-doh /</span><br>someone whose style is out of fashion</div><div><b>tutu</b> <span style="color:var(--muted);font-size:8.2pt">/ TOO-too /</span><br>South African prelate and leader of the antiapartheid struggle (born i</div></div>
+      <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 9 extras</span></div></div>
+<div class="pg">
+      <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><circle cx="34" cy="38" r="10" fill="#E8E4F0"/><circle cx="86" cy="38" r="10" fill="#E8E4F0"/><circle cx="30" cy="48" r="8" fill="#E8E4F0"/><circle cx="90" cy="48" r="8" fill="#E8E4F0"/>
+<circle cx="60" cy="52" r="26" fill="#FFD9A8"/>
+<path d="M40 40 q8 -12 20 -12 q12 0 20 12 q-8 -6 -20 -6 q-12 0 -20 6 z" fill="#E8E4F0"/>
+<path d="M46 50 q4 -4 9 -2 M74 50 q-4 -4 -9 -2" fill="none" stroke="#5C4A32" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M48 58 q3 3 6 0 M66 58 q3 3 6 0" fill="none" stroke="#2B2B3E" stroke-width="3" stroke-linecap="round"/>
+<ellipse cx="44" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/><ellipse cx="76" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/>
+<path d="M54 68 q6 6 12 0" fill="none" stroke="#5C3A1E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M38 84 q22 -12 44 0 l-3 20 q-19 8 -38 0 z" fill="#2B2B3E"/>
+<path d="M60 80 l-7 9 l7 9 l7 -9 z" fill="#fff"/>
+<path d="M52 82 l8 7 8 -7 l-4 -4 h-8 z" fill="#fff"/><path d="M56 80 h8 l3 4 l-7 6 l-7 -6 z" fill="#F4F4FA"/>
+<rect x="56" y="84" width="8" height="6" rx="2" fill="#C43D5A"/>
+<path d="M88 76 L106 52" stroke="#8A5B2E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M100 40 q6 5 10 4 M96 32 q4 3 8 2" stroke="#C9C9DD" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+<circle cx="18" cy="70" r="2.2" fill="#FFC83D"/></svg>
+        <div><div class="kicker">Maestro's puzzle page · Tautonyms — words that repeat themselves exactly</div>
+        <h2 style="font-size:16pt">Scramble & rescue</h2></div></div>
+      <div class="gtwo"><div><div class="kicker" style="margin-bottom:.08in">Unscramble</div>
+      <div class="g1" style="margin-bottom:.09in"><span class="gw">aiuuiqaq</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">ltatal</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">haammihi</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">ouosccus</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">rorpooop</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">rcaaarca</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">ribeberi</span><div class="gl"></div></div></div>
+      <div><div class="kicker" style="margin-bottom:.08in">Rescue the vowels</div>
+      <div class="g1" style="margin-bottom:.09in"><span class="gw">m_rm_r</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">b_r_b_r_</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">j_j_</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">m_h_m_h_</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">l_v_l_v_</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">ch_wch_w</span><div class="gl"></div></div><div class="g1" style="margin-bottom:.09in"><span class="gw">c__sc__s</span><div class="gl"></div></div></div></div><div class="bb"><span class="bbi">💬</span><div><div class="bbl">Bee Break · someone said it better</div><div class="bbb">“Life is like riding a bicycle. To keep your balance, you must keep moving.”</div><div class="bbt">— Albert Einstein, scientist</div></div></div>
+      <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Chapter 9 game</span></div></div>
 <div class="pg">
       <div class="kicker">The big list 1 of 3</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .18in">Every word in this book. Circle what you own.</h2>
+      <h2 style="font-size:16pt;margin:.04in 0 .16in">Every word in this book. Circle what you own.</h2>
       <div class="biglist"><div><span></span>abdominohysterectomy</div><div><span></span>absent-minded</div><div><span></span>accommodate</div><div><span></span>affinity</div><div><span></span>aggregate</div><div><span></span>alliteration</div><div><span></span>alternate</div><div><span></span>annihilate</div><div><span></span>apparatus</div><div><span></span>appropriate</div><div><span></span>arachibutyrophobia</div><div><span></span>arrogate</div><div><span></span>asparagus</div><div><span></span>assiduous</div><div><span></span>associate</div><div><span></span>asterisk</div><div><span></span>atlatl</div><div><span></span>attenuate</div><div><span></span>august</div><div><span></span>avant-gardism</div><div><span></span>belfry</div><div><span></span>beriberi</div><div><span></span>bird</div><div><span></span>bonbon</div><div><span></span>bow</div><div><span></span>bridegroom</div><div><span></span>brunch</div><div><span></span>burger</div><div><span></span>bus</div><div><span></span>cab</div><div><span></span>cancan</div><div><span></span>caracara</div><div><span></span>carat</div><div><span></span>carton-pierre</div><div><span></span>catch</div><div><span></span>cattle</div><div><span></span>cavalry</div><div><span></span>chaise</div><div><span></span>chase</div><div><span></span>chattel</div><div><span></span>chef</div><div><span></span>cherry</div><div><span></span>chief</div><div><span></span>chortle</div><div><span></span>chowchow</div><div><span></span>clasp</div><div><span></span>close</div><div><span></span>cockroach</div><div><span></span>coleslaw</div><div><span></span>collateral</div><div><span></span>colloquial</div><div><span></span>comfortable</div><div><span></span>commiserate</div><div><span></span>conduct</div><div><span></span>content</div><div><span></span>corps</div><div><span></span>corrigible</div><div><span></span>corroborate</div><div><span></span>couscous</div><div><span></span>crud</div><div><span></span>cul-de-sac</div><div><span></span>curd</div><div><span></span>curmudgeon</div><div><span></span>deliberate</div><div><span></span>dendrochronology</div><div><span></span>dillydally</div><div><span></span>dodo</div><div><span></span>dove</div><div><span></span>dumdum</div><div><span></span>edit</div><div><span></span>emoticon</div><div><span></span>espresso</div><div><span></span>estimate</div><div><span></span>flimflam</div><div><span></span>floccinaucinihilipilification</div><div><span></span>flu</div><div><span></span>fragile</div><div><span></span>frail</div><div><span></span>fridge</div><div><span></span>fringe</div><div><span></span>froufrou</div><div><span></span>galumph</div><div><span></span>gang-gang</div><div><span></span>genteel</div><div><span></span>gentle</div><div><span></span>graduate</div><div><span></span>grasp</div><div><span></span>greegree</div><div><span></span>guarantee</div><div><span></span>guard</div><div><span></span>guile</div><div><span></span>gym</div><div><span></span>hangnail</div><div><span></span>hasp</div><div><span></span>helpmate</div><div><span></span>hiccough</div><div><span></span>hippo</div><div><span></span>hippopotomonstrosesquippedaliophobia</div><div><span></span>honorificabilitudinitatibus</div><div><span></span>hostel</div></div>
-      <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>220 words</span></div></div>
+      <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>220 words</span></div></div>
 <div class="pg">
       <div class="kicker">The big list 2 of 3</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .18in">Every word in this book. Circle what you own.</h2>
+      <h2 style="font-size:16pt;margin:.04in 0 .16in">Every word in this book. Circle what you own.</h2>
       <div class="biglist"><div><span></span>hotel</div><div><span></span>hsaing-waing</div><div><span></span>hundred</div><div><span></span>hunky-dory</div><div><span></span>illegible</div><div><span></span>illuminate</div><div><span></span>immanent</div><div><span></span>immarcescible</div><div><span></span>immunoelectrophoresis</div><div><span></span>infomercial</div><div><span></span>integral</div><div><span></span>interpret</div><div><span></span>intimate</div><div><span></span>invalid</div><div><span></span>irascible</div><div><span></span>island</div><div><span></span>jewelry</div><div><span></span>juju</div><div><span></span>kakorrhaphiophobia</div><div><span></span>knickknack</div><div><span></span>laminate</div><div><span></span>laulau</div><div><span></span>lavalava</div><div><span></span>lead</div><div><span></span>liquorice</div><div><span></span>live</div><div><span></span>loup-garou</div><div><span></span>mahimahi</div><div><span></span>makomako</div><div><span></span>memo</div><div><span></span>mezzo-soprano</div><div><span></span>mille-feuille</div><div><span></span>minute</div><div><span></span>moderate</div><div><span></span>modern</div><div><span></span>motel</div><div><span></span>murmur</div><div><span></span>mushroom</div><div><span></span>muskrat</div><div><span></span>muumuu</div><div><span></span>nostril</div><div><span></span>nuclear</div><div><span></span>object</div><div><span></span>opponent</div><div><span></span>otorhinolaryngology</div><div><span></span>pea</div><div><span></span>penthouse</div><div><span></span>pickax</div><div><span></span>pneumonoultramicroscopicsilicovolcanoconiosis</div><div><span></span>poison</div><div><span></span>polish</div><div><span></span>poroporo</div><div><span></span>porte-monnaie</div><div><span></span>posthumous</div><div><span></span>potion</div><div><span></span>predicate</div><div><span></span>present</div><div><span></span>pretty</div><div><span></span>primrose</div><div><span></span>privat-docent</div><div><span></span>produce</div><div><span></span>project</div><div><span></span>psychopharmacology</div><div><span></span>quiaquia</div><div><span></span>radioimmunoassay</div><div><span></span>record</div><div><span></span>refuse</div><div><span></span>regal</div><div><span></span>regard</div><div><span></span>reward</div><div><span></span>rhino</div><div><span></span>riffraff</div><div><span></span>rosemary</div><div><span></span>royal</div><div><span></span>scatter</div><div><span></span>secure</div><div><span></span>self-conscious</div><div><span></span>separate</div><div><span></span>sesquipedalianism</div><div><span></span>shatter</div><div><span></span>sherbet</div><div><span></span>shirt</div><div><span></span>sirloin</div><div><span></span>skirt</div><div><span></span>smog</div><div><span></span>sow</div><div><span></span>spaghetti</div><div><span></span>staycation</div><div><span></span>subject</div><div><span></span>succumb</div><div><span></span>sufficient</div><div><span></span>suggestion</div><div><span></span>suppress</div><div><span></span>sure</div><div><span></span>surreptitious</div><div><span></span>syndicate</div><div><span></span>tartar</div><div><span></span>tear</div><div><span></span>thermoluminescence</div><div><span></span>third</div></div>
-      <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>220 words</span></div></div>
+      <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>220 words</span></div></div>
 <div class="pg">
       <div class="kicker">The big list 3 of 3</div>
-      <h2 style="font-size:16.5pt;margin:.04in 0 .18in">Every word in this book. Circle what you own.</h2>
+      <h2 style="font-size:16pt;margin:.04in 0 .16in">Every word in this book. Circle what you own.</h2>
       <div class="biglist"><div><span></span>thorough</div><div><span></span>through</div><div><span></span>tinsel</div><div><span></span>tradition</div><div><span></span>treason</div><div><span></span>tremble</div><div><span></span>trichotillomania</div><div><span></span>tsetse</div><div><span></span>tutu</div><div><span></span>ward</div><div><span></span>warranty</div><div><span></span>wasp</div><div><span></span>wile</div><div><span></span>wind</div><div><span></span>woodchuck</div><div><span></span>workaholic</div><div><span></span>wound</div><div><span></span>zenzizenzizenzic</div><div><span></span>zigzag</div><div><span></span>zoo</div></div>
-      <div class="foot"><span>The Word Factory · Bizzing Bee Press</span><span>220 words</span></div></div>
-<div class="pg" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
-    <svg viewBox="0 0 120 100" class="bee" aria-hidden="true">
-  <ellipse cx="44" cy="34" rx="17" ry="26" fill="#DCEFFF" opacity=".85" transform="rotate(-28 44 34)"/>
-  <ellipse cx="76" cy="34" rx="17" ry="26" fill="#EAF5FF" opacity=".85" transform="rotate(28 76 34)"/>
-  <ellipse cx="60" cy="60" rx="34" ry="27" fill="#FFC93C"/>
-  <path d="M44 37 a34 27 0 0 0 -6 14 l14 0 a1 1 0 0 1 0 -14 z M64 34 l0 53 a34 27 0 0 0 14 -5 l0 -43 a34 27 0 0 0 -14 -5 z" fill="#241E33"/>
-  <circle cx="49" cy="56" r="3.6" fill="#241E33"/>
-  <path d="M45 68 q8 7 16 1" stroke="#241E33" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <path d="M52 34 q-4 -12 -12 -14 M68 34 q4 -12 12 -14" stroke="#241E33" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <circle cx="40" cy="19" r="4" fill="#241E33"/><circle cx="80" cy="19" r="4" fill="#241E33"/>
-</svg>
-    <h2 style="font-size:18pt;margin:.14in 0">You finished a whole book. Bees everywhere are impressed.</h2>
-    <p style="font-size:11pt;max-width:5.4in;margin:0 auto .3in;line-height:1.6">Every word in here is also inside the Bizzing Bee app, with real audio, games and a coach that remembers what you miss. Paper for the muscles, app for the ears.</p>
-    <p style="font-size:8.6pt;color:#8b83a3;max-width:5.8in;margin:0 auto;line-height:1.6">Bizzing Bee Press · an independent study project. Bizzing Bee is not affiliated with, sponsored by, or endorsed by the Scripps National Spelling Bee, the North South Foundation, or Merriam-Webster. Competition names appear only to describe which bees the practice material relates to. Definitions, sentences and hints are written for this project. Typefaces are open-licensed (SIL OFL).</p></div></body></html>
+      <div class="foot"><span>The Word Factory · Bizzing Bee</span><span>220 words</span></div></div>
+<div class="pg"><div class="kicker">No peeking until you've tried</div>
+      <h2 style="font-size:16pt;margin:.04in 0 .14in">Answer key</h2>
+      <div class="key"><div><b>Ch. 1 crossword</b> — Across: 1 irascible, 7 alliteration, 8 commiserate · Down: 1 illegible, 2 accommodate, 3 illuminate, 4 annihilate, 5 collateral, 6 corroborate</div><div><b>Ch. 2 scramble</b> —  · vowels: </div><div><b>Ch. 3 scramble</b> —  · vowels: </div><div><b>Ch. 4 crossword</b> — Across: 3 guard, 4 guarantee, 6 warranty, 8 chattel, 9 ward · Down: 1 treason, 2 fragile, 4 genteel, 5 tradition, 7 regard</div><div><b>Ch. 6 scramble</b> — cdur=crud, spaw=wasp, rmoedn=modern, yprtet=pretty, thdir=third, eertlmb=tremble, urcd=curd · vowels: spaghetti, bird, espresso, wasp, curd, thorough, nostril</div><div><b>Ch. 7 crossword</b> — Across: 1 riffraff, 3 emoticon, 5 chortle, 6 infomercial, 7 staycation, 8 knickknack · Down: 2 flimflam, 4 workaholic</div><div><b>Ch. 9 scramble</b> — aiuuiqaq=quiaquia, ltatal=atlatl, haammihi=mahimahi, ouosccus=couscous, rorpooop=poroporo, rcaaarca=caracara, ribeberi=beriberi · vowels: murmur, beriberi, juju, mahimahi, lavalava, chowchow, couscous</div></div><div class="foot"><span>The Word Factory · Bizzing Bee</span><span>Answers</span></div></div>
+<div class="pg" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
+    <svg viewBox="0 0 120 120" style="width:1.4in;height:1.4in;flex-shrink:0" aria-hidden="true"><circle cx="34" cy="38" r="10" fill="#E8E4F0"/><circle cx="86" cy="38" r="10" fill="#E8E4F0"/><circle cx="30" cy="48" r="8" fill="#E8E4F0"/><circle cx="90" cy="48" r="8" fill="#E8E4F0"/>
+<circle cx="60" cy="52" r="26" fill="#FFD9A8"/>
+<path d="M40 40 q8 -12 20 -12 q12 0 20 12 q-8 -6 -20 -6 q-12 0 -20 6 z" fill="#E8E4F0"/>
+<path d="M46 50 q4 -4 9 -2 M74 50 q-4 -4 -9 -2" fill="none" stroke="#5C4A32" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M48 58 q3 3 6 0 M66 58 q3 3 6 0" fill="none" stroke="#2B2B3E" stroke-width="3" stroke-linecap="round"/>
+<ellipse cx="44" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/><ellipse cx="76" cy="64" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".85"/>
+<path d="M54 68 q6 6 12 0" fill="none" stroke="#5C3A1E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M38 84 q22 -12 44 0 l-3 20 q-19 8 -38 0 z" fill="#2B2B3E"/>
+<path d="M60 80 l-7 9 l7 9 l7 -9 z" fill="#fff"/>
+<path d="M52 82 l8 7 8 -7 l-4 -4 h-8 z" fill="#fff"/><path d="M56 80 h8 l3 4 l-7 6 l-7 -6 z" fill="#F4F4FA"/>
+<rect x="56" y="84" width="8" height="6" rx="2" fill="#C43D5A"/>
+<path d="M88 76 L106 52" stroke="#8A5B2E" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M100 40 q6 5 10 4 M96 32 q4 3 8 2" stroke="#C9C9DD" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+<circle cx="18" cy="70" r="2.2" fill="#FFC83D"/></svg>
+    <h2 style="font-size:18pt;margin:.12in 0">Maestro says: that's a whole book. Respect.</h2>
+    <p style="font-size:10.5pt;max-width:5.4in;margin:0 auto .28in;line-height:1.6">Every word in here also lives in the Bizzing Bee app, with real audio, games and a coach that remembers what you miss. Paper for the muscles, app for the ears.</p>
+    <p style="font-size:8.4pt;color:var(--muted);max-width:5.8in;margin:0 auto;line-height:1.6">Bizzing Bee · an independent study project. Not affiliated with, sponsored by, or endorsed by the Scripps National Spelling Bee, the North South Foundation, or Merriam-Webster. Competition names appear only to describe which bees the practice material relates to. Definitions, sentences and hints are written for this project. Typefaces are open-licensed (SIL OFL).</p></div></body></html>
