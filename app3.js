@@ -150,7 +150,7 @@ function listStages(key){
   if(key==='eponyms') return eponymStages();
   const raw=rawListWords(key); const cached=_stageCache[key];
   if(!_DYNAMIC_LISTS[key] && cached && cached._n===raw.length) return cached;
-  const sorted=raw.filter(w=>w&&w.w).sort((a,b)=> ((a.y||3)-(b.y||3)) || (a.w.length-b.w.length) || ((b.bp||0)-(a.bp||0)) );
+  const sorted=raw.filter(w=>w&&w.w).sort((a,b)=> (spellDiff(a)-spellDiff(b)) || ((b.bp||0)-(a.bp||0)) );
   const n=sorted.length; let stages;
   if(n<=WORK_MAX){ stages=[{ n:1, label:'Stage 1', words:sorted }]; }
   else { const N=Math.max(2,Math.min(24,Math.round(n/50))); const size=Math.ceil(n/N); stages=[];
@@ -169,8 +169,17 @@ function stagesDone(c,key){ c=c||active(); return listStageIdx(c,key) + (stageCo
    common misspelling) and returns how much of the spelling must be KNOWN rather than
    heard, and which concept family explains it. Ramps and clusters are built on this;
    rarity (y) and length survive only as minor terms inside spellDiff. */
-const TRICK_LABELS={ epon:'Named after someone', silent:'Silent letters', fr:'French patterns', gk:'Greek patterns', end:'Sound-alike ending', dbl:'Double letters', vow:'Tricky vowels', plain:'Straight spelling' };
-const TRICK_RANK={plain:0,dbl:1,vow:2,end:3,silent:4,gk:5,fr:6,epon:7};   // study order: phonics-adjacent first, story-words last
+const TRICK_LABELS={ epon:'Named after someone', silent:'Silent letters', fr:'French patterns', gk:'Greek patterns', end:'Sound-alike ending', dbl:'Double letters', vow:'Tricky vowels', hom:'Sound-alike word', plain:'Straight spelling' };
+const TRICK_RANK={plain:0,dbl:1,vow:2,end:3,hom:4,silent:5,gk:6,fr:7,epon:8};   // study order: phonics-adjacent first, story-words last
+
+/* homonyms, alternate pronunciations & diacritics (sounds-data.js).
+   Lookups guard against Object.prototype keys — "constructor" is a real library word. */
+const _hasOwn=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
+let _homIdx=null;
+function homIndex(){ if(_homIdx) return _homIdx; const m=Object.create(null); try{ (window.SB_HOM||[]).forEach(g=>g.forEach(w=>{ m[w]=g; })); }catch(e){} return (_homIdx=m); }
+function homPartners(w){ const g=homIndex()[nkey(w)]; return g?g.filter(x=>x!==nkey(w)):[]; }
+function altPron(w){ const o=window.SB_ALT_PRON||{}; const k=nkey(w); return _hasOwn(o,k)?o[k]:null; }
+function diacritic(w){ const o=window.SB_DIACRITICS||{}; const k=nkey(w); return _hasOwn(o,k)?o[k]:null; }
 function trickAnal(w){ if(w._tk) return w._tk;
   const s=String(w.w||'').toLowerCase(), p=String(w.p||'');
   const f={epon:0,silent:0,fr:0,gk:0,end:0,dbl:0,vow:0};
@@ -190,6 +199,7 @@ function trickAnal(w){ if(w._tk) return w._tk;
   if(/(cede|ceed|sede)$/.test(s)) f.end+=10;
   if(/(eous|ious|uous)$/.test(s)) f.end+=6;
   const dbl=s.match(/([bcdfghjklmnpqrstvz])\1/g); if(dbl) f.dbl+=Math.min(10,5*new Set(dbl).size);
+  if(homIndex()[s]) f.hom=8;                         // a homonym: only the MEANING picks the spelling
   if(/ei|ie/.test(s)) f.vow+=4;
   if(/ough|augh/.test(s)) f.vow+=9;
   if(/[aeiou]{3}/.test(s)) f.vow+=5;
@@ -657,8 +667,24 @@ function catStatic(){ if(_catStatic) return _catStatic; const nsf=SB_DATA.nsf||[
     hindi:nsf.filter(r=>/hindi|sanskrit|urdu|tamil|marathi|punjabi/i.test(r.o||'')).concat(HINDI_WORDS),
     eponyms:nsf.filter(r=>(r.t||[]).indexOf('eponyms')>=0) };
   return _catStatic; }
+/* the three sound lists rebuild once the 128k library loads in (hardPool pattern) */
+let _sndCache=null,_sndFull=false;
+function soundLists(){
+  const full=(typeof fullWords==='function'&&window.SB_FULL)?fullWords():null; const haveFull=!!(full&&full.length);
+  if(_sndCache&&_sndFull===haveFull) return _sndCache;
+  _sndFull=haveFull;
+  const idx=homIndex(); const AP=window.SB_ALT_PRON||{}; const DI=window.SB_DIACRITICS||{};
+  const src=haveFull?((SB_DATA.nsf||[]).concat(full)):((SB_DATA&&SB_DATA.nsf)||[]);
+  const seen=new Set(); const hom=[],alt=[],dia=[];
+  for(const r of src){ if(!r||!r.w) continue; const k=nkey(r.w); if(seen.has(k)) continue; seen.add(k);
+    if(idx[k]) hom.push(r);
+    if(_hasOwn(AP,k)) alt.push(r);
+    if(_hasOwn(DI,k)) dia.push(r); }
+  const byBee=(a,b)=>((b.bp||0)-(a.bp||0))||(spellDiff(b)-spellDiff(a));
+  hom.sort(byBee); alt.sort(byBee); dia.sort(byBee);
+  return (_sndCache={hom,alt,dia}); }
 function coachCatalog(){
-  const S=state; const st=catStatic(); const nsf=SB_DATA.nsf||[];
+  const S=state; const st=catStatic(); const nsf=SB_DATA.nsf||[]; const snd=soundLists();
   const cats=[
     { key:'review',     label:'Tricky review',           sub:'Curated commonly-missed words',        words:REVIEW },
     { key:'scripps',    label:'Winning Words — Scripps Bee', sub:'Championship-ending words, 1925–2026', words:(window.SB_SCRIPPS||[]) },
@@ -687,6 +713,9 @@ function coachCatalog(){
     { key:'japanese',   label:'Japanese origin',         sub:'Loanwords from Japanese',               words:st.japanese },
     { key:'hindi',      label:'Hindi / Sanskrit origin', sub:'Indian-language loanwords',             words:st.hindi },
     { key:'eponyms',    label:'Named After Someone',     sub:'Eponyms clustered by the name’s language — each Level is one cluster',  words:st.eponyms },
+    { key:'homophones', label:'Sound-Alike Words',       sub:'Homonyms — same sound, different spelling; the meaning decides', words:snd.hom },
+    { key:'altpron',    label:'Two Pronunciations',      sub:'One spelling, two accepted sounds — hear both, spell one', words:snd.alt },
+    { key:'diacritics', label:'Words With Accent Marks', sub:'Full-dress spellings behind the plain letters — é, ñ, ç, ü', words:snd.dia },
   ].filter(c=>(c.words&&c.words.length) || c.key==='missed');
   /* The advanced journey is a first-class list once the pack is on, so it inherits the
      whole Practice shell. Unshifted to the front so it sits ABOVE the Bizzing Bee
@@ -1739,6 +1768,15 @@ const app = {
   setCoachTarget:(key)=>{ const cat=coachCatalog().find(c=>c.key===key); state.coachTargetKey=key; state.coachTargetLabel=cat?cat.label:key; if(cat) flash('Target list set: '+cat.label); else render(); },
   coachRec:()=>{ const k=coachPhase().key; if(k==='breadth') app.coachStudy(); else if(k==='depth') app.coachWeakDrill(); else if(k==='sim') app.startWritten(); },
   say:(w)=>say(w),
+  /* the alternate pronunciation: a Google-TTS clip at voice/ap/<slug>.mp3 when one has
+     been generated (the Audio wrapper in voice-cdn.js resolves it on Pages), otherwise
+     the device voice reads the speakable respelling from SB_ALT_PRON */
+  sayAlt:(word)=>{ const a=altPron(word); if(!a) return;
+    const fallback=()=>{ try{ window.speechSynthesis.cancel(); window.speechSynthesis.speak(utter(a.s||word,0.88)); }catch(e){} };
+    try{ const slug=String(word).toLowerCase().replace(/[^a-z0-9]/g,'-');
+      const au=new Audio('voice/ap/'+slug+'.mp3');
+      au.onerror=fallback; au.play().catch(fallback);
+    }catch(e){ fallback(); } },
   /* ===== Advanced Mode (window.ADV, advanced.js) ===== */
   openAdvanced:()=>{ if(!window.ADV) return; ADV.open();
     if(state.advView!=='gate' && !window.SB_FULL) loadFullLibrary(()=>{ try{ render(); }catch(e){} }); },
@@ -4739,6 +4777,9 @@ function wordFlash(words, idx, navAct, opts){
       ${w.s?`<div style="font-size:13px;color:var(--muted);line-height:1.55;margin-top:9px"><b style="color:var(--text)">Sentence.</b> ${esc(w.s)}</div>`:''}
       ${w.h?`<div style="display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text);line-height:1.5;margin-top:10px;background:var(--chip);border-radius:10px;padding:9px 13px;max-width:42em"><span style="color:var(--accent);margin-top:1px;flex-shrink:0">${iconSVG('bulb',15)}</span><span>${esc(w.h)}</span></div>`:''}
       ${w.m?`<div style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--bad);font-weight:700;line-height:1.5;margin-top:9px">${iconSVG('alert',14)} Often misspelled “${esc(w.m)}”</div>`:''}
+      ${(()=>{try{const ps=homPartners(w.w); return ps.length?`<div style="display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text);line-height:1.5;margin-top:9px;background:var(--surface2);border-radius:10px;padding:9px 13px;max-width:42em"><span style="color:var(--accent);flex-shrink:0;font-weight:800">≈</span><span>Sounds exactly like <b>${ps.map(esc).join('</b> and <b>')}</b> — a different spelling! At the bee, ask for the meaning to know which one you have.</span></div>`:'';}catch(e){return '';}})()}
+      ${(()=>{try{const a=altPron(w.w); return a?`<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:13px;color:var(--text);line-height:1.5;margin-top:9px;background:var(--surface2);border-radius:10px;padding:9px 13px;max-width:42em"><span>Two ways to say it: <b>/ ${esc(a.a)} /</b> and <b>/ ${esc(a.b)} /</b>${a.n?` — ${esc(a.n)}`:''}</span><button data-act="sayAlt" data-arg="${escA(w.w)}" title="Hear the other pronunciation" style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:12px;flex-shrink:0">${iconSVG('volume',14)} Hear it the other way</button></div>`:'';}catch(e){return '';}})()}
+      ${(()=>{try{const d=diacritic(w.w); return (d&&d.m!==w.w)?`<div style="display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text);line-height:1.5;margin-top:9px;background:var(--surface2);border-radius:10px;padding:9px 13px;max-width:42em"><span style="flex-shrink:0">´</span><span>In full dress it wears its marks: <b style="font-size:15px">${esc(d.m)}</b> (${esc(d.n)}) — at the bee, spelling the plain letters is accepted.</span></div>`:'';}catch(e){return '';}})()}
       ${altsHTML(w.w,false)}
       <div style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:15px">
         ${w.bp!=null?`<span title="Bee-probability score: ${w.bp}/100" style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:999px;background:var(--surface2);font-size:12px;color:var(--accent);font-weight:800">${iconSVG('target',13)} ${beeOdds(w.bp)}</span>`:''}
