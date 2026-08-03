@@ -687,42 +687,76 @@ function soundLists(){
   hom.sort(byBee); alt.sort(byBee); dia.sort(byBee);
   return (_sndCache={hom,alt,dia}); }
 
-/* ===== Reading Diacritics trainer (Supercharge → Train) =====
-   Teaches the marks é è ê ç ñ ü å — what each does to a sound — then three drills:
-   name the mark, pick the true marked spelling, choose the right pronunciation.
-   Audio is the library's Google-TTS word clips, played through say(). */
-const DIA_COMB={acute:'́',grave:'̀',circ:'̂',tilde:'̃',umlaut:'̈',ring:'̊',cedilla:'̧'};
-const DIA_MARKS={
-  acute:  {name:'Acute accent', ex:'é', tip:'Points up-right. In French loans it makes e say “ay”: café, cliché, attaché.'},
-  grave:  {name:'Grave accent', ex:'è', tip:'Points down-right. It opens the vowel: crème rhymes with “them”, not “team”.'},
-  circ:   {name:'Circumflex',   ex:'ê', tip:'A little hat — often the gravestone of a lost s: crêpe was once “crespe”.'},
-  cedilla:{name:'Cedilla',      ex:'ç', tip:'A tail under the c that keeps it soft (an s sound) before a, o, u: façade, soupçon.'},
-  tilde:  {name:'Tilde',        ex:'ñ', tip:'A wave over the n that adds a y: jalapeño says “ha-luh-PAY-nyoh”.'},
-  umlaut: {name:'Umlaut · diaeresis', ex:'ü', tip:'Two dots. In German loans it bends the vowel (doppelgänger); in naïve it means “say this vowel on its own”.'},
-  ring:   {name:'Ring',         ex:'å', tip:'A small circle from Scandinavia — the å in smörgåsbord sounds like “oh”.'} };
-function diaMarksOf(m){ const out=[]; const nf=String(m||'').normalize('NFD');
-  for(const k in DIA_COMB){ if(nf.indexOf(DIA_COMB[k])>=0) out.push(k); } return out; }
-function diaPool(){ const pool=[];
-  for(const r of soundLists().dia){ const d=diacritic(r.w); const m=(d&&d.m)||r.w; const marks=diaMarksOf(m);
-    if(marks.length&&r.p) pool.push({ w:r.w, m, p:r.p, d:r.d||'', marks }); }
-  return pool; }
-const dtShuffle=(a)=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t; } return a; };
-function diaDecoys(m,n){ const nf=String(m).normalize('NFD'); const out=new Set(); const marks=Object.keys(DIA_COMB).map(k=>DIA_COMB[k]);
-  for(const mk of marks){ if(nf.indexOf(mk)<0) continue;
-    for(const alt of marks){ if(alt===mk) continue; const v=nf.split(mk).join(alt).normalize('NFC'); if(v!==m) out.add(v); } }
-  out.add(nf.replace(/[̀-ͯ]/g,''));           // the bare form is always a tempting decoy
-  return dtShuffle([...out].filter(x=>x!==m)).slice(0,n); }
-function dtBuild(mode){ const pool=diaPool(); if(pool.length<4) return null;
-  const qs=dtShuffle(pool.slice()).slice(0,Math.min(10,pool.length)).map(e=>{
-    let opts,correct;
-    if(mode==='name'){ correct=DIA_MARKS[e.marks[0]].name+' ('+DIA_MARKS[e.marks[0]].ex+')';
-      const others=dtShuffle(Object.keys(DIA_MARKS).filter(k=>e.marks.indexOf(k)<0)).slice(0,3)
-        .map(k=>DIA_MARKS[k].name+' ('+DIA_MARKS[k].ex+')');
-      opts=dtShuffle([correct].concat(others)); }
-    else if(mode==='place'){ correct=e.m; opts=dtShuffle([e.m].concat(diaDecoys(e.m,3))); }
-    else { correct=e.p; const others=dtShuffle(pool.filter(x=>x.p&&x.p!==e.p&&x.w!==e.w)).slice(0,3).map(x=>x.p);
-      opts=dtShuffle([correct].concat(others)); }
-    return { e, opts, ans:opts.indexOf(correct) }; });
+/* ===== The Sound Alphabet — IPA trainer (Supercharge → Train) =====
+   Bee study lists give pronunciations in phonetic notation; this teaches a speller to
+   READ it. A Learn grid explains each IPA symbol with real bee words, then three drills:
+   read a transcription and pick the word, pick the right transcription for a word, and
+   find the word that carries a given sound. SB_IPA (sounds-data.js) holds 800+ bee words
+   converted from CMUdict; audio is the library's Google-TTS clips via say(). */
+const IPA_SOUNDS=[
+  {s:'ə', n:'schwa — the lazy “uh” in a quiet syllable', eg:'the a in about'},
+  {s:'æ', n:'flat a', eg:'cat, apple'}, {s:'ɑ', n:'open ah', eg:'father, calm'},
+  {s:'ɛ', n:'short e', eg:'bed, said'}, {s:'ɪ', n:'short i', eg:'bit, gym'},
+  {s:'i', n:'long ee', eg:'see, ski'}, {s:'ʊ', n:'short oo', eg:'book, put'},
+  {s:'u', n:'long oo', eg:'moon, flute'}, {s:'ʌ', n:'stressed short u', eg:'cup, love'},
+  {s:'ɔ', n:'aw', eg:'law, thought'}, {s:'ər', n:'er', eg:'her, doctor'},
+  {s:'eɪ', n:'ay', eg:'day, eight'}, {s:'aɪ', n:'eye', eg:'my, night'},
+  {s:'oʊ', n:'oh', eg:'go, boat'}, {s:'aʊ', n:'ow', eg:'now, loud'}, {s:'ɔɪ', n:'oy', eg:'boy, coin'},
+  {s:'θ', n:'soft th (no buzz)', eg:'think, path'}, {s:'ð', n:'buzzy th', eg:'this, mother'},
+  {s:'ʃ', n:'sh', eg:'ship, nation'}, {s:'ʒ', n:'zh', eg:'vision, measure'},
+  {s:'tʃ', n:'ch', eg:'chip, catch'}, {s:'dʒ', n:'j', eg:'jump, giant'},
+  {s:'ŋ', n:'ng', eg:'ring, think'}, {s:'j', n:'y', eg:'yes, music'},
+  {s:'ˈ', n:'stress mark — the NEXT syllable is the loud one', eg:'ˈnɛməsɪs = NEM-uh-sis'} ];
+/* IPA for EVERY word: derived at runtime from the friendly respelling (the p field), so
+   the two notations always agree on the card. Words in SB_IPA carry exact CMU-derived
+   IPA and prefer it. The friendly respelling stays — it is the easier one to read. */
+const P2IPA=[['eye','aɪ'],['yoo','ju'],['air','ɛr'],['ay','eɪ'],['aw','ɔ'],['ow','aʊ'],['oy','ɔɪ'],['oh','oʊ'],['ah','ɑ'],['eh','ɛ'],['ih','ɪ'],['uh','ə'],['ee','i'],['oo','u'],['uu','ʊ'],['er','ər'],['ar','ɑr'],['or','ɔr'],['ch','tʃ'],['sh','ʃ'],['zh','ʒ'],['th','θ'],['ng','ŋ'],['wh','w'],['a','æ'],['e','ɛ'],['i','ɪ'],['o','ɑ'],['u','ʌ'],['j','dʒ'],['y','j'],['c','k'],['q','k'],['x','ks'],['g','ɡ']];
+function pToIPA(p){ if(!p) return ''; let n=0;
+  const chunks=String(p).trim().split(/[-·\s]+/).map(ch=>({ raw:ch, low:ch.toLowerCase().replace(/[^a-z']/g,'') }));
+  return chunks.map((ch,ci)=>{
+    const stressed=/[A-Z]/.test(ch.raw); const low=ch.low;
+    const nextFirst=(chunks[ci+1]&&chunks[ci+1].low[0])||'';
+    let i=0,s='';
+    while(i<low.length){ let hit=null;
+      for(const t of P2IPA){ if(low.startsWith(t[0],i)){ hit=t; break; } }
+      if(hit&&hit[0]==='y'){ const after=low[i+1]||nextFirst;                 // vowel y: cite = s-y-t
+        if(!/[aeiou]/.test(after)) hit=['y','aɪ']; }
+      if(hit){ s+=(hit[0]==='uh'&&stressed)?'ʌ':hit[1]; i+=hit[0].length; }
+      else { const c2=low[i]; s+=(c2==="'"?'':c2); i++; }
+    }
+    return (stressed?(n++?'ˌ':'ˈ'):'')+s; }).join(''); }
+function ipaOf(w,p){ try{ const M=window.SB_IPA||{}; const k=nkey(w); if(_hasOwn(M,k)) return M[k]; return pToIPA(p); }catch(e){ return ''; } }
+let _ipaPool=null;
+function ipaPool(){ if(_ipaPool) return _ipaPool; const IPA=window.SB_IPA||{}; const pool=[];
+  const recs={}; for(const r of (SB_DATA&&SB_DATA.nsf)||[]) recs[nkey(r.w)]=r;
+  for(const w in IPA){ if(!_hasOwn(IPA,w)) continue; const r=recs[w]; if(r) pool.push({ w:r.w, t:IPA[w], d:r.d||'' }); }
+  return (_ipaPool=pool); }
+const itShuffle=(a)=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t; } return a; };
+const IPA_CONFUSE=[['ɪ','i'],['ə','ʌ'],['ɛ','æ'],['ɑ','ɔ'],['ʊ','u'],['θ','ð'],['s','z'],['ʃ','tʃ'],['ʒ','dʒ'],['eɪ','ɛ'],['oʊ','ɔ'],['aɪ','eɪ'],['ˈ','ˌ']];
+function ipaDecoys(t,n){ const out=new Set();
+  for(const [a,b] of IPA_CONFUSE){ let i=t.indexOf(a); if(i>=0) out.add(t.slice(0,i)+b+t.slice(i+a.length));
+    i=t.indexOf(b); if(i>=0) out.add(t.slice(0,i)+a+t.slice(i+b.length)); }
+  return itShuffle([...out].filter(x=>x!==t)).slice(0,n); }
+function itBuild(mode){ const pool=ipaPool(); if(pool.length<8) return null;
+  const sh=itShuffle(pool.slice());
+  let qs;
+  if(mode==='sound'){
+    const syms=itShuffle(IPA_SOUNDS.filter(x=>x.s!=='ˈ'&&pool.some(e=>e.t.indexOf(x.s)>=0)&&pool.filter(e=>e.t.indexOf(x.s)<0).length>=3)).slice(0,10);
+    qs=syms.map(sym=>{ const yes=itShuffle(pool.filter(e=>e.t.indexOf(sym.s)>=0))[0];
+      const no=itShuffle(pool.filter(e=>e.t.indexOf(sym.s)<0)).slice(0,3);
+      const opts=itShuffle([yes].concat(no));
+      return { sym, e:yes, opts:opts.map(x=>x.w), full:opts, ans:opts.indexOf(yes) }; });
+  } else {
+    qs=sh.slice(0,10).map(e=>{ let opts,correct;
+      if(mode==='readipa'){ correct=e.w;
+        const near=itShuffle(pool.filter(x=>x.w!==e.w&&(x.w[0]===e.w[0]||Math.abs(x.w.length-e.w.length)<=1))).slice(0,3);
+        const fill=itShuffle(pool.filter(x=>x.w!==e.w&&near.indexOf(x)<0)).slice(0,3-near.length);
+        opts=itShuffle([e.w].concat(near.concat(fill).map(x=>x.w))); }
+      else { correct=e.t; let dec=ipaDecoys(e.t,3);
+        if(dec.length<3) dec=dec.concat(itShuffle(pool.filter(x=>x.t!==e.t)).slice(0,3-dec.length).map(x=>x.t));
+        opts=itShuffle([e.t].concat(dec)); }
+      return { e, opts, ans:opts.indexOf(correct) }; });
+  }
   return { mode, qs, i:0, score:0, picked:null, done:false }; }
 function coachCatalog(){
   const S=state; const st=catStatic(); const nsf=SB_DATA.nsf||[]; const snd=soundLists();
@@ -1124,16 +1158,16 @@ const app = {
     const w=(state.vocWords||[])[state.vocIdx]; if(w) setTimeout(()=>say(w.w),150); },
   // ----- Typing Trainer -----
   openTyping:()=>{ if(!gateFeature('trainTools','the Typing Trainer')) return; tyStop(); set({nav:'typing', screen:'app', ty:null, conceptSel:null}); },
-  // Reading Diacritics trainer
-  openDiaTrain:()=>{ if(!gateFeature('trainTools','Reading Diacritics')) return; set({nav:'diatrain', screen:'app', dt:null, conceptSel:null}); },
-  dtMode:(m)=>{ if(m==='learn'){ set({dt:{mode:'learn'}}); return; } const dt=dtBuild(m); if(!dt){ flash('Not enough marked words loaded yet'); return; } set({dt}); },
-  dtPick:(i)=>{ const dt=state.dt; if(!dt||dt.done||dt.picked!=null) return; i=+i; const q=dt.qs[dt.i]; dt.picked=i;
-    if(i===q.ans){ dt.score++; addCoins(1); }
-    if(dt.mode!=='place'||i===q.ans) app.dtSay();     // confirm with the real voice
+  // The Sound Alphabet (IPA) trainer
+  openIpaTrain:()=>{ if(!gateFeature('trainTools','The Sound Alphabet')) return; set({nav:'ipatrain', screen:'app', it:null, conceptSel:null}); },
+  itMode:(m)=>{ if(m==='learn'){ set({it:{mode:'learn'}}); return; } const it=itBuild(m); if(!it){ flash('The sound data has not loaded yet'); return; } set({it}); },
+  itPick:(i)=>{ const it=state.it; if(!it||it.done||it.picked!=null) return; i=+i; const q=it.qs[it.i]; it.picked=i;
+    if(i===q.ans){ it.score++; addCoins(1); }
+    if(it.mode!=='readipa'||i===q.ans) app.itSay();   // confirm with the real voice
     render(); },
-  dtNext:()=>{ const dt=state.dt; if(!dt||dt.picked==null) return; if(dt.i+1>=dt.qs.length){ dt.done=true; if(dt.score>=dt.qs.length*0.8){ sfx('win'); burstConfetti(50); } } else { dt.i++; dt.picked=null; } render(); },
-  dtSay:()=>{ const dt=state.dt; const q=dt&&dt.qs&&dt.qs[dt.i]; if(q) say(q.e.w); },
-  dtSayWord:(w)=>say(w),
+  itNext:()=>{ const it=state.it; if(!it||it.picked==null) return; if(it.i+1>=it.qs.length){ it.done=true; if(it.score>=it.qs.length*0.8){ sfx('win'); burstConfetti(50); } } else { it.i++; it.picked=null; } render(); },
+  itSay:()=>{ const it=state.it; const q=it&&it.qs&&it.qs[it.i]; if(q) say((q.e&&q.e.w)||''); },
+  itSayWord:(w)=>say(w),
   // ===== Trivia Training — study the whole question bank as flip-cards, by chapter =====
   openTrivTrain:()=>{ if(!gateFeature('trainTools','Trivia Training')) return;
     const lv=ttBand(); const ready=ttLevelReady(lv);
@@ -1420,7 +1454,7 @@ const app = {
   drawer:(key)=>{ state.drawerOpen=false; const F={ home:()=>app.setNav('home'), levelup:()=>app.startLevelUp(), games:()=>app.openGames(), shop:()=>app.openShop(), concepts:()=>app.setNav('concepts'),
       coach:()=>app.openCoach(), journeys:()=>app.openJourneys(), study:()=>app.coachStudy(), written:()=>app.startWritten(), oral:()=>app.startOral(),
       weak:()=>app.coachWeakDrill(), parentview:()=>{ state.progTab='parent'; app.setNav('progress'); }, settings:()=>app.setNav('settings'), themes:()=>app.setNav('themes'),
-      quest:()=>app.openQuestChooser(), traps:()=>app.openTraps(), collection:()=>app.openCollection(), finder:()=>app.openFinder(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore'), figurative:()=>app.setNav('figurative'), vocab:()=>app.openVocab(), typing:()=>app.openTyping(), quotes:()=>app.openQuotes(), trivia:()=>app.openTrivia(), trivtrain:()=>app.openTrivTrain(), diatrain:()=>app.openDiaTrain() };
+      quest:()=>app.openQuestChooser(), traps:()=>app.openTraps(), collection:()=>app.openCollection(), finder:()=>app.openFinder(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore'), figurative:()=>app.setNav('figurative'), vocab:()=>app.openVocab(), typing:()=>app.openTyping(), quotes:()=>app.openQuotes(), trivia:()=>app.openTrivia(), trivtrain:()=>app.openTrivTrain(), ipatrain:()=>app.openIpaTrain() };
     (F[key]||(()=>{}))(); },
   // coach
   openCoach:()=>{ const c=active(); ensureLists(c);
@@ -2295,7 +2329,7 @@ const WAYFIND={ quest:{c:'var(--action,#6C4FE0)',ic:'steps',sb:null,label:'Champ
   typing:{c:'#5B3DD6',ic:'pencil',sb:'pencil',label:'Typing Trainer'},
   quotes:{c:'#C8791B',ic:'quote',sb:'star',label:'Quotes'},
   trivtrain:{c:'#DC7A18',ic:'bulb',sb:'sparkle',label:'Know the World of Words'},
-  diatrain:{c:'#2E6FD8',ic:'book',sb:'sparkle',label:'Reading Diacritics'},
+  ipatrain:{c:'#2E6FD8',ic:'book',sb:'sparkle',label:'The Sound Alphabet'},
   traps:{c:'#C4453C',ic:'spark',sb:'target',label:'Your Traps'},
   revisions:{c:'#E0922E',ic:'book',sb:'target',label:'Your Revisions'},
   /* Advanced Mode destinations. These rows only render once Advanced Mode is on, and
@@ -3157,61 +3191,71 @@ function viewQuotes(){ const c=active(); const S=state; const all=(window.SB_QUO
     ${chips}
     ${body}
   </div>`; }
-function viewDiaTrain(){ const S=state; const dt=S.dt; const pool=diaPool();
-  const tab=(m,label)=>`<button data-act="dtMode" data-arg="${m}" style="padding:9px 15px;border-radius:999px;font-weight:800;font-size:13px;${(dt?dt.mode:'learn')===m?'background:var(--accent);color:#fff;box-shadow:var(--edge)':'background:var(--surface2);color:var(--text);border:1px solid var(--line)'}">${label}</button>`;
-  const head=pageHead('Reading Diacritics','é · è · ê · ç · ñ · ü · å','The little marks on borrowed words change the sound. Learn what each one does, then drill — every word is spoken by the real voice.');
-  const tabs=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px"><button data-act="setNav" data-arg="explore" style="color:var(--muted);font-weight:700;font-size:13px;padding:9px 6px">← Supercharge</button>${tab('learn','Learn the marks')}${tab('name','Name the mark')}${tab('place','True spelling')}${tab('read','Say it right')}</div>`;
-  if(!dt||dt.mode==='learn'){
-    const cards=Object.keys(DIA_MARKS).map(k=>{ const M=DIA_MARKS[k];
-      const samples=pool.filter(e=>e.marks.indexOf(k)>=0).slice(0,2);
-      return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:15px 16px;box-shadow:var(--sh-rest)">
-        <div style="display:flex;align-items:center;gap:11px;margin-bottom:7px"><span style="width:44px;height:44px;border-radius:12px;background:var(--chip);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:24px;color:var(--accent)">${M.ex}</span>
-          <span style="font-family:var(--display);font-weight:800;font-size:16px">${M.name}</span></div>
-        <div style="font-size:13px;color:var(--text);line-height:1.55">${M.tip}</div>
-        ${samples.length?`<div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:10px">${samples.map(e=>`<button data-act="dtSayWord" data-arg="${escA(e.w)}" title="Hear it" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:13px">${iconSVG('volume',13)} ${esc(e.m)}</button>`).join('')}</div>`:''}
-      </div>`; }).join('');
+function viewIpaTrain(){ const S=state; const it=S.it; const pool=ipaPool();
+  const tab=(m,label)=>`<button data-act="itMode" data-arg="${m}" style="padding:9px 15px;border-radius:999px;font-weight:800;font-size:13px;${(it?it.mode:'learn')===m?'background:var(--accent);color:#fff;box-shadow:var(--edge)':'background:var(--surface2);color:var(--text);border:1px solid var(--line)'}">${label}</button>`;
+  const head=pageHead('The Sound Alphabet','read IPA like a champion','Study lists write pronunciations in phonetic symbols. Learn what each one says, then drill with real bee words — every one spoken by the real voice.');
+  const tabs=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px"><button data-act="setNav" data-arg="explore" style="color:var(--muted);font-weight:700;font-size:13px;padding:9px 6px">← Supercharge</button>${tab('learn','Learn the symbols')}${tab('readipa','Read it')}${tab('writeipa','Transcribe it')}${tab('sound','Find the sound')}</div>`;
+  if(!it||it.mode==='learn'){
+    const eg=(sym)=>pool.filter(e=>e.t.indexOf(sym)>=0).slice(0,2);
+    const card=(M)=>{ const samples=M.s==='ˈ'?[]:eg(M.s);
+      return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:14px 15px;box-shadow:var(--sh-rest)">
+        <div style="display:flex;align-items:center;gap:11px;margin-bottom:6px"><span style="width:46px;height:46px;border-radius:12px;background:var(--chip);display:grid;place-items:center;font-weight:800;font-size:22px;color:var(--accent)">${M.s}</span>
+          <span style="min-width:0"><span style="display:block;font-family:var(--display);font-weight:800;font-size:14px;line-height:1.25">${esc(M.n)}</span>
+          <span style="display:block;font-size:12px;color:var(--muted);font-weight:600">${esc(M.eg)}</span></span></div>
+        ${samples.length?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${samples.map(e=>`<button data-act="itSayWord" data-arg="${escA(e.w)}" title="Hear it" style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:700;font-size:12.5px">${iconSVG('volume',12)} ${esc(e.w)} <span style="color:var(--muted)">/${esc(e.t)}/</span></button>`).join('')}</div>`:''}
+      </div>`; };
+    const vowels=IPA_SOUNDS.filter(x=>'əæɑɛɪiʊuʌɔ'.indexOf(x.s)>=0||x.s==='ər');
+    const glides=IPA_SOUNDS.filter(x=>['eɪ','aɪ','oʊ','aʊ','ɔɪ'].indexOf(x.s)>=0);
+    const cons=IPA_SOUNDS.filter(x=>['θ','ð','ʃ','ʒ','tʃ','dʒ','ŋ','j'].indexOf(x.s)>=0);
+    const stress=IPA_SOUNDS.filter(x=>x.s==='ˈ');
+    const sect=(t,arr)=>`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:16px 0 9px">${t}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:11px">${arr.map(card).join('')}</div>`;
     return `<div style="animation:sb-rise .35s ease both">${head}${tabs}
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">${cards}</div>
-      <div style="text-align:center;margin-top:20px"><button data-act="dtMode" data-arg="name" style="padding:15px 30px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Start the drills →</button></div></div>`; }
-  if(dt.done){ const pct=dt.qs.length?Math.round(dt.score/dt.qs.length*100):0;
+      ${sect('Vowels',vowels)}${sect('Gliding vowels',glides)}${sect('Consonants worth learning',cons)}${sect('The stress mark',stress)}
+      <div style="text-align:center;margin-top:20px"><button data-act="itMode" data-arg="readipa" style="padding:15px 30px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Start the drills →</button></div></div>`; }
+  if(it.done){ const pct=it.qs.length?Math.round(it.score/it.qs.length*100):0;
     return `<div style="animation:sb-rise .35s ease both">${head}${tabs}
       <div style="max-width:430px;margin:0 auto;text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:var(--glow)">
         <div style="width:64px;height:70px;margin:0 auto 10px">${mascotSVG(pct>=80?'excited':'happy')}</div>
-        <div style="font-family:var(--display);font-weight:800;font-size:26px">${dt.score} / ${dt.qs.length}</div>
-        <div style="font-size:14px;color:var(--muted);font-weight:600;margin:6px 0 18px">${pct>=80?'Sharp eyes! Those marks can’t hide from you.':'Every mark you learn is a word you’ll read right.'}</div>
+        <div style="font-family:var(--display);font-weight:800;font-size:26px">${it.score} / ${it.qs.length}</div>
+        <div style="font-size:14px;color:var(--muted);font-weight:600;margin:6px 0 18px">${pct>=80?'You read the sound alphabet like a pro!':'Each symbol you learn unlocks a thousand pronunciations.'}</div>
         <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
-          <button data-act="dtMode" data-arg="${dt.mode}" style="padding:12px 22px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px">Train again</button>
-          <button data-act="dtMode" data-arg="${dt.mode==='name'?'place':dt.mode==='place'?'read':'name'}" style="padding:12px 22px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">Next drill</button>
+          <button data-act="itMode" data-arg="${it.mode}" style="padding:12px 22px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px">Train again</button>
+          <button data-act="itMode" data-arg="${it.mode==='readipa'?'writeipa':it.mode==='writeipa'?'sound':'readipa'}" style="padding:12px 22px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">Next drill</button>
         </div></div></div>`; }
-  const q=dt.qs[dt.i]; const e=q.e; const picked=dt.picked;
-  const prompt = dt.mode==='place'
-    ? `<div style="font-size:15px;color:var(--text);line-height:1.5;max-width:34em;margin:0 auto">${esc(maskTxt(e.d,e.w))}</div>
-       <button data-act="dtSay" style="display:inline-flex;align-items:center;gap:7px;margin-top:10px;padding:9px 17px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">${iconSVG('volume',15)} Hear the word</button>`
-    : `<div style="font-family:var(--display);font-weight:800;font-size:clamp(30px,6vw,44px);letter-spacing:.01em">${esc(e.m)}</div>
-       ${dt.mode==='read'?`<div style="font-size:13px;color:var(--muted);font-weight:600;margin-top:5px">${esc(maskTxt(e.d,e.w)).slice(0,110)}</div>`:''}`;
-  const qTitle=dt.mode==='name'?'Which mark does this word wear?':dt.mode==='place'?'Which is the true spelling?':'How do you say it?';
+  const q=it.qs[it.i]; const picked=it.picked;
+  const qTitle=it.mode==='readipa'?'Which word is this?':it.mode==='writeipa'?'Pick the true transcription':'Which word carries this sound?';
+  const prompt = it.mode==='readipa'
+    ? `<div style="font-weight:800;font-size:clamp(28px,5.5vw,40px);letter-spacing:.02em">/ ${esc(q.e.t)} /</div>`
+    : it.mode==='writeipa'
+    ? `<div style="font-family:var(--display);font-weight:800;font-size:clamp(28px,5.5vw,40px)">${esc(q.e.w)}</div>
+       <button data-act="itSay" style="display:inline-flex;align-items:center;gap:7px;margin-top:8px;padding:9px 17px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">${iconSVG('volume',15)} Hear the word</button>`
+    : `<div style="display:inline-grid;place-items:center;width:72px;height:72px;border-radius:18px;background:var(--chip);color:var(--accent);font-weight:800;font-size:32px">${esc(q.sym.s)}</div>
+       <div style="font-size:14px;color:var(--text);font-weight:700;margin-top:8px">${esc(q.sym.n)} <span style="color:var(--muted);font-weight:600">· ${esc(q.sym.eg)}</span></div>`;
   const opts=q.opts.map((o,i)=>{ const isAns=i===q.ans; const st=picked==null?'background:var(--surface2);border:1px solid var(--line)':
       isAns?'background:color-mix(in srgb,var(--good) 18%,transparent);border:1.5px solid var(--good)':
       (i===picked?'background:color-mix(in srgb,var(--bad) 14%,transparent);border:1.5px solid var(--bad);opacity:.9':'background:var(--surface2);border:1px solid var(--line);opacity:.55');
-    return `<button data-act="dtPick" data-arg="${i}" ${picked!=null?'disabled':''} style="display:flex;align-items:center;gap:10px;text-align:left;padding:13px 15px;border-radius:12px;font-weight:800;font-size:${dt.mode==='place'?'17px':'14px'};${st}">
+    const shown=it.mode==='writeipa'?('/ '+o+' /'):o;
+    return `<button data-act="itPick" data-arg="${i}" ${picked!=null?'disabled':''} style="display:flex;align-items:center;gap:10px;text-align:left;padding:13px 15px;border-radius:12px;font-weight:800;font-size:${it.mode==='writeipa'?'16px':'15px'};${st}">
       <span style="width:24px;height:24px;border-radius:7px;background:var(--chip);color:var(--accent);display:grid;place-items:center;font-size:12px;flex-shrink:0">${i+1}</span>
-      <span style="min-width:0;overflow-wrap:anywhere">${esc(o)}</span>${picked!=null&&isAns?'<span style="margin-left:auto;color:var(--good);flex-shrink:0">✓</span>':''}</button>`; }).join('');
+      <span style="min-width:0;overflow-wrap:anywhere">${esc(shown)}</span>${picked!=null&&isAns?'<span style="margin-left:auto;color:var(--good);flex-shrink:0">✓</span>':''}</button>`; }).join('');
   return `<div style="animation:sb-rise .35s ease both">${head}${tabs}
     <div style="max-width:560px;margin:0 auto">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><span style="font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">Question ${dt.i+1} of ${dt.qs.length}</span>
-        <div style="flex:1;height:7px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;background:var(--accent);width:${Math.round(dt.i/dt.qs.length*100)}%"></div></div>
-        <span style="font-size:12px;color:var(--treasure-deep,#8A5B00);font-weight:800;white-space:nowrap">🪙 ${dt.score}</span></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><span style="font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">Question ${it.i+1} of ${it.qs.length}</span>
+        <div style="flex:1;height:7px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;background:var(--accent);width:${Math.round(it.i/it.qs.length*100)}%"></div></div>
+        <span style="font-size:12px;color:var(--treasure-deep,#8A5B00);font-weight:800;white-space:nowrap">🪙 ${it.score}</span></div>
       <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(18px,4vw,26px);box-shadow:var(--glow);text-align:center">
         <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px">${qTitle}</div>
         ${prompt}
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:9px;margin-top:16px">${opts}</div>
         ${picked!=null?`<div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;flex-wrap:wrap">
-          ${picked===q.ans?'<span style="color:var(--good);font-weight:800;font-size:14px">Right! +1 🪙</span>':`<span style="color:var(--bad);font-weight:800;font-size:14px">It’s ${esc(String(q.opts[q.ans]))}</span>`}
-          <button data-act="dtSay" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:12.5px">${iconSVG('volume',13)} Hear it</button>
-          <button data-act="dtNext" style="padding:10px 22px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px">${dt.i+1>=dt.qs.length?'Finish':'Next →'}</button></div>`:''}
+          ${picked===q.ans?'<span style="color:var(--good);font-weight:800;font-size:14px">Right! +1 🪙</span>':`<span style="color:var(--bad);font-weight:800;font-size:14px">It’s ${esc(it.mode==='writeipa'?('/ '+q.opts[q.ans]+' /'):String(q.opts[q.ans]))}</span>`}
+          <button data-act="itSay" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:12.5px">${iconSVG('volume',13)} Hear it</button>
+          <button data-act="itNext" style="padding:10px 22px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px">${it.i+1>=it.qs.length?'Finish':'Next →'}</button></div>`:''}
       </div>
       <div style="text-align:center;font-size:12px;color:var(--muted);font-weight:600;margin-top:10px">Keys: 1–4 answer · R hear it · Enter next</div>
     </div></div>`; }
+
 function viewExplore(){ const c=active(); ensureLists(c); const S=state; const advOn=advModeOn(c);
   const cAll=(state.conceptData||[]); const cDone=cAll.filter(ch=>conceptStat(ch).done).length;
   const fmtDone=(cDone>0?cDone+'/'+(cAll.length||121)+' mastered':(cAll.length||121)+' concepts');
@@ -3247,7 +3291,7 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state; const a
     row('typing','openTyping',null,'Touch-type, then race the 60-second test')+
     row('quotes','openQuotes',null,(qN?fmtN(qN)+' ':'')+'kid-friendly quotes from famous people')+
     row('trivtrain','openTrivTrain',null,'Trivia training — '+(tN?fmtN(tN)+' ':'')+'cards by chapter, then play the Arcade')+
-    row('diatrain','openDiaTrain',null,'Read é, ñ, ç & friends — the real voice says every word'));
+    row('ipatrain','openIpaTrain',null,'Read IPA — the phonetic symbols study lists are written in'));
   // ---- REVISE ----  fix what trips you up
   const revise=hub('Revise','retry','#E0922E','Fix what trips you up',
     row('revisions','openRevisions',null,'Redo the words you flagged to revise'+(missN?' · '+missN+' waiting':''))+
@@ -3386,7 +3430,7 @@ function viewRevisions(){
 /* ===================== APP SHELL ===================== */
 function viewApp(){
   const S=state;
-  const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,quotes:1,typing:1,builder:1,adv:1,traps:1,revisions:1,trivtrain:1,diatrain:1};
+  const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,quotes:1,typing:1,builder:1,adv:1,traps:1,revisions:1,trivtrain:1,ipatrain:1};
   const NAV_ART={home:'home',coach:'practice',explore:'explore',games:'arcade',shop:'store',progress:'progress',collection:'collection'};
   const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['explore','Supercharge','compass'],['games','Arcade','joystick'],['progress','Progress','chart'],['collection','Collection','crown'],['shop','Store','cart']].map(([key,label,ic])=>{
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:S.nav===key;
@@ -3407,7 +3451,7 @@ function viewApp(){
   else if(S.nav==='vocab') content=viewVocab();
   else if(S.nav==='quotes') content=viewQuotes();
   else if(S.nav==='trivtrain') content=viewTrivTrain();
-  else if(S.nav==='diatrain') content=viewDiaTrain();
+  else if(S.nav==='ipatrain') content=viewIpaTrain();
   else if(S.nav==='typing') content=viewTyping();
   else if(S.nav==='builder') content=viewBuilder();
   else if(S.nav==='leveltest') content=viewLevelTest();
@@ -4892,7 +4936,7 @@ function wordFlash(words, idx, navAct, opts){
       ${altsHTML(w.w,false)}
       <div style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:15px">
         ${w.bp!=null?`<span title="Bee-probability score: ${w.bp}/100" style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:999px;background:var(--surface2);font-size:12px;color:var(--accent);font-weight:800">${iconSVG('target',13)} ${beeOdds(w.bp)}</span>`:''}
-        ${w.p?chip('/ '+esc(w.p)+' /'):''}${w.o?chip(esc(w.o)):''}${w.ps?chip(esc(w.ps)):''}${(()=>{try{const tl=trickLabel(w);return tl?`<span title="Why this word is tricky" style="padding:4px 11px;border-radius:999px;background:var(--chip);font-size:12px;color:var(--accent);font-weight:800">🧩 ${esc(tl)}</span>`:'';}catch(e){return '';}})()}
+        ${w.p?chip('/ '+esc(w.p)+' /'):''}${(()=>{try{const t=ipaOf(w.w,w.p); return t?chip('IPA /'+esc(t)+'/'):'';}catch(e){return '';}})()}${w.o?chip(esc(w.o)):''}${w.ps?chip(esc(w.ps)):''}${(()=>{try{const tl=trickLabel(w);return tl?`<span title="Why this word is tricky" style="padding:4px 11px;border-radius:999px;background:var(--chip);font-size:12px;color:var(--accent);font-weight:800">🧩 ${esc(tl)}</span>`:'';}catch(e){return '';}})()}
         <button data-act="reportWord" data-arg="${escA(w.w)}" title="Meaning or sentence look wrong? Report it for review" style="padding:4px 11px;border-radius:999px;background:transparent;border:1px dashed var(--line);font-size:12px;color:var(--muted);font-weight:700">⚑ Report a fix</button>
       </div>
       ${state.reportW===w.w?`<div style="margin-top:12px;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:12px;max-width:34em">
@@ -7660,15 +7704,15 @@ window.addEventListener('keydown',e=>{ try{
   else if(k==='ArrowDown'){ e.preventDefault(); app.ttFlip(); }
   else if(k===' '||k==='Enter'){ e.preventDefault(); app.ttFlip(); }
 }catch(_){} });
-/* Reading Diacritics hotkeys: 1–4 answer, R hears the word, Enter/Space advances */
+/* Sound Alphabet hotkeys: 1–4 answer, R hears the word, Enter/Space advances */
 window.addEventListener('keydown',e=>{ try{
-  if(state.nav!=='diatrain'||!state.dt||state.dt.mode==='learn'||state.pinDlg||state.settingsOpen) return;
+  if(state.nav!=='ipatrain'||!state.it||state.it.mode==='learn'||state.pinDlg||state.settingsOpen) return;
   if(e.metaKey||e.ctrlKey||e.altKey) return;
   const t=e.target; if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)) return;
-  const dt=state.dt;
-  if(e.key>='1'&&e.key<='4'&&!dt.done&&dt.picked==null){ e.preventDefault(); app.dtPick(String(+e.key-1)); }
-  else if((e.key==='Enter'||e.key===' ')&&!dt.done&&dt.picked!=null){ e.preventDefault(); app.dtNext(); }
-  else if(e.key==='r'||e.key==='R'){ e.preventDefault(); app.dtSay(); }
+  const it=state.it;
+  if(e.key>='1'&&e.key<='4'&&!it.done&&it.picked==null){ e.preventDefault(); app.itPick(String(+e.key-1)); }
+  else if((e.key==='Enter'||e.key===' ')&&!it.done&&it.picked!=null){ e.preventDefault(); app.itNext(); }
+  else if(e.key==='r'||e.key==='R'){ e.preventDefault(); app.itSay(); }
 }catch(_){} });
 window.addEventListener('keydown',e=>{ try{ if(state.nav!=='quotes'||state.pinDlg||state.settingsOpen) return;
   const t=e.target; if(t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)) return;
