@@ -761,36 +761,36 @@ function itBuild(mode){ const pool=ipaPool(); if(pool.length<8) return null;
 function coachCatalog(){
   const S=state; const st=catStatic(); const nsf=SB_DATA.nsf||[]; const snd=soundLists();
   const cats=[
-    { key:'review',     label:'Tricky review',           sub:'Curated commonly-missed words',        words:REVIEW },
-    { key:'scripps',    label:'Winning Words — Scripps Bee', sub:'Championship-ending words, 1925–2026', words:(window.SB_SCRIPPS||[]) },
-    { key:'missed',     label:'My missed words',         sub:'Words you’ve gotten wrong',            words:((active().missed)||S.missedWords||[]) },
-    { key:'likely',     label:'Most likely words',       sub:'Ranked by bee-probability score',       words:st.likely },
-    { key:'nsf_finals', label:'North South Finals',      sub:'Modeled on the NSF finals word pool',         words:st.finals },
-    { key:'nsf_primary',label:'NSF — Primary',           sub:'Primary-level NSF words',               words:st.primary },
-    { key:'nsf_junior', label:'NSF — Junior',            sub:'Junior-level NSF words',                words:st.junior },
-    { key:'nsf500',     label:'Mock NSF Junior Final',    sub:'500 high-probability finals words · your 15-day list', words:st.nsf500 },
-    { key:'vocab26',    label:'vocab-NWFinal-2026-Junior', sub:'Practice for the NSF 2026 Junior Vocabulary final · 1,000 words', words:st.vocab26 },
-    { key:'nsf_senior', label:'NSF — Senior',            sub:'Senior-level NSF words',                words:st.senior },
-    { key:'nsf_advanced',label:'NSF — Advanced',         sub:'The hardest NSF words',                 words:st.advanced },
-    { key:'nsf',        label:'Championship library',     sub:'17,000-word competition library',       words:nsf },
-    { key:'all',        label:'Entire library',           sub:'Every word · 128,000 (loads on first use)', words:(window.SB_FULL||nsf) },
-    { key:'hardest',    label:'Toughest words',          sub:'Highest-difficulty spellers + Scripps champions', words:st.hardest.concat(window.SB_SCRIPPS||[]) },
-    { key:'trickiest',  label:'Trickiest spellings',     sub:'The sound hides the spelling — pattern words, not just rare ones', words:st.trickiest },
-    { key:'latin',      label:'Latin origin',            sub:'Roots from Latin',                      words:st.latin },
-    { key:'greek',      label:'Greek origin',            sub:'Roots from Greek',                      words:st.greek },
-    { key:'french',     label:'French origin',           sub:'Loanwords from French',                 words:st.french },
-    { key:'oe',         label:'Old English origin',      sub:'Anglo-Saxon roots',                     words:st.oe },
-    { key:'norse',      label:'Norse origin',            sub:'Old Norse roots',                       words:st.norse },
-    { key:'spanish',    label:'Spanish origin',          sub:'Loanwords from Spanish',                words:st.spanish },
-    { key:'italian',    label:'Italian origin',          sub:'Loanwords from Italian',                words:st.italian },
-    { key:'german',     label:'German origin',           sub:'Loanwords from German',                 words:st.german },
-    { key:'arabic',     label:'Arabic origin',           sub:'Loanwords from Arabic',                 words:st.arabic },
-    { key:'japanese',   label:'Japanese origin',         sub:'Loanwords from Japanese',               words:st.japanese },
-    { key:'hindi',      label:'Hindi / Sanskrit origin', sub:'Indian-language loanwords',             words:st.hindi },
+    { key:'review',     label:'Sticky Words',            sub:'The words everyone trips on — curated to untangle', words:REVIEW },
+    { key:'scripps',    label:'Words of Champions',      sub:'Every championship-winning word at the national bee, 1925–2026', words:(window.SB_SCRIPPS||[]) },
+    { key:'missed',     label:'My Comeback Words',       sub:'The ones that got away — win them back', words:((active().missed)||S.missedWords||[]) },
+    { key:'likely',     label:'Most Wanted Words',       sub:'Ranked by bee-probability score',       words:st.likely },
+    { key:'nsf_finals', label:'The Final Round',         sub:'Modeled on the NSF finals word pool',         words:st.finals },
+    { key:'nsf_primary',label:'First Flight',            sub:'Your first bee words · primary level',  words:st.primary },
+    { key:'nsf_junior', label:'Rising Stars',            sub:'Junior-level competition words',        words:st.junior },
+    { key:'nsf500',     label:'The Mighty 500',          sub:'500 high-probability finals words · your 15-day list', words:st.nsf500 },
+    { key:'vocab26',    label:'Meaning Masters',         sub:'Practice for the 2026 junior vocabulary final · 1,000 words', words:st.vocab26 },
+    { key:'nsf_senior', label:'The Big Leagues',         sub:'Senior-level competition words',        words:st.senior },
+    { key:'nsf_advanced',label:'Boss Level',             sub:'The hardest competition words there are', words:st.advanced },
+    { key:'nsf',        label:'The Champion’s Vault',    sub:'17,000-word competition library',       words:nsf },
+    { key:'all',        label:'The Whole Hive',          sub:'Every word we know · 128,000 (loads on first use)', words:(window.SB_FULL||nsf) },
+    { key:'hardest',    label:'Beastly Words',           sub:'Highest-difficulty spellers + championship winners', words:st.hardest.concat(window.SB_SCRIPPS||[]) },
+    { key:'trickiest',  label:'Sneaky Spellings',        sub:'The sound hides the spelling — pattern words, not just rare ones', words:st.trickiest },
+    { key:'latin',      label:'Latin Legends',           sub:'Words with roots from Latin',           words:st.latin },
+    { key:'greek',      label:'Greek Heroes',            sub:'Words with roots from Greek',           words:st.greek },
+    { key:'french',     label:'French Flair',            sub:'Loanwords from French',                 words:st.french },
+    { key:'oe',         label:'Old English Originals',   sub:'Anglo-Saxon roots',                     words:st.oe },
+    { key:'norse',      label:'Viking Words',            sub:'Old Norse roots',                       words:st.norse },
+    { key:'spanish',    label:'Spanish Treasures',       sub:'Loanwords from Spanish',                words:st.spanish },
+    { key:'italian',    label:'Italian Treasures',       sub:'Loanwords from Italian',                words:st.italian },
+    { key:'german',     label:'German Treasures',        sub:'Loanwords from German',                 words:st.german },
+    { key:'arabic',     label:'Arabic Treasures',        sub:'Loanwords from Arabic',                 words:st.arabic },
+    { key:'japanese',   label:'Japanese Treasures',      sub:'Loanwords from Japanese',               words:st.japanese },
+    { key:'hindi',      label:'Hindi & Sanskrit Treasures', sub:'Indian-language loanwords',          words:st.hindi },
     { key:'eponyms',    label:'Named After Someone',     sub:'Eponyms clustered by the name’s language — each Level is one cluster',  words:st.eponyms },
-    { key:'homophones', label:'Sound-Alike Words',       sub:'Homonyms — same sound, different spelling; the meaning decides', words:snd.hom },
-    { key:'altpron',    label:'Two Pronunciations',      sub:'One spelling, two accepted sounds — hear both, spell one', words:snd.alt },
-    { key:'diacritics', label:'Words With Accent Marks', sub:'Full-dress spellings behind the plain letters — é, ñ, ç, ü', words:snd.dia },
+    { key:'homophones', label:'Sound Twins',             sub:'Homonyms — same sound, different spelling; the meaning decides', words:snd.hom },
+    { key:'altpron',    label:'Two-Way Words',           sub:'One spelling, two accepted sounds — hear both, spell one', words:snd.alt },
+    { key:'diacritics', label:'Words in Fancy Dress',    sub:'é, ñ, ç — the marked spellings behind the plain letters', words:snd.dia },
   ].filter(c=>(c.words&&c.words.length) || c.key==='missed');
   /* The advanced journey is a first-class list once the pack is on, so it inherits the
      whole Practice shell. Unshifted to the front so it sits ABOVE the Bizzing Bee
@@ -5095,7 +5095,7 @@ function bldLevels(n){ return n<=WORK_MAX?1:Math.max(2,Math.min(24,Math.round(n/
 function viewBuilder(){ const S=state; const b=bldState(); const picked=bldPick(); const n=picked.length; const lv=bldLevels(n); const per=n?Math.ceil(n/lv):0;
   const btn=(group,val,label,cur)=>`<button data-act="bldSet" data-arg="${group}:${val}" style="padding:9px 14px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid ${cur===val?'var(--action,var(--accent))':'var(--line)'};${cur===val?'background:color-mix(in srgb,var(--action,var(--accent)) 12%,var(--paper,#fff));color:var(--action,var(--accent))':'background:var(--surface2);color:var(--text)'}">${label}</button>`;
   const row=(title,sub,btns)=>`<div style="margin-bottom:15px"><div style="font-family:var(--display);font-weight:800;font-size:13px">${title} <span style="color:var(--muted);font-weight:700;font-size:12px">· ${sub}</span></div><div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px">${btns}</div></div>`;
-  const srcs=[['core','Core library'],['scripps','Scripps winners'],['nsf','North South Finals'],['review','Tricky review'],['missed','My missed words']];
+  const srcs=[['core','Core library'],['scripps','Words of Champions'],['nsf','The Champion’s Vault'],['review','Sticky Words'],['missed','My Comeback Words']];
   const preview=picked.slice(0,18).map(w=>`<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;padding:4px 9px;border-radius:6px;background:var(--surface2);border:1px solid var(--line)">${esc(w.w)}</span>`).join('');
   return `<div style="animation:sb-rise .35s ease both">
     ${pageHead('List Builder','pick · build · print','Build a custom word list with five taps — or pick a ready-made list below. Every list gets its own Level ladder.')}
@@ -5115,7 +5115,7 @@ function viewBuilder(){ const S=state; const b=bldState(); const picked=bldPick(
     </div>
     <div class="sb-card">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px">…or pick a ready-made list</div>
-      <p style="font-size:12px;color:var(--muted);margin:0 0 12px">North South Finals, Scripps winners, origin lists and more — includes paste-your-own in Setup & lists.</p>
+      <p style="font-size:12px;color:var(--muted);margin:0 0 12px">Words of Champions, the Champion’s Vault, origin lists and more — includes paste-your-own in Setup & lists.</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         ${coachCatalog().slice(0,8).map(o=>`<button data-act="selectList" data-arg="${escA(o.key)}" style="padding:9px 14px;border-radius:10px;font-weight:800;font-size:12px;border:1px solid var(--line);background:var(--surface2);color:var(--text)">${esc(o.label)} <span style="color:var(--muted);font-weight:700">${o.count}</span></button>`).join('')}
         <button data-act="coachSetupOpen" style="padding:9px 14px;border-radius:10px;font-weight:800;font-size:12px;border:1px dashed var(--line);background:transparent;color:var(--accent)">All lists + paste your own →</button>
@@ -6358,16 +6358,16 @@ const LIST_COVER={
   review     :{c:'#E0922E',c2:'#C8791B',tex:'diag',hero:'Review',tag:'Curated'},
   missed     :{c:'#D6453A',c2:'#B8322A',tex:'dots',hero:'Misses',tag:'Yours'},
   likely     :{c:'#3D7DF0',c2:'#2A63D6',tex:'grid',hero:'Likely',tag:'Ranked'},
-  nsf_finals :{c:'#C8901B',c2:'#A8760E',tex:'rings',hero:'Finals',tag:'NSF'},
-  nsf_primary:{c:'#4F9E6A',c2:'#3C8455',tex:'grid',hero:'Primary',tag:'NSF'},
-  nsf_junior :{c:'#13A892',c2:'#0E8A78',tex:'grid',hero:'Junior',tag:'NSF'},
-  nsf500     :{c:'#E0922E',c2:'#B26E12',tex:'rings',hero:'Mock',tag:'NSF Junior'},
-  vocab26    :{c:'#2E8FB8',c2:'#1E6A8C',tex:'rings',hero:'Vocab',tag:'NSF 2026'},
-  nsf_senior :{c:'#3D7DF0',c2:'#2A63D6',tex:'grid',hero:'Senior',tag:'NSF'},
-  nsf_advanced:{c:'#7B52E0',c2:'#5E39C4',tex:'grid',hero:'Advanced',tag:'NSF'},
-  nsf        :{c:'#C8901B',c2:'#A8760E',tex:'rings',hero:'Champs',tag:'Library'},
-  all        :{c:'#7B52E0',c2:'#5E39C4',tex:'cross',hero:'128k',tag:'Everything'},
-  hardest    :{c:'#D6453A',c2:'#B8322A',tex:'cross',hero:'Tough',tag:'Tier 6+'},
+  nsf_finals :{c:'#C8901B',c2:'#A8760E',tex:'rings',hero:'Final',tag:'Round'},
+  nsf_primary:{c:'#4F9E6A',c2:'#3C8455',tex:'grid',hero:'First',tag:'Flight'},
+  nsf_junior :{c:'#13A892',c2:'#0E8A78',tex:'grid',hero:'Rising',tag:'Stars'},
+  nsf500     :{c:'#E0922E',c2:'#B26E12',tex:'rings',hero:'500',tag:'Mighty'},
+  vocab26    :{c:'#2E8FB8',c2:'#1E6A8C',tex:'rings',hero:'Meaning',tag:'Masters'},
+  nsf_senior :{c:'#3D7DF0',c2:'#2A63D6',tex:'grid',hero:'Big',tag:'Leagues'},
+  nsf_advanced:{c:'#7B52E0',c2:'#5E39C4',tex:'grid',hero:'Boss',tag:'Level'},
+  nsf        :{c:'#C8901B',c2:'#A8760E',tex:'rings',hero:'Vault',tag:'Champion’s'},
+  all        :{c:'#7B52E0',c2:'#5E39C4',tex:'cross',hero:'Hive',tag:'128k words'},
+  hardest    :{c:'#D6453A',c2:'#B8322A',tex:'cross',hero:'Beastly',tag:'Tier 6+'},
   latin      :{c:'#7C5CFF',c2:'#6A47F5',tex:'stripes',hero:'Latin',tag:'Origin'},
   greek      :{c:'#13A892',c2:'#0E8A78',tex:'rings',hero:'Greek',tag:'Origin'},
   french     :{c:'#E8458C',c2:'#CC2E72',tex:'dots',hero:'French',tag:'Origin'},
