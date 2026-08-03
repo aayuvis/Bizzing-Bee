@@ -12,4 +12,4 @@
 - New front/back matter: How to Use This Book, epilogue (The Weight of the Crown), The Laws at a Glance, The Leadership Mirror self-assessment, About the Author.
 - ◈ **My Story** panels are deliberate placeholders — only the author writes those.
 
-Design language: the cover's royal navy + gold carried through the interior (the source PDF's interior was plain black-on-white), consistent icon set, redesigned diagrams, ornamental dividers.
+Design language: mirrored from the original Canva edition — its actual embedded typefaces (Cormorant Garamond, Cardo, Noto Serif Ethiopic Condensed; Figtree standing in for the proprietary Canva Sans) and its page archetypes (black condensed-serif heads, gold King's Perspective on white, peach era banners, black-outline Be/Do/Create chips, grayscale frameworks), reproduced from page snapshots of the source PDF.
