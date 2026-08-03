@@ -1,0 +1,544 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Rulebook — Bizzing Bee Library Vol. 2</title>
+<style>
+  @font-face{font-family:'Baloo 2';src:url('../fonts/baloo2-800.woff2') format('woff2');font-weight:800}
+  @font-face{font-family:'Fredoka';src:url('../fonts/fredoka-600.woff2') format('woff2');font-weight:600}
+  @font-face{font-family:'Hanken Grotesk';src:url('../fonts/hanken-var.woff2') format('woff2');font-weight:100 900}
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--ink:#241E33;--paper:#FFFDF6;--c:#13A892;--c2:#0B6E5F;--tint:color-mix(in srgb,#13A892 12%,white)}
+  html{background:#e9e4f5}
+  body{font-family:'Hanken Grotesk',sans-serif;color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  @page{size:8.5in 11in;margin:0}
+  .pg{width:8.5in;height:11in;background:var(--paper);position:relative;overflow:hidden;padding:.62in .66in;page-break-after:always;break-after:page}
+  @media screen{.pg{margin:24px auto;box-shadow:0 10px 40px rgba(30,20,60,.18)}}
+  .bee{width:1.1in;height:auto}
+  .hexes{position:absolute;inset:0;width:100%;height:100%;opacity:.5}
+  h1,h2,h3,.disp{font-family:'Baloo 2';font-weight:800}
+  .kicker{font-family:'Fredoka';font-weight:600;font-size:10.5pt;letter-spacing:.14em;text-transform:uppercase;color:var(--c2)}
+  .foot{position:absolute;bottom:.35in;left:.66in;right:.66in;display:flex;justify-content:space-between;font-size:8.5pt;color:#8b83a3;font-weight:600}
+  .badge{display:inline-grid;place-items:center;width:.62in;height:.62in;border-radius:16px;background:var(--c);color:#fff;font-family:'Baloo 2';font-size:17pt}
+  .concept{background:var(--tint);border-left:6px solid var(--c);border-radius:12px;padding:.14in .18in;font-size:10.6pt;line-height:1.5;margin:.12in 0}
+  .method{background:#241E33;color:#FFF7E0;border-radius:14px;padding:.15in .19in;font-size:9.7pt;line-height:1.52;margin:.1in 0}
+  .method b{color:#FFC93C}
+  .method div{margin:3px 0}
+  .method .trick,.method [class]{font-family:'Baloo 2';font-size:12pt;letter-spacing:.05em}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:.11in;margin-top:.12in}
+  .card{background:#fff;border:2px solid var(--c);border-radius:12px;padding:.1in .12in;box-shadow:3px 3px 0 var(--c)}
+  .card:nth-child(even){transform:rotate(.5deg)} .card:nth-child(odd){transform:rotate(-.5deg)}
+  .card h3{font-size:10pt;color:var(--c2);margin-bottom:3px}
+  .card p{font-size:8.7pt;line-height:1.4}
+  .wgrid{display:grid;grid-template-columns:1fr 1fr;gap:.14in}
+  .wd{border:1.5px solid #E4DDF2;border-radius:12px;padding:.12in .14in;background:#fff}
+  .wd .w{font-family:'Baloo 2';font-size:14.5pt;color:var(--c2)}
+  .wd .say{font-family:'Fredoka';font-size:9pt;color:#8b83a3;margin-left:6px}
+  .wd .d{font-size:9pt;line-height:1.4;margin-top:2px}
+  .wd .h{font-size:8.6pt;line-height:1.35;margin-top:4px;color:#5a4d84;background:var(--tint);border-radius:7px;padding:4px 7px}
+  .wd .line{border-bottom:2px dashed #C9BFE6;height:.24in;margin-top:6px}
+  .rr{columns:2;column-gap:.3in;font-size:9.2pt;line-height:1.45}
+  .dense .concept{font-size:9.6pt;line-height:1.42}
+  .dense .method{font-size:8.9pt;line-height:1.45}
+  .dense .card p{font-size:8pt;line-height:1.34} .dense .card h3{font-size:9.2pt}
+  .rr div{break-inside:avoid;padding:3px 0;border-bottom:1px dotted #DDD4F2}
+  .rr b{font-family:'Fredoka';color:var(--c2)}
+  .biglist{columns:4;column-gap:.22in;font-size:8.7pt;line-height:1.62}
+  .biglist div{break-inside:avoid}
+  .biglist span{display:inline-block;width:.14in;height:.14in;border:1.6px solid var(--c);border-radius:50%;margin-right:5px;vertical-align:-2px}
+  </style></head><body><div class="pg" style="background:linear-gradient(160deg,var(--c),var(--c2));color:#fff;display:flex;flex-direction:column;justify-content:space-between">
+    <svg class="hexes" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <defs><pattern id="hx" width="56" height="97" patternUnits="userSpaceOnUse">
+    <path d="M28 0 L56 16 L56 48 L28 64 L0 48 L0 16 Z M28 64 L56 80 L56 97 M28 64 L0 80 L0 97" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="2"/>
+  </pattern></defs><rect width="400" height="400" fill="url(#hx)"/></svg>
+    <div style="position:relative;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-family:'Fredoka';font-weight:600;letter-spacing:.16em;font-size:11pt">BIZZING BEE LIBRARY</span>
+      <span class="disp" style="background:#241E33;padding:.08in .22in;border-radius:999px;font-size:13pt">Vol. 2</span>
+    </div>
+    <div style="position:relative;text-align:center">
+      <svg viewBox="0 0 120 100" class="bee" aria-hidden="true">
+  <ellipse cx="44" cy="34" rx="17" ry="26" fill="#DCEFFF" opacity=".85" transform="rotate(-28 44 34)"/>
+  <ellipse cx="76" cy="34" rx="17" ry="26" fill="#EAF5FF" opacity=".85" transform="rotate(28 76 34)"/>
+  <ellipse cx="60" cy="60" rx="34" ry="27" fill="#FFC93C"/>
+  <path d="M44 37 a34 27 0 0 0 -6 14 l14 0 a1 1 0 0 1 0 -14 z M64 34 l0 53 a34 27 0 0 0 14 -5 l0 -43 a34 27 0 0 0 -14 -5 z" fill="#241E33"/>
+  <circle cx="49" cy="56" r="3.6" fill="#241E33"/>
+  <path d="M45 68 q8 7 16 1" stroke="#241E33" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M52 34 q-4 -12 -12 -14 M68 34 q4 -12 12 -14" stroke="#241E33" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <circle cx="40" cy="19" r="4" fill="#241E33"/><circle cx="80" cy="19" r="4" fill="#241E33"/>
+</svg>
+      <h1 style="font-size:46pt;line-height:1.02;margin:.2in 0 .12in;text-shadow:0 3px 0 rgba(0,0,0,.18)">The Rulebook</h1>
+      <p style="font-family:'Fredoka';font-size:14pt;max-width:5.6in;margin:0 auto">Spelling rules that actually hold up</p>
+    </div>
+    <div style="position:relative;display:flex;gap:.16in;justify-content:center">
+      <div style="background:rgba(0,0,0,.22);border-radius:14px;padding:.14in .3in;text-align:center"><div class="disp" style="font-size:19pt">12</div><div style="font-family:'Fredoka';font-size:9.5pt">chapters</div></div><div style="background:rgba(0,0,0,.22);border-radius:14px;padding:.14in .3in;text-align:center"><div class="disp" style="font-size:19pt">204</div><div style="font-family:'Fredoka';font-size:9.5pt">practice words</div></div><div style="background:rgba(0,0,0,.22);border-radius:14px;padding:.14in .3in;text-align:center"><div class="disp" style="font-size:19pt">✏️</div><div style="font-family:'Fredoka';font-size:9.5pt">write-in pages</div></div>
+    </div></div>
+<div class="pg">
+    <div class="kicker">How this book works</div>
+    <h1 style="font-size:26pt;margin:.08in 0 .2in">Five moves, no fluff.</h1>
+    <div style="display:flex;gap:.18in;margin-bottom:.22in;align-items:flex-start">
+      <span class="badge">1</span>
+      <div><h3 style="font-size:13.5pt;color:var(--c2)">Read the Big Idea</h3><p style="font-size:11pt;line-height:1.55;max-width:5.6in">Every chapter starts with one idea that explains a whole family of words. Read it out loud. Twice is better.</p></div></div><div style="display:flex;gap:.18in;margin-bottom:.22in;align-items:flex-start">
+      <span class="badge">2</span>
+      <div><h3 style="font-size:13.5pt;color:var(--c2)">Steal the pro move</h3><p style="font-size:11pt;line-height:1.55;max-width:5.6in">The dark box is how a champion actually thinks on stage. It works on words you have never seen.</p></div></div><div style="display:flex;gap:.18in;margin-bottom:.22in;align-items:flex-start">
+      <span class="badge">3</span>
+      <div><h3 style="font-size:13.5pt;color:var(--c2)">Flip the sticky notes</h3><p style="font-size:11pt;line-height:1.55;max-width:5.6in">The note cards are the chapter in tiny pieces. Cover one, say it from memory, check yourself.</p></div></div><div style="display:flex;gap:.18in;margin-bottom:.22in;align-items:flex-start">
+      <span class="badge">4</span>
+      <div><h3 style="font-size:13.5pt;color:var(--c2)">Spell in the boxes</h3><p style="font-size:11pt;line-height:1.55;max-width:5.6in">Every practice word has a write-in line. Say it, spell it OUT LOUD, then write it. Hand and mouth together beat eyes alone.</p></div></div><div style="display:flex;gap:.18in;margin-bottom:.22in;align-items:flex-start">
+      <span class="badge">5</span>
+      <div><h3 style="font-size:13.5pt;color:var(--c2)">Hunt the Big List</h3><p style="font-size:11pt;line-height:1.55;max-width:5.6in">The back of the book has every word in one place. Circle the bubbles you own. Come back for the empty ones.</p></div></div>
+    <div class="concept" style="margin-top:.25in"><b>Grown-ups:</b> this book pairs with the Bizzing Bee app — the same chapters are narrated there, and every word here has real recorded audio in the app's Word Coach.</div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Part of the 122-chapter course</span></div></div>
+<div class="pg dense">
+    <div style="display:flex;align-items:center;gap:.16in">
+      <span class="badge">1</span>
+      <div><div class="kicker">Spelling Rules &amp; Patterns</div>
+      <h2 style="font-size:20pt;line-height:1.08">Silent kn- / gn- / wr- (Old English)</h2></div></div>
+    <div class="kicker" style="margin-top:.2in">The big idea</div>
+    <div class="concept">These initial consonant clusters come from Old English and Norse. The first consonant was once pronounced — you can still hear it in German (Knabe = boy, schreiben = to write). English pronunciation shifted; spelling froze.</div>
+    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>WRAITH</b></div>
+<b>Say it.</b> RAYTH
+<b>Spell it.</b> W · R · A · I · T · H
+<b>Say it again.</b> RAYTH
+<b>Syllables.</b> w · r · a · i · t · h
+<b>Sounds → Letters.</b> [r=WR] [ayth=AITH]
+<b>Exception.</b> wr- = /r/ only; w is completely silent; -ai- = /ay/; -th = /th/; Old English origin
+<b>Origin.</b> English
+<b>Root.</b> Scottish wraith = ghost, apparition (origin uncertain)</div>
+    <div class="cards"><div class="card"><h3>WR- (silent W)</h3><p>wr- cluster from Old English: wraith (ghost), writhe (twist in pain), wrought (past of work), wrath (fury), wreak (inflict), wrest (twist away), wry (twisted/ironic), wring (twist tightly), wren (small bird). All start with a silent w — only the r is heard.</p></div><div class="card"><h3>KN- (silent K)</h3><p>Old Norse kn- cluster: knight, knave, kneel, knell (sound of a bell), knapsack, knack, knavish, knickers, knob, knoll (small hill), knot. The k was once pronounced — you can still hear it in German Knabe (boy) and Knie (knee).</p></div><div class="card"><h3>GN- (silent G)</h3><p>Gnome (small creature), gnarled (twisted), gnash (grind teeth), gnu (wildebeest), gnostic (gnosis = knowledge — the g was always silent in Greek), gnaw (chew persistently), gnarl (twisted lump). The g was once pronounced in Old English — you can still hear it in Italian gnocchi.</p></div><div class="card"><h3>Why Spelling Froze</h3><p>English pronunciation shifted dramatically during the Great Vowel Shift (1400–1700), but printing was already standardizing spelling before the shift was complete. Spelling froze at a historical pronunciation moment; pronunciation kept moving. This is why English spelling preserves sounds that are no longer spoken.</p></div><div class="card"><h3>Bee Strategy</h3><p>When you hear a word starting with /r/ (like "right" or "raith") that seems literary or archaic, ask for the origin. Old English → consider wr-. When you hear /n/ at the start of a formal or medieval word, ask: could it be kn-? These two patterns explain dozens of common spelling bee words.</p></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 1</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · Silent kn- / gn- / wr- (Old English)</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">wraith</span><span class="say">/ RAYTH /</span>
+      <div class="d">a mental representation of some haunting experience</div><div class="h">💡 A wraith is like wrath made ghostly — silent, invisible anger haunting you.</div><div class="line"></div></div><div class="wd"><span class="w">writhe</span><span class="say">/ RIHTH /</span>
+      <div class="d">to move in a twisting or contorted motion, (especially when struggling)</div><div class="h">💡 WRITHE ends in -THE — think 'the snake writhes,' twisting its body into the shape of a TH.</div><div class="line"></div></div><div class="wd"><span class="w">wrought</span><span class="say">/ RAWT /</span>
+      <div class="d">exert oneself by doing mental or physical work for a purpose or out of necessity</div><div class="h">💡 WROUGHT iron is worked metal — remember the silent W and tricky -OUGHT by thinking 'Workers WROUGHT it.'</div><div class="line"></div></div><div class="wd"><span class="w">wrath</span><span class="say">/ RATH /</span>
+      <div class="d">intense anger (usually on an epic scale)</div><div class="h">💡 WRATH rhymes with BATH — when someone's wrath boils over, they're steaming like a hot bath.</div><div class="line"></div></div><div class="wd"><span class="w">wreak</span><span class="say">/ r-EE-k /</span>
+      <div class="d">to inflict or execute as punishment or vengeance</div><div class="h">💡 WREAK havoc has a silent 'w' like WRECK — both 'wreak' and 'wreck' start with 'wr' and suggest destruction.</div><div class="line"></div></div><div class="wd"><span class="w">wrest</span><span class="say">/ REHST /</span>
+      <div class="d">obtain by seizing forcibly or violently, also metaphorically</div><div class="h">💡 To WREST control you must first wrestle it away — WREST lives inside WRESTle.</div><div class="line"></div></div><div class="wd"><span class="w">wry</span><span class="say">/ REYE /</span>
+      <div class="d">humorously sarcastic or mocking</div><div class="h">💡 WRY humor is twisted — three letters, all twisted: silent W, consonant R, sneaky Y acting as a vowel.</div><div class="line"></div></div><div class="wd"><span class="w">wring</span><span class="say">/ RIHNG /</span>
+      <div class="d">a twisting squeeze</div><div class="h">💡 To WRING a towel, you need EXTRA force — that silent W is the extra effort you put in.</div><div class="line"></div></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 1 practice</span></div></div>
+<div class="pg">
+      <div class="kicker">Rapid round · Silent kn- / gn- / wr- (Old English)</div>
+      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>wren</b> <span style="color:#8b83a3;font-size:8.4pt">/ REHN /</span><br>English architect who designed more than fifty London churches (1632-1</div><div><b>knight</b> <span style="color:#8b83a3;font-size:8.4pt">/ n-AY-t /</span><br>is a mounted soldier in the Middle Ages</div><div><b>knave</b> <span style="color:#8b83a3;font-size:8.4pt">/ NAYV /</span><br>a deceitful and unreliable scoundrel</div><div><b>knell</b> <span style="color:#8b83a3;font-size:8.4pt">/ NEHL /</span><br>the sound of a bell rung slowly to announce a death or a funeral or th</div><div><b>knapsack</b> <span style="color:#8b83a3;font-size:8.4pt">/ NA-psak /</span><br>a bag carried by a strap on your back or shoulder</div><div><b>knavish</b> <span style="color:#8b83a3;font-size:8.4pt">/ NAY-vish /</span><br>marked by skill in deception</div><div><b>gnome</b> <span style="color:#8b83a3;font-size:8.4pt">/ NOHM /</span><br>a legendary creature resembling a tiny old man; lives in the depths of</div><div><b>gnarled</b> <span style="color:#8b83a3;font-size:8.4pt">/ NAHRLD /</span><br>twist into a state of deformity</div><div><b>gnash</b> <span style="color:#8b83a3;font-size:8.4pt">/ n-A-sh /</span><br>is to grind or strike the teeth together</div><div><b>gnu</b> <span style="color:#8b83a3;font-size:8.4pt">/ NOO /</span><br>large African antelope having a head with horns like an ox and a long </div><div><b>gnostic</b> <span style="color:#8b83a3;font-size:8.4pt">/ NOS-tik /</span><br>an advocate of Gnosticism</div></div>
+      <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 1 extras</span></div></div>
+<div class="pg dense">
+    <div style="display:flex;align-items:center;gap:.16in">
+      <span class="badge">2</span>
+      <div><div class="kicker">Spelling Rules &amp; Patterns</div>
+      <h2 style="font-size:20pt;line-height:1.08">Silent -gh- Patterns</h2></div></div>
+    <div class="kicker" style="margin-top:.2in">The big idea</div>
+    <div class="concept">The -gh- cluster is Old English's most complex legacy. It was once pronounced as a guttural /kh/ sound (like German Bach). As that sound disappeared, the gh became silent — but stayed in the spelling, creating six different pronunciations for -ough alone.</div>
+    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>DISTRAUGHT</b></div>
+<b>Say it.</b> d-ih-s-t-r-AW-t
+<b>Spell it.</b> D · I · S · T · R · A · U · G · H · T
+<b>Say it again.</b> d-ih-s-t-r-AW-t
+<b>Syllables.</b> d · i · s · t · r · a · u · g · h · t
+<b>Sounds → Letters.</b> [dis=DIS] [TRAWT=TRAUGHT]
+<b>Exception.</b> -aught = /awt/ sound; gh is completely silent; from Old English trahtion = pulled; stress: dis-TRAWT
+<b>Origin.</b> English
+<b>Root.</b> Latin distractus = pulled apart, past participle of distrahere</div>
+    <div class="cards"><div class="card"><h3>-igh- = /eye/ sound</h3><p>Night, knight, blight, flight, right, sight, tight, light, might, slight, fright, plight, bright. The -igh- sequence always = /eye/. The gh is completely silent. This is the most regular of the -gh- patterns.</p></div><div class="card"><h3>-ough = 6 pronunciations (memorize as groups)</h3><p>- /oh/: though, although, dough, furlough - /oo/: through, slough (a swamp) - /uf/: rough, tough, enough, slough (shed skin) - /of/: cough, trough - /aw/: thought, bought, fought, ought, nought, distraught, wrought - /up/: hiccough (= hiccup) Learn by pronunciation group, not individual words.</p></div><div class="card"><h3>-aught = /awt/ sound</h3><p>Distraught (pulled apart = extremely upset), onslaught (sudden violent attack), slaughter, naught (nothing), naughty, daughter, caught, taught, fraught (filled with anxiety). All use -aught = /awt/. This group is the most consistent.</p></div><div class="card"><h3>-ight vs -ite</h3><p>Night (Old English, -ight) vs site (Latin, -ite). Might (power) vs mite (a tiny creature). Right vs write vs rite — three spellings of one /rīt/ sound. When the /eye/ + /t/ sound appears in a word with Old English feel, the spelling is likely -ight.</p></div><div class="card"><h3>Bee Strategy for -gh-</h3><p>Ask for origin and definition. Old English origin + /awt/ sound → -aught. Old English + /eye/ sound → -ight. The /uf/ sound in a short word → likely -ough (rough, tough). The /oh/ sound in a word → could be -ough (though) or -ow (low) — definition distinguishes.</p></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 2</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · Silent -gh- Patterns</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">distraught</span><span class="say">/ d-ih-s-t-r-AW-t /</span>
+      <div class="d">means deeply agitated</div><div class="h">💡 DISTRAUGHT — the GH is silent but the emotion is not; the AU combination sounds like AW in 'awful.'</div><div class="line"></div></div><div class="wd"><span class="w">onslaught</span><span class="say">/ AW-nslawt /</span>
+      <div class="d">a sudden and severe onset of trouble</div><div class="h">💡 ONSLAUGHT — remember the AUGHT at the end like 'caught' or 'taught'; the attack CAUGHT everyone off guard.</div><div class="line"></div></div><div class="wd"><span class="w">slaughter</span>
+      <div class="d"></div><div class="line"></div></div><div class="wd"><span class="w">naught</span><span class="say">/ NAWT /</span>
+      <div class="d">a quantity of no importance</div><div class="h">💡 NAUGHT has the AUGH pattern — think 'All Ugh, I got nothing!'</div><div class="line"></div></div><div class="wd"><span class="w">naughty</span><span class="say">/ NAW-tee /</span>
+      <div class="d">suggestive of sexual impropriety</div><div class="h">💡 NAUGHTY has NAUGHT inside — a naughty child has naught (no) good behavior.</div><div class="line"></div></div><div class="wd"><span class="w">daughter</span><span class="say">/ DAW-ter /</span>
+      <div class="d">a female human offspring</div><div class="h">💡 DAUGHTER has a silent GH in the middle—think AUGHT like 'taught'</div><div class="line"></div></div><div class="wd"><span class="w">fraught</span><span class="say">/ f-r-AW-t /</span>
+      <div class="d">means full of or accompanied by</div><div class="h">💡 FRAUGHT rhymes with CAUGHT—you get caught in a fraught situation</div><div class="line"></div></div><div class="wd"><span class="w">wrought</span><span class="say">/ RAWT /</span>
+      <div class="d">exert oneself by doing mental or physical work for a purpose or out of necessity</div><div class="h">💡 WROUGHT iron is worked metal — remember the silent W and tricky -OUGHT by thinking 'Workers WROUGHT it.'</div><div class="line"></div></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 2 practice</span></div></div>
+<div class="pg">
+      <div class="kicker">Rapid round · Silent -gh- Patterns</div>
+      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>thought</b> <span style="color:#8b83a3;font-size:8.4pt">/ THAWT /</span><br>the content of cognition; the main thing you are thinking about</div><div><b>bought</b> <span style="color:#8b83a3;font-size:8.4pt">/ BAHT /</span><br>obtain by purchase; acquire by means of a financial transaction</div><div><b>knight</b> <span style="color:#8b83a3;font-size:8.4pt">/ n-AY-t /</span><br>is a mounted soldier in the Middle Ages</div><div><b>blight</b> <span style="color:#8b83a3;font-size:8.4pt">/ BLEYET /</span><br>a state or condition being blighted</div><div><b>plough</b> <span style="color:#8b83a3;font-size:8.4pt">/ PLOW /</span><br>a group of seven bright stars in the constellation Ursa Major</div><div><b>though</b> <span style="color:#8b83a3;font-size:8.4pt">/ THOH /</span><br>(postpositive) however</div><div><b>through</b> <span style="color:#8b83a3;font-size:8.4pt">/ THROO /</span><br>having finished or arrived at completion</div><div><b>rough</b> <span style="color:#8b83a3;font-size:8.4pt">/ RUHF /</span><br>the part of a golf course bordering the fairway where the grass is not</div><div><b>cough</b> <span style="color:#8b83a3;font-size:8.4pt">/ k-AH-f /</span><br>is to expel air through the lungs harshly often violently</div></div>
+      <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 2 extras</span></div></div>
+<div class="pg dense">
+    <div style="display:flex;align-items:center;gap:.16in">
+      <span class="badge">3</span>
+      <div><div class="kicker">Spelling Rules &amp; Patterns</div>
+      <h2 style="font-size:20pt;line-height:1.08">ie / ei Rule and Exceptions</h2></div></div>
+    <div class="kicker" style="margin-top:.2in">The big idea</div>
+    <div class="concept">The classic rhyme: "i before e, except after c, or when sounding like /ay/ as in neighbor and weigh." This covers 80% of cases. The other 20% — the exceptions — are the ones that appear in spelling bees.</div>
+    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>SERENDIPITY</b></div>
+<b>Say it.</b> s-eh-r-uh-n-d-IH-p-ih-t-ee
+<b>Spell it.</b> S · E · R · E · N · D · I · P · I · T · Y
+<b>Say it again.</b> s-eh-r-uh-n-d-IH-p-ih-t-ee
+<b>Syllables.</b> s · e · r · e · n · d · i · p · i · t · y
+<b>Sounds → Letters.</b> [ser=SER] [en=EN] [DIP=DIP] [ih=I] [tee=TY]
+<b>Exception.</b> -i- before -p- here; no ie/ei issue in this word — but seize, weird, leisure all break the ie/ei rule
+<b>Origin.</b> French
+<b>Root.</b> Persian Serendip = old name for Sri Lanka</div>
+    <div class="cards"><div class="card"><h3>The Rule — i before e</h3><p>After most consonants, ie = /ee/: believe, achieve, relieve, reprieve, grieve, retrieve, mischief, piece, niece. The mnemonic: "i before e" — the i comes first in most /ee/ sounds.</p></div><div class="card"><h3>After c — e before i</h3><p>After the letter c, the order reverses: ceiling, receive, perceive, deceive, conceive, deceit, conceit, receipt. The c flips the order. Mnemonic: the c is selfish — it pushes e in front of i.</p></div><div class="card"><h3>When Sounding /ay/ — e before i</h3><p>Vein, reign, rein, sleigh, weigh, beige, feign, feint, freight, neighbor, eight. When the vowel combination sounds like /ay/, e comes before i. The sound /ay/ overrides the normal order.</p></div><div class="card"><h3>The Exceptions — Memorize These</h3><p>Seize (not sieze), weird (not wierd), either (not iether), neither, leisure (not liesure), forfeit (not forfiet), foreign (not foriegn), height (not hieght), protein, caffeine, kaleidoscope, zeitgeist, species. These break the rule and must be memorized individually.</p></div><div class="card"><h3>Why the Rule Has Exceptions</h3><p>The rule was invented in 1866 to describe English spelling — English spelling was not invented to follow the rule. Words borrowed from German (zeitgeist, stein), French (beige, feign), and science (protein, caffeine) follow their source languages' spelling, not an English mnemonic invented centuries later.</p></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 3</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · ie / ei Rule and Exceptions</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">believe</span><span class="say">/ bih-LEEV /</span>
+      <div class="d">accept as true; take to be true</div><div class="h">💡 Never beLIEve a LIE — the word 'believe' hides the word LIE right in the middle!</div><div class="line"></div></div><div class="wd"><span class="w">achieve</span><span class="say">/ uh-CHEEV /</span>
+      <div class="d">to gain with effort</div><div class="h">💡 The CHIEF leads the team — aCHIEve has CHIEF hidden inside: a-CHIE-ve.</div><div class="line"></div></div><div class="wd"><span class="w">relieve</span><span class="say">/ r-ih-l-EE-v /</span>
+      <div class="d">is to ease or alleviate pain distress or anxiety</div><div class="h">💡 RELIEVE: I before E — reLIEve the pain by letting it LIE down first.</div><div class="line"></div></div><div class="wd"><span class="w">ceiling</span><span class="say">/ SEE-lihng /</span>
+      <div class="d">the overhead upper surface of a covered space</div><div class="h">💡 The CEILING follows the 'I before E' rule's exception — remember: you CEIl the room, and the ceiling is above you.</div><div class="line"></div></div><div class="wd"><span class="w">receive</span><span class="say">/ ruh-SEEV /</span>
+      <div class="d">get something; come into possession of</div><div class="h">💡 Break the I-before-E rule: reCEIVE — think 'CEIling' to remember CEI, not CIE.</div><div class="line"></div></div><div class="wd"><span class="w">perceive</span><span class="say">/ p-ur-s-EE-v /</span>
+      <div class="d">is to become aware of</div><div class="h">💡 Remember: I before E except after C — perCEIVE has C-E-I-V-E, not C-I-E.</div><div class="line"></div></div><div class="wd"><span class="w">deceive</span><span class="say">/ d-ih-s-EE-v /</span>
+      <div class="d">is to mislead by a false appearance or statement</div><div class="h">💡 deCEIVE — the E comes before I here: 'CEI' not 'CIE' — the deceiver puts E before I to trick you!</div><div class="line"></div></div><div class="wd"><span class="w">vein</span><span class="say">/ VAYN /</span>
+      <div class="d">a blood vessel that carries blood from the capillaries toward the heart</div><div class="h">💡 A VEIN carries blood — E before I: 'thE blood In a VEIN flows to the heart.'</div><div class="line"></div></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 3 practice</span></div></div>
+<div class="pg">
+      <div class="kicker">Rapid round · ie / ei Rule and Exceptions</div>
+      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>reign</b> <span style="color:#8b83a3;font-size:8.4pt">/ RAYN /</span><br>a period during which something or somebody is dominant or powerful</div><div><b>feign</b> <span style="color:#8b83a3;font-size:8.4pt">/ f-AY-n /</span><br>is to represent fictitiously</div><div><b>seize</b> <span style="color:#8b83a3;font-size:8.4pt">/ SEEZ /</span><br>take hold of; grab</div><div><b>weird</b> <span style="color:#8b83a3;font-size:8.4pt">/ w-IH-r-d /</span><br>is unearthly or uncanny</div><div><b>neither</b> <span style="color:#8b83a3;font-size:8.4pt">/ NEE-ther /</span><br>not either; not one or the other</div><div><b>leisure</b> <span style="color:#8b83a3;font-size:8.4pt">/ l-EH-zh-ur /</span><br>is freedom from the demands of work</div><div><b>forfeit</b> <span style="color:#8b83a3;font-size:8.4pt">/ FAW-rfiht /</span><br>something that is lost or surrendered as a penalty</div><div><b>foreign</b> <span style="color:#8b83a3;font-size:8.4pt">/ FAW-ruhn /</span><br>of concern to or concerning the affairs of other nations (other than y</div><div><b>height</b> <span style="color:#8b83a3;font-size:8.4pt">/ HEYET /</span><br>the vertical dimension of extension; distance from the base of somethi</div><div><b>protein</b> <span style="color:#8b83a3;font-size:8.4pt">/ PROH-teen /</span><br>any of a large group of nitrogenous organic compounds that are essenti</div><div><b>caffeine</b> <span style="color:#8b83a3;font-size:8.4pt">/ ka-FEEN /</span><br>a bitter alkaloid found in coffee and tea that is responsible for thei</div></div>
+      <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 3 extras</span></div></div>
+<div class="pg dense">
+    <div style="display:flex;align-items:center;gap:.16in">
+      <span class="badge">4</span>
+      <div><div class="kicker">Spelling Rules &amp; Patterns</div>
+      <h2 style="font-size:20pt;line-height:1.08">Double Consonant Rules</h2></div></div>
+    <div class="kicker" style="margin-top:.2in">The big idea</div>
+    <div class="concept">English doubles a final consonant before suffixes that begin with a vowel (-ing, -ed, -er, -est) under specific conditions. The rule is completely systematic — stress is the key.</div>
+    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>COMMITTED</b></div>
+<b>Say it.</b> kuh-MIH-tihd
+<b>Spell it.</b> C · O · M · M · I · T · T · E · D
+<b>Say it again.</b> kuh-MIH-tihd
+<b>Syllables.</b> kah · mih · tah · d
+<b>Sounds → Letters.</b> [kuh=COM] [MIT=MIT] [ed=TED]
+<b>Exception.</b> stress on -MIT so double T before -ed; commit + ted → committed; single-T would give /KOM-ih-ted/
+<b>Origin.</b> Latin
+<b>Root.</b> Latin committere = to send or put together</div>
+    <div class="cards"><div class="card"><h3>The One-Syllable Rule (CVC)</h3><p>Double the final consonant when a one-syllable word ends in consonant-vowel-consonant: run→running, stop→stopped, sit→sitting, cut→cutting, big→bigger. The doubling keeps the vowel short. Without it: runing would rhyme with tuning.</p></div><div class="card"><h3>The Two-Syllable Stress Rule</h3><p>For two-syllable words, double only if stress falls on the LAST syllable: begin→beginning (stress on BEGIN), occur→occurred (stress on OCCUR), commit→committed (stress on COMMIT), prefer→preferred (stress on preFER). Do NOT double if stress falls on the FIRST syllable: open→opening, happen→happened.</p></div><div class="card"><h3>Test — Tap the Syllable</h3><p>Tap your desk on each syllable and feel which one is louder. Travel: TRAV-el (first syllable louder) → traveled (no double). Control: con-TROL (second syllable louder) → controlled (double-l). Offer: OF-fer (first) → offered (no double). Occur: oc-CUR (second) → occurred (double-r).</p></div><div class="card"><h3>American vs British Doubling</h3><p>Americans: traveled, modeled, canceled. British: travelled, modelled, cancelled — they double whenever the final l is preceded by a single vowel, regardless of stress. For US spelling bees (Merriam-Webster): American conventions apply. Know which dictionary the bee uses.</p></div><div class="card"><h3>Always-Doubled Words</h3><p>Some words have inherited double consonants that are not about suffixes — they must be memorized: accommodate (double-c + double-m), embarrass (double-r + double-s), millennium (double-l + double-n), necessary (one-c + double-s), occasion (double-c + one-s), recommend (one-c + double-m), satellite (one-t + double-l).</p></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 4</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · Double Consonant Rules</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">committed</span><span class="say">/ kuh-MIH-tihd /</span>
+      <div class="d">perform an act, usually with a negative connotation</div><div class="h">💡 comMITTED doubles the T in past tense — you were so committed you gave it two T's!</div><div class="line"></div></div><div class="wd"><span class="w">occurred</span><span class="say">/ uh-KURD /</span>
+      <div class="d">come to pass</div><div class="h">💡 It OCCURRed to me: double 'c', double 'r' — two pairs, like two things running into each other.</div><div class="line"></div></div><div class="wd"><span class="w">beginning</span><span class="say">/ bih-GIH-nihng /</span>
+      <div class="d">the event consisting of the start of something</div><div class="h">💡 Beginning has two n's — you need two feet to take your first step.</div><div class="line"></div></div><div class="wd"><span class="w">preferred</span><span class="say">/ pruh-FURD /</span>
+      <div class="d">like better; value more highly</div><div class="h">💡 PREFERRED doubles the R because the stress falls on -FER — you really, REALLY prefer it, so add an extra R.</div><div class="line"></div></div><div class="wd"><span class="w">controlled</span><span class="say">/ kuh-NTROHLD /</span>
+      <div class="d">exercise authoritative control or power over</div><div class="h">💡 CONTROLLED doubles the L — it takes two strong Ls to hold everything under control.</div><div class="line"></div></div><div class="wd"><span class="w">traveled</span><span class="say">/ TRA-vuhld /</span>
+      <div class="d">change location; move, travel, or proceed, also metaphorically</div><div class="h">💡 American TRAVELED uses one L — one L for one continent crossed.</div><div class="line"></div></div><div class="wd"><span class="w">canceled</span><span class="say">/ KA-nsuhld /</span>
+      <div class="d">postpone indefinitely or annul something that was scheduled</div><div class="h">💡 In American English, one L is CANCELED — the second L got crossed out, just like the event!</div><div class="line"></div></div><div class="wd"><span class="w">accommodate</span><span class="say">/ uh-k-AH-m-uh-d-ay-t /</span>
+      <div class="d">is to do a kindness or a favor to oblige</div><div class="h">💡 ACCOMModate needs double C and double M — it takes TWO of each to fit everyone in.</div><div class="line"></div></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 4 practice</span></div></div>
+<div class="pg">
+      <div class="kicker">Rapid round · Double Consonant Rules</div>
+      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>embarrass</b> <span style="color:#8b83a3;font-size:8.4pt">/ ih-m-b-EH-r-uh-s /</span><br>is to cause confusion and shame to</div><div><b>millennium</b> <span style="color:#8b83a3;font-size:8.4pt">/ m-uh-l-EH-n-ee-uh-m /</span><br>is a period of 1000 years</div><div><b>necessary</b> <span style="color:#8b83a3;font-size:8.4pt">/ n-EH-s-uh-s-eh-r-ee /</span><br>is being essential indispensable</div><div><b>occasion</b> <span style="color:#8b83a3;font-size:8.4pt">/ uh-KAY-zhuhn /</span><br>an event that occurs at a critical time</div><div><b>recommend</b> <span style="color:#8b83a3;font-size:8.4pt">/ r-eh-k-uh-m-EH-n-d /</span><br>is to present as worthy of confidence or acceptance</div><div><b>satellite</b> <span style="color:#8b83a3;font-size:8.4pt">/ s-A-t-uh-l-ay-t /</span><br>a man-made object placed in orbit around the Earth or another celestia</div><div><b>parallel</b> <span style="color:#8b83a3;font-size:8.4pt">/ p-EH-r-uh-l-eh-l /</span><br>is extending in the same direction but never converging</div><div><b>committee</b> <span style="color:#8b83a3;font-size:8.4pt">/ kuh-MIH-tee /</span><br>a special group delegated to consider some matter;  - Milton Berle</div></div>
+      <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 4 extras</span></div></div>
+<div class="pg dense">
+    <div style="display:flex;align-items:center;gap:.16in">
+      <span class="badge">5</span>
+      <div><div class="kicker">Spelling Rules &amp; Patterns</div>
+      <h2 style="font-size:20pt;line-height:1.08">c = /s/ Before e / i / y</h2></div></div>
+    <div class="kicker" style="margin-top:.2in">The big idea</div>
+    <div class="concept">The letter c has two sounds: /k/ (hard) before a, o, u, and /s/ (soft) before e, i, y. Knowing this rule explains dozens of spelling patterns and helps decode words you've never seen.</div>
+    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>IRIDESCENT</b></div>
+<b>Say it.</b> ih-r-uh-d-EH-s-uh-n-t
+<b>Spell it.</b> I · R · I · D · E · S · C · E · N · T
+<b>Say it again.</b> ih-r-uh-d-EH-s-uh-n-t
+<b>Syllables.</b> i · r · i · d · e · s · c · e · n · t
+<b>Sounds → Letters.</b> [ir=IR] [ih=I] [DES=DES] [ent=CENT]
+<b>Exception.</b> -sc- = /s/ because c before e; -escent = becoming; -ir- not -irr-; stress: ir-ih-DES-ent
+<b>Origin.</b> English
+<b>Root.</b> Greek iris = rainbow + Latin -escent(becoming)</div>
+    <div class="cards"><div class="card"><h3>The Rule</h3><p>c = /k/ before a, o, u, and consonants: cat, cold, cup, craft. c = /s/ before e, i, y: ceiling, city, cycle. This explains why cell starts with /s/ and call starts with /k/ — same letter, different vowel following it.</p></div><div class="card"><h3>-sc- = /s/ Before e/i</h3><p>The cluster -sc- before e or i also = /s/: iridescent (sc + e = /s/), adolescent, luminescent, quiescent, convalescent, effervescent, incandescent. The s in -sc- is redundant to the /s/ sound of c — but both letters must be spelled.</p></div><div class="card"><h3>-ce and -ci- Inside Words</h3><p>Susceptible (sus- + cep- + -ible) — the c before e → susceptible not susceptable. Conceit (con- + ceit) — c before e. Luscious — c before i. Precious — c before i. Spacious — c before i. Recognizing -ci- as /sh/ in suffixes like -cious, -cial, -cient is a major spelling pattern.</p></div><div class="card"><h3>Acquiesce — the c/qu Combination</h3><p>Acquiesce (ac- + quiescere = rest) — the qu keeps its /kw/ sound; the -esce has c before e = /s/. The word has two different c sounds: /kw/ (in qu) and /s/ (in -sc-). Spelling: A-C-Q-U-I-E-S-C-E.</p></div><div class="card"><h3>Soft c vs Hard c in the Same Word</h3><p>Circle = cir (soft c before i) + -cle (hard c before l). Circus = cir (soft c before i) + -cus (hard c before u). Concede = con (hard c) + -cede (soft c before e). The position of the vowel following the c tells you which sound it makes — every time.</p></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 5</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · c = /s/ Before e / i / y</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">iridescent</span><span class="say">/ ih-r-uh-d-EH-s-uh-n-t /</span>
+      <div class="d">is displaying a play of bright colors like a rainbow</div><div class="h">💡 Iridescent — one R, like a single rainbow arc over the word.</div><div class="line"></div></div><div class="wd"><span class="w">adolescent</span><span class="say">/ a-duh-LEH-suhnt /</span>
+      <div class="d">a juvenile between the onset of puberty and maturity</div><div class="h">💡 An ADOLESCENT grows — spell the SCENT of growth: a-d-o-l-e-S-C-E-N-T.</div><div class="line"></div></div><div class="wd"><span class="w">luminescent</span><span class="say">/ loo-muh-NEH-suhnt /</span>
+      <div class="d">emitting light not caused by heat</div><div class="h">💡 LUMINESCENT ends in '-ent' like a glowing agent — only an '-ent' student spells it right.</div><div class="line"></div></div><div class="wd"><span class="w">quiescent</span><span class="say">/ k-w-ay-EH-s-uh-n-t /</span>
+      <div class="d">is being at rest quiet inactive</div><div class="h">💡 QUIESCENT ends in -SCENT: imagine a quiet, still room with a faint scent — perfectly at rest.</div><div class="line"></div></div><div class="wd"><span class="w">effervescent</span><span class="say">/ eh-f-ur-v-EH-s-uh-n-t /</span>
+      <div class="d">used of wines and waters; charged naturally or artificially with carbon dioxide</div><div class="h">💡 EFFERVescent = bubbles FERVOR-ing out — think of a soda bottle fizzing over.</div><div class="line"></div></div><div class="wd"><span class="w">incandescent</span><span class="say">/ ih-n-k-uh-n-d-EH-s-uh-n-t /</span>
+      <div class="d">strikingly bright radiant or clear</div><div class="h">💡 An incanDESCENT bulb glows as it DESCENDS into heat — spell the SCENT of hot wax: -s-c-e-n-t.</div><div class="line"></div></div><div class="wd"><span class="w">luscious</span><span class="say">/ l-UH-sh-ih-s /</span>
+      <div class="d">is highly pleasing to the taste or smell</div><div class="h">💡 LUSCIOUS has no H—it's lus-CIOUS, like delicious without the deli, packed with flavor.</div><div class="line"></div></div><div class="wd"><span class="w">precious</span><span class="say">/ p-r-EH-sh-uh-s /</span>
+      <div class="d">is of high price or great value</div><div class="h">💡 PRECIOUS gems have a PRICE — preci+ous, don't drop the 'i' that spells 'pricei' inside.</div><div class="line"></div></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 5 practice</span></div></div>
+<div class="pg">
+      <div class="kicker">Rapid round · c = /s/ Before e / i / y</div>
+      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>spacious</b> <span style="color:#8b83a3;font-size:8.4pt">/ s-p-AY-sh-uh-s /</span><br>affording much room not narrow or constricted roomy</div><div><b>susceptible</b> <span style="color:#8b83a3;font-size:8.4pt">/ suh-SEH-ptuh-buhl /</span><br>(often followed by `of' or `to') yielding readily to or capable of</div><div><b>acquiesce</b> <span style="color:#8b83a3;font-size:8.4pt">/ a-kwee-EHS /</span><br>to agree or express agreement</div><div><b>conceit</b> <span style="color:#8b83a3;font-size:8.4pt">/ k-uh-n-s-EE-t /</span><br>is an excessively favorable opinion of oneself</div><div><b>scintillating</b> <span style="color:#8b83a3;font-size:8.4pt">/ SIN-tih-lay-ting /</span><br>Brilliantly clever, lively, and stimulating; sparkling with wit, energ</div><div><b>nascent</b> <span style="color:#8b83a3;font-size:8.4pt">/ n-AY-s-uh-n-t /</span><br>is beginning to exist or develop</div><div><b>obsolescent</b> <span style="color:#8b83a3;font-size:8.4pt">/ ah-b-s-uh-l-EH-s-uh-n-t /</span><br>means passing out of use as a word</div></div>
+      <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 5 extras</span></div></div>
+<div class="pg dense">
+    <div style="display:flex;align-items:center;gap:.16in">
+      <span class="badge">6</span>
+      <div><div class="kicker">Spelling Rules &amp; Patterns</div>
+      <h2 style="font-size:20pt;line-height:1.08">ph = /f/ Sound (Greek Signal)</h2></div></div>
+    <div class="kicker" style="margin-top:.2in">The big idea</div>
+    <div class="concept">ph = /f/ is the most reliable Greek origin signal in English. It appears ONLY in Greek-origin words (or words modeled on Greek). Hearing /f/ in a learned, scientific, or literary word = look for ph, not f.</div>
+    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>DIAPHANOUS</b></div>
+<b>Say it.</b> d-ay-A-f-uh-n-ih-s
+<b>Spell it.</b> D · I · A · P · H · A · N · O · U · S
+<b>Say it again.</b> d-ay-A-f-uh-n-ih-s
+<b>Syllables.</b> d · i · a · p · h · a · n · o · u · s
+<b>Sounds → Letters.</b> [die=DI] [AF=APH] [uh=A] [nus=NOUS]
+<b>Exception.</b> -ph- = /f/ (Greek!); dia- = through; phanein = show; -ous suffix; die-AF-uh-nus
+<b>Origin.</b> English
+<b>Root.</b> Greek diaphainein = to show through</div>
+    <div class="cards"><div class="card"><h3>The Golden Rule</h3><p>If you hear /f/ in a learned, scientific, or literary word — write ph not f. Phenomenon, ephemeral, diphtheria, phosphorus, sycophant, sophistry, metaphor, diaphanous, asphyxia, phlegm. The ph is Greek phi (φ), and it entered English with the Greek vocabulary.</p></div><div class="card"><h3>The Exception</h3><p>Common everyday English words use f not ph: fun, fish, finger, fly, fog, flat. The rule only applies to borrowed learned words. Fahrenheit = German, uses f. Fan = Old English, uses f. If it is a short, everyday word you knew as a child → probably f. If it is a learned word you encountered in books → probably ph.</p></div><div class="card"><h3>ph in the Middle of Words</h3><p>Elephant (elephas = Greek) — ph in the middle. Orphan (orphanos = Greek) — ph in the middle. Emphasis (emphasis = Greek) — ph in the middle. Amphitheater — ph inside. Epiphany — ph inside. Morphine — ph inside. The ph appears anywhere in the word, not just at the start.</p></div><div class="card"><h3>The Hardest ph Clusters</h3><p>Diphthong = di- + phthongos = two sounds merged — has -phth- cluster (two silent-seeming letters working together). Ophthalmology = -phth- cluster inside. Phthisis (tuberculosis) starts with pht- — P-H-T-H-I-S-I-S. These are the most extreme Greek ph spellings.</p></div><div class="card"><h3>Building ph Word Families</h3><p>-phage (eating): sarcophagus (flesh eater). -phor (carrying): metaphor, phosphor. -phyte (plant): lithophyte, epiphyte. -phon (sound): microphone, saxophone. -phil (loving): bibliophile, anglophile. One pattern — the ph — unlocks them all.</p></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 6</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · ph = /f/ Sound (Greek Signal)</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">diaphanous</span><span class="say">/ d-ay-A-f-uh-n-ih-s /</span>
+      <div class="d">means very sheer and light</div><div class="h">💡 DIAphanous fabric is so sheer you could see a DIAMOND through it.</div><div class="line"></div></div><div class="wd"><span class="w">phenomenon</span><span class="say">/ f-uh-n-AH-m-uh-n-ah-n /</span>
+      <div class="d">is a fact or occurrence observed or observable</div><div class="h">💡 PHENOMENON ends in -ON not -IN — one phENOMENon, many phenomENA.</div><div class="line"></div></div><div class="wd"><span class="w">ephemeral</span><span class="say">/ ih-f-EH-m-ur-uh-l /</span>
+      <div class="d">is lasting a very short time</div><div class="h">💡 EPHEMERAL: 'Every Petal Has Every Morning Erased, Really A Loss' — beauty gone by dawn.</div><div class="line"></div></div><div class="wd"><span class="w">sycophant</span><span class="say">/ SIK-uh-fant /</span>
+      <div class="d">a person who tries to please someone in order to gain a personal advantage</div><div class="h">💡 A SYCOphant is SICK with flattery to get what they want</div><div class="line"></div></div><div class="wd"><span class="w">metaphor</span><span class="say">/ m-EH-t-uh-f-aw-r /</span>
+      <div class="d">is a figure of speech in which a term is applied to something to which it isn't literally app…</div><div class="h">💡 A metaPHOR carries meaning across — it PHORwarded an idea to a new place.</div><div class="line"></div></div><div class="wd"><span class="w">asphyxia</span><span class="say">/ as-FIK-see-uh /</span>
+      <div class="d">a condition in which insufficient or no oxygen and carbon dioxide are exchanged on a ventilat…</div><div class="h">💡 ASPHYXIA has a Y after SPH — you gasp 'WHY?' when you can't breathe, and Y is right there in the middle.</div><div class="line"></div></div><div class="wd"><span class="w">phlegm</span><span class="say">/ FLEHM /</span>
+      <div class="d">apathy demonstrated by an absence of emotional reactions</div><div class="h">💡 PHLEGM hides a silent G — the G gets stuck in your throat just like phlegm does.</div><div class="line"></div></div><div class="wd"><span class="w">diphthong</span><span class="say">/ d-IH-p-th-aw-ng /</span>
+      <div class="d">is an unsegmented gliding speech sound</div><div class="h">💡 A DIPHTHONG has TWO sounds — and two silent letters ph and th, making it doubly tricky.</div><div class="line"></div></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 6 practice</span></div></div>
+<div class="pg">
+      <div class="kicker">Rapid round · ph = /f/ Sound (Greek Signal)</div>
+      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>ophthalmology</b> <span style="color:#8b83a3;font-size:8.4pt">/ ah-p-th-uh-m-AH-l-uh-j-ee /</span><br>is the branch of medicine dealing with anatomy functions and diseases </div><div><b>phosphorus</b> <span style="color:#8b83a3;font-size:8.4pt">/ FAH-sfer-uhs /</span><br>a multivalent nonmetallic element of the nitrogen family that occurs c</div><div><b>diphtheria</b> <span style="color:#8b83a3;font-size:8.4pt">/ dih-FTHIH-ree-ah /</span><br>acute contagious infection caused by the bacterium Corynebacterium dip</div><div><b>emphatic</b> <span style="color:#8b83a3;font-size:8.4pt">/ eh-MFA-tihk /</span><br>spoken with emphasis</div><div><b>orphan</b> <span style="color:#8b83a3;font-size:8.4pt">/ AW-rfuhn /</span><br>a child who has lost both parents</div><div><b>elephant</b> <span style="color:#8b83a3;font-size:8.4pt">/ EH-luh-fuhnt /</span><br>five-toed pachyderm</div><div><b>amphitheater</b> <span style="color:#8b83a3;font-size:8.4pt">/ A-m-f-uh-th-ee-uh-t-ur /</span><br>is an oval or round building with an open central area</div><div><b>epiphany</b> <span style="color:#8b83a3;font-size:8.4pt">/ ih-p-IH-f-uh-n-ee /</span><br>is a Christian festival</div></div>
+      <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 6 extras</span></div></div>
+<div class="pg dense">
+    <div style="display:flex;align-items:center;gap:.16in">
+      <span class="badge">7</span>
+      <div><div class="kicker">Spelling Rules &amp; Patterns</div>
+      <h2 style="font-size:20pt;line-height:1.08">qu- Combination (q Always Followed by u)</h2></div></div>
+    <div class="kicker" style="margin-top:.2in">The big idea</div>
+    <div class="concept">In English, the letter q is almost always followed by u. The combination qu represents two different sounds: /kw/ in most English words, and /k/ in French-origin words ending in -que.</div>
+    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>ELOQUENT</b></div>
+<b>Say it.</b> EH-luh-kwuhnt
+<b>Spell it.</b> E · L · O · Q · U · E · N · T
+<b>Say it again.</b> EH-luh-kwuhnt
+<b>Syllables.</b> eh · lah · kwah · nt
+<b>Sounds → Letters.</b> [EL=EL] [uh=O] [kwent=QUENT]
+<b>Exception.</b> -oqu- = /uh-kw/; eloqui = speak out; -ent suffix; stress: EL-uh-kwent
+<b>Origin.</b> Latin
+<b>Root.</b> Latin eloqui = to speak out</div>
+    <div class="cards"><div class="card"><h3>The Rule</h3><p>In English, q is almost always followed by u. The qu cluster represents /kw/ in most words: queen, quick, question, quiet, quorum, quandary, quarrel, quarrel, querulous, quorum. There is almost never a q without a u in a standard English word.</p></div><div class="card"><h3>qu = /k/ (French-origin words)</h3><p>In French-origin words ending in -que, the qu = /k/ not /kw/: bouquet (boo-KAY), clique (kleek), opaque (oh-PAYK), unique (yoo-NEEK), oblique (oh-BLEEK), technique (tek-NEEK), antique (an-TEEK). The -que ending signals French origin and /k/ sound.</p></div><div class="card"><h3>qu Inside Latin Words</h3><p>Eloquent (e- + loqui = speak) — the qu = /kw/. Soliloquy — qu = /kw/. Colloquy — qu = /kw/. Ventriloquist — qu = /kw/. In Latin-derived words, qu almost always = /kw/. In French-derived words ending in -que, it = /k*.</p></div><div class="card"><h3>Exceptions — q Without u</h3><p>Rare borrowed words have q without u: qi (Chinese life-force), qigong (Chinese breathing practice), qanat (Persian underground waterway), qoph (Hebrew letter). These come from languages where q represents a different sound than in Latin/Greek/French. At a bee: ask for origin.</p></div><div class="card"><h3>Soliloquy vs Colloquy</h3><p>Soliloquy = S-O-L-I-L-O-Q-U-Y (speaking alone — the qu before y). Colloquy = C-O-L-L-O-Q-U-Y. Ventriloquist = V-E-N-T-R-I-L-O-Q-U-I-S-T. In all three, the qu is followed by a vowel (y or u or i). The q always needs its u — and then another vowel follows to complete the syllable.</p></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 7</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · qu- Combination (q Always Followed by u)</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">eloquent</span><span class="say">/ EH-luh-kwuhnt /</span>
+      <div class="d">expressing yourself readily, clearly, effectively</div><div class="h">💡 An ELOquent speaker lets words FLOW out beautifully.</div><div class="line"></div></div><div class="wd"><span class="w">soliloquy</span><span class="say">/ s-uh-l-IH-l-uh-k-w-ee /</span>
+      <div class="d">is a discourse by a person who is talking to himself</div><div class="h">💡 A soliloquy is a SOLO speech — SOL-I-LOQU-Y: alone + speak, with a Q-U-Y ending like obloquy.</div><div class="line"></div></div><div class="wd"><span class="w">colloquy</span><span class="say">/ KAH-luh-kwee /</span>
+      <div class="d">a conversation especially a formal one</div><div class="h">💡 A COLLOQUY is a TALK — col-LOQUY has LOQUACIOUS buried inside it.</div><div class="line"></div></div><div class="wd"><span class="w">ventriloquist</span>
+      <div class="d"></div><div class="line"></div></div><div class="wd"><span class="w">quandary</span><span class="say">/ KWAH-nder-ee /</span>
+      <div class="d">a situation from which extrication is difficult especially an unpleasant or trying one</div><div class="h">💡 You wander (quandary) in circles when you can't decide.</div><div class="line"></div></div><div class="wd"><span class="w">querulous</span><span class="say">/ k-w-EH-r-uh-l-uh-s /</span>
+      <div class="d">means full of complaints</div><div class="h">💡 Someone querulous is always querying why things are so bad.</div><div class="line"></div></div><div class="wd"><span class="w">quorum</span><span class="say">/ KWAW-ruhm /</span>
+      <div class="d">a gathering of the minimal number of members of an organization to conduct business</div><div class="h">💡 QUORUM ends in -UM like 'forum' — you need a quorum to hold a forum, and both end the same way.</div><div class="line"></div></div><div class="wd"><span class="w">bouquet</span><span class="say">/ b-oo-k-AY /</span>
+      <div class="d">an arrangement of flowers that is usually given as a present</div><div class="h">💡 BOUQUET ends in -QUET but sounds like -KAY—picture a bouquet at a boutiQUE</div><div class="line"></div></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 7 practice</span></div></div>
+<div class="pg">
+      <div class="kicker">Rapid round · qu- Combination (q Always Followed by u)</div>
+      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>clique</b> <span style="color:#8b83a3;font-size:8.4pt">/ KLEEK /</span><br>an exclusive circle of people with a common purpose</div><div><b>opaque</b> <span style="color:#8b83a3;font-size:8.4pt">/ oh-p-AY-k /</span><br>is not allowing light to pass through</div><div><b>unique</b> <span style="color:#8b83a3;font-size:8.4pt">/ yoo-NEEK /</span><br>radically distinctive and without equal</div><div><b>oblique</b> <span style="color:#8b83a3;font-size:8.4pt">/ uh-b-l-EE-k /</span><br>any grammatical case other than the nominative</div><div><b>technique</b> <span style="color:#8b83a3;font-size:8.4pt">/ t-eh-k-n-EE-k /</span><br>is the manner in which the technical skills of a particular art are us</div><div><b>antique</b> <span style="color:#8b83a3;font-size:8.4pt">/ a-NTEEK /</span><br>an elderly man</div><div><b>torque</b> <span style="color:#8b83a3;font-size:8.4pt">/ t-AW-r-k /</span><br>is something that produces rotation</div><div><b>plaque</b> <span style="color:#8b83a3;font-size:8.4pt">/ p-l-A-k /</span><br>is a tablet or plate of metal intended for use as an ornament</div></div>
+      <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 7 extras</span></div></div>
+<div class="pg dense">
+    <div style="display:flex;align-items:center;gap:.16in">
+      <span class="badge">8</span>
+      <div><div class="kicker">Spelling Rules &amp; Patterns</div>
+      <h2 style="font-size:20pt;line-height:1.08">y as Vowel (Greek Words)</h2></div></div>
+    <div class="kicker" style="margin-top:.2in">The big idea</div>
+    <div class="concept">In English words of Greek origin, y functions as a vowel, sounding like /i/ or /ee/. This is Greek letter upsilon (Υ), which became y when Greek words entered Latin and then English.</div>
+    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>LABYRINTH</b></div>
+<b>Say it.</b> l-A-b-ur-ih-n-th
+<b>Spell it.</b> L · A · B · Y · R · I · N · T · H
+<b>Say it again.</b> l-A-b-ur-ih-n-th
+<b>Syllables.</b> l · a · b · y · r · i · n · t · h
+<b>Sounds → Letters.</b> [LAB=LAB] [uh=Y] [rinth=RINTH]
+<b>Exception.</b> y = /uh/ here (as vowel, not consonant); -th = /th/ from Greek theta; Greek origin; LAB-uh-rinth
+<b>Origin.</b> English
+<b>Root.</b> Greek labyrinthos = maze, possibly from labrys = double-headed axe</div>
+    <div class="cards"><div class="card"><h3>The Pattern</h3><p>When y appears in the MIDDLE of a word (not at the end), it is usually Greek and functions as a vowel, sounding like /i/ or /uh/: rhythm, crypt, lymph, nymph, gymnasium, typhoon, oxygen, labyrinth, syllable, symbol, cyst, gypsum, myth, myrtle.</p></div><div class="card"><h3>Y Clusters — Middle of Word</h3><p>-yn-: synonym, syntax, synthesis, synapse. -ym-: symbol, symmetry, sympathy, symphony. -yr-: pyramid, lyric, lyre, myrtle, tyranny, myrrh. -ys-: system, mystery, crystalline. -yp-: typical, type, typhoon, hypnosis.</p></div><div class="card"><h3>Y at the End = /ee/</h3><p>When y ends a word, it sounds like /ee/ in Greek-derived words: harmony, melody, euphony, biology, geography. This is the -y from Greek -ia or -eia. Different sound, same Greek origin. End = /ee/. Middle = /i/ or /uh/.</p></div><div class="card"><h3>Medical Y Words</h3><p>Psych- words: psychology, psychiatry, psyche — the p is silent AND y is a vowel. Gymn- words: gymnasium, gymnast, gymnastics — y is a vowel. Crypt- words: cryptic, cryptogram — y is a vowel. Cyst, lymph, glyph — all single-syllable medical words with y as the only vowel.</p></div><div class="card"><h3>Why y?* Greek letter upsilon (Υ, υ) was a vowel in Greek. When Romans transcribed Greek words, they wrote y for upsilon (because they had no upsilon in Latin). English inherited this Roman convention. So every English word with a vowel-sounding y in the middle is a direct descendant of a Greek upsilon*. **Word Bank</h3><p>labyrinth · rhythm · lymph · nymph · gymnasium · typhoon · oxygen · syllable · symbol · crypt · mystery · synonym · synthesis · pyramid · lyric · tyranny · gypsum · crystalline ---</p></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 8</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · y as Vowel (Greek Words)</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">labyrinth</span><span class="say">/ l-A-b-ur-ih-n-th /</span>
+      <div class="d">is an intricate combination of paths</div><div class="h">💡 LABYrinth has a BABY inside it — even a baby would get lost in a maze!</div><div class="line"></div></div><div class="wd"><span class="w">rhythm</span><span class="say">/ r-IH-th-uh-m /</span>
+      <div class="d">is movement with uniform recurrence of a beat or accent</div><div class="h">💡 'Rhythm Helps Your Two Hips Move' — the first letter of each word spells RHYTHM.</div><div class="line"></div></div><div class="wd"><span class="w">lymph</span><span class="say">/ LIHMF /</span>
+      <div class="d">a thin coagulable fluid (similar to plasma but) containing white blood cells (lymphocytes) an…</div><div class="h">💡 LYMPH flows clear like water — Latin lympha = water, and the PH makes it scientifically proper.</div><div class="line"></div></div><div class="wd"><span class="w">nymph</span><span class="say">/ NIHMF /</span>
+      <div class="d">(classical mythology) a minor nature goddess usually depicted as a beautiful maiden</div><div class="h">💡 A NYMPH hides a Y — think 'mYsterious nature maiden' with that hidden Y.</div><div class="line"></div></div><div class="wd"><span class="w">gymnasium</span><span class="say">/ jih-MNAY-zee-uhm /</span>
+      <div class="d">a school for students intermediate between elementary school and college; usually grades 9 to…</div><div class="h">💡 GymnasIUM — the -IUM ending like a grand auditorium where athletes perform.</div><div class="line"></div></div><div class="wd"><span class="w">typhoon</span><span class="say">/ teye-FOON /</span>
+      <div class="d">a tropical cyclone occurring in the western Pacific or Indian oceans</div><div class="h">💡 A TYPHOON hits with a BOOM — hear that OON at the end like the howling wind.</div><div class="line"></div></div><div class="wd"><span class="w">oxygen</span><span class="say">/ AH-ksuh-juhn /</span>
+      <div class="d">a nonmetallic bivalent element that is normally a colorless odorless tasteless nonflammable d…</div><div class="h">💡 OXYGEN was named 'acid producer' — OXY-GEN, where GEN means to generate; it generates life.</div><div class="line"></div></div><div class="wd"><span class="w">syllable</span><span class="say">/ SIH-luh-buhl /</span>
+      <div class="d">a unit of spoken language larger than a phoneme</div><div class="h">💡 A sylLABle is a LAB where sounds combine — double L, then -able at the end.</div><div class="line"></div></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 8 practice</span></div></div>
+<div class="pg">
+      <div class="kicker">Rapid round · y as Vowel (Greek Words)</div>
+      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>symbol</b> <span style="color:#8b83a3;font-size:8.4pt">/ SIH-mbuhl /</span><br>an arbitrary sign (written or printed) that has acquired a conventiona</div><div><b>crypt</b> <span style="color:#8b83a3;font-size:8.4pt">/ k-r-IH-p-t /</span><br>is a subterranean chamber or vault</div><div><b>mystery</b> <span style="color:#8b83a3;font-size:8.4pt">/ MIH-ster-ee /</span><br>something that baffles understanding and cannot be explained</div><div><b>synonym</b> <span style="color:#8b83a3;font-size:8.4pt">/ s-IH-n-uh-n-ih-m /</span><br>is a word having nearly the same meaning as another</div><div><b>synthesis</b> <span style="color:#8b83a3;font-size:8.4pt">/ SIH-nthuh-suhs /</span><br>the process of producing a chemical compound (usually by the union of </div><div><b>pyramid</b> <span style="color:#8b83a3;font-size:8.4pt">/ PIH-ruh-mihd /</span><br>a polyhedron having a polygonal base and triangular sides with a commo</div><div><b>lyric</b> <span style="color:#8b83a3;font-size:8.4pt">/ LIH-rihk /</span><br>the text of a popular song or musical-comedy number</div><div><b>tyranny</b> <span style="color:#8b83a3;font-size:8.4pt">/ TIH-ruh-nee /</span><br>a form of government in which the ruler is an absolute dictator (not r</div><div><b>gypsum</b> <span style="color:#8b83a3;font-size:8.4pt">/ j-IH-p-s-uh-m /</span><br>is a common mineral</div><div><b>crystalline</b> <span style="color:#8b83a3;font-size:8.4pt">/ KRIH-stuh-leyen /</span><br>consisting of or containing or of the nature of crystals</div></div>
+      <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 8 extras</span></div></div>
+<div class="pg dense">
+    <div style="display:flex;align-items:center;gap:.16in">
+      <span class="badge">9</span>
+      <div><div class="kicker">Spelling Rules &amp; Patterns</div>
+      <h2 style="font-size:20pt;line-height:1.08">-ough: Six Pronunciations</h2></div></div>
+    <div class="kicker" style="margin-top:.2in">The big idea</div>
+    <div class="concept">The most notoriously irregular spelling pattern in English: -ough represents six distinct sounds with no sound-based rule for which applies. Memorizing the words by sound group is the only reliable strategy.</div>
+    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>THOROUGH</b></div>
+<b>Say it.</b> THUR-oh
+<b>Spell it.</b> T · H · O · R · O · U · G · H
+<b>Say it again.</b> THUR-oh
+<b>Syllables.</b> ther · ow
+<b>Sounds → Letters.</b> [THUR=THOR] [oh=OUGH]
+<b>Exception.</b> -ough = /oh/ here (the thorough/borough group); -th = /th/; silent gh; stress: THUR-oh
+<b>Origin.</b> Old English
+<b>Root.</b> Old English þuruh = through, complete</div>
+    <div class="cards"><div class="card"><h3>Group 1 — /oh/ (rhymes with "go")</h3><p>Though (conjunction), although, dough (bread dough), furlough (temporary leave), thorough (complete — also pronounced /thur-oh/). Mnemonic: though the dough rises, the soldier on furlough is thorough.</p></div><div class="card"><h3>Group 2 — /oo/ and /uf/</h3><p>/oo/ (rhymes with "true"): through (from one side to the other), slough (a swamp in American English). /uf/ (rhymes with "stuff"): rough, tough, enough, slough (to shed skin). ⚠️ Slough has TWO pronunciations with TWO meanings — /sloo/ = swamp, /sluf/ = shed skin.</p></div><div class="card"><h3>Group 3 — /aw/ and /of/</h3><p>/aw/ (rhymes with "law"): thought, bought, fought, ought, nought (zero), wrought (shaped by work), distraught (extremely upset), onslaught. /of/ (rhymes with "off"): cough, trough (a feeding container). The /aw/ group is the largest.</p></div><div class="card"><h3>Group 4 — /up/ and Outliers</h3><p>/up/: hiccough = an old spelling of hiccup — the -ough is historically irregular even here. Borough = /BUR-oh/. Thorough = /THUR-oh/. These end in -ough but sound like -oh. They share the /oh/ group pronunciation but are worth noting separately because of spelling-pronunciation mismatch.</p></div><div class="card"><h3>Bee Strategy for -ough Words</h3><p>When you hear a word and suspect -ough, ask for the definition and origin. Old English origin + /aw/ sound → almost certainly -ough (thought, bought). /uf/ sound in a short word → -ough (rough, tough). /oh/ sound → could be -ough (though) or -ow (low). Definition distinguishes. Spell the gh — it is always there, always silent.</p></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 9</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · -ough: Six Pronunciations</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">thought</span><span class="say">/ THAWT /</span>
+      <div class="d">the content of cognition; the main thing you are thinking about</div><div class="h">💡 THOUGHT contains 'ought' — you OUGHT to think (thought) before you speak.</div><div class="line"></div></div><div class="wd"><span class="w">bought</span><span class="say">/ BAHT /</span>
+      <div class="d">obtain by purchase; acquire by means of a financial transaction</div><div class="h">💡 You BOUGHT it with cash and got a silent 'ugh' deal — no 'a', just 'ou' like you 'ought' to remember.</div><div class="line"></div></div><div class="wd"><span class="w">fought</span><span class="say">/ FAWT /</span>
+      <div class="d">be engaged in a fight; carry on a fight</div><div class="h">💡 He FOUGHT and OUGHT to have won — FOUGHT rhymes with OUGHT, spelling it right.</div><div class="line"></div></div><div class="wd"><span class="w">ought</span>
+      <div class="d"></div><div class="line"></div></div><div class="wd"><span class="w">wrought</span><span class="say">/ RAWT /</span>
+      <div class="d">exert oneself by doing mental or physical work for a purpose or out of necessity</div><div class="h">💡 WROUGHT iron is worked metal — remember the silent W and tricky -OUGHT by thinking 'Workers WROUGHT it.'</div><div class="line"></div></div><div class="wd"><span class="w">distraught</span><span class="say">/ d-ih-s-t-r-AW-t /</span>
+      <div class="d">means deeply agitated</div><div class="h">💡 DISTRAUGHT — the GH is silent but the emotion is not; the AU combination sounds like AW in 'awful.'</div><div class="line"></div></div><div class="wd"><span class="w">onslaught</span><span class="say">/ AW-nslawt /</span>
+      <div class="d">a sudden and severe onset of trouble</div><div class="h">💡 ONSLAUGHT — remember the AUGHT at the end like 'caught' or 'taught'; the attack CAUGHT everyone off guard.</div><div class="line"></div></div><div class="wd"><span class="w">rough</span><span class="say">/ RUHF /</span>
+      <div class="d">the part of a golf course bordering the fairway where the grass is not cut short</div><div class="h">💡 ROUGH has a tricky OUGH that sounds like UFF — think 'it's ROUGH enough to trip you up with that spelling.'</div><div class="line"></div></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 9 practice</span></div></div>
+<div class="pg">
+      <div class="kicker">Rapid round · -ough: Six Pronunciations</div>
+      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>tough</b> <span style="color:#8b83a3;font-size:8.4pt">/ TUHF /</span><br>someone who learned to fight in the streets rather than being formally</div><div><b>enough</b> <span style="color:#8b83a3;font-size:8.4pt">/ ih-NUHF /</span><br>an adequate quantity; a quantity that is large enough to achieve a pur</div><div><b>through</b> <span style="color:#8b83a3;font-size:8.4pt">/ THROO /</span><br>having finished or arrived at completion</div><div><b>though</b> <span style="color:#8b83a3;font-size:8.4pt">/ THOH /</span><br>(postpositive) however</div><div><b>although</b><br></div><div><b>dough</b> <span style="color:#8b83a3;font-size:8.4pt">/ DOH /</span><br>a flour mixture stiff enough to knead or roll</div><div><b>furlough</b> <span style="color:#8b83a3;font-size:8.4pt">/ f-UR-l-oh /</span><br>is a leave of absence granted to an enlisted person</div><div><b>cough</b> <span style="color:#8b83a3;font-size:8.4pt">/ k-AH-f /</span><br>is to expel air through the lungs harshly often violently</div><div><b>trough</b> <span style="color:#8b83a3;font-size:8.4pt">/ TRAWF /</span><br>a narrow depression (as in the earth or between ocean waves or in the </div><div><b>thorough</b> <span style="color:#8b83a3;font-size:8.4pt">/ THUR-oh /</span><br>painstakingly careful and accurate</div><div><b>borough</b> <span style="color:#8b83a3;font-size:8.4pt">/ BUR-oh /</span><br>one of the administrative divisions of a large city</div></div>
+      <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 9 extras</span></div></div>
+<div class="pg dense">
+    <div style="display:flex;align-items:center;gap:.16in">
+      <span class="badge">10</span>
+      <div><div class="kicker">Word Formation</div>
+      <h2 style="font-size:20pt;line-height:1.08">Homophones (Same Sound, Different Spelling)</h2></div></div>
+    <div class="kicker" style="margin-top:.2in">The big idea</div>
+    <div class="concept">Homophones are words that sound identical but are spelled differently and mean different things. They cannot be decoded from sound alone — etymology and context are the only guides.</div>
+    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>PRINCIPLE</b></div>
+<b>Say it.</b> PRIH-nsuh-puhl
+<b>Spell it.</b> P · R · I · N · C · I · P · L · E
+<b>Say it again.</b> PRIH-nsuh-puhl
+<b>Syllables.</b> prih · nsah · pah · l
+<b>Sounds → Letters.</b> [PRIN=PRIN] [suh=CI] [pul=PLE]
+<b>Exception.</b> principal vs principle: both /PRIN-suh-pul/; -al = adjective/noun (a person); -le = abstract (a rule)
+<b>Origin.</b> French
+<b>Root.</b> Latin principium = beginning, foundation</div>
+    <div class="cards"><div class="card"><h3>The Core Pairs</h3><p>Principal (the head of a school, or primary) vs Principle (a fundamental rule). Memory trick: the principal is your pal; a principle is a learned rule. Complement (complete something) vs Compliment (praise). Stationary (not moving) vs Stationery (paper products — the er in stationery = paper).</p></div><div class="card"><h3>More Critical Pairs</h3><p>Affect (verb = to influence) vs Effect (noun = the result). Accept (to receive) vs Except (excluding). Elicit (to draw out) vs Illicit (not permitted). Eminent (famous, prominent) vs Imminent (about to happen). Allude (hint at) vs Elude (escape from).</p></div><div class="card"><h3>Triple Homophones</h3><p>Their (belonging to them) / There (a place) / They're (they are). To (preposition) / Two (the number) / Too (also/excessively). Bare (uncovered) / Bear (the animal, or to carry). Three spellings, one sound — context is everything.</p></div><div class="card"><h3>Etymology Resolves Homophones</h3><p>Stationary comes from Latin stationarius = standing still. Stationery comes from stationer = a bookshop owner who had a fixed station (shop). The -er at the end of stationery comes from the stationer who sold paper. Knowing the origin makes the spelling logical.</p></div><div class="card"><h3>Disinterested vs Uninterested</h3><p>Disinterested = having no personal stake = impartial (a dis- = away from interest judge). Uninterested = not interested = bored (un- = simply not). These are not homophones — they sound different and mean different things — but they are the most commonly confused pair in educated writing.</p></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 10</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · Homophones (Same Sound, Different Spelling)</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">principal</span><span class="say">/ PRIH-nsuh-puhl /</span>
+      <div class="d">the original amount of a debt on which interest is calculated</div><div class="h">💡 Your school PRINCIPAL is your PAL — principAL ends in A-L like PAL.</div><div class="line"></div></div><div class="wd"><span class="w">principle</span><span class="say">/ PRIH-nsuh-puhl /</span>
+      <div class="d">a basic generalization that is accepted as true and that can be used as a basis for reasoning…</div><div class="h">💡 A PRINCIPLE is a RULE — principLE ends in L-E like RULE reversed... and rules end things.</div><div class="line"></div></div><div class="wd"><span class="w">complement</span><span class="say">/ KAH-mpluh-muhnt /</span>
+      <div class="d">a word or phrase used to complete a grammatical construction</div><div class="h">💡 A complEment makEs things complEte — both have an E.</div><div class="line"></div></div><div class="wd"><span class="w">compliment</span><span class="say">/ KAH-mpluh-mehnt /</span>
+      <div class="d">a remark (or act) expressing praise and admiration</div><div class="h">💡 A compliment is something nice said to I — remember 'complIment' has an I, because it's about ME feeling good.</div><div class="line"></div></div><div class="wd"><span class="w">stationary</span><span class="say">/ STAY-shuh-neh-ree /</span>
+      <div class="d">standing still</div><div class="h">💡 StationARY means stAying — both have 'A'; you stAy in one plAce.</div><div class="line"></div></div><div class="wd"><span class="w">stationery</span><span class="say">/ s-t-AY-sh-uh-n-eh-r-ee /</span>
+      <div class="d">is writing paper</div><div class="h">💡 StationERy is for lettERs — both have 'ER'; you write a lettER on stationERy.</div><div class="line"></div></div><div class="wd"><span class="w">affect</span><span class="say">/ uh-FEHKT /</span>
+      <div class="d">the conscious subjective aspect of feeling or emotion</div><div class="h">💡 AFFECT starts with A — the Action word; double F, then ECT, like 'acted.'</div><div class="line"></div></div><div class="wd"><span class="w">effect</span><span class="say">/ ih-FEHKT /</span>
+      <div class="d">a phenomenon that follows and is caused by some previous phenomenon</div><div class="h">💡 To remember EFFECT vs AFFECT: EFFECT is the End result — both start with E.</div><div class="line"></div></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 10 practice</span></div></div>
+<div class="pg">
+      <div class="kicker">Rapid round · Homophones (Same Sound, Different Spelling)</div>
+      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>accept</b> <span style="color:#8b83a3;font-size:8.4pt">/ a-KSEHPT /</span><br>consider or hold as true</div><div><b>except</b> <span style="color:#8b83a3;font-size:8.4pt">/ ih-KSEHPT /</span><br>take exception to</div><div><b>elicit</b> <span style="color:#8b83a3;font-size:8.4pt">/ ih-LIH-siht /</span><br>call forth (emotions, feelings, and responses)</div><div><b>illicit</b> <span style="color:#8b83a3;font-size:8.4pt">/ ih-l-IH-s-uh-t /</span><br>is not legally permitted</div><div><b>eminent</b> <span style="color:#8b83a3;font-size:8.4pt">/ EH-muh-nuhnt /</span><br>standing above others in quality or position</div><div><b>imminent</b> <span style="color:#8b83a3;font-size:8.4pt">/ IH-muh-nuhnt /</span><br>close in time; about to occur</div><div><b>allude</b> <span style="color:#8b83a3;font-size:8.4pt">/ uh-LOOD /</span><br>make a more or less disguised reference to</div><div><b>elude</b> <span style="color:#8b83a3;font-size:8.4pt">/ ih-LOOD /</span><br>escape, either physically or mentally</div><div><b>disinterested</b> <span style="color:#8b83a3;font-size:8.4pt">/ dih-SIH-ntrih-stihd /</span><br>unaffected by self-interest</div><div><b>uninterested</b> <span style="color:#8b83a3;font-size:8.4pt">/ uh-NIH-ntruh-stihd /</span><br>not having or showing interest</div></div>
+      <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 10 extras</span></div></div>
+<div class="pg dense">
+    <div style="display:flex;align-items:center;gap:.16in">
+      <span class="badge">11</span>
+      <div><div class="kicker">Word Formation</div>
+      <h2 style="font-size:20pt;line-height:1.08">Contronyms (Same Word, Opposite Meanings)</h2></div></div>
+    <div class="kicker" style="margin-top:.2in">The big idea</div>
+    <div class="concept">Contronyms (also called autoantonyms) are words with two opposite meanings. Context determines which meaning applies. English has dozens of these from centuries of word-meaning drift.</div>
+    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>SANCTION</b></div>
+<b>Say it.</b> SA-ngkshuhn
+<b>Spell it.</b> S · A · N · C · T · I · O · N
+<b>Say it again.</b> SA-ngkshuhn
+<b>Syllables.</b> sae · ngkshah · n
+<b>Sounds → Letters.</b> [SANK=SANC] [shun=TION]
+<b>Exception.</b> Latin sancire = to make sacred; sanction = to approve OR to penalize — opposite meanings; stress: SANK-shun
+<b>Origin.</b> French
+<b>Root.</b> Latin sanctio = a decree making something sacred (sanctus=holy)</div>
+    <div class="cards"><div class="card"><h3>Classic Contronyms</h3><p>Sanction = to officially approve OR to penalize with restrictions. Cleave = to split apart OR to stick closely together. Oversight = careful supervision OR a failure to notice. Buckle = to fasten firmly OR to bend and collapse. Dust = to add dust (dusting crops) OR to remove dust (dusting furniture).</p></div><div class="card"><h3>More Contronyms</h3><p>Screen = to show (screen a film) OR to hide (screen from view). Weather = to withstand (weather a storm) OR to erode (rock weathers over time). Trip = to stumble and fall OR to take a journey. Off = active (the alarm went off) OR inactive (the alarm is off). Fast = moving quickly OR stuck firmly in place.</p></div><div class="card"><h3>Contronyms in Legal Language</h3><p>Enjoin = to order someone to do something OR to prohibit someone from doing something. Cleave appears in wedding vows: "cleave unto" = hold closely together. In cooking: "cleave the meat" = split apart. The same word, used centuries apart, accumulated both meanings.</p></div><div class="card"><h3>Why Contronyms Exist</h3><p>Some developed from different etymological paths meeting in the same spelling. Sanction comes from Latin sanctio = a decree — a decree can authorize or prohibit. Cleave has TWO Old English roots: cleofan (to split) and clifian (to stick). They merged in spelling but kept opposite meanings.</p></div><div class="card"><h3>Contronyms in Spelling Bees (Vocabulary Rounds)</h3><p>Inflammable = can catch fire (NOT fireproof) — in- here means "into flames" not "not." Invaluable = so valuable it cannot be valued = priceless (NOT worthless). These are the most dangerous contronyms because the in- prefix appears to negate the meaning but does not.</p></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 11</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · Contronyms (Same Word, Opposite Meanings)</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">sanction</span><span class="say">/ SA-ngkshuhn /</span>
+      <div class="d">formal and explicit approval</div><div class="h">💡 SANCTION: SANCT+ION — a decree so holy it charges like an ION, either approving or punishing.</div><div class="line"></div></div><div class="wd"><span class="w">cleave</span><span class="say">/ KLEEV /</span>
+      <div class="d">separate or cut with a tool, such as a sharp instrument</div><div class="h">💡 To CLEAVE is to split — the EA in the middle is itself split between C-L and V-E, mirroring the action.</div><div class="line"></div></div><div class="wd"><span class="w">oversight</span><span class="say">/ OH-ver-seyet /</span>
+      <div class="d">an unintentional omission resulting from failure to notice something</div><div class="h">💡 An OVERSIGHT means you looked right OVER something — the SIGHT was there, you just missed it.</div><div class="line"></div></div><div class="wd"><span class="w">buckle</span><span class="say">/ BUH-kuhl /</span>
+      <div class="d">fastener that fastens together two ends of a belt or strap; often has loose prong</div><div class="h">💡 BUCKLE your belt with a U and an LE at the end — bU-ckLE cinches it together.</div><div class="line"></div></div><div class="wd"><span class="w">dust</span><span class="say">/ DUHST /</span>
+      <div class="d">fine powdery material such as dry earth or pollen that can be blown about in the air</div><div class="h">💡 DUST: Dirt Under Shelves Today — four letters, fine and simple.</div><div class="line"></div></div><div class="wd"><span class="w">screen</span><span class="say">/ SKREEN /</span>
+      <div class="d">a white or silvered surface where pictures can be projected for viewing</div><div class="h">💡 SCREEN contains GREEN — movie screens often show lush green landscapes.</div><div class="line"></div></div><div class="wd"><span class="w">weather</span><span class="say">/ WEH-ther /</span>
+      <div class="d">the atmospheric conditions at a particular place and time, including temperature, wind, cloud…</div><div class="h">💡 WEATHER: WE AT HER mercy — watch for the silent 'a'</div><div class="line"></div></div><div class="wd"><span class="w">enjoin</span><span class="say">/ eh-NJOYN /</span>
+      <div class="d">issue an injunction</div><div class="h">💡 A judge ENJOINs — they JOIN an order ONTO you.</div><div class="line"></div></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 11 practice</span></div></div>
+<div class="pg">
+      <div class="kicker">Rapid round · Contronyms (Same Word, Opposite Meanings)</div>
+      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>fast</b> <span style="color:#8b83a3;font-size:8.4pt">/ FAST /</span><br>abstaining from food</div><div><b>trip</b> <span style="color:#8b83a3;font-size:8.4pt">/ TRIHP /</span><br>a journey for some purpose (usually including the return)</div><div><b>inflammable</b> <span style="color:#8b83a3;font-size:8.4pt">/ ih-n-f-l-A-m-uh-b-uh-l /</span><br>is capable of being set on fire</div><div><b>invaluable</b> <span style="color:#8b83a3;font-size:8.4pt">/ ih-NVA-lyuh-buhl /</span><br>having incalculable monetary, intellectual, or spiritual worth</div><div><b>off</b> <span style="color:#8b83a3;font-size:8.4pt">/ AWF /</span><br>kill intentionally and with premeditation</div><div><b>rent</b> <span style="color:#8b83a3;font-size:8.4pt">/ REHNT /</span><br>a payment or series of payments made by the lessee to an owner for use</div><div><b>transparent</b> <span style="color:#8b83a3;font-size:8.4pt">/ tra-NSPEH-ruhnt /</span><br>transmitting light; able to be seen through with clarity</div></div>
+      <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 11 extras</span></div></div>
+<div class="pg dense">
+    <div style="display:flex;align-items:center;gap:.16in">
+      <span class="badge">12</span>
+      <div><div class="kicker">Word Formation</div>
+      <h2 style="font-size:20pt;line-height:1.08">Eponyms (Words from People's Names)</h2></div></div>
+    <div class="kicker" style="margin-top:.2in">The big idea</div>
+    <div class="concept">Eponyms are words derived from people's names — real or legendary. English has hundreds of them, from boycott to algorithm. Knowing the story behind an eponym makes the spelling unforgettable.</div>
+    <div class="kicker" style="margin-top:.1in">The pro move</div><div class="method"><div class='trick'><b>BOYCOTT</b></div>
+<b>Say it.</b> BOY-kaht
+<b>Spell it.</b> B · O · Y · C · O · T · T
+<b>Say it again.</b> BOY-kaht
+<b>Syllables.</b> boy · cott
+<b>Sounds → Letters.</b> [BOY=BOY] [kot=COTT]
+<b>Exception.</b> From Captain Charles Boycott (Irish land agent, 1880); double-T not single; stress: BOY-kot
+<b>Origin.</b> Other
+<b>Root.</b> Named after Captain Charles Boycott (1832–1897), a land agent in Irela</div>
+    <div class="cards"><div class="card"><h3>Classic Eponyms</h3><p>Boycott = from Captain Charles Boycott, an Irish land agent who was socially ostracized. Sandwich = from the Earl of Sandwich who ate bread around his food so he could keep gambling. Cardigan = from Lord Cardigan who wore a knitted jacket at the Battle of Balaclava. Wellington (boot) = from the Duke of Wellington.</p></div><div class="card"><h3>Scientific Eponyms</h3><p>Watt (unit of power) = from James Watt, inventor. Fahrenheit = from Daniel Fahrenheit. Celsius = from Anders Celsius. Pasteurize = from Louis Pasteur. Galvanize = from Luigi Galvani (electricity). Algorithm = from Al-Khwarizmi, the Arab mathematician. Jacuzzi = from Candido Jacuzzi.</p></div><div class="card"><h3>Literary Eponyms</h3><p>Malapropism = from Mrs. Malaprop in Sheridan's play The Rivals (1775). Quixotic = from Don Quixote, Cervantes' idealistic knight. Odyssey = from Odysseus (Ulysses) and his long journey. Mentor = from Mentor, Odysseus's trusted advisor. Panic = from Pan, the Greek god who caused sudden irrational terror.</p></div><div class="card"><h3>Words from Mythology as Eponyms</h3><p>Narcissism = from Narcissus. Tantalize = from Tantalus (in the underworld, food and water always out of reach). Herculean = from Hercules. Jovial = from Jove/Jupiter (those born under Jupiter were thought cheerful). Mercurial = from Mercury (quick-moving, unpredictable).</p></div><div class="card"><h3>Spelling Eponyms</h3><p>They generally keep the capitalized person's spelling, then lowercased: Boycott = two t's because the name Boycott has two t's. Cardigan = no e before -an because the name is Cardigan. Machiavellian = M-A-C-H-I-A-V-E-L-L-I-A-N (double-l from Machiavelli's name). Quixotic = Q-U-I-X-O-T-I-C (x from Spanish Quixote).</p></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 12</span></div></div>
+<div class="pg">
+    <div class="kicker">Practice hive · Eponyms (Words from People's Names)</div>
+    <h2 style="font-size:16.5pt;margin:.04in 0 .16in">Say it. Spell it out loud. Then write it.</h2>
+    <div class="wgrid"><div class="wd"><span class="w">boycott</span><span class="say">/ BOY-kaht /</span>
+      <div class="d">a group's refusal to have commercial dealings with some organization in protest against its p…</div><div class="h">💡 BOYCOTT—a BOY named COTT refused to cooperate</div><div class="line"></div></div><div class="wd"><span class="w">sandwich</span><span class="say">/ SA-ndwihch /</span>
+      <div class="d">two (or more) slices of bread with a filling between them</div><div class="h">💡 No W sneaks into SANDWICH — think SAND + WITCH without the T, and drop the W everyone wants to add.</div><div class="line"></div></div><div class="wd"><span class="w">cardigan</span><span class="say">/ KAH-rdih-guhn /</span>
+      <div class="d">knitted jacket that is fastened up the front with buttons or a zipper</div><div class="h">💡 A cardIGAN is a snuGAN sweater — remember the -IGAN ending, like Michigan in a cozy sweater.</div><div class="line"></div></div><div class="wd"><span class="w">malapropism</span>
+      <div class="d"></div><div class="line"></div></div><div class="wd"><span class="w">quixotic</span><span class="say">/ kwih-KSAH-tihk /</span>
+      <div class="d">not sensible about practical matters; idealistic and unrealistic</div><div class="h">💡 QuiXOTic has an X because the hero crossed out reality with impossible dreams.</div><div class="line"></div></div><div class="wd"><span class="w">odyssey</span><span class="say">/ AH-duh-see /</span>
+      <div class="d">a long wandering and eventful journey</div><div class="h">💡 An odyssey has ONE 'd' and double 's' — 'od-YS-sey': one d, two s letters... wait, no: O-D-Y-S-S-E-Y — the double…</div><div class="line"></div></div><div class="wd"><span class="w">mentor</span><span class="say">/ MEH-ntawr /</span>
+      <div class="d">a wise and trusted guide and advisor</div><div class="h">💡 A MENTOR ends in '-or' like a doctOR or profesOR — a title for one who guides.</div><div class="line"></div></div><div class="wd"><span class="w">narcissism</span><span class="say">/ n-AH-r-s-ih-s-ih-z-uh-m /</span>
+      <div class="d">is excessive self-love vanity</div><div class="h">💡 NARCISSISM has double-s twice — so self-obsessed it even doubles its letters twice.</div><div class="line"></div></div></div>
+    <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 12 practice</span></div></div>
+<div class="pg">
+      <div class="kicker">Rapid round · Eponyms (Words from People's Names)</div>
+      <h2 style="font-size:16.5pt;margin:.04in 0 .16in">More ammo — one line each.</h2>
+      <div class="rr"><div><b>tantalize</b> <span style="color:#8b83a3;font-size:8.4pt">/ t-A-n-t-uh-l-ay-z /</span><br>To tantalize someone means to torment them by keeping something desira</div><div><b>herculean</b> <span style="color:#8b83a3;font-size:8.4pt">/ her-KYOO-lee-uhn /</span><br>displaying superhuman strength or power</div><div><b>jovial</b> <span style="color:#8b83a3;font-size:8.4pt">/ JOH-vee-uhl /</span><br>full of or showing high-spirited merriment; ; - Wordsworth</div><div><b>mercurial</b> <span style="color:#8b83a3;font-size:8.4pt">/ mer-KYUU-ree-uhl /</span><br>liable to sudden unpredictable change</div><div><b>pasteurize</b> <span style="color:#8b83a3;font-size:8.4pt">/ PA-scher-eyez /</span><br>heat food in order to kill harmful microorganisms</div><div><b>galvanize</b> <span style="color:#8b83a3;font-size:8.4pt">/ GAL-vuh-nyz /</span><br>to stimulate to action</div><div><b>algorithm</b> <span style="color:#8b83a3;font-size:8.4pt">/ A-l-g-ur-ih-th-uh-m /</span><br>is a set of rules for solving a problem</div><div><b>machiavellian</b> <span style="color:#8b83a3;font-size:8.4pt">/ mah-kee-uh-VEH-lee-uhn /</span><br>a follower of Machiavelli's principles</div></div>
+      <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>Chapter 12 extras</span></div></div>
+<div class="pg">
+      <div class="kicker">The big list 1 of 2</div>
+      <h2 style="font-size:16.5pt;margin:.04in 0 .18in">Every word in this book. Circle what you own.</h2>
+      <div class="biglist"><div><span></span>accept</div><div><span></span>accommodate</div><div><span></span>achieve</div><div><span></span>acquiesce</div><div><span></span>adolescent</div><div><span></span>affect</div><div><span></span>algorithm</div><div><span></span>allude</div><div><span></span>although</div><div><span></span>amphitheater</div><div><span></span>antique</div><div><span></span>asphyxia</div><div><span></span>beginning</div><div><span></span>believe</div><div><span></span>blight</div><div><span></span>borough</div><div><span></span>bought</div><div><span></span>bouquet</div><div><span></span>boycott</div><div><span></span>buckle</div><div><span></span>caffeine</div><div><span></span>canceled</div><div><span></span>cardigan</div><div><span></span>ceiling</div><div><span></span>cleave</div><div><span></span>clique</div><div><span></span>colloquy</div><div><span></span>committed</div><div><span></span>committee</div><div><span></span>complement</div><div><span></span>compliment</div><div><span></span>conceit</div><div><span></span>controlled</div><div><span></span>cough</div><div><span></span>crypt</div><div><span></span>crystalline</div><div><span></span>daughter</div><div><span></span>deceive</div><div><span></span>diaphanous</div><div><span></span>diphtheria</div><div><span></span>diphthong</div><div><span></span>disinterested</div><div><span></span>distraught</div><div><span></span>dough</div><div><span></span>dust</div><div><span></span>effect</div><div><span></span>effervescent</div><div><span></span>elephant</div><div><span></span>elicit</div><div><span></span>eloquent</div><div><span></span>elude</div><div><span></span>embarrass</div><div><span></span>eminent</div><div><span></span>emphatic</div><div><span></span>enjoin</div><div><span></span>enough</div><div><span></span>ephemeral</div><div><span></span>epiphany</div><div><span></span>except</div><div><span></span>fast</div><div><span></span>feign</div><div><span></span>foreign</div><div><span></span>forfeit</div><div><span></span>fought</div><div><span></span>fraught</div><div><span></span>furlough</div><div><span></span>galvanize</div><div><span></span>gnarled</div><div><span></span>gnash</div><div><span></span>gnome</div><div><span></span>gnostic</div><div><span></span>gnu</div><div><span></span>gymnasium</div><div><span></span>gypsum</div><div><span></span>height</div><div><span></span>herculean</div><div><span></span>illicit</div><div><span></span>imminent</div><div><span></span>incandescent</div><div><span></span>inflammable</div><div><span></span>invaluable</div><div><span></span>iridescent</div><div><span></span>jovial</div><div><span></span>knapsack</div><div><span></span>knave</div><div><span></span>knavish</div><div><span></span>knell</div><div><span></span>knight</div><div><span></span>labyrinth</div><div><span></span>leisure</div><div><span></span>luminescent</div><div><span></span>luscious</div><div><span></span>lymph</div><div><span></span>lyric</div><div><span></span>machiavellian</div><div><span></span>malapropism</div><div><span></span>mentor</div><div><span></span>mercurial</div><div><span></span>metaphor</div><div><span></span>millennium</div></div>
+      <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>193 words</span></div></div>
+<div class="pg">
+      <div class="kicker">The big list 2 of 2</div>
+      <h2 style="font-size:16.5pt;margin:.04in 0 .18in">Every word in this book. Circle what you own.</h2>
+      <div class="biglist"><div><span></span>mystery</div><div><span></span>narcissism</div><div><span></span>nascent</div><div><span></span>naught</div><div><span></span>naughty</div><div><span></span>necessary</div><div><span></span>neither</div><div><span></span>nymph</div><div><span></span>oblique</div><div><span></span>obsolescent</div><div><span></span>occasion</div><div><span></span>occurred</div><div><span></span>odyssey</div><div><span></span>off</div><div><span></span>onslaught</div><div><span></span>opaque</div><div><span></span>ophthalmology</div><div><span></span>orphan</div><div><span></span>ought</div><div><span></span>oversight</div><div><span></span>oxygen</div><div><span></span>parallel</div><div><span></span>pasteurize</div><div><span></span>perceive</div><div><span></span>phenomenon</div><div><span></span>phlegm</div><div><span></span>phosphorus</div><div><span></span>plaque</div><div><span></span>plough</div><div><span></span>precious</div><div><span></span>preferred</div><div><span></span>principal</div><div><span></span>principle</div><div><span></span>protein</div><div><span></span>pyramid</div><div><span></span>quandary</div><div><span></span>querulous</div><div><span></span>quiescent</div><div><span></span>quixotic</div><div><span></span>quorum</div><div><span></span>receive</div><div><span></span>recommend</div><div><span></span>reign</div><div><span></span>relieve</div><div><span></span>rent</div><div><span></span>rhythm</div><div><span></span>rough</div><div><span></span>sanction</div><div><span></span>sandwich</div><div><span></span>satellite</div><div><span></span>scintillating</div><div><span></span>screen</div><div><span></span>seize</div><div><span></span>slaughter</div><div><span></span>soliloquy</div><div><span></span>spacious</div><div><span></span>stationary</div><div><span></span>stationery</div><div><span></span>susceptible</div><div><span></span>sycophant</div><div><span></span>syllable</div><div><span></span>symbol</div><div><span></span>synonym</div><div><span></span>synthesis</div><div><span></span>tantalize</div><div><span></span>technique</div><div><span></span>thorough</div><div><span></span>though</div><div><span></span>thought</div><div><span></span>through</div><div><span></span>torque</div><div><span></span>tough</div><div><span></span>transparent</div><div><span></span>traveled</div><div><span></span>trip</div><div><span></span>trough</div><div><span></span>typhoon</div><div><span></span>tyranny</div><div><span></span>uninterested</div><div><span></span>unique</div><div><span></span>vein</div><div><span></span>ventriloquist</div><div><span></span>weather</div><div><span></span>weird</div><div><span></span>wraith</div><div><span></span>wrath</div><div><span></span>wreak</div><div><span></span>wren</div><div><span></span>wrest</div><div><span></span>wring</div><div><span></span>writhe</div><div><span></span>wrought</div><div><span></span>wry</div></div>
+      <div class="foot"><span>The Rulebook · Bizzing Bee Press</span><span>193 words</span></div></div>
+<div class="pg" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
+    <svg viewBox="0 0 120 100" class="bee" aria-hidden="true">
+  <ellipse cx="44" cy="34" rx="17" ry="26" fill="#DCEFFF" opacity=".85" transform="rotate(-28 44 34)"/>
+  <ellipse cx="76" cy="34" rx="17" ry="26" fill="#EAF5FF" opacity=".85" transform="rotate(28 76 34)"/>
+  <ellipse cx="60" cy="60" rx="34" ry="27" fill="#FFC93C"/>
+  <path d="M44 37 a34 27 0 0 0 -6 14 l14 0 a1 1 0 0 1 0 -14 z M64 34 l0 53 a34 27 0 0 0 14 -5 l0 -43 a34 27 0 0 0 -14 -5 z" fill="#241E33"/>
+  <circle cx="49" cy="56" r="3.6" fill="#241E33"/>
+  <path d="M45 68 q8 7 16 1" stroke="#241E33" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M52 34 q-4 -12 -12 -14 M68 34 q4 -12 12 -14" stroke="#241E33" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <circle cx="40" cy="19" r="4" fill="#241E33"/><circle cx="80" cy="19" r="4" fill="#241E33"/>
+</svg>
+    <h2 style="font-size:18pt;margin:.14in 0">You finished a whole book. Bees everywhere are impressed.</h2>
+    <p style="font-size:11pt;max-width:5.4in;margin:0 auto .3in;line-height:1.6">Every word in here is also inside the Bizzing Bee app, with real audio, games and a coach that remembers what you miss. Paper for the muscles, app for the ears.</p>
+    <p style="font-size:8.6pt;color:#8b83a3;max-width:5.8in;margin:0 auto;line-height:1.6">Bizzing Bee Press · an independent study project. Bizzing Bee is not affiliated with, sponsored by, or endorsed by the Scripps National Spelling Bee, the North South Foundation, or Merriam-Webster. Competition names appear only to describe which bees the practice material relates to. Definitions, sentences and hints are written for this project. Typefaces are open-licensed (SIL OFL).</p></div></body></html>
