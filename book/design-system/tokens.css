@@ -1,0 +1,52 @@
+/* ============================================================
+   KING'S PLAYBOOK — DESIGN TOKENS
+   Source of truth extracted from the original Canva edition and
+   the completed book build. Import before components.css.
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Cardo:ital,wght@0,400;0,700;1,400&family=Noto+Serif+Ethiopic:wdth,wght@62.5..100,400..700&family=Figtree:ital,wght@0,400..700;1,400&display=swap');
+
+:root{
+  /* ---- palette: royal core ---- */
+  --kp-navy-deep:#131347;      /* framework deepest band */
+  --kp-navy:#1b1b73;           /* framework rails, KV headers, pyramid mid */
+  --kp-navy-mid:#23239b;       /* icon-box borders (the original's box blue) */
+  --kp-indigo:#3a37d5;         /* pills row 3, pyramid base */
+  --kp-cover-navy:#0c1c33;     /* cover cloth ground */
+  --kp-ink:#161616;            /* body text */
+  --kp-ink-soft:#3d3d3d;
+
+  /* ---- palette: gold & warm ---- */
+  --kp-gold:#c9a24b;           /* rings, rules, arrows, ornament */
+  --kp-gold-deep:#a1770f;      /* King's Perspective heading */
+  --kp-gold-ink:#8a6a24;       /* sepia captions, axis notes */
+  --kp-gold-pale:#f4e3b2;      /* text on navy */
+  --kp-peach:#fbe7c6;          /* era-law banners, 2x2 caution quadrant */
+  --kp-cream:#fdfbf5;          /* framework card fill */
+  --kp-paper:#ffffff;          /* page ground */
+
+  /* ---- framework accent ramp (stacks, pyramid) ---- */
+  --kp-ramp-1:#0d0d2e; --kp-ramp-2:#161654; --kp-ramp-3:#1b1b73;
+  --kp-ramp-4:#23239b; --kp-ramp-5:#2d2cba; --kp-ramp-6:#3a37d5;
+
+  /* ---- type families (authentic to the original PDF) ---- */
+  --kp-font-display:'Cormorant Garamond', Georgia, serif;      /* cover display */
+  --kp-font-head:'Noto Serif Ethiopic','Times New Roman',serif;/* condensed heads: use font-stretch 66% */
+  --kp-font-quote:'Cardo', Georgia, serif;                     /* italic serif: subtitles, story titles */
+  --kp-font-body:'Figtree','Segoe UI',system-ui,sans-serif;    /* Canva Sans stand-in */
+
+  /* ---- type roles (page-native px at 6in width) ---- */
+  --kp-size-body:14.5px;   --kp-lh-body:1.56;
+  --kp-size-kicker:25px;   /* category running head */
+  --kp-size-lawtitle:27px; /* law title, 700 */
+  --kp-size-tagline:14px;  /* italic body-family */
+  --kp-size-epigraph:15px; /* italic body-family */
+  --kp-size-sub:16.5px;    /* sub-principle head, 700 */
+  --kp-size-kp-head:21px;  /* gold KP heading, 700 */
+
+  /* ---- page geometry ---- */
+  --kp-page-w:6in;  --kp-page-h:9.6in;
+  --kp-margin-top:0.55in; --kp-margin-x:0.58in; --kp-margin-bottom:0.62in;
+
+  /* ---- watermark treatment ---- */
+  --kp-wm-opacity:.18;     /* behind-text portraits: .15–.22 */
+}

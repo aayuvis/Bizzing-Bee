@@ -1,0 +1,174 @@
+/* ============================================================
+   KING'S PLAYBOOK — COMPONENTS
+   Requires tokens.css. Assets resolve relative to this file
+   (../assets/... from previews/, ./assets/... from root usage).
+   ============================================================ */
+*{box-sizing:border-box}
+body{font-family:var(--kp-font-body);font-size:var(--kp-size-body);line-height:var(--kp-lh-body);color:var(--kp-ink);background:var(--kp-paper);margin:0;padding:28px}
+
+/* ---------- chapter head ---------- */
+.law-head{text-align:center;margin:0 0 22px}
+.law-head .lawno{font-weight:600;font-size:9.5px;letter-spacing:.34em;text-transform:uppercase;color:#9a9a9a;margin:0 0 8px}
+.law-head .kicker{font-family:var(--kp-font-head);font-stretch:66%;font-weight:400;font-size:var(--kp-size-kicker);letter-spacing:.05em;color:var(--kp-ink);text-transform:uppercase;line-height:1.15;margin:0}
+.law-head h2{font-family:var(--kp-font-head);font-stretch:66%;font-weight:700;font-size:var(--kp-size-lawtitle);color:var(--kp-ink);letter-spacing:.02em;display:flex;align-items:center;justify-content:center;gap:10px;margin:4px 0 0}
+.law-head h2 img.icon{height:1.05em;width:auto}
+.tagline{max-width:580px;margin:8px auto 24px;text-align:center;font-style:italic;font-size:var(--kp-size-tagline);color:var(--kp-ink-soft)}
+.tagline::after{content:"";display:block;width:44px;height:1px;background:#bbb;margin:14px auto 0}
+
+/* ---------- epigraph ---------- */
+.epigraph{margin:0 auto 26px;max-width:600px;padding:0 10px}
+.epigraph p{font-style:italic;font-size:var(--kp-size-epigraph);line-height:1.6;text-align:justify;margin:0}
+.epigraph cite{display:block;margin-top:8px;font-style:normal;font-weight:500;font-size:13px;text-align:right}
+
+/* ---------- prose blocks ---------- */
+.prose{max-width:640px;margin:0 auto}
+.prose p{margin:0 0 12px;text-align:justify;hyphens:auto}
+.standfirst{font-weight:700;color:#000;font-size:15px}
+h3.sub{font-weight:700;font-size:var(--kp-size-sub);margin:24px 0 10px}
+.aside-quote{max-width:600px;margin:22px auto;font-style:italic;font-size:15px;text-align:justify}
+h3.storymark{font-weight:700;font-size:12px;letter-spacing:.16em;text-transform:uppercase;display:flex;align-items:center;gap:10px;margin:26px 0 12px}
+h3.storymark::before{content:"\25C6";color:var(--kp-gold-deep);font-size:12px}
+h3.storymark em{font-style:italic;text-transform:none;letter-spacing:.01em;font-family:var(--kp-font-quote);font-weight:400;color:var(--kp-gold-deep);font-size:15.5px}
+
+/* era banner (Pendulum) */
+.era{position:relative;padding-left:64px;max-width:640px;margin:0 auto 26px}
+.era::before{content:"";position:absolute;left:2px;top:2px;width:48px;height:44px;background:url(../assets/chrome/pendulum.png) no-repeat center/contain}
+.era h4{font-weight:700;font-size:15.5px;margin:0 0 8px}
+.era p{margin:0 0 12px;text-align:justify}
+.era .era-laws{background:var(--kp-peach);border-radius:16px;padding:11px 18px;text-align:center;font-size:13px}
+.era .era-laws b{display:block;font-size:14px;margin-bottom:3px}
+.era .era-laws span{font-style:italic}
+
+/* behind-text watermark */
+img.wm{display:block;pointer-events:none;opacity:var(--kp-wm-opacity)}
+
+/* MY STORY placeholder */
+.mystory{max-width:640px;margin:24px auto;padding:16px 18px;border:1.5px dashed #b9b9b9;border-radius:8px;background:#fcfcfa;position:relative}
+.mystory .tag{position:absolute;top:-11px;left:20px;background:#fff;padding:0 12px;font-weight:700;font-size:11.5px;letter-spacing:.22em;color:#8b8b8b;text-transform:uppercase}
+.mystory .tag::before{content:"\25C8  ";color:var(--kp-gold-deep)}
+.mystory h4{font-family:var(--kp-font-quote);font-style:italic;font-size:15px;margin:0 0 6px;font-weight:400}
+.mystory p{font-style:italic;color:#6f6f6f;font-size:12.5px;margin:0 0 6px}
+
+/* ---------- Be / Do / Create ---------- */
+.bdc{max-width:640px;margin:28px auto}
+.bdc .row{display:flex;gap:18px;align-items:center;padding:14px 0}
+.bdc .row + .row{border-top:1.5px dashed #777}
+.bdc .chip{flex:0 0 102px;min-height:70px;display:flex;align-items:center;justify-content:center;border:2px solid #111;border-radius:16px;font-weight:700;font-size:20px}
+.bdc .txt{font-size:13.5px;text-align:justify}
+
+/* ---------- King's Perspective ---------- */
+.kp{max-width:640px;margin:30px auto}
+.kp .kp-head{text-align:center;margin-bottom:16px}
+.kp .kp-head h3{font-weight:700;font-size:var(--kp-size-kp-head);color:var(--kp-gold-deep);margin:0}
+.kp .kp-head .who{margin-top:5px;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--kp-gold-ink);font-weight:600}
+img.kp-art{display:block;margin:0 auto 14px;max-height:150px;width:auto}
+.kp-art2{display:flex;gap:22px;justify-content:center;align-items:flex-end;margin-bottom:14px}
+.kp-art2 img{max-height:128px;width:auto}
+.kp p{margin:0 0 12px;text-align:justify}
+.kp p.final{font-weight:700;color:#000;font-size:14.5px}
+
+/* ---------- THE LAW ---------- */
+.thelaw{max-width:600px;margin:30px auto;text-align:center}
+.thelaw .t{font-weight:700;font-size:10px;letter-spacing:.4em;margin-bottom:10px}
+.thelaw p{font-family:var(--kp-font-head);font-stretch:70%;font-size:13.5px;line-height:1.9;text-transform:uppercase;letter-spacing:.05em;margin:0}
+.thelaw p b{display:block;margin-top:8px;font-size:15px}
+
+/* ============================================================
+   FRAMEWORK PLATES
+   ============================================================ */
+.diagram{max-width:640px;margin:26px auto}
+.diagram .dtitle{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--kp-navy-deep);font-weight:700;font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;margin:0 0 14px}
+.diagram .dtitle::before,.diagram .dtitle::after{content:"\25C6";color:var(--kp-gold);font-size:8px}
+.diagram .dnote{text-align:center;font-style:italic;color:#6b6252;font-size:11.5px;margin-top:12px}
+
+/* keycap step-flow */
+.stack .step{position:relative;display:flex;align-items:center;min-height:48px;padding:10px 14px 10px 122px;border:1px solid #c9c4e4;border-radius:9px;background:var(--kp-cream);font-size:12.6px;text-align:left}
+.stack .step b{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:96px;text-align:center;letter-spacing:.05em;background:var(--kp-navy);color:#fff;padding:7px 5px;border-radius:7px;font-size:9.6px;line-height:1.3}
+.stack > div:nth-child(1) b{background:var(--kp-ramp-1)}
+.stack > div:nth-child(3) b{background:var(--kp-ramp-2)}
+.stack > div:nth-child(5) b{background:var(--kp-ramp-3)}
+.stack > div:nth-child(7) b{background:var(--kp-ramp-4)}
+.stack > div:nth-child(9) b{background:var(--kp-ramp-5)}
+.stack > div:nth-child(11) b{background:var(--kp-ramp-6)}
+.stack .arrow{height:15px;margin:2px auto;color:var(--kp-gold);text-align:center}
+.stack .arrow::after{content:"\25BC";font-size:10px}
+
+/* plaque-number ladder */
+.ladder .rung{display:flex;gap:14px;border:1px solid #ddd6c2;border-left:4px solid var(--kp-navy);background:var(--kp-cream);border-radius:9px;padding:12px 14px;margin-bottom:9px;align-items:flex-start}
+.ladder .rung .no{flex:none;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--kp-navy);color:var(--kp-gold-pale);box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--kp-gold);font-weight:700;font-size:15px}
+.ladder .rung h4{color:var(--kp-navy-deep);font-size:13.8px;margin:0 0 4px}
+.ladder .rung p{font-size:12.4px;color:#333;margin:0}
+
+/* stepped pyramid */
+.pyramid .lvl{color:#fff;margin:0 auto 4px;padding:8px 26px;border-radius:2px;text-align:center}
+.pyramid .l1{width:58%;min-width:230px;background:var(--kp-navy-deep);clip-path:polygon(9% 0,91% 0,100% 100%,0 100%)}
+.pyramid .l2{width:72%;min-width:250px;background:var(--kp-navy);clip-path:polygon(6% 0,94% 0,100% 100%,0 100%)}
+.pyramid .l3{width:86%;min-width:270px;background:var(--kp-navy-mid);clip-path:polygon(4.5% 0,95.5% 0,100% 100%,0 100%)}
+.pyramid .l4{width:100%;background:#2f2dc0;clip-path:polygon(3.5% 0,96.5% 0,100% 100%,0 100%)}
+.pyramid .lvl h4{color:var(--kp-gold-pale);font-size:12.2px;letter-spacing:.03em;margin:0 0 4px}
+.pyramid .lvl p{color:#e9e8f8;font-size:11px;line-height:1.45;margin:0}
+.pyramid .lvl p i{display:block;color:#bfc4f2;margin-top:4px;font-size:10.4px}
+
+/* colored-meaning 2x2 */
+.grid2x2{display:grid;grid-template-columns:34px 1fr 1fr;grid-template-rows:1fr 1fr 60px;gap:7px}
+.grid2x2 .ylab{grid-row:1/3;writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10.5px;letter-spacing:.12em;color:var(--kp-navy-deep)}
+.grid2x2 .q{border-radius:9px;padding:13px 12px;font-size:11.9px;line-height:1.5}
+.grid2x2 .q h4{display:flex;gap:6px;align-items:baseline;font-size:12.6px;margin:0 0 5px}
+.grid2x2 .q h4::before{content:"\25C6";font-size:7px;color:var(--kp-gold)}
+.grid2x2 .q.best{background:var(--kp-navy);color:#e9e8f8;box-shadow:inset 0 0 0 1.5px var(--kp-gold)}
+.grid2x2 .q.best h4{color:var(--kp-gold-pale)}
+.grid2x2 .q.mid{background:#eceafb;color:#22224a}
+.grid2x2 .q.mid h4{color:var(--kp-navy)}
+.grid2x2 .q.warn{background:var(--kp-peach);color:#4a3418}
+.grid2x2 .q.warn h4{color:#7a4d10}
+.grid2x2 .xlab{grid-column:2/4;text-align:center;font-weight:700;font-size:10.5px;letter-spacing:.12em;color:var(--kp-navy-deep);align-self:center}
+.grid2x2 .axis{display:block;color:var(--kp-gold-ink);font-size:9.5px;letter-spacing:.12em}
+
+/* navy-rail KV table */
+.kv{max-width:640px;margin:0 auto;border:1.5px solid var(--kp-navy);border-radius:10px;overflow:hidden}
+.kv .kv-row{display:flex;border-bottom:1px solid #e6e3d6}
+.kv .kv-row:last-child{border-bottom:none}
+.kv .kv-k{flex:0 0 128px;background:var(--kp-navy);color:var(--kp-gold-pale);font-weight:700;font-size:10.8px;letter-spacing:.06em;text-transform:uppercase;padding:10px;border-right:2px solid var(--kp-gold);display:flex;align-items:center;line-height:1.35}
+.kv .kv-v{flex:1;padding:10px 12px;font-size:12.4px;background:#fff}
+.kv .kv-row:nth-child(even) .kv-v{background:#faf8f1}
+
+/* message pills */
+.pills{display:grid;grid-template-columns:74px 1fr 1fr 1fr;gap:7px;align-items:stretch}
+.pills .rowlab{display:flex;align-items:center;font-weight:700;font-size:10.5px;letter-spacing:.06em;color:var(--kp-navy-deep);text-transform:uppercase;line-height:1.3}
+.pills .pill{border-radius:13px;padding:9px 8px;text-align:center;color:#fff;font-size:11px;line-height:1.4;display:flex;flex-direction:column;justify-content:center;box-shadow:0 1px 0 rgba(0,0,0,.12)}
+.pills .pill b{font-size:11.5px;margin-bottom:2px}
+.pills .r1{background:#0d0d0d}.pills .r2{background:#171f4e}.pills .r3{background:var(--kp-indigo)}
+.pills .caption{grid-column:1/5;text-align:center;font-size:11.5px;color:#6b6252;font-style:italic;padding:2px 0 8px}
+
+/* network map */
+.netmap{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.netmap .hub{grid-column:1/3;justify-self:center;width:92px;height:92px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--kp-font-display);font-weight:700;font-size:21px;background:var(--kp-navy-deep);color:var(--kp-gold-pale);box-shadow:0 0 0 3px #fff,0 0 0 4.5px var(--kp-gold);margin:6px 0 4px}
+.netmap .node{border:1px solid #d9d4ea;border-radius:9px;overflow:hidden;font-size:11.8px;background:#fff}
+.netmap .node h4{background:var(--kp-navy);color:#fff;margin:0;padding:7px 11px;font-size:11.6px;letter-spacing:.05em}
+.netmap .node .likes{padding:8px 11px 3px;margin:0;color:#26264c}
+.netmap .node .flags{padding:2px 11px 9px;margin:0;color:#7a4d10}
+
+/* gem cards */
+.gems{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.gems .gem{background:#fffdf6;border:1px solid #ddd4bd;border-top:3px solid var(--kp-gold);border-radius:9px;padding:11px;font-size:11.4px;box-shadow:0 1px 2px rgba(60,45,10,.07)}
+.gems .gem h4{color:var(--kp-navy-deep);font-size:12.2px;margin:0 0 4px;display:flex;gap:7px;align-items:baseline}
+.gems .gem h4::before{content:"\25C6";color:var(--kp-gold);font-size:9px}
+.gems .gem p{margin:0;color:#3a3a3a}
+
+/* gold-ring rule numerals */
+.rules{max-width:640px;margin:0 auto;counter-reset:rule}
+.rules .rule-item{display:flex;gap:12px;padding:7px 0;border-bottom:1px dashed #e0d9c6;font-size:12.6px}
+.rules .rule-item:last-child{border-bottom:none}
+.rules .rule-item::before{counter-increment:rule;content:counter(rule);flex:none;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;border:1.6px solid var(--kp-gold);color:var(--kp-navy-deep);font-weight:700;font-size:12.5px;margin-top:1px}
+.rules .rule-item div{flex:1;text-align:justify}
+
+/* divider law row */
+.libox{display:inline-flex;flex-direction:column;align-items:center;gap:5px;border:1.5px solid var(--kp-navy-mid);border-radius:8px;padding:9px 6px;background:#fff;width:106px}
+.libox img{width:42px;height:30px;object-fit:contain}
+.libox b{font-weight:700;font-size:8.6px;letter-spacing:.04em;text-transform:uppercase;text-align:center;color:#111;line-height:1.35}
+
+/* overview cell */
+.cell{display:inline-flex;flex-direction:column;align-items:center;border:1px solid var(--kp-navy-mid);border-radius:6px;padding:8px 6px;background:#fff;width:104px;text-align:center}
+.cell img{width:40px;height:26px;object-fit:contain;margin-bottom:4px}
+.cell b{font-size:8.6px;letter-spacing:.02em;text-transform:uppercase;line-height:1.35}
+.cell i{font-family:var(--kp-font-quote);font-style:italic;color:var(--kp-gold-ink);font-size:7.6px;margin-top:2px}
