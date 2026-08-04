@@ -24,6 +24,9 @@
   @media screen{.page{margin:24px auto;box-shadow:0 10px 34px rgba(36,30,51,.18);border-radius:4px}}
   h1,h2,h3,.disp{font-family:'BB Display';font-weight:800}
   .kick{font-family:'BB Kicker';font-weight:600;font-size:10pt;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-deep)}
+  .worldchip{display:inline-flex;align-items:center;gap:5pt;background:rgba(255,255,255,.75);border:1px solid var(--hairline);border-radius:999px;padding:2.5pt 10pt;font-family:'BB Kicker';font-size:8.6pt;color:var(--accent-deep)}
+  .coverTitle{font-family:'BB Display';font-weight:800;color:#fff;text-shadow:0 4px 0 rgba(0,0,0,.25),0 10px 24px rgba(0,0,0,.25)}
+  .peek{position:absolute;pointer-events:none}
   .tile{font-family:'BB Tile';font-weight:600;color:var(--muted)}
   .bb-head{position:absolute;top:.3in;left:.75in;right:.5in;display:flex;justify-content:space-between;align-items:baseline;
     font-family:'BB Kicker';font-size:10pt;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--hairline);padding-bottom:4pt}
@@ -32,44 +35,50 @@
     font-family:'BB Kicker';font-size:10pt;color:var(--muted)}
   .page[data-verso] .bb-foot{left:.5in;right:.75in}
   .bb-panelbox{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-panel);padding:.12in .15in;box-shadow:var(--sh-screen)}
-  .bb-bigidea{background:var(--tint);border:1px solid color-mix(in srgb,var(--accent) 30%,white);border-left:6px solid var(--accent);
-    border-radius:var(--r-panel);padding:.12in .16in;max-height:1.5in;overflow:hidden}
+  .bb-bigidea{padding:.04in .8in .04in .42in;max-height:1.5in;overflow:hidden;position:relative;font-size:12pt;line-height:1.5}
+  .bb-bigidea:before{content:'“';position:absolute;left:0;top:-.12in;font-family:'BB Display';font-size:44pt;color:var(--accent)}
+  .bb-bigidea .cameo{position:absolute;right:.06in;top:50%;transform:translateY(-50%) rotate(4deg)}
   .bb-promove{background:var(--ink);color:#F4EFFF;border-radius:var(--r-panel);padding:.13in .16in;max-height:1.6in;overflow:hidden;
     font-size:9.4pt;line-height:1.45}
   .bb-promove b{color:var(--treasure)} .bb-promove div{margin:2px 0}
   .bb-promove .trick,.bb-promove [class]{font-family:'BB Display';font-size:11.5pt;letter-spacing:.04em}
   .bb-sticky{display:grid;grid-template-columns:1fr 1fr;gap:.1in;margin-top:.1in}
-  .bb-sticky .card{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-card);padding:.09in .11in;box-shadow:var(--sh-screen)}
+  .bb-sticky .card{background:var(--tint);border-radius:3pt 3pt 12pt 3pt;padding:.09in .11in;box-shadow:2pt 3pt 6pt rgba(36,30,51,.10)}
+  .bb-sticky .card:nth-child(odd){transform:rotate(-.7deg)} .bb-sticky .card:nth-child(even){transform:rotate(.6deg);background:color-mix(in srgb,var(--treasure) 12%,white)}
   .bb-sticky h3{font-size:9.6pt;color:var(--accent-deep);margin-bottom:2px}
   .bb-sticky p{font-size:8.4pt;line-height:1.35}
   .bb-strip{display:grid;gap:.12in;margin-top:.12in}
-  .bb-panel{border:2.5pt solid var(--ink);border-radius:11pt;background:var(--card);position:relative;overflow:hidden;padding:.1in .12in;min-height:2.1in}
+  .bb-panel{border:2.5pt solid var(--ink);border-radius:14pt 18pt 12pt 20pt;background:var(--card);position:relative;overflow:visible;padding:.1in .12in;min-height:2in}
+  .bb-strip .bb-panel:nth-child(1){transform:rotate(-.7deg)} .bb-strip .bb-panel:nth-child(2){transform:rotate(.5deg) translateY(.06in)}
+  .bb-strip .bb-panel:nth-child(3){transform:rotate(.6deg)} .bb-strip .bb-panel:nth-child(4){transform:rotate(-.5deg) translateY(-.04in)}
+  .bb-panel .who{margin-bottom:-14pt}
   .bb-panel.think{background:radial-gradient(circle at 30% 25%,#EFEAFB,#fff 70%)}
   .bb-panel.oops{background:#FFF1F3}
   .bb-panel.excited{background:radial-gradient(circle at 60% 30%,#E9FBEF,#fff 70%)}
   .bb-panel.love{background:radial-gradient(circle at 40% 30%,#FDEDF4,#fff 70%)}
-  .bb-bubble{position:relative;background:var(--card);border:1.6pt solid var(--ink);border-radius:12pt;padding:6pt 9pt;
+  .bb-bubble{position:relative;background:var(--card);border:1.6pt solid var(--ink);border-radius:14pt 18pt 16pt 12pt / 16pt 12pt 18pt 14pt;padding:6pt 9pt;
     font-family:'BB Display';font-size:10.4pt;line-height:1.28;margin-bottom:6pt}
   .bb-sfx{font-family:'BB Display';font-size:15pt;letter-spacing:.04em;position:absolute;right:8pt;bottom:6pt;color:var(--tricky-deep);transform:rotate(-4deg)}
   .bb-sfx.win{color:var(--right-deep)}
   .bb-prop{display:inline-block;background:var(--chip);color:var(--chip-ink);border-radius:8pt;padding:3pt 8pt;font-family:'BB Tile';font-size:10pt}
   .bb-hive{display:grid;grid-template-columns:1fr 1fr;gap:.11in}
-  .bb-card{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-panel);padding:.1in .12in;box-shadow:var(--sh-screen);max-height:1.35in;overflow:hidden}
+  .bb-card{padding:0 .04in;max-height:1.35in;overflow:hidden}
+  .bb-hive>div:nth-child(odd) .bb-card{transform:rotate(-.3deg)} .bb-hive>div:nth-child(even) .bb-card{transform:rotate(.3deg)}
   .bb-card .w{font-family:'BB Body';font-weight:800;font-size:20pt;line-height:1.05;font-variant-numeric:tabular-nums;color:var(--accent-deep)}
   .bb-card .say{font-family:'BB Tile';font-size:8.6pt;color:var(--muted);margin-top:1px}
   .bb-card .d{font-size:8.6pt;line-height:1.3;margin-top:2px}
-  .bb-card .hook{font-size:8.2pt;line-height:1.28;margin-top:2px;color:var(--chip-ink)}
+  .bb-card .hook{font-size:8.2pt;line-height:1.28;margin-top:2px;color:var(--chip-ink);font-style:italic}
   .bb-writeline{border-bottom:1pt solid var(--ink);height:.4in;margin-top:4pt}
   .bb-rapid{display:grid;grid-template-columns:1fr 1fr;gap:.08in .16in}
-  .bb-row{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-card);padding:4pt 8pt;max-height:.42in;overflow:hidden;font-size:8.8pt;line-height:1.3}
+  .bb-row{padding:3pt 0;max-height:.42in;overflow:hidden;font-size:8.8pt;line-height:1.3;border-bottom:1px dotted var(--hairline)}
   .bb-row b{font-family:'BB Kicker';color:var(--accent-deep)}
-  .bb-break{display:flex;gap:.1in;align-items:flex-start;background:var(--treasure-tint);border:1px solid var(--treasure);border-radius:var(--r-panel);padding:.1in .13in;max-height:2.2in;overflow:hidden}
+  .bb-break{display:flex;gap:.1in;align-items:flex-start;background:linear-gradient(90deg,var(--treasure-tint),transparent 85%);border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.08in .13in;max-height:2.2in;overflow:hidden}
   .bb-break .l{font-family:'BB Kicker';font-size:8.2pt;letter-spacing:.1em;text-transform:uppercase;color:var(--treasure-deep)}
   .bb-break .b{font-size:9.6pt;line-height:1.35;margin-top:2px}
   .bb-break .t{font-size:8.4pt;color:var(--muted);margin-top:2px}
-  .bb-check{background:var(--card);border:1px solid var(--right);border-radius:var(--r-panel);padding:.09in .13in;max-height:1.2in;overflow:hidden}
+  .bb-check{border-left:4pt solid var(--right);padding:.04in .1in;max-height:1.2in;overflow:hidden}
   .bb-check .l{font-family:'BB Kicker';font-size:8.2pt;letter-spacing:.1em;text-transform:uppercase;color:var(--right-deep)}
-  .bb-vex{background:#FFF1F3;border:1px solid var(--tricky);border-radius:var(--r-panel);padding:.09in .13in;max-height:1.2in;overflow:hidden;display:flex;gap:.09in;align-items:flex-start}
+  .bb-vex{background:linear-gradient(90deg,#FFF1F3,transparent 88%);border-left:4pt solid var(--tricky);border-radius:2pt 12pt 12pt 2pt;padding:.05in .1in;max-height:1.2in;overflow:hidden;display:flex;gap:.09in;align-items:flex-start}
   .bb-vex .l{font-family:'BB Kicker';font-size:8.2pt;letter-spacing:.1em;text-transform:uppercase;color:var(--tricky-deep)}
   .bb-audio{display:inline-flex;align-items:center;gap:5pt;background:var(--listen-tint);border:1px solid var(--listen);color:var(--listen-deep);
     border-radius:999px;padding:3pt 10pt;font-family:'BB Kicker';font-size:8.6pt;max-height:.3in}
@@ -83,7 +92,7 @@
   .bb-search{border-collapse:collapse;margin:0 auto}
   .bb-search td{width:.38in;height:.38in;text-align:center;font-family:'BB Tile';font-size:11pt;background:var(--card);border:1px solid var(--hairline)}
   .bb-scramble{display:grid;grid-template-columns:1fr 1fr;gap:.16in;max-height:none}
-  .bb-scramble .g1{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-card);padding:.09in .12in;margin-bottom:.08in}
+  .bb-scramble .g1{padding:.05in .02in;margin-bottom:.08in}
   .bb-scramble .gw{font-family:'BB Tile';font-size:11pt;letter-spacing:.14em;color:var(--accent-deep)}
   .bb-biglist{columns:4;column-gap:.18in;font-size:8.6pt;line-height:.28in}
   .bb-biglist div{break-inside:avoid}
@@ -92,13 +101,21 @@
   .bb-badge{display:flex;gap:.08in;align-items:center;max-height:.7in}
   .bb-badge .b1{width:.5in;height:.5in;border-radius:12pt;border:1.6pt dashed var(--accent);display:grid;place-items:center;font-family:'BB Display';font-size:9pt;color:var(--accent-deep);background:var(--card)}
   .chip{display:inline-block;background:var(--chip);color:var(--chip-ink);font-weight:700;font-size:9pt;border-radius:999px;padding:2pt 9pt}
-  </style></head><body data-vol="10" data-band="general"><div class="page" data-cover data-vol="10" style="background:linear-gradient(160deg,var(--accent),var(--accent-deep));color:#fff;display:flex;flex-direction:column;justify-content:space-between">
-    <svg style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true"><circle cx="8%" cy="5%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="26%" cy="5%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="44%" cy="5%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="62%" cy="5%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="80%" cy="5%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="98%" cy="5%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="8%" cy="18%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="26%" cy="18%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="44%" cy="18%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="62%" cy="18%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="80%" cy="18%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="98%" cy="18%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="8%" cy="31%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="26%" cy="31%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="44%" cy="31%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="62%" cy="31%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="80%" cy="31%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="98%" cy="31%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="8%" cy="44%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="26%" cy="44%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="44%" cy="44%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="62%" cy="44%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="80%" cy="44%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="98%" cy="44%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="8%" cy="57%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="26%" cy="57%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="44%" cy="57%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="62%" cy="57%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="80%" cy="57%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="98%" cy="57%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="8%" cy="70%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="26%" cy="70%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="44%" cy="70%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="62%" cy="70%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="80%" cy="70%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="98%" cy="70%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="8%" cy="83%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="26%" cy="83%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="44%" cy="83%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="62%" cy="83%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="80%" cy="83%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="98%" cy="83%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="8%" cy="96%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="26%" cy="96%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="44%" cy="96%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="62%" cy="96%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="80%" cy="96%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="98%" cy="96%" r="4" fill="rgba(255,255,255,.13)"/></svg>
-    <div style="position:relative;display:flex;justify-content:space-between;align-items:center">
+  </style></head><body data-vol="10" data-band="general"><div class="page" data-cover data-vol="10" style="background:linear-gradient(168deg,var(--accent),var(--accent-deep));color:#fff;padding:0">
+    <svg viewBox="0 0 816 1056" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">
+      <circle cx="8%" cy="5%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="26%" cy="5%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="44%" cy="5%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="62%" cy="5%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="80%" cy="5%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="98%" cy="5%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="8%" cy="18%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="26%" cy="18%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="44%" cy="18%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="62%" cy="18%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="80%" cy="18%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="98%" cy="18%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="8%" cy="31%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="26%" cy="31%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="44%" cy="31%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="62%" cy="31%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="80%" cy="31%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="98%" cy="31%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="8%" cy="44%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="26%" cy="44%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="44%" cy="44%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="62%" cy="44%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="80%" cy="44%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="98%" cy="44%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="8%" cy="57%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="26%" cy="57%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="44%" cy="57%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="62%" cy="57%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="80%" cy="57%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="98%" cy="57%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="8%" cy="70%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="26%" cy="70%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="44%" cy="70%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="62%" cy="70%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="80%" cy="70%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="98%" cy="70%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="8%" cy="83%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="26%" cy="83%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="44%" cy="83%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="62%" cy="83%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="80%" cy="83%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="98%" cy="83%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="8%" cy="96%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="26%" cy="96%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="44%" cy="96%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="62%" cy="96%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="80%" cy="96%" r="4" fill="rgba(255,255,255,.13)"/><circle cx="98%" cy="96%" r="4" fill="rgba(255,255,255,.13)"/>
+      <g><g fill="none"><g transform="translate(163.20000000000002 253.44)"><circle r="26" stroke="rgba(255,255,255,0.24)" stroke-width="5"/><circle r="17" stroke="rgba(255,255,255,0.24)" stroke-width="5"/><circle r="8" stroke="rgba(255,255,255,0.24)" stroke-width="5"/></g><g transform="translate(612 211.20000000000002)"><circle r="26" stroke="rgba(255,255,255,0.29)" stroke-width="5"/><circle r="17" stroke="rgba(255,255,255,0.29)" stroke-width="5"/><circle r="8" stroke="rgba(255,255,255,0.29)" stroke-width="5"/></g><g transform="translate(408 528)"><circle r="26" stroke="rgba(255,255,255,0.33999999999999997)" stroke-width="5"/><circle r="17" stroke="rgba(255,255,255,0.33999999999999997)" stroke-width="5"/><circle r="8" stroke="rgba(255,255,255,0.33999999999999997)" stroke-width="5"/></g><g transform="translate(114.24000000000001 633.6)"><circle r="26" stroke="rgba(255,255,255,0.39)" stroke-width="5"/><circle r="17" stroke="rgba(255,255,255,0.39)" stroke-width="5"/><circle r="8" stroke="rgba(255,255,255,0.39)" stroke-width="5"/></g></g><path d="M0 380.15999999999997 Q 204 295.68 408 401.28000000000003 T 816 316.8" stroke="rgba(255,255,255,.38)" stroke-width="10" fill="none"/><path d="M0 549.12 Q 244.79999999999998 633.6 489.59999999999997 528 T 816 591.36" stroke="rgba(255,255,255,.22)" stroke-width="16" fill="none"/><g fill="#FFD66B"><circle cx="244.79999999999998" cy="168.96" r="6"/><circle cx="505.92" cy="422.40000000000003" r="6"/><circle cx="693.6" cy="633.6" r="6"/><circle cx="326.40000000000003" cy="696.96" r="6"/></g><path d="M81.60000000000001 878.8000000000001 Q 326.40000000000003 774.8000000000001 505.92 704.8000000000001 T 775.1999999999999 584.8000000000001" stroke="rgba(255,255,255,.85)" stroke-width="3.5" stroke-dasharray="1 12" stroke-linecap="round" fill="none"/></g><path d="M0 844.8000000000001 Q 179.52 818.8000000000001 408 844.8000000000001 T 816 844.8000000000001 L 816 1056 L 0 1056 Z" fill="rgba(20,12,40,.30)"/>
+      <g transform="translate(95.05624447859823 137.8175599562645) rotate(-5.8063382604159415)"><rect x="-17" y="-17" width="34" height="34" rx="8" fill="rgba(255,255,255,.9)"/><text x="0" y="8" text-anchor="middle" font-family="'BB Display'" font-size="22" fill="#241E33">W</text></g><g transform="translate(201.36042401701212 223.15097732019424) rotate(3.656787450425327)"><rect x="-17" y="-17" width="34" height="34" rx="8" fill="rgba(255,255,255,.9)"/><text x="0" y="8" text-anchor="middle" font-family="'BB Display'" font-size="22" fill="#241E33">O</text></g><g transform="translate(366.57455611087386 182.61180169029234) rotate(8.304862559307367)"><rect x="-17" y="-17" width="34" height="34" rx="8" fill="rgba(255,255,255,.9)"/><text x="0" y="8" text-anchor="middle" font-family="'BB Display'" font-size="22" fill="#241E33">R</text></g><g transform="translate(450.67596994198857 144.56427682342527) rotate(2.428197583183646)"><rect x="-17" y="-17" width="34" height="34" rx="8" fill="rgba(255,255,255,.9)"/><text x="0" y="8" text-anchor="middle" font-family="'BB Display'" font-size="22" fill="#241E33">D</text></g><g transform="translate(616.5389167685063 199.75079619340897) rotate(7.3174617094919086)"><rect x="-17" y="-17" width="34" height="34" rx="8" fill="rgba(255,255,255,.9)"/><text x="0" y="8" text-anchor="middle" font-family="'BB Display'" font-size="22" fill="#241E33">P</text></g><g transform="translate(728.3035320992768 201.38279961891175) rotate(4.364264351315796)"><rect x="-17" y="-17" width="34" height="34" rx="8" fill="rgba(255,255,255,.9)"/><text x="0" y="8" text-anchor="middle" font-family="'BB Display'" font-size="22" fill="#241E33">E</text></g>
+    </svg>
+    <div style="position:absolute;top:.5in;left:.55in;right:.55in;display:flex;justify-content:space-between;align-items:center">
       <span style="font-family:'BB Kicker';letter-spacing:.16em;font-size:10.5pt">BIZZING BEE LIBRARY</span>
-      <span class="disp" style="background:rgba(0,0,0,.3);padding:.07in .2in;border-radius:999px;font-size:12.5pt">Vol. 10</span></div>
-    <div style="position:relative;text-align:center">
-      <svg viewBox="0 0 120 120" style="width:1.7in;height:1.7in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+      <span class="disp" style="background:rgba(0,0,0,.32);padding:.07in .2in;border-radius:999px;font-size:12.5pt;transform:rotate(2deg)">Vol. 10</span></div>
+    <div style="position:absolute;top:1.35in;left:.55in;right:.55in;text-align:center;transform:rotate(-1.6deg)">
+      <h1 class="coverTitle" style="font-size:52pt;line-height:.98">Word Personalities</h1>
+      <p style="font-family:'BB Kicker';font-size:13pt;max-width:5.6in;margin:.12in auto 0;text-shadow:0 2px 6px rgba(0,0,0,.3)">Every word has a character. Meet them.</p></div>
+    <div style="position:absolute;left:.5in;bottom:1.5in">
+      <div style="width:2.9in;height:.34in;background:rgba(0,0,0,.22);border-radius:50%;position:absolute;bottom:-.06in;left:.1in;filter:blur(2px)"></div>
+      <svg viewBox="0 0 120 120" style="width:3in;height:3in;flex-shrink:0;position:relative;transform:rotate(-3deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -110,11 +127,13 @@
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
 <circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg>
-      <h1 style="font-size:44pt;line-height:1.02;margin:.14in 0 .1in;text-shadow:0 3px 0 rgba(0,0,0,.2)">Word Personalities</h1>
-      <p style="font-family:'BB Kicker';font-size:13pt;max-width:5.8in;margin:0 auto">Every word has a character. Meet them.</p>
-      <p style="font-family:'BB Kicker';font-size:9.5pt;margin-top:.1in;opacity:.9">with Jester, your guide · the vibe world</p></div>
-    <div style="position:relative;display:flex;gap:.14in;justify-content:center">
-      <div style="background:rgba(0,0,0,.24);border-radius:14px;padding:.12in .28in;text-align:center"><div class="disp" style="font-size:17pt">8</div><div style="font-family:'BB Kicker';font-size:9pt">chapters</div></div><div style="background:rgba(0,0,0,.24);border-radius:14px;padding:.12in .28in;text-align:center"><div class="disp" style="font-size:17pt">141</div><div style="font-family:'BB Kicker';font-size:9pt">practice words</div></div><div style="background:rgba(0,0,0,.24);border-radius:14px;padding:.12in .28in;text-align:center"><div class="disp" style="font-size:17pt">🎲</div><div style="font-family:'BB Kicker';font-size:9pt">puzzles & games</div></div></div></div>
+    </div>
+    
+    <div style="position:absolute;right:.5in;bottom:.62in;display:flex;flex-direction:column;gap:.09in;align-items:flex-end">
+      <span style="background:rgba(0,0,0,.32);border-radius:999px;padding:.05in .2in;font-family:'BB Kicker';font-size:10pt;transform:rotate(-1.6deg)">8 chapters</span><span style="background:rgba(0,0,0,.32);border-radius:999px;padding:.05in .2in;font-family:'BB Kicker';font-size:10pt;transform:rotate(0deg)">141 practice words</span><span style="background:rgba(0,0,0,.32);border-radius:999px;padding:.05in .2in;font-family:'BB Kicker';font-size:10pt;transform:rotate(1.6deg)">puzzles in every chapter</span>
+      <span style="font-family:'BB Kicker';font-size:9.5pt;opacity:.95;margin-top:.05in">with Jester · in the Vibe</span></div>
+    <div style="position:absolute;left:.55in;bottom:.6in;font-family:'BB Kicker';font-size:9pt;opacity:.85">Some words have moods. The Vibe is where they let it show.</div>
+  </div>
 <div class="page" data-vol="10">
     <div class="bb-head"><span>Word Personalities</span><span>How this book works</span></div>
     <div style="margin-top:.4in"><h1 style="font-size:26pt">Five moves. That's the whole system.</h1></div>
@@ -145,15 +164,13 @@
       <div class="bb-panelbox" style="flex:1"><h3 style="font-size:12pt;color:var(--accent-deep)">Hunt the Big List</h3><p style="font-size:9.8pt;line-height:1.45">The back holds every word. Circle the bubbles you own. Come back for the rest.</p></div></div>
     <div class="bb-audio" style="margin-top:.05in">🔊 Grown-ups: every chapter is narrated, and every word recorded, in the Bizzing Bee app</div>
     <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>1</span></div></div>
-<div class="page" data-verso data-vol="10">
-    <div class="bb-head"><span>Chapter 1 · Ego &amp; Self — ego / auto / alter</span><span>Story · ★★☆</span></div>
-    <div style="margin-top:.4in;display:flex;align-items:center;gap:.14in">
-      <span style="display:inline-grid;place-items:center;width:.58in;height:.58in;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:16pt">1</span>
-      <div><div class="kick">Personality Themes</div><h1 style="font-size:26pt;line-height:1.05">Ego &amp; Self — ego / auto / alter</h1></div></div>
-    <div class="bb-strip" style="grid-template-columns:1fr 1fr"><div class="bb-panel happy">
-      <div class="bb-bubble">Meet the root ego, spelled E, G, O. It comes from Latin and it…</div>
-      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+<div class="page" data-verso data-vol="10" style="background:linear-gradient(160deg,var(--accent),var(--accent-deep));color:#fff;padding:0">
+    <svg viewBox="0 0 816 1056" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true"><g><g fill="none"><g transform="translate(163.20000000000002 253.44)"><circle r="26" stroke="rgba(255,255,255,0.24)" stroke-width="5"/><circle r="17" stroke="rgba(255,255,255,0.24)" stroke-width="5"/><circle r="8" stroke="rgba(255,255,255,0.24)" stroke-width="5"/></g><g transform="translate(612 211.20000000000002)"><circle r="26" stroke="rgba(255,255,255,0.29)" stroke-width="5"/><circle r="17" stroke="rgba(255,255,255,0.29)" stroke-width="5"/><circle r="8" stroke="rgba(255,255,255,0.29)" stroke-width="5"/></g><g transform="translate(408 528)"><circle r="26" stroke="rgba(255,255,255,0.33999999999999997)" stroke-width="5"/><circle r="17" stroke="rgba(255,255,255,0.33999999999999997)" stroke-width="5"/><circle r="8" stroke="rgba(255,255,255,0.33999999999999997)" stroke-width="5"/></g><g transform="translate(114.24000000000001 633.6)"><circle r="26" stroke="rgba(255,255,255,0.39)" stroke-width="5"/><circle r="17" stroke="rgba(255,255,255,0.39)" stroke-width="5"/><circle r="8" stroke="rgba(255,255,255,0.39)" stroke-width="5"/></g></g><path d="M0 380.15999999999997 Q 204 295.68 408 401.28000000000003 T 816 316.8" stroke="rgba(255,255,255,.38)" stroke-width="10" fill="none"/><path d="M0 549.12 Q 244.79999999999998 633.6 489.59999999999997 528 T 816 591.36" stroke="rgba(255,255,255,.22)" stroke-width="16" fill="none"/><g fill="#FFD66B"><circle cx="244.79999999999998" cy="168.96" r="6"/><circle cx="505.92" cy="422.40000000000003" r="6"/><circle cx="693.6" cy="633.6" r="6"/><circle cx="326.40000000000003" cy="696.96" r="6"/></g><path d="M81.60000000000001 878.8000000000001 Q 326.40000000000003 774.8000000000001 505.92 704.8000000000001 T 775.1999999999999 584.8000000000001" stroke="rgba(255,255,255,.85)" stroke-width="3.5" stroke-dasharray="1 12" stroke-linecap="round" fill="none"/></g><path d="M0 844.8000000000001 Q 179.52 818.8000000000001 408 844.8000000000001 T 816 844.8000000000001 L 816 1056 L 0 1056 Z" fill="rgba(20,12,40,.30)"/></svg>
+    <div style="position:absolute;top:2in;left:.7in;right:.7in;text-align:center">
+      <div style="font-family:'BB Kicker';letter-spacing:.14em;font-size:11pt;text-shadow:0 2px 6px rgba(0,0,0,.3)">WELCOME TO</div>
+      <h1 class="coverTitle" style="font-size:40pt;transform:rotate(-1.2deg)">The Vibe</h1>
+      <p style="font-family:'BB Kicker';font-size:12pt;max-width:5.4in;margin:.16in auto 0;text-shadow:0 2px 6px rgba(0,0,0,.35);line-height:1.5">Some words have moods. The Vibe is where they let it show.</p></div>
+    <div style="position:absolute;left:53%;bottom:2.1in;transform:rotate(6deg)"><svg viewBox="0 0 120 120" style="width:1.7in;height:1.7in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -164,18 +181,41 @@
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"></div></div></div><div class="bb-panel oops">
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></div>
+    <div class="bb-foot" style="color:rgba(255,255,255,.85)"><span>Bizzing Bee · Word Personalities</span><span>2</span></div>
+  </div>
+<div class="page" data-vol="10">
+    <div class="bb-head"><span>Chapter 1 · Ego &amp; Self — ego / auto / alter</span><span>Story · ★★☆</span></div>
+    <div style="margin-top:.4in;display:flex;align-items:center;gap:.14in">
+      <span style="display:inline-grid;place-items:center;width:.58in;height:.58in;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:16pt">1</span>
+      <div><div class="kick">Personality Themes</div><h1 style="font-size:26pt;line-height:1.05">Ego &amp; Self — ego / auto / alter</h1></div>
+      <span class="worldchip" style="margin-left:auto;transform:rotate(1.4deg)">📍 the Vibe</span></div>
+    <div class="bb-strip" style="grid-template-columns:1.15fr 1fr"><div class="bb-panel happy">
+      <div class="bb-bubble">Meet the root ego, spelled E, G, O. It comes from Latin and it…</div>
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+<path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
+<path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
+<circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
+<circle cx="60" cy="60" r="26" fill="#FFD9A8"/>
+<path d="M36 52 q24 -14 48 0 q-2 -10 -10 -14 q-14 -6 -28 0 q-8 4 -10 14 z" fill="#6C4FE0"/>
+<circle cx="50" cy="58" r="7.5" fill="#fff"/><circle cx="51.3" cy="59.5" r="3.8" fill="#2B1B5E"/><circle cx="50.2" cy="58.3" r="1.3" fill="#fff"/>
+<circle cx="70" cy="58" r="7.5" fill="#fff"/><circle cx="71.3" cy="59.5" r="3.8" fill="#2B1B5E"/><circle cx="70.2" cy="58.3" r="1.3" fill="#fff"/>
+<ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
+<path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
+<path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"></div></div></div><div class="bb-panel oops">
       <div class="bb-bubble">Here's a tricky pair. An egoist cares only about themselves. An egotist constantly talks…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true">
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.95in;height:0.95in;flex-shrink:0" aria-hidden="true">
   <path d="M60 26 L30 62 L48 58 L42 92 L60 72 L78 92 L72 58 L90 62 Z" fill="#3A2A55" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M30 62 Q12 48 16 30 Q34 34 42 50 Z M90 62 Q108 48 104 30 Q86 34 78 50 Z" fill="#5B3FA6" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M48 48 l10 4 M72 48 l-10 4" stroke="#E8546A" stroke-width="5" stroke-linecap="round"/>
   <path d="M52 62 q8 -5 16 0" stroke="#E8546A" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div style="text-align:right"></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
+  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
       <div class="bb-bubble">Now the Greek side. Auto, spelled A, U, T, O, means self. An autodidact…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0;transform:rotate(-6deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -186,10 +226,10 @@
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"><span class="bb-prop">AUTODIDACT</span></div></div><span class="bb-sfx win">GOT IT!</span></div><div class="bb-panel happy">
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"><span class="bb-prop">AUTODIDACT</span></div></div><span class="bb-sfx win">GOT IT!</span></div><div class="bb-panel happy">
       <div class="bb-bubble">Build ego up bigger. Ego plus the Greek mania, meaning madness, gives egomaniac, someone…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -200,15 +240,26 @@
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"><span class="bb-prop">EGOMANIAC</span></div></div></div></div>
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"><span class="bb-prop">EGOMANIAC</span></div></div></div></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.14in">
       <span class="bb-audio">🔊 Hear this chapter narrated in the app</span>
       <span class="kick" style="font-size:8.6pt">turn the page — the whole trick, explained →</span></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>2</span></div></div>
-<div class="page" data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>3</span></div></div>
+<div class="page" data-verso data-vol="10">
     <div class="bb-head"><span>Chapter 1 · Ego &amp; Self — ego / auto / alter</span><span>The idea · ★★☆</span></div>
     <div style="margin-top:.4in" class="kick">The big idea</div>
-    <div class="bb-bigidea">Words built on Latin ego = I and Greek autos = self describe how people relate to themselves. Master this cluster and you unlock personality vocabulary from egotist to autodidact.</div>
+    <div class="bb-bigidea">Words built on Latin ego = I and Greek autos = self describe how people relate to themselves. Master this cluster and you unlock personality vocabulary from egotist to autodidact.<span class="cameo"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+<path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
+<path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
+<circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
+<circle cx="60" cy="60" r="26" fill="#FFD9A8"/>
+<path d="M36 52 q24 -14 48 0 q-2 -10 -10 -14 q-14 -6 -28 0 q-8 4 -10 14 z" fill="#6C4FE0"/>
+<circle cx="50" cy="58" r="7.5" fill="#fff"/><circle cx="51.3" cy="59.5" r="3.8" fill="#2B1B5E"/><circle cx="50.2" cy="58.3" r="1.3" fill="#fff"/>
+<circle cx="70" cy="58" r="7.5" fill="#fff"/><circle cx="71.3" cy="59.5" r="3.8" fill="#2B1B5E"/><circle cx="70.2" cy="58.3" r="1.3" fill="#fff"/>
+<ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
+<path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
+<path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span></div>
     <div class="kick" style="margin-top:.08in">The pro move</div><div class="bb-promove"><div class='trick'><b>EGOTISTICAL</b></div>
 <b>Say it.</b> ee-guh-TIH-stih-kuhl
 <b>Spell it.</b> E · G · O · T · I · S · T · I · C · A · L
@@ -229,8 +280,8 @@
       <div class="bb-check"><div class="l">Check yourself</div><div style="font-size:8.8pt;line-height:1.35">Cover the page. Spell these three out loud: <b>egoist</b> · <b>egotist</b> · <b>egocentric</b>. Even Vex missed that last one.</div></div></div>
     <div class="bb-break"><span style="font-size:13pt">💬</span><div><div class="l">Bee Break · someone said it better</div><div class="b">“Earth has not anything to show more fair:
 Dull would he be of soul who could pass by.”</div><div class="t">— William Wordsworth, English Romantic poet who loved nature</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>3</span></div></div>
-<div class="page" data-verso data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>4</span></div></div>
+<div class="page" data-vol="10">
       <div class="bb-head"><span>Chapter 1 · Ego &amp; Self — ego / auto / alter</span><span>Practice · ★★☆</span></div>
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
@@ -260,13 +311,13 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
         <div class="say">/ aw-toh-DY-dakt /  ·  /ɔtoʊˈdaɪdækt/</div>
         <div class="d">a person who has taught himself</div><div class="hook">hook: AUTO (self) + DIDACT (teach) = self-taught person.</div></div>
         <div class="bb-writeline"></div></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>4</span></div></div>
-<div class="page" data-vol="10">
+      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>5</span></div></div>
+<div class="page" data-verso data-vol="10">
       <div class="bb-head"><span>Chapter 1 · Ego &amp; Self — ego / auto / alter</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
       <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>autonomous</b> <span class="tile" style="font-size:7.8pt">/aw-TAH-nuh-muhs/</span><br>(of political bodies) not controlled by outside forces</div><div class="bb-row"><b>narcissism</b> <span class="tile" style="font-size:7.8pt">/n-AH-r-s-ih-s-ih-z-uh-m/</span><br>is excessive self-love vanity</div><div class="bb-row"><b>solipsism</b> <span class="tile" style="font-size:7.8pt"></span><br></div><div class="bb-row"><b>egotism</b> <span class="tile" style="font-size:7.8pt">/EE-guh-tih-zuhm/</span><br>an exaggerated opinion of your own importance</div><div class="bb-row"><b>egoism</b> <span class="tile" style="font-size:7.8pt">/EE-goh-ih-zuhm/</span><br>(ethics) the theory that the pursuit of your own welfare in the…</div><div class="bb-row"><b>autocracy</b> <span class="tile" style="font-size:7.8pt">/aw-TAH-kruh-see/</span><br>a political system governed by a single individual</div><div class="bb-row"><b>autobiography</b> <span class="tile" style="font-size:7.8pt">/aw-tuh-beye-AH-gruh-fee/</span><br>a biography of yourself</div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>5</span></div></div>
-<div class="page" data-verso data-vol="10">
+      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>6</span></div></div>
+<div class="page" data-vol="10">
     <div class="bb-head"><span>Chapter 1 · Ego &amp; Self — ego / auto / alter</span><span>Game · ★★☆</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
@@ -285,16 +336,17 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
     <div style="margin-top:.1in"><div class="bb-xword-wrap" style="display:flex;justify-content:center"><table class="bb-xword"><tr><td class="c"><i>1</i></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"><i>2</i></td><td></td><td></td></tr><tr><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td class="c"><i>3</i></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td></tr><tr><td class="c"></td><td></td><td></td><td></td><td class="c"><i>4</i></td><td></td><td class="c"></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td></tr><tr><td class="c"></td><td></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td></tr><tr><td class="c"></td><td></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"><i>5</i></td><td></td><td class="c"></td><td></td><td></td></tr><tr><td class="c"></td><td></td><td class="c"><i>6</i></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td></tr><tr><td class="c"><i>7</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td></td><td></td></tr><tr><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"><i>8</i></td></tr><tr><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td></tr><tr><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td></tr><tr><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td><td></td><td class="c"></td></tr><tr><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td class="c"></td></tr><tr><td></td><td></td><td></td><td class="c"><i>9</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td></td></tr></table></div>
         <div class="bb-clues"><div><h3>Across</h3><div><b>7.</b> is generous in forgiving insult or injury</div><div><b>9.</b> a person who has taught himself</div></div><div><h3>Down</h3><div><b>1.</b> (of political bodies) not controlled by outside forces</div><div><b>2.</b> is excessive self-love vanity</div><div><b>3.</b> showing unselfish concern for the welfare of others</div><div><b>4.</b> an abnormally egotistical person</div><div><b>5.</b> a self-centered person with little regard for others</div><div><b>6.</b> a conceited and self-centered person</div><div><b>8.</b> a conceited and self-centered person</div></div></div></div>
     <div class="bb-break"><span style="font-size:13pt">✨</span><div><div class="l">Bee Break · simile of the page</div><div class="b"><b>like putty in someone's hands</b></div><div class="t">easily persuaded to do anything</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>6</span></div></div>
-<div class="page" data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>7</span></div></div>
+<div class="page" data-verso data-vol="10">
     <div class="bb-head"><span>Chapter 2 · Talking &amp; Speaking — loqu / phon / verb</span><span>Story · ★★☆</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.14in">
       <span style="display:inline-grid;place-items:center;width:.58in;height:.58in;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:16pt">2</span>
-      <div><div class="kick">Personality Themes</div><h1 style="font-size:26pt;line-height:1.05">Talking &amp; Speaking — loqu / phon / verb</h1></div></div>
-    <div class="bb-strip" style="grid-template-columns:1fr 1fr"><div class="bb-panel happy">
+      <div><div class="kick">Personality Themes</div><h1 style="font-size:26pt;line-height:1.05">Talking &amp; Speaking — loqu / phon / verb</h1></div>
+      <span class="worldchip" style="margin-left:auto;transform:rotate(1.4deg)">📍 the Vibe</span></div>
+    <div class="bb-strip" style="grid-template-columns:1.15fr 1fr"><div class="bb-panel happy">
       <div class="bb-bubble">Meet the root loqu, spelled L, O, Q, U. It comes from Latin and…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -305,18 +357,18 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"></div></div></div><div class="bb-panel oops">
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"></div></div></div><div class="bb-panel oops">
       <div class="bb-bubble">Switch to Greek. Phon, spelled P, H, O, N, means sound or voice. Watch…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true">
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.95in;height:0.95in;flex-shrink:0" aria-hidden="true">
   <path d="M60 26 L30 62 L48 58 L42 92 L60 72 L78 92 L72 58 L90 62 Z" fill="#3A2A55" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M30 62 Q12 48 16 30 Q34 34 42 50 Z M90 62 Q108 48 104 30 Q86 34 78 50 Z" fill="#5B3FA6" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M48 48 l10 4 M72 48 l-10 4" stroke="#E8546A" stroke-width="5" stroke-linecap="round"/>
   <path d="M52 62 q8 -5 16 0" stroke="#E8546A" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div style="text-align:right"></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
+  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
       <div class="bb-bubble">So symphony is sym, together, plus phon, sound, sounds blending together. Spot L, O,…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0;transform:rotate(-6deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -327,10 +379,10 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"><span class="bb-prop">SYMPHONY</span></div></div><span class="bb-sfx win">GOT IT!</span></div><div class="bb-panel happy">
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"><span class="bb-prop">SYMPHONY</span></div></div><span class="bb-sfx win">GOT IT!</span></div><div class="bb-panel happy">
       <div class="bb-bubble">Take ventriloquist. Ventri means belly, and loqu means speak. So a ventriloquist seems to…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -341,15 +393,26 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"><span class="bb-prop">VENTRILOQUIST</span></div></div></div></div>
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"><span class="bb-prop">VENTRILOQUIST</span></div></div></div></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.14in">
       <span class="bb-audio">🔊 Hear this chapter narrated in the app</span>
       <span class="kick" style="font-size:8.6pt">turn the page — the whole trick, explained →</span></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>7</span></div></div>
-<div class="page" data-verso data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>8</span></div></div>
+<div class="page" data-vol="10">
     <div class="bb-head"><span>Chapter 2 · Talking &amp; Speaking — loqu / phon / verb</span><span>The idea · ★★☆</span></div>
     <div style="margin-top:.4in" class="kick">The big idea</div>
-    <div class="bb-bigidea">Latin loqui = to speak and Greek phonē = sound/voice are two of the most productive roots in English. Together they explain dozens of words about how, how much, and how well people communicate.</div>
+    <div class="bb-bigidea">Latin loqui = to speak and Greek phonē = sound/voice are two of the most productive roots in English. Together they explain dozens of words about how, how much, and how well people communicate.<span class="cameo"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+<path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
+<path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
+<circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
+<circle cx="60" cy="60" r="26" fill="#FFD9A8"/>
+<path d="M36 52 q24 -14 48 0 q-2 -10 -10 -14 q-14 -6 -28 0 q-8 4 -10 14 z" fill="#6C4FE0"/>
+<circle cx="50" cy="58" r="7.5" fill="#fff"/><circle cx="51.3" cy="59.5" r="3.8" fill="#2B1B5E"/><circle cx="50.2" cy="58.3" r="1.3" fill="#fff"/>
+<circle cx="70" cy="58" r="7.5" fill="#fff"/><circle cx="71.3" cy="59.5" r="3.8" fill="#2B1B5E"/><circle cx="70.2" cy="58.3" r="1.3" fill="#fff"/>
+<ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
+<path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
+<path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span></div>
     <div class="kick" style="margin-top:.08in">The pro move</div><div class="bb-promove"><div class='trick'><b>LOQUACIOUS</b></div>
 <b>Say it.</b> l-oh-k-w-AY-sh-uh-s
 <b>Spell it.</b> L · O · Q · U · A · C · I · O · U · S
@@ -369,8 +432,8 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
   <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div><div class="l">Vex alert</div><div style="font-size:8.8pt;line-height:1.35">TACITURN: someone TACIT and STERN who never speaks turns away in silence</div></div></div>
       <div class="bb-check"><div class="l">Check yourself</div><div style="font-size:8.8pt;line-height:1.35">Cover the page. Spell these three out loud: <b>loquacious</b> · <b>eloquent</b> · <b>grandiloquent</b>. Even Vex missed that last one.</div></div></div>
     <div class="bb-break"><span style="font-size:13pt">🎈</span><div><div class="l">Bee Break · idiom to drop at dinner</div><div class="b"><b>have a bone to pick</b></div><div class="t">to have a complaint to argue out with someone</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>8</span></div></div>
-<div class="page" data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>9</span></div></div>
+<div class="page" data-verso data-vol="10">
       <div class="bb-head"><span>Chapter 2 · Talking &amp; Speaking — loqu / phon / verb</span><span>Practice · ★★☆</span></div>
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
@@ -400,13 +463,13 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
         <div class="say">/ AW-bluh-kwee /  ·  /ˈɔbləkwi/</div>
         <div class="d">is abusive language aimed at a person</div><div class="hook">hook: OBLOQUy — people LOQUACIOUSLY speak AGAINST (ob) you.</div></div>
         <div class="bb-writeline"></div></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>9</span></div></div>
-<div class="page" data-verso data-vol="10">
+      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>10</span></div></div>
+<div class="page" data-vol="10">
       <div class="bb-head"><span>Chapter 2 · Talking &amp; Speaking — loqu / phon / verb</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
       <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>interlocutor</b> <span class="tile" style="font-size:7.8pt">/ih-nter-LAH-kyuh-ter/</span><br>the performer in the middle of a minstrel line who engages the …</div><div class="bb-row"><b>taciturn</b> <span class="tile" style="font-size:7.8pt">/t-A-s-ih-t-ur-n/</span><br>means inclined to silence</div><div class="bb-row"><b>reticent</b> <span class="tile" style="font-size:7.8pt">/r-EH-t-ih-s-uh-n-t/</span><br>is someone disposed to be silent or not to speak freely</div><div class="bb-row"><b>verbose</b> <span class="tile" style="font-size:7.8pt">/ver-BOHS/</span><br>using or containing too many words</div><div class="bb-row"><b>garrulous</b> <span class="tile" style="font-size:7.8pt">/GEH-ruh-luhs/</span><br>full of trivial conversation</div><div class="bb-row"><b>cacophony</b> <span class="tile" style="font-size:7.8pt">/k-a-k-AH-f-uh-n-ee/</span><br>is a harsh discordance of sound</div><div class="bb-row"><b>euphony</b> <span class="tile" style="font-size:7.8pt">/YOO-fuh-nee/</span><br>any agreeable (pleasing and harmonious) sounds</div><div class="bb-row"><b>symphony</b> <span class="tile" style="font-size:7.8pt">/SIH-mfuh-nee/</span><br>a long and complex sonata for symphony orchestra</div><div class="bb-row"><b>polyphony</b> <span class="tile" style="font-size:7.8pt">/puh-LIH-fuh-nee/</span><br>music arranged in parts for several voices or instruments</div><div class="bb-row"><b>magniloquent</b> <span class="tile" style="font-size:7.8pt"></span><br></div><div class="bb-row"><b>pauciloquent</b> <span class="tile" style="font-size:7.8pt"></span><br></div><div class="bb-row"><b>somniloquy</b> <span class="tile" style="font-size:7.8pt"></span><br></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>10</span></div></div>
-<div class="page" data-vol="10">
+      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>11</span></div></div>
+<div class="page" data-verso data-vol="10">
     <div class="bb-head"><span>Chapter 2 · Talking &amp; Speaking — loqu / phon / verb</span><span>Game · ★★☆</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
@@ -426,16 +489,17 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
       <div style="display:flex;flex-wrap:wrap;gap:5pt;justify-content:center;margin-top:.1in"><span class="chip">loquacious</span><span class="chip">eloquent</span><span class="chip">soliloquy</span><span class="chip">colloquy</span><span class="chip">colloquial</span><span class="chip">obloquy</span><span class="chip">interlocutor</span><span class="chip">taciturn</span><span class="chip">reticent</span><span class="chip">verbose</span></div>
       <p style="text-align:center;font-size:8.6pt;color:var(--muted);margin-top:.06in">Words run in every direction — even backwards.</p></div>
     <div class="bb-break"><span style="font-size:13pt">💬</span><div><div class="l">Bee Break · someone said it better</div><div class="b">“Learn from yesterday, live for today, hope for tomorrow. The important thing is not to stop questioning.”</div><div class="t">— Albert Einstein, German-born physicist</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>11</span></div></div>
-<div class="page" data-verso data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>12</span></div></div>
+<div class="page" data-vol="10">
     <div class="bb-head"><span>Chapter 3 · Honesty &amp; Deception — ver / mendax / cred / p…</span><span>Story · ★★☆</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.14in">
       <span style="display:inline-grid;place-items:center;width:.58in;height:.58in;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:16pt">3</span>
-      <div><div class="kick">Personality Themes</div><h1 style="font-size:26pt;line-height:1.05">Honesty &amp; Deception — ver / mendax / cred / pseudo</h1></div></div>
-    <div class="bb-strip" style="grid-template-columns:1fr 1fr"><div class="bb-panel happy">
+      <div><div class="kick">Personality Themes</div><h1 style="font-size:26pt;line-height:1.05">Honesty &amp; Deception — ver / mendax / cred / pseudo</h1></div>
+      <span class="worldchip" style="margin-left:auto;transform:rotate(1.4deg)">📍 the Vibe</span></div>
+    <div class="bb-strip" style="grid-template-columns:1.15fr 1fr"><div class="bb-panel happy">
       <div class="bb-bubble">Meet the root ver, spelled V, E, R. It comes from the Latin veritas,…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -446,18 +510,18 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"></div></div></div><div class="bb-panel oops">
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"></div></div></div><div class="bb-panel oops">
       <div class="bb-bubble">Careful with a famous trap. Veracious, with an e, means truthful. But voracious, with…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true">
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.95in;height:0.95in;flex-shrink:0" aria-hidden="true">
   <path d="M60 26 L30 62 L48 58 L42 92 L60 72 L78 92 L72 58 L90 62 Z" fill="#3A2A55" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M30 62 Q12 48 16 30 Q34 34 42 50 Z M90 62 Q108 48 104 30 Q86 34 78 50 Z" fill="#5B3FA6" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M48 48 l10 4 M72 48 l-10 4" stroke="#E8546A" stroke-width="5" stroke-linecap="round"/>
   <path d="M52 62 q8 -5 16 0" stroke="#E8546A" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div style="text-align:right"></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
+  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
       <div class="bb-bubble">Last, the Greek pseudo means false, but here's the trap. It begins with a…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0;transform:rotate(-6deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -468,10 +532,10 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div><div class="bb-panel happy">
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div><div class="bb-panel happy">
       <div class="bb-bubble">Take verdict. Ver means truth, plus dict, meaning say. A verdict is what a…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -482,15 +546,26 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"><span class="bb-prop">VERDICT</span></div></div></div></div>
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"><span class="bb-prop">VERDICT</span></div></div></div></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.14in">
       <span class="bb-audio">🔊 Hear this chapter narrated in the app</span>
       <span class="kick" style="font-size:8.6pt">turn the page — the whole trick, explained →</span></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>12</span></div></div>
-<div class="page" data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>13</span></div></div>
+<div class="page" data-verso data-vol="10">
     <div class="bb-head"><span>Chapter 3 · Honesty &amp; Deception — ver / mendax / cred / p…</span><span>The idea · ★★☆</span></div>
     <div style="margin-top:.4in" class="kick">The big idea</div>
-    <div class="bb-bigidea">Latin veritas = truth and mendax = lying create perfectly opposite word families. Greek pseudos = false adds a third. These cover the full honesty spectrum and appear frequently in spelling bees.</div>
+    <div class="bb-bigidea">Latin veritas = truth and mendax = lying create perfectly opposite word families. Greek pseudos = false adds a third. These cover the full honesty spectrum and appear frequently in spelling bees.<span class="cameo"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+<path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
+<path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
+<circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
+<circle cx="60" cy="60" r="26" fill="#FFD9A8"/>
+<path d="M36 52 q24 -14 48 0 q-2 -10 -10 -14 q-14 -6 -28 0 q-8 4 -10 14 z" fill="#6C4FE0"/>
+<circle cx="50" cy="58" r="7.5" fill="#fff"/><circle cx="51.3" cy="59.5" r="3.8" fill="#2B1B5E"/><circle cx="50.2" cy="58.3" r="1.3" fill="#fff"/>
+<circle cx="70" cy="58" r="7.5" fill="#fff"/><circle cx="71.3" cy="59.5" r="3.8" fill="#2B1B5E"/><circle cx="70.2" cy="58.3" r="1.3" fill="#fff"/>
+<ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
+<path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
+<path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span></div>
     <div class="kick" style="margin-top:.08in">The pro move</div><div class="bb-promove"><div class='trick'><b>MENDACIOUS</b></div>
 <b>Say it.</b> m-eh-n-d-AY-sh-uh-s
 <b>Spell it.</b> M · E · N · D · A · C · I · O · U · S
@@ -510,8 +585,8 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
   <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div><div class="l">Vex alert</div><div style="font-size:8.8pt;line-height:1.35">VERIFY starts with VERI — VERy Important to spell it with an E, not an A!</div></div></div>
       <div class="bb-check"><div class="l">Check yourself</div><div style="font-size:8.8pt;line-height:1.35">Cover the page. Spell these three out loud: <b>veracious</b> · <b>veracity</b> · <b>verify</b>. Even Vex missed that last one.</div></div></div>
     <div class="bb-break"><span style="font-size:13pt">✨</span><div><div class="l">Bee Break · simile of the page</div><div class="b"><b>soar like an eagle</b></div><div class="t">to rise high with grace and power</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>13</span></div></div>
-<div class="page" data-verso data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>14</span></div></div>
+<div class="page" data-vol="10">
       <div class="bb-head"><span>Chapter 3 · Honesty &amp; Deception — ver / mendax / cred / p…</span><span>Practice · ★★☆</span></div>
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
@@ -541,13 +616,13 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
         <div class="say">/ doo-PLIH-sih-tuhs /  ·  /duˈplɪsɪtəs/</div>
         <div class="d">marked by deliberate deceptiveness especially by pretending one set of feelings and acting …</div><div class="hook">hook: A DUPLICITOUS person has a double face — no extra I after DUPLIC, just -ITOUS.</div></div>
         <div class="bb-writeline"></div></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>14</span></div></div>
-<div class="page" data-vol="10">
+      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>15</span></div></div>
+<div class="page" data-verso data-vol="10">
       <div class="bb-head"><span>Chapter 3 · Honesty &amp; Deception — ver / mendax / cred / p…</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
       <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>dissemble</b> <span class="tile" style="font-size:7.8pt">/dih-SEH-mbuhl/</span><br>make believe with the intent to deceive</div><div class="bb-row"><b>prevaricate</b> <span class="tile" style="font-size:7.8pt">/pruh-VEH-ruh-kayt/</span><br>be deliberately ambiguous or unclear in order to mislead or wit…</div><div class="bb-row"><b>equivocate</b> <span class="tile" style="font-size:7.8pt">/ih-KWIH-vuh-kayt/</span><br>be deliberately ambiguous or unclear in order to mislead or wit…</div><div class="bb-row"><b>disingenuous</b> <span class="tile" style="font-size:7.8pt">/dih-sih-NJEH-nyoo-uhs/</span><br>not straightforward or candid; giving a false appearance of fra…</div><div class="bb-row"><b>credulous</b> <span class="tile" style="font-size:7.8pt">/KREH-juh-luhs/</span><br>disposed to believe on little evidence</div><div class="bb-row"><b>incredulous</b> <span class="tile" style="font-size:7.8pt">/ih-NKREH-juh-luhs/</span><br>not disposed or willing to believe; unbelieving</div><div class="bb-row"><b>miscreant</b> <span class="tile" style="font-size:7.8pt">/MIH-skree-uhnt/</span><br>a person without moral scruples</div><div class="bb-row"><b>pseudonym</b> <span class="tile" style="font-size:7.8pt">/SOO-duh-nihm/</span><br>a fictitious name used when the person performs a particular so…</div><div class="bb-row"><b>pseudoscience</b> <span class="tile" style="font-size:7.8pt">/soo-doh-SEYE-uhns/</span><br>an activity resembling science but based on fallacious assumpti…</div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>15</span></div></div>
-<div class="page" data-verso data-vol="10">
+      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>16</span></div></div>
+<div class="page" data-vol="10">
     <div class="bb-head"><span>Chapter 3 · Honesty &amp; Deception — ver / mendax / cred / p…</span><span>Game · ★★☆</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
@@ -568,16 +643,17 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
       <div><div class="kick" style="margin-bottom:.06in">Rescue the vowels</div>
       <div class="g1"><span class="gw">m_nd_c___s</span><div class="bb-writeline"></div></div><div class="g1"><span class="gw">_ncr_d_l__s</span><div class="bb-writeline"></div></div><div class="g1"><span class="gw">cr_d_l__s</span><div class="bb-writeline"></div></div><div class="g1"><span class="gw">v_r_c___s</span><div class="bb-writeline"></div></div><div class="g1"><span class="gw">m_nd_c_ty</span><div class="bb-writeline"></div></div><div class="g1"><span class="gw">v_r_c_ty</span><div class="bb-writeline"></div></div></div></div></div>
     <div class="bb-break"><span style="font-size:13pt">🎈</span><div><div class="l">Bee Break · idiom to drop at dinner</div><div class="b"><b>fair-weather sailor</b></div><div class="t">someone who joins in only when things are easy</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>16</span></div></div>
-<div class="page" data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>17</span></div></div>
+<div class="page" data-verso data-vol="10">
     <div class="bb-head"><span>Chapter 4 · Feelings &amp; Emotions — the Four Humors</span><span>Story · ★★☆</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.14in">
       <span style="display:inline-grid;place-items:center;width:.58in;height:.58in;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:16pt">4</span>
-      <div><div class="kick">Personality Themes</div><h1 style="font-size:26pt;line-height:1.05">Feelings &amp; Emotions — the Four Humors</h1></div></div>
-    <div class="bb-strip" style="grid-template-columns:1fr 1fr"><div class="bb-panel love">
+      <div><div class="kick">Personality Themes</div><h1 style="font-size:26pt;line-height:1.05">Feelings &amp; Emotions — the Four Humors</h1></div>
+      <span class="worldchip" style="margin-left:auto;transform:rotate(1.4deg)">📍 the Vibe</span></div>
+    <div class="bb-strip" style="grid-template-columns:1.15fr 1fr"><div class="bb-panel love">
       <div class="bb-bubble">Here's a delightful old idea. Doctors once believed four body fluids shaped your mood,…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -588,18 +664,18 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"></div></div></div><div class="bb-panel oops">
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"></div></div></div><div class="bb-panel oops">
       <div class="bb-bubble">Now the hardest one. Phlegmatic, from the Greek phlegma, means so calm it seems…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true">
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.95in;height:0.95in;flex-shrink:0" aria-hidden="true">
   <path d="M60 26 L30 62 L48 58 L42 92 L60 72 L78 92 L72 58 L90 62 Z" fill="#3A2A55" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M30 62 Q12 48 16 30 Q34 34 42 50 Z M90 62 Q108 48 104 30 Q86 34 78 50 Z" fill="#5B3FA6" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M48 48 l10 4 M72 48 l-10 4" stroke="#E8546A" stroke-width="5" stroke-linecap="round"/>
   <path d="M52 62 q8 -5 16 0" stroke="#E8546A" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div style="text-align:right"></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
+  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
       <div class="bb-bubble">So four old fluids gave us sanguine, choleric, phlegmatic, and melancholy. Remember the ph…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0;transform:rotate(-6deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -610,10 +686,10 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div><div class="bb-panel happy">
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div><div class="bb-panel happy">
       <div class="bb-bubble">Blood was thought to bring joy. Sanguine comes from the Latin sanguis, meaning blood,…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -624,15 +700,26 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"><span class="bb-prop">SANGUINE</span></div></div></div></div>
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"><span class="bb-prop">SANGUINE</span></div></div></div></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.14in">
       <span class="bb-audio">🔊 Hear this chapter narrated in the app</span>
       <span class="kick" style="font-size:8.6pt">turn the page — the whole trick, explained →</span></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>17</span></div></div>
-<div class="page" data-verso data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>18</span></div></div>
+<div class="page" data-vol="10">
     <div class="bb-head"><span>Chapter 4 · Feelings &amp; Emotions — the Four Humors</span><span>The idea · ★★☆</span></div>
     <div style="margin-top:.4in" class="kick">The big idea</div>
-    <div class="bb-bigidea">Medieval medicine believed four bodily fluids controlled personality. This gave English four core emotion words still used today — each with an unusual spelling pattern that spelling bees love.</div>
+    <div class="bb-bigidea">Medieval medicine believed four bodily fluids controlled personality. This gave English four core emotion words still used today — each with an unusual spelling pattern that spelling bees love.<span class="cameo"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+<path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
+<path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
+<circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
+<circle cx="60" cy="60" r="26" fill="#FFD9A8"/>
+<path d="M36 52 q24 -14 48 0 q-2 -10 -10 -14 q-14 -6 -28 0 q-8 4 -10 14 z" fill="#6C4FE0"/>
+<circle cx="50" cy="58" r="7.5" fill="#fff"/><circle cx="51.3" cy="59.5" r="3.8" fill="#2B1B5E"/><circle cx="50.2" cy="58.3" r="1.3" fill="#fff"/>
+<circle cx="70" cy="58" r="7.5" fill="#fff"/><circle cx="71.3" cy="59.5" r="3.8" fill="#2B1B5E"/><circle cx="70.2" cy="58.3" r="1.3" fill="#fff"/>
+<ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
+<path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
+<path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span></div>
     <div class="kick" style="margin-top:.08in">The pro move</div><div class="bb-promove"><div class='trick'><b>MELANCHOLY</b></div>
 <b>Say it.</b> m-EH-l-uh-n-k-ah-l-ee
 <b>Spell it.</b> M · E · L · A · N · C · H · O · L · Y
@@ -652,8 +739,8 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
   <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div><div class="l">Vex alert</div><div style="font-size:8.8pt;line-height:1.35">MELANCHOLY: MELANcholy is not about a MELON — remember black (melan) + bile (choly), not fruit.</div></div></div>
       <div class="bb-check"><div class="l">Check yourself</div><div style="font-size:8.8pt;line-height:1.35">Cover the page. Spell these three out loud: <b>sanguine</b> · <b>choleric</b> · <b>phlegmatic</b>. Even Vex missed that last one.</div></div></div>
     <div class="bb-break"><span style="font-size:13pt">💬</span><div><div class="l">Bee Break · someone said it better</div><div class="b">“Adventure is worthwhile.”</div><div class="t">— Aesop, Ancient storyteller</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>18</span></div></div>
-<div class="page" data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>19</span></div></div>
+<div class="page" data-verso data-vol="10">
       <div class="bb-head"><span>Chapter 4 · Feelings &amp; Emotions — the Four Humors</span><span>Practice · ★★☆</span></div>
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
@@ -683,13 +770,13 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
         <div class="say">/ vuh-VAY-shuhs /  ·  /vəˈveɪʃəs/</div>
         <div class="d">vigorous and animated</div><div class="hook">hook: VIVACious — full of VIVA (life)!</div></div>
         <div class="bb-writeline"></div></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>19</span></div></div>
-<div class="page" data-verso data-vol="10">
+      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>20</span></div></div>
+<div class="page" data-vol="10">
       <div class="bb-head"><span>Chapter 4 · Feelings &amp; Emotions — the Four Humors</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
       <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>apathetic</b> <span class="tile" style="font-size:7.8pt">/a-puh-THEH-tihk/</span><br>showing little or no emotion or animation</div><div class="bb-row"><b>stoic</b> <span class="tile" style="font-size:7.8pt">/STOH-ihk/</span><br>a member of the ancient Greek school of philosophy founded by Z…</div><div class="bb-row"><b>imperturbable</b> <span class="tile" style="font-size:7.8pt"></span><br></div><div class="bb-row"><b>equanimous</b> <span class="tile" style="font-size:7.8pt"></span><br></div><div class="bb-row"><b>vehement</b> <span class="tile" style="font-size:7.8pt">/VEE-uh-muhnt/</span><br>marked by extreme intensity of emotions or convictions; incline…</div><div class="bb-row"><b>ardent</b> <span class="tile" style="font-size:7.8pt">/AH-rduhnt/</span><br>characterized by intense emotion</div><div class="bb-row"><b>fervent</b> <span class="tile" style="font-size:7.8pt">/FUR-vuhnt/</span><br>characterized by intense emotion</div><div class="bb-row"><b>fervid</b> <span class="tile" style="font-size:7.8pt">/FUR-vuhd/</span><br>characterized by intense emotion</div><div class="bb-row"><b>impassioned</b> <span class="tile" style="font-size:7.8pt">/ih-MPA-shuhnd/</span><br>characterized by intense emotion</div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>20</span></div></div>
-<div class="page" data-vol="10">
+      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>21</span></div></div>
+<div class="page" data-verso data-vol="10">
     <div class="bb-head"><span>Chapter 4 · Feelings &amp; Emotions — the Four Humors</span><span>Game · ★★☆</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
@@ -708,16 +795,17 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
     <div style="margin-top:.1in"><div class="bb-xword-wrap" style="display:flex;justify-content:center"><table class="bb-xword"><tr><td></td><td class="c"><i>1</i></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"><i>2</i></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td class="c"></td><td></td><td></td><td class="c"><i>3</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td></td><td></td></tr><tr><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td class="c"><i>4</i></td><td class="c"></td><td class="c"></td><td class="c"><i>5</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td class="c"><i>6</i></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td class="c"><i>7</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"><i>8</i></td></tr><tr><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td></tr><tr><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td></tr><tr><td class="c"><i>9</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td></tr><tr><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td></tr><tr><td></td><td class="c"><i>10</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td></tr></table></div>
         <div class="bb-clues"><div><h3>Across</h3><div><b>3.</b> is a gloomy state of mind</div><div><b>4.</b> used of wines and waters; charged naturally or artificially with carbon dio…</div><div><b>7.</b> vigorous and animated</div><div><b>9.</b> joyously unrestrained</div><div><b>10.</b> showing little or no emotion or animation</div></div><div><h3>Down</h3><div><b>1.</b> a blood-red color</div><div><b>2.</b> is not easily excited to action</div><div><b>5.</b> joyously unrestrained</div><div><b>6.</b> easily moved to anger; - H.G.Wells</div><div><b>8.</b> a member of the ancient Greek school of philosophy founded by Zeno</div></div></div></div>
     <div class="bb-break"><span style="font-size:13pt">✨</span><div><div class="l">Bee Break · simile of the page</div><div class="b"><b>like nails on a chalkboard</b></div><div class="t">unbearably irritating, especially of sounds</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>21</span></div></div>
-<div class="page" data-verso data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>22</span></div></div>
+<div class="page" data-vol="10">
     <div class="bb-head"><span>Chapter 5 · Wisdom &amp; Foolishness — sap / sophos / stult</span><span>Story · ★★☆</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.14in">
       <span style="display:inline-grid;place-items:center;width:.58in;height:.58in;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:16pt">5</span>
-      <div><div class="kick">Personality Themes</div><h1 style="font-size:26pt;line-height:1.05">Wisdom &amp; Foolishness — sap / sophos / stult</h1></div></div>
-    <div class="bb-strip" style="grid-template-columns:1fr 1fr"><div class="bb-panel happy">
+      <div><div class="kick">Personality Themes</div><h1 style="font-size:26pt;line-height:1.05">Wisdom &amp; Foolishness — sap / sophos / stult</h1></div>
+      <span class="worldchip" style="margin-left:auto;transform:rotate(1.4deg)">📍 the Vibe</span></div>
+    <div class="bb-strip" style="grid-template-columns:1.15fr 1fr"><div class="bb-panel happy">
       <div class="bb-bubble">Meet the root sap, spelled S, A, P. It comes from the Latin sapientia,…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -728,10 +816,10 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"></div></div></div><div class="bb-panel excited">
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"></div></div></div><div class="bb-panel excited">
       <div class="bb-bubble">Here's a locked-in pattern. Adjectives ending in a c i o u s become…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0;transform:rotate(-6deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -742,10 +830,10 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div><div class="bb-panel love">
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div><div class="bb-panel love">
       <div class="bb-bubble">Now the Greek sophos, meaning wise. My favorite is sophomore. Sophos, wise, plus moros,…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -756,10 +844,10 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"><span class="bb-prop">SOPHOMORE</span></div></div></div><div class="bb-panel happy">
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"><span class="bb-prop">SOPHOMORE</span></div></div></div><div class="bb-panel happy">
       <div class="bb-bubble">Sophos shows up again in philosophy. Philos means love, plus sophia, wisdom, so philosophy…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -770,15 +858,26 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"><span class="bb-prop">PHILOSOPHY</span></div></div></div></div>
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"><span class="bb-prop">PHILOSOPHY</span></div></div></div></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.14in">
       <span class="bb-audio">🔊 Hear this chapter narrated in the app</span>
       <span class="kick" style="font-size:8.6pt">turn the page — the whole trick, explained →</span></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>22</span></div></div>
-<div class="page" data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>23</span></div></div>
+<div class="page" data-verso data-vol="10">
     <div class="bb-head"><span>Chapter 5 · Wisdom &amp; Foolishness — sap / sophos / stult</span><span>The idea · ★★☆</span></div>
     <div style="margin-top:.4in" class="kick">The big idea</div>
-    <div class="bb-bigidea">Latin sapientia = wisdom and Greek sophos = wise generate the intelligence vocabulary. The -acious/-acity cluster gives you character adjectives and their noun twins in one pattern.</div>
+    <div class="bb-bigidea">Latin sapientia = wisdom and Greek sophos = wise generate the intelligence vocabulary. The -acious/-acity cluster gives you character adjectives and their noun twins in one pattern.<span class="cameo"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+<path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
+<path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
+<circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
+<circle cx="60" cy="60" r="26" fill="#FFD9A8"/>
+<path d="M36 52 q24 -14 48 0 q-2 -10 -10 -14 q-14 -6 -28 0 q-8 4 -10 14 z" fill="#6C4FE0"/>
+<circle cx="50" cy="58" r="7.5" fill="#fff"/><circle cx="51.3" cy="59.5" r="3.8" fill="#2B1B5E"/><circle cx="50.2" cy="58.3" r="1.3" fill="#fff"/>
+<circle cx="70" cy="58" r="7.5" fill="#fff"/><circle cx="71.3" cy="59.5" r="3.8" fill="#2B1B5E"/><circle cx="70.2" cy="58.3" r="1.3" fill="#fff"/>
+<ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
+<path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
+<path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span></div>
     <div class="kick" style="margin-top:.08in">The pro move</div><div class="bb-promove"><div class='trick'><b>PERSPICACIOUS</b></div>
 <b>Say it.</b> per-spuh-KAY-shuhs
 <b>Spell it.</b> P · E · R · S · P · I · C · A · C · I · O · U · S
@@ -798,8 +897,8 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
   <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div><div class="l">Vex alert</div><div style="font-size:8.8pt;line-height:1.35">A PRUDENT person is wise—end it with -ENT, not -ANT, just as wisdom is never aNTsy.</div></div></div>
       <div class="bb-check"><div class="l">Check yourself</div><div style="font-size:8.8pt;line-height:1.35">Cover the page. Spell these three out loud: <b>perspicacious</b> · <b>sagacious</b> · <b>sapient</b>. Even Vex missed that last one.</div></div></div>
     <div class="bb-break"><span style="font-size:13pt">🎈</span><div><div class="l">Bee Break · idiom to drop at dinner</div><div class="b"><b>go down in flames</b></div><div class="t">to fail suddenly and spectacularly</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>23</span></div></div>
-<div class="page" data-verso data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>24</span></div></div>
+<div class="page" data-vol="10">
       <div class="bb-head"><span>Chapter 5 · Wisdom &amp; Foolishness — sap / sophos / stult</span><span>Practice · ★★☆</span></div>
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
@@ -829,13 +928,13 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
         <div class="say">/ v-A-k-y-oo-uh-s /  ·  /vˈækjuəs/</div>
         <div class="d">Completely empty of meaning, substance, or intelligence; lacking serious thought or depth.</div><div class="hook">hook: VACUOUS means full of emptiness—no double-C, just one C: a truly hollow word for hollow min…</div></div>
         <div class="bb-writeline"></div></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>24</span></div></div>
-<div class="page" data-vol="10">
+      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>25</span></div></div>
+<div class="page" data-verso data-vol="10">
       <div class="bb-head"><span>Chapter 5 · Wisdom &amp; Foolishness — sap / sophos / stult</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
       <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>asinine</b> <span class="tile" style="font-size:7.8pt">/A-suh-neyen/</span><br>devoid of intelligence</div><div class="bb-row"><b>sophisticated</b> <span class="tile" style="font-size:7.8pt">/suh-FIH-stuh-kay-tihd/</span><br>make less natural or innocent</div><div class="bb-row"><b>sophomore</b> <span class="tile" style="font-size:7.8pt">/SAH-fmawr/</span><br>a second-year undergraduate</div><div class="bb-row"><b>sophistry</b> <span class="tile" style="font-size:7.8pt">/SAW-fih-stree/</span><br>a deliberately invalid argument displaying ingenuity in reasoni…</div><div class="bb-row"><b>perspicacity</b> <span class="tile" style="font-size:7.8pt"></span><br></div><div class="bb-row"><b>sagacity</b> <span class="tile" style="font-size:7.8pt">/suh-GAS-ih-tee/</span><br>the mental ability to understand and discriminate between relat…</div><div class="bb-row"><b>tenacious</b> <span class="tile" style="font-size:7.8pt">/t-uh-n-AY-sh-uh-s/</span><br>means holding fast</div><div class="bb-row"><b>voracious</b> <span class="tile" style="font-size:7.8pt">/v-aw-r-AY-sh-uh-s/</span><br>excessively eager avid insatiable</div><div class="bb-row"><b>audacious</b> <span class="tile" style="font-size:7.8pt">/ah-DAY-shuhs/</span><br>invulnerable to fear or intimidation</div><div class="bb-row"><b>agnostic</b> <span class="tile" style="font-size:7.8pt">/a-GNAH-stihk/</span><br>someone who is doubtful or noncommittal about something</div><div class="bb-row"><b>prognosis</b> <span class="tile" style="font-size:7.8pt">/prah-GNOH-suhs/</span><br>a prediction about how something (as the weather) will develop</div><div class="bb-row"><b>diagnosis</b> <span class="tile" style="font-size:7.8pt">/deye-uh-GNOH-suhs/</span><br>identifying the nature or cause of some phenomenon</div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>25</span></div></div>
-<div class="page" data-verso data-vol="10">
+      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>26</span></div></div>
+<div class="page" data-vol="10">
     <div class="bb-head"><span>Chapter 5 · Wisdom &amp; Foolishness — sap / sophos / stult</span><span>Game · ★★☆</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
@@ -855,16 +954,17 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
       <div style="display:flex;flex-wrap:wrap;gap:5pt;justify-content:center;margin-top:.1in"><span class="chip">sagacious</span><span class="chip">sapient</span><span class="chip">omniscient</span><span class="chip">prudent</span><span class="chip">obtuse</span><span class="chip">fatuous</span><span class="chip">vacuous</span><span class="chip">asinine</span><span class="chip">sophomore</span><span class="chip">sophistry</span></div>
       <p style="text-align:center;font-size:8.6pt;color:var(--muted);margin-top:.06in">Words run in every direction — even backwards.</p></div>
     <div class="bb-break"><span style="font-size:13pt">💬</span><div><div class="l">Bee Break · someone said it better</div><div class="b">“Make yourself an honest man, and then you may be sure there is one less rascal in the world.”</div><div class="t">— Thomas Carlyle, Scottish writer</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>26</span></div></div>
-<div class="page" data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>27</span></div></div>
+<div class="page" data-verso data-vol="10">
     <div class="bb-head"><span>Chapter 6 · Courage &amp; Fear — aud / fort / tim / phob</span><span>Story · ★★☆</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.14in">
       <span style="display:inline-grid;place-items:center;width:.58in;height:.58in;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:16pt">6</span>
-      <div><div class="kick">Personality Themes</div><h1 style="font-size:26pt;line-height:1.05">Courage &amp; Fear — aud / fort / tim / phob</h1></div></div>
-    <div class="bb-strip" style="grid-template-columns:1fr 1fr"><div class="bb-panel happy">
+      <div><div class="kick">Personality Themes</div><h1 style="font-size:26pt;line-height:1.05">Courage &amp; Fear — aud / fort / tim / phob</h1></div>
+      <span class="worldchip" style="margin-left:auto;transform:rotate(1.4deg)">📍 the Vibe</span></div>
+    <div class="bb-strip" style="grid-template-columns:1.15fr 1fr"><div class="bb-panel happy">
       <div class="bb-bubble">Meet the root aud, spelled A, U, D. It comes from the Latin audere,…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -875,18 +975,18 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"></div></div></div><div class="bb-panel oops">
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"></div></div></div><div class="bb-panel oops">
       <div class="bb-bubble">Watch this trap. Audacious, meaning daring, shares a u d with audible, meaning able…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true">
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.95in;height:0.95in;flex-shrink:0" aria-hidden="true">
   <path d="M60 26 L30 62 L48 58 L42 92 L60 72 L78 92 L72 58 L90 62 Z" fill="#3A2A55" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M30 62 Q12 48 16 30 Q34 34 42 50 Z M90 62 Q108 48 104 30 Q86 34 78 50 Z" fill="#5B3FA6" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M48 48 l10 4 M72 48 l-10 4" stroke="#E8546A" stroke-width="5" stroke-linecap="round"/>
   <path d="M52 62 q8 -5 16 0" stroke="#E8546A" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div style="text-align:right"></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel happy">
+  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel happy">
       <div class="bb-bubble">Next, fort, spelled F, O, R, T, from the Latin fortis, meaning strong. Effort…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -897,10 +997,10 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"><span class="bb-prop">FORTITUDE</span></div></div></div><div class="bb-panel happy">
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"><span class="bb-prop">FORTITUDE</span></div></div></div><div class="bb-panel happy">
       <div class="bb-bubble">Then tim, from the Latin timor, meaning fear. Timid means easily frightened, and to…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -911,15 +1011,26 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"><span class="bb-prop">INTIMIDATE</span></div></div></div></div>
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"><span class="bb-prop">INTIMIDATE</span></div></div></div></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.14in">
       <span class="bb-audio">🔊 Hear this chapter narrated in the app</span>
       <span class="kick" style="font-size:8.6pt">turn the page — the whole trick, explained →</span></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>27</span></div></div>
-<div class="page" data-verso data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>28</span></div></div>
+<div class="page" data-vol="10">
     <div class="bb-head"><span>Chapter 6 · Courage &amp; Fear — aud / fort / tim / phob</span><span>The idea · ★★☆</span></div>
     <div style="margin-top:.4in" class="kick">The big idea</div>
-    <div class="bb-bigidea">Latin audere = to dare, fortis = strong, and timor = fear create an elegant bravery vocabulary. Greek phobos = fear adds the medical compound fear words — all long, all appearing in bees.</div>
+    <div class="bb-bigidea">Latin audere = to dare, fortis = strong, and timor = fear create an elegant bravery vocabulary. Greek phobos = fear adds the medical compound fear words — all long, all appearing in bees.<span class="cameo"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+<path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
+<path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
+<circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
+<circle cx="60" cy="60" r="26" fill="#FFD9A8"/>
+<path d="M36 52 q24 -14 48 0 q-2 -10 -10 -14 q-14 -6 -28 0 q-8 4 -10 14 z" fill="#6C4FE0"/>
+<circle cx="50" cy="58" r="7.5" fill="#fff"/><circle cx="51.3" cy="59.5" r="3.8" fill="#2B1B5E"/><circle cx="50.2" cy="58.3" r="1.3" fill="#fff"/>
+<circle cx="70" cy="58" r="7.5" fill="#fff"/><circle cx="71.3" cy="59.5" r="3.8" fill="#2B1B5E"/><circle cx="70.2" cy="58.3" r="1.3" fill="#fff"/>
+<ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
+<path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
+<path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span></div>
     <div class="kick" style="margin-top:.08in">The pro move</div><div class="bb-promove"><div class='trick'><b>AUDACIOUS</b></div>
 <b>Say it.</b> ah-DAY-shuhs
 <b>Spell it.</b> A · U · D · A · C · I · O · U · S
@@ -939,8 +1050,8 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
   <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div><div class="l">Vex alert</div><div style="font-size:8.8pt;line-height:1.35">FORTIFY = FORTI + FY — think FORT + I + FY: a fort I will fortiFY with an I not an E.</div></div></div>
       <div class="bb-check"><div class="l">Check yourself</div><div style="font-size:8.8pt;line-height:1.35">Cover the page. Spell these three out loud: <b>audacious</b> · <b>audacity</b> · <b>fortitude</b>. Even Vex missed that last one.</div></div></div>
     <div class="bb-break"><span style="font-size:13pt">✨</span><div><div class="l">Bee Break · simile of the page</div><div class="b"><b>as hungry as a bear</b></div><div class="t">extremely hungry</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>28</span></div></div>
-<div class="page" data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>29</span></div></div>
+<div class="page" data-verso data-vol="10">
       <div class="bb-head"><span>Chapter 6 · Courage &amp; Fear — aud / fort / tim / phob</span><span>Practice · ★★☆</span></div>
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
@@ -970,13 +1081,13 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
         <div class="say">/ TIH-mer-uhs /  ·  /ˈtɪmərəs/</div>
         <div class="d">timid by nature or revealing timidity</div><div class="hook">hook: A TIMOROUS person is full of TIMOR (fear) — spot the Latin root hiding inside.</div></div>
         <div class="bb-writeline"></div></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>29</span></div></div>
-<div class="page" data-verso data-vol="10">
+      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>30</span></div></div>
+<div class="page" data-vol="10">
       <div class="bb-head"><span>Chapter 6 · Courage &amp; Fear — aud / fort / tim / phob</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
       <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>intimidate</b> <span class="tile" style="font-size:7.8pt">/ih-n-t-IH-m-ih-d-ay-t/</span><br>to make fearful.</div><div class="bb-row"><b>temerity</b> <span class="tile" style="font-size:7.8pt">/tuh-MEH-ruh-tee/</span><br>excessive confidence or boldness; audacious daring, often in th…</div><div class="bb-row"><b>agoraphobia</b> <span class="tile" style="font-size:7.8pt">/uh-gaw-ruh-FOH-bee-uh/</span><br>a morbid fear of open spaces or of being alone in a public plac…</div><div class="bb-row"><b>claustrophobia</b> <span class="tile" style="font-size:7.8pt">/klaw-struh-FOH-bee-uh/</span><br>a morbid fear of being closed in a confined space</div><div class="bb-row"><b>xenophobia</b> <span class="tile" style="font-size:7.8pt">/zeh-nuh-FOH-bee-uh/</span><br>a fear of foreigners or strangers</div><div class="bb-row"><b>triskaidekaphobia</b> <span class="tile" style="font-size:7.8pt">/tris-ky-dek-uh-FOH-bee-uh/</span><br>is a fear of the number 13</div><div class="bb-row"><b>valiant</b> <span class="tile" style="font-size:7.8pt">/VA-lyuhnt/</span><br>having or showing valor</div><div class="bb-row"><b>intrepid</b> <span class="tile" style="font-size:7.8pt">/ih-NTREH-puhd/</span><br>invulnerable to fear or intimidation</div><div class="bb-row"><b>dauntless</b> <span class="tile" style="font-size:7.8pt">/DAWNT-les/</span><br>invulnerable to fear or intimidation</div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>30</span></div></div>
-<div class="page" data-vol="10">
+      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>31</span></div></div>
+<div class="page" data-verso data-vol="10">
     <div class="bb-head"><span>Chapter 6 · Courage &amp; Fear — aud / fort / tim / phob</span><span>Game · ★★☆</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
@@ -997,16 +1108,17 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
       <div><div class="kick" style="margin-bottom:.06in">Rescue the vowels</div>
       <div class="g1"><span class="gw">_ff_rt</span><div class="bb-writeline"></div></div><div class="g1"><span class="gw">__d_c___s</span><div class="bb-writeline"></div></div><div class="g1"><span class="gw">c_mf_rt_bl_</span><div class="bb-writeline"></div></div><div class="g1"><span class="gw">x_n_ph_b__</span><div class="bb-writeline"></div></div><div class="g1"><span class="gw">d__ntl_ss</span><div class="bb-writeline"></div></div><div class="g1"><span class="gw">t_m_r_ty</span><div class="bb-writeline"></div></div></div></div></div>
     <div class="bb-break"><span style="font-size:13pt">🎈</span><div><div class="l">Bee Break · idiom to drop at dinner</div><div class="b"><b>call a spade a spade</b></div><div class="t">to speak plainly and directly</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>31</span></div></div>
-<div class="page" data-verso data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>32</span></div></div>
+<div class="page" data-vol="10">
     <div class="bb-head"><span>Chapter 7 · Kindness &amp; Cruelty — ben / mal / clem</span><span>Story · ★★☆</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.14in">
       <span style="display:inline-grid;place-items:center;width:.58in;height:.58in;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:16pt">7</span>
-      <div><div class="kick">Personality Themes</div><h1 style="font-size:26pt;line-height:1.05">Kindness &amp; Cruelty — ben / mal / clem</h1></div></div>
-    <div class="bb-strip" style="grid-template-columns:1fr 1fr"><div class="bb-panel happy">
+      <div><div class="kick">Personality Themes</div><h1 style="font-size:26pt;line-height:1.05">Kindness &amp; Cruelty — ben / mal / clem</h1></div>
+      <span class="worldchip" style="margin-left:auto;transform:rotate(1.4deg)">📍 the Vibe</span></div>
+    <div class="bb-strip" style="grid-template-columns:1.15fr 1fr"><div class="bb-panel happy">
       <div class="bb-bubble">Meet the root bene, spelled B, E, N, E. It comes from Latin and…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -1017,10 +1129,10 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"></div></div></div><div class="bb-panel excited">
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"></div></div></div><div class="bb-panel excited">
       <div class="bb-bubble">Here's the magic. Swap bene for mal and the meaning flips. Benevolent wishes good,…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0;transform:rotate(-6deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -1031,10 +1143,10 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div><div class="bb-panel happy">
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div><div class="bb-panel happy">
       <div class="bb-bubble">Take benevolent. Bene means well, plus velle, meaning to wish. So a benevolent person…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -1045,10 +1157,10 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"><span class="bb-prop">BENEVOLENT</span></div></div></div><div class="bb-panel happy">
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"><span class="bb-prop">BENEVOLENT</span></div></div></div><div class="bb-panel happy">
       <div class="bb-bubble">Now its opposite. Mal, spelled M, A, L, comes from the Latin malus, meaning…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -1059,15 +1171,26 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"></div></div></div></div>
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"></div></div></div></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.14in">
       <span class="bb-audio">🔊 Hear this chapter narrated in the app</span>
       <span class="kick" style="font-size:8.6pt">turn the page — the whole trick, explained →</span></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>32</span></div></div>
-<div class="page" data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>33</span></div></div>
+<div class="page" data-verso data-vol="10">
     <div class="bb-head"><span>Chapter 7 · Kindness &amp; Cruelty — ben / mal / clem</span><span>The idea · ★★☆</span></div>
     <div style="margin-top:.4in" class="kick">The big idea</div>
-    <div class="bb-bigidea">Latin bene = well/good and malus = bad/evil are the fundamental moral roots in English. Swapping the prefix flips the meaning — know one side of every pair and you know both.</div>
+    <div class="bb-bigidea">Latin bene = well/good and malus = bad/evil are the fundamental moral roots in English. Swapping the prefix flips the meaning — know one side of every pair and you know both.<span class="cameo"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+<path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
+<path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
+<circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
+<circle cx="60" cy="60" r="26" fill="#FFD9A8"/>
+<path d="M36 52 q24 -14 48 0 q-2 -10 -10 -14 q-14 -6 -28 0 q-8 4 -10 14 z" fill="#6C4FE0"/>
+<circle cx="50" cy="58" r="7.5" fill="#fff"/><circle cx="51.3" cy="59.5" r="3.8" fill="#2B1B5E"/><circle cx="50.2" cy="58.3" r="1.3" fill="#fff"/>
+<circle cx="70" cy="58" r="7.5" fill="#fff"/><circle cx="71.3" cy="59.5" r="3.8" fill="#2B1B5E"/><circle cx="70.2" cy="58.3" r="1.3" fill="#fff"/>
+<ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
+<path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
+<path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span></div>
     <div class="kick" style="margin-top:.08in">The pro move</div><div class="bb-promove"><div class='trick'><b>MALEVOLENT</b></div>
 <b>Say it.</b> muh-LEH-vuh-luhnt
 <b>Spell it.</b> M · A · L · E · V · O · L · E · N · T
@@ -1087,8 +1210,8 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
   <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div><div class="l">Vex alert</div><div style="font-size:8.8pt;line-height:1.35">MALEvolent = MALE (bad) + VOLENT (wishing) — wishing badly; ends in -lent not -lant</div></div></div>
       <div class="bb-check"><div class="l">Check yourself</div><div style="font-size:8.8pt;line-height:1.35">Cover the page. Spell these three out loud: <b>benevolent</b> · <b>benefactor</b> · <b>benign</b>. Even Vex missed that last one.</div></div></div>
     <div class="bb-break"><span style="font-size:13pt">💬</span><div><div class="l">Bee Break · someone said it better</div><div class="b">“Great moments are born from great opportunity.”</div><div class="t">— Herb Brooks, hockey coach</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>33</span></div></div>
-<div class="page" data-verso data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>34</span></div></div>
+<div class="page" data-vol="10">
       <div class="bb-head"><span>Chapter 7 · Kindness &amp; Cruelty — ben / mal / clem</span><span>Practice · ★★☆</span></div>
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
@@ -1118,13 +1241,13 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
         <div class="say">/ m-uh-l-IH-sh-uh-s /  ·  /məlˈɪʃəs/</div>
         <div class="d">marked by evil intention</div><div class="hook">hook: One L of malice is enough to be MALICIOUS — only one L: M-A-L-I-C-I-O-U-S.</div></div>
         <div class="bb-writeline"></div></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>34</span></div></div>
-<div class="page" data-vol="10">
+      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>35</span></div></div>
+<div class="page" data-verso data-vol="10">
       <div class="bb-head"><span>Chapter 7 · Kindness &amp; Cruelty — ben / mal / clem</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
       <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>malignant</b> <span class="tile" style="font-size:7.8pt">/m-uh-l-IH-g-n-uh-n-t/</span><br>tending to produce death or deterioration used in medicine</div><div class="bb-row"><b>maladroit</b> <span class="tile" style="font-size:7.8pt">/ma-luh-DROYT/</span><br>Lacking skill, dexterity, or cleverness; clumsy or awkward in m…</div><div class="bb-row"><b>clemency</b> <span class="tile" style="font-size:7.8pt">/KLEH-muh-nsee/</span><br>mercy and lenience shown toward someone it is within one's powe…</div><div class="bb-row"><b>clement</b> <span class="tile" style="font-size:7.8pt">/KLEH-muhnt/</span><br>(of weather or climate) physically mild</div><div class="bb-row"><b>inclement</b> <span class="tile" style="font-size:7.8pt">/ih-NKLEH-muhnt/</span><br>(of weather or climate) severe</div><div class="bb-row"><b>malaise</b> <span class="tile" style="font-size:7.8pt">/ma-LAYZ/</span><br>a general feeling of physical discomfort, illness, or mental un…</div><div class="bb-row"><b>malaria</b> <span class="tile" style="font-size:7.8pt">/m-uh-l-EH-r-ee-uh/</span><br>is a disease characterized by chills or fever caused by the bit…</div><div class="bb-row"><b>maleficent</b> <span class="tile" style="font-size:7.8pt"></span><br></div><div class="bb-row"><b>malediction</b> <span class="tile" style="font-size:7.8pt">/mal-eh-DIK-shun/</span><br>the act of calling down a curse that invokes evil (and usually …</div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>35</span></div></div>
-<div class="page" data-verso data-vol="10">
+      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>36</span></div></div>
+<div class="page" data-vol="10">
     <div class="bb-head"><span>Chapter 7 · Kindness &amp; Cruelty — ben / mal / clem</span><span>Game · ★★☆</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
@@ -1143,16 +1266,17 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
     <div style="margin-top:.1in"><div class="bb-xword-wrap" style="display:flex;justify-content:center"><table class="bb-xword"><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"><i>1</i></td></tr><tr><td></td><td></td><td></td><td class="c"><i>2</i></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td></tr><tr><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td class="c"><i>3</i></td><td></td><td></td><td></td><td class="c"></td></tr><tr><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td class="c"><i>4</i></td><td></td><td class="c"></td></tr><tr><td></td><td></td><td></td><td class="c"></td><td></td><td class="c"><i>5</i></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td></tr><tr><td></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td></tr><tr><td></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td></tr><tr><td></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td></tr><tr><td></td><td></td><td class="c"><i>6</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td></tr><tr><td></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td></tr><tr><td></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td></tr><tr><td class="c"><i>7</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td class="c"><i>8</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td></td></tr></table></div>
         <div class="bb-clues"><div><h3>Across</h3><div><b>6.</b> the act of praying for divine protection</div><div><b>7.</b> is having a kindly disposition</div><div><b>8.</b> doing or producing good</div></div><div><h3>Down</h3><div><b>1.</b> intending or showing kindness</div><div><b>2.</b> wishing or appearing to wish evil to others; arising from intense ill will …</div><div><b>3.</b> a person who helps people or institutions (especially with financial help)</div><div><b>4.</b> marked by evil intention</div><div><b>5.</b> is wrongdoing by a public official</div></div></div></div>
     <div class="bb-break"><span style="font-size:13pt">✨</span><div><div class="l">Bee Break · simile of the page</div><div class="b"><b>like a drowned rat</b></div><div class="t">soaked and bedraggled</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>36</span></div></div>
-<div class="page" data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>37</span></div></div>
+<div class="page" data-verso data-vol="10">
     <div class="bb-head"><span>Chapter 8 · Social &amp; Solitary — greg / anthrop / soci / m…</span><span>Story · ★★☆</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.14in">
       <span style="display:inline-grid;place-items:center;width:.58in;height:.58in;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:16pt">8</span>
-      <div><div class="kick">Personality Themes</div><h1 style="font-size:26pt;line-height:1.05">Social &amp; Solitary — greg / anthrop / soci / mis</h1></div></div>
-    <div class="bb-strip" style="grid-template-columns:1fr 1fr"><div class="bb-panel happy">
+      <div><div class="kick">Personality Themes</div><h1 style="font-size:26pt;line-height:1.05">Social &amp; Solitary — greg / anthrop / soci / mis</h1></div>
+      <span class="worldchip" style="margin-left:auto;transform:rotate(1.4deg)">📍 the Vibe</span></div>
+    <div class="bb-strip" style="grid-template-columns:1.15fr 1fr"><div class="bb-panel happy">
       <div class="bb-bubble">Meet the root greg, spelled G, R, E, G. It comes from the Latin…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -1163,18 +1287,18 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"></div></div></div><div class="bb-panel oops">
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"></div></div></div><div class="bb-panel oops">
       <div class="bb-bubble">Here's a sneaky one. Egregious is e, meaning out of, plus greg, the flock.…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true">
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.95in;height:0.95in;flex-shrink:0" aria-hidden="true">
   <path d="M60 26 L30 62 L48 58 L42 92 L60 72 L78 92 L72 58 L90 62 Z" fill="#3A2A55" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M30 62 Q12 48 16 30 Q34 34 42 50 Z M90 62 Q108 48 104 30 Q86 34 78 50 Z" fill="#5B3FA6" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M48 48 l10 4 M72 48 l-10 4" stroke="#E8546A" stroke-width="5" stroke-linecap="round"/>
   <path d="M52 62 q8 -5 16 0" stroke="#E8546A" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div style="text-align:right"><span class="bb-prop">EGREGIOUS</span></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
+  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span><div style="text-align:right"><span class="bb-prop">EGREGIOUS</span></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
       <div class="bb-bubble">Add the Greek misos, meaning hatred. A misanthrope is misos, hate, plus anthropos, human,…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0;transform:rotate(-6deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -1185,10 +1309,10 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"><span class="bb-prop">MISANTHROPE</span></div></div><span class="bb-sfx win">GOT IT!</span></div><div class="bb-panel happy">
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"><span class="bb-prop">MISANTHROPE</span></div></div><span class="bb-sfx win">GOT IT!</span></div><div class="bb-panel happy">
       <div class="bb-bubble">Now the Greek anthropos, meaning human being. Anthropology, spelled with that root, is simply…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
 <circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
@@ -1199,15 +1323,26 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 <ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
 <path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
 <path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
-<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg><div style="text-align:right"><span class="bb-prop">ANTHROPOLOGY</span></div></div></div></div>
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span><div style="text-align:right"><span class="bb-prop">ANTHROPOLOGY</span></div></div></div></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.14in">
       <span class="bb-audio">🔊 Hear this chapter narrated in the app</span>
       <span class="kick" style="font-size:8.6pt">turn the page — the whole trick, explained →</span></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>37</span></div></div>
-<div class="page" data-verso data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>38</span></div></div>
+<div class="page" data-vol="10">
     <div class="bb-head"><span>Chapter 8 · Social &amp; Solitary — greg / anthrop / soci / m…</span><span>The idea · ★★☆</span></div>
     <div style="margin-top:.4in" class="kick">The big idea</div>
-    <div class="bb-bigidea">Latin grex = flock and Greek anthropos = human being create vocabulary about how people relate to society. These are some of the richest theme words in English.</div>
+    <div class="bb-bigidea">Latin grex = flock and Greek anthropos = human being create vocabulary about how people relate to society. These are some of the richest theme words in English.<span class="cameo"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
+<path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
+<path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
+<circle cx="38" cy="13" r="4.5" fill="#FFC23D"/><circle cx="82" cy="13" r="4.5" fill="#FFC23D"/><circle cx="60" cy="16" r="4" fill="#6C4FE0"/>
+<circle cx="60" cy="60" r="26" fill="#FFD9A8"/>
+<path d="M36 52 q24 -14 48 0 q-2 -10 -10 -14 q-14 -6 -28 0 q-8 4 -10 14 z" fill="#6C4FE0"/>
+<circle cx="50" cy="58" r="7.5" fill="#fff"/><circle cx="51.3" cy="59.5" r="3.8" fill="#2B1B5E"/><circle cx="50.2" cy="58.3" r="1.3" fill="#fff"/>
+<circle cx="70" cy="58" r="7.5" fill="#fff"/><circle cx="71.3" cy="59.5" r="3.8" fill="#2B1B5E"/><circle cx="70.2" cy="58.3" r="1.3" fill="#fff"/>
+<ellipse cx="43" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/><ellipse cx="77" cy="68" rx="4.5" ry="2.8" fill="#FF9EB8" opacity=".9"/>
+<path d="M50 71 q10 9 20 0 q-10 4 -20 0 z" fill="#8A2A3E"/>
+<path d="M42 84 l6 8 l6 -8 l6 8 l6 -8 l6 8 l6 -8 v10 q-18 10 -36 0 z" fill="#FF5D9E"/>
+<circle cx="20" cy="46" r="2.2" fill="#FFC83D"/><circle cx="100" cy="46" r="2.2" fill="#FFC83D"/></svg></span></div>
     <div class="kick" style="margin-top:.08in">The pro move</div><div class="bb-promove"><div class='trick'><b>GREGARIOUS</b></div>
 <b>Say it.</b> gruh-GEH-ree-uhs
 <b>Spell it.</b> G · R · E · G · A · R · I · O · U · S
@@ -1227,8 +1362,8 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
   <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div><div class="l">Vex alert</div><div style="font-size:8.8pt;line-height:1.35">A misoGYNIST hates women — end with -IST like a specialist in hatred, not -yst.</div></div></div>
       <div class="bb-check"><div class="l">Check yourself</div><div style="font-size:8.8pt;line-height:1.35">Cover the page. Spell these three out loud: <b>gregarious</b> · <b>egregious</b> · <b>congregate</b>. Even Vex missed that last one.</div></div></div>
     <div class="bb-break"><span style="font-size:13pt">🎈</span><div><div class="l">Bee Break · idiom to drop at dinner</div><div class="b"><b>cut a long story short</b></div><div class="t">to skip the details and give the main point</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>38</span></div></div>
-<div class="page" data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>39</span></div></div>
+<div class="page" data-verso data-vol="10">
       <div class="bb-head"><span>Chapter 8 · Social &amp; Solitary — greg / anthrop / soci / m…</span><span>Practice · ★★☆</span></div>
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
@@ -1258,13 +1393,13 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
         <div class="say">/ mih-SOG-uh-mist /  ·  /mɪˈsɑɡəmɪst/</div>
         <div class="d">a person who hates marriage</div><div class="hook">hook: from Greek misos 'hatred' + gamos 'marriage'</div></div>
         <div class="bb-writeline"></div></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>39</span></div></div>
-<div class="page" data-verso data-vol="10">
+      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>40</span></div></div>
+<div class="page" data-vol="10">
       <div class="bb-head"><span>Chapter 8 · Social &amp; Solitary — greg / anthrop / soci / m…</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
       <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>anthropology</b> <span class="tile" style="font-size:7.8pt">/a-nthruh-PAH-luh-jee/</span><br>the social science that studies the origins and social relation…</div><div class="bb-row"><b>philanthropist</b> <span class="tile" style="font-size:7.8pt">/fuh-LA-nthruh-puhst/</span><br>someone who makes charitable donations intended to increase hum…</div><div class="bb-row"><b>anthropomorphic</b> <span class="tile" style="font-size:7.8pt">/a-nthruh-puh-MAW-rfihk/</span><br>suggesting human characteristics for animals or inanimate things</div><div class="bb-row"><b>anthropocentric</b> <span class="tile" style="font-size:7.8pt">/a-nthruh-puh-SEH-ntrihk/</span><br>human-centered</div><div class="bb-row"><b>sociable</b> <span class="tile" style="font-size:7.8pt">/SOH-shuh-buhl/</span><br>a party of people assembled to promote sociability and communal…</div><div class="bb-row"><b>associate</b> <span class="tile" style="font-size:7.8pt">/uh-SOH-see-uht/</span><br>a person who joins with others in some activity or endeavor</div><div class="bb-row"><b>convivial</b> <span class="tile" style="font-size:7.8pt">/k-uh-n-v-IH-v-ee-uh-l/</span><br>means friendly or agreeable</div><div class="bb-row"><b>affable</b> <span class="tile" style="font-size:7.8pt">/A-fuh-buhl/</span><br>friendly, easy to talk to, and pleasant in manner</div><div class="bb-row"><b>recluse</b> <span class="tile" style="font-size:7.8pt">/rih-KLOOS/</span><br>one who lives in solitude</div><div class="bb-row"><b>hermit</b> <span class="tile" style="font-size:7.8pt">/HUR-muht/</span><br>one retired from society for religious reasons</div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>40</span></div></div>
-<div class="page" data-vol="10">
+      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>41</span></div></div>
+<div class="page" data-verso data-vol="10">
     <div class="bb-head"><span>Chapter 8 · Social &amp; Solitary — greg / anthrop / soci / m…</span><span>Game · ★★☆</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
@@ -1287,18 +1422,18 @@ Dull would he be of soul who could pass by.”</div><div class="t">— William W
 Piping songs of pleasant glee,
 On a cloud I saw a child,
 And he laughing said to me.”</div><div class="t">— William Blake, from 'Songs of Innocence' (Introduction)</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>41</span></div></div>
-<div class="page" data-verso data-vol="10">
-      <div class="bb-head"><span>Word Personalities</span><span>The Big List</span></div>
-      <div style="margin-top:.4in"><h2 style="font-size:20pt">Every word in this book. Circle what you own.</h2></div>
-      <div class="bb-biglist" style="margin-top:.14in"><div><span></span>affable</div><div><span></span>aggregate</div><div><span></span>agnostic</div><div><span></span>agoraphobia</div><div><span></span>altruistic</div><div><span></span>anthropocentric</div><div><span></span>anthropology</div><div><span></span>anthropomorphic</div><div><span></span>apathetic</div><div><span></span>ardent</div><div><span></span>asinine</div><div><span></span>associate</div><div><span></span>audacious</div><div><span></span>audacity</div><div><span></span>autobiography</div><div><span></span>autocracy</div><div><span></span>autodidact</div><div><span></span>autonomous</div><div><span></span>benediction</div><div><span></span>benefactor</div><div><span></span>beneficent</div><div><span></span>benevolent</div><div><span></span>benign</div><div><span></span>cacophony</div><div><span></span>choleric</div><div><span></span>claustrophobia</div><div><span></span>clemency</div><div><span></span>clement</div><div><span></span>colloquial</div><div><span></span>colloquy</div><div><span></span>comfortable</div><div><span></span>congregate</div><div><span></span>convivial</div><div><span></span>credulous</div><div><span></span>dauntless</div><div><span></span>diagnosis</div><div><span></span>disingenuous</div><div><span></span>dissemble</div><div><span></span>duplicitous</div><div><span></span>ebullient</div><div><span></span>effervescent</div><div><span></span>effort</div><div><span></span>egocentric</div><div><span></span>egoism</div><div><span></span>egoist</div><div><span></span>egomaniac</div><div><span></span>egotism</div><div><span></span>egotist</div><div><span></span>egregious</div><div><span></span>eloquent</div><div><span></span>equanimous</div><div><span></span>equivocate</div><div><span></span>euphony</div><div><span></span>exuberant</div><div><span></span>fatuous</div><div><span></span>fervent</div><div><span></span>fervid</div><div><span></span>fortify</div><div><span></span>fortitude</div><div><span></span>garrulous</div><div><span></span>grandiloquent</div><div><span></span>gregarious</div><div><span></span>hermit</div><div><span></span>impassioned</div><div><span></span>imperturbable</div><div><span></span>inclement</div><div><span></span>incredulous</div><div><span></span>interlocutor</div><div><span></span>intimidate</div><div><span></span>intrepid</div><div><span></span>loquacious</div><div><span></span>magnanimous</div><div><span></span>magniloquent</div><div><span></span>maladroit</div><div><span></span>malaise</div><div><span></span>malaria</div><div><span></span>malediction</div><div><span></span>maleficent</div><div><span></span>malevolent</div><div><span></span>malfeasance</div><div><span></span>malicious</div><div><span></span>malignant</div><div><span></span>melancholy</div><div><span></span>mendacious</div><div><span></span>mendacity</div><div><span></span>misanthrope</div><div><span></span>miscreant</div><div><span></span>misogamist</div><div><span></span>misogynist</div><div><span></span>narcissism</div><div><span></span>obloquy</div><div><span></span>obtuse</div><div><span></span>omniscient</div><div><span></span>pauciloquent</div><div><span></span>perspicacious</div><div><span></span>perspicacity</div><div><span></span>philanthropist</div><div><span></span>phlegmatic</div><div><span></span>polyphony</div><div><span></span>prevaricate</div><div><span></span>prognosis</div><div><span></span>prudent</div><div><span></span>pseudonym</div><div><span></span>pseudoscience</div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>42</span></div></div>
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>42</span></div></div>
 <div class="page" data-vol="10">
       <div class="bb-head"><span>Word Personalities</span><span>The Big List</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">Every word in this book. Circle what you own.</h2></div>
-      <div class="bb-biglist" style="margin-top:.14in"><div><span></span>recluse</div><div><span></span>reticent</div><div><span></span>sagacious</div><div><span></span>sagacity</div><div><span></span>sanguine</div><div><span></span>sapient</div><div><span></span>segregate</div><div><span></span>sociable</div><div><span></span>soliloquy</div><div><span></span>solipsism</div><div><span></span>somniloquy</div><div><span></span>sophisticated</div><div><span></span>sophistry</div><div><span></span>sophomore</div><div><span></span>stoic</div><div><span></span>symphony</div><div><span></span>taciturn</div><div><span></span>temerity</div><div><span></span>tenacious</div><div><span></span>timid</div><div><span></span>timorous</div><div><span></span>triskaidekaphobia</div><div><span></span>vacuous</div><div><span></span>valiant</div><div><span></span>vehement</div><div><span></span>ventriloquist</div><div><span></span>veracious</div><div><span></span>veracity</div><div><span></span>verbose</div><div><span></span>verdict</div><div><span></span>verify</div><div><span></span>verisimilitude</div><div><span></span>vivacious</div><div><span></span>voracious</div><div><span></span>xenophobia</div></div>
+      <div class="bb-biglist" style="margin-top:.14in"><div><span></span>affable</div><div><span></span>aggregate</div><div><span></span>agnostic</div><div><span></span>agoraphobia</div><div><span></span>altruistic</div><div><span></span>anthropocentric</div><div><span></span>anthropology</div><div><span></span>anthropomorphic</div><div><span></span>apathetic</div><div><span></span>ardent</div><div><span></span>asinine</div><div><span></span>associate</div><div><span></span>audacious</div><div><span></span>audacity</div><div><span></span>autobiography</div><div><span></span>autocracy</div><div><span></span>autodidact</div><div><span></span>autonomous</div><div><span></span>benediction</div><div><span></span>benefactor</div><div><span></span>beneficent</div><div><span></span>benevolent</div><div><span></span>benign</div><div><span></span>cacophony</div><div><span></span>choleric</div><div><span></span>claustrophobia</div><div><span></span>clemency</div><div><span></span>clement</div><div><span></span>colloquial</div><div><span></span>colloquy</div><div><span></span>comfortable</div><div><span></span>congregate</div><div><span></span>convivial</div><div><span></span>credulous</div><div><span></span>dauntless</div><div><span></span>diagnosis</div><div><span></span>disingenuous</div><div><span></span>dissemble</div><div><span></span>duplicitous</div><div><span></span>ebullient</div><div><span></span>effervescent</div><div><span></span>effort</div><div><span></span>egocentric</div><div><span></span>egoism</div><div><span></span>egoist</div><div><span></span>egomaniac</div><div><span></span>egotism</div><div><span></span>egotist</div><div><span></span>egregious</div><div><span></span>eloquent</div><div><span></span>equanimous</div><div><span></span>equivocate</div><div><span></span>euphony</div><div><span></span>exuberant</div><div><span></span>fatuous</div><div><span></span>fervent</div><div><span></span>fervid</div><div><span></span>fortify</div><div><span></span>fortitude</div><div><span></span>garrulous</div><div><span></span>grandiloquent</div><div><span></span>gregarious</div><div><span></span>hermit</div><div><span></span>impassioned</div><div><span></span>imperturbable</div><div><span></span>inclement</div><div><span></span>incredulous</div><div><span></span>interlocutor</div><div><span></span>intimidate</div><div><span></span>intrepid</div><div><span></span>loquacious</div><div><span></span>magnanimous</div><div><span></span>magniloquent</div><div><span></span>maladroit</div><div><span></span>malaise</div><div><span></span>malaria</div><div><span></span>malediction</div><div><span></span>maleficent</div><div><span></span>malevolent</div><div><span></span>malfeasance</div><div><span></span>malicious</div><div><span></span>malignant</div><div><span></span>melancholy</div><div><span></span>mendacious</div><div><span></span>mendacity</div><div><span></span>misanthrope</div><div><span></span>miscreant</div><div><span></span>misogamist</div><div><span></span>misogynist</div><div><span></span>narcissism</div><div><span></span>obloquy</div><div><span></span>obtuse</div><div><span></span>omniscient</div><div><span></span>pauciloquent</div><div><span></span>perspicacious</div><div><span></span>perspicacity</div><div><span></span>philanthropist</div><div><span></span>phlegmatic</div><div><span></span>polyphony</div><div><span></span>prevaricate</div><div><span></span>prognosis</div><div><span></span>prudent</div><div><span></span>pseudonym</div><div><span></span>pseudoscience</div></div>
       <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>43</span></div></div>
-<div class="page" data-verso data-vol="10" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
+<div class="page" data-verso data-vol="10">
+      <div class="bb-head"><span>Word Personalities</span><span>The Big List</span></div>
+      <div style="margin-top:.4in"><h2 style="font-size:20pt">Every word in this book. Circle what you own.</h2></div>
+      <div class="bb-biglist" style="margin-top:.14in"><div><span></span>recluse</div><div><span></span>reticent</div><div><span></span>sagacious</div><div><span></span>sagacity</div><div><span></span>sanguine</div><div><span></span>sapient</div><div><span></span>segregate</div><div><span></span>sociable</div><div><span></span>soliloquy</div><div><span></span>solipsism</div><div><span></span>somniloquy</div><div><span></span>sophisticated</div><div><span></span>sophistry</div><div><span></span>sophomore</div><div><span></span>stoic</div><div><span></span>symphony</div><div><span></span>taciturn</div><div><span></span>temerity</div><div><span></span>tenacious</div><div><span></span>timid</div><div><span></span>timorous</div><div><span></span>triskaidekaphobia</div><div><span></span>vacuous</div><div><span></span>valiant</div><div><span></span>vehement</div><div><span></span>ventriloquist</div><div><span></span>veracious</div><div><span></span>veracity</div><div><span></span>verbose</div><div><span></span>verdict</div><div><span></span>verify</div><div><span></span>verisimilitude</div><div><span></span>vivacious</div><div><span></span>voracious</div><div><span></span>xenophobia</div></div>
+      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>44</span></div></div>
+<div class="page" data-vol="10" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
     <svg viewBox="0 0 120 120" style="width:1.2in;height:1.2in;flex-shrink:0" aria-hidden="true">
   <path d="M60 26 L30 62 L48 58 L42 92 L60 72 L78 92 L72 58 L90 62 Z" fill="#3A2A55" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M30 62 Q12 48 16 30 Q34 34 42 50 Z M90 62 Q108 48 104 30 Q86 34 78 50 Z" fill="#5B3FA6" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
@@ -1307,13 +1442,13 @@ And he laughing said to me.”</div><div class="t">— William Blake, from 'Song
   <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg>
     <h1 style="font-size:32pt;margin:.14in 0 .06in">No peeking until you've tried.</h1>
     <p style="color:var(--muted);font-size:11pt">Vex would peek. Be better than Vex.</p>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>44</span></div></div>
-<div class="page" data-vol="10">
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>45</span></div></div>
+<div class="page" data-verso data-vol="10">
       <div class="bb-head"><span>Word Personalities</span><span>Answer key</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">Answer key</h2></div>
       <div class="bb-key" style="margin-top:.12in"><div><b>Ch. 1 crossword</b> — Across: 7 magnanimous, 9 autodidact · Down: 1 autonomous, 2 narcissism, 3 altruistic, 4 egomaniac, 5 egocentric, 6 egotist, 8 egoist</div><div><b>Ch. 3 scramble</b> — ravyeitc=veracity, eucvqeaoti=equivocate, eiuacdnosm=mendacious, otupsclduii=duplicitous, cvritde=verdict, uearovisc=veracious · vowels: mendacious, incredulous, credulous, veracious, mendacity, veracity</div><div><b>Ch. 4 crossword</b> — Across: 3 melancholy, 4 effervescent, 7 vivacious, 9 exuberant, 10 apathetic · Down: 1 sanguine, 2 phlegmatic, 5 ebullient, 6 choleric, 8 stoic</div><div><b>Ch. 6 scramble</b> — dfeoruitt=fortitude, iadsacouu=audacious, dyuitcaa=audacity, smoortui=timorous, lefotrocbma=comfortable, eintmtdiia=intimidate · vowels: effort, audacious, comfortable, xenophobia, dauntless, temerity</div><div><b>Ch. 7 crossword</b> — Across: 6 benediction, 7 benign, 8 beneficent · Down: 1 benevolent, 2 malevolent, 3 benefactor, 4 malicious, 5 malfeasance</div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>45</span></div></div>
-<div class="page" data-verso data-vol="10" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
+      <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>46</span></div></div>
+<div class="page" data-vol="10" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
     <svg viewBox="0 0 120 120" style="width:1.4in;height:1.4in;flex-shrink:0" aria-hidden="true"><path d="M60 34 q-4 -16 -22 -22 q2 16 12 24 z" fill="#6C4FE0"/>
 <path d="M60 34 q4 -16 22 -22 q-2 16 -12 24 z" fill="#FF5D9E"/>
 <path d="M52 32 q4 -12 8 -14 q4 2 8 14 z" fill="#FFC23D"/>
@@ -1330,4 +1465,4 @@ And he laughing said to me.”</div><div class="t">— William Blake, from 'Song
     <div style="margin:0 auto .2in" class="bb-badge"><div class="b1">DONE</div><div class="b1" style="border-style:solid">★</div><div class="b1">+1</div></div>
     <p style="font-size:10.5pt;max-width:5.4in;margin:0 auto .26in;line-height:1.55">Every word in here also lives in the Bizzing Bee app, with real audio, games and a coach that remembers what you miss. Paper for the muscles, app for the ears.</p>
     <p style="font-size:8.4pt;color:var(--muted);max-width:5.9in;margin:0 auto;line-height:1.55">Bizzing Bee is an independent study project — not affiliated with, sponsored by, or endorsed by the Scripps National Spelling Bee, the North South Foundation, or Merriam-Webster. Competition names appear only to describe what the practice material relates to. Definitions, sentences, hints and stories are written for this project. Typefaces are open-licensed (SIL OFL).</p>
-    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>46</span></div></div></body></html>
+    <div class="bb-foot"><span>Bizzing Bee · Word Personalities</span><span>47</span></div></div></body></html>
