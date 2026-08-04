@@ -669,6 +669,111 @@ img.kp-art{display:block;margin:0 auto 14px;max-height:150px;width:auto}
 .kp-art2 img{max-height:128px;width:auto}
 img.napkin-art{float:left;width:120px;margin:4px 16px 4px 0}
 </style>
+<style>
+/* ============================================================
+   FRAMEWORK PLATES — redesigned diagrams in the book's palette
+   (navy/indigo ramp, old gold, peach). Overrides earlier rules.
+   ============================================================ */
+:root{--fw-deep:#131347;--fw-navy:#1b1b73;--fw-mid:#23239b;--fw-indigo:#3a37d5;
+      --fw-line:#c9c4e4;--fw-gold:#c9a24b;--fw-goldink:#8a6a24;--fw-cream:#fdfbf5}
+
+.diagram{margin:26px auto}
+.diagram .dtitle{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--fw-deep);font-size:12.5px;letter-spacing:.2em;margin-bottom:14px}
+.diagram .dtitle::before,.diagram .dtitle::after{content:"\25C6";color:var(--fw-gold);font-size:8px}
+.diagram .dnote{color:#6b6252;font-size:11.5px;margin-top:12px}
+
+/* ---- stacks: keycap step-flow with navy→indigo ramp ---- */
+.stack .step{position:relative;display:flex;align-items:center;min-height:48px;
+  padding:10px 14px 10px 122px;border:1px solid var(--fw-line);border-radius:9px;
+  background:var(--fw-cream);font-size:12.6px;line-height:1.5;text-align:left}
+.stack .step b{position:absolute;left:11px;top:50%;transform:translateY(-50%);
+  width:96px;box-sizing:border-box;text-align:center;letter-spacing:.05em;
+  background:var(--fw-navy);color:#fff;padding:7px 5px;border-radius:7px;
+  font-size:9.6px;line-height:1.3;font-weight:700}
+.stack > div:nth-child(1) b{background:#0d0d2e}
+.stack > div:nth-child(3) b{background:#161654}
+.stack > div:nth-child(5) b{background:var(--fw-navy)}
+.stack > div:nth-child(7) b{background:var(--fw-mid)}
+.stack > div:nth-child(9) b{background:#2d2cba}
+.stack > div:nth-child(11) b{background:var(--fw-indigo)}
+.stack .arrow{height:15px;margin:2px auto;color:var(--fw-gold)}
+.stack .arrow::after{content:"\25BC";font-size:10px}
+
+/* ---- ladders: navy plaque numbers, accent cards ---- */
+.ladder .rung{border:1px solid #ddd6c2;border-left:4px solid var(--fw-navy);
+  background:var(--fw-cream);border-radius:9px;padding:12px 14px;gap:14px;margin-bottom:9px}
+.ladder .rung .no{width:36px;height:36px;background:var(--fw-navy);color:#f4e3b2;border:none;
+  box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--fw-gold);font-family:var(--sans);font-weight:700;font-size:15px}
+.ladder .rung h4{color:var(--fw-deep);font-size:13.8px;margin-bottom:4px}
+.ladder .rung p{font-size:12.4px;color:#333}
+
+/* ---- pyramids: stepped trapezoid bands ---- */
+.pyramid{padding:0}
+.pyramid::before{display:none}
+.pyramid .lvl{color:#fff;border:none;margin:0 auto 4px;padding:8px 26px;border-radius:2px}
+.pyramid .l1{width:58%!important;min-width:230px!important;background:var(--fw-deep)!important;clip-path:polygon(9% 0,91% 0,100% 100%,0 100%)}
+.pyramid .l2{width:72%!important;min-width:250px!important;background:var(--fw-navy)!important;clip-path:polygon(6% 0,94% 0,100% 100%,0 100%)}
+.pyramid .l3{width:86%!important;min-width:270px!important;background:var(--fw-mid)!important;clip-path:polygon(4.5% 0,95.5% 0,100% 100%,0 100%)}
+.pyramid .l4{width:100%!important;background:#2f2dc0!important;clip-path:polygon(3.5% 0,96.5% 0,100% 100%,0 100%)}
+.pyramid .lvl h4{color:#f4e3b2;font-size:12.2px;letter-spacing:.03em;margin-bottom:4px}
+.pyramid .lvl p{color:#e9e8f8;font-size:11px;line-height:1.45}
+.pyramid .lvl p i{color:#bfc4f2;margin-top:4px;font-size:10.4px}
+
+/* ---- 2x2 matrices: colored-meaning quadrants ---- */
+.grid2x2{gap:7px}
+.grid2x2 .q{border-radius:9px;padding:13px 12px;font-size:11.9px;line-height:1.5}
+.grid2x2 .q h4{display:flex;gap:6px;align-items:baseline;font-size:12.6px;margin-bottom:5px}
+.grid2x2 .q h4::before{content:"\25C6";font-size:7px;color:var(--fw-gold)}
+.grid2x2 .q.best{background:var(--fw-navy);color:#e9e8f8;box-shadow:inset 0 0 0 1.5px var(--fw-gold)}
+.grid2x2 .q.best h4{color:#f4e3b2}
+.grid2x2 .q.mid{background:#eceafb;border:none;color:#22224a}
+.grid2x2 .q.mid h4{color:var(--fw-navy)}
+.grid2x2 .q.warn{background:#fbe7c6;border:none;color:#4a3418}
+.grid2x2 .q.warn h4{color:#7a4d10}
+.grid2x2 .ylab,.grid2x2 .xlab{color:var(--fw-deep);font-size:10.5px;letter-spacing:.12em}
+.grid2x2 .axis{color:var(--fw-goldink);font-size:9.5px}
+
+/* ---- KV tables: navy label rail ---- */
+.kv{border:1.5px solid var(--fw-navy);border-radius:10px;overflow:hidden}
+.kv .kv-row{border-bottom:1px solid #e6e3d6}
+.kv .kv-row:last-child{border-bottom:none}
+.kv .kv-k{flex:0 0 128px;background:var(--fw-navy);color:#f4e3b2;font-size:10.8px;letter-spacing:.06em;
+  text-transform:uppercase;padding:10px 10px;border-right:2px solid var(--fw-gold);line-height:1.35}
+.kv .kv-row:nth-child(even) .kv-v{background:#faf8f1}
+.kv .kv-v{font-size:12.4px;padding:10px 12px}
+
+/* ---- pills: keep original palette, polish ---- */
+.pills .pill{border-radius:13px;box-shadow:0 1px 0 rgba(0,0,0,.12)}
+.pills .rowlab{color:var(--fw-deep)}
+.pills .caption{color:#6b6252}
+.pills .caption b{color:var(--fw-deep)}
+
+/* ---- network map: banded cards around a sealed hub ---- */
+.netmap{gap:10px}
+.netmap .hub{width:92px;height:92px;background:var(--fw-deep);color:#f4e3b2;
+  box-shadow:0 0 0 3px #fff,0 0 0 4.5px var(--fw-gold);font-family:var(--display);font-weight:700;font-size:21px}
+.netmap .node{border:1px solid #d9d4ea;border-top:none;border-radius:9px;overflow:hidden;padding:0;font-size:11.8px;background:#fff}
+.netmap .node h4{background:var(--fw-navy);color:#fff;margin:0;padding:7px 11px;font-size:11.6px;letter-spacing:.05em}
+.netmap .node .likes{padding:8px 11px 3px;margin:0;color:#26264c}
+.netmap .node .flags{padding:2px 11px 9px;margin:0;color:#7a4d10}
+.netmap .node .likes b,.netmap .node .flags b{color:inherit}
+
+/* ---- nine gems: jewel cards ---- */
+.gems{gap:8px}
+.gems .gem{background:#fffdf6;border:1px solid #ddd4bd;border-top:3px solid var(--fw-gold);
+  border-radius:9px;padding:11px 11px;font-size:11.4px;box-shadow:0 1px 2px rgba(60,45,10,.07)}
+.gems .gem h4{color:var(--fw-deep);font-size:12.2px}
+.gems .gem h4::before{color:var(--fw-gold);font-size:9px}
+.gems .gem p{color:#3a3a3a}
+
+/* ---- numbered rules: gold-ring numerals ---- */
+.rules .rule-item{padding:7px 0;border-bottom:1px dashed #e0d9c6;gap:12px}
+.rules .rule-item:last-child{border-bottom:none}
+.rules .rule-item::before{content:counter(rule);width:26px;height:26px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;background:#fff;
+  border:1.6px solid var(--fw-gold);color:var(--fw-deep);font-size:12.5px;font-weight:700;margin-top:1px}
+.rules .rule-item div{font-size:12.6px}
+</style>
 </head>
 <body>
 <div id="progress"></div>
@@ -1231,17 +1336,17 @@ img.napkin-art{float:left;width:120px;margin:4px 16px 4px 0}
 
   <div class="diagram stack">
     <p class="dtitle">The Synthesis Stack</p>
-    <div class="step"><b>INTAKE</b> → Highest-signal sources only. Define your five non-negotiable weekly reads.</div>
+    <div class="step"><b>INTAKE</b> Highest-signal sources only. Define your five non-negotiable weekly reads.</div>
     <div class="arrow"></div>
-    <div class="step"><b>FILTER</b> → What is the bias in this source? What is it not telling me? What would the opposite view be?</div>
+    <div class="step"><b>FILTER</b> What is the bias in this source? What is it not telling me? What would the opposite view be?</div>
     <div class="arrow"></div>
-    <div class="step"><b>PATTERN</b> → What is the pattern across multiple independent sources? That convergence is the signal.</div>
+    <div class="step"><b>PATTERN</b> What is the pattern across multiple independent sources? That convergence is the signal.</div>
     <div class="arrow"></div>
-    <div class="step"><b>FRAMEWORK</b> → Which of the core frameworks best fits the shape of this problem? Apply it.</div>
+    <div class="step"><b>FRAMEWORK</b> Which of the core frameworks best fits the shape of this problem? Apply it.</div>
     <div class="arrow"></div>
-    <div class="step"><b>SYNTHESIZE</b> → If I had to act on this today, what would I do? State it in one sentence.</div>
+    <div class="step"><b>SYNTHESIZE</b> If I had to act on this today, what would I do? State it in one sentence.</div>
     <div class="arrow"></div>
-    <div class="step"><b>COMMUNICATE</b> → Lead with the conclusion. Support it with three arguments. Ground in data.</div>
+    <div class="step"><b>COMMUNICATE</b> Lead with the conclusion. Support it with three arguments. Ground in data.</div>
   </div>
 
   <div class="kp">
@@ -2515,13 +2620,13 @@ img.napkin-art{float:left;width:120px;margin:4px 16px 4px 0}
   <div class="diagram">
     <p class="dtitle">The Three-Move Map</p>
     <div class="stack">
-      <div class="step"><b>MOVE 1 — YOURS</b> → State the decision. One sentence, no hedges.</div>
+      <div class="step"><b>MOVE 1 — YOURS</b> State the decision. One sentence, no hedges.</div>
       <div class="arrow"></div>
-      <div class="step"><b>MOVE 2 — THEIRS</b> → Name every player it touches. Write each one's strongest response — played to win, not to be polite.</div>
+      <div class="step"><b>MOVE 2 — THEIRS</b> Name every player it touches. Write each one's strongest response — played to win, not to be polite.</div>
       <div class="arrow"></div>
-      <div class="step"><b>MOVE 3 — YOURS AGAIN</b> → What position answers those responses before they are made? That position — not the decision — is the strategy.</div>
+      <div class="step"><b>MOVE 3 — YOURS AGAIN</b> What position answers those responses before they are made? That position — not the decision — is the strategy.</div>
       <div class="arrow"></div>
-      <div class="step"><b>THE TEST</b> → If move 3 requires something you do not yet hold: start building it today. That is your real to-do list.</div>
+      <div class="step"><b>THE TEST</b> If move 3 requires something you do not yet hold: start building it today. That is your real to-do list.</div>
     </div>
   </div>
 
@@ -2873,15 +2978,15 @@ img.napkin-art{float:left;width:120px;margin:4px 16px 4px 0}
   <div class="diagram">
     <p class="dtitle">The Tempo Loop</p>
     <div class="stack">
-      <div class="step"><b>SEE</b> → How many days from frontline signal to a decider's desk? Cut the relay stations.</div>
+      <div class="step"><b>SEE</b> How many days from frontline signal to a decider's desk? Cut the relay stations.</div>
       <div class="arrow"></div>
-      <div class="step"><b>DECIDE</b> → How many signatures add judgment, and how many add delay? Keep the first kind only.</div>
+      <div class="step"><b>DECIDE</b> How many signatures add judgment, and how many add delay? Keep the first kind only.</div>
       <div class="arrow"></div>
-      <div class="step"><b>ACT</b> → How long from yes to shipped? Small team, whole problem, defended date.</div>
+      <div class="step"><b>ACT</b> How long from yes to shipped? Small team, whole problem, defended date.</div>
       <div class="arrow"></div>
-      <div class="step"><b>LEARN</b> → Does the outcome return to the decider by name? A loop that doesn't close isn't a loop. It's a leak.</div>
+      <div class="step"><b>LEARN</b> Does the outcome return to the decider by name? A loop that doesn't close isn't a loop. It's a leak.</div>
       <div class="arrow"></div>
-      <div class="step"><b>THE RACE</b> → Run the four stages faster than your competitor runs theirs. Inside their loop, every move they make answers a world that no longer exists.</div>
+      <div class="step"><b>THE RACE</b> Run the four stages faster than your competitor runs theirs. Inside their loop, every move they make answers a world that no longer exists.</div>
     </div>
   </div>
 
@@ -3725,15 +3830,15 @@ img.napkin-art{float:left;width:120px;margin:4px 16px 4px 0}
   <div class="diagram">
     <p class="dtitle">The Bench Ladder</p>
     <div class="stack">
-      <div class="step"><b>SPOT</b> → Proof over polish. Watch who delivers when the plan breaks — and what happens to their people.</div>
+      <div class="step"><b>SPOT</b> Proof over polish. Watch who delivers when the plan breaks — and what happens to their people.</div>
       <div class="arrow"></div>
-      <div class="step"><b>STRETCH</b> → Real decisions, real stakes, a net underneath. Two-way doors first. Narrate your reasoning in the car afterward.</div>
+      <div class="step"><b>STRETCH</b> Real decisions, real stakes, a net underneath. Two-way doors first. Narrate your reasoning in the car afterward.</div>
       <div class="arrow"></div>
-      <div class="step"><b>PROVE</b> → The turnaround, the knot, the crisis hour. Manufactured if necessary. The record is the interview.</div>
+      <div class="step"><b>PROVE</b> The turnaround, the knot, the crisis hour. Manufactured if necessary. The record is the interview.</div>
       <div class="arrow"></div>
-      <div class="step"><b>PROMOTE</b> → Visibly, for the proven reasons — every promotion is a broadcast about what wins here.</div>
+      <div class="step"><b>PROMOTE</b> Visibly, for the proven reasons — every promotion is a broadcast about what wins here.</div>
       <div class="arrow"></div>
-      <div class="step"><b>REPEAT</b> → The promoted build their own bench as a condition of the chair. Depth all the way down — that is the institution.</div>
+      <div class="step"><b>REPEAT</b> The promoted build their own bench as a condition of the chair. Depth all the way down — that is the institution.</div>
     </div>
   </div>
 
@@ -4081,13 +4186,13 @@ img.napkin-art{float:left;width:120px;margin:4px 16px 4px 0}
   <div class="diagram">
     <p class="dtitle">The Driver Tree</p>
     <div class="stack">
-      <div class="step"><b>THE TRUNK</b> → Profit. The number everyone stares at and nobody can move directly.</div>
+      <div class="step"><b>THE TRUNK</b> Profit. The number everyone stares at and nobody can move directly.</div>
       <div class="arrow"></div>
-      <div class="step"><b>THE BRANCHES</b> → Revenue: volume × price; new vs retained. Cost: the spine lines vs the tail. Ten to fifteen numbers, from memory.</div>
+      <div class="step"><b>THE BRANCHES</b> Revenue: volume × price; new vs retained. Cost: the spine lines vs the tail. Ten to fifteen numbers, from memory.</div>
       <div class="arrow"></div>
-      <div class="step"><b>THE ROOTS</b> → The physical facts: yield, call rate, Thursday's discount, days on ground. Where the tree is actually fed — and fixed.</div>
+      <div class="step"><b>THE ROOTS</b> The physical facts: yield, call rate, Thursday's discount, days on ground. Where the tree is actually fed — and fixed.</div>
       <div class="arrow"></div>
-      <div class="step"><b>THE SOIL</b> → The assumptions under everything, stated and unstated. When a plan dies, the autopsy always ends here.</div>
+      <div class="step"><b>THE SOIL</b> The assumptions under everything, stated and unstated. When a plan dies, the autopsy always ends here.</div>
     </div>
   </div>
 
