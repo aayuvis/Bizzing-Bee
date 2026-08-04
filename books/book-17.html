@@ -1,0 +1,1083 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Say It Like a Champion — Bizzing Bee Collections Vol. 17</title>
+<style>
+  @font-face{font-family:'Baloo 2';src:url('../fonts/baloo2-800.woff2') format('woff2');font-weight:800}
+  @font-face{font-family:'Fredoka';src:url('../fonts/fredoka-600.woff2') format('woff2');font-weight:600}
+  @font-face{font-family:'Hanken Grotesk';src:url('../fonts/hanken-var.woff2') format('woff2');font-weight:100 900}
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--bg1:#f3efff;--bg2:#fff;--line:#ddd4f2;--chip:#e6defc;--chipInk:#4a3aa0;--text:#241E33;--muted:#6b6482;
+    --treasure:#F0B429;--treasure-tint:#FFF3D6;--treasure-deep:#8A5B00;--c:#0EA5A0;--c2:#0B7E7A;
+    --tint:color-mix(in srgb,#0EA5A0 10%,white)}
+  html{background:#e5dff2}
+  body{font-family:'Hanken Grotesk',sans-serif;color:var(--text);letter-spacing:.02em;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  @page{size:8.5in 11in;margin:0}
+  .pg{width:8.5in;height:11in;background:var(--bg1);position:relative;overflow:hidden;padding:.58in .62in;page-break-after:always;break-after:page}
+  @media screen{.pg{margin:24px auto;box-shadow:0 10px 40px rgba(30,20,60,.18);border-radius:4px}}
+  h1,h2,h3,.disp{font-family:'Baloo 2';font-weight:800}
+  .kicker{font-family:'Fredoka';font-weight:600;font-size:10pt;letter-spacing:.13em;text-transform:uppercase;color:var(--c2)}
+  .foot{position:absolute;bottom:.32in;left:.62in;right:.62in;display:flex;justify-content:space-between;font-size:8.5pt;color:var(--muted);font-weight:600}
+  .panel{background:var(--bg2);border:1px solid var(--line);border-radius:16px;box-shadow:0 4px 14px rgba(108,79,224,.08)}
+  .chip{display:inline-block;background:var(--chip);color:var(--chipInk);font-weight:700;font-size:9pt;border-radius:999px;padding:3px 11px}
+  .bubble{position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:.13in .17in;font-size:10.5pt;line-height:1.5;box-shadow:0 4px 14px rgba(108,79,224,.08)}
+  .bubble:after{content:'';position:absolute;left:-9px;top:24px;width:16px;height:16px;background:var(--bg2);border-left:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
+  .sim{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:.11in .14in;box-shadow:0 3px 10px rgba(108,79,224,.06)}
+  .sim .p{font-family:'Baloo 2';font-size:12.5pt;color:var(--c2);line-height:1.15}
+  .sim .m{font-size:9pt;line-height:1.38;margin-top:3px}
+  .sim .os{font-size:8.2pt;line-height:1.35;margin-top:4px;color:var(--chipInk);background:var(--chip);border-radius:8px;padding:4px 7px}
+  .simgrid{display:grid;grid-template-columns:1fr 1fr;gap:.12in}
+  .idm{padding:5px 8px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;margin-bottom:5px;break-inside:avoid;font-size:8.8pt;line-height:1.35}
+  .idm b{font-family:'Fredoka';color:var(--c2)}
+  .idcols{columns:2;column-gap:.24in}
+  .qt{background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:.13in .17in;margin-bottom:.12in;box-shadow:0 3px 10px rgba(108,79,224,.06)}
+  .qt .q{font-family:'Baloo 2';font-size:12pt;line-height:1.3;color:var(--text)}
+  .qt .q:before{content:'“';color:var(--c);font-size:16pt}
+  .qt .a{font-family:'Fredoka';font-size:9pt;color:var(--c2);margin-top:4px}
+  .qt .m{font-size:8.6pt;line-height:1.35;margin-top:5px;color:var(--chipInk);background:var(--chip);border-radius:8px;padding:4px 8px}
+  .match{display:grid;grid-template-columns:1fr 1fr;gap:.2in;font-size:9.2pt;line-height:1.45}
+  .match .mh{font-family:'Baloo 2';font-size:11pt;color:var(--c2);margin-bottom:4px}
+  .match div.row{padding:5px 8px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;margin-bottom:5px}
+  .match b{color:var(--chipInk)}
+  .drawbox{background:var(--bg2);border:2px dashed var(--line);border-radius:16px;height:3.1in;display:grid;place-items:center;color:var(--muted);font-family:'Fredoka';font-size:10pt}
+  .lines div{border-bottom:2px dashed #C9BFE6;height:.34in}
+  .key{columns:3;column-gap:.2in;font-size:8.4pt;line-height:1.55}
+  .badge{display:inline-grid;place-items:center;width:.58in;height:.58in;border-radius:15px;background:linear-gradient(135deg,var(--c),var(--c2));color:#fff;font-family:'Baloo 2';font-size:16pt}
+  </style></head><body><div class="pg" style="background:linear-gradient(160deg,var(--c),var(--c2));color:#fff;display:flex;flex-direction:column;justify-content:space-between;padding:.55in">
+    <svg style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true"><circle cx="82%" cy="18%" r="70" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none"/><circle cx="82%" cy="18%" r="110" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none"/><circle cx="82%" cy="18%" r="150" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none"/><circle cx="10%" cy="92%" r="60" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none"/><circle cx="10%" cy="92%" r="95" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none"/></svg>
+    <div style="position:relative;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-family:'Fredoka';font-weight:600;letter-spacing:.16em;font-size:10.5pt">BIZZING BEE COLLECTIONS</span>
+      <span class="disp" style="background:rgba(0,0,0,.3);padding:.07in .2in;border-radius:999px;font-size:12.5pt">Vol. 17</span>
+    </div>
+    <div style="position:relative;text-align:center">
+      <svg viewBox="0 0 120 120" style="width:1.7in;height:1.7in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
+<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
+<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
+<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
+<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
+<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
+<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
+<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
+<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></svg>
+      <h1 style="font-size:42pt;line-height:1.02;margin:.14in 0 .1in;text-shadow:0 3px 0 rgba(0,0,0,.2)">Say It Like a Champion</h1>
+      <p style="font-family:'Fredoka';font-size:13.5pt;max-width:5.8in;margin:0 auto">Two hundred and forty lines worth keeping — and what they mean for spellers</p>
+      <p style="font-family:'Fredoka';font-size:10pt;margin-top:.12in;opacity:.9">with Melody, your guide</p>
+    </div>
+    <div style="position:relative;display:flex;gap:.14in;justify-content:center">
+      <div style="background:rgba(0,0,0,.24);border-radius:14px;padding:.12in .28in;text-align:center"><div class="disp" style="font-size:17pt">12</div><div style="font-family:'Fredoka';font-size:9pt">themes</div></div><div style="background:rgba(0,0,0,.24);border-radius:14px;padding:.12in .28in;text-align:center"><div class="disp" style="font-size:17pt">240</div><div style="font-family:'Fredoka';font-size:9pt">quotes worth keeping</div></div><div style="background:rgba(0,0,0,.24);border-radius:14px;padding:.12in .28in;text-align:center"><div class="disp" style="font-size:17pt">✍️</div><div style="font-family:'Fredoka';font-size:9pt">your-turn pages</div></div>
+    </div></div>
+<div class="pg">
+    <div class="kicker">How this book works</div>
+    <h1 style="font-size:24pt;margin:.06in 0 .16in">Borrow a giant's voice.</h1>
+    <div style="display:flex;gap:.16in;align-items:flex-start;margin-bottom:.2in">
+      <svg viewBox="0 0 120 120" style="width:1in;height:1in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
+<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
+<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
+<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
+<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
+<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
+<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
+<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
+<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></svg>
+      <div class="bubble">I'm <b>Melody</b>. Some sentences are so good they outlive the person who said them. Here are two hundred and forty of those — and under each one, what it means when YOU'RE the one at the microphone.</div>
+    </div>
+    <div style="display:flex;gap:.16in;margin-bottom:.16in;align-items:flex-start"><span class="badge">1</span>
+      <div class="panel" style="flex:1;padding:.1in .15in"><h3 style="font-size:12.5pt;color:var(--c2)">Read one theme at a time</h3><p style="font-size:10pt;line-height:1.5">Twelve themes, twenty lines each. Courage before a bee. Humor after a hard one.</p></div></div><div style="display:flex;gap:.16in;margin-bottom:.16in;align-items:flex-start"><span class="badge">2</span>
+      <div class="panel" style="flex:1;padding:.1in .15in"><h3 style="font-size:12.5pt;color:var(--c2)">Find your line</h3><p style="font-size:10pt;line-height:1.5">One of these will feel like it was written for you. Mark it. That’s your line now.</p></div></div><div style="display:flex;gap:.16in;margin-bottom:.16in;align-items:flex-start"><span class="badge">3</span>
+      <div class="panel" style="flex:1;padding:.1in .15in"><h3 style="font-size:12.5pt;color:var(--c2)">Play who-said-it</h3><p style="font-size:10pt;line-height:1.5">The match pages test whether you were really listening.</p></div></div><div style="display:flex;gap:.16in;margin-bottom:.16in;align-items:flex-start"><span class="badge">4</span>
+      <div class="panel" style="flex:1;padding:.1in .15in"><h3 style="font-size:12.5pt;color:var(--c2)">Write your own</h3><p style="font-size:10pt;line-height:1.5">Every theme ends with blank lines. Champions get quoted too, eventually.</p></div></div>
+    <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>The quotable collection</span></div></div>
+<div class="pg" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--bg1),var(--tint))">
+      <div class="kicker">Theme 1 of 12</div>
+      <h1 style="font-size:34pt;margin:.08in 0">Keep Going</h1>
+      <p style="font-family:'Fredoka';font-size:11.5pt;color:var(--muted)">For the round after the round you almost lost.</p>
+      <div style="margin:.3in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.1in;height:1.1in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
+<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
+<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
+<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
+<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
+<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
+<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
+<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
+<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></svg>
+        <div class="qt" style="text-align:left;margin-top:.14in"><div class="q">Patience can cook a stone.</div>
+        <div class="a">— African Proverb, a traditional saying</div></div></div>
+      <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Keep Going</span></div></div>
+<div class="pg">
+        <div class="kicker">Keep Going · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Every path has its puddle.</div>
+          <div class="a">— English Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Every journey has small difficulties along the way.</div></div><div class="qt"><div class="q">Many a little makes a lot.</div>
+          <div class="a">— Scottish Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Lots of small amounts add up to a large one.</div></div><div class="qt"><div class="q">Step by step, one goes far.</div>
+          <div class="a">— French Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Steady progress takes you a long way.</div></div><div class="qt"><div class="q">Water always finds its way.</div>
+          <div class="a">— Brazilian Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: With patience, you can always find a path to your goal.</div></div><div class="qt"><div class="q">Never, never, never give up.</div>
+          <div class="a">— Winston Churchill, British prime minister</div>
+          <div class="m">🐝 For spellers: No matter how hard things get, keep going and do not quit.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Keep Going · 2–6 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Keep Going · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Small strokes fell big oaks.</div>
+          <div class="a">— German proverb, Traditional wisdom from Germany</div>
+          <div class="m">🐝 For spellers: Even the biggest challenges can be beaten with steady, repeated effort.</div></div><div class="qt"><div class="q">Even monkeys fall from trees.</div>
+          <div class="a">— Japanese proverb, traditional saying</div>
+          <div class="m">🐝 For spellers: Even experts make mistakes, so don't be too hard on yourself.</div></div><div class="qt"><div class="q">A stumble may prevent a fall.</div>
+          <div class="a">— Thomas Fuller, English writer</div>
+          <div class="m">🐝 For spellers: A small slip can teach you and save you from a bigger fall.</div></div><div class="qt"><div class="q">Slow but steady wins the day.</div>
+          <div class="a">— Aesop's Fable Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Patient, steady effort beats fast but careless work.</div></div><div class="qt"><div class="q">Drops of water make an ocean.</div>
+          <div class="a">— Hindi proverb (India), Traditional wisdom from India</div>
+          <div class="m">🐝 For spellers: Small efforts add up to something huge. Every little bit matters.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Keep Going · 7–11 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Keep Going · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Slow and steady wins the race.</div>
+          <div class="a">— Aesop, ancient storyteller</div>
+          <div class="m">🐝 For spellers: Working steadily and patiently beats rushing.</div></div><div class="qt"><div class="q">Patience is the key to relief.</div>
+          <div class="a">— Arabic Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Being patient helps you get through hard times.</div></div><div class="qt"><div class="q">Hope is the last thing to die.</div>
+          <div class="a">— Italian proverb, Traditional wisdom from Italy</div>
+          <div class="m">🐝 For spellers: Even in hard times, hold on to hope. It keeps you going.</div></div><div class="qt"><div class="q">Drop by drop, a lake is formed.</div>
+          <div class="a">— Turkish Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Small contributions build up to something large.</div></div><div class="qt"><div class="q">Little by little, silk is spun.</div>
+          <div class="a">— Persian Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Beautiful things are made slowly and patiently.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Keep Going · 12–16 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Keep Going · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Adventure is just bad planning.</div>
+          <div class="a">— Roald Amundsen, polar explorer</div>
+          <div class="m">🐝 For spellers: He joked that good preparation prevents scary surprises.</div></div><div class="qt"><div class="q">You have to fight till the end.</div>
+          <div class="a">— Viswanathan Anand, Chess grandmaster</div>
+          <div class="m">🐝 For spellers: Keep trying right up to the finish.</div></div><div class="qt"><div class="q">Little by little, one walks far.</div>
+          <div class="a">— Peruvian proverb, traditional saying</div>
+          <div class="m">🐝 For spellers: Small steps taken again and again cover a long distance.</div></div><div class="qt"><div class="q">Hope is the last thing you lose.</div>
+          <div class="a">— Spanish Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Even in hard times, keep hoping.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Keep Going · 17–20 of 20</span></div></div>
+<div class="pg" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--bg1),var(--tint))">
+      <div class="kicker">Theme 2 of 12</div>
+      <h1 style="font-size:34pt;margin:.08in 0">Be Brave</h1>
+      <p style="font-family:'Fredoka';font-size:11.5pt;color:var(--muted)">For the walk to the microphone.</p>
+      <div style="margin:.3in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.1in;height:1.1in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
+<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
+<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
+<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
+<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
+<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
+<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
+<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
+<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></svg>
+        <div class="qt" style="text-align:left;margin-top:.14in"><div class="q">Freedom lies in being bold.</div>
+        <div class="a">— Robert Frost, poet</div></div></div>
+      <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Be Brave</span></div></div>
+<div class="pg">
+        <div class="kicker">Be Brave · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Age considers; youth ventures.</div>
+          <div class="a">— Rabindranath Tagore, Indian poet, Nobel laureate</div>
+          <div class="m">🐝 For spellers: It means the young are bold to try, while the old are careful.</div></div><div class="qt"><div class="q">Optimism is true moral courage.</div>
+          <div class="a">— Ernest Shackleton, polar explorer</div>
+          <div class="m">🐝 For spellers: Staying hopeful in hard times is a brave and good thing.</div></div><div class="qt"><div class="q">Courage is grace under pressure.</div>
+          <div class="a">— Ernest Hemingway, American author</div>
+          <div class="m">🐝 For spellers: Being brave means staying calm and kind when things are tough.</div></div><div class="qt"><div class="q">Adventure is worthwhile in itself.</div>
+          <div class="a">— Amelia Earhart, pioneering pilot</div>
+          <div class="m">🐝 For spellers: Trying bold new things is valuable all on its own.</div></div><div class="qt"><div class="q">Do the things you are afraid to do.</div>
+          <div class="a">— Louisa May Alcott, author of Little Women</div>
+          <div class="m">🐝 For spellers: It means courage grows when you face your fears.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Be Brave · 2–6 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Be Brave · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Strength is life, weakness is death.</div>
+          <div class="a">— Swami Vivekananda, Indian monk and teacher</div>
+          <div class="m">🐝 For spellers: Being strong in spirit keeps you truly alive.</div></div><div class="qt"><div class="q">Forgiveness is a virtue of the brave.</div>
+          <div class="a">— Indira Gandhi, Former Indian Prime Minister</div>
+          <div class="m">🐝 For spellers: It takes real courage to forgive.</div></div><div class="qt"><div class="q">You should not be afraid of failures.</div>
+          <div class="a">— MS Dhoni, Cricket captain</div>
+          <div class="m">🐝 For spellers: Failing is just part of learning.</div></div><div class="qt"><div class="q">It's kind of fun to do the impossible.</div>
+          <div class="a">— Walt Disney, animator and film maker</div>
+          <div class="m">🐝 For spellers: Trying things everyone says can't be done can be exciting.</div></div><div class="qt"><div class="q">I am not afraid. I was born to do this.</div>
+          <div class="a">— Joan of Arc, French heroine</div>
+          <div class="m">🐝 For spellers: She faced her fears believing she was meant for her mission.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Be Brave · 7–11 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Be Brave · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">The gods help them that help themselves.</div>
+          <div class="a">— Aesop, ancient Greek teller of animal fables</div>
+          <div class="m">🐝 For spellers: From Hercules and the Wagoner: try hard yourself, and help will follow.</div></div><div class="qt"><div class="q">The dogs bark, but the caravan moves on.</div>
+          <div class="a">— Arabic proverb, Traditional wisdom from the Arab world</div>
+          <div class="m">🐝 For spellers: Keep going toward your goal even when others complain or criticize you.</div></div><div class="qt"><div class="q">Fear is a reaction. Courage is a decision.</div>
+          <div class="a">— Winston Churchill, British prime minister</div>
+          <div class="m">🐝 For spellers: Feeling afraid happens on its own, but being brave is a choice.</div></div><div class="qt"><div class="q">This above all: to thine own self be true.</div>
+          <div class="a">— William Shakespeare, playwright</div>
+          <div class="m">🐝 For spellers: It means always be honest and true to who you really are.</div></div><div class="qt"><div class="q">It's not enough to want. You have to work.</div>
+          <div class="a">— Katherine Paterson, author of Bridge to Terabithia</div>
+          <div class="m">🐝 For spellers: It means wishing is not enough; you must act.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Be Brave · 12–16 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Be Brave · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">You must act as if it is impossible to fail.</div>
+          <div class="a">— Ashanti proverb (Ghana), Wisdom from the Ashanti people</div>
+          <div class="m">🐝 For spellers: Believe strongly in yourself and try boldly, as if you cannot lose.</div></div><div class="qt"><div class="q">Whatever it is you're scared of doing, do it.</div>
+          <div class="a">— Neil Gaiman, author</div>
+          <div class="m">🐝 For spellers: It means be brave and face what frightens you.</div></div><div class="qt"><div class="q">Just go out there and do what you have to do.</div>
+          <div class="a">— Venus Williams, Tennis champion</div>
+          <div class="m">🐝 For spellers: Sometimes you just need to begin and try.</div></div><div class="qt"><div class="q">A well-drawn tiger has no fear of a real one.</div>
+          <div class="a">— Korean proverb, Traditional wisdom from Korea</div>
+          <div class="m">🐝 For spellers: When you prepare well, you can face even scary challenges with confidence.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Be Brave · 17–20 of 20</span></div></div>
+<div class="pg" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--bg1),var(--tint))">
+      <div class="kicker">Theme 3 of 12</div>
+      <h1 style="font-size:34pt;margin:.08in 0">Do the Work</h1>
+      <p style="font-family:'Fredoka';font-size:11.5pt;color:var(--muted)">For the days the list looks too long.</p>
+      <div style="margin:.3in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.1in;height:1.1in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
+<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
+<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
+<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
+<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
+<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
+<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
+<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
+<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></svg>
+        <div class="qt" style="text-align:left;margin-top:.14in"><div class="q">He who rests grows rusty.</div>
+        <div class="a">— German Proverb, a traditional saying</div></div></div>
+      <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Do the Work</span></div></div>
+<div class="pg">
+        <div class="kicker">Do the Work · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Go and wake up your luck.</div>
+          <div class="a">— Persian proverb, Traditional wisdom from Persia</div>
+          <div class="m">🐝 For spellers: Don't just wait for good things. Take action and make your own good fortune.</div></div><div class="qt"><div class="q">Starting is half the task.</div>
+          <div class="a">— Korean Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Just beginning gets you a big part of the way there.</div></div><div class="qt"><div class="q">A gaun foot's aye getting.</div>
+          <div class="a">— Scottish proverb, Traditional wisdom from Scotland</div>
+          <div class="m">🐝 For spellers: A person who keeps busy and active always ends up gaining something.</div></div><div class="qt"><div class="q">Cost goes before the profit.</div>
+          <div class="a">— Dutch Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: You usually have to put in effort before you see rewards.</div></div><div class="qt"><div class="q">A field will not sow itself.</div>
+          <div class="a">— Belarusian Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Good results come only when you put in the effort.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Do the Work · 2–6 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Do the Work · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Effort is greater than fate.</div>
+          <div class="a">— Marathi Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Your hard work can shape your life more than luck can.</div></div><div class="qt"><div class="q">The lazy person works twice.</div>
+          <div class="a">— Spanish proverb, Traditional wisdom from Spain</div>
+          <div class="m">🐝 For spellers: If you rush or don't do a job right the first time, you'll have to do it again.</div></div><div class="qt"><div class="q">Nothing will come of nothing.</div>
+          <div class="a">— William Shakespeare, playwright</div>
+          <div class="m">🐝 For spellers: You get nothing if you put in nothing.</div></div><div class="qt"><div class="q">Strike while the iron is hot.</div>
+          <div class="a">— English Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Act quickly while the moment is right.</div></div><div class="qt"><div class="q">The lazy person works double.</div>
+          <div class="a">— Spanish Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Avoiding work often means you have to redo it later.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Do the Work · 7–11 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Do the Work · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">A roaring lion kills no game.</div>
+          <div class="a">— Ugandan Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Just making noise won't get the job done; you have to act.</div></div><div class="qt"><div class="q">Success is earned, not given.</div>
+          <div class="a">— Yuna Kim, Olympic figure skater</div>
+          <div class="m">🐝 For spellers: You earn success through effort.</div></div><div class="qt"><div class="q">A running horse needs no spur.</div>
+          <div class="a">— Persian Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Someone already trying hard needs no extra push.</div></div><div class="qt"><div class="q">Life is found in the practice.</div>
+          <div class="a">— Hawaiian Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: You grow and improve by actually doing the work.</div></div><div class="qt"><div class="q">The lazy ox drinks dirty water.</div>
+          <div class="a">— Portuguese Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Those who don't put in effort end up with the leftovers.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Do the Work · 12–16 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Do the Work · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">He who wants blue must earn it.</div>
+          <div class="a">— Latin American proverb, Traditional wisdom from Latin America</div>
+          <div class="m">🐝 For spellers: If you want something wonderful, you have to work to earn it.</div></div><div class="qt"><div class="q">Nothing worth having comes easy.</div>
+          <div class="a">— Theodore Roosevelt, US president</div>
+          <div class="m">🐝 For spellers: The best things in life take real effort to earn.</div></div><div class="qt"><div class="q">Nothing will work unless you do.</div>
+          <div class="a">— Maya Angelou, American poet</div>
+          <div class="m">🐝 For spellers: Plans and dreams only come true when you put in the effort.</div></div><div class="qt"><div class="q">Do small things with great love.</div>
+          <div class="a">— Mother Teresa, missionary and helper</div>
+          <div class="m">🐝 For spellers: Even tiny helpful acts matter when done with a caring heart.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Do the Work · 17–20 of 20</span></div></div>
+<div class="pg">
+        <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
+<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
+<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
+<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
+<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
+<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
+<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
+<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
+<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></svg>
+          <div><div class="kicker">Melody's match round</div><h2 style="font-size:15pt">Who said it?</h2></div></div>
+        <div class="match">
+          <div><div class="mh">The lines</div><div class="row"><b>1.</b> “Every dog has its day.”</div><div class="row"><b>2.</b> “When the whole world is silent, even one voice becomes powerful.”</div><div class="row"><b>3.</b> “The bee that gathers honey does not sting.”</div><div class="row"><b>4.</b> “A guest is a guest for two days; on the third give him a hoe.”</div><div class="row"><b>5.</b> “Cowards die many times before their deaths; the valiant never taste of …”</div><div class="row"><b>6.</b> “When you're the best, no one really sees how hard you work at it.”</div><div class="row"><b>7.</b> “A coward sweats in water; a brave person sweats in the field.”</div><div class="row"><b>8.</b> “The longest road out is the shortest road home.”</div></div>
+          <div><div class="mh">The voices</div><div class="row"><b>A.</b> Assamese Proverb</div><div class="row"><b>B.</b> Oromo Proverb</div><div class="row"><b>C.</b> English Proverb</div><div class="row"><b>D.</b> Misty Copeland</div><div class="row"><b>E.</b> Malala Yousafzai</div><div class="row"><b>F.</b> Irish proverb</div><div class="row"><b>G.</b> William Shakespeare</div><div class="row"><b>H.</b> Swahili Proverb</div></div></div>
+        <div class="kicker" style="margin-top:.18in">Your turn</div>
+        <p style="font-size:9.5pt;color:var(--muted);margin:.04in 0 .1in">Write a line of your own about do the work. Sign it. Date it. Future-you will want proof.</p>
+        <div class="lines"><div></div><div></div><div></div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>No peeking — key at the back</span></div></div>
+<div class="pg" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--bg1),var(--tint))">
+      <div class="kicker">Theme 4 of 12</div>
+      <h1 style="font-size:34pt;margin:.08in 0">Back Yourself</h1>
+      <p style="font-family:'Fredoka';font-size:11.5pt;color:var(--muted)">For the voice that says you can’t.</p>
+      <div style="margin:.3in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.1in;height:1.1in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
+<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
+<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
+<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
+<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
+<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
+<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
+<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
+<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></svg>
+        <div class="qt" style="text-align:left;margin-top:.14in"><div class="q">Stay hungry, stay foolish.</div>
+        <div class="a">— Steve Jobs, Apple co-founder</div></div></div>
+      <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Back Yourself</span></div></div>
+<div class="pg">
+        <div class="kicker">Back Yourself · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Light tomorrow with today.</div>
+          <div class="a">— Elizabeth Barrett Browning, poet</div>
+          <div class="m">🐝 For spellers: It means today's efforts brighten your future.</div></div><div class="qt"><div class="q">What you seek is seeking you.</div>
+          <div class="a">— Rumi, poet</div>
+          <div class="m">🐝 For spellers: The dreams you chase are reaching back toward you too.</div></div><div class="qt"><div class="q">We are what we believe we are.</div>
+          <div class="a">— C.S. Lewis, author of Narnia</div>
+          <div class="m">🐝 For spellers: It means our beliefs about ourselves shape who we become.</div></div><div class="qt"><div class="q">If I can do it, you can do it.</div>
+          <div class="a">— Terry Fox, Marathon of Hope runner</div>
+          <div class="m">🐝 For spellers: If one person can, so can you.</div></div><div class="qt"><div class="q">Where there's life there's hope.</div>
+          <div class="a">— J.R.R. Tolkien, author of The Hobbit</div>
+          <div class="m">🐝 For spellers: It means as long as you are alive, you can hope for better.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Back Yourself · 2–6 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Back Yourself · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">I exist as I am, that is enough.</div>
+          <div class="a">— Walt Whitman, poet</div>
+          <div class="m">🐝 For spellers: It means you are enough just as you are.</div></div><div class="qt"><div class="q">Where there's hope, there's life.</div>
+          <div class="a">— Anne Frank, diarist</div>
+          <div class="m">🐝 For spellers: It means hope keeps us going.</div></div><div class="qt"><div class="q">Where there is life, there is hope.</div>
+          <div class="a">— Stephen Hawking, physicist</div>
+          <div class="m">🐝 For spellers: As long as you are alive, there is always reason to hope.</div></div><div class="qt"><div class="q">The world needs all kinds of minds.</div>
+          <div class="a">— Temple Grandin, scientist and inventor</div>
+          <div class="m">🐝 For spellers: Every kind of mind has something valuable to offer.</div></div><div class="qt"><div class="q">We are not born for ourselves alone.</div>
+          <div class="a">— Cicero, Roman statesman</div>
+          <div class="m">🐝 For spellers: We are meant to help others, not just ourselves.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Back Yourself · 7–11 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Back Yourself · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Wherever you are is the entry point.</div>
+          <div class="a">— Kabir, Indian poet and saint</div>
+          <div class="m">🐝 For spellers: It means you can begin your journey right where you are.</div></div><div class="qt"><div class="q">They can because they think they can.</div>
+          <div class="a">— Virgil, Roman poet</div>
+          <div class="m">🐝 For spellers: People succeed because they believe they can.</div></div><div class="qt"><div class="q">You are capable of more than you know.</div>
+          <div class="a">— E. O. Wilson, biologist</div>
+          <div class="m">🐝 For spellers: You can do far more than you might imagine.</div></div><div class="qt"><div class="q">Only you can limit your possibilities.</div>
+          <div class="a">— Peggy Whitson, Record-setting astronaut</div>
+          <div class="m">🐝 For spellers: You decide how far you can go.</div></div><div class="qt"><div class="q">If you don't back yourself, nobody will.</div>
+          <div class="a">— Virat Kohli, Cricket star</div>
+          <div class="m">🐝 For spellers: Believe in yourself first.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Back Yourself · 12–16 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Back Yourself · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">I don't need easy. I just need possible.</div>
+          <div class="a">— Bethany Hamilton, Surfer</div>
+          <div class="m">🐝 For spellers: You don't need easy, just a chance.</div></div><div class="qt"><div class="q">It's not bragging if you can back it up.</div>
+          <div class="a">— Muhammad Ali, Boxing champion</div>
+          <div class="m">🐝 For spellers: Confidence grows from real practice.</div></div><div class="qt"><div class="q">Just be yourself, there is no one better.</div>
+          <div class="a">— Taylor Swift, singer and songwriter</div>
+          <div class="m">🐝 For spellers: Being yourself is the best thing you can be.</div></div><div class="qt"><div class="q">The greatest sin is to think yourself weak.</div>
+          <div class="a">— Swami Vivekananda, Indian monk and teacher</div>
+          <div class="m">🐝 For spellers: Never convince yourself that you are weak or unable.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Back Yourself · 17–20 of 20</span></div></div>
+<div class="pg" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--bg1),var(--tint))">
+      <div class="kicker">Theme 5 of 12</div>
+      <h1 style="font-size:34pt;margin:.08in 0">Dream Big</h1>
+      <p style="font-family:'Fredoka';font-size:11.5pt;color:var(--muted)">For the trophy you can already see.</p>
+      <div style="margin:.3in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.1in;height:1.1in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
+<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
+<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
+<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
+<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
+<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
+<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
+<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
+<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></svg>
+        <div class="qt" style="text-align:left;margin-top:.14in"><div class="q">What we think, we become.</div>
+        <div class="a">— Buddha, Ancient teacher</div></div></div>
+      <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Dream Big</span></div></div>
+<div class="pg">
+        <div class="kicker">Dream Big · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Oh, the places you'll go!</div>
+          <div class="a">— Dr. Seuss, children's author</div>
+          <div class="m">🐝 For spellers: It means an exciting world of adventures awaits you.</div></div><div class="qt"><div class="q">Explore. Dream. Discover.</div>
+          <div class="a">— Mark Twain, American humorist</div>
+          <div class="m">🐝 For spellers: Three little words to live by.</div></div><div class="qt"><div class="q">Dream big and dare to fail.</div>
+          <div class="a">— Norman Vaughan, American explorer</div>
+          <div class="m">🐝 For spellers: Aim for something great, and do not be afraid to make mistakes along the way.</div></div><div class="qt"><div class="q">Rome wasn't built in a day.</div>
+          <div class="a">— Proverb, Traditional proverb</div>
+          <div class="m">🐝 For spellers: Great things take time, so be patient with your dreams.</div></div><div class="qt"><div class="q">If you are a dreamer, come in.</div>
+          <div class="a">— Shel Silverstein, poet and children's author</div>
+          <div class="m">🐝 For spellers: It welcomes dreamers to imagine freely.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Dream Big · 2–6 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Dream Big · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Little strokes fell great oaks.</div>
+          <div class="a">— Benjamin Franklin, American statesman and inventor</div>
+          <div class="m">🐝 For spellers: Small, steady efforts can accomplish big things.</div></div><div class="qt"><div class="q">Dreams don't work unless you do.</div>
+          <div class="a">— John C. Maxwell, American author and speaker</div>
+          <div class="m">🐝 For spellers: Your dreams need your effort to grow; you have to do the work to see them come true.</div></div><div class="qt"><div class="q">A goal is a dream with a deadline.</div>
+          <div class="a">— Napoleon Hill, American author</div>
+          <div class="m">🐝 For spellers: A dream becomes a goal when you decide the time you will reach it by.</div></div><div class="qt"><div class="q">Dare to dream, then decide to fly.</div>
+          <div class="a">— Author unknown, Popular saying</div>
+          <div class="m">🐝 For spellers: Let yourself dream boldly, then take off toward that dream.</div></div><div class="qt"><div class="q">A dream is a wish your heart makes.</div>
+          <div class="a">— Jerry Livingston, American songwriter</div>
+          <div class="m">🐝 For spellers: Dreams are the gentle wishes that come from deep in your heart.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Dream Big · 7–11 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Dream Big · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Dreams are made possible if you try.</div>
+          <div class="a">— Terry Fox, Marathon of Hope runner</div>
+          <div class="m">🐝 For spellers: Trying is the first step to any dream.</div></div><div class="qt"><div class="q">Follow your dreams, they know the way.</div>
+          <div class="a">— Kobi Yamada, American author</div>
+          <div class="m">🐝 For spellers: Trust your dreams to guide you, because they point toward what you love.</div></div><div class="qt"><div class="q">Nothing happens unless first we dream.</div>
+          <div class="a">— Carl Sandburg, American poet</div>
+          <div class="m">🐝 For spellers: Every wonderful thing begins with someone daring to dream it.</div></div><div class="qt"><div class="q">Let me not seem to have lived in vain.</div>
+          <div class="a">— Tycho Brahe, astronomer</div>
+          <div class="m">🐝 For spellers: He hoped his life's work would truly matter.</div></div><div class="qt"><div class="q">The sky is not the limit. Your mind is.</div>
+          <div class="a">— Marilyn Monroe, American actress</div>
+          <div class="m">🐝 For spellers: Your dreams can go beyond anything, because your imagination has no ceiling.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Dream Big · 12–16 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Dream Big · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">A goal properly set is halfway reached.</div>
+          <div class="a">— Zig Ziglar, American speaker</div>
+          <div class="m">🐝 For spellers: Knowing exactly what you want puts you well on your way there.</div></div><div class="qt"><div class="q">Every great dream begins with a dreamer.</div>
+          <div class="a">— Harriet Tubman, American abolitionist</div>
+          <div class="m">🐝 For spellers: Big, wonderful changes always start with one person who dares to dream.</div></div><div class="qt"><div class="q">Wherever you go, go with all your heart.</div>
+          <div class="a">— Confucius, Ancient Chinese teacher</div>
+          <div class="m">🐝 For spellers: Follow your path fully, giving it all your love and effort.</div></div><div class="qt"><div class="q">Every noble work is at first impossible.</div>
+          <div class="a">— Thomas Carlyle, Scottish writer</div>
+          <div class="m">🐝 For spellers: Great dreams often look impossible until someone bravely makes them happen.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Dream Big · 17–20 of 20</span></div></div>
+<div class="pg" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--bg1),var(--tint))">
+      <div class="kicker">Theme 6 of 12</div>
+      <h1 style="font-size:34pt;margin:.08in 0">Stay Curious</h1>
+      <p style="font-family:'Fredoka';font-size:11.5pt;color:var(--muted)">For the words you’ve never met yet.</p>
+      <div style="margin:.3in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.1in;height:1.1in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
+<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
+<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
+<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
+<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
+<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
+<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
+<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
+<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></svg>
+        <div class="qt" style="text-align:left;margin-top:.14in"><div class="q">The days are just packed!</div>
+        <div class="a">— Bill Watterson, creator of Calvin and Hobbes</div></div></div>
+      <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Stay Curious</span></div></div>
+<div class="pg">
+        <div class="kicker">Stay Curious · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Doubt grows with knowledge.</div>
+          <div class="a">— Johann Wolfgang von Goethe, German writer</div>
+          <div class="m">🐝 For spellers: The more you learn, the more good questions you find.</div></div><div class="qt"><div class="q">Doubt is the origin of wisdom.</div>
+          <div class="a">— Rene Descartes, philosopher and mathematician</div>
+          <div class="m">🐝 For spellers: Questioning things is where wisdom begins.</div></div><div class="qt"><div class="q">Doubt is the key to knowledge.</div>
+          <div class="a">— Persian proverb, Traditional wisdom from Persia</div>
+          <div class="m">🐝 For spellers: Asking questions and being curious is how you learn new things.</div></div><div class="qt"><div class="q">Everything is physics and math.</div>
+          <div class="a">— Katherine Johnson, NASA mathematician</div>
+          <div class="m">🐝 For spellers: Math and science are everywhere around us.</div></div><div class="qt"><div class="q">I did not think; I investigated.</div>
+          <div class="a">— Wilhelm Rontgen, physicist</div>
+          <div class="m">🐝 For spellers: Instead of just guessing, he explored and tested to discover X-rays.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Stay Curious · 2–6 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Stay Curious · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">All men by nature desire to know.</div>
+          <div class="a">— Aristotle, Greek philosopher</div>
+          <div class="m">🐝 For spellers: Everyone is naturally curious and wants to learn.</div></div><div class="qt"><div class="q">Doubt is the father of invention.</div>
+          <div class="a">— Galileo Galilei, astronomer</div>
+          <div class="m">🐝 For spellers: Questioning and doubting can lead to new inventions.</div></div><div class="qt"><div class="q">Wonder is the beginning of wisdom.</div>
+          <div class="a">— Socrates, Greek philosopher</div>
+          <div class="m">🐝 For spellers: Being amazed by the world is the first step to becoming wise.</div></div><div class="qt"><div class="q">The cure for boredom is curiosity.</div>
+          <div class="a">— Ellen Parr, writer</div>
+          <div class="m">🐝 For spellers: When you feel bored, being curious wakes up your mind again.</div></div><div class="qt"><div class="q">Curiosity is the lust of the mind.</div>
+          <div class="a">— Thomas Hobbes, English philosopher</div>
+          <div class="m">🐝 For spellers: The mind craves new knowledge the way we crave good things.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Stay Curious · 7–11 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Stay Curious · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">The night sky belongs to everyone.</div>
+          <div class="a">— Chanda Prescod-Weinstein, physicist</div>
+          <div class="m">🐝 For spellers: The stars are there for every person to enjoy and wonder at.</div></div><div class="qt"><div class="q">Wonder is the desire for knowledge.</div>
+          <div class="a">— Thomas Aquinas, medieval philosopher</div>
+          <div class="m">🐝 For spellers: Feeling wonder is really the wish to understand.</div></div><div class="qt"><div class="q">Imagination is the true magic carpet.</div>
+          <div class="a">— Norman Vincent Peale, author and minister</div>
+          <div class="m">🐝 For spellers: Imagination can carry you anywhere, like a flying carpet.</div></div><div class="qt"><div class="q">Play is the highest form of research.</div>
+          <div class="a">— Albert Einstein, Physicist</div>
+          <div class="m">🐝 For spellers: Playing is a great way to learn.</div></div><div class="qt"><div class="q">Curiosity is the engine of achievement.</div>
+          <div class="a">— Ken Robinson, education expert</div>
+          <div class="m">🐝 For spellers: Wanting to know things drives you to accomplish great things.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Stay Curious · 12–16 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Stay Curious · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Curiosity is one door to the marvelous.</div>
+          <div class="a">— Vera Nazarian, author</div>
+          <div class="m">🐝 For spellers: Being curious opens the way to amazing discoveries.</div></div><div class="qt"><div class="q">Attention is the beginning of devotion.</div>
+          <div class="a">— Mary Oliver, Nature poet</div>
+          <div class="m">🐝 For spellers: Really paying attention is how caring begins.</div></div><div class="qt"><div class="q">Be curious. Read widely. Try new things.</div>
+          <div class="a">— Aaron Swartz, programmer and writer</div>
+          <div class="m">🐝 For spellers: Curiosity and wide reading are what make people smart.</div></div><div class="qt"><div class="q">The mountains are calling and I must go.</div>
+          <div class="a">— John Muir, naturalist</div>
+          <div class="m">🐝 For spellers: The wonder of nature pulls explorers outdoors.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Stay Curious · 17–20 of 20</span></div></div>
+<div class="pg">
+        <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
+<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
+<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
+<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
+<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
+<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
+<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
+<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
+<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></svg>
+          <div><div class="kicker">Melody's match round</div><h2 style="font-size:15pt">Who said it?</h2></div></div>
+        <div class="match">
+          <div><div class="mh">The lines</div><div class="row"><b>1.</b> “We are not born for ourselves alone.”</div><div class="row"><b>2.</b> “Imagination is the true magic carpet.”</div><div class="row"><b>3.</b> “Hope is being able to see that there is light despite all of the darkne…”</div><div class="row"><b>4.</b> “Kids are never the problem. They are born scientists. The problem is al…”</div><div class="row"><b>5.</b> “High expectations are the key to everything.”</div><div class="row"><b>6.</b> “Stay hungry, stay foolish.”</div><div class="row"><b>7.</b> “What makes us human, I think, is an ability to ask questions.”</div><div class="row"><b>8.</b> “Don't just dream your goals, achieve them.”</div></div>
+          <div><div class="mh">The voices</div><div class="row"><b>A.</b> Steve Jobs</div><div class="row"><b>B.</b> Neil deGrasse Tyson</div><div class="row"><b>C.</b> Norman Vincent Peale</div><div class="row"><b>D.</b> Sam Walton</div><div class="row"><b>E.</b> Jane Goodall</div><div class="row"><b>F.</b> Author unknown</div><div class="row"><b>G.</b> Cicero</div><div class="row"><b>H.</b> Desmond Tutu</div></div></div>
+        <div class="kicker" style="margin-top:.18in">Your turn</div>
+        <p style="font-size:9.5pt;color:var(--muted);margin:.04in 0 .1in">Write a line of your own about stay curious. Sign it. Date it. Future-you will want proof.</p>
+        <div class="lines"><div></div><div></div><div></div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>No peeking — key at the back</span></div></div>
+<div class="pg" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--bg1),var(--tint))">
+      <div class="kicker">Theme 7 of 12</div>
+      <h1 style="font-size:34pt;margin:.08in 0">Love Learning</h1>
+      <p style="font-family:'Fredoka';font-size:11.5pt;color:var(--muted)">For every list that made you better.</p>
+      <div style="margin:.3in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.1in;height:1.1in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
+<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
+<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
+<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
+<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
+<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
+<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
+<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
+<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></svg>
+        <div class="qt" style="text-align:left;margin-top:.14in"><div class="q">Kid, you'll move mountains.</div>
+        <div class="a">— Dr. Seuss, children's author</div></div></div>
+      <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Love Learning</span></div></div>
+<div class="pg">
+        <div class="kicker">Love Learning · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Blind is a bookless person.</div>
+          <div class="a">— Icelandic Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Reading opens your eyes to the whole world.</div></div><div class="qt"><div class="q">Rome was not built in a day.</div>
+          <div class="a">— French proverb, traditional saying</div>
+          <div class="m">🐝 For spellers: Great things take time and patience to achieve.</div></div><div class="qt"><div class="q">The wise store up knowledge.</div>
+          <div class="a">— Hebrew Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Smart people keep gathering and saving what they learn.</div></div><div class="qt"><div class="q">Learning expands great souls.</div>
+          <div class="a">— Persian proverb, traditional saying</div>
+          <div class="m">🐝 For spellers: Learning makes a person's spirit grow bigger.</div></div><div class="qt"><div class="q">Practice is the best teacher.</div>
+          <div class="a">— Latin Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: You learn the most by actually doing something.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Love Learning · 2–6 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Love Learning · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Becoming is better than being.</div>
+          <div class="a">— Carol Dweck, Psychologist</div>
+          <div class="m">🐝 For spellers: Growing is even better than being finished.</div></div><div class="qt"><div class="q">Knowledge is better than riches.</div>
+          <div class="a">— Cameroonian Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: What you know is worth more than money.</div></div><div class="qt"><div class="q">When you know better, do better.</div>
+          <div class="a">— Maya Angelou, Poet and author</div>
+          <div class="m">🐝 For spellers: As you learn more, make kinder choices.</div></div><div class="qt"><div class="q">New little bird, new little song.</div>
+          <div class="a">— Mexican Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: New situations bring new things to learn and enjoy.</div></div><div class="qt"><div class="q">The tongue will lead you to Kyiv.</div>
+          <div class="a">— Ukrainian Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Being brave enough to ask questions helps you find your way.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Love Learning · 7–11 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Love Learning · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Repetition teaches even a donkey.</div>
+          <div class="a">— Arabic Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Practicing something over and over helps anyone learn it.</div></div><div class="qt"><div class="q">Whoever has knowledge is powerful.</div>
+          <div class="a">— Persian Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: The more you learn, the more you can do in the world.</div></div><div class="qt"><div class="q">Bend the bamboo while it is young.</div>
+          <div class="a">— Filipino Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: It's easiest to learn good habits while you are still young.</div></div><div class="qt"><div class="q">There is no royal road to geometry.</div>
+          <div class="a">— Euclid, mathematician</div>
+          <div class="m">🐝 For spellers: There is no shortcut to learning math; everyone must work through it.</div></div><div class="qt"><div class="q">Repetition is the mother of wisdom.</div>
+          <div class="a">— Slovak Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Practicing something again and again helps you truly learn it.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Love Learning · 12–16 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Love Learning · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">I never lose. I either win or learn.</div>
+          <div class="a">— Nelson Mandela, South African leader</div>
+          <div class="m">🐝 For spellers: Even a loss can teach you something helpful.</div></div><div class="qt"><div class="q">There is no shortcut to achievement.</div>
+          <div class="a">— George Washington Carver, scientist and inventor</div>
+          <div class="m">🐝 For spellers: Real success comes from steady effort.</div></div><div class="qt"><div class="q">Where there is a will, there is a way.</div>
+          <div class="a">— English proverb, traditional saying</div>
+          <div class="m">🐝 For spellers: If you truly want something, you can find a way to do it.</div></div><div class="qt"><div class="q">Anyone who keeps learning stays young.</div>
+          <div class="a">— Henry Ford, inventor and engineer</div>
+          <div class="m">🐝 For spellers: Always learning keeps your mind young and fresh.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Love Learning · 17–20 of 20</span></div></div>
+<div class="pg" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--bg1),var(--tint))">
+      <div class="kicker">Theme 8 of 12</div>
+      <h1 style="font-size:34pt;margin:.08in 0">Imagine It</h1>
+      <p style="font-family:'Fredoka';font-size:11.5pt;color:var(--muted)">For seeing the word before you spell it.</p>
+      <div style="margin:.3in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.1in;height:1.1in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
+<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
+<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
+<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
+<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
+<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
+<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
+<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
+<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></svg>
+        <div class="qt" style="text-align:left;margin-top:.14in"><div class="q">Great minds discuss ideas.</div>
+        <div class="a">— Eleanor Roosevelt, American humanitarian</div></div></div>
+      <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Imagine It</span></div></div>
+<div class="pg">
+        <div class="kicker">Imagine It · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Let the wild rumpus start!</div>
+          <div class="a">— Maurice Sendak, author of Where the Wild Things Are</div>
+          <div class="m">🐝 For spellers: It is a joyful call to let imagination run free.</div></div><div class="qt"><div class="q">Beauty will save the world.</div>
+          <div class="a">— Fyodor Dostoevsky, author</div>
+          <div class="m">🐝 For spellers: It means beauty and goodness can change the world.</div></div><div class="qt"><div class="q">Imagination rules the world.</div>
+          <div class="a">— Napoleon Bonaparte, French leader</div>
+          <div class="m">🐝 For spellers: New ideas born in the imagination shape everything around us.</div></div><div class="qt"><div class="q">Imagination grows by exercise.</div>
+          <div class="a">— W. Somerset Maugham, British author</div>
+          <div class="m">🐝 For spellers: The more you use your imagination, the stronger and richer it becomes.</div></div><div class="qt"><div class="q">A day dreamed is never wasted.</div>
+          <div class="a">— Author unknown, Popular saying</div>
+          <div class="m">🐝 For spellers: Time spent imagining is never time lost.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Imagine It · 2–6 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Imagine It · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Imagination is the air of mind.</div>
+          <div class="a">— Philip James Bailey, English poet</div>
+          <div class="m">🐝 For spellers: Imagination is as important to your mind as air is to your body.</div></div><div class="qt"><div class="q">Imagination decides everything.</div>
+          <div class="a">— Blaise Pascal, French thinker</div>
+          <div class="m">🐝 For spellers: How you imagine things can shape everything you do.</div></div><div class="qt"><div class="q">Wonder is the seed of knowledge.</div>
+          <div class="a">— Francis Bacon, English philosopher</div>
+          <div class="m">🐝 For spellers: Feeling amazed and curious is where learning begins.</div></div><div class="qt"><div class="q">Only you can control your future.</div>
+          <div class="a">— Dr. Seuss, American author</div>
+          <div class="m">🐝 For spellers: You have the power to imagine and shape the days ahead.</div></div><div class="qt"><div class="q">You can make anything by writing.</div>
+          <div class="a">— C.S. Lewis, author of Narnia</div>
+          <div class="m">🐝 For spellers: With writing, you can create absolutely anything.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Imagine It · 7–11 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Imagine It · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Lord, what fools these mortals be!</div>
+          <div class="a">— William Shakespeare, England's famous playwright and poet</div>
+          <div class="m">🐝 For spellers: A mischievous fairy laughs at how silly people can act.</div></div><div class="qt"><div class="q">Imagination is the eye of the soul.</div>
+          <div class="a">— Joseph Joubert, French writer</div>
+          <div class="m">🐝 For spellers: Your imagination lets your heart see beautiful things others might miss.</div></div><div class="qt"><div class="q">I am a part of all that I have met.</div>
+          <div class="a">— Alfred Tennyson, English poet</div>
+          <div class="m">🐝 For spellers: Everything you experience becomes part of who you are.</div></div><div class="qt"><div class="q">Don't gobblefunk around with words.</div>
+          <div class="a">— Roald Dahl, author of The BFG</div>
+          <div class="m">🐝 For spellers: It is a playful reminder to say what you really mean.</div></div><div class="qt"><div class="q">An idea is salvation by imagination.</div>
+          <div class="a">— Frank Lloyd Wright, American architect</div>
+          <div class="m">🐝 For spellers: A fresh idea, born from imagination, can make everything better.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Imagine It · 12–16 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Imagine It · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Courage is found in unlikely places.</div>
+          <div class="a">— J. R. R. Tolkien, British author</div>
+          <div class="m">🐝 For spellers: Bravery can appear in the most surprising people, including you.</div></div><div class="qt"><div class="q">What are men to rocks and mountains?</div>
+          <div class="a">— Jane Austen, author of Pride and Prejudice</div>
+          <div class="m">🐝 For spellers: It is a joyful line about loving nature and travel.</div></div><div class="qt"><div class="q">Write hard and clear about what hurts.</div>
+          <div class="a">— Ernest Hemingway, American author</div>
+          <div class="m">🐝 For spellers: Honest writing comes from real feelings.</div></div><div class="qt"><div class="q">Improving things comes naturally to me.</div>
+          <div class="a">— Hedy Lamarr, inventor and actress</div>
+          <div class="m">🐝 For spellers: She naturally loved finding ways to make things better.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Imagine It · 17–20 of 20</span></div></div>
+<div class="pg" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--bg1),var(--tint))">
+      <div class="kicker">Theme 9 of 12</div>
+      <h1 style="font-size:34pt;margin:.08in 0">Make Things</h1>
+      <p style="font-family:'Fredoka';font-size:11.5pt;color:var(--muted)">For building your own way to remember.</p>
+      <div style="margin:.3in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.1in;height:1.1in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
+<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
+<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
+<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
+<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
+<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
+<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
+<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
+<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></svg>
+        <div class="qt" style="text-align:left;margin-top:.14in"><div class="q">Creativity takes courage.</div>
+        <div class="a">— Henri Matisse, French artist</div></div></div>
+      <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Make Things</span></div></div>
+<div class="pg">
+        <div class="kicker">Make Things · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Where words fail, music speaks.</div>
+          <div class="a">— Hans Christian Andersen, Danish author</div>
+          <div class="m">🐝 For spellers: When it is hard to explain feelings, music can express them for you.</div></div><div class="qt"><div class="q">Everything begins with an idea.</div>
+          <div class="a">— Earl Nightingale, American motivational author</div>
+          <div class="m">🐝 For spellers: Every wonderful creation starts from a single idea.</div></div><div class="qt"><div class="q">Every artist was first an amateur.</div>
+          <div class="a">— Ralph Waldo Emerson, American essayist</div>
+          <div class="m">🐝 For spellers: Everyone starts as a beginner, so keep practicing your art.</div></div><div class="qt"><div class="q">Music is the shorthand of emotion.</div>
+          <div class="a">— Leo Tolstoy, Russian author</div>
+          <div class="m">🐝 For spellers: Music is a quick, beautiful way to share how we feel.</div></div><div class="qt"><div class="q">You fail only if you stop writing.</div>
+          <div class="a">— Ray Bradbury, American author</div>
+          <div class="m">🐝 For spellers: As long as you keep creating, you keep growing and succeeding.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Make Things · 2–6 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Make Things · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Write what should not be forgotten.</div>
+          <div class="a">— Isabel Allende, Chilean-American author</div>
+          <div class="m">🐝 For spellers: Use your writing to keep wonderful stories and memories alive.</div></div><div class="qt"><div class="q">Talent is a flame. Genius is a fire.</div>
+          <div class="a">— Bernard Williams, British philosopher</div>
+          <div class="m">🐝 For spellers: Skill is a spark, but passion and practice make it blaze bright.</div></div><div class="qt"><div class="q">Design is intelligence made visible.</div>
+          <div class="a">— Alina Wheeler, American author</div>
+          <div class="m">🐝 For spellers: Good design shows clever thinking in a form you can see.</div></div><div class="qt"><div class="q">Just play. Have fun. Enjoy the game.</div>
+          <div class="a">— Michael Jordan, American basketball player</div>
+          <div class="m">🐝 For spellers: Enjoying what you do makes creating even better.</div></div><div class="qt"><div class="q">Creativity is contagious. Pass it on.</div>
+          <div class="a">— Albert Einstein, German-born physicist</div>
+          <div class="m">🐝 For spellers: When you share your creative spirit, it inspires others to create too.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Make Things · 7–11 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Make Things · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Creativity is just connecting things.</div>
+          <div class="a">— Steve Jobs, American inventor and entrepreneur</div>
+          <div class="m">🐝 For spellers: Being creative often means linking ideas together in new ways.</div></div><div class="qt"><div class="q">Every good painter paints what he is.</div>
+          <div class="a">— Jackson Pollock, American artist</div>
+          <div class="m">🐝 For spellers: Your art naturally shows who you are inside.</div></div><div class="qt"><div class="q">A line is a dot that went for a walk.</div>
+          <div class="a">— Paul Klee, Swiss-German artist</div>
+          <div class="m">🐝 For spellers: Even a simple drawing can start with one playful, creative move.</div></div><div class="qt"><div class="q">Do not fear mistakes. There are none.</div>
+          <div class="a">— Miles Davis, American musician</div>
+          <div class="m">🐝 For spellers: In creating, so-called mistakes can become happy surprises.</div></div><div class="qt"><div class="q">Art is never finished, only abandoned.</div>
+          <div class="a">— Leonardo da Vinci, Italian artist and inventor</div>
+          <div class="m">🐝 For spellers: You can always keep improving your art; there is always more to explore.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Make Things · 12–16 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Make Things · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">To create one's own world takes courage.</div>
+          <div class="a">— Georgia O'Keeffe, American artist</div>
+          <div class="m">🐝 For spellers: Making something uniquely yours takes bravery, and you can do it.</div></div><div class="qt"><div class="q">Dance is the hidden language of the soul.</div>
+          <div class="a">— Martha Graham, American dancer</div>
+          <div class="m">🐝 For spellers: Dancing lets you share feelings without any words.</div></div><div class="qt"><div class="q">Creativity comes from a conflict of ideas.</div>
+          <div class="a">— Donatella Versace, Italian designer</div>
+          <div class="m">🐝 For spellers: New ideas often spark when different thoughts meet.</div></div><div class="qt"><div class="q">You can't do it unless you can imagine it.</div>
+          <div class="a">— George Lucas, American filmmaker</div>
+          <div class="m">🐝 For spellers: You have to picture something before you can create it.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Make Things · 17–20 of 20</span></div></div>
+<div class="pg">
+        <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
+<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
+<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
+<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
+<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
+<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
+<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
+<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
+<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></svg>
+          <div><div class="kicker">Melody's match round</div><h2 style="font-size:15pt">Who said it?</h2></div></div>
+        <div class="match">
+          <div><div class="mh">The lines</div><div class="row"><b>1.</b> “The direction in which education starts a man will determine his future…”</div><div class="row"><b>2.</b> “Blind is a bookless person.”</div><div class="row"><b>3.</b> “The wise store up knowledge.”</div><div class="row"><b>4.</b> “Mistakes are a fact of life. It is the response to error that counts.”</div><div class="row"><b>5.</b> “We especially need imagination in science.”</div><div class="row"><b>6.</b> “You'll never know everything about anything, especially something you l…”</div><div class="row"><b>7.</b> “Imagination is the beginning of creation.”</div><div class="row"><b>8.</b> “Every failure teaches a man something, if he will learn.”</div></div>
+          <div><div class="mh">The voices</div><div class="row"><b>A.</b> Charles Dickens</div><div class="row"><b>B.</b> Maria Mitchell</div><div class="row"><b>C.</b> Julia Child</div><div class="row"><b>D.</b> Hebrew Proverb</div><div class="row"><b>E.</b> Plato</div><div class="row"><b>F.</b> Nikki Giovanni</div><div class="row"><b>G.</b> Icelandic Proverb</div><div class="row"><b>H.</b> George Bernard Shaw</div></div></div>
+        <div class="kicker" style="margin-top:.18in">Your turn</div>
+        <p style="font-size:9.5pt;color:var(--muted);margin:.04in 0 .1in">Write a line of your own about make things. Sign it. Date it. Future-you will want proof.</p>
+        <div class="lines"><div></div><div></div><div></div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>No peeking — key at the back</span></div></div>
+<div class="pg" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--bg1),var(--tint))">
+      <div class="kicker">Theme 10 of 12</div>
+      <h1 style="font-size:34pt;margin:.08in 0">Be Kind</h1>
+      <p style="font-family:'Fredoka';font-size:11.5pt;color:var(--muted)">For the speller who just went out.</p>
+      <div style="margin:.3in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.1in;height:1.1in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
+<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
+<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
+<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
+<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
+<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
+<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
+<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
+<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></svg>
+        <div class="qt" style="text-align:left;margin-top:.14in"><div class="q">Kindness is never wasted.</div>
+        <div class="a">— Aesop's Fable Proverb, a traditional saying</div></div></div>
+      <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Be Kind</span></div></div>
+<div class="pg">
+        <div class="kicker">Be Kind · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Kindness pays for itself.</div>
+          <div class="a">— Finnish Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Being kind is always worth it in the end.</div></div><div class="qt"><div class="q">We rise by lifting others.</div>
+          <div class="a">— Robert Green Ingersoll, American orator and lawyer</div>
+          <div class="m">🐝 For spellers: Helping other people up lifts you higher too.</div></div><div class="qt"><div class="q">A good deed is never lost.</div>
+          <div class="a">— Spanish Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Every kind act matters, even if you don't see the result.</div></div><div class="qt"><div class="q">Be a blessing to somebody.</div>
+          <div class="a">— Maya Angelou, poet and author</div>
+          <div class="m">🐝 For spellers: It means try to bring good into someone's life.</div></div><div class="qt"><div class="q">Work is love made visible.</div>
+          <div class="a">— Kahlil Gibran, poet and artist</div>
+          <div class="m">🐝 For spellers: Doing your work well is a way of showing love.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Be Kind · 2–6 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Be Kind · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Love is a great beautifier.</div>
+          <div class="a">— Louisa May Alcott, author of Little Women</div>
+          <div class="m">🐝 For spellers: It means love makes people and life more beautiful.</div></div><div class="qt"><div class="q">A kindness is never wasted.</div>
+          <div class="a">— Aesop, ancient Greek teller of animal fables</div>
+          <div class="m">🐝 For spellers: From the Ant and the Dove: a good deed always matters and comes back around.</div></div><div class="qt"><div class="q">Bread and salt make friends.</div>
+          <div class="a">— Georgian Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Sharing food and kindness turns strangers into friends.</div></div><div class="qt"><div class="q">The hand that gives, gathers.</div>
+          <div class="a">— Welsh Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: When you give to others, good things come back to you.</div></div><div class="qt"><div class="q">When they go low, we go high.</div>
+          <div class="a">— Michelle Obama, Former US First Lady</div>
+          <div class="m">🐝 For spellers: Answer meanness with your best self.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Be Kind · 7–11 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Be Kind · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Gentle words open iron gates.</div>
+          <div class="a">— Bulgarian Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Kindness can win over even the hardest hearts.</div></div><div class="qt"><div class="q">A closed hand cannot receive.</div>
+          <div class="a">— Chilean Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: You have to be open and giving to receive good things too.</div></div><div class="qt"><div class="q">The heart that gives, gathers.</div>
+          <div class="a">— Marianne Moore, American poet</div>
+          <div class="m">🐝 For spellers: A giving heart ends up richer, not poorer.</div></div><div class="qt"><div class="q">The whole world is one family.</div>
+          <div class="a">— Sanskrit Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: We should treat all people with care, like family.</div></div><div class="qt"><div class="q">We are made kind by being kind.</div>
+          <div class="a">— Eric Hoffer, American philosopher</div>
+          <div class="m">🐝 For spellers: Practicing kindness is what makes us kind.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Be Kind · 12–16 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Be Kind · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Do good and don't look at whom.</div>
+          <div class="a">— Latin American Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Help others without worrying about who they are.</div></div><div class="qt"><div class="q">A soft answer turns away anger.</div>
+          <div class="a">— Hebrew Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: Gentle words can calm an angry person.</div></div><div class="qt"><div class="q">He who brings kola brings life.</div>
+          <div class="a">— Igbo Proverb, a traditional saying</div>
+          <div class="m">🐝 For spellers: A welcoming gift or gesture shows care and friendship.</div></div><div class="qt"><div class="q">Good deeds are the best prayer.</div>
+          <div class="a">— Greek proverb, Traditional wisdom from Greece</div>
+          <div class="m">🐝 For spellers: Doing kind things for others is one of the most meaningful things you can do.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Be Kind · 17–20 of 20</span></div></div>
+<div class="pg" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--bg1),var(--tint))">
+      <div class="kicker">Theme 11 of 12</div>
+      <h1 style="font-size:34pt;margin:.08in 0">Bring Friends</h1>
+      <p style="font-family:'Fredoka';font-size:11.5pt;color:var(--muted)">For the people cheering in row three.</p>
+      <div style="margin:.3in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.1in;height:1.1in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
+<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
+<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
+<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
+<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
+<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
+<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
+<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
+<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></svg>
+        <div class="qt" style="text-align:left;margin-top:.14in"><div class="q">A friend is a second self.</div>
+        <div class="a">— Aristotle, Ancient Greek philosopher</div></div></div>
+      <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Bring Friends</span></div></div>
+<div class="pg">
+        <div class="kicker">Bring Friends · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">A friend loves at all times.</div>
+          <div class="a">— Book of Proverbs, Ancient book of wisdom</div>
+          <div class="m">🐝 For spellers: A true friend loves you no matter what.</div></div><div class="qt"><div class="q">Two people shorten the road.</div>
+          <div class="a">— Irish proverb, Traditional wisdom from Ireland</div>
+          <div class="m">🐝 For spellers: A journey feels quicker and nicer when you share it with a friend.</div></div><div class="qt"><div class="q">A friend loveth at all times.</div>
+          <div class="a">— King Solomon, proverb writer</div>
+          <div class="m">🐝 For spellers: It means true friends love you no matter what.</div></div><div class="qt"><div class="q">Friendship is the wine of life.</div>
+          <div class="a">— Edward Young, English poet</div>
+          <div class="m">🐝 For spellers: Friendship makes life richer and sweeter.</div></div><div class="qt"><div class="q">When friends meet, hearts warm.</div>
+          <div class="a">— Chinese Proverb, Traditional saying from China</div>
+          <div class="m">🐝 For spellers: Being with friends brings warmth and happiness.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Bring Friends · 2–6 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Bring Friends · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Friendship is a sheltering tree.</div>
+          <div class="a">— Samuel Taylor Coleridge, English poet</div>
+          <div class="m">🐝 For spellers: A friend gives you shade and protection like a big tree.</div></div><div class="qt"><div class="q">Friends are the sunshine of life.</div>
+          <div class="a">— John Hay, American statesman and author</div>
+          <div class="m">🐝 For spellers: Friends bring warmth and brightness to your life.</div></div><div class="qt"><div class="q">Good fences make good neighbours.</div>
+          <div class="a">— Robert Frost, American poet of woods and roads</div>
+          <div class="m">🐝 For spellers: An old saying: clear boundaries can help neighbors get along well.</div></div><div class="qt"><div class="q">Friends are the family you choose.</div>
+          <div class="a">— Jess C. Scott, American author</div>
+          <div class="m">🐝 For spellers: Good friends can feel as close as family you picked yourself.</div></div><div class="qt"><div class="q">Life is nothing without friendship.</div>
+          <div class="a">— Marcus Tullius Cicero, Roman statesman and writer</div>
+          <div class="m">🐝 For spellers: Without friends, life feels empty.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Bring Friends · 7–11 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Bring Friends · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">The absent are always in the wrong.</div>
+          <div class="a">— French proverb, Traditional wisdom from France</div>
+          <div class="m">🐝 For spellers: Be present and speak up for yourself, and be fair to those who aren't there.</div></div><div class="qt"><div class="q">A friend is a gift you give yourself.</div>
+          <div class="a">— Robert Louis Stevenson, Scottish author</div>
+          <div class="m">🐝 For spellers: Making a friend is a wonderful gift to your own life.</div></div><div class="qt"><div class="q">Friendship is Love without his wings.</div>
+          <div class="a">— Lord Byron, English Romantic poet</div>
+          <div class="m">🐝 For spellers: Friendship is a gentle, lasting kind of love.</div></div><div class="qt"><div class="q">Friendship is one mind in two bodies.</div>
+          <div class="a">— Mencius, Ancient Chinese philosopher</div>
+          <div class="m">🐝 For spellers: Close friends think and feel almost as one.</div></div><div class="qt"><div class="q">No man is an island, entire of itself.</div>
+          <div class="a">— John Donne, poet</div>
+          <div class="m">🐝 For spellers: It means we are all connected to one another.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Bring Friends · 12–16 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Bring Friends · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Hold a true friend with both your hands.</div>
+          <div class="a">— Nigerian Proverb, Traditional saying from Nigeria</div>
+          <div class="m">🐝 For spellers: Cherish a real friend and never let them go.</div></div><div class="qt"><div class="q">He who walks with the wise becomes wise.</div>
+          <div class="a">— Filipino proverb, Traditional wisdom from the Philippines</div>
+          <div class="m">🐝 For spellers: Spending time with good, wise people helps you become wise too.</div></div><div class="qt"><div class="q">Let there be spaces in your togetherness.</div>
+          <div class="a">— Kahlil Gibran, poet and author of The Prophet</div>
+          <div class="m">🐝 For spellers: It means even close friends need a little space.</div></div><div class="qt"><div class="q">He who goes with the lame learns to limp.</div>
+          <div class="a">— Italian proverb, Traditional wisdom from Italy</div>
+          <div class="m">🐝 For spellers: You pick up the habits of the people you spend time with, so choose good company.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Bring Friends · 17–20 of 20</span></div></div>
+<div class="pg" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--bg1),var(--tint))">
+      <div class="kicker">Theme 12 of 12</div>
+      <h1 style="font-size:34pt;margin:.08in 0">Laugh a Little</h1>
+      <p style="font-family:'Fredoka';font-size:11.5pt;color:var(--muted)">For when the nerves need popping.</p>
+      <div style="margin:.3in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.1in;height:1.1in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
+<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
+<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
+<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
+<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
+<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
+<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
+<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
+<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></svg>
+        <div class="qt" style="text-align:left;margin-top:.14in"><div class="q">Wit is educated insolence.</div>
+        <div class="a">— Aristotle, Ancient Greek philosopher</div></div></div>
+      <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Laugh a Little</span></div></div>
+<div class="pg">
+        <div class="kicker">Laugh a Little · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">Laughter is inner jogging.</div>
+          <div class="a">— Norman Cousins, American journalist</div>
+          <div class="m">🐝 For spellers: Laughing is like exercise for your insides.</div></div><div class="qt"><div class="q">Common sense is not so common.</div>
+          <div class="a">— Voltaire, French Enlightenment writer</div>
+          <div class="m">🐝 For spellers: Sensible thinking is rarer than people think.</div></div><div class="qt"><div class="q">Two rights don't equal a left.</div>
+          <div class="a">— Roald Dahl, author of The BFG</div>
+          <div class="m">🐝 For spellers: A goofy bit of BFG nonsense that makes you grin.</div></div><div class="qt"><div class="q">A joke is a very serious thing.</div>
+          <div class="a">— Winston Churchill, British wartime leader</div>
+          <div class="m">🐝 For spellers: Humor can carry real importance.</div></div><div class="qt"><div class="q">Don't teach a crocodile to swim.</div>
+          <div class="a">— Thai proverb, Traditional wisdom from Thailand</div>
+          <div class="m">🐝 For spellers: Don't try to teach an expert something they already know well.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Laugh a Little · 2–6 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Laugh a Little · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">It's like deja vu all over again.</div>
+          <div class="a">— Yogi Berra, Baseball player and coach</div>
+          <div class="m">🐝 For spellers: A funny way to say something feels repeated.</div></div><div class="qt"><div class="q">Where hens cackle, there are eggs.</div>
+          <div class="a">— Finnish proverb, Traditional wisdom from Finland</div>
+          <div class="m">🐝 For spellers: Where there's lots of activity and noise, something is usually being made.</div></div><div class="qt"><div class="q">Never miss a good chance to shut up.</div>
+          <div class="a">— Will Rogers, Cowboy humorist and actor</div>
+          <div class="m">🐝 For spellers: Sometimes staying quiet is the smartest choice.</div></div><div class="qt"><div class="q">If called by a panther, don't anther.</div>
+          <div class="a">— Ogden Nash, American poet of light verse</div>
+          <div class="m">🐝 For spellers: A goofy pun that's meant to make you groan and grin.</div></div><div class="qt"><div class="q">Life is hard. After all, it kills you.</div>
+          <div class="a">— Katharine Hepburn, Legendary film actress</div>
+          <div class="m">🐝 For spellers: A wry joke about life's difficulties.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Laugh a Little · 7–11 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Laugh a Little · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">You cannot spoil porridge with butter.</div>
+          <div class="a">— Russian proverb, Traditional wisdom from Russia</div>
+          <div class="m">🐝 For spellers: A little extra of a good thing rarely hurts. More kindness never spoils anything.</div></div><div class="qt"><div class="q">Never go to bed mad. Stay up and fight.</div>
+          <div class="a">— Phyllis Diller, Comedian</div>
+          <div class="m">🐝 For spellers: A joke about sorting out problems, not sleeping on them.</div></div><div class="qt"><div class="q">Nobody can be uncheered with a balloon.</div>
+          <div class="a">— A.A. Milne, author of Winnie the Pooh</div>
+          <div class="m">🐝 For spellers: A balloon is a tiny bundle of instant joy.</div></div><div class="qt"><div class="q">Eighty percent of success is showing up.</div>
+          <div class="a">— Woody Allen, Filmmaker and writer</div>
+          <div class="m">🐝 For spellers: Just being present is a big part of succeeding.</div></div><div class="qt"><div class="q">If you can't convince them, confuse them.</div>
+          <div class="a">— Harry S. Truman, 33rd U.S. President</div>
+          <div class="m">🐝 For spellers: A joking way to deal with tricky arguments.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Laugh a Little · 12–16 of 20</span></div></div>
+<div class="pg">
+        <div class="kicker">Laugh a Little · lines worth keeping</div>
+        <div style="height:.08in"></div>
+        <div class="qt"><div class="q">When humor goes, there goes civilization.</div>
+          <div class="a">— Erma Bombeck, humorist and columnist</div>
+          <div class="m">🐝 For spellers: A good sense of humor keeps the world kind.</div></div><div class="qt"><div class="q">When the cat is away, the mice will play.</div>
+          <div class="a">— French proverb, Traditional wisdom from France</div>
+          <div class="m">🐝 For spellers: People act freely when no one is watching. It's a playful reminder to behave anyway.</div></div><div class="qt"><div class="q">I can resist everything except temptation.</div>
+          <div class="a">— Oscar Wilde, Irish playwright and wit</div>
+          <div class="m">🐝 For spellers: A funny way to admit he gives in too easily.</div></div><div class="qt"><div class="q">I intend to live forever. So far, so good.</div>
+          <div class="a">— Steven Wright, Deadpan American comedian</div>
+          <div class="m">🐝 For spellers: A silly boast that he hasn't died yet.</div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Laugh a Little · 17–20 of 20</span></div></div>
+<div class="pg">
+        <div style="display:flex;align-items:center;gap:.12in;margin-bottom:.1in"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
+<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
+<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
+<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
+<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
+<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
+<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
+<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
+<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></svg>
+          <div><div class="kicker">Melody's match round</div><h2 style="font-size:15pt">Who said it?</h2></div></div>
+        <div class="match">
+          <div><div class="mh">The lines</div><div class="row"><b>1.</b> “Speaking of the king of Rome, and he appears at the door.”</div><div class="row"><b>2.</b> “I can resist everything except temptation.”</div><div class="row"><b>3.</b> “Goodness is the only investment that never fails.”</div><div class="row"><b>4.</b> “If you can't get a miracle, become one.”</div><div class="row"><b>5.</b> “Empathy makes you a better innovator.”</div><div class="row"><b>6.</b> “A friend is someone who makes it easy to believe in yourself.”</div><div class="row"><b>7.</b> “He who divides and shares always gets the best share.”</div><div class="row"><b>8.</b> “The best index to a person's character is how he treats people who can'…”</div></div>
+          <div><div class="mh">The voices</div><div class="row"><b>A.</b> Abigail Van Buren</div><div class="row"><b>B.</b> Latin American proverb</div><div class="row"><b>C.</b> Nick Vujicic</div><div class="row"><b>D.</b> Oscar Wilde</div><div class="row"><b>E.</b> Henry David Thoreau</div><div class="row"><b>F.</b> Latin American proverb</div><div class="row"><b>G.</b> Heidi Wills</div><div class="row"><b>H.</b> Satya Nadella</div></div></div>
+        <div class="kicker" style="margin-top:.18in">Your turn</div>
+        <p style="font-size:9.5pt;color:var(--muted);margin:.04in 0 .1in">Write a line of your own about laugh a little. Sign it. Date it. Future-you will want proof.</p>
+        <div class="lines"><div></div><div></div><div></div></div>
+        <div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>No peeking — key at the back</span></div></div>
+<div class="pg"><div class="kicker">No peeking until you've tried</div>
+      <h2 style="font-size:16pt;margin:.04in 0 .14in">Answer key</h2>
+      <div class="key"><div><b>Who said it, p.18</b> — 1→C, 2→E, 3→A, 4→H, 5→G, 6→D, 7→B, 8→F</div><div><b>Who said it, p.34</b> — 1→G, 2→C, 3→H, 4→B, 5→D, 6→A, 7→E, 8→F</div><div><b>Who said it, p.50</b> — 1→E, 2→G, 3→D, 4→F, 5→B, 6→C, 7→H, 8→A</div><div><b>Who said it, p.66</b> — 1→B, 2→D, 3→E, 4→C, 5→H, 6→G, 7→F, 8→A</div></div><div class="foot"><span>Say It Like a Champion · Bizzing Bee</span><span>Answers</span></div></div>
+<div class="pg" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
+    <svg viewBox="0 0 120 120" style="width:1.4in;height:1.4in;flex-shrink:0" aria-hidden="true"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
+<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
+<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
+<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
+<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
+<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
+<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
+<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
+<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></svg>
+    <h2 style="font-size:18pt;margin:.12in 0">Melody says: now go be quotable.</h2>
+    <p style="font-size:10.5pt;max-width:5.4in;margin:0 auto .28in;line-height:1.6">There's more where this came from — the Bizzing Bee app carries the full collection, with audio, games and a coach that remembers what you love.</p>
+    <p style="font-size:8.4pt;color:var(--muted);max-width:5.8in;margin:0 auto;line-height:1.6">Bizzing Bee · an independent study project. Not affiliated with, sponsored by, or endorsed by the Scripps National Spelling Bee, the North South Foundation, or Merriam-Webster. Meanings and commentary are written for this project. Typefaces are open-licensed (SIL OFL).</p></div></body></html>
