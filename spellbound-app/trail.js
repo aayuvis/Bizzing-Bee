@@ -1,5 +1,5 @@
 /* ============================================================
-   TRAIL.js — The Honey Trail & The Queen's Expedition engine.
+   TRAIL.js — The Word Atlas & The Ascent engine.
    Concept-first guided journeys over SB_TRAIL (trail-data.js):
    map screen (world-themed acts, winding node path) → unit loop
    (Learn → Words → Practice → Quiz gate) → checkpoints every
@@ -125,10 +125,10 @@
     set({ nav: 'trail', screen: 'app', trailView: 'map', trailTab: state.trailTab || 'honey', conceptSel: null, tq: null }); };
   app2.trailTab = t => set({ trailTab: t, trailView: 'map', tq: null });
   app2.trailUnit = id => { const c = active(); const s = seq(c); const i = s.findIndex(n => n.kind === 'unit' && n.u.id === id);
-    if (i > frontier(c)) { flash('Locked — win the earlier stops first 🔒'); return; }
+    if (i > frontier(c)) { flash('Locked — clear the earlier stops first'); return; }
     set({ trailView: 'unit', trailUnit: id, tq: null }); };
   app2.trailChk = id => { const c = active(); const s = seq(c); const i = s.findIndex(n => n.kind === 'chk' && n.id === id);
-    if (i > frontier(c)) { flash('Locked — win the earlier stops first 🔒'); return; }
+    if (i > frontier(c)) { flash('Locked — clear the earlier stops first'); return; }
     const items = buildCheckpoint(c, { id });
     set({ trailView: 'quiz', trailUnit: null, trailChk: id, tq: { items, i: 0, score: 0, picked: null, typed: '', missed: [], over: false } }); };
   app2.trailBack = () => set({ trailView: 'map', tq: null });
@@ -139,8 +139,12 @@
     try { clearAnimTimer(); } catch (e) {}
     state.conceptSel = ch; state.conceptStep = 0; state.conceptWordsOpen = false; state.animOn = false; render(); };
   app2.trailWords = () => { const u = unit(state.trailUnit);
-    needMap(() => set({ trailView: 'words', trailWordIdx: 0 })); };
-  app2.trailWordNav = d => { const n = (state.trailWordsN || 1); set({ trailWordIdx: Math.max(0, Math.min(n - 1, (state.trailWordIdx || 0) + (+d))) }); };
+    needMap(() => { const c = active(); const ws = lapWords(u, lapOf(c), 24);
+      state.sessionWords = ws.map(x => ({ w: x.w, d: x.d, s: x.s, p: x.p, o: '', r: x.h }));
+      set({ trailView: 'words', trailWordIdx: 0 }); }); };
+  app2.trailWordNav = d => { const n = (state.trailWordsN || 1);
+    const step = d === 'next' ? 1 : d === 'prev' ? -1 : (+d || 0);
+    set({ trailWordIdx: Math.max(0, Math.min(n - 1, (state.trailWordIdx || 0) + step)) }); };
   app2.trailPractice = () => { const u = unit(state.trailUnit); const c = active();
     needMap(() => { const ws = lapWords(u, lapOf(c), 24);
       if (!ws.length) { flash('No words here yet'); return; }
@@ -182,7 +186,7 @@
     const base = `position:relative;display:flex;align-items:center;gap:12px;margin:${i ? '18px' : '4px'} 0 0 ${left ? '6%' : '38%'};max-width:56%;`;
     if (node.kind === 'chk') {
       return `<button data-act="trailChk" data-arg="${escA(node.id)}" style="${base}text-align:left;${locked ? 'opacity:.45' : ''}">
-        <span style="width:46px;height:46px;flex-shrink:0;display:grid;place-items:center;background:${passed ? 'var(--good)' : 'linear-gradient(135deg,#F0B429,#C8791B)'};color:#fff;border-radius:12px;transform:rotate(45deg);box-shadow:var(--edge)"><span style="transform:rotate(-45deg);font-size:19px">${passed ? '✓' : '⭐'}</span></span>
+        <span style="width:46px;height:46px;flex-shrink:0;display:grid;place-items:center;background:${passed ? 'var(--good)' : 'linear-gradient(135deg,#F0B429,#C8791B)'};color:#fff;border-radius:12px;transform:rotate(45deg);box-shadow:var(--edge)"><span style="transform:rotate(-45deg);display:grid;place-items:center">${passed ? '✓' : iconSVG('target', 20)}</span></span>
         <span><span style="display:block;font-family:var(--display);font-weight:800;font-size:13.5px">Checkpoint</span><span style="font-size:11.5px;color:var(--muted);font-weight:600">${passed ? 'won' : locked ? 'locked' : 'mixed quiz — no new words'}</span></span></button>`;
     }
     const u = node.u; const stars = (doneMap(c)[u.id] || {});
@@ -219,17 +223,17 @@
     }
     return `<div style="animation:sb-rise .35s ease both;max-width:660px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-        <button data-act="openQuestChooser" style="color:var(--muted);font-weight:700;font-size:13px">← Quest</button>
+        <button data-act="openQuestChooser" style="color:var(--muted);font-weight:700;font-size:13px">← Quest</button>${isExp ? `<span style="font-size:10.5px;font-weight:800;letter-spacing:.08em;color:#fff;background:linear-gradient(135deg,#37415B,#1F2A44);border-radius:999px;padding:4px 11px">90% GATES</span>` : ''}
         <span style="font-family:var(--display);font-weight:800;font-size:22px">${esc(T().names[isExp ? 'expedition' : 'honey'])}</span>
         <span style="margin-left:auto;display:inline-flex;gap:6px">
-          <button data-act="trailTab" data-arg="honey" style="padding:7px 14px;border-radius:999px;font-weight:800;font-size:12.5px;${!isExp ? 'background:var(--accent);color:#fff' : 'background:var(--surface2);border:1px solid var(--line)'}">Honey Trail</button>
-          <button data-act="trailTab" data-arg="exp" style="padding:7px 14px;border-radius:999px;font-weight:800;font-size:12.5px;${isExp ? 'background:var(--accent);color:#fff' : 'background:var(--surface2);border:1px solid var(--line)'}">Queen's Expedition</button></span></div>
+          <button data-act="trailTab" data-arg="honey" style="padding:7px 14px;border-radius:999px;font-weight:800;font-size:12.5px;${!isExp ? 'background:var(--accent);color:#fff' : 'background:var(--surface2);border:1px solid var(--line)'}">${esc(T().names.honey)}</button>
+          <button data-act="trailTab" data-arg="exp" style="padding:7px 14px;border-radius:999px;font-weight:800;font-size:12.5px;${isExp ? 'background:var(--accent);color:#fff' : 'background:var(--surface2);border:1px solid var(--line)'}">${esc(T().names.expedition)}</button></span></div>
       ${expOk ? `<div style="display:flex;align-items:center;gap:12px;background:var(--bg2);border-radius:16px;padding:12px 16px;margin-bottom:16px;box-shadow:0 0 0 1px var(--line)">
-        <span style="font-family:var(--display);font-weight:800;font-size:13px;background:var(--chip);color:var(--accent);border-radius:999px;padding:5px 13px">Lap ${lap} of 3</span>
+        <span style="font-family:var(--display);font-weight:800;font-size:13px;background:var(--chip);color:var(--accent);border-radius:999px;padding:5px 13px">${isExp ? 'Ascent' : 'Tier'} ${lap} of 3</span>
         <div style="flex:1;height:9px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;background:linear-gradient(90deg,var(--accent),var(--treasure));width:${Math.round(done / Math.max(1, total) * 100)}%"></div></div>
         <span style="font-size:12px;font-weight:800;color:var(--muted)">${done}/${total} stops</span></div>
-      ${lap === 1 && !isExp ? `<p style="font-size:12.5px;color:var(--muted);font-weight:600;margin:-6px 0 14px 4px">Lap 1 keeps every word friendly — the same trail returns tougher on Lap 2. Concepts first; the words follow.</p>` : ''}
-      ${acts}` : `<div style="background:var(--bg2);border-radius:18px;padding:26px;text-align:center;box-shadow:0 0 0 1px var(--line)"><div style="font-size:34px">👑</div><h3 style="font-family:var(--display);font-size:18px;margin:8px 0">The Queen's Expedition needs the Advanced Pack</h3><p style="font-size:13px;color:var(--muted)">All 43 expert chapters, five expeditions, a 90% gate. Unlock the pack in Settings → Plans.</p></div>`}
+      ${lap === 1 && !isExp ? `<p style="font-size:12.5px;color:var(--muted);font-weight:600;margin:-6px 0 14px 4px">Tier 1 keeps every word at your level — the same route returns tougher at Tier 2. Concepts first; the words follow.</p>` : ''}
+      ${acts}` : `<div style="background:var(--bg2);border-radius:18px;padding:26px;text-align:center;box-shadow:0 0 0 1px var(--line)"><div style="display:inline-grid;place-items:center;width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#37415B,#1F2A44);color:#fff;margin:0 auto">${iconSVG('target', 28)}</div><h3 style="font-family:var(--display);font-size:18px;margin:10px 0 6px">The Ascent is Advanced Pack territory</h3><p style="font-size:13px;color:var(--muted)">All 43 expert chapters across five expeditions. 90% gates, no mercy, national-level words. Unlock in Settings → Plans.</p></div>`}
     </div>`;
   }
   function viewUnit() {
@@ -249,7 +253,7 @@
         <button data-act="trailBack" style="position:absolute;left:12px;top:10px;color:#fff;font-weight:800;font-size:12.5px;background:rgba(0,0,0,.3);border-radius:999px;padding:5px 12px">← Trail</button>
         <div style="position:absolute;left:16px;bottom:10px;right:16px;display:flex;align-items:baseline;gap:10px">
           <span style="font-family:var(--display);font-weight:800;font-size:18px;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.4);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(u.title)}</span>
-          <span style="margin-left:auto;flex-shrink:0;font-size:11px;font-weight:800;color:#fff;background:rgba(0,0,0,.3);border-radius:999px;padding:3px 10px">Lap ${lap}${passed ? ' · won ' + passed + '%' : ''}</span></div></div>
+          <span style="margin-left:auto;flex-shrink:0;font-size:11px;font-weight:800;color:#fff;background:rgba(0,0,0,.3);border-radius:999px;padding:3px 10px">${course() === 'exp' ? 'Ascent' : 'Tier'} ${lap}${passed ? ' · ' + passed + '%' : ''}</span></div></div>
       <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">${gsvg}
         <div style="position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:11px 14px;font-size:13.5px;line-height:1.5;box-shadow:var(--sh-rest)">${esc(String(ch.concept || '').split(/(?<=[.!?])\s/).slice(0, 2).join(' '))}</div></div>
       <div style="display:grid;gap:10px">
@@ -267,10 +271,11 @@
     state.trailWordsN = ws.length;
     return `<div style="animation:sb-rise .3s ease both;max-width:640px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><button data-act="trailUnit" data-arg="${escA(u.id)}" style="color:var(--muted);font-weight:700;font-size:13px">← ${esc(u.title.split('—')[0].trim())}</button></div>
-      ${wordFlash(ws, state.trailWordIdx || 0, 'trailWordNav', {})}
+      ${wordFlash(ws, state.trailWordIdx || 0, 'trailWordNav', { selfMark: true })}
       <div style="display:flex;justify-content:center;gap:10px;margin-top:12px">
         <button data-act="trailWordNav" data-arg="-1" style="padding:11px 22px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800">← Back</button>
         <button data-act="trailWordNav" data-arg="1" style="padding:11px 22px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800">Next →</button></div>
+      <p style="text-align:center;font-size:12px;color:var(--muted);font-weight:600;margin-top:8px">✓ Complete marks it mastered · ⚑ sends it to your Revisions — same as Word Coach.</p>
     </div>`;
   }
   function viewQuiz() {
@@ -281,8 +286,8 @@
       return `<div style="animation:sb-rise .35s ease both;max-width:460px;margin:0 auto;text-align:center">
         <div style="background:var(--bg2);border-radius:20px;padding:28px;box-shadow:0 0 0 1px var(--line),var(--glow)">
           <div style="width:92px;height:92px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(${q2.pass ? 'var(--good)' : 'var(--bad)'} ${pct}%,var(--surface2) 0)"><div style="width:72px;height:72px;border-radius:50%;background:var(--bg2);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:21px">${pct}%</div></div>
-          ${q2.lapUp ? `<h2 style="font-family:var(--display);font-size:21px;margin-bottom:6px">LAP ${lapOf(c)} UNLOCKED! 🏁</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">The whole trail returns — tougher words, same ideas. That's how champions are built.</p>`
-          : q2.pass ? `<h2 style="font-family:var(--display);font-size:21px;margin-bottom:6px">Stop won! +15 🪙</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">${q2.revising ? 'Revenge complete.' : 'The idea is yours. The trail rolls on.'}</p>`
+          ${q2.lapUp ? `<h2 style="font-family:var(--display);font-size:21px;margin-bottom:6px">${course() === 'exp' ? 'ASCENT' : 'TIER'} ${lapOf(c)} UNLOCKED</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">The whole route returns — tougher words, same ideas. That is how it sticks.</p>`
+          : q2.pass ? `<h2 style="font-family:var(--display);font-size:21px;margin-bottom:6px">Stop cleared · +15 🪙</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">${q2.revising ? 'Revenge complete.' : 'The idea is yours. The route rolls on.'}</p>`
           : `<h2 style="font-family:var(--display);font-size:21px;margin-bottom:6px">${pct}% — so close</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">You need ${Math.round(gate() * 100)}%. Win back the ${q2.missed.length} you missed, then take it again.</p>`}
           <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
             ${!q2.pass && q2.missed.length ? `<button data-act="tqRevise" style="padding:12px 20px;border-radius:12px;background:var(--treasure);color:#3a2c00;font-weight:800;font-size:13.5px">⚑ Revise the missed ones</button>` : ''}

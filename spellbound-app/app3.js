@@ -1277,7 +1277,7 @@ const app = {
     else { const ws=state.sessionWords||[]; const obj=ws.find(x=>nkey(x.w)===nkey(w))||{w:w,d:'',s:''}; addMiss(obj); flash('Marked for revision ⚑'); }
     if(nav && typeof app[nav]==='function') app[nav]('next'); else render(); },
   conceptWordNav:(dir)=>{ const ws=((state.conceptSel&&state.conceptSel.words)||[]).filter(x=>x&&x.w); const N=ws.length||1; let i=(state.conceptWordIdx||0)+(dir==='next'?1:-1); set({conceptWordIdx:Math.max(0,Math.min(N-1,i))}); },
-  exitTrain:()=>{ if((state.sessionDone||0)>0){ logActivity(state.coachSession?'concept':'practice', state.sessionLabel||'Practice', {done:state.sessionDone,right:state.sessionRight}, []); } if(state.coachSession){ state.coachSession=false; app.openCoach(); } else if(state.trainBack==='revisions'){ state.trainBack=null; app.openRevisions(); } else if(state.trainBack==='themes'){ state.trainBack=null; app.setNav('themes'); } else app.setNav('home'); },
+  exitTrain:()=>{ if((state.sessionDone||0)>0){ logActivity(state.coachSession?'concept':'practice', state.sessionLabel||'Practice', {done:state.sessionDone,right:state.sessionRight}, []); } if(state.trailReturn&&app.trailUnit){ const u=state.trailReturn; state.trailReturn=null; state.coachSession=false; state.nav='trail'; app.trailUnit(u); return; } if(state.coachSession){ state.coachSession=false; app.openCoach(); } else if(state.trainBack==='revisions'){ state.trainBack=null; app.openRevisions(); } else if(state.trainBack==='themes'){ state.trainBack=null; app.setNav('themes'); } else app.setNav('home'); },
   // Revisions — the words you flagged to revise; complete them or drill them again
   openRevisions:()=>set({nav:'revisions', screen:'app'}),
   reviseComplete:(word)=>{ const c=active(); const m=(c.missed||[]).find(x=>nkey(x.w)===nkey(word)); markMastered(nkey(word));
@@ -5329,10 +5329,10 @@ function viewQuest(){
       <span style="color:var(--treasure-deep,#8A5B00);font-weight:800">→</span></button>`:'';
   return `<div style="animation:sb-rise .35s ease both;max-width:640px;margin:0 auto">
     ${pageHead("Champion's Quest",'four paths, one goal','Pick a path — switch any time, all progress kept.')}
-    ${window.SB_TRAIL?`<button data-act="openTrail" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border-radius:18px;padding:15px 17px;margin-bottom:14px;background:linear-gradient(135deg,#FFC23D,#C8791B);color:#241E33;box-shadow:0 6px 18px rgba(200,121,27,.35)">
-      <span style="font-size:30px">🍯</span>
-      <span style="min-width:0;flex:1"><span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-family:var(--display);font-weight:800;font-size:17px">The Honey Trail</span><span style="background:#241E33;color:#FFC23D;border-radius:999px;padding:2px 10px;font-weight:800;font-size:11px">NEW</span></span>
-      <span style="display:block;font-size:12.5px;font-weight:700;margin-top:3px">The concept-first journey — learn the idea, meet its words, win the quiz, move on. ${(SB_TRAIL.honey.units||[]).length} stops across ${(SB_TRAIL.honey.acts||[]).length} worlds, three laps deep.</span></span>
+    ${window.SB_TRAIL?`<button data-act="openTrail" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border-radius:18px;padding:15px 17px;margin-bottom:14px;background:linear-gradient(135deg,#6C4FE0,#4A3AA0);color:#fff;box-shadow:0 6px 18px rgba(74,58,160,.4)">
+      <span style="width:46px;height:46px;flex-shrink:0;display:grid;place-items:center;border-radius:13px;background:rgba(255,255,255,.16)">${iconSVG('compass',26)}</span>
+      <span style="min-width:0;flex:1"><span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-family:var(--display);font-weight:800;font-size:17px">${esc(SB_TRAIL.names.honey)}</span><span style="background:rgba(255,255,255,.9);color:#4A3AA0;border-radius:999px;padding:2px 10px;font-weight:800;font-size:11px">NEW</span></span>
+      <span style="display:block;font-size:12.5px;font-weight:700;margin-top:3px;opacity:.95">Concept-first: learn the idea, meet its words, pass the gate, move on. ${(SB_TRAIL.honey.units||[]).length} stops · ${(SB_TRAIL.honey.acts||[]).length} worlds · 3 tiers. ${esc(SB_TRAIL.names.expedition)} waits at the top.</span></span>
       <span style="flex-shrink:0;font-weight:800">→</span></button>`:''}
     <div style="display:flex;flex-direction:column;gap:12px">${aUnlocked?(ultraTile+paths):(paths+advTile)}</div>
     ${vault}

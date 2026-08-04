@@ -246,7 +246,7 @@ if (eUsed.size !== ADV.length) { console.error('Expedition coverage', eUsed.size
 /* ================= emit ================= */
 const trail = {
   version: 1,
-  names: { honey: 'The Honey Trail', expedition: "The Queen's Expedition" },
+  names: { honey: 'The Word Atlas', expedition: 'The Ascent' },
   rules: { gate: 0.8, expeditionGate: 0.9, checkpointEvery: 4, bands: 3, coexist: true },
   bandCuts: { t1: Math.round(t1 * 10) / 10, t2: Math.round(t2 * 10) / 10 },
   honey: { acts, units: units.map(u => {

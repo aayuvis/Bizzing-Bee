@@ -122,11 +122,10 @@ handlers. App lives in this folder; open `index.html` to run.
   (98.6% agreement with CMU on the exact set; where they differ the card follows `p`,
   which is the point — the two notations on a card must agree with each other).
 
-## The Honey Trail & The Queen's Expedition (`trail.js` + `trail-data.js`)
+## The Word Atlas & The Ascent (`trail.js` + `trail-data.js`)
 - The **concept-first guided journeys**, coexisting with the classic ladder (entry: the
   gold card at the top of Champion's Quest). Curriculum lives in `trail-data.js`
-  (`SB_TRAIL`: 9 acts / 128 Honey units incl. 6 inline Trickster chapters; 5 expeditions
-  / 43 units), word pools in `trail-map-data.js` (**lazy-loaded** by the engine — never
+  (`SB_TRAIL`: 9 acts / 128 Honey units incl. 6 inline Trickster chapters; 5 expeditions / 43 units), word pools in `trail-map-data.js` (**lazy-loaded** by the engine — never
   add it to index.html). Regenerate both with `voice/pipeline/trail-build.js`.
 - Unit loop: Learn (opens the concept chapter; `state.trailReturn` routes `conceptBack`
   back to the unit) → Meet the words (wordFlash) → Practice (feeds `startTrain`) →
@@ -140,7 +139,7 @@ handlers. App lives in this folder; open `index.html` to run.
   teach once on their pinned lap. Finishing every stop advances the lap (max 3).
 - `app` is a top-level `const` (global lexical scope, **not** `window.app`) — extension
   scripts like trail.js must reference the bare identifier.
-- Trickster chapters (neu units) have no narration yet — browser TTS covers them;
+- The words step is the coach card view (selfMark wordFlash → flashMark writes luMastered / missed; requires state.sessionWords). exitTrain and conceptBack both honour state.trailReturn. Trickster chapters (neu units) have no narration yet — browser TTS covers them;
   when recording, append to `SB_CONCEPTS` (append-only) and switch units to `gi` refs.
 
 ## Vocabulary progression (separate from spelling)
