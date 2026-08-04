@@ -1,5 +1,5 @@
 /* ============================================================
-   TRAIL.js — The Word Atlas & The Ascent engine.
+   TRAIL.js — The Word Map & The Advanced Word Atlas engine.
    Concept-first guided journeys over SB_TRAIL (trail-data.js):
    map screen (world-themed acts, winding node path) → unit loop
    (Learn → Words → Practice → Quiz gate) → checkpoints every
@@ -229,11 +229,11 @@
           <button data-act="trailTab" data-arg="honey" style="padding:7px 14px;border-radius:999px;font-weight:800;font-size:12.5px;${!isExp ? 'background:var(--accent);color:#fff' : 'background:var(--surface2);border:1px solid var(--line)'}">${esc(T().names.honey)}</button>
           <button data-act="trailTab" data-arg="exp" style="padding:7px 14px;border-radius:999px;font-weight:800;font-size:12.5px;${isExp ? 'background:var(--accent);color:#fff' : 'background:var(--surface2);border:1px solid var(--line)'}">${esc(T().names.expedition)}</button></span></div>
       ${expOk ? `<div style="display:flex;align-items:center;gap:12px;background:var(--bg2);border-radius:16px;padding:12px 16px;margin-bottom:16px;box-shadow:0 0 0 1px var(--line)">
-        <span style="font-family:var(--display);font-weight:800;font-size:13px;background:var(--chip);color:var(--accent);border-radius:999px;padding:5px 13px">${isExp ? 'Ascent' : 'Tier'} ${lap} of 3</span>
+        <span style="font-family:var(--display);font-weight:800;font-size:13px;background:var(--chip);color:var(--accent);border-radius:999px;padding:5px 13px">Tier ${lap} of 3</span>
         <div style="flex:1;height:9px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;background:linear-gradient(90deg,var(--accent),var(--treasure));width:${Math.round(done / Math.max(1, total) * 100)}%"></div></div>
         <span style="font-size:12px;font-weight:800;color:var(--muted)">${done}/${total} stops</span></div>
       ${lap === 1 && !isExp ? `<p style="font-size:12.5px;color:var(--muted);font-weight:600;margin:-6px 0 14px 4px">Tier 1 keeps every word at your level — the same route returns tougher at Tier 2. Concepts first; the words follow.</p>` : ''}
-      ${acts}` : `<div style="background:var(--bg2);border-radius:18px;padding:26px;text-align:center;box-shadow:0 0 0 1px var(--line)"><div style="display:inline-grid;place-items:center;width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#37415B,#1F2A44);color:#fff;margin:0 auto">${iconSVG('target', 28)}</div><h3 style="font-family:var(--display);font-size:18px;margin:10px 0 6px">The Ascent is Advanced Pack territory</h3><p style="font-size:13px;color:var(--muted)">All 43 expert chapters across five expeditions. 90% gates, no mercy, national-level words. Unlock in Settings → Plans.</p></div>`}
+      ${acts}` : `<div style="background:var(--bg2);border-radius:18px;padding:26px;text-align:center;box-shadow:0 0 0 1px var(--line)"><div style="display:inline-grid;place-items:center;width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#37415B,#1F2A44);color:#fff;margin:0 auto">${iconSVG('target', 28)}</div><h3 style="font-family:var(--display);font-size:18px;margin:10px 0 6px">${esc(T().names.expedition)} is Advanced Pack territory</h3><p style="font-size:13px;color:var(--muted)">All 43 expert chapters across five expeditions. 90% gates, no mercy, national-level words. Unlock in Settings → Plans.</p></div>`}
     </div>`;
   }
   function viewUnit() {
@@ -253,7 +253,7 @@
         <button data-act="trailBack" style="position:absolute;left:12px;top:10px;color:#fff;font-weight:800;font-size:12.5px;background:rgba(0,0,0,.3);border-radius:999px;padding:5px 12px">← Trail</button>
         <div style="position:absolute;left:16px;bottom:10px;right:16px;display:flex;align-items:baseline;gap:10px">
           <span style="font-family:var(--display);font-weight:800;font-size:18px;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.4);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(u.title)}</span>
-          <span style="margin-left:auto;flex-shrink:0;font-size:11px;font-weight:800;color:#fff;background:rgba(0,0,0,.3);border-radius:999px;padding:3px 10px">${course() === 'exp' ? 'Ascent' : 'Tier'} ${lap}${passed ? ' · ' + passed + '%' : ''}</span></div></div>
+          <span style="margin-left:auto;flex-shrink:0;font-size:11px;font-weight:800;color:#fff;background:rgba(0,0,0,.3);border-radius:999px;padding:3px 10px">Tier ${lap}${passed ? ' · ' + passed + '%' : ''}</span></div></div>
       <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">${gsvg}
         <div style="position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:11px 14px;font-size:13.5px;line-height:1.5;box-shadow:var(--sh-rest)">${esc(String(ch.concept || '').split(/(?<=[.!?])\s/).slice(0, 2).join(' '))}</div></div>
       <div style="display:grid;gap:10px">
@@ -286,7 +286,7 @@
       return `<div style="animation:sb-rise .35s ease both;max-width:460px;margin:0 auto;text-align:center">
         <div style="background:var(--bg2);border-radius:20px;padding:28px;box-shadow:0 0 0 1px var(--line),var(--glow)">
           <div style="width:92px;height:92px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(${q2.pass ? 'var(--good)' : 'var(--bad)'} ${pct}%,var(--surface2) 0)"><div style="width:72px;height:72px;border-radius:50%;background:var(--bg2);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:21px">${pct}%</div></div>
-          ${q2.lapUp ? `<h2 style="font-family:var(--display);font-size:21px;margin-bottom:6px">${course() === 'exp' ? 'ASCENT' : 'TIER'} ${lapOf(c)} UNLOCKED</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">The whole route returns — tougher words, same ideas. That is how it sticks.</p>`
+          ${q2.lapUp ? `<h2 style="font-family:var(--display);font-size:21px;margin-bottom:6px">TIER ${lapOf(c)} UNLOCKED</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">The whole route returns — tougher words, same ideas. That is how it sticks.</p>`
           : q2.pass ? `<h2 style="font-family:var(--display);font-size:21px;margin-bottom:6px">Stop cleared · +15 🪙</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">${q2.revising ? 'Revenge complete.' : 'The idea is yours. The route rolls on.'}</p>`
           : `<h2 style="font-family:var(--display);font-size:21px;margin-bottom:6px">${pct}% — so close</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">You need ${Math.round(gate() * 100)}%. Win back the ${q2.missed.length} you missed, then take it again.</p>`}
           <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
