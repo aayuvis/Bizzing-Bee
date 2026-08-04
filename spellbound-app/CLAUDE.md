@@ -122,9 +122,11 @@ handlers. App lives in this folder; open `index.html` to run.
   (98.6% agreement with CMU on the exact set; where they differ the card follows `p`,
   which is the point — the two notations on a card must agree with each other).
 
-## The Word Atlas & The Ascent (`trail.js` + `trail-data.js`)
-- The **concept-first guided journeys**, coexisting with the classic ladder (entry: the
-  gold card at the top of Champion's Quest). Curriculum lives in `trail-data.js`
+## The Word Map & The Advanced Word Atlas (`trail.js` + `trail-data.js`)
+- The **concept-first guided journeys**, coexisting with the classic ladder. Desktop top
+  nav: **Home · Quest · Word Coach · Supercharge…** — the Quest tab IS the Word Map
+  (nav 'trail'); Word Coach holds the classic paths (ladder / own list / Ultra) via the
+  chooser at nav 'quest'; Theme Journeys live in Supercharge → Learn. Curriculum lives in `trail-data.js`
   (`SB_TRAIL`: 9 acts / 128 Honey units incl. 6 inline Trickster chapters; 5 expeditions / 43 units), word pools in `trail-map-data.js` (**lazy-loaded** by the engine — never
   add it to index.html). Regenerate both with `voice/pipeline/trail-build.js`.
 - Unit loop: Learn (opens the concept chapter; `state.trailReturn` routes `conceptBack`

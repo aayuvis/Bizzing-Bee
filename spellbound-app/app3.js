@@ -3282,6 +3282,7 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state; const a
     row('concepts','setNav','concepts','Spelling basics, roots & patterns · '+fmtDone)+
     (advOn?row('advconcepts','openAdvConcepts',null,'Schwa rescue, stress shift & the origin tree · narrated'):'')+
     row('journeys','openJourneys',null,'The history & geography of words'+(state.premium?'':' · Premium'))+
+    row('themes','setNav','themes','Theme journeys — words by their worlds; pick 3–5 to focus')+
     row('builder','openBuilder',null,'Build a custom word list in five taps')+
     row('vocab','openVocab',null,'Word → meaning, vocabulary-bee style'));
   // ---- TRAIN ----  sharpen your skills
@@ -3432,8 +3433,8 @@ function viewApp(){
   const S=state;
   const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,quotes:1,typing:1,builder:1,adv:1,traps:1,revisions:1,trivtrain:1,ipatrain:1};
   const NAV_ART={home:'home',coach:'practice',explore:'explore',games:'arcade',shop:'store',progress:'progress',collection:'collection'};
-  const navTabs=[['home','Home','home'],['coach','Practice','pencil'],['explore','Supercharge','compass'],['games','Arcade','joystick'],['progress','Progress','chart'],['collection','Collection','crown'],['shop','Store','cart']].map(([key,label,ic])=>{
-    const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:S.nav===key;
+  const navTabs=[['home','Home','home'],['trail','Quest','steps'],['coach','Word Coach','pencil'],['explore','Supercharge','compass'],['games','Arcade','joystick'],['progress','Progress','chart'],['collection','Collection','crown'],['shop','Store','cart']].map(([key,label,ic])=>{
+    const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:key==='coach'?(S.nav==='coach'||S.nav==='train'||S.nav==='levelup'||S.nav==='quest'):S.nav===key;
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
     const art=NAV_ART[key];
     const glyph=(window.SB_ICON_ART && art && SB_ICON_ART[art]) ? `<span style="display:inline-flex;line-height:0;width:22px;height:22px;${on?'filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))':''}">${SB_ICON_ART(art,{size:22})}</span>` : (key==='explore'?(window.SB_ICON?SB_ICON('compass',{size:17}):iconSVG('grid',17)):iconSVG(ic,17));
@@ -5276,9 +5277,6 @@ function viewQuest(){
     { id:'journey', key:'journey', col:'#7C5CFF', e:'questJourney', title:'Bizzing Bee Journey',
       desc:'The classic 20-Level champ ladder — the 1,600 highest-value bee words, ramped gently from easy to hard.',
       feat:'Clear a Level by mastering its words, or test out with a Champ Challenge.' },
-    { id:'themes',  key:'themes',  col:'#B14FC4', e:'questTheme', title:'Theme Journey',
-      desc:'Learn words grouped by their worlds — animals, space, food, feelings and more.',
-      feat:'Great for building vocabulary by topic. Pick 3–5 worlds to focus on.' },
     { id:'own',     key:'own',     col:'#13A892', e:'questOwn', title:'My Own List',
       desc:'Bring your school list, paste any words, or build a custom set in a few taps.',
       feat:'Perfect for this week’s spelling homework or a personal target list.' },
@@ -5328,12 +5326,7 @@ function viewQuest(){
       <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:14px;color:var(--treasure-deep,#8A5B00)">Story vault</span><span style="display:block;font-size:12px;color:var(--treasure-deep,#8A5B00);opacity:.85">${un.length} of ${all} word-history tales unlocked</span></span>
       <span style="color:var(--treasure-deep,#8A5B00);font-weight:800">→</span></button>`:'';
   return `<div style="animation:sb-rise .35s ease both;max-width:640px;margin:0 auto">
-    ${pageHead("Champion's Quest",'four paths, one goal','Pick a path — switch any time, all progress kept.')}
-    ${window.SB_TRAIL?`<button data-act="openTrail" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border-radius:18px;padding:15px 17px;margin-bottom:14px;background:linear-gradient(135deg,#6C4FE0,#4A3AA0);color:#fff;box-shadow:0 6px 18px rgba(74,58,160,.4)">
-      <span style="width:46px;height:46px;flex-shrink:0;display:grid;place-items:center;border-radius:13px;background:rgba(255,255,255,.16)">${iconSVG('compass',26)}</span>
-      <span style="min-width:0;flex:1"><span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-family:var(--display);font-weight:800;font-size:17px">${esc(SB_TRAIL.names.honey)}</span><span style="background:rgba(255,255,255,.9);color:#4A3AA0;border-radius:999px;padding:2px 10px;font-weight:800;font-size:11px">NEW</span></span>
-      <span style="display:block;font-size:12.5px;font-weight:700;margin-top:3px;opacity:.95">Concept-first: learn the idea, meet its words, pass the gate, move on. ${(SB_TRAIL.honey.units||[]).length} stops · ${(SB_TRAIL.honey.acts||[]).length} worlds · 3 tiers. ${esc(SB_TRAIL.names.expedition)} waits at the top.</span></span>
-      <span style="flex-shrink:0;font-weight:800">→</span></button>`:''}
+    ${pageHead('Word Coach paths','pick your training path','The Bizzing Bee ladder, your own lists, or Ultra — switch any time, all progress kept. Looking for the concept journey? That’s the Quest tab.')}
     <div style="display:flex;flex-direction:column;gap:12px">${aUnlocked?(ultraTile+paths):(paths+advTile)}</div>
     ${vault}
   </div>`;
