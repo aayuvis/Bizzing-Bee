@@ -1437,7 +1437,7 @@ const app = {
   conceptPagePrev:()=>set({conceptPage:Math.max(0,(state.conceptPage||0)-1)}),
   conceptPageNext:()=>set({conceptPage:(state.conceptPage||0)+1}),
   openConcept:(ci)=>{ ci=+ci; const ch=state.conceptData&&state.conceptData[ci]; if(!ch) return; if(!isConceptUnlocked(ci)){ app.buyConcept(ci); return; } clearAnimTimer(); stopNarration(); state.conceptSel=ch; state.conceptStep=0; state.conceptWordsOpen=false; state.conceptWordIdx=0; state.animOn=false; state.animScene=0; try{window.scrollTo(0,0);}catch(e){} render(); },
-  conceptBack:()=>{ clearAnimTimer(); stopNarration(); set({conceptSel:null, animOn:false, animScene:0}); },
+  conceptBack:()=>{ clearAnimTimer(); stopNarration(); if(state.trailReturn&&app.trailUnit){ const u=state.trailReturn; state.trailReturn=null; state.conceptSel=null; state.animOn=false; set({nav:'trail'}); app.trailUnit(u); return; } set({conceptSel:null, animOn:false, animScene:0}); },
   conceptStepGo:(i)=>{ clearAnimTimer(); stopNarration(); set({conceptStep:+i, animOn:false}); },
   conceptPlay:()=>{ clearAnimTimer(); stopNarration(); state.animNonce=(state.animNonce||0)+1; playScene(0); },
   conceptReplay:()=>{ clearAnimTimer(); stopNarration(); state.animNonce=(state.animNonce||0)+1; playScene(0); },
@@ -1454,7 +1454,7 @@ const app = {
   drawer:(key)=>{ state.drawerOpen=false; const F={ home:()=>app.setNav('home'), levelup:()=>app.startLevelUp(), games:()=>app.openGames(), shop:()=>app.openShop(), concepts:()=>app.setNav('concepts'),
       coach:()=>app.openCoach(), journeys:()=>app.openJourneys(), study:()=>app.coachStudy(), written:()=>app.startWritten(), oral:()=>app.startOral(),
       weak:()=>app.coachWeakDrill(), parentview:()=>{ state.progTab='parent'; app.setNav('progress'); }, settings:()=>app.setNav('settings'), themes:()=>app.setNav('themes'),
-      quest:()=>app.openQuestChooser(), traps:()=>app.openTraps(), collection:()=>app.openCollection(), finder:()=>app.openFinder(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore'), figurative:()=>app.setNav('figurative'), vocab:()=>app.openVocab(), typing:()=>app.openTyping(), quotes:()=>app.openQuotes(), trivia:()=>app.openTrivia(), trivtrain:()=>app.openTrivTrain(), ipatrain:()=>app.openIpaTrain() };
+      quest:()=>app.openQuestChooser(), traps:()=>app.openTraps(), collection:()=>app.openCollection(), finder:()=>app.openFinder(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore'), figurative:()=>app.setNav('figurative'), vocab:()=>app.openVocab(), typing:()=>app.openTyping(), quotes:()=>app.openQuotes(), trivia:()=>app.openTrivia(), trivtrain:()=>app.openTrivTrain(), ipatrain:()=>app.openIpaTrain(), trail:()=>app.openTrail() };
     (F[key]||(()=>{}))(); },
   // coach
   openCoach:()=>{ const c=active(); ensureLists(c);
@@ -3452,6 +3452,7 @@ function viewApp(){
   else if(S.nav==='quotes') content=viewQuotes();
   else if(S.nav==='trivtrain') content=viewTrivTrain();
   else if(S.nav==='ipatrain') content=viewIpaTrain();
+  else if(S.nav==='trail'&&window.TRAIL) content=TRAIL.view();
   else if(S.nav==='typing') content=viewTyping();
   else if(S.nav==='builder') content=viewBuilder();
   else if(S.nav==='leveltest') content=viewLevelTest();
@@ -3568,7 +3569,7 @@ function viewApp(){
     ${viewDrawer()}
     <div class="sb-content" style="max-width:1080px;margin:0 auto;width:100%;padding:18px clamp(14px,3.5vw,32px) 60px">${content}</div>
     <nav class="sb-tabbar" aria-label="Primary">
-      ${[['home','Home','home','home'],['coach','Practice','pencil','practice'],['explore','Supercharge','compass','explore'],['games','Arcade','joystick','arcade'],['progress','Progress','chart','progress']].map(([k,l,ic,art])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='coach'&&(S.nav==='train'||S.nav==='levelup'||S.nav==='quest')));
+      ${[['home','Home','home','home'],['coach','Practice','pencil','practice'],['explore','Supercharge','compass','explore'],['games','Arcade','joystick','arcade'],['progress','Progress','chart','progress']].map(([k,l,ic,art])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='coach'&&(S.nav==='train'||S.nav==='levelup'||S.nav==='quest'||S.nav==='trail')));
         const gl=(window.SB_ICON_ART && SB_ICON_ART[art])?`<span style="display:inline-flex;line-height:0;width:24px;height:24px;${on?'':'filter:grayscale(.35) opacity(.8)'}">${SB_ICON_ART(art,{size:24})}</span>`:iconSVG(ic,21);
         return `<button data-act="setNav" data-arg="${k}" aria-current="${on?'page':'false'}" style="${on?'color:var(--accent)':'color:var(--muted)'}">${gl}<span>${l}</span></button>`; }).join('')}
     </nav>
@@ -5328,6 +5329,11 @@ function viewQuest(){
       <span style="color:var(--treasure-deep,#8A5B00);font-weight:800">→</span></button>`:'';
   return `<div style="animation:sb-rise .35s ease both;max-width:640px;margin:0 auto">
     ${pageHead("Champion's Quest",'four paths, one goal','Pick a path — switch any time, all progress kept.')}
+    ${window.SB_TRAIL?`<button data-act="openTrail" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;border-radius:18px;padding:15px 17px;margin-bottom:14px;background:linear-gradient(135deg,#FFC23D,#C8791B);color:#241E33;box-shadow:0 6px 18px rgba(200,121,27,.35)">
+      <span style="font-size:30px">🍯</span>
+      <span style="min-width:0;flex:1"><span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-family:var(--display);font-weight:800;font-size:17px">The Honey Trail</span><span style="background:#241E33;color:#FFC23D;border-radius:999px;padding:2px 10px;font-weight:800;font-size:11px">NEW</span></span>
+      <span style="display:block;font-size:12.5px;font-weight:700;margin-top:3px">The concept-first journey — learn the idea, meet its words, win the quiz, move on. ${(SB_TRAIL.honey.units||[]).length} stops across ${(SB_TRAIL.honey.acts||[]).length} worlds, three laps deep.</span></span>
+      <span style="flex-shrink:0;font-weight:800">→</span></button>`:''}
     <div style="display:flex;flex-direction:column;gap:12px">${aUnlocked?(ultraTile+paths):(paths+advTile)}</div>
     ${vault}
   </div>`;
