@@ -24,6 +24,9 @@
   @media screen{.page{margin:24px auto;box-shadow:0 10px 34px rgba(36,30,51,.18);border-radius:4px}}
   h1,h2,h3,.disp{font-family:'BB Display';font-weight:800}
   .kick{font-family:'BB Kicker';font-weight:600;font-size:10pt;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-deep)}
+  .worldchip{display:inline-flex;align-items:center;gap:5pt;background:rgba(255,255,255,.75);border:1px solid var(--hairline);border-radius:999px;padding:2.5pt 10pt;font-family:'BB Kicker';font-size:8.6pt;color:var(--accent-deep)}
+  .coverTitle{font-family:'BB Display';font-weight:800;color:#fff;text-shadow:0 4px 0 rgba(0,0,0,.25),0 10px 24px rgba(0,0,0,.25)}
+  .peek{position:absolute;pointer-events:none}
   .tile{font-family:'BB Tile';font-weight:600;color:var(--muted)}
   .bb-head{position:absolute;top:.3in;left:.75in;right:.5in;display:flex;justify-content:space-between;align-items:baseline;
     font-family:'BB Kicker';font-size:10pt;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--hairline);padding-bottom:4pt}
@@ -32,44 +35,50 @@
     font-family:'BB Kicker';font-size:10pt;color:var(--muted)}
   .page[data-verso] .bb-foot{left:.5in;right:.75in}
   .bb-panelbox{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-panel);padding:.12in .15in;box-shadow:var(--sh-screen)}
-  .bb-bigidea{background:var(--tint);border:1px solid color-mix(in srgb,var(--accent) 30%,white);border-left:6px solid var(--accent);
-    border-radius:var(--r-panel);padding:.12in .16in;max-height:1.5in;overflow:hidden}
+  .bb-bigidea{padding:.04in .8in .04in .42in;max-height:1.5in;overflow:hidden;position:relative;font-size:12pt;line-height:1.5}
+  .bb-bigidea:before{content:'“';position:absolute;left:0;top:-.12in;font-family:'BB Display';font-size:44pt;color:var(--accent)}
+  .bb-bigidea .cameo{position:absolute;right:.06in;top:50%;transform:translateY(-50%) rotate(4deg)}
   .bb-promove{background:var(--ink);color:#F4EFFF;border-radius:var(--r-panel);padding:.13in .16in;max-height:1.6in;overflow:hidden;
     font-size:9.4pt;line-height:1.45}
   .bb-promove b{color:var(--treasure)} .bb-promove div{margin:2px 0}
   .bb-promove .trick,.bb-promove [class]{font-family:'BB Display';font-size:11.5pt;letter-spacing:.04em}
   .bb-sticky{display:grid;grid-template-columns:1fr 1fr;gap:.1in;margin-top:.1in}
-  .bb-sticky .card{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-card);padding:.09in .11in;box-shadow:var(--sh-screen)}
+  .bb-sticky .card{background:var(--tint);border-radius:3pt 3pt 12pt 3pt;padding:.09in .11in;box-shadow:2pt 3pt 6pt rgba(36,30,51,.10)}
+  .bb-sticky .card:nth-child(odd){transform:rotate(-.7deg)} .bb-sticky .card:nth-child(even){transform:rotate(.6deg);background:color-mix(in srgb,var(--treasure) 12%,white)}
   .bb-sticky h3{font-size:9.6pt;color:var(--accent-deep);margin-bottom:2px}
   .bb-sticky p{font-size:8.4pt;line-height:1.35}
   .bb-strip{display:grid;gap:.12in;margin-top:.12in}
-  .bb-panel{border:2.5pt solid var(--ink);border-radius:11pt;background:var(--card);position:relative;overflow:hidden;padding:.1in .12in;min-height:2.1in}
+  .bb-panel{border:2.5pt solid var(--ink);border-radius:14pt 18pt 12pt 20pt;background:var(--card);position:relative;overflow:visible;padding:.1in .12in;min-height:2in}
+  .bb-strip .bb-panel:nth-child(1){transform:rotate(-.7deg)} .bb-strip .bb-panel:nth-child(2){transform:rotate(.5deg) translateY(.06in)}
+  .bb-strip .bb-panel:nth-child(3){transform:rotate(.6deg)} .bb-strip .bb-panel:nth-child(4){transform:rotate(-.5deg) translateY(-.04in)}
+  .bb-panel .who{margin-bottom:-14pt}
   .bb-panel.think{background:radial-gradient(circle at 30% 25%,#EFEAFB,#fff 70%)}
   .bb-panel.oops{background:#FFF1F3}
   .bb-panel.excited{background:radial-gradient(circle at 60% 30%,#E9FBEF,#fff 70%)}
   .bb-panel.love{background:radial-gradient(circle at 40% 30%,#FDEDF4,#fff 70%)}
-  .bb-bubble{position:relative;background:var(--card);border:1.6pt solid var(--ink);border-radius:12pt;padding:6pt 9pt;
+  .bb-bubble{position:relative;background:var(--card);border:1.6pt solid var(--ink);border-radius:14pt 18pt 16pt 12pt / 16pt 12pt 18pt 14pt;padding:6pt 9pt;
     font-family:'BB Display';font-size:9.6pt;line-height:1.28;margin-bottom:6pt}
   .bb-sfx{font-family:'BB Display';font-size:15pt;letter-spacing:.04em;position:absolute;right:8pt;bottom:6pt;color:var(--tricky-deep);transform:rotate(-4deg)}
   .bb-sfx.win{color:var(--right-deep)}
   .bb-prop{display:inline-block;background:var(--chip);color:var(--chip-ink);border-radius:8pt;padding:3pt 8pt;font-family:'BB Tile';font-size:10pt}
   .bb-hive{display:grid;grid-template-columns:1fr 1fr;gap:.11in}
-  .bb-card{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-panel);padding:.1in .12in;box-shadow:var(--sh-screen);max-height:1.35in;overflow:hidden}
+  .bb-card{padding:0 .04in;max-height:1.35in;overflow:hidden}
+  .bb-hive>div:nth-child(odd) .bb-card{transform:rotate(-.3deg)} .bb-hive>div:nth-child(even) .bb-card{transform:rotate(.3deg)}
   .bb-card .w{font-family:'BB Body';font-weight:800;font-size:20pt;line-height:1.05;font-variant-numeric:tabular-nums;color:var(--accent-deep)}
   .bb-card .say{font-family:'BB Tile';font-size:8.6pt;color:var(--muted);margin-top:1px}
   .bb-card .d{font-size:8.6pt;line-height:1.3;margin-top:2px}
-  .bb-card .hook{font-size:8.2pt;line-height:1.28;margin-top:2px;color:var(--chip-ink)}
+  .bb-card .hook{font-size:8.2pt;line-height:1.28;margin-top:2px;color:var(--chip-ink);font-style:italic}
   .bb-writeline{border-bottom:1pt solid var(--ink);height:.32in;margin-top:4pt}
   .bb-rapid{display:grid;grid-template-columns:1fr 1fr;gap:.08in .16in}
-  .bb-row{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-card);padding:4pt 8pt;max-height:.42in;overflow:hidden;font-size:8.8pt;line-height:1.3}
+  .bb-row{padding:3pt 0;max-height:.42in;overflow:hidden;font-size:8.8pt;line-height:1.3;border-bottom:1px dotted var(--hairline)}
   .bb-row b{font-family:'BB Kicker';color:var(--accent-deep)}
-  .bb-break{display:flex;gap:.1in;align-items:flex-start;background:var(--treasure-tint);border:1px solid var(--treasure);border-radius:var(--r-panel);padding:.1in .13in;max-height:2.2in;overflow:hidden}
+  .bb-break{display:flex;gap:.1in;align-items:flex-start;background:linear-gradient(90deg,var(--treasure-tint),transparent 85%);border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.08in .13in;max-height:2.2in;overflow:hidden}
   .bb-break .l{font-family:'BB Kicker';font-size:8.2pt;letter-spacing:.1em;text-transform:uppercase;color:var(--treasure-deep)}
   .bb-break .b{font-size:9.6pt;line-height:1.35;margin-top:2px}
   .bb-break .t{font-size:8.4pt;color:var(--muted);margin-top:2px}
-  .bb-check{background:var(--card);border:1px solid var(--right);border-radius:var(--r-panel);padding:.09in .13in;max-height:1.2in;overflow:hidden}
+  .bb-check{border-left:4pt solid var(--right);padding:.04in .1in;max-height:1.2in;overflow:hidden}
   .bb-check .l{font-family:'BB Kicker';font-size:8.2pt;letter-spacing:.1em;text-transform:uppercase;color:var(--right-deep)}
-  .bb-vex{background:#FFF1F3;border:1px solid var(--tricky);border-radius:var(--r-panel);padding:.09in .13in;max-height:1.2in;overflow:hidden;display:flex;gap:.09in;align-items:flex-start}
+  .bb-vex{background:linear-gradient(90deg,#FFF1F3,transparent 88%);border-left:4pt solid var(--tricky);border-radius:2pt 12pt 12pt 2pt;padding:.05in .1in;max-height:1.2in;overflow:hidden;display:flex;gap:.09in;align-items:flex-start}
   .bb-vex .l{font-family:'BB Kicker';font-size:8.2pt;letter-spacing:.1em;text-transform:uppercase;color:var(--tricky-deep)}
   .bb-audio{display:inline-flex;align-items:center;gap:5pt;background:var(--listen-tint);border:1px solid var(--listen);color:var(--listen-deep);
     border-radius:999px;padding:3pt 10pt;font-family:'BB Kicker';font-size:8.6pt;max-height:.3in}
@@ -83,7 +92,7 @@
   .bb-search{border-collapse:collapse;margin:0 auto}
   .bb-search td{width:.38in;height:.38in;text-align:center;font-family:'BB Tile';font-size:11pt;background:var(--card);border:1px solid var(--hairline)}
   .bb-scramble{display:grid;grid-template-columns:1fr 1fr;gap:.16in;max-height:none}
-  .bb-scramble .g1{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-card);padding:.09in .12in;margin-bottom:.08in}
+  .bb-scramble .g1{padding:.05in .02in;margin-bottom:.08in}
   .bb-scramble .gw{font-family:'BB Tile';font-size:11pt;letter-spacing:.14em;color:var(--accent-deep)}
   .bb-biglist{columns:4;column-gap:.18in;font-size:8.6pt;line-height:.28in}
   .bb-biglist div{break-inside:avoid}
@@ -92,13 +101,21 @@
   .bb-badge{display:flex;gap:.08in;align-items:center;max-height:.7in}
   .bb-badge .b1{width:.5in;height:.5in;border-radius:12pt;border:1.6pt dashed var(--accent);display:grid;place-items:center;font-family:'BB Display';font-size:9pt;color:var(--accent-deep);background:var(--card)}
   .chip{display:inline-block;background:var(--chip);color:var(--chip-ink);font-weight:700;font-size:9pt;border-radius:999px;padding:2pt 9pt}
-  </style></head><body data-vol="12" data-band="advanced"><div class="page" data-cover data-vol="12" style="background:linear-gradient(160deg,var(--accent),var(--accent-deep));color:#fff;display:flex;flex-direction:column;justify-content:space-between">
-    <svg style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true"><circle cx="82%" cy="18%" r="70" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none"/><circle cx="82%" cy="18%" r="110" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none"/><circle cx="82%" cy="18%" r="150" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none"/><circle cx="10%" cy="92%" r="60" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none"/><circle cx="10%" cy="92%" r="95" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none"/></svg>
-    <div style="position:relative;display:flex;justify-content:space-between;align-items:center">
+  </style></head><body data-vol="12" data-band="advanced"><div class="page" data-cover data-vol="12" style="background:linear-gradient(168deg,var(--accent),var(--accent-deep));color:#fff;padding:0">
+    <svg viewBox="0 0 816 1056" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">
+      <circle cx="82%" cy="18%" r="70" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none"/><circle cx="82%" cy="18%" r="110" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none"/><circle cx="82%" cy="18%" r="150" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none"/><circle cx="10%" cy="92%" r="60" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none"/><circle cx="10%" cy="92%" r="95" stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none"/>
+      <g><ellipse cx="408" cy="316.8" rx="505.92" ry="26" fill="rgba(255,255,255,0.18)"/><ellipse cx="408" cy="464.64" rx="505.92" ry="26" fill="rgba(255,255,255,0.24)"/><ellipse cx="408" cy="612.4799999999999" rx="505.92" ry="26" fill="rgba(255,255,255,0.3)"/><ellipse cx="408" cy="828.8000000000001" rx="505.92" ry="26" fill="rgba(255,255,255,0.36)"/><g transform="translate(652.8000000000001 754.8000000000001) "><rect x="-9" y="0" width="18" height="90" fill="rgba(255,255,255,.38)"/><circle cx="0" cy="-8" r="10" fill="#FFD66B" opacity=".65"/><path d="M0 -8 L-70 -34 L-70 18 Z" fill="rgba(255,214,107,.14)"/></g><path d="M0 814.8000000000001 Q 68 802.8000000000001 136 814.8000000000001 Q 204 802.8000000000001 272 814.8000000000001 Q 340 802.8000000000001 408 814.8000000000001 Q 476 802.8000000000001 544 814.8000000000001 Q 612 802.8000000000001 680 814.8000000000001 Q 748 802.8000000000001 816 814.8000000000001" stroke="rgba(255,255,255,.3)" stroke-width="4" fill="none"/><text x="195.84" y="422.40000000000003" font-size="60" fill="rgba(255,255,255,.28)" font-family="Georgia" font-style="italic">ə</text><text x="408" y="274.56" font-size="38" fill="rgba(255,255,255,.2)" font-family="Georgia" font-style="italic">ə</text></g><path d="M0 844.8000000000001 Q 179.52 818.8000000000001 408 844.8000000000001 T 816 844.8000000000001 L 816 1056 L 0 1056 Z" fill="rgba(20,12,40,.30)"/>
+      <g transform="translate(98.74623861595988 164.51395618658066) rotate(-10.93471483886242)"><rect x="-17" y="-17" width="34" height="34" rx="8" fill="rgba(255,255,255,.9)"/><text x="0" y="8" text-anchor="middle" font-family="'BB Display'" font-size="22" fill="#241E33">S</text></g><g transform="translate(211.1627105947584 173.04223114385604) rotate(-6.462605552747846)"><rect x="-17" y="-17" width="34" height="34" rx="8" fill="rgba(255,255,255,.9)"/><text x="0" y="8" text-anchor="middle" font-family="'BB Display'" font-size="22" fill="#241E33">C</text></g><g transform="translate(332.8825122821331 201.12161562566754) rotate(6.15943031385541)"><rect x="-17" y="-17" width="34" height="34" rx="8" fill="rgba(255,255,255,.9)"/><text x="0" y="8" text-anchor="middle" font-family="'BB Display'" font-size="22" fill="#241E33">H</text></g><g transform="translate(463.4160134122521 138.26927517614365) rotate(0.3848980441689491)"><rect x="-17" y="-17" width="34" height="34" rx="8" fill="rgba(255,255,255,.9)"/><text x="0" y="8" text-anchor="middle" font-family="'BB Display'" font-size="22" fill="#241E33">W</text></g><g transform="translate(623.6241509456188 219.6788429666519) rotate(-3.5186853860504925)"><rect x="-17" y="-17" width="34" height="34" rx="8" fill="rgba(255,255,255,.9)"/><text x="0" y="8" text-anchor="middle" font-family="'BB Display'" font-size="22" fill="#241E33">A</text></g><g transform="translate(744.8120827317238 156.27698847942352) rotate(12.031586413737386)"><rect x="-17" y="-17" width="34" height="34" rx="8" fill="rgba(255,255,255,.9)"/><text x="0" y="8" text-anchor="middle" font-family="'BB Display'" font-size="22" fill="#241E33">C</text></g>
+    </svg>
+    <div style="position:absolute;top:.5in;left:.55in;right:.55in;display:flex;justify-content:space-between;align-items:center">
       <span style="font-family:'BB Kicker';letter-spacing:.16em;font-size:10.5pt">BIZZING BEE ADVANCED LIBRARY</span>
-      <span class="disp" style="background:rgba(0,0,0,.3);padding:.07in .2in;border-radius:999px;font-size:12.5pt">Vol. 12</span></div>
-    <div style="position:relative;text-align:center">
-      <svg viewBox="0 0 120 120" style="width:1.7in;height:1.7in;flex-shrink:0" aria-hidden="true"><g>
+      <span class="disp" style="background:rgba(0,0,0,.32);padding:.07in .2in;border-radius:999px;font-size:12.5pt;transform:rotate(2deg)">Vol. 12</span></div>
+    <div style="position:absolute;top:1.35in;left:.55in;right:.55in;text-align:center;transform:rotate(-1.6deg)">
+      <h1 class="coverTitle" style="font-size:52pt;line-height:.98">Schwa Country</h1>
+      <p style="font-family:'BB Kicker';font-size:13pt;max-width:5.6in;margin:.12in auto 0;text-shadow:0 2px 6px rgba(0,0,0,.3)">The vanishing vowel and its disguises</p></div>
+    <div style="position:absolute;left:.5in;bottom:1.5in">
+      <div style="width:2.9in;height:.34in;background:rgba(0,0,0,.22);border-radius:50%;position:absolute;bottom:-.06in;left:.1in;filter:blur(2px)"></div>
+      <svg viewBox="0 0 120 120" style="width:3in;height:3in;flex-shrink:0;position:relative;transform:rotate(-3deg)" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
@@ -117,11 +134,18 @@
 <path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
 <path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg>
-      <h1 style="font-size:44pt;line-height:1.02;margin:.14in 0 .1in;text-shadow:0 3px 0 rgba(0,0,0,.2)">Schwa Country</h1>
-      <p style="font-family:'BB Kicker';font-size:13pt;max-width:5.8in;margin:0 auto">The vanishing vowel and its disguises</p>
-      <p style="font-family:'BB Kicker';font-size:9.5pt;margin-top:.1in;opacity:.9">with Blossom, your guide · the greysea world</p></div>
-    <div style="position:relative;display:flex;gap:.14in;justify-content:center">
-      <div style="background:rgba(0,0,0,.24);border-radius:14px;padding:.12in .28in;text-align:center"><div class="disp" style="font-size:17pt">7</div><div style="font-family:'BB Kicker';font-size:9pt">chapters</div></div><div style="background:rgba(0,0,0,.24);border-radius:14px;padding:.12in .28in;text-align:center"><div class="disp" style="font-size:17pt">140</div><div style="font-family:'BB Kicker';font-size:9pt">practice words</div></div><div style="background:rgba(0,0,0,.24);border-radius:14px;padding:.12in .28in;text-align:center"><div class="disp" style="font-size:17pt">🎲</div><div style="font-family:'BB Kicker';font-size:9pt">puzzles & games</div></div></div></div>
+    </div>
+    <div class="peek" style="top:3.4in;right:-.32in;transform:rotate(-18deg)"><svg viewBox="0 0 120 120" style="width:1.15in;height:1.15in;flex-shrink:0" aria-hidden="true">
+  <path d="M60 26 L30 62 L48 58 L42 92 L60 72 L78 92 L72 58 L90 62 Z" fill="#3A2A55" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M30 62 Q12 48 16 30 Q34 34 42 50 Z M90 62 Q108 48 104 30 Q86 34 78 50 Z" fill="#5B3FA6" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M48 48 l10 4 M72 48 l-10 4" stroke="#E8546A" stroke-width="5" stroke-linecap="round"/>
+  <path d="M52 62 q8 -5 16 0" stroke="#E8546A" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg></div>
+    <div style="position:absolute;right:.5in;bottom:.62in;display:flex;flex-direction:column;gap:.09in;align-items:flex-end">
+      <span style="background:rgba(0,0,0,.32);border-radius:999px;padding:.05in .2in;font-family:'BB Kicker';font-size:10pt;transform:rotate(-1.6deg)">7 chapters</span><span style="background:rgba(0,0,0,.32);border-radius:999px;padding:.05in .2in;font-family:'BB Kicker';font-size:10pt;transform:rotate(0deg)">140 practice words</span><span style="background:rgba(0,0,0,.32);border-radius:999px;padding:.05in .2in;font-family:'BB Kicker';font-size:10pt;transform:rotate(1.6deg)">puzzles in every chapter</span>
+      <span style="font-family:'BB Kicker';font-size:9.5pt;opacity:.95;margin-top:.05in">with Blossom · in the Grey Sea</span></div>
+    <div style="position:absolute;left:.55in;bottom:.6in;font-family:'BB Kicker';font-size:9pt;opacity:.85">The Grey Sea is fog as far as you can hear. The schwa hides in it. Blossom does not get lost.</div>
+  </div>
 <div class="page" data-vol="12">
     <div class="bb-head"><span>Schwa Country</span><span>How this book works</span></div>
     <div style="margin-top:.4in"><h1 style="font-size:26pt">Five moves. That's the whole system.</h1></div>
@@ -159,15 +183,43 @@
       <div class="bb-panelbox" style="flex:1"><h3 style="font-size:12pt;color:var(--accent-deep)">Hunt the Big List</h3><p style="font-size:9.8pt;line-height:1.45">The back holds every word. Circle the bubbles you own. Come back for the rest.</p></div></div>
     <div class="bb-audio" style="margin-top:.05in">🔊 Grown-ups: every chapter is narrated, and every word recorded, in the Bizzing Bee app</div>
     <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>1</span></div></div>
-<div class="page" data-verso data-vol="12">
+<div class="page" data-verso data-vol="12" style="background:linear-gradient(160deg,var(--accent),var(--accent-deep));color:#fff;padding:0">
+    <svg viewBox="0 0 816 1056" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true"><g><ellipse cx="408" cy="316.8" rx="505.92" ry="26" fill="rgba(255,255,255,0.18)"/><ellipse cx="408" cy="464.64" rx="505.92" ry="26" fill="rgba(255,255,255,0.24)"/><ellipse cx="408" cy="612.4799999999999" rx="505.92" ry="26" fill="rgba(255,255,255,0.3)"/><ellipse cx="408" cy="828.8000000000001" rx="505.92" ry="26" fill="rgba(255,255,255,0.36)"/><g transform="translate(652.8000000000001 754.8000000000001) "><rect x="-9" y="0" width="18" height="90" fill="rgba(255,255,255,.38)"/><circle cx="0" cy="-8" r="10" fill="#FFD66B" opacity=".65"/><path d="M0 -8 L-70 -34 L-70 18 Z" fill="rgba(255,214,107,.14)"/></g><path d="M0 814.8000000000001 Q 68 802.8000000000001 136 814.8000000000001 Q 204 802.8000000000001 272 814.8000000000001 Q 340 802.8000000000001 408 814.8000000000001 Q 476 802.8000000000001 544 814.8000000000001 Q 612 802.8000000000001 680 814.8000000000001 Q 748 802.8000000000001 816 814.8000000000001" stroke="rgba(255,255,255,.3)" stroke-width="4" fill="none"/><text x="195.84" y="422.40000000000003" font-size="60" fill="rgba(255,255,255,.28)" font-family="Georgia" font-style="italic">ə</text><text x="408" y="274.56" font-size="38" fill="rgba(255,255,255,.2)" font-family="Georgia" font-style="italic">ə</text></g><path d="M0 844.8000000000001 Q 179.52 818.8000000000001 408 844.8000000000001 T 816 844.8000000000001 L 816 1056 L 0 1056 Z" fill="rgba(20,12,40,.30)"/></svg>
+    <div style="position:absolute;top:2in;left:.7in;right:.7in;text-align:center">
+      <div style="font-family:'BB Kicker';letter-spacing:.14em;font-size:11pt;text-shadow:0 2px 6px rgba(0,0,0,.3)">WELCOME TO</div>
+      <h1 class="coverTitle" style="font-size:40pt;transform:rotate(-1.2deg)">The Grey Sea</h1>
+      <p style="font-family:'BB Kicker';font-size:12pt;max-width:5.4in;margin:.16in auto 0;text-shadow:0 2px 6px rgba(0,0,0,.35);line-height:1.5">The Grey Sea is fog as far as you can hear. The schwa hides in it. Blossom does not get lost.</p></div>
+    <div style="position:absolute;left:53%;bottom:2.1in;transform:rotate(6deg)"><svg viewBox="0 0 120 120" style="width:1.7in;height:1.7in;flex-shrink:0" aria-hidden="true"><g>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(135 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(180 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(225 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(270 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(315 60 58)"/>
+</g>
+<circle cx="60" cy="58" r="20" fill="#FFD9A8"/>
+<path d="M60 82 q0 14 -2 20" fill="none" stroke="#4CAF50" stroke-width="4" stroke-linecap="round"/>
+<ellipse cx="70" cy="96" rx="8" ry="4" fill="#4CAF50" transform="rotate(-24 70 96)"/>
+<circle cx="52" cy="55" r="7" fill="#fff"/><circle cx="53.5" cy="56.5" r="3.6" fill="#2B1B5E"/><circle cx="52.3" cy="55.3" r="1.3" fill="#fff"/>
+<circle cx="68" cy="55" r="7" fill="#fff"/><circle cx="69.5" cy="56.5" r="3.6" fill="#2B1B5E"/><circle cx="68.3" cy="55.3" r="1.3" fill="#fff"/>
+<path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
+<path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
+<ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></div>
+    <div class="bb-foot" style="color:rgba(255,255,255,.85)"><span>Bizzing Bee · Schwa Country</span><span>2</span></div>
+  </div>
+<div class="page" data-vol="12">
     <div class="bb-head"><span>Chapter 1 · -esce, -escent, -escence — the becoming words</span><span>Story · ★★★</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.14in">
       <span style="display:inline-grid;place-items:center;width:.58in;height:.58in;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:16pt">1</span>
-      <div><div class="kick">Advanced Orthography</div><h1 style="font-size:26pt;line-height:1.05">-esce, -escent, -escence — the becoming words</h1></div></div>
-    <div class="bb-strip" style="grid-template-columns:1fr 1fr"><div class="bb-panel think">
+      <div><div class="kick">Advanced Orthography</div><h1 style="font-size:26pt;line-height:1.05">-esce, -escent, -escence — the becoming words</h1></div>
+      <span class="worldchip" style="margin-left:auto;transform:rotate(1.4deg)">📍 the Grey Sea</span></div>
+    <div class="bb-strip" style="grid-template-columns:1.15fr 1fr"><div class="bb-panel think">
       <div class="bb-bubble">Latin had a whole class of verbs for beginning to be something. It marked them with escere, and grammarians call…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><g>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.75in;height:0.75in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
@@ -185,10 +237,10 @@
 <path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
-<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg><div style="text-align:right"></div></div></div><div class="bb-panel think">
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div></div><div class="bb-panel think">
       <div class="bb-bubble">Here is the noun trap. The ending sounds exactly like the ordinary word essence, and spellers write obsolessence and effervessence.…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><g>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.75in;height:0.75in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
@@ -206,18 +258,18 @@
 <path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
-<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg><div style="text-align:right"><span class="bb-prop">EFFERVESCENCE</span></div></div></div><div class="bb-panel oops">
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span><div style="text-align:right"><span class="bb-prop">EFFERVESCENCE</span></div></div></div><div class="bb-panel oops">
       <div class="bb-bubble">Spellers drop that c constantly, because you barely hear it. But it is the visible piece of the Latin suffix…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true">
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.95in;height:0.95in;flex-shrink:0" aria-hidden="true">
   <path d="M60 26 L30 62 L48 58 L42 92 L60 72 L78 92 L72 58 L90 62 Z" fill="#3A2A55" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M30 62 Q12 48 16 30 Q34 34 42 50 Z M90 62 Q108 48 104 30 Q86 34 78 50 Z" fill="#5B3FA6" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M48 48 l10 4 M72 48 l-10 4" stroke="#E8546A" stroke-width="5" stroke-linecap="round"/>
   <path d="M52 62 q8 -5 16 0" stroke="#E8546A" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div style="text-align:right"></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
+  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
       <div class="bb-bubble">Watch how many of these describe something changing shade. Albescent, turning white. Canescent, turning grey. Nigrescent, turning black. Flavescent, turning…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><g>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0;transform:rotate(-6deg)" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
@@ -235,15 +287,33 @@
 <path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
-<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div></div>
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.14in">
       <span class="bb-audio">🔊 Hear this chapter narrated in the app</span>
       <span class="kick" style="font-size:8.6pt">turn the page — the whole trick, explained →</span></div>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>2</span></div></div>
-<div class="page" data-vol="12">
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>3</span></div></div>
+<div class="page" data-verso data-vol="12">
     <div class="bb-head"><span>Chapter 1 · -esce, -escent, -escence — the becoming words</span><span>The idea · ★★★</span></div>
     <div style="margin-top:.4in" class="kick">The big idea</div>
-    <div class="bb-bigidea">Latin had a whole verb class for beginning to be something: -escere, called the inchoative. English inherited the trio intact. The verb ends -esce, the adjective -escent, the noun -escence. Because the sound is just ess, spellers reach for -ess or -esent, and because the noun ends in a soft s sound they reach for -essence. The c never leaves and never doubles, and knowing the trio means one word gives you three.</div>
+    <div class="bb-bigidea">Latin had a whole verb class for beginning to be something: -escere, called the inchoative. English inherited the trio intact. The verb ends -esce, the adjective -escent, the noun -escence. Because the sound is just ess, spellers reach for -ess or -esent, and because the noun ends in a soft s sound they reach for -essence. The c never leaves and never doubles, and knowing the trio means one word gives you three.<span class="cameo"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><g>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(135 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(180 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(225 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(270 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(315 60 58)"/>
+</g>
+<circle cx="60" cy="58" r="20" fill="#FFD9A8"/>
+<path d="M60 82 q0 14 -2 20" fill="none" stroke="#4CAF50" stroke-width="4" stroke-linecap="round"/>
+<ellipse cx="70" cy="96" rx="8" ry="4" fill="#4CAF50" transform="rotate(-24 70 96)"/>
+<circle cx="52" cy="55" r="7" fill="#fff"/><circle cx="53.5" cy="56.5" r="3.6" fill="#2B1B5E"/><circle cx="52.3" cy="55.3" r="1.3" fill="#fff"/>
+<circle cx="68" cy="55" r="7" fill="#fff"/><circle cx="69.5" cy="56.5" r="3.6" fill="#2B1B5E"/><circle cx="68.3" cy="55.3" r="1.3" fill="#fff"/>
+<path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
+<path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
+<ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span></div>
     <div class="kick" style="margin-top:.08in">The pro move</div><div class="bb-promove"><div class='trick'>ERUBESCENT</div>
 <b>Heard.</b> er-oo-BESS-unt — beginning to redden
 <b>Origin.</b> Latin rubescere, from ruber = red, plus -escere = beginning to
@@ -260,8 +330,8 @@
   <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div><div class="l">Vex alert</div><div style="font-size:8.8pt;line-height:1.35">Latin -escere marked a process starting. Verb -esce, adjective -escent, noun -escence. The c is always there and never doubles.</div></div></div>
       <div class="bb-check"><div class="l">Check yourself</div><div style="font-size:8.8pt;line-height:1.35">Cover the page. Spell these three out loud: <b>erubescent</b> · <b>effervescence</b> · <b>arborescence</b>. Even Vex missed that last one.</div></div></div>
     <div class="bb-break"><span style="font-size:13pt">💬</span><div><div class="l">Bee Break · someone said it better</div><div class="b">“What you seek is seeking you.”</div><div class="t">— Rumi, poet</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>3</span></div></div>
-<div class="page" data-verso data-vol="12">
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>4</span></div></div>
+<div class="page" data-vol="12">
       <div class="bb-head"><span>Chapter 1 · -esce, -escent, -escence — the becoming words</span><span>Practice · ★★★</span></div>
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
@@ -291,8 +361,8 @@
         <div class="say">/ in-too-MES-unt /  ·  /ɪntuˈmɛsʌnt/</div>
         <div class="d">Abnormally swollen or distended, especially by fluids or gas; describing something that swe…</div><div class="hook">hook: Latin -escere marked a process starting. Verb -esce, adjective -escent, noun -escence. The …</div></div>
         <div class="bb-writeline"></div></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>4</span></div></div>
-<div class="page" data-vol="12">
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>5</span></div></div>
+<div class="page" data-verso data-vol="12">
       <div class="bb-head"><span>Chapter 1 · -esce, -escent, -escence — the becoming words</span><span>Practice · ★★★</span></div>
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
@@ -322,13 +392,13 @@
         <div class="say">/ sih-NES-unt /  ·  /sɪˈnɛsʌnt/</div>
         <div class="d">growing old.</div><div class="hook">hook: Latin -escere marked a process starting. Verb -esce, adjective -escent, noun -escence. The …</div></div>
         <div class="bb-writeline"></div></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>5</span></div></div>
-<div class="page" data-verso data-vol="12">
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>6</span></div></div>
+<div class="page" data-vol="12">
       <div class="bb-head"><span>Chapter 1 · -esce, -escent, -escence — the becoming words</span><span>Rapid round · ★★★</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
       <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>acquiesce</b> <span class="tile" style="font-size:7.8pt">/a-kwee-EHS/</span><br>to agree or express agreement</div><div class="bb-row"><b>coalesce</b> <span class="tile" style="font-size:7.8pt">/koh-uh-LEHS/</span><br>mix together different elements</div><div class="bb-row"><b>evanesce</b> <span class="tile" style="font-size:7.8pt">/ev-uh-NES/</span><br>disappear gradually</div><div class="bb-row"><b>putrescent</b> <span class="tile" style="font-size:7.8pt">/pyoo-TRES-ent/</span><br>becoming putrid</div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>6</span></div></div>
-<div class="page" data-vol="12">
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>7</span></div></div>
+<div class="page" data-verso data-vol="12">
     <div class="bb-head"><span>Chapter 1 · -esce, -escent, -escence — the becoming words</span><span>Game · ★★★</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
@@ -354,16 +424,17 @@
     <div style="margin-top:.1in"><div class="bb-xword-wrap" style="display:flex;justify-content:center"><table class="bb-xword"><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"><i>1</i></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td class="c"><i>2</i></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"><i>3</i></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td></tr><tr><td class="c"><i>4</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td></td><td class="c"></td><td></td><td class="c"></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td></tr><tr><td></td><td class="c"><i>5</i></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td></tr><tr><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td></tr><tr><td></td><td class="c"><i>6</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td></td><td class="c"></td></tr><tr><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td></tr><tr><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td></tr><tr><td></td><td class="c"></td><td></td><td></td><td class="c"><i>7</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td></tr><tr><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td class="c"></td><td></td><td></td><td class="c"><i>8</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td></tr><tr><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table></div>
         <div class="bb-clues"><div><h3>Across</h3><div><b>4.</b> Abnormally swollen or distended, especially by fluids or gas; describing so…</div><div><b>6.</b> The quality of branching or growing in a tree-like pattern; a structure or …</div><div><b>7.</b> In the process of putting forth fronds or leaves; becoming leafy, especiall…</div><div><b>8.</b> tending to become alkaline; slightly alkaline</div></div><div><h3>Down</h3><div><b>1.</b> The process or state of becoming fat or greasy; the gradual accumulation of…</div><div><b>2.</b> Becoming young again or growing youthful; displaying the process of returni…</div><div><b>3.</b> The process or condition of becoming weak, feeble, or invalid; a gradual de…</div><div><b>5.</b> (of plants) having no apparent stem above ground</div></div></div></div>
     <div class="bb-break"><span style="font-size:13pt">✨</span><div><div class="l">Bee Break · simile of the page</div><div class="b"><b>as snug as a bug in a rug</b></div><div class="t">perfectly cozy and comfortable</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>7</span></div></div>
-<div class="page" data-verso data-vol="12">
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>8</span></div></div>
+<div class="page" data-vol="12">
     <div class="bb-head"><span>Chapter 2 · -efy or -ify — only four take the e</span><span>Story · ★★★</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.14in">
       <span style="display:inline-grid;place-items:center;width:.58in;height:.58in;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:16pt">2</span>
-      <div><div class="kick">Advanced Orthography</div><h1 style="font-size:26pt;line-height:1.05">-efy or -ify — only four take the e</h1></div></div>
-    <div class="bb-strip" style="grid-template-columns:1fr 1fr"><div class="bb-panel happy">
+      <div><div class="kick">Advanced Orthography</div><h1 style="font-size:26pt;line-height:1.05">-efy or -ify — only four take the e</h1></div>
+      <span class="worldchip" style="margin-left:auto;transform:rotate(1.4deg)">📍 the Grey Sea</span></div>
+    <div class="bb-strip" style="grid-template-columns:1.15fr 1fr"><div class="bb-panel happy">
       <div class="bb-bubble">Latin facere meant to make, and English turned it into a verb ending. Classify is to make into classes. Magnify…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><g>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
@@ -381,10 +452,10 @@
 <path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
-<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg><div style="text-align:right"></div></div></div><div class="bb-panel think">
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div></div><div class="bb-panel think">
       <div class="bb-bubble">Now the test that makes it automatic. The four e f y verbs form nouns ending e f a c…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><g>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.75in;height:0.75in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
@@ -402,18 +473,18 @@
 <path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
-<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg><div style="text-align:right"></div></div></div><div class="bb-panel oops">
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div></div><div class="bb-panel oops">
       <div class="bb-bubble">Every one of the four has a tempting relative that pulls you toward an i. Liquid pulls liquefy toward liquify.…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true">
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.95in;height:0.95in;flex-shrink:0" aria-hidden="true">
   <path d="M60 26 L30 62 L48 58 L42 92 L60 72 L78 92 L72 58 L90 62 Z" fill="#3A2A55" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M30 62 Q12 48 16 30 Q34 34 42 50 Z M90 62 Q108 48 104 30 Q86 34 78 50 Z" fill="#5B3FA6" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M48 48 l10 4 M72 48 l-10 4" stroke="#E8546A" stroke-width="5" stroke-linecap="round"/>
   <path d="M52 62 q8 -5 16 0" stroke="#E8546A" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div style="text-align:right"></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
+  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
       <div class="bb-bubble">Here is the good news, and it is very good news. Only four English verbs take e f y. Liquefy.…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><g>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0;transform:rotate(-6deg)" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
@@ -431,15 +502,33 @@
 <path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
-<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div></div>
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.14in">
       <span class="bb-audio">🔊 Hear this chapter narrated in the app</span>
       <span class="kick" style="font-size:8.6pt">turn the page — the whole trick, explained →</span></div>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>8</span></div></div>
-<div class="page" data-vol="12">
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>9</span></div></div>
+<div class="page" data-verso data-vol="12">
     <div class="bb-head"><span>Chapter 2 · -efy or -ify — only four take the e</span><span>The idea · ★★★</span></div>
     <div style="margin-top:.4in" class="kick">The big idea</div>
-    <div class="bb-bigidea">Both endings come from Latin facere, to make, and both are pronounced the same. English standardised on -ify for essentially the whole language — and then left exactly four verbs behind with -efy. That is the entire exception list, which makes this one of the few patterns you can master completely in one sitting. The noun forms are the second half of the story, because -efy words take -efaction, not -ification.</div>
+    <div class="bb-bigidea">Both endings come from Latin facere, to make, and both are pronounced the same. English standardised on -ify for essentially the whole language — and then left exactly four verbs behind with -efy. That is the entire exception list, which makes this one of the few patterns you can master completely in one sitting. The noun forms are the second half of the story, because -efy words take -efaction, not -ification.<span class="cameo"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><g>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(135 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(180 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(225 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(270 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(315 60 58)"/>
+</g>
+<circle cx="60" cy="58" r="20" fill="#FFD9A8"/>
+<path d="M60 82 q0 14 -2 20" fill="none" stroke="#4CAF50" stroke-width="4" stroke-linecap="round"/>
+<ellipse cx="70" cy="96" rx="8" ry="4" fill="#4CAF50" transform="rotate(-24 70 96)"/>
+<circle cx="52" cy="55" r="7" fill="#fff"/><circle cx="53.5" cy="56.5" r="3.6" fill="#2B1B5E"/><circle cx="52.3" cy="55.3" r="1.3" fill="#fff"/>
+<circle cx="68" cy="55" r="7" fill="#fff"/><circle cx="69.5" cy="56.5" r="3.6" fill="#2B1B5E"/><circle cx="68.3" cy="55.3" r="1.3" fill="#fff"/>
+<path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
+<path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
+<ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span></div>
     <div class="kick" style="margin-top:.08in">The pro move</div><div class="bb-promove"><div class='trick'>LIQUEFY</div>
 <b>Heard.</b> LICK-wuh-fye — to make liquid
 <b>Candidates.</b> -efy or -ify
@@ -456,8 +545,8 @@
   <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div><div class="l">Vex alert</div><div style="font-size:8.8pt;line-height:1.35">Latin facere = to make. Only liquefy, rarefy, putrefy and stupefy keep the e. Every other verb takes -ify. The noun always turns …</div></div></div>
       <div class="bb-check"><div class="l">Check yourself</div><div style="font-size:8.8pt;line-height:1.35">Cover the page. Spell these three out loud: <b>liquefy</b> · <b>rarefy</b> · <b>putrefy</b>. Even Vex missed that last one.</div></div></div>
     <div class="bb-break"><span style="font-size:13pt">🎈</span><div><div class="l">Bee Break · idiom to drop at dinner</div><div class="b"><b>even the score</b></div><div class="t">to get revenge or make things equal again</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>9</span></div></div>
-<div class="page" data-verso data-vol="12">
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>10</span></div></div>
+<div class="page" data-vol="12">
       <div class="bb-head"><span>Chapter 2 · -efy or -ify — only four take the e</span><span>Practice · ★★★</span></div>
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
@@ -487,8 +576,8 @@
         <div class="say">/ pat-ih-FAK-shun /  ·  /pætɪˈfækʃʌn/</div>
         <div class="d">The act of opening, disclosing, or making something manifest; the state of being revealed o…</div><div class="hook">hook: Latin facere = to make. Only liquefy, rarefy, putrefy and stupefy keep the e. Every other v…</div></div>
         <div class="bb-writeline"></div></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>10</span></div></div>
-<div class="page" data-vol="12">
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>11</span></div></div>
+<div class="page" data-verso data-vol="12">
       <div class="bb-head"><span>Chapter 2 · -efy or -ify — only four take the e</span><span>Practice · ★★★</span></div>
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
@@ -518,13 +607,13 @@
         <div class="say">/ loo-dih-fih-KAY-shun /  ·  /ludɪfɪˈkeɪʃʌn/</div>
         <div class="d">The act of mocking, ridiculing, or making a fool of someone; the process of turning somethi…</div><div class="hook">hook: Latin facere = to make. Only liquefy, rarefy, putrefy and stupefy keep the e. Every other v…</div></div>
         <div class="bb-writeline"></div></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>11</span></div></div>
-<div class="page" data-verso data-vol="12">
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>12</span></div></div>
+<div class="page" data-vol="12">
       <div class="bb-head"><span>Chapter 2 · -efy or -ify — only four take the e</span><span>Rapid round · ★★★</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
       <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>domification</b> <span class="tile" style="font-size:7.8pt">/doh-mih-fih-KAY-shun/</span><br>In astrology, the division of the celestial sphere into twelve …</div><div class="bb-row"><b>mallification</b> <span class="tile" style="font-size:7.8pt">/maw-lih-fih-KAY-shun/</span><br>The process by which an area, culture, or community is transfor…</div><div class="bb-row"><b>abstractify</b> <span class="tile" style="font-size:7.8pt">/ab-STRAK-tih-fy/</span><br>To make something more abstract or theoretical; to transform a …</div><div class="bb-row"><b>disqualification</b> <span class="tile" style="font-size:7.8pt">/dih-skwah-luh-fuh-KAY-shuhn/</span><br>unfitness that bars you from participation</div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>12</span></div></div>
-<div class="page" data-vol="12">
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>13</span></div></div>
+<div class="page" data-verso data-vol="12">
     <div class="bb-head"><span>Chapter 2 · -efy or -ify — only four take the e</span><span>Game · ★★★</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
@@ -551,16 +640,17 @@
       <div style="display:flex;flex-wrap:wrap;gap:5pt;justify-content:center;margin-top:.1in"><span class="chip">liquefy</span><span class="chip">rarefy</span><span class="chip">putrefy</span><span class="chip">stupefy</span><span class="chip">liquefaction</span><span class="chip">benefaction</span><span class="chip">labefaction</span><span class="chip">patefaction</span><span class="chip">typify</span></div>
       <p style="text-align:center;font-size:8.6pt;color:var(--muted);margin-top:.06in">Words run in every direction — even backwards.</p></div>
     <div class="bb-break"><span style="font-size:13pt">💬</span><div><div class="l">Bee Break · someone said it better</div><div class="b">“Days are like camels; only a few are worth remembering.”</div><div class="t">— Arabic proverb, Traditional wisdom from the Arab world</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>13</span></div></div>
-<div class="page" data-verso data-vol="12">
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>14</span></div></div>
+<div class="page" data-vol="12">
     <div class="bb-head"><span>Chapter 3 · Bearing, eating, birthing — iferous, ivorous,…</span><span>Story · ★★★</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.14in">
       <span style="display:inline-grid;place-items:center;width:.58in;height:.58in;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:16pt">3</span>
-      <div><div class="kick">Advanced Orthography</div><h1 style="font-size:26pt;line-height:1.05">Bearing, eating, birthing — iferous, ivorous, parous, fugal, fluous</h1></div></div>
-    <div class="bb-strip" style="grid-template-columns:1fr 1fr"><div class="bb-panel happy">
+      <div><div class="kick">Advanced Orthography</div><h1 style="font-size:26pt;line-height:1.05">Bearing, eating, birthing — iferous, ivorous, parous, fugal, fluous</h1></div>
+      <span class="worldchip" style="margin-left:auto;transform:rotate(1.4deg)">📍 the Grey Sea</span></div>
+    <div class="bb-strip" style="grid-template-columns:1.15fr 1fr"><div class="bb-panel happy">
       <div class="bb-bubble">Latin took five very ordinary verbs and turned them into word endings that English still uses to build new scientific…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><g>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
@@ -578,10 +668,10 @@
 <path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
-<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg><div style="text-align:right"></div></div></div><div class="bb-panel think">
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div></div><div class="bb-panel think">
       <div class="bb-bubble">Mineralogy is full of these, and the roots are the Latin metal names. Aurum, gold, gives auriferous. Argentum, silver, gives…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><g>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.75in;height:0.75in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
@@ -599,18 +689,18 @@
 <path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
-<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg><div style="text-align:right"></div></div></div><div class="bb-panel oops">
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div></div><div class="bb-panel oops">
       <div class="bb-bubble">Here is the real difficulty, and it is not the ending. Latin joined the root to the ending with a…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true">
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.95in;height:0.95in;flex-shrink:0" aria-hidden="true">
   <path d="M60 26 L30 62 L48 58 L42 92 L60 72 L78 92 L72 58 L90 62 Z" fill="#3A2A55" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M30 62 Q12 48 16 30 Q34 34 42 50 Z M90 62 Q108 48 104 30 Q86 34 78 50 Z" fill="#5B3FA6" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M48 48 l10 4 M72 48 l-10 4" stroke="#E8546A" stroke-width="5" stroke-linecap="round"/>
   <path d="M52 62 q8 -5 16 0" stroke="#E8546A" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div style="text-align:right"><span class="bb-prop">CUPRIFEROUS</span></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
+  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span><div style="text-align:right"><span class="bb-prop">CUPRIFEROUS</span></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
       <div class="bb-bubble">A coniferous tree bears cones. A carnivorous animal devours flesh. An oviparous animal brings forth eggs. A centrifugal force flees…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><g>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0;transform:rotate(-6deg)" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
@@ -628,15 +718,33 @@
 <path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
-<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div></div>
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.14in">
       <span class="bb-audio">🔊 Hear this chapter narrated in the app</span>
       <span class="kick" style="font-size:8.6pt">turn the page — the whole trick, explained →</span></div>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>14</span></div></div>
-<div class="page" data-vol="12">
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>15</span></div></div>
+<div class="page" data-verso data-vol="12">
     <div class="bb-head"><span>Chapter 3 · Bearing, eating, birthing — iferous, ivorous,…</span><span>The idea · ★★★</span></div>
     <div style="margin-top:.4in" class="kick">The big idea</div>
-    <div class="bb-bigidea">Five Latin verbs became productive endings, and they behave as a family. Ferre, to bear, gives -iferous. Vorare, to devour, gives -ivorous. Parere, to bring forth, gives -parous. Fugere, to flee, gives -fugal. Fluere, to flow, gives -fluous. The spelling problem is almost never the ending itself but the vowel that joins it to the root, and that vowel is i far more often than anything else.</div>
+    <div class="bb-bigidea">Five Latin verbs became productive endings, and they behave as a family. Ferre, to bear, gives -iferous. Vorare, to devour, gives -ivorous. Parere, to bring forth, gives -parous. Fugere, to flee, gives -fugal. Fluere, to flow, gives -fluous. The spelling problem is almost never the ending itself but the vowel that joins it to the root, and that vowel is i far more often than anything else.<span class="cameo"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><g>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(135 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(180 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(225 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(270 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(315 60 58)"/>
+</g>
+<circle cx="60" cy="58" r="20" fill="#FFD9A8"/>
+<path d="M60 82 q0 14 -2 20" fill="none" stroke="#4CAF50" stroke-width="4" stroke-linecap="round"/>
+<ellipse cx="70" cy="96" rx="8" ry="4" fill="#4CAF50" transform="rotate(-24 70 96)"/>
+<circle cx="52" cy="55" r="7" fill="#fff"/><circle cx="53.5" cy="56.5" r="3.6" fill="#2B1B5E"/><circle cx="52.3" cy="55.3" r="1.3" fill="#fff"/>
+<circle cx="68" cy="55" r="7" fill="#fff"/><circle cx="69.5" cy="56.5" r="3.6" fill="#2B1B5E"/><circle cx="68.3" cy="55.3" r="1.3" fill="#fff"/>
+<path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
+<path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
+<ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span></div>
     <div class="kick" style="margin-top:.08in">The pro move</div><div class="bb-promove"><div class='trick'>FOSSILIFEROUS</div>
 <b>Heard.</b> foss-ill-IFF-er-us — bearing fossils
 <b>Parse.</b> fossil + i + ferous
@@ -653,8 +761,8 @@
   <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div><div class="l">Vex alert</div><div style="font-size:8.8pt;line-height:1.35">Latin combining verbs: ferre bear, vorare devour, parere bring forth, fugere flee, fluere flow. The connecting vowel is almost al…</div></div></div>
       <div class="bb-check"><div class="l">Check yourself</div><div style="font-size:8.8pt;line-height:1.35">Cover the page. Spell these three out loud: <b>fossiliferous</b> · <b>quartziferous</b> · <b>plutoniferous</b>. Even Vex missed that last one.</div></div></div>
     <div class="bb-break"><span style="font-size:13pt">✨</span><div><div class="l">Bee Break · simile of the page</div><div class="b"><b>as hot as fire</b></div><div class="t">extremely hot</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>15</span></div></div>
-<div class="page" data-verso data-vol="12">
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>16</span></div></div>
+<div class="page" data-vol="12">
       <div class="bb-head"><span>Chapter 3 · Bearing, eating, birthing — iferous, ivorous,…</span><span>Practice · ★★★</span></div>
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
@@ -684,8 +792,8 @@
         <div class="say">/ ar-sen-IF-er-us /  ·  /ɑrsɛnˈɪfərʌs/</div>
         <div class="d">Containing or yielding arsenic; used to describe minerals, soils, or geological deposits th…</div><div class="hook">hook: Latin combining verbs: ferre bear, vorare devour, parere bring forth, fugere flee, fluere f…</div></div>
         <div class="bb-writeline"></div></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>16</span></div></div>
-<div class="page" data-vol="12">
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>17</span></div></div>
+<div class="page" data-verso data-vol="12">
       <div class="bb-head"><span>Chapter 3 · Bearing, eating, birthing — iferous, ivorous,…</span><span>Practice · ★★★</span></div>
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
@@ -715,13 +823,13 @@
         <div class="say">/ oh-VIH-per-uhs /  ·  /oʊˈvɪpərəs/</div>
         <div class="d">Describing animals that reproduce by laying eggs that hatch outside the mother's body, such…</div><div class="hook">hook: Latin combining verbs: ferre bear, vorare devour, parere bring forth, fugere flee, fluere f…</div></div>
         <div class="bb-writeline"></div></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>17</span></div></div>
-<div class="page" data-verso data-vol="12">
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>18</span></div></div>
+<div class="page" data-vol="12">
       <div class="bb-head"><span>Chapter 3 · Bearing, eating, birthing — iferous, ivorous,…</span><span>Rapid round · ★★★</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
       <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>viviparous</b> <span class="tile" style="font-size:7.8pt">/veye-VIH-per-uhs/</span><br>producing living young (not eggs)</div><div class="bb-row"><b>centrifugal</b> <span class="tile" style="font-size:7.8pt">/SEH-ntrih-fyoo-guhl/</span><br>tending to move away from a center</div><div class="bb-row"><b>mellifluous</b> <span class="tile" style="font-size:7.8pt">/meh-LIF-loo-us/</span><br>is sweetly or smoothly flowing</div><div class="bb-row"><b>lucifugal</b> <span class="tile" style="font-size:7.8pt">/loo-SIF-yoo-gul/</span><br>avoiding or keeping away from light, as some insects do</div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>18</span></div></div>
-<div class="page" data-vol="12">
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>19</span></div></div>
+<div class="page" data-verso data-vol="12">
     <div class="bb-head"><span>Chapter 3 · Bearing, eating, birthing — iferous, ivorous,…</span><span>Game · ★★★</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
@@ -749,16 +857,17 @@
       <div><div class="kick" style="margin-bottom:.06in">Rescue the vowels</div>
       <div class="g1"><span class="gw">l_t_c_f_r__s</span><div class="bb-writeline"></div></div><div class="g1"><span class="gw">p_t_l_f_r__s</span><div class="bb-writeline"></div></div><div class="g1"><span class="gw">_v_p_r__s</span><div class="bb-writeline"></div></div><div class="g1"><span class="gw">_mn_v_r__s</span><div class="bb-writeline"></div></div><div class="g1"><span class="gw">m_ll_fl___s</span><div class="bb-writeline"></div></div><div class="g1"><span class="gw">_rs_n_f_r__s</span><div class="bb-writeline"></div></div></div></div></div>
     <div class="bb-break"><span style="font-size:13pt">🎈</span><div><div class="l">Bee Break · idiom to drop at dinner</div><div class="b"><b>miss the boat</b></div><div class="t">to lose an opportunity by acting late</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>19</span></div></div>
-<div class="page" data-verso data-vol="12">
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>20</span></div></div>
+<div class="page" data-vol="12">
     <div class="bb-head"><span>Chapter 4 · -ance or -ence after soft c and g</span><span>Story · ★★★</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.14in">
       <span style="display:inline-grid;place-items:center;width:.58in;height:.58in;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:16pt">4</span>
-      <div><div class="kick">Advanced Orthography</div><h1 style="font-size:26pt;line-height:1.05">-ance or -ence after soft c and g</h1></div></div>
-    <div class="bb-strip" style="grid-template-columns:1fr 1fr"><div class="bb-panel think">
+      <div><div class="kick">Advanced Orthography</div><h1 style="font-size:26pt;line-height:1.05">-ance or -ence after soft c and g</h1></div>
+      <span class="worldchip" style="margin-left:auto;transform:rotate(1.4deg)">📍 the Grey Sea</span></div>
+    <div class="bb-strip" style="grid-template-columns:1.15fr 1fr"><div class="bb-panel think">
       <div class="bb-bubble">Most spellers treat a n c e against e n c e as pure memory. For a lot of words…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><g>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.75in;height:0.75in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
@@ -776,10 +885,10 @@
 <path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
-<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg><div style="text-align:right"></div></div></div><div class="bb-panel think">
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div></div><div class="bb-panel think">
       <div class="bb-bubble">Be honest about the limits. This only works when the letter before the ending is c or g. Resistance against…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><g>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.75in;height:0.75in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
@@ -797,18 +906,18 @@
 <path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
-<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg><div style="text-align:right"></div></div></div><div class="bb-panel oops">
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div></div><div class="bb-panel oops">
       <div class="bb-bubble">Try the test in reverse and you will feel it. Say insurgance out loud. The a forces the g hard,…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true">
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.95in;height:0.95in;flex-shrink:0" aria-hidden="true">
   <path d="M60 26 L30 62 L48 58 L42 92 L60 72 L78 92 L72 58 L90 62 Z" fill="#3A2A55" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M30 62 Q12 48 16 30 Q34 34 42 50 Z M90 62 Q108 48 104 30 Q86 34 78 50 Z" fill="#5B3FA6" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M48 48 l10 4 M72 48 l-10 4" stroke="#E8546A" stroke-width="5" stroke-linecap="round"/>
   <path d="M52 62 q8 -5 16 0" stroke="#E8546A" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div style="text-align:right"></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
+  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
       <div class="bb-bubble">So say the word and listen to the consonant right before the ending. If it is soft — a j…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><g>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0;transform:rotate(-6deg)" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
@@ -826,15 +935,33 @@
 <path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
-<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div></div>
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.14in">
       <span class="bb-audio">🔊 Hear this chapter narrated in the app</span>
       <span class="kick" style="font-size:8.6pt">turn the page — the whole trick, explained →</span></div>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>20</span></div></div>
-<div class="page" data-vol="12">
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>21</span></div></div>
+<div class="page" data-verso data-vol="12">
     <div class="bb-head"><span>Chapter 4 · -ance or -ence after soft c and g</span><span>The idea · ★★★</span></div>
     <div style="margin-top:.4in" class="kick">The big idea</div>
-    <div class="bb-bigidea">English spells the same unstressed ending two ways, and after a c or g the choice is not arbitrary at all — it is forced by pronunciation. A c or g stays soft only when the next letter is e, i or y. So if you hear a soft sound just before the ending, the ending must begin with e. If you hear a hard sound, an a is available. This single piece of phonics resolves a whole class of words that otherwise have to be memorised one at a time.</div>
+    <div class="bb-bigidea">English spells the same unstressed ending two ways, and after a c or g the choice is not arbitrary at all — it is forced by pronunciation. A c or g stays soft only when the next letter is e, i or y. So if you hear a soft sound just before the ending, the ending must begin with e. If you hear a hard sound, an a is available. This single piece of phonics resolves a whole class of words that otherwise have to be memorised one at…<span class="cameo"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><g>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(135 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(180 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(225 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(270 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(315 60 58)"/>
+</g>
+<circle cx="60" cy="58" r="20" fill="#FFD9A8"/>
+<path d="M60 82 q0 14 -2 20" fill="none" stroke="#4CAF50" stroke-width="4" stroke-linecap="round"/>
+<ellipse cx="70" cy="96" rx="8" ry="4" fill="#4CAF50" transform="rotate(-24 70 96)"/>
+<circle cx="52" cy="55" r="7" fill="#fff"/><circle cx="53.5" cy="56.5" r="3.6" fill="#2B1B5E"/><circle cx="52.3" cy="55.3" r="1.3" fill="#fff"/>
+<circle cx="68" cy="55" r="7" fill="#fff"/><circle cx="69.5" cy="56.5" r="3.6" fill="#2B1B5E"/><circle cx="68.3" cy="55.3" r="1.3" fill="#fff"/>
+<path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
+<path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
+<ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span></div>
     <div class="kick" style="margin-top:.08in">The pro move</div><div class="bb-promove"><div class='trick'>INSURGENCE</div>
 <b>Heard.</b> in-SUR-junce — the g is soft, like j
 <b>Rule.</b> a soft g needs e, i or y after it to stay soft
@@ -851,8 +978,8 @@
   <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div><div class="l">Vex alert</div><div style="font-size:8.8pt;line-height:1.35">A soft c or g needs a following e or i to stay soft. So a soft sound before the ending forces -ence, and a hard sound allows -anc…</div></div></div>
       <div class="bb-check"><div class="l">Check yourself</div><div style="font-size:8.8pt;line-height:1.35">Cover the page. Spell these three out loud: <b>obliviscence</b> · <b>effervescence</b> · <b>arborescence</b>. Even Vex missed that last one.</div></div></div>
     <div class="bb-break"><span style="font-size:13pt">💬</span><div><div class="l">Bee Break · someone said it better</div><div class="b">“Each of us is a book waiting to be written, and that book, if written, results in a person explained.”</div><div class="t">— Judy Blume, children's author</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>21</span></div></div>
-<div class="page" data-verso data-vol="12">
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>22</span></div></div>
+<div class="page" data-vol="12">
       <div class="bb-head"><span>Chapter 4 · -ance or -ence after soft c and g</span><span>Practice · ★★★</span></div>
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
@@ -882,8 +1009,8 @@
         <div class="say">/ deye-VUR-juhns /  ·  /daɪˈvʌrdʒəns/</div>
         <div class="d">the act of moving away in different direction from a common point</div><div class="hook">hook: A soft c or g needs a following e or i to stay soft. So a soft sound before the ending forc…</div></div>
         <div class="bb-writeline"></div></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>22</span></div></div>
-<div class="page" data-vol="12">
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>23</span></div></div>
+<div class="page" data-verso data-vol="12">
       <div class="bb-head"><span>Chapter 4 · -ance or -ence after soft c and g</span><span>Practice · ★★★</span></div>
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
@@ -913,13 +1040,13 @@
         <div class="say">/ dis-PLAY-sen-see /  ·  /dɪsˈpleɪsɛnsi/</div>
         <div class="d">A state of displeasure or dissatisfaction; the feeling of being uncomfortable or ill at eas…</div><div class="hook">hook: A soft c or g needs a following e or i to stay soft. So a soft sound before the ending forc…</div></div>
         <div class="bb-writeline"></div></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>23</span></div></div>
-<div class="page" data-verso data-vol="12">
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>24</span></div></div>
+<div class="page" data-vol="12">
       <div class="bb-head"><span>Chapter 4 · -ance or -ence after soft c and g</span><span>Rapid round · ★★★</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
       <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>significance</b> <span class="tile" style="font-size:7.8pt">/suh-GNIH-fih-kuhns/</span><br>the quality of being significant</div><div class="bb-row"><b>insignificance</b> <span class="tile" style="font-size:7.8pt">/ih-nsih-GNYIH-fih-kuhns/</span><br>the quality of having little or no significance</div><div class="bb-row"><b>elegance</b> <span class="tile" style="font-size:7.8pt">/EH-luh-guhns/</span><br>a refined quality of gracefulness and good taste</div><div class="bb-row"><b>arrogance</b> <span class="tile" style="font-size:7.8pt">/EH-ruh-guhns/</span><br>overbearing pride evidenced by a superior manner toward inferio…</div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>24</span></div></div>
-<div class="page" data-vol="12">
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>25</span></div></div>
+<div class="page" data-verso data-vol="12">
     <div class="bb-head"><span>Chapter 4 · -ance or -ence after soft c and g</span><span>Game · ★★★</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
@@ -945,16 +1072,17 @@
     <div style="margin-top:.1in"><div class="bb-xword-wrap" style="display:flex;justify-content:center"><table class="bb-xword"><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"><i>1</i></td><td></td><td></td><td></td><td></td><td class="c"><i>2</i></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td class="c"><i>3</i></td><td></td><td></td><td class="c"></td></tr><tr><td></td><td></td><td></td><td class="c"><i>4</i></td><td></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td></tr><tr><td></td><td class="c"><i>5</i></td><td></td><td class="c"></td><td></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td></tr><tr><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td></tr><tr><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td></tr><tr><td></td><td class="c"><i>6</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td></tr><tr><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td></tr><tr><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td></tr><tr><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td></tr><tr><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td><td></td><td class="c"></td><td></td><td class="c"></td><td></td><td></td><td></td></tr><tr><td class="c"><i>7</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td></td><td></td></tr><tr><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td></tr><tr><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td class="c"><i>8</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td></td><td></td><td></td></tr></table></div>
         <div class="bb-clues"><div><h3>Across</h3><div><b>6.</b> The process or condition of forgetting; the gradual fading of memories from…</div><div><b>7.</b> the doing of good</div><div><b>8.</b> failure to act with the prudence that a reasonable person would exercise un…</div></div><div><h3>Down</h3><div><b>1.</b> The process or condition of becoming weak, feeble, or invalid; a gradual de…</div><div><b>2.</b> an act of rebellion</div><div><b>3.</b> The process or state of becoming fat or greasy; the gradual accumulation of…</div><div><b>4.</b> an inability to resist the gratification of whims and desires</div><div><b>5.</b> The quality of branching or growing in a tree-like pattern; a structure or …</div></div></div></div>
     <div class="bb-break"><span style="font-size:13pt">✨</span><div><div class="l">Bee Break · simile of the page</div><div class="b"><b>to run like the wind</b></div><div class="t">to run extremely fast</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>25</span></div></div>
-<div class="page" data-verso data-vol="12">
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>26</span></div></div>
+<div class="page" data-vol="12">
     <div class="bb-head"><span>Chapter 5 · Who rules — archy, cracy, arch and the govern…</span><span>Story · ★★★</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.14in">
       <span style="display:inline-grid;place-items:center;width:.58in;height:.58in;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:16pt">5</span>
-      <div><div class="kick">Advanced Orthography</div><h1 style="font-size:26pt;line-height:1.05">Who rules — archy, cracy, arch and the government words</h1></div></div>
-    <div class="bb-strip" style="grid-template-columns:1fr 1fr"><div class="bb-panel happy">
+      <div><div class="kick">Advanced Orthography</div><h1 style="font-size:26pt;line-height:1.05">Who rules — archy, cracy, arch and the government words</h1></div>
+      <span class="worldchip" style="margin-left:auto;transform:rotate(1.4deg)">📍 the Grey Sea</span></div>
+    <div class="bb-strip" style="grid-template-columns:1.15fr 1fr"><div class="bb-panel happy">
       <div class="bb-bubble">Almost every English word for a form of government comes from one of two Greek roots. Arkhein meant to rule,…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><g>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
@@ -972,10 +1100,10 @@
 <path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
-<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg><div style="text-align:right"></div></div></div><div class="bb-panel think">
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div></div><div class="bb-panel think">
       <div class="bb-bubble">First decision, and it is easy once you notice it. Does the word name a person or a system? A…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><g>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.75in;height:0.75in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
@@ -993,18 +1121,18 @@
 <path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
-<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg><div style="text-align:right"></div></div></div><div class="bb-panel oops">
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div></div><div class="bb-panel oops">
       <div class="bb-bubble">Now the spelling trap. That k sound in monarch is written c h, because the Greek letter behind it was…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true">
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.95in;height:0.95in;flex-shrink:0" aria-hidden="true">
   <path d="M60 26 L30 62 L48 58 L42 92 L60 72 L78 92 L72 58 L90 62 Z" fill="#3A2A55" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M30 62 Q12 48 16 30 Q34 34 42 50 Z M90 62 Q108 48 104 30 Q86 34 78 50 Z" fill="#5B3FA6" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M48 48 l10 4 M72 48 l-10 4" stroke="#E8546A" stroke-width="5" stroke-linecap="round"/>
   <path d="M52 62 q8 -5 16 0" stroke="#E8546A" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div style="text-align:right"></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
+  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
       <div class="bb-bubble">The best evidence that you can build these rather than memorise them is that English is still inventing them. Squattocracy,…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><g>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0;transform:rotate(-6deg)" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
@@ -1022,15 +1150,33 @@
 <path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
-<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div></div>
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.14in">
       <span class="bb-audio">🔊 Hear this chapter narrated in the app</span>
       <span class="kick" style="font-size:8.6pt">turn the page — the whole trick, explained →</span></div>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>26</span></div></div>
-<div class="page" data-vol="12">
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>27</span></div></div>
+<div class="page" data-verso data-vol="12">
     <div class="bb-head"><span>Chapter 5 · Who rules — archy, cracy, arch and the govern…</span><span>The idea · ★★★</span></div>
     <div style="margin-top:.4in" class="kick">The big idea</div>
-    <div class="bb-bigidea">Two Greek roots produce almost every word for a form of government, and they are not interchangeable. Arkhein meant to rule or to be first, and gives -arch for the ruler and -archy for the system. Kratos meant strength or power, and gives -crat for the person and -cracy for the system. The spelling trap is the ch: it is a Greek chi, always ch and never k, and the same root sits inside architect, archive and archaeology.</div>
+    <div class="bb-bigidea">Two Greek roots produce almost every word for a form of government, and they are not interchangeable. Arkhein meant to rule or to be first, and gives -arch for the ruler and -archy for the system. Kratos meant strength or power, and gives -crat for the person and -cracy for the system. The spelling trap is the ch: it is a Greek chi, always ch and never k, and the same root sits inside architect, archive and archaeology.<span class="cameo"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><g>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(135 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(180 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(225 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(270 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(315 60 58)"/>
+</g>
+<circle cx="60" cy="58" r="20" fill="#FFD9A8"/>
+<path d="M60 82 q0 14 -2 20" fill="none" stroke="#4CAF50" stroke-width="4" stroke-linecap="round"/>
+<ellipse cx="70" cy="96" rx="8" ry="4" fill="#4CAF50" transform="rotate(-24 70 96)"/>
+<circle cx="52" cy="55" r="7" fill="#fff"/><circle cx="53.5" cy="56.5" r="3.6" fill="#2B1B5E"/><circle cx="52.3" cy="55.3" r="1.3" fill="#fff"/>
+<circle cx="68" cy="55" r="7" fill="#fff"/><circle cx="69.5" cy="56.5" r="3.6" fill="#2B1B5E"/><circle cx="68.3" cy="55.3" r="1.3" fill="#fff"/>
+<path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
+<path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
+<ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span></div>
     <div class="kick" style="margin-top:.08in">The pro move</div><div class="bb-promove"><div class='trick'>KAKISTOCRACY</div>
 <b>Heard.</b> kack-iss-TOCK-ruh-see — government by the worst people
 <b>Parse.</b> kakistos = worst, plus o, plus kratos = power
@@ -1047,8 +1193,8 @@
   <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div><div class="l">Vex alert</div><div style="font-size:8.8pt;line-height:1.35">Greek arkhein = to rule or be first, kratos = power. -archy is rule by one kind of ruler, -cracy is power held by a group.</div></div></div>
       <div class="bb-check"><div class="l">Check yourself</div><div style="font-size:8.8pt;line-height:1.35">Cover the page. Spell these three out loud: <b>kakistocracy</b> · <b>squattocracy</b> · <b>punditocracy</b>. Even Vex missed that last one.</div></div></div>
     <div class="bb-break"><span style="font-size:13pt">🎈</span><div><div class="l">Bee Break · idiom to drop at dinner</div><div class="b"><b>the eleventh commandment</b></div><div class="t">an unofficial rule treated as seriously as a real one</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>27</span></div></div>
-<div class="page" data-verso data-vol="12">
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>28</span></div></div>
+<div class="page" data-vol="12">
       <div class="bb-head"><span>Chapter 5 · Who rules — archy, cracy, arch and the govern…</span><span>Practice · ★★★</span></div>
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
@@ -1078,8 +1224,8 @@
         <div class="say">/ tek-NOK-ruh-see /  ·  /tɛkˈnɑkrəsi/</div>
         <div class="d">a form of government in which scientists and technical experts are in control</div><div class="hook">hook: Greek arkhein = to rule or be first, kratos = power. -archy is rule by one kind of ruler, -…</div></div>
         <div class="bb-writeline"></div></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>28</span></div></div>
-<div class="page" data-vol="12">
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>29</span></div></div>
+<div class="page" data-verso data-vol="12">
       <div class="bb-head"><span>Chapter 5 · Who rules — archy, cracy, arch and the govern…</span><span>Practice · ★★★</span></div>
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
@@ -1109,13 +1255,13 @@
         <div class="say">/ GY-nar-kee /  ·  /ˈɡaɪnɑrki/</div>
         <div class="d">a political system governed by a woman</div><div class="hook">hook: Greek arkhein = to rule or be first, kratos = power. -archy is rule by one kind of ruler, -…</div></div>
         <div class="bb-writeline"></div></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>29</span></div></div>
-<div class="page" data-verso data-vol="12">
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>30</span></div></div>
+<div class="page" data-vol="12">
       <div class="bb-head"><span>Chapter 5 · Who rules — archy, cracy, arch and the govern…</span><span>Rapid round · ★★★</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
       <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>autarchy</b> <span class="tile" style="font-size:7.8pt">/AW-tar-kee/</span><br>economic independence as a national policy</div><div class="bb-row"><b>monarchy</b> <span class="tile" style="font-size:7.8pt">/MAH-nah-rkee/</span><br>an autocracy governed by a monarch who usually inherits the aut…</div><div class="bb-row"><b>anarchy</b> <span class="tile" style="font-size:7.8pt">/A-ner-kee/</span><br>a state of lawlessness and disorder (usually resulting from a f…</div><div class="bb-row"><b>meritocracy</b> <span class="tile" style="font-size:7.8pt">/meh-rih-TAW-kruh-see/</span><br>a form of social system in which power goes to those with super…</div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>30</span></div></div>
-<div class="page" data-vol="12">
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>31</span></div></div>
+<div class="page" data-verso data-vol="12">
     <div class="bb-head"><span>Chapter 5 · Who rules — archy, cracy, arch and the govern…</span><span>Game · ★★★</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
@@ -1142,16 +1288,17 @@
       <div style="display:flex;flex-wrap:wrap;gap:5pt;justify-content:center;margin-top:.1in"><span class="chip">kakistocracy</span><span class="chip">squattocracy</span><span class="chip">punditocracy</span><span class="chip">kindergarchy</span><span class="chip">ergatocracy</span><span class="chip">cryptocracy</span><span class="chip">ochlocracy</span><span class="chip">technocracy</span><span class="chip">ecclesiarch</span><span class="chip">gymnasiarch</span></div>
       <p style="text-align:center;font-size:8.6pt;color:var(--muted);margin-top:.06in">Words run in every direction — even backwards.</p></div>
     <div class="bb-break"><span style="font-size:13pt">💬</span><div><div class="l">Bee Break · someone said it better</div><div class="b">“Don't be a know-it-all; be a learn-it-all.”</div><div class="t">— Satya Nadella, Microsoft CEO</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>31</span></div></div>
-<div class="page" data-verso data-vol="12">
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>32</span></div></div>
+<div class="page" data-vol="12">
     <div class="bb-head"><span>Chapter 6 · -itude — the quality-of-being nouns</span><span>Story · ★★★</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.14in">
       <span style="display:inline-grid;place-items:center;width:.58in;height:.58in;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:16pt">6</span>
-      <div><div class="kick">Advanced Orthography</div><h1 style="font-size:26pt;line-height:1.05">-itude — the quality-of-being nouns</h1></div></div>
-    <div class="bb-strip" style="grid-template-columns:1fr 1fr"><div class="bb-panel happy">
+      <div><div class="kick">Advanced Orthography</div><h1 style="font-size:26pt;line-height:1.05">-itude — the quality-of-being nouns</h1></div>
+      <span class="worldchip" style="margin-left:auto;transform:rotate(1.4deg)">📍 the Grey Sea</span></div>
+    <div class="bb-strip" style="grid-template-columns:1.15fr 1fr"><div class="bb-panel happy">
       <div class="bb-bubble">Latin had a neat trick. Take an adjective and add itudo, and you get a noun naming the quality itself.…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><g>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.9in;height:0.9in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
@@ -1169,10 +1316,10 @@
 <path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
-<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg><div style="text-align:right"><span class="bb-prop">ALTITUDE</span></div></div></div><div class="bb-panel think">
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span><div style="text-align:right"><span class="bb-prop">ALTITUDE</span></div></div></div><div class="bb-panel think">
       <div class="bb-bubble">First rule, and it has no exceptions. The connecting vowel is i. Aptitude, gratitude, certitude, servitude, fortitude, magnitude, rectitude. There…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><g>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.75in;height:0.75in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
@@ -1190,18 +1337,18 @@
 <path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
-<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg><div style="text-align:right"></div></div></div><div class="bb-panel oops">
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div></div><div class="bb-panel oops">
       <div class="bb-bubble">Now the piece that catches almost everyone. Why is it longitudinal and not longitudal? Because in Latin the suffix declined,…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true">
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.95in;height:0.95in;flex-shrink:0" aria-hidden="true">
   <path d="M60 26 L30 62 L48 58 L42 92 L60 72 L78 92 L72 58 L90 62 Z" fill="#3A2A55" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M30 62 Q12 48 16 30 Q34 34 42 50 Z M90 62 Q108 48 104 30 Q86 34 78 50 Z" fill="#5B3FA6" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M48 48 l10 4 M72 48 l-10 4" stroke="#E8546A" stroke-width="5" stroke-linecap="round"/>
   <path d="M52 62 q8 -5 16 0" stroke="#E8546A" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div style="text-align:right"></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
+  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
       <div class="bb-bubble">The competition words here are all transparent once you have the Latin adjective. Pulcher, beautiful, gives pulchritude. Turpis, shameful, gives…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><g>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0;transform:rotate(-6deg)" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
@@ -1219,15 +1366,33 @@
 <path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
-<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div></div>
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.14in">
       <span class="bb-audio">🔊 Hear this chapter narrated in the app</span>
       <span class="kick" style="font-size:8.6pt">turn the page — the whole trick, explained →</span></div>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>32</span></div></div>
-<div class="page" data-vol="12">
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>33</span></div></div>
+<div class="page" data-verso data-vol="12">
     <div class="bb-head"><span>Chapter 6 · -itude — the quality-of-being nouns</span><span>The idea · ★★★</span></div>
     <div style="margin-top:.4in" class="kick">The big idea</div>
-    <div class="bb-bigidea">Latin -itudo turned an adjective into a noun naming the quality itself: from altus, high, came altitudo, height. English kept the suffix as -itude and it now names abstract qualities across the language. Two things trip spellers. The connecting vowel is i, not a, so it is never -atude. And the adjective is built on the Latin oblique stem itudin-, giving -itudinous and -itudinal, which is why longitude becomes longitudinal rather than longitudal.</div>
+    <div class="bb-bigidea">Latin -itudo turned an adjective into a noun naming the quality itself: from altus, high, came altitudo, height. English kept the suffix as -itude and it now names abstract qualities across the language. Two things trip spellers. The connecting vowel is i, not a, so it is never -atude. And the adjective is built on the Latin oblique stem itudin-, giving -itudinous and -itudinal, which is why longitude becomes longitudinal rat…<span class="cameo"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><g>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(135 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(180 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(225 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(270 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(315 60 58)"/>
+</g>
+<circle cx="60" cy="58" r="20" fill="#FFD9A8"/>
+<path d="M60 82 q0 14 -2 20" fill="none" stroke="#4CAF50" stroke-width="4" stroke-linecap="round"/>
+<ellipse cx="70" cy="96" rx="8" ry="4" fill="#4CAF50" transform="rotate(-24 70 96)"/>
+<circle cx="52" cy="55" r="7" fill="#fff"/><circle cx="53.5" cy="56.5" r="3.6" fill="#2B1B5E"/><circle cx="52.3" cy="55.3" r="1.3" fill="#fff"/>
+<circle cx="68" cy="55" r="7" fill="#fff"/><circle cx="69.5" cy="56.5" r="3.6" fill="#2B1B5E"/><circle cx="68.3" cy="55.3" r="1.3" fill="#fff"/>
+<path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
+<path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
+<ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span></div>
     <div class="kick" style="margin-top:.08in">The pro move</div><div class="bb-promove"><div class='trick'>PULCHRITUDE</div>
 <b>Heard.</b> PULL-kruh-tood — physical beauty
 <b>Origin.</b> Latin pulcher = beautiful, plus -itudo = the quality of
@@ -1244,8 +1409,8 @@
   <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div><div class="l">Vex alert</div><div style="font-size:8.8pt;line-height:1.35">Latin -itudo made an abstract noun from an adjective. The connecting vowel is i, never a, and the adjective form is -itudinous fr…</div></div></div>
       <div class="bb-check"><div class="l">Check yourself</div><div style="font-size:8.8pt;line-height:1.35">Cover the page. Spell these three out loud: <b>verisimilitude</b> · <b>pulchritude</b> · <b>vicissitude</b>. Even Vex missed that last one.</div></div></div>
     <div class="bb-break"><span style="font-size:13pt">✨</span><div><div class="l">Bee Break · simile of the page</div><div class="b"><b>as safe as houses</b></div><div class="t">completely safe and dependable</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>33</span></div></div>
-<div class="page" data-verso data-vol="12">
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>34</span></div></div>
+<div class="page" data-vol="12">
       <div class="bb-head"><span>Chapter 6 · -itude — the quality-of-being nouns</span><span>Practice · ★★★</span></div>
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
@@ -1275,8 +1440,8 @@
         <div class="say">/ TUR-pih-tood /  ·  /ˈtʌrpɪtud/</div>
         <div class="d">a corrupt or depraved or degenerate act or practice</div><div class="hook">hook: Latin -itudo made an abstract noun from an adjective. The connecting vowel is i, never a, a…</div></div>
         <div class="bb-writeline"></div></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>34</span></div></div>
-<div class="page" data-vol="12">
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>35</span></div></div>
+<div class="page" data-verso data-vol="12">
       <div class="bb-head"><span>Chapter 6 · -itude — the quality-of-being nouns</span><span>Practice · ★★★</span></div>
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
@@ -1306,13 +1471,13 @@
         <div class="say">/ NEG-rih-tood /  ·  /ˈnɛɡrɪtud/</div>
         <div class="d">an ideological position that holds Black culture to be independent and valid on its own ter…</div><div class="hook">hook: Latin -itudo made an abstract noun from an adjective. The connecting vowel is i, never a, a…</div></div>
         <div class="bb-writeline"></div></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>35</span></div></div>
-<div class="page" data-verso data-vol="12">
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>36</span></div></div>
+<div class="page" data-vol="12">
       <div class="bb-head"><span>Chapter 6 · -itude — the quality-of-being nouns</span><span>Rapid round · ★★★</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
       <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>longitudinal</b> <span class="tile" style="font-size:7.8pt">/lah-njuh-TOO-duh-nuhl/</span><br>of or relating to lines of longitude</div><div class="bb-row"><b>attitudinal</b> <span class="tile" style="font-size:7.8pt">/a-tuh-TOO-duh-nuhl/</span><br>of or relating to attitudes</div><div class="bb-row"><b>latitudinal</b> <span class="tile" style="font-size:7.8pt">/la-tuh-TOO-duh-nuhl/</span><br>of or relating to latitudes north or south</div><div class="bb-row"><b>amplitude</b> <span class="tile" style="font-size:7.8pt">/A-mpluh-tood/</span><br>(physics) the maximum displacement of a periodic wave</div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>36</span></div></div>
-<div class="page" data-vol="12">
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>37</span></div></div>
+<div class="page" data-verso data-vol="12">
     <div class="bb-head"><span>Chapter 6 · -itude — the quality-of-being nouns</span><span>Game · ★★★</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
@@ -1340,16 +1505,17 @@
       <div><div class="kick" style="margin-bottom:.06in">Rescue the vowels</div>
       <div class="g1"><span class="gw">v_c_ss_t_d_</span><div class="bb-writeline"></div></div><div class="g1"><span class="gw">s_l_c_t_d_</span><div class="bb-writeline"></div></div><div class="g1"><span class="gw">c_rr_ct_t_d_</span><div class="bb-writeline"></div></div><div class="g1"><span class="gw">l_ng_t_d_n_l</span><div class="bb-writeline"></div></div><div class="g1"><span class="gw">t_rp_t_d_</span><div class="bb-writeline"></div></div><div class="g1"><span class="gw">b__t_t_d_</span><div class="bb-writeline"></div></div></div></div></div>
     <div class="bb-break"><span style="font-size:13pt">🎈</span><div><div class="l">Bee Break · idiom to drop at dinner</div><div class="b"><b>break the news</b></div><div class="t">be the one to tell someone important, often unhappy, information</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>37</span></div></div>
-<div class="page" data-verso data-vol="12">
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>38</span></div></div>
+<div class="page" data-vol="12">
     <div class="bb-head"><span>Chapter 7 · -mancy — divination by absolutely anything</span><span>Story · ★★★</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.14in">
       <span style="display:inline-grid;place-items:center;width:.58in;height:.58in;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:16pt">7</span>
-      <div><div class="kick">Advanced Orthography</div><h1 style="font-size:26pt;line-height:1.05">-mancy — divination by absolutely anything</h1></div></div>
-    <div class="bb-strip" style="grid-template-columns:1fr 1fr"><div class="bb-panel excited">
+      <div><div class="kick">Advanced Orthography</div><h1 style="font-size:26pt;line-height:1.05">-mancy — divination by absolutely anything</h1></div>
+      <span class="worldchip" style="margin-left:auto;transform:rotate(1.4deg)">📍 the Grey Sea</span></div>
+    <div class="bb-strip" style="grid-template-columns:1.15fr 1fr"><div class="bb-panel excited">
       <div class="bb-bubble">Greek manteia meant prophecy. English attached it to the name of whatever you were reading the future in, and the…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><g>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0;transform:rotate(-6deg)" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
@@ -1367,10 +1533,10 @@
 <path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
-<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div><div class="bb-panel think">
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div><div class="bb-panel think">
       <div class="bb-bubble">Greek joined the root to the suffix with an o, and that o is the only real decision in the…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><g>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.75in;height:0.75in;flex-shrink:0;transform:rotate(-2deg)" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
@@ -1388,18 +1554,18 @@
 <path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
-<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg><div style="text-align:right"><span class="bb-prop">SELENOMANCY</span></div></div></div><div class="bb-panel oops">
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span><div style="text-align:right"><span class="bb-prop">SELENOMANCY</span></div></div></div><div class="bb-panel oops">
       <div class="bb-bubble">Watch for words that end in these letters by accident. Romantic came from Rome through the Romance languages. Semantic came…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true">
+        <span class="who"><svg viewBox="0 0 120 120" style="width:0.95in;height:0.95in;flex-shrink:0" aria-hidden="true">
   <path d="M60 26 L30 62 L48 58 L42 92 L60 72 L78 92 L72 58 L90 62 Z" fill="#3A2A55" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M30 62 Q12 48 16 30 Q34 34 42 50 Z M90 62 Q108 48 104 30 Q86 34 78 50 Z" fill="#5B3FA6" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M48 48 l10 4 M72 48 l-10 4" stroke="#E8546A" stroke-width="5" stroke-linecap="round"/>
   <path d="M52 62 q8 -5 16 0" stroke="#E8546A" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div style="text-align:right"></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
+  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx">UH-OH!</span></div><div class="bb-panel excited">
       <div class="bb-bubble">This is the family where building beats memorising. Cheir means hand, so palm reading is chiromancy. Ichthys means fish, so…</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <svg viewBox="0 0 120 120" style="width:0.85in;height:0.85in;flex-shrink:0" aria-hidden="true"><g>
+        <span class="who"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0;transform:rotate(-6deg)" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
@@ -1417,15 +1583,33 @@
 <path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
 <ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
-<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div></div>
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span><div style="text-align:right"></div></div><span class="bb-sfx win">GOT IT!</span></div></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.14in">
       <span class="bb-audio">🔊 Hear this chapter narrated in the app</span>
       <span class="kick" style="font-size:8.6pt">turn the page — the whole trick, explained →</span></div>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>38</span></div></div>
-<div class="page" data-vol="12">
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>39</span></div></div>
+<div class="page" data-verso data-vol="12">
     <div class="bb-head"><span>Chapter 7 · -mancy — divination by absolutely anything</span><span>The idea · ★★★</span></div>
     <div style="margin-top:.4in" class="kick">The big idea</div>
-    <div class="bb-bigidea">Greek manteia meant prophecy or divination, and English used it to name a method of foretelling by any object at all. It is one of the most reliably spellable families on a bee stage: the ending never varies, the connecting vowel is o, and the root is a plain Greek noun for whatever you are reading the future in. Once you know the roots, words nobody has ever seen become buildable.</div>
+    <div class="bb-bigidea">Greek manteia meant prophecy or divination, and English used it to name a method of foretelling by any object at all. It is one of the most reliably spellable families on a bee stage: the ending never varies, the connecting vowel is o, and the root is a plain Greek noun for whatever you are reading the future in. Once you know the roots, words nobody has ever seen become buildable.<span class="cameo"><svg viewBox="0 0 120 120" style="width:.62in;height:.62in;flex-shrink:0" aria-hidden="true"><g>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(90 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(135 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(180 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(225 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF8AB8" transform="rotate(270 60 58)"/>
+<ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(315 60 58)"/>
+</g>
+<circle cx="60" cy="58" r="20" fill="#FFD9A8"/>
+<path d="M60 82 q0 14 -2 20" fill="none" stroke="#4CAF50" stroke-width="4" stroke-linecap="round"/>
+<ellipse cx="70" cy="96" rx="8" ry="4" fill="#4CAF50" transform="rotate(-24 70 96)"/>
+<circle cx="52" cy="55" r="7" fill="#fff"/><circle cx="53.5" cy="56.5" r="3.6" fill="#2B1B5E"/><circle cx="52.3" cy="55.3" r="1.3" fill="#fff"/>
+<circle cx="68" cy="55" r="7" fill="#fff"/><circle cx="69.5" cy="56.5" r="3.6" fill="#2B1B5E"/><circle cx="68.3" cy="55.3" r="1.3" fill="#fff"/>
+<path d="M45 49 l-4 -3 M47 46 l-3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
+<path d="M75 49 l4 -3 M73 46 l3 -4" stroke="#2B1B5E" stroke-width="2" stroke-linecap="round"/>
+<ellipse cx="47" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/><ellipse cx="73" cy="63" rx="5.5" ry="3.5" fill="#FF7FBE" opacity=".95"/>
+<path d="M53 66 q7 7 14 0" fill="none" stroke="#3A1E5C" stroke-width="3.5" stroke-linecap="round"/></svg></span></div>
     <div class="kick" style="margin-top:.08in">The pro move</div><div class="bb-promove"><div class='trick'>AILUROMANCY</div>
 <b>Heard.</b> eye-LOOR-uh-man-see — divination by watching cats
 <b>Parse.</b> ailouros = cat, plus o, plus manteia = prophecy
@@ -1442,8 +1626,8 @@
   <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div><div class="l">Vex alert</div><div style="font-size:8.8pt;line-height:1.35">Greek manteia = prophecy. The joint is almost always o, and the practitioner is -mancer, the adjective -mantic.</div></div></div>
       <div class="bb-check"><div class="l">Check yourself</div><div style="font-size:8.8pt;line-height:1.35">Cover the page. Spell these three out loud: <b>ailuromancy</b> · <b>enoptromancy</b> · <b>arachnomancy</b>. Even Vex missed that last one.</div></div></div>
     <div class="bb-break"><span style="font-size:13pt">💬</span><div><div class="l">Bee Break · someone said it better</div><div class="b">“A poem begins as a lump in the throat, a homesickness, a lovesickness.”</div><div class="t">— Robert Frost, poet</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>39</span></div></div>
-<div class="page" data-verso data-vol="12">
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>40</span></div></div>
+<div class="page" data-vol="12">
       <div class="bb-head"><span>Chapter 7 · -mancy — divination by absolutely anything</span><span>Practice · ★★★</span></div>
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
@@ -1473,8 +1657,8 @@
         <div class="say">/ boh-TAN-oh-man-see /  ·  /boʊˈtænoʊmænsi/</div>
         <div class="d">The practice of attempting to predict the future or gain hidden knowledge by interpreting s…</div><div class="hook">hook: Greek manteia = prophecy. The joint is almost always o, and the practitioner is -mancer, th…</div></div>
         <div class="bb-writeline"></div></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>40</span></div></div>
-<div class="page" data-vol="12">
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>41</span></div></div>
+<div class="page" data-verso data-vol="12">
       <div class="bb-head"><span>Chapter 7 · -mancy — divination by absolutely anything</span><span>Practice · ★★★</span></div>
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
@@ -1504,13 +1688,13 @@
         <div class="say">/ KROH-noh-man-see /  ·  /ˈkroʊnoʊmænsi/</div>
         <div class="d">A form of divination in which a person attempts to predict the future or determine lucky an…</div><div class="hook">hook: Greek manteia = prophecy. The joint is almost always o, and the practitioner is -mancer, th…</div></div>
         <div class="bb-writeline"></div></div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>41</span></div></div>
-<div class="page" data-verso data-vol="12">
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>42</span></div></div>
+<div class="page" data-vol="12">
       <div class="bb-head"><span>Chapter 7 · -mancy — divination by absolutely anything</span><span>Rapid round · ★★★</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
       <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>chiromancy</b> <span class="tile" style="font-size:7.8pt">/KY-roh-man-see/</span><br>telling fortunes by lines on the palm of the hand</div><div class="bb-row"><b>necromancer</b> <span class="tile" style="font-size:7.8pt">/NEH-kruh-ma-nser/</span><br>one who practices magic or sorcery</div><div class="bb-row"><b>necromancy</b> <span class="tile" style="font-size:7.8pt">/NEH-kruh-ma-nsee/</span><br>the belief in magical spells that harness occult forces or evil…</div><div class="bb-row"><b>pyromancy</b> <span class="tile" style="font-size:7.8pt">/PY-roh-man-see/</span><br>divination by fire or flames</div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>42</span></div></div>
-<div class="page" data-vol="12">
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>43</span></div></div>
+<div class="page" data-verso data-vol="12">
     <div class="bb-head"><span>Chapter 7 · -mancy — divination by absolutely anything</span><span>Game · ★★★</span></div>
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
@@ -1536,18 +1720,18 @@
     <div style="margin-top:.1in"><div class="bb-xword-wrap" style="display:flex;justify-content:center"><table class="bb-xword"><tr><td></td><td class="c"><i>1</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"><i>2</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td class="c"><i>3</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td></td><td></td><td class="c"><i>4</i></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td class="c"><i>5</i></td><td class="c"><i>6</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td></tr><tr><td></td><td></td><td class="c"><i>7</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td></td><td class="c"></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td></tr><tr><td class="c"><i>8</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td></td><td></td><td></td><td class="c"></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td class="c"><i>9</i></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table></div>
         <div class="bb-clues"><div><h3>Across</h3><div><b>1.</b> A form of divination or fortune-telling in which rings worn on the fingers …</div><div><b>3.</b> A form of divination or fortune-telling based on the observation of a cat's…</div><div><b>5.</b> Divination or the attempt to foretell the future by examining fish, particu…</div><div><b>7.</b> A form of divination in which a person gazes into a mirror to receive proph…</div><div><b>8.</b> A form of divination in which predictions or omens are interpreted by exami…</div><div><b>9.</b> A form of divination in which a person attempts to foretell the future by o…</div></div><div><h3>Down</h3><div><b>2.</b> A form of divination or fortune-telling that uses the behavior, appearance,…</div><div><b>4.</b> A form of divination or fortune-telling based on the interpretation of spot…</div><div><b>6.</b> A form of divination in which predictions or omens are interpreted by exami…</div></div></div></div>
     <div class="bb-break"><span style="font-size:13pt">✨</span><div><div class="l">Bee Break · simile of the page</div><div class="b"><b>work like a Trojan</b></div><div class="t">to work with tireless energy</div></div></div>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>43</span></div></div>
-<div class="page" data-verso data-vol="12">
-      <div class="bb-head"><span>Schwa Country</span><span>The Big List</span></div>
-      <div style="margin-top:.4in"><h2 style="font-size:20pt">Every word in this book. Circle what you own.</h2></div>
-      <div class="bb-biglist" style="margin-top:.14in"><div><span></span>abstractify</div><div><span></span>acaulescent</div><div><span></span>acquiesce</div><div><span></span>ailuromancy</div><div><span></span>aleuromancy</div><div><span></span>alkalescent</div><div><span></span>amplitude</div><div><span></span>anarchy</div><div><span></span>arachnomancy</div><div><span></span>arborescence</div><div><span></span>aridification</div><div><span></span>arrogance</div><div><span></span>arseniferous</div><div><span></span>attitudinal</div><div><span></span>autarchy</div><div><span></span>beatitude</div><div><span></span>benefaction</div><div><span></span>beneficence</div><div><span></span>bibliomancy</div><div><span></span>botanomancy</div><div><span></span>centrifugal</div><div><span></span>cephalomancy</div><div><span></span>chartomancy</div><div><span></span>chiromancy</div><div><span></span>chronomancy</div><div><span></span>coalesce</div><div><span></span>coniferous</div><div><span></span>correctitude</div><div><span></span>crithomancy</div><div><span></span>cruciferous</div><div><span></span>cryptocracy</div><div><span></span>cupuliferous</div><div><span></span>dactylomancy</div><div><span></span>decrepitude</div><div><span></span>displacency</div><div><span></span>disqualification</div><div><span></span>divergence</div><div><span></span>domification</div><div><span></span>ecclesiarch</div><div><span></span>effervescence</div><div><span></span>elegance</div><div><span></span>enoptromancy</div><div><span></span>ergatocracy</div><div><span></span>erubescent</div><div><span></span>evanesce</div><div><span></span>exactitude</div><div><span></span>exigency</div><div><span></span>fossiliferous</div><div><span></span>frondescent</div><div><span></span>gamification</div><div><span></span>gymnasiarch</div><div><span></span>gynarchy</div><div><span></span>habitude</div><div><span></span>hierarchy</div><div><span></span>horrification</div><div><span></span>hyalescence</div><div><span></span>ichthyomancy</div><div><span></span>indulgence</div><div><span></span>ineptitude</div><div><span></span>insignificance</div><div><span></span>insurgence</div><div><span></span>intumescent</div><div><span></span>invalescence</div><div><span></span>iridescent</div><div><span></span>juvenescent</div><div><span></span>kakistocracy</div><div><span></span>kindergarchy</div><div><span></span>labefaction</div><div><span></span>laminiferous</div><div><span></span>lassitude</div><div><span></span>laticiferous</div><div><span></span>latitudinal</div><div><span></span>lecanomancy</div><div><span></span>liquefaction</div><div><span></span>liquefy</div><div><span></span>liquescent</div><div><span></span>longitudinal</div><div><span></span>lucifugal</div><div><span></span>ludification</div><div><span></span>maculomancy</div><div><span></span>mallification</div><div><span></span>massification</div><div><span></span>matriarch</div><div><span></span>mellifluous</div><div><span></span>meritocracy</div><div><span></span>monarchy</div><div><span></span>mystification</div><div><span></span>necromancer</div><div><span></span>necromancy</div><div><span></span>negligence</div><div><span></span>negritude</div><div><span></span>obliviscence</div><div><span></span>obsolescent</div><div><span></span>ochlocracy</div><div><span></span>oligarchy</div><div><span></span>omnivorous</div><div><span></span>oneiromancy</div><div><span></span>oviparous</div><div><span></span>patefaction</div><div><span></span>patriarch</div><div><span></span>perfectitude</div><div><span></span>petaliferous</div><div><span></span>pinguescence</div><div><span></span>piscivorous</div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>44</span></div></div>
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>44</span></div></div>
 <div class="page" data-vol="12">
       <div class="bb-head"><span>Schwa Country</span><span>The Big List</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">Every word in this book. Circle what you own.</h2></div>
-      <div class="bb-biglist" style="margin-top:.14in"><div><span></span>plangency</div><div><span></span>platitude</div><div><span></span>plumbiferous</div><div><span></span>plutoniferous</div><div><span></span>pulchritude</div><div><span></span>punditocracy</div><div><span></span>putrefy</div><div><span></span>putrescent</div><div><span></span>pyromancy</div><div><span></span>quartziferous</div><div><span></span>quiescent</div><div><span></span>rarefy</div><div><span></span>rectitude</div><div><span></span>reticence</div><div><span></span>selenomancy</div><div><span></span>senescent</div><div><span></span>significance</div><div><span></span>solicitude</div><div><span></span>squattocracy</div><div><span></span>stringency</div><div><span></span>strontiferous</div><div><span></span>stupefy</div><div><span></span>tangency</div><div><span></span>technocracy</div><div><span></span>theocracy</div><div><span></span>turpitude</div><div><span></span>typify</div><div><span></span>verisimilitude</div><div><span></span>vicissitude</div><div><span></span>vivification</div><div><span></span>viviparous</div><div><span></span>vociferous</div></div>
+      <div class="bb-biglist" style="margin-top:.14in"><div><span></span>abstractify</div><div><span></span>acaulescent</div><div><span></span>acquiesce</div><div><span></span>ailuromancy</div><div><span></span>aleuromancy</div><div><span></span>alkalescent</div><div><span></span>amplitude</div><div><span></span>anarchy</div><div><span></span>arachnomancy</div><div><span></span>arborescence</div><div><span></span>aridification</div><div><span></span>arrogance</div><div><span></span>arseniferous</div><div><span></span>attitudinal</div><div><span></span>autarchy</div><div><span></span>beatitude</div><div><span></span>benefaction</div><div><span></span>beneficence</div><div><span></span>bibliomancy</div><div><span></span>botanomancy</div><div><span></span>centrifugal</div><div><span></span>cephalomancy</div><div><span></span>chartomancy</div><div><span></span>chiromancy</div><div><span></span>chronomancy</div><div><span></span>coalesce</div><div><span></span>coniferous</div><div><span></span>correctitude</div><div><span></span>crithomancy</div><div><span></span>cruciferous</div><div><span></span>cryptocracy</div><div><span></span>cupuliferous</div><div><span></span>dactylomancy</div><div><span></span>decrepitude</div><div><span></span>displacency</div><div><span></span>disqualification</div><div><span></span>divergence</div><div><span></span>domification</div><div><span></span>ecclesiarch</div><div><span></span>effervescence</div><div><span></span>elegance</div><div><span></span>enoptromancy</div><div><span></span>ergatocracy</div><div><span></span>erubescent</div><div><span></span>evanesce</div><div><span></span>exactitude</div><div><span></span>exigency</div><div><span></span>fossiliferous</div><div><span></span>frondescent</div><div><span></span>gamification</div><div><span></span>gymnasiarch</div><div><span></span>gynarchy</div><div><span></span>habitude</div><div><span></span>hierarchy</div><div><span></span>horrification</div><div><span></span>hyalescence</div><div><span></span>ichthyomancy</div><div><span></span>indulgence</div><div><span></span>ineptitude</div><div><span></span>insignificance</div><div><span></span>insurgence</div><div><span></span>intumescent</div><div><span></span>invalescence</div><div><span></span>iridescent</div><div><span></span>juvenescent</div><div><span></span>kakistocracy</div><div><span></span>kindergarchy</div><div><span></span>labefaction</div><div><span></span>laminiferous</div><div><span></span>lassitude</div><div><span></span>laticiferous</div><div><span></span>latitudinal</div><div><span></span>lecanomancy</div><div><span></span>liquefaction</div><div><span></span>liquefy</div><div><span></span>liquescent</div><div><span></span>longitudinal</div><div><span></span>lucifugal</div><div><span></span>ludification</div><div><span></span>maculomancy</div><div><span></span>mallification</div><div><span></span>massification</div><div><span></span>matriarch</div><div><span></span>mellifluous</div><div><span></span>meritocracy</div><div><span></span>monarchy</div><div><span></span>mystification</div><div><span></span>necromancer</div><div><span></span>necromancy</div><div><span></span>negligence</div><div><span></span>negritude</div><div><span></span>obliviscence</div><div><span></span>obsolescent</div><div><span></span>ochlocracy</div><div><span></span>oligarchy</div><div><span></span>omnivorous</div><div><span></span>oneiromancy</div><div><span></span>oviparous</div><div><span></span>patefaction</div><div><span></span>patriarch</div><div><span></span>perfectitude</div><div><span></span>petaliferous</div><div><span></span>pinguescence</div><div><span></span>piscivorous</div></div>
       <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>45</span></div></div>
-<div class="page" data-verso data-vol="12" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
+<div class="page" data-verso data-vol="12">
+      <div class="bb-head"><span>Schwa Country</span><span>The Big List</span></div>
+      <div style="margin-top:.4in"><h2 style="font-size:20pt">Every word in this book. Circle what you own.</h2></div>
+      <div class="bb-biglist" style="margin-top:.14in"><div><span></span>plangency</div><div><span></span>platitude</div><div><span></span>plumbiferous</div><div><span></span>plutoniferous</div><div><span></span>pulchritude</div><div><span></span>punditocracy</div><div><span></span>putrefy</div><div><span></span>putrescent</div><div><span></span>pyromancy</div><div><span></span>quartziferous</div><div><span></span>quiescent</div><div><span></span>rarefy</div><div><span></span>rectitude</div><div><span></span>reticence</div><div><span></span>selenomancy</div><div><span></span>senescent</div><div><span></span>significance</div><div><span></span>solicitude</div><div><span></span>squattocracy</div><div><span></span>stringency</div><div><span></span>strontiferous</div><div><span></span>stupefy</div><div><span></span>tangency</div><div><span></span>technocracy</div><div><span></span>theocracy</div><div><span></span>turpitude</div><div><span></span>typify</div><div><span></span>verisimilitude</div><div><span></span>vicissitude</div><div><span></span>vivification</div><div><span></span>viviparous</div><div><span></span>vociferous</div></div>
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>46</span></div></div>
+<div class="page" data-vol="12" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
     <svg viewBox="0 0 120 120" style="width:1.2in;height:1.2in;flex-shrink:0" aria-hidden="true">
   <path d="M60 26 L30 62 L48 58 L42 92 L60 72 L78 92 L72 58 L90 62 Z" fill="#3A2A55" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
   <path d="M30 62 Q12 48 16 30 Q34 34 42 50 Z M90 62 Q108 48 104 30 Q86 34 78 50 Z" fill="#5B3FA6" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
@@ -1556,13 +1740,13 @@
   <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg>
     <h1 style="font-size:32pt;margin:.14in 0 .06in">No peeking until you've tried.</h1>
     <p style="color:var(--muted);font-size:11pt">Vex would peek. Be better than Vex.</p>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>46</span></div></div>
-<div class="page" data-vol="12">
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>47</span></div></div>
+<div class="page" data-verso data-vol="12">
       <div class="bb-head"><span>Schwa Country</span><span>Answer key</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">Answer key</h2></div>
       <div class="bb-key" style="margin-top:.12in"><div><b>Ch. 1 crossword</b> — Across: 4 intumescent, 6 arborescence, 7 frondescent, 8 alkalescent · Down: 1 pinguescence, 2 juvenescent, 3 invalescence, 5 acaulescent</div><div><b>Ch. 3 scramble</b> — coeivurfos=vociferous, ietaepfoulsr=petaliferous, ifnslaieomru=laminiferous, issrovcuoip=piscivorous, uoeciosfrn=coniferous, ouusfelmlli=mellifluous · vowels: laticiferous, petaliferous, oviparous, omnivorous, mellifluous, arseniferous</div><div><b>Ch. 4 crossword</b> — Across: 6 obliviscence, 7 beneficence, 8 negligence · Down: 1 invalescence, 2 insurgence, 3 pinguescence, 4 indulgence, 5 arborescence</div><div><b>Ch. 6 scramble</b> — dticretue=rectitude, ttbueeida=beatitude, dailtntatui=attitudinal, eustlioicd=solicitude, tolgnnidluai=longitudinal, urdtuptei=turpitude · vowels: vicissitude, solicitude, correctitude, longitudinal, turpitude, beatitude</div><div><b>Ch. 7 crossword</b> — Across: 1 dactylomancy, 3 ailuromancy, 5 ichthyomancy, 7 enoptromancy, 8 cephalomancy, 9 lecanomancy · Down: 2 arachnomancy, 4 maculomancy, 6 crithomancy</div></div>
-      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>47</span></div></div>
-<div class="page" data-verso data-vol="12" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
+      <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>48</span></div></div>
+<div class="page" data-vol="12" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
     <svg viewBox="0 0 120 120" style="width:1.4in;height:1.4in;flex-shrink:0" aria-hidden="true"><g>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4"/>
 <ellipse cx="60" cy="30" rx="11" ry="17" fill="#FF9EC4" transform="rotate(45 60 58)"/>
@@ -1586,4 +1770,4 @@
     <div style="margin:0 auto .2in" class="bb-badge"><div class="b1">DONE</div><div class="b1" style="border-style:solid">★</div><div class="b1">+1</div></div>
     <p style="font-size:10.5pt;max-width:5.4in;margin:0 auto .26in;line-height:1.55">Every word in here also lives in the Bizzing Bee app, with real audio, games and a coach that remembers what you miss. Paper for the muscles, app for the ears.</p>
     <p style="font-size:8.4pt;color:var(--muted);max-width:5.9in;margin:0 auto;line-height:1.55">Bizzing Bee is an independent study project — not affiliated with, sponsored by, or endorsed by the Scripps National Spelling Bee, the North South Foundation, or Merriam-Webster. Competition names appear only to describe what the practice material relates to. Definitions, sentences, hints and stories are written for this project. Typefaces are open-licensed (SIL OFL).</p>
-    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>48</span></div></div></body></html>
+    <div class="bb-foot"><span>Bizzing Bee · Schwa Country</span><span>49</span></div></div></body></html>

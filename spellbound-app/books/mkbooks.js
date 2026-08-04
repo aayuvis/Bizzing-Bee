@@ -80,6 +80,96 @@ function texture(tex) {
   return `<path d="M50% 0 V100% M0 50% H100%" stroke="rgba(255,255,255,.07)" stroke-width="30" fill="none"/>`;
 }
 
+
+/* ---------------- world scenery: one drawn scene per world, tied to the content ----------------
+   Layered SVG over the volume gradient: far layer in translucent white, ground in deep accent,
+   props in a small fixed palette that reads on any accent. Used full-bleed on covers and
+   divider pages, and as a silhouette strip elsewhere. */
+const WP = { sun:'#FFD66B', glow:'rgba(255,255,255,.85)', far:'rgba(255,255,255,.22)', mid:'rgba(255,255,255,.38)', dark:'rgba(20,12,40,.30)', ink:'rgba(20,12,40,.45)' };
+function worldScene(world, W, H) {
+  const gy = H * 0.8;
+  const ground = `<path d="M0 ${gy} Q ${W*.22} ${gy-26} ${W*.5} ${gy} T ${W} ${gy} L ${W} ${H} L 0 ${H} Z" fill="${WP.dark}"/>`;
+  const sun = (x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${WP.sun}" opacity=".9"/><circle cx="${x}" cy="${y}" r="${r*1.7}" fill="${WP.sun}" opacity=".18"/>`;
+  const cloud=(x,y,k)=>`<g fill="${WP.mid}"><ellipse cx="${x}" cy="${y}" rx="${44*k}" ry="${15*k}"/><ellipse cx="${x-26*k}" cy="${y+6*k}" rx="${26*k}" ry="${11*k}"/><ellipse cx="${x+30*k}" cy="${y+7*k}" rx="${30*k}" ry="${12*k}"/></g>`;
+  const hill=(x,w,h,o)=>`<path d="M${x-w} ${gy} Q ${x} ${gy-h} ${x+w} ${gy} Z" fill="rgba(255,255,255,${o})"/>`;
+  const path55=`<path d="M${W*.1} ${gy+34} Q ${W*.4} ${gy-70} ${W*.62} ${gy-140} T ${W*.95} ${gy-260}" stroke="${WP.glow}" stroke-width="3.5" stroke-dasharray="1 12" stroke-linecap="round" fill="none"/>`;
+  const S = {
+    meadow: ()=> sun(W*.82,H*.16,44)+cloud(W*.2,H*.14,1)+cloud(W*.55,H*.24,.7)+hill(W*.2,W*.4,120,.16)+hill(W*.8,W*.5,170,.1)
+      +`<g>${[ .12,.3,.52,.7,.9 ].map((f,i)=>`<g transform="translate(${W*f} ${gy-4})"><line x1="0" y1="0" x2="0" y2="-26" stroke="${WP.glow}" stroke-width="3"/><circle cx="0" cy="-32" r="9" fill="${['#FF9EBB','#FFD66B','#B9A6FF','#9FE7D6','#FF9EBB'][i]}"/><circle cx="0" cy="-32" r="3.5" fill="#7A4C10"/></g>`).join('')}</g>`
+      +`<g transform="translate(${W*.78} ${gy-58})"><rect x="-3" y="30" width="6" height="30" fill="${WP.ink}"/><ellipse cx="0" cy="6" rx="26" ry="10" fill="#F3B33C"/><ellipse cx="0" cy="18" rx="30" ry="11" fill="#E8A32B"/><ellipse cx="0" cy="30" rx="26" ry="10" fill="#D6931F"/><circle cx="0" cy="20" r="5" fill="#7A4C10"/></g>`+path55,
+    library: ()=>`<g fill="${WP.far}">${[0,1,2].map(i=>`<rect x="${W*(.06+i*.34)}" y="${H*.1}" width="${W*.24}" height="${gy-H*.1}" rx="8"/>`).join('')}</g>`
+      +`<g>${[0,1,2].map(i=>[0,1,2,3].map(j=>`<g transform="translate(${W*(.08+i*.34)} ${H*.16+j*(gy-H*.28)/4})">${[0,1,2,3,4].map(k=>`<rect x="${k*W*.042}" y="${Math.sin(i+j+k)*3}" width="${W*.03}" height="34" rx="3" fill="rgba(255,255,255,${.3+((i+j+k)%3)*.12})"/>`).join('')}<rect x="0" y="40" width="${W*.2}" height="5" rx="2" fill="${WP.mid}"/></g>`).join('')).join('')}</g>`
+      +`<g transform="translate(${W*.5} ${H*.12}) rotate(8)"><rect x="-20" y="-14" width="40" height="28" rx="4" fill="${WP.glow}"/><line x1="0" y1="-14" x2="0" y2="14" stroke="${WP.dark}" stroke-width="2"/></g>`+path55,
+    forum: ()=> sun(W*.16,H*.14,38)+`<g>${[.14,.32,.5,.68,.86].map(f=>`<g transform="translate(${W*f} 0)"><rect x="-16" y="${H*.24}" width="32" height="${gy-H*.24}" fill="${WP.far}"/><rect x="-24" y="${H*.22}" width="48" height="14" rx="4" fill="${WP.mid}"/><rect x="-24" y="${gy-12}" width="48" height="12" rx="3" fill="${WP.mid}"/>${[0,1,2].map(k=>`<line x1="${-8+k*8}" y1="${H*.26}" x2="${-8+k*8}" y2="${gy-16}" stroke="rgba(255,255,255,.14)" stroke-width="3"/>`).join('')}</g>`).join('')}</g>`
+      +`<path d="M${W*.28} ${H*.2} Q ${W*.5} ${H*.1} ${W*.72} ${H*.2}" stroke="${WP.mid}" stroke-width="12" fill="none"/>`
+      +`<g transform="translate(${W*.5} ${gy-26})"><path d="M-34 0 Q 0 -22 34 0" stroke="${WP.glow}" stroke-width="4" fill="none"/><path d="M-30 -2 l-6 -10 M30 -2 l6 -10" stroke="${WP.glow}" stroke-width="4" stroke-linecap="round"/></g>`+path55,
+    elements: ()=>`<g fill="${WP.far}">${[[.15,.2,30],[.8,.14,24],[.62,.3,18],[.3,.4,14]].map(([f,g2,r])=>`<circle cx="${W*f}" cy="${H*g2}" r="${r}"/>`).join('')}</g>`
+      +cloud(W*.7,H*.16,1.2)+`<path d="M${W*.7} ${H*.22} L ${W*.64} ${H*.38} L ${W*.7} ${H*.38} L ${W*.6} ${H*.56}" stroke="${WP.sun}" stroke-width="9" fill="none" stroke-linejoin="round" stroke-linecap="round"/>`
+      +`<g>${[[.14,.5],[.32,.62],[.52,.5],[.86,.44]].map(([f,g2],i)=>`<g transform="translate(${W*f} ${H*g2}) rotate(${i*14-20})"><path d="M0 -22 L19 -11 L19 11 L0 22 L-19 11 L-19 -11 Z" fill="rgba(255,255,255,${.2+i*.07})"/></g>`).join('')}</g>`+path55,
+    stage: ()=>`<path d="M0 0 L${W*.2} 0 Q ${W*.13} ${H*.3} ${W*.18} ${gy} L0 ${gy} Z" fill="${WP.dark}"/><path d="M${W} 0 L${W*.8} 0 Q ${W*.87} ${H*.3} ${W*.82} ${gy} L${W} ${gy} Z" fill="${WP.dark}"/>`
+      +`<path d="M${W*.35} 0 L${W*.22} ${gy} L${W*.48} ${gy} Z" fill="rgba(255,246,214,.30)"/><path d="M${W*.65} 0 L${W*.52} ${gy} L${W*.78} ${gy} Z" fill="rgba(255,246,214,.30)"/>`
+      +`<g transform="translate(${W*.5} ${gy-40})"><line x1="0" y1="0" x2="0" y2="40" stroke="${WP.glow}" stroke-width="5"/><circle cx="0" cy="-8" r="12" fill="${WP.glow}"/><rect x="-16" y="36" width="32" height="6" rx="3" fill="${WP.glow}"/></g>`
+      +`<g fill="${WP.sun}">${[[.3,.2],[.72,.12],[.6,.3],[.24,.42],[.8,.4]].map(([f,g2])=>`<path transform="translate(${W*f} ${H*g2}) scale(.8)" d="M0 -10 L2.8 -3 L10 -3 L4.4 1.6 L6.6 9 L0 4.6 L-6.6 9 L-4.4 1.6 L-10 -3 L-2.8 -3 Z"/>`).join('')}</g>`,
+    engine: ()=>{ const gear=(x,y,r,o)=>`<g transform="translate(${x} ${y})" fill="rgba(255,255,255,${o})">${[0,45,90,135].map(a2=>`<rect x="${-r-6}" y="-5" width="${2*r+12}" height="10" rx="3" transform="rotate(${a2})"/>`).join('')}<circle r="${r}"/><circle r="${r*.4}" fill="${WP.dark}"/></g>`;
+      return gear(W*.2,H*.3,34,.3)+gear(W*.34,H*.42,22,.22)+gear(W*.78,H*.2,42,.26)+gear(W*.64,H*.5,18,.3)
+      +`<path d="M0 ${H*.62} H ${W*.42} V ${H*.5}" stroke="${WP.far}" stroke-width="14" fill="none"/><path d="M${W} ${H*.66} H ${W*.6}" stroke="${WP.far}" stroke-width="14" fill="none"/>`
+      +cloud(W*.48,H*.14,.7)+cloud(W*.6,H*.08,.5)+path55; },
+    origami: ()=> sun(W*.84,H*.12,34)+`<g>${[[.18,190,.34],[.42,260,.22],[.68,210,.3],[.9,150,.24]].map(([f,h2,o])=>`<g transform="translate(${W*f} ${gy})"><path d="M${-h2*.7} 0 L0 ${-h2} L${h2*.7} 0 Z" fill="rgba(255,255,255,${o})"/><path d="M0 ${-h2} L${h2*.18} ${-h2*.55} L${-h2*.12} ${-h2*.4} Z" fill="${WP.glow}"/></g>`).join('')}</g>`
+      +`<g transform="translate(${W*.3} ${H*.24}) rotate(-8)" fill="${WP.glow}"><path d="M0 0 L34 -12 L14 4 L44 14 L8 10 L-6 26 Z"/></g>`+path55,
+    strait: ()=>{ const wave=(y,o)=>`<path d="M0 ${y} ${Array.from({length:8},(_,i)=>`Q ${W*(i+.5)/8} ${y-12} ${W*(i+1)/8} ${y}`).join(' ')}" stroke="rgba(255,255,255,${o})" stroke-width="4" fill="none"/>`;
+      return sun(W*.2,H*.14,40)+cloud(W*.6,H*.12,.9)+wave(gy-40,.5)+wave(gy-16,.35)+wave(gy+14,.25)
+      +`<g transform="translate(${W*.66} ${gy-52})"><path d="M0 40 L0 -34" stroke="${WP.glow}" stroke-width="5"/><path d="M0 -34 L46 6 L0 6 Z" fill="${WP.glow}"/><path d="M0 -20 L-30 4 L0 4 Z" fill="${WP.mid}"/><path d="M-22 40 Q 0 58 22 40 Z" fill="${WP.ink}"/></g>`
+      +`<g transform="translate(${W*.12} ${gy-70})"><rect x="-8" y="0" width="16" height="70" fill="${WP.glow}"/><rect x="-8" y="14" width="16" height="12" fill="${WP.dark}"/><rect x="-8" y="40" width="16" height="12" fill="${WP.dark}"/><circle cx="0" cy="-6" r="9" fill="${WP.sun}"/></g>`
+      +`<g stroke="${WP.glow}" stroke-width="3" fill="none">${[[.4,.3],[.48,.26],[.55,.32]].map(([f,g2])=>`<path d="M${W*f-10} ${H*g2} q 10 -8 20 0 M${W*f+10} ${H*g2} q 10 -8 20 0"/>`).join('')}</g>`; },
+    junkyard: ()=>{ const mound=(x,w,h)=>`<path d="M${x-w} ${gy} Q ${x} ${gy-h} ${x+w} ${gy} Z" fill="${WP.far}"/>`;
+      return mound(W*.2,W*.24,150)+mound(W*.6,W*.3,210)+mound(W*.9,W*.2,120)
+      +`<circle cx="${W*.22}" cy="${gy-40}" r="26" fill="none" stroke="${WP.glow}" stroke-width="9"/>`
+      +`<path d="M${W*.55} ${gy-140} q 14 -18 28 0 q 14 18 28 0" stroke="${WP.glow}" stroke-width="6" fill="none"/>`
+      +`<rect x="${W*.66}" y="${gy-90}" width="52" height="40" rx="6" fill="${WP.mid}" transform="rotate(-8 ${W*.66} ${gy-90})"/>`
+      +`<g transform="translate(${W*.84} ${H*.18})"><line x1="0" y1="0" x2="0" y2="70" stroke="${WP.glow}" stroke-width="5"/><path d="M-24 70 Q 0 96 24 70 Z" fill="#E8546A"/></g>`+path55; },
+    vibe: ()=>`<g fill="none">${[[.2,.24],[.75,.2],[.5,.5],[.14,.6]].map(([f,g2],i)=>`<g transform="translate(${W*f} ${H*g2})">${[26,17,8].map(r=>`<circle r="${r}" stroke="rgba(255,255,255,${.24+i*.05})" stroke-width="5"/>`).join('')}</g>`).join('')}</g>`
+      +`<path d="M0 ${H*.36} Q ${W*.25} ${H*.28} ${W*.5} ${H*.38} T ${W} ${H*.3}" stroke="${WP.mid}" stroke-width="10" fill="none"/>`
+      +`<path d="M0 ${H*.52} Q ${W*.3} ${H*.6} ${W*.6} ${H*.5} T ${W} ${H*.56}" stroke="${WP.far}" stroke-width="16" fill="none"/>`
+      +`<g fill="${WP.sun}">${[[.3,.16],[.62,.4],[.85,.6],[.4,.66]].map(([f,g2])=>`<circle cx="${W*f}" cy="${H*g2}" r="6"/>`).join('')}</g>`+path55,
+    warfield: ()=>`<g>${[.18,.5,.82].map((f,i)=>`<g transform="translate(${W*f} ${gy-8})"><line x1="0" y1="0" x2="0" y2="-${120+i*30}" stroke="${WP.glow}" stroke-width="5"/><path d="M0 -${120+i*30} L54 -${104+i*30} L0 -${88+i*30} Z" fill="${i===1?'#F0B429':'rgba(255,255,255,.5)'}"/></g>`).join('')}</g>`
+      +`<path d="M${W*.35} ${gy} L${W*.5} ${gy-70} L${W*.65} ${gy} Z" fill="${WP.far}"/>`
+      +`<path d="M${W*.5} 0 L${W*.38} ${gy-70} L${W*.62} ${gy-70} Z" fill="rgba(255,246,214,.25)"/>`+path55,
+    greysea: ()=>{ const fog=(y,o)=>`<ellipse cx="${W*.5}" cy="${y}" rx="${W*.62}" ry="26" fill="rgba(255,255,255,${o})"/>`;
+      return fog(H*.3,.18)+fog(H*.44,.24)+fog(H*.58,.3)+fog(gy-16,.36)
+      +`<g transform="translate(${W*.8} ${gy-90}) "><rect x="-9" y="0" width="18" height="90" fill="${WP.mid}"/><circle cx="0" cy="-8" r="10" fill="${WP.sun}" opacity=".65"/><path d="M0 -8 L-70 -34 L-70 18 Z" fill="rgba(255,214,107,.14)"/></g>`
+      +`<path d="M0 ${gy-30} ${Array.from({length:6},(_,i)=>`Q ${W*(i+.5)/6} ${gy-42} ${W*(i+1)/6} ${gy-30}`).join(' ')}" stroke="rgba(255,255,255,.3)" stroke-width="4" fill="none"/>`
+      +`<text x="${W*.24}" y="${H*.4}" font-size="60" fill="rgba(255,255,255,.28)" font-family="Georgia" font-style="italic">ə</text><text x="${W*.5}" y="${H*.26}" font-size="38" fill="rgba(255,255,255,.2)" font-family="Georgia" font-style="italic">ə</text>`; },
+  };
+  const fn = S[world] || S.meadow;
+  return `<g>${fn()}</g>${ground}`;
+}
+function letterTiles(word, W, H, seed) {
+  const rnd = mulberry(seed); const letters = String(word).toUpperCase().replace(/[^A-Z]/g, '').slice(0, 6).split('');
+  return letters.map((L, i) => { const x = W * (.1 + .8 * (i / Math.max(1, letters.length - 1)) + (rnd() - .5) * .06);
+    const y = H * (.3 + (rnd() - .5) * .16); const r = (rnd() - .5) * 26;
+    return `<g transform="translate(${x} ${y}) rotate(${r})"><rect x="-17" y="-17" width="34" height="34" rx="8" fill="rgba(255,255,255,.9)"/><text x="0" y="8" text-anchor="middle" font-family="'BB Display'" font-size="22" fill="#241E33">${L}</text></g>`; }).join('');
+}
+const WORLD_NAME = { meadow: 'the Meadow', library: 'the Great Library', forum: 'the Roman Forum', elements: 'the Storm of Elements', stage: 'the Big Stage', engine: 'the Engine Room', origami: 'the Paper Mountains', strait: 'the Wide Strait', junkyard: 'the Word Junkyard', vibe: 'the Vibe', warfield: 'the Proving Ground', greysea: 'the Grey Sea' };
+const WORLD_BLURB = {
+  1: 'Every champion started in the Meadow — first words, first stings, first wins.',
+  2: 'The Great Library holds every rule English ever wrote down. Waggle has the keys.',
+  3: 'Every column in the Forum holds up a prefix. Learn one, and a hundred words stand.',
+  4: 'Greek blows in like weather — catch the bolts and the words light up.',
+  5: 'Endings decide everything under the spotlight. This is where words take a bow.',
+  6: 'Roots are machine parts. In the Engine Room, Drone shows you how they fit.',
+  7: 'Greek roots fold together like paper — crease by crease, a word takes shape.',
+  8: 'Words sailed here from everywhere. The Strait is where they came ashore.',
+  9: 'Everything ever made ends up in the Junkyard — and every pile has a name.',
+  10: 'Some words have moods. The Vibe is where they let it show.',
+  11: 'The Proving Ground: where bee-day plans are drilled until they hold.',
+  12: 'The Grey Sea is fog as far as you can hear. The schwa hides in it. Blossom does not get lost.',
+  13: 'Back to the Junkyard — this time for the letters that lie, double and vanish.',
+  14: 'Past the lighthouse lies every language the big four forgot. Mic has the map.',
+  15: 'The Engine Room again, belts humming — this is where English bolts words together.',
+  16: 'A picnic in the Meadow with every simile we own. Bring an appetite.',
+  17: 'The Big Stage, house lights down. Two hundred and forty voices worth hearing.',
+};
+
 /* ---------------- CSS: tokens-book + type scale + class contracts ---------------- */
 function css(vol) {
   const bodyPt = vol.band === 'advanced' ? '11.5pt' : '13pt';
@@ -108,6 +198,9 @@ function css(vol) {
   @media screen{.page{margin:24px auto;box-shadow:0 10px 34px rgba(36,30,51,.18);border-radius:4px}}
   h1,h2,h3,.disp{font-family:'BB Display';font-weight:800}
   .kick{font-family:'BB Kicker';font-weight:600;font-size:10pt;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-deep)}
+  .worldchip{display:inline-flex;align-items:center;gap:5pt;background:rgba(255,255,255,.75);border:1px solid var(--hairline);border-radius:999px;padding:2.5pt 10pt;font-family:'BB Kicker';font-size:8.6pt;color:var(--accent-deep)}
+  .coverTitle{font-family:'BB Display';font-weight:800;color:#fff;text-shadow:0 4px 0 rgba(0,0,0,.25),0 10px 24px rgba(0,0,0,.25)}
+  .peek{position:absolute;pointer-events:none}
   .tile{font-family:'BB Tile';font-weight:600;color:var(--muted)}
   .bb-head{position:absolute;top:.3in;left:.75in;right:.5in;display:flex;justify-content:space-between;align-items:baseline;
     font-family:'BB Kicker';font-size:10pt;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--hairline);padding-bottom:4pt}
@@ -116,44 +209,50 @@ function css(vol) {
     font-family:'BB Kicker';font-size:10pt;color:var(--muted)}
   .page[data-verso] .bb-foot{left:.5in;right:.75in}
   .bb-panelbox{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-panel);padding:.12in .15in;box-shadow:var(--sh-screen)}
-  .bb-bigidea{background:var(--tint);border:1px solid color-mix(in srgb,var(--accent) 30%,white);border-left:6px solid var(--accent);
-    border-radius:var(--r-panel);padding:.12in .16in;max-height:1.5in;overflow:hidden}
+  .bb-bigidea{padding:.04in .8in .04in .42in;max-height:1.5in;overflow:hidden;position:relative;font-size:12pt;line-height:1.5}
+  .bb-bigidea:before{content:'“';position:absolute;left:0;top:-.12in;font-family:'BB Display';font-size:44pt;color:var(--accent)}
+  .bb-bigidea .cameo{position:absolute;right:.06in;top:50%;transform:translateY(-50%) rotate(4deg)}
   .bb-promove{background:var(--ink);color:#F4EFFF;border-radius:var(--r-panel);padding:.13in .16in;max-height:1.6in;overflow:hidden;
     font-size:9.4pt;line-height:1.45}
   .bb-promove b{color:var(--treasure)} .bb-promove div{margin:2px 0}
   .bb-promove .trick,.bb-promove [class]{font-family:'BB Display';font-size:11.5pt;letter-spacing:.04em}
   .bb-sticky{display:grid;grid-template-columns:1fr 1fr;gap:.1in;margin-top:.1in}
-  .bb-sticky .card{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-card);padding:.09in .11in;box-shadow:var(--sh-screen)}
+  .bb-sticky .card{background:var(--tint);border-radius:3pt 3pt 12pt 3pt;padding:.09in .11in;box-shadow:2pt 3pt 6pt rgba(36,30,51,.10)}
+  .bb-sticky .card:nth-child(odd){transform:rotate(-.7deg)} .bb-sticky .card:nth-child(even){transform:rotate(.6deg);background:color-mix(in srgb,var(--treasure) 12%,white)}
   .bb-sticky h3{font-size:9.6pt;color:var(--accent-deep);margin-bottom:2px}
   .bb-sticky p{font-size:8.4pt;line-height:1.35}
   .bb-strip{display:grid;gap:.12in;margin-top:.12in}
-  .bb-panel{border:2.5pt solid var(--ink);border-radius:11pt;background:var(--card);position:relative;overflow:hidden;padding:.1in .12in;min-height:2.1in}
+  .bb-panel{border:2.5pt solid var(--ink);border-radius:14pt 18pt 12pt 20pt;background:var(--card);position:relative;overflow:visible;padding:.1in .12in;min-height:2in}
+  .bb-strip .bb-panel:nth-child(1){transform:rotate(-.7deg)} .bb-strip .bb-panel:nth-child(2){transform:rotate(.5deg) translateY(.06in)}
+  .bb-strip .bb-panel:nth-child(3){transform:rotate(.6deg)} .bb-strip .bb-panel:nth-child(4){transform:rotate(-.5deg) translateY(-.04in)}
+  .bb-panel .who{margin-bottom:-14pt}
   .bb-panel.think{background:radial-gradient(circle at 30% 25%,#EFEAFB,#fff 70%)}
   .bb-panel.oops{background:#FFF1F3}
   .bb-panel.excited{background:radial-gradient(circle at 60% 30%,#E9FBEF,#fff 70%)}
   .bb-panel.love{background:radial-gradient(circle at 40% 30%,#FDEDF4,#fff 70%)}
-  .bb-bubble{position:relative;background:var(--card);border:1.6pt solid var(--ink);border-radius:12pt;padding:6pt 9pt;
+  .bb-bubble{position:relative;background:var(--card);border:1.6pt solid var(--ink);border-radius:14pt 18pt 16pt 12pt / 16pt 12pt 18pt 14pt;padding:6pt 9pt;
     font-family:'BB Display';font-size:${vol.band === 'advanced' ? '9.6pt' : '10.4pt'};line-height:1.28;margin-bottom:6pt}
   .bb-sfx{font-family:'BB Display';font-size:15pt;letter-spacing:.04em;position:absolute;right:8pt;bottom:6pt;color:var(--tricky-deep);transform:rotate(-4deg)}
   .bb-sfx.win{color:var(--right-deep)}
   .bb-prop{display:inline-block;background:var(--chip);color:var(--chip-ink);border-radius:8pt;padding:3pt 8pt;font-family:'BB Tile';font-size:10pt}
   .bb-hive{display:grid;grid-template-columns:1fr 1fr;gap:.11in}
-  .bb-card{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-panel);padding:.1in .12in;box-shadow:var(--sh-screen);max-height:1.35in;overflow:hidden}
+  .bb-card{padding:0 .04in;max-height:1.35in;overflow:hidden}
+  .bb-hive>div:nth-child(odd) .bb-card{transform:rotate(-.3deg)} .bb-hive>div:nth-child(even) .bb-card{transform:rotate(.3deg)}
   .bb-card .w{font-family:'BB Body';font-weight:800;font-size:20pt;line-height:1.05;font-variant-numeric:tabular-nums;color:var(--accent-deep)}
   .bb-card .say{font-family:'BB Tile';font-size:8.6pt;color:var(--muted);margin-top:1px}
   .bb-card .d{font-size:8.6pt;line-height:1.3;margin-top:2px}
-  .bb-card .hook{font-size:8.2pt;line-height:1.28;margin-top:2px;color:var(--chip-ink)}
+  .bb-card .hook{font-size:8.2pt;line-height:1.28;margin-top:2px;color:var(--chip-ink);font-style:italic}
   .bb-writeline{border-bottom:1pt solid var(--ink);height:${lineH};margin-top:4pt}
   .bb-rapid{display:grid;grid-template-columns:1fr 1fr;gap:.08in .16in}
-  .bb-row{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-card);padding:4pt 8pt;max-height:.42in;overflow:hidden;font-size:8.8pt;line-height:1.3}
+  .bb-row{padding:3pt 0;max-height:.42in;overflow:hidden;font-size:8.8pt;line-height:1.3;border-bottom:1px dotted var(--hairline)}
   .bb-row b{font-family:'BB Kicker';color:var(--accent-deep)}
-  .bb-break{display:flex;gap:.1in;align-items:flex-start;background:var(--treasure-tint);border:1px solid var(--treasure);border-radius:var(--r-panel);padding:.1in .13in;max-height:2.2in;overflow:hidden}
+  .bb-break{display:flex;gap:.1in;align-items:flex-start;background:linear-gradient(90deg,var(--treasure-tint),transparent 85%);border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.08in .13in;max-height:2.2in;overflow:hidden}
   .bb-break .l{font-family:'BB Kicker';font-size:8.2pt;letter-spacing:.1em;text-transform:uppercase;color:var(--treasure-deep)}
   .bb-break .b{font-size:9.6pt;line-height:1.35;margin-top:2px}
   .bb-break .t{font-size:8.4pt;color:var(--muted);margin-top:2px}
-  .bb-check{background:var(--card);border:1px solid var(--right);border-radius:var(--r-panel);padding:.09in .13in;max-height:1.2in;overflow:hidden}
+  .bb-check{border-left:4pt solid var(--right);padding:.04in .1in;max-height:1.2in;overflow:hidden}
   .bb-check .l{font-family:'BB Kicker';font-size:8.2pt;letter-spacing:.1em;text-transform:uppercase;color:var(--right-deep)}
-  .bb-vex{background:#FFF1F3;border:1px solid var(--tricky);border-radius:var(--r-panel);padding:.09in .13in;max-height:1.2in;overflow:hidden;display:flex;gap:.09in;align-items:flex-start}
+  .bb-vex{background:linear-gradient(90deg,#FFF1F3,transparent 88%);border-left:4pt solid var(--tricky);border-radius:2pt 12pt 12pt 2pt;padding:.05in .1in;max-height:1.2in;overflow:hidden;display:flex;gap:.09in;align-items:flex-start}
   .bb-vex .l{font-family:'BB Kicker';font-size:8.2pt;letter-spacing:.1em;text-transform:uppercase;color:var(--tricky-deep)}
   .bb-audio{display:inline-flex;align-items:center;gap:5pt;background:var(--listen-tint);border:1px solid var(--listen);color:var(--listen-deep);
     border-radius:999px;padding:3pt 10pt;font-family:'BB Kicker';font-size:8.6pt;max-height:.3in}
@@ -167,7 +266,7 @@ function css(vol) {
   .bb-search{border-collapse:collapse;margin:0 auto}
   .bb-search td{width:.38in;height:.38in;text-align:center;font-family:'BB Tile';font-size:11pt;background:var(--card);border:1px solid var(--hairline)}
   .bb-scramble{display:grid;grid-template-columns:1fr 1fr;gap:.16in;max-height:none}
-  .bb-scramble .g1{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-card);padding:.09in .12in;margin-bottom:.08in}
+  .bb-scramble .g1{padding:.05in .02in;margin-bottom:.08in}
   .bb-scramble .gw{font-family:'BB Tile';font-size:11pt;letter-spacing:.14em;color:var(--accent-deep)}
   .bb-biglist{columns:4;column-gap:.18in;font-size:8.6pt;line-height:.28in}
   .bb-biglist div{break-inside:avoid}
@@ -221,19 +320,21 @@ function comicOpener(vol, ch, ci, script, folio) {
   const panels = pick.map(sc => {
     const mood = sc.mood || 'happy';
     const isVex = mood === 'oops';
-    const who = isVex ? VEX('0.85in') : avatar(vol.av, '0.85in');
+    const sz = mood === 'excited' ? '1.05in' : mood === 'think' ? '0.75in' : '0.9in';
+    const who = isVex ? VEX('0.95in') : avatar(vol.av, sz, ';transform:rotate(' + (mood === 'excited' ? -6 : mood === 'oops' ? 5 : -2) + 'deg)');
     const sfx = isVex ? '<span class="bb-sfx">UH-OH!</span>' : (mood === 'excited' ? '<span class="bb-sfx win">GOT IT!</span>' : '');
     return `<div class="bb-panel ${esc(mood)}">
       <div class="bb-bubble">${esc(wordsClamp(sc.say, maxW))}</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        ${who}<div style="text-align:right">${sceneProp(sc)}</div></div>${sfx}</div>`;
+        <span class="who">${who}</span><div style="text-align:right">${sceneProp(sc)}</div></div>${sfx}</div>`;
   });
   return `<div class="page" data-vol="${vol.n}">
     ${head(vol, ch, ci, 'Story')}
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.14in">
       <span style="display:inline-grid;place-items:center;width:.58in;height:.58in;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:16pt">${ci + 1}</span>
-      <div><div class="kick">${esc(ch.category)}</div><h1 style="font-size:26pt;line-height:1.05">${esc(ch.title)}</h1></div></div>
-    <div class="bb-strip" style="grid-template-columns:1fr 1fr">${panels.slice(0, 4).join('')}</div>
+      <div><div class="kick">${esc(ch.category)}</div><h1 style="font-size:26pt;line-height:1.05">${esc(ch.title)}</h1></div>
+      <span class="worldchip" style="margin-left:auto;transform:rotate(1.4deg)">📍 ${esc(WORLD_NAME[vol.world] || vol.world)}</span></div>
+    <div class="bb-strip" style="grid-template-columns:1.15fr 1fr">${panels.slice(0, 4).join('')}</div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.14in">
       <span class="bb-audio">🔊 Hear this chapter narrated in the app</span>
       <span class="kick" style="font-size:8.6pt">turn the page — the whole trick, explained →</span></div>
@@ -250,7 +351,7 @@ function teachPage(vol, ch, ci, folio, nextBreak) {
   return `<div class="page" data-vol="${vol.n}">
     ${head(vol, ch, ci, 'The idea')}
     <div style="margin-top:.4in" class="kick">The big idea</div>
-    <div class="bb-bigidea">${esc(clamp(ch.concept, 460))}</div>
+    <div class="bb-bigidea">${esc(clamp(ch.concept, 430))}<span class="cameo">${avatar(vol.av, '.62in')}</span></div>
     ${ch.method ? `<div class="kick" style="margin-top:.08in">The pro move</div><div class="bb-promove">${String(ch.method)}</div>` : ''}
     ${cards.length ? `<div class="bb-sticky">${cards.map(cd => `<div class="card"><h3>${esc(cd.title)}</h3><p>${esc(clamp(cd.body, 300))}</p></div>`).join('')}</div>` : ''}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:.1in;margin-top:.1in">
@@ -389,19 +490,42 @@ function gamePage(vol, ch, ci, rnd, keys, folio, nextBreak) {
 
 /* shared front/back matter */
 function cover(vol, nCh, nWords, label) {
-  return `<div class="page" data-cover data-vol="${vol.n}" style="background:linear-gradient(160deg,var(--accent),var(--accent-deep));color:#fff;display:flex;flex-direction:column;justify-content:space-between">
-    <svg style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">${texture(vol.tex)}</svg>
-    <div style="position:relative;display:flex;justify-content:space-between;align-items:center">
+  const W = 816, H = 1056;
+  return `<div class="page" data-cover data-vol="${vol.n}" style="background:linear-gradient(168deg,var(--accent),var(--accent-deep));color:#fff;padding:0">
+    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">
+      ${texture(vol.tex)}
+      ${worldScene(vol.world, W, H)}
+      ${letterTiles(vol.title, W, H * .56, vol.n * 977)}
+    </svg>
+    <div style="position:absolute;top:.5in;left:.55in;right:.55in;display:flex;justify-content:space-between;align-items:center">
       <span style="font-family:'BB Kicker';letter-spacing:.16em;font-size:10.5pt">BIZZING BEE ${label}</span>
-      <span class="disp" style="background:rgba(0,0,0,.3);padding:.07in .2in;border-radius:999px;font-size:12.5pt">Vol. ${vol.n}</span></div>
-    <div style="position:relative;text-align:center">
-      ${avatar(vol.av, '1.7in')}
-      <h1 style="font-size:44pt;line-height:1.02;margin:.14in 0 .1in;text-shadow:0 3px 0 rgba(0,0,0,.2)">${esc(vol.title)}</h1>
-      <p style="font-family:'BB Kicker';font-size:13pt;max-width:5.8in;margin:0 auto">${esc(vol.tag)}</p>
-      <p style="font-family:'BB Kicker';font-size:9.5pt;margin-top:.1in;opacity:.9">with ${esc(NAMES[vol.av])}, your guide · the ${esc(vol.world)} world</p></div>
-    <div style="position:relative;display:flex;gap:.14in;justify-content:center">
-      ${[[nCh, 'chapters'], [nWords, 'practice words'], ['🎲', 'puzzles & games']].map(([a2, b2]) =>
-        `<div style="background:rgba(0,0,0,.24);border-radius:14px;padding:.12in .28in;text-align:center"><div class="disp" style="font-size:17pt">${a2}</div><div style="font-family:'BB Kicker';font-size:9pt">${b2}</div></div>`).join('')}</div></div>`;
+      <span class="disp" style="background:rgba(0,0,0,.32);padding:.07in .2in;border-radius:999px;font-size:12.5pt;transform:rotate(2deg)">Vol. ${vol.n}</span></div>
+    <div style="position:absolute;top:1.35in;left:.55in;right:.55in;text-align:center;transform:rotate(-1.6deg)">
+      <h1 class="coverTitle" style="font-size:52pt;line-height:.98">${esc(vol.title)}</h1>
+      <p style="font-family:'BB Kicker';font-size:13pt;max-width:5.6in;margin:.12in auto 0;text-shadow:0 2px 6px rgba(0,0,0,.3)">${esc(vol.tag)}</p></div>
+    <div style="position:absolute;left:.5in;bottom:1.5in">
+      <div style="width:2.9in;height:.34in;background:rgba(0,0,0,.22);border-radius:50%;position:absolute;bottom:-.06in;left:.1in;filter:blur(2px)"></div>
+      ${avatar(vol.av, '3in', ';position:relative;transform:rotate(-3deg)')}
+    </div>
+    ${vol.band === 'advanced' ? `<div class="peek" style="top:3.4in;right:-.32in;transform:rotate(-18deg)">${VEX('1.15in')}</div>` : ''}
+    <div style="position:absolute;right:.5in;bottom:.62in;display:flex;flex-direction:column;gap:.09in;align-items:flex-end">
+      ${[[nCh + ' chapters'], [nWords + ' practice words'], ['puzzles in every chapter']].map(([t], i2) =>
+        `<span style="background:rgba(0,0,0,.32);border-radius:999px;padding:.05in .2in;font-family:'BB Kicker';font-size:10pt;transform:rotate(${(i2 - 1) * 1.6}deg)">${t}</span>`).join('')}
+      <span style="font-family:'BB Kicker';font-size:9.5pt;opacity:.95;margin-top:.05in">with ${esc(NAMES[vol.av])} · in ${esc(WORLD_NAME[vol.world] || vol.world)}</span></div>
+    <div style="position:absolute;left:.55in;bottom:.6in;font-family:'BB Kicker';font-size:9pt;opacity:.85">${esc(WORLD_BLURB[vol.n] || '')}</div>
+  </div>`;
+}
+function dividerPage(vol, folio) {
+  const W = 816, H = 1056;
+  return `<div class="page" data-vol="${vol.n}" style="background:linear-gradient(160deg,var(--accent),var(--accent-deep));color:#fff;padding:0">
+    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">${worldScene(vol.world, W, H)}</svg>
+    <div style="position:absolute;top:2in;left:.7in;right:.7in;text-align:center">
+      <div style="font-family:'BB Kicker';letter-spacing:.14em;font-size:11pt;text-shadow:0 2px 6px rgba(0,0,0,.3)">WELCOME TO</div>
+      <h1 class="coverTitle" style="font-size:40pt;transform:rotate(-1.2deg)">${esc((WORLD_NAME[vol.world] || vol.world).replace(/^the /, 'The '))}</h1>
+      <p style="font-family:'BB Kicker';font-size:12pt;max-width:5.4in;margin:.16in auto 0;text-shadow:0 2px 6px rgba(0,0,0,.35);line-height:1.5">${esc(WORLD_BLURB[vol.n] || '')}</p></div>
+    <div style="position:absolute;left:53%;bottom:2.1in;transform:rotate(6deg)">${avatar(vol.av, '1.7in')}</div>
+    <div class="bb-foot" style="color:rgba(255,255,255,.85)"><span>Bizzing Bee · ${esc(vol.title)}</span><span>${folio}</span></div>
+  </div>`;
 }
 function howTo(vol, folio) {
   const steps = [
@@ -470,6 +594,7 @@ function buildCourse(vol, chapters, scripts, idxOf) {
   const folio = { n: 1 };
   let pages = [cover(vol, chapters.length, allWords.length, vol.band === 'advanced' ? 'ADVANCED LIBRARY' : 'LIBRARY')];
   pages.push(howTo(vol, folio.n++));
+  pages.push(dividerPage(vol, folio.n++));
   chapters.forEach((ch, i) => {
     const sc = scripts[String(idxOf(ch))];
     const op = comicOpener(vol, ch, i, sc, folio.n); if (op) { pages.push(op); folio.n++; }
@@ -502,16 +627,17 @@ function book16() {
   const keys = []; const folio = { n: 1 };
   const pages = [cover(vol, sims.length, idioms.length, 'COLLECTIONS')];
   pages.push(howTo16(vol, folio.n++));
+  pages.push(dividerPage(vol, folio.n++));
   let pageNo = 0;
   for (let i = 0; i < sims.length; i += 6) {
     const seg = sims.slice(i, i + 6); pageNo++;
     pages.push(`<div class="page" data-vol="16">
       ${head(vol, null, 0, 'The simile shelf')}
       <div style="margin-top:.4in"><h2 style="font-size:20pt">Say one thing is like another. Boom — a picture.</h2></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.11in;margin-top:.12in">${seg.map(x => `<div class="bb-panelbox">
-        <div style="font-family:'BB Display';font-size:12.5pt;color:var(--accent-deep);line-height:1.15">${esc(x.p)}</div>
-        <div style="font-size:9pt;line-height:1.35;margin-top:2pt">${esc(clamp(x.m, 100))}</div>
-        ${x.os ? `<div style="font-size:8.2pt;line-height:1.3;margin-top:3pt;color:var(--chip-ink);background:var(--chip);border-radius:8px;padding:3pt 6pt">📜 ${esc(clamp(x.os, 150))}</div>` : ''}</div>`).join('')}</div>
+      <div style="columns:2;column-gap:.34in;margin-top:.14in">${seg.map((x, k) => `<div style="break-inside:avoid;margin-bottom:.17in;transform:rotate(${k % 2 ? .3 : -.3}deg)">
+        <div style="font-family:'BB Display';font-size:13pt;color:var(--accent-deep);line-height:1.12">⬡ ${esc(x.p)}</div>
+        <div style="font-size:9.2pt;line-height:1.35;margin-top:2pt;padding-left:.18in">${esc(clamp(x.m, 100))}</div>
+        ${x.os ? `<div style="font-size:8.2pt;line-height:1.32;margin-top:2pt;padding-left:.18in;color:var(--muted);font-style:italic">${esc(clamp(x.os, 150))}</div>` : ''}</div>`).join('')}</div>
       ${foot(vol, folio.n++)}</div>`);
     if (pageNo % 6 === 0) {
       const pool = shuf(sims.slice(Math.max(0, i - 34), i + 6).slice(), rnd).slice(0, 10);
@@ -540,7 +666,7 @@ function book16() {
     pages.push(`<div class="page" data-vol="16">
       ${head(vol, null, 0, 'Idiom hall of fame')}
       <div style="margin-top:.4in"><h2 style="font-size:20pt">Phrases that stopped meaning what they say.</h2></div>
-      <div style="columns:2;column-gap:.2in;margin-top:.12in">${idioms.slice(i, i + 10).map(x => `<div class="bb-row" style="max-height:none;margin-bottom:5pt;break-inside:avoid"><b>${esc(x.p)}</b> — ${esc(clamp(x.m, 80))}<br><span style="color:var(--chip-ink);font-size:8pt">📜 ${esc(clamp(x.os, 110))}</span></div>`).join('')}</div>
+      <div style="columns:2;column-gap:.3in;margin-top:.14in">${idioms.slice(i, i + 10).map(x => `<div style="margin-bottom:.13in;break-inside:avoid;font-size:9pt;line-height:1.35"><b style="font-family:'BB Display';font-size:10.5pt;color:var(--accent-deep)">${esc(x.p)}</b> — ${esc(clamp(x.m, 80))}<br><span style="color:var(--muted);font-size:8.2pt;font-style:italic">${esc(clamp(x.os, 110))}</span></div>`).join('')}</div>
       ${foot(vol, folio.n++)}</div>`);
   }
   pages.push(...keyPages(vol, keys, folio));
@@ -582,6 +708,7 @@ function book17() {
   ];
   const keys = []; const folio = { n: 1 };
   const pages = [cover(vol, CH17.length, 240, 'COLLECTIONS')];
+  pages.push(dividerPage(vol, folio.n++));
   pages.push(`<div class="page" data-vol="17">
     ${head(vol, null, 0, 'How this book works')}
     <div style="margin-top:.4in"><h1 style="font-size:26pt">Borrow a giant's voice.</h1></div>
@@ -617,10 +744,11 @@ function book17() {
       pages.push(`<div class="page" data-vol="17">
         ${head(vol, null, 0, esc(title))}
         <div style="margin-top:.4in"></div>
-        ${rest.slice(i, i + 5).map(q => `<div class="bb-panelbox" style="margin-bottom:.11in">
-          <div style="font-family:'BB Display';font-size:12pt;line-height:1.28">“${esc(q.q)}”</div>
-          <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— ${esc(q.a)}${q.who ? ', ' + esc(q.who) : ''}</div>
-          <div style="font-size:8.6pt;line-height:1.32;margin-top:4pt;color:var(--chip-ink);background:var(--chip);border-radius:8px;padding:3pt 8pt">🐝 For spellers: ${esc(clamp(q.m, 150))}</div></div>`).join('')}
+        ${rest.slice(i, i + 5).map((q, k) => `<div style="margin-bottom:.19in;padding-left:.34in;position:relative;transform:rotate(${k % 2 ? .25 : -.25}deg)">
+          <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent)">“</span>
+          <div style="font-family:'BB Display';font-size:12.5pt;line-height:1.28">${esc(q.q)}</div>
+          <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:2pt">— ${esc(q.a)}${q.who ? ', ' + esc(q.who) : ''}</div>
+          <div style="font-size:8.6pt;line-height:1.32;margin-top:2pt;color:var(--muted);font-style:italic">🐝 ${esc(clamp(q.m, 150))}</div></div>`).join('')}
         ${foot(vol, folio.n++)}</div>`);
     }
     if (chNo % 3 === 0) {
