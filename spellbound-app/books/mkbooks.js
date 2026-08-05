@@ -22,10 +22,15 @@ eval(fs.readFileSync('quotes-lib.js', 'utf8'));
 eval(fs.readFileSync('figurative-data.js', 'utf8'));
 eval(fs.readFileSync('sounds-data.js', 'utf8'));
 eval(fs.readFileSync('trail-data.js', 'utf8'));
+eval(fs.readFileSync('books/southasia-chapters.js', 'utf8'));
 eval(fs.readFileSync('books/design-system/bb-anime.js', 'utf8'));
 let ADVS = {};
 try { const src = fs.readFileSync('adv-concepts-data.js', 'utf8'); ADVS = window.SB_ADV_CSCRIPT || {}; } catch (e) {}
 const GEN = SB_CONCEPTS.chapters, ADV = SB_ADV_CONCEPTS.chapters;
+/* Volume 14 is authored for the books rather than lifted from the app course:
+   South Asian words in English, with its own storyboard scripts on each chapter. */
+const SA = window.SB_SOUTHASIA || [];
+const SA_SCRIPT = {}; SA.forEach((ch, i) => { if (ch.sc) SA_SCRIPT[String(i)] = ch.sc; });
 const CS = window.SB_CSCRIPT || {}, AV = window.SB_AVATAR_ART;
 const QUOTES = window.SB_QUOTES, FIG = window.SB_FIG, IPA = window.SB_IPA || {};
 const ANIME = window.BB_ANIME;
@@ -53,16 +58,24 @@ const WORLD_PACKS = {
   origami: ['origami', 'dojo', 'elements'], strait: ['serpent', 'bigbeasts', 'critter', 'wildhearts'],
   junkyard: ['villains', 'arcade', 'turbo'], vibe: ['vibe', 'stage', 'cosmos'],
   warfield: ['dojo', 'turbo', 'villains', 'legends'], greysea: ['cosmos', 'serpent', 'enchanted'],
+  grandtrunk: ['serpent', 'gods', 'bigbeasts', 'wildhearts'],
 };
 const castUsed = new Set();
 function draftCast(vol) {
-  const rnd = mulberry(vol.n * 271 + 11);
+  /* A volume may pin its own crew (vol.cast). Pinned crews deliberately do NOT
+     claim names in castUsed, so inserting a volume never reshuffles the casts —
+     and the painted art of the volumes after it keeps matching their cast page. */
+  if (vol.cast) return vol.cast.map(id => (CAST_DB.byId || {})[id] || { id, pack: '' });
+  /* seedN pins the draft seed a volume shipped with, so renumbering the series
+     does not reshuffle a crew whose painted cast page is already drawn. */
+  const rnd = mulberry((vol.seedN || vol.n) * 271 + 11);
   const packs = WORLD_PACKS[vol.world] || ['hive'];
   const pool = (CAST_DB.list || []).filter(a => AV[a.id] && a.id !== vol.av && packs.includes(a.pack));
   const fresh = pool.filter(a => !castUsed.has(a.id));
   const picks = shuf(fresh.slice(), rnd).slice(0, 9);
   for (const a of shuf(pool.slice(), rnd)) { if (picks.length >= 9) break; if (!picks.includes(a)) picks.push(a); }
   picks.forEach(a => castUsed.add(a.id));
+  if (process.env.BB_CAST) console.error('cast', vol.n, picks.map(x => x.id).join(' '));
   return picks;
 }
 const castName = id => { try { return (CAST_DB.byId[id] || {}).name || (NAMES[id] || id); } catch (e) { return NAMES[id] || id; } };
@@ -77,7 +90,7 @@ const artAt = slug => { try { for (const ext of ['jpg', 'png']) if (fs.existsSyn
 const artImg = (src, extra) => `<img src="${src}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover${extra || ''}" alt="">`;
 
 /* Register: how grown-up this volume looks and sounds. */
-const REG = vol => vol.band === 'advanced' || vol.n === 17 ? 3 : vol.n <= 4 ? 1 : 2;
+const REG = vol => vol.band === 'advanced' || vol.n === 18 ? 3 : vol.n <= 4 ? 1 : 2;
 
 /* The app's avatar cards: real titles, lore, powers and facts — the cast's voices. */
 const CARD = id => { try { return SB_AV_CARD(id); } catch (e) { return null; } };
@@ -88,7 +101,8 @@ const HERO = 'bizzy';
 /* Chapters travel: each chapter of a volume visits the next world on the ring,
    starting from the volume's home world. */
 const WORLD_CYCLE = ['meadow', 'library', 'forum', 'elements', 'engine', 'origami', 'strait', 'junkyard', 'vibe', 'stage', 'warfield', 'greysea'];
-const chWorldOf = (vol, ci) => WORLD_CYCLE[(Math.max(0, WORLD_CYCLE.indexOf(vol.world)) + ci) % WORLD_CYCLE.length];
+const chWorldOf = (vol, ci) => vol.cyc ? vol.cyc[ci % vol.cyc.length]
+  : WORLD_CYCLE[(Math.max(0, WORLD_CYCLE.indexOf(vol.world)) + ci) % WORLD_CYCLE.length];
 const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const clamp = (s, n) => { s = String(s || ''); return s.length > n ? s.slice(0, n - 1) + '…' : s; };
 const wordsClamp = (s, n) => { const w = String(s || '').replace(/\s+/g, ' ').trim().split(' '); return w.length <= n ? w.join(' ') : w.slice(0, n).join(' ') + '…'; };
@@ -128,10 +142,14 @@ const AVOLS = [
   { n: 11, title: 'The Playbook', tag: 'Bee-day procedure and deep orthography', a: '#D6353F', d: '#8E1D26', tex: 'grid', av: 'queenhive', world: 'warfield', band: 'advanced', chapters: ADV.filter(ch => ch.category === 'Championship Procedure').concat(orth.slice(0, 5)) },
   { n: 12, title: 'Schwa Country', tag: 'The vanishing vowel and its disguises', a: '#7E8AA0', d: '#4C566B', tex: 'rings', av: 'blossom', world: 'greysea', band: 'advanced', chapters: orth.slice(5, 12) },
   { n: 13, title: 'Letters Behaving Badly', tag: 'Doubles, silents and sounds that lie', a: '#B8562F', d: '#7A3418', tex: 'diag', av: 'propolis', world: 'junkyard', band: 'advanced', chapters: orth.slice(12) },
-  { n: 14, title: 'Far-Flung Words', tag: 'Origins beyond the big four', a: '#0E8A78', d: '#075C50', tex: 'cross', av: 'mic', world: 'strait', band: 'advanced', chapters: ADV.filter(ch => ch.category === 'Origins Beyond the Big Four') },
-  { n: 15, title: 'The Word Factory', tag: 'How English bolts words together', a: '#5B6BA8', d: '#364475', tex: 'stripes', av: 'maestro', world: 'engine', band: 'advanced', chapters: ADV.filter(ch => ch.category === 'How Words Are Built') },
+  { n: 14, title: 'The Grand Trunk Road', tag: 'South Asian words that became English', a: '#D97A1E', d: '#8F4409', tex: 'rings', av: 'naga', world: 'grandtrunk', band: 'advanced', authored: true,
+    cyc: ['grandtrunk', 'strait', 'grandtrunk', 'meadow', 'grandtrunk', 'junkyard', 'grandtrunk', 'library', 'grandtrunk', 'stage', 'grandtrunk'],
+    cast: ['ganesha', 'hanuman', 'lakshmi', 'vasuki', 'cobra', 'python', 'aryabhatta', 'monarch', 'lotusfold'],
+    chapters: SA },
+  { n: 15, seedN: 14, title: 'Far-Flung Words', tag: 'Origins beyond the big four', a: '#0E8A78', d: '#075C50', tex: 'cross', av: 'mic', world: 'strait', band: 'advanced', chapters: ADV.filter(ch => ch.category === 'Origins Beyond the Big Four') },
+  { n: 16, seedN: 15, title: 'The Word Factory', tag: 'How English bolts words together', a: '#5B6BA8', d: '#364475', tex: 'stripes', av: 'maestro', world: 'engine', band: 'advanced', chapters: ADV.filter(ch => ch.category === 'How Words Are Built') },
 ];
-const NAMES = { bizzy: 'Bizzy', honeypot: 'Honeypot', waggle: 'Waggle', bumble: 'Bumble', star: 'Star', diva: 'Diva', drone: 'Drone', clover: 'Clover', nectar: 'Nectar', lumen: 'Lumen', jester: 'Jester', queenhive: 'Queen Hive', blossom: 'Blossom', propolis: 'Propolis', mic: 'Mic', maestro: 'Maestro', popcorn: 'Popcorn', melody: 'Melody' };
+const NAMES = { bizzy: 'Bizzy', honeypot: 'Honeypot', waggle: 'Waggle', bumble: 'Bumble', star: 'Star', diva: 'Diva', drone: 'Drone', clover: 'Clover', nectar: 'Nectar', lumen: 'Lumen', jester: 'Jester', queenhive: 'Queen Hive', blossom: 'Blossom', propolis: 'Propolis', mic: 'Mic', maestro: 'Maestro', popcorn: 'Popcorn', melody: 'Melody', naga: 'Naga' };
 /* Inline characters use the app's painted avatar art (avatars/<id>.png) framed in
    a soft bokeh disc tinted from that character's own palette; anything not yet
    painted falls back to the drawn SVG portrait. Books sit one level down, hence
@@ -219,6 +237,24 @@ function worldScene(world, W, H) {
       +`<g transform="translate(${W*.8} ${gy-90}) "><rect x="-9" y="0" width="18" height="90" fill="${WP.mid}"/><circle cx="0" cy="-8" r="10" fill="${WP.sun}" opacity=".65"/><path d="M0 -8 L-70 -34 L-70 18 Z" fill="rgba(255,214,107,.14)"/></g>`
       +`<path d="M0 ${gy-30} ${Array.from({length:6},(_,i)=>`Q ${W*(i+.5)/6} ${gy-42} ${W*(i+1)/6} ${gy-30}`).join(' ')}" stroke="rgba(255,255,255,.3)" stroke-width="4" fill="none"/>`
       +`<text x="${W*.24}" y="${H*.4}" font-size="60" fill="rgba(255,255,255,.28)" font-family="Georgia" font-style="italic">ə</text><text x="${W*.5}" y="${H*.26}" font-size="38" fill="rgba(255,255,255,.2)" font-family="Georgia" font-style="italic">ə</text>`; },
+    /* The Grand Trunk Road: a dusty highway under a banyan, milestones counting
+       down, kites over a distant temple and minaret — the route the words walked. */
+    grandtrunk: ()=>{ const banyan=(x,k)=>`<g transform="translate(${x} ${gy}) scale(${k})">
+        ${[0,1,2,3,4].map(i=>`<rect x="${-46+i*22}" y="-104" width="${7-Math.abs(2-i)}" height="104" fill="${WP.ink}"/>`).join('')}
+        <ellipse cx="0" cy="-128" rx="96" ry="46" fill="rgba(255,255,255,.30)"/><ellipse cx="-52" cy="-108" rx="52" ry="28" fill="rgba(255,255,255,.24)"/><ellipse cx="54" cy="-112" rx="56" ry="30" fill="rgba(255,255,255,.24)"/>
+        <ellipse cx="0" cy="-150" rx="58" ry="30" fill="rgba(255,255,255,.22)"/></g>`;
+      const milestone=(x,y,k)=>`<g transform="translate(${x} ${y}) scale(${k})"><path d="M-13 0 L-13 -26 Q 0 -38 13 -26 L13 0 Z" fill="${WP.glow}"/><rect x="-13" y="-26" width="26" height="9" fill="#D97A1E"/></g>`;
+      const kite=(x,y,r)=>`<g transform="translate(${x} ${y}) rotate(${r})"><path d="M0 -15 L13 0 L0 17 L-13 0 Z" fill="${WP.sun}"/><path d="M0 17 q 10 16 -4 30" stroke="${WP.glow}" stroke-width="2" fill="none"/></g>`;
+      return sun(W*.18,H*.13,42)+cloud(W*.62,H*.1,.9)+cloud(W*.34,H*.2,.6)
+      +hill(W*.86,W*.44,150,.13)+hill(W*.1,W*.34,104,.1)
+      /* the road itself, running from the bottom edge into the haze */
+      +`<path d="M${W*.28} ${H} L${W*.46} ${gy-8} L${W*.6} ${gy-8} L${W*.72} ${H} Z" fill="rgba(255,255,255,.26)"/>`
+      +`<path d="M${W*.5} ${H} L${W*.53} ${gy-10}" stroke="${WP.glow}" stroke-width="4" stroke-dasharray="16 20" fill="none"/>`
+      /* temple sikhara and a minaret on the skyline */
+      +`<g transform="translate(${W*.7} ${gy-8})"><path d="M-34 0 L-24 -66 Q 0 -104 24 -66 L34 0 Z" fill="${WP.far}"/><circle cx="0" cy="-108" r="8" fill="${WP.sun}"/><rect x="-40" y="-8" width="80" height="10" fill="${WP.mid}"/></g>`
+      +`<g transform="translate(${W*.87} ${gy-8})"><rect x="-9" y="-88" width="18" height="88" fill="${WP.far}"/><path d="M-14 -88 Q 0 -118 14 -88 Z" fill="${WP.mid}"/><circle cx="0" cy="-122" r="5" fill="${WP.sun}"/></g>`
+      +banyan(W*.16,1)+milestone(W*.4,gy+6,1.1)+milestone(W*.56,gy-26,.7)+milestone(W*.6,gy-52,.5)
+      +kite(W*.44,H*.16,-16)+kite(W*.58,H*.24,14)+kite(W*.3,H*.3,-8); },
   };
   const fn = S[world] || S.meadow;
   return `<g>${fn()}</g>${ground}`;
@@ -229,7 +265,7 @@ function letterTiles(word, W, H, seed) {
     const y = H * (.3 + (rnd() - .5) * .16); const r = (rnd() - .5) * 26;
     return `<g transform="translate(${x} ${y}) rotate(${r})"><rect x="-17" y="-17" width="34" height="34" rx="8" fill="rgba(255,255,255,.9)"/><text x="0" y="8" text-anchor="middle" font-family="'BB Display'" font-size="22" fill="#241E33">${L}</text></g>`; }).join('');
 }
-const WORLD_NAME = { meadow: 'the Meadow', library: 'the Great Library', forum: 'the Roman Forum', elements: 'the Storm of Elements', stage: 'the Big Stage', engine: 'the Engine Room', origami: 'the Paper Mountains', strait: 'the Wide Strait', junkyard: 'the Word Junkyard', vibe: 'the Vibe', warfield: 'the Proving Ground', greysea: 'the Grey Sea' };
+const WORLD_NAME = { meadow: 'the Meadow', library: 'the Great Library', forum: 'the Roman Forum', elements: 'the Storm of Elements', stage: 'the Big Stage', engine: 'the Engine Room', origami: 'the Paper Mountains', strait: 'the Wide Strait', junkyard: 'the Word Junkyard', vibe: 'the Vibe', warfield: 'the Proving Ground', greysea: 'the Grey Sea', grandtrunk: 'the Grand Trunk Road' };
 const WORLD_BLURB = {
   1: 'Every champion started in the Meadow — first words, first stings, first wins.',
   2: 'The Great Library holds every rule English ever wrote down. Waggle has the keys.',
@@ -244,10 +280,11 @@ const WORLD_BLURB = {
   11: 'The Proving Ground: where bee-day plans are drilled until they hold.',
   12: 'The Grey Sea is fog as far as you can hear. The schwa hides in it. Blossom does not get lost.',
   13: 'Back to the Junkyard — this time for the letters that lie, double and vanish.',
-  14: 'Past the lighthouse lies every language the big four forgot. Mic has the map.',
-  15: 'The Engine Room again, belts humming — this is where English bolts words together.',
-  16: 'A picnic in the Meadow with every simile we own. Bring an appetite.',
-  17: 'The Big Stage, house lights down. Two hundred and forty voices worth hearing.',
+  14: 'Fifteen hundred miles of road, and a word waiting at every milestone. Naga knows them all.',
+  15: 'Past the lighthouse lies every language the big four forgot. Mic has the map.',
+  16: 'The Engine Room again, belts humming — this is where English bolts words together.',
+  17: 'A picnic in the Meadow with every simile we own. Bring an appetite.',
+  18: 'The Big Stage, house lights down. Two hundred and forty voices worth hearing.',
 };
 
 /* ---------------- CSS: tokens-book + KID-SIZED type scale + class contracts ----------------
@@ -263,6 +300,7 @@ const WORLD_FACE = {
   elements: ['Comfortaa', 'comfortaa-700'], engine: ['Quicksand', 'quicksand-700'], origami: ['Fredoka', 'fredoka-600'],
   strait: ['Baloo 2', 'baloo2-800'], junkyard: ['Bungee', 'bungee-400'], vibe: ['Righteous', 'righteous-400'],
   stage: ['Righteous', 'righteous-400'], warfield: ['Bangers', 'bangers-400'], greysea: ['Fraunces', 'fraunces-800'],
+  grandtrunk: ['Baloo 2', 'baloo2-800'],
 };
 function css(vol) {
   const reg = REG(vol);
@@ -1081,20 +1119,20 @@ ${reviewPanel(vol)}</body></html>`;
   return { vol, pages: pages.length, ...meta };
 }
 
-/* ---------------- collections (16, 17) ---------------- */
-function book16() {
-  const vol = { n: 16, title: 'As Busy as a Bee', tag: 'Every simile we know, and the idiom hall of fame', a: '#3DA85C', d: '#1F6B39', tex: 'dots', av: 'popcorn', world: 'meadow', band: 'general' };
-  const rnd = mulberry(16 * 7919 + 17);
+/* ---------------- collections (17, 18) ---------------- */
+function book17() {
+  const vol = { n: 17, seedN: 16, title: 'As Busy as a Bee', tag: 'Every simile we know, and the idiom hall of fame', a: '#3DA85C', d: '#1F6B39', tex: 'dots', av: 'popcorn', world: 'meadow', band: 'general' };
+  const rnd = mulberry(17 * 7919 + 17);
   const sims = FIG.similes.slice().sort((a, b) => a.p.localeCompare(b.p));
   const idioms = FIG.idioms.filter(x => x.os && x.p.length <= 26 && (x.m || '').length <= 90).sort((a, b) => a.p.localeCompare(b.p)).slice(0, 240);
   const keys = []; const folio = { n: 1 };
   const pages = [cover(vol, sims.length, idioms.length, 'COLLECTIONS')];
-  pages.push(howTo16(vol, folio.n++));
+  pages.push(howTo17(vol, folio.n++));
   pages.push(dividerPage(vol, folio.n++));
   let pageNo = 0;
   for (let i = 0; i < sims.length; i += 14) {
     const seg = sims.slice(i, i + 14); pageNo++;
-    pages.push(`<div class="page" data-vol="16">
+    pages.push(`<div class="page" data-vol="17">
       ${head(vol, null, 0, 'The simile shelf')}
       <div style="margin-top:.4in"><h2 style="font-size:20pt">Say one thing is like another. Boom — a picture.</h2></div>
       <div style="columns:2;column-gap:.34in;margin-top:.14in">${seg.map((x, k) => `<div style="break-inside:avoid;margin-bottom:.15in;transform:rotate(${k % 2 ? .3 : -.3}deg)">
@@ -1107,7 +1145,7 @@ function book16() {
       const pool = shuf(sims.slice(Math.max(0, i - 34), i + 6).slice(), rnd).slice(0, 10);
       const right = shuf(pool.map((x, k) => ({ k, m: x.m })), rnd);
       keys.push(`<div><b>Match, folio ${folio.n}</b> — ${pool.map((x, k) => (k + 1) + '→' + String.fromCharCode(65 + right.findIndex(r => r.k === k))).join(', ')}</div>`);
-      pages.push(`<div class="page" data-vol="16">
+      pages.push(`<div class="page" data-vol="17">
         ${head(vol, null, 0, 'Match round')}
         <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in">${avatar(vol.av, '.6in')}<h2 style="font-size:20pt">Draw the line: simile → meaning</h2></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.18in;margin-top:.12in;font-size:9.2pt;line-height:1.4">
@@ -1118,7 +1156,7 @@ function book16() {
     }
     if (pageNo % 12 === 0) {
       const two = shuf(seg.slice(), rnd).slice(0, 2);
-      pages.push(`<div class="page" data-vol="16">
+      pages.push(`<div class="page" data-vol="17">
         ${head(vol, null, 0, 'Draw it literally')}
         <div style="margin-top:.4in"><h2 style="font-size:20pt">Take a simile at its word. Draw the chaos.</h2></div>
         ${two.map(x => `<div style="margin-top:.14in"><div style="font-family:'BB Display';font-size:13pt;color:var(--accent-deep);margin-bottom:.05in">${esc(x.p)}</div>
@@ -1127,7 +1165,7 @@ function book16() {
     }
   }
   for (let i = 0; i < idioms.length; i += 18) {
-    pages.push(`<div class="page" data-vol="16">
+    pages.push(`<div class="page" data-vol="17">
       ${head(vol, null, 0, 'Idiom hall of fame')}
       <div style="margin-top:.4in"><h2 style="font-size:20pt">Phrases that stopped meaning what they say.</h2></div>
       <div style="columns:2;column-gap:.3in;margin-top:.14in">${idioms.slice(i, i + 18).map(x => `<div style="margin-bottom:.12in;break-inside:avoid;font-size:9.8pt;line-height:1.36"><b style="font-family:'BB Display';font-size:11pt;color:var(--accent-deep)">${esc(x.p)}</b> — ${esc(clamp(x.m, 80))}<br><span style="color:var(--muted);font-size:8.8pt;font-style:italic">${esc(clamp(x.os, 110))}</span></div>`).join('')}</div>
@@ -1138,8 +1176,8 @@ function book16() {
   pages.push(colophon(vol, folio.n++));
   return finish(vol, pages, { chapters: 0, words: sims.length + idioms.length });
 }
-function howTo16(vol, folio) {
-  return `<div class="page" data-vol="16">
+function howTo17(vol, folio) {
+  return `<div class="page" data-vol="17">
     ${head(vol, null, 0, 'How this book works')}
     <div style="margin-top:.4in"><h1 style="font-size:26pt">Talk like a storyteller.</h1></div>
     <div style="display:flex;gap:.14in;align-items:flex-start;margin:.16in 0">
@@ -1155,10 +1193,10 @@ function howTo16(vol, folio) {
     ${worldStrip(vol.world, vol, 8)}
     ${foot(vol, folio)}</div>`;
 }
-function book17() {
-  const vol = { n: 17, title: 'Say It Like a Champion', tag: '240 lines worth keeping — and what they mean for spellers', a: '#7C3F9E', d: '#4E2166', tex: 'rings', av: 'melody', world: 'stage', band: 'general' };
-  const rnd = mulberry(17 * 7919 + 17);
-  const CH17 = [
+function book18() {
+  const vol = { n: 18, seedN: 17, title: 'Say It Like a Champion', tag: '240 lines worth keeping — and what they mean for spellers', a: '#7C3F9E', d: '#4E2166', tex: 'rings', av: 'melody', world: 'stage', band: 'general' };
+  const rnd = mulberry(18 * 7919 + 17);
+  const CH18 = [
     ['perseverance', 'Keep Going', 'For the round after the round you almost lost.'],
     ['courage', 'Be Brave', 'For the walk to the microphone.'],
     ['hardwork', 'Do the Work', 'For the days the list looks too long.'],
@@ -1173,9 +1211,9 @@ function book17() {
     ['humor', 'Laugh a Little', 'For when the nerves need popping.'],
   ];
   const keys = []; const folio = { n: 1 };
-  const pages = [cover(vol, CH17.length, 240, 'COLLECTIONS')];
+  const pages = [cover(vol, CH18.length, 240, 'COLLECTIONS')];
   pages.push(dividerPage(vol, folio.n++));
-  pages.push(`<div class="page" data-vol="17">
+  pages.push(`<div class="page" data-vol="18">
     ${head(vol, null, 0, 'How this book works')}
     <div style="margin-top:.4in"><h1 style="font-size:26pt">Borrow a giant's voice.</h1></div>
     <div style="display:flex;gap:.14in;align-items:flex-start;margin:.16in 0">
@@ -1191,15 +1229,15 @@ function book17() {
     ${worldStrip(vol.world, vol, 9)}
     ${foot(vol, folio.n++)}</div>`);
   let chNo = 0;
-  for (const [cat, title, sub] of CH17) {
+  for (const [cat, title, sub] of CH18) {
     chNo++;
     const pool = QUOTES.filter(q => q.c === cat && q.q.length <= 120 && q.q.length >= 25);
     const seen = new Set(); const picked = [];
     for (const q of pool.slice().sort((a, b) => a.q.length - b.q.length)) { if (seen.has(q.a)) continue; seen.add(q.a); picked.push(q); if (picked.length >= 20) break; }
     for (const q of pool) { if (picked.length >= 20) break; if (!picked.includes(q)) picked.push(q); }
     const hero = picked[0];
-    pages.push(`<div class="page" data-vol="17" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
-      <div class="kick">Theme ${chNo} of ${CH17.length}</div>
+    pages.push(`<div class="page" data-vol="18" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
+      <div class="kick">Theme ${chNo} of ${CH18.length}</div>
       <h1 style="font-size:32pt;margin:.06in 0">${esc(title)}</h1>
       <p style="font-family:'BB Kicker';font-size:11pt;color:var(--muted)">${esc(sub)}</p>
       <div style="margin:.26in auto 0;max-width:5.6in">${avatar(vol.av, '1.05in')}
@@ -1209,7 +1247,7 @@ function book17() {
       ${foot(vol, folio.n++)}</div>`);
     const rest = picked.slice(1);
     for (let i = 0; i < rest.length; i += 6) {
-      pages.push(`<div class="page" data-vol="17">
+      pages.push(`<div class="page" data-vol="18">
         ${head(vol, null, 0, esc(title))}
         <div style="margin-top:.4in"></div>
         ${rest.slice(i, i + 6).map((q, k) => `<div style="margin-bottom:.17in;padding-left:.34in;position:relative;transform:rotate(${k % 2 ? .25 : -.25}deg)">
@@ -1221,10 +1259,10 @@ function book17() {
         ${foot(vol, folio.n++)}</div>`);
     }
     if (chNo % 3 === 0) {
-      const mixPool = shuf(QUOTES.filter(q => CH17.slice(chNo - 3, chNo).some(c2 => c2[0] === q.c) && q.q.length <= 90).slice(), rnd).slice(0, 8);
+      const mixPool = shuf(QUOTES.filter(q => CH18.slice(chNo - 3, chNo).some(c2 => c2[0] === q.c) && q.q.length <= 90).slice(), rnd).slice(0, 8);
       const right = shuf(mixPool.map((q, k) => ({ k, a: q.a })), rnd);
       keys.push(`<div><b>Who said it, folio ${folio.n}</b> — ${mixPool.map((q, k) => (k + 1) + '→' + String.fromCharCode(65 + right.findIndex(r => r.k === k))).join(', ')}</div>`);
-      pages.push(`<div class="page" data-vol="17">
+      pages.push(`<div class="page" data-vol="18">
         ${head(vol, null, 0, 'Match round')}
         <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in">${avatar(vol.av, '.6in')}<h2 style="font-size:20pt">Who said it?</h2></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.18in;margin-top:.12in;font-size:9.2pt;line-height:1.4">
@@ -1238,7 +1276,7 @@ function book17() {
   }
   pages.push(...keyPages(vol, keys, folio));
   pages.push(colophon(vol, folio.n++));
-  return finish(vol, pages, { chapters: CH17.length, words: 240 });
+  return finish(vol, pages, { chapters: CH18.length, words: 240 });
 }
 
 /* ---------------- build all + copy lint + hub ---------------- */
@@ -1248,10 +1286,12 @@ for (const vol of VOLS) { const chs = GEN.filter(ch => vol.pick(ch)); chs.forEac
   made.push(buildCourse(vol, chs, CS, ch => GEN.indexOf(ch))); }
 if (GEN.filter(ch => !used.has(ch.title)).length) { console.error('UNASSIGNED GENERAL CHAPTERS'); process.exit(1); }
 const advUsed = new Set();
-for (const vol of AVOLS) { vol.chapters.forEach(ch => advUsed.add(ch.title));
+for (const vol of AVOLS) {
+  if (vol.authored) { made.push(buildCourse(vol, vol.chapters, SA_SCRIPT, ch => SA.indexOf(ch))); continue; }
+  vol.chapters.forEach(ch => advUsed.add(ch.title));
   made.push(buildCourse(vol, vol.chapters, window.SB_ADV_CSCRIPT || {}, ch => ADV.indexOf(ch))); }
 if (advUsed.size !== ADV.length) { console.error('ADV coverage', advUsed.size, '/', ADV.length); process.exit(1); }
-made.push(book16()); made.push(book17());
+made.push(book17()); made.push(book18());
 
 /* copy lint (handover §7) over authored copy — scan all output, report data-source hits */
 const BANNED = /\b(delve|unleash|leverage|utilize|furthermore|robust|seamless|elevate)\b|in today.s world/i;
@@ -1262,33 +1302,65 @@ for (const m of made) { const html = fs.readFileSync(`books/book-${String(m.vol.
 console.log('copy-lint total hits (incl. data text):', lintHits);
 
 const cards = made.map(m => { const id = String(m.vol.n).padStart(2, '0');
-  return `<div class="bk" style="background:linear-gradient(160deg,${m.vol.a},${m.vol.d})">
-  <svg viewBox="0 0 120 120">${AV[m.vol.av] || ''}</svg>
-  <b>Vol. ${m.vol.n} — ${esc(m.vol.title)}</b><span>${esc(m.vol.tag)}</span><span>${m.pages} pages</span>
-  <div class="links"><a href="book-${id}.html">Read</a><a href="pdf/book-${id}.pdf">PDF</a></div></div>`; }).join('');
+  const cov = artAt(`b${id}-cover`);
+  const cover = cov ? `<img src="${cov}" alt="" loading="lazy">`
+    : `<span class="bk-fallback" style="background:linear-gradient(160deg,${m.vol.a},${m.vol.d})"><svg viewBox="0 0 120 120">${AV[m.vol.av] || ''}</svg></span>`;
+  return `<a class="bk" href="book-${id}.html" style="--a:${m.vol.a};--d:${m.vol.d}">
+    <span class="bk-cov">${cover}<span class="bk-spine"></span><span class="bk-vol">Vol. ${m.vol.n}</span></span>
+    <span class="bk-meta"><b>${esc(m.vol.title)}</b><span class="tag">${esc(m.vol.tag)}</span>
+      <span class="foot"><span class="pg">${m.pages} pages</span>
+      <span class="pdf" onclick="event.preventDefault();event.stopPropagation();window.location='pdf/book-${id}.pdf'">PDF &darr;</span></span>
+    </span></a>`; }).join('');
 const hub = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Bizzing Bee Library — 17 graphic study books</title><style>
-@font-face{font-family:'Baloo 2';src:url('../fonts/baloo2-800.woff2') format('woff2');font-weight:800}
+<title>Bizzing Bee Library — ${made.length} graphic study books</title><style>
+@font-face{font-family:'Baloo 2';src:url('../fonts/baloo2-800.woff2') format('woff2');font-weight:400 900}
+@font-face{font-family:'Fredoka';src:url('../fonts/fredoka-600.woff2') format('woff2');font-weight:600}
 @font-face{font-family:'Hanken Grotesk';src:url('../fonts/hanken-var.woff2') format('woff2');font-weight:100 900}
-*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Hanken Grotesk',sans-serif;background:#f3efff;color:#241E33;padding:34px 20px 60px}
-main{max-width:1000px;margin:0 auto}h1{font-family:'Baloo 2';font-size:34px}p.lead{color:#6b6482;margin:8px 0 26px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
-.bk{border-radius:16px;padding:18px 15px;color:#fff;display:flex;flex-direction:column;gap:6px;min-height:190px}
-.bk svg{width:52px;height:52px}.bk b{font-family:'Baloo 2';font-size:17px;line-height:1.15}.bk span{font-size:12px;opacity:.92}
-.bk .links{margin-top:auto;display:flex;gap:8px}
-.bk .links a{background:rgba(0,0,0,.28);color:#fff;text-decoration:none;font-weight:700;font-size:12px;padding:5px 10px;border-radius:999px}
-.canva{background:#fff;border:1px solid #ddd4f2;border-radius:14px;padding:18px 20px;margin:28px 0;line-height:1.6;font-size:14.5px}
-.canva b{font-family:'Baloo 2'}</style></head><body><main>
-<h1>The Bizzing Bee Library</h1>
-<p class="lead">Seventeen graphic study books, anime edition — cinematic storyboard openers with the full avatar cast,
-checkpoint quizzes straight from the Word Map, practice hives with real write-in drills, puzzles made of each
-chapter's own words, and two collections. The books grow up as the reader does: bright daylight in Vol. 1,
-letterboxed night cinema by Vol. 12.</p>
-<div class="canva"><b>Getting a book into Canva:</b> download the PDF, then in Canva choose <b>Create a design → Import file</b>
-(or drag the PDF onto Canva's home page). Every page becomes an editable design. The HTML is the print master.</div>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Hanken Grotesk',sans-serif;color:#241E33;padding:0 0 70px;
+  background:radial-gradient(1200px 600px at 12% -8%,#EDE7FF,transparent 60%),radial-gradient(900px 500px at 92% 4%,#FFE9C9,transparent 58%),#F6F3FF}
+main{max-width:1180px;margin:0 auto;padding:0 22px}
+header.hero{padding:52px 0 30px;text-align:center}
+header.hero .kick{font-family:'Fredoka';font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;color:#7C5CFF}
+h1{font-family:'Baloo 2';font-size:clamp(34px,5.2vw,54px);line-height:1.04;margin:8px 0 12px;
+  background:linear-gradient(100deg,#6C4FE0,#E8458C 55%,#F0A93C);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+p.lead{color:#59527a;max-width:62ch;margin:0 auto;font-size:15.5px;line-height:1.65}
+.canva{background:#fff;border:1px solid #E4DBFA;border-radius:16px;padding:15px 20px;margin:26px auto 0;max-width:760px;
+  line-height:1.6;font-size:14px;color:#463c66;box-shadow:0 6px 20px rgba(108,79,224,.09)}
+.canva b{font-family:'Baloo 2'}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:28px 22px;margin-top:34px}
+.bk{display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:transform .22s ease}
+.bk:hover{transform:translateY(-7px)}
+.bk-cov{position:relative;display:block;aspect-ratio:3/4;border-radius:5px 12px 12px 5px;overflow:hidden;background:#241E33;
+  box-shadow:0 14px 30px rgba(36,24,80,.28),0 2px 5px rgba(36,24,80,.22),inset 0 0 0 1px rgba(255,255,255,.14)}
+.bk-cov img,.bk-fallback{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:grid;place-items:center}
+.bk-fallback svg{width:44%;height:44%}
+.bk-spine{position:absolute;left:0;top:0;bottom:0;width:13px;background:linear-gradient(90deg,rgba(0,0,0,.42),rgba(255,255,255,.22) 62%,rgba(0,0,0,.14))}
+.bk-vol{position:absolute;top:9px;right:9px;font-family:'Fredoka';font-size:11px;color:#fff;background:rgba(16,10,36,.62);border-radius:999px;padding:3px 10px}
+.bk:hover .bk-cov{box-shadow:0 20px 44px rgba(36,24,80,.36),0 3px 8px rgba(36,24,80,.26),inset 0 0 0 1px rgba(255,255,255,.2)}
+.bk-meta{padding:13px 3px 0;display:flex;flex-direction:column;flex:1}
+.bk-meta b{display:block;font-family:'Baloo 2';font-size:17.5px;line-height:1.18}
+.bk-meta .tag{display:block;font-size:13px;color:#645c86;line-height:1.45;margin-top:4px}
+.bk-meta .foot{display:flex;align-items:center;gap:9px;margin-top:auto;padding-top:10px}
+.bk-meta .pg{font-family:'Fredoka';font-size:11.5px;color:#8b83a3}
+.bk-meta .pdf{margin-left:auto;font-family:'Fredoka';font-size:11.5px;color:var(--d);
+  border:1.4px solid color-mix(in srgb,var(--a) 45%,#fff);background:color-mix(in srgb,var(--a) 12%,#fff);border-radius:999px;padding:4px 11px;cursor:pointer}
+.bk-meta .pdf:hover{background:var(--a);color:#fff;border-color:var(--a)}
+footer{max-width:1180px;margin:38px auto 0;padding:0 22px;font-size:12px;color:#8b83a3;line-height:1.6}
+</style></head><body><main>
+<header class="hero">
+  <div class="kick">Bizzing Bee Library</div>
+  <h1>${made.length} graphic study books</h1>
+  <p class="lead">Cinematic storyboard openers with the full avatar cast, checkpoint quizzes straight from the Word Map,
+  practice hives with real write-in drills, puzzles built from each chapter&rsquo;s own words, and two collections.
+  The books grow up as the reader does &mdash; bright daylight in Vol.&nbsp;1, letterboxed night cinema by the advanced volumes.</p>
+  <div class="canva"><b>Getting a book into Canva:</b> download the PDF, then in Canva choose <b>Create a design &rarr; Import file</b>
+  (or drag the PDF onto Canva&rsquo;s home page). Every page becomes an editable design. The HTML is the print master.</div>
+</header>
 <div class="grid">${cards}</div>
-<p style="font-size:12px;color:#8b83a3;margin-top:26px">Bizzing Bee · independent study material · not affiliated with Scripps, the North South Foundation, or Merriam-Webster.</p>
-</main></body></html>`;
+</main>
+<footer>Bizzing Bee &middot; independent study material &middot; not affiliated with Scripps, the North South Foundation, or Merriam-Webster.</footer>
+</body></html>`;
 fs.writeFileSync('books/index.html', hub);
 made.forEach(m => console.log(`Vol.${String(m.vol.n).padStart(2)} ${m.vol.title.padEnd(24)} ${String(m.pages).padStart(4)} pages`));
 console.log('total pages:', made.reduce((a, m) => a + m.pages, 0));
