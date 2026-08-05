@@ -1,10 +1,14 @@
-/* Bizzing Bee Library v3 — built to the Claude Design system handover
-   (templates/book-library/HANDOFF-CLAUDE-CODE.md): app tokens + print roles, the
-   8-size type scale with Sono tiles, .page geometry with verso gutter mirroring,
-   .bb-* class contracts with content budgets, comic chapter openers storyboarded
-   from the six-scene scripts (oops = Vex panel), the seven furniture boxes, seeded
-   puzzles, per-volume Bee Break cursors, running head/foot with folios, and the
-   banned-word copy lint. Outputs books/book-01..17.html + books/index.html. */
+/* Bizzing Bee Library v5 — the anime edition.
+   Built on the Claude Design system handover PLUS the BB ANIME module
+   (design-system/bb-anime.js): every avatar in the 211-strong collection can
+   now walk on stage as a rim-lit, backlit anime figure inside painterly
+   keyframe scenes. The register dial (1→3) matures the books as the reader
+   grows: bright chibi daylight in Vol. 1, golden-hour grounding mid-series,
+   letterboxed dusk cinema in the advanced volumes — and the voice matures with
+   it. Type is sized for kids (14.5pt body in the general band). Content grew:
+   checkpoint quizzes lifted from the Word Map curriculum, sound-trap boxes,
+   a cast page up front and a full-cast poster at the back of every volume.
+   Outputs books/book-01..17.html + books/index.html. */
 const fs = require('fs');
 global.window = global;
 process.chdir('/home/user/Bizzing-Bee/spellbound-app');
@@ -12,14 +16,70 @@ eval(fs.readFileSync('concepts-data.js', 'utf8'));
 eval(fs.readFileSync('adv-concepts-data.js', 'utf8'));
 eval(fs.readFileSync('concept-scripts.js', 'utf8'));
 eval(fs.readFileSync('avatars-art.js', 'utf8'));
+eval(fs.readFileSync('avatars.js', 'utf8'));
+eval(fs.readFileSync('avatar-cards.js', 'utf8'));
 eval(fs.readFileSync('quotes-lib.js', 'utf8'));
 eval(fs.readFileSync('figurative-data.js', 'utf8'));
 eval(fs.readFileSync('sounds-data.js', 'utf8'));
+eval(fs.readFileSync('trail-data.js', 'utf8'));
+eval(fs.readFileSync('books/design-system/bb-anime.js', 'utf8'));
 let ADVS = {};
 try { const src = fs.readFileSync('adv-concepts-data.js', 'utf8'); ADVS = window.SB_ADV_CSCRIPT || {}; } catch (e) {}
 const GEN = SB_CONCEPTS.chapters, ADV = SB_ADV_CONCEPTS.chapters;
 const CS = window.SB_CSCRIPT || {}, AV = window.SB_AVATAR_ART;
 const QUOTES = window.SB_QUOTES, FIG = window.SB_FIG, IPA = window.SB_IPA || {};
+const ANIME = window.BB_ANIME;
+const CAST_DB = window.SB_AVATARS;
+
+/* Word Map curriculum quizzes: chapter index (gi / ai) → the unit's authored
+   concept questions. c[0] is always the correct answer (shuffled at render). */
+const QS_GEN = {}, QS_ADV = {};
+try { for (const u of SB_TRAIL.honey.units) if (u.gi >= 0 && u.qs && u.qs.length) QS_GEN[u.gi] = u.qs; } catch (e) {}
+try { for (const u of SB_TRAIL.expedition.units) if (u.ai >= 0 && u.qs && u.qs.length) QS_ADV[u.ai] = u.qs; } catch (e) {}
+
+/* Homophone partners for the sound-trap box: word → its sound-twins */
+const HOMX = (() => { const m = Object.create(null);
+  try { for (const grp of window.SB_HOM) for (const w of grp) { const k = String(w).toLowerCase();
+    (m[k] = m[k] || []).push(...grp.filter(x => x !== w)); } } catch (e) {}
+  return m; })();
+
+/* ---------------- the cast: the whole collection reports for duty ----------------
+   Each volume drafts a crew of nine from the packs that suit its world, spreading
+   picks across the 200+ avatars with art so the series uses (nearly) everyone. */
+const WORLD_PACKS = {
+  meadow: ['hive', 'critter', 'enchanted', 'wildhearts'], library: ['legends', 'worldchangers', 'origami'],
+  forum: ['legends', 'gods', 'worldchangers'], elements: ['elements', 'cosmos', 'gods'],
+  stage: ['stage', 'vibe', 'arcade'], engine: ['lab', 'turbo', 'arcade'],
+  origami: ['origami', 'dojo', 'elements'], strait: ['serpent', 'bigbeasts', 'critter', 'wildhearts'],
+  junkyard: ['villains', 'arcade', 'turbo'], vibe: ['vibe', 'stage', 'cosmos'],
+  warfield: ['dojo', 'turbo', 'villains', 'legends'], greysea: ['cosmos', 'serpent', 'enchanted'],
+};
+const castUsed = new Set();
+function draftCast(vol) {
+  const rnd = mulberry(vol.n * 271 + 11);
+  const packs = WORLD_PACKS[vol.world] || ['hive'];
+  const pool = (CAST_DB.list || []).filter(a => AV[a.id] && a.id !== vol.av && packs.includes(a.pack));
+  const fresh = pool.filter(a => !castUsed.has(a.id));
+  const picks = shuf(fresh.slice(), rnd).slice(0, 9);
+  for (const a of shuf(pool.slice(), rnd)) { if (picks.length >= 9) break; if (!picks.includes(a)) picks.push(a); }
+  picks.forEach(a => castUsed.add(a.id));
+  return picks;
+}
+const castName = id => { try { return (CAST_DB.byId[id] || {}).name || (NAMES[id] || id); } catch (e) { return NAMES[id] || id; } };
+
+/* Register: how grown-up this volume looks and sounds. */
+const REG = vol => vol.band === 'advanced' || vol.n === 17 ? 3 : vol.n <= 4 ? 1 : 2;
+
+/* The app's avatar cards: real titles, lore, powers and facts — the cast's voices. */
+const CARD = id => { try { return SB_AV_CARD(id); } catch (e) { return null; } };
+
+/* Bizzy is the hero of every book; the volume guide co-stars. */
+const HERO = 'bizzy';
+
+/* Chapters travel: each chapter of a volume visits the next world on the ring,
+   starting from the volume's home world. */
+const WORLD_CYCLE = ['meadow', 'library', 'forum', 'elements', 'engine', 'origami', 'strait', 'junkyard', 'vibe', 'stage', 'warfield', 'greysea'];
+const chWorldOf = (vol, ci) => WORLD_CYCLE[(Math.max(0, WORLD_CYCLE.indexOf(vol.world)) + ci) % WORLD_CYCLE.length];
 const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const clamp = (s, n) => { s = String(s || ''); return s.length > n ? s.slice(0, n - 1) + '…' : s; };
 const wordsClamp = (s, n) => { const w = String(s || '').replace(/\s+/g, ' ').trim().split(' '); return w.length <= n ? w.join(' ') : w.slice(0, n).join(' ') + '…'; };
@@ -62,14 +122,11 @@ const AVOLS = [
   { n: 14, title: 'Far-Flung Words', tag: 'Origins beyond the big four', a: '#0E8A78', d: '#075C50', tex: 'cross', av: 'mic', world: 'strait', band: 'advanced', chapters: ADV.filter(ch => ch.category === 'Origins Beyond the Big Four') },
   { n: 15, title: 'The Word Factory', tag: 'How English bolts words together', a: '#5B6BA8', d: '#364475', tex: 'stripes', av: 'maestro', world: 'engine', band: 'advanced', chapters: ADV.filter(ch => ch.category === 'How Words Are Built') },
 ];
-const NAMES = { honeypot: 'Honeypot', waggle: 'Waggle', bumble: 'Bumble', star: 'Star', diva: 'Diva', drone: 'Drone', clover: 'Clover', nectar: 'Nectar', lumen: 'Lumen', jester: 'Jester', queenhive: 'Queen Hive', blossom: 'Blossom', propolis: 'Propolis', mic: 'Mic', maestro: 'Maestro', popcorn: 'Popcorn', melody: 'Melody' };
-const avatar = (id, size, extra) => `<svg viewBox="0 0 120 120" style="width:${size};height:${size};flex-shrink:0${extra || ''}" aria-hidden="true">${AV[id] || ''}</svg>`;
-const VEX = (size) => `<svg viewBox="0 0 120 120" style="width:${size};height:${size};flex-shrink:0" aria-hidden="true">
-  <path d="M60 26 L30 62 L48 58 L42 92 L60 72 L78 92 L72 58 L90 62 Z" fill="#3A2A55" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
-  <path d="M30 62 Q12 48 16 30 Q34 34 42 50 Z M90 62 Q108 48 104 30 Q86 34 78 50 Z" fill="#5B3FA6" stroke="#241E33" stroke-width="4" stroke-linejoin="round"/>
-  <path d="M48 48 l10 4 M72 48 l-10 4" stroke="#E8546A" stroke-width="5" stroke-linecap="round"/>
-  <path d="M52 62 q8 -5 16 0" stroke="#E8546A" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M52 18 q4 8 8 10 M68 18 q-4 8 -8 10" stroke="#241E33" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`;
+const NAMES = { bizzy: 'Bizzy', honeypot: 'Honeypot', waggle: 'Waggle', bumble: 'Bumble', star: 'Star', diva: 'Diva', drone: 'Drone', clover: 'Clover', nectar: 'Nectar', lumen: 'Lumen', jester: 'Jester', queenhive: 'Queen Hive', blossom: 'Blossom', propolis: 'Propolis', mic: 'Mic', maestro: 'Maestro', popcorn: 'Popcorn', melody: 'Melody' };
+/* Every inline character is a rim-lit anime portrait now; VEX is the redesigned moth. */
+let _pk = 0;
+const avatar = (id, size, extra) => ANIME.portrait(id, size, { style: extra || '', k: 'a' + (_pk++) });
+const VEX = (size, extra) => ANIME.vex(size, { style: extra || '', k: 'v' + (_pk++) });
 function texture(tex) {
   const S = 'stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none"';
   if (tex === 'rings') return `<circle cx="82%" cy="18%" r="70" ${S}/><circle cx="82%" cy="18%" r="110" ${S}/><circle cx="82%" cy="18%" r="150" ${S}/><circle cx="10%" cy="92%" r="60" ${S}/><circle cx="10%" cy="92%" r="95" ${S}/>`;
@@ -170,13 +227,30 @@ const WORLD_BLURB = {
   17: 'The Big Stage, house lights down. Two hundred and forty voices worth hearing.',
 };
 
-/* ---------------- CSS: tokens-book + type scale + class contracts ---------------- */
+/* ---------------- CSS: tokens-book + KID-SIZED type scale + class contracts ----------------
+   v5: body text grew a full size band (kids were squinting), and the comic ink-box
+   panels became .an-panel anime scene cards — full-bleed keyframe art with a
+   subtitle caption, no hard borders. Register 3 squares the corners and dims the
+   palette; register 1 keeps everything round and bright. */
+/* One display face per world — the app's own WORLD_HERO font schema, carried
+   into print. Headings and cover titles wear the volume's world face; body,
+   kicker and tile faces never move (Hanken / Fredoka / Sono). */
+const WORLD_FACE = {
+  meadow: ['Fredoka', 'fredoka-600'], library: ['Fraunces', 'fraunces-800'], forum: ['Fraunces', 'fraunces-800'],
+  elements: ['Comfortaa', 'comfortaa-700'], engine: ['Quicksand', 'quicksand-700'], origami: ['Fredoka', 'fredoka-600'],
+  strait: ['Baloo 2', 'baloo2-800'], junkyard: ['Bungee', 'bungee-400'], vibe: ['Righteous', 'righteous-400'],
+  stage: ['Righteous', 'righteous-400'], warfield: ['Bangers', 'bangers-400'], greysea: ['Fraunces', 'fraunces-800'],
+};
 function css(vol) {
-  const bodyPt = vol.band === 'advanced' ? '11.5pt' : '13pt';
-  const bodyLh = vol.band === 'advanced' ? '17pt' : '19.5pt';
-  const lineH = vol.band === 'advanced' ? '.32in' : '.4in';
+  const reg = REG(vol);
+  const bodyPt = vol.band === 'advanced' ? '13pt' : '15pt';
+  const bodyLh = vol.band === 'advanced' ? '19.5pt' : '22.5pt';
+  const lineH = vol.band === 'advanced' ? '.34in' : '.42in';
+  const panelR = reg >= 3 ? '6pt' : '16pt';
+  const [wf, wfFile] = WORLD_FACE[vol.world] || WORLD_FACE.meadow;
   return `
-  @font-face{font-family:'BB Display';src:url('../fonts/baloo2-800.woff2') format('woff2');font-weight:800}
+  @font-face{font-family:'BB Display';src:url('../fonts/baloo2-800.woff2') format('woff2');font-weight:400 900}
+  @font-face{font-family:'BB World';src:url('../fonts/${wfFile}.woff2') format('woff2');font-weight:400 900}
   @font-face{font-family:'BB Kicker';src:url('../fonts/fredoka-600.woff2') format('woff2');font-weight:600}
   @font-face{font-family:'BB Body';src:url('../fonts/hanken-var.woff2') format('woff2');font-weight:100 900}
   @font-face{font-family:'BB Tile';src:url('../fonts/sono-600.woff2') format('woff2');font-weight:600}
@@ -196,10 +270,17 @@ function css(vol) {
   .page[data-verso]{padding-left:.5in;padding-right:.75in}
   .page[data-cover]{padding:.55in}
   @media screen{.page{margin:24px auto;box-shadow:0 10px 34px rgba(36,30,51,.18);border-radius:4px}}
-  h1,h2,h3,.disp{font-family:'BB Display';font-weight:800}
+  h1,h2,.coverTitle{font-family:'BB World','BB Display';font-weight:800}
+  h3,.disp{font-family:'BB Display';font-weight:800}
   .kick{font-family:'BB Kicker';font-weight:600;font-size:10pt;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-deep)}
   .worldchip{display:inline-flex;align-items:center;gap:5pt;background:rgba(255,255,255,.75);border:1px solid var(--hairline);border-radius:999px;padding:2.5pt 10pt;font-family:'BB Kicker';font-size:8.6pt;color:var(--accent-deep)}
-  .coverTitle{font-family:'BB Display';font-weight:800;color:#fff;text-shadow:0 4px 0 rgba(0,0,0,.25),0 10px 24px rgba(0,0,0,.25)}
+  .coverTitle{font-family:'BB World','BB Display';font-weight:800;color:#fff;letter-spacing:.01em;
+    -webkit-text-stroke:2.6pt var(--accent-deep);paint-order:stroke fill;
+    text-shadow:0 5px 0 rgba(20,12,40,.45),0 12px 28px rgba(0,0,0,.4)}
+  .coverTitle .ln2{display:block;color:#FFE9AE}
+  .worldband{position:absolute;left:.5in;right:.5in;bottom:.52in;height:1.25in;opacity:.97;border-radius:12pt;overflow:hidden;box-shadow:0 4pt 14pt rgba(26,18,54,.22)}
+  .worldband svg{position:absolute;inset:0;width:100%;height:100%}
+  .worldband .wl{position:absolute;left:10pt;bottom:6pt;font-family:'BB Kicker';font-size:8.6pt;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.95);text-shadow:0 1px 4px rgba(0,0,0,.5)}
   .peek{position:absolute;pointer-events:none}
   .tile{font-family:'BB Tile';font-weight:600;color:var(--muted)}
   .bb-head{position:absolute;top:.3in;left:.75in;right:.5in;display:flex;justify-content:space-between;align-items:baseline;
@@ -209,69 +290,76 @@ function css(vol) {
     font-family:'BB Kicker';font-size:10pt;color:var(--muted)}
   .page[data-verso] .bb-foot{left:.5in;right:.75in}
   .bb-panelbox{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-panel);padding:.12in .15in;box-shadow:var(--sh-screen)}
-  .bb-bigidea{padding:.04in .8in .04in .42in;max-height:1.5in;overflow:hidden;position:relative;font-size:12pt;line-height:1.5}
+  .bb-bigidea{padding:.04in .8in .04in .42in;max-height:1.8in;overflow:hidden;position:relative;font-size:13.5pt;line-height:1.5}
   .bb-bigidea:before{content:'“';position:absolute;left:0;top:-.12in;font-family:'BB Display';font-size:44pt;color:var(--accent)}
   .bb-bigidea .cameo{position:absolute;right:.06in;top:50%;transform:translateY(-50%) rotate(4deg)}
-  .bb-promove{background:var(--ink);color:#F4EFFF;border-radius:var(--r-panel);padding:.13in .16in;max-height:1.6in;overflow:hidden;
-    font-size:9.4pt;line-height:1.45}
+  .bb-promove{background:var(--ink);color:#F4EFFF;border-radius:var(--r-panel);padding:.13in .16in;max-height:1.7in;overflow:hidden;
+    font-size:11pt;line-height:1.48}
   .bb-promove b{color:var(--treasure)} .bb-promove div{margin:2px 0}
-  .bb-promove .trick,.bb-promove [class]{font-family:'BB Display';font-size:11.5pt;letter-spacing:.04em}
+  .bb-promove .trick,.bb-promove [class]{font-family:'BB Display';font-size:12pt;letter-spacing:.04em}
   .bb-sticky{display:grid;grid-template-columns:1fr 1fr;gap:.1in;margin-top:.1in}
   .bb-sticky .card{background:var(--tint);border-radius:3pt 3pt 12pt 3pt;padding:.09in .11in;box-shadow:2pt 3pt 6pt rgba(36,30,51,.10)}
-  .bb-sticky .card:nth-child(odd){transform:rotate(-.7deg)} .bb-sticky .card:nth-child(even){transform:rotate(.6deg);background:color-mix(in srgb,var(--treasure) 12%,white)}
-  .bb-sticky h3{font-size:9.6pt;color:var(--accent-deep);margin-bottom:2px}
-  .bb-sticky p{font-size:8.4pt;line-height:1.35}
-  .bb-strip{display:grid;gap:.12in;margin-top:.12in}
-  .bb-panel{border:2.5pt solid var(--ink);border-radius:14pt 18pt 12pt 20pt;background:var(--card);position:relative;overflow:visible;padding:.1in .12in;min-height:2in}
-  .bb-strip .bb-panel:nth-child(1){transform:rotate(-.7deg)} .bb-strip .bb-panel:nth-child(2){transform:rotate(.5deg) translateY(.06in)}
-  .bb-strip .bb-panel:nth-child(3){transform:rotate(.6deg)} .bb-strip .bb-panel:nth-child(4){transform:rotate(-.5deg) translateY(-.04in)}
-  .bb-panel .who{margin-bottom:-14pt}
-  .bb-panel.think{background:radial-gradient(circle at 30% 25%,#EFEAFB,#fff 70%)}
-  .bb-panel.oops{background:#FFF1F3}
-  .bb-panel.excited{background:radial-gradient(circle at 60% 30%,#E9FBEF,#fff 70%)}
-  .bb-panel.love{background:radial-gradient(circle at 40% 30%,#FDEDF4,#fff 70%)}
-  .bb-bubble{position:relative;background:var(--card);border:1.6pt solid var(--ink);border-radius:14pt 18pt 16pt 12pt / 16pt 12pt 18pt 14pt;padding:6pt 9pt;
-    font-family:'BB Display';font-size:${vol.band === 'advanced' ? '9.6pt' : '10.4pt'};line-height:1.28;margin-bottom:6pt}
-  .bb-sfx{font-family:'BB Display';font-size:15pt;letter-spacing:.04em;position:absolute;right:8pt;bottom:6pt;color:var(--tricky-deep);transform:rotate(-4deg)}
-  .bb-sfx.win{color:var(--right-deep)}
+  .bb-sticky .card:nth-child(odd){transform:rotate(-.5deg)} .bb-sticky .card:nth-child(even){transform:rotate(.4deg);background:color-mix(in srgb,var(--treasure) 12%,white)}
+  .bb-sticky h3{font-size:11.2pt;color:var(--accent-deep);margin-bottom:2px}
+  .bb-sticky p{font-size:10pt;line-height:1.4}
+  /* v5 anime storyboard: full-bleed keyframe scenes with a subtitle caption —
+     no ink boxes. Register 1 keeps a slight playful tilt; register 3 is level. */
+  .an-strip{display:grid;gap:.12in;margin-top:.12in}
+  .an-panel{position:relative;border-radius:${panelR};overflow:hidden;min-height:3.05in;box-shadow:0 5pt 16pt rgba(26,18,54,.28);background:#241E33}
+  ${reg === 1 ? '.an-strip .an-panel:nth-child(odd){transform:rotate(-.5deg)} .an-strip .an-panel:nth-child(even){transform:rotate(.4deg)}' : ''}
+  .an-panel svg.scene{position:absolute;inset:0;width:100%;height:100%}
+  .an-cap{position:absolute;left:.09in;right:.09in;bottom:.09in;background:rgba(255,255,255,.93);border-radius:${reg >= 3 ? '4pt' : '10pt'};
+    padding:5pt 9pt;font-family:'BB Display';font-size:${vol.band === 'advanced' ? '10.6pt' : '11.5pt'};line-height:1.3;box-shadow:0 2pt 8pt rgba(26,18,54,.3)}
+  .an-cap .nm{display:block;font-family:'BB Kicker';font-size:8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-deep);margin-bottom:1pt}
+  .an-sfx{position:absolute;top:.08in;right:.1in;font-family:'BB Display';font-size:${reg >= 3 ? '10pt' : '14pt'};letter-spacing:.05em;
+    color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.35),0 5px 12px rgba(0,0,0,.4);transform:rotate(-3deg)}
+  .an-prop{position:absolute;top:.08in;left:.1in;background:rgba(20,14,44,.66);color:#FFE9AE;border-radius:8pt;padding:2.5pt 8pt;font-family:'BB Tile';font-size:9.6pt}
   .bb-prop{display:inline-block;background:var(--chip);color:var(--chip-ink);border-radius:8pt;padding:3pt 8pt;font-family:'BB Tile';font-size:10pt}
-  .bb-hive{display:grid;grid-template-columns:1fr 1fr;gap:.11in}
-  .bb-card{padding:0 .04in;max-height:1.35in;overflow:hidden}
-  .bb-hive>div:nth-child(odd) .bb-card{transform:rotate(-.3deg)} .bb-hive>div:nth-child(even) .bb-card{transform:rotate(.3deg)}
-  .bb-card .w{font-family:'BB Body';font-weight:800;font-size:20pt;line-height:1.05;font-variant-numeric:tabular-nums;color:var(--accent-deep)}
-  .bb-card .say{font-family:'BB Tile';font-size:8.6pt;color:var(--muted);margin-top:1px}
-  .bb-card .d{font-size:8.6pt;line-height:1.3;margin-top:2px}
-  .bb-card .hook{font-size:8.2pt;line-height:1.28;margin-top:2px;color:var(--chip-ink);font-style:italic}
+  .bb-bubble{background:var(--card);border:1px solid var(--hairline);border-radius:12pt;padding:6pt 10pt;font-family:'BB Display';font-size:11.5pt;line-height:1.35;box-shadow:var(--sh-screen)}
+  .bb-hive{display:grid;grid-template-columns:1fr 1fr;gap:.12in}
+  .bb-card{padding:0 .04in;max-height:1.95in;overflow:hidden}
+  .bb-card .ex{font-size:9.6pt;line-height:1.32;margin-top:2px;color:var(--ink);opacity:.85}
+  .bb-card .w{font-family:'BB Body';font-weight:800;font-size:23pt;line-height:1.05;font-variant-numeric:tabular-nums;color:var(--accent-deep)}
+  .bb-card .say{font-family:'BB Tile';font-size:10pt;color:var(--muted);margin-top:1px}
+  .bb-card .d{font-size:10.6pt;line-height:1.38;margin-top:2px}
+  .bb-card .hook{font-size:9.8pt;line-height:1.32;margin-top:2px;color:var(--chip-ink);font-style:italic}
   .bb-writeline{border-bottom:1pt solid var(--ink);height:${lineH};margin-top:4pt}
   .bb-rapid{display:grid;grid-template-columns:1fr 1fr;gap:.08in .16in}
-  .bb-row{padding:3pt 0;max-height:.42in;overflow:hidden;font-size:8.8pt;line-height:1.3;border-bottom:1px dotted var(--hairline)}
+  .bb-row{padding:3.5pt 0;min-height:.5in;max-height:.6in;overflow:hidden;font-size:10.8pt;line-height:1.34;border-bottom:1px dotted var(--hairline)}
   .bb-row b{font-family:'BB Kicker';color:var(--accent-deep)}
-  .bb-break{display:flex;gap:.1in;align-items:flex-start;background:linear-gradient(90deg,var(--treasure-tint),transparent 85%);border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.08in .13in;max-height:2.2in;overflow:hidden}
-  .bb-break .l{font-family:'BB Kicker';font-size:8.2pt;letter-spacing:.1em;text-transform:uppercase;color:var(--treasure-deep)}
-  .bb-break .b{font-size:9.6pt;line-height:1.35;margin-top:2px}
-  .bb-break .t{font-size:8.4pt;color:var(--muted);margin-top:2px}
-  .bb-check{border-left:4pt solid var(--right);padding:.04in .1in;max-height:1.2in;overflow:hidden}
-  .bb-check .l{font-family:'BB Kicker';font-size:8.2pt;letter-spacing:.1em;text-transform:uppercase;color:var(--right-deep)}
-  .bb-vex{background:linear-gradient(90deg,#FFF1F3,transparent 88%);border-left:4pt solid var(--tricky);border-radius:2pt 12pt 12pt 2pt;padding:.05in .1in;max-height:1.2in;overflow:hidden;display:flex;gap:.09in;align-items:flex-start}
-  .bb-vex .l{font-family:'BB Kicker';font-size:8.2pt;letter-spacing:.1em;text-transform:uppercase;color:var(--tricky-deep)}
+  .bb-break{display:flex;gap:.1in;align-items:flex-start;background:linear-gradient(90deg,var(--treasure-tint),transparent 85%);border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.08in .13in;max-height:2.3in;overflow:hidden}
+  .bb-break .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--treasure-deep)}
+  .bb-break .b{font-size:11.2pt;line-height:1.4;margin-top:2px}
+  .bb-break .t{font-size:10pt;color:var(--muted);margin-top:2px}
+  .bb-check{border-left:4pt solid var(--right);padding:.04in .1in;max-height:1.3in;overflow:hidden}
+  .bb-check .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--right-deep)}
+  .bb-vex{background:linear-gradient(90deg,#FFF1F3,transparent 88%);border-left:4pt solid var(--tricky);border-radius:2pt 12pt 12pt 2pt;padding:.05in .1in;max-height:1.3in;overflow:hidden;display:flex;gap:.09in;align-items:flex-start}
+  .bb-vex .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--tricky-deep)}
+  .bb-trap{background:var(--listen-tint);border-left:4pt solid var(--listen);border-radius:2pt 12pt 12pt 2pt;padding:.05in .1in;max-height:1.3in;overflow:hidden}
+  .bb-trap .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--listen-deep)}
+  .bb-quiz{counter-reset:q}
+  .bb-quiz .q{margin-bottom:.16in;break-inside:avoid}
+  .bb-quiz .q .qq{font-family:'BB Display';font-size:12pt;line-height:1.34;margin-bottom:3pt}
+  .bb-quiz .q .opt{display:flex;gap:6pt;align-items:baseline;font-size:10.6pt;line-height:1.42;padding:1.5pt 0}
+  .bb-quiz .q .opt i{font-style:normal;font-family:'BB Kicker';color:var(--accent-deep);width:.18in;flex-shrink:0}
   .bb-audio{display:inline-flex;align-items:center;gap:5pt;background:var(--listen-tint);border:1px solid var(--listen);color:var(--listen-deep);
-    border-radius:999px;padding:3pt 10pt;font-family:'BB Kicker';font-size:8.6pt;max-height:.3in}
+    border-radius:999px;padding:3pt 10pt;font-family:'BB Kicker';font-size:9.2pt;max-height:.3in}
   .bb-xword{border-collapse:collapse;margin:0 auto}
   .bb-xword td{width:.32in;height:.32in;position:relative}
   .bb-xword .c{background:var(--card);border:1.4px solid var(--chip-ink)}
   .bb-xword .c i{position:absolute;top:1px;left:2px;font-style:normal;font-size:5.4pt;color:var(--muted)}
-  .bb-clues{display:grid;grid-template-columns:1fr 1fr;gap:.18in;margin-top:.12in;font-size:8.6pt;line-height:1.4}
-  .bb-clues h3{font-size:10.5pt;color:var(--accent-deep);margin-bottom:2pt}
+  .bb-clues{display:grid;grid-template-columns:1fr 1fr;gap:.18in;margin-top:.12in;font-size:10.2pt;line-height:1.44}
+  .bb-clues h3{font-size:11.5pt;color:var(--accent-deep);margin-bottom:2pt}
   .bb-clues b{color:var(--chip-ink)}
   .bb-search{border-collapse:collapse;margin:0 auto}
   .bb-search td{width:.38in;height:.38in;text-align:center;font-family:'BB Tile';font-size:11pt;background:var(--card);border:1px solid var(--hairline)}
   .bb-scramble{display:grid;grid-template-columns:1fr 1fr;gap:.16in;max-height:none}
   .bb-scramble .g1{padding:.05in .02in;margin-bottom:.08in}
   .bb-scramble .gw{font-family:'BB Tile';font-size:11pt;letter-spacing:.14em;color:var(--accent-deep)}
-  .bb-biglist{columns:4;column-gap:.18in;font-size:8.6pt;line-height:.28in}
+  .bb-biglist{columns:3;column-gap:.2in;font-size:10.8pt;line-height:.33in}
   .bb-biglist div{break-inside:avoid}
-  .bb-biglist span{display:inline-block;width:.12in;height:.12in;border:1.4px solid var(--accent);border-radius:50%;margin-right:4pt;vertical-align:-1.5pt;background:var(--card)}
-  .bb-key{columns:3;column-gap:.18in;font-size:10pt;line-height:1.45;color:var(--ink)}
+  .bb-biglist span{display:inline-block;width:.13in;height:.13in;border:1.4px solid var(--accent);border-radius:50%;margin-right:4pt;vertical-align:-1.5pt;background:var(--card)}
+  .bb-key{columns:2;column-gap:.24in;font-size:11pt;line-height:1.5;color:var(--ink)}
   .bb-badge{display:flex;gap:.08in;align-items:center;max-height:.7in}
   .bb-badge .b1{width:.5in;height:.5in;border-radius:12pt;border:1.6pt dashed var(--accent);display:grid;place-items:center;font-family:'BB Display';font-size:9pt;color:var(--accent-deep);background:var(--card)}
   .chip{display:inline-block;background:var(--chip);color:var(--chip-ink);font-weight:700;font-size:9pt;border-radius:999px;padding:2pt 9pt}
@@ -283,32 +371,42 @@ const head = (vol, ch, ci, ptype) => ch ? `<div class="bb-head"><span>Chapter ${
   : `<div class="bb-head"><span>${esc(vol.title)}</span><span>${esc(ptype)}</span></div>`;
 const foot = (vol, folio) => `<div class="bb-foot"><span>Bizzing Bee · ${esc(vol.title)}</span><span>${folio}</span></div>`;
 
-/* Bee Break: per-volume cursors, no repeats inside a book */
-function makeBreaks(vol) {
+/* Bee Break: per-volume cursors, no repeats inside a book.
+   Four kinds now — the fourth hands the margin to a cast member's true fact,
+   pulled from the app's avatar cards. */
+function makeBreaks(vol, cast) {
   const rq = mulberry(vol.n * 131 + 7), rs = mulberry(vol.n * 131 + 8), ri = mulberry(vol.n * 131 + 9);
   const q = shuf(QUOTES.filter(x => x.q.length < 120).slice(), rq);
   const s = shuf(FIG.similes.filter(x => (x.p + x.m).length < 140).slice(), rs);
   const i = shuf(FIG.idioms.filter(x => (x.p + x.m).length < 140).slice(), ri);
-  let qi = 0, si = 0, ii = 0, k = 0;
+  const facts = (cast || []).map(a => ({ a, cd: CARD(a.id) })).filter(x => x.cd && x.cd.fact && x.cd.fact.length < 220);
+  let qi = 0, si = 0, ii = 0, fi = 0, k = 0;
   return () => {
-    const kind = (k++) % 3;
+    const kind = (k++) % (facts.length ? 4 : 3);
     if (kind === 0) { const x = q[qi++ % q.length]; return `<div class="bb-break"><span style="font-size:13pt">💬</span><div><div class="l">Bee Break · someone said it better</div><div class="b">“${esc(x.q)}”</div><div class="t">— ${esc(x.a)}${x.who ? ', ' + esc(x.who) : ''}</div></div></div>`; }
     if (kind === 1) { const x = s[si++ % s.length]; return `<div class="bb-break"><span style="font-size:13pt">✨</span><div><div class="l">Bee Break · simile of the page</div><div class="b"><b>${esc(x.p)}</b></div><div class="t">${esc(x.m)}</div></div></div>`; }
+    if (kind === 3) { const x = facts[fi++ % facts.length];
+      return `<div class="bb-break">${avatar(x.a.id, '.55in')}<div><div class="l">Bee Break · ${esc(x.a.name)}'s true fact</div><div class="b">${esc(x.cd.fact)}</div></div></div>`; }
     const x = i[ii++ % i.length]; return `<div class="bb-break"><span style="font-size:13pt">🎈</span><div><div class="l">Bee Break · idiom to drop at dinner</div><div class="b"><b>${esc(x.p)}</b></div><div class="t">${esc(x.m)}</div></div></div>`;
   };
 }
 
-/* ---------------- comic opener from the six-scene script ---------------- */
-function sceneProp(sc) {
+/* ---------------- anime storyboard opener from the six-scene script ----------------
+   v5: each panel is a full keyframe — painterly sky by mood, the world's own
+   silhouette landscape, particle weather, a rim-lit character staged in frame —
+   with the line as a subtitle caption. The speaking role rotates through the
+   volume's drafted cast, so a book's ensemble carries the story together. */
+function propText(sc) {
   try { const sh = sc.show; if (!sh) return '';
-    if (sh.word) return `<span class="bb-prop">${esc(String(sh.word).toUpperCase())}</span>`;
-    if (sh.parts) return `<span class="bb-prop">${esc([].concat(sh.parts).slice(0, 4).join(' · '))}</span>`;
-    if (sh.list) return [].concat(sh.list).slice(0, 3).map(x => `<span class="bb-prop" style="margin-right:4pt">${esc(clamp(typeof x === 'object' ? (x.w || x.t || '') : x, 16))}</span>`).join('');
-    if (sh.glyph) return `<span class="bb-prop" style="font-size:13pt">${esc(String(sh.glyph).slice(0, 8))}</span>`;
-    if (sh.big) return `<span class="bb-prop">${esc(clamp(sh.big, 20))}</span>`;
+    if (sh.word) return String(sh.word).toUpperCase();
+    if (sh.parts) return [].concat(sh.parts).slice(0, 4).join(' · ');
+    if (sh.list) return [].concat(sh.list).slice(0, 3).map(x => clamp(typeof x === 'object' ? (x.w || x.t || '') : x, 16)).join(' · ');
+    if (sh.glyph) return String(sh.glyph).slice(0, 8);
+    if (sh.big) return clamp(sh.big, 22);
   } catch (e) {} return '';
 }
-function comicOpener(vol, ch, ci, script, folio) {
+function comicOpener(vol, ch, ci, script, folio, cast) {
+  const reg = REG(vol);
   const scenes = (script && script.scenes) || [];
   if (!scenes.length) return null;
   const pick = [];
@@ -316,57 +414,120 @@ function comicOpener(vol, ch, ci, script, folio) {
   pick.push(scenes[0]);
   for (const m of ['think', 'oops', 'excited']) { const s = byMood(m); if (s && pick.length < 4) pick.push(s); }
   for (const s of scenes) { if (pick.length >= 4) break; if (!pick.includes(s)) pick.push(s); }
-  const maxW = vol.band === 'advanced' ? 20 : 14;
-  const panels = pick.map(sc => {
-    const mood = sc.mood || 'happy';
-    const isVex = mood === 'oops';
-    const sz = mood === 'excited' ? '1.05in' : mood === 'think' ? '0.75in' : '0.9in';
-    const who = isVex ? VEX('0.95in') : avatar(vol.av, sz, ';transform:rotate(' + (mood === 'excited' ? -6 : mood === 'oops' ? 5 : -2) + 'deg)');
-    const sfx = isVex ? '<span class="bb-sfx">UH-OH!</span>' : (mood === 'excited' ? '<span class="bb-sfx win">GOT IT!</span>' : '');
-    return `<div class="bb-panel ${esc(mood)}">
-      <div class="bb-bubble">${esc(wordsClamp(sc.say, maxW))}</div>
-      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:.08in">
-        <span class="who">${who}</span><div style="text-align:right">${sceneProp(sc)}</div></div>${sfx}</div>`;
+  const maxW = reg >= 3 ? 30 : 22;
+  const world = chWorldOf(vol, ci);
+  const co1 = cast[ci % cast.length], co2 = cast[(ci + 4) % cast.length];
+  /* one continuous canvas, no boxes: Bizzy opens, the guide and crew carry it,
+     Vex lurks in the storm stretch. Captions float in the clear sky OPPOSITE
+     each figure, never on top of it. */
+  const sceneList = pick.slice(0, 4).map((sc, k) => {
+    const isVex = (sc.mood || '') === 'oops';
+    const avId = k === 0 ? HERO : k === 1 ? vol.av : k === 3 ? co2.id : co1.id;
+    return { avId: isVex ? null : avId, vex: isVex, mood: sc.mood || 'happy',
+      name: isVex ? (NAMES[vol.av] || castName(vol.av)) : (NAMES[avId] || castName(avId)),
+      line: wordsClamp(sc.say, maxW), prop: propText(sc) };
   });
+  const uid = `op${vol.n}x${ci}`;
+  const svg = ANIME.storyboard(sceneList.map(s => ({ avId: s.avId, mood: s.mood, vex: s.vex })),
+    { W: 725, H: 830, world, reg, uid, seed: vol.n * 1009 + ci * 13 });
+  const caps = sceneList.map((s, i) => {
+    const t = i / Math.max(1, sceneList.length - 1);
+    const topPct = (.1 + t * .74) * 100;
+    const left = i % 2 === 1; // figure side; caption goes opposite
+    const sfx = reg >= 3 ? '' : s.vex ? '<span style="position:absolute;top:-16pt;right:6pt" class="an-sfx">UH-OH!</span>' : s.mood === 'excited' ? '<span style="position:absolute;top:-16pt;right:6pt" class="an-sfx">GOT IT!</span>' : '';
+    return `<div style="position:absolute;top:${topPct}%;${left ? 'right:3%' : 'left:3%'};width:45%;transform:translateY(-58%)">
+      ${sfx}<div class="an-cap" style="position:relative;left:auto;right:auto;bottom:auto">
+        <span class="nm">${esc(s.name)}${s.vex ? ' · Vex is circling' : ''}</span>${esc(s.line)}</div>
+      ${s.prop ? `<span class="bb-prop" style="margin-top:3pt;display:inline-block">${esc(s.prop)}</span>` : ''}</div>`;
+  }).join('');
   return `<div class="page" data-vol="${vol.n}">
     ${head(vol, ch, ci, 'Story')}
-    <div style="margin-top:.4in;display:flex;align-items:center;gap:.14in">
-      <span style="display:inline-grid;place-items:center;width:.58in;height:.58in;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:16pt">${ci + 1}</span>
-      <div><div class="kick">${esc(ch.category)}</div><h1 style="font-size:26pt;line-height:1.05">${esc(ch.title)}</h1></div>
-      <span class="worldchip" style="margin-left:auto;transform:rotate(1.4deg)">📍 ${esc(WORLD_NAME[vol.world] || vol.world)}</span></div>
-    <div class="bb-strip" style="grid-template-columns:1.15fr 1fr">${panels.slice(0, 4).join('')}</div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.14in">
-      <span class="bb-audio">🔊 Hear this chapter narrated in the app</span>
-      <span class="kick" style="font-size:8.6pt">turn the page — the whole trick, explained →</span></div>
+    <div style="margin-top:.34in;display:flex;align-items:center;gap:.14in">
+      <span style="display:inline-grid;place-items:center;width:.56in;height:.56in;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:16pt;flex-shrink:0">${ci + 1}</span>
+      <div style="min-width:0"><div class="kick">${esc(ch.category)}</div><h1 style="font-size:22pt;line-height:1.04">${esc(clamp(ch.title, 58))}</h1></div>
+      <span class="worldchip" style="margin-left:auto;flex-shrink:0">📍 ${esc(WORLD_NAME[world] || world)}</span></div>
+    <div style="position:relative;margin-top:.1in;height:8.35in;border-radius:${reg >= 3 ? '6pt' : '14pt'};overflow:hidden;box-shadow:0 6pt 20pt rgba(26,18,54,.3)">
+      <svg viewBox="0 0 725 830" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">${svg}</svg>
+      ${caps}
+      <span style="position:absolute;left:8pt;bottom:6pt" class="bb-audio">🔊 narrated in the app</span>
+      <span style="position:absolute;right:10pt;bottom:8pt;font-family:'BB Kicker';font-size:9.2pt;color:rgba(255,255,255,.95);text-shadow:0 1px 4px rgba(0,0,0,.6)">turn the page — the whole trick, explained →</span>
+    </div>
     ${foot(vol, folio)}</div>`;
 }
 
 /* ---------------- chapter pages ---------------- */
 function teachPage(vol, ch, ci, folio, nextBreak) {
+  const reg = REG(vol);
   const cards = (ch.cards || []).slice(0, 4);
   const words = (ch.words || []).filter(w => w && w.w);
-  const oops = null; // vex alert content: the sneakiest hook among the chapter's words
   const vexW = words.find(w => w.hook && /not|never|don’t|don't|watch|careful|trap/i.test(w.hook)) || words[0];
   const three = words.slice(0, 3).map(w => w.w);
+  /* sound-trap box: the chapter's own homophones, if it has any */
+  const traps = words.map(w => ({ w: w.w, twins: HOMX[String(w.w).toLowerCase()] })).filter(x => x.twins && x.twins.length).slice(0, 2);
+  const checkLine = reg === 1
+    ? `Cover the page. Spell these three out loud: <b>${three.map(esc).join('</b> · <b>')}</b>. Say each letter like you mean it.`
+    : reg === 2
+      ? `Cover the page and spell <b>${three.map(esc).join('</b> · <b>')}</b> out loud. Miss one? Read the idea again — it's faster than guessing twice.`
+      : `Book closed: <b>${three.map(esc).join('</b> · <b>')}</b>, out loud, full words. At this level, almost right is still an elimination.`;
+  const alerts = [
+    vexW && vexW.hook ? `<div class="bb-vex">${VEX('0.42in')}<div><div class="l">Vex alert</div><div style="font-size:9.8pt;line-height:1.35">${esc(clamp(vexW.hook, 120))}</div></div></div>` : '',
+    traps.length ? `<div class="bb-trap"><div class="l">Sound trap</div><div style="font-size:9.8pt;line-height:1.35">${traps.map(t => `<b>${esc(t.w)}</b> sounds like <i>${esc(t.twins.slice(0, 2).join(', '))}</i>`).join(' · ')} — at the mic, always ask for the meaning.</div></div>` : '',
+    `<div class="bb-check"><div class="l">Check yourself</div><div style="font-size:9.8pt;line-height:1.35">${checkLine}</div></div>`,
+  ].filter(Boolean);
   return `<div class="page" data-vol="${vol.n}">
     ${head(vol, ch, ci, 'The idea')}
     <div style="margin-top:.4in" class="kick">The big idea</div>
     <div class="bb-bigidea">${esc(clamp(ch.concept, 430))}<span class="cameo">${avatar(vol.av, '.62in')}</span></div>
     ${ch.method ? `<div class="kick" style="margin-top:.08in">The pro move</div><div class="bb-promove">${String(ch.method)}</div>` : ''}
-    ${cards.length ? `<div class="bb-sticky">${cards.map(cd => `<div class="card"><h3>${esc(cd.title)}</h3><p>${esc(clamp(cd.body, 300))}</p></div>`).join('')}</div>` : ''}
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.1in;margin-top:.1in">
-      ${vexW && vexW.hook ? `<div class="bb-vex">${VEX('0.42in')}<div><div class="l">Vex alert</div><div style="font-size:8.8pt;line-height:1.35">${esc(clamp(vexW.hook, 130))}</div></div></div>` : ''}
-      <div class="bb-check"><div class="l">Check yourself</div><div style="font-size:8.8pt;line-height:1.35">Cover the page. Spell these three out loud: <b>${three.map(esc).join('</b> · <b>')}</b>. Even Vex missed that last one.</div></div></div>
-    ${nextBreak()}
+    ${cards.length ? `<div class="bb-sticky">${cards.map(cd => `<div class="card"><h3>${esc(cd.title)}</h3><p>${esc(clamp(cd.body, 244))}</p></div>`).join('')}</div>` : ''}
+    <div style="display:grid;grid-template-columns:repeat(${alerts.length},1fr);gap:.1in;margin-top:.1in">${alerts.join('')}</div>
+    ${cards.length >= 4 && String(ch.method || '').length > 380 ? '' : nextBreak()}
+    ${foot(vol, folio)}</div>`;
+}
+/* checkpoint quiz page — the Word Map's own concept questions, on paper */
+function quizPage(vol, ch, ci, qs, cast, rnd, keys, folio) {
+  if (!qs || !qs.length) return null;
+  const reg = REG(vol);
+  const host = cast[(ci + 2) % cast.length];
+  const totLen = qs.slice(0, 5).reduce((a, q) => a + q.q.length + q.c.join('').length, 0);
+  const picked = qs.slice(0, totLen > 900 ? 4 : 5);
+  const letters = 'ABCD';
+  const ans = [];
+  const qHtml = picked.map((q, i) => {
+    const opts = q.c.map((c, k) => ({ c, ok: k === 0 })); shuf(opts, rnd);
+    ans.push(letters[opts.findIndex(o => o.ok)]);
+    return `<div class="q"><div class="qq">${i + 1}. ${esc(q.q)}</div>
+      ${opts.map((o, k) => `<div class="opt"><i>${letters[k]}</i><span>${esc(clamp(String(o.c), 96))}</span></div>`).join('')}</div>`;
+  }).join('');
+  keys.push(`<div><b>Ch. ${ci + 1} checkpoint</b> — ${ans.map((a, i) => (i + 1) + ':' + a).join('  ')}</div>`);
+  const intro = reg === 1 ? 'Circle your answer, then check the back. No pressure — wrong answers are how the right ones stick.'
+    : reg === 2 ? 'Same questions the app asks at this stop on the Word Map. Circle, then check the back.'
+    : 'The Word Map gates this stop at 90%. That is five of six, minimum. Circle and verify.';
+  /* dictation bonus fills the page and adds real practice: three chapter words,
+     read aloud by anyone nearby, written here; answers ride the back key */
+  const dictN = totLen > 700 ? 2 : 3;
+  const dict = shuf(((ch.words || []).filter(w => w && w.w)).slice(), rnd).slice(0, dictN);
+  keys.push(`<div><b>Ch. ${ci + 1} dictation</b> — ${dict.map(w => w.w).join(', ')}</div>`);
+  const hostCd = CARD(host.id) || {};
+  return `<div class="page" data-vol="${vol.n}">
+    ${head(vol, ch, ci, 'Checkpoint')}
+    <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in">${avatar(host.id, '.62in')}
+      <div><div class="kick">${esc(host.name)}${hostCd.title ? ' · ' + esc(hostCd.title) : ''} runs the checkpoint</div><h2 style="font-size:20pt">Do you own the idea?</h2></div></div>
+    <p style="font-size:10.4pt;color:var(--muted);margin:.06in 0 .1in">${intro}${hostCd.power ? ` <i>${esc(host.name)}'s power is ${esc(hostCd.power)} — borrow it.</i>` : ''}</p>
+    <div class="bb-quiz" style="columns:2;column-gap:.3in">${qHtml}</div>
+    <div class="kick" style="margin-top:.18in">Dictation round</div>
+    <p style="font-size:10.2pt;color:var(--muted);margin:.02in 0 .06in">Hand this page to anyone nearby. They read the words from the answer key (Ch. ${ci + 1} dictation, at the back) — you write, no peeking.</p>
+    ${dict.map((_, i) => `<div style="display:flex;gap:.12in;align-items:baseline"><span style="font-family:'BB Kicker';font-size:10pt;color:var(--accent-deep)">${i + 1}.</span><div class="bb-writeline" style="flex:1"></div></div>`).join('')}
+    ${picked.length <= 3 ? worldStrip(chWorldOf(vol, ci), vol, ci * 3 + 1) : ''}
     ${foot(vol, folio)}</div>`;
 }
 function hivePages(vol, ch, ci, folioRef) {
   const words = (ch.words || []).filter(w => w && w.w);
-  const FULLN = vol.band === 'advanced' ? 16 : 8;
+  const FULLN = vol.band === 'advanced' ? 12 : 6;
   const out = [];
   const fullAll = words.slice(0, FULLN);
-  for (let f = 0; f < fullAll.length; f += 8) {
-    const seg = fullAll.slice(f, f + 8);
+  for (let f = 0; f < fullAll.length; f += 6) {
+    const seg = fullAll.slice(f, f + 6);
     out.push(`<div class="page" data-vol="${vol.n}">
       ${head(vol, ch, ci, 'Practice')}
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
@@ -375,17 +536,27 @@ function hivePages(vol, ch, ci, folioRef) {
       <div class="bb-hive" style="margin-top:.12in">${seg.map(w => { const say = w.say || ''; const ipa = ipaOf(w.w, say);
         return `<div><div class="bb-card"><div class="w">${esc(w.w)}</div>
         <div class="say">${say ? '/ ' + esc(say) + ' /' : ''}${ipa ? '  ·  /' + esc(ipa) + '/' : ''}</div>
-        <div class="d">${esc(clamp(w.def, 92))}</div>${w.hook ? `<div class="hook">hook: ${esc(clamp(w.hook, 92))}</div>` : ''}</div>
-        <div class="bb-writeline"></div></div>`; }).join('')}</div>
+        <div class="d">${esc(clamp(w.def, 92))}</div>${w.hook ? `<div class="hook">hook: ${esc(clamp(w.hook, 92))}</div>` : ''}
+        ${w.ex ? `<div class="ex">${esc(maskDef(clamp(w.ex, 110), w.w))}</div>` : ''}</div>
+        <div class="bb-writeline"></div>${w.ex ? '' : '<div class="bb-writeline"></div><div class="bb-writeline"></div>'}</div>`; }).join('')}</div>
+      ${worldStrip(chWorldOf(vol, ci), vol, ci * 13 + f + 3)}
       ${foot(vol, folioRef.n++)}</div>`);
   }
   const rest = words.slice(FULLN);
-  for (let i = 0; i < rest.length; i += 28) {
-    const seg = rest.slice(i, i + 28);
+  for (let i = 0; i < rest.length; i += 14) {
+    const seg = rest.slice(i, i + 14);
+    /* a short final segment would leave the page mostly empty — fill it with a
+       lock-in writing drill and the travelling world band */
+    const short = true;
+    const lockIn = short ? `<div class="kick" style="margin-top:.24in">Lock them in</div>
+      <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick ${Math.min(4, seg.length)} words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in">${Array.from({ length: Math.min(4, seg.length) * 3 }, () => '<div class="bb-writeline"></div>').join('')}</div>
+      ${worldStrip(chWorldOf(vol, ci), vol, ci * 7 + i + 2)}` : '';
     out.push(`<div class="page" data-vol="${vol.n}">
       ${head(vol, ch, ci, 'Rapid round')}
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in">${seg.map(w => `<div class="bb-row"><b>${esc(w.w)}</b> <span class="tile" style="font-size:7.8pt">${w.say ? '/' + esc(w.say) + '/' : ''}</span><br>${esc(clamp(w.def, 64))}</div>`).join('')}</div>
+      <div class="bb-rapid" style="margin-top:.12in">${seg.map(w => `<div class="bb-row"><b>${esc(w.w)}</b> <span class="tile" style="font-size:8.8pt">${w.say ? '/' + esc(w.say) + '/' : ''}</span><br>${esc(clamp(w.def, 64))}</div>`).join('')}</div>
+      ${lockIn}
       ${foot(vol, folioRef.n++)}</div>`);
   }
   return out;
@@ -478,132 +649,238 @@ function gamePage(vol, ch, ci, rnd, keys, folio, nextBreak) {
       <div><div class="kick" style="margin-bottom:.06in">Rescue the vowels</div>
       ${ml.map(x => `<div class="g1"><span class="gw">${esc(x.m)}</span><div class="bb-writeline"></div></div>`).join('')}</div></div>`;
     keys.push(`<div><b>Ch. ${ci + 1} scramble</b> — ${sc.map(x => x.s + '=' + x.w).join(', ')} · vowels: ${ml.map(x => x.w).join(', ')}</div>`); }
+  const host = (gamePage._cast && gamePage._cast[(ci + 1) % gamePage._cast.length]) || { id: vol.av, name: NAMES[vol.av] || vol.av };
   return `<div class="page" data-vol="${vol.n}">
     ${head(vol, ch, ci, 'Game')}
-    <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in">${avatar(vol.av, '.6in')}
-      <div><div class="kick">${esc(NAMES[vol.av])}'s puzzle page</div><h2 style="font-size:20pt">${title}</h2></div>
+    <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in">${avatar(host.id, '.6in')}
+      <div><div class="kick">${esc(host.name)}'s puzzle page</div><h2 style="font-size:20pt">${title}</h2></div>
       <div style="margin-left:auto" class="bb-badge"><div class="b1">I own<br>this</div></div></div>
     <div style="margin-top:.1in">${body}</div>
     ${nextBreak()}
+    ${title === 'Scramble & rescue' ? worldStrip(chWorldOf(vol, ci), vol, ci * 11 + 5) : ''}
     ${foot(vol, folio)}</div>`;
 }
 
-/* shared front/back matter */
-function cover(vol, nCh, nWords, label) {
+/* shared front/back matter — v6 covers are dense ensemble keyframes:
+   Bizzy front and centre in motion, the guide and crew around, letter tiles
+   raining through the scene, the world's own props on the ground. */
+function cover(vol, nCh, nWords, label, cast) {
   const W = 816, H = 1056;
-  return `<div class="page" data-cover data-vol="${vol.n}" style="background:linear-gradient(168deg,var(--accent),var(--accent-deep));color:#fff;padding:0">
+  const reg = REG(vol);
+  const crew = [vol.av].concat((cast || []).slice(0, 3).map(a => a.id));
+  return `<div class="page" data-cover data-vol="${vol.n}" style="color:#fff;padding:0;background:#241E33">
     <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">
-      ${texture(vol.tex)}
-      ${worldScene(vol.world, W, H)}
-      ${letterTiles(vol.title, W, H * .56, vol.n * 977)}
+      ${ANIME.ensemble({ W, H, world: vol.world, reg, seed: vol.n * 977, uid: 'cov' + vol.n,
+        hero: HERO, crew, title: vol.title, vex: vol.band === 'advanced',
+        skyKey: reg >= 3 ? 'dusk' : vol.n % 2 ? 'gold' : 'day' })}
     </svg>
-    <div style="position:absolute;top:.5in;left:.55in;right:.55in;display:flex;justify-content:space-between;align-items:center">
-      <span style="font-family:'BB Kicker';letter-spacing:.16em;font-size:10.5pt">BIZZING BEE ${label}</span>
-      <span class="disp" style="background:rgba(0,0,0,.32);padding:.07in .2in;border-radius:999px;font-size:12.5pt;transform:rotate(2deg)">Vol. ${vol.n}</span></div>
-    <div style="position:absolute;top:1.35in;left:.55in;right:.55in;text-align:center;transform:rotate(-1.6deg)">
-      <h1 class="coverTitle" style="font-size:52pt;line-height:.98">${esc(vol.title)}</h1>
-      <p style="font-family:'BB Kicker';font-size:13pt;max-width:5.6in;margin:.12in auto 0;text-shadow:0 2px 6px rgba(0,0,0,.3)">${esc(vol.tag)}</p></div>
-    <div style="position:absolute;left:.5in;bottom:1.5in">
-      <div style="width:2.9in;height:.34in;background:rgba(0,0,0,.22);border-radius:50%;position:absolute;bottom:-.06in;left:.1in;filter:blur(2px)"></div>
-      ${avatar(vol.av, '3in', ';position:relative;transform:rotate(-3deg)')}
-    </div>
-    ${vol.band === 'advanced' ? `<div class="peek" style="top:3.4in;right:-.32in;transform:rotate(-18deg)">${VEX('1.15in')}</div>` : ''}
-    <div style="position:absolute;right:.5in;bottom:.62in;display:flex;flex-direction:column;gap:.09in;align-items:flex-end">
-      ${[[nCh + ' chapters'], [nWords + ' practice words'], ['puzzles in every chapter']].map(([t], i2) =>
-        `<span style="background:rgba(0,0,0,.32);border-radius:999px;padding:.05in .2in;font-family:'BB Kicker';font-size:10pt;transform:rotate(${(i2 - 1) * 1.6}deg)">${t}</span>`).join('')}
-      <span style="font-family:'BB Kicker';font-size:9.5pt;opacity:.95;margin-top:.05in">with ${esc(NAMES[vol.av])} · in ${esc(WORLD_NAME[vol.world] || vol.world)}</span></div>
-    <div style="position:absolute;left:.55in;bottom:.6in;font-family:'BB Kicker';font-size:9pt;opacity:.85">${esc(WORLD_BLURB[vol.n] || '')}</div>
+    <div style="position:absolute;top:.42in;left:.55in;right:.55in;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-family:'BB Kicker';letter-spacing:.16em;font-size:10.5pt;text-shadow:0 2px 6px rgba(0,0,0,.55)">BIZZING BEE ${label}</span>
+      <span class="disp" style="background:rgba(12,9,28,.55);padding:.07in .2in;border-radius:999px;font-size:12.5pt;transform:rotate(${reg >= 3 ? 0 : 2}deg)">Vol. ${vol.n}</span></div>
+    <div style="position:absolute;top:.95in;left:.4in;right:.4in;text-align:center;transform:rotate(${reg >= 3 ? 0 : -1.4}deg)">
+      <h1 class="coverTitle" style="font-size:58pt;line-height:.94">${esc(vol.title)}</h1>
+      <p style="font-family:'BB Kicker';font-size:14pt;max-width:5.8in;margin:.14in auto 0;text-shadow:0 2px 10px rgba(0,0,0,.65)">${esc(vol.tag)}</p></div>
+    <div style="position:absolute;left:0;right:0;bottom:0;height:1.5in;background:linear-gradient(180deg,rgba(12,9,28,0),rgba(12,9,28,.72))"></div>
+    <div style="position:absolute;right:.5in;bottom:.55in;display:flex;flex-direction:column;gap:.08in;align-items:flex-end">
+      ${[[nCh + ' chapters'], [nWords + ' practice words'], ['quizzes & puzzles throughout']].map(([t]) =>
+        `<span style="background:rgba(12,9,28,.55);border-radius:999px;padding:.05in .18in;font-family:'BB Kicker';font-size:10pt">${t}</span>`).join('')}</div>
+    <div style="position:absolute;left:.55in;bottom:.55in;max-width:4in;font-family:'BB Kicker';font-size:9.6pt;text-shadow:0 2px 6px rgba(0,0,0,.7)">
+      Bizzy &amp; ${esc(NAMES[vol.av] || castName(vol.av))} in ${esc(WORLD_NAME[vol.world] || vol.world)}<br>
+      <span style="opacity:.9">${esc(WORLD_BLURB[vol.n] || '')}</span></div>
   </div>`;
+}
+/* a slim world band that carries the journey's scenery onto working pages */
+function worldStrip(world, vol, seedK) {
+  const uid = 'ws' + vol.n + 'x' + seedK;
+  const reg = REG(vol);
+  return `<div class="worldband" aria-hidden="true">
+    <svg viewBox="0 0 725 120" preserveAspectRatio="xMidYMax slice">
+      <defs>${ANIME.filters(uid)}</defs>
+      ${ANIME.sky(world, reg >= 3 ? 'think' : 'happy', 725, 120, reg, uid)}
+      ${ANIME.ground(world, 725, 120, reg)}
+      ${ANIME.env(world, 725, 120, 96, reg, uid, seedK)}
+      ${ANIME.particles(world, 725, 120, seedK * 3 + 1, reg, uid)}</svg>
+    <span class="wl">${esc((WORLD_NAME[world] || world).replace(/^the /, 'the '))}</span></div>`;
 }
 function dividerPage(vol, folio) {
   const W = 816, H = 1056;
-  return `<div class="page" data-vol="${vol.n}" style="background:linear-gradient(160deg,var(--accent),var(--accent-deep));color:#fff;padding:0">
-    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">${worldScene(vol.world, W, H)}</svg>
-    <div style="position:absolute;top:2in;left:.7in;right:.7in;text-align:center">
-      <div style="font-family:'BB Kicker';letter-spacing:.14em;font-size:11pt;text-shadow:0 2px 6px rgba(0,0,0,.3)">WELCOME TO</div>
-      <h1 class="coverTitle" style="font-size:40pt;transform:rotate(-1.2deg)">${esc((WORLD_NAME[vol.world] || vol.world).replace(/^the /, 'The '))}</h1>
-      <p style="font-family:'BB Kicker';font-size:12pt;max-width:5.4in;margin:.16in auto 0;text-shadow:0 2px 6px rgba(0,0,0,.35);line-height:1.5">${esc(WORLD_BLURB[vol.n] || '')}</p></div>
-    <div style="position:absolute;left:53%;bottom:2.1in;transform:rotate(6deg)">${avatar(vol.av, '1.7in')}</div>
+  const reg = REG(vol);
+  return `<div class="page" data-vol="${vol.n}" style="color:#fff;padding:0;background:#241E33">
+    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">
+      ${ANIME.plate(vol.av, { W, H, world: vol.world, mood: reg >= 3 ? 'think' : 'excited', reg, seed: vol.n * 431 + 5,
+        uid: 'div' + vol.n, figX: W * .62, figY: H * .66, figS: 300, flip: true, letterbox: reg >= 3 })}</svg>
+    <div style="position:absolute;top:1.7in;left:.7in;right:.7in;text-align:center">
+      <div style="font-family:'BB Kicker';letter-spacing:.14em;font-size:11pt;text-shadow:0 2px 6px rgba(0,0,0,.4)">WELCOME TO</div>
+      <h1 class="coverTitle" style="font-size:40pt;transform:rotate(${reg >= 3 ? 0 : -1.2}deg)">${esc((WORLD_NAME[vol.world] || vol.world).replace(/^the /, 'The '))}</h1>
+      <p style="font-family:'BB Kicker';font-size:12.5pt;max-width:5.4in;margin:.16in auto 0;text-shadow:0 2px 8px rgba(0,0,0,.5);line-height:1.5">${esc(WORLD_BLURB[vol.n] || '')}</p></div>
+    <div class="bb-foot" style="color:rgba(255,255,255,.85)"><span>Bizzing Bee · ${esc(vol.title)}</span><span>${folio}</span></div>
+  </div>`;
+}
+/* the cast page: who walks through this book with you */
+const PACK_ROLE = {
+  hive: 'born in the Hive — spelling is the family business', stage: 'lives for the spotlight and the final round',
+  cosmos: 'navigates by the stars; never loses a syllable', dojo: 'trains daily — discipline beats talent',
+  lab: 'tests every rule twice before trusting it', arcade: 'turns every drill into a high score',
+  origami: 'folds long words into small, foldable steps', elements: 'reads the weather inside a word',
+  critter: 'sniffs out silent letters from a mile away', vibe: 'hears the rhythm a word wants to be spelled in',
+  dino: 'remembers words older than most languages', enchanted: 'keeps the words with a little magic in them',
+  wildhearts: 'loyal to the speller, fierce with the list', legends: 'has seen every trick a word can pull',
+  turbo: 'fast — but never faster than the routine', villains: 'reformed. Mostly. Knows every trap personally',
+  serpent: 'patient — waits a whole round for one perfect word', bigbeasts: 'carries the heavyweight vocabulary',
+  worldchangers: 'proof that one voice can move a room', gods: 'ancient management. Rarely wrong about roots',
+};
+function castPage(vol, cast, folio) {
+  const reg = REG(vol);
+  const lead = reg === 1 ? 'Nobody spells alone. Meet the crew walking this world with you — they will hand you puzzles, run your checkpoints and cheer from the margins.'
+    : reg === 2 ? 'Every book travels with a crew. These nine hand you puzzles, host the checkpoints and occasionally get a line right before you do.'
+    : 'The ensemble for this volume. They host the drills and checkpoints; the work is still yours.';
+  const gCard = CARD(vol.av); const hCard = CARD(HERO);
+  const entry = a => { const cd = CARD(a.id) || {};
+    return `<div style="display:flex;gap:.12in;align-items:center">
+      ${avatar(a.id, '.92in')}
+      <div style="min-width:0"><div style="font-family:'BB Display';font-size:13pt;line-height:1.1">${esc(a.name)}
+        ${cd.overall ? `<span style="font-family:'BB Tile';font-size:8.6pt;color:var(--muted)"> OVR ${cd.overall}</span>` : ''}</div>
+      <div style="font-family:'BB Kicker';font-size:8.4pt;color:var(--accent-deep);text-transform:uppercase;letter-spacing:.06em;margin:1pt 0 2pt">${esc(cd.title || (a.rarity + ' · ' + a.pack + ' pack'))}${cd.power ? ' · ' + esc(cd.power) : ''}</div>
+      <div style="font-size:9.6pt;color:var(--muted);line-height:1.32">${esc(clamp(cd.lore || PACK_ROLE[a.pack] || 'reports for spelling duty', 110))}</div></div></div>`; };
+  return `<div class="page" data-vol="${vol.n}">
+    ${head(vol, null, 0, 'The cast')}
+    <div style="margin-top:.36in;display:flex;align-items:center;gap:.16in">
+      ${avatar(HERO, '1.1in')}${avatar(vol.av, '.9in')}
+      <div><div class="kick">Bizzy — and this book's guide, ${esc(NAMES[vol.av] || castName(vol.av))}</div>
+      <h1 style="font-size:23pt">The crew of Vol. ${vol.n}</h1>
+      <p style="font-size:10.4pt;color:var(--muted);margin-top:2pt;max-width:5.2in;line-height:1.42">${lead}</p></div></div>
+    ${hCard && hCard.lore ? `<div class="bb-panelbox" style="margin-top:.12in;font-size:10.2pt;line-height:1.42"><b style="color:var(--accent-deep)">Bizzy</b> — ${esc(hCard.lore)}${gCard && gCard.lore ? ` &nbsp;·&nbsp; <b style="color:var(--accent-deep)">${esc(NAMES[vol.av] || '')}</b> — ${esc(gCard.lore)}` : ''}</div>` : ''}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.13in .22in;margin-top:.16in">
+      ${cast.slice(0, 8).map(entry).join('')}</div>
+    <div style="display:flex;gap:.14in;align-items:center;margin-top:.18in" class="bb-panelbox">
+      ${VEX('.85in')}
+      <div><div class="kick" style="color:var(--tricky-deep)">And the other one</div>
+      <p style="font-size:10.4pt;line-height:1.42">${reg >= 3 ? 'Vex, the word-moth. Every trap in this book is one it has watched a speller fall into on a real stage.' : 'Vex the word-moth sneaks through every chapter, planting the exact mistakes real spellers make. Spot the trap before you step in it.'}</p></div></div>
+    ${foot(vol, folio)}</div>`;
+}
+/* back-of-book poster: the crew, staged in their world at golden hour */
+function posterPage(vol, cast, folio) {
+  const W = 816, H = 1056;
+  const reg = REG(vol);
+  const uid = 'po' + vol.n;
+  const figs = [HERO, vol.av].concat(cast.slice(0, 3).map(a => a.id));
+  const spots = [[.5, .56, 300], [.16, .66, 190], [.82, .64, 185], [.32, .72, 160], [.68, .73, 165]];
+  const inner = figs.map((id, i) => { const [fx, fy, s] = spots[i];
+    return ANIME.figure(id, W * fx, H * fy, s, { uid, flip: fx > .5 }); }).join('');
+  return `<div class="page" data-vol="${vol.n}" style="color:#fff;padding:0;background:#241E33">
+    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">
+      <defs>${ANIME.filters(uid)}</defs>
+      ${ANIME.sky(vol.world, reg >= 3 ? 'think' : 'excited', W, H, Math.max(2, reg), uid)}
+      ${ANIME.clouds(W, H, reg, vol.n * 17 + 3, uid)}
+      ${ANIME.ground(vol.world, W, H, reg)}
+      ${inner}
+      ${ANIME.particles(vol.world, W, H, vol.n * 29 + 7, reg, uid)}</svg>
+    <div style="position:absolute;top:.8in;left:.6in;right:.6in;text-align:center">
+      <h1 class="coverTitle" style="font-size:34pt">${esc(vol.title)}</h1>
+      <p style="font-family:'BB Kicker';font-size:11pt;text-shadow:0 2px 6px rgba(0,0,0,.5)">the ${esc((WORLD_NAME[vol.world] || vol.world).replace(/^the /, ''))} crew · Bizzing Bee</p></div>
     <div class="bb-foot" style="color:rgba(255,255,255,.85)"><span>Bizzing Bee · ${esc(vol.title)}</span><span>${folio}</span></div>
   </div>`;
 }
 function howTo(vol, folio) {
+  const reg = REG(vol);
   const steps = [
-    ['Read the story strip', 'Each chapter opens as a comic. Vex sets the trap; your guide walks you out of it.'],
-    ['Steal the pro move', 'The dark box is how a champion thinks on stage. It works on brand-new words.'],
-    ['Spell in the boxes', 'Say it, spell it OUT LOUD, then write it. Hand and mouth together beat eyes alone.'],
-    ['Play the puzzle', 'Every chapter ends in a game made of its own words. Sneaky practice still counts.'],
-    ['Hunt the Big List', 'The back holds every word. Circle the bubbles you own. Come back for the rest.'],
+    ['Read the story', reg === 1 ? 'Each chapter opens like a film. Vex sets the trap; your guide walks you out of it.' : 'Each chapter opens as a storyboard. Vex sets the trap; the crew talks you out of it.'],
+    ['Steal the pro move', 'The dark box is how a champion thinks on stage. It works on brand-new words too.'],
+    ['Spell out loud, then write', reg === 1 ? 'Say it, spell it OUT LOUD, then write it in the box. Mouth and hand together beat eyes alone.' : 'Say it, spell it aloud, write it. The order matters — it is how the stage will ask for it.'],
+    ['Pass the checkpoint', reg >= 3 ? 'The same questions the app gates this chapter with — at 90%. Circle, then verify at the back.' : 'A short quiz straight from the Word Map. Circle your answers; the back of the book keeps the truth.'],
+    ['Play the puzzle, hunt the Big List', 'Every chapter ends in a game built from its own words, and the back holds every word in the book. Circle what you own.'],
   ];
+  const hello = reg === 1
+    ? `Hi — I'm <b>${esc(NAMES[vol.av])}</b>. ${esc(vol.tag)} — that's where we're going, one chapter at a time. Bring a pencil. I'll bring the words.`
+    : reg === 2
+      ? `<b>${esc(NAMES[vol.av])}</b> here. ${esc(vol.tag)} — that's the route. The crew and I will keep it moving; you keep the pencil moving.`
+      : `I'm <b>${esc(NAMES[vol.av] || castName(vol.av))}</b>. ${esc(vol.tag)}. Nothing in this book is filler — if a page is here, a real speller lost a real word without it.`;
   return `<div class="page" data-vol="${vol.n}">
     ${head(vol, null, 0, 'How this book works')}
-    <div style="margin-top:.4in"><h1 style="font-size:26pt">Five moves. That's the whole system.</h1></div>
-    <div style="display:flex;gap:.14in;align-items:flex-start;margin:.16in 0">
+    <div style="margin-top:.4in"><h1 style="font-size:25pt">Five moves. That's the whole system.</h1></div>
+    <div style="display:flex;gap:.14in;align-items:center;margin:.16in 0">
       ${avatar(vol.av, '1in')}
-      <div class="bb-bubble" style="font-size:11pt">Hi — <b>${esc(NAMES[vol.av])}</b> here. ${esc(vol.tag)}. That's our mission. Bring a pencil; I'll bring the words. Watch out for Vex.</div></div>
+      <div class="bb-panelbox" style="flex:1;font-size:11.5pt;line-height:1.5">${hello}</div></div>
     ${steps.map(([t, b], i) => `<div style="display:flex;gap:.14in;margin-bottom:.13in;align-items:flex-start">
       <span style="display:inline-grid;place-items:center;width:.52in;height:.52in;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:14pt;flex-shrink:0">${i + 1}</span>
-      <div class="bb-panelbox" style="flex:1"><h3 style="font-size:12pt;color:var(--accent-deep)">${t}</h3><p style="font-size:9.8pt;line-height:1.45">${b}</p></div></div>`).join('')}
+      <div class="bb-panelbox" style="flex:1"><h3 style="font-size:12.5pt;color:var(--accent-deep)">${t}</h3><p style="font-size:10.6pt;line-height:1.45">${b}</p></div></div>`).join('')}
     <div class="bb-audio" style="margin-top:.05in">🔊 Grown-ups: every chapter is narrated, and every word recorded, in the Bizzing Bee app</div>
+    ${worldStrip(vol.world, vol, 7)}
     ${foot(vol, folio)}</div>`;
 }
 function bigListPages(vol, allWords, folioRef) {
   const uniq = [...new Map(allWords.map(w => [w.w.toLowerCase(), w])).values()].sort((a, b) => a.w.localeCompare(b.w));
-  const out = []; const PER = 104;
+  const out = []; const PER = 66;
   for (let i = 0; i < uniq.length; i += PER) {
+    const seg = uniq.slice(i, i + PER);
     out.push(`<div class="page" data-vol="${vol.n}">
       ${head(vol, null, 0, 'The Big List')}
       <div style="margin-top:.4in"><h2 style="font-size:20pt">Every word in this book. Circle what you own.</h2></div>
-      <div class="bb-biglist" style="margin-top:.14in">${uniq.slice(i, i + PER).map(w => `<div><span></span>${esc(w.w)}</div>`).join('')}</div>
+      <div class="bb-biglist" style="margin-top:.14in">${seg.map(w => `<div><span></span>${esc(w.w)}</div>`).join('')}</div>
+      ${seg.length < PER * .82 ? worldStrip(vol.world, vol, 400 + i) : ''}
       ${foot(vol, folioRef.n++)}</div>`);
   }
   return out;
 }
 function keyPages(vol, keys, folioRef) {
+  const reg = REG(vol);
   const out = [];
   out.push(`<div class="page" data-vol="${vol.n}" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
-    ${VEX('1.2in')}
-    <h1 style="font-size:32pt;margin:.14in 0 .06in">No peeking until you've tried.</h1>
-    <p style="color:var(--muted);font-size:11pt">Vex would peek. Be better than Vex.</p>
+    ${VEX('1.2in', ';margin:0 auto')}
+    <h1 style="font-size:32pt;margin:.14in 0 .06in">${reg >= 3 ? 'Answers. Earn them first.' : "No peeking until you've tried."}</h1>
+    <p style="color:var(--muted);font-size:11.5pt;margin-bottom:1.6in">${reg >= 3 ? 'Checking before trying teaches you nothing twice.' : 'Vex would peek. Be better than Vex.'}</p>
+    ${worldStrip(vol.world, vol, 91)}
     ${foot(vol, folioRef.n++)}</div>`);
   for (let i = 0; i < keys.length; i += 14) {
     out.push(`<div class="page" data-vol="${vol.n}">
       ${head(vol, null, 0, 'Answer key')}
       <div style="margin-top:.4in"><h2 style="font-size:20pt">Answer key</h2></div>
       <div class="bb-key" style="margin-top:.12in">${keys.slice(i, i + 14).join('')}</div>
+      ${worldStrip(WORLD_CYCLE[(i / 14 + vol.n) % 12], vol, 300 + i)}
       ${foot(vol, folioRef.n++)}</div>`);
   }
   return out;
 }
 function colophon(vol, folio) {
+  const reg = REG(vol);
+  const line = reg === 1 ? `${esc(NAMES[vol.av] || castName(vol.av))} says: you just finished a whole book. That happened.`
+    : reg === 2 ? `That's the volume. ${esc(NAMES[vol.av] || castName(vol.av))} signs off — the words are yours now.`
+    : `End of volume. What you keep from it shows up at the microphone, not on this page.`;
   return `<div class="page" data-vol="${vol.n}" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
-    ${avatar(vol.av, '1.4in')}
-    <h2 style="font-size:20pt;margin:.12in 0">${esc(NAMES[vol.av])} says: that's a whole book. Respect.</h2>
+    ${avatar(vol.av, '1.4in', ';margin:0 auto')}
+    <h2 style="font-size:20pt;margin:.12in 0">${line}</h2>
     <div style="margin:0 auto .2in" class="bb-badge"><div class="b1">DONE</div><div class="b1" style="border-style:solid">★</div><div class="b1">+1</div></div>
     <p style="font-size:10.5pt;max-width:5.4in;margin:0 auto .26in;line-height:1.55">Every word in here also lives in the Bizzing Bee app, with real audio, games and a coach that remembers what you miss. Paper for the muscles, app for the ears.</p>
-    <p style="font-size:8.4pt;color:var(--muted);max-width:5.9in;margin:0 auto;line-height:1.55">Bizzing Bee is an independent study project — not affiliated with, sponsored by, or endorsed by the Scripps National Spelling Bee, the North South Foundation, or Merriam-Webster. Competition names appear only to describe what the practice material relates to. Definitions, sentences, hints and stories are written for this project. Typefaces are open-licensed (SIL OFL).</p>
+    <p style="font-size:8.4pt;color:var(--muted);max-width:5.9in;margin:0 auto 1.55in;line-height:1.55">Bizzing Bee is an independent study project — not affiliated with, sponsored by, or endorsed by the Scripps National Spelling Bee, the North South Foundation, or Merriam-Webster. Competition names appear only to describe what the practice material relates to. Definitions, sentences, hints and stories are written for this project. Typefaces are open-licensed (SIL OFL).</p>
+    ${worldStrip(vol.world, vol, 97)}
     ${foot(vol, folio)}</div>`;
 }
 
 /* ---------------- course book builder ---------------- */
 function buildCourse(vol, chapters, scripts, idxOf) {
   const rnd = mulberry(vol.n * 7919 + 17);
-  const nextBreak = makeBreaks(vol);
+  const cast = draftCast(vol);
+  const nextBreak = makeBreaks(vol, cast);
+  gamePage._cast = cast;
   const allWords = chapters.flatMap(ch => (ch.words || []).filter(w => w && w.w));
+  const QSRC = vol.band === 'advanced' ? QS_ADV : QS_GEN;
   const keys = [];
   const folio = { n: 1 };
-  let pages = [cover(vol, chapters.length, allWords.length, vol.band === 'advanced' ? 'ADVANCED LIBRARY' : 'LIBRARY')];
+  let pages = [cover(vol, chapters.length, allWords.length, vol.band === 'advanced' ? 'ADVANCED LIBRARY' : 'LIBRARY', cast)];
   pages.push(howTo(vol, folio.n++));
+  pages.push(castPage(vol, cast, folio.n++));
   pages.push(dividerPage(vol, folio.n++));
   chapters.forEach((ch, i) => {
     const sc = scripts[String(idxOf(ch))];
-    const op = comicOpener(vol, ch, i, sc, folio.n); if (op) { pages.push(op); folio.n++; }
+    const op = comicOpener(vol, ch, i, sc, folio.n, cast); if (op) { pages.push(op); folio.n++; }
     pages.push(teachPage(vol, ch, i, folio.n++, nextBreak));
     pages = pages.concat(hivePages(vol, ch, i, folio));
+    const qp = quizPage(vol, ch, i, QSRC[idxOf(ch)], cast, rnd, keys, folio.n); if (qp) { pages.push(qp); folio.n++; }
     pages.push(gamePage(vol, ch, i, rnd, keys, folio.n++, nextBreak));
   });
   pages = pages.concat(bigListPages(vol, allWords, folio));
   pages = pages.concat(keyPages(vol, keys, folio));
+  pages.push(posterPage(vol, cast, folio.n++));
   pages.push(colophon(vol, folio.n++));
   return finish(vol, pages, { chapters: chapters.length, words: allWords.length });
 }
@@ -629,15 +906,16 @@ function book16() {
   pages.push(howTo16(vol, folio.n++));
   pages.push(dividerPage(vol, folio.n++));
   let pageNo = 0;
-  for (let i = 0; i < sims.length; i += 6) {
-    const seg = sims.slice(i, i + 6); pageNo++;
+  for (let i = 0; i < sims.length; i += 14) {
+    const seg = sims.slice(i, i + 14); pageNo++;
     pages.push(`<div class="page" data-vol="16">
       ${head(vol, null, 0, 'The simile shelf')}
       <div style="margin-top:.4in"><h2 style="font-size:20pt">Say one thing is like another. Boom — a picture.</h2></div>
-      <div style="columns:2;column-gap:.34in;margin-top:.14in">${seg.map((x, k) => `<div style="break-inside:avoid;margin-bottom:.17in;transform:rotate(${k % 2 ? .3 : -.3}deg)">
-        <div style="font-family:'BB Display';font-size:13pt;color:var(--accent-deep);line-height:1.12">⬡ ${esc(x.p)}</div>
-        <div style="font-size:9.2pt;line-height:1.35;margin-top:2pt;padding-left:.18in">${esc(clamp(x.m, 100))}</div>
-        ${x.os ? `<div style="font-size:8.2pt;line-height:1.32;margin-top:2pt;padding-left:.18in;color:var(--muted);font-style:italic">${esc(clamp(x.os, 150))}</div>` : ''}</div>`).join('')}</div>
+      <div style="columns:2;column-gap:.34in;margin-top:.14in">${seg.map((x, k) => `<div style="break-inside:avoid;margin-bottom:.15in;transform:rotate(${k % 2 ? .3 : -.3}deg)">
+        <div style="font-family:'BB Display';font-size:13.5pt;color:var(--accent-deep);line-height:1.14">⬡ ${esc(x.p)}</div>
+        <div style="font-size:10pt;line-height:1.36;margin-top:2pt;padding-left:.18in">${esc(clamp(x.m, 100))}</div>
+        ${x.os ? `<div style="font-size:9pt;line-height:1.33;margin-top:2pt;padding-left:.18in;color:var(--muted);font-style:italic">${esc(clamp(x.os, 150))}</div>` : ''}</div>`).join('')}</div>
+      ${worldStrip(WORLD_CYCLE[(pageNo + 2) % 12], vol, 500 + pageNo)}
       ${foot(vol, folio.n++)}</div>`);
     if (pageNo % 6 === 0) {
       const pool = shuf(sims.slice(Math.max(0, i - 34), i + 6).slice(), rnd).slice(0, 10);
@@ -662,11 +940,12 @@ function book16() {
         ${foot(vol, folio.n++)}</div>`);
     }
   }
-  for (let i = 0; i < idioms.length; i += 10) {
+  for (let i = 0; i < idioms.length; i += 18) {
     pages.push(`<div class="page" data-vol="16">
       ${head(vol, null, 0, 'Idiom hall of fame')}
       <div style="margin-top:.4in"><h2 style="font-size:20pt">Phrases that stopped meaning what they say.</h2></div>
-      <div style="columns:2;column-gap:.3in;margin-top:.14in">${idioms.slice(i, i + 10).map(x => `<div style="margin-bottom:.13in;break-inside:avoid;font-size:9pt;line-height:1.35"><b style="font-family:'BB Display';font-size:10.5pt;color:var(--accent-deep)">${esc(x.p)}</b> — ${esc(clamp(x.m, 80))}<br><span style="color:var(--muted);font-size:8.2pt;font-style:italic">${esc(clamp(x.os, 110))}</span></div>`).join('')}</div>
+      <div style="columns:2;column-gap:.3in;margin-top:.14in">${idioms.slice(i, i + 18).map(x => `<div style="margin-bottom:.12in;break-inside:avoid;font-size:9.8pt;line-height:1.36"><b style="font-family:'BB Display';font-size:11pt;color:var(--accent-deep)">${esc(x.p)}</b> — ${esc(clamp(x.m, 80))}<br><span style="color:var(--muted);font-size:8.8pt;font-style:italic">${esc(clamp(x.os, 110))}</span></div>`).join('')}</div>
+      ${worldStrip(WORLD_CYCLE[(i / 18 + 4) % 12], vol, 600 + i)}
       ${foot(vol, folio.n++)}</div>`);
   }
   pages.push(...keyPages(vol, keys, folio));
@@ -686,7 +965,8 @@ function howTo16(vol, folio) {
        ['Play the match rounds', 'Cover the meanings, test yourself, check the key at the back.']]
       .map(([t, b], i) => `<div style="display:flex;gap:.14in;margin-bottom:.13in;align-items:flex-start">
       <span style="display:inline-grid;place-items:center;width:.52in;height:.52in;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:14pt;flex-shrink:0">${i + 1}</span>
-      <div class="bb-panelbox" style="flex:1"><h3 style="font-size:12pt;color:var(--accent-deep)">${t}</h3><p style="font-size:9.8pt;line-height:1.45">${b}</p></div></div>`).join('')}
+      <div class="bb-panelbox" style="flex:1"><h3 style="font-size:12pt;color:var(--accent-deep)">${t}</h3><p style="font-size:10.6pt;line-height:1.45">${b}</p></div></div>`).join('')}
+    ${worldStrip(vol.world, vol, 8)}
     ${foot(vol, folio)}</div>`;
 }
 function book17() {
@@ -721,7 +1001,8 @@ function book17() {
        ['Write your own', 'Every third theme ends with blank lines. Champions get quoted too, eventually.']]
       .map(([t, b], i) => `<div style="display:flex;gap:.14in;margin-bottom:.13in;align-items:flex-start">
       <span style="display:inline-grid;place-items:center;width:.52in;height:.52in;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:14pt;flex-shrink:0">${i + 1}</span>
-      <div class="bb-panelbox" style="flex:1"><h3 style="font-size:12pt;color:var(--accent-deep)">${t}</h3><p style="font-size:9.8pt;line-height:1.45">${b}</p></div></div>`).join('')}
+      <div class="bb-panelbox" style="flex:1"><h3 style="font-size:12pt;color:var(--accent-deep)">${t}</h3><p style="font-size:10.6pt;line-height:1.45">${b}</p></div></div>`).join('')}
+    ${worldStrip(vol.world, vol, 9)}
     ${foot(vol, folio.n++)}</div>`);
   let chNo = 0;
   for (const [cat, title, sub] of CH17) {
@@ -738,17 +1019,19 @@ function book17() {
       <div style="margin:.26in auto 0;max-width:5.6in">${avatar(vol.av, '1.05in')}
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“${esc(hero.q)}”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— ${esc(hero.a)}${hero.who ? ', ' + esc(hero.who) : ''}</div></div></div>
+      ${worldStrip(WORLD_CYCLE[(chNo + 8) % 12], vol, 700 + chNo)}
       ${foot(vol, folio.n++)}</div>`);
     const rest = picked.slice(1);
-    for (let i = 0; i < rest.length; i += 5) {
+    for (let i = 0; i < rest.length; i += 6) {
       pages.push(`<div class="page" data-vol="17">
         ${head(vol, null, 0, esc(title))}
         <div style="margin-top:.4in"></div>
-        ${rest.slice(i, i + 5).map((q, k) => `<div style="margin-bottom:.19in;padding-left:.34in;position:relative;transform:rotate(${k % 2 ? .25 : -.25}deg)">
+        ${rest.slice(i, i + 6).map((q, k) => `<div style="margin-bottom:.17in;padding-left:.34in;position:relative;transform:rotate(${k % 2 ? .25 : -.25}deg)">
           <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent)">“</span>
-          <div style="font-family:'BB Display';font-size:12.5pt;line-height:1.28">${esc(q.q)}</div>
-          <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:2pt">— ${esc(q.a)}${q.who ? ', ' + esc(q.who) : ''}</div>
-          <div style="font-size:8.6pt;line-height:1.32;margin-top:2pt;color:var(--muted);font-style:italic">🐝 ${esc(clamp(q.m, 150))}</div></div>`).join('')}
+          <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">${esc(q.q)}</div>
+          <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— ${esc(q.a)}${q.who ? ', ' + esc(q.who) : ''}</div>
+          <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 ${esc(clamp(q.m, 150))}</div></div>`).join('')}
+        ${worldStrip(WORLD_CYCLE[(chNo + i) % 12], vol, 800 + chNo * 9 + i)}
         ${foot(vol, folio.n++)}</div>`);
     }
     if (chNo % 3 === 0) {
@@ -811,8 +1094,10 @@ main{max-width:1000px;margin:0 auto}h1{font-family:'Baloo 2';font-size:34px}p.le
 .canva{background:#fff;border:1px solid #ddd4f2;border-radius:14px;padding:18px 20px;margin:28px 0;line-height:1.6;font-size:14.5px}
 .canva b{font-family:'Baloo 2'}</style></head><body><main>
 <h1>The Bizzing Bee Library</h1>
-<p class="lead">Seventeen graphic study books on the Claude Design system — comic chapter openers, Vex the villain,
-practice hives with real write-in drills, puzzles made of each chapter's own words, and two collections.</p>
+<p class="lead">Seventeen graphic study books, anime edition — cinematic storyboard openers with the full avatar cast,
+checkpoint quizzes straight from the Word Map, practice hives with real write-in drills, puzzles made of each
+chapter's own words, and two collections. The books grow up as the reader does: bright daylight in Vol. 1,
+letterboxed night cinema by Vol. 12.</p>
 <div class="canva"><b>Getting a book into Canva:</b> download the PDF, then in Canva choose <b>Create a design → Import file</b>
 (or drag the PDF onto Canva's home page). Every page becomes an editable design. The HTML is the print master.</div>
 <div class="grid">${cards}</div>
