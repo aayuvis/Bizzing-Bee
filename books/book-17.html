@@ -43,18 +43,21 @@
     font-family:'BB Kicker';font-size:10pt;color:var(--muted)}
   .page[data-verso] .bb-foot{left:.5in;right:.75in}
   .bb-panelbox{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-panel);padding:.12in .15in;box-shadow:var(--sh-screen)}
-  .bb-bigidea{padding:.04in .8in .04in .42in;max-height:1.8in;overflow:hidden;position:relative;font-size:13.5pt;line-height:1.5}
+  .bb-bigidea{padding:.06in .85in .06in .44in;max-height:1.9in;overflow:hidden;position:relative;font-size:13.5pt;line-height:1.56}
   .bb-bigidea:before{content:'“';position:absolute;left:0;top:-.12in;font-family:'BB Display';font-size:44pt;color:var(--accent)}
   .bb-bigidea .cameo{position:absolute;right:.06in;top:50%;transform:translateY(-50%) rotate(4deg)}
-  .bb-promove{background:var(--ink);color:#F4EFFF;border-radius:var(--r-panel);padding:.13in .16in;max-height:1.7in;overflow:hidden;
-    font-size:11pt;line-height:1.48}
-  .bb-promove b{color:var(--treasure)} .bb-promove div{margin:2px 0}
+  .bb-promove{background:var(--ink);color:#F4EFFF;border-radius:var(--r-panel);padding:.16in .18in;max-height:2.9in;overflow:hidden;
+    font-size:10.8pt;line-height:1.5}
+  .bb-promove b{color:var(--treasure)}
+  .bb-promove .ln{margin:0 0 5.5pt;padding-left:.14in;text-indent:-.14in}
+  .bb-promove .ln:last-child{margin-bottom:0}
+  .bb-promove .trick{margin:0 0 7pt;padding:0;text-indent:0}
   .bb-promove .trick,.bb-promove [class]{font-family:'BB Display';font-size:12pt;letter-spacing:.04em}
-  .bb-sticky{display:grid;grid-template-columns:1fr 1fr;gap:.1in;margin-top:.1in}
-  .bb-sticky .card{background:var(--tint);border-radius:3pt 3pt 12pt 3pt;padding:.09in .11in;box-shadow:2pt 3pt 6pt rgba(36,30,51,.10)}
+  .bb-sticky{display:grid;grid-template-columns:1fr 1fr;gap:.14in;margin-top:.16in}
+  .bb-sticky .card{background:var(--tint);border-radius:3pt 3pt 12pt 3pt;padding:.12in .14in;box-shadow:2pt 3pt 6pt rgba(36,30,51,.10)}
   .bb-sticky .card:nth-child(odd){transform:rotate(-.5deg)} .bb-sticky .card:nth-child(even){transform:rotate(.4deg);background:color-mix(in srgb,var(--treasure) 12%,white)}
-  .bb-sticky h3{font-size:11.2pt;color:var(--accent-deep);margin-bottom:2px}
-  .bb-sticky p{font-size:10pt;line-height:1.4}
+  .bb-sticky h3{font-size:11.2pt;color:var(--accent-deep);margin-bottom:4.5pt}
+  .bb-sticky p{font-size:10pt;line-height:1.46}
   /* v5 anime storyboard: full-bleed keyframe scenes with a subtitle caption —
      no ink boxes. Register 1 keeps a slight playful tilt; register 3 is level. */
   .an-strip{display:grid;gap:.12in;margin-top:.12in}
@@ -64,6 +67,17 @@
   .an-cap{position:absolute;left:.09in;right:.09in;bottom:.09in;background:rgba(255,255,255,.93);border-radius:4pt;
     padding:5pt 9pt;font-family:'BB Display';font-size:11.5pt;line-height:1.3;box-shadow:0 2pt 8pt rgba(26,18,54,.3)}
   .an-cap .nm{display:block;font-family:'BB Kicker';font-size:8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-deep);margin-bottom:1pt}
+  /* comic speech balloons: sit BESIDE the speaker, with a tail pointing at them */
+  .an-bub{position:absolute;background:#fff;border:1.6pt solid var(--ink);border-radius:16pt;padding:7pt 11pt;
+    font-family:'BB Display';font-size:11.4pt;line-height:1.34;
+    box-shadow:0 3pt 10pt rgba(26,18,54,.28);transform:translateY(-50%)}
+  .an-bub .nm{display:block;font-family:'BB Kicker';font-size:8pt;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--accent-deep);margin-bottom:2.5pt}
+  .an-bub .tail,.an-bub .tail i{position:absolute;top:50%;width:0;height:0;border-style:solid}
+  .an-bub.r .tail{right:-11pt;margin-top:-8pt;border-width:8pt 0 8pt 11pt;border-color:transparent transparent transparent var(--ink)}
+  .an-bub.r .tail i{right:2.4pt;margin-top:-6.2pt;border-width:6.2pt 0 6.2pt 8.5pt;border-color:transparent transparent transparent #fff}
+  .an-bub.l .tail{left:-11pt;margin-top:-8pt;border-width:8pt 11pt 8pt 0;border-color:transparent var(--ink) transparent transparent}
+  .an-bub.l .tail i{left:2.4pt;margin-top:-6.2pt;border-width:6.2pt 8.5pt 6.2pt 0;border-color:transparent #fff transparent transparent}
   .an-sfx{position:absolute;top:.08in;right:.1in;font-family:'BB Display';font-size:10pt;letter-spacing:.05em;
     color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.35),0 5px 12px rgba(0,0,0,.4);transform:rotate(-3deg)}
   .an-prop{position:absolute;top:.08in;left:.1in;background:rgba(20,14,44,.66);color:#FFE9AE;border-radius:8pt;padding:2.5pt 8pt;font-family:'BB Tile';font-size:9.6pt}
@@ -80,16 +94,16 @@
   .bb-rapid{display:grid;grid-template-columns:1fr 1fr;gap:.08in .16in}
   .bb-row{padding:3.5pt 0;min-height:.5in;max-height:.6in;overflow:hidden;font-size:10.8pt;line-height:1.34;border-bottom:1px dotted var(--hairline)}
   .bb-row b{font-family:'BB Kicker';color:var(--accent-deep)}
-  .bb-break{display:flex;gap:.1in;align-items:flex-start;background:linear-gradient(90deg,var(--treasure-tint),transparent 85%);border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.08in .13in;max-height:2.3in;overflow:hidden}
+  .bb-break{margin-top:.18in;display:flex;gap:.13in;align-items:flex-start;background:linear-gradient(90deg,var(--treasure-tint),transparent 85%);border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.08in .13in;max-height:2.3in;overflow:hidden}
   .bb-break .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--treasure-deep)}
   .bb-break .b{font-size:11.2pt;line-height:1.4;margin-top:2px}
   .bb-break .t{font-size:10pt;color:var(--muted);margin-top:2px}
-  .bb-check{border-left:4pt solid var(--right);padding:.04in .1in;max-height:1.3in;overflow:hidden}
-  .bb-check .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--right-deep)}
-  .bb-vex{background:linear-gradient(90deg,#FFF1F3,transparent 88%);border-left:4pt solid var(--tricky);border-radius:2pt 12pt 12pt 2pt;padding:.05in .1in;max-height:1.3in;overflow:hidden;display:flex;gap:.09in;align-items:flex-start}
-  .bb-vex .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--tricky-deep)}
-  .bb-trap{background:var(--listen-tint);border-left:4pt solid var(--listen);border-radius:2pt 12pt 12pt 2pt;padding:.05in .1in;max-height:1.3in;overflow:hidden}
-  .bb-trap .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--listen-deep)}
+  .bb-check{border-left:4pt solid var(--right);padding:.07in .12in .07in .14in;max-height:1.4in;overflow:hidden}
+  .bb-check .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--right-deep);margin-bottom:3.5pt}
+  .bb-vex{background:linear-gradient(90deg,#FFF1F3,transparent 88%);border-left:4pt solid var(--tricky);border-radius:2pt 12pt 12pt 2pt;padding:.07in .12in .07in .14in;max-height:1.4in;overflow:hidden;display:flex;gap:.12in;align-items:flex-start}
+  .bb-vex .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--tricky-deep);margin-bottom:3.5pt}
+  .bb-trap{background:var(--listen-tint);border-left:4pt solid var(--listen);border-radius:2pt 12pt 12pt 2pt;padding:.07in .12in .07in .14in;max-height:1.4in;overflow:hidden}
+  .bb-trap .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--listen-deep);margin-bottom:3.5pt}
   .bb-quiz{counter-reset:q}
   .bb-quiz .q{margin-bottom:.16in;break-inside:avoid}
   .bb-quiz .q .qq{font-family:'BB Display';font-size:12pt;line-height:1.34;margin-bottom:3pt}
@@ -143,31 +157,10 @@
     <div class="bb-head"><span>Say It Like a Champion</span><span>How this book works</span></div>
     <div style="margin-top:.4in"><h1 style="font-size:26pt">Borrow a giant's voice.</h1></div>
     <div style="display:flex;gap:.14in;align-items:flex-start;margin:.16in 0">
-      <svg viewBox="0 0 120 120" style="width:1in;height:1in;flex-shrink:0" aria-hidden="true">
-      <defs><filter id="bl2-ptmelodya924" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptmelodya924" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptmelodya924" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptmelodya924" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#ffeab4"/><stop offset=".62" stop-color="rgba(255,200,61,0.5)"/><stop offset="1" stop-color="#533ea3"/></radialGradient>
-        <clipPath id="pc-ptmelodya924"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptmelodya924)"/>
-      <g clip-path="url(#pc-ptmelodya924)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptmelodya924)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptmelodya924)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(108,79,224,0.3)" filter="url(#bl6-ptmelodya924)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
-<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
-<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
-<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
-<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
-<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
-<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
-<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
-<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptmelodya924)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(255,200,61,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg>
+      <span style="display:inline-grid;place-items:center;width:1in;height:1in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #ffefc4, rgba(255,200,61,0.55) 62%, #5640ac);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden">
+      <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
       <div class="bb-bubble" style="font-size:11pt">I'm <b>Melody</b>. Some sentences outlive the person who said them. Here are two hundred and forty — and under each, what it means when YOU'RE at the microphone.</div></div>
     <div style="display:flex;gap:.14in;margin-bottom:.13in;align-items:flex-start">
       <span style="display:inline-grid;place-items:center;width:.52in;height:.52in;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:14pt;flex-shrink:0">1</span>
@@ -185,31 +178,10 @@
       <div class="kick">Theme 1 of 12</div>
       <h1 style="font-size:32pt;margin:.06in 0">Keep Going</h1>
       <p style="font-family:'BB Kicker';font-size:11pt;color:var(--muted)">For the round after the round you almost lost.</p>
-      <div style="margin:.26in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0" aria-hidden="true">
-      <defs><filter id="bl2-ptmelodya925" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptmelodya925" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptmelodya925" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptmelodya925" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#ffeab4"/><stop offset=".62" stop-color="rgba(255,200,61,0.5)"/><stop offset="1" stop-color="#533ea3"/></radialGradient>
-        <clipPath id="pc-ptmelodya925"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptmelodya925)"/>
-      <g clip-path="url(#pc-ptmelodya925)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptmelodya925)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptmelodya925)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(108,79,224,0.3)" filter="url(#bl6-ptmelodya925)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
-<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
-<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
-<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
-<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
-<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
-<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
-<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
-<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptmelodya925)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(255,200,61,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg>
+      <div style="margin:.26in auto 0;max-width:5.6in"><span style="display:inline-grid;place-items:center;width:1.05in;height:1.05in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #ffefc4, rgba(255,200,61,0.55) 62%, #5640ac);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden">
+      <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“Patience can cook a stone.”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— African Proverb, a traditional saying</div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
@@ -323,31 +295,10 @@
       <div class="kick">Theme 2 of 12</div>
       <h1 style="font-size:32pt;margin:.06in 0">Be Brave</h1>
       <p style="font-family:'BB Kicker';font-size:11pt;color:var(--muted)">For the walk to the microphone.</p>
-      <div style="margin:.26in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0" aria-hidden="true">
-      <defs><filter id="bl2-ptmelodya926" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptmelodya926" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptmelodya926" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptmelodya926" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#ffeab4"/><stop offset=".62" stop-color="rgba(255,200,61,0.5)"/><stop offset="1" stop-color="#533ea3"/></radialGradient>
-        <clipPath id="pc-ptmelodya926"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptmelodya926)"/>
-      <g clip-path="url(#pc-ptmelodya926)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptmelodya926)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptmelodya926)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(108,79,224,0.3)" filter="url(#bl6-ptmelodya926)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
-<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
-<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
-<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
-<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
-<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
-<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
-<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
-<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptmelodya926)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(255,200,61,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg>
+      <div style="margin:.26in auto 0;max-width:5.6in"><span style="display:inline-grid;place-items:center;width:1.05in;height:1.05in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #ffefc4, rgba(255,200,61,0.55) 62%, #5640ac);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden">
+      <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“Freedom lies in being bold.”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— Robert Frost, poet</div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-warfield-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
@@ -461,31 +412,10 @@
       <div class="kick">Theme 3 of 12</div>
       <h1 style="font-size:32pt;margin:.06in 0">Do the Work</h1>
       <p style="font-family:'BB Kicker';font-size:11pt;color:var(--muted)">For the days the list looks too long.</p>
-      <div style="margin:.26in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0" aria-hidden="true">
-      <defs><filter id="bl2-ptmelodya927" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptmelodya927" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptmelodya927" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptmelodya927" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#ffeab4"/><stop offset=".62" stop-color="rgba(255,200,61,0.5)"/><stop offset="1" stop-color="#533ea3"/></radialGradient>
-        <clipPath id="pc-ptmelodya927"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptmelodya927)"/>
-      <g clip-path="url(#pc-ptmelodya927)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptmelodya927)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptmelodya927)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(108,79,224,0.3)" filter="url(#bl6-ptmelodya927)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
-<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
-<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
-<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
-<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
-<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
-<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
-<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
-<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptmelodya927)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(255,200,61,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg>
+      <div style="margin:.26in auto 0;max-width:5.6in"><span style="display:inline-grid;place-items:center;width:1.05in;height:1.05in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #ffefc4, rgba(255,200,61,0.55) 62%, #5640ac);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden">
+      <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“He who rests grows rusty.”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— German Proverb, a traditional saying</div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-greysea-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
@@ -597,31 +527,10 @@
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>17</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Match round</span></div>
-        <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true">
-      <defs><filter id="bl2-ptmelodya928" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptmelodya928" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptmelodya928" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptmelodya928" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#ffeab4"/><stop offset=".62" stop-color="rgba(255,200,61,0.5)"/><stop offset="1" stop-color="#533ea3"/></radialGradient>
-        <clipPath id="pc-ptmelodya928"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptmelodya928)"/>
-      <g clip-path="url(#pc-ptmelodya928)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptmelodya928)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptmelodya928)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(108,79,224,0.3)" filter="url(#bl6-ptmelodya928)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
-<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
-<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
-<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
-<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
-<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
-<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
-<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
-<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptmelodya928)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(255,200,61,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg><h2 style="font-size:20pt">Who said it?</h2></div>
+        <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><span style="display:inline-grid;place-items:center;width:.6in;height:.6in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #ffefc4, rgba(255,200,61,0.55) 62%, #5640ac);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden">
+      <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span><h2 style="font-size:20pt">Who said it?</h2></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.18in;margin-top:.12in;font-size:9.2pt;line-height:1.4">
           <div><h3 style="font-size:11pt;color:var(--accent-deep);margin-bottom:3pt">The lines</h3><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>1.</b> “Every dog has its day.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>2.</b> “When the whole world is silent, even one voice becomes powerful.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>3.</b> “The bee that gathers honey does not sting.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>4.</b> “A guest is a guest for two days; on the third give him a hoe.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>5.</b> “Cowards die many times before their deaths; the valiant never taste of …”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>6.</b> “When you're the best, no one really sees how hard you work at it.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>7.</b> “A coward sweats in water; a brave person sweats in the field.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>8.</b> “The longest road out is the shortest road home.”</div></div>
           <div><h3 style="font-size:11pt;color:var(--accent-deep);margin-bottom:3pt">The voices</h3><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>A.</b> Assamese Proverb</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>B.</b> Oromo Proverb</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>C.</b> English Proverb</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>D.</b> Misty Copeland</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>E.</b> Malala Yousafzai</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>F.</b> Irish proverb</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>G.</b> William Shakespeare</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>H.</b> Swahili Proverb</div></div></div>
@@ -633,31 +542,10 @@
       <div class="kick">Theme 4 of 12</div>
       <h1 style="font-size:32pt;margin:.06in 0">Back Yourself</h1>
       <p style="font-family:'BB Kicker';font-size:11pt;color:var(--muted)">For the voice that says you can’t.</p>
-      <div style="margin:.26in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0" aria-hidden="true">
-      <defs><filter id="bl2-ptmelodya929" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptmelodya929" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptmelodya929" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptmelodya929" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#ffeab4"/><stop offset=".62" stop-color="rgba(255,200,61,0.5)"/><stop offset="1" stop-color="#533ea3"/></radialGradient>
-        <clipPath id="pc-ptmelodya929"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptmelodya929)"/>
-      <g clip-path="url(#pc-ptmelodya929)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptmelodya929)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptmelodya929)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(108,79,224,0.3)" filter="url(#bl6-ptmelodya929)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
-<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
-<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
-<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
-<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
-<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
-<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
-<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
-<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptmelodya929)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(255,200,61,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg>
+      <div style="margin:.26in auto 0;max-width:5.6in"><span style="display:inline-grid;place-items:center;width:1.05in;height:1.05in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #ffefc4, rgba(255,200,61,0.55) 62%, #5640ac);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden">
+      <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“Stay hungry, stay foolish.”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— Steve Jobs, Apple co-founder</div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-meadow-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
@@ -771,31 +659,10 @@
       <div class="kick">Theme 5 of 12</div>
       <h1 style="font-size:32pt;margin:.06in 0">Dream Big</h1>
       <p style="font-family:'BB Kicker';font-size:11pt;color:var(--muted)">For the trophy you can already see.</p>
-      <div style="margin:.26in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0" aria-hidden="true">
-      <defs><filter id="bl2-ptmelodya930" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptmelodya930" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptmelodya930" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptmelodya930" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#ffeab4"/><stop offset=".62" stop-color="rgba(255,200,61,0.5)"/><stop offset="1" stop-color="#533ea3"/></radialGradient>
-        <clipPath id="pc-ptmelodya930"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptmelodya930)"/>
-      <g clip-path="url(#pc-ptmelodya930)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptmelodya930)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptmelodya930)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(108,79,224,0.3)" filter="url(#bl6-ptmelodya930)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
-<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
-<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
-<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
-<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
-<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
-<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
-<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
-<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptmelodya930)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(255,200,61,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg>
+      <div style="margin:.26in auto 0;max-width:5.6in"><span style="display:inline-grid;place-items:center;width:1.05in;height:1.05in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #ffefc4, rgba(255,200,61,0.55) 62%, #5640ac);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden">
+      <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“What we think, we become.”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— Buddha, Ancient teacher</div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-library-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
@@ -909,31 +776,10 @@
       <div class="kick">Theme 6 of 12</div>
       <h1 style="font-size:32pt;margin:.06in 0">Stay Curious</h1>
       <p style="font-family:'BB Kicker';font-size:11pt;color:var(--muted)">For the words you haven’t met yet.</p>
-      <div style="margin:.26in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0" aria-hidden="true">
-      <defs><filter id="bl2-ptmelodya931" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptmelodya931" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptmelodya931" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptmelodya931" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#ffeab4"/><stop offset=".62" stop-color="rgba(255,200,61,0.5)"/><stop offset="1" stop-color="#533ea3"/></radialGradient>
-        <clipPath id="pc-ptmelodya931"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptmelodya931)"/>
-      <g clip-path="url(#pc-ptmelodya931)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptmelodya931)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptmelodya931)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(108,79,224,0.3)" filter="url(#bl6-ptmelodya931)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
-<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
-<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
-<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
-<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
-<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
-<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
-<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
-<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptmelodya931)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(255,200,61,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg>
+      <div style="margin:.26in auto 0;max-width:5.6in"><span style="display:inline-grid;place-items:center;width:1.05in;height:1.05in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #ffefc4, rgba(255,200,61,0.55) 62%, #5640ac);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden">
+      <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“The days are just packed!”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— Bill Watterson, creator of Calvin and Hobbes</div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-forum-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
@@ -1045,31 +891,10 @@
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>33</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Match round</span></div>
-        <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true">
-      <defs><filter id="bl2-ptmelodya932" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptmelodya932" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptmelodya932" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptmelodya932" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#ffeab4"/><stop offset=".62" stop-color="rgba(255,200,61,0.5)"/><stop offset="1" stop-color="#533ea3"/></radialGradient>
-        <clipPath id="pc-ptmelodya932"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptmelodya932)"/>
-      <g clip-path="url(#pc-ptmelodya932)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptmelodya932)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptmelodya932)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(108,79,224,0.3)" filter="url(#bl6-ptmelodya932)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
-<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
-<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
-<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
-<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
-<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
-<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
-<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
-<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptmelodya932)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(255,200,61,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg><h2 style="font-size:20pt">Who said it?</h2></div>
+        <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><span style="display:inline-grid;place-items:center;width:.6in;height:.6in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #ffefc4, rgba(255,200,61,0.55) 62%, #5640ac);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden">
+      <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span><h2 style="font-size:20pt">Who said it?</h2></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.18in;margin-top:.12in;font-size:9.2pt;line-height:1.4">
           <div><h3 style="font-size:11pt;color:var(--accent-deep);margin-bottom:3pt">The lines</h3><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>1.</b> “We are not born for ourselves alone.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>2.</b> “Imagination is the true magic carpet.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>3.</b> “Hope is being able to see that there is light despite all of the darkne…”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>4.</b> “Kids are never the problem. They are born scientists. The problem is al…”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>5.</b> “High expectations are the key to everything.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>6.</b> “Stay hungry, stay foolish.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>7.</b> “What makes us human, I think, is an ability to ask questions.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>8.</b> “Don't just dream your goals, achieve them.”</div></div>
           <div><h3 style="font-size:11pt;color:var(--accent-deep);margin-bottom:3pt">The voices</h3><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>A.</b> Steve Jobs</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>B.</b> Neil deGrasse Tyson</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>C.</b> Norman Vincent Peale</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>D.</b> Sam Walton</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>E.</b> Jane Goodall</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>F.</b> Author unknown</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>G.</b> Cicero</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>H.</b> Desmond Tutu</div></div></div>
@@ -1081,31 +906,10 @@
       <div class="kick">Theme 7 of 12</div>
       <h1 style="font-size:32pt;margin:.06in 0">Love Learning</h1>
       <p style="font-family:'BB Kicker';font-size:11pt;color:var(--muted)">For every list that made you better.</p>
-      <div style="margin:.26in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0" aria-hidden="true">
-      <defs><filter id="bl2-ptmelodya933" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptmelodya933" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptmelodya933" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptmelodya933" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#ffeab4"/><stop offset=".62" stop-color="rgba(255,200,61,0.5)"/><stop offset="1" stop-color="#533ea3"/></radialGradient>
-        <clipPath id="pc-ptmelodya933"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptmelodya933)"/>
-      <g clip-path="url(#pc-ptmelodya933)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptmelodya933)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptmelodya933)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(108,79,224,0.3)" filter="url(#bl6-ptmelodya933)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
-<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
-<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
-<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
-<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
-<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
-<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
-<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
-<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptmelodya933)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(255,200,61,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg>
+      <div style="margin:.26in auto 0;max-width:5.6in"><span style="display:inline-grid;place-items:center;width:1.05in;height:1.05in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #ffefc4, rgba(255,200,61,0.55) 62%, #5640ac);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden">
+      <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“Kid, you'll move mountains.”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— Dr. Seuss, children's author</div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-elements-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
@@ -1219,31 +1023,10 @@
       <div class="kick">Theme 8 of 12</div>
       <h1 style="font-size:32pt;margin:.06in 0">Imagine It</h1>
       <p style="font-family:'BB Kicker';font-size:11pt;color:var(--muted)">For seeing the word before you spell it.</p>
-      <div style="margin:.26in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0" aria-hidden="true">
-      <defs><filter id="bl2-ptmelodya934" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptmelodya934" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptmelodya934" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptmelodya934" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#ffeab4"/><stop offset=".62" stop-color="rgba(255,200,61,0.5)"/><stop offset="1" stop-color="#533ea3"/></radialGradient>
-        <clipPath id="pc-ptmelodya934"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptmelodya934)"/>
-      <g clip-path="url(#pc-ptmelodya934)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptmelodya934)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptmelodya934)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(108,79,224,0.3)" filter="url(#bl6-ptmelodya934)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
-<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
-<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
-<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
-<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
-<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
-<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
-<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
-<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptmelodya934)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(255,200,61,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg>
+      <div style="margin:.26in auto 0;max-width:5.6in"><span style="display:inline-grid;place-items:center;width:1.05in;height:1.05in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #ffefc4, rgba(255,200,61,0.55) 62%, #5640ac);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden">
+      <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“Great minds discuss ideas.”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— Eleanor Roosevelt, American humanitarian</div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-engine-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
@@ -1357,31 +1140,10 @@
       <div class="kick">Theme 9 of 12</div>
       <h1 style="font-size:32pt;margin:.06in 0">Make Things</h1>
       <p style="font-family:'BB Kicker';font-size:11pt;color:var(--muted)">For building your own way to remember.</p>
-      <div style="margin:.26in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0" aria-hidden="true">
-      <defs><filter id="bl2-ptmelodya935" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptmelodya935" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptmelodya935" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptmelodya935" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#ffeab4"/><stop offset=".62" stop-color="rgba(255,200,61,0.5)"/><stop offset="1" stop-color="#533ea3"/></radialGradient>
-        <clipPath id="pc-ptmelodya935"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptmelodya935)"/>
-      <g clip-path="url(#pc-ptmelodya935)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptmelodya935)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptmelodya935)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(108,79,224,0.3)" filter="url(#bl6-ptmelodya935)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
-<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
-<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
-<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
-<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
-<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
-<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
-<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
-<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptmelodya935)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(255,200,61,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg>
+      <div style="margin:.26in auto 0;max-width:5.6in"><span style="display:inline-grid;place-items:center;width:1.05in;height:1.05in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #ffefc4, rgba(255,200,61,0.55) 62%, #5640ac);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden">
+      <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“Creativity takes courage.”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— Henri Matisse, French artist</div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-origami-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
@@ -1493,31 +1255,10 @@
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>49</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Match round</span></div>
-        <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true">
-      <defs><filter id="bl2-ptmelodya936" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptmelodya936" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptmelodya936" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptmelodya936" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#ffeab4"/><stop offset=".62" stop-color="rgba(255,200,61,0.5)"/><stop offset="1" stop-color="#533ea3"/></radialGradient>
-        <clipPath id="pc-ptmelodya936"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptmelodya936)"/>
-      <g clip-path="url(#pc-ptmelodya936)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptmelodya936)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptmelodya936)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(108,79,224,0.3)" filter="url(#bl6-ptmelodya936)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
-<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
-<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
-<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
-<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
-<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
-<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
-<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
-<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptmelodya936)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(255,200,61,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg><h2 style="font-size:20pt">Who said it?</h2></div>
+        <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><span style="display:inline-grid;place-items:center;width:.6in;height:.6in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #ffefc4, rgba(255,200,61,0.55) 62%, #5640ac);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden">
+      <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span><h2 style="font-size:20pt">Who said it?</h2></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.18in;margin-top:.12in;font-size:9.2pt;line-height:1.4">
           <div><h3 style="font-size:11pt;color:var(--accent-deep);margin-bottom:3pt">The lines</h3><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>1.</b> “The direction in which education starts a man will determine his future…”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>2.</b> “Blind is a bookless person.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>3.</b> “The wise store up knowledge.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>4.</b> “Mistakes are a fact of life. It is the response to error that counts.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>5.</b> “We especially need imagination in science.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>6.</b> “You'll never know everything about anything, especially something you l…”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>7.</b> “Imagination is the beginning of creation.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>8.</b> “Every failure teaches a man something, if he will learn.”</div></div>
           <div><h3 style="font-size:11pt;color:var(--accent-deep);margin-bottom:3pt">The voices</h3><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>A.</b> Charles Dickens</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>B.</b> Maria Mitchell</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>C.</b> Julia Child</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>D.</b> Hebrew Proverb</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>E.</b> Plato</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>F.</b> Nikki Giovanni</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>G.</b> Icelandic Proverb</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>H.</b> George Bernard Shaw</div></div></div>
@@ -1529,31 +1270,10 @@
       <div class="kick">Theme 10 of 12</div>
       <h1 style="font-size:32pt;margin:.06in 0">Be Kind</h1>
       <p style="font-family:'BB Kicker';font-size:11pt;color:var(--muted)">For the speller who just went out.</p>
-      <div style="margin:.26in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0" aria-hidden="true">
-      <defs><filter id="bl2-ptmelodya937" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptmelodya937" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptmelodya937" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptmelodya937" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#ffeab4"/><stop offset=".62" stop-color="rgba(255,200,61,0.5)"/><stop offset="1" stop-color="#533ea3"/></radialGradient>
-        <clipPath id="pc-ptmelodya937"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptmelodya937)"/>
-      <g clip-path="url(#pc-ptmelodya937)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptmelodya937)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptmelodya937)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(108,79,224,0.3)" filter="url(#bl6-ptmelodya937)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
-<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
-<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
-<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
-<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
-<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
-<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
-<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
-<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptmelodya937)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(255,200,61,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg>
+      <div style="margin:.26in auto 0;max-width:5.6in"><span style="display:inline-grid;place-items:center;width:1.05in;height:1.05in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #ffefc4, rgba(255,200,61,0.55) 62%, #5640ac);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden">
+      <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“Kindness is never wasted.”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— Aesop's Fable Proverb, a traditional saying</div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-strait-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
@@ -1667,31 +1387,10 @@
       <div class="kick">Theme 11 of 12</div>
       <h1 style="font-size:32pt;margin:.06in 0">Bring Friends</h1>
       <p style="font-family:'BB Kicker';font-size:11pt;color:var(--muted)">For the people cheering in row three.</p>
-      <div style="margin:.26in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0" aria-hidden="true">
-      <defs><filter id="bl2-ptmelodya938" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptmelodya938" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptmelodya938" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptmelodya938" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#ffeab4"/><stop offset=".62" stop-color="rgba(255,200,61,0.5)"/><stop offset="1" stop-color="#533ea3"/></radialGradient>
-        <clipPath id="pc-ptmelodya938"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptmelodya938)"/>
-      <g clip-path="url(#pc-ptmelodya938)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptmelodya938)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptmelodya938)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(108,79,224,0.3)" filter="url(#bl6-ptmelodya938)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
-<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
-<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
-<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
-<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
-<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
-<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
-<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
-<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptmelodya938)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(255,200,61,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg>
+      <div style="margin:.26in auto 0;max-width:5.6in"><span style="display:inline-grid;place-items:center;width:1.05in;height:1.05in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #ffefc4, rgba(255,200,61,0.55) 62%, #5640ac);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden">
+      <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“A friend is a second self.”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— Aristotle, Ancient Greek philosopher</div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-junkyard-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
@@ -1805,31 +1504,10 @@
       <div class="kick">Theme 12 of 12</div>
       <h1 style="font-size:32pt;margin:.06in 0">Laugh a Little</h1>
       <p style="font-family:'BB Kicker';font-size:11pt;color:var(--muted)">For when the nerves need popping.</p>
-      <div style="margin:.26in auto 0;max-width:5.6in"><svg viewBox="0 0 120 120" style="width:1.05in;height:1.05in;flex-shrink:0" aria-hidden="true">
-      <defs><filter id="bl2-ptmelodya939" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptmelodya939" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptmelodya939" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptmelodya939" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#ffeab4"/><stop offset=".62" stop-color="rgba(255,200,61,0.5)"/><stop offset="1" stop-color="#533ea3"/></radialGradient>
-        <clipPath id="pc-ptmelodya939"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptmelodya939)"/>
-      <g clip-path="url(#pc-ptmelodya939)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptmelodya939)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptmelodya939)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(108,79,224,0.3)" filter="url(#bl6-ptmelodya939)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
-<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
-<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
-<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
-<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
-<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
-<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
-<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
-<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptmelodya939)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(255,200,61,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg>
+      <div style="margin:.26in auto 0;max-width:5.6in"><span style="display:inline-grid;place-items:center;width:1.05in;height:1.05in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #ffefc4, rgba(255,200,61,0.55) 62%, #5640ac);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden">
+      <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“Wit is educated insolence.”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— Aristotle, Ancient Greek philosopher</div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-vibe-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
@@ -1941,31 +1619,10 @@
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>65</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Match round</span></div>
-        <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true">
-      <defs><filter id="bl2-ptmelodya940" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptmelodya940" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptmelodya940" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptmelodya940" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#ffeab4"/><stop offset=".62" stop-color="rgba(255,200,61,0.5)"/><stop offset="1" stop-color="#533ea3"/></radialGradient>
-        <clipPath id="pc-ptmelodya940"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptmelodya940)"/>
-      <g clip-path="url(#pc-ptmelodya940)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptmelodya940)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptmelodya940)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(108,79,224,0.3)" filter="url(#bl6-ptmelodya940)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
-<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
-<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
-<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
-<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
-<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
-<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
-<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
-<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptmelodya940)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(255,200,61,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg><h2 style="font-size:20pt">Who said it?</h2></div>
+        <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><span style="display:inline-grid;place-items:center;width:.6in;height:.6in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #ffefc4, rgba(255,200,61,0.55) 62%, #5640ac);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden">
+      <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span><h2 style="font-size:20pt">Who said it?</h2></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.18in;margin-top:.12in;font-size:9.2pt;line-height:1.4">
           <div><h3 style="font-size:11pt;color:var(--accent-deep);margin-bottom:3pt">The lines</h3><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>1.</b> “Speaking of the king of Rome, and he appears at the door.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>2.</b> “I can resist everything except temptation.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>3.</b> “Goodness is the only investment that never fails.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>4.</b> “If you can't get a miracle, become one.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>5.</b> “Empathy makes you a better innovator.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>6.</b> “A friend is someone who makes it easy to believe in yourself.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>7.</b> “He who divides and shares always gets the best share.”</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>8.</b> “The best index to a person's character is how he treats people who can'…”</div></div>
           <div><h3 style="font-size:11pt;color:var(--accent-deep);margin-bottom:3pt">The voices</h3><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>A.</b> Abigail Van Buren</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>B.</b> Latin American proverb</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>C.</b> Nick Vujicic</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>D.</b> Oscar Wilde</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>E.</b> Henry David Thoreau</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>F.</b> Latin American proverb</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>G.</b> Heidi Wills</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>H.</b> Satya Nadella</div></div></div>
@@ -1975,18 +1632,18 @@
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>66</span></div></div>
 <div class="page" data-vol="17" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
     <svg viewBox="0 0 120 120" style="width:1.2in;height:1.2in;flex-shrink:0;margin:0 auto" aria-hidden="true">
-      <defs><filter id="bl2-vxv941" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-vxv941" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-vxv941" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <linearGradient id="vw-vxv941" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6B4FC4"/><stop offset="1" stop-color="#2C2150"/></linearGradient>
-        <linearGradient id="vb-vxv941" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#463672"/><stop offset="1" stop-color="#1E1738"/></linearGradient></defs>
-      <circle cx="60" cy="62" r="44" fill="rgba(90,63,166,.28)" filter="url(#bl14-vxv941)"/>
+      <defs><filter id="bl2-vxv196" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
+      <filter id="bl6-vxv196" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
+      <filter id="bl14-vxv196" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
+        <linearGradient id="vw-vxv196" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6B4FC4"/><stop offset="1" stop-color="#2C2150"/></linearGradient>
+        <linearGradient id="vb-vxv196" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#463672"/><stop offset="1" stop-color="#1E1738"/></linearGradient></defs>
+      <circle cx="60" cy="62" r="44" fill="rgba(90,63,166,.28)" filter="url(#bl14-vxv196)"/>
       <g>
-        <path d="M56 52 Q30 24 12 30 Q10 52 30 64 Q18 66 14 78 Q30 88 46 76 Z" fill="url(#vw-vxv941)"/>
-        <path d="M64 52 Q90 24 108 30 Q110 52 90 64 Q102 66 106 78 Q90 88 74 76 Z" fill="url(#vw-vxv941)"/>
+        <path d="M56 52 Q30 24 12 30 Q10 52 30 64 Q18 66 14 78 Q30 88 46 76 Z" fill="url(#vw-vxv196)"/>
+        <path d="M64 52 Q90 24 108 30 Q110 52 90 64 Q102 66 106 78 Q90 88 74 76 Z" fill="url(#vw-vxv196)"/>
         <path d="M30 64 l-6 8 M90 64 l6 8" stroke="#241E33" stroke-width="2" opacity=".5"/>
         <path d="M14 78 q-4 8 -2 14 M106 78 q4 8 2 14" stroke="rgba(203,180,242,.55)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"/>
-        <ellipse cx="60" cy="66" rx="14" ry="26" fill="url(#vb-vxv941)"/>
+        <ellipse cx="60" cy="66" rx="14" ry="26" fill="url(#vb-vxv196)"/>
         <path d="M60 44 Q52 30 42 26 M60 44 Q68 30 78 26" stroke="#241E33" stroke-width="3" fill="none" stroke-linecap="round"/>
         <circle cx="42" cy="25" r="3" fill="#CBB4F2"/><circle cx="78" cy="25" r="3" fill="#CBB4F2"/>
         <circle cx="60" cy="50" r="12" fill="#31265A"/>
@@ -2009,31 +1666,10 @@
     <span class="wl">the Paper Mountains</span></div>
       <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>68</span></div></div>
 <div class="page" data-vol="17" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
-    <svg viewBox="0 0 120 120" style="width:1.4in;height:1.4in;flex-shrink:0;margin:0 auto" aria-hidden="true">
-      <defs><filter id="bl2-ptmelodya942" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptmelodya942" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptmelodya942" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptmelodya942" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#ffeab4"/><stop offset=".62" stop-color="rgba(255,200,61,0.5)"/><stop offset="1" stop-color="#533ea3"/></radialGradient>
-        <clipPath id="pc-ptmelodya942"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptmelodya942)"/>
-      <g clip-path="url(#pc-ptmelodya942)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptmelodya942)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptmelodya942)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(108,79,224,0.3)" filter="url(#bl6-ptmelodya942)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><defs><radialGradient id="sml-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#4A3AA8"/><stop offset="1" stop-color="#2B1B5E"/></radialGradient></defs>
-<path d="M74 74 V22 q10 2 14 10 q3 7 -2 14 q8 -2 10 -8" fill="none" stroke="#2B1B5E" stroke-width="6" stroke-linecap="round"/>
-<ellipse cx="56" cy="80" rx="22" ry="17" fill="url(#sml-g)" transform="rotate(-14 56 80)"/>
-<circle cx="47" cy="74" r="7.5" fill="#fff"/><circle cx="48.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="47.2" cy="74.3" r="1.3" fill="#fff"/>
-<circle cx="65" cy="74" r="7.5" fill="#fff"/><circle cx="66.3" cy="75.5" r="3.8" fill="#2B1B5E"/><circle cx="65.2" cy="74.3" r="1.3" fill="#fff"/>
-<ellipse cx="40" cy="84" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/><ellipse cx="72" cy="83" rx="4.2" ry="2.6" fill="#FF7FBE" opacity=".9"/>
-<path d="M49 87 q7 6 14 -1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-<path d="M20 38 v-14 q4 1 6 4" fill="none" stroke="#6C4FE0" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="39" r="4" fill="#6C4FE0"/>
-<path d="M102 62 v-12 q3.5 1 5 3.5" fill="none" stroke="#FF5D9E" stroke-width="3" stroke-linecap="round"/><circle cx="99.5" cy="63" r="3.5" fill="#FF5D9E"/>
-<circle cx="30" cy="102" r="2.2" fill="#FFC83D"/><circle cx="98" cy="20" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptmelodya942)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(255,200,61,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg>
+    <span style="display:inline-grid;place-items:center;width:1.4in;height:1.4in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #ffefc4, rgba(255,200,61,0.55) 62%, #5640ac);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden;margin:0 auto">
+      <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
     <h2 style="font-size:20pt;margin:.12in 0">End of volume. What you keep from it shows up at the microphone, not on this page.</h2>
     <div style="margin:0 auto .2in" class="bb-badge"><div class="b1">DONE</div><div class="b1" style="border-style:solid">★</div><div class="b1">+1</div></div>
     <p style="font-size:10.5pt;max-width:5.4in;margin:0 auto .26in;line-height:1.55">Every word in here also lives in the Bizzing Bee app, with real audio, games and a coach that remembers what you miss. Paper for the muscles, app for the ears.</p>
