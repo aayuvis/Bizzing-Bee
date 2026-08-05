@@ -41,6 +41,7 @@
   /* name -> file. Order inside IDLE is the priority order: what the reader is
      most likely to reach for first comes first. */
   var REG = {
+    words2: 'words-data-2.js',          // the rest of the core library (32,944 words)
     lore: 'words-lore.js',              // etymology + memory hint, merged onto SB_DATA
     concepts: 'concepts-data.js',       // the 121-chapter course
     trail: 'trail-data.js',             // Word Atlas curriculum
@@ -64,18 +65,19 @@
 
   /* Groups, so a caller can ask for a feature rather than a filename. */
   var GROUP = {
-    card: ['lore', 'alts', 'sounds', 'pron'],
+    words: ['words2', 'lore'],
+    card: ['words2', 'lore', 'alts', 'sounds', 'pron'],
     concepts: ['concepts', 'cscript'],
     advanced: ['advConcepts', 'advTips', 'advTour'],
     atlas: ['trail', 'concepts', 'cscript'],
     quotes: ['quotes'],
     figurative: ['fig'],
     audio: ['voiceWords', 'voiceFrench'],
-    lists: ['lessons', 'vocab26', 'finals500', 'scripps'],
+    lists: ['words2', 'lessons', 'vocab26', 'finals500', 'scripps'],
     sounds: ['sounds', 'pron']
   };
 
-  var IDLE = ['lore', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
+  var IDLE = ['words2', 'lore', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
     'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',
     'scripps', 'advTour', 'voiceFrench', 'story', 'alts'];
 
@@ -85,6 +87,10 @@
 
   /* after() hooks: work that has to happen the moment a file lands. */
   var AFTER = {
+    /* The second word shard arrives with bare records, so if lore is already in
+       hand it has to be merged again over the new ones. Both directions are
+       covered: whichever of the two lands second re-runs the merge. */
+    words2: function () { if (window.SB_LORE) AFTER.lore(); },
     /* Etymology and memory hints were split out of words-data.js to keep 5.7MB
        off the boot path. Merge them back onto the very same record objects, so
        every `w.r` / `w.h` read site in the app keeps working untouched. */

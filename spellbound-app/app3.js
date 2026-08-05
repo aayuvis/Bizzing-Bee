@@ -7794,6 +7794,10 @@ window.addEventListener('sb-lazy', e => { const name = e && e.detail;
   if(name==='voiceWords'){ _wvSet=null; }
   if(name==='lessons'||name==='vocab26'||name==='finals500'||name==='scripps'){ _catStatic=null; _wIdx=null; _wohPool=null; }
   if(name==='lore'){ _wdb=null; }
+  /* The second word shard quadruples the library, so every pool derived from it
+     is stale: the catalogue, the word index, the theme classifications, the
+     word-of-the-hour pool and the sound lists all rebuild on the next render. */
+  if(name==='words2'){ _catStatic=null; _wIdx=null; _wohPool=null; _wdb=null; _sndCache=null; _themeCache={}; }
 });
 
 (function init(){
