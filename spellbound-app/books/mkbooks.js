@@ -73,7 +73,7 @@ const castName = id => { try { return (CAST_DB.byId[id] || {}).name || (NAMES[id
    Slugs: b01-cover · b01-divider · b01-poster · b01-ch01-opener ·
    strip-<world>-r<register> (e.g. strip-meadow-r1). */
 const ART_DIR = 'books/art';
-const artAt = slug => { try { return fs.existsSync(`${ART_DIR}/${slug}.png`) ? `art/${slug}.png` : null; } catch (e) { return null; } };
+const artAt = slug => { try { for (const ext of ['jpg', 'png']) if (fs.existsSync(`${ART_DIR}/${slug}.${ext}`)) return `art/${slug}.${ext}`; } catch (e) {} return null; };
 const artImg = (src, extra) => `<img src="${src}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover${extra || ''}" alt="">`;
 
 /* Register: how grown-up this volume looks and sounds. */
@@ -459,6 +459,7 @@ function comicOpener(vol, ch, ci, script, folio, cast) {
       ${(() => { const a = artAt(`b${String(vol.n).padStart(2, '0')}-ch${String(ci + 1).padStart(2, '0')}-opener`);
         return a ? artImg(a) : `<svg viewBox="0 0 725 830" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">${svg}</svg>`; })()}
       ${caps}
+      <span style="position:absolute;left:0;right:0;bottom:0;height:.5in;background:linear-gradient(180deg,rgba(12,9,28,0),rgba(12,9,28,.55));pointer-events:none"></span>
       <span style="position:absolute;left:8pt;bottom:6pt" class="bb-audio">🔊 narrated in the app</span>
       <span style="position:absolute;right:10pt;bottom:8pt;font-family:'BB Kicker';font-size:9.2pt;color:rgba(255,255,255,.95);text-shadow:0 1px 4px rgba(0,0,0,.6)">turn the page — the whole trick, explained →</span>
     </div>
