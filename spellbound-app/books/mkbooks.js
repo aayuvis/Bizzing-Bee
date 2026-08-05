@@ -67,6 +67,15 @@ function draftCast(vol) {
 }
 const castName = id => { try { return (CAST_DB.byId[id] || {}).name || (NAMES[id] || id); } catch (e) { return NAMES[id] || id; } };
 
+/* ---- generated-art drop zone (Nano Banana pipeline) ----
+   Drop a PNG into books/art/ with the right slug and the next build swaps that
+   slot's SVG for the image; slots without art keep the BB ANIME engine.
+   Slugs: b01-cover · b01-divider · b01-poster · b01-ch01-opener ·
+   strip-<world>-r<register> (e.g. strip-meadow-r1). */
+const ART_DIR = 'books/art';
+const artAt = slug => { try { return fs.existsSync(`${ART_DIR}/${slug}.png`) ? `art/${slug}.png` : null; } catch (e) { return null; } };
+const artImg = (src, extra) => `<img src="${src}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover${extra || ''}" alt="">`;
+
 /* Register: how grown-up this volume looks and sounds. */
 const REG = vol => vol.band === 'advanced' || vol.n === 17 ? 3 : vol.n <= 4 ? 1 : 2;
 
@@ -447,7 +456,8 @@ function comicOpener(vol, ch, ci, script, folio, cast) {
       <div style="min-width:0"><div class="kick">${esc(ch.category)}</div><h1 style="font-size:22pt;line-height:1.04">${esc(clamp(ch.title, 58))}</h1></div>
       <span class="worldchip" style="margin-left:auto;flex-shrink:0">📍 ${esc(WORLD_NAME[world] || world)}</span></div>
     <div style="position:relative;margin-top:.1in;height:8.35in;border-radius:${reg >= 3 ? '6pt' : '14pt'};overflow:hidden;box-shadow:0 6pt 20pt rgba(26,18,54,.3)">
-      <svg viewBox="0 0 725 830" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">${svg}</svg>
+      ${(() => { const a = artAt(`b${String(vol.n).padStart(2, '0')}-ch${String(ci + 1).padStart(2, '0')}-opener`);
+        return a ? artImg(a) : `<svg viewBox="0 0 725 830" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">${svg}</svg>`; })()}
       ${caps}
       <span style="position:absolute;left:8pt;bottom:6pt" class="bb-audio">🔊 narrated in the app</span>
       <span style="position:absolute;right:10pt;bottom:8pt;font-family:'BB Kicker';font-size:9.2pt;color:rgba(255,255,255,.95);text-shadow:0 1px 4px rgba(0,0,0,.6)">turn the page — the whole trick, explained →</span>
@@ -668,12 +678,13 @@ function cover(vol, nCh, nWords, label, cast) {
   const W = 816, H = 1056;
   const reg = REG(vol);
   const crew = [vol.av].concat((cast || []).slice(0, 3).map(a => a.id));
+  const coverArt = artAt(`b${String(vol.n).padStart(2, '0')}-cover`);
   return `<div class="page" data-cover data-vol="${vol.n}" style="color:#fff;padding:0;background:#241E33">
-    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">
+    ${coverArt ? artImg(coverArt) : `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">
       ${ANIME.ensemble({ W, H, world: vol.world, reg, seed: vol.n * 977, uid: 'cov' + vol.n,
         hero: HERO, crew, title: vol.title, vex: vol.band === 'advanced',
         skyKey: reg >= 3 ? 'dusk' : vol.n % 2 ? 'gold' : 'day' })}
-    </svg>
+    </svg>`}
     <div style="position:absolute;top:.42in;left:.55in;right:.55in;display:flex;justify-content:space-between;align-items:center">
       <span style="font-family:'BB Kicker';letter-spacing:.16em;font-size:10.5pt;text-shadow:0 2px 6px rgba(0,0,0,.55)">BIZZING BEE ${label}</span>
       <span class="disp" style="background:rgba(12,9,28,.55);padding:.07in .2in;border-radius:999px;font-size:12.5pt;transform:rotate(${reg >= 3 ? 0 : 2}deg)">Vol. ${vol.n}</span></div>
@@ -693,6 +704,9 @@ function cover(vol, nCh, nWords, label, cast) {
 function worldStrip(world, vol, seedK) {
   const uid = 'ws' + vol.n + 'x' + seedK;
   const reg = REG(vol);
+  const stripArt = artAt(`strip-${world}-r${reg}`);
+  if (stripArt) return `<div class="worldband" aria-hidden="true">${artImg(stripArt)}
+    <span class="wl">${esc((WORLD_NAME[world] || world).replace(/^the /, 'the '))}</span></div>`;
   return `<div class="worldband" aria-hidden="true">
     <svg viewBox="0 0 725 120" preserveAspectRatio="xMidYMax slice">
       <defs>${ANIME.filters(uid)}</defs>
@@ -705,10 +719,11 @@ function worldStrip(world, vol, seedK) {
 function dividerPage(vol, folio) {
   const W = 816, H = 1056;
   const reg = REG(vol);
+  const divArt = artAt(`b${String(vol.n).padStart(2, '0')}-divider`);
   return `<div class="page" data-vol="${vol.n}" style="color:#fff;padding:0;background:#241E33">
-    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">
+    ${divArt ? artImg(divArt) : `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">
       ${ANIME.plate(vol.av, { W, H, world: vol.world, mood: reg >= 3 ? 'think' : 'excited', reg, seed: vol.n * 431 + 5,
-        uid: 'div' + vol.n, figX: W * .62, figY: H * .66, figS: 300, flip: true, letterbox: reg >= 3 })}</svg>
+        uid: 'div' + vol.n, figX: W * .62, figY: H * .66, figS: 300, flip: true, letterbox: reg >= 3 })}</svg>`}
     <div style="position:absolute;top:1.7in;left:.7in;right:.7in;text-align:center">
       <div style="font-family:'BB Kicker';letter-spacing:.14em;font-size:11pt;text-shadow:0 2px 6px rgba(0,0,0,.4)">WELCOME TO</div>
       <h1 class="coverTitle" style="font-size:40pt;transform:rotate(${reg >= 3 ? 0 : -1.2}deg)">${esc((WORLD_NAME[vol.world] || vol.world).replace(/^the /, 'The '))}</h1>
@@ -767,14 +782,15 @@ function posterPage(vol, cast, folio) {
   const spots = [[.5, .56, 300], [.16, .66, 190], [.82, .64, 185], [.32, .72, 160], [.68, .73, 165]];
   const inner = figs.map((id, i) => { const [fx, fy, s] = spots[i];
     return ANIME.figure(id, W * fx, H * fy, s, { uid, flip: fx > .5 }); }).join('');
+  const poArt = artAt(`b${String(vol.n).padStart(2, '0')}-poster`);
   return `<div class="page" data-vol="${vol.n}" style="color:#fff;padding:0;background:#241E33">
-    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">
+    ${poArt ? artImg(poArt) : `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">
       <defs>${ANIME.filters(uid)}</defs>
       ${ANIME.sky(vol.world, reg >= 3 ? 'think' : 'excited', W, H, Math.max(2, reg), uid)}
       ${ANIME.clouds(W, H, reg, vol.n * 17 + 3, uid)}
       ${ANIME.ground(vol.world, W, H, reg)}
       ${inner}
-      ${ANIME.particles(vol.world, W, H, vol.n * 29 + 7, reg, uid)}</svg>
+      ${ANIME.particles(vol.world, W, H, vol.n * 29 + 7, reg, uid)}</svg>`}
     <div style="position:absolute;top:.8in;left:.6in;right:.6in;text-align:center">
       <h1 class="coverTitle" style="font-size:34pt">${esc(vol.title)}</h1>
       <p style="font-family:'BB Kicker';font-size:11pt;text-shadow:0 2px 6px rgba(0,0,0,.5)">the ${esc((WORLD_NAME[vol.world] || vol.world).replace(/^the /, ''))} crew · Bizzing Bee</p></div>
