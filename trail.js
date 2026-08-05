@@ -218,62 +218,64 @@
      own avatar standing on it, and everything ahead is a flat unlit hex with a
      lock. The chrome is a world-tinted gradient with a top gloss and an inner
      rim, which is what stops it looking like a flat sticker. */
-  function hexChrome(world, i, kind, uid) {
+  /* ---- the route ----
+     The map used to be hexagons zig-zagging down the page with their labels off to
+     one side and a dotted line hopping between them. It read as a mobile-game level
+     select, not as an atlas. This is a journey ledger instead: one continuous rail
+     down the left, a small medallion on it per stop, and the stop itself as a proper
+     row to the right of it. Nothing zig-zags, nothing hops, and the type sits on a
+     single left margin the whole way down.
+
+     Three states, three weights. A cleared stop is quiet — a gold ring, a normal-
+     weight title, its score on the right. The stop you are on is the only card on the
+     page: raised, tinted with its world's accent, carrying the chapter's own line and
+     a Continue button, with your avatar standing on the rail beside it. Everything
+     ahead is a hairline ring and muted type. */
+  function medallion(kind, world, label, av) {
     const [a, d] = ACCENT[world] || ACCENT.meadow;
-    const S = 60, cx = S / 2;
-    const path = 'M30 2.5 L55 16.5 L55 43.5 L30 57.5 L5 43.5 L5 16.5 Z';
-    const fill = kind === 'passed' ? ['#FFD24D', '#C8791B']
-      : kind === 'cur' ? [a, d]
-      : ['var(--surface2)', 'var(--surface2)'];
-    const g = 'hx' + uid;
-    return `<svg viewBox="0 0 ${S} ${S}" style="position:absolute;inset:0;overflow:visible">
-      <defs><linearGradient id="${g}" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="${fill[0]}"/><stop offset="1" stop-color="${fill[1]}"/></linearGradient>
-        <linearGradient id="${g}g" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="rgba(255,255,255,.55)"/><stop offset=".55" stop-color="rgba(255,255,255,0)"/></linearGradient></defs>
-      ${kind === 'cur' ? `<path d="${path}" fill="${a}" opacity=".28" transform="translate(${cx} ${cx}) scale(1.34) translate(${-cx} ${-cx})"/>` : ''}
-      <path d="${path}" fill="url(#${g})"/>
-      <path d="${path}" fill="url(#${g}g)"/>
-      <path d="${path}" fill="none" stroke="${kind === 'locked' ? 'var(--line)' : 'rgba(255,255,255,.5)'}" stroke-width="1.6"/>
-      ${kind === 'cur' ? `<path d="${path}" fill="none" stroke="var(--treasure,#FFD24D)" stroke-width="3" transform="translate(${cx} ${cx}) scale(1.1) translate(${-cx} ${-cx})"/>` : ''}
-    </svg>`;
+    const base = 'position:absolute;left:0;top:16px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;z-index:2;';
+    if (kind === 'passed') return `<span style="${base}background:linear-gradient(160deg,#FFD24D,#E0922E);color:#4A2E00;box-shadow:0 2px 6px rgba(200,121,27,.34),inset 0 -1.5px 0 rgba(140,86,10,.3);font-family:var(--display);font-weight:800;font-size:15px">${label}</span>`;
+    /* The speller stands ON the stop they are at: the avatar IS the medallion, rather
+       than a second sprite floating beside it and colliding with the row above. */
+    if (kind === 'cur') return `<span style="${base}background:linear-gradient(160deg,${a},${d});box-shadow:0 0 0 4px color-mix(in srgb,${a} 22%,transparent),0 3px 9px rgba(26,18,54,.28);color:#fff;font-family:var(--display);font-weight:800;font-size:14px;overflow:visible">${av
+      ? `<span style="width:30px;height:30px;display:block;animation:sb-bee-bob 1.8s ease-in-out infinite">${av}</span>`
+      : label}</span>`;
+    return `<span style="${base}background:var(--bg2);border:1.5px solid var(--line);color:var(--muted);font-family:var(--display);font-weight:700;font-size:13px">${label}</span>`;
   }
-  let _hx = 0;
   function nodeHTML(c, node, i, fr, world) {
     const passed = passedNode(c, node); const isCur = i === fr; const locked = i > fr;
-    const left = i % 2 === 0;
-    /* Every row is the same full-width strip so the scores line up in one column;
-       only the hex slides left or right, which is what makes the route wind. */
-    const base = `position:relative;display:flex;align-items:center;gap:13px;width:100%;margin:${i ? '13px' : '2px'} 0 0;z-index:2;`;
-    const hexPad = left ? 'margin-left:2%' : 'margin-left:24%';
     const kind = passed ? 'passed' : isCur ? 'cur' : 'locked';
-    const label = (t, sub, score) => `<span style="min-width:0;flex:1">
-        <span style="display:block;font-family:var(--display);font-weight:800;font-size:14px;line-height:1.22;color:${locked ? 'var(--muted)' : 'var(--text)'}">${t}</span>
-        <span style="display:block;font-size:11.5px;color:var(--muted);font-weight:600;margin-top:1px">${sub}</span></span>`
-      + (score ? `<span style="flex-shrink:0;font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:800;font-size:12px;padding:4px 11px;border-radius:999px;background:var(--chip);color:var(--good)">${score}</span>` : '')
-      + (isCur ? `<span style="flex-shrink:0;font-family:var(--display);font-weight:800;font-size:12px;padding:5px 13px;border-radius:999px;background:var(--accent);color:#fff;white-space:nowrap">Play &rarr;</span>` : '');
-    const rider = isCur
-      ? `<span style="position:absolute;left:50%;bottom:calc(100% - 6px);transform:translateX(-50%);width:38px;height:38px;animation:sb-bee-bob 1.6s ease-in-out infinite;filter:drop-shadow(0 3px 5px rgba(20,14,44,.34))">${(window.SB_AVATAR ? SB_AVATAR(c.avatar || 'bizzy', 38) : '🐝')}</span>`
-      : '';
-    if (node.kind === 'chk') {
-      const uid = 'k' + (_hx++);
-      return `<button data-act="trailChk" data-arg="${escA(course() + '|' + node.id)}" class="sb-lift" style="${base}text-align:left">
-        <span style="width:60px;height:60px;flex-shrink:0;position:relative;display:grid;place-items:center;${hexPad}">
-          ${hexChrome(world, i, kind, uid)}
-          <span style="position:relative;color:${locked ? 'var(--muted)' : '#fff'};display:grid;place-items:center">${passed ? '<span style="font-size:19px">✓</span>' : iconSVG('target', 22)}</span>
-          ${rider}</span>
-        ${label('Checkpoint', passed ? 'cleared' : locked ? 'locked' : 'mixed quiz — no new words', passed ? (chkMap(c)[lapOf(c) + ':' + node.id] || 0) + '%' : '')}</button>`;
-    }
-    const u = node.u; const stars = (doneMap(c)[u.id] || {});
-    const short = u.title.split('—')[0].trim();
-    const uid = 'u' + (_hx++);
-    const tag = u.kind === 'lesson' || course() === 'exp' ? 'lesson' : 'word family';
-    return `<button data-act="trailUnit" data-arg="${escA(u.id)}" class="sb-lift" style="${base}text-align:left">
-      <span style="width:60px;height:60px;flex-shrink:0;position:relative;display:grid;place-items:center;${hexPad}">
-        ${hexChrome(world, i, kind, uid)}
-        <span style="position:relative;color:${locked ? 'var(--muted)' : '#fff'};font-family:var(--display);font-weight:800;font-size:${passed ? '19px' : '16px'};text-shadow:${locked ? 'none' : '0 1px 2px rgba(20,14,44,.35)'}">${passed ? '★' : locked ? iconSVG('lock', 17) : (i + 1)}</span>
-        ${rider}</span>
-      ${label(esc(short), tag, passed ? stars[lapOf(c)] + '%' : '')}</button>`;
+    const [a, d] = ACCENT[world] || ACCENT.meadow;
+    const chk = node.kind === 'chk';
+    const u = chk ? null : node.u;
+    const title = chk ? 'Checkpoint' : u.title.split('—')[0].trim();
+    const tag = chk ? 'mixed quiz — no new words'
+      : (u.kind === 'lesson' || course() === 'exp' ? 'lesson' : 'word family');
+    const score = passed ? (chk ? (chkMap(c)[lapOf(c) + ':' + node.id] || 0) : ((doneMap(c)[u.id] || {})[lapOf(c)] || 0)) + '%' : '';
+    const act = chk ? `data-act="trailChk" data-arg="${escA(course() + '|' + node.id)}"` : `data-act="trailUnit" data-arg="${escA(u.id)}"`;
+    const mark = passed ? '✓' : chk ? '◆' : String(i + 1);
+    const av = isCur && window.SB_AVATAR ? SB_AVATAR(c.avatar || 'bizzy', 30) : '';
+    /* the one-line promise of the stop, for the card you are standing on */
+    let blurb = '';
+    if (isCur && !chk) { try { const ch = chOf(u); blurb = String((ch && ch.concept) || '').split(/(?<=[.!?])\s/)[0] || ''; } catch (e) {} }
+    if (isCur && chk) blurb = 'Six mixed questions from the stops you have cleared. Pass it and the route opens.';
+    const rowPad = isCur ? '15px 16px 15px 54px' : '11px 12px 11px 54px';
+    const shell = isCur
+      ? `background:linear-gradient(150deg,color-mix(in srgb,${a} 12%,var(--bg2)),var(--bg2) 62%);border:1px solid color-mix(in srgb,${a} 42%,var(--line));box-shadow:0 6px 18px rgba(26,18,54,.13);border-radius:16px`
+      : 'background:transparent;border:1px solid transparent;border-radius:14px';
+    return `<button ${act} class="sb-lift" style="position:relative;display:block;width:100%;text-align:left;padding:${rowPad};margin-bottom:${isCur ? '10px' : '2px'};${shell}">
+      ${medallion(kind, world, mark, av)}
+      <span style="display:flex;align-items:center;gap:12px">
+        <span style="min-width:0;flex:1">
+          <span style="display:block;font-family:var(--display);font-weight:${isCur ? '800' : passed ? '700' : '600'};font-size:${isCur ? '16.5px' : '14.5px'};line-height:1.24;color:${locked ? 'var(--muted)' : 'var(--text)'}">${esc(title)}</span>
+          <span style="display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:2px">${esc(tag)}</span>
+          ${blurb ? `<span style="display:block;font-size:12.5px;color:var(--text);opacity:.82;line-height:1.5;margin-top:7px;max-width:44em">${esc(blurb)}</span>` : ''}
+        </span>
+        ${score ? `<span style="flex-shrink:0;font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:800;font-size:12px;color:var(--good)">${score}</span>` : ''}
+        ${locked ? `<span style="flex-shrink:0;color:var(--muted);opacity:.55">${iconSVG('lock', 15)}</span>` : ''}
+      </span>
+      ${isCur ? `<span style="display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:10px 18px;border-radius:11px;background:${d};color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge)">${passed ? 'Play again' : 'Continue'} &rarr;</span>` : ''}
+    </button>`;
   }
   /* A progress ring, because "0/13" tells a nine-year-old nothing at a glance. */
   function ring(done, total, col, size) {
@@ -289,24 +291,15 @@
   /* The travelled route is drawn as one continuous track behind the stops: the
      part already walked is a solid lit line, the rest a faint dashed one. It is
      the difference between a map you are moving across and a list of buttons. */
-  function trackSVG(nodes, c, fr, col) {
-    const STEP = 86, x = k => (k % 2 === 0 ? 12 : 44), y = k => k * STEP + 30;
-    /* Two explicit paths rather than one dashed at a fraction: a segment is lit
-       only when both stops it joins are cleared, so the gold stops exactly where
-       the speller stopped. */
-    let walkedD = '', aheadD = '';
-    for (let k = 1; k < nodes.length; k++) {
-      const x0 = x(k - 1), y0 = y(k - 1), x1 = x(k), y1 = y(k);
-      const seg = `M ${x0} ${y0} C ${x0 + (x1 - x0) * .1} ${y0 + STEP * .48}, ${x1 - (x1 - x0) * .1} ${y1 - STEP * .48}, ${x1} ${y1} `;
-      if (passedNode(c, nodes[k].n) && passedNode(c, nodes[k - 1].n)) walkedD += seg; else aheadD += seg;
-    }
-    if (!walkedD && !aheadD) return '';
-    const H = nodes.length * STEP;
-    return `<svg style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none" preserveAspectRatio="none" viewBox="0 0 100 ${H}">
-      ${aheadD ? `<path d="${aheadD}" stroke="var(--line)" stroke-width="2.6" stroke-dasharray="2 7" stroke-linecap="round" fill="none"/>` : ''}
-      ${walkedD ? `<path d="${walkedD}" stroke="${col}" stroke-width="3.6" stroke-linecap="round" fill="none" opacity=".9"/>` : ''}</svg>`;
+  /* One continuous rail behind the medallions, lit gold as far as the speller has
+     walked and hairline beyond. It replaces the dashed curve that used to hop from
+     hexagon to hexagon — a route on a map is a line, not a series of jumps. */
+  function railHTML(nodes, c, fr, col) {
+    const cleared = nodes.filter(o => passedNode(c, o.n)).length;
+    const pct = nodes.length > 1 ? Math.min(100, Math.round((cleared / nodes.length) * 100)) : 0;
+    return `<span aria-hidden="true" style="position:absolute;left:16px;top:26px;bottom:26px;width:2px;border-radius:2px;background:var(--line)">
+      <span style="position:absolute;left:0;right:0;top:0;height:${pct}%;border-radius:2px;background:linear-gradient(180deg,#FFD24D,${col});box-shadow:0 0 8px color-mix(in srgb,${col} 45%,transparent)"></span></span>`;
   }
-
   /* one course's run of act sections (assumes state.trailCourse === crs) */
   function actSections(c, crs) {
     const s = seq(c); const fr = frontier(c);
@@ -332,8 +325,8 @@
               <span style="display:block;font-size:11.5px;font-weight:700;color:rgba(255,255,255,.86);text-shadow:0 1px 4px rgba(0,0,0,.6);margin-top:2px">${here ? 'you are here' : dn === nodes.length ? 'cleared' : dn ? 'in progress' : 'ahead'}</span></span>
             ${ring(dn, nodes.length, dn === nodes.length ? 'var(--good)' : '#FFD24D', 44)}
           </div></div>
-        <div style="position:relative;padding:10px 12px 16px">
-          ${trackSVG(nodes, c, fr, a)}
+        <div style="position:relative;padding:16px 14px 18px 14px">
+          ${railHTML(nodes, c, fr, a)}
           ${nodes.map(x => nodeHTML(c, x.n, x.i, fr, world)).join('')}
         </div></section>`;
     }
@@ -344,6 +337,20 @@
         <span style="font-family:var(--display);font-weight:800;font-size:13px;background:var(--chip);color:var(--accent);border-radius:999px;padding:5px 13px">Tier ${lap} of 3</span>
         <div style="flex:1;height:9px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;background:linear-gradient(90deg,var(--accent),var(--treasure));width:${Math.round(done / Math.max(1, total) * 100)}%"></div></div>
         <span style="font-size:12px;font-weight:800;color:var(--muted)">${done}/${total} stops</span></div>`;
+  /* The revision pile and the weak-pattern trainer used to sit in a Library section
+     of their own, which meant leaving the journey to reach the two things you want
+     precisely while you are on it. They ride the Atlas header as pills, and the
+     chapter shelf keeps its place beside them. */
+  function atlasPills(c) {
+    const miss = ((c.missed) || []).length;
+    const pill = (act, arg, ic, label, count, tone) => `<button data-act="${act}"${arg ? ` data-arg="${escA(arg)}"` : ''} class="sb-lift" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;font-weight:800;font-size:12.5px;white-space:nowrap;
+      ${tone ? `background:color-mix(in srgb,${tone} 13%,var(--bg2));border:1px solid color-mix(in srgb,${tone} 45%,var(--line));color:${tone}` : 'background:var(--surface2);border:1px solid var(--line);color:var(--text)'}">${iconSVG(ic, 14)} ${label}${count ? `<span style="font-family:var(--display);font-variant-numeric:tabular-nums;background:${tone || 'var(--accent)'};color:#fff;border-radius:999px;padding:1px 7px;font-size:11px">${count}</span>` : ''}</button>`;
+    return `<span style="margin-left:auto;display:inline-flex;gap:7px;flex-wrap:wrap">
+      ${pill('openRevisions', '', 'retry', 'Revise', miss, miss ? 'var(--tricky-deep,#C24545)' : '')}
+      ${pill('openTraps', '', 'target', 'My traps', 0, '')}
+      ${pill('setNav', 'concepts', 'grid', 'Chapters', 0, '')}
+    </span>`;
+  }
   function viewMap() {
     const c = active();
     /* section 1 — the base route */
@@ -369,7 +376,7 @@
     return `<div style="animation:sb-rise .35s ease both;max-width:660px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
         <span style="font-family:var(--display);font-weight:800;font-size:22px">${esc(T().names.honey)}</span>
-        <button data-act="setNav" data-arg="concepts" style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:12.5px;color:var(--text)">${iconSVG('grid', 14)} Chapter shelf</button></div>
+        ${atlasPills(c)}</div>
       ${tierBar(h.lap, h.done, h.total)}
       ${h.lap === 1 ? `<p style="font-size:12.5px;color:var(--muted);font-weight:600;margin:-6px 0 14px 4px">Tier 1 keeps every word at your level — the same route returns tougher at Tier 2. Concepts first; the words follow.</p>` : ''}
       ${h.acts}

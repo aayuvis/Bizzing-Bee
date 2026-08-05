@@ -3326,50 +3326,53 @@ function viewIpaTrain(){ const S=state; const it=S.it; const pool=ipaPool();
       <div style="text-align:center;font-size:12px;color:var(--muted);font-weight:600;margin-top:10px">Keys: 1–4 answer · R hear it · Enter next</div>
     </div></div>`; }
 
-function viewExplore(){ const c=active(); ensureLists(c); const S=state; const advOn=advModeOn(c);
-  const cAll=(state.conceptData||[]); const cDone=cAll.filter(ch=>conceptStat(ch).done).length;
-  const fmtDone=(cDone>0?cDone+'/'+(cAll.length||121)+' mastered':(cAll.length||121)+' concepts');
-  /* Each Explore destination as a compact clickable row inside its hub. */
-  const row=(key,act,arg,sub)=>{ const w=WAYFIND[key]||{label:key,ic:'grid',c:'var(--accent)'};
-    return `<button class="sb-lift" data-act="${act}" ${arg?`data-arg="${escA(arg)}"`:''} style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px 13px;box-shadow:var(--sh-rest)">
-      ${iconTile((window.SB_ICON_ART&&SB_ICON_ART[key])?key:(w.sb||'grid'), w.c==='var(--accent)'?'#7C5CFF':w.c, {size:40, radius:11})}
-      <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">${esc(w.label)}</span>
-        <span style="display:block;font-size:12px;color:var(--muted);font-weight:600;line-height:1.35;margin-top:1px">${esc(sub)}</span></span>
-      <span style="color:${w.c};font-weight:800;flex-shrink:0">→</span></button>`; };
-  /* the three hub columns */
-  const hub=(title,e,col,intro,inner)=>`<section style="background:linear-gradient(160deg,color-mix(in srgb,${col} 12%,var(--bg2)),var(--bg2) 55%);border:1px solid color-mix(in srgb,${col} 30%,var(--line));border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--sh-rest)">
-      <div style="display:flex;align-items:center;gap:11px">
-        ${iconTile(e, col, {size:46, radius:14})}
-        <span><span style="display:block;font-family:var(--display);font-weight:800;font-size:19px;line-height:1;color:${col}">${title}</span>
-        <span style="display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:3px">${intro}</span></span>
-      </div>
-      ${inner}</section>`;
-  const missN=((c.missed)||[]).length;
-  const qN=(window.SB_QUOTES&&SB_QUOTES.length)?SB_QUOTES.length:0;
-  const tN=(window.SB_TRIVIA&&SB_TRIVIA.questions)?SB_TRIVIA.questions.length:0;
-  // ---- LEARN ----  understand words deeply
-  /* One door per idea. Concepts absorbed the advanced course, the Word Journeys
-     and the champion tip deck, so those rows are gone rather than duplicated; the
-     List Builder lives in Practice, which is where lists are actually studied. */
-  const learn=hub('Learn','learn','#7C5CFF','Understand words deeply',
-    row('concepts','setNav','concepts','Every chapter in the app — patterns, roots, origins, bee-day craft · '+fmtDone)+
-    row('themes','setNav','themes','Theme journeys — a world explained, then its words to keep')+
-    row('vocab','openVocab',null,'Word → meaning, vocabulary-bee style'));
-  // ---- TRAIN ----  sharpen your skills
-  const train=hub('Train','train','#13A892','Sharpen your skills',
-    (advOn?row('advmock','openAdvMock',null,'Benchmark rounds — written, vocabulary & lightning'):'')+
-    row('figurative','setNav','figurative','2,350 idioms & similes, card by card')+
-    row('typing','openTyping',null,'Touch-type, then race the 60-second test')+
-    row('quotes','openQuotes',null,(qN?fmtN(qN)+' ':'')+'kid-friendly quotes from famous people')+
-    row('trivtrain','openTrivTrain',null,'Trivia training — '+(tN?fmtN(tN)+' ':'')+'cards by chapter, then play the Arcade')+
-    row('ipatrain','openIpaTrain',null,'Read IPA — the phonetic symbols study lists are written in'));
-  // ---- REVISE ----  fix what trips you up
-  const revise=hub('Revise','retry','#E0922E','Fix what trips you up',
-    row('revisions','openRevisions',null,'Redo the words you flagged to revise'+(missN?' · '+missN+' waiting':''))+
-    row('traps','openTraps',null,'Beat your weak spelling patterns'));
-  return `<div style="animation:sb-rise .35s ease both">
-    ${pageHead('The Library','learn · train · revise','Everything beyond spelling practice — build deep word knowledge, sharpen real skills, and clean up what trips you up.')}
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;align-items:start">${learn}${train}${revise}</div>
+function viewExplore(){ const c=active(); ensureLists(c); const S=state;
+  /* The Library was three columns of text rows under Learn / Train / Revise. Two of
+     those sections no longer had anything of their own to hold: the revision pile and
+     the trap trainer live in Practice and now ride as pills on the Word Atlas, and the
+     quote trainer is reachable from the drawer and from the Quote of the Hour card on
+     the home screen. What is left is six real destinations, so they get the Arcade's
+     tile treatment rather than a filing structure. */
+  const cAll=(S.conceptData||[]); const cDone=cAll.filter(ch=>conceptStat(ch).done).length;
+  const shelves=cAll.length?conceptChapters().length:13;
+  const tN=triviaTotal();
+  const themeN=themeDefs().length||75;
+  const mine=myThemes().length;
+  const ART=(k,sz)=>(window.SB_ICON_ART&&SB_ICON_ART[k])?SB_ICON_ART(k,{size:sz||46}):iconSVG(k,sz||46);
+  const tile=(o)=>`<button data-act="${o.act}" ${o.arg?`data-arg="${escA(o.arg)}"`:''} class="arc-tile">
+      <span class="arc-tile-top" style="background:${o.grad}">${o.badge?`<span class="arc-badge">${esc(o.badge)}</span>`:''}
+        <span style="filter:drop-shadow(0 3px 7px rgba(0,0,0,.28))">${o.art}</span></span>
+      <span class="arc-tile-body">
+        <span class="arc-tile-title" style="display:block">${esc(o.title)}</span>
+        <span class="arc-tile-blurb" style="display:block">${esc(o.blurb)}</span>
+        <span class="arc-tile-foot"><span class="arc-cta" style="background:${o.cta}">${iconSVG(o.ctaIc||'book',14)} ${esc(o.ctaLabel||'Open')}</span>${o.stat?`<span class="arc-stat">${esc(o.stat)}</span>`:''}</span>
+      </span></button>`;
+  const tiles=[
+    tile({act:'setNav',arg:'concepts',grad:'linear-gradient(135deg,#7C5CFF,#5A37D6)',art:ART('concepts',48),badge:'Explain',
+      title:'Concepts',blurb:'Every explanation in the app on one shelf — patterns, roots, origins, bee-day craft.',
+      cta:'#5A37D6',stat:cAll.length?(cDone+'/'+cAll.length+' mastered'):(shelves+' shelves')}),
+    tile({act:'setNav',arg:'themes',grad:'linear-gradient(135deg,#F0703C,#C8451B)',art:ART('themes',48),badge:'Families',
+      title:'Theme Journeys',blurb:'Words by the family they belong to — a subject, or the language they came from.',
+      cta:'#C8451B',stat:mine?(mine+' picked'):(themeN+' families')}),
+    tile({act:'openVocab',grad:'linear-gradient(135deg,#13A892,#0A6B5D)',art:ART('vocab',48),badge:'Meaning',
+      title:'Vocabulary',blurb:'Word to meaning, vocabulary-bee style — study a deck, then take the check.',
+      cta:'#0A6B5D',ctaIc:'book',ctaLabel:'Study'}),
+    tile({act:'setNav',arg:'figurative',grad:'linear-gradient(135deg,#B14FC4,#7A2F8C)',art:ART('figurative',48),badge:'Sayings',
+      title:'Idioms & Similes',blurb:'2,350 phrases and the true story behind each one, card by card.',
+      cta:'#7A2F8C'}),
+    tile({act:'openTrivTrain',grad:'linear-gradient(135deg,#F0A93C,#C8791B)',art:ART('beeTrivia',48),badge:'Cards',
+      title:'Bizzing Trivia',blurb:'Etymology and word-world cards by chapter — then play the Arcade round.',
+      cta:'#C8791B',ctaIc:'bulb',ctaLabel:'Learn',stat:tN?fmtN(tN)+' questions':''}),
+    tile({act:'openIpaTrain',grad:'linear-gradient(135deg,#2E6FD8,#1C4A96)',art:ART('mic',48),badge:'Notation',
+      title:'The Sound Alphabet',blurb:'Read IPA — the phonetic symbols every real study list is written in.',
+      cta:'#1C4A96',ctaIc:'volume',ctaLabel:'Train'}),
+    tile({act:'openTyping',grad:'linear-gradient(135deg,#3D7DF0,#2A63D6)',art:ART('typing',48),badge:'Speed',
+      title:'Typing Trainer',blurb:'Learn to touch-type, then race the sixty-second test.',
+      cta:'#2A63D6',ctaIc:'pencil',ctaLabel:'Practise'}),
+  ].join('');
+  return `<div style="animation:sb-rise .35s ease both;max-width:1000px;margin:0 auto">
+    ${pageHead('The Library','learn beyond the drill','Everything that explains a word rather than testing it. Your revision pile and weak patterns ride on the Word Atlas; the drill itself lives in Practice.')}
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:14px">${tiles}</div>
   </div>`; }
 /* Advanced Mode entry — a gated hero banner. Unlocks at Level 12, Bee Band 7, or by paying. */
 function advBanner(c){
@@ -7243,6 +7246,12 @@ function magicView(){ const g=state.game; const S=state;
       ? `<button data-act="magicNew" style="flex:1;padding:13px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Round ${(g.round||1)+1} — 9 new cells →</button><button data-act="exitGame" style="padding:13px 16px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">Done</button>`
       : `<button data-act="magicBoard" style="flex:1;padding:13px;border-radius:14px;background:${r.win?'var(--accent)':'var(--surface2)'};color:${r.win?'#fff':'var(--text)'};font-weight:800;font-size:15px;${r.win?'box-shadow:var(--edge)':'border:1px solid var(--line)'}">Back to the board</button>`}</div>
   </div>`; }
+/* The question bank is sharded and lazy, so SB_TRIVIA.questions is empty until a
+   level loads. The index carries per-level counts — use those for any headline
+   number, or it reads "0 questions" on a fresh boot. */
+function triviaTotal(){ try{ const T=window.SB_TRIVIA; if(!T) return 0;
+    if(T.byLevel){ let n=0; for(const k in T.byLevel) n+=(T.byLevel[k]||0); if(n) return n; }
+    return (T.count||((T.questions||[]).length)||0); }catch(e){ return 0; } }
 function gamesHub(){ const S=state; const c=active();
   // ---- graphical tile helpers ----
   const heroTile=(o)=>`<button data-act="${o.act}" ${o.arg?`data-arg="${escA(o.arg)}"`:''} class="arc-hero" ${o.span?'style="grid-column:span 2"':''}>
@@ -7274,12 +7283,29 @@ function gamesHub(){ const S=state; const c=active();
     heroes.push(heroTile({act:'openQuest',grad:'linear-gradient(150deg,#2E2258,#241A47 60%,#1C1438)',art:SB_AVATAR(hid,116,{dark:true}),tag:'★ Story mode',title:'Spelling Quest',blurb:'Play 15 seasons — spell through five chapters to a boss and win its legendary avatar.',cta:done>0?'Continue':'Start Season 1',sub:done+'/'+total+' seasons'+(legWon?(' · '+legWon+' legendary'):'')})); }
   // ---- FEATURE TILES: daily, trivia, champ, magic ----
   const feats=[];
+  /* Daily Buzz is a once-a-day ritual, not one of nine games to browse. It rides as a
+     full-width banner under the two story adventures, where the streak is the hook. */
+  let dailyBanner='';
   if(window.SB_DAILY){ let st={}; try{ st=JSON.parse(localStorage.getItem('sb_daily')||'{}'); }catch(e){}
     const today=(()=>{ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); })();
     const doneToday=st.day===today&&st.over; const streak=st.streak||0;
-    feats.push(tile({act:'openDaily',grad:'linear-gradient(135deg,#2FA35C,#1E7D45)',art:gameArtSVG('daily',48),badge:'Daily',title:'Daily Buzz',blurb:'Six tries to spell today’s mystery word — then share your grid.',cta:'#1E7D45',stat:doneToday?'Seen ✓':(streak>0?streak+'-day 🔥':'new')})); }
-  if(window.SB_TRIVIA){ const st=(c.trivia)||{}; const nQ=(SB_TRIVIA.questions||[]).length;
-    feats.push(tile({act:'openTrivia',grad:'linear-gradient(135deg,#F0A93C,#DC7A18)',art:gameArtSVG('trivia',48),badge:'Quiz',title:'Bee Trivia',blurb:fmtN(nQ)+' questions · 20 themes · picture & listening rounds.',cta:'#C8791B',stat:st.right?fmtN(st.right)+' right':''})); }
+    dailyBanner=`<button data-act="openDaily" class="sb-lift" style="position:relative;display:block;width:100%;text-align:left;overflow:hidden;border-radius:18px;margin-bottom:16px;
+        background:linear-gradient(110deg,#1E7D45,#2FA35C 46%,#3FBF6E);box-shadow:0 8px 22px rgba(24,96,55,.28)">
+      <span aria-hidden="true" style="position:absolute;inset:0;opacity:.22;background:radial-gradient(320px 150px at 88% 30%,#FFF6D6,transparent 70%)"></span>
+      <span aria-hidden="true" style="position:absolute;right:16px;top:50%;transform:translateY(-50%) rotate(-7deg);opacity:.95;filter:drop-shadow(0 6px 14px rgba(0,0,0,.3))">${gameArtSVG('daily',92)}</span>
+      <span style="position:relative;z-index:2;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 20px;max-width:calc(100% - 110px)">
+        <span style="min-width:0;flex:1">
+          <span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--mono,monospace);font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#EAFBEF;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);border-radius:99px;padding:3px 10px">Today only</span>
+          <span style="display:block;font-family:var(--display);font-weight:800;font-size:22px;line-height:1.1;color:#fff;margin-top:8px">Daily Buzz</span>
+          <span style="display:block;font-size:13px;line-height:1.45;color:rgba(255,255,255,.92);margin-top:4px;max-width:34em">Six tries to spell today&rsquo;s mystery word, then share your grid. A new word every day at midnight.</span>
+        </span>
+        <span style="display:inline-flex;align-items:center;gap:10px;flex-shrink:0">
+          ${streak>0?`<span style="display:inline-flex;align-items:center;gap:5px;font-family:var(--display);font-weight:800;font-size:14px;color:#fff;background:rgba(0,0,0,.22);border-radius:999px;padding:7px 14px">🔥 ${streak}-day streak</span>`:''}
+          <span style="padding:11px 20px;border-radius:11px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px;white-space:nowrap">${doneToday?'Seen today ✓':'Play today\u2019s word →'}</span>
+        </span>
+      </span></button>`; }
+  if(window.SB_TRIVIA){ const st=(c.trivia)||{}; const nQ=triviaTotal();
+    feats.push(tile({act:'openTrivia',grad:'linear-gradient(135deg,#F0A93C,#DC7A18)',art:gameArtSVG('trivia',48),badge:'Quiz',title:'Bee Trivia',blurb:(nQ?fmtN(nQ)+' questions · ':'')+'32 chapters · picture & listening rounds.',cta:'#C8791B',stat:st.right?fmtN(st.right)+' right':''})); }
   /* Champ Challenge merged into Beat the Buzzer as its Level Challenge mode. */
   feats.push(tile({act:'playGame',arg:'magic',grad:'linear-gradient(135deg,#B14FC4,#7E2E9E)',art:gameArtSVG('magic',48),badge:'Board',title:'Magic Squares',blurb:'Clear a 3×3 board of themes & concepts — lines win bonus coins.',cta:'#7E2E9E',stat:''}));
   // ---- QUICK GAMES: the four arcade engines ----
@@ -7289,14 +7315,20 @@ function gamesHub(){ const S=state; const c=active();
       <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15px">Coin store</span><span style="display:block;font-size:12px;color:var(--muted)">Spend your 🪙 on avatar packs, worlds and power-ups.</span></span>
       <button data-act="openShop" style="padding:10px 16px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge);white-space:nowrap">Open the Store →</button></div>`;
   return `<div style="max-width:860px;margin:0 auto">
-    <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button><span style="margin-left:2px">${arcadeLogoSVG(38)}</span><span style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em">Arcade</span><span style="margin-left:auto">${coinChip()}</span></div>
-    <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:16px">
-      <span style="font-size:12px;font-weight:800;color:var(--muted)">Word difficulty</span>
-      ${[['auto','My level'],['easy','Easy'],['medium','Medium'],['hard','Hard'],['champ','Champ']].map(([k,l])=>{ const on=((c.gameDiff)||'auto')===k;
-        return `<button data-act="setGameDiff" data-arg="${k}" style="padding:7px 13px;border-radius:999px;font-weight:800;font-size:12.5px;${on?'background:var(--accent);color:var(--action-ink,#fff);box-shadow:var(--edge)':'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">${l}</button>`; }).join('')}
-      <span style="font-size:11.5px;color:var(--muted);font-weight:650">— scaled to your own level</span>
-    </div>
+    <!-- The difficulty pills belong beside the title: they set the level for every
+         game below, so they read as a property of the Arcade rather than a row of
+         buttons floating above the first tile. -->
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+      <button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button>
+      <span style="margin-left:2px">${arcadeLogoSVG(38)}</span>
+      <span style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em">Arcade</span>
+      <span style="display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap;padding-left:6px;border-left:1px solid var(--line);margin-left:4px">
+        ${[['auto','My level'],['easy','Easy'],['medium','Medium'],['hard','Hard'],['champ','Champ']].map(([k,l])=>{ const on=((c.gameDiff)||'auto')===k;
+          return `<button data-act="setGameDiff" data-arg="${k}" title="Word difficulty for every game" style="padding:6px 12px;border-radius:999px;font-weight:800;font-size:12px;${on?'background:var(--accent);color:var(--action-ink,#fff);box-shadow:var(--edge)':'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">${l}</button>`; }).join('')}
+      </span>
+      <span style="margin-left:auto">${coinChip()}</span></div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:16px">${heroes.join('')}</div>
+    ${dailyBanner}
     <div class="arc-sech">Games &amp; challenges</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin:8px 0 16px">${feats.join('')}${quick}</div>
     ${store}
