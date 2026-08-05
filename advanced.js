@@ -12,7 +12,7 @@
   /* ---- unlock ---- */
   function advLevel() { try { return listStageIdx(active(), 'journey') + 1; } catch (e) { return 1; } }
   function advBand() { try { return beeBand(active()).band; } catch (e) { return 2; } }
-  /* Advanced Mode IS the Advanced Pack add-on: $49/yr in pricing.js, sitting on top of any
+  /* Advanced Mode IS the Advanced Pack add-on: $49.99/yr in pricing.js, sitting on top of any
      tier. No tier grants it — not even Regional Speller — and it is not purchasable with
      coins, which are earned by playing and would undercut the price. So ownership of the
      add-on is the only gate, and SB_ENT.hasAddon is the only place that is decided.
@@ -258,7 +258,7 @@
 
     /* The gate is the only way in, and the only way through it is owning the add-on.
        Two faces, and neither of them grants access:
-         READY   Level 12 or Bee Band 7 reached — pitch it as earned, still $49/yr.
+         READY   Level 12 or Bee Band 7 reached — pitch it as earned, still $49.99/yr.
          EARLY   not there yet — show the progress, and let a parent buy anyway. */
     _gate() { const lvl = advLevel(); const band = advBand();
       const ready = advReady(); const price = ADV_PRICE;

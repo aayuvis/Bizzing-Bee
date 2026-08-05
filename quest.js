@@ -536,6 +536,13 @@
           <div style="font-family:var(--display);font-weight:800;font-size:24px;color:#fff;text-align:center;margin-bottom:4px">Spelling Quest</div>
           <div style="color:#C9BFEA;font-size:13px;text-align:center;margin-bottom:22px;font-weight:650">Play each pack’s story — spell your way through five chapters to a boss, and win its legendary avatar.</div>
           <div style="display:flex;flex-wrap:wrap;gap:16px 10px;justify-content:center">${nodes}</div>
+          <div style="display:flex;justify-content:center;margin-top:26px">
+            <button data-act="sqBoss" style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:13px 20px;max-width:460px;text-align:left">
+              <span style="font-size:26px">👹</span>
+              <span style="min-width:0"><span style="display:block;color:#fff;font-weight:800;font-size:14px">Boss Battle — quick fight</span>
+              <span style="display:block;color:#C9BFEA;font-size:12px;font-weight:650">Skip the story: face a boss right now with your toughest words. Shields &amp; reveals work here.</span></span>
+              <span style="color:#FFC23D;font-weight:800;flex-shrink:0">→</span></button>
+          </div>
         </div>`;
       return SQ._shell(inner);
     },
@@ -551,7 +558,7 @@
           <button data-act="sqExit" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:99px;padding:6px 14px;color:#C9BFEA;font-weight:800;font-size:13px">← Season map</button>
           <span style="flex:1"></span>${SQ._hudBtn()}</div>
         <div style="padding:74px 30px 34px;text-align:center;max-width:640px;margin:0 auto">
-          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:${S.accent};letter-spacing:.14em">YOUR MISSION · ${esc2(S.label).toUpperCase()}</div>
+          <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;color:${S.accent};letter-spacing:.14em">YOUR MISSION · ${esc2(S.label).toUpperCase()}</div>
           <div style="font-family:var(--display);font-weight:800;font-size:36px;color:#fff;margin:6px 0 14px">${esc2(S.title)}</div>
           <p style="color:#E9E1FF;font-size:16.5px;line-height:1.65;font-weight:650;margin:0 auto 18px;max-width:34em">${esc2(log)}</p>
           <div style="display:inline-block;background:rgba(255,194,61,.12);border:1px solid rgba(255,194,61,.35);border-radius:14px;padding:11px 18px;color:#FFE49B;font-weight:800;font-size:13px;margin-bottom:22px">
@@ -581,7 +588,7 @@
         : `<button data-act="sqToChallenge" style="display:block;margin:6px auto 0;background:none;border:0;cursor:pointer;text-align:center;color:${S.accent};font-weight:800;font-size:14px;animation:sb-pop .35s ease both">The story is told — take the challenge! ↓</button>`;
       const kindLabel={survival:'Spell Survival<br>6 words · 60s',accuracy:'Accuracy Gate<br>spell 7 of 10',origins:'Word Origins<br>7 of 10',boss:'Boss Battle<br>defeat '+esc2(S.boss),finale:'Finale Boss<br>'+esc2(S.boss)+' returns'}[chp.kind];
       const challenge=`<div id="sq-challenge" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:14px;text-align:center;${storyDone?'':'opacity:.55'}">
-          <div style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.12em;color:#C9BFEA;margin-bottom:6px">THE CHALLENGE</div>
+          <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:10px;font-weight:700;letter-spacing:.12em;color:#C9BFEA;margin-bottom:6px">THE CHALLENGE</div>
           <div style="color:#FFE49B;font-weight:800;font-size:12.5px;line-height:1.45;margin-bottom:11px">${kindLabel}</div>
           <button data-act="sqStart" style="background:${storyDone?S.accent:'rgba(255,255,255,.15)'};color:${storyDone?'#241E33':'#8A83A3'};font-weight:800;font-size:13px;border-radius:99px;padding:10px 18px;${storyDone?'box-shadow:0 4px 0 rgba(0,0,0,.25)':''}">START →</button>
           ${storyDone?'':'<div style="color:#8A83A3;font-size:10.5px;font-weight:700;margin-top:7px">story first</div>'}
@@ -593,7 +600,7 @@
         <div style="padding:72px 26px 30px;display:flex;gap:20px;flex-wrap:wrap;justify-content:center">
           <div style="flex:1;min-width:300px;max-width:620px">
             <div style="text-align:center;margin-bottom:14px">
-              <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:${S.accent};letter-spacing:.1em">CHAPTER ${String(q.ch).padStart(2,'0')} · ${bi>=bts.length?'READY':'STORY'}</div>
+              <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;color:${S.accent};letter-spacing:.1em">CHAPTER ${String(q.ch).padStart(2,'0')} · ${bi>=bts.length?'READY':'STORY'}</div>
               <div style="font-family:var(--display);font-weight:800;font-size:29px;color:#fff;margin-top:3px">${esc2(chTitle)}</div>
             </div>
             <div style="min-height:250px">${played||`<div style="text-align:center;color:#C9BFEA;font-size:14px;font-weight:650;padding:40px 10px 10px">The heroes of ${esc2(S.label)} have a story to tell…</div>`}</div>
@@ -644,7 +651,7 @@
           <span style="color:#8A83A3;font-weight:800;font-size:12px">PASS AT 7</span><span style="flex:1"></span>${SQ._hudBtn()}</div>
         <div style="padding:80px 24px 30px;display:flex;justify-content:center">
           <div style="background:#fff;border-radius:20px;padding:24px 28px;width:100%;max-width:520px;box-shadow:0 10px 30px rgba(0,0,0,.25)">
-            <div style="font-family:var(--mono);font-size:11px;font-weight:700;color:#9C6A08;letter-spacing:.1em;margin-bottom:8px">QUESTION ${g.i+1}</div>
+            <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:11px;font-weight:700;color:#9C6A08;letter-spacing:.1em;margin-bottom:8px">QUESTION ${g.i+1}</div>
             <div style="font-family:var(--display);font-weight:800;font-size:21px;line-height:1.35;margin-bottom:18px">${esc2(q.q)}</div>
             <div style="display:grid;gap:9px">${opts}</div>
             ${g.picked!=null&&q.choices[g.picked]!==q.a?`<div style="margin-top:12px;font-size:13px;color:#8A2A20;font-weight:650">The answer is “${esc2(q.a)}”.</div>`:''}
