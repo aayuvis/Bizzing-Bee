@@ -301,23 +301,27 @@ function css(vol) {
     -webkit-text-stroke:2.6pt var(--accent-deep);paint-order:stroke fill;
     text-shadow:0 5px 0 rgba(20,12,40,.45),0 12px 28px rgba(0,0,0,.4)}
   .coverTitle .ln2{display:block;color:#FFE9AE}
-  .worldband{position:absolute;left:.5in;right:.5in;bottom:.52in;height:1.25in;opacity:.97;border-radius:12pt;overflow:hidden;box-shadow:0 4pt 14pt rgba(26,18,54,.22)}
-  .worldband svg{position:absolute;inset:0;width:100%;height:100%}
-  .worldband .wl{position:absolute;left:10pt;bottom:6pt;font-family:'BB Kicker';font-size:8.6pt;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.95);text-shadow:0 1px 4px rgba(0,0,0,.5)}
+  /* travelling world scenery: bleeds off both page edges and dissolves upward into
+     the paper, so it reads as part of the page rather than a pasted-in picture */
+  .worldband{position:absolute;left:0;right:0;bottom:0;height:2.2in;overflow:hidden;pointer-events:none}
+  .worldband img,.worldband svg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .worldband:after{content:'';position:absolute;inset:0;
+    background:linear-gradient(180deg,var(--paper) 0%,color-mix(in srgb,var(--paper) 55%,transparent) 30%,transparent 66%)}
   .peek{position:absolute;pointer-events:none}
   .tile{font-family:'BB Tile';font-weight:600;color:var(--muted)}
   .bb-head{position:absolute;top:.3in;left:.75in;right:.5in;display:flex;justify-content:space-between;align-items:baseline;
     font-family:'BB Kicker';font-size:10pt;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--hairline);padding-bottom:4pt}
   .page[data-verso] .bb-head{left:.5in;right:.75in}
   .bb-foot{position:absolute;bottom:.28in;left:.75in;right:.5in;display:flex;justify-content:space-between;
-    font-family:'BB Kicker';font-size:10pt;color:var(--muted)}
+    font-family:'BB Kicker';font-size:10pt;color:var(--muted);z-index:3;
+    text-shadow:0 1px 2px rgba(255,255,255,.95),0 0 6px rgba(255,255,255,.85)}
   .page[data-verso] .bb-foot{left:.5in;right:.75in}
   .bb-panelbox{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-panel);padding:.12in .15in;box-shadow:var(--sh-screen)}
-  .bb-bigidea{padding:.06in .85in .06in .44in;max-height:1.9in;overflow:hidden;position:relative;font-size:13.5pt;line-height:1.56}
+  .bb-bigidea{padding:.06in .85in .06in .44in;position:relative;font-size:13pt;line-height:1.52}
   .bb-bigidea:before{content:'“';position:absolute;left:0;top:-.12in;font-family:'BB Display';font-size:44pt;color:var(--accent)}
   .bb-bigidea .cameo{position:absolute;right:.06in;top:50%;transform:translateY(-50%) rotate(4deg)}
-  .bb-promove{background:var(--ink);color:#F4EFFF;border-radius:var(--r-panel);padding:.16in .18in;max-height:2.9in;overflow:hidden;
-    font-size:10.8pt;line-height:1.5}
+  .bb-promove{background:var(--ink);color:#F4EFFF;border-radius:var(--r-panel);padding:.16in .18in;max-height:none;
+    font-size:10.6pt;line-height:1.46}
   .bb-promove b{color:var(--treasure)}
   .bb-promove .ln{margin:0 0 5.5pt;padding-left:.14in;text-indent:-.14in}
   .bb-promove .ln:last-child{margin-bottom:0}
@@ -337,12 +341,34 @@ function css(vol) {
   .an-cap{position:absolute;left:.09in;right:.09in;bottom:.09in;background:rgba(255,255,255,.93);border-radius:${reg >= 3 ? '4pt' : '10pt'};
     padding:5pt 9pt;font-family:'BB Display';font-size:${vol.band === 'advanced' ? '10.6pt' : '11.5pt'};line-height:1.3;box-shadow:0 2pt 8pt rgba(26,18,54,.3)}
   .an-cap .nm{display:block;font-family:'BB Kicker';font-size:8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-deep);margin-bottom:1pt}
+  /* full-bleed story page: no padding, art to every edge */
+  .page.an-full{padding:0;background:#241E33}
+  .page.an-full > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .an-title{position:absolute;left:0;right:0;top:0;padding:.4in .5in .75in;
+    background:linear-gradient(180deg,rgba(12,9,28,.7) 0%,rgba(12,9,28,.46) 52%,rgba(12,9,28,0) 100%)}
+  .an-title-in{display:flex;align-items:center;gap:.16in}
+  .an-title .n{display:inline-grid;place-items:center;width:.52in;height:.52in;flex-shrink:0;border-radius:14pt;
+    background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:17pt;
+    box-shadow:0 2pt 8pt rgba(0,0,0,.45)}
+  .an-title .k{display:block;font-family:'BB Kicker';font-size:9pt;letter-spacing:.09em;text-transform:uppercase;
+    color:rgba(255,255,255,.92);text-shadow:0 1px 4px rgba(0,0,0,.6)}
+  .an-title .t{display:block;font-family:'BB World','BB Display';font-weight:800;font-size:24pt;line-height:1.06;color:#fff;
+    -webkit-text-stroke:1.6pt rgba(20,14,44,.5);paint-order:stroke fill;text-shadow:0 3px 10px rgba(0,0,0,.5)}
+  .an-foot{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;
+    gap:.14in;padding:.5in .32in .2in;background:linear-gradient(180deg,rgba(12,9,28,0),rgba(12,9,28,.62))}
+  .an-folio{position:absolute;right:.28in;bottom:.05in;font-family:'BB Kicker';font-size:10pt;color:rgba(255,255,255,.9)}
   /* comic speech balloons: sit BESIDE the speaker, with a tail pointing at them */
-  .an-bub{position:absolute;background:#fff;border:1.6pt solid var(--ink);border-radius:16pt;padding:7pt 11pt;
-    font-family:'BB Display';font-size:${vol.band === 'advanced' ? '10.4pt' : '11.4pt'};line-height:1.34;
-    box-shadow:0 3pt 10pt rgba(26,18,54,.28);transform:translateY(-50%)}
-  .an-bub .nm{display:block;font-family:'BB Kicker';font-size:8pt;letter-spacing:.09em;text-transform:uppercase;
-    color:var(--accent-deep);margin-bottom:2.5pt}
+  .an-bub{position:absolute;background:#fff;border:2pt solid var(--ink);border-radius:20pt;padding:11pt 12pt 9pt;
+    font-family:'BB Display';font-size:${vol.band === 'advanced' ? '10.2pt' : '11pt'};line-height:1.36;
+    box-shadow:0 4pt 12pt rgba(26,18,54,.35);transform:translateY(-50%)}
+  /* the speaker is announced on a comic name-plate pinned to the balloon's rim */
+  .an-bub .nm{display:inline-block;font-family:'BB Kicker';font-size:8.4pt;letter-spacing:.09em;text-transform:uppercase;
+    color:#fff;background:var(--accent-deep);border:1.6pt solid var(--ink);border-radius:999px;padding:1.5pt 9pt;
+    position:absolute;top:-8.5pt;left:11pt;white-space:nowrap;box-shadow:0 2pt 5pt rgba(26,18,54,.32)}
+  .an-bub .say{display:block}
+  /* Vex shouts from a jagged balloon — classic comic villain treatment */
+  .an-bub.shout{background:#FFF1F4;border-color:var(--tricky-deep);border-radius:6pt}
+  .an-bub.shout .nm{background:var(--tricky-deep)}
   .an-bub .tail,.an-bub .tail i{position:absolute;top:50%;width:0;height:0;border-style:solid}
   .an-bub.r .tail{right:-11pt;margin-top:-8pt;border-width:8pt 0 8pt 11pt;border-color:transparent transparent transparent var(--ink)}
   .an-bub.r .tail i{right:2.4pt;margin-top:-6.2pt;border-width:6.2pt 0 6.2pt 8.5pt;border-color:transparent transparent transparent #fff}
@@ -354,7 +380,7 @@ function css(vol) {
   .bb-prop{display:inline-block;background:var(--chip);color:var(--chip-ink);border-radius:8pt;padding:3pt 8pt;font-family:'BB Tile';font-size:10pt}
   .bb-bubble{background:var(--card);border:1px solid var(--hairline);border-radius:12pt;padding:6pt 10pt;font-family:'BB Display';font-size:11.5pt;line-height:1.35;box-shadow:var(--sh-screen)}
   .bb-hive{display:grid;grid-template-columns:1fr 1fr;gap:.12in}
-  .bb-card{padding:0 .04in;max-height:1.95in;overflow:hidden}
+  .bb-card{padding:0 .04in}
   .bb-card .ex{font-size:9.6pt;line-height:1.32;margin-top:2px;color:var(--ink);opacity:.85}
   .bb-card .w{font-family:'BB Body';font-weight:800;font-size:23pt;line-height:1.05;font-variant-numeric:tabular-nums;color:var(--accent-deep)}
   .bb-card .say{font-family:'BB Tile';font-size:10pt;color:var(--muted);margin-top:1px}
@@ -362,17 +388,17 @@ function css(vol) {
   .bb-card .hook{font-size:9.8pt;line-height:1.32;margin-top:2px;color:var(--chip-ink);font-style:italic}
   .bb-writeline{border-bottom:1pt solid var(--ink);height:${lineH};margin-top:4pt}
   .bb-rapid{display:grid;grid-template-columns:1fr 1fr;gap:.08in .16in}
-  .bb-row{padding:3.5pt 0;min-height:.5in;max-height:.6in;overflow:hidden;font-size:10.8pt;line-height:1.34;border-bottom:1px dotted var(--hairline)}
+  .bb-row{padding:4pt 0;min-height:.52in;font-size:10.4pt;line-height:1.36;border-bottom:1px dotted var(--hairline)}
   .bb-row b{font-family:'BB Kicker';color:var(--accent-deep)}
-  .bb-break{margin-top:.18in;display:flex;gap:.13in;align-items:flex-start;background:linear-gradient(90deg,var(--treasure-tint),transparent 85%);border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.08in .13in;max-height:2.3in;overflow:hidden}
+  .bb-break{margin-top:.18in;display:flex;gap:.13in;align-items:flex-start;background:linear-gradient(90deg,var(--treasure-tint),transparent 85%);border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.09in .14in}
   .bb-break .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--treasure-deep)}
   .bb-break .b{font-size:11.2pt;line-height:1.4;margin-top:2px}
   .bb-break .t{font-size:10pt;color:var(--muted);margin-top:2px}
-  .bb-check{border-left:4pt solid var(--right);padding:.07in .12in .07in .14in;max-height:1.4in;overflow:hidden}
+  .bb-check{border-left:4pt solid var(--right);padding:.07in .12in .07in .14in}
   .bb-check .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--right-deep);margin-bottom:3.5pt}
-  .bb-vex{background:linear-gradient(90deg,#FFF1F3,transparent 88%);border-left:4pt solid var(--tricky);border-radius:2pt 12pt 12pt 2pt;padding:.07in .12in .07in .14in;max-height:1.4in;overflow:hidden;display:flex;gap:.12in;align-items:flex-start}
+  .bb-vex{background:linear-gradient(90deg,#FFF1F3,transparent 88%);border-left:4pt solid var(--tricky);border-radius:2pt 12pt 12pt 2pt;padding:.07in .12in .07in .14in;display:flex;gap:.12in;align-items:flex-start}
   .bb-vex .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--tricky-deep);margin-bottom:3.5pt}
-  .bb-trap{background:var(--listen-tint);border-left:4pt solid var(--listen);border-radius:2pt 12pt 12pt 2pt;padding:.07in .12in .07in .14in;max-height:1.4in;overflow:hidden}
+  .bb-trap{background:var(--listen-tint);border-left:4pt solid var(--listen);border-radius:2pt 12pt 12pt 2pt;padding:.07in .12in .07in .14in}
   .bb-trap .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--listen-deep);margin-bottom:3.5pt}
   .bb-quiz{counter-reset:q}
   .bb-quiz .q{margin-bottom:.16in;break-inside:avoid}
@@ -413,10 +439,10 @@ const foot = (vol, folio) => `<div class="bb-foot"><span>Bizzing Bee · ${esc(vo
    pulled from the app's avatar cards. */
 function makeBreaks(vol, cast) {
   const rq = mulberry(vol.n * 131 + 7), rs = mulberry(vol.n * 131 + 8), ri = mulberry(vol.n * 131 + 9);
-  const q = shuf(QUOTES.filter(x => x.q.length < 120).slice(), rq);
-  const s = shuf(FIG.similes.filter(x => (x.p + x.m).length < 140).slice(), rs);
-  const i = shuf(FIG.idioms.filter(x => (x.p + x.m).length < 140).slice(), ri);
-  const facts = (cast || []).map(a => ({ a, cd: CARD(a.id) })).filter(x => x.cd && x.cd.fact && x.cd.fact.length < 220);
+  const q = shuf(QUOTES.filter(x => x.q.length < 88).slice(), rq);
+  const s = shuf(FIG.similes.filter(x => (x.p + x.m).length < 104).slice(), rs);
+  const i = shuf(FIG.idioms.filter(x => (x.p + x.m).length < 104).slice(), ri);
+  const facts = (cast || []).map(a => ({ a, cd: CARD(a.id) })).filter(x => x.cd && x.cd.fact && x.cd.fact.length < 150);
   let qi = 0, si = 0, ii = 0, fi = 0, k = 0;
   return () => {
     const kind = (k++) % (facts.length ? 4 : 3);
@@ -473,37 +499,43 @@ function comicOpener(vol, ch, ci, script, folio, cast) {
      character stays uncovered. */
   const caps = sceneList.map((s, i) => {
     const t = i / Math.max(1, sceneList.length - 1);
-    const topPct = (.1 + t * .74) * 100;
+    const topPct = (.235 + t * .62) * 100;   // starts below the title banner, ends above the footer
     const figRight = i % 2 === 0;
     const side = figRight ? 'left:5%;width:52%' : 'right:5%;width:52%';
     const tailCls = figRight ? 'r' : 'l';   // tail points toward the figure
-    const sfx = reg >= 3 ? '' : s.vex ? `<span class="an-sfx" style="position:absolute;top:${topPct - 7}%;${figRight ? 'right:8%' : 'left:8%'}">UH-OH!</span>`
-      : s.mood === 'excited' ? `<span class="an-sfx" style="position:absolute;top:${topPct - 7}%;${figRight ? 'right:8%' : 'left:8%'}">GOT IT!</span>` : '';
-    return `${sfx}<div class="an-bub ${tailCls}" style="top:${topPct}%;${side}">
-      <span class="nm">${esc(s.name)}${s.vex ? ' · Vex is circling' : ''}</span>${esc(s.line)}
+    const sfx = reg >= 3 ? '' : s.vex ? `<span class="an-sfx" style="position:absolute;top:${topPct - 8}%;${figRight ? 'right:8%' : 'left:8%'}">UH-OH!</span>`
+      : s.mood === 'excited' ? `<span class="an-sfx" style="position:absolute;top:${topPct - 8}%;${figRight ? 'right:8%' : 'left:8%'}">GOT IT!</span>` : '';
+    return `${sfx}<div class="an-bub ${tailCls}${s.vex ? ' shout' : ''}" style="top:${topPct}%;${side}">
+      <span class="nm">${esc(s.vex ? 'Vex' : s.name)}</span>
+      <span class="say">${esc(s.line)}</span>
       <span class="tail"><i></i></span></div>`;
   }).join('');
-  return `<div class="page" data-vol="${vol.n}">
-    ${head(vol, ch, ci, 'Story')}
-    <div style="margin-top:.34in;display:flex;align-items:center;gap:.14in">
-      <span style="display:inline-grid;place-items:center;width:.56in;height:.56in;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:16pt;flex-shrink:0">${ci + 1}</span>
-      <div style="min-width:0"><div class="kick">${esc(ch.category)}</div><h1 style="font-size:22pt;line-height:1.04">${esc(clamp(ch.title, 58))}</h1></div>
-      <span class="worldchip" style="margin-left:auto;flex-shrink:0">📍 ${esc(WORLD_NAME[world] || world)}</span></div>
-    <div style="position:relative;margin-top:.1in;height:8.35in;border-radius:${reg >= 3 ? '6pt' : '14pt'};overflow:hidden;box-shadow:0 6pt 20pt rgba(26,18,54,.3)">
-      ${(() => { const a = artAt(`b${String(vol.n).padStart(2, '0')}-ch${String(ci + 1).padStart(2, '0')}-opener`);
-        return a ? artImg(a) : `<svg viewBox="0 0 725 830" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">${svg}</svg>`; })()}
-      ${caps}
-      <span style="position:absolute;left:0;right:0;bottom:0;height:.5in;background:linear-gradient(180deg,rgba(12,9,28,0),rgba(12,9,28,.55));pointer-events:none"></span>
-      <span style="position:absolute;left:8pt;bottom:6pt" class="bb-audio">🔊 narrated in the app</span>
-      <span style="position:absolute;right:10pt;bottom:8pt;font-family:'BB Kicker';font-size:9.2pt;color:rgba(255,255,255,.95);text-shadow:0 1px 4px rgba(0,0,0,.6)">turn the page — the whole trick, explained →</span>
+  /* The opener IS the page: art bleeds to every edge, the chapter title rides a
+     scrim that dissolves into the sky, and the balloons sit over the art. */
+  const artSrc = artAt(`b${String(vol.n).padStart(2, '0')}-ch${String(ci + 1).padStart(2, '0')}-opener`);
+  return `<div class="page an-full" data-vol="${vol.n}">
+    ${artSrc ? artImg(artSrc) : `<svg viewBox="0 0 725 830" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">${svg}</svg>`}
+    <div class="an-title"><div class="an-title-in">
+      <span class="n">${ci + 1}</span>
+      <span style="min-width:0">
+        <span class="k">${esc(ch.category)} · ${esc(WORLD_NAME[world] || world)}</span>
+        <span class="t">${esc(clamp(ch.title, 54))}</span></span>
+    </div></div>
+    ${caps}
+    <div class="an-foot">
+      <span class="bb-audio" style="background:rgba(255,255,255,.9)">🔊 narrated in the app</span>
+      <span style="font-family:'BB Kicker';font-size:9.6pt;color:#fff;text-shadow:0 1px 5px rgba(0,0,0,.7)">turn the page — the whole trick, explained →</span>
     </div>
-    ${foot(vol, folio)}</div>`;
+    <div class="an-folio">${folio}</div></div>`;
 }
 
 /* ---------------- chapter pages ---------------- */
 function teachPage(vol, ch, ci, folio, nextBreak) {
   const reg = REG(vol);
-  const cards = (ch.cards || []).slice(0, 4);
+  /* a tall pro-move plus four cards plus three alerts cannot share one page —
+     when the method runs long, show fewer cards so nothing gets pushed off */
+  const methodLines = String(ch.method || '').split('\n').filter(l => l.trim()).length;
+  const cards = (ch.cards || []).slice(0, methodLines >= 6 ? 2 : methodLines >= 4 ? 3 : 4);
   const words = (ch.words || []).filter(w => w && w.w);
   const vexW = words.find(w => w.hook && /not|never|don’t|don't|watch|careful|trap/i.test(w.hook)) || words[0];
   const three = words.slice(0, 3).map(w => w.w);
@@ -515,18 +547,18 @@ function teachPage(vol, ch, ci, folio, nextBreak) {
       ? `Cover the page and spell <b>${three.map(esc).join('</b> · <b>')}</b> out loud. Miss one? Read the idea again — it's faster than guessing twice.`
       : `Book closed: <b>${three.map(esc).join('</b> · <b>')}</b>, out loud, full words. At this level, almost right is still an elimination.`;
   const alerts = [
-    vexW && vexW.hook ? `<div class="bb-vex">${VEX('0.42in')}<div><div class="l">Vex alert</div><div style="font-size:9.8pt;line-height:1.35">${esc(clamp(vexW.hook, 120))}</div></div></div>` : '',
+    vexW && vexW.hook ? `<div class="bb-vex">${VEX('0.42in')}<div><div class="l">Vex alert</div><div style="font-size:9.8pt;line-height:1.35">${esc(clamp(vexW.hook, 84))}</div></div></div>` : '',
     traps.length ? `<div class="bb-trap"><div class="l">Sound trap</div><div style="font-size:9.8pt;line-height:1.35">${traps.map(t => `<b>${esc(t.w)}</b> sounds like <i>${esc(t.twins.slice(0, 2).join(', '))}</i>`).join(' · ')} — at the mic, always ask for the meaning.</div></div>` : '',
     `<div class="bb-check"><div class="l">Check yourself</div><div style="font-size:9.8pt;line-height:1.35">${checkLine}</div></div>`,
   ].filter(Boolean);
   return `<div class="page" data-vol="${vol.n}">
     ${head(vol, ch, ci, 'The idea')}
     <div style="margin-top:.4in" class="kick">The big idea</div>
-    <div class="bb-bigidea">${esc(clamp(ch.concept, 430))}<span class="cameo">${avatar(vol.av, '.62in')}</span></div>
-    ${ch.method ? `<div class="kick" style="margin-top:.14in">The pro move</div><div class="bb-promove">${String(ch.method).split('\n').map(l => l.trim()).filter(Boolean).map(l => `<div class="ln">${l}</div>`).join('')}</div>` : ''}
-    ${cards.length ? `<div class="bb-sticky">${cards.map(cd => `<div class="card"><h3>${esc(cd.title)}</h3><p>${esc(clamp(cd.body, 244))}</p></div>`).join('')}</div>` : ''}
+    <div class="bb-bigidea">${esc(clamp(ch.concept, 320))}<span class="cameo">${avatar(vol.av, '.62in')}</span></div>
+    ${ch.method ? `<div class="kick" style="margin-top:.14in">The pro move</div><div class="bb-promove">${String(ch.method).split('\n').map(l => l.trim()).filter(Boolean).slice(0, 6).map(l => `<div class="ln">${l}</div>`).join('')}</div>` : ''}
+    ${cards.length ? `<div class="bb-sticky">${cards.map(cd => `<div class="card"><h3>${esc(cd.title)}</h3><p>${esc(clamp(cd.body, 190))}</p></div>`).join('')}</div>` : ''}
     <div style="display:grid;grid-template-columns:repeat(${alerts.length},1fr);gap:.16in;margin-top:.18in">${alerts.join('')}</div>
-    ${cards.length >= 4 && String(ch.method || '').length > 380 ? '' : nextBreak()}
+    ${(cards.length >= 4 || String(ch.method || '').split('\n').filter(Boolean).length >= 6 || (alerts.length >= 3 && cards.length >= 3)) ? '' : nextBreak()}
     ${foot(vol, folio)}</div>`;
 }
 /* checkpoint quiz page — the Word Map's own concept questions, on paper */
@@ -542,7 +574,7 @@ function quizPage(vol, ch, ci, qs, cast, rnd, keys, folio) {
     const opts = q.c.map((c, k) => ({ c, ok: k === 0 })); shuf(opts, rnd);
     ans.push(letters[opts.findIndex(o => o.ok)]);
     return `<div class="q"><div class="qq">${i + 1}. ${esc(q.q)}</div>
-      ${opts.map((o, k) => `<div class="opt"><i>${letters[k]}</i><span>${esc(clamp(String(o.c), 96))}</span></div>`).join('')}</div>`;
+      ${opts.map((o, k) => `<div class="opt"><i>${letters[k]}</i><span>${esc(clamp(String(o.c), 84))}</span></div>`).join('')}</div>`;
   }).join('');
   keys.push(`<div><b>Ch. ${ci + 1} checkpoint</b> — ${ans.map((a, i) => (i + 1) + ':' + a).join('  ')}</div>`);
   const intro = reg === 1 ? 'Circle your answer, then check the back. No pressure — wrong answers are how the right ones stick.'
@@ -581,8 +613,8 @@ function hivePages(vol, ch, ci, folioRef) {
       <div class="bb-hive" style="margin-top:.12in">${seg.map(w => { const say = w.say || ''; const ipa = ipaOf(w.w, say);
         return `<div><div class="bb-card"><div class="w">${esc(w.w)}</div>
         <div class="say">${say ? '/ ' + esc(say) + ' /' : ''}${ipa ? '  ·  /' + esc(ipa) + '/' : ''}</div>
-        <div class="d">${esc(clamp(w.def, 92))}</div>${w.hook ? `<div class="hook">hook: ${esc(clamp(w.hook, 92))}</div>` : ''}
-        ${w.ex ? `<div class="ex">${esc(maskDef(clamp(w.ex, 110), w.w))}</div>` : ''}</div>
+        <div class="d">${esc(clamp(w.def, 74))}</div>${w.hook ? `<div class="hook">hook: ${esc(clamp(w.hook, 70))}</div>` : ''}
+        ${w.ex ? `<div class="ex">${esc(maskDef(clamp(w.ex, 84), w.w))}</div>` : ''}</div>
         <div class="bb-writeline"></div>${w.ex ? '' : '<div class="bb-writeline"></div><div class="bb-writeline"></div>'}</div>`; }).join('')}</div>
       ${worldStrip(chWorldOf(vol, ci), vol, ci * 13 + f + 3)}
       ${foot(vol, folioRef.n++)}</div>`);
@@ -600,7 +632,7 @@ function hivePages(vol, ch, ci, folioRef) {
     out.push(`<div class="page" data-vol="${vol.n}">
       ${head(vol, ch, ci, 'Rapid round')}
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in">${seg.map(w => `<div class="bb-row"><b>${esc(w.w)}</b> <span class="tile" style="font-size:8.8pt">${w.say ? '/' + esc(w.say) + '/' : ''}</span><br>${esc(clamp(w.def, 64))}</div>`).join('')}</div>
+      <div class="bb-rapid" style="margin-top:.12in">${seg.map(w => `<div class="bb-row"><b>${esc(w.w)}</b> <span class="tile" style="font-size:8.8pt">${w.say ? '/' + esc(w.say) + '/' : ''}</span><br>${esc(clamp(w.def, 48))}</div>`).join('')}</div>
       ${lockIn}
       ${foot(vol, folioRef.n++)}</div>`);
   }
@@ -740,16 +772,14 @@ function worldStrip(world, vol, seedK) {
   const uid = 'ws' + vol.n + 'x' + seedK;
   const reg = REG(vol);
   const stripArt = artAt(`strip-${world}-r${reg}`);
-  if (stripArt) return `<div class="worldband" aria-hidden="true">${artImg(stripArt)}
-    <span class="wl">${esc((WORLD_NAME[world] || world).replace(/^the /, 'the '))}</span></div>`;
+  if (stripArt) return `<div class="worldband" aria-hidden="true">${artImg(stripArt)}</div>`;
   return `<div class="worldband" aria-hidden="true">
     <svg viewBox="0 0 725 120" preserveAspectRatio="xMidYMax slice">
       <defs>${ANIME.filters(uid)}</defs>
       ${ANIME.sky(world, reg >= 3 ? 'think' : 'happy', 725, 120, reg, uid)}
       ${ANIME.ground(world, 725, 120, reg)}
       ${ANIME.env(world, 725, 120, 96, reg, uid, seedK)}
-      ${ANIME.particles(world, 725, 120, seedK * 3 + 1, reg, uid)}</svg>
-    <span class="wl">${esc((WORLD_NAME[world] || world).replace(/^the /, 'the '))}</span></div>`;
+      ${ANIME.particles(world, 725, 120, seedK * 3 + 1, reg, uid)}</svg></div>`;
 }
 function dividerPage(vol, folio) {
   const W = 816, H = 1056;
@@ -791,7 +821,7 @@ function castPage(vol, cast, folio) {
       <div style="min-width:0"><div style="font-family:'BB Display';font-size:13pt;line-height:1.15">${esc(a.name)}
         ${cd.overall ? `<span style="font-family:'BB Tile';font-size:8.6pt;color:var(--muted)"> OVR ${cd.overall}</span>` : ''}</div>
       <div style="font-family:'BB Kicker';font-size:8.2pt;color:var(--accent-deep);text-transform:uppercase;letter-spacing:.05em;margin:3pt 0 4pt;line-height:1.35">${esc(clamp(cd.title || (a.rarity + ' · ' + a.pack + ' pack'), 30))}</div>
-      <div style="font-size:9.6pt;color:var(--muted);line-height:1.42">${esc(clamp(cd.lore || PACK_ROLE[a.pack] || 'reports for spelling duty', 84))}</div></div></div>`; };
+      <div style="font-size:9.6pt;color:var(--muted);line-height:1.42">${esc(clamp(cd.lore || PACK_ROLE[a.pack] || 'reports for spelling duty', 72))}</div></div></div>`; };
   return `<div class="page" data-vol="${vol.n}">
     ${head(vol, null, 0, 'The cast')}
     <div style="margin-top:.36in;display:flex;align-items:center;gap:.16in">
@@ -935,13 +965,118 @@ function buildCourse(vol, chapters, scripts, idxOf) {
   pages.push(colophon(vol, folio.n++));
   return finish(vol, pages, { chapters: chapters.length, words: allWords.length });
 }
+
+/* ---------------- review panel (screen only) ----------------
+   A margin note-taker for the HTML edition: every page gets a numbered marker,
+   comments save to localStorage per book, and Export copies/downloads a plain
+   list of book · page · comment to paste straight back into a prompt. Hidden
+   entirely in print. */
+const REVIEW_CSS = `
+  @media print{.rv,.rv-tab,.rv-mark{display:none !important}}
+  @media screen{
+    body.rv-open{padding-right:330px}
+    .rv{position:fixed;top:0;right:0;width:330px;height:100vh;background:#fff;border-left:1px solid #ddd4f2;
+      box-shadow:-4px 0 20px rgba(36,30,51,.12);display:none;flex-direction:column;z-index:9999;font-family:'BB Body',sans-serif}
+    body.rv-open .rv{display:flex}
+    .rv h4{font-family:'BB Display';font-size:16px;padding:14px 16px 10px;border-bottom:1px solid #eee6fb;margin:0}
+    .rv h4 span{display:block;font-family:'BB Body';font-weight:600;font-size:11.5px;color:#6b6482;margin-top:3px}
+    .rv-list{flex:1;overflow:auto;padding:10px 12px}
+    .rv-row{border:1px solid #eee6fb;border-radius:10px;padding:8px 10px;margin-bottom:8px;background:#fbf9ff}
+    .rv-row b{font-family:'BB Kicker';font-size:11px;color:#4a3aa0;display:block;margin-bottom:4px;cursor:pointer}
+    .rv-row b:hover{text-decoration:underline}
+    .rv-row textarea{width:100%;min-height:52px;resize:vertical;border:1px solid #ddd4f2;border-radius:7px;
+      padding:6px 7px;font:inherit;font-size:12.5px;color:#241E33;background:#fff}
+    .rv-row.has b{color:#C25A2E}
+    .rv-foot{padding:11px 12px;border-top:1px solid #eee6fb;display:flex;gap:7px;flex-wrap:wrap}
+    .rv-foot button{flex:1;padding:9px 10px;border-radius:9px;border:0;cursor:pointer;font-weight:800;font-size:12.5px;
+      font-family:'BB Body',sans-serif;background:#6C4FE0;color:#fff}
+    .rv-foot button.alt{background:#eee6fb;color:#4a3aa0}
+    .rv-tab{position:fixed;right:14px;bottom:14px;z-index:10000;background:#6C4FE0;color:#fff;border:0;cursor:pointer;
+      border-radius:999px;padding:12px 18px;font-weight:800;font-size:13.5px;font-family:'BB Body',sans-serif;
+      box-shadow:0 6px 18px rgba(108,79,224,.4)}
+    body.rv-open .rv-tab{right:344px}
+    .rv-mark{position:absolute;top:6px;left:6px;z-index:5;background:rgba(108,79,224,.9);color:#fff;
+      font-family:'BB Kicker';font-size:10px;border-radius:999px;padding:2px 9px}
+    .page.rv-flag{outline:3px solid #E0922E;outline-offset:-3px}
+  }`;
+function reviewPanel(vol) {
+  return `<button class="rv-tab" onclick="RV.toggle()">📝 Review this book</button>
+<aside class="rv"><h4>Page notes<span>${esc(vol.title)} · Vol. ${vol.n} — notes save in this browser</span></h4>
+  <div class="rv-list" id="rv-list"></div>
+  <div class="rv-foot">
+    <button onclick="RV.exportNotes()">Export notes</button>
+    <button class="alt" onclick="RV.copyNotes()">Copy</button>
+    <button class="alt" onclick="RV.clearNotes()">Clear</button>
+  </div></aside>
+<script>
+window.RV = (function(){
+  var BOOK = ${JSON.stringify('Vol. ' + vol.n + ' — ' + vol.title)};
+  var KEY = 'bbrev-v${vol.n}';
+  var notes = {};
+  try { notes = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch(e){}
+  var pages = [];
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(notes)); } catch(e){} }
+  function build(){
+    pages = [].slice.call(document.querySelectorAll('.page'));
+    pages.forEach(function(p, i){
+      var n = i + 1;
+      p.id = 'pg' + n;
+      var m = document.createElement('span');
+      m.className = 'rv-mark'; m.textContent = 'p' + n;
+      p.appendChild(m);
+    });
+    var list = document.getElementById('rv-list');
+    list.innerHTML = pages.map(function(p, i){
+      var n = i + 1, v = notes[n] || '';
+      return '<div class="rv-row' + (v ? ' has' : '') + '" data-n="' + n + '">' +
+        '<b onclick="RV.go(' + n + ')">Page ' + n + ' ›</b>' +
+        '<textarea placeholder="what should change on this page?" oninput="RV.set(' + n + ',this.value)">' +
+        v.replace(/</g,'&lt;') + '</textarea></div>';
+    }).join('');
+    Object.keys(notes).forEach(flag);
+  }
+  function flag(n){
+    var p = document.getElementById('pg' + n); if(!p) return;
+    if (notes[n]) p.classList.add('rv-flag'); else p.classList.remove('rv-flag');
+    var row = document.querySelector('.rv-row[data-n="' + n + '"]');
+    if (row) row.className = 'rv-row' + (notes[n] ? ' has' : '');
+  }
+  function text(){
+    var out = ['Page notes — ' + BOOK, ''];
+    Object.keys(notes).sort(function(a,b){ return a-b; }).forEach(function(n){
+      if (notes[n] && notes[n].trim()) out.push(BOOK + ' · page ' + n + ': ' + notes[n].trim());
+    });
+    return out.length > 2 ? out.join('\\n') : 'No notes yet — type in the panel, then export.';
+  }
+  return {
+    toggle: function(){ document.body.classList.toggle('rv-open'); },
+    set: function(n, v){ notes[n] = v; if(!v) delete notes[n]; save(); flag(n); },
+    go: function(n){ var p = document.getElementById('pg' + n); if(p) p.scrollIntoView({behavior:'smooth', block:'start'}); },
+    clearNotes: function(){ if(!confirm('Clear all notes for this book?')) return; notes = {}; save(); build(); document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('rv-flag'); }); },
+    copyNotes: function(){ var t = text(); navigator.clipboard.writeText(t).then(function(){ alert('Notes copied — paste them into your next prompt.'); }, function(){ alert(t); }); },
+    exportNotes: function(){
+      var blob = new Blob([text()], {type:'text/plain'});
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'bizzing-bee-notes-vol${vol.n}.txt';
+      a.click();
+    },
+    _build: build
+  };
+})();
+document.addEventListener('DOMContentLoaded', function(){ RV._build(); });
+if (document.readyState !== 'loading') RV._build();
+<\/script>`;
+}
+
 /* verso marking + emit */
 function finish(vol, pages, meta) {
   const html = pages.map((p, i) => i > 0 && i % 2 === 0 ? p.replace('<div class="page"', '<div class="page" data-verso') : p).join('\n');
   const doc = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(vol.title)} — Bizzing Bee Library Vol. ${vol.n}</title>
-<style>${css(vol)}</style></head><body data-vol="${vol.n}" data-band="${vol.band}">${html}</body></html>`;
+<style>${css(vol)}${REVIEW_CSS}</style></head><body data-vol="${vol.n}" data-band="${vol.band}">${html}
+${reviewPanel(vol)}</body></html>`;
   fs.writeFileSync(`books/book-${String(vol.n).padStart(2, '0')}.html`, doc);
   return { vol, pages: pages.length, ...meta };
 }
