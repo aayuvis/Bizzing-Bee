@@ -1,5 +1,5 @@
 /* ============================================================
-   TRAIL.js — The Word Map engine (the Word Atlas tab).
+   TRAIL.js — The Word Atlas engine (the Word Atlas tab).
    ONE concept-first guided journey over SB_TRAIL (trail-data.js):
    a single continuous map — nine base acts, then the Advanced
    Rounds (the five expeditions), which unlock with the Advanced
@@ -38,8 +38,21 @@
     };
     return (S[world] || S.meadow)() + ground;
   }
-  const banner = (world, h) => { const [a, d] = ACCENT[world] || ACCENT.meadow;
-    return `<svg viewBox="0 0 400 ${h}" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%"><defs><linearGradient id="tg-${world}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${d}"/></linearGradient></defs><rect width="400" height="${h}" fill="url(#tg-${world})"/>${strip(world, 400, h)}</svg>`; };
+  /* Painted scenery, cut from the book series' own world strips (app-art/w-<world>-r<reg>.jpg,
+     built by voice/pipeline/app-banners.py). Register 2 is golden hour for the base
+     acts, register 3 dusk for the Advanced Rounds — the same maturity dial the books
+     use, so the advanced half of the map reads darker on sight. The drawn SVG strip
+     stays underneath as the gradient bed and as the fallback if art is missing. */
+  const PAINTED = { meadow:1, library:1, forum:1, elements:1, engine:1, strait:1, junkyard:1,
+    vibe:1, stage:1, warfield:1, greysea:1, origami:1, grandtrunk:1 };
+  const banner = (world, h, reg) => { const [a, d] = ACCENT[world] || ACCENT.meadow;
+    const bed = `<svg viewBox="0 0 400 ${h}" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%"><defs><linearGradient id="tg-${world}${reg || 2}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${d}"/></linearGradient></defs><rect width="400" height="${h}" fill="url(#tg-${world}${reg || 2})"/>${strip(world, 400, h)}</svg>`;
+    if (!PAINTED[world]) return bed;
+    return bed + `<img src="app-art/w-${world}-r${reg || 2}.jpg" alt="" loading="lazy" decoding="async"
+      style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`; };
+  /* The banner has to dissolve into the card rather than sit in a box — the scrim
+     carries the act title and fades to the card's own paper at the bottom edge. */
+  const scrim = () => `<span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,32,.42) 0%,rgba(14,9,32,.05) 34%,rgba(14,9,32,.22) 62%,var(--bg2) 100%)"></span>`;
 
   /* ---- state helpers ---- */
   const tr = c => c.trail || (c.trail = { lap: 1, done: {}, chk: {}, seen: {}, elap: 1, edone: {}, echk: {} });
@@ -82,7 +95,7 @@
     needMap._p = true; needMap._q = [cb];
     const s2 = document.createElement('script'); s2.src = 'trail-map-data.js?v=trail1';
     s2.onload = () => { needMap._q.forEach(f => { try { f(); } catch (e) {} }); needMap._p = false; };
-    s2.onerror = () => { needMap._p = false; flash('Could not load the trail word map'); };
+    s2.onerror = () => { needMap._p = false; flash('Could not load the Word Atlas word pools'); };
     document.head.appendChild(s2); }
   function lapWords(u, lap, cap) { // records for this unit at this lap
     const rec = k => widx().get(k);
@@ -199,43 +212,129 @@
   app2.tqInput = v => { state.tqTyped = String(v == null ? '' : v); };
 
   /* ---- views ---- */
-  function nodeHTML(c, node, i, fr) {
+  /* A stop on the map. Three states with three different silhouettes, so which
+     one you can play is obvious at arm's length: a cleared stop is a gold hex
+     with a star, the stop you are on is a lit hex with a halo and the speller's
+     own avatar standing on it, and everything ahead is a flat unlit hex with a
+     lock. The chrome is a world-tinted gradient with a top gloss and an inner
+     rim, which is what stops it looking like a flat sticker. */
+  function hexChrome(world, i, kind, uid) {
+    const [a, d] = ACCENT[world] || ACCENT.meadow;
+    const S = 60, cx = S / 2;
+    const path = 'M30 2.5 L55 16.5 L55 43.5 L30 57.5 L5 43.5 L5 16.5 Z';
+    const fill = kind === 'passed' ? ['#FFD24D', '#C8791B']
+      : kind === 'cur' ? [a, d]
+      : ['var(--surface2)', 'var(--surface2)'];
+    const g = 'hx' + uid;
+    return `<svg viewBox="0 0 ${S} ${S}" style="position:absolute;inset:0;overflow:visible">
+      <defs><linearGradient id="${g}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="${fill[0]}"/><stop offset="1" stop-color="${fill[1]}"/></linearGradient>
+        <linearGradient id="${g}g" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="rgba(255,255,255,.55)"/><stop offset=".55" stop-color="rgba(255,255,255,0)"/></linearGradient></defs>
+      ${kind === 'cur' ? `<path d="${path}" fill="${a}" opacity=".28" transform="translate(${cx} ${cx}) scale(1.34) translate(${-cx} ${-cx})"/>` : ''}
+      <path d="${path}" fill="url(#${g})"/>
+      <path d="${path}" fill="url(#${g}g)"/>
+      <path d="${path}" fill="none" stroke="${kind === 'locked' ? 'var(--line)' : 'rgba(255,255,255,.5)'}" stroke-width="1.6"/>
+      ${kind === 'cur' ? `<path d="${path}" fill="none" stroke="var(--treasure,#FFD24D)" stroke-width="3" transform="translate(${cx} ${cx}) scale(1.1) translate(${-cx} ${-cx})"/>` : ''}
+    </svg>`;
+  }
+  let _hx = 0;
+  function nodeHTML(c, node, i, fr, world) {
     const passed = passedNode(c, node); const isCur = i === fr; const locked = i > fr;
     const left = i % 2 === 0;
-    const base = `position:relative;display:flex;align-items:center;gap:12px;margin:${i ? '18px' : '4px'} 0 0 ${left ? '6%' : '38%'};max-width:56%;`;
+    /* Every row is the same full-width strip so the scores line up in one column;
+       only the hex slides left or right, which is what makes the route wind. */
+    const base = `position:relative;display:flex;align-items:center;gap:13px;width:100%;margin:${i ? '13px' : '2px'} 0 0;z-index:2;`;
+    const hexPad = left ? 'margin-left:2%' : 'margin-left:24%';
+    const kind = passed ? 'passed' : isCur ? 'cur' : 'locked';
+    const label = (t, sub, score) => `<span style="min-width:0;flex:1">
+        <span style="display:block;font-family:var(--display);font-weight:800;font-size:14px;line-height:1.22;color:${locked ? 'var(--muted)' : 'var(--text)'}">${t}</span>
+        <span style="display:block;font-size:11.5px;color:var(--muted);font-weight:600;margin-top:1px">${sub}</span></span>`
+      + (score ? `<span style="flex-shrink:0;font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:800;font-size:12px;padding:4px 11px;border-radius:999px;background:var(--chip);color:var(--good)">${score}</span>` : '')
+      + (isCur ? `<span style="flex-shrink:0;font-family:var(--display);font-weight:800;font-size:12px;padding:5px 13px;border-radius:999px;background:var(--accent);color:#fff;white-space:nowrap">Play &rarr;</span>` : '');
+    const rider = isCur
+      ? `<span style="position:absolute;left:50%;bottom:calc(100% - 6px);transform:translateX(-50%);width:38px;height:38px;animation:sb-bee-bob 1.6s ease-in-out infinite;filter:drop-shadow(0 3px 5px rgba(20,14,44,.34))">${(window.SB_AVATAR ? SB_AVATAR(c.avatar || 'bizzy', 38) : '🐝')}</span>`
+      : '';
     if (node.kind === 'chk') {
-      return `<button data-act="trailChk" data-arg="${escA(course() + '|' + node.id)}" style="${base}text-align:left;${locked ? 'opacity:.45' : ''}">
-        <span style="width:46px;height:46px;flex-shrink:0;display:grid;place-items:center;background:${passed ? 'var(--good)' : 'linear-gradient(135deg,#F0B429,#C8791B)'};color:#fff;border-radius:12px;transform:rotate(45deg);box-shadow:var(--edge)"><span style="transform:rotate(-45deg);display:grid;place-items:center">${passed ? '✓' : iconSVG('target', 20)}</span></span>
-        <span><span style="display:block;font-family:var(--display);font-weight:800;font-size:13.5px">Checkpoint</span><span style="font-size:11.5px;color:var(--muted);font-weight:600">${passed ? 'won' : locked ? 'locked' : 'mixed quiz — no new words'}</span></span></button>`;
+      const uid = 'k' + (_hx++);
+      return `<button data-act="trailChk" data-arg="${escA(course() + '|' + node.id)}" class="sb-lift" style="${base}text-align:left">
+        <span style="width:60px;height:60px;flex-shrink:0;position:relative;display:grid;place-items:center;${hexPad}">
+          ${hexChrome(world, i, kind, uid)}
+          <span style="position:relative;color:${locked ? 'var(--muted)' : '#fff'};display:grid;place-items:center">${passed ? '<span style="font-size:19px">✓</span>' : iconSVG('target', 22)}</span>
+          ${rider}</span>
+        ${label('Checkpoint', passed ? 'cleared' : locked ? 'locked' : 'mixed quiz — no new words', passed ? (chkMap(c)[lapOf(c) + ':' + node.id] || 0) + '%' : '')}</button>`;
     }
     const u = node.u; const stars = (doneMap(c)[u.id] || {});
     const short = u.title.split('—')[0].trim();
-    return `<button data-act="trailUnit" data-arg="${escA(u.id)}" style="${base}text-align:left;${locked ? 'opacity:.45' : ''}">
-      <span style="width:52px;height:52px;flex-shrink:0;position:relative;display:grid;place-items:center">
-        <svg viewBox="0 0 52 52" style="position:absolute;inset:0"><path d="M26 2 L48 14 L48 38 L26 50 L4 38 L4 14 Z" fill="${passed ? 'var(--good)' : locked ? 'var(--surface2)' : 'var(--accent)'}" stroke="${isCur ? 'var(--treasure)' : 'transparent'}" stroke-width="3"/></svg>
-        <span style="position:relative;color:${locked ? 'var(--muted)' : '#fff'};font-family:var(--display);font-weight:800;font-size:15px">${passed ? '★' : (i + 1)}</span>
-        ${isCur ? `<span style="position:absolute;top:-26px;left:50%;transform:translateX(-50%);width:34px;height:34px;animation:sb-bee-bob 1.6s ease-in-out infinite">${(window.SB_AVATAR ? SB_AVATAR(c.avatar || 'bizzy', 34) : '🐝')}</span>` : ''}
-      </span>
-      <span style="min-width:0"><span style="display:block;font-family:var(--display);font-weight:800;font-size:13.5px;line-height:1.2">${esc(short)}</span>
-      <span style="font-size:11.5px;color:var(--muted);font-weight:600">${u.kind === 'lesson' || course() === 'exp' ? 'lesson' : 'word family'}${passed ? ' · ' + stars[lapOf(c)] + '%' : locked ? ' · locked' : ''}</span></span></button>`;
+    const uid = 'u' + (_hx++);
+    const tag = u.kind === 'lesson' || course() === 'exp' ? 'lesson' : 'word family';
+    return `<button data-act="trailUnit" data-arg="${escA(u.id)}" class="sb-lift" style="${base}text-align:left">
+      <span style="width:60px;height:60px;flex-shrink:0;position:relative;display:grid;place-items:center;${hexPad}">
+        ${hexChrome(world, i, kind, uid)}
+        <span style="position:relative;color:${locked ? 'var(--muted)' : '#fff'};font-family:var(--display);font-weight:800;font-size:${passed ? '19px' : '16px'};text-shadow:${locked ? 'none' : '0 1px 2px rgba(20,14,44,.35)'}">${passed ? '★' : locked ? iconSVG('lock', 17) : (i + 1)}</span>
+        ${rider}</span>
+      ${label(esc(short), tag, passed ? stars[lapOf(c)] + '%' : '')}</button>`;
   }
+  /* A progress ring, because "0/13" tells a nine-year-old nothing at a glance. */
+  function ring(done, total, col, size) {
+    const R = (size - 6) / 2, C = 2 * Math.PI * R, pct = total ? done / total : 0;
+    return `<span style="position:relative;display:inline-grid;place-items:center;width:${size}px;height:${size}px;flex-shrink:0">
+      <svg viewBox="0 0 ${size} ${size}" style="position:absolute;inset:0;transform:rotate(-90deg)">
+        <circle cx="${size / 2}" cy="${size / 2}" r="${R}" fill="rgba(10,6,26,.34)" stroke="rgba(255,255,255,.3)" stroke-width="3"/>
+        <circle cx="${size / 2}" cy="${size / 2}" r="${R}" fill="none" stroke="${col}" stroke-width="3.4"
+          stroke-linecap="round" stroke-dasharray="${(C * pct).toFixed(1)} ${C.toFixed(1)}"/></svg>
+      <span style="position:relative;font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:800;font-size:11px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)">${done}/${total}</span></span>`;
+  }
+
+  /* The travelled route is drawn as one continuous track behind the stops: the
+     part already walked is a solid lit line, the rest a faint dashed one. It is
+     the difference between a map you are moving across and a list of buttons. */
+  function trackSVG(nodes, c, fr, col) {
+    const STEP = 86, x = k => (k % 2 === 0 ? 12 : 44), y = k => k * STEP + 30;
+    /* Two explicit paths rather than one dashed at a fraction: a segment is lit
+       only when both stops it joins are cleared, so the gold stops exactly where
+       the speller stopped. */
+    let walkedD = '', aheadD = '';
+    for (let k = 1; k < nodes.length; k++) {
+      const x0 = x(k - 1), y0 = y(k - 1), x1 = x(k), y1 = y(k);
+      const seg = `M ${x0} ${y0} C ${x0 + (x1 - x0) * .1} ${y0 + STEP * .48}, ${x1 - (x1 - x0) * .1} ${y1 - STEP * .48}, ${x1} ${y1} `;
+      if (passedNode(c, nodes[k].n) && passedNode(c, nodes[k - 1].n)) walkedD += seg; else aheadD += seg;
+    }
+    if (!walkedD && !aheadD) return '';
+    const H = nodes.length * STEP;
+    return `<svg style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none" preserveAspectRatio="none" viewBox="0 0 100 ${H}">
+      ${aheadD ? `<path d="${aheadD}" stroke="var(--line)" stroke-width="2.6" stroke-dasharray="2 7" stroke-linecap="round" fill="none"/>` : ''}
+      ${walkedD ? `<path d="${walkedD}" stroke="${col}" stroke-width="3.6" stroke-linecap="round" fill="none" opacity=".9"/>` : ''}</svg>`;
+  }
+
   /* one course's run of act sections (assumes state.trailCourse === crs) */
   function actSections(c, crs) {
     const s = seq(c); const fr = frontier(c);
+    const reg = crs === 'exp' ? 3 : 2;
     let acts = '';
     for (const act of actsOf(crs)) {
       const nodes = s.map((n, i) => ({ n, i })).filter(x => x.n.act === act.id);
       if (!nodes.length) continue;
       const world = act.world; const guide = GUIDE[world] || 'honeypot';
-      acts += `<section style="position:relative;border-radius:20px;overflow:hidden;margin-bottom:20px;background:var(--bg2);box-shadow:0 0 0 1px var(--line),var(--sh-rest)">
-        <div style="position:relative;height:92px;overflow:hidden">${banner(world, 92)}
-          <div style="position:absolute;left:16px;bottom:10px;display:flex;align-items:center;gap:10px">
-            <span style="width:46px;height:46px">${window.SB_AVATAR_ART && SB_AVATAR_ART[guide] ? `<svg viewBox="0 0 120 120" style="width:46px;height:46px">${SB_AVATAR_ART[guide]}</svg>` : ''}</span>
-            <span style="font-family:var(--display);font-weight:800;font-size:17px;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.4)">${esc(act.title)}</span></div>
-          <span style="position:absolute;right:14px;bottom:12px;font-size:11.5px;font-weight:800;color:#fff;background:rgba(0,0,0,.3);border-radius:999px;padding:3px 11px">${nodes.filter(x => passedNode(c, x.n)).length}/${nodes.length}</span></div>
-        <div style="position:relative;padding:12px 12px 18px">
-          <svg style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none" preserveAspectRatio="none" viewBox="0 0 100 ${nodes.length * 70}">${nodes.map((x, k) => k ? `<path d="M ${(k - 1) % 2 === 0 ? 16 : 48} ${(k - 1) * 70 + 40} C ${(k - 1) % 2 === 0 ? 40 : 24} ${(k - 1) * 70 + 62}, ${k % 2 === 0 ? 40 : 24} ${k * 70 + 12}, ${k % 2 === 0 ? 16 : 48} ${k * 70 + 34}" stroke="var(--line)" stroke-width="2.5" stroke-dasharray="1 7" stroke-linecap="round" fill="none"/>` : '').join('')}</svg>
-          ${nodes.map(x => nodeHTML(c, x.n, x.i, fr)).join('')}
+      const [a] = ACCENT[world] || ACCENT.meadow;
+      const dn = nodes.filter(x => passedNode(c, x.n)).length;
+      const here = nodes.some(x => x.i === fr);
+      /* The banner dissolves into the body: no inner border, no second box —
+         the act reads as one painted card with its own weather. */
+      acts += `<section style="position:relative;border-radius:22px;overflow:hidden;margin-bottom:18px;background:var(--bg2);
+          box-shadow:0 0 0 1px ${here ? `color-mix(in srgb,${a} 55%,var(--line))` : 'var(--line)'},var(--sh-rest)">
+        <div style="position:relative;height:118px">
+          ${banner(world, 118, reg)}${scrim()}
+          <div style="position:absolute;left:15px;right:15px;bottom:11px;display:flex;align-items:flex-end;gap:11px">
+            <span style="width:52px;height:52px;flex-shrink:0;filter:drop-shadow(0 3px 6px rgba(14,9,32,.45))">${window.SB_AVATAR ? SB_AVATAR(guide, 52, { dark: true }) : ''}</span>
+            <span style="min-width:0;flex:1">
+              <span style="display:block;font-family:var(--display);font-weight:800;font-size:17.5px;line-height:1.1;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.55)">${esc(act.title)}</span>
+              <span style="display:block;font-size:11.5px;font-weight:700;color:rgba(255,255,255,.86);text-shadow:0 1px 4px rgba(0,0,0,.6);margin-top:2px">${here ? 'you are here' : dn === nodes.length ? 'cleared' : dn ? 'in progress' : 'ahead'}</span></span>
+            ${ring(dn, nodes.length, dn === nodes.length ? 'var(--good)' : '#FFD24D', 44)}
+          </div></div>
+        <div style="position:relative;padding:10px 12px 16px">
+          ${trackSVG(nodes, c, fr, a)}
+          ${nodes.map(x => nodeHTML(c, x.n, x.i, fr, world)).join('')}
         </div></section>`;
     }
     const total = s.length, done = s.filter(n => passedNode(c, n)).length;
@@ -283,14 +382,14 @@
     const act = actsOf(course()).find(a => a.id === u.act); const world = act ? act.world : 'meadow';
     const guide = GUIDE[world] || 'honeypot';
     const passed = (doneMap(c)[u.id] || {})[lap];
-    const gsvg = window.SB_AVATAR_ART && SB_AVATAR_ART[guide] ? `<svg viewBox="0 0 120 120" style="width:64px;height:64px;flex-shrink:0">${SB_AVATAR_ART[guide]}</svg>` : '';
+    const gsvg = window.SB_AVATAR ? `<span style="width:64px;height:64px;flex-shrink:0;display:block">${SB_AVATAR(guide, 64)}</span>` : '';
     const stepCard = (n, title, sub, act2, done2, cta) => `<div style="display:flex;align-items:center;gap:13px;background:var(--bg2);border-radius:16px;padding:13px 15px;box-shadow:0 0 0 1px var(--line),var(--sh-rest)">
       <span style="width:38px;height:38px;flex-shrink:0;display:grid;place-items:center;border-radius:11px;background:${done2 ? 'var(--good)' : 'var(--chip)'};color:${done2 ? '#fff' : 'var(--accent)'};font-family:var(--display);font-weight:800">${done2 ? '✓' : n}</span>
       <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:14.5px">${title}</span>
       <span style="font-size:12px;color:var(--muted);font-weight:600">${sub}</span></span>
       <button data-act="${act2}" style="flex-shrink:0;padding:9px 16px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:12.5px">${cta}</button></div>`;
     return `<div style="animation:sb-rise .35s ease both;max-width:640px;margin:0 auto">
-      <div style="position:relative;border-radius:20px;overflow:hidden;margin-bottom:14px;height:86px">${banner(world, 86)}
+      <div style="position:relative;border-radius:20px;overflow:hidden;margin-bottom:14px;height:112px">${banner(world, 112, course() === 'exp' ? 3 : 2)}${scrim()}
         <button data-act="trailBack" style="position:absolute;left:12px;top:10px;color:#fff;font-weight:800;font-size:12.5px;background:rgba(0,0,0,.3);border-radius:999px;padding:5px 12px">← Map</button>
         <div style="position:absolute;left:16px;bottom:10px;right:16px;display:flex;align-items:baseline;gap:10px">
           <span style="font-family:var(--display);font-weight:800;font-size:18px;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.4);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(u.title)}</span>
@@ -365,7 +464,7 @@
       <p style="text-align:center;font-size:11.5px;color:var(--muted);font-weight:600;margin-top:8px">Keys: 1–4 answer · Enter check/next · R hear it</p>
     </div>`;
   }
-  window.TRAIL = { view: () => { if (!T()) return '<div style="padding:40px;text-align:center;color:var(--muted)">Loading the Trail…</div>';
+  window.TRAIL = { view: () => { if (!T()) return '<div style="padding:40px;text-align:center;color:var(--muted)">Opening the Word Atlas…</div>';
     const v = state.trailView || 'map';
     return v === 'unit' ? viewUnit() : v === 'words' ? viewWords() : v === 'quiz' ? viewQuiz() : viewMap(); } };
 
