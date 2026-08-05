@@ -4,7 +4,10 @@
    • rewrites graphic/adult example sentences to kid-safe ones,
    • rewrites definitions that leaked the target spelling.
    Reviewable, additive, and non-destructive to the generated core file. */
-(function () {
+/* Exposed as SB_WORDS_PATCH so it can be re-applied to a later shard: the core
+   library boots as an easy first tier and words-data-2.js appends the rest, and
+   those records need the same QC pass. Idempotent by construction. */
+window.SB_WORDS_PATCH = function () {
   var D = window.SB_DATA;
   if (!D || !Array.isArray(D.nsf)) return;
   var nk = function (s) { return String(s == null ? '' : s).toLowerCase().trim(); };
@@ -51,4 +54,5 @@
     if (DEF[w])  { e.d = DEF[w];  dPatched++; }
   }
   // (debug) window.__wordsPatch = {removed:removed, sPatched:sPatched, dPatched:dPatched};
-})();
+};
+window.SB_WORDS_PATCH();

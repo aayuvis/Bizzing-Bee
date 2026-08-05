@@ -11,7 +11,9 @@ clusters:[
  { id:'society',  label:'People & Society',   c:'#3D7DF0', c2:'#2A63D6', tex:'grid'   },
  { id:'history',  label:'History & Conflict', c:'#C24545', c2:'#A33232', tex:'cross'  },
  { id:'play',     label:'Movement & Play',    c:'#FF5FA2', c2:'#E8458C', tex:'dots'   },
- { id:'mind',     label:'Language & Mind',    c:'#7B52E0', c2:'#5E39C4', tex:'stripes'}
+ { id:'mind',     label:'Language & Mind',    c:'#7B52E0', c2:'#5E39C4', tex:'stripes'},
+ { id:'origins',  label:'Where Words Come From', c:'#C08A3E', c2:'#8A5B00', tex:'diag'  },
+ { id:'named',    label:'Named After Someone', c:'#E8458C', c2:'#A82563', tex:'dots'   },
 ],
 themes:[
  // ---- Science & nature ----
@@ -74,5 +76,35 @@ themes:[
  { id:'wordwords',cluster:'mind',    hero:'euonym',    label:'Words about Words',      sub:'Language, letters & linguistics', re:'\\b(word\\b|words\\b|language|linguistic|grammar|grammat|vocabulary|dialect|accent\\b|pronunciation|pronounce|alphabet|letter of the|syllable|vowel|consonant|noun\\b|verb\\b|adjective|adverb|prefix|suffix|etymolog|synonym|antonym|idiom|phrase|sentence structure|spelling|dictionary|translat)' },
  { id:'time',     cluster:'mind',    hero:'ephemeral', label:'Time & Seasons',         sub:'Moments, ages & the calendar', re:'\\b(time\\b|times\\b|hour|minute\\b|moment|day\\b|days\\b|daily|week\\b|weekly|month|year\\b|years\\b|yearly|annual|century|centuries|decade|era\\b|eras\\b|epoch|season|spring\\b|summer|autumn|winter|dawn\\b|dusk\\b|twilight|midnight|noon\\b|calendar|clock|ancient times|eternal|everlasting|temporary|fleeting|ephemeral)' },
  { id:'colors',   cluster:'mind',    hero:'cerulean',  label:'Colors & Light',         sub:'Hues, shades & shimmer', re:'\\b(color|colour|hue\\b|hues\\b|shade of|tint|crimson|scarlet|vermilion|azure|cerulean|indigo|violet color|turquoise|emerald green|golden|silver(y)?\\b|ebony|ivory|iridescent|luminous|radiant|gleam|glow\\b|glowing|shimmer|sparkle|dazzle|brilliance|light and|prismatic|opalescent)' },
- { id:'eponyms',  cluster:'mind',    hero:'sideburns', label:'Named After Someone',    sub:'Words born from real names', re:'\\b(named (after|for|in honou?r of)|takes its name from|derives its name from|coined (after|from the name)|from the name of)\\b' }
+ { id:'eponyms',  cluster:'mind',    hero:'sideburns', label:'Named After Someone',    sub:'Words born from real names', re:'\\b(named (after|for|in honou?r of)|takes its name from|derives its name from|coined (after|from the name)|from the name of)\\b' },
+
+ // ---- Where words come from (origin families, straight from the book series) ----
+ // These classify on a word's ORIGIN, not its meaning, so they cut the library the
+ // way the Word Atlas and the books do. `ore` is the origin matcher.
+ { id:'olatin',   cluster:'origins', hero:'forum',     label:'Latin — Rome\u2019s Long Reach', sub:'The single biggest layer in English', ore:'latin' },
+ { id:'ogreek',   cluster:'origins', hero:'elements',  label:'Greek — The Science Language', sub:'PH, CH, PS, RH and the silent openers', ore:'greek' },
+ { id:'ofrench',  cluster:'origins', hero:'strait',    label:'French — The Norman Layer', sub:'Endings that look nothing like they sound', ore:'french|anglo-norman' },
+ { id:'oiberian', cluster:'origins', hero:'strait',    label:'Italian, Spanish & Portuguese', sub:'Opera, ocean and open vowels', ore:'italian|spanish|portuguese|catalan|galician' },
+ { id:'onordic',  cluster:'origins', hero:'greysea',   label:'German & Nordic Cousins', sub:'Compounds, hard consonants, blunt spellings', ore:'german|norse|danish|swedish|norwegian|icelandic|scandinavian|finnish|yiddish' },
+ { id:'odutch',   cluster:'origins', hero:'strait',    label:'Dutch — The Sailors\u2019 Loan', sub:'The largest origin nobody teaches', ore:'dutch|afrikaans|flemish' },
+ { id:'oceltic',  cluster:'origins', hero:'meadow',    label:'Celtic — Irish, Welsh, Scots & Gaelic', sub:'Consonant clusters English never invented', ore:'irish|welsh|scots|gaelic|celtic|cornish|breton|manx' },
+ { id:'osouth',   cluster:'origins', hero:'grandtrunk',label:'South Asian — Sanskrit to Persian', sub:'The aspirated letters: bh, dh, gh, kh, th', ore:'sanskrit|hindi|urdu|tamil|bengali|marathi|telugu|malayalam|kannada|gujarati|punjabi|sinhala|nepali|pali|prakrit' },
+ { id:'oeastasia',cluster:'origins', hero:'origami',   label:'Japanese, Chinese & Korean', sub:'Words that arrive already spelled', ore:'japanese|chinese|mandarin|cantonese|yue|korean' },
+ { id:'osemitic', cluster:'origins', hero:'junkyard',  label:'Arabic & Hebrew — The Desert Roads', sub:'AL- words and the letters that came with them', ore:'arabic|hebrew|aramaic|syriac|phoenician' },
+ { id:'oslavic',  cluster:'origins', hero:'warfield',  label:'Russian & Slavic', sub:'Suffixes that name things', ore:'russian|polish|czech|slovak|serbian|croatian|bulgarian|ukrainian|slavic|slavonic' },
+ { id:'oturkic',  cluster:'origins', hero:'engine',    label:'Persian & Turkish — The Silk Road', sub:'Words that walked a very long way', ore:'persian|turkish|turkic|tatar|mongol|uzbek|azerbaijani' },
+ { id:'opacific', cluster:'origins', hero:'strait',    label:'Malay, Maori & Hawaiian', sub:'Open syllables, doubled vowels', ore:'malay|indonesian|javanese|tagalog|maori|hawaiian|samoan|tongan|polynesian|melanesian|fijian' },
+ { id:'oworld',   cluster:'origins', hero:'meadow',    label:'The Americas & Africa', sub:'Nahuatl, Quechua, Bantu, Yoruba, Swahili', ore:'nahuatl|quechua|algonquian|powhatan|narragansett|ojibwa|cree|inuit|aleut|carib|taino|tupi|guarani|mayan|american indian|native american|bantu|yoruba|swahili|zulu|xhosa|wolof|akan|twi|igbo|hausa|mandingo|kongo|african' },
+ { id:'ooldeng',  cluster:'origins', hero:'meadow',    label:'Old English — The Home Layer', sub:'The oldest words we own, and their odd spellings', ore:'old english|anglo-saxon|middle english' },
+
+ // ---- Named after someone (eponyms, clustered by the donor language of the NAME) ----
+ // Same clustering the Champion Ladder uses: a Greek hero\u2019s name and a French
+ // inventor\u2019s name break in completely different places.
+ { id:'epgreek',  cluster:'named', hero:'elements',  label:'Eponyms I — Greek Myth & Names', sub:'Gods, heroes and the words they left behind', tag:'eponyms', ore:'greek' },
+ { id:'eplatin',  cluster:'named', hero:'forum',     label:'Eponyms II — Latin & Roman Names', sub:'Emperors, generals, and Roman households', tag:'eponyms', ore:'latin' },
+ { id:'epfrench', cluster:'named', hero:'stage',     label:'Eponyms III — French Names', sub:'Inventors, chefs and aristocrats', tag:'eponyms', ore:'french|anglo-norman' },
+ { id:'epiber',   cluster:'named', hero:'strait',    label:'Eponyms IV — Italian & Spanish Names', sub:'Scientists, sailors and saints', tag:'eponyms', ore:'italian|spanish|portuguese' },
+ { id:'epnordic', cluster:'named', hero:'greysea',   label:'Eponyms V — German & Nordic Names', sub:'Physicists, botanists and unit names', tag:'eponyms', ore:'german|dutch|norse|danish|swedish|norwegian|finnish' },
+ { id:'epeng',    cluster:'named', hero:'library',   label:'Eponyms VI — English & Celtic Names', sub:'Earls, engineers and eccentrics', tag:'eponyms', ore:'english|scots|irish|welsh' },
+ { id:'epworld',  cluster:'named', hero:'grandtrunk',label:'Eponyms VII — Names from Everywhere Else', sub:'The rest of the world\u2019s namesakes', tag:'eponyms' },
 ]};

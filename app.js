@@ -6,7 +6,10 @@
 
 /* ---------------- data (from words-data.js / concepts-data.js) ------- */
 const SB_DATA = (typeof window !== 'undefined' && window.SB_DATA) || { nsf:[], champions:[], nationalRound:[] };
-const SB_CONCEPTS = (typeof window !== 'undefined' && window.SB_CONCEPTS) || { chapters:[] };
+/* No snapshot of SB_CONCEPTS here: concepts-data.js is deferred by boot-lazy, so
+   the real course can land after this file has run. boot-lazy stubs the global to
+   { chapters:[] } before anything reads it, and every bare SB_CONCEPTS reference
+   in the app is therefore a live window lookup that sees the course once it does. */
 
 /* =====================================================================
    Bee mascot — ported from Bizzing BeeMascot.dc.html
