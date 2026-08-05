@@ -344,6 +344,20 @@
         <span style="font-family:var(--display);font-weight:800;font-size:13px;background:var(--chip);color:var(--accent);border-radius:999px;padding:5px 13px">Tier ${lap} of 3</span>
         <div style="flex:1;height:9px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;background:linear-gradient(90deg,var(--accent),var(--treasure));width:${Math.round(done / Math.max(1, total) * 100)}%"></div></div>
         <span style="font-size:12px;font-weight:800;color:var(--muted)">${done}/${total} stops</span></div>`;
+  /* The revision pile and the weak-pattern trainer used to sit in a Library section
+     of their own, which meant leaving the journey to reach the two things you want
+     precisely while you are on it. They ride the Atlas header as pills, and the
+     chapter shelf keeps its place beside them. */
+  function atlasPills(c) {
+    const miss = ((c.missed) || []).length;
+    const pill = (act, arg, ic, label, count, tone) => `<button data-act="${act}"${arg ? ` data-arg="${escA(arg)}"` : ''} class="sb-lift" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;font-weight:800;font-size:12.5px;white-space:nowrap;
+      ${tone ? `background:color-mix(in srgb,${tone} 13%,var(--bg2));border:1px solid color-mix(in srgb,${tone} 45%,var(--line));color:${tone}` : 'background:var(--surface2);border:1px solid var(--line);color:var(--text)'}">${iconSVG(ic, 14)} ${label}${count ? `<span style="font-family:var(--display);font-variant-numeric:tabular-nums;background:${tone || 'var(--accent)'};color:#fff;border-radius:999px;padding:1px 7px;font-size:11px">${count}</span>` : ''}</button>`;
+    return `<span style="margin-left:auto;display:inline-flex;gap:7px;flex-wrap:wrap">
+      ${pill('openRevisions', '', 'retry', 'Revise', miss, miss ? 'var(--tricky-deep,#C24545)' : '')}
+      ${pill('openTraps', '', 'target', 'My traps', 0, '')}
+      ${pill('setNav', 'concepts', 'grid', 'Chapters', 0, '')}
+    </span>`;
+  }
   function viewMap() {
     const c = active();
     /* section 1 — the base route */
@@ -369,7 +383,7 @@
     return `<div style="animation:sb-rise .35s ease both;max-width:660px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
         <span style="font-family:var(--display);font-weight:800;font-size:22px">${esc(T().names.honey)}</span>
-        <button data-act="setNav" data-arg="concepts" style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:12.5px;color:var(--text)">${iconSVG('grid', 14)} Chapter shelf</button></div>
+        ${atlasPills(c)}</div>
       ${tierBar(h.lap, h.done, h.total)}
       ${h.lap === 1 ? `<p style="font-size:12.5px;color:var(--muted);font-weight:600;margin:-6px 0 14px 4px">Tier 1 keeps every word at your level — the same route returns tougher at Tier 2. Concepts first; the words follow.</p>` : ''}
       ${h.acts}

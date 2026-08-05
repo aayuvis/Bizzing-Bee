@@ -3326,50 +3326,53 @@ function viewIpaTrain(){ const S=state; const it=S.it; const pool=ipaPool();
       <div style="text-align:center;font-size:12px;color:var(--muted);font-weight:600;margin-top:10px">Keys: 1–4 answer · R hear it · Enter next</div>
     </div></div>`; }
 
-function viewExplore(){ const c=active(); ensureLists(c); const S=state; const advOn=advModeOn(c);
-  const cAll=(state.conceptData||[]); const cDone=cAll.filter(ch=>conceptStat(ch).done).length;
-  const fmtDone=(cDone>0?cDone+'/'+(cAll.length||121)+' mastered':(cAll.length||121)+' concepts');
-  /* Each Explore destination as a compact clickable row inside its hub. */
-  const row=(key,act,arg,sub)=>{ const w=WAYFIND[key]||{label:key,ic:'grid',c:'var(--accent)'};
-    return `<button class="sb-lift" data-act="${act}" ${arg?`data-arg="${escA(arg)}"`:''} style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px 13px;box-shadow:var(--sh-rest)">
-      ${iconTile((window.SB_ICON_ART&&SB_ICON_ART[key])?key:(w.sb||'grid'), w.c==='var(--accent)'?'#7C5CFF':w.c, {size:40, radius:11})}
-      <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">${esc(w.label)}</span>
-        <span style="display:block;font-size:12px;color:var(--muted);font-weight:600;line-height:1.35;margin-top:1px">${esc(sub)}</span></span>
-      <span style="color:${w.c};font-weight:800;flex-shrink:0">→</span></button>`; };
-  /* the three hub columns */
-  const hub=(title,e,col,intro,inner)=>`<section style="background:linear-gradient(160deg,color-mix(in srgb,${col} 12%,var(--bg2)),var(--bg2) 55%);border:1px solid color-mix(in srgb,${col} 30%,var(--line));border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--sh-rest)">
-      <div style="display:flex;align-items:center;gap:11px">
-        ${iconTile(e, col, {size:46, radius:14})}
-        <span><span style="display:block;font-family:var(--display);font-weight:800;font-size:19px;line-height:1;color:${col}">${title}</span>
-        <span style="display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:3px">${intro}</span></span>
-      </div>
-      ${inner}</section>`;
-  const missN=((c.missed)||[]).length;
-  const qN=(window.SB_QUOTES&&SB_QUOTES.length)?SB_QUOTES.length:0;
+function viewExplore(){ const c=active(); ensureLists(c); const S=state;
+  /* The Library was three columns of text rows under Learn / Train / Revise. Two of
+     those sections no longer had anything of their own to hold: the revision pile and
+     the trap trainer live in Practice and now ride as pills on the Word Atlas, and the
+     quote trainer is reachable from the drawer and from the Quote of the Hour card on
+     the home screen. What is left is six real destinations, so they get the Arcade's
+     tile treatment rather than a filing structure. */
+  const cAll=(S.conceptData||[]); const cDone=cAll.filter(ch=>conceptStat(ch).done).length;
+  const shelves=cAll.length?conceptChapters().length:13;
   const tN=(window.SB_TRIVIA&&SB_TRIVIA.questions)?SB_TRIVIA.questions.length:0;
-  // ---- LEARN ----  understand words deeply
-  /* One door per idea. Concepts absorbed the advanced course, the Word Journeys
-     and the champion tip deck, so those rows are gone rather than duplicated; the
-     List Builder lives in Practice, which is where lists are actually studied. */
-  const learn=hub('Learn','learn','#7C5CFF','Understand words deeply',
-    row('concepts','setNav','concepts','Every chapter in the app — patterns, roots, origins, bee-day craft · '+fmtDone)+
-    row('themes','setNav','themes','Theme journeys — a world explained, then its words to keep')+
-    row('vocab','openVocab',null,'Word → meaning, vocabulary-bee style'));
-  // ---- TRAIN ----  sharpen your skills
-  const train=hub('Train','train','#13A892','Sharpen your skills',
-    (advOn?row('advmock','openAdvMock',null,'Benchmark rounds — written, vocabulary & lightning'):'')+
-    row('figurative','setNav','figurative','2,350 idioms & similes, card by card')+
-    row('typing','openTyping',null,'Touch-type, then race the 60-second test')+
-    row('quotes','openQuotes',null,(qN?fmtN(qN)+' ':'')+'kid-friendly quotes from famous people')+
-    row('trivtrain','openTrivTrain',null,'Trivia training — '+(tN?fmtN(tN)+' ':'')+'cards by chapter, then play the Arcade')+
-    row('ipatrain','openIpaTrain',null,'Read IPA — the phonetic symbols study lists are written in'));
-  // ---- REVISE ----  fix what trips you up
-  const revise=hub('Revise','retry','#E0922E','Fix what trips you up',
-    row('revisions','openRevisions',null,'Redo the words you flagged to revise'+(missN?' · '+missN+' waiting':''))+
-    row('traps','openTraps',null,'Beat your weak spelling patterns'));
-  return `<div style="animation:sb-rise .35s ease both">
-    ${pageHead('The Library','learn · train · revise','Everything beyond spelling practice — build deep word knowledge, sharpen real skills, and clean up what trips you up.')}
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;align-items:start">${learn}${train}${revise}</div>
+  const themeN=themeDefs().length||75;
+  const mine=myThemes().length;
+  const ART=(k,sz)=>(window.SB_ICON_ART&&SB_ICON_ART[k])?SB_ICON_ART(k,{size:sz||46}):iconSVG(k,sz||46);
+  const tile=(o)=>`<button data-act="${o.act}" ${o.arg?`data-arg="${escA(o.arg)}"`:''} class="arc-tile">
+      <span class="arc-tile-top" style="background:${o.grad}">${o.badge?`<span class="arc-badge">${esc(o.badge)}</span>`:''}
+        <span style="filter:drop-shadow(0 3px 7px rgba(0,0,0,.28))">${o.art}</span></span>
+      <span class="arc-tile-body">
+        <span class="arc-tile-title" style="display:block">${esc(o.title)}</span>
+        <span class="arc-tile-blurb" style="display:block">${esc(o.blurb)}</span>
+        <span class="arc-tile-foot"><span class="arc-cta" style="background:${o.cta}">${iconSVG(o.ctaIc||'book',14)} ${esc(o.ctaLabel||'Open')}</span>${o.stat?`<span class="arc-stat">${esc(o.stat)}</span>`:''}</span>
+      </span></button>`;
+  const tiles=[
+    tile({act:'setNav',arg:'concepts',grad:'linear-gradient(135deg,#7C5CFF,#5A37D6)',art:ART('concepts',48),badge:'Explain',
+      title:'Concepts',blurb:'Every explanation in the app on one shelf — patterns, roots, origins, bee-day craft.',
+      cta:'#5A37D6',stat:cAll.length?(cDone+'/'+cAll.length+' mastered'):(shelves+' shelves')}),
+    tile({act:'setNav',arg:'themes',grad:'linear-gradient(135deg,#F0703C,#C8451B)',art:ART('themes',48),badge:'Families',
+      title:'Theme Journeys',blurb:'Words by the family they belong to — a subject, or the language they came from.',
+      cta:'#C8451B',stat:mine?(mine+' picked'):(themeN+' families')}),
+    tile({act:'openVocab',grad:'linear-gradient(135deg,#13A892,#0A6B5D)',art:ART('vocab',48),badge:'Meaning',
+      title:'Vocabulary',blurb:'Word to meaning, vocabulary-bee style — study a deck, then take the check.',
+      cta:'#0A6B5D',ctaIc:'book',ctaLabel:'Study'}),
+    tile({act:'setNav',arg:'figurative',grad:'linear-gradient(135deg,#B14FC4,#7A2F8C)',art:ART('figurative',48),badge:'Sayings',
+      title:'Idioms & Similes',blurb:'2,350 phrases and the true story behind each one, card by card.',
+      cta:'#7A2F8C'}),
+    tile({act:'openTrivTrain',grad:'linear-gradient(135deg,#F0A93C,#C8791B)',art:ART('trivtrain',48),badge:'Cards',
+      title:'Bizzing Trivia',blurb:'Etymology and word-world cards by chapter — then play the Arcade round.',
+      cta:'#C8791B',ctaIc:'bulb',ctaLabel:'Learn',stat:tN?fmtN(tN)+' questions':''}),
+    tile({act:'openIpaTrain',grad:'linear-gradient(135deg,#2E6FD8,#1C4A96)',art:ART('ipatrain',48),badge:'Notation',
+      title:'The Sound Alphabet',blurb:'Read IPA — the phonetic symbols every real study list is written in.',
+      cta:'#1C4A96',ctaIc:'volume',ctaLabel:'Train'}),
+    tile({act:'openTyping',grad:'linear-gradient(135deg,#3D7DF0,#2A63D6)',art:ART('typing',48),badge:'Speed',
+      title:'Typing Trainer',blurb:'Learn to touch-type, then race the sixty-second test.',
+      cta:'#2A63D6',ctaIc:'pencil',ctaLabel:'Practise'}),
+  ].join('');
+  return `<div style="animation:sb-rise .35s ease both;max-width:1000px;margin:0 auto">
+    ${pageHead('The Library','learn beyond the drill','Everything that explains a word rather than testing it. Your revision pile and weak patterns ride on the Word Atlas; the drill itself lives in Practice.')}
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:14px">${tiles}</div>
   </div>`; }
 /* Advanced Mode entry — a gated hero banner. Unlocks at Level 12, Bee Band 7, or by paying. */
 function advBanner(c){
