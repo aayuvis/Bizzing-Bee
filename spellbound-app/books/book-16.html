@@ -43,18 +43,21 @@
     font-family:'BB Kicker';font-size:10pt;color:var(--muted)}
   .page[data-verso] .bb-foot{left:.5in;right:.75in}
   .bb-panelbox{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-panel);padding:.12in .15in;box-shadow:var(--sh-screen)}
-  .bb-bigidea{padding:.04in .8in .04in .42in;max-height:1.8in;overflow:hidden;position:relative;font-size:13.5pt;line-height:1.5}
+  .bb-bigidea{padding:.06in .85in .06in .44in;max-height:1.9in;overflow:hidden;position:relative;font-size:13.5pt;line-height:1.56}
   .bb-bigidea:before{content:'“';position:absolute;left:0;top:-.12in;font-family:'BB Display';font-size:44pt;color:var(--accent)}
   .bb-bigidea .cameo{position:absolute;right:.06in;top:50%;transform:translateY(-50%) rotate(4deg)}
-  .bb-promove{background:var(--ink);color:#F4EFFF;border-radius:var(--r-panel);padding:.13in .16in;max-height:1.7in;overflow:hidden;
-    font-size:11pt;line-height:1.48}
-  .bb-promove b{color:var(--treasure)} .bb-promove div{margin:2px 0}
+  .bb-promove{background:var(--ink);color:#F4EFFF;border-radius:var(--r-panel);padding:.16in .18in;max-height:2.9in;overflow:hidden;
+    font-size:10.8pt;line-height:1.5}
+  .bb-promove b{color:var(--treasure)}
+  .bb-promove .ln{margin:0 0 5.5pt;padding-left:.14in;text-indent:-.14in}
+  .bb-promove .ln:last-child{margin-bottom:0}
+  .bb-promove .trick{margin:0 0 7pt;padding:0;text-indent:0}
   .bb-promove .trick,.bb-promove [class]{font-family:'BB Display';font-size:12pt;letter-spacing:.04em}
-  .bb-sticky{display:grid;grid-template-columns:1fr 1fr;gap:.1in;margin-top:.1in}
-  .bb-sticky .card{background:var(--tint);border-radius:3pt 3pt 12pt 3pt;padding:.09in .11in;box-shadow:2pt 3pt 6pt rgba(36,30,51,.10)}
+  .bb-sticky{display:grid;grid-template-columns:1fr 1fr;gap:.14in;margin-top:.16in}
+  .bb-sticky .card{background:var(--tint);border-radius:3pt 3pt 12pt 3pt;padding:.12in .14in;box-shadow:2pt 3pt 6pt rgba(36,30,51,.10)}
   .bb-sticky .card:nth-child(odd){transform:rotate(-.5deg)} .bb-sticky .card:nth-child(even){transform:rotate(.4deg);background:color-mix(in srgb,var(--treasure) 12%,white)}
-  .bb-sticky h3{font-size:11.2pt;color:var(--accent-deep);margin-bottom:2px}
-  .bb-sticky p{font-size:10pt;line-height:1.4}
+  .bb-sticky h3{font-size:11.2pt;color:var(--accent-deep);margin-bottom:4.5pt}
+  .bb-sticky p{font-size:10pt;line-height:1.46}
   /* v5 anime storyboard: full-bleed keyframe scenes with a subtitle caption —
      no ink boxes. Register 1 keeps a slight playful tilt; register 3 is level. */
   .an-strip{display:grid;gap:.12in;margin-top:.12in}
@@ -64,6 +67,17 @@
   .an-cap{position:absolute;left:.09in;right:.09in;bottom:.09in;background:rgba(255,255,255,.93);border-radius:10pt;
     padding:5pt 9pt;font-family:'BB Display';font-size:11.5pt;line-height:1.3;box-shadow:0 2pt 8pt rgba(26,18,54,.3)}
   .an-cap .nm{display:block;font-family:'BB Kicker';font-size:8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-deep);margin-bottom:1pt}
+  /* comic speech balloons: sit BESIDE the speaker, with a tail pointing at them */
+  .an-bub{position:absolute;background:#fff;border:1.6pt solid var(--ink);border-radius:16pt;padding:7pt 11pt;
+    font-family:'BB Display';font-size:11.4pt;line-height:1.34;
+    box-shadow:0 3pt 10pt rgba(26,18,54,.28);transform:translateY(-50%)}
+  .an-bub .nm{display:block;font-family:'BB Kicker';font-size:8pt;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--accent-deep);margin-bottom:2.5pt}
+  .an-bub .tail,.an-bub .tail i{position:absolute;top:50%;width:0;height:0;border-style:solid}
+  .an-bub.r .tail{right:-11pt;margin-top:-8pt;border-width:8pt 0 8pt 11pt;border-color:transparent transparent transparent var(--ink)}
+  .an-bub.r .tail i{right:2.4pt;margin-top:-6.2pt;border-width:6.2pt 0 6.2pt 8.5pt;border-color:transparent transparent transparent #fff}
+  .an-bub.l .tail{left:-11pt;margin-top:-8pt;border-width:8pt 11pt 8pt 0;border-color:transparent var(--ink) transparent transparent}
+  .an-bub.l .tail i{left:2.4pt;margin-top:-6.2pt;border-width:6.2pt 8.5pt 6.2pt 0;border-color:transparent #fff transparent transparent}
   .an-sfx{position:absolute;top:.08in;right:.1in;font-family:'BB Display';font-size:14pt;letter-spacing:.05em;
     color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.35),0 5px 12px rgba(0,0,0,.4);transform:rotate(-3deg)}
   .an-prop{position:absolute;top:.08in;left:.1in;background:rgba(20,14,44,.66);color:#FFE9AE;border-radius:8pt;padding:2.5pt 8pt;font-family:'BB Tile';font-size:9.6pt}
@@ -80,16 +94,16 @@
   .bb-rapid{display:grid;grid-template-columns:1fr 1fr;gap:.08in .16in}
   .bb-row{padding:3.5pt 0;min-height:.5in;max-height:.6in;overflow:hidden;font-size:10.8pt;line-height:1.34;border-bottom:1px dotted var(--hairline)}
   .bb-row b{font-family:'BB Kicker';color:var(--accent-deep)}
-  .bb-break{display:flex;gap:.1in;align-items:flex-start;background:linear-gradient(90deg,var(--treasure-tint),transparent 85%);border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.08in .13in;max-height:2.3in;overflow:hidden}
+  .bb-break{margin-top:.18in;display:flex;gap:.13in;align-items:flex-start;background:linear-gradient(90deg,var(--treasure-tint),transparent 85%);border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.08in .13in;max-height:2.3in;overflow:hidden}
   .bb-break .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--treasure-deep)}
   .bb-break .b{font-size:11.2pt;line-height:1.4;margin-top:2px}
   .bb-break .t{font-size:10pt;color:var(--muted);margin-top:2px}
-  .bb-check{border-left:4pt solid var(--right);padding:.04in .1in;max-height:1.3in;overflow:hidden}
-  .bb-check .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--right-deep)}
-  .bb-vex{background:linear-gradient(90deg,#FFF1F3,transparent 88%);border-left:4pt solid var(--tricky);border-radius:2pt 12pt 12pt 2pt;padding:.05in .1in;max-height:1.3in;overflow:hidden;display:flex;gap:.09in;align-items:flex-start}
-  .bb-vex .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--tricky-deep)}
-  .bb-trap{background:var(--listen-tint);border-left:4pt solid var(--listen);border-radius:2pt 12pt 12pt 2pt;padding:.05in .1in;max-height:1.3in;overflow:hidden}
-  .bb-trap .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--listen-deep)}
+  .bb-check{border-left:4pt solid var(--right);padding:.07in .12in .07in .14in;max-height:1.4in;overflow:hidden}
+  .bb-check .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--right-deep);margin-bottom:3.5pt}
+  .bb-vex{background:linear-gradient(90deg,#FFF1F3,transparent 88%);border-left:4pt solid var(--tricky);border-radius:2pt 12pt 12pt 2pt;padding:.07in .12in .07in .14in;max-height:1.4in;overflow:hidden;display:flex;gap:.12in;align-items:flex-start}
+  .bb-vex .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--tricky-deep);margin-bottom:3.5pt}
+  .bb-trap{background:var(--listen-tint);border-left:4pt solid var(--listen);border-radius:2pt 12pt 12pt 2pt;padding:.07in .12in .07in .14in;max-height:1.4in;overflow:hidden}
+  .bb-trap .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--listen-deep);margin-bottom:3.5pt}
   .bb-quiz{counter-reset:q}
   .bb-quiz .q{margin-bottom:.16in;break-inside:avoid}
   .bb-quiz .q .qq{font-family:'BB Display';font-size:12pt;line-height:1.34;margin-bottom:3pt}
@@ -135,32 +149,10 @@
     <div class="bb-head"><span>As Busy as a Bee</span><span>How this book works</span></div>
     <div style="margin-top:.4in"><h1 style="font-size:26pt">Talk like a storyteller.</h1></div>
     <div style="display:flex;gap:.14in;align-items:flex-start;margin:.16in 0">
-      <svg viewBox="0 0 120 120" style="width:1in;height:1in;flex-shrink:0" aria-hidden="true">
-      <defs><filter id="bl2-ptpopcorna917" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptpopcorna917" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptpopcorna917" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptpopcorna917" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#d2ada9"/><stop offset=".62" stop-color="rgba(138,42,32,0.5)"/><stop offset="1" stop-color="#b28d3a"/></radialGradient>
-        <clipPath id="pc-ptpopcorna917"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptpopcorna917)"/>
-      <g clip-path="url(#pc-ptpopcorna917)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptpopcorna917)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptpopcorna917)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(255,200,61,0.3)" filter="url(#bl6-ptpopcorna917)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><circle cx="44" cy="38" r="9" fill="#FFF3D6"/><circle cx="58" cy="30" r="10" fill="#FFF9E8"/><circle cx="74" cy="36" r="9" fill="#FFF3D6"/><circle cx="50" cy="28" r="7" fill="#FFF9E8"/><circle cx="66" cy="26" r="7" fill="#FFF3D6"/>
-<circle cx="52" cy="38" r="6" fill="#F5E3B8"/><circle cx="66" cy="36" r="6" fill="#F5E3B8"/>
-<circle cx="88" cy="18" r="6" fill="#FFF9E8"/><path d="M92 10 l2 -3 M96 16 l3 -1" stroke="#F0A82A" stroke-width="2" stroke-linecap="round"/>
-<path d="M38 44 h44 l-5 60 h-34 z" fill="#F4F0E6"/>
-<path d="M44 44 h7 l-4 60 h-7 z M58 44 h7 l-1 60 h-7 z M72 44 h7 l2 60 h-8 z" fill="#E0483C"/>
-<path d="M38 44 h44 l-1 8 h-42 z" fill="#fff" opacity=".5"/>
-<circle cx="50" cy="70" r="7" fill="#fff"/><circle cx="51.3" cy="71.5" r="3.6" fill="#8A2A20"/><circle cx="50.2" cy="70.3" r="1.3" fill="#fff"/>
-<circle cx="70" cy="70" r="7" fill="#fff"/><circle cx="71.3" cy="71.5" r="3.6" fill="#8A2A20"/><circle cx="70.2" cy="70.3" r="1.3" fill="#fff"/>
-<ellipse cx="44" cy="80" rx="4" ry="2.5" fill="#FF9E8A" opacity=".85"/><ellipse cx="76" cy="80" rx="4" ry="2.5" fill="#FF9E8A" opacity=".85"/>
-<path d="M53 83 q7 6 14 0" fill="none" stroke="#8A2A20" stroke-width="3.5" stroke-linecap="round"/>
-<circle cx="20" cy="60" r="2.2" fill="#FFC83D"/><circle cx="102" cy="52" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptpopcorna917)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(138,42,32,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg>
+      <span style="display:inline-grid;place-items:center;width:1in;height:1in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #dcbfbb, rgba(138,42,32,0.55) 62%, #bd953a);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden">
+      <img src="../avatars/popcorn.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
       <div class="bb-bubble" style="font-size:11pt">I'm <b>Popcorn</b>. A simile says one thing is LIKE another — and suddenly people listen. Steal freely; that's what these are for.</div></div>
     <div style="display:flex;gap:.14in;margin-bottom:.13in;align-items:flex-start">
       <span style="display:inline-grid;place-items:center;width:.52in;height:.52in;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:14pt;flex-shrink:0">1</span>
@@ -478,32 +470,10 @@
       <div class="bb-foot"><span>Bizzing Bee · As Busy as a Bee</span><span>8</span></div></div>
 <div class="page" data-vol="16">
         <div class="bb-head"><span>As Busy as a Bee</span><span>Match round</span></div>
-        <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true">
-      <defs><filter id="bl2-ptpopcorna918" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptpopcorna918" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptpopcorna918" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptpopcorna918" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#d2ada9"/><stop offset=".62" stop-color="rgba(138,42,32,0.5)"/><stop offset="1" stop-color="#b28d3a"/></radialGradient>
-        <clipPath id="pc-ptpopcorna918"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptpopcorna918)"/>
-      <g clip-path="url(#pc-ptpopcorna918)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptpopcorna918)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptpopcorna918)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(255,200,61,0.3)" filter="url(#bl6-ptpopcorna918)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><circle cx="44" cy="38" r="9" fill="#FFF3D6"/><circle cx="58" cy="30" r="10" fill="#FFF9E8"/><circle cx="74" cy="36" r="9" fill="#FFF3D6"/><circle cx="50" cy="28" r="7" fill="#FFF9E8"/><circle cx="66" cy="26" r="7" fill="#FFF3D6"/>
-<circle cx="52" cy="38" r="6" fill="#F5E3B8"/><circle cx="66" cy="36" r="6" fill="#F5E3B8"/>
-<circle cx="88" cy="18" r="6" fill="#FFF9E8"/><path d="M92 10 l2 -3 M96 16 l3 -1" stroke="#F0A82A" stroke-width="2" stroke-linecap="round"/>
-<path d="M38 44 h44 l-5 60 h-34 z" fill="#F4F0E6"/>
-<path d="M44 44 h7 l-4 60 h-7 z M58 44 h7 l-1 60 h-7 z M72 44 h7 l2 60 h-8 z" fill="#E0483C"/>
-<path d="M38 44 h44 l-1 8 h-42 z" fill="#fff" opacity=".5"/>
-<circle cx="50" cy="70" r="7" fill="#fff"/><circle cx="51.3" cy="71.5" r="3.6" fill="#8A2A20"/><circle cx="50.2" cy="70.3" r="1.3" fill="#fff"/>
-<circle cx="70" cy="70" r="7" fill="#fff"/><circle cx="71.3" cy="71.5" r="3.6" fill="#8A2A20"/><circle cx="70.2" cy="70.3" r="1.3" fill="#fff"/>
-<ellipse cx="44" cy="80" rx="4" ry="2.5" fill="#FF9E8A" opacity=".85"/><ellipse cx="76" cy="80" rx="4" ry="2.5" fill="#FF9E8A" opacity=".85"/>
-<path d="M53 83 q7 6 14 0" fill="none" stroke="#8A2A20" stroke-width="3.5" stroke-linecap="round"/>
-<circle cx="20" cy="60" r="2.2" fill="#FFC83D"/><circle cx="102" cy="52" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptpopcorna918)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(138,42,32,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg><h2 style="font-size:20pt">Draw the line: simile → meaning</h2></div>
+        <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><span style="display:inline-grid;place-items:center;width:.6in;height:.6in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #dcbfbb, rgba(138,42,32,0.55) 62%, #bd953a);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden">
+      <img src="../avatars/popcorn.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span><h2 style="font-size:20pt">Draw the line: simile → meaning</h2></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.18in;margin-top:.12in;font-size:9.2pt;line-height:1.4">
           <div><h3 style="font-size:11pt;color:var(--accent-deep);margin-bottom:3pt">The similes</h3><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>1.</b> as free as a bird</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>2.</b> as deaf as a post</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>3.</b> as dark as midnight</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>4.</b> as cunning as a fox</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>5.</b> as dead as a dodo</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>6.</b> as flat as a pancake</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>7.</b> as deaf as an adder</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>8.</b> as common as dirt</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>9.</b> as deep as the ocean</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>10.</b> as fleet as a deer</div></div>
           <div><h3 style="font-size:11pt;color:var(--accent-deep);margin-bottom:3pt">The meanings</h3><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>A.</b> very deep, or very profound</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>B.</b> refusing to hear anything at all</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>C.</b> completely flat</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>D.</b> completely free</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>E.</b> completely extinct or obsolete</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>F.</b> completely dark</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>G.</b> extremely ordinary and found everywhere</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>H.</b> unable to hear</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>I.</b> very crafty</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>J.</b> very swift-footed</div></div></div>
@@ -805,32 +775,10 @@
       <div class="bb-foot"><span>Bizzing Bee · As Busy as a Bee</span><span>15</span></div></div>
 <div class="page" data-verso data-vol="16">
         <div class="bb-head"><span>As Busy as a Bee</span><span>Match round</span></div>
-        <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true">
-      <defs><filter id="bl2-ptpopcorna919" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptpopcorna919" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptpopcorna919" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptpopcorna919" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#d2ada9"/><stop offset=".62" stop-color="rgba(138,42,32,0.5)"/><stop offset="1" stop-color="#b28d3a"/></radialGradient>
-        <clipPath id="pc-ptpopcorna919"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptpopcorna919)"/>
-      <g clip-path="url(#pc-ptpopcorna919)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptpopcorna919)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptpopcorna919)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(255,200,61,0.3)" filter="url(#bl6-ptpopcorna919)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><circle cx="44" cy="38" r="9" fill="#FFF3D6"/><circle cx="58" cy="30" r="10" fill="#FFF9E8"/><circle cx="74" cy="36" r="9" fill="#FFF3D6"/><circle cx="50" cy="28" r="7" fill="#FFF9E8"/><circle cx="66" cy="26" r="7" fill="#FFF3D6"/>
-<circle cx="52" cy="38" r="6" fill="#F5E3B8"/><circle cx="66" cy="36" r="6" fill="#F5E3B8"/>
-<circle cx="88" cy="18" r="6" fill="#FFF9E8"/><path d="M92 10 l2 -3 M96 16 l3 -1" stroke="#F0A82A" stroke-width="2" stroke-linecap="round"/>
-<path d="M38 44 h44 l-5 60 h-34 z" fill="#F4F0E6"/>
-<path d="M44 44 h7 l-4 60 h-7 z M58 44 h7 l-1 60 h-7 z M72 44 h7 l2 60 h-8 z" fill="#E0483C"/>
-<path d="M38 44 h44 l-1 8 h-42 z" fill="#fff" opacity=".5"/>
-<circle cx="50" cy="70" r="7" fill="#fff"/><circle cx="51.3" cy="71.5" r="3.6" fill="#8A2A20"/><circle cx="50.2" cy="70.3" r="1.3" fill="#fff"/>
-<circle cx="70" cy="70" r="7" fill="#fff"/><circle cx="71.3" cy="71.5" r="3.6" fill="#8A2A20"/><circle cx="70.2" cy="70.3" r="1.3" fill="#fff"/>
-<ellipse cx="44" cy="80" rx="4" ry="2.5" fill="#FF9E8A" opacity=".85"/><ellipse cx="76" cy="80" rx="4" ry="2.5" fill="#FF9E8A" opacity=".85"/>
-<path d="M53 83 q7 6 14 0" fill="none" stroke="#8A2A20" stroke-width="3.5" stroke-linecap="round"/>
-<circle cx="20" cy="60" r="2.2" fill="#FFC83D"/><circle cx="102" cy="52" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptpopcorna919)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(138,42,32,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg><h2 style="font-size:20pt">Draw the line: simile → meaning</h2></div>
+        <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><span style="display:inline-grid;place-items:center;width:.6in;height:.6in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #dcbfbb, rgba(138,42,32,0.55) 62%, #bd953a);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden">
+      <img src="../avatars/popcorn.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span><h2 style="font-size:20pt">Draw the line: simile → meaning</h2></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.18in;margin-top:.12in;font-size:9.2pt;line-height:1.4">
           <div><h3 style="font-size:11pt;color:var(--accent-deep);margin-bottom:3pt">The similes</h3><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>1.</b> as poor as Job's turkey</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>2.</b> as pale as a ghost</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>3.</b> as proud as a peacock</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>4.</b> as old as time</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>5.</b> as quick as lightning</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>6.</b> as rich as Croesus</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>7.</b> as plain as the nose on your face</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>8.</b> as safe as the Bank of England</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>9.</b> as scarce as hen's teeth</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>10.</b> as sick as a parrot</div></div>
           <div><h3 style="font-size:11pt;color:var(--accent-deep);margin-bottom:3pt">The meanings</h3><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>A.</b> utterly poor</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>B.</b> absolutely secure</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>C.</b> vain about one's appearance</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>D.</b> extremely fast</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>E.</b> impossible to miss</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>F.</b> existing longer than anyone can imagine</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>G.</b> fabulously wealthy</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>H.</b> so rare it practically doesn't exist</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>I.</b> very pale from fear or illness</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>J.</b> bitterly disappointed</div></div></div>
@@ -1139,32 +1087,10 @@
       <div class="bb-foot"><span>Bizzing Bee · As Busy as a Bee</span><span>23</span></div></div>
 <div class="page" data-verso data-vol="16">
         <div class="bb-head"><span>As Busy as a Bee</span><span>Match round</span></div>
-        <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true">
-      <defs><filter id="bl2-ptpopcorna920" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptpopcorna920" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptpopcorna920" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptpopcorna920" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#d2ada9"/><stop offset=".62" stop-color="rgba(138,42,32,0.5)"/><stop offset="1" stop-color="#b28d3a"/></radialGradient>
-        <clipPath id="pc-ptpopcorna920"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptpopcorna920)"/>
-      <g clip-path="url(#pc-ptpopcorna920)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptpopcorna920)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptpopcorna920)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(255,200,61,0.3)" filter="url(#bl6-ptpopcorna920)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><circle cx="44" cy="38" r="9" fill="#FFF3D6"/><circle cx="58" cy="30" r="10" fill="#FFF9E8"/><circle cx="74" cy="36" r="9" fill="#FFF3D6"/><circle cx="50" cy="28" r="7" fill="#FFF9E8"/><circle cx="66" cy="26" r="7" fill="#FFF3D6"/>
-<circle cx="52" cy="38" r="6" fill="#F5E3B8"/><circle cx="66" cy="36" r="6" fill="#F5E3B8"/>
-<circle cx="88" cy="18" r="6" fill="#FFF9E8"/><path d="M92 10 l2 -3 M96 16 l3 -1" stroke="#F0A82A" stroke-width="2" stroke-linecap="round"/>
-<path d="M38 44 h44 l-5 60 h-34 z" fill="#F4F0E6"/>
-<path d="M44 44 h7 l-4 60 h-7 z M58 44 h7 l-1 60 h-7 z M72 44 h7 l2 60 h-8 z" fill="#E0483C"/>
-<path d="M38 44 h44 l-1 8 h-42 z" fill="#fff" opacity=".5"/>
-<circle cx="50" cy="70" r="7" fill="#fff"/><circle cx="51.3" cy="71.5" r="3.6" fill="#8A2A20"/><circle cx="50.2" cy="70.3" r="1.3" fill="#fff"/>
-<circle cx="70" cy="70" r="7" fill="#fff"/><circle cx="71.3" cy="71.5" r="3.6" fill="#8A2A20"/><circle cx="70.2" cy="70.3" r="1.3" fill="#fff"/>
-<ellipse cx="44" cy="80" rx="4" ry="2.5" fill="#FF9E8A" opacity=".85"/><ellipse cx="76" cy="80" rx="4" ry="2.5" fill="#FF9E8A" opacity=".85"/>
-<path d="M53 83 q7 6 14 0" fill="none" stroke="#8A2A20" stroke-width="3.5" stroke-linecap="round"/>
-<circle cx="20" cy="60" r="2.2" fill="#FFC83D"/><circle cx="102" cy="52" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptpopcorna920)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(138,42,32,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg><h2 style="font-size:20pt">Draw the line: simile → meaning</h2></div>
+        <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><span style="display:inline-grid;place-items:center;width:.6in;height:.6in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #dcbfbb, rgba(138,42,32,0.55) 62%, #bd953a);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden">
+      <img src="../avatars/popcorn.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span><h2 style="font-size:20pt">Draw the line: simile → meaning</h2></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.18in;margin-top:.12in;font-size:9.2pt;line-height:1.4">
           <div><h3 style="font-size:11pt;color:var(--accent-deep);margin-bottom:3pt">The similes</h3><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>1.</b> as white as a sheet</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>2.</b> as tough as old boots</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>3.</b> as white as snow</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>4.</b> charge like a bull</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>5.</b> feel like a million dollars</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>6.</b> bleed like a stuck pig</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>7.</b> fall like dominoes</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>8.</b> dance like nobody's watching</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>9.</b> avoid someone like the plague</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>10.</b> as weak as water</div></div>
           <div><h3 style="font-size:11pt;color:var(--accent-deep);margin-bottom:3pt">The meanings</h3><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>A.</b> to collapse one after another in a chain</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>B.</b> to rush forward with unstoppable force</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>C.</b> pale with fear or shock</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>D.</b> to feel absolutely wonderful</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>E.</b> to stay away from completely</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>F.</b> very tough or durable</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>G.</b> to bleed very heavily</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>H.</b> to do things joyfully without fearing others' judgment</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>I.</b> having no strength or willpower</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>J.</b> pure white</div></div></div>
@@ -1466,32 +1392,10 @@
       <div class="bb-foot"><span>Bizzing Bee · As Busy as a Bee</span><span>30</span></div></div>
 <div class="page" data-vol="16">
         <div class="bb-head"><span>As Busy as a Bee</span><span>Match round</span></div>
-        <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><svg viewBox="0 0 120 120" style="width:.6in;height:.6in;flex-shrink:0" aria-hidden="true">
-      <defs><filter id="bl2-ptpopcorna921" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptpopcorna921" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptpopcorna921" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptpopcorna921" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#d2ada9"/><stop offset=".62" stop-color="rgba(138,42,32,0.5)"/><stop offset="1" stop-color="#b28d3a"/></radialGradient>
-        <clipPath id="pc-ptpopcorna921"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptpopcorna921)"/>
-      <g clip-path="url(#pc-ptpopcorna921)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptpopcorna921)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptpopcorna921)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(255,200,61,0.3)" filter="url(#bl6-ptpopcorna921)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><circle cx="44" cy="38" r="9" fill="#FFF3D6"/><circle cx="58" cy="30" r="10" fill="#FFF9E8"/><circle cx="74" cy="36" r="9" fill="#FFF3D6"/><circle cx="50" cy="28" r="7" fill="#FFF9E8"/><circle cx="66" cy="26" r="7" fill="#FFF3D6"/>
-<circle cx="52" cy="38" r="6" fill="#F5E3B8"/><circle cx="66" cy="36" r="6" fill="#F5E3B8"/>
-<circle cx="88" cy="18" r="6" fill="#FFF9E8"/><path d="M92 10 l2 -3 M96 16 l3 -1" stroke="#F0A82A" stroke-width="2" stroke-linecap="round"/>
-<path d="M38 44 h44 l-5 60 h-34 z" fill="#F4F0E6"/>
-<path d="M44 44 h7 l-4 60 h-7 z M58 44 h7 l-1 60 h-7 z M72 44 h7 l2 60 h-8 z" fill="#E0483C"/>
-<path d="M38 44 h44 l-1 8 h-42 z" fill="#fff" opacity=".5"/>
-<circle cx="50" cy="70" r="7" fill="#fff"/><circle cx="51.3" cy="71.5" r="3.6" fill="#8A2A20"/><circle cx="50.2" cy="70.3" r="1.3" fill="#fff"/>
-<circle cx="70" cy="70" r="7" fill="#fff"/><circle cx="71.3" cy="71.5" r="3.6" fill="#8A2A20"/><circle cx="70.2" cy="70.3" r="1.3" fill="#fff"/>
-<ellipse cx="44" cy="80" rx="4" ry="2.5" fill="#FF9E8A" opacity=".85"/><ellipse cx="76" cy="80" rx="4" ry="2.5" fill="#FF9E8A" opacity=".85"/>
-<path d="M53 83 q7 6 14 0" fill="none" stroke="#8A2A20" stroke-width="3.5" stroke-linecap="round"/>
-<circle cx="20" cy="60" r="2.2" fill="#FFC83D"/><circle cx="102" cy="52" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptpopcorna921)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(138,42,32,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg><h2 style="font-size:20pt">Draw the line: simile → meaning</h2></div>
+        <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in"><span style="display:inline-grid;place-items:center;width:.6in;height:.6in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #dcbfbb, rgba(138,42,32,0.55) 62%, #bd953a);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden">
+      <img src="../avatars/popcorn.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span><h2 style="font-size:20pt">Draw the line: simile → meaning</h2></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.18in;margin-top:.12in;font-size:9.2pt;line-height:1.4">
           <div><h3 style="font-size:11pt;color:var(--accent-deep);margin-bottom:3pt">The similes</h3><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>1.</b> mix like oil and water</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>2.</b> sink like a stone</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>3.</b> shake like a leaf</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>4.</b> like the cat that got the cream</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>5.</b> like pulling teeth</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>6.</b> live like a king</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>7.</b> sweat like a pig</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>8.</b> spend money like water</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>9.</b> more fun than a barrel of monkeys</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>10.</b> take to something like a duck to water</div></div>
           <div><h3 style="font-size:11pt;color:var(--accent-deep);margin-bottom:3pt">The meanings</h3><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>A.</b> to live in great comfort and luxury</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>B.</b> extremely fun</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>C.</b> to spend wastefully and constantly</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>D.</b> completely unable to get along</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>E.</b> to tremble with fear or cold</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>F.</b> to learn something new easily and happily</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>G.</b> to sweat heavily</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>H.</b> to drop straight down, or to fail completely</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>I.</b> smugly self-satisfied</div><div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>J.</b> extremely slow and difficult to get someone to do</div></div></div>
@@ -1653,18 +1557,18 @@
       <div class="bb-foot"><span>Bizzing Bee · As Busy as a Bee</span><span>47</span></div></div>
 <div class="page" data-verso data-vol="16" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
     <svg viewBox="0 0 120 120" style="width:1.2in;height:1.2in;flex-shrink:0;margin:0 auto" aria-hidden="true">
-      <defs><filter id="bl2-vxv922" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-vxv922" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-vxv922" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <linearGradient id="vw-vxv922" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6B4FC4"/><stop offset="1" stop-color="#2C2150"/></linearGradient>
-        <linearGradient id="vb-vxv922" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#463672"/><stop offset="1" stop-color="#1E1738"/></linearGradient></defs>
-      <circle cx="60" cy="62" r="44" fill="rgba(90,63,166,.28)" filter="url(#bl14-vxv922)"/>
+      <defs><filter id="bl2-vxv195" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
+      <filter id="bl6-vxv195" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
+      <filter id="bl14-vxv195" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
+        <linearGradient id="vw-vxv195" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6B4FC4"/><stop offset="1" stop-color="#2C2150"/></linearGradient>
+        <linearGradient id="vb-vxv195" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#463672"/><stop offset="1" stop-color="#1E1738"/></linearGradient></defs>
+      <circle cx="60" cy="62" r="44" fill="rgba(90,63,166,.28)" filter="url(#bl14-vxv195)"/>
       <g>
-        <path d="M56 52 Q30 24 12 30 Q10 52 30 64 Q18 66 14 78 Q30 88 46 76 Z" fill="url(#vw-vxv922)"/>
-        <path d="M64 52 Q90 24 108 30 Q110 52 90 64 Q102 66 106 78 Q90 88 74 76 Z" fill="url(#vw-vxv922)"/>
+        <path d="M56 52 Q30 24 12 30 Q10 52 30 64 Q18 66 14 78 Q30 88 46 76 Z" fill="url(#vw-vxv195)"/>
+        <path d="M64 52 Q90 24 108 30 Q110 52 90 64 Q102 66 106 78 Q90 88 74 76 Z" fill="url(#vw-vxv195)"/>
         <path d="M30 64 l-6 8 M90 64 l6 8" stroke="#241E33" stroke-width="2" opacity=".5"/>
         <path d="M14 78 q-4 8 -2 14 M106 78 q4 8 2 14" stroke="rgba(203,180,242,.55)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"/>
-        <ellipse cx="60" cy="66" rx="14" ry="26" fill="url(#vb-vxv922)"/>
+        <ellipse cx="60" cy="66" rx="14" ry="26" fill="url(#vb-vxv195)"/>
         <path d="M60 44 Q52 30 42 26 M60 44 Q68 30 78 26" stroke="#241E33" stroke-width="3" fill="none" stroke-linecap="round"/>
         <circle cx="42" cy="25" r="3" fill="#CBB4F2"/><circle cx="78" cy="25" r="3" fill="#CBB4F2"/>
         <circle cx="60" cy="50" r="12" fill="#31265A"/>
@@ -1687,32 +1591,10 @@
     <span class="wl">the Engine Room</span></div>
       <div class="bb-foot"><span>Bizzing Bee · As Busy as a Bee</span><span>49</span></div></div>
 <div class="page" data-verso data-vol="16" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
-    <svg viewBox="0 0 120 120" style="width:1.4in;height:1.4in;flex-shrink:0;margin:0 auto" aria-hidden="true">
-      <defs><filter id="bl2-ptpopcorna923" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-ptpopcorna923" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-ptpopcorna923" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <radialGradient id="pg-ptpopcorna923" cx=".38" cy=".3" r="1"><stop offset="0" stop-color="#d2ada9"/><stop offset=".62" stop-color="rgba(138,42,32,0.5)"/><stop offset="1" stop-color="#b28d3a"/></radialGradient>
-        <clipPath id="pc-ptpopcorna923"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-      <circle cx="60" cy="60" r="57" fill="url(#pg-ptpopcorna923)"/>
-      <g clip-path="url(#pc-ptpopcorna923)">
-        <circle cx="30" cy="30" r="12" fill="rgba(255,255,255,.35)" filter="url(#bl6-ptpopcorna923)"/>
-        <circle cx="92" cy="42" r="8" fill="rgba(255,255,255,.28)" filter="url(#bl6-ptpopcorna923)"/>
-        <circle cx="82" cy="96" r="14" fill="rgba(255,200,61,0.3)" filter="url(#bl6-ptpopcorna923)"/>
-        <g transform="translate(60 64) scale(.92) translate(-60 -60)"><circle cx="44" cy="38" r="9" fill="#FFF3D6"/><circle cx="58" cy="30" r="10" fill="#FFF9E8"/><circle cx="74" cy="36" r="9" fill="#FFF3D6"/><circle cx="50" cy="28" r="7" fill="#FFF9E8"/><circle cx="66" cy="26" r="7" fill="#FFF3D6"/>
-<circle cx="52" cy="38" r="6" fill="#F5E3B8"/><circle cx="66" cy="36" r="6" fill="#F5E3B8"/>
-<circle cx="88" cy="18" r="6" fill="#FFF9E8"/><path d="M92 10 l2 -3 M96 16 l3 -1" stroke="#F0A82A" stroke-width="2" stroke-linecap="round"/>
-<path d="M38 44 h44 l-5 60 h-34 z" fill="#F4F0E6"/>
-<path d="M44 44 h7 l-4 60 h-7 z M58 44 h7 l-1 60 h-7 z M72 44 h7 l2 60 h-8 z" fill="#E0483C"/>
-<path d="M38 44 h44 l-1 8 h-42 z" fill="#fff" opacity=".5"/>
-<circle cx="50" cy="70" r="7" fill="#fff"/><circle cx="51.3" cy="71.5" r="3.6" fill="#8A2A20"/><circle cx="50.2" cy="70.3" r="1.3" fill="#fff"/>
-<circle cx="70" cy="70" r="7" fill="#fff"/><circle cx="71.3" cy="71.5" r="3.6" fill="#8A2A20"/><circle cx="70.2" cy="70.3" r="1.3" fill="#fff"/>
-<ellipse cx="44" cy="80" rx="4" ry="2.5" fill="#FF9E8A" opacity=".85"/><ellipse cx="76" cy="80" rx="4" ry="2.5" fill="#FF9E8A" opacity=".85"/>
-<path d="M53 83 q7 6 14 0" fill="none" stroke="#8A2A20" stroke-width="3.5" stroke-linecap="round"/>
-<circle cx="20" cy="60" r="2.2" fill="#FFC83D"/><circle cx="102" cy="52" r="2.2" fill="#FFC83D"/></g>
-        <path d="M22 40 A 44 44 0 0 1 62 16" stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#bl2-ptpopcorna923)"/>
-      </g>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(138,42,32,0.9)" stroke-width="3"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></svg>
+    <span style="display:inline-grid;place-items:center;width:1.4in;height:1.4in;flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, #dcbfbb, rgba(138,42,32,0.55) 62%, #bd953a);
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden;margin:0 auto">
+      <img src="../avatars/popcorn.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
     <h2 style="font-size:20pt;margin:.12in 0">That's the volume. Popcorn signs off — the words are yours now.</h2>
     <div style="margin:0 auto .2in" class="bb-badge"><div class="b1">DONE</div><div class="b1" style="border-style:solid">★</div><div class="b1">+1</div></div>
     <p style="font-size:10.5pt;max-width:5.4in;margin:0 auto .26in;line-height:1.55">Every word in here also lives in the Bizzing Bee app, with real audio, games and a coach that remembers what you miss. Paper for the muscles, app for the ears.</p>

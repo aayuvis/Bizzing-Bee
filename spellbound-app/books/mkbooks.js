@@ -132,9 +132,23 @@ const AVOLS = [
   { n: 15, title: 'The Word Factory', tag: 'How English bolts words together', a: '#5B6BA8', d: '#364475', tex: 'stripes', av: 'maestro', world: 'engine', band: 'advanced', chapters: ADV.filter(ch => ch.category === 'How Words Are Built') },
 ];
 const NAMES = { bizzy: 'Bizzy', honeypot: 'Honeypot', waggle: 'Waggle', bumble: 'Bumble', star: 'Star', diva: 'Diva', drone: 'Drone', clover: 'Clover', nectar: 'Nectar', lumen: 'Lumen', jester: 'Jester', queenhive: 'Queen Hive', blossom: 'Blossom', propolis: 'Propolis', mic: 'Mic', maestro: 'Maestro', popcorn: 'Popcorn', melody: 'Melody' };
-/* Every inline character is a rim-lit anime portrait now; VEX is the redesigned moth. */
+/* Inline characters use the app's painted avatar art (avatars/<id>.png) framed in
+   a soft bokeh disc tinted from that character's own palette; anything not yet
+   painted falls back to the drawn SVG portrait. Books sit one level down, hence
+   ../avatars/. Vex keeps his own book design — the drawn moth. */
 let _pk = 0;
-const avatar = (id, size, extra) => ANIME.portrait(id, size, { style: extra || '', k: 'a' + (_pk++) });
+const avaPng = id => { try { return fs.existsSync(`avatars/${id}.png`) ? `../avatars/${id}.png` : null; } catch (e) { return null; } };
+function paintedPortrait(id, size, extra) {
+  const src = avaPng(id);
+  if (!src) return ANIME.portrait(id, size, { style: extra || '', k: 'a' + (_pk++) });
+  let pal = { a: '#F0B429', b: '#6C4FE0', glow: '#FFE9AE' };
+  try { pal = ANIME.palette(id); } catch (e) {}
+  return `<span style="display:inline-grid;place-items:center;width:${size};height:${size};flex-shrink:0;border-radius:50%;
+      background:radial-gradient(circle at 34% 28%, ${ANIME.mix(pal.glow || pal.a, '#FFFFFF', .45)}, ${ANIME.rgba(pal.a, .55)} 62%, ${ANIME.mix(pal.b, '#241E33', .3)});
+      box-shadow:inset 0 0 0 1.5pt rgba(255,255,255,.5), 0 2pt 6pt rgba(26,18,54,.22);overflow:hidden${extra || ''}">
+      <img src="${src}" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>`;
+}
+const avatar = (id, size, extra) => paintedPortrait(id, size, extra);
 const VEX = (size, extra) => ANIME.vex(size, { style: extra || '', k: 'v' + (_pk++) });
 function texture(tex) {
   const S = 'stroke="rgba(255,255,255,.16)" stroke-width="2" fill="none"';
@@ -299,18 +313,21 @@ function css(vol) {
     font-family:'BB Kicker';font-size:10pt;color:var(--muted)}
   .page[data-verso] .bb-foot{left:.5in;right:.75in}
   .bb-panelbox{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-panel);padding:.12in .15in;box-shadow:var(--sh-screen)}
-  .bb-bigidea{padding:.04in .8in .04in .42in;max-height:1.8in;overflow:hidden;position:relative;font-size:13.5pt;line-height:1.5}
+  .bb-bigidea{padding:.06in .85in .06in .44in;max-height:1.9in;overflow:hidden;position:relative;font-size:13.5pt;line-height:1.56}
   .bb-bigidea:before{content:'“';position:absolute;left:0;top:-.12in;font-family:'BB Display';font-size:44pt;color:var(--accent)}
   .bb-bigidea .cameo{position:absolute;right:.06in;top:50%;transform:translateY(-50%) rotate(4deg)}
-  .bb-promove{background:var(--ink);color:#F4EFFF;border-radius:var(--r-panel);padding:.13in .16in;max-height:1.7in;overflow:hidden;
-    font-size:11pt;line-height:1.48}
-  .bb-promove b{color:var(--treasure)} .bb-promove div{margin:2px 0}
+  .bb-promove{background:var(--ink);color:#F4EFFF;border-radius:var(--r-panel);padding:.16in .18in;max-height:2.9in;overflow:hidden;
+    font-size:10.8pt;line-height:1.5}
+  .bb-promove b{color:var(--treasure)}
+  .bb-promove .ln{margin:0 0 5.5pt;padding-left:.14in;text-indent:-.14in}
+  .bb-promove .ln:last-child{margin-bottom:0}
+  .bb-promove .trick{margin:0 0 7pt;padding:0;text-indent:0}
   .bb-promove .trick,.bb-promove [class]{font-family:'BB Display';font-size:12pt;letter-spacing:.04em}
-  .bb-sticky{display:grid;grid-template-columns:1fr 1fr;gap:.1in;margin-top:.1in}
-  .bb-sticky .card{background:var(--tint);border-radius:3pt 3pt 12pt 3pt;padding:.09in .11in;box-shadow:2pt 3pt 6pt rgba(36,30,51,.10)}
+  .bb-sticky{display:grid;grid-template-columns:1fr 1fr;gap:.14in;margin-top:.16in}
+  .bb-sticky .card{background:var(--tint);border-radius:3pt 3pt 12pt 3pt;padding:.12in .14in;box-shadow:2pt 3pt 6pt rgba(36,30,51,.10)}
   .bb-sticky .card:nth-child(odd){transform:rotate(-.5deg)} .bb-sticky .card:nth-child(even){transform:rotate(.4deg);background:color-mix(in srgb,var(--treasure) 12%,white)}
-  .bb-sticky h3{font-size:11.2pt;color:var(--accent-deep);margin-bottom:2px}
-  .bb-sticky p{font-size:10pt;line-height:1.4}
+  .bb-sticky h3{font-size:11.2pt;color:var(--accent-deep);margin-bottom:4.5pt}
+  .bb-sticky p{font-size:10pt;line-height:1.46}
   /* v5 anime storyboard: full-bleed keyframe scenes with a subtitle caption —
      no ink boxes. Register 1 keeps a slight playful tilt; register 3 is level. */
   .an-strip{display:grid;gap:.12in;margin-top:.12in}
@@ -320,6 +337,17 @@ function css(vol) {
   .an-cap{position:absolute;left:.09in;right:.09in;bottom:.09in;background:rgba(255,255,255,.93);border-radius:${reg >= 3 ? '4pt' : '10pt'};
     padding:5pt 9pt;font-family:'BB Display';font-size:${vol.band === 'advanced' ? '10.6pt' : '11.5pt'};line-height:1.3;box-shadow:0 2pt 8pt rgba(26,18,54,.3)}
   .an-cap .nm{display:block;font-family:'BB Kicker';font-size:8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-deep);margin-bottom:1pt}
+  /* comic speech balloons: sit BESIDE the speaker, with a tail pointing at them */
+  .an-bub{position:absolute;background:#fff;border:1.6pt solid var(--ink);border-radius:16pt;padding:7pt 11pt;
+    font-family:'BB Display';font-size:${vol.band === 'advanced' ? '10.4pt' : '11.4pt'};line-height:1.34;
+    box-shadow:0 3pt 10pt rgba(26,18,54,.28);transform:translateY(-50%)}
+  .an-bub .nm{display:block;font-family:'BB Kicker';font-size:8pt;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--accent-deep);margin-bottom:2.5pt}
+  .an-bub .tail,.an-bub .tail i{position:absolute;top:50%;width:0;height:0;border-style:solid}
+  .an-bub.r .tail{right:-11pt;margin-top:-8pt;border-width:8pt 0 8pt 11pt;border-color:transparent transparent transparent var(--ink)}
+  .an-bub.r .tail i{right:2.4pt;margin-top:-6.2pt;border-width:6.2pt 0 6.2pt 8.5pt;border-color:transparent transparent transparent #fff}
+  .an-bub.l .tail{left:-11pt;margin-top:-8pt;border-width:8pt 11pt 8pt 0;border-color:transparent var(--ink) transparent transparent}
+  .an-bub.l .tail i{left:2.4pt;margin-top:-6.2pt;border-width:6.2pt 8.5pt 6.2pt 0;border-color:transparent #fff transparent transparent}
   .an-sfx{position:absolute;top:.08in;right:.1in;font-family:'BB Display';font-size:${reg >= 3 ? '10pt' : '14pt'};letter-spacing:.05em;
     color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.35),0 5px 12px rgba(0,0,0,.4);transform:rotate(-3deg)}
   .an-prop{position:absolute;top:.08in;left:.1in;background:rgba(20,14,44,.66);color:#FFE9AE;border-radius:8pt;padding:2.5pt 8pt;font-family:'BB Tile';font-size:9.6pt}
@@ -336,16 +364,16 @@ function css(vol) {
   .bb-rapid{display:grid;grid-template-columns:1fr 1fr;gap:.08in .16in}
   .bb-row{padding:3.5pt 0;min-height:.5in;max-height:.6in;overflow:hidden;font-size:10.8pt;line-height:1.34;border-bottom:1px dotted var(--hairline)}
   .bb-row b{font-family:'BB Kicker';color:var(--accent-deep)}
-  .bb-break{display:flex;gap:.1in;align-items:flex-start;background:linear-gradient(90deg,var(--treasure-tint),transparent 85%);border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.08in .13in;max-height:2.3in;overflow:hidden}
+  .bb-break{margin-top:.18in;display:flex;gap:.13in;align-items:flex-start;background:linear-gradient(90deg,var(--treasure-tint),transparent 85%);border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.08in .13in;max-height:2.3in;overflow:hidden}
   .bb-break .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--treasure-deep)}
   .bb-break .b{font-size:11.2pt;line-height:1.4;margin-top:2px}
   .bb-break .t{font-size:10pt;color:var(--muted);margin-top:2px}
-  .bb-check{border-left:4pt solid var(--right);padding:.04in .1in;max-height:1.3in;overflow:hidden}
-  .bb-check .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--right-deep)}
-  .bb-vex{background:linear-gradient(90deg,#FFF1F3,transparent 88%);border-left:4pt solid var(--tricky);border-radius:2pt 12pt 12pt 2pt;padding:.05in .1in;max-height:1.3in;overflow:hidden;display:flex;gap:.09in;align-items:flex-start}
-  .bb-vex .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--tricky-deep)}
-  .bb-trap{background:var(--listen-tint);border-left:4pt solid var(--listen);border-radius:2pt 12pt 12pt 2pt;padding:.05in .1in;max-height:1.3in;overflow:hidden}
-  .bb-trap .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--listen-deep)}
+  .bb-check{border-left:4pt solid var(--right);padding:.07in .12in .07in .14in;max-height:1.4in;overflow:hidden}
+  .bb-check .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--right-deep);margin-bottom:3.5pt}
+  .bb-vex{background:linear-gradient(90deg,#FFF1F3,transparent 88%);border-left:4pt solid var(--tricky);border-radius:2pt 12pt 12pt 2pt;padding:.07in .12in .07in .14in;max-height:1.4in;overflow:hidden;display:flex;gap:.12in;align-items:flex-start}
+  .bb-vex .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--tricky-deep);margin-bottom:3.5pt}
+  .bb-trap{background:var(--listen-tint);border-left:4pt solid var(--listen);border-radius:2pt 12pt 12pt 2pt;padding:.07in .12in .07in .14in;max-height:1.4in;overflow:hidden}
+  .bb-trap .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--listen-deep);margin-bottom:3.5pt}
   .bb-quiz{counter-reset:q}
   .bb-quiz .q{margin-bottom:.16in;break-inside:avoid}
   .bb-quiz .q .qq{font-family:'BB Display';font-size:12pt;line-height:1.34;margin-bottom:3pt}
@@ -423,7 +451,7 @@ function comicOpener(vol, ch, ci, script, folio, cast) {
   pick.push(scenes[0]);
   for (const m of ['think', 'oops', 'excited']) { const s = byMood(m); if (s && pick.length < 4) pick.push(s); }
   for (const s of scenes) { if (pick.length >= 4) break; if (!pick.includes(s)) pick.push(s); }
-  const maxW = reg >= 3 ? 30 : 22;
+  const maxW = reg >= 3 ? 17 : 13;   // balloons stay small so the art breathes
   const world = chWorldOf(vol, ci);
   const co1 = cast[ci % cast.length], co2 = cast[(ci + 4) % cast.length];
   /* one continuous canvas, no boxes: Bizzy opens, the guide and crew carry it,
@@ -439,15 +467,21 @@ function comicOpener(vol, ch, ci, script, folio, cast) {
   const uid = `op${vol.n}x${ci}`;
   const svg = ANIME.storyboard(sceneList.map(s => ({ avId: s.avId, mood: s.mood, vex: s.vex })),
     { W: 725, H: 830, world, reg, uid, seed: vol.n * 1009 + ci * 13 });
+  /* storyboard() places figures at x=78% on even beats and x=20% on odd ones.
+     Each balloon sits on the free side of its own speaker with a tail pointing
+     back at them — so the words are next to the mouth that said them, and the
+     character stays uncovered. */
   const caps = sceneList.map((s, i) => {
     const t = i / Math.max(1, sceneList.length - 1);
     const topPct = (.1 + t * .74) * 100;
-    const left = i % 2 === 1; // figure side; caption goes opposite
-    const sfx = reg >= 3 ? '' : s.vex ? '<span style="position:absolute;top:-16pt;right:6pt" class="an-sfx">UH-OH!</span>' : s.mood === 'excited' ? '<span style="position:absolute;top:-16pt;right:6pt" class="an-sfx">GOT IT!</span>' : '';
-    return `<div style="position:absolute;top:${topPct}%;${left ? 'right:3%' : 'left:3%'};width:45%;transform:translateY(-58%)">
-      ${sfx}<div class="an-cap" style="position:relative;left:auto;right:auto;bottom:auto">
-        <span class="nm">${esc(s.name)}${s.vex ? ' · Vex is circling' : ''}</span>${esc(s.line)}</div>
-      ${s.prop ? `<span class="bb-prop" style="margin-top:3pt;display:inline-block">${esc(s.prop)}</span>` : ''}</div>`;
+    const figRight = i % 2 === 0;
+    const side = figRight ? 'left:5%;width:52%' : 'right:5%;width:52%';
+    const tailCls = figRight ? 'r' : 'l';   // tail points toward the figure
+    const sfx = reg >= 3 ? '' : s.vex ? `<span class="an-sfx" style="position:absolute;top:${topPct - 7}%;${figRight ? 'right:8%' : 'left:8%'}">UH-OH!</span>`
+      : s.mood === 'excited' ? `<span class="an-sfx" style="position:absolute;top:${topPct - 7}%;${figRight ? 'right:8%' : 'left:8%'}">GOT IT!</span>` : '';
+    return `${sfx}<div class="an-bub ${tailCls}" style="top:${topPct}%;${side}">
+      <span class="nm">${esc(s.name)}${s.vex ? ' · Vex is circling' : ''}</span>${esc(s.line)}
+      <span class="tail"><i></i></span></div>`;
   }).join('');
   return `<div class="page" data-vol="${vol.n}">
     ${head(vol, ch, ci, 'Story')}
@@ -489,9 +523,9 @@ function teachPage(vol, ch, ci, folio, nextBreak) {
     ${head(vol, ch, ci, 'The idea')}
     <div style="margin-top:.4in" class="kick">The big idea</div>
     <div class="bb-bigidea">${esc(clamp(ch.concept, 430))}<span class="cameo">${avatar(vol.av, '.62in')}</span></div>
-    ${ch.method ? `<div class="kick" style="margin-top:.08in">The pro move</div><div class="bb-promove">${String(ch.method)}</div>` : ''}
+    ${ch.method ? `<div class="kick" style="margin-top:.14in">The pro move</div><div class="bb-promove">${String(ch.method).split('\n').map(l => l.trim()).filter(Boolean).map(l => `<div class="ln">${l}</div>`).join('')}</div>` : ''}
     ${cards.length ? `<div class="bb-sticky">${cards.map(cd => `<div class="card"><h3>${esc(cd.title)}</h3><p>${esc(clamp(cd.body, 244))}</p></div>`).join('')}</div>` : ''}
-    <div style="display:grid;grid-template-columns:repeat(${alerts.length},1fr);gap:.1in;margin-top:.1in">${alerts.join('')}</div>
+    <div style="display:grid;grid-template-columns:repeat(${alerts.length},1fr);gap:.16in;margin-top:.18in">${alerts.join('')}</div>
     ${cards.length >= 4 && String(ch.method || '').length > 380 ? '' : nextBreak()}
     ${foot(vol, folio)}</div>`;
 }
@@ -754,10 +788,10 @@ function castPage(vol, cast, folio) {
   const entry = a => { const cd = CARD(a.id) || {};
     return `<div style="display:flex;gap:.12in;align-items:center">
       ${avatar(a.id, '.92in')}
-      <div style="min-width:0"><div style="font-family:'BB Display';font-size:13pt;line-height:1.1">${esc(a.name)}
+      <div style="min-width:0"><div style="font-family:'BB Display';font-size:13pt;line-height:1.15">${esc(a.name)}
         ${cd.overall ? `<span style="font-family:'BB Tile';font-size:8.6pt;color:var(--muted)"> OVR ${cd.overall}</span>` : ''}</div>
-      <div style="font-family:'BB Kicker';font-size:8.4pt;color:var(--accent-deep);text-transform:uppercase;letter-spacing:.06em;margin:1pt 0 2pt">${esc(cd.title || (a.rarity + ' · ' + a.pack + ' pack'))}${cd.power ? ' · ' + esc(cd.power) : ''}</div>
-      <div style="font-size:9.6pt;color:var(--muted);line-height:1.32">${esc(clamp(cd.lore || PACK_ROLE[a.pack] || 'reports for spelling duty', 110))}</div></div></div>`; };
+      <div style="font-family:'BB Kicker';font-size:8.2pt;color:var(--accent-deep);text-transform:uppercase;letter-spacing:.05em;margin:3pt 0 4pt;line-height:1.35">${esc(clamp(cd.title || (a.rarity + ' · ' + a.pack + ' pack'), 30))}</div>
+      <div style="font-size:9.6pt;color:var(--muted);line-height:1.42">${esc(clamp(cd.lore || PACK_ROLE[a.pack] || 'reports for spelling duty', 84))}</div></div></div>`; };
   return `<div class="page" data-vol="${vol.n}">
     ${head(vol, null, 0, 'The cast')}
     <div style="margin-top:.36in;display:flex;align-items:center;gap:.16in">
@@ -765,8 +799,8 @@ function castPage(vol, cast, folio) {
       <div><div class="kick">Bizzy — and this book's guide, ${esc(NAMES[vol.av] || castName(vol.av))}</div>
       <h1 style="font-size:23pt">The crew of Vol. ${vol.n}</h1>
       <p style="font-size:10.4pt;color:var(--muted);margin-top:2pt;max-width:5.2in;line-height:1.42">${lead}</p></div></div>
-    ${hCard && hCard.lore ? `<div class="bb-panelbox" style="margin-top:.12in;font-size:10.2pt;line-height:1.42"><b style="color:var(--accent-deep)">Bizzy</b> — ${esc(hCard.lore)}${gCard && gCard.lore ? ` &nbsp;·&nbsp; <b style="color:var(--accent-deep)">${esc(NAMES[vol.av] || '')}</b> — ${esc(gCard.lore)}` : ''}</div>` : ''}
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.13in .22in;margin-top:.16in">
+    ${hCard && hCard.lore ? `<div class="bb-panelbox" style="margin-top:.16in;font-size:10.2pt;line-height:1.5"><b style="color:var(--accent-deep)">Bizzy</b> — ${esc(hCard.lore)}${gCard && gCard.lore ? ` &nbsp;·&nbsp; <b style="color:var(--accent-deep)">${esc(NAMES[vol.av] || '')}</b> — ${esc(gCard.lore)}` : ''}</div>` : ''}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.2in .3in;margin-top:.2in">
       ${cast.slice(0, 8).map(entry).join('')}</div>
     <div style="display:flex;gap:.14in;align-items:center;margin-top:.18in" class="bb-panelbox">
       ${VEX('.85in')}
