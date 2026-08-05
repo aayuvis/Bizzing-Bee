@@ -5,7 +5,7 @@
 a **17-book graphic-novel-style study library** for young competitive spellers.
 **Companion product:** the Bizzing Bee app — same universe, same cast, same design
 tokens. The books should feel like the app came to paper.
-**Reference material in the repo:** working generated versions of all 17 books
+**Reference material in the repo:** working generated versions of all 18 books
 (`books/book-01.html … book-17.html`, ~970 pages) show every page type with real
 content flowed in. They are the floor, not the ceiling — your job is to take them from
 "handsome generated workbook" to "graphic novel a kid picks up on purpose."
@@ -63,7 +63,7 @@ These are field results from the app, not guesses. Design to them.
 10. **Audio is one tap away.** Every word in every book has real recorded audio in the
     app. Pages reference it ("hear it in Word Coach"); chapter-level QR codes are a plus.
 
-## 3. Series structure — 17 books, one system
+## 3. Series structure — 18 books, one system
 
 Every volume owns an accent color pair, a background texture from the app's cover-card
 families (rings / stripes / dots / grid / diag / cross), a **guide character** from the
@@ -85,10 +85,11 @@ read instantly as one series.
 | 11 | The Playbook *(ADV)* | Bee-day procedure + deep orthography (9) | Queen Hive | Warfield → stage |
 | 12 | Schwa Country *(ADV)* | The vanishing vowel (7) | Blossom | Greysea — fog **is** schwa |
 | 13 | Letters Behaving Badly *(ADV)* | Doubles, silents, liars (7) | Propolis | Junkyard |
-| 14 | Far-Flung Words *(ADV)* | Origins beyond the big four (11) | Mic | Strait / world map |
-| 15 | The Word Factory *(ADV)* | How words are built (9) | Maestro | Engine |
-| 16 | As Busy as a Bee | The simile & idiom collection | Popcorn | All worlds, one per section |
-| 17 | Say It Like a Champion | The quotable-quotes collection | Melody | Stage / sky |
+| 14 | The Grand Trunk Road *(ADV)* | South Asian words in English (11) | Naga | Grand Trunk Road *(13th world)* |
+| 15 | Far-Flung Words *(ADV)* | Origins beyond the big four (11) | Mic | Strait / world map |
+| 16 | The Word Factory *(ADV)* | How words are built (9) | Maestro | Engine |
+| 17 | As Busy as a Bee | The simile & idiom collection | Popcorn | All worlds, one per section |
+| 18 | Say It Like a Champion | The quotable-quotes collection | Melody | Stage / sky |
 
 Advanced volumes are visibly "bigger siblings": denser practice benches (16 write-in
 words per chapter vs 8), deeper clue language, slightly more grown-up furniture — same
@@ -261,7 +262,7 @@ as templates.
 
 - A parent in a bookstore mistakes it for a Scholastic/Usborne title; a kid opens it
   because the comic pulled them in, then does a page of drills without noticing.
-- All 17 books unmistakably one series — and unmistakably the same universe as the app.
+- All 18 books unmistakably one series — and unmistakably the same universe as the app.
 - Vex is somebody's favorite character by Volume 3.
 - Every page still passes the automated fit audit; print-ready and licensing-clean.
 

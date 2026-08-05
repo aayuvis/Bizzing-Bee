@@ -35,7 +35,7 @@ every subsequent prompt — that is what keeps Bizzy and Vex on-model across
 
 ## Character model sheets (generate first, reuse as references)
 
-**BIZZY (hero of all 17 books)**
+**BIZZY (hero of all 18 books)**
 > Character model sheet, front + three-quarter + flying pose. A round chibi
 > honeybee heroine: glossy gradient-gold body, two curved chocolate-brown
 > stripes, huge sparkling anime eyes with white catchlights, tiny pink blush,
