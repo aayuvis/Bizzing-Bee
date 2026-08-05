@@ -47,7 +47,10 @@
     text-shadow:0 1px 2px rgba(255,255,255,.95),0 0 6px rgba(255,255,255,.85)}
   .page[data-verso] .bb-foot{left:.5in;right:.75in}
   .bb-panelbox{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-panel);padding:.12in .15in;box-shadow:var(--sh-screen)}
-  .bb-bigidea{padding:.06in .85in .06in .44in;position:relative;font-size:13pt;line-height:1.52}
+  /* min-height so the .cameo avatar (.62in, vertically centred) always fits inside
+     the box — a short concept used to make a box shorter than its own portrait,
+     which is what the audit was reading as clipped content. */
+  .bb-bigidea{padding:.06in .85in .06in .44in;position:relative;font-size:13pt;line-height:1.52;min-height:.78in;display:flex;align-items:center}
   .bb-bigidea:before{content:'“';position:absolute;left:0;top:-.12in;font-family:'BB Display';font-size:44pt;color:var(--accent)}
   .bb-bigidea .cameo{position:absolute;right:.06in;top:50%;transform:translateY(-50%) rotate(4deg)}
   .bb-promove{background:var(--ink);color:#F4EFFF;border-radius:var(--r-panel);padding:.16in .18in;max-height:none;
@@ -96,6 +99,15 @@
     color:#fff;background:var(--accent-deep);border:1.6pt solid var(--ink);border-radius:999px;padding:1.5pt 9pt;
     position:absolute;top:-8.5pt;left:11pt;white-space:nowrap;box-shadow:0 2pt 5pt rgba(26,18,54,.32)}
   .an-bub .say{display:block}
+  /* Open lines: no box at all. Short lines ride the art as heavy white type with a
+     dark halo, exactly the way UH-OH! does, so they cover almost nothing. */
+  .an-open{position:absolute;transform:translateY(-50%);font-family:'BB Display';
+    font-size:13.6pt;line-height:1.22;color:#fff;
+    text-shadow:0 0 2pt rgba(14,9,32,.95),0 2pt 0 rgba(14,9,32,.75),0 3pt 14pt rgba(14,9,32,.85),0 0 22pt rgba(14,9,32,.6)}
+  .an-open .nm{display:block;font-family:'BB Kicker';font-size:8.6pt;letter-spacing:.12em;text-transform:uppercase;
+    color:#FFE9AE;margin-bottom:1.5pt;text-shadow:0 1pt 4pt rgba(14,9,32,.95)}
+  .an-open.vex{color:#FFD9E1}
+  .an-open.vex .nm{color:#FF9DB4}
   /* Vex shouts from a jagged balloon — classic comic villain treatment */
   .an-bub.shout{background:#FFF1F4;border-color:var(--tricky-deep);border-radius:6pt}
   .an-bub.shout .nm{background:var(--tricky-deep)}
@@ -138,14 +150,14 @@
   .bb-audio{display:inline-flex;align-items:center;gap:5pt;background:var(--listen-tint);border:1px solid var(--listen);color:var(--listen-deep);
     border-radius:999px;padding:3pt 10pt;font-family:'BB Kicker';font-size:9.2pt;max-height:.3in}
   .bb-xword{border-collapse:collapse;margin:0 auto}
-  .bb-xword td{width:.32in;height:.32in;position:relative}
+  .bb-xword td{width:var(--xw,.44in);height:var(--xw,.44in);position:relative}
   .bb-xword .c{background:var(--card);border:1.4px solid var(--chip-ink)}
-  .bb-xword .c i{position:absolute;top:1px;left:2px;font-style:normal;font-size:5.4pt;color:var(--muted)}
+  .bb-xword .c i{position:absolute;top:1.5px;left:3px;font-style:normal;font-size:7pt;color:var(--muted)}
   .bb-clues{display:grid;grid-template-columns:1fr 1fr;gap:.18in;margin-top:.12in;font-size:10.2pt;line-height:1.44}
   .bb-clues h3{font-size:11.5pt;color:var(--accent-deep);margin-bottom:2pt}
   .bb-clues b{color:var(--chip-ink)}
   .bb-search{border-collapse:collapse;margin:0 auto}
-  .bb-search td{width:.38in;height:.38in;text-align:center;font-family:'BB Tile';font-size:11pt;background:var(--card);border:1px solid var(--hairline)}
+  .bb-search td{width:.42in;height:.42in;text-align:center;font-family:'BB Tile';font-size:12.5pt;background:var(--card);border:1px solid var(--hairline)}
   .bb-scramble{display:grid;grid-template-columns:1fr 1fr;gap:.16in;max-height:none}
   .bb-scramble .g1{padding:.05in .02in;margin-bottom:.08in}
   .bb-scramble .gw{font-family:'BB Tile';font-size:11pt;letter-spacing:.14em;color:var(--accent-deep)}
@@ -185,18 +197,30 @@
     .page.rv-flag{outline:3px solid #E0922E;outline-offset:-3px}
   }</style></head><body data-vol="18" data-band="general"><div class="page" data-cover data-vol="18" style="color:#fff;padding:0;background:#241E33">
     <img src="art/b18-cover.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <div style="position:absolute;top:.42in;left:.55in;right:.55in;display:flex;justify-content:space-between;align-items:center">
-      <span style="font-family:'BB Kicker';letter-spacing:.16em;font-size:10.5pt;text-shadow:0 2px 6px rgba(0,0,0,.55)">BIZZING BEE COLLECTIONS</span>
-      <span class="disp" style="background:rgba(12,9,28,.55);padding:.07in .2in;border-radius:999px;font-size:12.5pt;transform:rotate(0deg)">Vol. 18</span></div>
-    <div style="position:absolute;top:.95in;left:.4in;right:.4in;text-align:center;transform:rotate(0deg)">
-      <h1 class="coverTitle" style="font-size:58pt;line-height:.94">Say It Like a Champion</h1>
+    <!-- One centred masthead: Bizzy, then the series name, then the volume line,
+         then the title. The old cover put the series name top-left, the volume in a
+         top-right pill and the title floating at a jaunty angle, which read as three
+         unrelated labels rather than one book. -->
+    <div style="position:absolute;top:.46in;left:.4in;right:.4in;text-align:center">
+      <div style="display:flex;align-items:center;justify-content:center;gap:.11in">
+        <img src="../avatars/bizzy.png" alt="" style="width:.34in;height:.34in;object-fit:contain;filter:drop-shadow(0 2px 5px rgba(0,0,0,.5))">
+        <span class="disp" style="font-size:19pt;letter-spacing:.01em;text-shadow:0 2px 9px rgba(0,0,0,.6)">The Bizzing Bee</span>
+      </div>
+      <div style="font-family:'BB Kicker';letter-spacing:.2em;font-size:10.5pt;margin-top:.06in;opacity:.92;text-shadow:0 2px 6px rgba(0,0,0,.6)">COLLECTIONS &middot; BOOK 18</div>
+      <h1 class="coverTitle" style="font-size:54pt;line-height:.96;margin-top:.2in">Say It Like a Champion</h1>
       <p style="font-family:'BB Kicker';font-size:14pt;max-width:5.8in;margin:.14in auto 0;text-shadow:0 2px 10px rgba(0,0,0,.65)">240 lines worth keeping — and what they mean for spellers</p></div>
-    <div style="position:absolute;left:0;right:0;bottom:0;height:1.5in;background:linear-gradient(180deg,rgba(12,9,28,0),rgba(12,9,28,.72))"></div>
-    <div style="position:absolute;right:.5in;bottom:.55in;display:flex;flex-direction:column;gap:.08in;align-items:flex-end">
-      <span style="background:rgba(12,9,28,.55);border-radius:999px;padding:.05in .18in;font-family:'BB Kicker';font-size:10pt">12 chapters</span><span style="background:rgba(12,9,28,.55);border-radius:999px;padding:.05in .18in;font-family:'BB Kicker';font-size:10pt">240 practice words</span><span style="background:rgba(12,9,28,.55);border-radius:999px;padding:.05in .18in;font-family:'BB Kicker';font-size:10pt">quizzes & puzzles throughout</span></div>
-    <div style="position:absolute;left:.55in;bottom:.55in;max-width:4in;font-family:'BB Kicker';font-size:9.6pt;text-shadow:0 2px 6px rgba(0,0,0,.7)">
-      Bizzy &amp; Melody in the Big Stage<br>
-      <span style="opacity:.9">The Big Stage, house lights down. Two hundred and forty voices worth hearing.</span></div>
+    <div style="position:absolute;left:0;right:0;bottom:0;height:1.7in;background:linear-gradient(180deg,rgba(12,9,28,0),rgba(12,9,28,.78))"></div>
+    <!-- The three facts are the only thing at the foot now, centred and big enough
+         to read across a room. The cast-and-world line that used to sit beside them
+         said nothing a reader could use. -->
+    <div style="position:absolute;left:.5in;right:.5in;bottom:.6in;display:flex;justify-content:center;gap:.14in;flex-wrap:wrap">
+      <span style="display:inline-block;background:linear-gradient(160deg,rgba(255,210,77,.94),rgba(240,169,60,.94));
+    color:#3E2708;border-radius:999px;padding:.085in .26in;font-family:'BB Display';font-weight:800;font-size:12.5pt;
+    letter-spacing:.01em;box-shadow:0 3pt 10pt rgba(12,9,28,.4), inset 0 -2pt 0 rgba(140,86,10,.28)">12 chapters</span><span style="display:inline-block;background:linear-gradient(160deg,rgba(255,210,77,.94),rgba(240,169,60,.94));
+    color:#3E2708;border-radius:999px;padding:.085in .26in;font-family:'BB Display';font-weight:800;font-size:12.5pt;
+    letter-spacing:.01em;box-shadow:0 3pt 10pt rgba(12,9,28,.4), inset 0 -2pt 0 rgba(140,86,10,.28)">240 practice words</span><span style="display:inline-block;background:linear-gradient(160deg,rgba(255,210,77,.94),rgba(240,169,60,.94));
+    color:#3E2708;border-radius:999px;padding:.085in .26in;font-family:'BB Display';font-weight:800;font-size:12.5pt;
+    letter-spacing:.01em;box-shadow:0 3pt 10pt rgba(12,9,28,.4), inset 0 -2pt 0 rgba(140,86,10,.28)">quizzes &amp; puzzles</span></div>
   </div>
 <div class="page" data-vol="18" style="color:#fff;padding:0;background:#241E33">
     <img src="art/b18-divider.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
