@@ -264,6 +264,17 @@
      alpha channel — so a cut-out PNG keeps the exact same edge, glow and dusk
      treatment as the vector art, at every size. Missing PNG → SVG fallback. */
   const hasPng = id => { try { return !!(window.SB_AVATAR_PNG && window.SB_AVATAR_PNG[id]); } catch(e){ return false; } };
+  /* The painted avatars are 640px so they hold up on a poster or a 150px
+     collection tile, but most of the app draws them at 34-116px. avatars/s/ is a
+     192px palette rendition — same alpha edge, ~9KB instead of ~348KB — served
+     whenever the requested size is small enough that nobody can tell. A retina
+     tablet at 2x still has more pixels than it needs up to 96 CSS px. */
+  const THUMB_MAX = 96;
+  const avSrc = (id, size) => 'avatars/' + (size <= THUMB_MAX ? 's/' : '') + id + '.png';
+  /* Rarity glow in the dark. Legendary burns gold, epic burns violet, and both
+     read as lit rather than merely outlined — that is the whole point of pulling
+     one. Commons keep the four-way enamel edge from the design contact sheet. */
+  const GLOW = { legendary: ['255,208,92', '255,240,190'], epic: ['186,148,255', '236,224,255'] };
   window.SB_AVATAR = function(id, size, opts){ size=size||64; opts=opts||{};
     const png = hasPng(id);
     let inner = png ? 'png' : ((window.SB_AVATAR_ART && window.SB_AVATAR_ART[id]) || (D[id] ? D[id]() : ''));
@@ -274,9 +285,10 @@
     if(opts.outline!==false){
       if(dusk){
         const rar=(window.SB_AVATARS.byId[id]||{}).rarity;
-        if(rar==='epic'||rar==='legendary'){
-          const g=Math.max(4, Math.round(size/14));
-          outline = `filter:drop-shadow(0 0 ${g}px rgba(255,255,255,.65)) drop-shadow(0 0 2px rgba(255,255,255,.9));`;
+        const gl=GLOW[rar];
+        if(gl){
+          const g=Math.max(7, Math.round(size/8));
+          outline = `filter:drop-shadow(0 0 ${g}px rgba(${gl[0]},.95)) drop-shadow(0 0 ${Math.round(g*2.1)}px rgba(${gl[0]},.5)) drop-shadow(0 0 2px rgba(${gl[1]},.95));`;
         } else {
           outline = `filter:drop-shadow(${w}px 0 0 #fff) drop-shadow(-${w}px 0 0 #fff) drop-shadow(0 ${w}px 0 #fff) drop-shadow(0 -${w}px 0 #fff);`;
         }
@@ -284,6 +296,6 @@
         outline = `filter:drop-shadow(${w}px 0 0 ${ink}) drop-shadow(-${w}px 0 0 ${ink}) drop-shadow(0 ${w}px 0 ${ink}) drop-shadow(0 -${w}px 0 ${ink});`;
       }
     }
-    if(png) return `<img src="avatars/${id}.png" width="${size}" height="${size}" alt="" aria-hidden="true" loading="lazy" decoding="async" style="display:block;object-fit:contain;${outline}">`;
+    if(png) return `<img src="${avSrc(id,size)}" width="${size}" height="${size}" alt="" aria-hidden="true" loading="lazy" decoding="async" style="display:block;object-fit:contain;${outline}">`;
     return `<svg viewBox="0 0 120 120" width="${size}" height="${size}" aria-hidden="true" style="display:block;overflow:visible;${outline}">${inner}</svg>`; };
 })();

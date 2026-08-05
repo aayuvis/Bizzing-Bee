@@ -175,6 +175,9 @@ const TRICK_RANK={plain:0,dbl:1,vow:2,end:3,hom:4,silent:5,gk:6,fr:7,epon:8};   
 /* homonyms, alternate pronunciations & diacritics (sounds-data.js).
    Lookups guard against Object.prototype keys — "constructor" is a real library word. */
 const _hasOwn=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
+/* Ask boot-lazy for a deferred data file at the door of the feature that needs
+   it. Safe to call repeatedly and safe to call before boot-lazy exists. */
+function lazyNeed(what, cb){ try{ if(window.SB_LAZY) return SB_LAZY.need(what, cb); }catch(e){} if(cb) cb(); }
 let _homIdx=null;
 function homIndex(){ if(_homIdx) return _homIdx; const m=Object.create(null); try{ (window.SB_HOM||[]).forEach(g=>g.forEach(w=>{ m[w]=g; })); }catch(e){} return (_homIdx=m); }
 function homPartners(w){ const g=homIndex()[nkey(w)]; return g?g.filter(x=>x!==nkey(w)):[]; }
@@ -1000,7 +1003,10 @@ const app = {
     if(key==='settings'){ pinGate(()=>app.openSettings(),'Settings — grown-ups only'); return; }
     if(key==='parent'){ pinGate(()=>{ state.progTab='parent'; set({nav:'progress', screen:'app', mood:'happy', conceptSel:null}); },'Parent zone'); return; }
     if(key==='progress'&&state.progTab==null) state.progTab='me';
-    if(key==='concepts'){ loadConcepts(); state.conceptView='all'; state.conceptTier=currentTier(); state.conceptPage=0; }
+    if(key==='concepts'){ lazyNeed('concepts'); loadConcepts(); state.conceptView='all'; state.conceptTier=currentTier(); state.conceptPage=0; }
+    if(key==='figurative') lazyNeed('figurative');
+    if(key==='themes'||key==='journeys') lazyNeed('lists');
+    if(key==='adv') lazyNeed('advanced');
     set({nav:key, screen:'app', mood:'happy', conceptSel:null}); },
   progTab:(k)=>{ if(k==='parent'){ pinGate(()=>set({progTab:'parent'}),'Parent zone'); return; } set({progTab:'me'}); },
   // ----- Parent PIN dialog + setup -----
@@ -1042,7 +1048,7 @@ const app = {
   // ---- Quotes: a swipeable deck of kid-friendly quotations from famous people ----
   // Quote of the hour on Home → the Quotes section, landing on that exact quote.
   openQuoteHour:(i)=>{ const n=parseInt(i,10); state.qCat=null; if(n>=0) state.qi=n; app.openQuotes(); },
-  openQuotes:()=>{ if(!gateFeature('trainTools','Quotes & poems')) return; set({nav:'quotes', screen:'app', conceptSel:null, qi:(state.qi||0)}); markQuoteSeen(); setTimeout(()=>{ if(state.readAloud) app.qSpeak(); },220); },
+  openQuotes:()=>{ if(!gateFeature('trainTools','Quotes & poems')) return; lazyNeed('quotes'); set({nav:'quotes', screen:'app', conceptSel:null, qi:(state.qi||0)}); markQuoteSeen(); setTimeout(()=>{ if(state.readAloud) app.qSpeak(); },220); },
   qNav:(dir)=>{ const L=quoteList(); if(!L.length) return; let i=(state.qi||0)+(+dir); if(i<0)i=L.length-1; if(i>=L.length)i=0; set({qi:i}); markQuoteSeen(); if(state.readAloud) app.qSpeak(); },
   qShuffle:()=>{ const L=quoteList(); if(!L.length) return; let i=state.qi||0; if(L.length>1){ while(i===(state.qi||0)) i=Math.floor(Math.random()*L.length); } set({qi:i}); markQuoteSeen(); if(state.readAloud) app.qSpeak(); },
   qSetCat:(cat)=>{ set({qCat:cat==='all'?null:cat, qi:0}); if(state.readAloud) setTimeout(app.qSpeak,150); },
@@ -1161,7 +1167,7 @@ const app = {
   // ----- Typing Trainer -----
   openTyping:()=>{ if(!gateFeature('trainTools','the Typing Trainer')) return; tyStop(); set({nav:'typing', screen:'app', ty:null, conceptSel:null}); },
   // The Sound Alphabet (IPA) trainer
-  openIpaTrain:()=>{ if(!gateFeature('trainTools','The Sound Alphabet')) return; set({nav:'ipatrain', screen:'app', it:null, conceptSel:null}); },
+  openIpaTrain:()=>{ if(!gateFeature('trainTools','The Sound Alphabet')) return; lazyNeed('sounds'); set({nav:'ipatrain', screen:'app', it:null, conceptSel:null}); },
   itMode:(m)=>{ if(m==='learn'){ set({it:{mode:'learn'}}); return; } const it=itBuild(m); if(!it){ flash('The sound data has not loaded yet'); return; } set({it}); },
   itPick:(i)=>{ const it=state.it; if(!it||it.done||it.picked!=null) return; i=+i; const q=it.qs[it.i]; it.picked=i;
     if(i===q.ans){ it.score++; addCoins(1); }
@@ -1269,7 +1275,7 @@ const app = {
   goConcepts:()=>app.setNav('concepts'),
   journey:(i)=>{ i=+i; if(i===0) app.openCoach(); else if(i===1) app.setNav('concepts'); else if(i===2) app.openGames(); else app.openJourneys(); },
   // train
-  startTrain:()=>{ state.sessionRight=0; state.sessionDone=0; state.sessionListKey=null; state.gi=0; state.sessionOver=false; state.sessionCorrect=[]; state.sessionWrong=[]; set({nav:'train', screen:'app', status:'idle', typed:'', mood:'happy', showDef:false, showSent:false, showOrigin:false}); setTimeout(speak,350); },
+  startTrain:()=>{ lazyNeed(['card','audio']); state.sessionRight=0; state.sessionDone=0; state.sessionListKey=null; state.gi=0; state.sessionOver=false; state.sessionCorrect=[]; state.sessionWrong=[]; set({nav:'train', screen:'app', status:'idle', typed:'', mood:'happy', showDef:false, showSent:false, showOrigin:false}); setTimeout(speak,350); },
   newBatch:()=>{ newCoachBatch(); flash('Fresh set of words ✨'); },
   startLevelUp:()=>{ const c=active(); ensureLists(c); c.activeList='default'; app.openCoach(); },
   reviseNav:(dir)=>{ const N=(state.sessionWords&&state.sessionWords.length)||LEVEL_WORDS.length; let i=(state.reviseIdx||0)+(dir==='next'?1:-1); set({reviseIdx:Math.max(0,Math.min(N-1,i))}); },
@@ -1459,7 +1465,7 @@ const app = {
       quest:()=>app.openQuestChooser(), traps:()=>app.openTraps(), collection:()=>app.openCollection(), finder:()=>app.openFinder(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore'), figurative:()=>app.setNav('figurative'), vocab:()=>app.openVocab(), typing:()=>app.openTyping(), quotes:()=>app.openQuotes(), trivia:()=>app.openTrivia(), trivtrain:()=>app.openTrivTrain(), ipatrain:()=>app.openIpaTrain(), trail:()=>app.openTrail() };
     (F[key]||(()=>{}))(); },
   // coach
-  openCoach:()=>{ const c=active(); ensureLists(c);
+  openCoach:()=>{ lazyNeed(['card','lists']); const c=active(); ensureLists(c);
     if(!c.questPath){ set({nav:'quest', screen:'app', conceptSel:null}); return; }   // first visit: choose a quest path
     ensureCoachWords(c.activeList||'default'); state.coachSession=false;
     set({nav:'coach', screen:'app', coachMode:'hub', coachTab:'train', luTab:'revise', luWordsOpen:false, status:'idle', typed:'', mood:'happy', conceptSel:null}); },
@@ -1868,7 +1874,7 @@ const app = {
       au.onerror=fallback; au.play().catch(fallback);
     }catch(e){ fallback(); } },
   /* ===== Advanced Mode (window.ADV, advanced.js) ===== */
-  openAdvanced:()=>{ if(!window.ADV) return; ADV.open();
+  openAdvanced:()=>{ if(!window.ADV) return; lazyNeed('advanced'); ADV.open();
     if(state.advView!=='gate' && !window.SB_FULL) loadFullLibrary(()=>{ try{ render(); }catch(e){} }); },
   advGo:(v)=>{ if(window.ADV) ADV.go(v); },
   /* ◆ advanced rounds inside the ordinary Arcade pickers (no separate Advanced Games room) */
@@ -7775,6 +7781,21 @@ window.addEventListener('keydown', e=>{ try{
 }catch(err){} });
 
 /* ===================== init ===================== */
+/* boot-lazy hand-off. The heavy feature data (etymology, the concept course, the
+   Word Atlas curriculum, the sound tables, the quote and figurative libraries)
+   now arrives after first paint, so anything this file memoised in the meantime
+   is built from an empty pool. Drop the stale caches when a file lands and let
+   boot-lazy's render rebuild them. */
+window.addEventListener('sb-lazy', e => { const name = e && e.detail;
+  if(name==='concepts'){ state.conceptData=null; state.conceptLoading=false; try{ loadConcepts(); }catch(err){} }
+  if(name==='sounds'){ _homIdx=null; _sndCache=null; }
+  if(name==='lore'||name==='pron'){ _wIdx=null; }
+  if(name==='fig'){ try{ window._figAll=null; }catch(err){} }
+  if(name==='voiceWords'){ _wvSet=null; }
+  if(name==='lessons'||name==='vocab26'||name==='finals500'||name==='scripps'){ _catStatic=null; _wIdx=null; _wohPool=null; }
+  if(name==='lore'){ _wdb=null; }
+});
+
 (function init(){
   try{ const raw=localStorage.getItem('sb_saas_v2'); if(raw){ const s=JSON.parse(raw);
     state.theme=s.theme||'spellbound'; state.mode=s.mode||'light'; state.premium=!!s.premium; state.parentPin=s.pin||null; state.voiceRate=s.vr||1; state.textSize=s.tz||'normal'; state.readAloud=!!s.ra; state.a11yFont=s.af||'std'; state.a11yContrast=!!s.ac; state.a11yMotion=!!s.am; state.calmMode=!!s.cm; window.SB_CALM=!!s.cm;

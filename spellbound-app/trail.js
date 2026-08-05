@@ -127,8 +127,13 @@
 
   /* ---- actions ---- */
   const app2 = app;   /* app3's top-level const — global lexical scope, not window */
-  app2.openTrail = () => { if (!T()) { flash('The Trail data is still loading'); return; }
-    set({ nav: 'trail', screen: 'app', trailView: 'map', trailCourse: 'honey', conceptSel: null, tq: null }); };
+  /* trail-data.js is deferred until after first paint, so opening the Atlas early
+     asks boot-lazy for it and lands on the map the moment it arrives. */
+  app2.openTrail = () => {
+    const go = () => set({ nav: 'trail', screen: 'app', trailView: 'map', trailCourse: 'honey', conceptSel: null, tq: null });
+    if (T()) { go(); return; }
+    if (window.SB_LAZY) { SB_LAZY.need('atlas', () => { if (T()) go(); else flash('Could not load the Word Atlas curriculum'); }); return; }
+    flash('The Word Atlas data is still loading'); };
   app2.trailUnit = id => { const c = active();
     const crs = courseOfId(id);
     if (crs === 'exp' && !advOn()) { app2.openAdvanced ? app2.openAdvanced() : flash('The Advanced Rounds come with the Advanced Pack'); return; }
