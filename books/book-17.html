@@ -31,23 +31,27 @@
     -webkit-text-stroke:2.6pt var(--accent-deep);paint-order:stroke fill;
     text-shadow:0 5px 0 rgba(20,12,40,.45),0 12px 28px rgba(0,0,0,.4)}
   .coverTitle .ln2{display:block;color:#FFE9AE}
-  .worldband{position:absolute;left:.5in;right:.5in;bottom:.52in;height:1.25in;opacity:.97;border-radius:12pt;overflow:hidden;box-shadow:0 4pt 14pt rgba(26,18,54,.22)}
-  .worldband svg{position:absolute;inset:0;width:100%;height:100%}
-  .worldband .wl{position:absolute;left:10pt;bottom:6pt;font-family:'BB Kicker';font-size:8.6pt;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.95);text-shadow:0 1px 4px rgba(0,0,0,.5)}
+  /* travelling world scenery: bleeds off both page edges and dissolves upward into
+     the paper, so it reads as part of the page rather than a pasted-in picture */
+  .worldband{position:absolute;left:0;right:0;bottom:0;height:2.2in;overflow:hidden;pointer-events:none}
+  .worldband img,.worldband svg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .worldband:after{content:'';position:absolute;inset:0;
+    background:linear-gradient(180deg,var(--paper) 0%,color-mix(in srgb,var(--paper) 55%,transparent) 30%,transparent 66%)}
   .peek{position:absolute;pointer-events:none}
   .tile{font-family:'BB Tile';font-weight:600;color:var(--muted)}
   .bb-head{position:absolute;top:.3in;left:.75in;right:.5in;display:flex;justify-content:space-between;align-items:baseline;
     font-family:'BB Kicker';font-size:10pt;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--hairline);padding-bottom:4pt}
   .page[data-verso] .bb-head{left:.5in;right:.75in}
   .bb-foot{position:absolute;bottom:.28in;left:.75in;right:.5in;display:flex;justify-content:space-between;
-    font-family:'BB Kicker';font-size:10pt;color:var(--muted)}
+    font-family:'BB Kicker';font-size:10pt;color:var(--muted);z-index:3;
+    text-shadow:0 1px 2px rgba(255,255,255,.95),0 0 6px rgba(255,255,255,.85)}
   .page[data-verso] .bb-foot{left:.5in;right:.75in}
   .bb-panelbox{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-panel);padding:.12in .15in;box-shadow:var(--sh-screen)}
-  .bb-bigidea{padding:.06in .85in .06in .44in;max-height:1.9in;overflow:hidden;position:relative;font-size:13.5pt;line-height:1.56}
+  .bb-bigidea{padding:.06in .85in .06in .44in;position:relative;font-size:13pt;line-height:1.52}
   .bb-bigidea:before{content:'“';position:absolute;left:0;top:-.12in;font-family:'BB Display';font-size:44pt;color:var(--accent)}
   .bb-bigidea .cameo{position:absolute;right:.06in;top:50%;transform:translateY(-50%) rotate(4deg)}
-  .bb-promove{background:var(--ink);color:#F4EFFF;border-radius:var(--r-panel);padding:.16in .18in;max-height:2.9in;overflow:hidden;
-    font-size:10.8pt;line-height:1.5}
+  .bb-promove{background:var(--ink);color:#F4EFFF;border-radius:var(--r-panel);padding:.16in .18in;max-height:none;
+    font-size:10.6pt;line-height:1.46}
   .bb-promove b{color:var(--treasure)}
   .bb-promove .ln{margin:0 0 5.5pt;padding-left:.14in;text-indent:-.14in}
   .bb-promove .ln:last-child{margin-bottom:0}
@@ -67,12 +71,34 @@
   .an-cap{position:absolute;left:.09in;right:.09in;bottom:.09in;background:rgba(255,255,255,.93);border-radius:4pt;
     padding:5pt 9pt;font-family:'BB Display';font-size:11.5pt;line-height:1.3;box-shadow:0 2pt 8pt rgba(26,18,54,.3)}
   .an-cap .nm{display:block;font-family:'BB Kicker';font-size:8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-deep);margin-bottom:1pt}
+  /* full-bleed story page: no padding, art to every edge */
+  .page.an-full{padding:0;background:#241E33}
+  .page.an-full > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .an-title{position:absolute;left:0;right:0;top:0;padding:.4in .5in .75in;
+    background:linear-gradient(180deg,rgba(12,9,28,.7) 0%,rgba(12,9,28,.46) 52%,rgba(12,9,28,0) 100%)}
+  .an-title-in{display:flex;align-items:center;gap:.16in}
+  .an-title .n{display:inline-grid;place-items:center;width:.52in;height:.52in;flex-shrink:0;border-radius:14pt;
+    background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:17pt;
+    box-shadow:0 2pt 8pt rgba(0,0,0,.45)}
+  .an-title .k{display:block;font-family:'BB Kicker';font-size:9pt;letter-spacing:.09em;text-transform:uppercase;
+    color:rgba(255,255,255,.92);text-shadow:0 1px 4px rgba(0,0,0,.6)}
+  .an-title .t{display:block;font-family:'BB World','BB Display';font-weight:800;font-size:24pt;line-height:1.06;color:#fff;
+    -webkit-text-stroke:1.6pt rgba(20,14,44,.5);paint-order:stroke fill;text-shadow:0 3px 10px rgba(0,0,0,.5)}
+  .an-foot{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;
+    gap:.14in;padding:.5in .32in .2in;background:linear-gradient(180deg,rgba(12,9,28,0),rgba(12,9,28,.62))}
+  .an-folio{position:absolute;right:.28in;bottom:.05in;font-family:'BB Kicker';font-size:10pt;color:rgba(255,255,255,.9)}
   /* comic speech balloons: sit BESIDE the speaker, with a tail pointing at them */
-  .an-bub{position:absolute;background:#fff;border:1.6pt solid var(--ink);border-radius:16pt;padding:7pt 11pt;
-    font-family:'BB Display';font-size:11.4pt;line-height:1.34;
-    box-shadow:0 3pt 10pt rgba(26,18,54,.28);transform:translateY(-50%)}
-  .an-bub .nm{display:block;font-family:'BB Kicker';font-size:8pt;letter-spacing:.09em;text-transform:uppercase;
-    color:var(--accent-deep);margin-bottom:2.5pt}
+  .an-bub{position:absolute;background:#fff;border:2pt solid var(--ink);border-radius:20pt;padding:11pt 12pt 9pt;
+    font-family:'BB Display';font-size:11pt;line-height:1.36;
+    box-shadow:0 4pt 12pt rgba(26,18,54,.35);transform:translateY(-50%)}
+  /* the speaker is announced on a comic name-plate pinned to the balloon's rim */
+  .an-bub .nm{display:inline-block;font-family:'BB Kicker';font-size:8.4pt;letter-spacing:.09em;text-transform:uppercase;
+    color:#fff;background:var(--accent-deep);border:1.6pt solid var(--ink);border-radius:999px;padding:1.5pt 9pt;
+    position:absolute;top:-8.5pt;left:11pt;white-space:nowrap;box-shadow:0 2pt 5pt rgba(26,18,54,.32)}
+  .an-bub .say{display:block}
+  /* Vex shouts from a jagged balloon — classic comic villain treatment */
+  .an-bub.shout{background:#FFF1F4;border-color:var(--tricky-deep);border-radius:6pt}
+  .an-bub.shout .nm{background:var(--tricky-deep)}
   .an-bub .tail,.an-bub .tail i{position:absolute;top:50%;width:0;height:0;border-style:solid}
   .an-bub.r .tail{right:-11pt;margin-top:-8pt;border-width:8pt 0 8pt 11pt;border-color:transparent transparent transparent var(--ink)}
   .an-bub.r .tail i{right:2.4pt;margin-top:-6.2pt;border-width:6.2pt 0 6.2pt 8.5pt;border-color:transparent transparent transparent #fff}
@@ -84,7 +110,7 @@
   .bb-prop{display:inline-block;background:var(--chip);color:var(--chip-ink);border-radius:8pt;padding:3pt 8pt;font-family:'BB Tile';font-size:10pt}
   .bb-bubble{background:var(--card);border:1px solid var(--hairline);border-radius:12pt;padding:6pt 10pt;font-family:'BB Display';font-size:11.5pt;line-height:1.35;box-shadow:var(--sh-screen)}
   .bb-hive{display:grid;grid-template-columns:1fr 1fr;gap:.12in}
-  .bb-card{padding:0 .04in;max-height:1.95in;overflow:hidden}
+  .bb-card{padding:0 .04in}
   .bb-card .ex{font-size:9.6pt;line-height:1.32;margin-top:2px;color:var(--ink);opacity:.85}
   .bb-card .w{font-family:'BB Body';font-weight:800;font-size:23pt;line-height:1.05;font-variant-numeric:tabular-nums;color:var(--accent-deep)}
   .bb-card .say{font-family:'BB Tile';font-size:10pt;color:var(--muted);margin-top:1px}
@@ -92,17 +118,17 @@
   .bb-card .hook{font-size:9.8pt;line-height:1.32;margin-top:2px;color:var(--chip-ink);font-style:italic}
   .bb-writeline{border-bottom:1pt solid var(--ink);height:.42in;margin-top:4pt}
   .bb-rapid{display:grid;grid-template-columns:1fr 1fr;gap:.08in .16in}
-  .bb-row{padding:3.5pt 0;min-height:.5in;max-height:.6in;overflow:hidden;font-size:10.8pt;line-height:1.34;border-bottom:1px dotted var(--hairline)}
+  .bb-row{padding:4pt 0;min-height:.52in;font-size:10.4pt;line-height:1.36;border-bottom:1px dotted var(--hairline)}
   .bb-row b{font-family:'BB Kicker';color:var(--accent-deep)}
-  .bb-break{margin-top:.18in;display:flex;gap:.13in;align-items:flex-start;background:linear-gradient(90deg,var(--treasure-tint),transparent 85%);border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.08in .13in;max-height:2.3in;overflow:hidden}
+  .bb-break{margin-top:.18in;display:flex;gap:.13in;align-items:flex-start;background:linear-gradient(90deg,var(--treasure-tint),transparent 85%);border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.09in .14in}
   .bb-break .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--treasure-deep)}
   .bb-break .b{font-size:11.2pt;line-height:1.4;margin-top:2px}
   .bb-break .t{font-size:10pt;color:var(--muted);margin-top:2px}
-  .bb-check{border-left:4pt solid var(--right);padding:.07in .12in .07in .14in;max-height:1.4in;overflow:hidden}
+  .bb-check{border-left:4pt solid var(--right);padding:.07in .12in .07in .14in}
   .bb-check .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--right-deep);margin-bottom:3.5pt}
-  .bb-vex{background:linear-gradient(90deg,#FFF1F3,transparent 88%);border-left:4pt solid var(--tricky);border-radius:2pt 12pt 12pt 2pt;padding:.07in .12in .07in .14in;max-height:1.4in;overflow:hidden;display:flex;gap:.12in;align-items:flex-start}
+  .bb-vex{background:linear-gradient(90deg,#FFF1F3,transparent 88%);border-left:4pt solid var(--tricky);border-radius:2pt 12pt 12pt 2pt;padding:.07in .12in .07in .14in;display:flex;gap:.12in;align-items:flex-start}
   .bb-vex .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--tricky-deep);margin-bottom:3.5pt}
-  .bb-trap{background:var(--listen-tint);border-left:4pt solid var(--listen);border-radius:2pt 12pt 12pt 2pt;padding:.07in .12in .07in .14in;max-height:1.4in;overflow:hidden}
+  .bb-trap{background:var(--listen-tint);border-left:4pt solid var(--listen);border-radius:2pt 12pt 12pt 2pt;padding:.07in .12in .07in .14in}
   .bb-trap .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--listen-deep);margin-bottom:3.5pt}
   .bb-quiz{counter-reset:q}
   .bb-quiz .q{margin-bottom:.16in;break-inside:avoid}
@@ -130,7 +156,34 @@
   .bb-badge{display:flex;gap:.08in;align-items:center;max-height:.7in}
   .bb-badge .b1{width:.5in;height:.5in;border-radius:12pt;border:1.6pt dashed var(--accent);display:grid;place-items:center;font-family:'BB Display';font-size:9pt;color:var(--accent-deep);background:var(--card)}
   .chip{display:inline-block;background:var(--chip);color:var(--chip-ink);font-weight:700;font-size:9pt;border-radius:999px;padding:2pt 9pt}
-  </style></head><body data-vol="17" data-band="general"><div class="page" data-cover data-vol="17" style="color:#fff;padding:0;background:#241E33">
+  
+  @media print{.rv,.rv-tab,.rv-mark{display:none !important}}
+  @media screen{
+    body.rv-open{padding-right:330px}
+    .rv{position:fixed;top:0;right:0;width:330px;height:100vh;background:#fff;border-left:1px solid #ddd4f2;
+      box-shadow:-4px 0 20px rgba(36,30,51,.12);display:none;flex-direction:column;z-index:9999;font-family:'BB Body',sans-serif}
+    body.rv-open .rv{display:flex}
+    .rv h4{font-family:'BB Display';font-size:16px;padding:14px 16px 10px;border-bottom:1px solid #eee6fb;margin:0}
+    .rv h4 span{display:block;font-family:'BB Body';font-weight:600;font-size:11.5px;color:#6b6482;margin-top:3px}
+    .rv-list{flex:1;overflow:auto;padding:10px 12px}
+    .rv-row{border:1px solid #eee6fb;border-radius:10px;padding:8px 10px;margin-bottom:8px;background:#fbf9ff}
+    .rv-row b{font-family:'BB Kicker';font-size:11px;color:#4a3aa0;display:block;margin-bottom:4px;cursor:pointer}
+    .rv-row b:hover{text-decoration:underline}
+    .rv-row textarea{width:100%;min-height:52px;resize:vertical;border:1px solid #ddd4f2;border-radius:7px;
+      padding:6px 7px;font:inherit;font-size:12.5px;color:#241E33;background:#fff}
+    .rv-row.has b{color:#C25A2E}
+    .rv-foot{padding:11px 12px;border-top:1px solid #eee6fb;display:flex;gap:7px;flex-wrap:wrap}
+    .rv-foot button{flex:1;padding:9px 10px;border-radius:9px;border:0;cursor:pointer;font-weight:800;font-size:12.5px;
+      font-family:'BB Body',sans-serif;background:#6C4FE0;color:#fff}
+    .rv-foot button.alt{background:#eee6fb;color:#4a3aa0}
+    .rv-tab{position:fixed;right:14px;bottom:14px;z-index:10000;background:#6C4FE0;color:#fff;border:0;cursor:pointer;
+      border-radius:999px;padding:12px 18px;font-weight:800;font-size:13.5px;font-family:'BB Body',sans-serif;
+      box-shadow:0 6px 18px rgba(108,79,224,.4)}
+    body.rv-open .rv-tab{right:344px}
+    .rv-mark{position:absolute;top:6px;left:6px;z-index:5;background:rgba(108,79,224,.9);color:#fff;
+      font-family:'BB Kicker';font-size:10px;border-radius:999px;padding:2px 9px}
+    .page.rv-flag{outline:3px solid #E0922E;outline-offset:-3px}
+  }</style></head><body data-vol="17" data-band="general"><div class="page" data-cover data-vol="17" style="color:#fff;padding:0;background:#241E33">
     <img src="art/b17-cover.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
     <div style="position:absolute;top:.42in;left:.55in;right:.55in;display:flex;justify-content:space-between;align-items:center">
       <span style="font-family:'BB Kicker';letter-spacing:.16em;font-size:10.5pt;text-shadow:0 2px 6px rgba(0,0,0,.55)">BIZZING BEE COLLECTIONS</span>
@@ -171,8 +224,7 @@
       <div class="bb-panelbox" style="flex:1"><h3 style="font-size:12pt;color:var(--accent-deep)">Play who-said-it</h3><p style="font-size:10.6pt;line-height:1.45">The match rounds test whether you were really listening.</p></div></div><div style="display:flex;gap:.14in;margin-bottom:.13in;align-items:flex-start">
       <span style="display:inline-grid;place-items:center;width:.52in;height:.52in;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:14pt;flex-shrink:0">4</span>
       <div class="bb-panelbox" style="flex:1"><h3 style="font-size:12pt;color:var(--accent-deep)">Write your own</h3><p style="font-size:10.6pt;line-height:1.45">Every third theme ends with blank lines. Champions get quoted too, eventually.</p></div></div>
-    <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Big Stage</span></div>
+    <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
     <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>2</span></div></div>
 <div class="page" data-vol="17" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
       <div class="kick">Theme 1 of 12</div>
@@ -184,8 +236,7 @@
       <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“Patience can cook a stone.”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— African Proverb, a traditional saying</div></div></div>
-      <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Big Stage</span></div>
+      <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>3</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Keep Going</span></div>
@@ -215,8 +266,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Small strokes fell big oaks.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— German proverb, Traditional wisdom from Germany</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Even the biggest challenges can be beaten with steady, repeated effort.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-library-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Great Library</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-library-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>4</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Keep Going</span></div>
@@ -246,8 +296,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Patience is the key to relief.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Arabic Proverb, a traditional saying</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Being patient helps you get through hard times.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-junkyard-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Word Junkyard</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-junkyard-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>5</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Keep Going</span></div>
@@ -277,8 +326,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Little by little, one walks far.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Peruvian proverb, traditional saying</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Small steps taken again and again cover a long distance.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-library-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Great Library</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-library-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>6</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Keep Going</span></div>
@@ -288,8 +336,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Hope is the last thing you lose.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Spanish Proverb, a traditional saying</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Even in hard times, keep hoping.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-junkyard-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Word Junkyard</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-junkyard-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>7</span></div></div>
 <div class="page" data-verso data-vol="17" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
       <div class="kick">Theme 2 of 12</div>
@@ -301,8 +348,7 @@
       <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“Freedom lies in being bold.”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— Robert Frost, poet</div></div></div>
-      <div class="worldband" aria-hidden="true"><img src="art/strip-warfield-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Proving Ground</span></div>
+      <div class="worldband" aria-hidden="true"><img src="art/strip-warfield-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>8</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Be Brave</span></div>
@@ -332,8 +378,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Strength is life, weakness is death.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Swami Vivekananda, Indian monk and teacher</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Being strong in spirit keeps you truly alive.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-forum-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Roman Forum</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-forum-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>9</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Be Brave</span></div>
@@ -363,8 +408,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">The dogs bark, but the caravan moves on.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Arabic proverb, Traditional wisdom from the Arab world</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Keep going toward your goal even when others complain or criticize you.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-vibe-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Vibe</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-vibe-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>10</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Be Brave</span></div>
@@ -394,8 +438,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Just go out there and do what you have to do.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Venus Williams, Tennis champion</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Sometimes you just need to begin and try.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-forum-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Roman Forum</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-forum-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>11</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Be Brave</span></div>
@@ -405,8 +448,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">A well-drawn tiger has no fear of a real one.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Korean proverb, Traditional wisdom from Korea</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 When you prepare well, you can face even scary challenges with confidence.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-vibe-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Vibe</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-vibe-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>12</span></div></div>
 <div class="page" data-vol="17" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
       <div class="kick">Theme 3 of 12</div>
@@ -418,8 +460,7 @@
       <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“He who rests grows rusty.”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— German Proverb, a traditional saying</div></div></div>
-      <div class="worldband" aria-hidden="true"><img src="art/strip-greysea-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Grey Sea</span></div>
+      <div class="worldband" aria-hidden="true"><img src="art/strip-greysea-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>13</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Do the Work</span></div>
@@ -449,8 +490,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Effort is greater than fate.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Marathi Proverb, a traditional saying</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Your hard work can shape your life more than luck can.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-elements-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Storm of Elements</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-elements-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>14</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Do the Work</span></div>
@@ -480,8 +520,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Success is earned, not given.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Yuna Kim, Olympic figure skater</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 You earn success through effort.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Big Stage</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>15</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Do the Work</span></div>
@@ -511,8 +550,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Nothing will work unless you do.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Maya Angelou, American poet</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Plans and dreams only come true when you put in the effort.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-elements-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Storm of Elements</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-elements-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>16</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Do the Work</span></div>
@@ -522,8 +560,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Do small things with great love.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Mother Teresa, missionary and helper</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Even tiny helpful acts matter when done with a caring heart.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Big Stage</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>17</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Match round</span></div>
@@ -548,8 +585,7 @@
       <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“Stay hungry, stay foolish.”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— Steve Jobs, Apple co-founder</div></div></div>
-      <div class="worldband" aria-hidden="true"><img src="art/strip-meadow-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Meadow</span></div>
+      <div class="worldband" aria-hidden="true"><img src="art/strip-meadow-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>19</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Back Yourself</span></div>
@@ -579,8 +615,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">I exist as I am, that is enough.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Walt Whitman, poet</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 It means you are enough just as you are.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-engine-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Engine Room</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-engine-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>20</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Back Yourself</span></div>
@@ -610,8 +645,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">They can because they think they can.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Virgil, Roman poet</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 People succeed because they believe they can.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-warfield-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Proving Ground</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-warfield-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>21</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Back Yourself</span></div>
@@ -641,8 +675,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Just be yourself, there is no one better.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Taylor Swift, singer and songwriter</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Being yourself is the best thing you can be.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-engine-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Engine Room</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-engine-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>22</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Back Yourself</span></div>
@@ -652,8 +685,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">The greatest sin is to think yourself weak.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Swami Vivekananda, Indian monk and teacher</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Never convince yourself that you are weak or unable.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-warfield-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Proving Ground</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-warfield-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>23</span></div></div>
 <div class="page" data-verso data-vol="17" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
       <div class="kick">Theme 5 of 12</div>
@@ -665,8 +697,7 @@
       <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“What we think, we become.”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— Buddha, Ancient teacher</div></div></div>
-      <div class="worldband" aria-hidden="true"><img src="art/strip-library-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Great Library</span></div>
+      <div class="worldband" aria-hidden="true"><img src="art/strip-library-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>24</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Dream Big</span></div>
@@ -696,8 +727,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Little strokes fell great oaks.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Benjamin Franklin, American statesman and inventor</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Small, steady efforts can accomplish big things.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-origami-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Paper Mountains</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-origami-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>25</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Dream Big</span></div>
@@ -727,8 +757,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Follow your dreams, they know the way.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Kobi Yamada, American author</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Trust your dreams to guide you, because they point toward what you love.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-greysea-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Grey Sea</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-greysea-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>26</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Dream Big</span></div>
@@ -758,8 +787,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Wherever you go, go with all your heart.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Confucius, Ancient Chinese teacher</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Follow your path fully, giving it all your love and effort.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-origami-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Paper Mountains</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-origami-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>27</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Dream Big</span></div>
@@ -769,8 +797,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Every noble work is at first impossible.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Thomas Carlyle, Scottish writer</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Great dreams often look impossible until someone bravely makes them happen.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-greysea-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Grey Sea</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-greysea-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>28</span></div></div>
 <div class="page" data-vol="17" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
       <div class="kick">Theme 6 of 12</div>
@@ -782,8 +809,7 @@
       <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“The days are just packed!”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— Bill Watterson, creator of Calvin and Hobbes</div></div></div>
-      <div class="worldband" aria-hidden="true"><img src="art/strip-forum-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Roman Forum</span></div>
+      <div class="worldband" aria-hidden="true"><img src="art/strip-forum-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>29</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Stay Curious</span></div>
@@ -813,8 +839,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">All men by nature desire to know.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Aristotle, Greek philosopher</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Everyone is naturally curious and wants to learn.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-strait-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Wide Strait</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-strait-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>30</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Stay Curious</span></div>
@@ -844,8 +869,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Wonder is the desire for knowledge.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Thomas Aquinas, medieval philosopher</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Feeling wonder is really the wish to understand.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-meadow-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Meadow</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-meadow-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>31</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Stay Curious</span></div>
@@ -875,8 +899,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Be curious. Read widely. Try new things.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Aaron Swartz, programmer and writer</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Curiosity and wide reading are what make people smart.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-strait-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Wide Strait</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-strait-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>32</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Stay Curious</span></div>
@@ -886,8 +909,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">The mountains are calling and I must go.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— John Muir, naturalist</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 The wonder of nature pulls explorers outdoors.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-meadow-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Meadow</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-meadow-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>33</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Match round</span></div>
@@ -912,8 +934,7 @@
       <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“Kid, you'll move mountains.”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— Dr. Seuss, children's author</div></div></div>
-      <div class="worldband" aria-hidden="true"><img src="art/strip-elements-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Storm of Elements</span></div>
+      <div class="worldband" aria-hidden="true"><img src="art/strip-elements-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>35</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Love Learning</span></div>
@@ -943,8 +964,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Becoming is better than being.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Carol Dweck, Psychologist</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Growing is even better than being finished.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-junkyard-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Word Junkyard</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-junkyard-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>36</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Love Learning</span></div>
@@ -974,8 +994,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Whoever has knowledge is powerful.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Persian Proverb, a traditional saying</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 The more you learn, the more you can do in the world.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-library-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Great Library</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-library-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>37</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Love Learning</span></div>
@@ -1005,8 +1024,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Where there is a will, there is a way.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— English proverb, traditional saying</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 If you truly want something, you can find a way to do it.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-junkyard-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Word Junkyard</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-junkyard-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>38</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Love Learning</span></div>
@@ -1016,8 +1034,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Anyone who keeps learning stays young.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Henry Ford, inventor and engineer</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Always learning keeps your mind young and fresh.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-library-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Great Library</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-library-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>39</span></div></div>
 <div class="page" data-verso data-vol="17" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
       <div class="kick">Theme 8 of 12</div>
@@ -1029,8 +1046,7 @@
       <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“Great minds discuss ideas.”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— Eleanor Roosevelt, American humanitarian</div></div></div>
-      <div class="worldband" aria-hidden="true"><img src="art/strip-engine-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Engine Room</span></div>
+      <div class="worldband" aria-hidden="true"><img src="art/strip-engine-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>40</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Imagine It</span></div>
@@ -1060,8 +1076,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Imagination is the air of mind.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Philip James Bailey, English poet</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Imagination is as important to your mind as air is to your body.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-vibe-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Vibe</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-vibe-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>41</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Imagine It</span></div>
@@ -1091,8 +1106,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Imagination is the eye of the soul.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Joseph Joubert, French writer</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Your imagination lets your heart see beautiful things others might miss.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-forum-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Roman Forum</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-forum-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>42</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Imagine It</span></div>
@@ -1122,8 +1136,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Write hard and clear about what hurts.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Ernest Hemingway, American author</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Honest writing comes from real feelings.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-vibe-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Vibe</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-vibe-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>43</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Imagine It</span></div>
@@ -1133,8 +1146,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Improving things comes naturally to me.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Hedy Lamarr, inventor and actress</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 She naturally loved finding ways to make things better.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-forum-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Roman Forum</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-forum-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>44</span></div></div>
 <div class="page" data-vol="17" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
       <div class="kick">Theme 9 of 12</div>
@@ -1146,8 +1158,7 @@
       <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“Creativity takes courage.”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— Henri Matisse, French artist</div></div></div>
-      <div class="worldband" aria-hidden="true"><img src="art/strip-origami-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Paper Mountains</span></div>
+      <div class="worldband" aria-hidden="true"><img src="art/strip-origami-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>45</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Make Things</span></div>
@@ -1177,8 +1188,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Write what should not be forgotten.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Isabel Allende, Chilean-American author</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Use your writing to keep wonderful stories and memories alive.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Big Stage</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>46</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Make Things</span></div>
@@ -1208,8 +1218,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Every good painter paints what he is.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Jackson Pollock, American artist</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Your art naturally shows who you are inside.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-elements-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Storm of Elements</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-elements-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>47</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Make Things</span></div>
@@ -1239,8 +1248,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Creativity comes from a conflict of ideas.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Donatella Versace, Italian designer</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 New ideas often spark when different thoughts meet.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Big Stage</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>48</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Make Things</span></div>
@@ -1250,8 +1258,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">You can't do it unless you can imagine it.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— George Lucas, American filmmaker</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 You have to picture something before you can create it.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-elements-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Storm of Elements</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-elements-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>49</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Match round</span></div>
@@ -1276,8 +1283,7 @@
       <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“Kindness is never wasted.”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— Aesop's Fable Proverb, a traditional saying</div></div></div>
-      <div class="worldband" aria-hidden="true"><img src="art/strip-strait-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Wide Strait</span></div>
+      <div class="worldband" aria-hidden="true"><img src="art/strip-strait-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>51</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Be Kind</span></div>
@@ -1307,8 +1313,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Love is a great beautifier.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Louisa May Alcott, author of Little Women</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 It means love makes people and life more beautiful.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-warfield-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Proving Ground</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-warfield-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>52</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Be Kind</span></div>
@@ -1338,8 +1343,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">A closed hand cannot receive.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Chilean Proverb, a traditional saying</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 You have to be open and giving to receive good things too.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-engine-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Engine Room</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-engine-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>53</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Be Kind</span></div>
@@ -1369,8 +1373,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">He who brings kola brings life.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Igbo Proverb, a traditional saying</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 A welcoming gift or gesture shows care and friendship.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-warfield-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Proving Ground</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-warfield-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>54</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Be Kind</span></div>
@@ -1380,8 +1383,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Good deeds are the best prayer.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Greek proverb, Traditional wisdom from Greece</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Doing kind things for others is one of the most meaningful things you can do.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-engine-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Engine Room</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-engine-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>55</span></div></div>
 <div class="page" data-verso data-vol="17" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
       <div class="kick">Theme 11 of 12</div>
@@ -1393,8 +1395,7 @@
       <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“A friend is a second self.”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— Aristotle, Ancient Greek philosopher</div></div></div>
-      <div class="worldband" aria-hidden="true"><img src="art/strip-junkyard-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Word Junkyard</span></div>
+      <div class="worldband" aria-hidden="true"><img src="art/strip-junkyard-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>56</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Bring Friends</span></div>
@@ -1424,8 +1425,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Friendship is a sheltering tree.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Samuel Taylor Coleridge, English poet</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 A friend gives you shade and protection like a big tree.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-greysea-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Grey Sea</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-greysea-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>57</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Bring Friends</span></div>
@@ -1455,8 +1455,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">A friend is a gift you give yourself.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Robert Louis Stevenson, Scottish author</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 Making a friend is a wonderful gift to your own life.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-origami-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Paper Mountains</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-origami-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>58</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Bring Friends</span></div>
@@ -1486,8 +1485,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Let there be spaces in your togetherness.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Kahlil Gibran, poet and author of The Prophet</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 It means even close friends need a little space.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-greysea-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Grey Sea</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-greysea-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>59</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Bring Friends</span></div>
@@ -1497,8 +1495,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">He who goes with the lame learns to limp.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Italian proverb, Traditional wisdom from Italy</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 You pick up the habits of the people you spend time with, so choose good company.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-origami-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Paper Mountains</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-origami-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>60</span></div></div>
 <div class="page" data-vol="17" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
       <div class="kick">Theme 12 of 12</div>
@@ -1510,8 +1507,7 @@
       <img src="../avatars/melody.png" alt="" style="width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(20,14,44,.3))"></span>
         <div class="bb-panelbox" style="text-align:left;margin-top:.12in"><div style="font-family:'BB Display';font-size:13pt;line-height:1.3">“Wit is educated insolence.”</div>
         <div style="font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:3pt">— Aristotle, Ancient Greek philosopher</div></div></div>
-      <div class="worldband" aria-hidden="true"><img src="art/strip-vibe-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Vibe</span></div>
+      <div class="worldband" aria-hidden="true"><img src="art/strip-vibe-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>61</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Laugh a Little</span></div>
@@ -1541,8 +1537,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">It's like deja vu all over again.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Yogi Berra, Baseball player and coach</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 A funny way to say something feels repeated.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-meadow-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Meadow</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-meadow-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>62</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Laugh a Little</span></div>
@@ -1572,8 +1567,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">Never go to bed mad. Stay up and fight.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Phyllis Diller, Comedian</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 A joke about sorting out problems, not sleeping on them.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-strait-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Wide Strait</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-strait-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>63</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Laugh a Little</span></div>
@@ -1603,8 +1597,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">I can resist everything except temptation.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Oscar Wilde, Irish playwright and wit</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 A funny way to admit he gives in too easily.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-meadow-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Meadow</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-meadow-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>64</span></div></div>
 <div class="page" data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Laugh a Little</span></div>
@@ -1614,8 +1607,7 @@
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">I intend to live forever. So far, so good.</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— Steven Wright, Deadpan American comedian</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 A silly boast that he hasn't died yet.</div></div>
-        <div class="worldband" aria-hidden="true"><img src="art/strip-strait-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Wide Strait</span></div>
+        <div class="worldband" aria-hidden="true"><img src="art/strip-strait-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
         <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>65</span></div></div>
 <div class="page" data-verso data-vol="17">
         <div class="bb-head"><span>Say It Like a Champion</span><span>Match round</span></div>
@@ -1655,15 +1647,13 @@
       </g></svg>
     <h1 style="font-size:32pt;margin:.14in 0 .06in">Answers. Earn them first.</h1>
     <p style="color:var(--muted);font-size:11.5pt;margin-bottom:1.6in">Checking before trying teaches you nothing twice.</p>
-    <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Big Stage</span></div>
+    <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
     <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>67</span></div></div>
 <div class="page" data-verso data-vol="17">
       <div class="bb-head"><span>Say It Like a Champion</span><span>Answer key</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">Answer key</h2></div>
       <div class="bb-key" style="margin-top:.12in"><div><b>Who said it, folio 18</b> — 1→C, 2→E, 3→A, 4→H, 5→G, 6→D, 7→B, 8→F</div><div><b>Who said it, folio 34</b> — 1→G, 2→C, 3→H, 4→B, 5→D, 6→A, 7→E, 8→F</div><div><b>Who said it, folio 50</b> — 1→E, 2→G, 3→D, 4→F, 5→B, 6→C, 7→H, 8→A</div><div><b>Who said it, folio 66</b> — 1→B, 2→D, 3→E, 4→C, 5→H, 6→G, 7→F, 8→A</div></div>
-      <div class="worldband" aria-hidden="true"><img src="art/strip-origami-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Paper Mountains</span></div>
+      <div class="worldband" aria-hidden="true"><img src="art/strip-origami-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>68</span></div></div>
 <div class="page" data-vol="17" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
     <span style="display:inline-grid;place-items:center;width:1.4in;height:1.4in;flex-shrink:0;border-radius:50%;
@@ -1674,6 +1664,72 @@
     <div style="margin:0 auto .2in" class="bb-badge"><div class="b1">DONE</div><div class="b1" style="border-style:solid">★</div><div class="b1">+1</div></div>
     <p style="font-size:10.5pt;max-width:5.4in;margin:0 auto .26in;line-height:1.55">Every word in here also lives in the Bizzing Bee app, with real audio, games and a coach that remembers what you miss. Paper for the muscles, app for the ears.</p>
     <p style="font-size:8.4pt;color:var(--muted);max-width:5.9in;margin:0 auto 1.55in;line-height:1.55">Bizzing Bee is an independent study project — not affiliated with, sponsored by, or endorsed by the Scripps National Spelling Bee, the North South Foundation, or Merriam-Webster. Competition names appear only to describe what the practice material relates to. Definitions, sentences, hints and stories are written for this project. Typefaces are open-licensed (SIL OFL).</p>
-    <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <span class="wl">the Big Stage</span></div>
-    <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>69</span></div></div></body></html>
+    <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
+    <div class="bb-foot"><span>Bizzing Bee · Say It Like a Champion</span><span>69</span></div></div>
+<button class="rv-tab" onclick="RV.toggle()">📝 Review this book</button>
+<aside class="rv"><h4>Page notes<span>Say It Like a Champion · Vol. 17 — notes save in this browser</span></h4>
+  <div class="rv-list" id="rv-list"></div>
+  <div class="rv-foot">
+    <button onclick="RV.exportNotes()">Export notes</button>
+    <button class="alt" onclick="RV.copyNotes()">Copy</button>
+    <button class="alt" onclick="RV.clearNotes()">Clear</button>
+  </div></aside>
+<script>
+window.RV = (function(){
+  var BOOK = "Vol. 17 — Say It Like a Champion";
+  var KEY = 'bbrev-v17';
+  var notes = {};
+  try { notes = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch(e){}
+  var pages = [];
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(notes)); } catch(e){} }
+  function build(){
+    pages = [].slice.call(document.querySelectorAll('.page'));
+    pages.forEach(function(p, i){
+      var n = i + 1;
+      p.id = 'pg' + n;
+      var m = document.createElement('span');
+      m.className = 'rv-mark'; m.textContent = 'p' + n;
+      p.appendChild(m);
+    });
+    var list = document.getElementById('rv-list');
+    list.innerHTML = pages.map(function(p, i){
+      var n = i + 1, v = notes[n] || '';
+      return '<div class="rv-row' + (v ? ' has' : '') + '" data-n="' + n + '">' +
+        '<b onclick="RV.go(' + n + ')">Page ' + n + ' ›</b>' +
+        '<textarea placeholder="what should change on this page?" oninput="RV.set(' + n + ',this.value)">' +
+        v.replace(/</g,'&lt;') + '</textarea></div>';
+    }).join('');
+    Object.keys(notes).forEach(flag);
+  }
+  function flag(n){
+    var p = document.getElementById('pg' + n); if(!p) return;
+    if (notes[n]) p.classList.add('rv-flag'); else p.classList.remove('rv-flag');
+    var row = document.querySelector('.rv-row[data-n="' + n + '"]');
+    if (row) row.className = 'rv-row' + (notes[n] ? ' has' : '');
+  }
+  function text(){
+    var out = ['Page notes — ' + BOOK, ''];
+    Object.keys(notes).sort(function(a,b){ return a-b; }).forEach(function(n){
+      if (notes[n] && notes[n].trim()) out.push(BOOK + ' · page ' + n + ': ' + notes[n].trim());
+    });
+    return out.length > 2 ? out.join('\n') : 'No notes yet — type in the panel, then export.';
+  }
+  return {
+    toggle: function(){ document.body.classList.toggle('rv-open'); },
+    set: function(n, v){ notes[n] = v; if(!v) delete notes[n]; save(); flag(n); },
+    go: function(n){ var p = document.getElementById('pg' + n); if(p) p.scrollIntoView({behavior:'smooth', block:'start'}); },
+    clearNotes: function(){ if(!confirm('Clear all notes for this book?')) return; notes = {}; save(); build(); document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('rv-flag'); }); },
+    copyNotes: function(){ var t = text(); navigator.clipboard.writeText(t).then(function(){ alert('Notes copied — paste them into your next prompt.'); }, function(){ alert(t); }); },
+    exportNotes: function(){
+      var blob = new Blob([text()], {type:'text/plain'});
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'bizzing-bee-notes-vol17.txt';
+      a.click();
+    },
+    _build: build
+  };
+})();
+document.addEventListener('DOMContentLoaded', function(){ RV._build(); });
+if (document.readyState !== 'loading') RV._build();
+</script></body></html>
