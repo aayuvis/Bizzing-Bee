@@ -102,3 +102,43 @@ member's true fact. No more generic mascot chatter.
   book holds hundreds of inline SVGs.
 - Type floor for kids: 14.5pt body (general band), 12.5pt (advanced); nothing
   under 8.6pt anywhere.
+
+## v8 — the Grand Trunk Road (Volume 14 inserted, series renumbered to 18)
+
+Volume 14 is the first book authored **for the series** rather than lifted from
+the app's own course: *The Grand Trunk Road — South Asian words that became
+English*, 11 chapters, 112 practice words, all definitions and pronunciations
+pulled from the 128k word library at build time (`books/southasia-chapters.js`,
+regenerate with the session's `mksa.js`). Its storyboard scripts live on the
+chapters themselves (`ch.sc`), so it does not borrow narration keys from
+`SB_CSCRIPT` / `SB_ADV_CSCRIPT` and cannot collide with them.
+
+Inserting a volume mid-series would normally reshuffle everything after it, so
+two pins were added and both must be kept:
+
+- **`vol.seedN`** — the draft seed a volume shipped with. Volumes 15–18 carry
+  their old numbers as `seedN`, so their crews (and therefore their already
+  painted cast pages, covers and posters) are unchanged.
+- **`vol.cast`** — an explicit crew. Volume 14 pins Ganesha, Hanuman, Lakshmi,
+  Vasuki, King Cobra, Python, Aryabhatta, Monarch and Lotus, and a pinned crew
+  deliberately does **not** claim names in `castUsed`, so it takes nothing away
+  from the volumes drafted after it. Naga guides.
+- **`vol.cyc`** — an explicit chapter-world ring. The 12-world ring was left
+  alone (changing its length would move every other volume's scenery); Vol. 14
+  alternates its home world with five others instead.
+
+**A 13th world: the Grand Trunk Road.** A dusty highway running to the horizon
+under an enormous banyan with hanging aerial roots, carved milestones counting
+down the verge, paper kites, and a temple spire and minaret on the skyline.
+Registered in `worldScene`, `WORLD_NAME`, `WORLD_FACE` (Baloo 2 — the app's own
+face for scripts of the subcontinent), `WORLD_PACKS` and `WORLD_BLURB`, with
+its own three painted scenery strips.
+
+Art: 17 new generations (cover, divider, poster, 11 chapter openers, 3 strips),
+taking the pack to **281**. The four volumes that moved down had their art
+renamed in reverse (b17→b18 first) so nothing collided.
+
+**Hub tiles are books now.** `books/index.html` shows each volume as its painted
+cover at 3:4 with a spine gradient, a volume pill, a hover lift and a PDF pill;
+`.bk-meta` is a flex column with the footer row pushed to `margin-top:auto`, so
+tiles in a row stay aligned however long their subtitles run.
