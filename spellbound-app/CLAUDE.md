@@ -273,6 +273,48 @@ handlers. App lives in this folder; open `index.html` to run.
   input (e.g. drop the trailing "." or shift speed ±0.03) and verify the output actually
   differs (envelope correlation) before shipping — see `voice/pipeline/` QA scripts.
 
+## Boot budget (`boot-lazy.js`) — read before adding a script tag
+- The app boots in ~400ms on 4.7MB of critical JS. It used to be 1417ms on 31.9MB.
+  **Do not add a data file to `index.html`.** Register it in `boot-lazy.js` (REG +
+  IDLE order, and a GROUP if a feature needs it) and it arrives on an idle queue
+  after first paint. Call `SB_LAZY.need('<group>', cb)` at the door of the feature.
+- Deferred globals get an empty **stub** in boot-lazy so a bare `SB_CONCEPTS` cannot
+  ReferenceError in the gap. **Never snapshot a deferred global into a `const`** —
+  that freezes the stub (app.js used to do this with SB_CONCEPTS; it no longer does).
+- Every load fires an `sb-lazy` event; app3's listener drops the pools memoised while
+  the data was missing (`_catStatic`, `_wIdx`, `_wohPool`, `_wdb`, `_sndCache`,
+  `_themeCache`, `state.conceptData`). Add yours there if you memoise from lazy data.
+- The core library is **sharded**: `words-data.js` is the easiest 8,000 words,
+  `words-data-2.js` the other 32,944 (idle). `words-patch.js` is now
+  `SB_WORDS_PATCH()` so its QC pass re-runs over the second shard; the words-lore
+  merge is re-entrant for the same reason. Regenerate with
+  `voice/pipeline/words-shard.js` and `words-lore-split.js`.
+- Avatars: `avatars/s/` holds 192px renditions (9KB vs 348KB). `SB_AVATAR` serves them
+  at ≤96px. Regenerate with `voice/pipeline/avatar-thumbs.py` after any avatar change.
+- World art: `app-art/w-<world>-r<2|3>.jpg` (26 banners) is cut from the book series'
+  strips by `voice/pipeline/app-banners.py`. The Word Atlas, the theme pages and the
+  home Atlas tile all draw from it — one visual language with the books.
+
+## Concepts is ONE library
+- `state.conceptData` = free `SB_CONCEPTS.chapters` **concat** `SB_ADV_CONCEPTS.chapters`.
+  Advanced is always **appended**, never interleaved — concept narration is indexed by
+  position (`voice/c<i>-<n>.mp3`), so inserting anything would remap every clip.
+- `isConceptUnlocked` gates `ch.adv` on the Advanced Pack alone (no coin unlock).
+- The hub is **shelves = families** (`conceptChapters()` groups by `catGroup`), and a
+  shelf is either free or Advanced Pack, never both. The four advanced families are
+  Bee day / Deep spelling / Far origins / Word building (`ADV_FAMS`).
+- Word Journeys and the champion tip deck are "also here" covers in the same grid.
+
+## Theme Journeys teach first
+- A theme opens on its authored explanation (`theme-lore.js`, one entry per theme:
+  idea / how to spot it / what trips people up) and then hands over to the coach and
+  the vocabulary engine through Learn · Cards · Practice · Vocab tabs.
+- Themes classify by meaning (`re` against the definition, or a baked `w.t` tag) OR by
+  **origin** (`ore` against `w.o`) — the origin families and the seven eponym clusters
+  use the latter. `tag` + `ore` together means two conditions ("an eponym whose name is
+  French"). Every new theme needs a `theme-lore.js` entry.
+- A theme with fewer than `THEME_MIN` (12) words says so and offers no level ladder.
+
 ## Verify (headless)
 - `node -c app3.js && node -c saga2.js && node -c voice-review.js` after edits.
 - Playwright: chromium at `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`,
