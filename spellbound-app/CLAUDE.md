@@ -56,7 +56,7 @@ handlers. App lives in this folder; open `index.html` to run.
 - `voice-cdn.js` — on `*.github.io`, rewrites `voice/…` → raw.githubusercontent of `main`.
   Concept narration (`voice/c*`, `voice/a*`) is exempt: it is bundled on `gh-pages` and
   served same-origin, so it never depends on those clips reaching `main`.
-- `advanced.js` + `adv-concepts-data.js` — the **Advanced Pack** ($49/yr add-on, gated by
+- `advanced.js` + `adv-concepts-data.js` — the **Advanced Pack** ($49.99/yr add-on, gated by
   `SB_ENT.hasAddon('advanced')` only). `SB_ADV_CONCEPTS` holds **43 expert chapters** in
   four categories, `SB_ADV_CSCRIPT` their 258 narrated scenes. These live entirely outside
   `state.conceptData`, so they cannot leak into the free 121-chapter course. Narration is
@@ -122,17 +122,30 @@ handlers. App lives in this folder; open `index.html` to run.
   (98.6% agreement with CMU on the exact set; where they differ the card follows `p`,
   which is the point — the two notations on a card must agree with each other).
 
-## The Word Map & The Advanced Word Atlas (`trail.js` + `trail-data.js`)
-- The **concept-first guided journeys**, coexisting with the classic ladder. Desktop top
-  nav: **Home · Quest · Word Coach · Supercharge…** — the Quest tab IS the Word Map
-  (nav 'trail'); Word Coach holds the classic paths (ladder / own list / Ultra) via the
-  chooser at nav 'quest'; Theme Journeys live in Supercharge → Learn. Curriculum lives in `trail-data.js`
+## The Word Map (`trail.js` + `trail-data.js`) — the Word Atlas tab
+- **ONE concept-first guided journey.** Desktop top nav (7 tabs): **Home · Word Atlas ·
+  Practice · Library · Arcade · Progress · My Hive** — the Word Atlas tab IS the Word Map
+  (nav 'trail'): one continuous map of 9 base acts followed by **The Advanced Rounds**
+  (the 5 expeditions, unit ids `x*`), which render locked with a **$49.99/yr** Advanced
+  Pack CTA until `ADV.active()`. Course is derived from the unit id prefix
+  (`state.trailCourse`, set by `trailUnit`/`trailChk`; checkpoint args are
+  `"course|actId:n"`). A "Chapter shelf" button on the map opens the Concepts library,
+  which ALSO stays listed in Library → Learn (the user wants both routes).
+  Practice (old Word Coach, nav 'coach') keeps the classic drill paths via the
+  "Practice paths" chooser (nav 'quest'); its list catalogue is collapsed into four
+  group cards (My Words / The Champion Ladder / Word Origins / Tricky Words —
+  `grp` fields in `coachCatalog`, `state.catGroup` opens one; keys unchanged).
+  My Hive = Collection + Evolution + Store behind one lit tab (`hiveBar`).
+  Arcade holds exactly 7 surfaces: Saga, Spelling Quest (whose season map carries the
+  classic Boss Battle quick fight — `sqBoss`), Daily Buzz, Bee Trivia, Magic Squares,
+  Beat the Buzzer (modes: Sprint / Warm-Up / Level Challenge / Duel / ◆ Rapid
+  Dictation) and Word Quiz (+ ◆ Memory Match). Curriculum lives in `trail-data.js`
   (`SB_TRAIL`: 9 acts / 128 Honey units incl. 6 inline Trickster chapters; 5 expeditions / 43 units), word pools in `trail-map-data.js` (**lazy-loaded** by the engine — never
   add it to index.html). Regenerate both with `voice/pipeline/trail-build.js`.
 - Unit loop: Learn (opens the concept chapter; `state.trailReturn` routes `conceptBack`
   back to the unit) → Meet the words (wordFlash) → Practice (feeds `startTrain`) →
   **Quiz gate**: 15 mixed items (4 concept MCQs from `unit.qs` where `c[0]` is always
-  correct, 8 spell-it with audio, 3 meaning MCQs). Hard gate 80% (90% Expedition);
+  correct, 8 spell-it with audio, 3 meaning MCQs). Hard gate 80% (90% Advanced Rounds);
   fails go to a revise round; pass pays 15 coins. Checkpoints every 4th unit are mixed
   quizzes with no new words. Progress on the child at `c.trail`
   (`{lap,done,chk,seen,elap,edone,echk}`).

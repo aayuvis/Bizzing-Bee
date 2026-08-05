@@ -439,7 +439,7 @@ function workingSet(key){ const ws=listWords(key);
   return ws.length<=36?ws.slice():sample(ws,36); }
 // bee-likelihood as 5 dots (●●●○○) from a 0–100 probability score
 function beeOdds(bp){ const n=Math.max(1,Math.min(5,Math.round((bp||0)/20))); return '●'.repeat(n)+'○'.repeat(5-n); }
-// Build the Word Coach working set for a list ONCE and keep it stable while you navigate —
+// Build the Practice working set for a list ONCE and keep it stable while you navigate —
 // only rebuilt when the active list changes (or after a drill clears sessionListKey).
 function resetSessionScore(){ state.sessionOver=false; state.sessionCorrect=[]; state.sessionWrong=[]; state.sessionRight=0; state.sessionDone=0; }
 function ensureCoachWords(key){ if(state.sessionListKey!==key || !(state.sessionWords&&state.sessionWords.length)){
@@ -517,7 +517,7 @@ function speakSlow(){ deviceSpeak(curWord().w, 0.55); } // tortoise: same clip/v
 function say(text,rate){ deviceSpeak(text, (rate||0.95)*(state.voiceRate||1)); }
 // tortoise glyph for the "hear it slowly" button — inherits the button's currentColor
 function tortoiseSVG(sz){ sz=sz||24; return `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="display:block"><path d="M3.5 15 Q11 5 18.5 15 Z" fill="currentColor"/><ellipse cx="11" cy="15" rx="7.6" ry="1.5" fill="currentColor"/><rect x="5" y="14.6" width="2.2" height="3.4" rx="1.1" fill="currentColor"/><rect x="14.8" y="14.6" width="2.2" height="3.4" rx="1.1" fill="currentColor"/><circle cx="20.2" cy="12.8" r="2.3" fill="currentColor"/><circle cx="21" cy="12.3" r=".55" fill="#fff"/><path d="M6 11.6 Q11 6.6 16 11.6" stroke="#fff" stroke-width="1" fill="none" opacity=".45"/><path d="M8.4 13.4 h5.2 M9.4 15 h3.2" stroke="#fff" stroke-width=".9" opacity=".4" stroke-linecap="round"/></svg>`; }
-// stacked-cards glyph for the Word Coach card-view toggle
+// stacked-cards glyph for the Practice card-view toggle
 function cardsSVG(sz){ sz=sz||20; return `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block"><rect x="3.5" y="7.5" width="12" height="13" rx="2.4"/><path d="M8 7.5V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v9.5a2 2 0 0 1-2 2h-1.5"/></svg>`; }
 // split a sentence around its target word (and simple inflections) so we can read it aloud
 // WITHOUT speaking the answer — used by "Finish the Sentence"
@@ -760,37 +760,39 @@ function itBuild(mode){ const pool=ipaPool(); if(pool.length<8) return null;
   return { mode, qs, i:0, score:0, picked:null, done:false }; }
 function coachCatalog(){
   const S=state; const st=catStatic(); const nsf=SB_DATA.nsf||[]; const snd=soundLists();
+  /* grp collapses the catalogue for the picker: members show inside one group card
+     (My Words / The Champion Ladder / Word Origins / Tricky Words). Keys unchanged. */
   const cats=[
-    { key:'review',     label:'Sticky Words',            sub:'The words everyone trips on — curated to untangle', words:REVIEW },
+    { key:'review',     grp:'mine',   label:'Sticky Words',            sub:'The words everyone trips on — curated to untangle', words:REVIEW },
     { key:'scripps',    label:'Words of Champions',      sub:'Every championship-winning word at the national bee, 1925–2026', words:(window.SB_SCRIPPS||[]) },
-    { key:'missed',     label:'My Comeback Words',       sub:'The ones that got away — win them back', words:((active().missed)||S.missedWords||[]) },
-    { key:'likely',     label:'Most Wanted Words',       sub:'Ranked by bee-probability score',       words:st.likely },
-    { key:'nsf_finals', label:'The Final Round',         sub:'Modeled on the NSF finals word pool',         words:st.finals },
-    { key:'nsf_primary',label:'First Flight',            sub:'Your first bee words · primary level',  words:st.primary },
-    { key:'nsf_junior', label:'Rising Stars',            sub:'Junior-level competition words',        words:st.junior },
+    { key:'missed',     grp:'mine',   label:'My Comeback Words',       sub:'The ones that got away — win them back', words:((active().missed)||S.missedWords||[]) },
+    { key:'likely',     grp:'mine',   label:'Most Wanted Words',       sub:'Ranked by bee-probability score',       words:st.likely },
+    { key:'nsf_primary',grp:'ladder', label:'First Flight',            sub:'Your first bee words · primary level',  words:st.primary },
+    { key:'nsf_junior', grp:'ladder', label:'Rising Stars',            sub:'Junior-level competition words',        words:st.junior },
+    { key:'nsf_senior', grp:'ladder', label:'The Big Leagues',         sub:'Senior-level competition words',        words:st.senior },
+    { key:'nsf_advanced',grp:'ladder',label:'Boss Level',              sub:'The hardest competition words there are', words:st.advanced },
+    { key:'nsf_finals', grp:'ladder', label:'The Final Round',         sub:'Modeled on the NSF finals word pool',         words:st.finals },
     { key:'nsf500',     label:'The Mighty 500',          sub:'500 high-probability finals words · your 15-day list', words:st.nsf500 },
     { key:'vocab26',    label:'Meaning Masters',         sub:'Practice for the 2026 junior vocabulary final · 1,000 words', words:st.vocab26 },
-    { key:'nsf_senior', label:'The Big Leagues',         sub:'Senior-level competition words',        words:st.senior },
-    { key:'nsf_advanced',label:'Boss Level',             sub:'The hardest competition words there are', words:st.advanced },
     { key:'nsf',        label:'The Champion’s Vault',    sub:'17,000-word competition library',       words:nsf },
     { key:'all',        label:'The Whole Hive',          sub:'Every word we know · 128,000 (loads on first use)', words:(window.SB_FULL||nsf) },
-    { key:'hardest',    label:'Beastly Words',           sub:'Highest-difficulty spellers + championship winners', words:st.hardest.concat(window.SB_SCRIPPS||[]) },
-    { key:'trickiest',  label:'Sneaky Spellings',        sub:'The sound hides the spelling — pattern words, not just rare ones', words:st.trickiest },
-    { key:'latin',      label:'Latin Legends',           sub:'Words with roots from Latin',           words:st.latin },
-    { key:'greek',      label:'Greek Heroes',            sub:'Words with roots from Greek',           words:st.greek },
-    { key:'french',     label:'French Flair',            sub:'Loanwords from French',                 words:st.french },
-    { key:'oe',         label:'Old English Originals',   sub:'Anglo-Saxon roots',                     words:st.oe },
-    { key:'norse',      label:'Viking Words',            sub:'Old Norse roots',                       words:st.norse },
-    { key:'spanish',    label:'Spanish Treasures',       sub:'Loanwords from Spanish',                words:st.spanish },
-    { key:'italian',    label:'Italian Treasures',       sub:'Loanwords from Italian',                words:st.italian },
-    { key:'german',     label:'German Treasures',        sub:'Loanwords from German',                 words:st.german },
-    { key:'arabic',     label:'Arabic Treasures',        sub:'Loanwords from Arabic',                 words:st.arabic },
-    { key:'japanese',   label:'Japanese Treasures',      sub:'Loanwords from Japanese',               words:st.japanese },
-    { key:'hindi',      label:'Hindi & Sanskrit Treasures', sub:'Indian-language loanwords',          words:st.hindi },
-    { key:'eponyms',    label:'Named After Someone',     sub:'Eponyms clustered by the name’s language — each Level is one cluster',  words:st.eponyms },
-    { key:'homophones', label:'Sound Twins',             sub:'Homonyms — same sound, different spelling; the meaning decides', words:snd.hom },
-    { key:'altpron',    label:'Two-Way Words',           sub:'One spelling, two accepted sounds — hear both, spell one', words:snd.alt },
-    { key:'diacritics', label:'Words in Fancy Dress',    sub:'é, ñ, ç — the marked spellings behind the plain letters', words:snd.dia },
+    { key:'hardest',    grp:'tricky', label:'Beastly Words',           sub:'Highest-difficulty spellers + championship winners', words:st.hardest.concat(window.SB_SCRIPPS||[]) },
+    { key:'trickiest',  grp:'tricky', label:'Sneaky Spellings',        sub:'The sound hides the spelling — pattern words, not just rare ones', words:st.trickiest },
+    { key:'latin',      grp:'origins',label:'Latin Legends',           sub:'Words with roots from Latin',           words:st.latin },
+    { key:'greek',      grp:'origins',label:'Greek Heroes',            sub:'Words with roots from Greek',           words:st.greek },
+    { key:'french',     grp:'origins',label:'French Flair',            sub:'Loanwords from French',                 words:st.french },
+    { key:'oe',         grp:'origins',label:'Old English Originals',   sub:'Anglo-Saxon roots',                     words:st.oe },
+    { key:'norse',      grp:'origins',label:'Viking Words',            sub:'Old Norse roots',                       words:st.norse },
+    { key:'spanish',    grp:'origins',label:'Spanish Treasures',       sub:'Loanwords from Spanish',                words:st.spanish },
+    { key:'italian',    grp:'origins',label:'Italian Treasures',       sub:'Loanwords from Italian',                words:st.italian },
+    { key:'german',     grp:'origins',label:'German Treasures',        sub:'Loanwords from German',                 words:st.german },
+    { key:'arabic',     grp:'origins',label:'Arabic Treasures',        sub:'Loanwords from Arabic',                 words:st.arabic },
+    { key:'japanese',   grp:'origins',label:'Japanese Treasures',      sub:'Loanwords from Japanese',               words:st.japanese },
+    { key:'hindi',      grp:'origins',label:'Hindi & Sanskrit Treasures', sub:'Indian-language loanwords',          words:st.hindi },
+    { key:'eponyms',    grp:'origins',label:'Named After Someone',     sub:'Eponyms clustered by the name’s language — each Level is one cluster',  words:st.eponyms },
+    { key:'homophones', grp:'tricky', label:'Sound Twins',             sub:'Homonyms — same sound, different spelling; the meaning decides', words:snd.hom },
+    { key:'altpron',    grp:'tricky', label:'Two-Way Words',           sub:'One spelling, two accepted sounds — hear both, spell one', words:snd.alt },
+    { key:'diacritics', grp:'tricky', label:'Words in Fancy Dress',    sub:'é, ñ, ç — the marked spellings behind the plain letters', words:snd.dia },
   ].filter(c=>(c.words&&c.words.length) || c.key==='missed');
   /* The advanced journey is a first-class list once the pack is on, so it inherits the
      whole Practice shell. Unshifted to the front so it sits ABOVE the Bizzing Bee
@@ -1305,7 +1307,7 @@ const app = {
   finderCreateAdd:()=>{ const c=active(); const w=state.finderSel; if(!w) return; const name=(state.finderName||'').trim()||'My words';
     c.builtLists=c.builtLists||{}; const key='built_'+Date.now().toString(36);
     c.builtLists[key]={ label:name, ws:[w.w] }; state.finderName=''; save(); sfx('win');
-    flash('New list “'+name+'” created with “'+w.w+'” — find it in Word Coach ✓'); render(); },
+    flash('New list “'+name+'” created with “'+w.w+'” — find it in Practice ✓'); render(); },
   reportWord:(w)=>set({reportW:w}),
   reportClose:()=>set({reportW:null}),
   reportIssue:(issue)=>{ const w=state.reportW; if(!w) return; const r=wordDB().get(nkey(w))||{w};
@@ -1365,7 +1367,7 @@ const app = {
     sfx('correct'); app.next(); },
   reviseWord:()=>{ const cw=curWord(); if(cw){ addMiss(cw); if(state.status==='idle') state.sessionDone=(state.sessionDone||0)+1; }
     flash('Marked for revision ⚑'); app.next(); },
-  // Word Coach card view: an icon toggles the spell card into a swipeable portrait flash-card
+  // Practice card view: an icon toggles the spell card into a swipeable portrait flash-card
   // deck. Tap/swipe right = "got it" (completeWord), tap/swipe left = revise (reviseWord).
   // Card view lives inside the Learn tab: the cards icon opens a deck starting on the word
   // you're on and the words after it. Right (tap/swipe/→ key) = next; left = mark revise + next.
@@ -1592,6 +1594,9 @@ const app = {
   trvExit:()=>{ if(window.STV) STV.exit(); },
   sqExit:()=>{ if(window.SQ) SQ.exit(); },
   sqPickSeason:(a)=>{ if(window.SQ) SQ.pickSeason(a); },
+  /* classic Boss Battle lives inside Spelling Quest now — quick fight from the season map */
+  sqBoss:()=>{ try{ clearInterval((state.sq||{}).timer); }catch(e){} state.sq=null; state.nav='games'; app.playGame('boss'); },
+  catGroup:(a)=>set({catGroup:a||null}),
   sqStart:()=>{ if(window.SQ) SQ.startChapter(); },
   sqHear:()=>{ if(window.SQ) SQ.hear(); },
   sqKey:(a)=>{ if(window.SQ) SQ.key(a); },
@@ -1866,6 +1871,9 @@ const app = {
   openAdvanced:()=>{ if(!window.ADV) return; ADV.open();
     if(state.advView!=='gate' && !window.SB_FULL) loadFullLibrary(()=>{ try{ render(); }catch(e){} }); },
   advGo:(v)=>{ if(window.ADV) ADV.go(v); },
+  /* ◆ advanced rounds inside the ordinary Arcade pickers (no separate Advanced Games room) */
+  arcAdvDict:()=>{ if(!window.ADV||!advModeOn()) return; app.openAdvanced(); ADV.dictStart(); },
+  arcAdvMem:()=>{ if(!window.ADV||!advModeOn()) return; app.openAdvanced(); ADV.memStart(); },
   advConcept:(i)=>{ if(window.ADV) ADV.openConcept(i); },
   /* Deep links from the ordinary hubs straight into an Advanced Mode segment. ADV.open()
      first so the module owns nav and the full library starts loading, then jump. */
@@ -2318,7 +2326,7 @@ function worldHeroCard(t, on, locked, act){ const H=WORLD_HERO[t.id]||WORLD_HERO
     </div></button>`; }
 /* ---- Wayfinding tiles: destination color pops (spec §1). 48px solid tile, white icon,
    press edge, playful ±2–3° tilt. Colors are PLACE identity — stable across worlds. ---- */
-const WAYFIND={ quest:{c:'var(--action,#6C4FE0)',ic:'steps',sb:null,label:'Champion’s Quest'},
+const WAYFIND={ quest:{c:'var(--action,#6C4FE0)',ic:'steps',sb:null,label:'Practice paths'},
   concepts:{c:'#0E8A78',ic:'grid',sb:'grid',label:'Word Concepts'},
   journeys:{c:'#C25A2E',ic:'book',sb:'book',label:'Word Journey'},
   builder:{c:'#7C5CFF',ic:'sliders',sb:'sliders',label:'List Builder'},
@@ -2394,16 +2402,16 @@ const ADV_TOUR=[
     screen:'Practice', rows:['Ultra Champions Journey','Practice · Test · Revise','Your level and words','Quick practice'], at:0,
     note:'A two-year plan at 150–300 words a day, drawn from all 128,196 words.' },
   { shot:'train', art:'mockBee', col:'#C8901B', title:'Mock Spelling Bee', seg:'mock',
-    where:'Supercharge → Train, at the top',
-    screen:'Supercharge · Train', rows:['Mock Spelling Bee','Idioms & Similes','Typing Trainer','Quotes'], at:0,
+    where:'Library → Train, at the top',
+    screen:'Library · Train', rows:['Mock Spelling Bee','Idioms & Similes','Typing Trainer','Quotes'], at:0,
     note:'Written, vocabulary and lightning rounds, with a readiness benchmark.' },
   { shot:'learn', art:'concepts', col:'#5B3FA6', title:'Advanced Concepts', seg:'concepts',
-    where:'Supercharge → Learn, just under Word Concepts',
-    screen:'Supercharge · Learn', rows:['Word Concepts','Advanced Concepts','Word Journey','List Builder'], at:1,
+    where:'Library → Learn, just under Word Concepts',
+    screen:'Library · Learn', rows:['Word Concepts','Advanced Concepts','Word Journey','List Builder'], at:1,
     note:'Six narrated lessons: schwa rescue, stress shift, the origin tree, question strategy.' },
   { shot:'revise', art:'advTips', col:'#0E8A78', title:'Advanced Tips & Tricks', seg:'tips',
-    where:'Supercharge → Revise',
-    screen:'Supercharge · Revise', rows:['Your Revisions','Your Traps','Advanced Tips & Tricks'], at:2,
+    where:'Library → Revise',
+    screen:'Library · Revise', rows:['Your Revisions','Your Traps','Advanced Tips & Tricks'], at:2,
     note:'36 champion techniques across memory, speed, etymology and bee-day tactics.' },
   { shot:'arcade', art:'advGames', col:'#E8458C', title:'Advanced Games', seg:'games',
     where:'The Arcade, leading the screen',
@@ -2859,7 +2867,7 @@ function viewTyping(){ const S=state; const c=active(); const st=tyStats(c);
 /* The check screen. Multiple choice on meaning, one question per word in the set, with the
    word spoken aloud — the same shape as a real vocabulary round. Keyboard 1-4 and Enter
    work alongside tapping, because every screen in this app needs both. */
-/* ---- Vocabulary shell: the Word Coach layout, driven by the vocabulary ladder --------
+/* ---- Vocabulary shell: the Practice layout, driven by the vocabulary ladder --------
    Same List Dock (one big "now studying" tile with a progress ring, small tiles to switch,
    "+ Add a list" opening the SAME chooser), same tab bar, same all-words panel. The only
    differences are the ones that must differ: the ring shows the vocabulary set rather than
@@ -2884,7 +2892,7 @@ function vocDockColor(k){ if(k==='journey') return '#7C5CFF'; if(k==='review') r
   if(String(k).indexOf('built_')===0) return '#13A892';
   let h=0; for(const ch of String(k)) h=(h*31+ch.charCodeAt(0))>>>0;
   return ['#7C5CFF','#E0922E','#DC5B7E','#13A892','#3D7DF0','#B14FC4','#4F9E6A','#F0703C'][h%8]; }
-/* The Word Coach shell, reused: back link + title row, the List Dock, the tab bar, then
+/* The Practice shell, reused: back link + title row, the List Dock, the tab bar, then
    whatever the active tab renders. Everything inside a tab is unchanged — only the frame
    around it now matches the coach. */
 /* The coach's "Live progress" heatmap, drawn from the VOCABULARY ladder: green = meaning
@@ -2965,7 +2973,7 @@ function vocDock(){ const c=active(); const key=vocListKey(); const deck=vocDeck
     <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:stretch">${bigTile}<div style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:7px;justify-content:center">${smallTiles||'<span style="font-size:12px;color:var(--muted);font-weight:650">Add a list to switch between them</span>'}</div></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">${addBtn}${wordsBtn}${newBtn}</div>
   </div>`; }
-/* Same three-tab bar shape as the Word Coach. */
+/* Same three-tab bar shape as the Practice. */
 function vocTabs(){ const t=state.vocTab||'cards';
   const tab=(k,l)=>`<button data-act="vocSetTab" data-arg="${k}" style="flex:1;padding:9px 8px;border-radius:10px;font-weight:800;font-size:13px;${t===k?'background:var(--bg2);color:var(--text);box-shadow:var(--sh-rest)':'color:var(--muted)'}">${l}</button>`;
   return `<div style="display:flex;gap:6px;background:var(--surface2);border-radius:12px;padding:5px;margin-bottom:14px">${tab('cards','📇 Cards')}${tab('practice','🎯 Practise')}${tab('check','✓ Check')}</div>`; }
@@ -3039,7 +3047,7 @@ function viewVocCheck(){ const g=state.vocCheck; if(!g) return '';
   </div>`; }
 
 function viewVocab(){ const S=state; const c=active();
-  /* Land straight on the current list, exactly as the Word Coach lands on the list being
+  /* Land straight on the current list, exactly as the Practice lands on the list being
      trained. There is no separate "pick a deck" screen any more — the List Dock does the
      switching and "+ Add a list" opens the same chooser the coach uses. */
   /* Derive the opening deck inline. Calling app.vocDeck() here would re-enter render()
@@ -3194,7 +3202,7 @@ function viewQuotes(){ const c=active(); const S=state; const all=(window.SB_QUO
 function viewIpaTrain(){ const S=state; const it=S.it; const pool=ipaPool();
   const tab=(m,label)=>`<button data-act="itMode" data-arg="${m}" style="padding:9px 15px;border-radius:999px;font-weight:800;font-size:13px;${(it?it.mode:'learn')===m?'background:var(--accent);color:#fff;box-shadow:var(--edge)':'background:var(--surface2);color:var(--text);border:1px solid var(--line)'}">${label}</button>`;
   const head=pageHead('The Sound Alphabet','read IPA like a champion','Study lists write pronunciations in phonetic symbols. Learn what each one says, then drill with real bee words — every one spoken by the real voice.');
-  const tabs=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px"><button data-act="setNav" data-arg="explore" style="color:var(--muted);font-weight:700;font-size:13px;padding:9px 6px">← Supercharge</button>${tab('learn','Learn the symbols')}${tab('readipa','Read it')}${tab('writeipa','Transcribe it')}${tab('sound','Find the sound')}</div>`;
+  const tabs=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px"><button data-act="setNav" data-arg="explore" style="color:var(--muted);font-weight:700;font-size:13px;padding:9px 6px">→ x/button>${tab('learn','Learn the symbols')}${tab('readipa','Read it')}${tab('writeipa','Transcribe it')}${tab('sound','Find the sound')}</div>`;
   if(!it||it.mode==='learn'){
     const eg=(sym)=>pool.filter(e=>e.t.indexOf(sym)>=0).slice(0,2);
     const card=(M)=>{ const samples=M.s==='ˈ'?[]:eg(M.s);
@@ -3299,7 +3307,7 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state; const a
     row('traps','openTraps',null,'Beat your weak spelling patterns')+
     (advOn?row('advtips','openAdvTips',null,'36 champion techniques — memory, speed, roots & bee-day tactics'):''));
   return `<div style="animation:sb-rise .35s ease both">
-    ${pageHead('Supercharge your English','learn · train · revise','Everything beyond spelling practice — build deep word knowledge, sharpen real skills, and clean up what trips you up.')}
+    ${pageHead('The Library','learn · train · revise','Everything beyond spelling practice — build deep word knowledge, sharpen real skills, and clean up what trips you up.')}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;align-items:start">${learn}${train}${revise}</div>
   </div>`; }
 /* Advanced Mode entry — a gated hero banner. Unlocks at Level 12, Bee Band 7, or by paying. */
@@ -3404,7 +3412,7 @@ function viewTraps(){ const S=state; const traps=missTraps(); const sel=S.trapSe
     ${traps.length?`<div style="display:flex;flex-direction:column;gap:9px">${rows}</div>`
       :beeEmpty('sleepy','Nothing on the radar — no misses to trace yet. The bee naps until you find a tricky word.')}
   </div>`; }
-// Revisions — words the child flagged "Mark for revision" in Word Coach. Each can be drilled
+// Revisions — words the child flagged "Mark for revision" in Practice. Each can be drilled
 // again (⚑ Revise) or cleared once mastered (✓ Complete). Companion to Your Traps.
 function viewRevisions(){
   const c=active(); const list=(c.missed||[]); const hist=(c.reviseHistory||[]); const tab=state.revTab||'todo';
@@ -3421,9 +3429,9 @@ function viewRevisions(){
   const body = tab==='history'
     ? (hist.length?`<div style="display:flex;flex-direction:column;gap:9px">${hist.map(histRow).join('')}</div>`:beeEmpty('happy','No revise history yet. When you mark a revision word ✓ Complete, it moves here so you can revisit it any time.'))
     : (list.length?`<div style="display:flex;gap:8px;margin-bottom:14px"><button data-act="practiceRevisions" style="flex:1;padding:13px;border-radius:12px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Practice all ${list.length} →</button></div><div style="display:flex;flex-direction:column;gap:9px">${list.map(todoRow).join('')}</div>`
-      :beeEmpty('happy','Nothing to revise — every flagged word is cleared! Mark a word for revision in Word Coach and it will show up here.'));
+      :beeEmpty('happy','Nothing to revise — every flagged word is cleared! Mark a word for revision in Practice and it will show up here.'));
   return `<div style="max-width:640px;margin:0 auto;animation:sb-rise .35s ease both">
-    ${pageHead('Your Revisions','words you flagged to revise','Mark a word for revision in Word Coach and it lands here. Drill it, or mark it complete once it sticks — completed words move to Revise history so you can revisit them.')}
+    ${pageHead('Your Revisions','words you flagged to revise','Mark a word for revision in Practice and it lands here. Drill it, or mark it complete once it sticks — completed words move to Revise history so you can revisit them.')}
     <div style="display:flex;gap:6px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:14px">${tabBtn('todo','To revise'+(list.length?' · '+list.length:''))}${tabBtn('history','Revise history'+(hist.length?' · '+hist.length:''))}</div>
     ${body}
   </div>`;
@@ -3433,8 +3441,8 @@ function viewApp(){
   const S=state;
   const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,quotes:1,typing:1,builder:1,adv:1,traps:1,revisions:1,trivtrain:1,ipatrain:1};
   const NAV_ART={home:'home',coach:'practice',explore:'explore',games:'arcade',shop:'store',progress:'progress',collection:'collection'};
-  const navTabs=[['home','Home','home'],['trail','Quest','steps'],['coach','Word Coach','pencil'],['explore','Supercharge','compass'],['games','Arcade','joystick'],['progress','Progress','chart'],['collection','Collection','crown'],['shop','Store','cart']].map(([key,label,ic])=>{
-    const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:key==='coach'?(S.nav==='coach'||S.nav==='train'||S.nav==='levelup'||S.nav==='quest'):S.nav===key;
+  const navTabs=[['home','Home','home'],['trail','Word Atlas','steps'],['coach','Practice','pencil'],['explore','Library','compass'],['games','Arcade','joystick'],['progress','Progress','chart'],['collection','My Hive','crown']].map(([key,label,ic])=>{
+    const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:key==='coach'?(S.nav==='coach'||S.nav==='train'||S.nav==='levelup'||S.nav==='quest'):key==='collection'?(S.nav==='collection'||S.nav==='shop'||S.nav==='evolution'):S.nav===key;
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
     const art=NAV_ART[key];
     const glyph=(window.SB_ICON_ART && art && SB_ICON_ART[art]) ? `<span style="display:inline-flex;line-height:0;width:22px;height:22px;${on?'filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))':''}">${SB_ICON_ART(art,{size:22})}</span>` : (key==='explore'?(window.SB_ICON?SB_ICON('compass',{size:17}):iconSVG('grid',17)):iconSVG(ic,17));
@@ -3570,7 +3578,7 @@ function viewApp(){
     ${viewDrawer()}
     <div class="sb-content" style="max-width:1080px;margin:0 auto;width:100%;padding:18px clamp(14px,3.5vw,32px) 60px">${content}</div>
     <nav class="sb-tabbar" aria-label="Primary">
-      ${[['home','Home','home','home'],['coach','Practice','pencil','practice'],['explore','Supercharge','compass','explore'],['games','Arcade','joystick','arcade'],['progress','Progress','chart','progress']].map(([k,l,ic,art])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='coach'&&(S.nav==='train'||S.nav==='levelup'||S.nav==='quest'||S.nav==='trail')));
+      ${[['home','Home','home','home'],['coach','Practice','pencil','practice'],['explore','Library','compass','explore'],['games','Arcade','joystick','arcade'],['progress','Progress','chart','progress']].map(([k,l,ic,art])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='coach'&&(S.nav==='train'||S.nav==='levelup'||S.nav==='quest'||S.nav==='trail')));
         const gl=(window.SB_ICON_ART && SB_ICON_ART[art])?`<span style="display:inline-flex;line-height:0;width:24px;height:24px;${on?'':'filter:grayscale(.35) opacity(.8)'}">${SB_ICON_ART(art,{size:24})}</span>`:iconSVG(ic,21);
         return `<button data-act="setNav" data-arg="${k}" aria-current="${on?'page':'false'}" style="${on?'color:var(--accent)':'color:var(--muted)'}">${gl}<span>${l}</span></button>`; }).join('')}
     </nav>
@@ -3697,10 +3705,10 @@ function viewHome(){
   const lChapDone=lUnits.filter(u=>{ const ls=lessonsAll().filter(L=>L.unit===u.n); return ls.length && ls.every(L=>lessonComplete(L)); }).length; const lChapTot=lUnits.length||10;
   const qp=c.questPath; const qpLabel=qp==='themes'?'Theme Journey':qp==='own'?'My own list':qp==='journey'?'Bizzing Bee Journey':null;
   const journeys=[
-    {goAct:'openCoach', ic:'steps', sc:'coach', c1:'#7C5CFF',c2:'#5A37D6',accent:'#7C5CFF', title:"Champion's Quest", desc:qp?('Your path: '+qpLabel+' — climb its Levels with Revise & Practice. Switch paths any time.'):'One quest, three paths — the Bizzing Bee ladder, a Theme Journey, or your own word list.', pct:Math.min(100,Math.round(aLvlNew/20*100))+'%', badge:qp?('Level '+aLvlNew+' · '+qpLabel):'Choose your path', kind:'go'},
+    {goAct:'openCoach', ic:'steps', sc:'coach', c1:'#7C5CFF',c2:'#5A37D6',accent:'#7C5CFF', title:"Practice", desc:qp?('Your path: '+qpLabel+' — climb its Levels with Revise & Practice. Switch paths any time.'):'Drill your words — the Bizzing Bee ladder or your own word list.', pct:Math.min(100,Math.round(aLvlNew/20*100))+'%', badge:qp?('Level '+aLvlNew+' · '+qpLabel):'Choose your path', kind:'go'},
     {goAct:'setNav', goArg:'concepts', ic:'grid', sc:'concept', c1:'#13A892',c2:'#0E8A78',accent:'#13A892', title:'Concepts', desc:'Spelling basics, patterns, prefixes, roots & tricky endings, in 11 short chapters.', pct:Math.round(cDone/(cTot||1)*100)+'%', badge:cChapDone+'/'+(conceptChapters().length||11)+' chapters', kind:'go'},
     {goAct:'openJourneys', ic:'book', sc:'book', c1:'#E0922E',c2:'#C8791B',accent:'#E0922E', title:'Word Journeys', desc:'The history & geography of words — roots, journeys & origins, in 10 chapters.', pct:Math.round((lChapTot?lChapDone/lChapTot:0)*100)+'%', badge:S.premium?(lChapDone+'/'+lChapTot+' chapters'):'Premium', kind:S.premium?'go':'lock'},
-    {goAct:'openGames', ic:'joystick', sc:'joystick', festive:true, title:'Arcade', desc:'Spelling Quest, Boss Battle, Word Quiz & more — earn coins!', pct:Math.min(100,(c.streak||0)*10)+'%', badge:(c.coins||0)+' coins', kind:'go'},
+    {goAct:'openGames', ic:'joystick', sc:'joystick', festive:true, title:'Arcade', desc:'Spelling Quest, the Saga, Word Quiz & more — earn coins!', pct:Math.min(100,(c.streak||0)*10)+'%', badge:(c.coins||0)+' coins', kind:'go'},
   ].filter(j=>focusedH?(j.sc==='coach'||j.sc==='concept'||j.festive):(j.sc==='coach'||j.festive)).map((j,ji)=>{
     const arg=j.goArg?`data-arg="${j.goArg}"`:'';
     const wk=({coach:'quest',concept:'concepts',book:'journeys',joystick:'arcade',theme:'themes'})[j.sc]||'quest';
@@ -4190,6 +4198,10 @@ function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageI
     { g:'Vocabulary', id:'figdecks3', name:'Phrase Fancier', desc:'Complete 3 idiom & simile decks', ic:'spark', done:Object.keys(c.figDone||{}).length>=3 },
     { g:'Vocabulary', id:'figq5', name:'Idiom Sleuth', desc:'Play 5 idiom or simile quiz rounds', ic:'spark', done:(c.figQuiz||0)>=5 },
   ]; }
+/* My Hive — one home for everything you've earned & everything you spend: the Collection,
+   the Evolution ladder and the Store share this section bar (one lit top-nav tab). */
+function hiveBar(cur){ const seg=(k,act,l,ic)=>`<button data-act="${act}" style="flex:1;min-width:110px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 10px;border-radius:12px;font-weight:800;font-size:13.5px;${cur===k?'background:var(--accent);color:#fff;box-shadow:var(--edge)':'background:var(--bg2);color:var(--muted);border:1px solid var(--line)'}">${iconSVG(ic,16)} ${l}</button>`;
+  return `<div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px">${seg('coll','openCollection','Collection','crown')}${seg('evo','openEvo','Evolution','spark')}${seg('store','openShop','Store','cart')}</div>`; }
 function viewCollection(){ const S=state; const c=active(); const tab=S.collTab||'badges';
   const tabBtn=(k,ic,l)=>`<button data-act="collTab" data-arg="${k}" style="flex:1;min-width:96px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${iconSVG(ic,15)} ${l}</button>`;
   let body='';
@@ -4259,7 +4271,8 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
   }
   const bAll=badgeDefs();
   return `<div style="max-width:920px;margin:0 auto">
-    ${pageHead('My Collection', avOwnedCount(c)+'/'+SB_AVATARS.list.length+' avatars', 'Everything you\'ve earned and unlocked — badges, avatars, worlds and artifacts.',
+    ${hiveBar('coll')}
+    ${pageHead('My Hive', avOwnedCount(c)+'/'+SB_AVATARS.list.length+' avatars', 'Everything you\'ve earned and unlocked — badges, avatars, worlds and artifacts.',
       `<span style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px">${coinAmt(c.coins||0,14)}</span>`)}
     <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">${tabBtn('badges','crown','Badges · '+bAll.filter(b=>b.done).length+'/'+bAll.length)}${tabBtn('avatars','spark','Avatars · '+avOwnedCount(c)+'/'+SB_AVATARS.list.length)}${tabBtn('worlds','palette','Worlds · '+THEMES.filter(t=>isThemeUnlocked(t.id)).length+'/'+THEMES.length)}${tabBtn('artifacts','bolt','Artifacts')}</div>
     ${body}
@@ -4273,7 +4286,7 @@ function viewEvolution(){ const S=state; const c=active(); ensureLists(c); const
   const rungMarks=Array.from({length:10},(_,i)=>i===0?'start':fmtN(stageXp(i))+' Karma');
   const xpToForm=Math.max(0, stageXp(Math.min(9,fIdx+1))-totalXp);
   return `<div style="max-width:900px;margin:0 auto">
-    <button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px;margin-bottom:8px">← Home</button>
+    ${hiveBar('evo')}
     <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 4px">Your evolution</h2><span style="font-size:13px;color:var(--muted);font-weight:650">how your bee grows</span></div>
     <p style="margin:0 0 16px;font-size:14px;color:var(--muted);line-height:1.5">Every word you practise feeds your bee. Evolution measures <b style="color:var(--text)">effort</b> — it always climbs and never falls. (What you're <i>ready</i> to spell is your Bee Band — that lives on Progress.)</p>
     <div class="sb-card" style="margin-bottom:14px">
@@ -4286,10 +4299,10 @@ function viewEvolution(){ const S=state; const c=active(); ensureLists(c); const
     </div>
     <div class="sb-card" style="margin-bottom:14px">
       <div class="sb-ct" style="font-size:15px;margin-bottom:6px">How Karma works</div>
-      <div class="sb-cs" style="line-height:1.6">One word spelled right = <b style="color:var(--text)">1 Karma</b> — in Word Coach, the Arcade, Concepts, anywhere. Karma is your practice record: it only grows and is never spent.<br>Coins 🪙 are different — they're treasure you win and <i>spend</i> in the Store on worlds, avatars and power-ups. Spending coins never touches your Karma or your evolution.</div>
+      <div class="sb-cs" style="line-height:1.6">One word spelled right = <b style="color:var(--text)">1 Karma</b> — in Practice, the Arcade, Concepts, anywhere. Karma is your practice record: it only grows and is never spent.<br>Coins 🪙 are different — they're treasure you win and <i>spend</i> in the Store on worlds, avatars and power-ups. Spending coins never touches your Karma or your evolution.</div>
     </div>
     ${(theme==='spellbound')?`<div class="sb-card" style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><span style="font-size:26px;flex-shrink:0">👑</span><span class="sb-cs"><b style="color:var(--text)">Why a Queen at the top?</b> Every hive is ruled by its Queen — the strongest, most protected bee alive. Reaching her means you outgrew every other bee in the hive.</span></div>`:''}
-    ${beeEmpty('happy','Ten forms, one bee. Practise anywhere — Word Coach, the Arcade, Concepts — and the Karma all feeds the same evolution.')}
+    ${beeEmpty('happy','Ten forms, one bee. Practise anywhere — Practice, the Arcade, Concepts — and the Karma all feeds the same evolution.')}
   </div>`;
 }
 
@@ -4797,7 +4810,7 @@ function trainerCard(){
       <div style="display:flex;gap:10px"><button data-act="reveal" style="padding:14px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Show answer</button><button data-act="primary" style="flex:1;padding:14px;border-radius:14px;${showResult?'background:var(--surface2);color:var(--text);border:1px solid var(--line)':'background:var(--accent);color:#fff;box-shadow:var(--edge)'};font-weight:800;font-size:15px">${primaryLabel}</button></div>
     </div>`;
 }
-// Word Coach CARD VIEW — a portrait flash-card deck. The word shows on a tall card; tap or
+// Practice CARD VIEW — a portrait flash-card deck. The word shows on a tall card; tap or
 // swipe the RIGHT half = "got it" → next (completeWord), the LEFT half = revise → next
 // (reviseWord). The top-left icon toggles back to the spelling card. Because the word itself
 // is shown here, meaning/sentence are not masked.
@@ -4910,7 +4923,7 @@ function wordFlash(words, idx, navAct, opts){
   opts=opts||{}; const N=words.length||1; const i=Math.min(Math.max(idx||0,0),N-1); const w=words[i]||{w:'',d:'',s:'',p:'',o:''};
   const mastered=state.luMastered[nkey(w.w)]; const pct=Math.round((i+1)/N*100);
   const chip=(t)=>`<span style="padding:4px 11px;border-radius:999px;background:var(--surface2);font-size:12px;color:var(--muted);font-weight:700">${t}</span>`;
-  // Word Coach self-mark: two top-right buttons replace the Next button — either one advances.
+  // Practice self-mark: two top-right buttons replace the Next button — either one advances.
   const selfMark=!!opts.selfMark;
   const markRow=selfMark?`<div style="display:flex;justify-content:flex-end;flex-wrap:wrap;gap:7px;align-self:stretch;width:100%;margin-bottom:6px">
         <button data-act="flashMark" data-arg="${escA('done|'+navAct+'|'+w.w)}" title="Got it — mark this word complete and move to the next" style="display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;${mastered?'background:var(--good);border:1px solid var(--good);color:#fff':'background:color-mix(in srgb,var(--good) 15%,transparent);border:1px solid var(--good);color:var(--good)'};font-weight:800;font-size:12.5px">✓ Complete</button>
@@ -5326,7 +5339,7 @@ function viewQuest(){
       <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:14px;color:var(--treasure-deep,#8A5B00)">Story vault</span><span style="display:block;font-size:12px;color:var(--treasure-deep,#8A5B00);opacity:.85">${un.length} of ${all} word-history tales unlocked</span></span>
       <span style="color:var(--treasure-deep,#8A5B00);font-weight:800">→</span></button>`:'';
   return `<div style="animation:sb-rise .35s ease both;max-width:640px;margin:0 auto">
-    ${pageHead('Word Coach paths','pick your training path','The Bizzing Bee ladder, your own lists, or Ultra — switch any time, all progress kept. Looking for the concept journey? That’s the Quest tab.')}
+    ${pageHead('Practice paths','pick your training path','The Bizzing Bee ladder, your own lists, or Ultra — switch any time, all progress kept. Looking for the concept journey? That’s the Word Atlas tab.')}
     <div style="display:flex;flex-direction:column;gap:12px">${aUnlocked?(ultraTile+paths):(paths+advTile)}</div>
     ${vault}
   </div>`;
@@ -5415,7 +5428,7 @@ function metricsCard(c){
       <div style="display:flex;align-items:flex-end;gap:2px;height:${H}px">${bars}</div>
     </div>
     <div style="display:flex;gap:2px;margin-top:4px">${ticks}</div>
-    <div style="font-size:11.5px;color:var(--muted);font-weight:650;margin-top:8px">${sel==='prac'?'Practice time counts Word Coach and revisions only — the clock stops in the Arcade and everywhere else.':(sel==='app'?'Every minute spent anywhere in Bizzing Bee, counted only while the app is on screen.':'Every word you spell right, wherever you spell it.')}</div>
+    <div style="font-size:11.5px;color:var(--muted);font-weight:650;margin-top:8px">${sel==='prac'?'Practice time counts Practice and revisions only — the clock stops in the Arcade and everywhere else.':(sel==='app'?'Every minute spent anywhere in Bizzing Bee, counted only while the app is on screen.':'Every word you spell right, wherever you spell it.')}</div>
   </div>`; }
 /* Study-card analytics: how the trivia cards are split across practised / tested / mastered /
    revision, chapter by chapter — and tapping a state opens the actual list of those cards. */
@@ -5517,7 +5530,7 @@ function viewProgress(){
           <div style="font-size:12px;font-weight:800;line-height:1.15;margin-top:3px;${on?'color:var(--accent)':''}">${label}</div></div>`; }).join('');
       return `<div class="sb-card" style="margin-bottom:18px">
         <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px"><span style="font-family:var(--display);font-weight:800;font-size:15px">Your Bee Band</span><span style="font-size:12px;color:var(--muted);font-weight:650">${bb.calibrating?'calibrating — appears after ~30 graded words':('Band '+bb.band+' · '+bb.tier+(bb.n>=2?(' · '+bb.acc+'% right at this band'):''))}</span></div>
-        <p style="margin:0 0 12px;font-size:12.5px;color:var(--muted);line-height:1.5">One skill measure across everything — Word Coach, games, duels and tests all feed it. It climbs the moment you prove a harder band (80%+ right) and never falls from one bad game — only a sustained slide moves it down. Your games and daily tip follow it automatically.</p>
+        <p style="margin:0 0 12px;font-size:12.5px;color:var(--muted);line-height:1.5">One skill measure across everything — Practice, games, duels and tests all feed it. It climbs the moment you prove a harder band (80%+ right) and never falls from one bad game — only a sustained slide moves it down. Your games and daily tip follow it automatically.</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap">${row}</div>
       </div>`; })()}
     <div style="margin-bottom:18px">${streakCard()}</div>
@@ -5571,7 +5584,7 @@ function viewFinder(){ const S=state; const c=active(); const q=S.finderQ||'';
         <div class="sb-ct" style="font-size:14px;margin-bottom:8px">Add “${esc(w.w)}” to a list</div>
         <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">${addChips}
           <span style="display:inline-flex;gap:6px;align-items:center"><input data-inp="finderName" data-fkey="finderName" value="${escA(S.finderName||'')}" maxlength="30" placeholder="New list name…" style="width:150px;padding:8px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:12.5px;font-weight:700;outline:none"><button data-act="finderCreateAdd" style="padding:8px 14px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:12.5px">Create + add</button></span></div>
-        <div class="sb-cn" style="margin-top:8px">Lists live in Word Coach — practise them any time.</div>
+        <div class="sb-cn" style="margin-top:8px">Lists live in Practice — practise them any time.</div>
       </div>
       ${wordFlash([w],0,'noop',{})}`;
   } else {
@@ -5853,7 +5866,7 @@ function themeCard(t){ const c=active(); const cl=themeClusters().find(x=>x.id==
       </div>
       <div style="margin-top:auto;padding-top:11px;display:flex;gap:7px">
         <button data-act="themePractice" data-arg="${t.id}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:10px;background:${cl.c};color:#fff;font-weight:800;font-size:12px;box-shadow:var(--edge)">${iconSVG('pencil',13)} Practice</button>
-        <button data-act="addTheme" data-arg="${t.id}" title="${pinned?'In your lists — tap to open in Word Coach':'Add to your lists (top bar in Practice)'}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:10px;font-weight:800;font-size:12px;${pinned?`background:color-mix(in srgb,${cl.c} 13%,var(--bg2));border:1px solid ${cl.c};color:${cl.c}`:'background:var(--surface2);border:1px solid var(--line);color:var(--text)'}">${pinned?('✓ L'+lvl):'+ Add'}</button>
+        <button data-act="addTheme" data-arg="${t.id}" title="${pinned?'In your lists — tap to open in Practice':'Add to your lists (top bar in Practice)'}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:10px;font-weight:800;font-size:12px;${pinned?`background:color-mix(in srgb,${cl.c} 13%,var(--bg2));border:1px solid ${cl.c};color:${cl.c}`:'background:var(--surface2);border:1px solid var(--line);color:var(--text)'}">${pinned?('✓ L'+lvl):'+ Add'}</button>
       </div>
     </div>
   </div>`; }
@@ -6085,7 +6098,7 @@ function viewSettings(){
           <div style="font-size:12.5px;color:var(--muted);margin-bottom:12px;line-height:1.45">Set them yourself — they draw the three rings on the Home card. Going past a target is encouraged; the ring keeps filling.</div>
           <div style="display:flex;gap:14px;flex-wrap:wrap">
             ${num('Total time on the app', RING_COL[0][0], 'setTgtApp', t.app, 'min / day', 'Everything you do in Bizzing Bee.')}
-            ${num('Time practising words', RING_COL[1][0], 'setTgtPrac', t.prac, 'min / day', 'Word Coach and revisions only — the clock stops in games.')}
+            ${num('Time practising words', RING_COL[1][0], 'setTgtPrac', t.prac, 'min / day', 'Practice and revisions only — the clock stops in games.')}
             ${num('Words practised', RING_COL[2][0], 'setTgtWords', t.words, 'words / day', 'Your daily word goal — used all across the app.')}
           </div></div>`; })()}
       <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px">
@@ -6093,7 +6106,7 @@ function viewSettings(){
           <input data-inp="profMsLabel" data-fkey="profMsLabel" value="${escA((_pc.milestone&&_pc.milestone.label)||'')}" maxlength="30" placeholder="e.g. NSF Finals" style="width:200px;padding:11px 13px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:700;outline:none"></div>
         <div><label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Date</label>
           <input type="date" data-chg="profMsDate" value="${escA((_pc.milestone&&_pc.milestone.date)||'')}" style="width:170px;padding:11px 13px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:700;outline:none"></div>
-        ${_pc.milestone&&_pc.milestone.date?`<div class="sb-cn" style="padding-bottom:12px">countdown shows in Word Coach & Progress</div>`:''}
+        ${_pc.milestone&&_pc.milestone.date?`<div class="sb-cn" style="padding-bottom:12px">countdown shows in Practice & Progress</div>`:''}
       </div>
       <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:8px">Buddy</label>
       ${_avRows}</div>`;
@@ -6248,7 +6261,7 @@ function coachTrain(){
     </div>`; }).join('');
   const pausedShelf=pausedKeys.length?`<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)"><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700">Paused</span>${pausedKeys.map(k=>`<button data-act="resumeList" data-arg="${escA(k)}" title="Tap to resume training this list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;border:1px dashed var(--line);background:transparent;color:var(--muted);font-weight:700;font-size:12px">${SB_ICON('play',{size:14})} ${esc(dockLabel(k))} <span style="font-size:12px">L${listStageIdx(c,k)+1}</span></button>`).join('')}</div>`:'';
   const addBtn=`<button data-act="coachSetupOpen" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px dashed var(--line);background:transparent;color:var(--accent)">+ Add list</button>`;
-  const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button><span style="font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">Word Coach</span><button data-act="openQuestChooser" title="Change your quest path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} Quest path</button>${(()=>{ const n=missTraps().length; return `<button data-act="openTraps" title="Your weak patterns" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${n?'var(--fix-tint,#FBE9E7)':'var(--surface2)'};border:1px solid ${n?'var(--fix,#C4453C)':'var(--line)'};color:${n?'var(--fix,#C4453C)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('target',13)} Traps${n?' · '+n:''}</button>`; })()}${(()=>{ const r=((active().missed)||[]).length; return `<button data-act="openRevisions" title="Words you marked to revise" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${r?'color-mix(in srgb,var(--treasure,#F0B429) 18%,transparent)':'var(--surface2)'};border:1px solid ${r?'var(--treasure,#F0B429)':'var(--line)'};color:${r?'var(--treasure-deep,#8A5B00)':'var(--muted)'};font-weight:800;font-size:12px">⚑ Revise${r?' · '+r:''}</button>`; })()}${(()=>{ const ms=milestone(); return ms?`<span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('target',14)} ${ms.days} days to ${esc(ms.label)}</span>`:''; })()}</div>`;
+  const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button><span style="font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">Practice</span><button data-act="openQuestChooser" title="Change your practice path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} My path</button>${(()=>{ const n=missTraps().length; return `<button data-act="openTraps" title="Your weak patterns" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${n?'var(--fix-tint,#FBE9E7)':'var(--surface2)'};border:1px solid ${n?'var(--fix,#C4453C)':'var(--line)'};color:${n?'var(--fix,#C4453C)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('target',13)} Traps${n?' · '+n:''}</button>`; })()}${(()=>{ const r=((active().missed)||[]).length; return `<button data-act="openRevisions" title="Words you marked to revise" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${r?'color-mix(in srgb,var(--treasure,#F0B429) 18%,transparent)':'var(--surface2)'};border:1px solid ${r?'var(--treasure,#F0B429)':'var(--line)'};color:${r?'var(--treasure-deep,#8A5B00)':'var(--muted)'};font-weight:800;font-size:12px">⚑ Revise${r?' · '+r:''}</button>`; })()}${(()=>{ const ms=milestone(); return ms?`<span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('target',14)} ${ms.days} days to ${esc(ms.label)}</span>`:''; })()}</div>`;
   const allWordsBtn=`<button data-act="luToggleWords" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid ${S.luWordsOpen?'var(--accent)':'var(--line)'};background:var(--surface2);color:var(--text)">${iconSVG('grid',14)} All words <span style="color:var(--muted);font-weight:700">${fullList.length}</span> ${S.luWordsOpen?'▴':'▾'}</button>`;
   const newSetBtn = fullList.length>WORK_MAX ? `<button data-act="newBatch" title="Swap in a fresh set of words from this list" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid var(--line);background:var(--surface2);color:var(--text)">${SB_ICON('retry',{size:16})} New set</button>` : '';
   const chipsRow=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px">
@@ -6415,7 +6428,38 @@ function coachSetup(){
   const S=state; const c=active();
   const coverGrid='display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px';
   const defCard=listCoverCard('default','Default · Level-Up','A 20-stage journey, growing tougher as you climb',curStage(c,'default').words.length,false);
-  const others=coachCatalog().filter(o=>o.key!=='default').map(o=>listCoverCard(o.key,o.label,o.sub,o.count, !isListUnlocked(o.key))).join('');
+  /* The catalogue is collapsed into a handful of top-level cards; four groups hold the
+     rest (My Words / The Champion Ladder / Word Origins / Tricky Words). Tapping a
+     group opens its members in the same grid — state.catGroup. Keys stay unchanged. */
+  const LIST_GROUPS={
+    mine:  {label:'My Words',            sub:'Sticky, comeback & most-wanted — your personal battle lists', c1:'#E0922E',c2:'#B4711A', tag:'Personal', hero:'★'},
+    ladder:{label:'The Champion Ladder', sub:'Five rungs, first bee to the final round — each keeps its own level', c1:'#7C5CFF',c2:'#5A37D6', tag:'The ladder', hero:'V'},
+    origins:{label:'Word Origins',       sub:'Latin to Japanese — every donor language, plus eponyms', c1:'#0E8A78',c2:'#0A6B5E', tag:'Origins', hero:'Ω'},
+    tricky:{label:'Tricky Words',        sub:'Sound twins, two-way words, fancy dress & the sneakiest spellings', c1:'#C4453C',c2:'#8E2C28', tag:'Traps', hero:'ph?'},
+  };
+  const catAll=coachCatalog().filter(o=>o.key!=='default');
+  const gSel=(S.catGroup&&LIST_GROUPS[S.catGroup])?S.catGroup:null;
+  const groupCard=(gk)=>{ const g=LIST_GROUPS[gk]; const mem=catAll.filter(x=>x.grp===gk);
+    const total=mem.reduce((s,x)=>s+(x.count||0),0);
+    const activeIn=mem.some(x=>x.key===(c.activeList||'default'));
+    return `<button class="sb-cover-card" data-act="catGroup" data-arg="${gk}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px ${activeIn?g.c1:'var(--line)'},var(--sh-rest);display:flex;flex-direction:column">
+      <div style="position:relative;height:88px;display:flex;align-items:center;justify-content:center;padding:12px;background:linear-gradient(135deg,${g.c1},${g.c2})">
+        <span style="position:absolute;top:10px;left:11px;font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(g.tag)}</span>
+        ${activeIn?'<span style="position:absolute;top:9px;right:10px;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.92);color:#1fa377;font-weight:900;font-size:12px">ACTIVE</span>':''}
+        <div style="font-family:var(--display);color:#fff;line-height:1;font-weight:800;font-size:40px;text-shadow:0 2px 8px rgba(0,0,0,.16)">${esc(g.hero)}</div>
+      </div>
+      <div style="padding:12px 14px 13px;display:flex;flex-direction:column;flex:1">
+        <div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.18;color:var(--text)">${esc(g.label)}</div>
+        <div style="font-family:var(--body);font-weight:600;font-size:12px;line-height:1.4;color:var(--muted);margin-top:4px">${esc(trunc(g.sub,72))}</div>
+        <div style="margin-top:auto;padding-top:11px;display:flex;align-items:center;justify-content:space-between;gap:8px">
+          <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);font-weight:700">${mem.length} lists · ${fmtN(total)} words</span>
+          <span style="font-weight:800;font-size:12.5px;color:${g.c1}">Open →</span></div>
+      </div></button>`; };
+  const emitted={};
+  const others=gSel
+    ? catAll.filter(o=>o.grp===gSel).map(o=>listCoverCard(o.key,o.label,o.sub,o.count, !isListUnlocked(o.key))).join('')
+    : catAll.map(o=>{ if(o.grp&&LIST_GROUPS[o.grp]){ if(emitted[o.grp]) return ''; emitted[o.grp]=1; return groupCard(o.grp); }
+        return listCoverCard(o.key,o.label,o.sub,o.count, !isListUnlocked(o.key)); }).join('');
   const jc=listCoverOf('journey'); const jLvl=(getList(c,'journey').stage||0)+1; const jMast=journeyMastered(c);
   const jChampPct=Math.round(Math.min(1,(getList(c,'journey').stage||0)/CHAMP_LEVELS)*100); const jStarted=(getList(c,'journey').stage||0)>0 || jMast>0;
   const champLabel = jLvl>CHAMP_LEVELS ? 'Bizzing Bee Champ 🏆 · exploring the Library' : ('Level '+Math.min(jLvl,CHAMP_LEVELS)+' of '+CHAMP_LEVELS+' to Champ');
@@ -6428,7 +6472,7 @@ function coachSetup(){
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><span style="font-size:12px;font-weight:800;color:rgba(255,255,255,.92)">${champLabel} · ${fmtN(jMast)} mastered</span><span style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:10px;background:#fff;color:${jc.c};font-weight:800;font-size:13px">${jStarted?'Continue':'Start the Journey'} →</span></div>
     </div></button>`;
   return `<div style="max-width:760px;margin:0 auto">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><button data-act="openCoach" style="color:var(--muted);font-weight:700;font-size:13px">← Back to Word Coach</button></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><button data-act="openCoach" style="color:var(--muted);font-weight:700;font-size:13px">← Back to Practice</button></div>
     <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 4px">Setup &amp; lists</h2>
     <p style="margin:0 0 16px;color:var(--muted);font-size:13px">Pick the list you're training — each keeps its own level.${state.premium?'':' 🔒 lists unlock with Premium <b>or</b> 🪙 '+COST.list+' coins from playing.'}</p>
     ${(()=>{ const on=advModeOn(c);
@@ -6449,7 +6493,7 @@ function coachSetup(){
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px">
       <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end"><div style="flex:1;min-width:150px"><label style="display:block;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px">Bee day</label><input data-chg="setCoachDate" type="date" value="${escA(S.coachDate||'')}" style="width:100%;padding:11px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px"></div><div style="width:120px"><label style="display:block;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px">Daily goal</label><input data-chg="setCoachGoal" value="${escA(S.coachGoal)}" style="width:100%;padding:11px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px"></div></div>
       <div style="font-size:12px;color:var(--muted);margin-top:8px">The daily goal is a target, not a limit — keep going as long as you like.</div></div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:12px">Choose a list</div><div style="${coverGrid}">${defCard}${others}</div></div>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:12px;display:flex;align-items:center;gap:10px">${gSel?`<button data-act="catGroup" data-arg="" style="color:var(--muted);font-weight:700;font-size:13px">← All lists</button><span>${esc((LIST_GROUPS[gSel]||{}).label||'')}</span>`:'Choose a list'}</div><div style="${coverGrid}">${gSel?'':defCard}${others}</div></div>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:16px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px;display:flex;align-items:center;gap:8px"><span style="color:var(--accent)">${iconSVG('upload',18)}</span> Bring your own words</div><p style="font-size:12px;color:var(--muted);margin:0 0 10px">Paste words (commas or new lines) — we enrich them from the database.</p>
       <textarea data-inp="setCustomText" data-fkey="customText" placeholder="silhouette, bouquet, mnemonic" style="width:100%;min-height:74px;resize:vertical;padding:12px 13px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:600;font-size:13px;margin-bottom:10px;font-family:var(--body)">${esc(S.customText)}</textarea>
       <button data-act="enrichCustom" style="width:100%;padding:12px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;border:1px solid var(--line)">Enrich &amp; train these →</button></div>
@@ -6578,11 +6622,12 @@ function magicAdvance(){ const g=state.game; if(!g) return;
   if(g.qi>=g.qs.length){ magicFinishCell(); return; }
   render(); const q=g.qs[g.qi]; if(q.k==='spell') setTimeout(()=>say(q.w.w),300); }
 /* ===================== GAMES ARCADE ===================== */
+/* Two quick games. Beat the Buzzer absorbed the Champ Challenge (Level Challenge mode),
+   the two-player Duel and the ◆ Rapid Dictation; Word Quiz absorbed ◆ Memory Match.
+   Boss Battle lives inside Spelling Quest (season map → quick fight). */
 const GAMES=[
-  { type:'beat',     ic:'target', name:'Beat the Buzzer', blurb:'A 60-second sprint, or a relaxed 10-word warm-up. You pick.', tag:'Timed', c:'#FF5FA2',c2:'#E8458C',tex:'dots' },
+  { type:'beat',     ic:'target', name:'Beat the Buzzer', blurb:'Sprint the clock, warm up, duel a friend or take the Level Challenge.', tag:'Timed', c:'#FF5FA2',c2:'#E8458C',tex:'dots' },
   { type:'wordquiz', ic:'book',   name:'Word Quiz',       blurb:'Meanings, spellings or word origins — choose your round, or go mixed.', tag:'Quiz', c:'#13A892',c2:'#0E8A78',tex:'rings' },
-  { type:'boss',     ic:'crown',  name:'Boss Battle',     blurb:'Defeat the boss with your toughest words.', tag:'Battle', c:'#7B52E0',c2:'#5E39C4',tex:'cross' },
-  { type:'duel',     ic:'swords', name:'Spelling Duel',  blurb:'Pass the device — same 10 words, two spellers. Who takes the crown?', tag:'Versus', c:'#C43D5A',c2:'#8E2C44',tex:'diag' },
 ];
 function gameCoverBG(gm){ const t=CONCEPT_TEX[gm.tex]||CONCEPT_TEX.stripes;
   return `background-color:${gm.c};background-image:${t[0]},linear-gradient(135deg,${gm.c},${gm.c2});background-size:${t[1]},100% 100%;background-position:center`; }
@@ -6867,7 +6912,10 @@ function pickerCard(act,arg,c,ic,name,desc){ return `<button data-act="${act}" d
     <span style="font-size:12.5px;color:var(--muted);line-height:1.4">${esc(desc)}</span></button>`; }
 function beatModePicker(){ return gamePickerShell('Beat the Buzzer','Pick how you want to play.',
   pickerCard('beatStart','sprint','#FF5FA2','target','60-Second Sprint','Spell as many as you can before the clock runs out.')+
-  pickerCard('beatStart','warmup','#E0922E','flame','10-Word Warm-Up','A relaxed, untimed round of ten mixed words — your daily warm-up.')); }
+  pickerCard('beatStart','warmup','#E0922E','flame','10-Word Warm-Up','A relaxed, untimed round of ten mixed words — your daily warm-up.')+
+  pickerCard('openChallenge','journey','#7C5CFF','trophy','Level Challenge','Beat the clock or a set number — pass your Level to test out.')+
+  pickerCard('playGame','duel','#C43D5A','swords','Spelling Duel','Pass the device — same 10 words, two spellers. Who takes the crown?')+
+  (advModeOn()?pickerCard('arcAdvDict','','#3A2A72','bolt','◆ Rapid Dictation','90 seconds — hear & type the hardest words in the library.'):'')); }
 function wordQuizPicker(){ return gamePickerShell('Word Quiz','Choose a round — each is 10 questions.',
   pickerCard('wqStart','meaning','#13A892','book','Meanings','Match a word to its meaning or fill the blank in a sentence.')+
   pickerCard('wqStart','spell','#3D7DF0','spark','Spellings','Pick the correctly-spelled word from look-alikes.')+
@@ -6875,7 +6923,8 @@ function wordQuizPicker(){ return gamePickerShell('Word Quiz','Choose a round �
   pickerCard('wqStart','idiom','#9C6A08','bulb','Idioms','What does “break the ice” really mean? 2,000 phrases.')+
   pickerCard('wqStart','simile','#E0922E','flame','Similes','Complete the simile — as busy as a … ?')+
   pickerCard('wqStart','vocab','#2E8FB8','book','Vocabulary','Bee-style: hear the word, pick the right meaning.')+
-  pickerCard('wqStart','mixed','#B14FC4','palette','Mixed','A little of everything — meanings, spellings and origins.')); }
+  pickerCard('wqStart','mixed','#B14FC4','palette','Mixed','A little of everything — meanings, spellings and origins.')+
+  (advModeOn()?pickerCard('arcAdvMem','','#3A2A72','grid','◆ Memory Match','Pair the hardest words with their meanings — trains recall.'):'')); }
 /* ---- Spelling Duel: pass-the-device, same 10 words, two spellers ---- */
 function duelView(){ const S=state; const g=S.game; const shell=(inner)=>`<div style="max-width:560px;margin:0 auto;animation:sb-rise .3s ease both">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><button data-act="exitGame" style="color:var(--muted);font-weight:700;font-size:14px">← Arcade</button><span style="font-family:var(--display);font-weight:800;font-size:20px">Spelling Duel</span></div>${inner}</div>`;
@@ -6979,14 +7028,9 @@ function gamesHub(){ const S=state; const c=active();
       </span></button>`;
   const ART=(k,sz,fb)=>(window.SB_ICON_ART&&SB_ICON_ART[k])?SB_ICON_ART(k,{size:sz||44}):(fb||'');
   // ---- HEROES: the two story adventures, side by side ----
+  /* The old Advanced Games room dissolved into the quick-game pickers — Rapid Dictation
+     rides in Beat the Buzzer, Memory Match in Word Quiz, both ◆-badged. */
   const heroes=[];
-  /* Advanced Games leads the Arcade once Advanced Mode is on — it is the hardest content
-     here, so it sits above the saga rather than buried with the quick games. */
-  if(advModeOn(c)&&window.ADV){ const st=(c.adv)||{};
-    heroes.push(heroTile({act:'openAdvGames',span:true,grad:'linear-gradient(150deg,#241B4E,#3A2A72 60%,#5B3FA6)',
-      art:ART('advanced',112)||gameArtSVG('champ',112),tag:'◆ Advanced',tagC:'#D8C9FF',tagBg:'rgba(180,150,255,.16)',tagBd:'rgba(180,150,255,.4)',
-      title:'Advanced Games',blurb:'Memory match and rapid dictation, drawn from the hardest words in the 128,000-word library.',
-      cta:'Play',sub:(st.dictBest?st.dictBest+' best dictation':'national-bee drills')})); }
   if(window.SAGA2){ let cl=0; try{ cl=SAGA2.cleared?SAGA2.cleared():((JSON.parse(localStorage.getItem('sb_saga2')||'{}').cleared)||0); }catch(e){}
     const hid=(function(){ try{ return SB_AVATARS.byId['bizzy']?'bizzy':((SB_AVATARS.list[0]||{}).id||null); }catch(e){ return null; } })();
     heroes.push(heroTile({act:'openSaga',grad:'linear-gradient(150deg,#3B2A8C,#2A1E6E 60%,#1F1652)',art:hid?SB_AVATAR(hid,116,{dark:true}):'',tag:'✦ New saga',title:'Bizzy & the Great Unspelling',blurb:'A cinematic story — fly, race and spell through the worlds to stop the word-eater.',cta:cl>0?'Continue':'Begin Act I',sub:cl+'/6 chapters'})); }
@@ -7001,7 +7045,7 @@ function gamesHub(){ const S=state; const c=active();
     feats.push(tile({act:'openDaily',grad:'linear-gradient(135deg,#2FA35C,#1E7D45)',art:gameArtSVG('daily',48),badge:'Daily',title:'Daily Buzz',blurb:'Six tries to spell today’s mystery word — then share your grid.',cta:'#1E7D45',stat:doneToday?'Seen ✓':(streak>0?streak+'-day 🔥':'new')})); }
   if(window.SB_TRIVIA){ const st=(c.trivia)||{}; const nQ=(SB_TRIVIA.questions||[]).length;
     feats.push(tile({act:'openTrivia',grad:'linear-gradient(135deg,#F0A93C,#DC7A18)',art:gameArtSVG('trivia',48),badge:'Quiz',title:'Bee Trivia',blurb:fmtN(nQ)+' questions · 20 themes · picture & listening rounds.',cta:'#C8791B',stat:st.right?fmtN(st.right)+' right':''})); }
-  feats.push(tile({act:'openChallenge',arg:'journey',grad:'linear-gradient(135deg,#7C5CFF,#5A37D6)',art:gameArtSVG('champ',48),badge:'Timed',title:'Champ Challenge',blurb:'Beat the clock or a set number — pass your Level to test out.',cta:'#5A37D6',stat:''}));
+  /* Champ Challenge merged into Beat the Buzzer as its Level Challenge mode. */
   feats.push(tile({act:'playGame',arg:'magic',grad:'linear-gradient(135deg,#B14FC4,#7E2E9E)',art:gameArtSVG('magic',48),badge:'Board',title:'Magic Squares',blurb:'Clear a 3×3 board of themes & concepts — lines win bonus coins.',cta:'#7E2E9E',stat:''}));
   // ---- QUICK GAMES: the four arcade engines ----
   const quick=GAMES.map(gm=>tile({act:'playGame',arg:gm.type,grad:gameCoverBG(gm),art:gameArtSVG(gm.type,48),badge:gm.tag,title:gm.name,blurb:gm.blurb,cta:gm.c,stat:''})).join('');
@@ -7091,8 +7135,9 @@ function viewShop(){ const S=state; const c=active(); ensureLists(c); const tab=
       <button data-act="goConcepts" style="width:100%;margin-top:6px;padding:13px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;border:1px solid var(--line)">Browse all concepts →</button>`;
   }
   return `<div style="max-width:680px;margin:0 auto">
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button><span style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">${iconSVG("cart",21)} Store</span><span style="margin-left:auto">${coinChip()}</span></div>
-    <p style="margin:0 0 14px;color:var(--muted);font-size:13px">Spend the coins you earn from games, Word Coach &amp; Concepts.</p>
+    ${hiveBar('store')}
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px"><span style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:20px">${iconSVG("cart",21)} Store</span><span style="margin-left:auto">${coinChip()}</span></div>
+    <p style="margin:0 0 14px;color:var(--muted);font-size:13px">Spend the coins you earn from games, Practice &amp; Concepts.</p>
     <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">${tabBtn('avatars','crown','Avatars')}${tabBtn('worlds','palette','Worlds')}${tabBtn('power','spark','Artifacts')}${tabBtn('lists','book','Word lists')}${tabBtn('concepts','grid','Concepts')}</div>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px">${body}</div>
   </div>`; }
@@ -7649,7 +7694,7 @@ root.addEventListener('click', e=>{ const el=e.target.closest('[data-act]'); if(
 root.addEventListener('input', e=>{ const el=e.target.closest('[data-inp]'); if(!el) return; callAct(el.getAttribute('data-inp'), el.value); });
 root.addEventListener('change', e=>{ const el=e.target.closest('[data-chg]'); if(!el) return; callAct(el.getAttribute('data-chg'), el.value); });
 root.addEventListener('keydown', e=>{ const el=e.target.closest('[data-key]'); if(!el) return; const fn=app[el.getAttribute('data-key')]; if(fn) fn(e); });
-/* Word Coach card view: swipe OR arrow keys, both on the app-wide d-pad —
+/* Practice card view: swipe OR arrow keys, both on the app-wide d-pad —
    ← previous · ↑ deck · ↓ revise · → next. preventDefault on a handled swipe suppresses
    the ghost click. */
 (function(){ let sx=0,sy=0,st=0,mode=null;

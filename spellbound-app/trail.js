@@ -1,10 +1,12 @@
 /* ============================================================
-   TRAIL.js — The Word Map & The Advanced Word Atlas engine.
-   Concept-first guided journeys over SB_TRAIL (trail-data.js):
-   map screen (world-themed acts, winding node path) → unit loop
-   (Learn → Words → Practice → Quiz gate) → checkpoints every
-   4th unit → laps (band-capped difficulty). Coexists with the
-   classic ladder; hard gate 80% (90% Expedition).
+   TRAIL.js — The Word Map engine (the Word Atlas tab).
+   ONE concept-first guided journey over SB_TRAIL (trail-data.js):
+   a single continuous map — nine base acts, then the Advanced
+   Rounds (the five expeditions), which unlock with the Advanced
+   Pack ($49.99/yr). Map screen (world-themed acts, winding node
+   path) → unit loop (Learn → Words → Practice → Quiz gate) →
+   checkpoints every 4th unit → laps (band-capped difficulty).
+   Hard gate 80% (90% in the Advanced Rounds).
    Word pools come from trail-map-data.js (lazy-loaded).
    Uses app3 globals: state, active, save, set, render, esc, escA,
    say, addCoins, sfx, burstConfetti, flash, wordFlash, SB_AVATAR,
@@ -41,7 +43,11 @@
 
   /* ---- state helpers ---- */
   const tr = c => c.trail || (c.trail = { lap: 1, done: {}, chk: {}, seen: {}, elap: 1, edone: {}, echk: {} });
-  const course = () => state.trailTab === 'exp' ? 'exp' : 'honey';
+  /* Both courses live on ONE map now; the active course follows the unit being
+     worked (x-prefixed ids are Advanced Rounds), set by the unit/checkpoint actions. */
+  const course = () => state.trailCourse === 'exp' ? 'exp' : 'honey';
+  const courseOfId = id => (String(id || '')[0] === 'x') ? 'exp' : 'honey';
+  const advOn = () => { try { return !!(window.ADV && ADV.active && ADV.active()); } catch (e) { return false; } };
   const unitsOf = tab => tab === 'exp' ? T().expedition.units : T().honey.units;
   const actsOf = tab => tab === 'exp' ? T().expedition.expeds : T().honey.acts;
   const unit = id => unitsOf(course()).find(u => u.id === id);
@@ -122,12 +128,20 @@
   /* ---- actions ---- */
   const app2 = app;   /* app3's top-level const — global lexical scope, not window */
   app2.openTrail = () => { if (!T()) { flash('The Trail data is still loading'); return; }
-    set({ nav: 'trail', screen: 'app', trailView: 'map', trailTab: state.trailTab || 'honey', conceptSel: null, tq: null }); };
-  app2.trailTab = t => set({ trailTab: t, trailView: 'map', tq: null });
-  app2.trailUnit = id => { const c = active(); const s = seq(c); const i = s.findIndex(n => n.kind === 'unit' && n.u.id === id);
+    set({ nav: 'trail', screen: 'app', trailView: 'map', trailCourse: 'honey', conceptSel: null, tq: null }); };
+  app2.trailUnit = id => { const c = active();
+    const crs = courseOfId(id);
+    if (crs === 'exp' && !advOn()) { app2.openAdvanced ? app2.openAdvanced() : flash('The Advanced Rounds come with the Advanced Pack'); return; }
+    state.trailCourse = crs;
+    const s = seq(c); const i = s.findIndex(n => n.kind === 'unit' && n.u.id === id);
     if (i > frontier(c)) { flash('Locked — clear the earlier stops first'); return; }
     set({ trailView: 'unit', trailUnit: id, tq: null }); };
-  app2.trailChk = id => { const c = active(); const s = seq(c); const i = s.findIndex(n => n.kind === 'chk' && n.id === id);
+  app2.trailChk = arg => { const c = active();
+    /* checkpoint args carry their course: "honey|meadow:4" / "exp|proving:4" */
+    const [crs, id] = String(arg).indexOf('|') >= 0 ? String(arg).split('|') : ['honey', String(arg)];
+    if (crs === 'exp' && !advOn()) { app2.openAdvanced ? app2.openAdvanced() : flash('The Advanced Rounds come with the Advanced Pack'); return; }
+    state.trailCourse = crs === 'exp' ? 'exp' : 'honey';
+    const s = seq(c); const i = s.findIndex(n => n.kind === 'chk' && n.id === id);
     if (i > frontier(c)) { flash('Locked — clear the earlier stops first'); return; }
     const items = buildCheckpoint(c, { id });
     set({ trailView: 'quiz', trailUnit: null, trailChk: id, tq: { items, i: 0, score: 0, picked: null, typed: '', missed: [], over: false } }); };
@@ -185,7 +199,7 @@
     const left = i % 2 === 0;
     const base = `position:relative;display:flex;align-items:center;gap:12px;margin:${i ? '18px' : '4px'} 0 0 ${left ? '6%' : '38%'};max-width:56%;`;
     if (node.kind === 'chk') {
-      return `<button data-act="trailChk" data-arg="${escA(node.id)}" style="${base}text-align:left;${locked ? 'opacity:.45' : ''}">
+      return `<button data-act="trailChk" data-arg="${escA(course() + '|' + node.id)}" style="${base}text-align:left;${locked ? 'opacity:.45' : ''}">
         <span style="width:46px;height:46px;flex-shrink:0;display:grid;place-items:center;background:${passed ? 'var(--good)' : 'linear-gradient(135deg,#F0B429,#C8791B)'};color:#fff;border-radius:12px;transform:rotate(45deg);box-shadow:var(--edge)"><span style="transform:rotate(-45deg);display:grid;place-items:center">${passed ? '✓' : iconSVG('target', 20)}</span></span>
         <span><span style="display:block;font-family:var(--display);font-weight:800;font-size:13.5px">Checkpoint</span><span style="font-size:11.5px;color:var(--muted);font-weight:600">${passed ? 'won' : locked ? 'locked' : 'mixed quiz — no new words'}</span></span></button>`;
     }
@@ -200,13 +214,11 @@
       <span style="min-width:0"><span style="display:block;font-family:var(--display);font-weight:800;font-size:13.5px;line-height:1.2">${esc(short)}</span>
       <span style="font-size:11.5px;color:var(--muted);font-weight:600">${u.kind === 'lesson' || course() === 'exp' ? 'lesson' : 'word family'}${passed ? ' · ' + stars[lapOf(c)] + '%' : locked ? ' · locked' : ''}</span></span></button>`;
   }
-  function viewMap() {
-    const c = active(); const lap = lapOf(c); const s = seq(c); const fr = frontier(c);
-    const total = s.length, done = s.filter(n => passedNode(c, n)).length;
-    const isExp = course() === 'exp';
-    const expOk = !isExp || (window.ADV && ADV.active && ADV.active());
+  /* one course's run of act sections (assumes state.trailCourse === crs) */
+  function actSections(c, crs) {
+    const s = seq(c); const fr = frontier(c);
     let acts = '';
-    for (const act of actsOf(course())) {
+    for (const act of actsOf(crs)) {
       const nodes = s.map((n, i) => ({ n, i })).filter(x => x.n.act === act.id);
       if (!nodes.length) continue;
       const world = act.world; const guide = GUIDE[world] || 'honeypot';
@@ -218,22 +230,46 @@
           <span style="position:absolute;right:14px;bottom:12px;font-size:11.5px;font-weight:800;color:#fff;background:rgba(0,0,0,.3);border-radius:999px;padding:3px 11px">${nodes.filter(x => passedNode(c, x.n)).length}/${nodes.length}</span></div>
         <div style="position:relative;padding:12px 12px 18px">
           <svg style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none" preserveAspectRatio="none" viewBox="0 0 100 ${nodes.length * 70}">${nodes.map((x, k) => k ? `<path d="M ${(k - 1) % 2 === 0 ? 16 : 48} ${(k - 1) * 70 + 40} C ${(k - 1) % 2 === 0 ? 40 : 24} ${(k - 1) * 70 + 62}, ${k % 2 === 0 ? 40 : 24} ${k * 70 + 12}, ${k % 2 === 0 ? 16 : 48} ${k * 70 + 34}" stroke="var(--line)" stroke-width="2.5" stroke-dasharray="1 7" stroke-linecap="round" fill="none"/>` : '').join('')}</svg>
-          ${nodes.map((x, k) => nodeHTML(c, x.n, x.i, fr)).join('')}
+          ${nodes.map(x => nodeHTML(c, x.n, x.i, fr)).join('')}
         </div></section>`;
     }
-    return `<div style="animation:sb-rise .35s ease both;max-width:660px;margin:0 auto">
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-        <button data-act="openQuestChooser" style="color:var(--muted);font-weight:700;font-size:13px">← Quest</button>${isExp ? `<span style="font-size:10.5px;font-weight:800;letter-spacing:.08em;color:#fff;background:linear-gradient(135deg,#37415B,#1F2A44);border-radius:999px;padding:4px 11px">90% GATES</span>` : ''}
-        <span style="font-family:var(--display);font-weight:800;font-size:22px">${esc(T().names[isExp ? 'expedition' : 'honey'])}</span>
-        <span style="margin-left:auto;display:inline-flex;gap:6px">
-          <button data-act="trailTab" data-arg="honey" style="padding:7px 14px;border-radius:999px;font-weight:800;font-size:12.5px;${!isExp ? 'background:var(--accent);color:#fff' : 'background:var(--surface2);border:1px solid var(--line)'}">${esc(T().names.honey)}</button>
-          <button data-act="trailTab" data-arg="exp" style="padding:7px 14px;border-radius:999px;font-weight:800;font-size:12.5px;${isExp ? 'background:var(--accent);color:#fff' : 'background:var(--surface2);border:1px solid var(--line)'}">${esc(T().names.expedition)}</button></span></div>
-      ${expOk ? `<div style="display:flex;align-items:center;gap:12px;background:var(--bg2);border-radius:16px;padding:12px 16px;margin-bottom:16px;box-shadow:0 0 0 1px var(--line)">
+    const total = s.length, done = s.filter(n => passedNode(c, n)).length;
+    return { acts, total, done, lap: lapOf(c) };
+  }
+  const tierBar = (lap, done, total) => `<div style="display:flex;align-items:center;gap:12px;background:var(--bg2);border-radius:16px;padding:12px 16px;margin-bottom:16px;box-shadow:0 0 0 1px var(--line)">
         <span style="font-family:var(--display);font-weight:800;font-size:13px;background:var(--chip);color:var(--accent);border-radius:999px;padding:5px 13px">Tier ${lap} of 3</span>
         <div style="flex:1;height:9px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;background:linear-gradient(90deg,var(--accent),var(--treasure));width:${Math.round(done / Math.max(1, total) * 100)}%"></div></div>
-        <span style="font-size:12px;font-weight:800;color:var(--muted)">${done}/${total} stops</span></div>
-      ${lap === 1 && !isExp ? `<p style="font-size:12.5px;color:var(--muted);font-weight:600;margin:-6px 0 14px 4px">Tier 1 keeps every word at your level — the same route returns tougher at Tier 2. Concepts first; the words follow.</p>` : ''}
-      ${acts}` : `<div style="background:var(--bg2);border-radius:18px;padding:26px;text-align:center;box-shadow:0 0 0 1px var(--line)"><div style="display:inline-grid;place-items:center;width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#37415B,#1F2A44);color:#fff;margin:0 auto">${iconSVG('target', 28)}</div><h3 style="font-family:var(--display);font-size:18px;margin:10px 0 6px">${esc(T().names.expedition)} is Advanced Pack territory</h3><p style="font-size:13px;color:var(--muted)">All 43 expert chapters across five expeditions. 90% gates, no mercy, national-level words. Unlock in Settings → Plans.</p></div>`}
+        <span style="font-size:12px;font-weight:800;color:var(--muted)">${done}/${total} stops</span></div>`;
+  function viewMap() {
+    const c = active();
+    /* section 1 — the base route */
+    state.trailCourse = 'honey';
+    const h = actSections(c, 'honey');
+    /* section 2 — the Advanced Rounds (the five expeditions), Advanced Pack territory */
+    state.trailCourse = 'exp';
+    const expOk = advOn();
+    const x = expOk ? actSections(c, 'exp') : null;
+    state.trailCourse = 'honey';
+    const price = (window.ADV && ADV.price) ? ADV.price() : 49.99;
+    const advHead = `<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:26px 0 12px">
+        <span style="font-family:var(--display);font-weight:800;font-size:19px">${esc(T().names.expedition)}</span>
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:.08em;color:#fff;background:linear-gradient(135deg,#37415B,#1F2A44);border-radius:999px;padding:4px 11px">90% GATES</span>
+        <span style="font-size:12px;color:var(--muted);font-weight:600">national-level expeditions — same map, harder rules</span></div>`;
+    const advPart = expOk
+      ? advHead + tierBar(x.lap, x.done, x.total) + x.acts
+      : advHead + `<button data-act="openAdvanced" style="width:100%;text-align:left;background:var(--bg2);border-radius:18px;padding:22px 24px;box-shadow:0 0 0 1px var(--line);display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <span style="display:inline-grid;place-items:center;width:52px;height:52px;border-radius:15px;background:linear-gradient(135deg,#37415B,#1F2A44);color:#fff;flex-shrink:0">${iconSVG('target', 26)}</span>
+          <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:16px">43 expert stops across five expeditions</span>
+          <span style="display:block;font-size:13px;color:var(--muted);margin-top:3px">The hardest chapters in the library — 90% gates, no mercy, national-level words. Unlocks with the Advanced Pack.</span></span>
+          <span style="flex-shrink:0;padding:10px 17px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;white-space:nowrap">Unlock · $${price}/yr →</span></button>`;
+    return `<div style="animation:sb-rise .35s ease both;max-width:660px;margin:0 auto">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <span style="font-family:var(--display);font-weight:800;font-size:22px">${esc(T().names.honey)}</span>
+        <button data-act="setNav" data-arg="concepts" style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:12.5px;color:var(--text)">${iconSVG('grid', 14)} Chapter shelf</button></div>
+      ${tierBar(h.lap, h.done, h.total)}
+      ${h.lap === 1 ? `<p style="font-size:12.5px;color:var(--muted);font-weight:600;margin:-6px 0 14px 4px">Tier 1 keeps every word at your level — the same route returns tougher at Tier 2. Concepts first; the words follow.</p>` : ''}
+      ${h.acts}
+      ${advPart}
     </div>`;
   }
   function viewUnit() {
@@ -250,7 +286,7 @@
       <button data-act="${act2}" style="flex-shrink:0;padding:9px 16px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:12.5px">${cta}</button></div>`;
     return `<div style="animation:sb-rise .35s ease both;max-width:640px;margin:0 auto">
       <div style="position:relative;border-radius:20px;overflow:hidden;margin-bottom:14px;height:86px">${banner(world, 86)}
-        <button data-act="trailBack" style="position:absolute;left:12px;top:10px;color:#fff;font-weight:800;font-size:12.5px;background:rgba(0,0,0,.3);border-radius:999px;padding:5px 12px">← Trail</button>
+        <button data-act="trailBack" style="position:absolute;left:12px;top:10px;color:#fff;font-weight:800;font-size:12.5px;background:rgba(0,0,0,.3);border-radius:999px;padding:5px 12px">← Map</button>
         <div style="position:absolute;left:16px;bottom:10px;right:16px;display:flex;align-items:baseline;gap:10px">
           <span style="font-family:var(--display);font-weight:800;font-size:18px;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.4);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(u.title)}</span>
           <span style="margin-left:auto;flex-shrink:0;font-size:11px;font-weight:800;color:#fff;background:rgba(0,0,0,.3);border-radius:999px;padding:3px 10px">Tier ${lap}${passed ? ' · ' + passed + '%' : ''}</span></div></div>
@@ -275,7 +311,7 @@
       <div style="display:flex;justify-content:center;gap:10px;margin-top:12px">
         <button data-act="trailWordNav" data-arg="-1" style="padding:11px 22px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800">← Back</button>
         <button data-act="trailWordNav" data-arg="1" style="padding:11px 22px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800">Next →</button></div>
-      <p style="text-align:center;font-size:12px;color:var(--muted);font-weight:600;margin-top:8px">✓ Complete marks it mastered · ⚑ sends it to your Revisions — same as Word Coach.</p>
+      <p style="text-align:center;font-size:12px;color:var(--muted);font-weight:600;margin-top:8px">✓ Complete marks it mastered · ⚑ sends it to your Revisions — same as Practice.</p>
     </div>`;
   }
   function viewQuiz() {
@@ -292,7 +328,7 @@
           <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
             ${!q2.pass && q2.missed.length ? `<button data-act="tqRevise" style="padding:12px 20px;border-radius:12px;background:var(--treasure);color:#3a2c00;font-weight:800;font-size:13.5px">⚑ Revise the missed ones</button>` : ''}
             ${!q2.pass ? `<button data-act="${state.trailChk ? 'trailChk' : 'trailQuiz'}" ${state.trailChk ? `data-arg="${escA(state.trailChk)}"` : ''} style="padding:12px 20px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px">Take it again</button>` : ''}
-            <button data-act="trailBack" style="padding:12px 20px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:13.5px">${q2.pass ? 'Back to the Trail →' : 'Back'}</button></div>
+            <button data-act="trailBack" style="padding:12px 20px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:13.5px">${q2.pass ? 'Back to the Map →' : 'Back'}</button></div>
         </div></div>`;
     }
     const it = q2.items[q2.i]; const picked = q2.picked;

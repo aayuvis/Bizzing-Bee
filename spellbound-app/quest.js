@@ -536,6 +536,13 @@
           <div style="font-family:var(--display);font-weight:800;font-size:24px;color:#fff;text-align:center;margin-bottom:4px">Spelling Quest</div>
           <div style="color:#C9BFEA;font-size:13px;text-align:center;margin-bottom:22px;font-weight:650">Play each pack’s story — spell your way through five chapters to a boss, and win its legendary avatar.</div>
           <div style="display:flex;flex-wrap:wrap;gap:16px 10px;justify-content:center">${nodes}</div>
+          <div style="display:flex;justify-content:center;margin-top:26px">
+            <button data-act="sqBoss" style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:13px 20px;max-width:460px;text-align:left">
+              <span style="font-size:26px">👹</span>
+              <span style="min-width:0"><span style="display:block;color:#fff;font-weight:800;font-size:14px">Boss Battle — quick fight</span>
+              <span style="display:block;color:#C9BFEA;font-size:12px;font-weight:650">Skip the story: face a boss right now with your toughest words. Shields &amp; reveals work here.</span></span>
+              <span style="color:#FFC23D;font-weight:800;flex-shrink:0">→</span></button>
+          </div>
         </div>`;
       return SQ._shell(inner);
     },
