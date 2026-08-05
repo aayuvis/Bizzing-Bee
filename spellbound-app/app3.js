@@ -21,6 +21,7 @@ const state = {
   challengeKey:null, chFmt:'count', chCount:10, chTime:60, chBand:'level',
   sessionWords:null, sessionListKey:null, sessionLabel:'', missedWords:[], sessionOver:false, sessionCorrect:[], sessionWrong:[],
   coachTab:'train', coachMode:'hub', coachDate:null, coachGoal:20,
+  themeSel:null, themeTab:'learn',
   coachTargetLabel:'Tricky review', coachTargetKey:'review', coachSrs:{}, coachHistory:{}, coachBestRounds:0,
   customText:'', customWords:[], enrichResult:'', aiPrompt:'', aiWords:[], aiLabel:'', aiLoading:false, aiError:'',
   coachSession:false, trainBack:'home', wr:null, or:null, wrInfoKey:'', orInfoKey:'', orFeedback:'',
@@ -93,11 +94,29 @@ function themeWords(id){ const pool=themePool();
   const t=themeOf(id); if(!t) return [];
   // Fast path: the base JSON is enriched with baked theme tags (w.t). The keyword classifier
   // remains as a fallback for any word without tags (e.g. custom/pasted words).
-  let re=null; try{ re=new RegExp(t.re,'i'); }catch(e){}
+  let re=null; try{ if(t.re) re=new RegExp(t.re,'i'); }catch(e){}
+  /* Origin themes cut the library the way the books and the Word Atlas do: by the
+     language a word came from, not by what it means. `ore` matches the origin field;
+     `tag` narrows to a baked tag as well, which is how the eponym clusters work —
+     "an eponym whose NAME is French" is two conditions, not one. */
+  let ore=null; try{ if(t.ore) ore=new RegExp(t.ore,'i'); }catch(e){}
+  const tag=t.tag||null;
   const out=[];
-  for(const w of pool){ if(!w||!w.w) continue;
-    if(w.t){ if(w.t.indexOf(id)>=0) out.push(w); }
-    else if(re && w.d && re.test(w.d)) out.push(w); }
+  if(ore || tag){
+    /* the catch-all eponym shelf: tagged, but not claimed by any lettered cluster */
+    let claimed=null;
+    if(tag && !ore){ claimed=[]; for(const o of themeDefs()) if(o.tag===tag && o.ore) claimed.push(new RegExp(o.ore,'i')); }
+    for(const w of pool){ if(!w||!w.w) continue;
+      if(tag && (!w.t || w.t.indexOf(tag)<0)) continue;
+      const o=w.o||'';
+      if(ore){ if(!ore.test(o)) continue; }
+      else if(claimed && claimed.length && claimed.some(r=>r.test(o))) continue;
+      out.push(w); }
+  } else {
+    for(const w of pool){ if(!w||!w.w) continue;
+      if(w.t){ if(w.t.indexOf(id)>=0) out.push(w); }
+      else if(re && w.d && re.test(w.d)) out.push(w); }
+  }
   out._n=pool.length; _themeCache[id]=out; return out; }
 function themeKey(id){ return 'th_'+id; }
 function isThemeKey(key){ return typeof key==='string' && key.slice(0,3)==='th_'; }
@@ -369,7 +388,10 @@ function gateFeature(feature, label, needTier){
   return false; }
 /* Concepts: all locked on free; Premium opens the easier 50%; the rest are coin-unlocks. */
 function conceptHalf(){ const n=(state.conceptData||SB_CONCEPTS.chapters||[]).length; return Math.ceil(n/2); }
-function isConceptUnlocked(ci){ if(state.devUnlock) return true; const ch=(state.conceptData||SB_CONCEPTS.chapters||[])[ci]; if(ch && catGroup(ch.category)==='Basics') return true; try{ if(window.SB_ENT && SB_ENT.has('concepts')) return true; }catch(e){} if((active().unlockedConcepts||{})[ci]) return true; if(state.premium && ci<conceptHalf()) return true; return false; }
+function isConceptUnlocked(ci){ const ch0=(state.conceptData||SB_CONCEPTS.chapters||[])[ci];
+  /* Advanced Pack chapters are pack-only: no coin unlock, no premium half-course. */
+  if(ch0&&ch0.adv) return advModeOn();
+  if(state.devUnlock) return true; const ch=ch0; if(ch && catGroup(ch.category)==='Basics') return true; try{ if(window.SB_ENT && SB_ENT.has('concepts')) return true; }catch(e){} if((active().unlockedConcepts||{})[ci]) return true; if(state.premium && ci<conceptHalf()) return true; return false; }
 // Levenshtein distance (for "so close!" near-miss feedback)
 function lev(a,b){ a=a||''; b=b||''; const m=a.length,n=b.length; if(!m) return n; if(!n) return m; const d=Array.from({length:m+1},(_,i)=>[i].concat(new Array(n).fill(0)));
   for(let j=0;j<=n;j++) d[0][j]=j;
@@ -551,6 +573,12 @@ function sayMasked(sentence, word){ try{ window.speechSynthesis.cancel(); }catch
 const conceptShort = (t) => (t||'').split('—')[0].trim();
 const conceptRoots = (t) => { const p=(t||'').split('—'); return p.length>1?p.slice(1).join('—').trim():''; };
 function catGroup(cat){ const c=(cat||'').toLowerCase();
+  /* The four Advanced Pack categories keep their own shelves, so a locked shelf
+     is a locked shelf and never blends into a free one. */
+  if(c.includes('championship procedure')) return 'Bee day';
+  if(c.includes('advanced orthography')) return 'Deep spelling';
+  if(c.includes('origins beyond')) return 'Far origins';
+  if(c.includes('how words are built')) return 'Word building';
   if(c.includes('basic')) return 'Basics';
   if(c.includes('prefix')) return 'Prefixes'; if(c.includes('suffix')) return 'Suffixes';
   if(c.includes('root')) return 'Roots';
@@ -558,9 +586,22 @@ function catGroup(cat){ const c=(cat||'').toLowerCase();
   if(c.includes('rule')||c.includes('pattern')||c.includes('strategy')||c.includes('spelling')) return 'Rules';
   if(c.includes('subject')) return 'Subjects'; if(c.includes('personality')||c.includes('theme')) return 'Themes';
   return 'Advanced'; }
+/* Advanced shelves — everything here needs the Advanced Pack. */
+const ADV_FAMS={'Bee day':1,'Deep spelling':1,'Far origins':1,'Word building':1};
+/* ONE chapter library. The free course and the 43 Advanced Pack chapters live in
+   one list so there is a single door to every explanation in the app — but the
+   advanced chapters are always APPENDED, never interleaved, because concept
+   narration is indexed by position in this array (voice/c<i>-<n>.mp3). Advanced
+   chapters carry ch.adv, which routes their narration to the am_michael clips and
+   gates them behind the pack. */
+function mergedConcepts(){
+  const free=(window.SB_CONCEPTS&&SB_CONCEPTS.chapters)||[];
+  const adv=(window.SB_ADV_CONCEPTS&&SB_ADV_CONCEPTS.chapters)||[];
+  return adv.length ? free.concat(adv) : free.slice();
+}
 function loadConcepts(){
   if(state.conceptData || state.conceptLoading) return;
-  if(SB_CONCEPTS && SB_CONCEPTS.chapters && SB_CONCEPTS.chapters.length){ state.conceptData = SB_CONCEPTS.chapters; return; }
+  if(SB_CONCEPTS && SB_CONCEPTS.chapters && SB_CONCEPTS.chapters.length){ state.conceptData = mergedConcepts(); return; }
   state.conceptLoading = true;
   fetch('concepts.json').then(r=>r.json()).then(j=>{ state.conceptData=j.chapters; state.conceptLoading=false; render(); })
     .catch(()=>{ state.conceptLoading=false; state.conceptErr=true; render(); });
@@ -1005,7 +1046,7 @@ const app = {
     if(key==='progress'&&state.progTab==null) state.progTab='me';
     if(key==='concepts'){ lazyNeed('concepts'); loadConcepts(); state.conceptView='all'; state.conceptTier=currentTier(); state.conceptPage=0; }
     if(key==='figurative') lazyNeed('figurative');
-    if(key==='themes'||key==='journeys') lazyNeed('lists');
+    if(key==='themes'||key==='journeys') lazyNeed(['themes','lists']);
     if(key==='adv') lazyNeed('advanced');
     set({nav:key, screen:'app', mood:'happy', conceptSel:null}); },
   progTab:(k)=>{ if(k==='parent'){ pinGate(()=>set({progTab:'parent'}),'Parent zone'); return; } set({progTab:'me'}); },
@@ -1516,6 +1557,19 @@ const app = {
   addTheme:(id)=>{ const c=active(); ensureLists(c); const key=themeKey(id); const t=themeOf(id); if(!t) return;
     if(!(c.pinnedLists||{})[key]){ if(!c.pinnedLists) c.pinnedLists={}; c.pinnedLists[key]=1; if(!c.lists[key]) c.lists[key]={xp:0}; save(); sfx('coin'); flash('“'+t.label+'” added to your lists ✓'); render(); }
     else app.selectList(key); },
+  /* A theme now opens the way a concept chapter does: the explanation first, then
+     the words. The Cards / Practice / Vocab tabs hand straight over to the coach
+     and the vocabulary engine — same backend, same screens, one more door in. */
+  openTheme:(id)=>{ const t=themeOf(id); if(!t) return; lazyNeed(['themes','card','lists']);
+    try{ window.scrollTo(0,0); }catch(e){}
+    set({nav:'themes', screen:'app', themeSel:id, themeTab:'learn', conceptSel:null}); },
+  themeBack:()=>set({themeSel:null}),
+  themeTab:(t)=>{ const id=state.themeSel; if(!id) return;
+    if(t==='cards'){ app.selectList(themeKey(id)); return; }
+    if(t==='practice'){ app.themePractice(id); return; }
+    if(t==='vocab'){ if(!gateFeature('trainTools','Vocab practice')) return;
+      set({nav:'vocab', screen:'app', vocDeck:null, conceptSel:null}); app.vocDeck('th:'+id); return; }
+    set({themeTab:t}); },
   themePractice:(id)=>{ const c=active(); ensureLists(c); const key=themeKey(id); const t=themeOf(id); if(!t) return;
     if(!c.lists[key]) c.lists[key]={xp:0};             // give it a ladder, but don't pin it to the top bar
     const ws=workingSet(key); if(!ws.length){ flash('No words in this theme yet'); return; }
@@ -3292,12 +3346,12 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state; const a
   const qN=(window.SB_QUOTES&&SB_QUOTES.length)?SB_QUOTES.length:0;
   const tN=(window.SB_TRIVIA&&SB_TRIVIA.questions)?SB_TRIVIA.questions.length:0;
   // ---- LEARN ----  understand words deeply
+  /* One door per idea. Concepts absorbed the advanced course, the Word Journeys
+     and the champion tip deck, so those rows are gone rather than duplicated; the
+     List Builder lives in Practice, which is where lists are actually studied. */
   const learn=hub('Learn','learn','#7C5CFF','Understand words deeply',
-    row('concepts','setNav','concepts','Spelling basics, roots & patterns · '+fmtDone)+
-    (advOn?row('advconcepts','openAdvConcepts',null,'Schwa rescue, stress shift & the origin tree · narrated'):'')+
-    row('journeys','openJourneys',null,'The history & geography of words'+(state.premium?'':' · Premium'))+
-    row('themes','setNav','themes','Theme journeys — words by their worlds; pick 3–5 to focus')+
-    row('builder','openBuilder',null,'Build a custom word list in five taps')+
+    row('concepts','setNav','concepts','Every chapter in the app — patterns, roots, origins, bee-day craft · '+fmtDone)+
+    row('themes','setNav','themes','Theme journeys — a world explained, then its words to keep')+
     row('vocab','openVocab',null,'Word → meaning, vocabulary-bee style'));
   // ---- TRAIN ----  sharpen your skills
   const train=hub('Train','train','#13A892','Sharpen your skills',
@@ -3310,8 +3364,7 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state; const a
   // ---- REVISE ----  fix what trips you up
   const revise=hub('Revise','retry','#E0922E','Fix what trips you up',
     row('revisions','openRevisions',null,'Redo the words you flagged to revise'+(missN?' · '+missN+' waiting':''))+
-    row('traps','openTraps',null,'Beat your weak spelling patterns')+
-    (advOn?row('advtips','openAdvTips',null,'36 champion techniques — memory, speed, roots & bee-day tactics'):''));
+    row('traps','openTraps',null,'Beat your weak spelling patterns'));
   return `<div style="animation:sb-rise .35s ease both">
     ${pageHead('The Library','learn · train · revise','Everything beyond spelling practice — build deep word knowledge, sharpen real skills, and clean up what trips you up.')}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;align-items:start">${learn}${train}${revise}</div>
@@ -3462,6 +3515,7 @@ function viewApp(){
   else if(S.nav==='coach') content=viewCoach();
   else if(S.nav==='quest') content=viewQuest();
   else if(S.nav==='explore') content=viewExplore();
+  else if(S.nav==='themes'&&S.themeSel) content=viewThemeDetail();
   else if(S.nav==='figurative') content=viewFigurative();
   else if(S.nav==='vocab') content=viewVocab();
   else if(S.nav==='quotes') content=viewQuotes();
@@ -4340,8 +4394,15 @@ const CONCEPT_FAM = {
   Rules:{c:'#3D7DF0',c2:'#2A63D6',tex:'grid'},
   Subjects:{c:'#4F9E6A',c2:'#3C8455',tex:'dots'},
   Themes:{c:'#F0703C',c2:'#D85A29',tex:'rings'},
-  Advanced:{c:'#7B52E0',c2:'#5E39C4',tex:'cross'} };
-const CONCEPT_FAM_ORDER = ['Basics','Prefixes','Suffixes','Roots','Loanwords','Rules','Subjects','Themes','Advanced'];
+  Advanced:{c:'#7B52E0',c2:'#5E39C4',tex:'cross'},
+  'Bee day':{c:'#D6353F',c2:'#8E1D26',tex:'grid'},
+  'Deep spelling':{c:'#7E8AA0',c2:'#4C566B',tex:'rings'},
+  'Far origins':{c:'#0E8A78',c2:'#075C50',tex:'cross'},
+  'Word building':{c:'#5B6BA8',c2:'#364475',tex:'stripes'},
+  'Word journeys':{c:'#C08A3E',c2:'#8A5B00',tex:'diag'},
+  'Champion tips':{c:'#E8458C',c2:'#A82563',tex:'dots'} };
+const CONCEPT_FAM_ORDER = ['Basics','Prefixes','Suffixes','Roots','Loanwords','Rules','Subjects','Themes','Advanced',
+  'Bee day','Deep spelling','Far origins','Word building'];
 const CONCEPT_TEX = {
   stripes:['repeating-linear-gradient(45deg,rgba(255,255,255,.13) 0 2px,transparent 2px 11px)','auto'],
   dots:['radial-gradient(rgba(255,255,255,.22) 1.5px,transparent 1.6px)','13px 13px'],
@@ -4422,24 +4483,67 @@ function conceptBigCard(ch, allChs){
 function famCoverBG(fam){ const f=CONCEPT_FAM[fam]||CONCEPT_FAM.Advanced; const t=CONCEPT_TEX[f.tex]||CONCEPT_TEX.stripes;
   return `background-color:${f.c};background-image:${t[0]},linear-gradient(135deg,${f.c},${f.c2});background-size:${t[1]},100% 100%;background-position:center`; }
 // Group the concepts into manageable CHAPTERS (ordered by family, then difficulty; 121 → 11 chapters).
+/* Shelves, not slices. The hub used to cut the sorted course into ten equal
+   chapters, which put a prefix family and a subject list on the same shelf and —
+   once the Advanced Pack chapters joined the same list — would have mixed free and
+   locked chapters inside one cover. Each shelf is now one real family, in teaching
+   order, and a shelf is either free or Advanced Pack, never both. */
 function conceptChapters(){ const chs=state.conceptData||[]; if(state._cchap && state._cchap._n===chs.length) return state._cchap||[];
   const dr={easy:0,medium:1,hard:2};
-  const ord=chs.map((c,i)=>({c,i})).sort((a,b)=>{ const fa=CONCEPT_FAM_ORDER.indexOf(catGroup(a.c.category)), fb=CONCEPT_FAM_ORDER.indexOf(catGroup(b.c.category)); if(fa!==fb) return (fa<0?9:fa)-(fb<0?9:fb); const da=dr[a.c.difficulty]??1, db=dr[b.c.difficulty]??1; if(da!==db) return da-db; return a.i-b.i; });
-  const N=ord.length>110?11:10; const per=Math.ceil(ord.length/N)||1; const out=[];
-  for(let k=0;k<N;k++){ const slice=ord.slice(k*per,(k+1)*per); if(!slice.length) continue;
-    const counts={}; slice.forEach(o=>{ const g=catGroup(o.c.category); counts[g]=(counts[g]||0)+1; }); const dom=Object.keys(counts).sort((x,y)=>counts[y]-counts[x])[0]||'Patterns';
-    out.push({ n:out.length+1, name:dom, items:slice.map(o=>o.c) }); }
+  const byFam={};
+  chs.forEach((c,i)=>{ const g=catGroup(c.category); (byFam[g]=byFam[g]||[]).push({c,i}); });
+  const out=[];
+  for(const fam of CONCEPT_FAM_ORDER){ const items=byFam[fam]; if(!items||!items.length) continue;
+    items.sort((a,b)=>{ const da=dr[a.c.difficulty]??1, db=dr[b.c.difficulty]??1; return (da-db)||(a.i-b.i); });
+    out.push({ n:out.length+1, name:fam, adv:!!ADV_FAMS[fam], items:items.map(o=>o.c) }); }
+  /* anything with an unexpected category still gets a home */
+  for(const fam of Object.keys(byFam)){ if(CONCEPT_FAM_ORDER.indexOf(fam)>=0) continue;
+    out.push({ n:out.length+1, name:fam, adv:!!ADV_FAMS[fam], items:byFam[fam].map(o=>o.c) }); }
   out._n=chs.length; state._cchap=out; return out; }
-function conceptChapterStat(chap){ const done=chap.items.filter(c=>conceptStat(c).done).length; return { done, total:chap.items.length, complete:done>=chap.items.length }; }
-function chapterCoverCard(chap){ const f=CONCEPT_FAM[chap.name]||CONCEPT_FAM.Advanced; const st=conceptChapterStat(chap); const pct=st.total?Math.round(st.done/st.total*100):0;
-  return `<button class="sb-cover-card" data-act="openConceptChapter" data-arg="${chap.n-1}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
-    <div style="position:relative;height:94px;display:flex;align-items:center;justify-content:center;padding:12px 14px;${famCoverBG(chap.name)}">
-      <span style="position:absolute;top:9px;left:11px;font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:11px;letter-spacing:.09em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:rgba(0,0,0,.28);color:#fff">Ch ${chap.n}</span>
-      <span style="font-family:var(--display);font-weight:800;font-size:24px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.3);text-align:center;line-height:1.05">${esc(chap.name)}</span>
-      ${st.complete?'<span style="position:absolute;bottom:9px;right:10px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
+/* The Library used to list Word Journeys and the champion tip deck as their own
+   rows. They are explanations, so they belong on the same shelf as everything
+   else — these two covers sit at the end of the concept grid and open the
+   existing viewers, which keeps their content and content-shape intact. */
+function sideShelves(){
+  const out=[];
+  const lessons=lessonsAll().length;
+  if(lessons) out.push(shelfCover('Word journeys', lessons+' journeys',
+    'The history and geography of one word at a time — story, pattern, then five words to keep.',
+    'openJourneys', null, !state.premium && !state.devUnlock ? 'Premium' : ''));
+  const tips=((window.SB_ADV_TIPS)||[]).length;
+  if(tips) out.push(shelfCover('Champion tips', tips+' techniques',
+    'Memory, speed, roots and bee-day tactics from spellers who have stood at the microphone.',
+    'openAdvTips', null, advModeOn() ? '' : '◆ Advanced Pack'));
+  return out.join('');
+}
+function shelfCover(name, meta, blurb, act, arg, badge){
+  const f=CONCEPT_FAM[name]||CONCEPT_FAM.Advanced;
+  const locked=!!badge;
+  return `<button class="sb-cover-card" data-act="${locked&&badge!=='Premium'?'openAdvanced':act}" ${arg?`data-arg="${escA(arg)}"`:''} style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
+    <div style="position:relative;height:94px;display:flex;align-items:center;justify-content:center;padding:12px 14px;${famCoverBG(name)}">
+      <span style="position:absolute;top:9px;left:11px;font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.09em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:rgba(0,0,0,.28);color:#fff">Also here</span>
+      <span style="font-family:var(--display);font-weight:800;font-size:23px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.3);text-align:center;line-height:1.05">${esc(name)}</span>
+      ${badge?`<span style="position:absolute;bottom:9px;right:10px;display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;background:rgba(10,6,26,.5);color:#fff;font-weight:800;font-size:11px">${iconSVG('lock',12,2.2)} ${esc(badge)}</span>`:''}
     </div>
     <div style="padding:13px 15px 14px;display:flex;flex-direction:column;flex:1">
-      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px"><span class="sb-ct" style="font-size:15px">Chapter ${chap.n}</span><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:12px;color:${f.c}">${st.total} concepts</span></div>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px"><span class="sb-ct" style="font-size:15px">${esc(name)}</span><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:12px;color:${f.c}">${esc(meta)}</span></div>
+      <p style="margin:7px 0 0;font-size:12.5px;color:var(--muted);line-height:1.45">${esc(blurb)}</p>
+    </div>
+  </button>`;
+}
+function conceptChapterStat(chap){ const done=chap.items.filter(c=>conceptStat(c).done).length; return { done, total:chap.items.length, complete:done>=chap.items.length }; }
+function chapterCoverCard(chap){ const f=CONCEPT_FAM[chap.name]||CONCEPT_FAM.Advanced; const st=conceptChapterStat(chap); const pct=st.total?Math.round(st.done/st.total*100):0;
+  const gated=chap.adv&&!advModeOn();
+  const price=(window.ADV&&ADV.price)?ADV.price():49.99;
+  return `<button class="sb-cover-card" data-act="${gated?'openAdvanced':'openConceptChapter'}" data-arg="${chap.n-1}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px ${chap.adv?`color-mix(in srgb,${f.c} 40%,var(--line))`:'var(--line)'},var(--sh-rest);display:flex;flex-direction:column">
+    <div style="position:relative;height:94px;display:flex;align-items:center;justify-content:center;padding:12px 14px;${famCoverBG(chap.name)}">
+      <span style="position:absolute;top:9px;left:11px;font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:11px;letter-spacing:.09em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:rgba(0,0,0,.28);color:#fff">${chap.adv?'◆ Advanced':'Shelf '+chap.n}</span>
+      <span style="font-family:var(--display);font-weight:800;font-size:23px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.3);text-align:center;line-height:1.05">${esc(chap.name)}</span>
+      ${gated?`<span style="position:absolute;bottom:9px;right:10px;display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;background:rgba(10,6,26,.5);color:#fff;font-weight:800;font-size:11px">${iconSVG('lock',12,2.2)} $${price}/yr</span>`
+        :st.complete?'<span style="position:absolute;bottom:9px;right:10px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
+    </div>
+    <div style="padding:13px 15px 14px;display:flex;flex-direction:column;flex:1">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px"><span class="sb-ct" style="font-size:15px">${gated?'Advanced Pack':esc(chap.name)}</span><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:12px;color:${f.c}">${st.total} chapters</span></div>
       <div style="margin-top:auto;padding-top:13px;display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:${st.complete?'var(--good)':f.c};width:${pct}%;transition:width .4s"></div></div><span style="font-size:12px;color:var(--muted);font-weight:800;white-space:nowrap">${st.done}/${st.total}</span></div>
     </div>
   </button>`; }
@@ -4469,15 +4573,15 @@ function viewConceptList(){
       headDesc='Ten short chapters of spelling patterns — finish one, then the next.';
       backRow=`<button data-act="conceptChaptersBack" style="display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-weight:700;font-size:13px;margin-bottom:12px">← All chapters</button>`;
       mainContent=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><span style="width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:800;font-size:20px;${famCoverBG(chap.name)}">${chap.n}</span><div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1.1">Chapter ${chap.n} · ${esc(chap.name)}</div><div style="font-size:12px;color:var(--muted);font-weight:700">${st.done}/${st.total} concepts done</div></div></div><div style="${gridStyle}">${chap.items.map(ch=>conceptCardHTML(ch,allChs)).join('')}</div>`;
-    } else { headDesc='Ten short chapters — pick one and master the spelling patterns inside. A concept is yours once you nail 70% of its words.';
-      mainContent=`<div style="${gridStyle}">${chapters.map(chapterCoverCard).join('')}</div>`; }
+    } else { headDesc='Every explanation in the app, on one shelf. Free shelves teach the patterns; the Advanced Pack shelves go to national-bee depth. A chapter is yours once you nail 70% of its words.';
+      mainContent=`<div style="${gridStyle}">${chapters.map(chapterCoverCard).join('')}${sideShelves()}</div>`; }
   }
   return `<div style="animation:sb-rise .35s ease both">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button></div>
-    <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px"><h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0">Concepts</h2><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">${conceptChapters().length||11} chapters</span></div>
+    <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px"><h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0">Concepts</h2><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">${allChs.length||121} chapters on ${conceptChapters().length||9} shelves</span></div>
     <p style="margin:0 0 12px;color:var(--muted);font-size:13px;max-width:52em">${headDesc}</p>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin-bottom:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-      <span style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('grid',15)} ${chaptersDone}/${conceptChapters().length||11} chapters</span>
+      <span style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('grid',15)} ${chaptersDone}/${conceptChapters().length||9} shelves</span>
       <div style="flex:1;min-width:140px;height:7px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--accent);width:${pct}%;transition:width .4s"></div></div>
       <span style="font-size:12px;color:var(--muted);font-weight:700">${pct}%</span>
     </div>
@@ -5851,6 +5955,14 @@ function themeArtSVG(id,size,sketch){ size=size||54; const fid='skf'+(++_artN);
   // a signed name plate hanging from a ribbon — the word that carries a person's name
   eponyms:P('M18 6l6 7 6-7')+P('M24 13v4')+'<rect x="7" y="17" width="34" height="23" rx="5"/>'+P('M13 25h9M13 31h6')+P('M27 34c1.5-4 3-6 4.4-6s1.6 2 .6 4 .4 2.6 2 1.2 2.4-3 3-5.6')+C(24,17,1.4,1),
   };
+  /* Origin and eponym themes are not subjects, so they borrow the mark that fits
+     what they actually are: a signpost for a language family, a nameplate for an
+     eponym cluster. Anything else falls back to the language mark. */
+  if(!M[id]){
+    if(/^ep/.test(id)) return W(M.eponyms);
+    if(/^o/.test(id)&&themeOf(id)&&themeOf(id).cluster==='origins')
+      return W(P('M24 6v36')+P('M10 12h22l4 5-4 5H10z')+P('M38 26H16l-4 5 4 5h22z')+C(24,44,1.6,1));
+  }
   return W(M[id]||M.wordwords); }
 function themeCard(t){ const c=active(); const cl=themeClusters().find(x=>x.id===t.cluster)||themeClusters()[0];
   const key=themeKey(t.id); const pinned=!!((c.pinnedLists||{})[key]); const st=themeStat(t.id);
@@ -5871,7 +5983,7 @@ function themeCard(t){ const c=active(); const cl=themeClusters().find(x=>x.id==
         <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">${st.m}/${fmtN(st.total)}</span>
       </div>
       <div style="margin-top:auto;padding-top:11px;display:flex;gap:7px">
-        <button data-act="themePractice" data-arg="${t.id}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:10px;background:${cl.c};color:#fff;font-weight:800;font-size:12px;box-shadow:var(--edge)">${iconSVG('pencil',13)} Practice</button>
+        <button data-act="openTheme" data-arg="${t.id}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:10px;background:${cl.c};color:#fff;font-weight:800;font-size:12px;box-shadow:var(--edge)">${iconSVG('bulb',13)} Open</button>
         <button data-act="addTheme" data-arg="${t.id}" title="${pinned?'In your lists — tap to open in Practice':'Add to your lists (top bar in Practice)'}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:10px;font-weight:800;font-size:12px;${pinned?`background:color-mix(in srgb,${cl.c} 13%,var(--bg2));border:1px solid ${cl.c};color:${cl.c}`:'background:var(--surface2);border:1px solid var(--line);color:var(--text)'}">${pinned?('✓ L'+lvl):'+ Add'}</button>
       </div>
     </div>
@@ -5892,7 +6004,7 @@ function viewThemes(){ const S=state; const c=active(); ensureLists(c);
       <span style="flex:1;height:1px;background:var(--line)"></span>
     </div><div style="${grid}">${ts.map(themeCard).join('')}</div>`; }).join('');
   return `<div style="animation:sb-rise .35s ease both">
-    ${pageHead('Theme Journeys', defs.length+' themes', 'Learn words by the worlds they live in — medicine, music, maps, mythology… Pick a theme and climb its levels; every word you master counts everywhere else too.')}
+    ${pageHead('Theme Journeys', defs.length+' themes', 'Words by the family they belong to — a subject, or the language they came from. Every theme opens with the explanation: what the family is, how to spot one at the microphone, and the trap it sets. Then the cards, the drill and the meaning check.')}
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin-bottom:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
       <span style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('palette',15)} ${mine.length} picked · ${doneThemes} complete</span>
       <span style="font-size:12px;color:var(--muted);font-weight:700">${fmtN(mastered)} themed words mastered</span>
@@ -5900,6 +6012,85 @@ function viewThemes(){ const S=state; const c=active(); ensureLists(c);
     ${myRow}
     ${sections}
   </div>`; }
+/* ===== Theme Journey — the explanation, then the words =====
+   The Library used to drop a tap straight into a themed word list. A theme is a
+   family of words with a shared history, so it now opens like a concept chapter:
+   what the family is, how to spot one at the microphone, the trap it sets, and a
+   handful of real examples with their origins. The three study tabs hand over to
+   the coach and the vocabulary engine unchanged — this adds a door, not a copy. */
+const THEME_WORLD={science:'elements',earth:'strait',living:'meadow',arts:'stage',
+  society:'forum',history:'warfield',play:'engine',mind:'library',origins:'grandtrunk',named:'junkyard'};
+const THEME_MIN=12;   /* below this a theme cannot make an honest level ladder */
+function themeLore(id){ try{ return (window.SB_THEME_LORE||{})[id]||null; }catch(e){ return null; } }
+function viewThemeDetail(){
+  const S=state; const c=active(); ensureLists(c);
+  const id=S.themeSel; const t=themeOf(id);
+  if(!t) return viewThemes();
+  const cl=themeClusters().find(x=>x.id===t.cluster)||themeClusters()[0];
+  const lore=themeLore(id);
+  const ws=themeWords(id); const st=themeStat(id);
+  const key=themeKey(id); const pinned=!!((c.pinnedLists||{})[key]);
+  const thin=ws.length<THEME_MIN;
+  /* Origin themes name their own world in `hero` (the Roman Forum for Latin, the
+     Grand Trunk Road for South Asian, the Grey Sea for Nordic), so each language
+     family gets its own scenery instead of the whole cluster sharing one. */
+  const WORLDS={meadow:1,library:1,forum:1,elements:1,engine:1,strait:1,junkyard:1,vibe:1,stage:1,warfield:1,greysea:1,origami:1,grandtrunk:1};
+  const world=(WORLDS[t.hero]?t.hero:null)||THEME_WORLD[t.cluster]||'meadow';
+  const tab=S.themeTab||'learn';
+  /* six real examples, easiest first, so the page shows the family rather than describing it */
+  const samples=ws.slice().sort((a,b)=>(spellDiff(a)-spellDiff(b))||((b.bp||0)-(a.bp||0))).slice(0,6);
+  const sampleHTML=samples.length?`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px">${samples.map(w=>`
+    <div style="background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:10px 12px">
+      <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+        <span style="font-family:var(--display);font-weight:800;font-size:15px">${esc(w.w)}</span>
+        ${w.p?`<span style="font-family:var(--mono);font-size:11.5px;color:${cl.c};font-weight:700">/ ${esc(w.p)} /</span>`:''}</div>
+      ${w.o?`<div style="font-size:11.5px;color:var(--muted);font-weight:700;margin-top:2px">${esc(w.o)}</div>`:''}
+      ${w.d?`<div style="font-size:12px;color:var(--text);line-height:1.45;margin-top:4px">${esc(clampTxt(w.d,86))}</div>`:''}
+    </div>`).join('')}</div>`:'';
+  const para=(kick,body)=>`<div style="margin-bottom:15px">
+    <div style="font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:${cl.c};margin-bottom:5px">${kick}</div>
+    <p style="margin:0;font-size:15px;line-height:1.62;color:var(--text)">${esc(body)}</p></div>`;
+  const learn=lore
+    ? para('The idea',lore.i)+para('How to spot one',lore.s)+para('What trips people up',lore.w)
+      +(sampleHTML?`<div style="font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:20px 0 8px">Six from this family</div>${sampleHTML}`:'')
+    : `<p style="font-size:15px;line-height:1.6;color:var(--muted)">${esc(t.sub)}</p>${sampleHTML}`;
+  const TABS=[['learn','Learn','bulb'],['cards','Cards','book'],['practice','Practice','pencil'],['vocab','Vocab','search']];
+  const tabBar=`<div role="tablist" style="display:flex;gap:7px;flex-wrap:wrap;margin:0 0 16px">${TABS.map(([k,label,ic])=>{
+    const on=k===tab; const dis=thin&&k!=='learn';
+    return `<button role="tab" aria-selected="${on}" data-act="themeTab" data-arg="${k}" ${dis?'disabled aria-disabled="true"':''}
+      style="display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:999px;font-weight:800;font-size:13px;
+      ${on?`background:${cl.c};color:#fff;box-shadow:var(--edge)`:`background:var(--surface2);border:1px solid var(--line);color:${dis?'var(--muted)':'var(--text)'}`}${dis?';opacity:.5':''}">${iconSVG(ic,14)} ${label}</button>`; }).join('')}</div>`;
+  const price=(window.ADV&&ADV.price)?ADV.price():49.99;
+  return `<div style="animation:sb-rise .35s ease both;max-width:760px;margin:0 auto">
+    <div style="position:relative;border-radius:20px;overflow:hidden;margin-bottom:16px;height:132px">
+      ${themeBannerHTML(world)}
+      <button data-act="themeBack" style="position:absolute;left:12px;top:11px;color:#fff;font-weight:800;font-size:12.5px;background:rgba(10,6,26,.42);border-radius:999px;padding:5px 13px">← All themes</button>
+      <div style="position:absolute;left:16px;right:16px;bottom:12px;display:flex;align-items:flex-end;gap:12px">
+        <div style="width:54px;height:54px;flex-shrink:0;filter:drop-shadow(0 3px 6px rgba(14,9,32,.5))">${themeArtSVG(id,54,false)}</div>
+        <span style="min-width:0;flex:1">
+          <span style="display:block;font-family:var(--display);font-weight:700;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.85);text-shadow:0 1px 4px rgba(0,0,0,.6)">${esc(cl.label)}</span>
+          <span style="display:block;font-family:var(--display);font-weight:800;font-size:20px;line-height:1.12;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.55)">${esc(t.label)}</span></span>
+        <span style="flex-shrink:0;font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:800;font-size:12px;color:#fff;background:rgba(10,6,26,.44);border-radius:999px;padding:5px 12px">${st.m}/${fmtN(ws.length)} mastered</span>
+      </div></div>
+    ${tabBar}
+    ${thin?`<div style="background:color-mix(in srgb,${cl.c} 10%,var(--bg2));border:1px solid color-mix(in srgb,${cl.c} 35%,var(--line));border-radius:14px;padding:13px 16px;margin-bottom:16px;font-size:13px;line-height:1.5">
+      <b>Only ${ws.length} ${ws.length===1?'word':'words'} here so far.</b> This family is small in the core library and deepens
+      to hundreds of words with the 128,000-word library in the Advanced Pack ($${price}/yr). Read the explanation now;
+      the level ladder opens once there are ${THEME_MIN} words to climb.</div>`:''}
+    ${learn}
+    <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:22px">
+      ${thin?'':`<button data-act="themeTab" data-arg="cards" style="flex:1;min-width:150px;padding:13px;border-radius:14px;background:${cl.c};color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">Study the cards →</button>`}
+      <button data-act="addTheme" data-arg="${esc(id)}" style="flex:1;min-width:150px;padding:13px;border-radius:14px;font-weight:800;font-size:14.5px;${pinned?`background:color-mix(in srgb,${cl.c} 13%,var(--bg2));border:1px solid ${cl.c};color:${cl.c}`:'background:var(--surface2);border:1px solid var(--line);color:var(--text)'}">${pinned?'✓ In my lists':'+ Add to my lists'}</button>
+    </div>
+  </div>`;
+}
+/* the painted world banner, shared with the Word Atlas */
+function themeBannerHTML(world){
+  return `<span style="position:absolute;inset:0;background:linear-gradient(160deg,#4a3f7a,#241e46)"></span>
+    <img src="app-art/w-${world}-r2.jpg" alt="" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+    <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,32,.4) 0%,rgba(14,9,32,.06) 38%,rgba(14,9,32,.55) 100%)"></span>`;
+}
+const clampTxt=(x,n)=>{ x=String(x||''); return x.length>n?x.slice(0,n-1).replace(/[,;:\s]+\S*$/,'')+'…':x; };
 function viewLesson(){ const S=state; const L=S.lessonSel; const dn=lessonComplete(L); const ws=lessonWordObjs(L);
   const f=unitPal(L.unit); const u=lessonUnits().find(x=>x.n===L.unit)||{title:''};
   // Each of the 5 words as a rich sub-card: word · pronunciation · syllables · meaning · full etymology (every bullet kept).
@@ -7787,7 +7978,8 @@ window.addEventListener('keydown', e=>{ try{
    is built from an empty pool. Drop the stale caches when a file lands and let
    boot-lazy's render rebuild them. */
 window.addEventListener('sb-lazy', e => { const name = e && e.detail;
-  if(name==='concepts'){ state.conceptData=null; state.conceptLoading=false; try{ loadConcepts(); }catch(err){} }
+  if(name==='concepts'||name==='advConcepts'){ state.conceptData=null; state.conceptLoading=false; state._cchap=null;
+    try{ loadConcepts(); }catch(err){} }
   if(name==='sounds'){ _homIdx=null; _sndCache=null; }
   if(name==='lore'||name==='pron'){ _wIdx=null; }
   if(name==='fig'){ try{ window._figAll=null; }catch(err){} }

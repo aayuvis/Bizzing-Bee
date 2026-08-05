@@ -34,7 +34,7 @@
     SB_DIACRITICS: null, SB_HOM: null, SB_IPA: null, SB_PRON: null,
     SB_QUOTES: [], SB_FIG: null, SB_LESSONS: null, SB_VOCAB26: null,
     SB_NSF500: null, SB_SCRIPPS: null, SB_WVOICE: null, SB_STORY_ARCS: null,
-    SB_ADV_SHOTS: null, SB_VOICE_FRENCH: null
+    SB_ADV_SHOTS: null, SB_VOICE_FRENCH: null, SB_THEME_LORE: null
   };
   for (var k in STUB) if (!(k in window)) window[k] = STUB[k];
 
@@ -60,7 +60,8 @@
     advTour: 'adv-tour-shots.js',
     voiceWords: 'voice-words.js',       // 128k clip manifest — needed on first audio
     voiceFrench: 'voice-french.js',
-    story: 'story-data.js'
+    story: 'story-data.js',
+    themeLore: 'theme-lore.js'      // the explanation that opens every Theme Journey
   };
 
   /* Groups, so a caller can ask for a feature rather than a filename. */
@@ -74,11 +75,12 @@
     figurative: ['fig'],
     audio: ['voiceWords', 'voiceFrench'],
     lists: ['words2', 'lessons', 'vocab26', 'finals500', 'scripps'],
+    themes: ['words2', 'themeLore'],
     sounds: ['sounds', 'pron']
   };
 
   var IDLE = ['words2', 'lore', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
-    'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',
+    'themeLore', 'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',
     'scripps', 'advTour', 'voiceFrench', 'story', 'alts'];
 
   var state = {};          // name -> 'loading' | 'done'
