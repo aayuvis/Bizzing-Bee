@@ -105,6 +105,30 @@ const chWorldOf = (vol, ci) => vol.cyc ? vol.cyc[ci % vol.cyc.length]
   : WORLD_CYCLE[(Math.max(0, WORLD_CYCLE.indexOf(vol.world)) + ci) % WORLD_CYCLE.length];
 const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const clamp = (s, n) => { s = String(s || ''); return s.length > n ? s.slice(0, n - 1) + '…' : s; };
+/* fit() is clamp's honest sibling: it keeps WHOLE SENTENCES up to the budget and
+   never leaves an ellipsis on the page. A definition, a memory hook and a concept
+   summary are all several sentences long in the data and only the first one or two
+   ever fit a box — clamp used to cut the second one mid-word ("carrying the wo…"),
+   which is the single most common complaint about these books. Where not even the
+   first sentence fits, it falls back to the first clause, and only after that to a
+   hard cut. */
+function fit(t, n) {
+  t = String(t == null ? '' : t).replace(/\s+/g, ' ').trim();
+  if (t.length <= n) return t;
+  const sentences = t.split(/(?<=[.!?])\s+/).filter(Boolean);
+  let out = '';
+  for (const sen of sentences) {
+    if (!out) { if (sen.length <= n) out = sen; else break; continue; }
+    if ((out + ' ' + sen).length > n) break;
+    out += ' ' + sen;
+  }
+  if (out) return out.trim();
+  const first = sentences[0] || t;
+  for (const cl of first.split(/,\s+|\s+—\s+|;\s+/)) {
+    if (cl && cl.length <= n) return cl.replace(/[,;.\s]+$/, '');
+  }
+  return first.slice(0, n - 1).replace(/\s+\S*$/, '') + '…';
+}
 const wordsClamp = (s, n) => { const w = String(s || '').replace(/\s+/g, ' ').trim().split(' '); return w.length <= n ? w.join(' ') : w.slice(0, n).join(' ') + '…'; };
 const mulberry = seed => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
 const shuf = (a, rnd) => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; } return a; };
@@ -355,7 +379,10 @@ function css(vol) {
     text-shadow:0 1px 2px rgba(255,255,255,.95),0 0 6px rgba(255,255,255,.85)}
   .page[data-verso] .bb-foot{left:.5in;right:.75in}
   .bb-panelbox{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-panel);padding:.12in .15in;box-shadow:var(--sh-screen)}
-  .bb-bigidea{padding:.06in .85in .06in .44in;position:relative;font-size:13pt;line-height:1.52}
+  /* min-height so the .cameo avatar (.62in, vertically centred) always fits inside
+     the box — a short concept used to make a box shorter than its own portrait,
+     which is what the audit was reading as clipped content. */
+  .bb-bigidea{padding:.06in .85in .06in .44in;position:relative;font-size:13pt;line-height:1.52;min-height:.78in;display:flex;align-items:center}
   .bb-bigidea:before{content:'“';position:absolute;left:0;top:-.12in;font-family:'BB Display';font-size:44pt;color:var(--accent)}
   .bb-bigidea .cameo{position:absolute;right:.06in;top:50%;transform:translateY(-50%) rotate(4deg)}
   .bb-promove{background:var(--ink);color:#F4EFFF;border-radius:var(--r-panel);padding:.16in .18in;max-height:none;
@@ -404,6 +431,15 @@ function css(vol) {
     color:#fff;background:var(--accent-deep);border:1.6pt solid var(--ink);border-radius:999px;padding:1.5pt 9pt;
     position:absolute;top:-8.5pt;left:11pt;white-space:nowrap;box-shadow:0 2pt 5pt rgba(26,18,54,.32)}
   .an-bub .say{display:block}
+  /* Open lines: no box at all. Short lines ride the art as heavy white type with a
+     dark halo, exactly the way UH-OH! does, so they cover almost nothing. */
+  .an-open{position:absolute;transform:translateY(-50%);font-family:'BB Display';
+    font-size:${vol.band === 'advanced' ? '12.4pt' : '13.6pt'};line-height:1.22;color:#fff;
+    text-shadow:0 0 2pt rgba(14,9,32,.95),0 2pt 0 rgba(14,9,32,.75),0 3pt 14pt rgba(14,9,32,.85),0 0 22pt rgba(14,9,32,.6)}
+  .an-open .nm{display:block;font-family:'BB Kicker';font-size:8.6pt;letter-spacing:.12em;text-transform:uppercase;
+    color:#FFE9AE;margin-bottom:1.5pt;text-shadow:0 1pt 4pt rgba(14,9,32,.95)}
+  .an-open.vex{color:#FFD9E1}
+  .an-open.vex .nm{color:#FF9DB4}
   /* Vex shouts from a jagged balloon — classic comic villain treatment */
   .an-bub.shout{background:#FFF1F4;border-color:var(--tricky-deep);border-radius:6pt}
   .an-bub.shout .nm{background:var(--tricky-deep)}
@@ -446,14 +482,14 @@ function css(vol) {
   .bb-audio{display:inline-flex;align-items:center;gap:5pt;background:var(--listen-tint);border:1px solid var(--listen);color:var(--listen-deep);
     border-radius:999px;padding:3pt 10pt;font-family:'BB Kicker';font-size:9.2pt;max-height:.3in}
   .bb-xword{border-collapse:collapse;margin:0 auto}
-  .bb-xword td{width:.32in;height:.32in;position:relative}
+  .bb-xword td{width:var(--xw,.44in);height:var(--xw,.44in);position:relative}
   .bb-xword .c{background:var(--card);border:1.4px solid var(--chip-ink)}
-  .bb-xword .c i{position:absolute;top:1px;left:2px;font-style:normal;font-size:5.4pt;color:var(--muted)}
+  .bb-xword .c i{position:absolute;top:1.5px;left:3px;font-style:normal;font-size:7pt;color:var(--muted)}
   .bb-clues{display:grid;grid-template-columns:1fr 1fr;gap:.18in;margin-top:.12in;font-size:10.2pt;line-height:1.44}
   .bb-clues h3{font-size:11.5pt;color:var(--accent-deep);margin-bottom:2pt}
   .bb-clues b{color:var(--chip-ink)}
   .bb-search{border-collapse:collapse;margin:0 auto}
-  .bb-search td{width:.38in;height:.38in;text-align:center;font-family:'BB Tile';font-size:11pt;background:var(--card);border:1px solid var(--hairline)}
+  .bb-search td{width:.42in;height:.42in;text-align:center;font-family:'BB Tile';font-size:12.5pt;background:var(--card);border:1px solid var(--hairline)}
   .bb-scramble{display:grid;grid-template-columns:1fr 1fr;gap:.16in;max-height:none}
   .bb-scramble .g1{padding:.05in .02in;margin-bottom:.08in}
   .bb-scramble .gw{font-family:'BB Tile';font-size:11pt;letter-spacing:.14em;color:var(--accent-deep)}
@@ -506,6 +542,25 @@ function propText(sc) {
     if (sh.big) return clamp(sh.big, 22);
   } catch (e) {} return '';
 }
+/* A balloon has room for about a dozen words. The narration paragraph does not fit,
+   and clamping it mid-clause is what left "First you say the word. Then…" on the
+   page. So take the scene's own short caption when there is one, else the first
+   whole sentence of the narration, else its first clause — a complete thought that
+   fits, rather than a truncated one that does not. */
+function comicLine(sc, maxW) {
+  const words = t => String(t || '').trim().split(/\s+/).filter(Boolean).length;
+  const cap = String((sc && sc.cap) || '').trim();
+  if (cap && words(cap) <= maxW) return cap.replace(/[.\s]+$/, '');
+  const say = String((sc && sc.say) || '').replace(/\s+/g, ' ').trim();
+  const sentences = say.split(/(?<=[.!?])\s+/).filter(Boolean);
+  for (const sen of sentences) if (words(sen) <= maxW) return sen.trim();
+  /* no whole sentence fits: take the first clause of the first sentence */
+  const first = sentences[0] || say;
+  const clauses = first.split(/,\s+|\s+—\s+|;\s+/).filter(Boolean);
+  for (const cl of clauses) if (words(cl) <= maxW) return cl.replace(/[,;.\s]+$/, '');
+  if (cap) return wordsClamp(cap, maxW);
+  return wordsClamp(first, maxW);
+}
 function comicOpener(vol, ch, ci, script, folio, cast) {
   const reg = REG(vol);
   const scenes = (script && script.scenes) || [];
@@ -515,7 +570,7 @@ function comicOpener(vol, ch, ci, script, folio, cast) {
   pick.push(scenes[0]);
   for (const m of ['think', 'oops', 'excited']) { const s = byMood(m); if (s && pick.length < 4) pick.push(s); }
   for (const s of scenes) { if (pick.length >= 4) break; if (!pick.includes(s)) pick.push(s); }
-  const maxW = reg >= 3 ? 17 : 13;   // balloons stay small so the art breathes
+  const maxW = reg >= 3 ? 15 : 12;   // balloons stay small so the art breathes
   const world = chWorldOf(vol, ci);
   const co1 = cast[ci % cast.length], co2 = cast[(ci + 4) % cast.length];
   /* one continuous canvas, no boxes: Bizzy opens, the guide and crew carry it,
@@ -526,7 +581,7 @@ function comicOpener(vol, ch, ci, script, folio, cast) {
     const avId = k === 0 ? HERO : k === 1 ? vol.av : k === 3 ? co2.id : co1.id;
     return { avId: isVex ? null : avId, vex: isVex, mood: sc.mood || 'happy',
       name: isVex ? (NAMES[vol.av] || castName(vol.av)) : (NAMES[avId] || castName(avId)),
-      line: wordsClamp(sc.say, maxW), prop: propText(sc) };
+      line: comicLine(sc, maxW), prop: propText(sc) };
   });
   const uid = `op${vol.n}x${ci}`;
   const svg = ANIME.storyboard(sceneList.map(s => ({ avId: s.avId, mood: s.mood, vex: s.vex })),
@@ -535,14 +590,30 @@ function comicOpener(vol, ch, ci, script, folio, cast) {
      Each balloon sits on the free side of its own speaker with a tail pointing
      back at them — so the words are next to the mouth that said them, and the
      character stays uncovered. */
+  /* Balloons hug the outer edge on the side AWAY from their speaker and take a
+     third of the width, not half — the figures in the painted art are large, and a
+     half-width balloon starting at 5% inevitably crossed them. Anything short
+     enough goes out with no box at all, which covers nothing but a little sky. */
+  const OPEN_W = 10;                       // words that fit on an open line
   const caps = sceneList.map((s, i) => {
     const t = i / Math.max(1, sceneList.length - 1);
     const topPct = (.235 + t * .62) * 100;   // starts below the title banner, ends above the footer
-    const figRight = i % 2 === 0;
-    const side = figRight ? 'left:5%;width:52%' : 'right:5%;width:52%';
+    /* Every painted opener puts the moth in the storm stretch on the right — the
+       prompt asked for it there — so Vex's line always goes left, whatever beat it
+       falls on. The rest alternate with their figures. */
+    const figRight = s.vex ? true : (i % 2 === 0);
+    /* a bare dash is not a word */
+    const wordN = String(s.line).trim().split(/\s+/).filter(w => w && !/^[—–-]+$/.test(w)).length;
+    const open = wordN <= OPEN_W;
+    const sfx = reg >= 3 ? '' : s.vex ? `<span class="an-sfx" style="position:absolute;top:${topPct - 9}%;${figRight ? 'right:6%' : 'left:6%'}">UH-OH!</span>`
+      : s.mood === 'excited' ? `<span class="an-sfx" style="position:absolute;top:${topPct - 9}%;${figRight ? 'right:6%' : 'left:6%'}">GOT IT!</span>` : '';
+    if (open) {
+      const side = figRight ? 'left:4.5%;width:36%' : 'right:4.5%;width:36%;text-align:right';
+      return `${sfx}<div class="an-open${s.vex ? ' vex' : ''}" style="top:${topPct}%;${side}">
+        <span class="nm">${esc(s.vex ? 'Vex' : s.name)}</span>${esc(s.line)}</div>`;
+    }
+    const side = figRight ? 'left:4.5%;width:37%' : 'right:4.5%;width:37%';
     const tailCls = figRight ? 'r' : 'l';   // tail points toward the figure
-    const sfx = reg >= 3 ? '' : s.vex ? `<span class="an-sfx" style="position:absolute;top:${topPct - 8}%;${figRight ? 'right:8%' : 'left:8%'}">UH-OH!</span>`
-      : s.mood === 'excited' ? `<span class="an-sfx" style="position:absolute;top:${topPct - 8}%;${figRight ? 'right:8%' : 'left:8%'}">GOT IT!</span>` : '';
     return `${sfx}<div class="an-bub ${tailCls}${s.vex ? ' shout' : ''}" style="top:${topPct}%;${side}">
       <span class="nm">${esc(s.vex ? 'Vex' : s.name)}</span>
       <span class="say">${esc(s.line)}</span>
@@ -561,7 +632,7 @@ function comicOpener(vol, ch, ci, script, folio, cast) {
     </div></div>
     ${caps}
     <div class="an-foot">
-      <span class="bb-audio" style="background:rgba(255,255,255,.9)">🔊 narrated in the app</span>
+      <span class="bb-audio" style="background:rgba(255,255,255,.9)">&#9835; narrated</span>
       <span style="font-family:'BB Kicker';font-size:9.6pt;color:#fff;text-shadow:0 1px 5px rgba(0,0,0,.7)">turn the page — the whole trick, explained →</span>
     </div>
     <div class="an-folio">${folio}</div></div>`;
@@ -585,39 +656,118 @@ function teachPage(vol, ch, ci, folio, nextBreak) {
       ? `Cover the page and spell <b>${three.map(esc).join('</b> · <b>')}</b> out loud. Miss one? Read the idea again — it's faster than guessing twice.`
       : `Book closed: <b>${three.map(esc).join('</b> · <b>')}</b>, out loud, full words. At this level, almost right is still an elimination.`;
   const alerts = [
-    vexW && vexW.hook ? `<div class="bb-vex">${VEX('0.42in')}<div><div class="l">Vex alert</div><div style="font-size:9.8pt;line-height:1.35">${esc(clamp(vexW.hook, 84))}</div></div></div>` : '',
+    vexW && vexW.hook ? `<div class="bb-vex">${VEX('0.42in')}<div><div class="l">Vex alert</div><div style="font-size:9.8pt;line-height:1.35">${esc(fit(vexW.hook, 96))}</div></div></div>` : '',
     traps.length ? `<div class="bb-trap"><div class="l">Sound trap</div><div style="font-size:9.8pt;line-height:1.35">${traps.map(t => `<b>${esc(t.w)}</b> sounds like <i>${esc(t.twins.slice(0, 2).join(', '))}</i>`).join(' · ')} — at the mic, always ask for the meaning.</div></div>` : '',
     `<div class="bb-check"><div class="l">Check yourself</div><div style="font-size:9.8pt;line-height:1.35">${checkLine}</div></div>`,
   ].filter(Boolean);
   return `<div class="page" data-vol="${vol.n}">
     ${head(vol, ch, ci, 'The idea')}
     <div style="margin-top:.4in" class="kick">The big idea</div>
-    <div class="bb-bigidea">${esc(clamp(ch.concept, 320))}<span class="cameo">${avatar(vol.av, '.62in')}</span></div>
+    <div class="bb-bigidea">${esc(fit(ch.concept, 300))}<span class="cameo">${avatar(vol.av, '.62in')}</span></div>
     ${ch.method ? `<div class="kick" style="margin-top:.14in">The pro move</div><div class="bb-promove">${String(ch.method).split('\n').map(l => l.trim()).filter(Boolean).slice(0, 6).map(l => `<div class="ln">${l}</div>`).join('')}</div>` : ''}
-    ${cards.length ? `<div class="bb-sticky">${cards.map(cd => `<div class="card"><h3>${esc(cd.title)}</h3><p>${esc(clamp(cd.body, 190))}</p></div>`).join('')}</div>` : ''}
+    ${cards.length ? `<div class="bb-sticky">${cards.map(cd => `<div class="card"><h3>${esc(cd.title)}</h3><p>${esc(fit(cd.body, 200))}</p></div>`).join('')}</div>` : ''}
     <div style="display:grid;grid-template-columns:repeat(${alerts.length},1fr);gap:.16in;margin-top:.18in">${alerts.join('')}</div>
     ${(cards.length >= 4 || String(ch.method || '').split('\n').filter(Boolean).length >= 6 || (alerts.length >= 3 && cards.length >= 3)) ? '' : nextBreak()}
     ${foot(vol, folio)}</div>`;
 }
-/* checkpoint quiz page — the Word Map's own concept questions, on paper */
+/* ---------------- the checkpoint quiz, built from the chapter itself ----------------
+   The quiz used to reuse the Word Atlas unit's own MCQs, whose decoys are drawn from
+   OTHER chapters — so "what is the big idea of The Champion's Routine?" offered the
+   summaries of un-, -tion and com- as the wrong answers. On a screen, inside a
+   sequence, that is survivable; on paper it reads as nonsense.
+
+   These questions are built from the chapter's own ten words, so every option is a
+   sibling of the right one: a definition against three definitions from the same
+   chapter, a spelling against three near-misses of itself, a memory hook against
+   three words that share the page. Each option is a word, an origin or one short
+   definition, so nothing needs truncating either. */
+const NEAR_MISS = w => {
+  /* plausible misspellings of a word: double a doubled-able letter, drop a double,
+     swap the classic vowel confusions, flip ie/ei. */
+  const out = [];
+  const push = x => { if (x && x !== w && !out.includes(x) && /^[a-z' -]+$/i.test(x)) out.push(x); };
+  push(w.replace(/([bcdfglmnprst])\1/, '$1'));                       // accommodate -> acomodate
+  if (!/([bcdfglmnprst])\1/.test(w)) {
+    const i = w.slice(1).search(/[bcdfglmnprst]/);
+    if (i >= 0) push(w.slice(0, i + 1) + w[i + 1] + w.slice(i + 1));  // practice -> pracctice
+  }
+  push(w.replace(/ie/, 'ei')); push(w.replace(/ei/, 'ie'));
+  push(w.replace(/ance$/, 'ence')); push(w.replace(/ence$/, 'ance'));
+  push(w.replace(/able$/, 'ible')); push(w.replace(/ible$/, 'able'));
+  push(w.replace(/ar$/, 'er')); push(w.replace(/er$/, 'ar')); push(w.replace(/or$/, 'er'));
+  push(w.replace(/([aeiou])\1/, '$1'));                              // committee -> commitee
+  push(w.replace(/tion$/, 'sion')); push(w.replace(/sion$/, 'tion'));
+  push(w.replace(/^([a-z])([aeiou])/, (x, a, b) => a + (b === 'e' ? 'i' : b === 'i' ? 'e' : b === 'a' ? 'e' : b)));
+  return out;
+};
+function chapterQuiz(vol, ch, rnd) {
+  const words = (ch.words || []).filter(w => w && w.w && String(w.w).length > 2);
+  if (words.length < 4) return [];
+  const short = t => String(t || '').replace(/\s+/g, ' ').trim();
+  const fits = t => short(t).length <= 82;
+  const qs = [];
+  const pool = shuf(words.slice(), rnd);
+
+  /* 1-2 — meaning, decoys from the same chapter */
+  const defWords = pool.filter(w => fits(w.def));
+  for (const w of defWords.slice(0, 2)) {
+    const others = shuf(defWords.filter(x => x !== w), rnd).slice(0, 3).map(x => short(x.def));
+    if (others.length < 3) break;
+    qs.push({ q: 'What does <b>' + esc(w.w) + '</b> mean?', c: [short(w.def)].concat(others) });
+  }
+  /* 3 — spelling, decoys are near-misses of the word itself */
+  const spell = pool.find(w => NEAR_MISS(String(w.w).toLowerCase()).length >= 3);
+  if (spell) {
+    const w = String(spell.w).toLowerCase();
+    qs.push({ q: 'Which spelling is correct?', c: [spell.w].concat(shuf(NEAR_MISS(w), rnd).slice(0, 3)) });
+  }
+  /* 4 — the memory hook, decoys are words off the same page */
+  const hookW = pool.find(w => w.hook && fits(w.hook));
+  if (hookW) {
+    const others = shuf(pool.filter(x => x !== hookW), rnd).slice(0, 3).map(x => x.w);
+    qs.push({ q: '&ldquo;' + esc(short(hookW.hook)) + '&rdquo; &mdash; which word is that about?', c: [hookW.w].concat(others) });
+  }
+  /* 5 — the example sentence with the word cut out */
+  const exW = pool.find(w => w.ex && String(w.ex).toLowerCase().includes(String(w.w).toLowerCase()) && fits(w.ex));
+  if (exW) {
+    const re = new RegExp(String(exW.w).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[a-z]*', 'ig');
+    const gap = short(exW.ex).replace(re, '▁▁▁');
+    const others = shuf(pool.filter(x => x !== exW), rnd).slice(0, 3).map(x => x.w);
+    qs.push({ q: 'Which word fills the gap? &ldquo;' + esc(gap) + '&rdquo;', c: [exW.w].concat(others) });
+  }
+  /* 6 — which of these belongs to this chapter (the only cross-chapter question,
+     and the one place a foreign word is the POINT rather than a distraction) */
+  const mine = pool[0];
+  const strangers = shuf((GEN.filter(x => x !== ch).flatMap(x => (x.words || []).slice(0, 2))), rnd)
+    .filter(x => x && x.w && !words.some(y => y.w === x.w)).slice(0, 3).map(x => x.w);
+  if (mine && strangers.length === 3) {
+    qs.push({ q: 'Which word belongs to this chapter&rsquo;s family?', c: [mine.w].concat(strangers) });
+  }
+  return qs;
+}
+/* checkpoint quiz page — built from the chapter's own words (see chapterQuiz) */
 function quizPage(vol, ch, ci, qs, cast, rnd, keys, folio) {
-  if (!qs || !qs.length) return null;
+  const built = chapterQuiz(vol, ch, rnd);
+  if (!built.length) return null;
   const reg = REG(vol);
   const host = cast[(ci + 2) % cast.length];
-  const totLen = qs.slice(0, 5).reduce((a, q) => a + q.q.length + q.c.join('').length, 0);
-  const picked = qs.slice(0, totLen > 900 ? 4 : 5);
+  const totLen = built.reduce((a, q) => a + q.q.length + q.c.join('').length, 0);
+  const picked = built.slice(0, totLen > 1000 ? 4 : built.length);
   const letters = 'ABCD';
   const ans = [];
+  /* Questions carry a little markup (the word in bold, curly quotes), so they are
+     pre-escaped by chapterQuiz; options are plain text and escaped here. Neither is
+     truncated — chapterQuiz only ever picks material that already fits. */
   const qHtml = picked.map((q, i) => {
     const opts = q.c.map((c, k) => ({ c, ok: k === 0 })); shuf(opts, rnd);
     ans.push(letters[opts.findIndex(o => o.ok)]);
-    return `<div class="q"><div class="qq">${i + 1}. ${esc(q.q)}</div>
-      ${opts.map((o, k) => `<div class="opt"><i>${letters[k]}</i><span>${esc(clamp(String(o.c), 84))}</span></div>`).join('')}</div>`;
+    return `<div class="q"><div class="qq">${i + 1}. ${q.q}</div>
+      ${opts.map((o, k) => `<div class="opt"><i>${letters[k]}</i><span>${esc(String(o.c))}</span></div>`).join('')}</div>`;
   }).join('');
   keys.push(`<div><b>Ch. ${ci + 1} checkpoint</b> — ${ans.map((a, i) => (i + 1) + ':' + a).join('  ')}</div>`);
   const intro = reg === 1 ? 'Circle your answer, then check the back. No pressure — wrong answers are how the right ones stick.'
-    : reg === 2 ? 'Same questions the app asks at this stop on the Word Map. Circle, then check the back.'
-    : 'The Word Map gates this stop at 90%. That is five of six, minimum. Circle and verify.';
+    : reg === 2 ? 'Six questions on the chapter you just read. Circle your answers, then check the back.'
+    : 'This checkpoint is gated at 90% — five of six, minimum. Circle, then verify at the back.';
   /* dictation bonus fills the page and adds real practice: three chapter words,
      read aloud by anyone nearby, written here; answers ride the back key */
   const dictN = totLen > 700 ? 2 : 3;
@@ -647,12 +797,12 @@ function hivePages(vol, ch, ci, folioRef) {
       ${head(vol, ch, ci, 'Practice')}
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
-        <span class="bb-audio">🔊 every word has real audio in the app</span></div>
+     </div>
       <div class="bb-hive" style="margin-top:.12in">${seg.map(w => { const say = w.say || ''; const ipa = ipaOf(w.w, say);
         return `<div><div class="bb-card"><div class="w">${esc(w.w)}</div>
         <div class="say">${say ? '/ ' + esc(say) + ' /' : ''}${ipa ? '  ·  /' + esc(ipa) + '/' : ''}</div>
-        <div class="d">${esc(clamp(w.def, 74))}</div>${w.hook ? `<div class="hook">hook: ${esc(clamp(w.hook, 70))}</div>` : ''}
-        ${w.ex ? `<div class="ex">${esc(maskDef(clamp(w.ex, 84), w.w))}</div>` : ''}</div>
+        <div class="d">${esc(fit(w.def, 82))}</div>${w.hook ? `<div class="hook">hook: ${esc(fit(w.hook, 78))}</div>` : ''}
+        ${w.ex ? `<div class="ex">${esc(maskDef(fit(w.ex, 92), w.w))}</div>` : ''}</div>
         <div class="bb-writeline"></div>${w.ex ? '' : '<div class="bb-writeline"></div><div class="bb-writeline"></div>'}</div>`; }).join('')}</div>
       ${worldStrip(chWorldOf(vol, ci), vol, ci * 13 + f + 3)}
       ${foot(vol, folioRef.n++)}</div>`);
@@ -670,7 +820,7 @@ function hivePages(vol, ch, ci, folioRef) {
     out.push(`<div class="page" data-vol="${vol.n}">
       ${head(vol, ch, ci, 'Rapid round')}
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in">${seg.map(w => `<div class="bb-row"><b>${esc(w.w)}</b> <span class="tile" style="font-size:8.8pt">${w.say ? '/' + esc(w.say) + '/' : ''}</span><br>${esc(clamp(w.def, 48))}</div>`).join('')}</div>
+      <div class="bb-rapid" style="margin-top:.12in">${seg.map(w => `<div class="bb-row"><b>${esc(w.w)}</b> <span class="tile" style="font-size:8.8pt">${w.say ? '/' + esc(w.say) + '/' : ''}</span><br>${esc(fit(w.def, 54))}</div>`).join('')}</div>
       ${lockIn}
       ${foot(vol, folioRef.n++)}</div>`);
   }
@@ -745,8 +895,13 @@ function gamePage(vol, ch, ci, rnd, keys, folio, nextBreak) {
         for (let c = cw.c0; c <= cw.c1; c++) { const chx = cw.g[r][c]; const num = cw.nums[r + ',' + c];
           rows += chx ? `<td class="c">${num ? `<i>${num}</i>` : ''}</td>` : '<td></td>'; }
         rows += '</tr>'; }
-      const clue = p => `<div><b>${p.n}.</b> ${esc(maskDef(clamp(p.def, 76), p.w))}</div>`;
-      body = `<div class="bb-xword-wrap" style="display:flex;justify-content:center"><table class="bb-xword">${rows}</table></div>
+      const clue = p => `<div><b>${p.n}.</b> ${esc(maskDef(fit(p.def, 84), p.w))}</div>`;
+      /* Big cells for small hands, but the grid has to leave room for the clue list
+         underneath it: cap by the width budget AND by the height budget, so a tall
+         puzzle shrinks its cells instead of pushing the clues off the page. */
+      const cols = cw.c1 - cw.c0 + 1, gridRows = cw.r1 - cw.r0 + 1;
+      const cell = Math.min(0.44, 6.6 / Math.max(1, cols), 4.0 / Math.max(1, gridRows)).toFixed(3);
+      body = `<div class="bb-xword-wrap" style="display:flex;justify-content:center"><table class="bb-xword" style="--xw:${cell}in">${rows}</table></div>
         <div class="bb-clues"><div><h3>Across</h3>${cw.across.map(clue).join('')}</div><div><h3>Down</h3>${cw.down.map(clue).join('')}</div></div>`;
       keys.push(`<div><b>Ch. ${ci + 1} crossword</b> — Across: ${cw.across.map(p => p.n + ' ' + p.w).join(', ')} · Down: ${cw.down.map(p => p.n + ' ' + p.w).join(', ')}</div>`); } }
   if (!body && kind !== 2) { const ws = wordSearch(words, rnd);
@@ -768,11 +923,12 @@ function gamePage(vol, ch, ci, rnd, keys, folio, nextBreak) {
   return `<div class="page" data-vol="${vol.n}">
     ${head(vol, ch, ci, 'Game')}
     <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in">${avatar(host.id, '.6in')}
-      <div><div class="kick">${esc(host.name)}'s puzzle page</div><h2 style="font-size:20pt">${title}</h2></div>
-      <div style="margin-left:auto" class="bb-badge"><div class="b1">I own<br>this</div></div></div>
+      <div><div class="kick">${esc(host.name)}'s puzzle page</div><h2 style="font-size:20pt">${title}</h2></div></div>
     <div style="margin-top:.1in">${body}</div>
-    ${nextBreak()}
-    ${title === 'Scramble & rescue' ? worldStrip(chWorldOf(vol, ci), vol, ci * 11 + 5) : ''}
+    <!-- The puzzle page carries a grid, a clue list and a painted band; a Bee Break
+         on top of that is what put a yellow box underneath the world strip. The
+         break it does not consume simply goes to the next page that has room. -->
+    ${worldStrip(chWorldOf(vol, ci), vol, ci * 11 + 5)}
     ${foot(vol, folio)}</div>`;
 }
 
@@ -790,20 +946,39 @@ function cover(vol, nCh, nWords, label, cast) {
         hero: HERO, crew, title: vol.title, vex: vol.band === 'advanced',
         skyKey: reg >= 3 ? 'dusk' : vol.n % 2 ? 'gold' : 'day' })}
     </svg>`}
-    <div style="position:absolute;top:.42in;left:.55in;right:.55in;display:flex;justify-content:space-between;align-items:center">
-      <span style="font-family:'BB Kicker';letter-spacing:.16em;font-size:10.5pt;text-shadow:0 2px 6px rgba(0,0,0,.55)">BIZZING BEE ${label}</span>
-      <span class="disp" style="background:rgba(12,9,28,.55);padding:.07in .2in;border-radius:999px;font-size:12.5pt;transform:rotate(${reg >= 3 ? 0 : 2}deg)">Vol. ${vol.n}</span></div>
-    <div style="position:absolute;top:.95in;left:.4in;right:.4in;text-align:center;transform:rotate(${reg >= 3 ? 0 : -1.4}deg)">
-      <h1 class="coverTitle" style="font-size:58pt;line-height:.94">${esc(vol.title)}</h1>
+    <!-- One centred masthead: Bizzy, then the series name, then the volume line,
+         then the title. The old cover put the series name top-left, the volume in a
+         top-right pill and the title floating at a jaunty angle, which read as three
+         unrelated labels rather than one book. -->
+    <div style="position:absolute;top:.46in;left:.4in;right:.4in;text-align:center">
+      <div style="display:flex;align-items:center;justify-content:center;gap:.11in">
+        ${bizzyMark('.34in')}
+        <span class="disp" style="font-size:19pt;letter-spacing:.01em;text-shadow:0 2px 9px rgba(0,0,0,.6)">The Bizzing Bee</span>
+      </div>
+      <div style="font-family:'BB Kicker';letter-spacing:.2em;font-size:10.5pt;margin-top:.06in;opacity:.92;text-shadow:0 2px 6px rgba(0,0,0,.6)">${esc(label)} &middot; BOOK ${vol.n}</div>
+      <h1 class="coverTitle" style="font-size:54pt;line-height:.96;margin-top:.2in">${esc(vol.title)}</h1>
       <p style="font-family:'BB Kicker';font-size:14pt;max-width:5.8in;margin:.14in auto 0;text-shadow:0 2px 10px rgba(0,0,0,.65)">${esc(vol.tag)}</p></div>
-    <div style="position:absolute;left:0;right:0;bottom:0;height:1.5in;background:linear-gradient(180deg,rgba(12,9,28,0),rgba(12,9,28,.72))"></div>
-    <div style="position:absolute;right:.5in;bottom:.55in;display:flex;flex-direction:column;gap:.08in;align-items:flex-end">
-      ${[[nCh + ' chapters'], [nWords + ' practice words'], ['quizzes & puzzles throughout']].map(([t]) =>
-        `<span style="background:rgba(12,9,28,.55);border-radius:999px;padding:.05in .18in;font-family:'BB Kicker';font-size:10pt">${t}</span>`).join('')}</div>
-    <div style="position:absolute;left:.55in;bottom:.55in;max-width:4in;font-family:'BB Kicker';font-size:9.6pt;text-shadow:0 2px 6px rgba(0,0,0,.7)">
-      Bizzy &amp; ${esc(NAMES[vol.av] || castName(vol.av))} in ${esc(WORLD_NAME[vol.world] || vol.world)}<br>
-      <span style="opacity:.9">${esc(WORLD_BLURB[vol.n] || '')}</span></div>
+    <div style="position:absolute;left:0;right:0;bottom:0;height:1.7in;background:linear-gradient(180deg,rgba(12,9,28,0),rgba(12,9,28,.78))"></div>
+    <!-- The three facts are the only thing at the foot now, centred and big enough
+         to read across a room. The cast-and-world line that used to sit beside them
+         said nothing a reader could use. -->
+    <div style="position:absolute;left:.5in;right:.5in;bottom:.6in;display:flex;justify-content:center;gap:.14in;flex-wrap:wrap">
+      ${[nCh + ' chapters', nWords + ' practice words', 'quizzes &amp; puzzles'].map(t => coverPill(t, vol)).join('')}</div>
   </div>`;
+}
+/* The masthead bee. Painted art when the avatar PNG is there, the drawn anime
+   Bizzy otherwise, so a cover never ships without her. */
+function bizzyMark(size) {
+  const src = avaPng(HERO);
+  if (src) return `<img src="${src}" alt="" style="width:${size};height:${size};object-fit:contain;filter:drop-shadow(0 2px 5px rgba(0,0,0,.5))">`;
+  return `<span style="display:inline-block;width:${size};height:${size}">${VEX ? '' : ''}${ANIME.portrait(HERO, size, { k: 'mk' + (_pk++) })}</span>`;
+}
+/* The cover fact pill: warm honey glass rather than a grey scrim, and sized to be
+   read rather than squinted at. */
+function coverPill(t, vol) {
+  return `<span style="display:inline-block;background:linear-gradient(160deg,rgba(255,210,77,.94),rgba(240,169,60,.94));
+    color:#3E2708;border-radius:999px;padding:.085in .26in;font-family:'BB Display';font-weight:800;font-size:12.5pt;
+    letter-spacing:.01em;box-shadow:0 3pt 10pt rgba(12,9,28,.4), inset 0 -2pt 0 rgba(140,86,10,.28)">${t}</span>`;
 }
 /* a slim world band that carries the journey's scenery onto working pages */
 function worldStrip(world, vol, seedK) {
@@ -859,7 +1034,7 @@ function castPage(vol, cast, folio) {
       <div style="min-width:0"><div style="font-family:'BB Display';font-size:13pt;line-height:1.15">${esc(a.name)}
         ${cd.overall ? `<span style="font-family:'BB Tile';font-size:8.6pt;color:var(--muted)"> OVR ${cd.overall}</span>` : ''}</div>
       <div style="font-family:'BB Kicker';font-size:8.2pt;color:var(--accent-deep);text-transform:uppercase;letter-spacing:.05em;margin:3pt 0 4pt;line-height:1.35">${esc(clamp(cd.title || (a.rarity + ' · ' + a.pack + ' pack'), 30))}</div>
-      <div style="font-size:9.6pt;color:var(--muted);line-height:1.42">${esc(clamp(cd.lore || PACK_ROLE[a.pack] || 'reports for spelling duty', 72))}</div></div></div>`; };
+      <div style="font-size:9.6pt;color:var(--muted);line-height:1.42">${esc(fit(cd.lore || PACK_ROLE[a.pack] || 'reports for spelling duty', 78))}</div></div></div>`; };
   return `<div class="page" data-vol="${vol.n}">
     ${head(vol, null, 0, 'The cast')}
     <div style="margin-top:.36in;display:flex;align-items:center;gap:.16in">
@@ -906,8 +1081,8 @@ function howTo(vol, folio) {
     ['Read the story', reg === 1 ? 'Each chapter opens like a film. Vex sets the trap; your guide walks you out of it.' : 'Each chapter opens as a storyboard. Vex sets the trap; the crew talks you out of it.'],
     ['Steal the pro move', 'The dark box is how a champion thinks on stage. It works on brand-new words too.'],
     ['Spell out loud, then write', reg === 1 ? 'Say it, spell it OUT LOUD, then write it in the box. Mouth and hand together beat eyes alone.' : 'Say it, spell it aloud, write it. The order matters — it is how the stage will ask for it.'],
-    ['Pass the checkpoint', reg >= 3 ? 'The same questions the app gates this chapter with — at 90%. Circle, then verify at the back.' : 'A short quiz straight from the Word Map. Circle your answers; the back of the book keeps the truth.'],
-    ['Play the puzzle, hunt the Big List', 'Every chapter ends in a game built from its own words, and the back holds every word in the book. Circle what you own.'],
+    ['Pass the checkpoint', reg >= 3 ? 'A short quiz on the chapter, gated at 90%. Circle your answers, then verify at the back.' : 'A short quiz on the chapter you just read. Circle your answers; the back of the book keeps the truth.'],
+    ['Play the game, then revise', 'Every chapter ends with a fun game, answer key at the back. Revise all words at the end and circle the ones you can spell and define.'],
   ];
   const hello = reg === 1
     ? `Hi — I'm <b>${esc(NAMES[vol.av])}</b>. ${esc(vol.tag)} — that's where we're going, one chapter at a time. Bring a pencil. I'll bring the words.`
@@ -923,7 +1098,6 @@ function howTo(vol, folio) {
     ${steps.map(([t, b], i) => `<div style="display:flex;gap:.14in;margin-bottom:.13in;align-items:flex-start">
       <span style="display:inline-grid;place-items:center;width:.52in;height:.52in;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:14pt;flex-shrink:0">${i + 1}</span>
       <div class="bb-panelbox" style="flex:1"><h3 style="font-size:12.5pt;color:var(--accent-deep)">${t}</h3><p style="font-size:10.6pt;line-height:1.45">${b}</p></div></div>`).join('')}
-    <div class="bb-audio" style="margin-top:.05in">🔊 Grown-ups: every chapter is narrated, and every word recorded, in the Bizzing Bee app</div>
     ${worldStrip(vol.world, vol, 7)}
     ${foot(vol, folio)}</div>`;
 }
@@ -950,14 +1124,26 @@ function keyPages(vol, keys, folioRef) {
     <p style="color:var(--muted);font-size:11.5pt;margin-bottom:1.6in">${reg >= 3 ? 'Checking before trying teaches you nothing twice.' : 'Vex would peek. Be better than Vex.'}</p>
     ${worldStrip(vol.world, vol, 91)}
     ${foot(vol, folioRef.n++)}</div>`);
-  for (let i = 0; i < keys.length; i += 14) {
+  /* Pack by weight, not by count. Fourteen entries a page left the last key page
+     two-thirds empty, because a checkpoint line is twenty characters and a crossword
+     line is two hundred. The budget is what actually fits the two-column body. */
+  const WEIGHT = 2500;                                 // characters per key page
+  const pages = [];
+  let bucket = [], w = 0;
+  for (const k of keys) {
+    const kw = String(k).replace(/<[^>]*>/g, '').length + 26;   // + the label's own line
+    if (bucket.length && w + kw > WEIGHT) { pages.push(bucket); bucket = []; w = 0; }
+    bucket.push(k); w += kw;
+  }
+  if (bucket.length) pages.push(bucket);
+  pages.forEach((chunk, pi) => {
     out.push(`<div class="page" data-vol="${vol.n}">
       ${head(vol, null, 0, 'Answer key')}
-      <div style="margin-top:.4in"><h2 style="font-size:20pt">Answer key</h2></div>
-      <div class="bb-key" style="margin-top:.12in">${keys.slice(i, i + 14).join('')}</div>
-      ${worldStrip(WORLD_CYCLE[(i / 14 + vol.n) % 12], vol, 300 + i)}
+      <div style="margin-top:.4in"><h2 style="font-size:20pt">Answer key${pages.length > 1 ? ' · ' + (pi + 1) + ' of ' + pages.length : ''}</h2></div>
+      <div class="bb-key" style="margin-top:.12in">${chunk.join('')}</div>
+      ${worldStrip(WORLD_CYCLE[(pi + vol.n) % 12], vol, 300 + pi * 14)}
       ${foot(vol, folioRef.n++)}</div>`);
-  }
+  });
   return out;
 }
 function colophon(vol, folio) {
@@ -1137,8 +1323,8 @@ function book17() {
       <div style="margin-top:.4in"><h2 style="font-size:20pt">Say one thing is like another. Boom — a picture.</h2></div>
       <div style="columns:2;column-gap:.34in;margin-top:.14in">${seg.map((x, k) => `<div style="break-inside:avoid;margin-bottom:.15in;transform:rotate(${k % 2 ? .3 : -.3}deg)">
         <div style="font-family:'BB Display';font-size:13.5pt;color:var(--accent-deep);line-height:1.14">⬡ ${esc(x.p)}</div>
-        <div style="font-size:10pt;line-height:1.36;margin-top:2pt;padding-left:.18in">${esc(clamp(x.m, 100))}</div>
-        ${x.os ? `<div style="font-size:9pt;line-height:1.33;margin-top:2pt;padding-left:.18in;color:var(--muted);font-style:italic">${esc(clamp(x.os, 150))}</div>` : ''}</div>`).join('')}</div>
+        <div style="font-size:10pt;line-height:1.36;margin-top:2pt;padding-left:.18in">${esc(fit(x.m, 104))}</div>
+        ${x.os ? `<div style="font-size:9pt;line-height:1.33;margin-top:2pt;padding-left:.18in;color:var(--muted);font-style:italic">${esc(fit(x.os, 154))}</div>` : ''}</div>`).join('')}</div>
       ${worldStrip(WORLD_CYCLE[(pageNo + 2) % 12], vol, 500 + pageNo)}
       ${foot(vol, folio.n++)}</div>`);
     if (pageNo % 6 === 0) {
@@ -1150,7 +1336,7 @@ function book17() {
         <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in">${avatar(vol.av, '.6in')}<h2 style="font-size:20pt">Draw the line: simile → meaning</h2></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.18in;margin-top:.12in;font-size:9.2pt;line-height:1.4">
           <div><h3 style="font-size:11pt;color:var(--accent-deep);margin-bottom:3pt">The similes</h3>${pool.map((x, k) => `<div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>${k + 1}.</b> ${esc(x.p)}</div>`).join('')}</div>
-          <div><h3 style="font-size:11pt;color:var(--accent-deep);margin-bottom:3pt">The meanings</h3>${right.map((r, k) => `<div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>${String.fromCharCode(65 + k)}.</b> ${esc(clamp(r.m, 70))}</div>`).join('')}</div></div>
+          <div><h3 style="font-size:11pt;color:var(--accent-deep);margin-bottom:3pt">The meanings</h3>${right.map((r, k) => `<div class="bb-row" style="max-height:none;margin-bottom:4pt"><b>${String.fromCharCode(65 + k)}.</b> ${esc(fit(r.m, 74))}</div>`).join('')}</div></div>
         <p style="font-size:9pt;color:var(--muted);margin-top:.1in">Your answers: ${pool.map((_, k) => (k + 1) + '—__').join('  ')}</p>
         ${foot(vol, folio.n++)}</div>`);
     }
@@ -1168,7 +1354,7 @@ function book17() {
     pages.push(`<div class="page" data-vol="17">
       ${head(vol, null, 0, 'Idiom hall of fame')}
       <div style="margin-top:.4in"><h2 style="font-size:20pt">Phrases that stopped meaning what they say.</h2></div>
-      <div style="columns:2;column-gap:.3in;margin-top:.14in">${idioms.slice(i, i + 18).map(x => `<div style="margin-bottom:.12in;break-inside:avoid;font-size:9.8pt;line-height:1.36"><b style="font-family:'BB Display';font-size:11pt;color:var(--accent-deep)">${esc(x.p)}</b> — ${esc(clamp(x.m, 80))}<br><span style="color:var(--muted);font-size:8.8pt;font-style:italic">${esc(clamp(x.os, 110))}</span></div>`).join('')}</div>
+      <div style="columns:2;column-gap:.3in;margin-top:.14in">${idioms.slice(i, i + 18).map(x => `<div style="margin-bottom:.12in;break-inside:avoid;font-size:9.8pt;line-height:1.36"><b style="font-family:'BB Display';font-size:11pt;color:var(--accent-deep)">${esc(x.p)}</b> — ${esc(fit(x.m, 84))}<br><span style="color:var(--muted);font-size:8.8pt;font-style:italic">${esc(fit(x.os, 114))}</span></div>`).join('')}</div>
       ${worldStrip(WORLD_CYCLE[(i / 18 + 4) % 12], vol, 600 + i)}
       ${foot(vol, folio.n++)}</div>`);
   }
@@ -1254,7 +1440,7 @@ function book18() {
           <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent)">“</span>
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">${esc(q.q)}</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— ${esc(q.a)}${q.who ? ', ' + esc(q.who) : ''}</div>
-          <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 ${esc(clamp(q.m, 150))}</div></div>`).join('')}
+          <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 ${esc(fit(q.m, 154))}</div></div>`).join('')}
         ${worldStrip(WORLD_CYCLE[(chNo + i) % 12], vol, 800 + chNo * 9 + i)}
         ${foot(vol, folio.n++)}</div>`);
     }
