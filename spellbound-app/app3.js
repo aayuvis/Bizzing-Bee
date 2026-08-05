@@ -1501,6 +1501,7 @@ const app = {
   // drawer
   openDrawer:()=>set({drawerOpen:true}), closeDrawer:()=>set({drawerOpen:false}),
   drawer:(key)=>{ state.drawerOpen=false; const F={ home:()=>app.setNav('home'), levelup:()=>app.startLevelUp(), games:()=>app.openGames(), shop:()=>app.openShop(), concepts:()=>app.setNav('concepts'),
+    trail:()=>app.openTrail&&app.openTrail(), revisions:()=>app.openRevisions(), ipatrain:()=>app.openIpaTrain(),
       coach:()=>app.openCoach(), journeys:()=>app.openJourneys(), study:()=>app.coachStudy(), written:()=>app.startWritten(), oral:()=>app.startOral(),
       weak:()=>app.coachWeakDrill(), parentview:()=>{ state.progTab='parent'; app.setNav('progress'); }, settings:()=>app.setNav('settings'), themes:()=>app.setNav('themes'),
       quest:()=>app.openQuestChooser(), traps:()=>app.openTraps(), collection:()=>app.openCollection(), finder:()=>app.openFinder(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore'), figurative:()=>app.setNav('figurative'), vocab:()=>app.openVocab(), typing:()=>app.openTyping(), quotes:()=>app.openQuotes(), trivia:()=>app.openTrivia(), trivtrain:()=>app.openTrivTrain(), ipatrain:()=>app.openIpaTrain(), trail:()=>app.openTrail() };
@@ -2387,6 +2388,7 @@ function worldHeroCard(t, on, locked, act){ const H=WORLD_HERO[t.id]||WORLD_HERO
 /* ---- Wayfinding tiles: destination color pops (spec §1). 48px solid tile, white icon,
    press edge, playful ±2–3° tilt. Colors are PLACE identity — stable across worlds. ---- */
 const WAYFIND={ quest:{c:'var(--action,#6C4FE0)',ic:'steps',sb:null,label:'Practice paths'},
+  trail:{c:'#C8791B',ic:'steps',sb:'steps',label:'The Word Atlas'},
   concepts:{c:'#0E8A78',ic:'grid',sb:'grid',label:'Word Concepts'},
   journeys:{c:'#C25A2E',ic:'book',sb:'book',label:'Word Journey'},
   builder:{c:'#7C5CFF',ic:'sliders',sb:'sliders',label:'List Builder'},
@@ -3648,6 +3650,14 @@ function viewApp(){
 // Side drawer — NOT a copy of the top nav. Identity + jump-back-in + colored Explore
 // shortcuts + training tools + family corner. The top nav answers "where am I";
 // the drawer answers "what can I do from here".
+/* The drawer's subtitles read the real data rather than a number typed in 2026:
+   the Atlas reports where the speller actually is, and Concepts reports how many
+   chapters the merged library holds for this account. */
+function atlasSub(c){ try{ const T=window.SB_TRAIL; if(!T) return 'the guided journey';
+    const tr=c.trail||{}; const n=Object.keys(tr.done||{}).length; const total=(T.honey.units||[]).length;
+    return n?('stop '+Math.min(n+1,total)+' of '+total+' · tier '+(tr.lap||1)):'nine acts · start at the Meadow'; }catch(e){ return 'the guided journey'; } }
+function conceptDrawerSub(){ try{ const n=(state.conceptData||[]).length; const sh=conceptChapters().length;
+    return n?(n+' chapters on '+sh+' shelves'):'every explanation in the app'; }catch(e){ return 'every explanation in the app'; } }
 function viewDrawer(){
   if(!state.drawerOpen) return '';
   const c=active(); ensureLists(c); const key=activeListKey();
@@ -3672,25 +3682,31 @@ function viewDrawer(){
       </div>
       <nav style="display:flex;flex-direction:column;gap:1px;overflow-y:auto">
         ${row('levelup','steps','Continue practising','${LBL}'.replace('${LBL}',esc(listLabel(key).split(' · ')[0])+' · Level '+(listStageIdx(c,key)+1)),false)}
+        ${row('trail','steps','The Word Atlas',atlasSub(c),state.nav==='trail')}
         ${missedN?row('weak','spark','Revenge round',missedN+' missed words waiting',false):''}
-        ${kick('Explore')}
-        ${wayRow('concepts','concepts','Concepts','121 concepts · 11 chapters')}
-        ${wayRow('journeys','journeys','Word Journeys','the history of words')}
-        ${wayRow('themes','themes','Theme Journeys',myThemes().length?myThemes().length+' worlds picked':'pick 3–5 worlds')}
-        ${wayRow("figurative","figurative","Idioms & Sayings","2,350 phrases · true origin stories")}
+        ${kick('Learn')}
+        ${wayRow('concepts','concepts','Concepts',conceptDrawerSub())}
+        ${wayRow('themes','themes','Theme Journeys',(themeDefs().length||75)+' families'+(myThemes().length?' · '+myThemes().length+' picked':''))}
         ${wayRow("vocab","vocab","Vocabulary","word → meaning, bee-style")}
+        ${kick('Train')}
+        ${wayRow("figurative","figurative","Idioms & Sayings","2,350 phrases · true origin stories")}
         ${wayRow("typing","typing","Typing Trainer","learn to type · 60s test")}
         ${wayRow('quotes','quotes','Quotes','words worth keeping')}
         ${wayRow('trivtrain','trivtrain','Know the World of Words','etymology cards by chapter')}
-        ${row('trivia','bulb','Bee Trivia','5,000 questions · 20 themes',state.nav==='trivia')}
-        ${kick('Tools')}
-        ${row('builder','pencil','List Builder','custom list in five taps',state.nav==='builder')}
+        ${row('ipatrain','book','The Sound Alphabet','read IPA · the notation study lists use',state.nav==='ipatrain')}
+        ${kick('Play')}
+        ${row('games','joystick','Arcade','seven games · saga, quest, trivia, sprints',state.nav==='games')}
+        ${row('trivia','bulb','Bee Trivia','25,000 questions · 32 chapters',state.nav==='trivia')}
+        ${kick('Revise')}
+        ${row('revisions','retry','Revision pile',missedN?missedN+' words waiting':'nothing waiting — nice',state.nav==='revisions')}
+        ${row('traps','target','Your weak patterns','beat the traps that keep catching you',state.nav==='traps')}
         <div class="sb-mob-only" style="display:contents">
-        ${row('collection','crown','My Collection',avOwnedCount(c)+'/'+SB_AVATARS.list.length+' avatars · badges',state.nav==='collection')}
-        ${row('shop','cart','Store','avatar packs, worlds & artifacts',state.nav==='shop')}
+        ${kick('My Hive')}
+        ${row('collection','crown','Collection, evolution & store',avOwnedCount(c)+'/'+SB_AVATARS.list.length+' avatars',state.nav==='collection')}
         ${row('finder','search','Search words','find any of 129,000 words',state.nav==='finder')}
         </div>
         ${kick('')}
+        ${row('builder','pencil','List Builder','custom list in five taps',state.nav==='builder')}
         ${row('settings','gear','Theme & settings','worlds, voice, style',state.nav==='settings')}
       </nav>
     </aside>`;
@@ -3750,6 +3766,21 @@ function streamers(){
     D.map(([l,t,co])=>`<span style="position:absolute;left:${l}%;top:${t}%;width:5px;height:5px;border-radius:50%;background:${co};opacity:.7"></span>`).join('')+
   `</div>`;
 }
+/* The Atlas tile shows the act the speller is actually standing in, painted with
+   the same scenery the Word Atlas and the books use — so the home screen and the
+   journey are visibly the same place. */
+function atlasWorld(c){ try{ const T=window.SB_TRAIL; if(!T) return 'meadow';
+    const tr=c.trail||{}; const done=tr.done||{};
+    let world='meadow';
+    for(const a of (T.honey.acts||[])){ const us=(T.honey.units||[]).filter(u=>u.act===a.id);
+      if(!us.length) continue; world=a.world;
+      if(!us.every(u=>(done[u.id]||{})[tr.lap||1])) break; }
+    return world; }catch(e){ return 'meadow'; } }
+function paintedTileArt(world,h){
+  return `<span style="position:relative;display:block;width:100%;height:${h}px;overflow:hidden;background:linear-gradient(160deg,#4a3f7a,#241e46)">
+    <img src="app-art/w-${world}-r2.jpg" alt="" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+    <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,32,.16),rgba(14,9,32,.42))"></span></span>`;
+}
 function viewHome(){
   const S=state; const c=active(); ensureLists(c); const theme=S.theme; const evo=EVO[theme]||EVO.spellbound;
   const focusedH=((c.ageMode)||((c.age||9)<=11?'playful':'focused'))==='focused';
@@ -3764,20 +3795,27 @@ function viewHome(){
   const lDone=lessonsDoneCount(); const lUnits=lessonUnits();
   const lChapDone=lUnits.filter(u=>{ const ls=lessonsAll().filter(L=>L.unit===u.n); return ls.length && ls.every(L=>lessonComplete(L)); }).length; const lChapTot=lUnits.length||10;
   const qp=c.questPath; const qpLabel=qp==='themes'?'Theme Journey':qp==='own'?'My own list':qp==='journey'?'Bizzing Bee Journey':null;
+  /* The four tiles are the four things a speller actually does, in the order the
+     app now presents them: follow the Atlas, drill words, read an explanation,
+     play. Word Journeys lost its tile when it moved onto a Concepts shelf — the
+     home screen should not offer a route the Library no longer lists. */
+  const atlas=(function(){ try{ const T=window.SB_TRAIL; if(!T) return {done:0,total:0,lap:1};
+      const tr=c.trail||{}; return { done:Object.keys(tr.done||{}).length, total:(T.honey.units||[]).length, lap:tr.lap||1 }; }
+    catch(e){ return {done:0,total:0,lap:1}; } })();
   const journeys=[
-    {goAct:'openCoach', ic:'steps', sc:'coach', c1:'#7C5CFF',c2:'#5A37D6',accent:'#7C5CFF', title:"Practice", desc:qp?('Your path: '+qpLabel+' — climb its Levels with Revise & Practice. Switch paths any time.'):'Drill your words — the Bizzing Bee ladder or your own word list.', pct:Math.min(100,Math.round(aLvlNew/20*100))+'%', badge:qp?('Level '+aLvlNew+' · '+qpLabel):'Choose your path', kind:'go'},
-    {goAct:'setNav', goArg:'concepts', ic:'grid', sc:'concept', c1:'#13A892',c2:'#0E8A78',accent:'#13A892', title:'Concepts', desc:'Spelling basics, patterns, prefixes, roots & tricky endings, in 11 short chapters.', pct:Math.round(cDone/(cTot||1)*100)+'%', badge:cChapDone+'/'+(conceptChapters().length||11)+' chapters', kind:'go'},
-    {goAct:'openJourneys', ic:'book', sc:'book', c1:'#E0922E',c2:'#C8791B',accent:'#E0922E', title:'Word Journeys', desc:'The history & geography of words — roots, journeys & origins, in 10 chapters.', pct:Math.round((lChapTot?lChapDone/lChapTot:0)*100)+'%', badge:S.premium?(lChapDone+'/'+lChapTot+' chapters'):'Premium', kind:S.premium?'go':'lock'},
+    {goAct:'openTrail', ic:'steps', sc:'trail', c1:'#F0A93C',c2:'#C8791B',accent:'#F0A93C', title:'The Word Atlas', desc:atlas.done?('Tier '+atlas.lap+' of 3 — nine acts, then the Advanced Rounds. Concepts first; the words follow.'):'One guided journey through nine worlds — learn the idea, meet the words, clear the quiz gate.', pct:Math.round((atlas.total?atlas.done/atlas.total:0)*100)+'%', badge:atlas.total?(atlas.done+'/'+atlas.total+' stops'):'Start at the Meadow', kind:'go'},
+    {goAct:'openCoach', ic:'pencil', sc:'coach', c1:'#7C5CFF',c2:'#5A37D6',accent:'#7C5CFF', title:"Practice", desc:qp?('Your path: '+qpLabel+' — climb its Levels with Revise & Practice. Switch paths any time.'):'Drill your words — the Bizzing Bee ladder, a theme, or your own list.', pct:Math.min(100,Math.round(aLvlNew/20*100))+'%', badge:qp?('Level '+aLvlNew+' · '+qpLabel):'Choose your path', kind:'go'},
+    {goAct:'setNav', goArg:'concepts', ic:'grid', sc:'concept', c1:'#13A892',c2:'#0E8A78',accent:'#13A892', title:'Concepts', desc:'Every explanation in the app on one shelf — patterns, roots, origins, bee-day craft.', pct:Math.round(cDone/(cTot||1)*100)+'%', badge:cChapDone+'/'+(conceptChapters().length||13)+' shelves', kind:'go'},
     {goAct:'openGames', ic:'joystick', sc:'joystick', festive:true, title:'Arcade', desc:'Spelling Quest, the Saga, Word Quiz & more — earn coins!', pct:Math.min(100,(c.streak||0)*10)+'%', badge:(c.coins||0)+' coins', kind:'go'},
-  ].filter(j=>focusedH?(j.sc==='coach'||j.sc==='concept'||j.festive):(j.sc==='coach'||j.festive)).map((j,ji)=>{
+  ].map((j,ji)=>{
     const arg=j.goArg?`data-arg="${j.goArg}"`:'';
-    const wk=({coach:'quest',concept:'concepts',book:'journeys',joystick:'arcade',theme:'themes'})[j.sc]||'quest';
-    const cid=({coach:'quest',concept:'concepts',book:'journeys',joystick:'arcade',theme:'themes'})[j.sc]||'quest';
+    const wk=({trail:'trail',coach:'quest',concept:'concepts',book:'journeys',joystick:'arcade',theme:'themes'})[j.sc]||'quest';
+    const cid=({trail:'journeys',coach:'quest',concept:'concepts',book:'journeys',joystick:'arcade',theme:'themes'})[j.sc]||'quest';
     const _pd=S.mode==='dusk'; const pillBg=_pd?'#FFFFFF':'#241E33', pillFg=_pd?'#241E33':'#FFFFFF';
     const meta=`<span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;padding:4px 11px;border-radius:var(--r-pill,999px);font-size:11px;font-weight:800;letter-spacing:.02em;background:${pillBg};color:${pillFg}">${j.festive?coinIc(12):(j.kind==='lock'?iconSVG('lock',11,2.2):'')}${j.festive?((c.coins||0)+' coins'):esc(j.badge)}</span>`;
     return `<button class="sb-lift" data-act="${j.goAct}" ${arg} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0">
       <div style="position:relative;width:100%">
-        ${SB_COVER(S.theme,cid,{h:66,dark:S.mode==='dusk'})}
+        ${j.sc==='trail'?paintedTileArt(atlasWorld(c),66):SB_COVER(S.theme,cid,{h:66,dark:S.mode==='dusk'})}
         <span style="position:absolute;left:14px;bottom:-13px">${wayTile(wk,40,ji%2?2.5:-2.5)}</span>
       </div>
       <div style="padding:8px 14px 0 62px;min-height:24px;display:flex;align-items:center;justify-content:flex-end;width:100%">${meta}</div>
@@ -3851,9 +3889,9 @@ function viewHome(){
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:14px">${wohTile}${qohTile}</div>`; })()}
 ${focusedH?(()=>{ return `
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:8px">${journeys}</div>`; })()
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(228px,1fr));gap:12px;margin-bottom:8px">${journeys}</div>`; })()
     :`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:2px 2px 9px">Keep going</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:8px">${journeys}</div>`}
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(228px,1fr));gap:12px;margin-bottom:8px">${journeys}</div>`}
     <div style="text-align:center;margin-top:26px;padding-top:14px;border-top:1px solid var(--line)"><a href="privacy.html" style="color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:3px">Privacy &amp; Parents' Notice</a></div>
   </div>`;
 }
