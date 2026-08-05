@@ -258,8 +258,15 @@
   // surfaces (opts.dark, or the app's dusk mode) epic & legendary avatars GLOW
   // (design "dusk tile" spec); everything else gets a thin white edge instead
   // of the ink outline, which would vanish on dark.
+  /* Painted avatars: when `avatars/<id>.png` exists (listed in SB_AVATAR_PNG,
+     avatar-png.js) the character renders as that image instead of the built-in
+     SVG. The enamel outline below is a CSS drop-shadow stack, which follows the
+     alpha channel — so a cut-out PNG keeps the exact same edge, glow and dusk
+     treatment as the vector art, at every size. Missing PNG → SVG fallback. */
+  const hasPng = id => { try { return !!(window.SB_AVATAR_PNG && window.SB_AVATAR_PNG[id]); } catch(e){ return false; } };
   window.SB_AVATAR = function(id, size, opts){ size=size||64; opts=opts||{};
-    let inner = (window.SB_AVATAR_ART && window.SB_AVATAR_ART[id]) || (D[id] ? D[id]() : '');
+    const png = hasPng(id);
+    let inner = png ? 'png' : ((window.SB_AVATAR_ART && window.SB_AVATAR_ART[id]) || (D[id] ? D[id]() : ''));
     if(!inner) return '';
     const w = Math.max(1, Math.round(size/100 * 12)/10); // ~1.2px, scales gently
     const dusk = !!opts.dark || (typeof state!=='undefined' && state && state.mode==='dusk');
@@ -277,5 +284,6 @@
         outline = `filter:drop-shadow(${w}px 0 0 ${ink}) drop-shadow(-${w}px 0 0 ${ink}) drop-shadow(0 ${w}px 0 ${ink}) drop-shadow(0 -${w}px 0 ${ink});`;
       }
     }
+    if(png) return `<img src="avatars/${id}.png" width="${size}" height="${size}" alt="" aria-hidden="true" loading="lazy" decoding="async" style="display:block;object-fit:contain;${outline}">`;
     return `<svg viewBox="0 0 120 120" width="${size}" height="${size}" aria-hidden="true" style="display:block;overflow:visible;${outline}">${inner}</svg>`; };
 })();
