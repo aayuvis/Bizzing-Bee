@@ -28,3 +28,9 @@ The visual language of *King's Playbook: 24 Laws of Leadership for Those Who Wea
 - **In Claude Code:** point a session at this folder ("follow book/design-system") when producing anything in the book's brand — new chapters, a workbook, slides, landing pages.
 - **In claude.ai/design:** the same files are synced as the "King's Playbook — Design System" project; browse the cards, iterate visually, and sync changes back with /design-sync.
 - **In the book build:** `book/kings-playbook.html` embeds these tokens/components inline (with fonts base64-embedded); this folder is the canonical, editable source.
+
+## Pending portraits (drop-in slots)
+
+Laws 9–24 currently use subject-matched portraits from the original art where the chapter's figures overlap (Frederick 9, Napoleon 14, Chanakya 16, Akbar 18, Welch 20) and the law's own icon as a faint background motif elsewhere. External image sourcing is blocked by this workspace's network policy, so to upgrade any chapter to a true portrait, drop a file with the name below into `assets/art/` (sketch/engraving style, transparent or light background, ≥400px) and ask Claude to wire it — placements are already defined:
+
+`bismarck` (10) · `prithviraj` (11) · `cincinnatus`, `mandela`, `jamsetji` (12) · `alexander` (13) · `musk` (14 opener) · `babur`, `tipu` (15) · `damani` (16 opener) · `jahangir` (17) · `harun` (19) · `genghis` (20) · `marcus-aurelius`, `buffett` (21) · `louis-xiv`, `tendulkar` (22) · `doge-venice` (23) · `maharana-pratap`, `nadella` (24) · `yi-sun-sin` (8 KP) · `merkel`, `iger` (9 opener) · `ghosn` (11 opener) · `mulally` (20 opener)
