@@ -3,4 +3,4 @@
    (avatars.js) renders the image instead of the SVG for every id listed here,
    and falls back to the vector art for anything missing. Keep append-only in
    spirit: removing an id silently reverts that character to its SVG. */
-window.SB_AVATAR_PNG = {"bizzy":1,"blossom":1,"bumble":1,"clover":1,"drone":1,"ganesha":1,"honeypot":1,"jester":1,"maestro":1,"mic":1,"nectar":1,"propolis":1,"queenhive":1,"star":1,"waggle":1};
+window.SB_AVATAR_PNG = {"alien":1,"astro":1,"bizzy":1,"blossom":1,"bumble":1,"clover":1,"comet":1,"diva":1,"drone":1,"encore":1,"ganesha":1,"goldlegend":1,"honeypot":1,"jester":1,"lumen":1,"luna":1,"maestro":1,"melody":1,"mic":1,"nectar":1,"popcorn":1,"propolis":1,"queenhive":1,"rocket":1,"saturn":1,"star":1,"waggle":1};
