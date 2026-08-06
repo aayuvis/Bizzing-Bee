@@ -30,7 +30,10 @@ STYLE_MATURE = ("Modern graphic-novel illustration: confident hand-inked linewor
                 "Composed like a printed book jacket rather than a film poster: calm, uncluttered, "
                 "confident. Figures — when there are any — are drawn with real proportion and a warm, "
                 "open expression; never scowling, never grim, never chibi. Full-bleed edge to edge, no "
-                "border, no frame, no panel grid, NO TEXT of any kind. ")
+                "border, no frame, no panel grid. ABSOLUTELY NO TEXT ANYWHERE: no title, no "
+                "captions, no labels, no country or place names, no signage, no numbers, no "
+                "lettering on any object, and no writing of any alphabet. Every surface that "
+                "could carry writing is left blank. ")
 if os.environ.get('NB_STYLE') == 'mature':
     STYLE = STYLE_MATURE
 

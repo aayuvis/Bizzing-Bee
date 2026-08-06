@@ -17,3 +17,12 @@ spellbound-app/*review.html
 
 # session-local voice QA scratch (scan intermediates, decoded wavs)
 .voicebuild/
+
+# Generated art intermediates. Every slot PNG the image pipeline writes is
+# resized to a served JPEG and then deleted, so a PNG in here only ever means
+# "a batch is still running". The two reference sheets are INPUTS to the
+# generator, not output, and stay tracked.
+spellbound-app/books/art/*.png
+!spellbound-app/books/art/bizzy-sheet.png
+!spellbound-app/books/art/vex-sheet.png
+spellbound-app/app-art/*.png
