@@ -30,7 +30,7 @@ window.SB_POEMS = {
     pieces: [
       {
         t: 'To be, or not to be',
-        a: 'William Shakespeare (1564–1616)', src: 'Hamlet, Act III, Scene 1', y: 'c. 1600', kind: 'speech',
+        th: 'night', a: 'William Shakespeare (1564–1616)', src: 'Hamlet, Act III, Scene 1', y: 'c. 1600', kind: 'speech',
         lines: [
           'To be, or not to be, that is the question:',
           'Whether ’tis nobler in the mind to suffer',
@@ -58,7 +58,7 @@ window.SB_POEMS = {
       },
       {
         t: 'Hath not a Jew eyes?',
-        a: 'William Shakespeare (1564–1616)', src: 'The Merchant of Venice, Act III, Scene 1', y: 'c. 1597', kind: 'speech',
+        th: 'city', a: 'William Shakespeare (1564–1616)', src: 'The Merchant of Venice, Act III, Scene 1', y: 'c. 1597', kind: 'speech',
         lines: [
           'I am a Jew. Hath not a Jew eyes? Hath not a Jew hands, organs,',
           'dimensions, senses, affections, passions; fed with the same food,',
@@ -79,7 +79,7 @@ window.SB_POEMS = {
       },
       {
         t: 'The quality of mercy',
-        a: 'William Shakespeare (1564–1616)', src: 'The Merchant of Venice, Act IV, Scene 1', y: 'c. 1597', kind: 'speech',
+        th: 'stage', a: 'William Shakespeare (1564–1616)', src: 'The Merchant of Venice, Act IV, Scene 1', y: 'c. 1597', kind: 'speech',
         lines: [
           'The quality of mercy is not strain’d,',
           'It droppeth as the gentle rain from heaven',
@@ -105,7 +105,7 @@ window.SB_POEMS = {
       },
       {
         t: 'Tomorrow, and tomorrow, and tomorrow',
-        a: 'William Shakespeare (1564–1616)', src: 'Macbeth, Act V, Scene 5', y: 'c. 1606', kind: 'speech',
+        th: 'night', a: 'William Shakespeare (1564–1616)', src: 'Macbeth, Act V, Scene 5', y: 'c. 1606', kind: 'speech',
         lines: [
           'Tomorrow, and tomorrow, and tomorrow,',
           'Creeps in this petty pace from day to day,',
@@ -127,7 +127,7 @@ window.SB_POEMS = {
       },
       {
         t: 'All the world’s a stage',
-        a: 'William Shakespeare (1564–1616)', src: 'As You Like It, Act II, Scene 7', y: 'c. 1599', kind: 'speech',
+        th: 'stage', a: 'William Shakespeare (1564–1616)', src: 'As You Like It, Act II, Scene 7', y: 'c. 1599', kind: 'speech',
         lines: [
           'All the world’s a stage,',
           'And all the men and women merely players;',
@@ -148,7 +148,7 @@ window.SB_POEMS = {
       },
       {
         t: 'Our revels now are ended',
-        a: 'William Shakespeare (1564–1616)', src: 'The Tempest, Act IV, Scene 1', y: 'c. 1611', kind: 'speech',
+        th: 'stage', a: 'William Shakespeare (1564–1616)', src: 'The Tempest, Act IV, Scene 1', y: 'c. 1611', kind: 'speech',
         lines: [
           'Our revels now are ended. These our actors,',
           'As I foretold you, were all spirits and',
@@ -181,7 +181,7 @@ window.SB_POEMS = {
     pieces: [
       {
         t: 'Sonnet 18: Shall I compare thee to a summer’s day?',
-        a: 'William Shakespeare (1564–1616)', src: 'Sonnets', y: '1609', kind: 'sonnet',
+        th: 'flower', a: 'William Shakespeare (1564–1616)', src: 'Sonnets', y: '1609', kind: 'sonnet',
         lines: [
           'Shall I compare thee to a summer’s day?',
           'Thou art more lovely and more temperate:',
@@ -207,7 +207,7 @@ window.SB_POEMS = {
       },
       {
         t: 'Sonnet 116: Let me not to the marriage of true minds',
-        a: 'William Shakespeare (1564–1616)', src: 'Sonnets', y: '1609', kind: 'sonnet',
+        th: 'sea', a: 'William Shakespeare (1564–1616)', src: 'Sonnets', y: '1609', kind: 'sonnet',
         lines: [
           'Let me not to the marriage of true minds',
           'Admit impediments. Love is not love',
@@ -234,7 +234,7 @@ window.SB_POEMS = {
       },
       {
         t: 'Sonnet 130: My mistress’ eyes are nothing like the sun',
-        a: 'William Shakespeare (1564–1616)', src: 'Sonnets', y: '1609', kind: 'sonnet',
+        th: 'flower', a: 'William Shakespeare (1564–1616)', src: 'Sonnets', y: '1609', kind: 'sonnet',
         lines: [
           'My mistress’ eyes are nothing like the sun;',
           'Coral is far more red than her lips’ red;',
@@ -258,9 +258,90 @@ window.SB_POEMS = {
           { w: 'belied', say: 'bih-LYDE', def: 'gave a false impression of' }
         ]
       },
+
+      {
+        t: 'Sonnet 29: When, in disgrace with fortune and men’s eyes',
+        th: 'dawn', a: 'William Shakespeare (1564–1616)', src: 'Sonnets', y: '1609', kind: 'sonnet',
+        lines: [
+          'When, in disgrace with fortune and men’s eyes,',
+          'I all alone beweep my outcast state,',
+          'And trouble deaf heaven with my bootless cries,',
+          'And look upon myself and curse my fate,',
+          'Wishing me like to one more rich in hope,',
+          'Featured like him, like him with friends possess’d,',
+          'Desiring this man’s art and that man’s scope,',
+          'With what I most enjoy contented least;',
+          'Yet in these thoughts myself almost despising,',
+          'Haply I think on thee, and then my state,',
+          'Like to the lark at break of day arising',
+          'From sullen earth, sings hymns at heaven’s gate;',
+          '   For thy sweet love remember’d such wealth brings',
+          '   That then I scorn to change my state with kings.'
+        ],
+        note: 'Eight lines of self-pity so complete it is almost funny, and then one word — "Haply", meaning by chance — turns the whole poem over. The lark image lifts the metre with it: after twelve heavy lines the verse suddenly climbs.',
+        hard: [
+          { w: 'bootless', say: 'BOOT-liss', def: 'useless; bringing no result' },
+          { w: 'haply', say: 'HAP-lee', def: 'by chance; perhaps' },
+          { w: 'sullen', say: 'SUL-uhn', def: 'gloomy and silent; dull in colour' },
+          { w: 'despising', say: 'dih-SPY-zing', def: 'regarding with contempt' }
+        ]
+      },
+      {
+        t: 'On First Looking into Chapman’s Homer',
+        th: 'sea', a: 'John Keats (1795–1821)', src: 'The Examiner', y: '1816', kind: 'sonnet',
+        lines: [
+          'Much have I travell’d in the realms of gold,',
+          '   And many goodly states and kingdoms seen;',
+          '   Round many western islands have I been',
+          'Which bards in fealty to Apollo hold.',
+          'Oft of one wide expanse had I been told',
+          '   That deep-brow’d Homer ruled as his demesne;',
+          '   Yet did I never breathe its pure serene',
+          'Till I heard Chapman speak out loud and bold:',
+          'Then felt I like some watcher of the skies',
+          '   When a new planet swims into his ken;',
+          'Or like stout Cortez when with eagle eyes',
+          '   He star’d at the Pacific—and all his men',
+          'Look’d at each other with a wild surmise—',
+          '   Silent, upon a peak in Darien.',
+        ],
+        note: 'A poem about reading a translation, which sounds dull and is not: it is about the moment a book cracks the world open. Keats got his explorer wrong — it was Balboa, not Cortez — and nobody has ever wanted the line changed.',
+        hard: [
+          { w: 'fealty', say: 'FEE-uhl-tee', def: 'loyalty sworn to a lord' },
+          { w: 'demesne', say: 'dih-MAYN', def: 'land attached to a manor; a domain' },
+          { w: 'surmise', say: 'ser-MYZE', def: 'a guess made without firm evidence' },
+          { w: 'expanse', say: 'ik-SPANSS', def: 'a wide continuous area' }
+        ]
+      },
+      {
+        t: 'Composed upon Westminster Bridge',
+        th: 'city', a: 'William Wordsworth (1770–1850)', src: 'Poems, in Two Volumes', y: '1807', kind: 'sonnet',
+        lines: [
+          'Earth has not any thing to shew more fair:',
+          'Dull would he be of soul who could pass by',
+          'A sight so touching in its majesty:',
+          'This City now doth like a garment wear',
+          'The beauty of the morning; silent, bare,',
+          'Ships, towers, domes, theatres, and temples lie',
+          'Open unto the fields, and to the sky;',
+          'All bright and glittering in the smokeless air.',
+          'Never did sun more beautifully steep',
+          'In his first splendour valley, rock, or hill;',
+          'Ne’er saw I, never felt, a calm so deep!',
+          'The river glideth at his own sweet will:',
+          '   Dear God! the very houses seem asleep;',
+          '   And all that mighty heart is lying still!'
+        ],
+        note: 'The great poet of lakes and mountains, undone by London at dawn. "Smokeless" is the key: he is seeing the city in the one hour before the fires are lit, and it will not look like this again all day.',
+        hard: [
+          { w: 'majesty', say: 'MAJ-uh-stee', def: 'impressive dignity or grandeur' },
+          { w: 'splendour', say: 'SPLEN-der', def: 'magnificent and brilliant appearance' },
+          { w: 'glideth', say: 'GLYE-duhth', def: 'moves smoothly and quietly (old form of glides)' }
+        ]
+      },
       {
         t: 'Ozymandias',
-        a: 'Percy Bysshe Shelley (1792–1822)', src: 'The Examiner', y: '1818', kind: 'sonnet',
+        th: 'ruin', a: 'Percy Bysshe Shelley (1792–1822)', src: 'The Examiner', y: '1818', kind: 'sonnet',
         lines: [
           'I met a traveller from an antique land,',
           'Who said—"Two vast and trunkless legs of stone',
@@ -287,7 +368,7 @@ window.SB_POEMS = {
       },
       {
         t: 'Death, be not proud (Holy Sonnet 10)',
-        a: 'John Donne (1572–1631)', src: 'Holy Sonnets', y: '1633', kind: 'sonnet',
+        th: 'night', a: 'John Donne (1572–1631)', src: 'Holy Sonnets', y: '1633', kind: 'sonnet',
         lines: [
           'Death, be not proud, though some have called thee',
           'Mighty and dreadful, for thou art not so;',
@@ -313,7 +394,7 @@ window.SB_POEMS = {
       },
       {
         t: 'The world is too much with us',
-        a: 'William Wordsworth (1770–1850)', src: 'Poems, in Two Volumes', y: '1807', kind: 'sonnet',
+        th: 'sea', a: 'William Wordsworth (1770–1850)', src: 'Poems, in Two Volumes', y: '1807', kind: 'sonnet',
         lines: [
           'The world is too much with us; late and soon,',
           'Getting and spending, we lay waste our powers;—',
@@ -347,40 +428,76 @@ window.SB_POEMS = {
     blurb: 'A haiku is not a small poem; it is a whole poem that has thrown away everything except the moment. Three lines, traditionally five syllables then seven then five, and somewhere in it a season and a cut — a place where the poem turns without saying so. The Japanese is given in rōmaji, and the English underneath is a plain rendering, not a translation trying to be a poem.',
     pieces: [
       {
-        t: 'The old pond', a: 'Matsuo Bashō (1644–1694)', src: 'Haru no Hi', y: '1686', kind: 'haiku',
+        t: 'The old pond', th: 'water', a: 'Matsuo Bashō (1644–1694)', src: 'Haru no Hi', y: '1686', kind: 'haiku',
         lines: ['furuike ya', 'kawazu tobikomu', 'mizu no oto', '', 'The old pond —', 'a frog jumps in:', 'the sound of water.'],
         note: 'The most famous poem in Japanese. Nothing happens except a sound, and the whole art is in the silence you are made to notice before it.',
         hard: [{ w: 'tranquil', say: 'TRANG-kwil', def: 'free from disturbance; calm' }]
       },
       {
-        t: 'On a bare branch', a: 'Matsuo Bashō (1644–1694)', src: 'Azuma Nikki', y: '1680', kind: 'haiku',
+        t: 'On a bare branch', th: 'bird', a: 'Matsuo Bashō (1644–1694)', src: 'Azuma Nikki', y: '1680', kind: 'haiku',
         lines: ['kare eda ni', 'karasu no tomarikeri', 'aki no kure', '', 'On a bare branch', 'a crow has settled —', 'autumn dusk.'],
         note: 'Three things and no verb of feeling. The poem trusts the crow, the branch and the failing light to do all of it.',
         hard: [{ w: 'desolate', say: 'DESS-uh-luht', def: 'bleak and empty; deserted' }]
       },
       {
-        t: 'The summer grasses', a: 'Matsuo Bashō (1644–1694)', src: 'Oku no Hosomichi', y: '1689', kind: 'haiku',
+        t: 'The summer grasses', th: 'war', a: 'Matsuo Bashō (1644–1694)', src: 'Oku no Hosomichi', y: '1689', kind: 'haiku',
         lines: ['natsukusa ya', 'tsuwamono domo ga', 'yume no ato', '', 'Summer grasses —', 'all that remains', 'of warriors’ dreams.'],
         note: 'Written at a battlefield where an army was destroyed five hundred years earlier. Grass, and the word "remains", and he never mentions a single body.',
         hard: [{ w: 'vestige', say: 'VESS-tij', def: 'a trace of something that no longer exists' }]
       },
       {
-        t: 'A world of dew', a: 'Kobayashi Issa (1763–1828)', src: 'Ora ga Haru', y: '1819', kind: 'haiku',
+        t: 'A world of dew', th: 'water', a: 'Kobayashi Issa (1763–1828)', src: 'Ora ga Haru', y: '1819', kind: 'haiku',
         lines: ['tsuyu no yo wa', 'tsuyu no yo nagara', 'sarinagara', '', 'This world of dew', 'is a world of dew —', 'and yet, and yet.'],
         note: 'Issa wrote it after his daughter died. The Buddhist teaching says the world is passing, like dew; he agrees with the teaching and refuses it in the same breath. "Sarinagara" is the sound of a man who knows better and cannot help it.',
         hard: [{ w: 'transient', say: 'TRAN-zee-uhnt', def: 'lasting only a short time' }]
       },
       {
-        t: 'The snail', a: 'Kobayashi Issa (1763–1828)', src: 'Collected haiku', y: 'c. 1810', kind: 'haiku',
+        t: 'The snail', th: 'mountain', a: 'Kobayashi Issa (1763–1828)', src: 'Collected haiku', y: 'c. 1810', kind: 'haiku',
         lines: ['katatsumuri', 'soro soro nobore', 'fuji no yama', '', 'O snail,', 'climb Mount Fuji —', 'but slowly, slowly.'],
         note: 'The kindest poem about ambition ever written, and the only advice most people need.',
         hard: [{ w: 'ascend', say: 'uh-SEND', def: 'to go up or climb' }]
       },
       {
-        t: 'The lightning flash', a: 'Yosa Buson (1716–1784)', src: 'Collected haiku', y: 'c. 1770', kind: 'haiku',
+        t: 'The lightning flash', th: 'sea', a: 'Yosa Buson (1716–1784)', src: 'Collected haiku', y: 'c. 1770', kind: 'haiku',
         lines: ['inazuma ya', 'nami moteyueru', 'akitsushima', '', 'Lightning —', 'and the waves are wreathed', 'around the islands.'],
         note: 'Buson painted as well as wrote, and it shows: the flash is a light source, and the poem is composed the way a picture is.',
         hard: [{ w: 'archipelago', say: 'ar-kih-PEL-uh-goh', def: 'a group or chain of islands' }]
+      },
+      {
+        t: 'First autumn morning', th: 'dawn', a: 'Matsuo Bashō (1644–1694)', src: 'Collected haiku', y: 'c. 1690', kind: 'haiku',
+        lines: ['asa yosamu', 'tabi no yadori no', 'kaji no oto', '', 'Cold at dawn —', 'from the traveller’s lodging,', 'the sound of a hammer.'],
+        note: 'Two facts and no comment. The cold is his; the hammer is somebody else already at work, which is what makes the cold lonely.',
+        hard: [{ w: 'lodging', say: 'LOJ-ing', def: 'a temporary place to stay' }]
+      },
+      {
+        t: 'The temple bell stops', th: 'night', a: 'Matsuo Bashō (1644–1694)', src: 'Collected haiku', y: 'c. 1688', kind: 'haiku',
+        lines: ['kane kiete', 'hana no ka wa tsuku', 'yūbe kana', '', 'The bell fades away —', 'the scent of blossom strikes,', 'evening.'],
+        note: 'One sense hands over to another: the sound stops and the smell arrives in its place. The verb for the scent is the verb for a bell being struck.',
+        hard: [{ w: 'resonance', say: 'REZ-uh-nuhnss', def: 'a deep, lingering sound' }]
+      },
+      {
+        t: 'Spring rain', th: 'water', a: 'Yosa Buson (1716–1784)', src: 'Collected haiku', y: 'c. 1775', kind: 'haiku',
+        lines: ['harusame ya', 'monogatari yuku', 'mino to kasa', '', 'Spring rain —', 'walking and talking,', 'a straw cape and an umbrella.'],
+        note: 'You never see the two people, only what they are wearing. Buson was a painter and this is a painter’s trick: describe the shapes, let the reader supply the friends.',
+        hard: [{ w: 'drizzle', say: 'DRIZ-uhl', def: 'fine light rain' }]
+      },
+      {
+        t: 'The piercing chill', th: 'snow', a: 'Yosa Buson (1716–1784)', src: 'Collected haiku', y: 'c. 1770', kind: 'haiku',
+        lines: ['mi ni shimu ya', 'naki tsuma no kushi wo', 'neya ni fumu', '', 'The piercing chill —', 'my dead wife’s comb, in our bedroom,', 'under my heel.'],
+        note: 'The whole poem is one physical shock standing in for a year of grief. Notice he does not say he was sad; he says he stepped on something.',
+        hard: [{ w: 'piercing', say: 'PEER-sing', def: 'sharp and penetrating' }]
+      },
+      {
+        t: 'The child of poverty', th: 'night', a: 'Kobayashi Issa (1763–1828)', src: 'Collected haiku', y: 'c. 1815', kind: 'haiku',
+        lines: ['yase-gaeru', 'makeru na Issa', 'kore ni ari', '', 'Skinny frog,', 'don’t give up the fight —', 'Issa is here.'],
+        note: 'Written watching a frog lose a contest it could not win. Issa cheers for it anyway, by name, which is the whole of his poetry in three lines.',
+        hard: [{ w: 'perseverance', say: 'per-suh-VEER-uhnss', def: 'continued effort in spite of difficulty' }]
+      },
+      {
+        t: 'In this world', th: 'flower', a: 'Kobayashi Issa (1763–1828)', src: 'Collected haiku', y: 'c. 1812', kind: 'haiku',
+        lines: ['yo no naka wa', 'jigoku no ue no', 'hanami kana', '', 'In this world', 'we walk on the roof of hell', 'gazing at flowers.'],
+        note: 'The most cheerful terrible thing ever written. Both halves are true at once and the poem refuses to choose between them.',
+        hard: [{ w: 'oblivious', say: 'uh-BLIV-ee-uhss', def: 'not aware of what is happening around you' }]
       }
     ]
   },
@@ -392,7 +509,7 @@ window.SB_POEMS = {
     pieces: [
       {
         t: 'The Road Not Taken',
-        a: 'Robert Frost (1874–1963)', src: 'Mountain Interval', y: '1916', kind: 'poem',
+        th: 'road', a: 'Robert Frost (1874–1963)', src: 'Mountain Interval', y: '1916', kind: 'poem',
         lines: [
           'Two roads diverged in a yellow wood,',
           'And sorry I could not travel both',
@@ -427,7 +544,7 @@ window.SB_POEMS = {
       },
       {
         t: 'Stopping by Woods on a Snowy Evening',
-        a: 'Robert Frost (1874–1963)', src: 'New Hampshire', y: '1923', kind: 'poem',
+        th: 'snow', a: 'Robert Frost (1874–1963)', src: 'New Hampshire', y: '1923', kind: 'poem',
         lines: [
           'Whose woods these are I think I know.',
           'His house is in the village though;',
@@ -457,7 +574,7 @@ window.SB_POEMS = {
       },
       {
         t: 'Invictus',
-        a: 'William Ernest Henley (1849–1903)', src: 'Book of Verses', y: '1888', kind: 'poem',
+        th: 'night', a: 'William Ernest Henley (1849–1903)', src: 'Book of Verses', y: '1888', kind: 'poem',
         lines: [
           'Out of the night that covers me,',
           '   Black as the pit from pole to pole,',
@@ -489,7 +606,7 @@ window.SB_POEMS = {
       },
       {
         t: 'If—',
-        a: 'Rudyard Kipling (1865–1936)', src: 'Rewards and Fairies', y: '1910', kind: 'poem',
+        th: 'mountain', a: 'Rudyard Kipling (1865–1936)', src: 'Rewards and Fairies', y: '1910', kind: 'poem',
         lines: [
           'If you can keep your head when all about you',
           '   Are losing theirs and blaming it on you,',
@@ -519,7 +636,7 @@ window.SB_POEMS = {
       },
       {
         t: 'The Tyger',
-        a: 'William Blake (1757–1827)', src: 'Songs of Experience', y: '1794', kind: 'poem',
+        th: 'fire', a: 'William Blake (1757–1827)', src: 'Songs of Experience', y: '1794', kind: 'poem',
         lines: [
           'Tyger Tyger, burning bright,',
           'In the forests of the night;',
@@ -562,7 +679,7 @@ window.SB_POEMS = {
       },
       {
         t: '"Hope" is the thing with feathers',
-        a: 'Emily Dickinson (1830–1886)', src: 'Poems', y: 'c. 1861', kind: 'poem',
+        th: 'bird', a: 'Emily Dickinson (1830–1886)', src: 'Poems', y: 'c. 1861', kind: 'poem',
         lines: [
           '"Hope" is the thing with feathers -',
           'That perches in the soul -',
@@ -588,7 +705,7 @@ window.SB_POEMS = {
       },
       {
         t: 'I Wandered Lonely as a Cloud',
-        a: 'William Wordsworth (1770–1850)', src: 'Poems, in Two Volumes', y: '1807', kind: 'poem',
+        th: 'flower', a: 'William Wordsworth (1770–1850)', src: 'Poems, in Two Volumes', y: '1807', kind: 'poem',
         lines: [
           'I wandered lonely as a cloud',
           'That floats on high o’er vales and hills,',
@@ -629,7 +746,7 @@ window.SB_POEMS = {
       },
       {
         t: 'Dreams',
-        a: 'Langston Hughes (1901–1967)', src: 'The Weary Blues era', y: '1922', kind: 'poem',
+        th: 'bird', a: 'Langston Hughes (1901–1967)', src: 'The Weary Blues era', y: '1922', kind: 'poem',
         lines: [
           'Hold fast to dreams',
           'For if dreams die',
@@ -648,7 +765,7 @@ window.SB_POEMS = {
       },
       {
         t: 'The Lake Isle of Innisfree',
-        a: 'W. B. Yeats (1865–1939)', src: 'The Rose', y: '1893', kind: 'poem',
+        th: 'water', a: 'W. B. Yeats (1865–1939)', src: 'The Rose', y: '1893', kind: 'poem',
         lines: [
           'I will arise and go now, and go to Innisfree,',
           'And a small cabin build there, of clay and wattles made;',
@@ -674,7 +791,7 @@ window.SB_POEMS = {
       },
       {
         t: 'Remember',
-        a: 'Christina Rossetti (1830–1894)', src: 'Goblin Market and Other Poems', y: '1862', kind: 'sonnet',
+        th: 'night', a: 'Christina Rossetti (1830–1894)', src: 'Goblin Market and Other Poems', y: '1862', kind: 'sonnet',
         lines: [
           'Remember me when I am gone away,',
           '   Gone far away into the silent land;',
@@ -700,7 +817,7 @@ window.SB_POEMS = {
       },
       {
         t: 'O Captain! My Captain!',
-        a: 'Walt Whitman (1819–1892)', src: 'Sequel to Drum-Taps', y: '1865', kind: 'poem',
+        th: 'sea', a: 'Walt Whitman (1819–1892)', src: 'Sequel to Drum-Taps', y: '1865', kind: 'poem',
         lines: [
           'O Captain! my Captain! our fearful trip is done,',
           'The ship has weather’d every rack, the prize we sought is won,',
@@ -728,7 +845,7 @@ window.SB_POEMS = {
     pieces: [
       {
         t: 'The Gettysburg Address',
-        a: 'Abraham Lincoln (1809–1865)', src: 'Soldiers’ National Cemetery, Pennsylvania', y: '19 November 1863', kind: 'prose',
+        th: 'war', a: 'Abraham Lincoln (1809–1865)', src: 'Soldiers’ National Cemetery, Pennsylvania', y: '19 November 1863', kind: 'prose',
         lines: [
           'Four score and seven years ago our fathers brought forth on this',
           'continent, a new nation, conceived in Liberty, and dedicated to the',
@@ -768,7 +885,7 @@ window.SB_POEMS = {
       },
       {
         t: 'It was the best of times',
-        a: 'Charles Dickens (1812–1870)', src: 'A Tale of Two Cities, opening', y: '1859', kind: 'prose',
+        th: 'city', a: 'Charles Dickens (1812–1870)', src: 'A Tale of Two Cities, opening', y: '1859', kind: 'prose',
         lines: [
           'It was the best of times, it was the worst of times, it was the age of',
           'wisdom, it was the age of foolishness, it was the epoch of belief, it',
@@ -789,7 +906,7 @@ window.SB_POEMS = {
       },
       {
         t: 'It is a truth universally acknowledged',
-        a: 'Jane Austen (1775–1817)', src: 'Pride and Prejudice, opening', y: '1813', kind: 'prose',
+        th: 'city', a: 'Jane Austen (1775–1817)', src: 'Pride and Prejudice, opening', y: '1813', kind: 'prose',
         lines: [
           'It is a truth universally acknowledged, that a single man in',
           'possession of a good fortune, must be in want of a wife.',
@@ -808,7 +925,7 @@ window.SB_POEMS = {
       },
       {
         t: 'Call me Ishmael',
-        a: 'Herman Melville (1819–1891)', src: 'Moby-Dick, opening', y: '1851', kind: 'prose',
+        th: 'sea', a: 'Herman Melville (1819–1891)', src: 'Moby-Dick, opening', y: '1851', kind: 'prose',
         lines: [
           'Call me Ishmael. Some years ago—never mind how long precisely—having',
           'little or no money in my purse, and nothing particular to interest me',
@@ -830,7 +947,7 @@ window.SB_POEMS = {
       },
       {
         t: 'I went to the woods',
-        a: 'Henry David Thoreau (1817–1862)', src: 'Walden', y: '1854', kind: 'prose',
+        th: 'forest', a: 'Henry David Thoreau (1817–1862)', src: 'Walden', y: '1854', kind: 'prose',
         lines: [
           'I went to the woods because I wished to live deliberately, to front',
           'only the essential facts of life, and see if I could not learn what it',

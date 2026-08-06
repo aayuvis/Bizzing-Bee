@@ -503,6 +503,77 @@ function css(vol) {
   .an-prop{position:absolute;top:.08in;left:.1in;background:rgba(20,14,44,.66);color:#FFE9AE;border-radius:8pt;padding:2.5pt 8pt;font-family:'BB Tile';font-size:9.6pt}
   .bb-prop{display:inline-block;background:var(--chip);color:var(--chip-ink);border-radius:8pt;padding:3pt 8pt;font-family:'BB Tile';font-size:10pt}
   .bb-bubble{background:var(--card);border:1px solid var(--hairline);border-radius:12pt;padding:6pt 10pt;font-family:'BB Display';font-size:11.5pt;line-height:1.35;box-shadow:var(--sh-screen)}
+  /* ---- the poems companion: one poem to a page, and the page keeps moving ----
+     A poem is a shape and it wants the leaf it is printed on. Text left, the
+     gist in tiles down one side, the hard words underlined where they stand and
+     glossed along the foot. The plate moves — head band, foot band, side column,
+     inset, screened-back ground — so no two spreads run the same way. */
+  /* The page is a column: the poem takes the slack and the gloss is pinned just
+     above the running foot, which is absolutely positioned at .28in. Without
+     that the gloss floated wherever the poem ended and, on a short poem, landed
+     on top of the footer. */
+  .pm-page{position:relative;overflow:hidden;display:flex;flex-direction:column}
+  .pm-page .pm-band-foot{margin-bottom:.30in}
+  /* THE PLATE TAKES THE SLACK.
+     A haiku is three lines. No type size fills a leaf with three lines and none
+     should try — set it at 26pt and there are still three inches of bare paper
+     under it. So the picture grows instead: whichever plate the layout is using
+     is a flex item that soaks up whatever the poem did not need, between its own
+     min and a max that keeps it a band and not a poster. On a long poem it sits
+     at its minimum and nothing moves. Only the screened-back ground has nothing
+     to grow — it already covers the leaf — so that one still pins the glossary
+     to the foot instead. */
+  .pm-page.pm-art-ground .pm-gloss{margin-top:auto;margin-bottom:.30in}
+  .pm-art-head .pm-band-top,.pm-art-foot .pm-band-foot{flex:1 1 1.15in;min-height:1.15in;max-height:4.6in}
+  .pm-art-side .pm-body,.pm-art-inset .pm-body,.pm-art-ground .pm-body{flex:1 1 auto;align-items:stretch}
+  .pm-art-inset .pm-inset{flex:1 1 1.35in;min-height:1.35in;max-height:4.4in}
+  /* where the body is stretched and the plate is beside or behind the poem rather
+     than growing itself, the poem rides the middle of the space it was given —
+     a short piece reads as centred on the plate, not as stranded at the top */
+  .pm-art-side .pm-col,.pm-art-ground .pm-col{display:flex;flex-direction:column;justify-content:center}
+  .pm-ground{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.14;z-index:0;filter:saturate(.7)}
+  /* Lift the poem's own parts above the screened-back ground — and NAME them.
+     This was once a blanket rule on every child but the ground, which also caught the running head and
+     the running foot and turned both from absolute into flow items:
+     the head then sat on the source kicker and the foot printed itself in the
+     middle of the leaf, under the glossary. Only these five want the treatment. */
+  .pm-page > .pm-head,.pm-page > .pm-body,.pm-page > .pm-gloss,.pm-page > .pm-band{position:relative;z-index:1}
+  .pm-band{display:block;width:calc(100% + 1.25in);margin-left:-.75in;height:1.15in;object-fit:cover}
+  .pm-band-top{margin-top:.06in;margin-bottom:.14in;
+    -webkit-mask-image:linear-gradient(180deg,#000 55%,transparent);mask-image:linear-gradient(180deg,#000 55%,transparent)}
+  .pm-band-foot{margin-top:.14in;
+    -webkit-mask-image:linear-gradient(0deg,#000 55%,transparent);mask-image:linear-gradient(0deg,#000 55%,transparent)}
+  /* the running head is absolute at .3in and its rule lands about .12in above the
+     text box — close enough to the source kicker to read as a collision. When the
+     title block is the first thing on the page, stand it off. */
+  .bb-head + .pm-head{margin-top:.15in}
+  .pm-head{margin-bottom:.13in}
+  .pm-head h2{margin:.02in 0 .01in;line-height:1.12;color:var(--ink)}
+  .pm-by{font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep)}
+  .pm-body{display:flex;gap:.20in;align-items:flex-start;margin-bottom:.10in}
+  .pm-body.rev{flex-direction:row-reverse}
+  .pm-col{flex:1;min-width:0}
+  .pm-text{font-family:'BB Display';color:var(--ink);overflow-wrap:break-word}
+  /* the underline is the point of the book — it must read as a mark, not a link */
+  .pm-text .pw{text-decoration:none;background:linear-gradient(180deg,transparent 78%,var(--accent) 78%,var(--accent) 94%,transparent 94%);
+    padding:0 .5pt}
+  .pm-tiles{flex:0 0 2.15in;display:flex;flex-direction:column;gap:.11in}
+  .pm-tile{background:color-mix(in srgb,var(--accent) 7%,var(--paper));border-left:2.5pt solid var(--accent);
+    border-radius:0 8px 8px 0;padding:.09in .11in}
+  .pm-tile p{margin:2pt 0 0;font-size:9.2pt;line-height:1.38;color:var(--ink)}
+  .pm-tk{font-family:'BB Kicker';font-size:7.6pt;letter-spacing:.10em;text-transform:uppercase;color:var(--accent-deep)}
+  .pm-sideimg{flex:0 0 1.5in;align-self:stretch;width:1.5in;min-height:3.4in;object-fit:cover;border-radius:10px;
+    -webkit-mask-image:linear-gradient(90deg,#000 60%,transparent);mask-image:linear-gradient(90deg,#000 60%,transparent)}
+  /* the plate always dissolves TOWARDS the poem, so it reads as part of the leaf.
+     On the right flank that means fading leftward, not off the trimmed edge. */
+  .pm-side-r .pm-sideimg{-webkit-mask-image:linear-gradient(270deg,#000 60%,transparent);mask-image:linear-gradient(270deg,#000 60%,transparent)}
+  .pm-inset{width:100%;height:1.35in;object-fit:cover;border-radius:10px;margin-bottom:.02in}
+  .pm-gloss{margin-top:.16in;padding-top:.09in;border-top:1pt solid color-mix(in srgb,var(--accent) 40%,transparent);
+    display:grid;grid-template-columns:1fr 1fr 1fr;gap:.05in .16in}
+  .pm-g{font-size:8.2pt;line-height:1.3;break-inside:avoid}
+  .pm-g b{font-family:'BB Display';font-size:9.4pt;display:block;color:var(--ink)}
+  .pm-g i{font-family:'BB Mono';font-size:7.4pt;font-style:normal;color:var(--accent-deep);display:block}
+  .pm-g span{color:var(--muted);display:block}
   .bb-hive{display:grid;grid-template-columns:1fr 1fr;gap:.12in}
   .bb-card{padding:0 .04in;min-width:0;overflow-wrap:anywhere}
   .bb-card .ex{font-size:9.6pt;line-height:1.32;margin-top:2px;color:var(--ink);opacity:.85}
@@ -1363,6 +1434,31 @@ if (document.readyState !== 'loading') RV._build();
 <\/script>`;
 }
 
+/* Let the browser do the last inch of the fitting.
+   The generator can only ESTIMATE how tall a poem sets — it does not know where
+   the lines wrap, how the glossary stacked, or what the title block came to once
+   the display face loaded. Estimating left white paper under the short pieces and
+   ran the long ones off the bottom. So the generator picks a sensible ceiling per
+   piece (`data-max`) and this steps the type down from it until the leaf holds the
+   whole poem. It runs after fonts and plates have landed, and the printer runs it
+   too — printing to PDF is a browser rendering the page. */
+const POEM_FIT = `<script>
+(function(){
+  function fit(){
+    var pages = document.querySelectorAll('.pm-page');
+    for (var i=0;i<pages.length;i++){
+      var p=pages[i], t=p.querySelector('.pm-text'); if(!t) continue;
+      var s=parseFloat(t.getAttribute('data-max'))||14, min=parseFloat(t.getAttribute('data-min'))||8.4;
+      t.style.fontSize=s+'pt';
+      var guard=0;
+      while(s>min && p.scrollHeight>p.clientHeight+1 && guard++<80){ s-=0.25; t.style.fontSize=s+'pt'; }
+    }
+  }
+  function go(){ if(document.fonts&&document.fonts.ready) document.fonts.ready.then(fit); else fit(); }
+  if(document.readyState==='complete') go(); else window.addEventListener('load',go);
+})();
+<\/script>`;
+
 /* verso marking + emit */
 function finish(vol, pages, meta) {
   const html = pages.map((p, i) => i > 0 && i % 2 === 0 ? p.replace('<div class="page"', '<div class="page" data-verso') : p).join('\n');
@@ -1370,7 +1466,7 @@ function finish(vol, pages, meta) {
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(vol.title)} — Bizzing Bee Library Vol. ${vol.n}</title>
 <style>${css(vol)}${REVIEW_CSS}</style></head><body data-vol="${vol.n}" data-band="${vol.band}">${html}
-${reviewPanel(vol)}</body></html>`;
+${reviewPanel(vol)}${html.indexOf('pm-text') > -1 ? POEM_FIT : ''}</body></html>`;
   fs.writeFileSync(`books/${slugOf(vol)}.html`, doc);
   return { vol, pages: pages.length, ...meta };
 }
@@ -1587,6 +1683,145 @@ function book18() {
    met `insubstantial` and `pageant` in the only place they are unforgettable.
    The app's own quote library supplies the connective tissue — 623 lines by
    poets, which is where the book's margins come from. */
+/* ---- one poem, one page ----
+   The first cut gave every piece two pages — the text on one, the note and the
+   words on the next — and both were half empty. A poem is a shape; it wants the
+   page it is printed on, with everything about it in reach.
+
+   So: the text on the left, the gist in tiles down the right, the hard words
+   UNDERLINED where they actually occur in the poem and glossed in a strip along
+   the foot, and the whole thing on one leaf wherever it fits.
+
+   And it changes. Twelve layouts rotate — the plate moves from a head banner to
+   a foot banner to a side column to an inset to a screened-back ground, and the
+   tile column swaps sides — so no two spreads in a row look alike, and the cycle
+   is long enough not to rhyme with the section lengths. The plate is chosen by
+   the piece's own subject (`th`) out of sixteen painted for the book, each
+   cropped a different way depending on where it lands. */
+const POEM_LAY = [
+  { art: 'head', tiles: 'right' },
+  { art: 'foot', tiles: 'right' },
+  { art: 'side-l', tiles: 'right' },
+  { art: 'inset', tiles: 'right' },
+  { art: 'head', tiles: 'left' },
+  { art: 'ground', tiles: 'right' },
+  { art: 'foot', tiles: 'left' },
+  { art: 'side-r', tiles: 'left' },
+  { art: 'inset', tiles: 'left' },
+  { art: 'ground', tiles: 'left' },
+  { art: 'side-r', tiles: 'right' },
+  { art: 'head', tiles: 'right' },
+];
+
+/* Fit the poem to the leaf — the generator's half of the job.
+   It sets the CEILING and the floor; POEM_FIT (in the browser, after the display
+   face and the plates have landed) walks the type down from the ceiling until the
+   leaf holds the whole poem. The ceiling is what the piece can carry as a matter
+   of taste — a haiku wants to be big, a twenty-eight-line ode does not — and the
+   first estimate is only there so the page does not visibly jump on load. */
+function fitPoem(p, L, hard) {
+  const isHaiku = p.kind === 'haiku';
+  const side = L.art === 'side-l' || L.art === 'side-r';
+  /* 8.5in less the two margins, less the gaps, the tile column and any side plate */
+  const colW = 7.25 - (side ? 0.40 + 1.50 : 0.20) - 2.15;
+  const band = L.art === 'head' ? 1.35 : L.art === 'foot' ? 1.59 : 0;
+  const glossH = hard.length ? 0.16 + Math.ceil(hard.length / 3) * 0.70 + 0.30 : 0.30;
+  const textH = 9.80 - band - 0.93 - glossH - 0.30;
+  const lh = isHaiku ? 1.75 : 1.48;
+  const nl = p.lines.filter(x => x !== '').length;
+  const max = isHaiku ? 26 : nl <= 6 ? 19 : nl <= 10 ? 17 : nl <= 16 ? 15.5 : 14;
+  const min = isHaiku ? 11 : 8.4;
+  let sz = max;
+  for (; sz > min; sz -= 0.25) {
+    const cpl = Math.max(8, Math.floor(colW * 144 / sz));  // ~0.5em average glyph
+    let rows = 0;
+    for (const l of p.lines) rows += l === '' ? 0.55 : Math.max(1, Math.ceil(l.length / cpl));
+    if (rows * sz * lh / 72 <= textH) break;
+  }
+  return { sz: Math.round(sz * 100) / 100, lh, max, min };
+}
+
+/* Underline every hard word where it stands in the text, matching the inflected
+   forms a poem actually uses (sceptre / sceptred, love / loving) without touching
+   a longer word that merely starts the same way.
+   Once each, over the WHOLE poem — not once per line. Marking per line meant a
+   word repeated in the speech got underlined every time it came round, while a
+   second hard word sharing a line was skipped entirely and turned up in the
+   glossary with nothing above it to point at. */
+function markPoem(lines, hard) {
+  const done = new Set();
+  return lines.map(line => {
+    let out = esc(line);
+    for (const h of hard) {
+      const key = String(h.w || '').toLowerCase();
+      if (!key || done.has(key)) continue;
+      const w = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const re = new RegExp('\\b(' + w + "(?:s|es|d|ed|ing|’s)?)\\b(?![^<]*</u>)", 'i');
+      if (re.test(out)) { out = out.replace(re, '<u class="pw">$1</u>'); done.add(key); }
+    }
+    return out;
+  });
+}
+
+function poemPage(vol, sec, p, n, folio, keys) {
+  let L = POEM_LAY[(n - 1) % POEM_LAY.length];
+  /* a side plate takes the poem's column down to 3.2in, which is fine for verse
+     but strangles prose — Lincoln at Gettysburg wrapped every sentence three
+     times and still ran off the leaf at the smallest size we allow. Prose keeps
+     the full measure and takes the plate as a screened-back ground instead. */
+  const wide = p.lines.some(l => l.length > 68);
+  if (wide && (L.art === 'side-l' || L.art === 'side-r')) L = { art: 'ground', tiles: L.tiles };
+  const plate = artAt('pt-' + (p.th || 'library')) || artAt('pt-library');
+  const hard = p.hard || [];
+  const isHaiku = p.kind === 'haiku';
+  const side = L.art === 'side-l' || L.art === 'side-r';
+  const nLines = p.lines.length;
+  const { sz, lh, max, min } = fitPoem(p, L, hard);
+
+  const poemHtml = `<div class="pm-text" data-max="${max}" data-min="${min}" style="font-size:${sz}pt;line-height:${lh};${isHaiku ? 'text-align:center' : ''}">`
+    + markPoem(p.lines, hard).map((l, i) => p.lines[i] === '' ? '<div style="height:.09in"></div>'
+      : `<div>${l}</div>`).join('') + '</div>';
+
+  const tilesInner = `
+    <div class="pm-tile pm-gist"><span class="pm-tk">What to listen for</span><p>${esc(p.note)}</p></div>
+    <div class="pm-tile pm-form"><span class="pm-tk">The form</span>
+      <p><b>${esc({ speech: 'Dramatic speech', sonnet: 'Sonnet', haiku: 'Haiku', poem: 'Lyric poem', prose: 'Prose' }[p.kind] || 'Poem')}</b>
+      &middot; ${isHaiku ? '17 syllables' : (nLines - p.lines.filter(x => x === '').length) + ' lines'}${p.y ? ' &middot; ' + esc(p.y) : ''}</p></div>
+    ${hard.length ? `<div class="pm-tile pm-count"><span class="pm-tk">Words to take</span><p><b>${hard.length}</b> underlined below, glossed at the foot of the page.</p></div>` : ''}`;
+
+  const gloss = hard.length ? `<div class="pm-gloss">
+    ${hard.map(h => `<div class="pm-g"><b>${esc(h.w)}</b><i>/ ${esc(h.say)} /</i><span>${esc(fit(h.def, 96))}</span></div>`).join('')}
+  </div>` : '';
+
+  const head2 = `<div class="pm-head">
+    <div class="kick">${esc(p.src)}</div>
+    <h2 style="font-size:${p.t.length > 36 ? 16 : p.t.length > 26 ? 19 : 22}pt">${esc(p.t)}</h2>
+    <div class="pm-by">${esc(p.a)}</div></div>`;
+
+  const img = (cls, extra) => plate ? `<img class="${cls}" src="${plate}" alt=""${extra || ''}>` : '';
+  /* the tile column carries the inset plate when that is the layout; the side
+     plate is a third column and can stand on either flank of the poem */
+  const tilesCol = `<div class="pm-tiles">${L.art === 'inset' ? img('pm-inset') : ''}${tilesInner}</div>`;
+  const sideImg = side ? img('pm-sideimg') : '';
+  const col = `<div class="pm-col">${poemHtml}</div>`;
+  const body = `<div class="pm-body">${
+    L.tiles === 'left'
+      ? tilesCol + col + sideImg
+      : (L.art === 'side-l' ? sideImg : '') + col + tilesCol + (L.art === 'side-r' ? sideImg : '')
+  }</div>`;
+
+  keys.push(`<div><b>${esc(p.t)}</b> — underlined: ${hard.map(h => esc(h.w)).join(', ') || '—'}</div>`);
+  return `<div class="page pm-page pm-art-${side ? 'side' : L.art}${L.art === 'side-r' ? ' pm-side-r' : ''}" data-vol="22">
+    ${L.art === 'ground' ? img('pm-ground') : ''}
+    ${head(vol, null, 0, esc(sec.title))}
+    ${L.art === 'head' ? img('pm-band pm-band-top') : ''}
+    ${head2}
+    ${body}
+    ${gloss}
+    ${L.art === 'foot' ? img('pm-band pm-band-foot') : ''}
+    ${foot(vol, folio.n++)}</div>`;
+}
+
 function book19() {
   const vol = { n: 22, seedN: 20, art: 'b22', slug: 'book-lines', companion: true,
     title: 'Lines Worth Keeping', tag: 'Poems, speeches and the long quotes — with the words inside them',
@@ -1618,7 +1853,7 @@ function book19() {
     ${worldStrip(vol.world, vol, 11)}
     ${foot(vol, folio.n++)}</div>`);
 
-  let sn = 0;
+  let sn = 0, pieceN = 0;
   for (const [, sec] of SEC) {
     sn++;
     /* section opener */
@@ -1631,36 +1866,8 @@ function book19() {
       ${foot(vol, folio.n++)}</div>`);
 
     for (const p of sec.pieces) {
-      const isHaiku = p.kind === 'haiku';
-      const lineSz = isHaiku ? 15 : p.lines.length > 22 ? 10.2 : p.lines.length > 15 ? 11.2 : 12.2;
-      /* the text itself — one page, set as the poet set it */
-      pages.push(`<div class="page" data-vol="22">
-        ${head(vol, null, 0, esc(sec.title))}
-        <div style="margin-top:.36in">
-          <div class="kick">${esc(p.src)}${p.y ? ' &middot; ' + esc(p.y) : ''}</div>
-          <h2 style="font-size:${p.t.length > 34 ? 17 : 21}pt;margin:.04in 0 .02in;line-height:1.16">${esc(p.t)}</h2>
-          <div style="font-family:'BB Kicker';font-size:10pt;color:var(--accent-deep);margin-bottom:.14in">${esc(p.a)}</div>
-        </div>
-        <div style="font-family:'BB Display';font-size:${lineSz}pt;line-height:1.52;${isHaiku ? 'text-align:center;' : ''}white-space:pre-wrap">${p.lines.map(l => l === '' ? '<div style="height:.10in"></div>' : `<div>${esc(l)}</div>`).join('')}</div>
-        ${foot(vol, folio.n++)}</div>`);
-
-      /* the note, and the words the piece is carrying */
-      const hard = p.hard || [];
-      keys.push(`<div><b>${esc(p.t)}</b> — the hard words: ${hard.map(h => esc(h.w)).join(', ') || '—'}</div>`);
-      pages.push(`<div class="page" data-vol="22">
-        ${head(vol, null, 0, 'What to listen for')}
-        <div style="margin-top:.36in"></div>
-        <div class="bb-bigidea"><h3>${esc(p.t)}</h3><p>${esc(p.note)}</p></div>
-        <div class="kick" style="margin-top:.18in">The words inside it</div>
-        <div class="bb-hive" style="margin-top:.06in">${hard.map(h => `<div class="bb-card">
-          <div style="font-family:'BB Display';font-size:17pt;line-height:1.1;overflow-wrap:anywhere">${esc(h.w)}</div>
-          <div style="font-family:'BB Mono';font-size:9pt;color:var(--accent-deep);margin:1pt 0 3pt">/ ${esc(h.say)} /</div>
-          <div style="font-size:9.6pt;line-height:1.38;color:var(--muted)">${esc(fit(h.def, 150))}</div>
-        </div>`).join('')}</div>
-        <div class="kick" style="margin-top:.16in">Say it, then spell it</div>
-        <p style="font-size:9.4pt;color:var(--muted);margin:.03in 0 .06in">Cover the page. Spell each one aloud, then write it.</p>
-        ${hard.map(() => '<div class="bb-writeline"></div>').join('')}
-        ${foot(vol, folio.n++)}</div>`);
+      pieceN++;
+      pages.push(poemPage(vol, sec, p, pieceN, folio, keys));
     }
 
     /* a margin page of the app's own poet lines, one per section */
