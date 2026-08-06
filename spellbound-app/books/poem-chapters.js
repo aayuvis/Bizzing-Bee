@@ -170,6 +170,222 @@ window.SB_POEMS = {
           { w: 'solemn', say: 'SOL-uhm', def: 'formal and dignified; serious' },
           { w: 'dissolve', say: 'dih-ZOLV', def: 'to fade away or break up' }
         ]
+      },
+      {
+        t: 'Now is the winter of our discontent',
+        th: 'war', a: 'William Shakespeare (1564–1616)', src: 'Richard III, Act I, Scene 1', y: 'c. 1593', kind: 'speech',
+        lines: [
+          'Now is the winter of our discontent',
+          'Made glorious summer by this sun of York;',
+          'And all the clouds that lour’d upon our house',
+          'In the deep bosom of the ocean buried.',
+          'Now are our brows bound with victorious wreaths;',
+          'Our bruised arms hung up for monuments;',
+          'Our stern alarums changed to merry meetings,',
+          'Our dreadful marches to delightful measures.',
+          'Grim-visaged war hath smooth’d his wrinkled front;',
+          'And now, instead of mounting barbed steeds',
+          'To fright the souls of fearful adversaries,',
+          'He capers nimbly in a lady’s chamber',
+          'To the lascivious pleasing of a lute.'
+        ],
+        note: 'Almost everyone quotes the first line as though it means "times are bad". It means the opposite: the winter is OVER — you have to reach "made glorious summer" to get the sentence. "This sun of York" is a pun on son, and the man saying it is telling you, in the sunniest weather of his life, that he intends to ruin everything.',
+        hard: [
+          { w: 'discontent', say: 'diss-kuhn-TENT', def: 'dissatisfaction with one’s circumstances' },
+          { w: 'victorious', say: 'vik-TOR-ee-uhss', def: 'having won a victory' },
+          { w: 'monuments', say: 'MON-yoo-muhnts', def: 'structures raised to keep a memory alive' },
+          { w: 'adversaries', say: 'AD-ver-sair-eez', def: 'opponents in a contest or conflict' },
+          { w: 'nimbly', say: 'NIM-blee', def: 'quickly and lightly on one’s feet' }
+        ]
+      },
+      {
+        t: 'Once more unto the breach',
+        th: 'war', a: 'William Shakespeare (1564–1616)', src: 'Henry V, Act III, Scene 1', y: 'c. 1599', kind: 'speech',
+        lines: [
+          'Once more unto the breach, dear friends, once more;',
+          'Or close the wall up with our English dead.',
+          'In peace there’s nothing so becomes a man',
+          'As modest stillness and humility:',
+          'But when the blast of war blows in our ears,',
+          'Then imitate the action of the tiger;',
+          'Stiffen the sinews, summon up the blood,',
+          'Disguise fair nature with hard-favour’d rage;',
+          'Then lend the eye a terrible aspect;',
+          'Let it pry through the portage of the head',
+          'Like the brass cannon; let the brow o’erwhelm it',
+          'As fearfully as doth a galled rock',
+          'O’erhang and jutty his confounded base,',
+          'Swill’d with the wild and wasteful ocean.'
+        ],
+        note: 'A king talking soldiers into a hole in a wall. Notice that he spends two lines praising calm before he asks for none of it — the speech admits that what it wants is unnatural, then tells them exactly which muscles to use anyway.',
+        hard: [
+          { w: 'breach', say: 'BREECH', def: 'a gap broken through a wall or defence' },
+          { w: 'humility', say: 'hyoo-MIL-ih-tee', def: 'a modest view of one’s own importance' },
+          { w: 'sinews', say: 'SIN-yooz', def: 'tendons; the tough cords that join muscle to bone' },
+          { w: 'aspect', say: 'ASS-pekt', def: 'the look or appearance of something' },
+          { w: 'confounded', say: 'kuhn-FOWN-did', def: 'thrown into confusion; overthrown' }
+        ]
+      },
+      {
+        t: 'We few, we happy few',
+        th: 'war', a: 'William Shakespeare (1564–1616)', src: 'Henry V, Act IV, Scene 3', y: 'c. 1599', kind: 'speech',
+        lines: [
+          'This day is call’d the feast of Crispian:',
+          'He that outlives this day, and comes safe home,',
+          'Will stand a tip-toe when this day is named,',
+          'And rouse him at the name of Crispian.',
+          'He that shall live this day, and see old age,',
+          'Will yearly on the vigil feast his neighbours,',
+          'And say "To-morrow is Saint Crispian":',
+          'Then will he strip his sleeve and show his scars,',
+          'And say "These wounds I had on Crispin’s day."',
+          'Old men forget: yet all shall be forgot,',
+          'But he’ll remember with advantages',
+          'What feats he did that day. We few, we happy few,',
+          'We band of brothers; for he to-day that sheds',
+          'His blood with me shall be my brother.',
+          'And gentlemen in England now a-bed',
+          'Shall think themselves accursed they were not here.'
+        ],
+        note: 'The trick of it is the tense. He is outnumbered five to one and he talks about the battle entirely in the future perfect — what you will have done, what you will tell people, how you will misremember it. By the end the men are not being asked to fight; they are being asked not to miss out.',
+        hard: [
+          { w: 'vigil', say: 'VIJ-il', def: 'a period of staying awake, often the night before a feast' },
+          { w: 'neighbours', say: 'NAY-berz', def: 'people who live nearby (British spelling)' },
+          { w: 'accursed', say: 'uh-KUR-sid', def: 'under a curse; detestable' },
+          { w: 'feats', say: 'FEETS', def: 'acts of notable skill or courage' }
+        ]
+      },
+      {
+        t: 'Friends, Romans, countrymen',
+        th: 'stage', a: 'William Shakespeare (1564–1616)', src: 'Julius Caesar, Act III, Scene 2', y: 'c. 1599', kind: 'speech',
+        lines: [
+          'Friends, Romans, countrymen, lend me your ears;',
+          'I come to bury Caesar, not to praise him.',
+          'The evil that men do lives after them;',
+          'The good is oft interred with their bones;',
+          'So let it be with Caesar. The noble Brutus',
+          'Hath told you Caesar was ambitious:',
+          'If it were so, it was a grievous fault,',
+          'And grievously hath Caesar answer’d it.',
+          'Here, under leave of Brutus and the rest—',
+          'For Brutus is an honourable man;',
+          'So are they all, all honourable men—',
+          'Come I to speak in Caesar’s funeral.',
+          'He was my friend, faithful and just to me:',
+          'But Brutus says he was ambitious;',
+          'And Brutus is an honourable man.'
+        ],
+        note: 'The most famous piece of sarcasm in English. Antony has been forbidden to blame anyone, so he obeys — and repeats "honourable" until the word turns to acid in the crowd’s mouth. He never once contradicts Brutus. He just says his name too often.',
+        hard: [
+          { w: 'interred', say: 'in-TURD', def: 'buried in the earth or a tomb' },
+          { w: 'ambitious', say: 'am-BISH-uhss', def: 'having a strong desire for success or power' },
+          { w: 'grievous', say: 'GREE-vuhss', def: 'causing grief or great harm; very serious' },
+          { w: 'honourable', say: 'ON-er-uh-buhl', def: 'deserving respect (British spelling)' }
+        ]
+      },
+      {
+        t: 'Is this a dagger which I see before me',
+        th: 'night', a: 'William Shakespeare (1564–1616)', src: 'Macbeth, Act II, Scene 1', y: 'c. 1606', kind: 'speech',
+        lines: [
+          'Is this a dagger which I see before me,',
+          'The handle toward my hand? Come, let me clutch thee.',
+          'I have thee not, and yet I see thee still.',
+          'Art thou not, fatal vision, sensible',
+          'To feeling as to sight? or art thou but',
+          'A dagger of the mind, a false creation,',
+          'Proceeding from the heat-oppressed brain?',
+          'I see thee yet, in form as palpable',
+          'As this which now I draw.',
+          'Thou marshall’st me the way that I was going;',
+          'And such an instrument I was to use.',
+          'Mine eyes are made the fools o’ the other senses,',
+          'Or else worth all the rest: I see thee still.'
+        ],
+        note: 'A man interrogating his own hallucination like a scientist — is it solid? can I touch it? — and losing the argument. He asks whether the dagger is real four times, and the fourth time he has stopped wanting the answer.',
+        hard: [
+          { w: 'dagger', say: 'DAG-er', def: 'a short pointed knife used as a weapon' },
+          { w: 'sensible', say: 'SEN-sih-buhl', def: 'able to be perceived by the senses' },
+          { w: 'palpable', say: 'PAL-puh-buhl', def: 'able to be touched or felt; unmistakable' },
+          { w: 'marshall’st', say: 'MAR-shuhlst', def: 'from marshal — to lead or guide in order' },
+          { w: 'instrument', say: 'IN-struh-muhnt', def: 'a tool used for a particular purpose' }
+        ]
+      },
+      {
+        t: 'What a piece of work is a man',
+        th: 'library', a: 'William Shakespeare (1564–1616)', src: 'Hamlet, Act II, Scene 2', y: 'c. 1600', kind: 'speech',
+        lines: [
+          'What a piece of work is a man! How noble in reason, how',
+          'infinite in faculty! In form and moving how express and',
+          'admirable! In action how like an angel, in apprehension',
+          'how like a god! The beauty of the world! The paragon of',
+          'animals! And yet, to me, what is this quintessence of dust?',
+          'Man delights not me — no, nor woman neither, though by',
+          'your smiling you seem to say so.'
+        ],
+        note: 'Set as prose, because it is prose: Hamlet drops into everyday speech to say the largest thing in the play. Five exclamation marks of praise and then one flat question that cancels them all. "Quintessence" meant the fifth element, the pure stuff above the other four — and he attaches it to dust.',
+        hard: [
+          { w: 'faculty', say: 'FAK-uhl-tee', def: 'a natural power of the mind or body' },
+          { w: 'admirable', say: 'AD-mer-uh-buhl', def: 'deserving respect and approval' },
+          { w: 'apprehension', say: 'ap-rih-HEN-shuhn', def: 'understanding; the act of grasping with the mind' },
+          { w: 'paragon', say: 'PAIR-uh-gon', def: 'a perfect example of a quality' },
+          { w: 'quintessence', say: 'kwin-TESS-uhnss', def: 'the purest, most essential form of something' }
+        ]
+      },
+      {
+        t: 'The barge she sat in',
+        th: 'water', a: 'William Shakespeare (1564–1616)', src: 'Antony and Cleopatra, Act II, Scene 2', y: 'c. 1607', kind: 'speech',
+        lines: [
+          'The barge she sat in, like a burnish’d throne,',
+          'Burn’d on the water: the poop was beaten gold;',
+          'Purple the sails, and so perfumed that',
+          'The winds were love-sick with them; the oars were silver,',
+          'Which to the tune of flutes kept stroke, and made',
+          'The water which they beat to follow faster,',
+          'As amorous of their strokes. For her own person,',
+          'It beggar’d all description: she did lie',
+          'In her pavilion—cloth-of-gold of tissue—',
+          'O’er-picturing that Venus where we see',
+          'The fancy outwork nature: on each side her',
+          'Stood pretty dimpled boys, like smiling Cupids,',
+          'With divers-colour’d fans, whose wind did seem',
+          'To glow the delicate cheeks which they did cool.'
+        ],
+        note: 'Enobarbus is a plain-spoken soldier, and this is the one time in the play he cannot be plain. Watch what happens to the verbs: the wind is love-sick, the water chases the oars, the fans warm the cheeks they are cooling. Everything in the scene has fallen for her, including the grammar.',
+        hard: [
+          { w: 'burnished', say: 'BUR-nisht', def: 'polished until it shines' },
+          { w: 'amorous', say: 'AM-er-uhss', def: 'showing or feeling love' },
+          { w: 'pavilion', say: 'puh-VIL-yuhn', def: 'a large decorated tent' },
+          { w: 'divers', say: 'DYE-verz', def: 'an old word for various or several' }
+        ]
+      },
+      {
+        t: 'If we shadows have offended',
+        th: 'forest', a: 'William Shakespeare (1564–1616)', src: 'A Midsummer Night’s Dream, Act V, Scene 1', y: 'c. 1595', kind: 'speech',
+        lines: [
+          'If we shadows have offended,',
+          'Think but this, and all is mended,',
+          'That you have but slumber’d here',
+          'While these visions did appear.',
+          'And this weak and idle theme,',
+          'No more yielding but a dream,',
+          'Gentles, do not reprehend:',
+          'If you pardon, we will mend.',
+          'And, as I am an honest Puck,',
+          'If we have unearned luck',
+          'Now to ’scape the serpent’s tongue,',
+          'We will make amends ere long;',
+          'Else the Puck a liar call:',
+          'So, good night unto you all.',
+          'Give me your hands, if we be friends,',
+          'And Robin shall restore amends.'
+        ],
+        note: 'The play apologises to you for existing. It is written in seven-syllable couplets — one beat shorter than the grand line — which is why it trots. "Give me your hands" asks for applause and for forgiveness in the same four words, and the actor cannot tell which he is getting.',
+        hard: [
+          { w: 'reprehend', say: 'rep-rih-HEND', def: 'to reprove or find fault with' },
+          { w: 'amends', say: 'uh-MENDZ', def: 'something done to make up for a wrong' },
+          { w: 'slumbered', say: 'SLUM-berd', def: 'slept' },
+          { w: 'serpent', say: 'SUR-puhnt', def: 'a snake, especially a large one' }
+        ]
       }
     ]
   },
@@ -416,7 +632,284 @@ window.SB_POEMS = {
           { w: 'sordid', say: 'SOR-did', def: 'dirty, squalid or morally low' },
           { w: 'boon', say: 'BOON', def: 'a thing that is helpful; a blessing' },
           { w: 'forlorn', say: 'fer-LORN', def: 'lonely and unhappy' },
-          { w: 'wreathed', say: 'REEṭHD', def: 'twisted or coiled into a ring' }
+          { w: 'wreathed', say: 'REETHD', def: 'twisted or coiled into a ring' }
+        ]
+      },
+      {
+        t: 'Sonnet 73: That time of year thou mayst in me behold',
+        th: 'forest', a: 'William Shakespeare (1564–1616)', src: 'Sonnets', y: '1609', kind: 'sonnet',
+        lines: [
+          'That time of year thou mayst in me behold',
+          'When yellow leaves, or none, or few, do hang',
+          'Upon those boughs which shake against the cold,',
+          'Bare ruin’d choirs, where late the sweet birds sang.',
+          'In me thou see’st the twilight of such day',
+          'As after sunset fadeth in the west,',
+          'Which by and by black night doth take away,',
+          'Death’s second self, that seals up all in rest.',
+          'In me thou see’st the glowing of such fire',
+          'That on the ashes of his youth doth lie,',
+          'As the death-bed whereon it must expire,',
+          'Consum’d with that which it was nourish’d by.',
+          '   This thou perceiv’st, which makes thy love more strong,',
+          '   To love that well which thou must leave ere long.'
+        ],
+        note: 'Three images, each one shorter-lived than the last: a year, a day, a fire. Watch the first quatrain hesitate — "yellow leaves, or none, or few" — a man correcting himself downward, in public, about how much of himself is left.',
+        hard: [
+          { w: 'boughs', say: 'BOWZ', def: 'the main branches of a tree' },
+          { w: 'choirs', say: 'KWIRE-z', def: 'the parts of a church where singers sit' },
+          { w: 'expire', say: 'ek-SPYRE', def: 'to come to an end; to die' },
+          { w: 'nourished', say: 'NUR-isht', def: 'fed and kept alive' },
+          { w: 'perceive', say: 'per-SEEV', def: 'to become aware of; to understand' }
+        ]
+      },
+      {
+        t: 'Sonnet 30: When to the sessions of sweet silent thought',
+        th: 'library', a: 'William Shakespeare (1564–1616)', src: 'Sonnets', y: '1609', kind: 'sonnet',
+        lines: [
+          'When to the sessions of sweet silent thought',
+          'I summon up remembrance of things past,',
+          'I sigh the lack of many a thing I sought,',
+          'And with old woes new wail my dear time’s waste:',
+          'Then can I drown an eye, unus’d to flow,',
+          'For precious friends hid in death’s dateless night,',
+          'And weep afresh love’s long since cancell’d woe,',
+          'And moan the expense of many a vanish’d sight:',
+          'Then can I grieve at grievances foregone,',
+          'And heavily from woe to woe tell o’er',
+          'The sad account of fore-bemoaned moan,',
+          'Which I new pay as if not paid before.',
+          '   But if the while I think on thee, dear friend,',
+          '   All losses are restor’d and sorrows end.'
+        ],
+        note: 'The whole poem is a lawsuit. "Sessions", "summon", "account", "expense", "cancell’d", "pay", "losses restor’d" — grief is being audited. Then the couplet closes the books in one line, which is either a comfort or a very quick change of subject.',
+        hard: [
+          { w: 'remembrance', say: 'rih-MEM-bruhnss', def: 'the act of remembering; a memory kept' },
+          { w: 'grievances', say: 'GREE-vuhn-siz', def: 'causes of complaint or resentment' },
+          { w: 'foregone', say: 'FOR-gawn', def: 'gone before; past and done with' },
+          { w: 'precious', say: 'PRESH-uhss', def: 'of great value; greatly loved' }
+        ]
+      },
+      {
+        t: 'Sonnet 60: Like as the waves make towards the pebbled shore',
+        th: 'sea', a: 'William Shakespeare (1564–1616)', src: 'Sonnets', y: '1609', kind: 'sonnet',
+        lines: [
+          'Like as the waves make towards the pebbled shore,',
+          'So do our minutes hasten to their end;',
+          'Each changing place with that which goes before,',
+          'In sequent toil all forwards do contend.',
+          'Nativity, once in the main of light,',
+          'Crawls to maturity, wherewith being crown’d,',
+          'Crooked eclipses ’gainst his glory fight,',
+          'And Time that gave doth now his gift confound.',
+          'Time doth transfix the flourish set on youth',
+          'And delves the parallels in beauty’s brow,',
+          'Feeds on the rarities of nature’s truth,',
+          'And nothing stands but for his scythe to mow:',
+          '   And yet to times in hope my verse shall stand,',
+          '   Praising thy worth, despite his cruel hand.'
+        ],
+        note: 'A whole life in four lines — born, crowned, eclipsed, taken back — and then Time gets teeth: it transfixes, it delves, it feeds, it mows. The poem loses the argument on purpose and then claims the last word anyway.',
+        hard: [
+          { w: 'nativity', say: 'nuh-TIV-ih-tee', def: 'the occasion of a person’s birth' },
+          { w: 'maturity', say: 'muh-TYOOR-ih-tee', def: 'the state of being fully grown' },
+          { w: 'eclipses', say: 'ih-KLIP-siz', def: 'obscurings of one heavenly body by another' },
+          { w: 'transfix', say: 'tranz-FIKS', def: 'to pierce through; to hold motionless' },
+          { w: 'scythe', say: 'SYTHE', def: 'a long curved blade for mowing by hand' }
+        ]
+      },
+      {
+        t: 'Sonnet 65: Since brass, nor stone, nor earth, nor boundless sea',
+        th: 'ruin', a: 'William Shakespeare (1564–1616)', src: 'Sonnets', y: '1609', kind: 'sonnet',
+        lines: [
+          'Since brass, nor stone, nor earth, nor boundless sea,',
+          'But sad mortality o’ersways their power,',
+          'How with this rage shall beauty hold a plea,',
+          'Whose action is no stronger than a flower?',
+          'O, how shall summer’s honey breath hold out',
+          'Against the wrackful siege of battering days,',
+          'When rocks impregnable are not so stout,',
+          'Nor gates of steel so strong, but Time decays?',
+          'O fearful meditation! where, alack,',
+          'Shall Time’s best jewel from Time’s chest lie hid?',
+          'Or what strong hand can hold his swift foot back?',
+          'Or who his spoil of beauty can forbid?',
+          '   O, none, unless this miracle have might,',
+          '   That in black ink my love may still shine bright.'
+        ],
+        note: 'Four hard things in the first line and every one of them loses. The poem asks six questions and answers none of them until "O, none" — and then stakes everything on the cheapest material in the list: ink.',
+        hard: [
+          { w: 'mortality', say: 'mor-TAL-ih-tee', def: 'the state of being subject to death' },
+          { w: 'impregnable', say: 'im-PREG-nuh-buhl', def: 'unable to be captured or broken into' },
+          { w: 'meditation', say: 'med-ih-TAY-shuhn', def: 'deep, focused thought' },
+          { w: 'miracle', say: 'MEER-uh-kuhl', def: 'a wonderful event beyond natural explanation' }
+        ]
+      },
+      {
+        t: 'When I consider how my light is spent',
+        th: 'night', a: 'John Milton (1608–1674)', src: 'Sonnet 19', y: 'c. 1655', kind: 'sonnet',
+        lines: [
+          'When I consider how my light is spent',
+          'Ere half my days in this dark world and wide,',
+          'And that one talent which is death to hide',
+          'Lodg’d with me useless, though my soul more bent',
+          'To serve therewith my Maker, and present',
+          'My true account, lest He returning chide,',
+          '"Doth God exact day-labour, light denied?"',
+          'I fondly ask. But Patience, to prevent',
+          'That murmur, soon replies: "God doth not need',
+          'Either man’s work or his own gifts: who best',
+          'Bear his mild yoke, they serve him best. His state',
+          'Is kingly; thousands at his bidding speed',
+          '   And post o’er land and ocean without rest:',
+          '   They also serve who only stand and wait."',
+        ],
+        note: 'Milton went blind in his forties. The whole octave is one enormous sentence that cannot finish — the sound of a question being worked up to and dreaded. Then Patience interrupts him mid-line, which is the only rude thing in the poem and the kindest.',
+        hard: [
+          { w: 'lodged', say: 'LOJD', def: 'placed or left somewhere for keeping' },
+          { w: 'chide', say: 'CHIDE', def: 'to scold or rebuke' },
+          { w: 'murmur', say: 'MUR-mer', def: 'a low complaint spoken under the breath' },
+          { w: 'yoke', say: 'YOKE', def: 'a wooden crosspiece harnessing two animals; a burden' },
+          { w: 'bidding', say: 'BID-ing', def: 'a command or request' }
+        ]
+      },
+      {
+        t: 'The New Colossus',
+        th: 'city', a: 'Emma Lazarus (1849–1887)', src: 'Written for the pedestal of the Statue of Liberty', y: '1883', kind: 'sonnet',
+        lines: [
+          'Not like the brazen giant of Greek fame,',
+          'With conquering limbs astride from land to land;',
+          'Here at our sea-washed, sunset gates shall stand',
+          'A mighty woman with a torch, whose flame',
+          'Is the imprisoned lightning, and her name',
+          'Mother of Exiles. From her beacon-hand',
+          'Glows world-wide welcome; her mild eyes command',
+          'The air-bridged harbor that twin cities frame.',
+          '"Keep, ancient lands, your storied pomp!" cries she',
+          'With silent lips. "Give me your tired, your poor,',
+          'Your huddled masses yearning to breathe free,',
+          'The wretched refuse of your teeming shore.',
+          '   Send these, the homeless, tempest-tost to me,',
+          '   I lift my lamp beside the golden door!"'
+        ],
+        note: 'It begins by refusing the obvious comparison — not that colossus, this one — and the difference is the whole poem: the old giant straddled a harbour to keep ships out. Note "refuse": here it is REF-yooss, rubbish, not rih-FYOOZ. A heteronym doing the hardest work in the line.',
+        hard: [
+          { w: 'brazen', say: 'BRAY-zuhn', def: 'made of brass; boldly shameless' },
+          { w: 'astride', say: 'uh-STRIDE', def: 'with a leg on either side' },
+          { w: 'beacon', say: 'BEE-kuhn', def: 'a fire or light used as a signal' },
+          { w: 'refuse', say: 'REF-yooss', def: 'matter thrown away; rubbish' },
+          { w: 'tempest', say: 'TEM-pist', def: 'a violent storm' }
+        ]
+      },
+      {
+        t: 'When I have Fears that I May Cease to Be',
+        th: 'night', a: 'John Keats (1795–1821)', src: 'Written in a letter to J. H. Reynolds', y: '1818', kind: 'sonnet',
+        lines: [
+          'When I have fears that I may cease to be',
+          'Before my pen has glean’d my teeming brain,',
+          'Before high-piled books, in charact’ry,',
+          'Hold like rich garners the full ripen’d grain;',
+          'When I behold, upon the night’s starr’d face,',
+          'Huge cloudy symbols of a high romance,',
+          'And think that I may never live to trace',
+          'Their shadows, with the magic hand of chance;',
+          'And when I feel, fair creature of an hour,',
+          'That I shall never look upon thee more,',
+          'Never have relish in the faery power',
+          'Of unreflecting love;—then on the shore',
+          '   Of the wide world I stand alone, and think',
+          '   Till love and fame to nothingness do sink.'
+        ],
+        note: 'Keats was twenty-two and already knew. Three "when"s pile up for twelve lines without a main clause — the sentence will not land — and when it finally does, everything in it goes small: one man, one shore, two words sinking.',
+        hard: [
+          { w: 'gleaned', say: 'GLEEND', def: 'gathered bit by bit, as grain left after harvest' },
+          { w: 'teeming', say: 'TEEM-ing', def: 'full to overflowing; swarming' },
+          { w: 'garners', say: 'GAR-nerz', def: 'storehouses for grain' },
+          { w: 'relish', say: 'REL-ish', def: 'great enjoyment of something' }
+        ]
+      },
+      {
+        t: 'Bright star, would I were stedfast as thou art',
+        th: 'snow', a: 'John Keats (1795–1821)', src: 'Written in a volume of Shakespeare', y: '1819', kind: 'sonnet',
+        lines: [
+          'Bright star, would I were stedfast as thou art—',
+          'Not in lone splendour hung aloft the night',
+          'And watching, with eternal lids apart,',
+          'Like nature’s patient, sleepless Eremite,',
+          'The moving waters at their priestlike task',
+          'Of pure ablution round earth’s human shores,',
+          'Or gazing on the new soft-fallen mask',
+          'Of snow upon the mountains and the moors—',
+          'No—yet still stedfast, still unchangeable,',
+          'Pillow’d upon my fair love’s ripening breast,',
+          'To feel for ever its soft fall and swell,',
+          'Awake for ever in a sweet unrest,',
+          '   Still, still to hear her tender-taken breath,',
+          '   And so live ever—or else swoon to death.'
+        ],
+        note: 'He asks for one quality of the star and spends eight lines refusing all its others. "Stedfast" is Keats’s own spelling — it was already old-fashioned when he wrote it, and he wanted the older, harder word. The poem ends on a choice between two things that are both an ending.',
+        hard: [
+          { w: 'stedfast', say: 'STED-fast', def: 'an older spelling of steadfast — firmly fixed' },
+          { w: 'splendour', say: 'SPLEN-der', def: 'magnificent brightness (British spelling)' },
+          { w: 'eremite', say: 'AIR-uh-mite', def: 'a hermit, especially a religious one' },
+          { w: 'ablution', say: 'uh-BLOO-shuhn', def: 'a ceremonial washing' },
+          { w: 'unchangeable', say: 'un-CHAYN-juh-buhl', def: 'not able to be altered' }
+        ]
+      },
+      {
+        t: 'God’s Grandeur',
+        th: 'dawn', a: 'Gerard Manley Hopkins (1844–1889)', src: 'Poems', y: '1877', kind: 'sonnet',
+        lines: [
+          'The world is charged with the grandeur of God.',
+          'It will flame out, like shining from shook foil;',
+          'It gathers to a greatness, like the ooze of oil',
+          'Crushed. Why do men then now not reck his rod?',
+          'Generations have trod, have trod, have trod;',
+          'And all is seared with trade; bleared, smeared with toil;',
+          'And wears man’s smudge and shares man’s smell: the soil',
+          'Is bare now, nor can foot feel, being shod.',
+          'And for all this, nature is never spent;',
+          'There lives the dearest freshness deep down things;',
+          'And though the last lights off the black West went',
+          'Oh, morning, at the brown brink eastward, springs—',
+          '   Because the Holy Ghost over the bent',
+          '   World broods with warm breast and with ah! bright wings.'
+        ],
+        note: 'Read it aloud or you will miss it entirely. Hopkins hammers the same sounds until they wear out — "have trod, have trod, have trod", "seared, bleared, smeared" — so the language itself gets tired and grubby, and then the last three lines let the air back in.',
+        hard: [
+          { w: 'grandeur', say: 'GRAN-jer', def: 'splendour and impressiveness' },
+          { w: 'seared', say: 'SEERD', def: 'burned or scorched on the surface' },
+          { w: 'bleared', say: 'BLEERD', def: 'made dim or blurred' },
+          { w: 'smudge', say: 'SMUJ', def: 'a dirty mark or smear' },
+          { w: 'shod', say: 'SHOD', def: 'wearing shoes' }
+        ]
+      },
+      {
+        t: 'It is a beauteous evening, calm and free',
+        th: 'sea', a: 'William Wordsworth (1770–1850)', src: 'Poems, in Two Volumes', y: '1807', kind: 'sonnet',
+        lines: [
+          'It is a beauteous evening, calm and free,',
+          'The holy time is quiet as a Nun',
+          'Breathless with adoration; the broad sun',
+          'Is sinking down in its tranquillity;',
+          'The gentleness of heaven broods o’er the Sea:',
+          'Listen! the mighty Being is awake,',
+          'And doth with his eternal motion make',
+          'A sound like thunder—everlastingly.',
+          'Dear Child! dear Girl! that walkest with me here,',
+          'If thou appear untouched by solemn thought,',
+          'Thy nature is not therefore less divine:',
+          'Thou liest in Abraham’s bosom all the year;',
+          '   And worshipp’st at the Temple’s inner shrine,',
+          '   God being with thee when we know it not.'
+        ],
+        note: 'Eight lines of hush and then "Listen!" — the loudest word in the poem is an instruction to be quiet. The turn happens when he notices the child beside him is not impressed, and decides that is holier than being impressed. Note "tranquillity": two l’s, the British spelling.',
+        hard: [
+          { w: 'beauteous', say: 'BYOO-tee-uhss', def: 'beautiful (a poetic form)' },
+          { w: 'adoration', say: 'ad-uh-RAY-shuhn', def: 'deep love and respect' },
+          { w: 'tranquillity', say: 'trang-KWIL-ih-tee', def: 'calmness and quiet (British spelling)' },
+          { w: 'solemn', say: 'SOL-uhm', def: 'formal and dignified; deeply serious' },
+          { w: 'divine', say: 'dih-VINE', def: 'of or like God' }
         ]
       }
     ]
@@ -498,6 +991,78 @@ window.SB_POEMS = {
         lines: ['yo no naka wa', 'jigoku no ue no', 'hanami kana', '', 'In this world', 'we walk on the roof of hell', 'gazing at flowers.'],
         note: 'The most cheerful terrible thing ever written. Both halves are true at once and the poem refuses to choose between them.',
         hard: [{ w: 'oblivious', say: 'uh-BLIV-ee-uhss', def: 'not aware of what is happening around you' }]
+      },
+      {
+        t: 'Such stillness', th: 'mountain', a: 'Matsuo Bashō (1644–1694)', src: 'Oku no Hosomichi', y: '1689', kind: 'haiku',
+        lines: ['shizukesa ya', 'iwa ni shimiiru', 'semi no koe', '', 'Such stillness —', 'soaking into the rock,', 'the cry of the cicadas.'],
+        note: 'A noise so continuous it becomes silence, and then goes into stone. The verb shimiiru is what ink does to paper.',
+        hard: [{ w: 'cicada', say: 'sih-KAY-duh', def: 'a loud insect that sings in hot weather' }]
+      },
+      {
+        t: 'Sick on a journey', th: 'road', a: 'Matsuo Bashō (1644–1694)', src: 'His last poem', y: '1694', kind: 'haiku',
+        lines: ['tabi ni yande', 'yume wa kareno wo', 'kakemeguru', '', 'Sick on a journey —', 'my dreams go wandering', 'over withered fields.'],
+        note: 'The last thing he wrote. He had spent his life walking, and even the dream keeps walking after the body stops.',
+        hard: [{ w: 'withered', say: 'WITH-erd', def: 'dried up and shrivelled' }]
+      },
+      {
+        t: 'First cold shower', th: 'snow', a: 'Matsuo Bashō (1644–1694)', src: 'Collected haiku', y: '1689', kind: 'haiku',
+        lines: ['hatsushigure', 'saru mo komino wo', 'hoshige nari', '', 'First cold shower —', 'even the monkey seems to want', 'a little coat of straw.'],
+        note: 'A whole season announced by one animal looking cold. Bashō almost never says he is uncomfortable; he finds something else that is.',
+        hard: [{ w: 'drizzle', say: 'DRIZ-uhl', def: 'light, fine rain' }]
+      },
+      {
+        t: 'Peaks of cloud', th: 'mountain', a: 'Matsuo Bashō (1644–1694)', src: 'Oku no Hosomichi', y: '1689', kind: 'haiku',
+        lines: ['kumo no mine', 'ikutsu kuzurete', 'tsuki no yama', '', 'Peaks of cloud —', 'how many have crumbled?', 'The mountain of the moon.'],
+        note: 'Two mountains in three lines: one made of vapour that keeps falling down, one that has not moved. Only one of them is asked a question.',
+        hard: [{ w: 'summit', say: 'SUM-it', def: 'the highest point of a hill or mountain' }]
+      },
+      {
+        t: 'Rape blossoms', th: 'flower', a: 'Yosa Buson (1716–1784)', src: 'Collected haiku', y: 'c. 1774', kind: 'haiku',
+        lines: ['na no hana ya', 'tsuki wa higashi ni', 'hi wa nishi ni', '', 'Fields of yellow flowers —', 'the moon in the east,', 'the sun in the west.'],
+        note: 'Buson trained as a painter and it shows: this is a canvas, not a thought. Three light sources, no people, and the exact minute of the day given away without a single number.',
+        hard: [{ w: 'horizon', say: 'huh-RYE-zuhn', def: 'the line where earth and sky appear to meet' }]
+      },
+      {
+        t: 'On the temple bell', th: 'night', a: 'Yosa Buson (1716–1784)', src: 'Collected haiku', y: 'c. 1770', kind: 'haiku',
+        lines: ['tsurigane ni', 'tomarite nemuru', 'kochō kana', '', 'On the temple bell,', 'settled, fast asleep —', 'a butterfly.'],
+        note: 'Everything in it is about what has not happened yet. The bell is enormous, the butterfly weighs nothing, and any moment now somebody will ring it.',
+        hard: [{ w: 'precarious', say: 'prih-KAIR-ee-uhss', def: 'not securely held; dangerously uncertain' }]
+      },
+      {
+        t: 'Evening wind', th: 'water', a: 'Yosa Buson (1716–1784)', src: 'Collected haiku', y: 'c. 1770', kind: 'haiku',
+        lines: ['yū kaze ya', 'mizu aosagi no', 'hagi wo utsu', '', 'The evening wind —', 'water slaps against', 'the blue heron’s legs.'],
+        note: 'The heron never moves and is never described. You get its legs, and from the legs you get the stillness of the whole bird.',
+        hard: [{ w: 'heron', say: 'HAIR-uhn', def: 'a long-legged wading bird' }]
+      },
+      {
+        t: 'Skinny frog', th: 'water', a: 'Kobayashi Issa (1763–1828)', src: 'Collected haiku', y: 'c. 1816', kind: 'haiku',
+        lines: ['yase-gaeru', 'makeru na Issa', 'kore ni ari', '', 'Skinny frog,', 'don’t give up the fight —', 'Issa is here.'],
+        note: 'Issa watched two frogs fighting over a mate and took a side. He puts his own name in the poem, which almost nobody did, because somebody had to be in the frog’s corner.',
+        hard: [{ w: 'perseverance', say: 'pur-suh-VEER-uhnss', def: 'continued effort in spite of difficulty' }]
+      },
+      {
+        t: 'Come and play with me', th: 'bird', a: 'Kobayashi Issa (1763–1828)', src: 'Ora ga Haru', y: '1819', kind: 'haiku',
+        lines: ['ware to kite', 'asobe ya oya no', 'nai suzume', '', 'Come and play with me,', 'sparrow', 'with no mother.'],
+        note: 'Issa’s mother died when he was three. He is not comforting the bird; he is asking it for something, which is why the poem does not sound sweet.',
+        hard: [{ w: 'orphan', say: 'OR-fuhn', def: 'a child whose parents have died' }]
+      },
+      {
+        t: 'The morning glory', th: 'flower', a: 'Fukuda Chiyo-ni (1703–1775)', src: 'Chiyo-ni kushū', y: 'c. 1750', kind: 'haiku',
+        lines: ['asagao ni', 'tsurube torarete', 'morai mizu', '', 'The morning glory', 'has taken the well bucket —', 'I shall beg for water.'],
+        note: 'A vine has wound round the rope overnight and she will not cut it. The poem is a small legal finding: the flower got there first, so she is the one who must go without.',
+        hard: [{ w: 'tendril', say: 'TEN-dril', def: 'a slender coiling shoot by which a plant climbs' }]
+      },
+      {
+        t: 'I bite into a persimmon', th: 'dawn', a: 'Masaoka Shiki (1867–1902)', src: 'Written at Hōryū-ji', y: '1895', kind: 'haiku',
+        lines: ['kaki kueba', 'kane ga naru nari', 'Hōryūji', '', 'I bite into a persimmon —', 'and a bell begins to sound:', 'Hōryū-ji.'],
+        note: 'Two senses and a place name, and no connection offered between them. Shiki insisted a haiku should be a sketch from life; here the coincidence IS the poem, and explaining it would kill it.',
+        hard: [{ w: 'persimmon', say: 'per-SIM-uhn', def: 'a sweet orange fruit eaten when very ripe' }]
+      },
+      {
+        t: 'Again and again', th: 'snow', a: 'Masaoka Shiki (1867–1902)', src: 'Collected haiku', y: '1896', kind: 'haiku',
+        lines: ['ikutabi mo', 'yuki no fukasa wo', 'tazunekeri', '', 'Again and again', 'I ask how deep', 'the snow has become.'],
+        note: 'Shiki spent his last years unable to leave his bed. The poem never says he cannot look out of the window; it only lets you hear him asking, and asking.',
+        hard: [{ w: 'confined', say: 'kuhn-FYND', def: 'kept within limits; unable to leave' }]
       }
     ]
   },
@@ -834,6 +1399,102 @@ window.SB_POEMS = {
           { w: 'vessel', say: 'VESS-uhl', def: 'a ship or large boat' },
           { w: 'keel', say: 'KEEL', def: 'the ridge along the bottom of a ship’s hull' }
         ]
+      },
+      {
+        t: 'Sea Fever',
+        th: 'sea', a: 'John Masefield (1878–1967)', src: 'Salt-Water Ballads', y: '1902', kind: 'poem',
+        lines: [
+          'I must go down to the seas again, to the lonely sea and the sky,',
+          'And all I ask is a tall ship and a star to steer her by,',
+          'And the wheel’s kick and the wind’s song and the white sail’s shaking,',
+          'And a grey mist on the sea’s face, and a grey dawn breaking.',
+          '',
+          'I must go down to the seas again, for the call of the running tide',
+          'Is a wild call and a clear call that may not be denied;',
+          'And all I ask is a windy day with the white clouds flying,',
+          'And the flung spray and the blown spume, and the sea-gulls crying.',
+          '',
+          'I must go down to the seas again, to the vagrant gypsy life,',
+          'To the gull’s way and the whale’s way where the wind’s like a whetted knife;',
+          'And all I ask is a merry yarn from a laughing fellow-rover,',
+          'And quiet sleep and a sweet dream when the long trick’s over.'
+        ],
+        note: 'Every stanza starts the same and means it more each time — "must" is not "want". Read the list of small things he asks for and notice none of them is a person; the whole poem is a man choosing the sea over company.',
+        hard: [
+          { w: 'vagrant', say: 'VAY-gruhnt', def: 'wandering, without a fixed home' },
+          { w: 'whetted', say: 'WET-id', def: 'sharpened, as a blade on a stone' },
+          { w: 'spume', say: 'SPYOOM', def: 'froth or foam on the sea' },
+          { w: 'denied', say: 'dih-NIDE', def: 'refused; not allowed to happen' }
+        ]
+      },
+      {
+        t: 'The Second Coming',
+        th: 'ruin', a: 'W. B. Yeats (1865–1939)', src: 'Michael Robartes and the Dancer', y: '1919', kind: 'poem',
+        lines: [
+          'Turning and turning in the widening gyre',
+          'The falcon cannot hear the falconer;',
+          'Things fall apart; the centre cannot hold;',
+          'Mere anarchy is loosed upon the world,',
+          'The blood-dimmed tide is loosed, and everywhere',
+          'The ceremony of innocence is drowned;',
+          'The best lack all conviction, while the worst',
+          'Are full of passionate intensity.',
+          '',
+          'Surely some revelation is at hand;',
+          'Surely the Second Coming is at hand.',
+          'The Second Coming! Hardly are those words out',
+          'When a vast image out of Spiritus Mundi',
+          'Troubles my sight: somewhere in sands of the desert',
+          'A shape with lion body and the head of a man,',
+          'A gaze blank and pitiless as the sun,',
+          'Is moving its slow thighs, while all about it',
+          'Reel shadows of the indignant desert birds.'
+        ],
+        note: 'Written just after the First World War, and it reads like this morning’s news to every generation since — that is the poem’s whole reputation, and also its warning: a text that fits everything may explain nothing. The falcon spiralling out of the falconer’s call is the picture the rest of the poem works from.',
+        hard: [
+          { w: 'gyre', say: 'JYRE', def: 'a spiral or vortex; a circular course' },
+          { w: 'anarchy', say: 'AN-er-kee', def: 'absence of government or order' },
+          { w: 'conviction', say: 'kuhn-VIK-shuhn', def: 'a firm belief' },
+          { w: 'revelation', say: 'rev-uh-LAY-shuhn', def: 'a dramatic disclosure of something hidden' },
+          { w: 'indignant', say: 'in-DIG-nuhnt', def: 'angry at something unfair' }
+        ]
+      },
+      {
+        t: 'Do not go gentle into that good night',
+        th: 'night', a: 'Dylan Thomas (1914–1953)', src: 'In Country Sleep', y: '1951', kind: 'poem',
+        lines: [
+          'Do not go gentle into that good night,',
+          'Old age should burn and rave at close of day;',
+          'Rage, rage against the dying of the light.',
+          '',
+          'Though wise men at their end know dark is right,',
+          'Because their words had forked no lightning they',
+          'Do not go gentle into that good night.',
+          '',
+          'Good men, the last wave by, crying how bright',
+          'Their frail deeds might have danced in a green bay,',
+          'Rage, rage against the dying of the light.',
+          '',
+          'Wild men who caught and sang the sun in flight,',
+          'And learn, too late, they grieved it on its way,',
+          'Do not go gentle into that good night.',
+          '',
+          'Grave men, near death, who see with blinding sight',
+          'Blind eyes could blaze like meteors and be gay,',
+          'Rage, rage against the dying of the light.',
+          '',
+          'And you, my father, there on the sad height,',
+          'Curse, bless, me now with your fierce tears, I pray.',
+          'Do not go gentle into that good night.',
+          'Rage, rage against the dying of the light.'
+        ],
+        note: 'A villanelle — nineteen lines built from just two repeating lines and two rhymes, a form meant for something the mind cannot stop circling back to. Thomas wrote it for his dying father, and only in the last line does the poem finally say "you".',
+        hard: [
+          { w: 'gentle', say: 'JEN-tuhl', def: 'mild and calm; here, used as a verb — to go quietly' },
+          { w: 'forked', say: 'FORKT', def: 'split into branches, as lightning does' },
+          { w: 'frail', say: 'FRAYL', def: 'weak and easily broken' },
+          { w: 'meteors', say: 'MEE-tee-erz', def: 'streaks of light from space burning in the atmosphere' }
+        ]
       }
     ]
   },
@@ -963,6 +1624,53 @@ window.SB_POEMS = {
           { w: 'resignation', say: 'rez-ig-NAY-shuhn', def: 'the acceptance of something unpleasant as unavoidable' },
           { w: 'marrow', say: 'MAIR-oh', def: 'the soft substance inside bones; the essential part' },
           { w: 'sturdily', say: 'STUR-dih-lee', def: 'strongly and solidly' }
+        ]
+      },
+      {
+        t: 'Four score and seven — the close',
+        th: 'road', a: 'Martin Luther King Jr. (1929–1968)', src: 'March on Washington, Lincoln Memorial', y: '28 August 1963', kind: 'prose',
+        lines: [
+          'I have a dream that my four little children will one day live in a nation where they will not be judged by the color of their skin but by the content of their character. I have a dream today!',
+          'I have a dream that one day, down in Alabama, with its vicious racists, with its governor having his lips dripping with the words of interposition and nullification — one day right there in Alabama little black boys and black girls will be able to join hands with little white boys and white girls as sisters and brothers.',
+          'This is our hope. This is the faith that I go back to the South with. With this faith we will be able to hew out of the mountain of despair a stone of hope. With this faith we will be able to transform the jangling discords of our nation into a beautiful symphony of brotherhood.',
+          'And when this happens, and when we allow freedom to ring, when we let it ring from every village and every hamlet, from every state and every city, we will be able to speed up that day when all of God’s children, black men and white men, Jews and Gentiles, Protestants and Catholics, will be able to join hands and sing in the words of the old Negro spiritual, "Free at last! Free at last! Thank God Almighty, we are free at last!"'
+        ],
+        note: 'The section people quote is the middle of a much longer speech, and King was largely off his prepared text by this point — a singer in the crowd, Mahalia Jackson, had called out "Tell them about the dream, Martin!" and he did. Listen for the anaphora: "I have a dream" eight times, "let freedom ring" ten more, each repeat adding a place rather than a new idea.',
+        hard: [
+          { w: 'interposition', say: 'in-ter-puh-ZISH-uhn', def: 'a state government placing itself between citizens and federal law' },
+          { w: 'nullification', say: 'nul-ih-fih-KAY-shuhn', def: 'a state declaring a federal law void within its borders' },
+          { w: 'discords', say: 'DISS-kordz', def: 'disagreements; harsh, unpleasant sounds' },
+          { w: 'symphony', say: 'SIM-fuh-nee', def: 'an elaborate musical composition for full orchestra' },
+          { w: 'hamlet', say: 'HAM-lit', def: 'a small settlement, smaller than a village' }
+        ]
+      },
+      {
+        t: 'We shall fight on the beaches',
+        th: 'war', a: 'Winston Churchill (1874–1965)', src: 'House of Commons', y: '4 June 1940', kind: 'prose',
+        lines: [
+          'We shall go on to the end. We shall fight in France, we shall fight on the seas and oceans, we shall fight with growing confidence and growing strength in the air, we shall defend our island, whatever the cost may be. We shall fight on the beaches, we shall fight on the landing grounds, we shall fight in the fields and in the streets, we shall fight in the hills; we shall never surrender.',
+          'And even if, which I do not for a moment believe, this island or a large part of it were subjugated and starving, then our Empire beyond the seas, armed and guarded by the British Fleet, would carry on the struggle, until, in God’s good time, the New World, with all its power and might, steps forth to the rescue and the liberation of the old.'
+        ],
+        note: 'Given four days after the retreat from Dunkirk, when Britain had just lost most of its army’s equipment and stood alone. Count the "we shall fight"s — nine of them, each clause shorter than the last, like a drumbeat that will not slow down — before the single word that stops it: "never".',
+        hard: [
+          { w: 'confidence', say: 'KON-fih-dunss', def: 'firm trust or belief' },
+          { w: 'subjugated', say: 'SUB-juh-gay-tid', def: 'brought under control by force; conquered' },
+          { w: 'liberation', say: 'lib-er-AY-shuhn', def: 'the act of setting someone free' }
+        ]
+      },
+      {
+        t: 'What to the Slave is the Fourth of July?',
+        th: 'city', a: 'Frederick Douglass (1818–1895)', src: 'Rochester, New York', y: '5 July 1852', kind: 'prose',
+        lines: [
+          'What, to the American slave, is your Fourth of July? I answer: a day that reveals to him, more than all other days in the year, the gross injustice and cruelty to which he is the constant victim. To him, your celebration is a sham; your boasted liberty, an unholy license; your national greatness, swelling vanity; your sounds of rejoicing are empty and heartless; your denunciations of tyrants, brass fronted impudence; your shouts of liberty and equality, hollow mockery; your prayers and hymns, your sermons and thanksgivings, with all your religious parade and solemnity, are, to him, mere bombast, fraud, deception, impiety, and hypocrisy — a thin veil to cover up crimes which would disgrace a nation of savages.',
+          'There is not a nation on the earth guilty of practices more shocking and bloody than are the people of these United States at this very hour.'
+        ],
+        note: 'Douglass was invited to give a Fourth of July address and instead built one long sentence out of the day’s own words — liberty, equality, celebration — and turned each one over to show its other side. He was formerly enslaved himself; every word here had cost him something to learn to write.',
+        hard: [
+          { w: 'denunciations', say: 'dih-nun-see-AY-shuhnz', def: 'public condemnations of something as wrong' },
+          { w: 'impudence', say: 'IM-pyoo-duhnss', def: 'bold disrespect; insolence' },
+          { w: 'hypocrisy', say: 'hih-POK-rih-see', def: 'claiming standards one does not actually follow' },
+          { w: 'bombast', say: 'BOM-bast', def: 'pompous, inflated language' }
         ]
       }
     ]
