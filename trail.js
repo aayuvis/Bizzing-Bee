@@ -190,9 +190,19 @@
     if (i > frontier(c)) { flash('Locked — clear the earlier stops first'); return; }
     const items = buildCheckpoint(c, { id });
     set({ nav: 'trail', screen: 'app', trailView: 'quiz', trailUnit: null, trailChk: id, tq: { items, i: 0, score: 0, picked: null, typed: '', missed: [], over: false } }); };
+  app2.trailPick = i => set({ trailStop: +i });
+  /* The Atlas hands its words to Practice — the same records, the same XP, one tap. */
+  app2.trailTrain = id => { const u = unit(id) || unit(state.trailUnit); if (!u) return;
+    const c = active();
+    needMap(() => { const ws = lapWords(u, lapOf(c), 24);
+      if (!ws.length) { flash('No words here yet'); return; }
+      state.trailReturn = u.id; state.trailCourse = courseOfId(u.id);
+      state.sessionWords = ws.map(x => ({ w: x.w, d: x.d, s: x.s, p: x.p, o: '', r: x.h }));
+      state.sessionLabel = String(u.title || '').split('—')[0].trim(); state.gi = 0;
+      app2.startTrain(); }); };
   app2.trailBack = () => set({ trailView: state.trailAct ? 'act' : 'map', tq: null });
   /* a region on the atlas: "honey|meadow" */
-  app2.trailAct = arg => { const [crs, id] = String(arg || '').split('|');
+  app2.trailAct = arg => { state.trailStop = null; const [crs, id] = String(arg || '').split('|');
     if (crs === 'exp' && !advOn()) { app2.openAdvanced ? app2.openAdvanced() : flash('The Advanced Rounds come with the Advanced Pack'); return; }
     state.trailCourse = crs === 'exp' ? 'exp' : 'honey';
     try { window.scrollTo(0, 0); } catch (e) {}
@@ -626,7 +636,48 @@
       </div>
     </div>`;
   }
-  /* one act, opened from the map: its painted world and its own run of stops */
+  /* ---------------------------------------------------------------
+     One act = one painting with a road across it. Not a checklist.
+
+     Each world carries ONE measured road (a cubic curve in a 760x220 box,
+     measured once against that world's art). Stops are then placed ALONG the
+     curve by arc length, so the same road holds two stops at Tier I and
+     twenty-two at Tier III without anyone re-measuring anything. Markers
+     shrink as the road recedes; the current stop breathes and carries the
+     speller's guide; tapping one raises the card underneath.
+     --------------------------------------------------------------- */
+  const ROADS = {
+    meadow:   'M 46 186 C 150 202, 214 170, 288 146 S 408 102, 492 112 C 576 120, 640 152, 724 180',
+    library:  'M 40 198 C 140 196, 236 168, 322 132 C 380 108, 420 92, 470 96 C 552 104, 646 158, 724 194',
+    forum:    'M 64 178 C 172 192, 260 170, 346 150 C 422 132, 500 128, 568 140 C 640 154, 694 170, 720 182',
+    elements: 'M 48 176 C 132 138, 214 178, 296 150 S 452 92, 534 126 C 610 158, 664 148, 722 168',
+    engine:   'M 44 192 C 148 186, 210 150, 296 138 S 430 156, 516 132 C 596 110, 654 142, 722 176',
+    strait:   'M 46 182 C 156 200, 246 178, 330 152 S 470 108, 556 124 C 632 138, 682 164, 722 184',
+    junkyard: 'M 50 190 C 146 178, 206 200, 292 172 S 434 118, 520 140 C 600 160, 660 178, 722 186',
+    vibe:     'M 44 172 C 140 196, 226 158, 308 168 S 452 130, 538 148 C 616 164, 668 152, 722 174',
+    stage:    'M 52 194 C 152 186, 218 156, 300 140 S 446 116, 528 132 C 610 148, 664 170, 720 188',
+    warfield: 'M 46 188 C 144 194, 214 164, 298 146 S 442 122, 526 138 C 606 154, 662 172, 722 184',
+    greysea:  'M 44 180 C 148 196, 236 174, 320 154 S 462 116, 546 132 C 622 146, 676 166, 722 182',
+  };
+  const roadOf = w => ROADS[w] || ROADS.meadow;
+  /* Arc-length placement, done once per render. Falls back to a straight run if
+     the browser cannot measure the path (it always can, but the map must not
+     depend on it). */
+  function roadPoints(d, n, W) {
+    const k = W / 760, out = [];
+    let path = null, L = 0;
+    try {
+      path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', d); L = path.getTotalLength();
+    } catch (e) { L = 0; }
+    for (let i = 0; i < n; i++) {
+      const f = n === 1 ? .5 : .07 + (i / (n - 1)) * .86;
+      let x = 40 + f * 680, y = 168;
+      if (L) { const pt = path.getPointAtLength(f * L); x = pt.x; y = pt.y; }
+      out.push({ x: x * k, y, f, sc: .74 + .26 * Math.min(1, Math.max(0, (y - 96) / 100)) });
+    }
+    return out;
+  }
   function viewAct() {
     const c = active();
     const crs = state.trailActCrs === 'exp' ? 'exp' : 'honey';
@@ -636,27 +687,98 @@
     if (!act) return viewAtlas();
     const s = seq(c); const fr = frontier(c);
     const nodes = s.map((n, i) => ({ n, i })).filter(x => x.n.act === act.id);
+    if (!nodes.length) return viewAtlas();
     const world = act.world; const guide = GUIDE[world] || 'honeypot';
     const [a] = ACCENT[world] || ACCENT.meadow;
     const dn = nodes.filter(x => passedNode(c, x.n)).length;
     const reg = crs === 'exp' ? 3 : 2;
-    return `<div style="animation:sb-rise .35s ease both;max-width:720px;margin:0 auto">
-      <section style="position:relative;border-radius:22px;overflow:hidden;margin-bottom:18px;background:var(--bg2);
-          box-shadow:0 0 0 1px color-mix(in srgb,${a} 45%,var(--line)),var(--sh-rest)">
-        <div style="position:relative;height:150px">
-          ${banner(world, 150, reg)}${scrim()}
-          <button data-act="trailBack" style="position:absolute;left:12px;top:11px;color:#fff;font-weight:800;font-size:12.5px;background:rgba(10,6,26,.44);border-radius:999px;padding:5px 13px;z-index:3">← The map</button>
-          <div style="position:absolute;left:15px;right:15px;bottom:12px;display:flex;align-items:flex-end;gap:12px">
-            <span style="width:56px;height:56px;flex-shrink:0;filter:drop-shadow(0 3px 6px rgba(14,9,32,.5))">${window.SB_AVATAR ? SB_AVATAR(guide, 56, { dark: true }) : ''}</span>
-            <span style="min-width:0;flex:1">
-              <span style="display:block;font-family:var(--display);font-weight:800;font-size:19px;line-height:1.1;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.55)">${esc(act.title)}</span>
-              <span style="display:block;font-size:11.5px;font-weight:700;color:rgba(255,255,255,.88);text-shadow:0 1px 4px rgba(0,0,0,.6);margin-top:2px">${esc(WORLD_LINE[world] || 'the route continues')}</span></span>
-            ${ring(dn, nodes.length, dn === nodes.length ? 'var(--good)' : '#FFD24D', 46)}
-          </div></div>
-        <div style="position:relative;padding:16px 14px 18px 14px">
-          ${railHTML(nodes, c, fr, a)}
-          ${nodes.map(x => nodeHTML(c, x.n, x.i, fr, world)).join('')}
-        </div></section>
+    const n = nodes.length;
+    /* the painting is as wide as the road needs; long acts pan sideways */
+    const W = Math.max(760, n * 62), H = 220;
+    const pts = roadPoints(roadOf(world), n, W);
+    /* which stop the card is showing: the speller's own frontier unless they tapped */
+    let sel = nodes.findIndex(x => x.i === fr);
+    if (sel < 0) sel = dn >= n ? n - 1 : 0;
+    const picked = nodes.findIndex(x => x.i === state.trailStop);
+    if (picked >= 0) sel = picked;
+    const road = roadOf(world), kx = W / 760;
+    const walked = Math.min(dn, n - 1);
+    const st = i => { const x = nodes[i]; return passedNode(c, x.n) ? 'done' : x.i === fr ? 'now' : 'next'; };
+
+    const marks = pts.map((p, i) => {
+      const kind = st(i), on = i === sel, node = nodes[i].n;
+      const r = kind === 'now' ? 19 : kind === 'done' ? 15 : 14;
+      const face = kind === 'done'
+        ? `<circle r="${r}" fill="#F0B429" stroke="#FFF3D2" stroke-width="3"/><text text-anchor="middle" y="5" font-family="var(--display)" font-size="14" font-weight="800" fill="#4A3306">✓</text>`
+        : kind === 'now'
+          ? `<circle r="${r}" fill="#FFFBEF" stroke="#F0B429" stroke-width="4" style="animation:sb-pulse 2.4s ease-in-out infinite"/>`
+          : `<circle r="${r}" fill="rgba(250,246,236,.86)" stroke="rgba(74,58,32,.42)" stroke-width="2.5"/><text text-anchor="middle" y="5" font-family="var(--display)" font-size="13" font-weight="800" fill="rgba(60,46,24,.72)">${i + 1}</text>`;
+      const rider = kind === 'now' && window.SB_AVATAR
+        ? `<g transform="translate(-17,-52)"><foreignObject width="34" height="36"><span xmlns="http://www.w3.org/1999/xhtml" style="display:block;width:34px;height:36px">${SB_AVATAR(guide, 34, { dark: true })}</span></foreignObject></g>` : '';
+      const chk = node.kind === 'chk' ? `<circle r="${r + 5}" fill="none" stroke="#fff" stroke-width="1.6" stroke-dasharray="3 4" opacity=".8"/>` : '';
+      return `<g transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)}) scale(${p.sc.toFixed(3)})" data-act="trailPick" data-arg="${nodes[i].i}" role="button" tabindex="0" aria-label="Stop ${i + 1}" style="cursor:pointer">
+        <circle r="26" fill="transparent"/>
+        <ellipse cy="20" rx="16" ry="5" fill="rgba(48,30,8,.30)"/>
+        ${chk}${face}
+        ${on ? `<circle r="${r + 6}" fill="none" stroke="${a}" stroke-width="3"/>` : ''}
+        ${rider}</g>`;
+    }).join('');
+
+    const cur = nodes[sel], node = cur.n, locked = cur.i > fr;
+    const u = node.kind === 'unit' ? node.u : null;
+    const raw = u ? String(u.title || '') : 'Checkpoint';
+    const cut = raw.indexOf(' — ');
+    const title = cut > 0 ? raw.slice(0, cut) : raw;
+    const sub = node.kind === 'chk' ? 'A mixed quiz over everything so far — no new words.' : (cut > 0 ? raw.slice(cut + 3) : '');
+    const score = node.kind === 'unit' ? ((doneMap(c)[u.id] || {})[lapOf(c)] || 0) : (chkMap(c)[lapOf(c) + ':' + node.id] || 0);
+    const goAct = node.kind === 'unit' ? 'trailUnit' : 'trailChk';
+    const goArg = node.kind === 'unit' ? u.id : (crs + '|' + node.id);
+
+    /* the road runs past the edge of a long act: bring the speller's own stop into view */
+    setTimeout(() => { try { const el = document.getElementById('sb-road');
+      if (el && pts[sel]) el.scrollLeft = Math.max(0, pts[sel].x - el.clientWidth / 2); } catch (e) {} }, 0);
+    return `<div style="animation:sb-rise .35s ease both;max-width:900px;margin:0 auto">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <button data-act="trailBack" style="display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:var(--muted)">← The map</button>
+        <span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px">
+          <span style="font-size:12px;font-weight:800;color:var(--muted)">Tier ${lapOf(c)}</span>
+          ${ring(dn, n, dn === n ? 'var(--good)' : '#FFD24D', 34)}</span>
+      </div>
+      <div style="display:flex;align-items:flex-end;gap:12px;margin-bottom:10px">
+        <span style="width:46px;height:46px;flex-shrink:0">${window.SB_AVATAR ? SB_AVATAR(guide, 46) : ''}</span>
+        <span style="min-width:0;flex:1">
+          <span style="display:block;font-family:var(--display);font-weight:800;font-size:22px;line-height:1.1">${esc(act.title)}</span>
+          <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:700;margin-top:2px">${esc(WORLD_LINE[world] || 'the route continues')} · ${dn} of ${n} stops</span></span>
+      </div>
+      <div id="sb-road" style="position:relative;border-radius:20px;overflow-x:auto;overflow-y:hidden;border:1px solid color-mix(in srgb,${a} 40%,var(--line));box-shadow:var(--sh-rest);-webkit-overflow-scrolling:touch">
+        <div style="position:relative;width:${W}px;height:${H}px">
+          ${banner(world, H, reg)}
+          <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible">
+            <g transform="scale(${kx.toFixed(4)},1)">
+              <path d="${road}" fill="none" stroke="rgba(255,247,225,.5)" stroke-width="7" stroke-linecap="round" stroke-dasharray="3 12"/>
+              <path d="${road}" fill="none" stroke="rgba(255,241,208,.92)" stroke-width="8" stroke-linecap="round"
+                pathLength="100" stroke-dasharray="${(pts[walked] ? pts[walked].f * 100 : 0).toFixed(1)} 100"/>
+            </g>
+            ${marks}
+          </svg>
+        </div>
+      </div>
+      <div class="sb-card" style="margin-top:14px;padding:15px 17px 17px">
+        <div style="display:flex;align-items:flex-start;gap:13px">
+          <span style="width:40px;height:40px;flex-shrink:0;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:15px;${st(sel) === 'done' ? 'background:linear-gradient(160deg,#FFE49B,#E8A81C);color:#4A3306' : st(sel) === 'now' ? 'background:#FFFBEF;border:2px solid #F0B429;color:#7A5300' : 'background:var(--surface2);color:var(--muted)'}">${st(sel) === 'done' ? '✓' : (sel + 1)}</span>
+          <div style="min-width:0;flex:1">
+            <div style="font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">Stop ${sel + 1} of ${n}${node.kind === 'chk' ? ' · checkpoint' : ''}${score ? ' · ' + score + '%' : ''}</div>
+            <div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1.15;margin-top:3px">${esc(title)}</div>
+            ${sub ? `<div style="font-size:13px;color:var(--muted);line-height:1.45;margin-top:4px">${esc(sub)}</div>` : ''}
+          </div>
+        </div>
+        <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:13px">
+          ${locked
+            ? `<span style="display:inline-flex;align-items:center;gap:7px;padding:11px 16px;border-radius:var(--r-md,10px);background:var(--surface2);color:var(--muted);font-weight:800;font-size:14px">${iconSVG('lock', 15)} Clear the earlier stops first</span>`
+            : `<button data-act="${goAct}" data-arg="${escA(goArg)}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:var(--r-md,10px);background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:14px;box-shadow:var(--edge)">${iconSVG(node.kind === 'chk' ? 'target' : 'steps', 15)} ${score ? 'Walk it again' : (node.kind === 'chk' ? 'Take the checkpoint' : 'Learn this stop')}</button>`}
+          ${(!locked && u) ? `<button data-act="trailTrain" data-arg="${escA(u.id)}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 16px;border-radius:var(--r-md,10px);background:var(--paper,var(--bg2));border:1px solid var(--line);color:var(--ink,var(--text));font-weight:800;font-size:13.5px">${iconSVG('pencil', 15)} Train these words</button>` : ''}
+        </div>
+      </div>
     </div>`;
   }
   /* one line of flavour per world, so an act page says where you are */
