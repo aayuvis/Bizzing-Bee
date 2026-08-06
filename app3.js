@@ -4780,7 +4780,10 @@ const capFirst=(s)=>String(s||'').replace(/^([a-z])/,(m,c)=>c.toUpperCase());
 function conceptAnim(ch){ if(ch._anim) return ch._anim;
   // Authored explanation script (the bee teaches the concept) takes priority over the pattern templates.
   try{ const ci=(ch&&ch.adv)?advIdx(ch):(state.conceptData||[]).indexOf(ch);
-    const auth=(ch&&ch.adv)?(window.SB_ADV_CSCRIPT&&window.SB_ADV_CSCRIPT[ci]):(window.SB_CSCRIPT&&window.SB_CSCRIPT[ci]);
+    /* A chapter may carry its own script inline (the Grand Trunk Road ones do —
+       they ship with the book, not with the indexed narration tables). */
+    const auth=(ch&&ch.sc&&ch.sc.scenes&&ch.sc.scenes.length)?ch.sc
+      :(ch&&ch.adv)?(window.SB_ADV_CSCRIPT&&window.SB_ADV_CSCRIPT[ci]):(window.SB_CSCRIPT&&window.SB_CSCRIPT[ci]);
     if(auth&&auth.scenes&&auth.scenes.length){
       /* Pace each scene by how long its narration actually is. A flat 3s default was fine
          for the short general scripts but ran the advanced ones (15-23s of speech) far

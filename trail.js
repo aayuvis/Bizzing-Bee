@@ -16,7 +16,7 @@
 (function () {
   const T = () => window.SB_TRAIL;
   const GUIDE = { meadow: 'honeypot', library: 'waggle', forum: 'bumble', elements: 'star', engine: 'drone', strait: 'nectar', junkyard: 'propolis', vibe: 'jester', stage: 'diva', warfield: 'queenhive', greysea: 'blossom' };
-  const ACCENT = { meadow: ['#FFC23D', '#C8791B'], library: ['#6C4FE0', '#4A3AA0'], forum: ['#E06A3C', '#A8431F'], elements: ['#2E8FB8', '#1C6486'], engine: ['#C08A3E', '#8A5B00'], strait: ['#3E63D6', '#26409A'], junkyard: ['#F0A93C', '#B4711A'], vibe: ['#B14FC4', '#7A2F8C'], stage: ['#E8458C', '#A82563'], warfield: ['#D6353F', '#8E1D26'], greysea: ['#7E8AA0', '#4C566B'] };
+  const ACCENT = { meadow: ['#FFC23D', '#C8791B'], library: ['#6C4FE0', '#4A3AA0'], forum: ['#E06A3C', '#A8431F'], elements: ['#2E8FB8', '#1C6486'], engine: ['#C08A3E', '#8A5B00'], strait: ['#3E63D6', '#26409A'], junkyard: ['#F0A93C', '#B4711A'], vibe: ['#B14FC4', '#7A2F8C'], stage: ['#E8458C', '#A82563'], warfield: ['#D6353F', '#8E1D26'], greysea: ['#7E8AA0', '#4C566B'], grandtrunk: ['#E0A33C', '#93551A'] };
 
   /* ---- compact world strips (drawn scenery for act banners) ---- */
   function strip(world, W, H) {
@@ -67,7 +67,13 @@
   const unitsOf = tab => tab === 'exp' ? T().expedition.units : T().honey.units;
   const actsOf = tab => tab === 'exp' ? T().expedition.expeds : T().honey.acts;
   const unit = id => unitsOf(course()).find(u => u.id === id);
-  const chOf = u => u.neu ? u.chapter : (u.ai != null ? (window.SB_ADV_CONCEPTS.chapters[u.ai]) : (window.SB_CONCEPTS.chapters[u.gi]));
+  /* Three sources, one shape. `sa` is the Grand Trunk Road: its chapters live in
+     their own file because they are the book's, not the advanced course's, and
+     appending them to SB_ADV_CONCEPTS would shift every narration index after them. */
+  const EMPTY_CH = { title: '', concept: '', cards: [], words: [] };
+  const chOf = u => u.neu ? u.chapter
+    : u.sa != null ? ((window.SB_SOUTHASIA || [])[u.sa] || EMPTY_CH)
+    : (u.ai != null ? (window.SB_ADV_CONCEPTS.chapters[u.ai]) : (window.SB_CONCEPTS.chapters[u.gi]));
   const lapOf = c => course() === 'exp' ? tr(c).elap : tr(c).lap;
   const doneMap = c => course() === 'exp' ? tr(c).edone : tr(c).done;
   const chkMap = c => course() === 'exp' ? tr(c).echk : tr(c).chk;
@@ -103,7 +109,12 @@
   function lapWords(u, lap, cap) { // records for this unit at this lap
     const rec = k => widx().get(k);
     if (course() === 'exp' || u.kind === 'lesson' || u.neu || !window.SB_TRAIL_MAP) {
-      const ws = (chOf(u).words || []).map(x => ({ w: x.w, d: x.def || '', s: x.ex || '', p: x.say || '', o: '', h: x.hook || '' }));
+      /* The chapter's own text wins; anything it does not carry (the book chapters
+         have no example sentences, some have no origin) is filled from the word
+         library so a stop's cards are never half-empty. */
+      const ws = (chOf(u).words || []).map(x => { const r = rec(nkey(x.w)) || {};
+        return { w: x.w, d: x.def || r.d || '', s: x.ex || r.s || '', p: x.say || r.p || '',
+          o: x.o || r.o || '', h: x.hook || r.h || '' }; });
       return cap ? ws.slice(0, cap) : ws;
     }
     const pool = (SB_TRAIL_MAP[u.id] || {})[lap] || [];
@@ -602,6 +613,7 @@
       ['proving',  18, 72],     // the lantern-lit proving ground
       ['greysea',  27, 41],     // the fog sea and its red buoy
       ['liars',    54, 46],     // the junkyard, centre
+      ['grandtrunk', 58, 33],   // the long road out of the junkyard
       ['farflung', 64, 15],     // the far shore
       ['factory',  83, 18],     // the word factory
     ],
@@ -881,6 +893,8 @@
     stage:    'M 52 194 C 152 186, 218 156, 300 140 S 446 116, 528 132 C 610 148, 664 170, 720 188',
     warfield: 'M 46 188 C 144 194, 214 164, 298 146 S 442 122, 526 138 C 606 154, 662 172, 722 184',
     greysea:  'M 44 180 C 148 196, 236 174, 320 154 S 462 116, 546 132 C 622 146, 676 166, 722 182',
+    /* the Grand Trunk Road runs straighter than any other world's — it is a road */
+    grandtrunk: 'M 42 196 C 158 188, 244 166, 330 150 S 466 124, 552 134 C 626 143, 678 162, 724 178',
   };
   const roadOf = w => ROADS[w] || ROADS.meadow;
   /* Arc-length placement, done once per render. Falls back to a straight run if

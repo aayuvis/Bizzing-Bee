@@ -34,7 +34,8 @@
     SB_DIACRITICS: null, SB_HOM: null, SB_IPA: null, SB_PRON: null,
     SB_QUOTES: [], SB_FIG: null, SB_LESSONS: null, SB_VOCAB26: null,
     SB_NSF500: null, SB_SCRIPPS: null, SB_WVOICE: null, SB_STORY_ARCS: null,
-    SB_ADV_SHOTS: null, SB_VOICE_FRENCH: null, SB_THEME_LORE: null
+    SB_ADV_SHOTS: null, SB_VOICE_FRENCH: null, SB_THEME_LORE: null,
+    SB_SOUTHASIA: []
   };
   for (var k in STUB) if (!(k in window)) window[k] = STUB[k];
 
@@ -45,6 +46,7 @@
     lore: 'words-lore.js',              // etymology + memory hint, merged onto SB_DATA
     concepts: 'concepts-data.js',       // the 121-chapter course
     trail: 'trail-data.js',             // Word Atlas curriculum
+    southasia: 'southasia-data.js',     // the Grand Trunk Road chapters (Expedition IV)
     sounds: 'sounds-data.js',           // homophones, alt pronunciations, diacritics, IPA
     pron: 'word-pron.js',
     alts: 'word-alternates.js',         // other senses on a word card
@@ -69,8 +71,8 @@
     words: ['words2', 'lore'],
     card: ['words2', 'lore', 'alts', 'sounds', 'pron'],
     concepts: ['concepts', 'cscript'],
-    advanced: ['advConcepts', 'advTips', 'advTour'],
-    atlas: ['trail', 'concepts', 'cscript'],
+    advanced: ['advConcepts', 'advTips', 'advTour', 'southasia'],
+    atlas: ['trail', 'concepts', 'cscript', 'southasia'],
     quotes: ['quotes'],
     figurative: ['fig'],
     audio: ['voiceWords', 'voiceFrench'],
@@ -81,7 +83,7 @@
 
   var IDLE = ['words2', 'lore', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
     'themeLore', 'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',
-    'scripps', 'advTour', 'voiceFrench', 'story', 'alts'];
+    'scripps', 'advTour', 'southasia', 'voiceFrench', 'story', 'alts'];
 
   var state = {};          // name -> 'loading' | 'done'
   var waiters = {};        // name -> [cb]
