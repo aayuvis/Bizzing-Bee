@@ -132,6 +132,15 @@ handlers. App lives in this folder; open `index.html` to run.
   illustrated and line glyphs. The Library is **eight painted tiles, four across**
   (`app-art/lib-*.jpg`); the shelf and tool row-lists are gone because every one of those
   destinations is reachable from its own home.
+- **Testing mode opens the Atlas too.** The Atlas gates on the *frontier* (sequential
+  progress), not on entitlement, so `devOn()` (Settings → Unlock everything) now bypasses
+  the frontier check in `trailUnit`/`trailChk`, the Advanced-Rounds course check, the act
+  card's locked state and the Ultra gate. Without it, "unlock everything" left every stop
+  after your own shut.
+- **Every Atlas entry point sets `nav`.** `trailUnit`, `trailChk`, `trailAct` and
+  `trailToMap` all set `nav:'trail', screen:'app'` so a stop or a region can be opened from
+  Home, Progress or a concept page. `trailBack` retraces: stop → region → map (it used to
+  stop at the region because `trailAct` was never cleared).
 - **Progress is not a tab** — it opens from Settings → Progress & reports (and the drawer).
   It reads rank → the World Atlas (tier, act, stops) → Practice (Stage + mastery) → this
   week → word difficulty → the 30-day targets → the word heatmap: the same order and the
