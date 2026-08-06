@@ -3326,6 +3326,13 @@ function viewIpaTrain(){ const S=state; const it=S.it; const pool=ipaPool();
       <div style="text-align:center;font-size:12px;color:var(--muted);font-weight:600;margin-top:10px">Keys: 1–4 answer · R hear it · Enter next</div>
     </div></div>`; }
 
+/* Map | Index — two readings of one journey. The map is where you are, the index is
+   everything there is. Both live under the Journey tab. */
+function journeySeg(which){
+  const b=(k,label)=>{ const on=which===k;
+    return `<button data-act="${k==='map'?'openTrail':'setNav'}"${k==='map'?'':' data-arg="explore"'} aria-pressed="${on}" style="flex:1;text-align:center;padding:9px 14px;border-radius:var(--r-pill,999px);font-family:var(--display);font-weight:800;font-size:14.5px;${on?'background:var(--paper,var(--bg2));color:var(--ink,var(--text));box-shadow:var(--sh-rest)':'background:transparent;color:var(--muted)'}">${label}</button>`; };
+  return `<div style="display:flex;gap:4px;padding:4px;border-radius:var(--r-pill,999px);background:var(--surface2);max-width:440px;margin:0 auto 16px">${b('map','The map')}${b('index','The index')}</div>`;
+}
 function viewExplore(){ const c=active(); ensureLists(c); const S=state;
   /* Seven destinations, each with its own painted header (app-art/lib-*.jpg, made by
      voice/pipeline/atlas-art.py). The Library had gradients and line icons before,
@@ -3361,8 +3368,26 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
       blurb:'Learn to touch-type, then race the sixty-second test.',c:'#2A63D6',ic:'pencil',cta:'Practise'}),
   ].join('');
   return `<div style="animation:sb-rise .35s ease both;max-width:1020px;margin:0 auto">
-    ${pageHead('The Library','learn beyond the drill','Everything that explains a word rather than testing it. Your revision pile and weak patterns ride on the Word Atlas; the drill itself lives in Practice.')}
+    ${pageHead('The index','everything the journey teaches','Sorted by kind instead of by place. The map is where you are; this is everything there is. The drill itself lives in Practice.')}
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(276px,1fr));gap:16px">${tiles}</div>
+    ${(()=>{ /* The shelf items have no painted header of their own, and the tools are a
+        means to an end — both read better as rows than as pretend tiles. */
+      const row=(act,arg,ic,t,d)=>`<button data-act="${act}"${arg?` data-arg="${escA(arg)}"`:''} style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;border-top:1px solid var(--line);background:transparent">
+          <span style="display:inline-flex;flex-shrink:0;color:var(--accent)">${iconSVG(ic,18)}</span>
+          <span style="min-width:0;flex:1"><span style="display:block;font-weight:800;font-size:14.5px;line-height:1.2">${esc(t)}</span>
+            <span style="display:block;font-size:12.5px;color:var(--muted);line-height:1.4;margin-top:2px">${esc(d)}</span></span>
+          <span class="sb-cl">Open →</span></button>`;
+      const block=(title,rows)=>`<div class="sb-card" style="padding:4px 0;margin-top:16px">
+          <div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:800;padding:12px 14px 4px">${title}</div>${rows}</div>`;
+      return block('Also on the shelf',
+          row('setNav','journeys','book','Word Journeys','curated routes through one idea')
+        + row('openQuotes','','quote','Quotes &amp; poems','1,200 quotations — also on your home screen')
+        + row('openAdvTips','','bulb','Champion tips','the technique deck from the Advanced Pack'))
+      + block('Tools',
+          row('openFinder','','search','Word finder','look up any of 129,000 words, hear it, list it')
+        + row('openBuilder','','pencil','List builder','make a pile — it opens in Practice')
+        + row('startLevelTest','','target','Placement test','sets your word difficulty in one 3-minute run'));
+    })()}
   </div>`; }
 /* Advanced Mode entry — a gated hero banner. Unlocks at Level 12, Bee Band 7, or by paying. */
 function advBanner(c){
@@ -3495,8 +3520,11 @@ function viewApp(){
   const S=state;
   const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,quotes:1,typing:1,builder:1,adv:1,traps:1,revisions:1,trivtrain:1,ipatrain:1};
   const NAV_ART={home:'home',coach:'practice',explore:'explore',games:'arcade',shop:'store',progress:'progress',collection:'collection'};
-  const navTabs=[['home','Home','home'],['trail','Word Atlas','steps'],['coach','Practice','pencil'],['explore','Library','compass'],['games','Arcade','joystick'],['progress','Progress','chart'],['collection','My Hive','crown']].map(([key,label,ic])=>{
-    const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:key==='coach'?(S.nav==='coach'||S.nav==='train'||S.nav==='levelup'||S.nav==='quest'):key==='collection'?(S.nav==='collection'||S.nav==='shop'||S.nav==='evolution'):S.nav===key;
+  /* Four tabs. The Library is not a destination any more — it is the Journey's
+     index, so every explore-family nav lights the Journey tab. Progress and My Hive
+     are not tabs either: they are you, and you are the avatar in the header. */
+  const navTabs=[['home','Home','home'],['trail','Journey','steps'],['coach','Practice','pencil'],['games','Play','joystick']].map(([key,label,ic])=>{
+    const on=key==='trail'?(S.nav==='trail'||!!EXPLORE_NAVS[S.nav]):key==='coach'?(S.nav==='coach'||S.nav==='train'||S.nav==='levelup'||S.nav==='quest'):S.nav===key;
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
     const art=NAV_ART[key];
     const glyph=(window.SB_ICON_ART && art && SB_ICON_ART[art]) ? `<span style="display:inline-flex;line-height:0;width:22px;height:22px;${on?'filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))':''}">${SB_ICON_ART(art,{size:22})}</span>` : (key==='explore'?(window.SB_ICON?SB_ICON('compass',{size:17}):iconSVG('grid',17)):iconSVG(ic,17));
@@ -3509,14 +3537,14 @@ function viewApp(){
   else if(S.nav==='train') content=viewTrain();
   else if(S.nav==='coach') content=viewCoach();
   else if(S.nav==='quest') content=viewQuest();
-  else if(S.nav==='explore') content=viewExplore();
+  else if(S.nav==='explore') content=journeySeg('index')+viewExplore();
   else if(S.nav==='themes'&&S.themeSel) content=viewThemeDetail();
   else if(S.nav==='figurative') content=viewFigurative();
   else if(S.nav==='vocab') content=viewVocab();
   else if(S.nav==='quotes') content=viewQuotes();
   else if(S.nav==='trivtrain') content=viewTrivTrain();
   else if(S.nav==='ipatrain') content=viewIpaTrain();
-  else if(S.nav==='trail'&&window.TRAIL) content=TRAIL.view();
+  else if(S.nav==='trail'&&window.TRAIL) content=((S.trailView&&S.trailView!=='map')?'':journeySeg('map'))+TRAIL.view();
   else if(S.nav==='typing') content=viewTyping();
   else if(S.nav==='builder') content=viewBuilder();
   else if(S.nav==='leveltest') content=viewLevelTest();
@@ -3626,6 +3654,8 @@ function viewApp(){
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="${_fon?'2.4':'1'}" fill="currentColor" stroke="none"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
           </button>`; })()}
         <button data-act="cycleMode" aria-label="Switch look (Light / White / Dusk)" title="Light / White / Dusk" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);font-size:16px;line-height:1" class="sb-mob-hide">${S.mode==='light'?'☀':S.mode==='white'?'◻':'☾'}</button>
+        <button data-act="setNav" data-arg="collection" aria-label="Your hive — progress, collection and store" title="Your hive — rank, progress, collection, store" style="width:38px;height:38px;border-radius:50%;background:var(--surface2);display:grid;place-items:center;overflow:hidden;border:1.5px solid color-mix(in srgb,var(--accent) 34%,var(--line));flex-shrink:0">
+          <span style="width:30px;height:30px;display:block">${avatarSVG(active().avatar||'bizzy',30,active().accOn)}</span></button>
         <button data-act="goSettings" aria-label="Settings" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text)">${iconSVG('gear',17)}</button>
       </div>
       <div class="sb-topnav" style="max-width:1080px;margin:0 auto;padding:0 clamp(14px,3.5vw,32px) 9px;display:flex;gap:6px;overflow-x:auto">${navTabs}</div>
@@ -3633,7 +3663,7 @@ function viewApp(){
     ${viewDrawer()}
     <div class="sb-content" style="max-width:1080px;margin:0 auto;width:100%;padding:18px clamp(14px,3.5vw,32px) 60px">${content}</div>
     <nav class="sb-tabbar" aria-label="Primary">
-      ${[['home','Home','home','home'],['coach','Practice','pencil','practice'],['explore','Library','compass','explore'],['games','Arcade','joystick','arcade'],['progress','Progress','chart','progress']].map(([k,l,ic,art])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='coach'&&(S.nav==='train'||S.nav==='levelup'||S.nav==='quest'||S.nav==='trail')));
+      ${[['home','Home','home','home'],['trail','Journey','steps','explore'],['coach','Practice','pencil','practice'],['games','Play','joystick','arcade']].map(([k,l,ic,art])=>{ const on=(k==='trail')?(S.nav==='trail'||!!EXPLORE_NAVS[S.nav]):(S.nav===k||(k==='coach'&&(S.nav==='train'||S.nav==='levelup'||S.nav==='quest')));
         const gl=(window.SB_ICON_ART && SB_ICON_ART[art])?`<span style="display:inline-flex;line-height:0;width:24px;height:24px;${on?'':'filter:grayscale(.35) opacity(.8)'}">${SB_ICON_ART(art,{size:24})}</span>`:iconSVG(ic,21);
         return `<button data-act="setNav" data-arg="${k}" aria-current="${on?'page':'false'}" style="${on?'color:var(--accent)':'color:var(--muted)'}">${gl}<span>${l}</span></button>`; }).join('')}
     </nav>
@@ -3799,9 +3829,7 @@ function viewHome(){
       const tr=c.trail||{}; return { done:Object.keys(tr.done||{}).length, total:(T.honey.units||[]).length, lap:tr.lap||1 }; }
     catch(e){ return {done:0,total:0,lap:1}; } })();
   const journeys=[
-    {goAct:'openTrail', ic:'steps', sc:'trail', c1:'#F0A93C',c2:'#C8791B',accent:'#F0A93C', title:'The Word Atlas', desc:atlas.done?('Tier '+atlas.lap+' of 3 — nine acts, then the Advanced Rounds. Concepts first; the words follow.'):'One guided journey through nine worlds — learn the idea, meet the words, clear the quiz gate.', pct:Math.round((atlas.total?atlas.done/atlas.total:0)*100)+'%', badge:atlas.total?(atlas.done+'/'+atlas.total+' stops'):'Start at the Meadow', kind:'go'},
     {goAct:'openCoach', ic:'pencil', sc:'coach', c1:'#7C5CFF',c2:'#5A37D6',accent:'#7C5CFF', title:"Practice", desc:qp?('Your path: '+qpLabel+' — climb its Levels with Revise & Practice. Switch paths any time.'):'Drill your words — the Bizzing Bee ladder, a theme, or your own list.', pct:Math.min(100,Math.round(aLvlNew/20*100))+'%', badge:qp?('Level '+aLvlNew+' · '+qpLabel):'Choose your path', kind:'go'},
-    {goAct:'setNav', goArg:'concepts', ic:'grid', sc:'concept', c1:'#13A892',c2:'#0E8A78',accent:'#13A892', title:'Concepts', desc:'Every explanation in the app on one shelf — patterns, roots, origins, bee-day craft.', pct:Math.round(cDone/(cTot||1)*100)+'%', badge:cChapDone+'/'+(conceptChapters().length||13)+' shelves', kind:'go'},
     {goAct:'openGames', ic:'joystick', sc:'joystick', festive:true, title:'Arcade', desc:'Spelling Quest, the Saga, Word Quiz & more — earn coins!', pct:Math.min(100,(c.streak||0)*10)+'%', badge:(c.coins||0)+' coins', kind:'go'},
   ].map((j,ji)=>{
     const arg=j.goArg?`data-arg="${j.goArg}"`:'';
