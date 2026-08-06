@@ -104,8 +104,23 @@ const artImg = (src, extra) => `<img src="${src}" style="position:absolute;inset
      slugOf    the file name — book-07.html, or book-similes.html for a companion
      artOf     which art set it wears; the eponym volume was generated as b19
                before it was renumbered to 17, and the art keeps its old prefix. */
+/* Which covers take ink type instead of white, measured from the art itself by
+   voice/pipeline/cover-ink.py. The composition was written for dark saturated
+   illustrations; the advanced volumes are light three-ink drawings now, and a
+   white title over a darkening scrim both greys out the art and disappears. */
+let COVER_INK = {};
+try { COVER_INK = JSON.parse(fs.readFileSync('books/art/cover-ink.json', 'utf8')); } catch (e) {}
 const slugOf = vol => vol.slug || ('book-' + String(vol.n).padStart(2, '0'));
 const artOf = vol => vol.art || ('b' + String(vol.n).padStart(2, '0'));
+const onLight = vol => ((COVER_INK[artOf(vol)] || {}).ink === 'dark');
+/* the four values the cover masthead needs, flipped as one */
+const inkKit = vol => onLight(vol)
+  ? { fg: '#241E33', soft: 'rgba(36,30,51,.78)', shadow: '0 1px 3px rgba(255,255,255,.75)',
+      top: 'linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,.18) 60%,rgba(255,255,255,0))',
+      foot: 'linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,.78))' }
+  : { fg: '#fff', soft: 'rgba(255,255,255,.92)', shadow: '0 2px 8px rgba(0,0,0,.6)',
+      top: 'linear-gradient(180deg,rgba(12,9,28,.52),rgba(12,9,28,.16) 62%,rgba(12,9,28,0))',
+      foot: 'linear-gradient(180deg,rgba(12,9,28,0),rgba(12,9,28,.78))' };
 const REG = vol => vol.ultra ? 4 : vol.band === 'advanced' || vol.companion ? 3 : vol.n <= 4 ? 1 : 2;
 
 /* The app's avatar cards: real titles, lore, powers and facts — the cast's voices. */
@@ -395,6 +410,7 @@ function css(vol) {
     -webkit-text-stroke:2.6pt var(--accent-deep);paint-order:stroke fill;
     text-shadow:0 5px 0 rgba(20,12,40,.45),0 12px 28px rgba(0,0,0,.4)}
   .coverTitle .ln2{display:block;color:#FFE9AE}
+  .page[data-cover] .coverTitle{color:inherit}
   /* travelling world scenery: bleeds off both page edges and dissolves upward into
      the paper, so it reads as part of the page rather than a pasted-in picture */
   .worldband{position:absolute;left:0;right:0;bottom:0;height:2.2in;overflow:hidden;pointer-events:none}
@@ -988,7 +1004,8 @@ function cover(vol, nCh, nWords, label, cast) {
   const reg = REG(vol);
   const crew = [vol.av].concat((cast || []).slice(0, 3).map(a => a.id));
   const coverArt = artAt(`${artOf(vol)}-cover`);
-  return `<div class="page" data-cover data-vol="${vol.n}" style="color:#fff;padding:0;background:#241E33">
+  const K = inkKit(vol);
+  return `<div class="page" data-cover data-vol="${vol.n}" style="color:${K.fg};padding:0;background:${onLight(vol) ? '#F6F3EC' : '#241E33'}">
     ${coverArt ? artImg(coverArt) : `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">
       ${ANIME.ensemble({ W, H, world: vol.world, reg, seed: vol.n * 977, uid: 'cov' + vol.n,
         hero: HERO, crew, title: vol.title, vex: vol.band === 'advanced',
@@ -998,15 +1015,18 @@ function cover(vol, nCh, nWords, label, cast) {
          then the title. The old cover put the series name top-left, the volume in a
          top-right pill and the title floating at a jaunty angle, which read as three
          unrelated labels rather than one book. -->
+    <span style="position:absolute;left:0;right:0;top:0;height:46%;background:${K.top}"></span>
     <div style="position:absolute;top:.46in;left:.4in;right:.4in;text-align:center">
       <div style="display:flex;align-items:center;justify-content:center;gap:.11in">
         ${bizzyMark('.34in')}
-        <span class="disp" style="font-size:19pt;letter-spacing:.01em;text-shadow:0 2px 9px rgba(0,0,0,.6)">The Bizzing Bee</span>
+        <span class="disp" style="font-size:19pt;letter-spacing:.01em;text-shadow:${K.shadow}">The Bizzing Bee</span>
       </div>
-      <div style="font-family:'BB Kicker';letter-spacing:.2em;font-size:10.5pt;margin-top:.06in;opacity:.92;text-shadow:0 2px 6px rgba(0,0,0,.6)">${esc(label)}${vol.companion ? '' : ' &middot; BOOK ' + vol.n}</div>
-      <h1 class="coverTitle" style="font-size:54pt;line-height:.96;margin-top:.2in">${esc(vol.title)}</h1>
-      <p style="font-family:'BB Kicker';font-size:14pt;max-width:5.8in;margin:.14in auto 0;text-shadow:0 2px 10px rgba(0,0,0,.65)">${esc(vol.tag)}</p></div>
-    <div style="position:absolute;left:0;right:0;bottom:0;height:1.7in;background:linear-gradient(180deg,rgba(12,9,28,0),rgba(12,9,28,.78))"></div>
+      <div style="font-family:'BB Kicker';letter-spacing:.2em;font-size:10.5pt;margin-top:.06in;color:${K.soft};text-shadow:${K.shadow}">${esc(label)}${vol.companion ? '' : ' &middot; BOOK ' + vol.n}</div>
+      <h1 class="coverTitle" style="font-size:54pt;line-height:.96;margin-top:.2in;color:${K.fg};text-shadow:${K.shadow}">${esc(vol.title)}</h1>
+      <p style="font-family:'BB Kicker';font-size:14pt;max-width:5.8in;margin:.14in auto 0;color:${K.soft};${onLight(vol)
+        ? 'background:rgba(255,255,255,.76);border-radius:.09in;padding:.05in .14in;display:inline-block'
+        : 'text-shadow:' + K.shadow}">${esc(vol.tag)}</p></div>
+    <div style="position:absolute;left:0;right:0;bottom:0;height:1.7in;background:${K.foot}"></div>
     <!-- The three facts are the only thing at the foot now, centred and big enough
          to read across a room. The cast-and-world line that used to sit beside them
          said nothing a reader could use. -->
@@ -1600,7 +1620,7 @@ const shelfCover = m => {
     fmt(m.words) + ' words', 'quizzes'];
   return (cov ? `<img src="${cov}" alt="" loading="lazy">`
     : `<span class="bk-fallback" style="background:linear-gradient(160deg,${m.vol.a},${m.vol.d})"><svg viewBox="0 0 120 120">${AV[m.vol.av] || ''}</svg></span>`)
-  + `<span class="bkc">
+  + `<span class="bkc${onLight(m.vol) ? ' on-light' : ''}">
       <span class="bkc-top"></span>
       <span class="mast">${bee ? `<img src="${bee}" alt="">` : ''}<i>The Bizzing Bee</i></span>
       <span class="kick2">${label}${m.vol.companion ? '' : ' &middot; BOOK ' + m.vol.n}</span>
@@ -1670,6 +1690,15 @@ p.lead{color:#59527a;max-width:62ch;margin:0 auto;font-size:15.5px;line-height:1
   text-shadow:0 1px 6px rgba(0,0,0,.82)}
 .bkc .scrim{position:absolute;left:0;right:0;bottom:0;height:36%;z-index:0;
   background:linear-gradient(180deg,rgba(12,9,28,0),rgba(12,9,28,.86))}
+/* A light cover takes ink type and a white veil. White type over a darkening
+   scrim both greys out a pale three-ink drawing and disappears into it. */
+.bkc.on-light{color:#241E33}
+.bkc.on-light .mast i,.bkc.on-light .bkt{text-shadow:0 1px 3px rgba(255,255,255,.8)}
+.bkc.on-light .kick2{color:rgba(36,30,51,.82);text-shadow:0 1px 3px rgba(255,255,255,.85)}
+.bkc.on-light .sub{color:rgba(36,30,51,.92);text-shadow:none;background:rgba(255,255,255,.74);
+  border-radius:2.4cqw;padding:1.2cqw 2.4cqw;backdrop-filter:blur(2px)}
+.bkc.on-light .bkc-top{background:linear-gradient(180deg,rgba(255,255,255,.74),rgba(255,255,255,.2) 60%,rgba(255,255,255,0))}
+.bkc.on-light .scrim{background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,.82))}
 .bkc .pills{position:absolute;left:3.5cqw;right:3.5cqw;bottom:5cqw;display:flex;justify-content:center;
   gap:1.8cqw;flex-wrap:wrap}
 .bkc .pill{font-family:'Baloo 2';font-weight:800;font-style:normal;font-size:3.3cqw;
