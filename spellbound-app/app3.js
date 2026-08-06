@@ -6560,9 +6560,11 @@ function viewSettings(){
         <div style="font-family:var(--display);font-weight:800;font-size:15px">Advanced Pack</div>
         <div style="font-size:12.5px;color:var(--muted);line-height:1.45">${_advOn?'On — the 128,000-word library, mock bees, advanced concepts, tips and games are live across the app.':'Off — $'+((window.ADV&&ADV.price)?ADV.price():49)+'/yr adds national-bee prep. Turn on to preview it.'}</div>
       </div>
-      <button data-act="toggleAdvPack" role="switch" aria-checked="${_advOn?'true':'false'}" style="flex-shrink:0;width:52px;height:30px;border-radius:999px;background:${_advOn?'var(--accent)':'var(--line)'};position:relative;transition:background .2s">
-        <span style="position:absolute;top:3px;left:${_advOn?'25px':'3px'};width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.24);transition:left .2s"></span></button>
-    </div></div>`;
+      ${S.devUnlock
+        ? `<button data-act="toggleDevUnlock" title="Testing unlock is forcing this on" style="flex-shrink:0;padding:9px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:12.5px;white-space:nowrap">Testing unlock is on →</button>`
+        : `<button data-act="toggleAdvPack" role="switch" aria-checked="${_advOn?'true':'false'}" style="flex-shrink:0;width:52px;height:30px;border-radius:999px;background:${_advOn?'var(--accent)':'var(--line)'};position:relative;transition:background .2s">
+        <span style="position:absolute;top:3px;left:${_advOn?'25px':'3px'};width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.24);transition:left .2s"></span></button>`}
+    </div>${S.devUnlock?`<div style="margin-top:10px;padding:9px 12px;border-radius:10px;background:var(--surface2);font-size:12.5px;line-height:1.45;color:var(--muted)"><b style="color:var(--text)">Testing unlock is on</b>, so every gate in the app reads as open and this switch cannot change anything. Turn it off in <b style="color:var(--text)">Testing tools</b> below to control the pack — or to see the app the way a family sees it.</div>`:''}</div>`;
   /* Settings is grouped, not stacked: four headed sections and one collapsed testing
      drawer, so a parent finds the thing they came for instead of scrolling twelve
      look-alike cards. Worlds moved to My Hive — a world is something you own. */
@@ -8020,6 +8022,9 @@ function tierEntRows(t){ const e=t.ent; const yes='✓', no='—';
   const rows=[wc, (e.lists?yes:no)+' Word lists', (e.concepts?yes:no)+' Concepts', (e.trainTools?yes:no)+' Train tools (idioms, typing, vocab, quotes)', (e.games==='all'?'All games':'Basic games'), worlds, packs, (e.saga?yes:no)+' Bizzy & the Great Unspelling', (e.startCoins?('🪙 '+fmtN(e.startCoins)+' start coins'):'')];
   return rows.filter(Boolean).map(r=>`<div style="font-size:12.5px;color:var(--text);padding:3px 0;line-height:1.4">${r.charAt(0)==='—'?'<span style="color:var(--muted)">'+esc(r)+'</span>':esc(r)}</div>`).join(''); }
 function viewTiersSheet(){ const S=state; const cur=(window.SB_ENT?SB_ENT.tierId():'free'); const up=S.tierUpsell;
+  /* Testing unlock overrides every entitlement, so a plan change here looks like it did
+     nothing. Say it plainly rather than letting the sheet lie. */
+  const devNote=S.devUnlock?`<div style="margin:0 0 14px;padding:11px 14px;border-radius:12px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-size:13px;line-height:1.5;font-weight:650"><b>Testing unlock is on.</b> Every plan's features are open regardless of what you pick here — switch it off in Settings → Testing tools to see a plan as a family sees it.</div>`:'';
   const col=(id)=>{ const t=SB_TIERS[id]; const isCur=id===cur; const accent=id==='regional'?'#7C5CFF':id==='beginner'?'#E0922E':'#2FA35C';
     const price=t.priceMo?('$'+t.priceMo.toFixed(2)+'/mo · $'+t.priceYr+'/yr'):'Free';
     return `<div style="flex:1;min-width:210px;background:var(--paper,var(--bg2));border:2px solid ${isCur?accent:'var(--line)'};border-radius:16px;padding:16px 15px;display:flex;flex-direction:column;position:relative">
@@ -8034,7 +8039,7 @@ function viewTiersSheet(){ const S=state; const cur=(window.SB_ENT?SB_ENT.tierId
   return `<div style="position:fixed;inset:0;z-index:135;display:grid;place-items:center;padding:18px;background:rgba(20,12,4,.55);overflow:auto" data-act="closeTiers">
     <div data-act="noop" style="background:var(--bg1,#f6f2ff);border-radius:22px;max-width:820px;width:100%;padding:22px;box-shadow:0 24px 70px rgba(20,10,30,.5);animation:sb-pop .3s ease both;max-height:92vh;overflow:auto">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px"><span style="font-family:var(--display);font-weight:800;font-size:20px">Choose your plan</span><button data-act="closeTiers" style="margin-left:auto;width:34px;height:34px;border-radius:10px;background:var(--surface2);color:var(--muted);font-weight:800">✕</button></div>
-      ${up?`<div style="font-size:13px;color:var(--accent);font-weight:700;margin-bottom:12px">🔒 ${esc(up.label)} is part of the ${esc((SB_TIERS[up.need]||{}).name||'a higher')} plan — upgrade to unlock it.</div>`:`<div style="font-size:12.5px;color:var(--muted);margin-bottom:12px">Prices in USD. Regional pricing applies at checkout (Phase 2). Change or cancel anytime.</div>`}
+      ${devNote}${up?`<div style="font-size:13px;color:var(--accent);font-weight:700;margin-bottom:12px">🔒 ${esc(up.label)} is part of the ${esc((SB_TIERS[up.need]||{}).name||'a higher')} plan — upgrade to unlock it.</div>`:`<div style="font-size:12.5px;color:var(--muted);margin-bottom:12px">Prices in USD. Regional pricing applies at checkout (Phase 2). Change or cancel anytime.</div>`}
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px">${['free','beginner','regional'].map(col).join('')}</div>
       <div style="background:var(--surface2);border:1px dashed var(--line);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
         <span style="width:40px;height:40px;flex-shrink:0;border-radius:11px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG('spark',22)}</span>
