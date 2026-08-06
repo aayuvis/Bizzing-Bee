@@ -1795,7 +1795,7 @@ const app = {
   wearAcc:(k)=>{ const c=active(); c.accOn=(c.accOn===k?null:k); save(); render(); },
 
   toggleSound:()=>{ set({sound:!state.sound}); if(state.sound) sfx('coin'); },
-  toggleFocus:()=>{ try{ if(window.SB_W4_FOCUS){ const on=SB_W4_FOCUS.toggle(); flash(on?'Focus on — music off, world held still':'Focus off — the world wakes up'); } }catch(e){} render(); },
+  toggleFocus:()=>{ clearTimeout(app._modeT); try{ if(window.SB_W4_FOCUS){ const on=SB_W4_FOCUS.toggle(); flash(on?'Focus on — music off, world held still':'Focus off — the world wakes up'); } }catch(e){} render(); },
   devTap:()=>{ state._devTaps=(state._devTaps||0)+1;
     if(state._devTaps>=7){ state._devTaps=0; state.devReveal=!state.devReveal; flash(state.devReveal?'🛠 Testing tools revealed':'🛠 Testing tools hidden'); render(); } },
   toggleDevUnlock:()=>{ pinGate(()=>{
@@ -2113,7 +2113,9 @@ const app = {
   celebrateClose:()=>set({celebrate:null}),
   setAgeMode:(m)=>{ const c=active(); c.ageMode=m; save(); render(); },
   setLight:()=>app.setMode('light'), setWhite:()=>app.setMode('white'), setDusk:()=>app.setMode('dusk'),
-  cycleMode:()=>{ const o=['light','white','dusk']; app.setMode(o[(o.indexOf(state.mode)+1)%3]); },
+  /* A tap cycles the look; a double-tap is focus. The cycle waits a beat so the two
+     gestures cannot both fire off one double-tap. */
+  cycleMode:()=>{ clearTimeout(app._modeT); app._modeT=setTimeout(()=>{ const o=['light','white','dusk']; app.setMode(o[(o.indexOf(state.mode)+1)%3]); },230); },
   profName:(v)=>{ const c=active(); c.name=(v||'').slice(0,24); save(); }, /* no per-key render (input keeps its own value) */
   profAge:(v)=>{ const c=active(); const n=parseInt(v,10); if(n>=5&&n<=18){ c.age=n; save(); render(); } },
   profGoal:(v)=>{ const c=active(); c.goal=+v||10; save(); render(); flash('Daily goal set to '+c.goal+' words'); },
@@ -3536,7 +3538,7 @@ function viewApp(){
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
     const art=NAV_ART[key];
     const glyph=(window.SB_ICON_ART && art && SB_ICON_ART[art]) ? `<span style="display:inline-flex;line-height:0;width:22px;height:22px;${on?'filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))':''}">${SB_ICON_ART(art,{size:22})}</span>` : (key==='explore'?(window.SB_ICON?SB_ICON('compass',{size:17}):iconSVG('grid',17)):iconSVG(ic,17));
-    return `<button data-act="setNav" data-arg="${key}" style="display:inline-flex;align-items:center;gap:8px;white-space:nowrap;padding:10px 18px;border-radius:var(--r-pill,999px);font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.01em;${on?'background:var(--action,var(--accent));color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">${glyph} ${label}</button>`;
+    return `<button data-act="setNav" data-arg="${key}" style="flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;padding:10px 12px;border-radius:var(--r-pill,999px);font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.01em;${on?'background:var(--action,var(--accent));color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">${glyph} ${label}</button>`;
   }).join('');
   let content='';
   if(S.nav==='home') content=viewHome();
@@ -3649,25 +3651,31 @@ function viewApp(){
             <span class="sb-band-lbl" style="white-space:nowrap;position:relative">${bb.calibrating?'Find your level':('Word difficulty '+bb.band)}</span>
             <span class="sb-band-mini" style="display:none;font-weight:900;position:relative">${bb.calibrating?'Band?':bb.band}</span>
           </button>`; })()}
-        <button data-act="openFinder" title="Word Finder — search 129,000 words, hear them, and add them to a list" aria-label="Search words" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:13px">${iconSVG('search',15)}<span class="sb-search-lbl">Search</span></button>${(()=>{ const _xp=getList(active(),activeListKey()).xp||0; const _lf=levelFromXp(_xp);
-          return `<button data-act="openEvo" class="sb-mob-hide" title="Karma — your practice record. One right word = 1 Karma; it grows your evolution and is never spent." style="display:inline-flex;flex-direction:column;align-items:center;gap:0;padding:4px 12px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:900;font-size:13px;line-height:1.1">
-          <span>✦ ${fmtN(_xp)}</span>
-          <span style="font-size:9.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;opacity:.72">Karma L${_lf.level}</span>
-        </button>`; })()}<button data-act="openShop" title="Your coins — tap to open the Store" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(active().coins||0,14)}</button>
+        <button data-act="openFinder" title="Word Finder — search 129,000 words, hear them, and add them to a list" aria-label="Search words" style="display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:13px;flex-shrink:0">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2 21 21"/></svg><span class="sb-search-lbl">Search</span></button>
+        ${(()=>{ /* Rank rides in the header beside Search: one ladder, one place, always
+            the same name and emblem whatever world is on. */
+          const r=rankOf(active());
+          return `<button data-act="setNav" data-arg="evolution" class="sb-mob-hide" title="Your rank — ${escA(r.name)} · effort, never falls" aria-label="Rank ${r.level}, ${escA(r.name)}" style="display:inline-flex;align-items:center;gap:7px;padding:4px 13px 4px 5px;border-radius:999px;background:var(--chip);border:1px solid color-mix(in srgb,var(--accent) 26%,var(--line));color:var(--accent);font-weight:800;font-size:13px;flex-shrink:0">
+            <span style="width:24px;height:26px;display:block;flex-shrink:0">${rankArt(r.form)}</span>
+            <span style="white-space:nowrap">Level ${r.level} · ${esc(r.name)}</span></button>`; })()}
+        ${(()=>{ const _xp=getList(active(),activeListKey()).xp||0;
+          return `<button data-act="openEvo" class="sb-mob-hide" title="Karma — your practice record. One right word = 1 Karma; it feeds your rank and is never spent." aria-label="Karma ${fmtN(_xp)}" style="display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:900;font-size:13px;flex-shrink:0">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" stroke="none"><path d="M12 2.4l2.1 6.1 6.4.3-5 4 1.8 6.2-5.3-3.7-5.3 3.7L8.5 12.8l-5-4 6.4-.3z"/></svg>${fmtN(_xp)}</button>`; })()}
+        <button data-act="openShop" title="Your coins — tap to open the Store" aria-label="Coins" style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12);flex-shrink:0">${coinAmt(active().coins||0,14)}</button>
         ${(()=>{ const _fon=!!(window.SB_W4_FOCUS&&SB_W4_FOCUS.on());
-          // a drawn reticle, not an emoji: emoji glyphs go monochrome-or-missing on some
-          // platforms in dark mode, but currentColor SVG shows everywhere
-          return `<button data-act="toggleFocus" aria-label="Focus mode: music off, still background" title="Focus — switches off the music and holds the world still" style="width:38px;height:38px;border-radius:10px;background:${_fon?'var(--chip)':'var(--surface2)'};display:grid;place-items:center;color:${_fon?'var(--accent)':'var(--muted)'}">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="${_fon?'2.4':'1'}" fill="currentColor" stroke="none"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
-          </button>`; })()}
-        <button data-act="cycleMode" aria-label="Switch look (Light / White / Dusk)" title="Light / White / Dusk" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text)" class="sb-mob-hide">${(()=>{
-          if(S.mode==='light') return `<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.4" fill="currentColor" stroke="none"/><path d="M12 2.6v2.3M12 19.1v2.3M2.6 12h2.3M19.1 12h2.3M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/></svg>`;
-          if(S.mode==='white') return `<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/></svg>`;
-          return `<svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" stroke="none"><path d="M20.4 14.6A8.6 8.6 0 0 1 9.4 3.6a8.6 8.6 0 1 0 11 11z"/></svg>`; })()}</button>
-        <button data-act="setNav" data-arg="collection" aria-label="Your hive — collection, evolution and store" title="Your hive — collection, evolution, store" style="width:38px;height:38px;border-radius:50%;background:var(--surface2);display:grid;place-items:center;overflow:hidden;border:1.5px solid color-mix(in srgb,var(--accent) 34%,var(--line));flex-shrink:0">
-          <span style="width:26px;height:29px;display:block">${mascotSVG('happy')}</span></button>
-        <button data-act="goSettings" aria-label="Settings" title="Settings" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text)">
-          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 12h2M10 12h10M4 17h8M16 17h4"/><circle cx="16" cy="7" r="2.1"/><circle cx="8" cy="12" r="2.1"/><circle cx="14" cy="17" r="2.1"/></svg></button>
+          /* One button for how the app looks: a tap cycles Light → White → Dusk, a
+             double-tap holds the world still (focus) in whichever look you are in. */
+          const glyph = S.mode==='light'
+            ? `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="12" cy="12" r="4.6" fill="currentColor" stroke="none"/><path d="M12 2.7v2.4M12 18.9v2.4M2.7 12h2.4M18.9 12h2.4M5.4 5.4l1.7 1.7M16.9 16.9l1.7 1.7M18.6 5.4l-1.7 1.7M7.1 16.9l-1.7 1.7"/></svg>`
+            : S.mode==='white'
+            ? `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"><rect x="4.2" y="4.2" width="15.6" height="15.6" rx="4"/><path d="M12 4.2v15.6" opacity=".45"/></svg>`
+            : `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="none"><path d="M20.6 14.8A8.8 8.8 0 0 1 9.2 3.4 8.8 8.8 0 1 0 20.6 14.8z"/><circle cx="17.4" cy="5.6" r="1.1" opacity=".8"/></svg>`;
+          return `<button data-act="cycleMode" data-dbl="toggleFocus" class="sb-hdr-ico${_fon?' on':''}" aria-label="Appearance: light, white or dusk. Double-tap for focus." title="Tap: Light / White / Dusk${_fon?' · focus is ON':''} — double-tap for focus">${glyph}</button>`; })()}
+        <button data-act="setNav" data-arg="collection" class="sb-hdr-ico round" aria-label="Your hive — collection, evolution and store" title="Your hive — collection, evolution, store">
+          <span style="width:27px;height:30px;display:block">${mascotSVG('happy')}</span></button>
+        <button data-act="goSettings" class="sb-hdr-ico" aria-label="Settings" title="Settings">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M4 7.5h9M17.5 7.5H20M4 12h3.5M12 12h8M4 16.5h7.5M16 16.5H20"/><circle cx="15" cy="7.5" r="2.2"/><circle cx="9.5" cy="12" r="2.2"/><circle cx="13.5" cy="16.5" r="2.2"/></svg></button>
       </div>
       <div class="sb-topnav" style="max-width:1080px;margin:0 auto;padding:0 clamp(14px,3.5vw,32px) 9px;display:flex;gap:6px;overflow-x:auto">${navTabs}</div>
     </div>
@@ -3902,18 +3910,16 @@ function viewHome(){
         <div style="min-width:0;flex:1">
           <div class="sb-cs">${greeting}</div>
           <div style="font-family:var(--display);font-weight:800;font-size:21px;line-height:1.1;margin-bottom:6px">${esc(c.name)}</div>
-          ${(()=>{ const hasCard=c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar]&&typeof SB_AV_CARD==='function';
-            const d=hasCard?SB_AV_CARD(c.avatar):null;
-            return d?`<div style="position:relative;background:var(--surface2,#f3eee3);border-radius:12px;border-bottom-left-radius:4px;padding:6px 10px;font:italic 600 11px/1.35 var(--body,sans-serif);color:var(--ink,var(--text))">“${esc(trunc((d.greeting||'').replace(/\{name\}/g, (c.name||'friend')),96))}”</div>`:'';
+          ${(()=>{ /* Your buddy says hello, whoever your buddy is — Bizzy included. The
+              line comes from SB_AV_GREETINGS, with the avatar card as a second source. */
+            let line=''; const who=c.avatar||'bizzy';
+            try{ const G=window.SB_AV_GREETINGS||{}; line=G[who]||''; }catch(e){}
+            if(!line){ try{ if(typeof SB_AV_CARD==='function'){ const d=SB_AV_CARD(who); line=(d&&d.greeting)||''; } }catch(e){} }
+            if(!line) line="Buzz buzz, {name}! Let's spell the meadow back to bloom!";
+            line=String(line).replace(/\{name\}/g,(c.name||'friend'));
+            return `<div style="position:relative;background:var(--surface2,#f3eee3);border-radius:12px;border-bottom-left-radius:4px;padding:8px 11px;font:italic 600 12.5px/1.4 var(--body,sans-serif);color:var(--ink,var(--text))">“${esc(trunc(line,104))}”</div>`;
           })()}
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
-            ${(()=>{ /* Rank rides in the greeting rather than owning a tile of its own —
-                it is who you are, not a fifth thing to read. Emblem, number and name all
-                come from heroLevel, in whichever world the speller is wearing. */
-              const r=rankOf(c);
-              return `<button data-act="setNav" data-arg="evolution" title="Your rank — evolution, collection and store" style="display:inline-flex;align-items:center;gap:7px;padding:4px 12px 4px 5px;border-radius:var(--r-pill,999px);background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">
-                <span style="width:24px;height:26px;display:block;flex-shrink:0">${rankArt(r.form)}</span>
-                Level ${r.level} · ${esc(r.name)}</button>`; })()}
             ${(c.streak||0)>0?`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">${iconSVG('flame',14)} ${c.streak}-day streak</span>`:''}
             ${(()=>{ const ms=milestone(); return (ms&&ms.days>=0)?`<button data-act="setNav" data-arg="progress" style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">🐝 ${ms.days} days to ${esc(trunc(ms.label,18))}</button>`:''; })()}
           </div>
@@ -8080,6 +8086,8 @@ function render(){
 }
 function callAct(act, arg, ev){ const fn=app[act]; if(typeof fn==='function') fn(arg, ev); }
 root.addEventListener('click', e=>{ const el=e.target.closest('[data-act]'); if(!el) return; callAct(el.getAttribute('data-act'), el.getAttribute('data-arg')); });
+root.addEventListener('dblclick', e=>{ const el=e.target.closest('[data-dbl]'); if(!el) return;
+  e.preventDefault(); callAct(el.getAttribute('data-dbl'), el.getAttribute('data-arg')); });
 root.addEventListener('input', e=>{ const el=e.target.closest('[data-inp]'); if(!el) return; callAct(el.getAttribute('data-inp'), el.value); });
 root.addEventListener('change', e=>{ const el=e.target.closest('[data-chg]'); if(!el) return; callAct(el.getAttribute('data-chg'), el.value); });
 root.addEventListener('keydown', e=>{ const el=e.target.closest('[data-key]'); if(!el) return; const fn=app[el.getAttribute('data-key')]; if(fn) fn(e); });

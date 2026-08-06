@@ -123,10 +123,16 @@ handlers. App lives in this folder; open `index.html` to run.
   which is the point — the two notations on a card must agree with each other).
 
 ## The Word Map (`trail.js` + `trail-data.js`) — the Journey tab
-- **Four tabs: Home · Journey · Practice · Play.** The Library is not a destination — it
-  is the Journey's **index** (`journeySeg()` switches Map/Index, and every explore-family
-  nav lights the Journey tab). Progress and My Hive are not tabs either: the **avatar in
-  the header** opens them. The mobile bar carries the same four.
+- **Five tabs: Home · World Atlas · Practice · Play · Progress**, spread evenly across the
+  bar. The Library is not a destination — it is the Atlas's **library** view
+  (`journeySeg()` switches Map/Library, and every explore-family nav lights the Atlas tab).
+  My Hive is not a tab: the **Bizzy button** in the header opens it. The mobile bar carries
+  the same five.
+- **Header tools are one size, one shape** (`.sb-hdr-ico`): the rank pill (fixed ladder,
+  beside Search), karma, coins, then appearance / hive / settings. The appearance button
+  does double duty — a tap cycles Light → White → Dusk (debounced 230ms), a **double-tap
+  toggles focus** in whichever look is on, so there is no separate focus button. Double-tap
+  actions go through `data-dbl` and the `dblclick` dispatcher.
 - **Three continents, one journey**: Honey (three tiers) → the Expedition → **Ultra
   Champions** (`ultraBoard`, `app-art/atlas-ultra.jpg`, five landmarks). Ultra's word
   list is unchanged and still special-cased in `rawListWords`/`ultraStages`, but it is no
