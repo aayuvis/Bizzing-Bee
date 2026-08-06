@@ -23,6 +23,7 @@ eval(fs.readFileSync('figurative-data.js', 'utf8'));
 eval(fs.readFileSync('sounds-data.js', 'utf8'));
 eval(fs.readFileSync('trail-data.js', 'utf8'));
 eval(fs.readFileSync('books/southasia-chapters.js', 'utf8'));
+eval(fs.readFileSync('books/eponym-chapters.js', 'utf8'));
 eval(fs.readFileSync('books/design-system/bb-anime.js', 'utf8'));
 let ADVS = {};
 try { const src = fs.readFileSync('adv-concepts-data.js', 'utf8'); ADVS = window.SB_ADV_CSCRIPT || {}; } catch (e) {}
@@ -31,6 +32,10 @@ const GEN = SB_CONCEPTS.chapters, ADV = SB_ADV_CONCEPTS.chapters;
    South Asian words in English, with its own storyboard scripts on each chapter. */
 const SA = window.SB_SOUTHASIA || [];
 const SA_SCRIPT = {}; SA.forEach((ch, i) => { if (ch.sc) SA_SCRIPT[String(i)] = ch.sc; });
+/* Volume 19 is authored the same way: the eponyms of English, with every word
+   pulled from the app's eponym-tagged library so no word data is invented. No
+   storyboard scripts yet, so its chapter openers use the drawn montage. */
+const EP = window.SB_EPONYMS || [];
 const CS = window.SB_CSCRIPT || {}, AV = window.SB_AVATAR_ART;
 const QUOTES = window.SB_QUOTES, FIG = window.SB_FIG, IPA = window.SB_IPA || {};
 const ANIME = window.BB_ANIME;
@@ -172,6 +177,10 @@ const AVOLS = [
     chapters: SA },
   { n: 15, seedN: 14, title: 'Far-Flung Words', tag: 'Origins beyond the big four', a: '#0E8A78', d: '#075C50', tex: 'cross', av: 'mic', world: 'strait', band: 'advanced', chapters: ADV.filter(ch => ch.category === 'Origins Beyond the Big Four') },
   { n: 16, seedN: 15, title: 'The Word Factory', tag: 'How English bolts words together', a: '#5B6BA8', d: '#364475', tex: 'stripes', av: 'maestro', world: 'engine', band: 'advanced', chapters: ADV.filter(ch => ch.category === 'How Words Are Built') },
+  { n: 19, seedN: 17, title: 'Named After Someone', tag: 'Every word here was a person first', a: '#C2586B', d: '#8A2F45', tex: 'cross', av: 'goldlegend', world: 'forum', band: 'advanced', authored: true, src: 'EP',
+    cyc: ['forum', 'forum', 'engine', 'forum', 'stage', 'meadow', 'junkyard', 'meadow', 'strait', 'warfield'],
+    cast: ['goldlegend', 'volt', 'phoenix', 'atom'],
+    chapters: EP },
 ];
 const NAMES = { bizzy: 'Bizzy', honeypot: 'Honeypot', waggle: 'Waggle', bumble: 'Bumble', star: 'Star', diva: 'Diva', drone: 'Drone', clover: 'Clover', nectar: 'Nectar', lumen: 'Lumen', jester: 'Jester', queenhive: 'Queen Hive', blossom: 'Blossom', propolis: 'Propolis', mic: 'Mic', maestro: 'Maestro', popcorn: 'Popcorn', melody: 'Melody', naga: 'Naga' };
 /* Inline characters use the app's painted avatar art (avatars/<id>.png) framed in
@@ -1473,7 +1482,10 @@ for (const vol of VOLS) { const chs = GEN.filter(ch => vol.pick(ch)); chs.forEac
 if (GEN.filter(ch => !used.has(ch.title)).length) { console.error('UNASSIGNED GENERAL CHAPTERS'); process.exit(1); }
 const advUsed = new Set();
 for (const vol of AVOLS) {
-  if (vol.authored) { made.push(buildCourse(vol, vol.chapters, SA_SCRIPT, ch => SA.indexOf(ch))); continue; }
+  /* An authored volume indexes into its OWN chapter source, not the advanced
+     course — vol.src names which one, so adding a third is one line. */
+  if (vol.authored) { const src = vol.src === 'EP' ? EP : SA, sc = vol.src === 'EP' ? {} : SA_SCRIPT;
+    made.push(buildCourse(vol, vol.chapters, sc, ch => src.indexOf(ch))); continue; }
   vol.chapters.forEach(ch => advUsed.add(ch.title));
   made.push(buildCourse(vol, vol.chapters, window.SB_ADV_CSCRIPT || {}, ch => ADV.indexOf(ch))); }
 if (advUsed.size !== ADV.length) { console.error('ADV coverage', advUsed.size, '/', ADV.length); process.exit(1); }
@@ -1487,12 +1499,36 @@ for (const m of made) { const html = fs.readFileSync(`books/book-${String(m.vol.
   if (found.length) { lintHits += found.length; console.log(`lint: book-${m.vol.n}:`, [...new Set(found.map(x => x.toLowerCase()))].join(', ')); } }
 console.log('copy-lint total hits (incl. data text):', lintHits);
 
-const cards = made.map(m => { const id = String(m.vol.n).padStart(2, '0');
+/* The shelf used to show the naked cover ILLUSTRATION: no title, no series line,
+   no facts — so eighteen books read as eighteen unrelated pictures, and the one
+   thing a reader picks a book by was missing. It shows the real cover now, the
+   same masthead-kicker-title-tag-pills composition the book's own cover page
+   carries, laid over the same art. Type is sized in cqw against the card, so it
+   holds together at 228px on a phone and at 300px on a desktop. */
+const shelfCover = m => { const id = String(m.vol.n).padStart(2, '0');
   const cov = artAt(`b${id}-cover`);
-  const cover = cov ? `<img src="${cov}" alt="" loading="lazy">`
-    : `<span class="bk-fallback" style="background:linear-gradient(160deg,${m.vol.a},${m.vol.d})"><svg viewBox="0 0 120 120">${AV[m.vol.av] || ''}</svg></span>`;
+  const bee = avaPng(HERO);
+  const label = m.vol.band === 'advanced' ? 'ADVANCED LIBRARY' : 'LIBRARY';
+  const facts = [m.chapters ? m.chapters + ' chapters' : m.pages + ' pages',
+    fmt(m.words) + ' words', 'quizzes'];
+  return (cov ? `<img src="${cov}" alt="" loading="lazy">`
+    : `<span class="bk-fallback" style="background:linear-gradient(160deg,${m.vol.a},${m.vol.d})"><svg viewBox="0 0 120 120">${AV[m.vol.av] || ''}</svg></span>`)
+  + `<span class="bkc">
+      <span class="bkc-top"></span>
+      <span class="mast">${bee ? `<img src="${bee}" alt="">` : ''}<i>The Bizzing Bee</i></span>
+      <span class="kick2">${label} &middot; BOOK ${m.vol.n}</span>
+      <span class="bkt">${esc(m.vol.title)}</span>
+      <span class="sub">${esc(m.vol.tag)}</span>
+      <span class="scrim"></span>
+      <span class="pills">${facts.map(t => `<i class="pill">${t}</i>`).join('')}</span>
+    </span>`; };
+const fmt = n => Number(n || 0).toLocaleString('en-US');
+/* The shelf reads in volume order. The build order does not: the two collections
+   are appended last and Vol. 19 was authored after Vol. 16. */
+made.sort((x, y) => x.vol.n - y.vol.n);
+const cards = made.map(m => { const id = String(m.vol.n).padStart(2, '0');
   return `<a class="bk" href="book-${id}.html" style="--a:${m.vol.a};--d:${m.vol.d}">
-    <span class="bk-cov">${cover}<span class="bk-spine"></span><span class="bk-vol">Vol. ${m.vol.n}</span></span>
+    <span class="bk-cov">${shelfCover(m)}<span class="bk-spine"></span><span class="bk-vol">Vol. ${m.vol.n}</span></span>
     <span class="bk-meta"><b>${esc(m.vol.title)}</b><span class="tag">${esc(m.vol.tag)}</span>
       <span class="foot"><span class="pg">${m.pages} pages</span>
       <span class="pdf" onclick="event.preventDefault();event.stopPropagation();window.location='pdf/book-${id}.pdf'">PDF &darr;</span></span>
@@ -1518,10 +1554,35 @@ p.lead{color:#59527a;max-width:62ch;margin:0 auto;font-size:15.5px;line-height:1
 .bk{display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:transform .22s ease}
 .bk:hover{transform:translateY(-7px)}
 .bk-cov{position:relative;display:block;aspect-ratio:3/4;border-radius:5px 12px 12px 5px;overflow:hidden;background:#241E33;
+  container-type:inline-size;
   box-shadow:0 14px 30px rgba(36,24,80,.28),0 2px 5px rgba(36,24,80,.22),inset 0 0 0 1px rgba(255,255,255,.14)}
-.bk-cov img,.bk-fallback{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:grid;place-items:center}
+/* the ART fills the card; the masthead bee inside .bkc must NOT be caught by this */
+.bk-cov > img,.bk-fallback{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:grid;place-items:center}
 .bk-fallback svg{width:44%;height:44%}
-.bk-spine{position:absolute;left:0;top:0;bottom:0;width:13px;background:linear-gradient(90deg,rgba(0,0,0,.42),rgba(255,255,255,.22) 62%,rgba(0,0,0,.14))}
+.bk-spine{position:absolute;left:0;top:0;bottom:0;width:13px;z-index:3;background:linear-gradient(90deg,rgba(0,0,0,.42),rgba(255,255,255,.22) 62%,rgba(0,0,0,.14))}
+/* the cover text, composed over the art exactly as the book's own cover page does */
+.bkc{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;
+  color:#fff;padding:5.6cqw 5.4cqw 0}
+.bkc .bkc-top{position:absolute;left:0;right:0;top:0;height:46%;
+  background:linear-gradient(180deg,rgba(12,9,28,.52),rgba(12,9,28,.16) 62%,rgba(12,9,28,0))}
+.bkc > *{position:relative;z-index:1}
+.bkc .mast{display:flex;align-items:center;justify-content:center;gap:1.7cqw}
+.bkc .mast i{font-family:'Baloo 2';font-weight:800;font-style:normal;font-size:5.6cqw;letter-spacing:.005em;
+  text-shadow:0 1px 5px rgba(0,0,0,.7)}
+.bkc .mast img{position:static;width:7.4cqw;height:7.4cqw;object-fit:contain;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}
+.bkc .kick2{font-family:'Fredoka';font-size:3.15cqw;letter-spacing:.17em;margin-top:1.1cqw;opacity:.95;
+  text-shadow:0 1px 4px rgba(0,0,0,.8)}
+.bkc .bkt{font-family:'Baloo 2';font-weight:800;font-size:13cqw;line-height:.97;margin-top:3.2cqw;
+  text-shadow:0 2px 10px rgba(0,0,0,.78),0 1px 2px rgba(0,0,0,.6)}
+.bkc .sub{font-family:'Fredoka';font-size:4.1cqw;line-height:1.28;margin-top:2.6cqw;max-width:19ch;
+  text-shadow:0 1px 6px rgba(0,0,0,.82)}
+.bkc .scrim{position:absolute;left:0;right:0;bottom:0;height:36%;z-index:0;
+  background:linear-gradient(180deg,rgba(12,9,28,0),rgba(12,9,28,.86))}
+.bkc .pills{position:absolute;left:3.5cqw;right:3.5cqw;bottom:5cqw;display:flex;justify-content:center;
+  gap:1.8cqw;flex-wrap:wrap}
+.bkc .pill{font-family:'Baloo 2';font-weight:800;font-style:normal;font-size:3.3cqw;
+  background:linear-gradient(160deg,rgba(255,210,77,.96),rgba(240,169,60,.96));color:#3E2708;
+  border-radius:999px;padding:.9cqw 2.5cqw;box-shadow:0 .5cqw 1.6cqw rgba(12,9,28,.45)}
 .bk-vol{position:absolute;top:9px;right:9px;font-family:'Fredoka';font-size:11px;color:#fff;background:rgba(16,10,36,.62);border-radius:999px;padding:3px 10px}
 .bk:hover .bk-cov{box-shadow:0 20px 44px rgba(36,24,80,.36),0 3px 8px rgba(36,24,80,.26),inset 0 0 0 1px rgba(255,255,255,.2)}
 .bk-meta{padding:13px 3px 0;display:flex;flex-direction:column;flex:1}
