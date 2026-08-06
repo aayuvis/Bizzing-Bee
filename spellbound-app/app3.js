@@ -346,7 +346,9 @@ const formIdx = (lvl) => Math.min(9, Math.max(0, Math.ceil((lvl||1)/2)-1));
    one world and Larva in another. */
 const RANK_NAMES = ['Egg','Hatchling','Larva','Grub','Pupa','Cocoon','Worker','Forager','Spellbinder','Queen Bee'];
 const rankName = (i) => RANK_NAMES[Math.max(0,Math.min(9,i|0))];
-const rankOf = (c) => { const lv=heroLevel(c||active()); return { level:lv, form:formIdx(lv), name:rankName(formIdx(lv)) }; };
+const rankXp = (c) => { c=c||active(); let t=0; try{ Object.keys(c.lists||{}).forEach(k=>{ t+=((c.lists[k]&&c.lists[k].xp)||0); }); }catch(e){} return t; };
+const rankOf = (c) => { c=c||active(); const xp=rankXp(c); const lv=levelFromXp(xp).level;
+  return { xp:xp, level:lv, form:formIdx(lv), name:rankName(formIdx(lv)) }; };
 function rankArt(i,size){ try{ return evEmb('spellbound',Math.max(0,Math.min(9,i|0))).replace('width="54" height="58"','width="100%" height="100%"'); }catch(e){ return ''; } }
 const milestone = () => { const c=active(); let m=c.milestone; if((!m||!m.date) && state.coachDate) m={label:(m&&m.label)||'the bee', date:state.coachDate};
   if(!m||!m.date) return null; const d=Math.ceil((new Date(m.date+'T00:00:00') - new Date())/86400000);
@@ -3336,6 +3338,28 @@ function viewIpaTrain(){ const S=state; const it=S.it; const pool=ipaPool();
       <div style="text-align:center;font-size:12px;color:var(--muted);font-weight:600;margin-top:10px">Keys: 1–4 answer · R hear it · Enter next</div>
     </div></div>`; }
 
+/* Six destinations, one drawn set. Duotone on the 24-grid: a soft currentColor wash
+   under bold strokes, so every world tints both layers and the six read as siblings
+   at 22px. Replaces the mixed illustrated/line glyphs the bar used to carry. */
+function navIcon(key,size){ size=size||22;
+  const w=(inner)=>`<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;flex-shrink:0">${inner}</svg>`;
+  const f=(d)=>`<path d="${d}" fill="currentColor" stroke="none" opacity=".17"/>`;
+  const M={
+    /* a hive-roofed home */
+    home:()=>w(f('M12 3.4 20.4 10v10.2H3.6V10z')+'<path d="M3.4 10.4 12 3.4l8.6 7"/><path d="M5.4 10.2V20.4h13.2V10.2"/><path d="M8.6 14.2h6.8M8.6 17.4h6.8"/>'),
+    /* a folded map with a route across it */
+    atlas:()=>w(f('M3.4 6.4 9 4.2l6 2.2 5.6-2.2v13.4L15 19.8l-6-2.2-5.6 2.2z')+'<path d="M3.4 6.4 9 4.2l6 2.2 5.6-2.2v13.4L15 19.8l-6-2.2-5.6 2.2z"/><path d="M9 4.2v13.4M15 6.4v13.4"/><path d="M6.2 14.6c2-2.4 3.4-.6 5-2.6s2.6-4 4.8-4.4" stroke-dasharray="1.6 2.4"/>'),
+    /* a pencil that has just written a line */
+    practice:()=>w(f('M4 20l4.4-1L19.3 8.1a2.1 2.1 0 0 0-3-3L5.4 16z')+'<path d="M4 20l4.4-1L19.3 8.1a2.1 2.1 0 0 0-3-3L5.4 16z"/><path d="M14.3 6.1l3 3"/><path d="M4.4 22h15"/>'),
+    /* three books on a shelf */
+    library:()=>w(f('M4.6 4.6h4v14.8h-4zM10.4 4.6h4v14.8h-4z')+'<rect x="4.6" y="4.6" width="4" height="14.8" rx="1.1"/><rect x="10.4" y="4.6" width="4" height="14.8" rx="1.1"/><path d="M16.6 5.6l3.2.8-3 14.4-3.2-.8z"/><path d="M4.6 9.4h4M10.4 9.4h4"/>'),
+    /* a gamepad */
+    play:()=>w(f('M7.2 7.4h9.6a4.6 4.6 0 0 1 4.6 4.6v.6a4 4 0 0 1-7.1 2.5H9.7A4 4 0 0 1 2.6 12.6V12a4.6 4.6 0 0 1 4.6-4.6z')+'<path d="M7.2 7.4h9.6a4.6 4.6 0 0 1 4.6 4.6v.6a4 4 0 0 1-7.1 2.5H9.7A4 4 0 0 1 2.6 12.6V12a4.6 4.6 0 0 1 4.6-4.6z"/><path d="M6.4 11.6h2.8M7.8 10.2v2.8"/><circle cx="15.4" cy="10.8" r=".9" fill="currentColor" stroke="none"/><circle cx="17.6" cy="12.8" r=".9" fill="currentColor" stroke="none"/>'),
+    /* a climbing chart with the last point lit */
+    progress:()=>w(f('M4.6 19.4h15V21h-15zM6.4 13h2.8v6.4H6.4zM11.2 9.6H14v9.8h-2.8zM16 5.8h2.8v13.6H16z')+'<path d="M4 20.4h16"/><rect x="6.4" y="12.4" width="3" height="8" rx="1.1"/><rect x="11" y="9" width="3" height="11.4" rx="1.1"/><rect x="15.6" y="5.2" width="3" height="15.2" rx="1.1"/><circle cx="17.1" cy="3" r="1.5" fill="currentColor" stroke="none"/>'),
+  };
+  return (M[key]||M.home)();
+}
 function viewExplore(){ const c=active(); ensureLists(c); const S=state;
   /* Seven destinations, each with its own painted header (app-art/lib-*.jpg, made by
      voice/pipeline/atlas-art.py). The Library had gradients and line icons before,
@@ -3369,28 +3393,13 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
       c:'#1C4A96',ic:'volume',cta:'Train'}),
     tile({act:'openTyping',img:'lib-typing',kick:'Speed',title:'Typing Trainer',
       blurb:'Learn to touch-type, then race the sixty-second test.',c:'#2A63D6',ic:'pencil',cta:'Practise'}),
+    tile({act:'openQuotes',img:'lib-quotes',kick:'Voices',title:'Quotes & Poems',
+      blurb:'1,200 lines worth knowing by heart — one lands on your home screen every hour.',
+      c:'#8A5B00',ic:'quote',cta:'Read'}),
   ].join('');
   return `<div style="animation:sb-rise .35s ease both;max-width:1020px;margin:0 auto">
     ${pageHead('The Library','everything the Atlas teaches','Sorted by kind instead of by place — the Atlas is where you are, the Library is everything there is. The drill itself lives in Practice.')}
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(276px,1fr));gap:16px">${tiles}</div>
-    ${(()=>{ /* The shelf items have no painted header of their own, and the tools are a
-        means to an end — both read better as rows than as pretend tiles. */
-      const row=(act,arg,ic,t,d)=>`<button data-act="${act}"${arg?` data-arg="${escA(arg)}"`:''} style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;border-top:1px solid var(--line);background:transparent">
-          <span style="display:inline-flex;flex-shrink:0;color:var(--accent)">${iconSVG(ic,18)}</span>
-          <span style="min-width:0;flex:1"><span style="display:block;font-weight:800;font-size:14.5px;line-height:1.2">${esc(t)}</span>
-            <span style="display:block;font-size:12.5px;color:var(--muted);line-height:1.4;margin-top:2px">${esc(d)}</span></span>
-          <span class="sb-cl">Open →</span></button>`;
-      const block=(title,rows)=>`<div class="sb-card" style="padding:4px 0;margin-top:16px">
-          <div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:800;padding:12px 14px 4px">${title}</div>${rows}</div>`;
-      return block('Also on the shelf',
-          row('setNav','journeys','book','Word Journeys','curated routes through one idea')
-        + row('openQuotes','','quote','Quotes &amp; poems','1,200 quotations — also on your home screen')
-        + row('openAdvTips','','bulb','Champion tips','the technique deck from the Advanced Pack'))
-      + block('Tools',
-          row('openFinder','','search','Word finder','look up any of 129,000 words, hear it, list it')
-        + row('openBuilder','','pencil','List builder','make a pile — it opens in Practice')
-        + row('startLevelTest','','target','Placement test','sets your word difficulty in one 3-minute run'));
-    })()}
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:14px">${tiles}</div>
   </div>`; }
 /* Advanced Mode entry — a gated hero banner. Unlocks at Level 12, Bee Band 7, or by paying. */
 function advBanner(c){
@@ -3526,11 +3535,10 @@ function viewApp(){
   /* Four tabs. The Library is not a destination any more — it is the Journey's
      index, so every explore-family nav lights the Journey tab. Progress and My Hive
      are not tabs either: they are you, and you are the avatar in the header. */
-  const navTabs=[['home','Home','home'],['trail','World Atlas','steps'],['explore','Library','compass'],['coach','Practice','pencil'],['games','Play','joystick'],['progress','Progress','chart']].map(([key,label,ic])=>{
+  const navTabs=[['home','Home','home'],['trail','World Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play'],['progress','Progress','progress']].map(([key,label,ic])=>{
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:key==='coach'?(S.nav==='coach'||S.nav==='train'||S.nav==='levelup'||S.nav==='quest'):S.nav===key;
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
-    const art=NAV_ART[key];
-    const glyph=(window.SB_ICON_ART && art && SB_ICON_ART[art]) ? `<span style="display:inline-flex;line-height:0;width:22px;height:22px;${on?'filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))':''}">${SB_ICON_ART(art,{size:22})}</span>` : (key==='explore'?(window.SB_ICON?SB_ICON('compass',{size:17}):iconSVG('grid',17)):iconSVG(ic,17));
+    const glyph=`<span style="display:inline-flex;line-height:0">${navIcon(ic,21)}</span>`;
     return `<button data-act="setNav" data-arg="${key}" style="flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;padding:10px 12px;border-radius:var(--r-pill,999px);font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.01em;${on?'background:var(--action,var(--accent));color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">${glyph} ${label}</button>`;
   }).join('');
   let content='';
@@ -3652,9 +3660,6 @@ function viewApp(){
           return `<button data-act="setNav" data-arg="evolution" class="sb-mob-hide" title="Your rank — ${escA(r.name)} · effort, never falls" aria-label="Rank ${r.level}, ${escA(r.name)}" style="display:inline-flex;align-items:center;gap:7px;padding:4px 13px 4px 5px;border-radius:999px;background:var(--chip);border:1px solid color-mix(in srgb,var(--accent) 26%,var(--line));color:var(--accent);font-weight:800;font-size:13px;flex-shrink:0">
             <span style="width:24px;height:26px;display:block;flex-shrink:0">${rankArt(r.form)}</span>
             <span style="white-space:nowrap">Level ${r.level} · ${esc(r.name)}</span></button>`; })()}
-        ${(()=>{ const _xp=getList(active(),activeListKey()).xp||0;
-          return `<button data-act="openEvo" class="sb-mob-hide" title="Karma — your practice record. One right word = 1 Karma; it feeds your rank and is never spent." aria-label="Karma ${fmtN(_xp)}" style="display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:900;font-size:13px;flex-shrink:0">
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" stroke="none"><path d="M12 2.4l2.1 6.1 6.4.3-5 4 1.8 6.2-5.3-3.7-5.3 3.7L8.5 12.8l-5-4 6.4-.3z"/></svg>${fmtN(_xp)}</button>`; })()}
         <button data-act="openShop" title="Your coins — tap to open the Store" aria-label="Coins" style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12);flex-shrink:0">${coinAmt(active().coins||0,14)}</button>
         ${(()=>{ const _fon=!!(window.SB_W4_FOCUS&&SB_W4_FOCUS.on());
           /* One button for how the app looks: a tap cycles Light → White → Dusk, a
@@ -3675,8 +3680,8 @@ function viewApp(){
     ${viewDrawer()}
     <div class="sb-content" style="max-width:1080px;margin:0 auto;width:100%;padding:18px clamp(14px,3.5vw,32px) 60px">${content}</div>
     <nav class="sb-tabbar" aria-label="Primary">
-      ${[['home','Home','home','home'],['trail','Atlas','steps','progress'],['explore','Library','compass','explore'],['coach','Practice','pencil','practice'],['games','Play','joystick','arcade'],['progress','Stats','chart','progress']].map(([k,l,ic,art])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='coach'&&(S.nav==='train'||S.nav==='levelup'||S.nav==='quest')));
-        const gl=(window.SB_ICON_ART && SB_ICON_ART[art])?`<span style="display:inline-flex;line-height:0;width:24px;height:24px;${on?'':'filter:grayscale(.35) opacity(.8)'}">${SB_ICON_ART(art,{size:24})}</span>`:iconSVG(ic,21);
+      ${[['home','Home','home'],['trail','Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play'],['progress','Stats','progress']].map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='coach'&&(S.nav==='train'||S.nav==='levelup'||S.nav==='quest')));
+        const gl=`<span style="display:inline-flex;line-height:0">${navIcon(ic,23)}</span>`;
         return `<button data-act="setNav" data-arg="${k}" aria-current="${on?'page':'false'}" style="${on?'color:var(--accent)':'color:var(--muted)'}">${gl}<span>${l}</span></button>`; }).join('')}
     </nav>
   </div>`;
@@ -4450,23 +4455,28 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
   </div>`; }
 /* ---- Evolution ladder as its own screen (Home shows only the compact card) ---- */
 function viewEvolution(){ const S=state; const c=active(); ensureLists(c); const theme=S.theme; const evo=EVO[theme]||EVO.spellbound;
-  const aKey=activeListKey(); const fIdx=formIdx(heroLevel(c));
-  const lp=getList(c,aKey); const totalXp=lp.xp||0;
+  const aKey=activeListKey(); const _r=rankOf(c); const fIdx=_r.form; const totalXp=_r.xp;
   // Karma needed to REACH each rung (stage i needs level 2i+1 → sum of the first 2i level costs)
   const stageXp=(i)=>{ let t=0; for(let l=1;l<=i*2;l++) t+=xpToNext(l); return t; };
   const rungMarks=Array.from({length:10},(_,i)=>i===0?'start':fmtN(stageXp(i))+' Karma');
   const xpToForm=Math.max(0, stageXp(Math.min(9,fIdx+1))-totalXp);
   return `<div style="max-width:900px;margin:0 auto">
     ${hiveBar('evo')}
-    <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 4px">Your evolution</h2><span style="font-size:13px;color:var(--muted);font-weight:650">how your bee grows</span></div>
+    <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 4px">Your rank</h2><span style="font-size:13px;color:var(--muted);font-weight:650">how your bee grows</span></div>
     <p style="margin:0 0 16px;font-size:14px;color:var(--muted);line-height:1.5">Every word you practise feeds your bee. Your rank measures <b style="color:var(--text)">effort</b> — it always climbs and never falls, and its ten forms keep their names in every world. (What you're <i>ready</i> to spell is your word difficulty — that lives on Progress.)</p>
     <div class="sb-card" style="margin-bottom:14px">
-      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:6px;flex-wrap:wrap">
-        <div style="font-family:var(--display);font-weight:800;font-size:17px">You're ${esc(rankName(fIdx))}</div>
-        <div style="font-size:12px;color:var(--muted);font-weight:600">${fIdx>=9?'Top form reached! 🎉':(fmtN(xpToForm)+' Karma of practice to '+evo[fIdx+1])}</div>
+      <div style="display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin-bottom:10px">
+        <span style="width:56px;height:60px;flex-shrink:0;display:grid;place-items:center;border-radius:14px;background:var(--surface2)">${rankArt(fIdx)}</span>
+        <span style="min-width:0;flex:1">
+          <span class="sb-cs">Your rank</span>
+          <span style="display:block;font-family:var(--display);font-weight:800;font-size:20px;line-height:1.12">Level ${_r.level} · ${esc(rankName(fIdx))}</span>
+          <span style="display:block;font-size:13px;color:var(--muted);font-weight:650;margin-top:3px">
+            <b style="color:var(--text)">${fmtN(totalXp)} karma</b> earned${fIdx>=9?' — top form reached 🎉':(' · '+fmtN(xpToForm)+' more to '+esc(rankName(fIdx+1)))}</span>
+          <span style="display:block;height:7px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden;margin-top:8px"><span style="display:block;height:100%;width:${Math.max(0,Math.min(100,Math.round((1-(xpToForm/Math.max(1,(stageXp(Math.min(9,fIdx+1))-stageXp(fIdx))||1)))*100)))}%;background:var(--action,var(--accent))"></span></span>
+        </span>
       </div>
       <div style="overflow-x:auto;padding:4px 0 2px"><div style="min-width:760px">${evoLadderHTML('spellbound',fIdx,rungMarks)}</div></div>
-      <div class="sb-cn" style="margin-top:6px">You have <b style="color:var(--text)">${fmtN(totalXp)} Karma</b> in ${esc(listLabel(aKey).split(' · ')[0])} — each rung shows the total Karma that unlocks it.</div>
+      <div class="sb-cn" style="margin-top:6px">Each rung shows the karma that opens it. Karma is your practice record — one right word anywhere in the app earns one, and it is never spent.</div>
     </div>
     <div class="sb-card" style="margin-bottom:14px">
       <div class="sb-ct" style="font-size:15px;margin-bottom:6px">How Karma works</div>

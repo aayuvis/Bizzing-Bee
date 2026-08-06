@@ -70,6 +70,10 @@ LIB = {
                'rippling through the air around it and a scattering of small blank polished wooden tiles beside it. '
                'The tiles are COMPLETELY BLANK with nothing carved or printed on them. No characters, no writing, '
                'no letters, no symbols of any alphabet anywhere in the image.',
+    'lib-quotes': 'A warm library alcove at golden hour: a wing-backed armchair, a small table with a brass lamp, '
+                  'and a dozen open books floating in a slow spiral above it, their pages glowing softly. '
+                  'Ribbons of light curl between the books like sentences taking flight. Absolutely no writing '
+                  'or letters on any page — the pages are blank and luminous. No characters.',
     'lib-typing': 'A cheerful chunky mechanical keyboard seen at a low three-quarter angle, keys glowing warm amber, letter tiles '
                   'leaping up off the keys in a joyful arc, soft workshop light. No characters.',
 }
