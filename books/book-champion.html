@@ -122,6 +122,77 @@
   .an-prop{position:absolute;top:.08in;left:.1in;background:rgba(20,14,44,.66);color:#FFE9AE;border-radius:8pt;padding:2.5pt 8pt;font-family:'BB Tile';font-size:9.6pt}
   .bb-prop{display:inline-block;background:var(--chip);color:var(--chip-ink);border-radius:8pt;padding:3pt 8pt;font-family:'BB Tile';font-size:10pt}
   .bb-bubble{background:var(--card);border:1px solid var(--hairline);border-radius:12pt;padding:6pt 10pt;font-family:'BB Display';font-size:11.5pt;line-height:1.35;box-shadow:var(--sh-screen)}
+  /* ---- the poems companion: one poem to a page, and the page keeps moving ----
+     A poem is a shape and it wants the leaf it is printed on. Text left, the
+     gist in tiles down one side, the hard words underlined where they stand and
+     glossed along the foot. The plate moves — head band, foot band, side column,
+     inset, screened-back ground — so no two spreads run the same way. */
+  /* The page is a column: the poem takes the slack and the gloss is pinned just
+     above the running foot, which is absolutely positioned at .28in. Without
+     that the gloss floated wherever the poem ended and, on a short poem, landed
+     on top of the footer. */
+  .pm-page{position:relative;overflow:hidden;display:flex;flex-direction:column}
+  .pm-page .pm-band-foot{margin-bottom:.30in}
+  /* THE PLATE TAKES THE SLACK.
+     A haiku is three lines. No type size fills a leaf with three lines and none
+     should try — set it at 26pt and there are still three inches of bare paper
+     under it. So the picture grows instead: whichever plate the layout is using
+     is a flex item that soaks up whatever the poem did not need, between its own
+     min and a max that keeps it a band and not a poster. On a long poem it sits
+     at its minimum and nothing moves. Only the screened-back ground has nothing
+     to grow — it already covers the leaf — so that one still pins the glossary
+     to the foot instead. */
+  .pm-page.pm-art-ground .pm-gloss{margin-top:auto;margin-bottom:.30in}
+  .pm-art-head .pm-band-top,.pm-art-foot .pm-band-foot{flex:1 1 1.15in;min-height:1.15in;max-height:4.6in}
+  .pm-art-side .pm-body,.pm-art-inset .pm-body,.pm-art-ground .pm-body{flex:1 1 auto;align-items:stretch}
+  .pm-art-inset .pm-inset{flex:1 1 1.35in;min-height:1.35in;max-height:4.4in}
+  /* where the body is stretched and the plate is beside or behind the poem rather
+     than growing itself, the poem rides the middle of the space it was given —
+     a short piece reads as centred on the plate, not as stranded at the top */
+  .pm-art-side .pm-col,.pm-art-ground .pm-col{display:flex;flex-direction:column;justify-content:center}
+  .pm-ground{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.14;z-index:0;filter:saturate(.7)}
+  /* Lift the poem's own parts above the screened-back ground — and NAME them.
+     This was once a blanket rule on every child but the ground, which also caught the running head and
+     the running foot and turned both from absolute into flow items:
+     the head then sat on the source kicker and the foot printed itself in the
+     middle of the leaf, under the glossary. Only these five want the treatment. */
+  .pm-page > .pm-head,.pm-page > .pm-body,.pm-page > .pm-gloss,.pm-page > .pm-band{position:relative;z-index:1}
+  .pm-band{display:block;width:calc(100% + 1.25in);margin-left:-.75in;height:1.15in;object-fit:cover}
+  .pm-band-top{margin-top:.06in;margin-bottom:.14in;
+    -webkit-mask-image:linear-gradient(180deg,#000 55%,transparent);mask-image:linear-gradient(180deg,#000 55%,transparent)}
+  .pm-band-foot{margin-top:.14in;
+    -webkit-mask-image:linear-gradient(0deg,#000 55%,transparent);mask-image:linear-gradient(0deg,#000 55%,transparent)}
+  /* the running head is absolute at .3in and its rule lands about .12in above the
+     text box — close enough to the source kicker to read as a collision. When the
+     title block is the first thing on the page, stand it off. */
+  .bb-head + .pm-head{margin-top:.15in}
+  .pm-head{margin-bottom:.13in}
+  .pm-head h2{margin:.02in 0 .01in;line-height:1.12;color:var(--ink)}
+  .pm-by{font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep)}
+  .pm-body{display:flex;gap:.20in;align-items:flex-start;margin-bottom:.10in}
+  .pm-body.rev{flex-direction:row-reverse}
+  .pm-col{flex:1;min-width:0}
+  .pm-text{font-family:'BB Display';color:var(--ink);overflow-wrap:break-word}
+  /* the underline is the point of the book — it must read as a mark, not a link */
+  .pm-text .pw{text-decoration:none;background:linear-gradient(180deg,transparent 78%,var(--accent) 78%,var(--accent) 94%,transparent 94%);
+    padding:0 .5pt}
+  .pm-tiles{flex:0 0 2.15in;display:flex;flex-direction:column;gap:.11in}
+  .pm-tile{background:color-mix(in srgb,var(--accent) 7%,var(--paper));border-left:2.5pt solid var(--accent);
+    border-radius:0 8px 8px 0;padding:.09in .11in}
+  .pm-tile p{margin:2pt 0 0;font-size:9.2pt;line-height:1.38;color:var(--ink)}
+  .pm-tk{font-family:'BB Kicker';font-size:7.6pt;letter-spacing:.10em;text-transform:uppercase;color:var(--accent-deep)}
+  .pm-sideimg{flex:0 0 1.5in;align-self:stretch;width:1.5in;min-height:3.4in;object-fit:cover;border-radius:10px;
+    -webkit-mask-image:linear-gradient(90deg,#000 60%,transparent);mask-image:linear-gradient(90deg,#000 60%,transparent)}
+  /* the plate always dissolves TOWARDS the poem, so it reads as part of the leaf.
+     On the right flank that means fading leftward, not off the trimmed edge. */
+  .pm-side-r .pm-sideimg{-webkit-mask-image:linear-gradient(270deg,#000 60%,transparent);mask-image:linear-gradient(270deg,#000 60%,transparent)}
+  .pm-inset{width:100%;height:1.35in;object-fit:cover;border-radius:10px;margin-bottom:.02in}
+  .pm-gloss{margin-top:.16in;padding-top:.09in;border-top:1pt solid color-mix(in srgb,var(--accent) 40%,transparent);
+    display:grid;grid-template-columns:1fr 1fr 1fr;gap:.05in .16in}
+  .pm-g{font-size:8.2pt;line-height:1.3;break-inside:avoid}
+  .pm-g b{font-family:'BB Display';font-size:9.4pt;display:block;color:var(--ink)}
+  .pm-g i{font-family:'BB Mono';font-size:7.4pt;font-style:normal;color:var(--accent-deep);display:block}
+  .pm-g span{color:var(--muted);display:block}
   .bb-hive{display:grid;grid-template-columns:1fr 1fr;gap:.12in}
   .bb-card{padding:0 .04in;min-width:0;overflow-wrap:anywhere}
   .bb-card .ex{font-size:9.6pt;line-height:1.32;margin-top:2px;color:var(--ink);opacity:.85}

@@ -25,6 +25,8 @@ eval(fs.readFileSync('trail-data.js', 'utf8'));
 eval(fs.readFileSync('books/southasia-chapters.js', 'utf8'));
 eval(fs.readFileSync('books/eponym-chapters.js', 'utf8'));
 eval(fs.readFileSync('books/ultra-chapters.js', 'utf8'));
+eval(fs.readFileSync('books/poem-chapters.js', 'utf8'));
+eval(fs.readFileSync('books/trivia-rounds.js', 'utf8'));
 eval(fs.readFileSync('books/design-system/bb-anime.js', 'utf8'));
 let ADVS = {};
 try { const src = fs.readFileSync('adv-concepts-data.js', 'utf8'); ADVS = window.SB_ADV_CSCRIPT || {}; } catch (e) {}
@@ -501,6 +503,77 @@ function css(vol) {
   .an-prop{position:absolute;top:.08in;left:.1in;background:rgba(20,14,44,.66);color:#FFE9AE;border-radius:8pt;padding:2.5pt 8pt;font-family:'BB Tile';font-size:9.6pt}
   .bb-prop{display:inline-block;background:var(--chip);color:var(--chip-ink);border-radius:8pt;padding:3pt 8pt;font-family:'BB Tile';font-size:10pt}
   .bb-bubble{background:var(--card);border:1px solid var(--hairline);border-radius:12pt;padding:6pt 10pt;font-family:'BB Display';font-size:11.5pt;line-height:1.35;box-shadow:var(--sh-screen)}
+  /* ---- the poems companion: one poem to a page, and the page keeps moving ----
+     A poem is a shape and it wants the leaf it is printed on. Text left, the
+     gist in tiles down one side, the hard words underlined where they stand and
+     glossed along the foot. The plate moves — head band, foot band, side column,
+     inset, screened-back ground — so no two spreads run the same way. */
+  /* The page is a column: the poem takes the slack and the gloss is pinned just
+     above the running foot, which is absolutely positioned at .28in. Without
+     that the gloss floated wherever the poem ended and, on a short poem, landed
+     on top of the footer. */
+  .pm-page{position:relative;overflow:hidden;display:flex;flex-direction:column}
+  .pm-page .pm-band-foot{margin-bottom:.30in}
+  /* THE PLATE TAKES THE SLACK.
+     A haiku is three lines. No type size fills a leaf with three lines and none
+     should try — set it at 26pt and there are still three inches of bare paper
+     under it. So the picture grows instead: whichever plate the layout is using
+     is a flex item that soaks up whatever the poem did not need, between its own
+     min and a max that keeps it a band and not a poster. On a long poem it sits
+     at its minimum and nothing moves. Only the screened-back ground has nothing
+     to grow — it already covers the leaf — so that one still pins the glossary
+     to the foot instead. */
+  .pm-page.pm-art-ground .pm-gloss{margin-top:auto;margin-bottom:.30in}
+  .pm-art-head .pm-band-top,.pm-art-foot .pm-band-foot{flex:1 1 1.15in;min-height:1.15in;max-height:4.6in}
+  .pm-art-side .pm-body,.pm-art-inset .pm-body,.pm-art-ground .pm-body{flex:1 1 auto;align-items:stretch}
+  .pm-art-inset .pm-inset{flex:1 1 1.35in;min-height:1.35in;max-height:4.4in}
+  /* where the body is stretched and the plate is beside or behind the poem rather
+     than growing itself, the poem rides the middle of the space it was given —
+     a short piece reads as centred on the plate, not as stranded at the top */
+  .pm-art-side .pm-col,.pm-art-ground .pm-col{display:flex;flex-direction:column;justify-content:center}
+  .pm-ground{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.14;z-index:0;filter:saturate(.7)}
+  /* Lift the poem's own parts above the screened-back ground — and NAME them.
+     This was once a blanket rule on every child but the ground, which also caught the running head and
+     the running foot and turned both from absolute into flow items:
+     the head then sat on the source kicker and the foot printed itself in the
+     middle of the leaf, under the glossary. Only these five want the treatment. */
+  .pm-page > .pm-head,.pm-page > .pm-body,.pm-page > .pm-gloss,.pm-page > .pm-band{position:relative;z-index:1}
+  .pm-band{display:block;width:calc(100% + 1.25in);margin-left:-.75in;height:1.15in;object-fit:cover}
+  .pm-band-top{margin-top:.06in;margin-bottom:.14in;
+    -webkit-mask-image:linear-gradient(180deg,#000 55%,transparent);mask-image:linear-gradient(180deg,#000 55%,transparent)}
+  .pm-band-foot{margin-top:.14in;
+    -webkit-mask-image:linear-gradient(0deg,#000 55%,transparent);mask-image:linear-gradient(0deg,#000 55%,transparent)}
+  /* the running head is absolute at .3in and its rule lands about .12in above the
+     text box — close enough to the source kicker to read as a collision. When the
+     title block is the first thing on the page, stand it off. */
+  .bb-head + .pm-head{margin-top:.15in}
+  .pm-head{margin-bottom:.13in}
+  .pm-head h2{margin:.02in 0 .01in;line-height:1.12;color:var(--ink)}
+  .pm-by{font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep)}
+  .pm-body{display:flex;gap:.20in;align-items:flex-start;margin-bottom:.10in}
+  .pm-body.rev{flex-direction:row-reverse}
+  .pm-col{flex:1;min-width:0}
+  .pm-text{font-family:'BB Display';color:var(--ink);overflow-wrap:break-word}
+  /* the underline is the point of the book — it must read as a mark, not a link */
+  .pm-text .pw{text-decoration:none;background:linear-gradient(180deg,transparent 78%,var(--accent) 78%,var(--accent) 94%,transparent 94%);
+    padding:0 .5pt}
+  .pm-tiles{flex:0 0 2.15in;display:flex;flex-direction:column;gap:.11in}
+  .pm-tile{background:color-mix(in srgb,var(--accent) 7%,var(--paper));border-left:2.5pt solid var(--accent);
+    border-radius:0 8px 8px 0;padding:.09in .11in}
+  .pm-tile p{margin:2pt 0 0;font-size:9.2pt;line-height:1.38;color:var(--ink)}
+  .pm-tk{font-family:'BB Kicker';font-size:7.6pt;letter-spacing:.10em;text-transform:uppercase;color:var(--accent-deep)}
+  .pm-sideimg{flex:0 0 1.5in;align-self:stretch;width:1.5in;min-height:3.4in;object-fit:cover;border-radius:10px;
+    -webkit-mask-image:linear-gradient(90deg,#000 60%,transparent);mask-image:linear-gradient(90deg,#000 60%,transparent)}
+  /* the plate always dissolves TOWARDS the poem, so it reads as part of the leaf.
+     On the right flank that means fading leftward, not off the trimmed edge. */
+  .pm-side-r .pm-sideimg{-webkit-mask-image:linear-gradient(270deg,#000 60%,transparent);mask-image:linear-gradient(270deg,#000 60%,transparent)}
+  .pm-inset{width:100%;height:1.35in;object-fit:cover;border-radius:10px;margin-bottom:.02in}
+  .pm-gloss{margin-top:.16in;padding-top:.09in;border-top:1pt solid color-mix(in srgb,var(--accent) 40%,transparent);
+    display:grid;grid-template-columns:1fr 1fr 1fr;gap:.05in .16in}
+  .pm-g{font-size:8.2pt;line-height:1.3;break-inside:avoid}
+  .pm-g b{font-family:'BB Display';font-size:9.4pt;display:block;color:var(--ink)}
+  .pm-g i{font-family:'BB Mono';font-size:7.4pt;font-style:normal;color:var(--accent-deep);display:block}
+  .pm-g span{color:var(--muted);display:block}
   .bb-hive{display:grid;grid-template-columns:1fr 1fr;gap:.12in}
   .bb-card{padding:0 .04in;min-width:0;overflow-wrap:anywhere}
   .bb-card .ex{font-size:9.6pt;line-height:1.32;margin-top:2px;color:var(--ink);opacity:.85}
@@ -1361,6 +1434,31 @@ if (document.readyState !== 'loading') RV._build();
 <\/script>`;
 }
 
+/* Let the browser do the last inch of the fitting.
+   The generator can only ESTIMATE how tall a poem sets — it does not know where
+   the lines wrap, how the glossary stacked, or what the title block came to once
+   the display face loaded. Estimating left white paper under the short pieces and
+   ran the long ones off the bottom. So the generator picks a sensible ceiling per
+   piece (`data-max`) and this steps the type down from it until the leaf holds the
+   whole poem. It runs after fonts and plates have landed, and the printer runs it
+   too — printing to PDF is a browser rendering the page. */
+const POEM_FIT = `<script>
+(function(){
+  function fit(){
+    var pages = document.querySelectorAll('.pm-page');
+    for (var i=0;i<pages.length;i++){
+      var p=pages[i], t=p.querySelector('.pm-text'); if(!t) continue;
+      var s=parseFloat(t.getAttribute('data-max'))||14, min=parseFloat(t.getAttribute('data-min'))||8.4;
+      t.style.fontSize=s+'pt';
+      var guard=0;
+      while(s>min && p.scrollHeight>p.clientHeight+1 && guard++<80){ s-=0.25; t.style.fontSize=s+'pt'; }
+    }
+  }
+  function go(){ if(document.fonts&&document.fonts.ready) document.fonts.ready.then(fit); else fit(); }
+  if(document.readyState==='complete') go(); else window.addEventListener('load',go);
+})();
+<\/script>`;
+
 /* verso marking + emit */
 function finish(vol, pages, meta) {
   const html = pages.map((p, i) => i > 0 && i % 2 === 0 ? p.replace('<div class="page"', '<div class="page" data-verso') : p).join('\n');
@@ -1368,7 +1466,7 @@ function finish(vol, pages, meta) {
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(vol.title)} — Bizzing Bee Library Vol. ${vol.n}</title>
 <style>${css(vol)}${REVIEW_CSS}</style></head><body data-vol="${vol.n}" data-band="${vol.band}">${html}
-${reviewPanel(vol)}</body></html>`;
+${reviewPanel(vol)}${html.indexOf('pm-text') > -1 ? POEM_FIT : ''}</body></html>`;
   fs.writeFileSync(`books/${slugOf(vol)}.html`, doc);
   return { vol, pages: pages.length, ...meta };
 }
@@ -1577,6 +1675,400 @@ function book18() {
   return finish(vol, pages, { chapters: CH18.length, words: 240 });
 }
 
+
+/* ================= COMPANION 3 — LINES WORTH KEEPING =================
+   Poems, sonnets, haiku and the long quotes, whole. A poetry anthology has no
+   business in a spelling library unless it earns its place, so every piece here
+   carries the bee-worthy words inside it: learn the Tempest speech and you have
+   met `insubstantial` and `pageant` in the only place they are unforgettable.
+   The app's own quote library supplies the connective tissue — 623 lines by
+   poets, which is where the book's margins come from. */
+/* ---- one poem, one page ----
+   The first cut gave every piece two pages — the text on one, the note and the
+   words on the next — and both were half empty. A poem is a shape; it wants the
+   page it is printed on, with everything about it in reach.
+
+   So: the text on the left, the gist in tiles down the right, the hard words
+   UNDERLINED where they actually occur in the poem and glossed in a strip along
+   the foot, and the whole thing on one leaf wherever it fits.
+
+   And it changes. Twelve layouts rotate — the plate moves from a head banner to
+   a foot banner to a side column to an inset to a screened-back ground, and the
+   tile column swaps sides — so no two spreads in a row look alike, and the cycle
+   is long enough not to rhyme with the section lengths. The plate is chosen by
+   the piece's own subject (`th`) out of sixteen painted for the book, each
+   cropped a different way depending on where it lands. */
+const POEM_LAY = [
+  { art: 'head', tiles: 'right' },
+  { art: 'foot', tiles: 'right' },
+  { art: 'side-l', tiles: 'right' },
+  { art: 'inset', tiles: 'right' },
+  { art: 'head', tiles: 'left' },
+  { art: 'ground', tiles: 'right' },
+  { art: 'foot', tiles: 'left' },
+  { art: 'side-r', tiles: 'left' },
+  { art: 'inset', tiles: 'left' },
+  { art: 'ground', tiles: 'left' },
+  { art: 'side-r', tiles: 'right' },
+  { art: 'head', tiles: 'right' },
+];
+
+/* Fit the poem to the leaf — the generator's half of the job.
+   It sets the CEILING and the floor; POEM_FIT (in the browser, after the display
+   face and the plates have landed) walks the type down from the ceiling until the
+   leaf holds the whole poem. The ceiling is what the piece can carry as a matter
+   of taste — a haiku wants to be big, a twenty-eight-line ode does not — and the
+   first estimate is only there so the page does not visibly jump on load. */
+function fitPoem(p, L, hard) {
+  const isHaiku = p.kind === 'haiku';
+  const side = L.art === 'side-l' || L.art === 'side-r';
+  /* 8.5in less the two margins, less the gaps, the tile column and any side plate */
+  const colW = 7.25 - (side ? 0.40 + 1.50 : 0.20) - 2.15;
+  const band = L.art === 'head' ? 1.35 : L.art === 'foot' ? 1.59 : 0;
+  const glossH = hard.length ? 0.16 + Math.ceil(hard.length / 3) * 0.70 + 0.30 : 0.30;
+  const textH = 9.80 - band - 0.93 - glossH - 0.30;
+  const lh = isHaiku ? 1.75 : 1.48;
+  const nl = p.lines.filter(x => x !== '').length;
+  const max = isHaiku ? 26 : nl <= 6 ? 19 : nl <= 10 ? 17 : nl <= 16 ? 15.5 : 14;
+  const min = isHaiku ? 11 : 8.4;
+  let sz = max;
+  for (; sz > min; sz -= 0.25) {
+    const cpl = Math.max(8, Math.floor(colW * 144 / sz));  // ~0.5em average glyph
+    let rows = 0;
+    for (const l of p.lines) rows += l === '' ? 0.55 : Math.max(1, Math.ceil(l.length / cpl));
+    if (rows * sz * lh / 72 <= textH) break;
+  }
+  return { sz: Math.round(sz * 100) / 100, lh, max, min };
+}
+
+/* Underline every hard word where it stands in the text, matching the inflected
+   forms a poem actually uses (sceptre / sceptred, love / loving) without touching
+   a longer word that merely starts the same way.
+   Once each, over the WHOLE poem — not once per line. Marking per line meant a
+   word repeated in the speech got underlined every time it came round, while a
+   second hard word sharing a line was skipped entirely and turned up in the
+   glossary with nothing above it to point at. */
+function markPoem(lines, hard) {
+  const done = new Set();
+  return lines.map(line => {
+    let out = esc(line);
+    for (const h of hard) {
+      const key = String(h.w || '').toLowerCase();
+      if (!key || done.has(key)) continue;
+      const w = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const re = new RegExp('\\b(' + w + "(?:s|es|d|ed|ing|’s)?)\\b(?![^<]*</u>)", 'i');
+      if (re.test(out)) { out = out.replace(re, '<u class="pw">$1</u>'); done.add(key); }
+    }
+    return out;
+  });
+}
+
+function poemPage(vol, sec, p, n, folio, keys) {
+  let L = POEM_LAY[(n - 1) % POEM_LAY.length];
+  /* a side plate takes the poem's column down to 3.2in, which is fine for verse
+     but strangles prose — Lincoln at Gettysburg wrapped every sentence three
+     times and still ran off the leaf at the smallest size we allow. Prose keeps
+     the full measure and takes the plate as a screened-back ground instead. */
+  const wide = p.lines.some(l => l.length > 68);
+  if (wide && (L.art === 'side-l' || L.art === 'side-r')) L = { art: 'ground', tiles: L.tiles };
+  const plate = artAt('pt-' + (p.th || 'library')) || artAt('pt-library');
+  const hard = p.hard || [];
+  const isHaiku = p.kind === 'haiku';
+  const side = L.art === 'side-l' || L.art === 'side-r';
+  const nLines = p.lines.length;
+  const { sz, lh, max, min } = fitPoem(p, L, hard);
+
+  const poemHtml = `<div class="pm-text" data-max="${max}" data-min="${min}" style="font-size:${sz}pt;line-height:${lh};${isHaiku ? 'text-align:center' : ''}">`
+    + markPoem(p.lines, hard).map((l, i) => p.lines[i] === '' ? '<div style="height:.09in"></div>'
+      : `<div>${l}</div>`).join('') + '</div>';
+
+  const tilesInner = `
+    <div class="pm-tile pm-gist"><span class="pm-tk">What to listen for</span><p>${esc(p.note)}</p></div>
+    <div class="pm-tile pm-form"><span class="pm-tk">The form</span>
+      <p><b>${esc({ speech: 'Dramatic speech', sonnet: 'Sonnet', haiku: 'Haiku', poem: 'Lyric poem', prose: 'Prose' }[p.kind] || 'Poem')}</b>
+      &middot; ${isHaiku ? '17 syllables' : (nLines - p.lines.filter(x => x === '').length) + ' lines'}${p.y ? ' &middot; ' + esc(p.y) : ''}</p></div>
+    ${hard.length ? `<div class="pm-tile pm-count"><span class="pm-tk">Words to take</span><p><b>${hard.length}</b> underlined below, glossed at the foot of the page.</p></div>` : ''}`;
+
+  const gloss = hard.length ? `<div class="pm-gloss">
+    ${hard.map(h => `<div class="pm-g"><b>${esc(h.w)}</b><i>/ ${esc(h.say)} /</i><span>${esc(fit(h.def, 96))}</span></div>`).join('')}
+  </div>` : '';
+
+  const head2 = `<div class="pm-head">
+    <div class="kick">${esc(p.src)}</div>
+    <h2 style="font-size:${p.t.length > 36 ? 16 : p.t.length > 26 ? 19 : 22}pt">${esc(p.t)}</h2>
+    <div class="pm-by">${esc(p.a)}</div></div>`;
+
+  const img = (cls, extra) => plate ? `<img class="${cls}" src="${plate}" alt=""${extra || ''}>` : '';
+  /* the tile column carries the inset plate when that is the layout; the side
+     plate is a third column and can stand on either flank of the poem */
+  const tilesCol = `<div class="pm-tiles">${L.art === 'inset' ? img('pm-inset') : ''}${tilesInner}</div>`;
+  const sideImg = side ? img('pm-sideimg') : '';
+  const col = `<div class="pm-col">${poemHtml}</div>`;
+  const body = `<div class="pm-body">${
+    L.tiles === 'left'
+      ? tilesCol + col + sideImg
+      : (L.art === 'side-l' ? sideImg : '') + col + tilesCol + (L.art === 'side-r' ? sideImg : '')
+  }</div>`;
+
+  keys.push(`<div><b>${esc(p.t)}</b> — underlined: ${hard.map(h => esc(h.w)).join(', ') || '—'}</div>`);
+  return `<div class="page pm-page pm-art-${side ? 'side' : L.art}${L.art === 'side-r' ? ' pm-side-r' : ''}" data-vol="22">
+    ${L.art === 'ground' ? img('pm-ground') : ''}
+    ${head(vol, null, 0, esc(sec.title))}
+    ${L.art === 'head' ? img('pm-band pm-band-top') : ''}
+    ${head2}
+    ${body}
+    ${gloss}
+    ${L.art === 'foot' ? img('pm-band pm-band-foot') : ''}
+    ${foot(vol, folio.n++)}</div>`;
+}
+
+function book19() {
+  const vol = { n: 22, seedN: 20, art: 'b22', slug: 'book-lines', companion: true,
+    title: 'Lines Worth Keeping', tag: 'Poems, speeches and the long quotes — with the words inside them',
+    a: '#4A6FA5', d: '#243C63', tex: 'diag', av: 'encore', world: 'library', band: 'advanced' };
+  const P = window.SB_POEMS || {};
+  const SEC = ['speeches', 'sonnets', 'haiku', 'byheart', 'prose'].map(k => [k, P[k]]).filter(x => x[1]);
+  const allHard = [];
+  SEC.forEach(([, sec]) => sec.pieces.forEach(p => (p.hard || []).forEach(h => allHard.push({ w: h.w, def: h.def, say: h.say }))));
+  const rnd = mulberry(vol.n * 7919 + 17);
+  const keys = []; const folio = { n: 1 };
+  const nPieces = SEC.reduce((n, [, sec]) => n + sec.pieces.length, 0);
+  const pages = [cover(vol, SEC.length, allHard.length, 'A BIZZING BEE COMPANION')];
+  pages.push(dividerPage(vol, folio.n++));
+
+  /* how it works */
+  pages.push(`<div class="page" data-vol="22">
+    ${head(vol, null, 0, 'How this book works')}
+    <div style="margin-top:.4in"><h1 style="font-size:26pt">Learn one by heart.</h1></div>
+    <div style="display:flex;gap:.14in;align-items:flex-start;margin:.16in 0">
+      ${avatar(vol.av, '1in')}
+      <div class="bb-bubble" style="font-size:11pt">Knowing a poem by heart is not showing off. It is the only way to own one — to have it at three in the morning when there is no book. Every piece in here is short enough to learn in a week.</div></div>
+    ${[['Read it out loud, once', 'Poetry is a sound before it is a meaning. You will hear the shape before you can explain it.'],
+       ['Find the turn', 'Nearly every piece here changes direction somewhere. The note under it tells you where — but look first.'],
+       ['Take the words', 'The hard words in each piece are listed after it, with how to say them. That is the spelling half of this book.'],
+       ['Copy one out by hand', 'Slowly, with the punctuation exactly as it is. You will notice things reading cannot show you.']]
+      .map(([t, b], i) => `<div style="display:flex;gap:.14in;margin-bottom:.13in;align-items:flex-start">
+      <span style="display:inline-grid;place-items:center;width:.52in;height:.52in;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:14pt;flex-shrink:0">${i + 1}</span>
+      <div class="bb-panelbox" style="flex:1"><h3 style="font-size:12pt;color:var(--accent-deep)">${t}</h3><p style="font-size:10.6pt;line-height:1.45">${b}</p></div></div>`).join('')}
+    ${worldStrip(vol.world, vol, 11)}
+    ${foot(vol, folio.n++)}</div>`);
+
+  let sn = 0, pieceN = 0;
+  for (const [, sec] of SEC) {
+    sn++;
+    /* section opener */
+    pages.push(`<div class="page" data-vol="22" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
+      <div class="kick">Part ${['I', 'II', 'III', 'IV', 'V'][sn - 1] || sn} of ${SEC.length}</div>
+      <h1 style="font-size:30pt;margin:.06in 0">${esc(sec.title)}</h1>
+      <p style="font-family:'BB Kicker';font-size:11pt;color:var(--muted);max-width:5in;margin:.1in auto 0;line-height:1.5">${esc(sec.blurb)}</p>
+      <div style="margin:.24in auto 0">${avatar(vol.av, '1.05in')}</div>
+      ${worldStrip(WORLD_CYCLE[(sn + 1) % 12], vol, 900 + sn)}
+      ${foot(vol, folio.n++)}</div>`);
+
+    for (const p of sec.pieces) {
+      pieceN++;
+      pages.push(poemPage(vol, sec, p, pieceN, folio, keys));
+    }
+
+    /* a margin page of the app's own poet lines, one per section */
+    const poets = /shakespeare|frost|dickinson|keats|blake|poe|kipling|tennyson|wordsworth|whitman|shelley|henley|hughes|yeats|donne|browning|coleridge|byron|rossetti|longfellow/i;
+    const marg = shuf(QUOTES.filter(q => poets.test(q.a || '') && q.q.length >= 30 && q.q.length <= 120).slice(), rnd).slice(0, 7);
+    if (marg.length) pages.push(`<div class="page" data-vol="22">
+      ${head(vol, null, 0, 'In the margins')}
+      <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in">${avatar(vol.av, '.6in')}<h2 style="font-size:19pt">Lines from the same hands</h2></div>
+      <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .14in">Single lines by the poets in this part — the ones that broke off from their poems and went out into the language on their own.</p>
+      ${marg.map((q, k) => `<div style="margin-bottom:.15in;padding-left:.32in;position:relative;transform:rotate(${k % 2 ? .25 : -.25}deg)">
+        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:28pt;color:var(--accent)">&ldquo;</span>
+        <div style="font-family:'BB Display';font-size:12.4pt;line-height:1.3">${esc(q.q)}</div>
+        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; ${esc(q.a)}</div></div>`).join('')}
+      ${worldStrip(WORLD_CYCLE[(sn + 5) % 12], vol, 950 + sn)}
+      ${foot(vol, folio.n++)}</div>`);
+  }
+
+  /* every word the book taught, in one list */
+  const uniq = []; const seenW = new Set();
+  for (const h of allHard) { const k = h.w.toLowerCase(); if (seenW.has(k)) continue; seenW.add(k); uniq.push(h); }
+  pages.push(...bigListPages(vol, uniq, folio));
+  pages.push(...keyPages(vol, keys, folio));
+  pages.push(colophon(vol, folio.n++));
+  return finish(vol, pages, { chapters: SEC.length, words: uniq.length, pieces: nPieces });
+}
+
+/* ================= COMPANION 4 — THE LONG QUIZ =================
+   A generic round, then a hyper-speciality round, and repeat. The generic
+   rounds are drawn from the app's own bank at levels 3-5; the speciality rounds
+   are authored, because no general bank goes that deep on Norse mythology or
+   minerals named after people. Formats rotate — multiple choice, short answer
+   with the key at the back, a crossword and a letter square — because thirty
+   rounds of A/B/C/D is a worksheet, not a book. */
+function book20() {
+  const vol = { n: 23, seedN: 21, art: 'b23', slug: 'book-quiz', companion: true,
+    title: 'The Long Quiz', tag: 'A general round, then a deep one, twenty-five times over',
+    a: '#B5893C', d: '#6E4E18', tex: 'grid', av: 'scopey', world: 'forum', band: 'advanced' };
+  const SPEC = window.SB_TRIVIA_ROUNDS || [];
+  const rnd = mulberry(vol.n * 7919 + 17);
+  const keys = []; const folio = { n: 1 };
+
+  /* ---- the general rounds, out of the app's bank ---- */
+  /* The shards do not export an array — each one calls SB_TRIVIA._add(lv, [...]).
+     So the loader supplies that one method and collects what the file hands it. */
+  const bank = [];
+  for (let lv = 3; lv <= 5; lv++) {
+    const f = `trivia-q${lv}.js`;
+    if (!fs.existsSync(f)) continue;
+    try {
+      const SB_TRIVIA = { _add: (n, arr) => { for (const q of (arr || [])) if (q && q.q && q.c && q.c.length >= 2) bank.push(q); } };
+      eval(fs.readFileSync(f, 'utf8'));
+    } catch (e) { console.error('  quiz book: could not read ' + f + ' — ' + e.message); }
+  }
+  if (!bank.length) console.error('  quiz book: the app bank is empty; general rounds will be skipped');
+  const THEMES = (window.SB_TRIVIA && SB_TRIVIA.themes) || [];
+  const label = id => (THEMES.find(t => t.id === id) || {}).label || id;
+  const byTheme = {}; bank.forEach(q => { (byTheme[q.th] = byTheme[q.th] || []).push(q); });
+  const genThemes = Object.keys(byTheme).filter(t => byTheme[t].length >= 24);
+  shuf(genThemes, rnd);
+
+  const N = SPEC.length;
+  let qTotal = 0;
+  const pages = [cover(vol, N * 2, SPEC.reduce((n, r) => n + r.qs.length, 0) + N * 30, 'A BIZZING BEE COMPANION')];
+  pages.push(dividerPage(vol, folio.n++));
+  pages.push(`<div class="page" data-vol="23">
+    ${head(vol, null, 0, 'How this book works')}
+    <div style="margin-top:.4in"><h1 style="font-size:26pt">General, then deep. Then again.</h1></div>
+    <div style="display:flex;gap:.14in;align-items:flex-start;margin:.16in 0">
+      ${avatar(vol.av, '1in')}
+      <div class="bb-bubble" style="font-size:11pt">Every general round is followed by a speciality round that goes straight down one narrow hole — Norse gods, obscure rivers, minerals named after people. Nobody knows all of them. That is the point.</div></div>
+    ${[['Rounds come in pairs', 'A general round to warm up, a speciality round to find out what you actually know.'],
+       ['The format keeps moving', 'Multiple choice, written answers, a crossword, a letter square. Never two the same in a row.'],
+       ['The key is at the back', 'Written answers are graded from the key. No peeking — Vex is guarding it.'],
+       ['The footnotes are the prize', 'Under every answer is the thing worth remembering. Read those even when you got it right.']]
+      .map(([t, b], i) => `<div style="display:flex;gap:.14in;margin-bottom:.13in;align-items:flex-start">
+      <span style="display:inline-grid;place-items:center;width:.52in;height:.52in;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:14pt;flex-shrink:0">${i + 1}</span>
+      <div class="bb-panelbox" style="flex:1"><h3 style="font-size:12pt;color:var(--accent-deep)">${t}</h3><p style="font-size:10.6pt;line-height:1.45">${b}</p></div></div>`).join('')}
+    ${worldStrip(vol.world, vol, 13)}
+    ${foot(vol, folio.n++)}</div>`);
+
+  /* ---- page renderers, shared by both kinds of round ---- */
+  const roundOpener = (n, title, blurb, kind, seedK) => `<div class="page" data-vol="23" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
+    <div class="kick">Round ${n} &middot; ${kind}</div>
+    <h1 style="font-size:30pt;margin:.06in 0">${esc(title)}</h1>
+    <p style="font-family:'BB Kicker';font-size:11pt;color:var(--muted);max-width:5in;margin:.1in auto 0;line-height:1.5">${esc(blurb)}</p>
+    <div style="margin:.24in auto 0">${avatar(vol.av, '1.05in')}</div>
+    ${worldStrip(WORLD_CYCLE[seedK % 12], vol, 1200 + seedK)}
+    ${foot(vol, folio.n++)}</div>`;
+
+  const mcPages = (rn, title, qs) => {
+    const out = [];
+    for (let i = 0; i < qs.length; i += 5) {
+      const slice = qs.slice(i, i + 5);
+      const body = slice.map((q, k) => {
+        const opts = shuf(q.c.slice(0, 4).map((t, oi) => ({ t, ok: oi === 0 })), rnd);
+        keys.push(`<div><b>R${rn} Q${i + k + 1}</b> — ${String.fromCharCode(65 + opts.findIndex(o => o.ok))}. ${esc(clamp(q.c[0], 60))}${q.f ? ' <i>' + esc(fit(q.f, 130)) + '</i>' : ''}</div>`);
+        return `<div class="q" style="margin-bottom:.13in">
+          <div class="qq" style="font-size:10.6pt;line-height:1.36"><b>${i + k + 1}.</b> ${esc(q.q)}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:2pt 10pt;margin-top:3pt">
+            ${opts.map((o, oi) => `<div class="opt" style="font-size:9.6pt"><b>${String.fromCharCode(65 + oi)}</b> ${esc(o.t)}</div>`).join('')}
+          </div></div>`;
+      }).join('');
+      out.push(`<div class="page" data-vol="23">${head(vol, null, 0, esc(title))}
+        <div class="bb-quiz" style="margin-top:.38in">${body}</div>
+        ${foot(vol, folio.n++)}</div>`);
+    }
+    return out;
+  };
+
+  const shortPages = (rn, title, qs) => {
+    const out = [];
+    for (let i = 0; i < qs.length; i += 7) {
+      const slice = qs.slice(i, i + 7);
+      const body = slice.map((q, k) => {
+        keys.push(`<div><b>R${rn} Q${i + k + 1}</b> — ${esc(q.c[0])}${q.f ? ' <i>' + esc(fit(q.f, 130)) + '</i>' : ''}</div>`);
+        return `<div style="margin-bottom:.15in">
+          <div style="font-size:10.6pt;line-height:1.36"><b>${i + k + 1}.</b> ${esc(q.q)}</div>
+          <div class="bb-writeline" style="margin-top:5pt"></div></div>`;
+      }).join('');
+      out.push(`<div class="page" data-vol="23">${head(vol, null, 0, esc(title))}
+        <div style="margin-top:.38in"><div class="kick">Write your answers. The key is at the back.</div></div>
+        <div style="margin-top:.1in">${body}</div>
+        ${foot(vol, folio.n++)}</div>`);
+    }
+    return out;
+  };
+
+  const xwordPage = (rn, title, qs) => {
+    const words = qs.map(q => ({ w: String(q.c[0] || '').replace(/[^a-z]/gi, ''), def: q.q }))
+      .filter(x => x.w.length >= 4 && x.w.length <= 13);
+    if (words.length < 4) return mcPages(rn, title, qs);
+    const cw = crossword(words, rnd);
+    if (!cw || !cw.across || (!cw.across.length && !cw.down.length)) return shortPages(rn, title, qs);
+    keys.push(`<div><b>R${rn} crossword</b> — ${cw.across.concat(cw.down).map(p => p.n + (p.dir || '') + ' ' + esc(p.w)).join(', ')}</div>`);
+    const cols = cw.g[0].length, gridRows = cw.g.length;
+    const cell = Math.min(0.44, 6.6 / Math.max(1, cols), 4.0 / Math.max(1, gridRows)).toFixed(3);
+    return [`<div class="page" data-vol="23">${head(vol, null, 0, esc(title))}
+      <div style="margin-top:.36in"><div class="kick">The clue is the meaning. The answer is the word.</div></div>
+      <div class="bb-xword" style="margin:.1in auto;display:grid;grid-template-columns:repeat(${cols},${cell}in);justify-content:center">
+        ${cw.g.map(row => row.map(c => c && c.ch
+          ? `<span style="width:${cell}in;height:${cell}in;border:1px solid var(--ink);position:relative;display:block">${c.n ? `<i style="position:absolute;top:0;left:1pt;font-size:5.4pt;font-style:normal">${c.n}</i>` : ''}</span>`
+          : `<span style="width:${cell}in;height:${cell}in;display:block"></span>`).join('')).join('')}
+      </div>
+      <div class="bb-clues" style="display:grid;grid-template-columns:1fr 1fr;gap:.14in;font-size:8.6pt;line-height:1.32">
+        <div><h3 style="font-size:10.5pt;color:var(--accent-deep)">Across</h3>${cw.across.map(p => `<div><b>${p.n}.</b> ${esc(fit(p.def, 84))}</div>`).join('')}</div>
+        <div><h3 style="font-size:10.5pt;color:var(--accent-deep)">Down</h3>${cw.down.map(p => `<div><b>${p.n}.</b> ${esc(fit(p.def, 84))}</div>`).join('')}</div>
+      </div>
+      ${foot(vol, folio.n++)}</div>`];
+  };
+
+  const squarePage = (rn, title, qs) => {
+    const words = qs.map(q => String(q.c[0] || '').replace(/[^a-z]/gi, '')).filter(w => w.length >= 4 && w.length <= 11);
+    if (words.length < 5) return shortPages(rn, title, qs);
+    const ws = wordSearch(words.map(w => ({ w })), rnd);
+    if (!ws || !ws.g) return shortPages(rn, title, qs);
+    keys.push(`<div><b>R${rn} square</b> — hidden: ${ws.words.map(w => esc(w)).join(', ')}</div>`);
+    return [`<div class="page" data-vol="23">${head(vol, null, 0, esc(title))}
+      <div style="margin-top:.36in"><div class="kick">Answer each clue, then find the answer in the square.</div></div>
+      <div class="bb-search" style="margin:.1in auto;display:grid;grid-template-columns:repeat(${ws.g[0].length},.26in);justify-content:center;font-family:'BB Mono';font-size:10pt">
+        ${ws.g.map(r => r.map(ch => `<span style="width:.26in;height:.26in;display:grid;place-items:center">${ch}</span>`).join('')).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.1in;font-size:8.8pt;line-height:1.34;margin-top:.08in">
+        ${qs.slice(0, 12).map((q, k) => `<div><b>${k + 1}.</b> ${esc(fit(q.q, 92))}</div>`).join('')}
+      </div>
+      ${foot(vol, folio.n++)}</div>`];
+  };
+
+  const render = (fmt, rn, title, qs) =>
+    fmt === 'short' ? shortPages(rn, title, qs)
+      : fmt === 'xword' ? xwordPage(rn, title, qs)
+        : fmt === 'square' ? squarePage(rn, title, qs)
+          : mcPages(rn, title, qs);
+
+  /* ---- alternate: general, speciality, general, speciality ---- */
+  const GEN_FMT = ['mc', 'short', 'mc', 'xword', 'mc', 'short', 'mc', 'square'];
+  let rn = 0;
+  for (let i = 0; i < N; i++) {
+    /* the general round */
+    const th = genThemes[i % Math.max(1, genThemes.length)];
+    const pool = shuf((byTheme[th] || []).slice(), rnd).slice(0, 30);
+    if (pool.length >= 12) {
+      rn++;
+      pages.push(roundOpener(rn, label(th), 'A general round, drawn from the app’s own bank at its three hardest levels. Warm up here.', 'General', i * 2));
+      qTotal += pool.length;
+      pages.push(...render(GEN_FMT[i % GEN_FMT.length], rn, label(th), pool));
+    }
+    /* the speciality round */
+    const sp = SPEC[i];
+    rn++;
+    pages.push(roundOpener(rn, sp.title, sp.blurb, 'Speciality', i * 2 + 1));
+    qTotal += sp.qs.length;
+    pages.push(...render(sp.fmt, rn, sp.title, sp.qs));
+  }
+
+  pages.push(...keyPages(vol, keys, folio));
+  pages.push(colophon(vol, folio.n++));
+  /* the shelf's fact pills read `chapters` and `words`; on a quiz book those
+     are rounds and questions, which is what these numbers actually count */
+  return finish(vol, pages, { chapters: rn, words: qTotal });
+}
+
 /* ---------------- build all + copy lint + hub ---------------- */
 fs.mkdirSync('books', { recursive: true });
 const made = []; const used = new Set();
@@ -1594,7 +2086,7 @@ for (const vol of AVOLS) {
   vol.chapters.forEach(ch => advUsed.add(ch.title));
   made.push(buildCourse(vol, vol.chapters, window.SB_ADV_CSCRIPT || {}, ch => ADV.indexOf(ch))); }
 if (advUsed.size !== ADV.length) { console.error('ADV coverage', advUsed.size, '/', ADV.length); process.exit(1); }
-made.push(book17()); made.push(book18());
+made.push(book17()); made.push(book18()); made.push(book19()); made.push(book20());
 
 /* copy lint (handover §7) over authored copy — scan all output, report data-source hits */
 const BANNED = /\b(delve|unleash|leverage|utilize|furthermore|robust|seamless|elevate)\b|in today.s world/i;
@@ -1610,6 +2102,13 @@ console.log('copy-lint total hits (incl. data text):', lintHits);
    same masthead-kicker-title-tag-pills composition the book's own cover page
    carries, laid over the same art. Type is sized in cqw against the card, so it
    holds together at 228px on a phone and at 300px on a desktop. */
+/* The PDF column is gone from the shelf. Twenty-one PDFs came to 214MB — the
+   larger part of a 555MB Pages site — and GitHub's deploy step began timing out
+   on it, so three shipped builds in a row never reached the live app. The books
+   are complete and readable as HTML, which is what the shelf opens. The files
+   remain in the gh-pages history and can be regenerated from the HTML at any
+   time; if they should be downloadable again they belong on main behind the same
+   raw.githubusercontent redirect the voice clips use, not on the Pages site. */
 const shelfCover = m => {
   const cov = artAt(`${artOf(m.vol)}-cover`);
   const bee = avaPng(HERO);
@@ -1641,7 +2140,7 @@ const cardOf = m => { const slug = slugOf(m.vol);
       <span class="bk-vol${m.vol.companion ? ' comp' : ''}">${m.vol.companion ? 'Companion' : 'Vol. ' + m.vol.n}</span></span>
     <span class="bk-meta"><b>${esc(m.vol.title)}</b><span class="tag">${esc(m.vol.tag)}</span>
       <span class="foot"><span class="pg">${m.pages} pages</span>
-      <span class="pdf" onclick="event.preventDefault();event.stopPropagation();window.location='pdf/${slug}.pdf'">PDF &darr;</span></span>
+      <span class="pdf">Read &rarr;</span></span>
     </span></a>`; };
 const cards = series.map(cardOf).join('');
 const compCards = companions.map(cardOf).join('');
@@ -1735,7 +2234,7 @@ footer{max-width:1180px;margin:38px auto 0;padding:0 22px;font-size:12px;color:#
 <div class="grid">${cards}</div>
 <section class="shelf2">
   <h2>Companions</h2>
-  <p>Two standalone books, not part of the numbered series. Collections rather than curriculum &mdash;
+  <p>Four standalone books, not part of the numbered series. Collections rather than curriculum &mdash;
   read them in any order, at any level.</p>
   <div class="grid comp">${compCards}</div>
 </section>
