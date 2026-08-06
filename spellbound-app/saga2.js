@@ -137,8 +137,36 @@
     img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
     return null;
   }
+  /* The PAINTED play field. The vector plate above is a few dozen filled paths,
+     and next to the painted act board the child has just walked across it reads
+     as a diagram. Each world has a painting now (app-art/sgw-<world>.jpg, built
+     by voice/pipeline/saga-worlds.py), composed to be played over: open and
+     low-contrast through the middle, detail pushed to the top and bottom edges,
+     and a stop darker than daylight so a gold bee reads against it.
+     The vector plate stays as the fallback while the JPEG is still loading and
+     for any world that has no painting. */
+  const _pCache={};
+  function fieldImg(id){
+    if(!id) return null;
+    if(id in _pCache) return _pCache[id]||null;
+    _pCache[id]=null;
+    const img=new Image();
+    img.onload=()=>{ _pCache[id]=img; };
+    img.onerror=()=>{ _pCache[id]=false; };
+    img.src='app-art/sgw-'+id+'.jpg';
+    return null;
+  }
+  /* cover-fit without distortion, whichever source we have */
+  function coverDraw(cx,im,x,y,w,h){
+    const ir=im.width/im.height, rr=w/h; let sw,sh,sx,sy;
+    if(ir>rr){ sh=im.height; sw=sh*rr; sx=(im.width-sw)/2; sy=0; }
+    else { sw=im.width; sh=sw/rr; sx=0; sy=(im.height-sh)/2; }
+    cx.drawImage(im,sx,sy,sw,sh,x,y,w,h);
+  }
   // Draw a world plate to fill a rect, cover-fit (crop, no distortion). Returns true if drawn.
   function drawWorld(cx,id,x,y,w,h){
+    const pf=fieldImg(id);
+    if(pf){ try{ coverDraw(cx,pf,x,y,w,h); return true; }catch(e){} }
     const im=worldImg(id); if(!im) return false;
     try{ const ir=im.width/im.height, rr=w/h; let sw,sh,sx,sy;
       if(ir>rr){ sh=im.height; sw=sh*rr; sx=(im.width-sw)/2; sy=0; }
@@ -146,6 +174,119 @@
       cx.drawImage(im,sx,sy,sw,sh,x,y,w,h); return true;
     }catch(e){ return false; }
   }
+
+  /* =================== SGFX · the shared canvas render kit ===================
+     Every canvas engine was drawing flat: solid fills, hard edges, four-pixel
+     dots for pickups, no light and nothing left behind anything that moved. The
+     engines are fine — what they lacked was a vocabulary. This is it, in one
+     place, so a fix to how a pickup glows fixes it in five games at once.
+
+     Everything here is cheap enough to run per frame at 60fps on a tablet: no
+     shadowBlur in the hot path except on the small stuff, no per-pixel work. */
+  const SGFX={
+    /* a rounded rect on any browser */
+    rr(cx,x,y,w,h,r){ if(cx.roundRect){ cx.beginPath(); cx.roundRect(x,y,w,h,r); return; }
+      cx.beginPath(); cx.moveTo(x+r,y); cx.arcTo(x+w,y,x+w,y+h,r); cx.arcTo(x+w,y+h,x,y+h,r);
+      cx.arcTo(x,y+h,x,y,r); cx.arcTo(x,y,x+w,y,r); cx.closePath(); },
+
+    /* a pointy-top hexagon, because a honeycomb maze drawn out of rounded
+       squares is not a honeycomb maze */
+    hex(cx,cxp,cyp,r){ cx.beginPath();
+      for(let i=0;i<6;i++){ const a=Math.PI/180*(60*i-90), x=cxp+r*Math.cos(a), y=cyp+r*Math.sin(a);
+        i?cx.lineTo(x,y):cx.moveTo(x,y); } cx.closePath(); },
+
+    /* a lit collectible: outer bloom, body gradient, specular highlight. The
+       phase makes a field of them breathe slightly out of step with each other. */
+    orb(cx,x,y,r,c1,c2,ph){
+      const p=0.86+0.14*Math.sin((ph||0));
+      const g=cx.createRadialGradient(x-r*0.35,y-r*0.4,r*0.1,x,y,r*2.6);
+      g.addColorStop(0,c1); g.addColorStop(0.34,c2); g.addColorStop(1,'rgba(0,0,0,0)');
+      cx.fillStyle=g; cx.beginPath(); cx.arc(x,y,r*2.6*p,0,7); cx.fill();
+      const b=cx.createRadialGradient(x-r*0.4,y-r*0.45,r*0.05,x,y,r);
+      b.addColorStop(0,'#FFFFFF'); b.addColorStop(0.35,c1); b.addColorStop(1,c2);
+      cx.fillStyle=b; cx.beginPath(); cx.arc(x,y,r*p,0,7); cx.fill(); },
+
+    /* a tile with a light source: top face brighter, a hairline rim, a shadow
+       under it. Used for maze walls and for letter tiles. */
+    tile(cx,x,y,w,h,r,top,bot,rim){
+      cx.save(); cx.shadowColor='rgba(10,6,26,.45)'; cx.shadowBlur=Math.max(4,h*0.18); cx.shadowOffsetY=Math.max(2,h*0.08);
+      const g=cx.createLinearGradient(0,y,0,y+h); g.addColorStop(0,top); g.addColorStop(1,bot);
+      cx.fillStyle=g; SGFX.rr(cx,x,y,w,h,r); cx.fill(); cx.restore();
+      if(rim){ cx.strokeStyle=rim; cx.lineWidth=Math.max(1,h*0.045); SGFX.rr(cx,x,y,w,h,r); cx.stroke(); }
+      cx.fillStyle='rgba(255,255,255,.22)'; SGFX.rr(cx,x+w*0.12,y+h*0.09,w*0.76,h*0.20,h*0.10); cx.fill(); },
+
+    /* --- particles ------------------------------------------------------
+       One list per engine, spawned by the events worth noticing and drained by
+       run(). Four kinds: spark, ring, text and mote (ambient drift). */
+    spark(fx,x,y,n,cols,opt){ opt=opt||{};
+      const sp=opt.speed||3.4, up=opt.up||0, g=opt.g==null?0.16:opt.g;
+      for(let i=0;i<n;i++){ const a=opt.dir!=null?opt.dir+(Math.random()-0.5)*(opt.spread||1.4)
+          :(i/n)*Math.PI*2+Math.random()*0.5;
+        const v=sp*(0.5+Math.random());
+        fx.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-up,g,rot:Math.random()*7,
+          vr:(Math.random()-0.5)*0.5,life:1,decay:opt.decay||0.028,
+          col:cols[i%cols.length],rx:opt.rx||3.6,ry:opt.ry||6.4}); } },
+    ring(fx,x,y,col,opt){ opt=opt||{};
+      fx.push({ring:1,x,y,r:opt.r0||6,gr:opt.grow||7,life:1,decay:opt.decay||0.045,
+        col:col||'255,209,63',lw:opt.lw||5}); },
+    say(fx,x,y,text,col){ fx.push({text,x,y,life:1.4,decay:0.02,col:col||'#E5533D',size:opt_size(text)}); },
+    /* ambient motes: the slow drifting dust that makes a still background feel
+       like air rather than a picture */
+    motes(n,w,h){ const out=[]; for(let i=0;i<n;i++) out.push({x:Math.random()*w,y:Math.random()*h,
+      r:0.7+Math.random()*1.8,vx:(Math.random()-0.5)*0.18,vy:-0.06-Math.random()*0.22,
+      a:0.10+Math.random()*0.26,ph:Math.random()*7}); return out; },
+    drawMotes(cx,list,w,h,t){ cx.save();
+      for(const m of list){ m.x+=m.vx; m.y+=m.vy; if(m.y<-4){ m.y=h+4; m.x=Math.random()*w; }
+        if(m.x<-4) m.x=w+4; if(m.x>w+4) m.x=-4;
+        cx.globalAlpha=m.a*(0.55+0.45*Math.sin(t*0.002+m.ph));
+        cx.fillStyle='#FFF6E0'; cx.beginPath(); cx.arc(m.x,m.y,m.r,0,7); cx.fill(); }
+      cx.restore(); },
+
+    run(cx,fx,scale){ if(!fx||!fx.length) return; scale=scale||1;
+      for(let i=fx.length-1;i>=0;i--){ const f=fx[i]; f.life-=f.decay;
+        if(f.life<=0){ fx.splice(i,1); continue; }
+        const a=Math.max(0,Math.min(1,f.life));
+        if(f.ring){ f.r+=f.gr; cx.strokeStyle='rgba('+f.col+','+a*0.9+')'; cx.lineWidth=f.lw*a;
+          cx.beginPath(); cx.arc(f.x,f.y,f.r,0,7); cx.stroke(); }
+        else if(f.text){ f.y-=1.3; cx.save(); cx.globalAlpha=a; cx.textAlign='center'; cx.textBaseline='middle';
+          cx.font='800 '+(f.size||26)+'px Sono, ui-monospace, monospace';
+          cx.lineWidth=6; cx.strokeStyle='rgba(255,255,255,.95)'; cx.strokeText(f.text,f.x,f.y);
+          cx.fillStyle=f.col; cx.fillText(f.text,f.x,f.y); cx.restore(); }
+        else { f.x+=f.vx; f.y+=f.vy; f.vy+=f.g; f.vx*=0.99; f.rot+=f.vr;
+          cx.save(); cx.globalAlpha=a; cx.translate(f.x,f.y); cx.rotate(f.rot);
+          cx.fillStyle=f.col; cx.beginPath(); cx.ellipse(0,0,f.rx*scale,f.ry*scale,0,0,7); cx.fill();
+          cx.fillStyle='rgba(255,255,255,.5)'; cx.beginPath(); cx.ellipse(-1,-2,f.rx*0.4,f.ry*0.4,0,0,7); cx.fill();
+          cx.restore(); } } },
+
+    /* a motion trail: the last N positions of something, fading and narrowing.
+       push() each frame, draw() once. */
+    trail(){ return { pts:[], push(x,y,max){ this.pts.push({x,y});
+        if(this.pts.length>(max||14)) this.pts.shift(); },
+      draw(cx,col,w){ const p=this.pts; if(p.length<2) return; cx.save(); cx.lineCap='round';
+        for(let i=1;i<p.length;i++){ const f=i/p.length;
+          cx.strokeStyle='rgba('+col+','+(f*0.45)+')'; cx.lineWidth=(w||6)*f;
+          cx.beginPath(); cx.moveTo(p[i-1].x,p[i-1].y); cx.lineTo(p[i].x,p[i].y); cx.stroke(); }
+        cx.restore(); },
+      clear(){ this.pts.length=0; } }; },
+
+    /* the scrim that makes gameplay legible over a painting, plus the vignette
+       that stops the play field looking like a flat rectangle of picture */
+    scrim(cx,w,h,amt){ const g=cx.createLinearGradient(0,0,0,h);
+      const a=amt==null?0.30:amt;
+      g.addColorStop(0,'rgba(16,10,34,'+(a*1.15)+')'); g.addColorStop(0.45,'rgba(16,10,34,'+(a*0.62)+')');
+      g.addColorStop(1,'rgba(16,10,34,'+(a*1.3)+')'); cx.fillStyle=g; cx.fillRect(0,0,w,h); },
+    vignette(cx,w,h,amt){ const r=Math.max(w,h)*0.75;
+      const g=cx.createRadialGradient(w/2,h/2,r*0.42,w/2,h/2,r);
+      g.addColorStop(0,'rgba(0,0,0,0)'); g.addColorStop(1,'rgba(10,6,24,'+(amt==null?0.42:amt)+')');
+      cx.fillStyle=g; cx.fillRect(0,0,w,h); },
+
+    /* screen shake: call hit() on impact, then wrap the frame in begin()/end() */
+    shake(){ return { t:0, m:0, hit(m){ this.m=Math.max(this.m,m||6); this.t=1; },
+      begin(cx){ if(this.t<=0) return; this.t-=0.07; const k=this.m*this.t*this.t;
+        cx.save(); cx.translate((Math.random()-0.5)*k,(Math.random()-0.5)*k); this._on=1; },
+      end(cx){ if(this._on){ cx.restore(); this._on=0; } } }; }
+  };
+  function opt_size(t){ return String(t||'').length>10?20:26; }
 
   /* A polished vector moth drawn straight onto the canvas — dusty scalloped wings,
      a fuzzy body, feathered antennae, and a soft blue glow when it's edible.
@@ -205,12 +346,12 @@
     let bee={c:scc,r:scr,px:scc,py:scr,dir:[0,0],want:[0,0]};
     let moths=[], score=0, lives=3, t=CFG.time, jelly=null, flee=0, flower=null, flowerT=5, card=null, over=false, fx=[];
     // Celebratory splash — petal burst + shockwave ring + "+1 LIFE" pop, drawn in the loop.
-    function spawnSplash(){ const cw=COLS*CELL, ch=ROWS*CELL, N=28, cols=['#F0B429','#FF7FB0','#8FA0F5','#4FC98A','#FFD13F'];
-      for(let i=0;i<N;i++){ const a=(i/N)*Math.PI*2+Math.random()*0.4, sp=2.4+Math.random()*4.2;
-        fx.push({x:cw/2,y:ch/2,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-1.4,rot:Math.random()*7,vr:(Math.random()-0.5)*0.4,life:1,col:cols[i%cols.length]}); }
-      fx.push({ring:true,x:cw/2,y:ch/2,r:8,life:1});
-      fx.push({ring:true,x:cw/2,y:ch/2,r:8,life:1.3,slow:1});
-      fx.push({text:'+1 LIFE  ❤',x:cw/2,y:ch/2-4,life:1.5}); }
+    const trail=SGFX.trail(), shake=SGFX.shake(), motes=SGFX.motes(26,COLS*CELL,ROWS*CELL);
+    function spawnSplash(){ const cw=COLS*CELL, ch=ROWS*CELL;
+      SGFX.spark(fx,cw/2,ch/2,28,['#F0B429','#FF7FB0','#8FA0F5','#4FC98A','#FFD13F'],{speed:4.4,up:1.4});
+      SGFX.ring(fx,cw/2,ch/2,'255,209,63',{grow:8});
+      SGFX.ring(fx,cw/2,ch/2,'255,255,255',{grow:5,decay:0.034});
+      SGFX.say(fx,cw/2,ch/2-4,'+1 LIFE'); shake.hit(7); }
     const words=pool(14); let wi=0;
     for(let i=0;i<CFG.moths;i++){ const mc=1+(i*3)%(COLS-2); moths.push({c:mc,r:1,px:mc,py:1,dir:[1,0]}); }
     // one royal jelly + dot bookkeeping
@@ -283,11 +424,15 @@
           flee=Math.max(0,flee-dt/1000);
           const bc=Math.round(bee.px), br=Math.round(bee.py);
           if(MAZE[br]&&MAZE[br][bc]===1){ MAZE[br][bc]=2; score+=10; dots--;
+            SGFX.spark(fx,bc*CELL+CELL/2,br*CELL+CELL/2,4,['#FFE9A8','#F0B429'],{speed:1.9,decay:0.06,rx:2,ry:2.6});
             if(dots<=0){ over=true; finish(true); return; } }          // maze cleared → win the round
           if(J.c===bc&&J.r===br&&!J.got){ J.got=true; flee=6; }
           if(flower && Math.round(flower.c)===bc && Math.round(flower.r)===br){ flower=null; spellCard(); }
           moths.forEach(m=>{ if(Math.abs(m.px-bee.px)<0.5&&Math.abs(m.py-bee.py)<0.5){
-            if(flee>0){ score+=50; m.px=6;m.py=1; } else { lives--; bee.px=6;bee.py=5;bee.dir=[0,0];
+            if(flee>0){ score+=50; m.px=6;m.py=1; SGFX.ring(fx,m.px*CELL+CELL/2,m.py*CELL+CELL/2,'150,180,255',{grow:9}); }
+            else { lives--; shake.hit(11); trail.clear();
+              SGFX.spark(fx,bee.px*CELL+CELL/2,bee.py*CELL+CELL/2,14,['#E0553C','#FF9C7A'],{speed:4});
+              bee.px=6;bee.py=5;bee.dir=[0,0];
               if(lives<=0){ over=true; finish(false); } } } });
           dotTimer+=dt/1000; if(dotTimer>=1){ dotTimer=0; t--; flowerT--; if(flowerT<=0&&!flower){ flowerT=9;
             let c,r,tries=0; do{ c=1+Math.floor(Math.random()*(COLS-2)); r=1+Math.floor(Math.random()*(ROWS-2)); }while(!open(c,r)&&++tries<50);
@@ -299,19 +444,29 @@
       }catch(err){ /* never let a render/logic error stop the loop — the bee must keep moving */ }
     }
     function draw(){
-      cx.clearRect(0,0,BW,BH);
-      const rrect=(x,y,w,h,rad)=>{ if(cx.roundRect){ cx.beginPath(); cx.roundRect(x,y,w,h,rad); } else { cx.beginPath(); cx.moveTo(x+rad,y); cx.arcTo(x+w,y,x+w,y+h,rad); cx.arcTo(x+w,y+h,x,y+h,rad); cx.arcTo(x,y+h,x,y,rad); cx.arcTo(x,y,x+w,y,rad); cx.closePath(); } };
-      // rich illustrated backdrop (Claude Design world plate), softened so the maze reads on top
-      if(!drawWorld(cx,world,0,0,BW,BH)){ cx.fillStyle='#8FCF7A'; cx.fillRect(0,0,BW,BH); }
-      cx.fillStyle='rgba(30,22,60,.28)'; cx.fillRect(0,0,BW,BH);   // scrim for contrast
-      // walls as translucent honeycomb tiles; paths let the backdrop shine through
+      shake.begin(cx);
+      cx.clearRect(-40,-40,BW+80,BH+80);
+      const T=Date.now();
+      // painted play field, scrimmed so the maze reads on top of it
+      if(!drawWorld(cx,world,0,0,BW,BH)){ cx.fillStyle='#4C7A54'; cx.fillRect(0,0,BW,BH); }
+      SGFX.scrim(cx,BW,BH,0.34);
+      SGFX.drawMotes(cx,motes,BW,BH,T);
+      /* the walls are HONEYCOMB - six sides, a light source above, a shadow under
+         each cell. They used to be rounded squares at 30% opacity, which is
+         neither a honeycomb nor a wall. */
       for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){ const v=MAZE[r][c];
-        if(v===0){ cx.fillStyle='rgba(240,180,41,.30)'; rrect(c*CELL+3,r*CELL+3,CELL-6,CELL-6,CELL*0.3); cx.fill();
-          cx.strokeStyle='rgba(255,214,110,.55)'; cx.lineWidth=1.5; cx.stroke(); }
-        else if(v===1){ cx.fillStyle='#FFCF3F'; cx.beginPath(); cx.arc(c*CELL+CELL/2,r*CELL+CELL/2,3.6,0,7); cx.fill();
-          cx.fillStyle='rgba(255,255,255,.7)'; cx.beginPath(); cx.arc(c*CELL+CELL/2-1,r*CELL+CELL/2-1,1.2,0,7); cx.fill(); } }
-      if(!J.got){ cx.fillStyle='#FFE28A'; cx.beginPath(); cx.arc(J.c*CELL+CELL/2,J.r*CELL+CELL/2,8,0,7); cx.fill();
-        cx.strokeStyle='#F0B429'; cx.lineWidth=2; cx.stroke(); }
+        const px=c*CELL+CELL/2, py=r*CELL+CELL/2;
+        if(v===0){
+          cx.save(); cx.shadowColor='rgba(8,5,20,.55)'; cx.shadowBlur=CELL*0.22; cx.shadowOffsetY=CELL*0.09;
+          const g=cx.createLinearGradient(0,py-CELL*0.5,0,py+CELL*0.5);
+          g.addColorStop(0,'rgba(255,214,122,.96)'); g.addColorStop(.55,'rgba(233,168,32,.94)'); g.addColorStop(1,'rgba(168,113,14,.94)');
+          cx.fillStyle=g; SGFX.hex(cx,px,py,CELL*0.53); cx.fill(); cx.restore();
+          cx.strokeStyle='rgba(255,243,206,.55)'; cx.lineWidth=1.4; SGFX.hex(cx,px,py,CELL*0.53); cx.stroke();
+          cx.fillStyle='rgba(120,72,8,.34)'; SGFX.hex(cx,px,py,CELL*0.30); cx.fill();
+        }
+        else if(v===1) SGFX.orb(cx,px,py,CELL*0.10,'#FFF3C4','#F0B429',T/420+(c+r)*0.7);
+      }
+      if(!J.got) SGFX.orb(cx,J.c*CELL+CELL/2,J.r*CELL+CELL/2,CELL*0.24,'#FFFFFF','#FFC93F',T/260);
       if(flower){ const fi=sgImg('env-meadow'); cx.font=(CELL*0.72)+'px serif'; cx.fillText('🌼',flower.c*CELL+CELL*0.14,flower.r*CELL+CELL*0.8); }
       // moths — the delivered grey-moth sprite (blue glow when edible); vector moth as fallback
       const mi=sgImg('grey-moth'), _ph=Date.now()/90;
@@ -319,6 +474,9 @@
         if(flee>0){ cx.fillStyle='rgba(120,150,255,.45)'; cx.beginPath(); cx.arc(mx+CELL/2,my+CELL/2,CELL*0.44,0,7); cx.fill(); }
         let md=false; if(mi){ try{ const s=CELL*0.96, bob=Math.sin(_ph+i)*CELL*0.03; cx.drawImage(mi,mx+(CELL-s)/2,my+(CELL-s)/2+bob,s,s); md=true; }catch(e){} }
         if(!md) drawMoth(cx,mx+CELL*0.04,my+CELL*0.04,CELL*0.92,flee>0,_ph+i); });
+      // the bee leaves honey behind her, so motion has a direction you can see
+      trail.push(bee.px*CELL+CELL/2, bee.py*CELL+CELL/2, 16);
+      trail.draw(cx,'255,205,80',CELL*0.30);
       // bee — the delivered Bizzy sprite (flips with direction); avatar then blob as fallback
       const bi=sgImg('bizzy-side-fly')||avImg(heroAv())||avImg('bizzy'), bx=bee.px*CELL, by=bee.py*CELL; let beeDrew=false;
       if(bi){ try{ const bob=1+0.05*Math.sin(Date.now()/110), s=CELL*1.12*bob;
@@ -327,23 +485,9 @@
         cx.drawImage(bi,-s/2,-s/2,s,s); cx.restore(); beeDrew=true; }catch(e){ try{cx.restore();}catch(_){} } }
       if(!beeDrew){ cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(bx+CELL/2,by+CELL/2,CELL*0.34,0,7); cx.fill();
         cx.fillStyle='#2B2117'; cx.fillRect(bx+CELL*0.3,by+CELL*0.34,CELL*0.4,CELL*0.09); }
-      // celebratory splash particles (bloom burst on a correct spelling)
-      if(fx.length){
-        for(let i=fx.length-1;i>=0;i--){ const f=fx[i]; f.life-=0.025;
-          if(f.life<=0){ fx.splice(i,1); continue; }
-          if(f.ring){ f.r+=f.slow?4:8; cx.strokeStyle='rgba(255,209,63,'+Math.max(0,Math.min(1,f.life))+')'; cx.lineWidth=5;
-            cx.beginPath(); cx.arc(f.x,f.y,f.r,0,7); cx.stroke(); }
-          else if(f.text){ f.y-=1.3; const a=Math.max(0,Math.min(1,f.life));
-            cx.save(); cx.globalAlpha=a; cx.textAlign='center'; cx.textBaseline='middle';
-            cx.font='800 '+Math.floor(CELL*0.9)+'px Sono, ui-monospace, monospace';
-            cx.lineWidth=6; cx.strokeStyle='rgba(255,255,255,.95)'; cx.strokeText(f.text,f.x,f.y);
-            cx.fillStyle='#E5533D'; cx.fillText(f.text,f.x,f.y); cx.restore(); }
-          else { f.x+=f.vx; f.y+=f.vy; f.vy+=0.14; f.vx*=0.99; f.rot+=f.vr;
-            cx.save(); cx.globalAlpha=Math.max(0,Math.min(1,f.life)); cx.translate(f.x,f.y); cx.rotate(f.rot);
-            cx.fillStyle=f.col; cx.beginPath(); cx.ellipse(0,0,4.5,8,0,0,7); cx.fill();
-            cx.fillStyle='rgba(255,255,255,.5)'; cx.beginPath(); cx.ellipse(-1,-2,1.6,3,0,0,7); cx.fill(); cx.restore(); }
-        }
-      }
+      SGFX.run(cx,fx);
+      SGFX.vignette(cx,BW,BH,0.40);
+      shake.end(cx);
       host.querySelector('#sg-score').textContent='🍯 '+score+' / '+CFG.target;
       host.querySelector('#sg-time').textContent='⏱ '+Math.floor(t/60)+':'+String(t%60).padStart(2,'0');
       host.querySelector('#sg-lives').textContent='❤'.repeat(Math.max(0,lives));
@@ -1173,43 +1317,56 @@
     function setHud(){ host.querySelector('#sg-score').textContent='⭐ '+score; host.querySelector('#sg-lives').textContent='❤'.repeat(Math.max(0,lives)); }
     function reset(){ const cxm=Math.floor(COLS/2), cym=Math.floor(ROWS/2);
       snake=[{x:cxm,y:cym},{x:cxm-1,y:cym},{x:cxm-2,y:cym}]; dir={x:1,y:0}; ndir={x:1,y:0}; layoutWord(); setHud(); }
-    function spawnSplash(txt){ const cw=COLS*CELL, ch=ROWS*CELL, cols=['#F0B429','#FF7FB0','#8FA0F5','#4FC98A'];
-      for(let i=0;i<20;i++){ const a=(i/20)*Math.PI*2, sp=2+Math.random()*3.5;
-        fx.push({x:cw/2,y:ch/2,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-1,rot:0,vr:(Math.random()-0.5)*0.4,life:1,col:cols[i%4]}); }
-      fx.push({ring:true,x:cw/2,y:ch/2,r:8,life:1}); if(txt) fx.push({text:txt,x:cw/2,y:ch/2-4,life:1.4}); }
-    function loseLife(){ lives--; setHud(); if(lives<=0){ finish(false); return; }
+    const shake=SGFX.shake(), motes=SGFX.motes(22,BW,BH);
+    function spawnSplash(txt){ const cw=COLS*CELL, ch=ROWS*CELL;
+      SGFX.spark(fx,cw/2,ch/2,22,['#F0B429','#FF7FB0','#8FA0F5','#4FC98A'],{speed:3.8,up:1});
+      SGFX.ring(fx,cw/2,ch/2,'255,209,63',{grow:7});
+      if(txt) SGFX.say(fx,cw/2,ch/2-4,txt,'#1F8A52'); shake.hit(5); }
+    function loseLife(){ lives--; setHud(); shake.hit(12);
+      try{ const h=snake[0]; SGFX.spark(fx,h.x*CELL+CELL/2,h.y*CELL+CELL/2,16,['#E0553C','#FF9C7A','#FFD24D'],{speed:4.2}); }catch(e){}
+      if(lives<=0){ finish(false); return; }
       bonk=3; const cxm=Math.floor(COLS/2), cym=Math.floor(ROWS/2); snake=[{x:cxm,y:cym},{x:cxm-1,y:cym},{x:cxm-2,y:cym}]; dir={x:1,y:0}; ndir={x:1,y:0}; }
     function step(){ if(over) return; dir=ndir; const h=snake[0], nx=(h.x+dir.x+COLS)%COLS, ny=(h.y+dir.y+ROWS)%ROWS;
       for(let i=0;i<snake.length-1;i++) if(snake[i].x===nx&&snake[i].y===ny){ loseLife(); return; }
       snake.unshift({x:nx,y:ny}); let grew=false;
       for(let t=0;t<tiles.length;t++){ if(tiles[t].x===nx&&tiles[t].y===ny){
-        if(tiles[t].idx===spelled){ spelled++; score+=15; grew=true; tiles.splice(t,1);
+        if(tiles[t].idx===spelled){ spelled++; score+=15; grew=true;
+          SGFX.spark(fx,tiles[t].x*CELL+CELL/2,tiles[t].y*CELL+CELL/2,9,['#FFE9A8','#F0B429','#FFFFFF'],{speed:2.6,decay:0.05,rx:2.6,ry:3.4});
+          SGFX.ring(fx,tiles[t].x*CELL+CELL/2,tiles[t].y*CELL+CELL/2,'255,233,168',{grow:5,decay:0.06,lw:3});
+          tiles.splice(t,1);
           if(spelled>=word.length){ wordsDone++; score+=40; spawnSplash('✓ '+word.toUpperCase());
             try{ if(typeof addCoins==='function') addCoins(10); }catch(e){}
             // EVOLVE: grow the snake through the forms up to Vasuki (the achievable endpoint)
             const ns=Math.min(5, Math.round(wordsDone/CFG.words*5));
             if(ns!==snakeStage){ snakeStage=ns; if(!wornSkin) PAL=EVO_PAL[ns]; if(evo) evo.set(ns, ()=>onVasuki(), 5); }
             if(tick>110) tick-=8; layoutWord(); } else renderWord(); }
-        else { bonk=2; } break; } }
+        else { bonk=2; shake.hit(6);
+          SGFX.spark(fx,nx*CELL+CELL/2,ny*CELL+CELL/2,8,['#E0553C','#FF9C7A'],{speed:2.4,decay:0.05}); } break; } }
       if(!grew) snake.pop(); setHud(); }
     function roundRect(x,y,w,h,r){ cx.beginPath(); cx.moveTo(x+r,y); cx.arcTo(x+w,y,x+w,y+h,r); cx.arcTo(x+w,y+h,x,y+h,r); cx.arcTo(x,y+h,x,y,r); cx.arcTo(x,y,x+w,y,r); cx.closePath(); }
     function draw(){
-      cx.clearRect(0,0,BW,BH);
-      // garden backdrop — soft grass gradient with a faint scale/leaf pattern (design-language, not a dark scrim)
-      const bg=cx.createLinearGradient(0,0,0,BH); bg.addColorStop(0,'#BFE8A0'); bg.addColorStop(1,'#7FC97A');
-      cx.fillStyle=bg; cx.fillRect(0,0,BW,BH);
-      cx.fillStyle='rgba(46,111,46,.08)';
-      for(let gy=0;gy<ROWS;gy++) for(let gx=0;gx<COLS;gx++){ if((gx+gy)%2) continue;
-        cx.beginPath(); cx.arc(gx*CELL+CELL/2,gy*CELL+CELL*0.7,CELL*0.26,Math.PI,0); cx.fill(); }
-      cx.strokeStyle='rgba(255,255,255,.14)'; cx.lineWidth=1;
+      shake.begin(cx);
+      cx.clearRect(-40,-40,BW+80,BH+80);
+      const T=Date.now();
+      // the painted garden, not a green gradient with dots on it
+      if(!drawWorld(cx,opts.world||'forest',0,0,BW,BH)){
+        const bg=cx.createLinearGradient(0,0,0,BH); bg.addColorStop(0,'#4E7A46'); bg.addColorStop(1,'#2E5230');
+        cx.fillStyle=bg; cx.fillRect(0,0,BW,BH); }
+      SGFX.scrim(cx,BW,BH,0.30);
+      SGFX.drawMotes(cx,motes,BW,BH,T);
+      cx.strokeStyle='rgba(255,255,255,.07)'; cx.lineWidth=1;
       for(let gx=1;gx<COLS;gx++){ cx.beginPath(); cx.moveTo(gx*CELL,0); cx.lineTo(gx*CELL,BH); cx.stroke(); }
       for(let gy=1;gy<ROWS;gy++){ cx.beginPath(); cx.moveTo(0,gy*CELL); cx.lineTo(BW,gy*CELL); cx.stroke(); }
-      // letter tiles as honeycomb chips; next needed one glows
+      /* letter tiles: real objects with a lit face and a shadow, and the one the
+         snake needs next carries its own light so the eye finds it instantly */
+      cx.textAlign='center'; cx.textBaseline='middle';
       for(let t=0;t<tiles.length;t++){ const tl=tiles[t], px=tl.x*CELL, py=tl.y*CELL, isNext=tl.idx===spelled;
-        cx.fillStyle=isNext?'#F0B429':'rgba(255,247,226,.94)'; roundRect(px+3,py+3,CELL-6,CELL-6,8); cx.fill();
-        if(isNext){ cx.strokeStyle='#C8901B'; cx.lineWidth=2.5; cx.stroke(); }
-        cx.fillStyle=isNext?'#2B2117':'#8A7A55'; cx.font='800 '+Math.floor(CELL*0.56)+'px Sono, monospace';
-        cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText(tl.ch.toUpperCase(),px+CELL/2,py+CELL/2+1); }
+        if(isNext) SGFX.orb(cx,px+CELL/2,py+CELL/2,CELL*0.30,'rgba(255,243,196,.85)','rgba(240,180,41,.35)',T/300);
+        SGFX.tile(cx,px+3,py+3,CELL-6,CELL-6,CELL*0.20,
+          isNext?'#FFE9A8':'rgba(252,247,236,.97)', isNext?'#E8A81C':'rgba(219,208,187,.97)',
+          isNext?'rgba(140,86,6,.55)':'rgba(120,104,76,.35)');
+        cx.fillStyle=isNext?'#4A3306':'#6A5C40'; cx.font='800 '+Math.floor(CELL*0.54)+'px Sono, monospace';
+        cx.fillText(tl.ch.toUpperCase(),px+CELL/2,py+CELL/2+1); }
       cx.textAlign='left'; cx.textBaseline='alphabetic';
       // ===== the snake — connected scaled body + a snake head (coloured to the worn Serpent avatar) =====
       const cc=(s)=>({x:s.x*CELL+CELL/2, y:s.y*CELL+CELL/2});
@@ -1249,14 +1406,9 @@
       // nostrils
       cx.fillStyle=PAL[3]; [[hw*0.8,-hh*0.3],[hw*0.8,hh*0.3]].forEach(n=>{ cx.beginPath(); cx.arc(n[0],n[1],CELL*0.03,0,7); cx.fill(); });
       cx.restore();
-      // splash fx
-      for(let i=fx.length-1;i>=0;i--){ const f=fx[i]; f.life-=0.03; if(f.life<=0){ fx.splice(i,1); continue; }
-        if(f.ring){ f.r+=7; cx.strokeStyle='rgba(255,209,63,'+Math.max(0,f.life)+')'; cx.lineWidth=4; cx.beginPath(); cx.arc(f.x,f.y,f.r,0,7); cx.stroke(); }
-        else if(f.text){ f.y-=1.1; cx.save(); cx.globalAlpha=Math.max(0,f.life); cx.textAlign='center'; cx.textBaseline='middle';
-          cx.font='800 '+Math.floor(CELL*0.7)+'px Sono, monospace'; cx.lineWidth=5; cx.strokeStyle='#fff'; cx.strokeText(f.text,f.x,f.y);
-          cx.fillStyle='#2FA35C'; cx.fillText(f.text,f.x,f.y); cx.restore(); }
-        else { f.x+=f.vx; f.y+=f.vy; f.vy+=0.14; f.rot+=f.vr; cx.save(); cx.globalAlpha=Math.max(0,f.life);
-          cx.translate(f.x,f.y); cx.rotate(f.rot); cx.fillStyle=f.col; cx.beginPath(); cx.ellipse(0,0,4,7,0,0,7); cx.fill(); cx.restore(); } }
+      SGFX.run(cx,fx);
+      SGFX.vignette(cx,BW,BH,0.36);
+      shake.end(cx);
     }
     function frame(){ if(over){ if(loop){clearInterval(loop);loop=null;} return; }
       try{ step(); if(!over) draw(); }catch(e){}
