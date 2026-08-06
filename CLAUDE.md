@@ -141,6 +141,16 @@ handlers. App lives in this folder; open `index.html` to run.
   `trailToMap` all set `nav:'trail', screen:'app'` so a stop or a region can be opened from
   Home, Progress or a concept page. `trailBack` retraces: stop → region → map (it used to
   stop at the region because `trailAct` was never cleared).
+- **Ultra has a curriculum**, not just pins: 5 landmarks x 4 stops (`ULTRA_PINS`,
+  `ultraStopsOf`). Each stop teaches one champion technique from `SB_ADV_TIPS` (36
+  authored) and drills its own 24-word block **sampled across** its band of `ADV.pool()`
+  — a contiguous slice reads as dictionary dregs once the difficulty score flattens.
+  Progress lives at `c.ultra.done`; `ultraTrain` hands the block to Practice.
+- **Testing unlock overrides entitlements, and now says so.** `SB_ENT.hasAddon` returns
+  true for everything under dev unlock, which made the Advanced Pack switch look dead and
+  plan changes look ignored. The Advanced card swaps its switch for a "Testing unlock is
+  on" pointer, and the plans sheet carries a banner. Advanced is still gated by the add-on
+  alone — never by tier or premium.
 - **Progress is not a tab** — it opens from Settings → Progress & reports (and the drawer).
   It reads rank → the World Atlas (tier, act, stops) → Practice (Stage + mastery) → this
   week → word difficulty → the 30-day targets → the word heatmap: the same order and the

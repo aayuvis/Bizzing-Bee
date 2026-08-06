@@ -693,7 +693,7 @@
       const ring = isDone ? 'linear-gradient(160deg,#FFD24D,#C8791B)'
         : cur ? 'linear-gradient(160deg,#FFE49B,#E8A81C)' : 'rgba(18,14,40,.58)';
       const size = cur ? 52 : 44;
-      return `<button data-act="${on ? 'openUltra' : 'openAdvanced'}" data-arg="${i}" class="atlas-pin"
+      return `<button data-act="${on ? 'ultraAct' : 'openAdvanced'}" data-arg="${i}" class="atlas-pin"
           style="left:${x}%;top:${y}%;--pz:${cur ? 3 : 2}" title="${escA(label)}">
         <span class="atlas-dot" style="width:${size}px;height:${size}px;background:${ring};
           border:2px solid rgba(255,246,222,${cur || isDone ? '.9' : '.42'});color:${cur || isDone ? '#3B2A00' : 'rgba(255,246,222,.85)'};
@@ -707,6 +707,111 @@
       <img src="app-art/atlas-ultra.jpg" alt="" loading="lazy" decoding="async">
       ${pins}
       <span style="position:absolute;left:12px;bottom:11px;z-index:4;font-size:11.5px;font-weight:800;color:#fff;background:rgba(10,7,26,.56);border-radius:999px;padding:5px 12px;backdrop-filter:blur(3px)">${esc(line)}</span></div>`;
+  }
+  /* ---------------------------------------------------------------
+     Ultra has its own curriculum now, not just five pins over a word pile.
+     Five landmarks x four stops = twenty stops. Each stop teaches ONE
+     champion technique (SB_ADV_TIPS, 36 authored) and drills its own block
+     of the hardest words in the library, taken hardest-first so every stop
+     is harder than the one before it. Progress lives at c.ultra.done.
+     --------------------------------------------------------------- */
+  const ULTRA_STOPS = 4;
+  const ULTRA_WORDS = 24;
+  const uTips = () => { try { return window.SB_ADV_TIPS || []; } catch (e) { return []; } };
+  const uPool = () => { try { return (window.ADV && ADV.pool) ? ADV.pool() : []; } catch (e) { return []; } };
+  const uProg = c => (c.ultra || (c.ultra = { done: {} }));
+  function ultraStopsOf(ai) {
+    const tips = uTips(), pool = uPool(), out = [];
+    const total = ULTRA_PINS.length * ULTRA_STOPS;
+    for (let k = 0; k < ULTRA_STOPS; k++) {
+      const idx = ai * ULTRA_STOPS + k;
+      const tip = tips[idx % Math.max(1, tips.length)] || null;
+      /* The pool is hardest-first, so stop n owns the nth BAND of it — and the stop's
+         words are sampled across that band rather than taken as a contiguous run. Deep
+         in the pool the difficulty score flattens and a straight slice returns whatever
+         happens to sit together alphabetically, which reads as dictionary dregs. */
+      const per = Math.max(ULTRA_WORDS, Math.floor(pool.length / total) || ULTRA_WORDS);
+      const band = pool.slice(idx * per, (idx + 1) * per);
+      const step = Math.max(1, Math.floor(band.length / ULTRA_WORDS));
+      const words = [];
+      for (let j = 0; j < ULTRA_WORDS && j * step < band.length; j++) words.push(band[j * step]);
+      out.push({ id: 'ul' + idx, idx, tip,
+        title: tip ? tip.title : ('Champion block ' + (idx + 1)),
+        cat: tip ? tip.cat : 'tactics',
+        words: words.filter(Boolean) });
+    }
+    return out;
+  }
+  const ultraDone = (c, id) => !!(uProg(c).done || {})[id];
+  app2.ultraAct = i => set({ nav: 'trail', screen: 'app', trailView: 'ultra', ultraAct: Math.max(0, Math.min(ULTRA_PINS.length - 1, +i || 0)), ultraStop: null });
+  app2.ultraPick = i => set({ ultraStop: +i });
+  app2.ultraSteps = () => set({ ultraOpen: !state.ultraOpen });
+  /* Train the block: the same hand-off the Honey stops use, so Ultra words land in
+     Practice with the rest of the speller's record. */
+  app2.ultraTrain = id => { const c = active(); const ai = state.ultraAct || 0;
+    const st = ultraStopsOf(ai).find(x => x.id === id); if (!st) return;
+    if (!st.words.length) { flash('The 128k library is still loading — try again in a moment'); return; }
+    uProg(c).done[id] = 1; save();
+    state.sessionWords = st.words.map(x => ({ w: x.w, d: x.d, s: x.s, p: x.p, o: x.o || '', r: x.r || '' }));
+    state.sessionLabel = 'Ultra · ' + st.title; state.gi = 0;
+    state.trailReturn = null; app2.startTrain(); };
+
+  function viewUltraAct() {
+    const c = active(); const ai = state.ultraAct || 0;
+    const [name, px, py] = ULTRA_PINS[ai];
+    const stops = ultraStopsOf(ai);
+    const dn = stops.filter(x => ultraDone(c, x.id)).length;
+    let sel = stops.findIndex(x => !ultraDone(c, x.id)); if (sel < 0) sel = stops.length - 1;
+    if (state.ultraStop != null) sel = Math.max(0, Math.min(stops.length - 1, state.ultraStop));
+    const cur = stops[sel], tip = cur.tip;
+    const W = 760, H = 220;
+    const pts = roadPoints(ROADS.greysea, stops.length, W);
+    const marks = pts.map((p, i) => {
+      const done = ultraDone(c, stops[i].id), now = i === dn && !done, on = i === sel;
+      const r = now ? 19 : 15;
+      return `<g transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)}) scale(${p.sc.toFixed(3)})" data-act="ultraPick" data-arg="${i}" role="button" tabindex="0" aria-label="Stop ${i + 1}" style="cursor:pointer">
+        <circle r="26" fill="transparent"/><ellipse cy="20" rx="16" ry="5" fill="rgba(10,6,20,.45)"/>
+        <circle r="${r}" fill="${done ? '#F0B429' : now ? '#FFFBEF' : 'rgba(240,236,226,.82)'}" stroke="${done || now ? '#FFF3D2' : 'rgba(60,48,26,.45)'}" stroke-width="${now ? 4 : 2.5}"${now ? ' style="animation:sb-pulse 2.4s ease-in-out infinite"' : ''}/>
+        <text text-anchor="middle" y="5" font-family="var(--display)" font-size="13" font-weight="800" fill="${done ? '#4A3306' : 'rgba(60,46,24,.78)'}">${done ? '✓' : (i + 1)}</text>
+        ${on ? `<circle r="${r + 6}" fill="none" stroke="#F0B429" stroke-width="3"/>` : ''}</g>`;
+    }).join('');
+    return `<div style="animation:sb-rise .35s ease both;max-width:900px;margin:0 auto">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <button data-act="trailToMap" style="display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:var(--muted)">← The map</button>
+        <span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px">
+          <span style="font-size:12px;font-weight:800;color:var(--muted)">Ultra Champions</span>${ring(dn, stops.length, dn === stops.length ? 'var(--good)' : '#FFD24D', 34)}</span>
+      </div>
+      <div style="margin-bottom:10px">
+        <span style="display:block;font-family:var(--display);font-weight:800;font-size:22px;line-height:1.1">${esc(name)}</span>
+        <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:700;margin-top:2px">Landmark ${ai + 1} of ${ULTRA_PINS.length} · ${dn} of ${stops.length} stops · the hardest words in the library</span>
+      </div>
+      <div style="position:relative;border-radius:20px;overflow:hidden;border:1px solid color-mix(in srgb,#F0B429 34%,var(--line));box-shadow:var(--sh-rest)">
+        <div style="position:relative;width:100%;height:${H}px">
+          <img src="app-art/atlas-ultra.jpg" alt="" loading="lazy" decoding="async"
+            style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:${px}% ${py}%">
+          <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,6,20,.28),rgba(8,6,20,.52))"></span>
+          <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible">
+            <path d="${ROADS.greysea}" fill="none" stroke="rgba(255,247,225,.45)" stroke-width="7" stroke-linecap="round" stroke-dasharray="3 12"/>
+            <path d="${ROADS.greysea}" fill="none" stroke="rgba(255,225,150,.92)" stroke-width="8" stroke-linecap="round" pathLength="100" stroke-dasharray="${(pts[Math.max(0, Math.min(stops.length - 1, dn))] ? pts[Math.max(0, Math.min(stops.length - 1, dn))].f * 100 : 0).toFixed(1)} 100"/>
+            ${marks}
+          </svg>
+        </div>
+      </div>
+      <div class="sb-card" style="margin-top:14px;padding:16px 18px 18px">
+        <div style="font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">Stop ${sel + 1} of ${stops.length}${tip ? ' · ' + esc(tip.cat) : ''}${ultraDone(c, cur.id) ? ' · done' : ''}</div>
+        <div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1.15;margin-top:4px">${tip && tip.ic ? tip.ic + ' ' : ''}${esc(cur.title)}</div>
+        ${tip ? `<p style="margin:8px 0 0;font-size:14px;line-height:1.55;color:var(--muted)">${esc(tip.hook)}</p>` : ''}
+        ${(tip && state.ultraOpen) ? `<div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
+            ${tip.steps.map((x, i) => `<div style="display:flex;gap:9px;font-size:13.5px;line-height:1.5"><span style="font-family:var(--mono);font-weight:800;color:var(--accent);flex-shrink:0">${i + 1}</span><span>${esc(x)}</span></div>`).join('')}
+            ${tip.example ? `<div style="margin-top:4px;padding:10px 12px;border-radius:10px;background:var(--surface2);font-size:13px;line-height:1.5"><b>Worked example.</b> ${esc(tip.example)}</div>` : ''}
+          </div>` : ''}
+        <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:14px">
+          ${tip ? `<button data-act="ultraSteps" style="display:inline-flex;align-items:center;gap:7px;padding:11px 17px;border-radius:var(--r-md,10px);background:${state.ultraOpen ? 'var(--surface2)' : 'var(--action,var(--accent))'};color:${state.ultraOpen ? 'var(--muted)' : 'var(--action-ink,#fff)'};font-weight:800;font-size:14px;${state.ultraOpen ? 'border:1px solid var(--line)' : 'box-shadow:var(--edge)'}">${iconSVG('bulb', 15)} ${state.ultraOpen ? 'Hide the technique' : 'Learn the technique'}</button>` : ''}
+          <button data-act="ultraTrain" data-arg="${escA(cur.id)}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 17px;border-radius:var(--r-md,10px);background:var(--paper,var(--bg2));border:1px solid var(--line);color:var(--ink,var(--text));font-weight:800;font-size:13.5px">${iconSVG('pencil', 15)} Train these ${cur.words.length || ULTRA_WORDS} words</button>
+        </div>
+        ${cur.words.length ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:13px">${cur.words.slice(0, 8).map(w => `<span style="font-family:var(--mono);font-size:12px;font-weight:700;padding:4px 9px;border-radius:999px;background:var(--surface2);color:var(--muted)">${esc(w.w)}</span>`).join('')}${cur.words.length > 8 ? `<span style="font-size:12px;color:var(--muted);font-weight:700;align-self:center">+${cur.words.length - 8} more</span>` : ''}</div>` : `<div class="sb-cn" style="margin-top:12px">The 128,000-word library loads on first use — open this stop again in a moment.</div>`}
+      </div>
+    </div>`;
   }
   function viewAtlas() {
     const c = active();
@@ -911,7 +1016,7 @@
   window.TRAIL = { view: () => { if (!T()) return '<div style="padding:40px;text-align:center;color:var(--muted)">Opening the Word Atlas…</div>';
     const v = state.trailView || 'map';
     return v === 'unit' ? viewUnit() : v === 'words' ? viewWords() : v === 'quiz' ? viewQuiz()
-      : v === 'act' ? viewAct() : viewAtlas(); } };
+      : v === 'ultra' ? viewUltraAct() : v === 'act' ? viewAct() : viewAtlas(); } };
 
   /* keyboard: 1-4 answers, Enter advances/checks, R replays */
   window.addEventListener('keydown', e => { try {
