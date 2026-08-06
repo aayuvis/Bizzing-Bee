@@ -666,6 +666,26 @@ function pronFor(w){ if(!w) return null; const k=nkey(w); if(/\s/.test(k)) retur
   if(!e) return null;
   const out={p:e.p||'',sy:e.sy||'',ps:e.ps||'',o:e.o||''};
   return (out.p||out.sy||out.ps||out.o)?out:null; }
+/* ---- settled picks: the home screen must not rewrite itself ----
+   The word library, the quote book and the tip book all arrive in shards after
+   boot, and each of the home cards picks deterministically from "everything
+   loaded right now". So the first paint picks from a quarter of the data and a
+   second later the card silently becomes a different word, a different quote, a
+   different tip — the home screen rewriting itself under the child's eyes about
+   a second in. That is what reads as the app glitching on load.
+
+   A pick is therefore made once per period and PINNED for that period. It is
+   allowed to be drawn from a smaller pool; it is not allowed to change while the
+   child is looking at it. The next hour (or the next day) picks again, from
+   whatever has landed by then — which by that point is everything. */
+const _pinned={};
+function settled(key,period,pick){
+  const p=_pinned[key];
+  if(p&&p.period===period&&p.val!=null) return p.val;
+  let val=null; try{ val=pick(); }catch(e){ val=null; }
+  if(val==null) return null;          // nothing to pick from yet; try again next render
+  _pinned[key]={period,val}; return val;
+}
 // Word of the hour — a rich, difficult word that rotates every hour, deterministically,
 // so every speller on the same hour sees the same gem. Pool = hard, fully-described words.
 let _wohPool=null;
@@ -675,15 +695,23 @@ function wohPool(){ if(_wohPool) return _wohPool; const src=(window.SB_DATA&&SB_
     // Prefer vetted bee words (bee-probability score) at a challenging-but-real level.
     const good=(e.bp&&e.bp>=60&&e.bp<=97)||(!e.bp&&e.y&&e.y>=3&&e.y<=4); if(good) out.push(e); }
   _wohPool=out.length?out:src.filter(e=>e&&e.w&&e.d&&e.p&&e.w.length>=7); return _wohPool; }
-function wordOfHour(){ const pool=wohPool(); if(!pool.length) return null;
+function wordOfHour(){
   const hr=Math.floor(Date.now()/3600000); // hours since epoch — changes every hour
-  let h=((hr*2654435761)>>>0)%pool.length; return pool[h]||pool[0]; }
+  return settled('woh',hr,()=>{ const pool=wohPool(); if(!pool.length) return null;
+    const h=((hr*2654435761)>>>0)%pool.length; return pool[h]||pool[0]||null; }); }
 // Quote of the hour — same deterministic hourly rotation, a different mixing constant so the
 // quote and the word never move in lockstep. Returns the quote plus its index into SB_QUOTES.
-function quoteOfHour(){ const all=(window.SB_QUOTES||[]); if(!all.length) return null;
+function quoteOfHour(){
   const hr=Math.floor(Date.now()/3600000);
-  const i=((hr*40503+1013904223)>>>0)%all.length; const q=all[i];
-  return q?{q, i}:null; }
+  const q=settled('qoh',hr,()=>{ const all=(window.SB_QUOTES||[]); if(!all.length) return null;
+    return all[((hr*40503+1013904223)>>>0)%all.length]||null; });
+  if(!q) return null;
+  /* the pinned quote keeps its identity; its INDEX is resolved against the book
+     as it stands now, because the quotes library grows after boot and Quotes is
+     opened by index */
+  const all=(window.SB_QUOTES||[]);
+  let i=all.indexOf(q); if(i<0) i=all.findIndex(x=>x&&x.q===q.q);
+  return {q, i:i<0?0:i}; }
 function viewWordCardPop(){ const w=state.wordCard; if(!w) return '';
   const pr=pronFor(w.w)||{p:w.p||'',sy:w.sy||'',ps:w.ps||'',o:w.o||''};
   const OLAB={Latin:'Latin',Greek:'Greek',French:'French',Spanish:'Spanish',Italian:'Italian',German:'German',Arabic:'Arabic',Japanese:'Japanese','Old English':'Old English',Norse:'Old Norse',Hindi:'Hindi/Sanskrit'};
@@ -1628,8 +1656,9 @@ const app = {
   startBuzz:()=>app.playGame('buzz'),
   // ===== games arcade =====
   openGames:()=>{ clearGTimer(); const c=active(); ensureLists(c); set({nav:'games', screen:'app', game:null, gInfo:false, typed:'', mood:'happy', conceptSel:null}); },
-  // ----- Spelling Quest (window.SQ) -----
-  openQuest:()=>{ clearGTimer(); if(window.SQ) SQ.open(); },
+  /* Spelling Quest is gone; its Arcade slot is the Mock Spelling Bee. Old
+     deep-links land on the new game rather than on nothing. */
+  openQuest:()=>{ clearGTimer(); if(window.MOCKBEE) MOCKBEE.open(); },
   openSaga:()=>{ if(!gateFeature('saga','Bizzy & the Great Unspelling')) return; clearGTimer(); if(window.SAGA2) SAGA2.open(); },
   openDaily:()=>{ clearGTimer(); if(window.SB_DAILY) SB_DAILY.open(); },
   // ----- Debug / QC: launch one saga engine standalone in a full-screen overlay -----
@@ -1663,26 +1692,10 @@ const app = {
   trvCell:(a)=>{ if(window.STV) STV.cell(a); },
   trvHear:()=>{ if(window.STV) STV.hear(); },
   trvExit:()=>{ if(window.STV) STV.exit(); },
-  sqExit:()=>{ if(window.SQ) SQ.exit(); },
-  sqPickSeason:(a)=>{ if(window.SQ) SQ.pickSeason(a); },
-  /* classic Boss Battle lives inside Spelling Quest now — quick fight from the season map */
+  /* Boss Battle used to be reached from the Spelling Quest season map; it is a
+     plain Arcade fight now. The rest of the sq* actions went out with the game. */
   sqBoss:()=>{ try{ clearInterval((state.sq||{}).timer); }catch(e){} state.sq=null; state.nav='games'; app.playGame('boss'); },
   catGroup:(a)=>set({catGroup:a||null}),
-  sqStart:()=>{ if(window.SQ) SQ.startChapter(); },
-  sqHear:()=>{ if(window.SQ) SQ.hear(); },
-  sqKey:(a)=>{ if(window.SQ) SQ.key(a); },
-  sqType:(v)=>{ if(window.SQ) SQ.type(v); },
-  sqKeyEnter:(e)=>{ if(window.SQ) SQ.keyEnter(e); },
-  sqPick:(a)=>{ if(window.SQ) SQ.pick(a); },
-  sqNext:()=>{ if(window.SQ) SQ.next(); },
-  sqRetry:()=>{ if(window.SQ) SQ.retry(); },
-  sqHearLine:(a)=>{ if(window.SQ) SQ.hearLine(a); },
-  sqBeat:()=>{ if(window.SQ) SQ.beatNext(); },
-  sqHearBeat:(a)=>{ if(window.SQ) SQ.hearBeat(a); },
-  sqToChallenge:()=>{ if(window.SQ) SQ.toChallenge(); },
-  sqGoCh:(a)=>{ if(window.SQ) SQ.goCh(a); },
-  sqBrief:()=>{ if(window.SQ) SQ.showBrief(); },
-  sqBegin:()=>{ if(window.SQ) SQ.beginSeason(); },
   // ----- Magic Squares -----
   magicCell:(i)=>{ const g=state.game; if(!g||g.type!=='magic') return; i=+i; if(g.board[i].done){ flash('That square is already yours ⭐'); return; }
     g.qs=magicBuildQs(g.board[i].id); if(g.qs.length<5){ flash('Not enough words in that theme yet'); return; }
@@ -2285,6 +2298,13 @@ function viewOnboarding(){
   </div>`;
 }
 
+/* A home card whose data has not landed yet holds its own space rather than
+   collapsing the grid — otherwise the row reflows the moment it arrives and the
+   whole screen jumps. Same shell, same height, a quiet shimmer where the words
+   will be. */
+function cardHold(label,h){ return `<div class="sb-card" aria-hidden="true" style="min-height:${h||128}px;padding:14px;display:flex;flex-direction:column;justify-content:center;gap:9px">
+  <span style="font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">${esc(label)}</span>
+  <span class="sb-hold" style="width:58%"></span><span class="sb-hold" style="width:88%"></span><span class="sb-hold" style="width:71%"></span></div>`; }
 // Buddy empty states — the bee lives in every empty moment (spec §8)
 function beeEmpty(mood,text){ return `<div style="display:flex;align-items:center;gap:14px;padding:10px 4px"><div style="width:56px;height:62px;flex-shrink:0;opacity:.95">${mascotSVG(mood)}</div><p style="margin:0;font-size:15px;color:var(--muted);line-height:1.5">${text}</p></div>`; }
 /* ---- Word Journeys as lore: one lesson unlocks per Level cleared (any list) ---- */
@@ -2306,12 +2326,15 @@ function tipOfDay(kid,asCard){ const pool=[]; let band=2; try{ band=beeBand(acti
     cats.forEach(k=>(T[k]||[]).forEach(t=>pool.push(t))); }
   }catch(e){}
   try{ if(band>2) lessonsAll().slice(0,40).forEach(L=>{ if(L.hook) pool.push(L.hook); }); }catch(e){}
-  if(!pool.length) return '';
+  if(!pool.length) return asCard?cardHold('Today\u2019s bee tip',128):'';
   // Up to 10 tips a day: a daily-resettable step lets the speller tap forward through more tips.
   const c0=active(); const day=dayNum(); const MAXFWD=10;
   if(c0){ if(c0.tipDay!==day){ c0.tipDay=day; c0.tipStep=0; } }
   const step=Math.max(0,Math.min(MAXFWD,(c0&&c0.tipStep)||0));
-  const t=trunc(pool[(day+step)%pool.length],150);
+  /* pinned per day-and-step: the tip book grows with the lesson hooks, so an
+     unpinned pick changes a second after the card paints */
+  const t=trunc(settled('tip',day+'/'+step,()=>pool[(day+step)%pool.length]||null)||'',150);
+  if(!t) return asCard?cardHold('Today\u2019s bee tip',128):'';
   const canFwd=step<MAXFWD;
   const fwd=`<button data-act="nextTip" ${canFwd?'':'disabled'} title="${canFwd?'Next tip ('+(MAXFWD-step)+' left today)':'That\u2019s all 10 tips for today \u2014 back tomorrow!'}" aria-label="Next tip" style="flex-shrink:0;align-self:center;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:16px;box-shadow:var(--edge);border:0;${canFwd?'background:var(--treasure,#F0B429);color:#5a3d00;cursor:pointer':'background:var(--surface2);color:var(--muted);opacity:.55'}">\u2192</button>`;
   // Card form for the home grid: same content and same forward nav, sized to sit beside the other tiles.
@@ -2455,7 +2478,7 @@ const WAYFIND={ quest:{c:'var(--action,#6C4FE0)',ic:'steps',sb:null,label:'Pract
      an unlocked speller should meet them where they already look for that kind of work. */
   advconcepts:{c:'#5B3FA6',ic:'grid',sb:'grid',label:'Advanced Concepts'},
   advtips:{c:'#0E8A78',ic:'bulb',sb:'sparkle',label:'Advanced Tips & Tricks'},
-  advmock:{c:'#C8901B',ic:'trophy',sb:'trophy',label:'Mock Spelling Bee'} };
+  advmock:{c:'#C8901B',ic:'crown',sb:'trophy',label:'Mock Spelling Bee'} };
 /* One predicate for "is Advanced Mode on", so every surface agrees. Mirrors advUnlocked()
    inside advanced.js and falls back to the same arithmetic if that module has not loaded. */
 function advModeOn(c){ c=c||active(); if(!c) return false;
@@ -3610,7 +3633,8 @@ function viewApp(){
   else if(S.nav==='collection') content=viewCollection();
   else if(S.nav==='finder') content=viewFinder();
   else if(S.nav==='games') content=viewGames();
-  else if(S.nav==='sq') content=(window.SQ?SQ.view():viewGames());
+  else if(S.nav==='mockbee') content=(window.MOCKBEE?MOCKBEE.view():'');
+  else if(S.nav==='sq') content=viewGames();          /* Spelling Quest retired */
   else if(S.nav==='trivia') content=(window.STV?STV.view():viewGames());
   else if(S.nav==='adv') content=(window.ADV?ADV.view():viewHome());
   else if(S.nav==='shop') content=viewShop();
@@ -3932,7 +3956,7 @@ function viewHome(){
           ${woh.d?`<span style="display:block;font-size:12px;line-height:1.4;color:var(--muted);margin-top:4px">${esc(trunc(woh.d,84))}</span>`:''}
           <span class="sb-cl" style="display:block;margin-top:6px">card →</span>
         </span>
-      </button>`:'';
+      </button>`:cardHold('Word of the hour',132);
       const qoh=(typeof quoteOfHour==='function')?quoteOfHour():null;
       const qohTile=qoh?`<button data-act="openQuoteHour" data-arg="${qoh.i}" title="Tap to open Quotes &amp; poems" class="sb-card" style="width:100%;display:flex;align-items:center;gap:13px;background:linear-gradient(100deg,color-mix(in srgb,#C8791B 15%,var(--paper,var(--bg2))),var(--paper,var(--bg2)) 62%);border-color:color-mix(in srgb,#C8791B 38%,var(--line));border-radius:var(--r-lg,16px);padding:14px 16px;cursor:pointer;text-align:left;min-height:132px">
         <span style="display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#C8791B;color:#fff;flex-shrink:0;font-size:20px">${iconSVG('quote',20)}</span>
@@ -3942,7 +3966,7 @@ function viewHome(){
           <span style="display:block;font-size:11.5px;font-weight:800;color:var(--muted)">— ${esc(qoh.q.a||'Unknown')}</span>
           <span class="sb-cl" style="display:block;margin-top:6px">more quotes →</span>
         </span>
-      </button>`:'';
+      </button>`:cardHold('Quote of the hour',132);
       return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:12px">
       <div class="sb-card" style="display:flex;align-items:center;gap:14px;min-height:128px;padding:14px">
         ${(()=>{ const hasCard=c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar]&&typeof SB_AV_CARD==='function';
@@ -3988,8 +4012,14 @@ function viewHome(){
     </div>
     <div class="sb-home-r2">
       ${(()=>{ /* Next on your journey — the Atlas frontier, straight from trail.js.
-          trail-data.js is deferred, so until it lands this is an invitation rather
-          than a stop; boot-lazy re-renders the moment it arrives. */
+          trail-data.js is deferred. It used to fall back to "Start at the Meadow"
+          in the meantime, which is the wrong destination for anyone already on
+          the road — a second later the card silently became their real stop. A
+          speller who has started holds the card's space instead and it fills in
+          once, correctly; only a speller with no progress sees the invitation. */
+        const started=(()=>{ try{ const tr=c.trail||{}; return Object.keys(tr.done||{}).length>0
+          ||Object.keys(tr.chk||{}).length>0||Object.keys(tr.seen||{}).length>0; }catch(e){ return false; } })();
+        if(!nx&&started) return cardHold('Next on your journey',218);
         const world=nx?nx.world:atlasWorld(c);
         const kick=nx?(nx.allDone?('Tier '+nx.lap+' complete'):trunc(nx.act,30)):'The Word Atlas';
         const title=nx?(nx.allDone?'Start the next tier':nx.title):'Start at the Meadow';
@@ -4322,7 +4352,10 @@ function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageI
   const legs=SB_AVATARS.list.filter(a=>a.rarity==='legendary'&&avOwned(c,a.id)).length;
   const epics=SB_AVATARS.list.filter(a=>a.rarity==='epic'&&avOwned(c,a.id)).length;
   const karma=Object.values(c.lists||{}).reduce((s,l)=>s+(l.xp||0),0);
-  let seasons=0; try{ if(window.SQ) seasons=SB_AVATARS.packs.filter(p=>SQ.cleared(p.pack)>=5).length; }catch(e){}
+  /* Spelling Quest's fifteen seasons are retired; the competition record is the
+     Mock Spelling Bee's — bees entered, bees won, and the best finish of eleven. */
+  let mbSt={}; try{ if(window.MOCKBEE) mbSt=MOCKBEE.stats()||{}; }catch(e){}
+  const mbPlayed=mbSt.played||0, mbWins=mbSt.wins||0, mbBest=mbSt.best||99;
   const worlds=THEMES.filter(t=>isThemeUnlocked(t.id)).length;
   const wkWords=(c.week||[]).reduce((a,b)=>a+(b||0),0);
   const arts=((c.pow||{}).shield||0)+((c.pow||{}).reveal||0)+((c.pow||{}).time||0)+(c.freezes||0);
@@ -4370,10 +4403,11 @@ function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageI
     { g:'Collection', id:'stylist', name:'Stylist', desc:'Dress your bee in an accessory', ic:'palette', done:Object.keys(c.beeAcc||{}).length>=1 },
     { g:'Collection', id:'stocked', name:'Well Stocked', desc:'Hold 5 artifacts at once', ic:'cart', done:arts>=5 },
     // Spelling Quest
-    { g:'Spelling Quest', id:'sq1', name:'First Season', desc:'Clear a Spelling Quest season', ic:'joystick', done:seasons>=1 },
-    { g:'Spelling Quest', id:'sq5', name:'Story Seeker', desc:'Clear 5 seasons', ic:'joystick', done:seasons>=5 },
-    { g:'Spelling Quest', id:'sq10', name:'Saga Speller', desc:'Clear 10 seasons', ic:'joystick', done:seasons>=10 },
-    { g:'Spelling Quest', id:'sq15', name:'World Ender', desc:'Clear all 15 seasons', ic:'crown', done:seasons>=15 },
+    { g:'Mock Spelling Bee', id:'mb1', name:'On the Stage', desc:'Enter a mock spelling bee', ic:'target', done:mbPlayed>=1 },
+    { g:'Mock Spelling Bee', id:'mbf', name:'Final Five', desc:'Finish in the last five of eleven', ic:'star', done:mbBest<=5 },
+    { g:'Mock Spelling Bee', id:'mb2', name:'Runner-Up', desc:'Reach the final two', ic:'flame', done:mbBest<=2 },
+    { g:'Mock Spelling Bee', id:'mbw', name:'Champion', desc:'Win a mock spelling bee', ic:'crown', done:mbWins>=1 },
+    { g:'Mock Spelling Bee', id:'mbw3', name:'Three-Time', desc:'Win three mock bees', ic:'crown', done:mbWins>=3 },
     // Learning
     { g:'Learning', id:'concepts5', name:'Pattern Spotter', desc:'Master 5 concepts', ic:'grid', done:concepts>=5 },
     { g:'Learning', id:'scholar', name:'Pattern Scholar', desc:'Master 10 concepts', ic:'grid', done:concepts>=10 },
@@ -6433,7 +6467,7 @@ function viewDebug(){
   const hubs=[
     {act:'openDaily',   arg:'', c:'#2E8B57', n:'Daily Buzz',      d:'Wordle-style daily word'},
     {act:'openSaga',    arg:'', c:'#F0B429', n:'Saga Quest',      d:'14-chapter story + engines'},
-    {act:'openQuest',   arg:'', c:'#7C5CFF', n:'Spelling Quest',  d:'Season map + chapters'},
+    {act:'mbOpen',      arg:'', c:'#7C5CFF', n:'Mock Spelling Bee', d:'11 spellers, 8 rounds'},
     {act:'openTrivia',  arg:'', c:'#13A892', n:'Bee Trivia',      d:'Knowledge rounds'},
     {act:'openChallenge',arg:'journey', c:'#E0922E', n:'Champ Challenge', d:'Timed / counted'},
     {act:'playGame',    arg:'magic', c:'#B14FC4', n:'Magic Squares', d:'3×3 spell-a-line'},
@@ -7501,9 +7535,12 @@ function gamesHub(){ const S=state; const c=active();
   if(window.SAGA2){ let cl=0; try{ cl=SAGA2.cleared?SAGA2.cleared():((JSON.parse(localStorage.getItem('sb_saga2')||'{}').cleared)||0); }catch(e){}
     const hid=(function(){ try{ return SB_AVATARS.byId['bizzy']?'bizzy':((SB_AVATARS.list[0]||{}).id||null); }catch(e){ return null; } })();
     heroes.push(heroTile({act:'openSaga',grad:'linear-gradient(150deg,#3B2A8C,#2A1E6E 60%,#1F1652)',art:hid?SB_AVATAR(hid,116,{dark:true}):'',tag:'✦ New saga',title:'Bizzy & the Great Unspelling',blurb:'A cinematic story — fly, race and spell through the worlds to stop the word-eater.',cta:cl>0?'Continue':'Begin Act I',sub:cl+'/6 chapters'})); }
-  if(window.SQ){ let done=0,total=0,legWon=0; try{ const ss=SQ.seasons(); total=ss.length; ss.forEach(s=>{ if(SQ.cleared(s.pack)>=5){done++; legWon++;} }); }catch(e){}
-    const hid=(function(){ try{ return (SB_AVATARS.byId['queenhive']?'queenhive':(SB_AVATARS.list[0]||{}).id); }catch(e){ return 'queenhive'; } })();
-    heroes.push(heroTile({act:'openQuest',grad:'linear-gradient(150deg,#2E2258,#241A47 60%,#1C1438)',art:SB_AVATAR(hid,116,{dark:true}),tag:'★ Story mode',title:'Spelling Quest',blurb:'Play 15 seasons — spell through five chapters to a boss and win its legendary avatar.',cta:done>0?'Continue':'Start Season 1',sub:done+'/'+total+' seasons'+(legWon?(' · '+legWon+' legendary'):'')})); }
+  /* Spelling Quest was fifteen seasons of story with a boss at the end of each —
+     a story mode wearing a spelling bee's clothes. The Arcade's second hero is the
+     thing the child is actually training for: eleven spellers, one microphone. */
+  if(window.MOCKBEE){ const st=MOCKBEE.stats();
+    const hid=(function(){ try{ return (SB_AVATARS.byId['goldlegend']?'goldlegend':(SB_AVATARS.list[0]||{}).id); }catch(e){ return 'goldlegend'; } })();
+    heroes.push(heroTile({act:'mbOpen',grad:'linear-gradient(150deg,#3A1E4E,#2A1638 60%,#1E1028)',art:SB_AVATAR(hid,116,{dark:true}),tag:'★ Competition',title:'Mock Spelling Bee',blurb:'Ten rivals, eight rounds, one microphone. Miss your word and you sit down.',cta:st.played?'Take the stage again':'Take the stage',sub:st.played?((st.wins||0)+' won · best '+(st.best||11)+'/11'):'11 spellers'})); }
   // ---- FEATURE TILES: daily, trivia, champ, magic ----
   const feats=[];
   /* Daily Buzz is a once-a-day ritual, not one of nine games to browse. It rides as a
