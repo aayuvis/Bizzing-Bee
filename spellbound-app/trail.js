@@ -15,7 +15,7 @@
    ============================================================ */
 (function () {
   const T = () => window.SB_TRAIL;
-  const GUIDE = { meadow: 'honeypot', library: 'waggle', forum: 'bumble', elements: 'star', engine: 'drone', strait: 'nectar', junkyard: 'propolis', vibe: 'jester', stage: 'diva', warfield: 'queenhive', greysea: 'blossom' };
+  const GUIDE = { meadow: 'honeypot', library: 'waggle', forum: 'bumble', elements: 'star', engine: 'drone', strait: 'nectar', junkyard: 'propolis', vibe: 'jester', stage: 'diva', warfield: 'queenhive', greysea: 'blossom', grandtrunk: 'naga' };
   const ACCENT = { meadow: ['#FFC23D', '#C8791B'], library: ['#6C4FE0', '#4A3AA0'], forum: ['#E06A3C', '#A8431F'], elements: ['#2E8FB8', '#1C6486'], engine: ['#C08A3E', '#8A5B00'], strait: ['#3E63D6', '#26409A'], junkyard: ['#F0A93C', '#B4711A'], vibe: ['#B14FC4', '#7A2F8C'], stage: ['#E8458C', '#A82563'], warfield: ['#D6353F', '#8E1D26'], greysea: ['#7E8AA0', '#4C566B'], grandtrunk: ['#E0A33C', '#93551A'] };
 
   /* ---- compact world strips (drawn scenery for act banners) ---- */
@@ -729,6 +729,8 @@
      of the hardest words in the library, taken hardest-first so every stop
      is harder than the one before it. Progress lives at c.ultra.done.
      --------------------------------------------------------------- */
+  /* one painted map per landmark, in ULTRA_PINS order */
+  const ULTRA_SLUG = ['uproving', 'ulibrary', 'ucrucible', 'uobservatory', 'uchampionship'];
   const ULTRA_STOPS = 4;
   const ULTRA_WORDS = 24;
   const uTips = () => { try { return window.SB_ADV_TIPS || []; } catch (e) { return []; } };
@@ -772,23 +774,29 @@
 
   function viewUltraAct() {
     const c = active(); const ai = state.ultraAct || 0;
-    const [name, px, py] = ULTRA_PINS[ai];
+    const [name] = ULTRA_PINS[ai];
     const stops = ultraStopsOf(ai);
     const dn = stops.filter(x => ultraDone(c, x.id)).length;
     let sel = stops.findIndex(x => !ultraDone(c, x.id)); if (sel < 0) sel = stops.length - 1;
     if (state.ultraStop != null) sel = Math.max(0, Math.min(stops.length - 1, state.ultraStop));
     const cur = stops[sel], tip = cur.tip;
-    const W = 760, H = 220;
-    const pts = roadPoints(ROADS.greysea, stops.length, W);
+    const slug = ULTRA_SLUG[ai] || ULTRA_SLUG[0];
+    const m = mapOf(slug);
+    const pts = mapPoints(m.d, stops.length);
     const marks = pts.map((p, i) => {
       const done = ultraDone(c, stops[i].id), now = i === dn && !done, on = i === sel;
-      const r = now ? 19 : 15;
-      return `<g transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)}) scale(${p.sc.toFixed(3)})" data-act="ultraPick" data-arg="${i}" role="button" tabindex="0" aria-label="Stop ${i + 1}" style="cursor:pointer">
-        <circle r="26" fill="transparent"/><ellipse cy="20" rx="16" ry="5" fill="rgba(10,6,20,.45)"/>
-        <circle r="${r}" fill="${done ? '#F0B429' : now ? '#FFFBEF' : 'rgba(240,236,226,.82)'}" stroke="${done || now ? '#FFF3D2' : 'rgba(60,48,26,.45)'}" stroke-width="${now ? 4 : 2.5}"${now ? ' style="animation:sb-pulse 2.4s ease-in-out infinite"' : ''}/>
-        <text text-anchor="middle" y="5" font-family="var(--display)" font-size="13" font-weight="800" fill="${done ? '#4A3306' : 'rgba(60,46,24,.78)'}">${done ? '✓' : (i + 1)}</text>
-        ${on ? `<circle r="${r + 6}" fill="none" stroke="#F0B429" stroke-width="3"/>` : ''}</g>`;
+      const size = now ? 42 : 34;
+      const bg = done ? 'linear-gradient(160deg,#FFD24D,#C8791B)' : now ? 'linear-gradient(160deg,#FFFBEF,#FFE9AE)' : 'rgba(246,242,232,.90)';
+      const ink = done ? '#4A3306' : now ? '#7A5300' : 'rgba(58,44,22,.78)';
+      return `<button class="atlas-stop${now ? ' now' : ''}${on ? ' on' : ''}" data-act="ultraPick" data-arg="${i}"
+          style="left:${p.x.toFixed(2)}%;top:${p.y.toFixed(2)}%;--pz:${on ? 5 : now ? 4 : 3}"
+          title="Stop ${i + 1} of ${stops.length}" aria-label="Stop ${i + 1} of ${stops.length}">
+        <span class="atlas-sd" style="width:${size}px;height:${size}px;background:${bg};color:${ink};
+          box-shadow:${on ? '0 0 0 3px #F0B429,0 5px 14px rgba(6,4,18,.6)' : '0 4px 11px rgba(6,4,18,.55)'}">${done ? '✓' : (i + 1)}</span>
+      </button>`;
     }).join('');
+    const caches = (m.t || []).map((xy, i) => treMark(c, slug, i, xy[0], xy[1], dn, stops.length)).join('');
+    panTo(sel, pts);
     return `<div style="animation:sb-rise .35s ease both;max-width:900px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
         <button data-act="trailToMap" style="display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:var(--muted)">← The map</button>
@@ -799,18 +807,7 @@
         <span style="display:block;font-family:var(--display);font-weight:800;font-size:22px;line-height:1.1">${esc(name)}</span>
         <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:700;margin-top:2px">Landmark ${ai + 1} of ${ULTRA_PINS.length} · ${dn} of ${stops.length} stops · the hardest words in the library</span>
       </div>
-      <div style="position:relative;border-radius:20px;overflow:hidden;border:1px solid color-mix(in srgb,#F0B429 34%,var(--line));box-shadow:var(--sh-rest)">
-        <div style="position:relative;width:100%;height:${H}px">
-          <img src="app-art/atlas-ultra.jpg" alt="" loading="lazy" decoding="async"
-            style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:${px}% ${py}%">
-          <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,6,20,.28),rgba(8,6,20,.52))"></span>
-          <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible">
-            <path d="${ROADS.greysea}" fill="none" stroke="rgba(255,247,225,.45)" stroke-width="7" stroke-linecap="round" stroke-dasharray="3 12"/>
-            <path d="${ROADS.greysea}" fill="none" stroke="rgba(255,225,150,.92)" stroke-width="8" stroke-linecap="round" pathLength="100" stroke-dasharray="${(pts[Math.max(0, Math.min(stops.length - 1, dn))] ? pts[Math.max(0, Math.min(stops.length - 1, dn))].f * 100 : 0).toFixed(1)} 100"/>
-            ${marks}
-          </svg>
-        </div>
-      </div>
+      ${actBoard('map-' + slug, m, pts, Math.max(0, Math.min(stops.length - 1, dn)), marks, caches, true)}
       <div class="sb-card" style="margin-top:14px;padding:16px 18px 18px">
         <div style="font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">Stop ${sel + 1} of ${stops.length}${tip ? ' · ' + esc(tip.cat) : ''}${ultraDone(c, cur.id) ? ' · done' : ''}</div>
         <div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1.15;margin-top:4px">${tip && tip.ic ? tip.ic + ' ' : ''}${esc(cur.title)}</div>
@@ -854,8 +851,8 @@
         ${expOk ? '' : `<button data-act="openAdvanced" style="position:absolute;inset:0;z-index:5;display:grid;place-items:center;border-radius:20px;background:linear-gradient(180deg,rgba(12,9,28,.34),rgba(12,9,28,.76))">
           <span style="text-align:center;padding:22px;max-width:26em">
             <span style="display:inline-grid;place-items:center;width:52px;height:52px;border-radius:15px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;margin-bottom:12px">${iconSVG('lock', 24)}</span>
-            <span style="display:block;font-family:var(--display);font-weight:800;font-size:19px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6)">Five expert expeditions</span>
-            <span style="display:block;font-size:13px;line-height:1.5;color:rgba(255,255,255,.92);margin-top:6px">43 stops at national level, gated at 90%. Unlocks with the Advanced Pack.</span>
+            <span style="display:block;font-family:var(--display);font-weight:800;font-size:19px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6)">Six expert expeditions</span>
+            <span style="display:block;font-size:13px;line-height:1.5;color:rgba(255,255,255,.92);margin-top:6px">54 stops at national level, each on its own map, gated at 90%. Unlocks with the Advanced Pack.</span>
             <span style="display:inline-block;margin-top:14px;padding:11px 20px;border-radius:11px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px">Unlock &middot; $${price}/yr &rarr;</span></span></button>`}
       </div>
       <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:26px 0 12px">
@@ -874,48 +871,140 @@
     </div>`;
   }
   /* ---------------------------------------------------------------
-     One act = one painting with a road across it. Not a checklist.
+     One act = one painted map of its own.
 
-     Each world carries ONE measured road (a cubic curve in a 760x220 box,
-     measured once against that world's art). Stops are then placed ALONG the
-     curve by arc length, so the same road holds two stops at Tier I and
-     twenty-two at Tier III without anyone re-measuring anything. Markers
-     shrink as the road recedes; the current stop breathes and carries the
-     speller's guide; tapping one raises the card underneath.
+     A region used to open as the 880x244 scenery STRIP its world used for
+     banners, which meant the two acts that share a world opened the same
+     picture: the Root Kingdoms and the Word Factory are both the engine, the
+     Trickster Junkyard and the Liars' Junkyard are both the junkyard. Every act
+     and expedition has its own bird's-eye map now (app-art/map-<actId>.jpg,
+     built by voice/pipeline/act-maps.py), and so does each of the five Ultra
+     landmarks.
+
+     ACT_MAP carries, per map, the ROUTE traced along the road the painter
+     actually put in the picture, and the CACHES they left in its corners. Both
+     are in the picture's own 0-100 space for x AND y, because the board is
+     drawn with preserveAspectRatio="none" — so a coordinate is a percentage of
+     the board either way and the same numbers work at 390px and 1240px. There
+     is no way to derive these: a route the stops do not sit on is worse than no
+     route at all, so each one is measured against its own painting.
      --------------------------------------------------------------- */
-  const ROADS = {
-    meadow:   'M 46 186 C 150 202, 214 170, 288 146 S 408 102, 492 112 C 576 120, 640 152, 724 180',
-    library:  'M 40 198 C 140 196, 236 168, 322 132 C 380 108, 420 92, 470 96 C 552 104, 646 158, 724 194',
-    forum:    'M 64 178 C 172 192, 260 170, 346 150 C 422 132, 500 128, 568 140 C 640 154, 694 170, 720 182',
-    elements: 'M 48 176 C 132 138, 214 178, 296 150 S 452 92, 534 126 C 610 158, 664 148, 722 168',
-    engine:   'M 44 192 C 148 186, 210 150, 296 138 S 430 156, 516 132 C 596 110, 654 142, 722 176',
-    strait:   'M 46 182 C 156 200, 246 178, 330 152 S 470 108, 556 124 C 632 138, 682 164, 722 184',
-    junkyard: 'M 50 190 C 146 178, 206 200, 292 172 S 434 118, 520 140 C 600 160, 660 178, 722 186',
-    vibe:     'M 44 172 C 140 196, 226 158, 308 168 S 452 130, 538 148 C 616 164, 668 152, 722 174',
-    stage:    'M 52 194 C 152 186, 218 156, 300 140 S 446 116, 528 132 C 610 148, 664 170, 720 188',
-    warfield: 'M 46 188 C 144 194, 214 164, 298 146 S 442 122, 526 138 C 606 154, 662 172, 722 184',
-    greysea:  'M 44 180 C 148 196, 236 174, 320 154 S 462 116, 546 132 C 622 146, 676 166, 722 182',
-    /* the Grand Trunk Road runs straighter than any other world's — it is a road */
-    grandtrunk: 'M 42 196 C 158 188, 244 166, 330 150 S 466 124, 552 134 C 626 143, 678 162, 724 178',
+  const ACT_ROUTE_FALLBACK = 'M 4 88 C 20 93, 34 86, 48 83 S 74 78, 85 71 C 93 66, 93 57, 84 53 C 70 47, 50 52, 34 49 S 13 43, 9 34 C 6 26, 16 20, 30 17 S 58 12, 75 11 C 86 10, 93 8, 97 4';
+  const ACT_MAP = {
+    /* the nine acts of the Honey continent */
+    meadow:     { d: 'M 1 73 C 12 82, 28 86, 44 84 C 58 82, 68 76, 76 66 C 83 56, 86 44, 88 32 C 89 22, 87 12, 85 4', t: [[5, 7], [89, 6], [73, 88]] },
+    library:    { d: 'M 14 94 C 28 88, 44 84, 58 79 C 70 74, 79 66, 83 55 C 87 44, 85 32, 79 22 C 74 14, 70 8, 68 2', t: [[93, 18], [96, 62], [94, 80]] },
+    forum:      { d: 'M 3 66 C 14 74, 32 78, 50 77 C 66 76, 78 70, 84 58 C 89 46, 88 32, 82 22 C 76 13, 76 8, 82 5 C 88 3, 93 3, 98 3', t: [[4, 8], [13, 84], [77, 80]] },
+    storm:      { d: 'M 2 80 C 16 78, 30 74, 44 68 C 57 63, 66 56, 74 48 C 82 40, 88 30, 91 20 C 93 13, 95 8, 97 5', t: [[6, 70], [89, 7], [91, 74]] },
+    roots:      { d: 'M 2 54 C 12 66, 26 73, 42 75 C 56 76, 66 70, 74 60 C 82 50, 86 38, 92 28 C 95 22, 96 16, 96 10', t: [[7, 60], [86, 52], [67, 73]] },
+    strait:     { d: 'M 4 88 C 14 80, 20 68, 22 56 C 24 44, 20 32, 22 22 C 25 12, 36 8, 50 8 C 64 8, 78 8, 88 6 C 93 5, 96 4, 98 3', t: [[5, 80], [95, 28], [92, 88]] },
+    junkyard:   { d: 'M 1 48 C 12 60, 26 70, 44 71 C 58 72, 70 66, 78 56 C 86 46, 90 34, 92 24 C 94 16, 96 10, 97 6', t: [[5, 12], [66, 14], [65, 86]] },
+    sprints:    { d: 'M 2 16 C 16 14, 32 16, 42 24 C 52 32, 52 44, 44 52 C 36 60, 34 70, 44 75 C 58 81, 76 76, 87 66 C 93 60, 96 53, 97 46', t: [[6, 12], [67, 52], [92, 88]] },
+    stage:      { d: 'M 4 84 C 18 82, 34 79, 50 75 C 62 72, 72 66, 77 55 C 82 44, 82 32, 76 22 C 71 14, 68 8, 68 3', t: [[5, 10], [89, 80], [86, 89]] },
+    /* the six expeditions of the Advanced Rounds */
+    proving:    { d: 'M 3 88 C 18 84, 32 76, 42 68 C 52 60, 54 50, 46 44 C 38 38, 24 40, 18 34 C 13 28, 20 21, 34 18 C 50 15, 70 17, 84 22 C 92 25, 96 30, 97 36', t: [[76, 50], [92, 87], [7, 55]] },
+    greysea:    { d: 'M 6 82 C 18 78, 30 74, 40 68 C 48 62, 50 52, 48 44 C 47 38, 52 33, 62 33 C 74 33, 84 34, 92 30 C 96 28, 98 24, 98 20', t: [[4, 74], [47, 12], [46, 88]] },
+    liars:      { d: 'M 2 80 C 14 76, 26 68, 40 63 C 52 59, 60 55, 70 57 C 80 59, 88 64, 94 60 C 97 58, 98 54, 98 50', t: [[28, 42], [88, 17], [91, 87]] },
+    grandtrunk: { d: 'M 1 40 C 12 44, 24 50, 38 57 C 50 62, 60 62, 70 58 C 78 54, 84 46, 88 34 C 90 27, 91 21, 92 16', t: [[11, 73], [79, 84], [73, 30]] },
+    farflung:   { d: 'M 4 90 C 10 82, 16 74, 24 68 C 32 62, 44 59, 58 59 C 70 59, 80 62, 88 60 C 93 59, 97 56, 98 52', t: [[7, 20], [92, 20], [92, 88]] },
+    factory:    { d: 'M 4 84 C 8 74, 7 60, 8 46 C 9 34, 16 24, 28 19 C 42 13, 58 13, 71 18 C 81 22, 87 31, 89 43 C 90 52, 89 60, 86 68', t: [[4, 72], [12, 10], [92, 88]] },
+    /* the five Ultra landmarks */
+    uproving:      { d: 'M 5 84 C 16 76, 26 66, 30 54 C 33 44, 42 40, 54 41 C 66 42, 78 46, 86 52 C 92 57, 96 62, 97 68', t: [[5, 78], [92, 18], [92, 88]] },
+    ulibrary:      { d: 'M 6 80 C 18 76, 32 70, 46 70 C 58 70, 70 66, 76 56 C 82 45, 80 32, 74 24 C 70 18, 68 12, 68 6', t: [[5, 73], [26, 42], [79, 88]] },
+    ucrucible:     { d: 'M 6 80 C 20 76, 36 73, 52 74 C 66 75, 78 74, 86 66 C 92 59, 93 48, 88 38 C 84 30, 80 24, 78 18', t: [[6, 12], [16, 50], [86, 86]] },
+    uobservatory:  { d: 'M 4 74 C 12 64, 18 54, 20 44 C 22 34, 30 26, 44 22 C 58 18, 70 20, 76 28 C 81 35, 82 44, 80 52', t: [[95, 12], [5, 82], [90, 88]] },
+    uchampionship: { d: 'M 6 82 C 20 78, 36 75, 50 73 C 62 71, 72 66, 78 56 C 84 46, 84 34, 78 26 C 74 20, 72 14, 72 8', t: [[6, 12], [95, 88], [8, 60]] },
   };
-  const roadOf = w => ROADS[w] || ROADS.meadow;
-  /* Arc-length placement, done once per render. Falls back to a straight run if
-     the browser cannot measure the path (it always can, but the map must not
-     depend on it). */
-  function roadPoints(d, n, W) {
-    const k = W / 760, out = [];
+  const mapOf = id => ACT_MAP[id] || { d: ACT_ROUTE_FALLBACK, t: [[10, 19], [91, 17], [85, 86]] };
+
+  /* Arc-length placement along a route, done once per render. n stops spread
+     evenly over the walkable middle of the path, so the same map holds two stops
+     at Tier I and twenty-two at Tier III without anyone re-measuring anything.
+     Falls back to a straight diagonal if the browser cannot measure the path
+     (it always can, but the map must not depend on it). */
+  function mapPoints(d, n) {
+    const out = [];
     let path = null, L = 0;
     try {
       path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       path.setAttribute('d', d); L = path.getTotalLength();
     } catch (e) { L = 0; }
     for (let i = 0; i < n; i++) {
-      const f = n === 1 ? .5 : .07 + (i / (n - 1)) * .86;
-      let x = 40 + f * 680, y = 168;
+      const f = n === 1 ? .5 : .045 + (i / (n - 1)) * .91;
+      let x = 8 + f * 84, y = 88 - f * 78;
       if (L) { const pt = path.getPointAtLength(f * L); x = pt.x; y = pt.y; }
-      out.push({ x: x * k, y, f, sc: .74 + .26 * Math.min(1, Math.max(0, (y - 96) / 100)) });
+      /* the board clips, so no marker may sit on an edge — a route traced to the
+         corner of its painting would put half a medallion outside the frame */
+      x = Math.min(96, Math.max(4, x)); y = Math.min(93, Math.max(7, y));
+      out.push({ x, y, f });
     }
     return out;
+  }
+
+  /* ---- hidden caches ----
+     Three per map, at the spots the painter tucked them into. They are shut
+     while the stops ahead of them are, open the moment the speller reaches
+     them, and pay once. Deliberately NOT worth xp: rank comes from spelling,
+     and a chest that moved your level would be a way to skip the work. */
+  const TRE_PAY = [20, 30, 50];
+  const treMap = c => (tr(c).tre || (tr(c).tre = {}));
+  const treGate = (n, i) => Math.max(1, Math.ceil(n * (i + 1) / 4));
+  const treGot = (c, act, i) => !!(treMap(c)[act] || {})[i];
+  app2.trailTre = arg => { const c = active();
+    const [act, si] = String(arg).split(':'); const i = +si || 0;
+    const cell = treMap(c)[act] || (treMap(c)[act] = {});
+    if (cell[i]) { flash('Already found'); return; }
+    cell[i] = 1; save();
+    addCoins(TRE_PAY[i] || 20);
+    try { sfx('win'); burstConfetti(40); } catch (e) {}
+    flash('Cache found — ' + (TRE_PAY[i] || 20) + ' coins');
+    render(); };
+
+  /* One cache marker: a shut chest you cannot reach yet reads as a faint
+     glimmer, so the map has something to walk towards without giving it away. */
+  function treMark(c, actId, i, x, y, cleared, n) {
+    const open = treGot(c, actId, i), ready = cleared >= treGate(n, i);
+    const pay = TRE_PAY[i] || 20;
+    if (!ready) return `<span class="atlas-tre glim" style="left:${x}%;top:${y}%" aria-hidden="true"></span>`;
+    return `<button class="atlas-tre ${open ? 'got' : 'ready'}" data-act="${open ? '' : 'trailTre'}" data-arg="${escA(actId + ':' + i)}"
+      style="left:${x}%;top:${y}%" title="${open ? 'Cache found · ' + pay + ' coins' : 'A cache! Tap to open — ' + pay + ' coins'}"
+      aria-label="${open ? 'Cache already found' : 'Open the cache for ' + pay + ' coins'}">
+      <span>${open ? '⌣' : '✦'}</span></button>`;
+  }
+  /* If the board grew past its container, centre the stop the card is showing. */
+  function panTo(sel, pts) {
+    setTimeout(() => { try {
+      const el = document.getElementById('sb-pan'); if (!el) return;
+      const bd = el.firstElementChild; if (!bd || bd.scrollWidth <= el.clientWidth + 4) return;
+      const p = pts[sel]; if (!p) return;
+      el.scrollLeft = Math.max(0, bd.clientWidth * p.x / 100 - el.clientWidth / 2);
+    } catch (e) {} }, 0);
+  }
+  const treFound = (c, actId) => { const cell = treMap(c)[actId] || {}; let k = 0; for (let i = 0; i < 3; i++) if (cell[i]) k++; return k; };
+
+  /* The board every sub-map shares: the painting, the route drawn over it, the
+     stop pins and the caches. The route is stroked twice — a dotted ghost for the
+     whole way and a solid gold overlay clipped to how far the speller has walked
+     (pathLength=100 turns the dash array into a percentage, so it works whatever
+     the real path length is). */
+  function actBoard(slug, m, pts, walked, marks, caches, dark) {
+    const f = (pts[walked] ? pts[walked].f * 100 : 0).toFixed(1);
+    /* 42px of board per stop is the least that keeps two markers apart. On a
+       phone a long act therefore grows past the screen and the map pans, which
+       is how a map should behave anyway; on a desktop the board is already wider
+       than the floor so nothing moves. */
+    const minW = Math.max(1, pts.length) * 42;
+    return `<div class="act-pan" id="sb-pan"><div class="atlas-board act-board" style="min-width:min(${minW}px,190vw)">
+      <img src="app-art/${slug}.jpg" alt="" loading="lazy" decoding="async">
+      ${dark ? '<span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,6,20,.16),rgba(8,6,20,.30));z-index:1"></span>' : ''}
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none">
+        <path d="${m.d}" fill="none" stroke="rgba(255,250,235,.72)" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 7" vector-effect="non-scaling-stroke"
+          style="filter:drop-shadow(0 1px 2px rgba(24,14,4,.5))"/>
+        <path d="${m.d}" fill="none" stroke="rgba(255,206,88,.9)" stroke-width="5" stroke-linecap="round"
+          pathLength="100" stroke-dasharray="${f} 100" vector-effect="non-scaling-stroke"
+          style="filter:drop-shadow(0 1px 3px rgba(24,14,4,.55))"/>
+      </svg>
+      ${caches}${marks}</div></div>`;
   }
   function viewAct() {
     const c = active();
@@ -930,38 +1019,38 @@
     const world = act.world; const guide = GUIDE[world] || 'honeypot';
     const [a] = ACCENT[world] || ACCENT.meadow;
     const dn = nodes.filter(x => passedNode(c, x.n)).length;
-    const reg = crs === 'exp' ? 3 : 2;
     const n = nodes.length;
-    /* the painting is as wide as the road needs; long acts pan sideways */
-    const W = Math.max(760, n * 62), H = 220;
-    const pts = roadPoints(roadOf(world), n, W);
+    const m = mapOf(act.id);
+    const pts = mapPoints(m.d, n);
     /* which stop the card is showing: the speller's own frontier unless they tapped */
     let sel = nodes.findIndex(x => x.i === fr);
     if (sel < 0) sel = dn >= n ? n - 1 : 0;
     const picked = nodes.findIndex(x => x.i === state.trailStop);
     if (picked >= 0) sel = picked;
-    const road = roadOf(world), kx = W / 760;
     const walked = Math.min(dn, n - 1);
     const st = i => { const x = nodes[i]; return passedNode(c, x.n) ? 'done' : x.i === fr ? 'now' : 'next'; };
 
+    /* Stops are HTML pins over the painting, not SVG inside it: they keep a real
+       size at every board width instead of scaling with the picture, and the
+       guide avatar rides one without a foreignObject. */
     const marks = pts.map((p, i) => {
       const kind = st(i), on = i === sel, node = nodes[i].n;
-      const r = kind === 'now' ? 19 : kind === 'done' ? 15 : 14;
-      const face = kind === 'done'
-        ? `<circle r="${r}" fill="#F0B429" stroke="#FFF3D2" stroke-width="3"/><text text-anchor="middle" y="5" font-family="var(--display)" font-size="14" font-weight="800" fill="#4A3306">✓</text>`
-        : kind === 'now'
-          ? `<circle r="${r}" fill="#FFFBEF" stroke="#F0B429" stroke-width="4" style="animation:sb-pulse 2.4s ease-in-out infinite"/>`
-          : `<circle r="${r}" fill="rgba(250,246,236,.86)" stroke="rgba(74,58,32,.42)" stroke-width="2.5"/><text text-anchor="middle" y="5" font-family="var(--display)" font-size="13" font-weight="800" fill="rgba(60,46,24,.72)">${i + 1}</text>`;
+      const size = kind === 'now' ? 42 : 34;
+      const bg = kind === 'done' ? 'linear-gradient(160deg,#FFD24D,#C8791B)'
+        : kind === 'now' ? 'linear-gradient(160deg,#FFFBEF,#FFE9AE)' : 'rgba(250,246,236,.90)';
+      const ink = kind === 'done' ? '#4A3306' : kind === 'now' ? '#7A5300' : 'rgba(58,44,22,.78)';
       const rider = kind === 'now' && window.SB_AVATAR
-        ? `<g transform="translate(-17,-52)"><foreignObject width="34" height="36"><span xmlns="http://www.w3.org/1999/xhtml" style="display:block;width:34px;height:36px">${SB_AVATAR(guide, 34, { dark: true })}</span></foreignObject></g>` : '';
-      const chk = node.kind === 'chk' ? `<circle r="${r + 5}" fill="none" stroke="#fff" stroke-width="1.6" stroke-dasharray="3 4" opacity=".8"/>` : '';
-      return `<g transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)}) scale(${p.sc.toFixed(3)})" data-act="trailPick" data-arg="${nodes[i].i}" role="button" tabindex="0" aria-label="Stop ${i + 1}" style="cursor:pointer">
-        <circle r="26" fill="transparent"/>
-        <ellipse cy="20" rx="16" ry="5" fill="rgba(48,30,8,.30)"/>
-        ${chk}${face}
-        ${on ? `<circle r="${r + 6}" fill="none" stroke="${a}" stroke-width="3"/>` : ''}
-        ${rider}</g>`;
+        ? `<span class="atlas-rider">${SB_AVATAR(guide, 34, { dark: true })}</span>` : '';
+      return `<button class="atlas-stop${kind === 'now' ? ' now' : ''}${on ? ' on' : ''}${node.kind === 'chk' ? ' chk' : ''}"
+          data-act="trailPick" data-arg="${nodes[i].i}" style="left:${p.x.toFixed(2)}%;top:${p.y.toFixed(2)}%;--pz:${on ? 5 : kind === 'now' ? 4 : 3}"
+          title="Stop ${i + 1} of ${n}" aria-label="Stop ${i + 1} of ${n}">
+        ${rider}
+        <span class="atlas-sd" style="width:${size}px;height:${size}px;background:${bg};color:${ink};
+          box-shadow:${on ? `0 0 0 3px ${a},0 5px 14px rgba(10,6,26,.5)` : '0 4px 11px rgba(10,6,26,.45)'}">${kind === 'done' ? '✓' : (i + 1)}</span>
+      </button>`;
     }).join('');
+    const caches = (m.t || []).map((xy, i) => treMark(c, act.id, i, xy[0], xy[1], dn, n)).join('');
+    panTo(sel, pts);
 
     const cur = nodes[sel], node = cur.n, locked = cur.i > fr && !devOn();
     const u = node.kind === 'unit' ? node.u : null;
@@ -973,10 +1062,7 @@
     const goAct = node.kind === 'unit' ? 'trailUnit' : 'trailChk';
     const goArg = node.kind === 'unit' ? u.id : (crs + '|' + node.id);
 
-    /* the road runs past the edge of a long act: bring the speller's own stop into view */
-    setTimeout(() => { try { const el = document.getElementById('sb-road');
-      if (el && pts[sel]) el.scrollLeft = Math.max(0, pts[sel].x - el.clientWidth / 2); } catch (e) {} }, 0);
-    return `<div style="animation:sb-rise .35s ease both;max-width:900px;margin:0 auto">
+    return `<div style="animation:sb-rise .35s ease both;max-width:980px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
         <button data-act="trailBack" style="display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:var(--muted)">← The map</button>
         <span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px">
@@ -987,21 +1073,9 @@
         <span style="width:46px;height:46px;flex-shrink:0">${window.SB_AVATAR ? SB_AVATAR(guide, 46) : ''}</span>
         <span style="min-width:0;flex:1">
           <span style="display:block;font-family:var(--display);font-weight:800;font-size:22px;line-height:1.1">${esc(act.title)}</span>
-          <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:700;margin-top:2px">${esc(WORLD_LINE[world] || 'the route continues')} · ${dn} of ${n} stops</span></span>
+          <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:700;margin-top:2px">${esc(WORLD_LINE[world] || 'the route continues')} · ${dn} of ${n} stops${treFound(c, act.id) ? ' · ' + treFound(c, act.id) + '/3 caches' : ''}</span></span>
       </div>
-      <div id="sb-road" style="position:relative;border-radius:20px;overflow-x:auto;overflow-y:hidden;border:1px solid color-mix(in srgb,${a} 40%,var(--line));box-shadow:var(--sh-rest);-webkit-overflow-scrolling:touch">
-        <div style="position:relative;width:${W}px;height:${H}px">
-          ${banner(world, H, reg)}
-          <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible">
-            <g transform="scale(${kx.toFixed(4)},1)">
-              <path d="${road}" fill="none" stroke="rgba(255,247,225,.5)" stroke-width="7" stroke-linecap="round" stroke-dasharray="3 12"/>
-              <path d="${road}" fill="none" stroke="rgba(255,241,208,.92)" stroke-width="8" stroke-linecap="round"
-                pathLength="100" stroke-dasharray="${(pts[walked] ? pts[walked].f * 100 : 0).toFixed(1)} 100"/>
-            </g>
-            ${marks}
-          </svg>
-        </div>
-      </div>
+      ${actBoard('map-' + act.id, m, pts, walked, marks, caches, crs === 'exp')}
       <div class="sb-card" style="margin-top:14px;padding:15px 17px 17px">
         <div style="display:flex;align-items:flex-start;gap:13px">
           <span style="width:40px;height:40px;flex-shrink:0;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:15px;${st(sel) === 'done' ? 'background:linear-gradient(160deg,#FFE49B,#E8A81C);color:#4A3306' : st(sel) === 'now' ? 'background:#FFFBEF;border:2px solid #F0B429;color:#7A5300' : 'background:var(--surface2);color:var(--muted)'}">${st(sel) === 'done' ? '✓' : (sel + 1)}</span>

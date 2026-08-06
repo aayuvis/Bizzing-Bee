@@ -202,6 +202,22 @@ handlers. App lives in this folder; open `index.html` to run.
   now prefers over the index-keyed `SB_CSCRIPT`/`SB_ADV_CSCRIPT` tables. Expedition word
   lists fill any missing definition/sentence/pronunciation from the word library, so a
   book chapter that ships without example sentences still drills with them.
+- **Every act and expedition has its OWN painted map** (`app-art/map-<actId>.jpg`, 15 of
+  them, plus `map-u*` for the five Ultra landmarks — built by
+  `voice/pipeline/act-maps.py`). A region used to open the 880x244 scenery STRIP its
+  world used for banners, so acts sharing a world opened the same picture. `ACT_MAP` in
+  trail.js carries, per map, the route traced along the road the painter drew and the
+  three caches they tucked into its corners — both in the picture's own 0-100 space for
+  x AND y, because the board is drawn `preserveAspectRatio="none"`. These are MEASURED by
+  eye against each painting; regenerating a map means re-tracing its route. `mapPoints()`
+  spreads n stops along the route by arc length (2 at Tier I, 22 at Tier III) and clamps
+  every marker off the board edge. Stops are HTML pins (`.atlas-stop`), not SVG, so they
+  keep a real size at any board width; the board pans horizontally at 42px per stop, so a
+  22-stop act is comfortable on a phone and never moves on a desktop.
+- **Hidden caches**: three per map at `ACT_MAP[act].t`, gated at a quarter / half /
+  three-quarters of the act's stops, paying 20/30/50 coins once each (`c.trail.tre`,
+  `app.trailTre`). Deliberately NO xp — rank comes from spelling, and a chest that moved
+  your level would be a way to skip the work.
 - Unit loop: Learn (opens the concept chapter; `state.trailReturn` routes `conceptBack`
   back to the unit) → Meet the words (wordFlash) → Practice (feeds `startTrain`) →
   **Quiz gate**: 15 mixed items (4 concept MCQs from `unit.qs` where `c[0]` is always
