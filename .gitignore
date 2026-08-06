@@ -26,3 +26,6 @@ spellbound-app/books/art/*.png
 !spellbound-app/books/art/bizzy-sheet.png
 !spellbound-app/books/art/vex-sheet.png
 spellbound-app/app-art/*.png
+
+# Book PDFs are generated from the HTML on demand; the HTML is the book.
+spellbound-app/books/pdf/
