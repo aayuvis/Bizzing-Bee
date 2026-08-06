@@ -946,7 +946,7 @@ function _bandUpdate(c){ if(bandEvidence(c)<BAND_MIN_EV) return;
   if(raw>cur) cur=raw; /* climb fast: proof promotes immediately */
   else { const s=_bandAcc(c,cur); if(s.w>=12 && s.acc<BAND_DOWN) cur=Math.max(1,cur-1); } /* fall slow: one bad game never demotes */
   const was=c.band||0;
-  if(cur>was && was>0){ try{ state.toast='📈 Bee Band '+cur+' — '+bandTier(cur)+'! Proven on Band '+cur+' words.'; scheduleToast(3600); sfx('win'); burstConfetti(120); }catch(e){} }
+  if(cur>was && was>0){ try{ state.toast='📈 Word difficulty '+cur+' — '+bandTier(cur)+'! Proven on level '+cur+' words.'; scheduleToast(3600); sfx('win'); burstConfetti(120); }catch(e){} }
   c.band=cur; }
 function bandTier(b){ return b<=2?'Classroom Speller':b<=4?'School-Bee Ready':b<=6?'Regional Ready':b<=8?'State & National':'Championship'; }
 function beeBand(c){ c=c||active(); const band=Math.max(1,Math.min(9,c.band||c.bandSeed||2));
@@ -2057,7 +2057,7 @@ const app = {
       '<div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #7C5CFF;padding-bottom:12px"><div><div style="font-size:13px;color:#7C5CFF;font-weight:800;letter-spacing:.08em">BIZZING BEE · WEEKLY REPORT</div><h1>'+E(c.name)+'</h1></div><div style="text-align:right;font-size:12px;color:#888">'+new Date().toLocaleDateString()+'<br>Age '+E(c.age||9)+'</div></div>'+
       '<h2>This week at a glance</h2><div class="row"><div class="stat"><b>'+daysThisWeek+'/7</b><span>Days practised</span></div><div class="stat"><b>'+(c.streak||0)+'</b><span>Day streak</span></div><div class="stat"><b>'+sessions+'</b><span>Sessions</span></div><div class="stat"><b>'+acc+'%</b><span>Accuracy</span></div></div>'+
       '<table style="width:100%;margin-top:16px;border-collapse:collapse"><tr>'+dotRow+'</tr></table>'+
-      '<h2>Progress</h2><div class="row"><div class="stat"><b>'+ov+'</b><span>Level ('+E(listLabel(activeListKey()))+')</span></div><div class="stat"><b>'+mastered+'</b><span>Words mastered</span></div><div class="stat"><b>'+totRight+'</b><span>Correct this week</span></div><div class="stat"><b>'+bnd.band+'</b><span>Bee Band · '+E(bnd.tier)+'</span></div></div>'+
+      '<h2>Progress</h2><div class="row"><div class="stat"><b>'+ov+'</b><span>Stage ('+E(listLabel(activeListKey()))+')</span></div><div class="stat"><b>'+mastered+'</b><span>Words mastered</span></div><div class="stat"><b>'+totRight+'</b><span>Correct this week</span></div><div class="stat"><b>'+bnd.band+'</b><span>Word difficulty · '+E(bnd.tier)+'</span></div></div>'+
       '<h2>Words to revise ('+(c.missed||[]).length+')</h2><div>'+missChips+'</div>'+
       (milestone()?('<h2>Countdown</h2><p style="font-size:15px">'+esc(milestone().label)+' — <b>'+milestone().days+' days</b> to go.</p>'):'')+
       (function(){ try{ const sg=parentSignals(); let rd=0; try{ rd=coachReadiness().ready||0; }catch(e){}
@@ -2257,7 +2257,7 @@ function viewOnboarding(){
         <p style="margin:0 0 8px;font-size:12px;color:var(--muted)">A competition coming up? Add the date — the app counts down to it and paces practice. You can set or change it in Settings any time.</p>
         <input type="date" data-chg="onbBeeDate" value="${escA(S.draft.beeDate||'')}" style="width:100%;max-width:220px;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:700;outline:none">
       </div>
-      <button data-act="startLevelTest" style="width:100%;margin-top:14px;display:flex;align-items:center;gap:11px;text-align:left;padding:13px 15px;border-radius:12px;border:1px dashed var(--accent);background:var(--chip);color:var(--text)"><span style="color:var(--accent)">${iconSVG('target',20)}</span><span style="min-width:0"><span style="display:block;font-weight:800;font-size:14px">Find my Bee Band first <span style="color:var(--muted);font-weight:650">(optional, ~3 min)</span></span><span style="display:block;font-size:12px;color:var(--muted)">Words climb band by band until we find what you're ready for — it sets your Band, your games and your Quest start in one go.</span></span></button>
+      <button data-act="startLevelTest" style="width:100%;margin-top:14px;display:flex;align-items:center;gap:11px;text-align:left;padding:13px 15px;border-radius:12px;border:1px dashed var(--accent);background:var(--chip);color:var(--text)"><span style="color:var(--accent)">${iconSVG('target',20)}</span><span style="min-width:0"><span style="display:block;font-weight:800;font-size:14px">Find my word difficulty first <span style="color:var(--muted);font-weight:650">(optional, ~3 min)</span></span><span style="display:block;font-size:12px;color:var(--muted)">Words climb band by band until we find what you're ready for — it sets your word difficulty, your games and your Practice start in one go.</span></span></button>
       <div style="margin-top:14px">${voiceUpgradeTip()}</div></div>`;
   }
   return `<div style="position:relative;z-index:1;min-height:100dvh;display:grid;place-items:center;padding:24px">
@@ -3328,10 +3328,10 @@ function viewIpaTrain(){ const S=state; const it=S.it; const pool=ipaPool();
 
 /* Map | Index — two readings of one journey. The map is where you are, the index is
    everything there is. Both live under the Journey tab. */
-function journeySeg(which){
+function journeySeg(which){ /* the World Atlas: where you are, and everything there is */
   const b=(k,label)=>{ const on=which===k;
     return `<button data-act="${k==='map'?'openTrail':'setNav'}"${k==='map'?'':' data-arg="explore"'} aria-pressed="${on}" style="flex:1;text-align:center;padding:9px 14px;border-radius:var(--r-pill,999px);font-family:var(--display);font-weight:800;font-size:14.5px;${on?'background:var(--paper,var(--bg2));color:var(--ink,var(--text));box-shadow:var(--sh-rest)':'background:transparent;color:var(--muted)'}">${label}</button>`; };
-  return `<div style="display:flex;gap:4px;padding:4px;border-radius:var(--r-pill,999px);background:var(--surface2);max-width:440px;margin:0 auto 16px">${b('map','The map')}${b('index','The index')}</div>`;
+  return `<div style="display:flex;gap:4px;padding:4px;border-radius:var(--r-pill,999px);background:var(--surface2);max-width:440px;margin:0 auto 16px">${b('map','The map')}${b('index','The library')}</div>`;
 }
 function viewExplore(){ const c=active(); ensureLists(c); const S=state;
   /* Seven destinations, each with its own painted header (app-art/lib-*.jpg, made by
@@ -3368,7 +3368,7 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
       blurb:'Learn to touch-type, then race the sixty-second test.',c:'#2A63D6',ic:'pencil',cta:'Practise'}),
   ].join('');
   return `<div style="animation:sb-rise .35s ease both;max-width:1020px;margin:0 auto">
-    ${pageHead('The index','everything the journey teaches','Sorted by kind instead of by place. The map is where you are; this is everything there is. The drill itself lives in Practice.')}
+    ${pageHead('The library','everything the Atlas teaches','Sorted by kind instead of by place. The map is where you are; the library is everything there is. The drill itself lives in Practice.')}
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(276px,1fr));gap:16px">${tiles}</div>
     ${(()=>{ /* The shelf items have no painted header of their own, and the tools are a
         means to an end — both read better as rows than as pretend tiles. */
@@ -3523,7 +3523,7 @@ function viewApp(){
   /* Four tabs. The Library is not a destination any more — it is the Journey's
      index, so every explore-family nav lights the Journey tab. Progress and My Hive
      are not tabs either: they are you, and you are the avatar in the header. */
-  const navTabs=[['home','Home','home'],['trail','Journey','steps'],['coach','Practice','pencil'],['games','Play','joystick']].map(([key,label,ic])=>{
+  const navTabs=[['home','Home','home'],['trail','World Atlas','steps'],['coach','Practice','pencil'],['games','Play','joystick'],['progress','Progress','chart']].map(([key,label,ic])=>{
     const on=key==='trail'?(S.nav==='trail'||!!EXPLORE_NAVS[S.nav]):key==='coach'?(S.nav==='coach'||S.nav==='train'||S.nav==='levelup'||S.nav==='quest'):S.nav===key;
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
     const art=NAV_ART[key];
@@ -3641,7 +3641,6 @@ function viewApp(){
             <span class="sb-band-lbl" style="white-space:nowrap;position:relative">${bb.calibrating?'Find your level':('Word difficulty '+bb.band)}</span>
             <span class="sb-band-mini" style="display:none;font-weight:900;position:relative">${bb.calibrating?'Band?':bb.band}</span>
           </button>`; })()}
-        <button data-act="surpriseMe" class="sb-mob-hide" title="Surprise me — jump into a random learning resource" aria-label="Surprise me" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--chip);border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));color:var(--accent);font-weight:800;font-size:13px">🎲<span class="sb-search-lbl">Surprise me</span></button>
         <button data-act="openFinder" title="Word Finder — search 129,000 words, hear them, and add them to a list" aria-label="Search words" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:13px">${iconSVG('search',15)}<span class="sb-search-lbl">Search</span></button>${(()=>{ const _xp=getList(active(),activeListKey()).xp||0; const _lf=levelFromXp(_xp);
           return `<button data-act="openEvo" class="sb-mob-hide" title="Karma — your practice record. One right word = 1 Karma; it grows your evolution and is never spent." style="display:inline-flex;flex-direction:column;align-items:center;gap:0;padding:4px 12px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:900;font-size:13px;line-height:1.1">
           <span>✦ ${fmtN(_xp)}</span>
@@ -3653,17 +3652,21 @@ function viewApp(){
           return `<button data-act="toggleFocus" aria-label="Focus mode: music off, still background" title="Focus — switches off the music and holds the world still" style="width:38px;height:38px;border-radius:10px;background:${_fon?'var(--chip)':'var(--surface2)'};display:grid;place-items:center;color:${_fon?'var(--accent)':'var(--muted)'}">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="${_fon?'2.4':'1'}" fill="currentColor" stroke="none"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
           </button>`; })()}
-        <button data-act="cycleMode" aria-label="Switch look (Light / White / Dusk)" title="Light / White / Dusk" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);font-size:16px;line-height:1" class="sb-mob-hide">${S.mode==='light'?'☀':S.mode==='white'?'◻':'☾'}</button>
-        <button data-act="setNav" data-arg="collection" aria-label="Your hive — progress, collection and store" title="Your hive — rank, progress, collection, store" style="width:38px;height:38px;border-radius:50%;background:var(--surface2);display:grid;place-items:center;overflow:hidden;border:1.5px solid color-mix(in srgb,var(--accent) 34%,var(--line));flex-shrink:0">
-          <span style="width:30px;height:30px;display:block">${avatarSVG(active().avatar||'bizzy',30,active().accOn)}</span></button>
-        <button data-act="goSettings" aria-label="Settings" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text)">${iconSVG('gear',17)}</button>
+        <button data-act="cycleMode" aria-label="Switch look (Light / White / Dusk)" title="Light / White / Dusk" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text)" class="sb-mob-hide">${(()=>{
+          if(S.mode==='light') return `<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.4" fill="currentColor" stroke="none"/><path d="M12 2.6v2.3M12 19.1v2.3M2.6 12h2.3M19.1 12h2.3M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/></svg>`;
+          if(S.mode==='white') return `<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/></svg>`;
+          return `<svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" stroke="none"><path d="M20.4 14.6A8.6 8.6 0 0 1 9.4 3.6a8.6 8.6 0 1 0 11 11z"/></svg>`; })()}</button>
+        <button data-act="setNav" data-arg="collection" aria-label="Your hive — collection, evolution and store" title="Your hive — collection, evolution, store" style="width:38px;height:38px;border-radius:50%;background:var(--surface2);display:grid;place-items:center;overflow:hidden;border:1.5px solid color-mix(in srgb,var(--accent) 34%,var(--line));flex-shrink:0">
+          <span style="width:26px;height:29px;display:block">${mascotSVG('happy')}</span></button>
+        <button data-act="goSettings" aria-label="Settings" title="Settings" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text)">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 12h2M10 12h10M4 17h8M16 17h4"/><circle cx="16" cy="7" r="2.1"/><circle cx="8" cy="12" r="2.1"/><circle cx="14" cy="17" r="2.1"/></svg></button>
       </div>
       <div class="sb-topnav" style="max-width:1080px;margin:0 auto;padding:0 clamp(14px,3.5vw,32px) 9px;display:flex;gap:6px;overflow-x:auto">${navTabs}</div>
     </div>
     ${viewDrawer()}
     <div class="sb-content" style="max-width:1080px;margin:0 auto;width:100%;padding:18px clamp(14px,3.5vw,32px) 60px">${content}</div>
     <nav class="sb-tabbar" aria-label="Primary">
-      ${[['home','Home','home','home'],['trail','Journey','steps','explore'],['coach','Practice','pencil','practice'],['games','Play','joystick','arcade']].map(([k,l,ic,art])=>{ const on=(k==='trail')?(S.nav==='trail'||!!EXPLORE_NAVS[S.nav]):(S.nav===k||(k==='coach'&&(S.nav==='train'||S.nav==='levelup'||S.nav==='quest')));
+      ${[['home','Home','home','home'],['trail','Atlas','steps','explore'],['coach','Practice','pencil','practice'],['games','Play','joystick','arcade'],['progress','Progress','chart','progress']].map(([k,l,ic,art])=>{ const on=(k==='trail')?(S.nav==='trail'||!!EXPLORE_NAVS[S.nav]):(S.nav===k||(k==='coach'&&(S.nav==='train'||S.nav==='levelup'||S.nav==='quest')));
         const gl=(window.SB_ICON_ART && SB_ICON_ART[art])?`<span style="display:inline-flex;line-height:0;width:24px;height:24px;${on?'':'filter:grayscale(.35) opacity(.8)'}">${SB_ICON_ART(art,{size:24})}</span>`:iconSVG(ic,21);
         return `<button data-act="setNav" data-arg="${k}" aria-current="${on?'page':'false'}" style="${on?'color:var(--accent)':'color:var(--muted)'}">${gl}<span>${l}</span></button>`; }).join('')}
     </nav>
@@ -3828,27 +3831,35 @@ function viewHome(){
   const atlas=nx?{done:nx.done,total:nx.total,lap:nx.lap}:(function(){ try{ const T=window.SB_TRAIL; if(!T) return {done:0,total:0,lap:1};
       const tr=c.trail||{}; return { done:Object.keys(tr.done||{}).length, total:(T.honey.units||[]).length, lap:tr.lap||1 }; }
     catch(e){ return {done:0,total:0,lap:1}; } })();
-  const journeys=[
-    {goAct:'openCoach', ic:'pencil', sc:'coach', c1:'#7C5CFF',c2:'#5A37D6',accent:'#7C5CFF', title:"Practice", desc:qp?('Your path: '+qpLabel+' — climb its Stages with Revise & Practice. Switch paths any time.'):'Drill your words — the Bizzing Bee ladder, a theme, or your own list.', pct:Math.min(100,Math.round(aLvlNew/20*100))+'%', badge:qp?('Stage '+aLvlNew+' · '+qpLabel):'Choose your path', kind:'go'},
-    {goAct:'openGames', ic:'joystick', sc:'joystick', festive:true, title:'Arcade', desc:'Spelling Quest, the Saga, Word Quiz & more — earn coins!', pct:Math.min(100,(c.streak||0)*10)+'%', badge:(c.coins||0)+' coins', kind:'go'},
-  ].map((j,ji)=>{
-    const arg=j.goArg?`data-arg="${j.goArg}"`:'';
-    const wk=({trail:'trail',coach:'quest',concept:'concepts',book:'journeys',joystick:'arcade',theme:'themes'})[j.sc]||'quest';
-    const cid=({trail:'journeys',coach:'quest',concept:'concepts',book:'journeys',joystick:'arcade',theme:'themes'})[j.sc]||'quest';
-    const _pd=S.mode==='dusk'; const pillBg=_pd?'#FFFFFF':'#241E33', pillFg=_pd?'#241E33':'#FFFFFF';
-    const meta=`<span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;padding:4px 11px;border-radius:var(--r-pill,999px);font-size:11px;font-weight:800;letter-spacing:.02em;background:${pillBg};color:${pillFg}">${j.festive?coinIc(12):(j.kind==='lock'?iconSVG('lock',11,2.2):'')}${j.festive?((c.coins||0)+' coins'):esc(j.badge)}</span>`;
-    return `<button class="sb-lift" data-act="${j.goAct}" ${arg} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0">
+  /* The Atlas stop's companion: the journey you are actually training. Same card
+     shape, same art language, same height — a champion sees the Ultra journey,
+     everyone else the Bizzing Bee Journey. */
+  const trainCard=(()=>{
+    const ultra=advModeOn(c);
+    const art=ultra?'atlas-ultra':'w-stage-r2';
+    const title=ultra?'Ultra Champions Journey':journeyName();
+    const sub=ultra?'Every word in the library, hardest first, in day-sized blocks.'
+      :'Twenty Stages to Bizzing Bee Champ — climb them with Revise and Practice.';
+    const pct=Math.min(100,Math.round(aLvlNew/20*100));
+    return `<button class="sb-lift" data-act="openCoach" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0;width:100%">
       <div style="position:relative;width:100%">
-        ${j.sc==='trail'?paintedTileArt(atlasWorld(c),66):SB_COVER(S.theme,cid,{h:66,dark:S.mode==='dusk'})}
-        <span style="position:absolute;left:14px;bottom:-13px">${wayTile(wk,40,ji%2?2.5:-2.5)}</span>
+        <span style="position:relative;display:block;width:100%;height:92px;overflow:hidden;background:linear-gradient(160deg,#4a3f7a,#241e46)">
+          <img src="app-art/${art}.jpg" alt="" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+          <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,32,.16),rgba(14,9,32,.44))"></span></span>
+        <span style="position:absolute;left:14px;bottom:-13px">${wayTile('quest',40,2.5)}</span>
       </div>
-      <div style="padding:8px 14px 0 62px;min-height:24px;display:flex;align-items:center;justify-content:flex-end;width:100%">${meta}</div>
-      <div style="padding:2px 15px 12px;display:flex;flex-direction:column;flex:1;width:100%">
-        <div style="font-family:var(--ui,var(--body));font-weight:650;font-size:15.5px;line-height:1.2;color:var(--ink,var(--text))">${j.title}</div>
-        <div style="font-size:12.5px;color:var(--muted);line-height:1.4;margin:3px 0 9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${trunc(j.desc,62)}</div>
-        <div style="margin-top:auto;height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden"><div style="height:100%;background:${j.kind==='lock'?'var(--muted)':'var(--action,var(--accent))'};width:${j.pct}"></div></div>
-      </div></button>`;
-  }).join('');
+      <div style="padding:9px 15px 0 62px;min-height:24px;display:flex;align-items:center;justify-content:flex-end;width:100%">
+        <span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;padding:4px 11px;border-radius:var(--r-pill,999px);font-size:11px;font-weight:800;background:${S.mode==='dusk'?'#FFFFFF':'#241E33'};color:${S.mode==='dusk'?'#241E33':'#FFFFFF'}">Stage ${aLvlNew} of 20${ultra?'':' to Champ'}</span>
+      </div>
+      <div style="padding:4px 15px 14px;display:flex;flex-direction:column;flex:1;width:100%">
+        <span class="sb-cs">Your training journey</span>
+        <div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1.14;margin:2px 0 3px;color:var(--ink,var(--text))">${esc(trunc(title,34))}</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.4">${esc(sub)}</div>
+        <span style="margin-top:auto;padding-top:11px;display:flex;align-items:center;gap:10px">
+          <span style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:var(--r-md,10px);background:var(--paper,var(--bg2));border:1px solid var(--line);color:var(--ink,var(--text));font-weight:800;font-size:13.5px">${iconSVG('pencil',15)} Practise</span>
+          <span style="flex:1;height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden"><span style="display:block;height:100%;width:${pct}%;background:var(--action,var(--accent))"></span></span>
+        </span>
+      </div></button>`; })();
   return `<div>
     ${(()=>{ const lp=getList(c,aKey); const lf=levelFromXp(lp.xp||0); const xpToNext=Math.max(0,(lf.need||1)-(lf.into||0));
       const evoPct=Math.min(100,Math.round((lf.into||0)/(lf.need||1)*100));
@@ -3888,6 +3899,13 @@ function viewHome(){
             return d?`<div style="position:relative;background:var(--surface2,#f3eee3);border-radius:12px;border-bottom-left-radius:4px;padding:6px 10px;font:italic 600 11px/1.35 var(--body,sans-serif);color:var(--ink,var(--text))">“${esc(trunc((d.greeting||'').replace(/\{name\}/g, (c.name||'friend')),96))}”</div>`:'';
           })()}
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+            ${(()=>{ /* Rank rides in the greeting rather than owning a tile of its own —
+                it is who you are, not a fifth thing to read. Emblem, number and name all
+                come from heroLevel, in whichever world the speller is wearing. */
+              const hl=heroLevel(c), fi=formIdx(hl);
+              return `<button data-act="setNav" data-arg="evolution" title="Your rank — evolution, collection and store" style="display:inline-flex;align-items:center;gap:7px;padding:4px 12px 4px 5px;border-radius:var(--r-pill,999px);background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">
+                <span style="width:24px;height:26px;display:block;flex-shrink:0">${evArt(theme,fi)}</span>
+                Level ${hl} · ${esc(evo[fi])}</button>`; })()}
             ${(c.streak||0)>0?`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">${iconSVG('flame',14)} ${c.streak}-day streak</span>`:''}
             ${(()=>{ const ms=milestone(); return (ms&&ms.days>=0)?`<button data-act="setNav" data-arg="progress" style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">🐝 ${ms.days} days to ${esc(trunc(ms.label,18))}</button>`:''; })()}
           </div>
@@ -3909,26 +3927,7 @@ function viewHome(){
           </span>
           <span class="sb-cl" style="display:block;margin-top:8px">${allDone?'All three rings closed — brilliant!':'last 30 days →'}</span>
         </span></button>`; })()}
-      ${(()=>{ /* Your rank — the evolution ladder, in the world you are wearing. The
-          number, the emblem and the name all come from heroLevel, so the card cannot
-          disagree with itself or with the Evolution tab. */
-        const hLevel=heroLevel(c); const fi=formIdx(hLevel);
-        const hKey=Object.keys(c.lists||{}).reduce((b,k)=>listLevel(c,k)>listLevel(c,b)?k:b, aKey);
-        const hf=levelFromXp((getList(c,hKey).xp)||0);
-        const formPct=Math.max(0,Math.min(100,Math.round(((hLevel-(fi*2+1))+(hf.into||0)/(hf.need||1))/2*100)));
-        const nextForm=fi<9?evo[fi+1]:null;
-        return `<button data-act="setNav" data-arg="evolution" title="Your evolution, collection and store" class="sb-card" style="display:flex;align-items:center;gap:13px;min-height:128px;padding:14px;text-align:left;cursor:pointer;width:100%">
-        <span style="flex-shrink:0;width:74px;height:80px;display:grid;place-items:center;border-radius:14px;background:var(--surface2)">${evArt(theme,fi)}</span>
-        <span style="min-width:0;flex:1">
-          <span class="sb-cs">Your rank</span>
-          <span style="display:block;font-family:var(--display);font-weight:800;font-size:19px;line-height:1.14;margin:1px 0 2px">Level ${hLevel} · ${esc(evo[fi])}</span>
-          <span style="display:block;font-size:12px;color:var(--muted);font-weight:650">${nextForm?('Next form: '+esc(nextForm)+' at Level '+((fi+1)*2+1)):'The top of the ladder — nothing left to hatch into'}</span>
-          <span style="display:block;height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden;margin:8px 0 8px"><span style="display:block;height:100%;width:${formPct}%;background:var(--action,var(--accent))"></span></span>
-          <span style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
-            <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:var(--r-pill,999px);background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12px">${coinIc(12)} ${c.coins||0}</span>
-            <span class="sb-cl">collection &amp; store →</span>
-          </span>
-        </span></button>`; })()}
+      ${wohTile}
     </div>
     <div class="sb-home-r2">
       ${(()=>{ /* Next on your journey — the Atlas frontier, straight from trail.js.
@@ -3956,12 +3955,9 @@ function viewHome(){
           <div style="font-size:12.5px;color:var(--muted);line-height:1.4">${esc(trunc(kick+(sub?' · '+sub:''),96))}</div>
           <span style="margin-top:auto;padding-top:11px"><span style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:var(--r-md,10px);background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:14px;box-shadow:var(--edge)">${iconSVG('steps',15)} ${nx&&nx.done?'Continue':'Start'}</span></span>
         </div></button>`; })()}
-      <div>
-        ${focusedH?'':`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:2px 2px 9px">Keep going</div>`}
-        <div class="sb-home-tiles">${journeys}</div>
-      </div>
+      ${trainCard}
     </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:14px">${tipOfDay(true,true)}${wohTile}${qohTile}</div>`; })()}
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:14px">${tipOfDay(true,true)}${qohTile}</div>`; })()}
     <div style="text-align:center;margin-top:26px;padding-top:14px;border-top:1px solid var(--line)"><a href="privacy.html" style="color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:3px">Privacy &amp; Parents' Notice</a></div>
   </div>`;
 }
@@ -6602,7 +6598,7 @@ function coachTrain(){
     return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;animation:sb-rise .3s ease both"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:10px">Level ${stage.n} words · ${esc(listLabel(key).split(' · ')[0])} · ${fullList.length}</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;max-height:360px;overflow-y:auto">${cells}</div>${fullList.length>cap?`<div style="font-size:12px;color:var(--muted);margin-top:8px">Showing the first ${cap} of ${fullList.length}.</div>`:''}</div>`; })() : '';
   const titleRow = (S.renameKey===key)
     ? `<div style="display:flex;align-items:center;gap:8px;flex:1;min-width:220px"><input data-inp="renameInput" data-fkey="renameInp" value="${escA(S.renameVal)}" maxlength="40" placeholder="List name" style="flex:1;min-width:120px;background:var(--surface2);border:1px solid var(--accent);border-radius:10px;padding:8px 11px;font-size:15px;font-weight:800;color:var(--text);font-family:var(--display)"><button data-act="saveRename" style="padding:8px 13px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">Save</button><button data-act="cancelRename" style="padding:8px 11px;border-radius:10px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:13px">✕</button></div>`
-    : `<div style="display:inline-flex;align-items:center;gap:8px;min-width:0"><span style="font-family:var(--display);font-weight:800;font-size:15px">${esc(listLabel(key))}</span><button data-act="startRename" data-arg="${escA(key)}" title="Rename this list" style="color:var(--muted);display:inline-flex">${iconSVG('pencil',15)}</button><span style="font-size:13px;color:var(--muted);font-weight:700;white-space:nowrap">· Level ${uiLevel}</span></div>`;
+    : `<div style="display:inline-flex;align-items:center;gap:8px;min-width:0"><span style="font-family:var(--display);font-weight:800;font-size:15px">${esc(listLabel(key))}</span><button data-act="startRename" data-arg="${escA(key)}" title="Rename this list" style="color:var(--muted);display:inline-flex">${iconSVG('pencil',15)}</button><span style="font-size:13px;color:var(--muted);font-weight:700;white-space:nowrap">· Stage ${uiLevel}</span></div>`;
   const printDlg = S.printOpen ? (()=>{ const p=(S.prn&&S.prn.inc)?S.prn:{inc:{w:1,p:1,d:1},page:'letter',scope:'level',sort:'level',size:'normal'};
     const pbtn=(g,v,l)=>`<button data-act="printSet" data-arg="${g}:${v}" style="padding:9px 13px;border-radius:10px;font-weight:800;font-size:12px;border:1px solid ${p[g]===v?'var(--accent)':'var(--line)'};${p[g]===v?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">${l}</button>`;
     const tbtn=(v,l)=>`<button data-act="printSet" data-arg="inc:${v}" style="padding:9px 13px;border-radius:10px;font-weight:800;font-size:12px;border:1px solid ${p.inc[v]?'var(--accent)':'var(--line)'};${p.inc[v]?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">${p.inc[v]?'✓ ':''}${l}</button>`;
@@ -6626,7 +6622,7 @@ function coachTrain(){
       </div></div>`; })() : '';
   // ---- one Level header (Word→Set→Level→Champ→Library) ----
   const levelHeadline = isJourney
-    ? (stage.champ ? ('Level '+stage.n+' of '+CHAMP_LEVELS+' to Champ') : ('Champion\'s Library · '+esc(stage.label)))
+    ? (stage.champ ? ('Stage '+stage.n+' of '+CHAMP_LEVELS+' to Champ') : ('Champion\'s Library · '+esc(stage.label)))
     : ('Level '+stage.n+' of '+stages.length);
   const levelTag = isJourney
     ? (stage.champ ? `<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--accent)">BIZZING BEE CHAMP</span>` : `<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.08em;color:#C8901B">★ CHAMP · LIBRARY</span>`)
@@ -6635,21 +6631,20 @@ function coachTrain(){
   let advanceHTML;
   if(lastStage && stageDone){ advanceHTML=`<div style="margin-top:10px;font-size:12px;color:var(--good);font-weight:800">🏆 Every level cleared — legendary!</div>`; }
   else if(stageDone && libLocked){ advanceHTML=`<div style="margin-top:11px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:11px 13px"><div style="font-weight:800;font-size:13px;margin-bottom:3px">🏆 You're a Bizzing Bee Champ!</div><div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:9px">The Champion's Library — the other ${fmtN(journeyTotal()-champWordCount())} words — is Premium.</div><button data-act="goPaywall" style="padding:9px 15px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">Unlock the Library 👑</button></div>`; }
-  else if(stageDone){ advanceHTML=`<button data-act="advanceStage" data-arg="${escA(key)}" style="margin-top:11px;width:100%;padding:12px;border-radius:10px;background:var(--good);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Level ${stage.n} cleared! Go to ${advanceTo} →</button><button data-act="openChallenge" data-arg="${escA(key)}" style="margin-top:8px;width:100%;padding:11px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:13px">⚡ Take the Level ${stage.n} Challenge</button>`; }
-  else { advanceHTML=`<div style="margin-top:11px"><button data-act="openChallenge" data-arg="${escA(key)}" style="width:100%;padding:12px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">⚡ Take the Level ${stage.n} Challenge</button></div><div style="margin-top:8px;font-size:12px;color:var(--muted);line-height:1.5">Master all ${stage.words.length} words to level up — or pass the Challenge to test out early.</div>`; }
+  else if(stageDone){ advanceHTML=`<button data-act="advanceStage" data-arg="${escA(key)}" style="margin-top:11px;width:100%;padding:12px;border-radius:10px;background:var(--good);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Stage ${stage.n} cleared! Go to ${advanceTo} →</button><button data-act="openChallenge" data-arg="${escA(key)}" style="margin-top:8px;width:100%;padding:11px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:13px">⚡ Take the Stage ${stage.n} Challenge</button>`; }
+  else { advanceHTML=`<div style="margin-top:11px"><button data-act="openChallenge" data-arg="${escA(key)}" style="width:100%;padding:12px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">⚡ Take the Stage ${stage.n} Challenge</button></div><div style="margin-top:8px;font-size:12px;color:var(--muted);line-height:1.5">Master all ${stage.words.length} words to open the next Stage — or pass the Challenge to test out early.</div>`; }
   const tracker = isJourney
-    ? `<div style="display:flex;gap:3px;margin-top:11px">${Array.from({length:CHAMP_LEVELS},(_,i)=>`<span style="flex:1;height:5px;border-radius:999px;background:${(uiLevel>i+1||(uiLevel===i+1&&stageDone))?'var(--good)':(uiLevel===i+1?'var(--accent)':'var(--line)')}"></span>`).join('')}</div><div style="font-size:12px;color:var(--muted);margin-top:5px">20 levels to Bizzing Bee Champ${uiLevel>CHAMP_LEVELS?' ✓ — now exploring the Library':''}</div>`
+    ? `<div style="display:flex;gap:3px;margin-top:11px">${Array.from({length:CHAMP_LEVELS},(_,i)=>`<span style="flex:1;height:5px;border-radius:999px;background:${(uiLevel>i+1||(uiLevel===i+1&&stageDone))?'var(--good)':(uiLevel===i+1?'var(--accent)':'var(--line)')}"></span>`).join('')}</div><div style="font-size:12px;color:var(--muted);margin-top:5px">20 Stages to Bizzing Bee Champ${uiLevel>CHAMP_LEVELS?' ✓ — now exploring the Library':''}</div>`
     : `<div style="display:flex;gap:4px;margin-top:11px">${stages.map((s,i)=>`<span style="flex:1;height:5px;border-radius:999px;background:${(i<sIdx||(i===sIdx&&stageDone))?'var(--good)':(i===sIdx?'var(--accent)':'var(--line)')}"></span>`).join('')}</div>`;
   const libMeter = isJourney ? `<div style="margin-top:11px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:7px"><span style="font-weight:800;color:var(--text)">Library explored</span> ${fmtN(journeyMastered(c))} / ${fmtN(journeyTotal())} words mastered</div>` : '';
   const levelBlock=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:16px">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px">${titleRow}<div style="font-size:12px;color:var(--muted);font-weight:700">You're <b style="color:var(--text)">${form}</b></div></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px">${titleRow}</div>
       <div style="background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:12px">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:3px">${levelTag}<span style="font-size:12px;color:var(--muted);font-weight:700">${stageM}/${stage.words.length} mastered</span></div>
         <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:8px">${levelHeadline}</div>
         <div style="display:flex;align-items:center;gap:10px"><div style="flex:1;height:9px;border-radius:999px;background:var(--bg2);overflow:hidden"><div style="height:100%;border-radius:999px;background:${stageDone?'var(--good)':'var(--accent)'};width:${stagePct}%;transition:width .4s"></div></div><span style="font-size:12px;color:var(--muted);font-weight:800">${stagePct}%</span></div>
         ${advanceHTML}
       </div>
-      <div style="overflow-x:auto;padding:2px 0"><div style="min-width:760px">${evoLadderHTML(theme, fIdx)}</div></div>
     </div>`;
   const tab=(k,l)=>`<button data-act="luSetTab" data-arg="${k}" style="flex:1;padding:9px 6px;border-radius:10px;font-weight:800;font-size:12px;line-height:1.15;${S.luTab===k?'background:var(--bg2);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.08)':'background:transparent;color:var(--muted)'}">${l}</button>`;
   const learnCardsBtn=`<div style="display:flex;margin-bottom:10px"><button data-act="toggleCardView" title="Card view — flip through these words, starting on this one" style="display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12.5px">${cardsSVG(15)} Card view</button></div>`;
@@ -6660,7 +6655,7 @@ function coachTrain(){
   const act=(a,ic,t,col)=>`<button data-act="${a}" class="sb-lift" style="display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:16px 10px;box-shadow:var(--sh-rest)">${iconTile(ic,col,{size:44,radius:13})}<span style="font-family:var(--display);font-weight:800;font-size:13.5px;color:${col};line-height:1.15">${t}</span></button>`;
   const actions=`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:18px 2px 10px">Quick practice</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:11px">${act('startBuzz','flame','Daily Buzz','#E8845C')}${act('startWritten','pencil','Written','#7C5CFF')}${act('startOral','speaker','Oral round','#13A892')}${act('coachSetupOpen','sliders','Setup','#C8901B')}</div>`;
-  const journeyPromo = (key!=='journey' && (getList(c,'journey').stage||0)===0) ? `<button data-act="startJourney" style="width:100%;text-align:left;border-radius:14px;margin-top:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 4px 14px rgba(43,27,94,.16)"><div style="padding:13px 16px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">★ Recommended path</div><div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">${journeyName()} — 20 Levels to Champ</div></div><span style="padding:8px 14px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Start →</span></div></button>` : '';
+  const journeyPromo = (key!=='journey' && (getList(c,'journey').stage||0)===0) ? `<button data-act="startJourney" style="width:100%;text-align:left;border-radius:14px;margin-top:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 4px 14px rgba(43,27,94,.16)"><div style="padding:13px 16px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">★ Recommended path</div><div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">${journeyName()} — 20 Stages to Champ</div></div><span style="padding:8px 14px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Start →</span></div></button>` : '';
   const advJourney = !advModeOn(c) ? '' : (key==='ultra'
     ? `<button class="sb-lift" data-act="openAdvJourney" style="width:100%;text-align:left;border-radius:16px;margin-bottom:16px;overflow:hidden;background:linear-gradient(135deg,#241B4E,#3A2A72 58%,#5B3FA6);box-shadow:0 6px 18px rgba(36,27,78,.28)">
       <div style="padding:14px 17px;display:flex;align-items:center;gap:13px;color:#fff;flex-wrap:wrap">
