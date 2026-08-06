@@ -1,8 +1,9 @@
-/* Volume 14 — The Grand Trunk Road: South Asian words in English.
-   Authored for the book series; word definitions and pronunciations are pulled
-   from the app word library at authoring time, so nothing here is invented.
-   Shape matches SB_CONCEPTS chapters (category/title/difficulty/concept/method/
-   cards/words) so mkbooks.js can treat it like any other chapter source. */
+/* southasia-data.js — the eleven South Asian chapters, shared by Volume 14 of the
+   book series (books/southasia-chapters.js, the authoring copy) and by Expedition IV
+   of the Word Atlas. Shape matches SB_CONCEPTS chapters (category/title/difficulty/
+   concept/method/cards/words) plus an authored `sc` narration script, so trail.js
+   can hand one straight to the concept viewer. Units point in by index (`sa`), so
+   this file is APPEND-ONLY: reordering it would repoint every stop on the road. */
 window.SB_SOUTHASIA = [
  {
   "category": "South Asian Words in English",

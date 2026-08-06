@@ -176,7 +176,7 @@ handlers. App lives in this folder; open `index.html` to run.
   `overallLevel` is deleted; the header pill says **Word difficulty**, not Bee Band.
 - **ONE concept-first guided journey.** The Journey tab IS the Word Map
   (nav 'trail'): one continuous map of 9 base acts followed by **The Advanced Rounds**
-  (the 5 expeditions, unit ids `x*`), which render locked with a **$49.99/yr** Advanced
+  (the 6 expeditions, unit ids `x*`), which render locked with a **$49.99/yr** Advanced
   Pack CTA until `ADV.active()`. Course is derived from the unit id prefix
   (`state.trailCourse`, set by `trailUnit`/`trailChk`; checkpoint args are
   `"course|actId:n"`). A "Chapter shelf" button on the map opens the Concepts library,
@@ -190,8 +190,18 @@ handlers. App lives in this folder; open `index.html` to run.
   classic Boss Battle quick fight — `sqBoss`), Daily Buzz, Bee Trivia, Magic Squares,
   Beat the Buzzer (modes: Sprint / Warm-Up / Level Challenge / Duel / ◆ Rapid
   Dictation) and Word Quiz (+ ◆ Memory Match). Curriculum lives in `trail-data.js`
-  (`SB_TRAIL`: 9 acts / 128 Honey units incl. 6 inline Trickster chapters; 5 expeditions / 43 units), word pools in `trail-map-data.js` (**lazy-loaded** by the engine — never
+  (`SB_TRAIL`: 9 acts / 128 Honey units incl. 6 inline Trickster chapters; 6 expeditions / 54 units), word pools in `trail-map-data.js` (**lazy-loaded** by the engine — never
   add it to index.html). Regenerate both with `voice/pipeline/trail-build.js`.
+- **A stop resolves its chapter three ways** (`chOf` in trail.js): `gi` -> `SB_CONCEPTS`,
+  `ai` -> `SB_ADV_CONCEPTS`, `sa` -> **`SB_SOUTHASIA`** (`southasia-data.js`, lazy, in the
+  `atlas` and `advanced` groups), plus `neu` units that carry their chapter inline. `sa`
+  is **Expedition IV - The Grand Trunk Road** — the 11 South Asian chapters shared with
+  Volume 14 of the book series (`books/southasia-chapters.js` is the authoring copy;
+  keep the two in step). That file is **append-only**: units point in by index.
+  Its chapters carry their own narration script inline as `ch.sc`, which `conceptAnim`
+  now prefers over the index-keyed `SB_CSCRIPT`/`SB_ADV_CSCRIPT` tables. Expedition word
+  lists fill any missing definition/sentence/pronunciation from the word library, so a
+  book chapter that ships without example sentences still drills with them.
 - Unit loop: Learn (opens the concept chapter; `state.trailReturn` routes `conceptBack`
   back to the unit) → Meet the words (wordFlash) → Practice (feeds `startTrain`) →
   **Quiz gate**: 15 mixed items (4 concept MCQs from `unit.qs` where `c[0]` is always
