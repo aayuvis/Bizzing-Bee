@@ -388,6 +388,13 @@ function css(vol) {
   @font-face{font-family:'BB Kicker';src:url('../fonts/fredoka-600.woff2') format('woff2');font-weight:600}
   @font-face{font-family:'BB Body';src:url('../fonts/hanken-var.woff2') format('woff2');font-weight:100 900}
   @font-face{font-family:'BB Tile';src:url('../fonts/sono-600.woff2') format('woff2');font-weight:600}
+  ${vol.n === 22 ? `
+  /* mood faces for the poems companion — a war/ruin subject reads bold and
+     declarative, a sonnet/speech/prose is the book's most literary matter and
+     sets in a serif, a haiku is quiet and round. See moodFont() in mkbooks.js. */
+  @font-face{font-family:'BB Bold';src:url('../fonts/bungee-400.woff2') format('woff2');font-weight:400}
+  @font-face{font-family:'BB Serif';src:url('../fonts/fraunces-800.woff2') format('woff2');font-weight:400 900}
+  @font-face{font-family:'BB Soft';src:url('../fonts/comfortaa-700.woff2') format('woff2');font-weight:700}` : ''}
   *{box-sizing:border-box;margin:0;padding:0}
   :root{--paper:#f3efff;--card:#fff;--hairline:#ddd4f2;--chip:#e6defc;--chip-ink:#4a3aa0;
     --ink:#241E33;--muted:#6b6482;--treasure:#F0B429;--treasure-tint:#FFF3D6;--treasure-deep:#8A5B00;
@@ -554,9 +561,9 @@ function css(vol) {
   .pm-body.rev{flex-direction:row-reverse}
   .pm-col{flex:1;min-width:0}
   .pm-text{font-family:'BB Display';color:var(--ink);overflow-wrap:break-word}
-  /* the underline is the point of the book — it must read as a mark, not a link */
-  .pm-text .pw{text-decoration:none;background:linear-gradient(180deg,transparent 78%,var(--accent) 78%,var(--accent) 94%,transparent 94%);
-    padding:0 .5pt}
+  .pm-text.pm-mood-bold{font-family:'BB Bold';letter-spacing:.01em}
+  .pm-text.pm-mood-serif{font-family:'BB Serif';font-weight:600}
+  .pm-text.pm-mood-soft{font-family:'BB Soft'}
   .pm-tiles{flex:0 0 2.15in;display:flex;flex-direction:column;gap:.11in}
   .pm-tile{background:color-mix(in srgb,var(--accent) 7%,var(--paper));border-left:2.5pt solid var(--accent);
     border-radius:0 8px 8px 0;padding:.09in .11in}
@@ -1449,9 +1456,16 @@ const POEM_FIT = `<script>
     for (var i=0;i<pages.length;i++){
       var p=pages[i], t=p.querySelector('.pm-text'); if(!t) continue;
       var s=parseFloat(t.getAttribute('data-max'))||14, min=parseFloat(t.getAttribute('data-min'))||8.4;
+      var lh=parseFloat(t.getAttribute('data-lh'))||1.5, lhMax=lh+0.5;
       t.style.fontSize=s+'pt';
       var guard=0;
       while(s>min && p.scrollHeight>p.clientHeight+1 && guard++<80){ s-=0.25; t.style.fontSize=s+'pt'; }
+      /* the type now fits at its smallest necessary size — if the leaf still has
+         slack, spend it on breathing room between lines rather than leaving the
+         paper bare, so a short piece reads as spacious, not just small */
+      guard=0;
+      while(lh<lhMax && p.scrollHeight<=p.clientHeight-6 && guard++<40){ lh+=0.02; t.style.lineHeight=lh; }
+      if (p.scrollHeight>p.clientHeight+1) { lh-=0.02; t.style.lineHeight=lh; }
     }
   }
   function go(){ if(document.fonts&&document.fonts.ready) document.fonts.ready.then(fit); else fit(); }
@@ -1741,26 +1755,18 @@ function fitPoem(p, L, hard) {
   return { sz: Math.round(sz * 100) / 100, lh, max, min };
 }
 
-/* Underline every hard word where it stands in the text, matching the inflected
-   forms a poem actually uses (sceptre / sceptred, love / loving) without touching
-   a longer word that merely starts the same way.
-   Once each, over the WHOLE poem — not once per line. Marking per line meant a
-   word repeated in the speech got underlined every time it came round, while a
-   second hard word sharing a line was skipped entirely and turned up in the
-   glossary with nothing above it to point at. */
-function markPoem(lines, hard) {
-  const done = new Set();
-  return lines.map(line => {
-    let out = esc(line);
-    for (const h of hard) {
-      const key = String(h.w || '').toLowerCase();
-      if (!key || done.has(key)) continue;
-      const w = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const re = new RegExp('\\b(' + w + "(?:s|es|d|ed|ing|’s)?)\\b(?![^<]*</u>)", 'i');
-      if (re.test(out)) { out = out.replace(re, '<u class="pw">$1</u>'); done.add(key); }
-    }
-    return out;
-  });
+/* The mood picks the face. Four registers, chosen from fields every piece
+   already carries (kind, th) so nothing had to be re-authored: a war or ruin
+   subject reads as bold declaration whatever form it is in (Ozymandias gets
+   the same weight as Henry V); a sonnet, a speech or a prose oration is the
+   book's most literary matter and sets in a serif; a haiku is quiet and round;
+   everything else — the poems people keep by heart — stays in the house face,
+   which is where a young reader should feel most at home. */
+function moodFont(p) {
+  if (p.th === 'war' || p.th === 'ruin') return 'bold';
+  if (p.kind === 'sonnet' || p.kind === 'speech' || p.kind === 'prose') return 'serif';
+  if (p.kind === 'haiku') return 'soft';
+  return '';
 }
 
 function poemPage(vol, sec, p, n, folio, keys) {
@@ -1775,19 +1781,14 @@ function poemPage(vol, sec, p, n, folio, keys) {
   const hard = p.hard || [];
   const isHaiku = p.kind === 'haiku';
   const side = L.art === 'side-l' || L.art === 'side-r';
-  const nLines = p.lines.length;
   const { sz, lh, max, min } = fitPoem(p, L, hard);
+  const mood = moodFont(p);
 
-  const poemHtml = `<div class="pm-text" data-max="${max}" data-min="${min}" style="font-size:${sz}pt;line-height:${lh};${isHaiku ? 'text-align:center' : ''}">`
-    + markPoem(p.lines, hard).map((l, i) => p.lines[i] === '' ? '<div style="height:.09in"></div>'
-      : `<div>${l}</div>`).join('') + '</div>';
+  const poemHtml = `<div class="pm-text${mood ? ' pm-mood-' + mood : ''}" data-max="${max}" data-min="${min}" data-lh="${lh}" style="font-size:${sz}pt;line-height:${lh};${isHaiku ? 'text-align:center' : ''}">`
+    + p.lines.map(l => l === '' ? '<div style="height:.09in"></div>' : `<div>${esc(l)}</div>`).join('') + '</div>';
 
   const tilesInner = `
-    <div class="pm-tile pm-gist"><span class="pm-tk">What to listen for</span><p>${esc(p.note)}</p></div>
-    <div class="pm-tile pm-form"><span class="pm-tk">The form</span>
-      <p><b>${esc({ speech: 'Dramatic speech', sonnet: 'Sonnet', haiku: 'Haiku', poem: 'Lyric poem', prose: 'Prose' }[p.kind] || 'Poem')}</b>
-      &middot; ${isHaiku ? '17 syllables' : (nLines - p.lines.filter(x => x === '').length) + ' lines'}${p.y ? ' &middot; ' + esc(p.y) : ''}</p></div>
-    ${hard.length ? `<div class="pm-tile pm-count"><span class="pm-tk">Words to take</span><p><b>${hard.length}</b> underlined below, glossed at the foot of the page.</p></div>` : ''}`;
+    <div class="pm-tile pm-gist"><span class="pm-tk">What to listen for</span><p>${esc(p.note)}</p></div>`;
 
   const gloss = hard.length ? `<div class="pm-gloss">
     ${hard.map(h => `<div class="pm-g"><b>${esc(h.w)}</b><i>/ ${esc(h.say)} /</i><span>${esc(fit(h.def, 96))}</span></div>`).join('')}
@@ -1810,7 +1811,7 @@ function poemPage(vol, sec, p, n, folio, keys) {
       : (L.art === 'side-l' ? sideImg : '') + col + tilesCol + (L.art === 'side-r' ? sideImg : '')
   }</div>`;
 
-  keys.push(`<div><b>${esc(p.t)}</b> — underlined: ${hard.map(h => esc(h.w)).join(', ') || '—'}</div>`);
+  keys.push(`<div><b>${esc(p.t)}</b> — words to take: ${hard.map(h => esc(h.w)).join(', ') || '—'}</div>`);
   return `<div class="page pm-page pm-art-${side ? 'side' : L.art}${L.art === 'side-r' ? ' pm-side-r' : ''}" data-vol="22">
     ${L.art === 'ground' ? img('pm-ground') : ''}
     ${head(vol, null, 0, esc(sec.title))}

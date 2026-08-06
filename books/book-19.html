@@ -7,6 +7,7 @@
   @font-face{font-family:'BB Kicker';src:url('../fonts/fredoka-600.woff2') format('woff2');font-weight:600}
   @font-face{font-family:'BB Body';src:url('../fonts/hanken-var.woff2') format('woff2');font-weight:100 900}
   @font-face{font-family:'BB Tile';src:url('../fonts/sono-600.woff2') format('woff2');font-weight:600}
+  
   *{box-sizing:border-box;margin:0;padding:0}
   :root{--paper:#f3efff;--card:#fff;--hairline:#ddd4f2;--chip:#e6defc;--chip-ink:#4a3aa0;
     --ink:#241E33;--muted:#6b6482;--treasure:#F0B429;--treasure-tint:#FFF3D6;--treasure-deep:#8A5B00;
@@ -173,9 +174,9 @@
   .pm-body.rev{flex-direction:row-reverse}
   .pm-col{flex:1;min-width:0}
   .pm-text{font-family:'BB Display';color:var(--ink);overflow-wrap:break-word}
-  /* the underline is the point of the book — it must read as a mark, not a link */
-  .pm-text .pw{text-decoration:none;background:linear-gradient(180deg,transparent 78%,var(--accent) 78%,var(--accent) 94%,transparent 94%);
-    padding:0 .5pt}
+  .pm-text.pm-mood-bold{font-family:'BB Bold';letter-spacing:.01em}
+  .pm-text.pm-mood-serif{font-family:'BB Serif';font-weight:600}
+  .pm-text.pm-mood-soft{font-family:'BB Soft'}
   .pm-tiles{flex:0 0 2.15in;display:flex;flex-direction:column;gap:.11in}
   .pm-tile{background:color-mix(in srgb,var(--accent) 7%,var(--paper));border-left:2.5pt solid var(--accent);
     border-radius:0 8px 8px 0;padding:.09in .11in}
