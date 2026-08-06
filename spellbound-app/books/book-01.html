@@ -122,16 +122,28 @@
   .bb-prop{display:inline-block;background:var(--chip);color:var(--chip-ink);border-radius:8pt;padding:3pt 8pt;font-family:'BB Tile';font-size:10pt}
   .bb-bubble{background:var(--card);border:1px solid var(--hairline);border-radius:12pt;padding:6pt 10pt;font-family:'BB Display';font-size:11.5pt;line-height:1.35;box-shadow:var(--sh-screen)}
   .bb-hive{display:grid;grid-template-columns:1fr 1fr;gap:.12in}
-  .bb-card{padding:0 .04in}
+  .bb-card{padding:0 .04in;min-width:0;overflow-wrap:anywhere}
   .bb-card .ex{font-size:9.6pt;line-height:1.32;margin-top:2px;color:var(--ink);opacity:.85}
-  .bb-card .w{font-family:'BB Body';font-weight:800;font-size:23pt;line-height:1.05;font-variant-numeric:tabular-nums;color:var(--accent-deep)}
+  /* --wsz is set per word from its own length: a 45-letter headword at 23pt is
+     four inches of type in a three-inch column, and it took the whole spread
+     with it. Wrapping is allowed as a last resort for the true monsters. */
+  .bb-card .w{font-family:'BB Body';font-weight:800;font-size:var(--wsz,23pt);line-height:1.06;
+    font-variant-numeric:tabular-nums;color:var(--accent-deep);overflow-wrap:anywhere;hyphens:auto}
+  .bb-card .say{overflow-wrap:anywhere}
   .bb-card .say{font-family:'BB Tile';font-size:10pt;color:var(--muted);margin-top:1px}
   .bb-card .d{font-size:10.6pt;line-height:1.38;margin-top:2px}
   .bb-card .hook{font-size:9.8pt;line-height:1.32;margin-top:2px;color:var(--chip-ink);font-style:italic}
+  /* An eponym's provenance is the fact a speller actually uses at the microphone:
+     "named after a French chemist" decides more letters than the definition does. */
+  .bb-card .after{font-size:9.4pt;line-height:1.34;margin-top:3px;padding-left:.09in;
+    border-left:2.2pt solid var(--accent);color:var(--ink)}
+  .bb-card .after b{font-variant:small-caps;letter-spacing:.04em;font-size:8.4pt;color:var(--muted)}
   .bb-writeline{border-bottom:1pt solid var(--ink);height:.42in;margin-top:4pt}
   .bb-rapid{display:grid;grid-template-columns:1fr 1fr;gap:.08in .16in}
-  .bb-row{padding:4pt 0;min-height:.52in;font-size:10.4pt;line-height:1.36;border-bottom:1px dotted var(--hairline)}
+  .bb-row{padding:4pt 0;min-height:.52in;font-size:10.4pt;line-height:1.36;border-bottom:1px dotted var(--hairline);
+    min-width:0;overflow-wrap:anywhere}
   .bb-row b{font-family:'BB Kicker';color:var(--accent-deep)}
+  .bb-row b.long{font-size:8.6pt}.bb-row b.xlong{font-size:7.4pt}
   .bb-break{margin-top:.18in;display:flex;gap:.13in;align-items:flex-start;background:linear-gradient(90deg,var(--treasure-tint),transparent 85%);border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.09in .14in}
   .bb-break .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--treasure-deep)}
   .bb-break .b{font-size:11.2pt;line-height:1.4;margin-top:2px}
@@ -414,29 +426,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">remember</div>
-        <div class="say">/ rih-MEM-ber /  ·  /rɪˈmɛmbər/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">remember</div>
+        <div class="say" style="font-size:10pt">/ rih-MEM-ber /  ·  /rɪˈmɛmbər/</div>
         <div class="d">to keep something in your mind; to not forget</div><div class="hook">hook: re + MEM + ber — the MEM in the middle comes from memory.</div>
+        
         <div class="ex">I ▁▁▁ the first word I ever spelled on stage.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">practice</div>
-        <div class="say">/ PRAK-tis /  ·  /ˈpræktɪs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">practice</div>
+        <div class="say" style="font-size:10pt">/ PRAK-tis /  ·  /ˈpræktɪs/</div>
         <div class="d">to do something again and again to get better at it</div><div class="hook">hook: PRACT + ICE — practice makes the tricky parts feel like smooth ice.</div>
+        
         <div class="ex">She spends ten minutes on spelling ▁▁▁ every morning.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">together</div>
-        <div class="say">/ tuh-GEH-ther /  ·  /təˈɡɛθər/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">together</div>
+        <div class="say" style="font-size:10pt">/ tuh-GEH-ther /  ·  /təˈɡɛθər/</div>
         <div class="d">with each other; joined as one group</div><div class="hook">hook: to + get + her — three little words hiding inside one.</div>
+        
         <div class="ex">The team spelled the word ▁▁▁ on the bus ride home.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">important</div>
-        <div class="say">/ im-POR-tunt /  ·  /ɪmˈpɔrtʌnt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">important</div>
+        <div class="say" style="font-size:10pt">/ im-POR-tunt /  ·  /ɪmˈpɔrtʌnt/</div>
         <div class="d">mattering a lot; having great value</div><div class="hook">hook: im + PORT + ant — ends in -ANT, like an important ant carrying the word.</div>
+        
         <div class="ex">Saying the word before you spell it is the most ▁▁▁ step.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">champion</div>
-        <div class="say">/ CHAM-pee-un /  ·  /ˈtʃæmpiʌn/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">champion</div>
+        <div class="say" style="font-size:10pt">/ CHAM-pee-un /  ·  /ˈtʃæmpiʌn/</div>
         <div class="d">the winner of a competition; the very best</div><div class="hook">hook: CHAMP + ION — a CHAMP never skips the routine.</div>
+        
         <div class="ex">The ▁▁▁ said every word clearly before spelling it.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">microphone</div>
-        <div class="say">/ MY-kruh-fohn /  ·  /ˈmaɪkrəˌfoʊn/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">microphone</div>
+        <div class="say" style="font-size:10pt">/ MY-kruh-fohn /  ·  /ˈmaɪkrəˌfoʊn/</div>
         <div class="d">a device that makes your voice louder</div><div class="hook">hook: micro (small) + phone (sound) — a small-sound helper. PH says /f/.</div>
+        
         <div class="ex">Step up to the ▁▁▁ and say the word first.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-meadow-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -444,7 +462,7 @@
 <div class="page" data-vol="1">
       <div class="bb-head"><span>Chapter 1 · The Champion's Routine — say, spell, say</span><span>Rapid round · ★☆☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>routine</b> <span class="tile" style="font-size:8.8pt">/roo-TEEN/</span><br>a set of steps done the same way every time</div><div class="bb-row"><b>steady</b> <span class="tile" style="font-size:8.8pt">/STEH-dee/</span><br>even and regular; not shaky or rushed</div><div class="bb-row"><b>clearly</b> <span class="tile" style="font-size:8.8pt">/KLEER-lee/</span><br>in a way that is easy to hear or see</div><div class="bb-row"><b>confirm</b> <span class="tile" style="font-size:8.8pt">/kun-FURM/</span><br>to check that something is true or correct</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">routine</b> <span class="tile" style="font-size:8.8pt">/roo-TEEN/</span><br>a set of steps done the same way every time</div><div class="bb-row"><b class="">steady</b> <span class="tile" style="font-size:8.8pt">/STEH-dee/</span><br>even and regular; not shaky or rushed</div><div class="bb-row"><b class="">clearly</b> <span class="tile" style="font-size:8.8pt">/KLEER-lee/</span><br>in a way that is easy to hear or see</div><div class="bb-row"><b class="">confirm</b> <span class="tile" style="font-size:8.8pt">/kun-FURM/</span><br>to check that something is true or correct</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -540,29 +558,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">circus</div>
-        <div class="say">/ SUR-kus /  ·  /ˈsʌrkʌs/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">circus</div>
+        <div class="say" style="font-size:10pt">/ SUR-kus /  ·  /ˈsʌrkʌs/</div>
         <div class="d">a traveling show with acrobats, clowns, and animals</div><div class="hook">hook: Both c sounds in one word: soft CIR /s/, hard CUS /k/.</div>
+        
         <div class="ex">The ▁▁▁ came to town with a big striped tent.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">city</div>
-        <div class="say">/ SIH-tee /  ·  /ˈsɪti/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">city</div>
+        <div class="say" style="font-size:10pt">/ SIH-tee /  ·  /ˈsɪti/</div>
         <div class="d">a large town where many people live</div><div class="hook">hook: Soft c before i — CITY starts with /s/ but is spelled with C.</div>
+        
         <div class="ex">The spelling bee finals were held in a big ▁▁▁.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">cycle</div>
-        <div class="say">/ SY-kul /  ·  /ˈsaɪkʌl/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">cycle</div>
+        <div class="say" style="font-size:10pt">/ SY-kul /  ·  /ˈsaɪkʌl/</div>
         <div class="d">a set of events that repeats in the same order</div><div class="hook">hook: Soft c before y, hard c before l — C-Y-C-L-E, one c soft, one hard.</div>
+        
         <div class="ex">The seasons follow the same ▁▁▁ every year.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">giant</div>
-        <div class="say">/ JY-unt /  ·  /ˈdʒjʌnt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">giant</div>
+        <div class="say" style="font-size:10pt">/ JY-unt /  ·  /ˈdʒjʌnt/</div>
         <div class="d">a huge imaginary person; anything very large</div><div class="hook">hook: Soft g before i — sounds like J but spelled GI.</div>
+        
         <div class="ex">A ▁▁▁ sequoia tree can grow taller than a building.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">gentle</div>
-        <div class="say">/ JEN-tul /  ·  /ˈdʒɛntʌl/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">gentle</div>
+        <div class="say" style="font-size:10pt">/ JEN-tul /  ·  /ˈdʒɛntʌl/</div>
         <div class="d">kind and soft; not rough</div><div class="hook">hook: Soft g before e — GEN, not JEN.</div>
+        
         <div class="ex">Be ▁▁▁ when you turn the old book’s pages.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">garden</div>
-        <div class="say">/ GAR-dun /  ·  /ˈɡɑrdʌn/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">garden</div>
+        <div class="say" style="font-size:10pt">/ GAR-dun /  ·  /ˈɡɑrdʌn/</div>
         <div class="d">a piece of ground where flowers or vegetables grow</div><div class="hook">hook: Hard g before a — g keeps its true /g/ voice.</div>
+        
         <div class="ex">Grandma grows tomatoes in her back ▁▁▁.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-library-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -570,7 +594,7 @@
 <div class="page" data-vol="1">
       <div class="bb-head"><span>Chapter 2 · Alphabet Sounds — cat, city, goat, giant</span><span>Rapid round · ★☆☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>guitar</b> <span class="tile" style="font-size:8.8pt">/gih-TAR/</span><br>a musical instrument with six strings</div><div class="bb-row"><b>quick</b> <span class="tile" style="font-size:8.8pt">/KWIK/</span><br>fast; done in a short time</div><div class="bb-row"><b>queen</b> <span class="tile" style="font-size:8.8pt">/KWEEN/</span><br>a woman who rules a country</div><div class="bb-row"><b>expect</b> <span class="tile" style="font-size:8.8pt">/ek-SPEKT/</span><br>to think something will happen</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">guitar</b> <span class="tile" style="font-size:8.8pt">/gih-TAR/</span><br>a musical instrument with six strings</div><div class="bb-row"><b class="">quick</b> <span class="tile" style="font-size:8.8pt">/KWIK/</span><br>fast; done in a short time</div><div class="bb-row"><b class="">queen</b> <span class="tile" style="font-size:8.8pt">/KWEEN/</span><br>a woman who rules a country</div><div class="bb-row"><b class="">expect</b> <span class="tile" style="font-size:8.8pt">/ek-SPEKT/</span><br>to think something will happen</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -666,29 +690,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">mistake</div>
-        <div class="say">/ mih-STAYK /  ·  /mɪˈsteɪk/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">mistake</div>
+        <div class="say" style="font-size:10pt">/ mih-STAYK /  ·  /mɪˈsteɪk/</div>
         <div class="d">something done wrong; an error</div><div class="hook">hook: Magic e turns TAK into TAKE — the a says its name.</div>
+        
         <div class="ex">One small ▁▁▁ taught her to slow down and say the word first.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">escape</div>
-        <div class="say">/ eh-SKAYP /  ·  /ɛˈskeɪp/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">escape</div>
+        <div class="say" style="font-size:10pt">/ eh-SKAYP /  ·  /ɛˈskeɪp/</div>
         <div class="d">to get away from a place or danger</div><div class="hook">hook: ES + CAPE — magic e makes cap into cape.</div>
+        
         <div class="ex">The hamster tried to ▁▁▁ from its cage again.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">invite</div>
-        <div class="say">/ in-VYT /  ·  /ɪnˈvaɪt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">invite</div>
+        <div class="say" style="font-size:10pt">/ in-VYT /  ·  /ɪnˈvaɪt/</div>
         <div class="d">to ask someone to come somewhere</div><div class="hook">hook: Magic e stretches VIT into VITE — long i.</div>
+        
         <div class="ex">Did you ▁▁▁ your cousins to the party?</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">alone</div>
-        <div class="say">/ uh-LOHN /  ·  /əˈloʊn/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">alone</div>
+        <div class="say" style="font-size:10pt">/ uh-LOHN /  ·  /əˈloʊn/</div>
         <div class="d">without anyone else; by yourself</div><div class="hook">hook: A + LONE — magic e makes the o say its name.</div>
+        
         <div class="ex">He likes to practice ▁▁▁ in his quiet room.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">complete</div>
-        <div class="say">/ kum-PLEET /  ·  /kʌmˈplit/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">complete</div>
+        <div class="say" style="font-size:10pt">/ kum-PLEET /  ·  /kʌmˈplit/</div>
         <div class="d">having every part; finished</div><div class="hook">hook: Magic e makes the middle e long — comPLETE.</div>
+        
         <div class="ex">▁▁▁ the whole list before dinner.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">costume</div>
-        <div class="say">/ KOS-toom /  ·  /kɑˈstum/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">costume</div>
+        <div class="say" style="font-size:10pt">/ KOS-toom /  ·  /kɑˈstum/</div>
         <div class="d">clothes worn to look like someone or something else</div><div class="hook">hook: Magic e turns the u long: cos + TUME.</div>
+        
         <div class="ex">She wore a bee ▁▁▁ to the school parade.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-forum-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -696,7 +726,7 @@
 <div class="page" data-vol="1">
       <div class="bb-head"><span>Chapter 3 · Vowels &amp; Magic E — cap, cape</span><span>Rapid round · ★☆☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>baby</b> <span class="tile" style="font-size:8.8pt">/BAY-bee/</span><br>a very young child</div><div class="bb-row"><b>music</b> <span class="tile" style="font-size:8.8pt">/MYOO-zik/</span><br>sounds arranged to be beautiful to hear</div><div class="bb-row"><b>gym</b> <span class="tile" style="font-size:8.8pt">/JIM/</span><br>a room or building for exercise and sports</div><div class="bb-row"><b>sky</b> <span class="tile" style="font-size:8.8pt">/SKY/</span><br>the space above the earth where clouds and stars…</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">baby</b> <span class="tile" style="font-size:8.8pt">/BAY-bee/</span><br>a very young child</div><div class="bb-row"><b class="">music</b> <span class="tile" style="font-size:8.8pt">/MYOO-zik/</span><br>sounds arranged to be beautiful to hear</div><div class="bb-row"><b class="">gym</b> <span class="tile" style="font-size:8.8pt">/JIM/</span><br>a room or building for exercise and sports</div><div class="bb-row"><b class="">sky</b> <span class="tile" style="font-size:8.8pt">/SKY/</span><br>the space above the earth where clouds and stars…</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -793,29 +823,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">fantastic</div>
-        <div class="say">/ fan-TAS-tik /  ·  /fænˈtæstɪk/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">fantastic</div>
+        <div class="say" style="font-size:10pt">/ fan-TAS-tik /  ·  /fænˈtæstɪk/</div>
         <div class="d">wonderful; extremely good</div><div class="hook">hook: Three beats: fan + tas + tic — spell them one at a time.</div>
+        
         <div class="ex">Spelling all ten words right feels ▁▁▁.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">rabbit</div>
-        <div class="say">/ RAB-it /  ·  /ˈræbɪt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">rabbit</div>
+        <div class="say" style="font-size:10pt">/ RAB-it /  ·  /ˈræbɪt/</div>
         <div class="d">a small animal with long ears that hops</div><div class="hook">hook: Twin b’s split the beats: rab + bit — each syllable keeps one b.</div>
+        
         <div class="ex">A ▁▁▁ hopped across the garden path.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">summer</div>
-        <div class="say">/ SUM-er /  ·  /ˈsʌmər/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">summer</div>
+        <div class="say" style="font-size:10pt">/ SUM-er /  ·  /ˈsʌmər/</div>
         <div class="d">the warmest season of the year</div><div class="hook">hook: sum + mer — the twin m’s mark where the beats split.</div>
+        
         <div class="ex">They practice spelling on the porch every ▁▁▁ evening.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">basket</div>
-        <div class="say">/ BAS-kit /  ·  /ˈbæskɪt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">basket</div>
+        <div class="say" style="font-size:10pt">/ BAS-kit /  ·  /ˈbæskɪt/</div>
         <div class="d">a container woven from strips, with a handle</div><div class="hook">hook: bas + ket — two closed beats, both vowels short.</div>
+        
         <div class="ex">She carried the word cards in a little ▁▁▁.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">monster</div>
-        <div class="say">/ MON-ster /  ·  /ˈmɑnstər/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">monster</div>
+        <div class="say" style="font-size:10pt">/ MON-ster /  ·  /ˈmɑnstər/</div>
         <div class="d">a large frightening imaginary creature</div><div class="hook">hook: mon + ster — two beats tame the monster.</div>
+        
         <div class="ex">Long words look like ▁▁▁ until you break them into beats.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">umbrella</div>
-        <div class="say">/ um-BREL-uh /  ·  /əmˈbrɛlə/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">umbrella</div>
+        <div class="say" style="font-size:10pt">/ um-BREL-uh /  ·  /əmˈbrɛlə/</div>
         <div class="d">a folding cover that keeps rain off you</div><div class="hook">hook: um + brel + la — three beats, twin l’s at the split.</div>
+        
         <div class="ex">Keep an ▁▁▁ by the door in April.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-elements-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -823,7 +859,7 @@
 <div class="page" data-vol="1">
       <div class="bb-head"><span>Chapter 4 · Syllables — re, mem, ber</span><span>Rapid round · ★☆☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>wonderful</b> <span class="tile" style="font-size:8.8pt">/WUN-der-ful/</span><br>amazing; very good</div><div class="bb-row"><b>hospital</b> <span class="tile" style="font-size:8.8pt">/HOS-pih-tul/</span><br>a place where sick or hurt people are cared for</div><div class="bb-row"><b>calendar</b> <span class="tile" style="font-size:8.8pt">/KAL-un-der/</span><br>a chart of the days, weeks, and months of a year</div><div class="bb-row"><b>celebrate</b> <span class="tile" style="font-size:8.8pt">/SEL-uh-brayt/</span><br>to do something fun for a special occasion</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">wonderful</b> <span class="tile" style="font-size:8.8pt">/WUN-der-ful/</span><br>amazing; very good</div><div class="bb-row"><b class="">hospital</b> <span class="tile" style="font-size:8.8pt">/HOS-pih-tul/</span><br>a place where sick or hurt people are cared for</div><div class="bb-row"><b class="">calendar</b> <span class="tile" style="font-size:8.8pt">/KAL-un-der/</span><br>a chart of the days, weeks, and months of a year</div><div class="bb-row"><b class="">celebrate</b> <span class="tile" style="font-size:8.8pt">/SEL-uh-brayt/</span><br>to do something fun for a special occasion</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -919,29 +955,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">splash</div>
-        <div class="say">/ SPLASH /  ·  /ˈsplæʃ/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">splash</div>
+        <div class="say" style="font-size:10pt">/ SPLASH /  ·  /ˈsplæʃ/</div>
         <div class="d">to hit water so it flies around</div><div class="hook">hook: Stretch it: s-p-l-a-sh — five sounds, six letters.</div>
+        
         <div class="ex">The dog made a huge ▁▁▁ jumping into the pool.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">stamp</div>
-        <div class="say">/ STAMP /  ·  /ˈstæmp/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">stamp</div>
+        <div class="say" style="font-size:10pt">/ STAMP /  ·  /ˈstæmp/</div>
         <div class="d">a small paper square stuck on mail; to press your foot down</div><div class="hook">hook: s-t-a-m-p — do not lose the quiet m before p.</div>
+        
         <div class="ex">Put a ▁▁▁ on the envelope before mailing it.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">blend</div>
-        <div class="say">/ BLEND /  ·  /ˈblɛnd/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">blend</div>
+        <div class="say" style="font-size:10pt">/ BLEND /  ·  /ˈblɛnd/</div>
         <div class="d">to mix things together smoothly</div><div class="hook">hook: b-l-e-n-d — the n hides before d; stretch to hear it.</div>
+        
         <div class="ex">▁▁▁ the letters together and read the word.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">crisp</div>
-        <div class="say">/ KRISP /  ·  /ˈkrɪsp/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">crisp</div>
+        <div class="say" style="font-size:10pt">/ KRISP /  ·  /ˈkrɪsp/</div>
         <div class="d">firm and fresh; making a snapping sound</div><div class="hook">hook: c-r-i-s-p — four consonants, one short i in the middle.</div>
+        
         <div class="ex">The ▁▁▁ autumn air smelled like leaves.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">plant</div>
-        <div class="say">/ PLANT /  ·  /ˈplænt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">plant</div>
+        <div class="say" style="font-size:10pt">/ PLANT /  ·  /ˈplænt/</div>
         <div class="d">a living thing that grows in soil</div><div class="hook">hook: p-l-a-n-t — stretch it or the n vanishes.</div>
+        
         <div class="ex">Water the ▁▁▁ twice a week.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">drift</div>
-        <div class="say">/ DRIFT /  ·  /ˈdrɪft/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">drift</div>
+        <div class="say" style="font-size:10pt">/ DRIFT /  ·  /ˈdrɪft/</div>
         <div class="d">to be carried slowly by water or air</div><div class="hook">hook: d-r-i-f-t — keep the order; dirft is the classic slip.</div>
+        
         <div class="ex">The paper boat began to ▁▁▁ downstream.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-engine-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -949,7 +991,7 @@
 <div class="page" data-vol="1">
       <div class="bb-head"><span>Chapter 5 · Sounds to Letters — stretch, spell</span><span>Rapid round · ★☆☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>trust</b> <span class="tile" style="font-size:8.8pt">/TRUST/</span><br>to believe someone is honest and reliable</div><div class="bb-row"><b>twist</b> <span class="tile" style="font-size:8.8pt">/TWIST/</span><br>to turn something around and around</div><div class="bb-row"><b>grasp</b> <span class="tile" style="font-size:8.8pt">/GRASP/</span><br>to grab firmly; to understand</div><div class="bb-row"><b>strap</b> <span class="tile" style="font-size:8.8pt">/STRAP/</span><br>a strip of material used to fasten or hold things</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">trust</b> <span class="tile" style="font-size:8.8pt">/TRUST/</span><br>to believe someone is honest and reliable</div><div class="bb-row"><b class="">twist</b> <span class="tile" style="font-size:8.8pt">/TWIST/</span><br>to turn something around and around</div><div class="bb-row"><b class="">grasp</b> <span class="tile" style="font-size:8.8pt">/GRASP/</span><br>to grab firmly; to understand</div><div class="bb-row"><b class="">strap</b> <span class="tile" style="font-size:8.8pt">/STRAP/</span><br>a strip of material used to fasten or hold things</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1045,29 +1087,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">whisper</div>
-        <div class="say">/ WIS-per /  ·  /ˈwɪspər/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">whisper</div>
+        <div class="say" style="font-size:10pt">/ WIS-per /  ·  /ˈwɪspər/</div>
         <div class="d">to speak very softly and quietly</div><div class="hook">hook: WH team starts it — whisper, whale, what.</div>
+        
         <div class="ex">She ▁▁▁ the syllables to herself before spelling aloud.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">shark</div>
-        <div class="say">/ SHARK /  ·  /ˈʃɑrk/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">shark</div>
+        <div class="say" style="font-size:10pt">/ SHARK /  ·  /ˈʃɑrk/</div>
         <div class="d">a large ocean fish with sharp teeth</div><div class="hook">hook: SH is one sound, one team — sh + ark.</div>
+        
         <div class="ex">A ▁▁▁ can grow new teeth its whole life.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">chest</div>
-        <div class="say">/ CHEST /  ·  /ˈtʃɛst/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">chest</div>
+        <div class="say" style="font-size:10pt">/ CHEST /  ·  /ˈtʃɛst/</div>
         <div class="d">the front of your body between neck and stomach; a big box</div><div class="hook">hook: CH team + est — four sounds, five letters.</div>
+        
         <div class="ex">The pirate’s ▁▁▁ was full of gold coins.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">thumb</div>
-        <div class="say">/ THUM /  ·  /ˈθʌm/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">thumb</div>
+        <div class="say" style="font-size:10pt">/ THUM /  ·  /ˈθʌm/</div>
         <div class="d">the short thick finger on the side of your hand</div><div class="hook">hook: TH team starts it, silent b ends it — thum(b).</div>
+        
         <div class="ex">He gave a ▁▁▁-up after spelling the word.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">whale</div>
-        <div class="say">/ WAYL /  ·  /ˈweɪl/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">whale</div>
+        <div class="say" style="font-size:10pt">/ WAYL /  ·  /ˈweɪl/</div>
         <div class="d">a huge animal that lives in the sea and breathes air</div><div class="hook">hook: WH + ALE — magic e makes the a long.</div>
+        
         <div class="ex">A blue ▁▁▁’s heart is as big as a small car.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">phone</div>
-        <div class="say">/ FOHN /  ·  /ˈfoʊn/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">phone</div>
+        <div class="say" style="font-size:10pt">/ FOHN /  ·  /ˈfoʊn/</div>
         <div class="d">a device used to talk to people far away</div><div class="hook">hook: PH is the Greek /f/ team — phone, photo, graph.</div>
+        
         <div class="ex">The good news came by ▁▁▁ that evening.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-origami-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1075,7 +1123,7 @@
 <div class="page" data-vol="1">
       <div class="bb-head"><span>Chapter 6 · Letter Teams — sh, ch, th, ph</span><span>Rapid round · ★☆☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>dolphin</b> <span class="tile" style="font-size:8.8pt">/DOL-fin/</span><br>a friendly sea animal that clicks and whistles</div><div class="bb-row"><b>kitchen</b> <span class="tile" style="font-size:8.8pt">/KIH-chin/</span><br>the room where food is cooked</div><div class="bb-row"><b>string</b> <span class="tile" style="font-size:8.8pt">/STRING/</span><br>a thin rope for tying things</div><div class="bb-row"><b>clock</b> <span class="tile" style="font-size:8.8pt">/KLOK/</span><br>a machine that shows the time</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">dolphin</b> <span class="tile" style="font-size:8.8pt">/DOL-fin/</span><br>a friendly sea animal that clicks and whistles</div><div class="bb-row"><b class="">kitchen</b> <span class="tile" style="font-size:8.8pt">/KIH-chin/</span><br>the room where food is cooked</div><div class="bb-row"><b class="">string</b> <span class="tile" style="font-size:8.8pt">/STRING/</span><br>a thin rope for tying things</div><div class="bb-row"><b class="">clock</b> <span class="tile" style="font-size:8.8pt">/KLOK/</span><br>a machine that shows the time</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1172,29 +1220,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">rainbow</div>
-        <div class="say">/ RAYN-boh /  ·  /ˈreɪnboʊ/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">rainbow</div>
+        <div class="say" style="font-size:10pt">/ RAYN-boh /  ·  /ˈreɪnboʊ/</div>
         <div class="d">an arch of colors in the sky after rain</div><div class="hook">hook: AI inside, OW at the end — two teams, both in position.</div>
+        
         <div class="ex">A double ▁▁▁ stretched over the valley.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">crayon</div>
-        <div class="say">/ KRAY-on /  ·  /ˈkreɪɑn/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">crayon</div>
+        <div class="say" style="font-size:10pt">/ KRAY-on /  ·  /ˈkreɪɑn/</div>
         <div class="d">a stick of colored wax for drawing</div><div class="hook">hook: AY ends its syllable: cray + on.</div>
+        
         <div class="ex">She drew the bee with a yellow ▁▁▁.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">paint</div>
-        <div class="say">/ PAYNT /  ·  /ˈpeɪnt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">paint</div>
+        <div class="say" style="font-size:10pt">/ PAYNT /  ·  /ˈpeɪnt/</div>
         <div class="d">colored liquid you brush onto things</div><div class="hook">hook: Long a inside the word = AI: p-ai-nt.</div>
+        
         <div class="ex">They used blue ▁▁▁ for the ocean poster.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">sweet</div>
-        <div class="say">/ SWEET /  ·  /ˈswit/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">sweet</div>
+        <div class="say" style="font-size:10pt">/ SWEET /  ·  /ˈswit/</div>
         <div class="d">tasting like sugar; very pleasant</div><div class="hook">hook: EE in the middle — you SEE two e’s in sweet.</div>
+        
         <div class="ex">Victory tasted ▁▁▁ after all that practice.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">reason</div>
-        <div class="say">/ REE-zun /  ·  /ˈrizʌn/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">reason</div>
+        <div class="say" style="font-size:10pt">/ REE-zun /  ·  /ˈrizʌn/</div>
         <div class="d">why something happens; a cause</div><div class="hook">hook: EA says long e: r-ea-son.</div>
+        
         <div class="ex">There is a ▁▁▁ for every strange spelling.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">coast</div>
-        <div class="say">/ KOHST /  ·  /ˈkoʊst/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">coast</div>
+        <div class="say" style="font-size:10pt">/ KOHST /  ·  /ˈkoʊst/</div>
         <div class="d">the land along the edge of the sea</div><div class="hook">hook: OA works inside: c-oa-st.</div>
+        
         <div class="ex">They drove down the ▁▁▁ to the finals.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-strait-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1202,7 +1256,7 @@
 <div class="page" data-vol="1">
       <div class="bb-head"><span>Chapter 7 · Vowel Teams — ai, ay, ee, oa</span><span>Rapid round · ★☆☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>window</b> <span class="tile" style="font-size:8.8pt">/WIN-doh/</span><br>an opening in a wall filled with glass</div><div class="bb-row"><b>voyage</b> <span class="tile" style="font-size:8.8pt">/VOY-ij/</span><br>a long journey by sea or through space</div><div class="bb-row"><b>poison</b> <span class="tile" style="font-size:8.8pt">/POY-zun/</span><br>something that can make you sick if swallowed</div><div class="bb-row"><b>author</b> <span class="tile" style="font-size:8.8pt">/AW-thur/</span><br>a person who writes books or stories</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">window</b> <span class="tile" style="font-size:8.8pt">/WIN-doh/</span><br>an opening in a wall filled with glass</div><div class="bb-row"><b class="">voyage</b> <span class="tile" style="font-size:8.8pt">/VOY-ij/</span><br>a long journey by sea or through space</div><div class="bb-row"><b class="">poison</b> <span class="tile" style="font-size:8.8pt">/POY-zun/</span><br>something that can make you sick if swallowed</div><div class="bb-row"><b class="">author</b> <span class="tile" style="font-size:8.8pt">/AW-thur/</span><br>a person who writes books or stories</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1297,29 +1351,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">knight</div>
-        <div class="say">/ NYT /  ·  /ˈnaɪt/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">knight</div>
+        <div class="say" style="font-size:10pt">/ NYT /  ·  /ˈnaɪt/</div>
         <div class="d">a warrior in armor who served a king</div><div class="hook">hook: Silent k, silent gh — six letters, three sounds.</div>
+        
         <div class="ex">The ▁▁▁ bowed before the queen.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">knee</div>
-        <div class="say">/ NEE /  ·  /ˈni/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">knee</div>
+        <div class="say" style="font-size:10pt">/ NEE /  ·  /ˈni/</div>
         <div class="d">the joint in the middle of your leg</div><div class="hook">hook: KN family — the k is a ghost from old English.</div>
+        
         <div class="ex">She scraped her ▁▁▁ on the playground.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">knock</div>
-        <div class="say">/ NOK /  ·  /ˈnɑk/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">knock</div>
+        <div class="say" style="font-size:10pt">/ NOK /  ·  /ˈnɑk/</div>
         <div class="d">to hit a door to be let in</div><div class="hook">hook: Ghost k up front, CK team at the back.</div>
+        
         <div class="ex">▁▁▁ twice before you come in.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">write</div>
-        <div class="say">/ RYT /  ·  /ˈraɪt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">write</div>
+        <div class="say" style="font-size:10pt">/ RYT /  ·  /ˈraɪt/</div>
         <div class="d">to make letters and words on paper</div><div class="hook">hook: WR family — writing words keep the silent w.</div>
+        
         <div class="ex">▁▁▁ each word three times to lock it in.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">wrist</div>
-        <div class="say">/ RIST /  ·  /ˈrɪst/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">wrist</div>
+        <div class="say" style="font-size:10pt">/ RIST /  ·  /ˈrɪst/</div>
         <div class="d">the joint between your hand and arm</div><div class="hook">hook: WR + ist — silent w, then a clean blend.</div>
+        
         <div class="ex">He wore his lucky band around his ▁▁▁.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">climb</div>
-        <div class="say">/ KLYM /  ·  /ˈklaɪm/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">climb</div>
+        <div class="say" style="font-size:10pt">/ KLYM /  ·  /ˈklaɪm/</div>
         <div class="d">to go up using your hands and feet</div><div class="hook">hook: -MB family — the b is silent: clim(b).</div>
+        
         <div class="ex">They ▁▁▁ the hill behind school every spring.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-junkyard-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1327,7 +1387,7 @@
 <div class="page" data-vol="1">
       <div class="bb-head"><span>Chapter 8 · Blends &amp; Silent Letters — kn, wr, mb</span><span>Rapid round · ★☆☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>lamb</b> <span class="tile" style="font-size:8.8pt">/LAM/</span><br>a young sheep</div><div class="bb-row"><b>ghost</b> <span class="tile" style="font-size:8.8pt">/GOHST/</span><br>the spirit of a dead person in stories</div><div class="bb-row"><b>strong</b> <span class="tile" style="font-size:8.8pt">/STRONG/</span><br>having great power; not weak</div><div class="bb-row"><b>island</b> <span class="tile" style="font-size:8.8pt">/EYE-lund/</span><br>land with water all around it</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">lamb</b> <span class="tile" style="font-size:8.8pt">/LAM/</span><br>a young sheep</div><div class="bb-row"><b class="">ghost</b> <span class="tile" style="font-size:8.8pt">/GOHST/</span><br>the spirit of a dead person in stories</div><div class="bb-row"><b class="">strong</b> <span class="tile" style="font-size:8.8pt">/STRONG/</span><br>having great power; not weak</div><div class="bb-row"><b class="">island</b> <span class="tile" style="font-size:8.8pt">/EYE-lund/</span><br>land with water all around it</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1423,29 +1483,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">delicious</div>
-        <div class="say">/ dih-LIH-shus /  ·  /dɪˈlɪʃʌs/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">delicious</div>
+        <div class="say" style="font-size:10pt">/ dih-LIH-shus /  ·  /dɪˈlɪʃʌs/</div>
         <div class="d">tasting extremely good</div><div class="hook">hook: Stress on LI — the quiet -cious tail hides five letters.</div>
+        
         <div class="ex">The victory pancakes were ▁▁▁.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">banana</div>
-        <div class="say">/ buh-NAN-uh /  ·  /bəˈnænə/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">banana</div>
+        <div class="say" style="font-size:10pt">/ buh-NAN-uh /  ·  /bəˈnænə/</div>
         <div class="d">a long curved yellow fruit</div><div class="hook">hook: Only the middle NA is loud — the other two a’s mumble.</div>
+        
         <div class="ex">A ▁▁▁ is good brain food before a bee.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">tomato</div>
-        <div class="say">/ tuh-MAY-toh /  ·  /təˈmeɪtoʊ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">tomato</div>
+        <div class="say" style="font-size:10pt">/ tuh-MAY-toh /  ·  /təˈmeɪtoʊ/</div>
         <div class="d">a round red fruit eaten as a vegetable</div><div class="hook">hook: Stress on MA — to-MA-to, all spelled with plain o’s and a’s.</div>
+        
         <div class="ex">She sliced a ▁▁▁ for the salad.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">potato</div>
-        <div class="say">/ puh-TAY-toh /  ·  /pəˈteɪtoʊ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">potato</div>
+        <div class="say" style="font-size:10pt">/ puh-TAY-toh /  ·  /pəˈteɪtoʊ/</div>
         <div class="d">a starchy vegetable that grows underground</div><div class="hook">hook: po-TA-to — same tune as tomato, stress on the middle.</div>
+        
         <div class="ex">Baked ▁▁▁ night is Friday night.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">vacation</div>
-        <div class="say">/ vay-KAY-shun /  ·  /veɪˈkeɪʃʌn/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">vacation</div>
+        <div class="say" style="font-size:10pt">/ vay-KAY-shun /  ·  /veɪˈkeɪʃʌn/</div>
         <div class="d">time away from school or work to rest or travel</div><div class="hook">hook: The loud CA says long a clearly — va-CA-tion.</div>
+        
         <div class="ex">They visited three national parks on ▁▁▁.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">tomorrow</div>
-        <div class="say">/ tuh-MOR-oh /  ·  /təˈmɔroʊ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">tomorrow</div>
+        <div class="say" style="font-size:10pt">/ tuh-MOR-oh /  ·  /təˈmɔroʊ/</div>
         <div class="d">the day after today</div><div class="hook">hook: Stress on MOR — one m in the quiet start, two r’s at the loud middle.</div>
+        
         <div class="ex">▁▁▁ is the last practice before the finals.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-vibe-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1453,7 +1519,7 @@
 <div class="page" data-vol="1">
       <div class="bb-head"><span>Chapter 9 · Stress — find the loud beat</span><span>Rapid round · ★☆☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>museum</b> <span class="tile" style="font-size:8.8pt">/myoo-ZEE-um/</span><br>a building where interesting objects are shown</div><div class="bb-row"><b>eleven</b> <span class="tile" style="font-size:8.8pt">/ih-LEV-un/</span><br>the number after ten</div><div class="bb-row"><b>gorilla</b> <span class="tile" style="font-size:8.8pt">/guh-RIL-uh/</span><br>the largest kind of ape</div><div class="bb-row"><b>important</b> <span class="tile" style="font-size:8.8pt">/im-POR-tunt/</span><br>mattering a lot</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">museum</b> <span class="tile" style="font-size:8.8pt">/myoo-ZEE-um/</span><br>a building where interesting objects are shown</div><div class="bb-row"><b class="">eleven</b> <span class="tile" style="font-size:8.8pt">/ih-LEV-un/</span><br>the number after ten</div><div class="bb-row"><b class="">gorilla</b> <span class="tile" style="font-size:8.8pt">/guh-RIL-uh/</span><br>the largest kind of ape</div><div class="bb-row"><b class="">important</b> <span class="tile" style="font-size:8.8pt">/im-POR-tunt/</span><br>mattering a lot</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1551,29 +1617,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">chocolate</div>
-        <div class="say">/ CHOK-lut /  ·  /ˈtʃɑklʌt/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">chocolate</div>
+        <div class="say" style="font-size:10pt">/ CHOK-lut /  ·  /ˈtʃɑklʌt/</div>
         <div class="d">a sweet food made from cacao beans</div><div class="hook">hook: Robot voice: choc-O-LATE — the middle o and the a-e are mumbled.</div>
+        
         <div class="ex">Hot ▁▁▁ is her reward after practice.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">about</div>
-        <div class="say">/ uh-BOWT /  ·  /əˈbaʊt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">about</div>
+        <div class="say" style="font-size:10pt">/ uh-BOWT /  ·  /əˈbaʊt/</div>
         <div class="d">concerning; on the subject of</div><div class="hook">hook: The opening ‘uh’ is the letter A — a-bout.</div>
+        
         <div class="ex">This chapter is ▁▁▁ the sneakiest sound in English.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">lemon</div>
-        <div class="say">/ LEM-un /  ·  /ˈlɛmʌn/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">lemon</div>
+        <div class="say" style="font-size:10pt">/ LEM-un /  ·  /ˈlɛmʌn/</div>
         <div class="d">a sour yellow fruit</div><div class="hook">hook: The mumbled ending is O — lem-ON, robot voice: lem-ON.</div>
+        
         <div class="ex">She squeezed a ▁▁▁ into her water.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">pencil</div>
-        <div class="say">/ PEN-sul /  ·  /ˈpɛnsʌl/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">pencil</div>
+        <div class="say" style="font-size:10pt">/ PEN-sul /  ·  /ˈpɛnsʌl/</div>
         <div class="d">a writing tool with a graphite center</div><div class="hook">hook: The mumble hides an I — pen-CIL.</div>
+        
         <div class="ex">Spell it in the air with your ▁▁▁ first.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">wagon</div>
-        <div class="say">/ WAG-un /  ·  /ˈwæɡʌn/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">wagon</div>
+        <div class="say" style="font-size:10pt">/ WAG-un /  ·  /ˈwæɡʌn/</div>
         <div class="d">a four-wheeled cart pulled by hand or horses</div><div class="hook">hook: wag-ON — the quiet o mumbles to uh.</div>
+        
         <div class="ex">The kids pulled their books in a red ▁▁▁.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">camera</div>
-        <div class="say">/ KAM-ruh /  ·  /ˈkæmrə/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">camera</div>
+        <div class="say" style="font-size:10pt">/ KAM-ruh /  ·  /ˈkæmrə/</div>
         <div class="d">a device for taking photographs</div><div class="hook">hook: Robot voice: cam-E-ra — a hidden e lives in the middle.</div>
+        
         <div class="ex">The ▁▁▁ flashed when she spelled the winning word.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1581,7 +1653,7 @@
 <div class="page" data-vol="1">
       <div class="bb-head"><span>Chapter 10 · The Sneaky Schwa — the mumbled uh</span><span>Rapid round · ★☆☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>animal</b> <span class="tile" style="font-size:8.8pt">/AN-ih-mul/</span><br>a living creature that can move on its own</div><div class="bb-row"><b>purpose</b> <span class="tile" style="font-size:8.8pt">/PUR-pus/</span><br>the reason something is done</div><div class="bb-row"><b>magazine</b> <span class="tile" style="font-size:8.8pt">/mag-uh-ZEEN/</span><br>a thin book with articles and pictures</div><div class="bb-row"><b>definition</b> <span class="tile" style="font-size:8.8pt">/def-uh-NIH-shun/</span><br>the meaning of a word</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">animal</b> <span class="tile" style="font-size:8.8pt">/AN-ih-mul/</span><br>a living creature that can move on its own</div><div class="bb-row"><b class="">purpose</b> <span class="tile" style="font-size:8.8pt">/PUR-pus/</span><br>the reason something is done</div><div class="bb-row"><b class="">magazine</b> <span class="tile" style="font-size:8.8pt">/mag-uh-ZEEN/</span><br>a thin book with articles and pictures</div><div class="bb-row"><b class="">definition</b> <span class="tile" style="font-size:8.8pt">/def-uh-NIH-shun/</span><br>the meaning of a word</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1677,29 +1749,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">bouquet</div>
-        <div class="say">/ boo-KAY /  ·  /buˈkeɪ/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">bouquet</div>
+        <div class="say" style="font-size:10pt">/ boo-KAY /  ·  /buˈkeɪ/</div>
         <div class="d">a bunch of flowers arranged nicely</div><div class="hook">hook: French: silent-t ending -QUET says /kay/.</div>
+        
         <div class="ex">The winner received a ▁▁▁ of roses.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">ballet</div>
-        <div class="say">/ ba-LAY /  ·  /bæˈleɪ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">ballet</div>
+        <div class="say" style="font-size:10pt">/ ba-LAY /  ·  /bæˈleɪ/</div>
         <div class="d">a graceful kind of dance that tells a story</div><div class="hook">hook: French: the final /ay/ is -ET with a silent t.</div>
+        
         <div class="ex">Her sister takes ▁▁▁ on Saturdays.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">chorus</div>
-        <div class="say">/ KOR-us /  ·  /ˈkɔrʌs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">chorus</div>
+        <div class="say" style="font-size:10pt">/ KOR-us /  ·  /ˈkɔrʌs/</div>
         <div class="d">a group of singers; the repeated part of a song</div><div class="hook">hook: Greek: ch says /k/ — chorus, echo, school.</div>
+        
         <div class="ex">The whole ▁▁▁ sang the school song.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">echo</div>
-        <div class="say">/ EK-oh /  ·  /ˈɛkoʊ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">echo</div>
+        <div class="say" style="font-size:10pt">/ EK-oh /  ·  /ˈɛkoʊ/</div>
         <div class="d">a sound that bounces back so you hear it again</div><div class="hook">hook: Greek: the /k/ is spelled CH — e-CHo.</div>
+        
         <div class="ex">Her voice made an ▁▁▁ in the empty gym.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">flour</div>
-        <div class="say">/ FLOW-er /  ·  /ˈflaʊər/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">flour</div>
+        <div class="say" style="font-size:10pt">/ FLOW-er /  ·  /ˈflaʊər/</div>
         <div class="d">the powder made from grain, used for baking</div><div class="hook">hook: Sounds exactly like flower — the sentence tells you which.</div>
+        
         <div class="ex">The baker sifted the ▁▁▁ twice.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">plain</div>
-        <div class="say">/ PLAYN /  ·  /ˈpleɪn/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">plain</div>
+        <div class="say" style="font-size:10pt">/ PLAYN /  ·  /ˈpleɪn/</div>
         <div class="d">simple, with nothing added; flat open land</div><div class="hook">hook: Homophone of plane — ask for a sentence!</div>
+        
         <div class="ex">She wore a ▁▁▁ blue shirt.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-warfield-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1707,7 +1785,7 @@
 <div class="page" data-vol="1">
       <div class="bb-head"><span>Chapter 11 · Ask the Right Questions — be a word detective</span><span>Rapid round · ★☆☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>canyon</b> <span class="tile" style="font-size:8.8pt">/KAN-yun/</span><br>a deep valley with steep rocky sides</div><div class="bb-row"><b>karate</b> <span class="tile" style="font-size:8.8pt">/kuh-RAH-tee/</span><br>a Japanese way of fighting using hands and feet</div><div class="bb-row"><b>waffle</b> <span class="tile" style="font-size:8.8pt">/WAH-ful/</span><br>a crisp breakfast cake with a grid of squares</div><div class="bb-row"><b>suite</b> <span class="tile" style="font-size:8.8pt">/SWEET/</span><br>a set of connected rooms; a matching set</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">canyon</b> <span class="tile" style="font-size:8.8pt">/KAN-yun/</span><br>a deep valley with steep rocky sides</div><div class="bb-row"><b class="">karate</b> <span class="tile" style="font-size:8.8pt">/kuh-RAH-tee/</span><br>a Japanese way of fighting using hands and feet</div><div class="bb-row"><b class="">waffle</b> <span class="tile" style="font-size:8.8pt">/WAH-ful/</span><br>a crisp breakfast cake with a grid of squares</div><div class="bb-row"><b class="">suite</b> <span class="tile" style="font-size:8.8pt">/SWEET/</span><br>a set of connected rooms; a matching set</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>

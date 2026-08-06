@@ -122,16 +122,28 @@
   .bb-prop{display:inline-block;background:var(--chip);color:var(--chip-ink);border-radius:8pt;padding:3pt 8pt;font-family:'BB Tile';font-size:10pt}
   .bb-bubble{background:var(--card);border:1px solid var(--hairline);border-radius:12pt;padding:6pt 10pt;font-family:'BB Display';font-size:11.5pt;line-height:1.35;box-shadow:var(--sh-screen)}
   .bb-hive{display:grid;grid-template-columns:1fr 1fr;gap:.12in}
-  .bb-card{padding:0 .04in}
+  .bb-card{padding:0 .04in;min-width:0;overflow-wrap:anywhere}
   .bb-card .ex{font-size:9.6pt;line-height:1.32;margin-top:2px;color:var(--ink);opacity:.85}
-  .bb-card .w{font-family:'BB Body';font-weight:800;font-size:23pt;line-height:1.05;font-variant-numeric:tabular-nums;color:var(--accent-deep)}
+  /* --wsz is set per word from its own length: a 45-letter headword at 23pt is
+     four inches of type in a three-inch column, and it took the whole spread
+     with it. Wrapping is allowed as a last resort for the true monsters. */
+  .bb-card .w{font-family:'BB Body';font-weight:800;font-size:var(--wsz,23pt);line-height:1.06;
+    font-variant-numeric:tabular-nums;color:var(--accent-deep);overflow-wrap:anywhere;hyphens:auto}
+  .bb-card .say{overflow-wrap:anywhere}
   .bb-card .say{font-family:'BB Tile';font-size:10pt;color:var(--muted);margin-top:1px}
   .bb-card .d{font-size:10.6pt;line-height:1.38;margin-top:2px}
   .bb-card .hook{font-size:9.8pt;line-height:1.32;margin-top:2px;color:var(--chip-ink);font-style:italic}
+  /* An eponym's provenance is the fact a speller actually uses at the microphone:
+     "named after a French chemist" decides more letters than the definition does. */
+  .bb-card .after{font-size:9.4pt;line-height:1.34;margin-top:3px;padding-left:.09in;
+    border-left:2.2pt solid var(--accent);color:var(--ink)}
+  .bb-card .after b{font-variant:small-caps;letter-spacing:.04em;font-size:8.4pt;color:var(--muted)}
   .bb-writeline{border-bottom:1pt solid var(--ink);height:.42in;margin-top:4pt}
   .bb-rapid{display:grid;grid-template-columns:1fr 1fr;gap:.08in .16in}
-  .bb-row{padding:4pt 0;min-height:.52in;font-size:10.4pt;line-height:1.36;border-bottom:1px dotted var(--hairline)}
+  .bb-row{padding:4pt 0;min-height:.52in;font-size:10.4pt;line-height:1.36;border-bottom:1px dotted var(--hairline);
+    min-width:0;overflow-wrap:anywhere}
   .bb-row b{font-family:'BB Kicker';color:var(--accent-deep)}
+  .bb-row b.long{font-size:8.6pt}.bb-row b.xlong{font-size:7.4pt}
   .bb-break{margin-top:.18in;display:flex;gap:.13in;align-items:flex-start;background:linear-gradient(90deg,var(--treasure-tint),transparent 85%);border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.09in .14in}
   .bb-break .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--treasure-deep)}
   .bb-break .b{font-size:11.2pt;line-height:1.4;margin-top:2px}
@@ -414,29 +426,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">impeccable</div>
-        <div class="say">/ ih-m-p-EH-k-uh-b-uh-l /  ·  /ɪmpˈɛkəbəl/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">impeccable</div>
+        <div class="say" style="font-size:10pt">/ ih-m-p-EH-k-uh-b-uh-l /  ·  /ɪmpˈɛkəbəl/</div>
         <div class="d">is faultless or flawless</div><div class="hook">hook: ImPECCAble has no PECCADILLO</div>
+        
         <div class="ex">The young chef presented a dish with ▁▁▁ attention to detail</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">imperturbable</div>
-        <div class="say"></div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">imperturbable</div>
+        <div class="say" style="font-size:10pt"></div>
         <div class="d"></div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">impecunious</div>
-        <div class="say">/ im-puh-KYOO-nee-us /  ·  /ɪmpəˈkjuniʌs/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">impecunious</div>
+        <div class="say" style="font-size:10pt">/ im-puh-KYOO-nee-us /  ·  /ɪmpəˈkjuniʌs/</div>
         <div class="d">not having enough money to pay for necessities</div><div class="hook">hook: IMPECUNious means no PECUNIA (money)</div>
+        
         <div class="ex">The ▁▁▁ student survived on peanut butter sandwiches because he could barely…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">impetuous</div>
-        <div class="say">/ ih-m-p-EH-ch-w-uh-s /  ·  /ɪmpˈɛtʃwəs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">impetuous</div>
+        <div class="say" style="font-size:10pt">/ ih-m-p-EH-ch-w-uh-s /  ·  /ɪmpˈɛtʃwəs/</div>
         <div class="d">is characterized by sudden or rash action</div><div class="hook">hook: Impetuous behavior is full of force</div>
+        
         <div class="ex">a hotheaded decision</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">implacable</div>
-        <div class="say">/ ih-MPLA-kuh-buhl /  ·  /ɪˈmplækəbəl/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">implacable</div>
+        <div class="say" style="font-size:10pt">/ ih-MPLA-kuh-buhl /  ·  /ɪˈmplækəbəl/</div>
         <div class="d">incapable of being placated</div><div class="hook">hook: IM(not)+PLAC(placate)+ABLE: impossible to PLACATE</div>
+        
         <div class="ex">The ▁▁▁ storm battered the coast for three days</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">inexorable</div>
-        <div class="say">/ ih-n-EH-k-s-ur-uh-b-uh-l /  ·  /ɪnˈɛksʌrəbəl/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">inexorable</div>
+        <div class="say" style="font-size:10pt">/ ih-n-EH-k-s-ur-uh-b-uh-l /  ·  /ɪnˈɛksʌrəbəl/</div>
         <div class="d">is unyielding or unalterable</div><div class="hook">hook: INEXORABLE ends in -ABLE</div>
+        
         <div class="ex">No matter how many times the students begged for more time</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-forum-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -444,7 +462,7 @@
 <div class="page" data-vol="3">
       <div class="bb-head"><span>Chapter 1 · in- / im- / il- / ir- (not / without)</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>inimical</b> <span class="tile" style="font-size:8.8pt">/ih-NIH-mih-kuhl/</span><br>not friendly</div><div class="bb-row"><b>inscrutable</b> <span class="tile" style="font-size:8.8pt">/ih-n-s-k-r-OO-t-uh-b-uh-l/</span><br>is incapable of being investigated or analyzed</div><div class="bb-row"><b>innuendo</b> <span class="tile" style="font-size:8.8pt">/ih-n-y-oo-EH-n-d-oh/</span><br>is an indirect intimation about a person usually of…</div><div class="bb-row"><b>ineffable</b> <span class="tile" style="font-size:8.8pt">/ih-NEH-fuh-buhl/</span><br>defying expression or description</div><div class="bb-row"><b>illicit</b> <span class="tile" style="font-size:8.8pt">/ih-l-IH-s-uh-t/</span><br>is not legally permitted</div><div class="bb-row"><b>irascible</b> <span class="tile" style="font-size:8.8pt">/ih-r-A-s-ih-b-uh-l/</span><br>is easily provoked to anger</div><div class="bb-row"><b>irrevocable</b> <span class="tile" style="font-size:8.8pt">/ih-REH-vuh-kuh-buhl/</span><br>incapable of being retracted or revoked</div><div class="bb-row"><b>immutable</b> <span class="tile" style="font-size:8.8pt">/ih-MYOO-tuh-buhl/</span><br>not subject or susceptible to change or variation in…</div><div class="bb-row"><b>incomprehensible</b> <span class="tile" style="font-size:8.8pt">/ih-ngkah-mpruh-HEH-nsih-buhl/</span><br>incapable of being explained or accounted for</div><div class="bb-row"><b>indelible</b> <span class="tile" style="font-size:8.8pt">/ih-NDEH-lih-buhl/</span><br>cannot be removed or erased</div><div class="bb-row"><b>irrefutable</b> <span class="tile" style="font-size:8.8pt">/ih-ruh-FYOO-tuh-buhl/</span><br>impossible to deny or disprove</div><div class="bb-row"><b>illusory</b> <span class="tile" style="font-size:8.8pt">/ih-LOO-ser-ee/</span><br>based on or having the nature of an illusion</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">inimical</b> <span class="tile" style="font-size:8.8pt">/ih-NIH-mih-kuhl/</span><br>not friendly</div><div class="bb-row"><b class="">inscrutable</b> <span class="tile" style="font-size:8.8pt">/ih-n-s-k-r-OO-t-uh-b-uh-l/</span><br>is incapable of being investigated or analyzed</div><div class="bb-row"><b class="">innuendo</b> <span class="tile" style="font-size:8.8pt">/ih-n-y-oo-EH-n-d-oh/</span><br>is an indirect intimation about a person usually of…</div><div class="bb-row"><b class="">ineffable</b> <span class="tile" style="font-size:8.8pt">/ih-NEH-fuh-buhl/</span><br>defying expression or description</div><div class="bb-row"><b class="">illicit</b> <span class="tile" style="font-size:8.8pt">/ih-l-IH-s-uh-t/</span><br>is not legally permitted</div><div class="bb-row"><b class="">irascible</b> <span class="tile" style="font-size:8.8pt">/ih-r-A-s-ih-b-uh-l/</span><br>is easily provoked to anger</div><div class="bb-row"><b class="">irrevocable</b> <span class="tile" style="font-size:8.8pt">/ih-REH-vuh-kuh-buhl/</span><br>incapable of being retracted or revoked</div><div class="bb-row"><b class="">immutable</b> <span class="tile" style="font-size:8.8pt">/ih-MYOO-tuh-buhl/</span><br>not subject or susceptible to change or variation in…</div><div class="bb-row"><b class="">incomprehensible</b> <span class="tile" style="font-size:8.8pt">/ih-ngkah-mpruh-HEH-nsih-buhl/</span><br>incapable of being explained or accounted for</div><div class="bb-row"><b class="">indelible</b> <span class="tile" style="font-size:8.8pt">/ih-NDEH-lih-buhl/</span><br>cannot be removed or erased</div><div class="bb-row"><b class="">irrefutable</b> <span class="tile" style="font-size:8.8pt">/ih-ruh-FYOO-tuh-buhl/</span><br>impossible to deny or disprove</div><div class="bb-row"><b class="">illusory</b> <span class="tile" style="font-size:8.8pt">/ih-LOO-ser-ee/</span><br>based on or having the nature of an illusion</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -539,29 +557,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">unkempt</div>
-        <div class="say">/ uh-n-k-EH-m-p-t /  ·  /ənkˈɛmpt/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">unkempt</div>
+        <div class="say" style="font-size:10pt">/ uh-n-k-EH-m-p-t /  ·  /ənkˈɛmpt/</div>
         <div class="d">is disheveled or messy</div><div class="hook">hook: KEMPT means combed — UN-kempt is the opposite of neat.</div>
+        
         <div class="ex">After hiking for three days through the muddy forest trail without a mirror or comb</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">unconscionable</div>
-        <div class="say">/ uh-n-k-AH-n-sh-uh-n-uh-b-uh-l /  ·  /ənkˈɑnʃənəbəl/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:20.5pt"><div class="w">unconscionable</div>
+        <div class="say" style="font-size:10pt">/ uh-n-k-AH-n-sh-uh-n-uh-b-uh-l /  ·  /ənkˈɑnʃənəbəl/</div>
         <div class="d">means unscrupulous or not guided by conscience</div><div class="hook">hook: UN + CONSCIENCE + ABLE: not able to be guided by conscience</div>
+        
         <div class="ex">a conscienceless villain</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">unrequited</div>
-        <div class="say">/ uh-n-r-ee-k-w-AY-t-ih-d /  ·  /ənrikwˈeɪtɪd/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">unrequited</div>
+        <div class="say" style="font-size:10pt">/ uh-n-r-ee-k-w-AY-t-ih-d /  ·  /ənrikwˈeɪtɪd/</div>
         <div class="d">is not returned or reciprocated</div><div class="hook">hook: QUIT has only one T</div>
+        
         <div class="ex">▁▁▁ (unanswered) love</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">unprecedented</div>
-        <div class="say">/ uh-NPREH-sih-deh-ntihd /  ·  /əˈnprɛsɪdɛntɪd/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">unprecedented</div>
+        <div class="say" style="font-size:10pt">/ uh-NPREH-sih-deh-ntihd /  ·  /əˈnprɛsɪdɛntɪd/</div>
         <div class="d">having no precedent; novel</div><div class="hook">hook: unPRECEDented: no PRECEDE came before it — keep PRECE-D-E-N-T inside.</div>
+        
         <div class="ex">an ▁▁▁ expansion in population and industry</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">unfettered</div>
-        <div class="say">/ uh-NFEH-terd /  ·  /əˈnfɛtərd/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">unfettered</div>
+        <div class="say" style="font-size:10pt">/ uh-NFEH-terd /  ·  /əˈnfɛtərd/</div>
         <div class="d">not bound by shackles and chains</div><div class="hook">hook: UNFETTEREd</div>
+        
         <div class="ex">With summer stretching ahead of her</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">unimpeachable</div>
-        <div class="say">/ uh-nih-MPEE-chuh-buhl /  ·  /ənɪˈmpitʃəbəl/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">unimpeachable</div>
+        <div class="say" style="font-size:10pt">/ uh-nih-MPEE-chuh-buhl /  ·  /ənɪˈmpitʃəbəl/</div>
         <div class="d">beyond doubt or reproach</div><div class="hook">hook: UNIMPEACHABLE ends in -ABLE not -IBLE</div>
+        
         <div class="ex">an ▁▁▁ source</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-elements-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -569,7 +593,7 @@
 <div class="page" data-vol="3">
       <div class="bb-head"><span>Chapter 2 · un- (not / reverse action)</span><span>Rapid round · ★☆☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>unscrupulous</b> <span class="tile" style="font-size:8.8pt">/uh-NSKROO-pyuh-luhs/</span><br>without scruples or principles</div><div class="bb-row"><b>unwieldy</b> <span class="tile" style="font-size:8.8pt">/uh-NWEE-ldee/</span><br>difficult to use or handle or manage because of size…</div><div class="bb-row"><b>unnecessary</b> <span class="tile" style="font-size:8.8pt">/uh-NNEH-suh-seh-ree/</span><br>not necessary</div><div class="bb-row"><b>unnatural</b> <span class="tile" style="font-size:8.8pt">/uh-NNA-cher-uhl/</span><br>not in accordance with or determined by nature</div><div class="bb-row"><b>unnerve</b> <span class="tile" style="font-size:8.8pt">/uh-NURV/</span><br>disturb the composure of</div><div class="bb-row"><b>unequivocal</b> <span class="tile" style="font-size:8.8pt">/uh-nih-KWIH-vuh-kuhl/</span><br>admitting of no doubt or misunderstanding</div><div class="bb-row"><b>unfathomable</b> <span class="tile" style="font-size:8.8pt">/uh-NFA-thuh-muh-buhl/</span><br>of depth; not capable of being sounded or measured</div><div class="bb-row"><b>unmistakable</b> <span class="tile" style="font-size:8.8pt">/uh-nmih-STAY-kuh-buhl/</span><br>clearly evident to the mind</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">unscrupulous</b> <span class="tile" style="font-size:8.8pt">/uh-NSKROO-pyuh-luhs/</span><br>without scruples or principles</div><div class="bb-row"><b class="">unwieldy</b> <span class="tile" style="font-size:8.8pt">/uh-NWEE-ldee/</span><br>difficult to use or handle or manage because of size…</div><div class="bb-row"><b class="">unnecessary</b> <span class="tile" style="font-size:8.8pt">/uh-NNEH-suh-seh-ree/</span><br>not necessary</div><div class="bb-row"><b class="">unnatural</b> <span class="tile" style="font-size:8.8pt">/uh-NNA-cher-uhl/</span><br>not in accordance with or determined by nature</div><div class="bb-row"><b class="">unnerve</b> <span class="tile" style="font-size:8.8pt">/uh-NURV/</span><br>disturb the composure of</div><div class="bb-row"><b class="">unequivocal</b> <span class="tile" style="font-size:8.8pt">/uh-nih-KWIH-vuh-kuhl/</span><br>admitting of no doubt or misunderstanding</div><div class="bb-row"><b class="">unfathomable</b> <span class="tile" style="font-size:8.8pt">/uh-NFA-thuh-muh-buhl/</span><br>of depth; not capable of being sounded or measured</div><div class="bb-row"><b class="">unmistakable</b> <span class="tile" style="font-size:8.8pt">/uh-nmih-STAY-kuh-buhl/</span><br>clearly evident to the mind</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -665,29 +689,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">disingenuous</div>
-        <div class="say">/ dih-sih-NJEH-nyoo-uhs /  ·  /dɪsɪˈndʒɛnjuəs/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">disingenuous</div>
+        <div class="say" style="font-size:10pt">/ dih-sih-NJEH-nyoo-uhs /  ·  /dɪsɪˈndʒɛnjuəs/</div>
         <div class="d">not straightforward or candid</div><div class="hook">hook: DIS-IN-GENU-OUS hides the Latin for 'genuine'</div>
+        
         <div class="ex">an ambitious</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">discernible</div>
-        <div class="say">/ d-ih-s-UR-n-uh-b-uh-l /  ·  /dɪsˈʌrnəbəl/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">discernible</div>
+        <div class="say" style="font-size:10pt">/ d-ih-s-UR-n-uh-b-uh-l /  ·  /dɪsˈʌrnəbəl/</div>
         <div class="d">means capable of being distinguished</div><div class="hook">hook: DisCERNible ends in -IBLE not -ABLE</div>
+        
         <div class="ex">things happen in the earth and sky with no ▁▁▁ cause</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">distraught</div>
-        <div class="say">/ d-ih-s-t-r-AW-t /  ·  /dɪstrˈɔt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">distraught</div>
+        <div class="say" style="font-size:10pt">/ d-ih-s-t-r-AW-t /  ·  /dɪstrˈɔt/</div>
         <div class="d">means deeply agitated</div><div class="hook">hook: DISTRAUGHT</div>
+        
         <div class="ex">▁▁▁ with grief</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">dissipate</div>
-        <div class="say">/ DIH-suh-payt /  ·  /ˈdɪsəpeɪt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">dissipate</div>
+        <div class="say" style="font-size:10pt">/ DIH-suh-payt /  ·  /ˈdɪsəpeɪt/</div>
         <div class="d">to cause to separate and go in different directions</div><div class="hook">hook: diSSIPate — watch it SLIP away like water you SIP that dribbles away.</div>
+        
         <div class="ex">By noon</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">disseminate</div>
-        <div class="say">/ dih-SEH-muh-nayt /  ·  /dɪˈsɛməneɪt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">disseminate</div>
+        <div class="say" style="font-size:10pt">/ dih-SEH-muh-nayt /  ·  /dɪˈsɛməneɪt/</div>
         <div class="d">cause to become widely known</div><div class="hook">hook: To disSEMinate is to scatter SEEDS widely</div>
+        
         <div class="ex">school</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">dissonance</div>
-        <div class="say">/ DIH-suh-nuhns /  ·  /ˈdɪsənəns/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">dissonance</div>
+        <div class="say" style="font-size:10pt">/ DIH-suh-nuhns /  ·  /ˈdɪsənəns/</div>
         <div class="d">a conflict of people's opinions or actions or characters</div><div class="hook">hook: DisSonance: two SONic clashes</div>
+        
         <div class="ex">modern music is just noise to me</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-engine-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -695,7 +725,7 @@
 <div class="page" data-vol="3">
       <div class="bb-head"><span>Chapter 3 · dis- (apart / not / opposite)</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>disparage</b> <span class="tile" style="font-size:8.8pt">/dih-SPEH-rihj/</span><br>express a negative opinion of</div><div class="bb-row"><b>discrepancy</b> <span class="tile" style="font-size:8.8pt">/dih-SKREH-puh-nsee/</span><br>a difference between conflicting facts or claims or…</div><div class="bb-row"><b>disconcert</b> <span class="tile" style="font-size:8.8pt">/dih-skuh-NSURT/</span><br>cause to feel embarrassment</div><div class="bb-row"><b>discomfit</b> <span class="tile" style="font-size:8.8pt">/dis-KUM-fit/</span><br>cause to lose one's composure</div><div class="bb-row"><b>dissemble</b> <span class="tile" style="font-size:8.8pt">/dih-SEH-mbuhl/</span><br>make believe with the intent to deceive</div><div class="bb-row"><b>disparate</b> <span class="tile" style="font-size:8.8pt">/DIH-sper-iht/</span><br>fundamentally different or distinct in quality or kind</div><div class="bb-row"><b>disparity</b> <span class="tile" style="font-size:8.8pt">/dih-SPEH-ruh-tee/</span><br>inequality or difference in some respect</div><div class="bb-row"><b>dissolute</b> <span class="tile" style="font-size:8.8pt">/DIS-uh-loot/</span><br>unrestrained by convention or morality</div><div class="bb-row"><b>disquisition</b> <span class="tile" style="font-size:8.8pt"></span><br></div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">disparage</b> <span class="tile" style="font-size:8.8pt">/dih-SPEH-rihj/</span><br>express a negative opinion of</div><div class="bb-row"><b class="">discrepancy</b> <span class="tile" style="font-size:8.8pt">/dih-SKREH-puh-nsee/</span><br>a difference between conflicting facts or claims or…</div><div class="bb-row"><b class="">disconcert</b> <span class="tile" style="font-size:8.8pt">/dih-skuh-NSURT/</span><br>cause to feel embarrassment</div><div class="bb-row"><b class="">discomfit</b> <span class="tile" style="font-size:8.8pt">/dis-KUM-fit/</span><br>cause to lose one's composure</div><div class="bb-row"><b class="">dissemble</b> <span class="tile" style="font-size:8.8pt">/dih-SEH-mbuhl/</span><br>make believe with the intent to deceive</div><div class="bb-row"><b class="">disparate</b> <span class="tile" style="font-size:8.8pt">/DIH-sper-iht/</span><br>fundamentally different or distinct in quality or kind</div><div class="bb-row"><b class="">disparity</b> <span class="tile" style="font-size:8.8pt">/dih-SPEH-ruh-tee/</span><br>inequality or difference in some respect</div><div class="bb-row"><b class="">dissolute</b> <span class="tile" style="font-size:8.8pt">/DIS-uh-loot/</span><br>unrestrained by convention or morality</div><div class="bb-row"><b class="">disquisition</b> <span class="tile" style="font-size:8.8pt"></span><br></div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -793,29 +823,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">desiccate</div>
-        <div class="say">/ d-EH-s-uh-k-ay-t /  ·  /dˈɛsəkeɪt/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">desiccate</div>
+        <div class="say" style="font-size:10pt">/ d-EH-s-uh-k-ay-t /  ·  /dˈɛsəkeɪt/</div>
         <div class="d">To desiccate something means to preserve it by removing all of its water and…</div><div class="hook">hook: DESICCATE has a double C—think of two C's squeezing all the moisture out</div>
+        
         <div class="ex">carry dehydrated food on your camping trip</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">decaffeinate</div>
-        <div class="say">/ d-ee-k-A-f-uh-n-ay-t /  ·  /diˈkæfəˌneɪt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">decaffeinate</div>
+        <div class="say" style="font-size:10pt">/ d-ee-k-A-f-uh-n-ay-t /  ·  /diˈkæfəˌneɪt/</div>
         <div class="d">To decaffeinate a beverage means to extract the caffeine from it so that it has…</div><div class="hook">hook: DECAFFEINATE has a DOUBLE F</div>
+        
         <div class="ex">The company uses a special water process to ▁▁▁ its coffee beans without altering…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">denouement</div>
-        <div class="say">/ d-ay-n-oo-m-AH-n /  ·  /ˌdeɪˌnuˈmɑn/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">denouement</div>
+        <div class="say" style="font-size:10pt">/ d-ay-n-oo-m-AH-n /  ·  /ˌdeɪˌnuˈmɑn/</div>
         <div class="d">the final outcome or resolution of a complex sequence of events</div><div class="hook">hook: The dénouement UNKNOTs the story — dé(undo)+noue(knot)</div>
+        
         <div class="ex">In the thrilling ▁▁▁ of the mystery novel</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">decimate</div>
-        <div class="say">/ DEH-suh-mayt /  ·  /ˈdɛsəmeɪt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">decimate</div>
+        <div class="say" style="font-size:10pt">/ DEH-suh-mayt /  ·  /ˈdɛsəmeɪt/</div>
         <div class="d">kill one in every ten, as of mutineers in Roman armies</div><div class="hook">hook: Roman soldiers were DECIMATEd</div>
+        
         <div class="ex">the plague wiped out an entire population</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">denigrate</div>
-        <div class="say">/ DEH-nuh-grayt /  ·  /ˈdɛnəɡreɪt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">denigrate</div>
+        <div class="say" style="font-size:10pt">/ DEH-nuh-grayt /  ·  /ˈdɛnəɡreɪt/</div>
         <div class="d">cause to seem less serious; play down</div><div class="hook">hook: To DENIGRATE is to blacken someone's name</div>
+        
         <div class="ex">Don't belittle his influence</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">deracinate</div>
-        <div class="say">/ dih-RAS-ih-nayt /  ·  /dɪˈræsɪneɪt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">deracinate</div>
+        <div class="say" style="font-size:10pt">/ dih-RAS-ih-nayt /  ·  /dɪˈræsɪneɪt/</div>
         <div class="d">move (people) forcibly from their homeland into a new and foreign environment</div><div class="hook">hook: De-RACIN-ate: picture pulling a RACE of people out by the roots like a plant.</div>
+        
         <div class="ex">The war uprooted many people</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-origami-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -823,7 +859,7 @@
 <div class="page" data-vol="3">
       <div class="bb-head"><span>Chapter 4 · de- (down / away / reverse)</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>demesne</b> <span class="tile" style="font-size:8.8pt">/duh-MAYN/</span><br>is possession of land as one's own</div><div class="bb-row"><b>demitasse</b> <span class="tile" style="font-size:8.8pt">/DEM-ee-tas/</span><br>is a small cup for serving strong black coffee</div><div class="bb-row"><b>debacle</b> <span class="tile" style="font-size:8.8pt">/duh-BAH-kuhl/</span><br>a sudden and violent collapse</div><div class="bb-row"><b>debonair</b> <span class="tile" style="font-size:8.8pt">/deh-buh-NEHR/</span><br>having a sophisticated charm</div><div class="bb-row"><b>deprecate</b> <span class="tile" style="font-size:8.8pt">/DEH-pruh-kayt/</span><br>express strong disapproval of; deplore</div><div class="bb-row"><b>depreciate</b> <span class="tile" style="font-size:8.8pt">/dih-PREE-shee-ayt/</span><br>To reduce or lessen the value</div><div class="bb-row"><b>deference</b> <span class="tile" style="font-size:8.8pt">/DEH-fer-uhns/</span><br>a courteous expression (by word or deed) of esteem…</div><div class="bb-row"><b>deign</b> <span class="tile" style="font-size:8.8pt">/d-AY-n/</span><br>to think fit or to condescend</div><div class="bb-row"><b>detriment</b> <span class="tile" style="font-size:8.8pt">/DEH-truh-muhnt/</span><br>a damage or loss</div><div class="bb-row"><b>derogate</b> <span class="tile" style="font-size:8.8pt">/DER-uh-gate/</span><br>cause to seem less serious; play down</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">demesne</b> <span class="tile" style="font-size:8.8pt">/duh-MAYN/</span><br>is possession of land as one's own</div><div class="bb-row"><b class="">demitasse</b> <span class="tile" style="font-size:8.8pt">/DEM-ee-tas/</span><br>is a small cup for serving strong black coffee</div><div class="bb-row"><b class="">debacle</b> <span class="tile" style="font-size:8.8pt">/duh-BAH-kuhl/</span><br>a sudden and violent collapse</div><div class="bb-row"><b class="">debonair</b> <span class="tile" style="font-size:8.8pt">/deh-buh-NEHR/</span><br>having a sophisticated charm</div><div class="bb-row"><b class="">deprecate</b> <span class="tile" style="font-size:8.8pt">/DEH-pruh-kayt/</span><br>express strong disapproval of; deplore</div><div class="bb-row"><b class="">depreciate</b> <span class="tile" style="font-size:8.8pt">/dih-PREE-shee-ayt/</span><br>To reduce or lessen the value</div><div class="bb-row"><b class="">deference</b> <span class="tile" style="font-size:8.8pt">/DEH-fer-uhns/</span><br>a courteous expression (by word or deed) of esteem…</div><div class="bb-row"><b class="">deign</b> <span class="tile" style="font-size:8.8pt">/d-AY-n/</span><br>to think fit or to condescend</div><div class="bb-row"><b class="">detriment</b> <span class="tile" style="font-size:8.8pt">/DEH-truh-muhnt/</span><br>a damage or loss</div><div class="bb-row"><b class="">derogate</b> <span class="tile" style="font-size:8.8pt">/DER-uh-gate/</span><br>cause to seem less serious; play down</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -919,29 +955,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">exquisite</div>
-        <div class="say">/ EH-k-s-k-w-uh-z-uh-t /  ·  /ˈɛkskwəzət/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">exquisite</div>
+        <div class="say" style="font-size:10pt">/ EH-k-s-k-w-uh-z-uh-t /  ·  /ˈɛkskwəzət/</div>
         <div class="d">is of special beauty or charm</div><div class="hook">hook: EXQUISITE things are EXceptionallyQUISITELY crafted</div>
+        
         <div class="ex">suffered ▁▁▁ pain</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">extemporaneous</div>
-        <div class="say">/ ek-stem-puh-RAY-nee-us /  ·  /ɛkstɛmpəˈreɪniʌs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:20.5pt"><div class="w">extemporaneous</div>
+        <div class="say" style="font-size:10pt">/ ek-stem-puh-RAY-nee-us /  ·  /ɛkstɛmpəˈreɪniʌs/</div>
         <div class="d">is done without special preparation</div><div class="hook">hook: EX TEMPORE means 'out of the moment'—no prep time!</div>
+        
         <div class="ex">his ad-lib comments showed poor judgment</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">effervescent</div>
-        <div class="say">/ eh-f-ur-v-EH-s-uh-n-t /  ·  /ˌɛfərˈvɛsənt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">effervescent</div>
+        <div class="say" style="font-size:10pt">/ eh-f-ur-v-EH-s-uh-n-t /  ·  /ˌɛfərˈvɛsənt/</div>
         <div class="d">used of wines and waters; charged naturally or artificially with carbon dioxide</div><div class="hook">hook: EFFERVescent = bubbles FERVOR-ing out — think of a soda bottle fizzing over.</div>
+        
         <div class="ex">The ▁▁▁ new student bubbled with energy from the very first day</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">exacerbate</div>
-        <div class="say">/ ih-g-z-A-s-ur-b-ay-t /  ·  /ɪɡzˈæsʌrbeɪt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">exacerbate</div>
+        <div class="say" style="font-size:10pt">/ ih-g-z-A-s-ur-b-ay-t /  ·  /ɪɡzˈæsʌrbeɪt/</div>
         <div class="d">is to make something worse</div><div class="hook">hook: To exACERBate is to make things ACERBic — bitterly worse.</div>
+        
         <div class="ex">This drug aggravates the pain</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">exasperate</div>
-        <div class="say">/ ih-GZA-sper-ayt /  ·  /ɪˈɡzæspəreɪt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">exasperate</div>
+        <div class="say" style="font-size:10pt">/ ih-GZA-sper-ayt /  ·  /ɪˈɡzæspəreɪt/</div>
         <div class="d">to irritate intensely; to make someone very annoyed or frustrated</div><div class="hook">hook: exASPERate — it makes things ASPERously rough and irritating</div>
+        
         <div class="ex">It began to ▁▁▁ her teammates when she changed the project plan for the fifth time…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">excruciating</div>
-        <div class="say">/ ih-KSKROO-shee-ay-tihng /  ·  /ɪˈkskruʃieɪtɪŋ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">excruciating</div>
+        <div class="say" style="font-size:10pt">/ ih-KSKROO-shee-ay-tihng /  ·  /ɪˈkskruʃieɪtɪŋ/</div>
         <div class="d">torment emotionally or mentally</div><div class="hook">hook: exCRUCIating pain</div>
+        
         <div class="ex">The sinners will be tormented in Hell, according to the Bible</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-strait-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -949,7 +991,7 @@
 <div class="page" data-vol="3">
       <div class="bb-head"><span>Chapter 5 · ex- / e- / ef- (out / former / thoroughly)</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>exhilarate</b> <span class="tile" style="font-size:8.8pt">/ih-GZIH-ler-ayt/</span><br>fill with sublime emotion</div><div class="bb-row"><b>excoriate</b> <span class="tile" style="font-size:8.8pt">/eh-KSKAW-ree-ayt/</span><br>express strong disapproval of</div><div class="bb-row"><b>exculpate</b> <span class="tile" style="font-size:8.8pt">/eh-KSKUH-lpayt/</span><br>pronounce not guilty of criminal charges</div><div class="bb-row"><b>exigent</b> <span class="tile" style="font-size:8.8pt">/EH-ksih-juhnt/</span><br>demanding attention; ; ; - H.L.Mencken</div><div class="bb-row"><b>expatiate</b> <span class="tile" style="font-size:8.8pt">/ik-SPAY-shee-ayt/</span><br>to speak or write at length</div><div class="bb-row"><b>expunge</b> <span class="tile" style="font-size:8.8pt">/ih-KSPUHNJ/</span><br>remove by erasing or crossing out or as if by…</div><div class="bb-row"><b>extirpate</b> <span class="tile" style="font-size:8.8pt">/EH-kster-payt/</span><br>destroy completely, as if down to the roots</div><div class="bb-row"><b>eloquent</b> <span class="tile" style="font-size:8.8pt">/EH-luh-kwuhnt/</span><br>expressing yourself readily, clearly, effectively</div><div class="bb-row"><b>elaborate</b> <span class="tile" style="font-size:8.8pt">/ih-LA-bruht/</span><br>add details</div><div class="bb-row"><b>elicit</b> <span class="tile" style="font-size:8.8pt">/ih-LIH-siht/</span><br>call forth (emotions, feelings, and responses)</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">exhilarate</b> <span class="tile" style="font-size:8.8pt">/ih-GZIH-ler-ayt/</span><br>fill with sublime emotion</div><div class="bb-row"><b class="">excoriate</b> <span class="tile" style="font-size:8.8pt">/eh-KSKAW-ree-ayt/</span><br>express strong disapproval of</div><div class="bb-row"><b class="">exculpate</b> <span class="tile" style="font-size:8.8pt">/eh-KSKUH-lpayt/</span><br>pronounce not guilty of criminal charges</div><div class="bb-row"><b class="">exigent</b> <span class="tile" style="font-size:8.8pt">/EH-ksih-juhnt/</span><br>demanding attention; ; ; - H.L.Mencken</div><div class="bb-row"><b class="">expatiate</b> <span class="tile" style="font-size:8.8pt">/ik-SPAY-shee-ayt/</span><br>to speak or write at length</div><div class="bb-row"><b class="">expunge</b> <span class="tile" style="font-size:8.8pt">/ih-KSPUHNJ/</span><br>remove by erasing or crossing out or as if by…</div><div class="bb-row"><b class="">extirpate</b> <span class="tile" style="font-size:8.8pt">/EH-kster-payt/</span><br>destroy completely, as if down to the roots</div><div class="bb-row"><b class="">eloquent</b> <span class="tile" style="font-size:8.8pt">/EH-luh-kwuhnt/</span><br>expressing yourself readily, clearly, effectively</div><div class="bb-row"><b class="">elaborate</b> <span class="tile" style="font-size:8.8pt">/ih-LA-bruht/</span><br>add details</div><div class="bb-row"><b class="">elicit</b> <span class="tile" style="font-size:8.8pt">/ih-LIH-siht/</span><br>call forth (emotions, feelings, and responses)</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1045,29 +1087,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">recalcitrant</div>
-        <div class="say">/ r-ih-k-A-l-s-ih-t-r-uh-n-t /  ·  /rɪkˈælsɪtrənt/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">recalcitrant</div>
+        <div class="say" style="font-size:10pt">/ r-ih-k-A-l-s-ih-t-r-uh-n-t /  ·  /rɪkˈælsɪtrənt/</div>
         <div class="d">means resisting authority</div><div class="hook">hook: A rECALCITRANT student kicks back like a mule</div>
+        
         <div class="ex">a fractious animal that would not submit to the harness</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">redoubtable</div>
-        <div class="say">/ r-uh-d-OW-t-uh-b-uh-l /  ·  /rədˈaʊtəbəl/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">redoubtable</div>
+        <div class="say" style="font-size:10pt">/ r-uh-d-OW-t-uh-b-uh-l /  ·  /rədˈaʊtəbəl/</div>
         <div class="d">is that that is to be feared formidable</div><div class="hook">hook: A redouBTable foe makes you doubt</div>
+        
         <div class="ex">the formidable prospect of major surgery</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">repartee</div>
-        <div class="say">/ r-eh-p-ur-t-EE /  ·  /rɛpʌrtˈi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">repartee</div>
+        <div class="say" style="font-size:10pt">/ r-eh-p-ur-t-EE /  ·  /rɛpʌrtˈi/</div>
         <div class="d">is a quick witty reply</div><div class="hook">hook: Good repartee ends with a TEE shot — it always lands perfectly</div>
+        
         <div class="ex">The debate champion's sharp ▁▁▁ left her opponent speechless and the audience laughing.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">renaissance</div>
-        <div class="say">/ reh-nuh-SAHNS /  ·  /rɛnəˈsɑns/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">renaissance</div>
+        <div class="say" style="font-size:10pt">/ reh-nuh-SAHNS /  ·  /rɛnəˈsɑns/</div>
         <div class="d">a cultural rebirth from the 14th through the middle of the 17th centuries</div><div class="hook">hook: RENAISSANCE = RE + NAIS + SANCE</div>
+        
         <div class="ex">Artists from across Europe were inspired by the ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">rendezvous</div>
-        <div class="say">/ RAH-ndih-voo /  ·  /ˈrɑndɪvu/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">rendezvous</div>
+        <div class="say" style="font-size:10pt">/ RAH-ndih-voo /  ·  /ˈrɑndɪvu/</div>
         <div class="d">a meeting planned at a certain time and place</div><div class="hook">hook: RENDEZVOUS ends in -vous — you (vous) must show up at the meeting!</div>
+        
         <div class="ex">he was waiting for them at the ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">reconnoiter</div>
-        <div class="say">/ ree-kuh-NOY-ter /  ·  /ˌrikəˈnɔɪtər/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">reconnoiter</div>
+        <div class="say" style="font-size:10pt">/ ree-kuh-NOY-ter /  ·  /ˌrikəˈnɔɪtər/</div>
         <div class="d">explore, often with the goal of finding something or somebody</div><div class="hook">hook: RE + CONnoiter — go out again to CONfirm what's out there</div>
+        
         <div class="ex">The scouts were sent ahead to ▁▁▁ the forest trail before the rest of the troop…</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-junkyard-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1075,7 +1123,7 @@
 <div class="page" data-vol="3">
       <div class="bb-head"><span>Chapter 6 · re- (again / back)</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>recidivism</b> <span class="tile" style="font-size:8.8pt">/ruh-SIH-dih-vih-zuhm/</span><br>habitual relapse into crime</div><div class="bb-row"><b>repudiate</b> <span class="tile" style="font-size:8.8pt">/ree-PYOO-dee-ayt/</span><br>To firmly reject</div><div class="bb-row"><b>rescind</b> <span class="tile" style="font-size:8.8pt">/r-ih-s-IH-n-d/</span><br>is to annul or repeal</div><div class="bb-row"><b>remonstrate</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>recriminate</b> <span class="tile" style="font-size:8.8pt">/rih-krih-mih-NAYT/</span><br>charge in return</div><div class="bb-row"><b>retract</b> <span class="tile" style="font-size:8.8pt">/ree-TRAKT/</span><br>formally reject or disavow a formerly held belief</div><div class="bb-row"><b>recant</b> <span class="tile" style="font-size:8.8pt">/ree-KANT/</span><br>formally reject or disavow a formerly held belief</div><div class="bb-row"><b>renounce</b> <span class="tile" style="font-size:8.8pt">/rih-NOWNS/</span><br>give up</div><div class="bb-row"><b>recondite</b> <span class="tile" style="font-size:8.8pt">/REH-kuh-ndeyet/</span><br>difficult to penetrate</div><div class="bb-row"><b>refulgent</b> <span class="tile" style="font-size:8.8pt">/rih-FUL-jent/</span><br>radiating or as if radiating light</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">recidivism</b> <span class="tile" style="font-size:8.8pt">/ruh-SIH-dih-vih-zuhm/</span><br>habitual relapse into crime</div><div class="bb-row"><b class="">repudiate</b> <span class="tile" style="font-size:8.8pt">/ree-PYOO-dee-ayt/</span><br>To firmly reject</div><div class="bb-row"><b class="">rescind</b> <span class="tile" style="font-size:8.8pt">/r-ih-s-IH-n-d/</span><br>is to annul or repeal</div><div class="bb-row"><b class="">remonstrate</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">recriminate</b> <span class="tile" style="font-size:8.8pt">/rih-krih-mih-NAYT/</span><br>charge in return</div><div class="bb-row"><b class="">retract</b> <span class="tile" style="font-size:8.8pt">/ree-TRAKT/</span><br>formally reject or disavow a formerly held belief</div><div class="bb-row"><b class="">recant</b> <span class="tile" style="font-size:8.8pt">/ree-KANT/</span><br>formally reject or disavow a formerly held belief</div><div class="bb-row"><b class="">renounce</b> <span class="tile" style="font-size:8.8pt">/rih-NOWNS/</span><br>give up</div><div class="bb-row"><b class="">recondite</b> <span class="tile" style="font-size:8.8pt">/REH-kuh-ndeyet/</span><br>difficult to penetrate</div><div class="bb-row"><b class="">refulgent</b> <span class="tile" style="font-size:8.8pt">/rih-FUL-jent/</span><br>radiating or as if radiating light</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1173,29 +1221,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">precocious</div>
-        <div class="say">/ p-r-ih-k-OH-sh-uh-s /  ·  /prɪkˈoʊʃəs/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">precocious</div>
+        <div class="say" style="font-size:10pt">/ p-r-ih-k-OH-sh-uh-s /  ·  /prɪkˈoʊʃəs/</div>
         <div class="d">is prematurely developed</div><div class="hook">hook: A precocious child is PRECIOUS but EARLY</div>
+        
         <div class="ex">The ▁▁▁ six-year-old stunned her kindergarten teacher by reading an entire chapter…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">precursor</div>
-        <div class="say">/ p-r-ee-k-UR-s-ur /  ·  /priˈkərsər/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">precursor</div>
+        <div class="say" style="font-size:10pt">/ p-r-ee-k-UR-s-ur /  ·  /priˈkərsər/</div>
         <div class="d">a substance from which another substance is formed (especially by a metabolic…</div><div class="hook">hook: A precursor RUNS before — like a CURSOR racing ahead on screen</div>
+        
         <div class="ex">Scientists discovered that a simple amino acid was the ▁▁▁ to the complex protein…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">prescient</div>
-        <div class="say">/ PREH-see-uhnt /  ·  /ˈprɛsiənt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">prescient</div>
+        <div class="say" style="font-size:10pt">/ PREH-see-uhnt /  ·  /ˈprɛsiənt/</div>
         <div class="d">perceiving the significance of events before they occur</div><div class="hook">hook: PRESCIENT people have pre-SCIENCE — they know things before they happen</div>
+        
         <div class="ex">Her ▁▁▁ warning about the bridge's weak supports was ignored for years before the…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">preponderant</div>
-        <div class="say"></div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">preponderant</div>
+        <div class="say" style="font-size:10pt"></div>
         <div class="d"></div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">prevaricate</div>
-        <div class="say">/ pruh-VEH-ruh-kayt /  ·  /prəˈvɛrəkeɪt/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">prevaricate</div>
+        <div class="say" style="font-size:10pt">/ pruh-VEH-ruh-kayt /  ·  /prəˈvɛrəkeɪt/</div>
         <div class="d">be deliberately ambiguous or unclear in order to mislead or withhold information</div><div class="hook">hook: preVARIcate</div>
+        
         <div class="ex">The detective warned the suspect not to ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">propitious</div>
-        <div class="say">/ p-r-uh-p-IH-sh-uh-s /  ·  /prəpˈɪʃəs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">propitious</div>
+        <div class="say" style="font-size:10pt">/ p-r-uh-p-IH-sh-uh-s /  ·  /prəpˈɪʃəs/</div>
         <div class="d">encouraging : favorable.</div><div class="hook">hook: Propitious has ITI in the middle</div>
+        
         <div class="ex">With clear skies</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-vibe-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1203,7 +1257,7 @@
 <div class="page" data-vol="3">
       <div class="bb-head"><span>Chapter 7 · pre- / pro- (before / forward)</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>prodigious</b> <span class="tile" style="font-size:8.8pt">/pruh-DIH-juhs/</span><br>so great in size or force or extent as to elicit awe</div><div class="bb-row"><b>provenance</b> <span class="tile" style="font-size:8.8pt">/PRAH-vuh-nuhns/</span><br>where something originated or was nurtured in its…</div><div class="bb-row"><b>protagonist</b> <span class="tile" style="font-size:8.8pt">/proh-TA-guh-nuhst/</span><br>a person who backs a politician or a team etc.</div><div class="bb-row"><b>profligate</b> <span class="tile" style="font-size:8.8pt">/PRAW-flih-gayt/</span><br>a dissolute man in fashionable society</div><div class="bb-row"><b>prescribe</b> <span class="tile" style="font-size:8.8pt">/pruh-SKREYEB/</span><br>issue commands or orders for</div><div class="bb-row"><b>proscribe</b> <span class="tile" style="font-size:8.8pt">/proh-SKREYEB/</span><br>command against</div><div class="bb-row"><b>precede</b> <span class="tile" style="font-size:8.8pt">/p-r-ih-s-EE-d/</span><br>is to go before</div><div class="bb-row"><b>proceed</b> <span class="tile" style="font-size:8.8pt">/pruh-SEED/</span><br>continue talking; he continued,</div><div class="bb-row"><b>preempt</b> <span class="tile" style="font-size:8.8pt">/PREE-ehmpt/</span><br>a high bid that is intended to prevent the opposing…</div><div class="bb-row"><b>predilection</b> <span class="tile" style="font-size:8.8pt">/preh-duh-LEH-kshuhn/</span><br>a predisposition in favor of something</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">prodigious</b> <span class="tile" style="font-size:8.8pt">/pruh-DIH-juhs/</span><br>so great in size or force or extent as to elicit awe</div><div class="bb-row"><b class="">provenance</b> <span class="tile" style="font-size:8.8pt">/PRAH-vuh-nuhns/</span><br>where something originated or was nurtured in its…</div><div class="bb-row"><b class="">protagonist</b> <span class="tile" style="font-size:8.8pt">/proh-TA-guh-nuhst/</span><br>a person who backs a politician or a team etc.</div><div class="bb-row"><b class="">profligate</b> <span class="tile" style="font-size:8.8pt">/PRAW-flih-gayt/</span><br>a dissolute man in fashionable society</div><div class="bb-row"><b class="">prescribe</b> <span class="tile" style="font-size:8.8pt">/pruh-SKREYEB/</span><br>issue commands or orders for</div><div class="bb-row"><b class="">proscribe</b> <span class="tile" style="font-size:8.8pt">/proh-SKREYEB/</span><br>command against</div><div class="bb-row"><b class="">precede</b> <span class="tile" style="font-size:8.8pt">/p-r-ih-s-EE-d/</span><br>is to go before</div><div class="bb-row"><b class="">proceed</b> <span class="tile" style="font-size:8.8pt">/pruh-SEED/</span><br>continue talking; he continued,</div><div class="bb-row"><b class="">preempt</b> <span class="tile" style="font-size:8.8pt">/PREE-ehmpt/</span><br>a high bid that is intended to prevent the opposing…</div><div class="bb-row"><b class="">predilection</b> <span class="tile" style="font-size:8.8pt">/preh-duh-LEH-kshuhn/</span><br>a predisposition in favor of something</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1298,29 +1352,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">surreptitious</div>
-        <div class="say">/ sur-uh-PTIH-shuhs /  ·  /sʌrəˈptɪʃəs/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">surreptitious</div>
+        <div class="say" style="font-size:10pt">/ sur-uh-PTIH-shuhs /  ·  /sʌrəˈptɪʃəs/</div>
         <div class="d">marked by quiet and caution and secrecy; taking pains to avoid being observed</div><div class="hook">hook: SURprise + REPTile + IOUS: a reptile sneaking up is surreptitious</div>
+        
         <div class="ex">The spy cast a ▁▁▁ glance over his shoulder before slipping the coded note under…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">surfeit</div>
-        <div class="say">/ s-UR-f-uh-t /  ·  /sˈʌrfət/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">surfeit</div>
+        <div class="say" style="font-size:10pt">/ s-UR-f-uh-t /  ·  /sˈʌrfət/</div>
         <div class="d">means excess an excessive amount</div><div class="hook">hook: A SURFEIT is when you SURF through an OVERFLOW of something</div>
+        
         <div class="ex">After Thanksgiving dinner</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">subcutaneous</div>
-        <div class="say">/ suh-bkyoo-TAY-nee-uhs /  ·  /səbkjuˈteɪniəs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">subcutaneous</div>
+        <div class="say" style="font-size:10pt">/ suh-bkyoo-TAY-nee-uhs /  ·  /səbkjuˈteɪniəs/</div>
         <div class="d">means lying under the skin as tissue</div><div class="hook">hook: SUBCUTANEOUS means SUB (under) the CUTIS (skin)</div>
+        
         <div class="ex">posing no danger and requiring no treatment unless it grew significantly larger over time</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">subpoena</div>
-        <div class="say">/ s-uh-p-EE-n-uh /  ·  /səpˈinə/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">subpoena</div>
+        <div class="say" style="font-size:10pt">/ s-uh-p-EE-n-uh /  ·  /səpˈinə/</div>
         <div class="d">is the usual writ for the summoning of witnesses</div><div class="hook">hook: subPOENA has POEtic justice</div>
+        
         <div class="ex">The witness and her records were ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">subterfuge</div>
-        <div class="say">/ SUH-bter-fyooj /  ·  /ˈsʌbtərfjudʒ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">subterfuge</div>
+        <div class="say" style="font-size:10pt">/ SUH-bter-fyooj /  ·  /ˈsʌbtərfjudʒ/</div>
         <div class="d">something intended to misrepresent the true nature of an activity</div><div class="hook">hook: SubterFUGE — fugitives use SUBTERFUGE to FLEE secretly underground.</div>
+        
         <div class="ex">he wasn't sick--it was just a ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">subliminal</div>
-        <div class="say">/ suh-BLIH-mih-nuhl /  ·  /səˈblɪmɪnəl/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">subliminal</div>
+        <div class="say" style="font-size:10pt">/ suh-BLIH-mih-nuhl /  ·  /səˈblɪmɪnəl/</div>
         <div class="d">below the threshold of conscious perception</div><div class="hook">hook: SUBLIMINAL is SUB (below) the LIMEN (threshold) — below your mental radar!</div>
+        
         <div class="ex">Researchers debated whether ▁▁▁ advertising</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1328,7 +1388,7 @@
 <div class="page" data-vol="3">
       <div class="bb-head"><span>Chapter 8 · sub- / sur- / super- / supra- (under / above)</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>supersede</b> <span class="tile" style="font-size:8.8pt">/s-oo-p-ur-s-EE-d/</span><br>is to replace in power or acceptance</div><div class="bb-row"><b>supercilious</b> <span class="tile" style="font-size:8.8pt">/soo-per-SIH-lee-uhs/</span><br>having or showing arrogant superiority and disdain…</div><div class="bb-row"><b>superintendent</b> <span class="tile" style="font-size:8.8pt">/s-oo-p-ur-uh-n-t-EH-n-d-uh-n-t/</span><br>is a person who oversees or directs some work</div><div class="bb-row"><b>superfluous</b> <span class="tile" style="font-size:8.8pt">/SOO-per-flwuhs/</span><br>serving no useful purpose; having no excuse for being</div><div class="bb-row"><b>supplant</b> <span class="tile" style="font-size:8.8pt">/suh-PLANT/</span><br>take the place or move into the position of</div><div class="bb-row"><b>subvert</b> <span class="tile" style="font-size:8.8pt">/suh-BVURT/</span><br>cause the downfall of; of rulers</div><div class="bb-row"><b>suppress</b> <span class="tile" style="font-size:8.8pt">/suh-PREHS/</span><br>to put down by force or authority</div><div class="bb-row"><b>surreptitiously</b> <span class="tile" style="font-size:8.8pt">/sur-uh-PTIH-shuh-slee/</span><br>in a surreptitious manner</div><div class="bb-row"><b>supranational</b> <span class="tile" style="font-size:8.8pt">/soo-pruh-NA-shuh-nuhl/</span><br>transcending established national boundaries or…</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">supersede</b> <span class="tile" style="font-size:8.8pt">/s-oo-p-ur-s-EE-d/</span><br>is to replace in power or acceptance</div><div class="bb-row"><b class="">supercilious</b> <span class="tile" style="font-size:8.8pt">/soo-per-SIH-lee-uhs/</span><br>having or showing arrogant superiority and disdain…</div><div class="bb-row"><b class="">superintendent</b> <span class="tile" style="font-size:8.8pt">/s-oo-p-ur-uh-n-t-EH-n-d-uh-n-t/</span><br>is a person who oversees or directs some work</div><div class="bb-row"><b class="">superfluous</b> <span class="tile" style="font-size:8.8pt">/SOO-per-flwuhs/</span><br>serving no useful purpose; having no excuse for being</div><div class="bb-row"><b class="">supplant</b> <span class="tile" style="font-size:8.8pt">/suh-PLANT/</span><br>take the place or move into the position of</div><div class="bb-row"><b class="">subvert</b> <span class="tile" style="font-size:8.8pt">/suh-BVURT/</span><br>cause the downfall of; of rulers</div><div class="bb-row"><b class="">suppress</b> <span class="tile" style="font-size:8.8pt">/suh-PREHS/</span><br>to put down by force or authority</div><div class="bb-row"><b class="">surreptitiously</b> <span class="tile" style="font-size:8.8pt">/sur-uh-PTIH-shuh-slee/</span><br>in a surreptitious manner</div><div class="bb-row"><b class="">supranational</b> <span class="tile" style="font-size:8.8pt">/soo-pruh-NA-shuh-nuhl/</span><br>transcending established national boundaries or…</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1424,29 +1484,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">connoisseur</div>
-        <div class="say">/ k-ah-n-uh-s-UR /  ·  /ˌkɑnəˈsər/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">connoisseur</div>
+        <div class="say" style="font-size:10pt">/ k-ah-n-uh-s-UR /  ·  /ˌkɑnəˈsər/</div>
         <div class="d">is a person competent to pass critical judgment</div><div class="hook">hook: A connoisseur KNOWS their stuff — double n, double s</div>
+        
         <div class="ex">The art museum hired a ▁▁▁ of Renaissance paintings to authenticate the newly…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">compunction</div>
-        <div class="say">/ kuh-MPUH-ngkshuhn /  ·  /kəˈmpʌŋkʃən/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">compunction</div>
+        <div class="say" style="font-size:10pt">/ kuh-MPUH-ngkshuhn /  ·  /kəˈmpʌŋkʃən/</div>
         <div class="d">a feeling of deep regret (usually for some misdeed)</div><div class="hook">hook: COM + PUNCTION — like a puncture that pricks your conscience</div>
+        
         <div class="ex">She felt absolutely no ▁▁▁ after cheating on the test until she saw how…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">complacent</div>
-        <div class="say">/ kuh-MPLAY-suhnt /  ·  /kəˈmpleɪsənt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">complacent</div>
+        <div class="say" style="font-size:10pt">/ kuh-MPLAY-suhnt /  ·  /kəˈmpleɪsənt/</div>
         <div class="d">contented to a fault with oneself or one's actions</div><div class="hook">hook: A COMPLACENT person is pleased with their place</div>
+        
         <div class="ex">he had become ▁▁▁ after years of success</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">complaisant</div>
-        <div class="say">/ kuh-MPLAY-suhnt /  ·  /kəˈmpleɪsənt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">complaisant</div>
+        <div class="say" style="font-size:10pt">/ kuh-MPLAY-suhnt /  ·  /kəˈmpleɪsənt/</div>
         <div class="d">showing a cheerful willingness to do favors for others</div><div class="hook">hook: A COMPLAISANT person is always pleased to say oui</div>
+        
         <div class="ex">to close one's eyes like a ▁▁▁ husband whose wife has taken a lover</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">contrite</div>
-        <div class="say">/ kuh-NTREYET /  ·  /kəˈntraɪt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">contrite</div>
+        <div class="say" style="font-size:10pt">/ kuh-NTREYET /  ·  /kəˈntraɪt/</div>
         <div class="d">feeling or expressing pain or sorrow for sins or offenses</div><div class="hook">hook: conTRITE — being contrite means feeling TRITEly sorry, ground down by guilt</div>
+        
         <div class="ex">After snapping at his little sister</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">consternation</div>
-        <div class="say">/ kah-nster-NAY-shuhn /  ·  /kɑnstərˈneɪʃən/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">consternation</div>
+        <div class="say" style="font-size:10pt">/ kah-nster-NAY-shuhn /  ·  /kɑnstərˈneɪʃən/</div>
         <div class="d">fear resulting from the awareness of danger</div><div class="hook">hook: CONSTERNation — you CONCERN + STERN face when alarmed</div>
+        
         <div class="ex">The students stared in ▁▁▁ when their teacher announced a surprise ten-page…</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-warfield-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1454,7 +1520,7 @@
 <div class="page" data-vol="3">
       <div class="bb-head"><span>Chapter 9 · com- / con- / col- / cor- / co- (together / w…</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>conciliatory</b> <span class="tile" style="font-size:8.8pt">/k-uh-n-s-IH-l-ee-uh-t-aw-r-ee/</span><br>tending to win over from a state of hostility or…</div><div class="bb-row"><b>concatenate</b> <span class="tile" style="font-size:8.8pt">/kuh-NKA-tuh-nayt/</span><br>combine two strings to form a single one</div><div class="bb-row"><b>collaborate</b> <span class="tile" style="font-size:8.8pt">/kuh-LA-ber-ayt/</span><br>work together on a common enterprise of project</div><div class="bb-row"><b>colloquy</b> <span class="tile" style="font-size:8.8pt">/KAH-luh-kwee/</span><br>a conversation especially a formal one</div><div class="bb-row"><b>corroborate</b> <span class="tile" style="font-size:8.8pt">/ker-AH-ber-ayt/</span><br>establish or strengthen as with new evidence or facts</div><div class="bb-row"><b>corrugated</b> <span class="tile" style="font-size:8.8pt">/KAW-ruh-gay-tihd/</span><br>fold into ridges</div><div class="bb-row"><b>commemorate</b> <span class="tile" style="font-size:8.8pt">/k-uh-m-EH-m-ur-ay-t/</span><br>is to serve as a reminder of</div><div class="bb-row"><b>continuum</b> <span class="tile" style="font-size:8.8pt">/k-uh-n-t-IH-n-y-oo-uh-m/</span><br>a continuous nonspatial whole or extent or…</div><div class="bb-row"><b>convivial</b> <span class="tile" style="font-size:8.8pt">/k-uh-n-v-IH-v-ee-uh-l/</span><br>means friendly or agreeable</div><div class="bb-row"><b>concupiscence</b> <span class="tile" style="font-size:8.8pt">/kon-KYOO-pih-sens/</span><br>a desire for sexual intimacy</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">conciliatory</b> <span class="tile" style="font-size:8.8pt">/k-uh-n-s-IH-l-ee-uh-t-aw-r-ee/</span><br>tending to win over from a state of hostility or…</div><div class="bb-row"><b class="">concatenate</b> <span class="tile" style="font-size:8.8pt">/kuh-NKA-tuh-nayt/</span><br>combine two strings to form a single one</div><div class="bb-row"><b class="">collaborate</b> <span class="tile" style="font-size:8.8pt">/kuh-LA-ber-ayt/</span><br>work together on a common enterprise of project</div><div class="bb-row"><b class="">colloquy</b> <span class="tile" style="font-size:8.8pt">/KAH-luh-kwee/</span><br>a conversation especially a formal one</div><div class="bb-row"><b class="">corroborate</b> <span class="tile" style="font-size:8.8pt">/ker-AH-ber-ayt/</span><br>establish or strengthen as with new evidence or facts</div><div class="bb-row"><b class="">corrugated</b> <span class="tile" style="font-size:8.8pt">/KAW-ruh-gay-tihd/</span><br>fold into ridges</div><div class="bb-row"><b class="">commemorate</b> <span class="tile" style="font-size:8.8pt">/k-uh-m-EH-m-ur-ay-t/</span><br>is to serve as a reminder of</div><div class="bb-row"><b class="">continuum</b> <span class="tile" style="font-size:8.8pt">/k-uh-n-t-IH-n-y-oo-uh-m/</span><br>a continuous nonspatial whole or extent or…</div><div class="bb-row"><b class="">convivial</b> <span class="tile" style="font-size:8.8pt">/k-uh-n-v-IH-v-ee-uh-l/</span><br>means friendly or agreeable</div><div class="bb-row"><b class="">concupiscence</b> <span class="tile" style="font-size:8.8pt">/kon-KYOO-pih-sens/</span><br>a desire for sexual intimacy</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1551,29 +1617,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">malfeasance</div>
-        <div class="say">/ m-a-l-f-EE-z-uh-n-s /  ·  /ˌmælˈfizəns/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">malfeasance</div>
+        <div class="say" style="font-size:10pt">/ m-a-l-f-EE-z-uh-n-s /  ·  /ˌmælˈfizəns/</div>
         <div class="d">is wrongdoing by a public official</div><div class="hook">hook: MALFEASance — a bad official does bad FEATS; end it with -ance, not -ence.</div>
+        
         <div class="ex">The city treasurer was removed from office after investigators uncovered evidence of…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">malevolent</div>
-        <div class="say">/ muh-LEH-vuh-luhnt /  ·  /məˈlɛvələnt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">malevolent</div>
+        <div class="say" style="font-size:10pt">/ muh-LEH-vuh-luhnt /  ·  /məˈlɛvələnt/</div>
         <div class="d">wishing or appearing to wish evil to others</div><div class="hook">hook: MALEvolent = MALE (bad) + VOLENT (wishing)</div>
+        
         <div class="ex">The ▁▁▁ sorcerer cast a spell that turned the entire village's crops to ash…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">malicious</div>
-        <div class="say">/ m-uh-l-IH-sh-uh-s /  ·  /məlˈɪʃəs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">malicious</div>
+        <div class="say" style="font-size:10pt">/ m-uh-l-IH-sh-uh-s /  ·  /məlˈɪʃəs/</div>
         <div class="d">marked by evil intention</div><div class="hook">hook: One L of malice is enough to be MALICIOUS — only one L: M-A-L-I-C-I-O-U-S.</div>
+        
         <div class="ex">The ▁▁▁ rumor spread through the school within hours</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">malignant</div>
-        <div class="say">/ m-uh-l-IH-g-n-uh-n-t /  ·  /məlˈɪɡnənt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">malignant</div>
+        <div class="say" style="font-size:10pt">/ m-uh-l-IH-g-n-uh-n-t /  ·  /məlˈɪɡnənt/</div>
         <div class="d">tending to produce death or deterioration used in medicine</div><div class="hook">hook: A MALIGNANT tumor is not gentle</div>
+        
         <div class="ex">The doctor delivered the frightening news that the tumor was ▁▁▁ and would require…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">malodorous</div>
-        <div class="say"></div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">malodorous</div>
+        <div class="say" style="font-size:10pt"></div>
         <div class="d"></div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">malcontent</div>
-        <div class="say">/ ma-lkuh-NTEHNT /  ·  /mælkəˈntɛnt/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">malcontent</div>
+        <div class="say" style="font-size:10pt">/ ma-lkuh-NTEHNT /  ·  /mælkəˈntɛnt/</div>
         <div class="d">a person who is discontented or disgusted</div><div class="hook">hook: A MALcontent is never content</div>
+        
         <div class="ex">One ▁▁▁ in the group kept complaining that the camping trip was badly organized</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-greysea-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1581,7 +1653,7 @@
 <div class="page" data-vol="3">
       <div class="bb-head"><span>Chapter 10 · mal- (bad / evil / ill)</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>malefactor</b> <span class="tile" style="font-size:8.8pt">/MA-luh-fa-kter/</span><br>someone who has committed a crime or has been…</div><div class="bb-row"><b>malediction</b> <span class="tile" style="font-size:8.8pt">/mal-eh-DIK-shun/</span><br>the act of calling down a curse that invokes evil…</div><div class="bb-row"><b>malaise</b> <span class="tile" style="font-size:8.8pt">/ma-LAYZ/</span><br>a general feeling of physical discomfort</div><div class="bb-row"><b>malaria</b> <span class="tile" style="font-size:8.8pt">/m-uh-l-EH-r-ee-uh/</span><br>is a disease characterized by chills or fever caused…</div><div class="bb-row"><b>maladroit</b> <span class="tile" style="font-size:8.8pt">/ma-luh-DROYT/</span><br>Lacking skill</div><div class="bb-row"><b>malapropism</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>maleficent</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>malpractice</b> <span class="tile" style="font-size:8.8pt">/ma-LPRA-ktuhs/</span><br>professional wrongdoing that results in injury or…</div><div class="bb-row"><b>malnutrition</b> <span class="tile" style="font-size:8.8pt">/m-a-l-n-oo-t-r-IH-sh-uh-n/</span><br>faulty nourishment due to a lack of or imbalance in…</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">malefactor</b> <span class="tile" style="font-size:8.8pt">/MA-luh-fa-kter/</span><br>someone who has committed a crime or has been…</div><div class="bb-row"><b class="">malediction</b> <span class="tile" style="font-size:8.8pt">/mal-eh-DIK-shun/</span><br>the act of calling down a curse that invokes evil…</div><div class="bb-row"><b class="">malaise</b> <span class="tile" style="font-size:8.8pt">/ma-LAYZ/</span><br>a general feeling of physical discomfort</div><div class="bb-row"><b class="">malaria</b> <span class="tile" style="font-size:8.8pt">/m-uh-l-EH-r-ee-uh/</span><br>is a disease characterized by chills or fever caused…</div><div class="bb-row"><b class="">maladroit</b> <span class="tile" style="font-size:8.8pt">/ma-luh-DROYT/</span><br>Lacking skill</div><div class="bb-row"><b class="">malapropism</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">maleficent</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">malpractice</b> <span class="tile" style="font-size:8.8pt">/ma-LPRA-ktuhs/</span><br>professional wrongdoing that results in injury or…</div><div class="bb-row"><b class="">malnutrition</b> <span class="tile" style="font-size:8.8pt">/m-a-l-n-oo-t-r-IH-sh-uh-n/</span><br>faulty nourishment due to a lack of or imbalance in…</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1677,29 +1749,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">mischievous</div>
-        <div class="say">/ m-IH-s-ch-uh-v-uh-s /  ·  /mˈɪstʃəvəs/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">mischievous</div>
+        <div class="say" style="font-size:10pt">/ m-IH-s-ch-uh-v-uh-s /  ·  /mˈɪstʃəvəs/</div>
         <div class="d">is maliciously or playfully annoying</div><div class="hook">hook: Mischievous has no extra 'i' after the 'v'</div>
+        
         <div class="ex">teasing and worrying with impish laughter</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">miscreant</div>
-        <div class="say">/ MIH-skree-uhnt /  ·  /ˈmɪskriənt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">miscreant</div>
+        <div class="say" style="font-size:10pt">/ MIH-skree-uhnt /  ·  /ˈmɪskriənt/</div>
         <div class="d">a person without moral scruples</div><div class="hook">hook: A MISCREANT mis-CREATES chaos</div>
+        
         <div class="ex">The sheriff finally tracked down the ▁▁▁ who had been stealing from local farmers…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">misnomer</div>
-        <div class="say">/ mih-SNOH-mer /  ·  /mɪˈsnoʊmər/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">misnomer</div>
+        <div class="say" style="font-size:10pt">/ mih-SNOH-mer /  ·  /mɪˈsnoʊmər/</div>
         <div class="d">an incorrect or unsuitable name</div><div class="hook">hook: A MIS-NO-MER is a MISsed NAME — one R, no double letters, just a wrong label.</div>
+        
         <div class="ex">Calling a starfish a fish is actually a ▁▁▁, since starfish are not fish at all.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">misprision</div>
-        <div class="say">/ mih-SPRIH-zhuh-n /  ·  /mɪˈsprɪʒən/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">misprision</div>
+        <div class="say" style="font-size:10pt">/ mih-SPRIH-zhuh-n /  ·  /mɪˈsprɪʒən/</div>
         <div class="d">In law</div><div class="hook">hook: MIS + PRISON — a mistake that could land you near a PRISON for staying silent.</div>
+        
         <div class="ex">The lawyer explained that ▁▁▁ of a crime means knowing about it but failing to…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">miscellaneous</div>
-        <div class="say">/ m-ih-s-uh-l-AY-n-ee-uh-s /  ·  /mɪsəlˈeɪniəs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">miscellaneous</div>
+        <div class="say" style="font-size:10pt">/ m-ih-s-uh-l-AY-n-ee-uh-s /  ·  /mɪsəlˈeɪniəs/</div>
         <div class="d">is of mixed character</div><div class="hook">hook: MISCELLANEOUS has CELL in it</div>
+        
         <div class="ex">an arrangement of assorted spring flowers</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">misanthrope</div>
-        <div class="say">/ MIH-suh-nthrohp /  ·  /ˈmɪsənθroʊp/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">misanthrope</div>
+        <div class="say" style="font-size:10pt">/ MIH-suh-nthrohp /  ·  /ˈmɪsənθroʊp/</div>
         <div class="d">someone who dislikes people in general</div><div class="hook">hook: A MISerable ANTHRO-PE-rson hates all people</div>
+        
         <div class="ex">The grumpy ▁▁▁ refused all party invitations and preferred to stay home alone.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-meadow-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1707,7 +1785,7 @@
 <div class="page" data-vol="3">
       <div class="bb-head"><span>Chapter 11 · mis- (wrongly / badly)</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>misconstrue</b> <span class="tile" style="font-size:8.8pt">/mih-skuh-NSTROO/</span><br>interpret in the wrong way</div><div class="bb-row"><b>misspell</b> <span class="tile" style="font-size:8.8pt">/mih-SSPEHL/</span><br>spell incorrectly</div><div class="bb-row"><b>misstep</b> <span class="tile" style="font-size:8.8pt">/mih-SSTEHP/</span><br>an unintentional but embarrassing blunder</div><div class="bb-row"><b>misdemeanor</b> <span class="tile" style="font-size:8.8pt">/mih-sduh-MEE-ner/</span><br>a crime less serious than a felony</div><div class="bb-row"><b>misgiving</b> <span class="tile" style="font-size:8.8pt">/mih-SGIH-vihng/</span><br>uneasiness about the fitness of an action</div><div class="bb-row"><b>misapprehend</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>misanthropic</b> <span class="tile" style="font-size:8.8pt">/mis-an-THROP-ik/</span><br>Believing the worst of human nature and motives</div><div class="bb-row"><b>misogyny</b> <span class="tile" style="font-size:8.8pt">/MIH-zuh-jih-nee/</span><br>hatred of women</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">misconstrue</b> <span class="tile" style="font-size:8.8pt">/mih-skuh-NSTROO/</span><br>interpret in the wrong way</div><div class="bb-row"><b class="">misspell</b> <span class="tile" style="font-size:8.8pt">/mih-SSPEHL/</span><br>spell incorrectly</div><div class="bb-row"><b class="">misstep</b> <span class="tile" style="font-size:8.8pt">/mih-SSTEHP/</span><br>an unintentional but embarrassing blunder</div><div class="bb-row"><b class="">misdemeanor</b> <span class="tile" style="font-size:8.8pt">/mih-sduh-MEE-ner/</span><br>a crime less serious than a felony</div><div class="bb-row"><b class="">misgiving</b> <span class="tile" style="font-size:8.8pt">/mih-SGIH-vihng/</span><br>uneasiness about the fitness of an action</div><div class="bb-row"><b class="">misapprehend</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">misanthropic</b> <span class="tile" style="font-size:8.8pt">/mis-an-THROP-ik/</span><br>Believing the worst of human nature and motives</div><div class="bb-row"><b class="">misogyny</b> <span class="tile" style="font-size:8.8pt">/MIH-zuh-jih-nee/</span><br>hatred of women</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1803,29 +1881,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">intransigent</div>
-        <div class="say">/ ih-n-t-r-A-n-s-uh-j-uh-n-t /  ·  /ɪntrˈænsədʒənt/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">intransigent</div>
+        <div class="say" style="font-size:10pt">/ ih-n-t-r-A-n-s-uh-j-uh-n-t /  ·  /ɪntrˈænsədʒənt/</div>
         <div class="d">is refusing to agree or compromise</div><div class="hook">hook: An intransigENT person won't budge</div>
+        
         <div class="ex">he is adamant in his refusal to change his mind</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">intermezzo</div>
-        <div class="say">/ in-tur-MET-soh /  ·  /ɪntʌrˈmɛtsoʊ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">intermezzo</div>
+        <div class="say" style="font-size:10pt">/ in-tur-MET-soh /  ·  /ɪntʌrˈmɛtsoʊ/</div>
         <div class="d">is a short musical entertainment between the acts of a drama or opera</div><div class="hook">hook: interMEZZO is played in the MIDDLE</div>
+        
         <div class="ex">The audience murmured appreciatively as the orchestra performed a gentle ▁▁▁ while…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">intercede</div>
-        <div class="say">/ ih-n-t-ur-s-EE-d /  ·  /ɪntʌrsˈid/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">intercede</div>
+        <div class="say" style="font-size:10pt">/ ih-n-t-ur-s-EE-d /  ·  /ɪntʌrsˈid/</div>
         <div class="d">is to act in behalf of someone in difficulty</div><div class="hook">hook: To interCEDE is to go between</div>
+        
         <div class="ex">He ▁▁▁ in the family dispute</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">interpolate</div>
-        <div class="say">/ ih-TUR-puh-layt /  ·  /ɪˈtʌrpəleɪt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">interpolate</div>
+        <div class="say" style="font-size:10pt">/ ih-TUR-puh-layt /  ·  /ɪˈtʌrpəleɪt/</div>
         <div class="d">estimate the value of</div><div class="hook">hook: To interPOLate is to POLish in a value between points — no extra O needed.</div>
+        
         <div class="ex">The scientist had to ▁▁▁ the missing data points on the graph to complete the…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">internecine</div>
-        <div class="say">/ ih-NTUR-nuh-seen /  ·  /ˌɪnˈtərnəˌsin/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">internecine</div>
+        <div class="say" style="font-size:10pt">/ ih-NTUR-nuh-seen /  ·  /ˌɪnˈtərnəˌsin/</div>
         <div class="d">(of conflict) within a group or organization</div><div class="hook">hook: Internecine conflict KILLS (Latin nec) from within.</div>
+        
         <div class="ex">The ▁▁▁ rivalry between the two factions of the student council made it impossible…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">intravenous</div>
-        <div class="say">/ ih-n-t-r-uh-v-EE-n-uh-s /  ·  /ɪntrəvˈinəs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">intravenous</div>
+        <div class="say" style="font-size:10pt">/ ih-n-t-r-uh-v-EE-n-uh-s /  ·  /ɪntrəvˈinəs/</div>
         <div class="d">means within a vein</div><div class="hook">hook: IntraVENous goes into the VEIN</div>
+        
         <div class="ex">an ▁▁▁ inflammation</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-library-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1833,7 +1917,7 @@
 <div class="page" data-vol="3">
       <div class="bb-head"><span>Chapter 12 · inter- / intra- (between / within)</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>intracranial</b> <span class="tile" style="font-size:8.8pt">/ih-ntruh-KRAY-nee-uhl/</span><br>within the skull</div><div class="bb-row"><b>intramural</b> <span class="tile" style="font-size:8.8pt">/ih-ntruh-MYUU-ruhl/</span><br>carried on within the bounds of an institution or…</div><div class="bb-row"><b>international</b> <span class="tile" style="font-size:8.8pt">/ih-nter-NA-shuh-nuhl/</span><br>any of several international socialist organizations</div><div class="bb-row"><b>intercollegiate</b> <span class="tile" style="font-size:8.8pt">/ih-nter-kuh-LEE-juht/</span><br>used of competition between colleges or universities</div><div class="bb-row"><b>interregnum</b> <span class="tile" style="font-size:8.8pt">/ih-n-t-ur-r-EH-g-n-uh-m/</span><br>is the time between the close of reign and the…</div><div class="bb-row"><b>interloper</b> <span class="tile" style="font-size:8.8pt">/IH-nter-loh-per/</span><br>someone who intrudes on the privacy or property of…</div><div class="bb-row"><b>interstitial</b> <span class="tile" style="font-size:8.8pt">/ih-nter-STIH-shuhl/</span><br>of or relating to interstices</div><div class="bb-row"><b>intractable</b> <span class="tile" style="font-size:8.8pt">/ih-NTRA-ktuh-buhl/</span><br>not tractable; difficult to manage or mold</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">intracranial</b> <span class="tile" style="font-size:8.8pt">/ih-ntruh-KRAY-nee-uhl/</span><br>within the skull</div><div class="bb-row"><b class="">intramural</b> <span class="tile" style="font-size:8.8pt">/ih-ntruh-MYUU-ruhl/</span><br>carried on within the bounds of an institution or…</div><div class="bb-row"><b class="">international</b> <span class="tile" style="font-size:8.8pt">/ih-nter-NA-shuh-nuhl/</span><br>any of several international socialist organizations</div><div class="bb-row"><b class="">intercollegiate</b> <span class="tile" style="font-size:8.8pt">/ih-nter-kuh-LEE-juht/</span><br>used of competition between colleges or universities</div><div class="bb-row"><b class="">interregnum</b> <span class="tile" style="font-size:8.8pt">/ih-n-t-ur-r-EH-g-n-uh-m/</span><br>is the time between the close of reign and the…</div><div class="bb-row"><b class="">interloper</b> <span class="tile" style="font-size:8.8pt">/IH-nter-loh-per/</span><br>someone who intrudes on the privacy or property of…</div><div class="bb-row"><b class="">interstitial</b> <span class="tile" style="font-size:8.8pt">/ih-nter-STIH-shuhl/</span><br>of or relating to interstices</div><div class="bb-row"><b class="">intractable</b> <span class="tile" style="font-size:8.8pt">/ih-NTRA-ktuh-buhl/</span><br>not tractable; difficult to manage or mold</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1930,29 +2014,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">perfidious</div>
-        <div class="say"></div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">perfidious</div>
+        <div class="say" style="font-size:10pt"></div>
         <div class="d"></div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">perfidy</div>
-        <div class="say">/ p-UR-f-ih-d-ee /  ·  /pˈʌrfɪdi/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">perfidy</div>
+        <div class="say" style="font-size:10pt">/ p-UR-f-ih-d-ee /  ·  /pˈʌrfɪdi/</div>
         <div class="d">is a deliberate breach of trust treachery</div><div class="hook">hook: PERFIDY breaks FAITH</div>
+        
         <div class="ex">The general's ▁▁▁ was revealed when he secretly passed battle plans to the enemy camp.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">pernicious</div>
-        <div class="say">/ p-ur-n-IH-sh-uh-s /  ·  /pʌrnˈɪʃəs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">pernicious</div>
+        <div class="say" style="font-size:10pt">/ p-ur-n-IH-sh-uh-s /  ·  /pʌrnˈɪʃəs/</div>
         <div class="d">means ruinous injurious hurtful</div><div class="hook">hook: PeRNICIOus is NASTY</div>
+        
         <div class="ex">glaucoma is an insidious disease</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">perennial</div>
-        <div class="say">/ p-ur-EH-n-ee-uh-l /  ·  /pʌrˈɛniəl/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">perennial</div>
+        <div class="say" style="font-size:10pt">/ p-ur-EH-n-ee-uh-l /  ·  /pʌrˈɛniəl/</div>
         <div class="d">is lasting for a long time enduring</div><div class="hook">hook: PERENNIAL has double N</div>
+        
         <div class="ex">the common buttercup is a popular ▁▁▁ plant</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">perspicacious</div>
-        <div class="say">/ per-spuh-KAY-shuhs /  ·  /pərspəˈkeɪʃəs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">perspicacious</div>
+        <div class="say" style="font-size:10pt">/ per-spuh-KAY-shuhs /  ·  /pərspəˈkeɪʃəs/</div>
         <div class="d">acutely insightful and wise</div><div class="hook">hook: PER-SPIC-acious: someone who sees (SPIC) through everything</div>
+        
         <div class="ex">The ▁▁▁ young detective noticed a tiny mud stain on the suspect's shoe that…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">perspicuous</div>
-        <div class="say">/ per-SPIK-yoo-us /  ·  /pərˈspɪkjuʌs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">perspicuous</div>
+        <div class="say" style="font-size:10pt">/ per-SPIK-yoo-us /  ·  /pərˈspɪkjuʌs/</div>
         <div class="d">is clearly expressed or presented</div><div class="hook">hook: PERSPICUOUS is clearly expressed</div>
+        
         <div class="ex">writes in a limpid style</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-forum-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1960,7 +2050,7 @@
 <div class="page" data-vol="3">
       <div class="bb-head"><span>Chapter 13 · trans- / per- (across / through)</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>perfunctory</b> <span class="tile" style="font-size:8.8pt">/per-FUH-ngkter-ee/</span><br>hasty and without attention to detail; not thorough</div><div class="bb-row"><b>transcend</b> <span class="tile" style="font-size:8.8pt">/t-r-a-n-s-EH-n-d/</span><br>to go beyond the limits of</div><div class="bb-row"><b>transient</b> <span class="tile" style="font-size:8.8pt">/t-r-A-n-zh-uh-n-t/</span><br>means not lasting or enduring</div><div class="bb-row"><b>translucent</b> <span class="tile" style="font-size:8.8pt">/t-r-a-n-s-l-OO-s-uh-n-t/</span><br>is letting pass through but not clearly</div><div class="bb-row"><b>transmogrify</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>transgress</b> <span class="tile" style="font-size:8.8pt">/tra-NZGREHS/</span><br>act in disregard of laws</div><div class="bb-row"><b>transmute</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>persiflage</b> <span class="tile" style="font-size:8.8pt">/PUR-sih-flahzh/</span><br>light teasing</div><div class="bb-row"><b>perquisite</b> <span class="tile" style="font-size:8.8pt">/p-UR-k-w-uh-z-ih-t/</span><br>is a gratuity or tip</div><div class="bb-row"><b>pertinacious</b> <span class="tile" style="font-size:8.8pt"></span><br></div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">perfunctory</b> <span class="tile" style="font-size:8.8pt">/per-FUH-ngkter-ee/</span><br>hasty and without attention to detail; not thorough</div><div class="bb-row"><b class="">transcend</b> <span class="tile" style="font-size:8.8pt">/t-r-a-n-s-EH-n-d/</span><br>to go beyond the limits of</div><div class="bb-row"><b class="">transient</b> <span class="tile" style="font-size:8.8pt">/t-r-A-n-zh-uh-n-t/</span><br>means not lasting or enduring</div><div class="bb-row"><b class="">translucent</b> <span class="tile" style="font-size:8.8pt">/t-r-a-n-s-l-OO-s-uh-n-t/</span><br>is letting pass through but not clearly</div><div class="bb-row"><b class="">transmogrify</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">transgress</b> <span class="tile" style="font-size:8.8pt">/tra-NZGREHS/</span><br>act in disregard of laws</div><div class="bb-row"><b class="">transmute</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">persiflage</b> <span class="tile" style="font-size:8.8pt">/PUR-sih-flahzh/</span><br>light teasing</div><div class="bb-row"><b class="">perquisite</b> <span class="tile" style="font-size:8.8pt">/p-UR-k-w-uh-z-ih-t/</span><br>is a gratuity or tip</div><div class="bb-row"><b class="">pertinacious</b> <span class="tile" style="font-size:8.8pt"></span><br></div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -2055,29 +2145,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">abscond</div>
-        <div class="say">/ a-BSKAHND /  ·  /æˈbskɑnd/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">abscond</div>
+        <div class="say" style="font-size:10pt">/ a-BSKAHND /  ·  /æˈbskɑnd/</div>
         <div class="d">run away; usually includes taking something or somebody along</div><div class="hook">hook: To abSCOND is to SCOOT and hide CONDtemptibly</div>
+        
         <div class="ex">The thief made off with our silver</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">aberrant</div>
-        <div class="say">/ a-BEH-ruhnt /  ·  /æˈbɛrənt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">aberrant</div>
+        <div class="say" style="font-size:10pt">/ a-BEH-ruhnt /  ·  /æˈbɛrənt/</div>
         <div class="d">Departing from the normal or expected course</div><div class="hook">hook: AB (away) + ERR (wander) + ANT: something that wanders away from the norm</div>
+        
         <div class="ex">The biologist discovered an ▁▁▁ specimen with an unusual coloration that set it apart…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">abjure</div>
-        <div class="say">/ ab-JOOR /  ·  /æbˈdʒur/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">abjure</div>
+        <div class="say" style="font-size:10pt">/ ab-JOOR /  ·  /æbˈdʒur/</div>
         <div class="d">formally reject or disavow a formerly held belief, usually under pressure</div><div class="hook">hook: To ABJURE is to swear (JURE) something AWAY</div>
+        
         <div class="ex">Under intense questioning</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">abrogate</div>
-        <div class="say">/ A-bruh-gayt /  ·  /ˈæbrəɡeɪt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">abrogate</div>
+        <div class="say" style="font-size:10pt">/ A-bruh-gayt /  ·  /ˈæbrəɡeɪt/</div>
         <div class="d">revoke formally</div><div class="hook">hook: ABROgate — AB-olish + ROGue laws; a rogue leader abrogates the rules</div>
+        
         <div class="ex">The new government moved quickly to ▁▁▁ the outdated treaty that had been in place…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">ablution</div>
-        <div class="say">/ uh-BLOO-shuhn /  ·  /əˈbluʃən/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">ablution</div>
+        <div class="say" style="font-size:10pt">/ uh-BLOO-shuhn /  ·  /əˈbluʃən/</div>
         <div class="d">the ritual washing of a priest's hands or of sacred vessels</div><div class="hook">hook: ABLUTion: think 'ab-LOOT'</div>
+        
         <div class="ex">Before the ceremony began</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">abnegate</div>
-        <div class="say">/ AB-nih-gayt /  ·  /ˈæbnɪɡeɪt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">abnegate</div>
+        <div class="say" style="font-size:10pt">/ AB-nih-gayt /  ·  /ˈæbnɪɡeɪt/</div>
         <div class="d">deny oneself (something); restrain, especially from indulging in some pleasure</div><div class="hook">hook: ABNEGATe = ab + NEGATE</div>
+        
         <div class="ex">The monk chose to ▁▁▁ all worldly possessions before entering the monastery.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-elements-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -2085,7 +2181,7 @@
 <div class="page" data-vol="3">
       <div class="bb-head"><span>Chapter 14 · ab- / abs- (away from / off)</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>abstain</b> <span class="tile" style="font-size:8.8pt">/uh-BSTAYN/</span><br>refrain from voting</div><div class="bb-row"><b>abstemious</b> <span class="tile" style="font-size:8.8pt">/ab-STEE-mee-uhs/</span><br>sparing in consumption of especially food and drink</div><div class="bb-row"><b>abstinence</b> <span class="tile" style="font-size:8.8pt">/A-bstuh-nuhns/</span><br>the trait of abstaining (especially from alcohol)</div><div class="bb-row"><b>abstruse</b> <span class="tile" style="font-size:8.8pt">/uh-BSTROOS/</span><br>difficult to penetrate</div><div class="bb-row"><b>abstract</b> <span class="tile" style="font-size:8.8pt">/a-BSTRAKT/</span><br>a concept or idea not associated with any specific…</div><div class="bb-row"><b>aversion</b> <span class="tile" style="font-size:8.8pt">/uh-VUR-zhuhn/</span><br>a feeling of intense dislike</div><div class="bb-row"><b>avert</b> <span class="tile" style="font-size:8.8pt">/uh-VURT/</span><br>prevent the occurrence of; prevent from happening</div><div class="bb-row"><b>aversive</b> <span class="tile" style="font-size:8.8pt">/uh-VUR-suhv/</span><br>tending to repel or dissuade</div><div class="bb-row"><b>abominate</b> <span class="tile" style="font-size:8.8pt">/uh-BOM-ih-nayt/</span><br>find repugnant</div><div class="bb-row"><b>abscissa</b> <span class="tile" style="font-size:8.8pt">/ab-SIS-ah/</span><br>the value of a coordinate on the horizontal axis</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">abstain</b> <span class="tile" style="font-size:8.8pt">/uh-BSTAYN/</span><br>refrain from voting</div><div class="bb-row"><b class="">abstemious</b> <span class="tile" style="font-size:8.8pt">/ab-STEE-mee-uhs/</span><br>sparing in consumption of especially food and drink</div><div class="bb-row"><b class="">abstinence</b> <span class="tile" style="font-size:8.8pt">/A-bstuh-nuhns/</span><br>the trait of abstaining (especially from alcohol)</div><div class="bb-row"><b class="">abstruse</b> <span class="tile" style="font-size:8.8pt">/uh-BSTROOS/</span><br>difficult to penetrate</div><div class="bb-row"><b class="">abstract</b> <span class="tile" style="font-size:8.8pt">/a-BSTRAKT/</span><br>a concept or idea not associated with any specific…</div><div class="bb-row"><b class="">aversion</b> <span class="tile" style="font-size:8.8pt">/uh-VUR-zhuhn/</span><br>a feeling of intense dislike</div><div class="bb-row"><b class="">avert</b> <span class="tile" style="font-size:8.8pt">/uh-VURT/</span><br>prevent the occurrence of; prevent from happening</div><div class="bb-row"><b class="">aversive</b> <span class="tile" style="font-size:8.8pt">/uh-VUR-suhv/</span><br>tending to repel or dissuade</div><div class="bb-row"><b class="">abominate</b> <span class="tile" style="font-size:8.8pt">/uh-BOM-ih-nayt/</span><br>find repugnant</div><div class="bb-row"><b class="">abscissa</b> <span class="tile" style="font-size:8.8pt">/ab-SIS-ah/</span><br>the value of a coordinate on the horizontal axis</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -2181,29 +2277,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">assiduous</div>
-        <div class="say">/ uh-SIH-dwuhs /  ·  /əˈsɪdwəs/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">assiduous</div>
+        <div class="say" style="font-size:10pt">/ uh-SIH-dwuhs /  ·  /əˈsɪdwəs/</div>
         <div class="d">marked by care and persistent effort</div><div class="hook">hook: assiDUous — an assiduous person is always DUE to be at their desk working</div>
+        
         <div class="ex">which is why she earned the top grade</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">acquiesce</div>
-        <div class="say">/ a-kwee-EHS /  ·  /ækwiˈɛs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">acquiesce</div>
+        <div class="say" style="font-size:10pt">/ a-kwee-EHS /  ·  /ækwiˈɛs/</div>
         <div class="d">to agree or express agreement</div><div class="hook">hook: ACQUIesce — QUIET agreement; when you acquiesce, you quietly give in</div>
+        
         <div class="ex">After hours of debate</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">accolade</div>
-        <div class="say">/ A-kuh-layd /  ·  /ˈækəleɪd/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">accolade</div>
+        <div class="say" style="font-size:10pt">/ A-kuh-layd /  ·  /ˈækəleɪd/</div>
         <div class="d">a tangible symbol signifying approval or distinction</div><div class="hook">hook: An acCOLade is a hug around the COLlar</div>
+        
         <div class="ex">an award for bravery</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">acquit</div>
-        <div class="say">/ uh-KWIHT /  ·  /əˈkwɪt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">acquit</div>
+        <div class="say" style="font-size:10pt">/ uh-KWIHT /  ·  /əˈkwɪt/</div>
         <div class="d">pronounce not guilty of criminal charges</div><div class="hook">hook: To acquit is to quietly free someone</div>
+        
         <div class="ex">The suspect was cleared of the murder charges</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">accrue</div>
-        <div class="say">/ uh-KROO /  ·  /əˈkru/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">accrue</div>
+        <div class="say" style="font-size:10pt">/ uh-KROO /  ·  /əˈkru/</div>
         <div class="d">grow by addition</div><div class="hook">hook: Your savings accrue — the account gets a double 'c' bonus before '-rue'.</div>
+        
         <div class="ex">The interest ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">alleviate</div>
-        <div class="say">/ uh-LEE-vee-ayt /  ·  /əˈliviˌeɪt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">alleviate</div>
+        <div class="say" style="font-size:10pt">/ uh-LEE-vee-ayt /  ·  /əˈliviˌeɪt/</div>
         <div class="d">provide physical relief, as from pain</div><div class="hook">hook: To allevIATE</div>
+        
         <div class="ex">This pill will relieve your headaches</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-engine-r1.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -2211,7 +2313,7 @@
 <div class="page" data-vol="3">
       <div class="bb-head"><span>Chapter 15 · ad- (toward / near) — the Great Assimilator</span><span>Rapid round · ★★★</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>allure</b> <span class="tile" style="font-size:8.8pt">/uh-LUUR/</span><br>the power to entice or attract through personal charm</div><div class="bb-row"><b>allude</b> <span class="tile" style="font-size:8.8pt">/uh-LOOD/</span><br>make a more or less disguised reference to</div><div class="bb-row"><b>allocate</b> <span class="tile" style="font-size:8.8pt">/A-luh-kayt/</span><br>distribute according to a plan or set apart for a…</div><div class="bb-row"><b>appease</b> <span class="tile" style="font-size:8.8pt">/uh-PEEZ/</span><br>cause to be more favorably inclined</div><div class="bb-row"><b>approbation</b> <span class="tile" style="font-size:8.8pt">/a-pruh-BAY-shuhn/</span><br>official approval</div><div class="bb-row"><b>append</b> <span class="tile" style="font-size:8.8pt">/uh-PEHND/</span><br>add to the very end</div><div class="bb-row"><b>appropriate</b> <span class="tile" style="font-size:8.8pt">/uh-PROH-pree-uht/</span><br>give or assign a resource to a particular person or…</div><div class="bb-row"><b>attenuate</b> <span class="tile" style="font-size:8.8pt">/uh-TEH-nyoo-ayt/</span><br>weaken the consistency of (a chemical substance)</div><div class="bb-row"><b>attrition</b> <span class="tile" style="font-size:8.8pt">/uh-TRIH-shuhn/</span><br>erosion by friction</div><div class="bb-row"><b>aggrandize</b> <span class="tile" style="font-size:8.8pt">/uh-GRA-ndeyez/</span><br>add details to</div><div class="bb-row"><b>annihilate</b> <span class="tile" style="font-size:8.8pt">/uh-NEYE-uh-layt/</span><br>kill in large numbers</div><div class="bb-row"><b>arraign</b> <span class="tile" style="font-size:8.8pt">/er-AYN/</span><br>call before a court to answer an indictment</div><div class="bb-row"><b>affidavit</b> <span class="tile" style="font-size:8.8pt">/a-fuh-DAY-vuht/</span><br>written declaration made under oath</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">allure</b> <span class="tile" style="font-size:8.8pt">/uh-LUUR/</span><br>the power to entice or attract through personal charm</div><div class="bb-row"><b class="">allude</b> <span class="tile" style="font-size:8.8pt">/uh-LOOD/</span><br>make a more or less disguised reference to</div><div class="bb-row"><b class="">allocate</b> <span class="tile" style="font-size:8.8pt">/A-luh-kayt/</span><br>distribute according to a plan or set apart for a…</div><div class="bb-row"><b class="">appease</b> <span class="tile" style="font-size:8.8pt">/uh-PEEZ/</span><br>cause to be more favorably inclined</div><div class="bb-row"><b class="">approbation</b> <span class="tile" style="font-size:8.8pt">/a-pruh-BAY-shuhn/</span><br>official approval</div><div class="bb-row"><b class="">append</b> <span class="tile" style="font-size:8.8pt">/uh-PEHND/</span><br>add to the very end</div><div class="bb-row"><b class="">appropriate</b> <span class="tile" style="font-size:8.8pt">/uh-PROH-pree-uht/</span><br>give or assign a resource to a particular person or…</div><div class="bb-row"><b class="">attenuate</b> <span class="tile" style="font-size:8.8pt">/uh-TEH-nyoo-ayt/</span><br>weaken the consistency of (a chemical substance)</div><div class="bb-row"><b class="">attrition</b> <span class="tile" style="font-size:8.8pt">/uh-TRIH-shuhn/</span><br>erosion by friction</div><div class="bb-row"><b class="">aggrandize</b> <span class="tile" style="font-size:8.8pt">/uh-GRA-ndeyez/</span><br>add details to</div><div class="bb-row"><b class="">annihilate</b> <span class="tile" style="font-size:8.8pt">/uh-NEYE-uh-layt/</span><br>kill in large numbers</div><div class="bb-row"><b class="">arraign</b> <span class="tile" style="font-size:8.8pt">/er-AYN/</span><br>call before a court to answer an indictment</div><div class="bb-row"><b class="">affidavit</b> <span class="tile" style="font-size:8.8pt">/a-fuh-DAY-vuht/</span><br>written declaration made under oath</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>

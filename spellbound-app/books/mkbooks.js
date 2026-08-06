@@ -24,6 +24,7 @@ eval(fs.readFileSync('sounds-data.js', 'utf8'));
 eval(fs.readFileSync('trail-data.js', 'utf8'));
 eval(fs.readFileSync('books/southasia-chapters.js', 'utf8'));
 eval(fs.readFileSync('books/eponym-chapters.js', 'utf8'));
+eval(fs.readFileSync('books/ultra-chapters.js', 'utf8'));
 eval(fs.readFileSync('books/design-system/bb-anime.js', 'utf8'));
 let ADVS = {};
 try { const src = fs.readFileSync('adv-concepts-data.js', 'utf8'); ADVS = window.SB_ADV_CSCRIPT || {}; } catch (e) {}
@@ -36,6 +37,9 @@ const SA_SCRIPT = {}; SA.forEach((ch, i) => { if (ch.sc) SA_SCRIPT[String(i)] = 
    pulled from the app's eponym-tagged library so no word data is invented. No
    storyboard scripts yet, so its chapter openers use the drawn montage. */
 const EP = window.SB_EPONYMS || [];
+/* Volumes 18 and 19: the last continent's own two books, generated from the 36
+   champion techniques by voice/pipeline/ultra-build.js. */
+const UL = window.SB_ULTRA || { mind: [], method: [] };
 const CS = window.SB_CSCRIPT || {}, AV = window.SB_AVATAR_ART;
 const QUOTES = window.SB_QUOTES, FIG = window.SB_FIG, IPA = window.SB_IPA || {};
 const ANIME = window.BB_ANIME;
@@ -95,7 +99,14 @@ const artAt = slug => { try { for (const ext of ['jpg', 'png']) if (fs.existsSyn
 const artImg = (src, extra) => `<img src="${src}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover${extra || ''}" alt="">`;
 
 /* Register: how grown-up this volume looks and sounds. */
-const REG = vol => vol.band === 'advanced' || vol.n === 18 ? 3 : vol.n <= 4 ? 1 : 2;
+/* Three identities per volume, because they stopped agreeing:
+     vol.n     the SERIES number printed on the cover (absent on a companion)
+     slugOf    the file name — book-07.html, or book-similes.html for a companion
+     artOf     which art set it wears; the eponym volume was generated as b19
+               before it was renumbered to 17, and the art keeps its old prefix. */
+const slugOf = vol => vol.slug || ('book-' + String(vol.n).padStart(2, '0'));
+const artOf = vol => vol.art || ('b' + String(vol.n).padStart(2, '0'));
+const REG = vol => vol.ultra ? 4 : vol.band === 'advanced' || vol.companion ? 3 : vol.n <= 4 ? 1 : 2;
 
 /* The app's avatar cards: real titles, lore, powers and facts — the cast's voices. */
 const CARD = id => { try { return SB_AV_CARD(id); } catch (e) { return null; } };
@@ -177,10 +188,19 @@ const AVOLS = [
     chapters: SA },
   { n: 15, seedN: 14, title: 'Far-Flung Words', tag: 'Origins beyond the big four', a: '#0E8A78', d: '#075C50', tex: 'cross', av: 'mic', world: 'strait', band: 'advanced', chapters: ADV.filter(ch => ch.category === 'Origins Beyond the Big Four') },
   { n: 16, seedN: 15, title: 'The Word Factory', tag: 'How English bolts words together', a: '#5B6BA8', d: '#364475', tex: 'stripes', av: 'maestro', world: 'engine', band: 'advanced', chapters: ADV.filter(ch => ch.category === 'How Words Are Built') },
-  { n: 19, seedN: 17, title: 'Named After Someone', tag: 'Every word here was a person first', a: '#C2586B', d: '#8A2F45', tex: 'cross', av: 'goldlegend', world: 'forum', band: 'advanced', authored: true, src: 'EP',
+  { n: 17, seedN: 17, art: 'b19', title: 'Named After Someone', tag: 'Every word here was a person first', a: '#C2586B', d: '#8A2F45', tex: 'cross', av: 'goldlegend', world: 'forum', band: 'advanced', authored: true, src: 'EP',
     cyc: ['forum', 'forum', 'engine', 'forum', 'stage', 'meadow', 'junkyard', 'meadow', 'strait', 'warfield'],
     cast: ['goldlegend', 'volt', 'phoenix', 'atom'],
     chapters: EP },
+  /* The last continent. Register 4: night, letterboxed, near-monochrome with gold. */
+  { n: 18, seedN: 18, art: 'b20', title: "The Champion's Mind", tag: 'Getting words in, and getting them back fast', a: '#7C5CFF', d: '#3E2A8C', tex: 'grid', av: 'encore', world: 'library', band: 'advanced', ultra: true, authored: true, src: 'UL_MIND',
+    cyc: ['library', 'engine', 'library', 'greysea', 'library', 'stage', 'library', 'warfield', 'library', 'engine', 'library', 'greysea'],
+    cast: ['encore', 'goldlegend', 'volt', 'atom'],
+    chapters: UL.mind },
+  { n: 19, seedN: 19, art: 'b21', title: "The Champion's Method", tag: 'Origin first, then the microphone', a: '#C8901B', d: '#7A5000', tex: 'diag', av: 'goldlegend', world: 'warfield', band: 'advanced', ultra: true, authored: true, src: 'UL_METHOD',
+    cyc: ['warfield', 'forum', 'warfield', 'engine', 'warfield', 'strait', 'warfield', 'stage', 'warfield', 'forum', 'warfield', 'engine'],
+    cast: ['goldlegend', 'phoenix', 'encore', 'volt'],
+    chapters: UL.method },
 ];
 const NAMES = { bizzy: 'Bizzy', honeypot: 'Honeypot', waggle: 'Waggle', bumble: 'Bumble', star: 'Star', diva: 'Diva', drone: 'Drone', clover: 'Clover', nectar: 'Nectar', lumen: 'Lumen', jester: 'Jester', queenhive: 'Queen Hive', blossom: 'Blossom', propolis: 'Propolis', mic: 'Mic', maestro: 'Maestro', popcorn: 'Popcorn', melody: 'Melody', naga: 'Naga' };
 /* Inline characters use the app's painted avatar art (avatars/<id>.png) framed in
@@ -463,16 +483,28 @@ function css(vol) {
   .bb-prop{display:inline-block;background:var(--chip);color:var(--chip-ink);border-radius:8pt;padding:3pt 8pt;font-family:'BB Tile';font-size:10pt}
   .bb-bubble{background:var(--card);border:1px solid var(--hairline);border-radius:12pt;padding:6pt 10pt;font-family:'BB Display';font-size:11.5pt;line-height:1.35;box-shadow:var(--sh-screen)}
   .bb-hive{display:grid;grid-template-columns:1fr 1fr;gap:.12in}
-  .bb-card{padding:0 .04in}
+  .bb-card{padding:0 .04in;min-width:0;overflow-wrap:anywhere}
   .bb-card .ex{font-size:9.6pt;line-height:1.32;margin-top:2px;color:var(--ink);opacity:.85}
-  .bb-card .w{font-family:'BB Body';font-weight:800;font-size:23pt;line-height:1.05;font-variant-numeric:tabular-nums;color:var(--accent-deep)}
+  /* --wsz is set per word from its own length: a 45-letter headword at 23pt is
+     four inches of type in a three-inch column, and it took the whole spread
+     with it. Wrapping is allowed as a last resort for the true monsters. */
+  .bb-card .w{font-family:'BB Body';font-weight:800;font-size:var(--wsz,23pt);line-height:1.06;
+    font-variant-numeric:tabular-nums;color:var(--accent-deep);overflow-wrap:anywhere;hyphens:auto}
+  .bb-card .say{overflow-wrap:anywhere}
   .bb-card .say{font-family:'BB Tile';font-size:10pt;color:var(--muted);margin-top:1px}
   .bb-card .d{font-size:10.6pt;line-height:1.38;margin-top:2px}
   .bb-card .hook{font-size:9.8pt;line-height:1.32;margin-top:2px;color:var(--chip-ink);font-style:italic}
+  /* An eponym's provenance is the fact a speller actually uses at the microphone:
+     "named after a French chemist" decides more letters than the definition does. */
+  .bb-card .after{font-size:9.4pt;line-height:1.34;margin-top:3px;padding-left:.09in;
+    border-left:2.2pt solid var(--accent);color:var(--ink)}
+  .bb-card .after b{font-variant:small-caps;letter-spacing:.04em;font-size:8.4pt;color:var(--muted)}
   .bb-writeline{border-bottom:1pt solid var(--ink);height:${lineH};margin-top:4pt}
   .bb-rapid{display:grid;grid-template-columns:1fr 1fr;gap:.08in .16in}
-  .bb-row{padding:4pt 0;min-height:.52in;font-size:10.4pt;line-height:1.36;border-bottom:1px dotted var(--hairline)}
+  .bb-row{padding:4pt 0;min-height:.52in;font-size:10.4pt;line-height:1.36;border-bottom:1px dotted var(--hairline);
+    min-width:0;overflow-wrap:anywhere}
   .bb-row b{font-family:'BB Kicker';color:var(--accent-deep)}
+  .bb-row b.long{font-size:8.6pt}.bb-row b.xlong{font-size:7.4pt}
   .bb-break{margin-top:.18in;display:flex;gap:.13in;align-items:flex-start;background:linear-gradient(90deg,var(--treasure-tint),transparent 85%);border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.09in .14in}
   .bb-break .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--treasure-deep)}
   .bb-break .b{font-size:11.2pt;line-height:1.4;margin-top:2px}
@@ -808,9 +840,13 @@ function hivePages(vol, ch, ci, folioRef) {
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
       <div class="bb-hive" style="margin-top:.12in">${seg.map(w => { const say = w.say || ''; const ipa = ipaOf(w.w, say);
-        return `<div><div class="bb-card"><div class="w">${esc(w.w)}</div>
-        <div class="say">${say ? '/ ' + esc(say) + ' /' : ''}${ipa ? '  ·  /' + esc(ipa) + '/' : ''}</div>
+        const L = w.w.length;
+        const wsz = L > 34 ? 10 : L > 26 ? 12.5 : L > 20 ? 15 : L > 16 ? 18 : L > 13 ? 20.5 : 23;
+        const ssz = L > 26 ? 7.6 : L > 20 ? 8.4 : L > 16 ? 9.2 : 10;
+        return `<div><div class="bb-card" style="--wsz:${wsz}pt"><div class="w">${esc(w.w)}</div>
+        <div class="say" style="font-size:${ssz}pt">${say ? '/ ' + esc(say) + ' /' : ''}${ipa ? '  ·  /' + esc(ipa) + '/' : ''}</div>
         <div class="d">${esc(fit(w.def, 82))}</div>${w.hook ? `<div class="hook">hook: ${esc(fit(w.hook, 78))}</div>` : ''}
+        ${w.after ? `<div class="after"><b>named after</b> ${esc(fit(w.after, 150))}</div>` : ''}
         ${w.ex ? `<div class="ex">${esc(maskDef(fit(w.ex, 92), w.w))}</div>` : ''}</div>
         <div class="bb-writeline"></div>${w.ex ? '' : '<div class="bb-writeline"></div><div class="bb-writeline"></div>'}</div>`; }).join('')}</div>
       ${worldStrip(chWorldOf(vol, ci), vol, ci * 13 + f + 3)}
@@ -829,7 +865,7 @@ function hivePages(vol, ch, ci, folioRef) {
     out.push(`<div class="page" data-vol="${vol.n}">
       ${head(vol, ch, ci, 'Rapid round')}
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in">${seg.map(w => `<div class="bb-row"><b>${esc(w.w)}</b> <span class="tile" style="font-size:8.8pt">${w.say ? '/' + esc(w.say) + '/' : ''}</span><br>${esc(fit(w.def, 54))}</div>`).join('')}</div>
+      <div class="bb-rapid" style="margin-top:.12in">${seg.map(w => `<div class="bb-row"><b class="${w.w.length > 26 ? 'xlong' : w.w.length > 18 ? 'long' : ''}">${esc(w.w)}</b> <span class="tile" style="font-size:${w.w.length > 22 ? '7.2' : '8.8'}pt">${w.say ? '/' + esc(w.say) + '/' : ''}</span><br>${esc(fit(w.def, 54))}${w.after ? `<br><span style="color:var(--muted);font-size:8.6pt">after ${esc(fit(w.after.split(/,| — |, the /)[0], 40))}</span>` : ''}</div>`).join('')}</div>
       ${lockIn}
       ${foot(vol, folioRef.n++)}</div>`);
   }
@@ -948,7 +984,7 @@ function cover(vol, nCh, nWords, label, cast) {
   const W = 816, H = 1056;
   const reg = REG(vol);
   const crew = [vol.av].concat((cast || []).slice(0, 3).map(a => a.id));
-  const coverArt = artAt(`b${String(vol.n).padStart(2, '0')}-cover`);
+  const coverArt = artAt(`${artOf(vol)}-cover`);
   return `<div class="page" data-cover data-vol="${vol.n}" style="color:#fff;padding:0;background:#241E33">
     ${coverArt ? artImg(coverArt) : `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">
       ${ANIME.ensemble({ W, H, world: vol.world, reg, seed: vol.n * 977, uid: 'cov' + vol.n,
@@ -964,7 +1000,7 @@ function cover(vol, nCh, nWords, label, cast) {
         ${bizzyMark('.34in')}
         <span class="disp" style="font-size:19pt;letter-spacing:.01em;text-shadow:0 2px 9px rgba(0,0,0,.6)">The Bizzing Bee</span>
       </div>
-      <div style="font-family:'BB Kicker';letter-spacing:.2em;font-size:10.5pt;margin-top:.06in;opacity:.92;text-shadow:0 2px 6px rgba(0,0,0,.6)">${esc(label)} &middot; BOOK ${vol.n}</div>
+      <div style="font-family:'BB Kicker';letter-spacing:.2em;font-size:10.5pt;margin-top:.06in;opacity:.92;text-shadow:0 2px 6px rgba(0,0,0,.6)">${esc(label)}${vol.companion ? '' : ' &middot; BOOK ' + vol.n}</div>
       <h1 class="coverTitle" style="font-size:54pt;line-height:.96;margin-top:.2in">${esc(vol.title)}</h1>
       <p style="font-family:'BB Kicker';font-size:14pt;max-width:5.8in;margin:.14in auto 0;text-shadow:0 2px 10px rgba(0,0,0,.65)">${esc(vol.tag)}</p></div>
     <div style="position:absolute;left:0;right:0;bottom:0;height:1.7in;background:linear-gradient(180deg,rgba(12,9,28,0),rgba(12,9,28,.78))"></div>
@@ -1006,7 +1042,7 @@ function worldStrip(world, vol, seedK) {
 function dividerPage(vol, folio) {
   const W = 816, H = 1056;
   const reg = REG(vol);
-  const divArt = artAt(`b${String(vol.n).padStart(2, '0')}-divider`);
+  const divArt = artAt(`${artOf(vol)}-divider`);
   return `<div class="page" data-vol="${vol.n}" style="color:#fff;padding:0;background:#241E33">
     ${divArt ? artImg(divArt) : `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">
       ${ANIME.plate(vol.av, { W, H, world: vol.world, mood: reg >= 3 ? 'think' : 'excited', reg, seed: vol.n * 431 + 5,
@@ -1310,18 +1346,20 @@ function finish(vol, pages, meta) {
 <title>${esc(vol.title)} — Bizzing Bee Library Vol. ${vol.n}</title>
 <style>${css(vol)}${REVIEW_CSS}</style></head><body data-vol="${vol.n}" data-band="${vol.band}">${html}
 ${reviewPanel(vol)}</body></html>`;
-  fs.writeFileSync(`books/book-${String(vol.n).padStart(2, '0')}.html`, doc);
+  fs.writeFileSync(`books/${slugOf(vol)}.html`, doc);
   return { vol, pages: pages.length, ...meta };
 }
 
 /* ---------------- collections (17, 18) ---------------- */
 function book17() {
-  const vol = { n: 17, seedN: 16, title: 'As Busy as a Bee', tag: 'Every simile we know, and the idiom hall of fame', a: '#3DA85C', d: '#1F6B39', tex: 'dots', av: 'popcorn', world: 'meadow', band: 'general' };
+  /* Not part of the series: a standalone companion, no volume number, its own
+     file name, and it keeps the b17 art it was generated with. */
+  const vol = { n: 17, seedN: 16, art: 'b17', slug: 'book-similes', companion: true, title: 'As Busy as a Bee', tag: 'Every simile we know, and the idiom hall of fame', a: '#3DA85C', d: '#1F6B39', tex: 'dots', av: 'popcorn', world: 'meadow', band: 'general' };
   const rnd = mulberry(17 * 7919 + 17);
   const sims = FIG.similes.slice().sort((a, b) => a.p.localeCompare(b.p));
   const idioms = FIG.idioms.filter(x => x.os && x.p.length <= 26 && (x.m || '').length <= 90).sort((a, b) => a.p.localeCompare(b.p)).slice(0, 240);
   const keys = []; const folio = { n: 1 };
-  const pages = [cover(vol, sims.length, idioms.length, 'COLLECTIONS')];
+  const pages = [cover(vol, sims.length, idioms.length, 'A BIZZING BEE COMPANION')];
   pages.push(howTo17(vol, folio.n++));
   pages.push(dividerPage(vol, folio.n++));
   let pageNo = 0;
@@ -1389,7 +1427,8 @@ function howTo17(vol, folio) {
     ${foot(vol, folio)}</div>`;
 }
 function book18() {
-  const vol = { n: 18, seedN: 17, title: 'Say It Like a Champion', tag: '240 lines worth keeping — and what they mean for spellers', a: '#7C3F9E', d: '#4E2166', tex: 'rings', av: 'melody', world: 'stage', band: 'general' };
+  /* The second standalone companion — quotations, not curriculum. */
+  const vol = { n: 18, seedN: 17, art: 'b18', slug: 'book-champion', companion: true, title: 'Say It Like a Champion', tag: '240 lines worth keeping — and what they mean for spellers', a: '#7C3F9E', d: '#4E2166', tex: 'rings', av: 'melody', world: 'stage', band: 'general' };
   const rnd = mulberry(18 * 7919 + 17);
   const CH18 = [
     ['perseverance', 'Keep Going', 'For the round after the round you almost lost.'],
@@ -1406,7 +1445,7 @@ function book18() {
     ['humor', 'Laugh a Little', 'For when the nerves need popping.'],
   ];
   const keys = []; const folio = { n: 1 };
-  const pages = [cover(vol, CH18.length, 240, 'COLLECTIONS')];
+  const pages = [cover(vol, CH18.length, 240, 'A BIZZING BEE COMPANION')];
   pages.push(dividerPage(vol, folio.n++));
   pages.push(`<div class="page" data-vol="18">
     ${head(vol, null, 0, 'How this book works')}
@@ -1484,7 +1523,9 @@ const advUsed = new Set();
 for (const vol of AVOLS) {
   /* An authored volume indexes into its OWN chapter source, not the advanced
      course — vol.src names which one, so adding a third is one line. */
-  if (vol.authored) { const src = vol.src === 'EP' ? EP : SA, sc = vol.src === 'EP' ? {} : SA_SCRIPT;
+  if (vol.authored) {
+    const SRC = { EP: EP, UL_MIND: UL.mind, UL_METHOD: UL.method, SA: SA };
+    const src = SRC[vol.src] || SA, sc = vol.src === 'SA' || !vol.src ? SA_SCRIPT : {};
     made.push(buildCourse(vol, vol.chapters, sc, ch => src.indexOf(ch))); continue; }
   vol.chapters.forEach(ch => advUsed.add(ch.title));
   made.push(buildCourse(vol, vol.chapters, window.SB_ADV_CSCRIPT || {}, ch => ADV.indexOf(ch))); }
@@ -1494,9 +1535,9 @@ made.push(book17()); made.push(book18());
 /* copy lint (handover §7) over authored copy — scan all output, report data-source hits */
 const BANNED = /\b(delve|unleash|leverage|utilize|furthermore|robust|seamless|elevate)\b|in today.s world/i;
 let lintHits = 0;
-for (const m of made) { const html = fs.readFileSync(`books/book-${String(m.vol.n).padStart(2, '0')}.html`, 'utf8');
+for (const m of made) { const html = fs.readFileSync(`books/${slugOf(m.vol)}.html`, 'utf8');
   const found = html.match(new RegExp(BANNED.source, 'gi')) || [];
-  if (found.length) { lintHits += found.length; console.log(`lint: book-${m.vol.n}:`, [...new Set(found.map(x => x.toLowerCase()))].join(', ')); } }
+  if (found.length) { lintHits += found.length; console.log(`lint: ${slugOf(m.vol)}:`, [...new Set(found.map(x => x.toLowerCase()))].join(', ')); } }
 console.log('copy-lint total hits (incl. data text):', lintHits);
 
 /* The shelf used to show the naked cover ILLUSTRATION: no title, no series line,
@@ -1505,10 +1546,12 @@ console.log('copy-lint total hits (incl. data text):', lintHits);
    same masthead-kicker-title-tag-pills composition the book's own cover page
    carries, laid over the same art. Type is sized in cqw against the card, so it
    holds together at 228px on a phone and at 300px on a desktop. */
-const shelfCover = m => { const id = String(m.vol.n).padStart(2, '0');
-  const cov = artAt(`b${id}-cover`);
+const shelfCover = m => {
+  const cov = artAt(`${artOf(m.vol)}-cover`);
   const bee = avaPng(HERO);
-  const label = m.vol.band === 'advanced' ? 'ADVANCED LIBRARY' : 'LIBRARY';
+  const label = m.vol.companion ? 'A BIZZING BEE COMPANION'
+    : m.vol.ultra ? 'THE LAST CONTINENT'
+    : m.vol.band === 'advanced' ? 'ADVANCED LIBRARY' : 'LIBRARY';
   const facts = [m.chapters ? m.chapters + ' chapters' : m.pages + ' pages',
     fmt(m.words) + ' words', 'quizzes'];
   return (cov ? `<img src="${cov}" alt="" loading="lazy">`
@@ -1516,25 +1559,30 @@ const shelfCover = m => { const id = String(m.vol.n).padStart(2, '0');
   + `<span class="bkc">
       <span class="bkc-top"></span>
       <span class="mast">${bee ? `<img src="${bee}" alt="">` : ''}<i>The Bizzing Bee</i></span>
-      <span class="kick2">${label} &middot; BOOK ${m.vol.n}</span>
+      <span class="kick2">${label}${m.vol.companion ? '' : ' &middot; BOOK ' + m.vol.n}</span>
       <span class="bkt">${esc(m.vol.title)}</span>
       <span class="sub">${esc(m.vol.tag)}</span>
       <span class="scrim"></span>
       <span class="pills">${facts.map(t => `<i class="pill">${t}</i>`).join('')}</span>
     </span>`; };
 const fmt = n => Number(n || 0).toLocaleString('en-US');
-/* The shelf reads in volume order. The build order does not: the two collections
-   are appended last and Vol. 19 was authored after Vol. 16. */
-made.sort((x, y) => x.vol.n - y.vol.n);
-const cards = made.map(m => { const id = String(m.vol.n).padStart(2, '0');
-  return `<a class="bk" href="book-${id}.html" style="--a:${m.vol.a};--d:${m.vol.d}">
-    <span class="bk-cov">${shelfCover(m)}<span class="bk-spine"></span><span class="bk-vol">Vol. ${m.vol.n}</span></span>
+/* The shelf reads in volume order; the build order does not. And the two
+   collections are NOT volumes — they are standalone companions, so they come off
+   the numbered shelf entirely and sit under their own heading with no Vol. badge. */
+const series = made.filter(m => !m.vol.companion).sort((x, y) => x.vol.n - y.vol.n);
+const companions = made.filter(m => m.vol.companion).sort((x, y) => x.vol.n - y.vol.n);
+const cardOf = m => { const slug = slugOf(m.vol);
+  return `<a class="bk" href="${slug}.html" style="--a:${m.vol.a};--d:${m.vol.d}">
+    <span class="bk-cov">${shelfCover(m)}<span class="bk-spine"></span>
+      <span class="bk-vol${m.vol.companion ? ' comp' : ''}">${m.vol.companion ? 'Companion' : 'Vol. ' + m.vol.n}</span></span>
     <span class="bk-meta"><b>${esc(m.vol.title)}</b><span class="tag">${esc(m.vol.tag)}</span>
       <span class="foot"><span class="pg">${m.pages} pages</span>
-      <span class="pdf" onclick="event.preventDefault();event.stopPropagation();window.location='pdf/book-${id}.pdf'">PDF &darr;</span></span>
-    </span></a>`; }).join('');
+      <span class="pdf" onclick="event.preventDefault();event.stopPropagation();window.location='pdf/${slug}.pdf'">PDF &darr;</span></span>
+    </span></a>`; };
+const cards = series.map(cardOf).join('');
+const compCards = companions.map(cardOf).join('');
 const hub = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Bizzing Bee Library — ${made.length} graphic study books</title><style>
+<title>Bizzing Bee Library — ${series.length} volumes and ${companions.length} companions</title><style>
 @font-face{font-family:'Baloo 2';src:url('../fonts/baloo2-800.woff2') format('woff2');font-weight:400 900}
 @font-face{font-family:'Fredoka';src:url('../fonts/fredoka-600.woff2') format('woff2');font-weight:600}
 @font-face{font-family:'Hanken Grotesk';src:url('../fonts/hanken-var.woff2') format('woff2');font-weight:100 900}
@@ -1593,21 +1641,35 @@ p.lead{color:#59527a;max-width:62ch;margin:0 auto;font-size:15.5px;line-height:1
 .bk-meta .pdf{margin-left:auto;font-family:'Fredoka';font-size:11.5px;color:var(--d);
   border:1.4px solid color-mix(in srgb,var(--a) 45%,#fff);background:color-mix(in srgb,var(--a) 12%,#fff);border-radius:999px;padding:4px 11px;cursor:pointer}
 .bk-meta .pdf:hover{background:var(--a);color:#fff;border-color:var(--a)}
+/* the companions sit apart from the numbered shelf, behind their own rule */
+.shelf2{margin-top:58px;padding-top:34px;border-top:1px solid #E4DBFA}
+.shelf2 h2{font-family:'Baloo 2';font-size:clamp(24px,3.2vw,32px);color:#4A3AA0;line-height:1.1}
+.shelf2 p{color:#59527a;max-width:60ch;font-size:14.5px;line-height:1.6;margin-top:8px}
+.shelf2 .grid{grid-template-columns:repeat(auto-fill,minmax(228px,1fr));max-width:720px;margin-top:24px}
+.bk-vol.comp{background:rgba(60,132,85,.72);font-size:10px}
 footer{max-width:1180px;margin:38px auto 0;padding:0 22px;font-size:12px;color:#8b83a3;line-height:1.6}
 </style></head><body><main>
 <header class="hero">
   <div class="kick">Bizzing Bee Library</div>
-  <h1>${made.length} graphic study books</h1>
+  <h1>${series.length} volumes, from first buzz to the last continent</h1>
   <p class="lead">Cinematic storyboard openers with the full avatar cast, checkpoint quizzes straight from the Word Map,
-  practice hives with real write-in drills, puzzles built from each chapter&rsquo;s own words, and two collections.
-  The books grow up as the reader does &mdash; bright daylight in Vol.&nbsp;1, letterboxed night cinema by the advanced volumes.</p>
+  practice hives with real write-in drills, and puzzles built from each chapter&rsquo;s own words.
+  The books grow up as the reader does &mdash; bright daylight in Vol.&nbsp;1, letterboxed dusk in the advanced volumes,
+  night and gold in the two Ultra books at the end.</p>
   <div class="canva"><b>Getting a book into Canva:</b> download the PDF, then in Canva choose <b>Create a design &rarr; Import file</b>
   (or drag the PDF onto Canva&rsquo;s home page). Every page becomes an editable design. The HTML is the print master.</div>
 </header>
 <div class="grid">${cards}</div>
+<section class="shelf2">
+  <h2>Companions</h2>
+  <p>Two standalone books, not part of the numbered series. Collections rather than curriculum &mdash;
+  read them in any order, at any level.</p>
+  <div class="grid comp">${compCards}</div>
+</section>
 </main>
 <footer>Bizzing Bee &middot; independent study material &middot; not affiliated with Scripps, the North South Foundation, or Merriam-Webster.</footer>
 </body></html>`;
 fs.writeFileSync('books/index.html', hub);
-made.forEach(m => console.log(`Vol.${String(m.vol.n).padStart(2)} ${m.vol.title.padEnd(24)} ${String(m.pages).padStart(4)} pages`));
+series.forEach(m => console.log(`Vol.${String(m.vol.n).padStart(2)} ${m.vol.title.padEnd(24)} ${String(m.pages).padStart(4)} pages`));
+companions.forEach(m => console.log(`  comp. ${m.vol.title.padEnd(24)} ${String(m.pages).padStart(4)} pages  (${slugOf(m.vol)}.html)`));
 console.log('total pages:', made.reduce((a, m) => a + m.pages, 0));

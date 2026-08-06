@@ -16,6 +16,26 @@ STYLE = ("Painterly Japanese anime illustration, soft cel shading with two-tone 
          "depth of field, rich color grading, in the spirit of Studio Ghibli backgrounds. "
          "Family-friendly children's book art. Full-bleed edge to edge, no border, no frame, NO TEXT of any kind. ")
 
+# The advanced half of the library is read by twelve-to-fifteen-year-olds two years
+# out from a national final. The house style — soft Ghibli daylight, chibi
+# proportions — reads as a picture book to them, and a picture book is the one
+# thing they will not carry to school. NB_STYLE=mature swaps it for a graphic-novel
+# register: seinen manga ink and screentone crossed with the Spider-Verse printing
+# tricks (halftone dots, offset colour channels, hard rim light). Same cast, same
+# scenes, grown up. Set per run so the general volumes are never touched.
+STYLE_MATURE = ("Modern graphic-novel illustration in the register of seinen manga crossed with "
+                "Spider-Verse comic printing: confident hard ink linework of varying weight, dramatic "
+                "low and high camera angles, deep chiaroscuro with hard-edged rim light, visible "
+                "halftone and ben-day dot texture in the shadows, subtle offset colour-channel "
+                "misregistration on the highlights, screentone hatching, motion smears and speed "
+                "lines, cinematic letterboxed framing, a restrained near-monochrome palette lifted by "
+                "one or two saturated accents. Characters drawn with real weight and grounded "
+                "proportion — sharp, poised and serious, never chibi, never cute. Moody, high-contrast, "
+                "the look of a graphic novel a fourteen-year-old would carry to school. Full-bleed edge "
+                "to edge, no border, no frame, no gutters, no panel grid, NO TEXT of any kind. ")
+if os.environ.get('NB_STYLE') == 'mature':
+    STYLE = STYLE_MATURE
+
 def parse_md():
     slots = {}
     txt = open(MD).read()

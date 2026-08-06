@@ -122,16 +122,28 @@
   .bb-prop{display:inline-block;background:var(--chip);color:var(--chip-ink);border-radius:8pt;padding:3pt 8pt;font-family:'BB Tile';font-size:10pt}
   .bb-bubble{background:var(--card);border:1px solid var(--hairline);border-radius:12pt;padding:6pt 10pt;font-family:'BB Display';font-size:11.5pt;line-height:1.35;box-shadow:var(--sh-screen)}
   .bb-hive{display:grid;grid-template-columns:1fr 1fr;gap:.12in}
-  .bb-card{padding:0 .04in}
+  .bb-card{padding:0 .04in;min-width:0;overflow-wrap:anywhere}
   .bb-card .ex{font-size:9.6pt;line-height:1.32;margin-top:2px;color:var(--ink);opacity:.85}
-  .bb-card .w{font-family:'BB Body';font-weight:800;font-size:23pt;line-height:1.05;font-variant-numeric:tabular-nums;color:var(--accent-deep)}
+  /* --wsz is set per word from its own length: a 45-letter headword at 23pt is
+     four inches of type in a three-inch column, and it took the whole spread
+     with it. Wrapping is allowed as a last resort for the true monsters. */
+  .bb-card .w{font-family:'BB Body';font-weight:800;font-size:var(--wsz,23pt);line-height:1.06;
+    font-variant-numeric:tabular-nums;color:var(--accent-deep);overflow-wrap:anywhere;hyphens:auto}
+  .bb-card .say{overflow-wrap:anywhere}
   .bb-card .say{font-family:'BB Tile';font-size:10pt;color:var(--muted);margin-top:1px}
   .bb-card .d{font-size:10.6pt;line-height:1.38;margin-top:2px}
   .bb-card .hook{font-size:9.8pt;line-height:1.32;margin-top:2px;color:var(--chip-ink);font-style:italic}
+  /* An eponym's provenance is the fact a speller actually uses at the microphone:
+     "named after a French chemist" decides more letters than the definition does. */
+  .bb-card .after{font-size:9.4pt;line-height:1.34;margin-top:3px;padding-left:.09in;
+    border-left:2.2pt solid var(--accent);color:var(--ink)}
+  .bb-card .after b{font-variant:small-caps;letter-spacing:.04em;font-size:8.4pt;color:var(--muted)}
   .bb-writeline{border-bottom:1pt solid var(--ink);height:.34in;margin-top:4pt}
   .bb-rapid{display:grid;grid-template-columns:1fr 1fr;gap:.08in .16in}
-  .bb-row{padding:4pt 0;min-height:.52in;font-size:10.4pt;line-height:1.36;border-bottom:1px dotted var(--hairline)}
+  .bb-row{padding:4pt 0;min-height:.52in;font-size:10.4pt;line-height:1.36;border-bottom:1px dotted var(--hairline);
+    min-width:0;overflow-wrap:anywhere}
   .bb-row b{font-family:'BB Kicker';color:var(--accent-deep)}
+  .bb-row b.long{font-size:8.6pt}.bb-row b.xlong{font-size:7.4pt}
   .bb-break{margin-top:.18in;display:flex;gap:.13in;align-items:flex-start;background:linear-gradient(90deg,var(--treasure-tint),transparent 85%);border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.09in .14in}
   .bb-break .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--treasure-deep)}
   .bb-break .b{font-size:11.2pt;line-height:1.4;margin-top:2px}
@@ -414,29 +426,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">yoga</div>
-        <div class="say">/ YOH-guh /  ·  /ˈjoʊɡə/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">yoga</div>
+        <div class="say" style="font-size:10pt">/ YOH-guh /  ·  /ˈjoʊɡə/</div>
         <div class="d">Hindu discipline aimed at training the consciousness for a state of perfect…</div><div class="hook">hook: YOH-guh — the O is long, the ending is a plain A</div>
+        
         <div class="ex">She does ▁▁▁ on the balcony before school.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">mantra</div>
-        <div class="say">/ MA-ntruh /  ·  /ˈmæntrə/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">mantra</div>
+        <div class="say" style="font-size:10pt">/ MA-ntruh /  ·  /ˈmæntrə/</div>
         <div class="d">a commonly repeated word or phrase</div><div class="hook">hook: MAN + TRA — two clean beats, no vowel between N and T</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">asana</div>
-        <div class="say">/ AH-suh-nuh /  ·  /ˈɑsənə/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">asana</div>
+        <div class="say" style="font-size:10pt">/ AH-suh-nuh /  ·  /ˈɑsənə/</div>
         <div class="d">(Hinduism) a posture or manner of sitting (as in the practice of yoga)</div><div class="hook">hook: three A vowels; the middle one still writes as A</div>
+        
         <div class="ex">The teacher held each ▁▁▁ for five slow breaths.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">prana</div>
-        <div class="say">/ PRAH-nuh /  ·  /ˈprɑnə/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">prana</div>
+        <div class="say" style="font-size:10pt">/ PRAH-nuh /  ·  /ˈprɑnə/</div>
         <div class="d">In Hindu philosophy and yoga</div><div class="hook">hook: PRA + NA — the opening PR is a real cluster, not "puh-rana"</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">karma</div>
-        <div class="say">/ KAH-rmuh /  ·  /ˈkɑrmə/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">karma</div>
+        <div class="say" style="font-size:10pt">/ KAH-rmuh /  ·  /ˈkɑrmə/</div>
         <div class="d">(Hinduism and Buddhism) the effects of a person's actions that determine his…</div><div class="hook">hook: KAR + MA — R then M, nothing between them</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">dharma</div>
-        <div class="say">/ DAH-rmuh /  ·  /ˈdɑrmə/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">dharma</div>
+        <div class="say" style="font-size:10pt">/ DAH-rmuh /  ·  /ˈdɑrmə/</div>
         <div class="d">basic principles of the cosmos</div><div class="hook">hook: DH is one sound; the H rides the D and cannot be dropped</div>
+        
         <div class="ex">In the story, the prince follows his ▁▁▁ even when it costs him the throne.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-grandtrunk-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -446,29 +464,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">nirvana</div>
-        <div class="say">/ nih-RVAH-nuh /  ·  /nɪˈrvɑnə/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">nirvana</div>
+        <div class="say" style="font-size:10pt">/ nih-RVAH-nuh /  ·  /nɪˈrvɑnə/</div>
         <div class="d">(Hinduism and Buddhism) the beatitude that transcends the cycle of reincarnation…</div><div class="hook">hook: NIR + VA + NA — three beats, the middle A is long</div>
+        
         <div class="ex">The monk described ▁▁▁ as the end of all wanting.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">chakra</div>
-        <div class="say">/ CHUK-ruh /  ·  /ˈtʃʌkrə/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">chakra</div>
+        <div class="say" style="font-size:10pt">/ CHUK-ruh /  ·  /ˈtʃʌkrə/</div>
         <div class="d">One of seven spiritual energy centers believed in yoga to exist along the human…</div><div class="hook">hook: CH + A + KRA — the KR cluster stays together</div>
+        
         <div class="ex">The diagram showed a ▁▁▁ at the base of the spine.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">guru</div>
-        <div class="say">/ GOO-roo /  ·  /ˈɡuru/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">guru</div>
+        <div class="say" style="font-size:10pt">/ GOO-roo /  ·  /ˈɡuru/</div>
         <div class="d">a Hindu or Buddhist religious leader and spiritual teacher</div><div class="hook">hook: two U vowels, both long: GOO-roo</div>
+        
         <div class="ex">Her grandmother was the family ▁▁▁ on every question of cooking.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">sutra</div>
-        <div class="say">/ SOO-trah /  ·  /ˈsutrɑ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">sutra</div>
+        <div class="say" style="font-size:10pt">/ SOO-trah /  ·  /ˈsutrɑ/</div>
         <div class="d">a rule or aphorism in Sanskrit literature or a group of aphoristic doctrinal…</div><div class="hook">hook: SU + TRA — the same -TRA ending as mantra</div>
+        
         <div class="ex">Each ▁▁▁ is only a line long, but a teacher can talk about it for an hour.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">avatar</div>
-        <div class="say">/ A-vuh-tahr /  ·  /ˈævətɑr/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">avatar</div>
+        <div class="say" style="font-size:10pt">/ A-vuh-tahr /  ·  /ˈævətɑr/</div>
         <div class="d">a new personification of a familiar idea</div><div class="hook">hook: A · VA · TAR — three As, and it ends in R, not A</div>
+        
         <div class="ex">In the epic, the god comes to earth as an ▁▁▁ with a bow.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">yogi</div>
-        <div class="say">/ YOH-gee /  ·  /ˈjoʊɡi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">yogi</div>
+        <div class="say" style="font-size:10pt">/ YOH-gee /  ·  /ˈjoʊɡi/</div>
         <div class="d">United States baseball player (born 1925)</div><div class="hook">hook: yoga with an I: the one in this family that does not end in A</div>
+        
         <div class="ex">The ▁▁▁ sat perfectly still while the class fidgeted.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-grandtrunk-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -562,29 +586,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">bhangra</div>
-        <div class="say">/ BAH-nggruh /  ·  /ˈbɑŋɡrə/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">bhangra</div>
+        <div class="say" style="font-size:10pt">/ BAH-nggruh /  ·  /ˈbɑŋɡrə/</div>
         <div class="d">A lively and energetic style of music and dance originating from the Punjab…</div><div class="hook">hook: BH — a B with a breath; the H is the whole trap</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">ghee</div>
-        <div class="say">/ GEE /  ·  /ˈɡi/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">ghee</div>
+        <div class="say" style="font-size:10pt">/ GEE /  ·  /ˈɡi/</div>
         <div class="d">clarified butter used in Indian cookery</div><div class="hook">hook: GH then double E — the H rides the G</div>
+        
         <div class="ex">He fried the onions in ▁▁▁ until the kitchen smelled sweet.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">jodhpurs</div>
-        <div class="say">/ JOD-purz /  ·  /ˈdʒɑdpʌrz/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">jodhpurs</div>
+        <div class="say" style="font-size:10pt">/ JOD-purz /  ·  /ˈdʒɑdpʌrz/</div>
         <div class="d">flared trousers ending at the calves; worn with riding boots</div><div class="hook">hook: DH in the middle, and the U before R is silent-ish but written</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">khaki</div>
-        <div class="say">/ k-AH-k-ee /  ·  /kˈɑki/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">khaki</div>
+        <div class="say" style="font-size:10pt">/ k-AH-k-ee /  ·  /kˈɑki/</div>
         <div class="d">means dull yellowish brown</div><div class="hook">hook: KH at the front, then a plain K — two different letters, same sound</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">dharma</div>
-        <div class="say">/ DAH-rmuh /  ·  /ˈdɑrmə/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">dharma</div>
+        <div class="say" style="font-size:10pt">/ DAH-rmuh /  ·  /ˈdɑrmə/</div>
         <div class="d">basic principles of the cosmos</div><div class="hook">hook: DH opens it; D alone is the classic miss</div>
+        
         <div class="ex">In the story, the prince follows his ▁▁▁ even when it costs him the throne.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">kurta</div>
-        <div class="say">/ KOOR-tuh /  ·  /ˈkurtə/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">kurta</div>
+        <div class="say" style="font-size:10pt">/ KOOR-tuh /  ·  /ˈkurtə/</div>
         <div class="d">a loose collarless shirt worn by many people on the Indian subcontinent (usually…</div><div class="hook">hook: no H here — a clean K, which is exactly why you must check</div>
+        
         </div>
         <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-strait-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -594,21 +624,25 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">chutney</div>
-        <div class="say">/ CHUH-tnee /  ·  /ˈtʃʌtni/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">chutney</div>
+        <div class="say" style="font-size:10pt">/ CHUH-tnee /  ·  /ˈtʃʌtni/</div>
         <div class="d">a spicy condiment made of chopped fruits or vegetables cooked in vinegar and…</div><div class="hook">hook: CH is its own pair; TN sit together with no vowel</div>
+        
         <div class="ex">There was a bowl of green ▁▁▁ beside every plate.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">gymkhana</div>
-        <div class="say">/ jihm-KAH-nuh /  ·  /dʒɪmˈkɑnə/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">gymkhana</div>
+        <div class="say" style="font-size:10pt">/ jihm-KAH-nuh /  ·  /dʒɪmˈkɑnə/</div>
         <div class="d">a meet at which riders and horses display a range of skills and aptitudes</div><div class="hook">hook: GYM then KHANA — the KH survives inside the word</div>
+        
         <div class="ex">The riding club held a ▁▁▁ on the first Saturday of May.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">pukka</div>
-        <div class="say">/ PUK-uh /  ·  /ˈpʌkə/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">pukka</div>
+        <div class="say" style="font-size:10pt">/ PUK-uh /  ·  /ˈpʌkə/</div>
         <div class="d">absolutely first class and genuine</div><div class="hook">hook: double K, no H — the doubling replaces the breath</div>
+        
         <div class="ex">Her father called the new bridge a ▁▁▁ job, and he did not say that often.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">chukker</div>
-        <div class="say">/ CHUK-er /  ·  /ˈtʃʌkər/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">chukker</div>
+        <div class="say" style="font-size:10pt">/ CHUK-er /  ·  /ˈtʃʌkər/</div>
         <div class="d">(polo) one of six divisions into which a polo match is divided</div><div class="hook">hook: CH opening, double K middle, -ER ending</div>
+        
         <div class="ex">The match paused between the third and fourth ▁▁▁.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-strait-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -703,29 +737,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">kurta</div>
-        <div class="say">/ KOOR-tuh /  ·  /ˈkurtə/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">kurta</div>
+        <div class="say" style="font-size:10pt">/ KOOR-tuh /  ·  /ˈkurtə/</div>
         <div class="d">a loose collarless shirt worn by many people on the Indian subcontinent (usually…</div><div class="hook">hook: KUR + TA — a clean K, no H</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">jodhpurs</div>
-        <div class="say">/ JOD-purz /  ·  /ˈdʒɑdpʌrz/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">jodhpurs</div>
+        <div class="say" style="font-size:10pt">/ JOD-purz /  ·  /ˈdʒɑdpʌrz/</div>
         <div class="d">flared trousers ending at the calves; worn with riding boots</div><div class="hook">hook: the DH plus the city it came from</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">cummerbund</div>
-        <div class="say">/ KUM-er-bund /  ·  /ˈkʌmərbʌnd/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">cummerbund</div>
+        <div class="say" style="font-size:10pt">/ KUM-er-bund /  ·  /ˈkʌmərbʌnd/</div>
         <div class="d">a broad pleated sash worn as formal dress with a tuxedo</div><div class="hook">hook: double M — Persian kamar (waist) + band</div>
+        
         <div class="ex">He wore a red ▁▁▁ with his black jacket.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">bandanna</div>
-        <div class="say">/ ban-DAN-uh /  ·  /bænˈdænə/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">bandanna</div>
+        <div class="say" style="font-size:10pt">/ ban-DAN-uh /  ·  /bænˈdænə/</div>
         <div class="d">large and brightly colored handkerchief; often used as a neckerchief</div><div class="hook">hook: double N in the middle, then a single A</div>
+        
         <div class="ex">She tied a ▁▁▁ over her hair before painting.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">dungaree</div>
-        <div class="say">/ dun-guh-REE /  ·  /dʌnɡəˈri/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">dungaree</div>
+        <div class="say" style="font-size:10pt">/ dun-guh-REE /  ·  /dʌnɡəˈri/</div>
         <div class="d">a coarse durable twill-weave cotton fabric</div><div class="hook">hook: ends -EE; named for Dongri, a Mumbai district</div>
+        
         <div class="ex">The workshop supplied a ▁▁▁ jacket to every apprentice.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">sari</div>
-        <div class="say">/ SAH-ree /  ·  /ˈsɑri/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">sari</div>
+        <div class="say" style="font-size:10pt">/ SAH-ree /  ·  /ˈsɑri/</div>
         <div class="d">a dress worn primarily by Hindu women</div><div class="hook">hook: the simplest in the family: four letters, both vowels plain</div>
+        
         <div class="ex">Her mother folded the ▁▁▁ into neat pleats before pinning it.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-grandtrunk-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -735,21 +775,25 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">shawl</div>
-        <div class="say">/ SHAWL /  ·  /ˈʃɔl/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">shawl</div>
+        <div class="say" style="font-size:10pt">/ SHAWL /  ·  /ˈʃɔl/</div>
         <div class="d">cloak consisting of an oblong piece of cloth used to cover the head and shoulders</div><div class="hook">hook: SH then AWL — the W is written even though the vowel swallows it</div>
+        
         <div class="ex">He put a ▁▁▁ round her shoulders on the cold platform.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">chintz</div>
-        <div class="say">/ CHIHNTS /  ·  /ˈtʃɪnts/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">chintz</div>
+        <div class="say" style="font-size:10pt">/ CHIHNTS /  ·  /ˈtʃɪnts/</div>
         <div class="d">a brightly printed and glazed cotton fabric</div><div class="hook">hook: ends in TZ — from Hindi chint, a spotted cloth</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">phulkari</div>
-        <div class="say">/ fool-KAH-ree /  ·  /fulˈkɑri/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">phulkari</div>
+        <div class="say" style="font-size:10pt">/ fool-KAH-ree /  ·  /fulˈkɑri/</div>
         <div class="d">A traditional embroidery style from the Punjab region of South Asia, featuring…</div><div class="hook">hook: PH says F; then UL · KA · RI, all plain vowels</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">nainsook</div>
-        <div class="say">/ NAYN-sook /  ·  /ˈneɪnsuk/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">nainsook</div>
+        <div class="say" style="font-size:10pt">/ NAYN-sook /  ·  /ˈneɪnsuk/</div>
         <div class="d">a soft lightweight muslin used especially for babies</div><div class="hook">hook: NAIN + SOOK — a double O in the second half</div>
+        
         </div>
         <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-grandtrunk-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -846,29 +890,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">tamarind</div>
-        <div class="say">/ TAM-uh-rind /  ·  /ˈtæmərɪnd/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">tamarind</div>
+        <div class="say" style="font-size:10pt">/ TAM-uh-rind /  ·  /ˈtæmərɪnd/</div>
         <div class="d">the pod of a large tropical tree</div><div class="hook">hook: TAM + A + RIND — the middle A is a schwa but writes as A</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">chutney</div>
-        <div class="say">/ CHUH-tnee /  ·  /ˈtʃʌtni/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">chutney</div>
+        <div class="say" style="font-size:10pt">/ CHUH-tnee /  ·  /ˈtʃʌtni/</div>
         <div class="d">a spicy condiment made of chopped fruits or vegetables cooked in vinegar and…</div><div class="hook">hook: CH opening; TN with no vowel between</div>
+        
         <div class="ex">There was a bowl of green ▁▁▁ beside every plate.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">basmati</div>
-        <div class="say">/ bahs-MAH-tee /  ·  /bɑsˈmɑti/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">basmati</div>
+        <div class="say" style="font-size:10pt">/ bahs-MAH-tee /  ·  /bɑsˈmɑti/</div>
         <div class="d">a long-grain aromatic rice originally grown in the Himalayas</div><div class="hook">hook: BAS + MA + TI — three beats, three plain vowels</div>
+        
         <div class="ex">The ▁▁▁ rice smelled of popcorn as it cooked.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">mulligatawny</div>
-        <div class="say">/ muh-lih-guh-TAH-nee /  ·  /məlɪɡəˈtɑni/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">mulligatawny</div>
+        <div class="say" style="font-size:10pt">/ muh-lih-guh-TAH-nee /  ·  /məlɪɡəˈtɑni/</div>
         <div class="d">a soup of eastern India that is flavored with curry</div><div class="hook">hook: double L, then AW before the -NY ending</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">curry</div>
-        <div class="say">/ KUH-ree /  ·  /ˈkʌri/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">curry</div>
+        <div class="say" style="font-size:10pt">/ KUH-ree /  ·  /ˈkʌri/</div>
         <div class="d">a spicy dish of meat or vegetables in a richly spiced sauce, often with rice</div><div class="hook">hook: double R before the Y</div>
+        
         <div class="ex">They ate ▁▁▁ and rice off steel plates.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">ghee</div>
-        <div class="say">/ GEE /  ·  /ˈɡi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">ghee</div>
+        <div class="say" style="font-size:10pt">/ GEE /  ·  /ˈɡi/</div>
         <div class="d">clarified butter used in Indian cookery</div><div class="hook">hook: the GH pair plus a double E</div>
+        
         <div class="ex">He fried the onions in ▁▁▁ until the kitchen smelled sweet.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-meadow-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -878,21 +928,25 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">jaggery</div>
-        <div class="say">/ JAG-er-ee /  ·  /ˈdʒæɡəri/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">jaggery</div>
+        <div class="say" style="font-size:10pt">/ JAG-er-ee /  ·  /ˈdʒæɡəri/</div>
         <div class="d">unrefined brown sugar made from palm sap</div><div class="hook">hook: double G in the middle, then -ERY</div>
+        
         <div class="ex">The sweets were made with ▁▁▁ instead of white sugar.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">kedgeree</div>
-        <div class="say">/ KEJ-uh-ree /  ·  /ˈkɛdʒəri/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">kedgeree</div>
+        <div class="say" style="font-size:10pt">/ KEJ-uh-ree /  ·  /ˈkɛdʒəri/</div>
         <div class="d">a dish of rice and hard-boiled eggs and cooked flaked fish</div><div class="hook">hook: DG makes the J sound, then -EREE</div>
+        
         <div class="ex">Breakfast at the old hotel was still ▁▁▁ and toast.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">mango</div>
-        <div class="say">/ MA-nggoh /  ·  /ˈmæŋɡoʊ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">mango</div>
+        <div class="say" style="font-size:10pt">/ MA-nggoh /  ·  /ˈmæŋɡoʊ/</div>
         <div class="d">large evergreen tropical tree cultivated for its large oval fruit</div><div class="hook">hook: from Tamil mankay; the O ending is the English part</div>
+        
         <div class="ex">The ▁▁▁ was so ripe that juice ran down his wrist.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">saffron</div>
-        <div class="say">/ s-A-f-r-uh-n /  ·  /sˈæfrən/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">saffron</div>
+        <div class="say" style="font-size:10pt">/ s-A-f-r-uh-n /  ·  /sˈæfrən/</div>
         <div class="d">a crocus having showy purple flowers</div><div class="hook">hook: double F — the Persian root travelled with the spice</div>
+        
         </div>
         <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-meadow-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -987,29 +1041,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">bungalow</div>
-        <div class="say">/ BUH-ngguh-loh /  ·  /ˈbʌŋɡəloʊ/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">bungalow</div>
+        <div class="say" style="font-size:10pt">/ BUH-ngguh-loh /  ·  /ˈbʌŋɡəloʊ/</div>
         <div class="d">a small house with a single story</div><div class="hook">hook: from bangla, "of Bengal"; ends -OW</div>
+        
         <div class="ex">They rented a small ▁▁▁ near the beach for the summer.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">juggernaut</div>
-        <div class="say">/ JUH-ger-nawt /  ·  /ˈdʒʌɡərnɔt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">juggernaut</div>
+        <div class="say" style="font-size:10pt">/ JUH-ger-nawt /  ·  /ˈdʒʌɡərnɔt/</div>
         <div class="d">a massive inexorable force that seems to crush everything in its way</div><div class="hook">hook: double G plus the -NAUT ending</div>
+        
         <div class="ex">The team became a ▁▁▁ that no defence could slow.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">cushy</div>
-        <div class="say">/ KUU-shee /  ·  /ˈkʊʃi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">cushy</div>
+        <div class="say" style="font-size:10pt">/ KUU-shee /  ·  /ˈkʊʃi/</div>
         <div class="d">not burdensome or demanding; borne or done easily and without hardship</div><div class="hook">hook: from khush (pleasant) — one S, then Y</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">loot</div>
-        <div class="say">/ LOOT /  ·  /ˈlut/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">loot</div>
+        <div class="say" style="font-size:10pt">/ LOOT /  ·  /ˈlut/</div>
         <div class="d">goods or money obtained illegally</div><div class="hook">hook: double O; from Hindi lut, plunder</div>
+        
         <div class="ex">The soldiers carried the ▁▁▁ away in carts.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">thug</div>
-        <div class="say">/ THUHG /  ·  /ˈθʌɡ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">thug</div>
+        <div class="say" style="font-size:10pt">/ THUHG /  ·  /ˈθʌɡ/</div>
         <div class="d">an aggressive and violent young criminal</div><div class="hook">hook: TH then UG — three letters, no trap, easy points</div>
+        
         <div class="ex">The traveller was warned that a ▁▁▁ might be waiting on the road.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">pundit</div>
-        <div class="say">/ PUH-nduht /  ·  /ˈpʌndət/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">pundit</div>
+        <div class="say" style="font-size:10pt">/ PUH-nduht /  ·  /ˈpʌndət/</div>
         <div class="d">someone who has been admitted to membership in a scholarly field</div><div class="hook">hook: from pandit, a scholar; a plain single-consonant word</div>
+        
         <div class="ex">Every ▁▁▁ on television predicted the wrong result.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-grandtrunk-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1019,21 +1079,25 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">veranda</div>
-        <div class="say">/ ver-A-nduh /  ·  /vərˈændə/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">veranda</div>
+        <div class="say" style="font-size:10pt">/ ver-A-nduh /  ·  /vərˈændə/</div>
         <div class="d">a porch along the outside of a building (sometimes partly enclosed)</div><div class="hook">hook: one R, one N, ends in plain A</div>
+        
         <div class="ex">They drank tea on the ▁▁▁ and watched the rain.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">cheroot</div>
-        <div class="say">/ sheh-ROOT /  ·  /ʃɛˈrut/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">cheroot</div>
+        <div class="say" style="font-size:10pt">/ sheh-ROOT /  ·  /ʃɛˈrut/</div>
         <div class="d">a cigar with both ends cut flat</div><div class="hook">hook: CH then double O — from Tamil shuruttu, a roll</div>
+        
         <div class="ex">The old captain smoked a ▁▁▁ on the deck each evening.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">dacoit</div>
-        <div class="say">/ dah-KOYT /  ·  /dɑˈkɔɪt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">dacoit</div>
+        <div class="say" style="font-size:10pt">/ dah-KOYT /  ·  /dɑˈkɔɪt/</div>
         <div class="d">a member of an armed gang of robbers</div><div class="hook">hook: OI in the middle; an armed robber</div>
+        
         <div class="ex">The village kept a watchman in case a ▁▁▁ came down from the hills.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">sepoy</div>
-        <div class="say">/ SEE-poy /  ·  /ˈsipɔɪ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">sepoy</div>
+        <div class="say" style="font-size:10pt">/ SEE-poy /  ·  /ˈsipɔɪ/</div>
         <div class="d">A native soldier of the Indian subcontinent who was trained and employed in the…</div><div class="hook">hook: SE + POY — from Persian sipahi, a soldier</div>
+        
         <div class="ex">His great-grandfather served as a ▁▁▁ in the same regiment.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-grandtrunk-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1128,29 +1192,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">catamaran</div>
-        <div class="say">/ ka-tuh-mer-AN /  ·  /kætəmərˈæn/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">catamaran</div>
+        <div class="say" style="font-size:10pt">/ ka-tuh-mer-AN /  ·  /kætəmərˈæn/</div>
         <div class="d">a sailboat with two parallel hulls held together by single deck</div><div class="hook">hook: four beats, and every vowel is an A</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">cheetah</div>
-        <div class="say">/ CHEE-tuh /  ·  /ˈtʃitə/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">cheetah</div>
+        <div class="say" style="font-size:10pt">/ CHEE-tuh /  ·  /ˈtʃitə/</div>
         <div class="d">long-legged spotted cat of Africa and southwestern Asia having nonretractile…</div><div class="hook">hook: from chitra, spotted; keeps both the CH and the final H</div>
+        
         <div class="ex">A ▁▁▁ can outrun any animal on the plain for about twenty seconds.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">jungle</div>
-        <div class="say">/ JUH-ngguhl /  ·  /ˈdʒʌŋɡəl/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">jungle</div>
+        <div class="say" style="font-size:10pt">/ JUH-ngguhl /  ·  /ˈdʒʌŋɡəl/</div>
         <div class="d">a location marked by an intense competition and struggle for survival</div><div class="hook">hook: from jangal — the A became U in English</div>
+        
         <div class="ex">The path disappeared into the ▁▁▁ within a hundred metres.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">bandicoot</div>
-        <div class="say">/ BA-ndih-koot /  ·  /ˈbændɪkut/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">bandicoot</div>
+        <div class="say" style="font-size:10pt">/ BA-ndih-koot /  ·  /ˈbændɪkut/</div>
         <div class="d">any of various agile ratlike terrestrial marsupials of Australia and adjacent…</div><div class="hook">hook: BANDI + COOT — double O in the tail</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">nilgai</div>
-        <div class="say">/ NIL-gy /  ·  /ˈnɪlɡaɪ/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">nilgai</div>
+        <div class="say" style="font-size:10pt">/ NIL-gy /  ·  /ˈnɪlɡaɪ/</div>
         <div class="d">large Indian antelope; male is blue-grey with white markings; female is brownish…</div><div class="hook">hook: NEEL + GY — nil (blue) + gai (cow), a compound animal</div>
+        
         <div class="ex">A ▁▁▁ stepped out of the scrub and stared at the jeep.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">nilgai</div>
-        <div class="say">/ NIL-gy /  ·  /ˈnɪlɡaɪ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">nilgai</div>
+        <div class="say" style="font-size:10pt">/ NIL-gy /  ·  /ˈnɪlɡaɪ/</div>
         <div class="d">large Indian antelope; male is blue-grey with white markings; female is brownish…</div><div class="hook">hook: NIL + GAI — "blue cow"; the AI is one sound</div>
+        
         <div class="ex">A ▁▁▁ stepped out of the scrub and stared at the jeep.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-junkyard-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1160,21 +1230,25 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">jackal</div>
-        <div class="say">/ j-A-k-uh-l /  ·  /dʒˈækəl/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">jackal</div>
+        <div class="say" style="font-size:10pt">/ j-A-k-uh-l /  ·  /dʒˈækəl/</div>
         <div class="d">a wild dog of Asia and Africa</div><div class="hook">hook: from Sanskrit srgala; ends -AL, not -EL</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">dinghy</div>
-        <div class="say">/ d-IH-ng-ee /  ·  /dˈɪŋi/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">dinghy</div>
+        <div class="say" style="font-size:10pt">/ d-IH-ng-ee /  ·  /dˈɪŋi/</div>
         <div class="d">a small boat designed as a lifeboat</div><div class="hook">hook: from dingi; the GH pair before the Y</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">mongoose</div>
-        <div class="say">/ MAH-nggoos /  ·  /ˈmɑŋɡus/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">mongoose</div>
+        <div class="say" style="font-size:10pt">/ MAH-nggoos /  ·  /ˈmɑŋɡus/</div>
         <div class="d">agile grizzled Old World viverrine; preys on snakes and rodents</div><div class="hook">hook: from Marathi mangus; double O, and the plural is mongooses</div>
+        
         <div class="ex">The ▁▁▁ killed the snake before anyone could move.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">teak</div>
-        <div class="say">/ TEEK /  ·  /ˈtik/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">teak</div>
+        <div class="say" style="font-size:10pt">/ TEEK /  ·  /ˈtik/</div>
         <div class="d">hard</div><div class="hook">hook: from Malayalam tekka — EA for one long sound</div>
+        
         </div>
         <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-junkyard-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1271,29 +1345,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">bazaar</div>
-        <div class="say">/ b-uh-z-AH-r /  ·  /bəzˈɑr/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">bazaar</div>
+        <div class="say" style="font-size:10pt">/ b-uh-z-AH-r /  ·  /bəzˈɑr/</div>
         <div class="d">a marketplace especially in the Middle East</div><div class="hook">hook: the double A is the whole test</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">caravan</div>
-        <div class="say">/ KA-ruh-van /  ·  /ˈkærəvæn/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">caravan</div>
+        <div class="say" style="font-size:10pt">/ KA-ruh-van /  ·  /ˈkærəvæn/</div>
         <div class="d">a procession (of wagons or mules or camels) traveling together in single file</div><div class="hook">hook: three separate As, no doubling</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">divan</div>
-        <div class="say">/ dih-VAN /  ·  /dɪˈvæn/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">divan</div>
+        <div class="say" style="font-size:10pt">/ dih-VAN /  ·  /dɪˈvæn/</div>
         <div class="d">a long backless sofa (usually with pillows against a wall)</div><div class="hook">hook: DI + VAN — ends -AN</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">turban</div>
-        <div class="say">/ t-UR-b-uh-n /  ·  /tˈʌrbən/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">turban</div>
+        <div class="say" style="font-size:10pt">/ t-UR-b-uh-n /  ·  /tˈʌrbən/</div>
         <div class="d">a headdress consisting of a long cloth that is wrapped around a cap or directly…</div><div class="hook">hook: TUR + BAN — the second vowel is A, not E</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">shampoo</div>
-        <div class="say">/ sha-MPOO /  ·  /ʃæˈmpu/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">shampoo</div>
+        <div class="say" style="font-size:10pt">/ sha-MPOO /  ·  /ʃæˈmpu/</div>
         <div class="d">cleansing agent consisting of soaps or detergents used for washing the hair</div><div class="hook">hook: from champo, "press!"; double O ending</div>
+        
         <div class="ex">She left the ▁▁▁ in her hair while she found a towel.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">khaki</div>
-        <div class="say">/ k-AH-k-ee /  ·  /kˈɑki/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">khaki</div>
+        <div class="say" style="font-size:10pt">/ k-AH-k-ee /  ·  /kˈɑki/</div>
         <div class="d">means dull yellowish brown</div><div class="hook">hook: the KH pair; Persian for dusty</div>
+        
         </div>
         <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-grandtrunk-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1303,21 +1383,25 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">cashmere</div>
-        <div class="say">/ KA-zhmihr /  ·  /ˈkæʒmɪr/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">cashmere</div>
+        <div class="say" style="font-size:10pt">/ KA-zhmihr /  ·  /ˈkæʒmɪr/</div>
         <div class="d">a very soft, warm wool that comes from a special kind of goat</div><div class="hook">hook: from Kashmir; the place kept its K, the cloth took a C</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">calico</div>
-        <div class="say">/ KA-luh-koh /  ·  /ˈkæləkoʊ/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">calico</div>
+        <div class="say" style="font-size:10pt">/ KA-luh-koh /  ·  /ˈkæləkoʊ/</div>
         <div class="d">coarse cloth with a bright print</div><div class="hook">hook: from Calicut; one L, ends -CO</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">madras</div>
-        <div class="say">/ MA-druhs /  ·  /ˈmædrəs/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">madras</div>
+        <div class="say" style="font-size:10pt">/ MA-druhs /  ·  /ˈmædrəs/</div>
         <div class="d">A light cotton cloth with a colorful plaid pattern.</div><div class="hook">hook: a city that became a cloth and a curry</div>
+        
         <div class="ex">He wore a ▁▁▁ shirt in bright checks.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">maharaja</div>
-        <div class="say">/ mah-her-AH-zhuh /  ·  /ˌmɑhərˈɑˌʒə/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">maharaja</div>
+        <div class="say" style="font-size:10pt">/ mah-her-AH-zhuh /  ·  /ˌmɑhərˈɑˌʒə/</div>
         <div class="d">a great raja; a Hindu prince or king in India ranking above a raja</div><div class="hook">hook: MAHA (great) + RAJA (king) — a compound worth splitting</div>
+        
         </div>
         <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-grandtrunk-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1412,29 +1496,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">mahatma</div>
-        <div class="say">/ muh-HAH-tmuh /  ·  /məˈhɑtmə/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">mahatma</div>
+        <div class="say" style="font-size:10pt">/ muh-HAH-tmuh /  ·  /məˈhɑtmə/</div>
         <div class="d">(Hinduism) term of respect for a brahmin sage</div><div class="hook">hook: maha (great) + atma (soul), vowels merged</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">maharaja</div>
-        <div class="say">/ mah-her-AH-zhuh /  ·  /ˌmɑhərˈɑˌʒə/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">maharaja</div>
+        <div class="say" style="font-size:10pt">/ mah-her-AH-zhuh /  ·  /ˌmɑhərˈɑˌʒə/</div>
         <div class="d">a great raja; a Hindu prince or king in India ranking above a raja</div><div class="hook">hook: maha + raja — the same prefix, a new word</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">ashram</div>
-        <div class="say">/ A-shrahm /  ·  /ˈæʃrɑm/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">ashram</div>
+        <div class="say" style="font-size:10pt">/ A-shrahm /  ·  /ˈæʃrɑm/</div>
         <div class="d">a quiet place where people go to meditate, pray, and practice yoga</div><div class="hook">hook: ASH + RAM — SH then R, no vowel between</div>
+        
         <div class="ex">The ▁▁▁ sat above the river, reached by two hundred steps.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">chakra</div>
-        <div class="say">/ CHUK-ruh /  ·  /ˈtʃʌkrə/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">chakra</div>
+        <div class="say" style="font-size:10pt">/ CHUK-ruh /  ·  /ˈtʃʌkrə/</div>
         <div class="d">One of seven spiritual energy centers believed in yoga to exist along the human…</div><div class="hook">hook: the KR cluster; a wheel or centre</div>
+        
         <div class="ex">The diagram showed a ▁▁▁ at the base of the spine.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">tulsi</div>
-        <div class="say">/ TOOL-see /  ·  /ˈtulsi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">tulsi</div>
+        <div class="say" style="font-size:10pt">/ TOOL-see /  ·  /ˈtulsi/</div>
         <div class="d">A sacred aromatic plant of the mint family native to India</div><div class="hook">hook: TUL + SI — the sacred basil, four letters, no traps</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">bindi</div>
-        <div class="say">/ BIN-dee /  ·  /ˈbɪndi/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">bindi</div>
+        <div class="say" style="font-size:10pt">/ BIN-dee /  ·  /ˈbɪndi/</div>
         <div class="d">A decorative mark worn on the forehead</div><div class="hook">hook: BIN + DI — from bindu, a dot</div>
+        
         </div>
         <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-library-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1444,21 +1534,25 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">swami</div>
-        <div class="say">/ SWAH-mee /  ·  /ˈswɑmi/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">swami</div>
+        <div class="say" style="font-size:10pt">/ SWAH-mee /  ·  /ˈswɑmi/</div>
         <div class="d">a Hindu religious teacher; used as a title of respect</div><div class="hook">hook: SW opening cluster, then -AMI</div>
+        
         <div class="ex">The ▁▁▁ answered every question with another question.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">rajah</div>
-        <div class="say">/ RAH-juh /  ·  /ˈrɑdʒə/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">rajah</div>
+        <div class="say" style="font-size:10pt">/ RAH-juh /  ·  /ˈrɑdʒə/</div>
         <div class="d">a prince or king in India</div><div class="hook">hook: the optional final H that raja can also drop</div>
+        
         <div class="ex">The ▁▁▁'s palace is now a museum.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">pundit</div>
-        <div class="say">/ PUH-nduht /  ·  /ˈpʌndət/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">pundit</div>
+        <div class="say" style="font-size:10pt">/ PUH-nduht /  ·  /ˈpʌndət/</div>
         <div class="d">someone who has been admitted to membership in a scholarly field</div><div class="hook">hook: from pandit — the A became U in English</div>
+        
         <div class="ex">Every ▁▁▁ on television predicted the wrong result.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">gymkhana</div>
-        <div class="say">/ jihm-KAH-nuh /  ·  /dʒɪmˈkɑnə/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">gymkhana</div>
+        <div class="say" style="font-size:10pt">/ jihm-KAH-nuh /  ·  /dʒɪmˈkɑnə/</div>
         <div class="d">a meet at which riders and horses display a range of skills and aptitudes</div><div class="hook">hook: GYM + KHANA; the KH survives mid-word</div>
+        
         <div class="ex">The riding club held a ▁▁▁ on the first Saturday of May.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-library-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1556,29 +1650,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">sugar</div>
-        <div class="say">/ SHUU-ger /  ·  /ˈʃʊɡər/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">sugar</div>
+        <div class="say" style="font-size:10pt">/ SHUU-ger /  ·  /ˈʃʊɡər/</div>
         <div class="d">a white crystalline carbohydrate used as a sweetener and preservative</div><div class="hook">hook: from sharkara; the S says SH</div>
+        
         <div class="ex">He stirred two spoons of ▁▁▁ into the tea.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">ginger</div>
-        <div class="say">/ JIH-njer /  ·  /ˈdʒɪndʒər/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">ginger</div>
+        <div class="say" style="font-size:10pt">/ JIH-njer /  ·  /ˈdʒɪndʒər/</div>
         <div class="d">perennial plants having thick branching aromatic rhizomes and leafy reedlike stems</div><div class="hook">hook: both Gs soft; a long journey through Greek and Latin</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">candy</div>
-        <div class="say">/ KA-ndee /  ·  /ˈkændi/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">candy</div>
+        <div class="say" style="font-size:10pt">/ KA-ndee /  ·  /ˈkændi/</div>
         <div class="d">a rich sweet made of flavored sugar and often combined with fruit or nuts</div><div class="hook">hook: from khanda, a fragment — the H fell away</div>
+        
         <div class="ex">The shop sold ▁▁▁ in glass jars along the whole wall.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">camphor</div>
-        <div class="say">/ KAM-fer /  ·  /ˈkæmfər/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">camphor</div>
+        <div class="say" style="font-size:10pt">/ KAM-fer /  ·  /ˈkæmfər/</div>
         <div class="d">a strong-smelling white substance from a tree, used in medicines and mothballs</div><div class="hook">hook: PH says F; from Sanskrit karpura</div>
+        
         <div class="ex">The old trunk smelled of ▁▁▁ and cedar.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">saffron</div>
-        <div class="say">/ s-A-f-r-uh-n /  ·  /sˈæfrən/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">saffron</div>
+        <div class="say" style="font-size:10pt">/ s-A-f-r-uh-n /  ·  /sˈæfrən/</div>
         <div class="d">a crocus having showy purple flowers</div><div class="hook">hook: double F; the spice and the word arrived together</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">musk</div>
-        <div class="say">/ MUHSK /  ·  /ˈmʌsk/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">musk</div>
+        <div class="say" style="font-size:10pt">/ MUHSK /  ·  /ˈmʌsk/</div>
         <div class="d">A strong-smelling substance used to make perfume.</div><div class="hook">hook: from Sanskrit muska; four letters, no trap</div>
+        
         <div class="ex">The perfume had a deep note of ▁▁▁ under the flowers.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-grandtrunk-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1588,21 +1688,25 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">lilac</div>
-        <div class="say">/ LEYE-lak /  ·  /ˈlaɪlæk/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">lilac</div>
+        <div class="say" style="font-size:10pt">/ LEYE-lak /  ·  /ˈlaɪlæk/</div>
         <div class="d">any of various plants of the genus Syringa having large panicles of usually…</div><div class="hook">hook: through Persian from Sanskrit nila, blue</div>
+        
         <div class="ex">A ▁▁▁ bush grew against the garden wall.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">orange</div>
-        <div class="say">/ AW-ruhnj /  ·  /ˈɔrəndʒ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">orange</div>
+        <div class="say" style="font-size:10pt">/ AW-ruhnj /  ·  /ˈɔrəndʒ/</div>
         <div class="d">A round, juicy citrus fruit with a thick, colorful peel.</div><div class="hook">hook: from naranga; English lost the opening N</div>
+        
         <div class="ex">She peeled the ▁▁▁ in one long spiral.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">lemon</div>
-        <div class="say">/ LEH-muhn /  ·  /ˈlɛmən/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">lemon</div>
+        <div class="say" style="font-size:10pt">/ LEH-muhn /  ·  /ˈlɛmən/</div>
         <div class="d">yellow oval fruit with juicy acidic flesh</div><div class="hook">hook: from limu via Persian and Arabic</div>
+        
         <div class="ex">A slice of ▁▁▁ floated in the jug of water.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">sapphire</div>
-        <div class="say">/ s-A-f-ay-ur /  ·  /sˈæfeɪʌr/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">sapphire</div>
+        <div class="say" style="font-size:10pt">/ s-A-f-ay-ur /  ·  /sˈæfeɪʌr/</div>
         <div class="d">a precious gemstone of rich blue corundum highly valued in jewelry</div><div class="hook">hook: double P then -IRE; from Sanskrit sanipriya</div>
+        
         </div>
         <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-grandtrunk-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1699,29 +1803,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">kathakali</div>
-        <div class="say">/ kah-tuh-KAH-lee /  ·  /kɑtəˈkɑli/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">kathakali</div>
+        <div class="say" style="font-size:10pt">/ kah-tuh-KAH-lee /  ·  /kɑtəˈkɑli/</div>
         <div class="d">A highly stylized classical dance-drama from the Indian state of Kerala…</div><div class="hook">hook: four beats; the middle TH keeps its H</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">bhangra</div>
-        <div class="say">/ BAH-nggruh /  ·  /ˈbɑŋɡrə/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">bhangra</div>
+        <div class="say" style="font-size:10pt">/ BAH-nggruh /  ·  /ˈbɑŋɡrə/</div>
         <div class="d">A lively and energetic style of music and dance originating from the Punjab…</div><div class="hook">hook: the BH pair opens it</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">ahimsa</div>
-        <div class="say">/ ah-HIM-sah /  ·  /ɑˈhɪmsɑ/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">ahimsa</div>
+        <div class="say" style="font-size:10pt">/ ah-HIM-sah /  ·  /ɑˈhɪmsɑ/</div>
         <div class="d">a Buddhist and Hindu and especially Jainist doctrine holding that all forms of…</div><div class="hook">hook: a- (not) + himsa (harm)</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">prana</div>
-        <div class="say">/ PRAH-nuh /  ·  /ˈprɑnə/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">prana</div>
+        <div class="say" style="font-size:10pt">/ PRAH-nuh /  ·  /ˈprɑnə/</div>
         <div class="d">In Hindu philosophy and yoga</div><div class="hook">hook: the PR cluster; life breath</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">tulsi</div>
-        <div class="say">/ TOOL-see /  ·  /ˈtulsi/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">tulsi</div>
+        <div class="say" style="font-size:10pt">/ TOOL-see /  ·  /ˈtulsi/</div>
         <div class="d">A sacred aromatic plant of the mint family native to India</div><div class="hook">hook: sacred basil; plain and short</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">bindi</div>
-        <div class="say">/ BIN-dee /  ·  /ˈbɪndi/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">bindi</div>
+        <div class="say" style="font-size:10pt">/ BIN-dee /  ·  /ˈbɪndi/</div>
         <div class="d">A decorative mark worn on the forehead</div><div class="hook">hook: from bindu, a dot</div>
+        
         </div>
         <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1731,21 +1841,25 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">mantra</div>
-        <div class="say">/ MA-ntruh /  ·  /ˈmæntrə/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">mantra</div>
+        <div class="say" style="font-size:10pt">/ MA-ntruh /  ·  /ˈmæntrə/</div>
         <div class="d">a commonly repeated word or phrase</div><div class="hook">hook: the -TRA ending, shared with sutra</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">dharma</div>
-        <div class="say">/ DAH-rmuh /  ·  /ˈdɑrmə/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">dharma</div>
+        <div class="say" style="font-size:10pt">/ DAH-rmuh /  ·  /ˈdɑrmə/</div>
         <div class="d">basic principles of the cosmos</div><div class="hook">hook: the DH opening — the chapter’s recurring test</div>
+        
         <div class="ex">In the story, the prince follows his ▁▁▁ even when it costs him the throne.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">nirvana</div>
-        <div class="say">/ nih-RVAH-nuh /  ·  /nɪˈrvɑnə/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">nirvana</div>
+        <div class="say" style="font-size:10pt">/ nih-RVAH-nuh /  ·  /nɪˈrvɑnə/</div>
         <div class="d">(Hinduism and Buddhism) the beatitude that transcends the cycle of reincarnation…</div><div class="hook">hook: NIR + VA + NA; the middle A is long</div>
+        
         <div class="ex">The monk described ▁▁▁ as the end of all wanting.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">guru</div>
-        <div class="say">/ GOO-roo /  ·  /ˈɡuru/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">guru</div>
+        <div class="say" style="font-size:10pt">/ GOO-roo /  ·  /ˈɡuru/</div>
         <div class="d">a Hindu or Buddhist religious leader and spiritual teacher</div><div class="hook">hook: two long U vowels</div>
+        
         <div class="ex">Her grandmother was the family ▁▁▁ on every question of cooking.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1839,29 +1953,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">bazaar</div>
-        <div class="say">/ b-uh-z-AH-r /  ·  /bəzˈɑr/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">bazaar</div>
+        <div class="say" style="font-size:10pt">/ b-uh-z-AH-r /  ·  /bəzˈɑr/</div>
         <div class="d">a marketplace especially in the Middle East</div><div class="hook">hook: the double A</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">jodhpurs</div>
-        <div class="say">/ JOD-purz /  ·  /ˈdʒɑdpʌrz/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">jodhpurs</div>
+        <div class="say" style="font-size:10pt">/ JOD-purz /  ·  /ˈdʒɑdpʌrz/</div>
         <div class="d">flared trousers ending at the calves; worn with riding boots</div><div class="hook">hook: the DH</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">mulligatawny</div>
-        <div class="say">/ muh-lih-guh-TAH-nee /  ·  /məlɪɡəˈtɑni/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">mulligatawny</div>
+        <div class="say" style="font-size:10pt">/ muh-lih-guh-TAH-nee /  ·  /məlɪɡəˈtɑni/</div>
         <div class="d">a soup of eastern India that is flavored with curry</div><div class="hook">hook: the double L and the AW</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">catamaran</div>
-        <div class="say">/ ka-tuh-mer-AN /  ·  /kætəmərˈæn/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">catamaran</div>
+        <div class="say" style="font-size:10pt">/ ka-tuh-mer-AN /  ·  /kætəmərˈæn/</div>
         <div class="d">a sailboat with two parallel hulls held together by single deck</div><div class="hook">hook: four As</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">cummerbund</div>
-        <div class="say">/ KUM-er-bund /  ·  /ˈkʌmərbʌnd/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">cummerbund</div>
+        <div class="say" style="font-size:10pt">/ KUM-er-bund /  ·  /ˈkʌmərbʌnd/</div>
         <div class="d">a broad pleated sash worn as formal dress with a tuxedo</div><div class="hook">hook: the double M</div>
+        
         <div class="ex">He wore a red ▁▁▁ with his black jacket.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">juggernaut</div>
-        <div class="say">/ JUH-ger-nawt /  ·  /ˈdʒʌɡərnɔt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">juggernaut</div>
+        <div class="say" style="font-size:10pt">/ JUH-ger-nawt /  ·  /ˈdʒʌɡərnɔt/</div>
         <div class="d">a massive inexorable force that seems to crush everything in its way</div><div class="hook">hook: the double G and -NAUT</div>
+        
         <div class="ex">The team became a ▁▁▁ that no defence could slow.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-grandtrunk-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1871,21 +1991,25 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">mahatma</div>
-        <div class="say">/ muh-HAH-tmuh /  ·  /məˈhɑtmə/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">mahatma</div>
+        <div class="say" style="font-size:10pt">/ muh-HAH-tmuh /  ·  /məˈhɑtmə/</div>
         <div class="d">(Hinduism) term of respect for a brahmin sage</div><div class="hook">hook: the merged seam</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">kathakali</div>
-        <div class="say">/ kah-tuh-KAH-lee /  ·  /kɑtəˈkɑli/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">kathakali</div>
+        <div class="say" style="font-size:10pt">/ kah-tuh-KAH-lee /  ·  /kɑtəˈkɑli/</div>
         <div class="d">A highly stylized classical dance-drama from the Indian state of Kerala…</div><div class="hook">hook: the rhythm and the TH</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">bandanna</div>
-        <div class="say">/ ban-DAN-uh /  ·  /bænˈdænə/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">bandanna</div>
+        <div class="say" style="font-size:10pt">/ ban-DAN-uh /  ·  /bænˈdænə/</div>
         <div class="d">large and brightly colored handkerchief; often used as a neckerchief</div><div class="hook">hook: the double N</div>
+        
         <div class="ex">She tied a ▁▁▁ over her hair before painting.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">chutney</div>
-        <div class="say">/ CHUH-tnee /  ·  /ˈtʃʌtni/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">chutney</div>
+        <div class="say" style="font-size:10pt">/ CHUH-tnee /  ·  /ˈtʃʌtni/</div>
         <div class="d">a spicy condiment made of chopped fruits or vegetables cooked in vinegar and…</div><div class="hook">hook: the CH and the TN</div>
+        
         <div class="ex">There was a bowl of green ▁▁▁ beside every plate.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-grandtrunk-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>

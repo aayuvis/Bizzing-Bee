@@ -122,16 +122,28 @@
   .bb-prop{display:inline-block;background:var(--chip);color:var(--chip-ink);border-radius:8pt;padding:3pt 8pt;font-family:'BB Tile';font-size:10pt}
   .bb-bubble{background:var(--card);border:1px solid var(--hairline);border-radius:12pt;padding:6pt 10pt;font-family:'BB Display';font-size:11.5pt;line-height:1.35;box-shadow:var(--sh-screen)}
   .bb-hive{display:grid;grid-template-columns:1fr 1fr;gap:.12in}
-  .bb-card{padding:0 .04in}
+  .bb-card{padding:0 .04in;min-width:0;overflow-wrap:anywhere}
   .bb-card .ex{font-size:9.6pt;line-height:1.32;margin-top:2px;color:var(--ink);opacity:.85}
-  .bb-card .w{font-family:'BB Body';font-weight:800;font-size:23pt;line-height:1.05;font-variant-numeric:tabular-nums;color:var(--accent-deep)}
+  /* --wsz is set per word from its own length: a 45-letter headword at 23pt is
+     four inches of type in a three-inch column, and it took the whole spread
+     with it. Wrapping is allowed as a last resort for the true monsters. */
+  .bb-card .w{font-family:'BB Body';font-weight:800;font-size:var(--wsz,23pt);line-height:1.06;
+    font-variant-numeric:tabular-nums;color:var(--accent-deep);overflow-wrap:anywhere;hyphens:auto}
+  .bb-card .say{overflow-wrap:anywhere}
   .bb-card .say{font-family:'BB Tile';font-size:10pt;color:var(--muted);margin-top:1px}
   .bb-card .d{font-size:10.6pt;line-height:1.38;margin-top:2px}
   .bb-card .hook{font-size:9.8pt;line-height:1.32;margin-top:2px;color:var(--chip-ink);font-style:italic}
+  /* An eponym's provenance is the fact a speller actually uses at the microphone:
+     "named after a French chemist" decides more letters than the definition does. */
+  .bb-card .after{font-size:9.4pt;line-height:1.34;margin-top:3px;padding-left:.09in;
+    border-left:2.2pt solid var(--accent);color:var(--ink)}
+  .bb-card .after b{font-variant:small-caps;letter-spacing:.04em;font-size:8.4pt;color:var(--muted)}
   .bb-writeline{border-bottom:1pt solid var(--ink);height:.42in;margin-top:4pt}
   .bb-rapid{display:grid;grid-template-columns:1fr 1fr;gap:.08in .16in}
-  .bb-row{padding:4pt 0;min-height:.52in;font-size:10.4pt;line-height:1.36;border-bottom:1px dotted var(--hairline)}
+  .bb-row{padding:4pt 0;min-height:.52in;font-size:10.4pt;line-height:1.36;border-bottom:1px dotted var(--hairline);
+    min-width:0;overflow-wrap:anywhere}
   .bb-row b{font-family:'BB Kicker';color:var(--accent-deep)}
+  .bb-row b.long{font-size:8.6pt}.bb-row b.xlong{font-size:7.4pt}
   .bb-break{margin-top:.18in;display:flex;gap:.13in;align-items:flex-start;background:linear-gradient(90deg,var(--treasure-tint),transparent 85%);border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.09in .14in}
   .bb-break .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--treasure-deep)}
   .bb-break .b{font-size:11.2pt;line-height:1.4;margin-top:2px}
@@ -414,29 +426,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">egoist</div>
-        <div class="say">/ EE-goh-ist /  ·  /ˈiɡoʊɪst/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">egoist</div>
+        <div class="say" style="font-size:10pt">/ EE-goh-ist /  ·  /ˈiɡoʊɪst/</div>
         <div class="d">a conceited and self-centered person</div><div class="hook">hook: An EGO+IST is one who practices putting the EGO first</div>
+        
         <div class="ex">The notorious ▁▁▁ never once asked how his teammates were feeling after the loss.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">egotist</div>
-        <div class="say">/ EE-guh-tihst /  ·  /ˈiɡətɪst/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">egotist</div>
+        <div class="say" style="font-size:10pt">/ EE-guh-tihst /  ·  /ˈiɡətɪst/</div>
         <div class="d">a conceited and self-centered person</div><div class="hook">hook: An EGO+T+IST talks about themselves constantly</div>
+        
         <div class="ex">The ▁▁▁ spent the entire dinner talking about himself without asking a single question.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">egocentric</div>
-        <div class="say">/ ee-goh-SEH-ntrihk /  ·  /iɡoʊˈsɛntrɪk/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">egocentric</div>
+        <div class="say" style="font-size:10pt">/ ee-goh-SEH-ntrihk /  ·  /iɡoʊˈsɛntrɪk/</div>
         <div class="d">a self-centered person with little regard for others</div><div class="hook">hook: An EGO-CENTRIC person puts their EGO at the CENTER of everything</div>
+        
         <div class="ex">The ▁▁▁ team captain always took credit for victories but blamed teammates for…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">egomaniac</div>
-        <div class="say">/ ee-goh-MAY-nee-ak /  ·  /iɡoʊˈmeɪniæk/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">egomaniac</div>
+        <div class="say" style="font-size:10pt">/ ee-goh-MAY-nee-ak /  ·  /iɡoʊˈmeɪniæk/</div>
         <div class="d">an abnormally egotistical person</div><div class="hook">hook: An EGO+MANIA+C is a maniac whose obsession is their own ego</div>
+        
         <div class="ex">The class president was such an ▁▁▁ that he insisted every school project be named…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">altruistic</div>
-        <div class="say">/ aw-ltroo-IH-stihk /  ·  /ɔltruˈɪstɪk/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">altruistic</div>
+        <div class="say" style="font-size:10pt">/ aw-ltroo-IH-stihk /  ·  /ɔltruˈɪstɪk/</div>
         <div class="d">showing unselfish concern for the welfare of others</div><div class="hook">hook: ALTRUISTIC people are TRUE to others</div>
+        
         <div class="ex">Her ▁▁▁ decision to donate her entire prize money to the shelter inspired everyone…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">magnanimous</div>
-        <div class="say">/ m-a-g-n-A-n-uh-m-uh-s /  ·  /mæɡˈnænəməs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">magnanimous</div>
+        <div class="say" style="font-size:10pt">/ m-a-g-n-A-n-uh-m-uh-s /  ·  /mæɡˈnænəməs/</div>
         <div class="d">is generous in forgiving insult or injury</div><div class="hook">hook: A magnANIMous person has a GREAT ANIMAL spirit — big-souled and forgiving.</div>
+        
         <div class="ex">a greathearted general</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-vibe-r2.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -444,7 +462,7 @@
 <div class="page" data-vol="10">
       <div class="bb-head"><span>Chapter 1 · Ego &amp; Self — ego / auto / alter</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>philanthropist</b> <span class="tile" style="font-size:8.8pt">/fuh-LA-nthruh-puhst/</span><br>someone who makes charitable donations intended to…</div><div class="bb-row"><b>autodidact</b> <span class="tile" style="font-size:8.8pt">/aw-toh-DY-dakt/</span><br>a person who has taught himself</div><div class="bb-row"><b>autonomous</b> <span class="tile" style="font-size:8.8pt">/aw-TAH-nuh-muhs/</span><br>(of political bodies) not controlled by outside forces</div><div class="bb-row"><b>narcissism</b> <span class="tile" style="font-size:8.8pt">/n-AH-r-s-ih-s-ih-z-uh-m/</span><br>is excessive self-love vanity</div><div class="bb-row"><b>solipsism</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>egotism</b> <span class="tile" style="font-size:8.8pt">/EE-guh-tih-zuhm/</span><br>an exaggerated opinion of your own importance</div><div class="bb-row"><b>egoism</b> <span class="tile" style="font-size:8.8pt">/EE-goh-ih-zuhm/</span><br>(ethics) the theory that the pursuit of your own…</div><div class="bb-row"><b>autocracy</b> <span class="tile" style="font-size:8.8pt">/aw-TAH-kruh-see/</span><br>a political system governed by a single individual</div><div class="bb-row"><b>autobiography</b> <span class="tile" style="font-size:8.8pt">/aw-tuh-beye-AH-gruh-fee/</span><br>a biography of yourself</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">philanthropist</b> <span class="tile" style="font-size:8.8pt">/fuh-LA-nthruh-puhst/</span><br>someone who makes charitable donations intended to…</div><div class="bb-row"><b class="">autodidact</b> <span class="tile" style="font-size:8.8pt">/aw-toh-DY-dakt/</span><br>a person who has taught himself</div><div class="bb-row"><b class="">autonomous</b> <span class="tile" style="font-size:8.8pt">/aw-TAH-nuh-muhs/</span><br>(of political bodies) not controlled by outside forces</div><div class="bb-row"><b class="">narcissism</b> <span class="tile" style="font-size:8.8pt">/n-AH-r-s-ih-s-ih-z-uh-m/</span><br>is excessive self-love vanity</div><div class="bb-row"><b class="">solipsism</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">egotism</b> <span class="tile" style="font-size:8.8pt">/EE-guh-tih-zuhm/</span><br>an exaggerated opinion of your own importance</div><div class="bb-row"><b class="">egoism</b> <span class="tile" style="font-size:8.8pt">/EE-goh-ih-zuhm/</span><br>(ethics) the theory that the pursuit of your own…</div><div class="bb-row"><b class="">autocracy</b> <span class="tile" style="font-size:8.8pt">/aw-TAH-kruh-see/</span><br>a political system governed by a single individual</div><div class="bb-row"><b class="">autobiography</b> <span class="tile" style="font-size:8.8pt">/aw-tuh-beye-AH-gruh-fee/</span><br>a biography of yourself</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -539,29 +557,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">loquacious</div>
-        <div class="say">/ l-oh-k-w-AY-sh-uh-s /  ·  /loʊkwˈeɪʃəs/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">loquacious</div>
+        <div class="say" style="font-size:10pt">/ l-oh-k-w-AY-sh-uh-s /  ·  /loʊkwˈeɪʃəs/</div>
         <div class="d">is talking or tending to talk too freely</div><div class="hook">hook: A loquacious person SQUAWKS like a parrot — loquACIOUS</div>
+        
         <div class="ex">kept from her housework by gabby neighbors</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">eloquent</div>
-        <div class="say">/ EH-luh-kwuhnt /  ·  /ˈɛləkwənt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">eloquent</div>
+        <div class="say" style="font-size:10pt">/ EH-luh-kwuhnt /  ·  /ˈɛləkwənt/</div>
         <div class="d">expressing yourself readily, clearly, effectively</div><div class="hook">hook: An ELOquent speaker lets words FLOW out beautifully.</div>
+        
         <div class="ex">able to dazzle with his facile tongue</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">grandiloquent</div>
-        <div class="say">/ gra-NDIH-luh-kwuhnt /  ·  /ɡræˈndɪləkwənt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">grandiloquent</div>
+        <div class="say" style="font-size:10pt">/ gra-NDIH-luh-kwuhnt /  ·  /ɡræˈndɪləkwənt/</div>
         <div class="d">lofty in style</div><div class="hook">hook: GRANDI-LO-QUENT rhymes with eloquent</div>
+        
         <div class="ex">he engages in so much tall talk, one never really realizes what he is saying</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">ventriloquist</div>
-        <div class="say"></div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">ventriloquist</div>
+        <div class="say" style="font-size:10pt"></div>
         <div class="d"></div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">soliloquy</div>
-        <div class="say">/ s-uh-l-IH-l-uh-k-w-ee /  ·  /səlˈɪləkwi/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">soliloquy</div>
+        <div class="say" style="font-size:10pt">/ s-uh-l-IH-l-uh-k-w-ee /  ·  /səlˈɪləkwi/</div>
         <div class="d">is a discourse by a person who is talking to himself</div><div class="hook">hook: A soliloquy is a SOLO speech</div>
+        
         <div class="ex">The actor delivered Hamlet's famous ▁▁▁ so powerfully that the entire audience held…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">colloquy</div>
-        <div class="say">/ KAH-luh-kwee /  ·  /ˈkɑləkwi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">colloquy</div>
+        <div class="say" style="font-size:10pt">/ KAH-luh-kwee /  ·  /ˈkɑləkwi/</div>
         <div class="d">a conversation especially a formal one</div><div class="hook">hook: A COLLOQUY is a TALK — col-LOQUY has LOQUACIOUS buried inside it.</div>
+        
         <div class="ex">The two diplomats held a private ▁▁▁ before the official summit began.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r2.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -569,7 +593,7 @@
 <div class="page" data-vol="10">
       <div class="bb-head"><span>Chapter 2 · Talking &amp; Speaking — loqu / phon / verb</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>colloquial</b> <span class="tile" style="font-size:8.8pt">/kuh-LOH-kwee-uhl/</span><br>characteristic of informal spoken language or…</div><div class="bb-row"><b>obloquy</b> <span class="tile" style="font-size:8.8pt">/AW-bluh-kwee/</span><br>is abusive language aimed at a person</div><div class="bb-row"><b>interlocutor</b> <span class="tile" style="font-size:8.8pt">/ih-nter-LAH-kyuh-ter/</span><br>the performer in the middle of a minstrel line who…</div><div class="bb-row"><b>taciturn</b> <span class="tile" style="font-size:8.8pt">/t-A-s-ih-t-ur-n/</span><br>means inclined to silence</div><div class="bb-row"><b>reticent</b> <span class="tile" style="font-size:8.8pt">/r-EH-t-ih-s-uh-n-t/</span><br>is someone disposed to be silent or not to speak…</div><div class="bb-row"><b>verbose</b> <span class="tile" style="font-size:8.8pt">/ver-BOHS/</span><br>using or containing too many words</div><div class="bb-row"><b>garrulous</b> <span class="tile" style="font-size:8.8pt">/GEH-ruh-luhs/</span><br>full of trivial conversation</div><div class="bb-row"><b>cacophony</b> <span class="tile" style="font-size:8.8pt">/k-a-k-AH-f-uh-n-ee/</span><br>is a harsh discordance of sound</div><div class="bb-row"><b>euphony</b> <span class="tile" style="font-size:8.8pt">/YOO-fuh-nee/</span><br>any agreeable (pleasing and harmonious) sounds</div><div class="bb-row"><b>symphony</b> <span class="tile" style="font-size:8.8pt">/SIH-mfuh-nee/</span><br>a long and complex sonata for symphony orchestra</div><div class="bb-row"><b>polyphony</b> <span class="tile" style="font-size:8.8pt">/puh-LIH-fuh-nee/</span><br>music arranged in parts for several voices or…</div><div class="bb-row"><b>magniloquent</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>pauciloquent</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>somniloquy</b> <span class="tile" style="font-size:8.8pt"></span><br></div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">colloquial</b> <span class="tile" style="font-size:8.8pt">/kuh-LOH-kwee-uhl/</span><br>characteristic of informal spoken language or…</div><div class="bb-row"><b class="">obloquy</b> <span class="tile" style="font-size:8.8pt">/AW-bluh-kwee/</span><br>is abusive language aimed at a person</div><div class="bb-row"><b class="">interlocutor</b> <span class="tile" style="font-size:8.8pt">/ih-nter-LAH-kyuh-ter/</span><br>the performer in the middle of a minstrel line who…</div><div class="bb-row"><b class="">taciturn</b> <span class="tile" style="font-size:8.8pt">/t-A-s-ih-t-ur-n/</span><br>means inclined to silence</div><div class="bb-row"><b class="">reticent</b> <span class="tile" style="font-size:8.8pt">/r-EH-t-ih-s-uh-n-t/</span><br>is someone disposed to be silent or not to speak…</div><div class="bb-row"><b class="">verbose</b> <span class="tile" style="font-size:8.8pt">/ver-BOHS/</span><br>using or containing too many words</div><div class="bb-row"><b class="">garrulous</b> <span class="tile" style="font-size:8.8pt">/GEH-ruh-luhs/</span><br>full of trivial conversation</div><div class="bb-row"><b class="">cacophony</b> <span class="tile" style="font-size:8.8pt">/k-a-k-AH-f-uh-n-ee/</span><br>is a harsh discordance of sound</div><div class="bb-row"><b class="">euphony</b> <span class="tile" style="font-size:8.8pt">/YOO-fuh-nee/</span><br>any agreeable (pleasing and harmonious) sounds</div><div class="bb-row"><b class="">symphony</b> <span class="tile" style="font-size:8.8pt">/SIH-mfuh-nee/</span><br>a long and complex sonata for symphony orchestra</div><div class="bb-row"><b class="">polyphony</b> <span class="tile" style="font-size:8.8pt">/puh-LIH-fuh-nee/</span><br>music arranged in parts for several voices or…</div><div class="bb-row"><b class="">magniloquent</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">pauciloquent</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">somniloquy</b> <span class="tile" style="font-size:8.8pt"></span><br></div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -665,29 +689,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">veracious</div>
-        <div class="say"></div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">veracious</div>
+        <div class="say" style="font-size:10pt"></div>
         <div class="d"></div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">veracity</div>
-        <div class="say">/ ver-A-sih-tee /  ·  /vərˈæsɪti/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">veracity</div>
+        <div class="say" style="font-size:10pt">/ ver-A-sih-tee /  ·  /vərˈæsɪti/</div>
         <div class="d">unwillingness to tell lies</div><div class="hook">hook: VERACity: VERy ACcurate = truth</div>
+        
         <div class="ex">The judge praised the witness for her ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">verify</div>
-        <div class="say">/ VEH-ruh-feye /  ·  /ˈvɛrəˌfaɪ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">verify</div>
+        <div class="say" style="font-size:10pt">/ VEH-ruh-feye /  ·  /ˈvɛrəˌfaɪ/</div>
         <div class="d">confirm the truth of</div><div class="hook">hook: VERIFY starts with VERI — VERy Important to spell it with an E, not an A!</div>
+        
         <div class="ex">Please ▁▁▁ that the doors are closed</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">verdict</div>
-        <div class="say">/ VUR-dihkt /  ·  /ˈvʌrdɪkt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">verdict</div>
+        <div class="say" style="font-size:10pt">/ VUR-dihkt /  ·  /ˈvʌrdɪkt/</div>
         <div class="d">(law) the findings of a jury on issues of fact submitted to it for decision</div><div class="hook">hook: A VERDICT is what is truly DICT-ated (said) by the jury — VERily DiCTated!</div>
+        
         <div class="ex">The courtroom fell completely silent as the jury foreman rose to announce the long-awaited…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">verisimilitude</div>
-        <div class="say">/ v-eh-r-uh-s-uh-m-IH-l-uh-t-oo-d /  ·  /vɛrəsəmˈɪlətud/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:20.5pt"><div class="w">verisimilitude</div>
+        <div class="say" style="font-size:10pt">/ v-eh-r-uh-s-uh-m-IH-l-uh-t-oo-d /  ·  /vɛrəsəmˈɪlətud/</div>
         <div class="d">the appearance of truth; the quality of seeming to be true</div><div class="hook">hook: VERI (very true) + SIMILAR: something so similar to truth it seems real</div>
+        
         <div class="ex">The novelist researched Medieval armor for months to give her fantasy story enough…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">mendacious</div>
-        <div class="say">/ m-eh-n-d-AY-sh-uh-s /  ·  /mɛndˈeɪʃəs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">mendacious</div>
+        <div class="say" style="font-size:10pt">/ m-eh-n-d-AY-sh-uh-s /  ·  /mɛndˈeɪʃəs/</div>
         <div class="d">is telling lies especially habitually</div><div class="hook">hook: MENDACious — you can't MEND a liar's ways; -acious not -atious</div>
+        
         <div class="ex">The ▁▁▁ salesman promised that the ancient car had never broken down</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-warfield-r2.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -695,7 +725,7 @@
 <div class="page" data-vol="10">
       <div class="bb-head"><span>Chapter 3 · Honesty &amp; Deception — ver / mendax / cred / p…</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>mendacity</b> <span class="tile" style="font-size:8.8pt">/meh-NDA-sih-tee/</span><br>the tendency to be untruthful</div><div class="bb-row"><b>duplicitous</b> <span class="tile" style="font-size:8.8pt">/doo-PLIH-sih-tuhs/</span><br>- Israel Zangwill</div><div class="bb-row"><b>dissemble</b> <span class="tile" style="font-size:8.8pt">/dih-SEH-mbuhl/</span><br>make believe with the intent to deceive</div><div class="bb-row"><b>prevaricate</b> <span class="tile" style="font-size:8.8pt">/pruh-VEH-ruh-kayt/</span><br>be deliberately ambiguous or unclear in order to…</div><div class="bb-row"><b>equivocate</b> <span class="tile" style="font-size:8.8pt">/ih-KWIH-vuh-kayt/</span><br>be deliberately ambiguous or unclear in order to…</div><div class="bb-row"><b>disingenuous</b> <span class="tile" style="font-size:8.8pt">/dih-sih-NJEH-nyoo-uhs/</span><br>not straightforward or candid</div><div class="bb-row"><b>credulous</b> <span class="tile" style="font-size:8.8pt">/KREH-juh-luhs/</span><br>disposed to believe on little evidence</div><div class="bb-row"><b>incredulous</b> <span class="tile" style="font-size:8.8pt">/ih-NKREH-juh-luhs/</span><br>not disposed or willing to believe; unbelieving</div><div class="bb-row"><b>miscreant</b> <span class="tile" style="font-size:8.8pt">/MIH-skree-uhnt/</span><br>a person without moral scruples</div><div class="bb-row"><b>pseudonym</b> <span class="tile" style="font-size:8.8pt">/SOO-duh-nihm/</span><br>a fictitious name used when the person performs a…</div><div class="bb-row"><b>pseudoscience</b> <span class="tile" style="font-size:8.8pt">/soo-doh-SEYE-uhns/</span><br>an activity resembling science but based on…</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">mendacity</b> <span class="tile" style="font-size:8.8pt">/meh-NDA-sih-tee/</span><br>the tendency to be untruthful</div><div class="bb-row"><b class="">duplicitous</b> <span class="tile" style="font-size:8.8pt">/doo-PLIH-sih-tuhs/</span><br>- Israel Zangwill</div><div class="bb-row"><b class="">dissemble</b> <span class="tile" style="font-size:8.8pt">/dih-SEH-mbuhl/</span><br>make believe with the intent to deceive</div><div class="bb-row"><b class="">prevaricate</b> <span class="tile" style="font-size:8.8pt">/pruh-VEH-ruh-kayt/</span><br>be deliberately ambiguous or unclear in order to…</div><div class="bb-row"><b class="">equivocate</b> <span class="tile" style="font-size:8.8pt">/ih-KWIH-vuh-kayt/</span><br>be deliberately ambiguous or unclear in order to…</div><div class="bb-row"><b class="">disingenuous</b> <span class="tile" style="font-size:8.8pt">/dih-sih-NJEH-nyoo-uhs/</span><br>not straightforward or candid</div><div class="bb-row"><b class="">credulous</b> <span class="tile" style="font-size:8.8pt">/KREH-juh-luhs/</span><br>disposed to believe on little evidence</div><div class="bb-row"><b class="">incredulous</b> <span class="tile" style="font-size:8.8pt">/ih-NKREH-juh-luhs/</span><br>not disposed or willing to believe; unbelieving</div><div class="bb-row"><b class="">miscreant</b> <span class="tile" style="font-size:8.8pt">/MIH-skree-uhnt/</span><br>a person without moral scruples</div><div class="bb-row"><b class="">pseudonym</b> <span class="tile" style="font-size:8.8pt">/SOO-duh-nihm/</span><br>a fictitious name used when the person performs a…</div><div class="bb-row"><b class="">pseudoscience</b> <span class="tile" style="font-size:8.8pt">/soo-doh-SEYE-uhns/</span><br>an activity resembling science but based on…</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -793,29 +823,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">sanguine</div>
-        <div class="say">/ SA-nggwihn /  ·  /ˈsæŋɡwɪn/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">sanguine</div>
+        <div class="say" style="font-size:10pt">/ SA-nggwihn /  ·  /ˈsæŋɡwɪn/</div>
         <div class="d">a blood-red color</div><div class="hook">hook: SANGUINE is blood-red</div>
+        
         <div class="ex">Despite the team's difficult loss in the semifinals</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">choleric</div>
-        <div class="say">/ KAH-ler-ihk /  ·  /ˈkɑlərɪk/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">choleric</div>
+        <div class="say" style="font-size:10pt">/ KAH-ler-ihk /  ·  /ˈkɑlərɪk/</div>
         <div class="d">easily moved to anger; - H.G.Wells</div><div class="hook">hook: A CHOLERIC person is full of bile</div>
+        
         <div class="ex">men of the ▁▁▁ type take to kicking and smashing</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">phlegmatic</div>
-        <div class="say">/ f-l-eh-g-m-A-t-ih-k /  ·  /flɛɡmˈætɪk/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">phlegmatic</div>
+        <div class="say" style="font-size:10pt">/ f-l-eh-g-m-A-t-ih-k /  ·  /flɛɡmˈætɪk/</div>
         <div class="d">is not easily excited to action</div><div class="hook">hook: PHLEGMATIC: the silent PH mirrors how phlegmatic people are</div>
+        
         <div class="ex">a ▁▁▁...and certainly undemonstrative man</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">melancholy</div>
-        <div class="say">/ m-EH-l-uh-n-k-ah-l-ee /  ·  /mˈɛlənkɑli/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">melancholy</div>
+        <div class="say" style="font-size:10pt">/ m-EH-l-uh-n-k-ah-l-ee /  ·  /mˈɛlənkɑli/</div>
         <div class="d">is a gloomy state of mind</div><div class="hook">hook: MELANCHOLY: MELANcholy is not about a MELON</div>
+        
         <div class="ex">growing more ▁▁▁ every hour</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">ebullient</div>
-        <div class="say">/ ih-BUH-lyuhnt /  ·  /ɪˈbʌljənt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">ebullient</div>
+        <div class="say" style="font-size:10pt">/ ih-BUH-lyuhnt /  ·  /ɪˈbʌljənt/</div>
         <div class="d">joyously unrestrained</div><div class="hook">hook: An eBULLient person BULLS their way through a room bubbling with joy</div>
+        
         <div class="ex">The ▁▁▁ crowd cheered and danced when their team scored the winning goal in overtime.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">effervescent</div>
-        <div class="say">/ eh-f-ur-v-EH-s-uh-n-t /  ·  /ˌɛfərˈvɛsənt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">effervescent</div>
+        <div class="say" style="font-size:10pt">/ eh-f-ur-v-EH-s-uh-n-t /  ·  /ˌɛfərˈvɛsənt/</div>
         <div class="d">used of wines and waters; charged naturally or artificially with carbon dioxide</div><div class="hook">hook: EFFERVescent = bubbles FERVOR-ing out — think of a soda bottle fizzing over.</div>
+        
         <div class="ex">The ▁▁▁ new student bubbled with energy from the very first day</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-greysea-r2.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -823,7 +859,7 @@
 <div class="page" data-vol="10">
       <div class="bb-head"><span>Chapter 4 · Feelings &amp; Emotions — the Four Humors</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>exuberant</b> <span class="tile" style="font-size:8.8pt">/ih-GZOO-ber-uhnt/</span><br>joyously unrestrained</div><div class="bb-row"><b>vivacious</b> <span class="tile" style="font-size:8.8pt">/vuh-VAY-shuhs/</span><br>vigorous and animated</div><div class="bb-row"><b>apathetic</b> <span class="tile" style="font-size:8.8pt">/a-puh-THEH-tihk/</span><br>showing little or no emotion or animation</div><div class="bb-row"><b>stoic</b> <span class="tile" style="font-size:8.8pt">/STOH-ihk/</span><br>a member of the ancient Greek school of philosophy…</div><div class="bb-row"><b>imperturbable</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>equanimous</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>vehement</b> <span class="tile" style="font-size:8.8pt">/VEE-uh-muhnt/</span><br>marked by extreme intensity of emotions or convictions</div><div class="bb-row"><b>ardent</b> <span class="tile" style="font-size:8.8pt">/AH-rduhnt/</span><br>characterized by intense emotion</div><div class="bb-row"><b>fervent</b> <span class="tile" style="font-size:8.8pt">/FUR-vuhnt/</span><br>characterized by intense emotion</div><div class="bb-row"><b>fervid</b> <span class="tile" style="font-size:8.8pt">/FUR-vuhd/</span><br>characterized by intense emotion</div><div class="bb-row"><b>impassioned</b> <span class="tile" style="font-size:8.8pt">/ih-MPA-shuhnd/</span><br>characterized by intense emotion</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">exuberant</b> <span class="tile" style="font-size:8.8pt">/ih-GZOO-ber-uhnt/</span><br>joyously unrestrained</div><div class="bb-row"><b class="">vivacious</b> <span class="tile" style="font-size:8.8pt">/vuh-VAY-shuhs/</span><br>vigorous and animated</div><div class="bb-row"><b class="">apathetic</b> <span class="tile" style="font-size:8.8pt">/a-puh-THEH-tihk/</span><br>showing little or no emotion or animation</div><div class="bb-row"><b class="">stoic</b> <span class="tile" style="font-size:8.8pt">/STOH-ihk/</span><br>a member of the ancient Greek school of philosophy…</div><div class="bb-row"><b class="">imperturbable</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">equanimous</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">vehement</b> <span class="tile" style="font-size:8.8pt">/VEE-uh-muhnt/</span><br>marked by extreme intensity of emotions or convictions</div><div class="bb-row"><b class="">ardent</b> <span class="tile" style="font-size:8.8pt">/AH-rduhnt/</span><br>characterized by intense emotion</div><div class="bb-row"><b class="">fervent</b> <span class="tile" style="font-size:8.8pt">/FUR-vuhnt/</span><br>characterized by intense emotion</div><div class="bb-row"><b class="">fervid</b> <span class="tile" style="font-size:8.8pt">/FUR-vuhd/</span><br>characterized by intense emotion</div><div class="bb-row"><b class="">impassioned</b> <span class="tile" style="font-size:8.8pt">/ih-MPA-shuhnd/</span><br>characterized by intense emotion</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -918,29 +954,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">perspicacious</div>
-        <div class="say">/ per-spuh-KAY-shuhs /  ·  /pərspəˈkeɪʃəs/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">perspicacious</div>
+        <div class="say" style="font-size:10pt">/ per-spuh-KAY-shuhs /  ·  /pərspəˈkeɪʃəs/</div>
         <div class="d">acutely insightful and wise</div><div class="hook">hook: PER-SPIC-acious: someone who sees (SPIC) through everything</div>
+        
         <div class="ex">The ▁▁▁ young detective noticed a tiny mud stain on the suspect's shoe that…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">sagacious</div>
-        <div class="say">/ suh-GAY-shus /  ·  /səˈɡeɪʃʌs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">sagacious</div>
+        <div class="say" style="font-size:10pt">/ suh-GAY-shus /  ·  /səˈɡeɪʃʌs/</div>
         <div class="d">showing acute mental discernment or being shrewd</div><div class="hook">hook: A SAGE is wise; sagaCIOUS has SAGE inside it</div>
+        
         <div class="ex">much too perspicacious to be taken in by such a spurious argument</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">sapient</div>
-        <div class="say">/ SAY-pee-int /  ·  /ˈseɪpiɪnt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">sapient</div>
+        <div class="say" style="font-size:10pt">/ SAY-pee-int /  ·  /ˈseɪpiɪnt/</div>
         <div class="d">acutely insightful and wise</div><div class="hook">hook: SAPIENT</div>
+        
         <div class="ex">much too perspicacious to be taken in by such a spurious argument</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">omniscient</div>
-        <div class="say">/ ah-MNIH-shuhnt /  ·  /ɑˈmnɪʃənt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">omniscient</div>
+        <div class="say" style="font-size:10pt">/ ah-MNIH-shuhnt /  ·  /ɑˈmnɪʃənt/</div>
         <div class="d">infinitely wise</div><div class="hook">hook: OMNI + SCIENT: SCIENT relates to SCIENCE (knowing)</div>
+        
         <div class="ex">In many fantasy novels</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">prudent</div>
-        <div class="say">/ PROO-duhnt /  ·  /ˈprudənt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">prudent</div>
+        <div class="say" style="font-size:10pt">/ PROO-duhnt /  ·  /ˈprudənt/</div>
         <div class="d">careful and sensible; marked by sound judgment</div><div class="hook">hook: A PRUDENT person is wise—end it with -ENT</div>
+        
         <div class="ex">even though the weather forecast had promised a clear and sunny day</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">obtuse</div>
-        <div class="say">/ ah-BTOOS /  ·  /ɑˈbtus/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">obtuse</div>
+        <div class="say" style="font-size:10pt">/ ah-BTOOS /  ·  /ɑˈbtus/</div>
         <div class="d">of an angle; between 90 and 180 degrees</div><div class="hook">hook: An obtuse angle is MORE than 90° and a dull person is MORE than slow</div>
+        
         <div class="ex">too ▁▁▁ to grasp the implications of his behavior</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-meadow-r2.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -948,7 +990,7 @@
 <div class="page" data-vol="10">
       <div class="bb-head"><span>Chapter 5 · Wisdom &amp; Foolishness — sap / sophos / stult</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>fatuous</b> <span class="tile" style="font-size:8.8pt">/FA-chuh-wuhs/</span><br>devoid of intelligence</div><div class="bb-row"><b>vacuous</b> <span class="tile" style="font-size:8.8pt">/v-A-k-y-oo-uh-s/</span><br>Completely empty of meaning</div><div class="bb-row"><b>asinine</b> <span class="tile" style="font-size:8.8pt">/A-suh-neyen/</span><br>devoid of intelligence</div><div class="bb-row"><b>sophisticated</b> <span class="tile" style="font-size:8.8pt">/suh-FIH-stuh-kay-tihd/</span><br>make less natural or innocent</div><div class="bb-row"><b>sophomore</b> <span class="tile" style="font-size:8.8pt">/SAH-fmawr/</span><br>a second-year undergraduate</div><div class="bb-row"><b>sophistry</b> <span class="tile" style="font-size:8.8pt">/SAW-fih-stree/</span><br>a deliberately invalid argument displaying ingenuity…</div><div class="bb-row"><b>perspicacity</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>sagacity</b> <span class="tile" style="font-size:8.8pt">/suh-GAS-ih-tee/</span><br>the mental ability to understand and discriminate…</div><div class="bb-row"><b>tenacious</b> <span class="tile" style="font-size:8.8pt">/t-uh-n-AY-sh-uh-s/</span><br>means holding fast</div><div class="bb-row"><b>voracious</b> <span class="tile" style="font-size:8.8pt">/v-aw-r-AY-sh-uh-s/</span><br>excessively eager avid insatiable</div><div class="bb-row"><b>audacious</b> <span class="tile" style="font-size:8.8pt">/ah-DAY-shuhs/</span><br>invulnerable to fear or intimidation</div><div class="bb-row"><b>agnostic</b> <span class="tile" style="font-size:8.8pt">/a-GNAH-stihk/</span><br>someone who is doubtful or noncommittal about…</div><div class="bb-row"><b>prognosis</b> <span class="tile" style="font-size:8.8pt">/prah-GNOH-suhs/</span><br>a prediction about how something (as the weather)…</div><div class="bb-row"><b>diagnosis</b> <span class="tile" style="font-size:8.8pt">/deye-uh-GNOH-suhs/</span><br>identifying the nature or cause of some phenomenon</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">fatuous</b> <span class="tile" style="font-size:8.8pt">/FA-chuh-wuhs/</span><br>devoid of intelligence</div><div class="bb-row"><b class="">vacuous</b> <span class="tile" style="font-size:8.8pt">/v-A-k-y-oo-uh-s/</span><br>Completely empty of meaning</div><div class="bb-row"><b class="">asinine</b> <span class="tile" style="font-size:8.8pt">/A-suh-neyen/</span><br>devoid of intelligence</div><div class="bb-row"><b class="">sophisticated</b> <span class="tile" style="font-size:8.8pt">/suh-FIH-stuh-kay-tihd/</span><br>make less natural or innocent</div><div class="bb-row"><b class="">sophomore</b> <span class="tile" style="font-size:8.8pt">/SAH-fmawr/</span><br>a second-year undergraduate</div><div class="bb-row"><b class="">sophistry</b> <span class="tile" style="font-size:8.8pt">/SAW-fih-stree/</span><br>a deliberately invalid argument displaying ingenuity…</div><div class="bb-row"><b class="">perspicacity</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">sagacity</b> <span class="tile" style="font-size:8.8pt">/suh-GAS-ih-tee/</span><br>the mental ability to understand and discriminate…</div><div class="bb-row"><b class="">tenacious</b> <span class="tile" style="font-size:8.8pt">/t-uh-n-AY-sh-uh-s/</span><br>means holding fast</div><div class="bb-row"><b class="">voracious</b> <span class="tile" style="font-size:8.8pt">/v-aw-r-AY-sh-uh-s/</span><br>excessively eager avid insatiable</div><div class="bb-row"><b class="">audacious</b> <span class="tile" style="font-size:8.8pt">/ah-DAY-shuhs/</span><br>invulnerable to fear or intimidation</div><div class="bb-row"><b class="">agnostic</b> <span class="tile" style="font-size:8.8pt">/a-GNAH-stihk/</span><br>someone who is doubtful or noncommittal about…</div><div class="bb-row"><b class="">prognosis</b> <span class="tile" style="font-size:8.8pt">/prah-GNOH-suhs/</span><br>a prediction about how something (as the weather)…</div><div class="bb-row"><b class="">diagnosis</b> <span class="tile" style="font-size:8.8pt">/deye-uh-GNOH-suhs/</span><br>identifying the nature or cause of some phenomenon</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1045,29 +1087,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">audacious</div>
-        <div class="say">/ ah-DAY-shuhs /  ·  /ɑˈdeɪʃəs/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">audacious</div>
+        <div class="say" style="font-size:10pt">/ ah-DAY-shuhs /  ·  /ɑˈdeɪʃəs/</div>
         <div class="d">invulnerable to fear or intimidation</div><div class="hook">hook: AUDacious people DARE to be heard — like a loud AUDIO blast</div>
+        
         <div class="ex">The ▁▁▁ climber scaled the sheer cliff face without ropes</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">audacity</div>
-        <div class="say">/ ah-DA-suh-tee /  ·  /ɑˈdæsəti/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">audacity</div>
+        <div class="say" style="font-size:10pt">/ ah-DA-suh-tee /  ·  /ɑˈdæsəti/</div>
         <div class="d">fearless daring</div><div class="hook">hook: AUDACITy: it takes AUDACI-TY — bold enough to drop an 's' that doesn't belong.</div>
+        
         <div class="ex">he had the ▁▁▁ to question my decision</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">fortitude</div>
-        <div class="say">/ FAW-rtih-tood /  ·  /ˈfɔrtɪtud/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">fortitude</div>
+        <div class="say" style="font-size:10pt">/ FAW-rtih-tood /  ·  /ˈfɔrtɪtud/</div>
         <div class="d">strength of mind that enables one to endure adversity with courage</div><div class="hook">hook: A person with fortITUDE has the ATTITUDE to endure — both end in TUDE.</div>
+        
         <div class="ex">It took tremendous ▁▁▁ for the young climber to push through the blizzard and reach…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">fortify</div>
-        <div class="say">/ FAW-rtih-feye /  ·  /ˈfɔrtɪˌfaɪ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">fortify</div>
+        <div class="say" style="font-size:10pt">/ FAW-rtih-feye /  ·  /ˈfɔrtɪˌfaɪ/</div>
         <div class="d">make strong or stronger</div><div class="hook">hook: FORTIFY = FORTI + FY</div>
+        
         <div class="ex">This exercise will strengthen your upper body</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">comfortable</div>
-        <div class="say">/ KUH-mfer-tuh-buhl /  ·  /ˈkʌmfərtəbəl/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">comfortable</div>
+        <div class="say" style="font-size:10pt">/ KUH-mfer-tuh-buhl /  ·  /ˈkʌmfərtəbəl/</div>
         <div class="d">providing or experiencing physical well-being or relief (`comfy' is informal)</div><div class="hook">hook: COMFORTABLE has COMFORT right inside it</div>
+        
         <div class="ex">After hiking through the muddy trail for six exhausting hours</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">effort</div>
-        <div class="say">/ EH-fert /  ·  /ˈɛfərt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">effort</div>
+        <div class="say" style="font-size:10pt">/ EH-fert /  ·  /ˈɛfərt/</div>
         <div class="d">earnest and conscientious activity intended to do or accomplish something</div><div class="hook">hook: EFFORT takes FORT-itude</div>
+        
         <div class="ex">made an ▁▁▁ to cover all the reading material</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-library-r2.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1075,7 +1123,7 @@
 <div class="page" data-vol="10">
       <div class="bb-head"><span>Chapter 6 · Courage &amp; Fear — aud / fort / tim / phob</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>timid</b> <span class="tile" style="font-size:8.8pt">/TIH-mihd/</span><br>people who are fearful and cautious</div><div class="bb-row"><b>timorous</b> <span class="tile" style="font-size:8.8pt">/TIH-mer-uhs/</span><br>timid by nature or revealing timidity</div><div class="bb-row"><b>intimidate</b> <span class="tile" style="font-size:8.8pt">/ih-n-t-IH-m-ih-d-ay-t/</span><br>to make fearful.</div><div class="bb-row"><b>temerity</b> <span class="tile" style="font-size:8.8pt">/tuh-MEH-ruh-tee/</span><br>excessive confidence or boldness</div><div class="bb-row"><b>agoraphobia</b> <span class="tile" style="font-size:8.8pt">/uh-gaw-ruh-FOH-bee-uh/</span><br>a morbid fear of open spaces or of being alone in a…</div><div class="bb-row"><b>claustrophobia</b> <span class="tile" style="font-size:8.8pt">/klaw-struh-FOH-bee-uh/</span><br>a morbid fear of being closed in a confined space</div><div class="bb-row"><b>xenophobia</b> <span class="tile" style="font-size:8.8pt">/zeh-nuh-FOH-bee-uh/</span><br>a fear of foreigners or strangers</div><div class="bb-row"><b>triskaidekaphobia</b> <span class="tile" style="font-size:8.8pt">/tris-ky-dek-uh-FOH-bee-uh/</span><br>is a fear of the number 13</div><div class="bb-row"><b>valiant</b> <span class="tile" style="font-size:8.8pt">/VA-lyuhnt/</span><br>having or showing valor</div><div class="bb-row"><b>intrepid</b> <span class="tile" style="font-size:8.8pt">/ih-NTREH-puhd/</span><br>invulnerable to fear or intimidation</div><div class="bb-row"><b>dauntless</b> <span class="tile" style="font-size:8.8pt">/DAWNT-les/</span><br>invulnerable to fear or intimidation</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">timid</b> <span class="tile" style="font-size:8.8pt">/TIH-mihd/</span><br>people who are fearful and cautious</div><div class="bb-row"><b class="">timorous</b> <span class="tile" style="font-size:8.8pt">/TIH-mer-uhs/</span><br>timid by nature or revealing timidity</div><div class="bb-row"><b class="">intimidate</b> <span class="tile" style="font-size:8.8pt">/ih-n-t-IH-m-ih-d-ay-t/</span><br>to make fearful.</div><div class="bb-row"><b class="">temerity</b> <span class="tile" style="font-size:8.8pt">/tuh-MEH-ruh-tee/</span><br>excessive confidence or boldness</div><div class="bb-row"><b class="">agoraphobia</b> <span class="tile" style="font-size:8.8pt">/uh-gaw-ruh-FOH-bee-uh/</span><br>a morbid fear of open spaces or of being alone in a…</div><div class="bb-row"><b class="">claustrophobia</b> <span class="tile" style="font-size:8.8pt">/klaw-struh-FOH-bee-uh/</span><br>a morbid fear of being closed in a confined space</div><div class="bb-row"><b class="">xenophobia</b> <span class="tile" style="font-size:8.8pt">/zeh-nuh-FOH-bee-uh/</span><br>a fear of foreigners or strangers</div><div class="bb-row"><b class="">triskaidekaphobia</b> <span class="tile" style="font-size:8.8pt">/tris-ky-dek-uh-FOH-bee-uh/</span><br>is a fear of the number 13</div><div class="bb-row"><b class="">valiant</b> <span class="tile" style="font-size:8.8pt">/VA-lyuhnt/</span><br>having or showing valor</div><div class="bb-row"><b class="">intrepid</b> <span class="tile" style="font-size:8.8pt">/ih-NTREH-puhd/</span><br>invulnerable to fear or intimidation</div><div class="bb-row"><b class="">dauntless</b> <span class="tile" style="font-size:8.8pt">/DAWNT-les/</span><br>invulnerable to fear or intimidation</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1172,29 +1220,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">benevolent</div>
-        <div class="say">/ buh-NEH-vuh-luhnt /  ·  /bəˈnɛvələnt/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">benevolent</div>
+        <div class="say" style="font-size:10pt">/ buh-NEH-vuh-luhnt /  ·  /bəˈnɛvələnt/</div>
         <div class="d">intending or showing kindness</div><div class="hook">hook: A BENEvolent person wishes you WELL</div>
+        
         <div class="ex">a ▁▁▁ society</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">benefactor</div>
-        <div class="say">/ BEH-nuh-fa-kter /  ·  /ˈbɛnəfæktər/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">benefactor</div>
+        <div class="say" style="font-size:10pt">/ BEH-nuh-fa-kter /  ·  /ˈbɛnəfæktər/</div>
         <div class="d">a person who helps people or institutions (especially with financial help)</div><div class="hook">hook: A benefACTOR is an ACTOR who does good deeds</div>
+        
         <div class="ex">An anonymous ▁▁▁ donated enough money to rebuild the school library after it was…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">benign</div>
-        <div class="say">/ b-ih-n-AY-n /  ·  /bɪnˈeɪn/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">benign</div>
+        <div class="say" style="font-size:10pt">/ b-ih-n-AY-n /  ·  /bɪnˈeɪn/</div>
         <div class="d">is having a kindly disposition</div><div class="hook">hook: beNIGN ends in -IGN like 'sign' — a benign tumor is a good SIGN, spelled G-N.</div>
+        
         <div class="ex">The doctor reassured the worried family that the small growth was completely ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">benediction</div>
-        <div class="say">/ beh-nuh-DIH-kshuhn /  ·  /bɛnəˈdɪkʃən/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">benediction</div>
+        <div class="say" style="font-size:10pt">/ beh-nuh-DIH-kshuhn /  ·  /bɛnəˈdɪkʃən/</div>
         <div class="d">the act of praying for divine protection</div><div class="hook">hook: A BENEficial DICTION: a benediction is literally 'well-spoken' words of…</div>
+        
         <div class="ex">The priest offered a warm ▁▁▁ at the end of the ceremony</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">beneficent</div>
-        <div class="say">/ beh-nuh-FIH-shuhnt /  ·  /bɛnəˈfɪʃənt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">beneficent</div>
+        <div class="say" style="font-size:10pt">/ beh-nuh-FIH-shuhnt /  ·  /bɛnəˈfɪʃənt/</div>
         <div class="d">doing or producing good</div><div class="hook">hook: BENE (good) + FICENT — bene-FICENT does good things, like magnificent but good</div>
+        
         <div class="ex">The ▁▁▁ billionaire donated millions of dollars to build new schools and hospitals…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">malevolent</div>
-        <div class="say">/ muh-LEH-vuh-luhnt /  ·  /məˈlɛvələnt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">malevolent</div>
+        <div class="say" style="font-size:10pt">/ muh-LEH-vuh-luhnt /  ·  /məˈlɛvələnt/</div>
         <div class="d">wishing or appearing to wish evil to others</div><div class="hook">hook: MALEvolent = MALE (bad) + VOLENT (wishing)</div>
+        
         <div class="ex">The ▁▁▁ sorcerer cast a spell that turned the entire village's crops to ash…</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-forum-r2.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1202,7 +1256,7 @@
 <div class="page" data-vol="10">
       <div class="bb-head"><span>Chapter 7 · Kindness &amp; Cruelty — ben / mal / clem</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>malfeasance</b> <span class="tile" style="font-size:8.8pt">/m-a-l-f-EE-z-uh-n-s/</span><br>is wrongdoing by a public official</div><div class="bb-row"><b>malicious</b> <span class="tile" style="font-size:8.8pt">/m-uh-l-IH-sh-uh-s/</span><br>marked by evil intention</div><div class="bb-row"><b>malignant</b> <span class="tile" style="font-size:8.8pt">/m-uh-l-IH-g-n-uh-n-t/</span><br>tending to produce death or deterioration used in…</div><div class="bb-row"><b>maladroit</b> <span class="tile" style="font-size:8.8pt">/ma-luh-DROYT/</span><br>Lacking skill</div><div class="bb-row"><b>clemency</b> <span class="tile" style="font-size:8.8pt">/KLEH-muh-nsee/</span><br>also mildness of weather</div><div class="bb-row"><b>clement</b> <span class="tile" style="font-size:8.8pt">/KLEH-muhnt/</span><br>(of weather or climate) physically mild</div><div class="bb-row"><b>inclement</b> <span class="tile" style="font-size:8.8pt">/ih-NKLEH-muhnt/</span><br>(of weather or climate) severe</div><div class="bb-row"><b>malaise</b> <span class="tile" style="font-size:8.8pt">/ma-LAYZ/</span><br>a general feeling of physical discomfort</div><div class="bb-row"><b>malaria</b> <span class="tile" style="font-size:8.8pt">/m-uh-l-EH-r-ee-uh/</span><br>is a disease characterized by chills or fever caused…</div><div class="bb-row"><b>maleficent</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>malediction</b> <span class="tile" style="font-size:8.8pt">/mal-eh-DIK-shun/</span><br>the act of calling down a curse that invokes evil…</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">malfeasance</b> <span class="tile" style="font-size:8.8pt">/m-a-l-f-EE-z-uh-n-s/</span><br>is wrongdoing by a public official</div><div class="bb-row"><b class="">malicious</b> <span class="tile" style="font-size:8.8pt">/m-uh-l-IH-sh-uh-s/</span><br>marked by evil intention</div><div class="bb-row"><b class="">malignant</b> <span class="tile" style="font-size:8.8pt">/m-uh-l-IH-g-n-uh-n-t/</span><br>tending to produce death or deterioration used in…</div><div class="bb-row"><b class="">maladroit</b> <span class="tile" style="font-size:8.8pt">/ma-luh-DROYT/</span><br>Lacking skill</div><div class="bb-row"><b class="">clemency</b> <span class="tile" style="font-size:8.8pt">/KLEH-muh-nsee/</span><br>also mildness of weather</div><div class="bb-row"><b class="">clement</b> <span class="tile" style="font-size:8.8pt">/KLEH-muhnt/</span><br>(of weather or climate) physically mild</div><div class="bb-row"><b class="">inclement</b> <span class="tile" style="font-size:8.8pt">/ih-NKLEH-muhnt/</span><br>(of weather or climate) severe</div><div class="bb-row"><b class="">malaise</b> <span class="tile" style="font-size:8.8pt">/ma-LAYZ/</span><br>a general feeling of physical discomfort</div><div class="bb-row"><b class="">malaria</b> <span class="tile" style="font-size:8.8pt">/m-uh-l-EH-r-ee-uh/</span><br>is a disease characterized by chills or fever caused…</div><div class="bb-row"><b class="">maleficent</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">malediction</b> <span class="tile" style="font-size:8.8pt">/mal-eh-DIK-shun/</span><br>the act of calling down a curse that invokes evil…</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1298,29 +1352,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">gregarious</div>
-        <div class="say">/ gruh-GEH-ree-uhs /  ·  /ɡrəˈɡɛriəs/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">gregarious</div>
+        <div class="say" style="font-size:10pt">/ gruh-GEH-ree-uhs /  ·  /ɡrəˈɡɛriəs/</div>
         <div class="d">(of animals) tending to form a group with others of the same species</div><div class="hook">hook: A GREGARIOUS person flocks with others</div>
+        
         <div class="ex">▁▁▁ bird species</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">egregious</div>
-        <div class="say">/ ih-g-r-EE-j-uh-s /  ·  /ɪɡrˈidʒəs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">egregious</div>
+        <div class="say" style="font-size:10pt">/ ih-g-r-EE-j-uh-s /  ·  /ɪɡrˈidʒəs/</div>
         <div class="d">is extraordinary in some bad way</div><div class="hook">hook: EGREGIOUS has GREG in the middle</div>
+        
         <div class="ex">The referee made such an ▁▁▁ error during the championship game that even fans from…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">congregate</div>
-        <div class="say">/ KAH-nggruh-gayt /  ·  /ˈkɑŋɡrəɡeɪt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">congregate</div>
+        <div class="say" style="font-size:10pt">/ KAH-nggruh-gayt /  ·  /ˈkɑŋɡrəɡeɪt/</div>
         <div class="d">come together, usually for a purpose</div><div class="hook">hook: People conGREGate in a GREAT group — GREG leads the flock!</div>
+        
         <div class="ex">The crowds ▁▁▁ in front of the Vatican on Christmas Eve</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">segregate</div>
-        <div class="say">/ SEH-gruh-gayt /  ·  /ˈsɛɡrəɡeɪt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">segregate</div>
+        <div class="say" style="font-size:10pt">/ SEH-gruh-gayt /  ·  /ˈsɛɡrəɡeɪt/</div>
         <div class="d">someone who is or has been segregated</div><div class="hook">hook: To SEGREGATE is to separate the flock</div>
+        
         <div class="ex">This neighborhood is ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">aggregate</div>
-        <div class="say">/ A-gruh-guht /  ·  /ˈæɡrəɡət/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">aggregate</div>
+        <div class="say" style="font-size:10pt">/ A-gruh-guht /  ·  /ˈæɡrəɡət/</div>
         <div class="d">the whole amount</div><div class="hook">hook: AGGREGATE gathers a flock</div>
+        
         <div class="ex">In the ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">misanthrope</div>
-        <div class="say">/ MIH-suh-nthrohp /  ·  /ˈmɪsənθroʊp/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">misanthrope</div>
+        <div class="say" style="font-size:10pt">/ MIH-suh-nthrohp /  ·  /ˈmɪsənθroʊp/</div>
         <div class="d">someone who dislikes people in general</div><div class="hook">hook: A MISerable ANTHRO-PE-rson hates all people</div>
+        
         <div class="ex">The grumpy ▁▁▁ refused all party invitations and preferred to stay home alone.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-elements-r2.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1328,7 +1388,7 @@
 <div class="page" data-vol="10">
       <div class="bb-head"><span>Chapter 8 · Social &amp; Solitary — greg / anthrop / soci / m…</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>misogynist</b> <span class="tile" style="font-size:8.8pt">/MIH-zuh-jih-nihst/</span><br>a misanthrope who dislikes women in particular</div><div class="bb-row"><b>misogamist</b> <span class="tile" style="font-size:8.8pt">/mih-SOG-uh-mist/</span><br>a person who hates marriage</div><div class="bb-row"><b>anthropology</b> <span class="tile" style="font-size:8.8pt">/a-nthruh-PAH-luh-jee/</span><br>the social science that studies the origins and…</div><div class="bb-row"><b>philanthropist</b> <span class="tile" style="font-size:8.8pt">/fuh-LA-nthruh-puhst/</span><br>someone who makes charitable donations intended to…</div><div class="bb-row"><b>anthropomorphic</b> <span class="tile" style="font-size:8.8pt">/a-nthruh-puh-MAW-rfihk/</span><br>suggesting human characteristics for animals or…</div><div class="bb-row"><b>anthropocentric</b> <span class="tile" style="font-size:8.8pt">/a-nthruh-puh-SEH-ntrihk/</span><br>human-centered</div><div class="bb-row"><b>sociable</b> <span class="tile" style="font-size:8.8pt">/SOH-shuh-buhl/</span><br>a party of people assembled to promote sociability…</div><div class="bb-row"><b>associate</b> <span class="tile" style="font-size:8.8pt">/uh-SOH-see-uht/</span><br>a person who joins with others in some activity or…</div><div class="bb-row"><b>convivial</b> <span class="tile" style="font-size:8.8pt">/k-uh-n-v-IH-v-ee-uh-l/</span><br>means friendly or agreeable</div><div class="bb-row"><b>affable</b> <span class="tile" style="font-size:8.8pt">/A-fuh-buhl/</span><br>friendly, easy to talk to, and pleasant in manner</div><div class="bb-row"><b>recluse</b> <span class="tile" style="font-size:8.8pt">/rih-KLOOS/</span><br>one who lives in solitude</div><div class="bb-row"><b>hermit</b> <span class="tile" style="font-size:8.8pt">/HUR-muht/</span><br>one retired from society for religious reasons</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">misogynist</b> <span class="tile" style="font-size:8.8pt">/MIH-zuh-jih-nihst/</span><br>a misanthrope who dislikes women in particular</div><div class="bb-row"><b class="">misogamist</b> <span class="tile" style="font-size:8.8pt">/mih-SOG-uh-mist/</span><br>a person who hates marriage</div><div class="bb-row"><b class="">anthropology</b> <span class="tile" style="font-size:8.8pt">/a-nthruh-PAH-luh-jee/</span><br>the social science that studies the origins and…</div><div class="bb-row"><b class="">philanthropist</b> <span class="tile" style="font-size:8.8pt">/fuh-LA-nthruh-puhst/</span><br>someone who makes charitable donations intended to…</div><div class="bb-row"><b class="">anthropomorphic</b> <span class="tile" style="font-size:8.8pt">/a-nthruh-puh-MAW-rfihk/</span><br>suggesting human characteristics for animals or…</div><div class="bb-row"><b class="">anthropocentric</b> <span class="tile" style="font-size:8.8pt">/a-nthruh-puh-SEH-ntrihk/</span><br>human-centered</div><div class="bb-row"><b class="">sociable</b> <span class="tile" style="font-size:8.8pt">/SOH-shuh-buhl/</span><br>a party of people assembled to promote sociability…</div><div class="bb-row"><b class="">associate</b> <span class="tile" style="font-size:8.8pt">/uh-SOH-see-uht/</span><br>a person who joins with others in some activity or…</div><div class="bb-row"><b class="">convivial</b> <span class="tile" style="font-size:8.8pt">/k-uh-n-v-IH-v-ee-uh-l/</span><br>means friendly or agreeable</div><div class="bb-row"><b class="">affable</b> <span class="tile" style="font-size:8.8pt">/A-fuh-buhl/</span><br>friendly, easy to talk to, and pleasant in manner</div><div class="bb-row"><b class="">recluse</b> <span class="tile" style="font-size:8.8pt">/rih-KLOOS/</span><br>one who lives in solitude</div><div class="bb-row"><b class="">hermit</b> <span class="tile" style="font-size:8.8pt">/HUR-muht/</span><br>one retired from society for religious reasons</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
