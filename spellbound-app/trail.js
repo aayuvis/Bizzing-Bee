@@ -439,7 +439,6 @@
     return `<span style="margin-left:auto;display:inline-flex;gap:7px;flex-wrap:wrap">
       ${pill('openRevisions', '', 'retry', 'Revise', miss, miss ? 'var(--tricky-deep,#C24545)' : '')}
       ${pill('openTraps', '', 'target', 'My traps', 0, '')}
-      ${pill('setNav', 'concepts', 'grid', 'Chapters', 0, '')}
     </span>`;
   }
   function viewMap() {

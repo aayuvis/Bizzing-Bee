@@ -123,11 +123,11 @@ handlers. App lives in this folder; open `index.html` to run.
   which is the point — the two notations on a card must agree with each other).
 
 ## The Word Map (`trail.js` + `trail-data.js`) — the Journey tab
-- **Five tabs: Home · World Atlas · Practice · Play · Progress**, spread evenly across the
-  bar. The Library is not a destination — it is the Atlas's **library** view
-  (`journeySeg()` switches Map/Library, and every explore-family nav lights the Atlas tab).
-  My Hive is not a tab: the **Bizzy button** in the header opens it. The mobile bar carries
-  the same five.
+- **Six tabs: Home · World Atlas · Library · Practice · Play · Progress**, spread evenly
+  across the bar (`flex:1` each). The Atlas has **no sub-nav** — the tab is the map, and the
+  only chrome on it is the Revise / My traps pill pair. The Library is its own tab again
+  (every explore-family nav lights it). My Hive is not a tab: the **Bizzy button** in the
+  header opens it. The mobile bar carries the same six (Atlas / Stats are the short labels).
 - **Header tools are one size, one shape** (`.sb-hdr-ico`): the rank pill (fixed ladder,
   beside Search), karma, coins, then appearance / hive / settings. The appearance button
   does double duty — a tap cycles Light → White → Dusk (debounced 230ms), a **double-tap

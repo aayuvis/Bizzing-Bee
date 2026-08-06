@@ -3336,13 +3336,6 @@ function viewIpaTrain(){ const S=state; const it=S.it; const pool=ipaPool();
       <div style="text-align:center;font-size:12px;color:var(--muted);font-weight:600;margin-top:10px">Keys: 1–4 answer · R hear it · Enter next</div>
     </div></div>`; }
 
-/* Map | Index — two readings of one journey. The map is where you are, the index is
-   everything there is. Both live under the Journey tab. */
-function journeySeg(which){ /* the World Atlas: where you are, and everything there is */
-  const b=(k,label)=>{ const on=which===k;
-    return `<button data-act="${k==='map'?'openTrail':'setNav'}"${k==='map'?'':' data-arg="explore"'} aria-pressed="${on}" style="flex:1;text-align:center;padding:9px 14px;border-radius:var(--r-pill,999px);font-family:var(--display);font-weight:800;font-size:14.5px;${on?'background:var(--paper,var(--bg2));color:var(--ink,var(--text));box-shadow:var(--sh-rest)':'background:transparent;color:var(--muted)'}">${label}</button>`; };
-  return `<div style="display:flex;gap:4px;padding:4px;border-radius:var(--r-pill,999px);background:var(--surface2);max-width:440px;margin:0 auto 16px">${b('map','The map')}${b('index','The library')}</div>`;
-}
 function viewExplore(){ const c=active(); ensureLists(c); const S=state;
   /* Seven destinations, each with its own painted header (app-art/lib-*.jpg, made by
      voice/pipeline/atlas-art.py). The Library had gradients and line icons before,
@@ -3378,7 +3371,7 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
       blurb:'Learn to touch-type, then race the sixty-second test.',c:'#2A63D6',ic:'pencil',cta:'Practise'}),
   ].join('');
   return `<div style="animation:sb-rise .35s ease both;max-width:1020px;margin:0 auto">
-    ${pageHead('The library','everything the Atlas teaches','Sorted by kind instead of by place. The map is where you are; the library is everything there is. The drill itself lives in Practice.')}
+    ${pageHead('The Library','everything the Atlas teaches','Sorted by kind instead of by place — the Atlas is where you are, the Library is everything there is. The drill itself lives in Practice.')}
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(276px,1fr));gap:16px">${tiles}</div>
     ${(()=>{ /* The shelf items have no painted header of their own, and the tools are a
         means to an end — both read better as rows than as pretend tiles. */
@@ -3533,8 +3526,8 @@ function viewApp(){
   /* Four tabs. The Library is not a destination any more — it is the Journey's
      index, so every explore-family nav lights the Journey tab. Progress and My Hive
      are not tabs either: they are you, and you are the avatar in the header. */
-  const navTabs=[['home','Home','home'],['trail','World Atlas','steps'],['coach','Practice','pencil'],['games','Play','joystick'],['progress','Progress','chart']].map(([key,label,ic])=>{
-    const on=key==='trail'?(S.nav==='trail'||!!EXPLORE_NAVS[S.nav]):key==='coach'?(S.nav==='coach'||S.nav==='train'||S.nav==='levelup'||S.nav==='quest'):S.nav===key;
+  const navTabs=[['home','Home','home'],['trail','World Atlas','steps'],['explore','Library','compass'],['coach','Practice','pencil'],['games','Play','joystick'],['progress','Progress','chart']].map(([key,label,ic])=>{
+    const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:key==='coach'?(S.nav==='coach'||S.nav==='train'||S.nav==='levelup'||S.nav==='quest'):S.nav===key;
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
     const art=NAV_ART[key];
     const glyph=(window.SB_ICON_ART && art && SB_ICON_ART[art]) ? `<span style="display:inline-flex;line-height:0;width:22px;height:22px;${on?'filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))':''}">${SB_ICON_ART(art,{size:22})}</span>` : (key==='explore'?(window.SB_ICON?SB_ICON('compass',{size:17}):iconSVG('grid',17)):iconSVG(ic,17));
@@ -3547,14 +3540,14 @@ function viewApp(){
   else if(S.nav==='train') content=viewTrain();
   else if(S.nav==='coach') content=viewCoach();
   else if(S.nav==='quest') content=viewQuest();
-  else if(S.nav==='explore') content=journeySeg('index')+viewExplore();
+  else if(S.nav==='explore') content=viewExplore();
   else if(S.nav==='themes'&&S.themeSel) content=viewThemeDetail();
   else if(S.nav==='figurative') content=viewFigurative();
   else if(S.nav==='vocab') content=viewVocab();
   else if(S.nav==='quotes') content=viewQuotes();
   else if(S.nav==='trivtrain') content=viewTrivTrain();
   else if(S.nav==='ipatrain') content=viewIpaTrain();
-  else if(S.nav==='trail'&&window.TRAIL) content=((S.trailView&&S.trailView!=='map')?'':journeySeg('map'))+TRAIL.view();
+  else if(S.nav==='trail'&&window.TRAIL) content=TRAIL.view();
   else if(S.nav==='typing') content=viewTyping();
   else if(S.nav==='builder') content=viewBuilder();
   else if(S.nav==='leveltest') content=viewLevelTest();
@@ -3682,7 +3675,7 @@ function viewApp(){
     ${viewDrawer()}
     <div class="sb-content" style="max-width:1080px;margin:0 auto;width:100%;padding:18px clamp(14px,3.5vw,32px) 60px">${content}</div>
     <nav class="sb-tabbar" aria-label="Primary">
-      ${[['home','Home','home','home'],['trail','Atlas','steps','explore'],['coach','Practice','pencil','practice'],['games','Play','joystick','arcade'],['progress','Progress','chart','progress']].map(([k,l,ic,art])=>{ const on=(k==='trail')?(S.nav==='trail'||!!EXPLORE_NAVS[S.nav]):(S.nav===k||(k==='coach'&&(S.nav==='train'||S.nav==='levelup'||S.nav==='quest')));
+      ${[['home','Home','home','home'],['trail','Atlas','steps','progress'],['explore','Library','compass','explore'],['coach','Practice','pencil','practice'],['games','Play','joystick','arcade'],['progress','Stats','chart','progress']].map(([k,l,ic,art])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='coach'&&(S.nav==='train'||S.nav==='levelup'||S.nav==='quest')));
         const gl=(window.SB_ICON_ART && SB_ICON_ART[art])?`<span style="display:inline-flex;line-height:0;width:24px;height:24px;${on?'':'filter:grayscale(.35) opacity(.8)'}">${SB_ICON_ART(art,{size:24})}</span>`:iconSVG(ic,21);
         return `<button data-act="setNav" data-arg="${k}" aria-current="${on?'page':'false'}" style="${on?'color:var(--accent)':'color:var(--muted)'}">${gl}<span>${l}</span></button>`; }).join('')}
     </nav>
