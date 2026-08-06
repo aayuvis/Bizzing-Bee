@@ -3792,7 +3792,10 @@ function viewHome(){
      app now presents them: follow the Atlas, drill words, read an explanation,
      play. Word Journeys lost its tile when it moved onto a Concepts shelf — the
      home screen should not offer a route the Library no longer lists. */
-  const atlas=(function(){ try{ const T=window.SB_TRAIL; if(!T) return {done:0,total:0,lap:1};
+  /* One reading of the Atlas for the whole screen: seq() filters by tier, so the
+     stop card and the Atlas tile must both quote the tier's count, not all 128. */
+  const nx=(typeof window.SB_TRAIL_NEXT==='function')?SB_TRAIL_NEXT():null;
+  const atlas=nx?{done:nx.done,total:nx.total,lap:nx.lap}:(function(){ try{ const T=window.SB_TRAIL; if(!T) return {done:0,total:0,lap:1};
       const tr=c.trail||{}; return { done:Object.keys(tr.done||{}).length, total:(T.honey.units||[]).length, lap:tr.lap||1 }; }
     catch(e){ return {done:0,total:0,lap:1}; } })();
   const journeys=[
@@ -3878,13 +3881,59 @@ function viewHome(){
           </span>
           <span class="sb-cl" style="display:block;margin-top:8px">${allDone?'All three rings closed — brilliant!':'last 30 days →'}</span>
         </span></button>`; })()}
-      ${tipOfDay(true,true)}
+      ${(()=>{ /* Your rank — the evolution ladder, in the world you are wearing. The
+          number, the emblem and the name all come from heroLevel, so the card cannot
+          disagree with itself or with the Evolution tab. */
+        const hLevel=heroLevel(c); const fi=formIdx(hLevel);
+        const hKey=Object.keys(c.lists||{}).reduce((b,k)=>listLevel(c,k)>listLevel(c,b)?k:b, aKey);
+        const hf=levelFromXp((getList(c,hKey).xp)||0);
+        const formPct=Math.max(0,Math.min(100,Math.round(((hLevel-(fi*2+1))+(hf.into||0)/(hf.need||1))/2*100)));
+        const nextForm=fi<9?evo[fi+1]:null;
+        return `<button data-act="setNav" data-arg="evolution" title="Your evolution, collection and store" class="sb-card" style="display:flex;align-items:center;gap:13px;min-height:128px;padding:14px;text-align:left;cursor:pointer;width:100%">
+        <span style="flex-shrink:0;width:74px;height:80px;display:grid;place-items:center;border-radius:14px;background:var(--surface2)">${evArt(theme,fi)}</span>
+        <span style="min-width:0;flex:1">
+          <span class="sb-cs">Your rank</span>
+          <span style="display:block;font-family:var(--display);font-weight:800;font-size:19px;line-height:1.14;margin:1px 0 2px">Level ${hLevel} · ${esc(evo[fi])}</span>
+          <span style="display:block;font-size:12px;color:var(--muted);font-weight:650">${nextForm?('Next form: '+esc(nextForm)+' at Level '+((fi+1)*2+1)):'The top of the ladder — nothing left to hatch into'}</span>
+          <span style="display:block;height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden;margin:8px 0 8px"><span style="display:block;height:100%;width:${formPct}%;background:var(--action,var(--accent))"></span></span>
+          <span style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+            <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:var(--r-pill,999px);background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12px">${coinIc(12)} ${c.coins||0}</span>
+            <span class="sb-cl">collection &amp; store →</span>
+          </span>
+        </span></button>`; })()}
     </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:14px">${wohTile}${qohTile}</div>`; })()}
-${focusedH?(()=>{ return `
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(228px,1fr));gap:12px;margin-bottom:8px">${journeys}</div>`; })()
-    :`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:2px 2px 9px">Keep going</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(228px,1fr));gap:12px;margin-bottom:8px">${journeys}</div>`}
+    <div class="sb-home-r2">
+      ${(()=>{ /* Next on your journey — the Atlas frontier, straight from trail.js.
+          trail-data.js is deferred, so until it lands this is an invitation rather
+          than a stop; boot-lazy re-renders the moment it arrives. */
+        const world=nx?nx.world:atlasWorld(c);
+        const kick=nx?(nx.allDone?('Tier '+nx.lap+' complete'):trunc(nx.act,30)):'The Word Atlas';
+        const title=nx?(nx.allDone?'Start the next tier':nx.title):'Start at the Meadow';
+        const sub=nx?(nx.allDone?'Every stop cleared at this tier — the same map returns with harder words.'
+              :(nx.kind==='chk'?'Checkpoint — a mixed quiz over everything so far, no new words.':(nx.sub||'')))
+            :'One guided journey through nine worlds — learn the idea, meet the words, clear the quiz gate.';
+        const go=nx&&!nx.allDone?`data-act="${nx.go}" data-arg="${escA(nx.arg)}"`:'data-act="openTrail"';
+        const meta=nx?(nx.done+'/'+nx.total+' stops · Tier '+nx.lap):'nine acts, then the Advanced Rounds';
+        return `<button class="sb-lift" ${go} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0;width:100%">
+        <div style="position:relative;width:100%">
+          ${paintedTileArt(world,92)}
+          <span style="position:absolute;left:14px;bottom:-13px">${wayTile('trail',40,-2.5)}</span>
+        </div>
+        <div style="padding:9px 15px 0 62px;min-height:24px;display:flex;align-items:center;justify-content:flex-end;width:100%">
+          <span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;padding:4px 11px;border-radius:var(--r-pill,999px);font-size:11px;font-weight:800;background:${S.mode==='dusk'?'#FFFFFF':'#241E33'};color:${S.mode==='dusk'?'#241E33':'#FFFFFF'}">${esc(meta)}</span>
+        </div>
+        <div style="padding:4px 15px 14px;display:flex;flex-direction:column;flex:1;width:100%">
+          <span class="sb-cs">Next on your journey</span>
+          <div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1.14;margin:2px 0 3px;color:var(--ink,var(--text))">${esc(trunc(title,40))}</div>
+          <div style="font-size:12.5px;color:var(--muted);line-height:1.4">${esc(trunc(kick+(sub?' · '+sub:''),96))}</div>
+          <span style="margin-top:auto;padding-top:11px"><span style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:var(--r-md,10px);background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:14px;box-shadow:var(--edge)">${iconSVG('steps',15)} ${nx&&nx.done?'Continue':'Start'}</span></span>
+        </div></button>`; })()}
+      <div>
+        ${focusedH?'':`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:2px 2px 9px">Keep going</div>`}
+        <div class="sb-home-tiles">${journeys}</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:14px">${tipOfDay(true,true)}${wohTile}${qohTile}</div>`; })()}
     <div style="text-align:center;margin-top:26px;padding-top:14px;border-top:1px solid var(--line)"><a href="privacy.html" style="color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:3px">Privacy &amp; Parents' Notice</a></div>
   </div>`;
 }

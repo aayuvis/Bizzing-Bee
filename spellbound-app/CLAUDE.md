@@ -154,6 +154,20 @@ handlers. App lives in this folder; open `index.html` to run.
   teach once on their pinned lap. Finishing every stop advances the lap (max 3).
 - `app` is a top-level `const` (global lexical scope, **not** `window.app`) — extension
   scripts like trail.js must reference the bare identifier.
+- **`window.SB_TRAIL_NEXT()`** is the one public reading of the frontier: `{title, sub,
+  act, world, done, total, lap, allDone, go, arg}`, or `null` until trail-data.js lands.
+  Home's "Next on your journey" card and the Atlas tile both quote it, so the stop count
+  is the tier's count (`seq()` filters by lap) and never disagrees between cards. Home
+  renders an invitation while it is null; boot-lazy's softRender fills it in.
+  `trailUnit`/`trailChk` set `nav:'trail'` themselves so a stop opens from anywhere.
+
+## Home is three rows
+1. **Who you are today** — the greeting/mascot card, the Daily goal rings, Your rank
+   (emblem + `EVO[theme][formIdx(heroLevel)]`, so the number, the art and the name all
+   come from one ladder and the card cannot disagree with the Evolution tab).
+2. **What to do next** — the Atlas's next stop beside the four "Keep going" tiles
+   (`.sb-home-r2` / `.sb-home-tiles` in index.html; one column below 900px).
+3. **Today's reading** — the bee tip, Word of the hour, Quote of the hour.
 - The words step is the coach card view (selfMark wordFlash → flashMark writes luMastered / missed; requires state.sessionWords). exitTrain and conceptBack both honour state.trailReturn. Trickster chapters (neu units) have no narration yet — browser TTS covers them;
   when recording, append to `SB_CONCEPTS` (append-only) and switch units to `gi` refs.
 
