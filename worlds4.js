@@ -602,10 +602,12 @@ window.SB_W4_FOCUS={
       for(var b1=0;b1<6;b1++){
         var art=BEE_S;
         try{ if(typeof SB_AVATAR==='function' && hive.length) art=SB_AVATAR(hive[b1%hive.length], Math.round(rnd(40,62))); }catch(e){}
-        /* the flutter lives on a wrapper: the outer element owns the crossing, the
-           inner one owns the wingbeat, and each bee beats at its own rate */
-        layer.appendChild(el('w4o-across w4o-bee','top:'+rnd(8,72).toFixed(1)+'vh;animation-duration:'+rnd(19,33).toFixed(1)+'s;animation-delay:-'+rnd(0,34).toFixed(1)+'s;opacity:.85',
-          '<span class="w4-flutter" style="animation-duration:'+rnd(.26,.4).toFixed(3)+'s">'+art+'</span>'));
+        /* The bees follow w4-beeline — four rises and falls per crossing, so they
+           travel like something with wings rather than drifting like a balloon.
+           There WAS a wingbeat squash on an inner wrapper as well; at 3Hz across
+           six bees it read as a twitch, not a flutter, so the flight path does
+           the work on its own. */
+        layer.appendChild(el('w4o-across w4o-bee','top:'+rnd(8,72).toFixed(1)+'vh;animation-duration:'+rnd(19,33).toFixed(1)+'s;animation-delay:-'+rnd(0,34).toFixed(1)+'s;opacity:.85', art));
       }
       for(var m1=0;m1<8;m1++) layer.appendChild(el('w4o-rise','left:'+rnd(2,98).toFixed(1)+'vw;width:5px;height:5px;background:#FFD34D;box-shadow:0 0 7px 2px rgba(255,211,77,.6);animation-duration:'+rnd(12,22).toFixed(1)+'s;animation-delay:-'+rnd(0,20).toFixed(1)+'s'));
     } else if(world==='marquee'){

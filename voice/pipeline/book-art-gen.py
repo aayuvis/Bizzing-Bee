@@ -23,16 +23,14 @@ STYLE = ("Painterly Japanese anime illustration, soft cel shading with two-tone 
 # register: seinen manga ink and screentone crossed with the Spider-Verse printing
 # tricks (halftone dots, offset colour channels, hard rim light). Same cast, same
 # scenes, grown up. Set per run so the general volumes are never touched.
-STYLE_MATURE = ("Modern graphic-novel illustration in the register of seinen manga crossed with "
-                "Spider-Verse comic printing: confident hard ink linework of varying weight, dramatic "
-                "low and high camera angles, deep chiaroscuro with hard-edged rim light, visible "
-                "halftone and ben-day dot texture in the shadows, subtle offset colour-channel "
-                "misregistration on the highlights, screentone hatching, motion smears and speed "
-                "lines, cinematic letterboxed framing, a restrained near-monochrome palette lifted by "
-                "one or two saturated accents. Characters drawn with real weight and grounded "
-                "proportion — sharp, poised and serious, never chibi, never cute. Moody, high-contrast, "
-                "the look of a graphic novel a fourteen-year-old would carry to school. Full-bleed edge "
-                "to edge, no border, no frame, no gutters, no panel grid, NO TEXT of any kind. ")
+STYLE_MATURE = ("Modern graphic-novel illustration: confident hand-inked linework of varying weight, "
+                "flat screen-printed colour in a RESTRAINED palette of three or four inks, light and "
+                "airy overall with darks used only where the drawing needs weight, a little halftone "
+                "texture, generous negative space, one clear subject and nothing competing with it. "
+                "Composed like a printed book jacket rather than a film poster: calm, uncluttered, "
+                "confident. Figures — when there are any — are drawn with real proportion and a warm, "
+                "open expression; never scowling, never grim, never chibi. Full-bleed edge to edge, no "
+                "border, no frame, no panel grid, NO TEXT of any kind. ")
 if os.environ.get('NB_STYLE') == 'mature':
     STYLE = STYLE_MATURE
 
