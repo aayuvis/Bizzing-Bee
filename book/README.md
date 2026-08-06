@@ -13,3 +13,13 @@
 - ◈ **My Story** panels are deliberate placeholders — only the author writes those.
 
 Design language: mirrored from the original Canva edition — its embedded typefaces (Cormorant Garamond, Cardo, Noto Serif Ethiopic Condensed; Figtree standing in for Canva Sans) and its actual artwork, extracted from the source PDF: the real cover page, the Canva icon set (16 embedded originals + 8 high-res captures of the vector ones), both ornate frames, the crown, and the pendulum. The back cover is composed from the cover's own texture, corners, thin gold frame, and crown.
+
+## Editing the book
+
+Three ways to rewrite, by preference:
+
+1. **`manuscript/Kings-Playbook-Manuscript.docx`** — the manuscript editing copy. The full book text with headings, taglines, epigraphs, framework label-lists, and ◈ MY STORY boxes marked *yours to write*. Open in Word or upload to Google Drive and edit as a Google Doc, with Track Changes on. Hand the edited file back and the typeset HTML + PDF are regenerated from it.
+2. **Edit mode in `kings-playbook.html`** — open the book, press **✎ Edit text** in the toolbar, click into any paragraph and type in the real book design. *Apply to pages* re-flows the sheets with your changes; *Save edited copy* downloads a self-contained edited book file.
+3. **`src/`** — the book's source, one file per section (`01-intro` … `08-close`). Edit any chapter file, run `python3 src/assemble.py` to rebuild the HTML, then `node src/pdf.js` for the PDF. This is also what a future Claude session edits when you describe changes in words.
+
+The words live in one place (`src/`); the design is CSS around them — rewriting text can't break the layout.

@@ -1,0 +1,235 @@
+</div><!-- /.book -->
+
+<div id="viewer"></div>
+
+<div id="sheetbar" hidden>
+  <button id="zoom-out" aria-label="Zoom out">−</button>
+  <span class="pct" id="zoom-pct">100%</span>
+  <button id="zoom-in" aria-label="Zoom in">+</button>
+  <button id="fit-w">Fit width</button>
+  <button id="fit-p">Fit page</button>
+  <button id="edit-btn">&#9998; Edit text</button>
+</div>
+
+<div id="editbar" hidden>
+  <span class="emsg">&#9998; <b>Editing</b> &mdash; click any text and type. Changes stay in this browser until you save a copy.</span>
+  <span class="esp"></span>
+  <button id="edit-apply">Apply to pages</button>
+  <button id="edit-save">Save edited copy</button>
+  <button id="edit-exit">Exit</button>
+</div>
+
+<style>
+/* ---- edit mode ---- */
+#editbar{position:fixed;top:0;left:0;right:0;z-index:80;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:9px 14px;background:#131347;color:#f5efdf;font:500 13px/1.35 "Figtree",system-ui,sans-serif;
+  box-shadow:0 2px 14px rgba(9,9,40,.35)}
+#editbar[hidden]{display:none}
+#editbar .esp{flex:1}
+#editbar .emsg b{color:#e9c979}
+#editbar button{font:600 12px/1 "Figtree",system-ui,sans-serif;letter-spacing:.04em;color:#131347;
+  background:#d9b45b;border:0;border-radius:14px;padding:8px 14px;cursor:pointer}
+#editbar button:hover{background:#e9c979}
+#editbar #edit-exit{background:transparent;color:#e8dcc0;border:1px solid rgba(232,220,192,.5)}
+html.editview{background:#e9e4d8}
+html.editview body{background:#e9e4d8}
+html.editview .book{display:block;max-width:680px;margin:64px auto 90px;padding:38px 46px;background:#fffdf7;
+  box-shadow:0 10px 40px rgba(19,19,71,.18);border-radius:4px;outline:none;caret-color:#1b1b73}
+html.editview #viewer,html.editview #sheetbar{display:none!important}
+html.editview #tocbtn{top:58px!important}
+html.editview .book :where(p,h1,h2,h3,h4,li,blockquote){cursor:text}
+@media (max-width:640px){#editbar .emsg{display:none}}
+@media print{#editbar{display:none!important}}
+</style>
+
+<div id="splash" hidden>
+  <svg class="crown" viewBox="0 0 222 133"><use href="#i-crown-gold"/></svg>
+  <p>King&rsquo;s Playbook</p>
+  <small>Binding the pages&hellip;</small>
+</div>
+
+<script>
+(function(){
+  var bar = document.getElementById('progress');
+  var btn = document.getElementById('tocbtn');
+  var panel = document.getElementById('tocpanel');
+  var close = document.getElementById('tocclose');
+  function onScroll(){
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  document.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+  btn.addEventListener('click', function(){ panel.classList.add('open'); });
+  close.addEventListener('click', function(){ panel.classList.remove('open'); });
+  panel.addEventListener('click', function(e){
+    var a = e.target.closest('a');
+    if (a) {
+      var id = a.getAttribute('href').slice(1);
+      var el = document.getElementById(id);
+      if (el) { e.preventDefault(); (window.__jumpTo || function(n){ n.scrollIntoView({behavior:'smooth', block:'start'}); })(el); }
+      panel.classList.remove('open');
+      return;
+    }
+    if (e.target === panel) panel.classList.remove('open');
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') panel.classList.remove('open');
+  });
+})();
+</script>
+
+<script>window.PagedConfig = { auto: false };</script>
+<script>
+/*__PAGEDJS__*/
+</script>
+
+<script>
+(function(){
+  var params = new URLSearchParams(location.search);
+  if (params.has('nopaged') || !window.Paged || !window.Paged.Previewer) return; // raw-flow fallback (also used for PDF generation)
+
+  var docEl = document.documentElement;
+  docEl.classList.add('sheetview');
+  var splash = document.getElementById('splash');
+  splash.hidden = false;
+
+  var PAGE_W = 576, PAGE_H = 921.6; // 6in x 9.6in at 96dpi
+  var viewer = document.getElementById('viewer');
+  var book = document.querySelector('.book');
+  var barEl = document.getElementById('sheetbar');
+  var pct = document.getElementById('zoom-pct');
+  var zoom = 1, pagesEl = null;
+
+  function apply(z){
+    zoom = Math.min(3, Math.max(0.2, z));
+    if (pagesEl) pagesEl.style.zoom = zoom;
+    pct.textContent = Math.round(zoom * 100) + '%';
+  }
+  function fitWidth(){ apply((window.innerWidth - 20) / (PAGE_W + 18)); }
+  window.__jumpTo = function(el){
+    if (docEl.classList.contains('editview')) { el.scrollIntoView({behavior:'smooth', block:'start'}); return; }
+    var pg = el.closest ? (el.closest('.pagedjs_page') || el) : el;
+    var pages = viewer.querySelector('.pagedjs_pages');
+    if (!pages) { el.scrollIntoView(); return; }
+    var yLocal = 0, n = pg;
+    while (n && n !== pages && n.offsetParent) { yLocal += n.offsetTop; if (n.offsetParent === pages || n.offsetParent === document.body) break; n = n.offsetParent; }
+    var base = 0, m = pages;
+    while (m) { base += m.offsetTop; m = m.offsetParent; }
+    window.scrollTo({ top: base + yLocal * zoom - 70, behavior: 'smooth' });
+  };
+  function fitPage(){ apply(Math.min((window.innerWidth - 20) / (PAGE_W + 18), (window.innerHeight - 84) / (PAGE_H + 24))); }
+
+  var skip = (params.get('skipstyles') || '').split(',').filter(Boolean).map(Number);
+  var styles = Array.prototype.map.call(document.querySelectorAll('style'), function(st, i){
+    st.setAttribute('data-kp-src', ''); // mark authored styles so saveCopy can drop Paged.js-injected ones
+    if (skip.indexOf(i) !== -1) return null;
+    return URL.createObjectURL(new Blob([st.textContent], {type:'text/css'}));
+  }).filter(Boolean);
+
+  var previewer = new window.Paged.Previewer();
+  previewer.preview(book, styles, viewer).then(function(){
+    book.remove();
+    pagesEl = viewer.querySelector('.pagedjs_pages');
+    splash.hidden = true;
+    barEl.hidden = false;
+    // sensible default: full page visible on small screens, comfortable width on large
+    if (window.innerWidth < 700) fitWidth(); else apply(Math.min(1.15, (window.innerWidth - 20) / (PAGE_W + 18)));
+    document.dispatchEvent(new Event('scroll'));
+  }).catch(function(err){
+    // fall back to the flowing view rather than a blank screen
+    splash.hidden = true;
+    docEl.classList.remove('sheetview');
+    if (viewer) viewer.remove();
+    console.error('Pagination failed, showing flow view:', err);
+  });
+
+  document.getElementById('zoom-in').addEventListener('click', function(){ apply(zoom / 0.85); });
+  document.getElementById('zoom-out').addEventListener('click', function(){ apply(zoom * 0.85); });
+  document.getElementById('fit-w').addEventListener('click', fitWidth);
+  document.getElementById('fit-p').addEventListener('click', fitPage);
+  window.addEventListener('keydown', function(e){
+    if ((e.ctrlKey || e.metaKey) && (e.key === '=' || e.key === '+')) { e.preventDefault(); apply(zoom / 0.85); }
+    if ((e.ctrlKey || e.metaKey) && e.key === '-') { e.preventDefault(); apply(zoom * 0.85); }
+  });
+
+  // ---- edit mode: re-attach the flow source, let the author type, re-flow or save ----
+  var editbar = document.getElementById('editbar');
+  var editing = false;
+  function enterEdit(){
+    if (editing) return; editing = true;
+    document.body.insertBefore(book, viewer);
+    book.setAttribute('contenteditable', 'true');
+    book.setAttribute('spellcheck', 'true');
+    docEl.classList.add('editview');
+    editbar.hidden = false; barEl.hidden = true;
+    window.scrollTo(0, 0);
+  }
+  function leaveEditDom(){
+    docEl.classList.remove('editview');
+    book.removeAttribute('contenteditable');
+    editbar.hidden = true;
+  }
+  function exitEdit(){
+    if (!editing) return; editing = false;
+    leaveEditDom();
+    book.remove();
+    barEl.hidden = false;
+  }
+  function applyEdits(){
+    if (!editing) return; editing = false;
+    leaveEditDom();
+    splash.hidden = false;
+    // stale ResizeObservers from the torn-down render fire once on detached pages; mute just that
+    var mute = function(ev){ if (ev.message && ev.message.indexOf("getAttribute") !== -1) { ev.preventDefault(); return true; } };
+    window.addEventListener('error', mute);
+    try { previewer.chunker && previewer.chunker.destroy(); } catch(e){}
+    try { previewer.polisher && previewer.polisher.destroy(); } catch(e){}
+    viewer.innerHTML = '';
+    pagesEl = null;
+    setTimeout(function(){ // let the splash paint before the heavy re-flow
+      previewer = new window.Paged.Previewer();
+      previewer.preview(book, styles, viewer).then(function(){
+        book.remove();
+        pagesEl = viewer.querySelector('.pagedjs_pages');
+        apply(zoom);
+        splash.hidden = true; barEl.hidden = false;
+        document.dispatchEvent(new Event('scroll'));
+        setTimeout(function(){ window.removeEventListener('error', mute); }, 3000);
+      }).catch(function(err){
+        console.error('Re-flow failed:', err);
+        splash.hidden = true; barEl.hidden = false;
+        window.removeEventListener('error', mute);
+      });
+    }, 60);
+  }
+  function saveCopy(){
+    var clone = document.documentElement.cloneNode(true);
+    clone.classList.remove('sheetview', 'editview');
+    clone.querySelectorAll('style:not([data-kp-src])').forEach(function(s){ s.remove(); });
+    var v = clone.querySelector('#viewer'); if (v) v.innerHTML = '';
+    var liveBook = clone.querySelector('.book');
+    if (!liveBook) { // page view: the source is detached, clone it back into place
+      liveBook = book.cloneNode(true);
+      v.parentNode.insertBefore(liveBook, v);
+    }
+    liveBook.removeAttribute('contenteditable');
+    liveBook.removeAttribute('spellcheck');
+    ['#sheetbar', '#editbar', '#splash'].forEach(function(sel){
+      var el = clone.querySelector(sel); if (el) el.setAttribute('hidden', '');
+    });
+    var blob = new Blob(['<!DOCTYPE html>\n', clone.outerHTML], {type: 'text/html'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'kings-playbook-edited.html';
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+  document.getElementById('edit-btn').addEventListener('click', enterEdit);
+  document.getElementById('edit-exit').addEventListener('click', exitEdit);
+  document.getElementById('edit-apply').addEventListener('click', applyEdits);
+  document.getElementById('edit-save').addEventListener('click', saveCopy);
+})();
+</script>
+</body>
+</html>
