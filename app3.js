@@ -2383,19 +2383,55 @@ const WORLD_HERO={
    bg:"background:linear-gradient(150deg,#2E8FB8 0%,#1D5E7C 58%,#103647 100%)",
    art:'<svg viewBox="0 0 120 60" style="position:absolute;right:6px;top:4px;width:112px"><g fill="none" stroke="#BFE4F2" stroke-width="2"><circle cx="72" cy="18" r="7"/><circle cx="94" cy="18" r="7" stroke="#F0B45B"/><circle cx="72" cy="40" r="7" stroke="#9BD3B4"/><circle cx="94" cy="40" r="7" stroke="#E4E8EC"/></g></svg>' },
 };
+/* One sentence per world, because the tile used to print the rank ladder's first
+   and last form ("Egg -> Queen Bee") under every card. That is not a progression
+   the world owns — the rank keeps the same ten forms in every world — so the line
+   said nothing except, misleadingly, that picking a world changed your ladder.
+   What a reader actually wants to know is what the place IS. */
+const WORLD_ABOUT={
+  spellbound:'The home hive: honey light, hexagons and the whole bee cast.',
+  marquee:'A theatre at curtain-up — spotlights, velvet and a stage waiting for you.',
+  aurora:'Deep space: star charts, ringed planets and a sky that never stops turning.',
+  anime:'A dawn dojo — ink, blossom and the discipline of a single clean strike.',
+  science:'A working lab: graph paper, glassware and an experiment already bubbling.',
+  origami:'A folded world, built crease by crease out of coloured paper.',
+  pixel:'An arcade at midnight — pixels, coin slots and high-score glow.',
+  avatar:'The four elements held in balance: water, earth, fire and air.',
+  godly:'A hall of the gods above the clouds, gold and pillars and long light.',
+  serpent:'A jade lair of coils and shadow, deep in the roots of the world.',
+  race:'A floodlit circuit at lights-out, tyres warm and the grid full.',
+  dino:'A lost valley of ferns and giants, mist still on the ground.',
+};
+/* Each tile moves the way its world moves. One keyframe set (index.html), one
+   layer per world, so a card is the place in miniature rather than a gradient. */
+const WORLD_FX={
+  spellbound:'<span class="wh-fx rise" style="--c:#FFD34D"></span>',
+  marquee:'<span class="wh-fx sweep" style="--c:#FFF3C9"></span>',
+  aurora:'<span class="wh-fx twinkle" style="--c:#fff"></span>',
+  anime:'<span class="wh-fx slide" style="--c:#FFD9E2"></span>',
+  science:'<span class="wh-fx rise" style="--c:#8FE0CC"></span>',
+  origami:'<span class="wh-fx glide" style="--c:#FFE8D0"></span>',
+  pixel:'<span class="wh-fx blink" style="--c:#9DB8F8"></span>',
+  avatar:'<span class="wh-fx fall" style="--c:#BFE9FF"></span>',
+  godly:'<span class="wh-fx spin" style="--c:#F6DC8A"></span>',
+  serpent:'<span class="wh-fx wave" style="--c:#7BE0A0"></span>',
+  race:'<span class="wh-fx scroll" style="--c:#FFD9CF"></span>',
+  dino:'<span class="wh-fx drift" style="--c:#D9E8B0"></span>',
+};
 function worldHeroCard(t, on, locked, act){ const H=WORLD_HERO[t.id]||WORLD_HERO.spellbound; const ev=EVO[t.id]||EVO.spellbound;
   const badge=on?'<span style="position:absolute;top:10px;right:10px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.94);color:#241E33;font-weight:800;font-size:12px;font-family:var(--ui,var(--body))">Active ✓</span>'
     :(locked?('<span style="position:absolute;top:10px;right:10px;left:auto;z-index:3;display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.94);color:#8A5B00;font-weight:900;font-size:12px;box-shadow:0 1px 4px rgba(0,0,0,.18)">🔒 '+coinAmt(COST.theme,11)+'</span>'):'');
   return `<button data-act="${act||'pickTheme'}" data-arg="${t.id}" style="position:relative;text-align:left;border-radius:20px;overflow:hidden;background:var(--paper,var(--bg2));border:1px solid var(--line);box-shadow:${on?'0 0 0 2px '+t.c1+',var(--sh-raised)':'var(--sh-rest)'};${locked?'opacity:.94':''}">
-    <div style="position:relative;height:104px;${H.bg};${locked?'filter:grayscale(1) brightness(.96);opacity:.75':''}">
-      ${H.art}${badge}
+    <div class="wh-band" style="position:relative;height:118px;${H.bg};${locked?'filter:grayscale(1) brightness(.96);opacity:.75':''}">
+      ${locked?'':(WORLD_FX[t.id]||'')}${H.art}${badge}
+      <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,7,26,0) 42%,rgba(10,7,26,.42) 100%);pointer-events:none"></span>
       <div style="position:absolute;left:16px;bottom:10px;right:12px">
         <div style="font-family:${H.face};font-weight:800;font-size:26px;line-height:1;color:${H.ink};text-shadow:0 1px 6px rgba(0,0,0,.35)">${t.label}</div>
         <div style="font-family:var(--ui,var(--body));font-weight:650;font-size:12px;letter-spacing:.08em;color:${H.ink};opacity:.85;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${H.tag}</div>
       </div>
     </div>
-    <div style="display:flex;align-items:center;padding:10px 14px">
-      <span style="font-family:var(--ui,var(--body));font-size:12px;font-weight:650;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${ev[0]} → ${ev[9]}</span>
+    <div style="padding:10px 14px 12px">
+      <span style="display:block;font-family:var(--ui,var(--body));font-size:12.5px;font-weight:600;line-height:1.42;color:var(--muted)">${esc(WORLD_ABOUT[t.id]||'A world of its own — colours, type and cast.')}</span>
     </div></button>`; }
 /* ---- Wayfinding tiles: destination color pops (spec §1). 48px solid tile, white icon,
    press edge, playful ±2–3° tilt. Colors are PLACE identity — stable across worlds. ---- */
@@ -3341,9 +3377,17 @@ function viewIpaTrain(){ const S=state; const it=S.it; const pool=ipaPool();
 /* Six destinations, one drawn set. Duotone on the 24-grid: a soft currentColor wash
    under bold strokes, so every world tints both layers and the six read as siblings
    at 22px. Replaces the mixed illustrated/line glyphs the bar used to carry. */
-function navIcon(key,size){ size=size||22;
-  const w=(inner)=>`<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;flex-shrink:0">${inner}</svg>`;
-  const f=(d)=>`<path d="${d}" fill="currentColor" stroke="none" opacity=".17"/>`;
+/* Each tab keeps its own colour, so the nav reads as five places rather than five
+   grey glyphs. The colours are PLACE identity and do not follow the world theme —
+   the same reason the wayfinding tiles have fixed colours. On the active tab the
+   icon drops back to currentColor, because the pill behind it is already the
+   accent and a coloured glyph on it would be unreadable. */
+const NAV_TINT={ home:'#F0A93C', atlas:'#6C4FE0', practice:'#E8458C', library:'#0E8A78',
+  play:'#3B6FE0', progress:'#C8901B' };
+function navIcon(key,size,plain){ size=size||22;
+  const tint=plain?'currentColor':(NAV_TINT[key]||'currentColor');
+  const w=(inner)=>`<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="${tint}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;flex-shrink:0">${inner}</svg>`;
+  const f=(d)=>`<path d="${d}" fill="${tint}" stroke="none" opacity="${plain?'.17':'.24'}"/>`;
   const M={
     /* a hive-roofed home */
     home:()=>w(f('M12 3.4 20.4 10v10.2H3.6V10z')+'<path d="M3.4 10.4 12 3.4l8.6 7"/><path d="M5.4 10.2V20.4h13.2V10.2"/><path d="M8.6 14.2h6.8M8.6 17.4h6.8"/>'),
@@ -3354,9 +3398,9 @@ function navIcon(key,size){ size=size||22;
     /* three books on a shelf */
     library:()=>w(f('M4.6 4.6h4v14.8h-4zM10.4 4.6h4v14.8h-4z')+'<rect x="4.6" y="4.6" width="4" height="14.8" rx="1.1"/><rect x="10.4" y="4.6" width="4" height="14.8" rx="1.1"/><path d="M16.6 5.6l3.2.8-3 14.4-3.2-.8z"/><path d="M4.6 9.4h4M10.4 9.4h4"/>'),
     /* a gamepad */
-    play:()=>w(f('M7.2 7.4h9.6a4.6 4.6 0 0 1 4.6 4.6v.6a4 4 0 0 1-7.1 2.5H9.7A4 4 0 0 1 2.6 12.6V12a4.6 4.6 0 0 1 4.6-4.6z')+'<path d="M7.2 7.4h9.6a4.6 4.6 0 0 1 4.6 4.6v.6a4 4 0 0 1-7.1 2.5H9.7A4 4 0 0 1 2.6 12.6V12a4.6 4.6 0 0 1 4.6-4.6z"/><path d="M6.4 11.6h2.8M7.8 10.2v2.8"/><circle cx="15.4" cy="10.8" r=".9" fill="currentColor" stroke="none"/><circle cx="17.6" cy="12.8" r=".9" fill="currentColor" stroke="none"/>'),
+    play:()=>w(f('M7.2 7.4h9.6a4.6 4.6 0 0 1 4.6 4.6v.6a4 4 0 0 1-7.1 2.5H9.7A4 4 0 0 1 2.6 12.6V12a4.6 4.6 0 0 1 4.6-4.6z')+'<path d="M7.2 7.4h9.6a4.6 4.6 0 0 1 4.6 4.6v.6a4 4 0 0 1-7.1 2.5H9.7A4 4 0 0 1 2.6 12.6V12a4.6 4.6 0 0 1 4.6-4.6z"/><path d="M6.4 11.6h2.8M7.8 10.2v2.8"/><circle cx="15.4" cy="10.8" r=".9" fill="${tint}" stroke="none"/><circle cx="17.6" cy="12.8" r=".9" fill="${tint}" stroke="none"/>'),
     /* a climbing chart with the last point lit */
-    progress:()=>w(f('M4.6 19.4h15V21h-15zM6.4 13h2.8v6.4H6.4zM11.2 9.6H14v9.8h-2.8zM16 5.8h2.8v13.6H16z')+'<path d="M4 20.4h16"/><rect x="6.4" y="12.4" width="3" height="8" rx="1.1"/><rect x="11" y="9" width="3" height="11.4" rx="1.1"/><rect x="15.6" y="5.2" width="3" height="15.2" rx="1.1"/><circle cx="17.1" cy="3" r="1.5" fill="currentColor" stroke="none"/>'),
+    progress:()=>w(f('M4.6 19.4h15V21h-15zM6.4 13h2.8v6.4H6.4zM11.2 9.6H14v9.8h-2.8zM16 5.8h2.8v13.6H16z')+'<path d="M4 20.4h16"/><rect x="6.4" y="12.4" width="3" height="8" rx="1.1"/><rect x="11" y="9" width="3" height="11.4" rx="1.1"/><rect x="15.6" y="5.2" width="3" height="15.2" rx="1.1"/><circle cx="17.1" cy="3" r="1.5" fill="${tint}" stroke="none"/>'),
   };
   return (M[key]||M.home)();
 }
@@ -3538,7 +3582,7 @@ function viewApp(){
   const navTabs=[['home','Home','home'],['trail','World Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play']].map(([key,label,ic])=>{
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:key==='coach'?(S.nav==='coach'||S.nav==='train'||S.nav==='levelup'||S.nav==='quest'):S.nav===key;
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
-    const glyph=`<span style="display:inline-flex;line-height:0">${navIcon(ic,21)}</span>`;
+    const glyph=`<span style="display:inline-flex;line-height:0">${navIcon(ic,21,on)}</span>`;
     return `<button data-act="setNav" data-arg="${key}" style="flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;padding:10px 12px;border-radius:var(--r-pill,999px);font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.01em;${on?'background:var(--action,var(--accent));color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">${glyph} ${label}</button>`;
   }).join('');
   let content='';

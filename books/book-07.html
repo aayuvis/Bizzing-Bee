@@ -122,16 +122,28 @@
   .bb-prop{display:inline-block;background:var(--chip);color:var(--chip-ink);border-radius:8pt;padding:3pt 8pt;font-family:'BB Tile';font-size:10pt}
   .bb-bubble{background:var(--card);border:1px solid var(--hairline);border-radius:12pt;padding:6pt 10pt;font-family:'BB Display';font-size:11.5pt;line-height:1.35;box-shadow:var(--sh-screen)}
   .bb-hive{display:grid;grid-template-columns:1fr 1fr;gap:.12in}
-  .bb-card{padding:0 .04in}
+  .bb-card{padding:0 .04in;min-width:0;overflow-wrap:anywhere}
   .bb-card .ex{font-size:9.6pt;line-height:1.32;margin-top:2px;color:var(--ink);opacity:.85}
-  .bb-card .w{font-family:'BB Body';font-weight:800;font-size:23pt;line-height:1.05;font-variant-numeric:tabular-nums;color:var(--accent-deep)}
+  /* --wsz is set per word from its own length: a 45-letter headword at 23pt is
+     four inches of type in a three-inch column, and it took the whole spread
+     with it. Wrapping is allowed as a last resort for the true monsters. */
+  .bb-card .w{font-family:'BB Body';font-weight:800;font-size:var(--wsz,23pt);line-height:1.06;
+    font-variant-numeric:tabular-nums;color:var(--accent-deep);overflow-wrap:anywhere;hyphens:auto}
+  .bb-card .say{overflow-wrap:anywhere}
   .bb-card .say{font-family:'BB Tile';font-size:10pt;color:var(--muted);margin-top:1px}
   .bb-card .d{font-size:10.6pt;line-height:1.38;margin-top:2px}
   .bb-card .hook{font-size:9.8pt;line-height:1.32;margin-top:2px;color:var(--chip-ink);font-style:italic}
+  /* An eponym's provenance is the fact a speller actually uses at the microphone:
+     "named after a French chemist" decides more letters than the definition does. */
+  .bb-card .after{font-size:9.4pt;line-height:1.34;margin-top:3px;padding-left:.09in;
+    border-left:2.2pt solid var(--accent);color:var(--ink)}
+  .bb-card .after b{font-variant:small-caps;letter-spacing:.04em;font-size:8.4pt;color:var(--muted)}
   .bb-writeline{border-bottom:1pt solid var(--ink);height:.42in;margin-top:4pt}
   .bb-rapid{display:grid;grid-template-columns:1fr 1fr;gap:.08in .16in}
-  .bb-row{padding:4pt 0;min-height:.52in;font-size:10.4pt;line-height:1.36;border-bottom:1px dotted var(--hairline)}
+  .bb-row{padding:4pt 0;min-height:.52in;font-size:10.4pt;line-height:1.36;border-bottom:1px dotted var(--hairline);
+    min-width:0;overflow-wrap:anywhere}
   .bb-row b{font-family:'BB Kicker';color:var(--accent-deep)}
+  .bb-row b.long{font-size:8.6pt}.bb-row b.xlong{font-size:7.4pt}
   .bb-break{margin-top:.18in;display:flex;gap:.13in;align-items:flex-start;background:linear-gradient(90deg,var(--treasure-tint),transparent 85%);border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.09in .14in}
   .bb-break .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--treasure-deep)}
   .bb-break .b{font-size:11.2pt;line-height:1.4;margin-top:2px}
@@ -414,29 +426,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">seismograph</div>
-        <div class="say">/ SYZ-muh-graf /  ·  /ˈsaɪzməɡræf/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">seismograph</div>
+        <div class="say" style="font-size:10pt">/ SYZ-muh-graf /  ·  /ˈsaɪzməɡræf/</div>
         <div class="d">a measuring instrument for detecting and measuring the intensity and direction…</div><div class="hook">hook: A seismoGRAPH GRAPHS the ground's shaking</div>
+        
         <div class="ex">Scientists studied the ▁▁▁ readings to determine the earthquake's magnitude and…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">cardiograph</div>
-        <div class="say">/ KAR-dee-oh-graf /  ·  /ˈkɑrdioʊɡræf/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">cardiograph</div>
+        <div class="say" style="font-size:10pt">/ KAR-dee-oh-graf /  ·  /ˈkɑrdioʊɡræf/</div>
         <div class="d">medical instrument that records electric currents associated with contractions…</div><div class="hook">hook: CARDIO (heart) + GRAPH (write/record) = the machine that writes the heart's…</div>
+        
         <div class="ex">The technician attached electrodes to the patient's chest before turning on the ▁▁▁.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">lithograph</div>
-        <div class="say">/ LIH-thuh-graf /  ·  /ˈlɪθəɡræf/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">lithograph</div>
+        <div class="say" style="font-size:10pt">/ LIH-thuh-graf /  ·  /ˈlɪθəɡræf/</div>
         <div class="d">a print produced by lithography</div><div class="hook">hook: A lithograph is writing on stone</div>
+        
         <div class="ex">The museum displayed an original ▁▁▁ by the famous artist</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">stenograph</div>
-        <div class="say"></div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">stenograph</div>
+        <div class="say" style="font-size:10pt"></div>
         <div class="d"></div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">anagram</div>
-        <div class="say">/ A-nuh-gram /  ·  /ˈænəɡræm/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">anagram</div>
+        <div class="say" style="font-size:10pt">/ A-nuh-gram /  ·  /ˈænəɡræm/</div>
         <div class="d">a word or phrase spelled by rearranging the letters of another word or phrase</div><div class="hook">hook: An ANAGRAM writes (GRAM) letters AGAIN (ANA) in a new order — only ONE 'n'!</div>
+        
         <div class="ex">The puzzle book challenged readers to find that "listen" is a perfect ▁▁▁ of the word…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">epigram</div>
-        <div class="say">/ EH-puh-gram /  ·  /ˈɛpəˌɡræm/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">epigram</div>
+        <div class="say" style="font-size:10pt">/ EH-puh-gram /  ·  /ˈɛpəˌɡræm/</div>
         <div class="d">a witty saying</div><div class="hook">hook: An EPIgram is a short bit of writing — like a telegram for the mind</div>
+        
         <div class="ex">The teacher had written an Oscar Wilde ▁▁▁ on the board: 'I can resist everything…</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-origami-r2.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -444,7 +462,7 @@
 <div class="page" data-vol="7">
       <div class="bb-head"><span>Chapter 1 · graph / gram (write / record)</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>monogram</b> <span class="tile" style="font-size:8.8pt">/MAH-nuh-gram/</span><br>printed on stationery or embroidered on clothing</div><div class="bb-row"><b>cryptogram</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>calligraphy</b> <span class="tile" style="font-size:8.8pt">/kuh-LIH-gruh-fee/</span><br>beautiful handwriting</div><div class="bb-row"><b>choreography</b> <span class="tile" style="font-size:8.8pt">/kaw-ree-AH-gruh-fee/</span><br>a show involving artistic dancing</div><div class="bb-row"><b>topography</b> <span class="tile" style="font-size:8.8pt">/tuh-PAH-gruh-fee/</span><br>the configuration of a surface and the relations…</div><div class="bb-row"><b>stenographer</b> <span class="tile" style="font-size:8.8pt">/steh-NUH-gruh-fer/</span><br>someone skilled in the transcription of speech…</div><div class="bb-row"><b>choreographer</b> <span class="tile" style="font-size:8.8pt">/kaw-ree-AH-gruh-fer/</span><br>someone who creates new dances</div><div class="bb-row"><b>lexicographer</b> <span class="tile" style="font-size:8.8pt">/leh-ksih-KAH-gruh-fer/</span><br>a compiler or writer of a dictionary</div><div class="bb-row"><b>telegraph</b> <span class="tile" style="font-size:8.8pt">/TEH-luh-graf/</span><br>apparatus used to communicate at a distance over a…</div><div class="bb-row"><b>monograph</b> <span class="tile" style="font-size:8.8pt">/MAH-nuh-graf/</span><br>a detailed and documented treatise on a particular…</div><div class="bb-row"><b>autobiography</b> <span class="tile" style="font-size:8.8pt">/aw-tuh-beye-AH-gruh-fee/</span><br>a biography of yourself</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">monogram</b> <span class="tile" style="font-size:8.8pt">/MAH-nuh-gram/</span><br>printed on stationery or embroidered on clothing</div><div class="bb-row"><b class="">cryptogram</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">calligraphy</b> <span class="tile" style="font-size:8.8pt">/kuh-LIH-gruh-fee/</span><br>beautiful handwriting</div><div class="bb-row"><b class="">choreography</b> <span class="tile" style="font-size:8.8pt">/kaw-ree-AH-gruh-fee/</span><br>a show involving artistic dancing</div><div class="bb-row"><b class="">topography</b> <span class="tile" style="font-size:8.8pt">/tuh-PAH-gruh-fee/</span><br>the configuration of a surface and the relations…</div><div class="bb-row"><b class="">stenographer</b> <span class="tile" style="font-size:8.8pt">/steh-NUH-gruh-fer/</span><br>someone skilled in the transcription of speech…</div><div class="bb-row"><b class="">choreographer</b> <span class="tile" style="font-size:8.8pt">/kaw-ree-AH-gruh-fer/</span><br>someone who creates new dances</div><div class="bb-row"><b class="">lexicographer</b> <span class="tile" style="font-size:8.8pt">/leh-ksih-KAH-gruh-fer/</span><br>a compiler or writer of a dictionary</div><div class="bb-row"><b class="">telegraph</b> <span class="tile" style="font-size:8.8pt">/TEH-luh-graf/</span><br>apparatus used to communicate at a distance over a…</div><div class="bb-row"><b class="">monograph</b> <span class="tile" style="font-size:8.8pt">/MAH-nuh-graf/</span><br>a detailed and documented treatise on a particular…</div><div class="bb-row"><b class="">autobiography</b> <span class="tile" style="font-size:8.8pt">/aw-tuh-beye-AH-gruh-fee/</span><br>a biography of yourself</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -540,29 +558,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">cacophony</div>
-        <div class="say">/ k-a-k-AH-f-uh-n-ee /  ·  /kækˈɑfəni/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">cacophony</div>
+        <div class="say" style="font-size:10pt">/ k-a-k-AH-f-uh-n-ee /  ·  /kækˈɑfəni/</div>
         <div class="d">is a harsh discordance of sound</div><div class="hook">hook: CACO-PHONY: bad (caco) PHONE (phon) call</div>
+        
         <div class="ex">The construction site next to the library created such a ▁▁▁ that students could…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">euphony</div>
-        <div class="say">/ YOO-fuh-nee /  ·  /ˈjufəni/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">euphony</div>
+        <div class="say" style="font-size:10pt">/ YOO-fuh-nee /  ·  /ˈjufəni/</div>
         <div class="d">any agreeable (pleasing and harmonious) sounds</div><div class="hook">hook: Euphony = EU + PHONY</div>
+        
         <div class="ex">he fell asleep to the music of the wind chimes</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">symphony</div>
-        <div class="say">/ SIH-mfuh-nee /  ·  /ˈsɪmfəni/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">symphony</div>
+        <div class="say" style="font-size:10pt">/ SIH-mfuh-nee /  ·  /ˈsɪmfəni/</div>
         <div class="d">a long and complex sonata for symphony orchestra</div><div class="hook">hook: A symPHONy is sounds (PHON) together — not symphAny, the O holds the note!</div>
+        
         <div class="ex">we heard the Vienna ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">polyphony</div>
-        <div class="say">/ puh-LIH-fuh-nee /  ·  /pəˈlɪfəni/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">polyphony</div>
+        <div class="say" style="font-size:10pt">/ puh-LIH-fuh-nee /  ·  /pəˈlɪfəni/</div>
         <div class="d">music arranged in parts for several voices or instruments</div><div class="hook">hook: POLYphony = POLY voices</div>
+        
         <div class="ex">The cathedral filled with rich ▁▁▁ as four separate vocal parts wove together in…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">microphone</div>
-        <div class="say">/ MEYE-kruh-fohn /  ·  /ˈmaɪkrəˌfoʊn/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">microphone</div>
+        <div class="say" style="font-size:10pt">/ MEYE-kruh-fohn /  ·  /ˈmaɪkrəˌfoʊn/</div>
         <div class="d">device for converting sound waves into electrical energy</div><div class="hook">hook: A MICROPHONE amplifies small PHONE (sound)—micro+phone</div>
+        
         <div class="ex">The nervous singer tapped the ▁▁▁ to check if the audience could hear her.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">saxophone</div>
-        <div class="say">/ SA-ksuh-fohn /  ·  /ˈsæksəfoʊn/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">saxophone</div>
+        <div class="say" style="font-size:10pt">/ SA-ksuh-fohn /  ·  /ˈsæksəfoʊn/</div>
         <div class="d">a single-reed woodwind with a conical bore</div><div class="hook">hook: SAX-O-PHONE: the Sax makes a PHONE call — no 'a' in the middle, just an o.</div>
+        
         <div class="ex">The jazz musician played a mellow ▁▁▁ solo that filled the entire club with warm</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-strait-r2.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -570,7 +594,7 @@
 <div class="page" data-vol="7">
       <div class="bb-head"><span>Chapter 2 · phon / phone (sound / voice)</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>megaphone</b> <span class="tile" style="font-size:8.8pt">/MEH-guh-fohn/</span><br>a cone-shaped acoustic device held to the mouth to…</div><div class="bb-row"><b>xylophone</b> <span class="tile" style="font-size:8.8pt">/ZEYE-luh-fohn/</span><br>played with small mallets</div><div class="bb-row"><b>phonics</b> <span class="tile" style="font-size:8.8pt">/FAH-nihks/</span><br>teaching reading by training beginners to associate…</div><div class="bb-row"><b>phonetics</b> <span class="tile" style="font-size:8.8pt">/fuh-NEH-tihks/</span><br>the branch of acoustics concerned with speech…</div><div class="bb-row"><b>homophone</b> <span class="tile" style="font-size:8.8pt">/HOH-moh-fohn/</span><br>two words are homophones if they are pronounced the…</div><div class="bb-row"><b>phoneme</b> <span class="tile" style="font-size:8.8pt">/FOH-neem/</span><br>(linguistics) one of a small set of speech sounds…</div><div class="bb-row"><b>philharmonic</b> <span class="tile" style="font-size:8.8pt">/fih-lhah-RMAH-nihk/</span><br>a large orchestra; can perform symphonies</div><div class="bb-row"><b>dysphonia</b> <span class="tile" style="font-size:8.8pt">/dis-FOH-nee-uh/</span><br>speech disorder attributable to a disorder of…</div><div class="bb-row"><b>aphasia</b> <span class="tile" style="font-size:8.8pt">/uh-FAY-zhuh/</span><br>inability to use or understand language (spoken or…</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">megaphone</b> <span class="tile" style="font-size:8.8pt">/MEH-guh-fohn/</span><br>a cone-shaped acoustic device held to the mouth to…</div><div class="bb-row"><b class="">xylophone</b> <span class="tile" style="font-size:8.8pt">/ZEYE-luh-fohn/</span><br>played with small mallets</div><div class="bb-row"><b class="">phonics</b> <span class="tile" style="font-size:8.8pt">/FAH-nihks/</span><br>teaching reading by training beginners to associate…</div><div class="bb-row"><b class="">phonetics</b> <span class="tile" style="font-size:8.8pt">/fuh-NEH-tihks/</span><br>the branch of acoustics concerned with speech…</div><div class="bb-row"><b class="">homophone</b> <span class="tile" style="font-size:8.8pt">/HOH-moh-fohn/</span><br>two words are homophones if they are pronounced the…</div><div class="bb-row"><b class="">phoneme</b> <span class="tile" style="font-size:8.8pt">/FOH-neem/</span><br>(linguistics) one of a small set of speech sounds…</div><div class="bb-row"><b class="">philharmonic</b> <span class="tile" style="font-size:8.8pt">/fih-lhah-RMAH-nihk/</span><br>a large orchestra; can perform symphonies</div><div class="bb-row"><b class="">dysphonia</b> <span class="tile" style="font-size:8.8pt">/dis-FOH-nee-uh/</span><br>speech disorder attributable to a disorder of…</div><div class="bb-row"><b class="">aphasia</b> <span class="tile" style="font-size:8.8pt">/uh-FAY-zhuh/</span><br>inability to use or understand language (spoken or…</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -666,29 +690,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">sympathy</div>
-        <div class="say">/ SIH-mpuh-thee /  ·  /ˈsɪmpəθi/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">sympathy</div>
+        <div class="say" style="font-size:10pt">/ SIH-mpuh-thee /  ·  /ˈsɪmpəθi/</div>
         <div class="d">an inclination to support or be loyal to or to agree with an opinion</div><div class="hook">hook: SYMPATHY: feel the SAME (sym) PATHos—you walk the same feeling path</div>
+        
         <div class="ex">When Jordan broke her leg before the championship</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">empathy</div>
-        <div class="say">/ EH-mpuh-thee /  ·  /ˈɛmpəθi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">empathy</div>
+        <div class="say" style="font-size:10pt">/ EH-mpuh-thee /  ·  /ˈɛmpəθi/</div>
         <div class="d">understanding and entering into another's feelings</div><div class="hook">hook: EMPATHY: Enter My Pal's Agony To Help You — no extra 'h' after 'em'.</div>
+        
         <div class="ex">Her ▁▁▁ for the injured stray cat led her to spend hours nursing it back to health.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">antipathy</div>
-        <div class="say">/ a-NTIH-puh-thee /  ·  /æˈntɪpəθi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">antipathy</div>
+        <div class="say" style="font-size:10pt">/ a-NTIH-puh-thee /  ·  /æˈntɪpəθi/</div>
         <div class="d">a feeling of intense dislike</div><div class="hook">hook: ANTI-PATHy — you are on the ANTI PATH to liking someone</div>
+        
         <div class="ex">The two rival teams developed a deep ▁▁▁ toward each other after years of intense…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">apathy</div>
-        <div class="say">/ A-puh-thee /  ·  /ˈæpəθi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">apathy</div>
+        <div class="say" style="font-size:10pt">/ A-puh-thee /  ·  /ˈæpəθi/</div>
         <div class="d">an absence of emotion or enthusiasm</div><div class="hook">hook: A-PATH-Y: apathy is being on a path with no destination</div>
+        
         <div class="ex">The coach worried that the team's ▁▁▁ after three straight losses would make it…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">neuropathy</div>
-        <div class="say">/ NUU-roh-pa-thee /  ·  /ˈnʊroʊpæθi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">neuropathy</div>
+        <div class="say" style="font-size:10pt">/ NUU-roh-pa-thee /  ·  /ˈnʊroʊpæθi/</div>
         <div class="d">any pathology of the peripheral nerves</div><div class="hook">hook: NEUROPATHy: the nerve's PATH leads to suffering</div>
+        
         <div class="ex">The diabetic patient developed ▁▁▁ in her feet</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">osteopathy</div>
-        <div class="say">/ os-tee-OP-uh-thee /  ·  /ɑstiˈɑpəθi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">osteopathy</div>
+        <div class="say" style="font-size:10pt">/ os-tee-OP-uh-thee /  ·  /ɑstiˈɑpəθi/</div>
         <div class="d">therapy based on the assumption that restoring health is best accomplished by…</div><div class="hook">hook: OSTEO-PATHY: 'osteo' (bone) + pathy (treatment/suffering)</div>
+        
         <div class="ex">She visited an ▁▁▁ clinic where the doctor used gentle manipulation to relieve her…</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-junkyard-r2.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -696,7 +726,7 @@
 <div class="page" data-vol="7">
       <div class="bb-head"><span>Chapter 3 · path / pathy (suffering / feeling / disease)</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>psychopathy</b> <span class="tile" style="font-size:8.8pt">/seye-KAH-puh-thee/</span><br>any disease of the mind</div><div class="bb-row"><b>homeopathy</b> <span class="tile" style="font-size:8.8pt">/hoh-mee-oh-PA-thee/</span><br>in large amounts in healthy people</div><div class="bb-row"><b>cardiopathy</b> <span class="tile" style="font-size:8.8pt">/kar-dee-OP-uh-thee/</span><br>a disease of the heart</div><div class="bb-row"><b>pathology</b> <span class="tile" style="font-size:8.8pt">/puh-THAH-luh-jee/</span><br>the branch of medical science that studies the…</div><div class="bb-row"><b>pathogen</b> <span class="tile" style="font-size:8.8pt">/PA-thuh-juhn/</span><br>any disease-producing agent (especially a virus or…</div><div class="bb-row"><b>pathological</b> <span class="tile" style="font-size:8.8pt">/pa-thuh-LAH-jih-kuhl/</span><br>of or relating to the practice of pathology</div><div class="bb-row"><b>telepathy</b> <span class="tile" style="font-size:8.8pt">/t-uh-l-EH-p-uh-th-ee/</span><br>is communication between minds</div><div class="bb-row"><b>sociopathy</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>bathos</b> <span class="tile" style="font-size:8.8pt">/BAY-thohs/</span><br>triteness or triviality of style</div><div class="bb-row"><b>pathos</b> <span class="tile" style="font-size:8.8pt">/PAY-thahs/</span><br>a quality that arouses emotions (especially pity or…</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">psychopathy</b> <span class="tile" style="font-size:8.8pt">/seye-KAH-puh-thee/</span><br>any disease of the mind</div><div class="bb-row"><b class="">homeopathy</b> <span class="tile" style="font-size:8.8pt">/hoh-mee-oh-PA-thee/</span><br>in large amounts in healthy people</div><div class="bb-row"><b class="">cardiopathy</b> <span class="tile" style="font-size:8.8pt">/kar-dee-OP-uh-thee/</span><br>a disease of the heart</div><div class="bb-row"><b class="">pathology</b> <span class="tile" style="font-size:8.8pt">/puh-THAH-luh-jee/</span><br>the branch of medical science that studies the…</div><div class="bb-row"><b class="">pathogen</b> <span class="tile" style="font-size:8.8pt">/PA-thuh-juhn/</span><br>any disease-producing agent (especially a virus or…</div><div class="bb-row"><b class="">pathological</b> <span class="tile" style="font-size:8.8pt">/pa-thuh-LAH-jih-kuhl/</span><br>of or relating to the practice of pathology</div><div class="bb-row"><b class="">telepathy</b> <span class="tile" style="font-size:8.8pt">/t-uh-l-EH-p-uh-th-ee/</span><br>is communication between minds</div><div class="bb-row"><b class="">sociopathy</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">bathos</b> <span class="tile" style="font-size:8.8pt">/BAY-thohs/</span><br>triteness or triviality of style</div><div class="bb-row"><b class="">pathos</b> <span class="tile" style="font-size:8.8pt">/PAY-thahs/</span><br>a quality that arouses emotions (especially pity or…</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -793,29 +823,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">anachronism</div>
-        <div class="say">/ uh-NA-kruh-nih-zuhm /  ·  /əˈnækrənɪzəm/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">anachronism</div>
+        <div class="say" style="font-size:10pt">/ uh-NA-kruh-nih-zuhm /  ·  /əˈnækrənɪzəm/</div>
         <div class="d">something located at a time when it could not have existed or occurred</div><div class="hook">hook: An ANACHRONISM fights against (ANA) CHRONOS (time)</div>
+        
         <div class="ex">The knight carrying a smartphone in the historical film was an obvious ▁▁▁ that…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">synchronize</div>
-        <div class="say">/ SIH-ngkruh-neyez /  ·  /ˈsɪŋkrənaɪz/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">synchronize</div>
+        <div class="say" style="font-size:10pt">/ SIH-ngkruh-neyez /  ·  /ˈsɪŋkrənaɪz/</div>
         <div class="d">make synchronous and adjust in time or manner</div><div class="hook">hook: SYNCHRONize your watches</div>
+        
         <div class="ex">Let's ▁▁▁ our efforts</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">chronometer</div>
-        <div class="say">/ kruh-NOM-ih-ter /  ·  /krəˈnɑmɪtər/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">chronometer</div>
+        <div class="say" style="font-size:10pt">/ kruh-NOM-ih-ter /  ·  /krəˈnɑmɪtər/</div>
         <div class="d">an accurate clock (especially used in navigation)</div><div class="hook">hook: CHRONO (time) + METER (measure) = time measurer.</div>
+        
         <div class="ex">The ship's navigator relied on the ▁▁▁ to calculate their exact position in the…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">chronograph</div>
-        <div class="say">/ KROH-noh-graf /  ·  /ˈkroʊnoʊɡræf/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">chronograph</div>
+        <div class="say" style="font-size:10pt">/ KROH-noh-graf /  ·  /ˈkroʊnoʊɡræf/</div>
         <div class="d">an accurate timer for recording time</div><div class="hook">hook: A chronograph GRAPHS time — CHRONOgraph writes (graphs) time for you.</div>
+        
         <div class="ex">The Olympic coach used a ▁▁▁ to record each swimmer's exact finishing time down to…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">chronicle</div>
-        <div class="say">/ KRAH-nih-kuhl /  ·  /ˈkrɑnɪkəl/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">chronicle</div>
+        <div class="say" style="font-size:10pt">/ KRAH-nih-kuhl /  ·  /ˈkrɑnɪkəl/</div>
         <div class="d">a record or narrative description of past events</div><div class="hook">hook: A CHRONICLE tracks time in little bites</div>
+        
         <div class="ex">The elderly historian decided to write a detailed ▁▁▁ of the town's founding</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">chronic</div>
-        <div class="say">/ KRAH-nihk /  ·  /ˈkrɑnɪk/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">chronic</div>
+        <div class="say" style="font-size:10pt">/ KRAH-nihk /  ·  /ˈkrɑnɪk/</div>
         <div class="d">being long-lasting and recurrent or characterized by long suffering</div><div class="hook">hook: CHRONIC pain lasts through time — 'chron' = time, just like in chronology.</div>
+        
         <div class="ex">After years of playing competitive soccer without proper rest</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-vibe-r2.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -823,7 +859,7 @@
 <div class="page" data-vol="7">
       <div class="bb-head"><span>Chapter 4 · chron (time)</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>diachronic</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>isochronal</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>chronological</b> <span class="tile" style="font-size:8.8pt">/krah-nuh-LAH-jih-kuhl/</span><br>relating to or arranged according to temporal order</div><div class="bb-row"><b>synchronicity</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>chronoscope</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>anachronistic</b> <span class="tile" style="font-size:8.8pt">/uh-na-kruh-NIH-stihk/</span><br>chronologically misplaced</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">diachronic</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">isochronal</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">chronological</b> <span class="tile" style="font-size:8.8pt">/krah-nuh-LAH-jih-kuhl/</span><br>relating to or arranged according to temporal order</div><div class="bb-row"><b class="">synchronicity</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">chronoscope</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">anachronistic</b> <span class="tile" style="font-size:8.8pt">/uh-na-kruh-NIH-stihk/</span><br>chronologically misplaced</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -918,29 +954,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">metamorphosis</div>
-        <div class="say">/ meh-tuh-MAW-rfuh-suhs /  ·  /mɛtəˈmɔrfəsəs/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">metamorphosis</div>
+        <div class="say" style="font-size:10pt">/ meh-tuh-MAW-rfuh-suhs /  ·  /mɛtəˈmɔrfəsəs/</div>
         <div class="d">the marked and rapid transformation of a larva into an adult that occurs in some…</div><div class="hook">hook: metaMORPHosis: the caterpillar MORPHs through a process (-osis), not an 'a'.</div>
+        
         <div class="ex">the ▁▁▁ of the old house into something new and exciting</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">amorphous</div>
-        <div class="say">/ uh-MAW-rfuhs /  ·  /əˈmɔrfəs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">amorphous</div>
+        <div class="say" style="font-size:10pt">/ uh-MAW-rfuhs /  ·  /əˈmɔrfəs/</div>
         <div class="d">having no definite form or distinct shape</div><div class="hook">hook: Amorphous has 'morph' inside — morph means shape, and amorphous has NO shape.</div>
+        
         <div class="ex">▁▁▁ clouds of insects</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">polymorphous</div>
-        <div class="say">/ pol-ee-MOR-fus /  ·  /pɑliˈmɔrfʌs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">polymorphous</div>
+        <div class="say" style="font-size:10pt">/ pol-ee-MOR-fus /  ·  /pɑliˈmɔrfʌs/</div>
         <div class="d">relating to the crystallization of a compound in two or more different forms</div><div class="hook">hook: POLY + MORPH + OUS: many morphs (shapes)</div>
+        
         <div class="ex">▁▁▁ crystallization</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">morphology</div>
-        <div class="say">/ maw-RFAH-luh-jee /  ·  /mɔˈrfɑlədʒi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">morphology</div>
+        <div class="say" style="font-size:10pt">/ maw-RFAH-luh-jee /  ·  /mɔˈrfɑlədʒi/</div>
         <div class="d">the branch of biology that deals with the structure of animals and plants</div><div class="hook">hook: MORPHOLOGY: the study of form</div>
+        
         <div class="ex">In science class</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">dimorphic</div>
-        <div class="say">/ deye-MAW-rfihk /  ·  /daɪˈmɔrfɪk/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">dimorphic</div>
+        <div class="say" style="font-size:10pt">/ deye-MAW-rfihk /  ·  /daɪˈmɔrfɪk/</div>
         <div class="d">occurring or existing in two different forms</div><div class="hook">hook: DiMORPHic means two (DI) shapes (MORPH) — like a Transformer with two forms.</div>
+        
         <div class="ex">The biology textbook explained that many bird species are ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">anthropomorphic</div>
-        <div class="say">/ a-nthruh-puh-MAW-rfihk /  ·  /ænθrəpəˈmɔrfɪk/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:20.5pt"><div class="w">anthropomorphic</div>
+        <div class="say" style="font-size:10pt">/ a-nthruh-puh-MAW-rfihk /  ·  /ænθrəpəˈmɔrfɪk/</div>
         <div class="d">suggesting human characteristics for animals or inanimate things</div><div class="hook">hook: MORPHIC means shaped</div>
+        
         <div class="ex">The animated film featured ▁▁▁ animals who spoke</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-stage-r2.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -948,7 +990,7 @@
 <div class="page" data-vol="7">
       <div class="bb-head"><span>Chapter 5 · morph (form / shape)</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>geomorphic</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>isomorphic</b> <span class="tile" style="font-size:8.8pt">/eye-soh-MOR-fik/</span><br>having similar appearance but genetically different</div><div class="bb-row"><b>morpheme</b> <span class="tile" style="font-size:8.8pt">/MOR-feem/</span><br>minimal meaningful language unit</div><div class="bb-row"><b>allomorph</b> <span class="tile" style="font-size:8.8pt">/A-luh-mawrf/</span><br>any of several different crystalline forms of the…</div><div class="bb-row"><b>anthropomorphism</b> <span class="tile" style="font-size:8.8pt">/a-nthruh-puh-MAW-rfih-zuhm/</span><br>the representation of objects (especially a god) as…</div><div class="bb-row"><b>anamorphic</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>morphine</b> <span class="tile" style="font-size:8.8pt">/m-AW-r-f-ee-n/</span><br>is a narcotic used as a pain-killer or sedative</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">geomorphic</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">isomorphic</b> <span class="tile" style="font-size:8.8pt">/eye-soh-MOR-fik/</span><br>having similar appearance but genetically different</div><div class="bb-row"><b class="">morpheme</b> <span class="tile" style="font-size:8.8pt">/MOR-feem/</span><br>minimal meaningful language unit</div><div class="bb-row"><b class="">allomorph</b> <span class="tile" style="font-size:8.8pt">/A-luh-mawrf/</span><br>any of several different crystalline forms of the…</div><div class="bb-row"><b class="">anthropomorphism</b> <span class="tile" style="font-size:8.8pt">/a-nthruh-puh-MAW-rfih-zuhm/</span><br>the representation of objects (especially a god) as…</div><div class="bb-row"><b class="">anamorphic</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">morphine</b> <span class="tile" style="font-size:8.8pt">/m-AW-r-f-ee-n/</span><br>is a narcotic used as a pain-killer or sedative</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1044,29 +1086,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">kaleidoscope</div>
-        <div class="say">/ k-uh-l-AY-d-uh-s-k-oh-p /  ·  /kəˈlaɪdəˌskoʊp/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">kaleidoscope</div>
+        <div class="say" style="font-size:10pt">/ k-uh-l-AY-d-uh-s-k-oh-p /  ·  /kəˈlaɪdəˌskoʊp/</div>
         <div class="d">is a continually shifting pattern or scene</div><div class="hook">hook: KALeidoscope shows BEAUTIFUL (kalos) SHAPES (eidos) to SEE (scope).</div>
+        
         <div class="ex">Looking through the ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">microscope</div>
-        <div class="say">/ MEYE-kruh-skohp /  ·  /ˈmaɪkrəskoʊp/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">microscope</div>
+        <div class="say" style="font-size:10pt">/ MEYE-kruh-skohp /  ·  /ˈmaɪkrəskoʊp/</div>
         <div class="d">magnifier of the image of small objects</div><div class="hook">hook: A MICROSCOPE lets you SCOPE out (look at) MICRO (tiny) things—micro+scope.</div>
+        
         <div class="ex">the invention of the ▁▁▁ led to the discovery of the cell</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">telescope</div>
-        <div class="say">/ TEH-luh-skohp /  ·  /ˈtɛləskoʊp/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">telescope</div>
+        <div class="say" style="font-size:10pt">/ TEH-luh-skohp /  ·  /ˈtɛləskoʊp/</div>
         <div class="d">a magnifier of images of distant objects</div><div class="hook">hook: A TELESCOPE lets you SCOPE (look) from TELE (far) — scope out distant stars!</div>
+        
         <div class="ex">In the accident, the cars ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">periscope</div>
-        <div class="say">/ PEH-ruh-skohp /  ·  /ˈpɛrəskoʊp/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">periscope</div>
+        <div class="say" style="font-size:10pt">/ PEH-ruh-skohp /  ·  /ˈpɛrəskoʊp/</div>
         <div class="d">an optical instrument that provides a view of an otherwise obstructed field</div><div class="hook">hook: A PERISCOPE lets you SCOPE all AROUND</div>
+        
         <div class="ex">The submarine crew used a ▁▁▁ to scan the surface of the ocean without rising above…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">stethoscope</div>
-        <div class="say">/ STEH-thuh-skohp /  ·  /ˈstɛθəskoʊp/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">stethoscope</div>
+        <div class="say" style="font-size:10pt">/ STEH-thuh-skohp /  ·  /ˈstɛθəskoʊp/</div>
         <div class="d">a medical instrument for listening to the sounds generated inside the body</div><div class="hook">hook: The STETHO-SCOPE lets doctors SCOPE out your CHEST — no 'e' sneaks in between.</div>
+        
         <div class="ex">The doctor pressed the cold ▁▁▁ against the boy's chest and listened carefully to…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">endoscope</div>
-        <div class="say">/ EH-ndoh-skohp /  ·  /ˈɛndoʊskoʊp/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">endoscope</div>
+        <div class="say" style="font-size:10pt">/ EH-ndoh-skohp /  ·  /ˈɛndoʊskoʊp/</div>
         <div class="d">a long slender medical instrument for examining the interior of a bodily organ…</div><div class="hook">hook: An ENDOscope lets doctors look INSIDE</div>
+        
         <div class="ex">The doctor used an ▁▁▁ to examine the patient's stomach without requiring major…</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-warfield-r2.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1074,7 +1122,7 @@
 <div class="page" data-vol="7">
       <div class="bb-head"><span>Chapter 6 · scop / scope (see / examine)</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>laparoscope</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>ophthalmoscope</b> <span class="tile" style="font-size:8.8pt">/ah-FTHA-lmuh-skohp/</span><br>medical instrument for examining the retina of the eye</div><div class="bb-row"><b>oscilloscope</b> <span class="tile" style="font-size:8.8pt">/aw-SIH-luh-skohp/</span><br>electronic equipment that provides visual images of…</div><div class="bb-row"><b>spectroscope</b> <span class="tile" style="font-size:8.8pt">/SPEK-troh-skohp/</span><br>an optical instrument for spectrographic analysis</div><div class="bb-row"><b>cystoscope</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>colonoscope</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>horoscope</b> <span class="tile" style="font-size:8.8pt">/HAW-ruh-skohp/</span><br>a prediction of someone's future based on the…</div><div class="bb-row"><b>bronchoscope</b> <span class="tile" style="font-size:8.8pt">/brah-nkuh-SKOHP/</span><br>a slender tubular instrument used to examine the…</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">laparoscope</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">ophthalmoscope</b> <span class="tile" style="font-size:8.8pt">/ah-FTHA-lmuh-skohp/</span><br>medical instrument for examining the retina of the eye</div><div class="bb-row"><b class="">oscilloscope</b> <span class="tile" style="font-size:8.8pt">/aw-SIH-luh-skohp/</span><br>electronic equipment that provides visual images of…</div><div class="bb-row"><b class="">spectroscope</b> <span class="tile" style="font-size:8.8pt">/SPEK-troh-skohp/</span><br>an optical instrument for spectrographic analysis</div><div class="bb-row"><b class="">cystoscope</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">colonoscope</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">horoscope</b> <span class="tile" style="font-size:8.8pt">/HAW-ruh-skohp/</span><br>a prediction of someone's future based on the…</div><div class="bb-row"><b class="">bronchoscope</b> <span class="tile" style="font-size:8.8pt">/brah-nkuh-SKOHP/</span><br>a slender tubular instrument used to examine the…</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1172,29 +1220,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">monologue</div>
-        <div class="say">/ MAH-nuh-lawg /  ·  /ˈmɑnəlɔɡ/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">monologue</div>
+        <div class="say" style="font-size:10pt">/ MAH-nuh-lawg /  ·  /ˈmɑnəlɔɡ/</div>
         <div class="d">speech you make to yourself</div><div class="hook">hook: A MONOlogue is ONE person's LOGUE (speech)</div>
+        
         <div class="ex">The actor delivered a powerful ▁▁▁ that left the entire audience holding its breath.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">dialogue</div>
-        <div class="say">/ d-AY-uh-l-aw-g /  ·  /dˈeɪəlɔɡ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">dialogue</div>
+        <div class="say" style="font-size:10pt">/ d-AY-uh-l-aw-g /  ·  /dˈeɪəlɔɡ/</div>
         <div class="d">is conversation with two or more people</div><div class="hook">hook: A dialogUE always ends politely with a silent UE</div>
+        
         <div class="ex">he has read Plato's ▁▁▁ in the original Greek</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">prologue</div>
-        <div class="say">/ PROH-lahg /  ·  /ˈproʊlɑɡ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">prologue</div>
+        <div class="say" style="font-size:10pt">/ PROH-lahg /  ·  /ˈproʊlɑɡ/</div>
         <div class="d">an introduction to a play</div><div class="hook">hook: A prOLOGUE opens the show</div>
+        
         <div class="ex">The ▁▁▁ hinted at the dark events that would unfold later in the play.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">epilogue</div>
-        <div class="say">/ EH-puh-lawg /  ·  /ˈɛpəlɔɡ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">epilogue</div>
+        <div class="say" style="font-size:10pt">/ EH-puh-lawg /  ·  /ˈɛpəlɔɡ/</div>
         <div class="d">a short speech (often in verse) addressed directly to the audience by an actor…</div><div class="hook">hook: An EPILOGue ends with a VOGUE bow</div>
+        
         <div class="ex">the ▁▁▁ told what eventually happened to the main characters</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">analogy</div>
-        <div class="say">/ uh-NA-luh-jee /  ·  /əˈnælədʒi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">analogy</div>
+        <div class="say" style="font-size:10pt">/ uh-NA-luh-jee /  ·  /əˈnælədʒi/</div>
         <div class="d">an inference that if things agree in some respects they probably agree in others</div><div class="hook">hook: An ANALOGY uses LOGIC (log) to draw a comparison — find the LOG in anaLOGy.</div>
+        
         <div class="ex">the operation of a computer presents and interesting ▁▁▁ to the working of the brain</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">tautology</div>
-        <div class="say">/ taw-TOL-uh-jee /  ·  /tɔˈtɑlədʒi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">tautology</div>
+        <div class="say" style="font-size:10pt">/ taw-TOL-uh-jee /  ·  /tɔˈtɑlədʒi/</div>
         <div class="d">(logic) a statement that is necessarily true</div><div class="hook">hook: TAUTO means SAME so a TAUTOlogy says the same thing twice</div>
+        
         <div class="ex">The phrase 'a bachelor who has never been married' is a ▁▁▁</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-greysea-r2.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1202,7 +1256,7 @@
 <div class="page" data-vol="7">
       <div class="bb-head"><span>Chapter 7 · log / logy (word / reason / study)</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>eulogy</b> <span class="tile" style="font-size:8.8pt">/y-OO-l-uh-j-ee/</span><br>is a speech in praise of a dead person</div><div class="bb-row"><b>neologism</b> <span class="tile" style="font-size:8.8pt">/nee-AH-luh-jih-zum/</span><br>a newly invented word or phrase</div><div class="bb-row"><b>syllogism</b> <span class="tile" style="font-size:8.8pt">/SIL-uh-jiz-um/</span><br>deductive reasoning in which a conclusion is derived…</div><div class="bb-row"><b>demagogue</b> <span class="tile" style="font-size:8.8pt">/DEH-muh-gahg/</span><br>a political leader who seeks support by appealing to…</div><div class="bb-row"><b>pedagogue</b> <span class="tile" style="font-size:8.8pt">/PED-uh-gog/</span><br>someone who educates young people</div><div class="bb-row"><b>theology</b> <span class="tile" style="font-size:8.8pt">/thee-AH-luh-jee/</span><br>the rational and systematic study of religion and…</div><div class="bb-row"><b>catalog</b> <span class="tile" style="font-size:8.8pt">/KA-tuh-lawg/</span><br>a book or pamphlet containing an enumeration of things</div><div class="bb-row"><b>travelogue</b> <span class="tile" style="font-size:8.8pt">/TRA-vuh-lawg/</span><br>a film or illustrated lecture on traveling</div><div class="bb-row"><b>apology</b> <span class="tile" style="font-size:8.8pt">/uh-PAH-luh-jee/</span><br>an expression of regret at having caused trouble for…</div><div class="bb-row"><b>trilogy</b> <span class="tile" style="font-size:8.8pt">/TRIH-luh-jee/</span><br>a set of three literary or dramatic works related in…</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">eulogy</b> <span class="tile" style="font-size:8.8pt">/y-OO-l-uh-j-ee/</span><br>is a speech in praise of a dead person</div><div class="bb-row"><b class="">neologism</b> <span class="tile" style="font-size:8.8pt">/nee-AH-luh-jih-zum/</span><br>a newly invented word or phrase</div><div class="bb-row"><b class="">syllogism</b> <span class="tile" style="font-size:8.8pt">/SIL-uh-jiz-um/</span><br>deductive reasoning in which a conclusion is derived…</div><div class="bb-row"><b class="">demagogue</b> <span class="tile" style="font-size:8.8pt">/DEH-muh-gahg/</span><br>a political leader who seeks support by appealing to…</div><div class="bb-row"><b class="">pedagogue</b> <span class="tile" style="font-size:8.8pt">/PED-uh-gog/</span><br>someone who educates young people</div><div class="bb-row"><b class="">theology</b> <span class="tile" style="font-size:8.8pt">/thee-AH-luh-jee/</span><br>the rational and systematic study of religion and…</div><div class="bb-row"><b class="">catalog</b> <span class="tile" style="font-size:8.8pt">/KA-tuh-lawg/</span><br>a book or pamphlet containing an enumeration of things</div><div class="bb-row"><b class="">travelogue</b> <span class="tile" style="font-size:8.8pt">/TRA-vuh-lawg/</span><br>a film or illustrated lecture on traveling</div><div class="bb-row"><b class="">apology</b> <span class="tile" style="font-size:8.8pt">/uh-PAH-luh-jee/</span><br>an expression of regret at having caused trouble for…</div><div class="bb-row"><b class="">trilogy</b> <span class="tile" style="font-size:8.8pt">/TRIH-luh-jee/</span><br>a set of three literary or dramatic works related in…</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1297,29 +1351,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">philanthropy</div>
-        <div class="say">/ fih-LA-nthruh-pee /  ·  /fɪˈlænθrəpi/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">philanthropy</div>
+        <div class="say" style="font-size:10pt">/ fih-LA-nthruh-pee /  ·  /fɪˈlænθrəpi/</div>
         <div class="d">voluntary promotion of human welfare</div><div class="hook">hook: PHIL loves ANTHROP-ology</div>
+        
         <div class="ex">The billionaire devoted her retirement to ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">philosophy</div>
-        <div class="say">/ fuh-LAH-suh-fee /  ·  /fəˈlɑsəfi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">philosophy</div>
+        <div class="say" style="font-size:10pt">/ fuh-LAH-suh-fee /  ·  /fəˈlɑsəfi/</div>
         <div class="d">a belief (or system of beliefs) accepted as authoritative by some group or school</div><div class="hook">hook: PHIL-O-SOPH-Y: Phil loves Sophie — no letters skipped between them.</div>
+        
         <div class="ex">self-indulgence was his only ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">philharmonic</div>
-        <div class="say">/ fih-lhah-RMAH-nihk /  ·  /fɪlhɑˈrmɑnɪk/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">philharmonic</div>
+        <div class="say" style="font-size:10pt">/ fih-lhah-RMAH-nihk /  ·  /fɪlhɑˈrmɑnɪk/</div>
         <div class="d">a large orchestra; can perform symphonies</div><div class="hook">hook: PHILharmonic: a PHIL-anthropist LOVES people; philharmonic LOVES harmony</div>
+        
         <div class="ex">The seventh-grade music class attended a concert performed by the city's ▁▁▁ and…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">bibliophile</div>
-        <div class="say"></div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">bibliophile</div>
+        <div class="say" style="font-size:10pt"></div>
         <div class="d"></div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">anglophile</div>
-        <div class="say">/ A-ngluh-feyel /  ·  /ˈæŋləfaɪl/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">anglophile</div>
+        <div class="say" style="font-size:10pt">/ A-ngluh-feyel /  ·  /ˈæŋləfaɪl/</div>
         <div class="d">an admirer of England and things English</div><div class="hook">hook: ANGLO + PHILE — a phile (lover) of all things ANGLO (English)</div>
+        
         <div class="ex">As an ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">francophile</div>
-        <div class="say">/ FRA-ngkuh-feyel /  ·  /ˈfræŋkəfaɪl/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">francophile</div>
+        <div class="say" style="font-size:10pt">/ FRA-ngkuh-feyel /  ·  /ˈfræŋkəfaɪl/</div>
         <div class="d">an admirer of France and everything French</div><div class="hook">hook: A FRANCOPHILE loves FRANCE</div>
+        
         <div class="ex">A true ▁▁▁, Mr.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-meadow-r2.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1327,7 +1387,7 @@
 <div class="page" data-vol="7">
       <div class="bb-head"><span>Chapter 8 · phil / phile (love)</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>oenophile</b> <span class="tile" style="font-size:8.8pt">/EE-nuh-feyel/</span><br>someone who appreciates wine</div><div class="bb-row"><b>cinephile</b> <span class="tile" style="font-size:8.8pt">/SIN-uh-fyl/</span><br>A person who is extremely enthusiastic about and…</div><div class="bb-row"><b>xenophile</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b>hemophilia</b> <span class="tile" style="font-size:8.8pt">/hee-muh-FEE-lee-uh/</span><br>congenital tendency to uncontrolled bleeding</div><div class="bb-row"><b>philadelphia</b> <span class="tile" style="font-size:8.8pt">/fih-luh-DEH-lfee-uh/</span><br>the largest city in Pennsylvania</div><div class="bb-row"><b>bibliophilia</b> <span class="tile" style="font-size:8.8pt">/bib-lee-oh-FIL-ee-uh/</span><br>A deep love of books and reading</div><div class="bb-row"><b>philology</b> <span class="tile" style="font-size:8.8pt">/fih-LOL-oh-jee/</span><br>the humanistic study of language and literature</div><div class="bb-row"><b>philosophic</b> <span class="tile" style="font-size:8.8pt">/fih-luh-SAH-fihk/</span><br>of or relating to philosophy or philosophers</div><div class="bb-row"><b>philanthropist</b> <span class="tile" style="font-size:8.8pt">/fuh-LA-nthruh-puhst/</span><br>someone who makes charitable donations intended to…</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">oenophile</b> <span class="tile" style="font-size:8.8pt">/EE-nuh-feyel/</span><br>someone who appreciates wine</div><div class="bb-row"><b class="">cinephile</b> <span class="tile" style="font-size:8.8pt">/SIN-uh-fyl/</span><br>A person who is extremely enthusiastic about and…</div><div class="bb-row"><b class="">xenophile</b> <span class="tile" style="font-size:8.8pt"></span><br></div><div class="bb-row"><b class="">hemophilia</b> <span class="tile" style="font-size:8.8pt">/hee-muh-FEE-lee-uh/</span><br>congenital tendency to uncontrolled bleeding</div><div class="bb-row"><b class="">philadelphia</b> <span class="tile" style="font-size:8.8pt">/fih-luh-DEH-lfee-uh/</span><br>the largest city in Pennsylvania</div><div class="bb-row"><b class="">bibliophilia</b> <span class="tile" style="font-size:8.8pt">/bib-lee-oh-FIL-ee-uh/</span><br>A deep love of books and reading</div><div class="bb-row"><b class="">philology</b> <span class="tile" style="font-size:8.8pt">/fih-LOL-oh-jee/</span><br>the humanistic study of language and literature</div><div class="bb-row"><b class="">philosophic</b> <span class="tile" style="font-size:8.8pt">/fih-luh-SAH-fihk/</span><br>of or relating to philosophy or philosophers</div><div class="bb-row"><b class="">philanthropist</b> <span class="tile" style="font-size:8.8pt">/fuh-LA-nthruh-puhst/</span><br>someone who makes charitable donations intended to…</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1423,29 +1483,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">genealogy</div>
-        <div class="say">/ jee-nee-AH-luh-jee /  ·  /dʒiniˈɑlədʒi/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">genealogy</div>
+        <div class="say" style="font-size:10pt">/ jee-nee-AH-luh-jee /  ·  /dʒiniˈɑlədʒi/</div>
         <div class="d">successive generations of kin</div><div class="hook">hook: GENEaLOGY: your GENE family LOG</div>
+        
         <div class="ex">After months of research into her ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">genesis</div>
-        <div class="say">/ JEH-nuh-suhs /  ·  /ˈdʒɛnəsəs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">genesis</div>
+        <div class="say" style="font-size:10pt">/ JEH-nuh-suhs /  ·  /ˈdʒɛnəsəs/</div>
         <div class="d">a coming into being</div><div class="hook">hook: Genesis is the origin</div>
+        
         <div class="ex">Scientists still debate the ▁▁▁ of the universe and what existed before the Big Bang.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">genetics</div>
-        <div class="say">/ juh-NEH-tihks /  ·  /dʒəˈnɛtɪks/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">genetics</div>
+        <div class="say" style="font-size:10pt">/ juh-NEH-tihks /  ·  /dʒəˈnɛtɪks/</div>
         <div class="d">the branch of biology that studies heredity and variation in organisms</div><div class="hook">hook: GENETICS begins with GENE — because genes are what this science is all about.</div>
+        
         <div class="ex">Her fascination with ▁▁▁ led her to study how inherited traits are passed from…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">generate</div>
-        <div class="say">/ JEH-ner-ayt /  ·  /ˈdʒɛnəreɪt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">generate</div>
+        <div class="say" style="font-size:10pt">/ JEH-ner-ayt /  ·  /ˈdʒɛnəreɪt/</div>
         <div class="d">bring into existence</div><div class="hook">hook: Generate keeps 'gene' at the start</div>
+        
         <div class="ex">The new manager ▁▁▁ a lot of problems</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">hydrogen</div>
-        <div class="say">/ HEYE-druh-juhn /  ·  /ˈhaɪdrədʒən/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">hydrogen</div>
+        <div class="say" style="font-size:10pt">/ HEYE-druh-juhn /  ·  /ˈhaɪdrədʒən/</div>
         <div class="d">the simplest and lightest and most abundant element in the universe</div><div class="hook">hook: HydroGEN GENerates water when burned</div>
+        
         <div class="ex">▁▁▁ is the lightest element on the periodic table and makes up most of the universe's…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">oxygen</div>
-        <div class="say">/ AH-ksuh-juhn /  ·  /ˈɑksədʒən/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">oxygen</div>
+        <div class="say" style="font-size:10pt">/ AH-ksuh-juhn /  ·  /ˈɑksədʒən/</div>
         <div class="d">constitutes 21 percent of the atmosphere by volume</div><div class="hook">hook: OXYGEN was named 'acid producer'</div>
+        
         <div class="ex">The deep-sea diver carefully checked her ▁▁▁ tank before descending into the dark ocean…</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-library-r2.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1453,7 +1519,7 @@
 <div class="page" data-vol="7">
       <div class="bb-head"><span>Chapter 9 · gen / genesis (birth / origin / produce)</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>nitrogen</b> <span class="tile" style="font-size:8.8pt">/n-AY-t-r-uh-j-uh-n/</span><br>a common nonmetallic element that constitutes 78…</div><div class="bb-row"><b>pathogen</b> <span class="tile" style="font-size:8.8pt">/PA-thuh-juhn/</span><br>any disease-producing agent (especially a virus or…</div><div class="bb-row"><b>carcinogen</b> <span class="tile" style="font-size:8.8pt">/kah-RSIH-nuh-juhn/</span><br>any substance that produces cancer</div><div class="bb-row"><b>photogenic</b> <span class="tile" style="font-size:8.8pt">/foh-tuh-JEH-nihk/</span><br>looking attractive in photographs</div><div class="bb-row"><b>pathogenic</b> <span class="tile" style="font-size:8.8pt">/pa-thuh-JEH-nihk/</span><br>able to cause disease</div><div class="bb-row"><b>carcinogenic</b> <span class="tile" style="font-size:8.8pt">/kah-rsuh-noh-JEH-nihk/</span><br>causing or tending to cause cancer</div><div class="bb-row"><b>homogeneous</b> <span class="tile" style="font-size:8.8pt">/hoh-muh-JEE-nee-uhs/</span><br>all of the same or similar kind or nature</div><div class="bb-row"><b>heterogeneous</b> <span class="tile" style="font-size:8.8pt">/h-eh-t-ur-uh-j-EE-n-y-uh-s/</span><br>is different in kind unlike</div><div class="bb-row"><b>genus</b> <span class="tile" style="font-size:8.8pt">/JEE-nuhs/</span><br>a general kind of something</div><div class="bb-row"><b>genre</b> <span class="tile" style="font-size:8.8pt">/zh-AH-n-r-uh/</span><br>is a class of artistic endeavor having a particular…</div><div class="bb-row"><b>congenital</b> <span class="tile" style="font-size:8.8pt">/kuh-NJEH-nuh-tuhl/</span><br>present at birth but not necessarily hereditary</div><div class="bb-row"><b>indigenous</b> <span class="tile" style="font-size:8.8pt">/ih-NDIH-juh-nuhs/</span><br>originating where it is found</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">nitrogen</b> <span class="tile" style="font-size:8.8pt">/n-AY-t-r-uh-j-uh-n/</span><br>a common nonmetallic element that constitutes 78…</div><div class="bb-row"><b class="">pathogen</b> <span class="tile" style="font-size:8.8pt">/PA-thuh-juhn/</span><br>any disease-producing agent (especially a virus or…</div><div class="bb-row"><b class="">carcinogen</b> <span class="tile" style="font-size:8.8pt">/kah-RSIH-nuh-juhn/</span><br>any substance that produces cancer</div><div class="bb-row"><b class="">photogenic</b> <span class="tile" style="font-size:8.8pt">/foh-tuh-JEH-nihk/</span><br>looking attractive in photographs</div><div class="bb-row"><b class="">pathogenic</b> <span class="tile" style="font-size:8.8pt">/pa-thuh-JEH-nihk/</span><br>able to cause disease</div><div class="bb-row"><b class="">carcinogenic</b> <span class="tile" style="font-size:8.8pt">/kah-rsuh-noh-JEH-nihk/</span><br>causing or tending to cause cancer</div><div class="bb-row"><b class="">homogeneous</b> <span class="tile" style="font-size:8.8pt">/hoh-muh-JEE-nee-uhs/</span><br>all of the same or similar kind or nature</div><div class="bb-row"><b class="">heterogeneous</b> <span class="tile" style="font-size:8.8pt">/h-eh-t-ur-uh-j-EE-n-y-uh-s/</span><br>is different in kind unlike</div><div class="bb-row"><b class="">genus</b> <span class="tile" style="font-size:8.8pt">/JEE-nuhs/</span><br>a general kind of something</div><div class="bb-row"><b class="">genre</b> <span class="tile" style="font-size:8.8pt">/zh-AH-n-r-uh/</span><br>is a class of artistic endeavor having a particular…</div><div class="bb-row"><b class="">congenital</b> <span class="tile" style="font-size:8.8pt">/kuh-NJEH-nuh-tuhl/</span><br>present at birth but not necessarily hereditary</div><div class="bb-row"><b class="">indigenous</b> <span class="tile" style="font-size:8.8pt">/ih-NDIH-juh-nuhs/</span><br>originating where it is found</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1550,29 +1616,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">democracy</div>
-        <div class="say">/ dih-MAH-kruh-see /  ·  /dɪˈmɑkrəsi/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">democracy</div>
+        <div class="say" style="font-size:10pt">/ dih-MAH-kruh-see /  ·  /dɪˈmɑkrəsi/</div>
         <div class="d">the political orientation of those who favor government by the people or by…</div><div class="hook">hook: DEMOCRACY: DEMO the CRAZY idea that one person rules</div>
+        
         <div class="ex">Students in the civics class debated whether a true ▁▁▁ could survive when large…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">demagogue</div>
-        <div class="say">/ DEH-muh-gahg /  ·  /ˈdɛməɡɑɡ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">demagogue</div>
+        <div class="say" style="font-size:10pt">/ DEH-muh-gahg /  ·  /ˈdɛməɡɑɡ/</div>
         <div class="d">a political leader who seeks support by appealing to popular passions and…</div><div class="hook">hook: A DEMAGOGUE has a silent OGUE at the end</div>
+        
         <div class="ex">The historian warned that the fiery speaker was a ▁▁▁ who stirred up fear rather…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">epidemic</div>
-        <div class="say">/ eh-puh-DEH-mihk /  ·  /ˌɛpəˈdɛmɪk/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">epidemic</div>
+        <div class="say" style="font-size:10pt">/ eh-puh-DEH-mihk /  ·  /ˌɛpəˈdɛmɪk/</div>
         <div class="d">a widespread outbreak of an infectious disease</div><div class="hook">hook: An EPIDEMic falls UPON the DEMO(cracy) — it spreads across all the people.</div>
+        
         <div class="ex">an ▁▁▁ outbreak of influenza</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">endemic</div>
-        <div class="say">/ eh-NDEH-mihk /  ·  /ɛˈndɛmɪk/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">endemic</div>
+        <div class="say" style="font-size:10pt">/ eh-NDEH-mihk /  ·  /ɛˈndɛmɪk/</div>
         <div class="d">a disease that is constantly present to a greater or lesser degree in people of…</div><div class="hook">hook: Endemic means IN the DEMO (people) of one place</div>
+        
         <div class="ex">it is an ▁▁▁ found only this island</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">pandemic</div>
-        <div class="say">/ pa-NDEH-mihk /  ·  /pæˈndɛmɪk/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">pandemic</div>
+        <div class="say" style="font-size:10pt">/ pa-NDEH-mihk /  ·  /pæˈndɛmɪk/</div>
         <div class="d">an epidemic that is geographically widespread</div><div class="hook">hook: A panDEMic affects ALL the DEMOS</div>
+        
         <div class="ex">a ▁▁▁ outbreak of malaria</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">demographics</div>
-        <div class="say">/ deh-muh-GRA-fihks /  ·  /dɛməˈɡræfɪks/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">demographics</div>
+        <div class="say" style="font-size:10pt">/ deh-muh-GRA-fihks /  ·  /dɛməˈɡræfɪks/</div>
         <div class="d">sex</div><div class="hook">hook: DEMOgraphics studies the DEMO — the people of a place</div>
+        
         <div class="ex">The marketing team studied the ▁▁▁ of the city to decide which neighborhoods…</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-forum-r2.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1580,7 +1652,7 @@
 <div class="page" data-vol="7">
       <div class="bb-head"><span>Chapter 10 · dem / demo (people)</span><span>Rapid round · ★★☆</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>demography</b> <span class="tile" style="font-size:8.8pt">/dih-MAH-gruh-fee/</span><br>the branch of sociology that studies the…</div><div class="bb-row"><b>demotic</b> <span class="tile" style="font-size:8.8pt">/dih-MAH-tik/</span><br>a simplified cursive form of the ancient hieratic…</div><div class="bb-row"><b>demiurge</b> <span class="tile" style="font-size:8.8pt">/DEM-ee-urj/</span><br>a subordinate deity</div><div class="bb-row"><b>democratize</b> <span class="tile" style="font-size:8.8pt">/dih-MAH-kruh-teyez/</span><br>become (more) democratic; of nations</div><div class="bb-row"><b>autocracy</b> <span class="tile" style="font-size:8.8pt">/aw-TAH-kruh-see/</span><br>a political system governed by a single individual</div><div class="bb-row"><b>plutocracy</b> <span class="tile" style="font-size:8.8pt">/ploo-TOK-ruh-see/</span><br>a political system governed by the wealthy people</div><div class="bb-row"><b>theocracy</b> <span class="tile" style="font-size:8.8pt">/th-ee-AH-k-r-uh-s-ee/</span><br>is a form of government in which a deity is…</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">demography</b> <span class="tile" style="font-size:8.8pt">/dih-MAH-gruh-fee/</span><br>the branch of sociology that studies the…</div><div class="bb-row"><b class="">demotic</b> <span class="tile" style="font-size:8.8pt">/dih-MAH-tik/</span><br>a simplified cursive form of the ancient hieratic…</div><div class="bb-row"><b class="">demiurge</b> <span class="tile" style="font-size:8.8pt">/DEM-ee-urj/</span><br>a subordinate deity</div><div class="bb-row"><b class="">democratize</b> <span class="tile" style="font-size:8.8pt">/dih-MAH-kruh-teyez/</span><br>become (more) democratic; of nations</div><div class="bb-row"><b class="">autocracy</b> <span class="tile" style="font-size:8.8pt">/aw-TAH-kruh-see/</span><br>a political system governed by a single individual</div><div class="bb-row"><b class="">plutocracy</b> <span class="tile" style="font-size:8.8pt">/ploo-TOK-ruh-see/</span><br>a political system governed by the wealthy people</div><div class="bb-row"><b class="">theocracy</b> <span class="tile" style="font-size:8.8pt">/th-ee-AH-k-r-uh-s-ee/</span><br>is a form of government in which a deity is…</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>

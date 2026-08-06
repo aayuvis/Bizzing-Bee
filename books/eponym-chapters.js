@@ -37,7 +37,8 @@ window.SB_EPONYMS = [
     "def": "(Greek mythology) a Titan who was forced by Zeus to bear the sky on his shoulders",
     "ex": "Like the mythological Atlas, the exhausted firefighter felt as though he were carrying the weight of the world on his shoulders.",
     "hook": "",
-    "o": "Greek"
+    "o": "Greek",
+    "after": "Atlas, the Titan condemned to hold up the sky; his picture was printed at the front of early map collections."
    },
    {
     "w": "echo",
@@ -45,7 +46,8 @@ window.SB_EPONYMS = [
     "def": "the repetition of a sound resulting from reflection of the sound waves",
     "ex": "She could hear echoes of her own footsteps.",
     "hook": "",
-    "o": "Latin"
+    "o": "Latin",
+    "after": "Echo, the mountain nymph who was left able to repeat only the last words anyone said to her."
    },
    {
     "w": "panic",
@@ -53,7 +55,8 @@ window.SB_EPONYMS = [
     "def": "an overwhelming feeling of fear and anxiety",
     "ex": "Panic in the stock market.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Pan, the goat-legged Greek god of wild places, whose shout could stampede a whole flock."
    },
    {
     "w": "siren",
@@ -61,7 +64,8 @@ window.SB_EPONYMS = [
     "def": "a sea nymph (part woman and part bird) supposed to lure sailors to destruction on the rocks where the nymphs lived",
     "ex": "Odysseus ordered his crew to plug their ears so they would not hear the Siren's fatal song.",
     "hook": "",
-    "o": "Greek"
+    "o": "Greek",
+    "after": "the Sirens, sea creatures whose singing lured sailors onto the rocks."
    },
    {
     "w": "tantalize",
@@ -69,7 +73,8 @@ window.SB_EPONYMS = [
     "def": "to tease someone by keeping something they want just out of reach",
     "ex": "The smell of fresh cookies began to tantalize the students waiting outside the locked kitchen.",
     "hook": "",
-    "o": "English"
+    "o": "English",
+    "after": "Tantalus, punished with fruit and water that drew back every time he reached for them."
    },
    {
     "w": "hygiene",
@@ -77,7 +82,8 @@ window.SB_EPONYMS = [
     "def": "the science that deals with preservation of health",
     "ex": "The school nurse visited every classroom to explain why proper hygiene, including washing hands thoroughly before eating and after using the restroom, was essential for preventing the spread of germs and illness.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Hygieia, the Greek goddess of health and cleanliness, daughter of the healer Asclepius."
    },
    {
     "w": "narcissism",
@@ -85,7 +91,8 @@ window.SB_EPONYMS = [
     "def": "is excessive self-love vanity",
     "ex": "His constant bragging showed a narcissism that made teammates roll their eyes.",
     "hook": "",
-    "o": "English"
+    "o": "English",
+    "after": "Narcissus, the youth who fell in love with his own reflection in a pool and could not leave it."
    },
    {
     "w": "Herculean",
@@ -93,7 +100,8 @@ window.SB_EPONYMS = [
     "def": "displaying superhuman strength or power",
     "ex": "Moving all those waterlogged sandbags before the flood arrived was a herculean task that left the volunteers exhausted but proud.",
     "hook": "",
-    "o": "Latin"
+    "o": "Latin",
+    "after": "Heracles (Hercules to the Romans), who was set twelve labours no ordinary man could finish."
    },
    {
     "w": "odyssey",
@@ -101,7 +109,8 @@ window.SB_EPONYMS = [
     "def": "a long wandering and eventful journey",
     "ex": "Her solo backpacking trip across three continents became a true odyssey of self-discovery.",
     "hook": "",
-    "o": "Greek"
+    "o": "Greek",
+    "after": "Odysseus, whose journey home from Troy took ten years and gave Homer his Odyssey."
    },
    {
     "w": "hermetic",
@@ -109,7 +118,8 @@ window.SB_EPONYMS = [
     "def": "completely sealed; completely airtight",
     "ex": "The ancient tomb had a hermetic seal that kept it perfectly preserved for thousands of years.",
     "hook": "",
-    "o": "Greek"
+    "o": "Greek",
+    "after": "Hermes Trismegistus, the legendary alchemist said to have sealed a jar so tightly nothing could get in."
    },
    {
     "w": "titanic",
@@ -117,7 +127,8 @@ window.SB_EPONYMS = [
     "def": "of great force or power",
     "ex": "The titanic storm uprooted century-old trees and tore rooftops from houses across the county.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "the Titans, the enormous elder gods the Olympians had to overthrow."
    },
    {
     "w": "protean",
@@ -125,7 +136,8 @@ window.SB_EPONYMS = [
     "def": "taking on different forms",
     "ex": "Eyes...of that baffling protean grey which is never twice the same.",
     "hook": "",
-    "o": "Greek"
+    "o": "Greek",
+    "after": "Proteus, the sea god who changed shape into anything at all rather than answer a question."
    }
   ]
  },
@@ -160,7 +172,8 @@ window.SB_EPONYMS = [
     "def": "the first month of the year; begins 10 days after the winter solstice",
     "ex": "On the first day of January, Maya wrote twelve goals in her new diary, one for every month of the fresh year ahead.",
     "hook": "",
-    "o": "Anglo-Norman"
+    "o": "Anglo-Norman",
+    "after": "Janus, the two-faced Roman god of doorways, who looks back at the old year and forward at the new one."
    },
    {
     "w": "july",
@@ -168,7 +181,8 @@ window.SB_EPONYMS = [
     "def": "the month following June and preceding August",
     "ex": "The Fourth of July fireworks lit up the entire sky over the lake in brilliant colors.",
     "hook": "",
-    "o": "Anglo-Norman"
+    "o": "Anglo-Norman",
+    "after": "Julius Caesar, born in the month the Roman senate renamed for him."
    },
    {
     "w": "august",
@@ -176,7 +190,8 @@ window.SB_EPONYMS = [
     "def": "the month following July and preceding September",
     "ex": "The fair comes to town in August, when the fields are already gold.",
     "hook": "",
-    "o": "Latin"
+    "o": "Latin",
+    "after": "Augustus, the first Roman emperor, who took the month after his adoptive father Julius."
    },
    {
     "w": "cereal",
@@ -184,7 +199,8 @@ window.SB_EPONYMS = [
     "def": "a prepared food of grain such as oatmeal or cornflakes eaten especially for breakfast",
     "ex": "Before the big exam, Daria poured herself a bowl of whole-grain cereal, knowing that a nutritious breakfast would help her stay alert and focused throughout the long morning.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Ceres, the Roman goddess of grain and the harvest."
    },
    {
     "w": "martial",
@@ -192,7 +208,8 @@ window.SB_EPONYMS = [
     "def": "Relating to war, fighting, or the military.",
     "ex": "Kayla practices karate, a martial art, three times a week.",
     "hook": "",
-    "o": "Latin"
+    "o": "Latin",
+    "after": "Mars, the Roman god of war, who also gave his name to March and to the planet."
    },
    {
     "w": "volcano",
@@ -200,7 +217,8 @@ window.SB_EPONYMS = [
     "def": "a fissure in the earth's crust (or in the surface of some other planet) through which molten lava and gases erupt",
     "ex": "Lava poured down the volcano's slope, glowing orange against the dark night sky.",
     "hook": "",
-    "o": "Italian"
+    "o": "Italian",
+    "after": "Vulcan, the Roman blacksmith god whose forge was said to be under Mount Etna."
    },
    {
     "w": "jovial",
@@ -208,7 +226,8 @@ window.SB_EPONYMS = [
     "def": "Cheerful, jolly, and full of good humor.",
     "ex": "Our jovial bus driver greets every kid with a joke.",
     "hook": "",
-    "o": "Latin"
+    "o": "Latin",
+    "after": "Jove (Jupiter), king of the Roman gods; astrologers said people born under his planet were cheerful."
    },
    {
     "w": "mercurial",
@@ -216,7 +235,8 @@ window.SB_EPONYMS = [
     "def": "liable to sudden unpredictable change",
     "ex": "The mercurial artist could shift from joyful and talkative to withdrawn and sullen within a single afternoon, making it difficult for his students to predict his mood.",
     "hook": "",
-    "o": "Latin"
+    "o": "Latin",
+    "after": "Mercury, the swift-footed messenger god, and the planet that moves fastest across the sky."
    },
    {
     "w": "saturnine",
@@ -224,7 +244,8 @@ window.SB_EPONYMS = [
     "def": "bitter or scornful; gloomy and sardonic in temperament",
     "ex": "The saturnine librarian rarely smiled and answered every question with a sigh, as if each inquiry were a personal inconvenience.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Saturn, the slowest and coldest planet, which astrologers blamed for a gloomy temperament."
    },
    {
     "w": "junoesque",
@@ -232,7 +253,8 @@ window.SB_EPONYMS = [
     "def": "suggestive of a statue",
     "ex": "The actress had a junoesque figure that commanded attention whenever she entered the room.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Juno, queen of the Roman gods, famous in art for being tall and stately."
    },
    {
     "w": "aurora",
@@ -240,7 +262,8 @@ window.SB_EPONYMS = [
     "def": "the first light of day",
     "ex": "They stood on the cold deck at four in the morning to watch the aurora.",
     "hook": "",
-    "o": "Latin"
+    "o": "Latin",
+    "after": "Aurora, the Roman goddess of the dawn, sister to the sun and the moon."
    },
    {
     "w": "museum",
@@ -248,7 +271,8 @@ window.SB_EPONYMS = [
     "def": "a depository for collecting and displaying objects having scientific or historical or artistic value",
     "ex": "The entire sixth-grade class spent the afternoon exploring the natural history museum's dinosaur exhibit.",
     "hook": "",
-    "o": "Latin"
+    "o": "Latin",
+    "after": "the Muses, the nine Greek goddesses of the arts; a mouseion was a temple built for them."
    }
   ]
  },
@@ -283,7 +307,8 @@ window.SB_EPONYMS = [
     "def": "a unit that measures the strength of an electric current",
     "ex": "The fuse blew because the motor drew nearly twice the amperes it was rated for.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Andre-Marie Ampere, the French physicist who worked out how currents push on each other."
    },
    {
     "w": "volt",
@@ -291,7 +316,8 @@ window.SB_EPONYMS = [
     "def": "a unit of potential equal to the potential difference between two points on a conductor carrying a current of 1 ampere when the power dissipated between the two points is 1 watt; equivalent to the potential difference across a resistance of 1 ohm when 1 ampere of current flows through it",
     "ex": "A standard AA battery produces about 1.5 volts, but the circuit required at least one volt more.",
     "hook": "",
-    "o": "Italian"
+    "o": "Italian",
+    "after": "Alessandro Volta, the Italian who built the first battery in 1800."
    },
    {
     "w": "watt",
@@ -299,7 +325,8 @@ window.SB_EPONYMS = [
     "def": "a unit of power equal to 1 joule per second; the power dissipated by a current of 1 ampere flowing across a resistance of 1 ohm",
     "ex": "Each watt of solar power generated by the panels helped reduce the family's electricity bill.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "James Watt, the Scottish engineer whose steam engine started the industrial revolution."
    },
    {
     "w": "ohm",
@@ -307,7 +334,8 @@ window.SB_EPONYMS = [
     "def": "a unit of electrical resistance equal to the resistance between two points on a conductor when a potential difference of one volt between them produces a current of one ampere",
     "ex": "The technician measured the circuit's resistance and found it was exactly one ohm.",
     "hook": "",
-    "o": "German"
+    "o": "German",
+    "after": "Georg Ohm, the German who found the law linking voltage, current and resistance."
    },
    {
     "w": "hertz",
@@ -315,7 +343,8 @@ window.SB_EPONYMS = [
     "def": "A unit that measures how many times something repeats each second.",
     "ex": "The radio station broadcasts at a frequency of one million hertz, or one megahertz.",
     "hook": "",
-    "o": "German"
+    "o": "German",
+    "after": "Heinrich Hertz, the German who proved radio waves exist."
    },
    {
     "w": "newton",
@@ -323,7 +352,8 @@ window.SB_EPONYMS = [
     "def": "English mathematician and physicist; remembered for developing the calculus and for his law of gravitation and his three laws of motion (1642-1727)",
     "ex": "In physics class, we learned that one newton is the force needed to accelerate one kilogram at one meter per second squared.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "Isaac Newton, the English physicist who explained gravity and the laws of motion."
    },
    {
     "w": "pasteurize",
@@ -331,7 +361,8 @@ window.SB_EPONYMS = [
     "def": "heat food in order to kill harmful microorganisms",
     "ex": "Health officials require dairy farmers to pasteurize their milk by heating it to a specific temperature in order to kill dangerous bacteria before it reaches grocery shelves.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Louis Pasteur, the French chemist who showed that gentle heat kills the microbes that spoil milk."
    },
    {
     "w": "galvanize",
@@ -339,7 +370,8 @@ window.SB_EPONYMS = [
     "def": "to stimulate to action",
     "ex": "The coach's passionate halftime speech galvanized the team, and they came back from twelve points down to win the championship.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "Luigi Galvani, the Italian who made a dead frog’s leg twitch with electricity."
    },
    {
     "w": "Celsius",
@@ -347,7 +379,8 @@ window.SB_EPONYMS = [
     "def": "a temperature scale where water freezes at 0 degrees and boils at 100",
     "ex": "The weather report said it was 35 degrees Celsius outside, which meant it was way too hot for soccer practice.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "Anders Celsius, the Swedish astronomer who set water’s freezing and boiling points 100 degrees apart."
    },
    {
     "w": "Fahrenheit",
@@ -355,7 +388,8 @@ window.SB_EPONYMS = [
     "def": "German physicist who invented the mercury thermometer and developed the scale of temperature that bears his name (1686-1736)",
     "ex": "Water freezes at 32 degrees Fahrenheit under normal conditions.",
     "hook": "",
-    "o": "German"
+    "o": "German",
+    "after": "Daniel Fahrenheit, the German-Dutch instrument maker who built the first reliable mercury thermometer."
    },
    {
     "w": "joule",
@@ -363,7 +397,8 @@ window.SB_EPONYMS = [
     "def": "a unit of electrical energy equal to the work done when a current of one ampere passes through a resistance of one ohm for one second",
     "ex": "The physics teacher explained that lifting a small apple about one meter uses roughly one joule of energy.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "James Prescott Joule, the English brewer who proved heat and work are the same thing."
    },
    {
     "w": "decibel",
@@ -371,7 +406,8 @@ window.SB_EPONYMS = [
     "def": "a logarithmic unit of sound intensity; 10 times the logarithm of the ratio of the sound intensity to some reference intensity",
     "ex": "Every decibel of the thunderstorm seemed to rattle the windows of the tiny cabin.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "Alexander Graham Bell, inventor of the telephone; a decibel is one tenth of a bel."
    }
   ]
  },
@@ -406,7 +442,8 @@ window.SB_EPONYMS = [
     "def": "a heavy engine, or the oily fuel it burns, used in trucks and buses",
     "ex": "The rumbling diesel engine of the old truck could be heard from two blocks away.",
     "hook": "",
-    "o": "German"
+    "o": "German",
+    "after": "Rudolf Diesel, the German engineer who built an engine that ignites fuel by squeezing it."
    },
    {
     "w": "guillotine",
@@ -414,7 +451,8 @@ window.SB_EPONYMS = [
     "def": "a machine with a heavy falling blade used for beheading",
     "ex": "The museum keeps a model guillotine behind glass.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Joseph-Ignace Guillotin, the French doctor who argued for a quicker, less cruel execution — he did not invent the machine and hated having it named for him."
    },
    {
     "w": "zeppelin",
@@ -422,7 +460,8 @@ window.SB_EPONYMS = [
     "def": "a rigid airship or dirigible",
     "ex": "The enormous zeppelin drifted silently over the city, its silver hull gleaming in the afternoon sun.",
     "hook": "",
-    "o": "English"
+    "o": "English",
+    "after": "Count Ferdinand von Zeppelin, the German officer who built the first rigid airships."
    },
    {
     "w": "saxophone",
@@ -430,7 +469,8 @@ window.SB_EPONYMS = [
     "def": "a single-reed woodwind with a conical bore",
     "ex": "The jazz musician played a mellow saxophone solo that filled the entire club with warm, golden sound.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Adolphe Sax, the Belgian instrument maker who patented it in 1846."
    },
    {
     "w": "jacuzzi",
@@ -438,7 +478,8 @@ window.SB_EPONYMS = [
     "def": "a bath fitted with jets that swirl the water",
     "ex": "The hotel had a small jacuzzi on the roof terrace.",
     "hook": "",
-    "o": "Italian"
+    "o": "Italian",
+    "after": "the Jacuzzi brothers, Italian-American engineers who built a whirlpool pump to treat one of their sons’ arthritis."
    },
    {
     "w": "macadam",
@@ -446,7 +487,8 @@ window.SB_EPONYMS = [
     "def": "broken stone used in macadamized roadways",
     "ex": "Workers poured fresh macadam over the old road to create a smooth, durable surface.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "John Loudon McAdam, the Scot who worked out how to build a road that drains instead of turning to mud."
    },
    {
     "w": "shrapnel",
@@ -454,7 +496,8 @@ window.SB_EPONYMS = [
     "def": "shell containing lead pellets that explodes in flight",
     "ex": "The museum displayed a piece of shrapnel recovered from the battlefield of World War I.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "Henry Shrapnel, the British officer who designed a shell that bursts and scatters."
    },
    {
     "w": "bakelite",
@@ -462,7 +505,8 @@ window.SB_EPONYMS = [
     "def": "a thermosetting plastic used as electric insulators and for making plastic ware and telephone receivers etc.",
     "ex": "The vintage radio had a sleek black Bakelite case that felt smooth and surprisingly heavy.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "Leo Baekeland, the Belgian-American chemist who made the world’s first true plastic."
    },
    {
     "w": "derrick",
@@ -470,7 +514,8 @@ window.SB_EPONYMS = [
     "def": "a framework erected over an oil well to allow drill tubes to be raised and lowered",
     "ex": "The massive steel derrick towered over the flat Texas landscape as workers drilled below.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "Thomas Derrick, a Tudor hangman; his gallows design gave the lifting crane its name."
    },
    {
     "w": "sousaphone",
@@ -478,7 +523,8 @@ window.SB_EPONYMS = [
     "def": "the lowest brass wind instrument",
     "ex": "The sousaphone player marched proudly at the front of the band, its enormous bell gleaming in the afternoon sun.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "John Philip Sousa, the American march composer who asked for a tuba he could carry."
    },
    {
     "w": "biro",
@@ -486,7 +532,8 @@ window.SB_EPONYMS = [
     "def": "a ballpoint pen",
     "ex": "She scribbled the address with a leaky biro.",
     "hook": "",
-    "o": "Hungarian"
+    "o": "Hungarian",
+    "after": "Laszlo Biro, the Hungarian journalist who patented the ballpoint pen."
    },
    {
     "w": "gerrymander",
@@ -494,7 +541,8 @@ window.SB_EPONYMS = [
     "def": "is dividing election districts to suit one group or party",
     "ex": "Critics accused the legislature of trying to gerrymander the district boundaries to guarantee their party's victory in the next election.",
     "hook": "",
-    "o": "English"
+    "o": "English",
+    "after": "Elbridge Gerry, an American governor who redrew an electoral district into a shape people said looked like a salamander."
    }
   ]
  },
@@ -529,7 +577,8 @@ window.SB_EPONYMS = [
     "def": "knitted jacket that is fastened up the front with buttons or a zipper",
     "ex": "She wrapped herself in a cozy cardigan and settled into the armchair with a good book.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "the 7th Earl of Cardigan, who led the Charge of the Light Brigade wearing a knitted waistcoat."
    },
    {
     "w": "leotard",
@@ -537,7 +586,8 @@ window.SB_EPONYMS = [
     "def": "a tight-fitting garment of stretchy material that covers the body from the shoulders to the thighs (and may have long sleeves or legs reaching down to the ankles); worn by ballet dancers and acrobats for practice or performance",
     "ex": "The gymnast adjusted her leotard before stepping onto the mat for her balance beam routine.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Jules Leotard, the French acrobat who invented the flying trapeze and needed something he could move in."
    },
    {
     "w": "mackintosh",
@@ -545,7 +595,8 @@ window.SB_EPONYMS = [
     "def": "a lightweight waterproof (usually rubberized) fabric",
     "ex": "She pulled on her old mackintosh and splashed through the puddles without getting the least bit wet.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "Charles Macintosh, the Scottish chemist who bonded rubber between two layers of cloth — the coat gained a k he never had."
    },
    {
     "w": "stetson",
@@ -553,7 +604,8 @@ window.SB_EPONYMS = [
     "def": "a hat made of felt with a creased crown",
     "ex": "The ranch hand tipped his worn stetson at the passing stranger as he rode into town.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "John B. Stetson, the American hatter who made the wide-brimmed hat of the West."
    },
    {
     "w": "bloomers",
@@ -561,7 +613,8 @@ window.SB_EPONYMS = [
     "def": "underpants worn by women",
     "ex": "She was afraid that her bloomers might have been showing.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "Amelia Bloomer, the American campaigner who published and defended the loose trousers."
    },
    {
     "w": "tuxedo",
@@ -569,7 +622,8 @@ window.SB_EPONYMS = [
     "def": "semiformal evening dress for men",
     "ex": "He adjusted the bow tie of his rented tuxedo one last time before walking into the elegant ballroom where the awards ceremony was being held.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "Tuxedo Park, the New York country club where the short dinner jacket was first worn."
    },
    {
     "w": "raglan",
@@ -577,7 +631,8 @@ window.SB_EPONYMS = [
     "def": "A coat or sweater whose sleeves reach in one piece up to the collar.",
     "ex": "He wore a cozy raglan sweater with diagonal seams running from the collar to the sleeves.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "Lord Raglan, who lost an arm at Waterloo and had his coats cut with the sleeve running to the collar."
    },
    {
     "w": "wellington",
@@ -585,7 +640,8 @@ window.SB_EPONYMS = [
     "def": "British general and statesman; he defeated Napoleon at Waterloo; subsequently served as Prime Minister (1769-1852)",
     "ex": "Wellington's decisive victory at Waterloo ended Napoleon's rule and reshaped Europe.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "the Duke of Wellington, whose custom boot became the rubber one everyone owns."
    },
    {
     "w": "pompadour",
@@ -593,7 +649,8 @@ window.SB_EPONYMS = [
     "def": "a hairstyle with the hair combed back high off the forehead into a roll",
     "ex": "For the 1950s costume party, Jordan styled his hair into a tall pompadour swept back from his forehead, just like the rock-and-roll stars of that era.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Madame de Pompadour, mistress of Louis XV, who wore her hair swept high off the forehead."
    },
    {
     "w": "sideburns",
@@ -601,7 +658,8 @@ window.SB_EPONYMS = [
     "def": "strips of hair grown down the sides of the face in front of the ears",
     "ex": "He grew enormous sideburns for the school play.",
     "hook": "",
-    "o": "English"
+    "o": "English",
+    "after": "General Ambrose Burnside of the Union army — his name was turned back to front to make the word."
    },
    {
     "w": "fedora",
@@ -609,7 +667,8 @@ window.SB_EPONYMS = [
     "def": "a hat made of felt with a creased crown",
     "ex": "The detective tilted his worn leather fedora low over his eyes as he entered the dimly lit café.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "Fedora, the heroine of a Sardou play of 1882, who wore a soft felt hat on stage."
    },
    {
     "w": "jodhpurs",
@@ -617,7 +676,8 @@ window.SB_EPONYMS = [
     "def": "flared trousers ending at the calves; worn with riding boots",
     "ex": "She polished her tall boots and pulled on her jodhpurs before heading to the stable for her morning riding lesson.",
     "hook": "",
-    "o": "Hindi"
+    "o": "Hindi",
+    "after": "Jodhpur, the city in Rajasthan whose polo players wore riding trousers cut tight below the knee."
    }
   ]
  },
@@ -652,7 +712,8 @@ window.SB_EPONYMS = [
     "def": "two (or more) slices of bread with a filling between them",
     "ex": "She was sandwiched in her airplane seat between two fat men.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "the 4th Earl of Sandwich, who asked for meat between bread so he could keep playing cards."
    },
    {
     "w": "praline",
@@ -660,7 +721,8 @@ window.SB_EPONYMS = [
     "def": "cookie-sized candy made of brown sugar and butter and pecans",
     "ex": "She savored every bite of the buttery praline she bought from the candy shop in New Orleans.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Marshal du Plessis-Praslin, whose cook coated almonds in caramel in the 1600s."
    },
    {
     "w": "melba",
@@ -668,7 +730,8 @@ window.SB_EPONYMS = [
     "def": "Australian operatic soprano (1861-1931)",
     "ex": "The chef served peach melba for dessert, presenting the elegant dish with a flourish.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "Dame Nellie Melba, the Australian soprano; the chef Escoffier built a peach dessert around her."
    },
    {
     "w": "garibaldi",
@@ -676,7 +739,8 @@ window.SB_EPONYMS = [
     "def": "Italian patriot whose conquest of Sicily and Naples led to the formation of the Italian state (1807-1882)",
     "ex": "The bright orange garibaldi fish darted through the kelp forest off the California coast.",
     "hook": "",
-    "o": "Italian"
+    "o": "Italian",
+    "after": "Giuseppe Garibaldi, who united Italy — the currant biscuit was baked to mark his visit to England."
    },
    {
     "w": "pavlova",
@@ -684,7 +748,8 @@ window.SB_EPONYMS = [
     "def": "Russian ballerina (1882-1931)",
     "ex": "The host topped the pavlova with kiwi slices and strawberries, creating a dessert that was almost too beautiful to eat.",
     "hook": "",
-    "o": "Russian"
+    "o": "Russian",
+    "after": "Anna Pavlova, the Russian ballerina; the meringue was made during her tour of Australia and New Zealand."
    },
    {
     "w": "nachos",
@@ -692,7 +757,8 @@ window.SB_EPONYMS = [
     "def": "a tortilla chip topped with cheese and chili-pepper and broiled",
     "ex": "Everyone cheered when the teacher brought a giant plate of nachos loaded with cheese and jalapeños to the party.",
     "hook": "",
-    "o": "Spanish"
+    "o": "Spanish",
+    "after": "Ignacio \"Nacho\" Anaya, a Mexican maitre d’ who improvised a snack for guests after the kitchen had closed."
    },
    {
     "w": "bechamel",
@@ -700,7 +766,8 @@ window.SB_EPONYMS = [
     "def": "milk thickened with a butter and flour roux",
     "ex": "The chef poured a rich bechamel over the layered lasagna before sliding it into the oven.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Louis de Bechameil, steward to Louis XIV, who is credited with the white sauce."
    },
    {
     "w": "margherita",
@@ -708,7 +775,8 @@ window.SB_EPONYMS = [
     "def": "a pizza topped with tomato, mozzarella and basil",
     "ex": "She ordered a margherita and ate the whole thing.",
     "hook": "",
-    "o": "Italian"
+    "o": "Italian",
+    "after": "Queen Margherita of Savoy, served a pizza in the colours of the Italian flag in 1889."
    },
    {
     "w": "tangerine",
@@ -716,7 +784,8 @@ window.SB_EPONYMS = [
     "def": "a variety of mandarin orange with a loose skin and sweet, easily separated segments",
     "ex": "Maya peeled a ripe tangerine at lunch, filling the entire cafeteria with its sweet, citrusy scent.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Tangier in Morocco, the port the small oranges were shipped from."
    },
    {
     "w": "satsuma",
@@ -724,7 +793,8 @@ window.SB_EPONYMS = [
     "def": "a variety of easy-peeling mandarin orange originally cultivated in Japan, known for its sweet flavor and loose skin",
     "ex": "Lena peeled the bright orange satsuma in one smooth spiral and shared the sweet segments with her classmates.",
     "hook": "",
-    "o": "Japanese"
+    "o": "Japanese",
+    "after": "Satsuma, the province in southern Japan the seedless mandarin came from."
    },
    {
     "w": "loganberry",
@@ -732,7 +802,8 @@ window.SB_EPONYMS = [
     "def": "a dark red fruit crossed from a blackberry and a raspberry",
     "ex": "The loganberry jam was almost too sharp.",
     "hook": "",
-    "o": "English"
+    "o": "English",
+    "after": "James Harvey Logan, the Californian judge who crossed a blackberry with a raspberry in his garden."
    },
    {
     "w": "frankfurter",
@@ -740,7 +811,8 @@ window.SB_EPONYMS = [
     "def": "a smooth-textured sausage of minced beef or pork usually smoked; often served on a bread roll",
     "ex": "Nothing tasted better after the baseball game than a grilled frankfurter loaded with mustard and relish.",
     "hook": "",
-    "o": "German"
+    "o": "German",
+    "after": "Frankfurt, the German city whose long thin sausage travelled to America."
    }
   ]
  },
@@ -775,7 +847,8 @@ window.SB_EPONYMS = [
     "def": "of or relating to Draco or his harsh code of laws",
     "ex": "The principal's draconian rule that students could not speak at all during lunch made the cafeteria feel like a prison.",
     "hook": "",
-    "o": "Latin"
+    "o": "Latin",
+    "after": "Draco, the Athenian lawgiver whose code punished almost every crime with death."
    },
    {
     "w": "Machiavellian",
@@ -783,7 +856,8 @@ window.SB_EPONYMS = [
     "def": "a follower of Machiavelli's principles",
     "ex": "The Machiavellian class president promised everyone free pizza, knowing he had no intention of ever keeping that promise.",
     "hook": "",
-    "o": "Italian"
+    "o": "Italian",
+    "after": "Niccolo Machiavelli, the Florentine writer whose book The Prince advised rulers to be feared."
    },
    {
     "w": "quixotic",
@@ -791,7 +865,8 @@ window.SB_EPONYMS = [
     "def": "not sensible about practical matters; idealistic and unrealistic",
     "ex": "As quixotic as a restoration of medieval knighthood.",
     "hook": "",
-    "o": "Spanish"
+    "o": "Spanish",
+    "after": "Don Quixote, Cervantes’ knight who charged windmills believing them to be giants."
    },
    {
     "w": "spartan",
@@ -799,7 +874,8 @@ window.SB_EPONYMS = [
     "def": "a resident of Sparta",
     "ex": "The athlete lived a spartan lifestyle during training season, waking before dawn each day, eating simple meals, and spending every free hour practicing rather than relaxing or going out with friends.",
     "hook": "",
-    "o": "Greek"
+    "o": "Greek",
+    "after": "Sparta, the Greek city that raised its citizens hard and plain and threw nothing away."
    },
    {
     "w": "stoic",
@@ -807,7 +883,8 @@ window.SB_EPONYMS = [
     "def": "a member of the ancient Greek school of philosophy founded by Zeno",
     "ex": "A Stoic achieves happiness by submission to destiny.",
     "hook": "",
-    "o": "Latin"
+    "o": "Latin",
+    "after": "the Stoics, Greek philosophers who taught at the Stoa and held that feelings should not rule you."
    },
    {
     "w": "laconic",
@@ -815,7 +892,8 @@ window.SB_EPONYMS = [
     "def": "is using few words being concise",
     "ex": "Coach Rivera was famously laconic before big games, offering her team nothing more than a quiet nod and the words 'You know what to do,' yet somehow those five words inspired more confidence than any long speech ever could.",
     "hook": "",
-    "o": "Latin"
+    "o": "Latin",
+    "after": "Laconia, the region around Sparta, whose people were famous for answering in as few words as possible."
    },
    {
     "w": "bowdlerize",
@@ -823,7 +901,8 @@ window.SB_EPONYMS = [
     "def": "to cut passages thought improper out of a book or play",
     "ex": "Editors used to bowdlerize the play before schoolchildren were allowed to read it.",
     "hook": "",
-    "o": "English"
+    "o": "English",
+    "after": "Thomas Bowdler, who published a Shakespeare with every line he thought unfit for a family cut out."
    },
    {
     "w": "chauvinism",
@@ -831,7 +910,8 @@ window.SB_EPONYMS = [
     "def": "fanatical patriotism",
     "ex": "His chauvinism blinded him to the genuine accomplishments of athletes from other nations.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Nicolas Chauvin, a French soldier of legend whose devotion to Napoleon became a joke."
    },
    {
     "w": "maverick",
@@ -839,7 +919,8 @@ window.SB_EPONYMS = [
     "def": "someone who exhibits great independence in thought and action",
     "ex": "As a true maverick, Marcus proposed a completely original science fair project that no one had ever attempted before.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "Samuel Maverick, a Texas rancher who refused to brand his cattle, so an unbranded animal was a maverick."
    },
    {
     "w": "boycott",
@@ -847,7 +928,8 @@ window.SB_EPONYMS = [
     "def": "a group's refusal to have commercial dealings with some organization in protest against its policies",
     "ex": "Students organized a boycott of the cafeteria's new menu until the school agreed to bring back the beloved pizza Fridays.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "Captain Charles Boycott, an Irish land agent whose neighbours refused to work for him or serve him."
    },
    {
     "w": "philippic",
@@ -855,7 +937,8 @@ window.SB_EPONYMS = [
     "def": "a speech of violent denunciation",
     "ex": "The senator delivered a blistering philippic against the new policy, his voice echoing through the chamber.",
     "hook": "",
-    "o": "Latin"
+    "o": "Latin",
+    "after": "Philip II of Macedon, attacked in a famous series of speeches by the orator Demosthenes."
    },
    {
     "w": "malapropism",
@@ -863,7 +946,8 @@ window.SB_EPONYMS = [
     "def": "a comic slip in which a similar-sounding wrong word is used",
     "ex": "He produced a splendid malapropism, praising her fine constellation of manners.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Mrs Malaprop in Sheridan’s The Rivals, who reached for a long word and always got the wrong one."
    }
   ]
  },
@@ -898,7 +982,8 @@ window.SB_EPONYMS = [
     "def": "a plant grown for its shiny leaves and bright, colorful flowers",
     "ex": "The cheerful begonia on the windowsill added a splash of red to the otherwise plain room.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Michel Begon, a French governor of Saint-Domingue and a keen collector of plants."
    },
    {
     "w": "dahlia",
@@ -906,7 +991,8 @@ window.SB_EPONYMS = [
     "def": "A garden plant with tuberous roots and large, showy, colorful flower heads.",
     "ex": "The gardener planted a row of dahlia bulbs along the fence in early spring, and by late summer the yard blazed with enormous blooms in shades of crimson, orange, and deep violet.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "Anders Dahl, the Swedish botanist and student of Linnaeus."
    },
    {
     "w": "magnolia",
@@ -914,7 +1000,8 @@ window.SB_EPONYMS = [
     "def": "a tree or shrub with large, fragrant white or pink flowers",
     "ex": "The ancient magnolia in the courtyard burst into pink blossoms every spring without fail.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "Pierre Magnol, the French botanist who first grouped plants into families."
    },
    {
     "w": "fuchsia",
@@ -922,7 +1009,8 @@ window.SB_EPONYMS = [
     "def": "a bright purplish-red color",
     "ex": "She painted her bedroom door a bold fuchsia that made everyone who walked down the hallway stop and stare.",
     "hook": "",
-    "o": "English"
+    "o": "English",
+    "after": "Leonhart Fuchs, the German botanist — his name is spelt f-u-c-h-s, which is why the flower is not fuscia."
    },
    {
     "w": "poinsettia",
@@ -930,7 +1018,8 @@ window.SB_EPONYMS = [
     "def": "is sometimes called the Christmas flower",
     "ex": "A bright red poinsettia sat in the window, adding a cheerful holiday touch to the room.",
     "hook": "",
-    "o": "English"
+    "o": "English",
+    "after": "Joel Roberts Poinsett, the first US minister to Mexico, who sent the plant home."
    },
    {
     "w": "gardenia",
@@ -938,7 +1027,8 @@ window.SB_EPONYMS = [
     "def": "A shrub with large, sweet-smelling white or yellow flowers.",
     "ex": "The sweet scent of a gardenia drifted through the open window on a warm summer evening.",
     "hook": "",
-    "o": "Latin"
+    "o": "Latin",
+    "after": "Alexander Garden, a Scottish-American doctor and naturalist in Charleston."
    },
    {
     "w": "zinnia",
@@ -946,7 +1036,8 @@ window.SB_EPONYMS = [
     "def": "a garden plant grown for its bright, colorful flower heads",
     "ex": "She planted a bright zinnia in every color she could find to fill her front garden with cheer.",
     "hook": "",
-    "o": "Latin"
+    "o": "Latin",
+    "after": "Johann Gottfried Zinn, the German botanist who first described the flower."
    },
    {
     "w": "camellia",
@@ -954,7 +1045,8 @@ window.SB_EPONYMS = [
     "def": "any of several shrubs or small evergreen trees having solitary white or pink or reddish flowers",
     "ex": "The red camellia blooming outside her window was the first sign that spring had arrived.",
     "hook": "",
-    "o": "Latin"
+    "o": "Latin",
+    "after": "Georg Josef Kamel, a Jesuit missionary in the Philippines, latinised as Camellus."
    },
    {
     "w": "wisteria",
@@ -962,7 +1054,8 @@ window.SB_EPONYMS = [
     "def": "a climbing vine that hangs in long drooping clusters of purple flowers",
     "ex": "Purple wisteria spilled over the garden wall every May.",
     "hook": "",
-    "o": "Latin"
+    "o": "Latin",
+    "after": "Caspar Wistar, an American anatomist — the plant kept an e his name never had."
    },
    {
     "w": "forsythia",
@@ -970,7 +1063,8 @@ window.SB_EPONYMS = [
     "def": "a shrub of the olive family",
     "ex": "Every spring, the forsythia along the fence burst into bright yellow blooms before any other plant had even budded.",
     "hook": "",
-    "o": "English"
+    "o": "English",
+    "after": "William Forsyth, the Scottish gardener who helped found the Royal Horticultural Society."
    },
    {
     "w": "bougainvillea",
@@ -978,7 +1072,8 @@ window.SB_EPONYMS = [
     "def": "A South American climbing vine with brilliant red or purple petal-like leaves, grown in warm places.",
     "ex": "The courtyard wall was draped in brilliant purple bougainvillea that glowed brightly in the afternoon sun.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Louis Antoine de Bougainville, the French admiral whose expedition found it in Brazil."
    },
    {
     "w": "lobelia",
@@ -986,7 +1081,8 @@ window.SB_EPONYMS = [
     "def": "A garden plant known for its small, bright blue flowers.",
     "ex": "The gardener planted bright blue lobelia along the border of her flower bed for a splash of color.",
     "hook": "",
-    "o": "Latin"
+    "o": "Latin",
+    "after": "Matthias de l’Obel, Flemish botanist to James I of England."
    }
   ]
  },
@@ -1021,7 +1117,8 @@ window.SB_EPONYMS = [
     "def": "a two-dimensional representation of the outline of an object",
     "ex": "As the sun set behind the mountains, the silhouette of the ancient castle appeared dramatically against the glowing orange sky.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Etienne de Silhouette, a French finance minister so mean with money that anything cheap — like a cut-paper outline — was named for him."
    },
    {
     "w": "mansard",
@@ -1029,7 +1126,8 @@ window.SB_EPONYMS = [
     "def": "a hip roof having two slopes on each side, with the lower slope nearly vertical and the upper slope nearly flat",
     "ex": "The old French-style home on the hill had a distinctive mansard roof that created an extra floor of living space.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Francois Mansart, the French architect who put rooms in the roof by breaking its slope."
    },
    {
     "w": "nicotine",
@@ -1037,7 +1135,8 @@ window.SB_EPONYMS = [
     "def": "the addictive alkaloid found in tobacco leaves",
     "ex": "The patch releases a small, steady dose of nicotine through the skin.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Jean Nicot, the French ambassador who sent tobacco to the court of Catherine de Medici."
    },
    {
     "w": "mesmerize",
@@ -1045,7 +1144,8 @@ window.SB_EPONYMS = [
     "def": "is to hypnotize",
     "ex": "The magician seemed to mesmerize the whole audience with his slow, swinging pocket watch.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Franz Mesmer, the Viennese doctor who claimed to cure patients by \"animal magnetism\"."
    },
    {
     "w": "martinet",
@@ -1053,7 +1153,8 @@ window.SB_EPONYMS = [
     "def": "someone who demands exact conformity to rules and forms",
     "ex": "The new band director was such a martinet that he made students redo their marching steps twenty times until every foot moved in perfect unison.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Jean Martinet, a drillmaster of Louis XIV famous for punishing the smallest mistake on parade."
    },
    {
     "w": "braille",
@@ -1061,7 +1162,8 @@ window.SB_EPONYMS = [
     "def": "a system of raised dots that blind people read by touching them",
     "ex": "Keiko learned to read braille so quickly that within a month she was running her fingertips smoothly across the pages of her favorite novel.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Louis Braille, blind from the age of three, who built the raised-dot alphabet at fifteen."
    },
    {
     "w": "denim",
@@ -1069,7 +1171,8 @@ window.SB_EPONYMS = [
     "def": "a strong cotton cloth, usually blue, used to make jeans",
     "ex": "He wore faded denim to the weekend barbecue, looking comfortably at ease in the summer heat.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Nimes in France — serge de Nimes, the cloth of Nimes, worn down to denim."
    },
    {
     "w": "cologne",
@@ -1077,7 +1180,8 @@ window.SB_EPONYMS = [
     "def": "a commercial center and river port in western Germany on the Rhine River; flourished during the 15th century as a member of the Hanseatic League",
     "ex": "The travelers visited the famous Gothic cathedral in Cologne during their trip through Germany.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Cologne, the German city where Johann Maria Farina made his eau de Cologne in 1709."
    },
    {
     "w": "limousine",
@@ -1085,7 +1189,8 @@ window.SB_EPONYMS = [
     "def": "a large luxurious car especially one driven by a chauffeur",
     "ex": "The prom queen arrived at the dance in a sleek black limousine that stretched almost half a block long.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "the Limousin region of France, whose herdsmen wore a hood that the car’s covered roof resembled."
    },
    {
     "w": "chartreuse",
@@ -1093,7 +1198,8 @@ window.SB_EPONYMS = [
     "def": "aromatic green or yellow liqueur flavored with orange peel and hyssop and peppermint oils; made at monastery near Grenoble, France",
     "ex": "The bartender poured a small glass of chartreuse, its vivid green color glowing under the bar lights.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "the Grande Chartreuse monastery, where the Carthusian monks still make the yellow-green liqueur."
    },
    {
     "w": "mayonnaise",
@@ -1101,7 +1207,8 @@ window.SB_EPONYMS = [
     "def": "a thick dressing of different ingredients",
     "ex": "He spread a generous layer of mayonnaise on his sandwich before piling on the turkey and lettuce.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Mahon, the port on Menorca, taken by the French in 1756 — the sauce is said to be their victory dish."
    },
    {
     "w": "bayonet",
@@ -1109,7 +1216,8 @@ window.SB_EPONYMS = [
     "def": "a knife that can be fixed to the end of a rifle and used as a weapon",
     "ex": "The soldier carefully attached the bayonet to his rifle before the morning drill.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Bayonne in south-west France, where the blade that fits on a musket was first forged."
    }
   ]
  },
@@ -1144,7 +1252,8 @@ window.SB_EPONYMS = [
     "def": "either of two huge coniferous California trees that reach a height of 300 feet; sometimes placed in the Taxodiaceae",
     "ex": "Standing at the base of a giant sequoia, Marcus felt incredibly small as the ancient tree soared hundreds of feet into the misty sky above him.",
     "hook": "",
-    "o": "English"
+    "o": "English",
+    "after": "Sequoyah, the Cherokee silversmith who invented a written alphabet for his own language."
    },
    {
     "w": "ritzy",
@@ -1152,7 +1261,8 @@ window.SB_EPONYMS = [
     "def": "luxuriously elegant",
     "ex": "The guests arrived in sleek limousines at the ritzy hotel where the award ceremony was being held.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "Cesar Ritz, the Swiss hotelier whose hotels in Paris and London set the standard for luxury."
    },
    {
     "w": "maudlin",
@@ -1160,7 +1270,8 @@ window.SB_EPONYMS = [
     "def": "effusively or insincerely emotional",
     "ex": "After watching the sentimental film for the third time, he grew maudlin and began tearfully telling everyone at the table how much he missed his childhood home.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "Mary Magdalene, painted so often weeping that her name came to mean tearful."
    },
    {
     "w": "quisling",
@@ -1168,7 +1279,8 @@ window.SB_EPONYMS = [
     "def": "someone who collaborates with an enemy occupying force",
     "ex": "The general was branded a quisling after he secretly passed battle plans to the invading army.",
     "hook": "",
-    "o": "Norwegian"
+    "o": "Norwegian",
+    "after": "Vidkun Quisling, who governed Norway for the Nazis and gave every language a word for traitor."
    },
    {
     "w": "dunce",
@@ -1176,7 +1288,8 @@ window.SB_EPONYMS = [
     "def": "a stupid person; these words are used to express a low opinion of someone's intelligence",
     "ex": "The cruel teacher made the struggling student wear a tall dunce cap and sit in the corner, which only made the child feel worse.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "John Duns Scotus, a serious medieval philosopher whose followers were mocked by later scholars."
    },
    {
     "w": "gargantuan",
@@ -1184,7 +1297,8 @@ window.SB_EPONYMS = [
     "def": "of great mass; huge and bulky",
     "ex": "The gargantuan sandwich at the deli was so tall that you needed two hands just to hold it up.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Gargantua, the giant in Rabelais who swallowed five pilgrims in a salad."
    },
    {
     "w": "lothario",
@@ -1192,7 +1306,8 @@ window.SB_EPONYMS = [
     "def": "a successful womanizer; a man who behaves selfishly in his sexual relationships with women",
     "ex": "The charming but unreliable lothario left a trail of broken hearts across the city.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "Lothario, the seducer in Rowe’s play The Fair Penitent of 1703."
    },
    {
     "w": "spoonerism",
@@ -1200,7 +1315,8 @@ window.SB_EPONYMS = [
     "def": "transposition of initial consonants in a pair of words",
     "ex": "Instead of saying 'well-oiled bicycle,' the nervous announcer produced a hilarious spoonerism: 'bell-oiled wicycle.'.",
     "hook": "",
-    "o": ""
+    "o": "",
+    "after": "Reverend William Spooner of Oxford, who swapped the opening sounds of his words."
    },
    {
     "w": "solecism",
@@ -1208,7 +1324,8 @@ window.SB_EPONYMS = [
     "def": "a nonstandard or ungrammatical usage",
     "ex": "Interrupting the guest speaker mid-sentence was considered a glaring solecism that made the entire audience cringe with embarrassment.",
     "hook": "",
-    "o": "English"
+    "o": "English",
+    "after": "Soloi, a Greek colony in Asia Minor whose settlers were mocked for their bad Greek."
    },
    {
     "w": "simony",
@@ -1216,7 +1333,8 @@ window.SB_EPONYMS = [
     "def": "traffic in ecclesiastical offices or preferments",
     "ex": "The bishop was accused of simony after it was discovered he had sold important church positions to the highest bidder.",
     "hook": "",
-    "o": "French"
+    "o": "French",
+    "after": "Simon Magus, who in the Book of Acts offered the apostles money for their powers."
    },
    {
     "w": "philistine",
@@ -1224,7 +1342,8 @@ window.SB_EPONYMS = [
     "def": "a person who is uninterested in intellectual pursuits",
     "ex": "The art curator called the developer a philistine for wanting to tear down the historic theater and replace it with a parking garage.",
     "hook": "",
-    "o": "Latin"
+    "o": "Latin",
+    "after": "the Philistines, the people of the coastal cities who fought Israel and were painted as caring nothing for art."
    },
    {
     "w": "svengali",
@@ -1232,7 +1351,8 @@ window.SB_EPONYMS = [
     "def": "someone who controls another person through sinister influence",
     "ex": "The press cast her manager as a svengali.",
     "hook": "",
-    "o": "English"
+    "o": "English",
+    "after": "Svengali, the hypnotist in du Maurier’s novel Trilby who controls a young singer entirely."
    }
   ]
  }

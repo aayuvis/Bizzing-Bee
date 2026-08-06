@@ -122,16 +122,28 @@
   .bb-prop{display:inline-block;background:var(--chip);color:var(--chip-ink);border-radius:8pt;padding:3pt 8pt;font-family:'BB Tile';font-size:10pt}
   .bb-bubble{background:var(--card);border:1px solid var(--hairline);border-radius:12pt;padding:6pt 10pt;font-family:'BB Display';font-size:11.5pt;line-height:1.35;box-shadow:var(--sh-screen)}
   .bb-hive{display:grid;grid-template-columns:1fr 1fr;gap:.12in}
-  .bb-card{padding:0 .04in}
+  .bb-card{padding:0 .04in;min-width:0;overflow-wrap:anywhere}
   .bb-card .ex{font-size:9.6pt;line-height:1.32;margin-top:2px;color:var(--ink);opacity:.85}
-  .bb-card .w{font-family:'BB Body';font-weight:800;font-size:23pt;line-height:1.05;font-variant-numeric:tabular-nums;color:var(--accent-deep)}
+  /* --wsz is set per word from its own length: a 45-letter headword at 23pt is
+     four inches of type in a three-inch column, and it took the whole spread
+     with it. Wrapping is allowed as a last resort for the true monsters. */
+  .bb-card .w{font-family:'BB Body';font-weight:800;font-size:var(--wsz,23pt);line-height:1.06;
+    font-variant-numeric:tabular-nums;color:var(--accent-deep);overflow-wrap:anywhere;hyphens:auto}
+  .bb-card .say{overflow-wrap:anywhere}
   .bb-card .say{font-family:'BB Tile';font-size:10pt;color:var(--muted);margin-top:1px}
   .bb-card .d{font-size:10.6pt;line-height:1.38;margin-top:2px}
   .bb-card .hook{font-size:9.8pt;line-height:1.32;margin-top:2px;color:var(--chip-ink);font-style:italic}
+  /* An eponym's provenance is the fact a speller actually uses at the microphone:
+     "named after a French chemist" decides more letters than the definition does. */
+  .bb-card .after{font-size:9.4pt;line-height:1.34;margin-top:3px;padding-left:.09in;
+    border-left:2.2pt solid var(--accent);color:var(--ink)}
+  .bb-card .after b{font-variant:small-caps;letter-spacing:.04em;font-size:8.4pt;color:var(--muted)}
   .bb-writeline{border-bottom:1pt solid var(--ink);height:.34in;margin-top:4pt}
   .bb-rapid{display:grid;grid-template-columns:1fr 1fr;gap:.08in .16in}
-  .bb-row{padding:4pt 0;min-height:.52in;font-size:10.4pt;line-height:1.36;border-bottom:1px dotted var(--hairline)}
+  .bb-row{padding:4pt 0;min-height:.52in;font-size:10.4pt;line-height:1.36;border-bottom:1px dotted var(--hairline);
+    min-width:0;overflow-wrap:anywhere}
   .bb-row b{font-family:'BB Kicker';color:var(--accent-deep)}
+  .bb-row b.long{font-size:8.6pt}.bb-row b.xlong{font-size:7.4pt}
   .bb-break{margin-top:.18in;display:flex;gap:.13in;align-items:flex-start;background:linear-gradient(90deg,var(--treasure-tint),transparent 85%);border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.09in .14in}
   .bb-break .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--treasure-deep)}
   .bb-break .b{font-size:11.2pt;line-height:1.4;margin-top:2px}
@@ -414,29 +426,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">erubescent</div>
-        <div class="say">/ er-oo-BES-ent /  ·  /əruˈbɛsɛnt/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">erubescent</div>
+        <div class="say" style="font-size:10pt">/ er-oo-BES-ent /  ·  /əruˈbɛsɛnt/</div>
         <div class="d">turning red or blushing, often from embarrassment or shyness</div><div class="hook">hook: Latin -escere marked a process starting.</div>
+        
         <div class="ex">His ▁▁▁ cheeks betrayed his embarrassment when the teacher read his poem aloud to…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">effervescence</div>
-        <div class="say">/ ef-er-VES-ents /  ·  /ɛfərˈvɛsɛnts/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">effervescence</div>
+        <div class="say" style="font-size:10pt">/ ef-er-VES-ents /  ·  /ɛfərˈvɛsɛnts/</div>
         <div class="d">the process of bubbling as gas escapes</div><div class="hook">hook: Latin -escere marked a process starting.</div>
+        
         <div class="ex">The ▁▁▁ of the sparkling water tickled Maya's nose as she took her first sip.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">arborescence</div>
-        <div class="say">/ ar-bor-ES-ents /  ·  /ɑrbɔrˈɛsɛnts/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">arborescence</div>
+        <div class="say" style="font-size:10pt">/ ar-bor-ES-ents /  ·  /ɑrbɔrˈɛsɛnts/</div>
         <div class="d">The quality of branching or growing in a tree-like pattern</div><div class="hook">hook: Latin -escere marked a process starting.</div>
+        
         <div class="ex">The ▁▁▁ of the river delta looked like a giant tree spreading across the land.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">invalescence</div>
-        <div class="say">/ in-vuh-LES-ents /  ·  /ɪnvəˈlɛsɛnts/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">invalescence</div>
+        <div class="say" style="font-size:10pt">/ in-vuh-LES-ents /  ·  /ɪnvəˈlɛsɛnts/</div>
         <div class="d">The process or condition of becoming weak</div><div class="hook">hook: Latin -escere marked a process starting.</div>
+        
         <div class="ex">The doctor noted the patient's gradual ▁▁▁ as he moved from active life to…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">pinguescence</div>
-        <div class="say">/ ping-GWES-ence /  ·  /pɪŋˈɡwɛsɛnkɛ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">pinguescence</div>
+        <div class="say" style="font-size:10pt">/ ping-GWES-ence /  ·  /pɪŋˈɡwɛsɛnkɛ/</div>
         <div class="d">The process or state of becoming fat or greasy</div><div class="hook">hook: Latin -escere marked a process starting.</div>
+        
         <div class="ex">The ▁▁▁ of the hibernating bear's body fat helped it survive the long winter…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">alkalescent</div>
-        <div class="say">/ al-kuh-LEH-sent /  ·  /ælkəˈlɛsɛnt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">alkalescent</div>
+        <div class="say" style="font-size:10pt">/ al-kuh-LEH-sent /  ·  /ælkəˈlɛsɛnt/</div>
         <div class="d">tending to become alkaline; slightly alkaline</div><div class="hook">hook: Latin -escere marked a process starting.</div>
+        
         <div class="ex">The ▁▁▁ solution turned the litmus paper a faint blue, showing a mild base.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-greysea-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -446,29 +464,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">frondescent</div>
-        <div class="say">/ fron-DES-unt /  ·  /frɑnˈdɛsʌnt/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">frondescent</div>
+        <div class="say" style="font-size:10pt">/ fron-DES-unt /  ·  /frɑnˈdɛsʌnt/</div>
         <div class="d">In the process of putting forth fronds or leaves</div><div class="hook">hook: Latin -escere marked a process starting.</div>
+        
         <div class="ex">The ▁▁▁ hillside turned brilliant green as the ferns and leafy plants burst into…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">intumescent</div>
-        <div class="say">/ in-too-MES-unt /  ·  /ɪntuˈmɛsʌnt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">intumescent</div>
+        <div class="say" style="font-size:10pt">/ in-too-MES-unt /  ·  /ɪntuˈmɛsʌnt/</div>
         <div class="d">Abnormally swollen or distended</div><div class="hook">hook: Latin -escere marked a process starting.</div>
+        
         <div class="ex">The ▁▁▁ paint swells into a protective foam whenever it gets too hot.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">juvenescent</div>
-        <div class="say">/ joo-vuh-NES-unt /  ·  /dʒuvəˈnɛsʌnt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">juvenescent</div>
+        <div class="say" style="font-size:10pt">/ joo-vuh-NES-unt /  ·  /dʒuvəˈnɛsʌnt/</div>
         <div class="d">Becoming young again or growing youthful</div><div class="hook">hook: Latin -escere marked a process starting.</div>
+        
         <div class="ex">The spring rain gave the old garden a ▁▁▁ quality, as if it had become young again.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">acaulescent</div>
-        <div class="say">/ ay-kaw-LES-ent /  ·  /eɪkɔˈlɛsɛnt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">acaulescent</div>
+        <div class="say" style="font-size:10pt">/ ay-kaw-LES-ent /  ·  /eɪkɔˈlɛsɛnt/</div>
         <div class="d">(of plants) having no apparent stem above ground</div><div class="hook">hook: Latin -escere marked a process starting.</div>
+        
         <div class="ex">The dandelion is ▁▁▁ because its leaves seem to rise directly from the ground with…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">hyalescence</div>
-        <div class="say">/ hy-uh-LES-unts /  ·  /hjəˈlɛsʌnts/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">hyalescence</div>
+        <div class="say" style="font-size:10pt">/ hy-uh-LES-unts /  ·  /hjəˈlɛsʌnts/</div>
         <div class="d">The process or quality of becoming glassy or transparent</div><div class="hook">hook: Latin -escere marked a process starting.</div>
+        
         <div class="ex">The scientist noted a subtle ▁▁▁ in the mineral sample as it became increasingly…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">quiescent</div>
-        <div class="say">/ k-w-ay-EH-s-uh-n-t /  ·  /kweɪˈɛsənt/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">quiescent</div>
+        <div class="say" style="font-size:10pt">/ k-w-ay-EH-s-uh-n-t /  ·  /kweɪˈɛsənt/</div>
         <div class="d">is being at rest quiet inactive</div><div class="hook">hook: Latin -escere marked a process starting.</div>
+        
         <div class="ex">The ▁▁▁ level of centimeter wave-length solar radiation.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-greysea-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -476,7 +500,7 @@
 <div class="page" data-verso data-vol="12">
       <div class="bb-head"><span>Chapter 1 · -esce, -escent, -escence — the becoming words</span><span>Rapid round · ★★★</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>liquescent</b> <span class="tile" style="font-size:8.8pt">/lih-KWES-ent/</span><br>becoming liquid</div><div class="bb-row"><b>iridescent</b> <span class="tile" style="font-size:8.8pt">/ih-r-uh-d-EH-s-uh-n-t/</span><br>is displaying a play of bright colors like a rainbow</div><div class="bb-row"><b>obsolescent</b> <span class="tile" style="font-size:8.8pt">/ah-b-s-uh-l-EH-s-uh-n-t/</span><br>means passing out of use as a word</div><div class="bb-row"><b>senescent</b> <span class="tile" style="font-size:8.8pt">/sih-NES-unt/</span><br>growing old.</div><div class="bb-row"><b>acquiesce</b> <span class="tile" style="font-size:8.8pt">/a-kwee-EHS/</span><br>to agree or express agreement</div><div class="bb-row"><b>coalesce</b> <span class="tile" style="font-size:8.8pt">/koh-uh-LEHS/</span><br>mix together different elements</div><div class="bb-row"><b>evanesce</b> <span class="tile" style="font-size:8.8pt">/ev-uh-NES/</span><br>disappear gradually</div><div class="bb-row"><b>putrescent</b> <span class="tile" style="font-size:8.8pt">/pyoo-TRES-ent/</span><br>becoming putrid</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">liquescent</b> <span class="tile" style="font-size:8.8pt">/lih-KWES-ent/</span><br>becoming liquid</div><div class="bb-row"><b class="">iridescent</b> <span class="tile" style="font-size:8.8pt">/ih-r-uh-d-EH-s-uh-n-t/</span><br>is displaying a play of bright colors like a rainbow</div><div class="bb-row"><b class="">obsolescent</b> <span class="tile" style="font-size:8.8pt">/ah-b-s-uh-l-EH-s-uh-n-t/</span><br>means passing out of use as a word</div><div class="bb-row"><b class="">senescent</b> <span class="tile" style="font-size:8.8pt">/sih-NES-unt/</span><br>growing old.</div><div class="bb-row"><b class="">acquiesce</b> <span class="tile" style="font-size:8.8pt">/a-kwee-EHS/</span><br>to agree or express agreement</div><div class="bb-row"><b class="">coalesce</b> <span class="tile" style="font-size:8.8pt">/koh-uh-LEHS/</span><br>mix together different elements</div><div class="bb-row"><b class="">evanesce</b> <span class="tile" style="font-size:8.8pt">/ev-uh-NES/</span><br>disappear gradually</div><div class="bb-row"><b class="">putrescent</b> <span class="tile" style="font-size:8.8pt">/pyoo-TRES-ent/</span><br>becoming putrid</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -571,29 +595,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">liquefy</div>
-        <div class="say">/ LIH-kwuh-feye /  ·  /ˈlɪkwəfaɪ/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">liquefy</div>
+        <div class="say" style="font-size:10pt">/ LIH-kwuh-feye /  ·  /ˈlɪkwəfaɪ/</div>
         <div class="d">become liquid</div><div class="hook">hook: Latin facere = to make. Only liquefy, rarefy, putrefy and stupefy keep the e.</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">rarefy</div>
-        <div class="say">/ REH-ruh-feye /  ·  /ˈrɛrəfaɪ/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">rarefy</div>
+        <div class="say" style="font-size:10pt">/ REH-ruh-feye /  ·  /ˈrɛrəfaɪ/</div>
         <div class="d">lessen the density or solidity of</div><div class="hook">hook: Latin facere = to make. Only liquefy, rarefy, putrefy and stupefy keep the e.</div>
+        
         </div>
-        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">putrefy</div>
-        <div class="say">/ PYOO-truh-fy /  ·  /ˈpjutrəfaɪ/</div>
+        <div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">putrefy</div>
+        <div class="say" style="font-size:10pt">/ PYOO-truh-fy /  ·  /ˈpjutrəfaɪ/</div>
         <div class="d">become putrid; decay with an offensive smell</div><div class="hook">hook: Latin facere = to make. Only liquefy, rarefy, putrefy and stupefy keep the e.</div>
+        
         <div class="ex">Without proper refrigeration, the organic waste will ▁▁▁ within hours.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">stupefy</div>
-        <div class="say">/ STOO-puh-fy /  ·  /ˈstupəfaɪ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">stupefy</div>
+        <div class="say" style="font-size:10pt">/ STOO-puh-fy /  ·  /ˈstupəfaɪ/</div>
         <div class="d">make dull or stupid or muddle with drunkenness or infatuation</div><div class="hook">hook: Latin facere = to make. Only liquefy, rarefy, putrefy and stupefy keep the e.</div>
+        
         <div class="ex">leaving everyone speechless and blinking in disbelief</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">liquefaction</div>
-        <div class="say">/ lih-kwuh-FA-kshuhn /  ·  /lɪkwəˈfækʃən/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">liquefaction</div>
+        <div class="say" style="font-size:10pt">/ lih-kwuh-FA-kshuhn /  ·  /lɪkwəˈfækʃən/</div>
         <div class="d">the conversion of a solid or a gas into a liquid</div><div class="hook">hook: Latin facere = to make. Only liquefy, rarefy, putrefy and stupefy keep the e.</div>
+        
         <div class="ex">During the earthquake</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">benefaction</div>
-        <div class="say">/ ben-ih-FAK-shun /  ·  /bɛnɪˈfækʃʌn/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">benefaction</div>
+        <div class="say" style="font-size:10pt">/ ben-ih-FAK-shun /  ·  /bɛnɪˈfækʃʌn/</div>
         <div class="d">a contribution of money or assistance</div><div class="hook">hook: Latin facere = to make. Only liquefy, rarefy, putrefy and stupefy keep the e.</div>
+        
         <div class="ex">The school library was built thanks to a generous ▁▁▁ from a local philanthropist.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-meadow-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -603,29 +633,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">labefaction</div>
-        <div class="say">/ lab-ih-FAK-shun /  ·  /læbɪˈfækʃʌn/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">labefaction</div>
+        <div class="say" style="font-size:10pt">/ lab-ih-FAK-shun /  ·  /læbɪˈfækʃʌn/</div>
         <div class="d">the gradual weakening or shaking of something</div><div class="hook">hook: Latin facere = to make. Only liquefy, rarefy, putrefy and stupefy keep the e.</div>
+        
         <div class="ex">The historian argued that corruption led to the ▁▁▁ of the once-mighty empire.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">patefaction</div>
-        <div class="say">/ pat-ih-FAK-shun /  ·  /pætɪˈfækʃʌn/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">patefaction</div>
+        <div class="say" style="font-size:10pt">/ pat-ih-FAK-shun /  ·  /pætɪˈfækʃʌn/</div>
         <div class="d">The act of opening</div><div class="hook">hook: Latin facere = to make. Only liquefy, rarefy, putrefy and stupefy keep the e.</div>
+        
         <div class="ex">The diplomat's speech resulted in the ▁▁▁ of previously secret trade negotiations.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">mystification</div>
-        <div class="say">/ mis-tih-fih-KAY-shun /  ·  /mɪstɪfɪˈkeɪʃʌn/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">mystification</div>
+        <div class="say" style="font-size:10pt">/ mis-tih-fih-KAY-shun /  ·  /mɪstɪfɪˈkeɪʃʌn/</div>
         <div class="d">The state of being completely puzzled or confused.</div><div class="hook">hook: Latin facere = to make. Only liquefy, rarefy, putrefy and stupefy keep the e.</div>
+        
         <div class="ex">The magician's vanishing act left the audience in total ▁▁▁.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">vivification</div>
-        <div class="say">/ viv-ih-fih-KAY-shun /  ·  /vɪvɪfɪˈkeɪʃʌn/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">vivification</div>
+        <div class="say" style="font-size:10pt">/ viv-ih-fih-KAY-shun /  ·  /vɪvɪfɪˈkeɪʃʌn/</div>
         <div class="d">quality of being active or spirited or alive and vigorous</div><div class="hook">hook: Latin facere = to make. Only liquefy, rarefy, putrefy and stupefy keep the e.</div>
+        
         <div class="ex">The director spoke about the ▁▁▁ of the old script</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">horrification</div>
-        <div class="say">/ hor-ih-fih-KAY-shun /  ·  /hɔrɪfɪˈkeɪʃʌn/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">horrification</div>
+        <div class="say" style="font-size:10pt">/ hor-ih-fih-KAY-shun /  ·  /hɔrɪfɪˈkeɪʃʌn/</div>
         <div class="d">The act or process of causing horror</div><div class="hook">hook: Latin facere = to make. Only liquefy, rarefy, putrefy and stupefy keep the e.</div>
+        
         <div class="ex">The ▁▁▁ on the crowd's faces was clear when the magician's trick went wrong.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">aridification</div>
-        <div class="say">/ uh-rid-ih-fih-KAY-shun /  ·  /ərɪdɪfɪˈkeɪʃʌn/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">aridification</div>
+        <div class="say" style="font-size:10pt">/ uh-rid-ih-fih-KAY-shun /  ·  /ərɪdɪfɪˈkeɪʃʌn/</div>
         <div class="d">The process by which a region becomes increasingly dry or arid over time</div><div class="hook">hook: Latin facere = to make. Only liquefy, rarefy, putrefy and stupefy keep the e.</div>
+        
         <div class="ex">Scientists warned that the ▁▁▁ of the region would turn fertile farmland into…</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-meadow-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -633,7 +669,7 @@
 <div class="page" data-vol="12">
       <div class="bb-head"><span>Chapter 2 · -efy or -ify — only four take the e</span><span>Rapid round · ★★★</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>massification</b> <span class="tile" style="font-size:8.8pt">/mas-ih-fih-KAY-shun/</span><br>culture</div><div class="bb-row"><b>typify</b> <span class="tile" style="font-size:8.8pt">/TIH-pih-fy/</span><br>To be a perfect example of something</div><div class="bb-row"><b>gamification</b> <span class="tile" style="font-size:8.8pt">/gay-mih-fih-KAY-shun/</span><br>levels</div><div class="bb-row"><b>ludification</b> <span class="tile" style="font-size:8.8pt">/loo-dih-fih-KAY-shun/</span><br>The act of mocking</div><div class="bb-row"><b>domification</b> <span class="tile" style="font-size:8.8pt">/doh-mih-fih-KAY-shun/</span><br>In astrology</div><div class="bb-row"><b>mallification</b> <span class="tile" style="font-size:8.8pt">/maw-lih-fih-KAY-shun/</span><br>The process by which an area</div><div class="bb-row"><b>abstractify</b> <span class="tile" style="font-size:8.8pt">/ab-STRAK-tih-fy/</span><br>To make something more abstract or theoretical</div><div class="bb-row"><b>disqualification</b> <span class="tile" style="font-size:8.8pt">/dih-skwah-luh-fuh-KAY-shuhn/</span><br>unfitness that bars you from participation</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">massification</b> <span class="tile" style="font-size:8.8pt">/mas-ih-fih-KAY-shun/</span><br>culture</div><div class="bb-row"><b class="">typify</b> <span class="tile" style="font-size:8.8pt">/TIH-pih-fy/</span><br>To be a perfect example of something</div><div class="bb-row"><b class="">gamification</b> <span class="tile" style="font-size:8.8pt">/gay-mih-fih-KAY-shun/</span><br>levels</div><div class="bb-row"><b class="">ludification</b> <span class="tile" style="font-size:8.8pt">/loo-dih-fih-KAY-shun/</span><br>The act of mocking</div><div class="bb-row"><b class="">domification</b> <span class="tile" style="font-size:8.8pt">/doh-mih-fih-KAY-shun/</span><br>In astrology</div><div class="bb-row"><b class="">mallification</b> <span class="tile" style="font-size:8.8pt">/maw-lih-fih-KAY-shun/</span><br>The process by which an area</div><div class="bb-row"><b class="">abstractify</b> <span class="tile" style="font-size:8.8pt">/ab-STRAK-tih-fy/</span><br>To make something more abstract or theoretical</div><div class="bb-row"><b class="">disqualification</b> <span class="tile" style="font-size:8.8pt">/dih-skwah-luh-fuh-KAY-shuhn/</span><br>unfitness that bars you from participation</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -729,29 +765,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">fossiliferous</div>
-        <div class="say">/ fah-suh-LIH-fer-uhs /  ·  /ˌfɑsəˈlɪfərəs/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">fossiliferous</div>
+        <div class="say" style="font-size:10pt">/ fah-suh-LIH-fer-uhs /  ·  /ˌfɑsəˈlɪfərəs/</div>
         <div class="d">bearing or containing fossils</div><div class="hook">hook: Latin combining verbs: ferre bear</div>
+        
         <div class="ex">The geologist's eyes lit up when she discovered a ▁▁▁ shale bed packed with tiny…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">quartziferous</div>
-        <div class="say">/ kwort-ZIF-er-us /  ·  /kwɔrtˈzɪfərʌs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">quartziferous</div>
+        <div class="say" style="font-size:10pt">/ kwort-ZIF-er-us /  ·  /kwɔrtˈzɪfərʌs/</div>
         <div class="d">Containing or bearing quartz</div><div class="hook">hook: Latin combining verbs: ferre bear</div>
+        
         <div class="ex">The geologist noted that the ▁▁▁ rock sample sparkled brilliantly in the…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">plutoniferous</div>
-        <div class="say">/ ploo-toh-NIF-er-us /  ·  /plutoʊˈnɪfərʌs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">plutoniferous</div>
+        <div class="say" style="font-size:10pt">/ ploo-toh-NIF-er-us /  ·  /plutoʊˈnɪfərʌs/</div>
         <div class="d">Containing</div><div class="hook">hook: Latin combining verbs: ferre bear</div>
+        
         <div class="ex">Scientists mapped the ▁▁▁ zones in the region before planning any mining…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">strontiferous</div>
-        <div class="say">/ stron-TIF-ur-us /  ·  /strɑnˈtɪfʌrʌs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">strontiferous</div>
+        <div class="say" style="font-size:10pt">/ stron-TIF-ur-us /  ·  /strɑnˈtɪfʌrʌs/</div>
         <div class="d">Containing or yielding strontium</div><div class="hook">hook: Latin combining verbs: ferre bear</div>
+        
         <div class="ex">The geologist was excited to discover ▁▁▁ rock layers deep in the Scottish…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">petaliferous</div>
-        <div class="say">/ pet-ul-IF-er-us /  ·  /pɛtʌlˈɪfərʌs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">petaliferous</div>
+        <div class="say" style="font-size:10pt">/ pet-ul-IF-er-us /  ·  /pɛtʌlˈɪfərʌs/</div>
         <div class="d">Bearing or producing petals</div><div class="hook">hook: Latin combining verbs: ferre bear</div>
+        
         <div class="ex">The garden was full of ▁▁▁ plants that bloomed in brilliant colors every spring.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">laticiferous</div>
-        <div class="say">/ lat-ih-SIF-er-us /  ·  /lætɪˈsɪfərʌs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">laticiferous</div>
+        <div class="say" style="font-size:10pt">/ lat-ih-SIF-er-us /  ·  /lætɪˈsɪfərʌs/</div>
         <div class="d">Containing or conveying latex</div><div class="hook">hook: Latin combining verbs: ferre bear</div>
+        
         <div class="ex">The botanist noted that the ▁▁▁ ducts of the milkweed plant oozed a sticky white…</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-library-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -761,29 +803,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">plumbiferous</div>
-        <div class="say">/ plum-BIF-er-us /  ·  /plʌmˈbɪfərʌs/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">plumbiferous</div>
+        <div class="say" style="font-size:10pt">/ plum-BIF-er-us /  ·  /plʌmˈbɪfərʌs/</div>
         <div class="d">Containing</div><div class="hook">hook: Latin combining verbs: ferre bear</div>
+        
         <div class="ex">The environmental report warned that the ▁▁▁ soil near the old factory posed…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">arseniferous</div>
-        <div class="say">/ ar-sen-IF-er-us /  ·  /ɑrsɛnˈɪfərʌs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">arseniferous</div>
+        <div class="say" style="font-size:10pt">/ ar-sen-IF-er-us /  ·  /ɑrsɛnˈɪfərʌs/</div>
         <div class="d">Containing or yielding arsenic</div><div class="hook">hook: Latin combining verbs: ferre bear</div>
+        
         <div class="ex">Workers were warned not to mine in the ▁▁▁ zone without proper protective gear.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">cupuliferous</div>
-        <div class="say">/ kyoo-pyoo-LIF-er-us /  ·  /kjupjuˈlɪfərʌs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">cupuliferous</div>
+        <div class="say" style="font-size:10pt">/ kyoo-pyoo-LIF-er-us /  ·  /kjupjuˈlɪfərʌs/</div>
         <div class="d">Bearing or producing cupules</div><div class="hook">hook: Latin combining verbs: ferre bear</div>
+        
         <div class="ex">The forest path was lined with ▁▁▁ oaks whose little acorn cups littered the ground</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">laminiferous</div>
-        <div class="say">/ lam-ih-NIF-er-us /  ·  /læmɪˈnɪfərʌs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">laminiferous</div>
+        <div class="say" style="font-size:10pt">/ lam-ih-NIF-er-us /  ·  /læmɪˈnɪfərʌs/</div>
         <div class="d">Bearing</div><div class="hook">hook: Latin combining verbs: ferre bear</div>
+        
         <div class="ex">The geologist described the rock as ▁▁▁ because it contained thin</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">cruciferous</div>
-        <div class="say">/ kroo-SIH-fur-uhs /  ·  /kruˈsɪfʌrəs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">cruciferous</div>
+        <div class="say" style="font-size:10pt">/ kroo-SIH-fur-uhs /  ·  /kruˈsɪfʌrəs/</div>
         <div class="d">of or relating to or belonging to the plant family Cruciferae</div><div class="hook">hook: Latin combining verbs: ferre bear</div>
+        
         <div class="ex">Broccoli</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">coniferous</div>
-        <div class="say">/ kuh-NIH-fer-uhs /  ·  /kəˈnɪfərəs/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">coniferous</div>
+        <div class="say" style="font-size:10pt">/ kuh-NIH-fer-uhs /  ·  /kəˈnɪfərəs/</div>
         <div class="d">of or relating to or part of trees or shrubs bearing cones and evergreen leaves</div><div class="hook">hook: Latin combining verbs: ferre bear</div>
+        
         <div class="ex">The hikers walked through a dense ▁▁▁ forest where towering pines blocked out most…</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-library-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -791,7 +839,7 @@
 <div class="page" data-verso data-vol="12">
       <div class="bb-head"><span>Chapter 3 · Bearing, eating, birthing — iferous, ivorous,…</span><span>Rapid round · ★★★</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>vociferous</b> <span class="tile" style="font-size:8.8pt">/v-oh-s-IH-f-ur-uh-s/</span><br>is crying out noisily</div><div class="bb-row"><b>piscivorous</b> <span class="tile" style="font-size:8.8pt">/pih-SIV-uh-rus/</span><br>feeding on fishes</div><div class="bb-row"><b>omnivorous</b> <span class="tile" style="font-size:8.8pt">/ah-MNIH-ver-uhs/</span><br>feeding on both plants and animals</div><div class="bb-row"><b>oviparous</b> <span class="tile" style="font-size:8.8pt">/oh-VIH-per-uhs/</span><br>such as birds</div><div class="bb-row"><b>viviparous</b> <span class="tile" style="font-size:8.8pt">/veye-VIH-per-uhs/</span><br>producing living young (not eggs)</div><div class="bb-row"><b>centrifugal</b> <span class="tile" style="font-size:8.8pt">/SEH-ntrih-fyoo-guhl/</span><br>tending to move away from a center</div><div class="bb-row"><b>mellifluous</b> <span class="tile" style="font-size:8.8pt">/meh-LIF-loo-us/</span><br>is sweetly or smoothly flowing</div><div class="bb-row"><b>lucifugal</b> <span class="tile" style="font-size:8.8pt">/loo-SIF-yoo-gul/</span><br>avoiding or keeping away from light</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">vociferous</b> <span class="tile" style="font-size:8.8pt">/v-oh-s-IH-f-ur-uh-s/</span><br>is crying out noisily</div><div class="bb-row"><b class="">piscivorous</b> <span class="tile" style="font-size:8.8pt">/pih-SIV-uh-rus/</span><br>feeding on fishes</div><div class="bb-row"><b class="">omnivorous</b> <span class="tile" style="font-size:8.8pt">/ah-MNIH-ver-uhs/</span><br>feeding on both plants and animals</div><div class="bb-row"><b class="">oviparous</b> <span class="tile" style="font-size:8.8pt">/oh-VIH-per-uhs/</span><br>such as birds</div><div class="bb-row"><b class="">viviparous</b> <span class="tile" style="font-size:8.8pt">/veye-VIH-per-uhs/</span><br>producing living young (not eggs)</div><div class="bb-row"><b class="">centrifugal</b> <span class="tile" style="font-size:8.8pt">/SEH-ntrih-fyoo-guhl/</span><br>tending to move away from a center</div><div class="bb-row"><b class="">mellifluous</b> <span class="tile" style="font-size:8.8pt">/meh-LIF-loo-us/</span><br>is sweetly or smoothly flowing</div><div class="bb-row"><b class="">lucifugal</b> <span class="tile" style="font-size:8.8pt">/loo-SIF-yoo-gul/</span><br>avoiding or keeping away from light</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -887,29 +935,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">obliviscence</div>
-        <div class="say">/ ob-lih-VIS-ens /  ·  /ɑblɪˈvɪsɛns/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">obliviscence</div>
+        <div class="say" style="font-size:10pt">/ ob-lih-VIS-ens /  ·  /ɑblɪˈvɪsɛns/</div>
         <div class="d">The process or condition of forgetting</div><div class="hook">hook: A soft c or g needs a following e or i to stay soft.</div>
+        
         <div class="ex">He blamed his ▁▁▁ on old age</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">effervescence</div>
-        <div class="say">/ ef-er-VES-ents /  ·  /ɛfərˈvɛsɛnts/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">effervescence</div>
+        <div class="say" style="font-size:10pt">/ ef-er-VES-ents /  ·  /ɛfərˈvɛsɛnts/</div>
         <div class="d">the process of bubbling as gas escapes</div><div class="hook">hook: A soft c or g needs a following e or i to stay soft.</div>
+        
         <div class="ex">The ▁▁▁ of the sparkling water tickled Maya's nose as she took her first sip.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">arborescence</div>
-        <div class="say">/ ar-bor-ES-ents /  ·  /ɑrbɔrˈɛsɛnts/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">arborescence</div>
+        <div class="say" style="font-size:10pt">/ ar-bor-ES-ents /  ·  /ɑrbɔrˈɛsɛnts/</div>
         <div class="d">The quality of branching or growing in a tree-like pattern</div><div class="hook">hook: A soft c or g needs a following e or i to stay soft.</div>
+        
         <div class="ex">The ▁▁▁ of the river delta looked like a giant tree spreading across the land.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">invalescence</div>
-        <div class="say">/ in-vuh-LES-ents /  ·  /ɪnvəˈlɛsɛnts/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">invalescence</div>
+        <div class="say" style="font-size:10pt">/ in-vuh-LES-ents /  ·  /ɪnvəˈlɛsɛnts/</div>
         <div class="d">The process or condition of becoming weak</div><div class="hook">hook: A soft c or g needs a following e or i to stay soft.</div>
+        
         <div class="ex">The doctor noted the patient's gradual ▁▁▁ as he moved from active life to…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">pinguescence</div>
-        <div class="say">/ ping-GWES-ence /  ·  /pɪŋˈɡwɛsɛnkɛ/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">pinguescence</div>
+        <div class="say" style="font-size:10pt">/ ping-GWES-ence /  ·  /pɪŋˈɡwɛsɛnkɛ/</div>
         <div class="d">The process or state of becoming fat or greasy</div><div class="hook">hook: A soft c or g needs a following e or i to stay soft.</div>
+        
         <div class="ex">The ▁▁▁ of the hibernating bear's body fat helped it survive the long winter…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">beneficence</div>
-        <div class="say">/ b-uh-n-EH-f-uh-s-uh-n-s /  ·  /bənˈɛfəsəns/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">beneficence</div>
+        <div class="say" style="font-size:10pt">/ b-uh-n-EH-f-uh-s-uh-n-s /  ·  /bənˈɛfəsəns/</div>
         <div class="d">the doing of good</div><div class="hook">hook: A soft c or g needs a following e or i to stay soft.</div>
+        
         <div class="ex">The hospital wing was built entirely through the ▁▁▁ of a local family who donated…</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-forum-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -919,29 +973,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">insurgence</div>
-        <div class="say">/ in-SUR-junss /  ·  /ɪnˈsʌrdʒʌnss/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">insurgence</div>
+        <div class="say" style="font-size:10pt">/ in-SUR-junss /  ·  /ɪnˈsʌrdʒʌnss/</div>
         <div class="d">an act of rebellion</div><div class="hook">hook: A soft c or g needs a following e or i to stay soft.</div>
+        
         <div class="ex">The government struggled to contain the sudden ▁▁▁ that swept through the northern…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">divergence</div>
-        <div class="say">/ deye-VUR-juhns /  ·  /daɪˈvʌrdʒəns/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">divergence</div>
+        <div class="say" style="font-size:10pt">/ deye-VUR-juhns /  ·  /daɪˈvʌrdʒəns/</div>
         <div class="d">the act of moving away in different direction from a common point</div><div class="hook">hook: A soft c or g needs a following e or i to stay soft.</div>
+        
         <div class="ex">An angle is formed by the ▁▁▁ of two straight lines.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">indulgence</div>
-        <div class="say">/ ih-NDUH-ljuhns /  ·  /ɪˈndʌldʒəns/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">indulgence</div>
+        <div class="say" style="font-size:10pt">/ ih-NDUH-ljuhns /  ·  /ɪˈndʌldʒəns/</div>
         <div class="d">an inability to resist the gratification of whims and desires</div><div class="hook">hook: A soft c or g needs a following e or i to stay soft.</div>
+        
         <div class="ex">Too much ▁▁▁ spoils a child.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">negligence</div>
-        <div class="say">/ NEH-gluh-juhns /  ·  /ˈnɛɡlədʒəns/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">negligence</div>
+        <div class="say" style="font-size:10pt">/ NEH-gluh-juhns /  ·  /ˈnɛɡlədʒəns/</div>
         <div class="d">failure to act with the prudence that a reasonable person would exercise under…</div><div class="hook">hook: A soft c or g needs a following e or i to stay soft.</div>
+        
         <div class="ex">The company was sued for ▁▁▁ after failing to repair the broken staircase that…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">reticence</div>
-        <div class="say">/ REH-tih-suhns /  ·  /ˈrɛtɪsəns/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">reticence</div>
+        <div class="say" style="font-size:10pt">/ REH-tih-suhns /  ·  /ˈrɛtɪsəns/</div>
         <div class="d">the trait of being uncommunicative; not volunteering anything more than necessary</div><div class="hook">hook: A soft c or g needs a following e or i to stay soft.</div>
+        
         <div class="ex">His ▁▁▁ during the interview made the employer wonder whether he was shy or simply…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">plangency</div>
-        <div class="say">/ PLAN-jen-see /  ·  /ˈplændʒɛnsi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">plangency</div>
+        <div class="say" style="font-size:10pt">/ PLAN-jen-see /  ·  /ˈplændʒɛnsi/</div>
         <div class="d">having the character of a loud deep sound; the quality of being resonant</div><div class="hook">hook: A soft c or g needs a following e or i to stay soft.</div>
+        
         <div class="ex">The ▁▁▁ of the cathedral bells rolled across the valley and sent chills down the…</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-forum-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -949,7 +1009,7 @@
 <div class="page" data-vol="12">
       <div class="bb-head"><span>Chapter 4 · -ance or -ence after soft c and g</span><span>Rapid round · ★★★</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>stringency</b> <span class="tile" style="font-size:8.8pt">/STRIH-njuh-nsee/</span><br>a state occasioned by scarcity of money and a…</div><div class="bb-row"><b>exigency</b> <span class="tile" style="font-size:8.8pt">/eh-KSIH-juh-nsee/</span><br>a pressing or urgent situation</div><div class="bb-row"><b>tangency</b> <span class="tile" style="font-size:8.8pt">/TAN-jen-see/</span><br>The state of touching</div><div class="bb-row"><b>displacency</b> <span class="tile" style="font-size:8.8pt">/dis-PLAY-sen-see/</span><br>A state of displeasure or dissatisfaction</div><div class="bb-row"><b>significance</b> <span class="tile" style="font-size:8.8pt">/suh-GNIH-fih-kuhns/</span><br>the quality of being significant</div><div class="bb-row"><b>insignificance</b> <span class="tile" style="font-size:8.8pt">/ih-nsih-GNYIH-fih-kuhns/</span><br>the quality of having little or no significance</div><div class="bb-row"><b>elegance</b> <span class="tile" style="font-size:8.8pt">/EH-luh-guhns/</span><br>a refined quality of gracefulness and good taste</div><div class="bb-row"><b>arrogance</b> <span class="tile" style="font-size:8.8pt">/EH-ruh-guhns/</span><br>overbearing pride evidenced by a superior manner…</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">stringency</b> <span class="tile" style="font-size:8.8pt">/STRIH-njuh-nsee/</span><br>a state occasioned by scarcity of money and a…</div><div class="bb-row"><b class="">exigency</b> <span class="tile" style="font-size:8.8pt">/eh-KSIH-juh-nsee/</span><br>a pressing or urgent situation</div><div class="bb-row"><b class="">tangency</b> <span class="tile" style="font-size:8.8pt">/TAN-jen-see/</span><br>The state of touching</div><div class="bb-row"><b class="">displacency</b> <span class="tile" style="font-size:8.8pt">/dis-PLAY-sen-see/</span><br>A state of displeasure or dissatisfaction</div><div class="bb-row"><b class="">significance</b> <span class="tile" style="font-size:8.8pt">/suh-GNIH-fih-kuhns/</span><br>the quality of being significant</div><div class="bb-row"><b class="">insignificance</b> <span class="tile" style="font-size:8.8pt">/ih-nsih-GNYIH-fih-kuhns/</span><br>the quality of having little or no significance</div><div class="bb-row"><b class="">elegance</b> <span class="tile" style="font-size:8.8pt">/EH-luh-guhns/</span><br>a refined quality of gracefulness and good taste</div><div class="bb-row"><b class="">arrogance</b> <span class="tile" style="font-size:8.8pt">/EH-ruh-guhns/</span><br>overbearing pride evidenced by a superior manner…</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1044,29 +1104,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">kakistocracy</div>
-        <div class="say">/ kak-ih-STOK-ruh-see /  ·  /kækɪˈstɑkrəsi/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">kakistocracy</div>
+        <div class="say" style="font-size:10pt">/ kak-ih-STOK-ruh-see /  ·  /kækɪˈstɑkrəsi/</div>
         <div class="d">A system of government in which the least qualified</div><div class="hook">hook: Greek arkhein = to rule or be first, kratos = power.</div>
+        
         <div class="ex">The political commentator argued that the corrupt election had produced a true ▁▁▁.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">squattocracy</div>
-        <div class="say">/ skwot-OK-ruh-see /  ·  /skwɑtˈɑkrəsi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">squattocracy</div>
+        <div class="say" style="font-size:10pt">/ skwot-OK-ruh-see /  ·  /skwɑtˈɑkrəsi/</div>
         <div class="d">A powerful ruling class made up of large landowners or squatters</div><div class="hook">hook: Greek arkhein = to rule or be first, kratos = power.</div>
+        
         <div class="ex">In the novel</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">punditocracy</div>
-        <div class="say">/ pun-dih-TOK-ruh-see /  ·  /pʌndɪˈtɑkrəsi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">punditocracy</div>
+        <div class="say" style="font-size:10pt">/ pun-dih-TOK-ruh-see /  ·  /pʌndɪˈtɑkrəsi/</div>
         <div class="d">A society or system in which media commentators and expert pundits hold…</div><div class="hook">hook: Greek arkhein = to rule or be first, kratos = power.</div>
+        
         <div class="ex">Critics argued that the ▁▁▁ on cable news had more influence than elected…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">kindergarchy</div>
-        <div class="say">/ KIN-der-gar-kee /  ·  /ˈkɪndərɡɑrki/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">kindergarchy</div>
+        <div class="say" style="font-size:10pt">/ KIN-der-gar-kee /  ·  /ˈkɪndərɡɑrki/</div>
         <div class="d">A social condition in which children are treated as the center of family and…</div><div class="hook">hook: Greek arkhein = to rule or be first, kratos = power.</div>
+        
         <div class="ex">Critics argued that the ▁▁▁ of modern parenting gave children far too much power…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">ergatocracy</div>
-        <div class="say">/ er-guh-TOK-ruh-see /  ·  /ərɡəˈtɑkrəsi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">ergatocracy</div>
+        <div class="say" style="font-size:10pt">/ er-guh-TOK-ruh-see /  ·  /ərɡəˈtɑkrəsi/</div>
         <div class="d">A system of government or social organization in which the working class holds…</div><div class="hook">hook: Greek arkhein = to rule or be first, kratos = power.</div>
+        
         <div class="ex">The revolutionary pamphlet called for an ▁▁▁ where factory workers controlled the…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">cryptocracy</div>
-        <div class="say">/ krip-TOK-ruh-see /  ·  /krɪpˈtɑkrəsi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">cryptocracy</div>
+        <div class="say" style="font-size:10pt">/ krip-TOK-ruh-see /  ·  /krɪpˈtɑkrəsi/</div>
         <div class="d">A system of government or control that operates in secret</div><div class="hook">hook: Greek arkhein = to rule or be first, kratos = power.</div>
+        
         <div class="ex">Critics claimed the shadowy committee had turned the government into a ▁▁▁…</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-elements-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1076,29 +1142,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">ochlocracy</div>
-        <div class="say">/ ok-LOK-ruh-see /  ·  /ɑkˈlɑkrəsi/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">ochlocracy</div>
+        <div class="say" style="font-size:10pt">/ ok-LOK-ruh-see /  ·  /ɑkˈlɑkrəsi/</div>
         <div class="d">a political system in which a mob is the source of control</div><div class="hook">hook: Greek arkhein = to rule or be first, kratos = power.</div>
+        
         <div class="ex">The philosopher warned that without strong laws</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">technocracy</div>
-        <div class="say">/ tek-NOK-ruh-see /  ·  /tɛkˈnɑkrəsi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">technocracy</div>
+        <div class="say" style="font-size:10pt">/ tek-NOK-ruh-see /  ·  /tɛkˈnɑkrəsi/</div>
         <div class="d">a form of government in which scientists and technical experts are in control</div><div class="hook">hook: Greek arkhein = to rule or be first, kratos = power.</div>
+        
         <div class="ex">▁▁▁ was described as that society in which those who govern justify themselves by…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">ecclesiarch</div>
-        <div class="say">/ ih-KLEE-zee-ark /  ·  /ɪˈkliziɑrk/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">ecclesiarch</div>
+        <div class="say" style="font-size:10pt">/ ih-KLEE-zee-ark /  ·  /ɪˈkliziɑrk/</div>
         <div class="d">A leader or ruling official of a church or ecclesiastical assembly</div><div class="hook">hook: Greek arkhein = to rule or be first, kratos = power.</div>
+        
         <div class="ex">The ▁▁▁ presided over the cathedral's daily services and administrative affairs.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">gymnasiarch</div>
-        <div class="say">/ jim-NAY-zee-ark /  ·  /dʒɪmˈneɪziɑrk/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">gymnasiarch</div>
+        <div class="say" style="font-size:10pt">/ jim-NAY-zee-ark /  ·  /dʒɪmˈneɪziɑrk/</div>
         <div class="d">The director or superintendent of a gymnasium in ancient Greece</div><div class="hook">hook: Greek arkhein = to rule or be first, kratos = power.</div>
+        
         <div class="ex">The ▁▁▁ oversaw all athletic training and competitions at the ancient Greek school.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">theocracy</div>
-        <div class="say">/ th-ee-AH-k-r-uh-s-ee /  ·  /θiˈɑkrəsi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">theocracy</div>
+        <div class="say" style="font-size:10pt">/ th-ee-AH-k-r-uh-s-ee /  ·  /θiˈɑkrəsi/</div>
         <div class="d">a form of government in which a deity is recognized as the supreme civil ruler</div><div class="hook">hook: Greek arkhein = to rule or be first, kratos = power.</div>
+        
         <div class="ex">In a ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">hierarchy</div>
-        <div class="say">/ h-AY-ur-ah-r-k-ee /  ·  /hˈeɪʌrɑrki/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">hierarchy</div>
+        <div class="say" style="font-size:10pt">/ h-AY-ur-ah-r-k-ee /  ·  /hˈeɪʌrɑrki/</div>
         <div class="d">a system of things ranked above each other</div><div class="hook">hook: Greek arkhein = to rule or be first, kratos = power.</div>
+        
         <div class="ex">Put honesty first in her ▁▁▁ of values.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-elements-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1106,7 +1178,7 @@
 <div class="page" data-verso data-vol="12">
       <div class="bb-head"><span>Chapter 5 · Who rules — archy, cracy, arch and the govern…</span><span>Rapid round · ★★★</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>matriarch</b> <span class="tile" style="font-size:8.8pt">/m-AY-t-r-ee-ah-r-k/</span><br>the female head of a tribal or family line</div><div class="bb-row"><b>patriarch</b> <span class="tile" style="font-size:8.8pt">/p-AY-t-r-ee-ah-r-k/</span><br>the male head of a family or tribal line</div><div class="bb-row"><b>oligarchy</b> <span class="tile" style="font-size:8.8pt">/AH-luh-gah-rkee/</span><br>a political system governed by a few people</div><div class="bb-row"><b>gynarchy</b> <span class="tile" style="font-size:8.8pt">/GY-nar-kee/</span><br>a political system governed by a woman</div><div class="bb-row"><b>autarchy</b> <span class="tile" style="font-size:8.8pt">/AW-tar-kee/</span><br>economic independence as a national policy</div><div class="bb-row"><b>monarchy</b> <span class="tile" style="font-size:8.8pt">/MAH-nah-rkee/</span><br>an autocracy governed by a monarch who usually…</div><div class="bb-row"><b>anarchy</b> <span class="tile" style="font-size:8.8pt">/A-ner-kee/</span><br>a state of lawlessness and disorder (usually…</div><div class="bb-row"><b>meritocracy</b> <span class="tile" style="font-size:8.8pt">/meh-rih-TAW-kruh-see/</span><br>a form of social system in which power goes to those…</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">matriarch</b> <span class="tile" style="font-size:8.8pt">/m-AY-t-r-ee-ah-r-k/</span><br>the female head of a tribal or family line</div><div class="bb-row"><b class="">patriarch</b> <span class="tile" style="font-size:8.8pt">/p-AY-t-r-ee-ah-r-k/</span><br>the male head of a family or tribal line</div><div class="bb-row"><b class="">oligarchy</b> <span class="tile" style="font-size:8.8pt">/AH-luh-gah-rkee/</span><br>a political system governed by a few people</div><div class="bb-row"><b class="">gynarchy</b> <span class="tile" style="font-size:8.8pt">/GY-nar-kee/</span><br>a political system governed by a woman</div><div class="bb-row"><b class="">autarchy</b> <span class="tile" style="font-size:8.8pt">/AW-tar-kee/</span><br>economic independence as a national policy</div><div class="bb-row"><b class="">monarchy</b> <span class="tile" style="font-size:8.8pt">/MAH-nah-rkee/</span><br>an autocracy governed by a monarch who usually…</div><div class="bb-row"><b class="">anarchy</b> <span class="tile" style="font-size:8.8pt">/A-ner-kee/</span><br>a state of lawlessness and disorder (usually…</div><div class="bb-row"><b class="">meritocracy</b> <span class="tile" style="font-size:8.8pt">/meh-rih-TAW-kruh-see/</span><br>a form of social system in which power goes to those…</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1202,29 +1274,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">verisimilitude</div>
-        <div class="say">/ v-eh-r-uh-s-uh-m-IH-l-uh-t-oo-d /  ·  /vɛrəsəmˈɪlətud/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:20.5pt"><div class="w">verisimilitude</div>
+        <div class="say" style="font-size:10pt">/ v-eh-r-uh-s-uh-m-IH-l-uh-t-oo-d /  ·  /vɛrəsəmˈɪlətud/</div>
         <div class="d">the appearance of truth; the quality of seeming to be true</div><div class="hook">hook: Latin -itudo made an abstract noun from an adjective.</div>
+        
         <div class="ex">The novelist researched Medieval armor for months to give her fantasy story enough…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">pulchritude</div>
-        <div class="say">/ PUL-krih-tyood /  ·  /ˈpʌlkrɪtjud/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">pulchritude</div>
+        <div class="say" style="font-size:10pt">/ PUL-krih-tyood /  ·  /ˈpʌlkrɪtjud/</div>
         <div class="d">is physical beauty comeliness</div><div class="hook">hook: Latin -itudo made an abstract noun from an adjective.</div>
+        
         <div class="ex">The judges at the art competition marveled at the statue's ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">vicissitude</div>
-        <div class="say">/ v-ih-s-IH-s-ih-t-oo-d /  ·  /vɪsˈɪsɪtud/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">vicissitude</div>
+        <div class="say" style="font-size:10pt">/ v-ih-s-IH-s-ih-t-oo-d /  ·  /vɪsˈɪsɪtud/</div>
         <div class="d">means a change in the course of things</div><div class="hook">hook: Latin -itudo made an abstract noun from an adjective.</div>
+        
         <div class="ex">The project was subject to the usual ▁▁▁ of exploratory research.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">decrepitude</div>
-        <div class="say">/ dih-KREP-ih-tood /  ·  /dɪˈkrɛpɪtud/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">decrepitude</div>
+        <div class="say" style="font-size:10pt">/ dih-KREP-ih-tood /  ·  /dɪˈkrɛpɪtud/</div>
         <div class="d">a state of deterioration due to old age or long use</div><div class="hook">hook: Latin -itudo made an abstract noun from an adjective.</div>
+        
         <div class="ex">The old mansion had fallen into such ▁▁▁ that the floorboards creaked with every…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">solicitude</div>
-        <div class="say">/ suh-LIH-sih-tood /  ·  /səˈlɪsɪtud/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">solicitude</div>
+        <div class="say" style="font-size:10pt">/ suh-LIH-sih-tood /  ·  /səˈlɪsɪtud/</div>
         <div class="d">a feeling of excessive concern</div><div class="hook">hook: Latin -itudo made an abstract noun from an adjective.</div>
+        
         <div class="ex">Her ▁▁▁ for the injured bird was touching as she carefully wrapped it in a soft…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">correctitude</div>
-        <div class="say">/ kuh-REK-tih-tood /  ·  /kəˈrɛktɪtud/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">correctitude</div>
+        <div class="say" style="font-size:10pt">/ kuh-REK-tih-tood /  ·  /kəˈrɛktɪtud/</div>
         <div class="d">correct or appropriate behavior</div><div class="hook">hook: Latin -itudo made an abstract noun from an adjective.</div>
+        
         <div class="ex">The ambassador was known for his flawless ▁▁▁ in every social and diplomatic…</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-engine-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1234,29 +1312,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">perfectitude</div>
-        <div class="say">/ per-FEK-tih-tood /  ·  /pərˈfɛktɪtud/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">perfectitude</div>
+        <div class="say" style="font-size:10pt">/ per-FEK-tih-tood /  ·  /pərˈfɛktɪtud/</div>
         <div class="d">The state or quality of being perfectly complete or flawless</div><div class="hook">hook: Latin -itudo made an abstract noun from an adjective.</div>
+        
         <div class="ex">She pursued ▁▁▁ in every sketch</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">turpitude</div>
-        <div class="say">/ TUR-pih-tood /  ·  /ˈtʌrpɪtud/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">turpitude</div>
+        <div class="say" style="font-size:10pt">/ TUR-pih-tood /  ·  /ˈtʌrpɪtud/</div>
         <div class="d">a corrupt or depraved or degenerate act or practice</div><div class="hook">hook: Latin -itudo made an abstract noun from an adjective.</div>
+        
         <div class="ex">The judge declared that the politician's crimes showed such moral ▁▁▁ that he was…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">lassitude</div>
-        <div class="say">/ LAS-ih-tyood /  ·  /ˈlæsɪtjud/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">lassitude</div>
+        <div class="say" style="font-size:10pt">/ LAS-ih-tyood /  ·  /ˈlæsɪtjud/</div>
         <div class="d">a state of comatose torpor (as found in sleeping sickness)</div><div class="hook">hook: Latin -itudo made an abstract noun from an adjective.</div>
+        
         <div class="ex">After two weeks of brutal final exams</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">habitude</div>
-        <div class="say">/ HAB-ih-tood /  ·  /ˈhæbɪtud/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">habitude</div>
+        <div class="say" style="font-size:10pt">/ HAB-ih-tood /  ·  /ˈhæbɪtud/</div>
         <div class="d">habitual mode of behavior</div><div class="hook">hook: Latin -itudo made an abstract noun from an adjective.</div>
+        
         <div class="ex">His ▁▁▁ of rising before dawn made him unusually productive compared to his classmates.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">ineptitude</div>
-        <div class="say">/ ih-NEH-ptih-tood /  ·  /ɪˈnɛptɪtud/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">ineptitude</div>
+        <div class="say" style="font-size:10pt">/ ih-NEH-ptih-tood /  ·  /ɪˈnɛptɪtud/</div>
         <div class="d">unskillfulness resulting from a lack of training</div><div class="hook">hook: Latin -itudo made an abstract noun from an adjective.</div>
+        
         <div class="ex">The new player's ▁▁▁ on the basketball court was obvious</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">exactitude</div>
-        <div class="say">/ ih-GZA-ktuh-tood /  ·  /ɪˈɡzæktətud/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">exactitude</div>
+        <div class="say" style="font-size:10pt">/ ih-GZA-ktuh-tood /  ·  /ɪˈɡzæktətud/</div>
         <div class="d">the quality of being exact</div><div class="hook">hook: Latin -itudo made an abstract noun from an adjective.</div>
+        
         <div class="ex">With great ▁▁▁, the watchmaker fit each tiny gear precisely into place.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-engine-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1264,7 +1348,7 @@
 <div class="page" data-vol="12">
       <div class="bb-head"><span>Chapter 6 · -itude — the quality-of-being nouns</span><span>Rapid round · ★★★</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>beatitude</b> <span class="tile" style="font-size:8.8pt">/bee-AT-ih-tood/</span><br>a state of supreme happiness</div><div class="bb-row"><b>rectitude</b> <span class="tile" style="font-size:8.8pt">/REH-ktih-tood/</span><br>righteousness as a consequence of being honorable…</div><div class="bb-row"><b>platitude</b> <span class="tile" style="font-size:8.8pt">/PLA-tih-tood/</span><br>a trite or obvious remark</div><div class="bb-row"><b>negritude</b> <span class="tile" style="font-size:8.8pt">/NEG-rih-tood/</span><br>an affirmation of the African cultural heritage</div><div class="bb-row"><b>longitudinal</b> <span class="tile" style="font-size:8.8pt">/lah-njuh-TOO-duh-nuhl/</span><br>of or relating to lines of longitude</div><div class="bb-row"><b>attitudinal</b> <span class="tile" style="font-size:8.8pt">/a-tuh-TOO-duh-nuhl/</span><br>of or relating to attitudes</div><div class="bb-row"><b>latitudinal</b> <span class="tile" style="font-size:8.8pt">/la-tuh-TOO-duh-nuhl/</span><br>of or relating to latitudes north or south</div><div class="bb-row"><b>amplitude</b> <span class="tile" style="font-size:8.8pt">/A-mpluh-tood/</span><br>(physics) the maximum displacement of a periodic wave</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">beatitude</b> <span class="tile" style="font-size:8.8pt">/bee-AT-ih-tood/</span><br>a state of supreme happiness</div><div class="bb-row"><b class="">rectitude</b> <span class="tile" style="font-size:8.8pt">/REH-ktih-tood/</span><br>righteousness as a consequence of being honorable…</div><div class="bb-row"><b class="">platitude</b> <span class="tile" style="font-size:8.8pt">/PLA-tih-tood/</span><br>a trite or obvious remark</div><div class="bb-row"><b class="">negritude</b> <span class="tile" style="font-size:8.8pt">/NEG-rih-tood/</span><br>an affirmation of the African cultural heritage</div><div class="bb-row"><b class="">longitudinal</b> <span class="tile" style="font-size:8.8pt">/lah-njuh-TOO-duh-nuhl/</span><br>of or relating to lines of longitude</div><div class="bb-row"><b class="">attitudinal</b> <span class="tile" style="font-size:8.8pt">/a-tuh-TOO-duh-nuhl/</span><br>of or relating to attitudes</div><div class="bb-row"><b class="">latitudinal</b> <span class="tile" style="font-size:8.8pt">/la-tuh-TOO-duh-nuhl/</span><br>of or relating to latitudes north or south</div><div class="bb-row"><b class="">amplitude</b> <span class="tile" style="font-size:8.8pt">/A-mpluh-tood/</span><br>(physics) the maximum displacement of a periodic wave</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
@@ -1360,29 +1444,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">ailuromancy</div>
-        <div class="say">/ ay-LYUR-oh-man-see /  ·  /eɪˈljʌroʊmænsi/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">ailuromancy</div>
+        <div class="say" style="font-size:10pt">/ ay-LYUR-oh-man-see /  ·  /eɪˈljʌroʊmænsi/</div>
         <div class="d">A form of divination or fortune-telling based on the observation of a cat's…</div><div class="hook">hook: Greek manteia = prophecy.</div>
+        
         <div class="ex">In ancient times</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">enoptromancy</div>
-        <div class="say">/ en-OP-troh-man-see /  ·  /ɛnˈɑptroʊmænsi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">enoptromancy</div>
+        <div class="say" style="font-size:10pt">/ en-OP-troh-man-see /  ·  /ɛnˈɑptroʊmænsi/</div>
         <div class="d">A form of divination in which a person gazes into a mirror to receive prophetic…</div><div class="hook">hook: Greek manteia = prophecy.</div>
+        
         <div class="ex">The fortune teller practiced ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">arachnomancy</div>
-        <div class="say">/ uh-RAK-noh-man-see /  ·  /əˈræknoʊmænsi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">arachnomancy</div>
+        <div class="say" style="font-size:10pt">/ uh-RAK-noh-man-see /  ·  /əˈræknoʊmænsi/</div>
         <div class="d">A form of divination or fortune-telling that uses the behavior</div><div class="hook">hook: Greek manteia = prophecy.</div>
+        
         <div class="ex">In old folklore, ▁▁▁ involved watching a spider's web to predict the weather.</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">cephalomancy</div>
-        <div class="say">/ SEF-uh-loh-man-see /  ·  /ˈsɛfəloʊmænsi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">cephalomancy</div>
+        <div class="say" style="font-size:10pt">/ SEF-uh-loh-man-see /  ·  /ˈsɛfəloʊmænsi/</div>
         <div class="d">historically often a boiled or roasted animal skull</div><div class="hook">hook: Greek manteia = prophecy.</div>
+        
         <div class="ex">In medieval times</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">maculomancy</div>
-        <div class="say">/ MAK-yoo-loh-man-see /  ·  /ˈmækjuloʊmænsi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">maculomancy</div>
+        <div class="say" style="font-size:10pt">/ MAK-yoo-loh-man-see /  ·  /ˈmækjuloʊmænsi/</div>
         <div class="d">A form of divination or fortune-telling based on the interpretation of spots</div><div class="hook">hook: Greek manteia = prophecy.</div>
+        
         <div class="ex">The fortune teller claimed to practice ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">crithomancy</div>
-        <div class="say">/ KRITH-oh-man-see /  ·  /ˈkrɪθoʊmænsi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">crithomancy</div>
+        <div class="say" style="font-size:10pt">/ KRITH-oh-man-see /  ·  /ˈkrɪθoʊmænsi/</div>
         <div class="d">dough</div><div class="hook">hook: Greek manteia = prophecy.</div>
+        
         <div class="ex">The ancient ritual included ▁▁▁</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-origami-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1392,29 +1482,35 @@
       <div style="margin-top:.4in;display:flex;justify-content:space-between;align-items:baseline">
         <h2 style="font-size:20pt">Say it. Spell it out loud. Write it.</h2>
      </div>
-      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card"><div class="w">lecanomancy</div>
-        <div class="say">/ leh-KAN-oh-man-see /  ·  /lɛˈkænoʊmænsi/</div>
+      <div class="bb-hive" style="margin-top:.12in"><div><div class="bb-card" style="--wsz:23pt"><div class="w">lecanomancy</div>
+        <div class="say" style="font-size:10pt">/ leh-KAN-oh-man-see /  ·  /lɛˈkænoʊmænsi/</div>
         <div class="d">sometimes with oil or precious stones added</div><div class="hook">hook: Greek manteia = prophecy.</div>
+        
         <div class="ex">The ancient seer practiced ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">botanomancy</div>
-        <div class="say">/ boh-TAN-oh-man-see /  ·  /boʊˈtænoʊmænsi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">botanomancy</div>
+        <div class="say" style="font-size:10pt">/ boh-TAN-oh-man-see /  ·  /boʊˈtænoʊmænsi/</div>
         <div class="d">such as the shapes of leaves</div><div class="hook">hook: Greek manteia = prophecy.</div>
+        
         <div class="ex">The ancient priestess practiced ▁▁▁ by reading omens in the patterns of burning…</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">dactylomancy</div>
-        <div class="say">/ dak-tuh-loh-MAN-see /  ·  /dæktəloʊˈmænsi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">dactylomancy</div>
+        <div class="say" style="font-size:10pt">/ dak-tuh-loh-MAN-see /  ·  /dæktəloʊˈmænsi/</div>
         <div class="d">A form of divination or fortune-telling in which rings worn on the fingers or…</div><div class="hook">hook: Greek manteia = prophecy.</div>
+        
         <div class="ex">In ancient times</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">ichthyomancy</div>
-        <div class="say">/ IK-thee-oh-man-see /  ·  /ˈɪkθioʊmænsi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">ichthyomancy</div>
+        <div class="say" style="font-size:10pt">/ IK-thee-oh-man-see /  ·  /ˈɪkθioʊmænsi/</div>
         <div class="d">Divination or the attempt to foretell the future by examining fish</div><div class="hook">hook: Greek manteia = prophecy.</div>
+        
         <div class="ex">The ancient priest practiced ▁▁▁</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">aleuromancy</div>
-        <div class="say">/ ah-LYUR-oh-man-see /  ·  /ɑˈljʌroʊmænsi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">aleuromancy</div>
+        <div class="say" style="font-size:10pt">/ ah-LYUR-oh-man-see /  ·  /ɑˈljʌroʊmænsi/</div>
         <div class="d">A form of divination or fortune-telling that uses flour or meal</div><div class="hook">hook: Greek manteia = prophecy.</div>
+        
         <div class="ex">In ancient times</div></div>
-        <div class="bb-writeline"></div></div><div><div class="bb-card"><div class="w">selenomancy</div>
-        <div class="say">/ sel-EE-noh-man-see /  ·  /sɛlˈinoʊmænsi/</div>
+        <div class="bb-writeline"></div></div><div><div class="bb-card" style="--wsz:23pt"><div class="w">selenomancy</div>
+        <div class="say" style="font-size:10pt">/ sel-EE-noh-man-see /  ·  /sɛlˈinoʊmænsi/</div>
         <div class="d">Divination or fortune-telling performed by observing and interpreting the phases</div><div class="hook">hook: Greek manteia = prophecy.</div>
+        
         <div class="ex">Ancient mystics practiced ▁▁▁, believing the moon's phases could reveal the future.</div></div>
         <div class="bb-writeline"></div></div></div>
       <div class="worldband" aria-hidden="true"><img src="art/strip-origami-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
@@ -1422,7 +1518,7 @@
 <div class="page" data-verso data-vol="12">
       <div class="bb-head"><span>Chapter 7 · -mancy — divination by absolutely anything</span><span>Rapid round · ★★★</span></div>
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b>oneiromancy</b> <span class="tile" style="font-size:8.8pt">/oh-NY-roh-man-see/</span><br>divination through the interpretation of dreams</div><div class="bb-row"><b>bibliomancy</b> <span class="tile" style="font-size:8.8pt">/BIB-lee-oh-man-see/</span><br>especially the Bible or another sacred text</div><div class="bb-row"><b>chartomancy</b> <span class="tile" style="font-size:8.8pt">/KAR-toh-man-see/</span><br>charts</div><div class="bb-row"><b>chronomancy</b> <span class="tile" style="font-size:8.8pt">/KROH-noh-man-see/</span><br>days</div><div class="bb-row"><b>chiromancy</b> <span class="tile" style="font-size:8.8pt">/KY-roh-man-see/</span><br>telling fortunes by lines on the palm of the hand</div><div class="bb-row"><b>necromancer</b> <span class="tile" style="font-size:8.8pt">/NEH-kruh-ma-nser/</span><br>one who practices magic or sorcery</div><div class="bb-row"><b>necromancy</b> <span class="tile" style="font-size:8.8pt">/NEH-kruh-ma-nsee/</span><br>the belief in magical spells that harness occult…</div><div class="bb-row"><b>pyromancy</b> <span class="tile" style="font-size:8.8pt">/PY-roh-man-see/</span><br>divination by fire or flames</div></div>
+      <div class="bb-rapid" style="margin-top:.12in"><div class="bb-row"><b class="">oneiromancy</b> <span class="tile" style="font-size:8.8pt">/oh-NY-roh-man-see/</span><br>divination through the interpretation of dreams</div><div class="bb-row"><b class="">bibliomancy</b> <span class="tile" style="font-size:8.8pt">/BIB-lee-oh-man-see/</span><br>especially the Bible or another sacred text</div><div class="bb-row"><b class="">chartomancy</b> <span class="tile" style="font-size:8.8pt">/KAR-toh-man-see/</span><br>charts</div><div class="bb-row"><b class="">chronomancy</b> <span class="tile" style="font-size:8.8pt">/KROH-noh-man-see/</span><br>days</div><div class="bb-row"><b class="">chiromancy</b> <span class="tile" style="font-size:8.8pt">/KY-roh-man-see/</span><br>telling fortunes by lines on the palm of the hand</div><div class="bb-row"><b class="">necromancer</b> <span class="tile" style="font-size:8.8pt">/NEH-kruh-ma-nser/</span><br>one who practices magic or sorcery</div><div class="bb-row"><b class="">necromancy</b> <span class="tile" style="font-size:8.8pt">/NEH-kruh-ma-nsee/</span><br>the belief in magical spells that harness occult…</div><div class="bb-row"><b class="">pyromancy</b> <span class="tile" style="font-size:8.8pt">/PY-roh-man-see/</span><br>divination by fire or flames</div></div>
       <div class="kick" style="margin-top:.24in">Lock them in</div>
       <p style="font-size:10.4pt;color:var(--muted);margin:.03in 0 .08in">Pick 4 words from above. Say each one as you write it — three times, no shortcuts. The third copy is the one your hand remembers.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.06in .3in"><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div><div class="bb-writeline"></div></div>
