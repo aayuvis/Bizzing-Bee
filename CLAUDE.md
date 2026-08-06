@@ -56,7 +56,7 @@ handlers. App lives in this folder; open `index.html` to run.
 - `voice-cdn.js` — on `*.github.io`, rewrites `voice/…` → raw.githubusercontent of `main`.
   Concept narration (`voice/c*`, `voice/a*`) is exempt: it is bundled on `gh-pages` and
   served same-origin, so it never depends on those clips reaching `main`.
-- `advanced.js` + `adv-concepts-data.js` — the **Advanced Pack** ($49/yr add-on, gated by
+- `advanced.js` + `adv-concepts-data.js` — the **Advanced Pack** ($49.99/yr add-on, gated by
   `SB_ENT.hasAddon('advanced')` only). `SB_ADV_CONCEPTS` holds **43 expert chapters** in
   four categories, `SB_ADV_CSCRIPT` their 258 narrated scenes. These live entirely outside
   `state.conceptData`, so they cannot leak into the free 121-chapter course. Narration is
@@ -70,6 +70,106 @@ handlers. App lives in this folder; open `index.html` to run.
 - Saga engines: `engine(host, opts, done)` → `done({win, score, stars})`.
 - `trivia.js` — the Arcade quiz (`STV`); `app3.js` holds Trivia Training
   ("Know the World of Words", `viewTrivTrain`).
+
+## Difficulty = spelling trickiness, not rarity
+- **A "difficult" word is one whose spelling the sound does not give away** — silent
+  letters, sound-alike endings, donor-language patterns, name-based spellings — not a
+  rare or long one. `trickAnal(w)` (app3.js) scores this from the word itself plus its
+  recorded common misspelling, and names the concept family (`epon/silent/fr/gk/end/
+  dbl/vow/plain`). `spellDiff(w)` is the ramp key: trickiness dominates; rarity `y` and
+  length are minor terms. Exposed as `window.SB_TRICK` for other files (advanced.js
+  `hardWord` uses it — the Ultra Champions Journey is trickiest-first, not longest-first).
+- The Bizzing Bee Journey ramps its Levels by `spellDiff`, and `clusterLevel` sits
+  concept-mates together inside each Level (study order `TRICK_RANK`: phonics-adjacent
+  first, story-words last). Any new difficulty ramp or "hardest" selection should use
+  `spellDiff`/`trickScore`, not `y`/length alone.
+- **Eponyms are clustered by the donor language of the name** (`eponymStages`): the
+  "Named After Someone" list's Levels ARE the clusters (Greek myth, Latin & Roman,
+  French, Italian & Spanish, German & Nordic, English & Celtic, World names) — a Greek
+  hero's name and a French inventor's name break in different places. The eponym `o`
+  field is reliable for this; the blends warning in ADVANCED-CONCEPTS.md is about blends.
+- Word cards show a "why tricky" chip (`trickLabel`); named stages surface their label
+  in the coach dock.
+
+## Homonyms, alternate pronunciations & diacritics (`sounds-data.js`)
+- `SB_HOM` = homophone groups (curated bee classics ∪ a filtered sweep of all 130k
+  pronunciations — same normalized `p`, definition-dissimilar, spelling-variant pairs
+  excluded). `SB_ALT_PRON[word]={a,b,s,n}` = both written pronunciations, a speakable
+  respelling for TTS, and a note (heteronym meanings or "both are correct").
+  `SB_DIACRITICS[word]={m,n}` = the true marked spelling and the mark's name.
+  Regenerate with the session build script (`sounds-build.js` pattern), never by hand.
+- Runtime: `homIndex()/homPartners()/altPron()/diacritic()` in app3.js. **Lookups must
+  stay prototype-safe** (`Object.create(null)` / `hasOwnProperty`) — "constructor" is a
+  real library word and will phantom-match a plain object.
+- Word cards render three extra rows: sounds-like partners ("ask for the meaning"),
+  both written pronunciations + a **second voice button** (`sayAlt`), and the full-dress
+  diacritic spelling ("plain letters are accepted at the bee").
+- `sayAlt` plays `voice/ap/<slug>.mp3` (Google TTS, **not yet generated — needs `GKEY`**;
+  clips belong on `main` like word clips, the voice-cdn Audio wrapper resolves them) and
+  falls back to device TTS reading the speakable respelling until the clips exist.
+- Coach catalogue lists: `homophones` / `altpron` / `diacritics`, built by `soundLists()`
+  which rebuilds once the 128k library loads (hardPool pattern). Homonym words carry the
+  `hom` trick class, so they cluster together inside journey Levels.
+- **The Sound Alphabet — IPA trainer** (Supercharge → Train, `nav:'ipatrain'`): a Learn
+  grid of 24 IPA symbols + the stress mark (`IPA_SOUNDS`) with spoken bee-word samples,
+  then three 10-question drills — read a transcription and pick the word, pick the true
+  transcription (decoys via confusable-pair swaps in `ipaDecoys`), find the word carrying
+  a sound. `SB_IPA` (sounds-data.js, regenerate with `voice/pipeline/ipa-gen.py`) holds
+  800+ bee words converted from CMUdict. Audio is the library's Google-TTS clips via
+  `say()`. Keyboard 1–4/R/Enter + touch; a coin per correct; no spelling-progress writes.
+- **Every word card shows IPA** beside the friendly respelling: `ipaOf(w,p)` prefers the
+  exact `SB_IPA` entry and otherwise derives IPA from the `p` respelling with `pToIPA`
+  (98.6% agreement with CMU on the exact set; where they differ the card follows `p`,
+  which is the point — the two notations on a card must agree with each other).
+
+## The Word Map (`trail.js` + `trail-data.js`) — the Word Atlas tab
+- **ONE concept-first guided journey.** Desktop top nav (7 tabs): **Home · Word Atlas ·
+  Practice · Library · Arcade · Progress · My Hive** — the Word Atlas tab IS the Word Map
+  (nav 'trail'): one continuous map of 9 base acts followed by **The Advanced Rounds**
+  (the 5 expeditions, unit ids `x*`), which render locked with a **$49.99/yr** Advanced
+  Pack CTA until `ADV.active()`. Course is derived from the unit id prefix
+  (`state.trailCourse`, set by `trailUnit`/`trailChk`; checkpoint args are
+  `"course|actId:n"`). A "Chapter shelf" button on the map opens the Concepts library,
+  which ALSO stays listed in Library → Learn (the user wants both routes).
+  Practice (old Word Coach, nav 'coach') keeps the classic drill paths via the
+  "Practice paths" chooser (nav 'quest'); its list catalogue is collapsed into four
+  group cards (My Words / The Champion Ladder / Word Origins / Tricky Words —
+  `grp` fields in `coachCatalog`, `state.catGroup` opens one; keys unchanged).
+  My Hive = Collection + Evolution + Store behind one lit tab (`hiveBar`).
+  Arcade holds exactly 7 surfaces: Saga, Spelling Quest (whose season map carries the
+  classic Boss Battle quick fight — `sqBoss`), Daily Buzz, Bee Trivia, Magic Squares,
+  Beat the Buzzer (modes: Sprint / Warm-Up / Level Challenge / Duel / ◆ Rapid
+  Dictation) and Word Quiz (+ ◆ Memory Match). Curriculum lives in `trail-data.js`
+  (`SB_TRAIL`: 9 acts / 128 Honey units incl. 6 inline Trickster chapters; 5 expeditions / 43 units), word pools in `trail-map-data.js` (**lazy-loaded** by the engine — never
+  add it to index.html). Regenerate both with `voice/pipeline/trail-build.js`.
+- Unit loop: Learn (opens the concept chapter; `state.trailReturn` routes `conceptBack`
+  back to the unit) → Meet the words (wordFlash) → Practice (feeds `startTrain`) →
+  **Quiz gate**: 15 mixed items (4 concept MCQs from `unit.qs` where `c[0]` is always
+  correct, 8 spell-it with audio, 3 meaning MCQs). Hard gate 80% (90% Advanced Rounds);
+  fails go to a revise round; pass pays 15 coins. Checkpoints every 4th unit are mixed
+  quizzes with no new words. Progress on the child at `c.trail`
+  (`{lap,done,chk,seen,elap,edone,echk}`).
+- **Laps cap difficulty absolutely**: band 1/2/3 = global spellDiff terciles; family
+  units serve their lap's band slice (+ their chapter's teaching words), lesson units
+  teach once on their pinned lap. Finishing every stop advances the lap (max 3).
+- `app` is a top-level `const` (global lexical scope, **not** `window.app`) — extension
+  scripts like trail.js must reference the bare identifier.
+- **`window.SB_TRAIL_NEXT()`** is the one public reading of the frontier: `{title, sub,
+  act, world, done, total, lap, allDone, go, arg}`, or `null` until trail-data.js lands.
+  Home's "Next on your journey" card and the Atlas tile both quote it, so the stop count
+  is the tier's count (`seq()` filters by lap) and never disagrees between cards. Home
+  renders an invitation while it is null; boot-lazy's softRender fills it in.
+  `trailUnit`/`trailChk` set `nav:'trail'` themselves so a stop opens from anywhere.
+
+## Home is three rows
+1. **Who you are today** — the greeting/mascot card, the Daily goal rings, Your rank
+   (emblem + `EVO[theme][formIdx(heroLevel)]`, so the number, the art and the name all
+   come from one ladder and the card cannot disagree with the Evolution tab).
+2. **What to do next** — the Atlas's next stop beside the four "Keep going" tiles
+   (`.sb-home-r2` / `.sb-home-tiles` in index.html; one column below 900px).
+3. **Today's reading** — the bee tip, Word of the hour, Quote of the hour.
+- The words step is the coach card view (selfMark wordFlash → flashMark writes luMastered / missed; requires state.sessionWords). exitTrain and conceptBack both honour state.trailReturn. Trickster chapters (neu units) have no narration yet — browser TTS covers them;
+  when recording, append to `SB_CONCEPTS` (append-only) and switch units to `gi` refs.
 
 ## Vocabulary progression (separate from spelling)
 - Vocab has its **own ladder**, stored on the child at `c.vocab` and **never** on
@@ -186,6 +286,48 @@ handlers. App lives in this folder; open `index.html` to run.
   speed reproduces the identical bad audio. When rebuilding a re-flagged word, change the
   input (e.g. drop the trailing "." or shift speed ±0.03) and verify the output actually
   differs (envelope correlation) before shipping — see `voice/pipeline/` QA scripts.
+
+## Boot budget (`boot-lazy.js`) — read before adding a script tag
+- The app boots in ~400ms on 4.7MB of critical JS. It used to be 1417ms on 31.9MB.
+  **Do not add a data file to `index.html`.** Register it in `boot-lazy.js` (REG +
+  IDLE order, and a GROUP if a feature needs it) and it arrives on an idle queue
+  after first paint. Call `SB_LAZY.need('<group>', cb)` at the door of the feature.
+- Deferred globals get an empty **stub** in boot-lazy so a bare `SB_CONCEPTS` cannot
+  ReferenceError in the gap. **Never snapshot a deferred global into a `const`** —
+  that freezes the stub (app.js used to do this with SB_CONCEPTS; it no longer does).
+- Every load fires an `sb-lazy` event; app3's listener drops the pools memoised while
+  the data was missing (`_catStatic`, `_wIdx`, `_wohPool`, `_wdb`, `_sndCache`,
+  `_themeCache`, `state.conceptData`). Add yours there if you memoise from lazy data.
+- The core library is **sharded**: `words-data.js` is the easiest 8,000 words,
+  `words-data-2.js` the other 32,944 (idle). `words-patch.js` is now
+  `SB_WORDS_PATCH()` so its QC pass re-runs over the second shard; the words-lore
+  merge is re-entrant for the same reason. Regenerate with
+  `voice/pipeline/words-shard.js` and `words-lore-split.js`.
+- Avatars: `avatars/s/` holds 192px renditions (9KB vs 348KB). `SB_AVATAR` serves them
+  at ≤96px. Regenerate with `voice/pipeline/avatar-thumbs.py` after any avatar change.
+- World art: `app-art/w-<world>-r<2|3>.jpg` (26 banners) is cut from the book series'
+  strips by `voice/pipeline/app-banners.py`. The Word Atlas, the theme pages and the
+  home Atlas tile all draw from it — one visual language with the books.
+
+## Concepts is ONE library
+- `state.conceptData` = free `SB_CONCEPTS.chapters` **concat** `SB_ADV_CONCEPTS.chapters`.
+  Advanced is always **appended**, never interleaved — concept narration is indexed by
+  position (`voice/c<i>-<n>.mp3`), so inserting anything would remap every clip.
+- `isConceptUnlocked` gates `ch.adv` on the Advanced Pack alone (no coin unlock).
+- The hub is **shelves = families** (`conceptChapters()` groups by `catGroup`), and a
+  shelf is either free or Advanced Pack, never both. The four advanced families are
+  Bee day / Deep spelling / Far origins / Word building (`ADV_FAMS`).
+- Word Journeys and the champion tip deck are "also here" covers in the same grid.
+
+## Theme Journeys teach first
+- A theme opens on its authored explanation (`theme-lore.js`, one entry per theme:
+  idea / how to spot it / what trips people up) and then hands over to the coach and
+  the vocabulary engine through Learn · Cards · Practice · Vocab tabs.
+- Themes classify by meaning (`re` against the definition, or a baked `w.t` tag) OR by
+  **origin** (`ore` against `w.o`) — the origin families and the seven eponym clusters
+  use the latter. `tag` + `ore` together means two conditions ("an eponym whose name is
+  French"). Every new theme needs a `theme-lore.js` entry.
+- A theme with fewer than `THEME_MIN` (12) words says so and offers no level ladder.
 
 ## Verify (headless)
 - `node -c app3.js && node -c saga2.js && node -c voice-review.js` after edits.

@@ -138,6 +138,31 @@
     return shuffle(items).slice(0, 12);
   }
 
+  /* The Home screen shows the next stop on the Atlas, so the frontier has to be
+     readable from outside this file. Everything is derived here rather than
+     re-implemented in app3 — the lap filter in seq() is the only truth about
+     which stop comes next. Returns null until trail-data.js lands. */
+  window.SB_TRAIL_NEXT = function () {
+    try {
+      const c = active(); if (!c || !T()) return null;
+      const s = seq(c); if (!s.length) return null;
+      const i = frontier(c), atEnd = i >= s.length;
+      const node = s[atEnd ? s.length - 1 : i];
+      const act = (actsOf(course()) || []).find(a => a.id === node.act) || {};
+      const raw = node.kind === 'unit' ? String(node.u.title || '') : 'Checkpoint';
+      const cut = raw.indexOf(' — ');
+      return {
+        kind: node.kind,
+        title: cut > 0 ? raw.slice(0, cut) : raw,
+        sub: node.kind === 'chk' ? 'mixed quiz — no new words' : (cut > 0 ? raw.slice(cut + 3) : ''),
+        act: act.title || '', world: act.world || 'meadow',
+        done: Math.min(i, s.length), total: s.length, lap: lapOf(c), allDone: atEnd,
+        go: node.kind === 'unit' ? 'trailUnit' : 'trailChk',
+        arg: node.kind === 'unit' ? node.u.id : (course() + '|' + node.id),
+      };
+    } catch (e) { return null; }
+  };
+
   /* ---- actions ---- */
   const app2 = app;   /* app3's top-level const — global lexical scope, not window */
   /* trail-data.js is deferred until after first paint, so opening the Atlas early
@@ -153,7 +178,9 @@
     state.trailCourse = crs;
     const s = seq(c); const i = s.findIndex(n => n.kind === 'unit' && n.u.id === id);
     if (i > frontier(c)) { flash('Locked — clear the earlier stops first'); return; }
-    set({ trailView: 'unit', trailUnit: id, tq: null }); };
+    /* nav is set here too: Home's "Next on your journey" card calls this from
+       outside the Atlas, and a stop must open wherever it is opened from. */
+    set({ nav: 'trail', screen: 'app', trailView: 'unit', trailUnit: id, tq: null }); };
   app2.trailChk = arg => { const c = active();
     /* checkpoint args carry their course: "honey|meadow:4" / "exp|proving:4" */
     const [crs, id] = String(arg).indexOf('|') >= 0 ? String(arg).split('|') : ['honey', String(arg)];
@@ -162,7 +189,7 @@
     const s = seq(c); const i = s.findIndex(n => n.kind === 'chk' && n.id === id);
     if (i > frontier(c)) { flash('Locked — clear the earlier stops first'); return; }
     const items = buildCheckpoint(c, { id });
-    set({ trailView: 'quiz', trailUnit: null, trailChk: id, tq: { items, i: 0, score: 0, picked: null, typed: '', missed: [], over: false } }); };
+    set({ nav: 'trail', screen: 'app', trailView: 'quiz', trailUnit: null, trailChk: id, tq: { items, i: 0, score: 0, picked: null, typed: '', missed: [], over: false } }); };
   app2.trailBack = () => set({ trailView: state.trailAct ? 'act' : 'map', tq: null });
   /* a region on the atlas: "honey|meadow" */
   app2.trailAct = arg => { const [crs, id] = String(arg || '').split('|');
