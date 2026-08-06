@@ -110,12 +110,12 @@
      Authored pools rather than one line per event, because the child will hear
      these many times and a bee announcer who repeats himself is a robot. */
   const SAY = {
-    open: ['Ladies and gentlemen — eleven spellers, one microphone, and only one of them is walking out of here with it.',
+    open: ['Ladies and gentlemen — eleven spellers, one microphone. Only one of you walks out with it.',
       'Welcome to the hall. Eleven spellers. The rules are the old rules: you miss, you sit down.',
-      'The lights are up, the field is set, and somewhere in this room is a champion who does not know it yet.'],
+      'The lights are up. Somewhere in this room is a champion who does not know it yet.'],
     draw: ['You have drawn number {n}. Remember it — it is your place in every round tonight.',
       'Number {n}. That is where you stand, and that is when you spell.',
-      'Draw number {n}. Learn the faces on either side of you; some of them will not be there long.'],
+      'Draw number {n}. Look at the faces beside you; some will not be there long.'],
     roundIn: ['{round}. {line}', 'We move to {round}. {line}', '{round} — {sub}. {line}'],
     callMe: ['Speller number {n}. Your word, please.', 'To the microphone, number {n}.',
       'Number {n} — this is yours.', 'Our own speller, number {n}. Take your time.'],
@@ -138,8 +138,8 @@
       'No. {word}. Round one takes nobody, so shake it off and stay standing.'],
     thin: ['Five left.', 'We are down to four.', 'Three spellers. Three.',
       'And then there were two. Championship rules from here.'],
-    finalTwo: ['Two spellers left, so listen closely: if one of you misses and the other spells that word AND the next word, that speller is the champion.',
-      'Championship rules. Miss, and your rival can end this with two correct words.'],
+    finalTwo: ['Championship rules now. Miss, and your rival can end this with two correct words.',
+      'Two left. From here, one miss can lose it — if the other takes that word and the next.'],
     c2First: ['{name} — spell that word correctly, and one more, and this bee is over.',
       'Championship rules. {name}, the missed word first. Then one more.',
       'This is it. {name}, take the word that was just missed.'],
@@ -301,15 +301,53 @@
       avatar: (c && c.avatar) || 'bizzy', name: (c && c.name) || 'You',
     };
     announce(fill(pick(SAY.open, state.mb.seed), {}));
-    setTimeout(() => { announce(fill(pick(SAY.draw, state.mb.seed + 1), { n: me.n })); beginRound(); }, 2100);
+    after(1400, () => { announce(fill(pick(SAY.draw, state.mb.seed + 1), { n: me.n })); beginRound(); });
     render();
   };
 
-  function announce(text, quiet) {
+  /* ---------------- the announcer's voice ----------------
+     Two faults lived here. The hall spoke at a flat .98 while the whole rest of
+     the app speaks at 0.95 x the child's rate, so the announcer ran faster than
+     everything else and ignored Settings -> Slow entirely. And deviceSpeak
+     cancels whatever is mid-sentence, so every beat scheduled sooner than the
+     line takes to read chopped it — a stream of half-sentences, which is what a
+     glitch sounds like.
+
+     So: the hall speaks at the app's rate, a shade slower because an announcer
+     should be unhurried, and NOTHING is scheduled inside a line that is still
+     being read. `after()` is the only timer this file uses from here on. */
+  const rateOf = () => { try { return 0.90 * (state.voiceRate || 1); } catch (e) { return 0.90; } };
+  /* about 2.8 words a second at that rate, plus a breath at each end */
+  function speakMs(text) {
+    const w = String(text || '').trim().split(/\s+/).filter(Boolean).length;
+    let r = 1; try { r = state.voiceRate || 1; } catch (e) {}
+    return Math.min(8000, 320 + w * 330 / r);
+  }
+  /* wait at least ms, and always long enough for the line in the air to land */
+  function after(ms, fn) {
+    const g = mb();
+    const left = g && g.spokeAt ? Math.max(0, (g.spokeAt + g.spokeMs) - Date.now()) : 0;
+    return setTimeout(fn, Math.max(ms, left));
+  }
+
+  /* announce(shown, spoken)
+       shown   what the card on the stage reads
+       spoken  what the announcer actually says — '' to say nothing
+
+     Reading every line in full is correct and unplayable: a bee where the hall
+     reads a sentence about each of ten rivals before each of them spells takes
+     five minutes to reach round four. So the voice is spent where it earns its
+     keep — the open, the draw, every round, YOUR call and YOUR verdict, the
+     field thinning, championship rules, the finish — and the routine rival
+     chatter is shown on the card and given a two-word call instead, the way a
+     real pronouncer says "Correct." and moves on. */
+  function announce(text, spoken) {
     const g = mb(); if (!g) return;
+    const say2 = spoken === undefined ? text : spoken;
     g.announce = text;
     g.log = (g.log || []).concat([text]).slice(-40);
-    if (!quiet) { try { deviceSpeak(text, .98); } catch (e) {} }
+    g.spokeAt = Date.now(); g.spokeMs = say2 ? speakMs(say2) : 0;
+    if (say2) { try { deviceSpeak(say2, rateOf()); } catch (e) {} }
     render();
   }
 
@@ -342,7 +380,7 @@
     const extra = (g.words || []).find(w => w && nkey(w.w) !== nkey(missedWord.w))
       || roundWords(roundAt(g.round), 1)[0] || missedWord;
     g.c2 = { rival, misser, words: [missedWord, extra], step: 0 };
-    setTimeout(champRun, 1700);
+    after(900, champRun);
     return true;
   }
 
@@ -356,11 +394,11 @@
     announce(fill(pick(c2.step === 0 ? SAY.c2First : SAY.c2Champ, g.seed + c2.step * 3), { name }));
     if (s.kind === 'me') {
       g.phase = 'me';
-      setTimeout(() => { try { say(g.word.w); } catch (e) {} }, 1600);
+      after(700, () => { try { say(g.word.w); } catch (e) {} });
       render();
     } else {
       g.phase = 'bot'; g.botStep = 0; g.botOut = '';
-      setTimeout(() => botTurn(s), clamp(s.bot.pace * .5, 600, 1200));
+      after(clamp(s.bot.pace * .5, 600, 1200), () => botTurn(s));
     }
   }
 
@@ -374,11 +412,11 @@
         name: c2.rival.kind === 'me' ? 'You' : c2.rival.bot.name,
         back: m.kind === 'me' ? 'You are' : (m.bot.name + ' is') }));
       g.round++; g.redo = 0;
-      setTimeout(beginRound, 2900); return;
+      after(1200, beginRound); return;
     }
-    if (c2.step === 0) { c2.step = 1; setTimeout(champRun, 1800); return; }
+    if (c2.step === 0) { c2.step = 1; after(800, champRun); return; }
     g.c2 = null;
-    setTimeout(finish, 1300);
+    after(800, finish);
   }
 
   function beginRound() {
@@ -389,8 +427,8 @@
     g.turn = 0; g.phase = 'call'; g.roundMissed = 0; g.roundTook = 0; g.roundOut = [];
     announce(fill(pick(SAY.roundIn, g.seed + g.round * 7), { round: R.name, sub: R.sub, line: R.line }));
     if (live.length === 2 && !g.saidFinal) { g.saidFinal = true;
-      setTimeout(() => announce(pick(SAY.finalTwo, g.seed)), 2600); }
-    setTimeout(nextTurn, live.length === 2 && g.saidFinal ? 4600 : 2100);
+      after(600, () => announce(pick(SAY.finalTwo, g.seed))); }
+    after(900, nextTurn);
   }
 
   function nextTurn() {
@@ -406,7 +444,7 @@
         g.outSeq = (g.outSeq || []).filter(s => s.in === false);
         g.roundOut = [];
         announce(pick(SAY.allMiss, g.seed + g.round));
-        setTimeout(() => { beginRound(); }, 2600); return;
+        after(900, () => { beginRound(); }); return;
       }
       const left = alive();
       if (left.length <= 1) return finish();
@@ -418,7 +456,7 @@
         if (!g.saidThin[li]) { g.saidThin[li] = 1; announce(SAY.thin[li] || ''); }
       }
       g.round++; g.redo = 0;
-      setTimeout(beginRound, 1300); return;
+      after(700, beginRound); return;
     }
     const s = live[g.turn];
     g.atMic = s;                     /* who is actually at the microphone, which
@@ -431,12 +469,13 @@
     if (s.kind === 'me') {
       g.phase = 'me';
       announce(fill(pick(SAY.callMe, g.seed + g.turn), { n: s.n }));
-      setTimeout(() => { try { say(g.word.w); } catch (e) {} }, 1500);
+      after(600, () => { try { say(g.word.w); } catch (e) {} });
       render();
     } else {
       g.phase = 'bot'; g.botStep = 0; g.botOut = '';
-      announce(fill(pick(SAY.callBot, g.seed + g.turn * 3 + g.round), { name: s.bot.name, age: s.bot.age + ' years old', tell: s.bot.tell, n: s.n }));
-      setTimeout(() => botTurn(s), clamp(s.bot.pace * .45, 420, 1000));
+      announce(fill(pick(SAY.callBot, g.seed + g.turn * 3 + g.round), { name: s.bot.name, age: s.bot.age + ' years old', tell: s.bot.tell, n: s.n }),
+        s.bot.name + ', number ' + s.n + '.');
+      after(clamp(s.bot.pace * .45, 420, 1000), () => botTurn(s));
     }
   }
 
@@ -465,18 +504,19 @@
     if (g.c2) {
       try { sfx(ok ? 'right' : 'wrong'); } catch (e) {}
       announce(ok ? fill(pick(SAY.botRight, g.seed + g.round * 5), { name: s.bot.name })
-        : fill(pick(SAY.botWrong, g.seed + g.round * 5), { name: s.bot.name, word: g.word.w }));
+        : fill(pick(SAY.botWrong, g.seed + g.round * 5), { name: s.bot.name, word: g.word.w }));   /* spoken in full: this is the title */
       s.hist.push(ok); g.phase = 'call';
-      setTimeout(() => champAfter(ok), 1500); return;
+      after(800, () => champAfter(ok)); return;
     }
     g.roundTook++;
     if (ok) { try { sfx('right'); } catch (e) {}
-      announce(fill(pick(SAY.botRight, g.seed + g.turn * 5), { name: s.bot.name }));
+      announce(fill(pick(SAY.botRight, g.seed + g.turn * 5), { name: s.bot.name }), 'Correct.');
     } else {
       const out = sitDown(s); g.roundMissed++;
       try { sfx('wrong'); } catch (e) {}
       announce(out ? fill(pick(SAY.botWrong, g.seed + g.turn * 5), { name: s.bot.name, word: g.word.w })
-        : fill(pick(SAY.botSafe, g.seed + g.turn * 5), { name: s.bot.name, word: g.word.w }));
+        : fill(pick(SAY.botSafe, g.seed + g.turn * 5), { name: s.bot.name, word: g.word.w }),
+        out ? 'No. ' + g.word.w + '.' : 'No — but round one forgives.');
       /* that miss left one speller standing — championship rules, not a win */
       if (out && alive().length === 1 && champTry(s, g.word)) {
         s.hist.push(ok); g.phase = 'call'; return;
@@ -484,7 +524,7 @@
     }
     s.hist.push(ok);
     g.turn++; g.phase = 'call';
-    setTimeout(nextTurn, 1150);
+    after(700, nextTurn);
   }
 
   /* ---------------- the speller's turn ---------------- */
@@ -495,7 +535,9 @@
       : k === 'org' ? ('From ' + (w.o || 'an origin not recorded'))
       : k === 'sent' ? (w.s || 'No sentence on file.')
       : (w.ps || 'Part of speech not recorded');
-    try { deviceSpeak(txt, .98); } catch (e) {}
+    try { deviceSpeak(txt, rateOf()); } catch (e) {}
+    /* the answer is being read; do not let the next beat cut it */
+    try { const gg = mb(); if (gg) { gg.spokeAt = Date.now(); gg.spokeMs = speakMs(txt); } } catch (e) {}
     render(); keepCaret(); };
   /* asking the pronouncer a question re-renders the hall, which throws away the
      caret. Put it back where it was, or the speller loses their place mid-word. */
@@ -519,7 +561,7 @@
       try { sfx(ok ? 'right' : 'wrong'); if (ok) burstConfetti(24); } catch (e) {}
       announce(fill(pick(ok ? SAY.meRight : SAY.meWrong, g.seed + g.round), { n: me.n, word: g.word.w }));
       me.hist.push(ok);
-      setTimeout(() => champAfter(ok), 2000);
+      after(900, () => champAfter(ok));
       render(); return;
     }
     g.roundTook++;
@@ -535,7 +577,7 @@
     }
     me.hist.push(ok);
     g.turn++;
-    setTimeout(() => { const gg = mb(); if (!gg) return; gg.phase = 'call'; nextTurn(); }, 1900);
+    after(900, () => { const gg = mb(); if (!gg) return; gg.phase = 'call'; nextTurn(); });
     render();
   };
 
@@ -568,7 +610,7 @@
       announce(pick(SAY.winMe, g.seed));
     } else { try { sfx('lose'); } catch (e) {}
       announce(fill(pick(SAY.winBot, g.seed), { name: champ ? champ.bot.name : 'Nobody', age: champ ? champ.bot.age : '' }));
-      setTimeout(() => announce(fill(pick(SAY.outMe, g.seed), { place: ordinal(place) }), true), 2600);
+      after(1200, () => announce(fill(pick(SAY.outMe, g.seed), { place: ordinal(place) })));
     }
     render();
   }
