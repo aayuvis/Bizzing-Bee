@@ -163,6 +163,32 @@
     } catch (e) { return null; }
   };
 
+  /* Where is this concept taught? The reverse of SB_TRAIL_NEXT: given a concept
+     index (the `gi` a unit points at), name the act and the stop that teaches it,
+     so the Library can point back at the map instead of being a parallel world.
+     Built once, from the curriculum itself. */
+  let _taught = null;
+  window.SB_TRAIL_TAUGHT = function (gi) {
+    if (gi == null || gi < 0 || !T()) return null;
+    if (!_taught) {
+      _taught = Object.create(null);
+      for (const crs of ['honey', 'exp']) {
+        const acts = crs === 'exp' ? (T().expedition.expeds || []) : (T().honey.acts || []);
+        const us = crs === 'exp' ? (T().expedition.units || []) : (T().honey.units || []);
+        for (const act of acts) {
+          let n = 0;
+          for (const id of (act.units || [])) { n++;
+            const u = us.find(x => x.id === id); if (!u || u.gi == null || u.gi < 0) continue;
+            if (_taught[u.gi]) continue;
+            _taught[u.gi] = { act: act.title || '', actId: act.id, world: act.world || 'meadow',
+              stop: n, unit: u.id, course: crs };
+          }
+        }
+      }
+    }
+    return _taught[gi] || null;
+  };
+
   /* ---- actions ---- */
   const app2 = app;   /* app3's top-level const — global lexical scope, not window */
   /* trail-data.js is deferred until after first paint, so opening the Atlas early
@@ -191,6 +217,10 @@
     const items = buildCheckpoint(c, { id });
     set({ nav: 'trail', screen: 'app', trailView: 'quiz', trailUnit: null, trailChk: id, tq: { items, i: 0, score: 0, picked: null, typed: '', missed: [], over: false } }); };
   app2.trailPick = i => set({ trailStop: +i });
+  /* Ultra is a map now, but its words are still the Ultra Champions Journey list —
+     the map is the way in, the list is the training ground behind it. */
+  app2.openUltra = () => { if (!advOn()) { app2.openAdvanced && app2.openAdvanced(); return; }
+    try { app2.selectList('ultra'); } catch (e) { set({ nav: 'coach', screen: 'app' }); } };
   /* The Atlas hands its words to Practice — the same records, the same XP, one tap. */
   app2.trailTrain = id => { const u = unit(id) || unit(state.trailUnit); if (!u) return;
     const c = active();
@@ -603,6 +633,42 @@
       ${atlasRoute(pins, curIdx)}
       ${cells}</div>`;
   }
+  /* ---------------------------------------------------------------
+     The third continent. Honey (three tiers) → the Expedition → Ultra.
+     The champions' journey was a word list sitting in Practice's catalogue,
+     next to "Latin Legends", which made the crown of the product look like a
+     word pile. It is a map now: five landmarks, one per block of the Ultra
+     Champions Journey, each opening that journey at its own day-block.
+     --------------------------------------------------------------- */
+  const ULTRA_PINS = [
+    ['The proving yard', 17, 70],
+    ['The black library', 33, 32],
+    ['The crucible',      57, 55],
+    ['The observatory',   58, 16],
+    ['The championship',  79, 16],
+  ];
+  function ultraBoard(c) {
+    const on = advOn();
+    let done = 0;
+    try { const st = (c.lists && c.lists.ultra && c.lists.ultra.stage) || 0;
+      const n = (typeof ultraStages === 'function') ? (ultraStages().length || 1) : 1;
+      done = Math.max(0, Math.min(5, Math.floor(st / Math.max(1, n / 5)))); } catch (e) {}
+    const pins = ULTRA_PINS.map(([label, x, y], i) => {
+      const cur = on && i === done, isDone = on && i < done;
+      const ring = isDone ? 'linear-gradient(160deg,#FFD24D,#C8791B)'
+        : cur ? 'linear-gradient(160deg,#FFE49B,#E8A81C)' : 'rgba(18,14,40,.58)';
+      const size = cur ? 52 : 44;
+      return `<button data-act="${on ? 'openUltra' : 'openAdvanced'}" data-arg="${i}" class="atlas-pin"
+          style="left:${x}%;top:${y}%;--pz:${cur ? 3 : 2}" title="${escA(label)}">
+        <span class="atlas-dot" style="width:${size}px;height:${size}px;background:${ring};
+          border:2px solid rgba(255,246,222,${cur || isDone ? '.9' : '.42'});color:${cur || isDone ? '#3B2A00' : 'rgba(255,246,222,.85)'};
+          font-family:var(--display);font-weight:800;font-size:${cur ? 17 : 15}px;box-shadow:0 4px 12px rgba(6,4,18,.5)">${isDone ? '✓' : (i + 1)}</span>
+        <span class="atlas-chip">${esc(label)}</span></button>`;
+    }).join('');
+    return `<div class="atlas-board">
+      <img src="app-art/atlas-ultra.jpg" alt="" loading="lazy" decoding="async">
+      ${pins}</div>`;
+  }
   function viewAtlas() {
     const c = active();
     state.trailCourse = 'honey';
@@ -634,6 +700,19 @@
             <span style="display:block;font-size:13px;line-height:1.5;color:rgba(255,255,255,.92);margin-top:6px">43 stops at national level, gated at 90%. Unlocks with the Advanced Pack.</span>
             <span style="display:inline-block;margin-top:14px;padding:11px 20px;border-radius:11px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px">Unlock &middot; $${price}/yr &rarr;</span></span></button>`}
       </div>
+      <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:26px 0 12px">
+        <span style="font-family:var(--display);font-weight:800;font-size:19px">Ultra Champions</span>
+        <span style="font-size:10.5px;font-weight:800;letter-spacing:.08em;color:#241E33;background:linear-gradient(135deg,#FFE49B,#E8A81C);border-radius:999px;padding:4px 11px">THE LAST CONTINENT</span></div>
+      <div style="position:relative">
+        ${ultraBoard(c)}
+        ${expOk ? '' : `<button data-act="openAdvanced" style="position:absolute;inset:0;z-index:5;display:grid;place-items:center;border-radius:20px;background:linear-gradient(180deg,rgba(10,8,26,.40),rgba(10,8,26,.80))">
+          <span style="text-align:center;padding:22px;max-width:26em">
+            <span style="display:inline-grid;place-items:center;width:52px;height:52px;border-radius:15px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;margin-bottom:12px">${iconSVG('crown', 24)}</span>
+            <span style="display:block;font-family:var(--display);font-weight:800;font-size:19px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6)">The champions' journey</span>
+            <span style="display:block;font-size:13px;line-height:1.5;color:rgba(255,255,255,.92);margin-top:6px">Every word in the library, hardest first, in day-sized blocks. The end of the road.</span>
+            <span style="display:inline-block;margin-top:14px;padding:11px 20px;border-radius:11px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px">Unlock &middot; $${price}/yr &rarr;</span></span></button>`}
+      </div>
+      <p style="font-size:12.5px;color:var(--muted);font-weight:600;margin:10px 2px 4px">Three continents, one journey: the Honey continent three tiers deep, then the Expedition, then Ultra.</p>
     </div>`;
   }
   /* ---------------------------------------------------------------
