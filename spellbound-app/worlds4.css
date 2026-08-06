@@ -87,10 +87,10 @@
 @keyframes w4-fly{0%{transform:translate(-12vw,0)}50%{transform:translate(55vw,-4vh)}100%{transform:translate(118vw,0)}}
 /* Bees do not glide. w4-fly on its own slid them across the meadow in a single
    shallow arc, which read as floating — a balloon, not an insect. w4-beeline gives
-   the crossing four rises and falls, and w4-flap runs INSIDE it on a wrapper at
-   wingbeat speed: a fast squash on the vertical, a small bob, and a roll into each
-   turn. Two animations, two elements, because one element cannot carry two
-   different durations. */
+   the crossing four rises and falls, which is what makes it read as flight.
+   (A wingbeat squash on an inner wrapper was tried and removed: at 3Hz across six
+   bees it read as a twitch — and its keyframe name collided with the dino
+   pterosaur's own w4-flap.) */
 @keyframes w4-beeline{
   0%{transform:translate(-12vw,0)}
   12%{transform:translate(4vw,-3.2vh)}
@@ -101,11 +101,7 @@
   75%{transform:translate(84vw,.4vh)}
   88%{transform:translate(101vw,-2.6vh)}
   100%{transform:translate(118vw,0)}}
-@keyframes w4-flap{
-  0%,100%{transform:translateY(0) scale(1,1) rotate(-4deg)}
-  25%{transform:translateY(-1.6px) scale(1.04,.9) rotate(1.5deg)}
-  50%{transform:translateY(.4px) scale(.98,1.03) rotate(4deg)}
-  75%{transform:translateY(1.6px) scale(1.03,.92) rotate(1deg)}}
+
 @keyframes w4-sway4{0%,100%{transform:rotate(-2.5deg)}50%{transform:rotate(2.5deg)}}
 @keyframes w4-creep{0%{transform:translateX(-24vw)}100%{transform:translateX(120vw)}}
 @keyframes w4-creepR{0%{transform:translateX(120vw) scaleX(-1)}100%{transform:translateX(-24vw) scaleX(-1)}}
@@ -190,8 +186,6 @@
 .w4o-across{animation:w4-fly linear infinite}
 /* a bee crossing the meadow, rather than drifting across it */
 .w4o-across.w4o-bee{animation-name:w4-beeline;animation-timing-function:ease-in-out}
-.w4-flutter{display:block;width:100%;height:100%;transform-origin:50% 62%;
-  animation:w4-flap .34s ease-in-out infinite}
 .w4o-zoom{animation:w4-zoom linear infinite}
 .w4o-rise{bottom:-12px;border-radius:50%;animation:w4-motes linear infinite}
 .w4o-fall{top:0;animation-name:w4-cotton,w4-cotdrift;animation-timing-function:linear,ease-in-out;animation-iteration-count:infinite,infinite}

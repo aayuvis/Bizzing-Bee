@@ -33,7 +33,7 @@ window.SB_SOUTHASIA = [
    {
     "w": "yoga",
     "say": "YOH-guh",
-    "def": "Hindu discipline aimed at training the consciousness for a state of perfect…",
+    "def": "a Hindu discipline of posture, breathing and meditation, practised to train body and mind together",
     "hook": "YOH-guh — the O is long, the ending is a plain A",
     "ex": "She does yoga on the balcony before school."
    },
@@ -53,26 +53,26 @@ window.SB_SOUTHASIA = [
    {
     "w": "prana",
     "say": "PRAH-nuh",
-    "def": "In Hindu philosophy and yoga, the vital life force or breath energy believed to flow…",
+    "def": "In Hindu philosophy and yoga, the vital life force or breath energy believed to flow through all living beings and the universe.",
     "hook": "PRA + NA — the opening PR is a real cluster, not \"puh-rana\""
    },
    {
     "w": "karma",
     "say": "KAH-rmuh",
-    "def": "(Hinduism and Buddhism) the effects of a person's actions that determine his destiny…",
+    "def": "The belief that your actions bring matching good or bad results.",
     "hook": "KAR + MA — R then M, nothing between them"
    },
    {
     "w": "dharma",
     "say": "DAH-rmuh",
-    "def": "basic principles of the cosmos; also: an ancient sage in Hindu mythology worshipped…",
+    "def": "in Hindu and Buddhist thought, the right way to live — the duty and moral order a person is meant to follow",
     "hook": "DH is one sound; the H rides the D and cannot be dropped",
     "ex": "In the story, the prince follows his dharma even when it costs him the throne."
    },
    {
     "w": "nirvana",
     "say": "nih-RVAH-nuh",
-    "def": "(Hinduism and Buddhism) the beatitude that transcends the cycle of reincarnation…",
+    "def": "in Hinduism and Buddhism, the state of perfect peace reached when desire ends and the cycle of rebirth stops",
     "hook": "NIR + VA + NA — three beats, the middle A is long",
     "ex": "The monk described nirvana as the end of all wanting."
    },
@@ -93,7 +93,7 @@ window.SB_SOUTHASIA = [
    {
     "w": "sutra",
     "say": "SOO-trah",
-    "def": "a rule or aphorism in Sanskrit literature or a group of aphoristic doctrinal…",
+    "def": "a short rule or saying in Sanskrit, written to be memorised; also a collection of such sayings",
     "hook": "SU + TRA — the same -TRA ending as mantra",
     "ex": "Each sutra is only a line long, but a teacher can talk about it for an hour."
    },
@@ -186,7 +186,7 @@ window.SB_SOUTHASIA = [
    {
     "w": "bhangra",
     "say": "BAH-nggruh",
-    "def": "A lively and energetic style of music and dance originating from the Punjab region…",
+    "def": "A lively and energetic style of music and dance originating from the Punjab region of South Asia, traditionally performed during harvest festivals and now popular worldwide as a form of celebratory entertainment.",
     "hook": "BH — a B with a breath; the H is the whole trap"
    },
    {
@@ -211,20 +211,20 @@ window.SB_SOUTHASIA = [
    {
     "w": "dharma",
     "say": "DAH-rmuh",
-    "def": "basic principles of the cosmos; also: an ancient sage in Hindu mythology worshipped…",
+    "def": "in Hindu and Buddhist thought, the right way to live — the duty and moral order a person is meant to follow",
     "hook": "DH opens it; D alone is the classic miss",
     "ex": "In the story, the prince follows his dharma even when it costs him the throne."
    },
    {
     "w": "kurta",
     "say": "KOOR-tuh",
-    "def": "a loose collarless shirt worn by many people on the Indian subcontinent (usually…",
+    "def": "a loose collarless shirt worn by many people on the Indian subcontinent (usually with a salwar or churidars or pyjama)",
     "hook": "no H here — a clean K, which is exactly why you must check"
    },
    {
     "w": "chutney",
     "say": "CHUH-tnee",
-    "def": "a spicy condiment made of chopped fruits or vegetables cooked in vinegar and sugar…",
+    "def": "a spicy Indian relish of chopped fruit or vegetables cooked with vinegar, sugar and spices",
     "hook": "CH is its own pair; TN sit together with no vowel",
     "ex": "There was a bowl of green chutney beside every plate."
    },
@@ -324,7 +324,7 @@ window.SB_SOUTHASIA = [
    {
     "w": "kurta",
     "say": "KOOR-tuh",
-    "def": "a loose collarless shirt worn by many people on the Indian subcontinent (usually…",
+    "def": "a loose collarless shirt worn by many people on the Indian subcontinent (usually with a salwar or churidars or pyjama)",
     "hook": "KUR + TA — a clean K, no H"
    },
    {
@@ -357,7 +357,7 @@ window.SB_SOUTHASIA = [
    {
     "w": "sari",
     "say": "SAH-ree",
-    "def": "a dress worn primarily by Hindu women; consists of several yards of light material…",
+    "def": "a length of light cloth, several yards long, wrapped and pleated into a dress worn mainly by women in South Asia",
     "hook": "the simplest in the family: four letters, both vowels plain",
     "ex": "Her mother folded the sari into neat pleats before pinning it."
    },
@@ -377,7 +377,7 @@ window.SB_SOUTHASIA = [
    {
     "w": "phulkari",
     "say": "fool-KAH-ree",
-    "def": "A traditional embroidery style from the Punjab region of South Asia, featuring…",
+    "def": "A traditional embroidery style from the Punjab region of South Asia, featuring colorful floral patterns stitched onto cloth using silk thread.",
     "hook": "PH says F; then UL · KA · RI, all plain vowels"
    },
    {
@@ -465,7 +465,7 @@ window.SB_SOUTHASIA = [
    {
     "w": "chutney",
     "say": "CHUH-tnee",
-    "def": "a spicy condiment made of chopped fruits or vegetables cooked in vinegar and sugar…",
+    "def": "a spicy Indian relish of chopped fruit or vegetables cooked with vinegar, sugar and spices",
     "hook": "CH opening; TN with no vowel between",
     "ex": "There was a bowl of green chutney beside every plate."
    },
@@ -479,7 +479,7 @@ window.SB_SOUTHASIA = [
    {
     "w": "mulligatawny",
     "say": "muh-lih-guh-TAH-nee",
-    "def": "a soup of eastern India that is flavored with curry; prepared with a meat or chicken…",
+    "def": "a soup of eastern India that is flavored with curry; prepared with a meat or chicken base",
     "hook": "double L, then AW before the -NY ending"
    },
    {
@@ -666,7 +666,7 @@ window.SB_SOUTHASIA = [
    {
     "w": "sepoy",
     "say": "SEE-poy",
-    "def": "A native soldier of the Indian subcontinent who was trained and employed in the…",
+    "def": "an Indian soldier serving in a European army, especially the British army in India",
     "hook": "SE + POY — from Persian sipahi, a soldier",
     "ex": "His great-grandfather served as a sepoy in the same regiment."
    }
@@ -750,7 +750,7 @@ window.SB_SOUTHASIA = [
    {
     "w": "cheetah",
     "say": "CHEE-tuh",
-    "def": "long-legged spotted cat of Africa and southwestern Asia having nonretractile claws…",
+    "def": "a long-legged spotted cat of Africa and south-west Asia, the fastest land animal over a short sprint",
     "hook": "from chitra, spotted; keeps both the CH and the final H",
     "ex": "A cheetah can outrun any animal on the plain for about twenty seconds."
    },
@@ -764,20 +764,20 @@ window.SB_SOUTHASIA = [
    {
     "w": "bandicoot",
     "say": "BA-ndih-koot",
-    "def": "any of various agile ratlike terrestrial marsupials of Australia and adjacent…",
+    "def": "any of various agile ratlike terrestrial marsupials of Australia and adjacent islands; insectivorous and herbivorous",
     "hook": "BANDI + COOT — double O in the tail"
    },
    {
     "w": "nilgai",
     "say": "NIL-gy",
-    "def": "large Indian antelope; male is blue-grey with white markings; female is brownish…",
+    "def": "a large Indian antelope; the male is blue-grey with white markings and the female is brown",
     "hook": "NEEL + GY — nil (blue) + gai (cow), a compound animal",
     "ex": "A nilgai stepped out of the scrub and stared at the jeep."
    },
    {
     "w": "nilgai",
     "say": "NIL-gy",
-    "def": "large Indian antelope; male is blue-grey with white markings; female is brownish…",
+    "def": "a large Indian antelope; the male is blue-grey with white markings and the female is brown",
     "hook": "NIL + GAI — \"blue cow\"; the AI is one sound",
     "ex": "A nilgai stepped out of the scrub and stared at the jeep."
    },
@@ -898,7 +898,7 @@ window.SB_SOUTHASIA = [
    {
     "w": "turban",
     "say": "t-UR-b-uh-n",
-    "def": "a headdress consisting of a long cloth that is wrapped around a cap or directly…",
+    "def": "a headdress consisting of a long cloth that is wrapped around a cap or directly around the head",
     "hook": "TUR + BAN — the second vowel is A, not E"
    },
    {
@@ -1039,13 +1039,13 @@ window.SB_SOUTHASIA = [
    {
     "w": "tulsi",
     "say": "TOOL-see",
-    "def": "A sacred aromatic plant of the mint family native to India, also called holy basil…",
+    "def": "A sacred aromatic plant of the mint family native to India, also called holy basil, widely used in Ayurvedic medicine and Hindu worship.",
     "hook": "TUL + SI — the sacred basil, four letters, no traps"
    },
    {
     "w": "bindi",
     "say": "BIN-dee",
-    "def": "A decorative mark worn on the forehead, especially by Hindu women, traditionally a…",
+    "def": "A decorative mark worn on the forehead, especially by Hindu women, traditionally a red dot symbolizing good fortune and marital status.",
     "hook": "BIN + DI — from bindu, a dot"
    },
    {
@@ -1190,7 +1190,7 @@ window.SB_SOUTHASIA = [
    {
     "w": "lilac",
     "say": "LEYE-lak",
-    "def": "any of various plants of the genus Syringa having large panicles of usually fragrant…",
+    "def": "a garden shrub with cone-shaped clusters of small, strongly scented purple or white flowers",
     "hook": "through Persian from Sanskrit nila, blue",
     "ex": "A lilac bush grew against the garden wall."
    },
@@ -1288,37 +1288,37 @@ window.SB_SOUTHASIA = [
    {
     "w": "kathakali",
     "say": "kah-tuh-KAH-lee",
-    "def": "A highly stylized classical dance-drama from the Indian state of Kerala…",
+    "def": "A highly stylized classical dance-drama from the Indian state of Kerala, characterized by elaborate costumes, vivid facial makeup, and expressive hand gestures used to enact stories from Hindu epics.",
     "hook": "four beats; the middle TH keeps its H"
    },
    {
     "w": "bhangra",
     "say": "BAH-nggruh",
-    "def": "A lively and energetic style of music and dance originating from the Punjab region…",
+    "def": "A lively and energetic style of music and dance originating from the Punjab region of South Asia, traditionally performed during harvest festivals and now popular worldwide as a form of celebratory entertainment.",
     "hook": "the BH pair opens it"
    },
    {
     "w": "ahimsa",
     "say": "ah-HIM-sah",
-    "def": "a Buddhist and Hindu and especially Jainist doctrine holding that all forms of life…",
+    "def": "a Buddhist and Hindu and especially Jainist doctrine holding that all forms of life are sacred and urging the avoidance of violence",
     "hook": "a- (not) + himsa (harm)"
    },
    {
     "w": "prana",
     "say": "PRAH-nuh",
-    "def": "In Hindu philosophy and yoga, the vital life force or breath energy believed to flow…",
+    "def": "In Hindu philosophy and yoga, the vital life force or breath energy believed to flow through all living beings and the universe.",
     "hook": "the PR cluster; life breath"
    },
    {
     "w": "tulsi",
     "say": "TOOL-see",
-    "def": "A sacred aromatic plant of the mint family native to India, also called holy basil…",
+    "def": "A sacred aromatic plant of the mint family native to India, also called holy basil, widely used in Ayurvedic medicine and Hindu worship.",
     "hook": "sacred basil; plain and short"
    },
    {
     "w": "bindi",
     "say": "BIN-dee",
-    "def": "A decorative mark worn on the forehead, especially by Hindu women, traditionally a…",
+    "def": "A decorative mark worn on the forehead, especially by Hindu women, traditionally a red dot symbolizing good fortune and marital status.",
     "hook": "from bindu, a dot"
    },
    {
@@ -1330,14 +1330,14 @@ window.SB_SOUTHASIA = [
    {
     "w": "dharma",
     "say": "DAH-rmuh",
-    "def": "basic principles of the cosmos; also: an ancient sage in Hindu mythology worshipped…",
+    "def": "in Hindu and Buddhist thought, the right way to live — the duty and moral order a person is meant to follow",
     "hook": "the DH opening — the chapter’s recurring test",
     "ex": "In the story, the prince follows his dharma even when it costs him the throne."
    },
    {
     "w": "nirvana",
     "say": "nih-RVAH-nuh",
-    "def": "(Hinduism and Buddhism) the beatitude that transcends the cycle of reincarnation…",
+    "def": "in Hinduism and Buddhism, the state of perfect peace reached when desire ends and the cycle of rebirth stops",
     "hook": "NIR + VA + NA; the middle A is long",
     "ex": "The monk described nirvana as the end of all wanting."
    },
@@ -1436,7 +1436,7 @@ window.SB_SOUTHASIA = [
    {
     "w": "mulligatawny",
     "say": "muh-lih-guh-TAH-nee",
-    "def": "a soup of eastern India that is flavored with curry; prepared with a meat or chicken…",
+    "def": "a soup of eastern India that is flavored with curry; prepared with a meat or chicken base",
     "hook": "the double L and the AW"
    },
    {
@@ -1468,7 +1468,7 @@ window.SB_SOUTHASIA = [
    {
     "w": "kathakali",
     "say": "kah-tuh-KAH-lee",
-    "def": "A highly stylized classical dance-drama from the Indian state of Kerala…",
+    "def": "A highly stylized classical dance-drama from the Indian state of Kerala, characterized by elaborate costumes, vivid facial makeup, and expressive hand gestures used to enact stories from Hindu epics.",
     "hook": "the rhythm and the TH"
    },
    {
@@ -1481,7 +1481,7 @@ window.SB_SOUTHASIA = [
    {
     "w": "chutney",
     "say": "CHUH-tnee",
-    "def": "a spicy condiment made of chopped fruits or vegetables cooked in vinegar and sugar…",
+    "def": "a spicy Indian relish of chopped fruit or vegetables cooked with vinegar, sugar and spices",
     "hook": "the CH and the TN",
     "ex": "There was a bowl of green chutney beside every plate."
    }

@@ -15,7 +15,7 @@
    ============================================================ */
 (function () {
   const T = () => window.SB_TRAIL;
-  const GUIDE = { meadow: 'honeypot', library: 'waggle', forum: 'bumble', elements: 'star', engine: 'drone', strait: 'nectar', junkyard: 'propolis', vibe: 'jester', stage: 'diva', warfield: 'queenhive', greysea: 'blossom', grandtrunk: 'naga' };
+  const GUIDE = { meadow: 'honeypot', library: 'waggle', forum: 'bumble', elements: 'star', engine: 'drone', strait: 'nectar', junkyard: 'propolis', vibe: 'jester', stage: 'diva', warfield: 'queenhive', greysea: 'blossom', grandtrunk: 'cobra' };
   const ACCENT = { meadow: ['#FFC23D', '#C8791B'], library: ['#6C4FE0', '#4A3AA0'], forum: ['#E06A3C', '#A8431F'], elements: ['#2E8FB8', '#1C6486'], engine: ['#C08A3E', '#8A5B00'], strait: ['#3E63D6', '#26409A'], junkyard: ['#F0A93C', '#B4711A'], vibe: ['#B14FC4', '#7A2F8C'], stage: ['#E8458C', '#A82563'], warfield: ['#D6353F', '#8E1D26'], greysea: ['#7E8AA0', '#4C566B'], grandtrunk: ['#E0A33C', '#93551A'] };
 
   /* ---- compact world strips (drawn scenery for act banners) ---- */
@@ -905,7 +905,7 @@
     proving:    { d: 'M 3 88 C 18 84, 32 76, 42 68 C 52 60, 54 50, 46 44 C 38 38, 24 40, 18 34 C 13 28, 20 21, 34 18 C 50 15, 70 17, 84 22 C 92 25, 96 30, 97 36', t: [[76, 50], [92, 87], [7, 55]] },
     greysea:    { d: 'M 6 82 C 18 78, 30 74, 40 68 C 48 62, 50 52, 48 44 C 47 38, 52 33, 62 33 C 74 33, 84 34, 92 30 C 96 28, 98 24, 98 20', t: [[4, 74], [47, 12], [46, 88]] },
     liars:      { d: 'M 2 80 C 14 76, 26 68, 40 63 C 52 59, 60 55, 70 57 C 80 59, 88 64, 94 60 C 97 58, 98 54, 98 50', t: [[28, 42], [88, 17], [91, 87]] },
-    grandtrunk: { d: 'M 1 40 C 12 44, 24 50, 38 57 C 50 62, 60 62, 70 58 C 78 54, 84 46, 88 34 C 90 27, 91 21, 92 16', t: [[11, 73], [79, 84], [73, 30]] },
+    grandtrunk: { d: 'M 7 91 C 18 84, 30 76, 44 71 C 56 67, 66 63, 76 55 C 84 48, 87 38, 88 28 C 89 20, 90 16, 92 13', t: [[7, 74], [24, 54], [90, 88]] },
     farflung:   { d: 'M 4 90 C 10 82, 16 74, 24 68 C 32 62, 44 59, 58 59 C 70 59, 80 62, 88 60 C 93 59, 97 56, 98 52', t: [[7, 20], [92, 20], [92, 88]] },
     factory:    { d: 'M 4 84 C 8 74, 7 60, 8 46 C 9 34, 16 24, 28 19 C 42 13, 58 13, 71 18 C 81 22, 87 31, 89 43 C 90 52, 89 60, 86 68', t: [[4, 72], [12, 10], [92, 88]] },
     /* the five Ultra landmarks */

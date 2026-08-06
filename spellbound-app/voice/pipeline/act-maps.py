@@ -109,8 +109,8 @@ EXPS = {
              'thistles growing through metal.',
     'grandtrunk': DUSK + 'The Grand Trunk Road across the northern plains of South Asia at dusk. Around '
                   'the open band: an avenue of enormous banyan trees with hanging aerial roots, '
-                  'carved milestone pillars (BLANK, with no writing on them), a bullock cart resting '
-                  'under a tree, a domed roadside shrine, a stepwell, kites flying far off, a '
+                  'carved milestone pillars that are BLANK and unlettered — smooth bare stone with absolutely no writing, no script, no Devanagari and no characters of any alphabet on them — a bullock cart resting '
+                  'under a tree, a plain domed rest-house for travellers, a stepwell, kites flying far off, a '
                   'temple spire and a minaret on the horizon.',
     'farflung': DUSK + 'A far shore of teal water at the edge of the world. Around the open band: a '
                 'striped lighthouse on a headland, a tall ship at anchor with furled sails, a stone '

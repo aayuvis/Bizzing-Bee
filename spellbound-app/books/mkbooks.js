@@ -182,9 +182,12 @@ const AVOLS = [
   { n: 11, title: 'The Playbook', tag: 'Bee-day procedure and deep orthography', a: '#D6353F', d: '#8E1D26', tex: 'grid', av: 'queenhive', world: 'warfield', band: 'advanced', chapters: ADV.filter(ch => ch.category === 'Championship Procedure').concat(orth.slice(0, 5)) },
   { n: 12, title: 'Schwa Country', tag: 'The vanishing vowel and its disguises', a: '#7E8AA0', d: '#4C566B', tex: 'rings', av: 'blossom', world: 'greysea', band: 'advanced', chapters: orth.slice(5, 12) },
   { n: 13, title: 'Letters Behaving Badly', tag: 'Doubles, silents and sounds that lie', a: '#B8562F', d: '#7A3418', tex: 'diag', av: 'propolis', world: 'junkyard', band: 'advanced', chapters: orth.slice(12) },
-  { n: 14, title: 'The Grand Trunk Road', tag: 'South Asian words that became English', a: '#D97A1E', d: '#8F4409', tex: 'rings', av: 'naga', world: 'grandtrunk', band: 'advanced', authored: true,
+  { n: 14, title: 'The Grand Trunk Road', tag: 'South Asian words that became English', a: '#D97A1E', d: '#8F4409', tex: 'rings', av: 'cobra', world: 'grandtrunk', band: 'advanced', authored: true,
     cyc: ['grandtrunk', 'strait', 'grandtrunk', 'meadow', 'grandtrunk', 'junkyard', 'grandtrunk', 'library', 'grandtrunk', 'stage', 'grandtrunk'],
-    cast: ['ganesha', 'hanuman', 'lakshmi', 'vasuki', 'cobra', 'python', 'aryabhatta', 'monarch', 'lotusfold'],
+    /* No worshipped figure appears as a cartoon character in this volume. The
+       cast is a king cobra, a python, a butterfly, a paper lotus and Aryabhatta
+       — a mathematician, not a god. */
+    cast: ['cobra', 'python', 'aryabhatta', 'monarch', 'lotusfold', 'vasuki'],
     chapters: SA },
   { n: 15, seedN: 14, title: 'Far-Flung Words', tag: 'Origins beyond the big four', a: '#0E8A78', d: '#075C50', tex: 'cross', av: 'mic', world: 'strait', band: 'advanced', chapters: ADV.filter(ch => ch.category === 'Origins Beyond the Big Four') },
   { n: 16, seedN: 15, title: 'The Word Factory', tag: 'How English bolts words together', a: '#5B6BA8', d: '#364475', tex: 'stripes', av: 'maestro', world: 'engine', band: 'advanced', chapters: ADV.filter(ch => ch.category === 'How Words Are Built') },
@@ -745,7 +748,7 @@ function chapterQuiz(vol, ch, rnd) {
   const words = (ch.words || []).filter(w => w && w.w && String(w.w).length > 2);
   if (words.length < 4) return [];
   const short = t => String(t || '').replace(/\s+/g, ' ').trim();
-  const fits = t => short(t).length <= 82;
+  const fits = t => short(t).length <= 140;
   const qs = [];
   const pool = shuf(words.slice(), rnd);
 
@@ -845,9 +848,9 @@ function hivePages(vol, ch, ci, folioRef) {
         const ssz = L > 26 ? 7.6 : L > 20 ? 8.4 : L > 16 ? 9.2 : 10;
         return `<div><div class="bb-card" style="--wsz:${wsz}pt"><div class="w">${esc(w.w)}</div>
         <div class="say" style="font-size:${ssz}pt">${say ? '/ ' + esc(say) + ' /' : ''}${ipa ? '  ·  /' + esc(ipa) + '/' : ''}</div>
-        <div class="d">${esc(fit(w.def, 82))}</div>${w.hook ? `<div class="hook">hook: ${esc(fit(w.hook, 78))}</div>` : ''}
+        <div class="d">${esc(fit(w.def, 210))}</div>${w.hook ? `<div class="hook">hook: ${esc(fit(w.hook, 130))}</div>` : ''}
         ${w.after ? `<div class="after"><b>named after</b> ${esc(fit(w.after, 150))}</div>` : ''}
-        ${w.ex ? `<div class="ex">${esc(maskDef(fit(w.ex, 92), w.w))}</div>` : ''}</div>
+        ${w.ex ? `<div class="ex">${esc(maskDef(fit(w.ex, 240), w.w))}</div>` : ''}</div>
         <div class="bb-writeline"></div>${w.ex ? '' : '<div class="bb-writeline"></div><div class="bb-writeline"></div>'}</div>`; }).join('')}</div>
       ${worldStrip(chWorldOf(vol, ci), vol, ci * 13 + f + 3)}
       ${foot(vol, folioRef.n++)}</div>`);
@@ -865,7 +868,7 @@ function hivePages(vol, ch, ci, folioRef) {
     out.push(`<div class="page" data-vol="${vol.n}">
       ${head(vol, ch, ci, 'Rapid round')}
       <div style="margin-top:.4in"><h2 style="font-size:20pt">More ammo — one line each.</h2></div>
-      <div class="bb-rapid" style="margin-top:.12in">${seg.map(w => `<div class="bb-row"><b class="${w.w.length > 26 ? 'xlong' : w.w.length > 18 ? 'long' : ''}">${esc(w.w)}</b> <span class="tile" style="font-size:${w.w.length > 22 ? '7.2' : '8.8'}pt">${w.say ? '/' + esc(w.say) + '/' : ''}</span><br>${esc(fit(w.def, 54))}${w.after ? `<br><span style="color:var(--muted);font-size:8.6pt">after ${esc(fit(w.after.split(/,| — |, the /)[0], 40))}</span>` : ''}</div>`).join('')}</div>
+      <div class="bb-rapid" style="margin-top:.12in">${seg.map(w => `<div class="bb-row"><b class="${w.w.length > 26 ? 'xlong' : w.w.length > 18 ? 'long' : ''}">${esc(w.w)}</b> <span class="tile" style="font-size:${w.w.length > 22 ? '7.2' : '8.8'}pt">${w.say ? '/' + esc(w.say) + '/' : ''}</span><br>${esc(fit(w.def, 230))}${w.after ? `<br><span style="color:var(--muted);font-size:8.6pt">after ${esc(fit(w.after.split(/,| — |, the /)[0], 40))}</span>` : ''}</div>`).join('')}</div>
       ${lockIn}
       ${foot(vol, folioRef.n++)}</div>`);
   }
@@ -1356,24 +1359,65 @@ function book17() {
      file name, and it keeps the b17 art it was generated with. */
   const vol = { n: 17, seedN: 16, art: 'b17', slug: 'book-similes', companion: true, title: 'As Busy as a Bee', tag: 'Every simile we know, and the idiom hall of fame', a: '#3DA85C', d: '#1F6B39', tex: 'dots', av: 'popcorn', world: 'meadow', band: 'general' };
   const rnd = mulberry(17 * 7919 + 17);
-  const sims = FIG.similes.slice().sort((a, b) => a.p.localeCompare(b.p));
+  /* 49 raw themes is too many shelves and some hold two entries; they fold into
+     eleven families, each big enough to be a section and narrow enough to mean
+     something. A simile lands in the first family its themes match. */
+  const SIM_FAM = [
+    ['Birds of every feather', 'Wings, songs and a surprising amount of scorn.', /^(birds)$/],
+    ['Small things that bite and swim', 'Insects and sea creatures — tiny vehicles carrying heavy meanings.', /^(insects|marine)$/],
+    ['Creatures great and small', 'Animals do most of the work in English — and the comparison is usually older than the fact.', /^(animals)$/],
+    ['How you feel', 'The comparisons we reach for when a plain adjective will not do.', /^(emotions|personality)$/],
+    ['Round the house', "Doors, nails, pins, kettles: the things always within arm's reach became the things always within reach of a sentence.", /^(household|tools|textiles|architecture)$/],
+    ['At the table', 'Food similes travel further than food does.', /^(cuisine|culinary|produce|agriculture|plants|trees)$/],
+    ['Weather and the world', 'Rain, rock, river and sky — the oldest comparisons of all.', /^(weather|geology|water|astronomy|ecology|geography|places|navigation|seafaring)$/],
+    ['Body and health', 'From head to toe, and what goes wrong along the way.', /^(body|disease)$/],
+    ['Books, faith and story', 'Similes that came out of scripture, myth and print.', /^(religion|literature|mythology|philosophy|ancient|linguistics|theater|visualarts|music)$/],
+    ['Work, war and money', 'The trades, the battlefield and the ledger.', /^(occupations|war|economics|law|politics|royalty|sports)$/],
+    ['Science and number', 'Comparisons the laboratory lent to the language.', /^(physics|chemistry|math)$/],
+    ['Everything else', 'The strays, and none of them worse for it.', /./],
+  ];
+  const simFam = x => { const th = x.th || [];
+    for (let i = 0; i < SIM_FAM.length; i++) if (th.some(t => SIM_FAM[i][2].test(t))) return i;
+    return SIM_FAM.length - 1; };
+  const simGroups = SIM_FAM.map(([name, blurb]) => ({ name, blurb, items: [] }));
+  FIG.similes.forEach(x => simGroups[simFam(x)].items.push(x));
+  simGroups.forEach(g => g.items.sort((a, b) => a.p.localeCompare(b.p)));
+  /* the flat run is still what the match rounds and the puzzles draw from */
+  const sims = simGroups.filter(g => g.items.length).flatMap(g => g.items.map(x => ({ ...x, _fam: g.name })));
   const idioms = FIG.idioms.filter(x => x.os && x.p.length <= 26 && (x.m || '').length <= 90).sort((a, b) => a.p.localeCompare(b.p)).slice(0, 240);
   const keys = []; const folio = { n: 1 };
   const pages = [cover(vol, sims.length, idioms.length, 'A BIZZING BEE COMPANION')];
   pages.push(howTo17(vol, folio.n++));
   pages.push(dividerPage(vol, folio.n++));
   let pageNo = 0;
-  for (let i = 0; i < sims.length; i += 14) {
-    const seg = sims.slice(i, i + 14); pageNo++;
+  /* Ten to a page now, not fourteen: each entry carries a sentence as well as a
+     meaning and an origin, and four lines of type need the room. */
+  const simEntry = x => `<div style="break-inside:avoid;margin-bottom:.15in">
+    <div style="font-family:'BB Display';font-size:13pt;color:var(--accent-deep);line-height:1.14">⬡ ${esc(x.p)}</div>
+    <div style="font-size:10pt;line-height:1.36;margin-top:2pt;padding-left:.18in">${esc(fit(x.m, 150))}</div>
+    ${x.ex ? `<div style="font-size:9.6pt;line-height:1.36;margin-top:2.5pt;padding-left:.18in;border-left:2pt solid color-mix(in srgb,var(--accent) 55%,transparent);color:var(--ink)">${esc(fit(x.ex, 150))}</div>` : ''}
+    ${x.os ? `<div style="font-size:8.8pt;line-height:1.33;margin-top:2.5pt;padding-left:.18in;color:var(--muted);font-style:italic">${esc(fit(x.os, 200))}</div>` : ''}</div>`;
+  const simPages = [];
+  for (const g of simGroups) {
+    if (!g.items.length) continue;
+    for (let i = 0; i < g.items.length; i += 10)
+      simPages.push({ g, seg: g.items.slice(i, i + 10), first: i === 0,
+        part: Math.floor(i / 10) + 1, parts: Math.ceil(g.items.length / 10) });
+  }
+  let seen = 0;
+  for (const sp of simPages) {
+    const seg = sp.seg; pageNo++;
     pages.push(`<div class="page" data-vol="17">
-      ${head(vol, null, 0, 'The simile shelf')}
-      <div style="margin-top:.4in"><h2 style="font-size:20pt">Say one thing is like another. Boom — a picture.</h2></div>
-      <div style="columns:2;column-gap:.34in;margin-top:.14in">${seg.map((x, k) => `<div style="break-inside:avoid;margin-bottom:.15in;transform:rotate(${k % 2 ? .3 : -.3}deg)">
-        <div style="font-family:'BB Display';font-size:13.5pt;color:var(--accent-deep);line-height:1.14">⬡ ${esc(x.p)}</div>
-        <div style="font-size:10pt;line-height:1.36;margin-top:2pt;padding-left:.18in">${esc(fit(x.m, 104))}</div>
-        ${x.os ? `<div style="font-size:9pt;line-height:1.33;margin-top:2pt;padding-left:.18in;color:var(--muted);font-style:italic">${esc(fit(x.os, 154))}</div>` : ''}</div>`).join('')}</div>
+      ${head(vol, null, 0, sp.g.name)}
+      <div style="margin-top:.4in">
+        <h2 style="font-size:20pt">${esc(sp.g.name)}${sp.parts > 1 ? ` <span style="font-size:12pt;color:var(--muted);font-weight:600">${sp.part} of ${sp.parts}</span>` : ''}</h2>
+        ${sp.first ? `<p style="font-size:10.4pt;color:var(--muted);line-height:1.45;margin:.05in 0 0;max-width:5.6in">${esc(sp.g.blurb)}</p>` : ''}
+      </div>
+      <div style="columns:2;column-gap:.34in;margin-top:.14in">${seg.map(simEntry).join('')}</div>
       ${worldStrip(WORLD_CYCLE[(pageNo + 2) % 12], vol, 500 + pageNo)}
       ${foot(vol, folio.n++)}</div>`);
+    seen += seg.length;
+    const i = seen;
     if (pageNo % 6 === 0) {
       const pool = shuf(sims.slice(Math.max(0, i - 34), i + 6).slice(), rnd).slice(0, 10);
       const right = shuf(pool.map((x, k) => ({ k, m: x.m })), rnd);
