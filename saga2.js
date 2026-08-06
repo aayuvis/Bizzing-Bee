@@ -1487,29 +1487,48 @@
         if(d.y>Ht-40 && Math.abs(d.x-basket)<BW/2+12){        // caught
           drops.splice(i,1);
           if(d.ch===word[spelled]){ spelled++; score+=15; renderSlots();
+            SGFX.spark(fx,d.x,d.y,8,['#FFE9A8','#F0B429','#FFFFFF'],{speed:2.4,decay:0.055,rx:2.4,ry:3.2});
             if(spelled>=word.length){ wordsDone++; score+=40; spawnSplash(); try{ if(typeof addCoins==='function') addCoins(8); }catch(e){}
               if(wordsDone>=CFG.words){ finish(true); return; } layout(); setHud(); } }
           else { bonk=3; }                                    // wrong letter — no penalty beyond the miss
         } else if(d.y>Ht){ drops.splice(i,1);
-          if(d.ch===word[spelled]){ lives--; bonk=3; setHud(); if(lives<=0){ finish(false); return; } } }   // let the needed letter fall past → lose a heart
+          if(d.ch===word[spelled]){ lives--; bonk=3; shake.hit(10);
+            SGFX.spark(fx,d.x,Ht-36,10,['#E0553C','#FF9C7A'],{speed:3});
+            setHud(); if(lives<=0){ finish(false); return; } } }   // let the needed letter fall past → lose a heart
       }
     }
-    let fx=[]; function spawnSplash(){ for(let i=0;i<16;i++){ const a=(i/16)*Math.PI*2; fx.push({x:basket,y:Ht-30,vx:Math.cos(a)*3,vy:Math.sin(a)*3-1,life:1,col:['#F0B429','#FF7FB0','#8FA0F5'][i%3]}); } }
+    let fx=[]; const shake=SGFX.shake(), motes=SGFX.motes(20,Wd,Ht), trail=SGFX.trail();
+    function spawnSplash(){
+      SGFX.spark(fx,basket,Ht-30,18,['#F0B429','#FF7FB0','#8FA0F5','#FFE9A8'],{speed:3.6,up:1});
+      SGFX.ring(fx,basket,Ht-30,'255,209,63',{grow:7}); shake.hit(5); }
     function draw(){
-      cx.clearRect(0,0,Wd,Ht);
-      if(!drawWorld(cx,world,0,0,Wd,Ht)){ cx.fillStyle='#8FCF7A'; cx.fillRect(0,0,Wd,Ht); }
-      cx.fillStyle='rgba(20,15,40,.18)'; cx.fillRect(0,0,Wd,Ht);
-      for(const d of drops){ cx.fillStyle=(d.ch===word[spelled])?'#F0B429':'#FFF7E2';
-        cx.beginPath(); cx.arc(d.x,d.y,15,0,7); cx.fill(); if(d.ch===word[spelled]){ cx.strokeStyle='#C8901B'; cx.lineWidth=2; cx.stroke(); }
-        cx.fillStyle=(d.ch===word[spelled])?'#2B2117':'#8A7A55'; cx.font='800 17px Sono,monospace'; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText(d.ch.toUpperCase(),d.x,d.y+1); }
+      shake.begin(cx);
+      cx.clearRect(-40,-40,Wd+80,Ht+80);
+      const T=Date.now();
+      if(!drawWorld(cx,world,0,0,Wd,Ht)){ cx.fillStyle='#4C7A54'; cx.fillRect(0,0,Wd,Ht); }
+      SGFX.scrim(cx,Wd,Ht,0.26);
+      SGFX.drawMotes(cx,motes,Wd,Ht,T);
+      /* a falling letter is a lit capsule with a tail, and the one you need next
+         carries its own light — you should be able to pick it out mid-fall */
+      cx.textAlign='center'; cx.textBaseline='middle';
+      for(const d of drops){ const need=d.ch===word[spelled];
+        cx.save(); cx.globalAlpha=.30; cx.fillStyle=need?'#F0B429':'#FFF7E2';
+        cx.beginPath(); cx.ellipse(d.x,d.y-16,5,13,0,0,7); cx.fill(); cx.restore();
+        if(need) SGFX.orb(cx,d.x,d.y,13,'rgba(255,243,196,.9)','rgba(240,180,41,.4)',T/280);
+        SGFX.tile(cx,d.x-15,d.y-15,30,30,10,
+          need?'#FFE9A8':'rgba(252,247,236,.97)', need?'#E8A81C':'rgba(214,203,182,.97)',
+          need?'rgba(140,86,6,.55)':'rgba(120,104,76,.3)');
+        cx.fillStyle=need?'#4A3306':'#6A5C40'; cx.font='800 16px Sono,monospace';
+        cx.fillText(d.ch.toUpperCase(),d.x,d.y+1); }
       cx.textAlign='left'; cx.textBaseline='alphabetic';
       // basket = Bizzy sprite
       const bi=sgImg('bizzy-side-fly')||avImg(heroAv()); const by=Ht-32;
       if(bonk>0){ cx.fillStyle='rgba(229,83,61,.5)'; cx.beginPath(); cx.arc(basket,by,26,0,7); cx.fill(); bonk--; }
       let bd=false; if(bi){ try{ cx.drawImage(bi,basket-24,by-24,48,48); bd=true; }catch(e){} }
       if(!bd){ cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(basket,by,20,0,7); cx.fill(); }
-      for(let i=fx.length-1;i>=0;i--){ const f=fx[i]; f.life-=0.04; if(f.life<=0){ fx.splice(i,1); continue; }
-        f.x+=f.vx; f.y+=f.vy; f.vy+=0.15; cx.globalAlpha=Math.max(0,f.life); cx.fillStyle=f.col; cx.beginPath(); cx.arc(f.x,f.y,4,0,7); cx.fill(); cx.globalAlpha=1; }
+      SGFX.run(cx,fx);
+      SGFX.vignette(cx,Wd,Ht,0.34);
+      shake.end(cx);
     }
     function frame(){ if(over){ if(loop){clearInterval(loop);loop=null;} return; } const now=Date.now(), dt=Math.min(50,now-last); last=now;
       try{ step(dt); if(!over) draw(); }catch(e){} }
