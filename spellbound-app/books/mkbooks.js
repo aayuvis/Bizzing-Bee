@@ -1610,6 +1610,13 @@ console.log('copy-lint total hits (incl. data text):', lintHits);
    same masthead-kicker-title-tag-pills composition the book's own cover page
    carries, laid over the same art. Type is sized in cqw against the card, so it
    holds together at 228px on a phone and at 300px on a desktop. */
+/* The PDF column is gone from the shelf. Twenty-one PDFs came to 214MB — the
+   larger part of a 555MB Pages site — and GitHub's deploy step began timing out
+   on it, so three shipped builds in a row never reached the live app. The books
+   are complete and readable as HTML, which is what the shelf opens. The files
+   remain in the gh-pages history and can be regenerated from the HTML at any
+   time; if they should be downloadable again they belong on main behind the same
+   raw.githubusercontent redirect the voice clips use, not on the Pages site. */
 const shelfCover = m => {
   const cov = artAt(`${artOf(m.vol)}-cover`);
   const bee = avaPng(HERO);
@@ -1641,7 +1648,7 @@ const cardOf = m => { const slug = slugOf(m.vol);
       <span class="bk-vol${m.vol.companion ? ' comp' : ''}">${m.vol.companion ? 'Companion' : 'Vol. ' + m.vol.n}</span></span>
     <span class="bk-meta"><b>${esc(m.vol.title)}</b><span class="tag">${esc(m.vol.tag)}</span>
       <span class="foot"><span class="pg">${m.pages} pages</span>
-      <span class="pdf" onclick="event.preventDefault();event.stopPropagation();window.location='pdf/${slug}.pdf'">PDF &darr;</span></span>
+      <span class="pdf">Read &rarr;</span></span>
     </span></a>`; };
 const cards = series.map(cardOf).join('');
 const compCards = companions.map(cardOf).join('');
