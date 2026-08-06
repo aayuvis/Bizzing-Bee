@@ -342,6 +342,24 @@ handlers. App lives in this folder; open `index.html` to run.
   converging on one hard-to-guess answer). Never clue with the answer's most famous
   fact — that belongs in `f`.
 
+## The Arcade's competition game
+- **Spelling Quest is gone** (`quest.js` deleted, its `sq*` actions with it). Its slot is
+  the **Mock Spelling Bee** (`mockbee.js`, `window.MOCKBEE`, nav `'mockbee'`): eleven
+  spellers, a drawn number, one word a round, miss and you sit down. Ten rivals each have
+  an age, a `lvl` they are comfortable at, `nerve`, a `spec` origin and a `tell`; whether
+  one gets a word is `BASE + spec + (lvl - hardness)*SPREAD - press*(1-nerve)*PRESS`, so
+  the round does the killing, not the bot. Eight named rounds; **round one eliminates
+  nobody** because the announcer says so; an all-miss round runs again; the **final two
+  play full championship rules** (a miss does not end it — the rival must take that word
+  AND the next, and fumbling either puts the other speller back on their feet), and after
+  three of those it goes to sudden death so the bee always terminates.
+- **The bee keeps its own word list.** `corpusSlice` by `y` band puts dictionary tail on a
+  championship stage (`abidingness` is a y-5 word). `beeList()` takes the ~4,650 words the
+  library tags as real competition words (`nt` — the finals lists and the Primary/Junior/
+  Advanced/Senior tiers), ranks them once, and each round takes a percentile window: pie →
+  hobbit → dogma → oregano → melee → dhole → harmattan → benthamite. It rebuilds when the
+  corpus grows under it, like every other memoised pool.
+
 ## Adding a saga chapter
 1. Append to `CH_META`: `{n, act, title, world, engine, opts, script}` (sequential `n`).
 2. Add a `SB_SAGA_SCRIPT[script]` block (format above).
@@ -353,6 +371,35 @@ handlers. App lives in this folder; open `index.html` to run.
 - **Status:** all six acts are built out (31 chapters). Future acts can use the spare
   `WORLD_ART` plates (dino, library, junkyard, siren, origami, elements, vibe, engine,
   greysea, strait, warfield, chakravyuha) — Vex still holds the Master Token.
+
+## The saga is painted, and so are the games
+- **Six painted act boards** (`app-art/saga-act1-6.jpg`, `voice/pipeline/saga-maps.py`) on
+  the Atlas contract: an open band bottom-left → right → back left → top-right, scenery in
+  the pockets. `SAGA_MAP` in saga2.js holds each act's route, **measured by eye against its
+  own painting** in 0-100 space for x AND y; regenerating a board means re-tracing it.
+  `map()` is the act picker (locked acts wear the grey Unspelling filter), `board(n)` is
+  the painted board — chapters walked along the route by arc length, boss ringed red,
+  finale violet, Bizzy riding the frontier pin. A tap selects, a second tap plays.
+- **The dialogue, the difficulty dial and the game frame all wear the act's painting**, not
+  the flat vector plate — you should not step off an oil painting onto a diagram.
+- **`SGFX` is the shared canvas render kit** (saga2.js). Hexes, lit tiles, glowing orbs,
+  sparks, rings, rising text, ambient motes, motion trails, screen shake, scrim+vignette.
+  Fix how a pickup glows once and five games change. `drawWorld` prefers the **painted play
+  field** (`app-art/sgw-<world>.jpg`, `voice/pipeline/saga-worlds.py`) and keeps the vector
+  plate as fallback — a play field is composed open and low-contrast through the middle,
+  detail at the top and bottom edges, a stop darker than daylight.
+- Watch the temporal dead zone when adding kit state to an engine: `const motes=SGFX.motes(w,h)`
+  placed above the `const BW=...` it reads throws at construction and kills the engine
+  silently (the frame loop swallows render errors, but not that one).
+
+## Home must not rewrite itself
+- The word of the hour, the quote of the hour, the bee tip and the Atlas "next stop" all
+  pick deterministically from data that **arrives in shards after boot**, so the first
+  paint picked from a quarter of the library and a second later the card silently changed.
+  `settled(key, period, pick)` pins a pick for its hour or day — allowed to come from a
+  smaller pool, not allowed to change while the child is looking at it. `cardHold(label,h)`
+  holds a card's space with a shimmer when its data has not landed at all, so the row
+  cannot reflow. Any new home card that picks from lazy data needs both.
 
 ## Voice: the feedback → Kokoro rebuild loop
 - Parent tests words in **Settings → Word voice tester** (walks the whole library in batches
@@ -429,6 +476,15 @@ handlers. App lives in this folder; open `index.html` to run.
   and ink-on-light (`inkKit()` / `.bkc.on-light`). Re-run it whenever cover art changes.
   The tagline gets its own white chip on light covers — it sits mid-cover on top of the
   drawing, where a text shadow is not enough.
+- **Four companions now**, not two: `book-similes`, `book-champion`, plus
+  **`book-lines` "Lines Worth Keeping"** (87pp — poems, speeches, sonnets, haiku and long
+  prose quotes, all public domain, printed whole, each carrying its own bee-worthy words;
+  `books/poem-chapters.js`) and **`book-quiz` "The Long Quiz"** (275pp — a general round
+  then a hyper-speciality round, twenty-five times; generals drawn at build time from the
+  app bank at levels 3-5, specialities authored in `books/trivia-rounds.js`; four formats
+  in rotation — MC, written answers with the key at the back, crossword, letter square).
+  The trivia shards do **not** export an array: each calls `SB_TRIVIA._add(lv, [...])`, so
+  a reader has to supply that method and collect what it is handed.
 - World art: `app-art/w-<world>-r<2|3>.jpg` (26 banners) is cut from the book series'
   strips by `voice/pipeline/app-banners.py`. The Word Atlas, the theme pages and the
   home Atlas tile all draw from it — one visual language with the books.
@@ -460,6 +516,25 @@ handlers. App lives in this folder; open `index.html` to run.
   `file://…/index.html`, drive engines via `window.SB_SAGA_ENGINES`, assert no pageerror.
 
 ## Ship
+- **The Pages site has a size budget, and blowing it is silent.** GitHub's "pages build and
+  deployment" job aborts at a ten-minute deploy timeout, and when it does the site keeps
+  serving the last good commit — the push succeeds, the build succeeds, nothing anywhere
+  says the app did not update. It happened at 555MB: three shipped builds in a row never
+  went live and a deleted game went on appearing in the Arcade for hours. Keep the site
+  **under ~250MB**. If a deploy "did nothing", check the run's conclusion before you blame
+  the browser (incognito showing the old build is the tell that it is not cache).
+  Site weight today: books/art 45MB, voice 53MB, avatars 33MB, books HTML ~85MB.
+- **Book PDFs are not in git.** They were 214MB of files generated from HTML that is
+  already complete; the shelf opens the HTML. Regenerate on demand; `.gitignore` keeps
+  them out. Do not re-add them to the repo or to gh-pages.
+- **Shipped art is sized to how it is drawn, not to how it came out of the model.**
+  `voice/pipeline/art-slim.py` (`--dry` measures first) holds the rule: full-size avatars
+  384px RGBA, book plates 1400px at q78. The 640px avatars were ~360KB each and nothing
+  ever painted one above about 200px. Re-run it after any art drop, then
+  `voice/pipeline/avatar-thumbs.py`.
+- **index.html declares itself uncacheable** (`no-store`) while every asset it points at
+  carries a `?v=` stamp and caches forever. Without that, a browser holding an old
+  document keeps requesting the old stamps and a shipped change stays invisible.
 - Commit to `main`. GitHub Pages serves from **`gh-pages`** (app minus `voice/`); voice is
   served from `main` via `voice-cdn.js`. Update the changed app files onto `gh-pages` via
   a `git worktree`; leave mp3s on `main`. Verify a raw voice URL returns 200.
