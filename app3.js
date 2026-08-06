@@ -340,6 +340,14 @@ const demo = () => ({ name:'Speller', age:9, avatar:'bee', theme:'spellbound', l
 const active = () => { const c = state.children[state.activeIdx] || demo(); ensureLists(c); return c; };
 const curWord = () => { const L=(state.sessionWords&&state.sessionWords.length)?state.sessionWords:WORDS; return L[state.gi % L.length]; };
 const formIdx = (lvl) => Math.min(9, Math.max(0, Math.ceil((lvl||1)/2)-1));
+/* RANK is the one ladder, and its rungs keep their names and their emblem whatever
+   world the speller is wearing. Worlds change the app's palette, type and motif —
+   they no longer rename the achievement, which is what made "Level 6" mean Bulb in
+   one world and Larva in another. */
+const RANK_NAMES = ['Egg','Hatchling','Larva','Grub','Pupa','Cocoon','Worker','Forager','Spellbinder','Queen Bee'];
+const rankName = (i) => RANK_NAMES[Math.max(0,Math.min(9,i|0))];
+const rankOf = (c) => { const lv=heroLevel(c||active()); return { level:lv, form:formIdx(lv), name:rankName(formIdx(lv)) }; };
+function rankArt(i,size){ try{ return evEmb('spellbound',Math.max(0,Math.min(9,i|0))).replace('width="54" height="58"','width="100%" height="100%"'); }catch(e){ return ''; } }
 const milestone = () => { const c=active(); let m=c.milestone; if((!m||!m.date) && state.coachDate) m={label:(m&&m.label)||'the bee', date:state.coachDate};
   if(!m||!m.date) return null; const d=Math.ceil((new Date(m.date+'T00:00:00') - new Date())/86400000);
   return d>=0?{ days:d, label:m.label||'the bee', date:m.date }:null; };
@@ -476,7 +484,7 @@ function ensureCoachWords(key){ if(state.sessionListKey!==key || !(state.session
 function newCoachBatch(){ const key=state.sessionListKey||activeListKey(); state.sessionWords=workingSet(key); state.sessionListKey=key; state.reviseIdx=0; state.gi=0; try{ if(key&&key[0]!=='_') getList(active(),key).gi=0; }catch(e){} resetSessionScore(); }
 function gainXp(){ const c=active(); const key=activeListKey(); const lp=getList(c,key); const before=listLevel(c,key);
   lp.xp=(lp.xp||0)+1; const rawAfter=listLevelRaw(c,key); const after=Math.min(rawAfter, levelCap());
-  if(after>before){ const form=formIdx(after); state.toast='Level '+after+'! Now '+((EVO[state.theme]||EVO.spellbound)[form])+' in '+listLabel(key)+' ✨'; scheduleToast(2600); addCoins(4); sfx('level'); burstConfetti(90); }
+  if(after>before){ const form=formIdx(after); state.toast='Stage up in '+listLabel(key)+' ✨'; scheduleToast(2600); addCoins(4); sfx('level'); burstConfetti(90); }
   else if(!state.premium && rawAfter>FREE_LEVEL_CAP && before>=FREE_LEVEL_CAP && (lp.xp % 6 === 0)){ state.toast='Level 5 reached — go Premium to keep leveling 👑'; scheduleToast(2800); }
 }
 // pick the smoothest natural voice the device offers (loaded async)
@@ -2048,7 +2056,7 @@ const app = {
     const sessions=recent.length; const totDone=recent.reduce((s,a)=>s+(a.done||0),0); const totRight=recent.reduce((s,a)=>s+(a.right||0),0);
     const acc=totDone?Math.round(totRight/totDone*100):0;
     const misses=(c.missed||[]).slice(0,24);
-    const ov=listStageIdx(c,activeListKey())+1; const bnd=beeBand(c);
+    const ov=listStageIdx(c,activeListKey())+1; const bnd=beeBand(c); const rk=rankOf(c);
     const E=(s)=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     const dotRow=last7.map(d=>`<td style="text-align:center;padding:4px"><div style="width:30px;height:30px;border-radius:6px;margin:0 auto;background:${d.on?'#7C5CFF':'#e7e3f5'}"></div><div style="font-size:12px;color:#888;margin-top:3px">${d.label}</div></td>`).join('');
     const missChips=misses.length?misses.map(m=>`<span style="display:inline-block;border:1px solid #ddd;border-radius:20px;padding:3px 10px;margin:3px;font-size:12px;font-family:monospace">${E(m.w)}${m.n>1?(' ×'+m.n):''}</span>`).join(''):'<i style="color:#888">No misses — great week!</i>';
@@ -2057,7 +2065,7 @@ const app = {
       '<div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #7C5CFF;padding-bottom:12px"><div><div style="font-size:13px;color:#7C5CFF;font-weight:800;letter-spacing:.08em">BIZZING BEE · WEEKLY REPORT</div><h1>'+E(c.name)+'</h1></div><div style="text-align:right;font-size:12px;color:#888">'+new Date().toLocaleDateString()+'<br>Age '+E(c.age||9)+'</div></div>'+
       '<h2>This week at a glance</h2><div class="row"><div class="stat"><b>'+daysThisWeek+'/7</b><span>Days practised</span></div><div class="stat"><b>'+(c.streak||0)+'</b><span>Day streak</span></div><div class="stat"><b>'+sessions+'</b><span>Sessions</span></div><div class="stat"><b>'+acc+'%</b><span>Accuracy</span></div></div>'+
       '<table style="width:100%;margin-top:16px;border-collapse:collapse"><tr>'+dotRow+'</tr></table>'+
-      '<h2>Progress</h2><div class="row"><div class="stat"><b>'+ov+'</b><span>Stage ('+E(listLabel(activeListKey()))+')</span></div><div class="stat"><b>'+mastered+'</b><span>Words mastered</span></div><div class="stat"><b>'+totRight+'</b><span>Correct this week</span></div><div class="stat"><b>'+bnd.band+'</b><span>Word difficulty · '+E(bnd.tier)+'</span></div></div>'+
+      '<h2>Progress</h2><div class="row"><div class="stat"><b>'+rk.level+'</b><span>Rank · '+E(rk.name)+'</span></div><div class="stat"><b>'+ov+'</b><span>Stage ('+E(listLabel(activeListKey()))+')</span></div><div class="stat"><b>'+mastered+'</b><span>Words mastered</span></div><div class="stat"><b>'+totRight+'</b><span>Correct this week</span></div><div class="stat"><b>'+bnd.band+'</b><span>Word difficulty · '+E(bnd.tier)+'</span></div></div>'+
       '<h2>Words to revise ('+(c.missed||[]).length+')</h2><div>'+missChips+'</div>'+
       (milestone()?('<h2>Countdown</h2><p style="font-size:15px">'+esc(milestone().label)+' — <b>'+milestone().days+' days</b> to go.</p>'):'')+
       (function(){ try{ const sg=parentSignals(); let rd=0; try{ rd=coachReadiness().ready||0; }catch(e){}
@@ -3428,7 +3436,7 @@ function viewLevelTest(){ const lt=state.lt||{}; if(lt.done) return `<div style=
       <div style="width:100px;height:110px;margin:0 auto 6px;animation:sb-bee-talk 1.6s ease-in-out infinite">${mascotAcc('excited')}</div>
       <div style="font-family:var(--ui,var(--body));font-weight:650;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">Placement complete</div>
       <div style="font-family:var(--display);font-weight:800;font-size:30px;margin:6px 0 4px">Band ${lt.placed} — ${bandTier(lt.placed||1)}!</div>
-      <p style="font-size:15px;color:var(--muted);margin:0 0 6px">That's exactly where champions start. Your Bee Band, your games and your Quest are all set to it — spell well and the Band climbs with you.</p>
+      <p style="font-size:15px;color:var(--muted);margin:0 0 6px">That's exactly where champions start. Your word difficulty, your games and your Practice are all set to it — spell well and it climbs with you.</p>
       <p style="font-size:13px;color:var(--muted);margin:0 0 8px">Quest start: Stage ${ltStageForBand(lt.placed||1)+1} of the Bizzing Bee Journey.</p>
       <p style="font-size:12.5px;color:var(--muted);margin:0 0 18px;line-height:1.5">One more thing: your <b>bee</b> still hatches young — evolution measures <b>practice</b>, not skill, and it only ever climbs. Your Band is the skill part, and yours is already set. 🐝</p>
       <button data-act="ltGo" style="width:100%;max-width:280px;padding:14px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Let's spell →</button>
@@ -3614,7 +3622,7 @@ function viewApp(){
         ${celeAvatar(cb.champ?'CHAMP! 🏆':'Level up!')}
         <div style="font-family:var(--ui);font-weight:650;font-size:12px;letter-spacing:.11em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">${cb.champ?'Champion unlocked':'Level cleared'}</div>
         <div style="font-family:var(--display);font-weight:800;font-size:36px;line-height:1.05;margin:6px 0 4px">${cb.champ?'Bizzing Bee Champ!':('Level '+cb.level+' unlocked!')}</div>
-        <div style="font-size:15px;color:var(--muted);font-weight:450">${esc(cb.list)} · ${esc(c2.name||'')} — ${evo2[fi]} · ${cb.date}</div>
+        <div style="font-size:15px;color:var(--muted);font-weight:450">${esc(cb.list)} · ${esc(c2.name||'')} — ${esc(rankName(fi))} · ${cb.date}</div>
         <div style="display:flex;justify-content:center;gap:6px;margin:14px 0 18px">${[0,1,2].map(i=>`<span style="display:inline-block;width:12px;height:12px;border-radius:999px;background:var(--treasure,#F0B429);animation:sb-pop .4s ease ${(i*0.12).toFixed(2)}s both"></span>`).join('')}</div>
         ${(()=>{ const L=lessonsAll()[loreCount(c2)-1]; if(!L) return ''; return `<div style="text-align:left;display:flex;align-items:center;gap:11px;background:var(--treasure-tint,#FFF3D6);border-radius:12px;padding:11px 13px;margin-bottom:14px">
           <span style="flex-shrink:0;color:var(--treasure-deep,#8A5B00)">${window.SB_ICON?SB_ICON('book',{size:22}):iconSVG('book',22)}</span>
@@ -3702,7 +3710,7 @@ function viewDrawer(){
         <div style="width:44px;height:50px;flex-shrink:0">${mascotAcc('happy')}</div>
         <div style="min-width:0;flex:1">
           <div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.1">${esc(c.name||'Speller')}</div>
-          <div style="font-size:12px;color:var(--muted);font-weight:650">${evoD[fiD]} · <span style="color:var(--treasure-deep,#8A5B00);font-weight:800">${c.coins||0} coins</span></div>
+          <div style="font-size:12px;color:var(--muted);font-weight:650">${esc(rankName(fiD))} · <span style="color:var(--treasure-deep,#8A5B00);font-weight:800">${c.coins||0} coins</span></div>
         </div>
         <button data-act="closeDrawer" aria-label="Close" style="width:32px;height:32px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('close',18)}</button>
       </div>
@@ -3902,10 +3910,10 @@ function viewHome(){
             ${(()=>{ /* Rank rides in the greeting rather than owning a tile of its own —
                 it is who you are, not a fifth thing to read. Emblem, number and name all
                 come from heroLevel, in whichever world the speller is wearing. */
-              const hl=heroLevel(c), fi=formIdx(hl);
+              const r=rankOf(c);
               return `<button data-act="setNav" data-arg="evolution" title="Your rank — evolution, collection and store" style="display:inline-flex;align-items:center;gap:7px;padding:4px 12px 4px 5px;border-radius:var(--r-pill,999px);background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">
-                <span style="width:24px;height:26px;display:block;flex-shrink:0">${evArt(theme,fi)}</span>
-                Level ${hl} · ${esc(evo[fi])}</button>`; })()}
+                <span style="width:24px;height:26px;display:block;flex-shrink:0">${rankArt(r.form)}</span>
+                Level ${r.level} · ${esc(r.name)}</button>`; })()}
             ${(c.streak||0)>0?`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">${iconSVG('flame',14)} ${c.streak}-day streak</span>`:''}
             ${(()=>{ const ms=milestone(); return (ms&&ms.days>=0)?`<button data-act="setNav" data-arg="progress" style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">🐝 ${ms.days} days to ${esc(trunc(ms.label,18))}</button>`:''; })()}
           </div>
@@ -4452,13 +4460,13 @@ function viewEvolution(){ const S=state; const c=active(); ensureLists(c); const
   return `<div style="max-width:900px;margin:0 auto">
     ${hiveBar('evo')}
     <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 4px">Your evolution</h2><span style="font-size:13px;color:var(--muted);font-weight:650">how your bee grows</span></div>
-    <p style="margin:0 0 16px;font-size:14px;color:var(--muted);line-height:1.5">Every word you practise feeds your bee. Evolution measures <b style="color:var(--text)">effort</b> — it always climbs and never falls. (What you're <i>ready</i> to spell is your Bee Band — that lives on Progress.)</p>
+    <p style="margin:0 0 16px;font-size:14px;color:var(--muted);line-height:1.5">Every word you practise feeds your bee. Your rank measures <b style="color:var(--text)">effort</b> — it always climbs and never falls, and its ten forms keep their names in every world. (What you're <i>ready</i> to spell is your word difficulty — that lives on Progress.)</p>
     <div class="sb-card" style="margin-bottom:14px">
       <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:6px;flex-wrap:wrap">
-        <div style="font-family:var(--display);font-weight:800;font-size:17px">You're ${evo[fIdx]}</div>
+        <div style="font-family:var(--display);font-weight:800;font-size:17px">You're ${esc(rankName(fIdx))}</div>
         <div style="font-size:12px;color:var(--muted);font-weight:600">${fIdx>=9?'Top form reached! 🎉':(fmtN(xpToForm)+' Karma of practice to '+evo[fIdx+1])}</div>
       </div>
-      <div style="overflow-x:auto;padding:4px 0 2px"><div style="min-width:760px">${evoLadderHTML(theme,fIdx,rungMarks)}</div></div>
+      <div style="overflow-x:auto;padding:4px 0 2px"><div style="min-width:760px">${evoLadderHTML('spellbound',fIdx,rungMarks)}</div></div>
       <div class="sb-cn" style="margin-top:6px">You have <b style="color:var(--text)">${fmtN(totalXp)} Karma</b> in ${esc(listLabel(aKey).split(' · ')[0])} — each rung shows the total Karma that unlocks it.</div>
     </div>
     <div class="sb-card" style="margin-bottom:14px">
@@ -5132,8 +5140,15 @@ function coachFlashCard(){
 }
 function viewTrain(){
   const S=state; const goalTarget=active().goal||S.draft.goal||10; const goalDoneN=goalToday(); const goalPctNum=Math.min(100,Math.round((goalDoneN/goalTarget)*100));
+  /* The Practice side of the two-way link: when these words came from a stop on the
+     World Atlas, the drill says which stop and offers the way back. */
+  const from=(()=>{ try{ if(!S.trailReturn||typeof window.SB_TRAIL_WHERE!=='function') return '';
+      const w=SB_TRAIL_WHERE(S.trailReturn); if(!w) return '';
+      return `<button data-act="trailUnit" data-arg="${escA(w.unit)}" style="display:inline-flex;align-items:center;gap:7px;margin-bottom:12px;padding:7px 13px;border-radius:var(--r-pill,999px);background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">
+        ${iconSVG('steps',14)} From the World Atlas · ${esc(w.act)} · stop ${w.stop} of ${w.total}</button>`; }catch(e){ return ''; } })();
   return `<div style="max-width:620px;margin:0 auto">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><button data-act="exitTrain" style="color:var(--muted);font-weight:700;font-size:13px">← Exit</button><div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${S.sessionDone} done · ${S.sessionRight} correct</div></div>
+    ${from}
     <div style="height:7px;border-radius:999px;background:var(--surface2);overflow:hidden;margin-bottom:22px"><div style="height:100%;background:var(--accent);border-radius:999px;width:${goalPctNum}%;transition:width .4s"></div></div>
     ${(S.coachCardView&&!S.sessionOver)?coachFlashCard():trainerCard()}
     ${liveHeatmap(S.sessionWords&&S.sessionWords.length?S.sessionWords:WORDS, {anon:true})}
@@ -5223,7 +5238,7 @@ function viewLevelUp(){
   const tab=(k,l)=>`<button data-act="luSetTab" data-arg="${k}" style="flex:1;padding:9px 8px;border-radius:10px;font-weight:800;font-size:13px;${S.luTab===k?'background:var(--bg2);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.08)':'background:transparent;color:var(--muted)'}">${l}</button>`;
   const header=`<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
       <button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button>
-      <span style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${evo[fIdx]}</span>
+      <span style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${esc(rankName(fIdx))}</span>
       <span style="font-size:12px;color:var(--muted);font-weight:700">${S.luTab==='practice'?('Word '+pos+' of '+N+' · '):''}${mastered}/${N} mastered</span>
       <button data-act="luToggleWords" style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">${iconSVG('grid',15)} Word list ${S.luWordsOpen?'▲':'▼'}</button>
     </div>
@@ -5697,14 +5712,37 @@ function viewTtList(){ const st=state.ttList; if(!st) return ''; const c=active(
 function viewProgress(){
   const c=active();
   const bb=beeBand(c);
-  const stats=[{v:masteredCount(),k:'Words mastered'},{v:c.streak||0,k:'Day streak'}]
+  const stats=[{v:c.streak||0,k:'Day streak'}]   /* words mastered is in the rank block above */
     .map(s=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px"><div style="font-family:var(--display);font-weight:800;font-size:24px;color:var(--accent)">${s.v}</div><div style="font-size:12px;color:var(--muted);font-weight:700">${s.k}</div></div>`).join('');
   const wk=c.week&&c.week.length?c.week:[12,20,15,30,18,25,22]; const maxW=Math.max(...wk,1); const days=['M','T','W','T','F','S','S'];
   const week=wk.map((m,i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end"><div style="font-size:11px;font-weight:800;color:var(--muted)">${m||''}</div><div style="width:100%;border-radius:6px 7px 4px 4px;background:var(--accent);height:${Math.round((m/maxW)*100)}%;min-height:5px;opacity:${m?'1':'.3'}"></div><div style="font-size:12px;color:var(--muted);font-weight:700">${days[i]}</div></div>`).join('');
+  /* Progress opens on the one ladder rather than computing a number of its own.
+     Rank (effort, never falls) · Word difficulty (the dial) · the Atlas tier. */
+  const rankBlock=(()=>{ const r=rankOf(c); const bnd=beeBand(c);
+    const nx=(typeof window.SB_TRAIL_NEXT==='function')?SB_TRAIL_NEXT():null;
+    const cell=(v,l,sub)=>`<span style="flex:1;min-width:104px"><span style="display:block;font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:800;font-size:21px;line-height:1.1">${v}</span>
+      <span style="display:block;font-size:11.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-top:3px">${l}</span>
+      ${sub?`<span style="display:block;font-size:12px;color:var(--muted);font-weight:650;margin-top:2px">${sub}</span>`:''}</span>`;
+    return `<div class="sb-card" style="margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:13px;flex-wrap:wrap">
+        <span style="width:60px;height:64px;flex-shrink:0;display:grid;place-items:center;border-radius:14px;background:var(--surface2)">${rankArt(r.form)}</span>
+        <span style="min-width:0;flex:1">
+          <span class="sb-cs">Your rank</span>
+          <span style="display:block;font-family:var(--display);font-weight:800;font-size:20px;line-height:1.12">Level ${r.level} · ${esc(r.name)}</span>
+          <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:650;margin-top:2px">Effort, not readiness — it only ever climbs, and it keeps these names in every world.</span>
+        </span>
+        <button data-act="setNav" data-arg="evolution" class="sb-cl" style="align-self:flex-start">the ladder →</button>
+      </div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;padding-top:13px;border-top:1px solid var(--line)">
+        ${cell(bnd.calibrating?'—':bnd.band, 'Word difficulty', bnd.calibrating?'take the placement test':esc(bnd.tier))}
+        ${cell(nx?('Tier '+nx.lap):'—', 'World Atlas', nx?(nx.done+' of '+nx.total+' stops'):'not started')}
+        ${cell(fmtN(journeyMastered(c)), 'Words mastered', 'across every list')}
+      </div>
+    </div>`; })();
   // ---- real per-list heatmap: dropdown over activated lists, plus All ----
   const S=state; const hKeys=activatedListKeys(); const hSel=(S.progHeatKey&&(S.progHeatKey==='all'||hKeys.includes(S.progHeatKey)))?S.progHeatKey:'all';
   const hLabel=(k)=> k==='journey'?'Bizzing Bee Journey':listLabel(k).split(' · ')[0];
-  const hOpts=[`<option value="all"${hSel==='all'?' selected':''}>All lists</option>`,...hKeys.map(k=>`<option value="${escA(k)}"${hSel===k?' selected':''}>${esc(hLabel(k))} · L${listStageIdx(c,k)+1}</option>`)].join('');
+  const hOpts=[`<option value="all"${hSel==='all'?' selected':''}>All lists</option>`,...hKeys.map(k=>`<option value="${escA(k)}"${hSel===k?' selected':''}>${esc(hLabel(k))} · Stage ${listStageIdx(c,k)+1}</option>`)].join('');
   const hDrop=`<div style="position:relative;margin-left:auto"><select data-chg="progHeat" style="appearance:none;-webkit-appearance:none;padding:9px 34px 9px 13px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-family:var(--display);font-weight:800;font-size:13px;cursor:pointer">${hOpts}</select><span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--accent);font-size:12px">▼</span></div>`;
   let hBody='';
   if(hSel==='all'){
@@ -5713,7 +5751,7 @@ function viewProgress(){
       const pct=ws.length?Math.round(m/ws.length*100):0;
       const tiles=ws.slice(0,96).map(w=>{ const kk=nkey(w.w); const bg=state.luMastered[kk]?'var(--good)':((state.missedWords||[]).some(x=>nkey(x.w)===kk)?'var(--bad)':'var(--surface2)'); return `<span title="${escA(w.w)}" style="width:14px;height:14px;border-radius:6px;background:${bg};display:inline-block"></span>`; }).join('');
       return `<button data-act="progHeatPick" data-arg="${escA(k)}" style="display:block;width:100%;text-align:left;border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:10px;background:var(--surface)">
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px"><span style="font-family:var(--display);font-weight:800;font-size:15px">${esc(hLabel(k))}</span><span style="font-size:12px;color:var(--muted);font-weight:700">L${listStageIdx(c,k)+1} · ${m}/${ws.length} mastered${miss?(' · '+miss+' to review'):''}</span><div style="flex:1;min-width:80px;height:6px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;background:var(--accent);width:${pct}%"></div></div><span style="font-size:12px;color:var(--accent);font-weight:800">${pct}%</span></div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px"><span style="font-family:var(--display);font-weight:800;font-size:15px">${esc(hLabel(k))}</span><span style="font-size:12px;color:var(--muted);font-weight:700">Stage ${listStageIdx(c,k)+1} · ${m}/${ws.length} mastered${miss?(' · '+miss+' to review'):''}</span><div style="flex:1;min-width:80px;height:6px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;background:var(--accent);width:${pct}%"></div></div><span style="font-size:12px;color:var(--accent);font-weight:800">${pct}%</span></div>
         <div style="display:flex;flex-wrap:wrap;gap:4px">${tiles}${ws.length>96?`<span style="font-size:12px;color:var(--muted);font-weight:700;align-self:center">+${ws.length-96} more</span>`:''}</div>
       </button>`; }).join('');
     hBody=hBody||beeEmpty('think','Nothing to map yet — start practising and this lights up like a hive.');
@@ -5728,7 +5766,8 @@ function viewProgress(){
   }
   const legend=[['var(--good)','Mastered'],['var(--bad)','Needs work'],['var(--surface2)','Not yet mastered']].map(([cc,l])=>`<span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:600"><span style="width:12px;height:12px;border-radius:6px;background:${cc}"></span>${l}</span>`).join('');
   return `<div style="animation:sb-rise .35s ease both">
-    ${pageHead('Progress','this week','Mastery, accuracy and streak at a glance — and where each word stands.')}
+    ${pageHead('Progress','where you stand','One rank, one difficulty dial, one Atlas tier — then this week\'s work and where each word stands.')}
+    ${rankBlock}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px">${stats}</div>
     ${(()=>{ const ms=milestone(); let rd=null; try{ rd=coachReadiness(); }catch(e){}
       if(!ms&&!rd) return '';
@@ -5750,7 +5789,7 @@ function viewProgress(){
           <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:11px;font-weight:700;color:var(--muted)">${a===b2?('Band '+a):('Bands '+a+'–'+b2)}</div>
           <div style="font-size:12px;font-weight:800;line-height:1.15;margin-top:3px;${on?'color:var(--accent)':''}">${label}</div></div>`; }).join('');
       return `<div class="sb-card" style="margin-bottom:18px">
-        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px"><span style="font-family:var(--display);font-weight:800;font-size:15px">Your Bee Band</span><span style="font-size:12px;color:var(--muted);font-weight:650">${bb.calibrating?'calibrating — appears after ~30 graded words':('Band '+bb.band+' · '+bb.tier+(bb.n>=2?(' · '+bb.acc+'% right at this band'):''))}</span></div>
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px"><span style="font-family:var(--display);font-weight:800;font-size:15px">Your word difficulty</span><span style="font-size:12px;color:var(--muted);font-weight:650">${bb.calibrating?'calibrating — appears after ~30 graded words':('Level '+bb.band+' of 9 · '+bb.tier+(bb.n>=2?(' · '+bb.acc+'% right at this band'):''))}</span></div>
         <p style="margin:0 0 12px;font-size:12.5px;color:var(--muted);line-height:1.5">One skill measure across everything — Practice, games, duels and tests all feed it. It climbs the moment you prove a harder band (80%+ right) and never falls from one bad game — only a sustained slide moves it down. Your games and daily tip follow it automatically.</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap">${row}</div>
       </div>`; })()}

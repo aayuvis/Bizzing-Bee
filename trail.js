@@ -189,6 +189,23 @@
     return _taught[gi] || null;
   };
 
+  /* Which act and stop does this unit belong to? The Practice side of the two-way
+     link: a session that came from the Atlas can say so and offer the way back. */
+  window.SB_TRAIL_WHERE = function (unitId) {
+    try {
+      if (!unitId || !T()) return null;
+      for (const crs of ['honey', 'exp']) {
+        const acts = crs === 'exp' ? (T().expedition.expeds || []) : (T().honey.acts || []);
+        for (const act of acts) {
+          const i = (act.units || []).indexOf(unitId);
+          if (i >= 0) return { act: act.title || '', actId: act.id, world: act.world || 'meadow',
+            stop: i + 1, total: (act.units || []).length, course: crs, unit: unitId };
+        }
+      }
+    } catch (e) {}
+    return null;
+  };
+
   /* ---- actions ---- */
   const app2 = app;   /* app3's top-level const — global lexical scope, not window */
   /* trail-data.js is deferred until after first paint, so opening the Atlas early
