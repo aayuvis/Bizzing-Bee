@@ -2312,21 +2312,20 @@ function tipOfDay(kid,asCard){ const pool=[]; let band=2; try{ band=beeBand(acti
   if(c0){ if(c0.tipDay!==day){ c0.tipDay=day; c0.tipStep=0; } }
   const step=Math.max(0,Math.min(MAXFWD,(c0&&c0.tipStep)||0));
   const t=trunc(pool[(day+step)%pool.length],150);
-  const face=(function(){ try{ return (WORLD_HERO[state.theme]||WORLD_HERO.spellbound).face; }catch(e){ return 'var(--display)'; } })();
   const canFwd=step<MAXFWD;
   const fwd=`<button data-act="nextTip" ${canFwd?'':'disabled'} title="${canFwd?'Next tip ('+(MAXFWD-step)+' left today)':'That\u2019s all 10 tips for today \u2014 back tomorrow!'}" aria-label="Next tip" style="flex-shrink:0;align-self:center;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:16px;box-shadow:var(--edge);border:0;${canFwd?'background:var(--treasure,#F0B429);color:#5a3d00;cursor:pointer':'background:var(--surface2);color:var(--muted);opacity:.55'}">\u2192</button>`;
   // Card form for the home grid: same content and same forward nav, sized to sit beside the other tiles.
   if(asCard) return `<div class="sb-card" style="display:flex;align-items:center;gap:11px;min-height:128px;padding:14px;border-left:4px solid var(--treasure,#F0B429)">
     <span style="min-width:0;flex:1">
       <span style="display:flex;align-items:center;gap:8px;font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:4px">Today\u2019s bee tip${step>0?`<span style="letter-spacing:0;text-transform:none;font-weight:700;color:var(--muted)">\u00b7 ${step+1}/${MAXFWD+1}</span>`:''}</span>
-      <span style="display:block;font-family:${face};font-size:13.5px;line-height:1.5;font-weight:400;color:var(--ink,var(--text))">${esc(trunc(t,132))}</span>
+      <span class="sb-tiptext" style="display:block;font-size:13.5px;line-height:1.5">${esc(trunc(t,132))}</span>
     </span>
     <span aria-hidden="true" style="flex-shrink:0;width:36px;height:42px;align-self:flex-end">${mascotSVG('happy')}</span>
     ${fwd}
   </div>`;
   return `<div style="position:relative;display:flex;align-items:center;gap:12px;background:var(--paper,var(--bg2));border:1px solid var(--line);border-left:4px solid var(--treasure,#F0B429);border-radius:14px;padding:14px 16px;margin-bottom:14px">
     <span style="min-width:0;flex:1"><span style="display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:3px">${kid?'Today\u2019s bee tip':'Tip of the day'}${step>0?`<span style="letter-spacing:0;text-transform:none;font-weight:700;color:var(--muted)">\u00b7 ${step+1}/${MAXFWD+1}</span>`:''}</span>
-    <span style="display:block;font-family:${face};font-size:15px;line-height:1.55;font-weight:400;color:var(--ink,var(--text))">${esc(t)}</span></span>
+    <span class="sb-tiptext" style="display:block;font-size:15px;line-height:1.55">${esc(t)}</span></span>
     <span aria-hidden="true" style="flex-shrink:0;width:42px;height:48px;align-self:flex-end">${mascotSVG('happy')}</span>
     ${fwd}
   </div>`; }

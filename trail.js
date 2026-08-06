@@ -613,7 +613,9 @@
       ['proving',  18, 72],     // the lantern-lit proving ground
       ['greysea',  27, 41],     // the fog sea and its red buoy
       ['liars',    54, 46],     // the junkyard, centre
-      ['grandtrunk', 58, 33],   // the long road out of the junkyard
+      ['grandtrunk', 70, 37],   // ON the road east of the junkyard - it IS the road,
+                                //  and it is the only spot whose chip clears all three
+                                //  neighbours' chips (liars, farflung, factory)
       ['farflung', 64, 15],     // the far shore
       ['factory',  83, 18],     // the word factory
     ],
@@ -710,7 +712,7 @@
         <span class="atlas-dot" style="width:${size}px;height:${size}px;background:${ring};
           border:2px solid rgba(255,246,222,${cur || isDone ? '.9' : '.42'});color:${cur || isDone ? '#3B2A00' : 'rgba(255,246,222,.85)'};
           font-family:var(--display);font-weight:800;font-size:${cur ? 17 : 15}px;box-shadow:0 4px 12px rgba(6,4,18,.5)">${isDone ? '✓' : (i + 1)}</span>
-        <span class="atlas-chip">${esc(label)}${blocks ? ` · days ${i * per + 1}–${Math.min(blocks, (i + 1) * per)}` : ''}</span></button>`;
+        <span class="atlas-chip"><b>${esc(label)}</b>${blocks ? `<i>days ${i * per + 1}–${Math.min(blocks, (i + 1) * per)}</i>` : ''}</span></button>`;
     }).join('');
     const line = blocks
       ? `${fmtN(words)} words in ${blocks} day-blocks — five landmarks, ${per} ${per === 1 ? 'day' : 'days'} each.`
