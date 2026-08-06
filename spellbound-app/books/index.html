@@ -43,6 +43,15 @@ p.lead{color:#59527a;max-width:62ch;margin:0 auto;font-size:15.5px;line-height:1
   text-shadow:0 1px 6px rgba(0,0,0,.82)}
 .bkc .scrim{position:absolute;left:0;right:0;bottom:0;height:36%;z-index:0;
   background:linear-gradient(180deg,rgba(12,9,28,0),rgba(12,9,28,.86))}
+/* A light cover takes ink type and a white veil. White type over a darkening
+   scrim both greys out a pale three-ink drawing and disappears into it. */
+.bkc.on-light{color:#241E33}
+.bkc.on-light .mast i,.bkc.on-light .bkt{text-shadow:0 1px 3px rgba(255,255,255,.8)}
+.bkc.on-light .kick2{color:rgba(36,30,51,.82);text-shadow:0 1px 3px rgba(255,255,255,.85)}
+.bkc.on-light .sub{color:rgba(36,30,51,.92);text-shadow:none;background:rgba(255,255,255,.74);
+  border-radius:2.4cqw;padding:1.2cqw 2.4cqw;backdrop-filter:blur(2px)}
+.bkc.on-light .bkc-top{background:linear-gradient(180deg,rgba(255,255,255,.74),rgba(255,255,255,.2) 60%,rgba(255,255,255,0))}
+.bkc.on-light .scrim{background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,.82))}
 .bkc .pills{position:absolute;left:3.5cqw;right:3.5cqw;bottom:5cqw;display:flex;justify-content:center;
   gap:1.8cqw;flex-wrap:wrap}
 .bkc .pill{font-family:'Baloo 2';font-weight:800;font-style:normal;font-size:3.3cqw;
@@ -77,7 +86,7 @@ footer{max-width:1180px;margin:38px auto 0;padding:0 22px;font-size:12px;color:#
   (or drag the PDF onto Canva&rsquo;s home page). Every page becomes an editable design. The HTML is the print master.</div>
 </header>
 <div class="grid"><a class="bk" href="book-01.html" style="--a:#FFC23D;--d:#C8791B">
-    <span class="bk-cov"><img src="art/b01-cover.jpg" alt="" loading="lazy"><span class="bkc">
+    <span class="bk-cov"><img src="art/b01-cover.jpg" alt="" loading="lazy"><span class="bkc on-light">
       <span class="bkc-top"></span>
       <span class="mast"><img src="../avatars/bizzy.png" alt=""><i>The Bizzing Bee</i></span>
       <span class="kick2">LIBRARY &middot; BOOK 1</span>
@@ -105,7 +114,7 @@ footer{max-width:1180px;margin:38px auto 0;padding:0 22px;font-size:12px;color:#
       <span class="foot"><span class="pg">84 pages</span>
       <span class="pdf" onclick="event.preventDefault();event.stopPropagation();window.location='pdf/book-02.pdf'">PDF &darr;</span></span>
     </span></a><a class="bk" href="book-03.html" style="--a:#E06A3C;--d:#A8431F">
-    <span class="bk-cov"><img src="art/b03-cover.jpg" alt="" loading="lazy"><span class="bkc">
+    <span class="bk-cov"><img src="art/b03-cover.jpg" alt="" loading="lazy"><span class="bkc on-light">
       <span class="bkc-top"></span>
       <span class="mast"><img src="../avatars/bizzy.png" alt=""><i>The Bizzing Bee</i></span>
       <span class="kick2">LIBRARY &middot; BOOK 3</span>
@@ -161,7 +170,7 @@ footer{max-width:1180px;margin:38px auto 0;padding:0 22px;font-size:12px;color:#
       <span class="foot"><span class="pg">78 pages</span>
       <span class="pdf" onclick="event.preventDefault();event.stopPropagation();window.location='pdf/book-06.pdf'">PDF &darr;</span></span>
     </span></a><a class="bk" href="book-07.html" style="--a:#13A892;--d:#0A6B5D">
-    <span class="bk-cov"><img src="art/b07-cover.jpg" alt="" loading="lazy"><span class="bkc">
+    <span class="bk-cov"><img src="art/b07-cover.jpg" alt="" loading="lazy"><span class="bkc on-light">
       <span class="bkc-top"></span>
       <span class="mast"><img src="../avatars/bizzy.png" alt=""><i>The Bizzing Bee</i></span>
       <span class="kick2">LIBRARY &middot; BOOK 7</span>
@@ -175,7 +184,7 @@ footer{max-width:1180px;margin:38px auto 0;padding:0 22px;font-size:12px;color:#
       <span class="foot"><span class="pg">72 pages</span>
       <span class="pdf" onclick="event.preventDefault();event.stopPropagation();window.location='pdf/book-07.pdf'">PDF &darr;</span></span>
     </span></a><a class="bk" href="book-08.html" style="--a:#3E63D6;--d:#26409A">
-    <span class="bk-cov"><img src="art/b08-cover.jpg" alt="" loading="lazy"><span class="bkc">
+    <span class="bk-cov"><img src="art/b08-cover.jpg" alt="" loading="lazy"><span class="bkc on-light">
       <span class="bkc-top"></span>
       <span class="mast"><img src="../avatars/bizzy.png" alt=""><i>The Bizzing Bee</i></span>
       <span class="kick2">LIBRARY &middot; BOOK 8</span>
@@ -189,7 +198,7 @@ footer{max-width:1180px;margin:38px auto 0;padding:0 22px;font-size:12px;color:#
       <span class="foot"><span class="pg">110 pages</span>
       <span class="pdf" onclick="event.preventDefault();event.stopPropagation();window.location='pdf/book-08.pdf'">PDF &darr;</span></span>
     </span></a><a class="bk" href="book-09.html" style="--a:#F0A93C;--d:#B4711A">
-    <span class="bk-cov"><img src="art/b09-cover.jpg" alt="" loading="lazy"><span class="bkc">
+    <span class="bk-cov"><img src="art/b09-cover.jpg" alt="" loading="lazy"><span class="bkc on-light">
       <span class="bkc-top"></span>
       <span class="mast"><img src="../avatars/bizzy.png" alt=""><i>The Bizzing Bee</i></span>
       <span class="kick2">LIBRARY &middot; BOOK 9</span>
@@ -203,7 +212,7 @@ footer{max-width:1180px;margin:38px auto 0;padding:0 22px;font-size:12px;color:#
       <span class="foot"><span class="pg">116 pages</span>
       <span class="pdf" onclick="event.preventDefault();event.stopPropagation();window.location='pdf/book-09.pdf'">PDF &darr;</span></span>
     </span></a><a class="bk" href="book-10.html" style="--a:#B14FC4;--d:#7A2F8C">
-    <span class="bk-cov"><img src="art/b10-cover.jpg" alt="" loading="lazy"><span class="bkc">
+    <span class="bk-cov"><img src="art/b10-cover.jpg" alt="" loading="lazy"><span class="bkc on-light">
       <span class="bkc-top"></span>
       <span class="mast"><img src="../avatars/bizzy.png" alt=""><i>The Bizzing Bee</i></span>
       <span class="kick2">LIBRARY &middot; BOOK 10</span>
@@ -217,7 +226,7 @@ footer{max-width:1180px;margin:38px auto 0;padding:0 22px;font-size:12px;color:#
       <span class="foot"><span class="pg">59 pages</span>
       <span class="pdf" onclick="event.preventDefault();event.stopPropagation();window.location='pdf/book-10.pdf'">PDF &darr;</span></span>
     </span></a><a class="bk" href="book-11.html" style="--a:#D6353F;--d:#8E1D26">
-    <span class="bk-cov"><img src="art/b11-cover.jpg" alt="" loading="lazy"><span class="bkc">
+    <span class="bk-cov"><img src="art/b11-cover.jpg" alt="" loading="lazy"><span class="bkc on-light">
       <span class="bkc-top"></span>
       <span class="mast"><img src="../avatars/bizzy.png" alt=""><i>The Bizzing Bee</i></span>
       <span class="kick2">ADVANCED LIBRARY &middot; BOOK 11</span>
@@ -245,7 +254,7 @@ footer{max-width:1180px;margin:38px auto 0;padding:0 22px;font-size:12px;color:#
       <span class="foot"><span class="pg">60 pages</span>
       <span class="pdf" onclick="event.preventDefault();event.stopPropagation();window.location='pdf/book-12.pdf'">PDF &darr;</span></span>
     </span></a><a class="bk" href="book-13.html" style="--a:#B8562F;--d:#7A3418">
-    <span class="bk-cov"><img src="art/b13-cover.jpg" alt="" loading="lazy"><span class="bkc">
+    <span class="bk-cov"><img src="art/b13-cover.jpg" alt="" loading="lazy"><span class="bkc on-light">
       <span class="bkc-top"></span>
       <span class="mast"><img src="../avatars/bizzy.png" alt=""><i>The Bizzing Bee</i></span>
       <span class="kick2">ADVANCED LIBRARY &middot; BOOK 13</span>
@@ -259,7 +268,7 @@ footer{max-width:1180px;margin:38px auto 0;padding:0 22px;font-size:12px;color:#
       <span class="foot"><span class="pg">58 pages</span>
       <span class="pdf" onclick="event.preventDefault();event.stopPropagation();window.location='pdf/book-13.pdf'">PDF &darr;</span></span>
     </span></a><a class="bk" href="book-14.html" style="--a:#D97A1E;--d:#8F4409">
-    <span class="bk-cov"><img src="art/b14-cover.jpg" alt="" loading="lazy"><span class="bkc">
+    <span class="bk-cov"><img src="art/b14-cover.jpg" alt="" loading="lazy"><span class="bkc on-light">
       <span class="bkc-top"></span>
       <span class="mast"><img src="../avatars/bizzy.png" alt=""><i>The Bizzing Bee</i></span>
       <span class="kick2">ADVANCED LIBRARY &middot; BOOK 14</span>
@@ -273,7 +282,7 @@ footer{max-width:1180px;margin:38px auto 0;padding:0 22px;font-size:12px;color:#
       <span class="foot"><span class="pg">77 pages</span>
       <span class="pdf" onclick="event.preventDefault();event.stopPropagation();window.location='pdf/book-14.pdf'">PDF &darr;</span></span>
     </span></a><a class="bk" href="book-15.html" style="--a:#0E8A78;--d:#075C50">
-    <span class="bk-cov"><img src="art/b15-cover.jpg" alt="" loading="lazy"><span class="bkc">
+    <span class="bk-cov"><img src="art/b15-cover.jpg" alt="" loading="lazy"><span class="bkc on-light">
       <span class="bkc-top"></span>
       <span class="mast"><img src="../avatars/bizzy.png" alt=""><i>The Bizzing Bee</i></span>
       <span class="kick2">ADVANCED LIBRARY &middot; BOOK 15</span>
@@ -287,7 +296,7 @@ footer{max-width:1180px;margin:38px auto 0;padding:0 22px;font-size:12px;color:#
       <span class="foot"><span class="pg">102 pages</span>
       <span class="pdf" onclick="event.preventDefault();event.stopPropagation();window.location='pdf/book-15.pdf'">PDF &darr;</span></span>
     </span></a><a class="bk" href="book-16.html" style="--a:#5B6BA8;--d:#364475">
-    <span class="bk-cov"><img src="art/b16-cover.jpg" alt="" loading="lazy"><span class="bkc">
+    <span class="bk-cov"><img src="art/b16-cover.jpg" alt="" loading="lazy"><span class="bkc on-light">
       <span class="bkc-top"></span>
       <span class="mast"><img src="../avatars/bizzy.png" alt=""><i>The Bizzing Bee</i></span>
       <span class="kick2">ADVANCED LIBRARY &middot; BOOK 16</span>
@@ -301,7 +310,7 @@ footer{max-width:1180px;margin:38px auto 0;padding:0 22px;font-size:12px;color:#
       <span class="foot"><span class="pg">78 pages</span>
       <span class="pdf" onclick="event.preventDefault();event.stopPropagation();window.location='pdf/book-16.pdf'">PDF &darr;</span></span>
     </span></a><a class="bk" href="book-17.html" style="--a:#C2586B;--d:#8A2F45">
-    <span class="bk-cov"><img src="art/b19-cover.jpg" alt="" loading="lazy"><span class="bkc">
+    <span class="bk-cov"><img src="art/b19-cover.jpg" alt="" loading="lazy"><span class="bkc on-light">
       <span class="bkc-top"></span>
       <span class="mast"><img src="../avatars/bizzy.png" alt=""><i>The Bizzing Bee</i></span>
       <span class="kick2">ADVANCED LIBRARY &middot; BOOK 17</span>
@@ -329,7 +338,7 @@ footer{max-width:1180px;margin:38px auto 0;padding:0 22px;font-size:12px;color:#
       <span class="foot"><span class="pg">103 pages</span>
       <span class="pdf" onclick="event.preventDefault();event.stopPropagation();window.location='pdf/book-18.pdf'">PDF &darr;</span></span>
     </span></a><a class="bk" href="book-19.html" style="--a:#C8901B;--d:#7A5000">
-    <span class="bk-cov"><img src="art/b21-cover.jpg" alt="" loading="lazy"><span class="bkc">
+    <span class="bk-cov"><img src="art/b21-cover.jpg" alt="" loading="lazy"><span class="bkc on-light">
       <span class="bkc-top"></span>
       <span class="mast"><img src="../avatars/bizzy.png" alt=""><i>The Bizzing Bee</i></span>
       <span class="kick2">THE LAST CONTINENT &middot; BOOK 19</span>
@@ -348,7 +357,7 @@ footer{max-width:1180px;margin:38px auto 0;padding:0 22px;font-size:12px;color:#
   <p>Two standalone books, not part of the numbered series. Collections rather than curriculum &mdash;
   read them in any order, at any level.</p>
   <div class="grid comp"><a class="bk" href="book-similes.html" style="--a:#3DA85C;--d:#1F6B39">
-    <span class="bk-cov"><img src="art/b17-cover.jpg" alt="" loading="lazy"><span class="bkc">
+    <span class="bk-cov"><img src="art/b17-cover.jpg" alt="" loading="lazy"><span class="bkc on-light">
       <span class="bkc-top"></span>
       <span class="mast"><img src="../avatars/bizzy.png" alt=""><i>The Bizzing Bee</i></span>
       <span class="kick2">A BIZZING BEE COMPANION</span>

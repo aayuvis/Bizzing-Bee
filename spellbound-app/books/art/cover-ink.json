@@ -1,0 +1,107 @@
+{
+ "b01": {
+  "bottom": 113.6,
+  "ink": "dark",
+  "top": 194.7
+ },
+ "b02": {
+  "bottom": 76.6,
+  "ink": "light",
+  "top": 144.8
+ },
+ "b03": {
+  "bottom": 117.3,
+  "ink": "dark",
+  "top": 193.3
+ },
+ "b04": {
+  "bottom": 108.5,
+  "ink": "light",
+  "top": 154.2
+ },
+ "b05": {
+  "bottom": 75.6,
+  "ink": "light",
+  "top": 96.8
+ },
+ "b06": {
+  "bottom": 51.5,
+  "ink": "light",
+  "top": 109.0
+ },
+ "b07": {
+  "bottom": 117.6,
+  "ink": "dark",
+  "top": 208.9
+ },
+ "b08": {
+  "bottom": 78.7,
+  "ink": "dark",
+  "top": 191.6
+ },
+ "b09": {
+  "bottom": 55.2,
+  "ink": "dark",
+  "top": 194.7
+ },
+ "b10": {
+  "bottom": 131.3,
+  "ink": "dark",
+  "top": 172.3
+ },
+ "b11": {
+  "bottom": 222.6,
+  "ink": "dark",
+  "top": 219.3
+ },
+ "b12": {
+  "bottom": 156.0,
+  "ink": "light",
+  "top": 156.9
+ },
+ "b13": {
+  "bottom": 231.7,
+  "ink": "dark",
+  "top": 202.3
+ },
+ "b14": {
+  "bottom": 156.2,
+  "ink": "dark",
+  "top": 208.9
+ },
+ "b15": {
+  "bottom": 211.0,
+  "ink": "dark",
+  "top": 184.6
+ },
+ "b16": {
+  "bottom": 233.1,
+  "ink": "dark",
+  "top": 231.9
+ },
+ "b17": {
+  "bottom": 93.9,
+  "ink": "dark",
+  "top": 223.1
+ },
+ "b18": {
+  "bottom": 39.7,
+  "ink": "light",
+  "top": 156.8
+ },
+ "b19": {
+  "bottom": 208.3,
+  "ink": "dark",
+  "top": 230.8
+ },
+ "b20": {
+  "bottom": 42.5,
+  "ink": "light",
+  "top": 105.3
+ },
+ "b21": {
+  "bottom": 114.8,
+  "ink": "dark",
+  "top": 232.9
+ }
+}
