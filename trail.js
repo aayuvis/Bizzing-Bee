@@ -61,6 +61,9 @@
   const course = () => state.trailCourse === 'exp' ? 'exp' : 'honey';
   const courseOfId = id => (String(id || '')[0] === 'x') ? 'exp' : 'honey';
   const advOn = () => { try { return !!(window.ADV && ADV.active && ADV.active()); } catch (e) { return false; } };
+  /* Settings → Unlock everything is meant to open the whole app for testing. The Atlas
+     gates on the frontier rather than on entitlement, so it needs to honour it too. */
+  const devOn = () => { try { return !!state.devUnlock; } catch (e) { return false; } };
   const unitsOf = tab => tab === 'exp' ? T().expedition.units : T().honey.units;
   const actsOf = tab => tab === 'exp' ? T().expedition.expeds : T().honey.acts;
   const unit = id => unitsOf(course()).find(u => u.id === id);
@@ -217,27 +220,35 @@
     flash('The Word Atlas data is still loading'); };
   app2.trailUnit = id => { const c = active();
     const crs = courseOfId(id);
-    if (crs === 'exp' && !advOn()) { app2.openAdvanced ? app2.openAdvanced() : flash('The Advanced Rounds come with the Advanced Pack'); return; }
+    if (crs === 'exp' && !advOn() && !devOn()) { app2.openAdvanced ? app2.openAdvanced() : flash('The Advanced Rounds come with the Advanced Pack'); return; }
     state.trailCourse = crs;
     const s = seq(c); const i = s.findIndex(n => n.kind === 'unit' && n.u.id === id);
-    if (i > frontier(c)) { flash('Locked — clear the earlier stops first'); return; }
+    if (i > frontier(c) && !devOn()) { flash('Locked — clear the earlier stops first'); return; }
     /* nav is set here too: Home's "Next on your journey" card calls this from
        outside the Atlas, and a stop must open wherever it is opened from. */
     set({ nav: 'trail', screen: 'app', trailView: 'unit', trailUnit: id, tq: null }); };
   app2.trailChk = arg => { const c = active();
     /* checkpoint args carry their course: "honey|meadow:4" / "exp|proving:4" */
     const [crs, id] = String(arg).indexOf('|') >= 0 ? String(arg).split('|') : ['honey', String(arg)];
-    if (crs === 'exp' && !advOn()) { app2.openAdvanced ? app2.openAdvanced() : flash('The Advanced Rounds come with the Advanced Pack'); return; }
+    if (crs === 'exp' && !advOn() && !devOn()) { app2.openAdvanced ? app2.openAdvanced() : flash('The Advanced Rounds come with the Advanced Pack'); return; }
     state.trailCourse = crs === 'exp' ? 'exp' : 'honey';
     const s = seq(c); const i = s.findIndex(n => n.kind === 'chk' && n.id === id);
-    if (i > frontier(c)) { flash('Locked — clear the earlier stops first'); return; }
+    if (i > frontier(c) && !devOn()) { flash('Locked — clear the earlier stops first'); return; }
     const items = buildCheckpoint(c, { id });
     set({ nav: 'trail', screen: 'app', trailView: 'quiz', trailUnit: null, trailChk: id, tq: { items, i: 0, score: 0, picked: null, typed: '', missed: [], over: false } }); };
   app2.trailPick = i => set({ trailStop: +i });
   /* Ultra is a map now, but its words are still the Ultra Champions Journey list —
      the map is the way in, the list is the training ground behind it. */
-  app2.openUltra = () => { if (!advOn()) { app2.openAdvanced && app2.openAdvanced(); return; }
-    try { app2.selectList('ultra'); } catch (e) { set({ nav: 'coach', screen: 'app' }); } };
+  app2.openUltra = (i) => { if (!advOn() && !devOn()) { app2.openAdvanced && app2.openAdvanced(); return; }
+    try {
+      /* a landmark IS a run of day-blocks: open the journey at the first day of that run */
+      const stages = (typeof ultraStages === 'function') ? ultraStages() : [];
+      const per = Math.max(1, Math.ceil((stages.length || 5) / 5));
+      const want = Math.max(0, Math.min((stages.length || 1) - 1, (+i || 0) * per));
+      const c = active(); if (c) { c.lists = c.lists || {}; c.lists.ultra = c.lists.ultra || { xp: 0 };
+        if ((c.lists.ultra.stage || 0) < want) c.lists.ultra.stage = want; }
+      app2.selectList('ultra');
+    } catch (e) { set({ nav: 'coach', screen: 'app' }); } };
   /* The Atlas hands its words to Practice — the same records, the same XP, one tap. */
   app2.trailTrain = id => { const u = unit(id) || unit(state.trailUnit); if (!u) return;
     const c = active();
@@ -247,14 +258,19 @@
       state.sessionWords = ws.map(x => ({ w: x.w, d: x.d, s: x.s, p: x.p, o: '', r: x.h }));
       state.sessionLabel = String(u.title || '').split('—')[0].trim(); state.gi = 0;
       app2.startTrain(); }); };
-  app2.trailBack = () => set({ trailView: state.trailAct ? 'act' : 'map', tq: null });
+  /* Back retraces the route: a stop returns to its region, and the region returns to the
+     map. It used to stop at the region because trailAct was never cleared. */
+  app2.trailBack = () => {
+    if (state.trailView === 'act') { set({ trailView: 'map', trailAct: null, trailStop: null, tq: null }); return; }
+    if (state.trailAct) { set({ trailView: 'act', trailUnit: null, tq: null }); return; }
+    set({ trailView: 'map', trailUnit: null, tq: null }); };
   /* a region on the atlas: "honey|meadow" */
   app2.trailAct = arg => { state.trailStop = null; const [crs, id] = String(arg || '').split('|');
-    if (crs === 'exp' && !advOn()) { app2.openAdvanced ? app2.openAdvanced() : flash('The Advanced Rounds come with the Advanced Pack'); return; }
+    if (crs === 'exp' && !advOn() && !devOn()) { app2.openAdvanced ? app2.openAdvanced() : flash('The Advanced Rounds come with the Advanced Pack'); return; }
     state.trailCourse = crs === 'exp' ? 'exp' : 'honey';
     try { window.scrollTo(0, 0); } catch (e) {}
-    set({ trailView: 'act', trailAct: id, trailActCrs: crs, tq: null }); };
-  app2.trailToMap = () => set({ trailView: 'map', trailAct: null, tq: null });
+    set({ nav: 'trail', screen: 'app', trailView: 'act', trailAct: id, trailActCrs: crs, tq: null }); };
+  app2.trailToMap = () => set({ nav: 'trail', screen: 'app', trailView: 'map', trailAct: null, trailStop: null, tq: null });
   app2.trailLesson = () => { const u = unit(state.trailUnit); const ch = chOf(u);
     state.trailReturn = u.id;
     state.nav = 'concepts';
@@ -448,7 +464,7 @@
     const h = actSections(c, 'honey');
     /* section 2 — the Advanced Rounds (the five expeditions), Advanced Pack territory */
     state.trailCourse = 'exp';
-    const expOk = advOn();
+    const expOk = advOn() || devOn();
     const x = expOk ? actSections(c, 'exp') : null;
     state.trailCourse = 'honey';
     const price = (window.ADV && ADV.price) ? ADV.price() : 49.99;
@@ -664,11 +680,14 @@
     ['The championship',  79, 16],
   ];
   function ultraBoard(c) {
-    const on = advOn();
-    let done = 0;
+    const on = advOn() || devOn();
+    let done = 0, blocks = 0, per = 0, words = 0;
     try { const st = (c.lists && c.lists.ultra && c.lists.ultra.stage) || 0;
-      const n = (typeof ultraStages === 'function') ? (ultraStages().length || 1) : 1;
-      done = Math.max(0, Math.min(5, Math.floor(st / Math.max(1, n / 5)))); } catch (e) {}
+      const stages = (typeof ultraStages === 'function') ? ultraStages() : [];
+      blocks = stages.length || 0;
+      words = stages.reduce((a, x) => a + ((x.words || []).length), 0);
+      per = Math.max(1, Math.ceil(blocks / 5));
+      done = Math.max(0, Math.min(5, Math.floor(st / per))); } catch (e) {}
     const pins = ULTRA_PINS.map(([label, x, y], i) => {
       const cur = on && i === done, isDone = on && i < done;
       const ring = isDone ? 'linear-gradient(160deg,#FFD24D,#C8791B)'
@@ -679,11 +698,15 @@
         <span class="atlas-dot" style="width:${size}px;height:${size}px;background:${ring};
           border:2px solid rgba(255,246,222,${cur || isDone ? '.9' : '.42'});color:${cur || isDone ? '#3B2A00' : 'rgba(255,246,222,.85)'};
           font-family:var(--display);font-weight:800;font-size:${cur ? 17 : 15}px;box-shadow:0 4px 12px rgba(6,4,18,.5)">${isDone ? '✓' : (i + 1)}</span>
-        <span class="atlas-chip">${esc(label)}</span></button>`;
+        <span class="atlas-chip">${esc(label)}${blocks ? ` · days ${i * per + 1}–${Math.min(blocks, (i + 1) * per)}` : ''}</span></button>`;
     }).join('');
+    const line = blocks
+      ? `${fmtN(words)} words in ${blocks} day-blocks — five landmarks, ${per} ${per === 1 ? 'day' : 'days'} each.`
+      : 'Every word in the library, hardest first, in day-sized blocks.';
     return `<div class="atlas-board">
       <img src="app-art/atlas-ultra.jpg" alt="" loading="lazy" decoding="async">
-      ${pins}</div>`;
+      ${pins}
+      <span style="position:absolute;left:12px;bottom:11px;z-index:4;font-size:11.5px;font-weight:800;color:#fff;background:rgba(10,7,26,.56);border-radius:999px;padding:5px 12px;backdrop-filter:blur(3px)">${esc(line)}</span></div>`;
   }
   function viewAtlas() {
     const c = active();
@@ -691,7 +714,7 @@
     const h = actSections(c, 'honey');
     const board = atlasBoard(c, 'honey');
     state.trailCourse = 'exp';
-    const expOk = advOn();
+    const expOk = advOn() || devOn();
     const x = expOk ? actSections(c, 'exp') : null;
     const advBoard = atlasBoard(c, 'exp');
     state.trailCourse = 'honey';
@@ -819,7 +842,7 @@
         ${rider}</g>`;
     }).join('');
 
-    const cur = nodes[sel], node = cur.n, locked = cur.i > fr;
+    const cur = nodes[sel], node = cur.n, locked = cur.i > fr && !devOn();
     const u = node.kind === 'unit' ? node.u : null;
     const raw = u ? String(u.title || '') : 'Checkpoint';
     const cut = raw.indexOf(' — ');
