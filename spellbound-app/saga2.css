@@ -72,18 +72,6 @@
 .sg-back{font:600 14px 'Hanken',sans-serif;border:1px solid var(--line,#EADFC8);background:var(--panel,#fff);border-radius:999px;padding:6px 14px;cursor:pointer}
 .sg-brand{font:800 16px 'Fraunces',serif}
 .sg-body{max-width:1320px;margin:0 auto;padding:10px 8px}
-.sg-acthead span{font:600 12px 'Sono',monospace;letter-spacing:.3em;color:var(--honey,#F0B429)}
-.sg-acthead h3{font:800 28px 'Fraunces',serif;margin:4px 0}
-.sg-map{display:grid;gap:10px;margin-top:14px}
-.sg-act{margin-bottom:26px}
-.sg-actlock{margin-top:10px;font:700 13px 'Hanken',sans-serif;color:var(--muted,#8A7F9E);background:rgba(140,120,170,.12);border:1px dashed var(--line,#d8cfe8);border-radius:12px;padding:10px 14px;text-align:center}
-.sg-node{display:grid;grid-template-columns:52px 1fr;grid-template-rows:auto auto;gap:2px 12px;align-items:center;text-align:left;background:var(--panel,#fff);border:2px solid var(--line,#EADFC8);border-radius:14px;padding:12px 14px;cursor:pointer}
-.sg-node .sg-nhex{grid-row:span 2;font:600 20px 'Sono',monospace;display:grid;place-items:center;width:48px;height:52px;background:var(--hexfill,#F6E7BF);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
-.sg-node b{font:800 16px 'Fraunces',serif}
-.sg-node i{font:400 13px 'Hanken',sans-serif;color:var(--muted,#7A6E5C);font-style:normal}
-.sg-node.done{border-color:var(--honey,#F0B429)}
-.sg-node.open{border-color:var(--deep,#4A32A8);box-shadow:0 2px 10px #4A32A822}
-.sg-node.locked{opacity:.45;cursor:default}
 .sg-note{color:var(--muted,#7A6E5C);font-size:13px;text-align:center;margin-top:16px}
 .sg-dlg{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:start;margin-top:24px}
 .sg-dface{font-size:52px;line-height:1}
@@ -363,3 +351,124 @@
   --surface2:rgb(36 30 51 / .07); --honey:#F0B429;
   color:#241E33;
 }
+
+/* ================= the saga's painted boards =================
+   The chapter select was a stack of rectangular buttons. It is now the World
+   Atlas treatment: an act picker of painted cards, then one bird's-eye board per
+   act with the chapters walked along the road the painter drew. */
+.sg-picker{max-width:1080px;margin:0 auto}
+.sg-pickhead{text-align:center;margin:2px 0 20px}
+.sg-pickhead h2{font:800 30px 'Fraunces',serif;margin:0;color:var(--ink,#241E33)}
+.sg-pickhead p{margin:5px 0 0;font:600 13.5px 'Hanken',sans-serif;color:var(--muted,#7A6E5C)}
+.sg-actgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.sg-actcard{display:flex;flex-direction:column;text-align:left;padding:0;border:0;border-radius:20px;overflow:hidden;
+  background:var(--panel,#fff);box-shadow:0 0 0 1px rgba(40,28,80,.10),0 10px 26px rgba(30,20,60,.16);
+  cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}
+.sg-actcard:hover{transform:translateY(-4px);box-shadow:0 0 0 1px rgba(40,28,80,.12),0 18px 36px rgba(30,20,60,.26)}
+.sg-actcard.locked{cursor:default;filter:grayscale(.75) brightness(.94);opacity:.62}
+.sg-actcard.locked:hover{transform:none}
+.sg-actcard.here{box-shadow:0 0 0 3px #F0B429,0 12px 30px rgba(30,20,60,.24)}
+.sg-actcard-art{position:relative;display:block;aspect-ratio:16/9;overflow:hidden;background:#241E33}
+.sg-actcard-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.sg-actcard-art:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(16,10,34,.30) 0%,rgba(16,10,34,0) 46%,rgba(16,10,34,.44) 100%)}
+.sg-actcard-lock{position:absolute;inset:0;z-index:2;display:grid;place-items:center;font-size:30px;background:rgba(16,10,34,.34)}
+.sg-actcard-here{position:absolute;top:9px;left:10px;z-index:2;font:800 10px 'Hanken',sans-serif;letter-spacing:.12em;
+  text-transform:uppercase;color:#3A2504;background:linear-gradient(160deg,#FFE49B,#E8A81C);border-radius:99px;padding:3px 10px}
+.sg-actcard-in{display:flex;flex-direction:column;gap:4px;padding:12px 15px 14px;flex:1}
+.sg-actcard-in .sg-actkick{font:800 10px 'Hanken',sans-serif;letter-spacing:.18em;color:var(--honey-d,#B8860B)}
+.sg-actcard-in b{font:800 18px 'Fraunces',serif;line-height:1.12;color:var(--ink,#241E33)}
+.sg-actcard-in i{font:400 12.5px/1.42 'Hanken',sans-serif;font-style:normal;color:var(--muted,#7A6E5C)}
+.sg-actbar{display:block;height:5px;border-radius:99px;background:rgba(120,100,170,.18);overflow:hidden;margin-top:6px}
+.sg-actbar s{display:block;height:100%;border-radius:99px;text-decoration:none;background:linear-gradient(90deg,#8B6BD6,#F0B429)}
+.sg-actmeta{display:flex;align-items:center;gap:7px;margin-top:2px}
+.sg-actmeta em{font:700 11.5px 'Hanken',sans-serif;font-style:normal;color:var(--muted,#7A6E5C)}
+
+/* ---- the board ---- */
+.sg-boardwrap{max-width:1080px;margin:0 auto}
+.sg-boardtop{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.sg-tolink{background:rgba(120,100,170,.12);border:1px solid rgba(120,100,170,.24);color:var(--ink,#241E33);
+  border-radius:99px;padding:7px 14px;font:800 13px 'Hanken',sans-serif;cursor:pointer;min-height:36px}
+.sg-tolink:hover{background:rgba(120,100,170,.22)}
+.sg-boardkick{font:800 17px 'Fraunces',serif;color:var(--ink,#241E33)}
+.sg-boardcount{margin-left:auto;font:800 12px 'Hanken',sans-serif;color:#8A5B00;
+  background:rgba(240,180,41,.16);border:1px solid rgba(240,180,41,.34);border-radius:99px;padding:5px 12px}
+.sg-pan{border-radius:22px;overflow:hidden;box-shadow:0 0 0 1px rgba(40,28,80,.12),0 14px 32px rgba(26,18,54,.22)}
+.sg-board{position:relative;aspect-ratio:16/9;border-radius:22px;overflow:hidden;width:100%}
+.sg-boardart{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block}
+/* the road, stroked over the painting so the walk is visible */
+.sg-road{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.sg-road path{fill:none;vector-effect:non-scaling-stroke;stroke-linecap:round}
+.sg-road-b{stroke:rgba(20,12,40,.34);stroke-width:9}
+.sg-road-f{stroke:rgba(255,247,224,.60);stroke-width:4;stroke-dasharray:2 7}
+/* chapter medallions: HTML pins over the painting, so they keep a real size at
+   every board width instead of scaling with the picture */
+.sg-pin{position:absolute;transform:translate(-50%,-50%);z-index:var(--pz,3);background:none;border:0;padding:0;
+  cursor:pointer;line-height:0;transition:transform .16s ease}
+.sg-pin:hover:not([disabled]),.sg-pin:focus-visible{transform:translate(-50%,-50%) scale(1.12);z-index:8}
+.sg-pin[disabled]{cursor:default}
+.sg-pind{display:grid;place-items:center;border-radius:50%;border:2.5px solid rgba(255,251,239,.92);
+  font:800 15px 'Fraunces',serif;line-height:1;box-shadow:0 4px 12px rgba(10,6,26,.48)}
+.sg-pin.now .sg-pind{border-width:3px;border-color:#F0B429;animation:sg-pulse 2.4s ease-in-out infinite}
+.sg-pin.on .sg-pind{box-shadow:0 0 0 3px #F0B429,0 6px 16px rgba(10,6,26,.55)}
+.sg-pin.locked .sg-pind{border-color:rgba(255,251,239,.55);box-shadow:0 3px 9px rgba(10,6,26,.35)}
+.sg-pin.boss .sg-pind{border-color:#E0553C;box-shadow:0 0 0 4px rgba(224,85,60,.22),0 5px 14px rgba(10,6,26,.5)}
+.sg-pin.finale .sg-pind{border-color:#8B6BD6;box-shadow:0 0 0 4px rgba(139,107,214,.26),0 5px 14px rgba(10,6,26,.5)}
+@keyframes sg-pulse{0%,100%{box-shadow:0 0 0 0 rgba(240,180,41,.55),0 4px 12px rgba(10,6,26,.48)}
+  50%{box-shadow:0 0 0 9px rgba(240,180,41,0),0 4px 12px rgba(10,6,26,.48)}}
+.sg-pinstars{position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);white-space:nowrap;
+  font-size:9px;line-height:1;color:#FFD24D;text-shadow:0 1px 3px rgba(8,5,22,.85);pointer-events:none}
+.sg-rider{position:absolute;left:50%;top:-7px;transform:translate(-50%,-100%);width:34px;height:36px;display:block;
+  pointer-events:none;filter:drop-shadow(0 3px 6px rgba(8,5,22,.5));animation:sg-bob 2.8s ease-in-out infinite}
+@keyframes sg-bob{0%,100%{transform:translate(-50%,-100%) translateY(0)}50%{transform:translate(-50%,-100%) translateY(-5px)}}
+/* the chapter card under the board */
+.sg-chcard{display:flex;gap:14px;align-items:stretch;margin-top:14px;border-radius:18px;overflow:hidden;
+  background:var(--panel,#fff);box-shadow:0 0 0 1px rgba(40,28,80,.10),0 8px 20px rgba(30,20,60,.14)}
+.sg-chcard.locked{opacity:.72}
+.sg-chcard-art{position:relative;flex:0 0 150px;overflow:hidden;background:#241E33}
+.sg-chcard-art .sg-plate{position:absolute;inset:0;width:100%;height:100%}
+.sg-chcard-in{display:flex;flex-direction:column;gap:5px;justify-content:center;padding:14px 16px;flex:1;min-width:0}
+.sg-chkick{font:800 10px 'Hanken',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--honey-d,#B8860B)}
+.sg-chcard-in b{font:800 20px 'Fraunces',serif;line-height:1.14;color:var(--ink,#241E33)}
+.sg-chgo{margin-top:5px}
+.sg-chgo em{font:600 13px 'Hanken',sans-serif;font-style:normal;color:var(--muted,#7A6E5C)}
+.sg-play{min-height:44px;padding:11px 22px;border:0;border-radius:99px;cursor:pointer;
+  font:800 15px 'Fraunces',serif;color:#3A2504;background:linear-gradient(160deg,#FFE49B,#E8A81C);
+  box-shadow:0 6px 16px rgba(240,180,41,.34);transition:transform .15s ease}
+.sg-play:hover{transform:translateY(-2px)}
+@media (max-width:640px){
+  .sg-actgrid{grid-template-columns:1fr}
+  .sg-pickhead h2{font-size:24px}
+  .sg-board{aspect-ratio:4/3}
+  .sg-pind{width:30px !important;height:30px !important;font-size:13px;border-width:2px}
+  .sg-pin.now .sg-pind{width:36px !important;height:36px !important}
+  .sg-rider{width:26px;height:28px;top:-4px}
+  .sg-chcard{flex-direction:column}
+  .sg-chcard-art{flex:0 0 108px}
+  .sg-boardkick{font-size:15px}
+}
+@media (prefers-reduced-motion:reduce){
+  .sg-pin.now .sg-pind,.sg-rider{animation:none}
+}
+
+/* ---- the act's painting behind the dialogue, the difficulty dial and the round ----
+   One art language from the board to the round: the child walks a painted map
+   and then plays inside the same painting, rather than stepping from an oil
+   painting onto a flat vector plate. */
+.sg-actbg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;z-index:0}
+.sg-actbg.sg-grey{filter:saturate(.14) brightness(.92)}
+.sg-actbg-scrim{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(18,11,36,.42) 0%,rgba(18,11,36,.20) 40%,rgba(18,11,36,.62) 100%)}
+.sg-scene-bg .sg-actbg-scrim{background:linear-gradient(180deg,rgba(18,11,36,.24) 0%,rgba(18,11,36,0) 40%,rgba(18,11,36,.52) 100%)}
+.sg-gameframe > .sg-actbg,.sg-gameframe > .sg-actbg-scrim{border-radius:18px}
+/* the difficulty dial now sits on the painting rather than on the page */
+.sg-diffpick{position:relative;max-width:none;padding:0;border-radius:20px;overflow:hidden;
+  box-shadow:0 10px 30px rgba(20,15,38,.28)}
+.sg-diffpick-in{position:relative;z-index:1;max-width:620px;margin:0 auto;text-align:center;padding:30px 18px 26px;color:#FFF6E4}
+.sg-diffkick{display:block;font:800 10px 'Hanken',sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#FFD24D}
+.sg-diffpick-in h3{margin:4px 0 8px;font:800 26px 'Fraunces',serif;color:#FFF6E4;text-shadow:0 2px 12px rgba(10,6,26,.7)}
+.sg-diffpick-in p{margin:0 auto 18px;max-width:52ch;font:500 13.5px/1.5 'Hanken',sans-serif;color:#E4DAF4;
+  text-shadow:0 1px 8px rgba(10,6,26,.7)}
+.sg-diffpick-in p b{color:#FFD24D}
+.sg-diffpick-in .sg-diff-back{margin-top:16px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.26);
+  color:#FFF6E4;border-radius:99px;padding:9px 18px;font:800 13px 'Hanken',sans-serif;cursor:pointer;min-height:40px}
+.sg-diffpick-in .sg-diff-back:hover{background:rgba(255,255,255,.22)}

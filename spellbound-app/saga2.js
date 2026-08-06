@@ -1834,34 +1834,193 @@
     if(mb) mb.onclick=()=>{ const muted=music().toggleMute(); mb.classList.toggle('off',muted); mb.textContent=muted?'🔇':'🎵'; };
     overlay.querySelector('#sg-body').innerHTML=inner;
     return overlay.querySelector('#sg-body'); }
+  /* ================= the painted boards =================
+     The chapter select used to be six stacked sections of rectangular buttons
+     under a scenery banner: a settings page for a story about a bee saving the
+     world from a villain who unspells things. The World Atlas walks its stops
+     along a painted region map, and the saga is the more cinematic of the two —
+     it should not have been the one that looked like a form.
+
+     Each act now has its own bird's-eye board (app-art/saga-act<n>.jpg, built by
+     voice/pipeline/saga-maps.py) with the chapters walked along a route measured
+     against the painting. Same contract as the Atlas: the route lives in the
+     picture's own 0-100 space for x AND y, because the board is drawn
+     preserveAspectRatio="none" and so the same numbers hold at 390px and 1240px.
+     Regenerating a board means re-tracing its route.
+
+     The paintings all follow one composition brief — an open band entering
+     bottom-left, running right, doubling back left across the middle, then
+     leaving top-right — so the six routes are variations on one S rather than
+     six unrelated curves. The boss is at the end of every one of them, because
+     that is where the painter was told to put it. */
+  const SG_ROUTE_FALLBACK='M 4 89 C 20 92, 42 89, 60 84 C 76 79, 88 73, 90 65 C 92 56, 80 51, 62 50 C 44 49, 24 49, 14 43 C 6 38, 8 29, 20 23 C 34 16, 56 13, 74 11 C 86 10, 94 8, 98 5';
+  const SAGA_MAP={
+    /* measured by eye against each painting: the road the painter actually drew */
+    1:{ d:'M 2 90 C 18 93, 38 90, 55 85 C 70 80, 82 73, 85 64 C 88 55, 76 51, 58 51 C 42 51, 24 52, 16 46 C 9 41, 11 30, 24 24 C 38 18, 58 15, 74 14 C 85 13, 92 10, 96 6' },
+    2:{ d:'M 2 92 C 20 94, 44 92, 62 88 C 76 85, 87 79, 89 71 C 92 63, 79 63, 61 66 C 43 69, 23 71, 14 65 C 6 60, 6 47, 17 39 C 29 31, 49 28, 65 26 C 77 24, 85 23, 91 21' },
+    3:{ d:'M 2 90 C 14 89, 30 86, 44 81 C 56 76, 64 68, 70 58 C 74 51, 72 45, 62 44 C 50 43, 34 45, 24 42 C 16 39, 15 32, 24 27 C 36 21, 56 16, 72 13 C 82 11, 88 10, 91 8' },
+    4:{ d:'M 4 90 C 19 92, 39 89, 56 84 C 71 79, 83 73, 87 65 C 91 56, 79 51, 60 50 C 42 49, 23 49, 14 43 C 6 38, 9 28, 22 22 C 36 16, 57 13, 76 11 C 87 10, 94 8, 97 5' },
+    5:{ d:'M 2 89 C 18 92, 38 89, 56 84 C 72 79, 84 71, 86 61 C 88 51, 74 41, 56 38 C 40 35, 22 39, 13 34 C 5 30, 10 22, 24 18 C 38 14, 58 11, 76 9 C 87 8, 94 6, 98 4' },
+    6:{ d:'M 4 88 C 20 91, 40 88, 58 83 C 73 78, 85 72, 88 64 C 91 55, 79 50, 60 49 C 42 48, 23 48, 14 42 C 6 37, 10 28, 23 22 C 37 16, 58 13, 76 11 C 87 10, 94 8, 97 4' }
+  };
+  const sgMapOf=n=>(SAGA_MAP[n]||{}).d||SG_ROUTE_FALLBACK;
+
+  /* Arc-length placement along a route. n chapters spread over the walkable
+     middle of the path, so a four-chapter act and a seven-chapter act both sit
+     on their road without anyone re-measuring. Falls back to a straight diagonal
+     if the browser cannot measure the path — it always can, but the board must
+     not depend on it. */
+  function sgPoints(d,n){
+    const out=[]; let path=null,L=0;
+    try{ path=document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d',d); L=path.getTotalLength(); }catch(e){ L=0; }
+    for(let i=0;i<n;i++){
+      const f=n===1?.5:.05+(i/(n-1))*.90;
+      let x=8+f*84, y=88-f*78;
+      if(L){ const pt=path.getPointAtLength(f*L); x=pt.x; y=pt.y; }
+      /* the board clips, so no medallion may sit on an edge */
+      x=Math.min(95,Math.max(5,x)); y=Math.min(92,Math.max(8,y));
+      out.push({x,y});
+    }
+    return out;
+  }
+
+  /* One reading of the frontier for every screen, so the act picker and the
+     board can never disagree about which chapter is open. Strictly linear: the
+     lowest chapter not yet cleared, and an act opens when the chapter before its
+     first is done. */
+  function devOn(){ try{ return (window.state&&window.state.devUnlock)||localStorage.getItem('sb_devunlock')==='1'; }catch(e){ return false; } }
+  function frontier(doneSet){ for(const c of CH_META){ if(!doneSet[c.n]) return c.n; } return CH_META.length+1; }
+  function actOpen(A,doneSet){ const chs=CH_META.filter(c=>c.act===A.n);
+    return devOn()||!chs.length||chs[0].n===1||!!doneSet[chs[0].n-1]; }
+  function actOf(chN){ const c=CH_META[chN-1]; return c?c.act:1; }
+  /* the file's esc() leaves quotes alone, which is fine in text and wrong inside
+     an attribute — chapter titles carry apostrophes and one carries neither */
+  const escA=s=>esc(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+
+  /* ---- the act picker: the saga's world map ---- */
   function map(){
     const p=prog(); const doneSet=p.done||{}; const gems=(p.gems||0);
-    const dev=(()=>{ try{ return (window.state&&window.state.devUnlock)||localStorage.getItem('sb_devunlock')==='1'; }catch(e){ return false; } })();
     const art=(window.SGART&&SGART.ready());
-    let nextOpen=CH_META.length+1; for(const c of CH_META){ if(!doneSet[c.n]){ nextOpen=c.n; break; } }
-    const node=(c)=>{ const st=doneSet[c.n]?'done':(dev||c.n===nextOpen)?'open':'locked';
-      const stars=(p.stars||{})[c.n]||0;
-      return '<button class="sg-node '+st+'" data-ch="'+c.n+'" '+(st==='locked'?'disabled':'')+'>'+
-        '<span class="sg-nhex">'+(st==='done'?'★'.repeat(Math.max(1,stars)):c.n)+'</span>'+
-        '<b>'+c.title+'</b><i>'+c.world+'</i></button>'; };
-    // one section per act: banner + its chapters. Later acts unlock as earlier chapters clear.
-    const sections=ACTS.map(A=>{
+    const fr=frontier(doneSet);
+    const cards=ACTS.map(A=>{
       const chs=CH_META.filter(c=>c.act===A.n); if(!chs.length) return '';
-      const done=chs.filter(c=>doneSet[c.n]).length; const first=chs[0].n;
-      const actLive=dev||first===1||!!doneSet[first-1];   // act opens once the chapter before its first is cleared
-      const banner=art?('<div class="sg-actbanner">'+SGART.plateForWorld(A.world)+
-        '<div class="sg-actbanner-in"><span class="sg-actkick">'+A.kick+'</span><h3>'+A.title+'</h3>'+
-        '<p>'+A.blurb+' '+done+'/'+chs.length+' cleared.</p>'+
-        '<div class="sg-actgem">'+SGART.sprite(A.gem||'gem-act1',{size:28,grey:done<chs.length})+'<b>'+gems+'</b></div></div></div>'):
-        ('<div class="sg-acthead"><span>'+A.kick+'</span><h3>'+A.title+'</h3><p>'+A.blurb+' '+done+'/'+chs.length+' cleared.</p></div>');
-      const lockNote=actLive?'':'<div class="sg-actlock">🔒 Clear Act '+(A.n-1)+' to raise the curtain.</div>';
-      return '<section class="sg-act">'+banner+lockNote+'<div class="sg-map">'+chs.map(node).join('')+'</div></section>';
+      const done=chs.filter(c=>doneSet[c.n]).length;
+      const live=actOpen(A,doneSet);
+      const here=live&&fr>=chs[0].n&&fr<=chs[chs.length-1].n;
+      const pct=Math.round(done/chs.length*100);
+      return '<button class="sg-actcard'+(live?'':' locked')+(here?' here':'')+'" data-act-n="'+A.n+'"'+(live?'':' disabled')+'>'+
+        '<span class="sg-actcard-art"><img src="app-art/saga-act'+A.n+'.jpg" alt="" loading="lazy">'+
+          (live?'':'<span class="sg-actcard-lock">🔒</span>')+
+          (here?'<span class="sg-actcard-here">You are here</span>':'')+'</span>'+
+        '<span class="sg-actcard-in">'+
+          '<span class="sg-actkick">'+esc(A.kick)+'</span>'+
+          '<b>'+esc(A.title)+'</b>'+
+          '<i>'+esc(live?A.blurb:'Clear Act '+(A.n-1)+' to raise the curtain.')+'</i>'+
+          '<span class="sg-actbar"><s style="width:'+pct+'%"></s></span>'+
+          '<span class="sg-actmeta">'+(art?SGART.sprite(A.gem||'gem-act1',{size:22,grey:done<chs.length}):'')+
+            '<em>'+done+' of '+chs.length+' cleared</em></span>'+
+        '</span></button>';
     }).join('');
-    const b=shell(sections);
+    const b=shell('<div class="sg-picker">'+
+      '<div class="sg-pickhead"><h2>The Great Unspelling</h2>'+
+      '<p>Six acts, thirty-one chapters. '+Object.keys(doneSet).length+' cleared'+(gems?' · '+gems+' gems':'')+'.</p></div>'+
+      '<div class="sg-actgrid">'+cards+'</div></div>');
     playMusic('Meadow');
-    b.querySelectorAll('.sg-node:not([disabled])').forEach(n=>n.onclick=()=>chapter(+n.dataset.ch));
+    b.querySelectorAll('.sg-actcard:not([disabled])').forEach(n=>n.onclick=()=>board(+n.dataset.actN));
     overlay.querySelector('#sg-back').onclick=()=>close();
   }
+
+  /* Which pin the board is describing. Defaults to the frontier; a tap moves it,
+     and it survives the board's own re-render so the second tap on a pin plays
+     the chapter rather than re-selecting it. Cleared on leaving the board. */
+  let boardSel=0;
+
+  /* ---- one act's painted board, with its chapters walked along the road ---- */
+  function board(actN){
+    const A=ACTS.find(a=>a.n===actN)||ACTS[0];
+    const p=prog(); const doneSet=p.done||{}; const stars=p.stars||{};
+    const dev=devOn(); const art=(window.SGART&&SGART.ready());
+    const chs=CH_META.filter(c=>c.act===A.n);
+    const fr=frontier(doneSet);
+    const stOf=c=>doneSet[c.n]?'done':(dev||c.n===fr)?'now':'locked';
+    const pts=sgPoints(sgMapOf(A.n),chs.length);
+    /* which chapter the card below the board is describing */
+    let sel=chs.findIndex(c=>c.n===fr);
+    if(sel<0) sel=chs.every(c=>doneSet[c.n])?chs.length-1:0;
+    const picked=chs.findIndex(c=>c.n===boardSel);
+    if(picked>=0) sel=picked;
+
+    const pins=chs.map((c,i)=>{
+      const st=stOf(c), boss=/^BOSS/i.test(c.title), last=(A.n===6&&i===chs.length-1);
+      const s=stars[c.n]||0;
+      const size=st==='now'?44:36;
+      const bg=st==='done'?'linear-gradient(160deg,#FFD24D,#C8791B)'
+        :st==='now'?'linear-gradient(160deg,#FFFBEF,#FFE9AE)':'rgba(244,240,232,.86)';
+      const ink=st==='done'?'#4A3306':st==='now'?'#7A5300':'rgba(52,40,22,.72)';
+      const face=st==='done'?'✓':(boss||last)?'★':String(i+1);
+      const rider=st==='now'&&window.SB_AVATAR?'<span class="sg-rider">'+SB_AVATAR('bizzy',34,{dark:true})+'</span>':'';
+      return '<button class="sg-pin '+st+(boss?' boss':'')+(last?' finale':'')+(i===sel?' on':'')+'" '+
+        'data-ch="'+c.n+'" '+(st==='locked'?'disabled ':'')+
+        'style="left:'+pts[i].x.toFixed(2)+'%;top:'+pts[i].y.toFixed(2)+'%;--pz:'+(i===sel?6:st==='now'?5:3)+'" '+
+        'title="'+escA(c.title)+'" aria-label="Chapter '+c.n+': '+escA(c.title)+'">'+rider+
+        '<span class="sg-pind" style="width:'+size+'px;height:'+size+'px;background:'+bg+';color:'+ink+'">'+face+'</span>'+
+        (st==='done'&&s?'<span class="sg-pinstars">'+'★'.repeat(Math.min(4,s))+'</span>':'')+
+        '</button>';
+    }).join('');
+
+    /* the road itself, stroked over the painting so the walk is visible */
+    const road='<svg class="sg-road" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">'+
+      '<path d="'+sgMapOf(A.n)+'" class="sg-road-b"/><path d="'+sgMapOf(A.n)+'" class="sg-road-f"/></svg>';
+
+    const cur=chs[sel]||chs[0];
+    const curSt=cur?stOf(cur):'locked';
+    const done=chs.filter(c=>doneSet[c.n]).length;
+    const html='<div class="sg-boardwrap">'+
+      '<div class="sg-boardtop">'+
+        '<button class="sg-tolink" id="sg-allacts">← All acts</button>'+
+        '<span class="sg-boardkick">'+esc(A.kick)+' · '+esc(A.title)+'</span>'+
+        '<span class="sg-boardcount">'+done+'/'+chs.length+'</span>'+
+      '</div>'+
+      '<div class="sg-pan"><div class="sg-board">'+
+        '<img class="sg-boardart" src="app-art/saga-act'+A.n+'.jpg" alt="">'+road+pins+
+      '</div></div>'+
+      '<div class="sg-chcard'+(curSt==='locked'?' locked':'')+'">'+
+        (art&&cur?'<span class="sg-chcard-art">'+SGART.plateForWorld(cur.world)+'</span>':'')+
+        '<span class="sg-chcard-in">'+
+          '<span class="sg-chkick">Chapter '+(cur?cur.n:'')+' · '+esc(cur?cur.world:'')+'</span>'+
+          '<b>'+esc(cur?cur.title:'')+'</b>'+
+          '<span class="sg-chgo">'+(curSt==='locked'
+            ? '<em>Clear the chapter before this one to open it.</em>'
+            : '<button class="sg-play" id="sg-play">'+(curSt==='done'?'Play again':'Begin chapter')+'</button>')+'</span>'+
+        '</span></div>'+
+      '</div>';
+
+    const b=shell(html);
+    playMusic(A.world);
+    b.querySelectorAll('.sg-pin:not([disabled])').forEach(n=>n.onclick=()=>{
+      const ch=+n.dataset.ch;
+      /* a tap selects; a tap on the already-selected pin plays it */
+      if(n.classList.contains('on')) chapter(ch); else { boardSel=ch; board(A.n); }
+    });
+    const play=b.querySelector('#sg-play'); if(play&&cur) play.onclick=()=>chapter(cur.n);
+    b.querySelector('#sg-allacts').onclick=()=>{ boardSel=0; map(); };
+    overlay.querySelector('#sg-back').onclick=()=>{ boardSel=0; map(); };
+  }
+
+  /* The dialogue, the difficulty chooser and the game frame used to sit on the
+     flat vector world plate, which reads as a much cruder drawing than the
+     painted board the child has just come from. They wear the act's own painting
+     now, dimmed behind the text — one art language from the board to the round.
+     The vector plate stays as the fallback for anything without a board. */
+  function actBackdrop(chN, grey){
+    const a=actOf(chN);
+    return '<img class="sg-actbg'+(grey?' sg-grey':'')+'" src="app-art/saga-act'+a+'.jpg" alt="">'+
+      '<span class="sg-actbg-scrim"></span>';
+  }
+  /* back out of a chapter to the board it came from, not to the act picker */
+  function backToBoard(chN){ boardSel=chN; board(actOf(chN)); }
+
   function beats(ch, phase, then){
     const meta0=CH_META[ch-1]||{}; const skey=meta0.script||('ch'+ch);
     const S=(window.SB_SAGA_SCRIPT||{})[skey]||{}; const lines=S[phase]||[];
@@ -1869,9 +2028,8 @@
     let i=0;
     const meta=CH_META[ch-1]||{};
     const art=(window.SGART&&SGART.ready());
-    const plate=art?SGART.plateForWorld(meta.world, phase==='lose'):'';
     const b=shell('<div class="sg-scene">'+
-      '<div class="sg-scene-bg">'+plate+'</div>'+
+      '<div class="sg-scene-bg">'+actBackdrop(ch, phase==='lose')+'</div>'+
       '<div class="sg-scene-char" id="sg-df"></div>'+
       '<div class="sg-bubble"><b id="sg-dn"></b><p id="sg-dl"></p><button class="sg-next" id="sg-nx">▸</button></div>'+
     '</div>');
@@ -1891,6 +2049,7 @@
         a.play().then(()=>{ curAudio=a; try{ if(music()) music().duck(true); }catch(e){} }).catch(unduck); }catch(e){ unduck(); }
     }
     b.querySelector('#sg-nx').onclick=()=>{ i++; if(i>=lines.length) then(); else show(); };
+    overlay.querySelector('#sg-back').onclick=()=>backToBoard(ch);
     show();
   }
   // ---- 4 hardness levels. Spelling words always match the speller's own level
@@ -1905,22 +2064,24 @@
         +'<span class="sg-diff-stars">'+'★'.repeat(st)+'<i>'+'☆'.repeat(4-st)+'</i></span>'
         +'<b>'+label+'</b><span class="sg-diff-sub">'+sub+'</span>'
         +'<span class="sg-diff-tag">'+(cleared?'Cleared ✓':(st+'★'))+'</span></button>'; }).join('');
-    const b=shell('<div class="sg-diffpick"><h3>Choose your challenge</h3>'
+    const b=shell('<div class="sg-diffpick">'+actBackdrop(meta.n)+
+      '<div class="sg-diffpick-in"><span class="sg-diffkick">Chapter '+meta.n+'</span><h3>'+esc(meta.title)+'</h3>'
       +'<p>Your spelling words always match <b>your</b> level. This dial sets how tough the <b>game</b> is — clear it to earn that many ★.</p>'
       +'<div class="sg-diffgrid">'+rows+'</div>'
-      +'<button class="sg-diff-back" id="sg-dback">← Back to map</button></div>');
+      +'<button class="sg-diff-back" id="sg-dback">← Back to the map</button></div></div>');
     playMusic(meta.world);
     b.querySelectorAll('.sg-diff').forEach(function(el){ el.onclick=function(){ then(el.dataset.d); }; });
-    var bk=b.querySelector('#sg-dback'); if(bk) bk.onclick=function(){ map(); };
+    var bk=b.querySelector('#sg-dback'); if(bk) bk.onclick=function(){ backToBoard(meta.n); };
+    overlay.querySelector('#sg-back').onclick=function(){ backToBoard(meta.n); };
   }
   function chapter(ch){
     const meta=CH_META[ch-1]; if(!meta) return;
     beats(ch,'intro',()=>{ pickDiff(meta,(d)=>game(meta,d)); });
   }
   function game(meta, diffKey){
-    const plate=(window.SGART&&SGART.ready())?SGART.plateForWorld(meta.world):'';
-    const b=shell('<div class="sg-gameframe">'+plate+'<div class="sg-gamehost" id="sg-gh"></div></div>');
+    const b=shell('<div class="sg-gameframe">'+actBackdrop(meta.n)+'<div class="sg-gamehost" id="sg-gh"></div></div>');
     playMusic(meta.world);
+    overlay.querySelector('#sg-back').onclick=()=>backToBoard(meta.n);
     const diff=diffKey||(active&&active().gameDiff)||'medium';
     const earned=diffStars[diff]||1;
     const eng=W().SB_SAGA_ENGINES[meta.engine];
@@ -1942,7 +2103,7 @@
       engineHandle=null;
       if(res.win){
         onUnlock();   // ensure cleared even if the engine didn't unlock mid-game
-        beats(meta.n,'win',()=>{ map(); });
+        beats(meta.n,'win',()=>{ backToBoard(meta.n); });
       } else {
         beats(meta.n,'lose',()=>{ pickDiff(meta,(d)=>game(meta,d)); });   // retry lets you drop the level
       }
