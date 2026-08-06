@@ -25,6 +25,8 @@ eval(fs.readFileSync('trail-data.js', 'utf8'));
 eval(fs.readFileSync('books/southasia-chapters.js', 'utf8'));
 eval(fs.readFileSync('books/eponym-chapters.js', 'utf8'));
 eval(fs.readFileSync('books/ultra-chapters.js', 'utf8'));
+eval(fs.readFileSync('books/poem-chapters.js', 'utf8'));
+eval(fs.readFileSync('books/trivia-rounds.js', 'utf8'));
 eval(fs.readFileSync('books/design-system/bb-anime.js', 'utf8'));
 let ADVS = {};
 try { const src = fs.readFileSync('adv-concepts-data.js', 'utf8'); ADVS = window.SB_ADV_CSCRIPT || {}; } catch (e) {}
@@ -1577,6 +1579,289 @@ function book18() {
   return finish(vol, pages, { chapters: CH18.length, words: 240 });
 }
 
+
+/* ================= COMPANION 3 — LINES WORTH KEEPING =================
+   Poems, sonnets, haiku and the long quotes, whole. A poetry anthology has no
+   business in a spelling library unless it earns its place, so every piece here
+   carries the bee-worthy words inside it: learn the Tempest speech and you have
+   met `insubstantial` and `pageant` in the only place they are unforgettable.
+   The app's own quote library supplies the connective tissue — 623 lines by
+   poets, which is where the book's margins come from. */
+function book19() {
+  const vol = { n: 22, seedN: 20, art: 'b22', slug: 'book-lines', companion: true,
+    title: 'Lines Worth Keeping', tag: 'Poems, speeches and the long quotes — with the words inside them',
+    a: '#4A6FA5', d: '#243C63', tex: 'diag', av: 'encore', world: 'library', band: 'advanced' };
+  const P = window.SB_POEMS || {};
+  const SEC = ['speeches', 'sonnets', 'haiku', 'byheart', 'prose'].map(k => [k, P[k]]).filter(x => x[1]);
+  const allHard = [];
+  SEC.forEach(([, sec]) => sec.pieces.forEach(p => (p.hard || []).forEach(h => allHard.push({ w: h.w, def: h.def, say: h.say }))));
+  const rnd = mulberry(vol.n * 7919 + 17);
+  const keys = []; const folio = { n: 1 };
+  const nPieces = SEC.reduce((n, [, sec]) => n + sec.pieces.length, 0);
+  const pages = [cover(vol, SEC.length, allHard.length, 'A BIZZING BEE COMPANION')];
+  pages.push(dividerPage(vol, folio.n++));
+
+  /* how it works */
+  pages.push(`<div class="page" data-vol="22">
+    ${head(vol, null, 0, 'How this book works')}
+    <div style="margin-top:.4in"><h1 style="font-size:26pt">Learn one by heart.</h1></div>
+    <div style="display:flex;gap:.14in;align-items:flex-start;margin:.16in 0">
+      ${avatar(vol.av, '1in')}
+      <div class="bb-bubble" style="font-size:11pt">Knowing a poem by heart is not showing off. It is the only way to own one — to have it at three in the morning when there is no book. Every piece in here is short enough to learn in a week.</div></div>
+    ${[['Read it out loud, once', 'Poetry is a sound before it is a meaning. You will hear the shape before you can explain it.'],
+       ['Find the turn', 'Nearly every piece here changes direction somewhere. The note under it tells you where — but look first.'],
+       ['Take the words', 'The hard words in each piece are listed after it, with how to say them. That is the spelling half of this book.'],
+       ['Copy one out by hand', 'Slowly, with the punctuation exactly as it is. You will notice things reading cannot show you.']]
+      .map(([t, b], i) => `<div style="display:flex;gap:.14in;margin-bottom:.13in;align-items:flex-start">
+      <span style="display:inline-grid;place-items:center;width:.52in;height:.52in;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:14pt;flex-shrink:0">${i + 1}</span>
+      <div class="bb-panelbox" style="flex:1"><h3 style="font-size:12pt;color:var(--accent-deep)">${t}</h3><p style="font-size:10.6pt;line-height:1.45">${b}</p></div></div>`).join('')}
+    ${worldStrip(vol.world, vol, 11)}
+    ${foot(vol, folio.n++)}</div>`);
+
+  let sn = 0;
+  for (const [, sec] of SEC) {
+    sn++;
+    /* section opener */
+    pages.push(`<div class="page" data-vol="22" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
+      <div class="kick">Part ${['I', 'II', 'III', 'IV', 'V'][sn - 1] || sn} of ${SEC.length}</div>
+      <h1 style="font-size:30pt;margin:.06in 0">${esc(sec.title)}</h1>
+      <p style="font-family:'BB Kicker';font-size:11pt;color:var(--muted);max-width:5in;margin:.1in auto 0;line-height:1.5">${esc(sec.blurb)}</p>
+      <div style="margin:.24in auto 0">${avatar(vol.av, '1.05in')}</div>
+      ${worldStrip(WORLD_CYCLE[(sn + 1) % 12], vol, 900 + sn)}
+      ${foot(vol, folio.n++)}</div>`);
+
+    for (const p of sec.pieces) {
+      const isHaiku = p.kind === 'haiku';
+      const lineSz = isHaiku ? 15 : p.lines.length > 22 ? 10.2 : p.lines.length > 15 ? 11.2 : 12.2;
+      /* the text itself — one page, set as the poet set it */
+      pages.push(`<div class="page" data-vol="22">
+        ${head(vol, null, 0, esc(sec.title))}
+        <div style="margin-top:.36in">
+          <div class="kick">${esc(p.src)}${p.y ? ' &middot; ' + esc(p.y) : ''}</div>
+          <h2 style="font-size:${p.t.length > 34 ? 17 : 21}pt;margin:.04in 0 .02in;line-height:1.16">${esc(p.t)}</h2>
+          <div style="font-family:'BB Kicker';font-size:10pt;color:var(--accent-deep);margin-bottom:.14in">${esc(p.a)}</div>
+        </div>
+        <div style="font-family:'BB Display';font-size:${lineSz}pt;line-height:1.52;${isHaiku ? 'text-align:center;' : ''}white-space:pre-wrap">${p.lines.map(l => l === '' ? '<div style="height:.10in"></div>' : `<div>${esc(l)}</div>`).join('')}</div>
+        ${foot(vol, folio.n++)}</div>`);
+
+      /* the note, and the words the piece is carrying */
+      const hard = p.hard || [];
+      keys.push(`<div><b>${esc(p.t)}</b> — the hard words: ${hard.map(h => esc(h.w)).join(', ') || '—'}</div>`);
+      pages.push(`<div class="page" data-vol="22">
+        ${head(vol, null, 0, 'What to listen for')}
+        <div style="margin-top:.36in"></div>
+        <div class="bb-bigidea"><h3>${esc(p.t)}</h3><p>${esc(p.note)}</p></div>
+        <div class="kick" style="margin-top:.18in">The words inside it</div>
+        <div class="bb-hive" style="margin-top:.06in">${hard.map(h => `<div class="bb-card">
+          <div style="font-family:'BB Display';font-size:17pt;line-height:1.1;overflow-wrap:anywhere">${esc(h.w)}</div>
+          <div style="font-family:'BB Mono';font-size:9pt;color:var(--accent-deep);margin:1pt 0 3pt">/ ${esc(h.say)} /</div>
+          <div style="font-size:9.6pt;line-height:1.38;color:var(--muted)">${esc(fit(h.def, 150))}</div>
+        </div>`).join('')}</div>
+        <div class="kick" style="margin-top:.16in">Say it, then spell it</div>
+        <p style="font-size:9.4pt;color:var(--muted);margin:.03in 0 .06in">Cover the page. Spell each one aloud, then write it.</p>
+        ${hard.map(() => '<div class="bb-writeline"></div>').join('')}
+        ${foot(vol, folio.n++)}</div>`);
+    }
+
+    /* a margin page of the app's own poet lines, one per section */
+    const poets = /shakespeare|frost|dickinson|keats|blake|poe|kipling|tennyson|wordsworth|whitman|shelley|henley|hughes|yeats|donne|browning|coleridge|byron|rossetti|longfellow/i;
+    const marg = shuf(QUOTES.filter(q => poets.test(q.a || '') && q.q.length >= 30 && q.q.length <= 120).slice(), rnd).slice(0, 7);
+    if (marg.length) pages.push(`<div class="page" data-vol="22">
+      ${head(vol, null, 0, 'In the margins')}
+      <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in">${avatar(vol.av, '.6in')}<h2 style="font-size:19pt">Lines from the same hands</h2></div>
+      <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .14in">Single lines by the poets in this part — the ones that broke off from their poems and went out into the language on their own.</p>
+      ${marg.map((q, k) => `<div style="margin-bottom:.15in;padding-left:.32in;position:relative;transform:rotate(${k % 2 ? .25 : -.25}deg)">
+        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:28pt;color:var(--accent)">&ldquo;</span>
+        <div style="font-family:'BB Display';font-size:12.4pt;line-height:1.3">${esc(q.q)}</div>
+        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; ${esc(q.a)}</div></div>`).join('')}
+      ${worldStrip(WORLD_CYCLE[(sn + 5) % 12], vol, 950 + sn)}
+      ${foot(vol, folio.n++)}</div>`);
+  }
+
+  /* every word the book taught, in one list */
+  const uniq = []; const seenW = new Set();
+  for (const h of allHard) { const k = h.w.toLowerCase(); if (seenW.has(k)) continue; seenW.add(k); uniq.push(h); }
+  pages.push(...bigListPages(vol, uniq, folio));
+  pages.push(...keyPages(vol, keys, folio));
+  pages.push(colophon(vol, folio.n++));
+  return finish(vol, pages, { chapters: SEC.length, words: uniq.length, pieces: nPieces });
+}
+
+/* ================= COMPANION 4 — THE LONG QUIZ =================
+   A generic round, then a hyper-speciality round, and repeat. The generic
+   rounds are drawn from the app's own bank at levels 3-5; the speciality rounds
+   are authored, because no general bank goes that deep on Norse mythology or
+   minerals named after people. Formats rotate — multiple choice, short answer
+   with the key at the back, a crossword and a letter square — because thirty
+   rounds of A/B/C/D is a worksheet, not a book. */
+function book20() {
+  const vol = { n: 23, seedN: 21, art: 'b23', slug: 'book-quiz', companion: true,
+    title: 'The Long Quiz', tag: 'A general round, then a deep one, twenty-five times over',
+    a: '#B5893C', d: '#6E4E18', tex: 'grid', av: 'scopey', world: 'forum', band: 'advanced' };
+  const SPEC = window.SB_TRIVIA_ROUNDS || [];
+  const rnd = mulberry(vol.n * 7919 + 17);
+  const keys = []; const folio = { n: 1 };
+
+  /* ---- the general rounds, out of the app's bank ---- */
+  /* The shards do not export an array — each one calls SB_TRIVIA._add(lv, [...]).
+     So the loader supplies that one method and collects what the file hands it. */
+  const bank = [];
+  for (let lv = 3; lv <= 5; lv++) {
+    const f = `trivia-q${lv}.js`;
+    if (!fs.existsSync(f)) continue;
+    try {
+      const SB_TRIVIA = { _add: (n, arr) => { for (const q of (arr || [])) if (q && q.q && q.c && q.c.length >= 2) bank.push(q); } };
+      eval(fs.readFileSync(f, 'utf8'));
+    } catch (e) { console.error('  quiz book: could not read ' + f + ' — ' + e.message); }
+  }
+  if (!bank.length) console.error('  quiz book: the app bank is empty; general rounds will be skipped');
+  const THEMES = (window.SB_TRIVIA && SB_TRIVIA.themes) || [];
+  const label = id => (THEMES.find(t => t.id === id) || {}).label || id;
+  const byTheme = {}; bank.forEach(q => { (byTheme[q.th] = byTheme[q.th] || []).push(q); });
+  const genThemes = Object.keys(byTheme).filter(t => byTheme[t].length >= 24);
+  shuf(genThemes, rnd);
+
+  const N = SPEC.length;
+  let qTotal = 0;
+  const pages = [cover(vol, N * 2, SPEC.reduce((n, r) => n + r.qs.length, 0) + N * 30, 'A BIZZING BEE COMPANION')];
+  pages.push(dividerPage(vol, folio.n++));
+  pages.push(`<div class="page" data-vol="23">
+    ${head(vol, null, 0, 'How this book works')}
+    <div style="margin-top:.4in"><h1 style="font-size:26pt">General, then deep. Then again.</h1></div>
+    <div style="display:flex;gap:.14in;align-items:flex-start;margin:.16in 0">
+      ${avatar(vol.av, '1in')}
+      <div class="bb-bubble" style="font-size:11pt">Every general round is followed by a speciality round that goes straight down one narrow hole — Norse gods, obscure rivers, minerals named after people. Nobody knows all of them. That is the point.</div></div>
+    ${[['Rounds come in pairs', 'A general round to warm up, a speciality round to find out what you actually know.'],
+       ['The format keeps moving', 'Multiple choice, written answers, a crossword, a letter square. Never two the same in a row.'],
+       ['The key is at the back', 'Written answers are graded from the key. No peeking — Vex is guarding it.'],
+       ['The footnotes are the prize', 'Under every answer is the thing worth remembering. Read those even when you got it right.']]
+      .map(([t, b], i) => `<div style="display:flex;gap:.14in;margin-bottom:.13in;align-items:flex-start">
+      <span style="display:inline-grid;place-items:center;width:.52in;height:.52in;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:14pt;flex-shrink:0">${i + 1}</span>
+      <div class="bb-panelbox" style="flex:1"><h3 style="font-size:12pt;color:var(--accent-deep)">${t}</h3><p style="font-size:10.6pt;line-height:1.45">${b}</p></div></div>`).join('')}
+    ${worldStrip(vol.world, vol, 13)}
+    ${foot(vol, folio.n++)}</div>`);
+
+  /* ---- page renderers, shared by both kinds of round ---- */
+  const roundOpener = (n, title, blurb, kind, seedK) => `<div class="page" data-vol="23" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
+    <div class="kick">Round ${n} &middot; ${kind}</div>
+    <h1 style="font-size:30pt;margin:.06in 0">${esc(title)}</h1>
+    <p style="font-family:'BB Kicker';font-size:11pt;color:var(--muted);max-width:5in;margin:.1in auto 0;line-height:1.5">${esc(blurb)}</p>
+    <div style="margin:.24in auto 0">${avatar(vol.av, '1.05in')}</div>
+    ${worldStrip(WORLD_CYCLE[seedK % 12], vol, 1200 + seedK)}
+    ${foot(vol, folio.n++)}</div>`;
+
+  const mcPages = (rn, title, qs) => {
+    const out = [];
+    for (let i = 0; i < qs.length; i += 5) {
+      const slice = qs.slice(i, i + 5);
+      const body = slice.map((q, k) => {
+        const opts = shuf(q.c.slice(0, 4).map((t, oi) => ({ t, ok: oi === 0 })), rnd);
+        keys.push(`<div><b>R${rn} Q${i + k + 1}</b> — ${String.fromCharCode(65 + opts.findIndex(o => o.ok))}. ${esc(clamp(q.c[0], 60))}${q.f ? ' <i>' + esc(fit(q.f, 130)) + '</i>' : ''}</div>`);
+        return `<div class="q" style="margin-bottom:.13in">
+          <div class="qq" style="font-size:10.6pt;line-height:1.36"><b>${i + k + 1}.</b> ${esc(q.q)}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:2pt 10pt;margin-top:3pt">
+            ${opts.map((o, oi) => `<div class="opt" style="font-size:9.6pt"><b>${String.fromCharCode(65 + oi)}</b> ${esc(o.t)}</div>`).join('')}
+          </div></div>`;
+      }).join('');
+      out.push(`<div class="page" data-vol="23">${head(vol, null, 0, esc(title))}
+        <div class="bb-quiz" style="margin-top:.38in">${body}</div>
+        ${foot(vol, folio.n++)}</div>`);
+    }
+    return out;
+  };
+
+  const shortPages = (rn, title, qs) => {
+    const out = [];
+    for (let i = 0; i < qs.length; i += 7) {
+      const slice = qs.slice(i, i + 7);
+      const body = slice.map((q, k) => {
+        keys.push(`<div><b>R${rn} Q${i + k + 1}</b> — ${esc(q.c[0])}${q.f ? ' <i>' + esc(fit(q.f, 130)) + '</i>' : ''}</div>`);
+        return `<div style="margin-bottom:.15in">
+          <div style="font-size:10.6pt;line-height:1.36"><b>${i + k + 1}.</b> ${esc(q.q)}</div>
+          <div class="bb-writeline" style="margin-top:5pt"></div></div>`;
+      }).join('');
+      out.push(`<div class="page" data-vol="23">${head(vol, null, 0, esc(title))}
+        <div style="margin-top:.38in"><div class="kick">Write your answers. The key is at the back.</div></div>
+        <div style="margin-top:.1in">${body}</div>
+        ${foot(vol, folio.n++)}</div>`);
+    }
+    return out;
+  };
+
+  const xwordPage = (rn, title, qs) => {
+    const words = qs.map(q => ({ w: String(q.c[0] || '').replace(/[^a-z]/gi, ''), def: q.q }))
+      .filter(x => x.w.length >= 4 && x.w.length <= 13);
+    if (words.length < 4) return mcPages(rn, title, qs);
+    const cw = crossword(words, rnd);
+    if (!cw || !cw.across || (!cw.across.length && !cw.down.length)) return shortPages(rn, title, qs);
+    keys.push(`<div><b>R${rn} crossword</b> — ${cw.across.concat(cw.down).map(p => p.n + (p.dir || '') + ' ' + esc(p.w)).join(', ')}</div>`);
+    const cols = cw.g[0].length, gridRows = cw.g.length;
+    const cell = Math.min(0.44, 6.6 / Math.max(1, cols), 4.0 / Math.max(1, gridRows)).toFixed(3);
+    return [`<div class="page" data-vol="23">${head(vol, null, 0, esc(title))}
+      <div style="margin-top:.36in"><div class="kick">The clue is the meaning. The answer is the word.</div></div>
+      <div class="bb-xword" style="margin:.1in auto;display:grid;grid-template-columns:repeat(${cols},${cell}in);justify-content:center">
+        ${cw.g.map(row => row.map(c => c && c.ch
+          ? `<span style="width:${cell}in;height:${cell}in;border:1px solid var(--ink);position:relative;display:block">${c.n ? `<i style="position:absolute;top:0;left:1pt;font-size:5.4pt;font-style:normal">${c.n}</i>` : ''}</span>`
+          : `<span style="width:${cell}in;height:${cell}in;display:block"></span>`).join('')).join('')}
+      </div>
+      <div class="bb-clues" style="display:grid;grid-template-columns:1fr 1fr;gap:.14in;font-size:8.6pt;line-height:1.32">
+        <div><h3 style="font-size:10.5pt;color:var(--accent-deep)">Across</h3>${cw.across.map(p => `<div><b>${p.n}.</b> ${esc(fit(p.def, 84))}</div>`).join('')}</div>
+        <div><h3 style="font-size:10.5pt;color:var(--accent-deep)">Down</h3>${cw.down.map(p => `<div><b>${p.n}.</b> ${esc(fit(p.def, 84))}</div>`).join('')}</div>
+      </div>
+      ${foot(vol, folio.n++)}</div>`];
+  };
+
+  const squarePage = (rn, title, qs) => {
+    const words = qs.map(q => String(q.c[0] || '').replace(/[^a-z]/gi, '')).filter(w => w.length >= 4 && w.length <= 11);
+    if (words.length < 5) return shortPages(rn, title, qs);
+    const ws = wordSearch(words.map(w => ({ w })), rnd);
+    if (!ws || !ws.g) return shortPages(rn, title, qs);
+    keys.push(`<div><b>R${rn} square</b> — hidden: ${ws.words.map(w => esc(w)).join(', ')}</div>`);
+    return [`<div class="page" data-vol="23">${head(vol, null, 0, esc(title))}
+      <div style="margin-top:.36in"><div class="kick">Answer each clue, then find the answer in the square.</div></div>
+      <div class="bb-search" style="margin:.1in auto;display:grid;grid-template-columns:repeat(${ws.g[0].length},.26in);justify-content:center;font-family:'BB Mono';font-size:10pt">
+        ${ws.g.map(r => r.map(ch => `<span style="width:.26in;height:.26in;display:grid;place-items:center">${ch}</span>`).join('')).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.1in;font-size:8.8pt;line-height:1.34;margin-top:.08in">
+        ${qs.slice(0, 12).map((q, k) => `<div><b>${k + 1}.</b> ${esc(fit(q.q, 92))}</div>`).join('')}
+      </div>
+      ${foot(vol, folio.n++)}</div>`];
+  };
+
+  const render = (fmt, rn, title, qs) =>
+    fmt === 'short' ? shortPages(rn, title, qs)
+      : fmt === 'xword' ? xwordPage(rn, title, qs)
+        : fmt === 'square' ? squarePage(rn, title, qs)
+          : mcPages(rn, title, qs);
+
+  /* ---- alternate: general, speciality, general, speciality ---- */
+  const GEN_FMT = ['mc', 'short', 'mc', 'xword', 'mc', 'short', 'mc', 'square'];
+  let rn = 0;
+  for (let i = 0; i < N; i++) {
+    /* the general round */
+    const th = genThemes[i % Math.max(1, genThemes.length)];
+    const pool = shuf((byTheme[th] || []).slice(), rnd).slice(0, 30);
+    if (pool.length >= 12) {
+      rn++;
+      pages.push(roundOpener(rn, label(th), 'A general round, drawn from the app’s own bank at its three hardest levels. Warm up here.', 'General', i * 2));
+      qTotal += pool.length;
+      pages.push(...render(GEN_FMT[i % GEN_FMT.length], rn, label(th), pool));
+    }
+    /* the speciality round */
+    const sp = SPEC[i];
+    rn++;
+    pages.push(roundOpener(rn, sp.title, sp.blurb, 'Speciality', i * 2 + 1));
+    qTotal += sp.qs.length;
+    pages.push(...render(sp.fmt, rn, sp.title, sp.qs));
+  }
+
+  pages.push(...keyPages(vol, keys, folio));
+  pages.push(colophon(vol, folio.n++));
+  /* the shelf's fact pills read `chapters` and `words`; on a quiz book those
+     are rounds and questions, which is what these numbers actually count */
+  return finish(vol, pages, { chapters: rn, words: qTotal });
+}
+
 /* ---------------- build all + copy lint + hub ---------------- */
 fs.mkdirSync('books', { recursive: true });
 const made = []; const used = new Set();
@@ -1594,7 +1879,7 @@ for (const vol of AVOLS) {
   vol.chapters.forEach(ch => advUsed.add(ch.title));
   made.push(buildCourse(vol, vol.chapters, window.SB_ADV_CSCRIPT || {}, ch => ADV.indexOf(ch))); }
 if (advUsed.size !== ADV.length) { console.error('ADV coverage', advUsed.size, '/', ADV.length); process.exit(1); }
-made.push(book17()); made.push(book18());
+made.push(book17()); made.push(book18()); made.push(book19()); made.push(book20());
 
 /* copy lint (handover §7) over authored copy — scan all output, report data-source hits */
 const BANNED = /\b(delve|unleash|leverage|utilize|furthermore|robust|seamless|elevate)\b|in today.s world/i;
@@ -1742,7 +2027,7 @@ footer{max-width:1180px;margin:38px auto 0;padding:0 22px;font-size:12px;color:#
 <div class="grid">${cards}</div>
 <section class="shelf2">
   <h2>Companions</h2>
-  <p>Two standalone books, not part of the numbered series. Collections rather than curriculum &mdash;
+  <p>Four standalone books, not part of the numbered series. Collections rather than curriculum &mdash;
   read them in any order, at any level.</p>
   <div class="grid comp">${compCards}</div>
 </section>
