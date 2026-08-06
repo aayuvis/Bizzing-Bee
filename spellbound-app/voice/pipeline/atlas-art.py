@@ -126,6 +126,24 @@ ATLAS_ADV = (
 SLOTS['atlas-adv'] = (ATLAS_ADV, '16:9')
 
 
+# The champions' continent: the third and last map, unlocked at the top of the
+# Advanced Rounds. Five regions, night, and a stadium at the end of the road.
+ATLAS_ULTRA = (
+    'A hand-painted bird\'s-eye fantasy world map of a small dramatic island continent at night under a '
+    'clear starfield, seen from high above at a slight three-quarter angle, floating on a black-violet '
+    'ocean lit by moonlight. A road of pale gold light enters at the BOTTOM-LEFT and climbs to the '
+    'TOP-RIGHT through five clearly separated landmark regions spaced evenly along it, with generous dark '
+    'ground between them: (1) bottom-left, a torchlit training yard of stone rings and racked banners; '
+    '(2) a library tower of black marble with tall lit windows and floating pages; (3) centre, a vast '
+    'crucible of molten gold in a rock basin, sparks rising; (4) a cliff observatory with a brass telescope '
+    'aimed at the stars; (5) top-right, a floodlit championship stadium built into the summit, a single '
+    'spotlit lectern at its centre, confetti in the air. A laurel wreath motif worked into one empty ocean '
+    'corner. Cold starlight over the whole island, warm gold glow inside each region, thin mist in the low '
+    'ground. Painted, tactile, storybook-atlas feel, restrained night palette with gold accents.'
+)
+SLOTS['atlas-ultra'] = (ATLAS_ULTRA, '16:9')
+
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     want = sys.argv[1:]
