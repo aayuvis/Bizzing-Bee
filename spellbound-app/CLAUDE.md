@@ -122,9 +122,23 @@ handlers. App lives in this folder; open `index.html` to run.
   (98.6% agreement with CMU on the exact set; where they differ the card follows `p`,
   which is the point — the two notations on a card must agree with each other).
 
-## The Word Map (`trail.js` + `trail-data.js`) — the Word Atlas tab
-- **ONE concept-first guided journey.** Desktop top nav (7 tabs): **Home · Word Atlas ·
-  Practice · Library · Arcade · Progress · My Hive** — the Word Atlas tab IS the Word Map
+## The Word Map (`trail.js` + `trail-data.js`) — the Journey tab
+- **Four tabs: Home · Journey · Practice · Play.** The Library is not a destination — it
+  is the Journey's **index** (`journeySeg()` switches Map/Index, and every explore-family
+  nav lights the Journey tab). Progress and My Hive are not tabs either: the **avatar in
+  the header** opens them. The mobile bar carries the same four.
+- **Three continents, one journey**: Honey (three tiers) → the Expedition → **Ultra
+  Champions** (`ultraBoard`, `app-art/atlas-ultra.jpg`, five landmarks). Ultra's word
+  list is unchanged and still special-cased in `rawListWords`/`ultraStages`, but it is no
+  longer in `coachCatalog` — the map is the way in, the list is the training ground.
+- **An act is a painting with a road across it**, never a checklist. `ROADS[world]` holds
+  one measured cubic per world; `roadPoints()` places N stops along it by arc length, so
+  the same curve serves 2 stops at Tier I and 22 at Tier III. Long acts pan sideways and
+  auto-scroll to the frontier. `trailPick` selects, `trailTrain` hands the stop's words
+  to Practice, `SB_TRAIL_TAUGHT(gi)` answers the reverse question for concept pages.
+- **One thing is called a Level: your rank.** Per-list ladders read **Stage** everywhere;
+  `overallLevel` is deleted; the header pill says **Word difficulty**, not Bee Band.
+- **ONE concept-first guided journey.** The Journey tab IS the Word Map
   (nav 'trail'): one continuous map of 9 base acts followed by **The Advanced Rounds**
   (the 5 expeditions, unit ids `x*`), which render locked with a **$49.99/yr** Advanced
   Pack CTA until `ADV.active()`. Course is derived from the unit id prefix
