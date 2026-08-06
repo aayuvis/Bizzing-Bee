@@ -123,7 +123,7 @@ handlers. App lives in this folder; open `index.html` to run.
   which is the point — the two notations on a card must agree with each other).
 
 ## The Word Map (`trail.js` + `trail-data.js`) — the Journey tab
-- **Six tabs: Home · World Atlas · Practice · Library · Play · Progress**, spread evenly
+- **Five tabs: Home · World Atlas · Practice · Library · Play**, spread evenly
   across the bar (`flex:1` each). The Atlas has **no sub-nav** — the tab is the map, and the
   only chrome on it is the Revise / My traps pill pair. The Library is its own tab again
   (every explore-family nav lights it). My Hive is not a tab: the **Bizzy button** in the
@@ -132,6 +132,13 @@ handlers. App lives in this folder; open `index.html` to run.
   illustrated and line glyphs. The Library is **eight painted tiles, four across**
   (`app-art/lib-*.jpg`); the shelf and tool row-lists are gone because every one of those
   destinations is reachable from its own home.
+- **Progress is not a tab** — it opens from Settings → Progress & reports (and the drawer).
+  It reads rank → the World Atlas (tier, act, stops) → Practice (Stage + mastery) → this
+  week → word difficulty → the 30-day targets → the word heatmap: the same order and the
+  same words the rest of the app uses.
+- **Worlds live in My Hive** (`viewWorlds`, `hiveBar` segment), not in Settings — a world is
+  a look you own. Settings is four headed sections (Your speller · Progress & reports ·
+  Look & feel · Sound & voice) plus a collapsed Testing drawer.
 - **Header tools are one size, one shape** (`.sb-hdr-ico`): the rank pill (fixed ladder,
   beside Search), karma, coins, then appearance / hive / settings. The appearance button
   does double duty — a tap cycles Light → White → Dusk (debounced 230ms), a **double-tap

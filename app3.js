@@ -1725,6 +1725,7 @@ const app = {
     render(); setTimeout(()=>{ const gg=state.game; if(gg&&gg.type==='duel'&&gg.phase==='play'&&gg.list[gg.i]) say(gg.list[gg.i].w); },300); },
   duelP2:()=>{ const g=state.game; g.turn=1; g.i=0; g.phase='play'; state.typed=''; render(); setTimeout(()=>{ const gg=state.game; if(gg&&gg.type==='duel'&&gg.phase==='play'&&gg.list[0]) say(gg.list[0].w); },350); },
   openTraps:()=>{ try{ loadConcepts(); }catch(e){} set({nav:'traps', screen:'app', trapSel:null, conceptSel:null}); },
+  openWorlds:()=>set({nav:'worlds', screen:'app', conceptSel:null}),
   openEvo:()=>set({nav:'evolution', screen:'app'}),
   openCollection:()=>set({nav:'collection', screen:'app'}),
   collTab:(t)=>set({collTab:t}),
@@ -3535,7 +3536,7 @@ function viewApp(){
   /* Four tabs. The Library is not a destination any more — it is the Journey's
      index, so every explore-family nav lights the Journey tab. Progress and My Hive
      are not tabs either: they are you, and you are the avatar in the header. */
-  const navTabs=[['home','Home','home'],['trail','World Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play'],['progress','Progress','progress']].map(([key,label,ic])=>{
+  const navTabs=[['home','Home','home'],['trail','World Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play']].map(([key,label,ic])=>{
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:key==='coach'?(S.nav==='coach'||S.nav==='train'||S.nav==='levelup'||S.nav==='quest'):S.nav===key;
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
     const glyph=`<span style="display:inline-flex;line-height:0">${navIcon(ic,21)}</span>`;
@@ -3562,6 +3563,7 @@ function viewApp(){
   else if(S.nav==='traps') content=viewTraps();
   else if(S.nav==='revisions') content=viewRevisions();
   else if(S.nav==='evolution') content=viewEvolution();
+  else if(S.nav==='worlds') content=viewWorlds();
   else if(S.nav==='collection') content=viewCollection();
   else if(S.nav==='finder') content=viewFinder();
   else if(S.nav==='games') content=viewGames();
@@ -3680,7 +3682,7 @@ function viewApp(){
     ${viewDrawer()}
     <div class="sb-content" style="max-width:1080px;margin:0 auto;width:100%;padding:18px clamp(14px,3.5vw,32px) 60px">${content}</div>
     <nav class="sb-tabbar" aria-label="Primary">
-      ${[['home','Home','home'],['trail','Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play'],['progress','Stats','progress']].map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='coach'&&(S.nav==='train'||S.nav==='levelup'||S.nav==='quest')));
+      ${[['home','Home','home'],['trail','Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play']].map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='coach'&&(S.nav==='train'||S.nav==='levelup'||S.nav==='quest')));
         const gl=`<span style="display:inline-flex;line-height:0">${navIcon(ic,23)}</span>`;
         return `<button data-act="setNav" data-arg="${k}" aria-current="${on?'page':'false'}" style="${on?'color:var(--accent)':'color:var(--muted)'}">${gl}<span>${l}</span></button>`; }).join('')}
     </nav>
@@ -4377,7 +4379,20 @@ function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageI
 /* My Hive — one home for everything you've earned & everything you spend: the Collection,
    the Evolution ladder and the Store share this section bar (one lit top-nav tab). */
 function hiveBar(cur){ const seg=(k,act,l,ic)=>`<button data-act="${act}" style="flex:1;min-width:110px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 10px;border-radius:12px;font-weight:800;font-size:13.5px;${cur===k?'background:var(--accent);color:#fff;box-shadow:var(--edge)':'background:var(--bg2);color:var(--muted);border:1px solid var(--line)'}">${iconSVG(ic,16)} ${l}</button>`;
-  return `<div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px">${seg('coll','openCollection','Collection','crown')}${seg('evo','openEvo','Evolution','spark')}${seg('store','openShop','Store','cart')}</div>`; }
+  return `<div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px">${seg('coll','openCollection','Collection','crown')}${seg('evo','openEvo','Rank','spark')}${seg('worlds','openWorlds','Worlds','palette')}${seg('store','openShop','Store','cart')}</div>`; }
+/* Worlds live in the hive, beside the other things you collect — a world is a look you
+   own, not a setting you configure. The picker keeps its painted hero cards. */
+function viewWorlds(){ const S=state;
+  const cards=THEMES.map(t=>{ const un=isThemeUnlocked(t.id);
+    return worldHeroCard(t, t.id===S.theme, !un, un?'pickTheme':'buyTheme'); }).join('');
+  const locked=THEMES.filter(t=>!isThemeUnlocked(t.id)).length;
+  return `<div style="max-width:900px;margin:0 auto">
+    ${hiveBar('worlds')}
+    <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 4px">Worlds</h2><span style="font-size:13px;color:var(--muted);font-weight:650">the look you wear</span></div>
+    <p style="margin:0 0 16px;font-size:14px;color:var(--muted);line-height:1.5">Each world repaints the app — its colours, its type and its motif — and brings its own cast. Your rank keeps its ten forms and their names in every one of them.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px">${cards}</div>
+    ${locked?`<div class="sb-cn" style="padding-top:12px">🔒 ${locked} more ${locked===1?'world is':'worlds are'} waiting — tap one to see what unlocks it.</div>`:''}
+  </div>`; }
 function viewCollection(){ const S=state; const c=active(); const tab=S.collTab||'badges';
   const tabBtn=(k,ic,l)=>`<button data-act="collTab" data-arg="${k}" style="flex:1;min-width:96px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${iconSVG(ic,15)} ${l}</button>`;
   let body='';
@@ -5775,8 +5790,41 @@ function viewProgress(){
   }
   const legend=[['var(--good)','Mastered'],['var(--bad)','Needs work'],['var(--surface2)','Not yet mastered']].map(([cc,l])=>`<span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:600"><span style="width:12px;height:12px;border-radius:6px;background:${cc}"></span>${l}</span>`).join('');
   return `<div style="animation:sb-rise .35s ease both">
-    ${pageHead('Progress','where you stand','One rank, one difficulty dial, one Atlas tier — then this week\'s work and where each word stands.')}
+    ${pageHead('Progress','where you stand','Your rank, then the two journeys, then this week — and where every word stands.')}
     ${rankBlock}
+    ${(()=>{ /* The World Atlas, in its own words */
+      const nx=(typeof window.SB_TRAIL_NEXT==='function')?SB_TRAIL_NEXT():null;
+      if(!nx) return '';
+      const pct=Math.round((nx.total?nx.done/nx.total:0)*100);
+      return `<div class="sb-card" style="margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:13px;flex-wrap:wrap">
+          <span style="width:74px;height:52px;flex-shrink:0;border-radius:12px;overflow:hidden">${paintedTileArt(nx.world,52)}</span>
+          <span style="min-width:0;flex:1">
+            <span class="sb-cs">The World Atlas · Tier ${nx.lap} of 3</span>
+            <span style="display:block;font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15;margin-top:2px">${esc(nx.allDone?('Tier '+nx.lap+' complete'):nx.title)}</span>
+            <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:650;margin-top:2px">${esc(nx.act)} · ${nx.done} of ${nx.total} stops this tier</span>
+          </span>
+          <button data-act="openTrail" style="padding:10px 16px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:13px;white-space:nowrap">Open the map →</button>
+        </div>
+        <div style="height:7px;border-radius:999px;background:var(--tint-deep,var(--surface2));overflow:hidden;margin-top:12px"><div style="height:100%;background:var(--action,var(--accent));width:${pct}%"></div></div>
+      </div>`; })()}
+    ${(()=>{ /* Practice, in its own words: Stage and mastery, never a level */
+      const k=activeListKey(); const st=listStages(k)||[]; const si=listStageIdx(c,k);
+      const ws=encounteredWords(k)||[]; const m=ws.filter(w=>state.luMastered[nkey(w.w)]).length;
+      const pct=ws.length?Math.round(m/ws.length*100):0;
+      const others=activatedListKeys().filter(x=>x!==k).slice(0,3);
+      return `<div class="sb-card" style="margin-bottom:18px">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <span style="min-width:0;flex:1">
+            <span class="sb-cs">Practice · now training</span>
+            <span style="display:block;font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15;margin-top:2px">${esc(listLabel(k).split(' · ')[0])}</span>
+            <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:650;margin-top:2px">${k==='journey'?(si<CHAMP_LEVELS?('Stage '+(si+1)+' of '+CHAMP_LEVELS+' to Champ'):('Champion’s Library · stage '+(si+1))):('Stage '+(si+1)+(st.length?(' of '+st.length):''))} · ${m} of ${ws.length} words met are mastered</span>
+          </span>
+          <button data-act="openCoach" style="padding:10px 16px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:13px;white-space:nowrap">Open Practice →</button>
+        </div>
+        <div style="height:7px;border-radius:999px;background:var(--tint-deep,var(--surface2));overflow:hidden;margin:12px 0 0"><div style="height:100%;background:var(--good);width:${pct}%"></div></div>
+        ${others.length?`<div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:11px">${others.map(x=>`<button data-act="selectList" data-arg="${escA(x)}" style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-size:12px;font-weight:800;color:var(--muted)">${esc(listLabel(x).split(' · ')[0])} · Stage ${listStageIdx(c,x)+1}</button>`).join('')}</div>`:''}
+      </div>`; })()}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px">${stats}</div>
     ${(()=>{ const ms=milestone(); let rd=null; try{ rd=coachReadiness(); }catch(e){}
       if(!ms&&!rd) return '';
@@ -6515,62 +6563,58 @@ function viewSettings(){
       <button data-act="toggleAdvPack" role="switch" aria-checked="${_advOn?'true':'false'}" style="flex-shrink:0;width:52px;height:30px;border-radius:999px;background:${_advOn?'var(--accent)':'var(--line)'};position:relative;transition:background .2s">
         <span style="position:absolute;top:3px;left:${_advOn?'25px':'3px'};width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.24);transition:left .2s"></span></button>
     </div></div>`;
-  return `<div style="max-width:640px">
-    <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 16px">Settings</h2>
+  /* Settings is grouped, not stacked: four headed sections and one collapsed testing
+     drawer, so a parent finds the thing they came for instead of scrolling twelve
+     look-alike cards. Worlds moved to My Hive — a world is something you own. */
+  const sec=(title,sub,body)=>`<section style="margin-bottom:22px">
+      <div style="display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin:0 0 9px 2px">
+        <h3 style="font-family:var(--display);font-weight:800;font-size:15px;margin:0">${title}</h3>
+        ${sub?`<span style="font-size:12.5px;color:var(--muted);font-weight:650">${sub}</span>`:''}</div>
+      <div class="sb-card" style="padding:4px 0">${body}</div></section>`;
+  const line=(title,sub,ctrl)=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:13px 16px;border-top:1px solid var(--line)">
+      <div style="min-width:0;flex:1"><div style="font-weight:800;font-size:14.5px;line-height:1.25">${title}</div>
+        ${sub?`<div style="font-size:12.5px;color:var(--muted);line-height:1.45;margin-top:2px">${sub}</div>`:''}</div>${ctrl}</div>`;
+  const pick=(opts)=>`<div style="display:flex;background:var(--surface2);border-radius:999px;padding:3px;flex-shrink:0">${opts}</div>`;
+  const tog=(act,on,onLbl,offLbl)=>`<button data-act="${act}" style="display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:10px;background:${on?'var(--accent)':'var(--surface2)'};color:${on?'#fff':'var(--muted)'};font-weight:800;font-size:13px;white-space:nowrap;flex-shrink:0">${on?onLbl:offLbl}</button>`;
+  const go=(act,arg,label)=>`<button data-act="${act}"${arg?` data-arg="${escA(arg)}"`:''} style="display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:13px;white-space:nowrap;flex-shrink:0">${label} →</button>`;
+  const ageM=(active().ageMode||((active().age||9)<=11?'playful':'focused'));
+
+  return `<div style="max-width:660px">
+    <h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:0 0 4px">Settings</h2>
+    <p style="margin:0 0 20px;font-size:13.5px;color:var(--muted)">Worlds moved to <b style="color:var(--text)">My Hive → Worlds</b>. Progress and the parent zone live here now.</p>
     ${accountCard}
     ${advCard}
-    <div class="sb-card" style="margin-bottom:16px">
-      <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:3px">World</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Each world is a different look and a character that evolves as you level up.</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:11px">${themes}</div>
-      ${THEMES.some(t=>!isThemeUnlocked(t.id))?`<div class="sb-cn" style="padding-top:10px">🔒 Locked worlds come with a bigger plan or coins — tap one to see.</div>`:''}
-    </div>
-    ${profileCard}
-    ${voiceCard}
-    <div class="sb-card" style="margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
-      <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Background</div><div style="font-size:13px;color:var(--muted)">Tinted paper or pure white</div></div>
-      <div style="display:flex;background:var(--surface2);border-radius:999px;padding:3px"><button data-act="setLight" style="${seg(S.mode==='light')}">Light</button><button data-act="setWhite" style="${seg(S.mode==='white')}">White</button><button data-act="setDusk" style="${seg(S.mode==='dusk')}">Dusk</button></div>
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px"><span style="font-size:13px;font-weight:650;color:var(--muted)">Style</span><div style="display:flex;background:var(--surface2);border-radius:999px;padding:3px"><button data-act="setAgeMode" data-arg="playful" style="${seg((active().ageMode||((active().age||9)<=11?'playful':'focused'))==='playful')}">Playful</button><button data-act="setAgeMode" data-arg="focused" style="${seg((active().ageMode||((active().age||9)<=11?'playful':'focused'))==='focused')}">Focused</button></div><span style="flex:1;min-width:180px;font-size:12px;color:var(--muted)">Playful = buddy everywhere & big celebrations · Focused = calmer, compact</span></div>
-    </div>
-    <div class="sb-card" style="margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
-      <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Sound effects</div><div style="font-size:13px;color:var(--muted)">Dings, coins &amp; celebrations during games</div></div>
-      <button data-act="toggleSound" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:${S.sound?'var(--accent)':'var(--surface2)'};color:${S.sound?'#fff':'var(--muted)'};font-weight:800;font-size:13px">${S.sound?'🔊 On':'🔇 Off'}</button>
-    </div>
-    <div class="sb-card" style="margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;flex-direction:column;gap:14px">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
-        <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Text size</div><div style="font-size:13px;color:var(--muted)">Larger text everywhere — easier for young or new readers</div></div>
-        <div style="display:flex;background:var(--surface2);border-radius:999px;padding:3px"><button data-act="setTextSize" data-arg="normal" style="${seg((S.textSize||'normal')==='normal')}">Normal</button><button data-act="setTextSize" data-arg="large" style="${seg(S.textSize==='large')}">Large</button></div>
+    ${sec('Your speller','name, age and daily goal', profileCard.replace('<div class="sb-card" style="margin-bottom:16px">','<div style="padding:14px 16px">').replace(/<\/div>\s*$/,'</div>'))}
+    ${sec('Progress &amp; reports','for grown-ups',
+        line('Progress','Rank, the Atlas, this week and every word met',go('setNav','progress','Open'))
+      + line('Parent zone','Weekly report, printables and the plan',go('setNav','parent','Open'))
+      + line('Parent PIN', pinSet()?'Set — protects Settings, the parent zone and purchases.':'Add a 4-digit PIN so only grown-ups can open Settings and buy things.',
+          `<button data-act="pinSetup" style="display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:10px;background:${pinSet()?'var(--surface2)':'var(--accent)'};color:${pinSet()?'var(--muted)':'#fff'};font-weight:800;font-size:13px;white-space:nowrap">${pinSet()?'Change':'Set PIN'}</button>`))}
+    ${sec('Look &amp; feel','how the app appears',
+        line('Background','Tinted paper, pure white or dusk',
+          pick(`<button data-act="setLight" style="${seg(S.mode==='light')}">Light</button><button data-act="setWhite" style="${seg(S.mode==='white')}">White</button><button data-act="setDusk" style="${seg(S.mode==='dusk')}">Dusk</button>`))
+      + line('Style','Playful = buddy everywhere and big celebrations · Focused = calmer, compact',
+          pick(`<button data-act="setAgeMode" data-arg="playful" style="${seg(ageM==='playful')}">Playful</button><button data-act="setAgeMode" data-arg="focused" style="${seg(ageM==='focused')}">Focused</button>`))
+      + line('Text size','Larger text everywhere — easier for young or new readers',
+          pick(`<button data-act="setTextSize" data-arg="normal" style="${seg((S.textSize||'normal')==='normal')}">Normal</button><button data-act="setTextSize" data-arg="large" style="${seg(S.textSize==='large')}">Large</button>`))
+      + line('Easy-read font','Clearer letters with extra spacing — made for dyslexic readers',
+          pick(`<button data-act="setA11yFont" data-arg="std" style="${seg((S.a11yFont||'std')!=='easy')}">Standard</button><button data-act="setA11yFont" data-arg="easy" style="${seg(S.a11yFont==='easy')}">Easy-read</button>`))
+      + line('High contrast','Stronger text and outlines',tog('toggleContrast',!!S.a11yContrast,'On','Off'))
+      + line('Reduce motion','Turn off animations and moving effects',tog('toggleReduceMotion',!!S.a11yMotion,'On','Off'))
+      + line('Calm mode','Games run gentler — slower pace, no time pressure',tog('toggleCalm',!!S.calmMode,'On','Off')))}
+    ${sec('Sound &amp; voice','what you hear',
+        line('Sound effects','Dings, coins and celebrations during games',tog('toggleSound',!!S.sound,'On','Off'))
+      + line('Voice speed','How fast words and sentences are read aloud',
+          pick(`<button data-act="setVoiceRate" data-arg="slow" style="${seg((S.voiceRate||1)<1)}">Slow</button><button data-act="setVoiceRate" data-arg="normal" style="${seg((S.voiceRate||1)>=1)}">Normal</button>`))
+      + line('Read cards to me','Bizzy reads every vocabulary and idiom card aloud when it flips',tog('toggleReadAloud',!!S.readAloud,'On','Off'))
+      + voiceCard.replace('<div class="sb-card" style="margin-bottom:16px">','<div style="padding:13px 16px;border-top:1px solid var(--line)">'))}
+    <details style="margin-bottom:20px">
+      <summary style="cursor:pointer;font-weight:800;font-size:13.5px;color:var(--muted);padding:10px 2px">Testing tools</summary>
+      <div class="sb-card" style="padding:4px 0;margin-top:8px">
+        ${line('Unlock everything','All concepts, lists, worlds, Advanced Mode and every level — no coins or Premium needed.',tog('toggleDevUnlock',!!S.devUnlock,'On','Off'))}
+        ${line('Test coins','Tops the purse up to 1,000,000 so you can test the Store. Switching it off puts the real balance back.',tog('toggleDevCoins',!!(active()&&active().devCoins),'On','Off'))}
       </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
-        <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Voice speed</div><div style="font-size:13px;color:var(--muted)">How fast words &amp; sentences are read aloud</div></div>
-        <div style="display:flex;background:var(--surface2);border-radius:999px;padding:3px"><button data-act="setVoiceRate" data-arg="slow" style="${seg((S.voiceRate||1)<1)}">Slow</button><button data-act="setVoiceRate" data-arg="normal" style="${seg((S.voiceRate||1)>=1)}">Normal</button></div>
-      </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
-        <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Read cards to me</div><div style="font-size:13px;color:var(--muted)">Bizzy reads every vocabulary &amp; idiom card aloud when it flips — great for reading together</div></div>
-        <button data-act="toggleReadAloud" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:${S.readAloud?'var(--accent)':'var(--surface2)'};color:${S.readAloud?'#fff':'var(--muted)'};font-weight:800;font-size:13px">${S.readAloud?'🐝 On':'Off'}</button>
-      </div>
-    </div>
-    ${(()=>{ const tog=(act,on,onLbl,offLbl)=>`<button data-act="${act}" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:${on?'var(--accent)':'var(--surface2)'};color:${on?'#fff':'var(--muted)'};font-weight:800;font-size:13px;white-space:nowrap">${on?onLbl:offLbl}</button>`;
-      const row=(title,sub,ctrl)=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap"><div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:14px">${title}</div><div style="font-size:13px;color:var(--muted)">${sub}</div></div>${ctrl}</div>`;
-      return `<div class="sb-card" style="margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;flex-direction:column;gap:14px">
-      <div style="font-family:var(--display);font-weight:800;font-size:15px;display:flex;align-items:center;gap:7px">♿ Accessibility</div>
-      ${row('Easy-read font','Clearer letters with extra spacing — made for dyslexic readers',`<div style="display:flex;background:var(--surface2);border-radius:999px;padding:3px"><button data-act="setA11yFont" data-arg="std" style="${seg((S.a11yFont||'std')!=='easy')}">Standard</button><button data-act="setA11yFont" data-arg="easy" style="${seg(S.a11yFont==='easy')}">Easy-read</button></div>`)}
-      ${row('High contrast','Stronger text and outlines for easier reading',tog('toggleContrast',!!S.a11yContrast,'◐ On','Off'))}
-      ${row('Reduce motion','Turn off animations and moving effects',tog('toggleReduceMotion',!!S.a11yMotion,'🛑 On','Off'))}
-      ${row('Calm mode','Games run gentler — slower pace, no time pressure',tog('toggleCalm',!!S.calmMode,'🌿 On','Off'))}
-    </div>`; })()}
-    <div class="sb-card" style="margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
-      <div style="min-width:0"><div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:15px">${SB_ICON('lock',{size:16})} Parent PIN</div><div style="font-size:13px;color:var(--muted)">${pinSet()?'Set — protects Settings, the Parent zone and purchases.':'Add a 4-digit PIN so only grown-ups can open Settings, the Parent zone and Premium.'}</div></div>
-      <button data-act="pinSetup" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:${pinSet()?'var(--surface2)':'var(--accent)'};color:${pinSet()?'var(--muted)':'#fff'};font-weight:800;font-size:13px;white-space:nowrap">${pinSet()?'Change / remove':'Set PIN'}</button>
-    </div>
-    ${`<div style="background:var(--bg2);border:1px solid ${S.devUnlock?'var(--accent)':'var(--line)'};border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
-      <div style="min-width:0"><div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:15px">${SB_ICON('lock',{size:16})} Unlock everything <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:999px">testing</span></div><div style="font-size:13px;color:var(--muted)">Unlocks all concepts, lists, worlds, Advanced Mode &amp; every level — no coins or Premium needed.</div></div>
-      <button data-act="toggleDevUnlock" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:${S.devUnlock?'var(--accent)':'var(--surface2)'};color:${S.devUnlock?'#fff':'var(--muted)'};font-weight:800;font-size:13px">${S.devUnlock?SB_ICON('check',{size:15})+' On':'Off'}</button>
-    </div>
-    <div style="background:var(--bg2);border:1px solid ${active()&&active().devCoins?'var(--treasure,#F0B429)':'var(--line)'};border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--sh-rest);display:flex;align-items:center;justify-content:space-between;gap:14px">
-      <div style="min-width:0"><div style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:15px">🪙 Test coins <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:999px">testing</span></div><div style="font-size:13px;color:var(--muted)">Tops the purse up to 1,000,000 so you can test the Store. Temporary — switching this (or testing mode) off puts the real balance back.</div></div>
-      <button data-act="toggleDevCoins" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:${active()&&active().devCoins?'var(--treasure,#F0B429)':'var(--surface2)'};color:${active()&&active().devCoins?'#5a3d00':'var(--muted)'};font-weight:800;font-size:13px;white-space:nowrap">${active()&&active().devCoins?SB_ICON('check',{size:15})+' On':'Off'}</button>
-    </div>`}
+    </details>
     <button data-act="signOut" style="width:100%;padding:14px;border-radius:14px;background:var(--surface2);color:var(--bad);font-weight:800;font-size:15px">Sign out</button>
     <button data-act="devTap" style="display:block;width:100%;text-align:center;background:none;border:0;cursor:default;margin-top:14px;font-size:11.5px;color:var(--muted);font-weight:650">Bizzing Bee · made with 🐝 for spellers</button>
   </div>`;
