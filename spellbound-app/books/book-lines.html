@@ -178,6 +178,50 @@
   .pm-g b{font-family:'BB Display';font-size:9.4pt;display:block;color:var(--ink)}
   .pm-g i{font-family:'BB Mono';font-size:7.4pt;font-style:normal;color:var(--accent-deep);display:block}
   .pm-g span{color:var(--muted);display:block}
+  /* The five steps on this volume's opening page. They were set as rounded
+     white panels with a gradient numeral chip on each — app furniture, in the
+     one book that is otherwise composed like a printed anthology. Same fault
+     the mascot and the scenery band on this page were removed for, and it
+     survived both passes because a panel looks tidy in isolation.
+     Set as a printed preface instead: a hanging numeral, a small-caps line,
+     and a hairline between steps. No box, no shadow, no fill. */
+  .lb-steps{margin:.10in 0 .06in;border-top:1px solid var(--hairline)}
+  .lb-step{display:flex;gap:.20in;align-items:baseline;padding:.135in 0 .145in;
+    border-bottom:1px solid var(--hairline)}
+  .lb-step .n{flex:0 0 .30in;text-align:right;font-family:'BB Display';font-size:12.5pt;
+    line-height:1;color:var(--accent);font-variant-numeric:lining-nums}
+  .lb-step .b{flex:1;min-width:0}
+  .lb-step .t{font-family:'BB Kicker';font-size:8.6pt;letter-spacing:.11em;
+    text-transform:uppercase;color:var(--accent-deep);margin-bottom:3pt}
+  .lb-step p{margin:0;font-size:11pt;line-height:1.48;color:var(--ink)}
+  /* The margin page. A full-bleed wash of the part's plate at 20% was tried
+     first and printed as a smudge — a busy painted scene at low opacity is not
+     a ground, it is a stain. The plate is given its own room instead, as a
+     tailpiece band across the foot the way an anthology closes a section, and
+     it stops clear of the running foot so the folio never prints on it. */
+  .lb-marg{position:relative;overflow:hidden}
+  /* the body takes the room above the tailpiece and leads the lines out into
+     it, rather than stacking tight and leaving an inch and a half of nothing */
+  .lb-marg-body{position:relative;z-index:2;display:flex;flex-direction:column;flex:1 1 auto;
+    padding-bottom:2.72in}
+  .lb-tail{position:absolute;left:0;right:0;bottom:.62in;height:2.45in;overflow:hidden;z-index:1}
+  .lb-tail img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.92)}
+  /* the top edge dissolves into the paper instead of butting against the type */
+  .lb-tail::before{content:'';position:absolute;inset:0;z-index:2;
+    background:linear-gradient(180deg,var(--paper) 0%,
+      color-mix(in srgb,var(--paper) 55%,transparent) 16%,transparent 40%)}
+  .lb-hand{font-family:'BB Kicker';font-size:8.6pt;letter-spacing:.10em;text-transform:uppercase;
+    color:var(--accent-deep);margin:.02in 0 .16in}
+  .lb-hero{position:relative;padding:.02in 0 .18in .40in;border-bottom:1px solid var(--hairline)}
+  .lb-hero::before{content:'“';position:absolute;left:0;top:-.12in;font-family:'BB Display';
+    font-size:42pt;line-height:1;color:var(--accent);opacity:.45}
+  .lb-hero .q{font-family:'BB Display';font-size:18pt;line-height:1.26;color:var(--ink)}
+  .lb-hero .by{font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:5pt}
+  .lb-rest{display:flex;flex-direction:column;justify-content:space-between;flex:1 1 auto}
+  .lb-line{padding:.105in 0;border-bottom:1px solid var(--hairline)}
+  .lb-line:last-child{border-bottom:0}
+  .lb-line .q{font-family:'BB Display';font-size:12.4pt;line-height:1.34;color:var(--ink)}
+  .lb-line .by{font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:2pt}
   /* ---- the part dividers ----
      A part opener used to be a centred title on a flat gradient with the book's
      cartoon mascot stamped under it and a scenery band along the foot. Against
@@ -406,18 +450,13 @@
          thought is better said straight, so it is said straight. -->
     <p style="font-family:'BB Kicker';font-size:12.4pt;line-height:1.55;color:var(--muted);max-width:5.6in;margin:.12in 0 .22in">
       Knowing a poem by heart is not showing off. It is the only way to own one &mdash; to have it at three in the morning when there is no book. Every piece in here is short enough to learn in a week.</p>
-    <div style="display:flex;flex-direction:column;justify-content:space-between;flex:1 1 auto;margin:.06in 0 .1in">
-    <div style="display:flex;gap:.14in;align-items:flex-start">
-      <span style="display:inline-grid;place-items:center;width:.52in;height:.52in;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:14pt;flex-shrink:0">1</span>
-      <div class="bb-panelbox" style="flex:1"><h3 style="font-size:12pt;color:var(--accent-deep)">Read it out loud, once</h3><p style="font-size:10.6pt;line-height:1.45">Poetry is a sound before it is a meaning. You will hear the shape before you can explain it.</p></div></div><div style="display:flex;gap:.14in;align-items:flex-start">
-      <span style="display:inline-grid;place-items:center;width:.52in;height:.52in;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:14pt;flex-shrink:0">2</span>
-      <div class="bb-panelbox" style="flex:1"><h3 style="font-size:12pt;color:var(--accent-deep)">Find the turn</h3><p style="font-size:10.6pt;line-height:1.45">Nearly every piece here changes direction somewhere. The note under it tells you where — but look first.</p></div></div><div style="display:flex;gap:.14in;align-items:flex-start">
-      <span style="display:inline-grid;place-items:center;width:.52in;height:.52in;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:14pt;flex-shrink:0">3</span>
-      <div class="bb-panelbox" style="flex:1"><h3 style="font-size:12pt;color:var(--accent-deep)">Take the words</h3><p style="font-size:10.6pt;line-height:1.45">The hard words in each piece are listed after it, with how to say them. That is the spelling half of this book.</p></div></div><div style="display:flex;gap:.14in;align-items:flex-start">
-      <span style="display:inline-grid;place-items:center;width:.52in;height:.52in;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:14pt;flex-shrink:0">4</span>
-      <div class="bb-panelbox" style="flex:1"><h3 style="font-size:12pt;color:var(--accent-deep)">Copy one out by hand</h3><p style="font-size:10.6pt;line-height:1.45">Slowly, with the punctuation exactly as it is. You will notice things reading cannot show you.</p></div></div><div style="display:flex;gap:.14in;align-items:flex-start">
-      <span style="display:inline-grid;place-items:center;width:.52in;height:.52in;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:14pt;flex-shrink:0">5</span>
-      <div class="bb-panelbox" style="flex:1"><h3 style="font-size:12pt;color:var(--accent-deep)">Then say it to somebody</h3><p style="font-size:10.6pt;line-height:1.45">Out loud, to a person, from memory. That is the only test there is, and it is the same nerve a bee asks for.</p></div></div>
+    <div class="lb-steps" style="flex:0 0 auto">
+    <div class="lb-step"><div class="n">1</div>
+      <div class="b"><div class="t">Read it out loud, once</div><p>Poetry is a sound before it is a meaning. You will hear the shape before you can explain it.</p></div></div><div class="lb-step"><div class="n">2</div>
+      <div class="b"><div class="t">Find the turn</div><p>Nearly every piece here changes direction somewhere. The note under it tells you where — but look first.</p></div></div><div class="lb-step"><div class="n">3</div>
+      <div class="b"><div class="t">Take the words</div><p>The hard words in each piece are listed after it, with how to say them. That is the spelling half of this book.</p></div></div><div class="lb-step"><div class="n">4</div>
+      <div class="b"><div class="t">Copy one out by hand</div><p>Slowly, with the punctuation exactly as it is. You will notice things reading cannot show you.</p></div></div><div class="lb-step"><div class="n">5</div>
+      <div class="b"><div class="t">Then say it to somebody</div><p>Out loud, to a person, from memory. That is the only test there is, and it is the same nerve a bee asks for.</p></div></div>
     </div>
     <!-- What used to close this page was a painted scenery band across the foot,
          with two inches of dead paper above it and the folio printed unreadably
@@ -426,7 +465,7 @@
          what is in it, and it is the only page where the whole arc is visible at
          once. Built from SEC, so carving the Bard out of two sections cannot
          leave this list telling a lie. -->
-    <div style="margin-bottom:.36in;padding-top:.16in;border-top:1.5pt solid color-mix(in srgb,var(--accent) 34%,transparent)">
+    <div style="margin-top:auto;margin-bottom:.36in;padding-top:.16in;border-top:1.5pt solid color-mix(in srgb,var(--accent) 34%,transparent)">
       <div class="kick" style="margin-bottom:.10in">The eight parts</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.09in .22in">
         <div style="display:flex;gap:.10in;align-items:baseline">
@@ -886,39 +925,25 @@
     <div class="pm-g"><b>mortality</b><i>/ mor-TAL-ih-tee /</i><span>the state of being subject to death</span></div><div class="pm-g"><b>impregnable</b><i>/ im-PREG-nuh-buhl /</i><span>unable to be captured or broken into</span></div><div class="pm-g"><b>meditation</b><i>/ med-ih-TAY-shuhn /</i><span>deep, focused thought</span></div><div class="pm-g"><b>miracle</b><i>/ MEER-uh-kuhl /</i><span>a wonderful event beyond natural explanation</span></div>
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>33</span></div></div>
-<div class="page" data-verso data-vol="22" style="display:flex;flex-direction:column">
+<div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
+      <div class="lb-marg-body">
       <div style="margin-top:.4in"><div class="kick">The Bard</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
-      <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .10in">Single lines by the writers in this part &mdash; the ones that broke off from their poems and went out into the language on their own.</p>
-      <div style="display:flex;flex-direction:column;justify-content:space-around;flex:1 1 auto;margin-bottom:.34in">
-      <div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">How far that little candle throws his beams!
+      <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .04in">Single lines by the writers in this part &mdash; the ones that broke off from their poems and went out into the language on their own.</p>
+      <div class="lb-hand">All of them William Shakespeare</div>
+      <div class="lb-hero">
+        <div class="q">How far that little candle throws his beams!
 So shines a good deed in a naughty world.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; William Shakespeare</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Some are born great, some achieve greatness,
-and some have greatness thrust upon them.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; William Shakespeare</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Good night, good night! parting is such sweet sorrow.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; William Shakespeare</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Let me not to the marriage of true minds
-Admit impediments.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; William Shakespeare</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">We are such stuff
+        </div>
+      <div class="lb-rest">
+      <div class="lb-line"><div class="q">Some are born great, some achieve greatness,
+and some have greatness thrust upon them.</div></div><div class="lb-line"><div class="q">Good night, good night! parting is such sweet sorrow.</div></div><div class="lb-line"><div class="q">Let me not to the marriage of true minds
+Admit impediments.</div></div><div class="lb-line"><div class="q">We are such stuff
 As dreams are made on, and our little life
-Is rounded with a sleep.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; William Shakespeare</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">The robbed that smiles steals something from the thief.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; William Shakespeare</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">So shines a good deed in a weary world.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; William Shakespeare</div></div>
-      </div>
+Is rounded with a sleep.</div></div><div class="lb-line"><div class="q">The robbed that smiles steals something from the thief.</div></div><div class="lb-line"><div class="q">This above all: to thine own self be true,
+And it must follow, as the night the day.</div></div>
+      </div></div>
+      <div class="lb-tail"><img src="art/sc-shakespeare.jpg" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>34</span></div></div>
 <div class="page sc-page" data-vol="22">
     <div class="sc-frame"><img class="sc-art" src="art/sc-speeches.jpg" alt=""></div>
@@ -1028,34 +1053,19 @@ Is rounded with a sleep.</div>
     <div class="pm-g"><b>formidable</b><i>/ FOR-mid-uh-bul /</i><span>frighteningly powerful</span></div><div class="pm-g"><b>adversary</b><i>/ AD-ver-sair-ee /</i><span>an opponent or enemy</span></div><div class="pm-g"><b>invincible</b><i>/ in-VIN-suh-bul /</i><span>impossible to defeat</span></div><div class="pm-g"><b>brethren</b><i>/ BRETH-run /</i><span>brothers; fellow members of a group</span></div><div class="pm-g"><b>resounding</b><i>/ rih-ZOWN-ding /</i><span>ringing loudly; echoing</span></div>
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>42</span></div></div>
-<div class="page" data-vol="22" style="display:flex;flex-direction:column">
+<div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
+      <div class="lb-marg-body">
       <div style="margin-top:.4in"><div class="kick">Speeches that changed something</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
-      <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .10in">Single lines by the writers in this part &mdash; the ones that broke off from their poems and went out into the language on their own.</p>
-      <div style="display:flex;flex-direction:column;justify-content:space-around;flex:1 1 auto;margin-bottom:.34in">
-      <div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">When you reach the end of your rope, tie a knot in it and hang on.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Franklin D. Roosevelt</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">No man has a good enough memory to be a successful liar.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Abraham Lincoln</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">I am a slow walker, but I never walk back.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Abraham Lincoln</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Am I not destroying my enemies when I make friends of them?</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Abraham Lincoln</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Nobody cares how much you know, until they know how much you care.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Theodore Roosevelt</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Happiness is not in the mere possession of money; it lies in the joy of achievement.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Franklin D. Roosevelt</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">A smooth sea never made a skilled sailor.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Franklin D. Roosevelt</div></div>
-      </div>
+      <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .04in">Single lines by the writers in this part &mdash; the ones that broke off from their poems and went out into the language on their own.</p>
+      
+      <div class="lb-hero">
+        <div class="q">When you reach the end of your rope, tie a knot in it and hang on.</div>
+        <div class="by">&mdash; Franklin D. Roosevelt</div></div>
+      <div class="lb-rest">
+      <div class="lb-line"><div class="q">No man has a good enough memory to be a successful liar.</div><div class="by">&mdash; Abraham Lincoln</div></div><div class="lb-line"><div class="q">I am a slow walker, but I never walk back.</div><div class="by">&mdash; Abraham Lincoln</div></div><div class="lb-line"><div class="q">Am I not destroying my enemies when I make friends of them?</div><div class="by">&mdash; Abraham Lincoln</div></div><div class="lb-line"><div class="q">Nobody cares how much you know, until they know how much you care.</div><div class="by">&mdash; Theodore Roosevelt</div></div><div class="lb-line"><div class="q">Happiness is not in the mere possession of money; it lies in the joy of achievement.</div><div class="by">&mdash; Franklin D. Roosevelt</div></div><div class="lb-line"><div class="q">A smooth sea never made a skilled sailor.</div><div class="by">&mdash; Franklin D. Roosevelt</div></div>
+      </div></div>
+      <div class="lb-tail"><img src="art/sc-speeches.jpg" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>43</span></div></div>
 <div class="page sc-page" data-vol="22">
     <div class="sc-frame"><img class="sc-art" src="art/sc-epics.jpg" alt=""></div>
@@ -1221,39 +1231,24 @@ Is rounded with a sleep.</div>
     <div class="pm-g"><b>essence</b><i>/ ESS-uns /</i><span>the one thing that makes something what it is, with everything else stripped away</span></div><div class="pm-g"><b>sorrow</b><i>/ SORR-oh /</i><span>deep sadness, especially from loss</span></div><div class="pm-g"><b>destroyed</b><i>/ dih-STROYD /</i><span>completely ruined or put an end to</span></div><div class="pm-g"><b>millionaire</b><i>/ mill-yuh-NAIR /</i><span>a person who has a million or more in money</span></div>
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>55</span></div></div>
-<div class="page" data-verso data-vol="22" style="display:flex;flex-direction:column">
+<div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
+      <div class="lb-marg-body">
       <div style="margin-top:.4in"><div class="kick">The oldest lines we still say</div><h2 style="font-size:19pt">Lines that got loose</h2></div>
-      <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .10in">Single lines that outgrew the poems they came from and went out into the language on their own.</p>
-      <div style="display:flex;flex-direction:column;justify-content:space-around;flex:1 1 auto;margin-bottom:.34in">
-      <div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">If you can keep your head when all about you
+      <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .04in">Single lines that outgrew the poems they came from and went out into the language on their own.</p>
+      
+      <div class="lb-hero">
+        <div class="q">If you can keep your head when all about you
 Are losing theirs and blaming it on you.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Rudyard Kipling</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Bee! I'm expecting you!
-Was saying Yesterday.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Emily Dickinson</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">When all at once I saw a crowd,
-A host, of golden daffodils.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; William Wordsworth</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Small cheer and great welcome makes a merry feast.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; William Shakespeare</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Sweet are the uses of adversity.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; William Shakespeare</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Hurt no living thing:
+        <div class="by">&mdash; Rudyard Kipling</div></div>
+      <div class="lb-rest">
+      <div class="lb-line"><div class="q">Bee! I'm expecting you!
+Was saying Yesterday.</div><div class="by">&mdash; Emily Dickinson</div></div><div class="lb-line"><div class="q">When all at once I saw a crowd,
+A host, of golden daffodils.</div><div class="by">&mdash; William Wordsworth</div></div><div class="lb-line"><div class="q">Small cheer and great welcome makes a merry feast.</div><div class="by">&mdash; William Shakespeare</div></div><div class="lb-line"><div class="q">Sweet are the uses of adversity.</div><div class="by">&mdash; William Shakespeare</div></div><div class="lb-line"><div class="q">Hurt no living thing:
 Ladybird, nor butterfly,
-Nor moth with dusty wing.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Christina Rossetti</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Present fears are less than horrible imaginings.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; William Shakespeare</div></div>
-      </div>
+Nor moth with dusty wing.</div><div class="by">&mdash; Christina Rossetti</div></div><div class="lb-line"><div class="q">Present fears are less than horrible imaginings.</div><div class="by">&mdash; William Shakespeare</div></div>
+      </div></div>
+      <div class="lb-tail"><img src="art/sc-epics.jpg" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>56</span></div></div>
 <div class="page sc-page" data-vol="22">
     <div class="sc-frame"><img class="sc-art" src="art/sc-sonnets.jpg" alt=""></div>
@@ -1419,44 +1414,29 @@ Nor moth with dusty wing.</div>
     <div class="pm-g"><b>beauteous</b><i>/ BYOO-tee-uhss /</i><span>beautiful (a poetic form)</span></div><div class="pm-g"><b>adoration</b><i>/ ad-uh-RAY-shuhn /</i><span>deep love and respect</span></div><div class="pm-g"><b>tranquillity</b><i>/ trang-KWIL-ih-tee /</i><span>calmness and quiet (British spelling)</span></div><div class="pm-g"><b>solemn</b><i>/ SOL-uhm /</i><span>formal and dignified; deeply serious</span></div><div class="pm-g"><b>divine</b><i>/ dih-VINE /</i><span>of or like God</span></div>
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>68</span></div></div>
-<div class="page" data-vol="22" style="display:flex;flex-direction:column">
+<div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
+      <div class="lb-marg-body">
       <div style="margin-top:.4in"><div class="kick">Fourteen lines, and a turn</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
-      <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .10in">Single lines by the writers in this part &mdash; the ones that broke off from their poems and went out into the language on their own.</p>
-      <div style="display:flex;flex-direction:column;justify-content:space-around;flex:1 1 auto;margin-bottom:.34in">
-      <div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Hail to thee, blithe Spirit!
+      <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .04in">Single lines by the writers in this part &mdash; the ones that broke off from their poems and went out into the language on their own.</p>
+      
+      <div class="lb-hero">
+        <div class="q">Hail to thee, blithe Spirit!
 Bird thou never wert.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Percy Bysshe Shelley</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Busy old fool, unruly Sun,
+        <div class="by">&mdash; Percy Bysshe Shelley</div></div>
+      <div class="lb-rest">
+      <div class="lb-line"><div class="q">Busy old fool, unruly Sun,
 Why dost thou thus,
-Through windows, and through curtains call on us?</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; John Donne</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Where are the songs of Spring? Ay, where are they?
-Think not of them, thou hast thy music too.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; John Keats</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">For oft, when on my couch I lie
+Through windows, and through curtains call on us?</div><div class="by">&mdash; John Donne</div></div><div class="lb-line"><div class="q">Where are the songs of Spring? Ay, where are they?
+Think not of them, thou hast thy music too.</div><div class="by">&mdash; John Keats</div></div><div class="lb-line"><div class="q">For oft, when on my couch I lie
 In vacant or in pensive mood,
-They flash upon that inward eye.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; William Wordsworth</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Beauty is truth, truth beauty,—that is all
-Ye know on earth, and all ye need to know.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; John Keats</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Higher still and higher
+They flash upon that inward eye.</div><div class="by">&mdash; William Wordsworth</div></div><div class="lb-line"><div class="q">Beauty is truth, truth beauty,—that is all
+Ye know on earth, and all ye need to know.</div><div class="by">&mdash; John Keats</div></div><div class="lb-line"><div class="q">Higher still and higher
 From the earth thou springest
-Like a cloud of fire.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Percy Bysshe Shelley</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">No man is an island, entire of itself;
-every man is a piece of the continent.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; John Donne</div></div>
-      </div>
+Like a cloud of fire.</div><div class="by">&mdash; Percy Bysshe Shelley</div></div><div class="lb-line"><div class="q">No man is an island, entire of itself;
+every man is a piece of the continent.</div><div class="by">&mdash; John Donne</div></div>
+      </div></div>
+      <div class="lb-tail"><img src="art/sc-sonnets.jpg" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>69</span></div></div>
 <div class="page sc-page" data-vol="22">
     <div class="sc-frame"><img class="sc-art" src="art/sc-haiku.jpg" alt=""></div>
@@ -1790,38 +1770,23 @@ every man is a piece of the continent.</div>
     <div class="pm-g"><b>confined</b><i>/ kuhn-FYND /</i><span>kept within limits; unable to leave</span></div>
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>93</span></div></div>
-<div class="page" data-verso data-vol="22" style="display:flex;flex-direction:column">
+<div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
+      <div class="lb-marg-body">
       <div style="margin-top:.4in"><div class="kick">Seventeen syllables</div><h2 style="font-size:19pt">Lines that got loose</h2></div>
-      <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .10in">Single lines that outgrew the poems they came from and went out into the language on their own.</p>
-      <div style="display:flex;flex-direction:column;justify-content:space-around;flex:1 1 auto;margin-bottom:.34in">
-      <div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">They do not love that do not show their love.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; William Shakespeare</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Lord, what fools these mortals be!</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; William Shakespeare</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Break, break, break,
-On thy cold gray stones, O Sea!</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Alfred, Lord Tennyson</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Flower in the crannied wall,
-I pluck you out of the crannies.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Alfred, Lord Tennyson</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Words without thoughts never to heaven go.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; William Shakespeare</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">How do I love thee? Let me count the ways.
+      <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .04in">Single lines that outgrew the poems they came from and went out into the language on their own.</p>
+      
+      <div class="lb-hero">
+        <div class="q">They do not love that do not show their love.</div>
+        <div class="by">&mdash; William Shakespeare</div></div>
+      <div class="lb-rest">
+      <div class="lb-line"><div class="q">Lord, what fools these mortals be!</div><div class="by">&mdash; William Shakespeare</div></div><div class="lb-line"><div class="q">Break, break, break,
+On thy cold gray stones, O Sea!</div><div class="by">&mdash; Alfred, Lord Tennyson</div></div><div class="lb-line"><div class="q">Flower in the crannied wall,
+I pluck you out of the crannies.</div><div class="by">&mdash; Alfred, Lord Tennyson</div></div><div class="lb-line"><div class="q">Words without thoughts never to heaven go.</div><div class="by">&mdash; William Shakespeare</div></div><div class="lb-line"><div class="q">How do I love thee? Let me count the ways.
 I love thee to the depth and breadth and height
-My soul can reach.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Elizabeth Barrett Browning</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">No man is an island, entire of itself.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; John Donne</div></div>
-      </div>
+My soul can reach.</div><div class="by">&mdash; Elizabeth Barrett Browning</div></div><div class="lb-line"><div class="q">No man is an island, entire of itself.</div><div class="by">&mdash; John Donne</div></div>
+      </div></div>
+      <div class="lb-tail"><img src="art/sc-haiku.jpg" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>94</span></div></div>
 <div class="page sc-page" data-vol="22">
     <div class="sc-frame"><img class="sc-art" src="art/sc-limericks.jpg" alt=""></div>
@@ -2057,43 +2022,28 @@ My soul can reach.</div>
     <div class="pm-g"><b>canny</b><i>/ KAN-ee /</i><span>clever and quick to spot an advantage</span></div><div class="pm-g"><b>exceedingly</b><i>/ ek-SEE-ding-lee /</i><span>extremely; to a very great degree</span></div><div class="pm-g"><b>preserve</b><i>/ pri-ZURV /</i><span>to treat food so it keeps without spoiling</span></div>
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>111</span></div></div>
-<div class="page" data-verso data-vol="22" style="display:flex;flex-direction:column">
+<div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
+      <div class="lb-marg-body">
       <div style="margin-top:.4in"><div class="kick">Five lines and a bounce</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
-      <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .10in">Single lines by the writers in this part &mdash; the ones that broke off from their poems and went out into the language on their own.</p>
-      <div style="display:flex;flex-direction:column;justify-content:space-around;flex:1 1 auto;margin-bottom:.34in">
-      <div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">On the top of the Crumpetty Tree
+      <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .04in">Single lines by the writers in this part &mdash; the ones that broke off from their poems and went out into the language on their own.</p>
+      <div class="lb-hand">All of them Edward Lear</div>
+      <div class="lb-hero">
+        <div class="q">On the top of the Crumpetty Tree
 The Quangle Wangle sat,
 But his face you could not see,
 On account of his Beaver Hat.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Edward Lear</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Far and few, far and few,
-Are the lands where the Jumblies live.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Edward Lear</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">There was an Old Man in a tree,
-Who was horribly bored by a Bee.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Edward Lear</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">There was an Old Person of Ware,
-Who rode on the back of a bear.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Edward Lear</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Their heads are green, and their hands are blue,
-And they went to sea in a Sieve.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Edward Lear</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">And hand in hand, on the edge of the sand,
-They danced by the light of the moon.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Edward Lear</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">On the Coast of Coromandel
-Where the early pumpkins blow.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Edward Lear</div></div>
-      </div>
+        </div>
+      <div class="lb-rest">
+      <div class="lb-line"><div class="q">Far and few, far and few,
+Are the lands where the Jumblies live.</div></div><div class="lb-line"><div class="q">There was an Old Man in a tree,
+Who was horribly bored by a Bee.</div></div><div class="lb-line"><div class="q">There was an Old Person of Ware,
+Who rode on the back of a bear.</div></div><div class="lb-line"><div class="q">Their heads are green, and their hands are blue,
+And they went to sea in a Sieve.</div></div><div class="lb-line"><div class="q">And hand in hand, on the edge of the sand,
+They danced by the light of the moon.</div></div><div class="lb-line"><div class="q">On the Coast of Coromandel
+Where the early pumpkins blow.</div></div>
+      </div></div>
+      <div class="lb-tail"><img src="art/sc-limericks.jpg" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>112</span></div></div>
 <div class="page sc-page" data-vol="22">
     <div class="sc-frame"><img class="sc-art" src="art/sc-byheart.jpg" alt=""></div>
@@ -2455,39 +2405,24 @@ Where the early pumpkins blow.</div>
     <div class="pm-g"><b>expatiate</b><i>/ ek-SPAY-shee-ayt /</i><span>to wander freely over a wide space, or to speak at length</span></div><div class="pm-g"><b>promiscuous</b><i>/ pruh-MISS-kyoo-us /</i><span>here, in its old sense: mixed together without order</span></div><div class="pm-g"><b>covert</b><i>/ KUV-ert /</i><span>a thicket of undergrowth where animals hide</span></div><div class="pm-g"><b>latent</b><i>/ LAY-tunt /</i><span>present but hidden, not yet showing</span></div><div class="pm-g"><b>candid</b><i>/ KAN-did /</i><span>honest and straightforward, even when it is awkward</span></div><div class="pm-g"><b>vindicate</b><i>/ VIN-dih-kayt /</i><span>to defend something against blame, and show it was right</span></div>
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>138</span></div></div>
-<div class="page" data-vol="22" style="display:flex;flex-direction:column">
+<div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
+      <div class="lb-marg-body">
       <div style="margin-top:.4in"><div class="kick">Poems worth knowing by heart</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
-      <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .10in">Single lines by the writers in this part &mdash; the ones that broke off from their poems and went out into the language on their own.</p>
-      <div style="display:flex;flex-direction:column;justify-content:space-around;flex:1 1 auto;margin-bottom:.34in">
-      <div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">To live is so startling it leaves little time for anything else.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Emily Dickinson</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">A city plum is not a plum;
-A dumb-bell is no bell, though dumb.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Christina Rossetti</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Can anything be sadder than work left unfinished? Yes, work never begun.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Christina Rossetti</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Earth has not anything to show more fair:
+      <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .04in">Single lines by the writers in this part &mdash; the ones that broke off from their poems and went out into the language on their own.</p>
+      
+      <div class="lb-hero">
+        <div class="q">To live is so startling it leaves little time for anything else.</div>
+        <div class="by">&mdash; Emily Dickinson</div></div>
+      <div class="lb-rest">
+      <div class="lb-line"><div class="q">A city plum is not a plum;
+A dumb-bell is no bell, though dumb.</div><div class="by">&mdash; Christina Rossetti</div></div><div class="lb-line"><div class="q">Can anything be sadder than work left unfinished? Yes, work never begun.</div><div class="by">&mdash; Christina Rossetti</div></div><div class="lb-line"><div class="q">Earth has not anything to show more fair:
 Dull would he be of soul who could pass by
-A sight so touching in its majesty.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; William Wordsworth</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">I have discovered in life that there are ways of getting almost anywhere you want to go, if you really want to go.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Langston Hughes</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Afoot and light-hearted I take to the open road,
-Healthy, free, the world before me.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Walt Whitman</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Bring me the sunset in a cup,
-Reckon the morning's flagons up.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Emily Dickinson</div></div>
-      </div>
+A sight so touching in its majesty.</div><div class="by">&mdash; William Wordsworth</div></div><div class="lb-line"><div class="q">I have discovered in life that there are ways of getting almost anywhere you want to go, if you really want to go.</div><div class="by">&mdash; Langston Hughes</div></div><div class="lb-line"><div class="q">Afoot and light-hearted I take to the open road,
+Healthy, free, the world before me.</div><div class="by">&mdash; Walt Whitman</div></div><div class="lb-line"><div class="q">Bring me the sunset in a cup,
+Reckon the morning's flagons up.</div><div class="by">&mdash; Emily Dickinson</div></div>
+      </div></div>
+      <div class="lb-tail"><img src="art/sc-byheart.jpg" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>139</span></div></div>
 <div class="page sc-page" data-vol="22">
     <div class="sc-frame"><img class="sc-art" src="art/sc-prose.jpg" alt=""></div>
@@ -2597,35 +2532,20 @@ Reckon the morning's flagons up.</div>
     <div class="pm-g"><b>conversations</b><i>/ kon-ver-SAY-shunz /</i><span>talks between people</span></div><div class="pm-g"><b>considering</b><i>/ kun-SID-er-ing /</i><span>thinking something over carefully</span></div><div class="pm-g"><b>pleasure</b><i>/ PLEZH-er /</i><span>a feeling of enjoyment</span></div><div class="pm-g"><b>suddenly</b><i>/ SUD-un-lee /</i><span>quickly and without warning</span></div>
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>147</span></div></div>
-<div class="page" data-verso data-vol="22" style="display:flex;flex-direction:column">
+<div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
+      <div class="lb-marg-body">
       <div style="margin-top:.4in"><div class="kick">The long quote</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
-      <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .10in">Single lines by the writers in this part &mdash; the ones that broke off from their poems and went out into the language on their own.</p>
-      <div style="display:flex;flex-direction:column;justify-content:space-around;flex:1 1 auto;margin-bottom:.34in">
-      <div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">It's no use going back to yesterday, because I was a different person then.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Lewis Carroll</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Goodness is the only investment that never fails.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Henry David Thoreau</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Begin at the beginning and go on till you come to the end: then stop.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Lewis Carroll</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">To ease another's heartache is to forget one's own.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Abraham Lincoln</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Reflect upon your present blessings, of which every man has many.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Charles Dickens</div></div><div style="padding-left:.34in;position:relative;transform:rotate(0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">'Twinkle, twinkle, little bat!
-How I wonder what you're at!'</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Lewis Carroll</div></div><div style="padding-left:.34in;position:relative;transform:rotate(-0.25deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">Nature is full of genius, full of the divinity.</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; Henry David Thoreau</div></div>
-      </div>
+      <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .04in">Single lines by the writers in this part &mdash; the ones that broke off from their poems and went out into the language on their own.</p>
+      
+      <div class="lb-hero">
+        <div class="q">It's no use going back to yesterday, because I was a different person then.</div>
+        <div class="by">&mdash; Lewis Carroll</div></div>
+      <div class="lb-rest">
+      <div class="lb-line"><div class="q">Goodness is the only investment that never fails.</div><div class="by">&mdash; Henry David Thoreau</div></div><div class="lb-line"><div class="q">Begin at the beginning and go on till you come to the end: then stop.</div><div class="by">&mdash; Lewis Carroll</div></div><div class="lb-line"><div class="q">To ease another's heartache is to forget one's own.</div><div class="by">&mdash; Abraham Lincoln</div></div><div class="lb-line"><div class="q">Reflect upon your present blessings, of which every man has many.</div><div class="by">&mdash; Charles Dickens</div></div><div class="lb-line"><div class="q">'Twinkle, twinkle, little bat!
+How I wonder what you're at!'</div><div class="by">&mdash; Lewis Carroll</div></div><div class="lb-line"><div class="q">Nature is full of genius, full of the divinity.</div><div class="by">&mdash; Henry David Thoreau</div></div>
+      </div></div>
+      <div class="lb-tail"><img src="art/sc-prose.jpg" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>148</span></div></div>
 <div class="page" data-vol="22">
       <div class="bb-head"><span>Lines Worth Keeping</span><span>The Big List</span></div>

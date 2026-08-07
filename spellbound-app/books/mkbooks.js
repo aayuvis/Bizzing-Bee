@@ -559,6 +559,50 @@ function css(vol) {
   .pm-g b{font-family:'BB Display';font-size:9.4pt;display:block;color:var(--ink)}
   .pm-g i{font-family:'BB Mono';font-size:7.4pt;font-style:normal;color:var(--accent-deep);display:block}
   .pm-g span{color:var(--muted);display:block}
+  /* The five steps on this volume's opening page. They were set as rounded
+     white panels with a gradient numeral chip on each — app furniture, in the
+     one book that is otherwise composed like a printed anthology. Same fault
+     the mascot and the scenery band on this page were removed for, and it
+     survived both passes because a panel looks tidy in isolation.
+     Set as a printed preface instead: a hanging numeral, a small-caps line,
+     and a hairline between steps. No box, no shadow, no fill. */
+  .lb-steps{margin:.10in 0 .06in;border-top:1px solid var(--hairline)}
+  .lb-step{display:flex;gap:.20in;align-items:baseline;padding:.135in 0 .145in;
+    border-bottom:1px solid var(--hairline)}
+  .lb-step .n{flex:0 0 .30in;text-align:right;font-family:'BB Display';font-size:12.5pt;
+    line-height:1;color:var(--accent);font-variant-numeric:lining-nums}
+  .lb-step .b{flex:1;min-width:0}
+  .lb-step .t{font-family:'BB Kicker';font-size:8.6pt;letter-spacing:.11em;
+    text-transform:uppercase;color:var(--accent-deep);margin-bottom:3pt}
+  .lb-step p{margin:0;font-size:11pt;line-height:1.48;color:var(--ink)}
+  /* The margin page. A full-bleed wash of the part's plate at 20% was tried
+     first and printed as a smudge — a busy painted scene at low opacity is not
+     a ground, it is a stain. The plate is given its own room instead, as a
+     tailpiece band across the foot the way an anthology closes a section, and
+     it stops clear of the running foot so the folio never prints on it. */
+  .lb-marg{position:relative;overflow:hidden}
+  /* the body takes the room above the tailpiece and leads the lines out into
+     it, rather than stacking tight and leaving an inch and a half of nothing */
+  .lb-marg-body{position:relative;z-index:2;display:flex;flex-direction:column;flex:1 1 auto;
+    padding-bottom:2.72in}
+  .lb-tail{position:absolute;left:0;right:0;bottom:.62in;height:2.45in;overflow:hidden;z-index:1}
+  .lb-tail img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.92)}
+  /* the top edge dissolves into the paper instead of butting against the type */
+  .lb-tail::before{content:'';position:absolute;inset:0;z-index:2;
+    background:linear-gradient(180deg,var(--paper) 0%,
+      color-mix(in srgb,var(--paper) 55%,transparent) 16%,transparent 40%)}
+  .lb-hand{font-family:'BB Kicker';font-size:8.6pt;letter-spacing:.10em;text-transform:uppercase;
+    color:var(--accent-deep);margin:.02in 0 .16in}
+  .lb-hero{position:relative;padding:.02in 0 .18in .40in;border-bottom:1px solid var(--hairline)}
+  .lb-hero::before{content:'“';position:absolute;left:0;top:-.12in;font-family:'BB Display';
+    font-size:42pt;line-height:1;color:var(--accent);opacity:.45}
+  .lb-hero .q{font-family:'BB Display';font-size:18pt;line-height:1.26;color:var(--ink)}
+  .lb-hero .by{font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:5pt}
+  .lb-rest{display:flex;flex-direction:column;justify-content:space-between;flex:1 1 auto}
+  .lb-line{padding:.105in 0;border-bottom:1px solid var(--hairline)}
+  .lb-line:last-child{border-bottom:0}
+  .lb-line .q{font-family:'BB Display';font-size:12.4pt;line-height:1.34;color:var(--ink)}
+  .lb-line .by{font-family:'BB Kicker';font-size:9pt;color:var(--accent-deep);margin-top:2pt}
   /* ---- the part dividers ----
      A part opener used to be a centred title on a flat gradient with the book's
      cartoon mascot stamped under it and a scenery band along the foot. Against
@@ -2107,15 +2151,14 @@ function book19() {
          thought is better said straight, so it is said straight. -->
     <p style="font-family:'BB Kicker';font-size:12.4pt;line-height:1.55;color:var(--muted);max-width:5.6in;margin:.12in 0 .22in">
       Knowing a poem by heart is not showing off. It is the only way to own one &mdash; to have it at three in the morning when there is no book. Every piece in here is short enough to learn in a week.</p>
-    <div style="display:flex;flex-direction:column;justify-content:space-between;flex:1 1 auto;margin:.06in 0 .1in">
+    <div class="lb-steps" style="flex:0 0 auto">
     ${[['Read it out loud, once', 'Poetry is a sound before it is a meaning. You will hear the shape before you can explain it.'],
        ['Find the turn', 'Nearly every piece here changes direction somewhere. The note under it tells you where — but look first.'],
        ['Take the words', 'The hard words in each piece are listed after it, with how to say them. That is the spelling half of this book.'],
        ['Copy one out by hand', 'Slowly, with the punctuation exactly as it is. You will notice things reading cannot show you.'],
        ['Then say it to somebody', 'Out loud, to a person, from memory. That is the only test there is, and it is the same nerve a bee asks for.']]
-      .map(([t, b], i) => `<div style="display:flex;gap:.14in;align-items:flex-start">
-      <span style="display:inline-grid;place-items:center;width:.52in;height:.52in;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:14pt;flex-shrink:0">${i + 1}</span>
-      <div class="bb-panelbox" style="flex:1"><h3 style="font-size:12pt;color:var(--accent-deep)">${t}</h3><p style="font-size:10.6pt;line-height:1.45">${b}</p></div></div>`).join('')}
+      .map(([t, b], i) => `<div class="lb-step"><div class="n">${i + 1}</div>
+      <div class="b"><div class="t">${t}</div><p>${b}</p></div></div>`).join('')}
     </div>
     <!-- What used to close this page was a painted scenery band across the foot,
          with two inches of dead paper above it and the folio printed unreadably
@@ -2124,7 +2167,7 @@ function book19() {
          what is in it, and it is the only page where the whole arc is visible at
          once. Built from SEC, so carving the Bard out of two sections cannot
          leave this list telling a lie. -->
-    <div style="margin-bottom:.36in;padding-top:.16in;border-top:1.5pt solid color-mix(in srgb,var(--accent) 34%,transparent)">
+    <div style="margin-top:auto;margin-bottom:.36in;padding-top:.16in;border-top:1.5pt solid color-mix(in srgb,var(--accent) 34%,transparent)">
       <div class="kick" style="margin-bottom:.10in">The ${['one','two','three','four','five','six','seven','eight','nine','ten'][SEC.length - 1] || SEC.length} parts</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.09in .22in">
         ${SEC.map(([, s], i) => `<div style="display:flex;gap:.10in;align-items:baseline">
@@ -2160,10 +2203,25 @@ function book19() {
        first six words, lower-cased and stripped, which is where the variants
        agree and where two genuinely different quotations almost never do. */
     const pick = (list) => {
-      const out = [], seenQ = new Set();
+      const out = [], seenQ = new Set(), norm = [];
+      const flat = t => t.toLowerCase().replace(/[^a-z ]+/g, ' ').replace(/\s+/g, ' ').trim();
       for (const q of list) {
-        const k = q.q.toLowerCase().replace(/[^a-z ]+/g, '').split(/\s+/).slice(0, 6).join(' ');
-        if (seenQ.has(k)) continue; seenQ.add(k); out.push(q);
+        const f = flat(q.q);
+        const k = f.split(' ').slice(0, 6).join(' ');
+        if (seenQ.has(k)) continue;
+        /* The first-six-words key let the candle through twice: "How far that
+           little candle throws his beams! So shines a good deed in a naughty
+           world" and "So shines a good deed in a weary world" begin
+           differently. Containment does not catch it either — the editors
+           disagree in the MIDDLE (naughty / weary), so neither string contains
+           the other. Five consecutive words in common does catch it: both share
+           "so shines a good deed". Two genuinely different quotations almost
+           never run five words together. */
+        const shing = t => { const w = t.split(' '); const o = new Set();
+          for (let i = 0; i + 5 <= w.length; i++) o.add(w.slice(i, i + 5).join(' ')); return o; };
+        const fs = shing(f);
+        if (norm.some(n => { for (const g of shing(n)) if (fs.has(g)) return true; return false; })) continue;
+        seenQ.add(k); norm.push(f); out.push(q);
         if (out.length === 7) break;
       }
       return out;
@@ -2175,18 +2233,36 @@ function book19() {
        drawn in the app's soft anime register, which is two books younger than
        anything else in this volume, and the folio printed on top of it was
        unreadable. The quotes take the room instead. */
-    if (marg.length) pages.push(`<div class="page" data-vol="22" style="display:flex;flex-direction:column">
+    /* This page was seven identical blocks down a bare sheet, every one of them
+       signed. In the Bard's part that printed "— William Shakespeare" seven
+       times under seven lines on a page whose whole subject is that they are all
+       his. One hand gets named ONCE, in the standfirst.
+
+       And it carried no picture at all, in the one volume where every other
+       spread is painted. It borrows its own part's divider plate as a ground,
+       the way a poem page does — same device, same opacity, so the margin page
+       reads as the end of that part rather than as a list that fell out of the
+       book. The first line is played large; the rest hang under hairlines. */
+    const hands1 = [...new Set(marg.map(q => String(q.a || '').trim()))];
+    const oneHand = hands1.length === 1 ? hands1[0] : null;
+    const ground = artAt('sc-' + key);
+    const heroQ = marg[0], restQ = marg.slice(1);
+    if (marg.length) pages.push(`<div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
       ${head(vol, null, 0, 'In the margins')}
+      <div class="lb-marg-body">
       <div style="margin-top:.4in"><div class="kick">${esc(sec.title)}</div><h2 style="font-size:19pt">${sameHands ? 'Lines from the same hands' : 'Lines that got loose'}</h2></div>
-      <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .10in">${sameHands
+      <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .04in">${sameHands
         ? 'Single lines by the writers in this part &mdash; the ones that broke off from their poems and went out into the language on their own.'
         : 'Single lines that outgrew the poems they came from and went out into the language on their own.'}</p>
-      <div style="display:flex;flex-direction:column;justify-content:space-around;flex:1 1 auto;margin-bottom:.34in">
-      ${marg.map((q, k) => `<div style="padding-left:.34in;position:relative;transform:rotate(${k % 2 ? .25 : -.25}deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">${esc(q.q)}</div>
-        <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; ${esc(q.a)}</div></div>`).join('')}
-      </div>
+      ${oneHand ? `<div class="lb-hand">All of them ${esc(oneHand)}</div>` : ''}
+      <div class="lb-hero">
+        <div class="q">${esc(heroQ.q)}</div>
+        ${oneHand ? '' : `<div class="by">&mdash; ${esc(heroQ.a)}</div>`}</div>
+      <div class="lb-rest">
+      ${restQ.map(q => `<div class="lb-line"><div class="q">${esc(q.q)}</div>${
+        oneHand ? '' : `<div class="by">&mdash; ${esc(q.a)}</div>`}</div>`).join('')}
+      </div></div>
+      ${ground ? `<div class="lb-tail"><img src="${ground}" alt=""></div>` : ''}
       ${foot(vol, folio.n++)}</div>`);
   }
 
