@@ -2822,7 +2822,11 @@ p.lead{color:#59527a;max-width:62ch;margin:0 auto;font-size:15.5px;line-height:1
 .shelf2{margin-top:58px;padding-top:34px;border-top:1px solid #E4DBFA}
 .shelf2 h2{font-family:'Baloo 2';font-size:clamp(24px,3.2vw,32px);color:#4A3AA0;line-height:1.1}
 .shelf2 p{color:#59527a;max-width:60ch;font-size:14.5px;line-height:1.6;margin-top:8px}
-.shelf2 .grid{grid-template-columns:repeat(auto-fill,minmax(228px,1fr));max-width:720px;margin-top:24px}
+/* Same track sizing AND same measure as the numbered shelf, so the companions
+   land on the same four-across rhythm. They used to be capped at 720px, which
+   forced three columns and left the fourth companion orphaned on its own row —
+   the cap made them look like an afterthought rather than part of the library. */
+.shelf2 .grid{grid-template-columns:repeat(auto-fill,minmax(228px,1fr));margin-top:24px}
 .bk-vol.comp{background:rgba(60,132,85,.72);font-size:10px}
 footer{max-width:1180px;margin:38px auto 0;padding:0 22px;font-size:12px;color:#8b83a3;line-height:1.6}
 </style></head><body><main>
