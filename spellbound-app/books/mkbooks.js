@@ -1045,6 +1045,20 @@ function hivePages(vol, ch, ci, folioRef) {
   return out;
 }
 /* puzzles (seeded; unchanged logic, restyled) */
+/* Split a run of items across pages WITHOUT stranding the remainder.
+   `for (i = 0; i < n; i += per)` puts everything left over on the last page, so
+   nineteen quotes at six to a page print 6/6/6/ONE — and that one quote sat on
+   seven inches of blank paper in twelve places in the champion volume. Chunking
+   by the page COUNT instead spreads the remainder: 19 over 4 pages is 5/5/5/4.
+   `per` is the maximum a page can hold, not the number it must carry. */
+function evenChunks(items, per) {
+  const n = Math.max(1, Math.ceil(items.length / per));
+  const size = Math.ceil(items.length / n);
+  const out = [];
+  for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
+  return out;
+}
+
 function crossword(words, rnd) {
   const W = words.filter(w => /^[a-z]{4,12}$/i.test(w.w)).slice(0, 10).map(w => ({ ...w, u: w.w.toUpperCase() }));
   if (W.length < 4) return null;
@@ -1606,9 +1620,11 @@ function book17() {
   const simPages = [];
   for (const g of simGroups) {
     if (!g.items.length) continue;
-    for (let i = 0; i < g.items.length; i += 10)
-      simPages.push({ g, seg: g.items.slice(i, i + 10), first: i === 0,
-        part: Math.floor(i / 10) + 1, parts: Math.ceil(g.items.length / 10) });
+    /* ten is the right page load here — the full pages measure 72-81%. What was
+       wrong was the remainder: a group of 22 printed 10/10/TWO. */
+    const segs = evenChunks(g.items, 10);
+    segs.forEach((seg, si) => simPages.push({ g, seg, first: si === 0,
+      part: si + 1, parts: segs.length }));
   }
   let seen = 0;
   for (const sp of simPages) {
@@ -1730,18 +1746,23 @@ function book18() {
       ${worldStrip(WORLD_CYCLE[(chNo + 8) % 12], vol, 700 + chNo)}
       ${foot(vol, folio.n++)}</div>`);
     const rest = picked.slice(1);
-    for (let i = 0; i < rest.length; i += 6) {
+    /* Nine, not six. Six quotes filled a page to 60% and the leftovers landed
+       one to a page at 12% — the emptiest paper in the library. evenChunks caps
+       at nine and spreads whatever is left across the same page count. */
+    const chunks = evenChunks(rest, 9);
+    chunks.forEach((seg, ci) => {
+      const i = ci * (chunks[0] || []).length;
       pages.push(`<div class="page" data-vol="18">
         ${head(vol, null, 0, esc(title))}
         <div style="margin-top:.4in"></div>
-        ${rest.slice(i, i + 6).map((q, k) => `<div style="margin-bottom:.17in;padding-left:.34in;position:relative;transform:rotate(${k % 2 ? .25 : -.25}deg)">
+        ${seg.map((q, k) => `<div style="margin-bottom:.17in;padding-left:.34in;position:relative;transform:rotate(${k % 2 ? .25 : -.25}deg)">
           <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent)">“</span>
           <div style="font-family:'BB Display';font-size:13pt;line-height:1.3">${esc(q.q)}</div>
           <div style="font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep);margin-top:2pt">— ${esc(q.a)}${q.who ? ', ' + esc(q.who) : ''}</div>
           <div style="font-size:9.4pt;line-height:1.34;margin-top:2pt;color:var(--muted);font-style:italic">🐝 ${esc(fit(q.m, 154))}</div></div>`).join('')}
         ${worldStrip(WORLD_CYCLE[(chNo + i) % 12], vol, 800 + chNo * 9 + i)}
         ${foot(vol, folio.n++)}</div>`);
-    }
+    });
     if (chNo % 3 === 0) {
       const mixPool = shuf(QUOTES.filter(q => CH18.slice(chNo - 3, chNo).some(c2 => c2[0] === q.c) && q.q.length <= 90).slice(), rnd).slice(0, 8);
       const right = shuf(mixPool.map((q, k) => ({ k, a: q.a })), rnd);
