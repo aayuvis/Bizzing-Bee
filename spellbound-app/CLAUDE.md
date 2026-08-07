@@ -479,12 +479,58 @@ handlers. App lives in this folder; open `index.html` to run.
 - **Four companions now**, not two: `book-similes`, `book-champion`, plus
   **`book-lines` "Lines Worth Keeping"** (poems, speeches, sonnets, haiku, limericks and
   long prose quotes, all public domain, printed whole, each carrying its own bee-worthy
-  words; `books/poem-chapters.js`) and **`book-quiz` "The Long Quiz"** (275pp — a general round
-  then a hyper-speciality round, twenty-five times; generals drawn at build time from the
-  app bank at levels 3-5, specialities authored in `books/trivia-rounds.js`; four formats
-  in rotation — MC, written answers with the key at the back, crossword, letter square).
+  words; `books/poem-chapters.js`) and **`book-quiz` "Nobody Knows All of These"** (258pp,
+  64 rounds, ~1,470 questions — a general round then a hyper-speciality round; generals
+  drawn at build time from the app bank at levels 3-5, specialities authored in
+  `books/trivia-rounds.js`; four formats in rotation — MC, written answers with the key at
+  the back, crossword, letter square).
   The trivia shards do **not** export an array: each calls `SB_TRIVIA._add(lv, [...])`, so
   a reader has to supply that method and collect what it is handed.
+
+## The quiz companion (`book20()` in mkbooks.js)
+- **Every count it prints is DERIVED** — the round total, the question total, the
+  subtitle. The subtitle used to read "twenty-five times over" as a string literal, and
+  appending rounds would have left the cover contradicting the contents page. `trivia-rounds.js`
+  is **append-only** (the book indexes rounds by position), so counts move whenever anyone
+  authors a round.
+- **Pages are packed by MEASUREMENT, not by a fixed count per page.** Every block estimates
+  its own height from its own text at its own type size and a page takes blocks until its
+  budget is gone. Two constants carry the whole thing and both are fitted, not guessed:
+  the character-width factor **0.55** (fitted against 1,840 rendered stems and option cells
+  — at 0.48 the estimate is unbiased but a page is fifteen blocks and the errors accumulate)
+  and the per-block overheads, which are read off the CSS rather than eyeballed. `BUDGET`
+  is **8.8in** with `SLOP2` 0.45in for CSS column balancing.
+- **A `.page` is `overflow:hidden`, so an over-budget page CLIPS SILENTLY.** After any
+  change to the block sizes, re-measure in the browser and assert zero overflow — the
+  numbers here were arrived at by hitting it three times.
+- **The column count follows the CONTENT, not the recipe.** A speciality round is twelve
+  questions and twelve questions in two columns can only ever half-fill a page: that, not
+  the block design, is why the book once ran at 44% fill. Each layout is costed both ways
+  and the cheaper wins.
+- **`crossword()` returns plain CHARACTERS in `g`, with the numbering in a separate `nums`
+  map keyed `"r,c"`, and a bounding box in `r0/r1/c0/c1`.** A renderer that tests `c.ch`
+  and `c.n` gets an empty cell every time and prints a blank rectangle; one that walks the
+  whole 17x17 working array instead of the bounding box prints it adrift in a field of
+  margin. The quiz book did both at once and shipped invisible crosswords. Build them the
+  way the chapter puzzles do.
+- **Art is keyed by round ID, never by round TITLE and never by position.** Half the first
+  art table was keyed off titles (`warwords` for `wartime`, `knots` for `seafarers`, `money`
+  for `currency`, `codes` for `ciphers`), so those rounds matched nothing and fell through
+  to the fallback pool. A round's own plate (`b23-<round id>`) wins automatically if one
+  exists, so art can be commissioned a round at a time with no table to keep in step.
+- **Never borrow `b<nn>-ch<nn>-opener` plates.** Those are the app's CAST — chibi bees in
+  armour, the moth, the mascot — drawn for a nine-year-old. On "The Roman Emperors" it reads
+  as a different book breaking into this one. Only cast-free mature-register art is eligible:
+  the poetry companion's `pt-*` and `sc-*`, and this volume's own `b23-*`.
+- **Prompting for a subject that carries writing: name what must stay BLANK.** "A half-carved
+  Latin inscription" came back covered in gibberish letters — the prompt asked for it. The
+  temple columns are "plain, eroded and completely smooth", the flags are "colour and geometry
+  only", the coins have "no faces, no numerals". That works; a generic "no text" does not.
+- **The model still adds a painted frame** perhaps a third of the time, whatever the style
+  string says. Crop it rather than re-rolling (another roll is another chance at text), but
+  detect it by **SYMMETRY**: a frame is a uniform band on all four edges within ~40% of the
+  deepest, and each edge is cropped by ITS OWN depth. A lone deep band is a flat sky or wall
+  — cropping all four sides by the deepest ate real art off three plates before this rule.
 - **Everything printed in `book-lines` must be PUBLIC DOMAIN, and the book says so in
   its own preamble.** In practice: first published **1928 or earlier**, or a work of the
   US federal government (17 U.S.C. §105 — a sitting President's official address counts;
