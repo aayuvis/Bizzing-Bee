@@ -66,16 +66,60 @@ HTML
 
 echo "==> html $(ls "$R"/books/*.html | wc -l) · art $(ls "$R/books/art" | wc -l) · avatars $(ls "$R/avatars" | wc -l) · fonts $(ls "$R/fonts" | wc -l) · $(du -sh "$R" | cut -f1)"
 
+# WHY THIS COMMITS ON TOP INSTEAD OF `git init` + `push -f`
+#   The first version built a fresh repo every run and force-pushed unrelated
+#   history over gh-pages. It worked, but it was the wrong shape for two reasons.
+#
+#   It cannot be rehearsed. `git push --dry-run` connects, authenticates and
+#   computes the update CLIENT-side, then stops without sending a ref update —
+#   so server-side rulesets and pre-receive hooks never fire. A dry run proves
+#   the proxy injected a credential and the token has write scope. It cannot
+#   tell you whether the server will accept a non-fast-forward, and if a ruleset
+#   blocks force-pushes on gh-pages you find out only on the real push, after
+#   the build.
+#
+#   And it threw the site's history away every deploy. The books site is the
+#   deliverable; "what changed between two versions of the poems companion" is
+#   worth being able to ask.
+#
+#   So: clone the branch shallow, replace the worktree wholesale, commit on top.
+#   The push is then an ordinary fast-forward — nothing to force, nothing that
+#   needs a rehearsal, and a rejection is real news rather than something -f
+#   papers over. The snapshot semantics are unchanged: the worktree is emptied
+#   before the new build is dropped in, so a deleted book really disappears.
+#
+#   BKFORCE=1 restores the old behaviour, for the one case that needs it —
+#   deliberately resetting the branch's history.
 echo "==> publishing"
-cd "$R"
-git init -q
+P="$R.pub"
+rm -rf "$P"
+if [ "${BKFORCE:-}" != "1" ] && git clone --depth 1 -b gh-pages "$REMOTE" "$P" 2>/dev/null; then
+  echo "    committing on top of $(cd "$P" && git rev-parse --short HEAD)"
+  find "$P" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+  cp -a "$R"/. "$P"/
+  cd "$P"
+  PUSH_ARGS="-u origin gh-pages"
+else
+  # first publish, or BKFORCE=1
+  echo "    fresh branch (no gh-pages yet, or BKFORCE=1)"
+  cd "$R"
+  git init -q
+  git branch -M gh-pages
+  git remote add origin "$REMOTE"
+  PUSH_ARGS="-f -u origin gh-pages"
+fi
+
 git add -A
+if git diff --cached --quiet 2>/dev/null; then
+  echo "==> nothing changed since the last publish; not pushing"
+  exit 0
+fi
+NH=$(ls books/*.html | wc -l | tr -d ' ')
+NA=$(ls books/art | wc -l | tr -d ' ')
 git -c user.email="aayush.vishnoi@gmail.com" -c user.name="Bizzing Bee" \
-    commit -q -m "The Bizzing Bee library — 19 volumes and 4 companions"
-git branch -M gh-pages
-git remote add origin "$REMOTE"
-# force: this branch is a full regenerated snapshot, never an incremental edit
-git push -f -u origin gh-pages
+    commit -q -m "The Bizzing Bee library — ${NH} volumes, ${NA} plates"
+# shellcheck disable=SC2086
+git push $PUSH_ARGS
 
 cat <<'DONE'
 
