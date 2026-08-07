@@ -146,64 +146,60 @@
   /* ---------------- the announcer ----------------
      Authored pools rather than one line per event, because the child will hear
      these many times and a bee announcer who repeats himself is a robot. */
+  /* THE ANNOUNCER, CUT TO SIZE.
+     Seventy-eight lines across twenty-four pools, which was written for variety
+     when the announcer was only ever going to be read. If any of it is to be
+     RECORDED, every line is a clip and every placeholder multiplies it — a single
+     "Number {n}, {name}. {age}, and {tell}." is ten spellers by eleven draw
+     numbers, a hundred and ten recordings for one sentence. Cutting to two lines
+     a pool takes the set from 78 to 41 without losing the voice: a bee announcer
+     repeats himself anyway, and a child hears these many times.
+
+     AND {name} NOW SITS AT A SENTENCE BOUNDARY, always first or last, never
+     buried mid-clause. That is what lets the name be spoken separately — by the
+     device's own voice, live — while the rest of the line stays fixed. It is the
+     one part that can never be pre-recorded without a clip per speller, so it is
+     the one part that is deliberately detachable. Do not move a {name} back into
+     the middle of a sentence. */
   const SAY = {
     open: ['Ladies and gentlemen — eleven spellers, one microphone. Only one of you walks out with it.',
-      'Welcome to the hall. Eleven spellers. The rules are the old rules: you miss, you sit down.',
       'The lights are up. Somewhere in this room is a champion who does not know it yet.'],
     draw: ['You have drawn number {n}. Remember it — it is your place in every round tonight.',
-      'Number {n}. That is where you stand, and that is when you spell.',
-      'Draw number {n}. Look at the faces beside you; some will not be there long.'],
-    roundIn: ['{round}. {line}', 'We move to {round}. {line}', '{round} — {sub}. {line}'],
-    callMe: ['Speller number {n}. Your word, please.', 'To the microphone, number {n}.',
-      'Number {n} — this is yours.', 'Our own speller, number {n}. Take your time.'],
-    callBot: ['{name}, {age}. {name} {tell}.', '{name} steps up — {age}, and {tell}.',
-      'Number {n}, {name}. {age}, and {tell}.', '{name} to the microphone. {age}.'],
+      'Number {n}. That is where you stand, and that is when you spell.'],
+    roundIn: ['{round}. {line}', '{round} — {sub}. {line}'],
+    callMe: ['Speller number {n}. Your word, please.', 'Number {n} — this one is yours.'],
+    callBot: ['{name} — {age}, and {tell}.', '{name}, number {n}, to the microphone.'],
     /* the meaning round has its own calls — a bee announcer does not ask you to
        spell a word and then read you four definitions in the same breath */
-    callVocMe: ['Speller number {n}. Your word, and its meaning, please.',
-      'Number {n} — not the spelling this time. The meaning.',
-      'To the microphone, number {n}. Which of these is it?',
+    callVocMe: ['Speller number {n}. Not the spelling this time — the meaning.',
       'Number {n}. Four meanings on the board. One of them is yours.'],
-    callVocBot: ['{name}, number {n}. {name} {vtell}.',
-      'Number {n}, {name}, for the meaning.',
-      '{name} steps up — {vtell}.',
-      '{name} to the microphone. The meaning, please.'],
+    callVocBot: ['{name}, for the meaning.', '{name} — {vtell}.'],
     boltIn: ['Ninety seconds on the clock. Spell everything you can.',
-      'This is the spell-off. No turns, no order — just the clock.',
-      'Ninety seconds. Whoever spells the fewest is finished.'],
-    boltEnd: ['Time. Pencils down.', 'That is ninety seconds.', 'Time is called.'],
-    botRight: ['Correct.', 'That is correct.', 'Correct — and quickly.', 'Right. {name} stays.',
-      'Clean. Not a hesitation in it.', 'Correct. {name} sits down still in this.'],
-    botWrong: ['No. I am sorry — that is not it.', 'That is incorrect. The bell, please.',
-      'No. The word was {word}.', 'Not this time. {word} was the word.',
-      'Oh — no. And that is {name} done.'],
-    meRight: ['CORRECT! Nicely handled.', 'That is correct! You are still in.',
-      'Correct — and that is one more round you have survived.', 'Right! Sit down, number {n}, you are fine.'],
-    meWrong: ['No — I am sorry. The word was {word}.', 'That is not it. {word}. Take a seat, and take it proudly.',
-      'Incorrect. The word was {word}. That is a hard one to go out on.'],
+      'This is the spell-off. No turns, no order — just the clock.'],
+    boltEnd: ['Time. Pencils down.', 'Time is called.'],
+    botRight: ['Correct.', 'Clean. Not a hesitation in it.'],
+    botWrong: ['No. The word was {word}.', 'That is incorrect. The bell, please.'],
+    meRight: ['Correct! You are still in.', 'Right — one more round survived.'],
+    meWrong: ['No — I am sorry. The word was {word}.',
+      'That is not it. {word}. Take a seat, and take it proudly.'],
     /* round one takes nobody, so a miss there gets a different bell */
-    botSafe: ['Not quite — but this is round one, and round one forgives. {name} stays.',
-      'No. The word was {word}. Lucky for {name}, nobody goes out in the warm-up.',
-      'Incorrect — and it costs {name} nothing tonight. Not yet.'],
-    meSafe: ['Not quite. The word was {word} — but this is the warm-up, and the warm-up forgives. You are still in.',
+    botSafe: ['Not quite — but this is the warm-up, and the warm-up forgives.',
+      'Incorrect, and it costs nothing tonight. Not yet.'],
+    meSafe: ['Not quite. The word was {word} — but the warm-up forgives. You are still in.',
       'No. {word}. Round one takes nobody, so shake it off and stay standing.'],
     thin: ['Five left.', 'We are down to four.', 'Three spellers. Three.',
       'And then there were two. Championship rules from here.'],
     finalTwo: ['Championship rules now. Miss, and your rival can end this with two correct words.',
       'Two left. From here, one miss can lose it — if the other takes that word and the next.'],
-    c2First: ['{name} — spell that word correctly, and one more, and this bee is over.',
-      'Championship rules. {name}, the missed word first. Then one more.',
-      'This is it. {name}, take the word that was just missed.'],
-    c2Champ: ['And now the championship word. Get this one, {name}, and you are the champion.',
-      'One word between {name} and the trophy. The championship word.',
-      'The hall is silent. {name} — the championship word, please.'],
-    c2Miss: ['No! {name} misses, and under championship rules {back} back on their feet. This bee is not over.',
-      'That is incorrect — and it hands the bee back. {back} still in it. We go again.'],
+    c2First: ['{name} — the missed word first. Then one more, and this bee is over.',
+      '{name}, take the word that was just missed.'],
+    c2Champ: ['{name} — the championship word, please.',
+      '{name}: get this one, and you are the champion.'],
+    c2Miss: ['No — that hands the bee back. {back} still in it. We go again.',
+      'Incorrect, and the bee is not over. {back} back on their feet.'],
     winMe: ['THAT IS IT! Ladies and gentlemen — your champion!',
-      'Correct! And that is the bee! Champion!', 'That is the championship word — spelled correctly! It is over!'],
-    winBot: ['{name} takes it. {name} is your champion.',
-      'And that is the bee. {name}, {age} years old, champion.',
-      '{name} spells the championship word. It is over.'],
+      'That is the championship word, spelled correctly. It is over!'],
+    winBot: ['{name} is your champion.', '{name} spells the championship word. It is over.'],
     outMe: ['You finish {place}. Out of eleven — that is a real result.',
       '{place} place. The hall applauds; they know how far that is.'],
     allMiss: ['Nobody spelled it. Under the rules, everybody stays. We go again.',
@@ -552,6 +548,34 @@
      a duration collapses every pause and the bee runs as a blur. It is now the
      time the line takes to READ, which is close enough to the time it took to
      hear that the rhythm is unchanged. */
+  /* THE ONE PIECE OF THE ANNOUNCER THAT IS SPOKEN: the speller's name.
+     A pronouncer calling a name aloud is most of what makes a hall feel like a
+     hall, and it is also the one part that could never be pre-recorded — a clip
+     per speller per line, which is where the 827-clip estimate came from. So it
+     is said live by the device's own voice while everything else stays on screen.
+
+     Deliberately NOT deviceSpeak(): that looks for a word clip first, and several
+     of these names are real words in the 41k library (Vesper, Nova, Comet), so a
+     name would sometimes come out in the pronouncer's recorded voice and
+     sometimes in the device's. One voice for names, always, and it is audibly a
+     different one from the word — which is correct, because a name and a word are
+     different things being said.
+
+     speechSynthesis.cancel() only cancels speech; the word clips are <audio>
+     elements and are untouched by it. The call sites still stagger the two so the
+     name finishes before the word begins. */
+  function speakName(n) {
+    const t = String(n || '').trim();
+    if (!t) return;
+    try {
+      if (!window.speechSynthesis) return;
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(t);
+      u.rate = 0.95 * (Number(state.voiceRate) || 1);
+      window.speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+
   function announce(text, spoken) {
     const g = mb(); if (!g) return;
     const beat = spoken === undefined ? text : spoken;
@@ -708,7 +732,8 @@
       if (s.kind === 'me') {
         g.phase = 'vme';
         announce(fill(pick(SAY.callVocMe, g.seed + g.turn), { n: s.n }));
-        after(500, () => { try { say(g.vq.w.w); } catch (e) {} });
+        speakName(g.name);
+        after(900, () => { try { say(g.vq.w.w); } catch (e) {} });
         render();
       } else {
         /* A rival's meaning question is the child's question too — exactly the way
@@ -721,8 +746,9 @@
         g.vprac = { pick: null, deadline: Date.now() + 30000, forBot: s };
         announce(fill(pick(SAY.callVocBot, g.seed + g.turn * 3 + g.round),
           { name: s.bot.name, n: s.n, vtell: s.bot.vtell || 'thinks about it' }));
+        speakName(s.bot.name);
         render();
-        after(400, () => { try { say(g.vq.w.w); } catch (e) {} });
+        after(900, () => { try { say(g.vq.w.w); } catch (e) {} });
         vpracTick();
       }
       return;
@@ -737,13 +763,16 @@
     if (s.kind === 'me') {
       g.phase = 'me';
       announce(fill(pick(SAY.callMe, g.seed + g.turn), { n: s.n }));
-      after(600, () => { try { say(g.word.w); } catch (e) {} });
+      speakName(g.name);
+      /* the name first, then the word — staggered so neither clips the other */
+      after(900, () => { try { say(g.word.w); } catch (e) {} });
       render();
     } else {
       g.phase = 'bot'; g.botStep = 0; g.botOut = '';
       announce(fill(pick(SAY.callBot, g.seed + g.turn * 3 + g.round), { name: s.bot.name, age: s.bot.age + ' years old', tell: s.bot.tell, n: s.n }),
         s.bot.name + ', number ' + s.n + '.');
-      callBotToMic(s, clamp(s.bot.pace * .45, 420, 1000));
+      speakName(s.bot.name);
+      callBotToMic(s, clamp(s.bot.pace * .45, 700, 1200));
     }
   }
 
