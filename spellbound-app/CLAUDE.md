@@ -570,7 +570,22 @@ handlers. App lives in this folder; open `index.html` to run.
   went live and a deleted game went on appearing in the Arcade for hours. Keep the site
   **under ~250MB**. If a deploy "did nothing", check the run's conclusion before you blame
   the browser (incognito showing the old build is the tell that it is not cache).
-  Site weight today: books/art 45MB, voice 53MB, avatars 33MB, books HTML ~85MB.
+  Site weight today: **183MB** — voice 53MB, avatars 33MB, app-art 7.6MB. It was 256MB,
+  over the line, until the books moved off it (below).
+- **The books are NOT on this site any more.** They are published from
+  `aayuvis/bizzing-bee-books` → https://aayuvis.github.io/bizzing-bee-books/ , by
+  `books/deploy-books-repo.sh` run from `spellbound-app/`. This branch keeps 24 redirect
+  stubs under `books/` so old links still land. Do not copy `books/*.html` or `books/art`
+  onto gh-pages again — that is the 73MB that put the site over budget.
+  The GENERATOR STAYS HERE: `mkbooks.js` reads ten app data files, volumes 1-16 are
+  generated from app data, and `books/art` is 488 plates that cost real image quota and
+  cannot be reproduced. Only the published output lives in the other repo, and a
+  books-only session cannot rebuild anything.
+  Publishing needs a session with BOTH repos as sources, or the git proxy refuses to
+  inject a credential. The gh-pages commit there carries a `Built from <branch>@<sha>`
+  trailer, and the script aborts if `mkbooks.js` lacks `sectionDivider`/`indexPages` —
+  both because the books were published four times from a clone eight commits stale, and
+  the script ran perfectly every time.
 - **Book PDFs are not in git.** They were 214MB of files generated from HTML that is
   already complete; the shelf opens the HTML. Regenerate on demand; `.gitignore` keeps
   them out. Do not re-add them to the repo or to gh-pages.
