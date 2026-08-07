@@ -178,6 +178,45 @@
   .pm-g b{font-family:'BB Display';font-size:9.4pt;display:block;color:var(--ink)}
   .pm-g i{font-family:'BB Mono';font-size:7.4pt;font-style:normal;color:var(--accent-deep);display:block}
   .pm-g span{color:var(--muted);display:block}
+  /* ---- the part dividers ----
+     A part opener used to be a centred title on a flat gradient with the book's
+     cartoon mascot stamped under it and a scenery band along the foot. Against
+     eight score bespoke paintings that read as the one page nobody had finished,
+     and the mascot belongs to the eight-year-old half of the library, not to the
+     reader of Ozymandias. So the divider IS the painting now: full bleed, no
+     margins, type sitting on it.
+     The scrim is two gradients, not one flat wash — dark down from the top where
+     the type lands, dark up from the foot so the folio stays legible, and the
+     picture left alone through its middle where it is actually worth looking at.
+     Plates are commissioned with a calm open top third for exactly this
+     (voice/pipeline/section-art.py). */
+  .sc-page{position:relative;overflow:hidden;padding:0;color:#fff;background:#1B1626}
+  /* scale(1.045): asked for full bleed, several plates came back with a painted
+     paper border anyway — a pale frame down two edges of the seaside town, a
+     dark vignette on the playhouse. On a page with no margins that frame reads
+     as a printing error. Overscanning by four per cent throws it off the leaf
+     and costs nothing the eye can find.
+     The overscan lives inside its own clipping frame rather than on the page:
+     a transform on a child still counts towards the parent's scrollHeight even
+     under overflow:hidden, so scaling the image directly made all eight
+     dividers report 24px of overflow to the page checker. */
+  .sc-frame{position:absolute;inset:0;overflow:hidden;z-index:0}
+  .sc-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.045)}
+  .sc-scrim{position:absolute;inset:0;z-index:1;
+    background:linear-gradient(180deg,rgba(16,12,26,.78) 0%,rgba(16,12,26,.62) 26%,rgba(16,12,26,.10) 52%,rgba(16,12,26,.06) 66%,rgba(16,12,26,.62) 100%)}
+  .sc-body{position:absolute;z-index:2;top:1.05in;left:.85in;right:.85in;text-align:center}
+  .sc-num{font-family:'BB Kicker';letter-spacing:.24em;text-transform:uppercase;font-size:10pt;
+    color:rgba(255,255,255,.82);text-shadow:0 2px 8px rgba(0,0,0,.6)}
+  .sc-rule{width:.9in;height:2.5pt;margin:.13in auto;border-radius:2pt;
+    background:linear-gradient(90deg,rgba(255,210,77,.25),rgba(255,210,77,.98),rgba(255,210,77,.25))}
+  .sc-page h1{font-family:'BB Display';font-size:36pt;line-height:1.04;margin:0;color:#fff;
+    text-shadow:0 3px 14px rgba(0,0,0,.7)}
+  .sc-blurb{font-family:'BB Kicker';font-size:11.4pt;line-height:1.55;max-width:4.9in;
+    margin:.18in auto 0;color:rgba(255,255,255,.93);text-shadow:0 2px 10px rgba(0,0,0,.75)}
+  .sc-count{position:absolute;z-index:2;left:0;right:0;bottom:.86in;text-align:center;
+    font-family:'BB Kicker';letter-spacing:.16em;text-transform:uppercase;font-size:9pt;
+    color:rgba(255,255,255,.78);text-shadow:0 2px 8px rgba(0,0,0,.7)}
+  .sc-page .bb-foot{color:rgba(255,255,255,.82);z-index:2}
   .bb-hive{display:grid;grid-template-columns:1fr 1fr;gap:.12in}
   .bb-card{padding:0 .04in;min-width:0;overflow-wrap:anywhere}
   .bb-card .ex{font-size:9.6pt;line-height:1.32;margin-top:2px;color:var(--ink);opacity:.85}

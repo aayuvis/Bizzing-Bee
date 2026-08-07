@@ -45,6 +45,41 @@ STYLE = ('Hand-inked illustration with soft watercolour washes, a light and airy
          'No people, no faces, no characters — imply presence instead (an empty chair, a moored '
          'boat, footprints, a lit window). ')
 
+# THE EPICS GET THEIR OWN REGISTER.
+# The house style above is deliberately quiet — hand-inked, low-contrast, no
+# figures — because it has to sit under a fourteen-line lyric without competing.
+# That is exactly wrong for Homer and the Mahabharata. An epic page wants scale:
+# distance, weather, monumental architecture, a sky doing something. And two of
+# these pieces are ABOUT a person speaking, so the no-figures rule is lifted for
+# the slugs in EPIC_FIGURES — a sermon delivered from a chariot is not a still
+# life. The middle of the frame still has to stay readable, so the drama is
+# pushed to the sky and the edges.
+EPIC_STYLE = ('Epic painted illustration on a grand scale: sweeping distance, monumental '
+              'architecture or landscape, dramatic weather and light — shafts of sun through '
+              'cloud, gold and deep shadow. Rich, painterly, cinematic depth, the feel of a '
+              'great frontispiece to a heroic poem. Keep the CENTRE of the frame calmer and '
+              'lower in contrast so text can sit over it, and push the drama to the sky and the '
+              'outer edges. ABSOLUTELY NO TEXT, NO LETTERING, NO WRITING, NO LABELS, NO NUMBERS, '
+              'NO SIGNAGE — every banner, shield and surface is COMPLETELY BLANK. ')
+EPIC_NO_FIGURE = 'No people and no faces — imply presence through objects, architecture and light. '
+EPIC_FIGURE = ('Figures ARE wanted here and must be drawn with dignity and real proportion: '
+               'noble, calm, reverent. Never cartoonish, never chibi, never grotesque. Faces '
+               'serene and kindly. Clothing and setting historically respectful to the culture '
+               'the poem comes from. ')
+
+# these two are about a person speaking, and the user asked for them by name
+EPIC_FIGURES = {
+ 'pp-gita-saar-the-essence':
+   'Krishna, blue-skinned and crowned with a peacock feather, stands in a great war chariot '
+   'and turns to counsel the archer Arjuna, who listens with his bow lowered. Four white '
+   'horses wait. Dawn light floods a vast plain behind them; two distant armies are only a '
+   'faint line on the horizon. Serene and reverent, not violent.',
+ 'pp-s-t-s-speech':
+   'Sita, in a simple forest robe, stands calm and resolute at the edge of a woodland '
+   'clearing at golden hour, speaking with quiet dignity. Tall sal trees, a thatched hermitage '
+   'behind her, flowers at her feet. Reverent and gentle.',
+}
+
 # fallback when a piece has no authored scene: its subject, painted straight
 THEME = {
  'sea': 'A grey-green sea under a wide pale sky, a far headland, spray along the lower edge.',
@@ -93,8 +128,8 @@ def pieces():
     return [tuple(x) for x in json.loads(r.stdout)]
 
 
-def gen(slug, prompt, retries=4, model=None):
-    body = {'contents': [{'parts': [{'text': STYLE + prompt}]}],
+def gen(slug, prompt, retries=4, model=None, style=None):
+    body = {'contents': [{'parts': [{'text': (style or STYLE) + prompt}]}],
             'generationConfig': {'responseModalities': ['IMAGE'],
                                  'imageConfig': {'aspectRatio': '16:9'}}}
     req = urllib.request.Request(
@@ -143,6 +178,18 @@ if __name__ == '__main__':
     if os.path.exists(SCENES):
         scenes = json.load(open(SCENES, encoding='utf-8'))
 
+    import subprocess as _sp
+    _js = r'''
+      global.window = {};
+      eval(require('fs').readFileSync(process.argv[1], 'utf8'));
+      const P = window.SB_POEMS;
+      const slug = t => 'pp-' + String(t || '').toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 44);
+      process.stdout.write(JSON.stringify((P.epics ? P.epics.pieces : []).map(p => slug(p.t))));
+    '''
+    EPIC_SLUGS = set(json.loads(_sp.run(['node','-e',_js,CHAPTERS],
+                                        capture_output=True, text=True).stdout or '[]'))
+
     all_p = pieces()
     todo = [(s, t, th) for (s, t, th) in all_p if not os.path.exists(f'{OUT}/{s}.jpg')]
 
@@ -174,7 +221,13 @@ if __name__ == '__main__':
     def one(job):
         i, (s, t, th) = job
         prompt = scenes.get(s) or THEME.get(th, THEME['library'])
-        r = gen(s, prompt, model=MODELS[i % len(MODELS)])
+        style = None
+        if s in EPIC_SLUGS:
+            if s in EPIC_FIGURES:
+                prompt, style = EPIC_FIGURES[s], EPIC_STYLE + EPIC_FIGURE
+            else:
+                style = EPIC_STYLE + EPIC_NO_FIGURE
+        r = gen(s, prompt, model=MODELS[i % len(MODELS)], style=style)
         if r.startswith('OK'):
             try: to_jpeg(s)
             except Exception as e: r += f' (jpeg failed: {type(e).__name__})'
