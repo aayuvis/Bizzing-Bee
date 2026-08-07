@@ -846,9 +846,22 @@
         <span style="font-family:var(--display);font-weight:800;font-size:19px">${esc(T().names.expedition)}</span>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:.08em;color:#fff;background:linear-gradient(135deg,#37415B,#1F2A44);border-radius:999px;padding:4px 11px">90% GATES</span></div>
       ${expOk ? tierBar(x.lap, x.done, x.total) : ''}
-      <div style="position:relative">
+      <!-- min-height only when LOCKED. The panel takes its height from the map's
+           aspect ratio, so on a phone it is about 200px (184px at 360px wide) while
+           the lock content — icon, heading, two-line paragraph, price button — is
+           272px. The button fell out of the bottom of the panel and landed on the
+           next section's heading. Desktop never showed it: there the map is 596px
+           tall and the content has room to spare. -->
+      <div style="position:relative${expOk ? '' : ';min-height:302px'}">
         ${advBoard}
-        ${expOk ? '' : `<button data-act="openAdvanced" style="position:absolute;inset:0;z-index:5;display:grid;place-items:center;border-radius:20px;background:linear-gradient(180deg,rgba(12,9,28,.34),rgba(12,9,28,.76))">
+        <!-- The scrim used to start at .34 opacity, which is nowhere near enough to
+             cover what is under it: the expedition map's region labels are white
+             pills on dark discs, and they punched straight through "Six expert
+             expeditions" and its paragraph. It read as a broken screen rather than
+             as a locked one. Stronger now, and blurred, so the map is still legibly
+             THERE — you can see there is something to unlock — without any of its
+             lettering competing with the lettering on top of it. -->
+        ${expOk ? '' : `<button data-act="openAdvanced" style="position:absolute;inset:0;z-index:5;display:grid;place-items:center;border-radius:20px;background:linear-gradient(180deg,rgba(12,9,28,.66),rgba(12,9,28,.88));-webkit-backdrop-filter:blur(3.5px);backdrop-filter:blur(3.5px)">
           <span style="text-align:center;padding:22px;max-width:26em">
             <span style="display:inline-grid;place-items:center;width:52px;height:52px;border-radius:15px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;margin-bottom:12px">${iconSVG('lock', 24)}</span>
             <span style="display:block;font-family:var(--display);font-weight:800;font-size:19px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6)">Six expert expeditions</span>
