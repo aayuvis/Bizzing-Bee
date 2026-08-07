@@ -386,6 +386,292 @@ window.SB_POEMS = {
           { w: 'slumbered', say: 'SLUM-berd', def: 'slept' },
           { w: 'serpent', say: 'SUR-puhnt', def: 'a snake, especially a large one' }
         ]
+      },
+      {
+        t: 'Now my charms are all o’erthrown',
+        th: 'sea', a: 'William Shakespeare (1564–1616)', src: 'The Tempest, Epilogue', y: 'c. 1611', kind: 'speech',
+        lines: [
+          'Now my charms are all o’erthrown,',
+          'And what strength I have’s mine own,',
+          'Which is most faint: now, ’tis true,',
+          'I must be here confined by you,',
+          'Or sent to Naples. Let me not,',
+          'Since I have my dukedom got,',
+          'And pardon’d the deceiver, dwell',
+          'In this bare island by your spell;',
+          'But release me from my bands',
+          'With the help of your good hands.',
+          'Gentle breath of yours my sails',
+          'Must fill, or else my project fails,',
+          'Which was to please. Now I want',
+          'Spirits to enforce, art to enchant;',
+          'And my ending is despair,',
+          'Unless I be relieved by prayer,',
+          'Which pierces so, that it assaults',
+          'Mercy itself, and frees all faults.',
+          'As you from crimes would pardon’d be,',
+          'Let your indulgence set me free.'
+        ],
+        note: 'Prospero was the play’s magician, and this is thought to be Shakespeare’s own farewell to the stage — his last solo-written play. The magic is gone by the time he speaks; all that is left is an old man asking an audience, quite plainly, to clap.',
+        hard: [
+          { w: 'confined', say: 'kuhn-FINED', def: 'kept within limits; shut in' },
+          { w: 'deceiver', say: 'dih-SEE-ver', def: 'a person who tricks or misleads' },
+          { w: 'enchant', say: 'en-CHANT', def: 'to put under a magic spell' },
+          { w: 'indulgence', say: 'in-DUL-junss', def: 'a kind, lenient act of forgiveness' }
+        ]
+      },
+      {
+        t: 'Out, damned spot!',
+        th: 'night', a: 'William Shakespeare (1564–1616)', src: 'Macbeth, Act V, Scene 1', y: 'c. 1606', kind: 'speech',
+        lines: [
+          'Out, damned spot! out, I say!—One: two: why,',
+          'then, ’tis time to do’t.—Hell is murky!—Fie, my',
+          'lord, fie! a soldier, and afeard? What need we',
+          'fear who knows it, when none can call our power',
+          'to accompt?—Yet who would have thought the old man',
+          'to have had so much blood in him.',
+          '',
+          'The Thane of Fife had a wife: where is she now?—',
+          'What, will these hands ne’er be clean?—No more o’',
+          'that, my lord, no more o’ that: you mar all with',
+          'this starting.',
+          '',
+          'Here’s the smell of the blood still: all the',
+          'perfumes of Arabia will not sweeten this little',
+          'hand. Oh, oh, oh!',
+          '',
+          'Wash your hands, put on your nightgown; look not so',
+          'pale.—I tell you yet again, Banquo’s buried; he',
+          'cannot come out on’s grave.',
+          '',
+          'To bed, to bed! there’s knocking at the gate: come,',
+          'come, come, come, give me your hand. What’s',
+          'done cannot be undone.—To bed, to bed, to bed!'
+        ],
+        note: 'Lady Macbeth says all of this asleep, in a dream, scrubbing hands that have been clean for weeks. Notice how the sentences stop finishing themselves — a mind confessing to no one, in a language only guilt speaks fluently.',
+        hard: [
+          { w: 'murky', say: 'MUR-kee', def: 'dark and gloomy; hard to see through' },
+          { w: 'accompt', say: 'uh-KOWNT', def: 'an old spelling of account — a reckoning' },
+          { w: 'perfumes', say: 'PER-fyoomz', def: 'sweet-smelling substances' },
+          { w: 'starting', say: 'STAR-ting', def: 'sudden nervous movements; flinching' }
+        ]
+      },
+      {
+        t: 'Blow, winds, and crack your cheeks!',
+        th: 'water', a: 'William Shakespeare (1564–1616)', src: 'King Lear, Act III, Scene 2', y: 'c. 1606', kind: 'speech',
+        lines: [
+          'Blow, winds, and crack your cheeks! rage! blow!',
+          'You cataracts and hurricanoes, spout',
+          'Till you have drench’d our steeples, drown’d the cocks!',
+          'You sulphurous and thought-executing fires,',
+          'Vaunt-couriers to oak-cleaving thunderbolts,',
+          'Singe my white head! And thou, all-shaking thunder,',
+          'Strike flat the thick rotundity o’ the world!',
+          'Crack nature’s moulds, all germens spill at once,',
+          'That make ingrateful man!'
+        ],
+        note: 'An old king, betrayed by both daughters he trusted, stands on a heath and orders the sky to end the world — and the sky, being weather, obliges without noticing him at all. That gap between what he demands and what actually happens is the whole tragedy in nine lines.',
+        hard: [
+          { w: 'cataracts', say: 'KAT-uh-rakts', def: 'large, powerful waterfalls' },
+          { w: 'sulphurous', say: 'SUL-fer-uhss', def: 'like sulphur; smelling of fire and brimstone' },
+          { w: 'rotundity', say: 'roh-TUN-dih-tee', def: 'roundness; here, the whole round world' },
+          { w: 'ingrateful', say: 'in-GRAYT-fuhl', def: 'an old form of ungrateful' }
+        ]
+      },
+      {
+        t: 'O for a Muse of fire',
+        th: 'fire', a: 'William Shakespeare (1564–1616)', src: 'Henry V, Prologue', y: 'c. 1599', kind: 'speech',
+        lines: [
+          'O for a Muse of fire, that would ascend',
+          'The brightest heaven of invention,',
+          'A kingdom for a stage, princes to act',
+          'And monarchs to behold the swelling scene!',
+          'Then should the warlike Harry, like himself,',
+          'Assume the port of Mars; and at his heels,',
+          'Leash’d in like hounds, should famine, sword and fire',
+          'Crouch for employment. But pardon, gentles all,',
+          'The flat unraised spirits that hath dared',
+          'On this unworthy scaffold to bring forth',
+          'So great an object: can this cockpit hold',
+          'The vasty fields of France? or may we cram',
+          'Within this wooden O the very casques',
+          'That did affright the air at Agincourt?'
+        ],
+        note: 'A whole war, kings, horses, France — and Shakespeare had none of it: a bare wooden circle and a few dozen actors. So the Chorus does the only honest thing: it apologises for the stage in advance, and asks the audience to imagine the rest. Theatre’s oldest trick, said out loud.',
+        hard: [
+          { w: 'ascend', say: 'uh-SEND', def: 'to rise or climb upward' },
+          { w: 'monarchs', say: 'MON-arks', def: 'kings or queens; rulers' },
+          { w: 'scaffold', say: 'SKAF-uhld', def: 'a raised wooden platform, here meaning the stage' },
+          { w: 'vasty', say: 'VAST-ee', def: 'an old poetic form of vast' },
+          { w: 'affright', say: 'uh-FRITE', def: 'an old word meaning to frighten' }
+        ]
+      },
+      {
+        t: 'Cowards die many times',
+        th: 'city', a: 'William Shakespeare (1564–1616)', src: 'Julius Caesar, Act II, Scene 2', y: 'c. 1599', kind: 'speech',
+        lines: [
+          'Cowards die many times before their deaths;',
+          'The valiant never taste of death but once.',
+          'Of all the wonders that I yet have heard,',
+          'It seems to me most strange that men should fear;',
+          'Seeing that death, a necessary end,',
+          'Will come when it will come.'
+        ],
+        note: 'Caesar says this the morning he is warned not to leave his house, and goes anyway. Six lines, and every one of them turns out to be exactly wrong about his own death — which is either the definition of tragic irony or the definition of stubbornness, and Shakespeare seems to think it is both.',
+        hard: [
+          { w: 'valiant', say: 'VAL-yuhnt', def: 'possessing or showing courage' },
+          { w: 'necessary', say: 'NESS-uh-sair-ee', def: 'unavoidable; required' }
+        ]
+      },
+      {
+        t: 'But soft, what light through yonder window breaks',
+        th: 'night', a: 'William Shakespeare (1564–1616)', src: 'Romeo and Juliet, Act II, Scene 2', y: 'c. 1595', kind: 'speech',
+        lines: [
+          'But soft, what light through yonder window breaks?',
+          'It is the east, and Juliet is the sun.',
+          'Arise, fair sun, and kill the envious moon,',
+          'Who is already sick and pale with grief,',
+          'That thou her maid art far more fair than she.',
+          'Be not her maid, since she is envious;',
+          'Her vestal livery is but sick and green,',
+          'And none but fools do wear it; cast it off.',
+          'It is my lady, O, it is my love!',
+          'O, that she knew she were!'
+        ],
+        note: 'Romeo is hiding in a garden talking to a lit window, and the whole speech runs on one idea: Juliet outshines the moon so completely that the moon gets jealous and sick. It is astronomy used as a compliment, and it is the most quoted opening line in the language.',
+        hard: [
+          { w: 'yonder', say: 'YON-der', def: 'over there; at a distance' },
+          { w: 'envious', say: 'EN-vee-uhss', def: 'feeling jealous of someone else' },
+          { w: 'vestal', say: 'VESS-tuhl', def: 'chaste, pure — like a vestal virgin' },
+          { w: 'livery', say: 'LIV-er-ee', def: 'a distinctive uniform or dress' }
+        ]
+      },
+      {
+        t: 'O Romeo, Romeo, wherefore art thou Romeo?',
+        th: 'flower', a: 'William Shakespeare (1564–1616)', src: 'Romeo and Juliet, Act II, Scene 2', y: 'c. 1595', kind: 'speech',
+        lines: [
+          'O Romeo, Romeo, wherefore art thou Romeo?',
+          'Deny thy father and refuse thy name;',
+          'Or, if thou wilt not, be but sworn my love,',
+          'And I’ll no longer be a Capulet.',
+          '’Tis but thy name that is my enemy;',
+          'Thou art thyself, though not a Montague.',
+          'What’s Montague? it is nor hand, nor foot,',
+          'Nor arm, nor face, nor any other part',
+          'Belonging to a man. O, be some other name!',
+          'What’s in a name? that which we call a rose',
+          'By any other name would smell as sweet;',
+          'So Romeo would, were he not Romeo call’d,',
+          'Retain that dear perfection which he owes',
+          'Without that title. Romeo, doff thy name,',
+          'And for that name, which is no part of thee,',
+          'Take all myself.'
+        ],
+        note: '"Wherefore" does not mean "where" — it means "why", and the misreading is nearly universal. Juliet is not asking where Romeo is; she is asking why he had to be born a Montague, the one family name standing between her and the person she has already chosen.',
+        hard: [
+          { w: 'wherefore', say: 'WAIR-for', def: 'an old word meaning "why", not "where"' },
+          { w: 'perfection', say: 'per-FEK-shuhn', def: 'the state of being flawless or complete' },
+          { w: 'retain', say: 'rih-TAYN', def: 'to continue to have or hold' }
+        ]
+      },
+      {
+        t: 'This was the noblest Roman of them all',
+        th: 'city', a: 'William Shakespeare (1564–1616)', src: 'Julius Caesar, Act V, Scene 5', y: 'c. 1599', kind: 'speech',
+        lines: [
+          'This was the noblest Roman of them all:',
+          'All the conspirators, save only he,',
+          'Did that they did in envy of great Caesar;',
+          'He only, in a general honest thought',
+          'And common good to all, made one of them.',
+          'His life was gentle, and the elements',
+          'So mix’d in him that Nature might stand up',
+          'And say to all the world, "This was a man!"'
+        ],
+        note: 'Antony spent the whole play turning the city against Brutus, and here, standing over Brutus’s body, he says the one thing he never said to his face: that of all the men who killed Caesar, Brutus alone believed he was doing right. It is generosity offered a beat too late to matter to the man it is about.',
+        hard: [
+          { w: 'conspirators', say: 'kuhn-SPEER-uh-terz', def: 'people who plan something secretly and unlawfully together' },
+          { w: 'elements', say: 'EL-uh-muhnts', def: 'the basic parts making up a whole; here, one’s nature' }
+        ]
+      },
+      {
+        t: 'Give me liberty, or give me death!',
+        th: 'fire', a: 'Patrick Henry (1736–1799)', src: 'Virginia Convention, Richmond', y: '23 March 1775', kind: 'speech',
+        lines: [
+          'Is life so dear, or peace so sweet, as to be purchased at the price of chains and slavery? Forbid it, Almighty God! I know not what course others may take; but as for me, give me liberty, or give me death!'
+        ],
+        note: 'The last line of a much longer speech, and Henry built the whole address to arrive at exactly this sentence — every argument before it is a road leading here. Delivered to a convention still hoping to avoid a war with Britain; within a month, the war had started anyway.',
+        hard: [
+          { w: 'purchased', say: 'PUR-chuhst', def: 'obtained by paying a price' },
+          { w: 'liberty', say: 'LIB-er-tee', def: 'the state of being free' }
+        ]
+      },
+      {
+        t: 'With malice toward none',
+        th: 'dawn', a: 'Abraham Lincoln (1809–1865)', src: 'Second Inaugural Address, Washington', y: '4 March 1865', kind: 'speech',
+        lines: [
+          'With malice toward none, with charity for all, with firmness in the right as God gives us to see the right, let us strive on to finish the work we are in, to bind up the nation’s wounds, to care for him who shall have borne the battle and for his widow and his orphan — to do all which may achieve and cherish a just and lasting peace among ourselves, and with all nations.'
+        ],
+        note: 'Delivered six weeks before the Civil War ended and six weeks before Lincoln was killed — a president who had every reason to speak of victory instead spent his second inaugural on tenderness toward the side he had just beaten. It is one sentence, and it never once uses the word "we won".',
+        hard: [
+          { w: 'malice', say: 'MAL-iss', def: 'the desire to harm someone; ill will' },
+          { w: 'charity', say: 'CHAIR-ih-tee', def: 'generosity and kindness toward others' },
+          { w: 'cherish', say: 'CHAIR-ish', def: 'to protect and care for lovingly' }
+        ]
+      },
+      {
+        t: 'Ain’t I a Woman?',
+        th: 'road', a: 'Sojourner Truth (c. 1797–1883)', src: 'Women’s Convention, Akron, Ohio', y: '1851', kind: 'speech',
+        lines: [
+          'That man over there says that women need to be helped into carriages, and lifted over ditches, and to have the best place everywhere. Nobody ever helps me into carriages, or over mud-puddles, or gives me any best place! And ain’t I a woman?',
+          'Look at me! Look at my arm! I have ploughed and planted, and gathered into barns, and no man could head me! And ain’t I a woman?',
+          'I could work as much and eat as much as a man — when I could get it — and bear the lash as well! And ain’t I a woman? I have borne thirteen children, and seen most all sold off to slavery, and when I cried out with my mother’s grief, none but Jesus heard me! And ain’t I a woman?'
+        ],
+        note: 'Truth was born enslaved and could not read or write; the speech survives only because a woman in the audience wrote down what she remembered years later, in Truth’s own spoken dialect, which is why it reads so differently from the polished speeches around it — it sounds like someone actually talking.',
+        hard: [
+          { w: 'convention', say: 'kuhn-VEN-shuhn', def: 'a large formal meeting for a shared purpose' },
+          { w: 'ploughed', say: 'PLOWD', def: 'turned over earth with a plough to prepare it for planting (British spelling)' }
+        ]
+      },
+      {
+        t: 'The Man in the Arena',
+        th: 'mountain', a: 'Theodore Roosevelt (1858–1919)', src: 'Citizenship in a Republic, Paris', y: '23 April 1910', kind: 'speech',
+        lines: [
+          'It is not the critic who counts; not the man who points out how the strong man stumbles, or where the doer of deeds could have done them better. The credit belongs to the man who is actually in the arena, whose face is marred by dust and sweat and blood; who strives valiantly; who errs, who comes short again and again, because there is no effort without error and shortcoming; but who does actually strive to do the deeds; who knows great enthusiasms, the great devotions; who spends himself in a worthy cause; who at the best knows in the end the triumph of high achievement, and who at the worst, if he fails, at least fails while daring greatly, so that his place shall never be with those cold and timid souls who neither know victory nor defeat.'
+        ],
+        note: 'One enormous sentence, built the way a boxing match is built: clause after clause landing blows, "who strives... who errs... who fails... who dares", until the only people left standing outside the ring are the ones who never got in it. The whole passage is an argument for trying and losing over never trying at all.',
+        hard: [
+          { w: 'marred', say: 'MARD', def: 'damaged or spoiled in appearance' },
+          { w: 'valiantly', say: 'VAL-yuhnt-lee', def: 'with courage and determination' },
+          { w: 'devotions', say: 'dih-VOH-shuhnz', def: 'strong feelings of loyalty or love' },
+          { w: 'achievement', say: 'uh-CHEEV-muhnt', def: 'a thing accomplished successfully' },
+          { w: 'timid', say: 'TIM-id', def: 'showing a lack of courage or confidence' }
+        ]
+      },
+      {
+        t: 'The only thing we have to fear',
+        th: 'city', a: 'Franklin D. Roosevelt (1882–1945)', src: 'First Inaugural Address, Washington', y: '4 March 1933', kind: 'speech',
+        lines: [
+          'So, first of all, let me assert my firm belief that the only thing we have to fear is fear itself — nameless, unreasoning, unjustified terror which paralyzes needed efforts to convert retreat into advance. In every dark hour of our national life, a leadership of frankness and vigor has met with that understanding and support of the people themselves which is essential to victory.'
+        ],
+        note: 'Delivered at the bottom of the Great Depression, with a quarter of the country out of work and banks failing across the nation. The famous line is really a diagnosis: Roosevelt is saying the economic damage is real, but the fear making people hoard money and stop spending is its own separate problem — and the one a president can actually speak to directly.',
+        hard: [
+          { w: 'unreasoning', say: 'un-REE-zuh-ning', def: 'not based on or guided by reason' },
+          { w: 'paralyzes', say: 'PAIR-uh-lyz-iz', def: 'makes unable to move or act' },
+          { w: 'vigor', say: 'VIG-er', def: 'physical or mental strength and energy' },
+          { w: 'essential', say: 'ih-SEN-shuhl', def: 'absolutely necessary' }
+        ]
+      },
+      {
+        t: 'I will fight no more forever',
+        th: 'snow', a: 'Chief Joseph (c. 1840–1904)', src: 'Surrender near the Bear Paw Mountains, Montana', y: '5 October 1877', kind: 'speech',
+        lines: [
+          'Tell General Howard I know his heart. What he told me before, I have it in my heart. I am tired of fighting. Our chiefs are killed. Looking Glass is dead. Toohoolhoolzote is dead. The old men are all dead. It is the young men who say yes or no. He who led the young men is dead. It is cold, and we have no blankets. The little children are freezing to death. My people, some of them, have run away to the hills, and have no blankets, no food. No one knows where they are — perhaps freezing to death. I want to have time to look for my children, and see how many of them I can find. Maybe I shall find them among the dead. Hear me, my chiefs. I am tired; my heart is sick and sad. From where the sun now stands, I will fight no more forever.'
+        ],
+        note: 'The Nez Perce had marched over 1,000 miles trying to reach safety in Canada and were stopped forty miles short of the border. This was translated and written down by an army officer at the surrender, which means the exact words are uncertain — but the last sentence has been remembered exactly, in every retelling, for a century and a half.',
+        hard: [
+          { w: 'chiefs', say: 'CHEEFS', def: 'leaders of a tribe or clan' },
+          { w: 'forever', say: 'for-EV-er', def: 'for all future time; endlessly' }
+        ]
       }
     ]
   },
