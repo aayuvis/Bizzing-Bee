@@ -496,6 +496,7 @@
   };
 
   app2.mbStart = () => {
+    aqStop();          /* a previous bee must not talk over this one */
     const c = active();
     /* the draw: eleven numbers in a hat, and one of them is yours */
     const order = shuffle(BOTS.map((b, i) => ({ kind: 'bot', bot: b, i })).concat([{ kind: 'me' }]));
@@ -574,72 +575,94 @@
      different one from the word — which is correct, because a name and a word are
      different things being said.
 
-     speechSynthesis.cancel() only cancels speech; the word clips are <audio>
-     elements and are untouched by it.
-
      Rate 0.95 matches the word library, which was synthesised at 0.95 — so the
      name and the word land at the same pace and the hall sounds like one person
-     talking, even though one is a recording and one is live.
+     talking, even though one is a recording and one is live. */
 
-     `then` fires when the name has ACTUALLY finished, not after a guessed delay.
-     The word used to start on a fixed 900ms timer, which is fine for "Pip" and
-     far too short for "Vesper" at 0.95 on a slow device — the word clip's own
-     speechSynthesis.cancel() then chopped the name mid-syllable. onend is exact.
-     The timer stays as a fallback because onend does not fire reliably on every
-     mobile browser, and a bee that stops because a callback never came is worse
-     than one that occasionally overlaps by a hair. */
-  function speakName(n, then) {
-    const t = String(n || '').trim();
-    let ran = false;
-    const go = () => { if (ran) return; ran = true; if (then) try { then(); } catch (e) {} };
-    if (!t) { go(); return; }
-    try {
-      if (!window.speechSynthesis) { setTimeout(go, 120); return; }
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(t);
-      u.rate = 0.95 * (Number(state.voiceRate) || 1);
-      u.onend = go; u.onerror = go;
-      window.speechSynthesis.speak(u);
-      /* belt and braces: ~420ms of speech per syllable at this rate, plus a
-         breath, and never longer than two seconds */
-      const syl = Math.max(1, (t.match(/[aeiouy]+/gi) || [1]).length);
-      setTimeout(go, Math.min(2000, 380 + syl * 300));
-    } catch (e) { setTimeout(go, 200); }
+  /* ================= ONE VOICE AT A TIME =================
+     The hall has three sound sources and they were all firing independently: the
+     announcer's recorded clips (<audio>), the speller's name (speechSynthesis)
+     and the word (<audio> again). Nothing serialised them, and the two KINDS do
+     not block each other — so announce() started a clip and speakName() started
+     the name over the top of it in the same tick, and deviceSpeak's own
+     speechSynthesis.cancel() then chopped the name off part way through.
+
+     Delays cannot fix that. Two channels playing at once is not a timing problem,
+     it is a missing queue. Everything the bee says now goes through ONE queue, in
+     order, each item waiting for the previous to actually finish — onended for a
+     clip, onend for an utterance — with a duration-derived safety timer under
+     both, because neither event fires reliably on every mobile browser and a hall
+     that goes permanently silent is worse than one that overlaps by a hair.
+
+     `token` invalidates everything in flight when the bee is left or restarted,
+     so an abandoned game cannot talk over the next one. */
+  const AQ = { q: [], busy: false, token: 0, cur: null };
+  function aqStop() {
+    AQ.token++; AQ.q.length = 0; AQ.busy = false;
+    try { if (AQ.cur && AQ.cur.pause) AQ.cur.pause(); } catch (e) {}
+    AQ.cur = null;
+    try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) {}
   }
-
-  /* The announcer's own recordings: voice/ann/<pool>-<i>.mp3, in the word
-     library's voice (en-US-Neural2-F at 0.95 — see voice/pipeline/announcer-tts.py).
-     There is NO manifest and that is deliberate: a missing file simply fails to
-     play and the line stays on screen, which is the behaviour we want anyway, so
-     a manifest would only be a second thing to keep in sync. Regenerating more
-     clips needs no code change at all.
-
-     A line whose recording ends where {word} goes — "No. The word was" — chains
-     the word's own clip after it, so the sentence finishes in the same voice with
-     the actual word rather than a synthesised approximation of it. */
-  let _annAudio = null;
-  /* Seventeen of the fifty lines are deliberately not recorded, and without a
-     memory this asked the network for each of them every single time — ten dead
-     requests in one bee. One failure is enough to know. Not a manifest: this
-     stays correct on its own when clips are added or removed. */
+  function aqPush(item) { AQ.q.push(item); aqPump(); }
+  function aqPump() {
+    if (AQ.busy) return;
+    const it = AQ.q.shift(); if (!it) return;
+    AQ.busy = true;
+    const tok = AQ.token;
+    let fired = false;
+    const done = () => {
+      if (fired) return; fired = true;
+      if (tok !== AQ.token) return;              /* the bee moved on; drop the rest */
+      AQ.cur = null; AQ.busy = false;
+      setTimeout(aqPump, it.gap == null ? 140 : it.gap);   /* a breath between lines */
+    };
+    const missed = () => { if (it.miss) { try { it.miss(); } catch (e) {} } done(); };
+    try {
+      if (it.kind === 'cb') { try { it.fn(); } catch (e) {} return done(); }
+      if (it.kind === 'tts') {
+        if (!window.speechSynthesis) return done();
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(it.text);
+        u.rate = 0.95 * (Number(state.voiceRate) || 1);
+        u.onend = done; u.onerror = done;
+        window.speechSynthesis.speak(u);
+        const syl = Math.max(1, (String(it.text).match(/[aeiouy]+/gi) || [1]).length);
+        setTimeout(done, Math.min(2600, 420 + syl * 320));
+      } else {
+        const a = new Audio(it.src);
+        AQ.cur = a;
+        a.onended = done; a.onerror = missed;
+        a.play().catch(missed);
+        setTimeout(done, it.max || 9000);        /* rescues a stalled load only */
+      }
+    } catch (e) { done(); }
+  }
+  /* the word, through the queue — a recorded clip when the library has one, the
+     device voice when it does not, which is the same decision deviceSpeak makes */
+  function aqWord(w) {
+    const t = String(w || '').trim(); if (!t) return;
+    let clip = null; try { clip = wordClip(t); } catch (e) {}
+    aqPush(clip ? { kind: 'clip', src: clip, gap: 220 } : { kind: 'tts', text: t, gap: 220 });
+  }
+  /* Seventeen of the fifty lines are deliberately not recorded. Without a memory
+     this asked the network for each of them every time — ten dead requests in one
+     bee. One failure is enough. Not a manifest: it stays correct on its own as
+     clips are added or removed. */
   const _annGone = new Set();
-  function playAnn(pick, text) {
+  function playAnn(pick) {
     if (!pick || !pick.pool) return;
     const key = pick.pool + '-' + pick.i;
     if (_annGone.has(key)) return;
-    try {
-      if (_annAudio) { try { _annAudio.pause(); } catch (e) {} _annAudio = null; }
-      const a = new Audio('voice/ann/' + key + '.mp3');
-      _annAudio = a;
-      a.onerror = () => _annGone.add(key);
-      /* a line that ends where {word} goes finishes on the word's own clip, so
-         the sentence lands in one voice with the real word in it */
-      if (/\{word\}\s*\.?\s*$/.test(pick.raw || '')) {
-        const g = mb(); const w = g && g.word && g.word.w;
-        if (w) a.onended = () => { try { say(w); } catch (e) {} };
-      }
-      a.play().catch(() => { _annGone.add(key); });
-    } catch (e) {}
+    aqPush({ kind: 'clip', src: 'voice/ann/' + key + '.mp3', gap: 160,
+             miss: () => _annGone.add(key) });
+  }
+
+  function speakName(n, then) {
+    const t = String(n || '').trim();
+    if (t) aqPush({ kind: 'tts', text: t, gap: 170 });
+    /* the callback is queued too, so `then` runs when the name has actually been
+       said rather than when it was scheduled — the queue is the ordering now */
+    if (then) aqPush({ kind: 'cb', fn: then, gap: 0 });
   }
 
   function announce(text, spoken) {
@@ -650,7 +673,12 @@
     g.spokeAt = Date.now();
     g.spokeMs = beat ? Math.max(900, speakMs(beat)) : 0;
     const p = _pick; _pick = null;     /* consume it — one announce, one line */
-    playAnn(p, text);
+    playAnn(p);
+    /* a line that ends where {word} goes finishes on the word's own clip, queued
+       straight after it so the sentence lands as one continuous piece of speech */
+    if (p && /\{word\}\s*\.?\s*$/.test(p.raw || '')) {
+      const w = g.word && g.word.w; if (w) aqWord(w);
+    }
     render();
   }
 
@@ -697,7 +725,7 @@
     announce(fill(pick(c2.step === 0 ? SAY.c2First : SAY.c2Champ, g.seed + c2.step * 3), { name }));
     if (s.kind === 'me') {
       g.phase = 'me';
-      after(700, () => { try { say(g.word.w); } catch (e) {} });
+      after(700, () => aqWord(g.word.w));
       render();
     } else {
       g.phase = 'bot'; g.botStep = 0; g.botOut = '';
@@ -800,7 +828,7 @@
       if (s.kind === 'me') {
         g.phase = 'vme';
         announce(fill(pick(SAY.callVocMe, g.seed + g.turn), { n: s.n }));
-        speakName(g.name, () => { try { say(g.vq.w.w); } catch (e) {} });
+        speakName(g.name, () => aqWord(g.vq.w.w));
         render();
       } else {
         /* A rival's meaning question is the child's question too — exactly the way
@@ -813,7 +841,7 @@
         g.vprac = { pick: null, deadline: Date.now() + 30000, forBot: s };
         announce(fill(pick(SAY.callVocBot, g.seed + g.turn * 3 + g.round),
           { name: s.bot.name, n: s.n, vtell: s.bot.vtell || 'thinks about it' }));
-        speakName(s.bot.name, () => { try { say(g.vq.w.w); } catch (e) {} });
+        speakName(s.bot.name, () => aqWord(g.vq.w.w));
         render();
         vpracTick();
       }
@@ -830,7 +858,7 @@
       g.phase = 'me';
       announce(fill(pick(SAY.callMe, g.seed + g.turn), { n: s.n }));
       /* the word waits for the name to finish, not for a guessed delay */
-      speakName(g.name, () => { try { say(g.word.w); } catch (e) {} });
+      speakName(g.name, () => aqWord(g.word.w));
       render();
     } else {
       g.phase = 'bot'; g.botStep = 0; g.botOut = '';
@@ -861,7 +889,7 @@
     g.bolt = { i: 0, typed: '', got: 0, miss: 0, deadline: Date.now() + BOLT_MS, done: [], tick: 1 };
     announce(pick(SAY.boltIn, g.seed + g.round));
     render();
-    try { say((g.words[0] || {}).w || ''); } catch (e) {}
+    aqWord((g.words[0] || {}).w || '');
     boltTick(1);
   }
   /* One clock, not one per submitted word. mbBoltGo used to restart the tick,
@@ -894,7 +922,9 @@
     try { sfx(ok ? 'right' : 'wrong'); } catch (e) {}
     const next = g.words[b.i % g.words.length];
     render();
-    if (next) { try { say(next.w); } catch (e) {} }
+    /* the spell-off is a race: the next word jumps the queue rather than
+       waiting behind the last one */
+    if (next) { aqStop(); aqWord(next.w); }
   };
   /* A rival's ninety seconds, in one number. Their spelling skill sets the rate
      and their nerve sets how much the clock costs them, so the ordering is the
@@ -1029,7 +1059,7 @@
   function callBotToMic(s, delay) {
     after(delay, () => {
       const g = mb(); if (!g || g.view !== 'stage') return;
-      try { say(g.word.w); } catch (e) {}
+      aqWord(g.word.w);
       startPractice(s);
     });
   }
@@ -1138,7 +1168,7 @@
     let w = g.word;
     if (g.phase === 'bolt' && g.bolt && g.words && g.words.length) w = g.words[g.bolt.i % g.words.length];
     else if (g.vq && /^v(me|meDone|prac|bot)$/.test(g.phase)) w = g.vq.w;
-    if (w && w.w) { try { say(w.w); } catch (e) {} }
+    if (w && w.w) { aqStop(); aqWord(w.w); }   /* a deliberate tap jumps the queue */
   };
   app2.mbAsk = k => { const g = mb(); if (!g) return; g.asked = { ...(g.asked || {}), [k]: 1 };
     const w = g.word || {};
@@ -1230,7 +1260,7 @@
   }
   const ordinal = n => n + (n % 10 === 1 && n !== 11 ? 'st' : n % 10 === 2 && n !== 12 ? 'nd' : n % 10 === 3 && n !== 13 ? 'rd' : 'th');
 
-  app2.mbQuit = () => { state.mb = null; state.nav = 'games'; render(); };
+  app2.mbQuit = () => { aqStop(); state.mb = null; state.nav = 'games'; render(); };
   app2.mbAgain = () => { app2.mbStart(); };
 
   /* ================= rendering ================= */
