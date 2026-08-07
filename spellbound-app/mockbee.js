@@ -320,12 +320,25 @@
       try { pool = pool.concat(corpusSlice(band[0], band[1], 600) || []); } catch (e) {}
       pool = pool.filter(w => w && w.w && w.d && /^[a-z][a-z-]{2,}$/i.test(w.w));
     }
-    const seen = new Set(), out = [];
+    /* NO-REPEAT ACROSS BEES.
+       The app already keeps a per-child log of served words (c.gameLog) and the
+       Arcade games pick around it with pickFresh(). The bee was not part of that:
+       it shuffled a percentile window of beeList() and never looked at the log or
+       wrote to it, so consecutive bees drew from the same few hundred words and a
+       child saw the same ones every time.
+       Words already served are pushed to the BACK rather than dropped, so a thin
+       window still fills — a bee that cannot find a word is worse than one that
+       repeats — but everything fresh comes first. */
+    let recent = null;
+    try { recent = recentGameKeys(active()); } catch (e) {}
+    const seen = new Set(); const fresh = [], stale = [];
     for (const w of shuffle(pool.slice())) {
       if (!w || !w.w) continue;
-      const k = nkey(w.w); if (seen.has(k)) continue; seen.add(k); out.push(w);
-      if (out.length >= n) break;
+      const k = nkey(w.w); if (seen.has(k)) continue; seen.add(k);
+      ((recent && recent.has(k)) ? stale : fresh).push(w);
+      if (fresh.length >= n) break;
     }
+    const out = fresh.concat(stale).slice(0, n);
     /* last resort: a bee with no list is not a bee, so take anything spellable */
     if (!out.length && list.length) out.push(list[Math.floor(Math.random() * list.length)]);
     return out;
@@ -691,6 +704,7 @@
       /* a new question wipes the last one's feedback, or the child reads someone
          else's result under their own word */
       g.word = g.vq.w; g.vPick = null; g.vprac = null; g.lastVPrac = null;
+      try { logGameWord(nkey(g.vq.w.w)); } catch (e) {}
       if (s.kind === 'me') {
         g.phase = 'vme';
         announce(fill(pick(SAY.callVocMe, g.seed + g.turn), { n: s.n }));
@@ -718,6 +732,8 @@
     /* the list came back empty — end the bee on the spellers still standing
        rather than putting a speller in front of a word that does not exist */
     if (!g.word || !g.word.w) return finish();
+    /* served — record it so the next bee, and every other game, picks around it */
+    try { logGameWord(nkey(g.word.w)); } catch (e) {}
     if (s.kind === 'me') {
       g.phase = 'me';
       announce(fill(pick(SAY.callMe, g.seed + g.turn), { n: s.n }));
@@ -778,6 +794,7 @@
     const ok = nkey(b.typed || '') === nkey(w.w);
     if (ok) b.got++; else b.miss++;
     b.done.push({ w: w.w, typed: b.typed, ok });
+    try { logGameWord(nkey(w.w)); } catch (e) {}
     b.typed = ''; b.i++;
     try { sfx(ok ? 'right' : 'wrong'); } catch (e) {}
     const next = g.words[b.i % g.words.length];
