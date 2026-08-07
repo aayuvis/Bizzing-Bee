@@ -34,6 +34,25 @@ REMOTE="https://github.com/aayuvis/bizzing-bee-books.git"
 
 [ -f "$SRC/books/mkbooks.js" ] || { echo "run this from spellbound-app/"; exit 1; }
 
+SRC_BRANCH=$(git -C "$SRC" rev-parse --abbrev-ref HEAD 2>/dev/null || echo '?')
+SRC_SHA=$(git -C "$SRC" rev-parse --short HEAD 2>/dev/null || echo '?')
+echo "==> source: ${SRC_BRANCH}@${SRC_SHA}"
+
+# The generator is the thing that carries the book's design. If the checkout
+# predates a feature, the script still runs perfectly and publishes the OLD
+# library — which is exactly what happened three times from a stale main. Assert
+# on the generator itself rather than trusting the branch name.
+MISSING=''
+for f in sectionDivider indexPages; do
+  grep -q "function $f" books/mkbooks.js || MISSING="$MISSING $f"
+done
+if [ -n "$MISSING" ]; then
+  echo "!!  this checkout's mkbooks.js is missing:$MISSING" >&2
+  echo "!!  you are about to publish an OLD build of the library." >&2
+  echo "!!  fetch the branch that has them, or set BKSTALE=1 to publish anyway." >&2
+  [ "${BKSTALE:-}" = "1" ] || exit 1
+fi
+
 echo "==> regenerating the books"
 node books/mkbooks.js >/dev/null
 
@@ -116,8 +135,15 @@ if git diff --cached --quiet 2>/dev/null; then
 fi
 NH=$(ls books/*.html | wc -l | tr -d ' ')
 NA=$(ls books/art | wc -l | tr -d ' ')
+# Stamp WHICH SOURCE COMMIT built this. The books site was published three times
+# from a checkout of main that had none of the work — the script ran perfectly
+# every time and republished the old library, and nothing in the result said so.
+# With the source branch and sha in the message, `git log` on gh-pages shows at a
+# glance whether a publish came from the tree you think it did.
 git -c user.email="aayush.vishnoi@gmail.com" -c user.name="Bizzing Bee" \
-    commit -q -m "The Bizzing Bee library — ${NH} volumes, ${NA} plates"
+    commit -q -m "The Bizzing Bee library — ${NH} volumes, ${NA} plates
+
+Built from ${SRC_BRANCH}@${SRC_SHA} of aayuvis/Bizzing-Bee."
 # shellcheck disable=SC2086
 git push $PUSH_ARGS
 
