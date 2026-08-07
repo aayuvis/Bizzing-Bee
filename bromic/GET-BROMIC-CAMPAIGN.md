@@ -73,15 +73,20 @@ correct, and it is the strategic opening.
 
 ## 2. The strategic idea
 
-Bromic currently sells **"extend the moment."** It's an emotional benefit, it's pleasant,
-and every competitor claims it. It also asks the buyer to want *more* of something nice —
-which is a weak motivator against a $2,000–$6,000 installed line item.
+**"Extend the Moment" is the right promise and it stays.** It is the brand's equity, it is
+what the product genuinely delivers, and it is where every one of these films resolves to.
+Nothing here replaces it.
 
-Get Bromic sells the **inverse**: the cost of *not*.
+What a promise cannot do on its own is create urgency. It asks the buyer to want *more* of
+something already pleasant — a soft ask against a $2,000–$6,000 installed line item, and the
+reason this category gets deferred to next year, every year.
+
+So Get Bromic supplies the other half. Not a new promise — an **argument** underneath the one
+that already works: the cost of *not*.
 
 > **You didn't spend eighty thousand dollars on a backyard to look at it through glass.**
 
-This is the reframe that does the commercial work. It moves the purchase out of the
+That argument does the commercial work. It moves the purchase out of the
 "heater" category — where it is a commodity, price-shopped against a $300 mushroom heater
 from a big-box store — and into the **"protecting the investment you already made"**
 category, where $4,000 is a rounding error on an $80k outdoor build and the comparison set
