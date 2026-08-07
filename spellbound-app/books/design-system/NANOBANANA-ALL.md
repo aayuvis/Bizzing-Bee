@@ -1027,3 +1027,33 @@ One continuous tall vertical graphic-novel montage, NO panel borders and no gutt
 
 ## 337. b21-ch18-opener.png — tall portrait
 One continuous tall vertical graphic-novel montage, NO panel borders and no gutters, for the chapter "Build a Two-Year Periodization Plan": the ground tone shifts gently top to bottom from pale paper white, through a narrow band of cool grey where the moth passes, and back to a warm cream at the foot — light and airy overall, with real darks used only in that one narrow band. Figures staged alternately right then left going down the page: top: the reference bee in motion; Phoenix Flame (a crimson-and-amber bee with burning feathered wings trailing hard-edged embers); the reference moth a hard silhouette in the black stretch; Volt (a wiry electric-blue bee wreathed in hard white arcs of current). A thin dotted line connects them down the page. a floodlit championship arena carved into a mountain at night: a bare stone dais with one microphone stand, banks of hard white floodlights on towers throwing long shadows, tiers of empty seats fading into black, laurel banners hanging still, drifting confetti frozen mid-air, near-monochrome charcoal and slate lifted by hard gold across the bottom, drawn lightly with plenty of air around it. Leave clear pale space beside each figure for captions.
+
+## 338. b23-silentletters.png — tall portrait
+A stonemason's bench seen from above in raking light: a blank grey slab of stone with a mallet and a fine chisel laid across it, fresh stone dust drifted in a shallow groove, chips scattered on the warm wooden bench around it. The slab is COMPLETELY BLANK — smooth uncarved stone with nothing cut into it, no inscription, no letters, no marks of any alphabet, no numerals, no symbols, not even partial or worn ones. Cool grey stone against warm cream, one band of shadow across the lower third, generous empty bench around the slab.
+
+## 339. b23-doubling.png — tall portrait
+A letterpress compositor’s case seen from directly above: rows of wooden type sorts in their compartments, two identical metal sorts lifted out and standing upright side by side on the rail, a composing stick beside them. Warm boxwood and cool lead grey, generous empty compartments, light from the upper left.
+
+## 340. b23-ableible.png — tall portrait
+A fork in a narrow country road drawn from the walker’s eye level, the two branches curving away around a low stone wall into pale distance, a bare signpost with two blank arms pointing opposite ways. Three flat inks, wide empty sky, the road pale and the hedges dark.
+
+## 341. b23-arabicwords.png — tall portrait
+An astrolabe lying open on a merchant’s table beside a small brass balance and a bowl of coffee beans, a rolled chart at the edge, an arched window throwing a hard rectangle of light across the table. Brass and indigo against cream, deep shadow only under the instruments.
+
+## 342. b23-sanskritwords.png — tall portrait
+A river ghat at first light drawn in flat inks: broad stone steps descending into still water, one narrow wooden boat moored, folded cloth drying on the parapet, a bare tree leaning in from the right. Pale rose sky, grey stone, one warm ochre band at the waterline.
+
+## 343. b23-foreignplurals.png — tall portrait
+A row of travelling trunks and cases of clearly different national make stacked on a station platform, each with blank luggage labels tied to the handles, a porter’s empty barrow beside them. Muted greens and browns, long platform receding, plenty of pale empty floor.
+
+## 344. b23-toponyms.png — tall portrait
+An old folding map spread on a desk with a magnifying glass resting on it and a pair of dividers open beside it, the map showing coastlines and rivers and absolutely no writing of any kind. Faded ochre and sea-green, hard shadow of the glass, warm cream paper edges.
+
+## 345. b23-homophonemic.png — tall portrait
+A single vintage microphone on a bare stage in a hard spotlight, drawn from slightly below, with two long shadows falling away from it in different directions across the boards. Near-monochrome charcoal and slate, one warm gold rim on the microphone, the rest of the stage empty.
+
+## 346. b23-frenchendings.png — tall portrait
+A Parisian shopfront at dusk with a striped awning, an empty blank signboard above the door, bentwood chairs stacked on the pavement, a bicycle leaning by the window. Slate blue and warm amber lamplight, wet pavement reflecting, generous empty sky above the awning.
+
+## 347. b23-meaningshift.png — tall portrait
+A library reading room with one long table, an open dictionary at the near end lying face up with blank pages, and behind it the same room drawn a little paler and older as if a memory of itself — bookcases fading into pale wash toward the top. Warm wood, cool grey air, light from tall windows on the left.

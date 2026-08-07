@@ -291,6 +291,48 @@
   .bb-badge{display:flex;gap:.08in;align-items:center;max-height:.7in}
   .bb-badge .b1{width:.5in;height:.5in;border-radius:12pt;border:1.6pt dashed var(--accent);display:grid;place-items:center;font-family:'BB Display';font-size:9pt;color:var(--accent-deep);background:var(--card)}
   .chip{display:inline-block;background:var(--chip);color:var(--chip-ink);font-weight:700;font-size:9pt;border-radius:999px;padding:2pt 9pt}
+  /* ---------------- the quiz companion's question blocks ----------------
+     Five hundred questions set the same way is a worksheet. These are the
+     shapes a page can be built from; the recipes in book20() rotate them so
+     no two facing pages of a round are laid out alike.
+
+     The option list picks its own shape from how long the options ARE:
+     four one-word answers laid out as a 2x2 grid waste two thirds of the
+     measure, and a full clause forced into a grid cell wraps to four lines. */
+  /* no column-fill:auto — with no fixed height that fills column one and
+     overflows the page; the default balance is what keeps a short last page
+     even across the measure */
+  .qz-col{columns:2;column-gap:.34in}
+  .qz-q{break-inside:avoid;margin-bottom:.13in}
+  .qz-stem{font-size:10.4pt;line-height:1.34}
+  .qz-stem b{font-family:'BB Kicker';color:var(--accent-deep);font-weight:600}
+  .qz-l{font-style:normal;font-family:'BB Kicker';color:var(--accent-deep);margin-right:3pt}
+  .qz-opts-inline{display:flex;flex-wrap:wrap;gap:2pt 11pt;margin-top:3pt;font-size:9.5pt;line-height:1.4}
+  .qz-opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5pt 10pt;margin-top:3pt;font-size:9.5pt;line-height:1.36}
+  .qz-opts-stack{display:grid;gap:1.5pt;margin-top:3pt;font-size:9.5pt;line-height:1.36}
+  .qz-card{border:1px solid var(--hairline);border-radius:var(--r-panel);background:var(--card);
+    padding:.085in .11in;break-inside:avoid;margin-bottom:.12in;box-shadow:var(--sh-screen)}
+  /* one question a page gets played large — the eye needs somewhere to land */
+  .qz-hero{background:linear-gradient(118deg,var(--tint),transparent 82%);border-left:4pt solid var(--accent);
+    border-radius:2pt 14pt 14pt 2pt;padding:.11in .15in .12in;margin-bottom:.15in;break-inside:avoid}
+  .qz-hero .qz-stem{font-family:'BB Display';font-size:13pt;line-height:1.28}
+  .qz-hero .qz-opts-inline,.qz-hero .qz-opts-grid,.qz-hero .qz-opts-stack{font-size:10.2pt}
+  /* breadcrumbs: a multi-clue question printed AS its clues, hardest first */
+  .qz-crumb{border-left:2.4pt solid var(--accent);padding-left:.11in;margin-top:3pt}
+  .qz-crumb div{font-size:9.6pt;line-height:1.34;padding:1pt 0}
+  .qz-crumb div+div{border-top:1px dotted var(--hairline)}
+  .qz-crumb i{font-style:normal;font-family:'BB Kicker';font-size:7.4pt;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--muted);margin-right:5pt}
+  .qz-write{border-bottom:1pt dotted var(--ink);height:.24in;margin-top:3pt}
+  .qz-box{border:1px solid var(--hairline);border-radius:8pt;background:var(--card);height:.28in;margin-top:4pt}
+  /* the tally that closes a round — also the thing that stops a last page
+     ending two inches short of the foot */
+  .qz-score{margin-top:.16in;display:flex;gap:.12in;align-items:center;background:linear-gradient(90deg,var(--treasure-tint),transparent 86%);
+    border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.1in .14in;break-inside:avoid}
+  .qz-score .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--treasure-deep)}
+  .qz-score .t{font-size:9.8pt;line-height:1.38;color:var(--muted);margin-top:2px}
+  .qz-score .n{width:.62in;height:.46in;border:1.4pt dashed var(--treasure);border-radius:10pt;background:var(--card);
+    display:grid;place-items:center;font-family:'BB Display';font-size:9pt;color:var(--muted);flex-shrink:0}
   
   @media print{.rv,.rv-tab,.rv-mark{display:none !important}}
   @media screen{

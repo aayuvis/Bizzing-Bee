@@ -450,6 +450,185 @@ window.SB_TRIVIA_ROUNDS = [
       { q: 'Which Scandinavian design element appears on the flags of Denmark, Sweden, Norway, Finland and Iceland?', c: ['An off-centre cross', 'A crown', 'A ship', 'A star'], f: 'The Nordic cross, with its centre shifted towards the hoist.' },
       { q: 'How many stripes are on the flag of the United States, and why?', c: ['Thirteen, for the original colonies', 'Fifty, for the states', 'Twelve, for the months', 'Fifteen, for the first fifteen states'], f: 'It briefly had fifteen stripes; they went back to thirteen when it became clear the flag would run out of room.' },
       { q: 'The flag of Mozambique is the only national flag to feature what modern object?', c: ['An assault rifle', 'A satellite', 'A telephone', 'A bicycle'], f: 'An AK-47 crossed with a hoe, over an open book.' }
+    ] },
+
+  /* ---- rounds 26-35: the speller's own ground ------------------------------
+     The first twenty-five rounds are general knowledge that happens to be told
+     through words. These ten are the other way round: every one of them is
+     about why a word is SPELLED the way it is. A speller who knows that the b
+     in debt was put there by sixteenth-century scholars, and that the k in knee
+     was once said aloud, is not memorising two more words — they are holding a
+     rule that decides a hundred they have never seen.
+     Origin rounds ask what a root MEANT, never "which language gave us this". */
+
+  { id: 'silentletters', title: 'Silent Letters, and Who Left Them There', fmt: 'mc',
+    blurb: 'Almost every silent letter in English is a fossil. Some were spoken and went quiet; others were never spoken at all, and were inserted by scholars who wanted the word to look like its Latin ancestor.',
+    qs: [
+      { q: 'The b in debt is silent and always was. Why was it put in?', c: ['To show the word came from Latin debitum', 'To mark a long vowel', 'To separate it from another word', 'It was once pronounced'], f: 'Middle English had dette, straight from Old French. Sixteenth-century scholars re-spelled it to display the Latin. The same hand added the b to doubt.' },
+      { q: 'The k in knee and knight was once said aloud. Which modern language still pronounces that cluster in its word for knee?', c: ['German', 'French', 'Italian', 'Spanish'], f: 'German Knie. English stopped saying the k in the seventeenth century and kept the letter for another four hundred years.' },
+      { q: 'The s in island was inserted because of a mistaken link to which other word?', c: ['Isle', 'Sand', 'Inland', 'Ireland'], f: 'Island is Old English igland and had no s. Isle comes from Latin insula by a completely separate road. The s is a borrowed error.' },
+      { q: 'The p in receipt was added to match the Latin recepta. Which related word kept the p AND pronounces it?', c: ['Reception', 'Receive', 'Recipient', 'Recess'], f: 'Receipt, receive and reception are one family; only reception and recipient say the p out loud.' },
+      { q: 'The l in salmon is silent. What was the word in Old French, before scholars restored the Latin?', c: ['Saumon', 'Salmone', 'Samoun', 'Salmoun'], f: 'From Latin salmo. English took the French saumon, then put the l back to show the ancestor, without ever saying it.' },
+      { q: 'The h in ghost was not in the Old English gast. Who is generally blamed for it?', c: ['Caxton’s Flemish typesetters', 'Samuel Johnson', 'The scribes of Chaucer', 'Noah Webster'], f: 'Flemish compositors in England’s first print shop spelled it the Flemish way, gheest. The h stuck to ghost, ghastly and aghast.' },
+      { q: 'In autumn, column and hymn the n is silent. What happens to it in autumnal and columnist?', c: ['It is pronounced again', 'It stays silent', 'It is dropped from the spelling', 'It becomes an m'], f: 'The Latin -mn survives whole; English only silences the n when it lands at the end of the word.' },
+      { q: 'The w in sword, two and answer is silent. Which of these still says its w?', c: ['Swore', 'Sword', 'Answer', 'Two'], f: 'The w went quiet before a rounded vowel. Swore kept it because the following vowel is different.' },
+      { q: 'The t is silent in castle, listen and whistle. What sound cluster is it caught between?', c: ['s and l', 'a and e', 'c and a', 'n and e'], f: 'English quietly drops the middle consonant of an awkward three-consonant run — the same thing happened in Christmas and often.' },
+      { q: 'The b in subtle came back from Latin subtilis. What did subtilis literally describe?', c: ['Finely woven', 'Quietly spoken', 'Deeply hidden', 'Slowly made'], f: 'Sub + tela, "under the web" — the fineness of a cloth. The b was reinserted in the fourteenth century.' },
+      { q: 'Gnaw, gnat and gnome all begin with a silent g. Which one is NOT an old Germanic word that once said it?', c: ['Gnome', 'Gnaw', 'Gnat', 'Gnash'], f: 'Gnome was coined in Latin by Paracelsus in the sixteenth century; its silent g is an imitation of the older native words.' },
+      { q: 'The c in scissors came from a wrong guess about its parent. Which Latin word were the spellers reaching for?', c: ['Scindere, to cut or split', 'Cisorium, a cutting tool', 'Sectio, a cutting', 'Secare, to cut'], f: 'The true parent is cisorium. Scindere was assumed, and the c was added to show it — the same instinct that put the b in debt, applied to the wrong ancestor.' }
+    ] },
+
+  { id: 'doubling', title: 'Double or Single?', fmt: 'short',
+    blurb: 'Doubled consonants are not decoration. English doubles a letter to protect a short vowel, and where the stress falls decides whether it doubles at all. Write each answer out in full.',
+    qs: [
+      { q: 'Write the past tense of "occur".', c: ['occurred'], f: 'Stress on the last syllable doubles the consonant: occur → occurred. Offer, stressed on the first, does not: offered.' },
+      { q: 'Write the past tense of "benefit".', c: ['benefited'], f: 'Stress is on the FIRST syllable, so no doubling. Benefitted appears in British usage but the rule points the other way.' },
+      { q: 'Write the word meaning "took in and made part of itself", from ab- and sorbere.', c: ['absorbed'], f: 'One b, one r. The related noun absorption drops the b sound of absorb entirely.' },
+      { q: 'Write the adjective from "regret".', c: ['regrettable'], f: 'Stressed final syllable, so the t doubles — and the -able ending survives because regret is a whole English word.' },
+      { q: 'Write the word for a person who travels on foot, from Latin pedester.', c: ['pedestrian'], f: 'No doubling anywhere. The temptation is a double d, by false analogy with peddler.' },
+      { q: 'Write the word meaning "needed" or "essential", built on "requisite".', c: ['prerequisite'], f: 'Two words joined, and neither doubles at the seam: pre + requisite.' },
+      { q: 'Write the noun meaning "the state of being embarrassed".', c: ['embarrassment'], f: 'Two r, two s. From Portuguese embaraçar, to entangle — the doubling came in through French.' },
+      { q: 'Write the word meaning "living quarters", from Latin accommodare.', c: ['accommodation'], f: 'Two c and two m — the most commonly misspelled long word in English surveys. Ad + com + modus, "to fit to a measure".' },
+      { q: 'Write the past tense of "travel" as it is spelled in American usage.', c: ['traveled'], f: 'One l in the United States, two in Britain. Webster cut the doubling where the stress does not fall on the final syllable.' },
+      { q: 'Write the word for the tool a carpenter uses to make a surface flat, and the past tense verb from it.', c: ['planed'], f: 'A single consonant plus e keeps the vowel long: planed. Doubling it makes planned, a different word entirely.' },
+      { q: 'Write the noun meaning "a formal agreement between nations".', c: ['committee'], f: 'Two m, two t, two e — the champion of doubled letters. From commit, whose final syllable is stressed.' },
+      { q: 'Write the word meaning "happening at the same time", from sub- and cedere.', c: ['successive'], f: 'Two c and two s. The cc is pronounced ks, which is why the ear gives no warning.' }
+    ] },
+
+  { id: 'ableible', title: 'Is It -able or -ible?', fmt: 'mc',
+    blurb: 'There is a rule, and it is nearly reliable: -able attaches to whole English words, -ible to Latin stems that cannot stand alone. Comfort is a word, so comfortable. Aud is not, so audible.',
+    qs: [
+      { q: 'Which of these is spelled correctly?', c: ['Collapsible', 'Collapsable', 'Collapseable', 'Collapsibel'], f: 'Collaps- is a Latin stem, not a free-standing English word, so it takes -ible.' },
+      { q: 'Which of these is spelled correctly?', c: ['Comfortable', 'Comfortible', 'Comfortabel', 'Comfortible'], f: 'Comfort is a complete English word. Whole word, -able.' },
+      { q: 'Which of these is spelled correctly?', c: ['Perceptible', 'Perceptable', 'Percieptible', 'Perceptibel'], f: 'Percept- cannot stand alone in English, so -ible. Its cousin perceivable, built on the whole word perceive, takes -able.' },
+      { q: 'Which of these is spelled correctly?', c: ['Indispensable', 'Indispensible', 'Indispensabel', 'Indispencable'], f: 'One of the rule’s honest exceptions — dispens- is not a free word, yet the ending is -able.' },
+      { q: 'Which of these is spelled correctly?', c: ['Legible', 'Legable', 'Ledgible', 'Legibel'], f: 'From legere, to read. No English word leg means read, so -ible.' },
+      { q: 'Which of these is spelled correctly?', c: ['Noticeable', 'Noticable', 'Noticeible', 'Notisable'], f: 'The e is kept to kelp the c stay soft. Drop it and you would be reading "notikable".' },
+      { q: 'Which of these is spelled correctly?', c: ['Reversible', 'Reversable', 'Reversibel', 'Reverseable'], f: 'Vers- is the Latin stem for turning. Reverse is a word, but the ending settled on -ible centuries ago.' },
+      { q: 'Which of these is spelled correctly?', c: ['Manageable', 'Managable', 'Manageible', 'Managible'], f: 'The e survives to keep the g soft, exactly as in noticeable and changeable.' },
+      { q: 'Which of these is spelled correctly?', c: ['Compatible', 'Compatable', 'Compatibel', 'Compatiable'], f: 'From compati, to suffer with. No free English stem, so -ible.' },
+      { q: 'Which of these is spelled correctly?', c: ['Inevitable', 'Inevitible', 'Inevitabel', 'Ineveitable'], f: 'In + evitare, to avoid — "not avoidable". The -able here comes straight from the Latin -abilis.' },
+      { q: 'Which of these is spelled correctly?', c: ['Irresistible', 'Irresistable', 'Irresistibel', 'Iresistible'], f: 'Two r at the front, and -ible at the back. Resist is a word, which is exactly why this one is so often got wrong.' },
+      { q: 'Which of these is spelled correctly?', c: ['Dependable', 'Dependible', 'Dependabel', 'Depenable'], f: 'Depend is a whole word, so the rule holds: -able.' }
+    ] },
+
+  { id: 'arabicwords', title: 'What the Arabic Root Meant', fmt: 'mc',
+    blurb: 'English took a great deal from Arabic, most of it through Spain and Italy, and much of it still carries the Arabic definite article al- fused to the front where English speakers could not hear the join.',
+    qs: [
+      { q: 'Algebra comes from al-jabr. What did al-jabr describe?', c: ['The reuniting of broken parts', 'The counting of herds', 'The measuring of land', 'The dividing of an estate'], f: 'From a ninth-century treatise by al-Khwarizmi, whose own name, worn down through Latin, gave English algorithm.' },
+      { q: 'Admiral has a d that does not belong to its root. What did the original amir al-bahr mean?', c: ['Commander of the sea', 'Keeper of the fleet', 'Prince of the shore', 'Master of the winds'], f: 'The d crept in through medieval Latin, on the assumption that the word was related to admirari, to wonder at.' },
+      { q: 'Magazine reached English meaning a storehouse. What was a makhzan?', c: ['A storehouse', 'A marketplace', 'A ledger', 'A watchtower'], f: 'A store of gunpowder, then a store of writing. The paper magazine and the rifle magazine are the same word.' },
+      { q: 'Cipher and zero are the same Arabic word twice. What did sifr mean?', c: ['Empty', 'Round', 'Small', 'Nothing gained'], f: 'It travelled through Latin zephirum to Italian zero, and separately through Old French to cipher.' },
+      { q: 'Alcohol first named something quite unlike a drink. What was al-kuhl?', c: ['A fine powder used as eye paint', 'A distilled perfume', 'A medicinal wine', 'A burning oil'], f: 'The sense moved from the powder, to any refined essence, to the spirit distilled from wine.' },
+      { q: 'A sofa was originally not furniture. What was a suffa?', c: ['A raised bench along a wall', 'A woven mat', 'A cushioned saddle', 'A shaded courtyard'], f: 'Raised, carpeted and built into the room. English kept the shape and threw away the wall.' },
+      { q: 'What did the Arabic qutn name?', c: ['Cotton', 'Linen', 'Silk', 'Wool'], f: 'It entered English through Old French coton in the thirteenth century, along with the trade itself.' },
+      { q: 'Giraffe comes from zarafa. Which European language passed it to English with the f?', c: ['Italian', 'German', 'Dutch', 'Portuguese'], f: 'Italian giraffa. Earlier English called the animal a camelopard, a camel crossed with a leopard.' },
+      { q: 'Alchemy carries al- plus kimiya. What is the most widely accepted source of kimiya?', c: ['A Greek word for the pouring or fusing of metals', 'An Egyptian word for black earth', 'A Persian word for gold', 'An Aramaic word for fire'], f: 'Greek khymeia. Strip the Arabic article from alchemy and what is left is chemistry.' },
+      { q: 'Which of these four words did NOT come to English through Arabic?', c: ['Almond', 'Alcove', 'Algebra', 'Alkali'], f: 'Almond is Greek by way of Latin and French; its al- is a coincidence, which is precisely the trap.' },
+      { q: 'Sugar reached English from sukkar, but where does that word ultimately come from?', c: ['Sanskrit sharkara, "gravel"', 'Persian shakar, "sweet"', 'Greek sakkharon, "cane juice"', 'Egyptian seqer, "crystal"'], f: 'Sanskrit named it for what it looked like: grit. It travelled Sanskrit to Persian to Arabic to Italian to English.' },
+      { q: 'A safari is a journey. What does the Arabic safar mean?', c: ['A journey or travel', 'A hunt', 'A caravan of camels', 'A desert crossing'], f: 'It reached English through Swahili, which had taken it from Arabic — one of the few Arabic words that arrived by way of East Africa.' }
+    ] },
+
+  { id: 'sanskritwords', title: 'What the Sanskrit Root Meant', fmt: 'short',
+    blurb: 'Sanskrit words reached English by two very different roads: the scholarly one, through translation, and the everyday one, through three centuries of trade and empire. Write the English word.',
+    qs: [
+      { q: 'From avatara, "a descent" — the coming down of a god into the world. Which English word?', c: ['avatar'], f: 'The computing sense, a body you wear in a world you are visiting, is closer to the Sanskrit than it looks.' },
+      { q: 'From jangala, "rough and waterless ground". Which English word?', c: ['jungle'], f: 'The Sanskrit meant dry scrub. English heard it in India, applied it to dense wet forest, and reversed the meaning.' },
+      { q: 'From Jagannatha, "lord of the world" — a temple chariot so large it could not be stopped. Which English word?', c: ['juggernaut'], f: 'English took the chariot and left the god behind.' },
+      { q: 'From pandita, "learned" or "scholar". Which English word?', c: ['pundit'], f: 'It meant a Hindu scholar of Sanskrit law before it meant anyone with opinions on television.' },
+      { q: 'From champo, "to press or knead". Which English word?', c: ['shampoo'], f: 'It meant a massage for a century before it meant anything to do with hair.' },
+      { q: 'From mantra, built on man- "to think" plus an instrument ending. Which English word?', c: ['mantra'], f: 'Literally an instrument of thought, the way a lever is an instrument of lifting.' },
+      { q: 'From nirvana, "a blowing out", as of a flame. Which English word?', c: ['nirvana'], f: 'Not a place. The extinguishing of the fire of craving.' },
+      { q: 'From guru, whose first meaning is "heavy" or "weighty". Which English word?', c: ['guru'], f: 'A teacher weighty with learning — the same metaphor as English gravity and grave.' },
+      { q: 'From naranga, the name of the fruit, which lost its first letter to French. Which English word?', c: ['orange'], f: 'Une norenge became une orenge. The colour is named after the fruit, not the other way round.' },
+      { q: 'From khanda, "a piece" or "broken sugar". Which English word?', c: ['candy'], f: 'Through Persian and Arabic qandi to French sucre candi, sugar in pieces.' },
+      { q: 'From cakra, "wheel" or "circle". Which English word for a wheel-shaped centre of energy?', c: ['chakra'], f: 'The same Indo-European root that gives English wheel and Greek kuklos, cycle.' },
+      { q: 'From upa-ni-shad, "sitting down near" — a pupil at a teacher’s feet. Which English word?', c: ['upanishad'], f: 'The name describes the teaching method, not the subject.' }
+    ] },
+
+  { id: 'foreignplurals', title: 'Plurals With Foreign Passports', fmt: 'mc',
+    blurb: 'A word that arrives from Latin or Greek often brings its own plural with it, and refuses the English -s for a century or two before giving in. Some have given in. Some never will.',
+    qs: [
+      { q: 'What is the singular of "data"?', c: ['Datum', 'Data', 'Data point', 'Datus'], f: 'Latin neuter plural of datum, "a thing given". In careful scientific writing data still takes a plural verb.' },
+      { q: 'What is the plural of "criterion"?', c: ['Criteria', 'Criterions', 'Criterias', 'Criterium'], f: 'Greek, not Latin — which is why it is not criteriums. The same pattern gives phenomenon and phenomena.' },
+      { q: 'What is the singular of "alumni"?', c: ['Alumnus', 'Alumnum', 'Alumni', 'Alumna'], f: 'Alumnus is male, alumna female, alumnae a group of women, alumni a group of men or a mixed group.' },
+      { q: 'What is the plural of "crisis"?', c: ['Crises', 'Crisises', 'Crisi', 'Crisae'], f: 'Greek -is becomes -es: crisis, thesis, analysis, basis, all the same way.' },
+      { q: 'What is the plural of "cactus" that follows the Latin?', c: ['Cacti', 'Cactuses', 'Cactae', 'Cactii'], f: 'Both cacti and cactuses are accepted; cactii, with two i, is not a form in any language.' },
+      { q: 'What is the plural of "index" in mathematics?', c: ['Indices', 'Indexes', 'Indicies', 'Index'], f: 'Indices for the mathematical sense, indexes for the ones at the back of books. The same word split in two.' },
+      { q: 'What is the singular of "bacteria"?', c: ['Bacterium', 'Bacteria', 'Bacterius', 'Bacter'], f: 'From Greek bakterion, "little staff", after the shape of the first ones seen down a lens.' },
+      { q: 'What is the plural of "larva"?', c: ['Larvae', 'Larvas', 'Larvi', 'Larvum'], f: 'Latin first declension. Larva meant a mask or ghost — the insect wearing a disguise before its true form.' },
+      { q: 'What is the plural of "octopus" preferred by most dictionaries?', c: ['Octopuses', 'Octopi', 'Octopodes', 'Octopus'], f: 'The word is Greek, so the Latin -i ending never applied. Octopodes is technically right and almost never used.' },
+      { q: 'What is the singular of "media" in its original sense?', c: ['Medium', 'Media', 'Medius', 'Medion'], f: 'A medium is a middle thing — the material through which something travels.' },
+      { q: 'What is the plural of "appendix" in a book?', c: ['Appendices', 'Appendixes', 'Appendici', 'Appendixi'], f: 'Appendices at the back of a book, appendixes in surgery. The body took the English plural.' },
+      { q: 'What is the plural of "stimulus"?', c: ['Stimuli', 'Stimuluses', 'Stimulae', 'Stimulii'], f: 'Latin stimulus was a goad for driving cattle — a sharp stick, applied to the mind.' }
+    ] },
+
+  { id: 'toponyms', title: 'Words That Are Really Places', fmt: 'xword',
+    blurb: 'A toponym is a word made from a place name. Cloth, food and animals collect them, because trade names its goods after wherever it first found them. The clue is the meaning; the answer is the word.',
+    qs: [
+      { q: 'Hard-wearing cotton twill, named for the French city of Nîmes', c: ['denim'], f: 'Serge de Nîmes, the serge of Nîmes. Jeans, worn with it, is from Genoa.' },
+      { q: 'A long-distance race named after a plain in Greece', c: ['marathon'], f: 'The runner’s message is the story; the distance was fixed at its modern length only in 1908.' },
+      { q: 'A small oily fish named after a Mediterranean island', c: ['sardine'], f: 'Sardinia. The fish was named for where the shoals were found, not where it was tinned.' },
+      { q: 'A strong-smelling cheese named after a village in Somerset', c: ['cheddar'], f: 'The caves there held the right temperature for maturing it. The name was never protected, which is why it is now made everywhere.' },
+      { q: 'A blue-green mineral whose name means "Turkish"', c: ['turquoise'], f: 'It reached Europe through Turkey from Persia, and was named for the road rather than the mine.' },
+      { q: 'Soft napped leather whose name means "from Sweden"', c: ['suede'], f: 'French gants de Suède, "gloves of Sweden".' },
+      { q: 'A brilliant purplish-red dye named after an Italian battle', c: ['magenta'], f: 'Discovered in 1859, the year of the battle, and named to sell it.' },
+      { q: 'A small yellow songbird named after a group of Atlantic islands', c: ['canary'], f: 'And the islands were named for dogs — Latin canis — not for the bird.' },
+      { q: 'A rich figured fabric named after a city in Syria', c: ['damask'], f: 'Damascus. The same city gives damson, the plum, and damascene, the watering of steel.' },
+      { q: 'A fine cotton fabric named after a city in Iraq', c: ['muslin'], f: 'Mosul. It reached Europe through Italian mussolina.' },
+      { q: 'A metal named after the island of Cyprus', c: ['copper'], f: 'Latin cyprium aes, "Cyprian metal", worn down to cuprum — which is why its symbol is Cu.' },
+      { q: 'A game named after an English country house', c: ['badminton'], f: 'The Duke of Beaufort’s seat in Gloucestershire, where the game was played in the 1860s.' }
+    ] },
+
+  { id: 'homophonemic', title: 'Homophones at the Microphone', fmt: 'short',
+    blurb: 'At a bee these are the ones that end it. The word is said once and two spellings fit the sound, so the only way through is the meaning. Write the spelling that matches the definition given.',
+    qs: [
+      { q: 'A fundamental truth or rule of conduct. Not the head of a school.', c: ['principle'], f: 'Principle is a rule; principal is the chief person or the sum of money. The head of a school is your pal.' },
+      { q: 'Writing paper and envelopes. Not "standing still".', c: ['stationery'], f: 'Stationery with an e is sold by a stationer. Stationary with an a stands still — think of "a" for "at rest".' },
+      { q: 'To complete or make whole. Not a piece of praise.', c: ['complement'], f: 'A complement completes; a compliment is kind. The e of complement matches the e of complete.' },
+      { q: 'Careful not to be noticed, tactful. Not "separate and distinct".', c: ['discreet'], f: 'Discrete keeps its two e apart, which is what discrete means. That is a genuine memory aid and not a coincidence.' },
+      { q: 'A store of something hidden away. Not a great crowd.', c: ['hoard'], f: 'A horde is a crowd, from Turkic ordu, a camp. A hoard is treasure buried.' },
+      { q: 'The roof of the mouth. Not an artist’s board, nor a wooden shipping platform.', c: ['palate'], f: 'Palate, palette, pallet — three words, one sound. Palate is the one inside you.' },
+      { q: 'A branch of a tree. Not the front of a ship, nor a bending at the waist.', c: ['bough'], f: 'Old English bog, a shoulder or limb. The -ough spelling is one of the seven ways English says that cluster.' },
+      { q: 'Strong coarse cloth used for sails and paintings. Not "to seek votes".', c: ['canvas'], f: 'To canvass, with two s, was originally to toss someone in a canvas sheet — then to shake a district for votes.' },
+      { q: 'To quote a source. Not a location, nor the ability to see.', c: ['cite'], f: 'Cite, site and sight. Cite is from citare, to summon — you summon your evidence.' },
+      { q: 'To draw out a response. Not "forbidden by law".', c: ['elicit'], f: 'Elicit is a verb, illicit an adjective. Illicit is in + licit, "not permitted".' },
+      { q: 'A narrow channel of water between two seas. Not "without a bend".', c: ['strait'], f: 'From Latin strictus, drawn tight — the same root as strict. Straitened means squeezed, not straightened out.' },
+      { q: 'A feeling of wounded pride. Not a mountain top, nor a quick look.', c: ['pique'], f: 'French piquer, to prick. Peak, peek, pique — and a fourth, peke, if the dog is allowed.' }
+    ] },
+
+  { id: 'frenchendings', title: 'French Endings, English Words', fmt: 'mc',
+    blurb: 'A third of English came in from French, and it arrived wearing endings that English never made for itself: -eau, -oir, -et, -que. Those endings are a spelling clue, because they behave the French way, not the English one.',
+    qs: [
+      { q: 'A bureau is a desk, then an office, then a government department. What did the French bureau first name?', c: ['The coarse cloth that covered a desk', 'A locked box for papers', 'A clerk’s stool', 'A room at the front of a house'], f: 'From bure, a woollen baize. The furniture was named after its cloth, and the institution after the furniture.' },
+      { q: 'Plateau, plate and flat all descend from one root. What does the French plat mean?', c: ['Flat', 'High', 'Wide', 'Bare'], f: 'A plateau is simply a flat place. The same root gives platform, platypus — "flat foot" — and plaza.' },
+      { q: 'What is the plural of "bureau" that follows the French?', c: ['Bureaux', 'Bureaus', 'Bureaui', 'Buroes'], f: 'Words in -eau take -x: plateaux, tableaux, gateaux. English also accepts -s, and increasingly prefers it.' },
+      { q: 'A reservoir holds water. What does the -oir ending mark in French?', c: ['A place where the action of the verb happens', 'A person who does the action', 'A thing made by the action', 'A repeated action'], f: 'Reservoir from réserver, memoir from mémoire, escritoire from écrire. The ending names the site.' },
+      { q: 'Which of these words did NOT come to English from French?', c: ['Kindergarten', 'Restaurant', 'Ballet', 'Croissant'], f: 'Kindergarten is German, and looks nothing like the others once you know to look — its ending is a whole word, garten.' },
+      { q: 'A silhouette is named after Étienne de Silhouette, a French finance minister. Why?', c: ['His economies were so severe that anything cheap was named for him', 'He invented the technique', 'He collected the portraits', 'He was famous for his profile'], f: 'A cut-paper profile was the cheapest portrait available, and 1759 was a year of ruinous austerity.' },
+      { q: 'The -et and -ette endings are diminutives. What does a diminutive do?', c: ['Makes the thing smaller', 'Makes the thing feminine', 'Makes the thing plural', 'Makes the thing older'], f: 'Cigarette, a small cigar. Statuette, a small statue. Kitchenette, a small kitchen — that one was coined in English.' },
+      { q: 'Why does "antique" end in -que rather than -k?', c: ['It keeps the French spelling of a hard c sound before e', 'It marks the word as a noun', 'It was once pronounced with two syllables at the end', 'It distinguishes it from "antic"'], f: 'French uses qu where English would use k or c: boutique, oblique, physique, unique.' },
+      { q: 'A restaurant was originally not a building. What did the French restaurant name?', c: ['A restorative broth', 'A resting place on a road', 'A guild of cooks', 'A table set for guests'], f: 'From restaurer, to restore. The soup was sold first; the room took its name from what was served in it.' },
+      { q: 'Which spelling is correct for the frozen dessert, following its French root?', c: ['Sorbet', 'Sorbay', 'Sorbette', 'Sorbé'], f: 'From Turkish şerbet by way of Italian sorbetto — the same word that gives English sherbet, spelled the other way.' },
+      { q: 'In "rendezvous", what does the French phrase literally command?', c: ['Present yourselves', 'Meet at the hour', 'Come quietly', 'Wait for me'], f: 'Rendez-vous, the imperative of se rendre. English froze a command into a noun, silent z and all.' },
+      { q: 'Why do "champagne" and "cognac" begin with small letters in English?', c: ['They are place names that became common nouns', 'They were never capitalised in French', 'They are trade marks that lapsed', 'They are shortened from longer phrases'], f: 'Champagne and Cognac are French regions. In France the capitals and the boundaries are still defended in court.' }
+    ] },
+
+  { id: 'meaningshift', title: 'Words That Changed Sides', fmt: 'mc',
+    blurb: 'A word’s meaning is not fixed by its spelling, and several of the most ordinary words in English once meant something close to the opposite. The spelling stayed put while the sense walked off.',
+    qs: [
+      { q: 'Nice comes from Latin nescius. What did nescius mean?', c: ['Ignorant', 'Delicate', 'Pleasant', 'Precise'], f: 'It went ignorant, then foolish, then fussy, then precise, then agreeable. Its old precision survives in "a nice distinction".' },
+      { q: 'What did "silly" mean in Old English?', c: ['Blessed or happy', 'Small', 'Quiet', 'Poor'], f: 'Blessed, then innocent, then harmless, then weak, then foolish. A full slide over six centuries.' },
+      { q: 'What did "awful" mean before it meant terrible?', c: ['Inspiring awe', 'Very large', 'Ancient', 'Frightening to look at'], f: 'It described cathedrals and mountains. Awesome now carries the old sense and awful the new one.' },
+      { q: '"Clue" was once spelled clew. What is a clew?', c: ['A ball of thread', 'A footprint', 'A key', 'A whisper'], f: 'The thread Theseus unwound in the labyrinth. To follow a clue is still to follow a thread.' },
+      { q: 'Quarantine names a specific number. What is it?', c: ['Forty days', 'Thirty days', 'Twenty days', 'Sixty days'], f: 'Venetian quaranta giorni — the period ships waited off Ragusa and Venice during the plague.' },
+      { q: 'What did "meat" mean in Middle English?', c: ['Food of any kind', 'Cooked flesh', 'A portion or share', 'A feast'], f: 'It survives in "sweetmeat" and in "meat and drink". Flesh was the word for what meat now means.' },
+      { q: 'What did "deer" once mean?', c: ['Any wild animal', 'A young animal', 'A hunted animal', 'A horned animal'], f: 'Old English deor, an animal. German Tier still means animal. English narrowed it to one species.' },
+      { q: 'Decimate names a Roman punishment. What did it do?', c: ['Killed one soldier in ten', 'Killed nine in ten', 'Halved a legion', 'Disbanded a unit'], f: 'The unit drew lots and executed every tenth man. The modern loose sense — to destroy most of something — reverses the proportion.' },
+      { q: 'What was a "villain" originally?', c: ['A farm worker attached to a villa', 'A wandering thief', 'A soldier without a lord', 'A man outside the law'], f: 'Latin villanus. The word slid from a description of rank to a judgement of character, as churl and boor also did.' },
+      { q: 'Egregious once meant the opposite of what it means now. What did it mean?', c: ['Outstandingly good', 'Ordinary', 'Rare', 'Well born'], f: 'Ex + grex, "out of the flock" — standing out. Sixteenth-century irony turned it sour and it never recovered.' },
+      { q: 'What did "girl" mean in Middle English?', c: ['A young person of either sex', 'A servant', 'An unmarried woman', 'A young sister'], f: 'A boy could be a girl. Knave and maiden did the work of distinguishing them.' },
+      { q: 'What did "naughty" originally describe?', c: ['Having nothing', 'Making noise', 'Being disobedient', 'Being unlucky'], f: 'From naught, nothing — a naughty person was a poor one, then a wicked one, then a badly behaved child.' }
     ] }
 
 ];

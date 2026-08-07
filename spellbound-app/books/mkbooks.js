@@ -672,6 +672,48 @@ function css(vol) {
   .bb-badge{display:flex;gap:.08in;align-items:center;max-height:.7in}
   .bb-badge .b1{width:.5in;height:.5in;border-radius:12pt;border:1.6pt dashed var(--accent);display:grid;place-items:center;font-family:'BB Display';font-size:9pt;color:var(--accent-deep);background:var(--card)}
   .chip{display:inline-block;background:var(--chip);color:var(--chip-ink);font-weight:700;font-size:9pt;border-radius:999px;padding:2pt 9pt}
+  /* ---------------- the quiz companion's question blocks ----------------
+     Five hundred questions set the same way is a worksheet. These are the
+     shapes a page can be built from; the recipes in book20() rotate them so
+     no two facing pages of a round are laid out alike.
+
+     The option list picks its own shape from how long the options ARE:
+     four one-word answers laid out as a 2x2 grid waste two thirds of the
+     measure, and a full clause forced into a grid cell wraps to four lines. */
+  /* no column-fill:auto — with no fixed height that fills column one and
+     overflows the page; the default balance is what keeps a short last page
+     even across the measure */
+  .qz-col{columns:2;column-gap:.34in}
+  .qz-q{break-inside:avoid;margin-bottom:.13in}
+  .qz-stem{font-size:10.4pt;line-height:1.34}
+  .qz-stem b{font-family:'BB Kicker';color:var(--accent-deep);font-weight:600}
+  .qz-l{font-style:normal;font-family:'BB Kicker';color:var(--accent-deep);margin-right:3pt}
+  .qz-opts-inline{display:flex;flex-wrap:wrap;gap:2pt 11pt;margin-top:3pt;font-size:9.5pt;line-height:1.4}
+  .qz-opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5pt 10pt;margin-top:3pt;font-size:9.5pt;line-height:1.36}
+  .qz-opts-stack{display:grid;gap:1.5pt;margin-top:3pt;font-size:9.5pt;line-height:1.36}
+  .qz-card{border:1px solid var(--hairline);border-radius:var(--r-panel);background:var(--card);
+    padding:.085in .11in;break-inside:avoid;margin-bottom:.12in;box-shadow:var(--sh-screen)}
+  /* one question a page gets played large — the eye needs somewhere to land */
+  .qz-hero{background:linear-gradient(118deg,var(--tint),transparent 82%);border-left:4pt solid var(--accent);
+    border-radius:2pt 14pt 14pt 2pt;padding:.11in .15in .12in;margin-bottom:.15in;break-inside:avoid}
+  .qz-hero .qz-stem{font-family:'BB Display';font-size:13pt;line-height:1.28}
+  .qz-hero .qz-opts-inline,.qz-hero .qz-opts-grid,.qz-hero .qz-opts-stack{font-size:10.2pt}
+  /* breadcrumbs: a multi-clue question printed AS its clues, hardest first */
+  .qz-crumb{border-left:2.4pt solid var(--accent);padding-left:.11in;margin-top:3pt}
+  .qz-crumb div{font-size:9.6pt;line-height:1.34;padding:1pt 0}
+  .qz-crumb div+div{border-top:1px dotted var(--hairline)}
+  .qz-crumb i{font-style:normal;font-family:'BB Kicker';font-size:7.4pt;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--muted);margin-right:5pt}
+  .qz-write{border-bottom:1pt dotted var(--ink);height:.24in;margin-top:3pt}
+  .qz-box{border:1px solid var(--hairline);border-radius:8pt;background:var(--card);height:.28in;margin-top:4pt}
+  /* the tally that closes a round — also the thing that stops a last page
+     ending two inches short of the foot */
+  .qz-score{margin-top:.16in;display:flex;gap:.12in;align-items:center;background:linear-gradient(90deg,var(--treasure-tint),transparent 86%);
+    border-left:4pt solid var(--treasure);border-radius:2pt 14pt 14pt 2pt;padding:.1in .14in;break-inside:avoid}
+  .qz-score .l{font-family:'BB Kicker';font-size:8.8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--treasure-deep)}
+  .qz-score .t{font-size:9.8pt;line-height:1.38;color:var(--muted);margin-top:2px}
+  .qz-score .n{width:.62in;height:.46in;border:1.4pt dashed var(--treasure);border-radius:10pt;background:var(--card);
+    display:grid;place-items:center;font-family:'BB Display';font-size:9pt;color:var(--muted);flex-shrink:0}
   `;
 }
 
@@ -2145,7 +2187,8 @@ function book19() {
    rounds of A/B/C/D is a worksheet, not a book. */
 function book20() {
   const vol = { n: 23, seedN: 21, art: 'b23', slug: 'book-quiz', companion: true,
-    title: 'The Long Quiz', tag: 'A general round, then a deep one, twenty-five times over',
+    title: 'Nobody Knows All of These',
+    tag: 'Fifty rounds — twenty-five to warm up on, twenty-five that go straight down one narrow hole',
     a: '#B5893C', d: '#6E4E18', tex: 'grid', av: 'scopey', world: 'forum', band: 'advanced' };
   const SPEC = window.SB_TRIVIA_ROUNDS || [];
   const rnd = mulberry(vol.n * 7919 + 17);
@@ -2171,8 +2214,23 @@ function book20() {
   shuf(genThemes, rnd);
 
   const N = SPEC.length;
+  /* 36, not 30: the bank holds 580-990 questions per theme at these levels, so
+     the round length was never limited by the data. */
+  const GEN_SIZE = 36;
+  /* Every count printed on this book is DERIVED. The subtitle used to say
+     "twenty-five times over" in a string literal, and ten appended rounds would
+     have made the cover of the book contradict its own contents page. */
+  const nGen = genThemes.filter(t => (byTheme[t] || []).length >= 12).length;
+  const nRounds = nGen + N;
+  const nQ = SPEC.reduce((n, r) => n + r.qs.length, 0) + nGen * GEN_SIZE;
+  const ONES = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
+    'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+  const TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+  const nw = n => n < 20 ? ONES[n] : TENS[Math.floor(n / 10)] + (n % 10 ? '-' + ONES[n % 10] : '');
+  const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+  vol.tag = `${cap(nw(nRounds))} rounds — ${nw(nGen)} to warm up on, ${nw(N)} that go straight down one narrow hole`;
   let qTotal = 0;
-  const pages = [cover(vol, N * 2, SPEC.reduce((n, r) => n + r.qs.length, 0) + N * 30, 'A BIZZING BEE COMPANION')];
+  const pages = [cover(vol, nRounds, nQ, 'A BIZZING BEE COMPANION')];
   pages.push(dividerPage(vol, folio.n++));
   pages.push(`<div class="page" data-vol="23">
     ${head(vol, null, 0, 'How this book works')}
@@ -2190,51 +2248,293 @@ function book20() {
     ${worldStrip(vol.world, vol, 13)}
     ${foot(vol, folio.n++)}</div>`);
 
-  /* ---- page renderers, shared by both kinds of round ---- */
-  const roundOpener = (n, title, blurb, kind, seedK) => `<div class="page" data-vol="23" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
-    <div class="kick">Round ${n} &middot; ${kind}</div>
-    <h1 style="font-size:30pt;margin:.06in 0">${esc(title)}</h1>
-    <p style="font-family:'BB Kicker';font-size:11pt;color:var(--muted);max-width:5in;margin:.1in auto 0;line-height:1.5">${esc(blurb)}</p>
-    <div style="margin:.24in auto 0">${avatar(vol.av, '1.05in')}</div>
-    ${worldStrip(WORLD_CYCLE[seedK % 12], vol, 1200 + seedK)}
-    ${foot(vol, folio.n++)}</div>`;
+  /* ---------------- the round openers are paintings ----------------
+     Seventy openers carrying the same mascot over the same tinted gradient is
+     the single most repetitive thing in the book, and this volume owned exactly
+     two plates — a cover and a divider — across two hundred pages. So the
+     openers borrow from the rest of the library.
 
-  const mcPages = (rn, title, qs) => {
-    const out = [];
-    for (let i = 0; i < qs.length; i += 5) {
-      const slice = qs.slice(i, i + 5);
-      const body = slice.map((q, k) => {
-        const opts = shuf(q.c.slice(0, 4).map((t, oi) => ({ t, ok: oi === 0 })), rnd);
-        keys.push(`<div><b>R${rn} Q${i + k + 1}</b> — ${String.fromCharCode(65 + opts.findIndex(o => o.ok))}. ${esc(clamp(q.c[0], 60))}${q.f ? ' <i>' + esc(fit(q.f, 130)) + '</i>' : ''}</div>`);
-        return `<div class="q" style="margin-bottom:.13in">
-          <div class="qq" style="font-size:10.6pt;line-height:1.36"><b>${i + k + 1}.</b> ${esc(q.q)}</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:2pt 10pt;margin-top:3pt">
-            ${opts.map((o, oi) => `<div class="opt" style="font-size:9.6pt"><b>${String.fromCharCode(65 + oi)}</b> ${esc(o.t)}</div>`).join('')}
-          </div></div>`;
-      }).join('');
-      out.push(`<div class="page" data-vol="23">${head(vol, null, 0, esc(title))}
-        <div class="bb-quiz" style="margin-top:.38in">${body}</div>
-        ${foot(vol, folio.n++)}</div>`);
-    }
-    return out;
+     They borrow from the ADVANCED shelves only (b11-b16, b19-b21) and from the
+     poetry companion's plates, never from volumes 1-10: those are painted in
+     the soft Ghibli daylight of the general series, and the same rule that took
+     the mascots out of `book-lines` applies here — this book is read by someone
+     two years from a national final.
+
+     Keyed by round ID and theme, never by position, for the reason the section
+     art is: rounds get appended, and index-keyed art silently re-attaches
+     itself to the wrong subject. A round with no match falls back to the shared
+     pool, and a missing plate falls back to the old gradient, so the book is
+     never broken while art is being filled in. */
+  const QZ_ART = {
+    greekgods: 'pt-ruin', norse: 'pt-snow', rivers: 'pt-water', capitals: 'pt-city',
+    shakespeare: 'sc-shakespeare', minerals: 'pt-mountain', warwords: 'pt-war',
+    constellations: 'pt-night', periodic: 'b20-ch04-opener', roots: 'sc-epics',
+    dynasties: 'pt-ruin', instruments: 'pt-stage', knots: 'pt-sea', deserts: 'pt-mountain',
+    bodylatin: 'b15-ch03-opener', egypt: 'pt-dawn', money: 'pt-city', emperors: 'sc-prose',
+    volcanoes: 'pt-fire', codes: 'b21-ch07-opener', silkroad: 'pt-road', kitchen: 'b13-ch02-opener',
+    birdsofprey: 'pt-bird', trees: 'pt-forest', flags: 'pt-dawn',
+    /* the ten speller rounds */
+    silentletters: 'sc-byheart', doubling: 'b20-ch09-opener', ableible: 'b20-ch12-opener',
+    arabicwords: 'pt-city', sanskritwords: 'b14-ch05-opener', foreignplurals: 'b15-ch08-opener',
+    toponyms: 'pt-road', homophonemic: 'sc-sonnets', frenchendings: 'b16-ch04-opener',
+    meaningshift: 'pt-library'
+  };
+  const THEME_ART = {
+    eponyms: 'b19-ch03-opener', words: 'pt-library', animals: 'pt-forest', history: 'pt-ruin',
+    ocean: 'pt-sea', bugs: 'pt-flower', food: 'b13-ch05-opener', myth: 'sc-epics',
+    fest: 'pt-fire', body: 'b15-ch02-opener', numbers: 'b20-ch02-opener', sports: 'pt-stage',
+    machines: 'b21-ch03-opener', plants: 'pt-flower', space: 'pt-night', music: 'pt-stage',
+    world: 'pt-mountain', art: 'sc-limericks', weather: 'pt-snow', story: 'sc-haiku',
+    science: 'b20-ch06-opener', brands: 'b21-ch11-opener', quotes: 'sc-speeches',
+    lit: 'sc-prose', ent: 'pt-stage', india: 'b14-ch02-opener', code: 'b21-ch14-opener',
+    explore: 'pt-road', langs: 'b16-ch06-opener'
+  };
+  /* the fallback pool, for a round whose subject nothing in the library matches */
+  const ART_POOL = ['b11-ch02-opener', 'b11-ch06-opener', 'b12-ch03-opener', 'b12-ch05-opener',
+    'b13-ch04-opener', 'b14-ch07-opener', 'b15-ch05-opener', 'b16-ch02-opener',
+    'b19-ch06-opener', 'b20-ch15-opener', 'b21-ch09-opener', 'pt-dawn'];
+  let poolAt = 0;
+  /* A round's OWN plate wins if one has been drawn for it: `b23-<round id>`.
+     That way art can be commissioned a round at a time and each new plate
+     displaces a borrowed one automatically, with no table to keep in step. */
+  const roundArt = key => {
+    const named = key && (QZ_ART[key] || THEME_ART[key]);
+    const tryKeys = [];
+    if (key) tryKeys.push(`${artOf(vol)}-${key}`);
+    if (named) tryKeys.push(named);
+    for (let i = 0; i < ART_POOL.length; i++) tryKeys.push(ART_POOL[(poolAt + i) % ART_POOL.length]);
+    for (const k of tryKeys) { const a = artAt(k); if (a) { if (!named) poolAt++; return a; } }
+    return null;
   };
 
-  const shortPages = (rn, title, qs) => {
-    const out = [];
-    for (let i = 0; i < qs.length; i += 7) {
-      const slice = qs.slice(i, i + 7);
-      const body = slice.map((q, k) => {
-        keys.push(`<div><b>R${rn} Q${i + k + 1}</b> — ${esc(q.c[0])}${q.f ? ' <i>' + esc(fit(q.f, 130)) + '</i>' : ''}</div>`);
-        return `<div style="margin-bottom:.15in">
-          <div style="font-size:10.6pt;line-height:1.36"><b>${i + k + 1}.</b> ${esc(q.q)}</div>
-          <div class="bb-writeline" style="margin-top:5pt"></div></div>`;
-      }).join('');
-      out.push(`<div class="page" data-vol="23">${head(vol, null, 0, esc(title))}
-        <div style="margin-top:.38in"><div class="kick">Write your answers. The key is at the back.</div></div>
-        <div style="margin-top:.1in">${body}</div>
-        ${foot(vol, folio.n++)}</div>`);
+  const roundOpener = (n, title, blurb, kind, seedK, artKey, nq, fmtLabel) => {
+    const art = roundArt(artKey);
+    if (!art) return `<div class="page" data-vol="23" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
+      <div class="kick">Round ${n} &middot; ${kind}</div>
+      <h1 style="font-size:30pt;margin:.06in 0">${esc(title)}</h1>
+      <p style="font-family:'BB Kicker';font-size:11pt;color:var(--muted);max-width:5in;margin:.1in auto 0;line-height:1.5">${esc(blurb)}</p>
+      ${worldStrip(WORLD_CYCLE[seedK % 12], vol, 1200 + seedK)}
+      ${foot(vol, folio.n++)}</div>`;
+    return `<div class="page sc-page" data-vol="23">
+      <div class="sc-frame"><img class="sc-art" src="${art}" alt=""></div>
+      <div class="sc-scrim"></div>
+      <div class="sc-body">
+        <div class="sc-num">Round ${n} &middot; ${kind}</div>
+        <div class="sc-rule"></div>
+        <h1>${esc(title)}</h1>
+        <p class="sc-blurb">${esc(blurb)}</p></div>
+      <div class="sc-count">${nq} question${nq === 1 ? '' : 's'}${fmtLabel ? ' &nbsp;&middot;&nbsp; ' + fmtLabel : ''}</div>
+      ${foot(vol, folio.n++)}</div>`;
+  };
+
+  /* ---------------- how a question page gets filled ----------------
+     Both question renderers used to take a fixed count — five multiple-choice
+     to a page, seven short answers — and five MC questions occupy about four
+     inches of a nine-inch measure. Measured across the whole book the MC pages
+     ran 44% full and the short-answer pages 55%, which is why the book was 275
+     pages of mostly white paper.
+
+     So the count is not fixed any more: every block is MEASURED (estimated from
+     its own text at its own type size), and a page takes blocks until its
+     budget is gone. Long questions therefore sit fewer to a page than short
+     ones, which is the correct behaviour and the thing a fixed count cannot do.
+
+     The estimate only has to be good enough to stop short of the foot — it is
+     checked against the real rendered geometry by the page-fill measurement,
+     not trusted blindly. */
+  const MEASURE = 7.25;                      // live text width, 8.5 - .5 - .75
+  /* 8.5, not 8.9: the estimate is per-block and a page is fifteen blocks, so
+     the error accumulates. At 8.9 three pages in the book ran 1-5% past the
+     foot, and a .page is overflow:hidden — it would have CLIPPED, silently. */
+  const BUDGET = 8.8;                        // first content line to the foot
+  /* 0.55 is FITTED, not guessed: it is the average glyph width as a fraction of
+     the type size, measured over 1,840 rendered stems and option cells in this
+     book's own faces. At 0.48 the estimate is unbiased but underestimates 4.6%
+     of blocks, and a page is fifteen blocks — the errors accumulate and seven
+     pages overflowed. 0.55 buys about a fifth of a line per block of headroom. */
+  const cpl = (pt, w) => Math.max(6, Math.floor(w * 72 / (pt * 0.55)));
+  const th = (s, pt, w, lh = 1.34) => Math.ceil(String(s || '').length / cpl(pt, w)) * pt * lh / 72;
+  const SLOP2 = 0.45;                        // what CSS column balancing can cost
+  const TAIL_H = 0.85;                       // the round scorecard
+
+  /* An option list picks its own shape. Four one-word answers in a 2x2 grid
+     throw away two thirds of the measure; a full clause in a grid cell wraps
+     to four lines and collides with its neighbour. */
+  const optBlock = (opts, w, big) => {
+    const pt = big ? 10.2 : 9.5;
+    const L = i => `<i class="qz-l">${String.fromCharCode(65 + i)}</i>`;
+    const mx = Math.max(...opts.map(o => o.t.length));
+    if (mx <= 14 && opts.length <= 4) {
+      const joined = opts.map(o => o.t).join('        ');
+      return { h: th(joined, pt, w, 1.4) + 0.04, html: `<div class="qz-opts-inline">${opts.map((o, i) => `<span>${L(i)}${esc(o.t)}</span>`).join('')}</div>` };
     }
-    return out;
+    if (mx <= 32) {
+      let h = 0;
+      for (let r = 0; r < Math.ceil(opts.length / 2); r++) {
+        h += Math.max(th(opts[r * 2] ? opts[r * 2].t : '', pt, w / 2 - 0.1),
+          th(opts[r * 2 + 1] ? opts[r * 2 + 1].t : '', pt, w / 2 - 0.1));
+      }
+      return { h: h + 0.05, html: `<div class="qz-opts-grid">${opts.map((o, i) => `<div>${L(i)}${esc(o.t)}</div>`).join('')}</div>` };
+    }
+    let h = 0; opts.forEach(o => { h += th(o.t, pt, w - 0.18); });
+    return { h: h + 0.05, html: `<div class="qz-opts-stack">${opts.map((o, i) => `<div>${L(i)}${esc(o.t)}</div>`).join('')}</div>` };
+  };
+
+  /* A question written as two or three independently-true clues converging on
+     one answer is the bank's own lv5 house style, and it reads far better set
+     AS clues than run together into one grey paragraph. */
+  const crumbsOf = q => {
+    const parts = String(q.q).split(/(?<=[.?!])\s+/).map(s => s.trim()).filter(Boolean);
+    return (parts.length >= 3 && q.q.length > 110) ? parts : null;
+  };
+
+  const stemBlock = (q, n, w, big) => {
+    const pt = big ? 13 : 10.4;
+    const cr = big ? null : crumbsOf(q);
+    if (cr) {
+      const ask = cr[cr.length - 1], clues = cr.slice(0, -1);
+      let h = th(`${n}. ${ask}`, pt, w);
+      const rows = clues.map((c, i) => {
+        h += th(c, 9.6, w - 0.16) + 0.03;
+        return `<div><i>${i === 0 ? 'First' : i === 1 ? 'Then' : 'And'}</i>${esc(c)}</div>`;
+      }).join('');
+      return { h: h + 0.04, html: `<div class="qz-stem"><b>${n}.</b> ${esc(ask)}</div><div class="qz-crumb">${rows}</div>` };
+    }
+    return { h: th(`${n}. ${q.q}`, pt, w), html: `<div class="qz-stem"><b>${n}.</b> ${esc(q.q)}</div>` };
+  };
+
+  /* items carry their shuffled options so the printed letter and the answer
+     key can never disagree, whatever recipe lays the page out */
+  const mkItems = (rn, qs, short) => qs.map((q, i) => {
+    if (short) {
+      keys.push(`<div><b>R${rn} Q${i + 1}</b> — ${esc(q.c[0])}${q.f ? ' <i>' + esc(fit(q.f, 130)) + '</i>' : ''}</div>`);
+      return { q, n: i + 1 };
+    }
+    const opts = shuf(q.c.slice(0, 4).map((t, oi) => ({ t, ok: oi === 0 })), rnd);
+    keys.push(`<div><b>R${rn} Q${i + 1}</b> — ${String.fromCharCode(65 + opts.findIndex(o => o.ok))}. ${esc(clamp(q.c[0], 60))}${q.f ? ' <i>' + esc(fit(q.f, 130)) + '</i>' : ''}</div>`);
+    return { q, n: i + 1, opts };
+  });
+
+  const mcBlock = (it, w, mode) => {
+    const big = mode === 'hero';
+    const inner = w - (mode === 'card' ? 0.22 : big ? 0.3 : 0);
+    const s = stemBlock(it.q, it.n, inner, big);
+    const o = optBlock(it.opts, inner, big);
+    const body = s.html + o.html;
+    if (mode === 'card') return { h: s.h + o.h + 0.32, html: `<div class="qz-card">${body}</div>` };
+    if (big) return { h: s.h + o.h + 0.40, html: `<div class="qz-hero">${body}</div>` };
+    return { h: s.h + o.h + 0.15, html: `<div class="qz-q">${body}</div>` };
+  };
+
+  const shortBlock = (it, w, mode) => {
+    const inner = w - (mode === 'box' ? 0.22 : 0);
+    const s = stemBlock(it.q, it.n, inner, false);
+    if (mode === 'box') return { h: s.h + 0.62, html: `<div class="qz-card">${s.html}<div class="qz-box"></div></div>` };
+    return { h: s.h + 0.42, html: `<div class="qz-q">${s.html}<div class="qz-write"></div></div>` };
+  };
+
+  const scoreStrip = (rn, total) => `<div class="qz-score"><div class="n">of ${total}</div>
+    <div><div class="l">Round ${rn} &middot; your score</div>
+    <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div>`;
+
+  const pageOf = (title, body, cls) => `<div class="page" data-vol="23">${head(vol, null, 0, esc(title))}
+    <div style="margin-top:.38in"${cls ? ` class="${cls}"` : ''}>${body}</div>
+    ${foot(vol, folio.n++)}</div>`;
+
+  /* The column count is chosen by the CONTENT, not by the recipe.
+     A speciality round is twelve questions. Twelve questions set in two columns
+     can only ever half-fill a page — that, not the block design, is why the old
+     book ran at 44%. Set the same twelve across the full measure and they fill
+     it. So each layout is costed both ways and the cheaper one wins; the recipe
+     still decides how a question LOOKS, which is where the variety lives. */
+  const capFor = cols => BUDGET * cols - (cols === 2 ? SLOP2 : 0);
+  const widthFor = cols => cols === 2 ? (MEASURE - 0.34) / 2 : MEASURE;
+  const wasteOf = (items, block, mode, cols, lead, tail) => {
+    const w = widthFor(cols);
+    const total = items.reduce((s, it) => s + block(it, w, mode).h, 0)
+      + (lead ? 0.3 : 0) + (tail ? TAIL_H : 0);
+    const cap = capFor(cols);
+    return Math.ceil(total / cap) * cap - total;
+  };
+
+  /* fill pages to the budget; `tail` is hung on the last page so a round always
+     closes on its own scorecard rather than on two inches of nothing */
+  const pack = (items, block, mode, colPref, title, lead, tail) => {
+    const cols = colPref || (wasteOf(items, block, mode, 2, lead, tail)
+      < wasteOf(items, block, mode, 1, lead, tail) - 0.6 ? 2 : 1);
+    const w = widthFor(cols);
+    const cap = capFor(cols) - (lead ? 0.3 : 0);
+    const blocks = items.map(it => block(it, w, mode));
+    /* The scorecard must not run off the foot, and it must not get a page of its
+       own either — both were tried and both printed a strip on an acre of white
+       paper (13% and 21% full). So its space is RESERVED on whichever page turns
+       out to be the last one. That page is not known until the pack is done, so
+       pack, learn the count, and pack again with the last page's budget reduced;
+       if the reservation pushes a question over, the count grew and it settles on
+       the next pass. Four passes is a backstop, not an expectation. */
+    const runPack = lastIdx => {
+      const out = []; let buf = [], used = 0;
+      blocks.forEach(b => {
+        const room = cap - (tail && out.length === lastIdx ? TAIL_H : 0);
+        if (buf.length && used + b.h > room) { out.push({ body: buf.join(''), used }); buf = []; used = 0; }
+        buf.push(b.html); used += b.h;
+      });
+      if (buf.length) out.push({ body: buf.join(''), used });
+      return out;
+    };
+    let pages = runPack(-1);
+    for (let pass = 0; pass < 4; pass++) {
+      const next = runPack(pages.length - 1);
+      if (next.length === pages.length) { pages = next; break; }
+      pages = next;
+    }
+    return pages.map((pg, i) => {
+      const last = i === pages.length - 1;
+      const wrapped = cols === 2 ? `<div class="qz-col">${pg.body}</div>` : pg.body;
+      const leadHtml = lead && i === 0 ? `<div class="kick" style="margin-bottom:.12in">${lead}</div>` : '';
+      return pageOf(title, leadHtml + wrapped + (last && tail ? tail : ''), null);
+    });
+  };
+
+  /* Four recipes for multiple choice, three for written answers. They rotate on
+     the round number, so a reader never meets the same page twice running. */
+  const MC_RECIPES = ['cards', 'hero', 'ladder', 'plain'];
+  const mcPages = (rn, title, qs) => {
+    const items = mkItems(rn, qs, false);
+    const tail = scoreStrip(rn, items.length);
+    const r = MC_RECIPES[(rn - 1) % MC_RECIPES.length];
+    if (r === 'cards') return pack(items, mcBlock, 'card', null, title, null, tail);
+    if (r === 'ladder') return pack(items, mcBlock, 'flat', 1, title, 'One at a time. No conferring.', tail);
+    if (r === 'hero') {
+      /* one question played large at the top of the round, the rest normal
+         underneath it — the eye needs somewhere to land on an opening page */
+      const hero = mcBlock(items[0], MEASURE, 'hero');
+      const rest = items.slice(1);
+      const cols = wasteOf(rest, mcBlock, 'flat', 2, null, tail) < wasteOf(rest, mcBlock, 'flat', 1, null, tail) - 0.6 ? 2 : 1;
+      const w = widthFor(cols);
+      const capFirst = (BUDGET - hero.h) * cols - (cols === 2 ? SLOP2 : 0);
+      const first = []; let used = 0, k = 0;
+      const blocks = rest.map(it => mcBlock(it, w, 'flat'));
+      while (k < blocks.length && used + blocks[k].h <= capFirst) { first.push(blocks[k].html); used += blocks[k].h; k++; }
+      const done = k >= blocks.length;
+      const fits = done && used + TAIL_H <= capFirst;
+      const inner = cols === 2 ? `<div class="qz-col">${first.join('')}</div>` : first.join('');
+      const firstPage = pageOf(title, hero.html + inner + (fits ? tail : ''), null);
+      /* no page of its own for the strip — that printed one 13% full */
+      if (done) return [firstPage];
+      return [firstPage, ...pack(rest.slice(k), mcBlock, 'flat', cols, title, null, tail)];
+    }
+    return pack(items, mcBlock, 'flat', null, title, null, tail);
+  };
+
+  const SHORT_RECIPES = ['lines', 'boxes', 'strip'];
+  const shortPages = (rn, title, qs) => {
+    const items = mkItems(rn, qs, true);
+    const tail = scoreStrip(rn, items.length);
+    const r = SHORT_RECIPES[(rn - 1) % SHORT_RECIPES.length];
+    if (r === 'boxes') return pack(items, shortBlock, 'box', null, title, 'Write the answer in the box. The key is at the back.', tail);
+    if (r === 'strip') return pack(items, shortBlock, 'line', 1, title, 'Write your answers. The key is at the back.', tail);
+    return pack(items, shortBlock, 'line', null, title, 'Write your answers. The key is at the back.', tail);
   };
 
   const xwordPage = (rn, title, qs) => {
@@ -2257,6 +2557,7 @@ function book20() {
         <div><h3 style="font-size:10.5pt;color:var(--accent-deep)">Across</h3>${cw.across.map(p => `<div><b>${p.n}.</b> ${esc(fit(p.def, 84))}</div>`).join('')}</div>
         <div><h3 style="font-size:10.5pt;color:var(--accent-deep)">Down</h3>${cw.down.map(p => `<div><b>${p.n}.</b> ${esc(fit(p.def, 84))}</div>`).join('')}</div>
       </div>
+      ${scoreStrip(rn, cw.across.length + cw.down.length)}
       ${foot(vol, folio.n++)}</div>`];
   };
 
@@ -2274,6 +2575,7 @@ function book20() {
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.1in;font-size:8.8pt;line-height:1.34;margin-top:.08in">
         ${qs.slice(0, 12).map((q, k) => `<div><b>${k + 1}.</b> ${esc(fit(q.q, 92))}</div>`).join('')}
       </div>
+      ${scoreStrip(rn, ws.words.length)}
       ${foot(vol, folio.n++)}</div>`];
   };
 
@@ -2285,21 +2587,32 @@ function book20() {
 
   /* ---- alternate: general, speciality, general, speciality ---- */
   const GEN_FMT = ['mc', 'short', 'mc', 'xword', 'mc', 'short', 'mc', 'square'];
+  const FMT_LABEL = { mc: 'multiple choice', short: 'written answers', xword: 'crossword', square: 'letter square' };
+  /* Every theme in the bank gets a round. The loop used to run i % themes with
+     25 pairs against 29 themes, so four themes — Languages of the World among
+     them, which is the most useful one in the book to a speller — were carried
+     in the shards and never printed. */
   let rn = 0;
-  for (let i = 0; i < N; i++) {
-    /* the general round */
-    const th = genThemes[i % Math.max(1, genThemes.length)];
-    const pool = shuf((byTheme[th] || []).slice(), rnd).slice(0, 30);
+  const nPairs = Math.max(N, genThemes.length);
+  for (let i = 0; i < nPairs; i++) {
+    /* One general round per theme, and no theme twice: past the end of the
+       theme list the speciality rounds simply run on their own. Cycling the
+       themes instead would print two rounds under the same title, sampled
+       differently, which reads as a mistake. */
+    const th = i < genThemes.length ? genThemes[i] : null;
+    const pool = th ? shuf((byTheme[th] || []).slice(), rnd).slice(0, GEN_SIZE) : [];
     if (pool.length >= 12) {
       rn++;
-      pages.push(roundOpener(rn, label(th), 'A general round, drawn from the app’s own bank at its three hardest levels. Warm up here.', 'General', i * 2));
+      const gf = GEN_FMT[i % GEN_FMT.length];
+      pages.push(roundOpener(rn, label(th), 'A general round, drawn from the app’s own bank at its three hardest levels. Warm up here.', 'General', i * 2, th, pool.length, FMT_LABEL[gf]));
       qTotal += pool.length;
-      pages.push(...render(GEN_FMT[i % GEN_FMT.length], rn, label(th), pool));
+      pages.push(...render(gf, rn, label(th), pool));
     }
     /* the speciality round */
     const sp = SPEC[i];
+    if (!sp) continue;
     rn++;
-    pages.push(roundOpener(rn, sp.title, sp.blurb, 'Speciality', i * 2 + 1));
+    pages.push(roundOpener(rn, sp.title, sp.blurb, 'Speciality', i * 2 + 1, sp.id, sp.qs.length, FMT_LABEL[sp.fmt]));
     qTotal += sp.qs.length;
     pages.push(...render(sp.fmt, rn, sp.title, sp.qs));
   }
