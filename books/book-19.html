@@ -131,8 +131,8 @@
      open passages (sky, water, empty ground) and a soft tinted pool sits behind
      the poem itself, so the words are never fighting the art for a reader's eye. */
   .pm-page{position:relative;overflow:hidden;display:flex;flex-direction:column;
-    background-color:color-mix(in srgb,var(--paper) 78%,var(--pm-tint,var(--paper)) 22%)}
-  .pm-ground{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.32;z-index:0;filter:saturate(.82)}
+    background-color:color-mix(in srgb,var(--paper) 66%,var(--pm-tint,var(--paper)) 34%)}
+  .pm-ground{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.42;z-index:0;filter:saturate(.88)}
   .pm-page > .pm-head,.pm-page > .pm-body,.pm-page > .pm-gloss{position:relative;z-index:1}
   /* the poem rides the middle of whatever room the page gives it — a haiku
      reads as centred on the painting, not stranded up against the running head */
@@ -142,14 +142,18 @@
   .pm-head h2{margin:.02in 0 .01in;line-height:1.12;color:var(--ink)}
   .pm-by{font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep)}
   .pm-body{display:flex;gap:.20in;align-items:stretch;margin-bottom:.10in;flex:1 1 auto}
-  .pm-col{flex:1;min-width:0;position:relative;display:flex;flex-direction:column;justify-content:center}
+  .pm-col{flex:1;min-width:0;position:relative;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
   /* the lighter pool behind the text — a soft radial wash of the page's own
      tint, so the words sit on calm colour while the painting stays full
-     strength everywhere the pool fades out */
-  .pm-col:before{content:'';position:absolute;inset:-.34in -.4in;z-index:0;pointer-events:none;
+     strength everywhere the pool fades out. It used to bleed sideways past
+     its own column on a negative inset and cut a hard seam straight through
+     the tile box next door — contained to the column's own width now (only
+     the vertical reach is generous), and overflow:hidden on .pm-col is the
+     backstop so it can never again paint outside its own box. */
+  .pm-col:before{content:'';position:absolute;inset:-.34in 0;z-index:0;pointer-events:none;
     background:radial-gradient(ellipse at center,
-      color-mix(in srgb,var(--pm-tint,var(--paper)) 85%,var(--paper) 15%) 0%,
-      color-mix(in srgb,var(--pm-tint,var(--paper)) 50%,transparent) 62%, transparent 88%)}
+      color-mix(in srgb,var(--pm-tint,var(--paper)) 88%,var(--paper) 12%) 0%,
+      color-mix(in srgb,var(--pm-tint,var(--paper)) 55%,transparent) 60%, transparent 86%)}
   /* the poem itself is set in the light, variable body face, not the display
      face the rest of the book uses — a whole soliloquy at display weight reads
      as shouting. Mood is carried by weight and tracking within that one family,
