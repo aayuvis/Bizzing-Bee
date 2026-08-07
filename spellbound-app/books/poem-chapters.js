@@ -1353,6 +1353,286 @@ window.SB_POEMS = {
     ]
   },
 
+  /* =============== IV. FIVE LINES AND A BOUNCE =============== */
+  limericks: {
+    title: 'Five lines and a bounce',
+    blurb: 'A limerick is five lines wearing a fixed uniform: lines one, two and five rhyme with each other and run long, while lines three and four rhyme with each other and run short — AABBA, and you can hear the shape before you understand the sentence. The engine underneath is the anapaest, that da-da-DUM gallop that will not let you mumble, so every syllable has to be struck cleanly or the line falls over. That is exactly why a spelling book wants them: a limerick is a machine for making words audible, forcing the ear to count the beats in a word like ca-PA-cious or ex-CEED-ing-ly before the hand ever tries to spell it.',
+    pieces: [
+{
+        t: 'There was an Old Man with a beard',
+        th: 'bird', a: 'Edward Lear (1812–1888)', src: 'A Book of Nonsense', y: '1846', kind: 'limerick',
+        lines: [
+          'There was an Old Man with a beard,',
+          'Who said, “It is just as I feared!—',
+          'Two Owls and a Hen,',
+          'Four Larks and a Wren,',
+          'Have all built their nests in my beard!”'
+        ],
+        note: 'Lear ends line five on the same word he began with — “beard” rhymed against itself — so the poem shuts like a box, and the two short lines are pure inventory, a bird list ticked off with the flat calm of a man reporting a burglary rather than a nesting colony on his own face. The comedy is the tone: “just as I feared” means he saw it coming and did nothing.',
+        hard: [
+          { w: 'wren', say: 'REN', def: 'a tiny brown songbird, spelled with a silent w' },
+          { w: 'plumage', say: 'PLOO-mij', def: 'the feathers covering a bird' },
+          { w: 'exasperation', say: 'eg-zas-puh-RAY-shun', def: 'the feeling of being worn out by an annoyance' }
+        ]
+      },
+      {
+        t: 'There was an Old Man with a nose',
+        th: 'stage', a: 'Edward Lear (1812–1888)', src: 'A Book of Nonsense', y: '1846', kind: 'limerick',
+        lines: [
+          'There was an Old Man with a nose,',
+          'Who said, “If you choose to suppose',
+          'That my nose is too long,',
+          'You are certainly wrong!”',
+          'That remarkable Man with a nose.'
+        ],
+        note: 'The whole middle of the poem is a man arguing with an accusation nobody has actually made, which is the joke — he protests before he is challenged. Lear never tells us the nose is long; the denial does all the describing, and the last line hands him the faintly damning word “remarkable” instead of agreeing with him.',
+        hard: [
+          { w: 'remarkable', say: 'ri-MAR-kuh-bul', def: 'worth noticing or commenting on' },
+          { w: 'protuberance', say: 'pruh-TOO-bur-unss', def: 'a part that sticks out from a surface' },
+          { w: 'indignant', say: 'in-DIG-nunt', def: 'angry at something felt to be unfair' }
+        ]
+      },
+      {
+        t: 'There was a Young Lady whose bonnet',
+        th: 'bird', a: 'Edward Lear (1812–1888)', src: 'A Book of Nonsense', y: '1846', kind: 'limerick',
+        lines: [
+          'There was a Young Lady whose bonnet',
+          'Came untied when the birds sate upon it;',
+          'But she said, “I don’t care!',
+          'All the birds in the air',
+          'Are welcome to sit on my bonnet!”'
+        ],
+        note: 'Lear needs a three-syllable rhyme and bullies the language into giving him one: “bonnet / upon it / bonnet,” where “upon it” is two words pretending to be one. The turn is temperamental rather than logical — she does not fix the hat, she reclassifies it as a public perch, and the exclamation mark in line three carries the whole change of heart.',
+        hard: [
+          { w: 'bonnet', say: 'BON-it', def: 'a hat tied under the chin with ribbons' },
+          { w: 'sate', say: 'SAYT', def: 'an old-fashioned past tense of sit' },
+          { w: 'millinery', say: 'MIL-uh-ner-ee', def: 'the trade of making hats' }
+        ]
+      },
+      {
+        t: 'There was an Old Man in a boat',
+        th: 'water', a: 'Edward Lear (1812–1888)', src: 'A Book of Nonsense', y: '1846', kind: 'limerick',
+        lines: [
+          'There was an Old Man in a boat,',
+          'Who said, “I’m afloat! I’m afloat!”',
+          'When they said, “No! you ain’t!”',
+          'He was ready to faint,',
+          'That unhappy Old Man in a boat.'
+        ],
+        note: 'This is the rare limerick built entirely out of a disagreement, and the man is right — he is in a boat, he is afloat — yet the crowd flatly contradicts him and he crumples anyway. Lear repeats “I’m afloat” to fill the long second line with pure insistence, then answers it with the shortest, rudest possible line three.',
+        hard: [
+          { w: 'afloat', say: 'uh-FLOHT', def: 'resting on the surface of water rather than sinking' },
+          { w: 'buoyant', say: 'BOY-unt', def: 'able to float' },
+          { w: 'contradict', say: 'kon-truh-DIKT', def: 'to say the opposite of what someone has said' }
+        ]
+      },
+      {
+        t: 'There was an Old Person of Dover',
+        th: 'flower', a: 'Edward Lear (1812–1888)', src: 'A Book of Nonsense', y: '1846', kind: 'limerick',
+        lines: [
+          'There was an Old Person of Dover,',
+          'Who rushed through a field of blue Clover;',
+          'But some very large bees',
+          'Stung his nose and his knees,',
+          'So he very soon went back to Dover.'
+        ],
+        note: 'The two short lines are the sting, literally — “bees / knees” is a fast, clipped pair dropped into the middle of a poem whose long lines amble. Lear ends where he started, at Dover, so the entire adventure cancels itself out: the man travels a full circle and gains nothing but two sore knees.',
+        hard: [
+          { w: 'clover', say: 'KLOH-vur', def: 'a low field plant with round pinkish or white flower heads' },
+          { w: 'apiary', say: 'AY-pee-air-ee', def: 'a place where bee hives are kept' },
+          { w: 'nectar', say: 'NEK-tur', def: 'the sweet liquid bees collect from flowers' }
+        ]
+      },
+      {
+        t: 'There was an Old Man of Kamschatka',
+        th: 'snow', a: 'Edward Lear (1812–1888)', src: 'A Book of Nonsense', y: '1846', kind: 'limerick',
+        lines: [
+          'There was an Old Man of Kamschatka,',
+          'Who possessed a remarkably fat cur;',
+          'His gait and his waddle',
+          'Were held as a model',
+          'To all the fat dogs in Kamschatka.'
+        ],
+        note: 'Line two does not really rhyme — “Kamschatka” and “cur” only agree if you swallow the ending, and Lear lets that near-miss stand, which is part of the deadpan. Meanwhile “waddle / model” is a perfect two-syllable rhyme, so the dog moves more gracefully in the rhyme scheme than he does in life.',
+        hard: [
+          { w: 'gait', say: 'GAYT', def: 'the particular way a person or animal walks' },
+          { w: 'cur', say: 'KUR', def: 'an old word for a scruffy or mixed-breed dog' },
+          { w: 'waddle', say: 'WOD-ul', def: 'to walk with short steps, rocking side to side' }
+        ]
+      },
+      {
+        t: 'There was an Old Person of Ware',
+        th: 'mountain', a: 'Edward Lear (1812–1888)', src: 'A Book of Nonsense', y: '1846', kind: 'limerick',
+        lines: [
+          'There was an Old Person of Ware,',
+          'Who rode on the back of a bear;',
+          'When they asked, “Does it trot?”',
+          'He said, “Certainly not!',
+          'He’s a Moppsikon Floppsikon bear!”'
+        ],
+        note: 'The last line abandons English altogether: “Moppsikon Floppsikon” is a nonsense word pair invented purely to fill four beats, and it works because the anapaestic bounce is so strong that the ear accepts any syllables that march in step. Note that the man treats a made-up adjective as a complete answer, and the poem lets him win the argument.',
+        hard: [
+          { w: 'ursine', say: 'UR-syne', def: 'having to do with bears' },
+          { w: 'portmanteau', say: 'port-MAN-toh', def: 'a word made by jamming two other words together' },
+          { w: 'preposterous', say: 'pri-POS-tur-uss', def: 'so silly it cannot be taken seriously' }
+        ]
+      },
+      {
+        t: 'There was a Young Lady whose chin',
+        th: 'stage', a: 'Edward Lear (1812–1888)', src: 'A Book of Nonsense', y: '1846', kind: 'limerick',
+        lines: [
+          'There was a Young Lady whose chin',
+          'Resembled the point of a pin;',
+          'So she had it made sharp,',
+          'And purchased a harp,',
+          'And played several tunes with her chin.'
+        ],
+        note: 'Lear starts with a simile — the chin is “like” a pin — and then quietly treats the simile as a fact, sharpening it and using it as a plectrum. The little word “So” at the head of line three is the hinge: it pretends the harp is a reasonable consequence of the chin, and the poem never blinks.',
+        hard: [
+          { w: 'resembled', say: 'ri-ZEM-buld', def: 'looked like something else' },
+          { w: 'harpist', say: 'HAR-pist', def: 'a person who plays the harp' },
+          { w: 'silhouette', say: 'sil-oo-ET', def: 'the dark outline of something seen against light' }
+        ]
+      },
+      {
+        t: 'There was a Young Lady of Ryde',
+        th: 'road', a: 'Edward Lear (1812–1888)', src: 'A Book of Nonsense', y: '1846', kind: 'limerick',
+        lines: [
+          'There was a Young Lady of Ryde,',
+          'Whose shoe-strings were seldom untied;',
+          'She purchased some clogs,',
+          'And some small spotted dogs,',
+          'And frequently walked about Ryde.'
+        ],
+        note: 'Nothing happens, and that is the trick — the poem promises a catastrophe in the shoe-strings of line two and then delivers only shopping. “Clogs / dogs” is a snapped-off rhyme that makes the purchases sound like one impulsive errand, and the flat last line lets the whole thing fizzle out on purpose.',
+        hard: [
+          { w: 'clogs', say: 'KLOGZ', def: 'heavy shoes with wooden soles' },
+          { w: 'promenade', say: 'prom-uh-NAHD', def: 'a leisurely public walk, or the place you take one' },
+          { w: 'frequently', say: 'FREE-kwunt-lee', def: 'often; again and again' }
+        ]
+      },
+      {
+        t: 'There was an Old Man who said, “Hush!”',
+        th: 'forest', a: 'Edward Lear (1812–1888)', src: 'More Nonsense', y: '1872', kind: 'limerick',
+        lines: [
+          'There was an Old Man who said, “Hush!',
+          'I perceive a young bird in this bush!”',
+          'When they said, “Is it small?”',
+          'He replied, “Not at all!',
+          'It is four times as big as the bush!”'
+        ],
+        note: 'The joke is a measurement problem: a bird four times the size of its own bush cannot be hiding in it, so line five destroys the picture line two just built. Lear also rhymes “Hush” with “bush” with “bush,” reusing the same word at the end, which makes the last line land like someone thumping the table.',
+        hard: [
+          { w: 'perceive', say: 'pur-SEEV', def: 'to notice or become aware of something' },
+          { w: 'shrubbery', say: 'SHRUB-ur-ee', def: 'a group of bushes planted together' },
+          { w: 'exaggerate', say: 'eg-ZAJ-uh-rayt', def: 'to make something sound bigger than it is' }
+        ]
+      },
+      {
+        t: 'A wonderful bird is the pelican',
+        th: 'sea', a: 'Dixon Lanier Merritt (1879–1972)', src: 'The Nashville Banner', y: '1910', kind: 'limerick',
+        lines: [
+          'A wonderful bird is the pelican,',
+          'His bill will hold more than his belican,',
+          'He can take in his beak',
+          'Enough food for a week,',
+          'But I’m darned if I know how the helican.'
+        ],
+        note: 'Three of the five lines rhyme on a syllable that does not exist: “belican” and “helican” are “belly can” and “the hell can” bent to fit the shape of “pelican.” It is a rhyme so determined that it rebuilds the English language around one bird, and the wrenched spelling is the entire point of reading it aloud.',
+        hard: [
+          { w: 'pelican', say: 'PEL-i-kun', def: 'a large water bird with a pouch under its beak' },
+          { w: 'capacious', say: 'kuh-PAY-shuss', def: 'able to hold a great deal' },
+          { w: 'gullet', say: 'GUL-it', def: 'the throat passage food travels down' }
+        ]
+      },
+      {
+        t: 'There was a young lady of Niger',
+        th: 'forest', a: 'Cosmo Monkhouse (1840–1901)', src: 'Traditional', y: '1891', kind: 'limerick',
+        lines: [
+          'There was a young lady of Niger',
+          'Who smiled as she rode on a tiger;',
+          'They returned from the ride',
+          'With the lady inside,',
+          'And the smile on the face of the tiger.'
+        ],
+        note: 'The last line is a single image doing all the work: the smile has changed owners, and the poem reports it as calmly as a passenger list. Notice that “returned” in line three is technically true — they did come back — which is why the rhyme lands as a shock rather than a description.',
+        hard: [
+          { w: 'ferocious', say: 'fuh-ROH-shuss', def: 'fierce and dangerous' },
+          { w: 'feline', say: 'FEE-lyne', def: 'having to do with cats' },
+          { w: 'irony', say: 'EYE-ruh-nee', def: 'when the outcome is the opposite of what was expected' }
+        ]
+      },
+      {
+        t: 'There once was a man from Peru',
+        th: 'night', a: 'Anonymous', src: 'Traditional', y: 'traditional', kind: 'limerick',
+        lines: [
+          'There once was a man from Peru',
+          'Who dreamed he was eating his shoe.',
+          'He awoke in the night',
+          'With a terrible fright',
+          'And found out that it was quite true.'
+        ],
+        note: 'The whole poem is a trapdoor in the last four words. Lines one to four set up an ordinary nightmare, and “it was quite true” retroactively moves the shoe out of the dream and into the mouth — the tense never changes, only the status of the facts.',
+        hard: [
+          { w: 'fright', say: 'FRYTE', def: 'a sudden feeling of fear' },
+          { w: 'nightmare', say: 'NYTE-mair', def: 'a frightening dream' },
+          { w: 'literal', say: 'LIT-ur-ul', def: 'true in the plainest, most exact sense' }
+        ]
+      },
+      {
+        t: 'There was a young lady named Bright',
+        th: 'night', a: 'A. H. Reginald Buller (1874–1944)', src: 'Punch', y: '1923', kind: 'limerick',
+        lines: [
+          'There was a young lady named Bright,',
+          'Whose speed was far faster than light;',
+          'She set out one day',
+          'In a relative way,',
+          'And returned on the previous night.'
+        ],
+        note: 'A physics lecture folded into five lines: the pun sits on “in a relative way,” which is both a casual phrase and a direct nod to Einstein, and the punchline is a time paradox delivered with the shrug of a train timetable. The rhyme Bright / light / night quietly runs the argument, because the joke needs light and night in the same sound.',
+        hard: [
+          { w: 'relativity', say: 'rel-uh-TIV-i-tee', def: 'Einstein’s theory about how time and speed are linked' },
+          { w: 'velocity', say: 'vuh-LOSS-i-tee', def: 'speed in a particular direction' },
+          { w: 'paradox', say: 'PAIR-uh-doks', def: 'a statement that contradicts itself yet seems true' }
+        ]
+      },
+      {
+        t: 'There was a young lady of Lynn',
+        th: 'water', a: 'Anonymous', src: 'Traditional', y: 'traditional', kind: 'limerick',
+        lines: [
+          'There was a young lady of Lynn',
+          'Who was so uncommonly thin',
+          'That when she essayed',
+          'To drink lemonade,',
+          'She slipped through the straw and fell in.'
+        ],
+        note: 'The rhyme word “in” is held back for four lines and then arrives in the worst possible position — inside the glass. The scale reverses without warning: the straw stops being a tool and becomes a chute, and the poem is over before you can object to the physics.',
+        hard: [
+          { w: 'essayed', say: 'eh-SAYD', def: 'attempted or tried, in an old-fashioned sense' },
+          { w: 'uncommonly', say: 'un-KOM-un-lee', def: 'unusually; more than is normal' },
+          { w: 'lemonade', say: 'lem-uh-NAYD', def: 'a drink made from lemons, sugar and water' }
+        ]
+      },
+      {
+        t: 'A canner, exceedingly canny',
+        th: 'fire', a: 'Anonymous', src: 'Traditional', y: 'traditional', kind: 'limerick',
+        lines: [
+          'A canner, exceedingly canny,',
+          'One morning remarked to his granny,',
+          '“A canner can can',
+          'Anything that he can,',
+          'But a canner can’t can a can, can he?”'
+        ],
+        note: 'One syllable, “can,” is used as a job, a verb, a permission word and a metal tin, all inside two short lines — nine times in the last three lines, and the meaning shifts on almost every repetition. The overlong final line is deliberate: it crams in an extra “can he?” so the tongue trips exactly where the sense does.',
+        hard: [
+          { w: 'canny', say: 'KAN-ee', def: 'clever and quick to spot an advantage' },
+          { w: 'exceedingly', say: 'ek-SEE-ding-lee', def: 'extremely; to a very great degree' },
+          { w: 'preserve', say: 'pri-ZURV', def: 'to treat food so it keeps without spoiling' }
+        ]
+      }
+    ]
+  },
+
   /* =============== IV. POEMS WORTH KNOWING BY HEART =============== */
   byheart: {
     title: 'Poems worth knowing by heart',
