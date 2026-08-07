@@ -110,19 +110,6 @@ button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
   font-size:12px;letter-spacing:.1em}
 .pass{color:var(--glow)} .fail{color:var(--cold)}
 
-/* ---- tone lab ---- */
-.lab{border:1px solid var(--line);background:var(--surface)}
-.lab-bar{display:flex;flex-wrap:wrap;gap:8px;padding:18px 22px;border-bottom:1px solid var(--line)}
-.lab-body{padding:22px}
-.lab-row{display:grid;grid-template-columns:170px 1fr;gap:20px;padding:16px 0;border-top:1px solid var(--line)}
-.lab-row:first-child{border-top:0}
-@media(max-width:700px){.lab-row{grid-template-columns:1fr;gap:6px}}
-.lab-label{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;
-  letter-spacing:.13em;text-transform:uppercase;color:var(--muted);padding-top:5px}
-.lab-line{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:clamp(17px,2vw,21px);
-  line-height:1.3;letter-spacing:-.018em;font-weight:500}
-.lab-note{padding:16px 22px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
-
 /* ---- bank grid ---- */
 .bank{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:1px;background:var(--line);
   border:1px solid var(--line)}
@@ -403,36 +390,11 @@ footer{padding:44px 0 72px;color:var(--muted);font-size:14px}
   </div>
 </section>
 
-<!-- ============ TONE LAB ============ -->
-<section>
-  <div class="stack-l">
-    <div class="col stack-s">
-      <p class="eyebrow">05 · Tone lab</p>
-      <h2>How far do we push it?</h2>
-      <p class="lead muted">Same scene, same strategy, four registers. This is the real decision in the room —
-      not <em>whether</em> it's funny, but <em>which kind</em> of funny the brand can carry without losing the
-      specifiers. Pick a register to rewrite every line — and every campaign tile in this deck carries the same
-      four-way switch, so any concept can be read in any register.</p>
-    </div>
-    <div class="lab">
-      <div class="lab-bar" role="group" aria-label="Humour register">
-        <button class="btn tone" data-tone="0" aria-pressed="true">Deadpan</button>
-        <button class="btn tone" data-tone="1" aria-pressed="false">Dry</button>
-        <button class="btn tone" data-tone="2" aria-pressed="false">Absurd</button>
-        <button class="btn tone" data-tone="3" aria-pressed="false">Dark</button>
-      </div>
-      <div class="lab-body" id="labbody"></div>
-      <p class="lab-note" id="labnote"></p>
-    </div>
-  </div>
-</section>
-
-
 <!-- ============ THE RECEIPT ============ -->
 <section>
   <div class="stack-l">
     <div class="col stack-s">
-      <p class="eyebrow">06 · Second format</p>
+      <p class="eyebrow">05 · Second format</p>
       <h2>The Receipt.</h2>
       <p class="lead">Everyone over forty knows the cadence: a stack of itemised prices, then a final line
       that money can't buy. Bromic's version <em class="g">inverts the ending</em> — because the whole
@@ -482,7 +444,7 @@ footer{padding:44px 0 72px;color:var(--muted);font-size:14px}
 <section>
   <div class="stack-l">
     <div class="col stack-s">
-      <p class="eyebrow">07 · The Receipt, as photography</p>
+      <p class="eyebrow">06 · The Receipt, as photography</p>
       <h2>Price the whole thing.<br>Then price the part that works.</h2>
       <p class="lead">The receipt told in type; this tells it in the space itself. Every object in the frame
       wears its price like a showroom tag — and the total climbs while you watch. Then the last tag lands on
@@ -503,7 +465,7 @@ footer{padding:44px 0 72px;color:var(--muted);font-size:14px}
 <section>
   <div class="stack-l">
     <div class="col stack-s">
-      <p class="eyebrow">08 · Concept bank</p>
+      <p class="eyebrow">07 · Concept bank</p>
       <h2>Twenty concepts, tagged</h2>
       <p class="lead muted">Eleven work unchanged in both markets. Five are twins — one idea, two local
       versions, usually a single swapped word or place card. Two are Australian-native, two American-native.</p>
@@ -538,7 +500,7 @@ footer{padding:44px 0 72px;color:var(--muted);font-size:14px}
 <section>
   <div class="stack-l">
     <div class="col stack-s">
-      <p class="eyebrow">09 · Tier 2 — builders and commercial end users</p>
+      <p class="eyebrow">08 · Tier 2 — builders and commercial end users</p>
       <h2>Same platform.<br>Different currency.</h2>
       <p class="lead muted">The consumer work sells the cost of an unused backyard. Neither of these audiences
       cares about that. A builder's currency is <strong>reputation, callbacks and referral</strong>; an
@@ -567,7 +529,7 @@ footer{padding:44px 0 72px;color:var(--muted);font-size:14px}
 <section>
   <div class="stack-l">
     <div class="col stack-s">
-      <p class="eyebrow">10 · Who this is for</p>
+      <p class="eyebrow">09 · Who this is for</p>
       <h2>Two tiers. Never one campaign.</h2>
       <p class="lead muted">Do not aim at homeowners and architects simultaneously. They want opposite things
       and the compromise satisfies neither.</p>
@@ -615,7 +577,7 @@ footer{padding:44px 0 72px;color:var(--muted);font-size:14px}
   <div class="stack-l">
     <div class="grid2">
       <div class="stack">
-        <p class="eyebrow">11 · How this gets judged</p>
+        <p class="eyebrow">10 · How this gets judged</p>
         <h3 style="font-size:22px;text-transform:uppercase;letter-spacing:-.025em">Measure fame, not clicks</h3>
         <dl class="datalist">
           <dt>Primary</dt><dd>Branded search volume for "Bromic" — cleanest, fastest, cheapest read. Baseline it now.</dd>
@@ -633,7 +595,7 @@ footer{padding:44px 0 72px;color:var(--muted);font-size:14px}
         has to be standing there to harvest it.</p>
       </div>
       <div class="stack">
-        <p class="eyebrow">12 · Red team</p>
+        <p class="eyebrow">11 · Red team</p>
         <h3 style="font-size:22px;text-transform:uppercase;letter-spacing:-.025em">What could break it</h3>
         <dl class="datalist">
           <dt>High</dt><dd><strong>Attribution failure.</strong> Brand in first 3s and endline, product in the
@@ -727,35 +689,6 @@ const PLATES = [
 ];
 
 /* tone lab register names live in TONE_NAMES */
-const TONE_NOTES = [
- "<strong>Deadpan</strong> — the recommended launch register. Straight-faced, observational, never winking. Safe for the trade tier and the one that ages best over a five-year platform.",
- "<strong>Dry</strong> — a half-step sharper. The line does a little more work than the picture. Good for statics and for markets where the visual gag is already familiar.",
- "<strong>Absurd</strong> — highest share potential, highest attribution risk: people repeat the joke and forget who told it. Use sparingly, and only where branding is heavy.",
- "<strong>Dark</strong> — funniest in the room, most dangerous in the feed. Test before committing, and never run it on trade channels or in the commercial/hospitality tier."
-];
-const LAB = [
- {c:"The Mushroom", lines:[
-   "Seventy thousand dollars of outdoor kitchen. Heated by an eighty-nine dollar mushroom.",
-   "The kitchen was designed by an architect. The heating was decided in aisle twelve.",
-   "They own a pizza oven, a wine fridge and a built-in griddle. They are standing in a circle around a lamp.",
-   "Somewhere in this photograph is a man who spent his bonus on this."]},
- {c:"The Deck", lines:[
-   "Beautifully maintained. Entirely unused.",
-   "He oils it twice a year. He sits on it twice a year. Never the same day.",
-   "The deck has a skincare routine.",
-   "He isn't maintaining it. He's visiting it."]},
- {c:"The Big Game", lines:[
-   "The outdoor TV cost six thousand dollars. Everyone is watching the small one.",
-   "Twenty-two people. One bathroom. An empty terrace nine feet away.",
-   "There is an eighty-five inch television outside, broadcasting to four garden chairs and a moth.",
-   "The outdoor television has never seen a human face."]},
- {c:"Don't Do It, Gary", lines:[
-   "Don't do it, Gary.",
-   "Gary is considering his options. Gary has one option.",
-   "Gary has begun to look at the neighbour's pony with real ambition.",
-   "They found Gary. They did not find the pony."]}
-];
-
 const BANK = [
  {n:1,t:"The Mushroom",m:"BOTH",ax:["ASSET","asset"],x:["REMODEL","FAME","R-LO"],img:"01a_mushroom_before",
   c:"Seventy thousand dollars of outdoor kitchen. Heated by an eighty-nine dollar mushroom.",
@@ -889,22 +822,6 @@ master.addEventListener('click',()=>{
     s.textContent = on ? 'After' : 'Before';
   });
 });
-
-/* ---------- tone lab ---------- */
-const labBody = document.getElementById('labbody'), labNote = document.getElementById('labnote');
-function renderTone(i){
-  labBody.innerHTML = LAB.map(r=>`
-    <div class="lab-row">
-      <p class="lab-label">${r.c}</p>
-      <p class="lab-line">${r.lines[i]}</p>
-    </div>`).join('');
-  labNote.innerHTML = TONE_NOTES[i];
-  document.querySelectorAll('.tone').forEach(b=>
-    b.setAttribute('aria-pressed', String(+b.dataset.tone === i)));
-}
-document.querySelectorAll('.tone').forEach(b=>
-  b.addEventListener('click',()=>renderTone(+b.dataset.tone)));
-renderTone(0);
 
 /* ---------- bank ---------- */
 const bank = document.getElementById('bank');
