@@ -389,7 +389,7 @@ function css(vol) {
   @font-face{font-family:'BB Body';src:url('../fonts/hanken-var.woff2') format('woff2');font-weight:100 900}
   @font-face{font-family:'BB Tile';src:url('../fonts/sono-600.woff2') format('woff2');font-weight:600}
   *{box-sizing:border-box;margin:0;padding:0}
-  :root{--paper:#f3efff;--card:#fff;--hairline:#ddd4f2;--chip:#e6defc;--chip-ink:#4a3aa0;
+  :root{--paper:#f3efff;--paper-rgb:243,239,255;--card:#fff;--hairline:#ddd4f2;--chip:#e6defc;--chip-ink:#4a3aa0;
     --ink:#241E33;--muted:#6b6482;--treasure:#F0B429;--treasure-tint:#FFF3D6;--treasure-deep:#8A5B00;
     --right:#3DA85C;--right-deep:#1F6B39;--tricky:#E8546A;--tricky-deep:#C43D5A;
     --listen:#2E8FB8;--listen-deep:#1C6486;--listen-tint:#E4F1F8;
@@ -572,12 +572,24 @@ function css(vol) {
      folio on top of Shakespeare's black doublet — the same illegible foot this
      volume already had its scenery bands removed for. Lines run the full height
      of this page, so the paper never thins below 76%. */
+  /* Plain rgba() rather than color-mix(), for portability of the print path —
+     color-mix computes to a color(srgb r g b / a) value, which is newer than
+     some PDF and print pipelines understand. It is NOT a bug fix: Chromium
+     exports either form correctly, as a /Shading pattern with an /SMask.
+
+     Recorded because it cost an hour and would cost it again: rendering a
+     book PDF with gs -sDEVICE=png16m to CHECK it is not a check. Ghostscript
+     10.02.1 drops SMask'd shading patterns when rasterising, so every scrim in
+     the book reads as missing and the artwork looks like it is printing over
+     the type. The file was correct the whole time. Verify a PDF by inspecting
+     it for /Shading + /SMask, or by rendering the page under
+     emulateMedia media:print in the browser — not with Ghostscript. */
   .lb-marg-scrim{position:absolute;inset:0;z-index:1;
     background:linear-gradient(180deg,
-      color-mix(in srgb,var(--paper) 93%,transparent) 0%,
-      color-mix(in srgb,var(--paper) 87%,transparent) 45%,
-      color-mix(in srgb,var(--paper) 80%,transparent) 75%,
-      color-mix(in srgb,var(--paper) 76%,transparent) 100%)}
+      rgba(var(--paper-rgb),.93) 0%,
+      rgba(var(--paper-rgb),.87) 45%,
+      rgba(var(--paper-rgb),.80) 75%,
+      rgba(var(--paper-rgb),.76) 100%)}
   .lb-marg > .bb-head,.lb-marg > .bb-foot{z-index:3}
   .lb-marg-body{position:relative;z-index:2;display:flex;flex-direction:column;flex:1 1 auto;
     padding-bottom:1.15in}
@@ -590,10 +602,10 @@ function css(vol) {
   .lb-open-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
   .lb-open-scrim{position:absolute;inset:0;z-index:1;
     background:linear-gradient(180deg,
-      color-mix(in srgb,var(--paper) 72%,transparent) 0%,
-      color-mix(in srgb,var(--paper) 90%,transparent) 34%,
-      color-mix(in srgb,var(--paper) 90%,transparent) 66%,
-      color-mix(in srgb,var(--paper) 74%,transparent) 100%)}
+      rgba(var(--paper-rgb),.72) 0%,
+      rgba(var(--paper-rgb),.90) 34%,
+      rgba(var(--paper-rgb),.90) 66%,
+      rgba(var(--paper-rgb),.74) 100%)}
   .lb-open-body{position:absolute;z-index:2;left:.9in;right:.9in;top:3.05in;text-align:center}
   .lb-open-kick{font-family:'BB Kicker';font-size:9.6pt;letter-spacing:.22em;
     text-transform:uppercase;color:var(--accent-deep);margin-bottom:.16in}
