@@ -1057,3 +1057,78 @@ A Parisian shopfront at dusk with a striped awning, an empty blank signboard abo
 
 ## 347. b23-meaningshift.png — tall portrait
 A library reading room with one long table, an open dictionary at the near end lying face up with blank pages, and behind it the same room drawn a little paler and older as if a memory of itself — bookcases fading into pale wash toward the top. Warm wood, cool grey air, light from tall windows on the left.
+
+## 348. b23-greekgods.png — tall portrait
+A ruined marble colonnade on a dry hillside at first light: three standing columns and two fallen drums in the foreground grass, olive trees behind, distant sea. Warm stone against a pale sky, hard morning shadow across the lower third. No people. Every stone surface is plain, weathered and completely uncarved — no inscriptions, no letters, no symbols.
+
+## 349. b23-norse.png — tall portrait
+The carved prow of a wooden longship drawn up on a black shingle beach, a grey fjord and snow-streaked cliffs behind it, a coil of rope on the stones. Slate blue, black rock and one band of cold gold on the water. No people. The carving is knotwork and animal forms only — no runes, no letters, no writing of any kind.
+
+## 350. b23-rivers.png — tall portrait
+A wide braided river seen from a high bank: pale sandbars splitting the channels, a single rope ferry strung across, low scrub on the far shore, flat light. Sage green and sand, generous empty sky, one dark band of trees at the horizon.
+
+## 351. b23-capitals.png — tall portrait
+A skyline of assorted domes, towers and steep rooftops silhouetted against a dusk sky, drawn as invented architecture that belongs to no real city, with a foreground of dark rooftops. Indigo and warm amber. No signage, no banners, no lettering anywhere.
+
+## 352. b23-shakespeare.png — tall portrait
+The interior of an empty Elizabethan playhouse at rest: a bare thrust stage of scrubbed boards, two oak pillars, three tiers of curved wooden galleries, one shaft of daylight from the open roof. Warm oak and cool shadow, no audience, no players. No playbills, no lettering.
+
+## 353. b23-minerals.png — tall portrait
+An open collector’s drawer of mineral specimens seen from above: crystal clusters and cut faces bedded in compartments, a hand lens beside it, small blank card labels tucked under each specimen. Muted mineral colours against pale wood. The labels are entirely blank.
+
+## 354. b23-wartime.png — tall portrait
+A quiet trench firestep at dawn, unoccupied: a field telephone in its case, a steel helmet resting on the parapet, a folded greatcoat, duckboards underfoot. Sober and still, mud brown and cold grey with one thin band of dawn. No figures, no weapons in use, nothing graphic. No markings or lettering.
+
+## 355. b23-constellations.png — tall portrait
+A brass telescope on a wooden tripod on a dark ridge under a deep field of stars, the land a low silhouette, faint aurora at the horizon. Near-black indigo with cold white stars and one warm lamp glow at the base. No constellation lines, no labels, no lettering.
+
+## 356. b23-periodic.png — tall portrait
+A laboratory bench from a low angle: a wooden rack of sealed glass ampoules holding different coloured solids, a balance behind, a stone mortar to one side, blank card labels leaning against the rack. Cool grey and glass green with warm brass. Labels completely blank.
+
+## 357. b23-roots.png — tall portrait
+A cutaway of ground seen from the side: a tree trunk above the line and a wide spreading root system below it drawn in fine ink, layers of soil and stone, a seedling rooting nearby. Warm earth browns above, cooler below, generous pale sky at the top.
+
+## 358. b23-dynasties.png — tall portrait
+An empty throne dais in a great hall: worn stone steps, a plain high-backed seat, long banners of solid colour hanging still on either side, light falling from a high window. Deep red and cold stone. The banners carry no device, no emblem, no lettering.
+
+## 359. b23-instruments.png — tall portrait
+A luthier’s workshop wall: hand tools hanging in order on pegs, an unstrung violin body clamped on the bench, wood shavings, a pot of varnish. Warm maple and spruce against a cool wall, light from the left. No people, no lettering on any tool or pot.
+
+## 360. b23-seafarers.png — tall portrait
+A ship’s rail in close view: coiled rope on a belaying pin rack, the edge of a canvas sail, blocks and tackle, open sea beyond with a low swell. Canvas cream, tarred black and sea grey. No people, no lettering.
+
+## 361. b23-deserts.png — tall portrait
+A field of wind-carved dunes with a hard shadow line, a distant dark mountain range, a single line of tracks crossing the sand. Ochre and violet shadow, wide empty sky above.
+
+## 362. b23-medicine.png — tall portrait
+A study desk of anatomical instruments: an articulated skeletal hand on a small stand, brass calipers, a mortar and pestle, a rolled blank chart. Bone white and brass against dark wood, one lamp pool of light. Nothing gruesome, no lettering.
+
+## 363. b23-egypt.png — tall portrait
+A hypostyle hall of massive stone columns with one shaft of sunlight falling between them onto the dusty floor, drawn from ground level. Sandstone gold and deep shadow. The columns are plain, eroded and completely smooth — no hieroglyphs, no carvings, no symbols, no lettering of any kind.
+
+## 364. b23-currency.png — tall portrait
+A money changer’s table from above: a small brass balance, shallow trays of assorted coins, a stack of coin rolls, an open ledger whose pages are entirely blank. Brass, ink blue and worn wood. The coins are plain discs with no faces, no numerals and no lettering.
+
+## 365. b23-emperors.png — tall portrait
+A gallery of marble portrait busts on plain plinths receding into soft shadow, lit from a high window, one bust in the foreground turned three-quarters. Cool white marble, warm grey walls. The plinths are bare — no plaques, no lettering.
+
+## 366. b23-volcano.png — tall portrait
+A fissure vent at night on a basalt plain: a low curtain of fire along the crack, an ash column rising and bending in the wind, cooled black rock in the foreground. Black, deep red and one grey plume against a starless sky.
+
+## 367. b23-ciphers.png — tall portrait
+A cipher desk from above: a brass cipher disc with two concentric plain rings, a rotor machine with blank keys, a spool of unmarked paper tape, a magnifier. Olive, brass and ink black. Every ring, key and tape is completely blank — no letters, no numbers, no symbols.
+
+## 368. b23-silkroad.png — tall portrait
+A caravan track climbing through a high mountain pass, a short string of laden camels small in the middle distance, prayer-flag-free bare poles, scree slopes rising either side. Dust ochre against cold blue rock, huge empty sky. No lettering.
+
+## 369. b23-kitchen.png — tall portrait
+A working hearth kitchen: copper pans hanging in size order, bunches of herbs drying from a beam, a scrubbed table with a board and a knife, a bread oven mouth glowing low. Copper, cream and warm shadow. No people, no lettering on jars or crocks.
+
+## 370. b23-raptors.png — tall portrait
+A falcon perched on a weathered wooden block in profile, leather jesses trailing, a bare heath and low cloud behind. Slate, buff and one hard white highlight on the breast feathers. No people, no lettering.
+
+## 371. b23-trees.png — tall portrait
+A ride cut straight through tall broadleaf woodland in autumn, trunks receding in pale mist, deep leaf litter on the track, light coming down the corridor. Ochre, umber and cool grey mist, generous empty light at the far end.
+
+## 372. b23-flags.png — tall portrait
+A row of tall plain banners on poles against a windy sky, each a single flat colour with a bold simple geometric division — stripes, a cross, a triangle — and nothing else. Bright flat inks against pale cloud. Absolutely no emblems, no crests, no stars, no symbols, no lettering: colour and geometry only.

@@ -2264,35 +2264,51 @@ function book20() {
      art is: rounds get appended, and index-keyed art silently re-attaches
      itself to the wrong subject. A round with no match falls back to the shared
      pool, and a missing plate falls back to the old gradient, so the book is
-     never broken while art is being filled in. */
+     never broken while art is being filled in.
+
+     The plates come from the poetry companion and from this volume's own set —
+     NOT from the numbered volumes' chapter openers. That was the first cut and
+     it was wrong: `b<nn>-ch<nn>-opener` is the app's CAST — chibi bees in
+     armour, the moth, the mascot — drawn in the soft anime register for a
+     nine-year-old. Dropped onto "The Roman Emperors" it reads as a different
+     book breaking into this one. Only cast-free plates in the mature register
+     are eligible here: the poetry companion's piece art (`pt-*`), its section
+     dividers (`sc-*`), and this volume's own (`b23-*`). */
   const QZ_ART = {
+    /* Every speciality round has its own b23 plate, found automatically by id.
+       These are the standby matches, used only until a plate exists — and the
+       IDS MUST BE THE REAL ONES. Half of this table was written from the round
+       TITLES on the first pass (warwords for wartime, knots for seafarers,
+       money for currency), so those rounds matched nothing, fell through to the
+       fallback pool, and collected the chibi art the pool then held. */
     greekgods: 'pt-ruin', norse: 'pt-snow', rivers: 'pt-water', capitals: 'pt-city',
-    shakespeare: 'sc-shakespeare', minerals: 'pt-mountain', warwords: 'pt-war',
-    constellations: 'pt-night', periodic: 'b20-ch04-opener', roots: 'sc-epics',
-    dynasties: 'pt-ruin', instruments: 'pt-stage', knots: 'pt-sea', deserts: 'pt-mountain',
-    bodylatin: 'b15-ch03-opener', egypt: 'pt-dawn', money: 'pt-city', emperors: 'sc-prose',
-    volcanoes: 'pt-fire', codes: 'b21-ch07-opener', silkroad: 'pt-road', kitchen: 'b13-ch02-opener',
-    birdsofprey: 'pt-bird', trees: 'pt-forest', flags: 'pt-dawn',
+    shakespeare: 'sc-shakespeare', minerals: 'pt-mountain', wartime: 'pt-war',
+    constellations: 'pt-night', periodic: 'sc-prose', roots: 'sc-epics',
+    dynasties: 'pt-ruin', instruments: 'pt-stage', seafarers: 'pt-sea', deserts: 'pt-mountain',
+    medicine: 'sc-byheart', egypt: 'pt-dawn', currency: 'pt-city', emperors: 'sc-prose',
+    volcano: 'pt-fire', ciphers: 'sc-limericks', silkroad: 'pt-road', kitchen: 'pt-fire',
+    raptors: 'pt-bird', trees: 'pt-forest', flags: 'pt-dawn',
     /* the ten speller rounds */
-    silentletters: 'sc-byheart', doubling: 'b20-ch09-opener', ableible: 'b20-ch12-opener',
-    arabicwords: 'pt-city', sanskritwords: 'b14-ch05-opener', foreignplurals: 'b15-ch08-opener',
-    toponyms: 'pt-road', homophonemic: 'sc-sonnets', frenchendings: 'b16-ch04-opener',
+    silentletters: 'sc-byheart', doubling: 'sc-sonnets', ableible: 'pt-road',
+    arabicwords: 'pt-city', sanskritwords: 'pt-dawn', foreignplurals: 'pt-city',
+    toponyms: 'pt-road', homophonemic: 'sc-sonnets', frenchendings: 'pt-city',
     meaningshift: 'pt-library'
   };
   const THEME_ART = {
-    eponyms: 'b19-ch03-opener', words: 'pt-library', animals: 'pt-forest', history: 'pt-ruin',
-    ocean: 'pt-sea', bugs: 'pt-flower', food: 'b13-ch05-opener', myth: 'sc-epics',
-    fest: 'pt-fire', body: 'b15-ch02-opener', numbers: 'b20-ch02-opener', sports: 'pt-stage',
-    machines: 'b21-ch03-opener', plants: 'pt-flower', space: 'pt-night', music: 'pt-stage',
+    eponyms: 'sc-shakespeare', words: 'pt-library', animals: 'pt-forest', history: 'pt-ruin',
+    ocean: 'pt-sea', bugs: 'pt-flower', food: 'pt-fire', myth: 'sc-epics',
+    fest: 'pt-fire', body: 'sc-byheart', numbers: 'sc-limericks', sports: 'pt-stage',
+    machines: 'pt-city', plants: 'pt-flower', space: 'pt-night', music: 'pt-stage',
     world: 'pt-mountain', art: 'sc-limericks', weather: 'pt-snow', story: 'sc-haiku',
-    science: 'b20-ch06-opener', brands: 'b21-ch11-opener', quotes: 'sc-speeches',
-    lit: 'sc-prose', ent: 'pt-stage', india: 'b14-ch02-opener', code: 'b21-ch14-opener',
-    explore: 'pt-road', langs: 'b16-ch06-opener'
+    science: 'pt-water', brands: 'pt-city', quotes: 'sc-speeches',
+    lit: 'sc-prose', ent: 'pt-stage', india: 'pt-dawn', code: 'sc-limericks',
+    explore: 'pt-road', langs: 'pt-library'
   };
   /* the fallback pool, for a round whose subject nothing in the library matches */
-  const ART_POOL = ['b11-ch02-opener', 'b11-ch06-opener', 'b12-ch03-opener', 'b12-ch05-opener',
-    'b13-ch04-opener', 'b14-ch07-opener', 'b15-ch05-opener', 'b16-ch02-opener',
-    'b19-ch06-opener', 'b20-ch15-opener', 'b21-ch09-opener', 'pt-dawn'];
+  const ART_POOL = ['pt-dawn', 'pt-forest', 'pt-mountain', 'pt-water', 'pt-night', 'pt-city',
+    'pt-road', 'pt-sea', 'pt-library', 'pt-snow', 'pt-flower', 'pt-fire', 'pt-bird',
+    'pt-ruin', 'pt-stage', 'pt-war', 'sc-epics', 'sc-prose', 'sc-sonnets', 'sc-haiku',
+    'sc-byheart', 'sc-limericks', 'sc-speeches', 'sc-shakespeare'];
   let poolAt = 0;
   /* A round's OWN plate wins if one has been drawn for it: `b23-<round id>`.
      That way art can be commissioned a round at a time and each new plate
@@ -2544,15 +2560,28 @@ function book20() {
     const cw = crossword(words, rnd);
     if (!cw || !cw.across || (!cw.across.length && !cw.down.length)) return shortPages(rn, title, qs);
     keys.push(`<div><b>R${rn} crossword</b> — ${cw.across.concat(cw.down).map(p => p.n + (p.dir || '') + ' ' + esc(p.w)).join(', ')}</div>`);
-    const cols = cw.g[0].length, gridRows = cw.g.length;
+    /* This grid rendered as a blank rectangle in every printed copy, three ways
+       at once: it tested `c.ch` and `c.n`, but crossword() fills `g` with plain
+       CHARACTERS and keeps the numbering in a separate `nums` map keyed "r,c",
+       so every cell fell to the empty branch — and it walked the whole 17x17
+       working array instead of the r0..r1/c0..c1 bounding box, so what little
+       there was to see was adrift in a field of margin. Built the same way as
+       the chapter puzzles now, which have always been right. */
+    const cols = cw.c1 - cw.c0 + 1, gridRows = cw.r1 - cw.r0 + 1;
     const cell = Math.min(0.44, 6.6 / Math.max(1, cols), 4.0 / Math.max(1, gridRows)).toFixed(3);
+    let rows = '';
+    for (let r = cw.r0; r <= cw.r1; r++) {
+      rows += '<tr>';
+      for (let c = cw.c0; c <= cw.c1; c++) {
+        const chx = cw.g[r][c], num = cw.nums[r + ',' + c];
+        rows += chx ? `<td class="c">${num ? `<i>${num}</i>` : ''}</td>` : '<td></td>';
+      }
+      rows += '</tr>';
+    }
     return [`<div class="page" data-vol="23">${head(vol, null, 0, esc(title))}
       <div style="margin-top:.36in"><div class="kick">The clue is the meaning. The answer is the word.</div></div>
-      <div class="bb-xword" style="margin:.1in auto;display:grid;grid-template-columns:repeat(${cols},${cell}in);justify-content:center">
-        ${cw.g.map(row => row.map(c => c && c.ch
-          ? `<span style="width:${cell}in;height:${cell}in;border:1px solid var(--ink);position:relative;display:block">${c.n ? `<i style="position:absolute;top:0;left:1pt;font-size:5.4pt;font-style:normal">${c.n}</i>` : ''}</span>`
-          : `<span style="width:${cell}in;height:${cell}in;display:block"></span>`).join('')).join('')}
-      </div>
+      <div class="bb-xword-wrap" style="display:flex;justify-content:center;margin:.12in 0">
+        <table class="bb-xword" style="--xw:${cell}in">${rows}</table></div>
       <div class="bb-clues" style="display:grid;grid-template-columns:1fr 1fr;gap:.14in;font-size:8.6pt;line-height:1.32">
         <div><h3 style="font-size:10.5pt;color:var(--accent-deep)">Across</h3>${cw.across.map(p => `<div><b>${p.n}.</b> ${esc(fit(p.def, 84))}</div>`).join('')}</div>
         <div><h3 style="font-size:10.5pt;color:var(--accent-deep)">Down</h3>${cw.down.map(p => `<div><b>${p.n}.</b> ${esc(fit(p.def, 84))}</div>`).join('')}</div>
