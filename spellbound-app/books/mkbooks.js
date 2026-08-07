@@ -388,13 +388,6 @@ function css(vol) {
   @font-face{font-family:'BB Kicker';src:url('../fonts/fredoka-600.woff2') format('woff2');font-weight:600}
   @font-face{font-family:'BB Body';src:url('../fonts/hanken-var.woff2') format('woff2');font-weight:100 900}
   @font-face{font-family:'BB Tile';src:url('../fonts/sono-600.woff2') format('woff2');font-weight:600}
-  ${vol.n === 22 ? `
-  /* mood faces for the poems companion — a war/ruin subject reads bold and
-     declarative, a sonnet/speech/prose is the book's most literary matter and
-     sets in a serif, a haiku is quiet and round. See moodFont() in mkbooks.js. */
-  @font-face{font-family:'BB Bold';src:url('../fonts/bungee-400.woff2') format('woff2');font-weight:400}
-  @font-face{font-family:'BB Serif';src:url('../fonts/fraunces-800.woff2') format('woff2');font-weight:400 900}
-  @font-face{font-family:'BB Soft';src:url('../fonts/comfortaa-700.woff2') format('woff2');font-weight:700}` : ''}
   *{box-sizing:border-box;margin:0;padding:0}
   :root{--paper:#f3efff;--card:#fff;--hairline:#ddd4f2;--chip:#e6defc;--chip-ink:#4a3aa0;
     --ink:#241E33;--muted:#6b6482;--treasure:#F0B429;--treasure-tint:#FFF3D6;--treasure-deep:#8A5B00;
@@ -510,72 +503,51 @@ function css(vol) {
   .an-prop{position:absolute;top:.08in;left:.1in;background:rgba(20,14,44,.66);color:#FFE9AE;border-radius:8pt;padding:2.5pt 8pt;font-family:'BB Tile';font-size:9.6pt}
   .bb-prop{display:inline-block;background:var(--chip);color:var(--chip-ink);border-radius:8pt;padding:3pt 8pt;font-family:'BB Tile';font-size:10pt}
   .bb-bubble{background:var(--card);border:1px solid var(--hairline);border-radius:12pt;padding:6pt 10pt;font-family:'BB Display';font-size:11.5pt;line-height:1.35;box-shadow:var(--sh-screen)}
-  /* ---- the poems companion: one poem to a page, and the page keeps moving ----
-     A poem is a shape and it wants the leaf it is printed on. Text left, the
-     gist in tiles down one side, the hard words underlined where they stand and
-     glossed along the foot. The plate moves — head band, foot band, side column,
-     inset, screened-back ground — so no two spreads run the same way. */
-  /* The page is a column: the poem takes the slack and the gloss is pinned just
-     above the running foot, which is absolutely positioned at .28in. Without
-     that the gloss floated wherever the poem ended and, on a short poem, landed
-     on top of the footer. */
-  .pm-page{position:relative;overflow:hidden;display:flex;flex-direction:column}
-  .pm-page .pm-band-foot{margin-bottom:.30in}
-  /* THE PLATE TAKES THE SLACK.
-     A haiku is three lines. No type size fills a leaf with three lines and none
-     should try — set it at 26pt and there are still three inches of bare paper
-     under it. So the picture grows instead: whichever plate the layout is using
-     is a flex item that soaks up whatever the poem did not need, between its own
-     min and a max that keeps it a band and not a poster. On a long poem it sits
-     at its minimum and nothing moves. Only the screened-back ground has nothing
-     to grow — it already covers the leaf — so that one still pins the glossary
-     to the foot instead. */
-  .pm-page.pm-art-ground .pm-gloss{margin-top:auto;margin-bottom:.30in}
-  .pm-art-head .pm-band-top,.pm-art-foot .pm-band-foot{flex:1 1 1.15in;min-height:1.15in;max-height:4.6in}
-  .pm-art-side .pm-body,.pm-art-inset .pm-body,.pm-art-ground .pm-body{flex:1 1 auto;align-items:stretch}
-  .pm-art-inset .pm-inset{flex:1 1 1.35in;min-height:1.35in;max-height:4.4in}
-  /* where the body is stretched and the plate is beside or behind the poem rather
-     than growing itself, the poem rides the middle of the space it was given —
-     a short piece reads as centred on the plate, not as stranded at the top */
-  .pm-art-side .pm-col,.pm-art-ground .pm-col{display:flex;flex-direction:column;justify-content:center}
-  .pm-ground{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.14;z-index:0;filter:saturate(.7)}
-  /* Lift the poem's own parts above the screened-back ground — and NAME them.
-     This was once a blanket rule on every child but the ground, which also caught the running head and
-     the running foot and turned both from absolute into flow items:
-     the head then sat on the source kicker and the foot printed itself in the
-     middle of the leaf, under the glossary. Only these five want the treatment. */
-  .pm-page > .pm-head,.pm-page > .pm-body,.pm-page > .pm-gloss,.pm-page > .pm-band{position:relative;z-index:1}
-  .pm-band{display:block;width:calc(100% + 1.25in);margin-left:-.75in;height:1.15in;object-fit:cover}
-  .pm-band-top{margin-top:.06in;margin-bottom:.14in;
-    -webkit-mask-image:linear-gradient(180deg,#000 55%,transparent);mask-image:linear-gradient(180deg,#000 55%,transparent)}
-  .pm-band-foot{margin-top:.14in;
-    -webkit-mask-image:linear-gradient(0deg,#000 55%,transparent);mask-image:linear-gradient(0deg,#000 55%,transparent)}
-  /* the running head is absolute at .3in and its rule lands about .12in above the
-     text box — close enough to the source kicker to read as a collision. When the
-     title block is the first thing on the page, stand it off. */
+  /* ---- the poems companion: one poem to a page, painted the whole way through ----
+     One full-bleed plate sits under every page, like "The Road Not Taken" — the
+     painting stays present through the leaf instead of getting boxed into a
+     rectangle that reads as pasted on. --pm-tint, set per page from the
+     piece's subject, washes the paper itself, so the page's own colour carries
+     the mood as far as the painting does. The picture runs DARKER through its
+     open passages (sky, water, empty ground) and a soft tinted pool sits behind
+     the poem itself, so the words are never fighting the art for a reader's eye. */
+  .pm-page{position:relative;overflow:hidden;display:flex;flex-direction:column;
+    background-color:color-mix(in srgb,var(--paper) 78%,var(--pm-tint,var(--paper)) 22%)}
+  .pm-ground{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.32;z-index:0;filter:saturate(.82)}
+  .pm-page > .pm-head,.pm-page > .pm-body,.pm-page > .pm-gloss{position:relative;z-index:1}
+  /* the poem rides the middle of whatever room the page gives it — a haiku
+     reads as centred on the painting, not stranded up against the running head */
+  .pm-page .pm-gloss{margin-top:auto;margin-bottom:.30in}
   .bb-head + .pm-head{margin-top:.15in}
   .pm-head{margin-bottom:.13in}
   .pm-head h2{margin:.02in 0 .01in;line-height:1.12;color:var(--ink)}
   .pm-by{font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep)}
-  .pm-body{display:flex;gap:.20in;align-items:flex-start;margin-bottom:.10in}
-  .pm-body.rev{flex-direction:row-reverse}
-  .pm-col{flex:1;min-width:0}
-  .pm-text{font-family:'BB Display';color:var(--ink);overflow-wrap:break-word}
-  .pm-text.pm-mood-bold{font-family:'BB Bold';letter-spacing:.01em}
-  .pm-text.pm-mood-serif{font-family:'BB Serif';font-weight:600}
-  .pm-text.pm-mood-soft{font-family:'BB Soft'}
-  .pm-tiles{flex:0 0 2.15in;display:flex;flex-direction:column;gap:.11in}
-  .pm-tile{background:color-mix(in srgb,var(--accent) 7%,var(--paper));border-left:2.5pt solid var(--accent);
-    border-radius:0 8px 8px 0;padding:.09in .11in}
+  .pm-body{display:flex;gap:.20in;align-items:stretch;margin-bottom:.10in;flex:1 1 auto}
+  .pm-col{flex:1;min-width:0;position:relative;display:flex;flex-direction:column;justify-content:center}
+  /* the lighter pool behind the text — a soft radial wash of the page's own
+     tint, so the words sit on calm colour while the painting stays full
+     strength everywhere the pool fades out */
+  .pm-col:before{content:'';position:absolute;inset:-.34in -.4in;z-index:0;pointer-events:none;
+    background:radial-gradient(ellipse at center,
+      color-mix(in srgb,var(--pm-tint,var(--paper)) 85%,var(--paper) 15%) 0%,
+      color-mix(in srgb,var(--pm-tint,var(--paper)) 50%,transparent) 62%, transparent 88%)}
+  /* the poem itself is set in the light, variable body face, not the display
+     face the rest of the book uses — a whole soliloquy at display weight reads
+     as shouting. Mood is carried by weight and tracking within that one family,
+     never past 520 (a firm read, not a bold one). */
+  .pm-text{position:relative;z-index:1;font-family:'BB Body';font-weight:430;color:var(--ink);overflow-wrap:break-word}
+  .pm-text.pm-mood-bold{font-weight:520;letter-spacing:.012em}
+  .pm-text.pm-mood-serif{font-weight:460}
+  .pm-text.pm-mood-soft{font-weight:400;letter-spacing:.01em}
+  .pm-tiles{flex:0 0 2.15in;display:flex;flex-direction:column;gap:.11in;justify-content:center}
+  .pm-tile{background:color-mix(in srgb,var(--pm-tint,var(--accent)) 22%,var(--card) 78%);
+    border-left:2.5pt solid var(--accent);border-radius:0 8px 8px 0;padding:.09in .11in;
+    box-shadow:0 2px 8px rgba(20,14,40,.06)}
   .pm-tile p{margin:2pt 0 0;font-size:9.2pt;line-height:1.38;color:var(--ink)}
   .pm-tk{font-family:'BB Kicker';font-size:7.6pt;letter-spacing:.10em;text-transform:uppercase;color:var(--accent-deep)}
-  .pm-sideimg{flex:0 0 1.5in;align-self:stretch;width:1.5in;min-height:3.4in;object-fit:cover;border-radius:10px;
-    -webkit-mask-image:linear-gradient(90deg,#000 60%,transparent);mask-image:linear-gradient(90deg,#000 60%,transparent)}
-  /* the plate always dissolves TOWARDS the poem, so it reads as part of the leaf.
-     On the right flank that means fading leftward, not off the trimmed edge. */
-  .pm-side-r .pm-sideimg{-webkit-mask-image:linear-gradient(270deg,#000 60%,transparent);mask-image:linear-gradient(270deg,#000 60%,transparent)}
-  .pm-inset{width:100%;height:1.35in;object-fit:cover;border-radius:10px;margin-bottom:.02in}
-  .pm-gloss{margin-top:.16in;padding-top:.09in;border-top:1pt solid color-mix(in srgb,var(--accent) 40%,transparent);
+  .pm-gloss{position:relative;z-index:1;margin-top:.16in;padding:.10in .12in;border-radius:10px;
+    background:color-mix(in srgb,var(--pm-tint,var(--paper)) 78%,var(--paper) 22%);
+    border-top:1pt solid color-mix(in srgb,var(--accent) 30%,transparent);
     display:grid;grid-template-columns:1fr 1fr 1fr;gap:.05in .16in}
   .pm-g{font-size:8.2pt;line-height:1.3;break-inside:avoid}
   .pm-g b{font-family:'BB Display';font-size:9.4pt;display:block;color:var(--ink)}
@@ -1706,26 +1678,33 @@ function book18() {
    UNDERLINED where they actually occur in the poem and glossed in a strip along
    the foot, and the whole thing on one leaf wherever it fits.
 
-   And it changes. Twelve layouts rotate — the plate moves from a head banner to
-   a foot banner to a side column to an inset to a screened-back ground, and the
-   tile column swaps sides — so no two spreads in a row look alike, and the cycle
-   is long enough not to rhyme with the section lengths. The plate is chosen by
-   the piece's own subject (`th`) out of sixteen painted for the book, each
-   cropped a different way depending on where it lands. */
+   And it changes, but the plate never leaves the page — one full-bleed painting
+   sits under every piece, the way it does under "The Road Not Taken": present
+   through the whole leaf, not boxed into a rectangle that reads as pasted on.
+   What moves is which part of the painting shows (`pos`, the sky, the middle
+   distance, the near ground) and which side the tile column stands, so the
+   book keeps rereading its sixteen plates without ever repeating a page. */
 const POEM_LAY = [
-  { art: 'head', tiles: 'right' },
-  { art: 'foot', tiles: 'right' },
-  { art: 'side-l', tiles: 'right' },
-  { art: 'inset', tiles: 'right' },
-  { art: 'head', tiles: 'left' },
-  { art: 'ground', tiles: 'right' },
-  { art: 'foot', tiles: 'left' },
-  { art: 'side-r', tiles: 'left' },
-  { art: 'inset', tiles: 'left' },
-  { art: 'ground', tiles: 'left' },
-  { art: 'side-r', tiles: 'right' },
-  { art: 'head', tiles: 'right' },
+  { tiles: 'right', pos: '50% 18%' },
+  { tiles: 'left', pos: '50% 82%' },
+  { tiles: 'right', pos: '22% 50%' },
+  { tiles: 'left', pos: '78% 45%' },
+  { tiles: 'right', pos: '50% 50%' },
+  { tiles: 'left', pos: '50% 30%' },
+  { tiles: 'right', pos: '30% 72%' },
+  { tiles: 'left', pos: '72% 28%' },
 ];
+
+/* A soft tint per subject, so the page's own colour carries the mood a step
+   further than the painting does — a war piece sits on ash, a sea piece on
+   cool water-blue — mixed at low strength into the book's lavender paper so
+   it reads as a wash, not a swatch. */
+const THEME_TINT = {
+  sea: '#cfe3f0', water: '#d2e6e6', night: '#cdc8e6', forest: '#d9e6cf',
+  mountain: '#dbe0d6', snow: '#dfeaf5', fire: '#f2d5c4', war: '#e3d3c2',
+  ruin: '#e0d3c0', stage: '#ecd7c8', city: '#d6d8e2', road: '#e3ddc7',
+  bird: '#e8ddc9', flower: '#f0d3e2', library: '#ded0bb', dawn: '#f2ddc0',
+};
 
 /* Fit the poem to the leaf — the generator's half of the job.
    It sets the CEILING and the floor; POEM_FIT (in the browser, after the display
@@ -1733,18 +1712,20 @@ const POEM_LAY = [
    leaf holds the whole poem. The ceiling is what the piece can carry as a matter
    of taste — a haiku wants to be big, a twenty-eight-line ode does not — and the
    first estimate is only there so the page does not visibly jump on load. */
-function fitPoem(p, L, hard) {
+function fitPoem(p, hard) {
   const isHaiku = p.kind === 'haiku';
-  const side = L.art === 'side-l' || L.art === 'side-r';
-  /* 8.5in less the two margins, less the gaps, the tile column and any side plate */
-  const colW = 7.25 - (side ? 0.40 + 1.50 : 0.20) - 2.15;
-  const band = L.art === 'head' ? 1.35 : L.art === 'foot' ? 1.59 : 0;
+  /* 8.5in less the two margins, less the gap, less the tile column — the plate
+     no longer takes a bite out of this: it lives full-bleed behind everything */
+  const colW = 7.25 - 0.20 - 2.15;
   const glossH = hard.length ? 0.16 + Math.ceil(hard.length / 3) * 0.70 + 0.30 : 0.30;
-  const textH = 9.80 - band - 0.93 - glossH - 0.30;
-  const lh = isHaiku ? 1.75 : 1.48;
+  const textH = 9.80 - 0.93 - glossH - 0.30;
+  /* smaller and airier than a display ceiling would suggest — the light body
+     face carries a page just fine well under its old size, and the room that
+     frees up goes straight to line-height instead */
+  const lh = isHaiku ? 1.85 : 1.58;
   const nl = p.lines.filter(x => x !== '').length;
-  const max = isHaiku ? 26 : nl <= 6 ? 19 : nl <= 10 ? 17 : nl <= 16 ? 15.5 : 14;
-  const min = isHaiku ? 11 : 8.4;
+  const max = isHaiku ? 20 : nl <= 6 ? 15.5 : nl <= 10 ? 14 : nl <= 16 ? 13 : 12;
+  const min = isHaiku ? 10 : 8.2;
   let sz = max;
   for (; sz > min; sz -= 0.25) {
     const cpl = Math.max(8, Math.floor(colW * 144 / sz));  // ~0.5em average glyph
@@ -1755,13 +1736,15 @@ function fitPoem(p, L, hard) {
   return { sz: Math.round(sz * 100) / 100, lh, max, min };
 }
 
-/* The mood picks the face. Four registers, chosen from fields every piece
-   already carries (kind, th) so nothing had to be re-authored: a war or ruin
-   subject reads as bold declaration whatever form it is in (Ozymandias gets
-   the same weight as Henry V); a sonnet, a speech or a prose oration is the
-   book's most literary matter and sets in a serif; a haiku is quiet and round;
-   everything else — the poems people keep by heart — stays in the house face,
-   which is where a young reader should feel most at home. */
+/* The mood picks a register, not a face — every poem sets in the same light
+   variable body font (see .pm-text), because a soliloquy at display weight
+   reads as shouting. Four registers, chosen from fields every piece already
+   carries (kind, th) so nothing had to be re-authored: a war or ruin subject
+   reads a shade firmer whatever its form (Ozymandias gets the same touch as
+   Henry V); a sonnet, a speech or a prose oration is the book's most literary
+   matter and sets a step heavier than the rest; a haiku stays lightest and
+   widest-tracked; everything else — the poems people keep by heart — is the
+   plain, most comfortable read in the book. */
 function moodFont(p) {
   if (p.th === 'war' || p.th === 'ruin') return 'bold';
   if (p.kind === 'sonnet' || p.kind === 'speech' || p.kind === 'prose') return 'serif';
@@ -1770,25 +1753,20 @@ function moodFont(p) {
 }
 
 function poemPage(vol, sec, p, n, folio, keys) {
-  let L = POEM_LAY[(n - 1) % POEM_LAY.length];
-  /* a side plate takes the poem's column down to 3.2in, which is fine for verse
-     but strangles prose — Lincoln at Gettysburg wrapped every sentence three
-     times and still ran off the leaf at the smallest size we allow. Prose keeps
-     the full measure and takes the plate as a screened-back ground instead. */
-  const wide = p.lines.some(l => l.length > 68);
-  if (wide && (L.art === 'side-l' || L.art === 'side-r')) L = { art: 'ground', tiles: L.tiles };
+  const L = POEM_LAY[(n - 1) % POEM_LAY.length];
   const plate = artAt('pt-' + (p.th || 'library')) || artAt('pt-library');
+  const tint = THEME_TINT[p.th] || THEME_TINT.library;
   const hard = p.hard || [];
   const isHaiku = p.kind === 'haiku';
-  const side = L.art === 'side-l' || L.art === 'side-r';
-  const { sz, lh, max, min } = fitPoem(p, L, hard);
+  const { sz, lh, max, min } = fitPoem(p, hard);
   const mood = moodFont(p);
 
   const poemHtml = `<div class="pm-text${mood ? ' pm-mood-' + mood : ''}" data-max="${max}" data-min="${min}" data-lh="${lh}" style="font-size:${sz}pt;line-height:${lh};${isHaiku ? 'text-align:center' : ''}">`
     + p.lines.map(l => l === '' ? '<div style="height:.09in"></div>' : `<div>${esc(l)}</div>`).join('') + '</div>';
 
-  const tilesInner = `
-    <div class="pm-tile pm-gist"><span class="pm-tk">What to listen for</span><p>${esc(p.note)}</p></div>`;
+  const tilesCol = `<div class="pm-tiles">
+    <div class="pm-tile pm-gist"><span class="pm-tk">What to listen for</span><p>${esc(p.note)}</p></div>
+  </div>`;
 
   const gloss = hard.length ? `<div class="pm-gloss">
     ${hard.map(h => `<div class="pm-g"><b>${esc(h.w)}</b><i>/ ${esc(h.say)} /</i><span>${esc(fit(h.def, 96))}</span></div>`).join('')}
@@ -1799,27 +1777,16 @@ function poemPage(vol, sec, p, n, folio, keys) {
     <h2 style="font-size:${p.t.length > 36 ? 16 : p.t.length > 26 ? 19 : 22}pt">${esc(p.t)}</h2>
     <div class="pm-by">${esc(p.a)}</div></div>`;
 
-  const img = (cls, extra) => plate ? `<img class="${cls}" src="${plate}" alt=""${extra || ''}>` : '';
-  /* the tile column carries the inset plate when that is the layout; the side
-     plate is a third column and can stand on either flank of the poem */
-  const tilesCol = `<div class="pm-tiles">${L.art === 'inset' ? img('pm-inset') : ''}${tilesInner}</div>`;
-  const sideImg = side ? img('pm-sideimg') : '';
   const col = `<div class="pm-col">${poemHtml}</div>`;
-  const body = `<div class="pm-body">${
-    L.tiles === 'left'
-      ? tilesCol + col + sideImg
-      : (L.art === 'side-l' ? sideImg : '') + col + tilesCol + (L.art === 'side-r' ? sideImg : '')
-  }</div>`;
+  const body = `<div class="pm-body">${L.tiles === 'left' ? tilesCol + col : col + tilesCol}</div>`;
 
   keys.push(`<div><b>${esc(p.t)}</b> — words to take: ${hard.map(h => esc(h.w)).join(', ') || '—'}</div>`);
-  return `<div class="page pm-page pm-art-${side ? 'side' : L.art}${L.art === 'side-r' ? ' pm-side-r' : ''}" data-vol="22">
-    ${L.art === 'ground' ? img('pm-ground') : ''}
+  return `<div class="page pm-page" data-vol="22" style="--pm-tint:${tint}">
+    ${plate ? `<img class="pm-ground" src="${plate}" alt="" style="object-position:${L.pos}">` : ''}
     ${head(vol, null, 0, esc(sec.title))}
-    ${L.art === 'head' ? img('pm-band pm-band-top') : ''}
     ${head2}
     ${body}
     ${gloss}
-    ${L.art === 'foot' ? img('pm-band pm-band-foot') : ''}
     ${foot(vol, folio.n++)}</div>`;
 }
 
