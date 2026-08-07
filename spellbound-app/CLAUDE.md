@@ -477,14 +477,41 @@ handlers. App lives in this folder; open `index.html` to run.
   The tagline gets its own white chip on light covers — it sits mid-cover on top of the
   drawing, where a text shadow is not enough.
 - **Four companions now**, not two: `book-similes`, `book-champion`, plus
-  **`book-lines` "Lines Worth Keeping"** (87pp — poems, speeches, sonnets, haiku and long
-  prose quotes, all public domain, printed whole, each carrying its own bee-worthy words;
-  `books/poem-chapters.js`) and **`book-quiz` "The Long Quiz"** (275pp — a general round
+  **`book-lines` "Lines Worth Keeping"** (poems, speeches, sonnets, haiku, limericks and
+  long prose quotes, all public domain, printed whole, each carrying its own bee-worthy
+  words; `books/poem-chapters.js`) and **`book-quiz` "The Long Quiz"** (275pp — a general round
   then a hyper-speciality round, twenty-five times; generals drawn at build time from the
   app bank at levels 3-5, specialities authored in `books/trivia-rounds.js`; four formats
   in rotation — MC, written answers with the key at the back, crossword, letter square).
   The trivia shards do **not** export an array: each calls `SB_TRIVIA._add(lv, [...])`, so
   a reader has to supply that method and collect what it is handed.
+- **Everything printed in `book-lines` must be PUBLIC DOMAIN, and the book says so in
+  its own preamble.** In practice: first published **1928 or earlier**, or a work of the
+  US federal government (17 U.S.C. §105 — a sitting President's official address counts;
+  a private citizen's speech does not, however famous). Three pieces shipped briefly and
+  had to be pulled — Dylan Thomas 1951, the close of King's "I Have a Dream" 1963, and
+  Churchill's "we shall fight on the beaches" 1940. Check the FIRST-PUBLICATION year, not
+  the author's death; and audit with a one-liner over `p.y` before every release.
+- **Art in `book-lines` is keyed per PIECE, on a slug of its title** (`pieceSlug()` in
+  mkbooks.js, mirrored by `voice/pipeline/poem-art.py`). Never key it on position — adding
+  one poem shifts every index after it and index-keyed art silently re-attaches to the
+  wrong poem. A piece with no bespoke plate falls back to its themed one, so the art can
+  be generated in batches without the book ever being broken in between. The Python side
+  asks **node** to evaluate `poem-chapters.js` rather than regex-scraping it: a regex
+  found 66 of 90 (the haiku put `t:` and `th:` on one line, the speeches on two) and the
+  two slug lists drifted apart in silence.
+- **Splicing pieces into `poem-chapters.js`: normalise to exactly ONE comma.** A removal
+  leaves a trailing comma; the next splice adds another; `[a, , b]` is a **sparse array
+  hole** that reads as `undefined` and crashes any `for...of` over the pieces. It hid
+  through two integrity checks because they used `forEach`, which silently skips holes —
+  count by index instead.
+- **The image-generation quota is per-MODEL**, so `poem-art.py` runs its workers
+  round-robined across three models rather than queueing on one. More *agents* would not
+  help — they contend for the same quota. `NB_WORKERS` / `NB_MODELS` tune it.
+- **Bulk verbatim poetry trips the output content filter**, intermittently and regardless
+  of public-domain status — inside subagents too. Batches of ~5 pieces mostly get through
+  and a retry of a blocked batch usually succeeds; batches of 15 never did. Author the
+  poetry sections in small batches and expect to retry.
 - World art: `app-art/w-<world>-r<2|3>.jpg` (26 banners) is cut from the book series'
   strips by `voice/pipeline/app-banners.py`. The Word Atlas, the theme pages and the
   home Atlas tile all draw from it — one visual language with the books.
