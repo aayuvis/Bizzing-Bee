@@ -217,6 +217,21 @@
     font-family:'BB Kicker';letter-spacing:.16em;text-transform:uppercase;font-size:9pt;
     color:rgba(255,255,255,.78);text-shadow:0 2px 8px rgba(0,0,0,.7)}
   .sc-page .bb-foot{color:rgba(255,255,255,.82);z-index:2}
+  /* the back-of-book indexes: leader dots done with a flex spacer and a repeating
+     radial, because a border-bottom dotted rule sits on the baseline and a row of
+     literal periods will not stay put when the type resizes */
+  .ix{column-count:2;column-gap:.30in}
+  .ix-r{display:flex;align-items:baseline;gap:.05in;font-size:9.2pt;line-height:1.42;break-inside:avoid}
+  .ix-t{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ix-d{flex:1 1 auto;height:.8em;min-width:.12in;
+    background-image:radial-gradient(circle at 1px 88%,var(--muted) .6px,transparent .7px);
+    background-size:4px 100%;opacity:.55}
+  .ix-p{flex:0 0 auto;font-family:'BB Mono';font-size:8.4pt;color:var(--accent-deep)}
+  .ix-h{break-inside:avoid;margin-bottom:.09in}
+  /* BB Display has no ō — "Matsuo Bashō" fell back and printed as "Basho¯". BB Kicker
+     carries the macron (it is the face the credit line under every poem already uses). */
+  .ix-h b{font-family:'BB Kicker';font-weight:700;font-size:10.2pt;color:var(--accent-deep);display:block}
+  .ix-h .ix-t{padding-left:.10in}
   .bb-hive{display:grid;grid-template-columns:1fr 1fr;gap:.12in}
   .bb-card{padding:0 .04in;min-width:0;overflow-wrap:anywhere}
   .bb-card .ex{font-size:9.6pt;line-height:1.32;margin-top:2px;color:var(--ink);opacity:.85}

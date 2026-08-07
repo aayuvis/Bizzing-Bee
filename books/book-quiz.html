@@ -217,6 +217,21 @@
     font-family:'BB Kicker';letter-spacing:.16em;text-transform:uppercase;font-size:9pt;
     color:rgba(255,255,255,.78);text-shadow:0 2px 8px rgba(0,0,0,.7)}
   .sc-page .bb-foot{color:rgba(255,255,255,.82);z-index:2}
+  /* the back-of-book indexes: leader dots done with a flex spacer and a repeating
+     radial, because a border-bottom dotted rule sits on the baseline and a row of
+     literal periods will not stay put when the type resizes */
+  .ix{column-count:2;column-gap:.30in}
+  .ix-r{display:flex;align-items:baseline;gap:.05in;font-size:9.2pt;line-height:1.42;break-inside:avoid}
+  .ix-t{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ix-d{flex:1 1 auto;height:.8em;min-width:.12in;
+    background-image:radial-gradient(circle at 1px 88%,var(--muted) .6px,transparent .7px);
+    background-size:4px 100%;opacity:.55}
+  .ix-p{flex:0 0 auto;font-family:'BB Mono';font-size:8.4pt;color:var(--accent-deep)}
+  .ix-h{break-inside:avoid;margin-bottom:.09in}
+  /* BB Display has no ō — "Matsuo Bashō" fell back and printed as "Basho¯". BB Kicker
+     carries the macron (it is the face the credit line under every poem already uses). */
+  .ix-h b{font-family:'BB Kicker';font-weight:700;font-size:10.2pt;color:var(--accent-deep);display:block}
+  .ix-h .ix-t{padding-left:.10in}
   .bb-hive{display:grid;grid-template-columns:1fr 1fr;gap:.12in}
   .bb-card{padding:0 .04in;min-width:0;overflow-wrap:anywhere}
   .bb-card .ex{font-size:9.6pt;line-height:1.32;margin-top:2px;color:var(--ink);opacity:.85}
@@ -4286,18 +4301,18 @@
         <div class="bb-foot"><span>Bizzing Bee · The Long Quiz</span><span>227</span></div></div>
 <div class="page" data-verso data-vol="23" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
     <svg viewBox="0 0 120 120" style="width:1.2in;height:1.2in;flex-shrink:0;margin:0 auto" aria-hidden="true">
-      <defs><filter id="bl2-vxv217" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <filter id="bl6-vxv217" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl14-vxv217" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
-        <linearGradient id="vw-vxv217" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6B4FC4"/><stop offset="1" stop-color="#2C2150"/></linearGradient>
-        <linearGradient id="vb-vxv217" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#463672"/><stop offset="1" stop-color="#1E1738"/></linearGradient></defs>
-      <circle cx="60" cy="62" r="44" fill="rgba(90,63,166,.28)" filter="url(#bl14-vxv217)"/>
+      <defs><filter id="bl2-vxv216" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
+      <filter id="bl6-vxv216" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
+      <filter id="bl14-vxv216" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter>
+        <linearGradient id="vw-vxv216" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6B4FC4"/><stop offset="1" stop-color="#2C2150"/></linearGradient>
+        <linearGradient id="vb-vxv216" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#463672"/><stop offset="1" stop-color="#1E1738"/></linearGradient></defs>
+      <circle cx="60" cy="62" r="44" fill="rgba(90,63,166,.28)" filter="url(#bl14-vxv216)"/>
       <g>
-        <path d="M56 52 Q30 24 12 30 Q10 52 30 64 Q18 66 14 78 Q30 88 46 76 Z" fill="url(#vw-vxv217)"/>
-        <path d="M64 52 Q90 24 108 30 Q110 52 90 64 Q102 66 106 78 Q90 88 74 76 Z" fill="url(#vw-vxv217)"/>
+        <path d="M56 52 Q30 24 12 30 Q10 52 30 64 Q18 66 14 78 Q30 88 46 76 Z" fill="url(#vw-vxv216)"/>
+        <path d="M64 52 Q90 24 108 30 Q110 52 90 64 Q102 66 106 78 Q90 88 74 76 Z" fill="url(#vw-vxv216)"/>
         <path d="M30 64 l-6 8 M90 64 l6 8" stroke="#241E33" stroke-width="2" opacity=".5"/>
         <path d="M14 78 q-4 8 -2 14 M106 78 q4 8 2 14" stroke="rgba(203,180,242,.55)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"/>
-        <ellipse cx="60" cy="66" rx="14" ry="26" fill="url(#vb-vxv217)"/>
+        <ellipse cx="60" cy="66" rx="14" ry="26" fill="url(#vb-vxv216)"/>
         <path d="M60 44 Q52 30 42 26 M60 44 Q68 30 78 26" stroke="#241E33" stroke-width="3" fill="none" stroke-linecap="round"/>
         <circle cx="42" cy="25" r="3" fill="#CBB4F2"/><circle cx="78" cy="25" r="3" fill="#CBB4F2"/>
         <circle cx="60" cy="50" r="12" fill="#31265A"/>
