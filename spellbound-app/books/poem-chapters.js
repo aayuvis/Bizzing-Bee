@@ -676,6 +676,135 @@ window.SB_POEMS = {
     ]
   },
 
+  /* =============== II. THE OLDEST LINES =============== */
+  epics: {
+    title: 'The oldest lines we still say',
+    blurb: 'These are the oldest stories anybody still tells, and not one of them was written in English. What you are reading is a translation — which means a second poet, centuries later, sat down and made the thing again in their own language. Every one here was translated before 1929 by someone who was a real poet in their own right, so the English is worth learning for its own sake: Pope’s couplets, Dryden’s line, FitzGerald’s quatrain. The date on each piece is the TRANSLATION’s date, not the poem’s.',
+    pieces: [
+{
+        t: 'Lo, praise of the prowess of people-kings',
+        th: 'sea', a: 'Anonymous, translated by Francis Barton Gummere (1855–1919)', src: 'Beowulf, Prologue (Fitt I)', y: '1910', kind: 'poem',
+        lines: [
+          'Lo, praise of the prowess of people-kings',
+          'of spear-armed Danes, in days long sped,',
+          'we have heard, and what honor the athelings won!',
+          'Oft Scyld the Scefing from squadroned foes,',
+          'from many a tribe, the mead-bench tore,',
+          'awing the earls. Since erst he lay',
+          'friendless, a foundling, fate repaid him:',
+          'for he waxed under welkin, in wealth he throve,',
+          'till before him the folk, both far and near,',
+          'who house by the whale-path, heard his mandate,',
+          'gave him gifts: a good king he!',
+          'To him an heir was afterward born,',
+          'a son in his halls, whom heaven sent',
+          'to favor the folk, feeling their woe',
+          'that erst they had lacked an earl for leader',
+          'so long a while; the Lord endowed him,',
+          'the Wielder of Wonder, with world’s renown.'
+        ],
+        note: 'Old English verse does not rhyme; it binds each line together with alliteration — repeated opening sounds — across a pause in the middle called the caesura. Say the fourth line aloud and you can hear the hinge: “Oft Scyld the Scefing / from squadroned foes,” with the s-sounds reaching over the gap. Listen too for the kennings, compound nicknames like “whale-path” for the sea.',
+        hard: [
+          { w: 'prowess', say: 'PROW-iss', def: 'great skill or bravery' },
+          { w: 'atheling', say: 'ATH-uh-ling', def: 'a prince or noble of royal blood' },
+          { w: 'foundling', say: 'FOWND-ling', def: 'a child found abandoned' },
+          { w: 'welkin', say: 'WEL-kin', def: 'the sky' },
+          { w: 'renown', say: 'rih-NOWN', def: 'widespread fame' }
+        ]
+      },
+      {
+        t: 'Awake! for Morning in the Bowl of Night',
+        th: 'dawn', a: 'Omar Khayyám, translated by Edward FitzGerald (1809–1883)', src: 'The Rubáiyát of Omar Khayyám, quatrains I, XI and LI (first edition)', y: '1859', kind: 'poem',
+        lines: [
+          'Awake! for Morning in the Bowl of Night',
+          'Has flung the Stone that puts the Stars to Flight:',
+          'And Lo! the Hunter of the East has caught',
+          'The Sultán’s Turret in a Noose of Light.',
+          '',
+          'Here with a Loaf of Bread beneath the Bough,',
+          'A Flask of Wine, a Book of Verse — and Thou',
+          'Beside me singing in the Wilderness —',
+          'And Wilderness is Paradise enow.',
+          '',
+          'The Moving Finger writes; and, having writ,',
+          'Moves on: nor all thy Piety nor Wit',
+          'Shall lure it back to cancel half a Line,',
+          'Nor all thy Tears wash out a Word of it.'
+        ],
+        note: 'A rubái is a four-line stanza rhymed A-A-B-A: lines one, two and four chime, and the third line is left hanging with no partner. Listen for that unrhymed third line — it lifts away from the pattern, and the fourth line snaps back to close the rhyme, which is why each quatrain lands like a small door shutting.',
+        hard: [
+          { w: 'turret', say: 'TUR-it', def: 'a small tower on a building' },
+          { w: 'wilderness', say: 'WIL-dur-nis', def: 'wild land where nobody lives' },
+          { w: 'paradise', say: 'PAIR-uh-dyce', def: 'a place of perfect happiness' },
+          { w: 'piety', say: 'PY-uh-tee', def: 'devotion to religion' }
+        ]
+      },
+      {
+        t: 'Midway upon the journey of our life',
+        th: 'forest', a: 'Dante Alighieri, translated by Henry Wadsworth Longfellow (1807–1882)', src: 'The Divine Comedy: Inferno, Canto I', y: '1867', kind: 'poem',
+        lines: [
+          'Midway upon the journey of our life',
+          'I found myself within a forest dark,',
+          'For the straightforward pathway had been lost.',
+          'Ah me! how hard a thing it is to say',
+          'What was this forest savage, rough, and stern,',
+          'Which in the very thought renews the fear.',
+          'So bitter is it, death is little more;',
+          'But of the good to treat, which there I found,',
+          'Speak will I of the other things I saw there.',
+          'I cannot well repeat how there I entered,',
+          'So full was I of slumber at the moment',
+          'In which I had abandoned the true way.',
+          'But after I had reached a mountain’s foot,',
+          'At that point where the valley terminated,',
+          'Which had with consternation pierced my heart,',
+          'Upward I looked, and I beheld its shoulders',
+          'Vested already with that planet’s rays',
+          'Which leadeth others right by every road.'
+        ],
+        note: 'Dante wrote in terza rima, an interlocking rhyme that pulls the reader forward; Longfellow gave up the rhyme in order to keep Dante’s exact word order, so the English sometimes arrives backwards — “Speak will I,” “Upward I looked.” Listen for how the passage climbs: it begins lost and low in the trees and ends with the eye going up a mountain into sunlight.',
+        hard: [
+          { w: 'savage', say: 'SAV-ij', def: 'wild and untamed' },
+          { w: 'slumber', say: 'SLUM-bur', def: 'sleep' },
+          { w: 'consternation', say: 'kon-stur-NAY-shun', def: 'sudden alarm or dismay' },
+          { w: 'vested', say: 'VES-tid', def: 'clothed or covered' }
+        ]
+      },
+      {
+        t: 'Arms, and the man I sing',
+        th: 'war', a: 'Virgil, translated by John Dryden (1631–1700)', src: 'The Aeneid, Book I', y: '1697', kind: 'poem',
+        lines: [
+          'Arms, and the man I sing, who, forc’d by fate,',
+          'And haughty Juno’s unrelenting hate,',
+          'Expell’d and exil’d, left the Trojan shore.',
+          'Long labors, both by sea and land, he bore,',
+          'And in the doubtful war, before he won',
+          'The Latian realm, and built the destin’d town;',
+          'His banish’d gods restor’d to rites divine,',
+          'And settled sure succession in his line,',
+          'From whence the race of Alban fathers come,',
+          'And the long glories of majestic Rome.',
+          'O Muse! the causes and the crimes relate;',
+          'What goddess was provok’d, and whence her hate;',
+          'For what offense the Queen of Heav’n began',
+          'To persecute so brave, so just a man;',
+          'Involv’d his anxious life in endless cares,',
+          'Expos’d to wants, and hurried into wars!',
+          'Can heav’nly minds such high resentment show,',
+          'Or exercise their spite in human woe?'
+        ],
+        note: 'Virgil’s Latin had no rhyme; Dryden turned it into heroic couplets — pairs of ten-beat lines that click shut on a rhyme, so the story advances two lines at a time. Watch the apostrophes in “forc’d,” “destin’d,” “heav’nly”: they are not decoration but instructions, telling the reader to swallow a syllable so the beat stays at ten.',
+        hard: [
+          { w: 'haughty', say: 'HAW-tee', def: 'proud and scornful' },
+          { w: 'unrelenting', say: 'un-rih-LEN-ting', def: 'never easing or giving up' },
+          { w: 'succession', say: 'suk-SESH-un', def: 'the order in which rulers follow one another' },
+          { w: 'majestic', say: 'muh-JES-tik', def: 'grand and dignified' },
+          { w: 'resentment', say: 'rih-ZENT-munt', def: 'bitter anger at unfair treatment' }
+        ]
+      }
+    ]
+  },
+
   /* =============== II. THE SONNET =============== */
   sonnets: {
     title: 'Fourteen lines, and a turn',
