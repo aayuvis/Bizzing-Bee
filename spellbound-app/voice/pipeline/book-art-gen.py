@@ -34,8 +34,30 @@ STYLE_MATURE = ("Modern graphic-novel illustration: confident hand-inked linewor
                 "captions, no labels, no country or place names, no signage, no numbers, no "
                 "lettering on any object, and no writing of any alphabet. Every surface that "
                 "could carry writing is left blank. ")
-if os.environ.get('NB_STYLE') == 'mature':
+# The two standalone companions sit between the two registers above. They are
+# read by the same nine-year-old as the general volumes, but they are keepsakes
+# rather than coursework — a similes collection and a champion's phrasebook —
+# and the soft Ghibli daylight made them look like homework for someone younger.
+# NB_STYLE=warm is the middle setting: painted rather than printed, so it keeps
+# colour and light the mature register throws away, but drawn with real
+# proportion and structure so it stops reading as a picture book. The look of a
+# handsome hardback a twelve-year-old would leave face-up on a desk.
+STYLE_WARM = ("Painterly illustration in gouache and ink: confident drawing with visible brush "
+              "and line, a warm full palette that stays muted rather than bright, soft directional "
+              "light and real cast shadow instead of flat cel shading, a little paper texture. "
+              "Grown-up in the way a good hardback is grown-up — not a picture book, not a comic. "
+              "Figures, where there are any, are drawn with true proportion and a warm open "
+              "expression; never chibi, never cute, never grim. One clear subject, generous "
+              "negative space, nothing competing with it. Full-bleed edge to edge, no border, no "
+              "frame, no panel grid. ABSOLUTELY NO TEXT ANYWHERE: no title, no captions, no labels, "
+              "no place names, no signage, no numbers, no lettering on any object, no writing of "
+              "any alphabet. Every surface that could carry writing is left blank. ")
+
+_S = os.environ.get('NB_STYLE')
+if _S == 'mature':
     STYLE = STYLE_MATURE
+elif _S == 'warm':
+    STYLE = STYLE_WARM
 
 def parse_md():
     slots = {}
