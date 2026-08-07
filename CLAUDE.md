@@ -342,6 +342,50 @@ handlers. App lives in this folder; open `index.html` to run.
   converging on one hard-to-guess answer). Never clue with the answer's most famous
   fact — that belongs in `f`.
 
+## The Arcade's competition game
+- **Spelling Quest is gone** (`quest.js` deleted, its `sq*` actions with it). Its slot is
+  the **Mock Spelling Bee** (`mockbee.js`, `window.MOCKBEE`, nav `'mockbee'`): eleven
+  spellers, a drawn number, one word a round, miss and you sit down. Ten rivals each have
+  an age, a `lvl` they are comfortable at, `nerve`, a `spec` origin and a `tell`; whether
+  one gets a word is `BASE + spec + (lvl - hardness)*SPREAD - press*(1-nerve)*PRESS`, so
+  the round does the killing, not the bot. **Round one eliminates nobody** because the
+  announcer says so; an all-miss round runs again; the **final two play full championship
+  rules** (a miss does not end it — the rival must take that word AND the next, and
+  fumbling either puts the other speller back on their feet), and after three further
+  segments it goes to sudden death so the bee always terminates.
+- **It runs in the Scripps shape: SEGMENTS, not a flat ladder of rounds.** Every segment is
+  the same three parts, in this order — `spell` (oral, one word each), `vocab` (a four-way
+  meaning question), `lightning` (the 90-second spell-off, everybody at once, lowest score
+  out). `roundAt(n, liveN)` derives the part from `n % 3` and the stage from `n / 3`, and
+  the stage ALSO jumps when the field collapses, because calling it "Quarterfinals" while
+  three people fight for a title reads as a bug. Stages: Preliminaries → Quarterfinals →
+  Semifinals → Finals.
+- **The meaning round reuses the app's own question.** `vocQuestion()` wraps
+  `vocBuildCheck()` from app3 — the same 4-option question the Vocabulary section asks, so
+  the child meets what they practised and there is one implementation. The bee widens the
+  DISTRACTOR POOL itself rather than changing that shared function: `gameWordsD()` is
+  scoped to the child's band (~180 words at level four), and three level-four definitions
+  against a championship word give the answer away on register alone. `vocPool()` prefers
+  `SB_VOCAB26` (997 words, all with definitions — the actual national vocabulary list).
+  **A meaning answered right must never call `logBand` or `markMastered`** — knowing a
+  meaning is not spelling a word, and the Vocabulary section has a headless test pinning
+  that separation down.
+- **Rivals have a `voc` skill distinct from `skill`.** Authored per speller, because that
+  is the whole point of the round: Dax can spell words he could not define, Theo asks for
+  the definition every time and remembers it. Reusing `skill` would make the vocabulary
+  round a repeat of the spelling one instead of something that reorders the field.
+- **The spell-off ranks, it does not merely eliminate**, so it is the round that breaks a
+  tie between two spellers who never miss. Rivals are simulated at the bell rather than
+  animated — eleven progress bars ticking at once is noise, and the child has ninety
+  seconds of their own to spend. It takes exactly one speller, and takes nobody when only
+  two are left: the last two are decided on words, not on a race.
+- **The bee keeps its own word list.** `corpusSlice` by `y` band puts dictionary tail on a
+  championship stage (`abidingness` is a y-5 word). `beeList()` takes the ~4,650 words the
+  library tags as real competition words (`nt` — the finals lists and the Primary/Junior/
+  Advanced/Senior tiers), ranks them once, and each round takes a percentile window: pie →
+  hobbit → dogma → oregano → melee → dhole → harmattan → benthamite. It rebuilds when the
+  corpus grows under it, like every other memoised pool.
+
 ## Adding a saga chapter
 1. Append to `CH_META`: `{n, act, title, world, engine, opts, script}` (sequential `n`).
 2. Add a `SB_SAGA_SCRIPT[script]` block (format above).
@@ -353,6 +397,35 @@ handlers. App lives in this folder; open `index.html` to run.
 - **Status:** all six acts are built out (31 chapters). Future acts can use the spare
   `WORLD_ART` plates (dino, library, junkyard, siren, origami, elements, vibe, engine,
   greysea, strait, warfield, chakravyuha) — Vex still holds the Master Token.
+
+## The saga is painted, and so are the games
+- **Six painted act boards** (`app-art/saga-act1-6.jpg`, `voice/pipeline/saga-maps.py`) on
+  the Atlas contract: an open band bottom-left → right → back left → top-right, scenery in
+  the pockets. `SAGA_MAP` in saga2.js holds each act's route, **measured by eye against its
+  own painting** in 0-100 space for x AND y; regenerating a board means re-tracing it.
+  `map()` is the act picker (locked acts wear the grey Unspelling filter), `board(n)` is
+  the painted board — chapters walked along the route by arc length, boss ringed red,
+  finale violet, Bizzy riding the frontier pin. A tap selects, a second tap plays.
+- **The dialogue, the difficulty dial and the game frame all wear the act's painting**, not
+  the flat vector plate — you should not step off an oil painting onto a diagram.
+- **`SGFX` is the shared canvas render kit** (saga2.js). Hexes, lit tiles, glowing orbs,
+  sparks, rings, rising text, ambient motes, motion trails, screen shake, scrim+vignette.
+  Fix how a pickup glows once and five games change. `drawWorld` prefers the **painted play
+  field** (`app-art/sgw-<world>.jpg`, `voice/pipeline/saga-worlds.py`) and keeps the vector
+  plate as fallback — a play field is composed open and low-contrast through the middle,
+  detail at the top and bottom edges, a stop darker than daylight.
+- Watch the temporal dead zone when adding kit state to an engine: `const motes=SGFX.motes(w,h)`
+  placed above the `const BW=...` it reads throws at construction and kills the engine
+  silently (the frame loop swallows render errors, but not that one).
+
+## Home must not rewrite itself
+- The word of the hour, the quote of the hour, the bee tip and the Atlas "next stop" all
+  pick deterministically from data that **arrives in shards after boot**, so the first
+  paint picked from a quarter of the library and a second later the card silently changed.
+  `settled(key, period, pick)` pins a pick for its hour or day — allowed to come from a
+  smaller pool, not allowed to change while the child is looking at it. `cardHold(label,h)`
+  holds a card's space with a shimmer when its data has not landed at all, so the row
+  cannot reflow. Any new home card that picks from lazy data needs both.
 
 ## Voice: the feedback → Kokoro rebuild loop
 - Parent tests words in **Settings → Word voice tester** (walks the whole library in batches
@@ -429,6 +502,62 @@ handlers. App lives in this folder; open `index.html` to run.
   and ink-on-light (`inkKit()` / `.bkc.on-light`). Re-run it whenever cover art changes.
   The tagline gets its own white chip on light covers — it sits mid-cover on top of the
   drawing, where a text shadow is not enough.
+- **Four companions now**, not two: `book-similes`, `book-champion`, plus
+  **`book-lines` "Lines Worth Keeping"** (poems, speeches, sonnets, haiku, limericks and
+  long prose quotes, all public domain, printed whole, each carrying its own bee-worthy
+  words; `books/poem-chapters.js`) and **`book-quiz` "The Long Quiz"** (275pp — a general round
+  then a hyper-speciality round, twenty-five times; generals drawn at build time from the
+  app bank at levels 3-5, specialities authored in `books/trivia-rounds.js`; four formats
+  in rotation — MC, written answers with the key at the back, crossword, letter square).
+  The trivia shards do **not** export an array: each calls `SB_TRIVIA._add(lv, [...])`, so
+  a reader has to supply that method and collect what it is handed.
+- **Everything printed in `book-lines` must be PUBLIC DOMAIN, and the book says so in
+  its own preamble.** In practice: first published **1928 or earlier**, or a work of the
+  US federal government (17 U.S.C. §105 — a sitting President's official address counts;
+  a private citizen's speech does not, however famous). Three pieces shipped briefly and
+  had to be pulled — Dylan Thomas 1951, the close of King's "I Have a Dream" 1963, and
+  Churchill's "we shall fight on the beaches" 1940. Check the FIRST-PUBLICATION year, not
+  the author's death; and audit with a one-liner over `p.y` before every release.
+- **Art in `book-lines` is keyed per PIECE, on a slug of its title** (`pieceSlug()` in
+  mkbooks.js, mirrored by `voice/pipeline/poem-art.py`). Never key it on position — adding
+  one poem shifts every index after it and index-keyed art silently re-attaches to the
+  wrong poem. A piece with no bespoke plate falls back to its themed one, so the art can
+  be generated in batches without the book ever being broken in between. The Python side
+  asks **node** to evaluate `poem-chapters.js` rather than regex-scraping it: a regex
+  found 66 of 90 (the haiku put `t:` and `th:` on one line, the speeches on two) and the
+  two slug lists drifted apart in silence.
+- **Splicing pieces into `poem-chapters.js`: normalise to exactly ONE comma.** A removal
+  leaves a trailing comma; the next splice adds another; `[a, , b]` is a **sparse array
+  hole** that reads as `undefined` and crashes any `for...of` over the pieces. It hid
+  through two integrity checks because they used `forEach`, which silently skips holes —
+  count by index instead.
+- **The image-generation quota is per-MODEL**, so `poem-art.py` runs its workers
+  round-robined across three models rather than queueing on one. More *agents* would not
+  help — they contend for the same quota. `NB_WORKERS` / `NB_MODELS` tune it.
+- **Bulk verbatim poetry trips the output content filter**, intermittently and regardless
+  of public-domain status — inside subagents too. Batches of ~5 pieces mostly get through
+  and a retry of a blocked batch usually succeeds; batches of 15 never did. Author the
+  poetry sections in small batches and expect to retry.
+- **The part dividers are the artwork** (`sectionDivider()` + `voice/pipeline/section-art.py`,
+  keyed `sc-<section>` on the section NAME, never its position). Two prompt traps, both
+  paid for twice: "frontispiece in a fine hardback" gets read as an actual **framed plate**
+  and comes back inside a painted gilt frame with a mount, and "keep the top third calm"
+  gets read as an instruction to leave a **flat grey rectangle** there, which prints as a
+  hard seam a third of the way down. Say both in the negative — no frame, no mount, no
+  border, and one *continuous* scene that is merely quieter at the top.
+- **Overscan to hide a painted edge belongs on a wrapper, not on the image.** A `transform`
+  on a child still counts towards the parent's `scrollHeight` even under `overflow:hidden`,
+  so `scale(1.045)` on the `<img>` made all eight dividers report 24px of overflow. Put the
+  image in a `position:absolute; inset:0; overflow:hidden` frame and scale it inside that.
+- **A CSS comment inside the mkbooks template literal must close on its own line.** Editing
+  prose into a `/* … */` block and leaving the old `*/` behind closes the comment early;
+  the remaining prose is then invalid CSS that silently swallows the *next* rule. That is
+  what made `.sc-frame` above render as a `position:static` zero-height div.
+- **The mascot avatars belong to the general volumes, not to the advanced companions.**
+  `avatar(vol.av, …)` on a `book-lines` page — the how-it-works opener, the part openers,
+  the margin pages — reads as a picture book to the twelve-year-old the volume is for. Same
+  for `worldStrip()`: it is drawn in the app's soft anime register and it prints the folio
+  unreadably on top of itself. Both are gone from that book; do not add them back.
 - World art: `app-art/w-<world>-r<2|3>.jpg` (26 banners) is cut from the book series'
   strips by `voice/pipeline/app-banners.py`. The Word Atlas, the theme pages and the
   home Atlas tile all draw from it — one visual language with the books.
@@ -460,12 +589,52 @@ handlers. App lives in this folder; open `index.html` to run.
   `file://…/index.html`, drive engines via `window.SB_SAGA_ENGINES`, assert no pageerror.
 
 ## Ship
+- **The Pages site has a size budget, and blowing it is silent.** GitHub's "pages build and
+  deployment" job aborts at a ten-minute deploy timeout, and when it does the site keeps
+  serving the last good commit — the push succeeds, the build succeeds, nothing anywhere
+  says the app did not update. It happened at 555MB: three shipped builds in a row never
+  went live and a deleted game went on appearing in the Arcade for hours. Keep the site
+  **under ~250MB**. If a deploy "did nothing", check the run's conclusion before you blame
+  the browser (incognito showing the old build is the tell that it is not cache).
+  Site weight today: **183MB** — voice 53MB, avatars 33MB, app-art 7.6MB. It was 256MB,
+  over the line, until the books moved off it (below).
+- **The books are NOT on this site any more.** They are published from
+  `aayuvis/bizzing-bee-books` → https://aayuvis.github.io/bizzing-bee-books/ , by
+  `books/deploy-books-repo.sh` run from `spellbound-app/`. This branch keeps 24 redirect
+  stubs under `books/` so old links still land. Do not copy `books/*.html` or `books/art`
+  onto gh-pages again — that is the 73MB that put the site over budget.
+  The GENERATOR STAYS HERE: `mkbooks.js` reads ten app data files, volumes 1-16 are
+  generated from app data, and `books/art` is 488 plates that cost real image quota and
+  cannot be reproduced. Only the published output lives in the other repo, and a
+  books-only session cannot rebuild anything.
+  Publishing needs a session with BOTH repos as sources, or the git proxy refuses to
+  inject a credential. The gh-pages commit there carries a `Built from <branch>@<sha>`
+  trailer, and the script aborts if `mkbooks.js` lacks `sectionDivider`/`indexPages` —
+  both because the books were published four times from a clone eight commits stale, and
+  the script ran perfectly every time.
+- **Book PDFs are not in git.** They were 214MB of files generated from HTML that is
+  already complete; the shelf opens the HTML. Regenerate on demand; `.gitignore` keeps
+  them out. Do not re-add them to the repo or to gh-pages.
+- **Shipped art is sized to how it is drawn, not to how it came out of the model.**
+  `voice/pipeline/art-slim.py` (`--dry` measures first) holds the rule: full-size avatars
+  384px RGBA, book plates 1400px at q78. The 640px avatars were ~360KB each and nothing
+  ever painted one above about 200px. Re-run it after any art drop, then
+  `voice/pipeline/avatar-thumbs.py`.
+- **index.html declares itself uncacheable** (`no-store`) while every asset it points at
+  carries a `?v=` stamp and caches forever. Without that, a browser holding an old
+  document keeps requesting the old stamps and a shipped change stays invisible.
 - Commit to `main`. GitHub Pages serves from **`gh-pages`** (app minus `voice/`); voice is
   served from `main` via `voice-cdn.js`. Update the changed app files onto `gh-pages` via
   a `git worktree`; leave mp3s on `main`. Verify a raw voice URL returns 200.
 - **Cache busting (do BOTH every deploy):** bump the `?v=` stamp on every asset URL in
   `index.html` (one `sed -i 's/?v=OLD/?v=NEW/g'`) so devices never run stale JS, and bump
   `SB_VOICE_VER` in `voice-review.js` whenever voice clips changed.
+- **Bump the stamp in the SOURCE `index.html`, not in the gh-pages worktree.** Bumping it
+  only in the worktree leaves the branch a stamp behind, and the next deploy that copies
+  `index.html` across silently reverts the stamp BACKWARDS — devices then keep serving the
+  build they already have. It has happened once. Check with
+  `diff <(sed s/OLD/S/g index.html) <(sed s/NEW/S/g /tmp/ghp8/index.html)`: the two must
+  differ by nothing but the stamp.
 - Commit trailer:
   ```
   Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
