@@ -114,13 +114,23 @@
     }
   };
 
+  /* Coalesce on a WINDOW, not on a frame.
+     One rAF only merges files that land in the same 16ms, and the deferred set
+     arrives spread over about four hundred milliseconds — so this fired fifteen
+     times at boot, fifteen full rebuilds of the view, which is what made the app
+     visibly jump as it opened. A short trailing window collapses that to a
+     handful without making any single file's data appear late enough to notice.
+     Timer + rAF together: the timer batches, the frame keeps the work off a
+     layout the browser is already mid-way through. */
+  var RENDER_WINDOW = 140;
   function softRender() {
-    /* Coalesce: the idle queue can land four files in one frame. */
-    if (pendingRender) return;
-    pendingRender = requestAnimationFrame(function () {
+    if (pendingRender) clearTimeout(pendingRender);
+    pendingRender = setTimeout(function () {
       pendingRender = 0;
-      try { if (typeof window.render === 'function') window.render(); } catch (e) {}
-    });
+      requestAnimationFrame(function () {
+        try { if (typeof window.render === 'function') window.render(); } catch (e) {}
+      });
+    }, RENDER_WINDOW);
   }
 
   function load(name, cb) {

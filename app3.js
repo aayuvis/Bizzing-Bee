@@ -8191,7 +8191,28 @@ function viewAdmin(){ const S=state; const tab=S.adminTab||'users'; const me=SB_
 /* ===================== render + events ===================== */
 const root = document.getElementById('root');
 function save(){ try{ localStorage.setItem('sb_saas_v2', JSON.stringify({ theme:state.theme, mode:state.mode, premium:state.premium, pin:state.parentPin||null, vr:state.voiceRate||1, tz:state.textSize||'normal', ra:state.readAloud?1:0, af:state.a11yFont||'std', ac:state.a11yContrast?1:0, am:state.a11yMotion?1:0, cm:state.calmMode?1:0, children:state.children, activeIdx:state.activeIdx, goalDone:state.goalDone, cN:(window.SB_CONCEPTS&&SB_CONCEPTS.chapters&&SB_CONCEPTS.chapters.length)||121, lu:state.luMastered, srs:state.coachSrs, chist:state.coachHistory, wr:state.wordReports||[] })); }catch(e){} }
+/* An entrance animation should say "a new screen arrived", not "a data file
+   landed". sb-rise is applied in thirty places, all inside strings render()
+   rebuilds — so every render restarts a translateY(12px) slide on everything
+   visible. At boot that is fifteen renders in four hundred milliseconds as
+   boot-lazy delivers the deferred data, and the whole screen jitters.
+   (Layout-shift metrics do not catch it: a transform is not a layout shift, so
+   CLS reads a clean 0.000 while the app is visibly jumping.)
+   So: remember what was on screen last time, and when render() is only
+   repainting the SAME view, suppress the entrances. Moving between screens
+   still animates, which is the only time it meant anything. */
+function viewKey(){
+  try{ return [state.screen, state.nav, state.view, state.coachTab, state.vocTab,
+    state.vocDeck, state.mb && state.mb.view, state.trailOpen, state.chapter].join('|'); }
+  catch(e){ return ''; }
+}
+var _lastViewKey = null;
 function render(){
+  try{
+    var k = viewKey();
+    document.body.classList.toggle('sb-norise', k === _lastViewKey);
+    _lastViewKey = k;
+  }catch(e){}
   // keep the legacy paid/free flag in lock-step with the active child's subscription tier
   try{ if(window.SB_ENT && state.children && state.children.length) state.premium = SB_ENT.isPaid(); }catch(e){}
   // Advanced Mode can switch on from a level-up mid-session, so check on every render.
