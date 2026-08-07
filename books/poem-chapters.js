@@ -914,6 +914,62 @@ window.SB_POEMS = {
           { w: 'agreeable', say: 'uh-GREE-uh-bul', def: 'pleasant to be around' },
           { w: 'avarice', say: 'AV-uh-riss', def: 'extreme greed for wealth' }
         ]
+      },
+{
+        t: 'The wrath of Achilles',
+        th: 'war', a: 'Homer, translated by Alexander Pope (1688–1744)', src: 'The Iliad, Book I, lines 1–14, trans. Alexander Pope', y: '1715', kind: 'poem',
+        lines: [
+          'Achilles’ wrath, to Greece the direful spring',
+          'Of woes unnumber’d, heavenly goddess, sing!',
+          'That wrath which hurl’d to Pluto’s gloomy reign',
+          'The souls of mighty chiefs untimely slain;',
+          'Whose limbs unburied on the naked shore,',
+          'Devouring dogs and hungry vultures tore.',
+          'Since great Achilles and Atrides strove,',
+          'Such was the sovereign doom, and such the will of Jove!',
+          'Declare, O Muse! in what ill-fated hour',
+          'Sprung the fierce strife, from what offended power',
+          'Latona’s son a dire contagion spread,',
+          'And heap’d the camp with mountains of the dead;',
+          'The king of men his reverent priest defied,',
+          'And for the king’s offence the people died.'
+        ],
+        note: 'The very first noun is an emotion, not a person — the wrath comes before Achilles owns it, and the sentence holds off its verb, “sing,” until the end of line two. Pope turns Homer’s long rolling hexameters into closed couplets, so every two lines snap shut on a rhyme; listen for how line 8 stretches past its ten beats to let “Jove” land heavy. Then at line 9 the poem restarts itself: “Declare, O Muse!” asks not what happened but why it began.',
+        hard: [
+          { w: 'direful', say: 'DYRE-full', def: 'dreadful; causing terrible trouble' },
+          { w: 'untimely', say: 'un-TYME-lee', def: 'happening far too soon' },
+          { w: 'sovereign', say: 'SOV-rin', def: 'highest in power; ruling over all' },
+          { w: 'contagion', say: 'kun-TAY-jun', def: 'a sickness that spreads from one to another' },
+          { w: 'reverent', say: 'REV-uh-runt', def: 'showing deep respect' }
+        ]
+      },
+      {
+        t: 'The man for wisdom’s various arts renown’d',
+        th: 'sea', a: 'Homer, translated by Alexander Pope (1688–1744)', src: 'The Odyssey, Book I, lines 1–14, trans. Alexander Pope', y: '1725', kind: 'poem',
+        lines: [
+          'The man for wisdom’s various arts renown’d,',
+          'Long exercised in woes, O Muse! resound;',
+          'Who, when his arms had wrought the destined fall',
+          'Of sacred Troy, and razed her heaven-built wall,',
+          'Wandering from clime to clime, observant stray’d,',
+          'Their manners noted, and their states survey’d,',
+          'On stormy seas unnumber’d toils he bore,',
+          'Safe with his friends to gain his natal shore:',
+          'Vain toils! their impious folly dared to prey',
+          'On herds devoted to the god of day;',
+          'The god vindictive doom’d them never more',
+          '(Ah, men unbless’d!) to touch that natal shore.',
+          'Oh, snatch some portion of these acts from fate,',
+          'Celestial Muse! and to our world relate.'
+        ],
+        note: 'Where the Iliad opened on a feeling, this one opens on a man — but Pope never names him in these fourteen lines; he is only “the man,” known by what he can do. Listen for “natal shore” arriving twice, at the end of line 8 and again at the end of line 12: first as the thing he almost reaches, then as the thing his crew is forbidden. That repeated rhyme-word is the hinge, and “Vain toils!” at line 9 is where the sentence turns and takes the hope back.',
+        hard: [
+          { w: 'observant', say: 'ub-ZER-vunt', def: 'quick to notice things' },
+          { w: 'natal', say: 'NAY-tul', def: 'having to do with one’s birth' },
+          { w: 'impious', say: 'IM-pee-us', def: 'showing no respect for the gods' },
+          { w: 'vindictive', say: 'vin-DIK-tiv', def: 'eager to punish; unforgiving' },
+          { w: 'celestial', say: 'suh-LES-chul', def: 'belonging to the sky or the heavens' }
+        ]
       }
     ]
   },
