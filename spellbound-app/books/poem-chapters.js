@@ -593,19 +593,7 @@ window.SB_POEMS = {
           { w: 'elements', say: 'EL-uh-muhnts', def: 'the basic parts making up a whole; here, one’s nature' }
         ]
       },
-      {
-        t: 'Give me liberty, or give me death!',
-        th: 'fire', a: 'Patrick Henry (1736–1799)', src: 'Virginia Convention, Richmond', y: '23 March 1775', kind: 'speech',
-        lines: [
-          'Is life so dear, or peace so sweet, as to be purchased at the price of chains and slavery? Forbid it, Almighty God! I know not what course others may take; but as for me, give me liberty, or give me death!'
-        ],
-        note: 'The last line of a much longer speech, and Henry built the whole address to arrive at exactly this sentence — every argument before it is a road leading here. Delivered to a convention still hoping to avoid a war with Britain; within a month, the war had started anyway.',
-        hard: [
-          { w: 'purchased', say: 'PUR-chuhst', def: 'obtained by paying a price' },
-          { w: 'liberty', say: 'LIB-er-tee', def: 'the state of being free' }
-        ]
-      },
-      {
+    {
         t: 'With malice toward none',
         th: 'dawn', a: 'Abraham Lincoln (1809–1865)', src: 'Second Inaugural Address, Washington', y: '4 March 1865', kind: 'speech',
         lines: [
@@ -671,6 +659,48 @@ window.SB_POEMS = {
         hard: [
           { w: 'chiefs', say: 'CHEEFS', def: 'leaders of a tribe or clan' },
           { w: 'forever', say: 'for-EV-er', def: 'for all future time; endlessly' }
+        ]
+      },
+{
+      t: 'A tryst with destiny',
+      th: 'dawn',
+      a: 'Jawaharlal Nehru (1889–1964)',
+      src: 'To the Constituent Assembly of India, New Delhi',
+      y: '14 August 1947',
+      kind: 'speech',
+      lines: [
+        'Long years ago we made a tryst with destiny, and now the time comes when we shall redeem our pledge, not wholly or in full measure, but very substantially. At the stroke of the midnight hour, when the world sleeps, India will awake to life and freedom. A moment comes, which comes but rarely in history, when we step out from the old to the new, when an age ends, and when the soul of a nation, long suppressed, finds utterance.',
+        '',
+        'It is fitting that at this solemn moment we take the pledge of dedication to the service of India and her people and to the still larger cause of humanity.',
+        '',
+        'At the dawn of history India started on her unending quest, and trackless centuries are filled with her striving and the grandeur of her success and her failures. Through good and ill fortune alike she has never lost sight of that quest or forgotten the ideals which gave her strength. We end today a period of ill fortune and India discovers herself again.',
+        '',
+        'Freedom and power bring responsibility.'
+      ],
+      note: 'Nehru began speaking a few minutes before midnight, so that the sentence about the stroke of the midnight hour would land on the stroke of the midnight hour. Listen to how carefully the first sentence refuses to overclaim: “not wholly or in full measure, but very substantially” — nine words that could have been left out, put in on purpose, because a promise kept in part is the only kind anyone ever keeps. Then watch the pronoun. India is “she” and “her” all the way through, an unending quest and trackless centuries, so that a country three hours old is spoken of as somebody very old who has simply been away. And the last line here is four words long after three enormous ones. That is the oldest trick in oratory and it never stops working.',
+      hard: [
+        { w: 'tryst', say: 'TRIST', def: 'an appointment to meet at a fixed time and place, especially a private one' },
+        { w: 'redeem', say: 'rih-DEEM', def: 'to make good on something owed — a promise, a debt, a pledge' },
+        { w: 'substantially', say: 'sub-STAN-shuh-lee', def: 'to a large and real extent' },
+        { w: 'suppressed', say: 'suh-PREST', def: 'held down and prevented from being heard' },
+        { w: 'utterance', say: 'UTT-ur-uns', def: 'the act of saying something aloud; a thing said' },
+        { w: 'grandeur', say: 'GRAN-jur', def: 'greatness of scale, and the awe it produces' }
+      ]
+    },
+{
+        t: 'Give me liberty, or give me death!',
+        th: 'war', a: 'Patrick Henry (1736–1799)', src: 'St. John’s Church, Richmond, Virginia', y: '23 March 1775', kind: 'speech',
+        lines: [
+          'They tell us, sir, that we are weak; unable to cope with so formidable an adversary. But when shall we be stronger? Will it be the next week, or the next year? Will it be when we are totally disarmed, and when a British guard shall be stationed in every house? Three millions of people, armed in the holy cause of liberty, and in such a country as that which we possess, are invincible by any force which our enemy can send against us.',
+          'Gentlemen may cry, Peace, Peace — but there is no peace. The war is actually begun! The next gale that sweeps from the north will bring to our ears the clash of resounding arms! Our brethren are already in the field! Why stand we here idle? What is it that gentlemen wish? What would they have? Is life so dear, or peace so sweet, as to be purchased at the price of chains and slavery? Forbid it, Almighty God! I know not what course others may take; but as for me, give me liberty or give me death!'
+        ],
+        note: 'Henry argues almost entirely in questions — seven of them here — and each one leaves his listeners less room to stand in. The second paragraph switches tactics: short exclamations pile up like drumbeats, then the sentences suddenly stretch out again for the gale sweeping from the north. The famous last line is the only clause in the passage with nothing hedged onto the end of it, which is exactly why it stops the speech dead.',
+        hard: [
+          { w: 'formidable', say: 'FOR-mid-uh-bul', def: 'frighteningly powerful' },
+          { w: 'adversary', say: 'AD-ver-sair-ee', def: 'an opponent or enemy' },
+          { w: 'invincible', say: 'in-VIN-suh-bul', def: 'impossible to defeat' },
+          { w: 'brethren', say: 'BRETH-run', def: 'brothers; fellow members of a group' },
+          { w: 'resounding', say: 'rih-ZOWN-ding', def: 'ringing loudly; echoing' }
         ]
       }
     ]
@@ -1663,13 +1693,7 @@ window.SB_POEMS = {
         note: 'The heron never moves and is never described. You get its legs, and from the legs you get the stillness of the whole bird.',
         hard: [{ w: 'heron', say: 'HAIR-uhn', def: 'a long-legged wading bird' }]
       },
-      {
-        t: 'Skinny frog', th: 'water', a: 'Kobayashi Issa (1763–1828)', src: 'Collected haiku', y: 'c. 1816', kind: 'haiku',
-        lines: ['yase-gaeru', 'makeru na Issa', 'kore ni ari', '', 'Skinny frog,', 'don’t give up the fight —', 'Issa is here.'],
-        note: 'Issa watched two frogs fighting over a mate and took a side. He puts his own name in the poem, which almost nobody did, because somebody had to be in the frog’s corner.',
-        hard: [{ w: 'perseverance', say: 'pur-suh-VEER-uhnss', def: 'continued effort in spite of difficulty' }]
-      },
-      {
+    {
         t: 'Come and play with me', th: 'bird', a: 'Kobayashi Issa (1763–1828)', src: 'Ora ga Haru', y: '1819', kind: 'haiku',
         lines: ['ware to kite', 'asobe ya oya no', 'nai suzume', '', 'Come and play with me,', 'sparrow', 'with no mother.'],
         note: 'Issa’s mother died when he was three. He is not comforting the bird; he is asking it for something, which is why the poem does not sound sweet.',
@@ -2939,37 +2963,7 @@ window.SB_POEMS = {
           { w: 'bombast', say: 'BOM-bast', def: 'pompous, inflated language' }
         ]
       },
-{
-        t: 'Give me liberty, or give me death',
-        th: 'war', a: 'Patrick Henry (1736–1799)', src: 'St. John’s Church, Richmond, Virginia', y: '23 March 1775', kind: 'prose',
-        lines: [
-          'They tell us, sir, that we are weak; unable to cope with so formidable an adversary. But when shall we be stronger? Will it be the next week, or the next year? Will it be when we are totally disarmed, and when a British guard shall be stationed in every house? Three millions of people, armed in the holy cause of liberty, and in such a country as that which we possess, are invincible by any force which our enemy can send against us.',
-          'Gentlemen may cry, Peace, Peace — but there is no peace. The war is actually begun! The next gale that sweeps from the north will bring to our ears the clash of resounding arms! Our brethren are already in the field! Why stand we here idle? What is it that gentlemen wish? What would they have? Is life so dear, or peace so sweet, as to be purchased at the price of chains and slavery? Forbid it, Almighty God! I know not what course others may take; but as for me, give me liberty or give me death!'
-        ],
-        note: 'Henry argues almost entirely in questions — seven of them here — and each one leaves his listeners less room to stand in. The second paragraph switches tactics: short exclamations pile up like drumbeats, then the sentences suddenly stretch out again for the gale sweeping from the north. The famous last line is the only clause in the passage with nothing hedged onto the end of it, which is exactly why it stops the speech dead.',
-        hard: [
-          { w: 'formidable', say: 'FOR-mid-uh-bul', def: 'frighteningly powerful' },
-          { w: 'adversary', say: 'AD-ver-sair-ee', def: 'an opponent or enemy' },
-          { w: 'invincible', say: 'in-VIN-suh-bul', def: 'impossible to defeat' },
-          { w: 'brethren', say: 'BRETH-run', def: 'brothers; fellow members of a group' },
-          { w: 'resounding', say: 'rih-ZOWN-ding', def: 'ringing loudly; echoing' }
-        ]
-      },
-      {
-        t: 'And ain’t I a woman?',
-        th: 'fire', a: 'Sojourner Truth (c. 1797–1883)', src: 'Women’s Rights Convention, Akron, Ohio — as recorded by Frances Gage', y: '29 May 1851', kind: 'prose',
-        lines: [
-          'That man over there says that women need to be helped into carriages, and lifted over ditches, and to have the best place everywhere. Nobody ever helps me into carriages, or over mud-puddles, or gives me any best place! And ain’t I a woman? Look at me! Look at my arm! I have ploughed and planted, and gathered into barns, and no man could head me! And ain’t I a woman? I could work as much and eat as much as a man — when I could get it — and bear the lash as well! And ain’t I a woman? I have borne thirteen children, and seen them most all sold off to slavery, and when I cried out with my mother’s grief, none but Jesus heard me! And ain’t I a woman?'
-        ],
-        note: 'The whole speech is one question asked four times, and it gets heavier each time because of what she stacks in front of it: first a carriage door, then a ploughed field, then thirteen children sold away. Truth never argues the point — she simply presents evidence and lets the refrain do the arguing. Notice too that the sentences before each refrain get longer and longer, so the four-word question keeps landing in more and more silence.',
-        hard: [
-          { w: 'carriages', say: 'KAIR-ih-jiz', def: 'wheeled vehicles pulled by horses' },
-          { w: 'ploughed', say: 'PLOWD', def: 'turned over soil for planting' },
-          { w: 'slavery', say: 'SLAY-vuh-ree', def: 'the practice of owning people as property' },
-          { w: 'grief', say: 'GREEF', def: 'deep sorrow, especially over a loss' }
-        ]
-      },
-      {
+    {
         t: 'What is the use of a book, without pictures or conversations?',
         th: 'flower', a: 'Lewis Carroll (1832–1898)', src: 'Alice’s Adventures in Wonderland, Chapter I', y: '1865', kind: 'prose',
         lines: [

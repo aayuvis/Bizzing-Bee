@@ -598,6 +598,21 @@ function css(vol) {
     font-family:'BB Kicker';letter-spacing:.16em;text-transform:uppercase;font-size:9pt;
     color:rgba(255,255,255,.78);text-shadow:0 2px 8px rgba(0,0,0,.7)}
   .sc-page .bb-foot{color:rgba(255,255,255,.82);z-index:2}
+  /* the back-of-book indexes: leader dots done with a flex spacer and a repeating
+     radial, because a border-bottom dotted rule sits on the baseline and a row of
+     literal periods will not stay put when the type resizes */
+  .ix{column-count:2;column-gap:.30in}
+  .ix-r{display:flex;align-items:baseline;gap:.05in;font-size:9.2pt;line-height:1.42;break-inside:avoid}
+  .ix-t{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ix-d{flex:1 1 auto;height:.8em;min-width:.12in;
+    background-image:radial-gradient(circle at 1px 88%,var(--muted) .6px,transparent .7px);
+    background-size:4px 100%;opacity:.55}
+  .ix-p{flex:0 0 auto;font-family:'BB Mono';font-size:8.4pt;color:var(--accent-deep)}
+  .ix-h{break-inside:avoid;margin-bottom:.09in}
+  /* BB Display has no ō — "Matsuo Bashō" fell back and printed as "Basho¯". BB Kicker
+     carries the macron (it is the face the credit line under every poem already uses). */
+  .ix-h b{font-family:'BB Kicker';font-weight:700;font-size:10.2pt;color:var(--accent-deep);display:block}
+  .ix-h .ix-t{padding-left:.10in}
   .bb-hive{display:grid;grid-template-columns:1fr 1fr;gap:.12in}
   .bb-card{padding:0 .04in;min-width:0;overflow-wrap:anywhere}
   .bb-card .ex{font-size:9.6pt;line-height:1.32;margin-top:2px;color:var(--ink);opacity:.85}
@@ -1802,6 +1817,82 @@ function moodFont(p) {
 const pieceSlug = p => 'pp-' + String(p.t || '').toLowerCase()
   .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 44);
 
+/* The plates built around one centred figure. Everything else in this book is
+   painted as landscape or still life, so the layout cycle is free to slide the
+   crop around for variety; these two are not. See poemPage(). */
+const FIGURE_PLATES = new Set(['pp-gita-saar-the-essence', 'pp-s-t-s-speech']);
+
+/* THE BACK OF THE BOOK — an index, not an answer key.
+   book-lines used to end on the shared keyPages(): seven leaves headed "Answers.
+   Earn them first." with Vex glaring out of the first one, and then, for every
+   one of a hundred and thirty pieces, the same handful of hard words that are
+   already glossed at the foot of that piece's own page. The book asks no
+   questions, so there was nothing to answer — it was seven pages of the book
+   quoting itself. What an anthology actually owes a reader at the back is a way
+   in: the line you half-remember, and the poet you came for. */
+function indexPages(vol, entries, folioRef) {
+  const out = [];
+  /* Strip only the quote marks that WRAP a line, never the ones inside it: the
+     first pass killed every apostrophe in the book and printed "Gods Grandeur",
+     "Achilles wrath" and "Im Nobody!". */
+  const clean = s => String(s).replace(/^[“”"‘’']+|[“”"‘’']+$/g, '').trim();
+  /* Sort a first line the way an index does — ignoring the article it starts
+     with, so "The quality of mercy" files under Q and not under a wall of Ts. */
+  const sortKey = s => clean(s).toLowerCase().replace(/^(the|a|an|o|oh)\s+/, '').replace(/[^a-z0-9 ]/g, '');
+  const lines = entries.slice().sort((x, y) => sortKey(x.first).localeCompare(sortKey(y.first)));
+
+  const rows = lines.map(e => {
+    const f = clean(e.first);
+    return `<div class="ix-r"><span class="ix-t">${esc(fit(f, 74))}</span><span class="ix-d"></span><span class="ix-p">${e.folio}</span></div>`;
+  });
+  /* Two columns of roughly forty-seven rows each. The first pass used 46 for the whole
+     PAGE rather than per column and printed both index sections half empty. */
+  const PER = 88;
+  for (let i = 0; i < rows.length; i += PER) {
+    const seg = rows.slice(i, i + PER);
+    out.push(`<div class="page" data-vol="${vol.n}">
+      ${head(vol, null, 0, 'Index of first lines')}
+      <div style="margin-top:.4in"><h2 style="font-size:20pt">Index of first lines</h2>
+      ${i ? '' : '<p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 0">You will remember the first line long before you remember the title. Articles are ignored, so <i>The quality of mercy</i> is filed under Q.</p>'}</div>
+      <div class="ix" style="margin-top:.14in">${seg.join('')}</div>
+      ${foot(vol, folioRef.n++)}</div>`);
+  }
+
+  /* One writer, all their pieces. The credit line carries dates and often a
+     translator too ("Vyasa, translated by Sir Edwin Arnold (1832–1904)"), so the
+     grouping key is the primary hand and the file key is their last word. */
+  const byHand = new Map();
+  for (const e of entries) {
+    const hand = String(e.a || '').split(/,|\btranslated by\b|\btrans\.|\btr\./i)[0].replace(/\s*\(.*$/, '').trim() || 'Anonymous';
+    if (!byHand.has(hand)) byHand.set(hand, []);
+    byHand.get(hand).push(e);
+  }
+  const surname = n => { const w = n.replace(/\s*\(.*$/, '').trim().split(/\s+/); return (w[w.length - 1] || n).toLowerCase(); };
+  const hands = [...byHand.keys()].sort((a, b) => surname(a).localeCompare(surname(b)) || a.localeCompare(b));
+  const hrows = hands.map(h => {
+    const ps = byHand.get(h).sort((x, y) => x.folio - y.folio);
+    return `<div class="ix-h"><b>${esc(h)}</b>${ps.map(p =>
+      `<div class="ix-r"><span class="ix-t">${esc(fit(clean(p.t), 62))}</span><span class="ix-d"></span><span class="ix-p">${p.folio}</span></div>`).join('')}</div>`;
+  });
+  /* Packed by weight, not by count: a writer with one piece is three lines and
+     Shakespeare is thirty-one, and splitting evenly by name left a last page
+     nearly empty. */
+  const bucket = []; let cur = [], w = 0;
+  for (const r of hrows) {
+    const kw = (r.match(/ix-r/g) || []).length * 1 + 2.2;
+    if (cur.length && w + kw > 86) { bucket.push(cur); cur = []; w = 0; }
+    cur.push(r); w += kw;
+  }
+  if (cur.length) bucket.push(cur);
+  bucket.forEach((chunk, bi) => out.push(`<div class="page" data-vol="${vol.n}">
+    ${head(vol, null, 0, 'Index of hands')}
+    <div style="margin-top:.4in"><h2 style="font-size:20pt">Index of hands</h2>
+    ${bi ? '' : '<p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 0">Every writer in the book, filed by last name, with everything of theirs that is in it. Translators are named on the piece itself, not here.</p>'}</div>
+    <div class="ix ix-2" style="margin-top:.14in">${chunk.join('')}</div>
+    ${foot(vol, folioRef.n++)}</div>`));
+  return out;
+}
+
 /* A part divider: the painting is the page.
    Keyed on the section's NAME ('sc-epics'), never its position — the arc gets
    reordered and pieces get added, and index-keyed art silently re-attaches
@@ -1880,14 +1971,24 @@ function poemPage(vol, sec, p, n, folio, keys) {
   const col = `<div class="pm-col">${poemHtml}</div>`;
   const body = `<div class="pm-body">${L.tiles === 'left' ? tilesCol + col : col + tilesCol}</div>`;
 
-  keys.push(`<div><b>${esc(p.t)}</b> — words to take: ${hard.map(h => esc(h.w)).join(', ') || '—'}</div>`);
+  /* Not an answer key — this book asks no questions. What the back of an anthology
+     owes a reader is an index, so each piece records what an index needs. */
+  const fn = folio.n++;
+  keys.push({ t: p.t, a: p.a, sec: sec.title, folio: fn,
+    first: (p.lines.find(l => l !== '') || p.t) });
+  /* Two plates were commissioned around a single centred figure (Krishna counselling
+     Arjuna, Sita in the clearing). A 16:9 plate on a portrait leaf shows only its
+     middle two-fifths, so an off-centre object-position throws the one thing the
+     picture exists for straight off the page — which is exactly what happened to
+     Sita. Mirrors EPIC_FIGURES in voice/pipeline/poem-art.py. */
+  const centred = FIGURE_PLATES.has(pieceSlug(p));
   return `<div class="page pm-page" data-vol="22" style="--pm-tint:${tint}">
-    ${plate ? `<img class="pm-ground" src="${plate}" alt="" style="object-position:${L.pos}">` : ''}
+    ${plate ? `<img class="pm-ground" src="${plate}" alt="" style="object-position:${centred ? '50% 45%' : L.pos}">` : ''}
     ${head(vol, null, 0, esc(sec.title))}
     ${head2}
     ${body}
     ${gloss}
-    ${foot(vol, folio.n++)}</div>`;
+    ${foot(vol, fn)}</div>`;
 }
 
 function book19() {
@@ -2030,7 +2131,7 @@ function book19() {
   const uniq = []; const seenW = new Set();
   for (const h of allHard) { const k = h.w.toLowerCase(); if (seenW.has(k)) continue; seenW.add(k); uniq.push(h); }
   pages.push(...bigListPages(vol, uniq, folio));
-  pages.push(...keyPages(vol, keys, folio));
+  pages.push(...indexPages(vol, keys, folio));
   pages.push(colophon(vol, folio.n++));
   return finish(vol, pages, { chapters: SEC.length, words: uniq.length, pieces: nPieces });
 }

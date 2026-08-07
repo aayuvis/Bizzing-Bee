@@ -60,12 +60,21 @@ EPIC_STYLE = ('Epic painted illustration on a grand scale: sweeping distance, mo
               'great frontispiece to a heroic poem. Keep the CENTRE of the frame calmer and '
               'lower in contrast so text can sit over it, and push the drama to the sky and the '
               'outer edges. ABSOLUTELY NO TEXT, NO LETTERING, NO WRITING, NO LABELS, NO NUMBERS, '
-              'NO SIGNAGE — every banner, shield and surface is COMPLETELY BLANK. ')
+              'NO SIGNAGE of any kind. There are NO banners, NO scrolls, NO ribbons, NO shields, '
+              'NO cartouches, NO plaques and NO frames anywhere in the picture — do not draw one '
+              'and leave it empty, do not draw one at all. ')
 EPIC_NO_FIGURE = 'No people and no faces — imply presence through objects, architecture and light. '
 EPIC_FIGURE = ('Figures ARE wanted here and must be drawn with dignity and real proportion: '
                'noble, calm, reverent. Never cartoonish, never chibi, never grotesque. Faces '
                'serene and kindly. Clothing and setting historically respectful to the culture '
-               'the poem comes from. ')
+               'the poem comes from. '
+               # Asking for a tall centred figure inside a 16:9 canvas made the model build a
+               # TRIPTYCH — a portrait panel inset between two landscape wings with hard vertical
+               # seams. It is solving the aspect-ratio problem by cropping itself. Forbid it.
+               'ONE SINGLE CONTINUOUS WIDE SCENE filling the entire canvas: NO panels, NO insets, '
+               'NO triptych, NO split screen, NO vertical divisions or seams, NO letterboxing, NO '
+               'inner border. The landscape runs unbroken from the far left edge to the far right '
+               'edge behind the figure. ')
 
 # these two are about a person speaking, and the user asked for them by name
 EPIC_FIGURES = {
@@ -74,10 +83,16 @@ EPIC_FIGURES = {
    'and turns to counsel the archer Arjuna, who listens with his bow lowered. Four white '
    'horses wait. Dawn light floods a vast plain behind them; two distant armies are only a '
    'faint line on the horizon. Serene and reverent, not violent.',
+ # Sita must be IN THE MIDDLE and BIG. The first plate put her small and far right,
+ # against a hut and trees — and the page crops a 16:9 plate hard to portrait, so the
+ # one figure the picture existed for was the first thing cut off the leaf.
  'pp-s-t-s-speech':
-   'Sita, in a simple forest robe, stands calm and resolute at the edge of a woodland '
-   'clearing at golden hour, speaking with quiet dignity. Tall sal trees, a thatched hermitage '
-   'behind her, flowers at her feet. Reverent and gentle.',
+   'Sita stands at the EXACT CENTRE of the picture and fills most of its height: a single '
+   'woman in a simple forest sari, calm and resolute, speaking with quiet dignity, hands '
+   'together. She is the large, clear, unmistakable subject in the middle of the frame — not '
+   'small, not off to one side, not hidden behind anything. Behind her, softly out of focus, '
+   'a woodland clearing at golden hour with tall sal trees and a low thatched hermitage far '
+   'back. Flowers at her feet. Reverent and gentle.',
 }
 
 # fallback when a piece has no authored scene: its subject, painted straight
