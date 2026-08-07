@@ -93,12 +93,12 @@ def pieces():
     return [tuple(x) for x in json.loads(r.stdout)]
 
 
-def gen(slug, prompt, retries=4):
+def gen(slug, prompt, retries=4, model=None):
     body = {'contents': [{'parts': [{'text': STYLE + prompt}]}],
             'generationConfig': {'responseModalities': ['IMAGE'],
                                  'imageConfig': {'aspectRatio': '16:9'}}}
     req = urllib.request.Request(
-        f'https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent',
+        f'https://generativelanguage.googleapis.com/v1beta/models/{model or MODEL}:generateContent',
         data=json.dumps(body).encode(),
         headers={'Content-Type': 'application/json',
                  'X-goog-api-key': open('/root/.gkey').read().strip()})
@@ -156,10 +156,32 @@ if __name__ == '__main__':
     if '--limit' in sys.argv:
         todo = todo[:int(sys.argv[sys.argv.index('--limit') + 1])]
 
-    print(f'{len(todo)} to generate with {MODEL}', flush=True)
-    for i, (s, t, th) in enumerate(todo):
+    # Throughput here is bound by the image API, not by anything local, so the
+    # lever is concurrency plus the fact that QUOTA IS PER-MODEL: three workers
+    # round-robined across three models draw on three separate buckets instead
+    # of queueing on one. (Spawning more agents would not help at all — they
+    # would contend for exactly the same quota.)
+    MODELS = [m.strip() for m in os.environ.get(
+        'NB_MODELS', 'gemini-3.1-flash-image,gemini-3-pro-image,gemini-2.5-flash-image'
+    ).split(',') if m.strip()]
+    workers = int(os.environ.get('NB_WORKERS', len(MODELS)))
+
+    print(f'{len(todo)} to generate · {workers} workers · {len(MODELS)} models', flush=True)
+    from concurrent.futures import ThreadPoolExecutor
+    import threading
+    lock, done = threading.Lock(), [0]
+
+    def one(job):
+        i, (s, t, th) = job
         prompt = scenes.get(s) or THEME.get(th, THEME['library'])
-        print(f'[{i+1}/{len(todo)}] {gen(s, prompt)}', flush=True)
-        to_jpeg(s)
-        time.sleep(1.0)
+        r = gen(s, prompt, model=MODELS[i % len(MODELS)])
+        if r.startswith('OK'):
+            try: to_jpeg(s)
+            except Exception as e: r += f' (jpeg failed: {type(e).__name__})'
+        with lock:
+            done[0] += 1
+            print(f'[{done[0]}/{len(todo)}] {r}', flush=True)
+
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        list(ex.map(one, enumerate(todo)))
     print('done', flush=True)

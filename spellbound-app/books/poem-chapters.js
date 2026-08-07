@@ -2025,6 +2025,177 @@ window.SB_POEMS = {
           { w: 'indignant', say: 'in-DIG-nuhnt', def: 'angry at something unfair' }
         ]
       },
+{
+        t: 'In Flanders Fields',
+        th: 'war', a: 'John McCrae (1872–1918)', src: 'Punch', y: '1915', kind: 'poem',
+        lines: [
+          'In Flanders fields the poppies blow',
+          'Between the crosses, row on row,',
+          'That mark our place; and in the sky',
+          'The larks, still bravely singing, fly',
+          'Scarce heard amid the guns below.',
+          '',
+          'We are the Dead. Short days ago',
+          'We lived, felt dawn, saw sunset glow,',
+          'Loved and were loved, and now we lie',
+          'In Flanders fields.',
+          '',
+          'Take up our quarrel with the foe:',
+          'To you from failing hands we throw',
+          'The torch; be yours to hold it high.',
+          'If ye break faith with us who die',
+          'We shall not sleep, though poppies grow',
+          'In Flanders fields.'
+        ],
+        note: 'It is a rondeau: fifteen lines on only two rhyme sounds, plus a short refrain lifted from the opening line. Listen for how “In Flanders fields” returns twice as a half-line that breaks the meter — the tetrameter stops short, and the silence after it is the poem’s grave. Notice too that the speaker changes hands: the dead address the living only in the last stanza, turning a landscape description into a demand.',
+        hard: [
+          { w: 'poppies', say: 'POP-eez', def: 'red field flowers that grew over the graves' },
+          { w: 'scarce', say: 'SKAIRSS', def: 'barely, hardly at all' },
+          { w: 'quarrel', say: 'KWOR-uhl', def: 'a fight or dispute' },
+          { w: 'foe', say: 'FOH', def: 'an enemy' }
+        ]
+      },
+      {
+        t: 'She Walks in Beauty',
+        th: 'night', a: 'Lord Byron (1788–1824)', src: 'Hebrew Melodies', y: '1815', kind: 'poem',
+        lines: [
+          'She walks in beauty, like the night',
+          'Of cloudless climes and starry skies;',
+          'And all that’s best of dark and bright',
+          'Meet in her aspect and her eyes;',
+          'Thus mellowed to that tender light',
+          'Which heaven to gaudy day denies.',
+          '',
+          'One shade the more, one ray the less,',
+          'Had half impaired the nameless grace',
+          'Which waves in every raven tress,',
+          'Or softly lightens o’er her face;',
+          'Where thoughts serenely sweet express,',
+          'How pure, how dear their dwelling-place.',
+          '',
+          'And on that cheek, and o’er that brow,',
+          'So soft, so calm, yet eloquent,',
+          'The smiles that win, the tints that glow,',
+          'But tell of days in goodness spent,',
+          'A mind at peace with all below,',
+          'A heart whose love is innocent!'
+        ],
+        note: 'Three six-line stanzas of iambic tetrameter rhyming ababab — a scheme so tight it keeps braiding dark and light back together, which is the poem’s whole argument. Listen for the balancing act in “One shade the more, one ray the less”: the line is built as a scale that would tip if you touched it. The praise also migrates, moving from surface (skies, tress, cheek) inward to mind and heart by the final couplet.',
+        hard: [
+          { w: 'climes', say: 'KLYMES', def: 'regions, considered by their weather' },
+          { w: 'gaudy', say: 'GAW-dee', def: 'showy in a cheap, glaring way' },
+          { w: 'tress', say: 'TRESS', def: 'a lock or braid of hair' },
+          { w: 'serenely', say: 'suh-REEN-lee', def: 'calmly and untroubled' },
+          { w: 'eloquent', say: 'EL-uh-kwent', def: 'expressive; speaking without words' }
+        ]
+      },
+      {
+        t: 'Loveliest of trees, the cherry now',
+        th: 'flower', a: 'A. E. Housman (1859–1936)', src: 'A Shropshire Lad', y: '1896', kind: 'poem',
+        lines: [
+          'Loveliest of trees, the cherry now',
+          'Is hung with bloom along the bough,',
+          'And stands about the woodland ride',
+          'Wearing white for Eastertide.',
+          '',
+          'Now, of my threescore years and ten,',
+          'Twenty will not come again,',
+          'And take from seventy springs a score,',
+          'It only leaves me fifty more.',
+          '',
+          'And since to look at things in bloom',
+          'Fifty springs are little room,',
+          'About the woodlands I will go',
+          'To see the cherry hung with snow.'
+        ],
+        note: 'Three quatrains in rhymed couplets, and the middle one is pure arithmetic — seventy minus twenty leaves fifty — which is a strange, cold thing to do inside a spring poem, and exactly the point. Listen for the turn in the last line: “hung with snow” repeats the earlier “hung with bloom,” so the blossom and the winter become one image, and the boy walking out to look at trees is really counting.',
+        hard: [
+          { w: 'bough', say: 'BOW', def: 'a main branch of a tree' },
+          { w: 'Eastertide', say: 'EE-ster-tyde', def: 'the Easter season' },
+          { w: 'threescore', say: 'THREE-skor', def: 'sixty' },
+          { w: 'score', say: 'SKOR', def: 'a group of twenty' }
+        ]
+      },
+      {
+        t: 'When I was one-and-twenty',
+        th: 'road', a: 'A. E. Housman (1859–1936)', src: 'A Shropshire Lad', y: '1896', kind: 'poem',
+        lines: [
+          'When I was one-and-twenty',
+          'I heard a wise man say,',
+          '“Give crowns and pounds and guineas',
+          'But not your heart away;',
+          'Give pearls away and rubies',
+          'But keep your fancy free.”',
+          'But I was one-and-twenty,',
+          'No use to talk to me.',
+          '',
+          'When I was one-and-twenty',
+          'I heard him say again,',
+          '“The heart out of the bosom',
+          'Was never given in vain;',
+          '’Tis paid with sighs a plenty',
+          'And sold for endless rue.”',
+          'And I am two-and-twenty,',
+          'And oh, ’tis true, ’tis true.'
+        ],
+        note: 'Two matched eight-line stanzas in ballad measure, and the second is a near-copy of the first — the repetition is the joke, because the speaker had to hear it twice and live it once. Listen for the single year that separates the stanzas: “one-and-twenty” becomes “two-and-twenty,” and the whole education fits in that gap. The last line drops the argument entirely and just repeats “’tis true,” which is what being wrong sounds like.',
+        hard: [
+          { w: 'guineas', say: 'GHIN-eez', def: 'old British gold coins' },
+          { w: 'fancy', say: 'FAN-see', def: 'affection or romantic liking' },
+          { w: 'bosom', say: 'BUUZ-uhm', def: 'the breast, as the seat of feeling' },
+          { w: 'vain', say: 'VAYN', def: 'without result or purpose' },
+          { w: 'rue', say: 'ROO', def: 'bitter regret' }
+        ]
+      },
+      {
+        t: 'The Owl and the Pussy-cat',
+        th: 'sea', a: 'Edward Lear (1812–1888)', src: 'Nonsense Songs', y: '1871', kind: 'poem',
+        lines: [
+          'The Owl and the Pussy-cat went to sea',
+          'In a beautiful pea-green boat,',
+          'They took some honey, and plenty of money,',
+          'Wrapped up in a five-pound note.',
+          'The Owl looked up to the stars above,',
+          'And sang to a small guitar,',
+          '“O lovely Pussy! O Pussy, my love,',
+          'What a beautiful Pussy you are,',
+          'You are,',
+          'You are!',
+          'What a beautiful Pussy you are!”',
+          '',
+          'Pussy said to the Owl, “You elegant fowl!',
+          'How charmingly sweet you sing!',
+          'O let us be married! too long we have tarried:',
+          'But what shall we do for a ring?”',
+          'They sailed away, for a year and a day,',
+          'To the land where the Bong-Tree grows',
+          'And there in a wood a Piggy-wig stood',
+          'With a ring at the end of his nose,',
+          'His nose,',
+          'His nose,',
+          'With a ring at the end of his nose.',
+          '',
+          '“Dear Pig, are you willing to sell for one shilling',
+          'Your ring?” Said the Piggy, “I will.”',
+          'So they took it away, and were married next day',
+          'By the Turkey who lives on the hill.',
+          'They dined on mince, and slices of quince,',
+          'Which they ate with a runcible spoon;',
+          'And hand in hand, on the edge of the sand,',
+          'They danced by the light of the moon,',
+          'The moon,',
+          'The moon,',
+          'They danced by the light of the moon.'
+        ],
+        note: 'Lear runs internal rhyme through the long lines — “plenty of money,” “elegant fowl,” “mince, and slices of quince” — so each stanza gallops until the three-word tag lines (“You are, / You are!”) stop it dead, like a chorus catching its breath. The famous word “runcible” is Lear’s own invention, meaning nothing at all; he never defined it and used it later for hats, walls, and geese. Note also the plot: this nonsense poem has a complete courtship, purchase, and wedding in thirty-three lines.',
+        hard: [
+          { w: 'tarried', say: 'TA-reed', def: 'delayed or waited around' },
+          { w: 'shilling', say: 'SHIL-ing', def: 'an old British coin' },
+          { w: 'mince', say: 'MINSS', def: 'finely chopped meat or fruit' },
+          { w: 'quince', say: 'KWINSS', def: 'a hard yellow pear-like fruit' },
+          { w: 'runcible', say: 'RUN-sih-buhl', def: 'a nonsense word Lear made up' }
+        ]
+      }
     ]
   },
 
@@ -2201,20 +2372,6 @@ window.SB_POEMS = {
         ]
       },
       {
-        t: 'I will fight no more forever',
-        th: 'snow', a: 'Chief Joseph, Hinmatóowyalahtq’it (c. 1840–1904)', src: 'Surrender in the Bear Paw Mountains, Montana Territory', y: '5 October 1877', kind: 'prose',
-        lines: [
-          'Tell General Howard I know his heart. What he told me before, I have it in my heart. I am tired of fighting. Our chiefs are killed. The old men are all dead. It is the young men who say yes or no. He who led the young men is dead. It is cold, and we have no blankets. The little children are freezing to death. My people, some of them, have run away to the hills, and have no blankets, no food; no one knows where they are — perhaps freezing to death. I want to have time to look for my children and see how many of them I can find. Maybe I shall find them among the dead. Hear me, my chiefs. I am tired. My heart is sick and sad. From where the sun now stands I will fight no more forever.'
-        ],
-        note: 'Nearly every sentence is short, flat, and begins with a plain subject — “I am tired,” “It is cold,” “My heart is sick and sad” — so the speech reads like a man counting losses rather than making a case. There is no argument in it at all; the grief is carried entirely by the list of who is dead and what is missing. Then the very last sentence reaches for the one image in the whole passage, the sun standing where it stands, and that is the line nobody forgets.',
-        hard: [
-          { w: 'blankets', say: 'BLANK-its', def: 'thick coverings used for warmth' },
-          { w: 'freezing', say: 'FREE-zing', def: 'becoming dangerously cold' },
-          { w: 'perhaps', say: 'per-HAPS', def: 'maybe; possibly' },
-          { w: 'forever', say: 'fer-EV-er', def: 'for all time to come' }
-        ]
-      },
-      {
         t: 'What is the use of a book, without pictures or conversations?',
         th: 'flower', a: 'Lewis Carroll (1832–1898)', src: 'Alice’s Adventures in Wonderland, Chapter I', y: '1865', kind: 'prose',
         lines: [
@@ -2229,21 +2386,6 @@ window.SB_POEMS = {
           { w: 'suddenly', say: 'SUD-un-lee', def: 'quickly and without warning' }
         ]
       },
-      {
-        t: 'The man in the arena',
-        th: 'stage', a: 'Theodore Roosevelt (1858–1919)', src: '“Citizenship in a Republic,” the Sorbonne, Paris', y: '23 April 1910', kind: 'prose',
-        lines: [
-          'It is not the critic who counts; not the man who points out how the strong man stumbles, or where the doer of deeds could have done them better. The credit belongs to the man who is actually in the arena, whose face is marred by dust and sweat and blood; who strives valiantly; who errs, who comes short again and again, because there is no effort without error and shortcoming; but who does actually strive to do the deeds; who knows great enthusiasms, the great devotions; who spends himself in a worthy cause; who at the best knows in the end the triumph of high achievement, and who at the worst, if he fails, at least fails while daring greatly, so that his place shall never be with those cold and timid souls who neither know victory nor defeat.'
-        ],
-        note: 'Roosevelt opens with a negative — it is not the critic — so that the real subject of the passage arrives late and lands harder. Then the second sentence runs on for well over a hundred words, chained together by the word “who” repeated ten times, and the semicolons never quite let you stop for breath. The ending refuses an easy victory: the last thing the sentence praises is failing while daring greatly.',
-        hard: [
-          { w: 'marred', say: 'MARD', def: 'damaged or spoiled in appearance' },
-          { w: 'valiantly', say: 'VAL-yunt-lee', def: 'with great courage' },
-          { w: 'enthusiasms', say: 'en-THOO-zee-az-umz', def: 'strong eager interests' },
-          { w: 'shortcoming', say: 'SHORT-kum-ing', def: 'a fault or failure to reach a standard' },
-          { w: 'timid', say: 'TIM-id', def: 'easily frightened; lacking boldness' }
-        ]
-      }
     ]
   }
 };
