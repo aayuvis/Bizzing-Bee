@@ -138,6 +138,34 @@ button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
   letter-spacing:.16em;text-transform:uppercase;color:var(--muted);opacity:.65}
 .card>p:last-child{margin-top:auto}
 
+
+/* ---- expand / lightbox ---- */
+.card{cursor:pointer;transition:background .18s ease}
+.card:hover{background:var(--surface)}
+.card .expand{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted);opacity:0;transition:opacity .18s ease}
+.card:hover .expand,.card:focus-visible .expand{opacity:1;color:var(--glow)}
+.frame.clickable{cursor:zoom-in}
+dialog#lb{padding:0;border:1px solid var(--line);background:var(--ground);color:var(--ink);
+  max-width:min(1120px,94vw);width:100%;max-height:92vh;border-radius:2px}
+dialog#lb::backdrop{background:rgba(4,8,10,.82)}
+.lb-inner{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:0;max-height:92vh}
+@media(max-width:880px){.lb-inner{grid-template-columns:1fr;overflow-y:auto}}
+.lb-media{padding:22px;display:flex;flex-direction:column;gap:14px;border-right:1px solid var(--line);min-width:0}
+@media(max-width:880px){.lb-media{border-right:0;border-bottom:1px solid var(--line)}}
+.lb-controls{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.lb-nav{display:flex;gap:6px}
+.lb-nav .btn{padding:9px 14px}
+.lb-body{padding:22px;overflow-y:auto;display:flex;flex-direction:column;gap:13px;min-width:0}
+.lb-close{position:absolute;top:12px;right:14px;z-index:5;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);background:var(--ground);padding:6px 10px;border:1px solid var(--line)}
+.lb-close:hover{color:var(--ink);border-color:var(--ink)}
+.lb-field{display:flex;flex-direction:column;gap:3px}
+.lb-field dt{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.lb-field dd{margin:0;font-size:14.5px;line-height:1.5}
+
 /* ---- misc ---- */
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:34px}
 @media(max-width:760px){.grid2{grid-template-columns:1fr}}
@@ -431,6 +459,28 @@ footer{padding:44px 0 72px;color:var(--muted);font-size:14px}
 </footer>
 </div>
 
+<dialog id="lb" aria-label="Concept detail">
+  <div class="lb-inner">
+    <button class="lb-close" id="lbclose" aria-label="Close">Close ✕</button>
+    <div class="lb-media">
+      <figure class="frame" id="lbframe" style="margin:0">
+        <img id="lbimg" alt="">
+        <img id="lbimg2" class="after" alt="">
+        <div class="bloom"></div>
+        <figcaption class="stamp" id="lbstamp">Before</figcaption>
+      </figure>
+      <div class="lb-controls">
+        <button class="btn" id="lbturn" aria-pressed="false">Get Bromic</button>
+        <div class="lb-nav">
+          <button class="btn" id="lbprev" aria-label="Previous concept">←</button>
+          <button class="btn" id="lbnext" aria-label="Next concept">→</button>
+        </div>
+      </div>
+    </div>
+    <div class="lb-body" id="lbbody"></div>
+  </div>
+</dialog>
+
 <script>
 const PLATES = [
  {no:"01", t:"The Mushroom", img:"01a_mushroom_before", img2:"01b_mushroom_after",
@@ -558,6 +608,7 @@ const BANK = [
   d:"He oils and polishes it the way other men polish a car, steps back, admires it, and goes inside. Deck pride is identical in both countries."}
 ];
 
+const EXTRA = {"1": {"f": ":30 film · :15 · :06 · statics", "au": "Homeowners 40–70 mid-remodel or adding on", "pn": "Launch film. One location, one deadpan VO. The mushroom heater is the hero prop — source a genuinely cheap one, do not art-direct it upward.", "lv": "No rewrite needed. Bunnings in AUS, Home Depot in US — the object reads identically."}, "2": {"f": ":30 film · :15 · statics", "au": "Homeowners who have already bought one outdoor luxury", "pn": "Casts easily, shoots in half a day, needs a practical wood-fired oven on location. Highest recognition scores of anything in the bank in informal testing conversations.", "lv": "None. Pizza ovens are an epidemic in both markets."}, "3": {"f": ":30 film · :15", "au": "55–70, retired or approaching it, second-property considerers", "pn": "Needs a second location or a convincing plate for the destination. The most extreme statement of the price reframe in the whole platform.", "lv": "US: Scottsdale, snowbirds. AUS: Sunshine Coast, the winter run north. Swap the destination plate only."}, "4": {"f": ":30 film", "au": "Renovators actively watching reno content", "pn": "Parody must be cleanly generic — no show branding, no recognisable set, no host likeness. Legal review before production.", "lv": "AUS: The Block treatment. US: HGTV / Property Brothers treatment. Same script, different casting register."}, "5": {"f": ":30 film · :15 · statics", "au": "New-build and beach/second-home owners; architects", "pn": "The only concept that dramatises wind-resistant infrared — the one product truth the main US competitor cannot answer. Shoot on a genuinely windy afternoon; do not fake it with a fan.", "lv": "AUS: Byron, Mornington, Palm Beach. US: Cape Cod, the Hamptons, coastal California."}, "6": {"f": ":15 social · statics", "au": "Anyone who has bought outdoor furniture", "pn": "Locked-off wide, no dialogue, pure choreography. Cheap. The caption is load-bearing — without it this is a generic cold joke any competitor could run.", "lv": "None."}, "7": {"f": "Static · :15", "au": "All consumer segments", "pn": "Near-zero cost. Shoot as a still on the main production day. The single most screenshot-able asset in the set.", "lv": "None. The basket exists in every home in the target, in both countries."}, "8": {"f": "9:16 social", "au": "Younger end of the target, 40–55", "pn": "Motion-graphics only, no shoot required. Ideal always-on filler between film flights. Refresh the dates each season for near-free new creative.", "lv": "Swap °C for °F. That is the entire localisation."}, "9": {"f": ":30 film · :15", "au": "People buying or selling a home — a segment heater marketing ignores entirely", "pn": "Strong dealer and showroom asset because it maps onto a moment agents and builders already talk about.", "lv": "US: Zillow listing. AUS: realestate.com.au and the Saturday open home."}, "10": {"f": ":15 social", "au": "Family decision-makers; the partner who is not the enthusiast", "pn": "Cold-axis — must be fixed in the turn by landing on the furniture, not the temperature, or it drags the brand down-market.", "lv": "US: “It's actually really nice out here.” AUS: “She'll be right.” One line changes."}, "11": {"f": ":30 film · :15", "au": "Urban and inner-suburban renovators", "pn": "Rhythm piece — the comedy is in the edit, not the performance. Cheap to shoot, one table, one afternoon.", "lv": "AUS-native to Melbourne. Transplants to Denver, Chicago or San Francisco on a city card."}, "12": {"f": "Static", "au": "AUS renovators and new-build buyers", "pn": "Set in the brand's existing typography at large size. The tension between the exquisite photograph and the blunt caption is the entire joke.", "lv": "AUS-native — alfresco is a load-bearing word in Australian home-building. US twin runs as “Pergola (n.): a structure for looking at.”"}, "13": {"f": ":30 film · :15", "au": "Established homeowners, 45–70", "pn": "Shot like a funeral and played entirely straight. The absurdity is that the weather is still perfect — hold on a thermometer or a supered temperature.", "lv": "US: Labor Day. AUS: Easter. Same ceremony, same solemnity, different date card."}, "14": {"f": ":30 film · :15 · :06", "au": "Households that have already built an outdoor room", "pn": "One film ships to both markets on a single supered date card — identical shot, opposite hemisphere, opposite month.", "lv": "US: Super Bowl Sunday, February. AUS: the Grand Final, September."}, "15": {"f": ":30 film · statics", "au": "New-build owners and the design-conscious decision maker", "pn": "Status axis — the humiliation of a beautiful thing not working, which is the emotional core of the platform. Wardrobe does all the work.", "lv": "None."}, "16": {"f": ":30 film · trade cut", "au": "Architects, designers, custom builders", "pn": "Makes a specifier uncomfortable in a useful way: the unused terrace is their failure, not the client's. Generic parody only — legal review.", "lv": "Works in both markets; Grand Designs is large in AUS and known in the US via streaming."}, "17": {"f": ":30 film · LinkedIn cuts · leave-behind", "au": "Architects, designers, custom builders, commercial specifiers", "pn": "The trade-tier workhorse. Keeps the endline, shifts the victim to the specifier's competence — the only currency that moves that audience. CTA is the spec kit, never the joke.", "lv": "US: “And in November?” AUS: “And in July?”"}, "18": {"f": ":15 · static · retargeting", "au": "Active considerers already aware of the brand", "pn": "An argument disguised as a joke — quietly the most persuasive asset for someone close to buying. Pair behind the funnier fame films as the consideration layer.", "lv": "None."}, "19": {"f": ":30 film", "au": "US families hosting at scale", "pn": "Dark. Needs a warm turn — the table brought back into the party — or it reads as mean rather than funny. Test before committing.", "lv": "US-native to Thanksgiving. No clean AUS equivalent; do not force one."}, "20": {"f": ":15 social · static", "au": "Owner-maintainers, heavily male-skewed", "pn": "Tender rather than mocking — that is what makes it work. The affection for the object is real and the audience shares it.", "lv": "None. Deck pride is identical in both countries."}};
 const IMG = window.__IMG__ || {};
 const src = k => IMG[k] || "";
 
@@ -586,6 +637,11 @@ PLATES.forEach(p=>{
       <p class="script" style="font-size:14px"><strong style="color:var(--ink)">Why it's here — </strong>${p.why}</p>
     </div>`;
   const fig = el.querySelector('.frame'), btn = el.querySelector('.turn'), stamp = el.querySelector('.stamp');
+  fig.classList.add('clickable');
+  fig.setAttribute('role','button'); fig.tabIndex = 0;
+  fig.setAttribute('aria-label', `Expand plate ${p.no}: ${p.t}`);
+  fig.addEventListener('click',()=>openLB('plate', PLATES.indexOf(p)));
+  fig.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();openLB('plate', PLATES.indexOf(p));} });
   btn.addEventListener('click',()=>{
     const on = fig.classList.toggle('on');
     btn.setAttribute('aria-pressed', on);
@@ -632,7 +688,7 @@ renderTone(0);
 
 /* ---------- bank ---------- */
 const bank = document.getElementById('bank');
-BANK.forEach(b=>{
+BANK.forEach((b,i)=>{
   const el = document.createElement('article');
   el.className = 'card';
   const tags = [`<span class="tag mkt">${b.m}</span>`,
@@ -646,7 +702,91 @@ BANK.forEach(b=>{
       ? `<img alt="${b.t}" src="${src(b.img)}">`
       : `<div class="noboard"><span>Board not shot</span></div>`}
     <p class="cap">${b.c}</p>
-    <p>${b.d}</p>`;
+    <p>${b.d}</p>
+    <p class="expand">Expand ↗</p>`;
+  el.tabIndex = 0;
+  el.setAttribute('role','button');
+  el.setAttribute('aria-label', `Expand concept ${b.n}: ${b.t}`);
+  el.addEventListener('click',()=>openLB('bank', i));
+  el.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();openLB('bank', i);} });
   bank.appendChild(el);
 });
+
+/* ---------- expand / lightbox ---------- */
+const lb = document.getElementById('lb'),
+      lbImg = document.getElementById('lbimg'), lbImg2 = document.getElementById('lbimg2'),
+      lbFrame = document.getElementById('lbframe'), lbStamp = document.getElementById('lbstamp'),
+      lbTurn = document.getElementById('lbturn'), lbBody = document.getElementById('lbbody');
+let lbKind = 'bank', lbIdx = 0;
+
+function tagRow(mkt, ax, rest){
+  return [`<span class="tag mkt">${mkt}</span>`,
+          `<span class="tag ${ax[1]}">${ax[0]}</span>`,
+          ...rest.map(t=>`<span class="tag ${t.startsWith('R-H')||t==='R-MED'?'risk':''}">${t}</span>`)].join('');
+}
+function field(label, val){
+  return val ? `<div class="lb-field"><dt>${label}</dt><dd>${val}</dd></div>` : '';
+}
+
+function renderLB(){
+  const isPlate = lbKind === 'plate';
+  const d = isPlate ? PLATES[lbIdx] : BANK[lbIdx];
+  const a = isPlate ? src(d.img) : src(d.img);
+  const b = isPlate ? src(d.img2) : '';
+
+  lbImg.src = a || ''; lbImg.style.display = a ? 'block' : 'none';
+  lbImg.alt = `${d.t} — mood board`;
+  lbImg2.src = b || ''; lbImg2.style.display = b ? 'block' : 'none';
+  lbImg2.alt = b ? `${d.t} — the turn` : '';
+  lbFrame.classList.remove('on');
+  lbTurn.setAttribute('aria-pressed','false');
+  lbTurn.textContent = 'Get Bromic';
+  lbTurn.style.display = b ? '' : 'none';
+  lbStamp.textContent = b ? 'Before' : 'Mood board';
+  lbStamp.style.display = a ? '' : 'none';
+
+  if (isPlate) {
+    const tags = d.tags.map(([l,c])=>`<span class="tag ${c}">${l}</span>`).join('');
+    lbBody.innerHTML = `
+      <p class="plate-num">PLATE ${d.no} · SHORTLIST</p>
+      <h3 style="font-size:26px;text-transform:uppercase;letter-spacing:-.03em">${d.t}</h3>
+      <div class="tags">${tags}</div>
+      <p class="line">${d.line}<br><span style="color:var(--muted)">Get Bromic.</span></p>
+      ${field('The scene', d.s)}
+      ${field('Why it\u2019s here', d.why)}`;
+  } else {
+    const e = EXTRA[d.n] || {};
+    lbBody.innerHTML = `
+      <p class="plate-num">CONCEPT ${String(d.n).padStart(2,'0')} OF 20</p>
+      <h3 style="font-size:26px;text-transform:uppercase;letter-spacing:-.03em">${d.t}</h3>
+      <div class="tags">${tagRow(d.m, d.ax, d.x)}</div>
+      <p class="line">${d.c}<br><span style="color:var(--muted)">Get Bromic.</span></p>
+      ${field('The scene', d.d)}
+      ${field('Format', e.f)}
+      ${field('Audience', e.au)}
+      ${field('Market variant', e.lv)}
+      ${field('Production note', e.pn)}`;
+  }
+}
+function openLB(kind, i){ lbKind = kind; lbIdx = i; renderLB(); if(!lb.open) lb.showModal(); }
+function step(n){
+  const len = lbKind === 'plate' ? PLATES.length : BANK.length;
+  lbIdx = (lbIdx + n + len) % len; renderLB();
+}
+lbTurn.addEventListener('click',()=>{
+  const on = lbFrame.classList.toggle('on');
+  lbTurn.setAttribute('aria-pressed', on);
+  lbTurn.textContent = on ? 'Turn it off' : 'Get Bromic';
+  lbStamp.textContent = on ? 'After' : 'Before';
+});
+document.getElementById('lbnext').addEventListener('click',()=>step(1));
+document.getElementById('lbprev').addEventListener('click',()=>step(-1));
+document.getElementById('lbclose').addEventListener('click',()=>lb.close());
+lb.addEventListener('click',e=>{ if(e.target === lb) lb.close(); });
+document.addEventListener('keydown',e=>{
+  if(!lb.open) return;
+  if(e.key === 'ArrowRight') step(1);
+  if(e.key === 'ArrowLeft') step(-1);
+});
+
 </script>
