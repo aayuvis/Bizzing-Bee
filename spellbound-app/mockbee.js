@@ -389,7 +389,7 @@
     const c2 = g.c2, s = c2.rival;
     g.word = c2.words[c2.step];
     if (!g.word || !g.word.w) { g.c2 = null; return finish(); }
-    g.typed = ''; g.asked = {}; g.atMic = s;
+    g.typed = ''; g.asked = {}; g.atMic = s; g.lastPractice = null;
     const name = s.kind === 'me' ? 'You' : s.bot.name;
     announce(fill(pick(c2.step === 0 ? SAY.c2First : SAY.c2Champ, g.seed + c2.step * 3), { name }));
     if (s.kind === 'me') {
@@ -398,7 +398,7 @@
       render();
     } else {
       g.phase = 'bot'; g.botStep = 0; g.botOut = '';
-      after(clamp(s.bot.pace * .5, 600, 1200), () => botTurn(s));
+      callBotToMic(s, clamp(s.bot.pace * .5, 600, 1200));
     }
   }
 
@@ -465,7 +465,7 @@
     /* the list came back empty — end the bee on the spellers still standing
        rather than putting a speller in front of a word that does not exist */
     if (!g.word || !g.word.w) return finish();
-    g.typed = ''; g.asked = {};
+    g.typed = ''; g.asked = {}; g.lastPractice = null;
     if (s.kind === 'me') {
       g.phase = 'me';
       announce(fill(pick(SAY.callMe, g.seed + g.turn), { n: s.n }));
@@ -475,9 +475,52 @@
       g.phase = 'bot'; g.botStep = 0; g.botOut = '';
       announce(fill(pick(SAY.callBot, g.seed + g.turn * 3 + g.round), { name: s.bot.name, age: s.bot.age + ' years old', tell: s.bot.tell, n: s.n }),
         s.bot.name + ', number ' + s.n + '.');
-      after(clamp(s.bot.pace * .45, 420, 1000), () => botTurn(s));
+      callBotToMic(s, clamp(s.bot.pace * .45, 420, 1000));
     }
   }
+
+  /* ---------------- a rival's word, pronounced ----------------
+     The pronouncer used to only NAME the rival ("Vesper, number four.") and
+     never actually said the word — the child heard who was spelling but never
+     what they were spelling, which is a spelling bee with the one useful part
+     missing. Now the word is spoken the same way it is for the child's own
+     turn, and there is a 30-second window to write it down before the rival
+     spells it: practice, whether or not it is your turn. */
+  function callBotToMic(s, delay) {
+    after(delay, () => {
+      const g = mb(); if (!g || g.view !== 'stage') return;
+      try { say(g.word.w); } catch (e) {}
+      startPractice(s);
+    });
+  }
+  function startPractice(s) {
+    const g = mb(); if (!g) return;
+    g.phase = 'practice';
+    g.practice = { typed: '', deadline: Date.now() + 30000, forBot: s };
+    render();
+    practiceTick();
+  }
+  /* Ticks the countdown by writing straight to the DOM, not by calling render():
+     a full re-render every 400ms would rebuild the input the child is typing
+     into and throw away their cursor (and half-typed word) five times over the
+     30 seconds. Only the number moves; the input is left alone. */
+  function practiceTick() {
+    const g = mb(); if (!g || g.phase !== 'practice' || !g.practice) return;
+    const left = g.practice.deadline - Date.now();
+    if (left <= 0) { endPractice(); return; }
+    try { const el = document.getElementById('mb-countdown'); if (el) el.textContent = Math.ceil(left / 1000) + 's'; } catch (e) {}
+    setTimeout(practiceTick, 400);
+  }
+  function endPractice() {
+    const g = mb(); if (!g || !g.practice) return;
+    const s = g.practice.forBot, typed = g.practice.typed;
+    g.lastPractice = typed ? { typed, correct: nkey(typed) === nkey(g.word.w) } : null;
+    g.practice = null;
+    g.phase = 'bot';
+    botTurn(s);
+  }
+  app2.mbPracType = v => { const g = mb(); if (g && g.practice) g.practice.typed = String(v || ''); };
+  app2.mbPracSkip = () => { if (mb() && mb().practice) endPractice(); };
 
   function botTurn(s) {
     const g = mb(); if (!g || g.view !== 'stage') return;
@@ -669,6 +712,35 @@
   }
   const bar = (label, v) => `<span class="mb-bar"><i>${label}</i><b><s style="width:${Math.round(v * 100)}%"></s></b></span>`;
 
+  /* The write-along window: a rival's word has just been said aloud, and the
+     child has 30 seconds to write it down before the rival spells it — good
+     practice whether or not it is their turn. Skippable with Enter or the
+     button, because a hall where every rival takes 30 forced seconds is not
+     a game anyone finishes. */
+  function practiceUI() {
+    const g = mb(); const pr = g.practice; if (!pr) return '';
+    const s = pr.forBot;
+    const left = Math.max(0, Math.ceil((pr.deadline - Date.now()) / 1000));
+    return `<div class="mb-mic practice">
+      <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(s.bot.id, 74) : ''}</span>
+      <div class="mb-mic-in">
+        <span class="mb-mic-name">${esc(s.bot.name)} is up next · number ${s.n}</span>
+        <div class="mb-prac-row">
+          <span class="mb-prac-note">Write it down before ${esc(s.bot.name)} spells it — good practice, no pressure.</span>
+          <span class="mb-countdown" id="mb-countdown">${left}s</span>
+        </div>
+        <div class="mb-controls">
+          <button data-act="mbSay" class="mb-hear">${iconSVG('volume', 18)} Hear it again</button>
+        </div>
+        <div class="mb-spellrow">
+          <input class="mb-input" id="mb-prac-in" autocomplete="off" autocapitalize="off" spellcheck="false"
+            placeholder="write it here" value="${escA(pr.typed || '')}" oninput="callAct('mbPracType',this.value)"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();callAct('mbPracSkip');}">
+          <button data-act="mbPracSkip" class="mb-submit">${esc(s.bot.name)}, spell it →</button>
+        </div>
+      </div></div>`;
+  }
+
   function viewStage() {
     const g = mb(); const R = roundAt(g.round); const live = alive();
     const meTurn = g.phase === 'me';
@@ -703,14 +775,17 @@
         <div class="mb-mic-in"><span class="mb-mic-name">${esc(g.name)}</span>
           <div class="mb-letters">${(g.typed || '—').toUpperCase().split('').join(' ')}</div>
           <div class="mb-truth">${g.meOk ? 'Correct' : 'The word was <b>' + esc(w.w) + '</b>'}</div></div></div>`
+      : g.phase === 'practice' ? practiceUI()
       : (function () {
         const s = g.atMic;
         if (!s || s.kind === 'me') return `<div class="mb-mic idle"><div class="mb-mic-in"><span class="mb-mic-name">…</span></div></div>`;
+        const lp = g.lastPractice;
         return `<div class="mb-mic ${g.phase === 'botSpell' && g.botOut.length >= (w.w || '').length ? (g.botOk ? 'ok' : 'no') : ''}">
           <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(s.bot.id, 74) : ''}</span>
           <div class="mb-mic-in">
             <span class="mb-mic-name">${esc(s.bot.name)} · ${s.bot.age} · number ${s.n}</span>
             <div class="mb-letters">${g.botOut || '<span class="mb-thinking">thinking…</span>'}</div>
+            ${lp ? `<div class="mb-prac-fb ${lp.correct ? 'ok' : 'no'}">You wrote <b>${esc(lp.typed.toUpperCase())}</b> — ${lp.correct ? 'you had it too.' : 'not quite that time.'}</div>` : ''}
           </div></div>`;
       })();
 
@@ -760,9 +835,12 @@
     stats: () => prog(),
   };
 
-  /* keyboard: Enter submits from anywhere on the speller's turn */
+  /* keyboard: Enter submits from anywhere on the speller's turn, and moves
+     the rival on from anywhere during the 30-second write-along window */
   window.addEventListener('keydown', e => { try {
-    const g = mb(); if (!g || state.nav !== 'mockbee' || g.phase !== 'me') return;
-    if (e.key === 'Enter') { e.preventDefault(); app2.mbSpell(); }
+    const g = mb(); if (!g || state.nav !== 'mockbee') return;
+    if (e.key !== 'Enter') return;
+    if (g.phase === 'me') { e.preventDefault(); app2.mbSpell(); }
+    else if (g.phase === 'practice') { e.preventDefault(); app2.mbPracSkip(); }
   } catch (_) {} });
 })();
