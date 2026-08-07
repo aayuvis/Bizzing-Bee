@@ -90,6 +90,44 @@ screenshot-able asset in the platform and the easiest thing a dealer can put on 
 
 ---
 
+---
+
+## The visual campaign — The Priced Scene
+
+The receipt told in type; this tells it in the space itself. One photograph of a real build,
+every object wearing its price like a showroom tag, the total climbing as the tags land — then
+the last tag drops on the only thing nobody costed, and it is the cheapest number on screen.
+
+**The backyard.** $16,000 planting and lighting · $11,400 sectional · $24,000 pergola ·
+$41,000 outdoor kitchen · $9,000 wood-fired oven · $19,000 stone paving.
+**Running total: $120,400.**
+Then, on the heater: **being able to use any of it in October — $4,200.**
+
+**The terrace.** $14,000 planters and screens · $46,000 tables, chairs and glassware ·
+$8,000 festoon and downlighting · $54,000 service station and fit-out · and forty covers roped
+off till spring, at $0. Then: **making those forty covers sellable in May — $9,000.**
+
+### Why this is the most efficient asset in the platform
+
+One photograph carries the whole argument. No cast, no dialogue, no shoot day beyond the plate
+itself — and it re-skins for any audience by swapping the labels. It is the natural hero for
+print, out-of-home, a showroom wall and a dealer counter card, and it crops from a six-sheet to
+a 9:16 story without losing the joke.
+
+It also unifies the platform: the priced scene takes the same cold-to-warm turn as the films,
+so both formats resolve the same way.
+
+### Craft mandate
+
+Set the tags as **live typography over the photograph** — never baked into an AI-generated
+image, and never as flattened artwork. Keeping the tags as a separate layer means the same
+plate re-prices for a different market, currency or spec in minutes, and the numbers stay
+legible at every crop. Tags near the frame edge anchor inward so nothing clips.
+
+All figures are illustrative and must be replaced with verified pricing before anything runs.
+
+---
+
 ## Legal — read before this goes anywhere
 
 **Never use the word that ends the original.** It is a registered Mastercard trademark and among the most

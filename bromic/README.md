@@ -6,7 +6,7 @@
 | `GET-BROMIC-20-CONCEPTS.md` | 20 culturally-tagged concepts for US + AUS, with a summary grid and shortlist |
 | `Get-Bromic-Deck.html` | **Standalone deck — every image and the film embedded as data URIs. Open it anywhere, offline, no network.** |
 | `deck.html` | Source of the deck (assets injected at build time, not stored inline) |
-| `GET-BROMIC-THE-RECEIPT.md` | Second format — the inverted Mastercard-style price stack, with legal guidance |
+| `GET-BROMIC-THE-RECEIPT.md` | Second format — the inverted price stack, in type and as priced photography, with legal guidance |
 | `GET-BROMIC-TRADE-COMMERCIAL.md` | Tier 2 — 5 builder + 5 commercial concepts with full campaign briefs |
 | `boards/` | 35 AI-generated mood board frames (Gemini `gemini-3-pro-image`), 1200px JPEG |
 | `films/` | 18-second films (Veo 3.1, 2×8s clips + endline card, stitched with ffmpeg) |
