@@ -970,7 +970,52 @@ window.SB_POEMS = {
           { w: 'vindictive', say: 'vin-DIK-tiv', def: 'eager to punish; unforgiving' },
           { w: 'celestial', say: 'suh-LES-chul', def: 'belonging to the sky or the heavens' }
         ]
-      }
+      },
+{
+      t: 'Gita Saar — the essence',
+      th: 'dawn',
+      a: 'Traditional, after the Bhagavad Gita',
+      src: 'The counsel of the Gita as it is remembered and repeated',
+      y: 'undated',
+      kind: 'poem',
+      lines: [
+        'Why do you worry without cause?',
+        'Whom do you fear without reason?',
+        'Who can kill you? The soul is neither',
+        'born, nor does it die.',
+        '',
+        'Whatever happened, happened for the good.',
+        'Whatever is happening is happening for the good.',
+        'Whatever will happen will also be for the good.',
+        '',
+        'What have you lost that you weep for?',
+        'What did you bring with you, that you have lost?',
+        'What did you create, that it was destroyed?',
+        'You brought nothing with you.',
+        'Whatever you have, you received here.',
+        'Whatever you gave, you gave here.',
+        '',
+        'Whatever you took, you took from this place.',
+        'What is yours today was somebody else’s yesterday',
+        'and will belong to somebody else tomorrow.',
+        'You think it is yours, and that is your sorrow.',
+        '',
+        'Change is the law of the world.',
+        'What you call death is only that law arriving.',
+        'In one moment you are a millionaire,',
+        'in the next you have nothing —',
+        'mine and yours, big and small, are ideas',
+        'you must take out of your mind.',
+        'Then everything is yours, and you belong to everyone.'
+      ],
+      note: 'Read this one differently from the two Arnold passages a few pages back. Those are a verse translation of the Sanskrit, line for line. This is not a translation at all — it is the Gita boiled down to its argument and passed from person to person until it settled into a fixed shape that millions of people can say from memory without ever having opened the book. Nobody knows who first put it in these words. Listen for how it is built entirely out of questions and answers, and how every single answer is the same answer said another way. That is what a summary sounds like when it has been polished by a few hundred years of repeating: no new information after the fourth line, only the same idea striking the same bell from a different side.',
+      hard: [
+        { w: 'essence', say: 'ESS-uns', def: 'the one thing that makes something what it is, with everything else stripped away' },
+        { w: 'sorrow', say: 'SORR-oh', def: 'deep sadness, especially from loss' },
+        { w: 'destroyed', say: 'dih-STROYD', def: 'completely ruined or put an end to' },
+        { w: 'millionaire', say: 'mill-yuh-NAIR', def: 'a person who has a million or more in money' }
+      ]
+    }
     ]
   },
 
@@ -2671,7 +2716,84 @@ window.SB_POEMS = {
           { w: 'abroad', say: 'uh-BRAWD', def: 'widely about, in all directions' },
           { w: 'plashless', say: 'PLASH-less', def: 'without any splash or sound of water' }
         ]
-      }
+      },
+{
+      t: 'The Universal Prayer',
+      th: 'dawn',
+      a: 'Alexander Pope (1688–1744)',
+      src: 'The Universal Prayer — the opening stanzas',
+      y: '1738',
+      kind: 'poem',
+      lines: [
+        'Father of all! in every age,',
+        'In every clime adored,',
+        'By saint, by savage, and by sage,',
+        'Jehovah, Jove, or Lord!',
+        '',
+        'Thou Great First Cause, least understood,',
+        'Who all my sense confined',
+        'To know but this, that thou art good,',
+        'And that myself am blind;',
+        '',
+        'Yet gave me, in this dark estate,',
+        'To see the good from ill;',
+        'And binding nature fast in fate,',
+        'Left free the human will.',
+        '',
+        'What conscience dictates to be done,',
+        'Or warns me not to do,',
+        'This, teach me more than hell to shun,',
+        'That, more than heaven pursue.',
+        '',
+        'What blessings thy free bounty gives,',
+        'Let me not cast away;',
+        'For God is paid when man receives,',
+        'To enjoy is to obey.'
+      ],
+      note: 'The man who wrote this is the same Alexander Pope who translated the Iliad and the Odyssey earlier in this book — and here he is doing the opposite job, in a stanza a quarter the length of his heroic line. Look at the third line: saint, savage and sage, three kinds of person who agree about nothing, and then three names for God from three different traditions in the line after. He is deliberately building a prayer that a Jew, a Greek and a Christian could all say without lying. Then listen for the hinge in the third stanza — the word “Yet”. Everything before it is about what the poet cannot know; everything after it is about what he can still choose. The last line is the whole poem in six words.',
+      hard: [
+        { w: 'clime', say: 'KLYME', def: 'a region of the world, thought of by its climate' },
+        { w: 'conscience', say: 'KON-shuns', def: 'the inner sense of what is right and wrong' },
+        { w: 'dictates', say: 'DIK-tayts', def: 'lays down as a rule that must be followed' },
+        { w: 'bounty', say: 'BOWN-tee', def: 'generosity, and the gifts that come from it' },
+        { w: 'estate', say: 'ess-TAYT', def: 'the condition or state a person is in' }
+      ]
+    },
+    {
+      t: 'Awake, my St. John!',
+      th: 'mountain',
+      a: 'Alexander Pope (1688–1744)',
+      src: 'An Essay on Man, Epistle I — the opening',
+      y: '1733',
+      kind: 'poem',
+      lines: [
+        'Awake, my St. John! leave all meaner things',
+        'To low ambition, and the pride of kings.',
+        'Let us (since life can little more supply',
+        'Than just to look about us and to die)',
+        'Expatiate free o’er all this scene of man;',
+        'A mighty maze! but not without a plan;',
+        'A wild, where weeds and flowers promiscuous shoot;',
+        'Or garden, tempting with forbidden fruit.',
+        'Together let us beat this ample field,',
+        'Try what the open, what the covert yield;',
+        'The latent tracts, the giddy heights explore',
+        'Of all who blindly creep, or sightless soar;',
+        'Eye Nature’s walks, shoot folly as it flies,',
+        'And catch the manners living as they rise;',
+        'Laugh where we must, be candid where we can;',
+        'But vindicate the ways of God to man.'
+      ],
+      note: 'Sixteen lines, eight couplets, every one of them closed — Pope almost never lets a sentence run past the rhyme, so the poem advances in complete thoughts the way an argument does. The whole passage is one extended invitation to go walking: a maze, a wild, a garden, a field, coverts, tracts, heights. He is turning the study of human beings into a day out with a gun and a dog, and “shoot folly as it flies” is the joke landing. Note the sixth line, which is the most quoted thing in it and also the thesis of the entire four-epistle poem: the world looks like chaos and is not. St. John, by the way, is a person — Henry St. John, Pope’s friend — and it is said SIN-jin.',
+      hard: [
+        { w: 'expatiate', say: 'ek-SPAY-shee-ayt', def: 'to wander freely over a wide space, or to speak at length' },
+        { w: 'promiscuous', say: 'pruh-MISS-kyoo-us', def: 'here, in its old sense: mixed together without order' },
+        { w: 'covert', say: 'KUV-ert', def: 'a thicket of undergrowth where animals hide' },
+        { w: 'latent', say: 'LAY-tunt', def: 'present but hidden, not yet showing' },
+        { w: 'candid', say: 'KAN-did', def: 'honest and straightforward, even when it is awkward' },
+        { w: 'vindicate', say: 'VIN-dih-kayt', def: 'to defend something against blame, and show it was right' }
+      ]
+    }
     ]
   },
 
