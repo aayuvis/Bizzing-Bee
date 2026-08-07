@@ -529,14 +529,26 @@
     const ok = botSpells(s.bot, g.word, R.press);
     const shown = ok ? g.word.w : misspell(g.word.w);
     g.botOut = ''; g.botOk = ok; g.phase = 'botSpell';
-    /* letters one at a time, because that is how it feels in the hall */
+    g.botLen = shown.length; g.botStep = 0;
+    /* Letters one at a time, because that is how it feels in the hall — but
+       PATCHED IN PLACE, not re-rendered.
+       This used to call render() per letter, which rebuilds the whole view: the
+       podium node is replaced ten to twenty times a second, so its
+       `animation:sb-rise` restarts every time and the box visibly jitters. The
+       announcement line and the practice-feedback line are rebuilt in the same
+       pass, and any change in their height shoves the podium up or down. Writing
+       one text node leaves every other box exactly where it is.
+       render() still runs once at the end, so the correct/wrong colour lands. */
     let i = 0;
     const step = () => {
       const gg = mb(); if (!gg || gg.view !== 'stage' || gg.phase !== 'botSpell') return;
-      gg.botOut = shown.slice(0, ++i).toUpperCase().split('').join(' ');
-      render();
+      gg.botStep = ++i;
+      gg.botOut = shown.slice(0, i).toUpperCase().split('').join(' ');
+      let live = null;
+      try { live = document.getElementById('mb-live'); } catch (e) {}
+      if (live) live.textContent = gg.botOut; else render();
       if (i < shown.length) setTimeout(step, clamp(s.bot.pace / shown.length, 55, 150));
-      else setTimeout(() => verdict(s, ok), 460);
+      else { render(); setTimeout(() => verdict(s, ok), 460); }
     };
     step();
   }
@@ -780,16 +792,40 @@
         const s = g.atMic;
         if (!s || s.kind === 'me') return `<div class="mb-mic idle"><div class="mb-mic-in"><span class="mb-mic-name">…</span></div></div>`;
         const lp = g.lastPractice;
-        return `<div class="mb-mic ${g.phase === 'botSpell' && g.botOut.length >= (w.w || '').length ? (g.botOk ? 'ok' : 'no') : ''}">
+        /* The box is sized by a hidden ghost the full length of what is being
+           spelled, and the live letters sit on top of it. Without that, the box
+           grows a letter at a time and a long word rewraps onto a second line
+           halfway through, so it changes height mid-spell.
+           The ghost is a row of X's, not the word: it is the same width in a
+           monospace face, and it keeps the answer out of the DOM where a curious
+           reader could find it before the speller gets there.
+           The done-state used to be `botOut.length >= w.w.length`, which compares
+           a string carrying a space between every letter against a plain word —
+           so it went green about halfway, and on a misspelling of a different
+           length it could go green on the wrong letter entirely. */
+        const done = g.phase === 'botSpell' && g.botStep >= g.botLen;
+        const ghost = new Array(Math.max(1, g.botLen || (w.w || '').length || 1)).fill('X').join(' ');
+        return `<div class="mb-mic ${done ? (g.botOk ? 'ok' : 'no') : ''}">
           <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(s.bot.id, 74) : ''}</span>
           <div class="mb-mic-in">
             <span class="mb-mic-name">${esc(s.bot.name)} · ${s.bot.age} · number ${s.n}</span>
-            <div class="mb-letters">${g.botOut || '<span class="mb-thinking">thinking…</span>'}</div>
+            <div class="mb-letters">
+              <span class="mb-l-ghost" aria-hidden="true">${ghost}</span>
+              <span class="mb-l-live" id="mb-live">${g.botOut || ''}</span>
+              ${g.botOut ? '' : '<span class="mb-thinking">thinking…</span>'}
+            </div>
             ${lp ? `<div class="mb-prac-fb ${lp.correct ? 'ok' : 'no'}">You wrote <b>${esc(lp.typed.toUpperCase())}</b> — ${lp.correct ? 'you had it too.' : 'not quite that time.'}</div>` : ''}
           </div></div>`;
       })();
 
-    return `<div class="mb-wrap" style="animation:sb-rise .35s ease both">
+    /* The entrance plays ONCE, on the first paint of the hall.
+       render() rebuilds this wrapper, so leaving the animation on it replayed a
+       twelve-pixel slide on every repaint — and during a rival's spelling that is
+       several times a second. Everything inside inherits the movement, which is
+       why the staging box appeared to drift even after its own animation went. */
+    const rise = g.rose ? '' : 'animation:sb-rise .35s ease both';
+    g.rose = 1;
+    return `<div class="mb-wrap" style="${rise}">
       <div class="mb-top">
         <button data-act="mbQuit" class="mb-back">← Leave the hall</button>
         <span class="mb-round">${esc(R.name)}<i>${esc(R.sub)}</i></span>
