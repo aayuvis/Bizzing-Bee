@@ -512,6 +512,26 @@ handlers. App lives in this folder; open `index.html` to run.
   of public-domain status — inside subagents too. Batches of ~5 pieces mostly get through
   and a retry of a blocked batch usually succeeds; batches of 15 never did. Author the
   poetry sections in small batches and expect to retry.
+- **The part dividers are the artwork** (`sectionDivider()` + `voice/pipeline/section-art.py`,
+  keyed `sc-<section>` on the section NAME, never its position). Two prompt traps, both
+  paid for twice: "frontispiece in a fine hardback" gets read as an actual **framed plate**
+  and comes back inside a painted gilt frame with a mount, and "keep the top third calm"
+  gets read as an instruction to leave a **flat grey rectangle** there, which prints as a
+  hard seam a third of the way down. Say both in the negative — no frame, no mount, no
+  border, and one *continuous* scene that is merely quieter at the top.
+- **Overscan to hide a painted edge belongs on a wrapper, not on the image.** A `transform`
+  on a child still counts towards the parent's `scrollHeight` even under `overflow:hidden`,
+  so `scale(1.045)` on the `<img>` made all eight dividers report 24px of overflow. Put the
+  image in a `position:absolute; inset:0; overflow:hidden` frame and scale it inside that.
+- **A CSS comment inside the mkbooks template literal must close on its own line.** Editing
+  prose into a `/* … */` block and leaving the old `*/` behind closes the comment early;
+  the remaining prose is then invalid CSS that silently swallows the *next* rule. That is
+  what made `.sc-frame` above render as a `position:static` zero-height div.
+- **The mascot avatars belong to the general volumes, not to the advanced companions.**
+  `avatar(vol.av, …)` on a `book-lines` page — the how-it-works opener, the part openers,
+  the margin pages — reads as a picture book to the twelve-year-old the volume is for. Same
+  for `worldStrip()`: it is drawn in the app's soft anime register and it prints the folio
+  unreadably on top of itself. Both are gone from that book; do not add them back.
 - World art: `app-art/w-<world>-r<2|3>.jpg` (26 banners) is cut from the book series'
   strips by `voice/pipeline/app-banners.py`. The Word Atlas, the theme pages and the
   home Atlas tile all draw from it — one visual language with the books.
@@ -568,6 +588,12 @@ handlers. App lives in this folder; open `index.html` to run.
 - **Cache busting (do BOTH every deploy):** bump the `?v=` stamp on every asset URL in
   `index.html` (one `sed -i 's/?v=OLD/?v=NEW/g'`) so devices never run stale JS, and bump
   `SB_VOICE_VER` in `voice-review.js` whenever voice clips changed.
+- **Bump the stamp in the SOURCE `index.html`, not in the gh-pages worktree.** Bumping it
+  only in the worktree leaves the branch a stamp behind, and the next deploy that copies
+  `index.html` across silently reverts the stamp BACKWARDS — devices then keep serving the
+  build they already have. It has happened once. Check with
+  `diff <(sed s/OLD/S/g index.html) <(sed s/NEW/S/g /tmp/ghp8/index.html)`: the two must
+  differ by nothing but the stamp.
 - Commit trailer:
   ```
   Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
