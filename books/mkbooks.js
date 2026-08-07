@@ -523,18 +523,20 @@ function css(vol) {
   .pm-head h2{margin:.02in 0 .01in;line-height:1.12;color:var(--ink)}
   .pm-by{font-family:'BB Kicker';font-size:9.6pt;color:var(--accent-deep)}
   .pm-body{display:flex;gap:.20in;align-items:stretch;margin-bottom:.10in;flex:1 1 auto}
-  .pm-col{flex:1;min-width:0;position:relative;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
-  /* the lighter pool behind the text — a soft radial wash of the page's own
-     tint, so the words sit on calm colour while the painting stays full
-     strength everywhere the pool fades out. It used to bleed sideways past
-     its own column on a negative inset and cut a hard seam straight through
-     the tile box next door — contained to the column's own width now (only
-     the vertical reach is generous), and overflow:hidden on .pm-col is the
-     backstop so it can never again paint outside its own box. */
-  .pm-col:before{content:'';position:absolute;inset:-.34in 0;z-index:0;pointer-events:none;
-    background:radial-gradient(ellipse at center,
-      color-mix(in srgb,var(--pm-tint,var(--paper)) 88%,var(--paper) 12%) 0%,
-      color-mix(in srgb,var(--pm-tint,var(--paper)) 55%,transparent) 60%, transparent 86%)}
+  .pm-col{flex:1;min-width:0;position:relative;display:flex;flex-direction:column;justify-content:center}
+  /* NO SCRIM BEHIND THE TEXT — deliberately.
+     Two attempts at one both failed. The first was a radial wash on a negative
+     inset: it bled sideways out of its column and cut a seam through the tile
+     box next door. Clipping it to the column fixed the bleed and produced
+     something worse — overflow:hidden chopped the gradient mid-fade, so the
+     "soft pool" printed as a pale rectangle with hard vertical edges.
+     Three things already do this job: the plates are commissioned calm and
+     low-contrast through their middles precisely so type can sit on them (see
+     the prompt in voice/pipeline/poem-art.py), the page carries its own
+     --pm-tint wash, and the ground sits at .42 opacity. A fourth layer on top
+     was belt, braces and a rope. A hairline paper-coloured shadow is all the
+     lift the type needs where a plate happens to run busy. */
+  .pm-text{text-shadow:0 1px 1px color-mix(in srgb,var(--paper) 66%,transparent)}
   /* the poem itself is set in the light, variable body face, not the display
      face the rest of the book uses — a whole soliloquy at display weight reads
      as shouting. Mood is carried by weight and tracking within that one family,
@@ -1756,9 +1758,22 @@ function moodFont(p) {
   return '';
 }
 
+/* A stable art key for one piece: derived from its title, so it survives any
+   reordering of the sections. Kept in sync with voice/pipeline/poem-art.py. */
+const pieceSlug = p => 'pp-' + String(p.t || '').toLowerCase()
+  .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 44);
+
 function poemPage(vol, sec, p, n, folio, keys) {
   const L = POEM_LAY[(n - 1) % POEM_LAY.length];
-  const plate = artAt('pt-' + (p.th || 'library')) || artAt('pt-library');
+  /* Art is keyed on the PIECE, falling back to its subject.
+     It used to be the subject alone, so with only sixteen plates across ninety
+     pieces the same painting turned up five or six times. Each piece now looks
+     for its own plate first — keyed on a slug of its title, NOT on its position,
+     because position shifts every time a poem is added and index-keyed art
+     silently re-attaches itself to the wrong poem. Any piece without a bespoke
+     plate quietly falls back to the themed one, so the art can be filled in a
+     few at a time without ever leaving a page blank. */
+  const plate = artAt(pieceSlug(p)) || artAt('pt-' + (p.th || 'library')) || artAt('pt-library');
   const tint = THEME_TINT[p.th] || THEME_TINT.library;
   const hard = p.hard || [];
   const isHaiku = p.kind === 'haiku';
@@ -1799,7 +1814,12 @@ function book19() {
     title: 'Lines Worth Keeping', tag: 'Poems, speeches and the long quotes — with the words inside them',
     a: '#4A6FA5', d: '#243C63', tex: 'diag', av: 'encore', world: 'library', band: 'advanced' };
   const P = window.SB_POEMS || {};
-  const SEC = ['speeches', 'sonnets', 'haiku', 'byheart', 'prose'].map(k => [k, P[k]]).filter(x => x[1]);
+  /* The running order is an arc: grand, then formal, then tiny, then funny,
+     then the ones you keep, then prose. Limericks sit beside the haiku because
+     they are the other short form — and because a reader needs the joke after
+     seventeen syllables of snow. `filter` keeps a missing section harmless. */
+  const SEC = ['speeches', 'epics', 'sonnets', 'haiku', 'limericks', 'byheart', 'prose']
+    .map(k => [k, P[k]]).filter(x => x[1]);
   const allHard = [];
   SEC.forEach(([, sec]) => sec.pieces.forEach(p => (p.hard || []).forEach(h => allHard.push({ w: h.w, def: h.def, say: h.say }))));
   const rnd = mulberry(vol.n * 7919 + 17);
