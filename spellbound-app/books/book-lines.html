@@ -194,22 +194,49 @@
   .lb-step .t{font-family:'BB Kicker';font-size:8.6pt;letter-spacing:.11em;
     text-transform:uppercase;color:var(--accent-deep);margin-bottom:3pt}
   .lb-step p{margin:0;font-size:11pt;line-height:1.48;color:var(--ink)}
-  /* The margin page. A full-bleed wash of the part's plate at 20% was tried
-     first and printed as a smudge — a busy painted scene at low opacity is not
-     a ground, it is a stain. The plate is given its own room instead, as a
-     tailpiece band across the foot the way an anthology closes a section, and
-     it stops clear of the running foot so the folio never prints on it. */
+  /* The margin page takes its plate FULL PAGE. A flat 20% wash was tried first
+     and printed as a smudge; a tailpiece band across the foot read better but
+     left the top of the page bare. Full bleed at full strength with a scrim
+     that is heavy where the type sits and clears towards the foot lets the
+     picture be a picture and the lines stay readable over it. */
   .lb-marg{position:relative;overflow:hidden}
-  /* the body takes the room above the tailpiece and leads the lines out into
-     it, rather than stacking tight and leaving an inch and a half of nothing */
+  .lb-marg-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    z-index:0;filter:saturate(.9)}
+  /* The scrim clears towards the foot only as far as the TYPE allows. The first
+     cut dropped to 30% paper at the bottom, which put the last two lines and the
+     folio on top of Shakespeare's black doublet — the same illegible foot this
+     volume already had its scenery bands removed for. Lines run the full height
+     of this page, so the paper never thins below 76%. */
+  .lb-marg-scrim{position:absolute;inset:0;z-index:1;
+    background:linear-gradient(180deg,
+      color-mix(in srgb,var(--paper) 93%,transparent) 0%,
+      color-mix(in srgb,var(--paper) 87%,transparent) 45%,
+      color-mix(in srgb,var(--paper) 80%,transparent) 75%,
+      color-mix(in srgb,var(--paper) 76%,transparent) 100%)}
+  .lb-marg > .bb-head,.lb-marg > .bb-foot{z-index:3}
   .lb-marg-body{position:relative;z-index:2;display:flex;flex-direction:column;flex:1 1 auto;
-    padding-bottom:2.72in}
-  .lb-tail{position:absolute;left:0;right:0;bottom:.62in;height:2.45in;overflow:hidden;z-index:1}
-  .lb-tail img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.92)}
-  /* the top edge dissolves into the paper instead of butting against the type */
-  .lb-tail::before{content:'';position:absolute;inset:0;z-index:2;
-    background:linear-gradient(180deg,var(--paper) 0%,
-      color-mix(in srgb,var(--paper) 55%,transparent) 16%,transparent 40%)}
+    padding-bottom:1.15in}
+
+  /* The threshold page: the book's opening line over its own painting.
+     "More transparent" means more PAPER over the picture, not a fainter
+     picture — a washed-out image reads as a printing fault, a veiled one reads
+     as a decision. */
+  .lb-open{position:relative;overflow:hidden;padding:0;color:var(--ink)}
+  .lb-open-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+  .lb-open-scrim{position:absolute;inset:0;z-index:1;
+    background:linear-gradient(180deg,
+      color-mix(in srgb,var(--paper) 72%,transparent) 0%,
+      color-mix(in srgb,var(--paper) 90%,transparent) 34%,
+      color-mix(in srgb,var(--paper) 90%,transparent) 66%,
+      color-mix(in srgb,var(--paper) 74%,transparent) 100%)}
+  .lb-open-body{position:absolute;z-index:2;left:.9in;right:.9in;top:3.05in;text-align:center}
+  .lb-open-kick{font-family:'BB Kicker';font-size:9.6pt;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--accent-deep);margin-bottom:.16in}
+  .lb-open h1{font-family:'BB World','BB Display';font-size:38pt;line-height:1.06;
+    color:var(--ink);margin:0}
+  .lb-open p{font-family:'BB Display';font-size:14.5pt;line-height:1.75;color:var(--ink);
+    margin:.30in auto 0;max-width:4.9in}
+  .lb-open .bb-foot{z-index:3}
   .lb-hand{font-family:'BB Kicker';font-size:8.6pt;letter-spacing:.10em;text-transform:uppercase;
     color:var(--accent-deep);margin:.02in 0 .16in}
   .lb-hero{position:relative;padding:.02in 0 .18in .40in;border-bottom:1px solid var(--hairline)}
@@ -432,24 +459,29 @@
     color:#3E2708;border-radius:999px;padding:.085in .26in;font-family:'BB Display';font-weight:800;font-size:12.5pt;
     letter-spacing:.01em;box-shadow:0 3pt 10pt rgba(12,9,28,.4), inset 0 -2pt 0 rgba(140,86,10,.28)">quizzes &amp; puzzles</span></div>
   </div>
-<div class="page" data-vol="22" style="color:#fff;padding:0;background:#241E33">
-    <img src="art/b22-divider.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
-    <div style="position:absolute;top:1.7in;left:.7in;right:.7in;text-align:center">
-      <div style="font-family:'BB Kicker';letter-spacing:.14em;font-size:11pt;text-shadow:0 2px 6px rgba(0,0,0,.4)">WELCOME TO</div>
-      <h1 class="coverTitle" style="font-size:40pt;transform:rotate(0deg)">The Great Library</h1>
-      <p style="font-family:'BB Kicker';font-size:12.5pt;max-width:5.4in;margin:.16in auto 0;text-shadow:0 2px 8px rgba(0,0,0,.5);line-height:1.5"></p></div>
-    <div class="bb-foot" style="color:rgba(255,255,255,.85)"><span>Bizzing Bee · Lines Worth Keeping</span><span>1</span></div>
-  </div>
+<div class="page lb-open" data-vol="22">
+      <img class="lb-open-art" src="art/b22-divider.jpg" alt="">
+      <div class="lb-open-scrim"></div>
+      <div class="lb-open-body">
+        <div class="lb-open-kick">Lines Worth Keeping</div>
+        <h1>Learn one by heart.</h1>
+        <p>A poem you have by heart is a poem you own.<br>
+        It is yours at three in the morning,<br>
+        in the dark, with no book in the room.<br>
+        Nothing here is too long to learn in a week.</p>
+      </div>
+      <div class="bb-foot"><span>Bizzing Bee &middot; Lines Worth Keeping</span><span>1</span></div>
+    </div>
 <div class="page" data-verso data-vol="22" style="display:flex;flex-direction:column">
     <div class="bb-head"><span>Lines Worth Keeping</span><span>How this book works</span></div>
-    <div style="margin-top:.4in"><h1 style="font-size:26pt">Learn one by heart.</h1></div>
+    <div style="margin-top:.4in"><h1 style="font-size:23pt">Five things to do with a poem.</h1></div>
     <!-- This page used to open with the book's cartoon mascot delivering the idea
          from a speech bubble. Everything else in this volume is painted and set
          like a printed anthology, and the sprite made the first page a reader
          sees look like it belonged to a different book for a younger child. The
          thought is better said straight, so it is said straight. -->
-    <p style="font-family:'BB Kicker';font-size:12.4pt;line-height:1.55;color:var(--muted);max-width:5.6in;margin:.12in 0 .22in">
-      Knowing a poem by heart is not showing off. It is the only way to own one &mdash; to have it at three in the morning when there is no book. Every piece in here is short enough to learn in a week.</p>
+    <p style="font-family:'BB Kicker';font-size:11.4pt;line-height:1.5;color:var(--muted);max-width:5.6in;margin:.10in 0 .16in">
+      In this order, and none of it takes long.</p>
     <div class="lb-steps" style="flex:0 0 auto">
     <div class="lb-step"><div class="n">1</div>
       <div class="b"><div class="t">Read it out loud, once</div><p>Poetry is a sound before it is a meaning. You will hear the shape before you can explain it.</p></div></div><div class="lb-step"><div class="n">2</div>
@@ -473,25 +505,25 @@
           <span style="font-family:'BB Display';font-size:10.6pt;line-height:1.3;flex:1">The Bard</span>
           <span style="font-family:'BB Mono';font-size:8.6pt;color:var(--muted);flex-shrink:0">30</span></div><div style="display:flex;gap:.10in;align-items:baseline">
           <span style="font-family:'BB Kicker';font-size:9pt;color:var(--accent);flex-shrink:0;min-width:.30in">II</span>
-          <span style="font-family:'BB Display';font-size:10.6pt;line-height:1.3;flex:1">Speeches that changed something</span>
+          <span style="font-family:'BB Display';font-size:10.6pt;line-height:1.3;flex:1">Speeches That Changed Something</span>
           <span style="font-family:'BB Mono';font-size:8.6pt;color:var(--muted);flex-shrink:0">7</span></div><div style="display:flex;gap:.10in;align-items:baseline">
           <span style="font-family:'BB Kicker';font-size:9pt;color:var(--accent);flex-shrink:0;min-width:.30in">III</span>
-          <span style="font-family:'BB Display';font-size:10.6pt;line-height:1.3;flex:1">The oldest lines we still say</span>
+          <span style="font-family:'BB Display';font-size:10.6pt;line-height:1.3;flex:1">The Oldest Lines We Still Say</span>
           <span style="font-family:'BB Mono';font-size:8.6pt;color:var(--muted);flex-shrink:0">11</span></div><div style="display:flex;gap:.10in;align-items:baseline">
           <span style="font-family:'BB Kicker';font-size:9pt;color:var(--accent);flex-shrink:0;min-width:.30in">IV</span>
-          <span style="font-family:'BB Display';font-size:10.6pt;line-height:1.3;flex:1">Fourteen lines, and a turn</span>
+          <span style="font-family:'BB Display';font-size:10.6pt;line-height:1.3;flex:1">Fourteen Lines, and a Turn</span>
           <span style="font-family:'BB Mono';font-size:8.6pt;color:var(--muted);flex-shrink:0">11</span></div><div style="display:flex;gap:.10in;align-items:baseline">
           <span style="font-family:'BB Kicker';font-size:9pt;color:var(--accent);flex-shrink:0;min-width:.30in">V</span>
-          <span style="font-family:'BB Display';font-size:10.6pt;line-height:1.3;flex:1">Seventeen syllables</span>
+          <span style="font-family:'BB Display';font-size:10.6pt;line-height:1.3;flex:1">Seventeen Syllables</span>
           <span style="font-family:'BB Mono';font-size:8.6pt;color:var(--muted);flex-shrink:0">23</span></div><div style="display:flex;gap:.10in;align-items:baseline">
           <span style="font-family:'BB Kicker';font-size:9pt;color:var(--accent);flex-shrink:0;min-width:.30in">VI</span>
-          <span style="font-family:'BB Display';font-size:10.6pt;line-height:1.3;flex:1">Five lines and a bounce</span>
+          <span style="font-family:'BB Display';font-size:10.6pt;line-height:1.3;flex:1">Five Lines and a Bounce</span>
           <span style="font-family:'BB Mono';font-size:8.6pt;color:var(--muted);flex-shrink:0">16</span></div><div style="display:flex;gap:.10in;align-items:baseline">
           <span style="font-family:'BB Kicker';font-size:9pt;color:var(--accent);flex-shrink:0;min-width:.30in">VII</span>
-          <span style="font-family:'BB Display';font-size:10.6pt;line-height:1.3;flex:1">Poems worth knowing by heart</span>
+          <span style="font-family:'BB Display';font-size:10.6pt;line-height:1.3;flex:1">Poems Worth Knowing by Heart</span>
           <span style="font-family:'BB Mono';font-size:8.6pt;color:var(--muted);flex-shrink:0">25</span></div><div style="display:flex;gap:.10in;align-items:baseline">
           <span style="font-family:'BB Kicker';font-size:9pt;color:var(--accent);flex-shrink:0;min-width:.30in">VIII</span>
-          <span style="font-family:'BB Display';font-size:10.6pt;line-height:1.3;flex:1">The long quote</span>
+          <span style="font-family:'BB Display';font-size:10.6pt;line-height:1.3;flex:1">The Long Quote</span>
           <span style="font-family:'BB Mono';font-size:8.6pt;color:var(--muted);flex-shrink:0">7</span></div>
       </div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>2</span></div></div>
@@ -926,6 +958,8 @@
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>33</span></div></div>
 <div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
+      <img class="lb-marg-art" src="art/lbm-shakespeare.jpg" alt="">
+      <div class="lb-marg-scrim"></div>
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
       <div class="lb-marg-body">
       <div style="margin-top:.4in"><div class="kick">The Bard</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
@@ -943,7 +977,6 @@ As dreams are made on, and our little life
 Is rounded with a sleep.</div></div><div class="lb-line"><div class="q">The robbed that smiles steals something from the thief.</div></div><div class="lb-line"><div class="q">This above all: to thine own self be true,
 And it must follow, as the night the day.</div></div>
       </div></div>
-      <div class="lb-tail"><img src="art/sc-shakespeare.jpg" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>34</span></div></div>
 <div class="page sc-page" data-vol="22">
     <div class="sc-frame"><img class="sc-art" src="art/sc-speeches.jpg" alt=""></div>
@@ -951,13 +984,13 @@ And it must follow, as the night the day.</div></div>
     <div class="sc-body">
       <div class="sc-num">Part II of 8</div>
       <div class="sc-rule"></div>
-      <h1>Speeches that changed something</h1>
+      <h1>Speeches That Changed Something</h1>
       <p class="sc-blurb">Not plays — real rooms, real days, and a person standing up with everything resting on the next sentence. Every one of these was spoken aloud before it was ever printed.</p></div>
     <div class="sc-count">7 pieces &nbsp;&middot;&nbsp; Abraham Lincoln &middot; Sojourner Truth &middot; Theodore Roosevelt &middot; and others</div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>35</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#f2ddc0">
     <img class="pm-ground" src="art/pp-with-malice-toward-none.jpg" alt="" style="object-position:30% 72%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Speeches that changed something</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Speeches That Changed Something</span></div>
     <div class="pm-head">
     <div class="kick">Second Inaugural Address, Washington</div>
     <h2 style="font-size:22pt">With malice toward none</h2>
@@ -971,7 +1004,7 @@ And it must follow, as the night the day.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>36</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e3ddc7">
     <img class="pm-ground" src="art/pp-ain-t-i-a-woman.jpg" alt="" style="object-position:72% 28%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Speeches that changed something</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Speeches That Changed Something</span></div>
     <div class="pm-head">
     <div class="kick">Women’s Convention, Akron, Ohio</div>
     <h2 style="font-size:22pt">Ain’t I a Woman?</h2>
@@ -985,7 +1018,7 @@ And it must follow, as the night the day.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>37</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#dbe0d6">
     <img class="pm-ground" src="art/pp-the-man-in-the-arena.jpg" alt="" style="object-position:50% 18%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Speeches that changed something</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Speeches That Changed Something</span></div>
     <div class="pm-head">
     <div class="kick">Citizenship in a Republic, Paris</div>
     <h2 style="font-size:22pt">The Man in the Arena</h2>
@@ -999,7 +1032,7 @@ And it must follow, as the night the day.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>38</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#d6d8e2">
     <img class="pm-ground" src="art/pp-the-only-thing-we-have-to-fear.jpg" alt="" style="object-position:50% 82%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Speeches that changed something</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Speeches That Changed Something</span></div>
     <div class="pm-head">
     <div class="kick">First Inaugural Address, Washington</div>
     <h2 style="font-size:19pt">The only thing we have to fear</h2>
@@ -1013,7 +1046,7 @@ And it must follow, as the night the day.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>39</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#dfeaf5">
     <img class="pm-ground" src="art/pp-i-will-fight-no-more-forever.jpg" alt="" style="object-position:22% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Speeches that changed something</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Speeches That Changed Something</span></div>
     <div class="pm-head">
     <div class="kick">Surrender near the Bear Paw Mountains, Montana</div>
     <h2 style="font-size:19pt">I will fight no more forever</h2>
@@ -1027,7 +1060,7 @@ And it must follow, as the night the day.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>40</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#f2ddc0">
     <img class="pm-ground" src="art/pp-a-tryst-with-destiny.jpg" alt="" style="object-position:78% 45%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Speeches that changed something</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Speeches That Changed Something</span></div>
     <div class="pm-head">
     <div class="kick">To the Constituent Assembly of India, New Delhi</div>
     <h2 style="font-size:22pt">A tryst with destiny</h2>
@@ -1041,7 +1074,7 @@ And it must follow, as the night the day.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>41</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e3d3c2">
     <img class="pm-ground" src="art/pp-give-me-liberty-or-give-me-death.jpg" alt="" style="object-position:50% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Speeches that changed something</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Speeches That Changed Something</span></div>
     <div class="pm-head">
     <div class="kick">St. John’s Church, Richmond, Virginia</div>
     <h2 style="font-size:19pt">Give me liberty, or give me death!</h2>
@@ -1054,9 +1087,11 @@ And it must follow, as the night the day.</div></div>
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>42</span></div></div>
 <div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
+      <img class="lb-marg-art" src="art/sc-speeches.jpg" alt="">
+      <div class="lb-marg-scrim"></div>
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
       <div class="lb-marg-body">
-      <div style="margin-top:.4in"><div class="kick">Speeches that changed something</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
+      <div style="margin-top:.4in"><div class="kick">Speeches That Changed Something</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
       <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .04in">Single lines by the writers in this part &mdash; the ones that broke off from their poems and went out into the language on their own.</p>
       
       <div class="lb-hero">
@@ -1065,7 +1100,6 @@ And it must follow, as the night the day.</div></div>
       <div class="lb-rest">
       <div class="lb-line"><div class="q">No man has a good enough memory to be a successful liar.</div><div class="by">&mdash; Abraham Lincoln</div></div><div class="lb-line"><div class="q">I am a slow walker, but I never walk back.</div><div class="by">&mdash; Abraham Lincoln</div></div><div class="lb-line"><div class="q">Am I not destroying my enemies when I make friends of them?</div><div class="by">&mdash; Abraham Lincoln</div></div><div class="lb-line"><div class="q">Nobody cares how much you know, until they know how much you care.</div><div class="by">&mdash; Theodore Roosevelt</div></div><div class="lb-line"><div class="q">Happiness is not in the mere possession of money; it lies in the joy of achievement.</div><div class="by">&mdash; Franklin D. Roosevelt</div></div><div class="lb-line"><div class="q">A smooth sea never made a skilled sailor.</div><div class="by">&mdash; Franklin D. Roosevelt</div></div>
       </div></div>
-      <div class="lb-tail"><img src="art/sc-speeches.jpg" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>43</span></div></div>
 <div class="page sc-page" data-vol="22">
     <div class="sc-frame"><img class="sc-art" src="art/sc-epics.jpg" alt=""></div>
@@ -1073,13 +1107,13 @@ And it must follow, as the night the day.</div></div>
     <div class="sc-body">
       <div class="sc-num">Part III of 8</div>
       <div class="sc-rule"></div>
-      <h1>The oldest lines we still say</h1>
+      <h1>The Oldest Lines We Still Say</h1>
       <p class="sc-blurb">These are the oldest stories anybody still tells, and not one of them was written in English. What you are reading is a translation — which means a second poet, centuries later, sat down and made the thing again in their own language. Every one here was translated before 1929 by someone who was a real poet in their own right, so the English is worth learning for its own sake: Pope’s couplets, Dryden’s line, FitzGerald’s quatrain. The date on each piece is the TRANSLATION’s date, not the poem’s.</p></div>
     <div class="sc-count">11 pieces &nbsp;&middot;&nbsp; Omar Khayyám &middot; Dante Alighieri &middot; Virgil &middot; Vyasa &middot; Válmíki &middot; and others</div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>44</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#cfe3f0">
     <img class="pm-ground" src="art/pp-lo-praise-of-the-prowess-of-people-kings.jpg" alt="" style="object-position:50% 30%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>The oldest lines we still say</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>The Oldest Lines We Still Say</span></div>
     <div class="pm-head">
     <div class="kick">Beowulf, Prologue (Fitt I)</div>
     <h2 style="font-size:16pt">Lo, praise of the prowess of people-kings</h2>
@@ -1093,7 +1127,7 @@ And it must follow, as the night the day.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>45</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#f2ddc0">
     <img class="pm-ground" src="art/pp-awake-for-morning-in-the-bowl-of-night.jpg" alt="" style="object-position:30% 72%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>The oldest lines we still say</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>The Oldest Lines We Still Say</span></div>
     <div class="pm-head">
     <div class="kick">The Rubáiyát of Omar Khayyám, quatrains I, XI and LI (first edition)</div>
     <h2 style="font-size:16pt">Awake! for Morning in the Bowl of Night</h2>
@@ -1107,7 +1141,7 @@ And it must follow, as the night the day.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>46</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#d9e6cf">
     <img class="pm-ground" src="art/pp-midway-upon-the-journey-of-our-life.jpg" alt="" style="object-position:72% 28%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>The oldest lines we still say</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>The Oldest Lines We Still Say</span></div>
     <div class="pm-head">
     <div class="kick">The Divine Comedy: Inferno, Canto I</div>
     <h2 style="font-size:19pt">Midway upon the journey of our life</h2>
@@ -1121,7 +1155,7 @@ And it must follow, as the night the day.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>47</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e3d3c2">
     <img class="pm-ground" src="art/pp-arms-and-the-man-i-sing.jpg" alt="" style="object-position:50% 18%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>The oldest lines we still say</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>The Oldest Lines We Still Say</span></div>
     <div class="pm-head">
     <div class="kick">The Aeneid, Book I</div>
     <h2 style="font-size:22pt">Arms, and the man I sing</h2>
@@ -1135,7 +1169,7 @@ And it must follow, as the night the day.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>48</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#f2d5c4">
     <img class="pm-ground" src="art/pp-never-the-spirit-was-born.jpg" alt="" style="object-position:50% 82%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>The oldest lines we still say</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>The Oldest Lines We Still Say</span></div>
     <div class="pm-head">
     <div class="kick">The Song Celestial — Bhagavad Gita, Book II</div>
     <h2 style="font-size:22pt">Never the spirit was born</h2>
@@ -1149,7 +1183,7 @@ And it must follow, as the night the day.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>49</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e3d3c2">
     <img class="pm-ground" src="art/pp-do-thine-allotted-task.jpg" alt="" style="object-position:22% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>The oldest lines we still say</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>The Oldest Lines We Still Say</span></div>
     <div class="pm-head">
     <div class="kick">The Song Celestial — Bhagavad Gita, Book III (Virtue in Work)</div>
     <h2 style="font-size:22pt">Do thine allotted task</h2>
@@ -1163,7 +1197,7 @@ And it must follow, as the night the day.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>50</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#d9e6cf">
     <img class="pm-ground" src="art/pp-s-t-s-speech.jpg" alt="" style="object-position:50% 45%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>The oldest lines we still say</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>The Oldest Lines We Still Say</span></div>
     <div class="pm-head">
     <div class="kick">The Rámáyan of Válmíki, Book II, Canto XXVII</div>
     <h2 style="font-size:22pt">Sítá’s Speech</h2>
@@ -1177,7 +1211,7 @@ And it must follow, as the night the day.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>51</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#d2e6e6">
     <img class="pm-ground" src="art/pp-the-yaksha-s-questions.jpg" alt="" style="object-position:50% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>The oldest lines we still say</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>The Oldest Lines We Still Say</span></div>
     <div class="pm-head">
     <div class="kick">The Mahabharata, Book 3: Vana Parva (the Yaksha’s riddles at the lake)</div>
     <h2 style="font-size:22pt">The Yaksha’s Questions</h2>
@@ -1191,7 +1225,7 @@ And it must follow, as the night the day.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>52</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e3d3c2">
     <img class="pm-ground" src="art/pp-the-wrath-of-achilles.jpg" alt="" style="object-position:50% 30%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>The oldest lines we still say</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>The Oldest Lines We Still Say</span></div>
     <div class="pm-head">
     <div class="kick">The Iliad, Book I, lines 1–14, trans. Alexander Pope</div>
     <h2 style="font-size:22pt">The wrath of Achilles</h2>
@@ -1205,7 +1239,7 @@ And it must follow, as the night the day.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>53</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#cfe3f0">
     <img class="pm-ground" src="art/pp-the-man-for-wisdom-s-various-arts-renown-d.jpg" alt="" style="object-position:30% 72%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>The oldest lines we still say</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>The Oldest Lines We Still Say</span></div>
     <div class="pm-head">
     <div class="kick">The Odyssey, Book I, lines 1–14, trans. Alexander Pope</div>
     <h2 style="font-size:16pt">The man for wisdom’s various arts renown’d</h2>
@@ -1219,7 +1253,7 @@ And it must follow, as the night the day.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>54</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#f2ddc0">
     <img class="pm-ground" src="art/pp-gita-saar-the-essence.jpg" alt="" style="object-position:50% 45%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>The oldest lines we still say</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>The Oldest Lines We Still Say</span></div>
     <div class="pm-head">
     <div class="kick">The counsel of the Gita as it is remembered and repeated</div>
     <h2 style="font-size:22pt">Gita Saar — the essence</h2>
@@ -1232,9 +1266,11 @@ And it must follow, as the night the day.</div></div>
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>55</span></div></div>
 <div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
+      <img class="lb-marg-art" src="art/sc-epics.jpg" alt="">
+      <div class="lb-marg-scrim"></div>
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
       <div class="lb-marg-body">
-      <div style="margin-top:.4in"><div class="kick">The oldest lines we still say</div><h2 style="font-size:19pt">Lines that got loose</h2></div>
+      <div style="margin-top:.4in"><div class="kick">The Oldest Lines We Still Say</div><h2 style="font-size:19pt">Lines that got loose</h2></div>
       <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .04in">Single lines that outgrew the poems they came from and went out into the language on their own.</p>
       
       <div class="lb-hero">
@@ -1248,7 +1284,6 @@ A host, of golden daffodils.</div><div class="by">&mdash; William Wordsworth</di
 Ladybird, nor butterfly,
 Nor moth with dusty wing.</div><div class="by">&mdash; Christina Rossetti</div></div><div class="lb-line"><div class="q">Present fears are less than horrible imaginings.</div><div class="by">&mdash; William Shakespeare</div></div>
       </div></div>
-      <div class="lb-tail"><img src="art/sc-epics.jpg" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>56</span></div></div>
 <div class="page sc-page" data-vol="22">
     <div class="sc-frame"><img class="sc-art" src="art/sc-sonnets.jpg" alt=""></div>
@@ -1256,13 +1291,13 @@ Nor moth with dusty wing.</div><div class="by">&mdash; Christina Rossetti</div><
     <div class="sc-body">
       <div class="sc-num">Part IV of 8</div>
       <div class="sc-rule"></div>
-      <h1>Fourteen lines, and a turn</h1>
+      <h1>Fourteen Lines, and a Turn</h1>
       <p class="sc-blurb">A sonnet is an argument with a hinge in it. Eight lines set a problem, then something shifts — usually at line nine, in the English form at the final couplet — and the poem answers itself. Find the hinge and you have read the poem.</p></div>
     <div class="sc-count">11 pieces &nbsp;&middot;&nbsp; John Keats &middot; William Wordsworth &middot; Percy Bysshe Shelley &middot; and others</div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>57</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#cfe3f0">
     <img class="pm-ground" src="art/pp-on-first-looking-into-chapman-s-homer.jpg" alt="" style="object-position:50% 18%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Fourteen lines, and a turn</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Fourteen Lines, and a Turn</span></div>
     <div class="pm-head">
     <div class="kick">The Examiner</div>
     <h2 style="font-size:16pt">On First Looking into Chapman’s Homer</h2>
@@ -1276,7 +1311,7 @@ Nor moth with dusty wing.</div><div class="by">&mdash; Christina Rossetti</div><
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>58</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#d6d8e2">
     <img class="pm-ground" src="art/pp-composed-upon-westminster-bridge.jpg" alt="" style="object-position:50% 82%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Fourteen lines, and a turn</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Fourteen Lines, and a Turn</span></div>
     <div class="pm-head">
     <div class="kick">Poems, in Two Volumes</div>
     <h2 style="font-size:19pt">Composed upon Westminster Bridge</h2>
@@ -1290,7 +1325,7 @@ Nor moth with dusty wing.</div><div class="by">&mdash; Christina Rossetti</div><
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>59</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e0d3c0">
     <img class="pm-ground" src="art/pp-ozymandias.jpg" alt="" style="object-position:22% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Fourteen lines, and a turn</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Fourteen Lines, and a Turn</span></div>
     <div class="pm-head">
     <div class="kick">The Examiner</div>
     <h2 style="font-size:22pt">Ozymandias</h2>
@@ -1304,7 +1339,7 @@ Nor moth with dusty wing.</div><div class="by">&mdash; Christina Rossetti</div><
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>60</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#cdc8e6">
     <img class="pm-ground" src="art/pp-death-be-not-proud-holy-sonnet-10.jpg" alt="" style="object-position:78% 45%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Fourteen lines, and a turn</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Fourteen Lines, and a Turn</span></div>
     <div class="pm-head">
     <div class="kick">Holy Sonnets</div>
     <h2 style="font-size:19pt">Death, be not proud (Holy Sonnet 10)</h2>
@@ -1318,7 +1353,7 @@ Nor moth with dusty wing.</div><div class="by">&mdash; Christina Rossetti</div><
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>61</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#cfe3f0">
     <img class="pm-ground" src="art/pp-the-world-is-too-much-with-us.jpg" alt="" style="object-position:50% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Fourteen lines, and a turn</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Fourteen Lines, and a Turn</span></div>
     <div class="pm-head">
     <div class="kick">Poems, in Two Volumes</div>
     <h2 style="font-size:19pt">The world is too much with us</h2>
@@ -1332,7 +1367,7 @@ Nor moth with dusty wing.</div><div class="by">&mdash; Christina Rossetti</div><
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>62</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#cdc8e6">
     <img class="pm-ground" src="art/pp-when-i-consider-how-my-light-is-spent.jpg" alt="" style="object-position:50% 30%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Fourteen lines, and a turn</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Fourteen Lines, and a Turn</span></div>
     <div class="pm-head">
     <div class="kick">Sonnet 19</div>
     <h2 style="font-size:16pt">When I consider how my light is spent</h2>
@@ -1346,7 +1381,7 @@ Nor moth with dusty wing.</div><div class="by">&mdash; Christina Rossetti</div><
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>63</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#d6d8e2">
     <img class="pm-ground" src="art/pp-the-new-colossus.jpg" alt="" style="object-position:30% 72%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Fourteen lines, and a turn</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Fourteen Lines, and a Turn</span></div>
     <div class="pm-head">
     <div class="kick">Written for the pedestal of the Statue of Liberty</div>
     <h2 style="font-size:22pt">The New Colossus</h2>
@@ -1360,7 +1395,7 @@ Nor moth with dusty wing.</div><div class="by">&mdash; Christina Rossetti</div><
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>64</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#cdc8e6">
     <img class="pm-ground" src="art/pp-when-i-have-fears-that-i-may-cease-to-be.jpg" alt="" style="object-position:72% 28%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Fourteen lines, and a turn</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Fourteen Lines, and a Turn</span></div>
     <div class="pm-head">
     <div class="kick">Written in a letter to J. H. Reynolds</div>
     <h2 style="font-size:16pt">When I have Fears that I May Cease to Be</h2>
@@ -1374,7 +1409,7 @@ Nor moth with dusty wing.</div><div class="by">&mdash; Christina Rossetti</div><
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>65</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#dfeaf5">
     <img class="pm-ground" src="art/pp-bright-star-would-i-were-stedfast-as-thou-ar.jpg" alt="" style="object-position:50% 18%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Fourteen lines, and a turn</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Fourteen Lines, and a Turn</span></div>
     <div class="pm-head">
     <div class="kick">Written in a volume of Shakespeare</div>
     <h2 style="font-size:16pt">Bright star, would I were stedfast as thou art</h2>
@@ -1388,7 +1423,7 @@ Nor moth with dusty wing.</div><div class="by">&mdash; Christina Rossetti</div><
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>66</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#f2ddc0">
     <img class="pm-ground" src="art/pp-god-s-grandeur.jpg" alt="" style="object-position:50% 82%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Fourteen lines, and a turn</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Fourteen Lines, and a Turn</span></div>
     <div class="pm-head">
     <div class="kick">Poems</div>
     <h2 style="font-size:22pt">God’s Grandeur</h2>
@@ -1402,7 +1437,7 @@ Nor moth with dusty wing.</div><div class="by">&mdash; Christina Rossetti</div><
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>67</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#cfe3f0">
     <img class="pm-ground" src="art/pp-it-is-a-beauteous-evening-calm-and-free.jpg" alt="" style="object-position:22% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Fourteen lines, and a turn</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Fourteen Lines, and a Turn</span></div>
     <div class="pm-head">
     <div class="kick">Poems, in Two Volumes</div>
     <h2 style="font-size:16pt">It is a beauteous evening, calm and free</h2>
@@ -1415,9 +1450,11 @@ Nor moth with dusty wing.</div><div class="by">&mdash; Christina Rossetti</div><
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>68</span></div></div>
 <div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
+      <img class="lb-marg-art" src="art/sc-sonnets.jpg" alt="">
+      <div class="lb-marg-scrim"></div>
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
       <div class="lb-marg-body">
-      <div style="margin-top:.4in"><div class="kick">Fourteen lines, and a turn</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
+      <div style="margin-top:.4in"><div class="kick">Fourteen Lines, and a Turn</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
       <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .04in">Single lines by the writers in this part &mdash; the ones that broke off from their poems and went out into the language on their own.</p>
       
       <div class="lb-hero">
@@ -1436,7 +1473,6 @@ From the earth thou springest
 Like a cloud of fire.</div><div class="by">&mdash; Percy Bysshe Shelley</div></div><div class="lb-line"><div class="q">No man is an island, entire of itself;
 every man is a piece of the continent.</div><div class="by">&mdash; John Donne</div></div>
       </div></div>
-      <div class="lb-tail"><img src="art/sc-sonnets.jpg" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>69</span></div></div>
 <div class="page sc-page" data-vol="22">
     <div class="sc-frame"><img class="sc-art" src="art/sc-haiku.jpg" alt=""></div>
@@ -1444,13 +1480,13 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="sc-body">
       <div class="sc-num">Part V of 8</div>
       <div class="sc-rule"></div>
-      <h1>Seventeen syllables</h1>
+      <h1>Seventeen Syllables</h1>
       <p class="sc-blurb">A haiku is not a small poem; it is a whole poem that has thrown away everything except the moment. Three lines, traditionally five syllables then seven then five, and somewhere in it a season and a cut — a place where the poem turns without saying so. The Japanese is given in rōmaji, and the English underneath is a plain rendering, not a translation trying to be a poem.</p></div>
     <div class="sc-count">23 pieces &nbsp;&middot;&nbsp; Matsuo Bashō &middot; Kobayashi Issa &middot; Yosa Buson &middot; Fukuda Chiyo-ni &middot; and others</div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>70</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#d2e6e6">
     <img class="pm-ground" src="art/pp-the-old-pond.jpg" alt="" style="object-position:78% 45%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">Haru no Hi</div>
     <h2 style="font-size:22pt">The old pond</h2>
@@ -1464,7 +1500,7 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>71</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e8ddc9">
     <img class="pm-ground" src="art/pp-on-a-bare-branch.jpg" alt="" style="object-position:50% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">Azuma Nikki</div>
     <h2 style="font-size:22pt">On a bare branch</h2>
@@ -1478,7 +1514,7 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>72</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e3d3c2">
     <img class="pm-ground" src="art/pp-the-summer-grasses.jpg" alt="" style="object-position:50% 30%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">Oku no Hosomichi</div>
     <h2 style="font-size:22pt">The summer grasses</h2>
@@ -1492,7 +1528,7 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>73</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#d2e6e6">
     <img class="pm-ground" src="art/pp-a-world-of-dew.jpg" alt="" style="object-position:30% 72%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">Ora ga Haru</div>
     <h2 style="font-size:22pt">A world of dew</h2>
@@ -1506,7 +1542,7 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>74</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#dbe0d6">
     <img class="pm-ground" src="art/pp-the-snail.jpg" alt="" style="object-position:72% 28%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">Collected haiku</div>
     <h2 style="font-size:22pt">The snail</h2>
@@ -1520,7 +1556,7 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>75</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#cfe3f0">
     <img class="pm-ground" src="art/pp-the-lightning-flash.jpg" alt="" style="object-position:50% 18%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">Collected haiku</div>
     <h2 style="font-size:22pt">The lightning flash</h2>
@@ -1534,7 +1570,7 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>76</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#f2ddc0">
     <img class="pm-ground" src="art/pp-first-autumn-morning.jpg" alt="" style="object-position:50% 82%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">Collected haiku</div>
     <h2 style="font-size:22pt">First autumn morning</h2>
@@ -1548,7 +1584,7 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>77</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#cdc8e6">
     <img class="pm-ground" src="art/pp-the-temple-bell-stops.jpg" alt="" style="object-position:22% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">Collected haiku</div>
     <h2 style="font-size:22pt">The temple bell stops</h2>
@@ -1562,7 +1598,7 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>78</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#d2e6e6">
     <img class="pm-ground" src="art/pp-spring-rain.jpg" alt="" style="object-position:78% 45%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">Collected haiku</div>
     <h2 style="font-size:22pt">Spring rain</h2>
@@ -1576,7 +1612,7 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>79</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#dfeaf5">
     <img class="pm-ground" src="art/pp-the-piercing-chill.jpg" alt="" style="object-position:50% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">Collected haiku</div>
     <h2 style="font-size:22pt">The piercing chill</h2>
@@ -1590,7 +1626,7 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>80</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#cdc8e6">
     <img class="pm-ground" src="art/pp-the-child-of-poverty.jpg" alt="" style="object-position:50% 30%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">Collected haiku</div>
     <h2 style="font-size:22pt">The child of poverty</h2>
@@ -1604,7 +1640,7 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>81</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#f0d3e2">
     <img class="pm-ground" src="art/pp-in-this-world.jpg" alt="" style="object-position:30% 72%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">Collected haiku</div>
     <h2 style="font-size:22pt">In this world</h2>
@@ -1618,7 +1654,7 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>82</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#dbe0d6">
     <img class="pm-ground" src="art/pp-such-stillness.jpg" alt="" style="object-position:72% 28%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">Oku no Hosomichi</div>
     <h2 style="font-size:22pt">Such stillness</h2>
@@ -1632,7 +1668,7 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>83</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e3ddc7">
     <img class="pm-ground" src="art/pp-sick-on-a-journey.jpg" alt="" style="object-position:50% 18%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">His last poem</div>
     <h2 style="font-size:22pt">Sick on a journey</h2>
@@ -1646,7 +1682,7 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>84</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#dfeaf5">
     <img class="pm-ground" src="art/pp-first-cold-shower.jpg" alt="" style="object-position:50% 82%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">Collected haiku</div>
     <h2 style="font-size:22pt">First cold shower</h2>
@@ -1660,7 +1696,7 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>85</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#dbe0d6">
     <img class="pm-ground" src="art/pp-peaks-of-cloud.jpg" alt="" style="object-position:22% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">Oku no Hosomichi</div>
     <h2 style="font-size:22pt">Peaks of cloud</h2>
@@ -1674,7 +1710,7 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>86</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#f0d3e2">
     <img class="pm-ground" src="art/pp-rape-blossoms.jpg" alt="" style="object-position:78% 45%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">Collected haiku</div>
     <h2 style="font-size:22pt">Rape blossoms</h2>
@@ -1688,7 +1724,7 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>87</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#cdc8e6">
     <img class="pm-ground" src="art/pp-on-the-temple-bell.jpg" alt="" style="object-position:50% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">Collected haiku</div>
     <h2 style="font-size:22pt">On the temple bell</h2>
@@ -1702,7 +1738,7 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>88</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#d2e6e6">
     <img class="pm-ground" src="art/pp-evening-wind.jpg" alt="" style="object-position:50% 30%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">Collected haiku</div>
     <h2 style="font-size:22pt">Evening wind</h2>
@@ -1716,7 +1752,7 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>89</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e8ddc9">
     <img class="pm-ground" src="art/pp-come-and-play-with-me.jpg" alt="" style="object-position:30% 72%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">Ora ga Haru</div>
     <h2 style="font-size:22pt">Come and play with me</h2>
@@ -1730,7 +1766,7 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>90</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#f0d3e2">
     <img class="pm-ground" src="art/pp-the-morning-glory.jpg" alt="" style="object-position:72% 28%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">Chiyo-ni kushū</div>
     <h2 style="font-size:22pt">The morning glory</h2>
@@ -1744,7 +1780,7 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>91</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#f2ddc0">
     <img class="pm-ground" src="art/pp-i-bite-into-a-persimmon.jpg" alt="" style="object-position:50% 18%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">Written at Hōryū-ji</div>
     <h2 style="font-size:22pt">I bite into a persimmon</h2>
@@ -1758,7 +1794,7 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>92</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#dfeaf5">
     <img class="pm-ground" src="art/pp-again-and-again.jpg" alt="" style="object-position:50% 82%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen syllables</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Seventeen Syllables</span></div>
     <div class="pm-head">
     <div class="kick">Collected haiku</div>
     <h2 style="font-size:22pt">Again and again</h2>
@@ -1771,9 +1807,11 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>93</span></div></div>
 <div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
+      <img class="lb-marg-art" src="art/sc-haiku.jpg" alt="">
+      <div class="lb-marg-scrim"></div>
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
       <div class="lb-marg-body">
-      <div style="margin-top:.4in"><div class="kick">Seventeen syllables</div><h2 style="font-size:19pt">Lines that got loose</h2></div>
+      <div style="margin-top:.4in"><div class="kick">Seventeen Syllables</div><h2 style="font-size:19pt">Lines that got loose</h2></div>
       <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .04in">Single lines that outgrew the poems they came from and went out into the language on their own.</p>
       
       <div class="lb-hero">
@@ -1786,7 +1824,6 @@ I pluck you out of the crannies.</div><div class="by">&mdash; Alfred, Lord Tenny
 I love thee to the depth and breadth and height
 My soul can reach.</div><div class="by">&mdash; Elizabeth Barrett Browning</div></div><div class="lb-line"><div class="q">No man is an island, entire of itself.</div><div class="by">&mdash; John Donne</div></div>
       </div></div>
-      <div class="lb-tail"><img src="art/sc-haiku.jpg" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>94</span></div></div>
 <div class="page sc-page" data-vol="22">
     <div class="sc-frame"><img class="sc-art" src="art/sc-limericks.jpg" alt=""></div>
@@ -1794,13 +1831,13 @@ My soul can reach.</div><div class="by">&mdash; Elizabeth Barrett Browning</div>
     <div class="sc-body">
       <div class="sc-num">Part VI of 8</div>
       <div class="sc-rule"></div>
-      <h1>Five lines and a bounce</h1>
+      <h1>Five Lines and a Bounce</h1>
       <p class="sc-blurb">A limerick is five lines wearing a fixed uniform: lines one, two and five rhyme with each other and run long, while lines three and four rhyme with each other and run short — AABBA, and you can hear the shape before you understand the sentence. The engine underneath is the anapaest, that da-da-DUM gallop that will not let you mumble, so every syllable has to be struck cleanly or the line falls over. That is exactly why a spelling book wants them: a limerick is a machine for making words audible, forcing the ear to count the beats in a word like ca-PA-cious or ex-CEED-ing-ly before the hand ever tries to spell it.</p></div>
     <div class="sc-count">16 pieces &nbsp;&middot;&nbsp; Edward Lear &middot; Dixon Lanier Merritt &middot; Cosmo Monkhouse &middot; and others</div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>95</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e8ddc9">
     <img class="pm-ground" src="art/pp-there-was-an-old-man-with-a-beard.jpg" alt="" style="object-position:22% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five lines and a bounce</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five Lines and a Bounce</span></div>
     <div class="pm-head">
     <div class="kick">A Book of Nonsense</div>
     <h2 style="font-size:19pt">There was an Old Man with a beard</h2>
@@ -1814,7 +1851,7 @@ My soul can reach.</div><div class="by">&mdash; Elizabeth Barrett Browning</div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>96</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#ecd7c8">
     <img class="pm-ground" src="art/pp-there-was-an-old-man-with-a-nose.jpg" alt="" style="object-position:78% 45%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five lines and a bounce</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five Lines and a Bounce</span></div>
     <div class="pm-head">
     <div class="kick">A Book of Nonsense</div>
     <h2 style="font-size:19pt">There was an Old Man with a nose</h2>
@@ -1828,7 +1865,7 @@ My soul can reach.</div><div class="by">&mdash; Elizabeth Barrett Browning</div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>97</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e8ddc9">
     <img class="pm-ground" src="art/pp-there-was-a-young-lady-whose-bonnet.jpg" alt="" style="object-position:50% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five lines and a bounce</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five Lines and a Bounce</span></div>
     <div class="pm-head">
     <div class="kick">A Book of Nonsense</div>
     <h2 style="font-size:19pt">There was a Young Lady whose bonnet</h2>
@@ -1842,7 +1879,7 @@ My soul can reach.</div><div class="by">&mdash; Elizabeth Barrett Browning</div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>98</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#d2e6e6">
     <img class="pm-ground" src="art/pp-there-was-an-old-man-in-a-boat.jpg" alt="" style="object-position:50% 30%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five lines and a bounce</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five Lines and a Bounce</span></div>
     <div class="pm-head">
     <div class="kick">A Book of Nonsense</div>
     <h2 style="font-size:19pt">There was an Old Man in a boat</h2>
@@ -1856,7 +1893,7 @@ My soul can reach.</div><div class="by">&mdash; Elizabeth Barrett Browning</div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>99</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#f0d3e2">
     <img class="pm-ground" src="art/pp-there-was-an-old-person-of-dover.jpg" alt="" style="object-position:30% 72%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five lines and a bounce</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five Lines and a Bounce</span></div>
     <div class="pm-head">
     <div class="kick">A Book of Nonsense</div>
     <h2 style="font-size:19pt">There was an Old Person of Dover</h2>
@@ -1870,7 +1907,7 @@ My soul can reach.</div><div class="by">&mdash; Elizabeth Barrett Browning</div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>100</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#dfeaf5">
     <img class="pm-ground" src="art/pp-there-was-an-old-man-of-kamschatka.jpg" alt="" style="object-position:72% 28%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five lines and a bounce</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five Lines and a Bounce</span></div>
     <div class="pm-head">
     <div class="kick">A Book of Nonsense</div>
     <h2 style="font-size:19pt">There was an Old Man of Kamschatka</h2>
@@ -1884,7 +1921,7 @@ My soul can reach.</div><div class="by">&mdash; Elizabeth Barrett Browning</div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>101</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#dbe0d6">
     <img class="pm-ground" src="art/pp-there-was-an-old-person-of-ware.jpg" alt="" style="object-position:50% 18%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five lines and a bounce</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five Lines and a Bounce</span></div>
     <div class="pm-head">
     <div class="kick">A Book of Nonsense</div>
     <h2 style="font-size:19pt">There was an Old Person of Ware</h2>
@@ -1898,7 +1935,7 @@ My soul can reach.</div><div class="by">&mdash; Elizabeth Barrett Browning</div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>102</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#ecd7c8">
     <img class="pm-ground" src="art/pp-there-was-a-young-lady-whose-chin.jpg" alt="" style="object-position:50% 82%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five lines and a bounce</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five Lines and a Bounce</span></div>
     <div class="pm-head">
     <div class="kick">A Book of Nonsense</div>
     <h2 style="font-size:19pt">There was a Young Lady whose chin</h2>
@@ -1912,7 +1949,7 @@ My soul can reach.</div><div class="by">&mdash; Elizabeth Barrett Browning</div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>103</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e3ddc7">
     <img class="pm-ground" src="art/pp-there-was-a-young-lady-of-ryde.jpg" alt="" style="object-position:22% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five lines and a bounce</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five Lines and a Bounce</span></div>
     <div class="pm-head">
     <div class="kick">A Book of Nonsense</div>
     <h2 style="font-size:19pt">There was a Young Lady of Ryde</h2>
@@ -1926,7 +1963,7 @@ My soul can reach.</div><div class="by">&mdash; Elizabeth Barrett Browning</div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>104</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#d9e6cf">
     <img class="pm-ground" src="art/pp-there-was-an-old-man-who-said-hush.jpg" alt="" style="object-position:78% 45%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five lines and a bounce</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five Lines and a Bounce</span></div>
     <div class="pm-head">
     <div class="kick">More Nonsense</div>
     <h2 style="font-size:16pt">There was an Old Man who said, “Hush!”</h2>
@@ -1940,7 +1977,7 @@ My soul can reach.</div><div class="by">&mdash; Elizabeth Barrett Browning</div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>105</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#cfe3f0">
     <img class="pm-ground" src="art/pp-a-wonderful-bird-is-the-pelican.jpg" alt="" style="object-position:50% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five lines and a bounce</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five Lines and a Bounce</span></div>
     <div class="pm-head">
     <div class="kick">The Nashville Banner</div>
     <h2 style="font-size:19pt">A wonderful bird is the pelican</h2>
@@ -1954,7 +1991,7 @@ My soul can reach.</div><div class="by">&mdash; Elizabeth Barrett Browning</div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>106</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#d9e6cf">
     <img class="pm-ground" src="art/pp-there-was-a-young-lady-of-niger.jpg" alt="" style="object-position:50% 30%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five lines and a bounce</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five Lines and a Bounce</span></div>
     <div class="pm-head">
     <div class="kick">Traditional</div>
     <h2 style="font-size:19pt">There was a young lady of Niger</h2>
@@ -1968,7 +2005,7 @@ My soul can reach.</div><div class="by">&mdash; Elizabeth Barrett Browning</div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>107</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#cdc8e6">
     <img class="pm-ground" src="art/pp-there-once-was-a-man-from-peru.jpg" alt="" style="object-position:30% 72%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five lines and a bounce</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five Lines and a Bounce</span></div>
     <div class="pm-head">
     <div class="kick">Traditional</div>
     <h2 style="font-size:19pt">There once was a man from Peru</h2>
@@ -1982,7 +2019,7 @@ My soul can reach.</div><div class="by">&mdash; Elizabeth Barrett Browning</div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>108</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#cdc8e6">
     <img class="pm-ground" src="art/pp-there-was-a-young-lady-named-bright.jpg" alt="" style="object-position:72% 28%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five lines and a bounce</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five Lines and a Bounce</span></div>
     <div class="pm-head">
     <div class="kick">Punch</div>
     <h2 style="font-size:19pt">There was a young lady named Bright</h2>
@@ -1996,7 +2033,7 @@ My soul can reach.</div><div class="by">&mdash; Elizabeth Barrett Browning</div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>109</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#d2e6e6">
     <img class="pm-ground" src="art/pp-there-was-a-young-lady-of-lynn.jpg" alt="" style="object-position:50% 18%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five lines and a bounce</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five Lines and a Bounce</span></div>
     <div class="pm-head">
     <div class="kick">Traditional</div>
     <h2 style="font-size:19pt">There was a young lady of Lynn</h2>
@@ -2010,7 +2047,7 @@ My soul can reach.</div><div class="by">&mdash; Elizabeth Barrett Browning</div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>110</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#f2d5c4">
     <img class="pm-ground" src="art/pp-a-canner-exceedingly-canny.jpg" alt="" style="object-position:50% 82%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five lines and a bounce</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Five Lines and a Bounce</span></div>
     <div class="pm-head">
     <div class="kick">Traditional</div>
     <h2 style="font-size:19pt">A canner, exceedingly canny</h2>
@@ -2023,9 +2060,11 @@ My soul can reach.</div><div class="by">&mdash; Elizabeth Barrett Browning</div>
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>111</span></div></div>
 <div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
+      <img class="lb-marg-art" src="art/sc-limericks.jpg" alt="">
+      <div class="lb-marg-scrim"></div>
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
       <div class="lb-marg-body">
-      <div style="margin-top:.4in"><div class="kick">Five lines and a bounce</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
+      <div style="margin-top:.4in"><div class="kick">Five Lines and a Bounce</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
       <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .04in">Single lines by the writers in this part &mdash; the ones that broke off from their poems and went out into the language on their own.</p>
       <div class="lb-hand">All of them Edward Lear</div>
       <div class="lb-hero">
@@ -2043,7 +2082,6 @@ And they went to sea in a Sieve.</div></div><div class="lb-line"><div class="q">
 They danced by the light of the moon.</div></div><div class="lb-line"><div class="q">On the Coast of Coromandel
 Where the early pumpkins blow.</div></div>
       </div></div>
-      <div class="lb-tail"><img src="art/sc-limericks.jpg" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>112</span></div></div>
 <div class="page sc-page" data-vol="22">
     <div class="sc-frame"><img class="sc-art" src="art/sc-byheart.jpg" alt=""></div>
@@ -2051,13 +2089,13 @@ Where the early pumpkins blow.</div></div>
     <div class="sc-body">
       <div class="sc-num">Part VII of 8</div>
       <div class="sc-rule"></div>
-      <h1>Poems worth knowing by heart</h1>
+      <h1>Poems Worth Knowing by Heart</h1>
       <p class="sc-blurb">Learning a poem by heart is not showing off. It is the only way to own one — to have it available at three in the morning when there is no book. Every poem here is short enough to learn in a week.</p></div>
     <div class="sc-count">25 pieces &nbsp;&middot;&nbsp; Robert Frost &middot; William Ernest Henley &middot; Rudyard Kipling &middot; and others</div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>113</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e3ddc7">
     <img class="pm-ground" src="art/pp-the-road-not-taken.jpg" alt="" style="object-position:22% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">Mountain Interval</div>
     <h2 style="font-size:22pt">The Road Not Taken</h2>
@@ -2071,7 +2109,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>114</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#dfeaf5">
     <img class="pm-ground" src="art/pp-stopping-by-woods-on-a-snowy-evening.jpg" alt="" style="object-position:78% 45%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">New Hampshire</div>
     <h2 style="font-size:19pt">Stopping by Woods on a Snowy Evening</h2>
@@ -2085,7 +2123,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>115</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#cdc8e6">
     <img class="pm-ground" src="art/pp-invictus.jpg" alt="" style="object-position:50% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">Book of Verses</div>
     <h2 style="font-size:22pt">Invictus</h2>
@@ -2099,7 +2137,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>116</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#dbe0d6">
     <img class="pm-ground" src="art/pp-if.jpg" alt="" style="object-position:50% 30%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">Rewards and Fairies</div>
     <h2 style="font-size:22pt">If—</h2>
@@ -2113,7 +2151,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>117</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#f2d5c4">
     <img class="pm-ground" src="art/pp-the-tyger.jpg" alt="" style="object-position:30% 72%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">Songs of Experience</div>
     <h2 style="font-size:22pt">The Tyger</h2>
@@ -2127,7 +2165,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>118</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e8ddc9">
     <img class="pm-ground" src="art/pp-hope-is-the-thing-with-feathers.jpg" alt="" style="object-position:72% 28%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">Poems</div>
     <h2 style="font-size:19pt">"Hope" is the thing with feathers</h2>
@@ -2141,7 +2179,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>119</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#f0d3e2">
     <img class="pm-ground" src="art/pp-i-wandered-lonely-as-a-cloud.jpg" alt="" style="object-position:50% 18%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">Poems, in Two Volumes</div>
     <h2 style="font-size:19pt">I Wandered Lonely as a Cloud</h2>
@@ -2155,7 +2193,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>120</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e8ddc9">
     <img class="pm-ground" src="art/pp-dreams.jpg" alt="" style="object-position:50% 82%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">The Weary Blues era</div>
     <h2 style="font-size:22pt">Dreams</h2>
@@ -2169,7 +2207,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>121</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#d2e6e6">
     <img class="pm-ground" src="art/pp-the-lake-isle-of-innisfree.jpg" alt="" style="object-position:22% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">The Rose</div>
     <h2 style="font-size:22pt">The Lake Isle of Innisfree</h2>
@@ -2183,7 +2221,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>122</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#cdc8e6">
     <img class="pm-ground" src="art/pp-remember.jpg" alt="" style="object-position:78% 45%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">Goblin Market and Other Poems</div>
     <h2 style="font-size:22pt">Remember</h2>
@@ -2197,7 +2235,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>123</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#cfe3f0">
     <img class="pm-ground" src="art/pp-o-captain-my-captain.jpg" alt="" style="object-position:50% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">Sequel to Drum-Taps</div>
     <h2 style="font-size:22pt">O Captain! My Captain!</h2>
@@ -2211,7 +2249,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>124</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#cfe3f0">
     <img class="pm-ground" src="art/pp-sea-fever.jpg" alt="" style="object-position:50% 30%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">Salt-Water Ballads</div>
     <h2 style="font-size:22pt">Sea Fever</h2>
@@ -2225,7 +2263,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>125</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e0d3c0">
     <img class="pm-ground" src="art/pp-the-second-coming.jpg" alt="" style="object-position:30% 72%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">Michael Robartes and the Dancer</div>
     <h2 style="font-size:22pt">The Second Coming</h2>
@@ -2239,7 +2277,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>126</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e3d3c2">
     <img class="pm-ground" src="art/pp-in-flanders-fields.jpg" alt="" style="object-position:72% 28%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">Punch</div>
     <h2 style="font-size:22pt">In Flanders Fields</h2>
@@ -2253,7 +2291,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>127</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#cdc8e6">
     <img class="pm-ground" src="art/pp-she-walks-in-beauty.jpg" alt="" style="object-position:50% 18%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">Hebrew Melodies</div>
     <h2 style="font-size:22pt">She Walks in Beauty</h2>
@@ -2267,7 +2305,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>128</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#f0d3e2">
     <img class="pm-ground" src="art/pp-loveliest-of-trees-the-cherry-now.jpg" alt="" style="object-position:50% 82%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">A Shropshire Lad</div>
     <h2 style="font-size:19pt">Loveliest of trees, the cherry now</h2>
@@ -2281,7 +2319,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>129</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e3ddc7">
     <img class="pm-ground" src="art/pp-when-i-was-one-and-twenty.jpg" alt="" style="object-position:22% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">A Shropshire Lad</div>
     <h2 style="font-size:22pt">When I was one-and-twenty</h2>
@@ -2295,7 +2333,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>130</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#cfe3f0">
     <img class="pm-ground" src="art/pp-the-owl-and-the-pussy-cat.jpg" alt="" style="object-position:78% 45%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">Nonsense Songs</div>
     <h2 style="font-size:22pt">The Owl and the Pussy-cat</h2>
@@ -2309,7 +2347,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>131</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#d9e6cf">
     <img class="pm-ground" src="art/pp-jabberwocky.jpg" alt="" style="object-position:50% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">Through the Looking-Glass</div>
     <h2 style="font-size:22pt">Jabberwocky</h2>
@@ -2323,7 +2361,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>132</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e3ddc7">
     <img class="pm-ground" src="art/pp-because-i-could-not-stop-for-death.jpg" alt="" style="object-position:50% 30%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">Poems</div>
     <h2 style="font-size:19pt">Because I could not stop for Death</h2>
@@ -2337,7 +2375,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>133</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#ecd7c8">
     <img class="pm-ground" src="art/pp-i-m-nobody-who-are-you.jpg" alt="" style="object-position:30% 72%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">Poems</div>
     <h2 style="font-size:22pt">I’m Nobody! Who are you?</h2>
@@ -2351,7 +2389,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>134</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e3d3c2">
     <img class="pm-ground" src="art/pp-success-is-counted-sweetest.jpg" alt="" style="object-position:72% 28%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">A Masque of Poets</div>
     <h2 style="font-size:19pt">Success is counted sweetest</h2>
@@ -2365,7 +2403,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>135</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e8ddc9">
     <img class="pm-ground" src="art/pp-a-bird-came-down-the-walk.jpg" alt="" style="object-position:50% 18%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">Poems</div>
     <h2 style="font-size:22pt">A Bird, came down the Walk</h2>
@@ -2379,7 +2417,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>136</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#f2ddc0">
     <img class="pm-ground" src="art/pp-the-universal-prayer.jpg" alt="" style="object-position:50% 82%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">The Universal Prayer — the opening stanzas</div>
     <h2 style="font-size:22pt">The Universal Prayer</h2>
@@ -2393,7 +2431,7 @@ Where the early pumpkins blow.</div></div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>137</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#dbe0d6">
     <img class="pm-ground" src="art/pp-awake-my-st-john.jpg" alt="" style="object-position:22% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems worth knowing by heart</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>Poems Worth Knowing by Heart</span></div>
     <div class="pm-head">
     <div class="kick">An Essay on Man, Epistle I — the opening</div>
     <h2 style="font-size:22pt">Awake, my St. John!</h2>
@@ -2406,9 +2444,11 @@ Where the early pumpkins blow.</div></div>
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>138</span></div></div>
 <div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
+      <img class="lb-marg-art" src="art/sc-byheart.jpg" alt="">
+      <div class="lb-marg-scrim"></div>
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
       <div class="lb-marg-body">
-      <div style="margin-top:.4in"><div class="kick">Poems worth knowing by heart</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
+      <div style="margin-top:.4in"><div class="kick">Poems Worth Knowing by Heart</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
       <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .04in">Single lines by the writers in this part &mdash; the ones that broke off from their poems and went out into the language on their own.</p>
       
       <div class="lb-hero">
@@ -2422,7 +2462,6 @@ A sight so touching in its majesty.</div><div class="by">&mdash; William Wordswo
 Healthy, free, the world before me.</div><div class="by">&mdash; Walt Whitman</div></div><div class="lb-line"><div class="q">Bring me the sunset in a cup,
 Reckon the morning's flagons up.</div><div class="by">&mdash; Emily Dickinson</div></div>
       </div></div>
-      <div class="lb-tail"><img src="art/sc-byheart.jpg" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>139</span></div></div>
 <div class="page sc-page" data-vol="22">
     <div class="sc-frame"><img class="sc-art" src="art/sc-prose.jpg" alt=""></div>
@@ -2430,13 +2469,13 @@ Reckon the morning's flagons up.</div><div class="by">&mdash; Emily Dickinson</d
     <div class="sc-body">
       <div class="sc-num">Part VIII of 8</div>
       <div class="sc-rule"></div>
-      <h1>The long quote</h1>
+      <h1>The Long Quote</h1>
       <p class="sc-blurb">Not every sentence worth learning is in a poem. These are the paragraphs — the openings and the addresses — that people carry around whole, and every one of them is built like a piece of music.</p></div>
     <div class="sc-count">7 pieces &nbsp;&middot;&nbsp; Abraham Lincoln &middot; Charles Dickens &middot; Jane Austen &middot; and others</div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>140</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#e3d3c2">
     <img class="pm-ground" src="art/pp-the-gettysburg-address.jpg" alt="" style="object-position:78% 45%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>The long quote</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>The Long Quote</span></div>
     <div class="pm-head">
     <div class="kick">Soldiers’ National Cemetery, Pennsylvania</div>
     <h2 style="font-size:22pt">The Gettysburg Address</h2>
@@ -2450,7 +2489,7 @@ Reckon the morning's flagons up.</div><div class="by">&mdash; Emily Dickinson</d
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>141</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#d6d8e2">
     <img class="pm-ground" src="art/pp-it-was-the-best-of-times.jpg" alt="" style="object-position:50% 50%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>The long quote</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>The Long Quote</span></div>
     <div class="pm-head">
     <div class="kick">A Tale of Two Cities, opening</div>
     <h2 style="font-size:22pt">It was the best of times</h2>
@@ -2464,7 +2503,7 @@ Reckon the morning's flagons up.</div><div class="by">&mdash; Emily Dickinson</d
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>142</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#d6d8e2">
     <img class="pm-ground" src="art/pp-it-is-a-truth-universally-acknowledged.jpg" alt="" style="object-position:50% 30%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>The long quote</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>The Long Quote</span></div>
     <div class="pm-head">
     <div class="kick">Pride and Prejudice, opening</div>
     <h2 style="font-size:16pt">It is a truth universally acknowledged</h2>
@@ -2478,7 +2517,7 @@ Reckon the morning's flagons up.</div><div class="by">&mdash; Emily Dickinson</d
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>143</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#cfe3f0">
     <img class="pm-ground" src="art/pp-call-me-ishmael.jpg" alt="" style="object-position:30% 72%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>The long quote</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>The Long Quote</span></div>
     <div class="pm-head">
     <div class="kick">Moby-Dick, opening</div>
     <h2 style="font-size:22pt">Call me Ishmael</h2>
@@ -2492,7 +2531,7 @@ Reckon the morning's flagons up.</div><div class="by">&mdash; Emily Dickinson</d
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>144</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#d9e6cf">
     <img class="pm-ground" src="art/pp-i-went-to-the-woods.jpg" alt="" style="object-position:72% 28%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>The long quote</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>The Long Quote</span></div>
     <div class="pm-head">
     <div class="kick">Walden</div>
     <h2 style="font-size:22pt">I went to the woods</h2>
@@ -2506,7 +2545,7 @@ Reckon the morning's flagons up.</div><div class="by">&mdash; Emily Dickinson</d
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>145</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#d6d8e2">
     <img class="pm-ground" src="art/pp-what-to-the-slave-is-the-fourth-of-july.jpg" alt="" style="object-position:50% 18%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>The long quote</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>The Long Quote</span></div>
     <div class="pm-head">
     <div class="kick">Rochester, New York</div>
     <h2 style="font-size:16pt">What to the Slave is the Fourth of July?</h2>
@@ -2520,7 +2559,7 @@ Reckon the morning's flagons up.</div><div class="by">&mdash; Emily Dickinson</d
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>146</span></div></div>
 <div class="page pm-page" data-vol="22" style="--pm-tint:#f0d3e2">
     <img class="pm-ground" src="art/pp-what-is-the-use-of-a-book-without-pictures-o.jpg" alt="" style="object-position:50% 82%">
-    <div class="bb-head"><span>Lines Worth Keeping</span><span>The long quote</span></div>
+    <div class="bb-head"><span>Lines Worth Keeping</span><span>The Long Quote</span></div>
     <div class="pm-head">
     <div class="kick">Alice’s Adventures in Wonderland, Chapter I</div>
     <h2 style="font-size:16pt">What is the use of a book, without pictures or conversations?</h2>
@@ -2533,9 +2572,11 @@ Reckon the morning's flagons up.</div><div class="by">&mdash; Emily Dickinson</d
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>147</span></div></div>
 <div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
+      <img class="lb-marg-art" src="art/sc-prose.jpg" alt="">
+      <div class="lb-marg-scrim"></div>
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
       <div class="lb-marg-body">
-      <div style="margin-top:.4in"><div class="kick">The long quote</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
+      <div style="margin-top:.4in"><div class="kick">The Long Quote</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
       <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .04in">Single lines by the writers in this part &mdash; the ones that broke off from their poems and went out into the language on their own.</p>
       
       <div class="lb-hero">
@@ -2545,7 +2586,6 @@ Reckon the morning's flagons up.</div><div class="by">&mdash; Emily Dickinson</d
       <div class="lb-line"><div class="q">Goodness is the only investment that never fails.</div><div class="by">&mdash; Henry David Thoreau</div></div><div class="lb-line"><div class="q">Begin at the beginning and go on till you come to the end: then stop.</div><div class="by">&mdash; Lewis Carroll</div></div><div class="lb-line"><div class="q">To ease another's heartache is to forget one's own.</div><div class="by">&mdash; Abraham Lincoln</div></div><div class="lb-line"><div class="q">Reflect upon your present blessings, of which every man has many.</div><div class="by">&mdash; Charles Dickens</div></div><div class="lb-line"><div class="q">'Twinkle, twinkle, little bat!
 How I wonder what you're at!'</div><div class="by">&mdash; Lewis Carroll</div></div><div class="lb-line"><div class="q">Nature is full of genius, full of the divinity.</div><div class="by">&mdash; Henry David Thoreau</div></div>
       </div></div>
-      <div class="lb-tail"><img src="art/sc-prose.jpg" alt=""></div>
       <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>148</span></div></div>
 <div class="page" data-vol="22">
       <div class="bb-head"><span>Lines Worth Keeping</span><span>The Big List</span></div>

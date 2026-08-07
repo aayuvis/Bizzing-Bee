@@ -575,22 +575,49 @@ function css(vol) {
   .lb-step .t{font-family:'BB Kicker';font-size:8.6pt;letter-spacing:.11em;
     text-transform:uppercase;color:var(--accent-deep);margin-bottom:3pt}
   .lb-step p{margin:0;font-size:11pt;line-height:1.48;color:var(--ink)}
-  /* The margin page. A full-bleed wash of the part's plate at 20% was tried
-     first and printed as a smudge — a busy painted scene at low opacity is not
-     a ground, it is a stain. The plate is given its own room instead, as a
-     tailpiece band across the foot the way an anthology closes a section, and
-     it stops clear of the running foot so the folio never prints on it. */
+  /* The margin page takes its plate FULL PAGE. A flat 20% wash was tried first
+     and printed as a smudge; a tailpiece band across the foot read better but
+     left the top of the page bare. Full bleed at full strength with a scrim
+     that is heavy where the type sits and clears towards the foot lets the
+     picture be a picture and the lines stay readable over it. */
   .lb-marg{position:relative;overflow:hidden}
-  /* the body takes the room above the tailpiece and leads the lines out into
-     it, rather than stacking tight and leaving an inch and a half of nothing */
+  .lb-marg-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    z-index:0;filter:saturate(.9)}
+  /* The scrim clears towards the foot only as far as the TYPE allows. The first
+     cut dropped to 30% paper at the bottom, which put the last two lines and the
+     folio on top of Shakespeare's black doublet — the same illegible foot this
+     volume already had its scenery bands removed for. Lines run the full height
+     of this page, so the paper never thins below 76%. */
+  .lb-marg-scrim{position:absolute;inset:0;z-index:1;
+    background:linear-gradient(180deg,
+      color-mix(in srgb,var(--paper) 93%,transparent) 0%,
+      color-mix(in srgb,var(--paper) 87%,transparent) 45%,
+      color-mix(in srgb,var(--paper) 80%,transparent) 75%,
+      color-mix(in srgb,var(--paper) 76%,transparent) 100%)}
+  .lb-marg > .bb-head,.lb-marg > .bb-foot{z-index:3}
   .lb-marg-body{position:relative;z-index:2;display:flex;flex-direction:column;flex:1 1 auto;
-    padding-bottom:2.72in}
-  .lb-tail{position:absolute;left:0;right:0;bottom:.62in;height:2.45in;overflow:hidden;z-index:1}
-  .lb-tail img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.92)}
-  /* the top edge dissolves into the paper instead of butting against the type */
-  .lb-tail::before{content:'';position:absolute;inset:0;z-index:2;
-    background:linear-gradient(180deg,var(--paper) 0%,
-      color-mix(in srgb,var(--paper) 55%,transparent) 16%,transparent 40%)}
+    padding-bottom:1.15in}
+
+  /* The threshold page: the book's opening line over its own painting.
+     "More transparent" means more PAPER over the picture, not a fainter
+     picture — a washed-out image reads as a printing fault, a veiled one reads
+     as a decision. */
+  .lb-open{position:relative;overflow:hidden;padding:0;color:var(--ink)}
+  .lb-open-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+  .lb-open-scrim{position:absolute;inset:0;z-index:1;
+    background:linear-gradient(180deg,
+      color-mix(in srgb,var(--paper) 72%,transparent) 0%,
+      color-mix(in srgb,var(--paper) 90%,transparent) 34%,
+      color-mix(in srgb,var(--paper) 90%,transparent) 66%,
+      color-mix(in srgb,var(--paper) 74%,transparent) 100%)}
+  .lb-open-body{position:absolute;z-index:2;left:.9in;right:.9in;top:3.05in;text-align:center}
+  .lb-open-kick{font-family:'BB Kicker';font-size:9.6pt;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--accent-deep);margin-bottom:.16in}
+  .lb-open h1{font-family:'BB World','BB Display';font-size:38pt;line-height:1.06;
+    color:var(--ink);margin:0}
+  .lb-open p{font-family:'BB Display';font-size:14.5pt;line-height:1.75;color:var(--ink);
+    margin:.30in auto 0;max-width:4.9in}
+  .lb-open .bb-foot{z-index:3}
   .lb-hand{font-family:'BB Kicker';font-size:8.6pt;letter-spacing:.10em;text-transform:uppercase;
     color:var(--accent-deep);margin:.02in 0 .16in}
   .lb-hero{position:relative;padding:.02in 0 .18in .40in;border-bottom:1px solid var(--hairline)}
@@ -1095,6 +1122,33 @@ function hivePages(vol, ch, ci, folioRef) {
    seven inches of blank paper in twelve places in the champion volume. Chunking
    by the page COUNT instead spreads the remainder: 19 over 4 pages is 5/5/5/4.
    `per` is the maximum a page can hold, not the number it must carry. */
+/* Part titles were written in two schemes: "The Bard" in title case and the
+   other seven in sentence case ("Speeches that changed something", "The long
+   quote"), which reads as a mistake in a contents list where they sit in a
+   column together. One scheme, applied at PRINT time so the authored data in
+   poem-chapters.js stays as its author typed it. Minor words stay down unless
+   they open or close the title. */
+const TC_MINOR = new Set(['a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'in', 'nor',
+  'of', 'on', 'or', 'per', 'the', 'to', 'up', 'via', 'vs']);
+function titleCase(t) {
+  const w = String(t || '').split(/(\s+)/);
+  const words = w.filter(x => x.trim());
+  let seen = 0;
+  return w.map(x => {
+    if (!x.trim()) return x;
+    seen++;
+    const lead = x.match(/^[^A-Za-z]*/)[0], tail = x.slice(lead.length);
+    const bare = tail.replace(/[^A-Za-z].*$/, '');
+    const low = bare.toLowerCase();
+    const first = seen === 1, last = seen === words.length;
+    /* leave a word that is already mixed-case alone — it is a name or an
+       acronym the author capitalised on purpose */
+    if (/[A-Z]/.test(bare.slice(1))) return x;
+    if (!first && !last && TC_MINOR.has(low)) return lead + tail.replace(bare, low);
+    return lead + tail.replace(bare, low.charAt(0).toUpperCase() + low.slice(1));
+  }).join('');
+}
+
 function evenChunks(items, per) {
   const n = Math.max(1, Math.ceil(items.length / per));
   const size = Math.ceil(items.length / n);
@@ -2128,8 +2182,9 @@ function book19() {
           : sec.blurb }]);
     } else SEC.push([k, sec]);
   }
+  SEC.forEach(e => { e[1] = { ...e[1], title: titleCase(e[1].title) }; });
   if (bard.length) SEC.unshift(['shakespeare', {
-    title: 'The Bard',
+    title: titleCase('The Bard'),
     blurb: 'He gets his own part because he would have taken over three others otherwise. The speeches first, then the sonnets — the same man doing the loudest thing in the language and then the quietest, in fourteen lines.',
     pieces: bard }]);
   const allHard = [];
@@ -2138,19 +2193,40 @@ function book19() {
   const keys = []; const folio = { n: 1 };
   const nPieces = SEC.reduce((n, [, sec]) => n + sec.pieces.length, 0);
   const pages = [cover(vol, SEC.length, allHard.length, 'A BIZZING BEE COMPANION')];
-  pages.push(dividerPage(vol, folio.n++));
+  /* The threshold page. It was the house divider — WELCOME TO The Great Library
+     over a full-strength painting — and the book's own opening line sat on the
+     NEXT page as a heading over a paragraph of prose. An anthology should not
+     say welcome; it should say the thing it is for. So the words move onto the
+     picture, the picture drops back far enough to read over, and the prose is
+     cut to four lines that scan. */
+  {
+    const openArt = artAt(`${artOf(vol)}-divider`);
+    pages.push(`<div class="page lb-open" data-vol="22">
+      ${openArt ? `<img class="lb-open-art" src="${openArt}" alt="">` : ''}
+      <div class="lb-open-scrim"></div>
+      <div class="lb-open-body">
+        <div class="lb-open-kick">Lines Worth Keeping</div>
+        <h1>Learn one by heart.</h1>
+        <p>A poem you have by heart is a poem you own.<br>
+        It is yours at three in the morning,<br>
+        in the dark, with no book in the room.<br>
+        Nothing here is too long to learn in a week.</p>
+      </div>
+      <div class="bb-foot"><span>Bizzing Bee &middot; ${esc(vol.title)}</span><span>${folio.n++}</span></div>
+    </div>`);
+  }
 
   /* how it works */
   pages.push(`<div class="page" data-vol="22" style="display:flex;flex-direction:column">
     ${head(vol, null, 0, 'How this book works')}
-    <div style="margin-top:.4in"><h1 style="font-size:26pt">Learn one by heart.</h1></div>
+    <div style="margin-top:.4in"><h1 style="font-size:23pt">Five things to do with a poem.</h1></div>
     <!-- This page used to open with the book's cartoon mascot delivering the idea
          from a speech bubble. Everything else in this volume is painted and set
          like a printed anthology, and the sprite made the first page a reader
          sees look like it belonged to a different book for a younger child. The
          thought is better said straight, so it is said straight. -->
-    <p style="font-family:'BB Kicker';font-size:12.4pt;line-height:1.55;color:var(--muted);max-width:5.6in;margin:.12in 0 .22in">
-      Knowing a poem by heart is not showing off. It is the only way to own one &mdash; to have it at three in the morning when there is no book. Every piece in here is short enough to learn in a week.</p>
+    <p style="font-family:'BB Kicker';font-size:11.4pt;line-height:1.5;color:var(--muted);max-width:5.6in;margin:.10in 0 .16in">
+      In this order, and none of it takes long.</p>
     <div class="lb-steps" style="flex:0 0 auto">
     ${[['Read it out loud, once', 'Poetry is a sound before it is a meaning. You will hear the shape before you can explain it.'],
        ['Find the turn', 'Nearly every piece here changes direction somewhere. The note under it tells you where — but look first.'],
@@ -2245,9 +2321,15 @@ function book19() {
        book. The first line is played large; the rest hang under hairlines. */
     const hands1 = [...new Set(marg.map(q => String(q.a || '').trim()))];
     const oneHand = hands1.length === 1 ? hands1[0] : null;
-    const ground = artAt('sc-' + key);
+    /* The Bard gets a portrait rather than his part's scenery — the page is a
+       page of his own lines, and a face is the right thing behind them. It is
+       drawn with the figure held to the right and the left two thirds left open
+       and pale, so the type has somewhere to sit. */
+    const ground = artAt('lbm-' + key) || artAt('sc-' + key);
     const heroQ = marg[0], restQ = marg.slice(1);
     if (marg.length) pages.push(`<div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
+      ${ground ? `<img class="lb-marg-art" src="${ground}" alt="">` : ''}
+      ${ground ? '<div class="lb-marg-scrim"></div>' : ''}
       ${head(vol, null, 0, 'In the margins')}
       <div class="lb-marg-body">
       <div style="margin-top:.4in"><div class="kick">${esc(sec.title)}</div><h2 style="font-size:19pt">${sameHands ? 'Lines from the same hands' : 'Lines that got loose'}</h2></div>
@@ -2262,7 +2344,6 @@ function book19() {
       ${restQ.map(q => `<div class="lb-line"><div class="q">${esc(q.q)}</div>${
         oneHand ? '' : `<div class="by">&mdash; ${esc(q.a)}</div>`}</div>`).join('')}
       </div></div>
-      ${ground ? `<div class="lb-tail"><img src="${ground}" alt=""></div>` : ''}
       ${foot(vol, folio.n++)}</div>`);
   }
 

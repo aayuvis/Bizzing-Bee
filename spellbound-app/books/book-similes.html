@@ -194,22 +194,49 @@
   .lb-step .t{font-family:'BB Kicker';font-size:8.6pt;letter-spacing:.11em;
     text-transform:uppercase;color:var(--accent-deep);margin-bottom:3pt}
   .lb-step p{margin:0;font-size:11pt;line-height:1.48;color:var(--ink)}
-  /* The margin page. A full-bleed wash of the part's plate at 20% was tried
-     first and printed as a smudge — a busy painted scene at low opacity is not
-     a ground, it is a stain. The plate is given its own room instead, as a
-     tailpiece band across the foot the way an anthology closes a section, and
-     it stops clear of the running foot so the folio never prints on it. */
+  /* The margin page takes its plate FULL PAGE. A flat 20% wash was tried first
+     and printed as a smudge; a tailpiece band across the foot read better but
+     left the top of the page bare. Full bleed at full strength with a scrim
+     that is heavy where the type sits and clears towards the foot lets the
+     picture be a picture and the lines stay readable over it. */
   .lb-marg{position:relative;overflow:hidden}
-  /* the body takes the room above the tailpiece and leads the lines out into
-     it, rather than stacking tight and leaving an inch and a half of nothing */
+  .lb-marg-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    z-index:0;filter:saturate(.9)}
+  /* The scrim clears towards the foot only as far as the TYPE allows. The first
+     cut dropped to 30% paper at the bottom, which put the last two lines and the
+     folio on top of Shakespeare's black doublet — the same illegible foot this
+     volume already had its scenery bands removed for. Lines run the full height
+     of this page, so the paper never thins below 76%. */
+  .lb-marg-scrim{position:absolute;inset:0;z-index:1;
+    background:linear-gradient(180deg,
+      color-mix(in srgb,var(--paper) 93%,transparent) 0%,
+      color-mix(in srgb,var(--paper) 87%,transparent) 45%,
+      color-mix(in srgb,var(--paper) 80%,transparent) 75%,
+      color-mix(in srgb,var(--paper) 76%,transparent) 100%)}
+  .lb-marg > .bb-head,.lb-marg > .bb-foot{z-index:3}
   .lb-marg-body{position:relative;z-index:2;display:flex;flex-direction:column;flex:1 1 auto;
-    padding-bottom:2.72in}
-  .lb-tail{position:absolute;left:0;right:0;bottom:.62in;height:2.45in;overflow:hidden;z-index:1}
-  .lb-tail img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.92)}
-  /* the top edge dissolves into the paper instead of butting against the type */
-  .lb-tail::before{content:'';position:absolute;inset:0;z-index:2;
-    background:linear-gradient(180deg,var(--paper) 0%,
-      color-mix(in srgb,var(--paper) 55%,transparent) 16%,transparent 40%)}
+    padding-bottom:1.15in}
+
+  /* The threshold page: the book's opening line over its own painting.
+     "More transparent" means more PAPER over the picture, not a fainter
+     picture — a washed-out image reads as a printing fault, a veiled one reads
+     as a decision. */
+  .lb-open{position:relative;overflow:hidden;padding:0;color:var(--ink)}
+  .lb-open-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+  .lb-open-scrim{position:absolute;inset:0;z-index:1;
+    background:linear-gradient(180deg,
+      color-mix(in srgb,var(--paper) 72%,transparent) 0%,
+      color-mix(in srgb,var(--paper) 90%,transparent) 34%,
+      color-mix(in srgb,var(--paper) 90%,transparent) 66%,
+      color-mix(in srgb,var(--paper) 74%,transparent) 100%)}
+  .lb-open-body{position:absolute;z-index:2;left:.9in;right:.9in;top:3.05in;text-align:center}
+  .lb-open-kick{font-family:'BB Kicker';font-size:9.6pt;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--accent-deep);margin-bottom:.16in}
+  .lb-open h1{font-family:'BB World','BB Display';font-size:38pt;line-height:1.06;
+    color:var(--ink);margin:0}
+  .lb-open p{font-family:'BB Display';font-size:14.5pt;line-height:1.75;color:var(--ink);
+    margin:.30in auto 0;max-width:4.9in}
+  .lb-open .bb-foot{z-index:3}
   .lb-hand{font-family:'BB Kicker';font-size:8.6pt;letter-spacing:.10em;text-transform:uppercase;
     color:var(--accent-deep);margin:.02in 0 .16in}
   .lb-hero{position:relative;padding:.02in 0 .18in .40in;border-bottom:1px solid var(--hairline)}

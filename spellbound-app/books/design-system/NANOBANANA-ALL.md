@@ -1132,3 +1132,7 @@ A ride cut straight through tall broadleaf woodland in autumn, trunks receding i
 
 ## 372. b23-flags.png — tall portrait
 A row of tall plain banners on poles against a windy sky, each a single flat colour with a bold simple geometric division — stripes, a cross, a triangle — and nothing else. Bright flat inks against pale cloud. Absolutely no emblems, no crests, no stars, no symbols, no lettering: colour and geometry only.
+
+## 373. lbm-shakespeare.png — tall portrait
+A three-quarter portrait of William Shakespeare after the Chandos likeness: high domed forehead with receding dark hair, a soft pointed beard, a small hoop earring in the left ear, a plain open collar rather than a starched ruff, dark doublet. He is placed to the RIGHT of the frame and looks calmly out past the viewer, not at them. The left two thirds of the picture is quiet open ground — a pale wash of candlelit air over a suggestion of dark panelling — so that lines of type can be laid across it and stay readable. Confident hand-inked line, three or four flat inks, warm cream and deep umber with one point of candle gold. Nothing on the walls, no framed pictures, no papers, no books with visible spines. ABSOLUTELY NO TEXT: no letters, no numerals, no signature, no lettering of any kind on any surface.
+
