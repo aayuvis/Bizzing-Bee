@@ -1756,9 +1756,22 @@ function moodFont(p) {
   return '';
 }
 
+/* A stable art key for one piece: derived from its title, so it survives any
+   reordering of the sections. Kept in sync with voice/pipeline/poem-art.py. */
+const pieceSlug = p => 'pp-' + String(p.t || '').toLowerCase()
+  .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 44);
+
 function poemPage(vol, sec, p, n, folio, keys) {
   const L = POEM_LAY[(n - 1) % POEM_LAY.length];
-  const plate = artAt('pt-' + (p.th || 'library')) || artAt('pt-library');
+  /* Art is keyed on the PIECE, falling back to its subject.
+     It used to be the subject alone, so with only sixteen plates across ninety
+     pieces the same painting turned up five or six times. Each piece now looks
+     for its own plate first — keyed on a slug of its title, NOT on its position,
+     because position shifts every time a poem is added and index-keyed art
+     silently re-attaches itself to the wrong poem. Any piece without a bespoke
+     plate quietly falls back to the themed one, so the art can be filled in a
+     few at a time without ever leaving a page blank. */
+  const plate = artAt(pieceSlug(p)) || artAt('pt-' + (p.th || 'library')) || artAt('pt-library');
   const tint = THEME_TINT[p.th] || THEME_TINT.library;
   const hard = p.hard || [];
   const isHaiku = p.kind === 'haiku';
@@ -1799,7 +1812,12 @@ function book19() {
     title: 'Lines Worth Keeping', tag: 'Poems, speeches and the long quotes — with the words inside them',
     a: '#4A6FA5', d: '#243C63', tex: 'diag', av: 'encore', world: 'library', band: 'advanced' };
   const P = window.SB_POEMS || {};
-  const SEC = ['speeches', 'sonnets', 'haiku', 'byheart', 'prose'].map(k => [k, P[k]]).filter(x => x[1]);
+  /* The running order is an arc: grand, then formal, then tiny, then funny,
+     then the ones you keep, then prose. Limericks sit beside the haiku because
+     they are the other short form — and because a reader needs the joke after
+     seventeen syllables of snow. `filter` keeps a missing section harmless. */
+  const SEC = ['speeches', 'sonnets', 'haiku', 'limericks', 'byheart', 'prose']
+    .map(k => [k, P[k]]).filter(x => x[1]);
   const allHard = [];
   SEC.forEach(([, sec]) => sec.pieces.forEach(p => (p.hard || []).forEach(h => allHard.push({ w: h.w, def: h.def, say: h.say }))));
   const rnd = mulberry(vol.n * 7919 + 17);

@@ -1745,43 +1745,6 @@ window.SB_POEMS = {
           { w: 'indignant', say: 'in-DIG-nuhnt', def: 'angry at something unfair' }
         ]
       },
-      {
-        t: 'Do not go gentle into that good night',
-        th: 'night', a: 'Dylan Thomas (1914–1953)', src: 'In Country Sleep', y: '1951', kind: 'poem',
-        lines: [
-          'Do not go gentle into that good night,',
-          'Old age should burn and rave at close of day;',
-          'Rage, rage against the dying of the light.',
-          '',
-          'Though wise men at their end know dark is right,',
-          'Because their words had forked no lightning they',
-          'Do not go gentle into that good night.',
-          '',
-          'Good men, the last wave by, crying how bright',
-          'Their frail deeds might have danced in a green bay,',
-          'Rage, rage against the dying of the light.',
-          '',
-          'Wild men who caught and sang the sun in flight,',
-          'And learn, too late, they grieved it on its way,',
-          'Do not go gentle into that good night.',
-          '',
-          'Grave men, near death, who see with blinding sight',
-          'Blind eyes could blaze like meteors and be gay,',
-          'Rage, rage against the dying of the light.',
-          '',
-          'And you, my father, there on the sad height,',
-          'Curse, bless, me now with your fierce tears, I pray.',
-          'Do not go gentle into that good night.',
-          'Rage, rage against the dying of the light.'
-        ],
-        note: 'A villanelle — nineteen lines built from just two repeating lines and two rhymes, a form meant for something the mind cannot stop circling back to. Thomas wrote it for his dying father, and only in the last line does the poem finally say "you".',
-        hard: [
-          { w: 'gentle', say: 'JEN-tuhl', def: 'mild and calm; here, used as a verb — to go quietly' },
-          { w: 'forked', say: 'FORKT', def: 'split into branches, as lightning does' },
-          { w: 'frail', say: 'FRAYL', def: 'weak and easily broken' },
-          { w: 'meteors', say: 'MEE-tee-erz', def: 'streaks of light from space burning in the atmosphere' }
-        ]
-      }
     ]
   },
 
@@ -1910,38 +1873,6 @@ window.SB_POEMS = {
           { w: 'resignation', say: 'rez-ig-NAY-shuhn', def: 'the acceptance of something unpleasant as unavoidable' },
           { w: 'marrow', say: 'MAIR-oh', def: 'the soft substance inside bones; the essential part' },
           { w: 'sturdily', say: 'STUR-dih-lee', def: 'strongly and solidly' }
-        ]
-      },
-      {
-        t: 'Four score and seven — the close',
-        th: 'road', a: 'Martin Luther King Jr. (1929–1968)', src: 'March on Washington, Lincoln Memorial', y: '28 August 1963', kind: 'prose',
-        lines: [
-          'I have a dream that my four little children will one day live in a nation where they will not be judged by the color of their skin but by the content of their character. I have a dream today!',
-          'I have a dream that one day, down in Alabama, with its vicious racists, with its governor having his lips dripping with the words of interposition and nullification — one day right there in Alabama little black boys and black girls will be able to join hands with little white boys and white girls as sisters and brothers.',
-          'This is our hope. This is the faith that I go back to the South with. With this faith we will be able to hew out of the mountain of despair a stone of hope. With this faith we will be able to transform the jangling discords of our nation into a beautiful symphony of brotherhood.',
-          'And when this happens, and when we allow freedom to ring, when we let it ring from every village and every hamlet, from every state and every city, we will be able to speed up that day when all of God’s children, black men and white men, Jews and Gentiles, Protestants and Catholics, will be able to join hands and sing in the words of the old Negro spiritual, "Free at last! Free at last! Thank God Almighty, we are free at last!"'
-        ],
-        note: 'The section people quote is the middle of a much longer speech, and King was largely off his prepared text by this point — a singer in the crowd, Mahalia Jackson, had called out "Tell them about the dream, Martin!" and he did. Listen for the anaphora: "I have a dream" eight times, "let freedom ring" ten more, each repeat adding a place rather than a new idea.',
-        hard: [
-          { w: 'interposition', say: 'in-ter-puh-ZISH-uhn', def: 'a state government placing itself between citizens and federal law' },
-          { w: 'nullification', say: 'nul-ih-fih-KAY-shuhn', def: 'a state declaring a federal law void within its borders' },
-          { w: 'discords', say: 'DISS-kordz', def: 'disagreements; harsh, unpleasant sounds' },
-          { w: 'symphony', say: 'SIM-fuh-nee', def: 'an elaborate musical composition for full orchestra' },
-          { w: 'hamlet', say: 'HAM-lit', def: 'a small settlement, smaller than a village' }
-        ]
-      },
-      {
-        t: 'We shall fight on the beaches',
-        th: 'war', a: 'Winston Churchill (1874–1965)', src: 'House of Commons', y: '4 June 1940', kind: 'prose',
-        lines: [
-          'We shall go on to the end. We shall fight in France, we shall fight on the seas and oceans, we shall fight with growing confidence and growing strength in the air, we shall defend our island, whatever the cost may be. We shall fight on the beaches, we shall fight on the landing grounds, we shall fight in the fields and in the streets, we shall fight in the hills; we shall never surrender.',
-          'And even if, which I do not for a moment believe, this island or a large part of it were subjugated and starving, then our Empire beyond the seas, armed and guarded by the British Fleet, would carry on the struggle, until, in God’s good time, the New World, with all its power and might, steps forth to the rescue and the liberation of the old.'
-        ],
-        note: 'Given four days after the retreat from Dunkirk, when Britain had just lost most of its army’s equipment and stood alone. Count the "we shall fight"s — nine of them, each clause shorter than the last, like a drumbeat that will not slow down — before the single word that stops it: "never".',
-        hard: [
-          { w: 'confidence', say: 'KON-fih-dunss', def: 'firm trust or belief' },
-          { w: 'subjugated', say: 'SUB-juh-gay-tid', def: 'brought under control by force; conquered' },
-          { w: 'liberation', say: 'lib-er-AY-shuhn', def: 'the act of setting someone free' }
         ]
       },
       {
