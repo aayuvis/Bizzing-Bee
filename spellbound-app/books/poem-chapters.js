@@ -801,6 +801,119 @@ window.SB_POEMS = {
           { w: 'majestic', say: 'muh-JES-tik', def: 'grand and dignified' },
           { w: 'resentment', say: 'rih-ZENT-munt', def: 'bitter anger at unfair treatment' }
         ]
+      },
+{
+        t: 'Never the spirit was born',
+        th: 'fire', a: 'Vyasa, translated by Sir Edwin Arnold (1832–1904)', src: 'The Song Celestial — Bhagavad Gita, Book II', y: '1885', kind: 'poem',
+        lines: [
+          'Never the spirit was born; the spirit shall cease to be never;',
+          'Never was time it was not; End and Beginning are dreams!',
+          'Birthless and deathless and changeless remaineth the spirit for ever;',
+          'Death hath not touched it at all, dead though the house of it seems!',
+          'Nay, but as when one layeth',
+          'His worn-out robes away,',
+          'And, taking new ones, sayeth,',
+          '“These will I wear to-day!”',
+          'So putteth by the spirit',
+          'Lightly its garb of flesh,',
+          'And passeth to inherit',
+          'A residence afresh.',
+          'I say to thee weapons reach not the Life;',
+          'Flame burns it not, waters cannot o’erwhelm,',
+          'Nor dry winds wither it. Impenetrable,',
+          'Unentered, unassailed, unharmed, untouched,',
+          'Immortal, all-arriving, stable, sure,',
+          'Invisible, ineffable, by word',
+          'And thought uncompassed, ever all itself,',
+          'Thus is the Soul declared!'
+        ],
+        note: 'Arnold changes his metre three times in twenty lines, and each shape does a different job. The opening four lines are enormous six-beat rollers that begin with the same word — “Never… Never… ” — so the sentence keeps swinging back like a bell; then he drops to a light, short-lined singing stanza for the picture of changing clothes; then to unrhymed blank verse for the long list of what the soul is not. Listen for that last list, where seven words in a row begin with un- or in-, because the poet is describing something by naming everything it cannot suffer.',
+        hard: [
+          { w: 'impenetrable', say: 'im-PEN-uh-truh-bul', def: 'impossible to get into or pass through' },
+          { w: 'unassailed', say: 'un-uh-SAYLD', def: 'never attacked' },
+          { w: 'ineffable', say: 'in-EFF-uh-bul', def: 'too great to be put into words' },
+          { w: 'immortal', say: 'ih-MOR-tul', def: 'living for ever, never dying' }
+        ]
+      },
+      {
+        t: 'Do thine allotted task',
+        th: 'war', a: 'Vyasa, translated by Sir Edwin Arnold (1832–1904)', src: 'The Song Celestial — Bhagavad Gita, Book III (Virtue in Work)', y: '1885', kind: 'poem',
+        lines: [
+          'Yet these are one! No man shall ’scape from act',
+          'By shunning action; nay, and none shall come',
+          'By mere renouncements unto perfectness.',
+          'Nay, and no jot of time, at any time,',
+          'Rests any actionless; his nature’s law',
+          'Compels him, even unwilling, into act;',
+          'For thought is act in fancy. He who sits',
+          'Suppressing all the instruments of flesh,',
+          'Yet in his idle heart thinking on them,',
+          'Plays the inept and guilty hypocrite:',
+          'But he who, with strong body serving mind,',
+          'Gives up his mortal powers to worthy work,',
+          'Not seeking gain, Arjuna! such an one',
+          'Is honourable. Do thine allotted task!',
+          'Work is more excellent than idleness;',
+          'The body’s life proceeds not, lacking work.',
+          'There is a task of holiness to do,',
+          'Unlike world-binding toil, which bindeth not',
+          'The faithful soul; such earthly duty do',
+          'Free from desire, and thou shalt well perform',
+          'Thy heavenly purpose.'
+        ],
+        note: 'Krishna is answering a real question here — Arjuna has asked why he must fight at all if thinking is nobler than doing. Arnold builds the reply as one long argument in blank verse, running the sentences straight over the ends of the lines so the reasoning never comes to rest; then, at the exact middle of a line, it snaps shut into four blunt words: “Do thine allotted task!” Listen for that break, and for the quiet hinge that follows it — the work must be done, but done “free from desire,” without any eye on what it will earn.',
+        hard: [
+          { w: 'hypocrite', say: 'HIP-uh-krit', def: 'someone who pretends to beliefs they do not hold' },
+          { w: 'inept', say: 'in-EPT', def: 'clumsy, having no skill' },
+          { w: 'allotted', say: 'uh-LOT-id', def: 'given out as one’s share' },
+          { w: 'suppressing', say: 'suh-PRESS-ing', def: 'holding down or shutting off by force' }
+        ]
+      },
+      {
+        t: 'Sítá’s Speech',
+        th: 'forest', a: 'Válmíki, translated by Ralph T. H. Griffith (1826–1906)', src: 'The Rámáyan of Válmíki, Book II, Canto XXVII', y: '1870', kind: 'poem',
+        lines: [
+          'Without my lord I would not prize',
+          'A home with Gods above the skies:',
+          'Without my lord, my life to bless,',
+          'Where could be heaven or happiness?',
+          'Forbid me not: with thee I go',
+          'The tangled wood to tread.',
+          'There will I live with thee, as though',
+          'This roof were o’er my head.',
+          'My will for thine shall be resigned;',
+          'Thy feet my steps shall guide.',
+          'Thou, only thou, art in my mind:',
+          'I heed not all beside.',
+          'Thy heart shall ne’er by me be grieved;',
+          'Do not my prayer deny:',
+          'Take me, dear lord; of thee bereaved',
+          'Thy Sítá swears to die.'
+        ],
+        note: 'Ráma has been exiled to the forest for fourteen years and has told Sítá to stay behind in comfort; this is her refusal. Griffith writes the first four lines as four-beat rhyming couplets, then changes shape entirely — the rest alternates a four-beat line with a three-beat one, rhyming abab, which is the metre of English ballads and hymns. Listen for the moment the argument turns into a song, and for the two lines that begin identically, “Without my lord,” pressing the same point twice before she asks.',
+        hard: [
+          { w: 'bereaved', say: 'bih-REEVD', def: 'left alone by the loss of a loved one' },
+          { w: 'resigned', say: 'rih-ZYND', def: 'given up or handed over' },
+          { w: 'grieved', say: 'GREEVD', def: 'made to feel deep sorrow' },
+          { w: 'prize', say: 'PRYZE', def: 'to value something very highly' }
+        ]
+      },
+      {
+        t: 'The Yaksha’s Questions',
+        th: 'water', a: 'Vyasa, translated by Kisari Mohan Ganguli (1848–1908)', src: 'The Mahabharata, Book 3: Vana Parva (the Yaksha’s riddles at the lake)', y: '1886', kind: 'prose',
+        lines: [
+          'Yaksha said, ‘What is that which doth not close its eyes while asleep? What is that which doth not move after birth? What is that which is without heart? And what is that which swells with its own impetus?’',
+          'Yudhishthira answered, ‘A fish doth not close its eyes while asleep; an egg doth not move after birth; a stone is without heart; and a river swelleth with its own impetus.’',
+          'Yaksha said, ‘What is that which, when renounced, maketh one agreeable? What is that which, when renounced, leadeth to no regret? What is that which, when renounced, maketh one wealthy? And what is that which, when renounced, maketh one happy?’',
+          'Yudhishthira answered, ‘Pride, if renounced, maketh one agreeable; wrath, if renounced, leadeth to no regret; desire, if renounced, maketh one wealthy; and avarice, if renounced, maketh one happy.’'
+        ],
+        note: 'Yudhishthira’s four brothers lie dead beside a forest lake, and the spirit who guards the water will give them back only if the king can answer. The riddles arrive four at a time, and Ganguli keeps the machinery visible: each answer returns the question’s own words in the same order, swapping in only the missing subject — “doth not close its eyes while asleep” comes back untouched with “a fish” put in front of it. Listen for that echo, because it is how the scene shows you that Yudhishthira is not guessing; he already had the shape of the sentence, and only needed the word.',
+        hard: [
+          { w: 'impetus', say: 'IM-puh-tus', def: 'the force that keeps something moving' },
+          { w: 'renounced', say: 'rih-NOWNST', def: 'formally given up or let go of' },
+          { w: 'agreeable', say: 'uh-GREE-uh-bul', def: 'pleasant to be around' },
+          { w: 'avarice', say: 'AV-uh-riss', def: 'extreme greed for wealth' }
+        ]
       }
     ]
   },
