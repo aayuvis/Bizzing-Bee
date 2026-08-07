@@ -366,13 +366,41 @@
      the only tidy one — a child could learn to pick it without knowing the word,
      which is a quiz that tests nothing. Normalising all four identically is what
      makes the question honest. */
+  /* A choice has to be READABLE on a phone, four at a time, under a clock.
+     The raw definitions are not: "necklace" ships as "Jewelry consisting of a
+     cord or chain (often bearing gems) worn about the neck as an ornament
+     (especially by women)", and once the length-matcher pairs that with three
+     equally long ones the screen is a wall of text nobody reads — they just pick
+     the one with a familiar noun in it. So each choice is reduced to the part
+     that actually distinguishes it: parentheticals dropped, one sentence only,
+     and clamped at a word boundary. */
+  const DEF_MAX = 92;
   function defText(d) {
     let t = String(d || '').trim().replace(/\s+/g, ' ');
+    /* Asides in brackets are almost never the distinguishing part, and they are
+       where most of the length lives — but a few entries are ENTIRELY bracketed
+       ("(chiefly British) …", "(see also …)"), and stripping those leaves an
+       empty string, which silently drops the question. Keep the strip only when
+       something usable survives it. */
+    const bare = t.replace(/\s*\([^)]*\)/g, ' ').replace(/\s+/g, ' ').trim();
+    if (bare.length >= 12) t = bare;
     t = t.replace(/[.;,]+$/, '');
-    /* only the first sentence: some definitions run to three, and a long one is
-       another tell as surely as a full stop is */
+    /* one sentence: some definitions run to three, and length is a tell */
     const cut = t.search(/\.\s+[A-Z]/);
     if (cut > 24) t = t.slice(0, cut);
+    /* still long — cut at a comma or semicolon clause if there is one late
+       enough to stand alone, otherwise at the last whole word */
+    if (t.length > DEF_MAX) {
+      const clause = t.slice(0, DEF_MAX).lastIndexOf(';');
+      const comma = t.slice(0, DEF_MAX).lastIndexOf(',');
+      const at = clause > 34 ? clause : comma > 40 ? comma : -1;
+      if (at > 0) t = t.slice(0, at);
+      else {
+        const sp = t.lastIndexOf(' ', DEF_MAX);
+        t = t.slice(0, sp > 30 ? sp : DEF_MAX).replace(/[,;]$/, '') + '…';
+      }
+    }
+    t = t.replace(/[.;,]+$/, '');
     return t.charAt(0).toUpperCase() + t.slice(1);
   }
   /* One meaning question. Falls back to the app's own builder when the wide pool
@@ -498,13 +526,26 @@
      field thinning, championship rules, the finish — and the routine rival
      chatter is shown on the card and given a two-word call instead, the way a
      real pronouncer says "Correct." and moves on. */
+  /* THE ANNOUNCER IS VISUAL. THE ONLY AUDIO IN THIS HALL IS THE WORD.
+     He used to be read aloud by the device voice, which fought the word
+     pronunciation for the same channel: deviceSpeak cancels whatever is already
+     speaking, so a called word could be cut off by the next piece of commentary,
+     and on a phone the two voices were indistinguishable anyway. The commentary
+     is on screen where it can be read at leisure; say() keeps the word.
+
+     The `spoken` argument is now only a length hint. Do not delete it: the
+     announcer's speech duration WAS the bee's pacing — after() waits for
+     spokeAt + spokeMs before advancing — so removing the speech without keeping
+     a duration collapses every pause and the bee runs as a blur. It is now the
+     time the line takes to READ, which is close enough to the time it took to
+     hear that the rhythm is unchanged. */
   function announce(text, spoken) {
     const g = mb(); if (!g) return;
-    const say2 = spoken === undefined ? text : spoken;
+    const beat = spoken === undefined ? text : spoken;
     g.announce = text;
     g.log = (g.log || []).concat([text]).slice(-40);
-    g.spokeAt = Date.now(); g.spokeMs = say2 ? speakMs(say2) : 0;
-    if (say2) { try { deviceSpeak(say2, rateOf()); } catch (e) {} }
+    g.spokeAt = Date.now();
+    g.spokeMs = beat ? Math.max(900, speakMs(beat)) : 0;
     render();
   }
 
@@ -647,25 +688,28 @@
     if (R.kind === 'vocab') {
       g.vq = (g.vqs && g.vqs.length) ? g.vqs[g.turn % g.vqs.length] : null;
       if (!g.vq) return finish();
-      g.word = g.vq.w; g.vPick = null;
+      /* a new question wipes the last one's feedback, or the child reads someone
+         else's result under their own word */
+      g.word = g.vq.w; g.vPick = null; g.vprac = null; g.lastVPrac = null;
       if (s.kind === 'me') {
         g.phase = 'vme';
         announce(fill(pick(SAY.callVocMe, g.seed + g.turn), { n: s.n }));
         after(500, () => { try { say(g.vq.w.w); } catch (e) {} });
         render();
       } else {
-        g.phase = 'vbot';
+        /* A rival's meaning question is the child's question too — exactly the way
+           a rival's WORD is, with the thirty-second window before they spell it.
+           Before this, the word was never pronounced and the four choices were
+           never shown on a rival's turn: the child watched a letter appear beside
+           a name and learned nothing. Now they hear it, see the options, and have
+           thirty seconds to choose before the rival answers. */
+        g.phase = 'vprac';
+        g.vprac = { pick: null, deadline: Date.now() + 30000, forBot: s };
         announce(fill(pick(SAY.callVocBot, g.seed + g.turn * 3 + g.round),
-          { name: s.bot.name, n: s.n, vtell: s.bot.vtell || 'thinks about it' }),
-          s.bot.name + ', number ' + s.n + '. Define it.');
+          { name: s.bot.name, n: s.n, vtell: s.bot.vtell || 'thinks about it' }));
         render();
-        after(clamp(s.bot.pace * .8, 900, 2400), () => {
-          const gg = mb(); if (!gg || gg.phase !== 'vbot') return;
-          const ok = botKnows(s.bot, g.vq.w, R.press);
-          gg.vPick = ok ? gg.vq.answer : shuffle(gg.vq.choices.filter(c => c !== gg.vq.answer))[0];
-          render();
-          after(700, () => verdict(s, ok));
-        });
+        after(400, () => { try { say(g.vq.w.w); } catch (e) {} });
+        vpracTick();
       }
       return;
     }
@@ -784,6 +828,42 @@
       if (left.length <= 1) return finish();
       gg.round++; gg.redo = 0;
       after(1200, beginRound);
+    });
+  }
+
+  /* ---- the child's thirty seconds on a rival's meaning question ----
+     Mirrors practiceTick/endPractice for the spelling round: the clock is patched
+     in place rather than re-rendered, because a full render on every tick would
+     throw away the child's selection highlight and, on the spelling side, their
+     half-typed word. */
+  function vpracTick() {
+    const g = mb(); if (!g || g.phase !== 'vprac' || !g.vprac) return;
+    const left = g.vprac.deadline - Date.now();
+    if (left <= 0) return endVprac();
+    try { const el = document.getElementById('mb-vcount'); if (el) el.textContent = Math.ceil(left / 1000) + 's'; } catch (e) {}
+    setTimeout(vpracTick, 400);
+  }
+  app2.mbVPracPick = i => {
+    const g = mb(); if (!g || g.phase !== 'vprac' || !g.vprac || g.vprac.pick != null || !g.vq) return;
+    g.vprac.pick = g.vq.choices[+i];
+    render();                       /* show the choice; the answer stays hidden */
+  };
+  app2.mbVPracSkip = () => { if (mb() && mb().phase === 'vprac') endVprac(); };
+  function endVprac() {
+    const g = mb(); if (!g || !g.vprac) return;
+    const s = g.vprac.forBot, mine = g.vprac.pick;
+    const live = alive();
+    const R = roundAt(g.round, live.length);
+    /* what the child chose, kept to show beside the rival's answer */
+    g.lastVPrac = mine ? { pick: mine, correct: mine === g.vq.answer } : null;
+    g.vprac = null; g.phase = 'vbot'; g.vPick = null;
+    render();
+    after(clamp(s.bot.pace * .7, 800, 2000), () => {
+      const gg = mb(); if (!gg || gg.phase !== 'vbot') return;
+      const ok = botKnows(s.bot, gg.vq.w, R.press);
+      gg.vPick = ok ? gg.vq.answer : shuffle(gg.vq.choices.filter(c => c !== gg.vq.answer))[0];
+      render();
+      after(900, () => verdict(s, ok));
     });
   }
 
@@ -945,7 +1025,7 @@
     const g = mb(); if (!g) return;
     let w = g.word;
     if (g.phase === 'bolt' && g.bolt && g.words && g.words.length) w = g.words[g.bolt.i % g.words.length];
-    else if ((g.phase === 'vme' || g.phase === 'vmeDone') && g.vq) w = g.vq.w;
+    else if (g.vq && /^v(me|meDone|prac|bot)$/.test(g.phase)) w = g.vq.w;
     if (w && w.w) { try { say(w.w); } catch (e) {} }
   };
   app2.mbAsk = k => { const g = mb(); if (!g) return; g.asked = { ...(g.asked || {}), [k]: 1 };
@@ -954,9 +1034,12 @@
       : k === 'org' ? ('From ' + (w.o || 'an origin not recorded'))
       : k === 'sent' ? (w.s || 'No sentence on file.')
       : (w.ps || 'Part of speech not recorded');
-    try { deviceSpeak(txt, rateOf()); } catch (e) {}
-    /* the answer is being read; do not let the next beat cut it */
-    try { const gg = mb(); if (gg) { gg.spokeAt = Date.now(); gg.spokeMs = speakMs(txt); } } catch (e) {}
+    /* The pronouncer's answers are printed, not spoken — the same rule as the
+       announcer. They already render in .mb-answers directly under the controls,
+       and reading a definition beats hearing the device voice race through it.
+       The word itself is still spoken; that is the one thing a bee is for.
+       The beat is kept so the next turn does not arrive while it is being read. */
+    try { const gg = mb(); if (gg) { gg.spokeAt = Date.now(); gg.spokeMs = Math.max(900, speakMs(txt)); } } catch (e) {}
     render(); keepCaret(); };
   /* asking the pronouncer a question re-renders the hall, which throws away the
      caret. Put it back where it was, or the speller loses their place mid-word. */
@@ -1131,22 +1214,60 @@
         </div>
       </div></div>`;
   }
-  /* ---- the meaning round, a rival's turn ----
-     Their pick appears as a letter, the way a bee answers aloud: "B, please." */
+  /* ---- a rival's meaning question, with the child's own thirty seconds ----
+     The word is spoken and all four choices are on the board, exactly as on the
+     child's own turn. Nothing is graded: this is the meaning-round twin of the
+     write-it-down window in the spelling round. */
+  function vocPracUI() {
+    const g = mb(); const pr = g.vprac, q = g.vq; if (!pr || !q) return '';
+    const s = pr.forBot;
+    const left = Math.max(0, Math.ceil((pr.deadline - Date.now()) / 1000));
+    return `<div class="mb-mic practice">
+      <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(s.bot.id, 74) : ''}</span>
+      <div class="mb-mic-in">
+        <span class="mb-mic-name">${esc(s.bot.name)} is up next · number ${s.n}</span>
+        <div class="mb-vword">${esc(q.w.w)}
+          <button data-act="mbSay" class="mb-hear mb-vhear">${iconSVG('volume', 16)} Hear it</button></div>
+        <div class="mb-prac-row">
+          <span class="mb-prac-note">Pick one before ${esc(s.bot.name)} answers — good practice, nothing counts.</span>
+          <span class="mb-countdown" id="mb-vcount">${left}s</span>
+        </div>
+        <div class="mb-vopts">
+          ${q.choices.map((c, i) => `<button class="mb-vopt${pr.pick === c ? ' picked' : ''}"
+            ${pr.pick == null ? `data-act="mbVPracPick" data-arg="${i}"` : ''}>
+            <span class="mb-vletter">${String.fromCharCode(65 + i)}</span><span>${esc(c)}</span></button>`).join('')}
+        </div>
+        <button data-act="mbVPracSkip" class="mb-submit" style="align-self:flex-start">${esc(s.bot.name)}, answer it &rarr;</button>
+      </div></div>`;
+  }
+  /* ---- the rival answering ----
+     Their pick is shown as a letter, the way a bee answers aloud ("B, please"),
+     and once it lands the board marks the right one — with the child's own
+     choice beside it, so a rival's turn teaches something either way. */
   function vocBotUI() {
     const g = mb(); const s = g.atMic, q = g.vq;
     if (!s || !q || s.kind === 'me') return '';
     const i = g.vPick == null ? -1 : q.choices.indexOf(g.vPick);
-    return `<div class="mb-mic">
+    const done = i >= 0;
+    const lp = g.lastVPrac;
+    return `<div class="mb-mic${done ? (g.vPick === q.answer ? ' ok' : ' no') : ''}">
       <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(s.bot.id, 74) : ''}</span>
       <div class="mb-mic-in">
         <span class="mb-mic-name">${esc(s.bot.name)} · ${s.bot.age} · number ${s.n}</span>
         <div class="mb-vword">${esc(q.w.w)}</div>
         <div class="mb-letters">
           <span class="mb-l-ghost" aria-hidden="true">X</span>
-          <span class="mb-l-live">${i < 0 ? '' : String.fromCharCode(65 + i)}</span>
-          ${i < 0 ? '<span class="mb-thinking">thinking…</span>' : ''}
+          <span class="mb-l-live">${done ? String.fromCharCode(65 + i) : ''}</span>
+          ${done ? '' : '<span class="mb-thinking">thinking…</span>'}
         </div>
+        <div class="mb-vopts">
+          ${q.choices.map((c, k) => {
+            const right = done && c === q.answer, theirs = done && c === g.vPick && c !== q.answer;
+            return `<button class="mb-vopt small${right ? ' right' : theirs ? ' wrong' : ''}${lp && lp.pick === c ? ' mine' : ''}">
+              <span class="mb-vletter">${String.fromCharCode(65 + k)}</span><span>${esc(c)}</span></button>`;
+          }).join('')}
+        </div>
+        ${lp ? `<div class="mb-prac-fb ${lp.correct ? 'ok' : 'no'}">You picked ${esc(lp.pick.slice(0, 40))}${lp.pick.length > 40 ? '…' : ''} — ${lp.correct ? 'you had it too.' : 'not that one.'}</div>` : ''}
       </div></div>`;
   }
   /* ---- the spell-off ----
@@ -1247,6 +1368,7 @@
           <div class="mb-letters">${(g.typed || '—').toUpperCase().split('').join(' ')}</div>
           <div class="mb-truth">${g.meOk ? 'Correct' : 'The word was <b>' + esc(w.w) + '</b>'}</div></div></div>`
       : (g.phase === 'vme' || g.phase === 'vmeDone') ? vocMeUI()
+      : g.phase === 'vprac' ? vocPracUI()
       : g.phase === 'vbot' ? vocBotUI()
       : (g.phase === 'bolt' || g.phase === 'boltIn' || g.phase === 'boltDone') ? boltUI()
       : g.phase === 'practice' ? practiceUI()

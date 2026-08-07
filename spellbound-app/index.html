@@ -15,9 +15,9 @@
 <meta name="description" content="Bizzing Bee — a spelling-bee trainer that hears your child spell, evolves a character with every win, and shows parents exactly where they stand.">
 <title>Bizzing Bee — spelling-bee trainer</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 viewBox%3D%220 0 64 64%22%3E%3Cellipse cx%3D%2215%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(-24 15 20)%22%2F%3E%3Cellipse cx%3D%2249%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(24 49 20)%22%2F%3E%3Cpath d%3D%22M27 17 Q23 7 21 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Cpath d%3D%22M37 17 Q41 7 43 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Ccircle cx%3D%2221%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Ccircle cx%3D%2243%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22 fill%3D%22%23FFC23D%22%2F%3E%3Cellipse cx%3D%2224%22 cy%3D%2230%22 rx%3D%2211%22 ry%3D%227%22 fill%3D%22%23FFD86E%22 opacity%3D%22.55%22%2F%3E%3CclipPath id%3D%22b%22%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22%2F%3E%3C%2FclipPath%3E%3Cg clip-path%3D%22url(%23b)%22%3E%3Crect x%3D%225%22 y%3D%2245%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3Crect x%3D%225%22 y%3D%2256%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3C%2Fg%3E%3Cellipse cx%3D%2217%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Cellipse cx%3D%2247%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Ccircle cx%3D%2224%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2225.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2224.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2240%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2241.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2240.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Cpath d%3D%22M26 49 Q32 55 40 49%22 fill%3D%22none%22 stroke%3D%22%233A1E5C%22 stroke-width%3D%222.8%22 stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E">
-<link rel="stylesheet" href="fonts/fonts.css?v=20260807k">
-<link rel="stylesheet" href="tokens.css?v=20260807k">
-<link rel="stylesheet" href="worlds4.css?v=20260807k">
+<link rel="stylesheet" href="fonts/fonts.css?v=20260807m">
+<link rel="stylesheet" href="tokens.css?v=20260807m">
+<link rel="stylesheet" href="worlds4.css?v=20260807m">
 
 <style>
   *{box-sizing:border-box}
@@ -659,6 +659,15 @@
   .mb-vopt:not([data-act]){cursor:default}
   .mb-vopt.right{border-color:rgba(78,207,140,.6);background:rgba(78,207,140,.16)}
   .mb-vopt.wrong{border-color:rgba(240,110,110,.6);background:rgba(240,110,110,.15)}
+  /* the child's own pick during a rival's turn: chosen, then carried through to
+     the reveal as a dotted outline so it can be compared with the right answer */
+  .mb-vopt.picked{border-color:rgba(240,180,41,.7);background:rgba(240,180,41,.16)}
+  .mb-vopt.mine{outline:2px dashed rgba(240,180,41,.75);outline-offset:-3px}
+  /* a rival's board is a readout, not a control — smaller, and it does not invite
+     a tap it will not honour */
+  .mb-vopt.small{font-size:12.4px;padding:7px 10px;cursor:default;background:rgba(255,255,255,.045)}
+  .mb-vopt.small:hover{background:rgba(255,255,255,.045)}
+  .mb-vopt.small .mb-vletter{width:19px;height:19px;font-size:11px}
   .mb-vletter{flex-shrink:0;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;
     background:rgba(240,180,41,.22);color:var(--mb-gold);font-family:var(--display);font-weight:800;font-size:12px}
   /* ---- the spell-off ---- */
@@ -793,54 +802,54 @@
   @keyframes lx-gleam{0%,100%{opacity:0;transform:translateY(-6px)}50%{opacity:1;transform:translateY(6px)}}
   @keyframes lx-string{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.7)}}
 </style>
-  <link rel="stylesheet" href="saga2.css?v=20260807k">
+  <link rel="stylesheet" href="saga2.css?v=20260807m">
 </head>
 <body>
 <div id="root"></div>
-<script src="icons.js?v=20260807k"></script>
-<script src="icons-art.js?v=20260807k"></script>
-<script src="cover-art.js?v=20260807k"></script>
+<script src="icons.js?v=20260807m"></script>
+<script src="icons-art.js?v=20260807m"></script>
+<script src="cover-art.js?v=20260807m"></script>
 <script>try{SB_ICON_MOTION()}catch(e){}</script>
-<script src="voice-cdn.js?v=20260807k"></script>
-<script>window.SB_ASSET_V="?v=20260807k";</script>
+<script src="voice-cdn.js?v=20260807m"></script>
+<script>window.SB_ASSET_V="?v=20260807m";</script>
 <!-- boot-lazy: everything the first screen does not need arrives after paint.
      Registry + idle order live in boot-lazy.js; call SB_LAZY.need(...) before
      opening a feature whose data is deferred. -->
-<script src="boot-lazy.js?v=20260807k"></script>
-<script src="words-data.js?v=20260807k"></script>
-<script src="words-extra.js?v=20260807k"></script>
-<script src="words-patch.js?v=20260807k"></script>
-<script src="themes-data.js?v=20260807k"></script>
-<script src="quotes.js?v=20260807k"></script>
-<script src="trivia-icons.js?v=20260807k"></script>
-<script src="trivia-data.js?v=20260807k"></script>
-<script src="tips-data.js?v=20260807k"></script>
-<script src="voice-manifest.js?v=20260807k"></script>
-<script src="voice-adv-manifest.js?v=20260807k"></script>
-<script src="voice-review.js?v=20260807k"></script>
-<script src="app.js?v=20260807k"></script>
-<script src="avatars-art.js?v=20260807k"></script>
-<script src="avatar-png.js?v=20260807k"></script>
-<script src="game-art.js?v=20260807k"></script>
-<script src="avatars.js?v=20260807k"></script>
-<script src="avatar-greetings.js?v=20260807k"></script>
-<script src="avatar-cards.js?v=20260807k"></script>
-<script src="app2.js?v=20260807k"></script>
-<script src="pricing.js?v=20260807k"></script>
-<script src="auth.js?v=20260807k"></script>
-<script src="app3.js?v=20260807k"></script>
-<script src="worlds4.js?v=20260807k"></script>
-<script src="mockbee.js?v=20260807k"></script>
-  <script src="games-daily.js?v=20260807k"></script>
-  <script src="saga-art/saga-art.js?v=20260807k"></script>
-  <script src="saga-art/saga-map.js?v=20260807k"></script>
-  <script src="saga-art/worlds-art.js?v=20260807k"></script>
-  <script src="saga-art-dom.js?v=20260807k"></script>
-  <script src="saga-music.js?v=20260807k"></script>
-  <script src="saga-script.js?v=20260807k"></script>
-  <script src="saga2.js?v=20260807k"></script>
-<script src="trivia.js?v=20260807k"></script>
-<script src="advanced.js?v=20260807k"></script>
-<script src="trail.js?v=20260807k"></script>
+<script src="boot-lazy.js?v=20260807m"></script>
+<script src="words-data.js?v=20260807m"></script>
+<script src="words-extra.js?v=20260807m"></script>
+<script src="words-patch.js?v=20260807m"></script>
+<script src="themes-data.js?v=20260807m"></script>
+<script src="quotes.js?v=20260807m"></script>
+<script src="trivia-icons.js?v=20260807m"></script>
+<script src="trivia-data.js?v=20260807m"></script>
+<script src="tips-data.js?v=20260807m"></script>
+<script src="voice-manifest.js?v=20260807m"></script>
+<script src="voice-adv-manifest.js?v=20260807m"></script>
+<script src="voice-review.js?v=20260807m"></script>
+<script src="app.js?v=20260807m"></script>
+<script src="avatars-art.js?v=20260807m"></script>
+<script src="avatar-png.js?v=20260807m"></script>
+<script src="game-art.js?v=20260807m"></script>
+<script src="avatars.js?v=20260807m"></script>
+<script src="avatar-greetings.js?v=20260807m"></script>
+<script src="avatar-cards.js?v=20260807m"></script>
+<script src="app2.js?v=20260807m"></script>
+<script src="pricing.js?v=20260807m"></script>
+<script src="auth.js?v=20260807m"></script>
+<script src="app3.js?v=20260807m"></script>
+<script src="worlds4.js?v=20260807m"></script>
+<script src="mockbee.js?v=20260807m"></script>
+  <script src="games-daily.js?v=20260807m"></script>
+  <script src="saga-art/saga-art.js?v=20260807m"></script>
+  <script src="saga-art/saga-map.js?v=20260807m"></script>
+  <script src="saga-art/worlds-art.js?v=20260807m"></script>
+  <script src="saga-art-dom.js?v=20260807m"></script>
+  <script src="saga-music.js?v=20260807m"></script>
+  <script src="saga-script.js?v=20260807m"></script>
+  <script src="saga2.js?v=20260807m"></script>
+<script src="trivia.js?v=20260807m"></script>
+<script src="advanced.js?v=20260807m"></script>
+<script src="trail.js?v=20260807m"></script>
 </body>
 </html>
