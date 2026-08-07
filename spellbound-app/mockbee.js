@@ -206,7 +206,20 @@
       'A clean sweep of misses — so nobody goes out. Back to the top of the order.'],
   };
   const fill = (t, v) => String(t).replace(/\{(\w+)\}/g, (m, k) => (v && v[k] != null) ? v[k] : m);
-  const pick = (arr, seed) => arr[Math.abs(seed | 0) % arr.length];
+  /* pick() also remembers WHICH line it chose, so announce() can find the matching
+     recording without every call site having to name it. The pool is resolved from
+     the array itself rather than passed in — the call sites already read
+     `pick(SAY.botRight, seed)` and adding an argument to forty of them would be a
+     lot of churn for a lookup the array reference already answers. */
+  const POOL_OF = new Map();
+  let _pick = null;
+  const pick = (arr, seed) => {
+    const i = Math.abs(seed | 0) % arr.length;
+    if (!POOL_OF.size) { try { Object.keys(SAY).forEach(k => POOL_OF.set(SAY[k], k)); } catch (e) {} }
+    const pool = POOL_OF.get(arr);
+    _pick = pool ? { pool: pool, i: i, raw: arr[i] } : null;
+    return arr[i];
+  };
 
   /* ---------------- state ---------------- */
   const mb = () => state.mb;
@@ -594,6 +607,41 @@
     } catch (e) { setTimeout(go, 200); }
   }
 
+  /* The announcer's own recordings: voice/ann/<pool>-<i>.mp3, in the word
+     library's voice (en-US-Neural2-F at 0.95 — see voice/pipeline/announcer-tts.py).
+     There is NO manifest and that is deliberate: a missing file simply fails to
+     play and the line stays on screen, which is the behaviour we want anyway, so
+     a manifest would only be a second thing to keep in sync. Regenerating more
+     clips needs no code change at all.
+
+     A line whose recording ends where {word} goes — "No. The word was" — chains
+     the word's own clip after it, so the sentence finishes in the same voice with
+     the actual word rather than a synthesised approximation of it. */
+  let _annAudio = null;
+  /* Seventeen of the fifty lines are deliberately not recorded, and without a
+     memory this asked the network for each of them every single time — ten dead
+     requests in one bee. One failure is enough to know. Not a manifest: this
+     stays correct on its own when clips are added or removed. */
+  const _annGone = new Set();
+  function playAnn(pick, text) {
+    if (!pick || !pick.pool) return;
+    const key = pick.pool + '-' + pick.i;
+    if (_annGone.has(key)) return;
+    try {
+      if (_annAudio) { try { _annAudio.pause(); } catch (e) {} _annAudio = null; }
+      const a = new Audio('voice/ann/' + key + '.mp3');
+      _annAudio = a;
+      a.onerror = () => _annGone.add(key);
+      /* a line that ends where {word} goes finishes on the word's own clip, so
+         the sentence lands in one voice with the real word in it */
+      if (/\{word\}\s*\.?\s*$/.test(pick.raw || '')) {
+        const g = mb(); const w = g && g.word && g.word.w;
+        if (w) a.onended = () => { try { say(w); } catch (e) {} };
+      }
+      a.play().catch(() => { _annGone.add(key); });
+    } catch (e) {}
+  }
+
   function announce(text, spoken) {
     const g = mb(); if (!g) return;
     const beat = spoken === undefined ? text : spoken;
@@ -601,6 +649,8 @@
     g.log = (g.log || []).concat([text]).slice(-40);
     g.spokeAt = Date.now();
     g.spokeMs = beat ? Math.max(900, speakMs(beat)) : 0;
+    const p = _pick; _pick = null;     /* consume it — one announce, one line */
+    playAnn(p, text);
     render();
   }
 

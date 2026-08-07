@@ -26,8 +26,13 @@
        comfortably. Keeping it local matters for two reasons: raw.githubusercontent
        rate-limits unauthenticated requests, and narration is the most-played audio in the
        app; and it removes the dependency on those clips having reached `main`.
-       voice/c<n>-<n>.mp3 = the 121 general chapters, voice/a<n>-<n>.mp3 = advanced. */
-    var LOCAL = /^voice\/[ca]\d+-\d+\.mp3$/i;
+       voice/c<n>-<n>.mp3 = the 121 general chapters, voice/a<n>-<n>.mp3 = advanced.
+
+       The MOCK BEE ANNOUNCER is bundled for the same reasons and one more: this
+       rewrite points at the `main` branch, and the announcer clips live on a
+       feature branch until it merges — fetched remotely they would simply 404.
+       33 files, 879KB. voice/ann/<pool>-<i>.mp3. */
+    var LOCAL = /^voice\/(?:[ca]\d+-\d+|ann\/[a-z0-9]+-\d+)\.mp3$/i;
     var Wrapped = function (src) {
       if (typeof src === 'string' && src.slice(0, 6) === 'voice/' && !LOCAL.test(src)) {
         // version query busts browser + CDN caches on each voice deploy

@@ -28,29 +28,28 @@ THE VOICE
   a shade quicker.
 
 CREDENTIALS
-  Google Cloud Text-to-Speech does NOT accept API keys — it returns
-  401 UNAUTHENTICATED with "API keys are not supported by this API". It needs a
-  service account:
+  An API key DOES work here, but only one with the Cloud Text-to-Speech API
+  enabled on its project. A key without it comes back 401 UNAUTHENTICATED with
+  "API keys are not supported by this API", which reads like a blanket refusal of
+  key auth and is not — it is that project saying no. /root/.gkey (the Gemini
+  image key) fails this way; the key at TTS_KEY_FILE succeeds.
 
-      export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
-      pip install google-cloud-texttospeech
-      python3 voice/pipeline/announcer-tts.py
+      TTS_KEY_FILE=/root/.tts-key python3 voice/pipeline/announcer-tts.py
 
-  The Gemini key at /root/.gkey is for the Generative Language API and will not
-  work here. If you only have that, the fallback is Gemini's own TTS models, but
-  they are a DIFFERENT voice from the word library and the mismatch is audible —
-  better to leave the announcer on screen than to give him a second voice.
+  A service account via GOOGLE_APPLICATION_CREDENTIALS works too, but is not
+  needed. The key is never printed and never written into any output.
 
 OUTPUT
   voice/ann/<pool>-<i>.mp3, plus voice/ann/manifest.json mapping each pool index
   to its file and duration. mockbee.js should fall back to the on-screen text
   whenever a clip is missing, so a partial run is safe to ship.
 """
-import json, os, re, sys
+import base64, json, os, re, ssl, sys, time, urllib.request, urllib.error
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 MOCKBEE = os.path.join(ROOT, 'mockbee.js')
 OUT = os.path.join(ROOT, 'voice', 'ann')
+CTX = ssl.create_default_context(cafile='/root/.ccr/ca-bundle.crt')
 
 VOICE = 'en-US-Neural2-F'      # the word library's voice — keep in lock-step
 RATE = 0.95                    # the word library's rate — see the docstring
@@ -126,7 +125,70 @@ def spoken(text):
     return body if len(words) >= 3 else None
 
 
+def synth(text, key):
+    """One sentence, straight at the REST endpoint. urllib rather than the
+    google-cloud library so this needs no service account and no extra install."""
+    body = json.dumps({
+        'input': {'text': text},
+        'voice': {'languageCode': 'en-US', 'name': VOICE},
+        'audioConfig': {'audioEncoding': 'MP3', 'speakingRate': RATE},
+    }).encode()
+    req = urllib.request.Request(
+        'https://texttospeech.googleapis.com/v1/text:synthesize?key=' + key,
+        data=body, headers={'Content-Type': 'application/json'})
+    for attempt in range(4):
+        try:
+            with urllib.request.urlopen(req, timeout=90, context=CTX) as r:
+                return base64.b64decode(json.load(r)['audioContent'])
+        except urllib.error.HTTPError as e:
+            if e.code in (429, 500, 503) and attempt < 3:
+                time.sleep(4 * (attempt + 1)); continue
+            raise SystemExit('HTTP %s from Cloud TTS' % e.code)   # never echo the key
+        except Exception:
+            if attempt < 3:
+                time.sleep(3); continue
+            raise
+
+
 def main():
+    key = ''
+    kf = os.environ.get('TTS_KEY_FILE', '/root/.tts-key')
+    try:
+        key = open(kf).read().strip()
+    except Exception:
+        pass
+    if not key:
+        sys.exit('no key — set TTS_KEY_FILE to a file holding a Google API key '
+                 'with the Cloud Text-to-Speech API enabled')
+
+    os.makedirs(OUT, exist_ok=True)
+    P = pools()
+    plan = []
+    for pool, lines in P.items():
+        for idx, line in enumerate(lines):
+            say = spoken(line)
+            if say:
+                plan.append((pool, idx, line, say))
+    print('%d sentences in the announcer, %d recordable, voice %s at %.2fx'
+          % (sum(len(v) for v in P.values()), len(plan), VOICE, RATE))
+
+    manifest = {}
+    for n, (pool, idx, line, say) in enumerate(plan, 1):
+        name = '%s-%d.mp3' % (pool, idx)
+        path = os.path.join(OUT, name)
+        if not os.path.exists(path):
+            open(path, 'wb').write(synth(say, key))
+        manifest.setdefault(pool, {})[str(idx)] = {'f': name, 'say': say}
+        print('  [%d/%d] %-14s %s' % (n, len(plan), pool, say[:58]))
+    json.dump(manifest, open(os.path.join(OUT, 'manifest.json'), 'w'),
+              ensure_ascii=False, indent=1, sort_keys=True)
+    mp3 = [f for f in os.listdir(OUT) if f.endswith('.mp3')]
+    kb = sum(os.path.getsize(os.path.join(OUT, f)) for f in mp3) // 1024
+    print('done — %d clips, %dKB in voice/ann/' % (len(mp3), kb))
+
+
+def _unused_service_account_main():
+
     try:
         from google.cloud import texttospeech
     except ImportError:
