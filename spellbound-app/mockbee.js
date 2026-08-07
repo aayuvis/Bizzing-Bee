@@ -562,18 +562,36 @@
      different things being said.
 
      speechSynthesis.cancel() only cancels speech; the word clips are <audio>
-     elements and are untouched by it. The call sites still stagger the two so the
-     name finishes before the word begins. */
-  function speakName(n) {
+     elements and are untouched by it.
+
+     Rate 0.95 matches the word library, which was synthesised at 0.95 — so the
+     name and the word land at the same pace and the hall sounds like one person
+     talking, even though one is a recording and one is live.
+
+     `then` fires when the name has ACTUALLY finished, not after a guessed delay.
+     The word used to start on a fixed 900ms timer, which is fine for "Pip" and
+     far too short for "Vesper" at 0.95 on a slow device — the word clip's own
+     speechSynthesis.cancel() then chopped the name mid-syllable. onend is exact.
+     The timer stays as a fallback because onend does not fire reliably on every
+     mobile browser, and a bee that stops because a callback never came is worse
+     than one that occasionally overlaps by a hair. */
+  function speakName(n, then) {
     const t = String(n || '').trim();
-    if (!t) return;
+    let ran = false;
+    const go = () => { if (ran) return; ran = true; if (then) try { then(); } catch (e) {} };
+    if (!t) { go(); return; }
     try {
-      if (!window.speechSynthesis) return;
+      if (!window.speechSynthesis) { setTimeout(go, 120); return; }
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(t);
       u.rate = 0.95 * (Number(state.voiceRate) || 1);
+      u.onend = go; u.onerror = go;
       window.speechSynthesis.speak(u);
-    } catch (e) {}
+      /* belt and braces: ~420ms of speech per syllable at this rate, plus a
+         breath, and never longer than two seconds */
+      const syl = Math.max(1, (t.match(/[aeiouy]+/gi) || [1]).length);
+      setTimeout(go, Math.min(2000, 380 + syl * 300));
+    } catch (e) { setTimeout(go, 200); }
   }
 
   function announce(text, spoken) {
@@ -732,8 +750,7 @@
       if (s.kind === 'me') {
         g.phase = 'vme';
         announce(fill(pick(SAY.callVocMe, g.seed + g.turn), { n: s.n }));
-        speakName(g.name);
-        after(900, () => { try { say(g.vq.w.w); } catch (e) {} });
+        speakName(g.name, () => { try { say(g.vq.w.w); } catch (e) {} });
         render();
       } else {
         /* A rival's meaning question is the child's question too — exactly the way
@@ -746,9 +763,8 @@
         g.vprac = { pick: null, deadline: Date.now() + 30000, forBot: s };
         announce(fill(pick(SAY.callVocBot, g.seed + g.turn * 3 + g.round),
           { name: s.bot.name, n: s.n, vtell: s.bot.vtell || 'thinks about it' }));
-        speakName(s.bot.name);
+        speakName(s.bot.name, () => { try { say(g.vq.w.w); } catch (e) {} });
         render();
-        after(900, () => { try { say(g.vq.w.w); } catch (e) {} });
         vpracTick();
       }
       return;
@@ -763,16 +779,16 @@
     if (s.kind === 'me') {
       g.phase = 'me';
       announce(fill(pick(SAY.callMe, g.seed + g.turn), { n: s.n }));
-      speakName(g.name);
-      /* the name first, then the word — staggered so neither clips the other */
-      after(900, () => { try { say(g.word.w); } catch (e) {} });
+      /* the word waits for the name to finish, not for a guessed delay */
+      speakName(g.name, () => { try { say(g.word.w); } catch (e) {} });
       render();
     } else {
       g.phase = 'bot'; g.botStep = 0; g.botOut = '';
       announce(fill(pick(SAY.callBot, g.seed + g.turn * 3 + g.round), { name: s.bot.name, age: s.bot.age + ' years old', tell: s.bot.tell, n: s.n }),
         s.bot.name + ', number ' + s.n + '.');
-      speakName(s.bot.name);
-      callBotToMic(s, clamp(s.bot.pace * .45, 700, 1200));
+      /* the rival's word waits on their name too — callBotToMic keeps its own
+         pacing delay on top, so the beat is name, pause, word */
+      speakName(s.bot.name, () => callBotToMic(s, clamp(s.bot.pace * .3, 300, 700)));
     }
   }
 
