@@ -1889,6 +1889,80 @@ window.SB_POEMS = {
           { w: 'hypocrisy', say: 'hih-POK-rih-see', def: 'claiming standards one does not actually follow' },
           { w: 'bombast', say: 'BOM-bast', def: 'pompous, inflated language' }
         ]
+      },
+{
+        t: 'Give me liberty, or give me death',
+        th: 'war', a: 'Patrick Henry (1736–1799)', src: 'St. John’s Church, Richmond, Virginia', y: '23 March 1775', kind: 'prose',
+        lines: [
+          'They tell us, sir, that we are weak; unable to cope with so formidable an adversary. But when shall we be stronger? Will it be the next week, or the next year? Will it be when we are totally disarmed, and when a British guard shall be stationed in every house? Three millions of people, armed in the holy cause of liberty, and in such a country as that which we possess, are invincible by any force which our enemy can send against us.',
+          'Gentlemen may cry, Peace, Peace — but there is no peace. The war is actually begun! The next gale that sweeps from the north will bring to our ears the clash of resounding arms! Our brethren are already in the field! Why stand we here idle? What is it that gentlemen wish? What would they have? Is life so dear, or peace so sweet, as to be purchased at the price of chains and slavery? Forbid it, Almighty God! I know not what course others may take; but as for me, give me liberty or give me death!'
+        ],
+        note: 'Henry argues almost entirely in questions — seven of them here — and each one leaves his listeners less room to stand in. The second paragraph switches tactics: short exclamations pile up like drumbeats, then the sentences suddenly stretch out again for the gale sweeping from the north. The famous last line is the only clause in the passage with nothing hedged onto the end of it, which is exactly why it stops the speech dead.',
+        hard: [
+          { w: 'formidable', say: 'FOR-mid-uh-bul', def: 'frighteningly powerful' },
+          { w: 'adversary', say: 'AD-ver-sair-ee', def: 'an opponent or enemy' },
+          { w: 'invincible', say: 'in-VIN-suh-bul', def: 'impossible to defeat' },
+          { w: 'brethren', say: 'BRETH-run', def: 'brothers; fellow members of a group' },
+          { w: 'resounding', say: 'rih-ZOWN-ding', def: 'ringing loudly; echoing' }
+        ]
+      },
+      {
+        t: 'And ain’t I a woman?',
+        th: 'fire', a: 'Sojourner Truth (c. 1797–1883)', src: 'Women’s Rights Convention, Akron, Ohio — as recorded by Frances Gage', y: '29 May 1851', kind: 'prose',
+        lines: [
+          'That man over there says that women need to be helped into carriages, and lifted over ditches, and to have the best place everywhere. Nobody ever helps me into carriages, or over mud-puddles, or gives me any best place! And ain’t I a woman? Look at me! Look at my arm! I have ploughed and planted, and gathered into barns, and no man could head me! And ain’t I a woman? I could work as much and eat as much as a man — when I could get it — and bear the lash as well! And ain’t I a woman? I have borne thirteen children, and seen them most all sold off to slavery, and when I cried out with my mother’s grief, none but Jesus heard me! And ain’t I a woman?'
+        ],
+        note: 'The whole speech is one question asked four times, and it gets heavier each time because of what she stacks in front of it: first a carriage door, then a ploughed field, then thirteen children sold away. Truth never argues the point — she simply presents evidence and lets the refrain do the arguing. Notice too that the sentences before each refrain get longer and longer, so the four-word question keeps landing in more and more silence.',
+        hard: [
+          { w: 'carriages', say: 'KAIR-ih-jiz', def: 'wheeled vehicles pulled by horses' },
+          { w: 'ploughed', say: 'PLOWD', def: 'turned over soil for planting' },
+          { w: 'slavery', say: 'SLAY-vuh-ree', def: 'the practice of owning people as property' },
+          { w: 'grief', say: 'GREEF', def: 'deep sorrow, especially over a loss' }
+        ]
+      },
+      {
+        t: 'I will fight no more forever',
+        th: 'snow', a: 'Chief Joseph, Hinmatóowyalahtq’it (c. 1840–1904)', src: 'Surrender in the Bear Paw Mountains, Montana Territory', y: '5 October 1877', kind: 'prose',
+        lines: [
+          'Tell General Howard I know his heart. What he told me before, I have it in my heart. I am tired of fighting. Our chiefs are killed. The old men are all dead. It is the young men who say yes or no. He who led the young men is dead. It is cold, and we have no blankets. The little children are freezing to death. My people, some of them, have run away to the hills, and have no blankets, no food; no one knows where they are — perhaps freezing to death. I want to have time to look for my children and see how many of them I can find. Maybe I shall find them among the dead. Hear me, my chiefs. I am tired. My heart is sick and sad. From where the sun now stands I will fight no more forever.'
+        ],
+        note: 'Nearly every sentence is short, flat, and begins with a plain subject — “I am tired,” “It is cold,” “My heart is sick and sad” — so the speech reads like a man counting losses rather than making a case. There is no argument in it at all; the grief is carried entirely by the list of who is dead and what is missing. Then the very last sentence reaches for the one image in the whole passage, the sun standing where it stands, and that is the line nobody forgets.',
+        hard: [
+          { w: 'blankets', say: 'BLANK-its', def: 'thick coverings used for warmth' },
+          { w: 'freezing', say: 'FREE-zing', def: 'becoming dangerously cold' },
+          { w: 'perhaps', say: 'per-HAPS', def: 'maybe; possibly' },
+          { w: 'forever', say: 'fer-EV-er', def: 'for all time to come' }
+        ]
+      },
+      {
+        t: 'What is the use of a book, without pictures or conversations?',
+        th: 'flower', a: 'Lewis Carroll (1832–1898)', src: 'Alice’s Adventures in Wonderland, Chapter I', y: '1865', kind: 'prose',
+        lines: [
+          'Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do: once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, “and what is the use of a book,” thought Alice, “without pictures or conversations?”',
+          'So she was considering in her own mind (as well as she could, for the hot day made her feel very sleepy and stupid) whether the pleasure of making a daisy-chain would be worth the trouble of getting up and picking the daisies, when suddenly a White Rabbit with pink eyes ran close by her.'
+        ],
+        note: 'Carroll opens with boredom on purpose, and he writes it into the shape of the sentences: both paragraphs sag along through clause after clause with nothing happening. The second one even wanders off into a bracket in the middle of itself, exactly the way a drowsy mind wanders. All of that delay exists so the final clause can cut straight across it — the Rabbit arrives in ten quick words after a hundred slow ones, and the book finally has a picture in it.',
+        hard: [
+          { w: 'conversations', say: 'kon-ver-SAY-shunz', def: 'talks between people' },
+          { w: 'considering', say: 'kun-SID-er-ing', def: 'thinking something over carefully' },
+          { w: 'pleasure', say: 'PLEZH-er', def: 'a feeling of enjoyment' },
+          { w: 'suddenly', say: 'SUD-un-lee', def: 'quickly and without warning' }
+        ]
+      },
+      {
+        t: 'The man in the arena',
+        th: 'stage', a: 'Theodore Roosevelt (1858–1919)', src: '“Citizenship in a Republic,” the Sorbonne, Paris', y: '23 April 1910', kind: 'prose',
+        lines: [
+          'It is not the critic who counts; not the man who points out how the strong man stumbles, or where the doer of deeds could have done them better. The credit belongs to the man who is actually in the arena, whose face is marred by dust and sweat and blood; who strives valiantly; who errs, who comes short again and again, because there is no effort without error and shortcoming; but who does actually strive to do the deeds; who knows great enthusiasms, the great devotions; who spends himself in a worthy cause; who at the best knows in the end the triumph of high achievement, and who at the worst, if he fails, at least fails while daring greatly, so that his place shall never be with those cold and timid souls who neither know victory nor defeat.'
+        ],
+        note: 'Roosevelt opens with a negative — it is not the critic — so that the real subject of the passage arrives late and lands harder. Then the second sentence runs on for well over a hundred words, chained together by the word “who” repeated ten times, and the semicolons never quite let you stop for breath. The ending refuses an easy victory: the last thing the sentence praises is failing while daring greatly.',
+        hard: [
+          { w: 'marred', say: 'MARD', def: 'damaged or spoiled in appearance' },
+          { w: 'valiantly', say: 'VAL-yunt-lee', def: 'with great courage' },
+          { w: 'enthusiasms', say: 'en-THOO-zee-az-umz', def: 'strong eager interests' },
+          { w: 'shortcoming', say: 'SHORT-kum-ing', def: 'a fault or failure to reach a standard' },
+          { w: 'timid', say: 'TIM-id', def: 'easily frightened; lacking boldness' }
+        ]
       }
     ]
   }
