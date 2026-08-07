@@ -559,6 +559,45 @@ function css(vol) {
   .pm-g b{font-family:'BB Display';font-size:9.4pt;display:block;color:var(--ink)}
   .pm-g i{font-family:'BB Mono';font-size:7.4pt;font-style:normal;color:var(--accent-deep);display:block}
   .pm-g span{color:var(--muted);display:block}
+  /* ---- the part dividers ----
+     A part opener used to be a centred title on a flat gradient with the book's
+     cartoon mascot stamped under it and a scenery band along the foot. Against
+     eight score bespoke paintings that read as the one page nobody had finished,
+     and the mascot belongs to the eight-year-old half of the library, not to the
+     reader of Ozymandias. So the divider IS the painting now: full bleed, no
+     margins, type sitting on it.
+     The scrim is two gradients, not one flat wash — dark down from the top where
+     the type lands, dark up from the foot so the folio stays legible, and the
+     picture left alone through its middle where it is actually worth looking at.
+     Plates are commissioned with a calm open top third for exactly this
+     (voice/pipeline/section-art.py). */
+  .sc-page{position:relative;overflow:hidden;padding:0;color:#fff;background:#1B1626}
+  /* scale(1.045): asked for full bleed, several plates came back with a painted
+     paper border anyway — a pale frame down two edges of the seaside town, a
+     dark vignette on the playhouse. On a page with no margins that frame reads
+     as a printing error. Overscanning by four per cent throws it off the leaf
+     and costs nothing the eye can find.
+     The overscan lives inside its own clipping frame rather than on the page:
+     a transform on a child still counts towards the parent's scrollHeight even
+     under overflow:hidden, so scaling the image directly made all eight
+     dividers report 24px of overflow to the page checker. */
+  .sc-frame{position:absolute;inset:0;overflow:hidden;z-index:0}
+  .sc-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.045)}
+  .sc-scrim{position:absolute;inset:0;z-index:1;
+    background:linear-gradient(180deg,rgba(16,12,26,.78) 0%,rgba(16,12,26,.62) 26%,rgba(16,12,26,.10) 52%,rgba(16,12,26,.06) 66%,rgba(16,12,26,.62) 100%)}
+  .sc-body{position:absolute;z-index:2;top:1.05in;left:.85in;right:.85in;text-align:center}
+  .sc-num{font-family:'BB Kicker';letter-spacing:.24em;text-transform:uppercase;font-size:10pt;
+    color:rgba(255,255,255,.82);text-shadow:0 2px 8px rgba(0,0,0,.6)}
+  .sc-rule{width:.9in;height:2.5pt;margin:.13in auto;border-radius:2pt;
+    background:linear-gradient(90deg,rgba(255,210,77,.25),rgba(255,210,77,.98),rgba(255,210,77,.25))}
+  .sc-page h1{font-family:'BB Display';font-size:36pt;line-height:1.04;margin:0;color:#fff;
+    text-shadow:0 3px 14px rgba(0,0,0,.7)}
+  .sc-blurb{font-family:'BB Kicker';font-size:11.4pt;line-height:1.55;max-width:4.9in;
+    margin:.18in auto 0;color:rgba(255,255,255,.93);text-shadow:0 2px 10px rgba(0,0,0,.75)}
+  .sc-count{position:absolute;z-index:2;left:0;right:0;bottom:.86in;text-align:center;
+    font-family:'BB Kicker';letter-spacing:.16em;text-transform:uppercase;font-size:9pt;
+    color:rgba(255,255,255,.78);text-shadow:0 2px 8px rgba(0,0,0,.7)}
+  .sc-page .bb-foot{color:rgba(255,255,255,.82);z-index:2}
   .bb-hive{display:grid;grid-template-columns:1fr 1fr;gap:.12in}
   .bb-card{padding:0 .04in;min-width:0;overflow-wrap:anywhere}
   .bb-card .ex{font-size:9.6pt;line-height:1.32;margin-top:2px;color:var(--ink);opacity:.85}
@@ -1763,6 +1802,48 @@ function moodFont(p) {
 const pieceSlug = p => 'pp-' + String(p.t || '').toLowerCase()
   .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 44);
 
+/* A part divider: the painting is the page.
+   Keyed on the section's NAME ('sc-epics'), never its position — the arc gets
+   reordered and pieces get added, and index-keyed art silently re-attaches
+   itself to the wrong part. If a plate is missing the page still renders: it
+   falls back to the tinted gradient the openers used to be, so art can be
+   filled in one part at a time without ever shipping a blank leaf. */
+function sectionDivider(vol, key, sec, sn, total, folio) {
+  const art = artAt('sc-' + key);
+  const num = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'][sn - 1] || sn;
+  const n = sec.pieces.length;
+  /* the hands in this part, named on the divider — a reader flicking through
+     stops at a name they know long before they stop at a section title */
+  const names = [];
+  for (const p of sec.pieces) {
+    /* the epics are credited "Vyasa, translated by Sir Edwin Arnold" and the roll
+       is a glance, not a bibliography — keep the poet, drop the translator and
+       anything parenthesised, or six names run to four lines across the foot */
+    const a = String(p.a || '').split(/,|\btranslated by\b|\btrans\.|\btr\./i)[0].replace(/\s*\(.*$/, '').trim();
+    if (a && !/^(unknown|anonymous|traditional|various)$/i.test(a) && !names.includes(a)) names.push(a);
+  }
+  /* budgeted by characters rather than by count: six short names fit on one line,
+     six long ones do not */
+  const shown = []; let budget = 62;
+  for (const a of names) { if (budget - a.length < 0) break; budget -= a.length + 3; shown.push(a); }
+  const roll = shown.map(esc).join(' &middot; ') + (shown.length < names.length ? ' &middot; and others' : '');
+  if (!art) return `<div class="page" data-vol="22" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
+    <div class="kick">Part ${num} of ${total}</div>
+    <h1 style="font-size:30pt;margin:.06in 0">${esc(sec.title)}</h1>
+    <p style="font-family:'BB Kicker';font-size:11pt;color:var(--muted);max-width:5in;margin:.1in auto 0;line-height:1.5">${esc(sec.blurb)}</p>
+    ${foot(vol, folio.n++)}</div>`;
+  return `<div class="page sc-page" data-vol="22">
+    <div class="sc-frame"><img class="sc-art" src="${art}" alt=""></div>
+    <div class="sc-scrim"></div>
+    <div class="sc-body">
+      <div class="sc-num">Part ${num} of ${total}</div>
+      <div class="sc-rule"></div>
+      <h1>${esc(sec.title)}</h1>
+      <p class="sc-blurb">${esc(sec.blurb)}</p></div>
+    <div class="sc-count">${n} piece${n === 1 ? '' : 's'}${roll ? ' &nbsp;&middot;&nbsp; ' + roll : ''}</div>
+    ${foot(vol, folio.n++)}</div>`;
+}
+
 function poemPage(vol, sec, p, n, folio, keys) {
   const L = POEM_LAY[(n - 1) % POEM_LAY.length];
   /* Art is keyed on the PIECE, falling back to its subject.
@@ -1818,8 +1899,31 @@ function book19() {
      then the ones you keep, then prose. Limericks sit beside the haiku because
      they are the other short form — and because a reader needs the joke after
      seventeen syllables of snow. `filter` keeps a missing section harmless. */
-  const SEC = ['speeches', 'epics', 'sonnets', 'haiku', 'limericks', 'byheart', 'prose']
-    .map(k => [k, P[k]]).filter(x => x[1]);
+  /* Shakespeare had twenty-two of the twenty-eight speeches and eight of the
+     nineteen sonnets — he was not IN two sections, he WAS them, and the oratory
+     and the other sonneteers had nowhere to stand. So he is carved out into his
+     own part here at build time rather than by moving object literals between
+     sections in the data file, which is reversible and cannot corrupt it. */
+  const isBard = p => /Shakespeare/.test(p.a || '');
+  const bard = [];
+  const SEC = [];
+  for (const k of ['speeches', 'epics', 'sonnets', 'haiku', 'limericks', 'byheart', 'prose']) {
+    const sec = P[k]; if (!sec) continue;
+    if (k === 'speeches' || k === 'sonnets') {
+      bard.push(...sec.pieces.filter(isBard));
+      const rest = sec.pieces.filter(p => !isBard(p));
+      if (!rest.length) continue;
+      SEC.push([k, { ...sec, pieces: rest,
+        title: k === 'speeches' ? 'Speeches that changed something' : sec.title,
+        blurb: k === 'speeches'
+          ? 'Not plays — real rooms, real days, and a person standing up with everything resting on the next sentence. Every one of these was spoken aloud before it was ever printed.'
+          : sec.blurb }]);
+    } else SEC.push([k, sec]);
+  }
+  if (bard.length) SEC.unshift(['shakespeare', {
+    title: 'The Bard',
+    blurb: 'He gets his own part because he would have taken over three others otherwise. The speeches first, then the sonnets — the same man doing the loudest thing in the language and then the quietest, in fourteen lines.',
+    pieces: bard }]);
   const allHard = [];
   SEC.forEach(([, sec]) => sec.pieces.forEach(p => (p.hard || []).forEach(h => allHard.push({ w: h.w, def: h.def, say: h.say }))));
   const rnd = mulberry(vol.n * 7919 + 17);
@@ -1829,51 +1933,96 @@ function book19() {
   pages.push(dividerPage(vol, folio.n++));
 
   /* how it works */
-  pages.push(`<div class="page" data-vol="22">
+  pages.push(`<div class="page" data-vol="22" style="display:flex;flex-direction:column">
     ${head(vol, null, 0, 'How this book works')}
     <div style="margin-top:.4in"><h1 style="font-size:26pt">Learn one by heart.</h1></div>
-    <div style="display:flex;gap:.14in;align-items:flex-start;margin:.16in 0">
-      ${avatar(vol.av, '1in')}
-      <div class="bb-bubble" style="font-size:11pt">Knowing a poem by heart is not showing off. It is the only way to own one — to have it at three in the morning when there is no book. Every piece in here is short enough to learn in a week.</div></div>
+    <!-- This page used to open with the book's cartoon mascot delivering the idea
+         from a speech bubble. Everything else in this volume is painted and set
+         like a printed anthology, and the sprite made the first page a reader
+         sees look like it belonged to a different book for a younger child. The
+         thought is better said straight, so it is said straight. -->
+    <p style="font-family:'BB Kicker';font-size:12.4pt;line-height:1.55;color:var(--muted);max-width:5.6in;margin:.12in 0 .22in">
+      Knowing a poem by heart is not showing off. It is the only way to own one &mdash; to have it at three in the morning when there is no book. Every piece in here is short enough to learn in a week.</p>
+    <div style="display:flex;flex-direction:column;justify-content:space-between;flex:1 1 auto;margin:.06in 0 .1in">
     ${[['Read it out loud, once', 'Poetry is a sound before it is a meaning. You will hear the shape before you can explain it.'],
        ['Find the turn', 'Nearly every piece here changes direction somewhere. The note under it tells you where — but look first.'],
        ['Take the words', 'The hard words in each piece are listed after it, with how to say them. That is the spelling half of this book.'],
-       ['Copy one out by hand', 'Slowly, with the punctuation exactly as it is. You will notice things reading cannot show you.']]
-      .map(([t, b], i) => `<div style="display:flex;gap:.14in;margin-bottom:.13in;align-items:flex-start">
+       ['Copy one out by hand', 'Slowly, with the punctuation exactly as it is. You will notice things reading cannot show you.'],
+       ['Then say it to somebody', 'Out loud, to a person, from memory. That is the only test there is, and it is the same nerve a bee asks for.']]
+      .map(([t, b], i) => `<div style="display:flex;gap:.14in;align-items:flex-start">
       <span style="display:inline-grid;place-items:center;width:.52in;height:.52in;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:'BB Display';font-size:14pt;flex-shrink:0">${i + 1}</span>
       <div class="bb-panelbox" style="flex:1"><h3 style="font-size:12pt;color:var(--accent-deep)">${t}</h3><p style="font-size:10.6pt;line-height:1.45">${b}</p></div></div>`).join('')}
-    ${worldStrip(vol.world, vol, 11)}
+    </div>
+    <!-- What used to close this page was a painted scenery band across the foot,
+         with two inches of dead paper above it and the folio printed unreadably
+         on top of the picture. The parts of the book are a better use of the
+         room: a reader who has just been told how to use the thing wants to know
+         what is in it, and it is the only page where the whole arc is visible at
+         once. Built from SEC, so carving the Bard out of two sections cannot
+         leave this list telling a lie. -->
+    <div style="margin-bottom:.36in;padding-top:.16in;border-top:1.5pt solid color-mix(in srgb,var(--accent) 34%,transparent)">
+      <div class="kick" style="margin-bottom:.10in">The ${['one','two','three','four','five','six','seven','eight','nine','ten'][SEC.length - 1] || SEC.length} parts</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.09in .22in">
+        ${SEC.map(([, s], i) => `<div style="display:flex;gap:.10in;align-items:baseline">
+          <span style="font-family:'BB Kicker';font-size:9pt;color:var(--accent);flex-shrink:0;min-width:.30in">${['I','II','III','IV','V','VI','VII','VIII','IX','X'][i] || i + 1}</span>
+          <span style="font-family:'BB Display';font-size:10.6pt;line-height:1.3;flex:1">${esc(s.title)}</span>
+          <span style="font-family:'BB Mono';font-size:8.6pt;color:var(--muted);flex-shrink:0">${s.pieces.length}</span></div>`).join('')}
+      </div></div>
     ${foot(vol, folio.n++)}</div>`);
 
   let sn = 0, pieceN = 0;
-  for (const [, sec] of SEC) {
+  for (const [key, sec] of SEC) {
     sn++;
-    /* section opener */
-    pages.push(`<div class="page" data-vol="22" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
-      <div class="kick">Part ${['I', 'II', 'III', 'IV', 'V'][sn - 1] || sn} of ${SEC.length}</div>
-      <h1 style="font-size:30pt;margin:.06in 0">${esc(sec.title)}</h1>
-      <p style="font-family:'BB Kicker';font-size:11pt;color:var(--muted);max-width:5in;margin:.1in auto 0;line-height:1.5">${esc(sec.blurb)}</p>
-      <div style="margin:.24in auto 0">${avatar(vol.av, '1.05in')}</div>
-      ${worldStrip(WORLD_CYCLE[(sn + 1) % 12], vol, 900 + sn)}
-      ${foot(vol, folio.n++)}</div>`);
+    pages.push(sectionDivider(vol, key, sec, sn, SEC.length, folio));
 
     for (const p of sec.pieces) {
       pieceN++;
       pages.push(poemPage(vol, sec, p, pieceN, folio, keys));
     }
 
-    /* a margin page of the app's own poet lines, one per section */
+    /* A margin page of single lines, one per part.
+       It says "the poets in this part", so it now actually asks THIS part who
+       its poets are instead of matching against one hard-coded list of twenty
+       names — which meant every part closed on the same handful of quotes, and
+       the Bard's own part could close on Frost. Falls back to the wider net
+       when a part's own hands left nothing quotable in the app's bank. */
+    const own = new RegExp('(' + sec.pieces.map(p => String(p.a || '').replace(/\s*\(.*$/, '').trim())
+      .filter(a => a.length > 3).map(a => a.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')', 'i');
     const poets = /shakespeare|frost|dickinson|keats|blake|poe|kipling|tennyson|wordsworth|whitman|shelley|henley|hughes|yeats|donne|browning|coleridge|byron|rossetti|longfellow/i;
-    const marg = shuf(QUOTES.filter(q => poets.test(q.a || '') && q.q.length >= 30 && q.q.length <= 120).slice(), rnd).slice(0, 7);
-    if (marg.length) pages.push(`<div class="page" data-vol="22">
+    const pool = q => q.q.length >= 30 && q.q.length <= 120;
+    /* The bank holds the same famous line twice under two wordings — the candle
+       throwing its beams into a naughty world and into a weary one — and printing
+       both, six lines apart, on the same page reads as a mistake. Keyed on the
+       first six words, lower-cased and stripped, which is where the variants
+       agree and where two genuinely different quotations almost never do. */
+    const pick = (list) => {
+      const out = [], seenQ = new Set();
+      for (const q of list) {
+        const k = q.q.toLowerCase().replace(/[^a-z ]+/g, '').split(/\s+/).slice(0, 6).join(' ');
+        if (seenQ.has(k)) continue; seenQ.add(k); out.push(q);
+        if (out.length === 7) break;
+      }
+      return out;
+    };
+    let marg = pick(shuf(QUOTES.filter(q => pool(q) && own.test(q.a || '')).slice(), rnd));
+    let sameHands = marg.length >= 4;
+    if (!sameHands) marg = pick(shuf(QUOTES.filter(q => pool(q) && poets.test(q.a || '')).slice(), rnd));
+    /* No painted band across the foot here either. The strip on this page was
+       drawn in the app's soft anime register, which is two books younger than
+       anything else in this volume, and the folio printed on top of it was
+       unreadable. The quotes take the room instead. */
+    if (marg.length) pages.push(`<div class="page" data-vol="22" style="display:flex;flex-direction:column">
       ${head(vol, null, 0, 'In the margins')}
-      <div style="margin-top:.4in;display:flex;align-items:center;gap:.12in">${avatar(vol.av, '.6in')}<h2 style="font-size:19pt">Lines from the same hands</h2></div>
-      <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .14in">Single lines by the poets in this part — the ones that broke off from their poems and went out into the language on their own.</p>
-      ${marg.map((q, k) => `<div style="margin-bottom:.15in;padding-left:.32in;position:relative;transform:rotate(${k % 2 ? .25 : -.25}deg)">
-        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:28pt;color:var(--accent)">&ldquo;</span>
-        <div style="font-family:'BB Display';font-size:12.4pt;line-height:1.3">${esc(q.q)}</div>
+      <div style="margin-top:.4in"><div class="kick">${esc(sec.title)}</div><h2 style="font-size:19pt">${sameHands ? 'Lines from the same hands' : 'Lines that got loose'}</h2></div>
+      <p style="font-size:9.6pt;color:var(--muted);margin:.04in 0 .10in">${sameHands
+        ? 'Single lines by the writers in this part &mdash; the ones that broke off from their poems and went out into the language on their own.'
+        : 'Single lines that outgrew the poems they came from and went out into the language on their own.'}</p>
+      <div style="display:flex;flex-direction:column;justify-content:space-around;flex:1 1 auto;margin-bottom:.34in">
+      ${marg.map((q, k) => `<div style="padding-left:.34in;position:relative;transform:rotate(${k % 2 ? .25 : -.25}deg)">
+        <span style="position:absolute;left:0;top:-.1in;font-family:'BB Display';font-size:30pt;color:var(--accent);opacity:.55">&ldquo;</span>
+        <div style="font-family:'BB Display';font-size:13pt;line-height:1.32">${esc(q.q)}</div>
         <div style="font-family:'BB Kicker';font-size:9.4pt;color:var(--accent-deep);margin-top:2pt">&mdash; ${esc(q.a)}</div></div>`).join('')}
-      ${worldStrip(WORLD_CYCLE[(sn + 5) % 12], vol, 950 + sn)}
+      </div>
       ${foot(vol, folio.n++)}</div>`);
   }
 
