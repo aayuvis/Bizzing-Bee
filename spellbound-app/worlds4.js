@@ -259,9 +259,11 @@
   };
   function ensureAC(){ var A=window.AudioContext||window.webkitAudioContext; if(!A) return false;
     if(!AC){ AC=new A();
-      // background music trimmed to 30% of its old level (was 1) — SFX are on a
-      // separate context and unaffected
-      master=AC.createGain(); master.gain.value=0.3;
+      // Background music, trimmed twice. It was 1.0, then 0.3, and it was still
+      // loud enough to be the thing you noticed about a world screen — so 40% of
+      // that again, which is 0.12 of the original synth level. SFX are on a
+      // separate context and are NOT affected by this gain.
+      master=AC.createGain(); master.gain.value=0.12;
       var lp=AC.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=3800; lp.Q.value=.3;
       var dly=AC.createDelay(1); dly.delayTime.value=.29;
       var fb=AC.createGain(); fb.gain.value=.28; var wet=AC.createGain(); wet.gain.value=.2;
