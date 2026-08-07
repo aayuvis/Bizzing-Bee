@@ -565,6 +565,14 @@ function css(vol) {
      that is heavy where the type sits and clears towards the foot lets the
      picture be a picture and the lines stay readable over it. */
   .lb-marg{position:relative;overflow:hidden}
+  /* The plate is served ALREADY VEILED and fully opaque (voice/pipeline/veil-art.py
+     bakes the paper ramp into the pixels). A translucent scrim over it was right
+     on screen and wrong in print: the overlay leaves Chromium as a shading
+     pattern with a soft mask, and consumers disagree about compositing it — it
+     dropped in Ghostscript AND in a reader, so these pages printed with the
+     artwork at full strength under the type. Nothing here has alpha now, so
+     there is nothing left for a rasteriser to get wrong. The .lb-*-scrim rules
+     below are the fallback for a plate whose veil has not been generated. */
   .lb-marg-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
     z-index:0;filter:saturate(.9)}
   /* The scrim clears towards the foot only as far as the TYPE allows. The first
@@ -2196,10 +2204,12 @@ function book19() {
      picture, the picture drops back far enough to read over, and the prose is
      cut to four lines that scan. */
   {
-    const openArt = artAt(`${artOf(vol)}-divider`);
+    /* the veil is baked into the plate — see the note on .lb-marg-art */
+    const openVeil = artAt(`${artOf(vol)}-divider-veil`);
+    const openArt = openVeil || artAt(`${artOf(vol)}-divider`);
     pages.push(`<div class="page lb-open" data-vol="22">
       ${openArt ? `<img class="lb-open-art" src="${openArt}" alt="">` : ''}
-      <div class="lb-open-scrim"></div>
+      ${openVeil ? '' : '<div class="lb-open-scrim"></div>'}
       <div class="lb-open-body">
         <div class="lb-open-kick">Lines Worth Keeping</div>
         <h1>Learn one by heart.</h1>
@@ -2290,11 +2300,12 @@ function book19() {
        page of his own lines, and a face is the right thing behind them. It is
        drawn with the figure held to the right and the left two thirds left open
        and pale, so the type has somewhere to sit. */
-    const ground = artAt('lbm-' + key) || artAt('sc-' + key);
+    const groundVeil = artAt('lbm-' + key + '-veil') || artAt('sc-' + key + '-veil');
+    const ground = groundVeil || artAt('lbm-' + key) || artAt('sc-' + key);
     const heroQ = marg[0], restQ = marg.slice(1);
     if (marg.length) pages.push(`<div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
       ${ground ? `<img class="lb-marg-art" src="${ground}" alt="">` : ''}
-      ${ground ? '<div class="lb-marg-scrim"></div>' : ''}
+      ${ground && !groundVeil ? '<div class="lb-marg-scrim"></div>' : ''}
       ${head(vol, null, 0, 'In the margins')}
       <div class="lb-marg-body">
       <div style="margin-top:.4in"><div class="kick">${esc(sec.title)}</div><h2 style="font-size:19pt">${sameHands ? 'Lines from the same hands' : 'Lines that got loose'}</h2></div>

@@ -184,6 +184,14 @@
      that is heavy where the type sits and clears towards the foot lets the
      picture be a picture and the lines stay readable over it. */
   .lb-marg{position:relative;overflow:hidden}
+  /* The plate is served ALREADY VEILED and fully opaque (voice/pipeline/veil-art.py
+     bakes the paper ramp into the pixels). A translucent scrim over it was right
+     on screen and wrong in print: the overlay leaves Chromium as a shading
+     pattern with a soft mask, and consumers disagree about compositing it — it
+     dropped in Ghostscript AND in a reader, so these pages printed with the
+     artwork at full strength under the type. Nothing here has alpha now, so
+     there is nothing left for a rasteriser to get wrong. The .lb-*-scrim rules
+     below are the fallback for a plate whose veil has not been generated. */
   .lb-marg-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
     z-index:0;filter:saturate(.9)}
   /* The scrim clears towards the foot only as far as the TYPE allows. The first
@@ -456,8 +464,8 @@
     letter-spacing:.01em;box-shadow:0 3pt 10pt rgba(12,9,28,.4), inset 0 -2pt 0 rgba(140,86,10,.28)">quizzes &amp; puzzles</span></div>
   </div>
 <div class="page lb-open" data-vol="22">
-      <img class="lb-open-art" src="art/b22-divider.jpg" alt="">
-      <div class="lb-open-scrim"></div>
+      <img class="lb-open-art" src="art/b22-divider-veil.jpg" alt="">
+      
       <div class="lb-open-body">
         <div class="lb-open-kick">Lines Worth Keeping</div>
         <h1>Learn one by heart.</h1>
@@ -899,8 +907,8 @@
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>32</span></div></div>
 <div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
-      <img class="lb-marg-art" src="art/lbm-shakespeare.jpg" alt="">
-      <div class="lb-marg-scrim"></div>
+      <img class="lb-marg-art" src="art/lbm-shakespeare-veil.jpg" alt="">
+      
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
       <div class="lb-marg-body">
       <div style="margin-top:.4in"><div class="kick">The Bard</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
@@ -1028,8 +1036,8 @@ And it must follow, as the night the day.</div></div>
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>41</span></div></div>
 <div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
-      <img class="lb-marg-art" src="art/sc-speeches.jpg" alt="">
-      <div class="lb-marg-scrim"></div>
+      <img class="lb-marg-art" src="art/sc-speeches-veil.jpg" alt="">
+      
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
       <div class="lb-marg-body">
       <div style="margin-top:.4in"><div class="kick">Speeches That Changed Something</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
@@ -1207,8 +1215,8 @@ And it must follow, as the night the day.</div></div>
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>54</span></div></div>
 <div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
-      <img class="lb-marg-art" src="art/sc-epics.jpg" alt="">
-      <div class="lb-marg-scrim"></div>
+      <img class="lb-marg-art" src="art/sc-epics-veil.jpg" alt="">
+      
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
       <div class="lb-marg-body">
       <div style="margin-top:.4in"><div class="kick">The Oldest Lines We Still Say</div><h2 style="font-size:19pt">Lines that got loose</h2></div>
@@ -1391,8 +1399,8 @@ Nor moth with dusty wing.</div><div class="by">&mdash; Christina Rossetti</div><
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>67</span></div></div>
 <div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
-      <img class="lb-marg-art" src="art/sc-sonnets.jpg" alt="">
-      <div class="lb-marg-scrim"></div>
+      <img class="lb-marg-art" src="art/sc-sonnets-veil.jpg" alt="">
+      
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
       <div class="lb-marg-body">
       <div style="margin-top:.4in"><div class="kick">Fourteen Lines, and a Turn</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
@@ -1748,8 +1756,8 @@ every man is a piece of the continent.</div><div class="by">&mdash; John Donne</
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>92</span></div></div>
 <div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
-      <img class="lb-marg-art" src="art/sc-haiku.jpg" alt="">
-      <div class="lb-marg-scrim"></div>
+      <img class="lb-marg-art" src="art/sc-haiku-veil.jpg" alt="">
+      
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
       <div class="lb-marg-body">
       <div style="margin-top:.4in"><div class="kick">Seventeen Syllables</div><h2 style="font-size:19pt">Lines that got loose</h2></div>
@@ -2001,8 +2009,8 @@ My soul can reach.</div><div class="by">&mdash; Elizabeth Barrett Browning</div>
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>110</span></div></div>
 <div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
-      <img class="lb-marg-art" src="art/sc-limericks.jpg" alt="">
-      <div class="lb-marg-scrim"></div>
+      <img class="lb-marg-art" src="art/sc-limericks-veil.jpg" alt="">
+      
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
       <div class="lb-marg-body">
       <div style="margin-top:.4in"><div class="kick">Five Lines and a Bounce</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
@@ -2385,8 +2393,8 @@ Where the early pumpkins blow.</div></div>
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>137</span></div></div>
 <div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
-      <img class="lb-marg-art" src="art/sc-byheart.jpg" alt="">
-      <div class="lb-marg-scrim"></div>
+      <img class="lb-marg-art" src="art/sc-byheart-veil.jpg" alt="">
+      
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
       <div class="lb-marg-body">
       <div style="margin-top:.4in"><div class="kick">Poems Worth Knowing by Heart</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
@@ -2513,8 +2521,8 @@ Reckon the morning's flagons up.</div><div class="by">&mdash; Emily Dickinson</d
   </div>
     <div class="bb-foot"><span>Bizzing Bee · Lines Worth Keeping</span><span>146</span></div></div>
 <div class="page lb-marg" data-vol="22" style="display:flex;flex-direction:column">
-      <img class="lb-marg-art" src="art/sc-prose.jpg" alt="">
-      <div class="lb-marg-scrim"></div>
+      <img class="lb-marg-art" src="art/sc-prose-veil.jpg" alt="">
+      
       <div class="bb-head"><span>Lines Worth Keeping</span><span>In the margins</span></div>
       <div class="lb-marg-body">
       <div style="margin-top:.4in"><div class="kick">The Long Quote</div><h2 style="font-size:19pt">Lines from the same hands</h2></div>
