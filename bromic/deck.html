@@ -276,6 +276,14 @@ dialog#lb::backdrop{background:rgba(4,8,10,.82)}
 .tone-line{transition:opacity .18s ease}
 .tone-line.swap{opacity:0}
 
+
+.filmgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(390px,1fr));gap:1px;
+  background:var(--line);border:1px solid var(--line)}
+.filmcard{background:var(--ground);padding:18px;display:flex;flex-direction:column;gap:11px}
+.filmcard video{width:100%;aspect-ratio:16/9;display:block;background:var(--sunk);border:1px solid var(--line)}
+.filmcard .fno{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;
+  letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+
 /* ---- misc ---- */
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:34px}
 @media(max-width:760px){.grid2{grid-template-columns:1fr}}
@@ -567,26 +575,18 @@ footer{padding:44px 0 72px;color:var(--muted);font-size:14px}
   <div class="stack-l">
     <div class="col stack-s">
       <p class="eyebrow">10 · Moving reference</p>
-      <h2>The format, moving.</h2>
-      <p class="lead muted">An 18-second animatic of the launch film, generated as reference for the edit
-      rhythm — eight seconds cold, eight seconds warm, two seconds endline. It exists to show how long the
-      deadpan holds before the turn pays off, which a still cannot do.</p>
+      <h2>Six animatics.</h2>
+      <p class="lead">Twenty seconds each, cut to the beat structure: a slow push in on the cold half, a
+      dissolve to the turn, a pull back as the space fills, then the endline card. A deadpan voice reads the
+      line and lands <em class="g">Get Bromic</em> on the card.</p>
+      <p class="lead muted">These are animatics, not films — built from the matched-cut plates so the timing,
+      the length of the deadpan hold and the shape of the turn can be judged before anyone books a crew.
+      They exist to answer the only question a still cannot: how long do you sit in the joke before it pays off.</p>
     </div>
-    <div class="filmwrap">
-      <video id="film" controls preload="metadata" playsinline poster=""></video>
-      <div class="stack-s" style="padding-top:4px">
-        <p class="plate-num">FILM 01 · THE MUSHROOM · 0:18</p>
-        <p class="line">Seventy thousand dollars of outdoor kitchen. Heated by an eighty-nine dollar
-        mushroom.<br><span style="color:var(--muted)">Get Bromic.</span></p>
-        <p class="script">Ambient audio only — wind and gas hiss under the cold half, room tone and
-        conversation under the turn. The endline is a card, not a voiceover: in production this is where the
-        cast VO lands, and casting one voice across the whole library is the cheapest distinctive asset
-        available to the brand.</p>
-        <p class="script" style="font-size:14px"><strong style="color:var(--ink)">Status — </strong>
-        one of ten scripted. The remaining nine are written and queued; generation stopped on an API quota
-        limit, not a creative one.</p>
-      </div>
-    </div>
+    <div class="filmgrid" id="filmgrid"></div>
+    <div class="note">In production the VO is cast, not synthesised, and one voice runs across the whole
+      library — the cheapest distinctive asset available to the brand. Ambient sound design (wind and gas
+      hiss under the cold half, room tone and conversation under the turn) is laid in at the mix.</div>
   </div>
 </section>
 
@@ -855,20 +855,7 @@ const TONE_NAMES = ['Deadpan','Dry','Absurd','Dark'];
 const toneState = {};
 const IMG = window.__IMG__ || {};
 const VID = window.__VID__ || {};
-(function(){
-  const v = document.getElementById('film');
-  if (!v) return;
-  const srcs = [['01_mushroom_webm','video/webm'], ['01_mushroom','video/mp4']];
-  let added = 0;
-  for (const [k, type] of srcs) {
-    if (!VID[k]) continue;
-    const s = document.createElement('source');
-    s.src = VID[k]; s.type = type;
-    v.appendChild(s); added++;
-  }
-  if (!added) v.replaceWith(Object.assign(document.createElement('div'),
-    {className:'noboard', innerHTML:'<span>Film not embedded</span>'}));
-})();
+
 const src = k => IMG[k] || "";
 
 /* ---------- plates ---------- */
@@ -1013,6 +1000,34 @@ function tline(id, extra){
   return `<p class="line tone-line" data-tone-id="${id}" ${extra}><span class="tone-text">${txt}</span>` +
          `<br><span style="color:var(--muted)">Get Bromic.</span></p>`;
 }
+
+
+const FILMS6 = [
+ {k:'01_mushroom',    no:'FILM 01 · 0:20', t:'The Mushroom',    id:'P01'},
+ {k:'02_pizza_oven',  no:'FILM 02 · 0:20', t:'The Pizza Oven',  id:'P02'},
+ {k:'03_snowbirds',   no:'FILM 03 · 0:20', t:'The Snowbirds',   id:'P03'},
+ {k:'04_big_game',    no:'FILM 04 · 0:20', t:'The Big Game',    id:'P04'},
+ {k:'05_coastal',     no:'FILM 05 · 0:20', t:'The Coastal Breeze', id:'P05'},
+ {k:'06_specification',no:'FILM 06 · 0:20',t:'The Specification', id:'P06'},
+];
+const fg = document.getElementById('filmgrid');
+FILMS6.forEach(f=>{
+  const el = document.createElement('article');
+  el.className = 'filmcard';
+  el.setAttribute('data-tone-host','');
+  const v = VID[f.k];
+  el.innerHTML = `
+    <p class="fno">${f.no}</p>
+    <h3 style="font-size:18px;text-transform:uppercase;letter-spacing:-.02em">${f.t}</h3>
+    ${v ? `<video controls preload="none" playsinline ${IMG[f.k+'_poster']?`poster="${IMG[f.k+'_poster']}"`:''}>
+             ${VID[f.k+'__webm']?`<source src="${VID[f.k+'__webm']}" type="video/webm">`:''}
+             <source src="${v}" type="video/mp4">
+           </video>`
+        : `<div class="noboard"><span>Film not embedded</span></div>`}
+    ${tline(f.id)}
+    ${toneSwitch(f.id, toneState[f.id]||0)}`;
+  fg.appendChild(el);
+});
 
 /* ---------- priced scenes ---------- */
 const money = n => '$' + n.toLocaleString('en-US');
