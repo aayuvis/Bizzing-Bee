@@ -1818,7 +1818,7 @@ function book19() {
      then the ones you keep, then prose. Limericks sit beside the haiku because
      they are the other short form — and because a reader needs the joke after
      seventeen syllables of snow. `filter` keeps a missing section harmless. */
-  const SEC = ['speeches', 'sonnets', 'haiku', 'limericks', 'byheart', 'prose']
+  const SEC = ['speeches', 'epics', 'sonnets', 'haiku', 'limericks', 'byheart', 'prose']
     .map(k => [k, P[k]]).filter(x => x[1]);
   const allHard = [];
   SEC.forEach(([, sec]) => sec.pieces.forEach(p => (p.hard || []).forEach(h => allHard.push({ w: h.w, def: h.def, say: h.say }))));
