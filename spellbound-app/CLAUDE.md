@@ -348,11 +348,37 @@ handlers. App lives in this folder; open `index.html` to run.
   spellers, a drawn number, one word a round, miss and you sit down. Ten rivals each have
   an age, a `lvl` they are comfortable at, `nerve`, a `spec` origin and a `tell`; whether
   one gets a word is `BASE + spec + (lvl - hardness)*SPREAD - press*(1-nerve)*PRESS`, so
-  the round does the killing, not the bot. Eight named rounds; **round one eliminates
-  nobody** because the announcer says so; an all-miss round runs again; the **final two
-  play full championship rules** (a miss does not end it — the rival must take that word
-  AND the next, and fumbling either puts the other speller back on their feet), and after
-  three of those it goes to sudden death so the bee always terminates.
+  the round does the killing, not the bot. **Round one eliminates nobody** because the
+  announcer says so; an all-miss round runs again; the **final two play full championship
+  rules** (a miss does not end it — the rival must take that word AND the next, and
+  fumbling either puts the other speller back on their feet), and after three further
+  segments it goes to sudden death so the bee always terminates.
+- **It runs in the Scripps shape: SEGMENTS, not a flat ladder of rounds.** Every segment is
+  the same three parts, in this order — `spell` (oral, one word each), `vocab` (a four-way
+  meaning question), `lightning` (the 90-second spell-off, everybody at once, lowest score
+  out). `roundAt(n, liveN)` derives the part from `n % 3` and the stage from `n / 3`, and
+  the stage ALSO jumps when the field collapses, because calling it "Quarterfinals" while
+  three people fight for a title reads as a bug. Stages: Preliminaries → Quarterfinals →
+  Semifinals → Finals.
+- **The meaning round reuses the app's own question.** `vocQuestion()` wraps
+  `vocBuildCheck()` from app3 — the same 4-option question the Vocabulary section asks, so
+  the child meets what they practised and there is one implementation. The bee widens the
+  DISTRACTOR POOL itself rather than changing that shared function: `gameWordsD()` is
+  scoped to the child's band (~180 words at level four), and three level-four definitions
+  against a championship word give the answer away on register alone. `vocPool()` prefers
+  `SB_VOCAB26` (997 words, all with definitions — the actual national vocabulary list).
+  **A meaning answered right must never call `logBand` or `markMastered`** — knowing a
+  meaning is not spelling a word, and the Vocabulary section has a headless test pinning
+  that separation down.
+- **Rivals have a `voc` skill distinct from `skill`.** Authored per speller, because that
+  is the whole point of the round: Dax can spell words he could not define, Theo asks for
+  the definition every time and remembers it. Reusing `skill` would make the vocabulary
+  round a repeat of the spelling one instead of something that reorders the field.
+- **The spell-off ranks, it does not merely eliminate**, so it is the round that breaks a
+  tie between two spellers who never miss. Rivals are simulated at the bell rather than
+  animated — eleven progress bars ticking at once is noise, and the child has ninety
+  seconds of their own to spend. It takes exactly one speller, and takes nobody when only
+  two are left: the last two are decided on words, not on a race.
 - **The bee keeps its own word list.** `corpusSlice` by `y` band puts dictionary tail on a
   championship stage (`abidingness` is a y-5 word). `beeList()` takes the ~4,650 words the
   library tags as real competition words (`nt` — the finals lists and the Primary/Junior/

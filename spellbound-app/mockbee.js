@@ -32,78 +32,115 @@
      at; pace is how long they take at the microphone, which is characterisation
      as much as timing. */
   const BOTS = [
-    { id: 'pixel', lvl: .18, name: 'Pip', age: 8, skill: .52, nerve: .74, spec: null, pace: 620,
+    { id: 'pixel', lvl: .18, name: 'Pip', age: 8, skill: .52, nerve: .74, voc: 0.40, vtell: 'spells at a sprint and has never once asked what it means', spec: null, pace: 620,
       note: 'Eight, and spells at a sprint. Brilliant or gone.', vary: .22,
       tell: 'starts before the pronouncer finishes' },
-    { id: 'koi', lvl: .24, name: 'Nova', age: 9, skill: .58, nerve: .70, spec: /old english|germanic/i, pace: 1150,
+    { id: 'koi', lvl: .24, name: 'Nova', age: 9, skill: .58, nerve: .70, voc: 0.56, vtell: 'reads more than she lets on', spec: /old english|germanic/i, pace: 1150,
       note: 'Steady. Short words are hers and she knows it.', vary: .08,
       tell: 'says the word twice, always' },
-    { id: 'beaker', lvl: .32, name: 'Rafi', age: 10, skill: .63, nerve: .58, spec: /latin/i, pace: 1300,
+    { id: 'beaker', lvl: .32, name: 'Rafi', age: 10, skill: .63, nerve: .58, voc: 0.74, vtell: 'takes the Latin root apart, so the meaning falls out of it', spec: /latin/i, pace: 1300,
       note: 'Takes every Latin root apart before he writes it.', vary: .10,
       tell: 'traces the letters on his palm' },
-    { id: 'panda', lvl: .38, name: 'Suki', age: 11, skill: .66, nerve: .93, spec: null, pace: 1400,
+    { id: 'panda', lvl: .38, name: 'Suki', age: 11, skill: .66, nerve: .93, voc: 0.62, vtell: 'steady here too', spec: null, pace: 1400,
       note: 'Unshakeable. The lights do nothing to her.', vary: .07,
       tell: 'breathes out, then spells' },
-    { id: 'comet', lvl: .42, name: 'Dax', age: 11, skill: .71, nerve: .34, spec: null, pace: 700,
+    { id: 'comet', lvl: .42, name: 'Dax', age: 11, skill: .71, nerve: .34, voc: 0.50, vtell: 'can spell words he could not define at gunpoint', spec: null, pace: 700,
       note: 'Fastest here in round one. Watch him in round six.', vary: .16,
       tell: 'rocks on his heels' },
-    { id: 'astro', lvl: .44, name: 'Mira', age: 12, skill: .70, nerve: .66, spec: /greek/i, pace: 1250,
+    { id: 'astro', lvl: .44, name: 'Mira', age: 12, skill: .70, nerve: .66, voc: 0.79, vtell: 'Greek gives her the meaning before the spelling', spec: /greek/i, pace: 1250,
       note: 'Greek is her language. Ask her for the origin and smile.', vary: .09,
       tell: 'asks for the language of origin every time' },
-    { id: 'scopey', lvl: .43, name: 'Theo', age: 12, skill: .69, nerve: .80, spec: null, pace: 2100,
+    { id: 'scopey', lvl: .43, name: 'Theo', age: 12, skill: .69, nerve: .80, voc: 0.85, vtell: 'asks for the definition every time — and remembers it', spec: null, pace: 2100,
       note: 'Asks all four questions. Every word. No exceptions.', vary: .06,
       tell: 'asks all four questions, every single word' },
-    { id: 'melody', lvl: .52, name: 'Ines', age: 13, skill: .74, nerve: .72, spec: /french/i, pace: 1200,
+    { id: 'melody', lvl: .52, name: 'Ines', age: 13, skill: .74, nerve: .72, voc: 0.71, vtell: 'French roots, French meanings', spec: /french/i, pace: 1200,
       note: 'French endings hold no silence she has not heard.', vary: .08,
       tell: 'mouths the word in French first' },
-    { id: 'samurai', lvl: .62, name: 'Kwame', age: 14, skill: .80, nerve: .78, spec: /latin|greek/i, pace: 1100,
+    { id: 'samurai', lvl: .62, name: 'Kwame', age: 14, skill: .80, nerve: .78, voc: 0.81, vtell: 'no weakness here either', spec: /latin|greek/i, pace: 1100,
       note: 'No weakness anybody has found yet.', vary: .06,
       tell: 'hands behind his back, dead still' },
-    { id: 'goldlegend', lvl: .72, name: 'Vesper', age: 15, skill: .87, nerve: .95, spec: null, pace: 900,
+    { id: 'goldlegend', lvl: .72, name: 'Vesper', age: 15, skill: .87, nerve: .95, voc: 0.88, vtell: 'knows the list the way other people know a song', spec: null, pace: 900,
       note: 'Won this last year. Has not looked at anyone since.', vary: .05,
       tell: 'does not ask for anything' },
   ];
 
-  /* ---------------- the rounds ----------------
-     A real bee gets harder every round and the room gets quieter. `pct` is the
-     slice of the ranked bee list the round draws from — a percentile window
-     rather than a library y-band, because the library's y only reaches 7 with
-     any depth and a round-eight band of [8,9] has almost nothing in it. The
-     windows overlap, the way a real list does. `press` is the pressure
-     multiplier: what turns a nervous speller's round six into a coin toss.
-     Round one does not eliminate — the announcer says so, so it must be true. */
-  const ROUNDS = [
-    { name: 'Round One', sub: 'the warm-up', pct: [0, .14], press: .1, safe: 1, line: 'Everybody gets one, and nobody goes out. Find your feet.' },
-    { name: 'Round Two', sub: 'finding the level', pct: [.10, .26], press: .2, line: 'From here it counts. Miss it and you sit down.' },
-    { name: 'Round Three', sub: 'the roots round', pct: [.22, .40], press: .35, line: 'From here on, know where the word came from.' },
-    { name: 'Round Four', sub: 'the long words', pct: [.36, .55], press: .5, line: 'Longer now. Take the syllables one at a time.' },
-    { name: 'Round Five', sub: 'the origins round', pct: [.50, .68], press: .65, line: 'Four languages on this list. Ask which one.' },
-    { name: 'Round Six', sub: 'the thinning', pct: [.63, .80], press: .8, line: 'Look around. There were eleven of you.' },
-    { name: 'Round Seven', sub: 'the deep end', pct: [.76, .92], press: .92, line: 'These are the words that end bees.' },
-    { name: 'Round Eight', sub: 'championship words', pct: [.86, 1], press: 1, line: 'Championship words. Every one of them can finish this.' },
+  /* ---------------- the rounds, in the Scripps shape ----------------
+     A national bee is not a single ladder of spelling rounds. It runs in
+     SEGMENTS, and every segment is the same three things: you spell, then you
+     answer for meaning, then — when the field is small enough to need deciding
+     rather than thinning — you go to the spell-off. Scripps stages that as
+     Preliminaries, Quarterfinals, Semifinals and Finals, and this does the same,
+     except the stage advances when the field thins rather than when a calendar
+     day ends, because this is one sitting with eleven spellers.
+
+     `pct` is the slice of the ranked bee list a round draws from — a percentile
+     window rather than a library y-band, because the library's y only reaches 7
+     with any depth and a band of [8,9] has almost nothing in it. Windows overlap
+     the way a real list does. `press` is the pressure multiplier: what turns a
+     nervous speller's fifth round into a coin toss.
+     The opening round does not eliminate — the announcer says so, so it is true. */
+  const STAGES = [
+    { name: 'Preliminaries', pct: [0, .30], press: .25,
+      open: 'Eleven spellers. The preliminaries decide who is still here at lunch.' },
+    { name: 'Quarterfinals', pct: [.26, .58], press: .55,
+      open: 'Quarterfinals. The list gets longer and the room gets quieter.' },
+    { name: 'Semifinals', pct: [.54, .82], press: .8,
+      open: 'Semifinals. Everything from here is a word that has ended somebody’s bee.' },
+    { name: 'Finals', pct: [.78, 1], press: 1,
+      open: 'The finals. Championship words, and one microphone left.' },
   ];
-  /* A real bee does not stop at eight. If two spellers are trading championship
-     words all night the rounds keep counting up, so the round keeps its own name
-     rather than announcing Round Eight four times. */
+  /* The three parts of a segment, in the order a bee actually runs them. Spelling
+     opens because that is what a bee is; the vocabulary round is second, the way
+     Scripps puts the meaning segment after the spelling one; the spell-off closes
+     because it decides rather than thins, and a decider makes no sense as an
+     opener. */
+  const SEGMENT = [
+    { kind: 'spell', sub: 'oral spelling',
+      line: 'Spell it as you hear it. Miss it and you sit down.' },
+    { kind: 'vocab', sub: 'word meanings',
+      line: 'Now the meanings. Four choices, one right, and no second guess.' },
+    { kind: 'lightning', sub: 'the spell-off',
+      line: 'Ninety seconds. Spell as many as you can. The lowest score goes out.' },
+  ];
+  const SEG_LEN = SEGMENT.length;
+  /* The stage a round belongs to. It climbs with the segment, but it also jumps
+     when the field collapses — with eleven spellers a run of bad luck can leave
+     three standing in the second segment, and calling that "Quarterfinals" while
+     three people fight for a title reads as a bug. */
+  function stageFor(seg, liveN) {
+    let i = Math.min(seg, STAGES.length - 1);
+    if (liveN <= 2) i = STAGES.length - 1;
+    else if (liveN <= 4) i = Math.max(i, STAGES.length - 2);
+    else if (liveN <= 6) i = Math.max(i, 1);
+    return i;
+  }
   const NUMERAL = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten',
     'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen'];
-  const EXTRA_LINE = ['Still standing. Still championship words.',
-    'Neither of you will give. Another one, then.',
-    'This is the longest this hall has run in years. Again.'];
-  /* Two spellers trading championship words under the two-word rule can go on
-     all night — the simulator found a bee that reached round fifty-three. So the
-     hall escalates: the list climbs to its very top, and after three extra rounds
-     the championship rule is suspended and the next miss ends it. Sudden death is
-     how real bees close, and it guarantees this one closes too. */
+  /* Two spellers trading championship words under the two-word rule can go on all
+     night — the simulator once found a bee that reached round fifty-three. So the
+     hall escalates: past the last stage the list climbs to its very top, and after
+     three further segments the championship rule is suspended and the next miss
+     ends it. Sudden death is how real bees close, and it guarantees this one does. */
   const SUDDEN_AT = 3;
-  function roundAt(n) {
-    if (n < ROUNDS.length) return ROUNDS[n];
-    const last = ROUNDS[ROUNDS.length - 1], k = n - ROUNDS.length;
-    const sudden = k >= SUDDEN_AT;
-    return { name: 'Round ' + (NUMERAL[n] || (n + 1)), sub: sudden ? 'sudden death' : 'championship words',
-      pct: [Math.min(.94, last.pct[0] + k * .02), 1], press: 1 + k * .25, sudden: sudden ? 1 : 0,
-      line: sudden ? 'Sudden death. The championship rule is suspended — the next miss ends this bee.'
-        : EXTRA_LINE[k % EXTRA_LINE.length] };
+  function roundAt(n, liveN) {
+    const seg = Math.floor(n / SEG_LEN);
+    const part = SEGMENT[n % SEG_LEN];
+    const si = stageFor(seg, liveN == null ? 99 : liveN);
+    const st = STAGES[si];
+    const over = Math.max(0, seg - (STAGES.length - 1));
+    const sudden = over >= SUDDEN_AT && part.kind === 'spell';
+    return {
+      kind: part.kind, sub: part.sub, stage: st.name, stageI: si, seg: seg,
+      name: st.name + ' · ' + (part.kind === 'spell' ? 'Round ' + (NUMERAL[seg] || (seg + 1))
+        : part.kind === 'vocab' ? 'Vocabulary' : 'Spell-off'),
+      pct: [Math.min(.94, st.pct[0] + over * .03), Math.min(1, st.pct[1] + over * .01)],
+      press: st.press + over * .2,
+      safe: n === 0 ? 1 : 0,
+      sudden: sudden ? 1 : 0,
+      line: n === 0 ? 'Everybody gets one, and nobody goes out. Find your feet.'
+        : sudden ? 'Sudden death. The championship rule is suspended — the next miss ends this bee.'
+        : (n % SEG_LEN === 0 && seg <= STAGES.length - 1) ? st.open : part.line,
+    };
   }
 
   /* ---------------- the announcer ----------------
@@ -121,6 +158,20 @@
       'Number {n} — this is yours.', 'Our own speller, number {n}. Take your time.'],
     callBot: ['{name}, {age}. {name} {tell}.', '{name} steps up — {age}, and {tell}.',
       'Number {n}, {name}. {age}, and {tell}.', '{name} to the microphone. {age}.'],
+    /* the meaning round has its own calls — a bee announcer does not ask you to
+       spell a word and then read you four definitions in the same breath */
+    callVocMe: ['Speller number {n}. Your word, and its meaning, please.',
+      'Number {n} — not the spelling this time. The meaning.',
+      'To the microphone, number {n}. Which of these is it?',
+      'Number {n}. Four meanings on the board. One of them is yours.'],
+    callVocBot: ['{name}, number {n}. {name} {vtell}.',
+      'Number {n}, {name}, for the meaning.',
+      '{name} steps up — {vtell}.',
+      '{name} to the microphone. The meaning, please.'],
+    boltIn: ['Ninety seconds on the clock. Spell everything you can.',
+      'This is the spell-off. No turns, no order — just the clock.',
+      'Ninety seconds. Whoever spells the fewest is finished.'],
+    boltEnd: ['Time. Pencils down.', 'That is ninety seconds.', 'Time is called.'],
     botRight: ['Correct.', 'That is correct.', 'Correct — and quickly.', 'Right. {name} stays.',
       'Clean. Not a hesitation in it.', 'Correct. {name} sits down still in this.'],
     botWrong: ['No. I am sorry — that is not it.', 'That is incorrect. The bell, please.',
@@ -280,6 +331,112 @@
     return out;
   }
 
+  /* ---------------- the vocabulary round ----------------
+     The app already has a meaning question: vocBuildCheck() in app3, which is
+     what the Vocabulary section asks. Reusing it means the child meets exactly
+     the question they have been practising, and there is one implementation
+     rather than two drifting apart.
+
+     The one thing it cannot do unchanged is the late rounds. Its distractors
+     come from gameWordsD(), which is scoped to THIS CHILD's difficulty band —
+     about 180 words for a level-four speller. Put a championship word against
+     three level-four definitions and the right answer is obvious from its
+     register alone, without knowing anything. So the bee widens the pool itself
+     rather than touching the shared function, whose behaviour the Vocabulary
+     section's headless test pins down.
+
+     SB_VOCAB26 is the natural source: 997 words, every one carrying a
+     definition, and it is the actual national vocabulary list. */
+  let _vocPool = null;
+  function vocPool() {
+    if (_vocPool) return _vocPool;
+    const out = [];
+    const push = arr => { for (const w of (arr || [])) if (w && w.w && String(w.d || '').trim().length > 8) out.push(w); };
+    try { push((window.SB_VOCAB26 || {}).words); } catch (e) {}
+    try { push(gameWordsD({ needDef: true })); } catch (e) {}
+    const seen = new Set(); _vocPool = [];
+    for (const w of out) { const k = nkey(w.w); if (seen.has(k)) continue; seen.add(k); _vocPool.push(w); }
+    return _vocPool;
+  }
+  /* EVERY CHOICE IS PUNCTUATED THE SAME WAY, and this is not cosmetic.
+     The answer comes from the round's word and the distractors from wherever the
+     pool found them, and the two banks are written differently: SB_VOCAB26
+     definitions are sentence-cased and end in a full stop, the library's are
+     lowercase fragments that do not. Printed side by side, the right answer was
+     the only tidy one — a child could learn to pick it without knowing the word,
+     which is a quiz that tests nothing. Normalising all four identically is what
+     makes the question honest. */
+  function defText(d) {
+    let t = String(d || '').trim().replace(/\s+/g, ' ');
+    t = t.replace(/[.;,]+$/, '');
+    /* only the first sentence: some definitions run to three, and a long one is
+       another tell as surely as a full stop is */
+    const cut = t.search(/\.\s+[A-Z]/);
+    if (cut > 24) t = t.slice(0, cut);
+    return t.charAt(0).toUpperCase() + t.slice(1);
+  }
+  /* One meaning question. Falls back to the app's own builder when the wide pool
+     is unavailable, so a missing data file costs a good question, not the round. */
+  function vocQuestion(w) {
+    const pool = vocPool();
+    /* LENGTH IS THE OTHER TELL. "Pick the longest one" is the oldest trick a
+       child brings to a multiple-choice paper, and it works whenever the right
+       answer is a careful full definition and the wrong ones are three-word
+       stubs. So the distractors are chosen for being CLOSE IN LENGTH to the
+       answer — from a wider candidate list, sorted by how near they land, with
+       enough slack left that the three are not identical in shape. */
+    const mk = (ans, others) => {
+      const A = defText(ans);
+      if (!A) return null;
+      const O = others.map(defText)
+        .filter(x => x && x.toLowerCase() !== A.toLowerCase())
+        .filter((x, i, a) => a.indexOf(x) === i)
+        .sort((x, y) => Math.abs(x.length - A.length) - Math.abs(y.length - A.length));
+      if (O.length < 3) return null;
+      /* take from the nearest six rather than the nearest three, so the set is
+         well-matched without being mechanically so */
+      return { w, answer: A, choices: shuffle([A].concat(shuffle(O.slice(0, 6)).slice(0, 3))) };
+    };
+    if (pool.length >= 8) {
+      const y = w.y || 3;
+      let near = pool.filter(x => nkey(x.w) !== nkey(w.w) && Math.abs((x.y || 3) - y) <= 1);
+      if (near.length < 6) near = pool.filter(x => nkey(x.w) !== nkey(w.w));
+      const q = mk(w.d, shuffle(near.slice()).slice(0, 40).map(x => x.d));
+      if (q) return q;
+    }
+    try {
+      const b = vocBuildCheck([w]);
+      if (b && b[0]) return mk(b[0].answer, b[0].choices.filter(c => c !== b[0].answer));
+    } catch (e) {}
+    return null;
+  }
+  /* A round's worth of questions, one per speller. Words come from the round's
+     own difficulty window, and only ones that carry a usable definition. */
+  function vocWordsFor(R, n) {
+    const from = roundWords(R, n * 4).filter(w => w && String(w.d || '').trim().length > 8);
+    const qs = [];
+    for (const w of from) { const q = vocQuestion(w); if (q) qs.push(q); if (qs.length >= n) break; }
+    if (qs.length < n) {           /* the round list was thin on definitions */
+      for (const w of shuffle(vocPool().slice())) {
+        if (qs.some(q => nkey(q.w.w) === nkey(w.w))) continue;
+        const q = vocQuestion(w); if (q) qs.push(q);
+        if (qs.length >= n) break;
+      }
+    }
+    return qs;
+  }
+  /* Does a rival know this one? Their `voc` rather than their `skill`, nudged by
+     the round's pressure and by whether the word sits in their speciality — a
+     Latin specialist has the root, and the root is most of the meaning. */
+  function botKnows(bot, w, press) {
+    let p = bot.voc == null ? bot.skill : bot.voc;
+    if (bot.spec && bot.spec.test(String(w.o || '') + ' ' + String(w.r || ''))) p += .10;
+    p -= (1 - bot.nerve) * .12 * (press || 0);
+    p -= Math.max(0, ((w.y || 3) - 4)) * .05;
+    p += (Math.random() - .5) * (bot.vary || .1) * 1.4;
+    return Math.random() < clamp(p, .05, .97);
+  }
+
   /* ---------------- the run ---------------- */
   app2.mbOpen = () => {
     state.nav = 'mockbee'; state.screen = 'app';
@@ -358,7 +515,7 @@
      a warm-up and takes nobody. */
   function sitDown(s) {
     const g = mb();
-    if (roundAt(g.round).safe) return false;
+    if (roundAt(g.round, alive().length).safe) return false;
     s.in = false;
     g.outSeq = (g.outSeq || []).concat([s]);
     g.roundOut = (g.roundOut || []).concat([s]);
@@ -374,11 +531,11 @@
      making a promise the engine did not keep. */
   function champTry(misser, missedWord) {
     const g = mb();
-    if (roundAt(g.round).sudden) return false;     /* sudden death: a miss is the end */
+    if (roundAt(g.round, alive().length).sudden) return false;     /* sudden death: a miss is the end */
     const rival = g.field.find(s => s.in && s !== misser);
     if (!rival || !missedWord || !missedWord.w) return false;
     const extra = (g.words || []).find(w => w && nkey(w.w) !== nkey(missedWord.w))
-      || roundWords(roundAt(g.round), 1)[0] || missedWord;
+      || roundWords(roundAt(g.round, alive().length), 1)[0] || missedWord;
     g.c2 = { rival, misser, words: [missedWord, extra], step: 0 };
     after(900, champRun);
     return true;
@@ -421,10 +578,30 @@
 
   function beginRound() {
     const g = mb(); if (!g) return;
-    const R = roundAt(g.round);
     const live = alive();
-    g.words = roundWords(R, live.length + 2);
-    g.turn = 0; g.phase = 'call'; g.roundMissed = 0; g.roundTook = 0; g.roundOut = [];
+    const R = roundAt(g.round, live.length);
+    g.turn = 0; g.roundMissed = 0; g.roundTook = 0; g.roundOut = [];
+    g.kind = R.kind;
+    /* The spell-off is the one round that is not taken in turn: everybody spells
+       at once against the same clock, so it needs no per-speller word list and it
+       opens straight into the timer rather than calling a name. */
+    if (R.kind === 'lightning') {
+      g.words = roundWords(R, 40);
+      g.phase = 'boltIn';
+      announce(fill(pick(SAY.roundIn, g.seed + g.round * 7), { round: R.name, sub: R.sub, line: R.line }));
+      render();
+      after(1400, startBolt); return;
+    }
+    if (R.kind === 'vocab') {
+      g.vqs = vocWordsFor(R, live.length + 2);
+      /* No usable meaning questions — skip rather than stall the bee on a round
+         it cannot ask. A thin definition set is a data problem, not a bee. */
+      if (!g.vqs.length) { g.round++; return after(200, beginRound); }
+      g.words = g.vqs.map(q => q.w);
+    } else {
+      g.words = roundWords(R, live.length + 2);
+    }
+    g.phase = 'call';
     announce(fill(pick(SAY.roundIn, g.seed + g.round * 7), { round: R.name, sub: R.sub, line: R.line }));
     if (live.length === 2 && !g.saidFinal) { g.saidFinal = true;
       after(600, () => announce(pick(SAY.finalTwo, g.seed))); }
@@ -438,7 +615,7 @@
     if (g.turn >= live.length) {
       /* round over. Real bee rule: if every speller in a round missed, nobody
          goes out and the round runs again. */
-      if (!roundAt(g.round).safe && g.roundMissed && g.roundTook
+      if (!roundAt(g.round, live.length).safe && g.roundMissed && g.roundTook
           && g.roundMissed >= g.roundTook && (g.redo = (g.redo || 0) + 1) <= 2) {
         (g.roundOut || []).forEach(s => { s.in = true; });
         g.outSeq = (g.outSeq || []).filter(s => s.in === false);
@@ -461,11 +638,42 @@
     const s = live[g.turn];
     g.atMic = s;                     /* who is actually at the microphone, which
                                         is NOT live[turn] once turn advances */
+    const R = roundAt(g.round, live.length);
+    g.typed = ''; g.asked = {}; g.lastPractice = null;
+
+    /* ---- the vocabulary round takes its turns the same way, but the question
+            is a meaning rather than a spelling, so it branches here rather than
+            duplicating the whole turn machinery. ---- */
+    if (R.kind === 'vocab') {
+      g.vq = (g.vqs && g.vqs.length) ? g.vqs[g.turn % g.vqs.length] : null;
+      if (!g.vq) return finish();
+      g.word = g.vq.w; g.vPick = null;
+      if (s.kind === 'me') {
+        g.phase = 'vme';
+        announce(fill(pick(SAY.callVocMe, g.seed + g.turn), { n: s.n }));
+        after(500, () => { try { say(g.vq.w.w); } catch (e) {} });
+        render();
+      } else {
+        g.phase = 'vbot';
+        announce(fill(pick(SAY.callVocBot, g.seed + g.turn * 3 + g.round),
+          { name: s.bot.name, n: s.n, vtell: s.bot.vtell || 'thinks about it' }),
+          s.bot.name + ', number ' + s.n + '. Define it.');
+        render();
+        after(clamp(s.bot.pace * .8, 900, 2400), () => {
+          const gg = mb(); if (!gg || gg.phase !== 'vbot') return;
+          const ok = botKnows(s.bot, g.vq.w, R.press);
+          gg.vPick = ok ? gg.vq.answer : shuffle(gg.vq.choices.filter(c => c !== gg.vq.answer))[0];
+          render();
+          after(700, () => verdict(s, ok));
+        });
+      }
+      return;
+    }
+
     g.word = (g.words && g.words.length) ? g.words[g.turn % g.words.length] : null;
     /* the list came back empty — end the bee on the spellers still standing
        rather than putting a speller in front of a word that does not exist */
     if (!g.word || !g.word.w) return finish();
-    g.typed = ''; g.asked = {}; g.lastPractice = null;
     if (s.kind === 'me') {
       g.phase = 'me';
       announce(fill(pick(SAY.callMe, g.seed + g.turn), { n: s.n }));
@@ -478,6 +686,146 @@
       callBotToMic(s, clamp(s.bot.pace * .45, 420, 1000));
     }
   }
+
+  /* ---------------- the spell-off ----------------
+     The one round that is not taken in turn. Scripps runs it when a traditional
+     finish is needed: every remaining speller gets the same ninety seconds and
+     spells as many as they can off a prepared list, and the count decides it.
+     Here it closes every segment, which is what gives the bee its rhythm —
+     spell, define, then race — and it is the only round that ranks rather than
+     merely eliminating, so it is the one that can break a tie between two
+     spellers who never miss.
+     The rivals are simulated rather than animated: eleven progress bars ticking
+     at once is noise, and the child has ninety seconds of their own to spend. */
+  const BOLT_MS = 90000;
+  function startBolt() {
+    const g = mb(); if (!g) return;
+    const live = alive();
+    const R = roundAt(g.round, live.length);
+    g.phase = 'bolt';
+    g.bolt = { i: 0, typed: '', got: 0, miss: 0, deadline: Date.now() + BOLT_MS, done: [], tick: 1 };
+    announce(pick(SAY.boltIn, g.seed + g.round));
+    render();
+    try { say((g.words[0] || {}).w || ''); } catch (e) {}
+    boltTick(1);
+  }
+  /* One clock, not one per submitted word. mbBoltGo used to restart the tick,
+     so by the fifteenth word fifteen loops were racing the same deadline and
+     each one would have called endBolt(). The token means only the newest loop
+     survives, and submitting a word does not need to touch the clock at all. */
+  function boltTick(token) {
+    const g = mb(); if (!g || g.phase !== 'bolt' || !g.bolt) return;
+    if (token !== g.bolt.tick) return;
+    if (Date.now() >= g.bolt.deadline) return endBolt();
+    try {
+      const el = document.getElementById('mb-bolt-clock');
+      if (el) el.textContent = Math.ceil((g.bolt.deadline - Date.now()) / 1000) + 's';
+    } catch (e) {}
+    setTimeout(() => boltTick(token), 250);
+  }
+  app2.mbBoltType = v => { const g = mb(); if (g && g.bolt) g.bolt.typed = String(v || ''); };
+  /* Submit one word: score it, move to the next, and speak it. The input is
+     patched rather than re-rendered so the caret does not jump mid-race. */
+  app2.mbBoltGo = () => {
+    const g = mb(); if (!g || g.phase !== 'bolt' || !g.bolt) return;
+    const b = g.bolt;
+    const w = g.words[b.i % g.words.length];
+    if (!w) return endBolt();
+    const ok = nkey(b.typed || '') === nkey(w.w);
+    if (ok) b.got++; else b.miss++;
+    b.done.push({ w: w.w, typed: b.typed, ok });
+    b.typed = ''; b.i++;
+    try { sfx(ok ? 'right' : 'wrong'); } catch (e) {}
+    const next = g.words[b.i % g.words.length];
+    render();
+    if (next) { try { say(next.w); } catch (e) {} }
+  };
+  /* A rival's ninety seconds, in one number. Their spelling skill sets the rate
+     and their nerve sets how much the clock costs them, so the ordering is the
+     same ordering the spelling rounds would give — just resolved faster. */
+  function botBolt(bot, press) {
+    const rate = 6 + bot.skill * 16;                      /* words attempted */
+    const n = Math.max(3, Math.round(rate * (.85 + Math.random() * .3)));
+    let got = 0;
+    for (let i = 0; i < n; i++) {
+      let p = bot.skill - (1 - bot.nerve) * .18 * (press || 0) + (Math.random() - .5) * (bot.vary || .1);
+      if (Math.random() < clamp(p, .05, .97)) got++;
+    }
+    return got;
+  }
+  function endBolt() {
+    const g = mb(); if (!g || !g.bolt) return;
+    const live = alive();
+    const R = roundAt(g.round, live.length);
+    g.phase = 'boltDone';
+    announce(pick(SAY.boltEnd, g.seed + g.round));
+    /* score everybody, then sit down the lowest — the spell-off ranks, so it
+       takes exactly one speller regardless of how many missed */
+    const board = live.map(s => ({ s, score: s.kind === 'me' ? g.bolt.got : botBolt(s.bot, R.press) }));
+    board.forEach(r => { r.s.boltScore = r.score; });
+    board.sort((a, b) => a.score - b.score || Math.random() - .5);
+    g.boltBoard = board.map(r => ({ name: nameOf(r.s), me: r.s.kind === 'me', score: r.score }))
+      .slice().sort((a, b) => b.score - a.score);
+    /* nobody goes out if that would end the bee early — the last two are decided
+       by spelling, not by a race */
+    const loser = live.length > 2 ? board[0].s : null;
+    render();
+    after(2200, () => {
+      const gg = mb(); if (!gg) return;
+      if (loser) {
+        loser.hist.push(false);
+        sitDown(loser);
+        announce(nameOf(loser) + ' spelled the fewest. Thank you, speller.');
+      } else {
+        announce('Both of you held. We go back to the words.');
+      }
+      gg.boltBoard = null; gg.bolt = null;
+      const left = alive();
+      if (left.length <= 1) return finish();
+      gg.round++; gg.redo = 0;
+      after(1200, beginRound);
+    });
+  }
+
+  /* the child's answer in a meaning round */
+  app2.mbVocPick = i => {
+    const g = mb(); if (!g || g.phase !== 'vme' || g.vPick != null || !g.vq) return;
+    const me = alive().find(s => s.kind === 'me'); if (!me) return;
+    g.vPick = g.vq.choices[+i];
+    const ok = g.vPick === g.vq.answer;
+    g.phase = 'vmeDone'; g.meOk = ok;
+    try { sfx(ok ? 'right' : 'wrong'); if (ok) burstConfetti(18); } catch (e) {}
+    /* DELIBERATELY no logBand and no markMastered here. Those move spelling
+       progress, and a meaning answered right is not a word spelt right — the
+       same separation the Vocabulary section keeps, and there is a headless test
+       over there that asserts it. */
+    render();
+    after(1100, () => {
+      const gg = mb(); if (!gg) return;
+      /* your shot at the title runs on its own rails, exactly as in mbSpell */
+      if (gg.c2) {
+        announce(ok ? 'Correct — and that is the title.' : 'That is not the meaning.');
+        me.hist.push(ok);
+        after(900, () => champAfter(ok));
+        return;
+      }
+      gg.roundTook++;
+      if (ok) { announce('Correct.'); }
+      else {
+        const out = sitDown(me); gg.roundMissed++;
+        announce(out ? 'That is not the meaning. Thank you, speller.'
+          : 'Not that one — but nobody goes out this round.');
+        /* the championship rule: if your miss leaves one speller standing, they
+           still have to win it on a word of their own */
+        if (out && alive().length === 1 && champTry(me, gg.vq.w)) {
+          me.hist.push(ok); render(); return;
+        }
+      }
+      me.hist.push(ok);
+      gg.turn++; gg.phase = 'call';
+      after(900, nextTurn);
+    });
+  };
 
   /* ---------------- a rival's word, pronounced ----------------
      The pronouncer used to only NAME the rival ("Vesper, number four.") and
@@ -525,7 +873,7 @@
   function botTurn(s) {
     const g = mb(); if (!g || g.view !== 'stage') return;
     if (!g.word || !g.word.w) return finish();
-    const R = roundAt(g.round);
+    const R = roundAt(g.round, alive().length);
     const ok = botSpells(s.bot, g.word, R.press);
     const shown = ok ? g.word.w : misspell(g.word.w);
     g.botOut = ''; g.botOk = ok; g.phase = 'botSpell';
@@ -564,14 +912,21 @@
       after(800, () => champAfter(ok)); return;
     }
     g.roundTook++;
+    /* "The word was {word}" is the right bell for a spelling miss and the wrong
+       one for a meaning miss — the word was on the board the whole time. */
+    const isVoc = g.kind === 'vocab';
     if (ok) { try { sfx('right'); } catch (e) {}
       announce(fill(pick(SAY.botRight, g.seed + g.turn * 5), { name: s.bot.name }), 'Correct.');
     } else {
       const out = sitDown(s); g.roundMissed++;
       try { sfx('wrong'); } catch (e) {}
-      announce(out ? fill(pick(SAY.botWrong, g.seed + g.turn * 5), { name: s.bot.name, word: g.word.w })
+      announce(isVoc
+        ? (out ? 'No — that is not what it means. Thank you, ' + s.bot.name + '.'
+               : 'Not the meaning — but nobody goes out this round.')
+        : out ? fill(pick(SAY.botWrong, g.seed + g.turn * 5), { name: s.bot.name, word: g.word.w })
         : fill(pick(SAY.botSafe, g.seed + g.turn * 5), { name: s.bot.name, word: g.word.w }),
-        out ? 'No. ' + g.word.w + '.' : 'No — but round one forgives.');
+        isVoc ? (out ? 'No.' : 'No — but this round forgives.')
+        : out ? 'No. ' + g.word.w + '.' : 'No — but round one forgives.');
       /* that miss left one speller standing — championship rules, not a win */
       if (out && alive().length === 1 && champTry(s, g.word)) {
         s.hist.push(ok); g.phase = 'call'; return;
@@ -583,7 +938,16 @@
   }
 
   /* ---------------- the speller's turn ---------------- */
-  app2.mbSay = () => { const g = mb(); if (g && g.word) { try { say(g.word.w); } catch (e) {} } };
+  /* "Hear it again" has to know which word is in front of the speller. In the
+     spell-off that is the one the race has reached, not g.word — which is the
+     last word of the previous round and would pronounce the wrong thing. */
+  app2.mbSay = () => {
+    const g = mb(); if (!g) return;
+    let w = g.word;
+    if (g.phase === 'bolt' && g.bolt && g.words && g.words.length) w = g.words[g.bolt.i % g.words.length];
+    else if ((g.phase === 'vme' || g.phase === 'vmeDone') && g.vq) w = g.vq.w;
+    if (w && w.w) { try { say(w.w); } catch (e) {} }
+  };
   app2.mbAsk = k => { const g = mb(); if (!g) return; g.asked = { ...(g.asked || {}), [k]: 1 };
     const w = g.word || {};
     const txt = k === 'def' ? (w.d || 'No definition on file for that one.')
@@ -704,8 +1068,17 @@
         <span>
           <span class="mb-kick">Eleven spellers · one microphone</span>
           <h2>Ten rivals, and a number in a hat</h2>
-          <p>You draw a number, you take your turn in that order, and you spell one word a round.
-             Miss it and you sit down. The last speller standing takes it.</p>
+          <p>You draw a number and take your turn in that order. It runs the way the national
+             bee runs — three parts, over and over, and it gets harder every time round.</p>
+          <div class="mb-format">
+            ${[['Spell', 'One word each, out loud. Miss it and you sit down.'],
+               ['Meaning', 'Four definitions, one right. Knowing how to spell it is not the same as knowing what it is.'],
+               ['Spell-off', 'Ninety seconds, everybody at once. The lowest score goes out.']]
+              .map(([t, d], i) => `<div class="mb-fstep"><span class="mb-fnum">${i + 1}</span>
+                <span><b>${t}</b>${esc(d)}</span></div>`).join('')}
+          </div>
+          <p class="mb-stages">Preliminaries &rarr; Quarterfinals &rarr; Semifinals &rarr; Finals.
+             The last speller standing takes it.</p>
           <button data-act="mbStart" class="mb-go">${iconSVG('crown', 17)} Take the stage</button>
         </span>
       </div>
@@ -716,9 +1089,13 @@
           <b>${esc(b.name)}<i>${b.age}</i></b>
           <span class="mb-note">${esc(b.note)}</span>
           <span class="mb-bars">
-            <span title="Skill">${bar('skill', b.skill)}</span>
+            <span title="Skill — spelling">${bar('skill', b.skill)}</span>
+            <span title="Vocab — how well they know what a word MEANS, which is not the same thing">${bar('vocab', b.voc == null ? b.skill : b.voc)}</span>
             <span title="Nerve — how little the late rounds move them">${bar('nerve', b.nerve)}</span>
           </span>
+          <!-- the vocab tell earns its place on the card: it is the only thing that
+               tells a reader why Theo is dangerous in a round Dax will lose -->
+          ${b.vtell ? `<span class="mb-vnote">Meanings: ${esc(b.vtell)}</span>` : ''}
         </span></div>`).join('')}</div>
     </div>`;
   }
@@ -729,6 +1106,88 @@
      practice whether or not it is their turn. Skippable with Enter or the
      button, because a hall where every rival takes 30 forced seconds is not
      a game anyone finishes. */
+  /* ---- the meaning round, the child's turn ----
+     Four choices, one shot. The word is shown as well as spoken: this round is
+     about what it means, so hiding the spelling would be testing the wrong
+     thing — and the child has just heard it pronounced. */
+  function vocMeUI() {
+    const g = mb(); const q = g.vq; if (!q) return '';
+    const done = g.phase === 'vmeDone';
+    return `<div class="mb-mic me${done ? (g.meOk ? ' ok' : ' no') : ''}">
+      <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(g.avatar, 74) : ''}</span>
+      <div class="mb-mic-in">
+        <span class="mb-mic-name">${esc(g.name)} · number ${g.myN}</span>
+        <div class="mb-vword">${esc(q.w.w)}
+          <button data-act="mbSay" class="mb-hear mb-vhear">${iconSVG('volume', 16)} Hear it</button></div>
+        <div class="mb-vq">What does it mean?</div>
+        <div class="mb-vopts">
+          ${q.choices.map((c, i) => {
+            const chosen = done && g.vPick === c, right = done && c === q.answer;
+            return `<button class="mb-vopt${right ? ' right' : chosen ? ' wrong' : ''}"
+              ${done ? '' : `data-act="mbVocPick" data-arg="${i}"`}>
+              <span class="mb-vletter">${String.fromCharCode(65 + i)}</span>
+              <span>${esc(c)}</span></button>`;
+          }).join('')}
+        </div>
+      </div></div>`;
+  }
+  /* ---- the meaning round, a rival's turn ----
+     Their pick appears as a letter, the way a bee answers aloud: "B, please." */
+  function vocBotUI() {
+    const g = mb(); const s = g.atMic, q = g.vq;
+    if (!s || !q || s.kind === 'me') return '';
+    const i = g.vPick == null ? -1 : q.choices.indexOf(g.vPick);
+    return `<div class="mb-mic">
+      <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(s.bot.id, 74) : ''}</span>
+      <div class="mb-mic-in">
+        <span class="mb-mic-name">${esc(s.bot.name)} · ${s.bot.age} · number ${s.n}</span>
+        <div class="mb-vword">${esc(q.w.w)}</div>
+        <div class="mb-letters">
+          <span class="mb-l-ghost" aria-hidden="true">X</span>
+          <span class="mb-l-live">${i < 0 ? '' : String.fromCharCode(65 + i)}</span>
+          ${i < 0 ? '<span class="mb-thinking">thinking…</span>' : ''}
+        </div>
+      </div></div>`;
+  }
+  /* ---- the spell-off ----
+     One input, one clock, and a running count. The rivals are not shown racing:
+     their scores land at the bell, because eleven bars ticking at once is noise
+     and the child has ninety seconds of their own to spend. */
+  function boltUI() {
+    const g = mb();
+    if (g.phase === 'boltIn') return `<div class="mb-mic mb-bolt">
+      <div class="mb-mic-in" style="align-items:center;text-align:center">
+        <div class="mb-bolt-big">90</div>
+        <div class="mb-mic-name">The spell-off — get ready</div></div></div>`;
+    if (g.phase === 'boltDone') {
+      const b = g.boltBoard || [];
+      return `<div class="mb-mic mb-bolt">
+        <div class="mb-mic-in">
+          <span class="mb-mic-name">Time. The spell-off board.</span>
+          <div class="mb-boltboard">${b.map((r, i) => `<div class="mb-brow${r.me ? ' me' : ''}${i === b.length - 1 ? ' last' : ''}">
+            <span class="mb-brank">${i + 1}</span><span class="mb-bname">${esc(r.name)}</span>
+            <span class="mb-bscore">${r.score}</span></div>`).join('')}</div>
+        </div></div>`;
+    }
+    const b = g.bolt || {}; const w = (g.words || [])[(b.i || 0) % Math.max(1, (g.words || []).length)] || {};
+    return `<div class="mb-mic mb-bolt">
+      <div class="mb-mic-in">
+        <div class="mb-bolt-top">
+          <span class="mb-bolt-clock" id="mb-bolt-clock">90s</span>
+          <span class="mb-bolt-score">${b.got || 0} spelled</span>
+        </div>
+        <div class="mb-controls"><button data-act="mbSay" class="mb-hear">${iconSVG('volume', 18)} Hear it again</button></div>
+        <div class="mb-spellrow">
+          <input class="mb-input" id="mb-in" autocomplete="off" autocapitalize="off" spellcheck="false"
+            placeholder="spell it — Enter for the next" value="${escA(b.typed || '')}" oninput="callAct('mbBoltType',this.value)"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();callAct('mbBoltGo');}">
+          <button data-act="mbBoltGo" class="mb-submit">Next →</button>
+        </div>
+        <div class="mb-bolt-trail">${(b.done || []).slice(-7).map(d =>
+          `<span class="mb-bt ${d.ok ? 'ok' : 'no'}">${esc(d.w)}</span>`).join('')}</div>
+      </div></div>`;
+  }
+
   function practiceUI() {
     const g = mb(); const pr = g.practice; if (!pr) return '';
     const s = pr.forBot;
@@ -754,7 +1213,7 @@
   }
 
   function viewStage() {
-    const g = mb(); const R = roundAt(g.round); const live = alive();
+    const g = mb(); const R = roundAt(g.round, alive().length); const live = alive();
     const meTurn = g.phase === 'me';
     const w = g.word || {};
     const asked = g.asked || {};
@@ -787,6 +1246,9 @@
         <div class="mb-mic-in"><span class="mb-mic-name">${esc(g.name)}</span>
           <div class="mb-letters">${(g.typed || '—').toUpperCase().split('').join(' ')}</div>
           <div class="mb-truth">${g.meOk ? 'Correct' : 'The word was <b>' + esc(w.w) + '</b>'}</div></div></div>`
+      : (g.phase === 'vme' || g.phase === 'vmeDone') ? vocMeUI()
+      : g.phase === 'vbot' ? vocBotUI()
+      : (g.phase === 'bolt' || g.phase === 'boltIn' || g.phase === 'boltDone') ? boltUI()
       : g.phase === 'practice' ? practiceUI()
       : (function () {
         const s = g.atMic;

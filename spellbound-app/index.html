@@ -15,9 +15,9 @@
 <meta name="description" content="Bizzing Bee — a spelling-bee trainer that hears your child spell, evolves a character with every win, and shows parents exactly where they stand.">
 <title>Bizzing Bee — spelling-bee trainer</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 viewBox%3D%220 0 64 64%22%3E%3Cellipse cx%3D%2215%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(-24 15 20)%22%2F%3E%3Cellipse cx%3D%2249%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(24 49 20)%22%2F%3E%3Cpath d%3D%22M27 17 Q23 7 21 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Cpath d%3D%22M37 17 Q41 7 43 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Ccircle cx%3D%2221%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Ccircle cx%3D%2243%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22 fill%3D%22%23FFC23D%22%2F%3E%3Cellipse cx%3D%2224%22 cy%3D%2230%22 rx%3D%2211%22 ry%3D%227%22 fill%3D%22%23FFD86E%22 opacity%3D%22.55%22%2F%3E%3CclipPath id%3D%22b%22%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22%2F%3E%3C%2FclipPath%3E%3Cg clip-path%3D%22url(%23b)%22%3E%3Crect x%3D%225%22 y%3D%2245%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3Crect x%3D%225%22 y%3D%2256%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3C%2Fg%3E%3Cellipse cx%3D%2217%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Cellipse cx%3D%2247%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Ccircle cx%3D%2224%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2225.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2224.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2240%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2241.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2240.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Cpath d%3D%22M26 49 Q32 55 40 49%22 fill%3D%22none%22 stroke%3D%22%233A1E5C%22 stroke-width%3D%222.8%22 stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E">
-<link rel="stylesheet" href="fonts/fonts.css?v=20260807h">
-<link rel="stylesheet" href="tokens.css?v=20260807h">
-<link rel="stylesheet" href="worlds4.css?v=20260807h">
+<link rel="stylesheet" href="fonts/fonts.css?v=20260807i">
+<link rel="stylesheet" href="tokens.css?v=20260807i">
+<link rel="stylesheet" href="worlds4.css?v=20260807i">
 
 <style>
   *{box-sizing:border-box}
@@ -626,6 +626,51 @@
   .mb-countdown{font-family:var(--mono,monospace);font-weight:800;font-size:15px;color:#E4D6FF;
     background:rgba(139,107,214,.28);border:1px solid rgba(160,130,230,.5);border-radius:99px;
     padding:3px 11px;flex-shrink:0}
+  .mb-vnote{display:block;font-size:11px;line-height:1.35;color:var(--mb-dim);margin-top:5px;font-style:italic}
+  /* the three parts of a segment, spelled out in the lobby so a child knows what
+     they are walking into rather than discovering the meaning round mid-bee */
+  .mb-format{display:flex;flex-direction:column;gap:7px;margin:12px 0 10px}
+  .mb-fstep{display:flex;gap:9px;align-items:flex-start;font-size:12.8px;line-height:1.44;color:var(--mb-dim)}
+  .mb-fstep b{display:block;font-family:var(--display);font-size:13.5px;color:var(--mb-ink)}
+  .mb-fnum{flex-shrink:0;display:inline-grid;place-items:center;width:21px;height:21px;border-radius:7px;
+    margin-top:1px;background:rgba(240,180,41,.2);color:var(--mb-gold);
+    font-family:var(--display);font-weight:800;font-size:11.5px}
+  .mb-stages{font-size:12px;color:var(--mb-dim);letter-spacing:.02em}
+  /* ---- the meaning round ---- */
+  .mb-vword{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:var(--display);
+    font-weight:800;font-size:20px;color:var(--mb-gold);letter-spacing:.01em}
+  .mb-vhear{min-height:30px;padding:4px 10px;font-size:12px}
+  .mb-vq{font-size:12.5px;font-weight:700;color:var(--mb-dim);letter-spacing:.04em;text-transform:uppercase}
+  .mb-vopts{display:flex;flex-direction:column;gap:7px}
+  .mb-vopt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;cursor:pointer;
+    padding:10px 12px;border-radius:13px;font-size:13.5px;line-height:1.42;color:var(--mb-ink);
+    background:rgba(255,255,255,.06);border:1px solid var(--mb-line);transition:background .15s ease,border-color .15s ease}
+  .mb-vopt:hover{background:rgba(255,255,255,.11)}
+  .mb-vopt[data-act]{cursor:pointer}
+  .mb-vopt:not([data-act]){cursor:default}
+  .mb-vopt.right{border-color:rgba(78,207,140,.6);background:rgba(78,207,140,.16)}
+  .mb-vopt.wrong{border-color:rgba(240,110,110,.6);background:rgba(240,110,110,.15)}
+  .mb-vletter{flex-shrink:0;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;
+    background:rgba(240,180,41,.22);color:var(--mb-gold);font-family:var(--display);font-weight:800;font-size:12px}
+  /* ---- the spell-off ---- */
+  .mb-bolt-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+  .mb-bolt-clock{font-family:var(--mono,monospace);font-weight:800;font-size:26px;color:var(--mb-gold);
+    font-variant-numeric:tabular-nums;min-width:74px;display:inline-block}
+  .mb-bolt-score{font-family:var(--display);font-weight:800;font-size:14px;color:var(--mb-ink)}
+  .mb-bolt-big{font-family:var(--display);font-weight:800;font-size:52px;color:var(--mb-gold);line-height:1}
+  .mb-bolt-trail{display:flex;flex-wrap:wrap;gap:5px;min-height:22px}
+  .mb-bt{font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;
+    background:rgba(255,255,255,.07);border:1px solid var(--mb-line)}
+  .mb-bt.ok{color:#8FE3B5;border-color:rgba(78,207,140,.4)}
+  .mb-bt.no{color:#F3A7A7;border-color:rgba(240,110,110,.4);text-decoration:line-through}
+  .mb-boltboard{display:flex;flex-direction:column;gap:4px}
+  .mb-brow{display:flex;align-items:center;gap:10px;padding:5px 9px;border-radius:10px;font-size:13px;
+    background:rgba(255,255,255,.05);border:1px solid transparent}
+  .mb-brow.me{background:rgba(240,180,41,.15);border-color:rgba(240,180,41,.4)}
+  .mb-brow.last{background:rgba(240,110,110,.14);border-color:rgba(240,110,110,.4)}
+  .mb-brank{flex-shrink:0;width:18px;color:var(--mb-dim);font-family:var(--mono,monospace);font-size:11px}
+  .mb-bname{flex:1;font-family:var(--display);font-weight:700}
+  .mb-bscore{font-family:var(--mono,monospace);font-weight:700;color:var(--mb-gold);font-variant-numeric:tabular-nums}
   .mb-prac-fb{font-size:12.5px;font-weight:700;color:var(--mb-dim)}
   .mb-prac-fb.ok{color:#8FE3B5}
   .mb-prac-fb b{color:var(--mb-ink)}
@@ -739,54 +784,54 @@
   @keyframes lx-gleam{0%,100%{opacity:0;transform:translateY(-6px)}50%{opacity:1;transform:translateY(6px)}}
   @keyframes lx-string{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.7)}}
 </style>
-  <link rel="stylesheet" href="saga2.css?v=20260807h">
+  <link rel="stylesheet" href="saga2.css?v=20260807i">
 </head>
 <body>
 <div id="root"></div>
-<script src="icons.js?v=20260807h"></script>
-<script src="icons-art.js?v=20260807h"></script>
-<script src="cover-art.js?v=20260807h"></script>
+<script src="icons.js?v=20260807i"></script>
+<script src="icons-art.js?v=20260807i"></script>
+<script src="cover-art.js?v=20260807i"></script>
 <script>try{SB_ICON_MOTION()}catch(e){}</script>
-<script src="voice-cdn.js?v=20260807h"></script>
-<script>window.SB_ASSET_V="?v=20260807h";</script>
+<script src="voice-cdn.js?v=20260807i"></script>
+<script>window.SB_ASSET_V="?v=20260807i";</script>
 <!-- boot-lazy: everything the first screen does not need arrives after paint.
      Registry + idle order live in boot-lazy.js; call SB_LAZY.need(...) before
      opening a feature whose data is deferred. -->
-<script src="boot-lazy.js?v=20260807h"></script>
-<script src="words-data.js?v=20260807h"></script>
-<script src="words-extra.js?v=20260807h"></script>
-<script src="words-patch.js?v=20260807h"></script>
-<script src="themes-data.js?v=20260807h"></script>
-<script src="quotes.js?v=20260807h"></script>
-<script src="trivia-icons.js?v=20260807h"></script>
-<script src="trivia-data.js?v=20260807h"></script>
-<script src="tips-data.js?v=20260807h"></script>
-<script src="voice-manifest.js?v=20260807h"></script>
-<script src="voice-adv-manifest.js?v=20260807h"></script>
-<script src="voice-review.js?v=20260807h"></script>
-<script src="app.js?v=20260807h"></script>
-<script src="avatars-art.js?v=20260807h"></script>
-<script src="avatar-png.js?v=20260807h"></script>
-<script src="game-art.js?v=20260807h"></script>
-<script src="avatars.js?v=20260807h"></script>
-<script src="avatar-greetings.js?v=20260807h"></script>
-<script src="avatar-cards.js?v=20260807h"></script>
-<script src="app2.js?v=20260807h"></script>
-<script src="pricing.js?v=20260807h"></script>
-<script src="auth.js?v=20260807h"></script>
-<script src="app3.js?v=20260807h"></script>
-<script src="worlds4.js?v=20260807h"></script>
-<script src="mockbee.js?v=20260807h"></script>
-  <script src="games-daily.js?v=20260807h"></script>
-  <script src="saga-art/saga-art.js?v=20260807h"></script>
-  <script src="saga-art/saga-map.js?v=20260807h"></script>
-  <script src="saga-art/worlds-art.js?v=20260807h"></script>
-  <script src="saga-art-dom.js?v=20260807h"></script>
-  <script src="saga-music.js?v=20260807h"></script>
-  <script src="saga-script.js?v=20260807h"></script>
-  <script src="saga2.js?v=20260807h"></script>
-<script src="trivia.js?v=20260807h"></script>
-<script src="advanced.js?v=20260807h"></script>
-<script src="trail.js?v=20260807h"></script>
+<script src="boot-lazy.js?v=20260807i"></script>
+<script src="words-data.js?v=20260807i"></script>
+<script src="words-extra.js?v=20260807i"></script>
+<script src="words-patch.js?v=20260807i"></script>
+<script src="themes-data.js?v=20260807i"></script>
+<script src="quotes.js?v=20260807i"></script>
+<script src="trivia-icons.js?v=20260807i"></script>
+<script src="trivia-data.js?v=20260807i"></script>
+<script src="tips-data.js?v=20260807i"></script>
+<script src="voice-manifest.js?v=20260807i"></script>
+<script src="voice-adv-manifest.js?v=20260807i"></script>
+<script src="voice-review.js?v=20260807i"></script>
+<script src="app.js?v=20260807i"></script>
+<script src="avatars-art.js?v=20260807i"></script>
+<script src="avatar-png.js?v=20260807i"></script>
+<script src="game-art.js?v=20260807i"></script>
+<script src="avatars.js?v=20260807i"></script>
+<script src="avatar-greetings.js?v=20260807i"></script>
+<script src="avatar-cards.js?v=20260807i"></script>
+<script src="app2.js?v=20260807i"></script>
+<script src="pricing.js?v=20260807i"></script>
+<script src="auth.js?v=20260807i"></script>
+<script src="app3.js?v=20260807i"></script>
+<script src="worlds4.js?v=20260807i"></script>
+<script src="mockbee.js?v=20260807i"></script>
+  <script src="games-daily.js?v=20260807i"></script>
+  <script src="saga-art/saga-art.js?v=20260807i"></script>
+  <script src="saga-art/saga-map.js?v=20260807i"></script>
+  <script src="saga-art/worlds-art.js?v=20260807i"></script>
+  <script src="saga-art-dom.js?v=20260807i"></script>
+  <script src="saga-music.js?v=20260807i"></script>
+  <script src="saga-script.js?v=20260807i"></script>
+  <script src="saga2.js?v=20260807i"></script>
+<script src="trivia.js?v=20260807i"></script>
+<script src="advanced.js?v=20260807i"></script>
+<script src="trail.js?v=20260807i"></script>
 </body>
 </html>
