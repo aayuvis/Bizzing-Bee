@@ -559,22 +559,6 @@ function css(vol) {
   .pm-g b{font-family:'BB Display';font-size:9.4pt;display:block;color:var(--ink)}
   .pm-g i{font-family:'BB Mono';font-size:7.4pt;font-style:normal;color:var(--accent-deep);display:block}
   .pm-g span{color:var(--muted);display:block}
-  /* The five steps on this volume's opening page. They were set as rounded
-     white panels with a gradient numeral chip on each — app furniture, in the
-     one book that is otherwise composed like a printed anthology. Same fault
-     the mascot and the scenery band on this page were removed for, and it
-     survived both passes because a panel looks tidy in isolation.
-     Set as a printed preface instead: a hanging numeral, a small-caps line,
-     and a hairline between steps. No box, no shadow, no fill. */
-  .lb-steps{margin:.10in 0 .06in;border-top:1px solid var(--hairline)}
-  .lb-step{display:flex;gap:.20in;align-items:baseline;padding:.135in 0 .145in;
-    border-bottom:1px solid var(--hairline)}
-  .lb-step .n{flex:0 0 .30in;text-align:right;font-family:'BB Display';font-size:12.5pt;
-    line-height:1;color:var(--accent);font-variant-numeric:lining-nums}
-  .lb-step .b{flex:1;min-width:0}
-  .lb-step .t{font-family:'BB Kicker';font-size:8.6pt;letter-spacing:.11em;
-    text-transform:uppercase;color:var(--accent-deep);margin-bottom:3pt}
-  .lb-step p{margin:0;font-size:11pt;line-height:1.48;color:var(--ink)}
   /* The margin page takes its plate FULL PAGE. A flat 20% wash was tried first
      and printed as a smudge; a tailpiece band across the foot read better but
      left the top of the page bare. Full bleed at full strength with a scrim
@@ -2216,42 +2200,11 @@ function book19() {
     </div>`);
   }
 
-  /* how it works */
-  pages.push(`<div class="page" data-vol="22" style="display:flex;flex-direction:column">
-    ${head(vol, null, 0, 'How this book works')}
-    <div style="margin-top:.4in"><h1 style="font-size:23pt">Five things to do with a poem.</h1></div>
-    <!-- This page used to open with the book's cartoon mascot delivering the idea
-         from a speech bubble. Everything else in this volume is painted and set
-         like a printed anthology, and the sprite made the first page a reader
-         sees look like it belonged to a different book for a younger child. The
-         thought is better said straight, so it is said straight. -->
-    <p style="font-family:'BB Kicker';font-size:11.4pt;line-height:1.5;color:var(--muted);max-width:5.6in;margin:.10in 0 .16in">
-      In this order, and none of it takes long.</p>
-    <div class="lb-steps" style="flex:0 0 auto">
-    ${[['Read it out loud, once', 'Poetry is a sound before it is a meaning. You will hear the shape before you can explain it.'],
-       ['Find the turn', 'Nearly every piece here changes direction somewhere. The note under it tells you where — but look first.'],
-       ['Take the words', 'The hard words in each piece are listed after it, with how to say them. That is the spelling half of this book.'],
-       ['Copy one out by hand', 'Slowly, with the punctuation exactly as it is. You will notice things reading cannot show you.'],
-       ['Then say it to somebody', 'Out loud, to a person, from memory. That is the only test there is, and it is the same nerve a bee asks for.']]
-      .map(([t, b], i) => `<div class="lb-step"><div class="n">${i + 1}</div>
-      <div class="b"><div class="t">${t}</div><p>${b}</p></div></div>`).join('')}
-    </div>
-    <!-- What used to close this page was a painted scenery band across the foot,
-         with two inches of dead paper above it and the folio printed unreadably
-         on top of the picture. The parts of the book are a better use of the
-         room: a reader who has just been told how to use the thing wants to know
-         what is in it, and it is the only page where the whole arc is visible at
-         once. Built from SEC, so carving the Bard out of two sections cannot
-         leave this list telling a lie. -->
-    <div style="margin-top:auto;margin-bottom:.36in;padding-top:.16in;border-top:1.5pt solid color-mix(in srgb,var(--accent) 34%,transparent)">
-      <div class="kick" style="margin-bottom:.10in">The ${['one','two','three','four','five','six','seven','eight','nine','ten'][SEC.length - 1] || SEC.length} parts</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.09in .22in">
-        ${SEC.map(([, s], i) => `<div style="display:flex;gap:.10in;align-items:baseline">
-          <span style="font-family:'BB Kicker';font-size:9pt;color:var(--accent);flex-shrink:0;min-width:.30in">${['I','II','III','IV','V','VI','VII','VIII','IX','X'][i] || i + 1}</span>
-          <span style="font-family:'BB Display';font-size:10.6pt;line-height:1.3;flex:1">${esc(s.title)}</span>
-          <span style="font-family:'BB Mono';font-size:8.6pt;color:var(--muted);flex-shrink:0">${s.pieces.length}</span></div>`).join('')}
-      </div></div>
-    ${foot(vol, folio.n++)}</div>`);
+  /* No "how this book works" page. It listed five things to do with a poem and
+     then a contents table, and it was the one page in the volume that looked
+     like a manual — the reader arrives off the threshold page ready to read,
+     and a set of instructions is the wrong thing to put in front of them. The
+     parts announce themselves as they come, on their own painted dividers. */
 
   let sn = 0, pieceN = 0;
   for (const [key, sec] of SEC) {
