@@ -17,3 +17,6 @@ spellbound-app/*review.html
 
 # session-local voice QA scratch (scan intermediates, decoded wavs)
 .voicebuild/
+
+# generated video output — regenerate with build-animatics.py
+bromic/films/

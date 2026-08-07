@@ -9,8 +9,7 @@
 | `GET-BROMIC-THE-RECEIPT.md` | Second format — the inverted price stack, in type and as priced photography, with legal guidance |
 | `GET-BROMIC-TRADE-COMMERCIAL.md` | Tier 2 — 5 builder + 5 commercial concepts with full campaign briefs |
 | `boards/` | 35 AI-generated mood board frames (Gemini `gemini-3-pro-image`), 1200px JPEG |
-| `films/` | Six 20-second animatics, kept on file but no longer embedded in the deck |
-| `build-animatics.py` | Animatic pipeline: TTS VO + ffmpeg zoompan/xfade (no video API, no quota) |
+| `build-animatics.py` | Animatic pipeline: TTS VO + ffmpeg zoompan/xfade. Renders 20s animatics from the boards into `films/` (untracked) |
 | `build-films.py` | Veo generation + ffmpeg stitch pipeline (blocked on Veo quota) |
 | `build-deck.py` | Inlines `boards/*.jpg` and the film as data URIs into `deck.html` → standalone HTML |
 
