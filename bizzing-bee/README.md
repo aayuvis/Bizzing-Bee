@@ -73,7 +73,8 @@ The child cannot buy a subscription; they can only ask for one. So this tier is 
 game, because the game is true.
 
 The app ships **14 real arcade engines** and a **31-chapter, six-act saga** with five boss
-fights and a traitor. Its signature mechanic is the campaign: the villain's Unspelling drains
+fights and a traitor, plus **211 collectibles in 20 packs**, **120 evolution forms** and
+**31,159 trivia questions across 29 themes**. Its signature mechanic is the campaign: the villain's Unspelling drains
 the world to **92% greyscale**, and every correct word sweeps the colour back. *You spell. The
 colour comes back.*
 
@@ -85,9 +86,30 @@ own art direction.
 
 Section 08 of the deck is the practical part: a feature-by-feature table converting everything
 a child wants into the argument a parent buys. You do not need two campaigns — you need one
-feature set with two captions. The strongest untold parent argument is that the app is
-**offline, with no account, no leaderboard, no chat, no microphone and no ads**, and that
+feature set with two captions. The strongest parent argument is that the app has **offline
+play, no leaderboard, no chat, no microphone, no ads — and the child never logs in**, and that
 **it cannot be bought through** — Karma is never spent, coins buy only cosmetics.
+
+### Figures
+
+Every number in the deck reads from **`SB_FACTS`** in the build, fed by **`qa/claims.cjs`**,
+and prices read from **`SB_TIERS`** — all stated as *"over"* figures so a claim in a pitch
+cannot drift away from what shipped. Headline counts: **128,000+ recorded words**, 14 engines,
+31 chapters across 6 acts, 120 evolution forms, 211 collectibles in 20 packs, 31,159 trivia
+questions across 29 themes, 108 Scripps winning words, 100 Word Journeys, 36 coaching
+techniques.
+
+> Note: `SB_FACTS`, `qa/claims.cjs` and `SB_TIERS` are not present at `origin/main` in this
+> repo (currently `92c4e6ef5`). These counts were verified against the shipping build by the
+> product owner; re-run the claims check before any public use.
+
+### The account model
+
+Section 09 of the deck states it on the page rather than in a footnote, because "no account"
+was doing real work in the pitch and a login can read as a retraction. The resolution is the
+one the red team already specifies: **the parent holds the account; the child authenticates
+against nothing.** Children are non-authenticating profiles — no child username, password or
+email; first name and age band only, never a birthdate. Every safety claim survives intact.
 
 ## Boards
 
@@ -103,6 +125,6 @@ casting a real child.
 - Verify the current user split between competitive and mainstream families.
 - Confirm whether AUS/UK have an NSF equivalent — the structure is specifically American
   and the strategy does not port without one.
-- Verify library and voice counts against the shipping build before any public claim.
+- Re-run `qa/claims.cjs` each flight rather than re-counting figures by hand.
 - `C2 The French Word` is the highest-risk asset: get the synthetic-voice comparison
   legal-reviewed, name no competitor, and make sure the demo is reproducible.
