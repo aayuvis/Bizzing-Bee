@@ -1032,7 +1032,13 @@ const app = {
     if(S.onbStep===0 && !S.draft.name.trim()){ flash('Add a name to continue'); return; }
     if(S.onbStep===1 && !S.draft.theme){ flash('Pick a world first — every speller chooses their own'); return; }
     if(S.onbStep<2){ set({onbStep:S.onbStep+1}); return; }
-    app._finishOnb(); set({screen:'app', nav:'home'}); flash('Profile ready — let’s spell! 🐝'); },
+    app._finishOnb(); set({screen:'app', nav:'home'}); flash('Profile ready — let’s spell! 🐝');
+    /* If they picked a paid plan on the landing page, land them back on it rather
+       than dropping them at the bottom of the ladder to find it again. The tier is
+       NOT applied here — nobody has paid yet; the sheet is where that happens. */
+    if(state.landWant && state.landWant!=='free'){ const want=state.landWant; state.landWant=null;
+      setTimeout(()=>{ try{ state.tierUpsell={feature:'plan', label:'the plan you picked', need:want};
+        set({showTiers:true}); }catch(e){} }, 700); } },
   _finishOnb:()=>{ const S=state; const kid={ name:S.draft.name.trim()||'Speller', age:S.draft.age, avatar:S.draft.avatar, theme:S.theme, goal:S.draft.goal, level:1, streak:0, acc:0, xp:0, week:[0,0,0,0,0,0,0] };
     if(S.draft.beeDate) kid.milestone={ label:(S.draft.beeLabel||'the bee'), date:S.draft.beeDate };
     const newIdx=S.children.length; state.children=[...S.children,kid]; state.activeIdx=newIdx; state.goalDone=0; state.addingMore=false; save(); },
@@ -2148,7 +2154,31 @@ const app = {
   profMsDate:(v)=>{ const c=active(); if(!v){ c.milestone=null; } else { c.milestone={ label:(c.milestone&&c.milestone.label)||'the bee', date:v }; } save(); render(); },
   landType:(v)=>{ state.landTyped=v; },
   landKey:(e)=>{ if(e.key==='Enter'){ e.preventDefault(); app.landCheck(); } },
-  landCheck:()=>{ const w=LAND_WORDS[state.landIdx||0]; if((state.landTyped||'').trim().toLowerCase()===w){ state.landDone=true; state.landTyped=''; state.landIdx=((state.landIdx||0)+1)%LAND_WORDS.length; try{ sfx('correct'); burstConfetti(90); }catch(e){} render(); setTimeout(()=>{ state.landDone=false; render(); },2600); } else { flash('Almost — check it letter by letter!'); } },
+  /* The landing demo is a scored round of real entries, not one word on a loop.
+     The point is the parent losing to their own child's word list — a claim about
+     the library cannot do that, and thirty seconds of trying can. */
+  landSay:()=>{ const e=LAND_WORDS[state.landIdx||0]; if(e) try{ say(e.w); }catch(err){} },
+  landNext:(gotIt)=>{ state.landAsked=(state.landAsked||0)+1;
+    if(gotIt) state.landScore=(state.landScore||0)+1;
+    state.landTyped=''; state.landIdx=(state.landIdx||0)+1; render();
+    setTimeout(()=>{ state.landDone=false; state.landMiss=''; render(); }, 2000); },
+  landCheck:()=>{ const e=LAND_WORDS[state.landIdx||0]; if(!e) return;
+    const ok=(state.landTyped||'').trim().toLowerCase()===e.w;
+    state.landDone=ok; state.landMiss=ok?'':e.w;
+    try{ sfx(ok?'correct':'wrong'); if(ok) burstConfetti(90); }catch(err){}
+    app.landNext(ok); },
+  landSkip:()=>{ const e=LAND_WORDS[state.landIdx||0]; if(!e) return;
+    state.landDone=false; state.landMiss=e.w; app.landNext(false); },
+  landRestart:()=>{ state.landIdx=0; state.landScore=0; state.landAsked=0;
+    state.landTyped=''; state.landDone=false; state.landMiss=''; render(); },
+  landBill:(k)=>{ state.landYearly=(k!=='month'); render(); },
+  landPlans:()=>{ try{ const el=document.getElementById('land-plans');
+    if(el){ el.scrollIntoView({behavior:'smooth',block:'start'}); return; } }catch(e){}
+    render(); },
+  /* Choosing a paid plan from the shop window still starts with an account —
+     there is nobody to bill otherwise. The tier is remembered so the sign-up lands
+     on the plan they picked instead of dropping them at the bottom of the ladder. */
+  landPick:(id)=>{ state.landWant=id||'regional'; app.goSignup(); },
   bandUpClose:()=>set({bandUp:null}),
   voiceSetDevice:(v)=>{ VOICE.name=v||''; saveVoiceCfg(); loadVoices(); flash(VOICE.name?'Voice set ✨':'Using the best available voice'); },
   voiceTest:()=>{ say('Hi! I am your spelling buddy. Try this word: iridescent. The soap bubble had an iridescent shine.'); },
@@ -2159,7 +2189,6 @@ const app = {
 /*  View — builds the HTML for the current state                          */
 /* ===================================================================== */
 const diffMap = { easy:['Easy','#1f9d57'], medium:['Medium','#c08a00'], hard:['Hard','#d63a3a'] };
-const LAND_WORDS=['iridescent','bouquet','rhythm','marvelous'];
 const diffStyleFor = (d) => 'padding:3px 9px;border-radius:999px;font-size:12px;font-weight:800;color:#fff;background:'+(diffMap[d]||diffMap.medium)[1];
 const seg = (on) => 'padding:7px 15px;border-radius:999px;font-weight:800;font-size:13px;transition:.2s;'+(on?'background:var(--accent);color:#fff':'background:transparent;color:var(--muted)');
 const chip = (on) => 'padding:9px 14px;border-radius:999px;font-weight:700;font-size:13px;border:1px solid var(--line);transition:.2s;'+(on?'background:var(--accent);color:#fff;border-color:transparent':'background:var(--surface2);color:var(--text)');
@@ -2173,52 +2202,343 @@ function view(){
   return viewApp();
 }
 
-function viewLanding(){
-  const features=[
-    { ic:'volume', title:'The speller hears every word', body:'Real spoken pronunciation, definition, sentence and origin — like a true bee round.' },
-    { ic:'sprout', title:'Tested, gamified learning methods', body:'Evolution ladders, streaks, coins and quests — play-tested mechanics that make daily practice stick.' },
-    { ic:'chart', title:'Parents see everything', body:'Accuracy, streaks, weak words and a finals countdown in one dashboard.' },
-  ].map(f=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:22px">
-      <div style="width:46px;height:46px;border-radius:14px;background:var(--chip);color:var(--accent);display:grid;place-items:center;margin-bottom:13px">${iconSVG(f.ic,22)}</div>
-      <div style="font-family:var(--display);font-weight:700;font-size:17px;margin-bottom:6px">${f.title}</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.5">${f.body}</div></div>`).join('');
-  return `<div style="position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:22px clamp(18px,4vw,40px) 60px">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:clamp(28px,7vw,72px)">
-      <div style="display:flex;align-items:center;gap:11px"><div style="width:44px;height:48px">${mascotSVG('happy')}</div><span style="font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:-.01em"><i style="font-style:italic">Bizzing</i> Bee</span></div>
-      <button data-act="goSignin" style="padding:10px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:700;font-size:13px">Sign in</button>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(24px,5vw,56px);align-items:center">
-      <div>
-        <div style="display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:18px"><span style="width:20px;height:22px;display:inline-block;flex-shrink:0">${mascotSVG('happy')}</span> Built for spelling-bee champions</div>
-        <h1 style="font-family:var(--display);font-weight:800;font-size:clamp(34px,6.4vw,58px);line-height:1.03;letter-spacing:-.02em;margin:0 0 16px">Spell your way to the National&nbsp;Bee.</h1>
-        <p style="font-size:clamp(16px,2.2vw,19px);line-height:1.55;color:var(--muted);max-width:30em;margin:0 0 26px">A daily spelling trainer that hears your child spell out loud, evolves a character with every win, and shows parents exactly where they stand — built around real championship words.</p>
-        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:24px">
-          <button data-act="goSignup" style="padding:15px 26px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge),0 8px 22px color-mix(in srgb,var(--accent) 40%,transparent)">Start free →</button>
-          <button data-act="goSignin" style="padding:15px 24px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">I have an account</button>
+/* ============================================================================
+   THE LANDING PAGE — the shop window, and the only screen a stranger ever sees.
+
+   It follows the order the brand platform sets out, which is not the order a
+   feature list would suggest:
+
+     1. Lead with the outcome the parent already wants — Why Spell.
+     2. Then answer the objection they have NOT said out loud: "they'll use it
+        twice and stop." Every competitor loses here.
+     3. Then remove the risk: offline, parent-only account, no ads, no strangers,
+        and nothing that can be bought through.
+     4. Then show the evidence — their own child spelling a word they cannot.
+
+   Two rules from the platform that are easy to break by accident:
+
+   WRITE TO THE CHILD'S AMBITION, NOT THE PARENT'S ANXIETY. "Sound smart" is the
+   wrong end of this idea; aimed carelessly it becomes status anxiety and a brand
+   children do not want to be seen using. The honest version is about being
+   understood and believed — power and agency, not performance.
+
+   NEVER STATE A FIGURE THAT IS NOT IN THE BUILD. Every number on this page comes
+   from SB_FACTS below, which was counted from the shipping build by
+   qa/claims.cjs. Re-run it before any flight and update in one place. The brand
+   deck's own figures were stale in six of thirteen cases and every one of them
+   UNDERSTATED the product — 41,136 recorded words against 128,491 real clips,
+   5,000 trivia questions against 31,159.
+   ========================================================================== */
+
+/* Counted from the shipping build 2026-08-08 by qa/claims.cjs — re-run and edit
+   HERE, never inline in the copy, so a claim cannot drift from the product.
+   Stated as "over" figures in the copy, per the platform's own caution. */
+const SB_FACTS = {
+  clips: 128491,        // voice/w/*.mp3, every word in both libraries
+  library: 128197,      // words-full.js
+  core: 40979,          // the core graded library
+  engines: 14,          // SB_SAGA_ENGINES
+  chapters: 31, acts: 6,
+  avatars: 211, packs: 20,
+  evoForms: 120,        // 12 worlds x 10 stages
+  trivia: 31159, triviaThemes: 29,
+  scripps: 108,         // SB_SCRIPPS — national winning words, 1925-2026
+  journeys: 100,        // Word Journeys lessons
+  techniques: 36,       // SB_ADV_TIPS
+  conceptsFree: 122, conceptsAdv: 43,
+  vocab26: 997,         // NSF Vocabulary 2026
+  ipa: 805, homophones: 1452,
+};
+const sbFmt = n => n.toLocaleString('en-US');
+/* "over 128,000", not "128,491" — a round floor stays true as the library grows,
+   and cannot be wrong by one clip in a screenshot six months from now. */
+const sbOver = n => 'over ' + sbFmt(Math.floor(n / (n >= 10000 ? 1000 : 10)) * (n >= 10000 ? 1000 : 10));
+
+function landSection(kicker, title, lede, inner, opts) {
+  opts = opts || {};
+  return `<section style="padding:clamp(48px,8vw,96px) 0;${opts.style || ''}">
+    <div style="max-width:1080px;margin:0 auto;padding:0 clamp(18px,4vw,32px)">
+      ${kicker ? `<div style="font-family:var(--ui);font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:12px">${kicker}</div>` : ''}
+      <h2 style="font-family:var(--display);font-weight:800;font-size:clamp(26px,4.4vw,42px);line-height:1.08;letter-spacing:-.02em;margin:0 0 ${lede ? '14px' : '28px'};max-width:18em">${title}</h2>
+      ${lede ? `<p style="font-size:clamp(15px,1.9vw,18px);line-height:1.6;color:var(--muted);max-width:36em;margin:0 0 30px">${lede}</p>` : ''}
+      ${inner}
+    </div></section>`;
+}
+
+function viewLanding() {
+  const S = state;
+
+  /* ---- 1. HERO. The whole platform in one sentence, and the honest version of
+       it: not "sound clever", but be understood at the moment it matters. ---- */
+  const risk = [
+    ['bolt', 'Works with no internet', 'On a plane, in a tunnel, in the car. The words live on the device.'],
+    ['users', 'Only the parent has an account', 'Your child never signs in to anything and never talks to anyone.'],
+    ['close', 'No ads, no chat, no leaderboard', 'Nobody can reach your child inside this app. There is no one to reach.'],
+    ['spark', 'Nothing can be bought through', 'Coins buy hats. Every locked thing can be earned by practising instead.'],
+  ].map(([ic, t, b]) => `<div style="display:flex;gap:12px;align-items:flex-start">
+      <span style="flex-shrink:0;width:34px;height:34px;border-radius:10px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG(ic, 17)}</span>
+      <span style="min-width:0"><span style="display:block;font-weight:800;font-size:14px;line-height:1.3">${t}</span>
+      <span style="display:block;font-size:13px;color:var(--muted);line-height:1.45;margin-top:2px">${b}</span></span></div>`).join('');
+
+  const hero = `<section style="padding:clamp(30px,6vw,64px) 0 clamp(40px,7vw,80px)">
+    <div style="max-width:1080px;margin:0 auto;padding:0 clamp(18px,4vw,32px)">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:clamp(28px,5vw,60px);align-items:center">
+        <div>
+          <div style="font-family:var(--ui);font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:16px">Why spell?</div>
+          <h1 style="font-family:var(--display);font-weight:800;font-size:clamp(32px,6vw,58px);line-height:1.02;letter-spacing:-.025em;margin:0 0 18px">Everything you're going to be, you're going to have&nbsp;to&nbsp;say.</h1>
+          <p style="font-size:clamp(16px,2.1vw,19px);line-height:1.55;color:var(--muted);max-width:31em;margin:0 0 28px">Not to sound clever — to be understood the first time, and believed. Every ambition a child has runs through the same place: finding the right word and saying it well. This is where they start collecting them.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:11px;margin-bottom:14px">
+            <button data-act="goSignup" style="padding:15px 26px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge),0 8px 22px color-mix(in srgb,var(--accent) 38%,transparent)">Start free — no card →</button>
+            <button data-act="landPlans" style="padding:15px 24px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">See the plans</button>
+          </div>
+          <button data-act="goSignin" style="font-size:13.5px;font-weight:700;color:var(--muted);text-decoration:underline;text-underline-offset:3px">I already have an account</button>
         </div>
-        <div style="display:flex;flex-direction:column;gap:10px;color:var(--muted);font-size:17px;font-weight:600;line-height:1.45;max-width:34em">
-          <span style="display:flex;align-items:center;gap:11px"><span style="color:var(--accent);flex-shrink:0">${iconSVG('lock',20)}</span>100% offline — words never leave your device</span>
-          <span style="display:flex;align-items:center;gap:11px"><span style="color:var(--accent);flex-shrink:0">${iconSVG('spark',20)}</span>No card to start</span>
-          <span style="display:flex;align-items:flex-start;gap:11px"><span style="color:var(--accent);flex-shrink:0;margin-top:2px">${iconSVG('users',20)}</span>Developed by an IIT/IIM couple with a national-level NSF spelling-bee finalist</span>
-        </div>
+        ${landTry()}
       </div>
-      <div style="position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,34px);box-shadow:var(--glow)">
-        <div style="display:flex;justify-content:center;margin-bottom:6px"><div style="width:118px;height:132px;animation:sb-float 4s ease-in-out infinite">${mascotSVG('excited')}</div></div>
-        <div style="text-align:center;font-family:var(--mono);font-size:13px;letter-spacing:.3em;color:var(--muted);margin-bottom:6px">SPELL THIS</div>
-        <div style="text-align:center;font-family:var(--display);font-weight:800;font-size:clamp(28px,5vw,40px);letter-spacing:.02em;margin-bottom:12px">${LAND_WORDS[state.landIdx||0]}</div>
-        ${state.landDone?`<div style="text-align:center;font-weight:800;color:var(--good,#178A4C);font-size:15px;margin-bottom:12px;animation:sb-pop .4s ease both">⭐ Nailed it! That\u2019s how practice feels.</div>`:''}
-        <div style="display:flex;gap:8px;margin-bottom:18px">
-          <input data-inp="landType" data-key="landKey" data-fkey="landType" value="${escA(state.landTyped||'')}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type it here — try me!" style="flex:1;min-width:0;padding:12px 14px;border-radius:12px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry,inherit);font-weight:700;font-size:16px;text-align:center;letter-spacing:.05em">
-          <button data-act="landCheck" style="padding:12px 18px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">Check</button>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px"><div style="font-size:12px;color:var(--muted);font-weight:700">Streak</div><div style="font-family:var(--display);font-weight:800;font-size:20px;display:flex;align-items:center;gap:6px">12 days <span style="color:#FF7A1A">${iconSVG('fire',18)}</span></div></div>
-          <div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px"><div style="font-size:12px;color:var(--muted);font-weight:700">Form</div><div style="font-family:var(--display);font-weight:800;font-size:20px">Forager</div></div>
-        </div>
-      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:18px;margin-top:clamp(34px,6vw,58px);padding-top:clamp(26px,4vw,36px);border-top:1px solid var(--line)">${risk}</div>
+    </div></section>`;
+
+  /* ---- 2. THE OBJECTION. Concede that it looks like a game and win with it. ---- */
+  const facts = [
+    [SB_FACTS.engines, 'arcade engines', 'A honeycomb maze, a flight, a perspective racer, whack-a-moth, Snake, a rhythm stage, a typing shooter, a boss duel. Different genres, not one drill re-skinned.'],
+    [SB_FACTS.chapters, 'story chapters', `${SB_FACTS.acts} acts, five boss fights, a traitor and a friend taken prisoner. Every chapter is a game a child would play if it taught nothing.`],
+    [SB_FACTS.evoForms, 'evolution forms', 'Egg to Queen Bee. Bit to Arcade. Hand-drawn, each with its own idle animation — and it never goes down.'],
+    [SB_FACTS.avatars, 'collectibles', `In ${SB_FACTS.packs} packs, with trump-card stats and a spoken greeting. Bought with practice, never with a card. Duplicates never drop.`],
+    [sbFmt(SB_FACTS.trivia), 'trivia questions', `Across ${SB_FACTS.triviaThemes} themes, plus a daily Buzz with a streak and Magic Squares — a bingo board you clear by spelling.`],
+    [SB_FACTS.scripps, 'national winning words', 'Every Scripps champion word from 1925 to 2026, seeded into the hardest levels. The words that ended real champions are the final bosses.'],
+  ].map(([n, t, b]) => `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:22px">
+      <div style="font-family:var(--display);font-weight:800;font-size:clamp(28px,4vw,38px);line-height:1;color:var(--accent);font-variant-numeric:tabular-nums">${n}</div>
+      <div style="font-weight:800;font-size:14px;margin:6px 0 8px">${t}</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.5">${b}</div></div>`).join('');
+
+  const game = landSection('The objection nobody says out loud',
+    'They&rsquo;ll use it twice and stop.',
+    `That is what actually kills these products — not whether they teach. So we didn't make a spelling app fun. <b style="color:var(--text)">We made a game where spelling is how you win</b>, and the spelling is load-bearing rather than bolted on.`,
+    `<div style="background:var(--chip);border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));border-radius:20px;padding:clamp(22px,4vw,34px);margin-bottom:26px">
+       <div style="font-family:var(--display);font-weight:800;font-size:clamp(20px,3vw,28px);line-height:1.2;margin-bottom:10px">Vex eats the letters out of the world. It turns grey.</div>
+       <p style="font-size:15px;line-height:1.6;color:var(--muted);max-width:40em;margin:0">And the app means it literally — the scene renders at 92% greyscale, and every word your child spells correctly sweeps the colour back, frame by frame, until the world is whole again. Grey is never decoration here. Grey means unspelled.</p>
+       <div style="font-family:var(--display);font-weight:800;font-size:clamp(18px,2.6vw,24px);color:var(--accent);margin-top:16px">You spell. The colour comes back.</div>
+     </div>
+     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,238px),1fr));gap:14px">${facts}</div>`,
+    { style: 'background:var(--bg2)' });
+
+  /* ---- 3. THE TRANSLATION. One feature set read two ways — the single most
+       useful page in the brand platform, because it needs no second campaign. ---- */
+  const rows = [
+    ['&ldquo;Everything&rsquo;s grey until you spell it. Then the colour comes back.&rdquo;',
+     'Spelling reframed from test to power. The child is repairing the world, not being examined by it — which is the whole difference between a chore and a game.'],
+    ['&ldquo;My bee is at Forager. Two more and she&rsquo;s Queen.&rdquo;',
+     'Progress that measures effort and can never be lost. That is the answer to the plateau — the exact moment most families quit.'],
+    ['&ldquo;It says the word properly.&rdquo;',
+     `${sbOver(SB_FACTS.clips)} words recorded in a real neural voice, not device text-to-speech — which mispronounces exactly the French-origin borrowings that decide bees. A child can only spell what they actually heard.`],
+    ['&ldquo;It won&rsquo;t tell me. It literally beeps it out.&rdquo;',
+     'When the app reads a word inside a sentence it splices the audio and plays a beep over the target, so the example can never leak the spelling. It is engineered so it cannot be cheated.'],
+    ['&ldquo;Beat your dad.&rdquo;',
+     'Spelling Duel — pass the device, same ten words, two spellers. No accounts, no internet, no strangers. The only head-to-head in the product happens on a sofa.'],
+    ['&ldquo;It works on the plane.&rdquo;',
+     'Offline, no login for the child, nothing harvested, nothing to police. Screen time that does not need supervising.'],
+  ].map(([kid, parent]) => `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:16px;padding:20px 0;border-top:1px solid var(--line)">
+      <div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.35">${kid}</div>
+      <div style="font-size:14px;color:var(--muted);line-height:1.55">${parent}</div></div>`).join('');
+
+  const translate = landSection('The same product, twice',
+    'What your child hears. What you&rsquo;re actually buying.',
+    'You do not need to talk them into it and they do not need to know what it is for. One feature set, read in two directions.',
+    `<div style="border-bottom:1px solid var(--line)">${rows}</div>`);
+
+  /* ---- 4. THE LADDER. The reason this is a subscription and not an app. ---- */
+  const ladder = [
+    ['4–7', 'The books', 'Read aloud by a parent. No screen, no scoring, no pressure — just affection for words, and for a character they will follow.'],
+    ['7–9', 'The story mode', `The same characters, now playable. ${SB_FACTS.acts} acts, ${SB_FACTS.chapters} chapters. They think they are playing a game about a bee.`],
+    ['9–12', 'The ladder', 'The highest-value words, an avatar that evolves the whole way up, and Champ Challenges to test out and skip ahead.'],
+    ['12–15', 'The library', `${sbOver(SB_FACTS.library)} words and serious bee preparation. The child who started with a picture book is now spelling words most adults cannot.`],
+  ].map(([age, t, b], i) => `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:20px;position:relative">
+      <div style="font-family:var(--display);font-weight:800;font-size:13px;color:var(--accent);letter-spacing:.06em">AGES ${age}</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:19px;margin:6px 0 8px">${t}</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.5">${b}</div></div>`).join('');
+
+  const ladderSec = landSection('One ladder, ages 4 to 15',
+    'A family that starts at four has eleven years of reasons to stay.',
+    'This is not an app you finish in a term. The books recruit, the app retains, and the ceiling is real — the words that ended national champions are in here waiting.',
+    `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px">${ladder}</div>`,
+    { style: 'background:var(--bg2)' });
+
+  return `<div style="min-height:100dvh;background:var(--bg)">
+    ${landNav()}${hero}${game}${translate}${ladderSec}${landPlansSection()}${landAccount()}${landFoot()}</div>`;
+}
+
+/* ---- The nav. Sign in sits here and nowhere near the child. ---- */
+function landNav() {
+  return `<div style="position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)">
+    <div style="max-width:1080px;margin:0 auto;padding:11px clamp(18px,4vw,32px);display:flex;flex-wrap:wrap;align-items:center;gap:10px">
+      <button data-act="goLanding" style="display:flex;align-items:center;gap:9px;margin-right:auto;background:none;border:0;cursor:pointer">
+        <span style="width:30px;height:34px;flex-shrink:0;display:block">${mascotSVG('happy')}</span>
+        <span style="font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i> Bee</span></button>
+      <button data-act="landPlans" style="padding:9px 15px;border-radius:12px;font-weight:800;font-size:13.5px;color:var(--muted)">Plans</button>
+      <button data-act="goSignin" style="padding:9px 15px;border-radius:12px;background:var(--surface2);color:var(--text);font-weight:800;font-size:13.5px">Sign in</button>
+      <button data-act="goSignup" style="padding:9px 17px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge)">Start free</button>
+    </div></div>`;
+}
+
+/* ---- The proof. Not a claim about the library — the parent losing to it.
+       "That feeling is the campaign": put them through it in thirty seconds.
+       These are real entries, and the speaker button plays the same recording
+       the child hears in a round, which is the one thing a screenshot cannot
+       demonstrate and every competitor gets wrong. ---- */
+const LAND_WORDS = [
+  { w: 'liaison',      d: 'A person who helps two groups talk to each other.',           o: 'French' },
+  { w: 'bouquet',      d: 'A bunch of flowers, gathered and tied.',                       o: 'French' },
+  { w: 'iridescent',   d: 'Showing shifting rainbow colours as the light moves.',         o: 'Latin' },
+  { w: 'chauffeur',    d: 'Someone employed to drive a private car.',                     o: 'French' },
+  { w: 'silhouette',   d: 'A dark outline of something against a lighter background.',    o: 'French' },
+  { w: 'questionnaire',d: 'A printed list of questions, used to gather information.',     o: 'French' },
+  { w: 'pharaoh',      d: 'A ruler of ancient Egypt.',                                    o: 'Greek' },
+  { w: 'rhythm',       d: 'A strong, regular, repeated pattern of sound or movement.',    o: 'Greek' },
+];
+
+function landTry() {
+  const i = Math.min(state.landIdx || 0, LAND_WORDS.length - 1);
+  const e = LAND_WORDS[i];
+  const done = (state.landIdx || 0) >= LAND_WORDS.length;
+  const score = state.landScore || 0;
+  const asked = state.landAsked || 0;
+
+  if (done) {
+    const half = score <= Math.ceil(LAND_WORDS.length / 2);
+    return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,4vw,34px);box-shadow:var(--glow);text-align:center">
+      <div style="width:96px;height:108px;margin:0 auto 10px;animation:sb-float 4s ease-in-out infinite">${mascotSVG('excited')}</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:clamp(24px,4vw,34px);margin-bottom:6px">${score} out of ${LAND_WORDS.length}</div>
+      <p style="font-size:15px;line-height:1.55;color:var(--muted);max-width:26em;margin:0 auto 18px">${half
+        ? 'Most adults get about half — these are real entries from the library, and your child will be spelling them out loud.'
+        : 'That is a strong round. The library goes a very long way past this — all the way to the words that ended national champions.'}</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center">
+        <button data-act="goSignup" style="padding:14px 24px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Start free — no card →</button>
+        <button data-act="landRestart" style="padding:14px 20px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Try again</button>
+      </div></div>`;
+  }
+
+  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,30px);box-shadow:var(--glow)">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px">
+      <span style="font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Can you spell it?</span>
+      <span style="font-family:var(--display);font-weight:800;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums">Word ${i + 1} of ${LAND_WORDS.length} · ${score}/${asked || 0} right</span>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:clamp(40px,7vw,72px)">${features}</div>
+    <div style="display:flex;justify-content:center;margin-bottom:12px">
+      <button data-act="landSay" aria-label="Hear the word" title="Hear it — this is the recording your child hears"
+        style="display:inline-flex;align-items:center;gap:9px;padding:13px 20px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:14px;border:1px solid color-mix(in srgb,var(--accent) 34%,var(--line))">
+        ${iconSVG('volume', 19)} Hear the word</button></div>
+    <div style="text-align:center;font-size:14.5px;line-height:1.5;color:var(--muted);margin-bottom:4px">${esc(e.d)}</div>
+    <div style="text-align:center;font-size:12.5px;font-weight:700;color:var(--muted);opacity:.8;margin-bottom:16px">from the ${esc(e.o)}</div>
+    ${state.landMiss ? `<div style="text-align:center;font-weight:800;font-size:14px;color:var(--bad,#C0392B);margin-bottom:10px">It was <span style="font-family:var(--mono)">${esc(state.landMiss)}</span></div>` : ''}
+    ${state.landDone ? `<div style="text-align:center;font-weight:800;color:var(--good,#178A4C);font-size:15px;margin-bottom:10px;animation:sb-pop .4s ease both">Correct.</div>` : ''}
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <input data-inp="landType" data-key="landKey" data-fkey="landType" value="${escA(state.landTyped || '')}"
+        autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="spell it here"
+        aria-label="Type your spelling"
+        style="flex:1;min-width:0;padding:13px 14px;border-radius:12px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--mono);font-weight:700;font-size:16px;text-align:center;letter-spacing:.06em">
+      <button data-act="landCheck" style="padding:13px 20px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge);flex-shrink:0">Check</button>
+    </div>
+    <div style="text-align:center"><button data-act="landSkip" style="font-size:13px;font-weight:700;color:var(--muted);text-decoration:underline;text-underline-offset:3px">Skip this one</button></div>
   </div>`;
+}
+
+/* ---- The plans. Read from SB_TIERS so the page cannot quote a price the app
+       does not charge, and the Advanced Pack is shown as what it is: an add-on
+       that sits on top of any tier and cannot be bought with coins. ---- */
+function landPlansSection() {
+  const T = window.SB_TIERS || {};
+  const yearly = state.landYearly !== false;
+  const cards = ['free', 'beginner', 'regional'].map(id => {
+    const t = T[id]; if (!t) return '';
+    const best = id === 'regional';
+    const price = id === 'free' ? 'Free'
+      : yearly ? '$' + t.priceYr + '<span style="font-size:14px;font-weight:700;color:var(--muted)">/year</span>'
+               : '$' + t.priceMo + '<span style="font-size:14px;font-weight:700;color:var(--muted)">/month</span>';
+    const sub = id === 'free' ? 'No card, no expiry'
+      : yearly ? 'about $' + (t.priceYr / 12).toFixed(2) + ' a month, billed yearly' : 'billed monthly';
+    const rows = {
+      free: ['500 words to practise', 'The basic games', 'Two worlds', 'Progress and streaks'],
+      beginner: [sbFmt(10000) + ' words', 'Concepts and Word Lists', 'The revision pile', 'Four worlds · 5 avatar packs'],
+      regional: [sbFmt(40000) + ' words — the full graded library', 'The Saga: ' + SB_FACTS.chapters + ' chapters, ' + SB_FACTS.engines + ' engines',
+                 'Every world, avatar pack and game', 'All the Supercharge training tools'],
+    }[id].map(r => `<li style="display:flex;gap:9px;align-items:flex-start;font-size:13.5px;line-height:1.45;margin-bottom:9px">
+        <span style="color:var(--accent);flex-shrink:0;margin-top:1px">${iconSVG('check', 15)}</span><span>${r}</span></li>`).join('');
+    return `<div style="background:var(--bg2);border:${best ? '2px solid var(--accent)' : '1px solid var(--line)'};border-radius:20px;padding:24px;position:relative;display:flex;flex-direction:column">
+      ${best ? `<div style="position:absolute;top:-11px;left:24px;padding:4px 12px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:11px;letter-spacing:.06em;text-transform:uppercase">Most families</div>` : ''}
+      <div style="font-family:var(--display);font-weight:800;font-size:18px;margin-bottom:4px">${esc(t.name)}</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.45;margin-bottom:14px;min-height:2.9em">${esc(t.blurb)}</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:34px;line-height:1;font-variant-numeric:tabular-nums">${price}</div>
+      <div style="font-size:12px;color:var(--muted);font-weight:700;margin:5px 0 16px">${sub}</div>
+      <ul style="list-style:none;padding:0;margin:0 0 18px;flex:1">${rows}</ul>
+      <button data-act="${id === 'free' ? 'goSignup' : 'landPick'}" data-arg="${id}"
+        style="width:100%;padding:13px;border-radius:13px;font-weight:800;font-size:14.5px;${best
+          ? 'background:var(--accent);color:#fff;box-shadow:var(--edge)' : 'background:var(--surface2);color:var(--text)'}">
+        ${id === 'free' ? 'Start free' : 'Choose ' + esc(t.name)}</button>
+    </div>`;
+  }).join('');
+
+  const adv = (window.SB_ADDONS || {}).advanced;
+  const addon = !adv ? '' : `<div style="margin-top:18px;background:var(--chip);border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));border-radius:20px;padding:24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:18px;align-items:center">
+      <div>
+        <div style="font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:7px">Add-on · sits on top of any plan</div>
+        <div style="font-family:var(--display);font-weight:800;font-size:21px;margin-bottom:7px">${esc(adv.name)} · $${adv.priceYr}/year</div>
+        <div style="font-size:13.5px;color:var(--muted);line-height:1.55">The full ${sbOver(SB_FACTS.library)}-word library, ${SB_FACTS.conceptsAdv} advanced narrated lessons, ${SB_FACTS.techniques} champion techniques, mock spelling bees and the Ultra Champions journey. For the family with a bee in the calendar.</div>
+      </div>
+      <div style="text-align:right"><button data-act="landPick" data-arg="advanced" style="padding:13px 22px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">Add the Advanced Pack</button></div>
+    </div>`;
+
+  const tog = on => `padding:8px 18px;border-radius:999px;font-weight:800;font-size:13px;transition:.2s;${on ? 'background:var(--accent);color:#fff' : 'color:var(--muted)'}`;
+  return `<section id="land-plans" style="padding:clamp(48px,8vw,96px) 0">
+    <div style="max-width:1080px;margin:0 auto;padding:0 clamp(18px,4vw,32px)">
+      <div style="text-align:center;margin-bottom:26px">
+        <div style="font-family:var(--ui);font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:12px">Plans</div>
+        <h2 style="font-family:var(--display);font-weight:800;font-size:clamp(26px,4.4vw,42px);line-height:1.08;letter-spacing:-.02em;margin:0 0 12px">Start free. Move up when they ask you&nbsp;to.</h2>
+        <p style="font-size:15.5px;line-height:1.6;color:var(--muted);max-width:34em;margin:0 auto 20px">Every plan is one account for the whole family — add a profile for each child. Cancel whenever you like; the free plan never expires.</p>
+        <div style="display:inline-flex;padding:4px;border-radius:999px;background:var(--surface2);gap:2px">
+          <button data-act="landBill" data-arg="year" style="${tog(yearly)}">Yearly · save 2 months</button>
+          <button data-act="landBill" data-arg="month" style="${tog(!yearly)}">Monthly</button></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,258px),1fr));gap:16px">${cards}</div>
+      ${addon}
+      <div style="text-align:center;font-size:13px;color:var(--muted);margin-top:20px;line-height:1.6">Coins are earned by playing and only buy cosmetics. Nothing that affects learning is ever behind a coin — anything paid can be earned instead.</div>
+    </div></section>`;
+}
+
+/* ---- The account, explained honestly. The platform names "no account" as the
+       strongest parent argument in the product, and a paywall appears to break
+       it. It does not, and the distinction is worth a section rather than a
+       footnote: the PARENT holds the account. The child is a profile on the
+       device and authenticates against nothing, ever. ---- */
+function landAccount() {
+  return landSection('About that sign-in',
+    'You have an account. Your child does&nbsp;not.',
+    'A paid product needs somebody to bill, and that is where it stops. Your child taps their own face on the home screen and starts spelling — there is no username, no password and no profile of them anywhere but this device.',
+    `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:16px">
+      ${[['users', 'One account, every child', 'Add a profile per child. They pick theirs and go — no sign-in, ever.'],
+         ['lock', 'The practice stays on the device', 'Words, progress and the weekly report are computed locally. Your child&rsquo;s work is not uploaded to be graded.'],
+         ['close', 'Nothing to police', 'No chat, no leaderboard, no microphone, no ads, no strangers, no in-app purchase a child can reach.'],
+         ['bolt', 'Unlock once, then fly', 'After the first sign-in it runs offline. On a plane, in a tunnel, on a tablet with no SIM.']]
+        .map(([ic, t, b]) => `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:20px">
+          <div style="width:38px;height:38px;border-radius:11px;background:var(--chip);color:var(--accent);display:grid;place-items:center;margin-bottom:11px">${iconSVG(ic, 19)}</div>
+          <div style="font-weight:800;font-size:15px;margin-bottom:6px">${t}</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.5">${b}</div></div>`).join('')}
+    </div>`, { style: 'background:var(--bg2)' });
+}
+
+/* ---- The footer carries the COPPA notice link. This is one of the four
+       placements the privacy policy has to be reachable from; do not remove it. ---- */
+function landFoot() {
+  return `<footer style="border-top:1px solid var(--line);padding:30px 0 40px">
+    <div style="max-width:1080px;margin:0 auto;padding:0 clamp(18px,4vw,32px);display:flex;flex-wrap:wrap;gap:14px;align-items:center">
+      <span style="display:flex;align-items:center;gap:8px;margin-right:auto">
+        <span style="width:24px;height:27px;display:block">${mascotSVG('happy')}</span>
+        <span style="font-family:var(--display);font-weight:800;font-size:14px"><i style="font-style:italic">Bizzing</i> Bee</span></span>
+      <a href="privacy.html" style="font-size:13px;font-weight:700;color:var(--muted);text-decoration:underline;text-underline-offset:3px">Privacy &amp; the children&rsquo;s online notice</a>
+      <button data-act="landPlans" style="font-size:13px;font-weight:700;color:var(--muted)">Plans</button>
+      <button data-act="goSignin" style="font-size:13px;font-weight:700;color:var(--muted)">Sign in</button>
+    </div>
+    <div style="max-width:1080px;margin:14px auto 0;padding:0 clamp(18px,4vw,32px);font-size:12px;color:var(--muted);line-height:1.6;opacity:.85">
+      Built by a family who has sat through the regional rounds. Figures on this page are counted from the shipping build.
+    </div></footer>`;
 }
 
 function viewAuth(){
