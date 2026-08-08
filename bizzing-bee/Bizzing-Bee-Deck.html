@@ -1,5 +1,10 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bizzing Bee — Why Spell?</title>
+
 <style>
 :root{
   --ground:#F7F5FC; --surface:#FFFFFF; --sunk:#EDE9F8; --line:#DAD3EE;
@@ -162,6 +167,8 @@ dialog#lb::backdrop{background:rgba(26,20,45,.7)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
+</head>
+<body>
 <div class="wrap">
 
 <section style="padding-top:92px">
@@ -875,3 +882,6 @@ function openLB(kind, i){
 $('lbClose').addEventListener('click', ()=> lb.close());
 lb.addEventListener('click', e=>{ if(e.target === lb) lb.close(); });
 </script>
+
+</body>
+</html>
