@@ -238,6 +238,119 @@ def autocorrect():
     b += f'<path d="M456 200 l10 10 l20 -22" stroke="{P["violet"]}" stroke-width="6" fill="none" stroke-linecap="round"/>'
     return frame(P["cream"], b)
 
+
+# ---------------- Why Spell? boards ----------------
+def tile(x, y, w=44, h=30, c=None, op="1"):
+    c = c or P["honey"]
+    return f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="5" fill="{c}" opacity="{op}"/>'
+
+def arsenal():
+    b = f'<rect width="{W}" height="{H}" fill="{P["dusk"]}"/>'
+    for r in range(4):
+        for c in range(9):
+            op = .9 - r * .16
+            col = P["honey"] if (r + c) % 4 == 0 else P["vio2"]
+            b += tile(52 + c * 62, 40 + r * 44, 50, 32, col, f"{op:.2f}")
+    b += f'<path d="M250 300 h140 l-16 -74 h-108z" fill="{P["mist"]}"/>'
+    b += f'<rect x="236" y="300" width="168" height="14" rx="7" fill="{P["mist"]}"/>'
+    b += figure(320, 250, 1.3, P["honey"])
+    return frame(P["dusk"], b)
+
+def interview():
+    b = hexes(o=".07")
+    b += f'<rect x="140" y="216" width="360" height="14" rx="7" fill="{P["ink"]}" opacity=".9"/>'
+    b += figure(206, 212, 1.25, P["ink"])
+    b += figure(434, 212, 1.25, P["violet"])
+    b += f'<rect x="96" y="88" width="150" height="62" rx="16" fill="{P["mist"]}" opacity=".7"/>'
+    b += f'<path d="M186 150 l12 20 l12 -20z" fill="{P["mist"]}" opacity=".7"/>'
+    b += f'<rect x="120" y="112" width="52" height="7" rx="3.5" fill="{P["ink"]}" opacity=".22"/>'
+    b += f'<rect x="392" y="72" width="164" height="78" rx="16" fill="{P["honey"]}"/>'
+    b += f'<path d="M446 150 l12 20 l12 -20z" fill="{P["honey"]}"/>'
+    for i, w in enumerate((116, 132, 84)):
+        b += f'<rect x="410" y="{92+i*16}" width="{w}" height="7" rx="3.5" fill="{P["ink"]}" opacity="{.55-i*.1}"/>'
+    return frame(P["cream"], b)
+
+def toast():
+    b = f'<rect width="{W}" height="{H}" fill="{P["dusk"]}"/>'
+    b += f'<circle cx="320" cy="180" r="132" fill="{P["honey"]}" opacity=".13"/>'
+    b += f'<path d="M286 118 h68 l-8 44 a26 26 0 0 1 -52 0z" fill="{P["mist"]}" opacity=".92"/>'
+    b += f'<rect x="316" y="162" width="8" height="52" fill="{P["mist"]}" opacity=".8"/>'
+    b += f'<ellipse cx="320" cy="218" rx="34" ry="7" fill="{P["mist"]}" opacity=".8"/>'
+    for i, (x, y, r) in enumerate(((250, 96, 4), (392, 108, 5), (300, 74, 3), (368, 78, 3.5))):
+        b += f'<circle cx="{x}" cy="{y}" r="{r}" fill="{P["honey"]}" opacity=".85"/>'
+    b += f'<rect x="150" y="258" width="340" height="56" rx="18" fill="{P["honey"]}"/>'
+    for i, w in enumerate((250, 180)):
+        b += f'<rect x="176" y="{274+i*18}" width="{w}" height="8" rx="4" fill="{P["ink"]}" opacity="{.5-i*.14}"/>'
+    return frame(P["dusk"], b)
+
+def pitch():
+    b = hexes(o=".07", c=P["honey"])
+    b += f'<rect x="196" y="222" width="248" height="76" rx="8" fill="{P["honey2"]}"/>'
+    b += f'<rect x="180" y="208" width="280" height="20" rx="6" fill="{P["honey"]}"/>'
+    b += figure(320, 200, 1.15, P["violet"])
+    b += f'<rect x="330" y="70" width="230" height="86" rx="18" fill="{P["violet"]}"/>'
+    b += f'<path d="M336 156 l10 22 l22 -22z" fill="{P["violet"]}"/>'
+    for i, w in enumerate((168, 190, 120)):
+        b += f'<rect x="352" y="{90+i*18}" width="{w}" height="8" rx="4" fill="{P["warm"]}" opacity="{.9-i*.2}"/>'
+    b += bee(112, 120, .9)
+    return frame(P["cream"], b)
+
+def creator():
+    b = f'<rect width="{W}" height="{H}" fill="{P["night"]}"/>'
+    b += f'<circle cx="200" cy="150" r="86" fill="none" stroke="{P["honey"]}" stroke-width="10" opacity=".55"/>'
+    b += f'<rect x="366" y="112" width="150" height="96" rx="12" fill="{P["mist"]}"/>'
+    b += f'<circle cx="441" cy="160" r="30" fill="{P["dusk"]}"/><circle cx="441" cy="160" r="15" fill="{P["honey"]}"/>'
+    b += f'<rect x="432" y="208" width="18" height="54" fill="{P["mist"]}" opacity=".8"/>'
+    b += f'<path d="M400 288 h82 l-41 -30z" fill="{P["mist"]}" opacity=".8"/>'
+    b += figure(200, 214, 1.5, P["honey"])
+    import math
+    for i in range(18):
+        h = 8 + abs(math.sin(i * .6)) * 44
+        b += f'<rect x="{58+i*9}" y="{312-h/2:.0f}" width="4" height="{h:.0f}" rx="2" fill="{P["vio2"]}" opacity=".8"/>'
+    return frame(P["night"], b)
+
+def comeback():
+    b = hexes(o=".07")
+    b += f'<rect x="72" y="92" width="180" height="58" rx="16" fill="{P["mist"]}" opacity=".65"/>'
+    b += f'<path d="M110 150 l10 20 l20 -20z" fill="{P["mist"]}" opacity=".65"/>'
+    b += f'<rect x="96" y="114" width="70" height="7" rx="3.5" fill="{P["ink"]}" opacity=".2"/>'
+    b += f'<rect x="286" y="150" width="288" height="132" rx="24" fill="{P["honey"]}"/>'
+    b += f'<path d="M330 282 l12 26 l26 -26z" fill="{P["honey"]}"/>'
+    for i, w in enumerate((214, 240, 180, 130)):
+        b += f'<rect x="312" y="{176+i*24}" width="{w}" height="9" rx="4.5" fill="{P["ink"]}" opacity="{.6-i*.11}"/>'
+    b += bee(120, 250, .95)
+    return frame(P["cream"], b)
+
+def metaphor():
+    b = hexes(o=".07", c=P["vio2"])
+    b += (f'<path d="M70 200 q30 -70 62 -20 q28 44 60 -10 q26 -44 54 18 q22 48 52 -4" '
+          f'stroke="{P["vio2"]}" stroke-width="7" fill="none" stroke-linecap="round" opacity=".65"/>')
+    b += f'<path d="M330 200 h58" stroke="{P["ink"]}" stroke-width="5" opacity=".3" stroke-dasharray="9 9"/>'
+    b += f'<circle cx="470" cy="186" r="62" fill="{P["honey"]}"/>'
+    b += f'<path d="M470 156 l10 22 l24 3 l-18 17 l5 24 l-21 -12 l-21 12 l5 -24 l-18 -17 l24 -3z" fill="{P["ink"]}" opacity=".78"/>'
+    b += f'<text x="70" y="298" font-family="ui-monospace,monospace" font-size="13" fill="{P["muted"] if "muted" in P else P["ink"]}" opacity=".5">COMPLICATED</text>'
+    b += f'<text x="424" y="298" font-family="ui-monospace,monospace" font-size="13" fill="{P["honey2"]}">CLEAR</text>'
+    return frame(P["cream"], b)
+
+def kit():
+    b = hexes(o=".07", c=P["honey"])
+    b += f'<path d="M180 300 q0 -60 34 -60 q22 0 22 26 v34z" fill="{P["violet"]}"/>'
+    b += f'<rect x="180" y="292" width="82" height="16" rx="8" fill="{P["ink"]}"/>'
+    b += f'<path d="M300 300 q0 -60 34 -60 q22 0 22 26 v34z" fill="{P["vio2"]}"/>'
+    b += f'<rect x="300" y="292" width="82" height="16" rx="8" fill="{P["ink"]}"/>'
+    b += f'<rect x="418" y="150" width="120" height="140" rx="22" fill="{P["honey"]}"/>'
+    b += f'<path d="M448 150 v-16 a30 30 0 0 1 60 0 v16" stroke="{P["honey2"]}" stroke-width="10" fill="none"/>'
+    b += f'<rect x="440" y="196" width="76" height="44" rx="8" fill="{P["warm"]}" opacity=".85"/>'
+    for i, x in enumerate((96, 152, 208)):
+        b += tile(x, 62, 46, 32, P["honey"] if i == 1 else P["vio2"], ".9")
+    b += bee(560, 84, .85)
+    return frame(P["cream"], b)
+
+BOARDS_WS = {
+ "WS1_arsenal": arsenal, "WS2_interview": interview, "WS3_toast": toast, "WS4_pitch": pitch,
+ "WS5_creator": creator, "WS6_comeback": comeback, "WS7_metaphor": metaphor, "WS8_kit": kit,
+}
+
 BOARDS = {
  "BB01_dinner": dinner, "BB02_groupchat": groupchat, "BB03_scrabble": boardgame,
  "BB04_autocorrect": autocorrect, "BB05_tunnel": car, "BB06_wallchart": wall,
@@ -245,6 +358,7 @@ BOARDS = {
  "BB10_cast": crew, "BB11_firstword": firstword, "BB12_bedtime": bedside,
  "C1_fortnight": countdown, "C2_french": waveform, "C3_oral": mic, "C4_plateau": plateau,
 }
+BOARDS.update(BOARDS_WS)
 
 if __name__ == "__main__":
     out = {k: fn() for k, fn in BOARDS.items()}

@@ -13,7 +13,29 @@ and the **Bizzy** story books (15 packs).
 
 **Published deck:** https://claude.ai/code/artifact/58b4756b-037e-4b21-8fc9-8fa84bb9a6c0
 
-## The finding that shaped it
+## The platform: Why Spell?
+
+Spelling isn't the point — it's the first rung. Nobody's ambition for their child is *good
+speller*, but every ambition they do have runs through the same place: the ability to find the
+right word and say it well.
+
+| Layer | |
+|---|---|
+| **The tools** | Words, spelling, vocabulary, quotes — the shoes and the backpack |
+| **The journey** | Mastery over language |
+| **The destination** | Sounding put together; being understood the first time |
+| **The outcome** | Leader, founder, creator, teacher, salesperson — whatever they choose |
+
+> Because everything you're going to be, you're going to have to say.
+
+Every leader is an orator. Behind every one of them is an arsenal of words and metaphors.
+Bizzing Bee is where a child starts assembling theirs.
+
+**The trap:** aimed carelessly, "sound smart" becomes status anxiety. The honest version is
+power and agency, not performance — being understood, being believed, being able to say the
+thing you mean when it matters. Write to the child's ambition, not the parent's.
+
+## The audience finding
 
 The product's own data says who it was built for. The word library is **NSF Finals** and
 Scripps; the vocabulary set is tagged *NSF 2026 Junior*; the parent coaching engine has
