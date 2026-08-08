@@ -1,9 +1,12 @@
 # Get Bromic — brand campaign
 
 > **Open `Get-Bromic-Deck.html`.** That is the finished deck, ~5 MB, with all 57 mood
-> boards embedded — works offline, no network, and **pre-rendered so it displays even where
-> JavaScript is blocked** (iOS Quick Look, email previews, some in-app browsers). JavaScript,
-> when available, adds the tone switches, the expand view and the before/after turns.
+> boards embedded — works offline, no network.
+>
+> **Open it in a real browser** (Safari, Chrome, Edge), not a file-preview pane. iOS Quick
+> Look and most email previews block JavaScript, and the deck is interactive — tone switches,
+> expand-to-brief, the before/after turns — so in a preview pane it will look empty or dead.
+> On a phone: share the file to Safari, or use the hosted link below.
 >
 > Everything in `src/` is build machinery. `src/deck.source.html` is the template with
 > **no images in it**; assets are injected at build time. Opening it directly shows an
