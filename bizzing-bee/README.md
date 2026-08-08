@@ -1,6 +1,6 @@
 # Bizzing Bee — brand campaign
 
-> **Open `Bizzing-Bee-Deck.html` in a real browser** (Chrome, Safari, Edge — not the iOS
+> **Open `Bizzing-Bee-Why-Spell.html` in a real browser** (Chrome, Safari, Edge — not the iOS
 > Files preview, which blocks JavaScript). Everything in `src/` is build machinery;
 > `src/deck.source.html` has no images in it by design.
 
@@ -9,7 +9,7 @@ and the **Bizzy** story books (15 packs).
 
 | File | What it is |
 |---|---|
-| **`Bizzing-Bee-Deck.html`** ← open this one | Standalone deck, 2.8MB, all 32 boards embedded |
+| **`Bizzing-Bee-Why-Spell.html`** ← open this one | Standalone deck, 2.8MB, all 32 boards embedded |
 | `boards/` | The 32 mood boards as JPEGs |
 | `src/build-boards.py` | Generates the 24 photoreal boards (Gemini `gemini-3-pro-image`) |
 | `src/build-kid-boards.py` | Generates the 8 kid-campaign game key-art boards |
