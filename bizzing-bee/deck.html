@@ -829,7 +829,7 @@ function cardFor(list, c, i, kind){
   }).join('');
   el.innerHTML = `
     ${src(c.img) ? `<img alt="${c.t}" src="${src(c.img)}">`
-                 : `<div class="noimg"><span>Board not shot</span></div>`}
+                 : `<div class="noimg"><span>Board to be shot</span></div>`}
     <div class="card-body">
       <p class="no">${c.n}</p>
       <h3>${c.t}</h3>

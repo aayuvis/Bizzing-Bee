@@ -1,7 +1,10 @@
 import json, base64, sys
 S='/tmp/claude-0/-home-user-Bizzing-Bee/4e23cfba-e7d7-5db3-a77c-4dd0a1079ba5'
-art=json.load(open(f'{S}/bbart.json'))
-imgs={k:'data:image/svg+xml;base64,'+base64.b64encode(v.encode()).decode() for k,v in art.items()}
+# Boards are deliberately NOT linked. Point IMG_SOURCE at a generated board set to re-enable.
+IMG_SOURCE = None          # e.g. f'{S}/boards.json' -> {name: dataURI}
+imgs = {}
+if IMG_SOURCE:
+    imgs = json.load(open(IMG_SOURCE))
 h=open(f'{S}/bb.html').read()
 anchor='<script>\nconst WORDS = ['
 assert anchor in h, "anchor not found — injection would have silently no-opped"
