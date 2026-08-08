@@ -1,0 +1,735 @@
+<title>Bizzing Bee — Brand Campaign Platform</title>
+<style>
+:root{
+  --ground:#F7F5FC; --surface:#FFFFFF; --sunk:#EDE9F8; --line:#DAD3EE;
+  --ink:#2A2140; --muted:#6B6382; --violet:#6C4FE0; --honey:#C98A06; --honey-bright:#FFC23D;
+  --chip:#EFEBFB; --good:#2E7D5B; --bad:#B3372F;
+}
+:root:not([data-theme="light"]){
+  @media (prefers-color-scheme: dark){
+    --ground:#1C1730; --surface:#251E3C; --sunk:#151022; --line:#372D55;
+    --ink:#F1EDFB; --muted:#A79CC4; --violet:#A88FFF; --honey:#FFC23D; --honey-bright:#FFC23D;
+    --chip:#2C2446; --good:#6BD1A3; --bad:#FF8B80;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#1C1730; --surface:#251E3C; --sunk:#151022; --line:#372D55;
+  --ink:#F1EDFB; --muted:#A79CC4; --violet:#A88FFF; --honey:#FFC23D; --honey-bright:#FFC23D;
+  --chip:#2C2446; --good:#6BD1A3; --bad:#FF8B80;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:17px;line-height:1.62}
+.wrap{max-width:1160px;margin:0 auto;padding:0 28px}
+.col{max-width:62ch}
+section{padding:76px 0;border-top:1px solid var(--line)}
+section:first-of-type{border-top:0}
+h1,h2,h3{font-family:Charter,"Bitstream Charter",Iowan Old Style,Georgia,serif;
+  text-wrap:balance;margin:0;font-weight:700}
+h1{font-size:clamp(38px,6.6vw,78px);line-height:1.02;letter-spacing:-.022em}
+h2{font-size:clamp(26px,3.6vw,44px);line-height:1.08;letter-spacing:-.018em}
+h3{font-size:20px;line-height:1.22;letter-spacing:-.012em}
+p{margin:0}
+em.h{font-style:italic;color:var(--violet)}
+.stack{display:flex;flex-direction:column;gap:18px}
+.stack-s{display:flex;flex-direction:column;gap:10px}
+.stack-l{display:flex;flex-direction:column;gap:42px}
+.eyebrow{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;
+  letter-spacing:.17em;text-transform:uppercase;color:var(--muted)}
+.lead{font-size:clamp(19px,2.1vw,23px);line-height:1.5}
+.muted{color:var(--muted)}
+.big{font-family:Charter,Georgia,serif;font-size:clamp(23px,3.1vw,34px);line-height:1.2;
+  letter-spacing:-.015em;text-wrap:balance}
+.rule{height:1px;background:var(--line);margin:32px 0}
+.note{border-left:3px solid var(--honey-bright);padding-left:16px;font-size:15px;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:36px}
+@media(max-width:800px){.grid2{grid-template-columns:1fr}}
+
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+.btn{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:700;font-size:14px;
+  padding:12px 22px;border-radius:999px;border:1px solid var(--ink);background:transparent;color:var(--ink);
+  transition:background .18s,color .18s,border-color .18s}
+.btn:hover{background:var(--ink);color:var(--ground)}
+.btn.solid{background:var(--violet);border-color:var(--violet);color:#fff}
+.btn.solid:hover{filter:brightness(1.08)}
+:focus-visible{outline:3px solid var(--honey-bright);outline-offset:3px}
+
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;
+  letter-spacing:.09em;text-transform:uppercase;padding:4px 9px;border-radius:999px;
+  background:var(--chip);color:var(--muted);border:1px solid transparent;white-space:nowrap}
+.tag.pr{background:transparent;border-color:var(--line);color:var(--ink)}
+.tag.ap{color:var(--violet);border-color:color-mix(in srgb,var(--violet) 42%,transparent);background:transparent}
+.tag.bk{color:var(--honey);border-color:color-mix(in srgb,var(--honey) 50%,transparent);background:transparent}
+
+/* ---- speller ---- */
+.speller{border:1px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden}
+.sp-top{padding:22px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;
+  align-items:center;gap:16px;flex-wrap:wrap}
+.sp-count{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.sp-body{padding:26px 24px;display:flex;flex-direction:column;gap:18px}
+.sp-def{font-family:Charter,Georgia,serif;font-size:clamp(19px,2.3vw,26px);line-height:1.32}
+.sp-meta{display:flex;gap:18px;flex-wrap:wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:12px;color:var(--muted)}
+.sp-meta b{color:var(--ink);font-weight:400}
+.sp-form{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.sp-form input{flex:1;min-width:220px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:19px;letter-spacing:.06em;padding:13px 16px;border-radius:10px;
+  border:1px solid var(--line);background:var(--ground);color:var(--ink)}
+.sp-form input:focus{outline:3px solid var(--honey-bright);outline-offset:2px}
+.sp-result{font-size:16px;line-height:1.5;display:none}
+.sp-result.show{display:block}
+.sp-result .ans{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:21px;
+  letter-spacing:.08em;color:var(--ink)}
+.sp-result.ok .verdict{color:var(--good)} .sp-result.no .verdict{color:var(--bad)}
+.verdict{font-weight:700}
+.sp-foot{padding:16px 24px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);
+  background:var(--sunk)}
+.scoreline{font-family:Charter,Georgia,serif;font-size:clamp(20px,2.6vw,30px);line-height:1.25}
+
+/* ---- concept cards ---- */
+.bank{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  display:flex;flex-direction:column;cursor:pointer;transition:transform .18s ease, box-shadow .18s ease}
+.card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(42,33,64,.13)}
+.card img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:var(--sunk)}
+.card .noimg{width:100%;aspect-ratio:16/9;background:var(--sunk);display:grid;place-items:center}
+.card .noimg span{font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--muted)}
+.card-body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:10px;flex:1}
+.card .no{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;
+  letter-spacing:.15em;color:var(--muted)}
+.card .cap{font-family:Charter,Georgia,serif;font-size:17.5px;line-height:1.3}
+.card p.d{font-size:14.5px;line-height:1.5;color:var(--muted)}
+.card .more{margin-top:auto;font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--violet);opacity:0;transition:opacity .18s}
+.card:hover .more,.card:focus-visible .more{opacity:1}
+
+/* ---- truths ---- */
+.truths{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+.truth{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;
+  display:flex;flex-direction:column;gap:7px}
+.truth b{font-family:Charter,Georgia,serif;font-size:clamp(28px,3.4vw,40px);line-height:1;
+  letter-spacing:-.02em;color:var(--violet);font-variant-numeric:tabular-nums}
+.truth span{font-size:14.5px;line-height:1.45;color:var(--muted)}
+
+/* ---- ladder ---- */
+.ladder{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;align-items:stretch}
+.rung{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;
+  display:flex;flex-direction:column;gap:8px;position:relative}
+.rung .age{font-family:ui-monospace,monospace;font-size:10.5px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--honey)}
+.rung h3{font-size:18px}
+.rung p{font-size:14.5px;line-height:1.5;color:var(--muted)}
+
+/* ---- packs ---- */
+.packs{display:flex;flex-wrap:wrap;gap:8px}
+.pack{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11.5px;
+  padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);
+  color:var(--ink)}
+.pack em{font-style:normal;color:var(--muted)}
+
+.datalist{display:grid;grid-template-columns:auto 1fr;gap:10px 20px;font-size:15px}
+.datalist dt{font-family:ui-monospace,monospace;font-size:10.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--muted);padding-top:4px}
+.datalist dd{margin:0}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:11px 15px;border-bottom:1px solid var(--line)}
+th{font-family:ui-monospace,monospace;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--muted);font-weight:400}
+tbody tr:last-child td{border-bottom:0}
+footer{padding:48px 0 80px;color:var(--muted);font-size:14px}
+
+dialog#lb{padding:0;border:1px solid var(--line);border-radius:16px;background:var(--ground);
+  color:var(--ink);max-width:min(1000px,94vw);width:100%;max-height:92vh}
+dialog#lb::backdrop{background:rgba(26,20,45,.7)}
+.lb-in{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);max-height:92vh}
+@media(max-width:860px){.lb-in{grid-template-columns:1fr;overflow-y:auto}}
+.lb-media{padding:22px;border-right:1px solid var(--line)}
+.lb-media img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;display:block}
+.lb-body{padding:24px;overflow-y:auto;display:flex;flex-direction:column;gap:13px}
+.lb-close{position:absolute;top:14px;right:16px;z-index:5;font-family:ui-monospace,monospace;
+  font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  background:var(--ground);padding:7px 12px;border:1px solid var(--line);border-radius:999px}
+.fld{display:flex;flex-direction:column;gap:3px}
+.fld dt{font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted)}
+.fld dd{margin:0;font-size:14.5px;line-height:1.5}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+
+<section style="padding-top:92px">
+  <div class="stack">
+    <p class="eyebrow">Bizzing Bee · Brand platform · App + Books</p>
+    <h1>Two audiences.<br>One product.<br>Do not confuse them.</h1>
+    <div class="rule"></div>
+    <div class="col stack">
+      <p class="lead">Bizzing Bee is not a generic kids' spelling app that happens to have hard words in it.
+      It is built on <strong>NSF Finals and Scripps-level data</strong>, with a parent coaching engine whose
+      categories are <em class="h">bee day</em>, <em class="h">nerves</em>, <em class="h">plateau</em> and
+      <em class="h">oral rounds</em>. That is not homework help. That is competition preparation.</p>
+      <p class="lead muted">Which means the campaign has two speeds, and running one message at both
+      audiences would waste the product's single biggest advantage: it is genuinely serious, in a category
+      that is genuinely not.</p>
+    </div>
+    <p class="big" style="margin-top:12px">Win the circuit on credibility.<br>Win the country on fame.</p>
+  </section>
+
+
+<section>
+  <div class="stack-l">
+    <div class="col stack">
+      <p class="eyebrow">01 · The audience, before anything else</p>
+      <h2>There is a core, and there is a country.</h2>
+      <p class="lead">The product tells you who it was built for. The word data is
+      <strong>North South Foundation Finals</strong> and Scripps. The vocabulary set is tagged
+      <em>NSF 2026 Junior</em>. The parent tips include how to breathe backstage and what to do in the
+      fortnight before a bee. Nobody builds that for a child who just wants to pass Friday's test.</p>
+    </div>
+
+    <div class="ladder">
+      <div class="rung"><p class="age">Ring 1 · The beachhead</p><h3>The competitive bee family</h3>
+        <p>Children 8–14 on the NSF and Scripps circuit. In the US this community is concentrated in South
+        Asian diaspora families — highly organised, chapter-based, and already spending real money on
+        coaches, workbooks and word lists. They do not need persuading that spelling matters. They need
+        to believe your <strong>word coverage, pronunciation accuracy and bee-day readiness</strong> beat
+        what they use now.</p></div>
+      <div class="rung"><p class="age">Ring 2 · The volume</p><h3>The ambitious mainstream parent</h3>
+        <p>Would never enter a bee. Wants their child ahead, and wants proof. Buys on visible progress and
+        on what other parents in the class group say. This is where the fame campaign earns its money.</p></div>
+      <div class="rung"><p class="age">Ring 3 · The anxious parent</p><h3>The child who is behind</h3>
+        <p>Spelling has become a fight. They want remediation without tears. The story mode and the arcade
+        matter more to them than the ladder — the product's job is that the child doesn't notice it's work.</p></div>
+      <div class="rung"><p class="age">Ring 4 · The multiplier</p><h3>Coaches, tutors and schools</h3>
+        <p>Small in number, disproportionate in influence. One bee coach recommending this reaches thirty
+        families who are already paying for help. The cheapest distribution in the entire plan.</p></div>
+    </div>
+
+    <div class="grid2">
+      <div class="stack-s">
+        <p class="eyebrow">What the core actually worries about</p>
+        <p style="font-size:15px">Not "is it fun". The product's own coaching engine is organised around
+        sixteen parent problems, and they are the real brief:</p>
+        <div class="packs">
+          <span class="pack">Re-engaging after a break</span><span class="pack">Consistency</span>
+          <span class="pack">Hard words</span><span class="pack">Memory</span>
+          <span class="pack">Accuracy</span><span class="pack">Oral rounds</span>
+          <span class="pack">Written rounds</span><span class="pack">Bee day</span>
+          <span class="pack">Nerves</span><span class="pack">Motivation</span>
+          <span class="pack">Plateau</span><span class="pack">Review</span>
+          <span class="pack">Coverage</span><span class="pack">Word origins</span>
+        </div>
+        <p class="muted" style="font-size:14.5px;margin-top:4px">Two of those — <strong>bee day</strong> and
+        <strong>nerves</strong> — only exist for a family with a competition in the calendar. That is the
+        clearest evidence of who this was built for.</p>
+      </div>
+      <div class="stack-s">
+        <p class="eyebrow">Why the order matters commercially</p>
+        <p style="font-size:15px">The beachhead is <strong>a community, not a media buy.</strong> It is
+        reachable through NSF regional chapters, coaches, and parent groups where a recommendation travels
+        faster than any ad. It is small, but it converts high, pays annually, and stays for years.</p>
+        <p style="font-size:15px">Ring 2 is a hundred times larger and almost impossible to convert cold —
+        unless it arrives pre-endorsed. Winning the circuit first is what makes the mainstream campaign
+        credible rather than just another app ad.</p>
+        <div class="note">Sequence: <strong>earn the core, then buy the country.</strong> Spending fame
+        money before the circuit vouches for you wastes the one thing competitors cannot copy.</div>
+      </div>
+    </div>
+
+    <div class="note col">Two things to verify before this is presented as fact: the real split of current
+    users between competitive and mainstream families, and whether the Australian and UK markets have an
+    equivalent circuit — the NSF structure is specifically American, and the strategy does not port without
+    a local equivalent.</div>
+  </div>
+</section>
+
+<section>
+  <div class="stack-l">
+    <div class="col stack">
+      <p class="eyebrow">02 · What that means for the work</p>
+      <h2>Nobody abandons a game they're winning.</h2>
+      <p class="lead">The edtech graveyard is full of beautiful apps that got downloaded once. The category
+      talks to parents about <em>learning outcomes</em> and never once solves the thing that actually kills
+      these products: <strong>the child stops opening it.</strong></p>
+      <p>So the campaign should not argue that Bizzing Bee is educational. Parents assume that, and every
+      competitor claims it. It should argue that <strong>the child keeps going</strong> — and prove it with
+      the only evidence a parent trusts, which is their own child doing something they couldn't do last month.</p>
+      <div class="note">The strategic filter, applied to every idea here: <strong>show the child ahead of
+      the adult.</strong> If an execution could run for a generic "fun learning" app, it isn't a Bizzing Bee
+      idea. Progress you can see beats progress you're promised.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="stack-l">
+    <div class="col stack-s">
+      <p class="eyebrow">03 · The proof, not the promise</p>
+      <h2>Can you spell it?</h2>
+      <p class="lead muted">These are real words from the Bizzing Bee library, with the real definitions
+      and pronunciations children hear in the app. Try them. Most adults get about half.</p>
+    </div>
+
+    <div class="speller" id="speller">
+      <div class="sp-top">
+        <p class="sp-count" id="spCount">Word 1 of 8</p>
+        <p class="sp-count" id="spScore">Correct: 0</p>
+      </div>
+      <div class="sp-body">
+        <p class="sp-def" id="spDef"></p>
+        <div class="sp-meta" id="spMeta"></div>
+        <form class="sp-form" id="spForm" autocomplete="off">
+          <input id="spInput" type="text" spellcheck="false" autocapitalize="off"
+                 aria-label="Type your spelling" placeholder="Type your spelling…">
+          <button class="btn solid" type="submit">Check</button>
+          <button class="btn" type="button" id="spSkip">Skip</button>
+        </form>
+        <div class="sp-result" id="spResult"></div>
+      </div>
+      <p class="sp-foot" id="spFoot">No audio here. In the app, every one of these words is spoken aloud —
+        all 41,136 of them.</p>
+    </div>
+
+    <div class="col stack-s">
+      <p class="scoreline" id="spFinal" style="display:none"></p>
+      <p class="muted" style="font-size:15px">That feeling is the campaign. Everything below is a way of
+      putting a parent through it in thirty seconds.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="stack-l">
+    <div class="col stack-s">
+      <p class="eyebrow">04 · Why the claim survives scrutiny</p>
+      <h2>The product can actually back it.</h2>
+      <p class="lead muted">A fame campaign built on a claim the product can't deliver dies at the first
+      review. These are the reasons this one holds.</p>
+    </div>
+    <div class="truths">
+      <div class="truth"><b>41,136</b><span>words recorded with real neural voice — not device text-to-speech. The whole library is spoken properly, including the French-origin words that break every other app.</span></div>
+      <div class="truth"><b>128,040</b><span>words in the full library behind it, for the multi-year long game rather than one term's word list.</span></div>
+      <div class="truth"><b>13</b><span>genuinely different playable engines across a six-act story mode — not one drill re-skinned thirteen times. This is why they keep opening it.</span></div>
+      <div class="truth"><b>0</b><span>internet required. It runs offline, on a tablet, in a car, on a plane. No login wall between a child and a word.</span></div>
+      <div class="truth"><b>100</b><span>etymology "Word Journeys" — where words come from, so spelling becomes reasoning rather than memorising.</span></div>
+      <div class="truth"><b>Scripps</b><span>-level word data for the children who want to compete seriously, sitting on the same ladder as the child who just wants Friday's test.</span></div>
+    </div>
+    <p class="note col">One caveat worth stating in the room: these figures come from the product itself and
+    should be verified against the shipping build before they appear in any public claim, especially the
+    voice count, which changes as the library grows.</p>
+  </div>
+</section>
+
+<section>
+  <div class="stack-l">
+    <div class="col stack-s">
+      <p class="eyebrow">05 · The work — ring 2, the mainstream</p>
+      <h2>Eight ways to be out-spelled.</h2>
+      <p class="lead muted">Every one is the same structure: an adult, confident, and a child who is simply
+      further along. Warm, never humiliating — the parent is delighted to lose.</p>
+    </div>
+    <div class="bank" id="bankApp"></div>
+  </div>
+</section>
+
+
+<section>
+  <div class="stack-l">
+    <div class="col stack-s">
+      <p class="eyebrow">06 · The work — ring 1, the circuit</p>
+      <h2>For the core, credibility is the creative.</h2>
+      <p class="lead">This audience does not want to be charmed. They want to know your word list is
+      deeper, your pronunciation is right, and your plan holds in the fortnight before a bee. Same brand,
+      no jokes — the register here is a serious tool talking to serious people.</p>
+      <p class="lead muted">Every one of these comes straight out of the product's own coaching data,
+      which means the brand is saying things no competitor can credibly say.</p>
+    </div>
+    <div class="bank" id="bankCore"></div>
+    <div class="note col">Distribution for this tier is not media. It is NSF regional chapters, coaches,
+    tutoring networks and parent groups — plus a free, genuinely useful artefact (the bee-day plan, the
+    printable word list) that circulates on its own.</div>
+  </div>
+</section>
+
+<section>
+  <div class="stack-l">
+    <div class="col stack-s">
+      <p class="eyebrow">07 · The work — books</p>
+      <h2>Where it starts.</h2>
+      <p class="lead">The app is for the child who wants to win. <strong>The books are for the child who
+      doesn't know they like words yet</strong> — and for the parent who wants a bedtime story, not a
+      screen. Fifteen packs, one hero, a cast that turns vocabulary into characters.</p>
+      <div class="packs" id="packs"></div>
+    </div>
+    <div class="bank" id="bankBooks"></div>
+  </div>
+</section>
+
+<section>
+  <div class="stack-l">
+    <div class="col stack-s">
+      <p class="eyebrow">08 · How the two products work together</p>
+      <h2>One ladder, ages 4 to 15.</h2>
+      <p class="lead muted">This is the commercial argument for running them as one brand rather than two.
+      The books recruit; the app retains; each makes the other worth more.</p>
+    </div>
+    <div class="ladder">
+      <div class="rung"><p class="age">Ages 4–7</p><h3>The books</h3>
+        <p>Bizzy and the crew. Read aloud by a parent. No screen, no scoring, no pressure. The job is
+        affection for words — and for a character the child will follow.</p></div>
+      <div class="rung"><p class="age">Ages 7–9</p><h3>The story mode</h3>
+        <p>The same characters, now playable. Six acts, thirty-one chapters. The child thinks they are
+        playing a game about a bee. They are learning to spell.</p></div>
+      <div class="rung"><p class="age">Ages 9–12</p><h3>The ladder</h3>
+        <p>Levels 1–20, the ~1,600 highest-value words, an avatar that evolves the whole way up. Champ
+        Challenges to test out and skip ahead.</p></div>
+      <div class="rung"><p class="age">Ages 12–15</p><h3>The library</h3>
+        <p>Levels 21+ and competitive bee preparation. The child who started with a picture book is now
+        working through words most adults cannot spell.</p></div>
+    </div>
+    <div class="note col">The ladder is also the retention story a subscription business needs: a family
+    that enters at four has eleven years of reasons to stay. Price and package the books as the top of the
+    funnel, not as merchandise.</div>
+  </div>
+</section>
+
+<section>
+  <div class="stack-l">
+    <div class="grid2">
+      <div class="stack">
+        <p class="eyebrow">09 · Channel plan</p>
+        <h3 style="font-size:22px">Two buyers, one child</h3>
+        <dl class="datalist">
+          <dt>Buyer</dt><dd><strong>Parents 32–50</strong> of children 4–15. They hold the card and the
+            guilt. They are not looking for another app; they are looking for evidence they made a good call.</dd>
+          <dt>User</dt><dd><strong>The child.</strong> They decide whether it survives past week three.
+            Nothing in the campaign should bore them, and the story world is what they actually respond to.</dd>
+          <dt>Segments</dt><dd>The competitive family aiming at a bee · the anxious family whose child is
+            behind · the bookish family who want less screen, not more · the homeschool and tutoring segment.</dd>
+          <dt>Channels</dt><dd>Meta and TikTok for the out-spelled films (they are natively shareable),
+            YouTube pre-roll, parenting newsletters and podcasts, school and tutor partnerships, and the
+            single highest-value channel: <strong>other parents in the same class group.</strong></dd>
+          <dt>Timing</dt><dd>Back-to-school is the obvious spike; the sharper opportunity is the first
+            spelling-test week of term, when the pain is specific and immediate.</dd>
+        </dl>
+      </div>
+      <div class="stack">
+        <p class="eyebrow">10 · How it gets judged</p>
+        <h3 style="font-size:22px">Retention, not installs</h3>
+        <dl class="datalist">
+          <dt>Primary</dt><dd><strong>Day-30 and day-90 active rate.</strong> The whole strategy rests on
+            the child still opening it. If this number moves, the campaign worked.</dd>
+          <dt>Primary</dt><dd>Words mastered per active child per week — the number that produces the
+            dinner-table moment the advertising promises.</dd>
+          <dt>Secondary</dt><dd>Trial-to-paid conversion; books-to-app crossover rate, which is the whole
+            argument for one brand.</dd>
+          <dt>Fame</dt><dd>Branded search for "Bizzing Bee", and share rate on the out-spelled films —
+            this format lives or dies on being sent between parents.</dd>
+          <dt>Not a KPI</dt><dd>Installs alone. An install with no week-three open is a cost, not a win.</dd>
+        </dl>
+        <div class="note">The riskiest assumption in this platform is that the product retains. Before
+        spending on fame, instrument retention properly and read it honestly — if children do drop at week
+        three, fix that first. Advertising a leaky product just fills the bucket faster.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="stack-l">
+    <div class="col stack-s">
+      <p class="eyebrow">11 · Red team</p>
+      <h2>What could break it.</h2>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Risk</th><th>Severity</th><th>How it's handled</th></tr></thead>
+        <tbody>
+          <tr><td>Parent feels mocked rather than proud</td><td>High</td><td>The adult is always delighted to lose. Never smug children, never humiliated parents — the emotion is shared pride, and casting carries it.</td></tr>
+          <tr><td>Child safety and privacy scrutiny</td><td>High</td><td>Only the parent holds an account; children are non-authenticating profiles. Minimal child data. Every claim and consent flow legal-reviewed before launch — non-negotiable for a paid children's product.</td></tr>
+          <tr><td>Product doesn't retain</td><td>High</td><td>Measure day-30 before spending on fame. The campaign amplifies whatever is true.</td></tr>
+          <tr><td>Word claims challenged</td><td>Medium</td><td>Verify library and voice counts against the shipping build; state them as "over" figures and re-verify each flight.</td></tr>
+          <tr><td>Books read as merchandise</td><td>Medium</td><td>Give them their own creative and their own shelf logic. They are the top of the funnel, not a gift-shop line.</td></tr>
+          <tr><td>Competitive spelling reads as pushy</td><td>Medium</td><td>Lead with delight and the story world; keep Scripps-level preparation as a depth message for the families who seek it.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="col stack-s">
+    <p class="eyebrow">Before this goes anywhere</p>
+    <p>Verify the library and voice figures against the shipping build; confirm the books' format, page
+    count and publishing route; instrument day-30 retention; and get the consent flow and every child-facing
+    claim through legal. Mood boards are AI-generated tonal references for direction only — casting,
+    lighting and register — not final frames.</p>
+  </div>
+</footer>
+</div>
+
+<dialog id="lb" aria-label="Concept detail">
+  <button class="lb-close" id="lbClose">Close ✕</button>
+  <div class="lb-in">
+    <div class="lb-media"><img id="lbImg" alt=""></div>
+    <div class="lb-body" id="lbBody"></div>
+  </div>
+</dialog>
+
+<script>
+const WORDS = [
+ {w:"mesmerize",   d:"To hypnotize; to hold someone's attention so completely they cannot look away.", p:"MEZ-mur-ize",        o:"French", y:5, ps:"verb"},
+ {w:"condominium", d:"One apartment-like home that a person owns within a larger shared building.",    p:"kah-nduh-MIH-nee-uhm", o:"Latin", y:5, ps:"noun"},
+ {w:"abhorrence",  d:"A feeling of intense loathing or disgust; extreme repugnance toward something.", p:"ab-HAWR-uhns",       o:"Latin",  y:4, ps:"noun"},
+ {w:"inestimable", d:"Beyond calculation or measure.",                                                p:"in-ES-tih-muh-bul",  o:"French", y:5, ps:"adjective"},
+ {w:"abridgment",  d:"A shortened form of a book.",                                                   p:"uh-BRIJ-ment",       o:"Latin",  y:4, ps:"noun"},
+ {w:"indigestible",d:"Digested with difficulty.",                                                     p:"in-dih-JES-tuh-bul", o:"Latin",  y:5, ps:"adjective"},
+ {w:"unutterable", d:"Too sacred to be uttered.",                                                     p:"un-UT-er-uh-bul",    o:"Latin",  y:5, ps:"adjective"},
+ {w:"absorption",  d:"A process in which one substance permeates another.",                           p:"uh-BZAWRP-shuhn",    o:"Latin",  y:3, ps:"noun"},
+];
+
+const PACKS = ["Hive · The Silent Meadow","Stage · Opening Night","Cosmos · The Missing Star",
+ "Dojo · The Silent Bell","Lab · The Great Fizz","Arcade · Insert Coin","Origami · One Thousand Folds",
+ "Elements · Four-Season Tuesday","Critter Crew · The Big Splash","Vibe · The Sleepover",
+ "Dino · The Rumble Egg","Enchanted · The Borrowed Moon","Wildhearts · The Long Way Home",
+ "Legends · The Proof","Turbo · The Junkyard Grand Prix"];
+
+
+const CORE = [
+ {n:"C1",t:"The Fortnight",img:"",tags:["CORE","BEE DAY","CONSIDER"],
+  c:"Two weeks out, stop learning. Start defending.",
+  d:"A countdown film or single spread built on the app's own bee-day guidance: in the final fortnight, shift from new frontiers to review, and rehearse at the hour the bee actually happens.",
+  ins:"Every competitive family over-trains in the last two weeks and peaks in the wrong direction. The product already knows the right answer and gives it away.",
+  role:"The trust asset for ring 1. Give it away free — a printable fortnight plan does more for acquisition here than any ad.",
+  fmt:"Printable plan · email sequence · social carousel",
+  pn:"Attribute the advice to the product's coaching engine, not to a personality. Nothing invented — every line should trace to a real tip in the library."},
+ {n:"C2",t:"The French Word",img:"",tags:["CORE","PRODUCT TRUTH","FILM"],
+  c:"Your app has been teaching them the wrong word for a year.",
+  d:"The same French-origin word, played twice: once in a generic synthetic voice, once in real recorded voice. They are audibly different. A child can only spell what they actually heard.",
+  ins:"Device text-to-speech mispronounces exactly the borrowings that decide bees. This is the single most concrete, checkable superiority claim the product has.",
+  role:"The knockout argument for the core, and the reason a coach switches.",
+  fmt:":30 · audio-first social · demo at events",
+  pn:"Highest-impact and highest-risk asset here. Do not name a competitor; use a generic synthetic voice and have it legal-reviewed. The comparison must be honest and reproducible."},
+ {n:"C3",t:"The Round Nobody Practises",img:"",tags:["CORE","CONSIDER","FILM"],
+  c:"They train typing. The bee is oral.",
+  d:"A child spelling confidently at a keyboard, then the same child at a microphone, hesitating. The app runs both — written rounds and oral elimination.",
+  ins:"Most preparation happens on a keyboard. Most eliminations happen out loud. The gap between the two is where good spellers lose.",
+  role:"Reframes the category from word lists to competition readiness.",
+  fmt:":30 · :15 · coach leave-behind",
+  pn:"Keep the child composed rather than distressed. The point is the format gap, not a failing child."},
+ {n:"C4",t:"The Plateau",img:"",tags:["CORE","PARENTS","CONSIDER"],
+  c:"A plateau is the brain filing, not the child failing.",
+  d:"Aimed squarely at the parent mid-campaign, when progress visibly stalls and families quit. Change the format, not the effort.",
+  ins:"The plateau is the single most common moment a committed family gives up — and it is the moment the product has the most useful thing to say.",
+  role:"Retention creative. This is CRM, not advertising, and it is worth more than a media flight.",
+  fmt:"In-app · parent email · dashboard card",
+  pn:"Trigger it off real practice data, which the product already tracks. Advice arriving at the exact moment it is needed is the whole trick."},
+];
+
+const APP = [
+ {n:"01",t:"The Dinner Table",img:"BB01_dinner",tags:["APP","FAME","FILM"],
+  c:"“Go on then. Spell it.”",
+  d:"A father, mid-forkful, asked to spell a word his nine-year-old has just used correctly in a sentence. He will not get it. Everyone at the table knows he will not get it.",
+  ins:"The moment a parent realises their child has passed them is the single most emotionally loaded thing this product produces — and it happens in public, at home, unprompted.",
+  role:"Launch film. It states the platform in one scene and needs no explanation.",
+  fmt:":30 · :15 · :06 · statics",
+  pn:"The father must be delighted, not embarrassed. Cast a warm loser. The child never gloats — they just wait."},
+ {n:"02",t:"The Group Chat",img:"BB02_groupchat",tags:["APP","SOCIAL","LO-COST"],
+  c:"Dad asks the family chat how to spell it. His daughter answers in four seconds, with the etymology.",
+  d:"Told entirely in messages. The reply lands before he has finished reading his own question.",
+  ins:"Parents already use their children as a spellchecker. The campaign just notices it out loud.",
+  role:"Always-on social. Near-zero production, refreshes endlessly with new words.",
+  fmt:"9:16 social · statics",
+  pn:"Motion graphics only. Never mimic a real messaging product's interface — design a generic one."},
+ {n:"03",t:"Game Night",img:"BB03_scrabble",tags:["APP","FAME","FILM"],
+  c:"Nobody at this table is going to challenge it.",
+  d:"Overhead on a word game. A child lays down something enormous. Four adults look at it. A long silence. Nobody reaches for the dictionary, because they know.",
+  ins:"Family game night is where spelling ability becomes public, competitive and funny — the one arena where a child can legitimately beat every adult in the room.",
+  role:"The most shareable film in the set.",
+  fmt:":30 · :15",
+  pn:"Shoot straight down, locked off. Do not use a trademarked board — art-direct a generic word game."},
+ {n:"04",t:"Autocorrect",img:"BB04_autocorrect",tags:["APP","SOCIAL","LO-COST"],
+  c:"The phone suggested a correction. The child was right.",
+  d:"An adult hand hovers over a tablet, about to correct a spelling, and stops. Beat. The hand withdraws.",
+  ins:"Every child using this app eventually reaches the point where the machine is wrong and they are not.",
+  role:"Short-form proof. Works as a six-second bumper.",
+  fmt:":06 · :15 · static",
+  pn:"Entirely in the hands. No dialogue, no faces needed."},
+ {n:"05",t:"No Signal",img:"BB05_tunnel",tags:["APP","CONSIDER","PRODUCT TRUTH"],
+  c:"Four hours from anywhere. Still spelling.",
+  d:"A child in the back of a car on a long night drive, absorbed, lit by the tablet. Outside: nothing. No bars, no wifi, no problem.",
+  ins:"Offline is a genuine differentiator that almost no competitor has, and it maps to the exact moments parents most need something that works — cars, planes, waiting rooms.",
+  role:"The rational film. Give it to the parent who is comparing options.",
+  fmt:":30 · :15 · statics",
+  pn:"Resist making it sad or lonely. It should feel like the best part of a long trip."},
+ {n:"06",t:"The Wall",img:"BB06_wallchart",tags:["APP","FAME","FILM"],
+  c:"Two years of words.",
+  d:"A bedroom wall covered floor to ceiling in small cards, hundreds of them, each a word mastered. A small figure stands at the bottom looking up.",
+  ins:"Progress in this category is invisible — it lives in a database. Made physical, it is genuinely moving.",
+  role:"The emotional film, and the one that sells the multi-year library rather than one term.",
+  fmt:":30 · statics · OOH",
+  pn:"Build the wall for real. It only works if the volume is overwhelming and handmade."},
+ {n:"07",t:"Say It Properly",img:"BB07_voice",tags:["APP","CONSIDER","PRODUCT TRUTH"],
+  c:"Forty-one thousand words. All of them said properly.",
+  d:"A child in headphones, eyes closed, mouthing a word back carefully. Intimate and serious.",
+  ins:"Robot text-to-speech mispronounces exactly the words that matter most — the French and Greek borrowings that decide competitive bees. Real recorded voice is the difference between practice and bad practice.",
+  role:"The credibility film for serious families and for tutors.",
+  fmt:":30 · :15",
+  pn:"Consider running the same word in a competitor's synthetic voice and in ours — the comparison does the arguing. Clear it legally first."},
+ {n:"08",t:"Parent-Teacher Night",img:"BB08_parentteacher",tags:["APP","CONSIDER","FILM"],
+  c:"“Can I ask what you're doing at home?”",
+  d:"Two parents on tiny chairs. The teacher leans forward, genuinely curious. The parents glance at each other.",
+  ins:"Third-party validation from a teacher is worth more than any claim the brand can make about itself.",
+  role:"Trust film. Also the natural asset for school and tutor partnerships.",
+  fmt:":30 · :15",
+  pn:"Keep the teacher credible and unbranded — never let it look like an endorsement deal."},
+];
+
+const BOOKS = [
+ {n:"09",t:"Read It Again",img:"BB09_spine",tags:["BOOKS","FAME","STATIC"],
+  c:"Some books get read once.",
+  d:"A single book under a bedside lamp, spine cracked soft from hundreds of readings, corners rounded, ribbon frayed. Still life.",
+  ins:"Parents do not judge a children's book by its story. They judge it by how many nights it survives.",
+  role:"The hero static for the books, and the clearest statement of what a good one is worth.",
+  fmt:"Statics · OOH · :15",
+  pn:"Age a real copy properly. A pristine book photographed to look loved will fool nobody."},
+ {n:"10",t:"The Crew",img:"BB10_cast",tags:["BOOKS","FAME","BRAND"],
+  c:"Fifteen adventures. One very small hero.",
+  d:"The ensemble poster: Bizzy and the crew in a meadow of enormous flowers. Every character carries a real fact about bees.",
+  ins:"Children follow characters, not curricula. The cast is the asset that carries a reader from a picture book all the way into the app's story mode.",
+  role:"Brand-building for the whole property, and the merchandising and licensing foundation.",
+  fmt:"Poster · covers · social · in-app",
+  pn:"Keep the illustration identical across books and app. Character consistency is the entire crossover mechanic."},
+ {n:"11",t:"The First Long Word",img:"BB11_firstword",tags:["BOOKS","FAME","FILM"],
+  c:"Nobody taught her that. A bee did.",
+  d:"A very small child standing on a kitchen chair, deploying a magnificent long word at breakfast. Two adults look at each other.",
+  ins:"A child's first big word is a family event. It comes from a story far more often than from a lesson.",
+  role:"The bridge film — it sells books to parents who think their child is too young for an app.",
+  fmt:":30 · :15 · social",
+  pn:"The word must be real, age-plausible and drawn from an actual book in the series."},
+ {n:"12",t:"Bedtime to Bee",img:"BB12_bedtime",tags:["BOOKS","APP","LADDER"],
+  c:"It starts on the bedside table.",
+  d:"A stack of picture books with a tablet resting on top and Bizzy sitting on the very top of the pile.",
+  ins:"The two products are one journey, and the image says it faster than any line of copy.",
+  role:"The portfolio asset — use it wherever both products appear, and on the pricing page.",
+  fmt:"Static · packaging · retail",
+  pn:"This is the single most important image in the platform commercially: it is what makes a books buyer an app subscriber."},
+];
+
+const IMG = window.__IMG__ || {};
+const src = k => IMG[k] || "";
+
+/* ---------- the speller ---------- */
+let idx = 0, score = 0, answered = 0;
+const $ = id => document.getElementById(id);
+function renderWord(){
+  const w = WORDS[idx];
+  $('spCount').textContent = `Word ${idx+1} of ${WORDS.length}`;
+  $('spScore').textContent = `Correct: ${score}`;
+  $('spDef').textContent = `“${w.d}”`;
+  $('spMeta').innerHTML =
+    `<span>Said <b>${w.p}</b></span><span>From <b>${w.o}</b></span><span><b>${w.ps}</b></span>`;
+  $('spInput').value = ''; $('spInput').disabled = false;
+  const r = $('spResult'); r.className = 'sp-result'; r.innerHTML = '';
+}
+function judge(skipped){
+  const w = WORDS[idx], guess = $('spInput').value.trim().toLowerCase();
+  if(!skipped && !guess) return;
+  const ok = !skipped && guess === w.w;
+  if(ok) score++;
+  answered++;
+  const r = $('spResult');
+  r.className = 'sp-result show ' + (ok ? 'ok' : 'no');
+  r.innerHTML = ok
+    ? `<span class="verdict">Correct.</span> <span class="ans">${w.w}</span> — a Bizzing Bee speller
+       meets this at year ${w.y}.`
+    : `<span class="verdict">${skipped ? 'Skipped.' : 'Not quite.'}</span> It's
+       <span class="ans">${w.w}</span> — and a Bizzing Bee speller meets it at year ${w.y}.`;
+  $('spInput').disabled = true;
+  setTimeout(()=>{
+    if(idx < WORDS.length - 1){ idx++; renderWord(); $('spInput').focus(); }
+    else finish();
+  }, ok ? 1400 : 2600);
+}
+function finish(){
+  $('spForm').style.display = 'none';
+  $('spCount').textContent = 'Finished';
+  const pct = Math.round(score / WORDS.length * 100);
+  const f = $('spFinal');
+  f.style.display = '';
+  f.innerHTML = score >= 6
+    ? `You got <strong>${score} of ${WORDS.length}</strong>. Genuinely good — and an eleven-year-old
+       who has climbed to Level 20 would still take you.`
+    : `You got <strong>${score} of ${WORDS.length}</strong>. A child working through the Bizzing Bee ladder
+       clears all eight before they turn twelve.`;
+  $('spFoot').textContent = 'Every word above is real, and every one is spoken aloud in the app.';
+}
+$('spForm').addEventListener('submit', e=>{ e.preventDefault(); judge(false); });
+$('spSkip').addEventListener('click', ()=> judge(true));
+renderWord();
+
+/* ---------- packs ---------- */
+$('packs').innerHTML = PACKS.map(p=>{
+  const [a,b] = p.split(' · ');
+  return `<span class="pack">${b} <em>${a}</em></span>`;
+}).join('');
+
+/* ---------- concept cards ---------- */
+function cardFor(list, c, i, kind){
+  const el = document.createElement('article');
+  el.className = 'card'; el.tabIndex = 0; el.setAttribute('role','button');
+  el.setAttribute('aria-label', `Expand ${c.t}`);
+  const tags = c.tags.map(t=>{
+    const cls = t==='APP' ? 'ap' : t==='BOOKS' ? 'bk' : t==='CORE' ? 'ap' : 'pr';
+    return `<span class="tag ${cls}">${t}</span>`;
+  }).join('');
+  el.innerHTML = `
+    ${src(c.img) ? `<img alt="${c.t}" src="${src(c.img)}">`
+                 : `<div class="noimg"><span>Board not shot</span></div>`}
+    <div class="card-body">
+      <p class="no">${c.n}</p>
+      <h3>${c.t}</h3>
+      <div class="tags">${tags}</div>
+      <p class="cap">${c.c}</p>
+      <p class="d">${c.d}</p>
+      <p class="more">Full brief ↗</p>
+    </div>`;
+  const open = ()=>openLB(kind, i);
+  el.addEventListener('click', open);
+  el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();open();} });
+  return el;
+}
+APP.forEach((c,i)=> document.getElementById('bankApp').appendChild(cardFor(APP,c,i,'app')));
+CORE.forEach((c,i)=> document.getElementById('bankCore').appendChild(cardFor(CORE,c,i,'core')));
+BOOKS.forEach((c,i)=> document.getElementById('bankBooks').appendChild(cardFor(BOOKS,c,i,'books')));
+
+/* ---------- blowout ---------- */
+const lb = $('lb'), lbImg = $('lbImg'), lbBody = $('lbBody');
+function fld(l,v){ return v ? `<div class="fld"><dt>${l}</dt><dd>${v}</dd></div>` : ''; }
+function openLB(kind, i){
+  const d = kind === 'app' ? APP[i] : kind === 'core' ? CORE[i] : BOOKS[i];
+  const media = lb.querySelector('.lb-media');
+  if(src(d.img)){ media.style.display=''; lbImg.src = src(d.img); lbImg.alt = d.t;
+                  lb.querySelector('.lb-in').style.gridTemplateColumns=''; }
+  else { media.style.display='none'; lb.querySelector('.lb-in').style.gridTemplateColumns='1fr'; }
+  lbBody.innerHTML = `
+    <p class="no" style="font-family:ui-monospace,monospace;font-size:10.5px;letter-spacing:.15em;color:var(--muted)">${d.n} · ${kind.toUpperCase()}</p>
+    <h3 style="font-size:27px">${d.t}</h3>
+    <div class="tags">${d.tags.map(t=>`<span class="tag ${t==='APP'?'ap':t==='BOOKS'?'bk':'pr'}">${t}</span>`).join('')}</div>
+    <p class="cap" style="font-family:Charter,Georgia,serif;font-size:20px;line-height:1.3;
+       border-left:3px solid var(--honey-bright);padding-left:14px">${d.c}</p>
+    ${fld('The scene', d.d)}
+    ${fld('Insight', d.ins)}
+    ${fld('Role in the platform', d.role)}
+    ${fld('Format', d.fmt)}
+    ${fld('Production note', d.pn)}`;
+  if(!lb.open) lb.showModal();
+}
+$('lbClose').addEventListener('click', ()=> lb.close());
+lb.addEventListener('click', e=>{ if(e.target === lb) lb.close(); });
+</script>
