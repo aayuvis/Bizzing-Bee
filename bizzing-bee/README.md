@@ -9,9 +9,10 @@ and the **Bizzy** story books (15 packs).
 
 | File | What it is |
 |---|---|
-| **`Bizzing-Bee-Deck.html`** ← open this one | Standalone deck, 1.9MB, all 24 boards embedded |
-| `boards/` | The 24 mood boards as JPEGs |
-| `src/build-boards.py` | Generates the boards (Gemini `gemini-3-pro-image`) |
+| **`Bizzing-Bee-Deck.html`** ← open this one | Standalone deck, 2.8MB, all 32 boards embedded |
+| `boards/` | The 32 mood boards as JPEGs |
+| `src/build-boards.py` | Generates the 24 photoreal boards (Gemini `gemini-3-pro-image`) |
+| `src/build-kid-boards.py` | Generates the 8 kid-campaign game key-art boards |
 | `src/build-deck.py` | Embeds them into the deck as data URIs |
 
 **Published deck:** https://claude.ai/code/artifact/58b4756b-037e-4b21-8fc9-8fa84bb9a6c0
@@ -55,14 +56,38 @@ So the platform runs at two speeds:
 
 Sequence: **earn the core, then buy the country.**
 
-## The work — 24 concepts
+## The work — 32 concepts
 
-| Set | Count | What it does |
-|---|---|---|
-| **Why Spell** (`WS1–WS8`) | 8 | The platform films — the arsenal, the interview, the toast, the kit |
-| **The core** (`C1–C4`) | 4 | Ring-1 credibility: the fortnight, the French word, the oral round, the plateau |
-| **The app** (`01–08`) | 8 | Proof creative — the child visibly ahead of the adult |
-| **The books** (`09–12`) | 4 | Where it starts, and the ladder up into the app |
+| Set | Count | Audience | What it does |
+|---|---|---|---|
+| **Why Spell** (`WS1–WS8`) | 8 | Parents | The platform films — the arsenal, the interview, the toast, the kit |
+| **The core** (`C1–C4`) | 4 | Ring 1 | Credibility: the fortnight, the French word, the oral round, the plateau |
+| **The app** (`01–08`) | 8 | Parents | Proof creative — the child visibly ahead of the adult |
+| **The books** (`09–12`) | 4 | Parents | Where it starts, and the ladder up into the app |
+| **The kid campaign** (`K1–K8`) | 8 | **Children** | Spelling is the cheat code — the game, the villain, the collection |
+
+### The kid campaign
+
+The child cannot buy a subscription; they can only ask for one. So this tier is built for
+**nag, not conversion** — it never says "educational", never shows a classroom, and sells the
+game, because the game is true.
+
+The app ships **14 real arcade engines** and a **31-chapter, six-act saga** with five boss
+fights and a traitor. Its signature mechanic is the campaign: the villain's Unspelling drains
+the world to **92% greyscale**, and every correct word sweeps the colour back. *You spell. The
+colour comes back.*
+
+Kid boards are deliberately drawn in a different visual language from the photoreal parent
+boards — bold game key art in honey gold, deep violet and villain crimson, matching the app's
+own art direction.
+
+### The translation
+
+Section 08 of the deck is the practical part: a feature-by-feature table converting everything
+a child wants into the argument a parent buys. You do not need two campaigns — you need one
+feature set with two captions. The strongest untold parent argument is that the app is
+**offline, with no account, no leaderboard, no chat, no microphone and no ads**, and that
+**it cannot be bought through** — Karma is never spent, coins buy only cosmetics.
 
 ## Boards
 
