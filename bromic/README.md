@@ -1,7 +1,9 @@
 # Get Bromic — brand campaign
 
-> **Open `Get-Bromic-Deck.html`.** That is the finished deck, ~8.5 MB, with all 57 mood
-> boards embedded — works offline, no network.
+> **Open `Get-Bromic-Deck.html`.** That is the finished deck, ~5 MB, with all 57 mood
+> boards embedded — works offline, no network, and **pre-rendered so it displays even where
+> JavaScript is blocked** (iOS Quick Look, email previews, some in-app browsers). JavaScript,
+> when available, adds the tone switches, the expand view and the before/after turns.
 >
 > Everything in `src/` is build machinery. `src/deck.source.html` is the template with
 > **no images in it**; assets are injected at build time. Opening it directly shows an
