@@ -85,15 +85,27 @@
   }
   @media(max-width:480px){ .sb-bandsub{display:none!important} }
   @media(max-width:560px){ .sb-search-lbl{display:none!important} }
-  /* Bee Band header pill collapses to just the band number on narrow screens */
-  @media(max-width:700px){ .sb-band-lbl{display:none!important} .sb-band-mini{display:inline!important} }
-  /* …and the wordmark yields to it on small phones; the mascot stays as the home button */
-  @media(max-width:460px){ .sb-brand{display:none!important} }
+  /* Bee Band header pill collapses to just the band number on narrow screens.
+     These two breakpoints used to be 700 and 460, and the header row overflowed the
+     PAGE at every width from 360 to 900 — worst at 640px, where it pushed the
+     document 201px sideways. The row is `nowrap` with every child `flex-shrink:0`,
+     so it cannot absorb the excess: it just makes the whole app scroll horizontally.
+     Two things were hiding it. #root carries zoom:1.09, so the layout inside runs 9%
+     wider than the viewport these queries test against; and nothing clips the row, so
+     the overflow lands on the document instead of on the header. */
+  @media(max-width:1000px){ .sb-band-lbl{display:none!important} .sb-band-mini{display:inline!important} }
+  /* …and the wordmark yields to it; the mascot beside it stays as the home button */
+  @media(max-width:900px){ .sb-brand{display:none!important} }
   /* drawer rows that duplicate the desktop top nav — mobile only */
   @media(min-width:640px){ .sb-mob-only{display:none!important} }
   /* comfortable default type: the whole app runs ~9% larger; Large text steps up further */
   #root{zoom:1.09}
   :root[data-size="large"] #root{zoom:1.28}
+  /* Onboarding avatar picker: the tiles are drawn at 70px but must be free to shrink
+     with their grid column on a phone, or the row sets the page's minimum width. */
+  .sb-onb-avs>button{min-width:0}
+  .sb-onb-avs>button>span{width:100%!important;max-width:70px;height:auto!important;aspect-ratio:1}
+  .sb-onb-avs>button>span>svg{width:100%;height:100%;display:block}
   /* ---- accessibility modes (Settings → Accessibility) ---- */
   :root[data-font="easy"]{--display:Verdana,Tahoma,ui-sans-serif,system-ui,sans-serif;--body:Verdana,Tahoma,ui-sans-serif,system-ui,sans-serif;--entry:Verdana,ui-monospace,monospace}
   :root[data-font="easy"] body{letter-spacing:.035em;word-spacing:.08em;line-height:1.65}

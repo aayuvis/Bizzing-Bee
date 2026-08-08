@@ -199,7 +199,40 @@ state.children=[{name:'T',age:9,theme:'spellbound',avatar:'bizzy',goal:10,coins:
 state.activeIdx=0; ensureLists(state.children[0]); state.screen='app'; render();
 ```
 
-Checks (all implemented in `scratchpad/deeptest*.cjs`, keep them as the regression harness):
+**The harness is `qa/audit.cjs`, in the repo.** It used to be `scratchpad/deeptest*.cjs`; session
+scratchpads are deleted, so by the time it was next needed it was gone and had to be rebuilt from
+this prose. Run it as:
+
+```
+python3 -m http.server 8991                       # from spellbound-app/
+NODE_PATH=/opt/node22/lib/node_modules /opt/node22/bin/node qa/audit.cjs
+```
+
+It sweeps 6 profiles (age 8→15, free/beginner/regional, the advanced add-on, the testing unlock, a
+parent PIN) x 36 screens x 3 widths, then runs the content, money, PIN, engine, font, look,
+accessibility and onboarding checks below. It exits non-zero on a blocker, and it groups a repeated
+finding into one line — **one bug showing on 34 screens is one bug**, and a raw list of 320 rows
+hides that.
+
+**Four assertions that look right and are not.** Every one produced a confident false positive the
+first time this harness ran; the file guards against all four and the comments say why:
+
+1. *"a purchase must call `confirm()`"* — `buyTheme()` legitimately refuses **before** asking when
+   the world is not in the child's plan: it opens the upsell and returns. The real safety property
+   is **no state change without a yes**.
+2. *"a game canvas must have painted after a second"* — gated engines run their frame loop but
+   deliberately skip `draw()` until `started`, which the how-to card sets. `keepFlying` reads as a
+   dead black canvas until that card is clicked, and paints ~3,000 colours the moment it is.
+   **Dismiss the how-to before judging.**
+3. *"the widest element sticking out is the culprit"* — the `.w4o-*` ambient bees are absolutely
+   positioned far off-screen inside a clipped `.w4-bg`, so they have huge rects and cannot affect
+   the page at all. Skip ancestors with **any** non-visible `overflow-x`, not just `auto|scroll`.
+4. *"read the look off `getComputedStyle(body)`"* — dusk's dark comes from the fixed `.w4-bg` layer
+   painted over body's background, so body reads **white** in dusk and the contrast maths is
+   meaningless. **Measure real pixels.** Likewise text size is `#root` `zoom` (via `data-size`), not
+   `font-size`, and the accessibility flags land on `<html>`, not on `#root`.
+
+Checks:
 - **Boot:** capture `pageerror` + console `error`; assert none.
 - **Nav sweep:** set `state.nav` to each of the 8 tabs, `render()`, assert body text > 40 chars.
 - **Engine sweep:** `SB_SAGA_ENGINES[name](host,{diff:'easy',world,onUnlock(){}},cb)` for all 14;

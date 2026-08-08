@@ -151,7 +151,21 @@
     exit() { const g = state.trv; if (g && g.timer) clearInterval(g.timer); stopAud(); STV.open(); },
 
     /* ================= views ================= */
-    view() { const g = state.trv; if (!g) { STV.open(); return ''; }
+    view() { let g = state.trv;
+      if (!g) {
+        /* First visit. This used to call STV.open() and return '' — but open() ends in
+           set(), which dispatches a nested render from inside this one, and the '' then
+           went on screen anyway. The child's first tap on Bee Trivia painted a bare
+           header and tab bar with nothing between it, and only a second render (some
+           other state change, or the level shard landing) filled it in.
+           Build the hub state here instead and let this very render draw it. The hub
+           needs only the 4KB index, not the level shard, so there is nothing to wait
+           for; ttNeed still pulls the shard in and re-renders for the rounds. */
+        stopAud();
+        const lv = autoLv();
+        g = state.trv = { view: 'hub', th: 'mix', lv: lv };
+        try { if (window.ttNeed) ttNeed(lv, function () { try { render(); } catch (e) {} }); } catch (e) {}
+      }
       if (g.view === 'quiz')   return g.done ? STV._done('Round complete!', g.right + '/' + g.qs.length, 'questions right') : STV._q(g.qs[g.i], 'Question ' + (g.i + 1) + ' of ' + g.qs.length);
       if (g.view === 'clock')  return g.done ? STV._done(g.right >= (tStats(active()).clockBest || 0) ? 'New best! ⏱' : 'Time!', String(g.right), 'answers in 60 seconds') : STV._q(g.qs[g.i], '<span id="trv-time">' + g.timeLeft + 's</span> · ✓ ' + g.right);
       if (g.view === 'square') return g.done ? STV._done(g.lines >= 3 ? 'Board master! 📐' : 'Board complete!', g.cells.filter(x => x.st === 1).length + '/9', g.lines + ' line' + (g.lines === 1 ? '' : 's') + ' scored') : STV._square();
