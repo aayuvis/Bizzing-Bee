@@ -6,7 +6,10 @@ and the **Bizzy** story books (15 packs).
 | File | What it is |
 |---|---|
 | `Bizzing-Bee-Deck.html` | Standalone deck — open in any browser |
-| `deck.html` | Source (mood boards injected at build time) |
+| `deck.html` | Source (boards injected at build time) |
+| `build-boards.py` | Generates all 16 boards as flat vector SVG — no API, no cost, re-runs instantly |
+| `build-deck.py` | Inlines the boards into `deck.html` → standalone file |
+| `boards-contact-sheet.svg` | All 16 boards on one sheet |
 
 **Published deck:** https://claude.ai/code/artifact/58b4756b-037e-4b21-8fc9-8fa84bb9a6c0
 
@@ -33,4 +36,7 @@ Sequence: **earn the core, then buy the country.**
 - Confirm whether AUS/UK have an NSF equivalent — the structure is specifically American
   and the strategy does not port without one.
 - Verify library and voice counts against the shipping build before any public claim.
-- Mood boards were not generated: the Gemini key returned `429 — billing account`.
+- Boards are hand-authored vector in the app own visual language (honey/violet, honeycomb motif,
+  recurring bee), matching how the app generates its cover art as inline SVG. Photographic boards
+  were blocked: the Gemini key returns `429 — monthly spending cap exceeded`, which is a cap
+  setting in AI Studio rather than depleted credit.
