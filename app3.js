@@ -2248,7 +2248,11 @@ function viewOnboarding(){
   if(S.onbStep===0){
     const _freeAvs=SB_AVATARS.list.filter(a=>a.rarity==='free');
     const _legendAvs=SB_AVATARS.list.filter(a=>a.rarity==='legendary');
-    const avatars=`<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;max-width:460px;margin:0 auto;justify-items:center">${_freeAvs.map(a=>{ const on=S.draft.avatar===a.id;
+    /* minmax(0,1fr), not 1fr: a plain 1fr floors at min-content, and min-content here
+       is the 70px avatar plus its padding — so five columns refused to go under ~470px
+       and the very first screen a child sees pushed a 390px phone 191px sideways.
+       The sb-onb-avs rule lets the artwork scale down with the column. */
+    const avatars=`<div class="sb-onb-avs" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;max-width:460px;margin:0 auto;justify-items:center">${_freeAvs.map(a=>{ const on=S.draft.avatar===a.id;
         return `<button data-act="pickAvatar" data-arg="${a.id}" title="${a.name}" style="position:relative;width:100%;aspect-ratio:1;border-radius:16px;display:grid;place-items:center;transition:.15s;background:var(--surface2);border:2.5px solid ${on?'var(--accent)':'transparent'};padding:7px;${on?'box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)':''}"><span style="width:70px;height:70px;display:inline-block">${avatarSVG(a.id,70)}</span></button>`; }).join('')}</div>
       <div style="margin-top:14px;font-size:12.5px;font-weight:700;color:var(--muted);text-align:center">…and ${SB_AVATARS.list.length-_freeAvs.length} more to collect — earn coins by playing.</div>
       <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;justify-content:center">${_legendAvs.map(a=>`<button data-act="pickAvatar" data-arg="${a.id}" title="${a.name} · legendary — unlock later with coins" style="position:relative;width:50px;height:50px;border-radius:12px;display:grid;place-items:center;background:var(--surface2);border:2px solid transparent;padding:4px;opacity:.45"><span style="width:38px;height:38px;display:inline-block">${avatarSVG(a.id,38)}</span><span style="position:absolute;top:1px;right:2px;font-size:9px">🔒</span></button>`).join('')}</div>`;
@@ -3711,7 +3715,11 @@ function viewApp(){
          away behind a hover, which made the app feel like it had lost its navigation.
          Focus still kills the music and holds the background still; the tabs stay put. -->
     <div class="sb-header-sticky" style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
-      <div style="max-width:1080px;margin:0 auto;padding:11px clamp(9px,3.2vw,32px);display:flex;align-items:center;gap:8px">
+      <!-- flex-wrap is the safety net, not the layout: the chips collapse by breakpoint
+           long before it engages. Without it this row is nowrap with every child
+           flex-shrink:0, so any width it does not fit at pushes the whole document
+           sideways rather than the header. -->
+      <div style="max-width:1080px;margin:0 auto;padding:11px clamp(9px,3.2vw,32px);display:flex;flex-wrap:wrap;align-items:center;gap:8px">
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
         <button data-act="goHome" title="Home" aria-label="Bizzing Bee — Home" style="display:flex;align-items:center;gap:9px;margin-right:auto;background:none;border:0;cursor:pointer"><div style="width:34px;height:38px;flex-shrink:0">${mascotSVG('happy')}</div><span class="sb-brand" style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i> Bee</span></button>
         ${(()=>{ const bb=beeBand(active());
@@ -6117,8 +6125,12 @@ function viewJourneys(){ const S=state; if(S.lessonSel) return viewLesson();
   const chaptersTotal=units.length||10;
   if(!all.length) return `<div style="max-width:680px;margin:0 auto;padding:60px 0;text-align:center;color:var(--muted);font-weight:700">Lessons are loading…</div>`;
   if(!S.premium){
-    const _hw=(words[Math.max(0,Math.min(idx||0,words.length-1))]||{}).w||'';
-  return `<div style="max-width:${hwWide(_hw,620)}px;margin:0 auto">
+    /* This card carries no headword — it is the Word Journeys paywall. The
+       hwWide(...) widening idiom belongs on cards that print a word and must grow
+       for a long one; pasted in here it read `words` and `idx`, which do not exist
+       in this scope, so the whole screen threw for every free speller and the only
+       route to the upsell was a blank page. */
+  return `<div style="max-width:620px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button></div>
       <div style="background:var(--bg2);border:1px solid var(--accent);border-radius:20px;padding:30px;text-align:center;box-shadow:var(--glow)">
         <div style="width:64px;height:64px;border-radius:14px;background:var(--chip);color:var(--accent);display:grid;place-items:center;margin:0 auto 14px">${iconSVG('book',32)}</div>

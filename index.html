@@ -15,9 +15,9 @@
 <meta name="description" content="Bizzing Bee — a spelling-bee trainer that hears your child spell, evolves a character with every win, and shows parents exactly where they stand.">
 <title>Bizzing Bee — spelling-bee trainer</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 viewBox%3D%220 0 64 64%22%3E%3Cellipse cx%3D%2215%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(-24 15 20)%22%2F%3E%3Cellipse cx%3D%2249%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(24 49 20)%22%2F%3E%3Cpath d%3D%22M27 17 Q23 7 21 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Cpath d%3D%22M37 17 Q41 7 43 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Ccircle cx%3D%2221%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Ccircle cx%3D%2243%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22 fill%3D%22%23FFC23D%22%2F%3E%3Cellipse cx%3D%2224%22 cy%3D%2230%22 rx%3D%2211%22 ry%3D%227%22 fill%3D%22%23FFD86E%22 opacity%3D%22.55%22%2F%3E%3CclipPath id%3D%22b%22%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22%2F%3E%3C%2FclipPath%3E%3Cg clip-path%3D%22url(%23b)%22%3E%3Crect x%3D%225%22 y%3D%2245%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3Crect x%3D%225%22 y%3D%2256%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3C%2Fg%3E%3Cellipse cx%3D%2217%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Cellipse cx%3D%2247%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Ccircle cx%3D%2224%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2225.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2224.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2240%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2241.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2240.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Cpath d%3D%22M26 49 Q32 55 40 49%22 fill%3D%22none%22 stroke%3D%22%233A1E5C%22 stroke-width%3D%222.8%22 stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E">
-<link rel="stylesheet" href="fonts/fonts.css?v=20260807s">
-<link rel="stylesheet" href="tokens.css?v=20260807s">
-<link rel="stylesheet" href="worlds4.css?v=20260807s">
+<link rel="stylesheet" href="fonts/fonts.css?v=20260807t">
+<link rel="stylesheet" href="tokens.css?v=20260807t">
+<link rel="stylesheet" href="worlds4.css?v=20260807t">
 
 <style>
   *{box-sizing:border-box}
@@ -85,15 +85,27 @@
   }
   @media(max-width:480px){ .sb-bandsub{display:none!important} }
   @media(max-width:560px){ .sb-search-lbl{display:none!important} }
-  /* Bee Band header pill collapses to just the band number on narrow screens */
-  @media(max-width:700px){ .sb-band-lbl{display:none!important} .sb-band-mini{display:inline!important} }
-  /* …and the wordmark yields to it on small phones; the mascot stays as the home button */
-  @media(max-width:460px){ .sb-brand{display:none!important} }
+  /* Bee Band header pill collapses to just the band number on narrow screens.
+     These two breakpoints used to be 700 and 460, and the header row overflowed the
+     PAGE at every width from 360 to 900 — worst at 640px, where it pushed the
+     document 201px sideways. The row is `nowrap` with every child `flex-shrink:0`,
+     so it cannot absorb the excess: it just makes the whole app scroll horizontally.
+     Two things were hiding it. #root carries zoom:1.09, so the layout inside runs 9%
+     wider than the viewport these queries test against; and nothing clips the row, so
+     the overflow lands on the document instead of on the header. */
+  @media(max-width:1000px){ .sb-band-lbl{display:none!important} .sb-band-mini{display:inline!important} }
+  /* …and the wordmark yields to it; the mascot beside it stays as the home button */
+  @media(max-width:900px){ .sb-brand{display:none!important} }
   /* drawer rows that duplicate the desktop top nav — mobile only */
   @media(min-width:640px){ .sb-mob-only{display:none!important} }
   /* comfortable default type: the whole app runs ~9% larger; Large text steps up further */
   #root{zoom:1.09}
   :root[data-size="large"] #root{zoom:1.28}
+  /* Onboarding avatar picker: the tiles are drawn at 70px but must be free to shrink
+     with their grid column on a phone, or the row sets the page's minimum width. */
+  .sb-onb-avs>button{min-width:0}
+  .sb-onb-avs>button>span{width:100%!important;max-width:70px;height:auto!important;aspect-ratio:1}
+  .sb-onb-avs>button>span>svg{width:100%;height:100%;display:block}
   /* ---- accessibility modes (Settings → Accessibility) ---- */
   :root[data-font="easy"]{--display:Verdana,Tahoma,ui-sans-serif,system-ui,sans-serif;--body:Verdana,Tahoma,ui-sans-serif,system-ui,sans-serif;--entry:Verdana,ui-monospace,monospace}
   :root[data-font="easy"] body{letter-spacing:.035em;word-spacing:.08em;line-height:1.65}
@@ -802,54 +814,54 @@
   @keyframes lx-gleam{0%,100%{opacity:0;transform:translateY(-6px)}50%{opacity:1;transform:translateY(6px)}}
   @keyframes lx-string{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.7)}}
 </style>
-  <link rel="stylesheet" href="saga2.css?v=20260807s">
+  <link rel="stylesheet" href="saga2.css?v=20260807t">
 </head>
 <body>
 <div id="root"></div>
-<script src="icons.js?v=20260807s"></script>
-<script src="icons-art.js?v=20260807s"></script>
-<script src="cover-art.js?v=20260807s"></script>
+<script src="icons.js?v=20260807t"></script>
+<script src="icons-art.js?v=20260807t"></script>
+<script src="cover-art.js?v=20260807t"></script>
 <script>try{SB_ICON_MOTION()}catch(e){}</script>
-<script src="voice-cdn.js?v=20260807s"></script>
-<script>window.SB_ASSET_V="?v=20260807s";</script>
+<script src="voice-cdn.js?v=20260807t"></script>
+<script>window.SB_ASSET_V="?v=20260807t";</script>
 <!-- boot-lazy: everything the first screen does not need arrives after paint.
      Registry + idle order live in boot-lazy.js; call SB_LAZY.need(...) before
      opening a feature whose data is deferred. -->
-<script src="boot-lazy.js?v=20260807s"></script>
-<script src="words-data.js?v=20260807s"></script>
-<script src="words-extra.js?v=20260807s"></script>
-<script src="words-patch.js?v=20260807s"></script>
-<script src="themes-data.js?v=20260807s"></script>
-<script src="quotes.js?v=20260807s"></script>
-<script src="trivia-icons.js?v=20260807s"></script>
-<script src="trivia-data.js?v=20260807s"></script>
-<script src="tips-data.js?v=20260807s"></script>
-<script src="voice-manifest.js?v=20260807s"></script>
-<script src="voice-adv-manifest.js?v=20260807s"></script>
-<script src="voice-review.js?v=20260807s"></script>
-<script src="app.js?v=20260807s"></script>
-<script src="avatars-art.js?v=20260807s"></script>
-<script src="avatar-png.js?v=20260807s"></script>
-<script src="game-art.js?v=20260807s"></script>
-<script src="avatars.js?v=20260807s"></script>
-<script src="avatar-greetings.js?v=20260807s"></script>
-<script src="avatar-cards.js?v=20260807s"></script>
-<script src="app2.js?v=20260807s"></script>
-<script src="pricing.js?v=20260807s"></script>
-<script src="auth.js?v=20260807s"></script>
-<script src="app3.js?v=20260807s"></script>
-<script src="worlds4.js?v=20260807s"></script>
-<script src="mockbee.js?v=20260807s"></script>
-  <script src="games-daily.js?v=20260807s"></script>
-  <script src="saga-art/saga-art.js?v=20260807s"></script>
-  <script src="saga-art/saga-map.js?v=20260807s"></script>
-  <script src="saga-art/worlds-art.js?v=20260807s"></script>
-  <script src="saga-art-dom.js?v=20260807s"></script>
-  <script src="saga-music.js?v=20260807s"></script>
-  <script src="saga-script.js?v=20260807s"></script>
-  <script src="saga2.js?v=20260807s"></script>
-<script src="trivia.js?v=20260807s"></script>
-<script src="advanced.js?v=20260807s"></script>
-<script src="trail.js?v=20260807s"></script>
+<script src="boot-lazy.js?v=20260807t"></script>
+<script src="words-data.js?v=20260807t"></script>
+<script src="words-extra.js?v=20260807t"></script>
+<script src="words-patch.js?v=20260807t"></script>
+<script src="themes-data.js?v=20260807t"></script>
+<script src="quotes.js?v=20260807t"></script>
+<script src="trivia-icons.js?v=20260807t"></script>
+<script src="trivia-data.js?v=20260807t"></script>
+<script src="tips-data.js?v=20260807t"></script>
+<script src="voice-manifest.js?v=20260807t"></script>
+<script src="voice-adv-manifest.js?v=20260807t"></script>
+<script src="voice-review.js?v=20260807t"></script>
+<script src="app.js?v=20260807t"></script>
+<script src="avatars-art.js?v=20260807t"></script>
+<script src="avatar-png.js?v=20260807t"></script>
+<script src="game-art.js?v=20260807t"></script>
+<script src="avatars.js?v=20260807t"></script>
+<script src="avatar-greetings.js?v=20260807t"></script>
+<script src="avatar-cards.js?v=20260807t"></script>
+<script src="app2.js?v=20260807t"></script>
+<script src="pricing.js?v=20260807t"></script>
+<script src="auth.js?v=20260807t"></script>
+<script src="app3.js?v=20260807t"></script>
+<script src="worlds4.js?v=20260807t"></script>
+<script src="mockbee.js?v=20260807t"></script>
+  <script src="games-daily.js?v=20260807t"></script>
+  <script src="saga-art/saga-art.js?v=20260807t"></script>
+  <script src="saga-art/saga-map.js?v=20260807t"></script>
+  <script src="saga-art/worlds-art.js?v=20260807t"></script>
+  <script src="saga-art-dom.js?v=20260807t"></script>
+  <script src="saga-music.js?v=20260807t"></script>
+  <script src="saga-script.js?v=20260807t"></script>
+  <script src="saga2.js?v=20260807t"></script>
+<script src="trivia.js?v=20260807t"></script>
+<script src="advanced.js?v=20260807t"></script>
+<script src="trail.js?v=20260807t"></script>
 </body>
 </html>
