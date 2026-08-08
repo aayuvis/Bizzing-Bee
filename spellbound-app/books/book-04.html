@@ -132,7 +132,12 @@
      the poem itself, so the words are never fighting the art for a reader's eye. */
   .pm-page{position:relative;overflow:hidden;display:flex;flex-direction:column;
     background-color:color-mix(in srgb,var(--paper) 66%,var(--pm-tint,var(--paper)) 34%)}
-  .pm-ground{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.42;z-index:0;filter:saturate(.88)}
+  /* No opacity and no filter here. The 42% wash and the desaturation are baked
+     into the plate by voice/pipeline/bake-art.py, because a CSS effect on an
+     image makes Chromium rasterise it into the PDF at full page size and throw
+     the JPEG away — 130 of these took the poetry companion's PDF to 143MB. The
+     same pictures, embedded as JPEGs, are 30MB. */
+  .pm-ground{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
   .pm-page > .pm-head,.pm-page > .pm-body,.pm-page > .pm-gloss{position:relative;z-index:1}
   /* the poem rides the middle of whatever room the page gives it — a haiku
      reads as centred on the painting, not stranded up against the running head */
@@ -192,8 +197,7 @@
      artwork at full strength under the type. Nothing here has alpha now, so
      there is nothing left for a rasteriser to get wrong. The .lb-*-scrim rules
      below are the fallback for a plate whose veil has not been generated. */
-  .lb-marg-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-    z-index:0;filter:saturate(.9)}
+  .lb-marg-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
   /* The scrim clears towards the foot only as far as the TYPE allows. The first
      cut dropped to 30% paper at the bottom, which put the last two lines and the
      folio on top of Shakespeare's black doublet — the same illegible foot this
@@ -276,7 +280,10 @@
      under overflow:hidden, so scaling the image directly made all eight
      dividers report 24px of overflow to the page checker. */
   .sc-frame{position:absolute;inset:0;overflow:hidden;z-index:0}
-  .sc-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.045)}
+  /* Overscan by LAYOUT, not by transform. transform:scale on an image is a
+     compositing effect and rasterises it into the PDF exactly as opacity and
+     filter do; sizing it past its frame costs nothing and looks identical. */
+  .sc-art{position:absolute;top:-2.25%;left:-2.25%;width:104.5%;height:104.5%;object-fit:cover}
   .sc-scrim{position:absolute;inset:0;z-index:1;
     background:linear-gradient(180deg,rgba(16,12,26,.78) 0%,rgba(16,12,26,.62) 26%,rgba(16,12,26,.10) 52%,rgba(16,12,26,.06) 66%,rgba(16,12,26,.62) 100%)}
   .sc-body{position:absolute;z-index:2;top:1.05in;left:.85in;right:.85in;text-align:center}

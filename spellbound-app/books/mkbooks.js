@@ -513,7 +513,12 @@ function css(vol) {
      the poem itself, so the words are never fighting the art for a reader's eye. */
   .pm-page{position:relative;overflow:hidden;display:flex;flex-direction:column;
     background-color:color-mix(in srgb,var(--paper) 66%,var(--pm-tint,var(--paper)) 34%)}
-  .pm-ground{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.42;z-index:0;filter:saturate(.88)}
+  /* No opacity and no filter here. The 42% wash and the desaturation are baked
+     into the plate by voice/pipeline/bake-art.py, because a CSS effect on an
+     image makes Chromium rasterise it into the PDF at full page size and throw
+     the JPEG away — 130 of these took the poetry companion's PDF to 143MB. The
+     same pictures, embedded as JPEGs, are 30MB. */
+  .pm-ground{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
   .pm-page > .pm-head,.pm-page > .pm-body,.pm-page > .pm-gloss{position:relative;z-index:1}
   /* the poem rides the middle of whatever room the page gives it — a haiku
      reads as centred on the painting, not stranded up against the running head */
@@ -573,8 +578,7 @@ function css(vol) {
      artwork at full strength under the type. Nothing here has alpha now, so
      there is nothing left for a rasteriser to get wrong. The .lb-*-scrim rules
      below are the fallback for a plate whose veil has not been generated. */
-  .lb-marg-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-    z-index:0;filter:saturate(.9)}
+  .lb-marg-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
   /* The scrim clears towards the foot only as far as the TYPE allows. The first
      cut dropped to 30% paper at the bottom, which put the last two lines and the
      folio on top of Shakespeare's black doublet — the same illegible foot this
@@ -657,7 +661,10 @@ function css(vol) {
      under overflow:hidden, so scaling the image directly made all eight
      dividers report 24px of overflow to the page checker. */
   .sc-frame{position:absolute;inset:0;overflow:hidden;z-index:0}
-  .sc-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.045)}
+  /* Overscan by LAYOUT, not by transform. transform:scale on an image is a
+     compositing effect and rasterises it into the PDF exactly as opacity and
+     filter do; sizing it past its frame costs nothing and looks identical. */
+  .sc-art{position:absolute;top:-2.25%;left:-2.25%;width:104.5%;height:104.5%;object-fit:cover}
   .sc-scrim{position:absolute;inset:0;z-index:1;
     background:linear-gradient(180deg,rgba(16,12,26,.78) 0%,rgba(16,12,26,.62) 26%,rgba(16,12,26,.10) 52%,rgba(16,12,26,.06) 66%,rgba(16,12,26,.62) 100%)}
   .sc-body{position:absolute;z-index:2;top:1.05in;left:.85in;right:.85in;text-align:center}
@@ -2065,7 +2072,12 @@ function indexPages(vol, entries, folioRef) {
    falls back to the tinted gradient the openers used to be, so art can be
    filled in one part at a time without ever shipping a blank leaf. */
 function sectionDivider(vol, key, sec, sn, total, folio) {
-  const art = artAt('sc-' + key);
+  /* The dark ramp under the white title is baked into the plate now. As a CSS
+     overlay it did not survive the PDF: the type stayed white while the scrim
+     vanished, so the titles sat on pale artwork and disappeared. Measured on a
+     divider, title band: 89 in HTML against 195 in the PDF. */
+  const baked = artAt('sc-' + key + '-div');
+  const art = baked || artAt('sc-' + key);
   const num = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'][sn - 1] || sn;
   const n = sec.pieces.length;
   /* the hands in this part, named on the divider — a reader flicking through
@@ -2090,7 +2102,7 @@ function sectionDivider(vol, key, sec, sn, total, folio) {
     ${foot(vol, folio.n++)}</div>`;
   return `<div class="page sc-page" data-vol="22">
     <div class="sc-frame"><img class="sc-art" src="${art}" alt=""></div>
-    <div class="sc-scrim"></div>
+    ${baked ? '' : '<div class="sc-scrim"></div>'}
     <div class="sc-body">
       <div class="sc-num">Part ${num} of ${total}</div>
       <div class="sc-rule"></div>
@@ -2110,7 +2122,9 @@ function poemPage(vol, sec, p, n, folio, keys) {
      silently re-attaches itself to the wrong poem. Any piece without a bespoke
      plate quietly falls back to the themed one, so the art can be filled in a
      few at a time without ever leaving a page blank. */
-  const plate = artAt(pieceSlug(p)) || artAt('pt-' + (p.th || 'library')) || artAt('pt-library');
+  /* pieceSlug plates are baked in place; the themed fallbacks keep a full-strength
+     original because the quiz book's openers use them, so they get a -g twin. */
+  const plate = artAt(pieceSlug(p)) || artAt('pt-' + (p.th || 'library') + '-g') || artAt('pt-library-g');
   const tint = THEME_TINT[p.th] || THEME_TINT.library;
   const hard = p.hard || [];
   const isHaiku = p.kind === 'haiku';
@@ -2478,7 +2492,10 @@ function book20() {
   };
 
   const roundOpener = (n, title, blurb, kind, seedK, artKey, nq, fmtLabel) => {
-    const art = roundArt(artKey);
+    const plain = roundArt(artKey);
+    /* same baked-scrim rule as the poetry companion's dividers */
+    const artBaked = plain ? artAt(plain.replace(/^art\//, '').replace(/\.(jpg|png)$/, '') + '-div') : null;
+    const art = artBaked || plain;
     if (!art) return `<div class="page" data-vol="23" style="display:flex;flex-direction:column;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--paper),var(--tint))">
       <div class="kick">Round ${n} &middot; ${kind}</div>
       <h1 style="font-size:30pt;margin:.06in 0">${esc(title)}</h1>
@@ -2487,7 +2504,7 @@ function book20() {
       ${foot(vol, folio.n++)}</div>`;
     return `<div class="page sc-page" data-vol="23">
       <div class="sc-frame"><img class="sc-art" src="${art}" alt=""></div>
-      <div class="sc-scrim"></div>
+      ${artBaked ? '' : '<div class="sc-scrim"></div>'}
       <div class="sc-body">
         <div class="sc-num">Round ${n} &middot; ${kind}</div>
         <div class="sc-rule"></div>

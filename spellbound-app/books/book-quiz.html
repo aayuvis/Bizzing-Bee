@@ -132,7 +132,12 @@
      the poem itself, so the words are never fighting the art for a reader's eye. */
   .pm-page{position:relative;overflow:hidden;display:flex;flex-direction:column;
     background-color:color-mix(in srgb,var(--paper) 66%,var(--pm-tint,var(--paper)) 34%)}
-  .pm-ground{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.42;z-index:0;filter:saturate(.88)}
+  /* No opacity and no filter here. The 42% wash and the desaturation are baked
+     into the plate by voice/pipeline/bake-art.py, because a CSS effect on an
+     image makes Chromium rasterise it into the PDF at full page size and throw
+     the JPEG away — 130 of these took the poetry companion's PDF to 143MB. The
+     same pictures, embedded as JPEGs, are 30MB. */
+  .pm-ground{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
   .pm-page > .pm-head,.pm-page > .pm-body,.pm-page > .pm-gloss{position:relative;z-index:1}
   /* the poem rides the middle of whatever room the page gives it — a haiku
      reads as centred on the painting, not stranded up against the running head */
@@ -192,8 +197,7 @@
      artwork at full strength under the type. Nothing here has alpha now, so
      there is nothing left for a rasteriser to get wrong. The .lb-*-scrim rules
      below are the fallback for a plate whose veil has not been generated. */
-  .lb-marg-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-    z-index:0;filter:saturate(.9)}
+  .lb-marg-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
   /* The scrim clears towards the foot only as far as the TYPE allows. The first
      cut dropped to 30% paper at the bottom, which put the last two lines and the
      folio on top of Shakespeare's black doublet — the same illegible foot this
@@ -276,7 +280,10 @@
      under overflow:hidden, so scaling the image directly made all eight
      dividers report 24px of overflow to the page checker. */
   .sc-frame{position:absolute;inset:0;overflow:hidden;z-index:0}
-  .sc-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.045)}
+  /* Overscan by LAYOUT, not by transform. transform:scale on an image is a
+     compositing effect and rasterises it into the PDF exactly as opacity and
+     filter do; sizing it past its frame costs nothing and looks identical. */
+  .sc-art{position:absolute;top:-2.25%;left:-2.25%;width:104.5%;height:104.5%;object-fit:cover}
   .sc-scrim{position:absolute;inset:0;z-index:1;
     background:linear-gradient(180deg,rgba(16,12,26,.78) 0%,rgba(16,12,26,.62) 26%,rgba(16,12,26,.10) 52%,rgba(16,12,26,.06) 66%,rgba(16,12,26,.62) 100%)}
   .sc-body{position:absolute;z-index:2;top:1.05in;left:.85in;right:.85in;text-align:center}
@@ -492,8 +499,8 @@
     <div class="worldband" aria-hidden="true"><img src="art/strip-forum-r3.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>2</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/pt-dawn.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/pt-dawn-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 1 &middot; General</div>
         <div class="sc-rule"></div>
@@ -516,8 +523,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>7</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-greekgods.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-greekgods-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 2 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -529,8 +536,8 @@
     <div style="margin-top:.38in"><div class="qz-hero"><div class="qz-stem"><b>1.</b> Which goddess was born from the sea foam, according to Hesiod?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>Aphrodite</span><span><i class="qz-l">B</i>Demeter</span><span><i class="qz-l">C</i>Hestia</span><span><i class="qz-l">D</i>Artemis</span></div></div><div class="qz-q"><div class="qz-stem"><b>2.</b> Hephaestus was the god of the forge. What was unusual about him among the Olympians?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>He was blind</span><span><i class="qz-l">B</i>He never spoke</span><span><i class="qz-l">C</i>He was mortal</span><span><i class="qz-l">D</i>He was lame</span></div></div><div class="qz-q"><div class="qz-stem"><b>3.</b> Which of the twelve Olympians gave up her seat so that Dionysus could have one?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>Hera</span><span><i class="qz-l">B</i>Athena</span><span><i class="qz-l">C</i>Hebe</span><span><i class="qz-l">D</i>Hestia</span></div></div><div class="qz-q"><div class="qz-stem"><b>4.</b> The Muses were nine. Whose daughters were they?</div><div class="qz-opts-grid"><div><i class="qz-l">A</i>Zeus and Mnemosyne</div><div><i class="qz-l">B</i>Poseidon and Amphitrite</div><div><i class="qz-l">C</i>Zeus and Hera</div><div><i class="qz-l">D</i>Apollo and Leto</div></div></div><div class="qz-q"><div class="qz-stem"><b>5.</b> What did Hermes carry that is still used as a symbol by some medical bodies, in error?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>The thyrsus</span><span><i class="qz-l">B</i>The aegis</span><span><i class="qz-l">C</i>The trident</span><span><i class="qz-l">D</i>The caduceus</span></div></div><div class="qz-q"><div class="qz-stem"><b>6.</b> Which Titan was punished by having an eagle eat his regenerating liver?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>Cronus</span><span><i class="qz-l">B</i>Oceanus</span><span><i class="qz-l">C</i>Atlas</span><span><i class="qz-l">D</i>Prometheus</span></div></div><div class="qz-q"><div class="qz-stem"><b>7.</b> The word "panic" comes from which god?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>Pan</span><span><i class="qz-l">B</i>Pluto</span><span><i class="qz-l">C</i>Phobos</span><span><i class="qz-l">D</i>Poseidon</span></div></div><div class="qz-q"><div class="qz-stem"><b>8.</b> Which river of the underworld gave English a word meaning "forgetful"?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>Styx</span><span><i class="qz-l">B</i>Acheron</span><span><i class="qz-l">C</i>Lethe</span><span><i class="qz-l">D</i>Cocytus</span></div></div><div class="qz-q"><div class="qz-stem"><b>9.</b> Athena sprang fully armed from the head of Zeus. Whom had Zeus swallowed to bring this about?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>Leto</span><span><i class="qz-l">B</i>Maia</span><span><i class="qz-l">C</i>Metis</span><span><i class="qz-l">D</i>Themis</span></div></div><div class="qz-q"><div class="qz-stem"><b>10.</b> Which goddess did the Romans call Ceres, giving English a word for breakfast?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>Persephone</span><span><i class="qz-l">B</i>Demeter</span><span><i class="qz-l">C</i>Rhea</span><span><i class="qz-l">D</i>Gaia</span></div></div><div class="qz-q"><div class="qz-stem"><b>11.</b> What was the aegis, carried by Zeus and Athena?</div><div class="qz-opts-stack"><div><i class="qz-l">A</i>A shield or breastplate bearing a gorgon’s head</div><div><i class="qz-l">B</i>A cap of invisibility</div><div><i class="qz-l">C</i>A three-pronged spear</div><div><i class="qz-l">D</i>A winged sandal</div></div></div><div class="qz-q"><div class="qz-stem"><b>12.</b> Which nymph faded away until only her voice remained?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>Thetis</span><span><i class="qz-l">B</i>Daphne</span><span><i class="qz-l">C</i>Echo</span><span><i class="qz-l">D</i>Calypso</span></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>9</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/pt-road.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/pt-road-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 3 &middot; General</div>
         <div class="sc-rule"></div>
@@ -550,8 +557,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>13</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-norse.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-norse-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 4 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -565,8 +572,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>15</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/sc-epics.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/sc-epics-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 5 &middot; General</div>
         <div class="sc-rule"></div>
@@ -592,8 +599,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>21</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-rivers.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-rivers-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 6 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -607,8 +614,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>23</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/sc-prose.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/sc-prose-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 7 &middot; General</div>
         <div class="sc-rule"></div>
@@ -629,8 +636,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div>
       <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>25</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-capitals.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-capitals-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 8 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -644,8 +651,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>27</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/sc-shakespeare.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/sc-shakespeare-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 9 &middot; General</div>
         <div class="sc-rule"></div>
@@ -665,8 +672,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>31</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-shakespeare.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-shakespeare-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 10 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -680,8 +687,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>33</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/sc-byheart.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/sc-byheart-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 11 &middot; General</div>
         <div class="sc-rule"></div>
@@ -704,8 +711,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>38</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-minerals.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-minerals-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 12 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -719,8 +726,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>40</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/sc-limericks.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/sc-limericks-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 13 &middot; General</div>
         <div class="sc-rule"></div>
@@ -740,8 +747,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>44</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-wartime.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-wartime-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 14 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -758,8 +765,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>47</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/pt-snow.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/pt-snow-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 15 &middot; General</div>
         <div class="sc-rule"></div>
@@ -780,8 +787,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div>
       <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>49</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-constellations.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-constellations-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 16 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -795,8 +802,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>51</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/sc-speeches.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/sc-speeches-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 17 &middot; General</div>
         <div class="sc-rule"></div>
@@ -816,8 +823,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>55</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-periodic.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-periodic-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 18 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -829,8 +836,8 @@
     <div style="margin-top:.38in"><div class="qz-hero"><div class="qz-stem"><b>1.</b> Four elements are named after a single village in Sweden. Which village?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>Ytterby</span><span><i class="qz-l">B</i>Falun</span><span><i class="qz-l">C</i>Kiruna</span><span><i class="qz-l">D</i>Uppsala</span></div></div><div class="qz-q"><div class="qz-stem"><b>2.</b> Which element is named after the Greek word for "lazy" or "inactive"?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>Krypton</span><span><i class="qz-l">B</i>Neon</span><span><i class="qz-l">C</i>Argon</span><span><i class="qz-l">D</i>Xenon</span></div></div><div class="qz-q"><div class="qz-stem"><b>3.</b> Einsteinium and fermium were both discovered in the debris of what?</div><div class="qz-opts-grid"><div><i class="qz-l">A</i>A uranium mine</div><div><i class="qz-l">B</i>A hydrogen bomb test</div><div><i class="qz-l">C</i>A meteorite</div><div><i class="qz-l">D</i>A particle accelerator</div></div></div><div class="qz-q"><div class="qz-stem"><b>4.</b> Which element is named after the Greek for "hidden"?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>Lanthanum</span><span><i class="qz-l">B</i>Krypton</span><span><i class="qz-l">C</i>Selenium</span><span><i class="qz-l">D</i>Iridium</span></div></div><div class="qz-q"><div class="qz-stem"><b>5.</b> Iridium takes its name from Iris. What was she goddess of?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>The rainbow</span><span><i class="qz-l">B</i>The dawn</span><span><i class="qz-l">C</i>The sea</span><span><i class="qz-l">D</i>Memory</span></div></div><div class="qz-q"><div class="qz-stem"><b>6.</b> Which element is named after the Latin for "heavy stone"?</div><div class="qz-opts-grid"><div><i class="qz-l">A</i>Barium</div><div><i class="qz-l">B</i>Stibium (antimony)</div><div><i class="qz-l">C</i>Plumbum (lead)</div><div><i class="qz-l">D</i>Wolfram (tungsten)</div></div></div><div class="qz-q"><div class="qz-stem"><b>7.</b> Cobalt is named after a creature from German folklore. What kind?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>A giant</span><span><i class="qz-l">B</i>A goblin</span><span><i class="qz-l">C</i>A water spirit</span><span><i class="qz-l">D</i>A dragon</span></div></div><div class="qz-q"><div class="qz-stem"><b>8.</b> Which element is named after the Greek titan who stole fire?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>Tantalum</span><span><i class="qz-l">B</i>Uranium</span><span><i class="qz-l">C</i>Promethium</span><span><i class="qz-l">D</i>Titanium</span></div></div><div class="qz-q"><div class="qz-stem"><b>9.</b> Tantalum is named after Tantalus, who was punished how?</div><div class="qz-opts-stack"><div><i class="qz-l">A</i>By being turned to stone</div><div><i class="qz-l">B</i>By being chained to a rock</div><div><i class="qz-l">C</i>By pushing a boulder uphill forever</div><div><i class="qz-l">D</i>With food and water always just out of reach</div></div></div><div class="qz-q"><div class="qz-stem"><b>10.</b> Which element honours the woman who won Nobel Prizes in two different sciences?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>Meitnerium</span><span><i class="qz-l">B</i>Curium</span><span><i class="qz-l">C</i>Roentgenium</span><span><i class="qz-l">D</i>Nobelium</span></div></div><div class="qz-q"><div class="qz-stem"><b>11.</b> Gallium is named after a place. Which one?</div><div class="qz-opts-grid"><div><i class="qz-l">A</i>Galicia in Spain</div><div><i class="qz-l">B</i>France (Gallia)</div><div><i class="qz-l">C</i>Wales</div><div><i class="qz-l">D</i>Galilee</div></div></div><div class="qz-q"><div class="qz-stem"><b>12.</b> Which element is named after the smallest planet, and was discovered by studying the Sun?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>Mercury</span><span><i class="qz-l">B</i>Selenium</span><span><i class="qz-l">C</i>Helium</span><span><i class="qz-l">D</i>Tellurium</span></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>57</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/pt-fire.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/pt-fire-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 19 &middot; General</div>
         <div class="sc-rule"></div>
@@ -850,8 +857,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>61</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-roots.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-roots-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 20 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -872,8 +879,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div>
       <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>63</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/pt-library.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/pt-library-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 21 &middot; General</div>
         <div class="sc-rule"></div>
@@ -896,8 +903,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>68</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-dynasties.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-dynasties-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 22 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -911,8 +918,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>70</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/sc-haiku.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/sc-haiku-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 23 &middot; General</div>
         <div class="sc-rule"></div>
@@ -933,8 +940,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div>
       <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>72</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-instruments.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-instruments-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 24 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -948,8 +955,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>74</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/pt-flower.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/pt-flower-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 25 &middot; General</div>
         <div class="sc-rule"></div>
@@ -972,8 +979,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>79</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-seafarers.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-seafarers-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 26 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -994,8 +1001,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div>
       <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>81</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/pt-library.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/pt-library-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 27 &middot; General</div>
         <div class="sc-rule"></div>
@@ -1015,8 +1022,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>85</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-deserts.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-deserts-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 28 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -1030,8 +1037,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>87</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/pt-flower.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/pt-flower-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 29 &middot; General</div>
         <div class="sc-rule"></div>
@@ -1054,8 +1061,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>92</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-medicine.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-medicine-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 30 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -1072,8 +1079,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>95</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/sc-limericks.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/sc-limericks-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 31 &middot; General</div>
         <div class="sc-rule"></div>
@@ -1094,8 +1101,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div>
       <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>97</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-egypt.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-egypt-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 32 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -1109,8 +1116,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>99</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/pt-stage.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/pt-stage-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 33 &middot; General</div>
         <div class="sc-rule"></div>
@@ -1133,8 +1140,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>104</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-currency.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-currency-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 34 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -1148,8 +1155,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>106</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/pt-sea.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/pt-sea-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 35 &middot; General</div>
         <div class="sc-rule"></div>
@@ -1172,8 +1179,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>111</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-emperors.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-emperors-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 36 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -1187,8 +1194,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>113</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/pt-water.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/pt-water-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 37 &middot; General</div>
         <div class="sc-rule"></div>
@@ -1211,8 +1218,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>118</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-volcano.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-volcano-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 38 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -1224,8 +1231,8 @@
     <div style="margin-top:.38in"><div class="qz-hero"><div class="qz-stem"><b>1.</b> What is molten rock called while it is still underground?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>Pumice</span><span><i class="qz-l">B</i>Magma</span><span><i class="qz-l">C</i>Tephra</span><span><i class="qz-l">D</i>Lava</span></div></div><div class="qz-q"><div class="qz-stem"><b>2.</b> The 1883 eruption of Krakatoa was heard how far away?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>About 500 km</span><span><i class="qz-l">B</i>About 4,800 km</span><span><i class="qz-l">C</i>About 200 km</span><span><i class="qz-l">D</i>About 1,200 km</span></div></div><div class="qz-q"><div class="qz-stem"><b>3.</b> Which volcano destroyed Pompeii?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>Vesuvius</span><span><i class="qz-l">B</i>Vulcano</span><span><i class="qz-l">C</i>Etna</span><span><i class="qz-l">D</i>Stromboli</span></div></div><div class="qz-q"><div class="qz-stem"><b>4.</b> What is the hardest mineral on the Mohs scale?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>Quartz</span><span><i class="qz-l">B</i>Topaz</span><span><i class="qz-l">C</i>Diamond</span><span><i class="qz-l">D</i>Corundum</span></div></div><div class="qz-q"><div class="qz-stem"><b>5.</b> What is the ring of volcanoes and faults around the Pacific called?</div><div class="qz-opts-grid"><div><i class="qz-l">A</i>The Pacific Arc</div><div><i class="qz-l">B</i>The Ring of Fire</div><div><i class="qz-l">C</i>The Andesite Line</div><div><i class="qz-l">D</i>The Mid-Ocean Belt</div></div></div><div class="qz-q"><div class="qz-stem"><b>6.</b> Which rock forms from cooled lava that trapped gas, and floats?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>Basalt</span><span><i class="qz-l">B</i>Granite</span><span><i class="qz-l">C</i>Obsidian</span><span><i class="qz-l">D</i>Pumice</span></div></div><div class="qz-q"><div class="qz-stem"><b>7.</b> What does the word "caldera" mean?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>A mouth</span><span><i class="qz-l">B</i>A crater</span><span><i class="qz-l">C</i>A cauldron</span><span><i class="qz-l">D</i>A pit</span></div></div><div class="qz-q"><div class="qz-stem"><b>8.</b> Which scale measures earthquake energy release, replacing the Richter scale for large quakes?</div><div class="qz-opts-grid"><div><i class="qz-l">A</i>The Beaufort scale</div><div><i class="qz-l">B</i>The Mercalli scale</div><div><i class="qz-l">C</i>The Rossi-Forel scale</div><div><i class="qz-l">D</i>The moment magnitude scale</div></div></div><div class="qz-q"><div class="qz-stem"><b>9.</b> What is the boundary where two plates slide past each other called?</div><div class="qz-opts-grid"><div><i class="qz-l">A</i>A subduction zone</div><div><i class="qz-l">B</i>A hotspot</div><div><i class="qz-l">C</i>A rift valley</div><div><i class="qz-l">D</i>A transform fault</div></div></div><div class="qz-q"><div class="qz-stem"><b>10.</b> What is obsidian?</div><div class="qz-opts-grid"><div><i class="qz-l">A</i>Fossilised resin</div><div><i class="qz-l">B</i>Compressed ash</div><div><i class="qz-l">C</i>A metamorphic rock</div><div><i class="qz-l">D</i>Volcanic glass</div></div></div><div class="qz-q"><div class="qz-stem"><b>11.</b> Which Icelandic word for a glacial flood caused by a volcano has entered English?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>Jokulhlaup</span><span><i class="qz-l">B</i>Fjord</span><span><i class="qz-l">C</i>Geyser</span><span><i class="qz-l">D</i>Tundra</span></div></div><div class="qz-q"><div class="qz-stem"><b>12.</b> What is a "hotspot" volcano, such as Hawaii, sitting on?</div><div class="qz-opts-grid"><div><i class="qz-l">A</i>A rift</div><div><i class="qz-l">B</i>A subducting slab</div><div><i class="qz-l">C</i>A plate boundary</div><div><i class="qz-l">D</i>A plume of rising mantle</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>120</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/pt-forest.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/pt-forest-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 39 &middot; General</div>
         <div class="sc-rule"></div>
@@ -1246,8 +1253,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div>
       <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>122</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-ciphers.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-ciphers-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 40 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -1261,8 +1268,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>124</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/pt-city.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/pt-city-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 41 &middot; General</div>
         <div class="sc-rule"></div>
@@ -1282,8 +1289,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>128</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-silkroad.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-silkroad-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 42 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -1295,8 +1302,8 @@
     <div style="margin-top:.38in"><div class="qz-hero"><div class="qz-stem"><b>1.</b> What was the eastern end of the Silk Road, in most periods?</div><div class="qz-opts-grid"><div><i class="qz-l">A</i>Chang’an (modern Xi’an)</div><div><i class="qz-l">B</i>Kaifeng</div><div><i class="qz-l">C</i>Beijing</div><div><i class="qz-l">D</i>Guangzhou</div></div></div><div class="qz-q"><div class="qz-stem"><b>2.</b> Which desert did the routes split to avoid, going north and south?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>The Gobi</span><span><i class="qz-l">B</i>The Taklamakan</span><span><i class="qz-l">C</i>The Thar</span><span><i class="qz-l">D</i>The Karakum</span></div></div><div class="qz-q"><div class="qz-stem"><b>3.</b> Which religion spread from India to China largely along these routes?</div><div class="qz-opts-grid"><div><i class="qz-l">A</i>Buddhism</div><div><i class="qz-l">B</i>Manichaeism</div><div><i class="qz-l">C</i>Zoroastrianism</div><div><i class="qz-l">D</i>Nestorian Christianity</div></div></div><div class="qz-q"><div class="qz-stem"><b>4.</b> What did the Chinese guard as a state secret for centuries?</div><div class="qz-opts-grid"><div><i class="qz-l">A</i>How paper is made</div><div><i class="qz-l">B</i>How silk is made</div><div><i class="qz-l">C</i>How porcelain is fired</div><div><i class="qz-l">D</i>How gunpowder is mixed</div></div></div><div class="qz-q"><div class="qz-stem"><b>5.</b> Which city in modern Uzbekistan was a great Silk Road hub under Timur?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>Khiva</span><span><i class="qz-l">B</i>Bukhara</span><span><i class="qz-l">C</i>Tashkent</span><span><i class="qz-l">D</i>Samarkand</span></div></div><div class="qz-q"><div class="qz-stem"><b>6.</b> Which Venetian’s account of the route became the most famous in Europe?</div><div class="qz-opts-grid"><div><i class="qz-l">A</i>Giovanni Carpini</div><div><i class="qz-l">B</i>Niccolo Conti</div><div><i class="qz-l">C</i>Marco Polo</div><div><i class="qz-l">D</i>Odoric of Pordenone</div></div></div><div class="qz-q"><div class="qz-stem"><b>7.</b> What disease is generally thought to have travelled west along these routes in the 1340s?</div><div class="qz-opts-grid"><div><i class="qz-l">A</i>Cholera</div><div><i class="qz-l">B</i>The Black Death</div><div><i class="qz-l">C</i>Smallpox</div><div><i class="qz-l">D</i>Typhus</div></div></div><div class="qz-q"><div class="qz-stem"><b>8.</b> Paper-making reached the Islamic world after which battle, from captured craftsmen?</div><div class="qz-opts-grid"><div><i class="qz-l">A</i>Talas, 751</div><div><i class="qz-l">B</i>Badr, 624</div><div><i class="qz-l">C</i>Ain Jalut, 1260</div><div><i class="qz-l">D</i>Manzikert, 1071</div></div></div><div class="qz-q"><div class="qz-stem"><b>9.</b> Which animal made the desert crossings possible?</div><div class="qz-opts-grid"><div><i class="qz-l">A</i>The dromedary</div><div><i class="qz-l">B</i>The Bactrian camel</div><div><i class="qz-l">C</i>The mule</div><div><i class="qz-l">D</i>The yak</div></div></div><div class="qz-q"><div class="qz-stem"><b>10.</b> Which fruit’s English name comes from the Persian for "peach of Armenia"?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>Quince</span><span><i class="qz-l">B</i>Nectarine</span><span><i class="qz-l">C</i>Apricot</span><span><i class="qz-l">D</i>Pomegranate</span></div></div><div class="qz-q"><div class="qz-stem"><b>11.</b> Which Chinese invention reached Europe by these routes and changed warfare?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>The crossbow</span><span><i class="qz-l">B</i>Gunpowder</span><span><i class="qz-l">C</i>The stirrup</span><span><i class="qz-l">D</i>The compass</span></div></div><div class="qz-q"><div class="qz-stem"><b>12.</b> What were the caravan inns along the route called?</div><div class="qz-opts-inline"><span><i class="qz-l">A</i>Khanates</span><span><i class="qz-l">B</i>Bazaars</span><span><i class="qz-l">C</i>Madrasas</span><span><i class="qz-l">D</i>Caravanserais</span></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>130</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/pt-stage.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/pt-stage-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 43 &middot; General</div>
         <div class="sc-rule"></div>
@@ -1316,8 +1323,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>134</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-kitchen.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-kitchen-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 44 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -1338,8 +1345,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div>
       <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>136</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/pt-city.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/pt-city-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 45 &middot; General</div>
         <div class="sc-rule"></div>
@@ -1362,8 +1369,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>141</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-raptors.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-raptors-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 46 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -1377,8 +1384,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>143</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/pt-mountain.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/pt-mountain-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 47 &middot; General</div>
         <div class="sc-rule"></div>
@@ -1399,8 +1406,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div>
       <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>145</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-trees.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-trees-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 48 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -1414,8 +1421,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>147</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/pt-night.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/pt-night-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 49 &middot; General</div>
         <div class="sc-rule"></div>
@@ -1435,8 +1442,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>151</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-flags.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-flags-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 50 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -1450,8 +1457,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>153</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/pt-fire.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/pt-fire-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 51 &middot; General</div>
         <div class="sc-rule"></div>
@@ -1471,8 +1478,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>157</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-silentletters.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-silentletters-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 52 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -1486,8 +1493,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>159</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/sc-limericks.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/sc-limericks-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 53 &middot; General</div>
         <div class="sc-rule"></div>
@@ -1510,8 +1517,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>164</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-doubling.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-doubling-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 54 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -1525,8 +1532,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>166</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/pt-stage.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/pt-stage-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 55 &middot; General</div>
         <div class="sc-rule"></div>
@@ -1547,8 +1554,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div>
       <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>168</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-ableible.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-ableible-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 56 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -1562,8 +1569,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>170</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/pt-ruin.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/pt-ruin-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 57 &middot; General</div>
         <div class="sc-rule"></div>
@@ -1586,8 +1593,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>175</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-arabicwords.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-arabicwords-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 58 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -1604,8 +1611,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>178</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-sanskritwords.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-sanskritwords-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 59 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -1619,8 +1626,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>180</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-foreignplurals.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-foreignplurals-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 60 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -1634,8 +1641,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>182</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-toponyms.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-toponyms-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 61 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -1656,8 +1663,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div>
       <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>184</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-homophonemic.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-homophonemic-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 62 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -1671,8 +1678,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>186</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-frenchendings.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-frenchendings-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 63 &middot; Speciality</div>
         <div class="sc-rule"></div>
@@ -1689,8 +1696,8 @@
     <div class="t">Mark it now, while you still remember which ones you guessed. A guess you got right is not a thing you know.</div></div></div></div>
     <div class="bb-foot"><span>Bizzing Bee · Nobody Knows All of These</span><span>189</span></div></div>
 <div class="page sc-page" data-vol="23">
-      <div class="sc-frame"><img class="sc-art" src="art/b23-meaningshift.jpg" alt=""></div>
-      <div class="sc-scrim"></div>
+      <div class="sc-frame"><img class="sc-art" src="art/b23-meaningshift-div.jpg" alt=""></div>
+      
       <div class="sc-body">
         <div class="sc-num">Round 64 &middot; Speciality</div>
         <div class="sc-rule"></div>

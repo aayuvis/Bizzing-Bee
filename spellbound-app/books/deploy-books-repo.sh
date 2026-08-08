@@ -59,7 +59,19 @@ node books/mkbooks.js >/dev/null
 echo "==> assembling $R"
 rm -rf "$R"; mkdir -p "$R/books" "$R/fonts" "$R/avatars"
 cp "$SRC"/books/*.html      "$R/books/"
-cp -r "$SRC"/books/art      "$R/books/art"
+# Only the plates the built books actually reference. The art directory is the
+# MASTER set — it keeps the full-strength originals that the baked variants
+# (-div, -veil, -g) are derived from, and those masters have no business on the
+# site: 136 files, 21MB, that no page links to. Regenerating a variant needs
+# them; serving a book does not.
+mkdir -p "$R/books/art"
+grep -oh 'art/[A-Za-z0-9._-]*\.\(jpg\|png\)' "$SRC"/books/*.html \
+  | sed 's|art/||' | sort -u > "$R/.used-art"
+while read -r f; do
+  [ -f "$SRC/books/art/$f" ] && cp "$SRC/books/art/$f" "$R/books/art/"
+done < "$R/.used-art"
+echo "    art: $(wc -l < "$R/.used-art") of $(ls "$SRC"/books/art | wc -l) plates referenced"
+rm -f "$R/.used-art"
 cp "$SRC"/fonts/*.woff2     "$R/fonts/"
 
 # only the avatars the books actually reference — all of them is 33MB, the
