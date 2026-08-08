@@ -11,5 +11,6 @@ assert anchor in h, "anchor not found — injection would have silently no-opped
 blob='<script>window.__IMG__='+json.dumps(imgs)+';</script>\n'
 h=h.replace(anchor, blob+anchor, 1)
 assert 'window.__IMG__=' in h
-open(f'{S}/bb-final.html','w').write(h)
+VIEWPORT = '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
+open(f'{S}/bb-final.html','w').write(VIEWPORT + h)
 print('boards embedded:',len(imgs),'| deck KB',len(h)//1024)

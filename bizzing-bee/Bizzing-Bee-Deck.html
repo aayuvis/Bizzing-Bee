@@ -1,3 +1,4 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bizzing Bee — Why Spell?</title>
 <style>
 :root{
@@ -90,7 +91,7 @@ button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
 .scoreline{font-family:Charter,Georgia,serif;font-size:clamp(20px,2.6vw,30px);line-height:1.25}
 
 /* ---- concept cards ---- */
-.bank{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.bank{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:20px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;
   display:flex;flex-direction:column;cursor:pointer;transition:transform .18s ease, box-shadow .18s ease}
 .card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(42,33,64,.13)}
@@ -108,7 +109,7 @@ button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
 .card:hover .more,.card:focus-visible .more{opacity:1}
 
 /* ---- truths ---- */
-.truths{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+.truths{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:18px}
 .truth{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;
   display:flex;flex-direction:column;gap:7px}
 .truth b{font-family:Charter,Georgia,serif;font-size:clamp(28px,3.4vw,40px);line-height:1;
@@ -116,7 +117,7 @@ button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
 .truth span{font-size:14.5px;line-height:1.45;color:var(--muted)}
 
 /* ---- ladder ---- */
-.ladder{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;align-items:stretch}
+.ladder{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:18px;align-items:stretch}
 .rung{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;
   display:flex;flex-direction:column;gap:8px;position:relative}
 .rung .age{font-family:ui-monospace,monospace;font-size:10.5px;letter-spacing:.15em;
@@ -829,7 +830,7 @@ function cardFor(list, c, i, kind){
     return `<span class="tag ${cls}">${t}</span>`;
   }).join('');
   el.innerHTML = `
-    ${src(c.img) ? `<img alt="${c.t}" src="${src(c.img)}">`
+    ${src(c.img) ? `<img loading="lazy" decoding="async" alt="${c.t}" src="${src(c.img)}">`
                  : `<div class="noimg"><span>Board to be shot</span></div>`}
     <div class="card-body">
       <p class="no">${c.n}</p>

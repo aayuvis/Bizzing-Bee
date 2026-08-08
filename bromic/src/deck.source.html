@@ -111,7 +111,7 @@ button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
 .pass{color:var(--glow)} .fail{color:var(--cold)}
 
 /* ---- bank grid ---- */
-.bank{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:1px;background:var(--line);
+.bank{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(268px,100%),1fr));gap:1px;background:var(--line);
   border:1px solid var(--line)}
 .card{background:var(--ground);padding:20px;display:flex;flex-direction:column;gap:11px}
 .card .no{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:var(--muted);letter-spacing:.14em}
@@ -161,7 +161,7 @@ dialog#lb::backdrop{background:rgba(4,8,10,.82)}
 
 
 /* ---- receipts ---- */
-.receipts{display:grid;grid-template-columns:repeat(auto-fit,minmax(430px,1fr));gap:1px;
+.receipts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(430px,100%),1fr));gap:1px;
   background:var(--line);border:1px solid var(--line)}
 .receipt{background:var(--ground);padding:26px;display:flex;flex-direction:column;gap:16px;cursor:pointer;transition:background .18s ease}
 .receipt:hover{background:var(--surface)}
@@ -243,7 +243,7 @@ dialog#lb::backdrop{background:rgba(4,8,10,.82)}
   font-variant-numeric:tabular-nums;color:#F2F5F6}
 .scene-foot{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .scene-foot .btn{font-size:15px;padding:13px 26px;letter-spacing:.03em}
-.scene-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2px 26px;
+.scene-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(250px,100%),1fr));gap:2px 26px;
   font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;
   font-variant-numeric:tabular-nums}
 .scene-list div{display:flex;justify-content:space-between;gap:14px;padding:7px 0;
@@ -786,8 +786,8 @@ PLATES.forEach(p=>{
   el.innerHTML = `
     <div class="stack-s">
       <figure class="frame" style="margin:0">
-        ${src(p.img)?`<img alt="${p.t} — cold frame" src="${src(p.img)}">`:''}
-        ${src(p.img2)?`<img class="after" alt="${p.t} — the turn" src="${src(p.img2)}">`:''}
+        ${src(p.img)?`<img loading="lazy" decoding="async" alt="${p.t} — cold frame" src="${src(p.img)}">`:''}
+        ${src(p.img2)?`<img class="after" loading="lazy" decoding="async" alt="${p.t} — the turn" src="${src(p.img2)}">`:''}
         <div class="bloom"></div>
         <figcaption class="stamp">Before</figcaption>
       </figure>
@@ -849,7 +849,7 @@ BANK.forEach((b,i)=>{
     <h3>${b.t}</h3>
     <div class="tags">${tags}</div>
     ${src(b.img)
-      ? `<img alt="${b.t}" src="${src(b.img)}">`
+      ? `<img loading="lazy" decoding="async" alt="${b.t}" src="${src(b.img)}">`
       : `<div class="noboard"><span>Board not shot</span></div>`}
     <p class="cap tone-line" data-tone-id="B${b.n}"><span class="tone-text">${TONES['B'+b.n]?TONES['B'+b.n][toneState['B'+b.n]||0]:b.c}</span></p>
     <p>${b.d}</p>
@@ -925,8 +925,8 @@ SCENES.forEach(sc=>{
       <p class="script" style="max-width:46ch;margin:0">${sc.note}</p>
     </div>
     <figure class="scene-plate" style="margin:0">
-      ${src(sc.cold)?`<img alt="${sc.t} — unpriced" src="${src(sc.cold)}">`:''}
-      ${src(sc.warm)?`<img class="warm" alt="${sc.t} — in use" src="${src(sc.warm)}">`:''}
+      ${src(sc.cold)?`<img loading="lazy" decoding="async" alt="${sc.t} — unpriced" src="${src(sc.cold)}">`:''}
+      ${src(sc.warm)?`<img class="warm" loading="lazy" decoding="async" alt="${sc.t} — in use" src="${src(sc.warm)}">`:''}
       <div class="runtot"><span>Running total</span><strong class="tot">$0</strong></div>
       ${pins}${punch}
     </figure>
@@ -1041,7 +1041,7 @@ function tradeCard(b, i){
     <p class="no">${b.n}</p>
     <h3>${b.t}</h3>
     <div class="tags">${tags}</div>
-    ${src(b.img) ? `<img alt="${b.t}" src="${src(b.img)}">`
+    ${src(b.img) ? `<img loading="lazy" decoding="async" alt="${b.t}" src="${src(b.img)}">`
                  : `<div class="noboard"><span>Board not shot</span></div>`}
     <p class="cap tone-line" data-tone-id="T${b.n}"><span class="tone-text">${TONES['T'+b.n]?TONES['T'+b.n][toneState['T'+b.n]||0]:b.c}</span></p>
     <p>${b.d}</p>
