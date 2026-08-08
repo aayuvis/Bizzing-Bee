@@ -1,14 +1,14 @@
 # Bizzing Bee — brand campaign
 
+> **Open `Bizzing-Bee-Deck.html`.** Everything in `src/` is build machinery;
+> `src/deck.source.html` has no images in it by design.
+
 Campaign platform for the **Bizzing Bee** app (offline spelling-bee trainer, kids 8–15)
 and the **Bizzy** story books (15 packs).
 
 | File | What it is |
 |---|---|
-| `Bizzing-Bee-Deck.html` | Standalone deck — open in any browser |
-| `deck.html` | Source (boards injected at build time) |
-| `build-boards.py` | Generates all 16 boards as flat vector SVG — no API, no cost, re-runs instantly |
-| `build-deck.py` | Inlines the boards into `deck.html` → standalone file |
+| **`Bizzing-Bee-Deck.html`** ← open this one | Standalone deck — open in any browser |
 | `boards-contact-sheet.svg` | All 16 boards on one sheet |
 
 **Published deck:** https://claude.ai/code/artifact/58b4756b-037e-4b21-8fc9-8fa84bb9a6c0
