@@ -1,6 +1,7 @@
 # Bizzing Bee — brand campaign
 
-> **Open `Bizzing-Bee-Deck.html`.** Everything in `src/` is build machinery;
+> **Open `Bizzing-Bee-Deck.html` in a real browser** (Chrome, Safari, Edge — not the iOS
+> Files preview, which blocks JavaScript). Everything in `src/` is build machinery;
 > `src/deck.source.html` has no images in it by design.
 
 Campaign platform for the **Bizzing Bee** app (offline spelling-bee trainer, kids 8–15)
@@ -8,8 +9,10 @@ and the **Bizzy** story books (15 packs).
 
 | File | What it is |
 |---|---|
-| **`Bizzing-Bee-Deck.html`** ← open this one | Standalone deck — open in any browser |
-| `boards-contact-sheet.svg` | All 16 boards on one sheet |
+| **`Bizzing-Bee-Deck.html`** ← open this one | Standalone deck, 1.9MB, all 24 boards embedded |
+| `boards/` | The 24 mood boards as JPEGs |
+| `src/build-boards.py` | Generates the boards (Gemini `gemini-3-pro-image`) |
+| `src/build-deck.py` | Embeds them into the deck as data URIs |
 
 **Published deck:** https://claude.ai/code/artifact/58b4756b-037e-4b21-8fc9-8fa84bb9a6c0
 
@@ -52,13 +55,29 @@ So the platform runs at two speeds:
 
 Sequence: **earn the core, then buy the country.**
 
+## The work — 24 concepts
+
+| Set | Count | What it does |
+|---|---|---|
+| **Why Spell** (`WS1–WS8`) | 8 | The platform films — the arsenal, the interview, the toast, the kit |
+| **The core** (`C1–C4`) | 4 | Ring-1 credibility: the fortnight, the French word, the oral round, the plateau |
+| **The app** (`01–08`) | 8 | Proof creative — the child visibly ahead of the adult |
+| **The books** (`09–12`) | 4 | Where it starts, and the ladder up into the app |
+
+## Boards
+
+24 photoreal and illustrated boards, generated with Gemini `gemini-3-pro-image`, embedded
+at 900px q72 so the deck stays under the mobile decoded-bitmap ceiling. Children are framed
+wide, from behind or in profile — no board is a face-on portrait, so nothing here reads as
+casting a real child.
+
+**These are tonal references only** — casting, lighting and register, not final frames.
+
 ## Open items
 
 - Verify the current user split between competitive and mainstream families.
 - Confirm whether AUS/UK have an NSF equivalent — the structure is specifically American
   and the strategy does not port without one.
 - Verify library and voice counts against the shipping build before any public claim.
-- Boards are hand-authored vector in the app own visual language (honey/violet, honeycomb motif,
-  recurring bee), matching how the app generates its cover art as inline SVG. Photographic boards
-  were blocked: the Gemini key returns `429 — monthly spending cap exceeded`, which is a cap
-  setting in AI Studio rather than depleted credit.
+- `C2 The French Word` is the highest-risk asset: get the synthetic-voice comparison
+  legal-reviewed, name no competitor, and make sure the demo is reproducible.

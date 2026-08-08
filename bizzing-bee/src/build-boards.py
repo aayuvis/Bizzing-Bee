@@ -1,367 +1,184 @@
-# Bizzing Bee board art — flat vector posters in the product's own visual language.
-# 16:9, composed per concept, honey + violet palette, honeycomb motif, no raster.
-import json
+import json, os, base64, urllib.request, urllib.error, threading, time
+from PIL import Image
 
-W, H = 640, 360
-P = dict(cream="#F6F2E8", ink="#2A2140", violet="#6C4FE0", vio2="#8B6FF0",
-         honey="#FFC23D", honey2="#E39A12", dusk="#241C3C", night="#171130",
-         mist="#CFC6EE", warm="#FFF6E4")
+S = '/tmp/claude-0/-home-user-Bizzing-Bee/4e23cfba-e7d7-5db3-a77c-4dd0a1079ba5/scratchpad'
+K = open(f'{S}/.gkey').read().strip()
+URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image:generateContent"
+for d in ('board', 'jpg', 'jpg-web'):
+    os.makedirs(f'{S}/{d}', exist_ok=True)
 
-def hexes(n=9, y=None, o=".10", c=None):
-    c = c or P["violet"]; out = []
-    for i in range(n):
-        x = 26 + i * 72; yy = (34 if i % 2 else 88) if y is None else y
-        out.append(f'<path d="M{x} {yy-13}l11 6.5v13l-11 6.5-11-6.5v-13z" fill="none" '
-                   f'stroke="{c}" stroke-opacity="{o}" stroke-width="2"/>')
-    return "".join(out)
+# Warm, honest, cinematic — the opposite of stocky edtech. Children framed wide or from
+# behind so no board reads as a casting portrait of a real minor.
+PHOTO = ("Warm cinematic editorial photograph, 35mm, soft natural motivated light, shallow depth of field, "
+"honest documentary family feel, rich but natural colour, photorealistic, ultra detailed, 8k, "
+"no text, no captions, no logos, no watermarks, no legible writing anywhere. "
+"Children are framed wide, from behind or in profile — never a close-up portrait face-on. ")
 
-def bee(x, y, s=1, wing=P["mist"]):
-    return (f'<g transform="translate({x} {y}) scale({s})">'
-            f'<ellipse cx="0" cy="-9" rx="13" ry="9" fill="{wing}" opacity=".85" transform="rotate(-22)"/>'
-            f'<ellipse cx="8" cy="-9" rx="13" ry="9" fill="{wing}" opacity=".7" transform="rotate(22)"/>'
-            f'<ellipse cx="0" cy="0" rx="15" ry="12" fill="{P["honey"]}"/>'
-            f'<path d="M-4 -11a12 12 0 0 0 0 22z" fill="{P["ink"]}" opacity=".9"/>'
-            f'<path d="M6 -10.5a12 12 0 0 1 0 21" stroke="{P["ink"]}" stroke-width="4" fill="none" opacity=".9"/>'
-            f'<circle cx="11" cy="-3" r="2" fill="{P["ink"]}"/></g>')
+ILLO = ("Children's picture-book illustration, gouache and coloured-pencil texture, warm honey-gold and deep "
+"violet palette, charming and characterful, hand-made not corporate, high detail, "
+"no text, no logos, no watermarks. ")
 
-def figure(x, y, s=1, c=None, head=True):
-    c = c or P["ink"]
-    o = f'<g transform="translate({x} {y}) scale({s})">'
-    if head: o += f'<circle cx="0" cy="-26" r="11" fill="{c}"/>'
-    o += f'<path d="M-14 6c0-13 6-21 14-21s14 8 14 21z" fill="{c}"/></g>'
-    return o
+SHOTS = [
+# ---- WHY SPELL: the platform films -------------------------------------------------
+("WS1_arsenal", PHOTO +
+ "A vast dim armoury hall, rack upon rack of small wooden drawers and shelves stretching away into "
+ "darkness like an arsenal, each shelf holding rows of small blank pale tiles. In the foreground, "
+ "seen from behind, a lone figure in a good suit stands at a lectern in a single shaft of warm light, "
+ "reaching out to take exactly one tile from a rack. Monumental, cinematic, wide symmetrical shot."),
+("WS2_interview", PHOTO +
+ "A modern glass-walled interview room, shot wide from outside through the glass. At an identical table, "
+ "two equally sharp, equally likeable candidates in their twenties are seen in the same room in two "
+ "moments: one sits mid-sentence with an open confident gesture and the panel leaning in; the other sits "
+ "with hands folded, mouth closed, searching for a word, the panel politely waiting. Cool daylight, "
+ "restrained corporate palette, deadpan and fair to both."),
+("WS3_toast", PHOTO +
+ "A warm wedding reception at night in a marquee strung with festoon lights. A man stands mid-speech "
+ "holding a champagne glass, seen from behind over the shoulders of the seated tables. Every single face "
+ "at the long tables is turned toward him, genuinely rapt, several laughing. Golden candlelight, "
+ "wide shot, affectionate and alive."),
+("WS4_pitch", PHOTO +
+ "A suburban front-yard lemonade stand on a bright summer afternoon. A nine-year-old girl, seen in "
+ "profile, stands behind the crate table mid-argument with one hand raised making a point. Four adult "
+ "neighbours stand in a loose semicircle, wallets already out, genuinely persuaded and amused. "
+ "Warm afternoon light, wide documentary shot."),
+("WS5_creator", PHOTO +
+ "A single twelve-year-old boy, alone in his own bedroom at night, sitting cross-legged on the floor and "
+ "seen from behind and slightly to the side over his shoulder. He is talking animatedly, one hand raised "
+ "mid-explanation, to a smartphone clamped on a small tripod in front of him with a cheap ring light. No "
+ "adults and no other children anywhere in the frame. The bedroom is ordinary, messy and lived-in with a "
+ "single bed and posters. Warm lamplight, shallow depth of field, intimate and unglamorous, no screen "
+ "content visible."),
+("WS6_comeback", PHOTO +
+ "A school corridor at end of day. A small girl, seen in profile, stands calmly facing two taller "
+ "children, mid-sentence, entirely composed. The taller children have stopped, caught out, one almost "
+ "smiling. Cool overcast light through high windows, wide shot, kind rather than cruel."),
+("WS7_metaphor", PHOTO +
+ "A kitchen table covered in a genuinely complicated diagram on a large sheet of paper, and beside it a "
+ "simple arrangement of everyday objects — an orange, a lamp, a coin — set out to explain the same thing. "
+ "A pair of adult hands and a pair of child's hands rest on either side. Overhead shot looking straight "
+ "down, warm evening light, no legible writing."),
+("WS8_kit", PHOTO +
+ "An honest overhead flat-lay on weathered pale wood, shot straight down, arranged like expedition kit: "
+ "a pair of worn leather walking boots, a canvas backpack, a rolled map, a compass, a water bottle — and "
+ "laid out among them in the same neat rows, a set of small blank pale wooden tiles treated as equipment. "
+ "Natural daylight, soft shadow, editorial still life, no writing on any tile."),
+# ---- CORE: the competitive circuit --------------------------------------------------
+("C1_fortnight", PHOTO +
+ "A kitchen wall calendar seen at a slight angle in warm morning light, the last fourteen squares marked "
+ "with small hand-drawn symbols and a circle around the final one. On the counter below, a stack of "
+ "well-used flashcards, a kitchen timer and a mug. Shallow depth of field, quiet and domestic, "
+ "no legible writing."),
+("C2_french", PHOTO +
+ "A close-up of a child's ear and the edge of their jaw in profile, wearing one large over-ear headphone "
+ "cup, eyes just out of frame, concentrating hard. Beside them on the desk sits a small plastic smart "
+ "speaker, out of focus. Low warm desk light, very shallow depth of field, intimate and serious."),
+("C3_oral", PHOTO +
+ "A school hall stage seen from the wings. A child stands alone in profile at a standing microphone in a "
+ "hard spotlight, composed, hands at their sides, facing a dark auditorium. In the foreground, out of "
+ "focus, an abandoned laptop sits open on a chair. Cinematic, high contrast, wide shot."),
+("C4_plateau", PHOTO +
+ "A child asleep face-down on a desk in the late evening, seen from the side and above, head on folded "
+ "arms beside a closed workbook and a cold cup of tea. A parent's hand rests lightly on their shoulder, "
+ "the parent otherwise out of frame. Warm low lamplight, tender, shallow depth of field."),
+# ---- APP ---------------------------------------------------------------------------
+("BB01_dinner", PHOTO +
+ "A family dinner table at night. A father in his forties sits with a fork paused halfway to his mouth, "
+ "brow furrowed, completely stumped and quietly delighted. Across the table his nine-year-old daughter, "
+ "seen from behind and side-on, sits calmly waiting. The mother is laughing into her hand. Warm domestic "
+ "lamplight, wide shot."),
+("BB02_groupchat", PHOTO +
+ "A man in his forties standing in a kitchen at night staring at his phone with a defeated expression, "
+ "one hand on the counter. Behind him through a doorway a child sits cross-legged on a sofa with a "
+ "tablet, entirely relaxed. Warm lamplight, wide shot, shot from the side, no screen content visible."),
+("BB03_scrabble", PHOTO +
+ "Overhead shot looking straight down at a generic wooden word-tile board game on a coffee table "
+ "mid-game, one very long word laid across it. Four pairs of adult hands rest motionless around the "
+ "board; one small pair of child's hands is folded neatly. Warm evening lamplight, game night, "
+ "no legible letters."),
+("BB04_autocorrect", PHOTO +
+ "Over-the-shoulder close-up of a child's hands typing on a tablet at a kitchen table, screen glowing "
+ "blank and out of focus, an adult's hand hovering nearby about to point and hesitating. Warm morning "
+ "light, shallow depth of field, no legible text on screen."),
+("BB05_tunnel", PHOTO +
+ "Interior of a car in the middle of the night, shot from the front passenger seat looking back into the "
+ "rear seats. Every window is pitch black — total darkness outside, no streetlights, nothing visible at "
+ "all. A nine-year-old child sits alone in the back seat absorbed in a tablet held on their lap, their "
+ "face lit only by the pale glow of the screen from below. Everything else in the car is nearly black. "
+ "Night interior, very high contrast, single-source lighting, cinematic, no screen content legible."),
+("BB06_wallchart", PHOTO +
+ "A child's bedroom wall covered floor to ceiling in hundreds of small blank paper cards pinned in neat "
+ "rows, like a vast collection. A small figure stands at the bottom of the wall looking up, seen from "
+ "behind. Warm lamplight, wide symmetrical shot, quietly monumental, no legible writing."),
+("BB07_voice", PHOTO +
+ "A child wearing large over-ear headphones at a desk with a tablet, seen in profile, eyes closed, "
+ "mouthing a word carefully. Warm low light, shallow depth of field, intimate and serious."),
+("BB08_parentteacher", PHOTO +
+ "A primary school classroom after hours. A teacher sits on one side of a small low table, two parents on "
+ "tiny children's chairs opposite, mid-conversation. The teacher leans forward, curious and impressed, "
+ "gesturing with an open hand. Warm late-afternoon light through classroom windows, wide shot."),
+# ---- BOOKS -------------------------------------------------------------------------
+("BB09_spine", PHOTO +
+ "Extreme close-up still life of a single thin hardback children's PICTURE BOOK standing upright, shot "
+ "side-on so the SPINE faces the camera and fills the frame. The spine is deeply cracked, creased and "
+ "softened with pale white stress lines from hundreds of readings, the cloth fraying at the head and "
+ "tail, the corners bumped and rounded, a frayed ribbon bookmark trailing out of the pages. It rests on "
+ "a wooden bedside table under a warm lamp. Macro detail on the worn spine texture, very shallow depth "
+ "of field, tender, no text or lettering anywhere on the book."),
+("BB10_cast", ILLO +
+ "An ensemble hero illustration: a friendly round cartoon bee character and its crew of insect friends "
+ "standing shoulder to shoulder in a sunlit meadow of enormous flowers, storybook adventure poster "
+ "composition, honey-gold light, characterful and warm."),
+("BB11_firstword", PHOTO +
+ "A very young child standing on a kitchen chair at a family breakfast table, arms out mid-sentence, "
+ "clearly saying something long and impressive. Two adults look at each other in amused astonishment. "
+ "Warm morning light, wide shot, seen slightly from behind the child."),
+("BB12_bedtime", ILLO +
+ "A cosy children's bedroom at night in warm lamplight: a stack of picture books on the bedside table, a "
+ "tablet resting on top of the stack, and a small round cartoon bee character perched on the very top "
+ "like a mascot. Honey-gold and deep violet, tender and inviting."),
+]
 
-def frame(bg, body, band=None):
-    b = f'<rect width="{W}" height="{H}" fill="{bg}"/>'
-    if band: b += band
-    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" '
-            f'width="{W}" height="{H}" role="img">{b}{body}</svg>')
+lock = threading.Lock()
+def log(*a):
+    with lock: print(*a, flush=True)
 
-# ---------------- boards ----------------
-def dinner():
-    b = hexes(o=".07", c=P["honey"])
-    b += f'<rect x="88" y="196" width="464" height="16" rx="8" fill="{P["ink"]}" opacity=".92"/>'
-    b += f'<rect x="120" y="212" width="12" height="52" fill="{P["ink"]}" opacity=".55"/>'
-    b += f'<rect x="508" y="212" width="12" height="52" fill="{P["ink"]}" opacity=".55"/>'
-    for cx in (168, 236, 404, 472):
-        b += f'<ellipse cx="{cx}" cy="192" rx="26" ry="7" fill="{P["warm"]}" opacity=".9"/>'
-    b += figure(180, 168, 1.25, P["ink"])
-    b += figure(300, 160, 1.15, P["violet"])          # the child, ahead
-    b += figure(452, 168, 1.25, P["ink"])
-    b += f'<circle cx="300" cy="96" r="30" fill="{P["honey"]}" opacity=".22"/>'
-    b += f'<text x="300" y="106" text-anchor="middle" font-family="Georgia,serif" font-size="34" fill="{P["honey2"]}">?</text>'
-    return frame(P["cream"], b)
+def gen(it):
+    n, pr = it
+    path = f'{S}/board/{n}.png'
+    if os.path.exists(path) and os.path.getsize(path) > 50000:
+        log("skip", n); return
+    body = {"contents": [{"parts": [{"text": pr}]}],
+            "generationConfig": {"responseModalities": ["IMAGE"],
+                                 "imageConfig": {"aspectRatio": "16:9"}}}
+    for a in range(5):
+        try:
+            r = urllib.request.Request(URL, data=json.dumps(body).encode(),
+                headers={"Content-Type": "application/json", "X-goog-api-key": K})
+            d = json.load(urllib.request.urlopen(r, timeout=300))
+            for p in d["candidates"][0]["content"]["parts"]:
+                if "inlineData" in p:
+                    open(path, "wb").write(base64.b64decode(p["inlineData"]["data"]))
+                    log("OK", n); return
+            log("no image", n, json.dumps(d)[:120])
+        except Exception as e:
+            m = e.read()[:90].decode() if isinstance(e, urllib.error.HTTPError) else str(e)[:90]
+            log("retry", a, n, m); time.sleep(10 * (a + 1))
+    log("FAIL", n)
 
-def groupchat():
-    b = hexes(o=".08", c=P["vio2"])
-    rows = [(70, 96, 250, P["mist"]), (300, 150, 268, P["vio2"]), (70, 204, 210, P["mist"])]
-    for x, y, w, c in rows:
-        b += f'<rect x="{x}" y="{y}" width="{w}" height="44" rx="20" fill="{c}" opacity=".95"/>'
-        for i in range(3):
-            b += f'<rect x="{x+22+i*0}" y="{y+14}" width="{int(w*0.45)}" height="7" rx="3.5" fill="{P["ink"]}" opacity=".3"/>'
-            break
-        b += f'<rect x="{x+22}" y="{y+26}" width="{int(w*0.7)}" height="7" rx="3.5" fill="{P["ink"]}" opacity=".18"/>'
-    b += f'<rect x="300" y="258" width="268" height="44" rx="20" fill="{P["honey"]}"/>'
-    b += f'<rect x="322" y="272" width="150" height="8" rx="4" fill="{P["ink"]}" opacity=".55"/>'
-    b += f'<rect x="322" y="286" width="96" height="8" rx="4" fill="{P["ink"]}" opacity=".35"/>'
-    b += bee(560, 292, .8)
-    return frame(P["cream"], b)
+sem = threading.Semaphore(3)
+def w(i):
+    with sem: gen(i)
+ts = [threading.Thread(target=w, args=(i,)) for i in SHOTS]
+for t in ts: t.start()
+for t in ts: t.join()
 
-def boardgame():
-    b = ""
-    gx, gy, c, n = 168, 60, 40, 6
-    for r in range(n):
-        for col in range(n):
-            fill = P["warm"] if (r + col) % 2 else "#EFE7D6"
-            b += f'<rect x="{gx+col*c}" y="{gy+r*c}" width="{c-3}" height="{c-3}" rx="4" fill="{fill}"/>'
-    word = "SPELL"
-    for i, ch in enumerate(word):
-        x = gx + (i) * c
-        b += (f'<rect x="{x}" y="{gy+3*c}" width="{c-3}" height="{c-3}" rx="4" fill="{P["honey"]}"/>'
-              f'<text x="{x+(c-3)/2}" y="{gy+3*c+26}" text-anchor="middle" font-family="Georgia,serif" '
-              f'font-size="20" font-weight="700" fill="{P["ink"]}">{ch}</text>')
-    b += figure(96, 300, 1.0, P["ink"]); b += figure(544, 300, 1.0, P["ink"])
-    return frame(P["cream"], b)
-
-def car():
-    b = f'<rect width="{W}" height="{H}" fill="{P["night"]}"/>'
-    b += f'<path d="M0 300 L{W} 262 L{W} {H} L0 {H}z" fill="{P["dusk"]}"/>'
-    for i in range(14):
-        b += f'<rect x="{20+i*46}" y="{306-i*2}" width="20" height="3" rx="1.5" fill="{P["mist"]}" opacity=".22"/>'
-    b += f'<rect x="236" y="120" width="168" height="112" rx="12" fill="{P["violet"]}" opacity=".28"/>'
-    b += f'<rect x="252" y="134" width="136" height="84" rx="8" fill="{P["honey"]}" opacity=".92"/>'
-    b += f'<rect x="272" y="160" width="96" height="9" rx="4.5" fill="{P["ink"]}" opacity=".45"/>'
-    b += f'<rect x="272" y="180" width="62" height="9" rx="4.5" fill="{P["ink"]}" opacity=".28"/>'
-    b += figure(320, 264, 1.5, P["ink"])
-    for i, cx in enumerate((70, 120, 560, 596)):
-        b += f'<circle cx="{cx}" cy="{50+i*14}" r="2" fill="{P["mist"]}" opacity=".5"/>'
-    return frame(P["night"], b)
-
-def wall():
-    b = ""
-    for r in range(7):
-        for c in range(16):
-            op = .95 - (r * .02)
-            fill = P["honey"] if (r * 16 + c) % 11 == 0 else P["warm"]
-            b += (f'<rect x="{28+c*37}" y="{26+r*36}" width="30" height="28" rx="4" fill="{fill}" opacity="{op}"/>'
-                  f'<rect x="{33+c*37}" y="{36+r*36}" width="18" height="4" rx="2" fill="{P["ink"]}" opacity=".22"/>')
-    b += f'<rect x="0" y="292" width="{W}" height="68" fill="{P["cream"]}"/>'
-    b += figure(320, 340, 1.5, P["violet"])
-    return frame(P["mist"], b)
-
-def headphones():
-    b = hexes(o=".08")
-    b += f'<circle cx="320" cy="182" r="96" fill="{P["violet"]}" opacity=".12"/>'
-    b += f'<path d="M236 190a84 84 0 0 1 168 0" stroke="{P["ink"]}" stroke-width="14" fill="none" stroke-linecap="round"/>'
-    b += f'<rect x="216" y="184" width="42" height="70" rx="18" fill="{P["ink"]}"/>'
-    b += f'<rect x="382" y="184" width="42" height="70" rx="18" fill="{P["ink"]}"/>'
-    for i, r in enumerate((26, 44, 62)):
-        b += f'<circle cx="320" cy="214" r="{r}" fill="none" stroke="{P["honey"]}" stroke-width="3" opacity="{.5-i*.13}"/>'
-    b += bee(320, 214, .9)
-    return frame(P["cream"], b)
-
-def classroom():
-    b = f'<rect x="0" y="0" width="{W}" height="196" fill="{P["dusk"]}"/>'
-    b += f'<rect x="92" y="36" width="456" height="124" rx="8" fill="{P["ink"]}" opacity=".55"/>'
-    b += f'<rect x="122" y="70" width="200" height="10" rx="5" fill="{P["honey"]}" opacity=".8"/>'
-    b += f'<rect x="122" y="94" width="290" height="10" rx="5" fill="{P["mist"]}" opacity=".45"/>'
-    b += f'<rect x="122" y="118" width="150" height="10" rx="5" fill="{P["mist"]}" opacity=".3"/>'
-    b += f'<rect x="140" y="236" width="360" height="14" rx="7" fill="{P["ink"]}" opacity=".9"/>'
-    b += figure(200, 232, 1.15, P["ink"]); b += figure(280, 232, 1.15, P["ink"])
-    b += figure(430, 226, 1.3, P["violet"])
-    return frame(P["cream"], b)
-
-def book():
-    b = hexes(o=".07", c=P["honey"])
-    b += f'<ellipse cx="320" cy="300" rx="180" ry="18" fill="{P["ink"]}" opacity=".10"/>'
-    for i, (dx, dy, c) in enumerate(((0, 0, P["violet"]), (-8, -16, P["vio2"]), (6, -32, P["honey"]))):
-        b += f'<rect x="{188+dx}" y="{206+dy}" width="264" height="26" rx="5" fill="{c}"/>'
-    b += f'<rect x="196" y="120" width="248" height="60" rx="6" fill="{P["warm"]}" stroke="{P["ink"]}" stroke-opacity=".18"/>'
-    b += f'<rect x="318" y="120" width="4" height="60" fill="{P["ink"]}" opacity=".14"/>'
-    b += f'<rect x="300" y="120" width="10" height="86" fill="{P["honey"]}"/>'
-    b += bee(452, 128, .85)
-    return frame(P["cream"], b)
-
-def crew():
-    b = f'<circle cx="320" cy="200" r="150" fill="{P["honey"]}" opacity=".16"/>'
-    b += hexes(o=".10", c=P["violet"])
-    for i, (x, y, s) in enumerate(((190, 196, .95), (256, 158, .8), (320, 202, 1.5),
-                                   (392, 158, .8), (452, 196, .95))):
-        b += bee(x, y, s)
-    for x in (140, 240, 400, 500):
-        b += (f'<path d="M{x} 306 q10 -34 0 -52 q22 12 34 0 q-6 32 -34 52z" fill="{P["vio2"]}" opacity=".55"/>')
-    return frame(P["cream"], b)
-
-def bedside():
-    b = f'<rect width="{W}" height="{H}" fill="{P["dusk"]}"/>'
-    b += f'<circle cx="320" cy="160" r="150" fill="{P["honey"]}" opacity=".13"/>'
-    for i, (w, c) in enumerate(((236, P["violet"]), (212, P["vio2"]), (188, P["honey2"]))):
-        y = 268 - i * 26
-        b += f'<rect x="{320-w//2}" y="{y}" width="{w}" height="24" rx="5" fill="{c}"/>'
-    b += f'<rect x="252" y="164" width="136" height="26" rx="6" fill="{P["mist"]}"/>'
-    b += f'<rect x="264" y="172" width="80" height="9" rx="4.5" fill="{P["ink"]}" opacity=".35"/>'
-    b += bee(320, 124, 1.1)
-    return frame(P["dusk"], b)
-
-def mic():
-    b = hexes(o=".08")
-    b += f'<circle cx="320" cy="170" r="86" fill="{P["violet"]}" opacity=".12"/>'
-    b += f'<rect x="298" y="96" width="44" height="94" rx="22" fill="{P["ink"]}"/>'
-    for i in range(4):
-        b += f'<rect x="304" y="{112+i*18}" width="32" height="4" rx="2" fill="{P["mist"]}" opacity=".5"/>'
-    b += f'<path d="M268 176a52 52 0 0 0 104 0" stroke="{P["ink"]}" stroke-width="9" fill="none" stroke-linecap="round"/>'
-    b += f'<rect x="315" y="228" width="10" height="46" fill="{P["ink"]}"/>'
-    b += f'<rect x="272" y="274" width="96" height="12" rx="6" fill="{P["ink"]}"/>'
-    b += f'<rect x="120" y="150" width="70" height="10" rx="5" fill="{P["honey"]}" opacity=".8"/>'
-    b += f'<rect x="452" y="150" width="70" height="10" rx="5" fill="{P["honey"]}" opacity=".35"/>'
-    return frame(P["cream"], b)
-
-def countdown():
-    b = ""
-    for r in range(3):
-        for c in range(7):
-            n = r * 7 + c
-            done = n < 14
-            fill = P["honey"] if done else P["warm"]
-            b += f'<rect x="{92+c*66}" y="{72+r*72}" width="56" height="56" rx="10" fill="{fill}"/>'
-            if done:
-                b += (f'<path d="M{104+c*66} {100+r*72} l10 10 l20 -22" stroke="{P["ink"]}" '
-                      f'stroke-width="5" fill="none" stroke-linecap="round" stroke-opacity=".55"/>')
-    b += f'<rect x="422" y="216" width="56" height="56" rx="10" fill="{P["violet"]}"/>'
-    b += bee(450, 244, .7, P["warm"])
-    return frame(P["cream"], b)
-
-def waveform():
-    b = f'<rect width="{W}" height="{H}" fill="{P["dusk"]}"/>'
-    import math
-    for i in range(46):
-        x = 40 + i * 13
-        h1 = 10 + abs(math.sin(i * .55)) * 62
-        b += f'<rect x="{x}" y="{130-h1/2:.0f}" width="6" height="{h1:.0f}" rx="3" fill="{P["mist"]}" opacity=".45"/>'
-        h2 = 10 + abs(math.sin(i * .3 + 1)) * 96
-        b += f'<rect x="{x}" y="{262-h2/2:.0f}" width="6" height="{h2:.0f}" rx="3" fill="{P["honey"]}"/>'
-    b += f'<text x="40" y="52" font-family="ui-monospace,monospace" font-size="14" fill="{P["mist"]}" opacity=".7">SYNTHETIC</text>'
-    b += f'<text x="40" y="330" font-family="ui-monospace,monospace" font-size="14" fill="{P["honey"]}">RECORDED</text>'
-    return frame(P["dusk"], b)
-
-def plateau():
-    b = hexes(o=".07", c=P["violet"])
-    b += (f'<path d="M60 300 C150 300 150 150 240 150 C300 150 300 132 360 132 '
-          f'L520 132" stroke="{P["violet"]}" stroke-width="7" fill="none" stroke-linecap="round"/>')
-    b += f'<path d="M360 132 L520 132" stroke="{P["honey"]}" stroke-width="9" stroke-linecap="round"/>'
-    b += f'<circle cx="520" cy="132" r="11" fill="{P["honey"]}"/>'
-    b += f'<rect x="60" y="316" width="460" height="4" rx="2" fill="{P["ink"]}" opacity=".2"/>'
-    b += bee(552, 96, .8)
-    return frame(P["cream"], b)
-
-def firstword():
-    b = hexes(o=".07", c=P["honey"])
-    b += f'<rect x="140" y="252" width="360" height="14" rx="7" fill="{P["ink"]}" opacity=".9"/>'
-    b += f'<rect x="286" y="212" width="68" height="42" rx="6" fill="{P["vio2"]}"/>'
-    b += figure(320, 196, 1.1, P["violet"])
-    b += figure(180, 250, 1.15, P["ink"]); b += figure(460, 250, 1.15, P["ink"])
-    b += f'<rect x="196" y="70" width="248" height="58" rx="16" fill="{P["honey"]}"/>'
-    b += f'<path d="M300 128 l14 22 l14 -22z" fill="{P["honey"]}"/>'
-    for i, w in enumerate((150, 190, 110)):
-        b += f'<rect x="216" y="{84+i*14}" width="{w}" height="7" rx="3.5" fill="{P["ink"]}" opacity="{.5-i*.12}"/>'
-    return frame(P["cream"], b)
-
-def autocorrect():
-    b = hexes(o=".08")
-    b += f'<rect x="196" y="72" width="248" height="216" rx="20" fill="{P["ink"]}"/>'
-    b += f'<rect x="210" y="92" width="220" height="176" rx="10" fill="{P["warm"]}"/>'
-    b += f'<rect x="230" y="120" width="150" height="11" rx="5.5" fill="{P["ink"]}" opacity=".28"/>'
-    b += f'<rect x="230" y="146" width="180" height="11" rx="5.5" fill="{P["honey2"]}"/>'
-    b += f'<path d="M230 164 q10 6 20 0 q10 -6 20 0 q10 6 20 0 q10 -6 20 0" stroke="{P["honey2"]}" stroke-width="3" fill="none"/>'
-    b += f'<rect x="230" y="192" width="120" height="11" rx="5.5" fill="{P["ink"]}" opacity=".18"/>'
-    b += f'<circle cx="470" cy="200" r="26" fill="{P["violet"]}" opacity=".2"/>'
-    b += f'<path d="M456 200 l10 10 l20 -22" stroke="{P["violet"]}" stroke-width="6" fill="none" stroke-linecap="round"/>'
-    return frame(P["cream"], b)
-
-
-# ---------------- Why Spell? boards ----------------
-def tile(x, y, w=44, h=30, c=None, op="1"):
-    c = c or P["honey"]
-    return f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="5" fill="{c}" opacity="{op}"/>'
-
-def arsenal():
-    b = f'<rect width="{W}" height="{H}" fill="{P["dusk"]}"/>'
-    for r in range(4):
-        for c in range(9):
-            op = .9 - r * .16
-            col = P["honey"] if (r + c) % 4 == 0 else P["vio2"]
-            b += tile(52 + c * 62, 40 + r * 44, 50, 32, col, f"{op:.2f}")
-    b += f'<path d="M250 300 h140 l-16 -74 h-108z" fill="{P["mist"]}"/>'
-    b += f'<rect x="236" y="300" width="168" height="14" rx="7" fill="{P["mist"]}"/>'
-    b += figure(320, 250, 1.3, P["honey"])
-    return frame(P["dusk"], b)
-
-def interview():
-    b = hexes(o=".07")
-    b += f'<rect x="140" y="216" width="360" height="14" rx="7" fill="{P["ink"]}" opacity=".9"/>'
-    b += figure(206, 212, 1.25, P["ink"])
-    b += figure(434, 212, 1.25, P["violet"])
-    b += f'<rect x="96" y="88" width="150" height="62" rx="16" fill="{P["mist"]}" opacity=".7"/>'
-    b += f'<path d="M186 150 l12 20 l12 -20z" fill="{P["mist"]}" opacity=".7"/>'
-    b += f'<rect x="120" y="112" width="52" height="7" rx="3.5" fill="{P["ink"]}" opacity=".22"/>'
-    b += f'<rect x="392" y="72" width="164" height="78" rx="16" fill="{P["honey"]}"/>'
-    b += f'<path d="M446 150 l12 20 l12 -20z" fill="{P["honey"]}"/>'
-    for i, w in enumerate((116, 132, 84)):
-        b += f'<rect x="410" y="{92+i*16}" width="{w}" height="7" rx="3.5" fill="{P["ink"]}" opacity="{.55-i*.1}"/>'
-    return frame(P["cream"], b)
-
-def toast():
-    b = f'<rect width="{W}" height="{H}" fill="{P["dusk"]}"/>'
-    b += f'<circle cx="320" cy="180" r="132" fill="{P["honey"]}" opacity=".13"/>'
-    b += f'<path d="M286 118 h68 l-8 44 a26 26 0 0 1 -52 0z" fill="{P["mist"]}" opacity=".92"/>'
-    b += f'<rect x="316" y="162" width="8" height="52" fill="{P["mist"]}" opacity=".8"/>'
-    b += f'<ellipse cx="320" cy="218" rx="34" ry="7" fill="{P["mist"]}" opacity=".8"/>'
-    for i, (x, y, r) in enumerate(((250, 96, 4), (392, 108, 5), (300, 74, 3), (368, 78, 3.5))):
-        b += f'<circle cx="{x}" cy="{y}" r="{r}" fill="{P["honey"]}" opacity=".85"/>'
-    b += f'<rect x="150" y="258" width="340" height="56" rx="18" fill="{P["honey"]}"/>'
-    for i, w in enumerate((250, 180)):
-        b += f'<rect x="176" y="{274+i*18}" width="{w}" height="8" rx="4" fill="{P["ink"]}" opacity="{.5-i*.14}"/>'
-    return frame(P["dusk"], b)
-
-def pitch():
-    b = hexes(o=".07", c=P["honey"])
-    b += f'<rect x="196" y="222" width="248" height="76" rx="8" fill="{P["honey2"]}"/>'
-    b += f'<rect x="180" y="208" width="280" height="20" rx="6" fill="{P["honey"]}"/>'
-    b += figure(320, 200, 1.15, P["violet"])
-    b += f'<rect x="330" y="70" width="230" height="86" rx="18" fill="{P["violet"]}"/>'
-    b += f'<path d="M336 156 l10 22 l22 -22z" fill="{P["violet"]}"/>'
-    for i, w in enumerate((168, 190, 120)):
-        b += f'<rect x="352" y="{90+i*18}" width="{w}" height="8" rx="4" fill="{P["warm"]}" opacity="{.9-i*.2}"/>'
-    b += bee(112, 120, .9)
-    return frame(P["cream"], b)
-
-def creator():
-    b = f'<rect width="{W}" height="{H}" fill="{P["night"]}"/>'
-    b += f'<circle cx="200" cy="150" r="86" fill="none" stroke="{P["honey"]}" stroke-width="10" opacity=".55"/>'
-    b += f'<rect x="366" y="112" width="150" height="96" rx="12" fill="{P["mist"]}"/>'
-    b += f'<circle cx="441" cy="160" r="30" fill="{P["dusk"]}"/><circle cx="441" cy="160" r="15" fill="{P["honey"]}"/>'
-    b += f'<rect x="432" y="208" width="18" height="54" fill="{P["mist"]}" opacity=".8"/>'
-    b += f'<path d="M400 288 h82 l-41 -30z" fill="{P["mist"]}" opacity=".8"/>'
-    b += figure(200, 214, 1.5, P["honey"])
-    import math
-    for i in range(18):
-        h = 8 + abs(math.sin(i * .6)) * 44
-        b += f'<rect x="{58+i*9}" y="{312-h/2:.0f}" width="4" height="{h:.0f}" rx="2" fill="{P["vio2"]}" opacity=".8"/>'
-    return frame(P["night"], b)
-
-def comeback():
-    b = hexes(o=".07")
-    b += f'<rect x="72" y="92" width="180" height="58" rx="16" fill="{P["mist"]}" opacity=".65"/>'
-    b += f'<path d="M110 150 l10 20 l20 -20z" fill="{P["mist"]}" opacity=".65"/>'
-    b += f'<rect x="96" y="114" width="70" height="7" rx="3.5" fill="{P["ink"]}" opacity=".2"/>'
-    b += f'<rect x="286" y="150" width="288" height="132" rx="24" fill="{P["honey"]}"/>'
-    b += f'<path d="M330 282 l12 26 l26 -26z" fill="{P["honey"]}"/>'
-    for i, w in enumerate((214, 240, 180, 130)):
-        b += f'<rect x="312" y="{176+i*24}" width="{w}" height="9" rx="4.5" fill="{P["ink"]}" opacity="{.6-i*.11}"/>'
-    b += bee(120, 250, .95)
-    return frame(P["cream"], b)
-
-def metaphor():
-    b = hexes(o=".07", c=P["vio2"])
-    b += (f'<path d="M70 200 q30 -70 62 -20 q28 44 60 -10 q26 -44 54 18 q22 48 52 -4" '
-          f'stroke="{P["vio2"]}" stroke-width="7" fill="none" stroke-linecap="round" opacity=".65"/>')
-    b += f'<path d="M330 200 h58" stroke="{P["ink"]}" stroke-width="5" opacity=".3" stroke-dasharray="9 9"/>'
-    b += f'<circle cx="470" cy="186" r="62" fill="{P["honey"]}"/>'
-    b += f'<path d="M470 156 l10 22 l24 3 l-18 17 l5 24 l-21 -12 l-21 12 l5 -24 l-18 -17 l24 -3z" fill="{P["ink"]}" opacity=".78"/>'
-    b += f'<text x="70" y="298" font-family="ui-monospace,monospace" font-size="13" fill="{P["muted"] if "muted" in P else P["ink"]}" opacity=".5">COMPLICATED</text>'
-    b += f'<text x="424" y="298" font-family="ui-monospace,monospace" font-size="13" fill="{P["honey2"]}">CLEAR</text>'
-    return frame(P["cream"], b)
-
-def kit():
-    b = hexes(o=".07", c=P["honey"])
-    b += f'<path d="M180 300 q0 -60 34 -60 q22 0 22 26 v34z" fill="{P["violet"]}"/>'
-    b += f'<rect x="180" y="292" width="82" height="16" rx="8" fill="{P["ink"]}"/>'
-    b += f'<path d="M300 300 q0 -60 34 -60 q22 0 22 26 v34z" fill="{P["vio2"]}"/>'
-    b += f'<rect x="300" y="292" width="82" height="16" rx="8" fill="{P["ink"]}"/>'
-    b += f'<rect x="418" y="150" width="120" height="140" rx="22" fill="{P["honey"]}"/>'
-    b += f'<path d="M448 150 v-16 a30 30 0 0 1 60 0 v16" stroke="{P["honey2"]}" stroke-width="10" fill="none"/>'
-    b += f'<rect x="440" y="196" width="76" height="44" rx="8" fill="{P["warm"]}" opacity=".85"/>'
-    for i, x in enumerate((96, 152, 208)):
-        b += tile(x, 62, 46, 32, P["honey"] if i == 1 else P["vio2"], ".9")
-    b += bee(560, 84, .85)
-    return frame(P["cream"], b)
-
-BOARDS_WS = {
- "WS1_arsenal": arsenal, "WS2_interview": interview, "WS3_toast": toast, "WS4_pitch": pitch,
- "WS5_creator": creator, "WS6_comeback": comeback, "WS7_metaphor": metaphor, "WS8_kit": kit,
-}
-
-BOARDS = {
- "BB01_dinner": dinner, "BB02_groupchat": groupchat, "BB03_scrabble": boardgame,
- "BB04_autocorrect": autocorrect, "BB05_tunnel": car, "BB06_wallchart": wall,
- "BB07_voice": headphones, "BB08_parentteacher": classroom, "BB09_spine": book,
- "BB10_cast": crew, "BB11_firstword": firstword, "BB12_bedtime": bedside,
- "C1_fortnight": countdown, "C2_french": waveform, "C3_oral": mic, "C4_plateau": plateau,
-}
-BOARDS.update(BOARDS_WS)
-
-if __name__ == "__main__":
-    out = {k: fn() for k, fn in BOARDS.items()}
-    open('/tmp/claude-0/-home-user-Bizzing-Bee/4e23cfba-e7d7-5db3-a77c-4dd0a1079ba5/bbart.json','w').write(
-        json.dumps(out))
-    print("boards:", len(out), "| total KB", sum(len(v) for v in out.values())//1024)
+ok = 0
+for n, _ in SHOTS:
+    p = f'{S}/board/{n}.png'
+    if not os.path.exists(p): continue
+    im = Image.open(p).convert('RGB')
+    for wd, q, d in ((1400, 74, 'jpg'), (900, 72, 'jpg-web')):
+        o = im.resize((wd, int(im.height * wd / im.width)), Image.LANCZOS)
+        o.save(f'{S}/{d}/{n}.jpg', 'JPEG', quality=q, optimize=True, progressive=True)
+    ok += 1
+print("DONE", ok, "/", len(SHOTS))
