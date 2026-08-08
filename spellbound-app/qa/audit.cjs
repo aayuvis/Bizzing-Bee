@@ -302,8 +302,12 @@ const seed = (page, P) => page.evaluate(P => {
       ['reduced motion', 'a11yMotion', 'data-motion', 'off']]) {
       state[key] = key === 'a11yFont' ? 'easy' : true;
       render(); await new Promise(r => setTimeout(r, 150));
-      out.push({ k, applied: R.getAttribute(attr) === val,
-        ctl: !!document.querySelector(`[data-act="set${key.charAt(0).toUpperCase()}${key.slice(1)}"]`) });
+      /* "Is there a way to turn this on" must ask whether the ACTION exists, not
+         whether a data-act happens to be in the DOM right now — these controls live
+         in Settings, and this probe runs on Home. Querying the live DOM reported the
+         dyslexia-font switch as missing when it has two working segments. */
+      const act = 'set' + key.charAt(0).toUpperCase() + key.slice(1);
+      out.push({ k, applied: R.getAttribute(attr) === val, ctl: typeof app[act] === 'function' });
       state[key] = key === 'a11yFont' ? 'std' : false;
     }
     render(); return out;
