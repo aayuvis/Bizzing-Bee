@@ -1478,6 +1478,11 @@ plushy: `<defs><radialGradient id="vbpl-g" cx="50%" cy="35%" r="75%"><stop offse
 <circle cx="18" cy="88" r="2.2" fill="#FFC83D"/><circle cx="102" cy="90" r="2.2" fill="#FFC83D"/>`,
 
 gg: `<defs><radialGradient id="vbgg-g" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#FFE0B8"/><stop offset="1" stop-color="#FFD9A8"/></radialGradient></defs>
+<path d="M52 80 h16 v14 q-8 4 -16 0 z" fill="#EFC194"/>
+<path d="M60 92 q-20 1 -28 11 q-6 6 -7 17 h70 q-1 -11 -7 -17 q-8 -10 -28 -11 z" fill="#3B6FE0"/>
+<path d="M49 94 q11 9 22 0 q-3 10 -11 10 q-8 0 -11 -10 z" fill="#2C54B0"/>
+<path d="M36 104 q-4 7 -4 16" stroke="#2C54B0" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M84 104 q4 7 4 16" stroke="#2C54B0" stroke-width="3" fill="none" stroke-linecap="round"/>
 <circle cx="60" cy="64" r="27" fill="url(#vbgg-g)"/>
 <path d="M32 52 a28 28 0 0 1 56 0 l-2 4 h-52 z" fill="#3B6FE0"/>
 <path d="M86 54 h18 q4 0 4 5 q0 5 -5 5 h-15 z" fill="#2C54B0"/>
