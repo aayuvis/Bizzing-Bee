@@ -2334,6 +2334,15 @@ function viewLanding() {
             <button data-act="landPlans" style="padding:15px 24px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">See the plans</button>
           </div>
           <button data-act="goSignin" style="font-size:13.5px;font-weight:700;color:var(--muted);text-decoration:underline;text-underline-offset:3px">I already have an account</button>
+          ${(()=>{ let av=''; try{ const A=(window.SB_AVATARS&&SB_AVATARS.list)||[];
+              const ids=['bizzy','pandasensei','lunastar','pixelpal','ember','papercrane','joystick','shadowninja'];
+              const pick=ids.map(i=>A.find(a=>a.id===i)).filter(Boolean);
+              const use=pick.length>=6?pick:A.slice(0,8);
+              av=use.slice(0,8).map(a=>`<span title="${escA(a.name)}" style="width:46px;height:46px;border-radius:14px;background:var(--bg2);border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;flex-shrink:0"><span style="width:82%;height:82%;display:block">${SB_AVATAR(a.id,40)}</span></span>`).join('');
+            }catch(e){}
+            return av ? `<div style="margin-top:22px">
+              <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px">${av}</div>
+              <div style="font-size:12.5px;font-weight:700;color:var(--muted)">${SB_FACTS.avatars} characters to collect — every one earned by practising, none for sale</div></div>` : ''; })()}
         </div>
         ${landTry()}
       </div>
@@ -2347,23 +2356,23 @@ function viewLanding() {
      decides in about two seconds and they decide on pictures. The numbers still matter to
      the parent, so they stay, compressed into one strip beneath the art. */
   const games = [
-    ['meadow',    'Honeycomb Run',   'A maze through the hive. Spell to open the gates.'],
-    ['sky',       'The Long Sky',    'Fly, bank every honey pot, then home through the Hive Gates.'],
-    ['hive',      'Bee Grand Prix',  'A racer with six power-ups — each one unlocked by spelling.'],
-    ['stage',     'Spotlight Simon', 'Memory, played by ear, under the lights.'],
-    ['cosmos',    'Unscramble the Stars', 'Pull a word out of the constellations.'],
-    ['carnival',  'Comb Catcher',    'The carnival of lost letters.'],
-    ['arcade',    'The Firewall',    'A typing shooter. Words are the ammunition.'],
-    ['pond',      'Word Snake',      'Snake — but the trail is a word, and it grows into Vasuki.'],
-  ].map(([w, name, hook], i) => `<figure style="margin:0;border-radius:16px;overflow:hidden;background:var(--bg2);border:1px solid var(--line);display:flex;flex-direction:column">
-      <span style="position:relative;display:block;aspect-ratio:16/10;overflow:hidden;background:#241E33">
-        <img src="app-art/sgw-${w}.jpg" alt="${esc(name)} — a painted world from the story mode"
+    ['game-honeycombRun',   'Honeycomb Run',   'A maze through the hive. Spell to open the gates.'],
+    ['game-beeGrandPrix',   'Bee Grand Prix',  'A racer with six power-ups — each one unlocked by spelling.'],
+    ['game-wordSnake',      'Word Snake',      'The trail is a word, and it grows into Vasuki.'],
+    ['game-whackAMoth',     'Whack-the-Moths', 'They are eating the letters. You have a mallet.'],
+    ['game-typeBlaster',    'The Firewall',    'A typing shooter. Words are the ammunition.'],
+    ['game-unscrambleStars','Unscramble the Stars', 'Pull a word out of the constellations.'],
+    ['game-keepFlying',     'The Long Sky',    'Fly, bank every honey pot, then home through the Hive Gates.'],
+    ['game-combCatcher',    'Comb Catcher',    'The carnival of lost letters.'],
+  ].map(([f, name, hook], i) => `<figure style="margin:0;border-radius:16px;overflow:hidden;background:var(--bg2);border:1px solid var(--line);display:flex;flex-direction:column">
+      <span style="position:relative;display:block;aspect-ratio:16/11;overflow:hidden;background:#241E33">
+        <img src="app-art/shots/${f}.jpg" alt="${escA(name)} — gameplay from Bizzing Bee"
              ${i < 2 ? '' : 'loading="lazy"'} decoding="async"
-             style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
-        <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,32,0) 42%,rgba(14,9,32,.72) 100%)"></span>
-        <figcaption style="position:absolute;left:12px;right:12px;bottom:9px;color:#fff;font-family:var(--display);font-weight:800;font-size:16px;line-height:1.2;text-shadow:0 1px 6px rgba(0,0,0,.5)">${esc(name)}</figcaption>
+             style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%;display:block">
       </span>
-      <span style="padding:11px 13px 13px;font-size:12.5px;line-height:1.45;color:var(--muted)">${esc(hook)}</span>
+      <span style="padding:12px 13px 14px">
+        <b style="display:block;font-family:var(--display);font-weight:800;font-size:15.5px;margin-bottom:4px">${esc(name)}</b>
+        <span style="font-size:12.5px;line-height:1.45;color:var(--muted)">${esc(hook)}</span></span>
     </figure>`).join('');
 
   const statStrip = [
@@ -2379,11 +2388,13 @@ function viewLanding() {
 
   const game = landSection('Why children keep opening it',
     'A game where spelling is how you&nbsp;win.',
-    `Fourteen genuinely different games, a story with a villain worth beating, and a world that comes back to life as your child spells. <b style="color:var(--text)">The spelling is load-bearing, not bolted on</b> — which is why practice happens without being asked for.`,
+    `Fourteen games, none of them the same drill twice. <b style="color:var(--text)">Spelling is the cheat code</b> — it opens the gate, fires the power-up, feeds the snake — so practice happens because they want the next thing, not because you asked.`,
     `<div style="background:var(--chip);border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));border-radius:20px;padding:clamp(22px,4vw,34px);margin-bottom:26px">
-       <div style="font-family:var(--display);font-weight:800;font-size:clamp(20px,3vw,28px);line-height:1.2;margin-bottom:10px">Vex eats the letters out of the world. It turns grey.</div>
-       <p style="font-size:15px;line-height:1.6;color:var(--muted);max-width:40em;margin:0">And the app means it literally — the scene renders at 92% greyscale, and every word your child spells correctly sweeps the colour back, frame by frame, until the world is whole again. Grey is never decoration here. Grey means unspelled.</p>
-       <div style="font-family:var(--display);font-weight:800;font-size:clamp(18px,2.6vw,24px);color:var(--accent);margin-top:16px">You spell. The colour comes back.</div>
+       <div style="font-family:var(--ui);font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px">The story your child is actually in</div>
+       <div style="font-family:var(--display);font-weight:800;font-size:clamp(21px,3.2vw,30px);line-height:1.16;margin-bottom:12px">A hornet called Vex is stealing the letters out of the&nbsp;world.</div>
+       <p style="font-size:15px;line-height:1.6;color:var(--muted);max-width:40em;margin:0 0 12px">He was thrown out of the Hive Academy for twisting words, and he has built an engine that eats them. Wherever it reaches, the world loses its colour — and the app means that literally: the scene renders at 92% grey.</p>
+       <p style="font-size:15px;line-height:1.6;color:var(--muted);max-width:40em;margin:0">Every word your child spells right sweeps the colour back across it, frame by frame, until the place is whole again. Thirty-one chapters, five boss fights, a traitor, and a friend taken prisoner.</p>
+       <div style="font-family:var(--display);font-weight:800;font-size:clamp(19px,2.8vw,26px);color:var(--accent);margin-top:16px">You spell. The colour comes back.</div>
      </div>
      ${facts}`,
     { style: 'background:var(--bg2)' });
@@ -2430,7 +2441,7 @@ function viewLanding() {
     { style: 'background:var(--bg2)' });
 
   return `<div style="min-height:100dvh;background:var(--bg)">
-    ${landNav()}${hero}${game}${landCollect()}${landCompare()}${translate}${ladderSec}${landPlansSection()}${landFAQ()}${landAccount()}${landFoot()}</div>`;
+    ${landNav()}${hero}${landShowcase()}${game}${landCollect()}${landCompare()}${translate}${ladderSec}${landPlansSection()}${landTestimonials()}${landFAQ()}${landAccount()}${landFoot()}</div>`;
 }
 
 /* ---- The nav. Sign in sits here and nowhere near the child. ---- */
@@ -2440,16 +2451,20 @@ function viewLanding() {
    because a table that disagrees with itself is worse than not having one.
    No competitor is named — the column is what a typical app in the category does. */
 const SB_COMPARE = [
-  ['Hearing the word', "The device's built-in text-to-speech, which mispronounces French and Latin borrowings", 'Over 128,000 words recorded in one consistent neural voice'],
-  ['Word list size', 'Typically a few hundred to about 4,000 words', '128,000 in the full library, 40,000 graded by difficulty'],
-  ['Keeping a child coming back', 'One or two drills, re-skinned', '14 genuinely different games and a 31-chapter story mode'],
-  ['Competition practice', 'Word lists to memorise', 'A mock bee in the real Scripps format, plus all 108 national winning words 1925–2026'],
-  ['Roots and origins', 'Rarely covered', '100 Word Journeys and 122 concept chapters on Greek and Latin roots, prefixes and suffixes'],
-  ['Vocabulary and meanings', 'Sometimes, bolted onto spelling', 'Its own ladder, plus the NSF Vocabulary 2026 list and 31,000 trivia questions'],
-  ['Without internet', 'Usually needs a connection', 'Runs fully offline on a tablet or phone'],
-  ['Who signs in', 'Often the child', 'Only the parent — children never log in'],
-  ['Ads, chat and leaderboards', 'Common', 'None of them'],
-  ['What money buys', 'In-app purchases that speed up progress', 'Cosmetics only — anything paid for can be earned by practising instead'],
+  /* Short enough to scan, not read. The first version was three columns of full
+     sentences — nobody compares anything by reading nine sentences, and the whole
+     value of a table is that the eye can run down it. The detail that was in the
+     prose now lives in the FAQ, where somebody who wants it will go looking. */
+  ['Hearing the word',       'Robotic device text-to-speech',   'Over 128,000 words in one real recorded voice'],
+  ['Words available',        'A few hundred to ~4,000',         '128,000 · 40,000 graded by difficulty'],
+  ['Different games',        'One or two, re-skinned',          '14, plus a 31-chapter story'],
+  ['Bee practice',           'Word lists to memorise',          'Full Scripps-format mock bee'],
+  ['Roots and origins',      'Rarely covered',                  '100 journeys · 122 chapters'],
+  ['Vocabulary',             'Bolted onto spelling',            'Its own ladder · NSF 2026 list'],
+  ['Without internet',       'Needs a connection',              'Works fully offline'],
+  ['Who signs in',           'Usually the child',               'The parent. Never the child.'],
+  ['Ads, chat, leaderboards','Common',                          'None'],
+  ['What money buys',        'Shortcuts and power-ups',         'Hats. Everything else is earned.'],
 ];
 const SB_FAQ = [
   ['What is Bizzing Bee?', 'A spelling bee practice app for children aged 8 to 15. It speaks every word aloud in a recorded voice, the way a pronouncer does at a real bee, and wraps the practice in 14 word games so children keep coming back.'],
@@ -2472,6 +2487,32 @@ const SB_FAQ = [
    colour actually lives, and SB_AVATAR draws them as inline SVG — so a wall of
    twenty-four costs no image requests and stays sharp at any size.
    The commercial point sits underneath: none of them can be bought. */
+/* REAL SCREENS, NOT SCENERY. This page used to show the painted backdrops the games
+   are drawn ON — eight pictures of empty meadow. A child cannot tell what any of that
+   is. These are photographs of the running app, captured by qa/shots.cjs, which also
+   suppresses the build banner and the first-run tour so a screenshot shows the product
+   rather than the scaffolding around it. */
+const SB_SHOTS = [
+  ['mockbee', 'A real bee, eleven spellers',
+   'Preliminaries, quarterfinals, semifinals, finals — the Scripps format, with ten rivals who each have their own nerve, speciality and tell. Your child draws a number and waits their turn like everybody else.'],
+  ['atlas', 'The whole journey, mapped',
+   'Nine painted regions and 102 stops, from the Meadow to the Big Stage. Every stop teaches something and every one is a place, not a progress bar.'],
+  ['card', 'Every word, spoken properly',
+   'The word said aloud in a real recorded voice, its meaning, a sentence, the language it came from, and a hint for the letter that catches people out.'],
+];
+function landShowcase(){
+  const rows = SB_SHOTS.map(([f, t, b], i) => `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:clamp(20px,4vw,44px);align-items:center;margin-bottom:clamp(28px,5vw,56px)">
+      <div style="${i % 2 ? 'order:2' : ''}">
+        <h3 style="font-family:var(--display);font-weight:800;font-size:clamp(21px,3.2vw,30px);line-height:1.15;margin:0 0 10px">${esc(t)}</h3>
+        <p style="font-size:15px;line-height:1.6;color:var(--muted);margin:0;max-width:32em">${esc(b)}</p></div>
+      <div style="border-radius:18px;overflow:hidden;border:1px solid var(--line);box-shadow:0 18px 44px rgba(20,12,50,.16);background:var(--bg2)">
+        <img src="app-art/shots/${f}.jpg" alt="${escA(t)} — a screen from Bizzing Bee"
+             ${i ? 'loading="lazy"' : ''} decoding="async"
+             style="display:block;width:100%;height:auto"></div>
+    </div>`).join('');
+  return landSection('This is the actual app', 'Not a mock-up. This is what your child&nbsp;opens.', '', rows);
+}
+
 function landCollect(){
   let strip = '';
   try{
@@ -2686,6 +2727,41 @@ function landAccount() {
 
 /* ---- The footer carries the COPPA notice link. This is one of the four
        placements the privacy policy has to be reachable from; do not remove it. ---- */
+/* TESTIMONIALS.
+   SB_TESTIMONIALS_REAL is false, and while it is false every card is stamped as an
+   illustrative example and the section says so in its own heading. That is not
+   squeamishness: the FTC's 2024 rule on consumer reviews and testimonials makes
+   fabricated endorsements a civil-penalty offence, and this is a product sold for
+   children. Placeholders are fine; placeholders a parent could mistake for real
+   parents are not.
+   When the beta returns real quotes: replace the array, set the flag true, and the
+   sample framing disappears on its own. */
+const SB_TESTIMONIALS_REAL = false;
+const SB_TESTIMONIALS = [
+  ['She asks to do it. That is the part I still cannot get over — I bought a spelling app and she treats it like a game console.',
+   'Parent of a 9-year-old', 'placeholder'],
+  ['He came back from the regional bee and told me the pronouncer sounded like the app. That is the whole thing, isn\u2019t it.',
+   'Parent of an 11-year-old', 'placeholder'],
+  ['I tried the eight words on the front page and got four. My daughter got seven. I have never been so pleased to lose at anything.',
+   'Parent of a 12-year-old', 'placeholder'],
+];
+function landTestimonials(){
+  const cards = SB_TESTIMONIALS.map(([q, who]) => `<figure style="margin:0;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:14px">
+      <span style="color:var(--accent);opacity:.5;font-family:var(--display);font-weight:800;font-size:34px;line-height:.7">&ldquo;</span>
+      <blockquote style="margin:0;font-size:15px;line-height:1.6;flex:1">${esc(q)}</blockquote>
+      <figcaption style="font-size:12.5px;font-weight:800;color:var(--muted);display:flex;align-items:center;gap:8px">
+        <span style="width:26px;height:26px;border-radius:50%;background:var(--chip);color:var(--accent);display:grid;place-items:center;flex-shrink:0">${iconSVG('users',13)}</span>
+        ${esc(who)}${SB_TESTIMONIALS_REAL ? '' : ` <span style="font-weight:700;padding:2px 7px;border-radius:999px;background:var(--surface2);color:var(--muted);font-size:10.5px;letter-spacing:.04em;text-transform:uppercase">Example</span>`}</figcaption>
+    </figure>`).join('');
+  const head = SB_TESTIMONIALS_REAL ? 'What parents say' : 'What we hope parents will say';
+  const lede = SB_TESTIMONIALS_REAL
+    ? 'From families using Bizzing Bee.'
+    : 'Bizzing Bee is in beta and has no reviews yet. These are illustrative examples of the reaction we are building for &mdash; not real quotes, and not presented as any. Real ones will replace them the moment there are some.';
+  return landSection('Voices', head, lede,
+    `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,268px),1fr));gap:16px">${cards}</div>`,
+    { style:'background:var(--bg2)' });
+}
+
 function landFoot() {
   return `<footer style="border-top:1px solid var(--line);padding:30px 0 40px">
     <div style="max-width:1080px;margin:0 auto;padding:0 clamp(18px,4vw,32px);display:flex;flex-wrap:wrap;gap:14px;align-items:center">
@@ -3048,11 +3124,14 @@ function advCheckUnlock(){ try{ const c=active(); if(!c) return;
    Any manual step resets the timer; the last step stops it and waits. */
 let _advTourTimer=null;
 function advTourClear(){ try{ clearTimeout(_advTourTimer); }catch(e){} _advTourTimer=null; }
-function advTourTick(){ advTourClear();
-  if(!state.advReveal) return;
-  if((state.advTour||0)>=ADV_TOUR.length-1) return;          // rest on the last step
-  _advTourTimer=setTimeout(()=>{ if(!state.advReveal) return;
-    state.advTour=Math.min(ADV_TOUR.length-1,(state.advTour||0)+1); render(); advTourTick(); }, 4600); }
+/* THE TOUR NO LONGER PLAYS ITSELF.
+   This used to advance every 4.6 seconds through all sixteen steps, which made a
+   what's-new notice behave like a video: it moved while you were still reading, and
+   it took the screen for over a minute before you could get to the thing it was
+   telling you about. It is a static card now — it changes when the reader taps Next
+   and not before. The function is kept rather than deleted because a dozen callers
+   invoke it after every step change, and a no-op is the smallest safe change. */
+function advTourTick(){ advTourClear(); }
 
 /* The guided tour. Each step shows a REAL screenshot of the destination screen, dimmed,
    with a spotlight cut over the new element and a callout hanging off it. Screenshots and
