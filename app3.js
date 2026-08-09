@@ -2328,7 +2328,7 @@ function viewLanding() {
         <div>
           <div style="font-family:var(--ui);font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:16px">Spelling · Vocabulary · Word origins · Ages 8–15</div>
           <h1 style="font-family:var(--display);font-weight:800;font-size:clamp(30px,5.4vw,54px);line-height:1.04;letter-spacing:-.025em;margin:0 0 18px">Spelling bee practice that speaks every word&nbsp;aloud.</h1>
-          <p style="font-size:clamp(16px,2.1vw,19px);line-height:1.55;color:var(--muted);max-width:32em;margin:0 0 28px">Over 128,000 words recorded in a real voice, fourteen word games, and the Greek and Latin roots behind them. Because everything your child is going to be, they are going to have to say.</p>
+          <p style="font-size:clamp(16px,2.1vw,19px);line-height:1.55;color:var(--muted);max-width:32em;margin:0 0 28px">One day your child spells a word you can&rsquo;t. Getting there takes months of practice they actually did — so this is a game where spelling is how you win, with every word spoken in a real recorded voice and the Greek and Latin roots that make an unfamiliar one solvable.</p>
           <div style="display:flex;flex-wrap:wrap;gap:11px;margin-bottom:14px">
             <button data-act="goSignup" style="padding:15px 26px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge),0 8px 22px color-mix(in srgb,var(--accent) 38%,transparent)">Start free — no card →</button>
             <button data-act="landPlans" style="padding:15px 24px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">See the plans</button>
@@ -2341,17 +2341,41 @@ function viewLanding() {
     </div></section>`;
 
   /* ---- 2. THE OBJECTION. Concede that it looks like a game and win with it. ---- */
-  const facts = [
-    [SB_FACTS.engines, 'arcade engines', 'A honeycomb maze, a flight, a perspective racer, whack-a-moth, Snake, a rhythm stage, a typing shooter, a boss duel. Different genres, not one drill re-skinned.'],
-    [SB_FACTS.chapters, 'story chapters', `${SB_FACTS.acts} acts, five boss fights, a traitor and a friend taken prisoner. Every chapter is a game a child would play if it taught nothing.`],
-    [SB_FACTS.evoForms, 'evolution forms', 'Egg to Queen Bee. Bit to Arcade. Hand-drawn, each with its own idle animation — and it never goes down.'],
-    [SB_FACTS.avatars, 'collectibles', `In ${SB_FACTS.packs} packs, with trump-card stats and a spoken greeting. Bought with practice, never with a card. Duplicates never drop.`],
-    [sbFmt(SB_FACTS.trivia), 'trivia questions', `Across ${SB_FACTS.triviaThemes} themes, plus a daily Buzz with a streak and Magic Squares — a bingo board you clear by spelling.`],
-    [SB_FACTS.scripps, 'national winning words', 'Every Scripps champion word from 1925 to 2026, seeded into the hardest levels. The words that ended real champions are the final bosses.'],
-  ].map(([n, t, b]) => `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:22px">
-      <div style="font-family:var(--display);font-weight:800;font-size:clamp(28px,4vw,38px);line-height:1;color:var(--accent);font-variant-numeric:tabular-nums">${n}</div>
-      <div style="font-weight:800;font-size:14px;margin:6px 0 8px">${t}</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.5">${b}</div></div>`).join('');
+  /* SHOW THE GAMES, DO NOT LIST THEM. This section used to be six tiles of numbers,
+     which is a specification, not an advertisement — and the app has fourteen painted
+     worlds sitting in app-art that the landing page had never once used. A nine-year-old
+     decides in about two seconds and they decide on pictures. The numbers still matter to
+     the parent, so they stay, compressed into one strip beneath the art. */
+  const games = [
+    ['meadow',    'Honeycomb Run',   'A maze through the hive. Spell to open the gates.'],
+    ['sky',       'The Long Sky',    'Fly, bank every honey pot, then home through the Hive Gates.'],
+    ['hive',      'Bee Grand Prix',  'A racer with six power-ups — each one unlocked by spelling.'],
+    ['stage',     'Spotlight Simon', 'Memory, played by ear, under the lights.'],
+    ['cosmos',    'Unscramble the Stars', 'Pull a word out of the constellations.'],
+    ['carnival',  'Comb Catcher',    'The carnival of lost letters.'],
+    ['arcade',    'The Firewall',    'A typing shooter. Words are the ammunition.'],
+    ['pond',      'Word Snake',      'Snake — but the trail is a word, and it grows into Vasuki.'],
+  ].map(([w, name, hook], i) => `<figure style="margin:0;border-radius:16px;overflow:hidden;background:var(--bg2);border:1px solid var(--line);display:flex;flex-direction:column">
+      <span style="position:relative;display:block;aspect-ratio:16/10;overflow:hidden;background:#241E33">
+        <img src="app-art/sgw-${w}.jpg" alt="${esc(name)} — a painted world from the story mode"
+             ${i < 2 ? '' : 'loading="lazy"'} decoding="async"
+             style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
+        <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,32,0) 42%,rgba(14,9,32,.72) 100%)"></span>
+        <figcaption style="position:absolute;left:12px;right:12px;bottom:9px;color:#fff;font-family:var(--display);font-weight:800;font-size:16px;line-height:1.2;text-shadow:0 1px 6px rgba(0,0,0,.5)">${esc(name)}</figcaption>
+      </span>
+      <span style="padding:11px 13px 13px;font-size:12.5px;line-height:1.45;color:var(--muted)">${esc(hook)}</span>
+    </figure>`).join('');
+
+  const statStrip = [
+    [SB_FACTS.engines, 'games'], [SB_FACTS.chapters, 'story chapters'],
+    [SB_FACTS.evoForms, 'evolution forms'], [SB_FACTS.avatars, 'collectibles'],
+    [sbFmt(SB_FACTS.trivia), 'trivia questions'], [SB_FACTS.scripps, 'champion words'],
+  ].map(([n, t]) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0">
+      <b style="font-family:var(--display);font-weight:800;font-size:clamp(20px,3vw,28px);line-height:1;color:var(--accent);font-variant-numeric:tabular-nums">${n}</b>
+      <span style="font-size:11.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">${t}</span></span>`).join('');
+
+  const facts = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,232px),1fr));gap:14px">${games}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:18px clamp(14px,4vw,40px);justify-content:center;margin-top:26px;padding:20px;border-radius:16px;background:var(--bg2);border:1px solid var(--line)">${statStrip}</div>`;
 
   const game = landSection('Why children keep opening it',
     'A game where spelling is how you&nbsp;win.',
@@ -2361,7 +2385,7 @@ function viewLanding() {
        <p style="font-size:15px;line-height:1.6;color:var(--muted);max-width:40em;margin:0">And the app means it literally — the scene renders at 92% greyscale, and every word your child spells correctly sweeps the colour back, frame by frame, until the world is whole again. Grey is never decoration here. Grey means unspelled.</p>
        <div style="font-family:var(--display);font-weight:800;font-size:clamp(18px,2.6vw,24px);color:var(--accent);margin-top:16px">You spell. The colour comes back.</div>
      </div>
-     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,238px),1fr));gap:14px">${facts}</div>`,
+     ${facts}`,
     { style: 'background:var(--bg2)' });
 
   /* ---- 3. THE TRANSLATION. One feature set read two ways — the single most
@@ -2406,7 +2430,7 @@ function viewLanding() {
     { style: 'background:var(--bg2)' });
 
   return `<div style="min-height:100dvh;background:var(--bg)">
-    ${landNav()}${hero}${game}${landCompare()}${translate}${ladderSec}${landPlansSection()}${landFAQ()}${landAccount()}${landFoot()}</div>`;
+    ${landNav()}${hero}${game}${landCollect()}${landCompare()}${translate}${ladderSec}${landPlansSection()}${landFAQ()}${landAccount()}${landFoot()}</div>`;
 }
 
 /* ---- The nav. Sign in sits here and nowhere near the child. ---- */
@@ -2433,12 +2457,51 @@ const SB_FAQ = [
   ['Does my child hear the words spoken aloud?', "Yes. Over 128,000 words are recorded in a real neural voice rather than read by the device's built-in text-to-speech, which mispronounces exactly the French and Latin borrowings that decide bees. A child can only spell a word they actually heard correctly."],
   ['How does it help prepare for the Scripps National Spelling Bee?', 'It practises the way the bee is actually run: the word spoken aloud, the definition, the language of origin and a sentence, then you spell it. It carries the Scripps and North South Foundation study tiers, all 108 national winning words from 1925 to 2026, and a Mock Spelling Bee that follows the real format of preliminaries, quarterfinals, semifinals and finals.'],
   ['Does it teach Greek and Latin roots?', 'Yes. 100 Word Journeys lessons and 122 concept chapters cover roots, prefixes, suffixes and language families, so an unfamiliar word can be reasoned out rather than memorised. Recognising word patterns is the single technique bee coaches recommend most.'],
-  ['Does it work without internet?', "Yes. Once loaded it runs offline on a tablet or phone — on a plane, in a car or in a tunnel. Your child's practice is stored on the device."],
+  ['Does it work without internet?', 'Yes. Once loaded it runs offline on a tablet or phone — on a plane, in a car or in a tunnel. Practice is saved on the device and backed up to your account whenever there is a connection, so a wiped or lost tablet does not cost your child months of work.'],
   ['What ages is it for?', 'Children aged 8 to 15. Difficulty tracks the individual child rather than their school year, so a strong eight-year-old and a struggling thirteen-year-old both get words pitched at them.'],
   ['Is it safe for children?', 'There is no chat, no leaderboard, no microphone, no ads and no strangers. Only the parent holds an account; children never sign in to anything. Practice is stored on your own device.'],
   ['Can more than one child use one account?', 'Yes. One parent account carries a profile for each child, each with their own words, progress and avatar.'],
+  ['What information do you actually store?', 'Your email address, because somebody has to hold the account and be billed. For each child: a display name they invent, a spelling level, and their practice progress. We do not store a child\u2019s real name, age, photo, voice or location — the database has no column for any of it, so it cannot be collected by accident later.'],
   ['Does it cover vocabulary and word meanings too?', 'Yes. There is a separate vocabulary ladder for meanings, the official NSF Vocabulary 2026 list, 31,000 trivia questions across 29 themes, idioms and similes, and an IPA trainer for reading pronunciation notation.'],
 ];
+
+/* THE COLLECTIBLES BLOCK — the one that talks to the nine-year-old.
+   The painted worlds above are play FIELDS: composed open and low-contrast through
+   the middle so gameplay reads on top of them. Eight in a row is atmospheric and,
+   for a child deciding in two seconds, gloomy. The characters are where this app's
+   colour actually lives, and SB_AVATAR draws them as inline SVG — so a wall of
+   twenty-four costs no image requests and stays sharp at any size.
+   The commercial point sits underneath: none of them can be bought. */
+function landCollect(){
+  let strip = '';
+  try{
+    const A = (window.SB_AVATARS && SB_AVATARS.list) || [];
+    if (A.length) {
+      /* one from each pack, so the wall shows the RANGE rather than ten bees */
+      const byPack = {}; A.forEach(a=>{ (byPack[a.pack]=byPack[a.pack]||[]).push(a); });
+      const picks = [];
+      Object.keys(byPack).forEach(k=>{ picks.push(byPack[k][0]); if(byPack[k][1]) picks.push(byPack[k][1]); });
+      strip = picks.slice(0,24).map(a=>`<span title="${escA(a.name)}"
+        style="width:clamp(52px,7.4vw,76px);aspect-ratio:1;border-radius:18px;background:var(--bg2);
+        border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;flex-shrink:0">
+        <span style="width:80%;height:80%;display:block">${SB_AVATAR(a.id, 68)}</span></span>`).join('');
+    }
+  }catch(e){}
+  if(!strip) return '';                       // avatars not in yet — say nothing rather than a hole
+
+  return landSection('Collect · evolve · never buy',
+    `${SB_FACTS.avatars} characters. Not one of them for&nbsp;sale.`,
+    `Packs drop with a golden reveal and duplicates never land. Every one of them is earned by practising — coins buy hats and nothing else, and anything paid for can be earned instead. In a category built on pester-power purchases, that is the headline.`,
+    `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(clamp(52px,7.4vw,76px),1fr));gap:10px;justify-items:center;margin-bottom:22px">${strip}</div>
+     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px">
+       ${[['Egg to Queen Bee', SB_FACTS.evoForms + ' evolution forms across twelve worlds, each hand-drawn with its own idle animation. It measures effort, and it never goes down.'],
+          ['Karma is the record', 'Karma is never spent. Coins buy cosmetics. There is no way to pay your way past a word you cannot spell.'],
+          ['A golden reveal', 'Pack drops are the reason a nine-year-old comes back tomorrow without being asked — bought with practice, not with a card.']]
+        .map(([t,b])=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:20px">
+          <div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:7px">${t}</div>
+          <div style="font-size:13px;line-height:1.5;color:var(--muted)">${b}</div></div>`).join('')}
+     </div>`);
+}
 
 function landCompare(){
   const rows = SB_COMPARE.map(([k,a,b])=>`<tr>
@@ -2611,7 +2674,7 @@ function landAccount() {
     'A paid product needs somebody to bill, and that is where it stops. Your child taps their own face on the home screen and starts spelling — there is no username, no password and no profile of them anywhere but this device.',
     `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:16px">
       ${[['users', 'One account, every child', 'Add a profile per child. They pick theirs and go — no sign-in, ever.'],
-         ['lock', 'The practice stays on the device', 'Words, progress and the weekly report are computed locally. Your child&rsquo;s work is not uploaded to be graded.'],
+         ['lock', 'Progress is backed up. Your child is not.', 'Practice syncs to your account so a wiped tablet cannot erase months of work. What is stored is a display name they invented, a spelling level and their progress — there is no field for a real name or an age.'],
          ['close', 'Nothing to police', 'No chat, no leaderboard, no microphone, no ads, no strangers, no in-app purchase a child can reach.'],
          ['bolt', 'Unlock once, then fly', 'After the first sign-in it runs offline. On a plane, in a tunnel, on a tablet with no SIM.']]
         .map(([ic, t, b]) => `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:20px">
