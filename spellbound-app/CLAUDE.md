@@ -645,6 +645,15 @@ handlers. App lives in this folder; open `index.html` to run.
 - **Cache busting (do BOTH every deploy):** bump the `?v=` stamp on every asset URL in
   `index.html` (one `sed -i 's/?v=OLD/?v=NEW/g'`) so devices never run stale JS, and bump
   `SB_VOICE_VER` in `voice-review.js` whenever voice clips changed.
+- **The site is `www.bizzingbee.com`, and a `CNAME` file is what makes that true.**
+  GitHub writes `CNAME` onto `gh-pages` when you set the custom domain in Settings.
+  The deploy here is `git push -f origin HEAD:gh-pages` from a worktree, which replaces
+  the whole branch — so a worktree without that file **silently unsets the domain** and
+  the site falls back to the github.io URL with no error anywhere. `CNAME` therefore
+  lives in the SOURCE `spellbound-app/` and is copied across on every deploy, exactly
+  like `index.html`. Never delete it, and `git fetch` + reset the worktree to
+  `origin/gh-pages` before deploying if anything may have changed the branch from the
+  GitHub side.
 - **Bump the stamp in the SOURCE `index.html`, not in the gh-pages worktree.** Bumping it
   only in the worktree leaves the branch a stamp behind, and the next deploy that copies
   `index.html` across silently reverts the stamp BACKWARDS — devices then keep serving the
