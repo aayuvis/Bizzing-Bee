@@ -2306,9 +2306,9 @@ function viewLanding() {
     <div style="max-width:1080px;margin:0 auto;padding:0 clamp(18px,4vw,32px)">
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:clamp(28px,5vw,60px);align-items:center">
         <div>
-          <div style="font-family:var(--ui);font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:16px">Why spell?</div>
-          <h1 style="font-family:var(--display);font-weight:800;font-size:clamp(32px,6vw,58px);line-height:1.02;letter-spacing:-.025em;margin:0 0 18px">Everything you're going to be, you're going to have&nbsp;to&nbsp;say.</h1>
-          <p style="font-size:clamp(16px,2.1vw,19px);line-height:1.55;color:var(--muted);max-width:31em;margin:0 0 28px">Not to sound clever — to be understood the first time, and believed. Every ambition a child has runs through the same place: finding the right word and saying it well. This is where they start collecting them.</p>
+          <div style="font-family:var(--ui);font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:16px">Spelling · Vocabulary · Word origins · Ages 8–15</div>
+          <h1 style="font-family:var(--display);font-weight:800;font-size:clamp(30px,5.4vw,54px);line-height:1.04;letter-spacing:-.025em;margin:0 0 18px">Spelling bee practice that speaks every word&nbsp;aloud.</h1>
+          <p style="font-size:clamp(16px,2.1vw,19px);line-height:1.55;color:var(--muted);max-width:32em;margin:0 0 28px">Over 128,000 words recorded in a real voice, fourteen word games, and the Greek and Latin roots behind them. Because everything your child is going to be, they are going to have to say.</p>
           <div style="display:flex;flex-wrap:wrap;gap:11px;margin-bottom:14px">
             <button data-act="goSignup" style="padding:15px 26px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge),0 8px 22px color-mix(in srgb,var(--accent) 38%,transparent)">Start free — no card →</button>
             <button data-act="landPlans" style="padding:15px 24px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">See the plans</button>
@@ -2333,9 +2333,9 @@ function viewLanding() {
       <div style="font-weight:800;font-size:14px;margin:6px 0 8px">${t}</div>
       <div style="font-size:13px;color:var(--muted);line-height:1.5">${b}</div></div>`).join('');
 
-  const game = landSection('The objection nobody says out loud',
-    'They&rsquo;ll use it twice and stop.',
-    `That is what actually kills these products — not whether they teach. So we didn't make a spelling app fun. <b style="color:var(--text)">We made a game where spelling is how you win</b>, and the spelling is load-bearing rather than bolted on.`,
+  const game = landSection('Why children keep opening it',
+    'A game where spelling is how you&nbsp;win.',
+    `Fourteen genuinely different games, a story with a villain worth beating, and a world that comes back to life as your child spells. <b style="color:var(--text)">The spelling is load-bearing, not bolted on</b> — which is why practice happens without being asked for.`,
     `<div style="background:var(--chip);border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));border-radius:20px;padding:clamp(22px,4vw,34px);margin-bottom:26px">
        <div style="font-family:var(--display);font-weight:800;font-size:clamp(20px,3vw,28px);line-height:1.2;margin-bottom:10px">Vex eats the letters out of the world. It turns grey.</div>
        <p style="font-size:15px;line-height:1.6;color:var(--muted);max-width:40em;margin:0">And the app means it literally — the scene renders at 92% greyscale, and every word your child spells correctly sweeps the colour back, frame by frame, until the world is whole again. Grey is never decoration here. Grey means unspelled.</p>
@@ -2386,10 +2386,64 @@ function viewLanding() {
     { style: 'background:var(--bg2)' });
 
   return `<div style="min-height:100dvh;background:var(--bg)">
-    ${landNav()}${hero}${game}${translate}${ladderSec}${landPlansSection()}${landAccount()}${landFoot()}</div>`;
+    ${landNav()}${hero}${game}${landCompare()}${translate}${ladderSec}${landPlansSection()}${landFAQ()}${landAccount()}${landFoot()}</div>`;
 }
 
 /* ---- The nav. Sign in sits here and nowhere near the child. ---- */
+/* The comparison table and the FAQ exist twice on purpose: here for the visitor,
+   and as static HTML inside #root in index.html for crawlers and answer engines
+   that never run this file. qa/audit.cjs asserts the two FAQ question lists match,
+   because a table that disagrees with itself is worse than not having one.
+   No competitor is named — the column is what a typical app in the category does. */
+const SB_COMPARE = [
+  ['Hearing the word', "The device's built-in text-to-speech, which mispronounces French and Latin borrowings", 'Over 128,000 words recorded in one consistent neural voice'],
+  ['Word list size', 'Typically a few hundred to about 4,000 words', '128,000 in the full library, 40,000 graded by difficulty'],
+  ['Keeping a child coming back', 'One or two drills, re-skinned', '14 genuinely different games and a 31-chapter story mode'],
+  ['Competition practice', 'Word lists to memorise', 'A mock bee in the real Scripps format, plus all 108 national winning words 1925–2026'],
+  ['Roots and origins', 'Rarely covered', '100 Word Journeys and 122 concept chapters on Greek and Latin roots, prefixes and suffixes'],
+  ['Vocabulary and meanings', 'Sometimes, bolted onto spelling', 'Its own ladder, plus the NSF Vocabulary 2026 list and 31,000 trivia questions'],
+  ['Without internet', 'Usually needs a connection', 'Runs fully offline on a tablet or phone'],
+  ['Who signs in', 'Often the child', 'Only the parent — children never log in'],
+  ['Ads, chat and leaderboards', 'Common', 'None of them'],
+  ['What money buys', 'In-app purchases that speed up progress', 'Cosmetics only — anything paid for can be earned by practising instead'],
+];
+const SB_FAQ = [
+  ['What is Bizzing Bee?', 'A spelling bee practice app for children aged 8 to 15. It speaks every word aloud in a recorded voice, the way a pronouncer does at a real bee, and wraps the practice in 14 word games so children keep coming back.'],
+  ['Is Bizzing Bee free?', 'Yes. The free plan gives you 500 words and the basic games, with no card required and no expiry. Paid plans start at $49.99 a year for 10,000 words, and $99 a year unlocks the full graded library, the story mode and the book series.'],
+  ['Does my child hear the words spoken aloud?', "Yes. Over 128,000 words are recorded in a real neural voice rather than read by the device's built-in text-to-speech, which mispronounces exactly the French and Latin borrowings that decide bees. A child can only spell a word they actually heard correctly."],
+  ['How does it help prepare for the Scripps National Spelling Bee?', 'It practises the way the bee is actually run: the word spoken aloud, the definition, the language of origin and a sentence, then you spell it. It carries the Scripps and North South Foundation study tiers, all 108 national winning words from 1925 to 2026, and a Mock Spelling Bee that follows the real format of preliminaries, quarterfinals, semifinals and finals.'],
+  ['Does it teach Greek and Latin roots?', 'Yes. 100 Word Journeys lessons and 122 concept chapters cover roots, prefixes, suffixes and language families, so an unfamiliar word can be reasoned out rather than memorised. Recognising word patterns is the single technique bee coaches recommend most.'],
+  ['Does it work without internet?', "Yes. Once loaded it runs offline on a tablet or phone — on a plane, in a car or in a tunnel. Your child's practice is stored on the device."],
+  ['What ages is it for?', 'Children aged 8 to 15. Difficulty tracks the individual child rather than their school year, so a strong eight-year-old and a struggling thirteen-year-old both get words pitched at them.'],
+  ['Is it safe for children?', 'There is no chat, no leaderboard, no microphone, no ads and no strangers. Only the parent holds an account; children never sign in to anything. Practice is stored on your own device.'],
+  ['Can more than one child use one account?', 'Yes. One parent account carries a profile for each child, each with their own words, progress and avatar.'],
+  ['Does it cover vocabulary and word meanings too?', 'Yes. There is a separate vocabulary ladder for meanings, the official NSF Vocabulary 2026 list, 31,000 trivia questions across 29 themes, idioms and similes, and an IPA trainer for reading pronunciation notation.'],
+];
+
+function landCompare(){
+  const rows = SB_COMPARE.map(([k,a,b])=>`<tr>
+      <th scope="row" style="text-align:left;padding:13px 12px;border-bottom:1px solid var(--line);font-weight:800;font-size:14px;vertical-align:top">${esc(k)}</th>
+      <td style="padding:13px 12px;border-bottom:1px solid var(--line);font-size:13.5px;color:var(--muted);line-height:1.5;vertical-align:top">${esc(a)}</td>
+      <td style="padding:13px 12px;border-bottom:1px solid var(--line);font-size:13.5px;line-height:1.5;vertical-align:top;background:color-mix(in srgb,var(--accent) 7%,transparent);font-weight:600">${esc(b)}</td></tr>`).join('');
+  return landSection('How it compares', 'What a spelling app usually gives you, and what this&nbsp;does.',
+    'No names — this is the category, not a rival. Every figure in the right-hand column is counted from the shipping build.',
+    `<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:16px">
+       <table style="border-collapse:collapse;width:100%;min-width:620px">
+         <thead><tr>
+           <th scope="col" style="text-align:left;padding:13px 12px;border-bottom:2px solid var(--line);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">What matters</th>
+           <th scope="col" style="text-align:left;padding:13px 12px;border-bottom:2px solid var(--line);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">A typical spelling app</th>
+           <th scope="col" style="text-align:left;padding:13px 12px;border-bottom:2px solid var(--line);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);background:color-mix(in srgb,var(--accent) 7%,transparent)">Bizzing Bee</th>
+         </tr></thead><tbody>${rows}</tbody></table></div>`);
+}
+
+function landFAQ(){
+  const items = SB_FAQ.map(([q,a],i)=>`<div style="border-bottom:1px solid var(--line);padding:18px 0">
+      <h3 style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.35;margin:0 0 7px">${esc(q)}</h3>
+      <p style="font-size:14.5px;line-height:1.6;color:var(--muted);margin:0;max-width:52em">${esc(a)}</p></div>`).join('');
+  return landSection('Questions parents ask', 'Everything you might reasonably want to know&nbsp;first.',
+    '', `<div style="border-top:1px solid var(--line)">${items}</div>`, { style:'background:var(--bg2)' });
+}
+
 function landNav() {
   return `<div style="position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)">
     <div style="max-width:1080px;margin:0 auto;padding:11px clamp(18px,4vw,32px);display:flex;flex-wrap:wrap;align-items:center;gap:10px">
