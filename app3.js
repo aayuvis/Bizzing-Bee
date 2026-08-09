@@ -2190,6 +2190,7 @@ const app = {
     state.landDone=false; state.landMiss=e.w; app.landNext(false); },
   landRestart:()=>{ state.landIdx=0; state.landScore=0; state.landAsked=0;
     state.landTyped=''; state.landDone=false; state.landMiss=''; render(); },
+  devBannerHide:()=>{ state.devBannerOff=true; render(); },
   landBill:(k)=>{ state.landYearly=(k!=='month'); render(); },
   /* The books are published from their own repo and their own Pages site — the app
      site only keeps redirect stubs. ONE constant, so moving them to
@@ -8672,7 +8673,22 @@ function render(){
   try{ const _c=active(); document.documentElement.setAttribute('data-age', _c.ageMode||((_c.age||9)<=11?'playful':'focused')); }catch(e){}
   // preserve the Settings pop-up scroll position across re-renders so it never jumps
   let _setScroll=null; try{ const so=document.getElementById('sb-set-ov'); if(so) _setScroll=so.scrollTop; }catch(e){}
-  root.innerHTML = `<div style="min-height:100dvh;position:relative;z-index:1">${view()}</div>` + overlays();
+  /* SITE-UNDER-DEVELOPMENT BANNER.
+     Rendered rather than written into the static #root on purpose: the crawlable
+     copy is what Google and the answer engines index, and "under development" is
+     not a sentence worth ranking for. A visitor sees it; a crawler describes the
+     product. Dismissible for the session only — it comes back on the next visit,
+     because it stops being true only when we say so, not when someone clicks an X. */
+  const devBanner = state.devBannerOff ? '' : `<div style="position:relative;z-index:60;
+    background:linear-gradient(90deg,#F0B429,#E09612);color:#3A2A00;
+    font-family:var(--ui,system-ui);font-weight:800;font-size:12.5px;line-height:1.4;
+    padding:8px clamp(12px,3vw,20px);display:flex;align-items:center;gap:10px;justify-content:center;text-align:center">
+    <span style="flex-shrink:0;display:inline-flex">${iconSVG('alert',15)}</span>
+    <span style="min-width:0">This site is still being built — you may find rough edges, and some things will change.</span>
+    <button data-act="devBannerHide" aria-label="Hide this notice"
+      style="flex-shrink:0;width:22px;height:22px;border-radius:6px;display:grid;place-items:center;
+      background:rgba(58,42,0,.14);color:#3A2A00;font-weight:800;line-height:1">${iconSVG('close',12)}</button></div>`;
+  root.innerHTML = devBanner + `<div style="min-height:100dvh;position:relative;z-index:1">${view()}</div>` + overlays();
   /* First real paint — take the loading screen down. Called on every render; the
      injector guards against running twice, and its own 6s ceiling covers the case
      where a render never arrives at all. */
