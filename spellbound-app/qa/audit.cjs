@@ -296,17 +296,20 @@ const seed = (page, P) => page.evaluate(P => {
     out.push({ k: 'text size', attr: R.getAttribute('data-size'),
       zoom: getComputedStyle(document.getElementById('root')).zoom, ctl: true });
     app.setTextSize('normal'); render();
-    for (const [k, key, attr, val] of [
-      ['dyslexia font', 'a11yFont', 'data-font', 'easy'],
-      ['high contrast', 'a11yContrast', 'data-contrast', 'high'],
-      ['reduced motion', 'a11yMotion', 'data-motion', 'off']]) {
+    /* The action name is NAMED here, never derived. Deriving it as 'set'+key gets
+       the font right by luck and invents setA11yContrast / setA11yMotion for the
+       other two, which do not exist and never did — so the probe reported two
+       missing switches that are sitting in Settings under Look & feel. */
+    for (const [k, key, attr, val, act] of [
+      ['dyslexia font', 'a11yFont', 'data-font', 'easy', 'setA11yFont'],
+      ['high contrast', 'a11yContrast', 'data-contrast', 'high', 'toggleContrast'],
+      ['reduced motion', 'a11yMotion', 'data-motion', 'off', 'toggleReduceMotion']]) {
       state[key] = key === 'a11yFont' ? 'easy' : true;
       render(); await new Promise(r => setTimeout(r, 150));
       /* "Is there a way to turn this on" must ask whether the ACTION exists, not
          whether a data-act happens to be in the DOM right now — these controls live
          in Settings, and this probe runs on Home. Querying the live DOM reported the
          dyslexia-font switch as missing when it has two working segments. */
-      const act = 'set' + key.charAt(0).toUpperCase() + key.slice(1);
       out.push({ k, applied: R.getAttribute(attr) === val, ctl: typeof app[act] === 'function' });
       state[key] = key === 'a11yFont' ? 'std' : false;
     }
