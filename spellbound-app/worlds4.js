@@ -596,25 +596,15 @@ window.SB_W4_FOCUS={
             var x=ci*dx-s0, y=ri*hh+((ci%2)?hh/2:0)-hh/2;
             layer.appendChild(el('w4-hexcell','left:'+x+'px;top:'+y+'px;width:'+(2*s0)+'px;height:'+hh+'px;animation-delay:'+(((ci*2+ri*5)%29)*0.23).toFixed(2)+'s', HEXCELL)); }
       })();
-      /* WAS: six of the app's own bee avatars flying across the meadow.
-         They were cartoon characters loose in the CHROME — the same figures that
-         appear as a child's avatar, drifting behind every screen and, because the
-         world layer paints before the app renders, behind the loading screen too.
-         A mascot belongs in the content, not in the wallpaper.
-
-         What replaces them is the app's actual subject: letters. Glyphs rise and
-         fade like pollen through the hive light — on-brand for a spelling app,
-         quiet enough to sit behind text, and with no character competing with the
-         one the child chose. */
-      var GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      for(var b1=0;b1<14;b1++){
-        var ch = GLYPHS.charAt(Math.floor(rnd(0, GLYPHS.length)));
-        layer.appendChild(el('w4o-glyph',
-          'left:'+rnd(3,96).toFixed(1)+'vw;font-size:'+rnd(15,44).toFixed(0)+'px;'
-          +'animation-duration:'+rnd(22,42).toFixed(1)+'s;'
-          +'animation-delay:-'+rnd(0,40).toFixed(1)+'s;'
-          +'--w4rot:'+rnd(-24,24).toFixed(0)+'deg', ch));
-      }
+      /* NOTHING CROSSES THIS SKY, and that took two tries to learn.
+         It was six of the app's own bee avatars flying across — cartoon characters
+         loose in the chrome, competing with the avatar the child actually chose, and
+         visible behind the loading screen because the world layer paints first.
+         Replacing them with drifting letters fixed the mascot problem and kept the
+         real one: anything discrete moving across a page pulls the eye off the words,
+         and this background sits behind a child trying to read and spell.
+         So the world is texture and light now — the honeycomb drift, the hive glow,
+         and a little rising dust. No objects, nothing to track. */
       for(var m1=0;m1<8;m1++) layer.appendChild(el('w4o-rise','left:'+rnd(2,98).toFixed(1)+'vw;width:5px;height:5px;background:#FFD34D;box-shadow:0 0 7px 2px rgba(255,211,77,.6);animation-duration:'+rnd(12,22).toFixed(1)+'s;animation-delay:-'+rnd(0,20).toFixed(1)+'s'));
     } else if(world==='marquee'){
       layer.appendChild(el('w4o-drape w4o-drapeL')); layer.appendChild(el('w4o-drape w4o-drapeR'));
