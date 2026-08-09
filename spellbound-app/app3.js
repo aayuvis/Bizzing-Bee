@@ -2179,6 +2179,11 @@ const app = {
      blank tab there would look like the app broke rather than like the internet is
      missing. */
   openBooks:()=>{
+    /* Regional Speller only. gateFeature reads SB_ENT.has('books'), which is declared
+       on every tier in pricing.js — never a hardcoded tier comparison here, so the
+       source of truth can move server-side without touching this call. It also opens
+       the plans sheet on the right tier when the answer is no. */
+    if(!gateFeature('books','The book series','regional')) return;
     if(typeof navigator!=='undefined' && navigator.onLine===false){
       flash('The books live on the web — reconnect to open the shelf'); return; }
     try{ const w=window.open(SB_BOOKS_URL,'_blank','noopener');
@@ -2476,7 +2481,8 @@ function landPlansSection() {
       free: ['500 words to practise', 'The basic games', 'Two worlds', 'Progress and streaks'],
       beginner: [sbFmt(10000) + ' words', 'Concepts and Word Lists', 'The revision pile', 'Four worlds · 5 avatar packs'],
       regional: [sbFmt(40000) + ' words — the full graded library', 'The Saga: ' + SB_FACTS.chapters + ' chapters, ' + SB_FACTS.engines + ' engines',
-                 'Every world, avatar pack and game', 'All the Supercharge training tools'],
+                 'The book series — 19 volumes and 4 companions', 'Every world, avatar pack and game',
+                 'All the Supercharge training tools'],
     }[id].map(r => `<li style="display:flex;gap:9px;align-items:flex-start;font-size:13.5px;line-height:1.45;margin-bottom:9px">
         <span style="color:var(--accent);flex-shrink:0;margin-top:1px">${iconSVG('check', 15)}</span><span>${r}</span></li>`).join('');
     return `<div style="background:var(--bg2);border:${best ? '2px solid var(--accent)' : '1px solid var(--line)'};border-radius:20px;padding:24px;position:relative;display:flex;flex-direction:column">
@@ -3775,7 +3781,7 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
   const cAll=(S.conceptData||[]); const cDone=cAll.filter(ch=>conceptStat(ch).done).length;
   const shelves=cAll.length?conceptChapters().length:13;
   const tN=triviaTotal(); const themeN=themeDefs().length||75; const mine=myThemes().length;
-  const tile=(o)=>`<button data-act="${o.act}" ${o.arg?`data-arg="${escA(o.arg)}"`:''} class="lib-tile">
+  const tile=(o)=>`<button data-act="${o.act}" ${o.arg?`data-arg="${escA(o.arg)}"`:''} class="lib-tile${o.lock?' lib-locked':''}"${o.lock?' aria-label="Locked — included with the Regional Speller plan"':''}>
       <span class="lib-art"><img src="app-art/${o.img}.jpg" alt="" loading="lazy" decoding="async">
         <span class="lib-kick">${esc(o.kick)}</span><span class="lib-h">${esc(o.title)}</span></span>
       <span class="lib-body"><p>${esc(o.blurb)}</p>
@@ -3809,11 +3815,13 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
        arrives here — so a shelf with no door into it was a real gap, not a nicety.
        The tile header is a montage of the actual covers (voice/pipeline made none for
        this, so it is composed from books/art), which is why it can promise a shelf. */
-    tile({act:'openBooks',img:'lib-books',kick:'Read',title:'The Book Series',
+    (()=>{ let ok=true; try{ ok=!window.SB_ENT||SB_ENT.has('books'); }catch(e){}
+      return tile({act:'openBooks',img:'lib-books',kick:'Read',title:'The Book Series',
       /* Nineteen numbered volumes and four companions — counted from the generator,
          not remembered. book-01..19 plus champion, lines, quiz and similes. */
       blurb:'Nineteen illustrated volumes and four companions — origins, eponyms, poems and the champion techniques, printed to be read away from a screen.',
-      c:'#6B3F14',ic:'book',cta:'Open the shelf',stat:'23 books · opens in a new tab'}),
+      c:'#6B3F14',ic:ok?'book':'lock',cta:ok?'Open the shelf':'Regional Speller',
+      lock:!ok, stat:ok?'23 books · opens in a new tab':'23 books · included with 👑 Regional Speller'}); })(),
   ].join('');
   return `<div style="animation:sb-rise .35s ease both;max-width:1020px;margin:0 auto">
     ${pageHead('The Library','everything the Atlas teaches','Sorted by kind instead of by place — the Atlas is where you are, the Library is everything there is. The drill itself lives in Practice.')}

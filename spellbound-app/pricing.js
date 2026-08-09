@@ -21,19 +21,22 @@
       id: 'free', name: 'Free', order: 0, priceMo: 0, priceYr: 0, badge: '🐝',
       blurb: 'A real taste — 500 words and the basic games.',
       ent: { words: 500, lists: false, concepts: false, journeys: false, revise: false,
-             trainTools: false, games: 'basic', worlds: 2, avatarPacks: 0, saga: false, startCoins: 0 }
+             trainTools: false, games: 'basic', worlds: 2, avatarPacks: 0, saga: false,
+             books: false, startCoins: 0 }
     },
     beginner: {
       id: 'beginner', name: 'Beginner Bee', order: 1, priceMo: 4.99, priceYr: 49.99, badge: '🐝✨',
       blurb: '10,000 words, Concepts, Lists and four worlds to explore.',
       ent: { words: 10000, lists: true, concepts: true, journeys: false, revise: true,
-             trainTools: false, games: 'basic', worlds: 4, avatarPacks: 5, saga: false, startCoins: 400 }
+             trainTools: false, games: 'basic', worlds: 4, avatarPacks: 5, saga: false,
+             books: false, startCoins: 400 }
     },
     regional: {
       id: 'regional', name: 'Regional Speller', order: 2, priceMo: 9.99, priceYr: 99, badge: '👑',
-      blurb: 'Everything unlocked — all 40k words, worlds, avatars, games, Supercharge and the Saga.',
+      blurb: 'Everything unlocked — all 40k words, worlds, avatars, games, Supercharge, the Saga and the book series.',
       ent: { words: 40000, lists: true, concepts: true, journeys: true, revise: true,
-             trainTools: true, games: 'all', worlds: 'all', avatarPacks: 'all', saga: true, startCoins: 1500 }
+             trainTools: true, games: 'all', worlds: 'all', avatarPacks: 'all', saga: true,
+             books: true, startCoins: 1500 }
     }
   };
   var ADDONS = {
