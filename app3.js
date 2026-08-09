@@ -1162,8 +1162,27 @@ const app = {
   openAuth:(mode)=>set({authSheet:mode||'signin', authErr:null}),
   closeAuth:()=>set({authSheet:null, authErr:null, authAdmin:false}),
   authEmail:(v)=>{ state.auth_email=v; }, authPw:(v)=>{ state.auth_pw=v; }, authName:(v)=>{ state.auth_name=v; },
-  doSignIn:()=>{ const r=SB_AUTH.signIn(state.auth_email||'', state.auth_pw||''); if(r.error){ set({authErr:r.error}); return; } state.auth_pw=''; if(r.user.role==='admin'){ set({authSheet:null, authAdmin:false, screen:'admin'}); } else { set({authSheet:null}); flash('Signed in as '+esc(r.user.name)); } },
-  doSignUp:()=>{ const r=SB_AUTH.signUp(state.auth_email||'', state.auth_pw||'', state.auth_name||''); if(r.error){ set({authErr:r.error}); return; } state.auth_pw=''; set({authSheet:null}); flash('Account created — welcome!'); },
+  /* signIn/signUp return a value in local mode and a promise once a backend is
+     configured. Promise.resolve() flattens both, so neither path needs its own
+     branch and a build with no backend behaves exactly as it always did. */
+  doSignIn:()=>{ set({authErr:null, authBusy:true});
+    Promise.resolve(SB_AUTH.signIn(state.auth_email||'', state.auth_pw||'')).then(r=>{
+      state.authBusy=false;
+      if(!r || r.error){ set({authErr:(r&&r.error)||'Could not sign in'}); return; }
+      state.auth_pw='';
+      if(r.user && r.user.role==='admin'){ set({authSheet:null, authAdmin:false, screen:'admin'}); }
+      else { set({authSheet:null}); flash('Signed in as '+esc((r.user&&(r.user.name||r.user.email))||'you')); }
+    }); },
+  doSignUp:()=>{ set({authErr:null, authBusy:true});
+    Promise.resolve(SB_AUTH.signUp(state.auth_email||'', state.auth_pw||'', state.auth_name||'')).then(r=>{
+      state.authBusy=false;
+      if(!r || r.error){ set({authErr:(r&&r.error)||'Could not create the account'}); return; }
+      state.auth_pw='';
+      /* Confirm-by-email is on by default in Supabase, so sign-up can succeed with
+         no session yet. Saying that plainly beats a spinner that never resolves. */
+      if(r.pending){ set({authErr:null}); flash(r.message||'Check your email to confirm the account'); return; }
+      set({authSheet:null}); flash('Account created — welcome!');
+    }); },
   doSignOut:()=>{ SB_AUTH.signOut(); flash('Signed out'); render(); },
   // ===== Admin console =====
   openAdmin:()=>{ if(SB_AUTH.isAdmin()){ set({screen:'admin', adminTab:'users'}); } else { set({authSheet:'signin', authAdmin:true, authErr:null}); } },
