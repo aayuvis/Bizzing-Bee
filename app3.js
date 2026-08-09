@@ -2172,6 +2172,18 @@ const app = {
   landRestart:()=>{ state.landIdx=0; state.landScore=0; state.landAsked=0;
     state.landTyped=''; state.landDone=false; state.landMiss=''; render(); },
   landBill:(k)=>{ state.landYearly=(k!=='month'); render(); },
+  /* The books are published from their own repo and their own Pages site — the app
+     site only keeps redirect stubs. ONE constant, so moving them to
+     books.bizzingbee.com is a one-line change and not a hunt through the codebase.
+     Offline is checked first: this app is built to work in a tunnel, and opening a
+     blank tab there would look like the app broke rather than like the internet is
+     missing. */
+  openBooks:()=>{
+    if(typeof navigator!=='undefined' && navigator.onLine===false){
+      flash('The books live on the web — reconnect to open the shelf'); return; }
+    try{ const w=window.open(SB_BOOKS_URL,'_blank','noopener');
+      if(!w) flash('Pop-up blocked — allow pop-ups to open the book shelf'); }
+    catch(e){ flash('Could not open the shelf'); } },
   landPlans:()=>{ try{ const el=document.getElementById('land-plans');
     if(el){ el.scrollIntoView({behavior:'smooth',block:'start'}); return; } }catch(e){}
     render(); },
@@ -2233,6 +2245,11 @@ function view(){
 /* Counted from the shipping build 2026-08-08 by qa/claims.cjs — re-run and edit
    HERE, never inline in the copy, so a claim cannot drift from the product.
    Stated as "over" figures in the copy, per the platform's own caution. */
+/* Where the book series is published. It is a SEPARATE Pages site in a separate
+   repo — this repo keeps only redirect stubs under books/ so old links still land.
+   Change this one line to move the shelf (e.g. to https://books.bizzingbee.com/). */
+const SB_BOOKS_URL = 'https://aayuvis.github.io/bizzing-bee-books/books/';
+
 const SB_FACTS = {
   clips: 128491,        // voice/w/*.mp3, every word in both libraries
   library: 128197,      // words-full.js
@@ -3787,6 +3804,16 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
     tile({act:'openQuotes',img:'lib-quotes',kick:'Voices',title:'Quotes & Poems',
       blurb:'1,200 lines worth knowing by heart — one lands on your home screen every hour.',
       c:'#8A5B00',ic:'quote',cta:'Read'}),
+    /* The books were reachable from nowhere in the app until now. They are the top of
+       the funnel — the child who does not know they like words yet starts there and
+       arrives here — so a shelf with no door into it was a real gap, not a nicety.
+       The tile header is a montage of the actual covers (voice/pipeline made none for
+       this, so it is composed from books/art), which is why it can promise a shelf. */
+    tile({act:'openBooks',img:'lib-books',kick:'Read',title:'The Book Series',
+      /* Nineteen numbered volumes and four companions — counted from the generator,
+         not remembered. book-01..19 plus champion, lines, quiz and similes. */
+      blurb:'Nineteen illustrated volumes and four companions — origins, eponyms, poems and the champion techniques, printed to be read away from a screen.',
+      c:'#6B3F14',ic:'book',cta:'Open the shelf',stat:'23 books · opens in a new tab'}),
   ].join('');
   return `<div style="animation:sb-rise .35s ease both;max-width:1020px;margin:0 auto">
     ${pageHead('The Library','everything the Atlas teaches','Sorted by kind instead of by place — the Atlas is where you are, the Library is everything there is. The drill itself lives in Practice.')}
