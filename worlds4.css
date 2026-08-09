@@ -184,21 +184,6 @@
 .w4o-twk{border-radius:50%;background:#fff;animation:w4-twk ease-in-out infinite}
 .w4o-shoot{width:130px;height:2.5px;border-radius:2px;background:linear-gradient(90deg,#fff,transparent);animation:w4-shoot 8s ease-out infinite}
 .w4o-across{animation:w4-fly linear infinite}
-/* Drifting letters — what replaced the six bee avatars that used to fly across the
-   Bizzing Bee world. A mascot in the wallpaper competes with the one the child picked,
-   and it appeared behind the loading screen too, because the world layer paints before
-   the app renders. Letters are the app's own subject and sit behind text quietly. */
-.w4o-glyph{bottom:-12vh;font-family:var(--display,system-ui);font-weight:800;
-  color:#F0B429;opacity:0;pointer-events:none;user-select:none;
-  text-shadow:0 0 18px rgba(255,196,61,.45);
-  animation:w4-glyphrise linear infinite;will-change:transform,opacity}
-@keyframes w4-glyphrise{
-  0%{transform:translate3d(0,0,0) rotate(0deg);opacity:0}
-  12%{opacity:.30}
-  70%{opacity:.22}
-  100%{transform:translate3d(2.5vw,-118vh,0) rotate(var(--w4rot,12deg));opacity:0}}
-[data-mode="dusk"] .w4o-glyph{color:#FFD98A;text-shadow:0 0 22px rgba(255,217,138,.5)}
-[data-mode="white"] .w4o-glyph{opacity:.5;color:#C8891B}
 /* a bee crossing the meadow, rather than drifting across it */
 .w4o-across.w4o-bee{animation-name:w4-beeline;animation-timing-function:ease-in-out}
 .w4o-zoom{animation:w4-zoom linear infinite}
