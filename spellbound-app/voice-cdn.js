@@ -17,7 +17,21 @@
 (function () {
   try {
     var host = (typeof location !== 'undefined' && location.hostname) || '';
-    if (!/(^|\.)github\.io$/i.test(host)) return;            // hosted Pages only
+    var proto = (typeof location !== 'undefined' && location.protocol) || '';
+    /* WHICH BUILDS STREAM THE CORPUS.
+       This used to test `host is *.github.io`, which quietly stopped being the
+       right question the moment a custom domain existed: on bizzingbee.com the
+       check failed, the Audio wrapper never installed, and every word resolved
+       same-origin to a gh-pages branch that carries ZERO word clips. The app
+       would have launched on its own domain with all 128k pronunciations 404ing
+       and nothing on screen to say so.
+       The real question is not what the host is called — it is whether THIS build
+       bundles voice/w. Two kinds do: a file:// or localhost copy, and a full
+       download build, which says so by setting SB_VOICE_BUNDLED before this runs.
+       Everything else is a hosted build and must stream, whatever it is named. */
+    if (window.SB_VOICE_BUNDLED) return;                     // a build that ships the corpus
+    if (proto === 'file:') return;                           // offline / bundled
+    if (/^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[?::1\]?)$/i.test(host)) return;   // dev server
     var BASE = 'https://raw.githubusercontent.com/aayuvis/Bizzing-Bee/main/spellbound-app/';
     var Native = window.Audio;
     if (!Native) return;
