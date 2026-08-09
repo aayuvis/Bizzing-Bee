@@ -3,7 +3,7 @@
    ONE concept-first guided journey over SB_TRAIL (trail-data.js):
    a single continuous map — nine base acts, then the Advanced
    Rounds (the five expeditions), which unlock with the Advanced
-   Pack ($49.99/yr). Map screen (world-themed acts, winding node
+   Pack ($299/yr). Map screen (world-themed acts, winding node
    path) → unit loop (Learn → Words → Practice → Quiz gate) →
    checkpoints every 4th unit → laps (band-capped difficulty).
    Hard gate 80% (90% in the Advanced Rounds).
@@ -478,7 +478,7 @@
     const expOk = advOn() || devOn();
     const x = expOk ? actSections(c, 'exp') : null;
     state.trailCourse = 'honey';
-    const price = (window.ADV && ADV.price) ? ADV.price() : 49.99;
+    const price = (window.ADV && ADV.price) ? ADV.price() : 299;
     const advHead = `<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:26px 0 12px">
         <span style="font-family:var(--display);font-weight:800;font-size:19px">${esc(T().names.expedition)}</span>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:.08em;color:#fff;background:linear-gradient(135deg,#37415B,#1F2A44);border-radius:999px;padding:4px 11px">90% GATES</span>
@@ -834,7 +834,7 @@
     const x = expOk ? actSections(c, 'exp') : null;
     const advBoard = atlasBoard(c, 'exp');
     state.trailCourse = 'honey';
-    const price = (window.ADV && ADV.price) ? ADV.price() : 49.99;
+    const price = (window.ADV && ADV.price) ? ADV.price() : 299;
     return `<div style="animation:sb-rise .35s ease both;max-width:980px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
         <span style="font-family:var(--display);font-weight:800;font-size:22px">${esc(T().names.honey)}</span>
