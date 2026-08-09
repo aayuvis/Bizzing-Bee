@@ -56,7 +56,7 @@ handlers. App lives in this folder; open `index.html` to run.
 - `voice-cdn.js` — on `*.github.io`, rewrites `voice/…` → raw.githubusercontent of `main`.
   Concept narration (`voice/c*`, `voice/a*`) is exempt: it is bundled on `gh-pages` and
   served same-origin, so it never depends on those clips reaching `main`.
-- `advanced.js` + `adv-concepts-data.js` — the **Advanced Pack** ($49.99/yr add-on, gated by
+- `advanced.js` + `adv-concepts-data.js` — the **Advanced Pack** ($299/yr add-on, gated by
   `SB_ENT.hasAddon('advanced')` only). `SB_ADV_CONCEPTS` holds **43 expert chapters** in
   four categories, `SB_ADV_CSCRIPT` their 258 narrated scenes. These live entirely outside
   `state.conceptData`, so they cannot leak into the free 121-chapter course. Narration is
@@ -176,7 +176,7 @@ handlers. App lives in this folder; open `index.html` to run.
   `overallLevel` is deleted; the header pill says **Word difficulty**, not Bee Band.
 - **ONE concept-first guided journey.** The Journey tab IS the Word Map
   (nav 'trail'): one continuous map of 9 base acts followed by **The Advanced Rounds**
-  (the 6 expeditions, unit ids `x*`), which render locked with a **$49.99/yr** Advanced
+  (the 6 expeditions, unit ids `x*`), which render locked with a **$299/yr** Advanced
   Pack CTA until `ADV.active()`. Course is derived from the unit id prefix
   (`state.trailCourse`, set by `trailUnit`/`trailChk`; checkpoint args are
   `"course|actId:n"`). A "Chapter shelf" button on the map opens the Concepts library,

@@ -2468,7 +2468,7 @@ const SB_COMPARE = [
 ];
 const SB_FAQ = [
   ['What is Bizzing Bee?', 'A spelling bee practice app for children aged 8 to 15. It speaks every word aloud in a recorded voice, the way a pronouncer does at a real bee, and wraps the practice in 14 word games so children keep coming back.'],
-  ['Is Bizzing Bee free?', 'Yes. The free plan gives you 500 words and the basic games, with no card required and no expiry. Paid plans start at $49.99 a year for 10,000 words, and $99 a year unlocks the full graded library, the story mode and the book series.'],
+  ['Is Bizzing Bee free?', 'Yes. The free plan gives you 500 words and the basic games, with no card required and no expiry. Beginner Bee is $9.99 a month or $99 a year for 10,000 words, and Regional Speller at $19.99 a month or $199 a year unlocks the full graded library, the story mode and the book series. Monthly plans can be cancelled at any time.'],
   ['Does my child hear the words spoken aloud?', "Yes. Over 128,000 words are recorded in a real neural voice rather than read by the device's built-in text-to-speech, which mispronounces exactly the French and Latin borrowings that decide bees. A child can only spell a word they actually heard correctly."],
   ['How does it help prepare for the Scripps National Spelling Bee?', 'It practises the way the bee is actually run: the word spoken aloud, the definition, the language of origin and a sentence, then you spell it. It carries the Scripps and North South Foundation study tiers, all 108 national winning words from 1925 to 2026, and a Mock Spelling Bee that follows the real format of preliminaries, quarterfinals, semifinals and finals.'],
   ['Does it teach Greek and Latin roots?', 'Yes. 100 Word Journeys lessons and 122 concept chapters cover roots, prefixes, suffixes and language families, so an unfamiliar word can be reasoned out rather than memorised. Recognising word patterns is the single technique bee coaches recommend most.'],
@@ -2654,7 +2654,7 @@ function landPlansSection() {
       : yearly ? '$' + t.priceYr + '<span style="font-size:14px;font-weight:700;color:var(--muted)">/year</span>'
                : '$' + t.priceMo + '<span style="font-size:14px;font-weight:700;color:var(--muted)">/month</span>';
     const sub = id === 'free' ? 'No card, no expiry'
-      : yearly ? 'about $' + (t.priceYr / 12).toFixed(2) + ' a month, billed yearly' : 'billed monthly';
+      : yearly ? 'about $' + (t.priceYr / 12).toFixed(2) + ' a month, billed yearly' : 'billed monthly · cancel anytime';
     const rows = {
       free: ['500 words to practise', 'The basic games', 'Two worlds', 'Progress and streaks'],
       beginner: [sbFmt(10000) + ' words', 'Concepts and Word Lists', 'The revision pile', 'Four worlds · 5 avatar packs'],
@@ -4053,7 +4053,7 @@ function advBanner(c){
   const band=(function(){ try{ return beeBand(c).band; }catch(e){ return 2; } })();
   const on=advModeOn(c);                                   // owns the Advanced Pack
   const ready=(window.ADV&&ADV.ready)?ADV.ready():(lvl>=12||band>=7);
-  const price=(window.ADV&&ADV.price)?ADV.price():49;
+  const price=(window.ADV&&ADV.price)?ADV.price():299;
   const unlocked=on;
   const sub=on
     ? 'National-bee prep · 128,000-word library · 2-year plan, mock bees, champion tips & games'
@@ -5326,7 +5326,7 @@ function shelfCover(name, meta, blurb, act, arg, badge){
 function conceptChapterStat(chap){ const done=chap.items.filter(c=>conceptStat(c).done).length; return { done, total:chap.items.length, complete:done>=chap.items.length }; }
 function chapterCoverCard(chap){ const f=CONCEPT_FAM[chap.name]||CONCEPT_FAM.Advanced; const st=conceptChapterStat(chap); const pct=st.total?Math.round(st.done/st.total*100):0;
   const gated=chap.adv&&!advModeOn();
-  const price=(window.ADV&&ADV.price)?ADV.price():49.99;
+  const price=(window.ADV&&ADV.price)?ADV.price():299;
   return `<button class="sb-cover-card" data-act="${gated?'openAdvanced':'openConceptChapter'}" data-arg="${chap.n-1}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px ${chap.adv?`color-mix(in srgb,${f.c} 40%,var(--line))`:'var(--line)'},var(--sh-rest);display:flex;flex-direction:column">
     <div style="position:relative;height:94px;display:flex;align-items:center;justify-content:center;padding:12px 14px;${famCoverBG(chap.name)}">
       <span style="position:absolute;top:9px;left:11px;font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:11px;letter-spacing:.09em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:rgba(0,0,0,.28);color:#fff">${chap.adv?'◆ Advanced':'Shelf '+chap.n}</span>
@@ -6226,7 +6226,7 @@ function viewQuest(){
   // Advanced Mode — the fourth, gated path: National Spelling Bee prep from the 128k library.
   const aLvl=lvlOf('journey'); const aBand=(function(){ try{ return beeBand(c).band; }catch(e){ return 2; } })();
   const aUnlocked=advModeOn(c);                                   // owns the Advanced Pack
-  const aPrice=(window.ADV&&ADV.price)?ADV.price():49;
+  const aPrice=(window.ADV&&ADV.price)?ADV.price():299;
   const advCol='#5B3FA6';
   const advTile=`<button class="sb-lift" data-act="openAdvanced" style="display:flex;align-items:flex-start;gap:14px;width:100%;text-align:left;border-radius:18px;padding:16px 17px;box-shadow:0 6px 18px rgba(60,40,120,.22);border:1px solid ${aUnlocked?advCol:'var(--line)'};background:${aUnlocked?'linear-gradient(160deg,color-mix(in srgb,'+advCol+' 14%,var(--bg2)),var(--bg2) 60%)':'var(--paper,var(--bg2))'}">
       ${iconTile('advanced', advCol, {size:54, radius:16})}
@@ -6932,7 +6932,7 @@ function viewThemeDetail(){
     return `<button role="tab" aria-selected="${on}" data-act="themeTab" data-arg="${k}" ${dis?'disabled aria-disabled="true"':''}
       style="display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:999px;font-weight:800;font-size:13px;
       ${on?`background:${cl.c};color:#fff;box-shadow:var(--edge)`:`background:var(--surface2);border:1px solid var(--line);color:${dis?'var(--muted)':'var(--text)'}`}${dis?';opacity:.5':''}">${iconSVG(ic,14)} ${label}</button>`; }).join('')}</div>`;
-  const price=(window.ADV&&ADV.price)?ADV.price():49.99;
+  const price=(window.ADV&&ADV.price)?ADV.price():299;
   return `<div style="animation:sb-rise .35s ease both;max-width:760px;margin:0 auto">
     <div style="position:relative;border-radius:20px;overflow:hidden;margin-bottom:16px;height:132px">
       ${themeBannerHTML(world)}
@@ -7221,7 +7221,7 @@ function viewSettings(){
       <span style="width:40px;height:40px;flex-shrink:0;border-radius:12px;background:linear-gradient(135deg,#3A2A72,#5B3FA6);display:grid;place-items:center;color:#fff">${(window.SB_ICON_ART&&SB_ICON_ART.advanced)?SB_ICON_ART('advanced',{size:22}):(SB_ICON?SB_ICON('trophy',{size:20}):'')}</span>
       <div style="min-width:0;flex:1">
         <div style="font-family:var(--display);font-weight:800;font-size:15px">Advanced Pack</div>
-        <div style="font-size:12.5px;color:var(--muted);line-height:1.45">${_advOn?'On — the 128,000-word library, mock bees, advanced concepts, tips and games are live across the app.':'Off — $'+((window.ADV&&ADV.price)?ADV.price():49)+'/yr adds national-bee prep. Turn on to preview it.'}</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.45">${_advOn?'On — the 128,000-word library, mock bees, advanced concepts, tips and games are live across the app.':'Off — $'+((window.ADV&&ADV.price)?ADV.price():299)+'/yr adds national-bee prep. Turn on to preview it.'}</div>
       </div>
       ${S.devUnlock
         ? `<button data-act="toggleDevUnlock" title="Testing unlock is forcing this on" style="flex-shrink:0;padding:9px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:12.5px;white-space:nowrap">Testing unlock is on →</button>`
@@ -7565,7 +7565,7 @@ function coachSetup(){
         <span style="width:40px;height:40px;flex-shrink:0;border-radius:12px;background:color-mix(in srgb,#5B3FA6 13%,transparent);color:#5B3FA6;display:grid;place-items:center;opacity:.8">${(window.SB_ICON_ART&&SB_ICON_ART.ultraJourney)?SB_ICON_ART('ultraJourney',{size:22}):''}</span>
         <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15px;color:var(--muted)">Ultra Champions Journey</span>
         <span style="display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:1px">Hardest-first through all 128,000 words · Advanced Pack</span></span>
-        <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:11px;white-space:nowrap">${iconSVG('lock',12)||''} $${(window.ADV&&ADV.price)?ADV.price():49}/yr</span></button>`;
+        <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:11px;white-space:nowrap">${iconSVG('lock',12)||''} $${(window.ADV&&ADV.price)?ADV.price():299}/yr</span></button>`;
       // unlocked: the advanced journey leads. locked: it sits under the standard one.
       return on ? (ultra+journeyBanner) : (journeyBanner+locked); })()}
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px">
