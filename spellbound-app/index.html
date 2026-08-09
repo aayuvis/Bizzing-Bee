@@ -1221,6 +1221,9 @@
   }, 320);
 })();
 </script>
+<!-- Backend config + the real-accounts adapter. Both are inert until sb-config.js
+     carries a project URL and anon key, so shipping them changes nothing yet. -->
+<script src="sb-config.js?v=20260808f"></script>
 <script src="voice-cdn.js?v=20260808f"></script>
 <script>window.SB_ASSET_V="?v=20260808f";</script>
 <!-- boot-lazy: everything the first screen does not need arrives after paint.
@@ -1248,6 +1251,7 @@
 <script src="app2.js?v=20260808f"></script>
 <script src="pricing.js?v=20260808f"></script>
 <script src="auth.js?v=20260808f"></script>
+<script src="supabase-auth.js?v=20260808f"></script>
 <script src="app3.js?v=20260808f"></script>
 <script src="worlds4.js?v=20260808f"></script>
 <script src="mockbee.js?v=20260808f"></script>
