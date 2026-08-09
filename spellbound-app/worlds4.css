@@ -369,6 +369,33 @@
   animation:w4-hexglow 6.8s linear infinite;filter:drop-shadow(0 0 9px rgba(255,211,77,.75))}
 [data-theme="spellbound"][data-mode="dusk"] .w4o-comb{opacity:.22}
 
+/* THE SAME TRAVELLING WAVE IN DAYLIGHT, retuned rather than reused.
+   The night values do not transfer: a cell flashing to .95 with a gold drop-shadow
+   is a glow against black and a smear against pale lavender, and the shadow is the
+   expensive part — it is a filter on up to 360 elements, which is exactly why day
+   mode originally skipped the whole thing.
+   So daylight gets the wave with no filter at all, and a peak of .40 instead of .95
+   — enough that the lattice reads as lit honey, not enough to pull the eye off a
+   word. The lattice is already in the DOM in every mode; only the animation was
+   ever being saved. */
+@keyframes w4-hexglow-day{0%,80%,100%{opacity:.05}86%{opacity:.40}92%{opacity:.15}}
+[data-theme="spellbound"][data-mode="light"] .w4-hexcell{display:block;opacity:.05;
+  animation:w4-hexglow-day 6.8s linear infinite}
+[data-theme="spellbound"][data-mode="light"] .w4o-comb{opacity:.20}
+
+/* WHITE MODE KEEPS NO LATTICE AT ALL, which is where it already was — and I put it
+   back after measuring, not before. White sets opacity:.13 on the whole .w4-bg
+   layer, and a group opacity forces its children into an offscreen buffer; showing
+   308 hexagons under that costs ~17fps whether they animate or not. Turning the
+   animation off recovered almost none of it, because the cost is the compositing,
+   not the wave. Measured, three samples each:
+       light  61fps -> 58 with the wave        (cheap: no group opacity)
+       white  56fps -> 39 with the lattice     (still 39 with animation:none)
+   White is the mode a parent picks to make the app quiet. It stays quiet. */
+[data-theme="spellbound"][data-mode="white"] .w4o-comb{opacity:.13}
+@media(prefers-reduced-motion:reduce){
+  [data-theme="spellbound"] .w4-hexcell{animation:none}}
+
 
 /* ===== the Milky Way: corner to corner through the centre ================================= */
 [data-theme="aurora"] .w4o-milkyway{left:50%;top:50%;width:220vmax;height:26vmin;border-radius:50%;
