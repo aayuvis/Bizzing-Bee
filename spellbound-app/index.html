@@ -370,6 +370,33 @@
   /* comfortable default type: the whole app runs ~9% larger; Large text steps up further */
   #root{zoom:1.09}
   :root[data-size="large"] #root{zoom:1.28}
+/* ============================ THE LOADING SCREEN ============================
+   There was not one. The app booted straight onto the world background, so what a
+   child saw while it loaded was the wallpaper — including, until now, six cartoon
+   bees drifting through it. This is a deliberate screen instead: a honeycomb that
+   fills cell by cell while the library lands, under the wordmark spelling itself
+   out a letter at a time. It is injected and removed by JavaScript, so a crawler
+   never sees it and the static content underneath stays the crawlable first paint. */
+.sb-boot{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;
+  background:radial-gradient(120% 100% at 50% 0%,#FFF6E0 0%,#FDEBC4 46%,#F7D89A 100%);
+  transition:opacity .45s ease,visibility .45s ease}
+.sb-boot.gone{opacity:0;visibility:hidden;pointer-events:none}
+.sb-boot-in{display:flex;flex-direction:column;align-items:center;gap:22px}
+.sb-boot-comb{display:grid;grid-template-columns:repeat(5,26px);gap:5px 3px;width:max-content}
+.sb-boot-cell{width:26px;height:29px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+  background:rgba(198,150,40,.17);animation:sb-boot-fill 1.9s ease-in-out infinite}
+.sb-boot-cell:nth-child(even){transform:translateY(14px)}
+@keyframes sb-boot-fill{0%,70%,100%{background:rgba(198,150,40,.17)}
+  32%{background:#F0B429;box-shadow:0 0 16px rgba(240,180,41,.75)}}
+.sb-boot-word{font-family:var(--display,system-ui);font-weight:800;font-size:29px;
+  letter-spacing:-.01em;color:#5A3D00;display:flex;gap:1px}
+.sb-boot-word span{opacity:0;animation:sb-boot-letter .55s ease forwards}
+@keyframes sb-boot-letter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.sb-boot-sub{font-family:var(--ui,system-ui);font-weight:700;font-size:12.5px;
+  letter-spacing:.16em;text-transform:uppercase;color:#8A6512;opacity:.85}
+@media(prefers-reduced-motion:reduce){
+  .sb-boot-cell,.sb-boot-word span{animation:none}
+  .sb-boot-word span{opacity:1}}
   /* Onboarding avatar picker: the tiles are drawn at 70px but must be free to shrink
      with their grid column on a phone, or the row sets the page's minimum width. */
   .sb-onb-avs>button{min-width:0}
@@ -1148,6 +1175,52 @@
 <script src="icons-art.js?v=20260808f"></script>
 <script src="cover-art.js?v=20260808f"></script>
 <script>try{SB_ICON_MOTION()}catch(e){}</script>
+<script>
+/* THE LOADING SCREEN, SHOWN ONLY IF LOADING IS ACTUALLY SLOW.
+
+   Injected by script rather than written into the HTML, so crawlers and answer
+   engines never meet it — they get the static content in #root instead.
+
+   And injected on a 320ms delay: the app usually paints in about 250ms, and a
+   splash that appears and vanishes inside a quarter of a second is a flash, which
+   reads as a fault rather than as loading. Fast boots now see nothing at all; slow
+   ones — a cold cache, a phone on 3G — get the hive filling. Once shown it stays
+   up for at least 800ms so it cannot flicker either, and a hard 8s ceiling means a
+   stalled shard can never strand a child on it. */
+(function(){
+  var painted=false, shownAt=0, node=null;
+  function drop(){
+    if(!node) return;
+    var wait=Math.max(0, 800-(Date.now()-shownAt));
+    setTimeout(function(){
+      if(!node) return;
+      node.classList.add('gone');
+      var n=node; node=null;
+      setTimeout(function(){ try{ n.remove(); }catch(x){} }, 600);
+    }, wait);
+  }
+  window.SB_BOOT_DONE=function(){ painted=true; drop(); };
+  setTimeout(function(){
+    if(painted) return;
+    try{
+      var W='Bizzing Bee', h='';
+      for(var i=0;i<W.length;i++) h+='<span style="animation-delay:'+(0.10+i*0.055).toFixed(2)+'s">'
+        +(W[i]===' '?'&nbsp;':W[i])+'</span>';
+      var cells=''; for(var c=0;c<10;c++) cells+='<i class="sb-boot-cell" style="animation-delay:'+(c*0.13).toFixed(2)+'s"></i>';
+      var d=document.createElement('div');
+      d.className='sb-boot'; d.id='sb-boot';
+      d.setAttribute('role','status'); d.setAttribute('aria-label','Loading Bizzing Bee');
+      d.innerHTML='<div class="sb-boot-in"><div class="sb-boot-comb">'+cells+'</div>'
+        +'<div class="sb-boot-word">'+h+'</div>'
+        +'<div class="sb-boot-sub">filling the hive…</div></div>';
+      (document.body||document.documentElement).appendChild(d);
+      node=d; shownAt=Date.now();
+      if(painted) drop();
+      setTimeout(function(){ painted=true; drop(); }, 8000);
+    }catch(e){ }
+  }, 320);
+})();
+</script>
 <script src="voice-cdn.js?v=20260808f"></script>
 <script>window.SB_ASSET_V="?v=20260808f";</script>
 <!-- boot-lazy: everything the first screen does not need arrives after paint.

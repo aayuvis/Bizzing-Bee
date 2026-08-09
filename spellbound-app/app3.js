@@ -8654,6 +8654,10 @@ function render(){
   // preserve the Settings pop-up scroll position across re-renders so it never jumps
   let _setScroll=null; try{ const so=document.getElementById('sb-set-ov'); if(so) _setScroll=so.scrollTop; }catch(e){}
   root.innerHTML = `<div style="min-height:100dvh;position:relative;z-index:1">${view()}</div>` + overlays();
+  /* First real paint — take the loading screen down. Called on every render; the
+     injector guards against running twice, and its own 6s ceiling covers the case
+     where a render never arrives at all. */
+  try{ if(window.SB_BOOT_DONE) window.SB_BOOT_DONE(); }catch(e){}
   if(_setScroll!=null){ try{ const so2=document.getElementById('sb-set-ov'); if(so2) so2.scrollTop=_setScroll; }catch(e){} }
   if(state.settingsOpen) state._setOpened=true;
   if(fkey){ const el=root.querySelector('[data-fkey="'+fkey+'"]'); if(el){ try{ el.focus(); if(ss!=null&&el.setSelectionRange) el.setSelectionRange(ss,se); }catch(e){} } }

@@ -596,18 +596,24 @@ window.SB_W4_FOCUS={
             var x=ci*dx-s0, y=ri*hh+((ci%2)?hh/2:0)-hh/2;
             layer.appendChild(el('w4-hexcell','left:'+x+'px;top:'+y+'px;width:'+(2*s0)+'px;height:'+hh+'px;animation-delay:'+(((ci*2+ri*5)%29)*0.23).toFixed(2)+'s', HEXCELL)); }
       })();
-      // the bees crossing the meadow are the app's own bee avatars, not stand-in doodles
-      var hive=['bizzy','bumble','waggle','dronedan','queenhive','clover'];
-      try{ if(window.SB_AVATARS) hive=hive.filter(function(id){ return SB_AVATARS.byId[id]; }); }catch(e){}
-      for(var b1=0;b1<6;b1++){
-        var art=BEE_S;
-        try{ if(typeof SB_AVATAR==='function' && hive.length) art=SB_AVATAR(hive[b1%hive.length], Math.round(rnd(40,62))); }catch(e){}
-        /* The bees follow w4-beeline — four rises and falls per crossing, so they
-           travel like something with wings rather than drifting like a balloon.
-           There WAS a wingbeat squash on an inner wrapper as well; at 3Hz across
-           six bees it read as a twitch, not a flutter, so the flight path does
-           the work on its own. */
-        layer.appendChild(el('w4o-across w4o-bee','top:'+rnd(8,72).toFixed(1)+'vh;animation-duration:'+rnd(19,33).toFixed(1)+'s;animation-delay:-'+rnd(0,34).toFixed(1)+'s;opacity:.85', art));
+      /* WAS: six of the app's own bee avatars flying across the meadow.
+         They were cartoon characters loose in the CHROME — the same figures that
+         appear as a child's avatar, drifting behind every screen and, because the
+         world layer paints before the app renders, behind the loading screen too.
+         A mascot belongs in the content, not in the wallpaper.
+
+         What replaces them is the app's actual subject: letters. Glyphs rise and
+         fade like pollen through the hive light — on-brand for a spelling app,
+         quiet enough to sit behind text, and with no character competing with the
+         one the child chose. */
+      var GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      for(var b1=0;b1<14;b1++){
+        var ch = GLYPHS.charAt(Math.floor(rnd(0, GLYPHS.length)));
+        layer.appendChild(el('w4o-glyph',
+          'left:'+rnd(3,96).toFixed(1)+'vw;font-size:'+rnd(15,44).toFixed(0)+'px;'
+          +'animation-duration:'+rnd(22,42).toFixed(1)+'s;'
+          +'animation-delay:-'+rnd(0,40).toFixed(1)+'s;'
+          +'--w4rot:'+rnd(-24,24).toFixed(0)+'deg', ch));
       }
       for(var m1=0;m1<8;m1++) layer.appendChild(el('w4o-rise','left:'+rnd(2,98).toFixed(1)+'vw;width:5px;height:5px;background:#FFD34D;box-shadow:0 0 7px 2px rgba(255,211,77,.6);animation-duration:'+rnd(12,22).toFixed(1)+'s;animation-delay:-'+rnd(0,20).toFixed(1)+'s'));
     } else if(world==='marquee'){
