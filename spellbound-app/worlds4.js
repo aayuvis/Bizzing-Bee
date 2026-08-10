@@ -259,9 +259,11 @@
   };
   function ensureAC(){ var A=window.AudioContext||window.webkitAudioContext; if(!A) return false;
     if(!AC){ AC=new A();
-      // background music trimmed to 30% of its old level (was 1) — SFX are on a
-      // separate context and unaffected
-      master=AC.createGain(); master.gain.value=0.3;
+      // Background music level. 1 originally, then 0.3, and now 40% of THAT — this is
+      // the bed that plays on the world screens themselves, and it had only been cut
+      // once while the saga bed had been cut twice, which is why the worlds stayed the
+      // loud ones. SFX are on a separate context and unaffected.
+      master=AC.createGain(); master.gain.value=0.12;
       var lp=AC.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=3800; lp.Q.value=.3;
       var dly=AC.createDelay(1); dly.delayTime.value=.29;
       var fb=AC.createGain(); fb.gain.value=.28; var wet=AC.createGain(); wet.gain.value=.2;
