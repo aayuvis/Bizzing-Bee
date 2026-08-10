@@ -69,11 +69,11 @@
 
   var master = null, pad = null, running = false, timer = null;
   var nextTime = 0, stepIdx = 0, mood = MOODS.meadow, duckAmt = 1;
-  // Background level. It has come down twice: 0.055 originally, then 0.0165 (30%
-  // of that), and now 40% of THAT again — the world screens were still louder
-  // than a background bed should be when a child is trying to hear a word.
+  // Background level. It has come down three times: 0.055 originally, then 0.0165
+  // (30% of that), then 0.0066, and now 40% of THAT again — a background bed must
+  // never compete with the word a child is trying to hear.
   // Everything else is relative to this one number, so the mix stays intact.
-  var TARGET = 0.0066;
+  var TARGET = 0.00264;
 
   function muted() { try { return localStorage.getItem('sb_saga_music') === 'off'; } catch (e) { return false; } }
 
