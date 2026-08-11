@@ -28,34 +28,7 @@ window.SB_POEMS = {
     title: 'Six speeches everybody half-knows',
     blurb: 'These are the passages that get quoted at half length and misquoted at full length. Here they are entire, so you can hear where the sentence actually turns — and Shakespeare’s sentences always turn.',
     pieces: [
-      {
-        t: 'To be, or not to be',
-        th: 'night', a: 'William Shakespeare (1564–1616)', src: 'Hamlet, Act III, Scene 1', y: 'c. 1600', kind: 'speech',
-        lines: [
-          'To be, or not to be, that is the question:',
-          'Whether ’tis nobler in the mind to suffer',
-          'The slings and arrows of outrageous fortune,',
-          'Or to take arms against a sea of troubles',
-          'And by opposing end them. To die—to sleep,',
-          'No more; and by a sleep to say we end',
-          'The heart-ache and the thousand natural shocks',
-          'That flesh is heir to: ’tis a consummation',
-          'Devoutly to be wish’d. To die, to sleep;',
-          'To sleep, perchance to dream—ay, there’s the rub:',
-          'For in that sleep of death what dreams may come,',
-          'When we have shuffled off this mortal coil,',
-          'Must give us pause—there’s the respect',
-          'That makes calamity of so long life.'
-        ],
-        note: 'Not a speech about suicide so much as a speech about not knowing. Every line adds a clause and refuses to finish the thought; the colons and dashes are the sound of a man arguing with himself and losing. Read it slowly and you will hear that it never once says "I".',
-        hard: [
-          { w: 'outrageous', say: 'owt-RAY-juhss', def: 'shockingly bad or excessive' },
-          { w: 'consummation', say: 'kon-suh-MAY-shuhn', def: 'a completion or perfect finish' },
-          { w: 'devoutly', say: 'dih-VOWT-lee', def: 'earnestly and sincerely, as in prayer' },
-          { w: 'perchance', say: 'per-CHANSS', def: 'by chance; perhaps' },
-          { w: 'calamity', say: 'kuh-LAM-ih-tee', def: 'a disaster causing great distress' }
-        ]
-      },
+
       {
         t: 'Hath not a Jew eyes?',
         th: 'city', a: 'William Shakespeare (1564–1616)', src: 'The Merchant of Venice, Act III, Scene 1', y: 'c. 1597', kind: 'speech',
@@ -103,28 +76,7 @@ window.SB_POEMS = {
           { w: 'enthroned', say: 'en-THROHND', def: 'placed on a throne; given a position of honour' }
         ]
       },
-      {
-        t: 'Tomorrow, and tomorrow, and tomorrow',
-        th: 'night', a: 'William Shakespeare (1564–1616)', src: 'Macbeth, Act V, Scene 5', y: 'c. 1606', kind: 'speech',
-        lines: [
-          'Tomorrow, and tomorrow, and tomorrow,',
-          'Creeps in this petty pace from day to day,',
-          'To the last syllable of recorded time;',
-          'And all our yesterdays have lighted fools',
-          'The way to dusty death. Out, out, brief candle!',
-          'Life’s but a walking shadow, a poor player,',
-          'That struts and frets his hour upon the stage,',
-          'And then is heard no more. It is a tale',
-          'Told by an idiot, full of sound and fury,',
-          'Signifying nothing.'
-        ],
-        note: 'Three tomorrows in a row, and the line drags because of them — the rhythm is doing the exhaustion for him. Then the images shorten: candle, shadow, player, tale. He is running out of things to compare life to, and the last word is "nothing".',
-        hard: [
-          { w: 'syllable', say: 'SIL-uh-buhl', def: 'a unit of pronunciation with one vowel sound' },
-          { w: 'signifying', say: 'SIG-nih-fye-ing', def: 'being a sign of; meaning' },
-          { w: 'petty', say: 'PET-ee', def: 'small and of little importance' }
-        ]
-      },
+
       {
         t: 'All the world’s a stage',
         th: 'stage', a: 'William Shakespeare (1564–1616)', src: 'As You Like It, Act II, Scene 7', y: 'c. 1599', kind: 'speech',
@@ -283,33 +235,7 @@ window.SB_POEMS = {
           { w: 'honourable', say: 'ON-er-uh-buhl', def: 'deserving respect (British spelling)' }
         ]
       },
-      {
-        t: 'Is this a dagger which I see before me',
-        th: 'night', a: 'William Shakespeare (1564–1616)', src: 'Macbeth, Act II, Scene 1', y: 'c. 1606', kind: 'speech',
-        lines: [
-          'Is this a dagger which I see before me,',
-          'The handle toward my hand? Come, let me clutch thee.',
-          'I have thee not, and yet I see thee still.',
-          'Art thou not, fatal vision, sensible',
-          'To feeling as to sight? or art thou but',
-          'A dagger of the mind, a false creation,',
-          'Proceeding from the heat-oppressed brain?',
-          'I see thee yet, in form as palpable',
-          'As this which now I draw.',
-          'Thou marshall’st me the way that I was going;',
-          'And such an instrument I was to use.',
-          'Mine eyes are made the fools o’ the other senses,',
-          'Or else worth all the rest: I see thee still.'
-        ],
-        note: 'A man interrogating his own hallucination like a scientist — is it solid? can I touch it? — and losing the argument. He asks whether the dagger is real four times, and the fourth time he has stopped wanting the answer.',
-        hard: [
-          { w: 'dagger', say: 'DAG-er', def: 'a short pointed knife used as a weapon' },
-          { w: 'sensible', say: 'SEN-sih-buhl', def: 'able to be perceived by the senses' },
-          { w: 'palpable', say: 'PAL-puh-buhl', def: 'able to be touched or felt; unmistakable' },
-          { w: 'marshall’st', say: 'MAR-shuhlst', def: 'from marshal — to lead or guide in order' },
-          { w: 'instrument', say: 'IN-struh-muhnt', def: 'a tool used for a particular purpose' }
-        ]
-      },
+
       {
         t: 'What a piece of work is a man',
         th: 'library', a: 'William Shakespeare (1564–1616)', src: 'Hamlet, Act II, Scene 2', y: 'c. 1600', kind: 'speech',
@@ -420,42 +346,7 @@ window.SB_POEMS = {
           { w: 'indulgence', say: 'in-DUL-junss', def: 'a kind, lenient act of forgiveness' }
         ]
       },
-      {
-        t: 'Out, damned spot!',
-        th: 'night', a: 'William Shakespeare (1564–1616)', src: 'Macbeth, Act V, Scene 1', y: 'c. 1606', kind: 'speech',
-        lines: [
-          'Out, damned spot! out, I say!—One: two: why,',
-          'then, ’tis time to do’t.—Hell is murky!—Fie, my',
-          'lord, fie! a soldier, and afeard? What need we',
-          'fear who knows it, when none can call our power',
-          'to accompt?—Yet who would have thought the old man',
-          'to have had so much blood in him.',
-          '',
-          'The Thane of Fife had a wife: where is she now?—',
-          'What, will these hands ne’er be clean?—No more o’',
-          'that, my lord, no more o’ that: you mar all with',
-          'this starting.',
-          '',
-          'Here’s the smell of the blood still: all the',
-          'perfumes of Arabia will not sweeten this little',
-          'hand. Oh, oh, oh!',
-          '',
-          'Wash your hands, put on your nightgown; look not so',
-          'pale.—I tell you yet again, Banquo’s buried; he',
-          'cannot come out on’s grave.',
-          '',
-          'To bed, to bed! there’s knocking at the gate: come,',
-          'come, come, come, give me your hand. What’s',
-          'done cannot be undone.—To bed, to bed, to bed!'
-        ],
-        note: 'Lady Macbeth says all of this asleep, in a dream, scrubbing hands that have been clean for weeks. Notice how the sentences stop finishing themselves — a mind confessing to no one, in a language only guilt speaks fluently.',
-        hard: [
-          { w: 'murky', say: 'MUR-kee', def: 'dark and gloomy; hard to see through' },
-          { w: 'accompt', say: 'uh-KOWNT', def: 'an old spelling of account — a reckoning' },
-          { w: 'perfumes', say: 'PER-fyoomz', def: 'sweet-smelling substances' },
-          { w: 'starting', say: 'STAR-ting', def: 'sudden nervous movements; flinching' }
-        ]
-      },
+
       {
         t: 'Blow, winds, and crack your cheeks!',
         th: 'water', a: 'William Shakespeare (1564–1616)', src: 'King Lear, Act III, Scene 2', y: 'c. 1606', kind: 'speech',
@@ -2360,38 +2251,7 @@ window.SB_POEMS = {
           { w: 'denied', say: 'dih-NIDE', def: 'refused; not allowed to happen' }
         ]
       },
-      {
-        t: 'The Second Coming',
-        th: 'ruin', a: 'W. B. Yeats (1865–1939)', src: 'Michael Robartes and the Dancer', y: '1919', kind: 'poem',
-        lines: [
-          'Turning and turning in the widening gyre',
-          'The falcon cannot hear the falconer;',
-          'Things fall apart; the centre cannot hold;',
-          'Mere anarchy is loosed upon the world,',
-          'The blood-dimmed tide is loosed, and everywhere',
-          'The ceremony of innocence is drowned;',
-          'The best lack all conviction, while the worst',
-          'Are full of passionate intensity.',
-          '',
-          'Surely some revelation is at hand;',
-          'Surely the Second Coming is at hand.',
-          'The Second Coming! Hardly are those words out',
-          'When a vast image out of Spiritus Mundi',
-          'Troubles my sight: somewhere in sands of the desert',
-          'A shape with lion body and the head of a man,',
-          'A gaze blank and pitiless as the sun,',
-          'Is moving its slow thighs, while all about it',
-          'Reel shadows of the indignant desert birds.'
-        ],
-        note: 'Written just after the First World War, and it reads like this morning’s news to every generation since — that is the poem’s whole reputation, and also its warning: a text that fits everything may explain nothing. The falcon spiralling out of the falconer’s call is the picture the rest of the poem works from.',
-        hard: [
-          { w: 'gyre', say: 'JYRE', def: 'a spiral or vortex; a circular course' },
-          { w: 'anarchy', say: 'AN-er-kee', def: 'absence of government or order' },
-          { w: 'conviction', say: 'kuhn-VIK-shuhn', def: 'a firm belief' },
-          { w: 'revelation', say: 'rev-uh-LAY-shuhn', def: 'a dramatic disclosure of something hidden' },
-          { w: 'indignant', say: 'in-DIG-nuhnt', def: 'angry at something unfair' }
-        ]
-      },
+
 {
         t: 'In Flanders Fields',
         th: 'war', a: 'John McCrae (1872–1918)', src: 'Punch', y: '1915', kind: 'poem',
