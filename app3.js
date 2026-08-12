@@ -2303,6 +2303,41 @@ const SB_BOOKS_URL = 'https://aayuvis.github.io/bizzing-bee-books/books/';
    spine in app-art/spines/<s>.png and the real book agree on sight. The spine art
    carries NO lettering: the title below is real text over it, because an image model
    spells badly and this is a spelling app. */
+/* Each spine's MEASURED width/height, written by voice/pipeline/spine-art.py into
+   app-art/spines/ratios.json and baked in here rather than fetched — this app has no
+   build step and must work from file://, so a runtime fetch for 23 numbers would be
+   both a request and a new failure mode.
+   libShelf() sizes each title from its own spine's width. Without this the type was
+   sized on title length alone, which ignored that a vertical line of letters cannot be
+   thicker than the book it is printed on: on the narrowest spines the letters painted
+   out over both edges onto the shelf behind. REGENERATE THIS BLOCK whenever the spine
+   art changes. */
+window.SB_SPINE_R = {
+ 'book-01': 0.1365,
+ 'book-02': 0.1481,
+ 'book-03': 0.1346,
+ 'book-04': 0.1442,
+ 'book-05': 0.1308,
+ 'book-06': 0.1519,
+ 'book-07': 0.1462,
+ 'book-08': 0.1269,
+ 'book-09': 0.1404,
+ 'book-10': 0.1212,
+ 'book-11': 0.1808,
+ 'book-12': 0.125,
+ 'book-13': 0.1615,
+ 'book-14': 0.1808,
+ 'book-15': 0.1462,
+ 'book-16': 0.1192,
+ 'book-17': 0.1365,
+ 'book-18': 0.1346,
+ 'book-19': 0.1346,
+ 'book-champion': 0.1442,
+ 'book-lines': 0.1827,
+ 'book-quiz': 0.1192,
+ 'book-similes': 0.1154
+};
+
 const SB_SHELF = [
   { s:'book-01', t:'Lift-Off!',              a:'#FFC23D' },
   { s:'book-02', t:'The Rulebook',           a:'#6C4FE0' },
@@ -4119,41 +4154,74 @@ function libShelf(){
      and Say It Like a Champion on the first pass. The angles are gentle and each
      leaning spine carries its own side margin (below), so it tilts into air. */
   const LEAN = { 2:-4, 7:3.5, 10:-3.5, 13:4, 21:-3.5 };   // degrees, by position
-  const LAY  = [[4,5,6],[16,17,18,19]];                  // flat stacks
+  /* Five to a stack, not three. Against a 180px row a 3-high stack (~70px) left a
+     conspicuous rectangle of empty shelf above it; five fills the space the way a real
+     pile does. Both runs stay inside one mobile half (0-11, 12-22) so a stack is never
+     split across the phone's two shelves. */
+  const LAY  = [[4,5,6,7,8],[16,17,18,19,20]];            // flat stacks
   /* Heights are a PERCENTAGE OF THE ROW and must never exceed 100: the row is
      align-items:flex-end with no clipping, so a 110% book grows upward out of the box
      and silently pushes the shelf into the heading above it. That is what made the
      shelf measure 278px when its row was 170. Vary downward only. */
   const H    = [100,92,97,88,99,94,90,100,95,87,96,91,100,93,89,98,86,100,94];
 
-  /* TYPE IS SIZED FROM THE TITLE, NOT FROM A ROTATING TABLE. A fixed cycle of sizes
-     looks livelier but it is blind to length, and it clipped "Say It Like a Champion"
-     — the one title that happened to land on the largest size and the shortest book.
-     Deriving the size from the character count means a long title can never overflow
-     its spine, and the shelf still varies because the titles do. */
-  const fs = t => t.length<=12 ? 10.5 : t.length<=16 ? 10 : t.length<=19 ? 9 : t.length<=22 ? 8 : 7.4;
+  /* TYPE IS SIZED FROM THE SPINE ITSELF, in BOTH directions.
+       across the spine — a vertical line of type cannot be thicker than the book it is
+         printed on. Sizing on title length alone ignored this, so on the thinnest books
+         (17px wide against a 46px one) the letters painted out over both edges onto the
+         shelf behind. `SB_SPINE_R` holds each spine's MEASURED width/height, written by
+         voice/pipeline/spine-art.py, so this is the real width and not an assumption.
+       along the spine — a long title still has to fit end to end, which is the length
+         term that already caught "Say It Like a Champion".
+     The smaller of the two wins. */
+  const ROW = 150;                                    // the shortest row any layout uses (the phone)
+  const R = window.SB_SPINE_R || {};
+  const fsLen = t => t.length<=12 ? 10.5 : t.length<=16 ? 10 : t.length<=19 ? 9 : t.length<=22 ? 8 : 7.4;
+  const fs = (t,slug) => {
+    const w = (R[slug] || 0.16) * ROW;                // this spine's width in px
+    const across = Math.max(6.5, Math.min(11, w * 0.44));
+    return Math.round(Math.min(fsLen(t), across) * 10) / 10;
+  };
   /* ...and the book grows if its title still needs the room. 0.62em per character is
      measured for this face at these sizes; the +18 is the spine's own top/bottom
      padding. Capped at 100 for the reason in the H comment above.
      THE DIVISOR IS THE SHORTEST ROW ANY LAYOUT USES (128px, the phone's two shelves),
      not the desktop row. Sizing against the taller row is what clipped four titles on
      a phone while measuring clean on a desktop — a percentage of a row it never had. */
-  const bh = (t,i) => Math.min(100, Math.max(H[i%H.length],
-                       Math.ceil((t.length*fs(t)*0.62+18)/128*100)));
+  const bh = (t,i,slug) => Math.min(100, Math.max(H[i%H.length],
+                       Math.ceil((t.length*fs(t,slug)*0.62+18)/ROW*100)));
 
   const inLay = new Map();
   LAY.forEach((run,ri)=>run.forEach(i=>inLay.set(i,ri)));
 
-  const title=(b,i)=>`<span class="bk-t" style="--fs:${fs(b.t)}px">${esc(b.t)}</span>`;
+  /* INK FOLLOWS THE SPINE, AND IT IS CHOSEN BY CONTRAST RATHER THAN BY A THRESHOLD.
+     White type on Lift-Off!'s yellow and Subject Sprints' orange was barely legible. A
+     single luminance cut-off fixed those two and left a cluster of mid-tone golds
+     (Root Camp: Latin, The Long Quiz, The Champion's Method) sitting right on the line
+     with white type at about 1.8:1 — technically "dark enough", actually unreadable.
+     So compute the WCAG contrast ratio for BOTH inks and keep the better one. No
+     threshold to tune, and it stays correct if a volume is ever recoloured.
+     The book pipeline does the same job for covers in cover-ink.py. */
+  const ink = hex => {
+    const n = parseInt(hex.slice(1), 16);
+    const ch = v => { v /= 255; return v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); };
+    const L = 0.2126*ch((n>>16)&255) + 0.7152*ch((n>>8)&255) + 0.0722*ch(n&255);
+    const ratio = other => (Math.max(L,other)+0.05) / (Math.min(L,other)+0.05);
+    return ratio(1) >= ratio(0.006)                       // white vs a near-black ink
+      ? {c:'#fff',    sh:'0 1px 2px rgba(0,0,0,.55)'}
+      : {c:'#241703', sh:'0 1px 1px rgba(255,255,255,.5)'};
+  };
+  const title=(b,i)=>{ const k=ink(b.a);
+    return `<span class="bk-t" style="--fs:${fs(b.t,b.s)}px;color:${k.c};text-shadow:${k.sh}">${esc(b.t)}</span>`; };
   const img=(b)=>`<img src="app-art/spines/${b.s}.png" alt="" loading="lazy" decoding="async">`;
   const attrs=(b)=>`data-act="openBook" data-arg="${escA(b.s)}" title="${escA(b.t)}${ok?'':' — Regional Speller'}"`;
 
   const upright=(b,i)=>`<button class="bk-sp" ${attrs(b)}
-      style="--bh:${bh(b.t,i)}%;${LEAN[i]?`--lean:${LEAN[i]}deg;margin:0 9px`:''}">${img(b)}${title(b,i)}</button>`;
+      style="--bh:${bh(b.t,i,b.s)}%;${LEAN[i]?`--lean:${LEAN[i]}deg;margin:0 9px`:''}">${img(b)}${title(b,i)}</button>`;
   /* A book lying down is the same drawing turned a quarter turn. Rotating the IMAGE
      rather than shipping a second set of art keeps one file per volume, and the title
      simply stops being vertical. */
-  const laid=(b,i)=>`<button class="bk-lay" ${attrs(b)}>${img(b)}<span class="bk-lt" style="--fs:${fs(b.t)}px">${esc(b.t)}</span></button>`;
+  const laid=(b,i)=>`<button class="bk-lay" ${attrs(b)}>${img(b)}<span class="bk-lt" style="--fs:${fs(b.t,b.s)}px;color:${ink(b.a).c};text-shadow:${ink(b.a).sh}">${esc(b.t)}</span></button>`;
 
   const piece=(b,i)=>{
     const run=inLay.get(i);
