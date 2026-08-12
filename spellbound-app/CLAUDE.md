@@ -573,20 +573,41 @@ handlers. App lives in this folder; open `index.html` to run.
   spine `data-act="openBook"`; app3's handler resolves `closest('[data-act]')`, so a spine
   wins on its own hit area and the shelf catches the wood and the gaps. `openBook`
   validates the slug against `SB_SHELF` rather than pasting it into a URL.
-- **Spine art carries NO lettering** (`voice/pipeline/spine-art.py`, 23 PNGs / 193KB in
+- **Spine art carries NO lettering** (`voice/pipeline/spine-art.py`, 23 PNGs in
   `app-art/spines/`). An image model letters convincingly and spells badly, and this is a
   spelling app — so the model paints the spine and HTML sets the type over it. Titles stay
   correct, selectable and crisp, and a re-render never needs new art.
   - Only **`gemini-3.1-flash-image`** reliably reads "spine" as the narrow edge of a book;
-    the other two drew the front COVER 10 times in 23. The script now MEASURES the aspect
-    and retries anything squarer than 0.28 rather than trusting the model.
+    the other two drew the front COVER 10 times in 23. The script MEASURES the aspect and
+    retries outside **`[MIN_RATIO, MAX_RATIO]` = [0.095, 0.185]** rather than trusting it.
+    The first run accepted 0.126–0.28 — a 17px book beside a 46px one — and that spread was
+    most of why the shelf read as scruffy AND why type spilled off the narrow spines.
+  - The style prompt says **"fine, even, confident ink line"** and forbids a cartoon in the
+    negative (no thick wobbly outline, no childish doodle, no bouncy uneven shapes). The
+    first cut was drawn with a heavy wobble and read as a picture book.
   - The Gemini key lives at **`/root/.gkey`** (mode 600, `GKEY_FILE` overrides). It is the
     newer `AQ.`-prefixed format, not `AIza…`, and goes in the `x-goog-api-key` header.
-- **Spine geometry is derived, never tabulated.** Type size comes from the title's
-  character count and the book's height from that — a fixed cycle of sizes is blind to
-  length and clipped "Say It Like a Champion". The height divisor is **the shortest row any
-  layout uses (128px, the phone's two shelves)**, not the desktop row: sizing against the
-  taller row measured clean on desktop and clipped four titles on a phone.
+- **`window.SB_SPINE_R` in app3.js holds every spine's MEASURED width/height**, written by
+  the script to `app-art/spines/ratios.json` and **baked into the source** — no build step
+  and `file://` support mean a runtime fetch for 23 numbers would be a request and a new
+  failure mode. **Regenerate that block whenever the spine art changes.**
+- **Spine geometry is derived, never tabulated, in BOTH directions.** Type is sized by the
+  smaller of: the title's character count (so a long title fits end to end) and **the
+  spine's own measured width** (so a vertical line of letters is never thicker than the
+  book it is printed on). Sizing on length alone let the letters paint out over both edges
+  of the thinnest spines onto the shelf behind — and a box-vs-image geometry check could
+  not see it, because the box and the image are the same width by construction. The
+  divisor is **the shortest row any layout uses (150px, the phone's two shelves)**, not the
+  desktop row: sizing against the taller row measured clean on desktop and clipped four
+  titles on a phone.
+- **Title ink is chosen by CONTRAST, not by a luminance threshold** (`ink()`): compute the
+  WCAG ratio for white and for near-black against the spine colour and keep the better. A
+  single cut-off fixed the yellow and orange and left a cluster of mid-tone golds at about
+  1.8:1 — technically past the line, actually unreadable. Every spine now clears 4.35:1.
+  `cover-ink.py` does the same job for the book covers.
+- The row height IS the book height: `.bk-books` 180px desktop, `.bk-row` 150px phone.
+  Stacks are **five** books — against a 180px row a 3-high stack left a conspicuous
+  rectangle of empty shelf above it.
 - `--bh` is a **percentage of the row and must never exceed 100** — the row is
   `align-items:flex-end` with no clipping, so a 110% book grows up out of the box and
   pushes the shelf into the heading above it.
@@ -598,7 +619,7 @@ handlers. App lives in this folder; open `index.html` to run.
   `font-size` were quietly beaten by the base rules.
 
 ## The Atlas is a journey on scenery, not a painting with pins
-- The painted map is held at **`opacity:.42`** (dusk `.34`, high-contrast `.24`) and
+- The painted map is held at **`opacity:.6`** (dusk `.5`, high-contrast `.34`) and
   desaturated; the route SVG and the pins are SIBLINGS above it and keep full contrast, so
   dimming the art lifts the journey without touching anything that must stay legible.
 - **`.atlas-board`'s own background is load-bearing.** It was a near-black `#241E33`, so

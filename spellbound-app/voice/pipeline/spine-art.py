@@ -47,17 +47,29 @@ H = int(os.environ.get('NB_H', '520'))   # shipped spine height in px
 MODELS = (os.environ.get('NB_MODELS')
           or 'gemini-3.1-flash-image,gemini-3.1-flash-image,gemini-3-pro-image').split(',')
 WORKERS = int(os.environ.get('NB_WORKERS', '4'))
-# A spine is much taller than it is wide. Anything squarer than this is a cover.
-MAX_RATIO = float(os.environ.get('NB_MAX_RATIO', '0.28'))
+# A spine is much taller than it is wide. Anything squarer than MAX is a cover; anything
+# thinner than MIN is a bookmark. The FIRST run accepted 0.126 to 0.28 — a 17px book
+# beside a 46px one — and that spread is most of why the shelf read as scruffy AND why
+# the type spilled off the narrow ones. The band is tight now and enforced by measurement.
+MAX_RATIO = float(os.environ.get('NB_MAX_RATIO', '0.185'))
+# The floor only exists to reject a bookmark. It was 0.115 and rejected two perfectly
+# good slim volumes at 0.100; type now sizes itself from the MEASURED width, so a thin
+# spine is a thin book rather than a bug.
+MIN_RATIO = float(os.environ.get('NB_MIN_RATIO', '0.095'))
 
 NOTEXT = ("ABSOLUTELY NO TEXT ANYWHERE ON THE SPINE: no title, no author, no publisher, "
           "no captions, no labels, no numbers, no roman numerals, no monograms, no initials, "
           "no lettering of any alphabet, and no marks that resemble writing. Every surface "
           "that could carry writing is left as clean flat colour. ")
 
-STYLE = ("Hand-drawn children's-bookshop illustration: confident hand-inked outline of slightly "
-         "uneven weight, flat gouache colour inside the line, a little paper texture, no gradients, "
-         "no photorealism, no 3D rendering. The charm of a drawing made by a person. ")
+# The first cut was drawn with a thick wobbly outline and read as a cartoon — fine for a
+# picture book, wrong for a shelf a twelve-year-old is meant to take seriously. This is the
+# same medium drawn with a steadier hand: a fine even line, flat ink, elegant proportions.
+STYLE = ("Elegant editorial illustration of a real hardback book: a FINE, EVEN, confident ink "
+         "line of uniform thin weight, flat printed colour inside it, a whisper of paper grain. "
+         "Drawn with a steady hand and real proportion, like the endpapers of a well-made "
+         "hardback. NOT a cartoon: no thick wobbly outline, no childish doodle, no bouncy "
+         "uneven shapes, no gradients, no photorealism, no 3D rendering, no drop shadows. ")
 
 
 def prompt_for(v, band):
@@ -73,7 +85,8 @@ def prompt_for(v, band):
     }[band]
     return (
         f"A single upright hardback book spine standing vertically, seen straight on, face-on, flat to camera. "
-        f"The spine is tall and narrow. Its colour is exactly the hex colour {v['a']}, with any shading in a "
+        f"THE SPINE IS VERY TALL AND VERY NARROW — a slender column about seven times taller than it "
+        f"is wide, the proportions of a real hardback seen edge-on. Its colour is exactly the hex colour {v['a']}, with any shading in a "
         f"deeper tone of that same hue. {deco.capitalize()}. "
         f"The MIDDLE two thirds of the spine is left completely clean and empty — flat undecorated colour with "
         f"nothing drawn on it at all. "
@@ -129,6 +142,7 @@ def knockout(png):
 BANDS = ['plain', 'bands', 'dots', 'stripe', 'block', 'crown']
 lock = threading.Lock()
 done = {'n': 0, 'fail': []}
+RATIOS = {}
 
 
 def one(i, v):
@@ -145,12 +159,14 @@ def one(i, v):
             raw = gen(model, prompt_for(v, band))
             im = knockout(raw)
             ratio = im.width / im.height
-            if ratio > MAX_RATIO:
-                # a front cover, not a spine — retry on another model rather than ship it
-                last = f'drew a cover (ratio {ratio:.2f} > {MAX_RATIO})'
+            if ratio > MAX_RATIO or ratio < MIN_RATIO:
+                # a front cover or a bookmark, not a spine — retry rather than ship it
+                last = f'ratio {ratio:.3f} outside [{MIN_RATIO}, {MAX_RATIO}]'
                 raise ValueError(last)
             im = im.convert('P', palette=Image.ADAPTIVE, colors=64)
             im.save(path, 'PNG', optimize=True)
+            with lock:
+                RATIOS[v['slug']] = round(ratio, 4)
             with lock:
                 done['n'] += 1
                 print(f"  {v['slug']:<14} {band:<7} {model:<24} {im.width}x{im.height} "
@@ -174,7 +190,18 @@ def main():
     print(f'{len(vols)} spines -> {OUT}  ({WORKERS} workers over {len(MODELS)} models)', flush=True)
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
         list(ex.map(lambda a: one(*a), list(enumerate(vols))))
-    print(f"\ndone: {done['n']}/{len(vols)}")
+    # The client needs each spine's true width to size its title; measure every file on
+    # disk, not just the ones this run drew, so a partial run still writes a full map.
+    for v in vols:
+        f = os.path.join(OUT, v['slug'] + '.png')
+        if os.path.exists(f):
+            im = Image.open(f)
+            RATIOS[v['slug']] = round(im.width / im.height, 4)
+    with open(os.path.join(OUT, 'ratios.json'), 'w') as fh:
+        json.dump(RATIOS, fh, indent=1, sort_keys=True)
+    print(f"\nratios.json written ({len(RATIOS)} spines, "
+          f"{min(RATIOS.values()):.3f}-{max(RATIOS.values()):.3f})")
+    print(f"done: {done['n']}/{len(vols)}")
     if done['fail']:
         print('failures:')
         for f in done['fail']:
