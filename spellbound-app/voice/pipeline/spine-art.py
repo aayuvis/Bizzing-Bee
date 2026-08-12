@@ -51,45 +51,65 @@ WORKERS = int(os.environ.get('NB_WORKERS', '4'))
 # thinner than MIN is a bookmark. The FIRST run accepted 0.126 to 0.28 — a 17px book
 # beside a 46px one — and that spread is most of why the shelf read as scruffy AND why
 # the type spilled off the narrow ones. The band is tight now and enforced by measurement.
-MAX_RATIO = float(os.environ.get('NB_MAX_RATIO', '0.185'))
-# The floor only exists to reject a bookmark. It was 0.115 and rejected two perfectly
-# good slim volumes at 0.100; type now sizes itself from the MEASURED width, so a thin
-# spine is a thin book rather than a bug.
-MIN_RATIO = float(os.environ.get('NB_MIN_RATIO', '0.095'))
+MAX_RATIO = float(os.environ.get('NB_MAX_RATIO', '0.30'))
+# Thickness. The band went 0.28 -> 0.185 -> and now UP to 0.17-0.30, because slender was
+# the wrong correction: at ~0.14 the books read as thin card, and thirteen of them left a
+# third of the shelf empty at either end. A real hardback spine is roughly a quarter of
+# its height. 0.30 is still unmistakably a spine — the covers this check exists to reject
+# came back at 0.37-0.57.
+MIN_RATIO = float(os.environ.get('NB_MIN_RATIO', '0.17'))
 
 NOTEXT = ("ABSOLUTELY NO TEXT ANYWHERE ON THE SPINE: no title, no author, no publisher, "
           "no captions, no labels, no numbers, no roman numerals, no monograms, no initials, "
           "no lettering of any alphabet, and no marks that resemble writing. Every surface "
           "that could carry writing is left as clean flat colour. ")
 
-# The first cut was drawn with a thick wobbly outline and read as a cartoon — fine for a
-# picture book, wrong for a shelf a twelve-year-old is meant to take seriously. This is the
-# same medium drawn with a steadier hand: a fine even line, flat ink, elegant proportions.
-STYLE = ("Elegant editorial illustration of a real hardback book: a FINE, EVEN, confident ink "
-         "line of uniform thin weight, flat printed colour inside it, a whisper of paper grain. "
-         "Drawn with a steady hand and real proportion, like the endpapers of a well-made "
-         "hardback. NOT a cartoon: no thick wobbly outline, no childish doodle, no bouncy "
-         "uneven shapes, no gradients, no photorealism, no 3D rendering, no drop shadows. ")
+# Two corrections live in this string. The first cut was drawn with a thick wobbly outline
+# and read as a cartoon. The second was clean but FLAT — a coloured rectangle, not a book.
+# What makes a spine read as real is that it is the curved back of a cylinder: a soft
+# highlight down its centre, a little shade at both long edges, and the small physical
+# details a bound book actually has (headband, hubs, stamped rules, cloth weave).
+STYLE = ("Illustration of a REAL cloth-bound hardback book, drawn with the care of a "
+         "bookbinder's catalogue. A fine, even, confident ink line. THE SPINE IS THE CURVED "
+         "BACK OF A BOOK, NOT A FLAT RECTANGLE: soft vertical shading with a subtle highlight "
+         "running down the centre of the spine and a little deeper tone along both long edges, "
+         "so it reads as rounded. Visible cloth weave or fine leather grain in the colour. "
+         "A small striped HEADBAND at the very top and the very bottom where the binding shows. "
+         "Slight honest wear at the head and tail. "
+         "NOT a cartoon: no thick wobbly outline, no childish doodle, no bouncy uneven shapes, "
+         "no flat featureless block of colour, no photorealism, no 3D render, no cast shadow "
+         "on the background. ")
 
 
 def prompt_for(v, band):
     """One upright spine. `band` varies the decoration so a row of 23 does not read as
     23 copies of one drawing — the reference shelf's appeal is that no two spines match."""
+    # Eight real bindings, so no two books on the shelf are the same object. These are
+    # things an actual hardback has, not decoration invented for the picture.
     deco = {
-        'plain':  "the spine is plain flat colour with a single thin darker rule near the top and another near the bottom",
-        'bands':  "the spine has two broad horizontal bands, one near the top and one near the bottom, in a darker shade of the same colour",
-        'dots':   "the spine carries a neat vertical column of small circles near the very bottom, in assorted colours, like a publisher's device",
-        'stripe': "the spine has a narrow vertical stripe of a darker shade running its full height along one edge",
-        'block':  "the lower third of the spine is a solid block of a deeper shade, with a clean straight edge where the two colours meet",
-        'crown':  "the spine has a small simple decorative motif near the very top only — a tiny star or a tiny leaf — and is otherwise plain",
+        'hubs':   "an antique binding: four RAISED HORIZONTAL BANDS (hubs) across the spine dividing it "
+                  "into panels, with a thin stamped rule above and below each hub",
+        'label':  "a modern cloth binding with a small rectangular paper LABEL pasted near the top, "
+                  "its edges slightly uneven, the rest plain cloth",
+        'rules':  "a plain cloth binding with two fine stamped RULES near the top and two near the "
+                  "bottom, nothing between them",
+        'quarter':"a QUARTER-BOUND book: the lower third in a distinctly darker cloth with a clean "
+                  "straight horizontal join where the two materials meet",
+        'colophon':"a plain cloth binding with a small publisher's COLOPHON near the tail — a neat "
+                  "vertical column of tiny circles in assorted colours",
+        'gilt':   "a handsome binding with a single wide GILT PANEL outlined in a thin gold rule in the "
+                  "upper third, the rest plain cloth",
+        'ridges': "a plain binding with three narrow ridges close together near the tail only",
+        'worn':   "a well-read cloth binding, slightly faded down one long edge, with a soft bumped "
+                  "corner at the tail and a single stamped rule at the head",
     }[band]
     return (
         f"A single upright hardback book spine standing vertically, seen straight on, face-on, flat to camera. "
-        f"THE SPINE IS VERY TALL AND VERY NARROW — a slender column about seven times taller than it "
-        f"is wide, the proportions of a real hardback seen edge-on. Its colour is exactly the hex colour {v['a']}, with any shading in a "
+        f"THE SPINE IS A SUBSTANTIAL HARDBACK, about four times taller than it is wide — a proper "
+        f"thick book, not a slim pamphlet and not a flat card. Its colour is exactly the hex colour {v['a']}, with any shading in a "
         f"deeper tone of that same hue. {deco.capitalize()}. "
-        f"The MIDDLE two thirds of the spine is left completely clean and empty — flat undecorated colour with "
-        f"nothing drawn on it at all. "
+        f"The MIDDLE two thirds of the spine is left clean and empty — no decoration at all there, "
+        f"just the cloth and its shading, because a title will be printed over it. "
         f"{NOTEXT}"
         f"{STYLE}"
         f"The book stands alone, centred, upright, with nothing else in the picture. Plain flat WHITE background, "
@@ -139,7 +159,7 @@ def knockout(png):
     return im.resize((tw, H), Image.LANCZOS)
 
 
-BANDS = ['plain', 'bands', 'dots', 'stripe', 'block', 'crown']
+BANDS = ['hubs', 'label', 'rules', 'quarter', 'colophon', 'gilt', 'ridges', 'worn']
 lock = threading.Lock()
 done = {'n': 0, 'fail': []}
 RATIOS = {}
@@ -163,7 +183,7 @@ def one(i, v):
                 # a front cover or a bookmark, not a spine — retry rather than ship it
                 last = f'ratio {ratio:.3f} outside [{MIN_RATIO}, {MAX_RATIO}]'
                 raise ValueError(last)
-            im = im.convert('P', palette=Image.ADAPTIVE, colors=64)
+            im = im.convert('P', palette=Image.ADAPTIVE, colors=160)  # 64 banded the spine shading
             im.save(path, 'PNG', optimize=True)
             with lock:
                 RATIOS[v['slug']] = round(ratio, 4)

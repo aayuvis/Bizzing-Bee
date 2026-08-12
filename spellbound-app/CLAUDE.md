@@ -447,6 +447,24 @@ handlers. App lives in this folder; open `index.html` to run.
   differs (envelope correlation) before shipping — see `voice/pipeline/` QA scripts.
 
 ## Boot budget (`boot-lazy.js`) — read before adding a script tag
+- **EVERY `<script src>` in index.html carries `defer`, and it must stay that way.** All 42
+  were plain blocking, which made the parser stop and restart 42 times: DOMContentLoaded
+  **2952ms**, first contentful paint **716ms**. Adding `defer` to all of them — not one byte
+  less JS — gave DCL **792ms** and FCP **228ms**, a 3.5x improvement. Execution order is
+  preserved for deferred classic scripts, so the icons -> app -> app3 -> trail chain is
+  unaffected; only parsing stops being blocked.
+  - **An inline script that CALLS into a deferred one must wait for `DOMContentLoaded`.**
+    `try{SB_ICON_MOTION()}catch(e){}` ran at parse time, before any deferred script existed,
+    and its own try/catch would have swallowed the failure and silently left icon motion off.
+    Inline scripts that merely SET a global (`window.SB_ASSET_V`) are fine where they are —
+    they run earlier, which is what their readers need.
+  - Measure with the resource-timing harness, not by eye: `paints`, `domContentLoadedEventEnd`
+    and per-resource transfer sizes. Note localhost serves uncompressed, so byte figures there
+    are ~3-4x the gzipped reality on Pages; the parse/execute time is the honest part.
+- Boot is **5.03MB across 42 files**; `words-data.js` alone is 2.3MB of it (46%) and `app3.js`
+  1.0MB. The next real lever, if boot needs to get faster again, is a smaller first word
+  shard (`voice/pipeline/words-shard.js`) and moving the saga/mockbee/advanced/trail cluster
+  (~800KB, none of it needed for Home's first paint) into `boot-lazy` groups.
 - The app boots in ~400ms on 4.7MB of critical JS. It used to be 1417ms on 31.9MB.
   **Do not add a data file to `index.html`.** Register it in `boot-lazy.js` (REG +
   IDLE order, and a GROUP if a feature needs it) and it arrives on an idle queue
@@ -582,9 +600,21 @@ handlers. App lives in this folder; open `index.html` to run.
     retries outside **`[MIN_RATIO, MAX_RATIO]` = [0.095, 0.185]** rather than trusting it.
     The first run accepted 0.126–0.28 — a 17px book beside a 46px one — and that spread was
     most of why the shelf read as scruffy AND why type spilled off the narrow spines.
+  - The band has moved twice and BOTH corrections mattered: 0.28 (too loose, accepted
+    covers) -> 0.185 (too slender — the books read as thin card and thirteen of them left a
+    third of the shelf empty) -> **0.17-0.30**, which fills 89% of the row. A real hardback
+    spine is roughly a quarter of its height.
   - The style prompt says **"fine, even, confident ink line"** and forbids a cartoon in the
     negative (no thick wobbly outline, no childish doodle, no bouncy uneven shapes). The
     first cut was drawn with a heavy wobble and read as a picture book.
+  - **A spine reads as real because it is the curved back of a cylinder.** The prompt asks
+    for a highlight down the centre and deeper tone at both long edges, plus the details a
+    bound book actually has — a striped **headband** at head and tail, raised **hubs**, a
+    pasted paper **label**, stamped **rules**, a **quarter-bound** join, a colophon. Eight
+    such bindings rotate, so no two books on the shelf are the same object. Without that
+    shading the drawings were clean but flat: a coloured rectangle, not a book.
+  - Quantise the PNGs to **160 colours, not 64** — 64 banded the very spine shading that
+    sells the roundness.
   - The Gemini key lives at **`/root/.gkey`** (mode 600, `GKEY_FILE` overrides). It is the
     newer `AQ.`-prefixed format, not `AIza…`, and goes in the `x-goog-api-key` header.
 - **`window.SB_SPINE_R` in app3.js holds every spine's MEASURED width/height**, written by
@@ -607,7 +637,8 @@ handlers. App lives in this folder; open `index.html` to run.
   `cover-ink.py` does the same job for the book covers.
 - The row height IS the book height: `.bk-books` 180px desktop, `.bk-row` 150px phone.
   Stacks are **five** books — against a 180px row a 3-high stack left a conspicuous
-  rectangle of empty shelf above it.
+  rectangle of empty shelf above it. With the thicker spines the row fills 89% of its
+  width, leaving ~59px at each end, which reads as shelf rather than as a gap.
 - `--bh` is a **percentage of the row and must never exceed 100** — the row is
   `align-items:flex-end` with no clipping, so a 110% book grows up out of the box and
   pushes the shelf into the heading above it.
