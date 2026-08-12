@@ -653,8 +653,12 @@
     const d = pins.map((p, i) => (i ? 'L' : 'M') + p[1] + ' ' + p[2]).join(' ');
     const walked = pins.slice(0, Math.max(1, upto + 1)).map((p, i) => (i ? 'L' : 'M') + p[1] + ' ' + p[2]).join(' ');
     return `<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1">
-      <path d="${d}" fill="none" stroke="rgba(255,255,255,.5)" stroke-width=".7" stroke-dasharray="1.4 2.2" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
-      ${upto >= 1 ? `<path d="${walked}" fill="none" stroke="#FFD24D" stroke-width="1.1" stroke-linecap="round" vector-effect="non-scaling-stroke" opacity=".95"/>` : ''}</svg>`;
+      ${/* The strokes were white-on-dark, which was right while the painting behind
+            them was at full strength. Over a map deliberately taken down to 42% they
+            were the faintest marks on screen — and the route IS the journey. They read
+            from CSS custom properties now, so light gets ink and dusk keeps its glow. */''}
+      <path d="${d}" fill="none" stroke="var(--rt-guide,rgba(255,255,255,.5))" stroke-width=".8" stroke-dasharray="1.4 2.2" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+      ${upto >= 1 ? `<path d="${walked}" fill="none" stroke="var(--rt-walk,#FFD24D)" stroke-width="1.3" stroke-linecap="round" vector-effect="non-scaling-stroke"/>` : ''}</svg>`;
   }
 
   function atlasBoard(c, crs) {
@@ -1009,13 +1013,18 @@
     const minW = Math.max(1, pts.length) * 42;
     return `<div class="act-pan" id="sb-pan"><div class="atlas-board act-board" style="min-width:min(${minW}px,190vw)">
       <img src="app-art/${slug}.jpg" alt="" loading="lazy" decoding="async">
-      ${dark ? '<span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,6,20,.16),rgba(8,6,20,.30));z-index:1"></span>' : ''}
+      ${/* The advanced half reads darker on sight. That used to be a near-black wash,
+            which was right when the painting underneath was at full strength; over a
+            painting deliberately taken down to 42% it just makes mud. A violet tint at
+            a third of the weight still says "this is the advanced road" and leaves the
+            route and pins to carry the screen. */''}
+      ${dark ? '<span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(58,38,110,.07),rgba(58,38,110,.13));z-index:1;pointer-events:none"></span>' : ''}
       <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none">
-        <path d="${m.d}" fill="none" stroke="rgba(255,250,235,.72)" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 7" vector-effect="non-scaling-stroke"
-          style="filter:drop-shadow(0 1px 2px rgba(24,14,4,.5))"/>
-        <path d="${m.d}" fill="none" stroke="rgba(255,206,88,.9)" stroke-width="5" stroke-linecap="round"
+        <path d="${m.d}" fill="none" stroke="var(--rt-guide,rgba(255,250,235,.72))" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 7" vector-effect="non-scaling-stroke"
+          style="filter:drop-shadow(0 1px 2px var(--rt-sh,rgba(24,14,4,.5)))"/>
+        <path d="${m.d}" fill="none" stroke="var(--rt-walk,rgba(255,206,88,.9))" stroke-width="5" stroke-linecap="round"
           pathLength="100" stroke-dasharray="${f} 100" vector-effect="non-scaling-stroke"
-          style="filter:drop-shadow(0 1px 3px rgba(24,14,4,.55))"/>
+          style="filter:drop-shadow(0 1px 3px var(--rt-sh,rgba(24,14,4,.55)))"/>
       </svg>
       ${caches}${marks}</div></div>`;
   }
