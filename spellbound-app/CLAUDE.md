@@ -562,6 +562,55 @@ handlers. App lives in this folder; open `index.html` to run.
   strips by `voice/pipeline/app-banners.py`. The Word Atlas, the theme pages and the
   home Atlas tile all draw from it — one visual language with the books.
 
+## The Library's book shelf, and the drawn spines
+- The books are a **shelf of 23 spines above the tiles** (`libShelf()` in app3.js), not a
+  tile among tiles. `SB_SHELF` is the ordered list; **`s` (the file name) is the ONLY one
+  of a volume's three identities that may build a URL** — `n` is the printed number and
+  `art` is the art prefix, and they disagree (17 is `book-17.html` with `b19` art; the
+  companions have no number). The table was read out of `mkbooks.js` via `slugOf`/`artOf`
+  and cross-checked against the `books/*.html` redirect stubs; all 23 matched both ways.
+- **Two levels of click, for free.** The shelf carries `data-act="openBooks"` and each
+  spine `data-act="openBook"`; app3's handler resolves `closest('[data-act]')`, so a spine
+  wins on its own hit area and the shelf catches the wood and the gaps. `openBook`
+  validates the slug against `SB_SHELF` rather than pasting it into a URL.
+- **Spine art carries NO lettering** (`voice/pipeline/spine-art.py`, 23 PNGs / 193KB in
+  `app-art/spines/`). An image model letters convincingly and spells badly, and this is a
+  spelling app — so the model paints the spine and HTML sets the type over it. Titles stay
+  correct, selectable and crisp, and a re-render never needs new art.
+  - Only **`gemini-3.1-flash-image`** reliably reads "spine" as the narrow edge of a book;
+    the other two drew the front COVER 10 times in 23. The script now MEASURES the aspect
+    and retries anything squarer than 0.28 rather than trusting the model.
+  - The Gemini key lives at **`/root/.gkey`** (mode 600, `GKEY_FILE` overrides). It is the
+    newer `AQ.`-prefixed format, not `AIza…`, and goes in the `x-goog-api-key` header.
+- **Spine geometry is derived, never tabulated.** Type size comes from the title's
+  character count and the book's height from that — a fixed cycle of sizes is blind to
+  length and clipped "Say It Like a Champion". The height divisor is **the shortest row any
+  layout uses (128px, the phone's two shelves)**, not the desktop row: sizing against the
+  taller row measured clean on desktop and clipped four titles on a phone.
+- `--bh` is a **percentage of the row and must never exceed 100** — the row is
+  `align-items:flex-end` with no clipping, so a 110% book grows up out of the box and
+  pushes the shelf into the heading above it.
+- Leaning books need their own side margin or they lie across the neighbour's title.
+- **Two shelves below 720px.** The row is authored as two halves that `display:contents`
+  re-joins into one row on wider screens — one source of markup, no duplicated list.
+- A mobile override of equal specificity only wins by **source order**: the phone block
+  sits after the base `.lib-*` rules, because declared above them its `display:none` and
+  `font-size` were quietly beaten by the base rules.
+
+## The Atlas is a journey on scenery, not a painting with pins
+- The painted map is held at **`opacity:.42`** (dusk `.34`, high-contrast `.24`) and
+  desaturated; the route SVG and the pins are SIBLINGS above it and keep full contrast, so
+  dimming the art lifts the journey without touching anything that must stay legible.
+- **`.atlas-board`'s own background is load-bearing.** It was a near-black `#241E33`, so
+  lowering the image's opacity *darkened* the map instead of calming it. It is a paper tone
+  now; only dusk keeps a dark ground.
+- **Route ink is theme-tokened** (`--rt-guide` / `--rt-walk` / `--rt-sh` on `.atlas-board`).
+  The strokes were white-on-dark, correct over a full-strength painting and the faintest
+  marks on screen over a dimmed one. Light and white get a drawn-road brown; dusk keeps the
+  original glow. Both the overview route and the act board read the same tokens.
+- The advanced band's scrim dropped from a near-black wash to a light violet tint: over a
+  42% painting the old weight just made mud.
+
 ## Concepts is ONE library
 - `state.conceptData` = free `SB_CONCEPTS.chapters` **concat** `SB_ADV_CONCEPTS.chapters`.
   Advanced is always **appended**, never interleaved — concept narration is indexed by

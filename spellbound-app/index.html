@@ -342,9 +342,9 @@
 }
 </script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 viewBox%3D%220 0 64 64%22%3E%3Cellipse cx%3D%2215%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(-24 15 20)%22%2F%3E%3Cellipse cx%3D%2249%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(24 49 20)%22%2F%3E%3Cpath d%3D%22M27 17 Q23 7 21 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Cpath d%3D%22M37 17 Q41 7 43 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Ccircle cx%3D%2221%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Ccircle cx%3D%2243%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22 fill%3D%22%23FFC23D%22%2F%3E%3Cellipse cx%3D%2224%22 cy%3D%2230%22 rx%3D%2211%22 ry%3D%227%22 fill%3D%22%23FFD86E%22 opacity%3D%22.55%22%2F%3E%3CclipPath id%3D%22b%22%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22%2F%3E%3C%2FclipPath%3E%3Cg clip-path%3D%22url(%23b)%22%3E%3Crect x%3D%225%22 y%3D%2245%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3Crect x%3D%225%22 y%3D%2256%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3C%2Fg%3E%3Cellipse cx%3D%2217%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Cellipse cx%3D%2247%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Ccircle cx%3D%2224%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2225.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2224.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2240%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2241.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2240.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Cpath d%3D%22M26 49 Q32 55 40 49%22 fill%3D%22none%22 stroke%3D%22%233A1E5C%22 stroke-width%3D%222.8%22 stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E">
-<link rel="stylesheet" href="fonts/fonts.css?v=20260809b">
-<link rel="stylesheet" href="tokens.css?v=20260809b">
-<link rel="stylesheet" href="worlds4.css?v=20260809b">
+<link rel="stylesheet" href="fonts/fonts.css?v=20260809c">
+<link rel="stylesheet" href="tokens.css?v=20260809c">
+<link rel="stylesheet" href="worlds4.css?v=20260809c">
 
 <style>
   *{box-sizing:border-box}
@@ -775,8 +775,27 @@
   .arc-stat{font-size:11.5px;font-weight:800;color:var(--muted)}
   .arc-sech{font-family:var(--display);font-weight:800;font-size:14px;color:var(--muted);margin:4px 2px 2px;letter-spacing:.01em}
   /* ---- The Word Atlas map: pins on painted art ---- */
-  .atlas-board{position:relative;border-radius:20px;overflow:hidden;box-shadow:0 0 0 1px var(--line),0 14px 32px rgba(26,18,54,.2);background:#241E33;line-height:0}
-  .atlas-board>img{display:block;width:100%;height:auto}
+  /* The painting is scenery; the journey is the subject. The route and its stops are
+     drawn OVER the art (the SVG at z-index 2, the pins above that), so taking the
+     painting down lifts the journey without touching anything that has to stay legible.
+     Only the <img> is dimmed — pins, route, caches and rider are siblings, not children,
+     and keep full contrast.
+     The board's own background is load-bearing here: it used to be a near-black
+     (#241E33), so lowering the image's opacity DARKENED the map instead of calming it.
+     It is a paper tone now, and only dusk keeps a dark ground. */
+  .atlas-board{position:relative;border-radius:20px;overflow:hidden;box-shadow:0 0 0 1px var(--line),0 14px 32px rgba(26,18,54,.2);background:#F5EEE0;line-height:0}
+  .atlas-board>img{display:block;width:100%;height:auto;opacity:.42;filter:saturate(.68) contrast(.94)}
+  :root[data-mode="white"] .atlas-board{background:#FAF7F1}
+  :root[data-mode="dusk"] .atlas-board{background:#241E33}
+  :root[data-mode="dusk"] .atlas-board>img{opacity:.34;filter:saturate(.6) brightness(.92)}
+  /* Reduced motion is about movement, not contrast — but a speller who has asked for
+     high contrast wants the map to stop competing with the pins even more, not less. */
+  :root[data-contrast="high"] .atlas-board>img{opacity:.24;filter:saturate(.5)}
+  /* Route ink. Light and white grounds get a warm brown that reads as a drawn road on
+     pale paper; dusk keeps the original glow, which was always correct there. */
+  .atlas-board{--rt-guide:rgba(104,68,26,.55);--rt-walk:#B4620E;--rt-sh:rgba(255,255,255,.55)}
+  :root[data-mode="dusk"] .atlas-board{--rt-guide:rgba(255,250,235,.72);--rt-walk:rgba(255,206,88,.95);--rt-sh:rgba(24,14,4,.55)}
+  :root[data-contrast="high"] .atlas-board{--rt-guide:rgba(60,36,8,.8);--rt-walk:#8A4708}
   .atlas-pin{position:absolute;transform:translate(-50%,-50%);z-index:var(--pz,2);display:flex;flex-direction:column;align-items:center;gap:5px;background:none;padding:0;cursor:pointer;transition:transform .16s ease}
   .atlas-pin:hover,.atlas-pin:focus-visible{transform:translate(-50%,-50%) scale(1.07);z-index:6}
   .atlas-dot{display:grid;place-items:center;border-radius:50%;backdrop-filter:blur(2px);line-height:1}
@@ -1105,10 +1124,70 @@
     .mb-spot,.mb-ann-ic,.mb-thinking,.mb-result.won .mb-result-face{animation:none}
   }
   /* ---- Library tiles: painted headers ---- */
+  .lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:12px}
   .lib-tile{position:relative;display:flex;flex-direction:column;border-radius:18px;overflow:hidden;background:var(--paper,var(--bg2));
     box-shadow:0 0 0 1px var(--line),var(--sh-rest);text-align:left;transition:transform .16s ease,box-shadow .16s ease}
   .lib-tile:hover{transform:translateY(-4px);box-shadow:0 0 0 1px var(--line),0 16px 30px rgba(43,27,94,.2)}
-  .lib-art{position:relative;display:block;aspect-ratio:16/9;overflow:hidden;background:#241E33}
+  /* ---- The book shelf, above the tiles ----
+     Spine art is drawn (app-art/spines/*.png, voice/pipeline/spine-art.py) and carries
+     no lettering; .bk-t is real text laid over it. The shelf itself is CSS, not art,
+     so it costs nothing and takes the theme with it. */
+  .bk-shelf{position:relative;margin:0 0 14px;padding:10px 14px 0;border-radius:18px;
+    background:var(--paper,var(--bg2));box-shadow:0 0 0 1px var(--line);cursor:pointer}
+  .bk-shelf:hover{box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 40%,var(--line))}
+  .bk-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+  .bk-kick{font-family:var(--mono,monospace);font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--accent)}
+  .bk-title{font-family:var(--display);font-weight:800;font-size:16px;line-height:1.15}
+  .bk-all{display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border-radius:9px;
+    background:#6B3F14;color:#fff;font-weight:800;font-size:12px}
+  .bk-locked .bk-all{background:var(--surface2);color:var(--muted)}
+  .bk-books{display:flex;align-items:flex-end;justify-content:center;gap:2px;height:128px}
+  /* One continuous row on anything wider than a phone: the two authored halves
+     collapse away and their spines become direct children of .bk-books. */
+  .bk-row{display:contents}
+  /* A book leans by rotating about the point where it meets the wood, which is how a
+     real one falls. Rotating about its centre lifts one corner off the shelf. */
+  .bk-sp{position:relative;display:block;height:var(--bh,100%);flex:0 1 auto;min-width:0;padding:0;
+    background:none;border:0;cursor:pointer;transition:transform .14s ease;
+    transform-origin:50% 100%;transform:rotate(var(--lean,0deg))}
+  .bk-sp:hover,.bk-sp:focus-visible{transform:rotate(var(--lean,0deg)) translateY(-7px)}
+  .bk-sp:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+  .bk-sp>img{display:block;height:100%;width:auto;max-width:none}
+  .bk-locked .bk-sp>img,.bk-locked .bk-lay>img{filter:saturate(.34) brightness(.94)}
+  /* The title reads bottom-to-top, the way most of the spines on a real shelf do.
+     It is clipped rather than wrapped — a two-line title on a 30px spine is a smear —
+     and the full title is always available as the button's tooltip and accessible name. */
+  .bk-t{position:absolute;left:0;right:0;top:7px;bottom:9px;display:flex;align-items:flex-end;justify-content:center;
+    writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;overflow:hidden;
+    font-family:var(--display);font-weight:800;font-size:var(--fs,9.5px);letter-spacing:.01em;
+    color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.55);pointer-events:none}
+  /* ---- the flat stack: somebody left a few lying on top of each other ----
+     A laid book is the same drawing turned a quarter turn, so there is one image per
+     volume and no second set of art. The button is sized to the book LYING DOWN
+     (long side across); the image inside is rotated into it. */
+  .bk-stack{display:flex;flex-direction:column-reverse;justify-content:flex-start;gap:2px;align-self:flex-end;margin:0 4px}
+  .bk-lay{position:relative;display:block;width:var(--lw,150px);height:21px;padding:0;background:none;border:0;
+    cursor:pointer;transition:transform .14s ease}
+  .bk-lay:hover,.bk-lay:focus-visible{transform:translateX(5px)}
+  .bk-lay:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+  .bk-lay>img{position:absolute;top:50%;left:50%;height:var(--lw,150px);width:auto;max-width:none;
+    transform:translate(-50%,-50%) rotate(-90deg)}
+  .bk-lt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:0 9px;
+    white-space:nowrap;overflow:hidden;font-family:var(--display);font-weight:800;font-size:var(--fs,9.5px);
+    color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.55);pointer-events:none}
+  .bk-wood{height:9px;margin:0 -14px;border-radius:0 0 18px 18px;
+    background:linear-gradient(180deg,#A9793F,#7A5024 45%,#5C3A18);box-shadow:inset 0 2px 3px rgba(255,255,255,.18)}
+  .bk-foot{padding:6px 0 8px;font-size:11px;font-weight:700;color:var(--muted);text-align:center}
+  @media(max-width:719px){
+    /* Two shelves. 23 spines across a phone is 14px each — a barcode, not a bookshelf. */
+    .bk-books{display:block;height:auto}
+    .bk-row{display:flex;align-items:flex-end;justify-content:center;gap:2px;height:128px}
+    .bk-row+.bk-row{margin-top:9px;padding-top:9px;border-top:2px solid #7A5024}
+    /* No font-size here. It used to pin .bk-t to 9px, which overrode the size derived
+       from the title's length and clipped the three longest titles on a phone while
+       the desktop measured clean. The derived size is already safe for this row. */
+  }
+  .lib-art{position:relative;display:block;aspect-ratio:3/1;overflow:hidden;background:#241E33}
   .lib-art>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
   .lib-art:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,32,.34) 0%,rgba(14,9,32,0) 42%,rgba(14,9,32,.52) 100%)}
   /* A locked shelf still shows what it holds — a child who cannot see the books has no
@@ -1117,12 +1196,27 @@
   .lib-locked .lib-go{background:var(--surface2)!important;color:var(--muted)!important}
   .lib-kick{position:absolute;top:9px;left:10px;z-index:2;font-family:var(--mono,monospace);font-size:9px;font-weight:700;letter-spacing:.13em;
     text-transform:uppercase;color:#fff;background:rgba(14,9,32,.5);border:1px solid rgba(255,255,255,.28);border-radius:99px;padding:3px 9px}
-  .lib-h{position:absolute;left:12px;right:12px;bottom:9px;z-index:2;font-family:var(--display);font-weight:800;font-size:16px;line-height:1.12;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6)}
-  .lib-body{padding:10px 12px 12px;display:flex;flex-direction:column;flex:1}
-  .lib-body p{margin:0;font-size:12px;color:var(--muted);line-height:1.4}
-  .lib-foot{margin-top:auto;padding-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .lib-go{display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border-radius:9px;color:#fff;font-weight:800;font-size:12px}
+  .lib-h{position:absolute;left:11px;right:11px;bottom:7px;z-index:2;font-family:var(--display);font-weight:800;font-size:15px;line-height:1.12;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+  .lib-body{padding:8px 11px 10px;display:flex;flex-direction:column;flex:1}
+  /* Two lines, always. A three-line blurb on one tile and a one-line blurb on the
+     next made the grid ragged, and the eighth tile fell below the fold for it. */
+  .lib-body p{margin:0;font-size:11.5px;color:var(--muted);line-height:1.36;
+    display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+  .lib-foot{margin-top:auto;padding-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .lib-go{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:9px;color:#fff;font-weight:800;font-size:11.5px}
   .lib-stat{font-size:11.5px;font-weight:800;color:var(--muted);margin-left:auto}
+  @media(max-width:620px){
+    /* Eight full-width tiles is 1,600px of scroll on a phone; two columns halves it.
+       This block sits AFTER the base rules on purpose — as a media query of equal
+       specificity it only wins by source order, and while it was declared above
+       .lib-body p the base display:-webkit-box quietly beat it. */
+    .lib-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    /* At half width the 3:1 strip is only ~58px tall, which a two-word title wraps
+       into and lands on top of the kicker. Give the picture room instead. */
+    .lib-art{aspect-ratio:16/10}
+    .lib-h{font-size:13px;line-height:1.1}
+    .lib-body{padding:7px 9px 9px}
+  }
   /* ---- Legendary avatars: a living, animated treatment ---- */
   .sb-av-legend{transform-origin:50% 54%;animation:sb-avbreathe 3.6s ease-in-out infinite;overflow:visible}
   @keyframes sb-avbreathe{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1.024) translateY(-1px)}}
@@ -1172,7 +1266,7 @@
   @keyframes lx-gleam{0%,100%{opacity:0;transform:translateY(-6px)}50%{opacity:1;transform:translateY(6px)}}
   @keyframes lx-string{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.7)}}
 </style>
-  <link rel="stylesheet" href="saga2.css?v=20260809b">
+  <link rel="stylesheet" href="saga2.css?v=20260809c">
 </head>
 <body>
 <div id="root">
@@ -1230,9 +1324,9 @@
 </dl>
 </main>
 </div>
-<script src="icons.js?v=20260809b"></script>
-<script src="icons-art.js?v=20260809b"></script>
-<script src="cover-art.js?v=20260809b"></script>
+<script src="icons.js?v=20260809c"></script>
+<script src="icons-art.js?v=20260809c"></script>
+<script src="cover-art.js?v=20260809c"></script>
 <script>try{SB_ICON_MOTION()}catch(e){}</script>
 <script>
 /* THE LOADING SCREEN, SHOWN ONLY IF LOADING IS ACTUALLY SLOW.
@@ -1282,48 +1376,48 @@
 </script>
 <!-- Backend config + the real-accounts adapter. Both are inert until sb-config.js
      carries a project URL and anon key, so shipping them changes nothing yet. -->
-<script src="sb-config.js?v=20260809b"></script>
-<script src="voice-cdn.js?v=20260809b"></script>
-<script>window.SB_ASSET_V="?v=20260809b";</script>
+<script src="sb-config.js?v=20260809c"></script>
+<script src="voice-cdn.js?v=20260809c"></script>
+<script>window.SB_ASSET_V="?v=20260809c";</script>
 <!-- boot-lazy: everything the first screen does not need arrives after paint.
      Registry + idle order live in boot-lazy.js; call SB_LAZY.need(...) before
      opening a feature whose data is deferred. -->
-<script src="boot-lazy.js?v=20260809b"></script>
-<script src="words-data.js?v=20260809b"></script>
-<script src="words-extra.js?v=20260809b"></script>
-<script src="words-patch.js?v=20260809b"></script>
-<script src="themes-data.js?v=20260809b"></script>
-<script src="quotes.js?v=20260809b"></script>
-<script src="trivia-icons.js?v=20260809b"></script>
-<script src="trivia-data.js?v=20260809b"></script>
-<script src="tips-data.js?v=20260809b"></script>
-<script src="voice-manifest.js?v=20260809b"></script>
-<script src="voice-adv-manifest.js?v=20260809b"></script>
-<script src="voice-review.js?v=20260809b"></script>
-<script src="app.js?v=20260809b"></script>
-<script src="avatars-art.js?v=20260809b"></script>
-<script src="avatar-png.js?v=20260809b"></script>
-<script src="game-art.js?v=20260809b"></script>
-<script src="avatars.js?v=20260809b"></script>
-<script src="avatar-greetings.js?v=20260809b"></script>
-<script src="avatar-cards.js?v=20260809b"></script>
-<script src="app2.js?v=20260809b"></script>
-<script src="pricing.js?v=20260809b"></script>
-<script src="auth.js?v=20260809b"></script>
-<script src="supabase-auth.js?v=20260809b"></script>
-<script src="app3.js?v=20260809b"></script>
-<script src="worlds4.js?v=20260809b"></script>
-<script src="mockbee.js?v=20260809b"></script>
-  <script src="games-daily.js?v=20260809b"></script>
-  <script src="saga-art/saga-art.js?v=20260809b"></script>
-  <script src="saga-art/saga-map.js?v=20260809b"></script>
-  <script src="saga-art/worlds-art.js?v=20260809b"></script>
-  <script src="saga-art-dom.js?v=20260809b"></script>
-  <script src="saga-music.js?v=20260809b"></script>
-  <script src="saga-script.js?v=20260809b"></script>
-  <script src="saga2.js?v=20260809b"></script>
-<script src="trivia.js?v=20260809b"></script>
-<script src="advanced.js?v=20260809b"></script>
-<script src="trail.js?v=20260809b"></script>
+<script src="boot-lazy.js?v=20260809c"></script>
+<script src="words-data.js?v=20260809c"></script>
+<script src="words-extra.js?v=20260809c"></script>
+<script src="words-patch.js?v=20260809c"></script>
+<script src="themes-data.js?v=20260809c"></script>
+<script src="quotes.js?v=20260809c"></script>
+<script src="trivia-icons.js?v=20260809c"></script>
+<script src="trivia-data.js?v=20260809c"></script>
+<script src="tips-data.js?v=20260809c"></script>
+<script src="voice-manifest.js?v=20260809c"></script>
+<script src="voice-adv-manifest.js?v=20260809c"></script>
+<script src="voice-review.js?v=20260809c"></script>
+<script src="app.js?v=20260809c"></script>
+<script src="avatars-art.js?v=20260809c"></script>
+<script src="avatar-png.js?v=20260809c"></script>
+<script src="game-art.js?v=20260809c"></script>
+<script src="avatars.js?v=20260809c"></script>
+<script src="avatar-greetings.js?v=20260809c"></script>
+<script src="avatar-cards.js?v=20260809c"></script>
+<script src="app2.js?v=20260809c"></script>
+<script src="pricing.js?v=20260809c"></script>
+<script src="auth.js?v=20260809c"></script>
+<script src="supabase-auth.js?v=20260809c"></script>
+<script src="app3.js?v=20260809c"></script>
+<script src="worlds4.js?v=20260809c"></script>
+<script src="mockbee.js?v=20260809c"></script>
+  <script src="games-daily.js?v=20260809c"></script>
+  <script src="saga-art/saga-art.js?v=20260809c"></script>
+  <script src="saga-art/saga-map.js?v=20260809c"></script>
+  <script src="saga-art/worlds-art.js?v=20260809c"></script>
+  <script src="saga-art-dom.js?v=20260809c"></script>
+  <script src="saga-music.js?v=20260809c"></script>
+  <script src="saga-script.js?v=20260809c"></script>
+  <script src="saga2.js?v=20260809c"></script>
+<script src="trivia.js?v=20260809c"></script>
+<script src="advanced.js?v=20260809c"></script>
+<script src="trail.js?v=20260809c"></script>
 </body>
 </html>

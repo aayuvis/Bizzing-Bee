@@ -2209,6 +2209,19 @@ const app = {
     try{ const w=window.open(SB_BOOKS_URL,'_blank','noopener');
       if(!w) flash('Pop-up blocked — allow pop-ups to open the book shelf'); }
     catch(e){ flash('Could not open the shelf'); } },
+  /* One volume off the shelf. Same gate, same offline check and the same pop-up
+     handling as openBooks — a child tapping a spine and a child tapping the shelf
+     must not be able to reach two different answers about whether they own this.
+     The slug is checked against SB_SHELF rather than pasted into a URL, so a stray
+     data-arg cannot navigate anywhere we did not publish. */
+  openBook:(slug)=>{
+    const v = SB_SHELF.find(b=>b.s===slug); if(!v) return;
+    if(!gateFeature('books','The book series','regional')) return;
+    if(typeof navigator!=='undefined' && navigator.onLine===false){
+      flash('The books live on the web — reconnect to open them'); return; }
+    try{ const w=window.open(SB_BOOKS_URL+v.s+'.html','_blank','noopener');
+      if(!w) flash('Pop-up blocked — allow pop-ups to open the book'); }
+    catch(e){ flash('Could not open that book'); } },
   landPlans:()=>{ try{ const el=document.getElementById('land-plans');
     if(el){ el.scrollIntoView({behavior:'smooth',block:'start'}); return; } }catch(e){}
     render(); },
@@ -2274,6 +2287,47 @@ function view(){
    repo — this repo keeps only redirect stubs under books/ so old links still land.
    Change this one line to move the shelf (e.g. to https://books.bizzingbee.com/). */
 const SB_BOOKS_URL = 'https://aayuvis.github.io/bizzing-bee-books/books/';
+
+/* The shelf. One entry per published volume, in shelf order: the nineteen numbered
+   books, then the four companions.
+
+   THE THREE FIELDS ARE NOT INTERCHANGEABLE and this is the file where that bites.
+   A volume's printed number, its file name and its art prefix disagree by design —
+   volume 17 "Named After Someone" is book-17.html but carries b19 art, and the
+   companions have no number at all. `s` is the FILE NAME, and it is the only one of
+   the three that may ever be used to build a URL. It was read out of mkbooks.js
+   (slugOf/artOf) rather than typed, and cross-checked against the redirect stubs in
+   books/ — all 23 matched both ways.
+
+   `a` is the volume's own accent colour, the same one its cover uses, so the drawn
+   spine in app-art/spines/<s>.png and the real book agree on sight. The spine art
+   carries NO lettering: the title below is real text over it, because an image model
+   spells badly and this is a spelling app. */
+const SB_SHELF = [
+  { s:'book-01', t:'Lift-Off!',              a:'#FFC23D' },
+  { s:'book-02', t:'The Rulebook',           a:'#6C4FE0' },
+  { s:'book-03', t:'Latin Launchers',        a:'#E06A3C' },
+  { s:'book-04', t:'Greek Lightning',        a:'#2E8FB8' },
+  { s:'book-05', t:'Endings That Win',       a:'#E8458C' },
+  { s:'book-06', t:'Root Camp: Latin',       a:'#C08A3E' },
+  { s:'book-07', t:'Root Camp: Greek',       a:'#13A892' },
+  { s:'book-08', t:'The World Tour',         a:'#3E63D6' },
+  { s:'book-09', t:'Subject Sprints',        a:'#F0A93C' },
+  { s:'book-10', t:'Word Personalities',     a:'#B14FC4' },
+  { s:'book-11', t:'The Playbook',           a:'#D6353F' },
+  { s:'book-12', t:'Schwa Country',          a:'#7E8AA0' },
+  { s:'book-13', t:'Letters Behaving Badly', a:'#B8562F' },
+  { s:'book-14', t:'The Grand Trunk Road',   a:'#D97A1E' },
+  { s:'book-15', t:'Far-Flung Words',        a:'#0E8A78' },
+  { s:'book-16', t:'The Word Factory',       a:'#5B6BA8' },
+  { s:'book-17', t:'Named After Someone',    a:'#C2586B' },
+  { s:'book-18', t:"The Champion's Mind",    a:'#7C5CFF' },
+  { s:'book-19', t:"The Champion's Method",  a:'#C8901B' },
+  { s:'book-similes',  t:'As Busy as a Bee',      a:'#3DA85C', co:1 },
+  { s:'book-champion', t:'Say It Like a Champion',a:'#7C3F9E', co:1 },
+  { s:'book-lines',    t:'Lines Worth Keeping',   a:'#4A6FA5', co:1 },
+  { s:'book-quiz',     t:'The Long Quiz',         a:'#B5893C', co:1 },
+];
 
 const SB_FACTS = {
   clips: 128491,        // voice/w/*.mp3, every word in both libraries
@@ -4005,43 +4059,126 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
         ${o.stat?`<span class="lib-stat">${esc(o.stat)}</span>`:''}</span></span></button>`;
   const tiles=[
     tile({act:'setNav',arg:'concepts',img:'lib-concepts',kick:'Explain',title:'Concepts',
-      blurb:'Every explanation in the app on one shelf — patterns, roots, origins and bee-day craft.',
+      blurb:'Patterns, roots, origins and bee-day craft.',
       c:'#5A37D6',stat:cAll.length?(cDone+'/'+cAll.length+' mastered'):(shelves+' shelves')}),
     tile({act:'setNav',arg:'themes',img:'lib-themes',kick:'Families',title:'Theme Journeys',
-      blurb:'Words by the family they belong to — a subject, or the language they came from.',
+      blurb:'Words grouped by subject, or by the language they came from.',
       c:'#C8451B',stat:mine?(mine+' picked'):(themeN+' families')}),
     tile({act:'openVocab',img:'lib-vocab',kick:'Meaning',title:'Vocabulary',
-      blurb:'Word to meaning, vocabulary-bee style. Study a deck, then take the check.',
+      blurb:'Word to meaning, vocabulary-bee style.',
       c:'#0A6B5D',cta:'Study'}),
     tile({act:'setNav',arg:'figurative',img:'lib-figurative',kick:'Sayings',title:'Idioms & Similes',
-      blurb:'2,350 phrases and the true story behind each one, card by card.',c:'#7A2F8C'}),
+      blurb:'2,350 phrases and the story behind each one.',c:'#7A2F8C'}),
     tile({act:'openTrivTrain',img:'lib-trivia',kick:'Cards',title:'Bizzing Trivia',
-      blurb:'Etymology and word-world cards by chapter, then play the Arcade round.',
+      blurb:'Etymology cards by chapter, then the Arcade round.',
       c:'#C8791B',ic:'bulb',cta:'Learn',stat:tN?fmtN(tN)+' questions':''}),
     tile({act:'openIpaTrain',img:'lib-ipa',kick:'Notation',title:'The Sound Alphabet',
-      blurb:'Read IPA — the phonetic symbols every real study list is written in.',
+      blurb:'Read IPA, the notation real study lists use.',
       c:'#1C4A96',ic:'volume',cta:'Train'}),
     tile({act:'openTyping',img:'lib-typing',kick:'Speed',title:'Typing Trainer',
-      blurb:'Learn to touch-type, then race the sixty-second test.',c:'#2A63D6',ic:'pencil',cta:'Practise'}),
+      blurb:'Touch-type, then race the sixty-second test.',c:'#2A63D6',ic:'pencil',cta:'Practise'}),
     tile({act:'openQuotes',img:'lib-quotes',kick:'Voices',title:'Quotes & Poems',
-      blurb:'1,200 lines worth knowing by heart — one lands on your home screen every hour.',
+      blurb:'1,200 lines worth knowing by heart.',
       c:'#8A5B00',ic:'quote',cta:'Read'}),
-    /* The books were reachable from nowhere in the app until now. They are the top of
-       the funnel — the child who does not know they like words yet starts there and
-       arrives here — so a shelf with no door into it was a real gap, not a nicety.
-       The tile header is a montage of the actual covers (voice/pipeline made none for
-       this, so it is composed from books/art), which is why it can promise a shelf. */
-    (()=>{ let ok=true; try{ ok=!window.SB_ENT||SB_ENT.has('books'); }catch(e){}
-      return tile({act:'openBooks',img:'lib-books',kick:'Read',title:'The Book Series',
-      /* Nineteen numbered volumes and four companions — counted from the generator,
-         not remembered. book-01..19 plus champion, lines, quiz and similes. */
-      blurb:'Nineteen illustrated volumes and four companions — origins, eponyms, poems and the champion techniques, printed to be read away from a screen.',
-      c:'#6B3F14',ic:ok?'book':'lock',cta:ok?'Open the shelf':'Regional Speller',
-      lock:!ok, stat:ok?'23 books · opens in a new tab':'23 books · included with 👑 Regional Speller'}); })(),
   ].join('');
   return `<div style="animation:sb-rise .35s ease both;max-width:1020px;margin:0 auto">
-    ${pageHead('The Library','everything the Atlas teaches','Sorted by kind instead of by place — the Atlas is where you are, the Library is everything there is. The drill itself lives in Practice.')}
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:14px">${tiles}</div>
+    ${pageHead('The Library','everything the Atlas teaches')}
+    ${libShelf()}
+    <div class="lib-grid">${tiles}</div>
+  </div>`; }
+
+/* ---- The shelf. The books used to be one painted tile among eight, which said
+   "here is a feature" when the truth is "here are twenty-three books". A row of
+   spines says the second thing without a word of copy, and it is the only thing on
+   this page a child recognises from a real room.
+
+   TWO LEVELS OF CLICK, and they fall out of the dispatcher rather than being wired:
+   the shelf carries data-act="openBooks" and each spine carries its own
+   data-act="openBook". app3's click handler resolves e.target.closest('[data-act]'),
+   so a spine wins on its own hit area and the shelf catches everything else —
+   the wood, the gaps between books, the end of the row.
+
+   Heights vary per position, not at random: a shelf where every book is the same
+   height reads as a chart. It is deterministic so the shelf does not reshuffle on
+   every render, which is the same rule Home follows for its hourly cards. */
+function libShelf(){
+  let ok=true; try{ ok=!window.SB_ENT||SB_ENT.has('books'); }catch(e){}
+
+  /* THE LAYOUT IS AUTHORED, NOT RANDOMISED. A real shelf is uneven — books lean, and
+     somebody has left a few lying flat on top of each other — and that unevenness is
+     most of why it reads as a shelf rather than a bar chart. But it must be the SAME
+     unevenness every render: a shelf that reshuffles each time the Library repaints is
+     a bug the eye catches immediately, and Home already learned this lesson with its
+     hourly cards. So the poses are a fixed table, keyed by position.
+
+     LAY runs are indices that lie flat, stacked on each other. They are chosen to sit
+     entirely inside one mobile half (0-11, 12-22), because a stack split across two
+     shelves would be three books on one row and one on the next. */
+  /* A leaning book needs elbow room, or it lies down across the title of the book
+     next to it — which is exactly what happened to The Rulebook, The Grand Trunk Road
+     and Say It Like a Champion on the first pass. The angles are gentle and each
+     leaning spine carries its own side margin (below), so it tilts into air. */
+  const LEAN = { 2:-4, 7:3.5, 10:-3.5, 13:4, 21:-3.5 };   // degrees, by position
+  const LAY  = [[4,5,6],[16,17,18,19]];                  // flat stacks
+  /* Heights are a PERCENTAGE OF THE ROW and must never exceed 100: the row is
+     align-items:flex-end with no clipping, so a 110% book grows upward out of the box
+     and silently pushes the shelf into the heading above it. That is what made the
+     shelf measure 278px when its row was 170. Vary downward only. */
+  const H    = [100,92,97,88,99,94,90,100,95,87,96,91,100,93,89,98,86,100,94];
+
+  /* TYPE IS SIZED FROM THE TITLE, NOT FROM A ROTATING TABLE. A fixed cycle of sizes
+     looks livelier but it is blind to length, and it clipped "Say It Like a Champion"
+     — the one title that happened to land on the largest size and the shortest book.
+     Deriving the size from the character count means a long title can never overflow
+     its spine, and the shelf still varies because the titles do. */
+  const fs = t => t.length<=12 ? 10.5 : t.length<=16 ? 10 : t.length<=19 ? 9 : t.length<=22 ? 8 : 7.4;
+  /* ...and the book grows if its title still needs the room. 0.62em per character is
+     measured for this face at these sizes; the +18 is the spine's own top/bottom
+     padding. Capped at 100 for the reason in the H comment above.
+     THE DIVISOR IS THE SHORTEST ROW ANY LAYOUT USES (128px, the phone's two shelves),
+     not the desktop row. Sizing against the taller row is what clipped four titles on
+     a phone while measuring clean on a desktop — a percentage of a row it never had. */
+  const bh = (t,i) => Math.min(100, Math.max(H[i%H.length],
+                       Math.ceil((t.length*fs(t)*0.62+18)/128*100)));
+
+  const inLay = new Map();
+  LAY.forEach((run,ri)=>run.forEach(i=>inLay.set(i,ri)));
+
+  const title=(b,i)=>`<span class="bk-t" style="--fs:${fs(b.t)}px">${esc(b.t)}</span>`;
+  const img=(b)=>`<img src="app-art/spines/${b.s}.png" alt="" loading="lazy" decoding="async">`;
+  const attrs=(b)=>`data-act="openBook" data-arg="${escA(b.s)}" title="${escA(b.t)}${ok?'':' — Regional Speller'}"`;
+
+  const upright=(b,i)=>`<button class="bk-sp" ${attrs(b)}
+      style="--bh:${bh(b.t,i)}%;${LEAN[i]?`--lean:${LEAN[i]}deg;margin:0 9px`:''}">${img(b)}${title(b,i)}</button>`;
+  /* A book lying down is the same drawing turned a quarter turn. Rotating the IMAGE
+     rather than shipping a second set of art keeps one file per volume, and the title
+     simply stops being vertical. */
+  const laid=(b,i)=>`<button class="bk-lay" ${attrs(b)}>${img(b)}<span class="bk-lt" style="--fs:${fs(b.t)}px">${esc(b.t)}</span></button>`;
+
+  const piece=(b,i)=>{
+    const run=inLay.get(i);
+    if(run===undefined) return upright(b,i);
+    if(LAY[run][0]!==i) return '';                        // the stack is emitted once
+    return `<span class="bk-stack">${LAY[run].map(j=>laid(SB_SHELF[j],j)).join('')}</span>`;
+  };
+
+  /* Two shelves on a phone. 23 spines across 390px is 14px each — a barcode, not a
+     bookshelf. The row is split here and the two halves are re-joined into ONE row on
+     wider screens with display:contents, so there is a single source of markup and no
+     duplicated list to drift. */
+  const half=12;
+  const row=(from,to)=>`<span class="bk-row">${SB_SHELF.slice(from,to).map((b,k)=>piece(b,from+k)).join('')}</span>`;
+  return `<div class="bk-shelf${ok?'':' bk-locked'}" data-act="openBooks">
+    <div class="bk-head">
+      <div>
+        <div class="bk-kick">Read</div>
+        <div class="bk-title">The Book Series</div>
+      </div>
+      <button class="bk-all" data-act="openBooks">${iconSVG(ok?'book':'lock',13)} ${ok?'Open the shelf':'👑 Regional Speller'}</button>
+    </div>
+    <div class="bk-books">${row(0,half)}${row(half,SB_SHELF.length)}</div>
+    <div class="bk-wood"></div>
+    <div class="bk-foot">${SB_SHELF.length} books · 19 volumes and 4 companions${ok?' · opens in a new tab':' · included with 👑 Regional Speller'}</div>
   </div>`; }
 /* Advanced Mode entry — a gated hero banner. Unlocks at Level 12, Bee Band 7, or by paying. */
 function advBanner(c){
