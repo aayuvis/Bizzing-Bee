@@ -4176,11 +4176,20 @@ function libShelf(){
      The smaller of the two wins. */
   const ROW = 150;                                    // the shortest row any layout uses (the phone)
   const R = window.SB_SPINE_R || {};
-  const fsLen = t => t.length<=12 ? 10.5 : t.length<=16 ? 10 : t.length<=19 ? 9 : t.length<=22 ? 8 : 7.4;
   const fs = (t,slug) => {
-    const w = (R[slug] || 0.16) * ROW;                // this spine's width in px
-    const across = Math.max(6.5, Math.min(11, w * 0.44));
-    return Math.round(Math.min(fsLen(t), across) * 10) / 10;
+    /* Two independent limits, both real, and the smaller wins:
+         ACROSS — a vertical line of letters cannot be thicker than the book it is
+           printed on. R[slug] is the spine's MEASURED width/height.
+         ALONG  — the title must also fit end to end. This used to be a hand-written
+           table of sizes by character count, calibrated when the spines were thin; it
+           had "Letters Behaving Badly" at 8px when the book could carry 12. Deriving it
+           from the actual length available means it stays right when the art changes.
+       Both are computed against the SHORTEST row any layout uses, so a size that fits
+       on a phone is simply generous on a desktop, never the reverse. */
+    const w      = (R[slug] || 0.2) * ROW;
+    const across = w * 0.44;
+    const along  = (ROW - 18) / Math.max(1, t.length * 0.62);
+    return Math.round(Math.max(7, Math.min(15, across, along)) * 10) / 10;
   };
   /* ...and the book grows if its title still needs the room. 0.62em per character is
      measured for this face at these sizes; the +18 is the spine's own top/bottom
