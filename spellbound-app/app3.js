@@ -4443,7 +4443,7 @@ function viewApp(){
             : `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="none"><path d="M20.6 14.8A8.8 8.8 0 0 1 9.2 3.4 8.8 8.8 0 1 0 20.6 14.8z"/><circle cx="17.4" cy="5.6" r="1.1" opacity=".8"/></svg>`;
           return `<button data-act="cycleMode" data-dbl="toggleFocus" class="sb-hdr-ico${_fon?' on':''}" aria-label="Appearance: light, white or dusk. Double-tap for focus." title="Tap: Light / White / Dusk${_fon?' · focus is ON':''} — double-tap for focus">${glyph}</button>`; })()}
         <button data-act="setNav" data-arg="collection" class="sb-hdr-ico round" aria-label="Your hive — collection, evolution and store" title="Your hive — collection, evolution, store">
-          <span style="width:27px;height:30px;display:block">${mascotSVG('happy')}</span></button>
+          <span style="width:32px;height:36px;display:block;transform:translateY(6%) scale(1.16);transform-origin:center">${mascotSVG('happy')}</span></button>
         <button data-act="goSettings" class="sb-hdr-ico" aria-label="Settings" title="Settings">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M4 7.5h9M17.5 7.5H20M4 12h3.5M12 12h8M4 16.5h7.5M16 16.5H20"/><circle cx="15" cy="7.5" r="2.2"/><circle cx="9.5" cy="12" r="2.2"/><circle cx="13.5" cy="16.5" r="2.2"/></svg></button>
       </div>
