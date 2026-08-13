@@ -10,6 +10,20 @@
   function wordFeed(n,filter){ const f=filter||(w=>w&&w.w); let q=pool(n).filter(f);
     return { next(){ if(!q.length) q=pool(Math.max(14,n)).filter(f);
       return q.shift()||{w:'honey',d:'the sweet golden food that bees make'}; } }; }
+  /* Robust n-word draw for the letter-typing engines. A single pool(n+k) draw can come
+     back with ZERO words inside a length band once the difficulty range shifts to a rarer,
+     longer slice (e.g. Band 6 'medium' pulls corpus y-bands 5-7, where few words are 3-9
+     letters) — and the engines then instant-"win" on an empty host. This keeps drawing
+     fresh batches until it has n words in [minLen,maxLen], deduped, so the field is never
+     hollow. pickFresh backfills from used words when fresh runs low, so it always terminates. */
+  function fillWords(n,minLen,maxLen){
+    const ok=w=>w&&/^[a-z]+$/i.test(w.w||'')&&(w.w||'').length>=minLen&&(w.w||'').length<=maxLen;
+    const out=[], seen=new Set();
+    for(let tries=0; tries<8 && out.length<n; tries++){
+      const batch=pool(Math.max(18,(n-out.length)*4)).filter(ok);
+      for(const w of batch){ const k=nkey(w.w); if(!seen.has(k)){ seen.add(k); out.push(w); if(out.length>=n) break; } }
+    }
+    return out.slice(0,n); }
 
   /* Calm mode (Settings → Accessibility): gentler pacing, more time, no rush.
      Scales the shared CFG knobs in a direction that always eases pressure. */
@@ -1561,7 +1575,7 @@
   function stageRhythm(host, opts, done){
     const diff=opts.diff||'medium';
     const CFG=calmCFG({easy:{words:4,fall:2.4,gap:950},medium:{words:5,fall:3.0,gap:800},hard:{words:6,fall:3.6,gap:680},champ:{words:7,fall:4.2,gap:580}}[diff]||{words:5,fall:3.0,gap:800});
-    const words=pool(CFG.words+5).filter(w=>w&&/^[a-z]+$/i.test(w.w||'')&&(w.w||'').length>=3&&(w.w||'').length<=8).slice(0,CFG.words);
+    const words=fillWords(CFG.words,3,8);
     if(!words.length){ done({win:true,score:0,stars:1}); return; }
     const art=(window.SGART&&SGART.ready());
     const plate=art?SGART.plateForWorld(opts.world||'Stage'):'';
@@ -1626,7 +1640,7 @@
   function constellationConnect(host, opts, done){
     const diff=opts.diff||'medium';
     const CFG=calmCFG({easy:{n:4},medium:{n:5},hard:{n:6},champ:{n:7}}[diff]||{n:5});
-    const words=pool(CFG.n+4).filter(w=>w&&/^[a-z]+$/i.test(w.w||'')&&(w.w||'').length>=3&&(w.w||'').length<=8).slice(0,CFG.n);
+    const words=fillWords(CFG.n,3,8);
     if(!words.length){ done({win:true,score:0,stars:1}); return; }
     const art=(window.SGART&&SGART.ready());
     const plate=art?SGART.plateForWorld(opts.world||'Cosmos'):'';
@@ -1687,7 +1701,7 @@
   function typeBlaster(host, opts, done){
     const diff=opts.diff||'medium';
     const CFG=calmCFG({easy:{n:5,v:0.09},medium:{n:6,v:0.115},hard:{n:7,v:0.14},champ:{n:8,v:0.165}}[diff]||{n:6,v:0.115});
-    const words=pool(CFG.n+5).filter(w=>w&&/^[a-z]+$/i.test(w.w||'')&&(w.w||'').length>=3&&(w.w||'').length<=9).slice(0,CFG.n);
+    const words=fillWords(CFG.n,3,9);
     if(!words.length){ done({win:true,score:0,stars:1}); return; }
     const art=(window.SGART&&SGART.ready());
     const plate=art?SGART.plateForWorld(opts.world||'Arcade'):'';
@@ -1856,7 +1870,7 @@
   function spellScene(host, opts, done){
     const diff=opts.diff||'medium';
     const CFG=calmCFG({easy:{n:6},medium:{n:8},hard:{n:10},champ:{n:12}}[diff]||{n:8});
-    const words=pool(CFG.n+6).filter(w=>w&&/^[a-z]+$/i.test(w.w||'')&&(w.w||'').length>=3&&(w.w||'').length<=12).slice(0,CFG.n);
+    const words=fillWords(CFG.n,3,12);
     if(!words.length){ done({win:true,score:0,stars:1}); return; }
     const art=(window.SGART&&SGART.ready());
     const plate=art?SGART.plateForWorld(opts.world||'Meadow'):'';

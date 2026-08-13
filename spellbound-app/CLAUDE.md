@@ -209,7 +209,17 @@ handlers. App lives in this folder; open `index.html` to run.
   (task 46) leaves the arcade working. CRITICAL: the engines key their config by
   easy/medium/hard/champ and THROW on 'auto' (CFG['auto'].time) — the saga only ever
   passed the four concrete levels. arcadePlay resolves a tile's 'auto' to a concrete
-  level from the speller's band before the engine sees it. Still to do: a Bizzillionaire
+  level from the speller's band before the engine sees it.
+  SECOND arcade-only gotcha, fixed in QC: the four letter-typing engines (typeBlaster,
+  stageRhythm, constellationConnect, spellScene) drew ONE small `pool(n+k)` batch and
+  filtered it to short words (3-8/3-9/3-12 letters); if that single draw yielded zero
+  passing words they instant-"won" on a BLANK host. It only bit at some bands because
+  `diffRange` shifts the corpus slice: Band 6 'medium' = corpus y-bands [5,7], a rarer/
+  longer slice where only ~12% of a draw is 3-9 letters, so ~35% of typeBlaster launches
+  came up empty (Band 4 'medium' = [3,5], 0%). Fix: `fillWords(n,min,max)` in saga2.js
+  keeps drawing fresh `pool()` batches (deduped) until it has n words, so the field is
+  never hollow; pickFresh backfills used words so it always terminates. Verified 0% empty
+  across bands 2/4/6/8/9 and all 14 games mount at bands 2/6/9. Still to do: a Bizzillionaire
   Bizzillionaire (app.openBizz + SB_BIZZ_LADDER) is a 15-rung money-ladder quiz over
   the 31k trivia bank — a self-managed overlay (.bz-play), DOM-driven, no engine.
   Rungs 1-3 draw lv1 … rungs 13-15 draw lv5 (_bizzLevelOf); two safe havens (5, 10);
