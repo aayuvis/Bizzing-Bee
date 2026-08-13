@@ -270,7 +270,14 @@
      whenever the requested size is small enough that nobody can tell. A retina
      tablet at 2x still has more pixels than it needs up to 96 CSS px. */
   const THUMB_MAX = 96;
-  const avSrc = (id, size) => 'avatars/' + (size <= THUMB_MAX ? 's/' : '') + id + '.png';
+  /* The full-size art is WebP at q=95 (33MB of PNG -> ~8MB, no visible loss: the
+     encoder only touches outline-edge pixels and the app downscales a 384px source to
+     <=150px anyway, which discards more than the encoder does). The 192px THUMBS stay
+     PNG on purpose — WebP measured ~2% LARGER at that size, so converting them would
+     cost effort and add weight. Hence the extension depends on which branch we take. */
+  const avSrc = (id, size) => size <= THUMB_MAX
+    ? 'avatars/s/' + id + '.png'
+    : 'avatars/' + id + '.webp';
   /* Rarity glow in the dark. Legendary burns gold, epic burns violet, and both
      read as lit rather than merely outlined — that is the whole point of pulling
      one. Commons keep the four-way enamel edge from the design contact sheet. */
