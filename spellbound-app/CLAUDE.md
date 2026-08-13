@@ -202,8 +202,15 @@ handlers. App lives in this folder; open `index.html` to run.
   `c.gameDiffBy[type]` remembers each game's choice; `gameDiffFor(c,type)` reads it;
   `playGame` copies it into the live `c.gameDiff` on launch (the same trick champTen
   used) so the mid-play engines that read `c.gameDiff` see the right level.
-  IN PROGRESS: rebuilding to one grid of the 14 engines + a Bizzillionaire quiz, then
-  removing the 'Great Unspelling' story layer (keeping the 14 engines + play-fields).
+  The 14 engine games are now PLAYABLE DIRECTLY from the arcade (SB_ARCADE_GAMES +
+  app.arcadePlay): each tile shows its painted play-field (app-art/sgw-<world>.jpg) and
+  mounts its SB_SAGA_ENGINES engine in a self-managed fullscreen overlay (.arc-play,
+  appended to <body>), DECOUPLED from saga2's story machinery — so removing the story
+  (task 46) leaves the arcade working. CRITICAL: the engines key their config by
+  easy/medium/hard/champ and THROW on 'auto' (CFG['auto'].time) — the saga only ever
+  passed the four concrete levels. arcadePlay resolves a tile's 'auto' to a concrete
+  level from the speller's band before the engine sees it. Still to do: a Bizzillionaire
+  quiz tile, then removing the 'Great Unspelling' story hero + saga2 story scaffolding.
   Arcade holds exactly 7 surfaces: Saga, Spelling Quest (whose season map carries the
   classic Boss Battle quick fight — `sqBoss`), Daily Buzz, Bee Trivia, Magic Squares,
   Beat the Buzzer (modes: Sprint / Warm-Up / Level Challenge / Duel / ◆ Rapid
