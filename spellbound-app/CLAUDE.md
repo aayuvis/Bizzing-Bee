@@ -194,6 +194,16 @@ handlers. App lives in this folder; open `index.html` to run.
   group cards (My Words / The Champion Ladder / Word Origins / Tricky Words —
   `grp` fields in `coachCatalog`, `state.catGroup` opens one; keys unchanged).
   My Hive = Collection + Evolution + Store behind one lit tab (`hiveBar`).
+- **The Arcade is 'Bizzy's Great Spelling Arcade'** (`gamesHub()`), and difficulty is
+  chosen PER GAME, not once for the whole room. The old global My-level/Easy/Medium/
+  Hard/Champ pill row is gone (it was redundant, and did nothing for games that carry
+  their own level like Trivia). Word games use `gtile()`: the card is one Play button,
+  a difficulty strip below it is separate buttons (a button can't nest a button).
+  `c.gameDiffBy[type]` remembers each game's choice; `gameDiffFor(c,type)` reads it;
+  `playGame` copies it into the live `c.gameDiff` on launch (the same trick champTen
+  used) so the mid-play engines that read `c.gameDiff` see the right level.
+  IN PROGRESS: rebuilding to one grid of the 14 engines + a Bizzillionaire quiz, then
+  removing the 'Great Unspelling' story layer (keeping the 14 engines + play-fields).
   Arcade holds exactly 7 surfaces: Saga, Spelling Quest (whose season map carries the
   classic Boss Battle quick fight — `sqBoss`), Daily Buzz, Bee Trivia, Magic Squares,
   Beat the Buzzer (modes: Sprint / Warm-Up / Level Challenge / Duel / ◆ Rapid
