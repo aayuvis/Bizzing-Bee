@@ -218,6 +218,13 @@ handlers. App lives in this folder; open `index.html` to run.
   REWARD THE CLIMB, not the money (which is exponential flavour): ~12/rung, +150 to
   finish, capped 400 — busting at rung 6 pays 72, not 0. Still to do: remove the
   'Great Unspelling' story hero + saga2 story scaffolding (keep the 14 engines).
+  DONE: the story is fully removed. saga2.js's 360-line story controller (map/board/
+  beats/CH_META/ACTS/SAGA_MAP, 166KB->144KB) is deleted; saga-script.js (dialogue) and
+  saga-music.js (SAGA_MUSIC — the story's bed; the LIVE world music is SB_W4_MUSIC in
+  worlds4.js, untouched) and the 6 app-art/saga-act*.jpg board images are gone. KEPT,
+  because the engines' drawWorld fallback needs them: saga-art-dom.js + saga-art/
+  saga-map.js (WORLD_ART / SAGA_ART) and the sgw-<world>.jpg play-fields. The only
+  SAGA2 reference left is a guarded parent-analytics read that degrades to 0.
   Arcade holds exactly 7 surfaces: Saga, Spelling Quest (whose season map carries the
   classic Boss Battle quick fight — `sqBoss`), Daily Buzz, Bee Trivia, Magic Squares,
   Beat the Buzzer (modes: Sprint / Warm-Up / Level Challenge / Duel / ◆ Rapid
