@@ -1684,7 +1684,10 @@ const app = {
   /* Spelling Quest is gone; its Arcade slot is the Mock Spelling Bee. Old
      deep-links land on the new game rather than on nothing. */
   openQuest:()=>{ clearGTimer(); if(window.MOCKBEE) MOCKBEE.open(); },
-  openSaga:()=>{ if(!gateFeature('saga','Bizzy & the Great Unspelling')) return; clearGTimer(); if(window.SAGA2) SAGA2.open(); },
+  /* The 'Bizzy & the Great Unspelling' story is gone — the 14 games it used to gate are
+     now played straight from the arcade (arcadePlay). This is kept as a safe no-op so any
+     stale saved deep-link or cached handler lands somewhere harmless rather than throwing. */
+  openSaga:()=>{ set({nav:'games', screen:'app'}); },
   openDaily:()=>{ clearGTimer(); if(window.SB_DAILY) SB_DAILY.open(); },
   // ----- Debug / QC: launch one saga engine standalone in a full-screen overlay -----
   dbgSaga:(name)=>{ if(!window.SB_SAGA_ENGINES||!SB_SAGA_ENGINES[name]){ flash('Engine not loaded'); return; }
@@ -6443,19 +6446,11 @@ function viewProgressShell(){ const t=state.progTab==='parent'?'parent':'me';
   return `<div style="max-width:920px;margin:0 auto">
     <div style="display:flex;gap:8px;margin-bottom:16px">${seg2('me','chart','My progress')}${seg2('parent','users','Parent zone')}</div>
     ${t==='parent'?viewParent():viewProgress()}</div>`; }
-// Overall Story-mode progress (shared across the device, stored in localStorage).
-function sagaFootprint(){ let p={}; try{ p=JSON.parse(localStorage.getItem('sb_saga2')||'{}'); }catch(e){}
-  const total=(window.SAGA2&&SAGA2.total)||0;
-  const cleared=Object.keys(p.done||{}).length;
-  const stars=Object.values(p.stars||{}).reduce((a,b)=>a+(+b||0),0);
-  return {total,cleared,stars,maxStars:total*4,gems:p.gems||0}; }
 // A snapshot of everything a speller explores beyond core spelling — used by both the
-// kid Progress screen and the Parent dashboard so the new surfaces (Quotes, Story mode,
-// Journeys, Typing, Idioms) are actually reflected in progress.
+// kid Progress screen and the Parent dashboard so the surfaces (Quotes, Journeys,
+// Typing, Idioms) are actually reflected in progress.
 function explorerTiles(c){
   const tiles=[]; const qTotal=(window.SB_QUOTES||[]).length;
-  const sg=sagaFootprint();
-  if(sg.total) tiles.push({act:'openSaga',ic:'joystick',col:'#7C5CFF',label:'Story mode',v:sg.cleared+'/'+sg.total,sub:sg.stars+' ★ earned · '+sg.gems+' 💎'});
   if(qTotal){ const favN=Object.keys(c.quoteFavs||{}).length; const seenN=Object.keys(c.qSeen||{}).length;
     tiles.push({act:'openQuotes',ic:'quote',col:'#C8791B',label:'Quotes & poems',v:(seenN||favN||0)+'',sub:(favN?favN+' ❤ favourites · ':'')+fmtN(qTotal)+' to explore'}); }
   try{ const lDone=lessonsDoneCount(); const lU=lessonUnits(); const lChap=lU.filter(u=>{ const ls=lessonsAll().filter(L=>L.unit===u.n); return ls.length&&ls.every(L=>lessonComplete(L)); }).length;
@@ -7223,7 +7218,6 @@ function viewDebug(){
   if(!state.devUnlock) return viewSettings();
   const hubs=[
     {act:'openDaily',   arg:'', c:'#2E8B57', n:'Daily Buzz',      d:'Wordle-style daily word'},
-    {act:'openSaga',    arg:'', c:'#F0B429', n:'Saga Quest',      d:'14-chapter story + engines'},
     {act:'mbOpen',      arg:'', c:'#7C5CFF', n:'Mock Spelling Bee', d:'11 spellers, 8 rounds'},
     {act:'openTrivia',  arg:'', c:'#13A892', n:'Bee Trivia',      d:'Knowledge rounds'},
     {act:'openChallenge',arg:'journey', c:'#E0922E', n:'Champ Challenge', d:'Timed / counted'},
@@ -8477,16 +8471,12 @@ function gamesHub(){ const S=state; const c=active();
       <div class="arc-diff" role="group" aria-label="Difficulty for ${escA(o.title)}">${DIFFS.map(([k,l])=>`<button data-act="setGameDiff" data-arg="${escA(o.arg)}|${k}" class="${cur===k?'on':''}" title="${l} words">${l}</button>`).join('')}</div>
     </div>`; };
   const ART=(k,sz,fb)=>(window.SB_ICON_ART&&SB_ICON_ART[k])?SB_ICON_ART(k,{size:sz||44}):(fb||'');
-  // ---- HEROES: the two story adventures, side by side ----
-  /* The old Advanced Games room dissolved into the quick-game pickers — Rapid Dictation
-     rides in Beat the Buzzer, Memory Match in Word Quiz, both ◆-badged. */
+  // ---- HEROES: the two marquee games ----
+  /* The 'Bizzy & the Great Unspelling' story hero is gone. Its 14 games are the arcade
+     grid below now — the story arc, the word-eater plot and the chapter gates went with
+     it. The two heroes are the things a child actually comes back for: the mock bee they
+     are training toward, and the quiz ladder. */
   const heroes=[];
-  if(window.SAGA2){ let cl=0; try{ cl=SAGA2.cleared?SAGA2.cleared():((JSON.parse(localStorage.getItem('sb_saga2')||'{}').cleared)||0); }catch(e){}
-    const hid=(function(){ try{ return SB_AVATARS.byId['bizzy']?'bizzy':((SB_AVATARS.list[0]||{}).id||null); }catch(e){ return null; } })();
-    heroes.push(heroTile({act:'openSaga',grad:'linear-gradient(150deg,#3B2A8C,#2A1E6E 60%,#1F1652)',art:hid?SB_AVATAR(hid,116,{dark:true}):'',tag:'✦ New saga',title:'Bizzy & the Great Unspelling',blurb:'A cinematic story — fly, race and spell through the worlds to stop the word-eater.',cta:cl>0?'Continue':'Begin Act I',sub:cl+'/6 chapters'})); }
-  /* Spelling Quest was fifteen seasons of story with a boss at the end of each —
-     a story mode wearing a spelling bee's clothes. The Arcade's second hero is the
-     thing the child is actually training for: eleven spellers, one microphone. */
   if(window.MOCKBEE){ const st=MOCKBEE.stats();
     const hid=(function(){ try{ return (SB_AVATARS.byId['goldlegend']?'goldlegend':(SB_AVATARS.list[0]||{}).id); }catch(e){ return 'goldlegend'; } })();
     heroes.push(heroTile({act:'mbOpen',grad:'linear-gradient(150deg,#3A1E4E,#2A1638 60%,#1E1028)',art:SB_AVATAR(hid,116,{dark:true}),tag:'★ Competition',title:'Mock Spelling Bee',blurb:'Ten rivals, eight rounds, one microphone. Miss your word and you sit down.',cta:st.played?'Take the stage again':'Take the stage',sub:st.played?((st.wins||0)+' won · best '+(st.best||11)+'/11'):'11 spellers'})); }
@@ -9055,7 +9045,7 @@ function tierEntRows(t){ const e=t.ent; const yes='✓', no='—';
   const wc=e.words>=40000?'All 40,000 words':(fmtN(e.words)+' words');
   const worlds=e.worlds==='all'?'All worlds':(e.worlds+' worlds');
   const packs=e.avatarPacks==='all'?'All avatar packs':(e.avatarPacks?e.avatarPacks+' avatar packs':'Free avatars only');
-  const rows=[wc, (e.lists?yes:no)+' Word lists', (e.concepts?yes:no)+' Concepts', (e.trainTools?yes:no)+' Train tools (idioms, typing, vocab, quotes)', (e.games==='all'?'All games':'Basic games'), worlds, packs, (e.saga?yes:no)+' Bizzy & the Great Unspelling', (e.startCoins?('🪙 '+fmtN(e.startCoins)+' start coins'):'')];
+  const rows=[wc, (e.lists?yes:no)+' Word lists', (e.concepts?yes:no)+' Concepts', (e.trainTools?yes:no)+' Train tools (idioms, typing, vocab, quotes)', (e.games==='all'?'All games':'Basic games'), worlds, packs, (e.startCoins?('🪙 '+fmtN(e.startCoins)+' start coins'):'')];
   return rows.filter(Boolean).map(r=>`<div style="font-size:12.5px;color:var(--text);padding:3px 0;line-height:1.4">${r.charAt(0)==='—'?'<span style="color:var(--muted)">'+esc(r)+'</span>':esc(r)}</div>`).join(''); }
 function viewTiersSheet(){ const S=state; const cur=(window.SB_ENT?SB_ENT.tierId():'free'); const up=S.tierUpsell;
   /* Testing unlock overrides every entitlement, so a plan change here looks like it did
