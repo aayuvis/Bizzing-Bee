@@ -1895,6 +1895,7 @@ const app = {
     ov.addEventListener('touchend',e=>{ if(sx==null) return; const dx=e.changedTouches[0].clientX-sx; if(Math.abs(dx)>45) go(dx<0?1:-1); sx=null; },{passive:true});
     document.addEventListener('keydown',key); paint(); document.body.appendChild(ov); },
   playGame:(type)=>{ clearGTimer(); const c=active(); ensureLists(c); state.gInfo=false; state.typed='';
+    c.gameDiff = gameDiffFor(c, type);           // this game's own level drives the word pick
     if(type==='buzz'){ const list=pickFresh(gameWordsD(),10); if(!list.length){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,right:0,ans:[],status:'idle'}; setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[0]) say(state.game.list[0].w); },320); }
     else if(type==='beat'){ state.game={type:'beat',phase:'mode'}; set({nav:'games',screen:'app'}); return; }
     else if(type==='wordquiz'){ state.game={type:'wordquiz',phase:'pick'}; set({nav:'games',screen:'app'}); return; }
@@ -1904,7 +1905,11 @@ const app = {
     else if(type==='magic'){ magicNewBoard(); }
     else return;
     set({nav:'games', screen:'app'}); },
-  setGameDiff:(k)=>{ const c=active(); c.gameDiff=k; save(); render(); },
+  /* data-arg is "type|key": set THIS game's difficulty, remember it, and re-render so the
+     tile's pill row updates. Does not launch the game — Play does that. */
+  setGameDiff:(arg)=>{ const c=active(); const [type,k]=String(arg).split('|');
+    if(!k){ c.gameDiff=type; save(); render(); return; }     // legacy single-arg call
+    c.gameDiffBy=c.gameDiffBy||{}; c.gameDiffBy[type]=k; c.gameDiff=k; save(); render(); },
   champTen:()=>{ const c=active(); const keep=c.gameDiff; c.gameDiff='champ';
     const list=pickFresh(gameWordsD(),10); c.gameDiff=keep;
     if(list.length<3){ flash('Not enough champ words yet — play a little first'); return; }
@@ -7999,6 +8004,11 @@ function corpusBands(){ if(_corpusBands) return _corpusBands;
     const y=Math.max(1,Math.min(9,w.y||3)); by[y].push(w); }
   _corpusBands=by; return by; }
 // difficulty → an absolute y-range anchored on the child's proven Bee Band and age
+/* Difficulty is chosen PER GAME now, not once for the whole Arcade. c.gameDiffBy keeps
+   each game's own choice; gameDiffFor reads it. The live engines still read the single
+   c.gameDiff (saga2.js does, mid-play), so launching a game copies its per-game choice
+   into c.gameDiff for that session — the same trick champTen already used. */
+function gameDiffFor(c,type){ c=c||active(); return (c && c.gameDiffBy && c.gameDiffBy[type]) || 'auto'; }
 function diffRange(c,dOver){ c=c||active(); const d=dOver||c.gameDiff||'auto'; const band=beeBand(c).band; const age=c.age||9;
   if(d==='easy')   return [1, Math.max(1, Math.min(age<=8?2:3, band))];
   if(d==='medium') return [Math.max(1,band-1), Math.min(9,band+1)];
@@ -8234,6 +8244,20 @@ function gamesHub(){ const S=state; const c=active();
         <span class="arc-tile-blurb" style="display:block">${esc(o.blurb)}</span>
         <span class="arc-tile-foot"><span class="arc-cta" style="background:${o.cta||'var(--accent)'}">${iconSVG('joystick',14)} Play</span>${o.stat?`<span class="arc-stat">${esc(o.stat)}</span>`:''}</span>
       </span></button>`;
+  /* A game tile that owns its difficulty. The card is the Play button; the strip below it
+     sets THIS game's word level (auto/easy/medium/hard/champ) and is remembered per game. */
+  const DIFFS=[['auto','Auto'],['easy','Easy'],['medium','Med'],['hard','Hard'],['champ','Champ']];
+  const gtile=(o)=>{ const cur=gameDiffFor(c,o.arg);
+    return `<div class="arc-tile">
+      <button data-act="${o.act}" data-arg="${escA(o.arg)}" class="arc-tile-play">
+        <span class="arc-tile-top" style="background:${o.grad}">${o.badge?`<span class="arc-badge">${esc(o.badge)}</span>`:''}<span style="filter:drop-shadow(0 3px 7px rgba(0,0,0,.28))">${o.art}</span></span>
+        <span class="arc-tile-body">
+          <span class="arc-tile-title" style="display:block">${esc(o.title)}</span>
+          <span class="arc-tile-blurb" style="display:block">${esc(o.blurb)}</span>
+          <span class="arc-tile-foot"><span class="arc-cta" style="background:${o.cta||'var(--accent)'}">${iconSVG('joystick',14)} Play</span>${o.stat?`<span class="arc-stat">${esc(o.stat)}</span>`:''}</span>
+        </span></button>
+      <div class="arc-diff" role="group" aria-label="Difficulty for ${escA(o.title)}">${DIFFS.map(([k,l])=>`<button data-act="setGameDiff" data-arg="${escA(o.arg)}|${k}" class="${cur===k?'on':''}" title="${l} words">${l}</button>`).join('')}</div>
+    </div>`; };
   const ART=(k,sz,fb)=>(window.SB_ICON_ART&&SB_ICON_ART[k])?SB_ICON_ART(k,{size:sz||44}):(fb||'');
   // ---- HEROES: the two story adventures, side by side ----
   /* The old Advanced Games room dissolved into the quick-game pickers — Rapid Dictation
@@ -8276,23 +8300,19 @@ function gamesHub(){ const S=state; const c=active();
   /* Champ Challenge merged into Beat the Buzzer as its Level Challenge mode. */
   feats.push(tile({act:'playGame',arg:'magic',grad:'linear-gradient(135deg,#B14FC4,#7E2E9E)',art:gameArtSVG('magic',48),badge:'Board',title:'Magic Squares',blurb:'Clear a 3×3 board of themes & concepts — lines win bonus coins.',cta:'#7E2E9E',stat:''}));
   // ---- QUICK GAMES: the four arcade engines ----
-  const quick=GAMES.map(gm=>tile({act:'playGame',arg:gm.type,grad:gameCoverBG(gm),art:gameArtSVG(gm.type,48),badge:gm.tag,title:gm.name,blurb:gm.blurb,cta:gm.c,stat:''})).join('');
+  const quick=GAMES.map(gm=>gtile({act:'playGame',arg:gm.type,grad:gameCoverBG(gm),art:gameArtSVG(gm.type,48),badge:gm.tag,title:gm.name,blurb:gm.blurb,cta:gm.c,stat:''})).join('');
   const store=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:16px 18px;margin-top:4px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
       <span style="width:44px;height:44px;flex-shrink:0;border-radius:12px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);display:grid;place-items:center">${iconSVG('cart',22)}</span>
       <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15px">Coin store</span><span style="display:block;font-size:12px;color:var(--muted)">Spend your 🪙 on avatar packs, worlds and power-ups.</span></span>
       <button data-act="openShop" style="padding:10px 16px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge);white-space:nowrap">Open the Store →</button></div>`;
   return `<div style="max-width:860px;margin:0 auto">
-    <!-- The difficulty pills belong beside the title: they set the level for every
-         game below, so they read as a property of the Arcade rather than a row of
-         buttons floating above the first tile. -->
+    <!-- No global difficulty row: each game sets its own level, on its own tile. A single
+         Arcade-wide selector was redundant with that and misleading (it did nothing for
+         the games that carry their own level, like Trivia). -->
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px">
       <button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button>
       <span style="margin-left:2px">${arcadeLogoSVG(38)}</span>
-      <span style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em">Arcade</span>
-      <span style="display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap;padding-left:6px;border-left:1px solid var(--line);margin-left:4px">
-        ${[['auto','My level'],['easy','Easy'],['medium','Medium'],['hard','Hard'],['champ','Champ']].map(([k,l])=>{ const on=((c.gameDiff)||'auto')===k;
-          return `<button data-act="setGameDiff" data-arg="${k}" title="Word difficulty for every game" style="padding:6px 12px;border-radius:999px;font-weight:800;font-size:12px;${on?'background:var(--accent);color:var(--action-ink,#fff);box-shadow:var(--edge)':'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">${l}</button>`; }).join('')}
-      </span>
+      <span style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em">Bizzy&rsquo;s Great Spelling Arcade</span>
       <span style="margin-left:auto">${coinChip()}</span></div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:16px">${heroes.join('')}</div>
     ${dailyBanner}
