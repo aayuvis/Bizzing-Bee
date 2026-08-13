@@ -19,8 +19,11 @@ SIZE = 192
 
 os.makedirs(OUT, exist_ok=True)
 tot_in = tot_out = n = 0
-for path in sorted(glob.glob(f'{SRC}/*.png')):
-    slug = os.path.basename(path)
+# The full-size art is WebP now (q=95, big saving, no visible loss). The THUMBS stay
+# PNG — WebP was ~2% larger at 192px — so the thumb is always <slug>.png regardless of
+# what the source was. Read whichever full-size file exists.
+for path in sorted(glob.glob(f'{SRC}/*.webp')) or sorted(glob.glob(f'{SRC}/*.png')):
+    slug = os.path.splitext(os.path.basename(path))[0] + '.png'
     im = Image.open(path).convert('RGBA')
     im = im.resize((SIZE, SIZE), Image.LANCZOS)
     # quantise to a 255-colour palette + alpha: cartoon art has few real colours,

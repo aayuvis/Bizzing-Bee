@@ -488,8 +488,14 @@ handlers. App lives in this folder; open `index.html` to run.
   `SB_WORDS_PATCH()` so its QC pass re-runs over the second shard; the words-lore
   merge is re-entrant for the same reason. Regenerate with
   `voice/pipeline/words-shard.js` and `words-lore-split.js`.
-- Avatars: `avatars/s/` holds 192px renditions (9KB vs 348KB). `SB_AVATAR` serves them
-  at ≤96px. Regenerate with `voice/pipeline/avatar-thumbs.py` after any avatar change.
+- Avatars: full-size art is **WebP q=95** in `avatars/<id>.webp` (29.6MB of PNG -> 7.1MB,
+  76% off, no visible loss — the encoder only touches outline-edge pixels and the app
+  downscales a 384px source to <=150px anyway). `avatars/s/` holds 192px **PNG** thumbs
+  (WebP measured ~2% LARGER at that size, so thumbs stay PNG). `avSrc` in avatars.js
+  picks `.webp` above 96px and `s/<id>.png` at or below. `avatar-thumbs.py` reads the
+  `.webp` source now and still writes PNG thumbs. Full-size PNGs are DELETED from the
+  repo — regeneration works from the WebP. Convert new avatar art to WebP q=95 before
+  committing, then run avatar-thumbs.py.
 - **The book series** (`books/`, one generator: `books/mkbooks.js`, run from the repo
   root) is **19 numbered volumes plus 2 standalone companions / 1,707 pages**.
   Vols 1-10 build from `SB_CONCEPTS`, 11-16 from `SB_ADV_CONCEPTS`, and four are AUTHORED
