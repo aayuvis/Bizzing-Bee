@@ -1910,6 +1910,37 @@ const app = {
   setGameDiff:(arg)=>{ const c=active(); const [type,k]=String(arg).split('|');
     if(!k){ c.gameDiff=type; save(); render(); return; }     // legacy single-arg call
     c.gameDiffBy=c.gameDiffBy||{}; c.gameDiffBy[type]=k; c.gameDiff=k; save(); render(); },
+  /* Launch one of the 14 engines directly on its play-field, story-free. Mounts into a
+     self-managed fullscreen overlay (like the saga's, minus the story) so it does not
+     depend on app3's string render or on saga2's board/beats. */
+  arcadePlay:(k)=>{
+    const g=(window.SB_ARCADE_GAMES||[]).find(x=>x.k===k); if(!g) return;
+    const engs=window.SB_SAGA_ENGINES;   // saga2.js is a direct boot script, so this is present
+    if(!engs||!engs[k]){ flash('Games are still loading — one moment'); return; }
+    const c=active(); ensureLists(c);
+    /* The engines key their internal config by easy/medium/hard/champ and were never
+       handed 'auto' — the saga only ever passed the four concrete levels. So resolve
+       'auto' (this tile's default) to a concrete level from the speller's band before
+       the engine sees it, or CFG['auto'].time throws. The word pool is happy with the
+       resolved level too. */
+    const pick=gameDiffFor(c,k);
+    const band=(function(){ try{ return beeBand(c).band; }catch(e){ return 4; } })();
+    const eDiff = pick!=='auto' ? pick : (band<=3?'easy':band<=6?'medium':band<=8?'hard':'champ');
+    c.gameDiff=eDiff; clearGTimer(); arcadeClose();
+    const el=document.createElement('div'); el.className='arc-play'; _arcEl=el;
+    el.innerHTML='<div class="arc-play-top">'
+      +'<button class="arc-play-back" id="arc-back">← Arcade</button>'
+      +'<span class="arc-play-name">'+esc(g.n)+'</span>'
+      +'<span class="arc-play-diff">'+(_arcDiffLabel[pick]||'')+'</span></div>'
+      +'<div class="arc-play-host" id="arc-host"></div>';
+    document.body.appendChild(el);
+    el.querySelector('#arc-back').onclick=arcadeClose;
+    const host=el.querySelector('#arc-host');
+    const onUnlock=()=>{ try{ addCoins(15); }catch(e){} };
+    const done=(res)=>{ _arcHandle=null; arcadeResult(g, !!(res&&res.win)); };
+    try{ _arcHandle=engs[k](host, {diff:eDiff, world:g.w, onUnlock}, done); }
+    catch(e){ try{ console.error(e); }catch(_){} flash('Could not start that game'); arcadeClose(); }
+  },
   champTen:()=>{ const c=active(); const keep=c.gameDiff; c.gameDiff='champ';
     const list=pickFresh(gameWordsD(),10); c.gameDiff=keep;
     if(list.length<3){ flash('Not enough champ words yet — play a little first'); return; }
@@ -8226,6 +8257,57 @@ function magicView(){ const g=state.game; const S=state;
 function triviaTotal(){ try{ const T=window.SB_TRIVIA; if(!T) return 0;
     if(T.byLevel){ let n=0; for(const k in T.byLevel) n+=(T.byLevel[k]||0); if(n) return n; }
     return (T.count||((T.questions||[]).length)||0); }catch(e){ return 0; } }
+/* ============================================================================
+   THE 14 GAMES, PLAYABLE DIRECTLY FROM THE ARCADE — no story in the way.
+   Each tile mounts one SB_SAGA_ENGINES engine on its painted play-field at the
+   difficulty chosen on that tile. This runner is DECOUPLED from saga2's story
+   machinery (map/board/beats/CH_META): it calls the engine straight, so when the
+   'Great Unspelling' story layer is removed the arcade keeps working. The engines
+   pull their own words via pool()->gameWordsD(), which reads c.gameDiff — so, like
+   playGame, we set c.gameDiff from the tile's choice before mounting.
+   Engine contract: handle = eng(hostEl, {diff, world, onUnlock}, done); handle.destroy().
+   ============================================================================ */
+const SB_ARCADE_GAMES = [
+  {k:'honeycombRun',        n:'Honeycomb Run',    tag:'Maze',   w:'meadow',    blurb:'Race the maze — spell a word to open each gate.'},
+  {k:'beeGrandPrix',        n:'Bee Grand Prix',   tag:'Race',   w:'hive',      blurb:'Spell to boost past rivals in a flat-out race.'},
+  {k:'keepFlying',          n:'Keep Flying',      tag:'Flight', w:'sky',       blurb:'Tap to fly, bank the honey pots, spell through the gates.'},
+  {k:'wordSnake',           n:'Word Snake',       tag:'Arcade', w:'forest',    blurb:'Grow the snake by eating the letters in order.'},
+  {k:'whackAMoth',          n:'Whack-a-Moth',     tag:'Reflex', w:'dojo',      blurb:'Bop the moths that spell the word, dodge the rest.'},
+  {k:'combCatcher',         n:'Comb Catcher',     tag:'Catch',  w:'carnival',  blurb:'Catch the falling letters that build the word.'},
+  {k:'wordHive',            n:'Word Hive',        tag:'Build',  w:'lotus',     blurb:'Fill the honeycomb with the right letters.'},
+  {k:'typeBlaster',         n:'Type Blaster',     tag:'Speed',  w:'arcade',    blurb:'Type the words before they reach the bottom.'},
+  {k:'unscrambleStars',     n:'Unscramble Stars', tag:'Puzzle', w:'cosmos',    blurb:'Slide the scrambled letters into the right order.'},
+  {k:'constellationConnect',n:'Star Connect',     tag:'Trace',  w:'flyway',    blurb:'Trace the letters in order to draw the constellation.'},
+  {k:'spellShield',         n:'Spell Shield',     tag:'Defend', w:'hive',      blurb:'Spell fast to raise the shield before it strikes.'},
+  {k:'spotlightSimon',      n:'Spotlight Simon',  tag:'Memory', w:'stage',     blurb:'Watch the spotlight sequence, then repeat it.'},
+  {k:'stageRhythm',         n:'Stage Rhythm',     tag:'Rhythm', w:'pond',      blurb:'Hit the letters on the beat to spell in time.'},
+  {k:'spellScene',          n:'Spell Scene',      tag:'Scene',  w:'homecoming',blurb:'Spell the word that finishes each scene.'},
+];
+window.SB_ARCADE_GAMES = SB_ARCADE_GAMES;
+const _arcDiffLabel = {auto:'My level',easy:'Easy',medium:'Medium',hard:'Hard',champ:'Champ'};
+let _arcHandle=null, _arcEl=null;
+function arcadeClose(){
+  if(_arcHandle){ try{ _arcHandle.destroy(); }catch(e){} _arcHandle=null; }
+  if(_arcEl){ _arcEl.remove(); _arcEl=null; }
+  try{ if(window.SB_W4_MUSIC) SB_W4_MUSIC.sync(); }catch(e){}
+}
+function arcadeResult(g, win){
+  if(!_arcEl) return;
+  const coins = win ? 20 : 0;
+  if(coins) try{ addCoins(coins); }catch(e){}
+  const card=document.createElement('div'); card.className='arc-play-result';
+  card.innerHTML=`<div class="arc-play-rcard">
+      <div style="font-size:34px;line-height:1">${win?'🏆':'💪'}</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:20px;margin:6px 0 2px">${win?'Nice spelling!':'Good try!'}</div>
+      <div style="font-size:13px;color:var(--muted)">${win?('+'+coins+' 🪙 · play again to beat it'):'Every round makes the words stick. Give it another go.'}</div>
+      <div style="display:flex;gap:9px;margin-top:16px;justify-content:center;flex-wrap:wrap">
+        <button class="arc-r-again" style="padding:11px 18px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:14px">Play again</button>
+        <button class="arc-r-back" style="padding:11px 18px;border-radius:11px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:14px">← Arcade</button>
+      </div></div>`;
+  _arcEl.appendChild(card);
+  card.querySelector('.arc-r-again').onclick=()=>{ arcadeClose(); if(window.app) app.arcadePlay(g.k); };
+  card.querySelector('.arc-r-back').onclick=arcadeClose;
+}
 function gamesHub(){ const S=state; const c=active();
   // ---- graphical tile helpers ----
   const heroTile=(o)=>`<button data-act="${o.act}" ${o.arg?`data-arg="${escA(o.arg)}"`:''} class="arc-hero" ${o.span?'style="grid-column:span 2"':''}>
@@ -8299,7 +8381,11 @@ function gamesHub(){ const S=state; const c=active();
     feats.push(tile({act:'openTrivia',grad:'linear-gradient(135deg,#F0A93C,#DC7A18)',art:gameArtSVG('trivia',48),badge:'Quiz',title:'Bee Trivia',blurb:(nQ?fmtN(nQ)+' questions · ':'')+'32 chapters · picture & listening rounds.',cta:'#C8791B',stat:st.right?fmtN(st.right)+' right':''})); }
   /* Champ Challenge merged into Beat the Buzzer as its Level Challenge mode. */
   feats.push(tile({act:'playGame',arg:'magic',grad:'linear-gradient(135deg,#B14FC4,#7E2E9E)',art:gameArtSVG('magic',48),badge:'Board',title:'Magic Squares',blurb:'Clear a 3×3 board of themes & concepts — lines win bonus coins.',cta:'#7E2E9E',stat:''}));
-  // ---- QUICK GAMES: the four arcade engines ----
+  // ---- THE 14 GAMES: each mounts its engine on its play-field, story-free ----
+  const arcadeGames=SB_ARCADE_GAMES.map(g=>gtile({act:'arcadePlay',arg:g.k,
+    grad:"linear-gradient(180deg,rgba(20,14,42,.08),rgba(20,14,42,.5)),url('app-art/sgw-"+g.w+".jpg') center/cover",
+    art:'',badge:g.tag,title:g.n,blurb:g.blurb,cta:'var(--accent)',stat:''})).join('');
+  // ---- QUICK GAMES: the timed/quiz engines that aren't part of the 14 ----
   const quick=GAMES.map(gm=>gtile({act:'playGame',arg:gm.type,grad:gameCoverBG(gm),art:gameArtSVG(gm.type,48),badge:gm.tag,title:gm.name,blurb:gm.blurb,cta:gm.c,stat:''})).join('');
   const store=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:16px 18px;margin-top:4px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
       <span style="width:44px;height:44px;flex-shrink:0;border-radius:12px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);display:grid;place-items:center">${iconSVG('cart',22)}</span>
@@ -8316,7 +8402,9 @@ function gamesHub(){ const S=state; const c=active();
       <span style="margin-left:auto">${coinChip()}</span></div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:16px">${heroes.join('')}</div>
     ${dailyBanner}
-    <div class="arc-sech">Games &amp; challenges</div>
+    <div class="arc-sech">The 14 games — pick your level on each</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin:8px 0 18px">${arcadeGames}</div>
+    <div class="arc-sech">More to play</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin:8px 0 16px">${feats.join('')}${quick}</div>
     ${store}
   </div>`;
