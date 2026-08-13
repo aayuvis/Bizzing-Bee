@@ -2005,21 +2005,16 @@ const app = {
   openAdvTips:()=>app.advJump('tips'),
   openAdvMock:()=>app.advJump('mock'),
   openAdvGames:()=>app.advJump('games'),
-  advRevealClose:()=>{ advTourClear(); set({advReveal:false, advTour:0}); },
   /* Turn the pack on or off. Off clears the announce flag too, so switching it back on
-     replays the guided tour rather than silently changing five screens again. */
+     re-fires the one-line confirmation rather than silently changing five screens. */
   toggleAdvPack:()=>{ const c=active(); if(!c) return;
     if(advModeOn(c)){ c.addons=c.addons||{}; delete c.addons.advanced; c.advOn=false; c.advPaid=false; c.advAnnounced=0;
-      advTourClear(); state.advReveal=false; state.advTour=0; state.advView=null;
+      state.advView=null;
       if(state.nav==='adv') state.nav='home';
       save(); flash('Advanced Pack off'); render(); return; }
     c.addons=c.addons||{}; c.addons.advanced=1; c.advOn=true; save();
     try{ if(window.ADV&&ADV.activate) ADV.activate(); }catch(e){}
     render(); },
-  advTourNext:()=>{ state.advTour=Math.min(ADV_TOUR.length-1,(state.advTour||0)+1); render(); advTourTick(); },
-  advTourPrev:()=>{ state.advTour=Math.max(0,(state.advTour||0)-1); render(); advTourTick(); },
-  advTourStep:(i)=>{ state.advTour=Math.max(0,Math.min(ADV_TOUR.length-1,+i)); render(); advTourTick(); },
-  advTourGo:(seg)=>{ advTourClear(); set({advReveal:false, advTour:0}); app.advJump(seg); },
   
   advBack:()=>{ if(window.ADV) ADV.back(); },
   advExit:()=>{ if(window.ADV) ADV.exit(); },
@@ -3178,104 +3173,20 @@ function focusAutoSync(){ try{ const F=window.SB_W4_FOCUS; if(!F) return;
 /* One step per upgrade. `screen`/`rows`/`at` describe the destination well enough to
    redraw it in miniature, so the tour SHOWS where each feature landed rather than
    describing it — you watch the new row slide into the position it now occupies. */
-const ADV_TOUR=[
-  { shot:'practice', art:'ultraJourney', col:'#6C4FE0', title:'Ultra Champions Journey', seg:'ucj',
-    where:'At the top of Practice',
-    screen:'Practice', rows:['Ultra Champions Journey','Practice · Test · Revise','Your level and words','Quick practice'], at:0,
-    note:'A two-year plan at 150–300 words a day, drawn from all 128,196 words.' },
-  { shot:'train', art:'mockBee', col:'#C8901B', title:'Mock Spelling Bee', seg:'mock',
-    where:'Library → Train, at the top',
-    screen:'Library · Train', rows:['Mock Spelling Bee','Idioms & Similes','Typing Trainer','Quotes'], at:0,
-    note:'Written, vocabulary and lightning rounds, with a readiness benchmark.' },
-  { shot:'learn', art:'concepts', col:'#5B3FA6', title:'Advanced Concepts', seg:'concepts',
-    where:'Library → Learn, just under Word Concepts',
-    screen:'Library · Learn', rows:['Word Concepts','Advanced Concepts','Word Journey','List Builder'], at:1,
-    note:'Six narrated lessons: schwa rescue, stress shift, the origin tree, question strategy.' },
-  { shot:'revise', art:'advTips', col:'#0E8A78', title:'Advanced Tips & Tricks', seg:'tips',
-    where:'Library → Revise',
-    screen:'Library · Revise', rows:['Your Revisions','Your Traps','Advanced Tips & Tricks'], at:2,
-    note:'36 champion techniques across memory, speed, etymology and bee-day tactics.' },
-  { shot:'arcade', art:'advGames', col:'#E8458C', title:'Advanced Games', seg:'games',
-    where:'The Arcade, leading the screen',
-    screen:'Arcade', rows:['Advanced Games','Spelling Saga','Daily Buzz','Bee Trivia'], at:0,
-    note:'Memory match and rapid dictation, built on the hardest words in the library.' } ];
 
 function advCheckUnlock(){ try{ const c=active(); if(!c) return;
     if(!advModeOn(c)) return; if(c.advAnnounced) return;
     c.advAnnounced=1; save();
-    state.advReveal=true; state.advTour=0;
+    /* NO TAKEOVER ON UNLOCK. This used to open a sixteen-step guided tour over the whole
+       screen the instant the pack went live — the wrong thing twice over: it interrupted
+       the very moment the parent had just paid to reach, and it described features
+       instead of letting the child meet them. The unlock is now a confetti burst and a
+       one-line confirmation; the five new surfaces announce themselves where they live.
+       If a "what's new" is ever wanted again it belongs in Settings, opened on purpose. */
     try{ sfx('win'); burstConfetti(150); }catch(e){}
     try{ flash('Advanced Pack active'); }catch(e){}
     try{ logActivity('unlock','Advanced Pack activated',{},[]); }catch(e){}
-    advTourTick();
   }catch(e){} }
-/* Auto-advance, so it plays as a guided tour rather than waiting to be clicked through.
-   Any manual step resets the timer; the last step stops it and waits. */
-let _advTourTimer=null;
-function advTourClear(){ try{ clearTimeout(_advTourTimer); }catch(e){} _advTourTimer=null; }
-/* THE TOUR NO LONGER PLAYS ITSELF.
-   This used to advance every 4.6 seconds through all sixteen steps, which made a
-   what's-new notice behave like a video: it moved while you were still reading, and
-   it took the screen for over a minute before you could get to the thing it was
-   telling you about. It is a static card now — it changes when the reader taps Next
-   and not before. The function is kept rather than deleted because a dozen callers
-   invoke it after every step change, and a no-op is the smallest safe change. */
-function advTourTick(){ advTourClear(); }
-
-/* The guided tour. Each step shows a REAL screenshot of the destination screen, dimmed,
-   with a spotlight cut over the new element and a callout hanging off it. Screenshots and
-   the element rects come from adv-tour-shots.js, captured against the live app. */
-function advTourCard(){
-  const n=ADV_TOUR.length; const i=Math.min(Math.max(state.advTour||0,0),n-1); const st=ADV_TOUR[i];
-  const last=i===n-1;
-  const shots=(window.SB_ADV_SHOTS||[]);
-  const shot=shots.find(x=>x.id===st.shot)||null;
-  const art=(k,sz)=>(window.SB_ICON_ART&&SB_ICON_ART[k])?SB_ICON_ART(k,{size:sz}):(window.SB_ICON?SB_ICON('grid',{size:sz}):'');
-  /* The shot is drawn at its natural aspect inside a fixed-width frame; every rect is
-     expressed as a percentage so the spotlight tracks the image at any width. */
-  let stage='';
-  if(shot&&shot.rect){ const r=shot.rect;
-    const pc=(v,t)=>(v/t*100).toFixed(3)+'%';
-    const below=(r.y+r.h)<(shot.vh*0.55);            // put the callout under the target if there is room
-    stage=`<div style="position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#efe8d8;aspect-ratio:${shot.vw} / ${shot.vh}">
-      <img src="${escA(shot.img)}?v=1" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center">
-      <span style="position:absolute;inset:0;background:rgba(24,16,44,.58);animation:sb-fade .4s ease both"></span>
-      <span style="position:absolute;left:${pc(r.x,shot.vw)};top:${pc(r.y,shot.vh)};width:${pc(r.w,shot.vw)};height:${pc(r.h,shot.vh)};
-        border-radius:12px;box-shadow:0 0 0 9999px rgba(24,16,44,.0),0 0 0 3px ${st.col},0 10px 30px rgba(0,0,0,.4);
-        background:transparent;backdrop-filter:none;animation:advt-spot .7s cubic-bezier(.2,1.2,.35,1) .18s both;
-        outline:2px solid rgba(255,255,255,.5);outline-offset:-6px"></span>
-      <span style="position:absolute;left:${pc(r.x,shot.vw)};top:${pc(r.y,shot.vh)};width:${pc(r.w,shot.vw)};height:${pc(r.h,shot.vh)};
-        border-radius:12px;box-shadow:inset 0 0 0 2000px rgba(255,255,255,0);mix-blend-mode:normal;
-        background:transparent;animation:advt-ring 1.5s ease .8s infinite"></span>
-      <span style="position:absolute;left:50%;transform:translateX(-50%);${below?`top:calc(${pc(r.y+r.h,shot.vh)} + 10px)`:`bottom:calc(${pc(shot.vh-r.y,shot.vh)} + 10px)`};
-        max-width:86%;background:#fff;color:#241B4E;border-radius:11px;padding:9px 12px;box-shadow:0 10px 26px rgba(0,0,0,.34);
-        animation:advt-in .55s cubic-bezier(.2,1.25,.35,1) .45s both">
-        <span style="display:block;font-family:var(--display);font-weight:900;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:${st.col}">New here</span>
-        <span style="display:block;font-family:var(--body);font-weight:700;font-size:12px;line-height:1.4;margin-top:2px">${esc(st.where)}</span></span>
-      <span style="position:absolute;left:9px;top:9px;display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.94);color:#241B4E;border-radius:999px;padding:4px 10px;font-family:var(--display);font-weight:800;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase">
-        <span style="width:5px;height:5px;border-radius:50%;background:${st.col}"></span>${esc(st.screen)}</span>
-    </div>`; }
-  const dots=ADV_TOUR.map((sx,di)=>`<button data-act="advTourStep" data-arg="${di}" title="${escA(sx.title)}" style="height:5px;flex:1;border-radius:999px;background:${di<=i?sx.col:'var(--line)'};transition:background .3s"></button>`).join('');
-  return `<div data-act="advRevealClose" style="position:fixed;inset:0;z-index:96;background:rgba(20,14,42,.76);backdrop-filter:blur(6px);display:grid;place-items:center;padding:14px;overflow:auto">
-    <div data-act="noop" style="width:100%;max-width:430px;background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:16px 16px 15px;box-shadow:0 24px 64px rgba(0,0,0,.45);animation:sb-pop .4s cubic-bezier(.2,1.3,.4,1) both">
-      <div style="display:flex;align-items:center;gap:9px;margin-bottom:9px">
-        <span style="width:28px;height:28px;flex-shrink:0;border-radius:9px;background:linear-gradient(135deg,#3A2A72,#5B3FA6);display:grid;place-items:center;color:#fff">${art('advanced',16)}</span>
-        <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:13.5px;line-height:1.1">Where your new features live</span>
-        <span style="display:block;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:1px">${i+1} of ${n}</span></span>
-        <button data-act="advRevealClose" style="flex-shrink:0;color:var(--muted);font-weight:700;font-size:12px;padding:4px 6px">Skip</button></div>
-      <div style="display:flex;gap:4px;margin-bottom:11px">${dots}</div>
-      ${stage}
-      <div style="display:flex;align-items:center;gap:10px;margin:12px 2px 12px">
-        <span style="width:38px;height:38px;flex-shrink:0;border-radius:11px;background:color-mix(in srgb,${st.col} 15%,transparent);color:${st.col};display:grid;place-items:center;animation:sb-pop .4s cubic-bezier(.2,1.3,.4,1) both">${art(st.art,21)}</span>
-        <span style="min-width:0;flex:1">
-          <span style="display:block;font-family:var(--display);font-weight:800;font-size:16px;line-height:1.15">${esc(st.title)}</span>
-          <span style="display:block;font-size:11.5px;color:var(--muted);font-weight:650;line-height:1.45;margin-top:2px">${esc(st.note)}</span></span></div>
-      <div style="display:flex;gap:8px;align-items:center">
-        ${i>0?`<button data-act="advTourPrev" style="padding:12px 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">&larr;</button>`:''}
-        <button data-act="advTourGo" data-arg="${escA(st.seg)}" style="padding:12px 13px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:${st.col};font-weight:800;font-size:13px;white-space:nowrap">Take me</button>
-        <button data-act="${last?'advRevealClose':'advTourNext'}" style="flex:1;padding:12px;border-radius:12px;background:${last?'var(--accent)':st.col};color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">${last?'Start exploring':'Next &rarr;'}</button>
-      </div>
-    </div></div>`; }
 function wayTile(key,size,tilt){ const w=WAYFIND[key]; size=size||48;
   const glyph=(w.sb&&window.SB_ICON)?SB_ICON(w.sb,{size:24}):iconSVG(w.ic,24,2.2);
   return `<span style="width:${size}px;height:${size}px;flex-shrink:0;display:grid;place-items:center;border-radius:14px;background:${w.c};color:#fff;box-shadow:var(--edge),var(--sh-rest);transform:rotate(${tilt||-2.5}deg)">${glyph}</span>`; }
@@ -4494,8 +4405,7 @@ function viewApp(){
         <div style="font-size:12px;color:var(--muted);margin-top:10px">Screenshot this card to share it!</div>`); })():'';
   const bandUp='';
 
-  const advReveal=S.advReveal?advTourCard():'';
-  return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}${advReveal}${bandUp}
+  return `<div style="min-height:100dvh;display:flex;flex-direction:column">${celebrate}${bandUp}
     <!-- The top nav is never collapsed or hidden on desktop. Focus mode used to tuck it
          away behind a hover, which made the app feel like it had lost its navigation.
          Focus still kills the music and holds the background still; the tabs stay put. -->
@@ -9014,7 +8924,7 @@ function render(){
   try{ if(window.SB_ENT && state.children && state.children.length) state.premium = SB_ENT.isPaid(); }catch(e){}
   // Advanced Mode can switch on from a level-up mid-session, so check on every render.
   // advCheckUnlock() is a no-op after the first time for a given child.
-  try{ if(state.screen==='app' && !state.advReveal) advCheckUnlock(); }catch(e){}
+  try{ if(state.screen==='app') advCheckUnlock(); }catch(e){}
   try{ if(state.screen==='app') focusAutoSync(); }catch(e){}
   const a=document.activeElement; const fkey=a&&a.getAttribute&&a.getAttribute('data-fkey'); let ss=null,se=null;
   try{ if(a){ ss=a.selectionStart; se=a.selectionEnd; } }catch(e){}

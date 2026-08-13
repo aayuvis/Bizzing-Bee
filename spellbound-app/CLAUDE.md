@@ -146,6 +146,14 @@ handlers. App lives in this folder; open `index.html` to run.
   authored) and drills its own 24-word block **sampled across** its band of `ADV.pool()`
   — a contiguous slice reads as dictionary dregs once the difficulty score flattens.
   Progress lives at `c.ultra.done`; `ultraTrain` hands the block to Practice.
+- **There is NO takeover when the Advanced Pack unlocks.** It used to open a sixteen-step
+  guided tour (`ADV_TOUR`, `advTourCard`, `adv-tour-shots.js`) full-screen the instant the
+  pack went live. Wrong twice over: it interrupted the exact moment the parent had paid to
+  reach, and it *described* five features instead of letting the child meet them. All of it
+  is deleted — the data, the card, the timer, the five `advTour*`/`advReveal*` actions and
+  the lazy registration. The unlock is a confetti burst and a one-line `flash`; the five
+  surfaces announce themselves where they live. If a "what's new" is ever wanted again it
+  belongs in Settings, opened on purpose — not over the screen.
 - **Testing unlock overrides entitlements, and now says so.** `SB_ENT.hasAddon` returns
   true for everything under dev unlock, which made the Advanced Pack switch look dead and
   plan changes look ignored. The Advanced card swaps its switch for a "Testing unlock is

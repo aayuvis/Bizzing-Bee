@@ -25,7 +25,7 @@ const seed = p => p.evaluate(k => {
   state.children=[k]; state.activeIdx=0; ensureLists(state.children[0]);
   state.devUnlock=true; state.premium=true; state.screen='app'; state.mode='light';
   state.devBannerOff = true;                       // no build banner in the shot
-  state.advReveal = null; state.advTour = null;    // no first-run tour card
+     // no first-run tour card
   state.advAnnounced = true;
   try { const c = active(); c.advAnnounced = true; c.badgesSeen = 1; } catch(e) {}
   state.settingsOpen = false; state.showTiers = false; state.pinDlg = null;
@@ -44,8 +44,7 @@ const seed = p => p.evaluate(k => {
 
   const shot = async (name, ms=900, clip=null) => {
     await p.waitForTimeout(ms);
-    await p.evaluate(() => { state.devBannerOff = true; state.advReveal = null;
-      document.querySelectorAll('.sb-boot').forEach(e => e.remove()); });
+    await p.evaluate(() => { state.devBannerOff = true; document.querySelectorAll('.sb-boot').forEach(e => e.remove()); });
     await p.waitForTimeout(120);
     const f = path.join(OUT, name + '.jpg');
     await p.screenshot({ path:f, type:'jpeg', quality:82, clip: clip||undefined });

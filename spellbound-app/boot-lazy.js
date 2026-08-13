@@ -29,7 +29,7 @@
      stub instead, which is why app.js no longer does. */
   var STUB = {
     SB_CONCEPTS: { chapters: [] }, SB_ADV_CONCEPTS: { chapters: [] },
-    SB_CSCRIPT: {}, SB_ADV_CSCRIPT: {}, SB_ADV_TIPS: null, SB_ADV_TOUR: null,
+    SB_CSCRIPT: {}, SB_ADV_CSCRIPT: {}, SB_ADV_TIPS: null,
     SB_TRAIL: null, SB_LORE: null, SB_ALT: null, SB_ALT_PRON: null,
     SB_DIACRITICS: null, SB_HOM: null, SB_IPA: null, SB_PRON: null,
     SB_QUOTES: [], SB_FIG: null, SB_LESSONS: null, SB_VOCAB26: null,
@@ -59,7 +59,6 @@
     advConcepts: 'adv-concepts-data.js',
     advTips: 'adv-tips-data.js',
     cscript: 'concept-scripts.js',      // narration scene scripts
-    advTour: 'adv-tour-shots.js',
     voiceWords: 'voice-words.js',       // 128k clip manifest — needed on first audio
     voiceFrench: 'voice-french.js',
     story: 'story-data.js',
@@ -71,7 +70,7 @@
     words: ['words2', 'lore'],
     card: ['words2', 'lore', 'alts', 'sounds', 'pron'],
     concepts: ['concepts', 'cscript'],
-    advanced: ['advConcepts', 'advTips', 'advTour', 'southasia'],
+    advanced: ['advConcepts', 'advTips', 'southasia'],
     atlas: ['trail', 'concepts', 'cscript', 'southasia'],
     quotes: ['quotes'],
     figurative: ['fig'],
@@ -83,7 +82,7 @@
 
   var IDLE = ['words2', 'lore', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
     'themeLore', 'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',
-    'scripps', 'advTour', 'southasia', 'voiceFrench', 'story', 'alts'];
+    'scripps', 'southasia', 'voiceFrench', 'story', 'alts'];
 
   var state = {};          // name -> 'loading' | 'done'
   var waiters = {};        // name -> [cb]
