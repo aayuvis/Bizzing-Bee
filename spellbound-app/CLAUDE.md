@@ -210,7 +210,14 @@ handlers. App lives in this folder; open `index.html` to run.
   easy/medium/hard/champ and THROW on 'auto' (CFG['auto'].time) — the saga only ever
   passed the four concrete levels. arcadePlay resolves a tile's 'auto' to a concrete
   level from the speller's band before the engine sees it. Still to do: a Bizzillionaire
-  quiz tile, then removing the 'Great Unspelling' story hero + saga2 story scaffolding.
+  Bizzillionaire (app.openBizz + SB_BIZZ_LADDER) is a 15-rung money-ladder quiz over
+  the 31k trivia bank — a self-managed overlay (.bz-play), DOM-driven, no engine.
+  Rungs 1-3 draw lv1 … rungs 13-15 draw lv5 (_bizzLevelOf); two safe havens (5, 10);
+  three one-shot lifelines (50:50 / Ask Bizzy = the question's `f` fact / Skip). c[0]
+  is the correct answer in the bank; the overlay shuffles its own A-D order. COINS
+  REWARD THE CLIMB, not the money (which is exponential flavour): ~12/rung, +150 to
+  finish, capped 400 — busting at rung 6 pays 72, not 0. Still to do: remove the
+  'Great Unspelling' story hero + saga2 story scaffolding (keep the 14 engines).
   Arcade holds exactly 7 surfaces: Saga, Spelling Quest (whose season map carries the
   classic Boss Battle quick fight — `sqBoss`), Daily Buzz, Bee Trivia, Magic Squares,
   Beat the Buzzer (modes: Sprint / Warm-Up / Level Challenge / Duel / ◆ Rapid
