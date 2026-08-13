@@ -1941,6 +1941,20 @@ const app = {
     try{ _arcHandle=engs[k](host, {diff:eDiff, world:g.w, onUnlock}, done); }
     catch(e){ try{ console.error(e); }catch(_){} flash('Could not start that game'); arcadeClose(); }
   },
+  /* Who Wants to Be a Bizzillionaire — the money-ladder quiz. Overlay, decoupled. */
+  openBizz:()=>{
+    if(!window.SB_TRIVIA){ flash('Trivia is still loading — one moment'); return; }
+    clearGTimer(); bizzClose();
+    const el=document.createElement('div'); el.className='bz-play'; _bizzEl=el;
+    el.innerHTML='<div class="bz-top"><button class="bz-back" id="bz-back">← Arcade</button>'
+      +'<span class="bz-title">Who Wants to Be a Bizzillionaire</span></div>'
+      +'<div class="bz-body"><div class="bz-stage"></div><div class="bz-ladder"></div></div>';
+    document.body.appendChild(el);
+    el.querySelector('#bz-back').onclick=bizzClose;
+    _bizzS={ rung:0, used:new Set(), cur:null, picked:null, locked:false, reveal:false,
+             hidden:[], hint:null, over:false, lifelines:{fifty:true,ask:true,skip:true} };
+    bizzNext();
+  },
   champTen:()=>{ const c=active(); const keep=c.gameDiff; c.gameDiff='champ';
     const list=pickFresh(gameWordsD(),10); c.gameDiff=keep;
     if(list.length<3){ flash('Not enough champ words yet — play a little first'); return; }
@@ -8308,6 +8322,128 @@ function arcadeResult(g, win){
   card.querySelector('.arc-r-again').onclick=()=>{ arcadeClose(); if(window.app) app.arcadePlay(g.k); };
   card.querySelector('.arc-r-back').onclick=arcadeClose;
 }
+/* ============================================================================
+   WHO WANTS TO BE A BIZZILLIONAIRE — a 15-rung money ladder over the 31k trivia
+   bank. Difficulty rises with the ladder (levels 1..5, three rungs each), two safe
+   havens, three one-shot lifelines. Self-managed overlay like the arcade games; a
+   quiz, so it is DOM-driven — no engine, no canvas. c[0] is the correct answer in
+   the bank (SB_TRIVIA shuffles for its own UI; here we shuffle our own order).
+   ============================================================================ */
+const SB_BIZZ_LADDER=[
+  {v:100},{v:200},{v:300},{v:500},{v:1000,safe:1},
+  {v:2000},{v:4000},{v:8000},{v:16000},{v:32000,safe:1},
+  {v:64000},{v:125000},{v:250000},{v:500000},{v:1000000}
+];
+const _bizzLevelOf=r=> r<3?1 : r<6?2 : r<9?3 : r<12?4 : 5;   // rung 0..14 -> trivia level
+let _bizzEl=null, _bizzS=null;
+function bizzMoney(n){ return n.toLocaleString('en-US'); }
+function bizzClose(){ if(_bizzEl){ _bizzEl.remove(); _bizzEl=null; } _bizzS=null;
+  try{ if(window.SB_W4_MUSIC) SB_W4_MUSIC.sync(); }catch(e){} }
+function bizzSafe(rung){ let s=0; for(let i=0;i<rung;i++) if(SB_BIZZ_LADDER[i].safe) s=SB_BIZZ_LADDER[i].v; return s; }
+/* Pull a fresh question for this rung's level. Returns {q, order, correctIdx} or null. */
+function bizzDraw(){
+  const S=_bizzS; const lv=_bizzLevelOf(S.rung);
+  const pool=(window.SB_TRIVIA&&SB_TRIVIA.questions||[]).filter(x=>x.lv===lv && x.ty==='mc' && x.c&&x.c.length>=4 && !S.used.has(x.id));
+  if(!pool.length){ // fall back to any unused mc at a nearby level
+    const any=(SB_TRIVIA.questions||[]).filter(x=>x.ty==='mc'&&x.c&&x.c.length>=4&&!S.used.has(x.id));
+    if(!any.length) return null;
+    return bizzShape(any[(Math.floor((S.rung+1)*97)%any.length)]);
+  }
+  return bizzShape(pool[(Math.floor((S.rung*131+7))%pool.length)]);
+}
+function bizzShape(q){ const S=_bizzS; S.used.add(q.id);
+  const choices=q.c.slice(0,4);
+  // deterministic-ish shuffle (no Math.random needed): rotate + swap by rung
+  const order=[0,1,2,3]; const k=(S.rung*3+1)%4;
+  for(let i=0;i<4;i++){ const j=(i+k)%4; const t=order[i]; order[i]=order[j]; order[j]=t; }
+  return { q, choices, order, correctIdx: order.indexOf(0) };
+}
+function bizzNext(){
+  const S=_bizzS; const lv=_bizzLevelOf(S.rung);
+  const go=()=>{ const d=bizzDraw(); if(!d){ bizzResult(true, 'ranout'); return; }
+    S.cur=d; S.picked=null; S.locked=false; S.hidden=[]; S.hint=null; bizzRender(); };
+  if(window.SB_TRIVIA && !SB_TRIVIA.loaded(lv)){
+    bizzRender('loading');
+    SB_TRIVIA.need(lv, ()=>{ if(_bizzS) go(); });
+  } else go();
+}
+function bizzAnswer(i){
+  const S=_bizzS; if(!S||S.locked||S.over||S.hidden.indexOf(i)>=0) return;
+  S.picked=i; S.locked=true; bizzRender();
+  setTimeout(()=>{ if(!_bizzS) return;
+    const right = i===S.cur.correctIdx;
+    S.reveal=true; bizzRender();
+    setTimeout(()=>{ if(!_bizzS) return;
+      if(right){
+        if(S.rung>=SB_BIZZ_LADDER.length-1){ bizzResult(true,'won'); return; }
+        S.rung++; S.reveal=false; bizzNext();
+      } else { bizzResult(false,'wrong'); }
+    }, 950);
+  }, 550);
+}
+function bizzLifeline(kind){
+  const S=_bizzS; if(!S||S.locked||S.over||!S.lifelines[kind]) return;
+  S.lifelines[kind]=false;
+  if(kind==='fifty'){ const wrong=[0,1,2,3].filter(i=>i!==S.cur.correctIdx); // hide 2 wrong
+    wrong.sort((a,b)=>((a*7+S.rung)%3)-((b*7+S.rung)%3)); S.hidden=wrong.slice(0,2); }
+  else if(kind==='ask'){ S.hint=(S.cur.q.f)||('Bizzy thinks it starts with “'+String(S.cur.choices[S.cur.order.indexOf(0)]).charAt(0)+'”'); }
+  else if(kind==='skip'){ S.picked=null; S.locked=false; bizzNext(); return; }
+  bizzRender();
+}
+function bizzResult(won, why){
+  const S=_bizzS; if(!S) return; S.over=true;
+  const banked = won ? SB_BIZZ_LADDER[SB_BIZZ_LADDER.length-1].v
+    : (why==='ranout' ? (S.rung>0?SB_BIZZ_LADDER[S.rung-1].v:0) : bizzSafe(S.rung));
+  /* Coins reward the CLIMB, not the money (which is exponential flavour): a child who
+     reaches rung 6 should not walk away with nothing because 1,000 ÷ big number rounds
+     to zero. ~12 per rung cleared, +150 for going all the way, capped so the ladder
+     can't out-earn a day of real practice. */
+  const coins = Math.min(400, S.rung*12 + (won?150:0));
+  if(coins) try{ addCoins(coins); }catch(e){}
+  bizzRender('result', {won, banked, coins, why});
+}
+function bizzRender(mode, data){
+  if(!_bizzEl) return; const S=_bizzS;
+  const money=v=>bizzMoney(v);
+  const ladder=SB_BIZZ_LADDER.map((r,i)=>{ const on=S&&i===S.rung&&!(mode==='result');
+    const passed=S&&i<S.rung;
+    return `<div class="bz-rung${on?' on':''}${r.safe?' safe':''}${passed?' passed':''}">
+      <span class="bz-rn">${i+1}</span><span class="bz-rv">${money(r.v)}</span></div>`; }).reverse().join('');
+  let main='';
+  if(mode==='loading'){ main=`<div class="bz-load">Loading round ${_bizzS?_bizzS.rung+1:1}…</div>`; }
+  else if(mode==='result'){ const d=data;
+    main=`<div class="bz-result">
+      <div style="font-size:44px">${d.won?'🏆':(d.banked>0?'💰':'💫')}</div>
+      <div class="bz-rh">${d.won?'BIZZILLIONAIRE!':(d.banked>0?'You walk away with':'Good run!')}</div>
+      <div class="bz-rmoney">${money(d.banked)}</div>
+      <div class="bz-rsub">${d.coins?('+'+d.coins+' 🪙 added to your hive'):'No coins this time — the safe rungs bank your winnings.'}</div>
+      <div style="display:flex;gap:9px;margin-top:18px;justify-content:center;flex-wrap:wrap">
+        <button class="bz-again" style="padding:12px 20px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:15px">Play again</button>
+        <button class="bz-quit" style="padding:12px 20px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">← Arcade</button>
+      </div></div>`;
+  } else if(S&&S.cur){ const q=S.cur; const L=['A','B','C','D'];
+    const answers=[0,1,2,3].map(i=>{ if(S.hidden.indexOf(i)>=0) return `<div class="bz-ans hidden"></div>`;
+      const txt=q.choices[q.order.indexOf(i)]; const picked=S.picked===i;
+      const showRight=S.reveal&&i===q.correctIdx; const showWrong=S.reveal&&picked&&i!==q.correctIdx;
+      return `<button class="bz-ans${picked?' picked':''}${showRight?' right':''}${showWrong?' wrong':''}" data-bz="${i}">
+        <span class="bz-al">${L[i]}</span><span class="bz-at">${esc(txt)}</span></button>`; }).join('');
+    main=`<div class="bz-q">${esc(q.q.q)}</div>
+      ${S.hint?`<div class="bz-hint">🐝 ${esc(S.hint)}</div>`:''}
+      <div class="bz-answers">${answers}</div>
+      <div class="bz-lifelines">
+        <button class="bz-ll${S.lifelines.fifty?'':' used'}" data-ll="fifty" ${S.lifelines.fifty?'':'disabled'}>50:50</button>
+        <button class="bz-ll${S.lifelines.ask?'':' used'}" data-ll="ask" ${S.lifelines.ask?'':'disabled'}>Ask Bizzy</button>
+        <button class="bz-ll${S.lifelines.skip?'':' used'}" data-ll="skip" ${S.lifelines.skip?'':'disabled'}>Skip</button>
+      </div>`;
+  }
+  _bizzEl.querySelector('.bz-stage').innerHTML=main;
+  _bizzEl.querySelector('.bz-ladder').innerHTML=ladder;
+  // wire
+  _bizzEl.querySelectorAll('[data-bz]').forEach(b=>b.onclick=()=>bizzAnswer(+b.getAttribute('data-bz')));
+  _bizzEl.querySelectorAll('[data-ll]').forEach(b=>b.onclick=()=>bizzLifeline(b.getAttribute('data-ll')));
+  const again=_bizzEl.querySelector('.bz-again'); if(again) again.onclick=()=>{ bizzClose(); if(window.app) app.openBizz(); };
+  const quit=_bizzEl.querySelector('.bz-quit'); if(quit) quit.onclick=bizzClose;
+}
 function gamesHub(){ const S=state; const c=active();
   // ---- graphical tile helpers ----
   const heroTile=(o)=>`<button data-act="${o.act}" ${o.arg?`data-arg="${escA(o.arg)}"`:''} class="arc-hero" ${o.span?'style="grid-column:span 2"':''}>
@@ -8354,6 +8490,8 @@ function gamesHub(){ const S=state; const c=active();
   if(window.MOCKBEE){ const st=MOCKBEE.stats();
     const hid=(function(){ try{ return (SB_AVATARS.byId['goldlegend']?'goldlegend':(SB_AVATARS.list[0]||{}).id); }catch(e){ return 'goldlegend'; } })();
     heroes.push(heroTile({act:'mbOpen',grad:'linear-gradient(150deg,#3A1E4E,#2A1638 60%,#1E1028)',art:SB_AVATAR(hid,116,{dark:true}),tag:'★ Competition',title:'Mock Spelling Bee',blurb:'Ten rivals, eight rounds, one microphone. Miss your word and you sit down.',cta:st.played?'Take the stage again':'Take the stage',sub:st.played?((st.wins||0)+' won · best '+(st.best||11)+'/11'):'11 spellers'})); }
+  if(window.SB_TRIVIA){ const bhid=(function(){ try{ return SB_AVATARS.byId['bizzy']?'bizzy':((SB_AVATARS.list[0]||{}).id||null); }catch(e){ return null; } })();
+    heroes.push(heroTile({act:'openBizz',grad:'linear-gradient(150deg,#12324E,#0E2540 58%,#0A1A30)',art:bhid?SB_AVATAR(bhid,116,{dark:true}):'',tag:'💰 Quiz ladder',title:'Who Wants to Be a Bizzillionaire',blurb:'Fifteen questions, rising stakes, two safe rungs and three lifelines. How far can you climb?',cta:'Play the ladder',sub:'50:50 · Ask Bizzy · Skip'})); }
   // ---- FEATURE TILES: daily, trivia, champ, magic ----
   const feats=[];
   /* Daily Buzz is a once-a-day ritual, not one of nine games to browse. It rides as a
