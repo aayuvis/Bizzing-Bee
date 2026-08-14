@@ -231,7 +231,12 @@ handlers. App lives in this folder; open `index.html` to run.
   SB_ARCADE_GAMES. Still to do: a Bizzillionaire
   Bizzillionaire (app.openBizz + SB_BIZZ_LADDER) is a 15-rung money-ladder quiz over
   the 31k trivia bank — a self-managed overlay (.bz-play), DOM-driven, no engine.
-  Rungs 1-3 draw lv1 … rungs 13-15 draw lv5 (_bizzLevelOf); two safe havens (5, 10);
+  Rungs 1-3 draw lv1 … rungs 13-15 draw lv5 (_bizzLevelOf) — the difficulty RAMP.
+  Questions are drawn RANDOMLY from the whole level pool (not a fixed index) and every
+  id asked is remembered across plays in localStorage `sb_bizz_seen` (_bizzSeen), so a
+  second/third/tenth playthrough serves NEW questions; a level is only recycled once its
+  entire bank is exhausted. Answer order is a real Fisher-Yates shuffle so the correct
+  slot moves every play. two safe havens (5, 10);
   three one-shot lifelines (50:50 / Ask Bizzy = the question's `f` fact / Skip). c[0]
   is the correct answer in the bank; the overlay shuffles its own A-D order. COINS
   REWARD THE CLIMB, not the money (which is exponential flavour): ~12/rung, +150 to

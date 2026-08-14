@@ -85,10 +85,12 @@ const seed = p => p.evaluate(k => {
   /* ---- 5. the games, actually being played ----
      Each engine is mounted full-bleed and driven past its how-to card, then given a
      couple of seconds to reach a frame with something happening in it. */
+  /* The arcade's eight games (matches SB_ARCADE_GAMES), so the landing shows what a
+     child can actually play — not the culled Whack-a-Moth / Comb Catcher. */
   const GAMES = [
-    ['honeycombRun','meadow'], ['beeGrandPrix','hive'], ['wordSnake','pond'],
-    ['whackAMoth','hive'], ['typeBlaster','arcade'], ['unscrambleStars','cosmos'],
-    ['keepFlying','sky'], ['combCatcher','carnival'],
+    ['beeGrandPrix','hive'], ['honeycombRun','meadow'], ['typeBlaster','arcade'],
+    ['keepFlying','sky'], ['wordSnake','forest'], ['unscrambleStars','cosmos'],
+    ['spotlightSimon','stage'], ['spellScene','homecoming'],
   ];
   for (const [eng, world] of GAMES) {
     const ok = await p.evaluate(async ({eng, world}) => {
