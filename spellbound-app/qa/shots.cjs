@@ -102,13 +102,19 @@ const seed = p => p.evaluate(k => {
       catch(e){ return 'threw '+e; }
       await new Promise(r=>setTimeout(r,700));
       const go=host.querySelector('#sg-howgo, .sg-howto-go'); if(go) go.click();
-      await new Promise(r=>setTimeout(r,250));
-      for(let i=0;i<14;i++){
-        host.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));
+      await new Promise(r=>setTimeout(r,450));   // let countdowns (Bee Grand Prix, Keep Flying) run out
+      for(let i=0;i<30;i++){                     // longer drive so racers/flight reach an ACTIVE frame, not the count-in
+        host.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,clientX:innerWidth/2,clientY:innerHeight*0.42}));
         window.dispatchEvent(new KeyboardEvent('keydown',{key:' ',bubbles:true}));
+        window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowUp',bubbles:true}));   // flap for Keep Flying
         window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));
-        await new Promise(r=>setTimeout(r,110));
+        await new Promise(r=>setTimeout(r,95));
+        window.dispatchEvent(new KeyboardEvent('keyup',{key:'ArrowRight',bubbles:true}));
       }
+      // Some engines (Bee Grand Prix) set host.style.position='relative' for their own
+      // absolute children, which DROPS this fixed overlay into normal flow BELOW the app —
+      // the screenshot then catches the app screen, not the game. Re-assert the overlay.
+      host.style.position='fixed'; host.style.inset='0'; host.style.zIndex='99999';
       return 'ok';
     }, {eng, world});
     if (ok !== 'ok') { console.log(`  ${eng}: ${ok}`); continue; }
