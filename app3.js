@@ -2416,8 +2416,8 @@ const SB_FACTS = {
   clips: 128491,        // voice/w/*.mp3, every word in both libraries
   library: 128197,      // words-full.js
   core: 40979,          // the core graded library
-  engines: 14,          // SB_SAGA_ENGINES
-  chapters: 31, acts: 6,
+  engines: 8,           // SB_ARCADE_GAMES — the playable arcade games
+  chapters: 31, acts: 6,   // legacy story counts; kept for any remaining references, no longer marketed
   avatars: 211, packs: 20,
   evoForms: 120,        // 12 worlds x 10 stages
   trivia: 31159, triviaThemes: 29,
@@ -2493,14 +2493,14 @@ function viewLanding() {
      decides in about two seconds and they decide on pictures. The numbers still matter to
      the parent, so they stay, compressed into one strip beneath the art. */
   const games = [
-    ['game-honeycombRun',   'Honeycomb Run',   'A maze through the hive. Spell to open the gates.'],
-    ['game-beeGrandPrix',   'Bee Grand Prix',  'A racer with six power-ups — each one unlocked by spelling.'],
-    ['game-wordSnake',      'Word Snake',      'The trail is a word, and it grows into Vasuki.'],
-    ['game-whackAMoth',     'Whack-the-Moths', 'They are eating the letters. You have a mallet.'],
-    ['game-typeBlaster',    'The Firewall',    'A typing shooter. Words are the ammunition.'],
-    ['game-unscrambleStars','Unscramble the Stars', 'Pull a word out of the constellations.'],
-    ['game-keepFlying',     'The Long Sky',    'Fly, bank every honey pot, then home through the Hive Gates.'],
-    ['game-combCatcher',    'Comb Catcher',    'The carnival of lost letters.'],
+    ['game-beeGrandPrix',   'Bee Grand Prix',   'A racer with six power-ups — each one unlocked by spelling.'],
+    ['game-honeycombRun',   'Honeycomb Run',    'A maze through the hive. Spell a word to open every gate.'],
+    ['game-typeBlaster',    'Type Blaster',     'A typing shooter. The words are your ammunition.'],
+    ['game-keepFlying',     'Keep Flying',      'Fly, bank every honey pot, then home through the gates.'],
+    ['game-wordSnake',      'Word Snake',       'The trail is a word — eat the letters in order and grow.'],
+    ['game-unscrambleStars','Unscramble Stars', 'Pull the word back out of the scrambled constellation.'],
+    ['game-spotlightSimon', 'Spotlight Simon',  'Watch the spotlight spell it, then repeat from memory.'],
+    ['game-spellScene',     'Spell Scene',      'Spell the word that finishes the scene.'],
   ].map(([f, name, hook], i) => `<figure style="margin:0;border-radius:16px;overflow:hidden;background:var(--bg2);border:1px solid var(--line);display:flex;flex-direction:column">
       <span style="position:relative;display:block;aspect-ratio:16/11;overflow:hidden;background:#241E33">
         <img src="app-art/shots/${f}.jpg" alt="${escA(name)} — gameplay from Bizzing Bee"
@@ -2513,7 +2513,7 @@ function viewLanding() {
     </figure>`).join('');
 
   const statStrip = [
-    [SB_FACTS.engines, 'games'], [SB_FACTS.chapters, 'story chapters'],
+    [SB_FACTS.engines, 'arcade games'], [SB_FACTS.conceptsFree, 'concept chapters'],
     [SB_FACTS.evoForms, 'evolution forms'], [SB_FACTS.avatars, 'collectibles'],
     [sbFmt(SB_FACTS.trivia), 'trivia questions'], [SB_FACTS.scripps, 'champion words'],
   ].map(([n, t]) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0">
@@ -2525,13 +2525,13 @@ function viewLanding() {
 
   const game = landSection('Why children keep opening it',
     'A game where spelling is how you&nbsp;win.',
-    `Fourteen games, none of them the same drill twice. <b style="color:var(--text)">Spelling is the cheat code</b> — it opens the gate, fires the power-up, feeds the snake — so practice happens because they want the next thing, not because you asked.`,
+    `Eight arcade games, no two the same drill. <b style="color:var(--text)">Spelling is the cheat code</b> — it opens the gate, fires the power-up, feeds the snake — so practice happens because they want the next thing, not because you asked.`,
     `<div style="background:var(--chip);border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));border-radius:20px;padding:clamp(22px,4vw,34px);margin-bottom:26px">
-       <div style="font-family:var(--ui);font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px">The story your child is actually in</div>
-       <div style="font-family:var(--display);font-weight:800;font-size:clamp(21px,3.2vw,30px);line-height:1.16;margin-bottom:12px">A hornet called Vex is stealing the letters out of the&nbsp;world.</div>
-       <p style="font-size:15px;line-height:1.6;color:var(--muted);max-width:40em;margin:0 0 12px">He was thrown out of the Hive Academy for twisting words, and he has built an engine that eats them. Wherever it reaches, the world loses its colour — and the app means that literally: the scene renders at 92% grey.</p>
-       <p style="font-size:15px;line-height:1.6;color:var(--muted);max-width:40em;margin:0">Every word your child spells right sweeps the colour back across it, frame by frame, until the place is whole again. Thirty-one chapters, five boss fights, a traitor, and a friend taken prisoner.</p>
-       <div style="font-family:var(--display);font-weight:800;font-size:clamp(19px,2.8vw,26px);color:var(--accent);margin-top:16px">You spell. The colour comes back.</div>
+       <div style="font-family:var(--ui);font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px">The one rule under every game</div>
+       <div style="font-family:var(--display);font-weight:800;font-size:clamp(21px,3.2vw,30px);line-height:1.16;margin-bottom:12px">Spelling is the cheat&nbsp;code.</div>
+       <p style="font-size:15px;line-height:1.6;color:var(--muted);max-width:40em;margin:0 0 12px">It opens the gate, fires the power-up, feeds the snake, lights the next tile. There is no pay-to-win and no tapping past it — the only way forward is to spell the word, said aloud first in a real recorded voice. So the practice happens because your child wants the next thing, not because you asked.</p>
+       <p style="font-size:15px;line-height:1.6;color:var(--muted);max-width:40em;margin:0">And it all points somewhere: a full Scripps-format <b style="color:var(--text)">Mock Spelling Bee</b> — eleven spellers, preliminaries to finals — the stage they are quietly training for.</p>
+       <div style="font-family:var(--display);font-weight:800;font-size:clamp(19px,2.8vw,26px);color:var(--accent);margin-top:16px">They think they&rsquo;re playing. They&rsquo;re practising for the bee.</div>
      </div>
      ${facts}`,
     { style: 'background:var(--bg2)' });
@@ -2539,8 +2539,8 @@ function viewLanding() {
   /* ---- 3. THE TRANSLATION. One feature set read two ways — the single most
        useful page in the brand platform, because it needs no second campaign. ---- */
   const rows = [
-    ['&ldquo;Everything&rsquo;s grey until you spell it. Then the colour comes back.&rdquo;',
-     'Spelling reframed from test to power. The child is repairing the world, not being examined by it — which is the whole difference between a chore and a game.'],
+    ['&ldquo;Spelling opens the gate. I have to get it right to keep&nbsp;going.&rdquo;',
+     'Spelling reframed from test to power. In every game the word is the key — the child is unlocking the next thing, not being examined by it. That is the whole difference between a chore and a game.'],
     ['&ldquo;My bee is at Forager. Two more and she&rsquo;s Queen.&rdquo;',
      'Progress that measures effort and can never be lost. That is the answer to the plateau — the exact moment most families quit.'],
     ['&ldquo;It says the word properly.&rdquo;',
@@ -2563,7 +2563,7 @@ function viewLanding() {
   /* ---- 4. THE LADDER. The reason this is a subscription and not an app. ---- */
   const ladder = [
     ['4–7', 'The books', 'Read aloud by a parent. No screen, no scoring, no pressure — just affection for words, and for a character they will follow.'],
-    ['7–9', 'The story mode', `The same characters, now playable. ${SB_FACTS.acts} acts, ${SB_FACTS.chapters} chapters. They think they are playing a game about a bee.`],
+    ['7–9', 'The arcade', `${SB_FACTS.engines} word games where spelling is how you win, a new Daily Buzz every day, and ${sbFmt(SB_FACTS.trivia)} trivia questions. They think they are playing a game about a bee.`],
     ['9–12', 'The ladder', 'The highest-value words, an avatar that evolves the whole way up, and Champ Challenges to test out and skip ahead.'],
     ['12–15', 'The library', `${sbOver(SB_FACTS.library)} words and serious bee preparation. The child who started with a picture book is now spelling words most adults cannot.`],
   ].map(([age, t, b], i) => `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:20px;position:relative">
@@ -2594,7 +2594,7 @@ const SB_COMPARE = [
      prose now lives in the FAQ, where somebody who wants it will go looking. */
   ['Hearing the word',       'Robotic device text-to-speech',   'Over 128,000 words in one real recorded voice'],
   ['Words available',        'A few hundred to ~4,000',         '128,000 · 40,000 graded by difficulty'],
-  ['Different games',        'One or two, re-skinned',          '14, plus a 31-chapter story'],
+  ['Different games',        'One or two, re-skinned',          'Eight distinct games, trivia and a mock bee'],
   ['Bee practice',           'Word lists to memorise',          'Full Scripps-format mock bee'],
   ['Roots and origins',      'Rarely covered',                  '100 journeys · 122 chapters'],
   ['Vocabulary',             'Bolted onto spelling',            'Its own ladder · NSF 2026 list'],
@@ -2604,8 +2604,8 @@ const SB_COMPARE = [
   ['What money buys',        'Shortcuts and power-ups',         'Hats. Everything else is earned.'],
 ];
 const SB_FAQ = [
-  ['What is Bizzing Bee?', 'A spelling bee practice app for children aged 8 to 15. It speaks every word aloud in a recorded voice, the way a pronouncer does at a real bee, and wraps the practice in 14 word games so children keep coming back.'],
-  ['Is Bizzing Bee free?', 'Yes. The free plan gives you 500 words and the basic games, with no card required and no expiry. Beginner Bee is $9.99 a month or $99 a year for 10,000 words, and Regional Speller at $19.99 a month or $199 a year unlocks the full graded library, the story mode and the book series. Monthly plans can be cancelled at any time.'],
+  ['What is Bizzing Bee?', 'A spelling bee practice app for children aged 8 to 15. It speaks every word aloud in a recorded voice, the way a pronouncer does at a real bee, and wraps the practice in eight word games plus a full mock bee so children keep coming back.'],
+  ['Is Bizzing Bee free?', 'Yes. The free plan gives you 500 words and the basic games, with no card required and no expiry. Beginner Bee is $9.99 a month or $99 a year for 10,000 words, and Regional Speller at $19.99 a month or $199 a year unlocks the full graded library and the book series. Monthly plans can be cancelled at any time.'],
   ['Does my child hear the words spoken aloud?', "Yes. Over 128,000 words are recorded in a real neural voice rather than read by the device's built-in text-to-speech, which mispronounces exactly the French and Latin borrowings that decide bees. A child can only spell a word they actually heard correctly."],
   ['How does it help prepare for the Scripps National Spelling Bee?', 'It practises the way the bee is actually run: the word spoken aloud, the definition, the language of origin and a sentence, then you spell it. It carries the Scripps and North South Foundation study tiers, all 108 national winning words from 1925 to 2026, and a Mock Spelling Bee that follows the real format of preliminaries, quarterfinals, semifinals and finals.'],
   ['Does it teach Greek and Latin roots?', 'Yes. 100 Word Journeys lessons and 122 concept chapters cover roots, prefixes, suffixes and language families, so an unfamiliar word can be reasoned out rather than memorised. Recognising word patterns is the single technique bee coaches recommend most.'],
@@ -2795,7 +2795,7 @@ function landPlansSection() {
     const rows = {
       free: ['500 words to practise', 'The basic games', 'Two worlds', 'Progress and streaks'],
       beginner: [sbFmt(10000) + ' words', 'Concepts and Word Lists', 'The revision pile', 'Four worlds · 5 avatar packs'],
-      regional: [sbFmt(40000) + ' words — the full graded library', 'The Saga: ' + SB_FACTS.chapters + ' chapters, ' + SB_FACTS.engines + ' engines',
+      regional: [sbFmt(40000) + ' words — the full graded library', 'The full arcade: ' + SB_FACTS.engines + ' games, trivia and the mock bee',
                  'The book series — 19 volumes and 4 companions', 'Every world, avatar pack and game',
                  'All the Supercharge training tools'],
     }[id].map(r => `<li style="display:flex;gap:9px;align-items:flex-start;font-size:13.5px;line-height:1.45;margin-bottom:9px">
@@ -6467,7 +6467,7 @@ function explorerCard(c,opts){ opts=opts||{}; const tiles=explorerTiles(c); if(!
     <span style="font-size:11.5px;color:var(--muted);font-weight:600;line-height:1.3">${esc(t.sub)}</span></button>`; };
   return `<div class="sb-card" style="${opts.mt?'margin-top:18px':''}">
     <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:3px">${opts.title||'Beyond spelling'}</div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:13px">${opts.sub||'Everywhere '+esc(c.name||'your speller')+' is building language — story mode, quotes, journeys and more.'}</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:13px">${opts.sub||'Everywhere '+esc(c.name||'your speller')+' is building language — the arcade, quotes, journeys and more.'}</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">${tiles.map(cell).join('')}</div>
   </div>`; }
 /* ---- Daily-target history: one metric at a time, 30 days of bars against the target line ---- */
@@ -6681,7 +6681,7 @@ function viewProgress(){
     <div style="margin-bottom:18px">${streakCard()}</div>
     ${metricsCard(c)}
     ${ttAnalyticsCard(c)}
-    ${(()=>{ const ec=explorerCard(c,{title:'Your Bizzing Bee world',sub:'Everywhere you’re exploring — story mode, quotes, journeys, typing and more.'}); return ec?`<div style="margin-bottom:18px">${ec}</div>`:''; })()}
+    ${(()=>{ const ec=explorerCard(c,{title:'Your Bizzing Bee world',sub:'Everywhere you’re exploring — the arcade, quotes, journeys, typing and more.'}); return ec?`<div style="margin-bottom:18px">${ec}</div>`:''; })()}
     <div class="sb-card" style="margin-bottom:18px">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:16px">This week</div>
       <div style="display:flex;align-items:flex-end;gap:9px;height:120px">${week}</div>
@@ -8331,28 +8331,46 @@ const SB_BIZZ_LADDER=[
   {v:2000},{v:4000},{v:8000},{v:16000},{v:32000,safe:1},
   {v:64000},{v:125000},{v:250000},{v:500000},{v:1000000}
 ];
-const _bizzLevelOf=r=> r<3?1 : r<6?2 : r<9?3 : r<12?4 : 5;   // rung 0..14 -> trivia level
-let _bizzEl=null, _bizzS=null;
+const _bizzLevelOf=r=> r<3?1 : r<6?2 : r<9?3 : r<12?4 : 5;   // rung 0..14 -> trivia level (the difficulty ramp)
+let _bizzEl=null, _bizzS=null, _bizzSeen=null;
+/* Cross-game no-repeat: the ids of every trivia question the ladder has already asked,
+   persisted so a second, third, tenth playthrough serves NEW questions rather than the
+   same fifteen. It is recycled one level at a time — only when a whole level's bank has
+   been exhausted do we forget that level, so the game can keep running forever without
+   ever repeating until it truly has to. */
+function _bizzSeenLoad(){ if(_bizzSeen) return _bizzSeen;
+  try{ _bizzSeen=new Set(JSON.parse(localStorage.getItem('sb_bizz_seen')||'[]')); }catch(e){ _bizzSeen=new Set(); }
+  return _bizzSeen; }
+function _bizzSeenSave(){ try{ localStorage.setItem('sb_bizz_seen', JSON.stringify([..._bizzSeen].slice(-6000))); }catch(e){} }
 function bizzMoney(n){ return n.toLocaleString('en-US'); }
 function bizzClose(){ if(_bizzEl){ _bizzEl.remove(); _bizzEl=null; } _bizzS=null;
   try{ if(window.SB_W4_MUSIC) SB_W4_MUSIC.sync(); }catch(e){} }
 function bizzSafe(rung){ let s=0; for(let i=0;i<rung;i++) if(SB_BIZZ_LADDER[i].safe) s=SB_BIZZ_LADDER[i].v; return s; }
-/* Pull a fresh question for this rung's level. Returns {q, order, correctIdx} or null. */
+/* Pull a fresh question for this rung's level. Returns {q, order, correctIdx} or null.
+   Draws RANDOMLY from the whole level pool (not a fixed index), skipping anything asked
+   in this game (S.used) or any past game (_bizzSeen), so the trivia bank is spread across
+   plays instead of cycling the same slice. */
 function bizzDraw(){
-  const S=_bizzS; const lv=_bizzLevelOf(S.rung);
-  const pool=(window.SB_TRIVIA&&SB_TRIVIA.questions||[]).filter(x=>x.lv===lv && x.ty==='mc' && x.c&&x.c.length>=4 && !S.used.has(x.id));
-  if(!pool.length){ // fall back to any unused mc at a nearby level
-    const any=(SB_TRIVIA.questions||[]).filter(x=>x.ty==='mc'&&x.c&&x.c.length>=4&&!S.used.has(x.id));
-    if(!any.length) return null;
-    return bizzShape(any[(Math.floor((S.rung+1)*97)%any.length)]);
+  const S=_bizzS; const lv=_bizzLevelOf(S.rung); const seen=_bizzSeenLoad();
+  const all=(window.SB_TRIVIA&&SB_TRIVIA.questions)||[];
+  const atLv=all.filter(x=>x.lv===lv && x.ty==='mc' && x.c && x.c.length>=4);
+  let pool=atLv.filter(x=>!S.used.has(x.id) && !seen.has(x.id));
+  if(!pool.length && atLv.length){          // this whole level has been seen across plays — recycle just this level
+    atLv.forEach(x=>seen.delete(x.id)); _bizzSeenSave();
+    pool=atLv.filter(x=>!S.used.has(x.id));
   }
-  return bizzShape(pool[(Math.floor((S.rung*131+7))%pool.length)]);
+  if(!pool.length){                          // level not loaded yet, or genuinely dry — any fresh mc, seen-aware then not
+    pool=all.filter(x=>x.ty==='mc'&&x.c&&x.c.length>=4&&!S.used.has(x.id)&&!seen.has(x.id));
+    if(!pool.length) pool=all.filter(x=>x.ty==='mc'&&x.c&&x.c.length>=4&&!S.used.has(x.id));
+    if(!pool.length) return null;
+  }
+  return bizzShape(pool[Math.floor(Math.random()*pool.length)]);
 }
 function bizzShape(q){ const S=_bizzS; S.used.add(q.id);
+  const seen=_bizzSeenLoad(); seen.add(q.id); _bizzSeenSave();
   const choices=q.c.slice(0,4);
-  // deterministic-ish shuffle (no Math.random needed): rotate + swap by rung
-  const order=[0,1,2,3]; const k=(S.rung*3+1)%4;
-  for(let i=0;i<4;i++){ const j=(i+k)%4; const t=order[i]; order[i]=order[j]; order[j]=t; }
+  // random answer order (Fisher-Yates) so the correct slot moves every play
+  const order=[0,1,2,3]; for(let i=3;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=order[i]; order[i]=order[j]; order[j]=t; }
   return { q, choices, order, correctIdx: order.indexOf(0) };
 }
 function bizzNext(){
