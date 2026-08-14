@@ -8531,8 +8531,11 @@ function gamesHub(){ const S=state; const c=active();
   /* Champ Challenge merged into Beat the Buzzer as its Level Challenge mode. */
   feats.push(tile({act:'playGame',arg:'magic',grad:'linear-gradient(135deg,#B14FC4,#7E2E9E)',art:gameArtSVG('magic',48),badge:'Board',title:'Magic Squares',blurb:'Clear a 3×3 board of themes & concepts — lines win bonus coins.',cta:'#7E2E9E',stat:''}));
   // ---- THE GAMES (the culled eight): each mounts its engine on its play-field, story-free ----
+  /* Tile banner is a REAL screenshot of the game (app-art/shots/game-<k>.jpg), not the
+     generic painted world plate — so the picture on the Bee Grand Prix tile is the race,
+     not a hive. Same images the landing uses; regenerate both with qa/shots.cjs. */
   const arcadeGames=SB_ARCADE_GAMES.map(g=>gtile({act:'arcadePlay',arg:g.k,
-    grad:"linear-gradient(180deg,rgba(20,14,42,.08),rgba(20,14,42,.5)),url('app-art/sgw-"+g.w+".jpg') center/cover",
+    grad:"linear-gradient(180deg,rgba(20,14,42,.06),rgba(20,14,42,.34)),url('app-art/shots/game-"+g.k+".jpg') center/cover",
     art:'',badge:g.tag,title:g.n,blurb:g.blurb,cta:'var(--accent)',stat:''})).join('');
   // ---- QUICK GAMES: the timed/quiz engines that aren't part of the 14 ----
   const quick=GAMES.map(gm=>gtile({act:'playGame',arg:gm.type,grad:gameCoverBG(gm),art:gameArtSVG(gm.type,48),badge:gm.tag,title:gm.name,blurb:gm.blurb,cta:gm.c,stat:''})).join('');
