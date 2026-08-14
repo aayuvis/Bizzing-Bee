@@ -202,8 +202,8 @@ handlers. App lives in this folder; open `index.html` to run.
   `c.gameDiffBy[type]` remembers each game's choice; `gameDiffFor(c,type)` reads it;
   `playGame` copies it into the live `c.gameDiff` on launch (the same trick champTen
   used) so the mid-play engines that read `c.gameDiff` see the right level.
-  The 14 engine games are now PLAYABLE DIRECTLY from the arcade (SB_ARCADE_GAMES +
-  app.arcadePlay): each tile shows its painted play-field (app-art/sgw-<world>.jpg) and
+  The arcade's engine games are PLAYABLE DIRECTLY (SB_ARCADE_GAMES + app.arcadePlay):
+  each tile shows its painted play-field (app-art/sgw-<world>.jpg) and
   mounts its SB_SAGA_ENGINES engine in a self-managed fullscreen overlay (.arc-play,
   appended to <body>), DECOUPLED from saga2's story machinery — so removing the story
   (task 46) leaves the arcade working. CRITICAL: the engines key their config by
@@ -219,15 +219,25 @@ handlers. App lives in this folder; open `index.html` to run.
   came up empty (Band 4 'medium' = [3,5], 0%). Fix: `fillWords(n,min,max)` in saga2.js
   keeps drawing fresh `pool()` batches (deduped) until it has n words, so the field is
   never hollow; pickFresh backfills used words so it always terminates. Verified 0% empty
-  across bands 2/4/6/8/9 and all 14 games mount at bands 2/6/9. Still to do: a Bizzillionaire
+  across bands 2/4/6/8/9 and all games mount at bands 2/6/9.
+  CULLED 14 -> 8 on a fun x learning index: kept beeGrandPrix, honeycombRun, typeBlaster,
+  keepFlying, wordSnake, unscrambleStars, spotlightSimon, spellScene — eight distinct feels
+  (Race/Maze/Speed/Flight/Arcade/Puzzle/Memory/Scene), weighted to games that make the
+  child PRODUCE the spelling. Dropped the redundant select/catch-given-letters cluster
+  (whackAMoth, combCatcher, constellationConnect, wordHive) and two lowest-learning
+  novelties (spellShield — duplicated typeBlaster's spell-fast-under-threat; stageRhythm —
+  timing crowded out recall). wordSnake was kept by user request as a fun-dexterity anchor.
+  The dropped ENGINES stay in saga2.js (still exported), so a re-add is one line in
+  SB_ARCADE_GAMES. Still to do: a Bizzillionaire
   Bizzillionaire (app.openBizz + SB_BIZZ_LADDER) is a 15-rung money-ladder quiz over
   the 31k trivia bank — a self-managed overlay (.bz-play), DOM-driven, no engine.
   Rungs 1-3 draw lv1 … rungs 13-15 draw lv5 (_bizzLevelOf); two safe havens (5, 10);
   three one-shot lifelines (50:50 / Ask Bizzy = the question's `f` fact / Skip). c[0]
   is the correct answer in the bank; the overlay shuffles its own A-D order. COINS
   REWARD THE CLIMB, not the money (which is exponential flavour): ~12/rung, +150 to
-  finish, capped 400 — busting at rung 6 pays 72, not 0. Still to do: remove the
-  'Great Unspelling' story hero + saga2 story scaffolding (keep the 14 engines).
+  finish, capped 400 — busting at rung 6 pays 72, not 0. Bizzillionaire is a HERO tile
+  at the top of the arcade (alongside the Mock Spelling Bee), NOT one of the eight game
+  tiles — it stays there.
   DONE: the story is fully removed. saga2.js's 360-line story controller (map/board/
   beats/CH_META/ACTS/SAGA_MAP, 166KB->144KB) is deleted; saga-script.js (dialogue) and
   saga-music.js (SAGA_MUSIC — the story's bed; the LIVE world music is SB_W4_MUSIC in

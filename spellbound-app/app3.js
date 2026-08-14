@@ -1684,7 +1684,7 @@ const app = {
   /* Spelling Quest is gone; its Arcade slot is the Mock Spelling Bee. Old
      deep-links land on the new game rather than on nothing. */
   openQuest:()=>{ clearGTimer(); if(window.MOCKBEE) MOCKBEE.open(); },
-  /* The 'Bizzy & the Great Unspelling' story is gone — the 14 games it used to gate are
+  /* The 'Bizzy & the Great Unspelling' story is gone — the games it used to gate are
      now played straight from the arcade (arcadePlay). This is kept as a safe no-op so any
      stale saved deep-link or cached handler lands somewhere harmless rather than throwing. */
   openSaga:()=>{ set({nav:'games', screen:'app'}); },
@@ -4496,7 +4496,7 @@ function viewApp(){
             : `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="none"><path d="M20.6 14.8A8.8 8.8 0 0 1 9.2 3.4 8.8 8.8 0 1 0 20.6 14.8z"/><circle cx="17.4" cy="5.6" r="1.1" opacity=".8"/></svg>`;
           return `<button data-act="cycleMode" data-dbl="toggleFocus" class="sb-hdr-ico${_fon?' on':''}" aria-label="Appearance: light, white or dusk. Double-tap for focus." title="Tap: Light / White / Dusk${_fon?' · focus is ON':''} — double-tap for focus">${glyph}</button>`; })()}
         <button data-act="setNav" data-arg="collection" class="sb-hdr-ico round" aria-label="Your hive — collection, evolution and store" title="Your hive — collection, evolution, store">
-          <span style="width:32px;height:36px;display:block;transform:translateY(6%) scale(1.16);transform-origin:center">${mascotSVG('happy')}</span></button>
+          <span style="width:30px;height:34px;display:block">${mascotSVG('happy')}</span></button>
         <button data-act="goSettings" class="sb-hdr-ico" aria-label="Settings" title="Settings">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M4 7.5h9M17.5 7.5H20M4 12h3.5M12 12h8M4 16.5h7.5M16 16.5H20"/><circle cx="15" cy="7.5" r="2.2"/><circle cx="9.5" cy="12" r="2.2"/><circle cx="13.5" cy="16.5" r="2.2"/></svg></button>
       </div>
@@ -8275,20 +8275,23 @@ function triviaTotal(){ try{ const T=window.SB_TRIVIA; if(!T) return 0;
    playGame, we set c.gameDiff from the tile's choice before mounting.
    Engine contract: handle = eng(hostEl, {diff, world, onUnlock}, done); handle.destroy().
    ============================================================================ */
+/* The arcade's eight games, culled from fourteen on a fun × learning index. The dropped
+   six were the redundant "select/catch given letters" cluster (Whack-a-Moth, Comb
+   Catcher, Star Connect, Word Hive) plus the two lowest-learning novelties (Spell Shield
+   — it duplicated Type Blaster's spell-fast-under-threat loop — and Stage Rhythm, where
+   timing crowded out recall). Word Snake is kept by request (a fun-dexterity anchor).
+   What's left spans eight distinct feels with no two sharing a core loop, weighted toward
+   games that make the child PRODUCE the spelling from memory, with Keep Flying, Word Snake
+   and Spotlight Simon as the lighter fun anchors for younger spellers. The dropped engines
+   still live in saga2.js, so any one can be re-added with a single line here. */
 const SB_ARCADE_GAMES = [
-  {k:'honeycombRun',        n:'Honeycomb Run',    tag:'Maze',   w:'meadow',    blurb:'Race the maze — spell a word to open each gate.'},
   {k:'beeGrandPrix',        n:'Bee Grand Prix',   tag:'Race',   w:'hive',      blurb:'Spell to boost past rivals in a flat-out race.'},
+  {k:'honeycombRun',        n:'Honeycomb Run',    tag:'Maze',   w:'meadow',    blurb:'Race the maze — spell a word to open each gate.'},
+  {k:'typeBlaster',         n:'Type Blaster',     tag:'Speed',  w:'arcade',    blurb:'Type the words before they reach the bottom.'},
   {k:'keepFlying',          n:'Keep Flying',      tag:'Flight', w:'sky',       blurb:'Tap to fly, bank the honey pots, spell through the gates.'},
   {k:'wordSnake',           n:'Word Snake',       tag:'Arcade', w:'forest',    blurb:'Grow the snake by eating the letters in order.'},
-  {k:'whackAMoth',          n:'Whack-a-Moth',     tag:'Reflex', w:'dojo',      blurb:'Bop the moths that spell the word, dodge the rest.'},
-  {k:'combCatcher',         n:'Comb Catcher',     tag:'Catch',  w:'carnival',  blurb:'Catch the falling letters that build the word.'},
-  {k:'wordHive',            n:'Word Hive',        tag:'Build',  w:'lotus',     blurb:'Fill the honeycomb with the right letters.'},
-  {k:'typeBlaster',         n:'Type Blaster',     tag:'Speed',  w:'arcade',    blurb:'Type the words before they reach the bottom.'},
   {k:'unscrambleStars',     n:'Unscramble Stars', tag:'Puzzle', w:'cosmos',    blurb:'Slide the scrambled letters into the right order.'},
-  {k:'constellationConnect',n:'Star Connect',     tag:'Trace',  w:'flyway',    blurb:'Trace the letters in order to draw the constellation.'},
-  {k:'spellShield',         n:'Spell Shield',     tag:'Defend', w:'hive',      blurb:'Spell fast to raise the shield before it strikes.'},
   {k:'spotlightSimon',      n:'Spotlight Simon',  tag:'Memory', w:'stage',     blurb:'Watch the spotlight sequence, then repeat it.'},
-  {k:'stageRhythm',         n:'Stage Rhythm',     tag:'Rhythm', w:'pond',      blurb:'Hit the letters on the beat to spell in time.'},
   {k:'spellScene',          n:'Spell Scene',      tag:'Scene',  w:'homecoming',blurb:'Spell the word that finishes each scene.'},
 ];
 window.SB_ARCADE_GAMES = SB_ARCADE_GAMES;
@@ -8472,10 +8475,10 @@ function gamesHub(){ const S=state; const c=active();
     </div>`; };
   const ART=(k,sz,fb)=>(window.SB_ICON_ART&&SB_ICON_ART[k])?SB_ICON_ART(k,{size:sz||44}):(fb||'');
   // ---- HEROES: the two marquee games ----
-  /* The 'Bizzy & the Great Unspelling' story hero is gone. Its 14 games are the arcade
-     grid below now — the story arc, the word-eater plot and the chapter gates went with
-     it. The two heroes are the things a child actually comes back for: the mock bee they
-     are training toward, and the quiz ladder. */
+  /* The 'Bizzy & the Great Unspelling' story hero is gone. Its games became the arcade
+     grid below (now the culled eight) — the story arc, the word-eater plot and the
+     chapter gates went with it. The two heroes are the things a child actually comes back
+     for: the mock bee they are training toward, and the quiz ladder. */
   const heroes=[];
   if(window.MOCKBEE){ const st=MOCKBEE.stats();
     const hid=(function(){ try{ return (SB_AVATARS.byId['goldlegend']?'goldlegend':(SB_AVATARS.list[0]||{}).id); }catch(e){ return 'goldlegend'; } })();
@@ -8509,7 +8512,7 @@ function gamesHub(){ const S=state; const c=active();
     feats.push(tile({act:'openTrivia',grad:'linear-gradient(135deg,#F0A93C,#DC7A18)',art:gameArtSVG('trivia',48),badge:'Quiz',title:'Bee Trivia',blurb:(nQ?fmtN(nQ)+' questions · ':'')+'32 chapters · picture & listening rounds.',cta:'#C8791B',stat:st.right?fmtN(st.right)+' right':''})); }
   /* Champ Challenge merged into Beat the Buzzer as its Level Challenge mode. */
   feats.push(tile({act:'playGame',arg:'magic',grad:'linear-gradient(135deg,#B14FC4,#7E2E9E)',art:gameArtSVG('magic',48),badge:'Board',title:'Magic Squares',blurb:'Clear a 3×3 board of themes & concepts — lines win bonus coins.',cta:'#7E2E9E',stat:''}));
-  // ---- THE 14 GAMES: each mounts its engine on its play-field, story-free ----
+  // ---- THE GAMES (the culled eight): each mounts its engine on its play-field, story-free ----
   const arcadeGames=SB_ARCADE_GAMES.map(g=>gtile({act:'arcadePlay',arg:g.k,
     grad:"linear-gradient(180deg,rgba(20,14,42,.08),rgba(20,14,42,.5)),url('app-art/sgw-"+g.w+".jpg') center/cover",
     art:'',badge:g.tag,title:g.n,blurb:g.blurb,cta:'var(--accent)',stat:''})).join('');
@@ -8530,7 +8533,7 @@ function gamesHub(){ const S=state; const c=active();
       <span style="margin-left:auto">${coinChip()}</span></div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:16px">${heroes.join('')}</div>
     ${dailyBanner}
-    <div class="arc-sech">The 14 games — pick your level on each</div>
+    <div class="arc-sech">The games — pick your level on each</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin:8px 0 18px">${arcadeGames}</div>
     <div class="arc-sech">More to play</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin:8px 0 16px">${feats.join('')}${quick}</div>
