@@ -355,7 +355,7 @@
     // staggered honeycomb wall pattern at Champion. (Spelling words still match the speller.)
     const DIM={easy:[11,9,false],medium:[13,11,false],hard:[15,11,false],champ:[17,13,true]}[diff]||[13,11,false];
     const COLS=DIM[0], ROWS=DIM[1], HEX=DIM[2];
-    const CELL=Math.max(24,Math.min(64, Math.floor(Math.min(innerWidth-20,1120)/COLS), Math.floor((innerHeight-290)/ROWS)));
+    const CELL=Math.max(24,Math.min(104, Math.floor(Math.min(innerWidth-16,1600)/COLS), Math.floor((innerHeight-208)/ROWS)));
     function makeMaze(cols,rows,hex){ const M=[]; // 0 wall · 1 dot · 2 empty
       for(let r=0;r<rows;r++){ const row=[];
         for(let c=0;c<cols;c++){
