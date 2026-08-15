@@ -30,15 +30,18 @@ STYLE = ("Cute modern mobile-game sprite in a clean, bold, friendly cartoon styl
 # name -> (aspect_ratio, max_side_px, prompt)
 SPRITES = {
     # ---- Bee Grand Prix ----
-    'kart':      ('1:1', 320, "A friendly cartoon go-kart racing buggy viewed from DIRECTLY BEHIND and slightly above, as if "
-                              "a chase camera is following it down the track — you see the BACK of the kart: the rear spoiler, "
-                              "twin exhaust pipes, the two big rear tyres and the back of an EMPTY driver seat (no driver); the "
-                              "nose of the kart points away from the viewer into the distance. Honeycomb-yellow and black "
-                              "bee-striped bodywork, glossy, rounded and toy-like."),
-    'kart-red':  ('1:1', 320, "A friendly cartoon go-kart racing buggy viewed from DIRECTLY BEHIND and slightly above (chase-cam "
-                              "rear view): you see the back of the kart, rear spoiler, twin exhausts, two big rear tyres and the "
-                              "back of an EMPTY seat (no driver), nose pointing away into the distance. Glossy crimson-red "
-                              "bodywork with a white racing stripe, rounded and toy-like."),
+    'kart':      ('1:1', 300, "A friendly cartoon go-kart DRIVING AWAY from the viewer, seen from a chase camera DIRECTLY BEHIND "
+                              "it at track level — a straight tail-on rear view. You see ONLY the BACK of the kart: the tall "
+                              "back of the driver's headrest and seat-back (the cockpit and seat cushion are HIDDEN behind the "
+                              "seat-back and NOT visible), a rear wing across the top, twin chrome exhaust pipes low and centred, "
+                              "and the two big rear tyres splayed left and right. The nose of the kart is hidden, pointing away "
+                              "into the distance. Honeycomb-yellow and black bee-striped bodywork, glossy, rounded and toy-like. "
+                              "Symmetric, centred, level (NOT tilted or angled)."),
+    'kart-red':  ('1:1', 300, "A friendly cartoon go-kart DRIVING AWAY from the viewer, straight tail-on rear view from a chase "
+                              "camera directly behind at track level. ONLY the BACK is visible: the back of the headrest/seat-back "
+                              "(cockpit hidden, NOT visible), a rear wing across the top, twin chrome exhausts low and centred, two "
+                              "big rear tyres splayed left and right, nose pointing away into the distance. Glossy crimson-red "
+                              "bodywork with a white centre stripe, rounded and toy-like. Symmetric, centred, level (not tilted)."),
     'oil':       ('1:1', 200, "A glossy dark spilled oil slick puddle for a racing game hazard, an irregular shiny black-and-"
                               "purple blob with a rainbow sheen and a small warning look, top-down, cartoon."),
     'item-box':  ('1:1', 200, "A floating mystery item box power-up for a racing game: a rounded glowing golden cube with a "
