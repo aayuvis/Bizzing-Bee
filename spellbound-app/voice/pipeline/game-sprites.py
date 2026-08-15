@@ -43,10 +43,37 @@ SPRITES = {
                               "purple blob with a rainbow sheen and a small warning look, top-down, cartoon."),
     'item-box':  ('1:1', 200, "A floating mystery item box power-up for a racing game: a rounded glowing golden cube with a "
                               "big white question mark carved into its face, sparkles around it, honeycomb texture, cartoon."),
+    # ---- Keep Flying ----
+    'honeypot':  ('1:1', 170, "A cute little honey pot: a round amber clay jar full of glossy golden honey with a honey "
+                              "dipper and a drip over the rim, a tiny wooden lid tag, glossy and collectible, cartoon."),
+    'pillar':    ('3:4', 260, "A tall friendly obstacle pillar for a side-scrolling flappy-style game: a chunky rounded "
+                              "honeycomb-and-wax column with soft rounded ends, warm golden beeswax texture, cartoon, "
+                              "a single vertical pillar standing upright."),
+    'coin':      ('1:1', 130, "A shiny round golden game coin with a honeycomb hexagon stamped in the centre, bright and "
+                              "collectible, soft rim light, cartoon."),
+    'tree':      ('3:4', 200, "A single cute rounded cartoon tree with a full leafy green canopy in soft layered blobs and a "
+                              "short chunky brown trunk, gentle shading, storybook style, standing upright."),
 }
 
-def gen_png(prompt, aspect, retries=3):
-    body = {'contents': [{'parts': [{'text': STYLE + prompt}]}],
+# Opaque full-frame backdrops (NOT alpha-cut). name -> (aspect, max_side, prompt)
+BACKDROPS = {
+    'gp-sky': ('16:9', 1280, "A bright cheerful sunny countryside racing backdrop for a cartoon kart game, painted in a soft "
+                             "Studio-Ghibli storybook style: a clear blue sky with a warm sun and a few soft fluffy white "
+                             "clouds up top, gentle rolling blue-green hills along the horizon, and bright green grassy fields "
+                             "below. Composed with an OPEN, uncluttered centre and lower-middle (no road, no track, no cars, "
+                             "no path) so a race track can be drawn on top; all the detail — clouds, sun, hills, a few distant "
+                             "trees — sits toward the top and the far sides. ABSOLUTELY NO vehicles, NO karts, NO cars, NO "
+                             "people, NO animals, NO creatures, NO characters of any kind anywhere — only an empty peaceful "
+                             "landscape of sky, clouds, hills and grass. Warm, inviting, full-bleed edge to edge, no border, "
+                             "no frame, no text of any kind."),
+}
+
+BG_STYLE = ("Full-scene painted illustration in a soft Studio-Ghibli storybook style, cheerful and warm, gentle "
+            "cel shading and soft light. A COMPLETE edge-to-edge SCENE that fills the entire frame (not an object, "
+            "not a sticker, not on a white background). No characters, no text. ")
+
+def gen_png(prompt, aspect, style=None, retries=3):
+    body = {'contents': [{'parts': [{'text': (style if style is not None else STYLE) + prompt}]}],
             'generationConfig': {'responseModalities': ['IMAGE'],
                                  'imageConfig': {'aspectRatio': aspect}}}
     req = urllib.request.Request(
@@ -118,9 +145,27 @@ def process(raw, max_side):
         im = im.resize((max(1, round(w * scale)), max(1, round(h * scale))), Image.LANCZOS)
     return im
 
+def process_backdrop(raw, max_side):
+    im = Image.open(io.BytesIO(raw)).convert('RGB')
+    w, h = im.size
+    scale = min(1.0, max_side / max(w, h))
+    if scale < 1.0:
+        im = im.resize((max(1, round(w * scale)), max(1, round(h * scale))), Image.LANCZOS)
+    return im
+
 def main():
-    want = sys.argv[1:] or list(SPRITES)
+    want = sys.argv[1:] or (list(SPRITES) + list(BACKDROPS))
     for name in want:
+        if name in BACKDROPS:
+            aspect, mx, prompt = BACKDROPS[name]
+            raw = gen_png(prompt, aspect, style=BG_STYLE)
+            if not raw:
+                print('FAIL', name); continue
+            im = process_backdrop(raw, mx)
+            path = f'{OUT}/{name}.webp'
+            im.save(path, 'WEBP', quality=82, method=6)
+            print(f'OK {name} {im.size[0]}x{im.size[1]} {os.path.getsize(path)/1024:.1f}KB (backdrop) -> {path}')
+            continue
         if name not in SPRITES:
             print('skip (unknown)', name); continue
         aspect, mx, prompt = SPRITES[name]
