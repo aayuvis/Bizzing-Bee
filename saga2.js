@@ -425,7 +425,7 @@
     function spellCard(){
       if(wi>=words.length) wi=0; const w=words[wi++]; card={w,typed:'',t:12};
       const el=host.querySelector('#sg-card');
-      el.innerHTML='<div class="sg-cardbox"><b>🌼 Spell it to bloom — earn time &amp; coins!</b><button class="sg-cardw" id="sg-cw">🔊</button>'+meaningHTML(w)+'<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off"><button class="sg-rbtn go" id="sg-cgo">Bloom</button></div><div id="sg-ct">12</div></div>';
+      el.innerHTML='<div class="sg-cardbox"><b>🌼 Spell it to bloom — earn time &amp; coins!</b><button class="sg-cardw" id="sg-cw">'+iconSVG('volume',18)+'</button>'+meaningHTML(w)+'<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off"><button class="sg-rbtn go" id="sg-cgo">Bloom</button></div><div id="sg-ct">12</div></div>';
       el.style.display='grid'; try{ say(w.w); }catch(e){}
       const inp=el.querySelector('#sg-ci'); inp.focus();
       function submit(){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase();
@@ -581,7 +581,7 @@
     function spellStop(){
       const w=feed.next(); card={w};
       const el=host.querySelector('#sg-card');
-      el.innerHTML='<div class="sg-cardbox"><b>🍯 Honey pot! Spell to bank it</b><button class="sg-cardw" id="sg-cspk">🔊</button>'+meaningHTML(w)+'<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off"><button class="sg-rbtn go" id="sg-cgo">Bank</button></div></div>';
+      el.innerHTML='<div class="sg-cardbox"><b>🍯 Honey pot! Spell to bank it</b><button class="sg-cardw" id="sg-cspk">'+iconSVG('volume',18)+'</button>'+meaningHTML(w)+'<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off"><button class="sg-rbtn go" id="sg-cgo">Bank</button></div></div>';
       el.style.display='grid'; try{ say(w.w); }catch(e){}
       const inp=el.querySelector('#sg-ci'); inp.focus();
       function submit(){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase();
@@ -969,7 +969,7 @@
       const p=POWERS[Math.floor(Math.random()*POWERS.length)];
       const el=host.querySelector('#sg-card');
       el.innerHTML='<div class="sg-cardbox"><b>🎁 Item box! Spell to unlock the power-up</b>'+
-        '<button class="sg-cardw" id="sg-cspk">🔊</button>'+meaningHTML(w)+
+        '<button class="sg-cardw" id="sg-cspk">'+iconSVG('volume',18)+'</button>'+meaningHTML(w)+
         '<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="sg-rbtn go" id="sg-cgo">Unlock</button></div></div>';
       el.style.display='grid'; try{ say(w.w); }catch(e){}
       const inp=el.querySelector('#sg-ci'); try{inp.focus();}catch(e){}
@@ -1646,7 +1646,7 @@
       '<div class="sg-rhythm" id="sg-rst"><div class="sg-rhythm-bg">'+plate+'</div>'+
         '<div class="sg-rlanes" id="sg-rl">'+[0,1,2,3].map(l=>'<div class="sg-rlane" data-l="'+l+'"><span class="sg-rkey">'+['D','F','J','K'][l]+'</span></div>').join('')+'</div>'+
         '<div class="sg-rhit" id="sg-rhit"></div></div>'+
-      '<div class="sg-rword"><button class="sg-sbtn" id="sg-rsay" aria-label="Hear the word">🔊</button><span id="sg-rslots"></span></div>'+
+      '<div class="sg-rword"><button class="sg-sbtn" id="sg-rsay" aria-label="Hear the word">'+iconSVG('volume',18)+'</button><span id="sg-rslots"></span></div>'+
       '<div class="sg-race-mean" id="sg-rmean"></div><div id="sg-card"></div>';
     const stage=host.querySelector('#sg-rst'), laneEl=host.querySelector('#sg-rl');
     let wi=0, li=0, hearts=4, score=0, notes=[], over=false, loop=null, spawnT=0, beatT=0;
@@ -1712,7 +1712,7 @@
       '<div class="sg-consky" id="sg-csky"><div class="sg-consky-bg">'+plate+'</div>'+
         '<svg class="sg-conlayer" id="sg-csvg" viewBox="0 0 100 62" preserveAspectRatio="none"><polyline id="sg-cline" points=""/></svg>'+
         '<div id="sg-cstars"></div></div>'+
-      '<div class="sg-rword"><button class="sg-sbtn" id="sg-csay" aria-label="Hear the word">🔊</button><span id="sg-cslots"></span></div>'+
+      '<div class="sg-rword"><button class="sg-sbtn" id="sg-csay" aria-label="Hear the word">'+iconSVG('volume',18)+'</button><span id="sg-cslots"></span></div>'+
       '<div class="sg-race-mean" id="sg-cmean"></div>';
     const sky=host.querySelector('#sg-csky'), starsEl=host.querySelector('#sg-cstars'), line=host.querySelector('#sg-cline');
     function cur(){ return words[wi]; }
@@ -1776,7 +1776,7 @@
         '<div class="sg-tbbeam" id="sg-tbbeam"></div>'+
         '<div class="sg-tbshield" id="sg-tbshieldbar"></div>'+
         '<div class="sg-tbcannon">🐝</div></div>'+
-      '<div class="sg-rword"><button class="sg-sbtn" id="sg-tsay" aria-label="Hear the word">🔊</button><span class="sg-race-mean" id="sg-tmean"></span></div>'+
+      '<div class="sg-rword"><button class="sg-sbtn" id="sg-tsay" aria-label="Hear the word">'+iconSVG('volume',18)+'</button><span class="sg-race-mean" id="sg-tmean"></span></div>'+
       '<div class="ss-key sg-tbkey" id="sg-tkey"></div>';
     const stage=host.querySelector('#sg-tbs'), foe=host.querySelector('#sg-tbf'), beam=host.querySelector('#sg-tbbeam');
     const rows=['qwertyuiop','asdfghjkl','zxcvbnm'];
@@ -1948,7 +1948,7 @@
         '</div>'+
         '<div class="ss-meterwrap"><div class="ss-meter"><div class="ss-meter-fill" id="ss-fill"></div></div><span class="ss-mlbl" id="ss-mlbl">0 / '+words.length+'</span></div>'+
         '<div class="ss-panel">'+
-          '<div class="ss-prompt"><button class="ss-say" id="ss-say" aria-label="Hear the word">🔊</button><span class="ss-hint" id="ss-hint"></span></div>'+
+          '<div class="ss-prompt"><button class="ss-say" id="ss-say" aria-label="Hear the word">'+iconSVG('volume',18)+'</button><span class="ss-hint" id="ss-hint"></span></div>'+
           '<div class="ss-slots" id="ss-slots"></div>'+
           '<div class="ss-key" id="ss-key"></div>'+
         '</div>'+
