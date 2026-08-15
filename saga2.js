@@ -1015,7 +1015,7 @@
       return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1); }
     function rrp(x,y,w,h,rad){ cx.beginPath(); if(cx.roundRect){ cx.roundRect(x,y,w,h,rad); } else { cx.rect(x,y,w,h); } }
     function drawKart(px,baseY,w,col,rider,o){ o=o||{}; const h=w*0.82;
-      cx.save(); cx.fillStyle='rgba(0,0,0,.32)'; cx.beginPath(); cx.ellipse(px,baseY-(o.kart?w*0.16:1),w*0.66,w*0.18,0,0,7); cx.fill(); cx.restore();
+      cx.save(); cx.fillStyle='rgba(0,0,0,.32)'; cx.beginPath(); cx.ellipse(px,baseY-(o.kart?w*0.02:1),w*0.64,w*0.17,0,0,7); cx.fill(); cx.restore();
       if(o.boost){ const fl=w*(0.55+Math.random()*0.3); const fg=cx.createLinearGradient(0,baseY-h*0.2,0,baseY+fl);
         fg.addColorStop(0,'#FFF6C0'); fg.addColorStop(.45,'#FF9E3D'); fg.addColorStop(1,'rgba(255,80,40,0)');
         cx.fillStyle=fg; cx.beginPath(); cx.moveTo(px-w*0.24,baseY-h*0.2); cx.quadraticCurveTo(px,baseY+fl,px+w*0.24,baseY-h*0.2); cx.closePath(); cx.fill(); }
@@ -1025,11 +1025,11 @@
       if(tex){
         // Gemini rear-view kart sprite, sized to the primitive kart's footprint (~1.15w
         // incl. wheels) so it doesn't balloon; rider seated in the cockpit.
-        const kw=w*1.15, kh=kw*(tex.height/tex.width);
-        // dip the sprite ~13% below the ground line so the WHEELS sit on the road (the
-        // exhaust pipes hang below the wheels in the art) — otherwise the kart floats.
-        try{ cx.drawImage(tex, px-kw/2, baseY-kh*0.87, kw, kh); }catch(e){}
-        hd=w*0.34; riderY = baseY-kh*0.44-hd*0.5;   // a small driver seated in the cockpit, not a giant face
+        const kw=w*1.12, kh=kw*(tex.height/tex.width);
+        // tail-on rear-view sprite: wheels + exhaust sit at the sprite's bottom edge, so
+        // its bottom aligns to the ground line (tiny overlap so it doesn't hover).
+        try{ cx.drawImage(tex, px-kw/2, baseY-kh*0.97, kw, kh); }catch(e){}
+        hd=0; riderY=baseY;   // driver is hidden behind the seat-back — no rider drawn
       } else {
         // primitive fallback: wheels + gradient body (kept for when the sprite is absent)
         const ww=w*0.30, wh=h*0.54, wy=baseY-wh;
