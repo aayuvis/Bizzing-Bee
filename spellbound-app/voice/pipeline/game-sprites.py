@@ -53,6 +53,11 @@ SPRITES = {
                               "collectible, soft rim light, cartoon."),
     'tree':      ('3:4', 200, "A single cute rounded cartoon tree with a full leafy green canopy in soft layered blobs and a "
                               "short chunky brown trunk, gentle shading, storybook style, standing upright."),
+    # ---- Word Snake ----
+    'snake-head':('1:1', 180, "A cute friendly cartoon snake head seen from top-down and FACING RIGHT (the snout points to the "
+                              "right edge), bright grass-green with a soft lighter-green jaw, two big round friendly eyes on top "
+                              "of the head looking forward, tiny nostrils, a small red forked tongue flicking out to the right, "
+                              "smooth glossy rounded shading, no body — just the head."),
 }
 
 # Opaque full-frame backdrops (NOT alpha-cut). name -> (aspect, max_side, prompt)
