@@ -1448,6 +1448,7 @@
         cx.stroke(); };
       drawRun(CELL*0.86, PAL[3]);              // dark outline
       drawRun(CELL*0.66, PAL[0]);              // body colour
+      cx.globalAlpha=0.5; drawRun(CELL*0.26, PAL[1]); cx.globalAlpha=1;   // glossy centre highlight — rounds the tube
       // belly highlight + scale dots along the body
       cx.fillStyle=PAL[1];
       for(let i=1;i<snake.length;i++){ const p=cc(snake[i]), t=1-(i/snake.length)*0.5;
@@ -1457,21 +1458,26 @@
       const hd=snake[0], hcx=hd.x*CELL+CELL/2, hcy=hd.y*CELL+CELL/2;
       cx.save(); cx.translate(hcx,hcy); cx.rotate(Math.atan2(dir.y,dir.x));
       if(bonk>0){ cx.fillStyle='rgba(229,83,61,.5)'; cx.beginPath(); cx.arc(0,0,CELL*0.5,0,7); cx.fill(); bonk--; }
-      const hw=CELL*0.62, hh=CELL*0.46;
-      cx.fillStyle=PAL[3]; cx.beginPath(); cx.ellipse(2,0,hw+2,hh+2,0,0,7); cx.fill();      // outline
-      const hg=cx.createLinearGradient(0,-hh,0,hh); hg.addColorStop(0,PAL[1]); hg.addColorStop(1,PAL[0]);
-      cx.fillStyle=hg; cx.beginPath(); cx.ellipse(2,0,hw,hh,0,0,7); cx.fill();               // head
-      // flicking forked tongue out the front
-      tongueT+=0.2; const tl=CELL*(0.28+0.12*Math.max(0,Math.sin(tongueT)));
-      cx.strokeStyle='#E23B57'; cx.lineWidth=Math.max(1.5,CELL*0.05); cx.lineCap='round';
-      cx.beginPath(); cx.moveTo(hw,0); cx.lineTo(hw+tl,0); cx.moveTo(hw+tl,0); cx.lineTo(hw+tl+CELL*0.09,-CELL*0.07); cx.moveTo(hw+tl,0); cx.lineTo(hw+tl+CELL*0.09,CELL*0.07); cx.stroke();
-      // eyes (on top of the head, so they read whatever the direction)
-      const ex=hw*0.15, ey=hh*0.55, er=CELL*0.11;
-      [[ex,-ey],[ex,ey]].forEach(e=>{ cx.fillStyle='#fff'; cx.beginPath(); cx.arc(e[0],e[1],er,0,7); cx.fill();
-        cx.fillStyle='#241A0C'; cx.beginPath(); cx.arc(e[0]+er*0.3,e[1],er*0.55,0,7); cx.fill();
-        cx.fillStyle='#fff'; cx.beginPath(); cx.arc(e[0]-er*0.2,e[1]-er*0.3,er*0.25,0,7); cx.fill(); });
-      // nostrils
-      cx.fillStyle=PAL[3]; [[hw*0.8,-hh*0.3],[hw*0.8,hh*0.3]].forEach(n=>{ cx.beginPath(); cx.arc(n[0],n[1],CELL*0.03,0,7); cx.fill(); });
+      tongueT+=0.2;
+      // Gemini painted head for the default garden-green snake; procedural head keeps
+      // recolouring correctly for the evolved / worn-skin palettes (gold naga, blue seasnake).
+      const headTex=(!wornSkin && snakeStage===0)?sgTex('snake-head'):null;
+      if(headTex){ const hw2=CELL*1.22, hh2=hw2*(headTex.height/headTex.width);
+        try{ cx.drawImage(headTex,-hw2*0.42,-hh2/2,hw2,hh2); }catch(e){} }
+      else {
+        const hw=CELL*0.62, hh=CELL*0.46;
+        cx.fillStyle=PAL[3]; cx.beginPath(); cx.ellipse(2,0,hw+2,hh+2,0,0,7); cx.fill();      // outline
+        const hg=cx.createLinearGradient(0,-hh,0,hh); hg.addColorStop(0,PAL[1]); hg.addColorStop(1,PAL[0]);
+        cx.fillStyle=hg; cx.beginPath(); cx.ellipse(2,0,hw,hh,0,0,7); cx.fill();               // head
+        const tl=CELL*(0.28+0.12*Math.max(0,Math.sin(tongueT)));
+        cx.strokeStyle='#E23B57'; cx.lineWidth=Math.max(1.5,CELL*0.05); cx.lineCap='round';
+        cx.beginPath(); cx.moveTo(hw,0); cx.lineTo(hw+tl,0); cx.moveTo(hw+tl,0); cx.lineTo(hw+tl+CELL*0.09,-CELL*0.07); cx.moveTo(hw+tl,0); cx.lineTo(hw+tl+CELL*0.09,CELL*0.07); cx.stroke();
+        const ex=hw*0.15, ey=hh*0.55, er=CELL*0.11;
+        [[ex,-ey],[ex,ey]].forEach(e=>{ cx.fillStyle='#fff'; cx.beginPath(); cx.arc(e[0],e[1],er,0,7); cx.fill();
+          cx.fillStyle='#241A0C'; cx.beginPath(); cx.arc(e[0]+er*0.3,e[1],er*0.55,0,7); cx.fill();
+          cx.fillStyle='#fff'; cx.beginPath(); cx.arc(e[0]-er*0.2,e[1]-er*0.3,er*0.25,0,7); cx.fill(); });
+        cx.fillStyle=PAL[3]; [[hw*0.8,-hh*0.3],[hw*0.8,hh*0.3]].forEach(n=>{ cx.beginPath(); cx.arc(n[0],n[1],CELL*0.03,0,7); cx.fill(); });
+      }
       cx.restore();
       SGFX.run(cx,fx);
       SGFX.vignette(cx,BW,BH,0.36);
