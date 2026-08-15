@@ -109,6 +109,18 @@
   }
   function sgPreload(names){ (names||[]).forEach(sgImg); }
 
+  /* Raster game-element sprites — Gemini-generated, transparent WebP in app-art/gart/.
+     Loaded by URL and DECODED ONCE into a cached <img>, so drawing one per frame is a
+     cheap cx.drawImage (no data-URI encode, no per-frame decode). Each engine keeps its
+     primitive drawing as the fallback until the sprite is present, so a missing/loading
+     texture never breaks the frame loop. Regenerate with voice/pipeline/game-sprites.py. */
+  const _texCache={};
+  function sgTex(name){ if(!name) return null; if(name in _texCache) return _texCache[name]||null;
+    _texCache[name]=null; const img=new Image();
+    img.onload=()=>{ _texCache[name]=img; }; img.onerror=()=>{ _texCache[name]=false; };
+    img.src='app-art/gart/'+name+'.webp'; return null; }
+  function sgTexPreload(names){ (names||[]).forEach(sgTex); }
+
   /* Rasterise a collectible AVATAR (window.SB_AVATAR) into a canvas-drawable <img>
      (cached by id). This is how the games show the REAL characters — Bizzy, the
      bee racers, the villains — instead of primitive blobs. */
@@ -871,6 +883,7 @@
     // look DOWN onto more of the track ahead instead of skimming it at ground level.
     const horizonY=Math.round(Ht*0.40);
     const camDepth=1/Math.tan((fov/2)*Math.PI/180);
+    sgTexPreload(['kart','kart-red','oil','item-box']);   // Gemini kart/hazard art, decoded before first frame
     const LIGHT={road:'#6C6C74',grass:'#7BC169',rumble:'#EDEDED',lane:'#FFFFFF'};
     const DARK ={road:'#64646C',grass:'#72B461',rumble:'#C7413F',lane:''};
     const segs=[];
@@ -998,27 +1011,39 @@
       if(o.boost){ const fl=w*(0.55+Math.random()*0.3); const fg=cx.createLinearGradient(0,baseY-h*0.2,0,baseY+fl);
         fg.addColorStop(0,'#FFF6C0'); fg.addColorStop(.45,'#FF9E3D'); fg.addColorStop(1,'rgba(255,80,40,0)');
         cx.fillStyle=fg; cx.beginPath(); cx.moveTo(px-w*0.24,baseY-h*0.2); cx.quadraticCurveTo(px,baseY+fl,px+w*0.24,baseY-h*0.2); cx.closePath(); cx.fill(); }
-      const ww=w*0.30, wh=h*0.54, wy=baseY-wh;
-      [-1,1].forEach(s=>{ const wx=px+s*w*0.42;
-        cx.fillStyle='#17151b'; rrp(wx-ww/2,wy,ww,wh,ww*0.34); cx.fill();
-        cx.fillStyle='#39363f'; rrp(wx-ww/2+2,wy+wh*0.16,ww-4,wh*0.5,ww*0.28); cx.fill();
-        cx.fillStyle='#7a7684'; cx.beginPath(); cx.ellipse(wx,wy+wh*0.4,ww*0.2,ww*0.2,0,0,7); cx.fill(); });
-      const bw=w*0.9, bh=h*0.5, by=baseY-h*0.6;
-      cx.fillStyle=hx(col,0.5); rrp(px-bw*0.52,by-h*0.18,bw*1.04,h*0.11,4); cx.fill();
-      cx.fillStyle=hx(col,0.8); cx.fillRect(px-bw*0.4,by-h*0.18,w*0.07,h*0.2); cx.fillRect(px+bw*0.33,by-h*0.18,w*0.07,h*0.2);
-      const bg=cx.createLinearGradient(0,by-bh*0.2,0,by+bh);
-      bg.addColorStop(0,hx(col,1.38)); bg.addColorStop(.5,col); bg.addColorStop(1,hx(col,0.68));
-      cx.fillStyle=bg; rrp(px-bw/2,by,bw,bh,w*0.18); cx.fill();
-      cx.fillStyle=hx(col,0.52); rrp(px-bw/2,by+bh*0.6,bw,bh*0.42,w*0.12); cx.fill();
-      cx.fillStyle='#141018'; rrp(px-bw*0.46,baseY-h*0.15,bw*0.92,h*0.12,4); cx.fill();
-      cx.fillStyle=hx(col,0.42); cx.beginPath(); cx.ellipse(px,by+bh*0.12,bw*0.26,bh*0.36,0,0,7); cx.fill();
-      const hd=w*0.6;
+      let hd=w*0.55;
+      let riderY;                          // top-left Y for the rider head, set per kart art
+      const tex = o.kart ? sgTex(o.kart) : null;
+      if(tex){
+        // Gemini rear-view kart sprite, sized to the primitive kart's footprint (~1.15w
+        // incl. wheels) so it doesn't balloon; rider seated in the cockpit.
+        const kw=w*1.15, kh=kw*(tex.height/tex.width);
+        try{ cx.drawImage(tex, px-kw/2, baseY-kh, kw, kh); }catch(e){}
+        hd=w*0.34; riderY = baseY-kh*0.54-hd*0.5;   // a small driver seated in the cockpit, not a giant face
+      } else {
+        // primitive fallback: wheels + gradient body (kept for when the sprite is absent)
+        const ww=w*0.30, wh=h*0.54, wy=baseY-wh;
+        [-1,1].forEach(s=>{ const wx=px+s*w*0.42;
+          cx.fillStyle='#17151b'; rrp(wx-ww/2,wy,ww,wh,ww*0.34); cx.fill();
+          cx.fillStyle='#39363f'; rrp(wx-ww/2+2,wy+wh*0.16,ww-4,wh*0.5,ww*0.28); cx.fill();
+          cx.fillStyle='#7a7684'; cx.beginPath(); cx.ellipse(wx,wy+wh*0.4,ww*0.2,ww*0.2,0,0,7); cx.fill(); });
+        const bw=w*0.9, bh=h*0.5, by=baseY-h*0.6;
+        cx.fillStyle=hx(col,0.5); rrp(px-bw*0.52,by-h*0.18,bw*1.04,h*0.11,4); cx.fill();
+        cx.fillStyle=hx(col,0.8); cx.fillRect(px-bw*0.4,by-h*0.18,w*0.07,h*0.2); cx.fillRect(px+bw*0.33,by-h*0.18,w*0.07,h*0.2);
+        const bg=cx.createLinearGradient(0,by-bh*0.2,0,by+bh);
+        bg.addColorStop(0,hx(col,1.38)); bg.addColorStop(.5,col); bg.addColorStop(1,hx(col,0.68));
+        cx.fillStyle=bg; rrp(px-bw/2,by,bw,bh,w*0.18); cx.fill();
+        cx.fillStyle=hx(col,0.52); rrp(px-bw/2,by+bh*0.6,bw,bh*0.42,w*0.12); cx.fill();
+        cx.fillStyle='#141018'; rrp(px-bw*0.46,baseY-h*0.15,bw*0.92,h*0.12,4); cx.fill();
+        cx.fillStyle=hx(col,0.42); cx.beginPath(); cx.ellipse(px,by+bh*0.12,bw*0.26,bh*0.36,0,0,7); cx.fill();
+        riderY = (baseY-h*0.6)-hd*0.66;
+      }
       let done_=false;
-      if(rider&&rider.av){ const im=avImg(rider.av); if(im){ try{ cx.drawImage(im,px-hd/2,by-hd*0.66,hd,hd); done_=true; }catch(e){} } }
-      if(!done_&&rider&&rider.sprite){ const im=sgImg(rider.sprite); if(im){ try{ cx.drawImage(im,px-hd/2,by-hd*0.66,hd,hd); done_=true; }catch(e){} } }
-      if(!done_&&rider&&rider.glyph){ cx.font=Math.round(hd*0.8)+'px serif'; cx.textAlign='center'; cx.fillText(rider.glyph,px,by-hd*0.05); cx.textAlign='left'; done_=true; }
-      if(!done_){ cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(px,by-hd*0.08,hd*0.32,0,7); cx.fill(); }
-      if(o.spin){ cx.font='700 '+Math.round(w*0.7)+'px serif'; cx.textAlign='center'; cx.fillText('💫',px,by-hd*0.7); cx.textAlign='left'; } }
+      if(rider&&rider.av){ const im=avImg(rider.av); if(im){ try{ cx.drawImage(im,px-hd/2,riderY,hd,hd); done_=true; }catch(e){} } }
+      if(!done_&&rider&&rider.sprite){ const im=sgImg(rider.sprite); if(im){ try{ cx.drawImage(im,px-hd/2,riderY,hd,hd); done_=true; }catch(e){} } }
+      if(!done_&&rider&&rider.glyph){ cx.font=Math.round(hd*0.8)+'px serif'; cx.textAlign='center'; cx.fillText(rider.glyph,px,riderY+hd*0.6); cx.textAlign='left'; done_=true; }
+      if(!done_&&!o.kart){ cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(px,riderY+hd*0.4,hd*0.32,0,7); cx.fill(); }
+      if(o.spin){ cx.font='700 '+Math.round(w*0.7)+'px serif'; cx.textAlign='center'; cx.fillText('💫',px,riderY-hd*0.1); cx.textAlign='left'; } }
 
     function drawBG(){
       const hz=horizonY, sway=Math.sin(pos/2600)*34 - playerX*26;
@@ -1081,27 +1106,33 @@
           const tg=cx.createRadialGradient(o.sx-w*0.2,o.sy-w*1.5,2,o.sx,o.sy-w*1.3,w*0.95);
           tg.addColorStop(0,'#7ED07A'); tg.addColorStop(1,'#2F8A46'); cx.fillStyle=tg;
           cx.beginPath(); cx.arc(o.sx,o.sy-w*1.35,w*0.72,0,7); cx.arc(o.sx-w*0.5,o.sy-w*0.95,w*0.5,0,7); cx.arc(o.sx+w*0.5,o.sy-w*0.95,w*0.5,0,7); cx.fill(); }
-        else if(o.t==='oil'){ cx.fillStyle='rgba(18,16,24,.78)'; cx.beginPath(); cx.ellipse(o.sx,o.sy-w*0.1,w*0.95,w*0.32,0,0,7); cx.fill();
-          cx.fillStyle='rgba(150,110,210,.55)'; cx.beginPath(); cx.ellipse(o.sx-w*0.22,o.sy-w*0.16,w*0.34,w*0.11,0,0,7); cx.fill();
-          cx.fillStyle='rgba(90,200,255,.35)'; cx.beginPath(); cx.ellipse(o.sx+w*0.25,o.sy-w*0.06,w*0.22,w*0.07,0,0,7); cx.fill(); }
+        else if(o.t==='oil'){ const oil=sgTex('oil');
+          if(oil){ const ow=w*2.1, oh=ow*(oil.height/oil.width); try{ cx.drawImage(oil,o.sx-ow/2,o.sy-oh*0.62,ow,oh); }catch(e){} }
+          else { cx.fillStyle='rgba(18,16,24,.78)'; cx.beginPath(); cx.ellipse(o.sx,o.sy-w*0.1,w*0.95,w*0.32,0,0,7); cx.fill();
+            cx.fillStyle='rgba(150,110,210,.55)'; cx.beginPath(); cx.ellipse(o.sx-w*0.22,o.sy-w*0.16,w*0.34,w*0.11,0,0,7); cx.fill();
+            cx.fillStyle='rgba(90,200,255,.35)'; cx.beginPath(); cx.ellipse(o.sx+w*0.25,o.sy-w*0.06,w*0.22,w*0.07,0,0,7); cx.fill(); } }
         else if(o.t==='item'){ const s=Math.max(14,w*1.3), yy=o.sy-w*1.25-Math.sin(pos/180+o.it.k)*4;
           cx.save(); cx.translate(o.sx,yy); cx.rotate(Math.sin(pos/300+o.it.k)*0.12);
           const halo=cx.createRadialGradient(0,0,s*0.2,0,0,s*1.5);
           halo.addColorStop(0,'rgba(140,230,255,.5)'); halo.addColorStop(1,'rgba(140,230,255,0)');
           cx.fillStyle=halo; cx.beginPath(); cx.arc(0,0,s*1.5,0,7); cx.fill();
           cx.fillStyle='rgba(0,0,0,.16)'; cx.beginPath(); cx.ellipse(0,w*1.15,s*0.5,s*0.16,0,0,7); cx.fill();
-          const ig=cx.createLinearGradient(0,-s,0,s); ig.addColorStop(0,'#8BE7FF'); ig.addColorStop(1,'#2E9BD6');
-          cx.fillStyle=ig; rrp(-s/2,-s/2,s,s,s*0.22); cx.fill();
-          cx.strokeStyle='#fff'; cx.lineWidth=Math.max(1.5,s*0.06); cx.stroke();
-          cx.fillStyle='rgba(255,255,255,.35)'; rrp(-s/2+2,-s/2+2,s-4,s*0.3,s*0.16); cx.fill();
-          cx.fillStyle='#fff'; cx.font='800 '+Math.round(s*0.78)+'px Fraunces,serif'; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText('?',0,s*0.04);
-          cx.textAlign='left'; cx.textBaseline='alphabetic'; cx.restore(); }
-        else { const r=o.r; drawKart(o.sx,o.sy,w*1.9,r.col,{sprite:r.sprite,glyph:r.glyph},{spin:r.spin>0}); }
+          const box=sgTex('item-box');
+          if(box){ const bw=s*1.9, bh=bw*(box.height/box.width); try{ cx.drawImage(box,-bw/2,-bh/2,bw,bh); }catch(e){} }
+          else {
+            const ig=cx.createLinearGradient(0,-s,0,s); ig.addColorStop(0,'#8BE7FF'); ig.addColorStop(1,'#2E9BD6');
+            cx.fillStyle=ig; rrp(-s/2,-s/2,s,s,s*0.22); cx.fill();
+            cx.strokeStyle='#fff'; cx.lineWidth=Math.max(1.5,s*0.06); cx.stroke();
+            cx.fillStyle='rgba(255,255,255,.35)'; rrp(-s/2+2,-s/2+2,s-4,s*0.3,s*0.16); cx.fill();
+            cx.fillStyle='#fff'; cx.font='800 '+Math.round(s*0.78)+'px Fraunces,serif'; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText('?',0,s*0.04);
+            cx.textAlign='left'; cx.textBaseline='alphabetic'; }
+          cx.restore(); }
+        else { const r=o.r; drawKart(o.sx,o.sy,w*1.9,r.col,{sprite:r.sprite,glyph:r.glyph},{spin:r.spin>0,kart:'kart-red'}); }
         cx.globalAlpha=1; cx.restore();
       });
       const pw=Wd*0.30, px=Wd/2 + playerX*Wd*0.03 + steer*8, py=Ht-14;
       cx.save(); cx.translate(px,py); cx.rotate(steer*0.05);
-      drawKart(0,0,pw,'#F0B429',{av:heroKart},{boost:boostT>0});
+      drawKart(0,0,pw,'#F0B429',{av:heroKart},{boost:boostT>0,kart:'kart'});
       cx.restore();
       if(shieldT>0){ cx.strokeStyle='rgba(120,205,255,.85)'; cx.lineWidth=3; cx.beginPath(); cx.ellipse(px,py-pw*0.34,pw*0.62,pw*0.5,0,0,7); cx.stroke();
         cx.fillStyle='rgba(150,215,255,.14)'; cx.fill(); }
