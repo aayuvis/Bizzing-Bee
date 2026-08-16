@@ -1027,3 +1027,63 @@ One continuous tall vertical graphic-novel montage, NO panel borders and no gutt
 
 ## 337. b21-ch18-opener.png — tall portrait
 One continuous tall vertical graphic-novel montage, NO panel borders and no gutters, for the chapter "Build a Two-Year Periodization Plan": the ground tone shifts gently top to bottom from pale paper white, through a narrow band of cool grey where the moth passes, and back to a warm cream at the foot — light and airy overall, with real darks used only in that one narrow band. Figures staged alternately right then left going down the page: top: the reference bee in motion; Phoenix Flame (a crimson-and-amber bee with burning feathered wings trailing hard-edged embers); the reference moth a hard silhouette in the black stretch; Volt (a wiry electric-blue bee wreathed in hard white arcs of current). A thin dotted line connects them down the page. a floodlit championship arena carved into a mountain at night: a bare stone dais with one microphone stand, banks of hard white floodlights on towers throwing long shadows, tiers of empty seats fading into black, laurel banners hanging still, drifting confetti frozen mid-air, near-monochrome charcoal and slate lifted by hard gold across the bottom, drawn lightly with plenty of air around it. Leave clear pale space beside each figure for captions.
+
+---
+
+# ARCADE GAME SPRITES — the in-game element art (added 2026-08)
+
+The eight Arcade games no longer draw their moving elements as hand-coded canvas
+primitives. Each key element (the kart, hazards, coins, the honey pot, the glitch
+foe, the snake head, trees) is a **Gemini-generated sprite** baked to a small
+transparent WebP under `app-art/gart/`, plus a couple of full-scene painted
+**backdrops**. They are light (every sprite is < 32KB) so drawing one per frame is
+a cheap `cx.drawImage` and never touches the frame rate — the only render cost in
+these games is the pre-existing pseudo-3D road maths in Bee Grand Prix.
+
+## Pipeline — `voice/pipeline/game-sprites.py`
+- Model `gemini-3-pro-image` (`NB_MODEL`), key at `/root/.gkey` (`x-goog-api-key`),
+  `responseModalities:['IMAGE']`, CA bundle `/root/.ccr/ca-bundle.crt`.
+- **Sprites** are prompted as ONE object on a **solid pure-white** field (the `STYLE`
+  preamble). Gemini returns an opaque PNG, so the script removes the background by
+  **flood-filling near-white FROM THE EDGES** (`cut_bg`) — interior whites (an eye
+  catchlight, a rim highlight) are kept — then autocrops, downscales to the sprite's
+  `max_side`, feathers the cut edge, and saves transparent WebP q88.
+- **Backdrops** (`BACKDROPS`, `BG_STYLE`) are full-bleed painted scenes — NOT cut,
+  saved opaque WebP q82. Prepending the sprite `STYLE` to a backdrop garbles it
+  (cupcake/kart ghosts), so backdrops pass `style=BG_STYLE` instead.
+- Run: `NB_MODEL=gemini-3-pro-image python3 voice/pipeline/game-sprites.py [names…]`
+  (no args = regenerate every sprite + backdrop). Never prints the key.
+
+## Loader — `sgTex(name)` in `saga2.js`
+`sgTex('coin')` loads `app-art/gart/coin.webp` by URL, decoded ONCE into a cached
+`<img>`; returns the image or `null` while loading/missing. **Every engine keeps its
+old primitive drawing as the fallback** behind an `if(tex){…}else{…}`, so a missing
+or still-loading sprite never breaks the frame loop. `sgTexPreload([...])` warms the
+cache before the first frame. DOM games (Type Blaster) reference the same files via a
+plain `<img src="app-art/gart/…webp">` with an emoji `onerror` fallback.
+
+## The sprites (name → where it's used)
+- **kart** — Bee Grand Prix player kart. Avatar-agnostic racer seen from behind and
+  above: a honeycomb-yellow racing **helmet** (NOT a bee, NOT a face — so it reads as
+  whichever avatar the child chose), driving away up the track. Drawn at 0.20 of lane
+  width under a high chase camera (`camH` 5200, horizon 0.30).
+- **kart-red** — the rival karts, strict tail-on rear view.
+- **oil** — Grand Prix oil-slick hazard. **item-box** — the mystery power-up cube.
+- **tree** — roadside trees (Grand Prix), scattered by depth.
+- **gp-sky** *(backdrop)* — the painted Ghibli countryside behind the race (open,
+  uncluttered centre so the road draws on top; no vehicles/characters in the art).
+- **honeypot** — Keep Flying's spell-to-bank pot. **coin** — the collectible coins
+  (Keep Flying). **pillar** — its rounded end is sculpted into the **cap** at each
+  honeycomb pipe mouth (the body stays procedural honeycomb).
+- **snake-head** — Word Snake's head (procedural body, worn skins keep procedural).
+- **glitch** — Type Blaster's falling foe: a cute purple/teal pixel-block blob monster
+  (big eyes, jagged grin — playful, not scary).
+
+## Rules when adding or regenerating a game sprite
+1. Keep the primitive fallback in the engine — never assume the texture is present.
+2. Sprites are ONE object, centred, on pure white; backdrops are full scenes, no white.
+3. Keep them small (each already < 32KB); they are drawn every frame.
+4. A character sprite that stands in for the player must be **avatar-agnostic**
+   (the kart driver is a plain helmet, not Bizzy) so it fits every chosen avatar.
+5. In-game chrome matches the app: the speaker button is `iconSVG('volume',18)`, the
+   Spell Scene hero is the app's own bee mascot sprite.
