@@ -926,7 +926,7 @@
     const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
 
     /* ---- pseudo-3D track ---- */
-    const segLen=200, roadW=2200, rumbleLen=3, drawDist=160, camH=5200, fov=100;   // high camera — sit well above the world, looking down onto the track
+    const segLen=200, roadW=2200, rumbleLen=3, drawDist=160, camH=4200, fov=76;   // zoomed-in, high camera — the race world sits close and large, looking down onto the track
     // Elevated chase-cam: taller camera + a horizon lifted above mid-screen so you
     // look DOWN onto more of the track ahead instead of skimming it at ground level.
     const horizonY=Math.round(Ht*0.30);   // horizon high up-screen: more track visible from above
