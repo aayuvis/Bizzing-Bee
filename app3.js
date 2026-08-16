@@ -1940,7 +1940,7 @@ const app = {
     el.querySelector('#arc-back').onclick=arcadeClose;
     const host=el.querySelector('#arc-host');
     const onUnlock=()=>{ try{ addCoins(15); }catch(e){} };
-    const done=(res)=>{ _arcHandle=null; arcadeResult(g, !!(res&&res.win)); };
+    const done=(res)=>{ _arcHandle=null; arcadeResult(g, res||{}); };
     try{ _arcHandle=engs[k](host, {diff:eDiff, world:g.w, onUnlock}, done); }
     catch(e){ try{ console.error(e); }catch(_){} flash('Could not start that game'); arcadeClose(); }
   },
@@ -8302,15 +8302,32 @@ function arcadeClose(){
   if(_arcEl){ _arcEl.remove(); _arcEl=null; }
   try{ if(window.SB_W4_MUSIC) SB_W4_MUSIC.sync(); }catch(e){}
 }
-function arcadeResult(g, win){
+/* Per-game personal best, persisted on the device — gives the competitive speller a
+   number to beat every play. localStorage['sb_arc_best'] = { <gameKey>: bestScore }. */
+function arcBestMap(){ try{ return JSON.parse(localStorage.getItem('sb_arc_best')||'{}')||{}; }catch(e){ return {}; } }
+function arcSaveBest(k,v){ try{ const m=arcBestMap(); m[k]=v; localStorage.setItem('sb_arc_best',JSON.stringify(m)); }catch(e){} }
+function arcadeResult(g, res){
   if(!_arcEl) return;
+  const win = !!(res && res.win);
+  const score = Math.max(0, Math.round((res && res.score) || 0));
+  const prevBest = arcBestMap()[g.k] || 0;
+  const isBest = score > 0 && score > prevBest;
+  if(isBest) arcSaveBest(g.k, score);
+  const shownBest = Math.max(prevBest, score);
   const coins = win ? 20 : 0;
   if(coins) try{ addCoins(coins); }catch(e){}
+  // best-score line: celebrate a new record, else show the bar to beat
+  const bestLine = score>0
+    ? (isBest
+        ? `<div style="margin-top:9px;font-family:var(--display);font-weight:800;font-size:14px;color:var(--accent)">🏆 New personal best — ${score}!</div>`
+        : `<div style="margin-top:9px;font-size:12.5px;color:var(--muted)">You scored <b style="color:var(--text)">${score}</b> · best <b style="color:var(--text)">${shownBest}</b></div>`)
+    : '';
   const card=document.createElement('div'); card.className='arc-play-result';
   card.innerHTML=`<div class="arc-play-rcard">
-      <div style="font-size:34px;line-height:1">${win?'🏆':'💪'}</div>
-      <div style="font-family:var(--display);font-weight:800;font-size:20px;margin:6px 0 2px">${win?'Nice spelling!':'Good try!'}</div>
+      <div style="font-size:34px;line-height:1">${isBest?'🌟':win?'🏆':'💪'}</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:20px;margin:6px 0 2px">${isBest?'New record!':win?'Nice spelling!':'Good try!'}</div>
       <div style="font-size:13px;color:var(--muted)">${win?('+'+coins+' 🪙 · play again to beat it'):'Every round makes the words stick. Give it another go.'}</div>
+      ${bestLine}
       <div style="display:flex;gap:9px;margin-top:16px;justify-content:center;flex-wrap:wrap">
         <button class="arc-r-again" style="padding:11px 18px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:14px">Play again</button>
         <button class="arc-r-back" style="padding:11px 18px;border-radius:11px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:14px">← Arcade</button>

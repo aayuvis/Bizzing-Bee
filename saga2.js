@@ -552,7 +552,7 @@
     const Wd=Math.min(innerWidth-8,1600), Ht=Math.max(360,innerHeight-104);
     const diff=opts.diff||'medium', world=opts.world||'opensky';
     // Roomier gaps + gentler speeds — the towers were punishingly tight before.
-    const CFG={easy:{gap:245,speed:1.95,pots:8},medium:{gap:220,speed:2.25,pots:10},
+    const CFG={easy:{gap:285,speed:1.6,pots:8},medium:{gap:220,speed:2.25,pots:10},
                hard:{gap:195,speed:2.6,pots:10},champ:{gap:175,speed:2.95,pots:12}}[diff];
     const MAXLIVES=5;
     host.innerHTML='<div class="sg-hud"><span id="sg-pots">🍯 0/'+CFG.pots+'</span><span class="sg-flyprog"><i id="sg-fill"></i><b>⛩️</b></span><span id="sg-coins">🪙 0</span><span id="sg-lives"></span></div><canvas id="sg-cv"></canvas><div id="sg-card"></div>';
@@ -1131,7 +1131,7 @@
       const posm=pos%trackLen;
       const base=segs[Math.floor(posm/segLen)%segs.length]; const basePct=(posm%segLen)/segLen;
       let x=0, dx=-(base.curve*basePct), maxy=Ht;
-      const camX=playerX*roadW;
+      const camX=playerX*roadW*0.34;   // camera only half-follows: the kart visibly holds its own line, not glued to centre
       for(let n=0;n<drawDist;n++){ const seg=segs[(base.index+n)%segs.length];
         const looped=seg.index<base.index; const cz=posm-(looped?trackLen:0);
         project(seg.p1, camX - x,        camH, cz);
@@ -1196,7 +1196,7 @@
         else { const r=o.r; drawKart(o.sx,o.sy,w*2.15,r.col,{sprite:r.sprite,glyph:r.glyph},{spin:r.spin>0,kart:'kart-red'}); }
         cx.globalAlpha=1; cx.restore();
       });
-      const pw=Wd*0.15, px=Wd/2 + playerX*Wd*0.03 + steer*8, py=Ht-14;
+      const pw=Wd*0.12, px=Wd/2 + playerX*Wd*0.26 + steer*4, py=Ht-14;   // kart tracks its own lane position on screen
       cx.save(); cx.translate(px,py); cx.rotate(steer*0.02);
       drawKart(0,0,pw,'#F0B429',{av:heroKart},{boost:boostT>0,kart:'kart'});
       cx.restore();
@@ -1237,7 +1237,10 @@
       const seg=segs[Math.min(segs.length-1,Math.floor(pos/segLen))]; const spdPct=v/maxV;
       v=Math.min(maxV*boostMul, v+accel*dt);
       const dxs=dt*2.2*Math.max(0.35,spdPct);
-      playerX+=steer*dxs;   // no centrifugal self-drift: unsteered, the kart tracks the road straight
+      playerX+=steer*dxs;
+      // curve drift: on a bend the kart carries straight and drifts to the outside, so the
+      // player must actively steer into the corner — it is driven, not self-driving.
+      playerX-=(seg.curve||0)*spdPct*dt*0.62;
       if((playerX<-1||playerX>1) && v>offLimit){ v+=offDecel*dt; }
       playerX=Math.max(-2,Math.min(2,playerX));
       const pm=pos%trackLen;
@@ -1941,20 +1944,21 @@
     const diff=opts.diff||'medium';
     const CFG=calmCFG({easy:{n:8},medium:{n:12},hard:{n:12},champ:{n:14}}[diff]);
     const words=pool(CFG.n+4).filter(w=>/^[a-z]+$/.test(w.w)&&w.w.length>=4&&w.w.length<=9).slice(0,CFG.n);
-    let i=0, hints=3, over=false;
+    let i=0, hints=3, over=false, speedBonus=0, wordStart=0;
     const art=(window.SGART&&SGART.ready());
     const plate=art?SGART.plateForWorld(opts.world||'Cosmos'):'';
-    host.innerHTML='<div class="sg-hud"><span id="sg-c">⭐ 1/'+CFG.n+'</span><span id="sg-h">💡 ×3</span></div>'+
+    host.innerHTML='<div class="sg-hud"><span id="sg-c">⭐ 1/'+CFG.n+'</span><span id="sg-sp">⚡ 0</span><span id="sg-h">💡 ×3</span></div>'+
       '<div class="sg-sky"><div class="sg-sky-bg">'+plate+'</div><div class="sg-stars" id="sg-stars"></div><div class="sg-answer" id="sg-ans"></div></div>'+
       '<div class="sg-simonprompt"><button class="sg-hintbtn" id="sg-hint">💡 Zib\u2019s hint</button></div>';
     function scr(w){ const a=w.split(''); do{ a.sort(()=>Math.random()-0.5); }while(a.join('')===w); return a; }
     function newWord(){
-      if(i>=words.length){ over=true; done({win:true,score:CFG.n*100+hints*50,stars:hints>=2?3:hints===1?2:1}); return; }
+      if(i>=words.length){ over=true; done({win:true,score:CFG.n*100+hints*50+speedBonus,stars:hints>=2?3:hints===1?2:1}); return; }
       const w=words[i].w.toLowerCase(); const letters=scr(w);
       host.querySelector('#sg-c').textContent='⭐ '+(i+1)+'/'+CFG.n;
       const st=host.querySelector('#sg-stars'); st.innerHTML='';
       letters.forEach(ch=>{ const s=document.createElement('button'); s.className='sg-star'; s.textContent=ch.toUpperCase(); s.dataset.ch=ch; st.appendChild(s); });
       host.querySelector('#sg-ans').innerHTML=w.split('').map(()=>'<span class="sg-slot"></span>').join('');
+      wordStart=Date.now();
       try{ say(words[i].w); }catch(e){}
     }
     let picked=[];
@@ -1964,9 +1968,14 @@
       if(s.dataset.ch===w[picked.length]){ s.disabled=true; s.classList.add('set');
         const slot=host.querySelectorAll('.sg-slot')[picked.length]; slot.textContent=s.textContent; slot.classList.add('fill');
         picked.push(s.dataset.ch);
-        if(picked.length===w.length){ i++; picked=[];
-          try{flash('🌌 Constellation restored!');}catch(_){}
-          setTimeout(newWord,600); } }
+        if(picked.length===w.length){
+          // speed bonus: solve fast for extra stars + a shooting-star pop
+          const el=Date.now()-wordStart, bonus=el<3200?30:el<6000?15:0;
+          if(bonus){ speedBonus+=bonus; host.querySelector('#sg-sp').textContent='⚡ '+speedBonus;
+            try{ if(typeof sfx==='function') sfx('coin'); }catch(_){}
+            try{flash('⚡ Fast solve! +'+bonus);}catch(_){} }
+          else { try{flash('🌌 Constellation restored!');}catch(_){} }
+          i++; picked=[]; setTimeout(newWord,600); } }
       else { s.classList.add('no'); setTimeout(()=>s.classList.remove('no'),300); } };
     host.querySelector('#sg-hint').onclick=()=>{ if(hints<=0||over) return; hints--;
       host.querySelector('#sg-h').textContent='💡 ×'+hints;
