@@ -979,7 +979,7 @@
     /* ---- racers: the villains ---- */
     const maxV=segLen*46, accel=maxV/4.6, offDecel=-maxV/1.6, offLimit=maxV/3.2, centri=0.32;
     let pos=0, playerX=0, v=0, over=false, mode='howto', lap=1, hudT=1; // howto -> count -> race -> spell -> done
-    let boostT=0, boostMul=1, shieldT=0, spinFlashT=0, countT=0, finishedRivals=0;
+    let boostT=0, boostMul=1, shieldT=0, spinFlashT=0, countT=0, finishedRivals=0, gpCombo=0;
     const heroKart=heroAv();
     const VILL=[
       {name:'The Smudge',col:'#8B8B96',glyph:'🦋',sprite:'smudge-swarm'},
@@ -1031,11 +1031,13 @@
       function submit(){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase();
         el.style.display='none'; el.innerHTML='';
         if(ok){ held=p; renderHold();
+          // spell combo: unbroken correct spells stack an instant extra boost
+          gpCombo++; if(gpCombo>=2){ boostT=Math.max(boostT,1.2); boostMul=Math.max(boostMul,1.22+Math.min(gpCombo,6)*0.06); }
           const uc=host.querySelector('#sg-card');
-          uc.innerHTML='<div class="sg-cardbox sg-unlock"><span class="sg-unlock-ic">'+PWSVG[p.id]+'</span><b>'+p.name+' unlocked!</b><i>tap the slot (or Space) to use it</i></div>';
+          uc.innerHTML='<div class="sg-cardbox sg-unlock"><span class="sg-unlock-ic">'+PWSVG[p.id]+'</span><b>'+p.name+(gpCombo>=2?(' · 🔥 '+gpCombo+'× combo'):'')+' unlocked!</b><i>tap the slot (or Space) to use it</i></div>';
           uc.style.display='grid';
           setTimeout(()=>{ uc.style.display='none'; uc.innerHTML=''; resume(); },1300);
-        } else { try{flash('The box fizzles… next one is coming!');}catch(_){ } resume(); } }
+        } else { gpCombo=0; try{flash('The box fizzles… next one is coming!');}catch(_){ } resume(); } }
       inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } };
       el.querySelector('#sg-cgo').onclick=submit;
       el.querySelector('#sg-cspk').onclick=()=>{ try{ say(w.w); }catch(e){} };
@@ -1212,7 +1214,7 @@
         else { const r=o.r; drawKart(o.sx,o.sy,w*2.15,r.col,{sprite:r.sprite,glyph:r.glyph},{spin:r.spin>0,kart:'kart-red'}); }
         cx.globalAlpha=1; cx.restore();
       });
-      const pw=Wd*0.12, px=Wd/2 + playerX*Wd*0.26 + steer*4, py=Ht-14;   // kart tracks its own lane position on screen
+      const pw=Wd*0.12, px=Wd/2 + playerX*Wd*0.26, py=Ht-14;   // smooth: screen position follows only the (continuous) lane position
       cx.save(); cx.translate(px,py); cx.rotate(steer*0.02);
       drawKart(0,0,pw,'#F0B429',{av:heroKart},{boost:boostT>0,kart:'kart',tint:opts.tint});
       cx.restore();
@@ -1253,10 +1255,7 @@
       const seg=segs[Math.min(segs.length-1,Math.floor(pos/segLen))]; const spdPct=v/maxV;
       v=Math.min(maxV*boostMul, v+accel*dt);
       const dxs=dt*2.2*Math.max(0.35,spdPct);
-      playerX+=steer*dxs;
-      // curve drift: on a bend the kart carries straight and drifts to the outside, so the
-      // player must actively steer into the corner — it is driven, not self-driving.
-      playerX-=(seg.curve||0)*spdPct*dt*0.62;
+      playerX+=steer*dxs;   // smooth, continuous: the kart moves only as the player steers, and holds its line otherwise
       if((playerX<-1||playerX>1) && v>offLimit){ v+=offDecel*dt; }
       playerX=Math.max(-2,Math.min(2,playerX));
       const pm=pos%trackLen;
@@ -1421,7 +1420,7 @@
     cv.width=Math.round(BW*dpr); cv.height=Math.round(BH*dpr);
     cv.style.width=BW+'px'; cv.style.height=BH+'px';
     const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
-    let snake,dir,ndir,word='',spelled=0,tiles=[],wordsDone=0,score=0,lives=3,over=false,bonk=0,tick=CFG.tick,loop=null,fx=[],tongueT=0;
+    let snake,dir,ndir,word='',spelled=0,tiles=[],wordsDone=0,score=0,lives=3,over=false,bonk=0,tick=CFG.tick,loop=null,fx=[],tongueT=0,streak=0,cleanWord=true;
     /* the snake game IS a snake — coloured to the worn Serpent-pack avatar, else garden green */
     const SERP_PAL={noodle:['#5FBE5A','#86D97F','#D6F0B8','#2C6E2C'],sunny:['#E9963C','#FFC07A','#FFDFB0','#9A5410'],
       cobra:['#3E8D5C','#69B984','#DDF0BE','#1F5A38'],python:['#9A824C','#C2A972','#E9DBB4','#5A4620'],
@@ -1465,13 +1464,16 @@
           SGFX.spark(fx,tiles[t].x*CELL+CELL/2,tiles[t].y*CELL+CELL/2,9,['#FFE9A8','#F0B429','#FFFFFF'],{speed:2.6,decay:0.05,rx:2.6,ry:3.4});
           SGFX.ring(fx,tiles[t].x*CELL+CELL/2,tiles[t].y*CELL+CELL/2,'255,233,168',{grow:5,decay:0.06,lw:3});
           tiles.splice(t,1);
-          if(spelled>=word.length){ wordsDone++; score+=40; spawnSplash('✓ '+word.toUpperCase());
+          if(spelled>=word.length){ wordsDone++; score+=40;
+            // streak: a whole word eaten in order without a wrong bite pays a rising bonus
+            if(cleanWord){ streak++; if(streak>=2) score+=streak*12; } else streak=0; cleanWord=true;
+            spawnSplash((streak>=2?('🔥 '+streak+'× '):'✓ ')+word.toUpperCase());
             try{ if(typeof addCoins==='function') addCoins(10); }catch(e){}
             // EVOLVE: grow the snake through the forms up to Vasuki (the achievable endpoint)
             const ns=Math.min(5, Math.round(wordsDone/CFG.words*5));
             if(ns!==snakeStage){ snakeStage=ns; if(!wornSkin) PAL=EVO_PAL[ns]; if(evo) evo.set(ns, ()=>onVasuki(), 5); }
             if(tick>110) tick-=8; layoutWord(); } else renderWord(); }
-        else { bonk=2; shake.hit(6);
+        else { bonk=2; shake.hit(6); cleanWord=false; streak=0;
           SGFX.spark(fx,nx*CELL+CELL/2,ny*CELL+CELL/2,8,['#E0553C','#FF9C7A'],{speed:2.4,decay:0.05}); } break; } }
       if(!grew) snake.pop(); setHud(); }
     function roundRect(x,y,w,h,r){ cx.beginPath(); cx.moveTo(x+r,y); cx.arcTo(x+w,y,x+w,y+h,r); cx.arcTo(x+w,y+h,x,y+h,r); cx.arcTo(x,y+h,x,y,r); cx.arcTo(x,y,x+w,y,r); cx.closePath(); }
@@ -1842,8 +1844,8 @@
     // Gemini glitch-monster foe (transparent WebP); falls back to an emoji if the image is missing
     const foeSvg='<img src="app-art/gart/glitch.webp" class="sg-tbimg sg-tbglitch" alt="glitch" '
       +"onerror=\"this.replaceWith(Object.assign(document.createElement('span'),{className:'sg-tbemoji',textContent:'\\uD83D\\uDC7E'}))\">";
-    let wi=0, li=0, shield=3, score=0, foeY=0, over=false, loop=null;
-    host.innerHTML='<div class="sg-hud"><span id="sg-tw">👾 1/'+CFG.n+'</span><span id="sg-tsh"></span><span id="sg-ts">0</span></div>'+
+    let wi=0, li=0, shield=3, score=0, foeY=0, over=false, loop=null, combo=0, wordPerfect=true, danger=false;
+    host.innerHTML='<div class="sg-hud"><span id="sg-tw">👾 1/'+CFG.n+'</span><span id="sg-tc"></span><span id="sg-tsh"></span><span id="sg-ts">0</span></div>'+
       '<div class="sg-tbstage" id="sg-tbs"><div class="sg-tbstage-bg">'+plate+'</div>'+
         '<div class="sg-tbfoe" id="sg-tbf">'+foeSvg+'<div class="sg-tbslots" id="sg-tbslots"></div></div>'+
         '<div class="sg-tbbeam" id="sg-tbbeam"></div>'+
@@ -1859,8 +1861,9 @@
     function renderSlots(){ const w=cur().w.toLowerCase();
       host.querySelector('#sg-tbslots').innerHTML=w.split('').map((ch,ix)=>'<span class="sg-slot'+(ix<li?' fill':'')+'">'+(ix<li?ch.toUpperCase():'')+'</span>').join('');
       host.querySelector('#sg-tsh').textContent='🛡'.repeat(Math.max(0,shield));
+      host.querySelector('#sg-tc').textContent=combo>=2?('🔥 '+combo+'×'):'';
       host.querySelector('#sg-ts').textContent='⭐ '+score; }
-    function newWord(){ li=0; foeY=0; const w=cur();
+    function newWord(){ li=0; foeY=0; wordPerfect=true; const w=cur();
       host.querySelector('#sg-tw').textContent='👾 '+(wi+1)+'/'+CFG.n;
       host.querySelector('#sg-tmean').innerHTML=meaningHTML(w);
       foe.style.top='0%'; renderSlots(); try{ say(w.w); }catch(e){} }
@@ -1869,17 +1872,22 @@
     function type(ch){ if(over) return; const w=cur().w.toLowerCase();
       if(ch===w[li]){ li++; score+=15; foeY=Math.max(0,foeY-7); zap(); renderSlots();
         try{ if(typeof sfx==='function') sfx('correct'); }catch(e){}
-        if(li>=w.length){ score+=50; foe.classList.add('boom');
-          try{ flash('💥 '+w.toUpperCase()+' — glitch zapped!'); }catch(e){}
+        if(li>=w.length){ score+=50;
+          // combo: an unbroken word extends the chain and pays a rising bonus
+          if(wordPerfect){ combo++; if(combo>=2){ score+=combo*10; } } else combo=0;
+          foe.classList.add('boom'); stage.classList.remove('sg-tb-danger'); danger=false;
+          try{ flash(combo>=2?('🔥 '+combo+'× COMBO — '+w.toUpperCase()+'!'):('💥 '+w.toUpperCase()+' — glitch zapped!')); }catch(e){}
           wi++; if(wi>=CFG.n){ finish(true); return; }
           setTimeout(()=>{ foe.classList.remove('boom'); newWord(); },650); } }
-      else { score=Math.max(0,score-5); foeY+=3;
+      else { score=Math.max(0,score-5); foeY+=3; wordPerfect=false; combo=0; renderSlots();
         foe.classList.remove('gloatfx'); void foe.offsetWidth; foe.classList.add('gloatfx');
         try{ if(typeof sfx==='function') sfx('wrong'); }catch(e){} } }
     function frame(){ if(over) return;
       if(foe.classList.contains('boom')) return;
       foeY+=CFG.v; foe.style.top=Math.min(78,foeY)+'%';
-      if(foeY>=78){ shield--; foeY=0; foe.style.top='0%';
+      // OVERLOAD: as the glitch nears the floor the stage flashes red and shudders
+      const d=foeY>=58; if(d!==danger){ danger=d; stage.classList.toggle('sg-tb-danger',d); }
+      if(foeY>=78){ shield--; foeY=0; foe.style.top='0%'; danger=false; stage.classList.remove('sg-tb-danger');
         stage.classList.remove('breach'); void stage.offsetWidth; stage.classList.add('breach');
         renderSlots(); try{ flash('⚡ The firewall took a hit — keep spelling!'); }catch(e){}
         if(shield<=0){ finish(false); return; } } }
