@@ -1776,7 +1776,9 @@
     if(!words.length){ done({win:true,score:0,stars:1}); return; }
     const art=(window.SGART&&SGART.ready());
     const plate=art?SGART.plateForWorld(opts.world||'Arcade'):'';
-    const foeSvg=(art&&SGART.has('static-sprite'))?SGART.sprite('static-sprite',{cls:'sg-tbimg'}):'<span class="sg-tbemoji">👾</span>';
+    // Gemini glitch-monster foe (transparent WebP); falls back to an emoji if the image is missing
+    const foeSvg='<img src="app-art/gart/glitch.webp" class="sg-tbimg sg-tbglitch" alt="glitch" '
+      +"onerror=\"this.replaceWith(Object.assign(document.createElement('span'),{className:'sg-tbemoji',textContent:'\\uD83D\\uDC7E'}))\">";
     let wi=0, li=0, shield=3, score=0, foeY=0, over=false, loop=null;
     host.innerHTML='<div class="sg-hud"><span id="sg-tw">👾 1/'+CFG.n+'</span><span id="sg-tsh"></span><span id="sg-ts">0</span></div>'+
       '<div class="sg-tbstage" id="sg-tbs"><div class="sg-tbstage-bg">'+plate+'</div>'+

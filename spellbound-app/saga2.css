@@ -247,13 +247,15 @@
 @keyframes sgHintGlow{50%{inset:-2px;background:radial-gradient(circle,#7CF29C 0%,#3CBF66aa 55%,transparent 80%)}}
 
 /* ===== ENGINE M · Type Blaster ===== */
-.sg-tbstage{position:relative;height:max(300px,calc(100vh - 380px));max-width:900px;margin:0 auto;background:rgba(12,10,30,.65);border-radius:16px;overflow:hidden}
+.sg-tbstage{position:relative;height:max(320px,calc(100vh - 320px));max-width:1400px;margin:0 auto;background:rgba(12,10,30,.65);border-radius:16px;overflow:hidden}
 .sg-tbstage-bg{position:absolute;inset:0}
 .sg-tbstage-bg .sg-plate{width:100%;height:100%;object-fit:cover;opacity:.8}
 .sg-tbstage.breach{animation:sgBreach .5s}
 @keyframes sgBreach{0%,60%{box-shadow:inset 0 0 0 4px #E5484D}100%{box-shadow:none}}
 .sg-tbfoe{position:absolute;left:50%;top:0;transform:translateX(-50%);z-index:2;display:grid;place-items:center;gap:4px;transition:top .12s linear;filter:drop-shadow(0 4px 10px rgba(0,0,0,.45))}
 .sg-tbimg{width:74px;height:74px}
+.sg-tbglitch{width:96px;height:96px;object-fit:contain;animation:sgGlitchBob 1.8s ease-in-out infinite}
+@keyframes sgGlitchBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(5px) rotate(2deg)}}
 .sg-tbemoji{font-size:52px;line-height:1}
 .sg-tbfoe.hitfx{animation:sgFoeHit .2s}
 @keyframes sgFoeHit{40%{transform:translateX(-50%) translateY(-9px) scale(.94);filter:brightness(1.9) drop-shadow(0 0 12px #36D1FF)}}
@@ -267,7 +269,7 @@
 .sg-tbbeam.fire{animation:sgBeam .22s ease-out}
 @keyframes sgBeam{0%{opacity:1;height:78%}100%{opacity:0;height:78%}}
 .sg-tbshield{position:absolute;left:6%;right:6%;bottom:38px;height:0;z-index:1;border-top:3px solid rgba(54,209,255,.75);box-shadow:0 0 14px rgba(54,209,255,.5);border-radius:99px}
-.sg-tbcannon{position:absolute;left:50%;bottom:2px;transform:translateX(-50%);z-index:2;font-size:30px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+.sg-tbcannon{position:absolute;left:50%;bottom:2px;transform:translateX(-50%);z-index:2;font-size:44px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
 .sg-tbkey{max-width:560px;margin:10px auto 0}
 
 /* Long Sky v3: pot progress bar with the gate at the end */
