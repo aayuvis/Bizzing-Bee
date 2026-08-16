@@ -30,13 +30,15 @@ STYLE = ("Cute modern mobile-game sprite in a clean, bold, friendly cartoon styl
 # name -> (aspect_ratio, max_side_px, prompt)
 SPRITES = {
     # ---- Bee Grand Prix ----
-    'kart':      ('1:1', 300, "A friendly cartoon go-kart DRIVING AWAY from the viewer, seen from a chase camera DIRECTLY BEHIND "
-                              "it at track level — a straight tail-on rear view. You see ONLY the BACK of the kart: the tall "
-                              "back of the driver's headrest and seat-back (the cockpit and seat cushion are HIDDEN behind the "
-                              "seat-back and NOT visible), a rear wing across the top, twin chrome exhaust pipes low and centred, "
-                              "and the two big rear tyres splayed left and right. The nose of the kart is hidden, pointing away "
-                              "into the distance. Honeycomb-yellow and black bee-striped bodywork, glossy, rounded and toy-like. "
-                              "Symmetric, centred, level (NOT tilted or angled)."),
+    'kart':      ('1:1', 300, "VIEW FROM BEHIND AND ABOVE. A small cute cartoon go-kart driving directly AWAY from the viewer up "
+                              "a track, seen from a high chase camera looking down after it. A racing driver sits in the kart, seen "
+                              "ONLY FROM BEHIND: we see the smooth rounded back of a glossy RACING HELMET (honeycomb-yellow with a "
+                              "thin dark centre stripe) and a hint of the driver's shoulders in a racing suit. IMPORTANT: the "
+                              "driver is a generic human racer in a plain helmet — NOT a bee, NOT an animal, NO antennae, NO wings, "
+                              "NO ears, no face, nothing but the smooth back of a helmet. Below and around, from this high-behind "
+                              "angle we look down onto: the seat, a low rear wing across the top, twin chrome exhaust pipes at the "
+                              "back centre, and two chunky black rear tyres splayed left and right. The kart's nose points away up "
+                              "the track into the distance. A strict tail-on rear view, symmetric and level, glossy cheerful cartoon."),
     'kart-red':  ('1:1', 300, "A friendly cartoon go-kart DRIVING AWAY from the viewer, straight tail-on rear view from a chase "
                               "camera directly behind at track level. ONLY the BACK is visible: the back of the headrest/seat-back "
                               "(cockpit hidden, NOT visible), a rear wing across the top, twin chrome exhausts low and centred, two "
@@ -61,7 +63,16 @@ SPRITES = {
                               "right edge), bright grass-green with a soft lighter-green jaw, two big round friendly eyes on top "
                               "of the head looking forward, tiny nostrils, a small red forked tongue flicking out to the right, "
                               "smooth glossy rounded shading, no body — just the head."),
+    # ---- Type Blaster ----
+    'glitch':    ('1:1', 200, "A cute-but-mischievous cartoon glitch monster for a kids' typing game — a chunky rounded blob "
+                              "creature made of glitchy purple and teal pixel-blocks with a few offset colour-channel edges, two "
+                              "big round mischievous eyes, a little jagged grin, small stubby arms, floating menacingly. Playful, "
+                              "not scary, glossy cartoon."),
 }
+
+# Reference images attached per sprite so a character stays on-model.
+BEES = '/home/user/Bizzing-Bee/spellbound-app/books/art/bizzy-sheet.png'
+REFS = {}   # kart driver is a helmet-from-behind now (works for any chosen avatar), no face reference needed
 
 # Opaque full-frame backdrops (NOT alpha-cut). name -> (aspect, max_side, prompt)
 BACKDROPS = {
@@ -80,8 +91,13 @@ BG_STYLE = ("Full-scene painted illustration in a soft Studio-Ghibli storybook s
             "cel shading and soft light. A COMPLETE edge-to-edge SCENE that fills the entire frame (not an object, "
             "not a sticker, not on a white background). No characters, no text. ")
 
-def gen_png(prompt, aspect, style=None, retries=3):
-    body = {'contents': [{'parts': [{'text': (style if style is not None else STYLE) + prompt}]}],
+def gen_png(prompt, aspect, style=None, refs=None, retries=3):
+    parts = []
+    for rp in (refs or []):
+        with open(rp, 'rb') as f:
+            parts.append({'inline_data': {'mime_type': 'image/png', 'data': base64.b64encode(f.read()).decode()}})
+    parts.append({'text': (style if style is not None else STYLE) + prompt})
+    body = {'contents': [{'parts': parts}],
             'generationConfig': {'responseModalities': ['IMAGE'],
                                  'imageConfig': {'aspectRatio': aspect}}}
     req = urllib.request.Request(
@@ -177,7 +193,7 @@ def main():
         if name not in SPRITES:
             print('skip (unknown)', name); continue
         aspect, mx, prompt = SPRITES[name]
-        raw = gen_png(prompt, aspect)
+        raw = gen_png(prompt, aspect, refs=REFS.get(name))
         if not raw:
             print('FAIL', name); continue
         im = process(raw, mx)

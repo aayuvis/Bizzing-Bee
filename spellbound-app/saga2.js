@@ -886,10 +886,10 @@
     const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
 
     /* ---- pseudo-3D track ---- */
-    const segLen=200, roadW=2200, rumbleLen=3, drawDist=160, camH=1850, fov=100;
+    const segLen=200, roadW=2200, rumbleLen=3, drawDist=160, camH=3200, fov=100;   // higher camera — look down more onto the track
     // Elevated chase-cam: taller camera + a horizon lifted above mid-screen so you
     // look DOWN onto more of the track ahead instead of skimming it at ground level.
-    const horizonY=Math.round(Ht*0.40);
+    const horizonY=Math.round(Ht*0.34);   // horizon higher up-screen: more track visible from above
     const camDepth=1/Math.tan((fov/2)*Math.PI/180);
     sgTexPreload(['kart','kart-red','oil','item-box','gp-sky','tree']);   // Gemini kart/hazard/scene art, decoded before first frame
     const LIGHT={road:'#6C6C74',grass:'#7BC169',rumble:'#EDEDED',lane:'#FFFFFF'};
@@ -1025,7 +1025,7 @@
       if(tex){
         // Gemini rear-view kart sprite, sized to the primitive kart's footprint (~1.15w
         // incl. wheels) so it doesn't balloon; rider seated in the cockpit.
-        const kw=w*1.12, kh=kw*(tex.height/tex.width);
+        const kw=w*0.92, kh=kw*(tex.height/tex.width);
         // tail-on rear-view sprite: wheels + exhaust sit at the sprite's bottom edge, so
         // its bottom aligns to the ground line (tiny overlap so it doesn't hover).
         try{ cx.drawImage(tex, px-kw/2, baseY-kh*0.97, kw, kh); }catch(e){}
