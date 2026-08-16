@@ -886,10 +886,10 @@
     const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
 
     /* ---- pseudo-3D track ---- */
-    const segLen=200, roadW=2200, rumbleLen=3, drawDist=160, camH=3200, fov=100;   // higher camera — look down more onto the track
+    const segLen=200, roadW=2200, rumbleLen=3, drawDist=160, camH=5200, fov=100;   // high camera — sit well above the world, looking down onto the track
     // Elevated chase-cam: taller camera + a horizon lifted above mid-screen so you
     // look DOWN onto more of the track ahead instead of skimming it at ground level.
-    const horizonY=Math.round(Ht*0.34);   // horizon higher up-screen: more track visible from above
+    const horizonY=Math.round(Ht*0.30);   // horizon high up-screen: more track visible from above
     const camDepth=1/Math.tan((fov/2)*Math.PI/180);
     sgTexPreload(['kart','kart-red','oil','item-box','gp-sky','tree']);   // Gemini kart/hazard/scene art, decoded before first frame
     const LIGHT={road:'#6C6C74',grass:'#7BC169',rumble:'#EDEDED',lane:'#FFFFFF'};
@@ -1156,7 +1156,7 @@
         else { const r=o.r; drawKart(o.sx,o.sy,w*1.9,r.col,{sprite:r.sprite,glyph:r.glyph},{spin:r.spin>0,kart:'kart-red'}); }
         cx.globalAlpha=1; cx.restore();
       });
-      const pw=Wd*0.30, px=Wd/2 + playerX*Wd*0.03 + steer*8, py=Ht-14;
+      const pw=Wd*0.20, px=Wd/2 + playerX*Wd*0.03 + steer*8, py=Ht-14;
       cx.save(); cx.translate(px,py); cx.rotate(steer*0.02);
       drawKart(0,0,pw,'#F0B429',{av:heroKart},{boost:boostT>0,kart:'kart'});
       cx.restore();
