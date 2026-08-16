@@ -2044,9 +2044,11 @@
           '<div class="ss-key" id="ss-key"></div>'+
         '</div>'+
       '</div>';
-    let i=0, typed='', over=false, misses=0;
-    const bg=host.querySelector('#ss-bg'), foeEl=host.querySelector('#ss-foe'),
+    let i=0, typed='', over=false, misses=0, ssCombo=0;
+    const bg=host.querySelector('#ss-bg'), foeEl=host.querySelector('#ss-foe'), heroEl=host.querySelector('.ss-hero'),
           fill=host.querySelector('#ss-fill'), slotsEl=host.querySelector('#ss-slots'), mlbl=host.querySelector('#ss-mlbl');
+    if(foeEl) foeEl.style.transition='right .6s cubic-bezier(.3,1.4,.5,1), transform .3s';
+    if(heroEl) heroEl.style.transition='left .6s cubic-bezier(.3,1.4,.5,1)';
     function grey(p){ bg.style.filter='grayscale('+(0.92*(1-p)).toFixed(2)+') brightness('+(0.9+0.12*p).toFixed(2)+')'; }
     grey(0);
     const rows=['qwertyuiop','asdfghjkl','zxcvbnm'];
@@ -2061,13 +2063,15 @@
       renderSlots(); try{ say(w.w); }catch(e){} }
     function sparkle(){ const fx=document.createElement('div'); fx.className='ss-burst'; foeEl.appendChild(fx); setTimeout(()=>fx.remove(),720); }
     function commit(){ const w=words[i].w.toLowerCase();
-      if(typed.toLowerCase()===w){ i++; const p=i/words.length;
+      if(typed.toLowerCase()===w){ i++; const p=i/words.length; ssCombo++;
         fill.style.width=Math.round(p*100)+'%'; grey(p); mlbl.textContent=i+' / '+words.length;
+        // the duel: the moth is driven back toward the edge and the hero advances as colour returns
+        try{ if(foeEl) foeEl.style.right=(4+p*24)+'%'; if(heroEl) heroEl.style.left=(4+p*15)+'%'; }catch(_){}
         foeEl.classList.remove('recoil'); void foeEl.offsetWidth; foeEl.classList.add('recoil'); sparkle();
         try{ if(typeof sfx==='function') sfx('correct'); }catch(e){}
-        try{ flash('✨ '+w.toUpperCase()+' — the colour rushes back!'); }catch(e){}
+        try{ flash(ssCombo>=2?('🔥 '+ssCombo+'× — '+w.toUpperCase()+' drives it back!'):('✨ '+w.toUpperCase()+' — the colour rushes back!')); }catch(e){}
         setTimeout(newWord,700);
-      } else { misses++; typed='';
+      } else { misses++; typed=''; ssCombo=0;
         renderSlots(true); setTimeout(()=>renderSlots(),420);
         slotsEl.classList.remove('shake'); void slotsEl.offsetWidth; slotsEl.classList.add('shake');
         foeEl.classList.remove('gloat'); void foeEl.offsetWidth; foeEl.classList.add('gloat');
@@ -2084,7 +2088,14 @@
     host.querySelector('#ss-key').onclick=e=>{ const bt=e.target.closest('.ss-kb'); if(!bt) return;
       const k=bt.dataset.k; if(k==='back') back(); else if(k==='enter'){ if(typed.length===words[i].w.length) commit(); } else type(k); };
     host.querySelector('#ss-say').onclick=()=>{ try{ say(words[i].w); }catch(e){} };
-    function win(){ removeEventListener('keydown',kb); done({win:true, score:words.length*100-misses*15, stars:misses===0?3:misses<=2?2:1}); }
+    function win(){ removeEventListener('keydown',kb);
+      // finale: the moth is banished off-screen and the world snaps to full colour
+      try{ grey(1); if(bg) bg.style.filter='none';
+        if(foeEl){ foeEl.style.transition='right .8s ease-in, transform .8s ease-in, opacity .8s'; foeEl.style.right='-30%'; foeEl.style.transform='rotate(40deg) scale(.7)'; foeEl.style.opacity='0'; }
+        if(heroEl) heroEl.style.left='42%';
+        flash('🏆 The scene is whole again — the moth is banished!');
+      }catch(e){}
+      setTimeout(()=>done({win:true, score:words.length*100-misses*15, stars:misses===0?3:misses<=2?2:1}), 900); }
     newWord();
     return { destroy(){ over=true; removeEventListener('keydown',kb); } };
   }
