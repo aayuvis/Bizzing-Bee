@@ -58,6 +58,16 @@ SPRITES = {
                               "collectible, soft rim light, cartoon."),
     'tree':      ('3:4', 200, "A single cute rounded cartoon tree with a full leafy green canopy in soft layered blobs and a "
                               "short chunky brown trunk, gentle shading, storybook style, standing upright."),
+    # ---- Keep Flying: characters ----
+    'bee-fly':   ('1:1', 200, "A round chibi cartoon honeybee heroine flying, seen from a gentle three-quarter side view facing RIGHT, "
+                              "wings up mid-beat. Glossy gradient-gold body with two soft chocolate-brown stripes, a small black "
+                              "stinger, huge sparkling friendly eyes with catchlights, a tiny pink blush, two curled black antennae "
+                              "with bobble tips, and four glassy translucent blue-white veined wings. Warm confident smile, soft cel "
+                              "shading with a rim highlight, bright and toy-like, a single bee facing right."),
+    'moth':      ('1:1', 190, "A small kid-friendly cartoon moth villain seen from the front with wings spread, gently mischievous "
+                              "not scary. Dark wisteria-violet ragged wings with lighter gradient panels trailing a little sparkling "
+                              "dust, a slim indigo fuzzy body, narrow amber lantern-glow eyes under small angry brows, a tiny smirk, "
+                              "and two thin antennae with pale bobble tips. Soft glossy cel shading, a single moth centred."),
     # ---- Word Snake ----
     'snake-head':('1:1', 180, "A cute friendly cartoon snake head seen from top-down and FACING RIGHT (the snout points to the "
                               "right edge), bright grass-green with a soft lighter-green jaw, two big round friendly eyes on top "
@@ -76,6 +86,13 @@ REFS = {}   # kart driver is a helmet-from-behind now (works for any chosen avat
 
 # Opaque full-frame backdrops (NOT alpha-cut). name -> (aspect, max_side, prompt)
 BACKDROPS = {
+    'fly-sky': ('16:9', 1280, "A bright cheerful daytime SKY backdrop for a side-scrolling cartoon flying game, painted in a soft "
+                             "Studio-Ghibli storybook style: a clear blue sky graded from deeper blue at the top to pale near the "
+                             "horizon, a warm friendly sun with a soft glow, several big fluffy white cumulus clouds at different "
+                             "heights, and a low band of soft green rolling hills with a couple of distant trees along the very "
+                             "bottom. The whole middle of the frame is OPEN, uncluttered sky (so game obstacles draw on top). "
+                             "ABSOLUTELY NO characters, NO bees, NO birds, NO creatures, NO text — only sky, sun, clouds and a "
+                             "thin strip of hills. Warm, inviting, full-bleed edge to edge, no border, no frame."),
     'gp-sky': ('16:9', 1280, "A bright cheerful sunny countryside racing backdrop for a cartoon kart game, painted in a soft "
                              "Studio-Ghibli storybook style: a clear blue sky with a warm sun and a few soft fluffy white "
                              "clouds up top, gentle rolling blue-green hills along the horizon, and bright green grassy fields "

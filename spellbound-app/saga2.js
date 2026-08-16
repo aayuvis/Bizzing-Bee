@@ -318,6 +318,13 @@
      a fuzzy body, feathered antennae, and a soft blue glow when it's edible.
      Far cleaner than an emoji or a flat triangle. */
   function drawMoth(cx,x,y,size,edible,ph){
+    // Gemini moth sprite for the normal (dangerous) state; the frightened/edible state
+    // keeps the procedural blue moth so a fled enemy still reads distinctly.
+    const mtex=(!edible)&&sgTex('moth');
+    if(mtex){ const cxp0=x+size/2, cyp0=y+size/2, fl=1+0.05*Math.sin((ph||0)); const hh0=size*(mtex.height/mtex.width);
+      cx.save(); cx.translate(cxp0,cyp0); cx.scale(fl,1);
+      try{ cx.drawImage(mtex,-size/2,-hh0/2,size,hh0); }catch(e){}
+      cx.restore(); return; }
     const cxp=x+size/2, cyp=y+size/2, s=size*0.5, flap=0.82+0.18*Math.sin((ph||0));
     cx.save(); cx.translate(cxp,cyp);
     if(edible){ const g=cx.createRadialGradient(0,0,2,0,0,s*1.15); g.addColorStop(0,'rgba(120,150,255,.55)'); g.addColorStop(1,'rgba(120,150,255,0)');
@@ -555,6 +562,7 @@
     let bee={y:Ht/2,vy:0}, obs=[], pot=null, banked=0, lives=3, t=0, over=false, card=null, graceUntil=0, inv=0;
     let moths=[], coins=[], hearts=[], coinsGot=0, gate=null, started=false;
     const feed=wordFeed(CFG.pots+6);
+    sgTexPreload(['bee-fly','moth','fly-sky','honeypot','coin','pillar']);   // decode game art before first frame
     /* per-world premium palettes; anything unlisted uses its illustrated plate */
     const PAL={
       opensky:{top:'#3D8BD4',mid:'#7FC0EC',bot:'#E9F6FF',sun:['rgba(255,251,225,.95)','rgba(255,240,180,.42)'],sunCore:'rgba(255,252,235,.96)',hill:'#9CCB7A',hill2:'#7FB662',pill:['#F0B429','#D89614'],stars:0,birds:1},
@@ -636,6 +644,14 @@
       const e=(dx,dy,r)=>{ cx.beginPath(); cx.ellipse(x+dx*s,y+dy*s,r*s,r*s*0.72,0,0,7); cx.fill(); };
       e(0,0,27); e(25,5,20); e(-25,6,19); e(11,-11,18); e(-11,-8,16); cx.restore(); }
     function drawBackdrop(){
+      // painted Ghibli sky for the daytime world; night/sunset worlds keep the procedural sky
+      const sky=(world==='opensky'||world==='sky')&&sgTex('fly-sky');
+      if(sky){
+        const ar=sky.width/sky.height, car=Wd/Ht; let dw,dh;
+        if(ar>car){ dh=Ht; dw=Ht*ar; } else { dw=Wd; dh=Wd/ar; }
+        try{ cx.drawImage(sky,(Wd-dw)/2,(Ht-dh)/2,dw,dh); }catch(e){}
+        return;   // the painted sky already carries clouds, sun and hills — no procedural overlay
+      }
       const g=cx.createLinearGradient(0,0,0,Ht);
       g.addColorStop(0,pal.top); g.addColorStop(0.52,pal.mid); g.addColorStop(1,pal.bot);
       cx.fillStyle=g; cx.fillRect(0,0,Wd,Ht);
@@ -664,8 +680,20 @@
     }
     /* hand-drawn shaded bee with animated wings; the child's avatar rides on its back */
     function drawFlyer(x,y,tilt){
-      const wf=Math.sin(t*26), s=1;
+      const wf=Math.sin(t*26), s=1, btex=sgTex('bee-fly');
       cx.save(); cx.translate(x,y); cx.rotate(tilt);
+      if(btex){
+        const bw=66, bh=bw*(btex.height/btex.width);
+        try{ cx.drawImage(btex,-bw*0.5,-bh*0.46,bw,bh); }catch(e){}
+        // rider: the child's avatar in a little bubble on the bee's back
+        const av=avImg(heroAv());
+        if(av){ try{ const bob=Math.sin(t*7)*1.2, rx=-bw*0.06, ry=-bh*0.24+bob, rr=9;
+          cx.save(); cx.beginPath(); cx.arc(rx,ry,rr,0,7); cx.clip();
+          cx.drawImage(av,rx-rr,ry-rr,rr*2,rr*2); cx.restore();
+          cx.strokeStyle='rgba(60,40,10,.5)'; cx.lineWidth=1.2;
+          cx.beginPath(); cx.arc(rx,ry,rr,0,7); cx.stroke(); }catch(e){ try{cx.restore();}catch(_){} } }
+        cx.restore();
+      } else {
       // wings behind body
       for(const [dx,dy,rot,len] of [[-2,-14,-0.5-wf*0.35,20],[4,-13,-0.15-wf*0.3,15]]){
         cx.save(); cx.translate(dx,dy); cx.rotate(rot);
@@ -700,6 +728,7 @@
         cx.strokeStyle='rgba(60,40,10,.5)'; cx.lineWidth=1.2;
         cx.beginPath(); cx.arc(-4,-16+bob,10,0,7); cx.stroke(); }catch(e){ try{cx.restore();}catch(_){}} }
       cx.restore();
+      }
       // grace sparkle trail
       if(t<graceUntil||t<3){ for(let i=0;i<2;i++){ const a=Math.random();
         cx.globalAlpha=0.5*a; cx.fillStyle='#FFE28A';
