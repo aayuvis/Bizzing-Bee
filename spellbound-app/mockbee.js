@@ -313,12 +313,18 @@
     return _beeList;
   }
 
+  /* Optional player-chosen hardness — shifts the whole percentile window the child's
+     words are drawn from, easier (down) or harder (up). 'auto' keeps the bee's own ramp. */
+  function mbDiffShift() { try { const d = (active() && active().mbDiff) || 'auto';
+    return { auto: 0, easy: -0.24, medium: -0.08, hard: 0.12, champ: 0.26 }[d] || 0; } catch (e) { return 0; } }
   function roundWords(R, n) {
     const list = beeList();
     let pool = [];
     if (list.length > 60 && R.pct) {
-      const a = Math.floor(R.pct[0] * list.length);
-      const b = Math.max(a + n * 4, Math.ceil(R.pct[1] * list.length));
+      const sh = mbDiffShift();
+      const p0 = Math.max(0, Math.min(0.9, R.pct[0] + sh)), p1 = Math.max(0.1, Math.min(1, R.pct[1] + sh));
+      const a = Math.floor(p0 * list.length);
+      const b = Math.max(a + n * 4, Math.ceil(p1 * list.length));
       pool = list.slice(a, Math.min(b, list.length));
     }
     /* the tagged list has not loaded yet (or a build stripped it) — fall back to
@@ -1262,6 +1268,7 @@
 
   app2.mbQuit = () => { aqStop(); state.mb = null; state.nav = 'games'; render(); };
   app2.mbAgain = () => { app2.mbStart(); };
+  app2.mbSetDiff = (k) => { const c = active(); if (!c) return; c.mbDiff = k; try { save(); } catch (e) {} render(); };
 
   /* ================= rendering ================= */
   const face = (s, size) => s.kind === 'me'
@@ -1304,6 +1311,10 @@
           </div>
           <p class="mb-stages">Preliminaries &rarr; Quarterfinals &rarr; Semifinals &rarr; Finals.
              The last speller standing takes it.</p>
+          <div class="mb-diffrow"><span class="mb-difflbl">Word hardness</span>
+            <div class="mb-diff" role="group" aria-label="Word hardness">${
+              [['auto','Bee ramp'],['easy','Easy'],['medium','Medium'],['hard','Hard'],['champ','Champ']]
+              .map(([k,l])=>`<button data-act="mbSetDiff" data-arg="${k}" class="${((c.mbDiff||'auto')===k)?'on':''}">${l}</button>`).join('')}</div></div>
           <button data-act="mbStart" class="mb-go">${iconSVG('crown', 17)} Take the stage</button>
         </span>
       </div>
