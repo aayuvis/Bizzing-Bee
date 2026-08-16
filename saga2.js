@@ -1342,8 +1342,9 @@
       playerX=Math.max(-1.2,Math.min(1.2,playerX));
       const offRoad=(playerX<-0.95||playerX>0.95);
       if(offRoad){
-        // the grass drags the kart to a near-stop and holds it there — no throttle off the tarmac
-        v=Math.max(maxV*0.04, v-(maxV/0.9)*dt);
+        // the grass rolls the kart to a FULL STOP — no throttle off the tarmac; steering
+        // still works at a standstill, so you steer back on and pull away again
+        v=Math.max(0, v-(maxV/0.9)*dt);
         if(!offGrass){ offGrass=true; spinFlashT=Math.max(spinFlashT,0.3); try{flash('🌿 Off the track — steer back on!');}catch(_){} }
       } else {
         offGrass=false;
