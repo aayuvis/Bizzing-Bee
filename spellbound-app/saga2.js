@@ -1912,33 +1912,53 @@
     let si=0, seq=null, showing=false, tapIdx=0, over=false, misses=0;
     const art=(window.SGART&&SGART.ready());
     const plate=art?SGART.plateForWorld(opts.world||'Stage'):'';
+    // a colourful light-show: each tile owns a colour + a pentatonic note
+    const TILECOL=['#FF6B8B','#FFC24D','#4FD08A','#4FB8F0','#B47CF0','#F08CD0','#66E0C8','#FF9E5E'];
+    const TILEFREQ=[392,440,494,523,587,659,698,784];
+    let _actx=null;
+    function note(fr){ try{ _actx=_actx||new (window.AudioContext||window.webkitAudioContext)();
+      const o=_actx.createOscillator(),g=_actx.createGain(); o.type='triangle'; o.frequency.value=fr;
+      o.connect(g); g.connect(_actx.destination); const t=_actx.currentTime; g.gain.setValueAtTime(0.0001,t);
+      g.gain.exponentialRampToValueAtTime(0.16,t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+0.34);
+      o.start(t); o.stop(t+0.36); }catch(e){} }
+    function lightTile(t,hold){ if(!t) return; const c=t.dataset.col||'#FFD873';
+      t.classList.add('lit'); t.style.background=c; t.style.boxShadow='0 0 26px 4px '+c+', inset 0 0 18px rgba(255,255,255,.5)';
+      note(+t.dataset.fr||440); setTimeout(()=>{ t.classList.remove('lit'); t.style.background=''; t.style.boxShadow=''; }, hold||200); }
     host.innerHTML='<div class="sg-hud"><span id="sg-seq">Song 1/'+CFG.seqs+'</span><span id="sg-miss"></span></div>'+
       '<div class="sg-stage"><div class="sg-stage-bg">'+plate+'</div><div class="sg-tiles" id="sg-tiles"></div></div>'+
       '<div class="sg-simonprompt" id="sg-sp"></div><div id="sg-card"></div>';
     function newSeq(){
-      if(si>=CFG.seqs){ over=true; done({win:true,score:CFG.seqs*120-misses*20,stars:misses===0?3:misses<=2?2:1}); return; }
+      if(si>=CFG.seqs){ over=true; finale(()=>done({win:true,score:CFG.seqs*120-misses*20,stars:misses===0?3:misses<=2?2:1})); return; }
       const w=feed.next(); seq={w:w.w.toLowerCase(),i:0,d:(w.d||w.def||'')};
       const tiles=host.querySelector('#sg-tiles'); tiles.innerHTML='';
       const letters=[...new Set(seq.w.split(''))];
       while(letters.length<8){ const c=String.fromCharCode(97+Math.floor(Math.random()*26)); if(!letters.includes(c)) letters.push(c); }
-      letters.sort(()=>Math.random()-0.5).forEach(ch=>{ const t=document.createElement('button');
-        t.className='sg-stile'; t.textContent=ch.toUpperCase(); t.dataset.ch=ch; tiles.appendChild(t); });
+      letters.sort(()=>Math.random()-0.5).forEach((ch,idx)=>{ const t=document.createElement('button');
+        t.className='sg-stile'; t.textContent=ch.toUpperCase(); t.dataset.ch=ch;
+        t.dataset.col=TILECOL[idx%TILECOL.length]; t.dataset.fr=TILEFREQ[idx%TILEFREQ.length]; tiles.appendChild(t); });
       showSeq();
     }
     async function showSeq(){
       showing=true; tapIdx=0;
       host.querySelector('#sg-sp').textContent='👀 Watch the spotlights…';
       await new Promise(r=>setTimeout(r,700));
+      // tempo ramps up as the songs get longer — a livelier show, round by round
+      const lit=Math.max(230,520-si*36), gap=Math.max(90,160-si*10);
       for(const ch of seq.w){ if(over) return;
         const t=[...host.querySelectorAll('.sg-stile')].find(x=>x.dataset.ch===ch);
-        t.classList.add('lit'); await new Promise(r=>setTimeout(r,520)); t.classList.remove('lit');
-        await new Promise(r=>setTimeout(r,160)); }
+        lightTile(t,lit); await new Promise(r=>setTimeout(r,lit+gap)); }
       showing=false;
       host.querySelector('#sg-sp').textContent='🎯 Your turn — repeat it!';
     }
+    function finale(cb){ // curtain call: run the marquee lights before the win banner
+      const tiles=[...host.querySelectorAll('.sg-stile')]; if(!tiles.length){ cb(); return; }
+      try{ if(typeof SGFX!=='undefined'&&SGFX.scrim) SGFX.scrim(host,'#FFE9A8'); }catch(_){}
+      let k=0; const iv=setInterval(()=>{ lightTile(tiles[k%tiles.length],180); k++;
+        if(k>=tiles.length*2){ clearInterval(iv); tiles.forEach(t=>lightTile(t,520)); setTimeout(cb,620); } }, 110);
+    }
     host.querySelector('#sg-tiles').onclick=e=>{
       const t=e.target.closest('.sg-stile'); if(!t||showing||over) return;
-      if(t.dataset.ch===seq.w[tapIdx]){ t.classList.add('lit'); setTimeout(()=>t.classList.remove('lit'),200); tapIdx++;
+      if(t.dataset.ch===seq.w[tapIdx]){ lightTile(t,200); tapIdx++;
         if(tapIdx>=seq.w.length) recall(); }
       else { misses++; host.querySelector('#sg-miss').textContent='✖'.repeat(misses);
         if(misses>=4){ over=true; done({win:false,score:si*60,stars:0}); return; }
