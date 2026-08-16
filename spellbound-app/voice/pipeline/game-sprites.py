@@ -46,6 +46,32 @@ SPRITES = {
                               "bodywork with a white centre stripe, rounded and toy-like. Symmetric, centred, level (not tilted)."),
     'oil':       ('1:1', 200, "A glossy dark spilled oil slick puddle for a racing game hazard, an irregular shiny black-and-"
                               "purple blob with a rainbow sheen and a small warning look, top-down, cartoon."),
+    'kart-rocket':('1:1', 300, "A friendly cartoon RACING kart DRIVING AWAY from the viewer, strict tail-on rear view from a chase "
+                              "camera directly behind at track level. ONLY the BACK is visible: the back of the headrest/seat-back "
+                              "(cockpit hidden, NOT visible), a tall swept rear wing across the top, twin glowing blue jet-exhausts "
+                              "low and centred, two big rear tyres splayed left and right, a sleek pointed nose tapering away into the "
+                              "distance. Glossy electric-blue bodywork with a white lightning stripe, aerodynamic and toy-like. "
+                              "Symmetric, centred, level (not tilted)."),
+    'kart-buggy':('1:1', 300, "A friendly chunky cartoon OFF-ROAD dune-buggy kart DRIVING AWAY from the viewer, strict tail-on rear "
+                              "view from a chase camera directly behind at track level. ONLY the BACK is visible: the back of a roll-"
+                              "cage and seat-back (cockpit hidden, NOT visible), a spare-tyre on the back, twin stubby exhausts low "
+                              "and centred, and two HUGE knobbly off-road rear tyres splayed wide left and right, nose pointing away "
+                              "into the distance. Glossy lime-green bodywork with black trim, rugged rounded and toy-like. Symmetric, "
+                              "centred, level (not tilted)."),
+    'kart-cruiser':('1:1', 300, "A friendly rounded VINTAGE cartoon kart DRIVING AWAY from the viewer, strict tail-on rear view from a "
+                              "chase camera directly behind at track level. ONLY the BACK is visible: the rounded back of a bubble "
+                              "seat-back (cockpit hidden, NOT visible), a small curved rear fender, one chrome exhaust low and centred, "
+                              "two rounded whitewall rear tyres splayed left and right, a bulbous rounded tail pointing away into the "
+                              "distance. Glossy grape-purple bodywork with a cream stripe, cute retro bubble shape, toy-like. Symmetric, "
+                              "centred, level (not tilted)."),
+    'cop':       ('1:1', 300, "A cartoon POLICE PATROL CAR DRIVING AWAY from the viewer, strict tail-on rear view from a chase camera "
+                              "directly behind at track level. ONLY the BACK is visible: the rear windscreen, tail-lights, a roof "
+                              "light-bar with a red and a blue dome lit up and glowing, two rear tyres, nose pointing away into the "
+                              "distance. Glossy black-and-white patrol livery, rounded friendly cartoon shape, toy-like. Symmetric, "
+                              "centred, level (not tilted). A little comic urgency but not scary."),
+    'speedbump': ('3:2', 240, "A cartoon yellow-and-black striped SPEED BUMP hump lying across a road, seen from a low chase camera "
+                              "from behind and slightly above, a wide rounded raised ridge spanning left to right with bold diagonal "
+                              "hazard stripes and a soft shadow under its front edge, glossy cartoon, a single speed bump centred."),
     'item-box':  ('1:1', 200, "A floating mystery item box power-up for a racing game: a rounded glowing golden cube with a "
                               "big white question mark carved into its face, sparkles around it, honeycomb texture, cartoon."),
     # ---- Keep Flying ----
@@ -102,6 +128,22 @@ BACKDROPS = {
                              "people, NO animals, NO creatures, NO characters of any kind anywhere — only an empty peaceful "
                              "landscape of sky, clouds, hills and grass. Warm, inviting, full-bleed edge to edge, no border, "
                              "no frame, no text of any kind."),
+    'gp-sunset': ('16:9', 1280, "A warm SUNSET DESERT-CANYON racing backdrop for a cartoon kart game, painted in a soft Studio-Ghibli "
+                             "storybook style: a glowing amber-and-rose evening sky graded from deep orange at the horizon to violet "
+                             "up top, a big low golden sun with soft rays, tall red-rock mesas and canyon buttes in silhouette along "
+                             "the sides and horizon, and warm sandy desert flats below. Composed with an OPEN, uncluttered centre and "
+                             "lower-middle (no road, no track, no path) so a race track can be drawn on top; all the detail sits toward "
+                             "the top and far sides. ABSOLUTELY NO vehicles, NO people, NO animals, NO characters anywhere — only an "
+                             "empty warm desert of sky, sun, mesas and sand. Warm, inviting, full-bleed edge to edge, no border, no "
+                             "frame, no text of any kind."),
+    'gp-city': ('16:9', 1280, "A NIGHT NEON CITY racing backdrop for a cartoon kart game, painted in a soft Studio-Ghibli storybook "
+                             "style but at night: a deep indigo starry sky, a big soft moon, a friendly cartoon skyline of tall city "
+                             "buildings with warm glowing windows and a few bright neon signs (no readable letters) along the sides and "
+                             "horizon, gentle bokeh glows. Composed with an OPEN, uncluttered centre and lower-middle (no road, no "
+                             "track, no path) so a race track can be drawn on top; all the detail — towers, moon, neon — sits toward the "
+                             "top and far sides. ABSOLUTELY NO vehicles, NO people, NO animals, NO characters anywhere, NO readable "
+                             "text or letters — only an empty glowing night city skyline. Cheerful, inviting, full-bleed edge to edge, "
+                             "no border, no frame."),
 }
 
 BG_STYLE = ("Full-scene painted illustration in a soft Studio-Ghibli storybook style, cheerful and warm, gentle "
