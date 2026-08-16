@@ -991,10 +991,10 @@
         p2:{world:{y:y,z:(n+1)*segLen},camera:{},screen:{}},
         color:(Math.floor(n/rumbleLen)%2)?DARK:LIGHT, sprites:[]}); }
     const eI=(a,b,p)=>a+(b-a)*Math.pow(p,2), eIO=(a,b,p)=>a+(b-a)*(-Math.cos(p*Math.PI)/2+0.5);
-    // DEAD-FLAT STRAIGHT highway: no curves AND no hills. Curves made the kart look
-    // self-driving; hills made rivals flicker/slice at crest lines (per-segment culling)
-    // and wobbled the kart's road anchor while steering. Flat + straight = rock solid.
-    function road(enter,hold,leave,curve,hill){ curve=0; hill=0; const sY=lastY(), eY=sY+hill*segLen, tot=enter+hold+leave; let i;
+    // CURVED but FLAT: gentle curves are back (softened 30%) — the kart holds a WORLD-straight
+    // line, so on a bend the road slides away from under it and the player must steer into the
+    // curve (no auto-tracking). Hills stay flattened: crest culling made rivals flicker/slice.
+    function road(enter,hold,leave,curve,hill){ hill=0; curve*=0.7; const sY=lastY(), eY=sY+hill*segLen, tot=enter+hold+leave; let i;
       for(i=0;i<enter;i++) addSeg(eI(0,curve,i/enter), eIO(sY,eY,i/tot));
       for(i=0;i<hold;i++)  addSeg(curve,              eIO(sY,eY,(enter+i)/tot));
       for(i=0;i<leave;i++) addSeg(eIO(curve,0,i/leave),eIO(sY,eY,(enter+hold+i)/tot)); }
@@ -1331,9 +1331,14 @@
     function update(dt){
       boostT=Math.max(0,boostT-dt); if(boostT===0) boostMul=1; shieldT=Math.max(0,shieldT-dt); spinFlashT=Math.max(0,spinFlashT-dt);
       const seg=segs[Math.min(segs.length-1,Math.floor(pos/segLen))];
-      // steer first (works even at a crawl, so you can always get back on)
-      const dxs=dt*2.2*Math.max(0.42,v/maxV);
+      // steer first (works even at a crawl, so you can always get back on) — HALF the old
+      // speed: a tap nudges one lane-notch instead of leaping across the road
+      const dxs=dt*1.1*Math.max(0.42,v/maxV);
       playerX+=steer*dxs;
+      // world-straight through bends: the road curves away under a hands-off kart, so the
+      // player steers INTO the curve to hold the racing line (this is not auto-correct —
+      // it is the absence of it)
+      playerX-=(seg.curve||0)*(v/maxV)*dt*0.4;
       playerX=Math.max(-1.2,Math.min(1.2,playerX));
       const offRoad=(playerX<-0.95||playerX>0.95);
       if(offRoad){
@@ -1374,7 +1379,7 @@
       '<div class="sg-howto-h">🏁 Bee Grand Prix</div>'+
       '<div class="sg-howto-sub">One epic race to the finish against the Unspelling’s crew — the Smudge, Glitch and Vex are on the grid!</div>'+
       '<ol class="sg-howto-steps">'+
-      '<li>You keep rolling in a straight line — <b>steer</b> with <b>◀ ▶</b> (arrows / tap the sides) and dodge 🛢️ oil and 🚓 cops.</li>'+
+      '<li><b>Steer</b> with <b>◀ ▶</b> (arrows / tap the sides) — lean into the bends, dodge 🛢️ oil and 🚓 cops.</li>'+
       '<li>Drive into a <b>? box</b> — the race pauses while you <b>spell the word</b>.</li>'+
       '<li>Spelling it right <b>unlocks a power-up</b> into your slot — tap the slot (or Space) to fire it when you need it!</li>'+
       '<li>Watch the <b>track bar up top</b> to see where every racer is. First to the flag wins ⭐⭐⭐.</li>'+
