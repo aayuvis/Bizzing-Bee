@@ -991,7 +991,10 @@
         p2:{world:{y:y,z:(n+1)*segLen},camera:{},screen:{}},
         color:(Math.floor(n/rumbleLen)%2)?DARK:LIGHT, sprites:[]}); }
     const eI=(a,b,p)=>a+(b-a)*Math.pow(p,2), eIO=(a,b,p)=>a+(b-a)*(-Math.cos(p*Math.PI)/2+0.5);
-    function road(enter,hold,leave,curve,hill){ const sY=lastY(), eY=sY+hill*segLen, tot=enter+hold+leave; let i;
+    // STRAIGHT highway: the road never curves, so the kart travels dead straight and only
+    // MOVES when the player steers (to grab ❓ boxes / dodge oil & cops). No self-driving,
+    // no drift. Hills still roll for depth. (curve is forced to 0 here.)
+    function road(enter,hold,leave,curve,hill){ curve=0; const sY=lastY(), eY=sY+hill*segLen, tot=enter+hold+leave; let i;
       for(i=0;i<enter;i++) addSeg(eI(0,curve,i/enter), eIO(sY,eY,i/tot));
       for(i=0;i<hold;i++)  addSeg(curve,              eIO(sY,eY,(enter+i)/tot));
       for(i=0;i<leave;i++) addSeg(eIO(curve,0,i/leave),eIO(sY,eY,(enter+hold+i)/tot)); }
@@ -1189,8 +1192,8 @@
       const posm=pos%trackLen;
       const base=segs[Math.floor(posm/segLen)%segs.length]; const basePct=(posm%segLen)/segLen;
       let x=0, dx=-(base.curve*basePct), maxy=Ht;
-      const camX=playerX*roadW;        // camera FULLY follows the kart's lane — so the kart holds a straight screen line and the road curves under it, instead of the kart appearing to swing on bends
-      let nearS=null;                  // nearest on-screen road point (kept for reference)
+      const camX=0;                    // camera fixed on the (straight) road centre; the KART slides across, the world does not pan
+      let nearS=null;                  // nearest on-screen road point — the kart is placed here so it lines up with what it can hit
       for(let n=0;n<drawDist;n++){ const seg=segs[(base.index+n)%segs.length];
         const looped=seg.index<base.index; const cz=posm-(looped?trackLen:0);
         project(seg.p1, camX - x,        camH, cz);
@@ -1282,11 +1285,12 @@
         else { const r=o.r; drawKart(o.sx,o.sy,w*2.15,r.col,{sprite:r.sprite,glyph:r.glyph},{spin:r.spin>0,kart:'kart-red'}); }
         cx.globalAlpha=1; cx.restore();
       });
-      // With a full-follow camera the player's own lane is ALWAYS screen-centre, so the kart
-      // sits at Wd/2 and holds a straight line — steering shifts the road, not a swinging kart.
-      // Items at the player's lane also land at centre, so visual === collision (no phantom catches).
-      const pw=Wd*0.115, py=Ht-14, px=Wd/2;
-      cx.save(); cx.translate(px,py); cx.rotate(steer*0.035);
+      // Straight road + fixed camera: the kart is drawn at its true lane on the near road,
+      // so it VISIBLY slides left/right as you steer and lines up with the items/hazards it
+      // can hit (visual === collision). It holds its lane when you're not steering.
+      const pw=Wd*0.115, py=Ht-14;
+      const px = nearS ? nearS.x + nearS.w*playerX : (Wd/2 + playerX*Wd*0.42);
+      cx.save(); cx.translate(px,py); cx.rotate(steer*0.05);
       drawKart(0,0,pw,'#F0B429',{av:heroKart},{boost:boostT>0,kart:KART,tint:opts.tint});
       cx.restore();
       if(shieldT>0){ cx.strokeStyle='rgba(120,205,255,.85)'; cx.lineWidth=3; cx.beginPath(); cx.ellipse(px,py-pw*0.34,pw*0.62,pw*0.5,0,0,7); cx.stroke();
