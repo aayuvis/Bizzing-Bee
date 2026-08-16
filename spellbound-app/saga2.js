@@ -1392,7 +1392,12 @@
     if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over}),
       steerTo:(x)=>{playerX=x;}, jump:(z)=>{pos=z;}, grant:(i)=>{held=POWERS[i||0];renderHold();},
       toBox:()=>{ const pm=pos%trackLen, it=items.find(x=>!x.gone&&x.seg*segLen>pm+segLen*10);   // capture tooling: line up the next ? box
-        if(it){ pos+= (it.seg-8)*segLen - pm; playerX=it.off; } } };
+        if(it){ pos+= (it.seg-8)*segLen - pm; playerX=it.off; } },
+      toHaz:(kind)=>{ const pm=pos%trackLen, h=hazards.find(x=>!x.hit&&(!kind||x.kind===kind)&&x.seg*segLen>pm+segLen*12);   // capture tooling: line up the next hazard
+        if(h){ pos+= (h.seg-9)*segLen - pm; playerX=h.off; } },
+      clearBoxes:()=>{ items.forEach(i=>i.gone=true); },                 // capture tooling: no unplanned spell gates
+      gateNow:()=>{ const pm=pos%trackLen, it=items.find(x=>x.seg*segLen>pm+segLen*14);   // capture tooling: summon ONE gate ahead
+        if(it){ it.gone=false; pos+= (it.seg-8)*segLen - pm; playerX=it.off; } } };
     requestAnimationFrame(frame);
     return { destroy(){ over=true; removeEventListener('keydown',kd); removeEventListener('keyup',ku); } };
   }

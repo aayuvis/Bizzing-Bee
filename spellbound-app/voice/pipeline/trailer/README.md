@@ -12,3 +12,13 @@ Real gameplay, no AI video gen. Order:
 Clips include ~9-13s of app boot — find cut points with 1fps contact sheets
 (ffmpeg tile filter) before trusting the trim table in assemble.py.
 ffmpeg comes from pip's imageio-ffmpeg (no drawtext in that build — overlays are PNGs).
+
+## Episode format (v2 — the engaging one)
+Ad ≠ episode. `capture2.cjs` records ONE continuous choreographed champ race
+(cold-open loop, one-rule challenge, setbacks, near-miss, photo finish) with an
+EV event log; `vo2.py` is let's-play commentary (am_adam) with word-specific
+lines; `sfx.py` synthesizes whoosh/skid/siren/thud/ding/rocket/tada; `assemble2.py`
+cuts it. Two hard-won rules: call _race.clearBoxes() right after GO or champ's
+scattered ? boxes dim every racing segment, and expect recordVideo to DRIFT
+seconds past the EV log under load — verify cut points against extracted frames,
+never trust the log alone. Word-specific VO/overlays must be regenerated per take.
