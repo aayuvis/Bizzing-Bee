@@ -1017,7 +1017,7 @@
     /* ---- racers: the villains ---- */
     const maxV=segLen*46, accel=maxV/4.6, offDecel=-maxV/1.6, offLimit=maxV/3.2, centri=0.32;
     let pos=0, playerX=0, v=0, over=false, mode='howto', lap=1, hudT=1; // howto -> count -> race -> spell -> done
-    let boostT=0, boostMul=1, shieldT=0, spinFlashT=0, countT=0, finishedRivals=0, gpCombo=0;
+    let boostT=0, boostMul=1, shieldT=0, spinFlashT=0, countT=0, finishedRivals=0, gpCombo=0, offGrass=false;
     const heroKart=HERO;
     const VILL=[
       {name:'The Smudge',col:'#8B8B96',glyph:'🦋',sprite:'smudge-swarm'},
@@ -1325,12 +1325,20 @@
       draw(); requestAnimationFrame(frame); }
     function update(dt){
       boostT=Math.max(0,boostT-dt); if(boostT===0) boostMul=1; shieldT=Math.max(0,shieldT-dt); spinFlashT=Math.max(0,spinFlashT-dt);
-      const seg=segs[Math.min(segs.length-1,Math.floor(pos/segLen))]; const spdPct=v/maxV;
-      v=Math.min(maxV*boostMul, v+accel*dt);
-      const dxs=dt*2.2*Math.max(0.35,spdPct);
-      playerX+=steer*dxs;   // smooth, continuous: the kart moves only as the player steers, and holds its line otherwise
-      if((playerX<-0.94||playerX>0.94) && v>offLimit){ v+=offDecel*dt; }   // drag once a wheel leaves the tarmac
-      playerX=Math.max(-1.15,Math.min(1.15,playerX));
+      const seg=segs[Math.min(segs.length-1,Math.floor(pos/segLen))];
+      // steer first (works even at a crawl, so you can always get back on)
+      const dxs=dt*2.2*Math.max(0.42,v/maxV);
+      playerX+=steer*dxs;
+      playerX=Math.max(-1.2,Math.min(1.2,playerX));
+      const offRoad=(playerX<-0.95||playerX>0.95);
+      if(offRoad){
+        // the grass drags the kart to a near-stop and holds it there — no throttle off the tarmac
+        v=Math.max(maxV*0.04, v-(maxV/0.9)*dt);
+        if(!offGrass){ offGrass=true; spinFlashT=Math.max(spinFlashT,0.3); try{flash('🌿 Off the track — steer back on!');}catch(_){} }
+      } else {
+        offGrass=false;
+        v=Math.min(maxV*boostMul, v+accel*dt);   // tarmac: accelerate up to top speed
+      }
       const pm=pos%trackLen;
       // tol ≈ half a kart-width in lane units — so a hit needs a real overlap, matching what you see
       const CATCH=0.34;
