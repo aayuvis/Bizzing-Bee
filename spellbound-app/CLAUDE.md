@@ -836,3 +836,27 @@ handlers. App lives in this folder; open `index.html` to run.
   Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
   Claude-Session: https://claude.ai/code/session_01QWsiRQxQMXwKsQoppGtYWa
   ```
+
+## Video production — a failed experiment, and its lessons (Aug 2026)
+Two YouTube videos were built from in-app assets (`voice/pipeline/trailer/`) and both
+were rejected — storyline, graphics and voice. The lessons are the point; do not repeat
+the attempt with the same inputs.
+- **TTS cannot perform.** Kokoro is a pronunciation voice; commentary/let's-play formats
+  are mostly voice energy, and synthetic enthusiasm reads as uncanny. Any narrated video
+  needs a HUMAN voice track first — write the script, let the user record it, build
+  around it. Never ship TTS narration as entertainment.
+- **Choreographed drama is fake drama.** Setbacks staged through debug hooks (toHaz/
+  gateNow teleports), a "rule" that was never at risk, a comeback that couldn't fail —
+  scripted stakes with no real uncertainty read hollow on sight. Real content needs real
+  play (genuine winnable/losable runs) or genuinely authored narrative craft.
+- **A screen recording is not footage.** The game reads well in hand; at 1080p passive
+  viewing it is a fixed camera, small sprites and app chrome. Text overlays are not
+  production value. If footage must come from the app, it needs a purpose-built
+  cinematic mode (no HUD, dynamic camera), not a capture of the play surface.
+- **QC the bar, not the storyboard.** Every check verified "frame X at time Y", never
+  "would anyone watch this?" Judge a 15-second test cut against real videos in the
+  genre BEFORE building the full length — and show the user that cut first.
+- What survives: the capture/assembly tooling works (Playwright recordVideo drifts
+  seconds past wall-clock — cut against extracted frames; clearBoxes() before racing
+  segments; single-frame inputs into zoompan). Useful for QC reels and dev demos —
+  not for audience-facing video.
