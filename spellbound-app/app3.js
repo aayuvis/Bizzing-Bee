@@ -1946,8 +1946,10 @@ const app = {
     const onUnlock=()=>{ try{ addCoins(15); }catch(e){} };
     const done=(res)=>{ _arcHandle=null; arcadeResult(g, res||{}); };
     const gopts=extra.opts||((c.arcGame&&c.arcGame[k]&&c.arcGame[k].opts))||{};
+    // no tint: karts/heroes carry their own colours (a leftover saved arcColour used to
+    // wash the kart sprite oddly)
     try{ _arcHandle=engs[k](host, {diff:eDiff, world:g.w, onUnlock, hero:heroAvId,
-        tint:extra.tint||(c.arcColour||null), kart:gopts.kart, scene:gopts.scene, layout:gopts.layout, style:gopts.style}, done); }
+        kart:gopts.kart, scene:gopts.scene, layout:gopts.layout, style:gopts.style}, done); }
     catch(e){ try{ console.error(e); }catch(_){} flash('Could not start that game'); arcadeClose(); }
     // launched from the start menu → skip the engine's own how-to gate (the menu explained it)
     if(extra.fromMenu){ setTimeout(()=>{ try{ const go=host.querySelector('#sg-howgo'); if(go) go.click(); }catch(_){}} , 90); }
