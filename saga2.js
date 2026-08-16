@@ -145,14 +145,17 @@
     if(id in _avCache) return _avCache[id];
     _avCache[id]=null;
     try{
-      if(typeof window.SB_AVATAR!=='function') return null;
-      let svg=window.SB_AVATAR(id,512,{outline:false});   // hi-res raster: crisp on DPR canvases (was 120 - pixelated)
-      if(!svg) { _avCache[id]=false; return null; }
-      if(!/xmlns=/.test(svg)) svg=svg.replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" ');
-      const img=new Image(512,512);
+      // Avatars are RASTER art (avatars/<id>.webp / avatars/s/<id>.png thumb), not SVG.
+      // SB_AVATAR returns an <img> tag — read its resolved src and load that straight for
+      // canvas use. (The old code rasterised an SVG data-URI, which silently failed for
+      // every photo avatar, so the chosen hero never appeared in any game.)
+      let src='avatars/s/'+id+'.png';
+      try{ if(typeof window.SB_AVATAR==='function'){ const s=window.SB_AVATAR(id,192,{outline:false});
+        const m=s&&s.match(/src=["']([^"']+)["']/); if(m) src=m[1]; } }catch(e){}
+      const img=new Image();
       img.onload=()=>{ _avCache[id]=img; };
       img.onerror=()=>{ _avCache[id]=false; };
-      img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      img.src=src;
     }catch(e){ _avCache[id]=false; }
     return null;
   }
@@ -372,19 +375,36 @@
   // grid maze; arrows/swipe; moth patrols; nectar dots; golden flower spell-cards.
   function honeycombRun(host, opts, done){
     const diff=opts.diff||'medium';
-    const world=opts.world||'meadow';   // rich Claude Design backdrop plate
+    const HERO=opts.hero||heroAv();     // the chosen runner is the hero, not always Bizzy
+    const LAYOUT=opts.layout||'classic';// 3 maze layouts
+    // 3 world styles: wall palette + backdrop plate. Default keeps the golden hive look.
+    const STYLES={
+      hive:  {world:'hive',   wall:['rgba(255,214,122,.96)','rgba(233,168,32,.94)','rgba(168,113,14,.94)'],edge:'rgba(255,243,206,.55)',core:'rgba(120,72,8,.34)'},
+      meadow:{world:'meadow', wall:['rgba(176,224,132,.97)','rgba(96,176,80,.95)','rgba(46,112,44,.95)'], edge:'rgba(226,255,206,.5)', core:'rgba(30,84,22,.34)'},
+      cavern:{world:'cosmos', wall:['rgba(196,158,255,.96)','rgba(140,96,222,.95)','rgba(82,52,152,.95)'],edge:'rgba(228,214,255,.55)',core:'rgba(60,32,112,.4)'}
+    };
+    const STY=STYLES[opts.style]||{world:(opts.world||'meadow'),wall:STYLES.hive.wall,edge:STYLES.hive.edge,core:STYLES.hive.core};
+    const world=STY.world;
     // Gameplay hardness scales the MAZE itself: bigger grid at higher levels, and a
     // staggered honeycomb wall pattern at Champion. (Spelling words still match the speller.)
     const DIM={easy:[11,9,false],medium:[13,11,false],hard:[15,11,false],champ:[17,13,true]}[diff]||[13,11,false];
     const COLS=DIM[0], ROWS=DIM[1], HEX=DIM[2];
     sgTexPreload(['bee-fly','moth']);   // canonical bee + moth, decoded before first frame
     const CELL=Math.max(24,Math.min(104, Math.floor(Math.min(innerWidth-16,1600)/COLS), Math.floor((innerHeight-208)/ROWS)));
+    // Every layout keeps odd rows / odd columns open, so the maze is always fully connected.
     function makeMaze(cols,rows,hex){ const M=[]; // 0 wall · 1 dot · 2 empty
       for(let r=0;r<rows;r++){ const row=[];
         for(let c=0;c<cols;c++){
-          if(r===0||r===rows-1||c===0||c===cols-1) row.push(0);        // border wall
-          else if(r%2===0){ const off=hex?((r/2)%2):0; row.push(((c+off)%2===0)?0:1); } // pillar row (staggered when hex)
-          else row.push(1);                                             // open corridor
+          if(r===0||r===rows-1||c===0||c===cols-1){ row.push(0); continue; }  // border wall
+          let wall=false;
+          if(LAYOUT==='spiral'){        // vertical corridors: pillar COLUMNS
+            if(c%2===0){ const off=hex?((c/2)%2):0; wall=((r+off)%2===0); }
+          } else if(LAYOUT==='chambers'){ // sparse pillars → big open rooms
+            wall=(r%2===0 && c%2===0);
+          } else {                       // classic: pillar ROWS
+            if(r%2===0){ const off=hex?((r/2)%2):0; wall=((c+off)%2===0); }
+          }
+          row.push(wall?0:1);
         } M.push(row); } return M; }
     const MAZE=makeMaze(COLS,ROWS,HEX);
     const CFG={easy:{moths:2,speed:2.0,target:900,time:150},medium:{moths:3,speed:2.6,target:1200,time:180},
@@ -508,10 +528,10 @@
         if(v===0){
           cx.save(); cx.shadowColor='rgba(8,5,20,.55)'; cx.shadowBlur=CELL*0.22; cx.shadowOffsetY=CELL*0.09;
           const g=cx.createLinearGradient(0,py-CELL*0.5,0,py+CELL*0.5);
-          g.addColorStop(0,'rgba(255,214,122,.96)'); g.addColorStop(.55,'rgba(233,168,32,.94)'); g.addColorStop(1,'rgba(168,113,14,.94)');
+          g.addColorStop(0,STY.wall[0]); g.addColorStop(.55,STY.wall[1]); g.addColorStop(1,STY.wall[2]);
           cx.fillStyle=g; SGFX.hex(cx,px,py,CELL*0.53); cx.fill(); cx.restore();
-          cx.strokeStyle='rgba(255,243,206,.55)'; cx.lineWidth=1.4; SGFX.hex(cx,px,py,CELL*0.53); cx.stroke();
-          cx.fillStyle='rgba(120,72,8,.34)'; SGFX.hex(cx,px,py,CELL*0.30); cx.fill();
+          cx.strokeStyle=STY.edge; cx.lineWidth=1.4; SGFX.hex(cx,px,py,CELL*0.53); cx.stroke();
+          cx.fillStyle=STY.core; SGFX.hex(cx,px,py,CELL*0.30); cx.fill();
         }
         else if(v===1) SGFX.orb(cx,px,py,CELL*0.10,'#FFF3C4','#F0B429',T/420+(c+r)*0.7);
       }
@@ -528,8 +548,9 @@
       // the bee leaves honey behind her, so motion has a direction you can see
       trail.push(bee.px*CELL+CELL/2, bee.py*CELL+CELL/2, 16);
       trail.draw(cx,'255,205,80',CELL*0.30);
-      // bee — the canonical Gemini bee-fly sprite (flips with direction); SGART Bizzy then avatar/blob fallback
-      const bi=sgTex('bee-fly')||sgImg('bizzy-side-fly')||avImg(heroAv())||avImg('bizzy'), bx=bee.px*CELL, by=bee.py*CELL; let beeDrew=false;
+      // the RUNNER is the chosen hero avatar (falls back to the bee-fly sprite / Bizzy)
+      const usingAv=!!avImg(HERO);
+      const bi=avImg(HERO)||sgTex('bee-fly')||sgImg('bizzy-side-fly')||avImg('bizzy'), bx=bee.px*CELL, by=bee.py*CELL; let beeDrew=false;
       if(bi){ try{ const bob=1+0.05*Math.sin(Date.now()/110), s=CELL*1.12*bob, hh=bi.height&&bi.width?s*(bi.height/bi.width):s;
         cx.save(); cx.translate(bx+CELL/2,by+CELL/2);
         if(bee.dir[0]<0) cx.scale(-1,1);              // flip when flying left
@@ -566,9 +587,12 @@
   function keepFlying(host, opts, done){
     const Wd=Math.min(innerWidth-8,1600), Ht=Math.max(360,innerHeight-104);
     const diff=opts.diff||'medium', world=opts.world||'opensky';
-    // Roomier gaps + gentler speeds — the towers were punishingly tight before.
-    const CFG={easy:{gap:285,speed:1.6,pots:8},medium:{gap:220,speed:2.25,pots:10},
-               hard:{gap:195,speed:2.6,pots:10},champ:{gap:175,speed:2.95,pots:12}}[diff];
+    const HERO=opts.hero||heroAv();     // the chosen hero rides the bee
+    // Real flappy feel: a world that actually moves, honest gravity, and towers spaced
+    // ~500px apart (every = seconds between spawns, tuned to each speed) so you get time
+    // to read the next gap instead of meeting a wall the moment the last one clears.
+    const CFG={easy:{gap:250,speed:2.4,pots:8,every:3.4},medium:{gap:210,speed:3.0,pots:10,every:2.8},
+               hard:{gap:185,speed:3.5,pots:10,every:2.4},champ:{gap:168,speed:3.9,pots:12,every:2.1}}[diff];
     const MAXLIVES=5;
     host.innerHTML='<div class="sg-hud"><span id="sg-pots">🍯 0/'+CFG.pots+'</span><span class="sg-flyprog"><i id="sg-fill"></i><b>⛩️</b></span><span id="sg-coins">🪙 0</span><span id="sg-lives"></span></div><canvas id="sg-cv"></canvas><div id="sg-card"></div>';
     const cv=host.querySelector('#sg-cv');
@@ -593,8 +617,8 @@
     const stars=[]; if(pal&&pal.stars) for(let i=0;i<pal.stars;i++) stars.push({x:Math.random()*Wd,y:Math.random()*Ht*0.8,r:0.6+Math.random()*1.5,tw:Math.random()*7});
     const birds=[]; 
     let holding=false;
-    const flap=e=>{ if(e.key!==' ')return; bee.vy=-5.4; e.preventDefault&&e.preventDefault(); };
-    const pdown=e=>{ if(e.target.closest&&e.target.closest('#sg-card,.sg-howto'))return; holding=true; if(bee.vy>-2.4) bee.vy=-3.2; e.preventDefault&&e.preventDefault(); };
+    const flap=e=>{ if(e.key!==' ')return; bee.vy=-6.4; e.preventDefault&&e.preventDefault(); };
+    const pdown=e=>{ if(e.target.closest&&e.target.closest('#sg-card,.sg-howto'))return; holding=true; if(bee.vy>-3.0) bee.vy=-4.4; e.preventDefault&&e.preventDefault(); };
     const pup=()=>{ holding=false; };
     addEventListener('keydown',flap);
     host.addEventListener('pointerdown',pdown); addEventListener('pointerup',pup); addEventListener('pointercancel',pup);
@@ -627,11 +651,11 @@
       if(card||!started){ last=ts; requestAnimationFrame(frame); return; }
       const dt=Math.min(50,ts-last); last=ts; t+=dt/1000; potT-=dt/1000; mothT-=dt/1000; coinT-=dt/1000; heartT-=dt/1000;
       const GRACE=(t<3)||(t<graceUntil);
-      if(holding) bee.vy-=0.42;
+      if(holding) bee.vy-=0.62;                                 // hold to climb (beats gravity)
       if(GRACE){ bee.vy*=0.9; bee.y+=bee.vy; bee.y=Math.max(30,Math.min(Ht-40,bee.y)); }
-      else { spawnT+=dt/1000; bee.vy+=0.10; bee.y+=bee.vy; }   // gentler gravity for easier control
+      else { spawnT+=dt/1000; bee.vy+=0.30; bee.vy=Math.min(bee.vy,9); bee.y+=bee.vy; }   // honest gravity + a terminal fall speed
       if(!gate){
-        if(spawnT>2.4){ spawnT=0; spawn(); }                    // more room between towers
+        if(spawnT>CFG.every){ spawnT=0; spawn(); }              // towers spaced to the world speed
         if(potT<=0&&!pot){ potT=8; pot={x:Wd+30,y:80+Math.random()*(Ht-220)}; }
         if(mothT<=0){ mothT=4.8+Math.random()*3.2; spawnMoth(); } // fewer moths
         if(coinT<=0){ coinT=6+Math.random()*5; spawnCoins(); }
@@ -704,7 +728,7 @@
         const bw=66, bh=bw*(btex.height/btex.width);
         try{ cx.drawImage(btex,-bw*0.5,-bh*0.46,bw,bh); }catch(e){}
         // rider: the child's avatar in a little bubble on the bee's back
-        const av=avImg(heroAv());
+        const av=avImg(HERO);
         if(av){ try{ const bob=Math.sin(t*7)*1.2, rx=-bw*0.06, ry=-bh*0.24+bob, rr=9;
           cx.save(); cx.beginPath(); cx.arc(rx,ry,rr,0,7); cx.clip();
           cx.drawImage(av,rx-rr,ry-rr,rr*2,rr*2); cx.restore();
@@ -739,7 +763,7 @@
       cx.beginPath(); cx.moveTo(13,-10); cx.quadraticCurveTo(11,-17,7,-18); cx.moveTo(17,-10); cx.quadraticCurveTo(17,-17,21,-18); cx.stroke();
       cx.fillStyle='#241A0C'; cx.beginPath(); cx.arc(7,-18,1.6,0,7); cx.arc(21,-18,1.6,0,7); cx.fill();
       // rider: the child's avatar, bobbing on the bee's back
-      const av=avImg(heroAv());
+      const av=avImg(HERO);
       if(av){ try{ const bob=Math.sin(t*7)*1.3;
         cx.save(); cx.beginPath(); cx.arc(-4,-16+bob,10,0,7); cx.clip();
         cx.drawImage(av,-14,-26+bob,20,20); cx.restore();
@@ -919,6 +943,16 @@
     // so the canvas can take almost the whole overlay height — no dark letterbox below).
     const Wd=Math.min(innerWidth-8,1600), Ht=Math.max(340,Math.min(innerHeight-96,Math.round(Wd*0.92)));
     const diff=opts.diff||'medium';
+    const HERO=(opts.hero)||heroAv();            // the chosen racer shows as the driver + the position marker
+    const KART=(opts.kart)||'kart';              // chosen kart sprite (5 options in the start menu)
+    // three scenarios: each is its own painted sky + road/grass palette
+    const SCENES={
+      meadow:{sky:'gp-sky',  light:{road:'#6C6C74',grass:'#7BC169',rumble:'#EDEDED',lane:'#FFFFFF'}, dark:{road:'#64646C',grass:'#72B461',rumble:'#C7413F',lane:''}},
+      sunset:{sky:'gp-sunset',light:{road:'#6B5A63',grass:'#C98A4A',rumble:'#FFE7BE',lane:'#FFF3D8'}, dark:{road:'#63535B',grass:'#BC7E42',rumble:'#B5503A',lane:''}},
+      city:  {sky:'gp-city',  light:{road:'#50505E',grass:'#333B5E',rumble:'#8AE0FF',lane:'#EAF6FF'}, dark:{road:'#484852',grass:'#2C3452',rumble:'#C452C4',lane:''}}
+    };
+    const SCN=SCENES[opts.scene]||SCENES.meadow;
+    const SKY=SCN.sky, NIGHT=(opts.scene==='city');
     // one epic point-to-point run - length ~= minutes of driving; boxes pace the spelling
     const CFG=calmCFG({easy:{len:1800,laps:2,rivals:3,rival:0.84,haz:0.014,boxEvery:280},
                medium:{len:2300,laps:2,rivals:4,rival:0.90,haz:0.026,boxEvery:300},
@@ -941,14 +975,14 @@
     const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
 
     /* ---- pseudo-3D track ---- */
-    const segLen=200, roadW=2200, rumbleLen=3, drawDist=160, camH=4200, fov=76;   // zoomed-in, high camera — the race world sits close and large, looking down onto the track
+    const segLen=200, roadW=2200, rumbleLen=3, drawDist=130, camH=3600, fov=62;   // zoomed-in, high camera — the race world sits close and large, looking down onto the track
     // Elevated chase-cam: taller camera + a horizon lifted above mid-screen so you
     // look DOWN onto more of the track ahead instead of skimming it at ground level.
     const horizonY=Math.round(Ht*0.30);   // horizon high up-screen: more track visible from above
     const camDepth=1/Math.tan((fov/2)*Math.PI/180);
-    sgTexPreload(['kart','kart-red','oil','item-box','gp-sky','tree']);   // Gemini kart/hazard/scene art, decoded before first frame
-    const LIGHT={road:'#6C6C74',grass:'#7BC169',rumble:'#EDEDED',lane:'#FFFFFF'};
-    const DARK ={road:'#64646C',grass:'#72B461',rumble:'#C7413F',lane:''};
+    sgTexPreload([KART,'kart-red','oil','cop','speedbump','item-box',SKY,'tree']);   // Gemini kart/hazard/scene art, decoded before first frame
+    const LIGHT=SCN.light;
+    const DARK =SCN.dark;
     const segs=[];
     const lastY=()=>segs.length?segs[segs.length-1].p2.world.y:0;
     function addSeg(curve,y){ const n=segs.length;
@@ -973,14 +1007,18 @@
     while(segs.length%rumbleLen!==0) addSeg(0,lastY());
     const trackLen=segs.length*segLen, TOTAL=trackLen*CFG.laps, FINVIS=trackLen-segLen*8;
     for(let n=10;n<segs.length;n+=6){ const side=(n%12<6)?-1:1; segs[n].sprites.push({kind:'flora',off:side*(1.15+Math.random()*0.9)}); }
-    const hazards=[]; for(let n=60;n<segs.length-40;n+=Math.floor(20+Math.random()*16)){ if(Math.random()<CFG.haz*8){ hazards.push({seg:n,off:(Math.random()*1.6-0.8)}); } }
+    // mixed hazards + crazy distractions: oil slicks, striped speed bumps, and patrol cops
+    const HKINDS=['oil','oil','oil','bump','bump','cop'];
+    const hazards=[]; for(let n=60;n<segs.length-40;n+=Math.floor(20+Math.random()*16)){ if(Math.random()<CFG.haz*8){
+      const kind=HKINDS[Math.floor(Math.random()*HKINDS.length)];
+      hazards.push({seg:n,off:kind==='bump'?0:(Math.random()*1.4-0.7),kind:kind}); } }
     const items=[]; for(let n=70;n<segs.length-60;n+=Math.floor(CFG.boxEvery*(0.8+Math.random()*0.5))){ items.push({seg:n,off:(Math.random()*1.1-0.55),gone:false,k:Math.random()*6}); }
 
     /* ---- racers: the villains ---- */
     const maxV=segLen*46, accel=maxV/4.6, offDecel=-maxV/1.6, offLimit=maxV/3.2, centri=0.32;
     let pos=0, playerX=0, v=0, over=false, mode='howto', lap=1, hudT=1; // howto -> count -> race -> spell -> done
-    let boostT=0, boostMul=1, shieldT=0, spinFlashT=0, countT=0, finishedRivals=0, gpCombo=0;
-    const heroKart=heroAv();
+    let boostT=0, boostMul=1, shieldT=0, spinFlashT=0, countT=0, finishedRivals=0, gpCombo=0, bumpT=0;
+    const heroKart=HERO;
     const VILL=[
       {name:'The Smudge',col:'#8B8B96',glyph:'🦋',sprite:'smudge-swarm'},
       {name:'Glitch',    col:'#7B5CE0',glyph:'👾',sprite:'glitch-corrupt-glee'},
@@ -1087,7 +1125,9 @@
         // its bottom aligns to the ground line (tiny overlap so it doesn't hover).
         const dtex = o.tint ? tintTex(tex,o.tint) : tex;   // player's chosen racing colour
         try{ cx.drawImage(dtex, px-kw/2, baseY-kh*0.97, kw, kh); }catch(e){}
-        hd=0; riderY=baseY;   // driver is hidden behind the seat-back — no rider drawn
+        // the DRIVER sits in the cockpit — the player's chosen avatar (or a rival's face)
+        if(rider&&rider.av){ hd=kw*0.66; riderY=baseY-kh*0.58-hd*0.62; }   // chosen racer rides high in the seat
+        else { hd=kw*0.44; riderY=baseY-kh*0.62-hd*0.5; }                  // rival head peeks from the cockpit
       } else {
         // primitive fallback: wheels + gradient body (kept for when the sprite is absent)
         const ww=w*0.30, wh=h*0.54, wy=baseY-wh;
@@ -1115,7 +1155,7 @@
 
     function drawBG(){
       const hz=horizonY;
-      const sky=sgTex('gp-sky');
+      const sky=sgTex(SKY);
       if(sky){
         // Painted Ghibli countryside backdrop with gentle parallax; the pseudo-3D road
         // draws on top and the grass band below is dropped to low alpha so the painted
@@ -1123,7 +1163,7 @@
         const par=Math.sin(pos/2600)*18 - playerX*30;
         const iw=Wd*1.14, ih=iw*(sky.height/sky.width), iy=hz-ih*0.46;
         try{ cx.drawImage(sky, -(iw-Wd)/2 + par*0.35, iy, iw, ih); }catch(e){}
-        if(iy+ih<Ht){ cx.fillStyle='#8FCB6A'; cx.fillRect(0,iy+ih-1,Wd,Ht-(iy+ih)+1); }
+        if(iy+ih<Ht){ cx.fillStyle=hx(LIGHT.grass,1.14); cx.fillRect(0,iy+ih-1,Wd,Ht-(iy+ih)+1); }
         return;
       }
       const sway=Math.sin(pos/2600)*34 - playerX*26;
@@ -1150,6 +1190,7 @@
       const base=segs[Math.floor(posm/segLen)%segs.length]; const basePct=(posm%segLen)/segLen;
       let x=0, dx=-(base.curve*basePct), maxy=Ht;
       const camX=playerX*roadW*0.34;   // camera only half-follows: the kart visibly holds its own line, not glued to centre
+      let nearS=null;                  // nearest on-screen road point — the kart is placed here so what you SEE is what you HIT
       for(let n=0;n<drawDist;n++){ const seg=segs[(base.index+n)%segs.length];
         const looped=seg.index<base.index; const cz=posm-(looped?trackLen:0);
         project(seg.p1, camX - x,        camH, cz);
@@ -1158,8 +1199,9 @@
         seg._vis=false; seg._clip=maxy; seg._far=n;
         if(seg.p1.camera.z<=camDepth || seg.p2.screen.y>=seg.p1.screen.y || seg.p2.screen.y>=maxy) continue;
         seg._vis=true; maxy=seg.p2.screen.y;
+        if(!nearS) nearS=seg.p1.screen;   // first visible segment = closest to the kart
         const s1=seg.p1.screen, s2=seg.p2.screen, c=seg.color;
-        if(sgTex('gp-sky')){ cx.globalAlpha=0.30; poly(0,s1.y, 0,s2.y, Wd,s2.y, Wd,s1.y, c.grass); cx.globalAlpha=1; }
+        if(sgTex(SKY)){ cx.globalAlpha=0.30; poly(0,s1.y, 0,s2.y, Wd,s2.y, Wd,s1.y, c.grass); cx.globalAlpha=1; }
         else poly(0,s1.y, 0,s2.y, Wd,s2.y, Wd,s1.y, c.grass);
         const r1=s1.w*0.18, r2=s2.w*0.18;
         poly(s1.x-s1.w-r1,s1.y, s2.x-s2.w-r2,s2.y, s2.x-s2.w,s2.y, s1.x-s1.w,s1.y, c.rumble);
@@ -1173,7 +1215,7 @@
       const order=[];
       for(let n=drawDist-1;n>=0;n--){ const seg=segs[(base.index+n)%segs.length]; if(!seg._vis) continue; const sc=seg.p1.screen;
         seg.sprites.forEach(sp=>{ order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*(sp.off||0),sy:sc.y,t:sp.kind,w2:sc.w,clip:seg._clip,far:seg._far}); }); }
-      hazards.forEach(hh=>{ const seg=segs[hh.seg]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*hh.off,sy:sc.y,t:'oil',clip:seg._clip,far:seg._far}); } });
+      hazards.forEach(hh=>{ const seg=segs[hh.seg]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*hh.off,sy:sc.y,t:hh.kind||'oil',hw:sc.w,clip:seg._clip,far:seg._far}); } });
       items.forEach(it=>{ if(it.gone) return; const seg=segs[it.seg]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*it.off,sy:sc.y,t:'item',it:it,clip:seg._clip,far:seg._far}); } });
       rivals.forEach(r=>{ const seg=segs[Math.floor((r.z%trackLen)/segLen)%segs.length]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*r.x,sy:sc.y,t:'rival',r:r,clip:seg._clip,far:seg._far}); } });
       order.sort((a,b)=>a.y-b.y);
@@ -1195,6 +1237,18 @@
           else { cx.fillStyle='rgba(18,16,24,.78)'; cx.beginPath(); cx.ellipse(o.sx,o.sy-w*0.1,w*0.95,w*0.32,0,0,7); cx.fill();
             cx.fillStyle='rgba(150,110,210,.55)'; cx.beginPath(); cx.ellipse(o.sx-w*0.22,o.sy-w*0.16,w*0.34,w*0.11,0,0,7); cx.fill();
             cx.fillStyle='rgba(90,200,255,.35)'; cx.beginPath(); cx.ellipse(o.sx+w*0.25,o.sy-w*0.06,w*0.22,w*0.07,0,0,7); cx.fill(); } }
+        else if(o.t==='cop'){ const cop=sgTex('cop');
+          if(cop){ const cw=w*1.9, ch2=cw*(cop.height/cop.width); try{ cx.drawImage(cop,o.sx-cw/2,o.sy-ch2*0.9,cw,ch2); }catch(e){}
+            // flashing roof light-bar
+            const on=(Math.floor(pos/90)%2)===0; cx.globalAlpha*=0.9;
+            cx.fillStyle=on?'#FF3B4D':'#3B7BFF'; cx.beginPath(); cx.ellipse(o.sx,o.sy-ch2*0.86,w*0.2,w*0.09,0,0,7); cx.fill(); cx.globalAlpha=Math.max(0,Math.min(1,(95-(o.far||0))/25)); }
+          else { cx.fillStyle='#20222B'; rrp(o.sx-w*0.5,o.sy-w*0.8,w,w*0.8,w*0.16); cx.fill();
+            cx.fillStyle='#EDEDED'; cx.fillRect(o.sx-w*0.5,o.sy-w*0.5,w,w*0.22);
+            const on=(Math.floor(pos/90)%2)===0; cx.fillStyle=on?'#FF3B4D':'#3B7BFF'; cx.fillRect(o.sx-w*0.22,o.sy-w*0.92,w*0.44,w*0.12); } }
+        else if(o.t==='bump'){ const bmp=sgTex('speedbump'), bw=Math.max(o.hw?o.hw*1.9:w*3,w*3);
+          if(bmp){ const bh=bw*(bmp.height/bmp.width); try{ cx.drawImage(bmp,o.sx-bw/2,o.sy-bh*0.8,bw,bh); }catch(e){} }
+          else { for(let k=-4;k<=4;k++){ cx.fillStyle=(k%2)?'#1A1A1F':'#F2C64B'; cx.beginPath();
+              cx.moveTo(o.sx+k*bw*0.11,o.sy); cx.lineTo(o.sx+(k+1)*bw*0.11,o.sy); cx.lineTo(o.sx+(k+1)*bw*0.11,o.sy-w*0.22); cx.lineTo(o.sx+k*bw*0.11,o.sy-w*0.22); cx.closePath(); cx.fill(); } } }
         else if(o.t==='item'){ const s=Math.max(14,w*1.3), yy=o.sy-w*1.25-Math.sin(pos/180+o.it.k)*4;
           cx.save(); cx.translate(o.sx,yy); cx.rotate(Math.sin(pos/300+o.it.k)*0.12);
           const halo=cx.createRadialGradient(0,0,s*0.2,0,0,s*1.5);
@@ -1214,9 +1268,13 @@
         else { const r=o.r; drawKart(o.sx,o.sy,w*2.15,r.col,{sprite:r.sprite,glyph:r.glyph},{spin:r.spin>0,kart:'kart-red'}); }
         cx.globalAlpha=1; cx.restore();
       });
-      const pw=Wd*0.12, px=Wd/2 + playerX*Wd*0.26, py=Ht-14;   // smooth: screen position follows only the (continuous) lane position
-      cx.save(); cx.translate(px,py); cx.rotate(steer*0.02);
-      drawKart(0,0,pw,'#F0B429',{av:heroKart},{boost:boostT>0,kart:'kart',tint:opts.tint});
+      // place the kart on the ACTUAL projected road at lane playerX, so it lines up with the
+      // items and hazards it can hit — visual position === collision position (no more phantom catches).
+      const pw=Wd*0.115, py=Ht-14;
+      const px = nearS ? nearS.x + nearS.w*playerX : (Wd/2 + playerX*Wd*0.26);
+      const jolt = bumpT>0 ? Math.sin(bumpT*46)*pw*0.06 : 0;
+      cx.save(); cx.translate(px,py+jolt); cx.rotate(steer*0.02 + (nearS?0:0));
+      drawKart(0,0,pw,'#F0B429',{av:heroKart},{boost:boostT>0,kart:KART,tint:opts.tint});
       cx.restore();
       if(shieldT>0){ cx.strokeStyle='rgba(120,205,255,.85)'; cx.lineWidth=3; cx.beginPath(); cx.ellipse(px,py-pw*0.34,pw*0.62,pw*0.5,0,0,7); cx.stroke();
         cx.fillStyle='rgba(150,215,255,.14)'; cx.fill(); }
@@ -1230,6 +1288,8 @@
         const n=Math.ceil(countT*3/1.0); const txt=countT<0.33?'GO!':String(Math.ceil(countT*3));
         cx.strokeText(txt,Wd/2,Ht*0.42); cx.fillText(txt,Wd/2,Ht*0.42); cx.restore(); }
     }
+    /* the position marker wears the chosen racer's face, not a generic bee */
+    const meMark=(function(){ try{ const s=window.SB_AVATAR&&window.SB_AVATAR(HERO,20); return s?('<span class="sg-pb-av">'+s+'</span>'):'🐝'; }catch(e){ return '🐝'; } })();
     /* position bar: everyone's progress at a glance */
     function updateHud(){
       const ahead=rivals.filter(r=>r.z>pos).length; const place=ahead+1;
@@ -1240,7 +1300,7 @@
       let dots='<i class="sg-pb-road"></i><b class="sg-pb-flag">🏁</b>';
       rivals.forEach((r,i)=>{ const pct=Math.min(99,r.z/TOTAL*100);
         dots+='<span class="sg-pb-dot" style="left:'+pct.toFixed(1)+'%;top:'+(i%2?72:28)+'%;background:'+r.col+'" title="'+r.name+'">'+r.glyph+'</span>'; });
-      dots+='<span class="sg-pb-dot me" style="left:'+Math.min(99,pos/TOTAL*100).toFixed(1)+'%">🐝</span>';
+      dots+='<span class="sg-pb-dot me" style="left:'+Math.min(99,pos/TOTAL*100).toFixed(1)+'%">'+meMark+'</span>';
       pb.innerHTML=dots;
     }
 
@@ -1251,17 +1311,25 @@
       if(mode==='race') update(dt);
       draw(); requestAnimationFrame(frame); }
     function update(dt){
-      boostT=Math.max(0,boostT-dt); if(boostT===0) boostMul=1; shieldT=Math.max(0,shieldT-dt); spinFlashT=Math.max(0,spinFlashT-dt);
+      boostT=Math.max(0,boostT-dt); if(boostT===0) boostMul=1; shieldT=Math.max(0,shieldT-dt); spinFlashT=Math.max(0,spinFlashT-dt); bumpT=Math.max(0,bumpT-dt);
       const seg=segs[Math.min(segs.length-1,Math.floor(pos/segLen))]; const spdPct=v/maxV;
       v=Math.min(maxV*boostMul, v+accel*dt);
       const dxs=dt*2.2*Math.max(0.35,spdPct);
       playerX+=steer*dxs;   // smooth, continuous: the kart moves only as the player steers, and holds its line otherwise
-      if((playerX<-1||playerX>1) && v>offLimit){ v+=offDecel*dt; }
-      playerX=Math.max(-2,Math.min(2,playerX));
+      if((playerX<-0.94||playerX>0.94) && v>offLimit){ v+=offDecel*dt; }   // drag once a wheel leaves the tarmac
+      playerX=Math.max(-1.15,Math.min(1.15,playerX));
       const pm=pos%trackLen;
-      if(shieldT<=0){ hazards.forEach(h=>{ const hz2=h.seg*segLen; let d=Math.abs(pm-hz2); d=Math.min(d,trackLen-d); if(d<segLen*1.2 && Math.abs(playerX-h.off)<0.5 && v>maxV*0.3){ v*=0.55; spinFlashT=0.5; try{flash('🛢️ Slipped on oil!');}catch(_){}} }); }
+      // tol ≈ half a kart-width in lane units — so a hit needs a real overlap, matching what you see
+      const CATCH=0.34;
+      if(shieldT<=0){ hazards.forEach(h=>{ if(h.hit) return; const hz2=h.seg*segLen; let d=Math.abs(pm-hz2); d=Math.min(d,trackLen-d);
+        const near=(h.kind==='bump'? d<segLen*1.0 : d<segLen*0.9);
+        const wide=(h.kind==='bump'? 1.0 : CATCH);   // a bump spans the whole road
+        if(near && Math.abs(playerX-h.off)<wide && v>maxV*0.25){ h.hit=true; setTimeout(()=>{h.hit=false;},1400);
+          if(h.kind==='bump'){ v*=0.82; bumpT=0.5; try{if(typeof SGFX!=='undefined'&&SGFX.shake)SGFX.shake(6);}catch(_){}; try{flash('🟡 Speed bump!');}catch(_){} }
+          else if(h.kind==='cop'){ v*=0.5; spinFlashT=0.5; try{flash('🚓 Pulled over — the cops!');}catch(_){} }
+          else { v*=0.55; spinFlashT=0.5; try{flash('🛢️ Slipped on oil!');}catch(_){} } } }); }
       items.forEach(it=>{ if(it.gone) return; const iz=it.seg*segLen; const d=iz-pm;
-        if(d>-segLen*0.4&&d<segLen*1.4 && Math.abs(playerX-it.off)<0.5){ it.gone=true; spellGate(); } });
+        if(d>-segLen*0.5&&d<segLen*1.1 && Math.abs(playerX-it.off)<CATCH){ it.gone=true; spellGate(); } });
       pos+=v*dt;
       const nl=1+Math.floor(pos/trackLen);
       if(nl>lap&&nl<=CFG.laps){ lap=nl; items.forEach(it=>it.gone=false); try{flash('🏁 Lap '+lap+' of '+CFG.laps+'!');}catch(_){ } }
@@ -1283,7 +1351,7 @@
       '<div class="sg-howto-h">🏁 Bee Grand Prix</div>'+
       '<div class="sg-howto-sub">One epic race to the finish against the Unspelling’s crew — the Smudge, Glitch and Vex are on the grid!</div>'+
       '<ol class="sg-howto-steps">'+
-      '<li>You <b>drive automatically</b> — steer with <b>◀ ▶</b> (arrows / tap the sides) and dodge 🛢️ oil.</li>'+
+      '<li>You keep rolling — <b>steer</b> with <b>◀ ▶</b> (arrows / tap the sides) and dodge 🛢️ oil, 🟡 speed bumps and 🚓 cops.</li>'+
       '<li>Drive into a <b>? box</b> — the race pauses while you <b>spell the word</b>.</li>'+
       '<li>Spelling it right <b>unlocks a power-up</b> into your slot — tap the slot (or Space) to fire it when you need it!</li>'+
       '<li>Watch the <b>track bar up top</b> to see where every racer is. First to the flag wins ⭐⭐⭐.</li>'+

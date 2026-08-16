@@ -1933,7 +1933,8 @@ const app = {
     const eDiff = pick!=='auto' ? pick : (band<=3?'easy':band<=6?'medium':band<=8?'hard':'champ');
     c.gameDiff=eDiff; clearGTimer(); arcadeClose();
     const el=document.createElement('div'); el.className='arc-play'; _arcEl=el;
-    const avChip=(()=>{ try{ return '<span class="arc-play-av">'+(SB_AVATAR(c.avatar||'bizzy',26)||'')+'</span>'; }catch(e){ return ''; } })();
+    const heroAvId=extra.hero||((c.arcGame&&c.arcGame[k]&&c.arcGame[k].av))||c.avatar||'bizzy';
+    const avChip=(()=>{ try{ return '<span class="arc-play-av">'+(SB_AVATAR(heroAvId,26)||'')+'</span>'; }catch(e){ return ''; } })();
     el.innerHTML='<div class="arc-play-top">'
       +'<button class="arc-play-back" id="arc-back">← Arcade</button>'
       +'<span class="arc-play-name">'+esc(g.n)+'</span>'+avChip
@@ -1944,7 +1945,9 @@ const app = {
     const host=el.querySelector('#arc-host');
     const onUnlock=()=>{ try{ addCoins(15); }catch(e){} };
     const done=(res)=>{ _arcHandle=null; arcadeResult(g, res||{}); };
-    try{ _arcHandle=engs[k](host, {diff:eDiff, world:g.w, onUnlock, tint:extra.tint||(c.arcColour||null)}, done); }
+    const gopts=extra.opts||((c.arcGame&&c.arcGame[k]&&c.arcGame[k].opts))||{};
+    try{ _arcHandle=engs[k](host, {diff:eDiff, world:g.w, onUnlock, hero:heroAvId,
+        tint:extra.tint||(c.arcColour||null), kart:gopts.kart, scene:gopts.scene, layout:gopts.layout, style:gopts.style}, done); }
     catch(e){ try{ console.error(e); }catch(_){} flash('Could not start that game'); arcadeClose(); }
     // launched from the start menu → skip the engine's own how-to gate (the menu explained it)
     if(extra.fromMenu){ setTimeout(()=>{ try{ const go=host.querySelector('#sg-howgo'); if(go) go.click(); }catch(_){}} , 90); }
@@ -8326,25 +8329,58 @@ const ARC_COLOURS = [
   {n:'Grape',v:'#8B63D6'},{n:'Mint',v:'#2FB98A'},{n:'Sunset',v:'#F0803C'},{n:'Bubblegum',v:'#EC6BB0'},
 ];
 const ARC_DIFFS = [['auto','My level'],['easy','Easy'],['medium','Medium'],['hard','Hard'],['champ','Champ']];
+/* Per-game extra customization for the start menu. Each group has a kind:
+   'kart'/'scene' render an image thumbnail (app-art/gart/<img>.webp); 'chip' is a
+   plain labelled button. The chosen values ride into the engine via opts. */
+const ARC_KARTS = [
+  {v:'kart',n:'Classic',img:'kart'},{v:'kart-red',n:'Racer',img:'kart-red'},
+  {v:'kart-rocket',n:'Rocket',img:'kart-rocket'},{v:'kart-buggy',n:'Buggy',img:'kart-buggy'},
+  {v:'kart-cruiser',n:'Cruiser',img:'kart-cruiser'},
+];
+const ARC_SCENES = [
+  {v:'meadow',n:'Sunny Meadow',img:'gp-sky'},{v:'sunset',n:'Sunset Canyon',img:'gp-sunset'},
+  {v:'city',n:'Neon City',img:'gp-city'},
+];
+const ARC_HCLAYOUT = [{v:'classic',n:'Classic'},{v:'spiral',n:'Spiral'},{v:'chambers',n:'Chambers'}];
+const ARC_HCSTYLE  = [{v:'hive',n:'Golden Hive'},{v:'meadow',n:'Meadow'},{v:'cavern',n:'Crystal Cavern'}];
+const ARC_CFG = {
+  beeGrandPrix:{ colour:true, groups:[
+    {key:'kart', label:'Your kart', kind:'kart',  opts:ARC_KARTS},
+    {key:'scene',label:'Track',     kind:'scene', opts:ARC_SCENES} ]},
+  honeycombRun:{ colour:false, groups:[
+    {key:'layout',label:'Maze layout',kind:'chip', opts:ARC_HCLAYOUT},
+    {key:'style', label:'World style', kind:'chip', opts:ARC_HCSTYLE} ]},
+  wordSnake:{ colour:true, groups:[] },
+};
+function arcGart(img){ return 'app-art/gart/'+img+'.webp'+(window.SB_ASSET_V?('?v='+window.SB_ASSET_V):''); }
 function arcadeMenu(k){
   const g=(window.SB_ARCADE_GAMES||[]).find(x=>x.k===k); if(!g) return;
   const c=active(); ensureLists(c); arcadeClose();
+  const cfg=ARC_CFG[k]||{colour:false,groups:[]};
   const AVL=(window.SB_AVATARS&&SB_AVATARS.list)||[];
-  const owned=AVL.filter(a=>{ try{ return avOwned(c,a.id); }catch(e){ return true; } });
-  const avList=(owned.length?owned:AVL).slice(0,12);
-  let selAv=(c.avatar&&avList.some(a=>a.id===c.avatar))?c.avatar:((avList[0]&&avList[0].id)||'bizzy');
-  let selCol=c.arcColour||ARC_COLOURS[0].v;
-  let selDiff=gameDiffFor(c,k);
+  // a big cast is pickable as your hero — owned ones first, then the rest, capped so the row stays snappy
+  const owned=AVL.filter(a=>{ try{ return avOwned(c,a.id); }catch(e){ return false; } });
+  const rest=AVL.filter(a=>owned.indexOf(a)<0);
+  const avList=(owned.concat(rest)).slice(0,30);
+  if(!avList.length) avList.push({id:'bizzy',name:'Bizzy'});
+  const saved=(c.arcGame&&c.arcGame[k])||{};
+  let selAv=(saved.av&&avList.some(a=>a.id===saved.av))?saved.av
+           :(c.avatar&&avList.some(a=>a.id===c.avatar))?c.avatar:((avList[0]&&avList[0].id)||'bizzy');
+  let selCol=saved.col||c.arcColour||ARC_COLOURS[0].v;
+  let selDiff=saved.diff||gameDiffFor(c,k);
+  const selOpt={}; (cfg.groups||[]).forEach(gr=>{ selOpt[gr.key]=(saved.opts&&saved.opts[gr.key])||(gr.opts[0]&&gr.opts[0].v); });
   const avSVG=(id,sz)=>{ try{ return (window.SB_AVATAR&&SB_AVATAR(id,sz))||''; }catch(e){ return ''; } };
   const el=document.createElement('div'); el.className='arc-menu'; _arcEl=el;
+  const groupHTML=(cfg.groups||[]).map(gr=>`<div class="arcm-sec"><div class="arcm-lbl">${esc(gr.label)}</div><div class="arcm-opts arcm-opts-${gr.kind}" id="arcm-gr-${gr.key}"></div></div>`).join('');
   el.innerHTML=`<div class="arcm-card">
     <button class="arcm-x" aria-label="Back to arcade">✕</button>
     <span class="arcm-tag">${esc(g.tag)}</span>
     <h2 class="arcm-title">${esc(g.n)}</h2>
     <p class="arcm-how">${esc(ARCADE_HOWTO[k]||g.blurb||'')}</p>
     <div class="arcm-preview"><span class="arcm-av" id="arcm-prev"></span></div>
-    <div class="arcm-sec"><div class="arcm-lbl">Your racer</div><div class="arcm-avrow" id="arcm-avs"></div></div>
-    <div class="arcm-sec"><div class="arcm-lbl">Your colour</div><div class="arcm-cols" id="arcm-cols"></div></div>
+    <div class="arcm-sec"><div class="arcm-lbl">Your hero</div><div class="arcm-avrow" id="arcm-avs"></div></div>
+    ${cfg.colour?`<div class="arcm-sec"><div class="arcm-lbl">Your colour</div><div class="arcm-cols" id="arcm-cols"></div></div>`:''}
+    ${groupHTML}
     <div class="arcm-sec"><div class="arcm-lbl">Difficulty</div><div class="arcm-diff" id="arcm-diff"></div></div>
     <button class="arcm-go" id="arcm-go">${iconSVG('joystick',18)} Start</button>
   </div>`;
@@ -8355,10 +8391,19 @@ function arcadeMenu(k){
   avs.innerHTML=avList.map(a=>`<button class="arcm-av-b${a.id===selAv?' on':''}" data-av="${escA(a.id)}" title="${escA(a.name||a.id)}">${avSVG(a.id,44)}</button>`).join('');
   avs.onclick=e=>{ const b=e.target.closest('[data-av]'); if(!b)return; selAv=b.dataset.av;
     avs.querySelectorAll('.arcm-av-b').forEach(x=>x.classList.toggle('on',x.dataset.av===selAv)); drawPrev(); };
-  const cols=el.querySelector('#arcm-cols');
-  cols.innerHTML=ARC_COLOURS.map(cc=>`<button class="arcm-col${cc.v===selCol?' on':''}" data-col="${cc.v}" style="background:${cc.v}" title="${cc.n}" aria-label="${cc.n}"></button>`).join('');
-  cols.onclick=e=>{ const b=e.target.closest('[data-col]'); if(!b)return; selCol=b.dataset.col;
-    cols.querySelectorAll('.arcm-col').forEach(x=>x.classList.toggle('on',x.dataset.col===selCol)); drawPrev(); };
+  if(cfg.colour){ const cols=el.querySelector('#arcm-cols');
+    cols.innerHTML=ARC_COLOURS.map(cc=>`<button class="arcm-col${cc.v===selCol?' on':''}" data-col="${cc.v}" style="background:${cc.v}" title="${cc.n}" aria-label="${cc.n}"></button>`).join('');
+    cols.onclick=e=>{ const b=e.target.closest('[data-col]'); if(!b)return; selCol=b.dataset.col;
+      cols.querySelectorAll('.arcm-col').forEach(x=>x.classList.toggle('on',x.dataset.col===selCol)); drawPrev(); }; }
+  (cfg.groups||[]).forEach(gr=>{ const box=el.querySelector('#arcm-gr-'+gr.key); if(!box) return;
+    box.innerHTML=gr.opts.map(o=>{
+      const on=o.v===selOpt[gr.key]?' on':'';
+      if(gr.kind==='kart'||gr.kind==='scene'){
+        return `<button class="arcm-opt arcm-opt-img${on}" data-v="${escA(o.v)}" title="${escA(o.n)}"><img src="${arcGart(o.img)}" alt="${escA(o.n)}" loading="lazy"><span>${esc(o.n)}</span></button>`; }
+      return `<button class="arcm-opt arcm-opt-chip${on}" data-v="${escA(o.v)}">${esc(o.n)}</button>`;
+    }).join('');
+    box.onclick=e=>{ const b=e.target.closest('[data-v]'); if(!b) return; selOpt[gr.key]=b.dataset.v;
+      box.querySelectorAll('.arcm-opt').forEach(x=>x.classList.toggle('on',x.dataset.v===selOpt[gr.key])); }; });
   const dd=el.querySelector('#arcm-diff');
   dd.innerHTML=ARC_DIFFS.map(([kk,l])=>`<button class="arcm-d${kk===selDiff?' on':''}" data-d="${kk}">${l}</button>`).join('');
   dd.onclick=e=>{ const b=e.target.closest('[data-d]'); if(!b)return; selDiff=b.dataset.d;
@@ -8366,10 +8411,12 @@ function arcadeMenu(k){
   drawPrev();
   el.querySelector('.arcm-x').onclick=arcadeClose;
   el.querySelector('#arcm-go').onclick=()=>{
-    c.avatar=selAv; c.arcColour=selCol; c.gameDiffBy=c.gameDiffBy||{}; c.gameDiffBy[k]=selDiff; c.gameDiff=selDiff;
+    // remember the per-game choices, but DON'T overwrite the child's app-wide avatar
+    c.arcGame=c.arcGame||{}; c.arcGame[k]={av:selAv,col:selCol,diff:selDiff,opts:{...selOpt}};
+    c.arcColour=selCol; c.gameDiffBy=c.gameDiffBy||{}; c.gameDiffBy[k]=selDiff; c.gameDiff=selDiff;
     try{ save(); }catch(e){}
     arcadeClose();
-    app.arcadePlay(k,{tint:selCol,fromMenu:true});
+    app.arcadePlay(k,{hero:selAv,tint:selCol,opts:{...selOpt},fromMenu:true});
   };
 }
 /* Per-game personal best, persisted on the device — gives the competitive speller a
