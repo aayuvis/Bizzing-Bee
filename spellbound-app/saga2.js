@@ -1166,7 +1166,7 @@
         if(o.t==='flora'){
           cx.fillStyle='rgba(0,0,0,.18)'; cx.beginPath(); cx.ellipse(o.sx,o.sy,w*0.5,w*0.14,0,0,7); cx.fill();
           const tr=sgTex('tree');
-          if(tr){ const tw=w*1.5, th=tw*(tr.height/tr.width); try{ cx.drawImage(tr,o.sx-tw/2,o.sy-th,tw,th); }catch(e){} }
+          if(tr){ const tw=w*1.75, th=tw*(tr.height/tr.width); try{ cx.drawImage(tr,o.sx-tw/2,o.sy-th,tw,th); }catch(e){} }
           else {
             cx.fillStyle='#6b4a2a'; cx.fillRect(o.sx-w*0.09,o.sy-w*0.7,w*0.18,w*0.7);
             const tg=cx.createRadialGradient(o.sx-w*0.2,o.sy-w*1.5,2,o.sx,o.sy-w*1.3,w*0.95);
@@ -1193,10 +1193,10 @@
             cx.fillStyle='#fff'; cx.font='800 '+Math.round(s*0.78)+'px Fraunces,serif'; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText('?',0,s*0.04);
             cx.textAlign='left'; cx.textBaseline='alphabetic'; }
           cx.restore(); }
-        else { const r=o.r; drawKart(o.sx,o.sy,w*1.9,r.col,{sprite:r.sprite,glyph:r.glyph},{spin:r.spin>0,kart:'kart-red'}); }
+        else { const r=o.r; drawKart(o.sx,o.sy,w*2.15,r.col,{sprite:r.sprite,glyph:r.glyph},{spin:r.spin>0,kart:'kart-red'}); }
         cx.globalAlpha=1; cx.restore();
       });
-      const pw=Wd*0.20, px=Wd/2 + playerX*Wd*0.03 + steer*8, py=Ht-14;
+      const pw=Wd*0.15, px=Wd/2 + playerX*Wd*0.03 + steer*8, py=Ht-14;
       cx.save(); cx.translate(px,py); cx.rotate(steer*0.02);
       drawKart(0,0,pw,'#F0B429',{av:heroKart},{boost:boostT>0,kart:'kart'});
       cx.restore();
