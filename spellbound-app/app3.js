@@ -8344,13 +8344,12 @@ const ARC_SCENES = [
 const ARC_HCLAYOUT = [{v:'classic',n:'Classic'},{v:'spiral',n:'Spiral'},{v:'chambers',n:'Chambers'}];
 const ARC_HCSTYLE  = [{v:'hive',n:'Golden Hive'},{v:'meadow',n:'Meadow'},{v:'cavern',n:'Crystal Cavern'}];
 const ARC_CFG = {
-  beeGrandPrix:{ colour:true, groups:[
+  beeGrandPrix:{ groups:[
     {key:'kart', label:'Your kart', kind:'kart',  opts:ARC_KARTS},
     {key:'scene',label:'Track',     kind:'scene', opts:ARC_SCENES} ]},
-  honeycombRun:{ colour:false, groups:[
+  honeycombRun:{ groups:[
     {key:'layout',label:'Maze layout',kind:'chip', opts:ARC_HCLAYOUT},
     {key:'style', label:'World style', kind:'chip', opts:ARC_HCSTYLE} ]},
-  wordSnake:{ colour:true, groups:[] },
 };
 function arcGart(img){ return 'app-art/gart/'+img+'.webp'+(window.SB_ASSET_V?('?v='+window.SB_ASSET_V):''); }
 function arcadeMenu(k){
@@ -8386,7 +8385,7 @@ function arcadeMenu(k){
   </div>`;
   document.body.appendChild(el);
   const prev=el.querySelector('#arcm-prev');
-  const drawPrev=()=>{ prev.innerHTML=avSVG(selAv,120); prev.style.boxShadow='0 0 0 4px '+selCol+'88, 0 10px 30px rgba(0,0,0,.4)'; };
+  const drawPrev=()=>{ prev.innerHTML=avSVG(selAv,120); prev.style.boxShadow='0 0 0 4px rgba(255,216,115,.55), 0 10px 30px rgba(0,0,0,.4)'; };
   const avs=el.querySelector('#arcm-avs');
   avs.innerHTML=avList.map(a=>`<button class="arcm-av-b${a.id===selAv?' on':''}" data-av="${escA(a.id)}" title="${escA(a.name||a.id)}">${avSVG(a.id,44)}</button>`).join('');
   avs.onclick=e=>{ const b=e.target.closest('[data-av]'); if(!b)return; selAv=b.dataset.av;
@@ -8412,11 +8411,12 @@ function arcadeMenu(k){
   el.querySelector('.arcm-x').onclick=arcadeClose;
   el.querySelector('#arcm-go').onclick=()=>{
     // remember the per-game choices, but DON'T overwrite the child's app-wide avatar
-    c.arcGame=c.arcGame||{}; c.arcGame[k]={av:selAv,col:selCol,diff:selDiff,opts:{...selOpt}};
-    c.arcColour=selCol; c.gameDiffBy=c.gameDiffBy||{}; c.gameDiffBy[k]=selDiff; c.gameDiff=selDiff;
+    c.arcGame=c.arcGame||{}; c.arcGame[k]={av:selAv,diff:selDiff,opts:{...selOpt}};
+    c.gameDiffBy=c.gameDiffBy||{}; c.gameDiffBy[k]=selDiff; c.gameDiff=selDiff;
     try{ save(); }catch(e){}
     arcadeClose();
-    app.arcadePlay(k,{hero:selAv,tint:selCol,opts:{...selOpt},fromMenu:true});
+    // no colour tint — each kart carries its own colour
+    app.arcadePlay(k,{hero:selAv,opts:{...selOpt},fromMenu:true});
   };
 }
 /* Per-game personal best, persisted on the device — gives the competitive speller a
@@ -8668,8 +8668,10 @@ function gamesHub(){ const S=state; const c=active();
   /* Tile banner is a REAL screenshot of the game (app-art/shots/game-<k>.jpg), not the
      generic painted world plate — so the picture on the Bee Grand Prix tile is the race,
      not a hive. Same images the landing uses; regenerate both with qa/shots.cjs. */
-  const arcadeGames=SB_ARCADE_GAMES.map(g=>gtile({act:'arcadeMenu',arg:g.k,
-    grad:"linear-gradient(180deg,rgba(20,14,42,.06),rgba(20,14,42,.34)),url('app-art/shots/game-"+g.k+".jpg') center/cover",
+  // Difficulty is chosen in each game's START MENU now (arcadeMenu), so the tile is just a
+  // single Play button + its screenshot — no difficulty strip. Lighter scrim so the shot reads.
+  const arcadeGames=SB_ARCADE_GAMES.map(g=>tile({act:'arcadeMenu',arg:g.k,
+    grad:"linear-gradient(180deg,rgba(20,14,42,0),rgba(20,14,42,.14)),url('app-art/shots/game-"+g.k+".jpg') center/cover",
     art:'',badge:g.tag,title:g.n,blurb:g.blurb,cta:'var(--accent)',stat:''})).join('');
   // ---- QUICK GAMES: the timed/quiz engines that aren't part of the 14 ----
   const quick=GAMES.map(gm=>gtile({act:'playGame',arg:gm.type,grad:gameCoverBG(gm),art:gameArtSVG(gm.type,48),badge:gm.tag,title:gm.name,blurb:gm.blurb,cta:gm.c,stat:''})).join('');
