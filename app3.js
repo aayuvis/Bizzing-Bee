@@ -1947,8 +1947,8 @@ const app = {
     const done=(res)=>{ _arcHandle=null; arcadeResult(g, res||{}); };
     const gopts=extra.opts||((c.arcGame&&c.arcGame[k]&&c.arcGame[k].opts))||{};
     // no tint: karts/heroes carry their own colours (a leftover saved arcColour used to
-    // wash the kart sprite oddly)
-    try{ _arcHandle=engs[k](host, {diff:eDiff, world:g.w, onUnlock, hero:heroAvId,
+    // wash the kart sprite oddly). A menu-chosen world overrides the tile's default.
+    try{ _arcHandle=engs[k](host, {diff:eDiff, world:gopts.world||g.w, onUnlock, hero:heroAvId,
         kart:gopts.kart, scene:gopts.scene, layout:gopts.layout, style:gopts.style}, done); }
     catch(e){ try{ console.error(e); }catch(_){} flash('Could not start that game'); arcadeClose(); }
     // launched from the start menu → skip the engine's own how-to gate (the menu explained it)
@@ -8322,7 +8322,7 @@ const ARCADE_HOWTO = {
   typeBlaster:    'Type each word before the glitch monster reaches the bottom. Fast and perfect builds your combo — zap every glitch.',
   keepFlying:     'Tap or hold to fly. Bank every honey pot by spelling it, dodge the pillars, then soar through the Hive Gates home.',
   wordSnake:      'Steer the snake to eat the letters in spelling order. Every word makes it grow — spell without crashing into yourself.',
-  unscrambleStars:'Tap the scrambled star-letters into the right order. Solve fast for ⚡ bonus stars and light up the constellation.',
+  unscrambleStars:'Tap or TYPE the scrambled star-letters into the right order. Solve fast for ⚡ bonus stars and light up the constellation.',
   spotlightSimon: 'Watch the spotlight sequence, tap it back in order, then spell the word from memory. Keep the marquee blazing.',
   spellScene:     'Read the clue, spell the word, and sweep colour back into the scene — drive the moth off and restore the whole world.',
 };
@@ -8345,6 +8345,10 @@ const ARC_SCENES = [
 ];
 const ARC_HCLAYOUT = [{v:'classic',n:'Classic'},{v:'spiral',n:'Spiral'},{v:'chambers',n:'Chambers'}];
 const ARC_HCSTYLE  = [{v:'hive',n:'Golden Hive'},{v:'meadow',n:'Meadow'},{v:'cavern',n:'Crystal Cavern'}];
+// Word Snake: YOU ARE THE SNAKE — the hero row offers the Serpent pack (each id maps to a
+// SERP_PAL skin in the engine), and the world choice sets the painted backdrop.
+const ARC_SNAKES=['noodle','sunny','cobra','python','rattler','viper','boa','mamba','seasnake','naga','titanoboa','vasuki'];
+const ARC_SWORLDS=[{v:'forest',n:'Deep Forest',img:'forest'},{v:'pond',n:'Lily Pond',img:'pond'},{v:'cosmos',n:'Cosmos',img:'cosmos'}];
 const ARC_CFG = {
   beeGrandPrix:{ groups:[
     {key:'kart', label:'Your kart', kind:'kart',  opts:ARC_KARTS},
@@ -8352,22 +8356,32 @@ const ARC_CFG = {
   honeycombRun:{ groups:[
     {key:'layout',label:'Maze layout',kind:'chip', opts:ARC_HCLAYOUT},
     {key:'style', label:'World style', kind:'chip', opts:ARC_HCSTYLE} ]},
+  wordSnake:{ heroLabel:'Your snake', heroList:ARC_SNAKES, groups:[
+    {key:'world',label:'World',kind:'world', opts:ARC_SWORLDS} ]},
+  // puzzles of taps/typing/memory — an avatar adds nothing here
+  unscrambleStars:{ noHero:true, groups:[] },
+  spotlightSimon:{ noHero:true, groups:[] },
 };
 function arcGart(img){ return 'app-art/gart/'+img+'.webp'+(window.SB_ASSET_V?('?v='+window.SB_ASSET_V):''); }
 function arcadeMenu(k){
   const g=(window.SB_ARCADE_GAMES||[]).find(x=>x.k===k); if(!g) return;
   const c=active(); ensureLists(c); arcadeClose();
-  const cfg=ARC_CFG[k]||{colour:false,groups:[]};
+  const cfg=ARC_CFG[k]||{groups:[]};
   const AVL=(window.SB_AVATARS&&SB_AVATARS.list)||[];
-  // a big cast is pickable as your hero — owned ones first, then the rest, capped so the row stays snappy
-  const owned=AVL.filter(a=>{ try{ return avOwned(c,a.id); }catch(e){ return false; } });
-  const rest=AVL.filter(a=>owned.indexOf(a)<0);
-  const avList=(owned.concat(rest)).slice(0,30);
+  let avList;
+  if(cfg.heroList){
+    // a curated cast for this game (e.g. Word Snake offers the Serpent pack)
+    avList=cfg.heroList.map(id=>AVL.find(a=>a.id===id)||{id,name:id}).filter(Boolean);
+  } else {
+    // the whole roster — owned ones first, capped so the row stays snappy
+    const owned=AVL.filter(a=>{ try{ return avOwned(c,a.id); }catch(e){ return false; } });
+    const rest=AVL.filter(a=>owned.indexOf(a)<0);
+    avList=(owned.concat(rest)).slice(0,30);
+  }
   if(!avList.length) avList.push({id:'bizzy',name:'Bizzy'});
   const saved=(c.arcGame&&c.arcGame[k])||{};
   let selAv=(saved.av&&avList.some(a=>a.id===saved.av))?saved.av
            :(c.avatar&&avList.some(a=>a.id===c.avatar))?c.avatar:((avList[0]&&avList[0].id)||'bizzy');
-  let selCol=saved.col||c.arcColour||ARC_COLOURS[0].v;
   let selDiff=saved.diff||gameDiffFor(c,k);
   const selOpt={}; (cfg.groups||[]).forEach(gr=>{ selOpt[gr.key]=(saved.opts&&saved.opts[gr.key])||(gr.opts[0]&&gr.opts[0].v); });
   const avSVG=(id,sz)=>{ try{ return (window.SB_AVATAR&&SB_AVATAR(id,sz))||''; }catch(e){ return ''; } };
@@ -8378,29 +8392,27 @@ function arcadeMenu(k){
     <span class="arcm-tag">${esc(g.tag)}</span>
     <h2 class="arcm-title">${esc(g.n)}</h2>
     <p class="arcm-how">${esc(ARCADE_HOWTO[k]||g.blurb||'')}</p>
-    <div class="arcm-preview"><span class="arcm-av" id="arcm-prev"></span></div>
-    <div class="arcm-sec"><div class="arcm-lbl">Your hero</div><div class="arcm-avrow" id="arcm-avs"></div></div>
-    ${cfg.colour?`<div class="arcm-sec"><div class="arcm-lbl">Your colour</div><div class="arcm-cols" id="arcm-cols"></div></div>`:''}
+    ${cfg.noHero?'':`<div class="arcm-preview"><span class="arcm-av" id="arcm-prev"></span></div>
+    <div class="arcm-sec"><div class="arcm-lbl">${esc(cfg.heroLabel||'Your hero')}</div><div class="arcm-avrow" id="arcm-avs"></div></div>`}
     ${groupHTML}
     <div class="arcm-sec"><div class="arcm-lbl">Difficulty</div><div class="arcm-diff" id="arcm-diff"></div></div>
     <button class="arcm-go" id="arcm-go">${iconSVG('joystick',18)} Start</button>
   </div>`;
   document.body.appendChild(el);
   const prev=el.querySelector('#arcm-prev');
-  const drawPrev=()=>{ prev.innerHTML=avSVG(selAv,120); prev.style.boxShadow='0 0 0 4px rgba(255,216,115,.55), 0 10px 30px rgba(0,0,0,.4)'; };
+  const drawPrev=()=>{ if(!prev) return; prev.innerHTML=avSVG(selAv,120); prev.style.boxShadow='0 0 0 4px rgba(255,216,115,.55), 0 10px 30px rgba(0,0,0,.4)'; };
   const avs=el.querySelector('#arcm-avs');
-  avs.innerHTML=avList.map(a=>`<button class="arcm-av-b${a.id===selAv?' on':''}" data-av="${escA(a.id)}" title="${escA(a.name||a.id)}">${avSVG(a.id,44)}</button>`).join('');
-  avs.onclick=e=>{ const b=e.target.closest('[data-av]'); if(!b)return; selAv=b.dataset.av;
-    avs.querySelectorAll('.arcm-av-b').forEach(x=>x.classList.toggle('on',x.dataset.av===selAv)); drawPrev(); };
-  if(cfg.colour){ const cols=el.querySelector('#arcm-cols');
-    cols.innerHTML=ARC_COLOURS.map(cc=>`<button class="arcm-col${cc.v===selCol?' on':''}" data-col="${cc.v}" style="background:${cc.v}" title="${cc.n}" aria-label="${cc.n}"></button>`).join('');
-    cols.onclick=e=>{ const b=e.target.closest('[data-col]'); if(!b)return; selCol=b.dataset.col;
-      cols.querySelectorAll('.arcm-col').forEach(x=>x.classList.toggle('on',x.dataset.col===selCol)); drawPrev(); }; }
+  if(avs){
+    avs.innerHTML=avList.map(a=>`<button class="arcm-av-b${a.id===selAv?' on':''}" data-av="${escA(a.id)}" title="${escA(a.name||a.id)}">${avSVG(a.id,44)}</button>`).join('');
+    avs.onclick=e=>{ const b=e.target.closest('[data-av]'); if(!b)return; selAv=b.dataset.av;
+      avs.querySelectorAll('.arcm-av-b').forEach(x=>x.classList.toggle('on',x.dataset.av===selAv)); drawPrev(); };
+  }
   (cfg.groups||[]).forEach(gr=>{ const box=el.querySelector('#arcm-gr-'+gr.key); if(!box) return;
     box.innerHTML=gr.opts.map(o=>{
       const on=o.v===selOpt[gr.key]?' on':'';
-      if(gr.kind==='kart'||gr.kind==='scene'){
-        return `<button class="arcm-opt arcm-opt-img${on}" data-v="${escA(o.v)}" title="${escA(o.n)}"><img src="${arcGart(o.img)}" alt="${escA(o.n)}" loading="lazy"><span>${esc(o.n)}</span></button>`; }
+      if(gr.kind==='kart'||gr.kind==='scene'||gr.kind==='world'){
+        const src=gr.kind==='world'?('app-art/sgw-'+o.img+'.jpg'+(window.SB_ASSET_V?('?v='+window.SB_ASSET_V):'')):arcGart(o.img);
+        return `<button class="arcm-opt arcm-opt-img${on}" data-v="${escA(o.v)}" title="${escA(o.n)}"><img src="${src}" alt="${escA(o.n)}" loading="lazy"><span>${esc(o.n)}</span></button>`; }
       return `<button class="arcm-opt arcm-opt-chip${on}" data-v="${escA(o.v)}">${esc(o.n)}</button>`;
     }).join('');
     box.onclick=e=>{ const b=e.target.closest('[data-v]'); if(!b) return; selOpt[gr.key]=b.dataset.v;

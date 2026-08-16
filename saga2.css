@@ -92,7 +92,8 @@
 .sg-stage-bg{position:absolute;inset:0;z-index:0}
 .sg-stage-bg .sg-plate{width:100%;height:100%;object-fit:cover;opacity:.9}
 .sg-stage>*:not(.sg-stage-bg){position:relative;z-index:1}
-.sg-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+/* capped tile size + centred grid — 8 tiles must fit ONE screen, not 300px monsters */
+.sg-tiles{display:grid;grid-template-columns:repeat(4,minmax(64px,108px));gap:10px;justify-content:center}
 .sg-stile{aspect-ratio:1;font:800 24px 'Sono',monospace;background:#2A2244;color:#8F86B8;border:2px solid #3A3160;border-radius:12px;cursor:pointer}
 .sg-stile.lit{background:#F0B429;color:#2B2117;border-color:#FFE28A;box-shadow:0 0 18px #F0B42999}
 .sg-simonprompt{text-align:center;font:600 15px 'Hanken',sans-serif;padding:10px;color:var(--muted,#7A6E5C)}
@@ -180,6 +181,10 @@
 .ss-meter{flex:1;height:13px;border-radius:99px;background:rgba(20,15,38,.35);overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.3)}
 .ss-meter-fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#F0B429,#FFD86E);transition:width .6s cubic-bezier(.2,.9,.3,1.1);box-shadow:0 0 10px #F0B42999}
 .ss-mlbl{font:700 12px 'Sono',monospace;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+.ss-lives{font-size:14px;letter-spacing:2px;color:#FF6B8B;text-shadow:0 1px 4px rgba(0,0,0,.6);margin-left:8px}
+.ss-skip{margin-left:auto;padding:8px 13px;border-radius:99px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.10);
+  color:#fff;font-weight:800;font-size:12.5px;cursor:pointer;white-space:nowrap}
+.ss-skip:active{transform:scale(.95)}
 .ss-panel{position:relative;z-index:2;background:rgba(255,255,255,.97);border-radius:20px 20px 0 0;padding:12px 14px 14px;box-shadow:0 -6px 20px rgba(20,15,38,.25)}
 .ss-prompt{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 /* .ss-say styling is unified with the card speaker above (accent circle, white icon) */
