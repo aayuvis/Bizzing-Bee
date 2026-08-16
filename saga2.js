@@ -120,6 +120,21 @@
     img.onload=()=>{ _texCache[name]=img; }; img.onerror=()=>{ _texCache[name]=false; };
     img.src='app-art/gart/'+name+'.webp'; return null; }
   function sgTexPreload(names){ (names||[]).forEach(sgTex); }
+  /* Tint a loaded sprite to the player's chosen colour (source-atop wash), cached by
+     colour so it's built once. Used for the customised kart etc. */
+  const _tintCache={};
+  function tintTex(tex,col){ if(!tex||!col) return tex; const key=(tex.src||tex.width+'x'+tex.height)+'|'+col;
+    if(_tintCache[key]) return _tintCache[key];
+    try{ const cv=document.createElement('canvas'); cv.width=tex.width; cv.height=tex.height; const c2=cv.getContext('2d');
+      c2.drawImage(tex,0,0); c2.globalCompositeOperation='source-atop'; c2.globalAlpha=0.4; c2.fillStyle=col;
+      c2.fillRect(0,0,cv.width,cv.height); c2.globalAlpha=1; c2.globalCompositeOperation='source-over';
+      _tintCache[key]=cv; return cv; }catch(e){ return tex; } }
+  /* Build a 4-tone snake/skin palette [base, light, pale, dark] from one colour. */
+  function tintPalette(col){ try{ const n=parseInt(col.slice(1),16); let r=(n>>16)&255,g=(n>>8)&255,b=n&255;
+    const mix=(v,t,to)=>Math.round(v+(to-v)*t);
+    const lt=t=>'#'+[mix(r,t,255),mix(g,t,255),mix(b,t,255)].map(x=>x.toString(16).padStart(2,'0')).join('');
+    const dk=t=>'#'+[mix(r,t,0),mix(g,t,0),mix(b,t,0)].map(x=>x.toString(16).padStart(2,'0')).join('');
+    return [col, lt(0.28), lt(0.6), dk(0.42)]; }catch(e){ return null; } }
 
   /* Rasterise a collectible AVATAR (window.SB_AVATAR) into a canvas-drawable <img>
      (cached by id). This is how the games show the REAL characters — Bizzy, the
@@ -1068,7 +1083,8 @@
         const kw=w*0.92, kh=kw*(tex.height/tex.width);
         // tail-on rear-view sprite: wheels + exhaust sit at the sprite's bottom edge, so
         // its bottom aligns to the ground line (tiny overlap so it doesn't hover).
-        try{ cx.drawImage(tex, px-kw/2, baseY-kh*0.97, kw, kh); }catch(e){}
+        const dtex = o.tint ? tintTex(tex,o.tint) : tex;   // player's chosen racing colour
+        try{ cx.drawImage(dtex, px-kw/2, baseY-kh*0.97, kw, kh); }catch(e){}
         hd=0; riderY=baseY;   // driver is hidden behind the seat-back — no rider drawn
       } else {
         // primitive fallback: wheels + gradient body (kept for when the sprite is absent)
@@ -1198,7 +1214,7 @@
       });
       const pw=Wd*0.12, px=Wd/2 + playerX*Wd*0.26 + steer*4, py=Ht-14;   // kart tracks its own lane position on screen
       cx.save(); cx.translate(px,py); cx.rotate(steer*0.02);
-      drawKart(0,0,pw,'#F0B429',{av:heroKart},{boost:boostT>0,kart:'kart'});
+      drawKart(0,0,pw,'#F0B429',{av:heroKart},{boost:boostT>0,kart:'kart',tint:opts.tint});
       cx.restore();
       if(shieldT>0){ cx.strokeStyle='rgba(120,205,255,.85)'; cx.lineWidth=3; cx.beginPath(); cx.ellipse(px,py-pw*0.34,pw*0.62,pw*0.5,0,0,7); cx.stroke();
         cx.fillStyle='rgba(150,215,255,.14)'; cx.fill(); }
@@ -1417,7 +1433,8 @@
     const EVO_PAL=[['#5FBE5A','#86D97F','#D6F0B8','#2C6E2C'],['#3E8D5C','#69B984','#DDF0BE','#1F5A38'],
       ['#9A824C','#C2A972','#E9DBB4','#5A4620'],['#2E9FB8','#5CC4D8','#BEEAF0','#14607A'],
       ['#C9A227','#F0D064','#F5E7B0','#7A5A10'],['#63499E','#9179CE','#E6D9F5','#3A2560']];
-    let PAL=wornSkin||EVO_PAL[0], evo=null, snakeStage=0, unlocked=false;
+    const tintPal=(opts.tint&&!wornSkin)?tintPalette(opts.tint):null;   // player's chosen colour
+    let PAL=wornSkin||tintPal||EVO_PAL[0], evo=null, snakeStage=0, unlocked=false;
     function occupied(x,y,extra){ for(let i=0;i<snake.length;i++) if(snake[i].x===x&&snake[i].y===y) return true;
       for(let i=0;i<(extra||[]).length;i++) if(extra[i].x===x&&extra[i].y===y) return true; return false; }
     function layoutWord(){ word=feed.next().w; spelled=0; tiles=[];

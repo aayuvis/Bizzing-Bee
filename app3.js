@@ -1916,7 +1916,9 @@ const app = {
   /* Launch one of the 14 engines directly on its play-field, story-free. Mounts into a
      self-managed fullscreen overlay (like the saga's, minus the story) so it does not
      depend on app3's string render or on saga2's board/beats. */
-  arcadePlay:(k)=>{
+  arcadeMenu:(k)=>{ try{ arcadeMenu(k); }catch(e){ try{ app.arcadePlay(k); }catch(_){} } },
+  arcadePlay:(k,extra)=>{
+    extra=extra||{};
     const g=(window.SB_ARCADE_GAMES||[]).find(x=>x.k===k); if(!g) return;
     const engs=window.SB_SAGA_ENGINES;   // saga2.js is a direct boot script, so this is present
     if(!engs||!engs[k]){ flash('Games are still loading — one moment'); return; }
@@ -1931,9 +1933,10 @@ const app = {
     const eDiff = pick!=='auto' ? pick : (band<=3?'easy':band<=6?'medium':band<=8?'hard':'champ');
     c.gameDiff=eDiff; clearGTimer(); arcadeClose();
     const el=document.createElement('div'); el.className='arc-play'; _arcEl=el;
+    const avChip=(()=>{ try{ return '<span class="arc-play-av">'+(SB_AVATAR(c.avatar||'bizzy',26)||'')+'</span>'; }catch(e){ return ''; } })();
     el.innerHTML='<div class="arc-play-top">'
       +'<button class="arc-play-back" id="arc-back">← Arcade</button>'
-      +'<span class="arc-play-name">'+esc(g.n)+'</span>'
+      +'<span class="arc-play-name">'+esc(g.n)+'</span>'+avChip
       +'<span class="arc-play-diff">'+(_arcDiffLabel[pick]||'')+'</span></div>'
       +'<div class="arc-play-host" id="arc-host"></div>';
     document.body.appendChild(el);
@@ -1941,8 +1944,10 @@ const app = {
     const host=el.querySelector('#arc-host');
     const onUnlock=()=>{ try{ addCoins(15); }catch(e){} };
     const done=(res)=>{ _arcHandle=null; arcadeResult(g, res||{}); };
-    try{ _arcHandle=engs[k](host, {diff:eDiff, world:g.w, onUnlock}, done); }
+    try{ _arcHandle=engs[k](host, {diff:eDiff, world:g.w, onUnlock, tint:extra.tint||(c.arcColour||null)}, done); }
     catch(e){ try{ console.error(e); }catch(_){} flash('Could not start that game'); arcadeClose(); }
+    // launched from the start menu → skip the engine's own how-to gate (the menu explained it)
+    if(extra.fromMenu){ setTimeout(()=>{ try{ const go=host.querySelector('#sg-howgo'); if(go) go.click(); }catch(_){}} , 90); }
   },
   /* Who Wants to Be a Bizzillionaire — the money-ladder quiz. Overlay, decoupled. */
   openBizz:()=>{
@@ -8302,6 +8307,71 @@ function arcadeClose(){
   if(_arcEl){ _arcEl.remove(); _arcEl=null; }
   try{ if(window.SB_W4_MUSIC) SB_W4_MUSIC.sync(); }catch(e){}
 }
+/* ============================================================================
+   ARCADE START MENU — a per-game launch screen: explains the game, lets you pick
+   your racer (avatar), your colour, and difficulty, then drops you straight in.
+   ========================================================================== */
+const ARCADE_HOWTO = {
+  beeGrandPrix:   'Spell the word at each ⚡ gate to boost past your rivals. Steer ◀ ▶, dodge 🛢️ oil, grab ❓ boxes — finish top of the pack.',
+  honeycombRun:   'Munch the honey through the hive and clear each gate by spelling its word. Dodge the moths and fill the honey meter.',
+  typeBlaster:    'Type each word before the glitch monster reaches the bottom. Fast and perfect builds your combo — zap every glitch.',
+  keepFlying:     'Tap or hold to fly. Bank every honey pot by spelling it, dodge the pillars, then soar through the Hive Gates home.',
+  wordSnake:      'Steer the snake to eat the letters in spelling order. Every word makes it grow — spell without crashing into yourself.',
+  unscrambleStars:'Tap the scrambled star-letters into the right order. Solve fast for ⚡ bonus stars and light up the constellation.',
+  spotlightSimon: 'Watch the spotlight sequence, tap it back in order, then spell the word from memory. Keep the marquee blazing.',
+  spellScene:     'Read the clue, spell the word, and sweep colour back into the scene — drive the moth off and restore the whole world.',
+};
+const ARC_COLOURS = [
+  {n:'Honey',v:'#F0B429'},{n:'Cherry',v:'#EC5C67'},{n:'Ocean',v:'#3B93D6'},
+  {n:'Grape',v:'#8B63D6'},{n:'Mint',v:'#2FB98A'},{n:'Sunset',v:'#F0803C'},{n:'Bubblegum',v:'#EC6BB0'},
+];
+const ARC_DIFFS = [['auto','My level'],['easy','Easy'],['medium','Medium'],['hard','Hard'],['champ','Champ']];
+function arcadeMenu(k){
+  const g=(window.SB_ARCADE_GAMES||[]).find(x=>x.k===k); if(!g) return;
+  const c=active(); ensureLists(c); arcadeClose();
+  const AVL=(window.SB_AVATARS&&SB_AVATARS.list)||[];
+  const owned=AVL.filter(a=>{ try{ return avOwned(c,a.id); }catch(e){ return true; } });
+  const avList=(owned.length?owned:AVL).slice(0,12);
+  let selAv=(c.avatar&&avList.some(a=>a.id===c.avatar))?c.avatar:((avList[0]&&avList[0].id)||'bizzy');
+  let selCol=c.arcColour||ARC_COLOURS[0].v;
+  let selDiff=gameDiffFor(c,k);
+  const avSVG=(id,sz)=>{ try{ return (window.SB_AVATAR&&SB_AVATAR(id,sz))||''; }catch(e){ return ''; } };
+  const el=document.createElement('div'); el.className='arc-menu'; _arcEl=el;
+  el.innerHTML=`<div class="arcm-card">
+    <button class="arcm-x" aria-label="Back to arcade">✕</button>
+    <span class="arcm-tag">${esc(g.tag)}</span>
+    <h2 class="arcm-title">${esc(g.n)}</h2>
+    <p class="arcm-how">${esc(ARCADE_HOWTO[k]||g.blurb||'')}</p>
+    <div class="arcm-preview"><span class="arcm-av" id="arcm-prev"></span></div>
+    <div class="arcm-sec"><div class="arcm-lbl">Your racer</div><div class="arcm-avrow" id="arcm-avs"></div></div>
+    <div class="arcm-sec"><div class="arcm-lbl">Your colour</div><div class="arcm-cols" id="arcm-cols"></div></div>
+    <div class="arcm-sec"><div class="arcm-lbl">Difficulty</div><div class="arcm-diff" id="arcm-diff"></div></div>
+    <button class="arcm-go" id="arcm-go">${iconSVG('joystick',18)} Start</button>
+  </div>`;
+  document.body.appendChild(el);
+  const prev=el.querySelector('#arcm-prev');
+  const drawPrev=()=>{ prev.innerHTML=avSVG(selAv,120); prev.style.boxShadow='0 0 0 4px '+selCol+'88, 0 10px 30px rgba(0,0,0,.4)'; };
+  const avs=el.querySelector('#arcm-avs');
+  avs.innerHTML=avList.map(a=>`<button class="arcm-av-b${a.id===selAv?' on':''}" data-av="${escA(a.id)}" title="${escA(a.name||a.id)}">${avSVG(a.id,44)}</button>`).join('');
+  avs.onclick=e=>{ const b=e.target.closest('[data-av]'); if(!b)return; selAv=b.dataset.av;
+    avs.querySelectorAll('.arcm-av-b').forEach(x=>x.classList.toggle('on',x.dataset.av===selAv)); drawPrev(); };
+  const cols=el.querySelector('#arcm-cols');
+  cols.innerHTML=ARC_COLOURS.map(cc=>`<button class="arcm-col${cc.v===selCol?' on':''}" data-col="${cc.v}" style="background:${cc.v}" title="${cc.n}" aria-label="${cc.n}"></button>`).join('');
+  cols.onclick=e=>{ const b=e.target.closest('[data-col]'); if(!b)return; selCol=b.dataset.col;
+    cols.querySelectorAll('.arcm-col').forEach(x=>x.classList.toggle('on',x.dataset.col===selCol)); drawPrev(); };
+  const dd=el.querySelector('#arcm-diff');
+  dd.innerHTML=ARC_DIFFS.map(([kk,l])=>`<button class="arcm-d${kk===selDiff?' on':''}" data-d="${kk}">${l}</button>`).join('');
+  dd.onclick=e=>{ const b=e.target.closest('[data-d]'); if(!b)return; selDiff=b.dataset.d;
+    dd.querySelectorAll('.arcm-d').forEach(x=>x.classList.toggle('on',x.dataset.d===selDiff)); };
+  drawPrev();
+  el.querySelector('.arcm-x').onclick=arcadeClose;
+  el.querySelector('#arcm-go').onclick=()=>{
+    c.avatar=selAv; c.arcColour=selCol; c.gameDiffBy=c.gameDiffBy||{}; c.gameDiffBy[k]=selDiff; c.gameDiff=selDiff;
+    try{ save(); }catch(e){}
+    arcadeClose();
+    app.arcadePlay(k,{tint:selCol,fromMenu:true});
+  };
+}
 /* Per-game personal best, persisted on the device — gives the competitive speller a
    number to beat every play. localStorage['sb_arc_best'] = { <gameKey>: bestScore }. */
 function arcBestMap(){ try{ return JSON.parse(localStorage.getItem('sb_arc_best')||'{}')||{}; }catch(e){ return {}; } }
@@ -8551,7 +8621,7 @@ function gamesHub(){ const S=state; const c=active();
   /* Tile banner is a REAL screenshot of the game (app-art/shots/game-<k>.jpg), not the
      generic painted world plate — so the picture on the Bee Grand Prix tile is the race,
      not a hive. Same images the landing uses; regenerate both with qa/shots.cjs. */
-  const arcadeGames=SB_ARCADE_GAMES.map(g=>gtile({act:'arcadePlay',arg:g.k,
+  const arcadeGames=SB_ARCADE_GAMES.map(g=>gtile({act:'arcadeMenu',arg:g.k,
     grad:"linear-gradient(180deg,rgba(20,14,42,.06),rgba(20,14,42,.34)),url('app-art/shots/game-"+g.k+".jpg') center/cover",
     art:'',badge:g.tag,title:g.n,blurb:g.blurb,cta:'var(--accent)',stat:''})).join('');
   // ---- QUICK GAMES: the timed/quiz engines that aren't part of the 14 ----
