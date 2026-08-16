@@ -1390,7 +1390,9 @@
     intro.querySelector('#sg-howgo').onclick=()=>{ intro.remove(); countT=1.0; mode='count'; };
     renderHold();
     if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over}),
-      steerTo:(x)=>{playerX=x;}, jump:(z)=>{pos=z;}, grant:(i)=>{held=POWERS[i||0];renderHold();} };
+      steerTo:(x)=>{playerX=x;}, jump:(z)=>{pos=z;}, grant:(i)=>{held=POWERS[i||0];renderHold();},
+      toBox:()=>{ const pm=pos%trackLen, it=items.find(x=>!x.gone&&x.seg*segLen>pm+segLen*10);   // capture tooling: line up the next ? box
+        if(it){ pos+= (it.seg-8)*segLen - pm; playerX=it.off; } } };
     requestAnimationFrame(frame);
     return { destroy(){ over=true; removeEventListener('keydown',kd); removeEventListener('keyup',ku); } };
   }
