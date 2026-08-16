@@ -653,7 +653,7 @@
       const GRACE=(t<3)||(t<graceUntil);
       if(holding) bee.vy-=0.50;                                 // hold to climb (beats gravity)
       if(GRACE){ bee.vy*=0.9; bee.y+=bee.vy; bee.y=Math.max(30,Math.min(Ht-40,bee.y)); }
-      else { spawnT+=dt/1000; bee.vy+=0.22; bee.vy=Math.min(bee.vy,7.5); bee.y+=bee.vy; }   // honest gravity + a terminal fall speed
+      else { spawnT+=dt/1000; bee.vy+=0.187; bee.vy=Math.min(bee.vy,7.5); bee.y+=bee.vy; }   // gravity −15% per tuning + a terminal fall speed
       if(!gate){
         if(spawnT>CFG.every){ spawnT=0; spawn(); }              // towers spaced to the world speed
         if(potT<=0&&!pot){ potT=8; pot={x:Wd+30,y:80+Math.random()*(Ht-220)}; }
