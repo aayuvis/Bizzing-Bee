@@ -539,7 +539,7 @@
 
   /* ---------- ENGINE B · KEEP FLYING (flappy) ---------- */
   function keepFlying(host, opts, done){
-    const Wd=Math.min(innerWidth-16,1280), Ht=Math.max(320,innerHeight-210);
+    const Wd=Math.min(innerWidth-8,1600), Ht=Math.max(360,innerHeight-104);
     const diff=opts.diff||'medium', world=opts.world||'opensky';
     // Roomier gaps + gentler speeds — the towers were punishingly tight before.
     const CFG={easy:{gap:245,speed:1.95,pots:8},medium:{gap:220,speed:2.25,pots:10},
@@ -744,15 +744,23 @@
       if(pal){ drawBackdrop(); }
       else if(!drawWorld(cx,world,0,0,Wd,Ht)){ const g=cx.createLinearGradient(0,0,0,Ht);
         g.addColorStop(0,'#3D8BD4'); g.addColorStop(1,'#E9F6FF'); cx.fillStyle=g; cx.fillRect(0,0,Wd,Ht); }
-      const pc=(pal||PAL.opensky).pill;
-      obs.forEach(o=>{ const pil=(yy,hh)=>{ const g=cx.createLinearGradient(o.x,0,o.x+44,0); g.addColorStop(0,pc[0]); g.addColorStop(1,pc[1]);
-        cx.fillStyle=g; cx.fillRect(o.x,yy,44,hh); cx.fillStyle='rgba(255,255,255,.18)'; cx.fillRect(o.x,yy,7,hh);
-        cx.strokeStyle='rgba(60,40,10,.45)'; cx.lineWidth=2; cx.strokeRect(o.x,yy,44,hh);
-        cx.fillStyle='rgba(0,0,0,.12)';
-        for(let hy=yy+10;hy<yy+hh-8;hy+=22) for(let hx=o.x+8;hx<o.x+40;hx+=13){ cx.beginPath();
-          for(let k=0;k<6;k++){ const a=Math.PI/3*k+Math.PI/6; const px=hx+Math.cos(a)*5, py=hy+Math.sin(a)*5; k?cx.lineTo(px,py):cx.moveTo(px,py); }
-          cx.closePath(); cx.fill(); } };
-        pil(0,o.y); pil(o.y+o.g,Ht-o.y-o.g); });
+      const pc=(pal||PAL.opensky).pill, ptex=sgTex('pillar');
+      obs.forEach(o=>{
+        const PW=44;
+        const body=(yy,hh)=>{ const g=cx.createLinearGradient(o.x,0,o.x+PW,0); g.addColorStop(0,pc[0]); g.addColorStop(1,pc[1]);
+          cx.fillStyle=g; cx.fillRect(o.x,yy,PW,hh); cx.fillStyle='rgba(255,255,255,.18)'; cx.fillRect(o.x,yy,7,hh);
+          cx.fillStyle='rgba(0,0,0,.12)';
+          for(let hy=yy+10;hy<yy+hh-8;hy+=22) for(let hx=o.x+8;hx<o.x+40;hx+=13){ cx.beginPath();
+            for(let k=0;k<6;k++){ const a=Math.PI/3*k+Math.PI/6; const px=hx+Math.cos(a)*5, py=hy+Math.sin(a)*5; k?cx.lineTo(px,py):cx.moveTo(px,py); }
+            cx.closePath(); cx.fill(); }
+          cx.strokeStyle='rgba(60,40,10,.45)'; cx.lineWidth=2; cx.strokeRect(o.x,yy,PW,hh); };
+        // rounded, shaded cap sculpted from the pillar sprite's rounded end, at each pipe mouth
+        const cap=(mouthY,down)=>{ if(!ptex) return; const cw=PW+12, ch=cw*0.6;
+          cx.save(); cx.translate(o.x+PW/2, mouthY); if(down) cx.scale(1,-1);
+          try{ cx.drawImage(ptex, 0,0,ptex.width,Math.round(ptex.height*0.42), -cw/2, -ch*0.72, cw, ch); }catch(e){}
+          cx.restore(); };
+        body(0,o.y); cap(o.y,true);
+        body(o.y+o.g,Ht-o.y-o.g); cap(o.y+o.g,false); });
       coins.forEach(drawCoin); hearts.forEach(drawHeart);
       moths.forEach(m=>drawMoth(cx,m.x-m.s/2,m.y-m.s/2,m.s,false,m.ph*3));
       if(pot){ const px=pot.x+16, py=pot.y+22, bobp=Math.sin(t*3)*3;
