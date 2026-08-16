@@ -1874,7 +1874,7 @@
       '<div class="sg-rword"><button class="sg-sbtn" id="sg-csay" aria-label="Hear the word">'+iconSVG('volume',18)+'</button><span id="sg-cslots"></span></div>'+
       '<div class="sg-race-mean" id="sg-cmean"></div>';
     const sky=host.querySelector('#sg-csky'), starsEl=host.querySelector('#sg-cstars'), line=host.querySelector('#sg-cline');
-    function cur(){ return words[wi]; }
+    function cur(){ return words[wi]||words[words.length-1]||{w:'honey'}; }   // never index past the end
     function renderSlots(){ const w=cur().w.toLowerCase();
       host.querySelector('#sg-cslots').innerHTML=w.split('').map((ch,ix)=>'<span class="sg-slot'+(ix<li?' fill':ix===li?' next':'')+'">'+(ix<li?ch.toUpperCase():'')+'</span>').join('');
       host.querySelector('#sg-cm').textContent=misses?('✖'.repeat(Math.min(misses,8))):''; }
@@ -1943,7 +1943,7 @@
     const stage=host.querySelector('#sg-tbs'), foe=host.querySelector('#sg-tbf'), beam=host.querySelector('#sg-tbbeam');
     const rows=['qwertyuiop','asdfghjkl','zxcvbnm'];
     host.querySelector('#sg-tkey').innerHTML=rows.map(r=>'<div class="ss-krow">'+r.split('').map(ch=>'<button class="ss-kb" data-k="'+ch+'">'+ch+'</button>').join('')+'</div>').join('');
-    function cur(){ return words[wi]; }
+    function cur(){ return words[wi]||words[words.length-1]||{w:'honey'}; }   // never index past the end
     function renderSlots(){ const w=cur().w.toLowerCase();
       host.querySelector('#sg-tbslots').innerHTML=w.split('').map((ch,ix)=>'<span class="sg-slot'+(ix<li?' fill':'')+'">'+(ix<li?ch.toUpperCase():'')+'</span>').join('');
       host.querySelector('#sg-tsh').textContent='🛡'.repeat(Math.max(0,shield));
