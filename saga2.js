@@ -318,6 +318,13 @@
      a fuzzy body, feathered antennae, and a soft blue glow when it's edible.
      Far cleaner than an emoji or a flat triangle. */
   function drawMoth(cx,x,y,size,edible,ph){
+    // Gemini moth sprite for the normal (dangerous) state; the frightened/edible state
+    // keeps the procedural blue moth so a fled enemy still reads distinctly.
+    const mtex=(!edible)&&sgTex('moth');
+    if(mtex){ const cxp0=x+size/2, cyp0=y+size/2, fl=1+0.05*Math.sin((ph||0)); const hh0=size*(mtex.height/mtex.width);
+      cx.save(); cx.translate(cxp0,cyp0); cx.scale(fl,1);
+      try{ cx.drawImage(mtex,-size/2,-hh0/2,size,hh0); }catch(e){}
+      cx.restore(); return; }
     const cxp=x+size/2, cyp=y+size/2, s=size*0.5, flap=0.82+0.18*Math.sin((ph||0));
     cx.save(); cx.translate(cxp,cyp);
     if(edible){ const g=cx.createRadialGradient(0,0,2,0,0,s*1.15); g.addColorStop(0,'rgba(120,150,255,.55)'); g.addColorStop(1,'rgba(120,150,255,0)');
@@ -355,6 +362,7 @@
     // staggered honeycomb wall pattern at Champion. (Spelling words still match the speller.)
     const DIM={easy:[11,9,false],medium:[13,11,false],hard:[15,11,false],champ:[17,13,true]}[diff]||[13,11,false];
     const COLS=DIM[0], ROWS=DIM[1], HEX=DIM[2];
+    sgTexPreload(['bee-fly','moth']);   // canonical bee + moth, decoded before first frame
     const CELL=Math.max(24,Math.min(104, Math.floor(Math.min(innerWidth-16,1600)/COLS), Math.floor((innerHeight-208)/ROWS)));
     function makeMaze(cols,rows,hex){ const M=[]; // 0 wall · 1 dot · 2 empty
       for(let r=0;r<rows;r++){ const row=[];
@@ -494,21 +502,23 @@
       }
       if(!J.got) SGFX.orb(cx,J.c*CELL+CELL/2,J.r*CELL+CELL/2,CELL*0.24,'#FFFFFF','#FFC93F',T/260);
       if(flower){ const fi=sgImg('env-meadow'); cx.font=(CELL*0.72)+'px serif'; cx.fillText('🌼',flower.c*CELL+CELL*0.14,flower.r*CELL+CELL*0.8); }
-      // moths — the delivered grey-moth sprite (blue glow when edible); vector moth as fallback
-      const mi=sgImg('grey-moth'), _ph=Date.now()/90;
+      // moths — the Gemini purple moth sprite (blue glow when edible); SGART grey-moth then vector fallback
+      const mtex=sgTex('moth'), mi=sgImg('grey-moth'), _ph=Date.now()/90;
       moths.forEach((m,i)=>{ const mx=m.px*CELL, my=m.py*CELL;
         if(flee>0){ cx.fillStyle='rgba(120,150,255,.45)'; cx.beginPath(); cx.arc(mx+CELL/2,my+CELL/2,CELL*0.44,0,7); cx.fill(); }
-        let md=false; if(mi){ try{ const s=CELL*0.96, bob=Math.sin(_ph+i)*CELL*0.03; cx.drawImage(mi,mx+(CELL-s)/2,my+(CELL-s)/2+bob,s,s); md=true; }catch(e){} }
+        let md=false; const bob=Math.sin(_ph+i)*CELL*0.03;
+        if(mtex){ try{ const s=CELL*1.0, hh=s*(mtex.height/mtex.width); cx.drawImage(mtex,mx+(CELL-s)/2,my+(CELL-hh)/2+bob,s,hh); md=true; }catch(e){} }
+        else if(mi){ try{ const s=CELL*0.96; cx.drawImage(mi,mx+(CELL-s)/2,my+(CELL-s)/2+bob,s,s); md=true; }catch(e){} }
         if(!md) drawMoth(cx,mx+CELL*0.04,my+CELL*0.04,CELL*0.92,flee>0,_ph+i); });
       // the bee leaves honey behind her, so motion has a direction you can see
       trail.push(bee.px*CELL+CELL/2, bee.py*CELL+CELL/2, 16);
       trail.draw(cx,'255,205,80',CELL*0.30);
-      // bee — the delivered Bizzy sprite (flips with direction); avatar then blob as fallback
-      const bi=sgImg('bizzy-side-fly')||avImg(heroAv())||avImg('bizzy'), bx=bee.px*CELL, by=bee.py*CELL; let beeDrew=false;
-      if(bi){ try{ const bob=1+0.05*Math.sin(Date.now()/110), s=CELL*1.12*bob;
+      // bee — the canonical Gemini bee-fly sprite (flips with direction); SGART Bizzy then avatar/blob fallback
+      const bi=sgTex('bee-fly')||sgImg('bizzy-side-fly')||avImg(heroAv())||avImg('bizzy'), bx=bee.px*CELL, by=bee.py*CELL; let beeDrew=false;
+      if(bi){ try{ const bob=1+0.05*Math.sin(Date.now()/110), s=CELL*1.12*bob, hh=bi.height&&bi.width?s*(bi.height/bi.width):s;
         cx.save(); cx.translate(bx+CELL/2,by+CELL/2);
         if(bee.dir[0]<0) cx.scale(-1,1);              // flip when flying left
-        cx.drawImage(bi,-s/2,-s/2,s,s); cx.restore(); beeDrew=true; }catch(e){ try{cx.restore();}catch(_){} } }
+        cx.drawImage(bi,-s/2,-hh/2,s,hh); cx.restore(); beeDrew=true; }catch(e){ try{cx.restore();}catch(_){} } }
       if(!beeDrew){ cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(bx+CELL/2,by+CELL/2,CELL*0.34,0,7); cx.fill();
         cx.fillStyle='#2B2117'; cx.fillRect(bx+CELL*0.3,by+CELL*0.34,CELL*0.4,CELL*0.09); }
       SGFX.run(cx,fx);
@@ -555,6 +565,7 @@
     let bee={y:Ht/2,vy:0}, obs=[], pot=null, banked=0, lives=3, t=0, over=false, card=null, graceUntil=0, inv=0;
     let moths=[], coins=[], hearts=[], coinsGot=0, gate=null, started=false;
     const feed=wordFeed(CFG.pots+6);
+    sgTexPreload(['bee-fly','moth','fly-sky','honeypot','coin','pillar']);   // decode game art before first frame
     /* per-world premium palettes; anything unlisted uses its illustrated plate */
     const PAL={
       opensky:{top:'#3D8BD4',mid:'#7FC0EC',bot:'#E9F6FF',sun:['rgba(255,251,225,.95)','rgba(255,240,180,.42)'],sunCore:'rgba(255,252,235,.96)',hill:'#9CCB7A',hill2:'#7FB662',pill:['#F0B429','#D89614'],stars:0,birds:1},
@@ -636,6 +647,14 @@
       const e=(dx,dy,r)=>{ cx.beginPath(); cx.ellipse(x+dx*s,y+dy*s,r*s,r*s*0.72,0,0,7); cx.fill(); };
       e(0,0,27); e(25,5,20); e(-25,6,19); e(11,-11,18); e(-11,-8,16); cx.restore(); }
     function drawBackdrop(){
+      // painted Ghibli sky for the daytime world; night/sunset worlds keep the procedural sky
+      const sky=(world==='opensky'||world==='sky')&&sgTex('fly-sky');
+      if(sky){
+        const ar=sky.width/sky.height, car=Wd/Ht; let dw,dh;
+        if(ar>car){ dh=Ht; dw=Ht*ar; } else { dw=Wd; dh=Wd/ar; }
+        try{ cx.drawImage(sky,(Wd-dw)/2,(Ht-dh)/2,dw,dh); }catch(e){}
+        return;   // the painted sky already carries clouds, sun and hills — no procedural overlay
+      }
       const g=cx.createLinearGradient(0,0,0,Ht);
       g.addColorStop(0,pal.top); g.addColorStop(0.52,pal.mid); g.addColorStop(1,pal.bot);
       cx.fillStyle=g; cx.fillRect(0,0,Wd,Ht);
@@ -664,8 +683,20 @@
     }
     /* hand-drawn shaded bee with animated wings; the child's avatar rides on its back */
     function drawFlyer(x,y,tilt){
-      const wf=Math.sin(t*26), s=1;
+      const wf=Math.sin(t*26), s=1, btex=sgTex('bee-fly');
       cx.save(); cx.translate(x,y); cx.rotate(tilt);
+      if(btex){
+        const bw=66, bh=bw*(btex.height/btex.width);
+        try{ cx.drawImage(btex,-bw*0.5,-bh*0.46,bw,bh); }catch(e){}
+        // rider: the child's avatar in a little bubble on the bee's back
+        const av=avImg(heroAv());
+        if(av){ try{ const bob=Math.sin(t*7)*1.2, rx=-bw*0.06, ry=-bh*0.24+bob, rr=9;
+          cx.save(); cx.beginPath(); cx.arc(rx,ry,rr,0,7); cx.clip();
+          cx.drawImage(av,rx-rr,ry-rr,rr*2,rr*2); cx.restore();
+          cx.strokeStyle='rgba(60,40,10,.5)'; cx.lineWidth=1.2;
+          cx.beginPath(); cx.arc(rx,ry,rr,0,7); cx.stroke(); }catch(e){ try{cx.restore();}catch(_){} } }
+        cx.restore();
+      } else {
       // wings behind body
       for(const [dx,dy,rot,len] of [[-2,-14,-0.5-wf*0.35,20],[4,-13,-0.15-wf*0.3,15]]){
         cx.save(); cx.translate(dx,dy); cx.rotate(rot);
@@ -700,6 +731,7 @@
         cx.strokeStyle='rgba(60,40,10,.5)'; cx.lineWidth=1.2;
         cx.beginPath(); cx.arc(-4,-16+bob,10,0,7); cx.stroke(); }catch(e){ try{cx.restore();}catch(_){}} }
       cx.restore();
+      }
       // grace sparkle trail
       if(t<graceUntil||t<3){ for(let i=0;i<2;i++){ const a=Math.random();
         cx.globalAlpha=0.5*a; cx.fillStyle='#FFE28A';
@@ -1453,11 +1485,22 @@
       const near=(a,b)=>Math.abs(a.x-b.x)<=CELL*1.5 && Math.abs(a.y-b.y)<=CELL*1.5;
       // body as a thick rounded stroke through the segment centres (outline then fill), tail tapers
       const pts=snake.map(cc);
+      // a solid rounded body ball at every segment cell — so a segment that sits alone
+      // across the wrap seam still reads as a snake chunk, not a stray pill
+      for(let i=snake.length-1;i>=1;i--){ const p=pts[i], r=CELL*(0.40-(i/snake.length)*0.10);
+        cx.fillStyle=PAL[3]; cx.beginPath(); cx.arc(p.x,p.y,r+1.5,0,7); cx.fill();
+        cx.fillStyle=PAL[0]; cx.beginPath(); cx.arc(p.x,p.y,r,0,7); cx.fill(); }
+      // draw the tube segment by segment; a pair that straddles the wrap seam is drawn as two
+      // stubs running OFF the shared edge, so a wrapping snake still reads as one continuous body
       const drawRun=(w,col)=>{ cx.strokeStyle=col; cx.lineWidth=w; cx.lineCap='round'; cx.lineJoin='round';
-        cx.beginPath(); let started=false;
-        for(let i=0;i<pts.length;i++){ if(i>0 && !near(pts[i],pts[i-1])){ cx.stroke(); cx.beginPath(); started=false; }
-          if(!started){ cx.moveTo(pts[i].x,pts[i].y); started=true; } else cx.lineTo(pts[i].x,pts[i].y); }
-        cx.stroke(); };
+        for(let i=1;i<pts.length;i++){ const a=pts[i-1], b=pts[i];
+          if(near(a,b)){ cx.beginPath(); cx.moveTo(a.x,a.y); cx.lineTo(b.x,b.y); cx.stroke(); }
+          else if(Math.abs(a.x-b.x)>Math.abs(a.y-b.y)){ const L=a.x<b.x?a:b, R=a.x<b.x?b:a;
+            cx.beginPath(); cx.moveTo(L.x,L.y); cx.lineTo(-CELL*0.5,L.y); cx.stroke();
+            cx.beginPath(); cx.moveTo(R.x,R.y); cx.lineTo(BW+CELL*0.5,R.y); cx.stroke(); }
+          else { const T=a.y<b.y?a:b, B=a.y<b.y?b:a;
+            cx.beginPath(); cx.moveTo(T.x,T.y); cx.lineTo(T.x,-CELL*0.5); cx.stroke();
+            cx.beginPath(); cx.moveTo(B.x,B.y); cx.lineTo(B.x,BH+CELL*0.5); cx.stroke(); } } };
       drawRun(CELL*0.86, PAL[3]);              // dark outline
       drawRun(CELL*0.66, PAL[0]);              // body colour
       cx.globalAlpha=0.5; drawRun(CELL*0.26, PAL[1]); cx.globalAlpha=1;   // glossy centre highlight — rounds the tube
@@ -1785,7 +1828,8 @@
         '<div class="sg-tbfoe" id="sg-tbf">'+foeSvg+'<div class="sg-tbslots" id="sg-tbslots"></div></div>'+
         '<div class="sg-tbbeam" id="sg-tbbeam"></div>'+
         '<div class="sg-tbshield" id="sg-tbshieldbar"></div>'+
-        '<div class="sg-tbcannon">🐝</div></div>'+
+        '<div class="sg-tbcannon"><img src="app-art/gart/bee-fly.webp" alt="bee" '
+          +"onerror=\"this.replaceWith(document.createTextNode('\\uD83D\\uDC1D'))\"></div></div>"+
       '<div class="sg-rword"><button class="sg-sbtn" id="sg-tsay" aria-label="Hear the word">'+iconSVG('volume',18)+'</button><span class="sg-race-mean" id="sg-tmean"></span></div>'+
       '<div class="ss-key sg-tbkey" id="sg-tkey"></div>';
     const stage=host.querySelector('#sg-tbs'), foe=host.querySelector('#sg-tbf'), beam=host.querySelector('#sg-tbbeam');
