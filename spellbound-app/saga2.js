@@ -1518,7 +1518,7 @@
       rattler:['#B99154','#DDBA80','#EEDCB0','#6E4E24'],viper:['#6E9A3E','#97C066','#DCEAB0','#3E5A20'],
       boa:['#8A6AB8','#B39AD8','#E6D9F0','#4A3072'],mamba:['#4A4A58','#6E6E80','#B8B8C4','#22222E'],
       seasnake:['#2E9FB8','#5CC4D8','#BEEAF0','#14607A'],naga:['#C9A227','#F0D064','#F5E7B0','#7A5A10']};
-    const wornSkin=(function(){ const a=(typeof heroAv==='function')&&heroAv(); return SERP_PAL[a]||(a==='titanoboa'?['#4E7F41','#74AC60','#DCEBC8','#2C4A24']:a==='vasuki'?['#63499E','#9179CE','#E6D9F5','#3A2560']:null); })();
+    const wornSkin=(function(){ const a=opts.hero||((typeof heroAv==='function')&&heroAv()); return SERP_PAL[a]||(a==='titanoboa'?['#4E7F41','#74AC60','#DCEBC8','#2C4A24']:a==='vasuki'?['#63499E','#9179CE','#E6D9F5','#3A2560']:null); })();
     // evolution ladder: the snake grows from a garden snake up to VASUKI as words are spelled
     const EVO_PAL=[['#5FBE5A','#86D97F','#D6F0B8','#2C6E2C'],['#3E8D5C','#69B984','#DDF0BE','#1F5A38'],
       ['#9A824C','#C2A972','#E9DBB4','#5A4620'],['#2E9FB8','#5CC4D8','#BEEAF0','#14607A'],
@@ -1687,7 +1687,14 @@
       spawnSplash('🌌 VASUKI!');
       const fb=document.createElement('button'); fb.className='sg-finishbtn'; fb.textContent='Finish ⭐';
       fb.onclick=()=>finish(true); host.appendChild(fb); }
-    evo=sgEvo(host,'snake'); evo.set(0);
+    evo=sgEvo(host,'snake');
+    if(wornSkin){
+      // a PICKED snake wears its own name — the evolution ladder's labels don't apply to a fixed skin
+      const nm={noodle:'Noodle',sunny:'Sunny',cobra:'Cobra',python:'Python',rattler:'Rattler',viper:'Viper',
+        boa:'Boa',mamba:'Mamba',seasnake:'Sea Snake',naga:'Naga',titanoboa:'Titanoboa',vasuki:'Vasuki'}[opts.hero]||'Serpent';
+      const chip=host.querySelector('.sg-evochip'); if(chip) chip.innerHTML='🐍 <b>'+nm+'</b>';
+      evo={ set(stage,onUnlock,uAt){ const u=(uAt!=null)?uAt:5; if(stage>=u&&onUnlock) onUnlock(3); } };  // keep the Vasuki unlock, skip chip rewrites
+    } else evo.set(0);
     reset(); frame._t=tick; loop=setInterval(frame,tick); draw();
     return { destroy(){ over=true; if(loop){ clearInterval(loop); loop=null; } removeEventListener('keydown',key); } };
   }
@@ -2098,8 +2105,7 @@
       try{ say(words[i].w); }catch(e){}
     }
     let picked=[];
-    host.querySelector('#sg-stars').onclick=e=>{
-      const s=e.target.closest('.sg-star'); if(!s||s.disabled||over) return;
+    function pickStar(s){ if(!s||s.disabled||over) return;
       const w=words[i].w.toLowerCase();
       if(s.dataset.ch===w[picked.length]){ s.disabled=true; s.classList.add('set');
         const slot=host.querySelectorAll('.sg-slot')[picked.length]; slot.textContent=s.textContent; slot.classList.add('fill');
@@ -2112,14 +2118,23 @@
             try{flash('⚡ Fast solve! +'+bonus);}catch(_){} }
           else { try{flash('🌌 Constellation restored!');}catch(_){} }
           i++; picked=[]; setTimeout(newWord,600); } }
-      else { s.classList.add('no'); setTimeout(()=>s.classList.remove('no'),300); } };
+      else { s.classList.add('no'); setTimeout(()=>s.classList.remove('no'),300); } }
+    host.querySelector('#sg-stars').onclick=e=>{ pickStar(e.target.closest('.sg-star')); };
+    // TYPE to unscramble too: a letter key picks the matching star (keyboard = first-class)
+    const usKey=e=>{ if(over) return; const t=e.target;
+      if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)) return;
+      if(!/^[a-zA-Z]$/.test(e.key)) return;
+      const ch=e.key.toLowerCase(), star=[...host.querySelectorAll('.sg-star')].find(x=>!x.disabled&&x.dataset.ch===ch);
+      if(!star) return; e.preventDefault();
+      pickStar(star); };
+    addEventListener('keydown',usKey);
     host.querySelector('#sg-hint').onclick=()=>{ if(hints<=0||over) return; hints--;
       host.querySelector('#sg-h').textContent='💡 ×'+hints;
       const w=words[i].w.toLowerCase(); const need=w[picked.length];
       const s=[...host.querySelectorAll('.sg-star')].find(x=>!x.disabled&&x.dataset.ch===need);
       if(s){ s.classList.add('lit'); setTimeout(()=>s.classList.remove('lit'),900); } };
     newWord();
-    return { destroy(){ over=true; } };
+    return { destroy(){ over=true; removeEventListener('keydown',usKey); } };
   }
 
   /* ================================================================
@@ -2148,16 +2163,19 @@
           '<div class="ss-hero">'+heroSvg+'</div>'+
           '<div class="ss-foe" id="ss-foe">'+foeSvg+'</div>'+
         '</div>'+
-        '<div class="ss-meterwrap"><div class="ss-meter"><div class="ss-meter-fill" id="ss-fill"></div></div><span class="ss-mlbl" id="ss-mlbl">0 / '+words.length+'</span></div>'+
+        '<div class="ss-meterwrap"><div class="ss-meter"><div class="ss-meter-fill" id="ss-fill"></div></div><span class="ss-mlbl" id="ss-mlbl">0 / '+words.length+'</span><span class="ss-lives" id="ss-lives"></span></div>'+
         '<div class="ss-panel">'+
-          '<div class="ss-prompt"><button class="ss-say" id="ss-say" aria-label="Hear the word">'+iconSVG('volume',18)+'</button><span class="ss-hint" id="ss-hint"></span></div>'+
+          '<div class="ss-prompt"><button class="ss-say" id="ss-say" aria-label="Hear the word">'+iconSVG('volume',18)+'</button><span class="ss-hint" id="ss-hint"></span><button class="ss-skip" id="ss-skip" title="Skip this word (costs a life)">⏭ Skip</button></div>'+
           '<div class="ss-slots" id="ss-slots"></div>'+
           '<div class="ss-key" id="ss-key"></div>'+
         '</div>'+
       '</div>';
-    let i=0, typed='', over=false, misses=0, ssCombo=0;
+    let i=0, typed='', over=false, misses=0, ssCombo=0, lives=3; const MAXLIVES=5;
     const bg=host.querySelector('#ss-bg'), foeEl=host.querySelector('#ss-foe'), heroEl=host.querySelector('.ss-hero'),
           fill=host.querySelector('#ss-fill'), slotsEl=host.querySelector('#ss-slots'), mlbl=host.querySelector('#ss-mlbl');
+    const livesEl=host.querySelector('#ss-lives');
+    function renderLives(){ if(livesEl) livesEl.textContent='❤'.repeat(Math.max(0,lives)); }
+    renderLives();
     if(foeEl) foeEl.style.transition='right .6s cubic-bezier(.3,1.4,.5,1), transform .3s';
     if(heroEl) heroEl.style.transition='left .6s cubic-bezier(.3,1.4,.5,1)';
     function grey(p){ bg.style.filter='grayscale('+(0.92*(1-p)).toFixed(2)+') brightness('+(0.9+0.12*p).toFixed(2)+')'; }
@@ -2181,13 +2199,25 @@
         foeEl.classList.remove('recoil'); void foeEl.offsetWidth; foeEl.classList.add('recoil'); sparkle();
         try{ if(typeof sfx==='function') sfx('correct'); }catch(e){}
         try{ flash(ssCombo>=2?('🔥 '+ssCombo+'× — '+w.toUpperCase()+' drives it back!'):('✨ '+w.toUpperCase()+' — the colour rushes back!')); }catch(e){}
+        // milestone: every 3rd word restored wins a life back
+        if(i%3===0 && i<words.length && lives<MAXLIVES){ lives++; renderLives(); try{ flash('❤ Milestone — extra life!'); }catch(e){} }
         setTimeout(newWord,700);
-      } else { misses++; typed=''; ssCombo=0;
+      } else { misses++; typed=''; ssCombo=0; lives--; renderLives();
         renderSlots(true); setTimeout(()=>renderSlots(),420);
         slotsEl.classList.remove('shake'); void slotsEl.offsetWidth; slotsEl.classList.add('shake');
         foeEl.classList.remove('gloat'); void foeEl.offsetWidth; foeEl.classList.add('gloat');
-        try{ flash('The Unspelling holds — listen again.'); }catch(e){} try{ say(words[i].w); }catch(e){}
+        if(lives<=0){ return lose(); }
+        try{ flash('💔 The Unspelling holds — listen again.'); }catch(e){} try{ say(words[i].w); }catch(e){}
       } }
+    function skipWord(){ if(over) return;
+      if(lives<=1){ try{ flash('Not enough lives to skip — spell it!'); }catch(e){} return; }
+      lives--; renderLives(); ssCombo=0; typed='';
+      words.push(words.splice(i,1)[0]);   // the skipped word waits at the back — you WILL meet it again
+      try{ flash('⏭ Skipped — it will come back around. −❤'); }catch(e){}
+      newWord(); }
+    function lose(){ over=true; removeEventListener('keydown',kb);
+      try{ flash('🌑 The colour fades… the moth wins this round.'); }catch(e){}
+      setTimeout(()=>done({win:false, score:i*60, stars:0}), 700); }
     function type(ch){ if(over) return; const w=words[i].w.toLowerCase();
       if(typed.length<w.length){ typed+=ch; renderSlots(); if(typed.length===w.length) setTimeout(commit,180); } }
     function back(){ if(over) return; typed=typed.slice(0,-1); renderSlots(); }
@@ -2199,6 +2229,7 @@
     host.querySelector('#ss-key').onclick=e=>{ const bt=e.target.closest('.ss-kb'); if(!bt) return;
       const k=bt.dataset.k; if(k==='back') back(); else if(k==='enter'){ if(typed.length===words[i].w.length) commit(); } else type(k); };
     host.querySelector('#ss-say').onclick=()=>{ try{ say(words[i].w); }catch(e){} };
+    host.querySelector('#ss-skip').onclick=skipWord;
     function win(){ removeEventListener('keydown',kb);
       // finale: the moth is banished off-screen and the world snaps to full colour
       try{ grey(1); if(bg) bg.style.filter='none';
