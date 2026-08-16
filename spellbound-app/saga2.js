@@ -1991,8 +1991,11 @@
     if(!words.length){ done({win:true,score:0,stars:1}); return; }
     const art=(window.SGART&&SGART.ready());
     const plate=art?SGART.plateForWorld(opts.world||'Meadow'):'';
-    const heroSvg=art?SGART.sprite(opts.hero||'bizzy-base',{cls:'ss-sprite'}):'<span class="ss-emoji">🐝</span>';
-    const foeSvg=art?SGART.sprite(opts.foe||'grey-moth',{cls:'ss-sprite'}):'<span class="ss-emoji">🦋</span>';
+    // canonical bee-fly hero + purple moth foe (consistent with the other games); SGART/emoji fallback
+    const heroSvg='<img src="app-art/gart/bee-fly.webp" class="ss-sprite ss-img" alt="hero" '
+      +"onerror=\"this.replaceWith(Object.assign(document.createElement('span'),{className:'ss-emoji',textContent:'\\uD83D\\uDC1D'}))\">";
+    const foeSvg='<img src="app-art/gart/moth.webp" class="ss-sprite ss-img" alt="foe" '
+      +"onerror=\"this.replaceWith(Object.assign(document.createElement('span'),{className:'ss-emoji',textContent:'\\uD83E\\uDD8B'}))\">";
     host.innerHTML=
       '<div class="ss-wrap">'+
         '<div class="ss-bg" id="ss-bg">'+plate+'</div>'+

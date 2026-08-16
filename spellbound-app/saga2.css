@@ -88,7 +88,7 @@
 .sg-dbox p{margin:4px 0 0;font:400 17px/1.5 'Hanken',sans-serif}
 .sg-next{grid-column:2;justify-self:end;font-size:22px;border:none;background:var(--honey,#F0B429);color:#2B2117;border-radius:999px;width:44px;height:44px;cursor:pointer;margin-top:8px}
 .sg-gamehost{padding-top:8px}
-.sg-stage{position:relative;background:rgba(20,15,38,.5);border-radius:16px;padding:26px 12px;max-width:1240px;min-height:max(360px,calc(100vh - 340px));margin:0 auto;overflow:hidden;display:grid;align-content:center}
+.sg-stage{position:relative;background:rgba(20,15,38,.5);border-radius:16px;padding:26px 12px;max-width:1240px;min-height:max(360px,calc(100vh - 250px));margin:0 auto;overflow:hidden;display:grid;align-content:center}
 .sg-stage-bg{position:absolute;inset:0;z-index:0}
 .sg-stage-bg .sg-plate{width:100%;height:100%;object-fit:cover;opacity:.9}
 .sg-stage>*:not(.sg-stage-bg){position:relative;z-index:1}
@@ -96,10 +96,13 @@
 .sg-stile{aspect-ratio:1;font:800 24px 'Sono',monospace;background:#2A2244;color:#8F86B8;border:2px solid #3A3160;border-radius:12px;cursor:pointer}
 .sg-stile.lit{background:#F0B429;color:#2B2117;border-color:#FFE28A;box-shadow:0 0 18px #F0B42999}
 .sg-simonprompt{text-align:center;font:600 15px 'Hanken',sans-serif;padding:10px;color:var(--muted,#7A6E5C)}
-.sg-sky{position:relative;background:linear-gradient(rgba(16,26,56,.5),rgba(30,42,92,.5));border-radius:16px;padding:22px 12px;max-width:1080px;min-height:max(340px,calc(100vh - 360px));margin:0 auto;overflow:hidden;display:grid;align-content:center}
+.sg-sky{position:relative;background:linear-gradient(rgba(16,26,56,.5),rgba(30,42,92,.5));border-radius:16px;padding:22px 12px;max-width:1080px;min-height:max(360px,calc(100vh - 250px));margin:0 auto;overflow:hidden;display:grid;align-content:center}
 .sg-sky-bg{position:absolute;inset:0;z-index:0}
 .sg-sky-bg .sg-plate{width:100%;height:100%;object-fit:cover}
-.sg-sky>*:not(.sg-sky-bg){position:relative;z-index:1}
+/* soft centre scrim so decorative plate text/signage recedes and the gold letters pop */
+.sg-sky::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(85% 52% at 50% 40%,rgba(8,6,26,.62),rgba(8,6,26,.32) 42%,rgba(8,6,26,0) 72%)}
+.sg-sky>*:not(.sg-sky-bg){position:relative;z-index:2}
 .sg-stars{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;min-height:64px}
 .sg-star{width:52px;height:52px;font:800 20px 'Sono',monospace;background:radial-gradient(circle at 35% 30%,#FFF3C8,#F0B429);color:#2B2117;border:none;border-radius:50%;cursor:pointer;box-shadow:0 0 12px #F0B42966}
 .sg-star.set{opacity:.15}
@@ -161,7 +164,7 @@
 .ss-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,15,38,0) 42%,rgba(20,15,38,.5))}
 .ss-stage{position:relative;flex:1;min-height:150px;z-index:1}
 .ss-hero,.ss-foe{position:absolute;bottom:4%;height:46%;filter:drop-shadow(0 10px 16px rgba(20,15,38,.45))}
-.ss-hero svg,.ss-foe svg{height:100%;width:auto}
+.ss-hero svg,.ss-foe svg,.ss-hero img,.ss-foe img{height:100%;width:auto;object-fit:contain}
 .ss-hero{left:4%;animation:ss-bob 2.8s ease-in-out infinite}
 .ss-foe{right:4%;animation:ss-hover 3.4s ease-in-out infinite}
 .ss-emoji{font-size:80px;line-height:1}

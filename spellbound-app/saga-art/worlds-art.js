@@ -191,7 +191,7 @@
       [[120, 176], [112, 108], [156, 96], [170, 124], [136, 140], [178, 158], [158, 190]].map(function (pt, i) {
         return '<circle cx="' + pt[0] + '" cy="' + pt[1] + '" r="' + (i % 2 ? 3.4 : 4.6) + '" fill="#FFC83D"/><circle cx="' + pt[0] + '" cy="' + pt[1] + '" r="1.6" fill="#FFF6DC"/>';
       }).join('') + '</g>';
-    s += '<text x="196" y="150" font-family="Sono,monospace" font-weight="600" font-size="17" fill="#36D1FF" letter-spacing="2">BRAVE</text><text x="194.5" y="148.5" font-family="Sono,monospace" font-weight="600" font-size="17" fill="#FF5D9E" letter-spacing="2" opacity=".75">BRAVE</text>';
+    // (removed a decorative "BRAVE" neon sign — a stray real word in a spelling game read as a distraction/leak)
     // comet + trail particles
     s += '<g filter="url(#' + p + '-glow)"><path d="M226 236 C300 210 400 224 470 200" stroke="#FF5D9E" stroke-width="2.6" stroke-dasharray="2 9" stroke-linecap="round" fill="none"/><g transform="translate(222,238)"><circle r="9" fill="#FFC83D"/><path d="M9 -2 L48 -14 L40 2 L52 6 L14 6Z" fill="#FF5D9E" opacity=".8"/><path d="M9 0 L40 10 L30 -4Z" fill="#36D1FF" opacity=".7"/></g></g>';
     var cr = rng(61);
