@@ -991,10 +991,10 @@
         p2:{world:{y:y,z:(n+1)*segLen},camera:{},screen:{}},
         color:(Math.floor(n/rumbleLen)%2)?DARK:LIGHT, sprites:[]}); }
     const eI=(a,b,p)=>a+(b-a)*Math.pow(p,2), eIO=(a,b,p)=>a+(b-a)*(-Math.cos(p*Math.PI)/2+0.5);
-    // STRAIGHT highway: the road never curves, so the kart travels dead straight and only
-    // MOVES when the player steers (to grab ❓ boxes / dodge oil & cops). No self-driving,
-    // no drift. Hills still roll for depth. (curve is forced to 0 here.)
-    function road(enter,hold,leave,curve,hill){ curve=0; const sY=lastY(), eY=sY+hill*segLen, tot=enter+hold+leave; let i;
+    // DEAD-FLAT STRAIGHT highway: no curves AND no hills. Curves made the kart look
+    // self-driving; hills made rivals flicker/slice at crest lines (per-segment culling)
+    // and wobbled the kart's road anchor while steering. Flat + straight = rock solid.
+    function road(enter,hold,leave,curve,hill){ curve=0; hill=0; const sY=lastY(), eY=sY+hill*segLen, tot=enter+hold+leave; let i;
       for(i=0;i<enter;i++) addSeg(eI(0,curve,i/enter), eIO(sY,eY,i/tot));
       for(i=0;i<hold;i++)  addSeg(curve,              eIO(sY,eY,(enter+i)/tot));
       for(i=0;i<leave;i++) addSeg(eIO(curve,0,i/leave),eIO(sY,eY,(enter+hold+i)/tot)); }
@@ -1193,7 +1193,6 @@
       const base=segs[Math.floor(posm/segLen)%segs.length]; const basePct=(posm%segLen)/segLen;
       let x=0, dx=-(base.curve*basePct), maxy=Ht;
       const camX=0;                    // camera fixed on the (straight) road centre; the KART slides across, the world does not pan
-      let nearS=null;                  // nearest on-screen road point — the kart is placed here so it lines up with what it can hit
       for(let n=0;n<drawDist;n++){ const seg=segs[(base.index+n)%segs.length];
         const looped=seg.index<base.index; const cz=posm-(looped?trackLen:0);
         project(seg.p1, camX - x,        camH, cz);
@@ -1202,7 +1201,6 @@
         seg._vis=false; seg._clip=maxy; seg._far=n;
         if(seg.p1.camera.z<=camDepth || seg.p2.screen.y>=seg.p1.screen.y || seg.p2.screen.y>=maxy) continue;
         seg._vis=true; maxy=seg.p2.screen.y;
-        if(!nearS) nearS=seg.p1.screen;   // first visible segment = closest to the kart
         const s1=seg.p1.screen, s2=seg.p2.screen, c=seg.color;
         if(sgTex(SKY)){ cx.globalAlpha=0.30; poly(0,s1.y, 0,s2.y, Wd,s2.y, Wd,s1.y, c.grass); cx.globalAlpha=1; }
         else poly(0,s1.y, 0,s2.y, Wd,s2.y, Wd,s1.y, c.grass);
@@ -1285,11 +1283,14 @@
         else { const r=o.r; drawKart(o.sx,o.sy,w*2.15,r.col,{sprite:r.sprite,glyph:r.glyph},{spin:r.spin>0,kart:'kart-red'}); }
         cx.globalAlpha=1; cx.restore();
       });
-      // Straight road + fixed camera: the kart is drawn at its true lane on the near road,
-      // so it VISIBLY slides left/right as you steer and lines up with the items/hazards it
-      // can hit (visual === collision). It holds its lane when you're not steering.
+      // Straight flat road + fixed camera: place the kart ANALYTICALLY at its lane on the
+      // near road (projection solved at the kart's screen row) — stable every frame, no
+      // per-segment anchor to wobble. Items at the same z project identically, so what you
+      // see is what you hit; the kart holds its lane rock-steady unless steered.
       const pw=Wd*0.115, py=Ht-14;
-      const px = nearS ? nearS.x + nearS.w*playerX : (Wd/2 + playerX*Wd*0.42);
+      const kScale=(py-horizonY)/(camH*Ht/2);            // projection scale at the kart's row
+      const kHalfW=kScale*roadW*Wd/2;                    // road half-width there
+      const px=Wd/2 + kHalfW*playerX;
       cx.save(); cx.translate(px,py); cx.rotate(steer*0.05);
       drawKart(0,0,pw,'#F0B429',{av:heroKart},{boost:boostT>0,kart:KART,tint:opts.tint});
       cx.restore();
