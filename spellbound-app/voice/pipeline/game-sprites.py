@@ -84,6 +84,13 @@ SPRITES = {
                               "collectible, soft rim light, cartoon."),
     'tree':      ('3:4', 200, "A single cute rounded cartoon tree with a full leafy green canopy in soft layered blobs and a "
                               "short chunky brown trunk, gentle shading, storybook style, standing upright."),
+    'cactus':    ('3:4', 200, "A single cute cartoon saguaro desert cactus standing upright: a chunky rounded green cactus with two "
+                              "raised arms, a few tiny spines and a small pink flower on top, soft cel shading, warm desert storybook "
+                              "style, a single cactus."),
+    'building':  ('3:4', 240, "A single cute cartoon CITY SKYSCRAPER at night standing upright, seen straight on: a tall narrow tower "
+                              "with rows of small warm glowing yellow windows, a flat roof with a little antenna, deep indigo-blue walls, "
+                              "a soft neon cyan-and-pink glow along its edges, glossy cartoon, a single building. No readable text or "
+                              "signage lettering."),
     # ---- Keep Flying: characters ----
     'bee-fly':   ('1:1', 200, "A round chibi cartoon honeybee heroine flying, seen from a gentle three-quarter side view facing RIGHT, "
                               "wings up mid-beat. Glossy gradient-gold body with two soft chocolate-brown stripes, a small black "

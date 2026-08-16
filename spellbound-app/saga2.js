@@ -617,8 +617,8 @@
     const stars=[]; if(pal&&pal.stars) for(let i=0;i<pal.stars;i++) stars.push({x:Math.random()*Wd,y:Math.random()*Ht*0.8,r:0.6+Math.random()*1.5,tw:Math.random()*7});
     const birds=[]; 
     let holding=false;
-    const flap=e=>{ if(e.key!==' ')return; bee.vy=-6.4; e.preventDefault&&e.preventDefault(); };
-    const pdown=e=>{ if(e.target.closest&&e.target.closest('#sg-card,.sg-howto'))return; holding=true; if(bee.vy>-3.0) bee.vy=-4.4; e.preventDefault&&e.preventDefault(); };
+    const flap=e=>{ if(e.key!==' ')return; bee.vy=-5.6; e.preventDefault&&e.preventDefault(); };
+    const pdown=e=>{ if(e.target.closest&&e.target.closest('#sg-card,.sg-howto'))return; holding=true; if(bee.vy>-2.6) bee.vy=-3.9; e.preventDefault&&e.preventDefault(); };
     const pup=()=>{ holding=false; };
     addEventListener('keydown',flap);
     host.addEventListener('pointerdown',pdown); addEventListener('pointerup',pup); addEventListener('pointercancel',pup);
@@ -651,9 +651,9 @@
       if(card||!started){ last=ts; requestAnimationFrame(frame); return; }
       const dt=Math.min(50,ts-last); last=ts; t+=dt/1000; potT-=dt/1000; mothT-=dt/1000; coinT-=dt/1000; heartT-=dt/1000;
       const GRACE=(t<3)||(t<graceUntil);
-      if(holding) bee.vy-=0.62;                                 // hold to climb (beats gravity)
+      if(holding) bee.vy-=0.50;                                 // hold to climb (beats gravity)
       if(GRACE){ bee.vy*=0.9; bee.y+=bee.vy; bee.y=Math.max(30,Math.min(Ht-40,bee.y)); }
-      else { spawnT+=dt/1000; bee.vy+=0.30; bee.vy=Math.min(bee.vy,9); bee.y+=bee.vy; }   // honest gravity + a terminal fall speed
+      else { spawnT+=dt/1000; bee.vy+=0.22; bee.vy=Math.min(bee.vy,7.5); bee.y+=bee.vy; }   // honest gravity + a terminal fall speed
       if(!gate){
         if(spawnT>CFG.every){ spawnT=0; spawn(); }              // towers spaced to the world speed
         if(potT<=0&&!pot){ potT=8; pot={x:Wd+30,y:80+Math.random()*(Ht-220)}; }
@@ -666,9 +666,9 @@
       coins.forEach(c=>{ c.x-=CFG.speed; c.ph+=dt/240; });
       hearts.forEach(h=>{ h.x-=CFG.speed*0.8; h.ph+=dt/300; });
       obs=obs.filter(o=>o.x>-40); moths=moths.filter(m=>m.x>-70); coins=coins.filter(c=>c.x>-30); hearts=hearts.filter(h=>h.x>-30);
-      // collisions
-      bee.y=Math.max(24,Math.min(Ht-26,bee.y));            // sky edges are soft — they never hurt
-      if(bee.y<=24&&bee.vy<0) bee.vy=0; if(bee.y>=Ht-26&&bee.vy>0) bee.vy=0;
+      // collisions — the CEILING is soft (just don't fly off-screen), but the GROUND is deadly
+      if(bee.y<24){ bee.y=24; if(bee.vy<0) bee.vy=0; }
+      if(bee.y>=Ht-26){ bee.y=Ht-26; if(!GRACE&&t>inv){ try{flash('💥 Crash landing!');}catch(_){} hit(); } }
       if(!GRACE&&t>inv){ obs.forEach(o=>{ if(o.x<70&&o.x>10){ if(bee.y<o.y||bee.y>o.y+o.g){ hit(); o.x=-99; } } });
         moths.forEach(m=>{ if(Math.abs(m.x-60)<m.s*0.45&&Math.abs(m.y-bee.y)<m.s*0.45){ hit(); m.x=-99; } }); }
       coins=coins.filter(c=>{ if(Math.abs(c.x-60)<26&&Math.abs(c.y-bee.y)<30){ coinsGot++; try{if(typeof sfx==='function')sfx('coin');}catch(e){} return false; } return true; });
@@ -947,9 +947,9 @@
     const KART=(opts.kart)||'kart';              // chosen kart sprite (5 options in the start menu)
     // three scenarios: each is its own painted sky + road/grass palette
     const SCENES={
-      meadow:{sky:'gp-sky',  light:{road:'#6C6C74',grass:'#7BC169',rumble:'#EDEDED',lane:'#FFFFFF'}, dark:{road:'#64646C',grass:'#72B461',rumble:'#C7413F',lane:''}},
-      sunset:{sky:'gp-sunset',light:{road:'#6B5A63',grass:'#C98A4A',rumble:'#FFE7BE',lane:'#FFF3D8'}, dark:{road:'#63535B',grass:'#BC7E42',rumble:'#B5503A',lane:''}},
-      city:  {sky:'gp-city',  light:{road:'#50505E',grass:'#333B5E',rumble:'#8AE0FF',lane:'#EAF6FF'}, dark:{road:'#484852',grass:'#2C3452',rumble:'#C452C4',lane:''}}
+      meadow:{sky:'gp-sky',  prop:'tree',    light:{road:'#6C6C74',grass:'#7BC169',rumble:'#EDEDED',lane:'#FFFFFF'}, dark:{road:'#64646C',grass:'#72B461',rumble:'#C7413F',lane:''}},
+      sunset:{sky:'gp-sunset',prop:'cactus',  light:{road:'#6B5A63',grass:'#C98A4A',rumble:'#FFE7BE',lane:'#FFF3D8'}, dark:{road:'#63535B',grass:'#BC7E42',rumble:'#B5503A',lane:''}},
+      city:  {sky:'gp-city',  prop:'building',light:{road:'#50505E',grass:'#333B5E',rumble:'#8AE0FF',lane:'#EAF6FF'}, dark:{road:'#484852',grass:'#2C3452',rumble:'#C452C4',lane:''}}
     };
     const SCN=SCENES[opts.scene]||SCENES.meadow;
     const SKY=SCN.sky, NIGHT=(opts.scene==='city');
@@ -980,7 +980,7 @@
     // look DOWN onto more of the track ahead instead of skimming it at ground level.
     const horizonY=Math.round(Ht*0.30);   // horizon high up-screen: more track visible from above
     const camDepth=1/Math.tan((fov/2)*Math.PI/180);
-    sgTexPreload([KART,'kart-red','oil','cop','speedbump','item-box',SKY,'tree']);   // Gemini kart/hazard/scene art, decoded before first frame
+    sgTexPreload([KART,'kart-red','oil','cop','item-box',SKY,SCN.prop]);   // Gemini kart/hazard/scene art, decoded before first frame
     const LIGHT=SCN.light;
     const DARK =SCN.dark;
     const segs=[];
@@ -1007,17 +1007,17 @@
     while(segs.length%rumbleLen!==0) addSeg(0,lastY());
     const trackLen=segs.length*segLen, TOTAL=trackLen*CFG.laps, FINVIS=trackLen-segLen*8;
     for(let n=10;n<segs.length;n+=6){ const side=(n%12<6)?-1:1; segs[n].sprites.push({kind:'flora',off:side*(1.15+Math.random()*0.9)}); }
-    // mixed hazards + crazy distractions: oil slicks, striped speed bumps, and patrol cops
-    const HKINDS=['oil','oil','oil','bump','bump','cop'];
+    // mixed hazards + crazy distractions: oil slicks and patrol cops
+    const HKINDS=['oil','oil','oil','cop'];
     const hazards=[]; for(let n=60;n<segs.length-40;n+=Math.floor(20+Math.random()*16)){ if(Math.random()<CFG.haz*8){
       const kind=HKINDS[Math.floor(Math.random()*HKINDS.length)];
-      hazards.push({seg:n,off:kind==='bump'?0:(Math.random()*1.4-0.7),kind:kind}); } }
+      hazards.push({seg:n,off:(Math.random()*1.4-0.7),kind:kind}); } }
     const items=[]; for(let n=70;n<segs.length-60;n+=Math.floor(CFG.boxEvery*(0.8+Math.random()*0.5))){ items.push({seg:n,off:(Math.random()*1.1-0.55),gone:false,k:Math.random()*6}); }
 
     /* ---- racers: the villains ---- */
     const maxV=segLen*46, accel=maxV/4.6, offDecel=-maxV/1.6, offLimit=maxV/3.2, centri=0.32;
     let pos=0, playerX=0, v=0, over=false, mode='howto', lap=1, hudT=1; // howto -> count -> race -> spell -> done
-    let boostT=0, boostMul=1, shieldT=0, spinFlashT=0, countT=0, finishedRivals=0, gpCombo=0, bumpT=0;
+    let boostT=0, boostMul=1, shieldT=0, spinFlashT=0, countT=0, finishedRivals=0, gpCombo=0;
     const heroKart=HERO;
     const VILL=[
       {name:'The Smudge',col:'#8B8B96',glyph:'🦋',sprite:'smudge-swarm'},
@@ -1189,8 +1189,8 @@
       const posm=pos%trackLen;
       const base=segs[Math.floor(posm/segLen)%segs.length]; const basePct=(posm%segLen)/segLen;
       let x=0, dx=-(base.curve*basePct), maxy=Ht;
-      const camX=playerX*roadW*0.34;   // camera only half-follows: the kart visibly holds its own line, not glued to centre
-      let nearS=null;                  // nearest on-screen road point — the kart is placed here so what you SEE is what you HIT
+      const camX=playerX*roadW;        // camera FULLY follows the kart's lane — so the kart holds a straight screen line and the road curves under it, instead of the kart appearing to swing on bends
+      let nearS=null;                  // nearest on-screen road point (kept for reference)
       for(let n=0;n<drawDist;n++){ const seg=segs[(base.index+n)%segs.length];
         const looped=seg.index<base.index; const cz=posm-(looped?trackLen:0);
         project(seg.p1, camX - x,        camH, cz);
@@ -1225,8 +1225,26 @@
         cx.globalAlpha=Math.max(0,Math.min(1,(95-(o.far||0))/25));
         if(o.t==='flora'){
           cx.fillStyle='rgba(0,0,0,.18)'; cx.beginPath(); cx.ellipse(o.sx,o.sy,w*0.5,w*0.14,0,0,7); cx.fill();
-          const tr=sgTex('tree');
-          if(tr){ const tw=w*1.75, th=tw*(tr.height/tr.width); try{ cx.drawImage(tr,o.sx-tw/2,o.sy-th,tw,th); }catch(e){} }
+          const tr=sgTex(SCN.prop);   // bespoke sprite if present, else a per-scene procedural prop
+          if(tr){ const tw=w*(SCN.prop==='building'?1.9:1.75), th=tw*(tr.height/tr.width); try{ cx.drawImage(tr,o.sx-tw/2,o.sy-th,tw,th); }catch(e){} }
+          else if(SCN.prop==='building'){
+            // neon-city skyline block: dark tower, glowing windows, neon-lit roofline
+            const bw2=w*0.9, bh2=w*(1.7+((o.far||0)%5)*0.18);
+            const bg2=cx.createLinearGradient(0,o.sy-bh2,0,o.sy); bg2.addColorStop(0,'#3A3F63'); bg2.addColorStop(1,'#20233B');
+            cx.fillStyle=bg2; cx.fillRect(o.sx-bw2/2,o.sy-bh2,bw2,bh2);
+            cx.fillStyle='rgba(120,240,255,.5)'; cx.fillRect(o.sx-bw2/2,o.sy-bh2,bw2,w*0.05);   // neon top edge
+            cx.fillStyle='#FFE07A';
+            for(let wy=o.sy-bh2+w*0.22; wy<o.sy-w*0.2; wy+=w*0.26){ for(let wx=o.sx-bw2*0.32; wx<o.sx+bw2*0.32; wx+=bw2*0.28){
+              if(((wx+wy)|0)%3) cx.fillRect(wx,wy,bw2*0.14,w*0.12); } } }
+          else if(SCN.prop==='cactus'){
+            // desert saguaro: green body + two arms
+            const cg=cx.createLinearGradient(o.sx-w*0.2,0,o.sx+w*0.2,0); cg.addColorStop(0,'#3E8B4E'); cg.addColorStop(.5,'#5CB36A'); cg.addColorStop(1,'#3E8B4E');
+            cx.fillStyle=cg; cx.strokeStyle='#2E6B3C'; cx.lineWidth=Math.max(1,w*0.03);
+            const bx=o.sx, top=o.sy-w*1.5;
+            rrp(bx-w*0.14,top,w*0.28,w*1.5,w*0.14); cx.fill();
+            rrp(bx-w*0.5,o.sy-w*1.0,w*0.16,w*0.5,w*0.08); cx.fill();  rrp(bx-w*0.5,o.sy-w*1.0,w*0.36,w*0.16,w*0.08); cx.fill();
+            rrp(bx+w*0.34,o.sy-w*0.85,w*0.16,w*0.42,w*0.08); cx.fill(); rrp(bx+w*0.14,o.sy-w*0.85,w*0.36,w*0.16,w*0.08); cx.fill();
+            cx.fillStyle='#F07FB0'; cx.beginPath(); cx.arc(bx,top,w*0.1,0,7); cx.fill(); }
           else {
             cx.fillStyle='#6b4a2a'; cx.fillRect(o.sx-w*0.09,o.sy-w*0.7,w*0.18,w*0.7);
             const tg=cx.createRadialGradient(o.sx-w*0.2,o.sy-w*1.5,2,o.sx,o.sy-w*1.3,w*0.95);
@@ -1245,10 +1263,6 @@
           else { cx.fillStyle='#20222B'; rrp(o.sx-w*0.5,o.sy-w*0.8,w,w*0.8,w*0.16); cx.fill();
             cx.fillStyle='#EDEDED'; cx.fillRect(o.sx-w*0.5,o.sy-w*0.5,w,w*0.22);
             const on=(Math.floor(pos/90)%2)===0; cx.fillStyle=on?'#FF3B4D':'#3B7BFF'; cx.fillRect(o.sx-w*0.22,o.sy-w*0.92,w*0.44,w*0.12); } }
-        else if(o.t==='bump'){ const bmp=sgTex('speedbump'), bw=Math.max(o.hw?o.hw*1.9:w*3,w*3);
-          if(bmp){ const bh=bw*(bmp.height/bmp.width); try{ cx.drawImage(bmp,o.sx-bw/2,o.sy-bh*0.8,bw,bh); }catch(e){} }
-          else { for(let k=-4;k<=4;k++){ cx.fillStyle=(k%2)?'#1A1A1F':'#F2C64B'; cx.beginPath();
-              cx.moveTo(o.sx+k*bw*0.11,o.sy); cx.lineTo(o.sx+(k+1)*bw*0.11,o.sy); cx.lineTo(o.sx+(k+1)*bw*0.11,o.sy-w*0.22); cx.lineTo(o.sx+k*bw*0.11,o.sy-w*0.22); cx.closePath(); cx.fill(); } } }
         else if(o.t==='item'){ const s=Math.max(14,w*1.3), yy=o.sy-w*1.25-Math.sin(pos/180+o.it.k)*4;
           cx.save(); cx.translate(o.sx,yy); cx.rotate(Math.sin(pos/300+o.it.k)*0.12);
           const halo=cx.createRadialGradient(0,0,s*0.2,0,0,s*1.5);
@@ -1268,12 +1282,11 @@
         else { const r=o.r; drawKart(o.sx,o.sy,w*2.15,r.col,{sprite:r.sprite,glyph:r.glyph},{spin:r.spin>0,kart:'kart-red'}); }
         cx.globalAlpha=1; cx.restore();
       });
-      // place the kart on the ACTUAL projected road at lane playerX, so it lines up with the
-      // items and hazards it can hit — visual position === collision position (no more phantom catches).
-      const pw=Wd*0.115, py=Ht-14;
-      const px = nearS ? nearS.x + nearS.w*playerX : (Wd/2 + playerX*Wd*0.26);
-      const jolt = bumpT>0 ? Math.sin(bumpT*46)*pw*0.06 : 0;
-      cx.save(); cx.translate(px,py+jolt); cx.rotate(steer*0.02 + (nearS?0:0));
+      // With a full-follow camera the player's own lane is ALWAYS screen-centre, so the kart
+      // sits at Wd/2 and holds a straight line — steering shifts the road, not a swinging kart.
+      // Items at the player's lane also land at centre, so visual === collision (no phantom catches).
+      const pw=Wd*0.115, py=Ht-14, px=Wd/2;
+      cx.save(); cx.translate(px,py); cx.rotate(steer*0.035);
       drawKart(0,0,pw,'#F0B429',{av:heroKart},{boost:boostT>0,kart:KART,tint:opts.tint});
       cx.restore();
       if(shieldT>0){ cx.strokeStyle='rgba(120,205,255,.85)'; cx.lineWidth=3; cx.beginPath(); cx.ellipse(px,py-pw*0.34,pw*0.62,pw*0.5,0,0,7); cx.stroke();
@@ -1311,7 +1324,7 @@
       if(mode==='race') update(dt);
       draw(); requestAnimationFrame(frame); }
     function update(dt){
-      boostT=Math.max(0,boostT-dt); if(boostT===0) boostMul=1; shieldT=Math.max(0,shieldT-dt); spinFlashT=Math.max(0,spinFlashT-dt); bumpT=Math.max(0,bumpT-dt);
+      boostT=Math.max(0,boostT-dt); if(boostT===0) boostMul=1; shieldT=Math.max(0,shieldT-dt); spinFlashT=Math.max(0,spinFlashT-dt);
       const seg=segs[Math.min(segs.length-1,Math.floor(pos/segLen))]; const spdPct=v/maxV;
       v=Math.min(maxV*boostMul, v+accel*dt);
       const dxs=dt*2.2*Math.max(0.35,spdPct);
@@ -1322,11 +1335,8 @@
       // tol ≈ half a kart-width in lane units — so a hit needs a real overlap, matching what you see
       const CATCH=0.34;
       if(shieldT<=0){ hazards.forEach(h=>{ if(h.hit) return; const hz2=h.seg*segLen; let d=Math.abs(pm-hz2); d=Math.min(d,trackLen-d);
-        const near=(h.kind==='bump'? d<segLen*1.0 : d<segLen*0.9);
-        const wide=(h.kind==='bump'? 1.0 : CATCH);   // a bump spans the whole road
-        if(near && Math.abs(playerX-h.off)<wide && v>maxV*0.25){ h.hit=true; setTimeout(()=>{h.hit=false;},1400);
-          if(h.kind==='bump'){ v*=0.82; bumpT=0.5; try{if(typeof SGFX!=='undefined'&&SGFX.shake)SGFX.shake(6);}catch(_){}; try{flash('🟡 Speed bump!');}catch(_){} }
-          else if(h.kind==='cop'){ v*=0.5; spinFlashT=0.5; try{flash('🚓 Pulled over — the cops!');}catch(_){} }
+        if(d<segLen*0.9 && Math.abs(playerX-h.off)<CATCH && v>maxV*0.25){ h.hit=true; setTimeout(()=>{h.hit=false;},1400);
+          if(h.kind==='cop'){ v*=0.5; spinFlashT=0.5; try{flash('🚓 Pulled over — the cops!');}catch(_){} }
           else { v*=0.55; spinFlashT=0.5; try{flash('🛢️ Slipped on oil!');}catch(_){} } } }); }
       items.forEach(it=>{ if(it.gone) return; const iz=it.seg*segLen; const d=iz-pm;
         if(d>-segLen*0.5&&d<segLen*1.1 && Math.abs(playerX-it.off)<CATCH){ it.gone=true; spellGate(); } });
@@ -1351,7 +1361,7 @@
       '<div class="sg-howto-h">🏁 Bee Grand Prix</div>'+
       '<div class="sg-howto-sub">One epic race to the finish against the Unspelling’s crew — the Smudge, Glitch and Vex are on the grid!</div>'+
       '<ol class="sg-howto-steps">'+
-      '<li>You keep rolling — <b>steer</b> with <b>◀ ▶</b> (arrows / tap the sides) and dodge 🛢️ oil, 🟡 speed bumps and 🚓 cops.</li>'+
+      '<li>You keep rolling in a straight line — <b>steer</b> with <b>◀ ▶</b> (arrows / tap the sides) and dodge 🛢️ oil and 🚓 cops.</li>'+
       '<li>Drive into a <b>? box</b> — the race pauses while you <b>spell the word</b>.</li>'+
       '<li>Spelling it right <b>unlocks a power-up</b> into your slot — tap the slot (or Space) to fire it when you need it!</li>'+
       '<li>Watch the <b>track bar up top</b> to see where every racer is. First to the flag wins ⭐⭐⭐.</li>'+
