@@ -17,3 +17,6 @@ spellbound-app/*review.html
 
 # session-local voice QA scratch (scan intermediates, decoded wavs)
 .voicebuild/
+
+# staging deploy worktree (deploy-staging.sh --from-gh-pages)
+.staging-build/
