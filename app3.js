@@ -4786,10 +4786,13 @@ function viewHome(){
         </span>
       </button>`:cardHold('Quote of the hour',132);
       return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:12px">
-      <div class="sb-card" style="display:flex;align-items:center;gap:14px;min-height:128px;padding:14px">
+      <div class="sb-card" style="display:flex;align-items:center;gap:14px;min-height:178px;padding:14px">
         ${(()=>{ const hasCard=c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar]&&typeof SB_AV_CARD==='function';
-          const art=hasCard?avatarSVG(c.avatar,94,c.accOn):mascotAcc(S.mood,84);
-          const inner=`<div style="width:96px;height:100px;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center;position:relative">${art}</div>`;
+          /* 1.5x the original 94/84 — the buddy is the first thing on Home and read small.
+             avSrc switches to the full-size .webp above 96px, so the bigger draw is also a
+             sharper source rather than an upscale of the 192px thumb. */
+          const art=hasCard?avatarSVG(c.avatar,141,c.accOn):mascotAcc(S.mood,126);
+          const inner=`<div style="width:144px;height:150px;flex-shrink:0;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center;position:relative">${art}</div>`;
           return hasCard?`<button data-act="openAvDeck" data-arg="${c.avatar}" title="Flip through your avatar cards" style="flex-shrink:0;background:none;border:0;padding:0;cursor:pointer">${inner}</button>`
                         :`<div style="position:relative;flex-shrink:0">${inner}</div>`; })()}
         <div style="min-width:0;flex:1">
