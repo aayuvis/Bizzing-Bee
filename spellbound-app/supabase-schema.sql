@@ -20,7 +20,10 @@
 create table if not exists public.children (
   id            uuid primary key default gen_random_uuid(),
   parent_id     uuid not null references auth.users(id) on delete cascade,
-  display_name  text not null default 'Speller',   -- a nickname the CHILD picks, not a legal name
+  -- NOT the name the parent typed. The client derives this from the child's AVATAR
+  -- ("Fox", "Panda"), because the app has one name field and most families put a real
+  -- name in it. See label() in supabase-sync.js.
+  display_name  text not null default 'Speller',
   spell_level   int  not null default 1,           -- self-declared, then corrected by the placement test
   avatar        text,
   theme         text,
@@ -51,10 +54,18 @@ create table if not exists public.accounts (
   tier                text not null default 'free',
   addons              jsonb not null default '{}'::jsonb,
   stripe_customer_id  text,
+  -- COPPA consent record. Null means the parent has never switched cloud backup on,
+  -- or has withdrawn it; either way nothing about a child may be stored. It is kept
+  -- HERE rather than only in the browser so it survives a wiped device and can be
+  -- shown back to the parent as a fact rather than a claim.
+  consent_at          timestamptz,
+  consent_device      text,
   created_at          timestamptz not null default now(),
   updated_at          timestamptz not null default now(),
   constraint tier_known check (tier in ('free','beginner','regional'))
 );
+alter table public.accounts add column if not exists consent_at     timestamptz;
+alter table public.accounts add column if not exists consent_device text;
 
 -- Create the account row automatically on sign-up, so the client never has to.
 create or replace function public.handle_new_user()

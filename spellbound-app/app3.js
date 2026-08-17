@@ -1184,6 +1184,58 @@ const app = {
       set({authSheet:null}); flash('Account created — welcome!');
     }); },
   doSignOut:()=>{ SB_AUTH.signOut(); flash('Signed out'); render(); },
+  /* ===== Cloud backup =====
+     Every one of these routes through SB_LAZY.need('cloud'), because supabase-sync.js
+     arrives on the idle queue and a parent can reach this card before it lands. */
+  cloudNeed:(cb)=>{ if(window.SB_SYNC) return cb(); if(window.SB_LAZY) SB_LAZY.need('cloud',()=>cb()); },
+  openCloud:(m)=>app.cloudNeed(()=>set({cloudSheet:m||'consent', cloudErr:null, cloudList:null})),
+  closeCloud:()=>set({cloudSheet:null, cloudErr:null, cloudList:null}),
+  /* The consent event itself. It cannot be reached without a signed-in parent, and the
+     sheet that calls it has already spelled out what will and will not be sent — which
+     is the whole point of making this a screen rather than a switch. */
+  cloudAgree:()=>{ app.cloudNeed(()=>{
+      if(!SB_AUTH.current()){ set({cloudErr:'Sign in first — the backup belongs to your account.'}); return; }
+      set({cloudBusy:true});
+      Promise.resolve(SB_SYNC.giveConsent()).then(()=>SB_SYNC.push()).then(r=>{
+        state.cloudBusy=false;
+        if(r&&r.error){ set({cloudErr:r.error}); return; }
+        set({cloudSheet:null}); flash('Cloud backup is on'); }); }); },
+  cloudOff:()=>{ app.cloudNeed(()=>{ set({cloudBusy:true});
+      Promise.resolve(SB_SYNC.withdrawConsent()).then(r=>{
+        state.cloudBusy=false;
+        if(r&&r.error){ set({cloudErr:r.error}); return; }
+        set({cloudSheet:null}); flash('Backup off — everything uploaded has been deleted'); }); }); },
+  cloudPush:()=>{ app.cloudNeed(()=>{ flash('Backing up…');
+      Promise.resolve(SB_SYNC.push()).then(r=>{ render();
+        flash(r&&r.error ? 'Could not back up — '+r.error : 'Backed up'); }); }); },
+  cloudRestore:()=>{ app.cloudNeed(()=>{ set({cloudSheet:'restore', cloudList:null, cloudErr:null});
+      Promise.resolve(SB_SYNC.fetchAll()).then(r=>{
+        if(r&&r.error){ set({cloudErr:r.error, cloudList:[]}); return; }
+        set({cloudList:(r&&r.kids)||[]}); }); }); },
+  /* Restoring asks for the name and the age HERE, on the device, because the server
+     was never told them. That is the design working, not a missing field. */
+  cloudAdd:(i)=>{ const row=(state.cloudList||[])[+i]; if(!row) return;
+    const nEl=document.getElementById('cldn-'+i), aEl=document.getElementById('clda-'+i);
+    const nm=((nEl&&nEl.value)||'').trim()||'Speller';
+    const age=Math.max(4,Math.min(18,+((aEl&&aEl.value)||9)||9));
+    if((state.children||[]).some(c=>c.cid===row.row.id)){ flash('That speller is already on this device'); return; }
+    const kid=Object.assign({}, row.child, {name:nm, age:age});
+    state.children=(state.children||[]).concat([kid]); save();
+    flash(esc(nm)+' restored'); set({cloudSheet:null, cloudList:null}); },
+  /* Deleting a speller. COPPA gives a parent the right to delete their child's
+     information, and the privacy notice says it can be done in the app — so it has to
+     actually exist. Two taps, because the second tap destroys months of practice. */
+  askDelSpeller:(i)=>set({delSpeller:(state.delSpeller===+i?null:+i)}),
+  delSpeller:(i)=>{ const ch=state.children||[]; const k=ch[+i]; if(!k) return;
+    const nm=k.name||'That speller';
+    if(k.cid&&window.SB_SYNC) { try{ SB_SYNC.delChild(k.cid); }catch(e){} }
+    ch.splice(+i,1);
+    state.children=ch;
+    state.activeIdx=Math.max(0,Math.min(state.activeIdx||0, ch.length-1));
+    state.delSpeller=null;
+    save();
+    if(!ch.length){ flash(esc(nm)+' removed'); set({screen:'onboarding', onbStep:0, addingMore:false, draft:{name:'',age:9,avatar:'bizzy',goal:10}}); return; }
+    flash(esc(nm)+' removed — everything of theirs is deleted'); render(); },
   // ===== Admin console =====
   openAdmin:()=>{ if(SB_AUTH.isAdmin()){ set({screen:'admin', adminTab:'users'}); } else { set({authSheet:'signin', authAdmin:true, authErr:null}); } },
   closeAdmin:()=>set({screen:'app'}),
@@ -6772,7 +6824,13 @@ function viewParent(){
         <div style="background:var(--surface);border-radius:10px;padding:11px;text-align:center" title="${bandTier(beeBand(k).band)} — proven difficulty band across all activities">${(()=>{ const kb=beeBand(k); return `<div style="font-family:var(--display);font-weight:800;font-size:17px">${kb.calibrating?'…':kb.band}</div><div style="font-size:12px;color:var(--muted);font-weight:700">BEE BAND</div>`; })()}</div>
         <div style="background:var(--surface);border-radius:10px;padding:11px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:17px">${k.acc||0}%</div><div style="font-size:12px;color:var(--muted);font-weight:700">ACCURACY</div></div>
         <div style="background:var(--surface);border-radius:10px;padding:11px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:17px">${k.streak||0}</div><div style="font-size:12px;color:var(--muted);font-weight:700">STREAK</div></div>
-      </div></div>`).join('');
+      </div>
+      ${S.children.length?(S.delSpeller===i
+        ? `<div style="margin-top:11px;padding:11px 12px;border-radius:11px;background:color-mix(in srgb,var(--bad,#D6453A) 10%,var(--surface));border:1px solid color-mix(in srgb,var(--bad,#D6453A) 34%,transparent)">
+            <div style="font-size:12.5px;line-height:1.5;font-weight:650;margin-bottom:9px">Delete ${esc(k.name)} and everything they have earned? Progress, words, coins and levels go permanently — here and in any backup.</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap"><button data-act="delSpeller" data-arg="${i}" style="padding:8px 14px;border-radius:9px;background:var(--bad,#D6453A);color:#fff;font-weight:800;font-size:12.5px">Delete permanently</button><button data-act="askDelSpeller" data-arg="${i}" style="padding:8px 14px;border-radius:9px;background:var(--surface2);color:var(--text);font-weight:800;font-size:12.5px">Cancel</button></div></div>`
+        : `<div style="margin-top:10px;text-align:right"><button data-act="askDelSpeller" data-arg="${i}" style="padding:6px 11px;border-radius:8px;background:transparent;color:var(--muted);font-weight:700;font-size:12px">Remove speller</button></div>`):''}
+      </div>`).join('');
   const parentBtns=`<button data-act="printReport" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:13px;border:1px solid var(--line)">${iconSVG('print',15)} Weekly report</button><button data-act="addChild" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">${iconSVG('plus',15)} Add child</button>`;
   const oneThing=(()=>{ try{ const t=parentTips()[0]; if(!t) return '';
     return `<div class="sb-card" style="margin-bottom:16px;background:linear-gradient(100deg,color-mix(in srgb,var(--treasure,#F0B429) 14%,var(--paper,var(--bg2))),var(--paper,var(--bg2)) 65%)">
@@ -6797,11 +6855,7 @@ function viewParent(){
         <div style="display:grid;gap:6px;max-height:220px;overflow-y:auto">${rs.slice().reverse().map(r=>`<div style="background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:12.5px"><b>${esc(r.w)}</b> — ${esc(r.issue)} <span style="color:var(--muted)">· ${esc(r.when)}</span>${r.d?`<div style="color:var(--muted);margin-top:2px">meaning: ${esc(trunc(r.d,110))}</div>`:''}</div>`).join('')}</div>
         <div class="sb-cn" style="margin-top:8px">The app is fully offline — copy these and share them with us to get the dictionary corrected.</div>
       </div>`; })()}
-    <div class="sb-card" style="margin-top:18px">
-      <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:6px">🔒 Privacy — your child's data</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:10px">Everything in this app — names, ages, progress, scores — lives only in this browser on this device. Nothing is ever sent anywhere: no accounts, no analytics, no ads, no third parties. You can review it all right here, and deleting a profile (or clearing this site's browser data) erases it permanently.</div>
-      <a href="privacy.html" style="display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12.5px;text-decoration:none">Read the full Privacy &amp; Parents' Notice →</a>
-    </div>
+    ${cloudCard()}
     <div class="sb-card" style="margin-top:18px">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:6px">Countdown</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:14px">${(()=>{ const ms=milestone(); return ms?esc(ms.label):'Your next milestone'; })()}</div>
@@ -8965,6 +9019,7 @@ function overlays(){
   if(S.ttList) h+=viewTtList();
   if(S.showTiers) h+=viewTiersSheet();
   if(S.authSheet) h+=viewAuthSheet();
+  if(S.cloudSheet) h+=viewCloudSheet();
   if(S.settingsOpen){
     h+=`<div id="sb-set-ov" data-act="closeSettings" style="position:fixed;inset:0;z-index:76;background:rgba(10,8,20,.55);backdrop-filter:blur(6px);display:grid;place-items:start center;padding:18px;overflow:auto">
       <div data-act="noop" style="position:relative;width:100%;max-width:660px;background:var(--bg2);border:1px solid var(--line);border-radius:20px;box-shadow:var(--glow);padding:clamp(16px,4vw,26px) clamp(16px,4vw,26px) 24px;margin:20px 0;${state._setOpened?'':'animation:sb-pop .3s ease both'}">
@@ -9256,7 +9311,7 @@ function viewAuthSheet(){ const S=state; const mode=S.authSheet; const signup=mo
   return `<div style="position:fixed;inset:0;z-index:136;display:grid;place-items:center;padding:20px;background:rgba(20,12,4,.55)" data-act="closeAuth">
     <div data-act="noop" style="background:var(--paper,#fff);border-radius:20px;max-width:380px;width:100%;padding:24px 22px;box-shadow:0 20px 60px rgba(20,10,30,.5);animation:sb-pop .3s ease both">
       <div style="font-family:var(--display);font-weight:800;font-size:20px;margin-bottom:3px">${signup?'Create parent account':(adminHint?'Admin sign in':'Parent sign in')}</div>
-      <div style="font-size:12.5px;color:var(--muted);margin-bottom:16px">${adminHint?'Enter the admin credentials to open the console.':'Accounts are for grown-ups — kids just play. (Local preview; real accounts in Phase 2.)'}</div>
+      <div style="font-size:12.5px;color:var(--muted);margin-bottom:16px">${adminHint?'Enter the admin credentials to open the console.':'Accounts are for grown-ups — kids just play. '+((window.SB_AUTH&&SB_AUTH.isCloud)?'Your email is the account; your child never signs in to anything.':'(Local preview — this account stays on this device.)')}</div>
       ${signup?`<input data-inp="authName" placeholder="Your name" autocomplete="off" style="width:100%;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:600;margin-bottom:10px;outline:none">`:''}
       <input data-inp="authEmail" placeholder="${adminHint?'admin':'you@email.com'}" autocomplete="off" autocapitalize="off" style="width:100%;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:600;margin-bottom:10px;outline:none">
       <input data-inp="authPw" type="password" placeholder="Password" autocomplete="off" style="width:100%;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:600;margin-bottom:${S.authErr?'8':'16'}px;outline:none">
@@ -9264,6 +9319,96 @@ function viewAuthSheet(){ const S=state; const mode=S.authSheet; const signup=mo
       <button data-act="${signup?'doSignUp':'doSignIn'}" style="width:100%;padding:13px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge);margin-bottom:10px">${signup?'Create account':'Sign in'}</button>
       <div style="text-align:center;font-size:12.5px;color:var(--muted)">${signup?'Have an account?':'No account yet?'} <button data-act="openAuth" data-arg="${signup?'signin':'signup'}" style="color:var(--accent);font-weight:800;background:none;border:0;cursor:pointer">${signup?'Sign in':'Create one'}</button> · <button data-act="closeAuth" style="color:var(--muted);font-weight:700;background:none;border:0;cursor:pointer">Cancel</button></div>
     </div></div>`; }
+/* ===== Cloud backup: the consent screen, the off switch, and restore =====
+   The consent screen is deliberately wordy. It is the one place a parent decides that
+   something about their child leaves the device, and a switch labelled "sync" would
+   not be consent to anything. What it promises is enforced in supabase-sync.js
+   (an allow-list of fields) and in the schema (no column for a name or an age). */
+function viewCloudSheet(){ const S=state; const m=S.cloudSheet;
+  const wrap=(inner,wide)=>`<div style="position:fixed;inset:0;z-index:137;display:grid;place-items:center;padding:20px;background:rgba(20,12,4,.55)" data-act="closeCloud">
+    <div data-act="noop" style="background:var(--paper,#fff);border-radius:20px;max-width:${wide?'520px':'420px'};width:100%;max-height:86vh;overflow:auto;padding:24px 22px;box-shadow:0 20px 60px rgba(20,10,30,.5);animation:sb-pop .3s ease both">${inner}</div></div>`;
+  const err=S.cloudErr?`<div style="font-size:12.5px;color:var(--bad,#D6453A);font-weight:700;margin:10px 0 0">${esc(S.cloudErr)}</div>`:'';
+  if(m==='off') return wrap(`
+    <div style="font-family:var(--display);font-weight:800;font-size:19px;margin-bottom:6px">Turn cloud backup off?</div>
+    <div style="font-size:13.5px;line-height:1.6;color:var(--muted)">This withdraws your consent and <b style="color:var(--text)">deletes everything already uploaded</b> — every speller record and every progress record on your account. Nothing on this device is touched; your child keeps playing exactly as they are.</div>
+    <div style="display:flex;gap:9px;margin-top:18px">
+      <button data-act="cloudOff" style="flex:1;padding:13px;border-radius:12px;background:var(--bad,#D6453A);color:#fff;font-weight:800;font-size:14px">${S.cloudBusy?'Deleting…':'Turn off &amp; delete'}</button>
+      <button data-act="closeCloud" style="padding:13px 18px;border-radius:12px;background:var(--surface2);color:var(--text);font-weight:800;font-size:14px">Keep it on</button>
+    </div>${err}`);
+  if(m==='restore'){
+    const list=S.cloudList;
+    const body = list===null
+      ? `<div style="font-size:13px;color:var(--muted);padding:14px 0">Looking for backed-up spellers…</div>`
+      : (!list.length
+        ? `<div style="font-size:13px;color:var(--muted);padding:14px 0">No backed-up spellers on this account yet.</div>`
+        : list.map((r,i)=>{
+            const here=(S.children||[]).some(c=>c.cid===r.row.id);
+            const when=r.updated_at?new Date(r.updated_at).toLocaleDateString():'';
+            return `<div style="border:1px solid var(--line);border-radius:14px;padding:13px;margin-bottom:10px">
+              <div style="display:flex;align-items:center;gap:11px;margin-bottom:${here?'0':'10px'}">
+                <div style="width:42px;height:42px;border-radius:12px;background:var(--surface2);display:grid;place-items:center">${avatarSVG(r.row.avatar||'bizzy',30)}</div>
+                <div style="min-width:0;flex:1"><div style="font-weight:800;font-size:14.5px">${esc(r.row.display_name||'Speller')} · Level ${+r.row.spell_level||1}</div>
+                  <div style="font-size:12px;color:var(--muted)">${when?'Last saved '+esc(when):'Backed up'}</div></div>
+                ${here?'<span style="font-size:12px;font-weight:800;color:var(--muted)">On this device</span>':''}</div>
+              ${here?'':`<div style="display:flex;gap:8px;flex-wrap:wrap">
+                <input id="cldn-${i}" placeholder="First name or nickname" style="flex:1;min-width:140px;padding:10px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:13.5px;font-weight:600;outline:none">
+                <input id="clda-${i}" type="number" min="4" max="18" value="9" aria-label="Age" style="width:74px;padding:10px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:13.5px;font-weight:600;outline:none">
+                <button data-act="cloudAdd" data-arg="${i}" style="padding:10px 16px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">Restore</button></div>`}
+            </div>`; }).join(''));
+    return wrap(`
+      <div style="font-family:var(--display);font-weight:800;font-size:19px;margin-bottom:4px">Restore a speller</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:14px">Their progress is on your account. Their <b style="color:var(--text)">name and age were never uploaded</b>, so add those here — they stay on this device.</div>
+      ${body}${err}
+      <button data-act="closeCloud" style="width:100%;padding:12px;border-radius:12px;background:var(--surface2);color:var(--text);font-weight:800;font-size:13.5px;margin-top:4px">Done</button>`,true);
+  }
+  const signed=(window.SB_AUTH&&SB_AUTH.current())||null;
+  const yes=(t)=>`<li style="margin-bottom:5px">${t}</li>`;
+  return wrap(`
+    <div style="font-family:var(--display);font-weight:800;font-size:19px;margin-bottom:4px">Back up your spellers' progress</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:14px">So a lost, wiped or replaced tablet does not cost months of practice — and so the same progress opens on a second device.</div>
+    <div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px">
+      <div style="font-weight:800;font-size:13px;margin-bottom:6px">What gets uploaded</div>
+      <ul style="margin:0 0 12px 16px;padding:0;font-size:13px;color:var(--muted);line-height:1.5">
+        ${yes('A label taken from their avatar — “Fox”, “Panda”')}${yes('Their spelling level, avatar and world')}${yes('Practice progress: words, scores, coins, streaks')}</ul>
+      <div style="font-weight:800;font-size:13px;margin-bottom:6px">What never leaves this device</div>
+      <ul style="margin:0 0 0 16px;padding:0;font-size:13px;color:var(--muted);line-height:1.5">
+        ${yes('<b style="color:var(--text)">The name you typed for them</b> — real name or nickname, neither is uploaded')}${yes('<b style="color:var(--text)">Their age</b>')}${yes('Anything else that could identify them — the database has no column for it')}</ul>
+    </div>
+    <div style="font-size:12.5px;color:var(--muted);line-height:1.55;margin-bottom:14px">Records are stored against a random id on our database host, Supabase, and are readable only by your account. You can turn this off and delete everything in one tap, any time. <a href="privacy.html" style="color:var(--accent);font-weight:700">Read the full notice →</a></div>
+    ${signed
+      ? `<button data-act="cloudAgree" style="width:100%;padding:13px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">${S.cloudBusy?'Turning on…':'I’m the parent — turn backup on'}</button>`
+      : `<button data-act="openAuth" data-arg="signup" style="width:100%;padding:13px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">Create a parent account first</button>`}
+    ${err}
+    <button data-act="closeCloud" style="width:100%;padding:11px;border-radius:12px;background:transparent;color:var(--muted);font-weight:800;font-size:13px;margin-top:8px">Not now</button>`);
+}
+/* The card in the Parent dashboard. It states the truth about THIS install rather than
+   a general claim, because the honest answer differs per family: most are offline-only,
+   and telling them their data is in a cloud they never opted into would be a lie. */
+function cloudCard(){
+  const st=(window.SB_SYNC&&SB_SYNC.status())||{configured:false};
+  const signed=(window.SB_AUTH&&SB_AUTH.current())||null;
+  const when=(t)=>t?new Date(t).toLocaleString():'never';
+  let body, ctrl;
+  if(!st.configured){
+    body='Everything in this app — names, ages, progress, scores — lives only in this browser on this device. Nothing is sent anywhere: no accounts, no analytics, no ads, no third parties. Deleting a profile (or clearing this site’s browser data) erases it permanently.';
+    ctrl='';
+  } else if(!st.consented){
+    body='Right now this app is <b>offline only</b> — your child’s names, ages and progress live in this browser and nothing is sent anywhere. You can optionally back up progress to your parent account so a wiped tablet does not cost months of work. Names and ages are never uploaded.';
+    ctrl=`<button data-act="openCloud" data-arg="consent" style="display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:12.5px;box-shadow:var(--edge)">Set up cloud backup</button>
+      <button data-act="cloudRestore" style="display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12.5px">Restore a speller</button>`;
+  } else {
+    body=`Cloud backup is <b>on</b> for ${esc((signed&&signed.email)||'your account')}. Spelling levels, avatars and progress are backed up under an avatar label; <b>names and ages are not, and cannot be</b>. Last backup: ${esc(when(st.lastPush))}.${st.error?' <span style="color:var(--bad,#D6453A)">Last attempt failed: '+esc(st.error)+'</span>':''}`;
+    ctrl=`<button data-act="cloudPush" style="display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:12.5px;box-shadow:var(--edge)">Back up now</button>
+      <button data-act="cloudRestore" style="display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12.5px">Restore a speller</button>
+      <button data-act="openCloud" data-arg="off" style="display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:10px;background:transparent;border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:12.5px">Turn off &amp; delete</button>`;
+  }
+  return `<div class="sb-card" style="margin-top:18px">
+      <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:6px">🔒 Privacy — your child's data</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:10px">${body}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">${ctrl}
+        <a href="privacy.html" style="display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12.5px;text-decoration:none">Read the full Privacy &amp; Parents' Notice →</a></div>
+    </div>`;
+}
 // ===== Admin console (local support tool; Retool/RBAC in Phase 2) =====
 function viewAdmin(){ const S=state; const tab=S.adminTab||'users'; const me=SB_AUTH.current();
   const tabBtn=(k,l)=>`<button data-act="adminTab" data-arg="${k}" style="padding:9px 15px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${l}</button>`;
@@ -9307,7 +9452,12 @@ function viewAdmin(){ const S=state; const tab=S.adminTab||'users'; const me=SB_
 
 /* ===================== render + events ===================== */
 const root = document.getElementById('root');
-function save(){ try{ localStorage.setItem('sb_saas_v2', JSON.stringify({ theme:state.theme, mode:state.mode, premium:state.premium, pin:state.parentPin||null, vr:state.voiceRate||1, tz:state.textSize||'normal', ra:state.readAloud?1:0, af:state.a11yFont||'std', ac:state.a11yContrast?1:0, am:state.a11yMotion?1:0, cm:state.calmMode?1:0, children:state.children, activeIdx:state.activeIdx, goalDone:state.goalDone, cN:(window.SB_CONCEPTS&&SB_CONCEPTS.chapters&&SB_CONCEPTS.chapters.length)||121, lu:state.luMastered, srs:state.coachSrs, chist:state.coachHistory, wr:state.wordReports||[] })); }catch(e){} }
+function save(){ try{ localStorage.setItem('sb_saas_v2', JSON.stringify({ theme:state.theme, mode:state.mode, premium:state.premium, pin:state.parentPin||null, vr:state.voiceRate||1, tz:state.textSize||'normal', ra:state.readAloud?1:0, af:state.a11yFont||'std', ac:state.a11yContrast?1:0, am:state.a11yMotion?1:0, cm:state.calmMode?1:0, children:state.children, activeIdx:state.activeIdx, goalDone:state.goalDone, cN:(window.SB_CONCEPTS&&SB_CONCEPTS.chapters&&SB_CONCEPTS.chapters.length)||121, lu:state.luMastered, srs:state.coachSrs, chist:state.coachHistory, wr:state.wordReports||[] })); }catch(e){}
+  /* Cloud backup rides on the same call, coalesced inside SB_SYNC. save() fires on
+     nearly every interaction, so this must never do work on the calling frame — and
+     it must never be able to break the local save above, which is why it is last and
+     wrapped. Inert unless a parent has signed in and consented. */
+  try{ if(window.SB_SYNC) SB_SYNC.queue(); }catch(e){} }
 /* An entrance animation should say "a new screen arrived", not "a data file
    landed". sb-rise is applied in thirty places, all inside strings render()
    rebuilds — so every render restarts a translateY(12px) slide on everything

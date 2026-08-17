@@ -11,7 +11,8 @@
   body{font-family:"Hanken Grotesk",system-ui,-apple-system,sans-serif;color:#241E33;background:#f3efff;line-height:1.65;padding:28px 18px 80px}
   @media(prefers-color-scheme:dark){html,body{background:#1c1630;color:#EDE9F7}
     .card{background:#262040;border-color:#3a3158}
-    a{color:#B9A6FF} .muted{color:#B0A8C8} .tag{background:#3a3158;color:#CFC6E8}}
+    a{color:#B9A6FF} .muted{color:#B0A8C8} .tag{background:#3a3158;color:#CFC6E8}
+    table{border-color:#3a3158} th,td{border-color:#3a3158} th{background:#2f2850}}
   main{max-width:760px;margin:0 auto}
   h1{font-size:28px;line-height:1.2;margin:14px 0 4px}
   h2{font-size:19px;margin:34px 0 10px}
@@ -23,6 +24,10 @@
   .tag{display:inline-block;background:#e6defc;color:#4a3aa0;font-weight:800;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;border-radius:999px;padding:4px 12px;margin-bottom:10px}
   .card{background:#fff;border:1px solid #ddd4f2;border-radius:16px;padding:18px 20px;margin:14px 0}
   .back{display:inline-block;margin-bottom:18px;font-size:14px}
+  .tw{overflow-x:auto;margin:12px 0 16px}
+  table{border-collapse:collapse;width:100%;min-width:460px;font-size:14px}
+  th,td{border:1px solid #ddd4f2;padding:9px 11px;text-align:left;vertical-align:top}
+  th{background:#f0eaff;font-weight:800;font-size:12.5px;letter-spacing:.02em}
 </style>
 </head>
 <body>
@@ -30,25 +35,23 @@
   <a class="back" href="index.html">← Back to Bizzing Bee</a>
   <span class="tag">Privacy &amp; Parents' Notice</span>
   <h1>Bizzing Bee — Privacy Policy and Notice to Parents</h1>
-  <p class="muted">Effective 9 August 2026 · Written for parents and guardians, under the Children's Online
+  <p class="muted">Effective 17 August 2026 · Written for parents and guardians, under the Children's Online
   Privacy Protection Act (COPPA, 16 CFR Part 312)</p>
 
   <div class="card">
     <h3>The short version</h3>
     <p><b>We do not hold a record of your child.</b> Not their name, not their age, not a photo, a
-    voice recording or a location. A speller profile is a <b>display name they invent</b> and a
-    <b>spelling level</b> — nothing that identifies a person. The database has no column for the
-    rest, so it cannot be collected later by accident.</p>
-    <p>Their practice — words attempted, scores, streaks, coins — is saved on your device and
-    <b>backed up to your account</b>, so a wiped or lost tablet does not cost them months of work.
-    It is stored against a random id, not a name.</p>
-    <p>The one piece of personal information we hold is <b>your email address</b>, because somebody
-    has to own the account and be billed. It is an adult's, given by the adult. There is no
-    analytics, no advertising, no trackers, and no third party receives any of it.</p>
-    <p>There is now a <b>parent account</b> — an email address and a password you choose. It is created
-    and kept <b>on your own device</b> and is not sent to us or to anyone else; we have no server to
-    send it to. Your child never signs in to anything. Please read section 8 before choosing that
-    password.</p>
+    voice recording or a location. What can leave the device is a <b>display name</b>, a
+    <b>spelling level</b> and their practice progress, stored against a random id. The database has
+    no column for a real name or an age, so neither can be collected later by accident.</p>
+    <p><b>The app works completely offline, and that is still the default.</b> Everything is saved on
+    your device first. Nothing is sent anywhere until <i>you</i>, the parent, create an account and
+    switch cloud backup on.</p>
+    <p>If you do switch it on, one piece of personal information is held: <b>your email address</b>,
+    because somebody has to own the account. It is an adult's, given by an adult. There is no
+    analytics, no advertising, no trackers, and nobody's information is sold or shared.</p>
+    <p>Your child never signs in to anything, and is never asked for an email address, a phone
+    number, a photo or a location. Sections 3 and 9 explain exactly what travels and what does not.</p>
   </div>
 
   <h2>1. Who we are</h2>
@@ -60,71 +63,120 @@
     launch, as COPPA's online-notice rule requires.</li>
   </ul>
 
-  <h2>2. What information the app handles — and where it lives</h2>
-  <p>When you create a speller profile, the app asks for a <b>first name (or nickname)</b> and an
-  <b>age</b>, and lets your child pick an avatar. As your child plays it also records practice
-  progress: words attempted, scores, levels, coins and settings.</p>
-  <p><b>It is stored on your device first, and the app works with no connection at all.</b> Practice
-  is then backed up to your account so it survives a wiped or replaced tablet. What travels is the
-  display name, the spelling level and the progress — against a random id. Your child's real name and
-  age never travel, because the app never asks for them.</p>
-  <p>Creating a parent account stores your <b>email address</b> with our hosting provider so we can
-  recognise you on any device and attach a paid plan to an adult rather than to a child. It is not
-  sold, not shared, and not used to market to you — there is no mailing list. Your password is
-  handled by the authentication service and we never see it.</p>
-  <p><b>What syncs, and what does not.</b> Each speller's display name, spelling level and practice
-  progress are backed up to your account against a random id. Nothing that identifies the child
-  travels with it, because the app does not ask for it and the database cannot hold it.</p>
-  <p>A nickname works exactly as well as a real name — the name is only used to greet your child
-  on screen.</p>
-
-  <h2>3. What we never do</h2>
+  <h2>2. Two modes, and you choose</h2>
+  <p>Bizzing Bee runs in one of two modes, and it starts in the first one:</p>
   <ul>
-    <li>No collection or transmission of personal information from children</li>
-    <li>No email address, phone number, photo, voice recording or location is ever collected from a
-    <i>child</i> — the parent account is the only login, and children do not have one</li>
-    <li>Nothing you or your child enters is transmitted to us; we operate no server that could receive it</li>
-    <li>No advertising, no behavioural profiling, no analytics or tracking scripts, no social features</li>
-    <li>No disclosure of children's information to third parties — we hold none to disclose</li>
-    <li>No prompts nudging a child to share more information than the activity needs (the only thing
-    ever asked for is a first name or nickname and an age)</li>
+    <li><b>On-device (the default).</b> No account, no sign-in, nothing transmitted. Profiles and
+    progress live in your browser's own storage. The app is fully playable this way, forever, and
+    nothing in it is withheld from you for staying here.</li>
+    <li><b>With a parent account and cloud backup (optional).</b> You create an account with your
+    email address and turn backup on. From then on each speller's <i>display name, spelling level and
+    progress</i> are copied to our database so a wiped, lost or replaced tablet does not cost your
+    child months of work, and so the same progress appears on a second device.</li>
   </ul>
+  <p>Switching from the first to the second is a deliberate act by an adult, taken behind the parent
+  PIN, on a screen that says plainly what will be sent. You can switch back at any time (section 7).</p>
 
-  <h2>4. Web hosting and IP addresses</h2>
+  <h2>3. What information the app handles — and where it lives</h2>
+  <p>When you create a speller profile, the app asks for a <b>first name (or nickname)</b> and an
+  <b>age</b>, and lets your child pick an avatar. As your child plays it records practice progress:
+  words attempted, scores, levels, coins and settings. All of that is stored on your device.</p>
+  <p><b>The name and the age never leave the device</b> — not the real name, and not a nickname
+  either. They are used only to greet your child on screen and to pick a starting difficulty. When
+  backup is on, what is copied to the server is a label taken from <i>the avatar your child picked</i>
+  ("Fox", "Panda"), their spelling level, and the progress record — against a random id that is not
+  derived from anything about them. When you restore onto a new device, the app asks you for the name
+  and the age there, because the server was never told them.</p>
+
+  <div class="tw"><table>
+    <tr><th>Information</th><th>Where it lives</th><th>Sent to the server?</th></tr>
+    <tr><td>Child's first name or nickname</td><td>Your device</td><td><b>No</b></td></tr>
+    <tr><td>Child's age</td><td>Your device</td><td><b>No</b></td></tr>
+    <tr><td>Avatar label ("Fox", "Panda")</td><td>Your device</td><td>Only if you turn backup on</td></tr>
+    <tr><td>Avatar, theme, spelling level</td><td>Your device</td><td>Only if you turn backup on</td></tr>
+    <tr><td>Practice progress, scores, coins, settings</td><td>Your device</td><td>Only if you turn backup on</td></tr>
+    <tr><td>Parent's email address</td><td>Only exists if you create an account</td><td>Yes — it is the account</td></tr>
+    <tr><td>Parent's password</td><td>Never stored by us in readable form</td><td>Sent once to be hashed; we never see it</td></tr>
+    <tr><td>Photos, voice recordings, location, contacts</td><td>Never collected</td><td><b>Never</b></td></tr>
+  </table></div>
+
+  <h2>4. Verifiable parental consent</h2>
+  <p>COPPA requires an operator to obtain verifiable parental consent before collecting personal
+  information online from a child under 13. Bizzing Bee is built so that the question mostly does not
+  arise — the app collects no personal information from children at all, and what it backs up is
+  pseudonymous by design. Even so, because backup means data about a child leaves the device, we
+  treat turning it on as a consent event and handle it as follows:</p>
+  <ul>
+    <li>Backup can only be switched on from the <b>Parent Zone, behind the parent PIN</b>, by someone
+    who has created an account with a <b>working email address</b> and confirmed it by clicking a
+    link we send there. A child cannot reach this screen or complete this step.</li>
+    <li>The consent screen states, in plain language and before anything is sent, exactly what will
+    be uploaded, what will not, who stores it, and how to withdraw.</li>
+    <li>We record the date and time consent was given against the account, so it can be shown back to
+    you and audited.</li>
+    <li><b>Consent can be withdrawn at any time</b>, in one tap, from the same screen. Withdrawing it
+    stops all further uploads immediately and deletes what was already uploaded (section 7).</li>
+  </ul>
+  <p>If a future version of the app collects anything genuinely identifying from a child, this policy
+  will be updated <i>before</i> that ships, the effective date above will move, and we will give
+  direct notice and obtain consent by one of the methods the FTC recognises before any such
+  collection begins.</p>
+
+  <h2>5. Who else touches this information</h2>
+  <p>Two service providers, and no one else. Neither is permitted to use the information for their
+  own purposes; both act only on our instructions.</p>
+  <ul>
+    <li><b>Supabase</b> (<a href="https://supabase.com/privacy" rel="noopener">supabase.com/privacy</a>)
+    hosts the database and the sign-in service. This is where the parent's email address, the hashed
+    password, and — if backup is on — the pseudonymous speller records are stored. Rows are protected
+    by row-level security, which means a signed-in account can reach only its own family's rows and
+    nothing else, enforced by the database itself rather than by the app asking nicely.</li>
+    <li><b>GitHub</b> serves the pages, artwork and audio (section 6).</li>
+  </ul>
+  <p>There is no advertising network, no analytics provider, no crash reporter, no marketing tool and
+  no social platform in this app. Nothing is sold. Nothing is shared for anyone else's benefit.</p>
+
+  <h2>6. Web hosting and IP addresses</h2>
   <p>Like every website, the pages, artwork and audio of Bizzing Bee are delivered by a web host —
   GitHub Pages, with word-audio files served from GitHub's content servers. To deliver a file, a web
   host necessarily receives the requesting device's <b>IP address</b>, and may keep it briefly in
-  standard server logs for security and traffic purposes. COPPA treats an IP address as a persistent
-  identifier; it is used here solely to <b>support the internal operations</b> of the service
-  (delivering content and maintaining security), which COPPA permits without parental consent. It is
-  not used to profile, track or contact anyone. GitHub's handling of server logs is described in the
-  <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">GitHub Privacy Statement</a>.</p>
+  standard server logs for security and traffic purposes; the same is true of the database host when
+  backup is on. COPPA treats an IP address as a persistent identifier; it is used here solely to
+  <b>support the internal operations</b> of the service (delivering content, storing the backup you
+  asked for, and maintaining security), which COPPA permits without parental consent. It is not used
+  to profile, track, advertise to or contact anyone. GitHub's handling of server logs is described in
+  the <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">GitHub Privacy Statement</a>.</p>
 
-  <h2>5. Your rights as a parent</h2>
-  <p>Because everything is on your device, you exercise every COPPA right directly, immediately, and
-  without asking us:</p>
+  <h2>7. Your rights as a parent</h2>
+  <p>You can exercise every COPPA right from inside the app, immediately, without asking us and
+  without waiting for a reply:</p>
   <ul>
     <li><b>Review</b> — open the <b>Parent Zone</b> (Progress → Parent zone, behind your parent PIN)
-    to see everything the app knows: profiles, progress, scores and settings.</li>
-    <li><b>Delete</b> — remove a speller profile in Settings, or clear the browser's site data for
-    this app. Either erases the information permanently; no copy exists anywhere else.</li>
-    <li><b>Delete the parent account</b> — signing out and clearing this app's site data in your
-    browser removes the account, its email address and its scrambled password along with everything
-    else. There is no copy on any server for us to delete, and nothing to email us about.</li>
-    <li><b>Refuse further collection</b> — sign out and the app keeps working on the device alone,
-    with nothing leaving it. Delete the account and the backup goes with it.</li>
+    to see everything the app knows: profiles, progress, scores and settings. What is backed up is a
+    subset of what you see there, described in section 3.</li>
+    <li><b>Delete a speller</b> — remove the profile in Settings. The local copy goes, and if backup
+    is on, the row and its progress are deleted from the database with it.</li>
+    <li><b>Withdraw consent / turn backup off</b> — one tap in the Parent Zone. Uploads stop at once
+    and everything already uploaded for your account is deleted. The app keeps working on the device
+    exactly as before, with nothing leaving it.</li>
+    <li><b>Delete the whole account</b> — deleting the parent account deletes every speller row and
+    every progress record attached to it, permanently and by database cascade, along with the email
+    address. If you would rather we did it, email us and we will, and confirm when it is done.</li>
+    <li><b>Refuse further collection while keeping the app</b> — sign out, or simply never create an
+    account. Neither costs your child a single feature.</li>
   </ul>
 
-  <h2>6. How long information is kept</h2>
-  <p>Local data is kept on your device only for as long as you keep it: until you delete the profile
-  or clear the browser's storage. The backup is kept for as long as the account exists: delete the
-  account and every speller profile and progress record attached to it is deleted with it, permanently.
-  We keep no separate copy, and there is nothing identifying a child in it to keep.</p>
+  <h2>8. How long information is kept</h2>
+  <p>Information on your device is kept for as long as you keep it: until you delete the profile or
+  clear the browser's storage for this app. Information in the backup is kept for as long as the
+  account exists and backup is on — delete the account, or withdraw consent, and it is deleted. We
+  keep no separate copy and no archive, and there is nothing identifying a child in it to keep.
+  Standard server logs (section 6) age out on our hosts' own schedules.</p>
 
-  <h2>7. Payments</h2>
+  <h2>9. Payments</h2>
   <p>The app and its opening page describe optional paid plans and show their prices, but
   <b>no payment is collected inside the app today</b>, no card details are ever requested, and no
-  payment processor is integrated. Choosing a plan today records a preference on your device and
+  payment processor is integrated. Choosing a plan today records a preference on your account and
   charges you nothing.</p>
   <p>When payments are switched on, purchases will be a parent-only flow: behind the parent PIN, with
   any personal or payment information collected from the parent — never the child — and handled by a
@@ -132,26 +184,34 @@
   to us. This policy and the notices in the app will be updated <i>before</i> the first payment is
   taken, and the effective date above will move.</p>
 
-  <h2>8. Security — and an honest warning about the password</h2>
-  <p>The best protection for children's data is not to collect it, and that is the design here.
-  The little that exists lives in your browser's own storage, protected by your device. The optional
-  parent PIN keeps children out of Settings, the Parent Zone and anything marked for grown-ups.</p>
-  <p><b>Please do not reuse an important password here.</b> The parent account is stored entirely on
-  your device, and its password is scrambled only enough to keep it from sitting in plain sight — it
-  is not protected to the standard a bank or an email provider uses, because there is no server doing
-  the checking. Anyone with access to your unlocked device could recover it. Choose a password you use
-  nowhere else. When accounts move to a real server, passwords will be properly hashed there, this
-  policy will say so, and the effective date above will move.</p>
-  <p>For the same reason, the sign-in is a convenience and an ownership record — it is not a vault.
-  Nothing behind it is secret from someone holding your unlocked device.</p>
+  <h2>10. Security</h2>
+  <p>The best protection for children's data is not to collect it, and that is still the design here:
+  the two things that would identify a child — their real name and their age — have nowhere to go,
+  because the database has no column for either.</p>
+  <p>For what does travel:</p>
+  <ul>
+    <li>Every request is over <b>HTTPS</b>. Nothing is sent in the clear.</li>
+    <li>Your password is <b>hashed by the authentication service</b> and never stored, logged or seen
+    by us in readable form. Sign-in is checked on the server, not in your browser.</li>
+    <li><b>Row-level security</b> is the access model, not a convention: each row records which
+    account owns it, and the database refuses to return a row to anyone else. The public key shipped
+    in the app identifies the project and grants no access on its own.</li>
+    <li>The <b>parent PIN</b> keeps children out of Settings, the Parent Zone, account screens and
+    anything else marked for grown-ups. It is a local gate on your device, not a password — someone
+    holding your unlocked device can still see what is on it.</li>
+  </ul>
+  <p><b>Please choose a password you do not use anywhere else.</b> That is ordinary good practice for
+  any account, and it costs nothing to follow.</p>
+  <p class="muted">Earlier versions of Bizzing Bee stored a parent account in the browser with only a
+  scrambled password, and this policy warned about it. That local-only account is gone; accounts are
+  now checked and hashed on a server, which is the improvement that warning promised.</p>
 
-  <h2>9. Changes to this policy</h2>
-  <p>If the app's data practices ever change in a material way — for example, if accounts or online
-  sync were added — this policy will be updated before the change ships, the effective date above
-  will move, and where COPPA requires it we will provide direct notice and obtain verifiable parental
-  consent before any new collection begins.</p>
+  <h2>11. Changes to this policy</h2>
+  <p>If the app's data practices change in a material way, this policy will be updated before the
+  change ships, the effective date above will move, and where COPPA requires it we will provide
+  direct notice and obtain verifiable parental consent before any new collection begins.</p>
 
-  <h2>10. About Bizzing Bee &amp; sources</h2>
+  <h2>12. About Bizzing Bee &amp; sources</h2>
   <p><b>Bizzing Bee is an independent study tool.</b> It is not affiliated with, sponsored by, or
   endorsed by the Scripps National Spelling Bee, the North South Foundation, or Merriam-Webster.
   Those names appear in the app only to describe which competitions the practice material relates
@@ -163,7 +223,7 @@
   lesson narration uses the Apache-licensed Kokoro voice model. Third-party licences are listed in
   the project's <code>LICENSES-THIRD-PARTY.md</code>.</p>
 
-  <h2>11. COPPA and where to learn more</h2>
+  <h2>13. COPPA and where to learn more</h2>
   <p>COPPA is enforced by the U.S. Federal Trade Commission. The FTC explains parents' rights at
   <a href="https://www.ftc.gov/business-guidance/privacy-security/childrens-privacy" rel="noopener">ftc.gov — Children's Privacy</a>.
   If you believe this app has not honoured this policy, please email us first — and you may also

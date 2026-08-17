@@ -62,7 +62,13 @@
     voiceWords: 'voice-words.js',       // 128k clip manifest — needed on first audio
     voiceFrench: 'voice-french.js',
     story: 'story-data.js',
-    themeLore: 'theme-lore.js'      // the explanation that opens every Theme Journey
+    themeLore: 'theme-lore.js',     // the explanation that opens every Theme Journey
+    /* Cloud backup. Not on the boot path by design: a child opening the app must
+       reach a word without waiting on anything that talks to a network, and a
+       family that never makes an account must never pay for this file at all. It
+       is fetched on the idle queue, last, and its own guards keep it inert until
+       a parent has signed in AND consented. */
+    sync: 'supabase-sync.js'
   };
 
   /* Groups, so a caller can ask for a feature rather than a filename. */
@@ -77,12 +83,13 @@
     audio: ['voiceWords', 'voiceFrench'],
     lists: ['words2', 'lessons', 'vocab26', 'finals500', 'scripps'],
     themes: ['words2', 'themeLore'],
-    sounds: ['sounds', 'pron']
+    sounds: ['sounds', 'pron'],
+    cloud: ['sync']
   };
 
   var IDLE = ['words2', 'lore', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
     'themeLore', 'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',
-    'scripps', 'southasia', 'voiceFrench', 'story', 'alts'];
+    'scripps', 'southasia', 'voiceFrench', 'story', 'alts', 'sync'];
 
   var state = {};          // name -> 'loading' | 'done'
   var waiters = {};        // name -> [cb]

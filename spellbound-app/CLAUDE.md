@@ -379,6 +379,50 @@ handlers. App lives in this folder; open `index.html` to run.
   mailing address and phone (placeholder noted in §1), and if real payments are added the
   purchase flow must stay parent-only (behind the PIN) with notice/consent revisited.
 
+## Accounts & cloud backup (Supabase)
+- **Four files, and three of them do nothing until two values are pasted in.**
+  `sb-config.js` holds the project URL + anon key (blank = the app is exactly as it was:
+  offline, no account, zero requests). `auth.js` is the local scaffold; `supabase-auth.js`
+  re-backs `window.SB_AUTH` with real auth when configured; `supabase-sync.js` is the
+  backup layer. **No SDK, no CDN script tag** — Supabase's auth and REST APIs are plain
+  HTTP and `fetch` is the correct client for a no-build app. `supabase-schema.sql` is the
+  whole database; paste it into the SQL editor.
+- **`supabase-sync.js` is registered in `boot-lazy.js` (`sync` / group `cloud`), never in
+  index.html.** It is last on the idle queue: a child must reach a word without waiting on
+  anything that talks to a network, and a family that never makes an account should never
+  pay for the file. Every entry point goes through `app.cloudNeed(cb)` because a parent can
+  open the card before the file lands.
+- **A child's real name and age NEVER leave the device**, and that is enforced twice over.
+  `shred()` is an **allow-list** (`PROGRESS_KEYS`) so a field added to the child object next
+  year is not silently uploaded, and the schema has **no column** for either — a column that
+  does not exist cannot be filled in by a careless commit. `rebuild()` deletes both again on
+  the way back, so a legacy blob cannot smuggle them in. There is a headless assertion that
+  greps the serialized `shred()` output for the name and the age.
+- **`children.display_name` is derived from the AVATAR, not from `c.name`.** The app has one
+  name field and its onboarding asks for "first name or nickname", so most families type the
+  real one; a column called display_name is a standing invitation to put it there. `label()`
+  answers that invitation with "Fox"/"Panda". Restore tells spellers apart on avatar + level
+  + date, and asks the parent for the name and age **on the device**.
+- **Three gates, all of which must be true before one byte moves**: configured
+  (`SB_CLOUD_ON`), signed in (`SB_AUTH.token()`), and **consented** (`SB_SYNC.consented()`).
+  Consent is a screen, not a switch — it is the one moment a parent decides something about
+  their child leaves the device — reached only from the Parent Zone behind the PIN, and it is
+  recorded both locally and on `accounts.consent_at` so it survives a wiped device.
+  Withdrawing it **deletes** what was uploaded; it does not merely stop uploading.
+- `save()` calls `SB_SYNC.queue()` last and wrapped: save() fires on nearly every
+  interaction, so the push is coalesced (4s) and can never break the local write above it.
+- **Conflicts are last-write-wins per child, deliberately.** Merging two divergent progress
+  blobs invents a history neither device had. `fetchAll()` therefore never touches local
+  state — it returns candidates and the restore sheet decides.
+- **Deleting a speller exists now** (`askDelSpeller` → `delSpeller`, two taps, in the Parent
+  Zone). It has to: COPPA gives a parent the right to delete, and `privacy.html` has always
+  claimed the app offered one. It deletes the cloud row too.
+- **`privacy.html` is updated BEFORE any network feature ships, with a new effective date.**
+  The Aug 2026 rewrite fixed a policy that had gone self-contradictory — half of it described
+  cloud backup while §3 still said "we operate no server that could receive it" and §8 still
+  warned the password was only scrambled locally. If you touch sync, re-read the whole policy
+  for claims that the change has just made false; they are load-bearing.
+
 ## Trivia: levels, sharding, and the authoring pipeline
 - **Five levels, one band per speller.** `ttBand(c)` (app3.js) picks 1–5: base from age
   (≤8→1, ≤10→2, ≤12→3, ≤14→4, else 5), shifted by spelling `heroLevel`, then nudged by
