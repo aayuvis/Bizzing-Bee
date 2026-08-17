@@ -1009,7 +1009,7 @@
     let si=0; while(segs.length<CFG.len){ SECTORS[si%SECTORS.length](); si++; }
     while(segs.length%rumbleLen!==0) addSeg(0,lastY());
     const trackLen=segs.length*segLen, TOTAL=trackLen*CFG.laps, FINVIS=trackLen-segLen*8;
-    for(let n=10;n<segs.length;n+=6){ const side=(n%12<6)?-1:1; segs[n].sprites.push({kind:'flora',off:side*(1.15+Math.random()*0.9)}); }
+    for(let n=10;n<segs.length;n+=6){ const side=(n%12<6)?-1:1; segs[n].sprites.push({kind:'flora',off:side*(1.15+Math.random()*0.9),k:Math.random()}); }
     // mixed hazards + crazy distractions: oil slicks and patrol cops
     const HKINDS=['oil','oil','oil','cop'];
     const hazards=[]; for(let n=60;n<segs.length-40;n+=Math.floor(20+Math.random()*16)){ if(Math.random()<CFG.haz*8){
@@ -1160,13 +1160,29 @@
       const hz=horizonY;
       const sky=sgTex(SKY);
       if(sky){
-        // Painted Ghibli countryside backdrop with gentle parallax; the pseudo-3D road
-        // draws on top and the grass band below is dropped to low alpha so the painted
-        // field and hills show through (see the grass poly in draw()).
-        const par=Math.sin(pos/2600)*18 - playerX*30;
-        const iw=Wd*1.14, ih=iw*(sky.height/sky.width), iy=hz-ih*0.46;
-        try{ cx.drawImage(sky, -(iw-Wd)/2 + par*0.35, iy, iw, ih); }catch(e){}
-        if(iy+ih<Ht){ cx.fillStyle=hx(LIGHT.grass,1.14); cx.fillRect(0,iy+ih-1,Wd,Ht-(iy+ih)+1); }
+        // A backdrop belongs BEHIND and ABOVE the horizon. The painting's own sky band
+        // (its top ~68%, i.e. sky + skyline/hills) is cropped and mapped onto the area
+        // above the horizon; the ground below is OUR gradient. Drawing the whole painting
+        // full-height put its bottom edge mid-screen — a hard seam straight across the road.
+        const par=Math.sin(pos/2600)*16 - playerX*26;         // gentle parallax
+        const srcH=sky.height*0.68, iw=Wd*1.12, dh=hz+2;
+        try{ cx.drawImage(sky, 0,0, sky.width,srcH, -(iw-Wd)/2 + par*0.35, 0, iw, dh); }catch(e){}
+        // ground: horizon haze → open field, so nothing cuts across the track
+        const gg=cx.createLinearGradient(0,hz,0,Ht);
+        gg.addColorStop(0, hx(LIGHT.grass,1.16));
+        gg.addColorStop(0.35, LIGHT.grass);
+        gg.addColorStop(1, hx(LIGHT.grass,0.86));
+        cx.fillStyle=gg; cx.fillRect(0,hz,Wd,Ht-hz);
+        if(NIGHT){   // neon city: let the skyline bleed a glow onto the ground
+          const ng=cx.createLinearGradient(0,hz-30,0,hz+120);
+          ng.addColorStop(0,'rgba(150,220,255,.30)'); ng.addColorStop(1,'rgba(150,220,255,0)');
+          cx.fillStyle=ng; cx.fillRect(0,hz-30,Wd,150);
+        }
+        // atmospheric haze across the join, so the painting and our ground read as one distance
+        const hazeCol=NIGHT?'170,205,255':(SCN.prop==='cactus'?'255,214,160':'236,248,255');
+        const hb=cx.createLinearGradient(0,hz-26,0,hz+34);
+        hb.addColorStop(0,'rgba('+hazeCol+',0)'); hb.addColorStop(.45,'rgba('+hazeCol+',.55)'); hb.addColorStop(1,'rgba('+hazeCol+',0)');
+        cx.fillStyle=hb; cx.fillRect(0,hz-26,Wd,60);
         return;
       }
       const sway=Math.sin(pos/2600)*34 - playerX*26;
@@ -1202,7 +1218,7 @@
         if(seg.p1.camera.z<=camDepth || seg.p2.screen.y>=seg.p1.screen.y || seg.p2.screen.y>=maxy) continue;
         seg._vis=true; maxy=seg.p2.screen.y;
         const s1=seg.p1.screen, s2=seg.p2.screen, c=seg.color;
-        if(sgTex(SKY)){ cx.globalAlpha=0.30; poly(0,s1.y, 0,s2.y, Wd,s2.y, Wd,s1.y, c.grass); cx.globalAlpha=1; }
+        if(sgTex(SKY)){ cx.globalAlpha=0.62; poly(0,s1.y, 0,s2.y, Wd,s2.y, Wd,s1.y, c.grass); cx.globalAlpha=1; }
         else poly(0,s1.y, 0,s2.y, Wd,s2.y, Wd,s1.y, c.grass);
         const r1=s1.w*0.18, r2=s2.w*0.18;
         poly(s1.x-s1.w-r1,s1.y, s2.x-s2.w-r2,s2.y, s2.x-s2.w,s2.y, s1.x-s1.w,s1.y, c.rumble);
@@ -1215,7 +1231,7 @@
       }
       const order=[];
       for(let n=drawDist-1;n>=0;n--){ const seg=segs[(base.index+n)%segs.length]; if(!seg._vis) continue; const sc=seg.p1.screen;
-        seg.sprites.forEach(sp=>{ order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*(sp.off||0),sy:sc.y,t:sp.kind,w2:sc.w,clip:seg._clip,far:seg._far}); }); }
+        seg.sprites.forEach(sp=>{ order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*(sp.off||0),sy:sc.y,t:sp.kind,w2:sc.w,k:sp.k||0,clip:seg._clip,far:seg._far}); }); }
       hazards.forEach(hh=>{ const seg=segs[hh.seg]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*hh.off,sy:sc.y,t:hh.kind||'oil',hw:sc.w,clip:seg._clip,far:seg._far}); } });
       items.forEach(it=>{ if(it.gone) return; const seg=segs[it.seg]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*it.off,sy:sc.y,t:'item',it:it,clip:seg._clip,far:seg._far}); } });
       rivals.forEach(r=>{ const seg=segs[Math.floor((r.z%trackLen)/segLen)%segs.length]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*r.x,sy:sc.y,t:'rival',r:r,clip:seg._clip,far:seg._far}); } });
@@ -1229,23 +1245,61 @@
           const tr=sgTex(SCN.prop);   // bespoke sprite if present, else a per-scene procedural prop
           if(tr){ const tw=w*(SCN.prop==='building'?1.9:1.75), th=tw*(tr.height/tr.width); try{ cx.drawImage(tr,o.sx-tw/2,o.sy-th,tw,th); }catch(e){} }
           else if(SCN.prop==='building'){
-            // neon-city skyline block: dark tower, glowing windows, neon-lit roofline
-            const bw2=w*0.9, bh2=w*(1.7+((o.far||0)%5)*0.18);
-            const bg2=cx.createLinearGradient(0,o.sy-bh2,0,o.sy); bg2.addColorStop(0,'#3A3F63'); bg2.addColorStop(1,'#20233B');
-            cx.fillStyle=bg2; cx.fillRect(o.sx-bw2/2,o.sy-bh2,bw2,bh2);
-            cx.fillStyle='rgba(120,240,255,.5)'; cx.fillRect(o.sx-bw2/2,o.sy-bh2,bw2,w*0.05);   // neon top edge
-            cx.fillStyle='#FFE07A';
-            for(let wy=o.sy-bh2+w*0.22; wy<o.sy-w*0.2; wy+=w*0.26){ for(let wx=o.sx-bw2*0.32; wx<o.sx+bw2*0.32; wx+=bw2*0.28){
-              if(((wx+wy)|0)%3) cx.fillRect(wx,wy,bw2*0.14,w*0.12); } } }
+            /* NEON CITY tower: a lit slab with a glass gradient, warm window grid, a glowing
+               roof crown and a vertical neon sign. Everything keys off the prop's own seed
+               (o.k) so the skyline varies instead of repeating one block. */
+            const k=o.k||0, tall=1.5+k*1.9, bw2=w*(0.72+((k*7)%1)*0.5), bh2=w*tall;
+            const top=o.sy-bh2;
+            const NEON=['#5BE9FF','#FF6BD6','#8B7BFF','#57FFC2'], neon=NEON[(k*13|0)%4];
+            cx.save();
+            // body: cool glass, darker at the base
+            const bg2=cx.createLinearGradient(0,top,0,o.sy);
+            bg2.addColorStop(0,'#4A5080'); bg2.addColorStop(0.55,'#2E3355'); bg2.addColorStop(1,'#1A1C30');
+            cx.fillStyle=bg2; cx.fillRect(o.sx-bw2/2,top,bw2,bh2);
+            // a setback tier on taller towers
+            if(k>0.55){ const tw=bw2*0.6; cx.fillStyle='#3A4068'; cx.fillRect(o.sx-tw/2,top-w*0.3,tw,w*0.3);
+              cx.fillStyle=neon; cx.globalAlpha=0.85; cx.fillRect(o.sx-tw/2,top-w*0.3,tw,Math.max(1,w*0.035)); cx.globalAlpha=1; }
+            // window grid — warm, unevenly lit
+            const cols=Math.max(2,Math.round(bw2/(w*0.22))), rows=Math.max(3,Math.round(bh2/(w*0.26)));
+            const cwid=bw2/cols, rhi=bh2/rows;
+            for(let r=0;r<rows;r++) for(let c2=0;c2<cols;c2++){
+              const lit=((r*7+c2*3+(k*97|0))%5)!==0;
+              cx.fillStyle=lit?'rgba(255,214,130,.92)':'rgba(90,100,140,.5)';
+              cx.fillRect(o.sx-bw2/2+c2*cwid+cwid*0.22, top+r*rhi+rhi*0.24, cwid*0.56, rhi*0.5); }
+            // glowing crown + edge light
+            cx.shadowColor=neon; cx.shadowBlur=Math.max(6,w*0.5);
+            cx.fillStyle=neon; cx.fillRect(o.sx-bw2/2,top,bw2,Math.max(1.5,w*0.055));
+            cx.shadowBlur=0;
+            cx.fillStyle=neon; cx.globalAlpha=0.5;
+            cx.fillRect(o.sx-bw2/2,top,Math.max(1,w*0.02),bh2); cx.fillRect(o.sx+bw2/2-Math.max(1,w*0.02),top,Math.max(1,w*0.02),bh2);
+            cx.globalAlpha=1;
+            // vertical neon sign strip on some towers
+            if(k>0.34){ const sw=Math.max(2,w*0.08), sy2=top+bh2*0.16, sh2=bh2*0.42;
+              cx.shadowColor=neon; cx.shadowBlur=Math.max(5,w*0.42);
+              cx.fillStyle=neon; cx.fillRect(o.sx+bw2*0.30,sy2,sw,sh2); cx.shadowBlur=0; }
+            cx.restore(); }
           else if(SCN.prop==='cactus'){
-            // desert saguaro: green body + two arms
-            const cg=cx.createLinearGradient(o.sx-w*0.2,0,o.sx+w*0.2,0); cg.addColorStop(0,'#3E8B4E'); cg.addColorStop(.5,'#5CB36A'); cg.addColorStop(1,'#3E8B4E');
-            cx.fillStyle=cg; cx.strokeStyle='#2E6B3C'; cx.lineWidth=Math.max(1,w*0.03);
-            const bx=o.sx, top=o.sy-w*1.5;
-            rrp(bx-w*0.14,top,w*0.28,w*1.5,w*0.14); cx.fill();
-            rrp(bx-w*0.5,o.sy-w*1.0,w*0.16,w*0.5,w*0.08); cx.fill();  rrp(bx-w*0.5,o.sy-w*1.0,w*0.36,w*0.16,w*0.08); cx.fill();
-            rrp(bx+w*0.34,o.sy-w*0.85,w*0.16,w*0.42,w*0.08); cx.fill(); rrp(bx+w*0.14,o.sy-w*0.85,w*0.36,w*0.16,w*0.08); cx.fill();
-            cx.fillStyle='#F07FB0'; cx.beginPath(); cx.arc(bx,top,w*0.1,0,7); cx.fill(); }
+            /* saguaro: ribbed body, sun-side highlight, arms at varied heights, bloom on top */
+            const k=o.k||0, H=w*(1.6+k*0.9), bx=o.sx, top=o.sy-H, bwid=w*0.36;
+            cx.save();
+            const cg=cx.createLinearGradient(bx-bwid,0,bx+bwid,0);
+            cg.addColorStop(0,'#2F6B3A'); cg.addColorStop(.42,'#63BC70'); cg.addColorStop(.62,'#4E9B57'); cg.addColorStop(1,'#2A5E33');
+            cx.fillStyle=cg;
+            rrp(bx-bwid/2,top,bwid,H,bwid*0.5); cx.fill();
+            // arms — left low, right high (flipped by seed)
+            const flip=k>0.5?-1:1, aw=bwid*0.66;
+            const armY=o.sy-H*(0.52+k*0.16), armY2=o.sy-H*(0.40+k*0.1);
+            rrp(bx+flip*(bwid*0.42), armY, aw, H*0.40, aw*0.5); cx.fill();
+            rrp(bx+flip*(bwid*0.22), armY, aw*1.5, aw, aw*0.5); cx.fill();
+            rrp(bx-flip*(bwid*0.42)-aw, armY2, aw, H*0.30, aw*0.5); cx.fill();
+            rrp(bx-flip*(bwid*1.1), armY2, aw*1.5, aw, aw*0.5); cx.fill();
+            // ribs + rim light
+            cx.strokeStyle='rgba(20,60,26,.35)'; cx.lineWidth=Math.max(0.6,w*0.014);
+            for(const f of [-0.22,0,0.22]){ cx.beginPath(); cx.moveTo(bx+bwid*f,top+bwid*0.4); cx.lineTo(bx+bwid*f,o.sy-bwid*0.2); cx.stroke(); }
+            cx.strokeStyle='rgba(190,255,190,.4)'; cx.lineWidth=Math.max(0.7,w*0.02);
+            cx.beginPath(); cx.moveTo(bx-bwid*0.30,top+bwid*0.5); cx.lineTo(bx-bwid*0.30,o.sy-bwid*0.3); cx.stroke();
+            if(k>0.6){ cx.fillStyle='#FF9EC4'; cx.beginPath(); cx.arc(bx,top+bwid*0.1,w*0.075,0,7); cx.fill(); }
+            cx.restore(); }
           else {
             cx.fillStyle='#6b4a2a'; cx.fillRect(o.sx-w*0.09,o.sy-w*0.7,w*0.18,w*0.7);
             const tg=cx.createRadialGradient(o.sx-w*0.2,o.sy-w*1.5,2,o.sx,o.sy-w*1.3,w*0.95);
@@ -1390,7 +1444,14 @@
     intro.querySelector('#sg-howgo').onclick=()=>{ intro.remove(); countT=1.0; mode='count'; };
     renderHold();
     if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over}),
-      steerTo:(x)=>{playerX=x;}, jump:(z)=>{pos=z;}, grant:(i)=>{held=POWERS[i||0];renderHold();} };
+      steerTo:(x)=>{playerX=x;}, jump:(z)=>{pos=z;}, grant:(i)=>{held=POWERS[i||0];renderHold();},
+      toBox:()=>{ const pm=pos%trackLen, it=items.find(x=>!x.gone&&x.seg*segLen>pm+segLen*10);   // capture tooling: line up the next ? box
+        if(it){ pos+= (it.seg-8)*segLen - pm; playerX=it.off; } },
+      toHaz:(kind)=>{ const pm=pos%trackLen, h=hazards.find(x=>!x.hit&&(!kind||x.kind===kind)&&x.seg*segLen>pm+segLen*12);   // capture tooling: line up the next hazard
+        if(h){ pos+= (h.seg-9)*segLen - pm; playerX=h.off; } },
+      clearBoxes:()=>{ items.forEach(i=>i.gone=true); },                 // capture tooling: no unplanned spell gates
+      gateNow:()=>{ const pm=pos%trackLen, it=items.find(x=>x.seg*segLen>pm+segLen*14);   // capture tooling: summon ONE gate ahead
+        if(it){ it.gone=false; pos+= (it.seg-8)*segLen - pm; playerX=it.off; } } };
     requestAnimationFrame(frame);
     return { destroy(){ over=true; removeEventListener('keydown',kd); removeEventListener('keyup',ku); } };
   }
