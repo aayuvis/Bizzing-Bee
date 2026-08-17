@@ -4531,7 +4531,7 @@ function viewApp(){
            sideways rather than the header. -->
       <div style="max-width:1080px;margin:0 auto;padding:11px clamp(9px,3.2vw,32px);display:flex;flex-wrap:wrap;align-items:center;gap:8px">
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
-        <button data-act="goHome" title="Home" aria-label="Bizzing Bee — Home" style="display:flex;align-items:center;gap:9px;margin-right:auto;background:none;border:0;cursor:pointer"><div style="width:34px;height:38px;flex-shrink:0">${mascotSVG('happy')}</div><span class="sb-brand" style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i> Bee</span></button>
+        <button data-act="goHome" title="Home" aria-label="Bizzing Bee — Home" style="display:flex;align-items:center;gap:9px;margin-right:auto;background:none;border:0;cursor:pointer"><div style="width:34px;height:38px;flex-shrink:0">${mascotSVG('happy')}</div><span class="sb-brand" style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i><span class="sb-tm" aria-hidden="true">™</span> Bee</span></button>
         ${(()=>{ const bb=beeBand(active());
           // Bee Band lives in the header as a pill: prompts calibration, then shows the band itself.
           return `<button data-act="${bb.calibrating?'startLevelTest':'setNav'}" data-arg="progress" class="sb-mob-hide ${bb.calibrating?'sb-band-call':''}" title="${bb.calibrating?'A 3-minute placement quest sets your words, games and tips exactly to you':'Word difficulty '+bb.band+' of 9 · '+bb.tier+' — the dial that sets how tricky your words are'}" aria-label="${bb.calibrating?'Find your word difficulty':'Word difficulty '+bb.band}" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:color-mix(in srgb,var(--accent) 13%,var(--chip));border:1px solid color-mix(in srgb,var(--accent) ${bb.calibrating?'62':'38'}%,var(--line));color:var(--accent);font-weight:${bb.calibrating?'900':'800'};font-size:13px;flex-shrink:0;max-width:none">
@@ -4863,8 +4863,16 @@ function viewHome(){
       ${trainCard}
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:14px">${tipOfDay(true,true)}${qohTile}</div>`; })()}
-    <div style="text-align:center;margin-top:26px;padding-top:14px;border-top:1px solid var(--line)"><a href="privacy.html" style="color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:3px">Privacy &amp; Parents' Notice</a></div>
+    <div style="text-align:center;margin-top:26px;padding-top:14px;border-top:1px solid var(--line)"><a href="privacy.html" style="color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:3px">Privacy &amp; Parents' Notice</a>${tmLine()}</div>
   </div>`;
+}
+/* Trademark attribution. One line, in the footer, rather than a ™ sprayed over every
+   mention — marking the prominent use once per surface plus an attribution line is the
+   convention, and it is what a claim actually rests on. `Bizzing` is the mark being
+   registered (the family brand across Bizzing Bee / Maths / India); `Bizzing Bee` is
+   claimed as a mark in its own right. No ® until a registration actually issues. */
+function tmLine(){
+  return `<div style="margin-top:9px;font-size:11.5px;color:var(--muted);line-height:1.5">Bizzing&trade; and Bizzing Bee&trade; are trademarks of the Bizzing Bee developer. Not affiliated with the Scripps National Spelling Bee, the North South Foundation or Merriam-Webster.</div>`;
 }
 function avatarSVG(id,size,acc){ size=size||30;
   let svg;
