@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Bromic Sample Deck — reference implementation</title>
+<style>
+/* ============================================================
+   BROMIC HEATING — DECK CSS. Copy this block verbatim.
+   Canvas 1280x720. Arial. Ember #EF4123. Ink #231F20.
+   ============================================================ */
+html,body{margin:0;background:#8E9297}
+a{color:#CC3315}a:hover{color:#EF4123}
+.deck{display:flex;flex-direction:column;gap:22px;padding:22px;width:1324px;box-sizing:border-box}
+.slide{width:1280px;height:720px;position:relative;overflow:hidden;background:#fff;color:#231F20;font-family:Arial,'Helvetica Neue','Liberation Sans',sans-serif;box-sizing:border-box}
+
+/* section tab — flush to top-left corner, 26px tall */
+.sectab{position:absolute;left:0;top:0;display:flex;height:26px}
+.sectab .num{background:#EF4123;color:#fff;font-weight:700;font-size:12px;width:30px;display:grid;place-items:center}
+.sectab .name{background:#231F20;color:#fff;font-size:12px;font-weight:600;letter-spacing:.02em;padding:0 14px;display:flex;align-items:center}
+
+/* title zone — FIXED. 24pt bold, max 2 lines. Never move or shrink. */
+.title{position:absolute;left:36px;top:33px;width:1190px;height:90px;font-size:30px;line-height:1.16;font-weight:700;color:#231F20}
+.title .hl{color:#EF4123}
+.rule{position:absolute;left:48px;top:118px;width:535px;height:3px;background:#EF4123}
+
+/* body field */
+.body{position:absolute;left:36px;right:36px;top:140px;bottom:118px;display:flex;gap:34px}
+.half{width:50%;display:flex;flex-direction:column}
+.label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#231F20}
+.sub{font-size:10px;color:#71777D;margin-top:2px}
+.p{font-size:13px;line-height:1.45;color:#303438}
+.det{font-size:11.5px;color:#5A6066;line-height:1.4;margin-top:2px}
+
+/* chart */
+.chart{flex:1;display:flex;align-items:flex-end;gap:18px;padding:26px 0 4px;border-bottom:2px solid #231F20;margin-top:10px;position:relative}
+.col{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end}
+.bar{width:100%;max-width:58px;border-radius:2px 2px 0 0;position:relative;background:#EF4123}
+.bar.muted{background:#BCC1C5}
+.bar .v{position:absolute;top:-19px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:700;color:#231F20}
+.yr{position:absolute;bottom:-22px;font-size:11px;font-weight:600;color:#71777D}
+.callout{position:absolute;top:0;right:0;background:#C1F0C8;color:#067140;font-size:12px;font-weight:700;padding:5px 9px;border-radius:3px;display:flex;align-items:center;gap:5px}
+.callout svg{width:14px;height:14px}
+
+/* driver rows */
+.driver{display:flex;gap:12px;align-items:flex-start;padding:9px 0;border-top:1px solid #DDE0E2}
+.driver:first-of-type{border-top:0}
+.dico{width:34px;height:34px;flex:none;border-radius:5px;background:#FBE0D8;color:#CC3315;display:grid;place-items:center}
+.dico svg{width:18px;height:18px}
+.driver .lead{font-size:13.5px;font-weight:700;white-space:nowrap}
+.row1{display:flex;align-items:center;gap:8px;margin-bottom:2px}
+
+/* status chips — RAG ONLY */
+.chip{font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:3px;margin-left:auto;flex:none}
+.chip.up{background:#C1F0C8;color:#067140}
+.chip.watch{background:#FCEFD6;color:#8A5E12}
+.chip.risk{background:#F7D6D4;color:#C00000}
+.chip.info{background:#C0E6F5;color:#04698C}
+
+/* next steps kicker — every content slide ends with one */
+.next{position:absolute;left:36px;right:36px;bottom:30px;background:#231F20;color:#fff;padding:13px 20px;display:flex;align-items:center;gap:16px}
+.next .tag{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#F46A4A;flex:none}
+.next .txt{font-size:13px;font-weight:600}
+.next .arrow{margin-left:auto;flex:none;color:#F46A4A;display:flex}
+.next .arrow svg{width:20px;height:20px}
+
+/* footer */
+.logo{position:absolute;left:36px;bottom:6px;height:15px}
+.src{position:absolute;left:200px;bottom:6px;font-size:9px;color:#BCC1C5}
+.pg{position:absolute;right:36px;bottom:6px;font-size:9px;color:#969CA2}
+
+/* panels */
+.panel{border:1px solid #DDE0E2;background:#F6F7F8;padding:14px 16px;box-sizing:border-box}
+.panel.dark{background:#231F20;border-color:#231F20;color:#fff}
+.panel.dark .p{color:#DDE0E2}
+.stat{font-family:'IBM Plex Mono',Menlo,monospace;font-size:30px;font-weight:700;line-height:1}
+.stat.em{color:#EF4123}
+
+/* cover */
+.slide.cover{background:#0E0F11;color:#fff}
+.cover .ctitle{position:absolute;left:64px;top:250px;width:900px;font-size:52px;line-height:1.1;font-weight:700}
+.cover .ctitle .hl{color:#EF4123}
+.cover .crule{position:absolute;left:64px;top:414px;width:300px;height:4px;background:#EF4123}
+.cover .meta{position:absolute;left:64px;top:444px;font-size:14px;color:#969CA2;line-height:1.7}
+.cover .flame{position:absolute;right:64px;top:60px;height:44px;opacity:.9}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- ============ 1. COVER ============ -->
+<section class="slide cover" data-screen-label="01">
+  <img class="flame" src="assets/bromic-flame.png" alt="">
+  <div class="ctitle">Heating to <span class="hl">AUD 250M</span><br>Value creation plan, FY2027–FY2030</div>
+  <div class="crule"></div>
+  <div class="meta">Board review · 18 August 2026<br>Prepared by the Bromic executive team</div>
+  <img class="logo" style="height:18px" src="assets/bromic-logo-white.png" alt="Bromic Heating">
+</section>
+
+<!-- ============ 2. AGENDA ============ -->
+<section class="slide" data-screen-label="02">
+  <div class="sectab"><span class="num">0</span><span class="name">Agenda</span></div>
+  <div class="title">Four decisions in <span class="hl">forty minutes</span></div>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="half" style="gap:0">
+      <div style="display:flex;gap:16px;align-items:baseline;padding:15px 0;border-bottom:1px solid #DDE0E2"><span style="font-family:'IBM Plex Mono',Menlo,monospace;font-size:13px;color:#EF4123;font-weight:700;width:24px">01</span><div style="flex:1"><div class="lead" style="font-size:16px;font-weight:700;color:#EF4123">Where the growth comes from</div><div class="det">Five building blocks, A$81M → A$251M</div></div><span style="font-size:11px;color:#71777D">10 min</span></div>
+      <div style="display:flex;gap:16px;align-items:baseline;padding:15px 0;border-bottom:1px solid #DDE0E2"><span style="font-family:'IBM Plex Mono',Menlo,monospace;font-size:13px;color:#BCC1C5;font-weight:700;width:24px">02</span><div style="flex:1"><div style="font-size:16px;font-weight:700">Where we win, and against whom</div><div class="det">Premium positioning vs. the volume field</div></div><span style="font-size:11px;color:#71777D">10 min</span></div>
+      <div style="display:flex;gap:16px;align-items:baseline;padding:15px 0;border-bottom:1px solid #DDE0E2"><span style="font-family:'IBM Plex Mono',Menlo,monospace;font-size:13px;color:#BCC1C5;font-weight:700;width:24px">03</span><div style="flex:1"><div style="font-size:16px;font-weight:700">What we build first</div><div class="det">Three horizons, sequenced by payback</div></div><span style="font-size:11px;color:#71777D">12 min</span></div>
+      <div style="display:flex;gap:16px;align-items:baseline;padding:15px 0"><span style="font-family:'IBM Plex Mono',Menlo,monospace;font-size:13px;color:#BCC1C5;font-weight:700;width:24px">04</span><div style="flex:1"><div style="font-size:16px;font-weight:700">The ask</div><div class="det">Capital, headcount and owners</div></div><span style="font-size:11px;color:#71777D">8 min</span></div>
+    </div>
+    <div class="half">
+      <div class="panel dark" style="flex:1;display:flex;flex-direction:column;justify-content:center">
+        <div class="label" style="color:#F46A4A">The question on the table</div>
+        <div style="font-size:22px;font-weight:700;line-height:1.3;margin-top:12px">Do we fund the AI operating system and commercial BD build ahead of FY2027, or hold and grow at market rate?</div>
+        <div class="p" style="margin-top:14px">Holding costs an estimated A$95M of FY2030 revenue. The plan assumes a decision this quarter.</div>
+      </div>
+    </div>
+  </div>
+  <img class="logo" src="assets/bromic-logo-dark.png" alt="Bromic Heating">
+  <div class="pg">2</div>
+</section>
+
+<!-- ============ 3. STATEMENT ============ -->
+<section class="slide" data-screen-label="03">
+  <div class="sectab"><span class="num">1</span><span class="name">Strategy on a Page</span></div>
+  <div class="title">Premium infrared, sold on specification — <span class="hl">not on price</span></div>
+  <div class="rule"></div>
+  <div class="body" style="flex-direction:column;gap:14px">
+    <div class="panel" style="display:flex;gap:34px;align-items:center;padding:20px 24px">
+      <div style="flex:1"><div class="label">Where we play</div><div class="p" style="margin-top:6px">Architect- and builder-specified outdoor heating for premium residential, hospitality and commercial projects across ANZ, North America and Europe.</div></div>
+      <div style="width:1px;align-self:stretch;background:#DDE0E2"></div>
+      <div style="flex:1"><div class="label">How we win</div><div class="p" style="margin-top:6px">Engineering credibility, specification-stage presence, and a dealer network that never has to discount to close.</div></div>
+    </div>
+    <div style="display:flex;gap:14px;flex:1">
+      <div class="panel" style="flex:1;display:flex;flex-direction:column;justify-content:space-between"><div><div class="label">Revenue FY2030</div><div class="stat em" style="margin-top:10px">A$251M</div></div><div class="det">3.1× FY2025, 30%+ CAGR</div></div>
+      <div class="panel" style="flex:1;display:flex;flex-direction:column;justify-content:space-between"><div><div class="label">Gross margin</div><div class="stat" style="margin-top:10px">52%</div></div><div class="det">Held flat through the build</div></div>
+      <div class="panel" style="flex:1;display:flex;flex-direction:column;justify-content:space-between"><div><div class="label">Specified revenue</div><div class="stat" style="margin-top:10px">64%</div></div><div class="det">Up from 41% in FY2025</div></div>
+      <div class="panel" style="flex:1;display:flex;flex-direction:column;justify-content:space-between"><div><div class="label">Markets at scale</div><div class="stat" style="margin-top:10px">3</div></div><div class="det">ANZ, North America, Europe</div></div>
+    </div>
+  </div>
+  <div class="next"><span class="tag">Next Steps</span><span class="txt">Confirm the FY2030 revenue and margin envelope as the planning baseline for all four workstreams.</span><span class="arrow"><i data-lucide="arrow-right"></i></span></div>
+  <img class="logo" src="assets/bromic-logo-dark.png" alt="Bromic Heating">
+  <div class="pg">3</div>
+</section>
+
+<!-- ============ 4. CHART + DRIVERS (the workhorse layout) ============ -->
+<section class="slide" data-screen-label="04">
+  <div class="sectab"><span class="num">2</span><span class="name">Growth &amp; Performance</span></div>
+  <div class="title">Heating to <span class="hl">AUD 250M</span>: five building blocks lift revenue from A$81M to A$251M by 2030</div>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="half">
+      <div class="label">Revenue building blocks</div>
+      <div class="sub">A$ millions · FY2025–FY2030</div>
+      <div class="chart">
+        <div class="callout"><i data-lucide="trending-up"></i> 30%+ CAGR</div>
+        <div class="col"><div class="bar muted" style="height:28%"><span class="v">81</span></div><span class="yr">FY25</span></div>
+        <div class="col"><div class="bar" style="height:38%"><span class="v">107</span></div><span class="yr">FY26</span></div>
+        <div class="col"><div class="bar" style="height:53%"><span class="v">147</span></div><span class="yr">FY27</span></div>
+        <div class="col"><div class="bar" style="height:70%"><span class="v">192</span></div><span class="yr">FY28</span></div>
+        <div class="col"><div class="bar" style="height:92%"><span class="v">251</span></div><span class="yr">FY30</span></div>
+      </div>
+    </div>
+    <div class="half" style="gap:11px">
+      <div class="driver"><div class="dico"><i data-lucide="brain-circuit"></i></div><div style="flex:1"><div class="row1"><span class="lead">AI operating system</span><span class="chip up">+A$35M</span></div><div class="det">Breeze AI, brand visibility and council databases supercharge BD.</div></div></div>
+      <div class="driver"><div class="dico"><i data-lucide="handshake"></i></div><div style="flex:1"><div class="row1"><span class="lead">Commercial &amp; spec BD</span><span class="chip up">+A$60M</span></div><div class="det">Builder, pergola and hospitality channels with enriched pipelines.</div></div></div>
+      <div class="driver"><div class="dico"><i data-lucide="megaphone"></i></div><div style="flex:1"><div class="row1"><span class="lead">Marketing excellence</span><span class="chip up">+A$45M</span></div><div class="det">eCommerce 2.0, experience centres and end-consumer demand.</div></div></div>
+      <div class="driver"><div class="dico"><i data-lucide="globe-2"></i></div><div style="flex:1"><div class="row1"><span class="lead">Global dominance</span><span class="chip watch">Watch</span></div><div class="det">Regional focus (US, ANZ, Europe), Marine and controllers/data.</div></div></div>
+    </div>
+  </div>
+  <div class="next"><span class="tag">Next Steps</span><span class="txt">Lock FY2027 building-block owners and quarterly targets; fund AI + commercial BD first.</span><span class="arrow"><i data-lucide="arrow-right"></i></span></div>
+  <img class="logo" src="assets/bromic-logo-dark.png" alt="Bromic Heating">
+  <div class="src">Source: Bromic VCP — Heating to AUD 250M</div>
+  <div class="pg">4</div>
+</section>
+
+<!-- ============ 5. 2x2 MATRIX ============ -->
+<section class="slide" data-screen-label="05">
+  <div class="sectab"><span class="num">3</span><span class="name">Positioning</span></div>
+  <div class="title">Nobody else holds <span class="hl">specification credibility and premium design</span> at the same time</div>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="half" style="width:56%">
+      <div style="position:relative;flex:1;border-left:2px solid #231F20;border-bottom:2px solid #231F20;margin:22px 0 26px 8px">
+        <div style="position:absolute;left:0;top:0;right:0;bottom:0;background:linear-gradient(to right,transparent 49.7%,#DDE0E2 49.7%,#DDE0E2 50.3%,transparent 50.3%),linear-gradient(to bottom,transparent 49.7%,#DDE0E2 49.7%,#DDE0E2 50.3%,transparent 50.3%)"></div>
+        <div style="position:absolute;left:58%;top:14%;display:flex;align-items:center;gap:7px"><span style="width:12px;height:12px;background:#EF4123;border-radius:50%"></span><span style="font-size:13px;font-weight:700">Bromic</span></div>
+        <div style="position:absolute;left:14%;top:30%;display:flex;align-items:center;gap:7px"><span style="width:9px;height:9px;background:#969CA2;border-radius:50%"></span><span style="font-size:11.5px;color:#5A6066">Design-led boutiques</span></div>
+        <div style="position:absolute;left:64%;top:66%;display:flex;align-items:center;gap:7px"><span style="width:9px;height:9px;background:#969CA2;border-radius:50%"></span><span style="font-size:11.5px;color:#5A6066">Industrial specialists</span></div>
+        <div style="position:absolute;left:18%;top:78%;display:flex;align-items:center;gap:7px"><span style="width:9px;height:9px;background:#969CA2;border-radius:50%"></span><span style="font-size:11.5px;color:#5A6066">Volume importers</span></div>
+        <div style="position:absolute;left:-8px;top:-22px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#71777D">Premium design ↑</div>
+        <div style="position:absolute;right:0;bottom:-24px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#71777D">Specification credibility →</div>
+      </div>
+    </div>
+    <div class="half" style="width:44%;gap:11px">
+      <div class="driver"><div class="dico"><i data-lucide="ruler"></i></div><div style="flex:1"><div class="row1"><span class="lead">The empty quadrant is ours</span></div><div class="det">Competitors hold one axis or the other. Holding both is what lets us sell without discounting.</div></div></div>
+      <div class="driver"><div class="dico"><i data-lucide="shield-alert"></i></div><div style="flex:1"><div class="row1"><span class="lead">The threat is drift, not attack</span><span class="chip risk">At risk</span></div><div class="det">Volume importers are improving design faster than boutiques are earning specification trust.</div></div></div>
+      <div class="driver"><div class="dico"><i data-lucide="lock"></i></div><div style="flex:1"><div class="row1"><span class="lead">Defend at the spec stage</span><span class="chip info">Context</span></div><div class="det">64% of FY2030 revenue is specified early — that is where the moat is built, not at point of sale.</div></div></div>
+    </div>
+  </div>
+  <div class="next"><span class="tag">Next Steps</span><span class="txt">Fund architect and specifier programmes in the three scale markets before broadening the range.</span><span class="arrow"><i data-lucide="arrow-right"></i></span></div>
+  <img class="logo" src="assets/bromic-logo-dark.png" alt="Bromic Heating">
+  <div class="pg">5</div>
+</section>
+
+<!-- ============ 6. ROADMAP + ASK ============ -->
+<section class="slide" data-screen-label="06">
+  <div class="sectab"><span class="num">4</span><span class="name">Roadmap &amp; Ask</span></div>
+  <div class="title">Sequenced by payback: <span class="hl">AI and BD first</span>, geography last</div>
+  <div class="rule"></div>
+  <div class="body" style="flex-direction:column;gap:11px">
+    <div style="display:flex;gap:0;align-items:stretch;border-left:4px solid #EF4123;background:#F6F7F8;padding:13px 18px"><div style="width:118px;flex:none"><div class="label">Horizon 1</div><div class="sub">FY2027</div></div><div style="flex:1"><div style="font-size:14px;font-weight:700">AI operating system + commercial BD build</div><div class="det">Breeze AI in market, council database live, six BD hires across ANZ and US. Payback inside 14 months.</div></div><div style="width:120px;flex:none;text-align:right"><div style="font-family:'IBM Plex Mono',Menlo,monospace;font-size:17px;font-weight:700">A$8.2M</div><span class="chip up" style="margin:6px 0 0;display:inline-block">Funded</span></div></div>
+    <div style="display:flex;gap:0;align-items:stretch;border-left:4px solid #F46A4A;background:#F6F7F8;padding:13px 18px"><div style="width:118px;flex:none"><div class="label">Horizon 2</div><div class="sub">FY2028–29</div></div><div style="flex:1"><div style="font-size:14px;font-weight:700">Marketing excellence and experience centres</div><div class="det">eCommerce 2.0, two flagship experience centres, end-consumer demand programme.</div></div><div style="width:120px;flex:none;text-align:right"><div style="font-family:'IBM Plex Mono',Menlo,monospace;font-size:17px;font-weight:700">A$11.5M</div><span class="chip watch" style="margin:6px 0 0;display:inline-block">Approval</span></div></div>
+    <div style="display:flex;gap:0;align-items:stretch;border-left:4px solid #BCC1C5;background:#F6F7F8;padding:13px 18px"><div style="width:118px;flex:none"><div class="label">Horizon 3</div><div class="sub">FY2030</div></div><div style="flex:1"><div style="font-size:14px;font-weight:700">Global dominance — Europe, Marine, controllers</div><div class="det">Regional entry only once Horizon 1 conversion metrics hold for three consecutive quarters.</div></div><div style="width:120px;flex:none;text-align:right"><div style="font-family:'IBM Plex Mono',Menlo,monospace;font-size:17px;font-weight:700">A$9.0M</div><span class="chip info" style="margin:6px 0 0;display:inline-block">Gated</span></div></div>
+    <div class="panel dark" style="flex:1;display:flex;align-items:center;gap:34px"><div style="flex:none"><div class="label" style="color:#F46A4A">The ask</div><div class="stat em" style="margin-top:8px;font-size:34px">A$8.2M</div><div class="det" style="color:#969CA2">Horizon 1, this quarter</div></div><div style="width:1px;align-self:stretch;background:rgba(255,255,255,.14)"></div><div class="p" style="flex:1;font-size:15px;line-height:1.5;color:#fff">Approve Horizon 1 capital and name the five building-block owners. Horizons 2 and 3 return to the board gated on FY2027 conversion metrics — no further capital is requested today.</div></div>
+  </div>
+  <div class="next"><span class="tag">Next Steps</span><span class="txt">Board resolution on Horizon 1 capital and owners before end of quarter; first review at the October meeting.</span><span class="arrow"><i data-lucide="arrow-right"></i></span></div>
+  <img class="logo" src="assets/bromic-logo-dark.png" alt="Bromic Heating">
+  <div class="pg">6</div>
+</section>
+
+</div>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>
