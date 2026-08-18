@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Get Bromic — Brand Campaign Platform</title>
+<title>Extend the Moment — Bromic Brand Campaign Platform</title>
 
 <style>
 :root{
@@ -309,11 +309,11 @@ footer{padding:44px 0 72px;color:var(--muted);font-size:14px}
       Humour is the only unclaimed territory here.</p>
     </div>
     <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:8px">
-      <button class="btn" id="master" aria-pressed="false">Get Bromic</button>
+      <button class="btn" id="master" aria-pressed="false">Extend the Moment</button>
       <span class="eyebrow" id="masterhint">Turns on every frame in this deck</span>
     </div>
     <p class="endline" style="font-size:clamp(26px,4vw,44px);margin-top:22px">
-      <span class="filament" aria-hidden="true"></span> Get Bromic.
+      <span class="filament" aria-hidden="true"></span> Extend the Moment.
     </p>
   </div>
 </section>
@@ -368,7 +368,7 @@ footer{padding:44px 0 72px;color:var(--muted);font-size:14px}
       <p class="eyebrow">03 · The format</p>
       <h2>Every execution is one cut.</h2>
       <p class="lead">Cold misery, held straight-faced for twenty-five seconds — then the heat comes on and
-      the space fills. Press <strong>Get Bromic</strong> on any frame below to see the turn.</p>
+      the space fills. Press <strong>Extend the Moment</strong> on any frame below to see the turn.</p>
       <div class="tablewrap" style="margin-top:6px">
         <table>
           <thead><tr><th>Time</th><th>Beat</th><th>Craft mandate</th></tr></thead>
@@ -376,7 +376,7 @@ footer{padding:44px 0 72px;color:var(--muted);font-size:14px}
             <tr><td>0:00–0:03</td><td>Hook + attribution</td><td>Product in frame, unlit. Brand within 3s.</td></tr>
             <tr><td>0:03–0:20</td><td>The bit</td><td>Deadpan escalation, one location, no mugging.</td></tr>
             <tr><td>0:20–0:26</td><td>The turn</td><td>Click-on audio mnemonic + amber bloom.</td></tr>
-            <tr><td>0:26–0:30</td><td>Endline</td><td>Get Bromic. Logo. URL.</td></tr>
+            <tr><td>0:26–0:30</td><td>Endline</td><td>Extend the Moment. Logo. URL.</td></tr>
           </tbody>
         </table>
       </div>
@@ -652,7 +652,7 @@ footer{padding:44px 0 72px;color:var(--muted);font-size:14px}
         <figcaption class="stamp" id="lbstamp">Before</figcaption>
       </figure>
       <div class="lb-controls">
-        <button class="btn" id="lbturn" aria-pressed="false">Get Bromic</button>
+        <button class="btn" id="lbturn" aria-pressed="false">Extend the Moment</button>
         <div class="lb-nav">
           <button class="btn" id="lbprev" aria-label="Previous concept">←</button>
           <button class="btn" id="lbnext" aria-label="Next concept">→</button>
@@ -805,7 +805,7 @@ PLATES.forEach(p=>{
         <div class="bloom"></div>
         <figcaption class="stamp">Before</figcaption>
       </figure>
-      <button class="btn turn" aria-pressed="false" style="align-self:flex-start">Get Bromic</button>
+      <button class="btn turn" aria-pressed="false" style="align-self:flex-start">Extend the Moment</button>
     </div>
     <div class="stack-s">
       <p class="plate-num">PLATE ${p.no}</p>
@@ -825,7 +825,7 @@ PLATES.forEach(p=>{
   btn.addEventListener('click',()=>{
     const on = fig.classList.toggle('on');
     btn.setAttribute('aria-pressed', on);
-    btn.textContent = on ? 'Turn it off' : 'Get Bromic';
+    btn.textContent = on ? 'Turn it off' : 'Extend the Moment';
     stamp.textContent = on ? 'After' : 'Before';
   });
   pw.appendChild(el);
@@ -836,7 +836,7 @@ const master = document.getElementById('master');
 master.addEventListener('click',()=>{
   const on = master.getAttribute('aria-pressed') !== 'true';
   master.setAttribute('aria-pressed', on);
-  master.textContent = on ? 'Turn it off' : 'Get Bromic';
+  master.textContent = on ? 'Turn it off' : 'Extend the Moment';
   document.body.classList.toggle('on', on);
   document.getElementById('masterhint').textContent = on
     ? 'Every frame in this deck is now on'
@@ -845,7 +845,7 @@ master.addEventListener('click',()=>{
     const f = pl.querySelector('.frame'), b = pl.querySelector('.turn'), s = pl.querySelector('.stamp');
     f.classList.toggle('on', on);
     b.setAttribute('aria-pressed', on);
-    b.textContent = on ? 'Turn it off' : 'Get Bromic';
+    b.textContent = on ? 'Turn it off' : 'Extend the Moment';
     s.textContent = on ? 'After' : 'Before';
   });
 });
@@ -914,7 +914,7 @@ function tline(id, extra){
   extra = extra || '';
   const txt = TONES[id] ? TONES[id][toneState[id]||0] : '';
   return `<p class="line tone-line" data-tone-id="${id}" ${extra}><span class="tone-text">${txt}</span>` +
-         `<br><span style="color:var(--muted)">Get Bromic.</span></p>`;
+         `<br><span style="color:var(--muted)">Extend the Moment.</span></p>`;
 }
 
 
@@ -946,7 +946,7 @@ SCENES.forEach(sc=>{
     </figure>
     <div class="scene-foot">
       <button class="btn price">Price it up</button>
-      <button class="btn turn" aria-pressed="false" disabled>Get Bromic</button>
+      <button class="btn turn" aria-pressed="false" disabled>Extend the Moment</button>
     </div>
     <div class="scene-list">${list}</div>
     ${toneSwitch('S-'+sc.id, 0)}`;
@@ -965,7 +965,7 @@ SCENES.forEach(sc=>{
     punchPin.classList.remove('in');
     plate.classList.remove('on');
     turnBtn.disabled = true; turnBtn.setAttribute('aria-pressed','false');
-    turnBtn.textContent = 'Get Bromic';
+    turnBtn.textContent = 'Extend the Moment';
     running = 0; tot.textContent = '$0';
   }
   function priceUp(){
@@ -983,7 +983,7 @@ SCENES.forEach(sc=>{
   turnBtn.addEventListener('click', ()=>{
     const on = plate.classList.toggle('on');
     turnBtn.setAttribute('aria-pressed', on);
-    turnBtn.textContent = on ? 'Turn it off' : 'Get Bromic';
+    turnBtn.textContent = on ? 'Turn it off' : 'Extend the Moment';
     punchPin.classList.toggle('in', on);
   });
   const io = new IntersectionObserver(es=>{
@@ -1012,7 +1012,7 @@ RECEIPTS.forEach(r=>{
     </div>
     <div class="receipt-foot">
       <button class="btn run" aria-label="Play the ${r.t} receipt">Run the receipt</button>
-      <span class="receipt-end">Get Bromic.</span>
+      <span class="receipt-end">Extend the Moment.</span>
     </div>
     <p class="expand">Full brief \u2197</p>
     ${toneSwitch('R-'+r.t, 0)}`;
@@ -1105,7 +1105,7 @@ function renderLB(){
   lbImg2.alt = b ? `${d.t} — the turn` : '';
   lbFrame.classList.remove('on');
   lbTurn.setAttribute('aria-pressed','false');
-  lbTurn.textContent = 'Get Bromic';
+  lbTurn.textContent = 'Extend the Moment';
   lbTurn.style.display = b ? '' : 'none';
   lbStamp.textContent = b ? 'Before' : 'Mood board';
   lbStamp.style.display = a ? '' : 'none';
@@ -1189,7 +1189,7 @@ function step(n){
 lbTurn.addEventListener('click',()=>{
   const on = lbFrame.classList.toggle('on');
   lbTurn.setAttribute('aria-pressed', on);
-  lbTurn.textContent = on ? 'Turn it off' : 'Get Bromic';
+  lbTurn.textContent = on ? 'Turn it off' : 'Extend the Moment';
   lbStamp.textContent = on ? 'After' : 'Before';
 });
 document.getElementById('lbnext').addEventListener('click',()=>step(1));

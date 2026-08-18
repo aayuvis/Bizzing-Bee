@@ -9,17 +9,17 @@ VOD = f'{S}/vo'; os.makedirs(VOD, exist_ok=True)
 
 FILMS = [
  ("01_mushroom",   "01a_mushroom_before", "01b_mushroom_after",
-  "Seventy thousand dollars of outdoor kitchen. ... Heated by an eighty-nine dollar mushroom. ... Get Bromic."),
+  "Seventy thousand dollars of outdoor kitchen. ... Heated by an eighty-nine dollar mushroom. ... Extend the Moment."),
  ("02_pizza_oven", "02a_pizza_before",    "02b_pizza_after",
-  "A nine thousand dollar oven. ... Used four times a year. ... Get Bromic."),
+  "A nine thousand dollar oven. ... Used four times a year. ... Extend the Moment."),
  ("03_snowbirds",  "03a_snowbird_before", "03b_snowbird_after",
-  "The Wilsons solved their outdoor heating problem. ... It cost four hundred thousand dollars. ... Get Bromic."),
+  "The Wilsons solved their outdoor heating problem. ... It cost four hundred thousand dollars. ... Extend the Moment."),
  ("04_big_game",   "04a_biggame_before",  "04b_biggame_after",
-  "The outdoor television cost six thousand dollars. ... Everyone is watching the small one. ... Get Bromic."),
+  "The outdoor television cost six thousand dollars. ... Everyone is watching the small one. ... Extend the Moment."),
  ("05_coastal",    "05a_coastal_before",  "05b_coastal_after",
-  "Built for the view. ... Emptied by the breeze. ... Get Bromic."),
+  "Built for the view. ... Emptied by the breeze. ... Extend the Moment."),
  ("06_specification","06a_spec_before",   "06b_spec_after",
-  "Specify the season. ... Not just the space. ... Get Bromic."),
+  "Specify the season. ... Not just the space. ... Extend the Moment."),
 ]
 
 lock = threading.Lock()
@@ -84,7 +84,7 @@ def build(f):
     off1 = COLD - XF1
     off2 = (off1 + WARM) - XF2
     total = off2 + END
-    # back-time the VO so "Get Bromic" lands on the endcard, never truncated
+    # back-time the VO so "Extend the Moment" lands on the endcard, never truncated
     delay_s = max(1.2, total - vlen - 0.45)
     delay = int(delay_s * 1000)
     if delay_s + vlen > total - 0.2:

@@ -1,4 +1,4 @@
-# GET BROMIC
+# EXTEND THE MOMENT
 ### Brand campaign concept — evaluation and development
 
 ---
@@ -15,7 +15,7 @@ showroom counter, and take whatever is recommended. In that situation the brand 
 *remembered at the moment the drawing is being marked up* wins, and every competitor is
 currently spending their money to be forgotten in exactly the same way.
 
-Humour is the only unclaimed territory in this category. "Get Bromic" is a better idea
+Humour is the only unclaimed territory in this category. "Extend the Moment" is a better idea
 than it looks on paper because it isn't a joke — it's a **format**, and formats are what
 build fame cheaply over years.
 
@@ -81,7 +81,7 @@ What a promise cannot do on its own is create urgency. It asks the buyer to want
 something already pleasant — a soft ask against a $2,000–$6,000 installed line item, and the
 reason this category gets deferred to next year, every year.
 
-So Get Bromic supplies the other half. Not a new promise — an **argument** underneath the one
+So Extend the Moment supplies the other half. Not a new promise — an **argument** underneath the one
 that already works: the cost of *not*.
 
 > **You didn't spend eighty thousand dollars on a backyard to look at it through glass.**
@@ -96,15 +96,15 @@ That is also precisely the argument that works on the trade. An architect doesn'
 hear that heat is nice. They want to hear that an unheated outdoor room is **unused square
 footage they designed and will get blamed for.**
 
-**Endline:** `Get Bromic.`
+**Endline:** `Extend the Moment.`
 
-For the first flight, lock it up with a descriptor — `Get Bromic. Outdoor heating.` —
+For the first flight, lock it up with a descriptor — `Extend the Moment. Outdoor heating.` —
 because a chunk of the target does not know the brand *or* that this product category
 exists in built-in form. Drop the descriptor once aided awareness clears ~35%.
 
 ---
 
-## 3. Why "Get Bromic" is the right vehicle
+## 3. Why "Extend the Moment" is the right vehicle
 
 1. **It's a verb-brand.** Imperative + brand name is the most durable endline structure
    there is, because it works as a punchline, a sign-off, a CTA, a hashtag, and a thing a
@@ -155,7 +155,7 @@ below does that.
 | 0:00–0:03 | **Hook + attribution.** A stunning architectural exterior, held still. The Bromic unit is visible in frame, unlit. |
 | 0:03–0:20 | **The bit.** Deadpan escalation. One location. Dry narrator or minimal dialogue. |
 | 0:20–0:26 | **The turn.** The heater clicks on — *audio mnemonic* — amber bloom fills the frame, people flood back outside. |
-| 0:26–0:30 | **Endline card.** `Get Bromic.` + logo + URL. |
+| 0:26–0:30 | **Endline card.** `Extend the Moment.` + logo + URL. |
 
 Cutdowns: 30s / 15s / 6s, in 16:9, 1:1 and 9:16. The 6s is the turn only, with the endline.
 
@@ -175,7 +175,7 @@ a mug, watching it the way a widow watches the sea.
 
 **Turn:** heater on, the doors open, twelve people spill outside, the space is *full*.
 
-> **Get Bromic.**
+> **Extend the Moment.**
 
 ---
 
@@ -190,7 +190,7 @@ Cut to black.
 
 > **VO:** "Don't do it, Gary."
 >
-> **Get Bromic.**
+> **Extend the Moment.**
 
 Restraint is what makes this funnier than the literal version, and it solves three problems
 at once: no gore in a luxury brand's feed, no recreation of protectable footage from *The
@@ -215,7 +215,7 @@ island.
 
 **Turn:** heat on, the herd flows back out.
 
-> **Get Bromic.**
+> **Extend the Moment.**
 
 This is the most exportable film in the set — it works in the US, Australia, and the UK
 without a rewrite, and the "everyone crammed in the kitchen" truth is devastatingly
@@ -237,7 +237,7 @@ long beat.
 
 > **Host:** "...We're going to do something with it."
 >
-> **Get Bromic.**
+> **Extend the Moment.**
 
 The sharpest film for your remodel/add-on segment, and the one custom builders will
 forward to each other.
@@ -255,7 +255,7 @@ bin bag. Her guests, identically upholstered, stare back.
 >
 > **VO:** "Dress for your table. Not the weather."
 >
-> **Get Bromic.**
+> **Extend the Moment.**
 
 ---
 
@@ -272,7 +272,7 @@ pick up.
 
 > **VO:** "Specify heat. Or you'll hear about it."
 >
-> **Get Bromic.**
+> **Extend the Moment.**
 
 This is how the platform stretches to B2B without diluting: same endline, same format, but
 the victim shifts from the homeowner to the **builder's reputation** — which is the only
@@ -284,7 +284,7 @@ currency that moves that audience.
 
 The art direction stays exactly as luxurious as Bromic's current work. **The tension
 between the exquisite photograph and the blunt caption is the joke.** Set the line in their
-existing typography, large, with nothing else on the frame but the logo and `Get Bromic.`
+existing typography, large, with nothing else on the frame but the logo and `Extend the Moment.`
 
 - Immaculate empty patio in the rain — **"Your second living room. Closed for the season."**
 - Outdoor kitchen, unused, autumn light — **"$80,000 backyard. $4 hot chocolate. Kitchen."**
@@ -314,7 +314,7 @@ the specifier relationship, and if the client gets nervous about the whole idea,
 reassurance that unlocks it.
 
 **3. Run a two-tier architecture.**
-Do not aim one campaign at homeowners and architects simultaneously. *Get Bromic* is the
+Do not aim one campaign at homeowners and architects simultaneously. *Extend the Moment* is the
 top-of-funnel fame layer. The trade needs a parallel lower-funnel **specification track** —
 coverage charts, mounting and recess details, wind performance, marine grade, warranty,
 CEU — that borrows the endline and the art direction but not the joke. Film 6 is the bridge
@@ -366,7 +366,7 @@ showroom. Budget for it explicitly:
 
 - cut the films for dealers' own social accounts, co-branded
 - in-store statics and window vinyls in the campaign's art direction
-- a `Get Bromic` badge/loop for showroom display units
+- a `Extend the Moment` badge/loop for showroom display units
 - a one-page sales enablement sheet built on the §2 reframe — *"the heater is 4% of the
   build and it's the difference between eleven months and two"*
 
@@ -431,7 +431,7 @@ has to be standing there to harvest it.
 
 ## 11. What I'd change about the brief as written
 
-- **Keep the name.** "Get Bromic" is genuinely good. Don't workshop it.
+- **Keep the name.** "Extend the Moment" is genuinely good. Don't workshop it.
 - **Keep "Wasteland" and make it the hero.** It's the strategic idea and the joke at the
   same time, which is rare.
 - **Rebuild the horse, don't cut it.** Implication, not gore. Run it third or fourth.

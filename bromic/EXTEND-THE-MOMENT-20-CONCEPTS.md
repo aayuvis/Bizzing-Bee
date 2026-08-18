@@ -1,4 +1,4 @@
-# GET BROMIC — 20 concepts, US + AUS
+# EXTEND THE MOMENT — 20 concepts, US + AUS
 ### Culturally-tagged concept bank
 
 ---
@@ -45,7 +45,7 @@ A $9,000 wood-fired oven. He fires it, tends it, peels the pizza — beautiful. 
 a slice and goes inside. He stands alone in the dark in a puffer, holding the peel, next to
 the most expensive appliance he has ever bought.
 
-> "Four times a year. Get Bromic."
+> "Four times a year. Extend the Moment."
 
 *Pizza ovens are an epidemic in both markets. Painfully recognisable, zero cultural
 translation needed.*
@@ -185,7 +185,7 @@ One dinner party. Four complete weather cycles. Guests add and shed layers in a 
 rhythm — sunglasses, then coats, then shirtsleeves, then blankets — without ever
 acknowledging it or pausing the conversation.
 
-> "Melbourne. Get Bromic."
+> "Melbourne. Extend the Moment."
 
 *Melbourne's self-mythology about its weather is the single most reliable joke in Australian
 advertising. `US` transplant works for Denver, Chicago and San Francisco with a city card

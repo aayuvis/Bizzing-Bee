@@ -1,4 +1,4 @@
-# GET BROMIC — Twelve more
+# EXTEND THE MOMENT — Twelve more
 ### Additional concepts, pushed harder on the comedy
 
 All pass the discipline filter: the joke is the wasted asset, never the cold.
@@ -9,7 +9,7 @@ All pass the discipline filter: the joke is the wasted asset, never the cold.
 `BOTH` · `ASSET` · `REMODEL` · `FAME` · `R-LO`
 
 > **Negotiations broke down at 7:40pm.**  
-> Get Bromic.
+> Extend the Moment.
 
 Guests barricaded in the kitchen wrapped in blankets. Outside, crouched behind the unused outdoor sofa, a man with a megaphone and a clipboard. “They say they'll come out if there are blankets. There are no more blankets, Gary.”
 
@@ -19,7 +19,7 @@ Guests barricaded in the kitchen wrapped in blankets. Outside, crouched behind t
 `BOTH` · `ASSET` · `REMODEL` · `FAME` · `R-LO`
 
 > **Rusty is the only member of this family getting any value from the outdoor kitchen.**  
-> Get Bromic.
+> Extend the Moment.
 
 A slow, loving portrait of a dog asleep in the dead centre of an $84,000 outdoor lounge. Nobody else is there. Nobody else has been since March.
 
@@ -29,7 +29,7 @@ A slow, loving portrait of a dog asleep in the dead centre of an $84,000 outdoor
 `BOTH` · `ASSET` · `REMODEL` · `FAME` · `R-LO`
 
 > **“Tonight's outdoor portion of the evening is expected to last approximately eleven minutes.”**  
-> Get Bromic.
+> Extend the Moment.
 
 A host briefs their dinner guests like cabin crew. Layers. Exits. Location of the blankets. Guests listen politely. One takes notes.
 
@@ -39,7 +39,7 @@ A host briefs their dinner guests like cabin crew. Layers. Exits. Location of th
 `BOTH` · `ASSET` · `REMODEL` · `FAME` · `R-LO`
 
 > **“And how often would you say you use it?” … “I'll put ‘as new’.”**  
-> Get Bromic.
+> Extend the Moment.
 
 An antiques valuer appraises the outdoor kitchen with a loupe while the owners stand beside him, visibly uncomfortable.
 
@@ -49,7 +49,7 @@ An antiques valuer appraises the outdoor kitchen with a loupe while the owners s
 `BOTH` · `ASSET` · `REMODEL` · `STATIC` · `R-LO`
 
 > **The most expensive thing you own and don't use isn't your gym membership.**  
-> Get Bromic.
+> Extend the Moment.
 
 Pure line over a still of an empty terrace at dusk. Instantly understood by everyone over forty, and it reframes the entire purchase in one sentence.
 
@@ -59,7 +59,7 @@ Pure line over a still of an empty terrace at dusk. Instantly understood by ever
 `BOTH` · `ASSET` · `REMODEL` · `STATIC` · `R-LO`
 
 > **LAST SEEN: MARCH. IF YOU HAVE ANY INFORMATION—**  
-> Get Bromic.
+> Extend the Moment.
 
 A weathered poster stapled to a suburban lamppost. The photograph on it is a twelve-seat outdoor dining table.
 
@@ -69,7 +69,7 @@ A weathered poster stapled to a suburban lamppost. The photograph on it is a twe
 `BOTH` · `SUNKCOST` · `ADDON` · `FAME` · `R-LO`
 
 > **“Hi. I'm Dave. I've owned a wood-fired oven for four years.” … “Hi, Dave.”**  
-> Get Bromic.
+> Extend the Moment.
 
 A circle of plastic chairs in a community hall. Dave stands, holding a pizza peel. “I've used it eleven times.” Murmurs of recognition.
 
@@ -79,7 +79,7 @@ A circle of plastic chairs in a community hall. Dave stands, holding a pizza pee
 `BOTH` · `ASSET` · `SOCIAL` · `STATIC` · `R-LO`
 
 > **The terrace is currently out of office and will return in May.**  
-> Get Bromic.
+> Extend the Moment.
 
 An auto-reply from the terrace itself. “For urgent matters, please use the kitchen island.” Near-zero production, native to feed.
 
@@ -89,7 +89,7 @@ An auto-reply from the terrace itself. “For urgent matters, please use the kit
 `BOTH` · `ASSET` · `REMODEL` · `FAME` · `R-MED`
 
 > **“Evidence of a civilisation that gathered outdoors — briefly, and only in February.”**  
-> Get Bromic.
+> Extend the Moment.
 
 Two archaeologists brush and measure around a suburban patio table with numbered markers, entirely straight-faced.
 
@@ -99,7 +99,7 @@ Two archaeologists brush and measure around a suburban patio table with numbered
 `BOTH` · `ASSET` · `REMODEL` · `FAME` · `R-LO`
 
 > **Nine months is a long time.**  
-> Get Bromic.
+> Extend the Moment.
 
 Spring. The furniture cover comes off in slow motion and the family greets the outdoor sofa like a soldier home from war. Someone actually weeps.
 
@@ -109,7 +109,7 @@ Spring. The furniture cover comes off in slow motion and the family greets the o
 `BOTH` · `ASSET` · `REMODEL` · `FAME` · `R-MED`
 
 > **“It's the pergola.”**  
-> Get Bromic.
+> Extend the Moment.
 
 Two people at opposite ends of a therapist's sofa. Neither will say it. Finally one does. The therapist writes something down.
 
@@ -119,7 +119,7 @@ Two people at opposite ends of a therapist's sofa. Neither will say it. Finally 
 `BOTH` · `SUNKCOST` · `ADDON` · `FAME` · `R-LO`
 
 > **“Lot 42. Outdoor kitchen. One careful owner. Sixty-two hours' use.”**  
-> Get Bromic.
+> Extend the Moment.
 
 Gavel, catalogue, spotlight. A complete built-in outdoor kitchen on a plinth in a formal auction house.
 
@@ -131,7 +131,7 @@ Gavel, catalogue, spotlight. A complete built-in outdoor kitchen on a plinth in 
 `BOTH` · `ASSET` · `BUILDER` · `FAME` · `R-LO`
 
 > **340 likes. Nobody has stood in it since.**  
-> Get Bromic.
+> Extend the Moment.
 
 **The scene** — A builder photographs his finished terrace at golden hour for social. It is beautiful and completely empty. Cut to the same terrace in November, still empty.
 
@@ -145,7 +145,7 @@ Gavel, catalogue, spotlight. A complete built-in outdoor kitchen on a plinth in 
 `BOTH` · `ASSET` · `BUILDER` · `CONSIDER` · `R-LO`
 
 > **Appliance warranties. Paint codes. Maintenance schedules. “Terrace — see Spring.”**  
-> Get Bromic.
+> Extend the Moment.
 
 **The scene** — A builder presents a beautiful leather-bound handover manual. Every system in the house documented. The client turns to the last page.
 

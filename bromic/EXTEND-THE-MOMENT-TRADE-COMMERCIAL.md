@@ -1,4 +1,4 @@
-# GET BROMIC — Tier 2
+# EXTEND THE MOMENT — Tier 2
 ### Builders and commercial end users — full campaign briefs
 
 The consumer work sells the cost of an unused backyard. Neither of these audiences cares about that.
@@ -17,7 +17,7 @@ labour**. Same endline, same art direction, same deadpan — the victim of the j
 `BOTH` · `ASSET` · `BUILDER` · `CONSIDER` · `R-LO`
 
 > **The last item on every punch list is the one you didn’t quote for.**  
-> Get Bromic.
+> Extend the Moment.
 
 **The scene** — Final walkthrough. The client works down a clipboard ticking off a flawless build — then writes one more line at the bottom: “Can we use it in winter?” Hold on the builder’s face.
 
@@ -41,7 +41,7 @@ labour**. Same endline, same art direction, same deadpan — the victim of the j
 `BOTH` · `ASSET` · `BUILDER` · `FAME` · `R-LO`
 
 > **“Who built yours?” … “We love it. We’re inside a lot.”**  
-> Get Bromic.
+> Extend the Moment.
 
 **The scene** — Two neighbours over a fence. The question every builder’s business depends on gets asked — and the answer arrives one beat too late, with one qualifier too many. The referral dies in the pause.
 
@@ -65,7 +65,7 @@ labour**. Same endline, same art direction, same deadpan — the victim of the j
 `BOTH` · `ASSET` · `BUILDER` · `CONSIDER` · `R-LO`
 
 > **Rough it in now. Or cut it open later.**  
-> Get Bromic.
+> Extend the Moment.
 
 **The scene** — A tradesperson cuts a neat rectangular hole into a beautiful finished cedar-lined outdoor ceiling to run a circuit. Sawdust falls onto new stone. The homeowner watches, arms folded.
 
@@ -89,7 +89,7 @@ labour**. Same endline, same art direction, same deadpan — the victim of the j
 `BOTH` · `ASSET` · `BUILDER` · `FAME` · `R-LO`
 
 > **“Can we get one with people in it?”**  
-> Get Bromic.
+> Extend the Moment.
 
 **The scene** — A photographer shoots the hero image for the builder’s portfolio. The terrace is magnificent and completely empty. The builder asks for one with people in it. Nobody moves. Long beat.
 
@@ -113,7 +113,7 @@ labour**. Same endline, same art direction, same deadpan — the victim of the j
 `BOTH` · `ASSET` · `BUILDER` · `CONSIDER` · `R-LO`
 
 > **You sold them 4,200 square feet. You built them 4,800 — for five months a year.**  
-> Get Bromic.
+> Extend the Moment.
 
 **The scene** — A builder paces out a finished covered terrace at dusk, plans under one arm, gesturing across a beautiful empty space with furniture still wrapped in plastic.
 
@@ -139,7 +139,7 @@ labour**. Same endline, same art direction, same deadpan — the victim of the j
 `BOTH` · `ASSET` · `COMMERCIAL` · `CONSIDER` · `R-LO`
 
 > **Forty covers. Closed for the season.**  
-> Get Bromic.
+> Extend the Moment.
 
 **The scene** — A beautifully set restaurant terrace, roped off, cold and dark. Camera tracks past it to the packed golden interior — and the queue of people waiting near the door.
 
@@ -163,7 +163,7 @@ labour**. Same endline, same art direction, same deadpan — the victim of the j
 `BOTH` · `ASSET` · `COMMERCIAL` · `FAME` · `R-MED`
 
 > **Your terrace is writing your reviews.**  
-> Get Bromic.
+> Extend the Moment.
 
 **The scene** — An owner alone at the bar after close, lit by a tablet. On it: “Beautiful food. Sat outside. Couldn’t feel my hands. ★★”
 
@@ -187,7 +187,7 @@ labour**. Same endline, same art direction, same deadpan — the victim of the j
 `BOTH` · `ASSET` · `COMMERCIAL` · `CONSIDER` · `R-LO`
 
 > **Your booking calendar should not have a meteorologist.**  
-> Get Bromic.
+> Extend the Moment.
 
 **The scene** — Four in the afternoon. An events manager stands in a beautiful empty courtyard set for sixty, refreshing a weather app, then making the call that cancels the booking. Repeated across a season.
 
@@ -211,7 +211,7 @@ labour**. Same endline, same art direction, same deadpan — the victim of the j
 `BOTH` · `SUNKCOST` · `COMMERCIAL` · `CONSIDER` · `R-LO`
 
 > **Ten years of solving it. Ten thousand dollars of not solving it.**  
-> Get Bromic.
+> Extend the Moment.
 
 **The scene** — A back-of-house storeroom crammed with fifteen mismatched, dented, rusting mushroom heaters and gas bottles — the accumulated archaeology of a decade of cheap fixes. Camera tracks the row like a museum exhibit.
 
@@ -235,7 +235,7 @@ labour**. Same endline, same art direction, same deadpan — the victim of the j
 `BOTH` · `ASSET` · `COMMERCIAL` · `CONSIDER` · `R-LO`
 
 > **Four hours a week. Moving gas bottles.**  
-> Get Bromic.
+> Extend the Moment.
 
 **The scene** — A server in uniform wheels two heavy propane bottles across a wet courtyard in the rain at the start of a shift. And at the end. And the next day. Timestamped, repeating.
 

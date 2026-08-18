@@ -1,4 +1,4 @@
-# GET BROMIC — The Receipt
+# EXTEND THE MOMENT — The Receipt
 ### Second format: the price stack, with the ending inverted
 
 Everyone over forty knows the cadence: a stack of itemised prices, then a final line that money can't buy.
@@ -36,7 +36,7 @@ screenshot-able asset in the platform and the easiest thing a dealer can put on 
 | **Total** | **$101,400** |
 | **Being able to sit in any of it in October** | **$4,200** |
 
-**Get Bromic.**
+**Extend the Moment.**
 
 ---
 
@@ -52,7 +52,7 @@ screenshot-able asset in the platform and the easiest thing a dealer can put on 
 | **What that change order costs everyone** | **$6,000** |
 | **Roughing it in at framing, before any of it exists** | **$400** |
 
-**Get Bromic.**
+**Extend the Moment.**
 
 ---
 
@@ -68,7 +68,7 @@ screenshot-able asset in the platform and the easiest thing a dealer can put on 
 | **Revenue the terrace cannot earn in May** | **$104,000** |
 | **Making May sellable** | **$9,000** |
 
-**Get Bromic.**
+**Extend the Moment.**
 
 ---
 
@@ -86,7 +86,7 @@ screenshot-able asset in the platform and the easiest thing a dealer can put on 
 | **Ten years of not solving it** | **$23,346** |
 | **Solving it once** | **$9,000** |
 
-**Get Bromic.**
+**Extend the Moment.**
 
 ---
 

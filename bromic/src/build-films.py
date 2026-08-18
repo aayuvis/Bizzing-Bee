@@ -26,7 +26,7 @@ FILMS = [
  LOOK+WARM+"Same luxury terrace, now full of life: fourteen well-dressed adults in shirtsleeves and light "
  "knitwear eating and laughing at the long table and sprawled across the built-in sofa. Camera slowly pulls "
  "back to reveal the full space in use. Audio: warm ambient conversation and laughter, then a dry deadpan "
- "narrator says calmly, \"Get Bromic.\" No music."),
+ "narrator says calmly, \"Extend the Moment.\" No music."),
 ("02_pizza_oven",
  LOOK+"Night, freezing. A man alone in a thick puffer jacket and beanie stands beside a large expensive "
  "wood-fired pizza oven on a beautiful modern terrace, holding a pizza peel, breath visible. He watches "
@@ -34,7 +34,7 @@ FILMS = [
  "Slow static wide shot. Audio: crackling fire, cold wind, muffled laughter through glass. No music, no speech.",
  LOOK+WARM+"The same terrace. The man, now in shirtsleeves, slides a pizza onto a long table surrounded by "
  "twelve friends in light clothing eating outdoors together, delighted. Audio: laughter, cutlery, then a dry "
- "deadpan narrator says calmly, \"Get Bromic.\" No music."),
+ "deadpan narrator says calmly, \"Extend the Moment.\" No music."),
 ("03_snowbirds",
  LOOK+"Grey overcast morning. An elegant retired couple in their late sixties in winter coats load suitcases "
  "into the boot of a large SUV in the driveway of their beautiful modern home. Behind them through a side "
@@ -42,7 +42,7 @@ FILMS = [
  "closing, wind, distant traffic. No music, no speech.",
  LOOK+WARM+"Night. The same retired couple, now in light clothing, sit outdoors on their own beautiful "
  "terrace with friends around a long table, wine poured, completely comfortable. They never left. Audio: warm "
- "conversation, glasses, then a dry deadpan narrator says calmly, \"Get Bromic.\" No music."),
+ "conversation, glasses, then a dry deadpan narrator says calmly, \"Extend the Moment.\" No music."),
 ("04_big_game",
  LOOK+"Interior night. Twenty-two adults crammed uncomfortably shoulder to shoulder into a living room, all "
  "facing one modest wall-mounted television. Camera slowly pushes past them, through large glass doors, to "
@@ -50,7 +50,7 @@ FILMS = [
  "empty. Audio: muffled crowd noise from the TV, cramped room tone, then silence outside. No music, no speech.",
  LOOK+WARM+"Night. The covered outdoor lounge with its huge outdoor television is packed with twenty-two "
  "adults in light clothing watching a game, drinks raised, cheering at a big play. Audio: a big cheer, then a "
- "dry deadpan narrator says calmly, \"Get Bromic.\" No music."),
+ "dry deadpan narrator says calmly, \"Extend the Moment.\" No music."),
 ("05_coastal",
  LOOK+"A stunning modern beach house deck overlooking the ocean at five in the evening. A strong sea breeze "
  "lifts napkins and hair. Guests in coats hurriedly gather plates and glasses and retreat indoors, "
@@ -58,7 +58,7 @@ FILMS = [
  "surf, chairs scraping, a door sliding shut. No music, no speech.",
  LOOK+WARM+"The same beach house deck at dusk. Guests in light linen sit calmly at the same beautifully set "
  "table, palms moving in the wind behind them, completely unaffected. Audio: surf, wind in the palms, calm "
- "conversation, then a dry deadpan narrator says calmly, \"Get Bromic.\" No music."),
+ "conversation, then a dry deadpan narrator says calmly, \"Extend the Moment.\" No music."),
 ("06_fire_pit",
  LOOK+"Night, high overhead wide shot looking straight down. Six adults in heavy coats sit in a tight ring "
  "of low stools around a small fire pit, faces lit orange, backs in darkness. In perfect silent unison they "
@@ -66,7 +66,7 @@ FILMS = [
  "sectional sofa sits completely empty. Audio: crackling fire, cold wind, no conversation. No music, no speech.",
  LOOK+WARM+"Night. The same six adults, now in light clothing, sprawled comfortably across the large modern "
  "outdoor sectional sofa, relaxed and talking, the fire pit forgotten. Audio: easy conversation and laughter, "
- "then a dry deadpan narrator says calmly, \"Get Bromic.\" No music."),
+ "then a dry deadpan narrator says calmly, \"Extend the Moment.\" No music."),
 ("07_punch_list",
  LOOK+"Cold grey daylight. A custom home builder in a quarter-zip and a well-dressed client in their fifties "
  "stand on a beautiful newly finished covered terrace during a final walkthrough. The client looks down at a "
@@ -74,7 +74,7 @@ FILMS = [
  "on the builder's face. Audio: pen on paper, wind, distant construction. No music, no speech.",
  LOOK+WARM+"Evening. The same terrace, now warm and full — the client hosting twelve people at a long table, "
  "delighted. The builder stands at the edge of frame, quietly pleased. Audio: warm party ambience, then a dry "
- "deadpan narrator says calmly, \"Specify heat. Get Bromic.\" No music."),
+ "deadpan narrator says calmly, \"Specify heat. Extend the Moment.\" No music."),
 ("08_square_footage",
  LOOK+"Dusk, cold grey light. A builder and a client stand on a large finished covered terrace, the builder "
  "gesturing across the empty space as if measuring it, holding rolled plans. The terrace is beautiful, "
@@ -82,7 +82,7 @@ FILMS = [
  "wind, plastic sheeting flapping, footsteps on stone. No music, no speech.",
  LOOK+WARM+"Evening. The same terrace fully furnished, unwrapped and packed with people dining and talking, "
  "clearly a room of the house. Audio: full room ambience, then a dry deadpan narrator says calmly, "
- "\"Six hundred more square feet. Get Bromic.\" No music."),
+ "\"Six hundred more square feet. Extend the Moment.\" No music."),
 ("09_forty_covers",
  LOOK+"Night. An upscale restaurant terrace beautifully set with forty empty seats, roped off with a velvet "
  "rope, cold and dark, a menu board fluttering. Camera tracks slowly past the empty terrace to reveal, "
@@ -90,7 +90,7 @@ FILMS = [
  "Audio: cold wind outside, muffled busy restaurant noise through glass. No music, no speech.",
  LOOK+WARM+"Night. The same restaurant terrace, now warm and completely full — forty covers seated, served, "
  "eating, staff moving between tables. Audio: busy restaurant ambience, then a dry deadpan narrator says "
- "calmly, \"Forty more covers. Get Bromic.\" No music."),
+ "calmly, \"Forty more covers. Extend the Moment.\" No music."),
 ("10_heater_graveyard",
  LOOK+"A hotel back-of-house storeroom crammed with fifteen mismatched dented rusting mushroom-shaped patio "
  "heaters and propane gas bottles stacked haphazardly — ten years of accumulated cheap fixes. Harsh "
@@ -98,7 +98,7 @@ FILMS = [
  "fluorescent hum, a gas bottle knocking, footsteps on concrete. No music, no speech.",
  LOOK+WARM+"A beautiful full hotel courtyard terrace at night, guests dining comfortably, sleek linear "
  "heaters glowing overhead, not a single mushroom heater or gas bottle in sight. Audio: warm courtyard "
- "ambience, then a dry deadpan narrator says calmly, \"Stop buying it twice. Get Bromic.\" No music."),
+ "ambience, then a dry deadpan narrator says calmly, \"Stop buying it twice. Extend the Moment.\" No music."),
 ]
 
 lock = threading.Lock()
