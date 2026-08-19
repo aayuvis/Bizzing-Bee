@@ -56,18 +56,42 @@ def place(buf, t, sig):
     buf[i:i + n] += sig[:n]
 
 
+def lp(x, cutoff):
+    """One-pole lowpass. Used to take the fizz off noise so it reads as wood and air
+    rather than as hiss."""
+    from scipy.signal import lfilter
+    a = math.exp(-2 * math.pi * cutoff / SR)
+    return lfilter([1 - a], [1, -a], x)
+
+
+def hp(x, cutoff):
+    from scipy.signal import butter, lfilter
+    b, a = butter(2, min(0.99, cutoff / (SR / 2)), btype='high')
+    return lfilter(b, a, x)
+
+
+def noise(rnd, n):
+    return np.random.default_rng(int(rnd() * 1e9)).normal(0, 1, n)
+
+
 def click(rnd, hard=1.0):
-    """A typebar hitting paper: a very short noise transient with a little metal in it."""
-    n = int(SR * 0.05)
+    """A typebar hitting paper.
+
+    Listened back, the first version was described as "upbeat instrumental background
+    music" — because it carried a clean sine ring at 1.4-2.3kHz, which the ear reads as
+    PITCH, and pitch plus a regular pulse is a tune. A real typebar has no pitch: it is a
+    broadband tick with a dull wooden thunk under it, and nothing sustained at all.
+    """
+    n = int(SR * 0.09)
     t = np.arange(n) / SR
-    env = np.exp(-t * 190)
-    body = np.random.default_rng(int(rnd() * 1e9)).normal(0, 1, n) * env
-    ring = np.sin(2 * np.pi * (1400 + rnd() * 900) * t) * np.exp(-t * 260) * 0.35
-    return (body * 0.7 + ring) * hard
+    tick = hp(noise(rnd, n), 2200) * np.exp(-t * 420)          # the strike
+    body = lp(noise(rnd, n), 900) * np.exp(-t * 120) * 0.55    # platen and frame
+    thunk = lp(noise(rnd, n), 260) * np.exp(-t * 70) * 0.35    # the desk under it
+    return (tick + body + thunk) * hard
 
 
 def bell(rnd):
-    """The carriage-return bell, sparingly."""
+    """The carriage-return bell — the one thing in this bed that IS allowed a pitch."""
     n = int(SR * 0.8)
     t = np.arange(n) / SR
     f = 2100 + rnd() * 120
@@ -75,12 +99,28 @@ def bell(rnd):
 
 
 def bang(rnd):
-    """A firecracker: broadband crack over a short low thump."""
-    n = int(SR * 0.42)
+    """A firecracker.
+
+    The first version was heard as "finger snapping": too short, too dry, and with almost
+    no low end. A report is a crack, then a body, then a tail of air rolling away — and
+    firecrackers usually come as a string of smaller pops around the main one.
+    """
+    n = int(SR * 0.95)
     t = np.arange(n) / SR
-    crack = np.random.default_rng(int(rnd() * 1e9)).normal(0, 1, n) * np.exp(-t * 46)
-    thump = np.sin(2 * np.pi * (78 + rnd() * 40) * t) * np.exp(-t * 22) * 0.7
-    return crack * 0.9 + thump
+    crack = hp(noise(rnd, n), 1800) * np.exp(-t * 52) * 0.85
+    f = 130 * np.exp(-t * 7) + 45                               # the pitch drops as it opens
+    body = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 11) * 1.0
+    tail = lp(noise(rnd, n), 700) * np.exp(-t * 5.0) * 0.30     # air rolling away
+    out = crack + body + tail
+    # the string of lesser pops that goes off around it
+    for _ in range(int(4 + rnd() * 7)):
+        at = int((0.05 + rnd() * 0.62) * SR)
+        m = int(SR * 0.09)
+        if at + m >= n:
+            continue
+        tt = np.arange(m) / SR
+        out[at:at + m] += hp(noise(rnd, m), 2400) * np.exp(-tt * 150) * (0.10 + rnd() * 0.16)
+    return out / 1.6
 
 
 def build():
@@ -92,10 +132,12 @@ def build():
         t = a + 0.15
         since_bell = 0.0
         while t < b - 0.12:
-            place(buf, t, click(rnd, 0.6 + rnd() * 0.5) * 0.30)
-            gap = 0.055 + rnd() * 0.20
-            if rnd() < 0.10:
-                gap += 0.25                      # a pause for thought
+            place(buf, t, click(rnd, 0.6 + rnd() * 0.5) * 0.34)
+            # A typist works in bursts. An even gap is a metronome, and a metronome under a
+            # voice is heard as music no matter what the timbre is.
+            gap = 0.052 + rnd() * 0.075
+            if rnd() < 0.22:
+                gap += 0.18 + rnd() * 0.55       # end of a word, a thought, a glance up
             t += gap
             since_bell += gap
             if since_bell > 2.2 and rnd() < 0.35:
@@ -114,19 +156,20 @@ def build():
 
     # --- firecrackers, timed to the bursts drawn on screen ------------------------------
     r = js_rng(PARADE_SHOT_IDX + 91)
-    starts = []
+    starts, periods = [], []
     for _ in range(9):
-        r(); r()                                  # cx, cy — consumed to keep the order
+        r(); r()                                   # cx, cy — consumed to keep the order
         delay = r() * (PARADE_DUR * 900) / 1000.0  # ms in the renderer, seconds here
+        per = (1050 + r() * 900) / 1000.0          # each burst loops on its OWN period
         for _ in range(12):
-            r()                                   # each spark's length
-        starts.append(delay)
+            r()                                    # each spark's length
+        starts.append(delay); periods.append(per)
     a, b = PARADE
-    for d in starts:
+    for d, per in zip(starts, periods):
         t = d
-        while t < (b - a) - 0.15:                 # the burst animation loops every 1.25s
-            place(buf, a + t + 0.06, bang(rnd) * (0.16 + rnd() * 0.12))
-            t += 1.25
+        while t < (b - a) - 0.15:
+            place(buf, a + t + 0.05, bang(rnd) * (0.34 + rnd() * 0.22))
+            t += per
     return buf, starts
 
 

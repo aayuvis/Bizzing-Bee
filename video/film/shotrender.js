@@ -233,6 +233,11 @@ function plate(stage, sh) {
     const s2 = svg(1920, 1080); s2.style.zIndex = '4'; stage.appendChild(s2);
     for (let b = 0; b < 9; b++) {
       const cx = 180 + r() * 1560, cy = 90 + r() * 420, delay = r() * (sh.dur * 900);
+      // Each burst loops on its OWN period. With one shared 1250ms loop the volley fell
+      // into a steady pulse, and the mix of it was heard back as "finger snapping in a
+      // rhythmic beat". sfx.py draws this same value from the same generator in the same
+      // order, so the reports stay locked to the flashes.
+      const per = 1050 + r() * 900;
       const g = el('g', {}, s2);
       for (let k = 0; k < 12; k++) {
         const a = (k / 12) * Math.PI * 2, L = 46 + r() * 40;
@@ -245,7 +250,7 @@ function plate(stage, sh) {
                { transform: 'scale(.05)', opacity: 1, offset: .02 },
                { transform: 'scale(1)', opacity: 1, offset: .45 },
                { transform: 'scale(1.35)', opacity: 0 }],
-        { duration: 1250, delay, iterations: Infinity,
+        { duration: per, delay, iterations: Infinity,
           easing: 'cubic-bezier(.15,.7,.3,1)', transformOrigin: `${cx}px ${cy}px` });
     }
   }
