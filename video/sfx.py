@@ -99,28 +99,38 @@ def bell(rnd):
 
 
 def bang(rnd):
-    """A firecracker.
+    """An aerial firework bursting over the street.
 
-    The first version was heard as "finger snapping": too short, too dry, and with almost
-    no low end. A report is a crack, then a body, then a tail of air rolling away — and
-    firecrackers usually come as a string of smaller pops around the main one.
+    Seven blind listening passes shaped this, and the last three are the instructive ones:
+    a dense volley was heard as "automatic gunfire", and thinning it to single spaced
+    reports gave "firing a gun". Both are the correct acoustic family and both are exactly
+    the wrong association for a channel made for children — an isolated sharp report simply
+    IS a gunshot, however it is dressed.
+
+    So this is no longer a firecracker. It is the thing actually drawn on screen: an aerial
+    shell. The attack is soft rather than cracked, the body is a deep unpitched whump, and
+    over it sits the sparkle — a long scatter of tiny bright pops, which is the sound no
+    gunshot has and every firework does.
     """
-    n = int(SR * 0.95)
+    n = int(SR * 1.9)
     t = np.arange(n) / SR
-    crack = hp(noise(rnd, n), 1800) * np.exp(-t * 52) * 0.85
-    f = 130 * np.exp(-t * 7) + 45                               # the pitch drops as it opens
-    body = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 11) * 1.0
-    tail = lp(noise(rnd, n), 700) * np.exp(-t * 5.0) * 0.30     # air rolling away
-    out = crack + body + tail
-    # the string of lesser pops that goes off around it
-    for _ in range(int(4 + rnd() * 7)):
-        at = int((0.05 + rnd() * 0.62) * SR)
-        m = int(SR * 0.09)
+    # soft-edged body: a short rise takes the crack off the front
+    rise = np.minimum(1.0, t / 0.018)
+    out = lp(noise(rnd, n), 110) * np.exp(-t * 3.2) * 1.70 * rise
+    out += lp(noise(rnd, n), 620) * np.exp(-t * 6.0) * 0.22 * rise
+    # the sparkle: what makes it a firework and not a report
+    for _ in range(int(30 + rnd() * 26)):
+        at = int((0.04 + rnd() ** 0.85 * 1.25) * SR)
+        m = int(SR * 0.05)
         if at + m >= n:
             continue
         tt = np.arange(m) / SR
-        out[at:at + m] += hp(noise(rnd, m), 2400) * np.exp(-tt * 150) * (0.10 + rnd() * 0.16)
-    return out / 1.6
+        out[at:at + m] += (hp(noise(rnd, m), 3200) * np.exp(-tt * 220)
+                           * (0.06 + rnd() * 0.13) * math.exp(-at / SR * 1.5))
+    for d, g in ((0.036, 0.24), (0.068, 0.13)):        # a little of the street back
+        i = int(d * SR)
+        out[i:] += out[:n - i] * g
+    return out / (np.max(np.abs(out)) + 1e-9) * 0.95
 
 
 def build():
@@ -146,13 +156,23 @@ def build():
                 t += 0.35
 
     # the pressroom keeps a low mechanical rumble rather than clicks
+    # A rotary press: broadband machine roar with the cylinders thumping through it.
+    # Two sine tones under a slow tremolo were identified in isolation as "a human
+    # heartbeat", which is exactly what that recipe builds.
     for (a, b) in PRESSROOM:
         n = int((b - a) * SR)
         t = np.arange(n) / SR
-        rum = (np.sin(2 * np.pi * 46 * t) * 0.5 + np.sin(2 * np.pi * 92.7 * t) * 0.25)
-        rum *= (0.75 + 0.25 * np.sin(2 * np.pi * 5.5 * t))
+        roar = lp(noise(rnd, n), 420) * 0.55 + lp(noise(rnd, n), 1800) * 0.14
+        for k in range(int((b - a) * 5.2)):                # cylinder strokes, ~5 a second
+            at = int((k / 5.2 + rnd() * 0.02) * SR)
+            m = int(SR * 0.13)
+            if at + m >= n:
+                continue
+            tt = np.arange(m) / SR
+            roar[at:at + m] += (lp(noise(rnd, m), 260) * np.exp(-tt * 34) * 0.85
+                                + hp(noise(rnd, m), 1500) * np.exp(-tt * 120) * 0.18)
         fade = np.minimum(1.0, np.minimum(t / 0.4, (b - a - t) / 0.4))
-        place(buf, a, rum * fade * 0.05)
+        place(buf, a, roar * fade * 0.22)
 
     # --- firecrackers, timed to the bursts drawn on screen ------------------------------
     r = js_rng(PARADE_SHOT_IDX + 91)
@@ -164,12 +184,22 @@ def build():
         for _ in range(12):
             r()                                    # each spark's length
         starts.append(delay); periods.append(per)
-    a, b = PARADE
-    for d, per in zip(starts, periods):
-        t = d
-        while t < (b - a) - 0.15:
-            place(buf, a + t + 0.05, bang(rnd) * (0.34 + rnd() * 0.22))
-            t += per
+    # ONE report per burst, not a loop. Nine looping bursts put roughly twenty-five bangs
+    # into five seconds, which a blind listener called "automatic gunfire" — the correct
+    # acoustic family and completely the wrong association for a channel aimed at children.
+    # Spaced single pops read as a celebration instead, which is what the scene is.
+    # DELIBERATELY SILENT. Eight blind listening passes were run on this bed, and every
+    # version of an explosive report — dense, spaced, cracked, softened, sparkled — came
+    # back identified as a gunshot, gunfire, or a weapon being handled. That is not a flaw
+    # in any one recipe: a short loud unpitched impact simply IS that sound, and no amount
+    # of sparkle on top changes what the transient says. On a channel made for children
+    # that association is not worth a background effect, so the parade plays on its picture
+    # alone, which carries it perfectly well. A real fireworks recording could be dropped
+    # in here if one is ever licensed; synthesis is the wrong tool for this particular cue.
+    if os.environ.get('SFX_PARADE'):
+        a, b = PARADE
+        for d in sorted(starts)[::2]:
+            place(buf, a + d + 0.05, bang(rnd) * (0.30 + rnd() * 0.20))
     return buf, starts
 
 
