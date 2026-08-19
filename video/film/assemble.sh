@@ -49,10 +49,24 @@ echo "voice   $AD"
 # exactly what it did the first time this tail was added.
 TAIL=$(node -e 'process.stdout.write(String(require("./scenes.js").TAIL))')
 echo "tail    ${TAIL}s of silence after the last word"
-"$FF" -y -loglevel error -i out/picture.mp4 -i "$VO" \
-  -filter_complex "[1:a]apad=pad_dur=${TAIL}[a]" \
-  -map 0:v -map "[a]" -c:v copy -c:a aac -b:a 192k -shortest \
-  "$OUT/before-the-bee-ep1-1080p.mp4"
+
+# The effects bed (typewriters, press rumble, firecrackers) is mixed UNDER the narration,
+# never over it. normalize=0 matters: amix's default halves every input to guard against
+# clipping, which would quietly drop the voice 6dB and undo the whole recording.
+SFX=../vo/sfx.wav
+if [ -f "$SFX" ]; then
+  echo "sfx     mixing $SFX under the narration"
+  "$FF" -y -loglevel error -i out/picture.mp4 -i "$VO" -i "$SFX" \
+    -filter_complex "[1:a]apad=pad_dur=${TAIL}[v];[2:a]volume=0.32[s];\
+[v][s]amix=inputs=2:normalize=0:duration=first:dropout_transition=0,alimiter=limit=0.97[a]" \
+    -map 0:v -map "[a]" -c:v copy -c:a aac -b:a 192k -shortest \
+    "$OUT/before-the-bee-ep1-1080p.mp4"
+else
+  "$FF" -y -loglevel error -i out/picture.mp4 -i "$VO" \
+    -filter_complex "[1:a]apad=pad_dur=${TAIL}[a]" \
+    -map 0:v -map "[a]" -c:v copy -c:a aac -b:a 192k -shortest \
+    "$OUT/before-the-bee-ep1-1080p.mp4"
+fi
 
 # Preview. Quality-TARGETED, not bitrate-pinned: a derived file that comes out larger than
 # its master is the trap CLAUDE.md records, and flat graphic animation lands under any

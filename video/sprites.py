@@ -71,6 +71,26 @@ SLOTS = {
         'A single flat open horse-drawn delivery cart of about 1910 with one horse in '
         'harness, strict side view, facing RIGHT, whole cart and whole horse visible, '
         'stacked plain crates on the cart bed. No driver.', '16:9'),
+    # Review note: "nobody had made it national" wants an actual map of the United States,
+    # and the cold open wants a small 1908-style map inset locating Cleveland. Generated as a
+    # silhouette with NO lettering: every city dot and label in the film is placed in code
+    # from real coordinates, because a generated map's own labels cannot be trusted and this
+    # one sits beside four genuine archive photographs.
+    'sprite-usmap': (
+        'A map of the contiguous United States shown as ONE single flat filled silhouette of '
+        'the whole landmass, seen straight on from directly above, complete and correct in '
+        'outline with the Atlantic and Pacific coasts, the Gulf of Mexico, Florida, Texas, '
+        'the Great Lakes and Maine all clearly readable. Faint thin internal lines suggest '
+        'state boundaries. Deep indigo fill with a fine warm gold outline. No Alaska, no '
+        'Hawaii, no compass, no border, no frame, no graticule, and absolutely NO text or '
+        'labels of any kind anywhere.', '16:9'),
+
+    # §06, 3:47 — the museum hall is seated and still; a few figures crossing the aisle give
+    # the room a pulse without pretending the audience itself is animated.
+    'sprite-walkers': (
+        'Three American adults of about 1925 in overcoats and hats, WALKING, shown together '
+        'in strict side view facing RIGHT, mid-stride, whole bodies from hat to shoe, seen '
+        'from the side so no face is readable. Plain dark clothing.', '16:9'),
 }
 
 

@@ -164,10 +164,11 @@ SLOTS = {
         'text, no lettering anywhere. Energetic, morning light, motion.', '16:9'),
 
     'plate-family-reading': (
-        'A modest American kitchen in 1908 at evening, lamplit. A seated adult holds an open '
-        'newspaper; two children lean in against the chair to look at it with them. All '
-        'figures seen from behind or in profile deep in shadow, no readable faces. The '
-        'newspaper is completely BLANK. Warm, close, domestic. The lamp is the only light.', '16:9'),
+        'A modest African-American family in their own kitchen in 1908 at evening, lamplit: a '
+        'seated adult holding an open newspaper with two children leaning in against the chair '
+        'to read it with them. Every figure is seen FROM BEHIND or in deep profile shadow so '
+        'that no face is readable at all. The newspaper is completely BLANK. Warm, close, '
+        'domestic, dignified. The oil lamp is the only light in the room.', '16:9'),
 
     # §05 — the commercial pressure that invented the national bee
     'plate-radio-1920s': (
@@ -179,15 +180,19 @@ SLOTS = {
     'plate-newsroom-desks': (
         'A 1920s American newspaper editorial room seen down its length: rows of wooden desks '
         'with heavy manual typewriters, paper spikes and telephones, a dozen figures in '
-        'shirtsleeves working, all seen from behind or turned away. Hanging lamps, haze of '
-        'cigarette smoke, hard light from tall windows at the far end. All paper is BLANK.', '16:9'),
+        'shirtsleeves working, all seen from behind or turned away. Hanging lamps and hard '
+        'light from tall windows at the far end. All paper is BLANK. '
+        'ABSOLUTELY NO SMOKING ANYWHERE: no cigarettes, no cigars, no pipes, no ashtrays, no '
+        'matches, no smoke and no haze of any kind. The air is completely clear.', '16:9'),
 
     # §06 — the 1925 final
     'plate-museum-hall-chairs': (
-        'A grand American museum hall of about 1925 arranged for a contest: a wide floor with '
-        'rows of empty wooden folding chairs facing a low platform, tall arched windows and '
-        'iron galleries above, everything waiting and unoccupied. Dust in shafts of daylight. '
-        'Formal, institutional, expectant. No people.', '16:9'),
+        'A grand American museum hall of about 1925 set up for a contest, seen FROM THE VERY '
+        'BACK OF THE ROOM looking FORWARD towards a low platform at the far end. Rows of '
+        'wooden folding chairs all FACE AWAY from us TOWARDS that platform, and an audience is '
+        'seated in them, every person seen from behind as heads and shoulders and hats. Tall '
+        'arched windows and iron galleries above. Dust in shafts of daylight. The platform at '
+        'the far end is the brightest thing in the picture.', '16:9'),
 
     'plate-gladiolus-garden': (
         'A row of tall gladiolus flower spikes growing in a modest American back garden in '
@@ -216,10 +221,12 @@ SLOTS = {
         'shadow. Exacting and quiet.', '16:9'),
 
     'plate-old-man-hall': (
-        'A tall hall filled with rows of seated schoolchildren seen from the back of the room, '
-        'and in the foreground the small dark silhouette of one elderly figure with a walking '
-        'stick standing alone in the aisle facing away from us towards them. The children are '
-        'distant and indistinct. High windows, cool even light. Tender and a little lonely.', '16:9'),
+        'A tall hall filled with rows of seated schoolchildren, seen from behind. In the near '
+        'foreground, large and dominating the frame, stands ONE TALL ELDERLY MAN in a long '
+        'overcoat and hat, stooped, leaning on a walking stick, seen entirely FROM BEHIND and '
+        'facing away from us down the aisle towards the children. He is unmistakably an old '
+        'man: tall, broad-shouldered, adult height, at least twice the height of the seated '
+        'children. The children are small and distant. High windows, cool even light.', '16:9'),
 
     # §08 — cerise as a fashion word
     # First attempt came back as a near-empty pale field with one small washed-out figure at
@@ -251,6 +258,39 @@ SLOTS = {
         'bundle of papers, an old trunk, one shaft of daylight from a small window falling '
         'across them. All papers and box faces completely BLANK. Everything softened by dust. '
         'Still, forgotten, and unread.', '16:9'),
+    # ══════════════════════════════════════════════════════════════════════════════════
+    # THIRD PASS — review notes on the v2 cut.
+    # ══════════════════════════════════════════════════════════════════════════════════
+
+    # §01 — the cold open. The wide theatre interior was handsome but empty, and the
+    # narration is explicit: a girl on a stage in front of THOUSANDS. This is the shot the
+    # opening needs, and it is taken from behind her so no face is invented.
+    'plate-stage-over-shoulder': (
+        'Seen from BEHIND and just over the shoulder of a young Black girl of about thirteen '
+        'standing alone at the front of a theatre stage in 1908, facing out into an enormous '
+        'packed auditorium. We see the back of her head, her plaited hair and her shoulders '
+        'large in the near foreground, dark against the light — HER FACE IS COMPLETELY '
+        'INVISIBLE because she is turned away from us. Beyond her, thousands of tiny distant '
+        'people fill tier upon tier of seats and balconies rising into the dark, an immense '
+        'crowd. A hard stage light falls on her from above. Vast, hushed, overwhelming.', '16:9'),
+
+    # §04 — segregation. The two plain doors were too quiet to read; a partitioned streetcar
+    # states it plainly, and states it with architecture rather than with a caption.
+    'plate-segregation-streetcar': (
+        'The inside of an American electric streetcar about 1908, seen down its length from '
+        'one end. A plain wooden partition screen stands across the middle of the car dividing '
+        'it in two. Passengers are seated on both sides of the screen, all of them seen from '
+        'behind or in silhouette with no readable faces, and nobody crosses it. Cold daylight '
+        'through the windows, worn cane seats, hand straps overhead. No signs, no lettering of '
+        'any kind. Ordinary, everyday, and quietly wrong.', '16:9'),
+
+    # §08 — "serious money for an ordinary family in 1926". The plate here was a motor car.
+    'plate-family-1926': (
+        'An ordinary modest American family of about 1926 standing together outside their '
+        'small clapboard house: two parents and three children, plainly dressed, on a bare '
+        'porch step. Every figure is seen from behind or in near silhouette against the light, '
+        'with no readable faces. A washing line, a wooden fence, a plain yard. Flat afternoon '
+        'light. Unglamorous, hardworking, and warm.', '16:9'),
 }
 
 

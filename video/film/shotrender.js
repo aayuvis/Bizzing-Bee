@@ -42,6 +42,56 @@ function rng(seed) {
   return () => { x ^= x << 13; x ^= x >>> 17; x ^= x << 5; x >>>= 0; return x / 4294967296; };
 }
 
+/* Where the contiguous United States sits inside sprite-usmap.png, which is trimmed to the
+ * landmass. Longitude maps near enough linearly across this span; latitude is close enough
+ * over 25 degrees that the dots land on their cities when checked against the drawing.
+ * Every dot in this film is placed from real coordinates rather than read off a generated
+ * map's own labels — the map is asked to carry no lettering at all for exactly that reason. */
+const US = { w: -124.7, e: -66.95, n: 49.38, s: 24.5 };
+const CITY = {
+  cleveland: [41.50, -81.69], neworleans: [29.95, -90.07], newyork: [40.71, -74.01],
+  chicago:   [41.88, -87.63], boston:     [42.36, -71.06], philadelphia: [39.95, -75.17],
+  stlouis:   [38.63, -90.20], denver:     [39.74, -104.99], sanfrancisco: [37.77, -122.42],
+  atlanta:   [33.75, -84.39], kansascity: [39.10, -94.58], minneapolis:  [44.98, -93.27],
+  washington:[38.91, -77.04], louisville: [38.25, -85.76],
+};
+const cityXY = k => {
+  const [lat, lon] = CITY[k];
+  return [(lon - US.w) / (US.e - US.w), (US.n - lat) / (US.n - US.s)];
+};
+
+/* The bee's own mark, animated — a small rosette of honeycomb cells that fill one after
+ * another. Review note: every plain hexagon-background type frame should carry a moving
+ * element rather than sitting as a static caption. */
+function ornament(stage, sh, where) {
+  const box = document.createElement('div');
+  const bottom = where === 'bottom';
+  box.style.cssText = 'position:absolute;z-index:6;pointer-events:none;'
+    + (bottom ? 'left:0;right:0;bottom:74px;display:flex;justify-content:center'
+              : 'right:96px;top:50%;transform:translateY(-50%)');
+  const s = document.createElementNS(NS, 'svg');
+  const n = 7, R = 17;
+  s.setAttribute('viewBox', `0 0 ${n * R * 1.78 + 20} 46`);
+  s.setAttribute('width', n * R * 1.78 + 20); s.setAttribute('height', 46);
+  const hex = (cx, cy, r) => {
+    let d = '';
+    for (let i = 0; i < 6; i++) {
+      const a = (Math.PI / 180) * (60 * i - 90);
+      d += (i ? 'L' : 'M') + (cx + r * Math.cos(a)).toFixed(1) + ',' + (cy + r * Math.sin(a)).toFixed(1);
+    }
+    return d + 'Z';
+  };
+  for (let i = 0; i < n; i++) {
+    const cx = 12 + R + i * R * 1.78, cy = 23;
+    el('path', { d: hex(cx, cy, R - 2), fill: 'none', stroke: GOLD, 'stroke-width': 2, opacity: '.34' }, s);
+    const fill = el('path', { d: hex(cx, cy, R - 5), fill: HONEY, opacity: '0' }, s);
+    anim(fill, [{ opacity: 0 }, { opacity: .95, offset: .18 }, { opacity: .95, offset: .5 }, { opacity: 0 }],
+      { duration: 3200, iterations: Infinity, delay: -i * 300, easing: 'ease-in-out' });
+  }
+  box.appendChild(s);
+  stage.appendChild(box);
+}
+
 function hexbed(stage, sh) {
   const h = $('<div class="hexbed"></div>');
   const g = $('<div class="glow"></div>');
@@ -133,6 +183,73 @@ function plate(stage, sh) {
 
   dust(stage, sh, 34);
 
+  /* A place-name set over the picture rather than on its own card, so the opening does not
+   * spend three seconds of a nine-minute film on a title slate. */
+  if (sh.title) {
+    const t = $(`<div class="ptitle"><div class="pt-l">${esc(sh.title)}</div>`
+      + (sh.subtitle ? `<div class="pt-s">${esc(sh.subtitle)}</div>` : '') + '</div>');
+    stage.appendChild(t);
+    anim(t, [{ opacity: 0, transform: 'translateY(-16px)' }, { opacity: 1, transform: 'none' }],
+      { duration: 820, easing: 'cubic-bezier(.2,.9,.25,1)' });
+  }
+
+  /* Locator inset: the map, with one city pulsing. Placed from coordinates, not eyeballed. */
+  if (sh.locate) {
+    const [fx, fy] = cityXY(sh.locate);
+    const box = document.createElement('div');
+    box.style.cssText = 'position:absolute;right:58px;top:52px;width:376px;z-index:7;'
+      + 'background:rgba(16,11,38,.80);border:2px solid rgba(255,216,115,.42);'
+      + 'border-radius:14px;padding:16px 16px 12px';
+    const inner = document.createElement('div');
+    inner.style.cssText = 'position:relative;width:100%;aspect-ratio:1974/1237';
+    inner.innerHTML = `<img src="${IMG}sprite-usmap.png" style="width:100%;height:100%;`
+      + `object-fit:contain;filter:brightness(1.5) saturate(.8)">`;
+    const pin = document.createElement('div');
+    pin.style.cssText = `position:absolute;left:${(fx * 100).toFixed(2)}%;top:${(fy * 100).toFixed(2)}%;`
+      + 'width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:' + HONEY;
+    const ring = document.createElement('div');
+    ring.style.cssText = `position:absolute;left:${(fx * 100).toFixed(2)}%;top:${(fy * 100).toFixed(2)}%;`
+      + 'width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:2px solid ' + HONEY;
+    inner.appendChild(ring); inner.appendChild(pin);
+    box.appendChild(inner);
+    if (sh.locateLabel) {
+      const lab = document.createElement('div');
+      lab.style.cssText = `font:700 22px Hanken,system-ui;letter-spacing:.22em;`
+        + `text-transform:uppercase;color:${GOLD};text-align:center;margin-top:10px`;
+      lab.textContent = sh.locateLabel;
+      box.appendChild(lab);
+    }
+    stage.appendChild(box);
+    anim(box, [{ opacity: 0, transform: 'translateY(-18px)' }, { opacity: 1, transform: 'none' }],
+      { duration: 760, delay: 520, easing: 'cubic-bezier(.2,.9,.25,1)' });
+    anim(ring, [{ transform: 'scale(1)', opacity: .95 }, { transform: 'scale(3.6)', opacity: 0 }],
+      { duration: 2000, iterations: Infinity, easing: 'ease-out', delay: 900 });
+  }
+
+  /* Firecrackers over the parade. Review note: the motor car crossing the road read wrong
+   * for a crowd standing still, so the movement here is the celebration itself. */
+  if (sh.fireworks) {
+    const r = rng((sh.idx || 0) + 91);
+    const s2 = svg(1920, 1080); s2.style.zIndex = '4'; stage.appendChild(s2);
+    for (let b = 0; b < 9; b++) {
+      const cx = 180 + r() * 1560, cy = 90 + r() * 420, delay = r() * (sh.dur * 900);
+      const g = el('g', {}, s2);
+      for (let k = 0; k < 12; k++) {
+        const a = (k / 12) * Math.PI * 2, L = 46 + r() * 40;
+        el('line', { x1: cx, y1: cy, x2: (cx + Math.cos(a) * L).toFixed(1),
+          y2: (cy + Math.sin(a) * L).toFixed(1), stroke: k % 2 ? GOLD : '#FFF0C2',
+          'stroke-width': 4, 'stroke-linecap': 'round' }, g);
+      }
+      el('circle', { cx, cy, r: 9, fill: '#FFF6DC' }, g);
+      anim(g, [{ transform: 'scale(.05)', opacity: 0 },
+               { transform: 'scale(.05)', opacity: 1, offset: .02 },
+               { transform: 'scale(1)', opacity: 1, offset: .45 },
+               { transform: 'scale(1.35)', opacity: 0 }],
+        { duration: 1250, delay, iterations: Infinity,
+          easing: 'cubic-bezier(.15,.7,.3,1)', transformOrigin: `${cx}px ${cy}px` });
+    }
+  }
+
   // Settle in over the first half-second. Not a fade from black — that would flicker at
   // every cut — just a slight lift, so the cut lands softly.
   // Deliberately NOT composite:'add' — the underlying opacity is 1, so an additive 0.84
@@ -176,6 +293,7 @@ function card(stage, sh) {
     <div class="line">${sh.line || ''}</div>
     ${sh.sub ? `<div class="sub">${esc(sh.sub)}</div>` : ''}</div>`);
   stage.appendChild(c);
+  ornament(stage, sh, 'bottom');
   anim(c, [{ opacity: 0, transform: 'translateY(18px)' }, { opacity: 1, transform: 'none' }],
     { duration: 700, easing: 'cubic-bezier(.2,.9,.25,1)' });
   if (sh.fade) {
@@ -217,6 +335,7 @@ function count(stage, sh) {
   stage.appendChild(box);
   const n = box.querySelector('.n');
   n.dataset.to = sh.to; n.dataset.prefix = sh.prefix || '';
+  ornament(stage, sh, 'bottom');
 }
 
 function title(stage) {
@@ -523,45 +642,156 @@ function papers(stage, sh) {
 }
 
 /* ---------- CITIES — teams from cities across the country ----------
- * Deliberately a constellation and not a map of the United States: an approximate outline
- * drawn from memory would be a wrong picture of a real place, sitting beside four genuine
- * archive photographs. Points of light make the same point and claim nothing.
+ * v2 drew this as an abstract constellation because an outline of the United States drawn
+ * from memory would be a wrong picture of a real place sitting beside four genuine archive
+ * photographs. That objection is answered rather than avoided here: the map is a real
+ * drawn silhouette, and every dot is placed from actual latitude and longitude rather than
+ * from where a label happened to look right. The map itself carries no lettering at all.
  */
 function cities(stage, sh) {
-  hexbed(stage);
-  const s = svg(1920, 1080); stage.appendChild(s);
-  const PTS = [[380, 640], [520, 430], [700, 560], [760, 350], [900, 700], [960, 470],
-               [1080, 330], [1140, 620], [1300, 430], [1380, 700], [1520, 520], [1620, 380]];
-  const HUB = [960, 470];
+  hexbed(stage, sh);
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);'
+    + 'width:1290px;aspect-ratio:1974/1237;z-index:4;margin-top:-42px';
+  wrap.innerHTML = `<img src="${IMG}sprite-usmap.png" style="position:absolute;inset:0;`
+    + `width:100%;height:100%;object-fit:contain;filter:brightness(1.35)">`;
+  stage.appendChild(wrap);
+  anim(wrap, [{ opacity: 0, transform: 'translate(-50%,-50%) scale(.97)' },
+              { opacity: 1, transform: 'translate(-50%,-50%) scale(1)' }],
+    { duration: 900, easing: 'cubic-bezier(.2,.9,.25,1)' });
+
+  const NAMES = ['newyork', 'boston', 'philadelphia', 'chicago', 'stlouis', 'neworleans',
+                 'atlanta', 'kansascity', 'minneapolis', 'denver', 'sanfrancisco'];
+  const HUB = 'cleveland';
+  const [hx, hy] = cityXY(HUB);
+
+  // lines first, so the dots sit on top of them
   if (sh.lit) {
-    PTS.forEach(([x, y], i) => {
-      if (x === HUB[0] && y === HUB[1]) return;
-      const ln = el('line', { x1: HUB[0], y1: HUB[1], x2: x, y2: y, stroke: GOLD,
-        'stroke-width': 2, opacity: '.35' }, s);
-      const L = Math.hypot(x - HUB[0], y - HUB[1]);
+    const lines = document.createElementNS(NS, 'svg');
+    lines.setAttribute('viewBox', '0 0 100 100');
+    lines.setAttribute('preserveAspectRatio', 'none');
+    lines.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;overflow:visible';
+    NAMES.forEach((k, i) => {
+      const [x, y] = cityXY(k);
+      const ln = el('line', { x1: hx * 100, y1: hy * 100, x2: x * 100, y2: y * 100,
+        stroke: GOLD, 'stroke-width': 2.4, opacity: '.75',
+        'vector-effect': 'non-scaling-stroke' }, lines);
+      const L = Math.hypot((x - hx) * 100, (y - hy) * 100);
       ln.setAttribute('stroke-dasharray', L);
       anim(ln, [{ strokeDashoffset: L }, { strokeDashoffset: 0 }],
-        { duration: 900, delay: 260 + i * 110, easing: 'ease-out' });
+        { duration: 760, delay: 500 + i * 130, easing: 'ease-out' });
     });
+    wrap.appendChild(lines);
   }
-  PTS.forEach(([x, y], i) => {
-    const g = el('g', {}, s);
-    el('circle', { cx: x, cy: y, r: 30, fill: HONEY, opacity: sh.lit ? '.20' : '.05' }, g);
-    el('circle', { cx: x, cy: y, r: 11, fill: sh.lit ? GOLD : '#4A4270' }, g);
-    if (sh.lit) {
-      anim(g, [{ opacity: 0, transform: 'scale(.4)' }, { opacity: 1, transform: 'scale(1)' }],
-        { duration: 520, delay: 200 + i * 110, easing: 'cubic-bezier(.2,.9,.25,1)',
-          transformOrigin: `${x}px ${y}px` });
-    }
+
+  const dot = (k, hub) => {
+    const [x, y] = cityXY(k);
+    const d = document.createElement('div');
+    const sz = hub ? 26 : 15;
+    d.style.cssText = `position:absolute;left:${(x * 100).toFixed(2)}%;top:${(y * 100).toFixed(2)}%;`
+      + `width:${sz}px;height:${sz}px;margin:${-sz / 2}px 0 0 ${-sz / 2}px;border-radius:50%;`
+      + `background:${sh.lit || hub ? HONEY : '#5A5288'};`
+      + (hub ? `box-shadow:0 0 0 5px rgba(255,194,61,.28)` : '');
+    wrap.appendChild(d);
+    return d;
+  };
+
+  NAMES.forEach((k, i) => {
+    const d = dot(k, false);
+    if (sh.lit) anim(d, [{ opacity: 0, transform: 'scale(.2)' }, { opacity: 1, transform: 'scale(1)' }],
+      { duration: 420, delay: 560 + i * 130, easing: 'cubic-bezier(.2,.9,.25,1)' });
   });
-  const cap = $(`<div class="card" style="align-content:end;padding-bottom:130px"><div class="kicker">${
+  const hub = dot(HUB, true);
+  anim(hub, [{ transform: 'scale(1)' }, { transform: 'scale(1.22)' }, { transform: 'scale(1)' }],
+    { duration: 1800, iterations: Infinity, easing: 'ease-in-out' });
+
+  const cap = $(`<div class="card" style="align-content:end;padding-bottom:126px"><div class="kicker">${
     sh.lit ? 'city against city' : 'nobody had made it national'}</div></div>`);
   stage.appendChild(cap);
+  ornament(stage, sh, 'bottom');
+}
+
+/* ---------- SPOTLIGHT ----------
+ * One child, alone in the light, at the moment the narration says she made no mistakes at
+ * all. The figure is drawn — plaits, a plain 1908 pinafore, seen from BEHIND facing the
+ * dark house. It is not a likeness and does not claim to be one: no face is drawn, here or
+ * anywhere else in this film.
+ */
+function spotlight(stage, sh) {
+  const kb = $(`<div class="kb"><img src="${IMG}plate-theatre-spot.png"></div>`);
+  kb.querySelector('img').style.transform = 'scale(1.035)';
+  stage.appendChild(kb);
+  anim(kb, [{ transform: 'scale(1.05)' }, { transform: 'scale(1)' }],
+    { duration: sh.dur * 1000, easing: 'linear' });
+
+  /* The plate is deliberately almost black, so the light she stands in is painted here
+   * rather than borrowed from it — the first attempt put the figure at the very bottom of
+   * the frame on an unlit stage and she read as a chess piece in the dark. */
+  // The beam itself, thrown from above and flaring where it meets the boards.
+  const beam = document.createElement('div');
+  beam.style.cssText = 'position:absolute;left:50%;top:-4%;width:1000px;height:96%;z-index:2;'
+    + 'transform:translateX(-50%);pointer-events:none;'
+    + 'clip-path:polygon(38% 0,62% 0,100% 100%,0 100%);'
+    + 'background:linear-gradient(180deg,rgba(255,240,205,.34),rgba(255,232,178,.13) 62%,transparent)';
+  stage.appendChild(beam);
+  const pool = document.createElement('div');
+  pool.style.cssText = 'position:absolute;left:50%;top:70%;width:1240px;height:520px;z-index:2;'
+    + 'transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;'
+    + 'background:radial-gradient(50% 50% at 50% 50%,rgba(255,244,214,.92),'
+    + 'rgba(255,226,160,.52) 40%,rgba(255,214,130,.16) 66%,transparent 80%)';
+  stage.appendChild(pool);
+  anim(beam, [{ opacity: .86 }, { opacity: 1 }],
+    { duration: 3600, direction: 'alternate', iterations: Infinity, easing: 'ease-in-out' });
+  anim(pool, [{ opacity: .82 }, { opacity: 1 }],
+    { duration: 3600, direction: 'alternate', iterations: Infinity, easing: 'ease-in-out' });
+
+  const s = svg(1920, 1080); s.style.zIndex = '4'; stage.appendChild(s);
+  const BASE = 838, H = 452;                       // feet on the boards, head up in the light
+  const g = el('g', { transform: `translate(960 ${BASE})` }, s);
+  const rise = el('g', {}, g);
+  const DK = '#1B1338', MD = '#2A2050';
+  el('ellipse', { cx: 0, cy: 4, rx: 118, ry: 24, fill: '#000', opacity: '.42' }, rise);
+  // skirt
+  el('path', { d: `M-96,0 Q-70,${-H * 0.34} -42,${-H * 0.55} L42,${-H * 0.55} Q70,${-H * 0.34} 96,0 Z`, fill: MD }, rise);
+  el('path', { d: `M-96,0 Q-70,${-H * 0.34} -42,${-H * 0.55} L-12,${-H * 0.55} Q-30,${-H * 0.3} -34,0 Z`,
+    fill: '#372A63' }, rise);
+  // bodice
+  el('path', { d: `M-44,${-H * 0.53} L-38,${-H * 0.78} L38,${-H * 0.78} L44,${-H * 0.53} Z`, fill: DK }, rise);
+  // arms, hanging at her sides
+  el('path', { d: `M-40,${-H * 0.76} q-20,${H * 0.11} -13,${H * 0.26}`, stroke: DK,
+    'stroke-width': 19, fill: 'none', 'stroke-linecap': 'round' }, rise);
+  el('path', { d: `M40,${-H * 0.76} q20,${H * 0.11} 13,${H * 0.26}`, stroke: DK,
+    'stroke-width': 19, fill: 'none', 'stroke-linecap': 'round' }, rise);
+  // shoulders
+  el('path', { d: `M-46,${-H * 0.775} q46,${-H * 0.05} 92,0`, stroke: DK, 'stroke-width': 16,
+    fill: 'none', 'stroke-linecap': 'round' }, rise);
+  // head from behind, plaits — no face is drawn, here or anywhere in this film
+  el('circle', { cx: 0, cy: -H * 0.875, r: 42, fill: DK }, rise);
+  el('path', { d: `M-38,${-H * 0.885} q-18,${H * 0.09} -7,${H * 0.16}`, stroke: DK,
+    'stroke-width': 14, fill: 'none', 'stroke-linecap': 'round' }, rise);
+  el('path', { d: `M38,${-H * 0.885} q18,${H * 0.09} 7,${H * 0.16}`, stroke: DK,
+    'stroke-width': 14, fill: 'none', 'stroke-linecap': 'round' }, rise);
+  el('path', { d: `M-27,${-H * 0.94} a27,23 0 0 1 54,0 z`, fill: '#3E2F78' }, rise);
+
+  anim(rise, [{ transform: 'translateY(44px)', opacity: 0 },
+              { transform: 'translateY(0)', opacity: 1 }],
+    { duration: 1150, easing: 'cubic-bezier(.2,.9,.25,1)' });
+  anim(g, [{ transform: `translate(960px,${BASE}px) scale(1)` },
+           { transform: `translate(960px,${BASE}px) scale(1.014)` }],
+    { duration: 4200, direction: 'alternate', iterations: Infinity, easing: 'ease-in-out' });
+
+  dust(stage, sh, 30);
+  if (sh.caption) {
+    const cap = $(`<div class="card" style="align-content:start;padding-top:110px">`
+      + `<div class="kicker">${esc(sh.caption)}</div></div>`);
+    stage.appendChild(cap);
+    anim(cap, [{ opacity: 0 }, { opacity: 1 }], { duration: 800, delay: 600 });
+  }
 }
 
 /* ---------- BEEWORD — the word has nothing to do with the insect ---------- */
 function beeword(stage, sh) {
-  hexbed(stage);
+  hexbed(stage, sh);
   const wrap = $('<div class="card"><div class="line" style="font-size:230px;letter-spacing:.04em">bee</div>'
     + '<div class="sub">a gathering of neighbours — nothing to do with the insect</div></div>');
   stage.appendChild(wrap);
@@ -575,7 +805,6 @@ function beeword(stage, sh) {
   el('ellipse', { cx: -4, cy: -20, rx: 20, ry: 11, fill: CREAM, opacity: '.72',
     transform: 'rotate(-22 -4 -20)' }, b);
   el('circle', { cx: 24, cy: -4, r: 9, fill: '#3A2A08' }, b);
-  // one pass across frame and gone: the insect leaves, the word stays
   // Scaled 3.4x and flown across the UPPER third: at its original size it was a speck, and
   // its old path crossed the subtitle so the insect appeared to be reading the line.
   anim(b, [{ transform: 'translate(-180px,300px) rotate(-8deg) scale(3.4)', opacity: 0 },
@@ -587,7 +816,7 @@ function beeword(stage, sh) {
 
 /* ---------- FOURWORDS — the recap, as pictures rather than a list ---------- */
 function fourwords(stage, sh) {
-  hexbed(stage);
+  hexbed(stage, sh);
   const ITEMS = [
     ['gladiolus', 'plate-gladiolus-garden.png', 'a garden flower'],
     ['cerise',    'plate-fashion-plate-cerise.png', 'a Paris colour'],
@@ -619,19 +848,20 @@ function fourwords(stage, sh) {
  * instead is what the channel is for.
  */
 function outro(stage, sh) {
-  hexbed(stage);
+  hexbed(stage, sh);
   const o = $(`<div id="outro">
     <div class="brand"><i>Bizzing</i><span class="tm">&trade;</span> Bee</div>
     <div class="blurb">A free spelling-bee training app.<br>128,000 words — every one spoken aloud.</div>
     <div class="url">www.bizzingbee.com</div></div>`);
   stage.appendChild(o);
+  ornament(stage, sh, 'bottom');
   [...o.children].forEach((c, i) =>
     anim(c, [{ opacity: 0, transform: 'translateY(22px)' }, { opacity: 1, transform: 'none' }],
       { duration: 780, delay: 180 + i * 460, easing: 'cubic-bezier(.2,.9,.25,1)' }));
 }
 
 const KIND = { plate, spell, card, swap, cards, count, medal, title, outro, gladiolus, sword,
-               colourfill, coins, elim, papers, cities, beeword, fourwords,
+               colourfill, coins, elim, papers, cities, beeword, fourwords, spotlight,
                hold: (s) => hexbed(s) };
 
 window.SHOT = function (sh) {

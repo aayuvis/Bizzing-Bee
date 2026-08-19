@@ -61,7 +61,8 @@ function cue(sec, phrase) {
  *   coins      — gold coins falling into a pile
  *   elim       — nine lights going out until two remain
  *   papers     — newspaper sheets fanning across the country
- *   cities     — points of light, one per city, connecting
+ *   cities     — the map, cities lighting and connecting
+ *   spotlight  — one child alone in the stage light
  *   beeword    — BEE, and the insect that leaves
  *   fourwords  — the four winning words, each with its picture
  *   outro      — the sign-off
@@ -70,9 +71,10 @@ function cue(sec, phrase) {
 const SHOTS = [
   // ── §01 COLD OPEN ────────────────────────────────────────────────────────────
   { s:1, cue:'Cleveland, Ohio',            type:'plate', src:'plate-theatre-exterior-1908.png', push:0.05,
+    title:'Cleveland, Ohio', subtitle:'June 1908', locate:'cleveland', locateLabel:'Cleveland',
     traffic:[{ sp:'sprite-carriage',      bottom:3,  h:22, w:22, x0:96,  x1:64 },
              { sp:'sprite-motorcar-1908', bottom:4,  h:17, w:19, x0:6,   x1:34, flip:true }] },
-  { s:1, cue:'A thirteen-year-old girl',   type:'plate', src:'plate-theatre-stage.png', push:0.06, from:'center' },
+  { s:1, cue:'A thirteen-year-old girl',   type:'plate', src:'plate-stage-over-shoulder.png', push:0.06, from:'center' },
   { s:1, cue:'Her name is Marie',          type:'card',  kicker:'Cleveland, Ohio', line:'Marie C. Bolden', sub:'thirteen years old' },
   { s:1, cue:'Her father is a mail',       type:'plate', src:'plate-mail-carrier.png', push:0.05, from:'left' },
   { s:1, cue:'She is Black',               type:'plate', src:'plate-two-doors.png', push:0.04 },
@@ -109,11 +111,11 @@ const SHOTS = [
   { s:4, cue:'The venue is the Hippodrome', type:'plate', src:'plate-theatre-stage.png', push:0.05, from:'left' },
   { s:4, cue:'The date is the twenty-ninth', type:'card', kicker:'Hippodrome Theater · Cleveland', line:'29 June 1908' },
   { s:4, cue:'It is a team competition',   type:'plate', src:'plate-schoolroom-interior.png', push:0.05 },
-  { s:4, cue:'And when the spelling is finished', type:'plate', src:'plate-theatre-spot.png', push:0.04 },
+  { s:4, cue:'And when the spelling is finished', type:'spotlight', caption:'no mistakes at all' },
   { s:4, cue:'Marie Bolden',               type:'card',  kicker:'individual champion, 1908', line:'Marie C. Bolden', sub:'thirteen years old' },
   { s:4, cue:'Cleveland takes the team',   type:'card',  kicker:'team title', line:'Cleveland' },
   { s:4, cue:'Marie is named individual',  type:'medal' },
-  { s:4, cue:'Now understand what that meant', type:'plate', src:'plate-two-doors.png', push:0.05, from:'left' },
+  { s:4, cue:'Now understand what that meant', type:'plate', src:'plate-segregation-streetcar.png', push:0.05, from:'left' },
   { s:4, cue:'A Black teenager',           type:'plate', src:'plate-theatre-stage.png', push:0.05, from:'right' },
   { s:4, cue:'Newspapers carried it',      type:'plate', src:'plate-newsboys.png', push:0.06,
     traffic:[{ sp:'sprite-cart',          bottom:14, h:17, w:18, x0:78,  x1:52 }] },
@@ -142,7 +144,8 @@ const SHOTS = [
 
   // ── §06 THE 1925 FINAL — the hero sequence ───────────────────────────────────
   { s:6, cue:'The seventeenth of June',    type:'plate', src:'us-national-museum-exterior-1880s-sia.jpg', push:0.05, fit:'cover' },
-  { s:6, cue:'The National Museum',        type:'plate', src:'plate-museum-hall-chairs.png', push:0.05 },
+  { s:6, cue:'The National Museum',        type:'plate', src:'plate-museum-hall-chairs.png', push:0.05,
+    traffic:[{ sp:'sprite-walkers', bottom:2, h:26, w:20, x0:-22, x1:16 }] },
   { s:6, cue:'Six girls, three boys',      type:'card',  kicker:'Washington, D.C. · 17 June 1925', line:'nine finalists', sub:'six girls, three boys' },
   { s:6, cue:'Before it starts',           type:'plate', src:'calvin-coolidge-photo-c1924-ulmann-npg.jpg', push:0.04, fit:'contain' },
   { s:6, cue:'Calvin Coolidge shakes',     type:'plate', src:'calvin-coolidge-print-1925-sturges-npg.jpg', push:0.05, fit:'contain' },
@@ -165,8 +168,7 @@ const SHOTS = [
   { s:6, cue:'G',                          type:'spell', word:'GLADIOLUS', fix:{ i:7 }, sync:true },
   { s:6, cue:'Champion of the United States', type:'card', line:'Champion of the United States' },
   { s:6, cue:'Five hundred dollars',       type:'coins' },
-  { s:6, cue:'And when he got home',       type:'plate', src:'plate-parade.png', push:0.05,
-    traffic:[{ sp:'sprite-motorcar-1925', bottom:6,  h:24, w:26, x0:22,  x1:56 }] },
+  { s:6, cue:'And when he got home',       type:'plate', src:'plate-parade.png', push:0.05, fireworks:true },
 
   // ── §07 WHAT HAPPENED TO FRANK ───────────────────────────────────────────────
   { s:7, cue:'Engineering degree',         type:'card',  kicker:'1934 engineering · 1940 law', line:'then patent law' },
@@ -182,7 +184,7 @@ const SHOTS = [
   { s:8, cue:'Watch how fast it grows',    type:'card',  line:'year two' },
   { s:8, cue:'nine children becomes',      type:'count', to:25, label:'contestants' },
   { s:8, cue:'the prize doubles',          type:'count', to:1000, label:'first prize', prefix:'$' },
-  { s:8, cue:'That is serious money',      type:'plate', src:'ford-model-t-roadster-1926-nmah.jpg', push:0.05, fit:'contain' },
+  { s:8, cue:'That is serious money',      type:'plate', src:'plate-family-1926.png', push:0.05 },
   { s:8, cue:'The winner is Pauline Bell', type:'card',  kicker:'Clarkson, Kentucky', line:'Pauline Bell', sub:'thirteen' },
   { s:8, cue:'Her word',                   type:'spell', word:'CERISE' },
   { s:8, cue:'It means cherry',            type:'colourfill', hex:'#DE3163', label:'cerise' },

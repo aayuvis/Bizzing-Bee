@@ -71,6 +71,20 @@ function check() {
   return { errs, warns };
 }
 
+/* Wait for every image in the shot to actually DECODE, not merely for two frames to pass.
+ * The plates are 2752px PNGs of three to five megabytes; two requestAnimationFrames is not
+ * long enough to decode one, and a shot whose picture had not arrived yet rendered as bare
+ * background — the parade came out as fireworks over black. Awaiting decode() also removes
+ * the risk of a blank FIRST frame at the head of every plate shot in the full render, which
+ * is the same bug one frame wide and far harder to notice. */
+async function decoded(page) {
+  await page.evaluate(async () => {
+    await Promise.all([...document.images].map(i => i.decode().catch(() => {})));
+    await document.fonts.ready;
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+  });
+}
+
 /* ---------------- render ---------------- */
 async function render(list) {
   fs.mkdirSync(OUT, { recursive: true });
@@ -87,7 +101,7 @@ async function render(list) {
     fs.rmSync(dir, { recursive: true, force: true }); fs.mkdirSync(dir, { recursive: true });
 
     await page.evaluate(sh => window.SHOT(sh), s);
-    await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
+    await decoded(page);
 
     // THE assertion for this film, checked from the live DOM before any frame is written.
     if (s.type === 'spell') {
@@ -130,7 +144,7 @@ async function still(idx, frac) {
   await page.goto('file://' + path.join(DIR, 'shot.html'), { waitUntil: 'load' });
   await page.evaluate(() => document.fonts.ready);
   await page.evaluate(sh => window.SHOT(sh), s);
-  await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
+  await decoded(page);
   await page.evaluate(() => document.getAnimations().forEach(a => a.pause()));
   await page.evaluate(([ms, p]) => {
     document.getAnimations().forEach(a => { a.currentTime = ms; });

@@ -73,6 +73,15 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:#100B26}
 #swap span{font:800 160px Fraunces,serif;color:#fff;display:inline-block}
 #swap span.drop{animation:fall 1.4s ease-in 1.0s both;color:var(--bad)}
 
+/* A place-name set OVER the picture, not on its own slate. Scrim behind it so the type
+   holds whatever the plate happens to be doing underneath. */
+.ptitle{position:absolute;left:0;right:0;top:0;z-index:6;text-align:center;padding:54px 6% 96px;
+  background:linear-gradient(180deg,rgba(16,11,38,.86) 0%,rgba(16,11,38,.55) 55%,transparent 100%)}
+.ptitle .pt-l{font:800 96px Fraunces,serif;color:#fff;line-height:1.02;
+  text-shadow:0 4px 26px rgba(16,11,38,.75)}
+.ptitle .pt-s{font:700 30px Hanken,system-ui;letter-spacing:.32em;text-transform:uppercase;
+  color:var(--gold);margin-top:14px}
+
 /* outro */
 #outro{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:22px}
 #outro .brand{font:800 118px Fraunces,serif;color:#fff}
