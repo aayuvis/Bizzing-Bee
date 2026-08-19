@@ -39,3 +39,6 @@ __pycache__/
 # statement, so the binaries are re-downloadable and the provenance is not lost.
 video/images/*
 !video/images/MANIFEST.md
+video/vo/full/
+video/vo/sec-*.mp3
+video/segs.json
