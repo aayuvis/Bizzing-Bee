@@ -182,25 +182,73 @@ mascot walking through a segregation-era history would be a serious tonal error.
 
 ## 4. Assets
 
-**Have** (image agent, `images/MANIFEST.md` — check rights per file): Noah Webster ×2,
-Coolidge ×3, US National Museum exterior/interior ×3, Arts & Industries Building ×2.
+### 4.1 In hand — 21 files, all CC0, verified valid (`images/MANIFEST.md`, 488 lines)
 
-**Still needed — highest value first:**
-1. **Marie C. Bolden portrait.** If none is free to use, §01 and §04 must carry her
-   typographically rather than with a stand-in face. **Never use an unidentified period
-   photograph of a Black child as if it were her.** That is the kind of error that ends a
-   channel's credibility, and it is not recoverable.
-2. Hippodrome Theater, Cleveland, c.1908
-3. Webster's *American Spelling Book* — cover + a spread
-4. Frontier schoolhouse, exterior night + crowded interior
-5. Gladiolus botanical plate (Biodiversity Heritage Library)
-6. 1920s newsroom / press / newsboy
-7. LoC 1928 White House photographs (three known items, in the manifest)
-8. 1920s department-store or fashion plate for `cerise`
+Sourced from **Smithsonian Open Access via its public S3 mirror**
+(`smithsonian-open-access.s3-us-west-2.amazonaws.com`), which was the only route the egress
+proxy permitted. Every record was filtered on an explicit `CC0` flag, so nothing
+rights-unknown is in the set.
+
+| Group | Files | Best of them |
+|---|---|---|
+| Webster / the speller | 6 | The **actual 1821 *American Spelling Book*** — cover and pages. Plus *"Noah Webster – The Schoolmaster of the Republic"*, a chromolithograph with the blue speller in frame |
+| Schoolroom | 3 | *The Village School* (c.1870 lithograph, master asleep, pupils rioting) |
+| Coolidge / 1920s | 4 | Ulmann photograph c.1924; 1926 Model T |
+| **The venue** | 5 | **Two c.1920 interiors of the Arts & Industries Building** — the National Museum, where all four bees were held |
+| Lindbergh | 2 | Spirit of St. Louis + cockpit |
+| Gladiolus | 1 | Herbarium specimen sheet |
+
+**Three content caveats — do not mis-caption:**
+- The Spirit of St. Louis shots are **modern museum photographs** of the 1927 aircraft, not
+  1927 press photos.
+- The building **exteriors are 1880s**; only the **interiors are c.1920**. Use the interiors
+  for the bee hall.
+- The gladiolus is a **pressed 1932 Central European herbarium specimen** — not an American
+  garden flower and not in bloom. See §4.3.
+
+### 4.2 ⚠️ BLOCKING — the bee photographs, which must be fetched by hand
+
+**No photograph of any spelling bee was obtained.** Every known image is Library of Congress
+held, and `loc.gov` — along with archives.gov, NYPL, Internet Archive, Wikimedia Commons,
+BHL, PICRYL and Openverse — is blocked by this session's egress proxy for both `curl` and
+WebFetch. This is an environment limit, not an availability one: **the images are public
+domain and take two minutes to download from an ordinary browser.**
+
+Download these four and drop them in `video/images/`:
+
+| Item | What it shows |
+|---|---|
+| `loc.gov/item/94509235/` | Coolidge with the seven 1925 finalists |
+| `loc.gov/item/2016888806/` | Everett Sanders congratulating Betty Robinson, 1928 |
+| `loc.gov/pictures/item/hec2013004930/` | Coolidge and Betty Robinson, 1928 |
+| `loc.gov/pictures/item/2016890661/` | The 1928 winners with Coolidge — Doig, Robinson, Gray |
+
+LoC states **"No known restrictions on publication"** for these. **One caveat:** item
+`2016888806` is credited to **Harris & Ewing**, not the National Photo Company — read the
+rights advisory on its own item page rather than assuming it matches the others.
+
+Until these land, **§10 has no photograph of the real people in the real room**, which is
+that section's whole payoff.
+
+### 4.3 Still needed
+
+1. **Marie C. Bolden portrait — the highest-value missing asset.** Not found, and it may not
+   exist in any free collection. If none is available, §01 and §04 carry her
+   **typographically**. **Never use an unidentified period photograph of a Black child as if
+   it were her.** That error ends a channel's credibility and is not recoverable.
+2. **Hippodrome Theater, Cleveland, c.1908** — not found.
+3. **Gladiolus in bloom.** The herbarium sheet is a pressed, dried specimen; §06 calls for a
+   flower blooming into frame. Two honest options: generate a botanical plate in house style,
+   **or** rewrite the shot to use the specimen sheet — which is arguably the better image, and
+   truer to a film about a boy who grew them. Decide before building §06.
+4. 1920s newsroom / press. *(The agent deliberately declined 19th-century brass patent models
+   here rather than pass them off as the Courier-Journal pressroom — the right call.)*
+5. 1920s department store or a `cerise` fashion plate (Cooper Hewitt's CC0 plates stop at 1888).
+6. 1920s classroom photograph; 1929 crash.
 
 **Generated (Gemini image, app house style):** honeycomb fields and transition cells, the
-word-card furniture, the medal, the era/plate backgrounds where no period image exists.
-Generated plates carry **no lettering** — type is composited.
+word-card furniture, the medal, and era backgrounds where no period image exists. Generated
+plates carry **no lettering** — type is composited.
 
 ---
 
