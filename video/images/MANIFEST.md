@@ -525,3 +525,23 @@ theatre in 1908", and the narration never claims more.
 
 **AI disclosure:** these plates are why the video description must carry a synthetic-media
 disclosure. That is not optional and not a formality.
+
+
+## ⚠️ CORRECTION — the "1925 finalists" photograph is 1926
+
+`spelling-bee-1926-finalists-coolidge-loc.jpg` (LoC, `loc.gov/item/94509235/`) was
+downloaded and filed as the **1925** finalists. Its own typed caption, legible at full
+resolution, reads:
+
+> *"With finalists in National Spelling Bee.  6/4/26   neg. 40125"*
+
+**It is 1926.** It had already been wired into §06 as the 1925 final, which would have put
+a misdated photograph on screen in a film whose entire subject is which year came first.
+
+Fixed: renamed, and §06 now carries that beat in type ("nine finalists · six girls, three
+boys") which claims only what is true. The photograph moved to §08, the 1926 section, where
+it is correct — displacing the cerise shop-window illustration, because a real photograph of
+the actual bee outranks a drawing of a fashion colour.
+
+**Read the caption strip on every archive photograph before wiring it to a date.** The
+filename is whatever the downloader typed; the caption is what the archive says.

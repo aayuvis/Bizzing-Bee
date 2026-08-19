@@ -56,7 +56,7 @@ const SHOTS = [
   { s:6, at:0.0,  type:'plate', src:'us-national-museum-exterior-1880s-sia.jpg', push:0.05, fit:'cover' },
   { s:6, at:8.0,  type:'plate', src:'calvin-coolidge-photo-c1924-ulmann-npg.jpg', push:0.04, fit:'contain' },
   { s:6, at:18.0, type:'plate', src:'us-national-museum-interior-inventions-exhibit-c1920-sia.jpg', push:0.05 },
-  { s:6, at:28.0, type:'plate', src:'spelling-bee-1925-finalists-coolidge-loc.jpg', push:0.05, fit:'contain' },
+  { s:6, at:28.0, type:'card',  kicker:'Washington, D.C. · 17 June 1925', line:'nine finalists', sub:'six girls, three boys' },
   { s:6, at:36.5, type:'spell', word:'GLADIOLUS' },              // A1
   { s:6, at:49.5, type:'spell', word:'GLADIOLUS', wrong:{ i:7, ch:'Y' } },  // A2 — the Y falls
   { s:6, at:56.5, type:'hold',  ms:3500 },                       // black. silence in the mix.
@@ -73,7 +73,7 @@ const SHOTS = [
   { s:8, at:0.0,  type:'count', to:1000, label:'first prize', prefix:'$' },
   { s:8, at:11.0, type:'card',  kicker:'Clarkson, Kentucky', line:'Pauline Bell', sub:'thirteen' },
   { s:8, at:22.0, type:'spell', word:'CERISE' },
-  { s:8, at:32.0, type:'plate', src:'plate-shopwindow-1920s.png', push:0.05 },
+  { s:8, at:32.0, type:'plate', src:'spelling-bee-1926-finalists-coolidge-loc.jpg', push:0.04, fit:'contain' },
   { s:8, at:41.0, type:'card',  kicker:'second place, 1926', line:'Betty Robinson' },
 
   // ── §09 1927 ─────────────────────────────────────────────────────────────────

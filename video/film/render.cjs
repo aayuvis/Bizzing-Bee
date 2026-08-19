@@ -110,9 +110,19 @@ async function render(list) {
   /* --resume skips shots whose mp4 already exists. The renderer had no resume and a
      killed run meant starting over; with 57 shots at ~70s that is an hour thrown away
      for one interruption. */
+  /* --slice K/N takes every Nth shot starting at K. Four cores, one Chromium each: the
+     render is CPU-bound on screenshotting 2K composites, so it scales almost linearly
+     across processes. Combined with --resume, a worker also skips anything a sibling has
+     already finished, so the slices self-heal if one dies. */
+  const sl = a.indexOf('--slice');
+  if (sl > -1) {
+    const [k, n] = a[sl + 1].split('/').map(Number);
+    list = list.filter(s => s.idx % n === k);
+    console.log(`slice ${k}/${n}: ${list.length} shots`);
+  }
   if (a.includes('--resume')) {
     const have = new Set(fs.existsSync(OUT) ? fs.readdirSync(OUT).filter(f => f.endsWith('.mp4')) : []);
-    list = shots.filter(s => !have.has('shot' + String(s.idx).padStart(3, '0') + '.mp4'));
+    list = list.filter(s => !have.has('shot' + String(s.idx).padStart(3, '0') + '.mp4'));
     console.log(`resume: ${have.size} already rendered, ${list.length} to go`);
   }
   else if (a.includes('--shot')) list = [shots[+a[a.indexOf('--shot') + 1]]];
