@@ -22,8 +22,9 @@ echo "concatenating $n shots"
 for f in $(ls out/shot*.mp4 | sort); do echo "file '$PWD/$f'" >> out/list.txt; done
 "$FF" -y -loglevel error -f concat -safe 0 -i out/list.txt -c copy out/picture.mp4
 
-VD=$("$FF" -i out/picture.mp4 2>&1 | grep -o 'Duration: [0-9:.]*' | head -1)
-AD=$("$FF" -i "$VO"           2>&1 | grep -o 'Duration: [0-9:.]*' | head -1)
+probe(){ "$FF" -i "$1" 2>&1 | sed -n 's/.*\(Duration: [0-9:.]*\).*/\1/p' | sed -n 1p || true; }
+VD=$(probe out/picture.mp4)
+AD=$(probe "$VO")
 echo "picture $VD"
 echo "voice   $AD"
 
