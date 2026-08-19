@@ -30,3 +30,12 @@ spellbound-app/app-art/*.png
 # Book PDFs are generated from the HTML on demand; the HTML is the book.
 spellbound-app/books/pdf/
 __pycache__/
+
+# Video source images: downloaded archive originals (Library of Congress, NPG,
+# Smithsonian). Single files run to 27MB and a full episode's research is
+# hundreds of MB — this is exactly the bloat that cost this repo a 1.63GB
+# history purge, and the rule from that is to gitignore BEFORE the first commit.
+# MANIFEST.md is the durable artifact: it records every source URL and rights
+# statement, so the binaries are re-downloadable and the provenance is not lost.
+video/images/*
+!video/images/MANIFEST.md
