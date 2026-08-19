@@ -1,0 +1,90 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>shot</title>
+<style>
+@font-face{font-family:Fraunces;src:url('../../spellbound-app/fonts/fraunces-800.woff2') format('woff2');font-weight:800;font-display:block}
+@font-face{font-family:Hanken;src:url('../../spellbound-app/fonts/hanken-var.woff2') format('woff2-variations');font-weight:100 900;font-display:block}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#100B26}
+/* --- tokens: the app's own ink, honey and paper --- */
+:root{--ink:#100B26;--indigo:#33257A;--honey:#FFC23D;--gold:#FFD873;--cream:#F3EEFF;--bad:#E0483C}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:var(--ink)}
+
+/* ============================ PLATE (Ken Burns) ============================
+   ONE move per shot and it never reverses. The image is oversized by the push
+   amount up front so the transform only ever scales DOWN into frame — an
+   upscale past 1.0 would soften a 2K plate for no reason. */
+.kb{position:absolute;inset:0;will-change:transform}
+.kb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.kb img.contain{object-fit:contain;background:var(--ink)}
+
+/* ============================ TYPE ============================ */
+.card{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:10px;padding:0 12%}
+.kicker{font:700 30px Hanken,system-ui;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);opacity:.92}
+.line{font:800 104px Fraunces,serif;color:#fff;line-height:1.05;text-wrap:balance}
+.sub{font:600 38px Hanken,system-ui;color:var(--cream);opacity:.86;margin-top:6px}
+
+/* ============================ A1 — THE LETTER DROP ============================
+   The film's signature. Letters land one at a time onto the honeycomb.
+   Each letter is its own element with its own delay, so the assertion can read
+   the assembled string straight out of the DOM before a frame is rendered. */
+#word{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:.06em}
+#word span{font:800 var(--sz,190px) Fraunces,serif;color:#fff;display:inline-block;
+  animation:drop .42s cubic-bezier(.2,.9,.25,1) both}
+@keyframes drop{from{opacity:0;transform:translateY(-58px) scale(1.22);filter:blur(6px)}
+                to  {opacity:1;transform:none;filter:none}}
+/* A2 — the wrong letter: lands, reddens, cracks, falls away */
+#word span.wrong{color:var(--bad);animation:drop .42s cubic-bezier(.2,.9,.25,1) both, fall 1.5s ease-in 1.1s both}
+@keyframes fall{0%{transform:none;opacity:1}
+                18%{transform:translateY(-10px) rotate(-4deg)}
+                100%{transform:translateY(320px) rotate(22deg);opacity:0}}
+#word span.fix{color:var(--honey);animation:drop .5s cubic-bezier(.2,.9,.25,1) .35s both}
+.hexbed{position:absolute;inset:0;opacity:.5;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='52' height='90'><g fill='none' stroke='%23FFD873' stroke-opacity='0.5' stroke-width='2'><path d='M0,-30 L26,-15 L26,15 L0,30 L-26,15 L-26,-15 Z'/><path d='M52,-30 L78,-15 L78,15 L52,30 L26,15 L26,-15 Z'/><path d='M26,15 L52,30 L52,60 L26,75 L0,60 L0,30 Z'/><path d='M0,60 L26,75 L26,105 L0,120 L-26,105 L-26,75 Z'/><path d='M52,60 L78,75 L78,105 L52,120 L26,105 L26,75 Z'/></g></svg>")}
+.glow{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:1500px;height:640px;
+  background:radial-gradient(50% 50% at 50% 50%,rgba(255,194,61,.28),rgba(255,194,61,.06) 55%,transparent 76%)}
+
+/* A4 — title: 1925 struck out, replaced by 1908 */
+#t25,#t08{position:absolute;left:0;right:0;text-align:center;font:800 190px Fraunces,serif}
+#t25{top:300px;color:#fff;opacity:.55;animation:strike .1s linear 1.1s both}
+#t25 s{text-decoration-color:var(--bad);text-decoration-thickness:10px}
+@keyframes strike{to{opacity:.30}}
+#t08{top:300px;color:var(--honey);animation:drop .6s cubic-bezier(.2,.9,.25,1) 1.6s both}
+#ttl{position:absolute;left:0;right:0;top:560px;text-align:center;
+  font:800 92px Fraunces,serif;color:#fff;animation:drop .6s ease 2.2s both}
+
+/* A6 — word cards */
+.cards{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:34px;flex-wrap:wrap;padding:0 8%}
+.wc{background:rgba(255,255,255,.06);border:2px solid rgba(255,216,115,.42);border-radius:22px;
+  padding:26px 40px;font:800 62px Fraunces,serif;color:#fff;animation:drop .5s ease both}
+.wc.big{font-size:86px;border-color:var(--honey)}
+
+/* A7 — medal */
+#medal{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:620px;
+  animation:drop .8s ease both}
+#medal.ghost{filter:grayscale(1) brightness(.32);opacity:.5}
+
+/* counter */
+#count{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+#count .n{font:800 210px Fraunces,serif;color:var(--honey);font-variant-numeric:tabular-nums}
+#count .l{font:600 40px Hanken,system-ui;color:var(--cream);opacity:.85;margin-top:14px}
+
+/* swap: colour -> color */
+#swap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:.04em}
+#swap span{font:800 160px Fraunces,serif;color:#fff;display:inline-block}
+#swap span.drop{animation:fall 1.4s ease-in 1.0s both;color:var(--bad)}
+
+/* outro */
+#outro{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:18px}
+#outro .brand{font:800 118px Fraunces,serif;color:#fff}
+#outro .brand i{font-style:italic} #outro .tm{font-size:.4em;vertical-align:.78em;margin-left:.24em}
+#outro .url{font:700 44px Hanken,system-ui;color:var(--honey)}
+#outro .ai{font:600 26px Hanken,system-ui;color:var(--cream);opacity:.62;margin-top:26px}
+
+/* Scrims are POSITIONED and would otherwise paint over static type (brief §5.5).
+   Everything gets an explicit z-index; nothing relies on source order. */
+.hexbed{z-index:1} .glow{z-index:2} #word,#swap,.card,.cards,#count,#medal,#outro,#t25,#t08,#ttl{z-index:5}
+.kb{z-index:0}
+</style></head>
+<body><div id="stage"></div>
+<script src="shotrender.js"></script>
+</body></html>

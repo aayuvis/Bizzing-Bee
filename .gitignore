@@ -42,3 +42,5 @@ video/images/*
 video/vo/full/
 video/vo/sec-*.mp3
 video/segs.json
+video/film/out/
+video/out/
