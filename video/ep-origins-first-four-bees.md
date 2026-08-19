@@ -1,194 +1,349 @@
-# The First Four Spelling Bees (1925–1928)
+# The First Four Spelling Bees (1925–1928) — full script
 
-**Format:** long-form, ~7 min · **Voice:** human, conversational — read it out loud and cut
-anything you stumble on. Per the video post-mortem in `CLAUDE.md`, do NOT synthesize this.
+**Runtime:** ~11 min · **Voice:** human, conversational.
+Per the post-mortem in `CLAUDE.md`: do **not** synthesize this narration. Read it aloud and
+cut anything you stumble on — the stumbles are the script's fault, not yours.
 
-**Visuals:** Library of Congress holds public-domain press photographs of the 1925–1928 bees,
-including President Coolidge with the contestants and with Betty Robinson (`loc.gov`,
-National Photo Company collection). Scripps' own archive photos are **not** free to use —
-check the rights statement on each LoC item before it goes in the edit.
+**Visuals:** the Library of Congress holds public-domain press photographs of these bees
+(National Photo Company collection), including Coolidge with the 1928 contestants and with
+Betty Robinson. Check the rights statement on each item. **Scripps' own archive is not free
+to use.**
 
-**Verify before publishing:** contestant counts and hometowns come from single sources.
-The champions, ages, dates and winning words are corroborated; the rest is not.
+⚠️ **Name collision — do not mix these up.** The 1928 spelling champion Betty Robinson of
+South Bend, Indiana is **not** Betty Robinson the sprinter, who won Olympic 100m gold in
+Amsterdam the same year. Different person, same name, same year. Search results conflate them.
+
+**Verify before publishing:** champions, ages, hometowns, dates, words and prize amounts are
+corroborated across sources. Contestant counts rest on fewer. Nothing below is invented —
+where the record is silent, the script says so.
 
 ---
 
 ## THE FACTS (checked)
 
-| Year | Champion | Age | From | Word | Field |
-|---|---|---|---|---|---|
-| 1925 | Frank Neuhauser | 11 | Louisville, Kentucky | **gladiolus** | 9 finalists |
-| 1926 | Pauline Bell | 13 | Clarkson, Kentucky | **cerise** | 25 (17 girls, 8 boys) |
-| 1927 | Dean Lucas | 13 | West Salem, Ohio | **abrogate** | 17 (13 girls, 4 boys) |
-| 1928 | Betty Robinson | 13 | South Bend, Indiana | **knack**, then **albumen** | 23 |
+| | 1925 | 1926 | 1927 | 1928 |
+|---|---|---|---|---|
+| Date | 17 Jun | 17 Jun | 23 Jun | 23 May |
+| Champion | Frank Neuhauser, 11 | Pauline Bell, 13 | Dean Lucas, 13 | Betty Robinson, 13 |
+| From | Louisville, KY | Clarkson, KY | West Salem, OH | South Bend, IN |
+| Word | **gladiolus** | **cerise** | **abrogate** | **knack**, then **albumen** |
+| Field | 9 (6 girls, 3 boys) | 25 (17 girls, 8 boys) | 17 (13 girls, 4 boys) | 23 |
+| 1st prize | $500 in gold | $1,000 | $1,000 | $1,000 |
 
-All four held in Washington, D.C.; 1926–28 at the National Museum. Sponsor was the
-**Louisville Courier-Journal** — Scripps did not take over until 1941.
+All four at the **National Museum**, Washington, D.C. Sponsor: the **Louisville
+Courier-Journal**. Scripps did not take over until 1941.
+
+- **1925 runner-up:** Edna Stover, 11, Trenton, NJ — $250. She missed *gladiolus*, spelling
+  it with a **y**.
+- **1926 runner-up:** Betty Robinson, South Bend — who comes back and wins in 1928.
+- **1928 places:** Pauline Gray (Akron) 2nd, $500; Bessie Doig (Detroit) 3rd, $200.
+- **Frank Neuhauser:** b. 29 Sep 1913, d. 11 Mar 2011, aged 97. Electrical engineering
+  degree 1934; law degree, George Washington University, 1940. Patent lawyer at General
+  Electric, then private practice. Retired 1988. Still growing gladioli in his nineties.
 
 ---
 
 ## SCRIPT
 
 **[0:00 — COLD OPEN]**
-*On screen: the word GLADIOLUS, letter by letter.*
+*Black. One voice. The word appears letter by letter.*
 
-In 1925, an eleven-year-old boy stood up in Washington, D.C., and spelled the name of a
-flower. G–L–A–D–I–O–L–U–S. Gladiolus.
+Washington, D.C. June, 1925.
 
-He won five hundred dollars in gold coins. He met the President. His home town threw him
-a parade.
+Two eleven-year-olds are left standing. Everyone else has sat down.
 
-And he had just accidentally invented one of the strangest competitions in the world.
+The pronouncer gives a word to the girl. Gladiolus. A flower.
 
-**[0:25 — WHY A NEWSPAPER]**
+She spells it. G–L–A–D–I–O–L… **Y**… S.
 
-Here's the part nobody tells you. The National Spelling Bee wasn't started by a school. It
-wasn't started by the government. It was started by a **newspaper** — the Louisville
-Courier-Journal — and it was, partly, a circulation stunt.
+And that's it. That's the whole thing. One letter.
 
-In the 1920s American newspapers were at war with each other. Radio had just arrived. If
-you wanted families to buy your paper, you gave them a reason. And someone at the
-Courier-Journal worked out that if you ran a spelling contest in your own city, then invited
-newspapers in other cities to send *their* winner… you'd have a national story that every
-one of those papers would have to cover.
+Because now the same word — *the exact same word* — passes to the boy standing next to her.
 
-Nine newspapers said yes. More than two million children entered at the local level. Nine
-kids made it to Washington.
+**[0:35 — TITLE]**
 
-**[1:05 — THE OLDER ROOT]**
+This is the story of the first four spelling bees ever held in America. Who won them. What
+words they won on. And what happened to those kids afterwards.
 
-But spelling bees themselves were already old — and very American.
+**[0:50 — WHERE THE BEE COMES FROM]**
 
-Go back to 1783. A man named Noah Webster publishes a small book with a blue cover.
-Americans call it the blue-backed speller. It sells in enormous numbers for a century, and
-it does something deliberate: it makes American spelling *American*. Colour loses its u.
-Centre flips to center. Webster wanted a country that didn't spell like Britain.
+First — where does a spelling bee even come from? Because it's a genuinely odd thing to do.
+No other country does this at anything like the same scale.
 
-And out on the frontier, spelling became entertainment. A "bee" just meant people getting
-together to do something — a quilting bee, a husking bee. A spelling bee was a night out.
-You'd fill a schoolhouse, and neighbours would stand and spell until one was left.
+It starts with a book. 1783. The Revolutionary War has just ended, and a man named **Noah
+Webster** publishes a small schoolbook with a blue cover. Kids called it the blue-backed
+speller, and it sold in tens of millions over the next century.
 
-So by 1925 the format was a century old. What was new was doing it nationally, for money,
-in front of the President.
+Webster had an agenda. He didn't just want American children to spell — he wanted them to
+spell *differently from the British*. Colour loses its U. Centre flips round to center.
+Waggon drops a G. A new country, he thought, ought to have a language of its own.
 
-**[1:50 — 1925: GLADIOLUS]**
-*On screen: Frank Neuhauser, 11.*
+So American spelling is, from the start, a slightly political act. And the book that taught
+it was in nearly every schoolhouse in the country.
 
-Frank Neuhauser. Eleven years old. Louisville, Kentucky.
+**[1:40 — THE "BEE"]**
 
-His word was gladiolus — Latin for *little sword*, because of the shape of the leaves.
+Then there's the word *bee* itself. It's got nothing to do with insects. In early America a
+"bee" just meant neighbours gathering to get something done — a quilting bee, a husking
+bee, a barn-raising bee.
 
-And here's what makes it perfect: Frank grew gladioli. He'd raised them himself as a boy.
-In 1925 America, that isn't a coincidence — home gardening was everywhere, seed catalogues
-arrived by post in every small town, and a flower with a Latin name was something an
-ordinary eleven-year-old actually knew.
+A **spelling bee** was a night out. Out on the frontier, where there was no theatre and no
+radio and not much else to do in the evening, you'd pack the schoolhouse, and grown adults
+and children would stand up and spell at each other until one was left standing. People
+came to watch. There was betting.
 
-The first winning word in history was a word a kid knew because of his back garden.
+So by the 1920s, spelling out loud in public was already a hundred-year-old American
+pastime.
 
-**[2:30 — WHAT AMERICA LOOKED LIKE]**
+What nobody had done was make it *national*.
 
-Picture the country he won in. Calvin Coolidge is President. The war has been over seven
-years. There's money about, there's jazz, there are cars. That same year *The Great Gatsby*
-is published, and a schoolteacher in Tennessee goes on trial for teaching evolution.
+**[2:20 — WHY A NEWSPAPER DID IT]**
 
-And America is arguing hard about who counts as American. Immigration has just been
-sharply restricted. Public schools are running enormous literacy and "Americanization"
-campaigns.
+And here's the part that surprises people. The National Spelling Bee wasn't started by a
+school, or a university, or the government.
 
-A national spelling contest lands in the middle of that. On the surface it's a game. Underneath
-it's a country insisting that its children master its language, in its own spelling — the one
-Noah Webster built.
+It was started by a **newspaper**.
 
-**[3:15 — 1926: CERISE]**
-*On screen: Pauline Bell, 13.*
+The Louisville Courier-Journal, in Kentucky, was already running a spelling contest for
+schoolchildren in its own state. And in 1925 somebody there had an idea: what if we invited
+newspapers in *other* cities to run their own contest — and send us their winner?
 
-1926. Twenty-five children go to Washington — seventeen girls, eight boys. The winner is
-Pauline Bell, thirteen, from Clarkson, Kentucky. Kentucky again.
+Think about why that's clever. Every paper that joins in now has a local kid in a national
+final. That's weeks of stories. That's a reason for families to buy the paper. In the 1920s,
+newspapers were fighting each other for readers — radio had just arrived and was stealing
+their audience — and a competition full of local children was very good business.
 
-Her word: **cerise**. C–E–R–I–S–E. It's French. It means cherry — but not the fruit. Cerise
-is a *colour*.
+But it wasn't *only* business. The stated purpose was to get children interested in a common
+branch of learning. This is a decade when America is pouring money into public literacy,
+into schooling, into what it then called "Americanization." A national spelling contest fits
+that mood exactly.
 
-Think about what that tells you. In 1926 a thirteen-year-old is expected to know a French
-fashion word, because that is the decade when American women's clothing goes mass-market:
-department stores, ready-to-wear, catalogues, and colour names imported straight from Paris.
+Nine newspapers said yes. More than **two million** children entered at the local level.
 
-Gladiolus came from the garden. Cerise came from the shop window.
+Nine of them made it to Washington.
 
-**[3:55 — 1927: ABROGATE]**
-*On screen: Dean Lucas, 13.*
+**[3:20 — WHAT AMERICA LOOKED LIKE]**
 
-1927. Seventeen contestants, aged ten to fifteen. Dean Lucas, thirteen, from West Salem,
-Ohio.
+So picture the country those nine kids travelled through.
 
-His word is **abrogate** — to repeal, to formally cancel a law.
+It's 1925. Calvin Coolidge is President. The war has been over seven years and there is
+money about — cars, jazz, radio sets appearing in ordinary front rooms for the first time.
+That same year, *The Great Gatsby* is published. That same summer, a schoolteacher in
+Tennessee goes on trial for teaching evolution.
 
-That's not a flower or a colour. That's a courtroom. Latin again, but legal Latin — and this
-is America deep in the argument over Prohibition, where the whole national conversation is
-about whether you can un-make a law you've already made.
+It's also a country arguing hard about who belongs in it. Immigration has just been sharply
+restricted. And the language you speak — and how you spell it — is part of that argument.
 
-These children were being tested on the vocabulary of the adult world they were about to
-walk into.
+Most of these children have never left their home state. They arrive in Washington by train,
+chaperoned, in their best clothes.
 
-**[4:30 — 1928: KNACK, AND THEN ALBUMEN]**
-*On screen: Betty Robinson, 13.*
+**[4:00 — THE FIRST BEE]**
+*On screen: the National Museum, Washington D.C.*
 
-1928. And my favourite one, because it's strange.
+**17 June 1925.** The National Museum in Washington. Nine finalists — six girls, three boys.
 
-Betty Robinson, thirteen, of South Bend, Indiana. She had been to Washington before — she
-came **second** in 1926. She went home, and she came back, and she won.
+Before it starts, they're taken to meet the President of the United States. Coolidge shakes
+each of their hands. Then they're walked back and told to spell.
 
-Now: what was her winning word? Depends who you ask. Some records say **knack**. Others say
-**albumen**. Both are right — because under the rules then, once the last rival missed, the
-champion had to spell one more word to take the title. She spelled knack. Then she spelled
-albumen. Then she was champion.
+It runs an hour and a half.
 
-And look at those two words together. *Knack* is short, blunt, old, Germanic — it's the
-kind of word English has had forever. *Albumen* is egg white. It's the science word — and
-1928 is when nutrition, home economics and school science are pushing into American
-classrooms.
+One by one they go out. And it comes down to two eleven-year-olds: **Edna Stover** of
+Trenton, New Jersey — and **Frank Neuhauser** of Louisville, Kentucky.
 
-One ancient word, one modern one, in the same minute.
+**[4:35 — GLADIOLUS]**
 
-**[5:20 — THE PATTERN]**
+The word is **gladiolus**.
 
-Four years. Four words. Line them up:
+It's Latin. It means *little sword* — because the leaves come to a point, like a blade. It's
+a garden flower, and in 1925 America it's a very ordinary thing to have in your back garden.
+Seed catalogues arrive by post in every small town. Everybody grows something.
 
-A garden flower. A Paris colour. A legal term. And a protein.
+Edna goes first. And she puts a **Y** where the second **I** belongs.
 
-That's not a random list. That's a portrait of what a well-educated American child was
-supposed to have in their head in the 1920s — some Latin, some French, some civics, some
-science. The words weren't chosen to be impossible. They were chosen to be *expected*.
+G–L–A–D–I–O–L–Y–S.
 
-Which is why they look so easy now. Today's winning words are things like *guetapens* and
-*psammophile*. In 1928 you could win the whole thing with **knack**.
+She sits down. Two hundred and fifty dollars, second place in the country, and a mistake
+she'll be asked about for the rest of her life.
 
-The bee didn't get harder because children got smarter. It got harder because the moment
-the word list became public, everyone studied it — and the bee had to keep running to stay
-ahead.
+And now Frank Neuhauser gets the same word.
 
-**[6:05 — WHAT HAPPENED TO THEM]**
+Here's the thing. **Frank grew gladioli.** He'd raised them himself, in his own garden, as a
+boy. Of all nine children in that room, the word landed on the one who'd been pulling them
+out of the ground with his hands.
 
-So what became of them?
+G–L–A–D–I–O–L–U–S.
 
-Frank Neuhauser we know about. He grew up, became a patent attorney in Washington — a man
-whose whole career was the precise meaning of words. He came back to the bee for
-anniversaries, an old man greeted like royalty by children who hadn't been born when he won.
-He died in 2011. He was ninety-seven.
+Champion of the United States. Eleven years old.
 
-The others? Here's the honest answer: we don't really know. Pauline Bell, Dean Lucas,
-Betty Robinson — they won the biggest thing a child could win in America, they shook hands
-with the President of the United States, there are photographs of them in the Library of
-Congress… and then they went home, and grew up, and got on with their lives, and the record
-mostly stops.
+**[5:25 — WHAT HE WON]**
 
-I find that oddly comforting. They weren't building careers. They were kids who were good at
-something, for one afternoon, in front of the whole country.
+Five hundred dollars — in **gold coins**. Not a cheque. Actual gold, in 1925, to an
+eleven-year-old.
 
-**[6:45 — CLOSE]**
+And when he got back to Louisville, the city threw him a **parade**.
 
-One newspaper wanting to sell more copies. A hundred-year-old habit of spelling out loud in
-schoolhouses. Nine children in Washington.
+**[5:45 — WHAT HAPPENED TO FRANK NEUHAUSER]**
 
-And a boy who won it all with the name of the flower in his own back garden.
+So what happens to a boy like that?
+
+He grows up. Takes a degree in electrical engineering in 1934. Then goes to law school at
+George Washington University, qualifying in 1940.
+
+And then he does something I find perfect. He becomes a **patent attorney** — first at
+General Electric, later in private practice. A patent lawyer's entire job is the exact
+meaning of exact words. Get one wrong and an invention isn't protected. He spent fifty years
+being paid for precision. He retired in 1988.
+
+He kept coming back to the bee. Anniversary after anniversary, an old man walking into a
+hall full of children who hadn't been born when he won, and being treated like royalty.
+
+Frank Neuhauser died in March 2011. He was **ninety-seven**.
+
+And here's the detail that gets me. Into his nineties, he was still gardening.
+
+He was still growing gladioli.
+
+**[6:40 — 1926: IT GETS SERIOUS]**
+
+Now watch how fast this thing grows.
+
+Year two, 1926. Same date, same building. But the field goes from nine children to
+**twenty-five** — seventeen girls, eight boys. And the prize **doubles**. Five hundred
+dollars becomes **a thousand**.
+
+A thousand dollars in 1926 is not pocket money. That is a serious amount of money for an
+ordinary family. In two years this has gone from a newspaper promotion to something worth
+travelling across the country for.
+
+The winner is **Pauline Bell**, thirteen, from Clarkson, Kentucky. Kentucky again — two for
+two for the state that started it.
+
+Her word: **cerise**. C–E–R–I–S–E.
+
+It's French. It means cherry — but not the fruit. Cerise is a *colour*.
+
+And that tells you something about 1926. A thirteen-year-old is expected to know a French
+fashion word, because this is the decade American clothing goes mass-market — department
+stores, ready-to-wear, mail-order catalogues, and colour names imported straight from Paris.
+
+Gladiolus came out of the garden. Cerise came out of a shop window.
+
+**[7:35 — THE GIRL WHO CAME SECOND]**
+
+But hold on to something from 1926. Because second place that year — the girl who came
+within one word of it, and lost — was a girl from South Bend, Indiana.
+
+Her name was **Betty Robinson**.
+
+Remember her.
+
+**[7:55 — 1927: ABROGATE]**
+
+1927. Seventeen contestants, aged ten to fifteen.
+
+The winner is **Dean Lucas**, thirteen, of West Salem, Ohio. First prize, a thousand dollars.
+
+His word: **abrogate**. To repeal something. To formally cancel a law.
+
+That's not a flower and it's not a colour — that's a courtroom. Latin again, but *legal*
+Latin. And 1927 is America in the thick of Prohibition, where the entire national argument
+is about whether you can un-make a law you already made.
+
+Meanwhile, outside the hall: that May, Charles Lindbergh flies the Atlantic alone. That
+October, *The Jazz Singer* opens and films start talking.
+
+The world is getting loud. And thirteen-year-olds are being asked to spell the vocabulary of
+the adult world they're about to walk into.
+
+**[8:40 — 1928: SHE COMES BACK]**
+
+1928. Twenty-three contestants.
+
+And the girl who came second two years earlier walks back into that building.
+
+**Betty Robinson.** Thirteen now. South Bend, Indiana. She lost here. She went home. She
+came back.
+
+And this time she wins.
+
+**[9:05 — TWO WORDS]**
+
+Now — her winning word. Ask three sources and you'll get two answers. Some say **knack**.
+Some say **albumen**. And for years I'd have told you one of them was just wrong.
+
+They're both right.
+
+Under the rules back then, when the last rival missed, the champion had to spell **one more
+word** to actually take the title. So Betty spelled **knack**. K–N–A–C–K. And then she
+spelled **albumen** — the white of an egg.
+
+And look at those two words sitting next to each other. *Knack* is short, blunt, ancient —
+Germanic, the kind of word English has had forever, with that silent K at the front that
+makes no sense unless you know it used to be pronounced. *Albumen* is a laboratory word,
+Latin, scientific — and 1928 is exactly when nutrition and home economics and school science
+are pushing into American classrooms.
+
+The oldest kind of English word, and the newest, inside the same minute.
+
+She took a thousand dollars. Pauline Gray of Akron took five hundred for second. Bessie Doig
+of Detroit took two hundred for third. And President Coolidge received them all at the White
+House — there are photographs of it in the Library of Congress to this day.
+
+**[10:00 — WHAT HAPPENED TO THE REST OF THEM]**
+
+So what became of the others?
+
+And here I have to be honest with you, because the honest answer is better than a made-up
+one.
+
+**We don't really know.**
+
+Pauline Bell. Dean Lucas. Betty Robinson. They won the biggest thing an American child could
+win. They shook hands with the President of the United States. Their photographs are sitting
+in the national archive right now.
+
+And then they went home. And grew up. And got on with their lives. And the record just…
+stops.
+
+No books. No interviews. No obituaries that anybody kept.
+
+Frank Neuhauser is the exception, not the rule — and he's the exception mostly because he
+lived to ninety-seven and kept turning up.
+
+I've come to think that's the truest thing about those first four bees. These weren't
+professional children. Nobody had a coach. Nobody had a study plan. They were ordinary kids
+who happened to be very good at one thing, for one afternoon, in front of the entire country
+— and then went back to being ordinary.
+
+**[10:50 — THE PATTERN]**
+
+Four years. Four winning words. Line them up.
+
+A garden flower. A Paris colour. A legal term. And the white of an egg.
+
+That's not a random list — that's a portrait. That is precisely what a well-schooled American
+child was expected to have in their head in the 1920s. A bit of Latin. A bit of French. Some
+civics. Some science.
+
+Those words weren't chosen to be impossible. They were chosen to be *reasonable*.
+
+Which is why they look so easy now. Today you need words like *guetapens* and *psammophile*
+to win. In 1928 you could take the national title with **knack**.
+
+The bee didn't get harder because children got smarter. It got harder because the moment the
+word list went public, everybody studied it — and the bee has been running to stay ahead of
+its own contestants ever since.
+
+**[11:35 — CLOSE]**
+
+One last thing.
+
+Those four bees — 1925, '26, '27, '28 — all happen in the last few summers of the boom.
+In October 1929 the market collapses, and America becomes a completely different country.
+
+Nine children in their best clothes, shaking hands with a President, spelling the name of a
+flower.
+
+It's the very end of that world. And it's still going, a hundred years later.
 
 *[END]*
