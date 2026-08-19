@@ -1,25 +1,36 @@
-# The First Four Spelling Bees (1925–1928) — full script
+# Before the Bee: 1908, 1925, and the First Four Champions
 
-**Runtime:** ~11 min · **Voice:** human, conversational.
-Per the post-mortem in `CLAUDE.md`: do **not** synthesize this narration. Read it aloud and
-cut anything you stumble on — the stumbles are the script's fault, not yours.
+**Runtime:** ~8 min · **Voice:** inspiring documentary narrator.
 
-**Visuals:** the Library of Congress holds public-domain press photographs of these bees
-(National Photo Company collection), including Coolidge with the 1928 contestants and with
-Betty Robinson. Check the rights statement on each item. **Scripps' own archive is not free
-to use.**
+**⚠️ THE CORRECTION THIS SCRIPT EXISTS TO GET RIGHT.** An earlier draft opened with
+"the first four spelling bees ever held in America" and started in 1925. **That is wrong.**
+The first *national* spelling bee was **29 June 1908**, at the Hippodrome Theater in
+Cleveland, run by the National Education Association — seventeen years earlier. Guinness
+World Records recognises it as the first nationwide spelling bee. 1925 is the first of the
+**continuous** series that became Scripps, which is a different claim and must be worded
+as such every single time.
 
-⚠️ **Name collision — do not mix these up.** The 1928 spelling champion Betty Robinson of
-South Bend, Indiana is **not** Betty Robinson the sprinter, who won Olympic 100m gold in
-Amsterdam the same year. Different person, same name, same year. Search results conflate them.
+**Visuals:** Library of Congress (National Photo Company) holds public-domain press photos
+of the 1925–28 bees, incl. Coolidge with the 1928 contestants. Check each rights statement.
+Scripps' own archive is **not** free to use.
 
-**Verify before publishing:** champions, ages, hometowns, dates, words and prize amounts are
-corroborated across sources. Contestant counts rest on fewer. Nothing below is invented —
-where the record is silent, the script says so.
+**⚠️ Name collision:** the 1928 champion Betty Robinson of South Bend, Indiana is **not**
+Betty Robinson the sprinter who won Olympic 100m gold that same year. Sources conflate them.
 
 ---
 
 ## THE FACTS (checked)
+
+**1908 — the first national spelling bee.** 29 June 1908, Hippodrome Theater, Cleveland,
+Ohio, run by the National Education Association. Team format between cities. **Marie C.
+Bolden**, 13, a Black student from Cleveland, daughter of a mail carrier, was the only
+Cleveland speller with **no errors** — individual champion, awarded a gold medal. Cleveland
+won the team title. Members of the all-white New Orleans team objected to spelling against
+her; Cleveland's position was that she had earned her place and New Orleans could withdraw
+if they wished. Her gold medal is lost — there has since been a public search for it.
+
+**1925–28 — the continuous series** (sponsor: Louisville Courier-Journal; Scripps took over
+in 1941). All four at the National Museum, Washington, D.C.
 
 | | 1925 | 1926 | 1927 | 1928 |
 |---|---|---|---|---|
@@ -27,323 +38,215 @@ where the record is silent, the script says so.
 | Champion | Frank Neuhauser, 11 | Pauline Bell, 13 | Dean Lucas, 13 | Betty Robinson, 13 |
 | From | Louisville, KY | Clarkson, KY | West Salem, OH | South Bend, IN |
 | Word | **gladiolus** | **cerise** | **abrogate** | **knack**, then **albumen** |
-| Field | 9 (6 girls, 3 boys) | 25 (17 girls, 8 boys) | 17 (13 girls, 4 boys) | 23 |
+| Field | 9 (6 girls, 3 boys) | 25 | 17 | 23 |
 | 1st prize | $500 in gold | $1,000 | $1,000 | $1,000 |
 
-All four at the **National Museum**, Washington, D.C. Sponsor: the **Louisville
-Courier-Journal**. Scripps did not take over until 1941.
-
-- **1925 runner-up:** Edna Stover, 11, Trenton, NJ — $250. She missed *gladiolus*, spelling
-  it with a **y**.
-- **1926 runner-up:** Betty Robinson, South Bend — who comes back and wins in 1928.
-- **1928 places:** Pauline Gray (Akron) 2nd, $500; Bessie Doig (Detroit) 3rd, $200.
-- **Frank Neuhauser:** b. 29 Sep 1913, d. 11 Mar 2011, aged 97. Electrical engineering
-  degree 1934; law degree, George Washington University, 1940. Patent lawyer at General
-  Electric, then private practice. Retired 1988. Still growing gladioli in his nineties.
+- **1925 runner-up:** Edna Stover, 11, Trenton NJ — $250 — missed *gladiolus* with a **Y**.
+- **1926 runner-up:** Betty Robinson — who returns and wins in 1928.
+- **1928:** Pauline Gray (Akron) 2nd $500; Bessie Doig (Detroit) 3rd $200.
+- **Frank Neuhauser:** b. 1913, d. 11 Mar 2011, aged 97. Engineering 1934, law 1940, patent
+  attorney at General Electric then private practice, retired 1988. Still growing gladioli
+  in his nineties.
+- **Two winning words in 1928:** the champion had to spell one further word after the last
+  rival missed. Sources listing only one are partial, not wrong.
 
 ---
 
 ## SCRIPT
 
 **[0:00 — COLD OPEN]**
-*Black. One voice. The word appears letter by letter.*
 
-Washington, D.C. June, 1925.
+Cleveland, Ohio. June, 1908.
 
-Two eleven-year-olds are left standing. Everyone else has sat down.
+A thirteen-year-old girl is standing on the stage of a theatre, in front of thousands of
+people, waiting for a word.
 
-The pronouncer gives a word to the girl. Gladiolus. A flower.
+Her name is Marie Bolden. Her father is a mail carrier. She is Black — and some of the
+white spellers who travelled up from New Orleans have already said, out loud, that they do
+not want to compete against her.
 
-She spells it. G–L–A–D–I–O–L… **Y**… S.
+Cleveland's answer was simple. She earned her place. If you don't like it, go home.
 
-And that's it. That's the whole thing. One letter.
+**[0:40 — TITLE]**
 
-Because now the same word — *the exact same word* — passes to the boy standing next to her.
+Everybody will tell you the first National Spelling Bee was 1925.
 
-**[0:35 — TITLE]**
+It wasn't.
 
-This is the story of the first four spelling bees ever held in America. Who won them. What
-words they won on. And what happened to those kids afterwards.
+**[0:50 — WHERE BEES COME FROM]**
 
-**[0:50 — WHERE THE BEE COMES FROM]**
+Quick, because you need it. Two things made this possible.
 
-First — where does a spelling bee even come from? Because it's a genuinely odd thing to do.
-No other country does this at anything like the same scale.
+First, a book. 1783 — **Noah Webster** publishes a schoolbook with a blue cover. Kids called
+it the blue-backed speller, and it sold tens of millions of copies over the next century.
+Webster wanted American children to spell *differently from the British*. Colour loses its
+U. Centre flips to center. American spelling was, from day one, a deliberate act.
 
-It starts with a book. 1783. The Revolutionary War has just ended, and a man named **Noah
-Webster** publishes a small schoolbook with a blue cover. Kids called it the blue-backed
-speller, and it sold in tens of millions over the next century.
+Second, the word **bee** — nothing to do with insects. In early America a "bee" just meant
+neighbours getting together to do something: a quilting bee, a husking bee. A **spelling
+bee** was a night out. You packed the schoolhouse and people stood up and spelled at each
+other until one was left. There was betting.
 
-Webster had an agenda. He didn't just want American children to spell — he wanted them to
-spell *differently from the British*. Colour loses its U. Centre flips round to center.
-Waggon drops a G. A new country, he thought, ought to have a language of its own.
+So spelling in public was already a century-old American habit. What nobody had done was
+make it national.
 
-So American spelling is, from the start, a slightly political act. And the book that taught
-it was in nearly every schoolhouse in the country.
+**[1:40 — 1908]**
 
-**[1:40 — THE "BEE"]**
+Until the summer of 1908.
 
-Then there's the word *bee* itself. It's got nothing to do with insects. In early America a
-"bee" just meant neighbours gathering to get something done — a quilting bee, a husking
-bee, a barn-raising bee.
+The National Education Association is holding its convention in Cleveland, and it stages a
+spelling contest between teams of schoolchildren from cities across the country. The venue
+is the Hippodrome Theater. The date is the twenty-ninth of June.
 
-A **spelling bee** was a night out. Out on the frontier, where there was no theatre and no
-radio and not much else to do in the evening, you'd pack the schoolhouse, and grown adults
-and children would stand up and spell at each other until one was left standing. People
-came to watch. There was betting.
+It is a **team** competition — city against city. And when the spelling is finished, one
+child in the entire Cleveland team has made no mistakes at all. Not one.
 
-So by the 1920s, spelling out loud in public was already a hundred-year-old American
-pastime.
+Marie Bolden. Thirteen years old.
 
-What nobody had done was make it *national*.
+Cleveland takes the team title. Marie is named individual champion, and she's given a gold
+medal.
 
-**[2:20 — WHY A NEWSPAPER DID IT]**
+Now understand what that meant in 1908. This is America deep in the era of segregation. A
+Black teenager has just out-spelled the country — publicly, on a stage, in front of teams
+who'd said they wouldn't stand beside her. Newspapers carried it nationwide. For a lot of
+Black families reading it, this was not a spelling story.
 
-And here's the part that surprises people. The National Spelling Bee wasn't started by a
-school, or a university, or the government.
+Guinness World Records recognises that contest as the first nationwide spelling bee ever
+held.
 
-It was started by a **newspaper**.
+And her gold medal? **Nobody knows where it is.** It was lost somewhere across the last
+hundred years. People have gone looking for it. It has never been found.
 
-The Louisville Courier-Journal, in Kentucky, was already running a spelling contest for
-schoolchildren in its own state. And in 1925 somebody there had an idea: what if we invited
-newspapers in *other* cities to run their own contest — and send us their winner?
+**[3:00 — WHY 1925 STILL MATTERS]**
 
-Think about why that's clever. Every paper that joins in now has a local kid in a national
-final. That's weeks of stories. That's a reason for families to buy the paper. In the 1920s,
-newspapers were fighting each other for readers — radio had just arrived and was stealing
-their audience — and a competition full of local children was very good business.
+So why does everyone say 1925?
 
-But it wasn't *only* business. The stated purpose was to get children interested in a common
-branch of learning. This is a decade when America is pouring money into public literacy,
-into schooling, into what it then called "Americanization." A national spelling contest fits
-that mood exactly.
+Because 1908 didn't *continue*. It was a one-off at a teachers' convention. What began in
+1925 never stopped — and that's the bee that's still running today.
 
-Nine newspapers said yes. More than **two million** children entered at the local level.
+And it started, of all things, as a **newspaper stunt**.
 
-Nine of them made it to Washington.
+The Louisville Courier-Journal, in Kentucky, already ran a spelling contest for its own
+state. In 1925 someone there had an idea: invite newspapers in other cities to run their own
+— and send us their winner.
 
-**[3:20 — WHAT AMERICA LOOKED LIKE]**
+It's clever. Every paper that joins now has a local child in a national final. That's weeks
+of stories, and a reason for families to buy the paper — which mattered, because radio had
+just arrived and was taking their readers.
 
-So picture the country those nine kids travelled through.
+Nine newspapers said yes. **More than two million children** entered locally.
 
-It's 1925. Calvin Coolidge is President. The war has been over seven years and there is
-money about — cars, jazz, radio sets appearing in ordinary front rooms for the first time.
-That same year, *The Great Gatsby* is published. That same summer, a schoolteacher in
-Tennessee goes on trial for teaching evolution.
+Nine made it to Washington.
 
-It's also a country arguing hard about who belongs in it. Immigration has just been sharply
-restricted. And the language you speak — and how you spell it — is part of that argument.
+**[3:55 — THE 1925 FINAL]**
 
-Most of these children have never left their home state. They arrive in Washington by train,
-chaperoned, in their best clothes.
+The seventeenth of June, 1925. The National Museum in Washington, D.C. Six girls, three
+boys — most of them have never left their home state.
 
-**[4:00 — THE FIRST BEE]**
-*On screen: the National Museum, Washington D.C.*
+Before it starts they're taken to meet the President. Calvin Coolidge shakes every one of
+their hands. Then they're walked back in and told to spell.
 
-**17 June 1925.** The National Museum in Washington. Nine finalists — six girls, three boys.
+It runs an hour and a half. One by one, they go out.
 
-Before it starts, they're taken to meet the President of the United States. Coolidge shakes
-each of their hands. Then they're walked back and told to spell.
+Until two eleven-year-olds are left: **Edna Stover** of Trenton, New Jersey, and **Frank
+Neuhauser** of Louisville, Kentucky.
 
-It runs an hour and a half.
-
-One by one they go out. And it comes down to two eleven-year-olds: **Edna Stover** of
-Trenton, New Jersey — and **Frank Neuhauser** of Louisville, Kentucky.
-
-**[4:35 — GLADIOLUS]**
-
-The word is **gladiolus**.
-
-It's Latin. It means *little sword* — because the leaves come to a point, like a blade. It's
-a garden flower, and in 1925 America it's a very ordinary thing to have in your back garden.
-Seed catalogues arrive by post in every small town. Everybody grows something.
+The word is **gladiolus**. Latin — it means *little sword*, because the leaves come to a
+point, like a blade.
 
 Edna goes first. And she puts a **Y** where the second **I** belongs.
 
-G–L–A–D–I–O–L–Y–S.
+She sits down. Two hundred and fifty dollars, second in the country, and one letter.
 
-She sits down. Two hundred and fifty dollars, second place in the country, and a mistake
-she'll be asked about for the rest of her life.
+And now the *same word* passes to Frank.
 
-And now Frank Neuhauser gets the same word.
-
-Here's the thing. **Frank grew gladioli.** He'd raised them himself, in his own garden, as a
-boy. Of all nine children in that room, the word landed on the one who'd been pulling them
-out of the ground with his hands.
+Here's the thing. **Frank grew gladioli.** He'd raised them himself, in his own garden. Of
+all nine children in that room, the word landed on the one who'd pulled them out of the
+ground with his hands.
 
 G–L–A–D–I–O–L–U–S.
 
-Champion of the United States. Eleven years old.
+Champion of the United States. Five hundred dollars — in **gold coins**. And when he got
+home, Louisville threw him a parade.
 
-**[5:25 — WHAT HE WON]**
+**[5:10 — WHAT HAPPENED TO FRANK]**
 
-Five hundred dollars — in **gold coins**. Not a cheque. Actual gold, in 1925, to an
-eleven-year-old.
+He grew up. Engineering degree in 1934, law degree in 1940. And then he became a **patent
+attorney** — a job that is *entirely* about the exact meaning of exact words. Get one wrong
+and an invention isn't protected. He did it for nearly fifty years.
 
-And when he got back to Louisville, the city threw him a **parade**.
+He kept coming back to the bee, an old man walking into halls full of children who hadn't
+been born when he won.
 
-**[5:45 — WHAT HAPPENED TO FRANK NEUHAUSER]**
-
-So what happens to a boy like that?
-
-He grows up. Takes a degree in electrical engineering in 1934. Then goes to law school at
-George Washington University, qualifying in 1940.
-
-And then he does something I find perfect. He becomes a **patent attorney** — first at
-General Electric, later in private practice. A patent lawyer's entire job is the exact
-meaning of exact words. Get one wrong and an invention isn't protected. He spent fifty years
-being paid for precision. He retired in 1988.
-
-He kept coming back to the bee. Anniversary after anniversary, an old man walking into a
-hall full of children who hadn't been born when he won, and being treated like royalty.
-
-Frank Neuhauser died in March 2011. He was **ninety-seven**.
-
-And here's the detail that gets me. Into his nineties, he was still gardening.
+Frank Neuhauser died in 2011, aged **ninety-seven**. And into his nineties he was still
+gardening.
 
 He was still growing gladioli.
 
-**[6:40 — 1926: IT GETS SERIOUS]**
+**[5:55 — 1926]**
 
-Now watch how fast this thing grows.
+Watch how fast it grows. Year two: nine children becomes **twenty-five**, and the prize
+**doubles** — five hundred dollars to a thousand. That is serious money for an ordinary
+family in 1926.
 
-Year two, 1926. Same date, same building. But the field goes from nine children to
-**twenty-five** — seventeen girls, eight boys. And the prize **doubles**. Five hundred
-dollars becomes **a thousand**.
+The winner is **Pauline Bell**, thirteen, of Clarkson, Kentucky. Kentucky again.
 
-A thousand dollars in 1926 is not pocket money. That is a serious amount of money for an
-ordinary family. In two years this has gone from a newspaper promotion to something worth
-travelling across the country for.
+Her word: **cerise**. It's French. It means cherry — but not the fruit. Cerise is a
+*colour*. A thirteen-year-old is expected to know a Paris fashion word, because this is the
+decade American clothing goes mass-market.
 
-The winner is **Pauline Bell**, thirteen, from Clarkson, Kentucky. Kentucky again — two for
-two for the state that started it.
+Gladiolus came from the garden. Cerise came from a shop window.
 
-Her word: **cerise**. C–E–R–I–S–E.
+And hold on to one name. Second place that year — one word short — was a girl from South
+Bend, Indiana. **Betty Robinson.**
 
-It's French. It means cherry — but not the fruit. Cerise is a *colour*.
+**[6:40 — 1927]**
 
-And that tells you something about 1926. A thirteen-year-old is expected to know a French
-fashion word, because this is the decade American clothing goes mass-market — department
-stores, ready-to-wear, mail-order catalogues, and colour names imported straight from Paris.
+1927. Seventeen contestants. **Dean Lucas**, thirteen, West Salem, Ohio.
 
-Gladiolus came out of the garden. Cerise came out of a shop window.
+His word: **abrogate** — to repeal a law. Not a flower, not a colour. A courtroom. And this
+is America in the middle of Prohibition, arguing about whether you can un-make a law you
+already made.
 
-**[7:35 — THE GIRL WHO CAME SECOND]**
+**[7:00 — 1928]**
 
-But hold on to something from 1926. Because second place that year — the girl who came
-within one word of it, and lost — was a girl from South Bend, Indiana.
+1928. And the girl who came second walks back in.
 
-Her name was **Betty Robinson**.
+Betty Robinson. She lost here. She went home. She came back.
 
-Remember her.
+This time she wins.
 
-**[7:55 — 1927: ABROGATE]**
+Her word? Ask three sources, get two answers — some say **knack**, some say **albumen**.
+Both are right. Back then, once the last rival missed, the champion had to spell **one more**
+to take it. She spelled knack. Then albumen — the white of an egg.
 
-1927. Seventeen contestants, aged ten to fifteen.
+The oldest kind of English word and the newest, in the same minute.
 
-The winner is **Dean Lucas**, thirteen, of West Salem, Ohio. First prize, a thousand dollars.
+**[7:35 — WHAT HAPPENED TO THEM]**
 
-His word: **abrogate**. To repeal something. To formally cancel a law.
+So what became of them all?
 
-That's not a flower and it's not a colour — that's a courtroom. Latin again, but *legal*
-Latin. And 1927 is America in the thick of Prohibition, where the entire national argument
-is about whether you can un-make a law you already made.
+Frank we know. The rest — honestly? We don't.
 
-Meanwhile, outside the hall: that May, Charles Lindbergh flies the Atlantic alone. That
-October, *The Jazz Singer* opens and films start talking.
+Marie Bolden, Pauline Bell, Dean Lucas, Betty Robinson. They won the biggest thing an
+American child could win. And then they went home, and grew up, and the record mostly stops.
+Marie's medal is still missing.
 
-The world is getting loud. And thirteen-year-olds are being asked to spell the vocabulary of
-the adult world they're about to walk into.
+They weren't professional children. No coaches, no study plans. They were ordinary kids who
+were extraordinary for one afternoon, in front of the whole country.
 
-**[8:40 — 1928: SHE COMES BACK]**
+**[8:00 — CLOSE]**
 
-1928. Twenty-three contestants.
+Four words: a garden flower, a Paris colour, a legal term, the white of an egg. That's not a
+random list — that's a portrait of what a child was expected to know.
 
-And the girl who came second two years earlier walks back into that building.
-
-**Betty Robinson.** Thirteen now. South Bend, Indiana. She lost here. She went home. She
-came back.
-
-And this time she wins.
-
-**[9:05 — TWO WORDS]**
-
-Now — her winning word. Ask three sources and you'll get two answers. Some say **knack**.
-Some say **albumen**. And for years I'd have told you one of them was just wrong.
-
-They're both right.
-
-Under the rules back then, when the last rival missed, the champion had to spell **one more
-word** to actually take the title. So Betty spelled **knack**. K–N–A–C–K. And then she
-spelled **albumen** — the white of an egg.
-
-And look at those two words sitting next to each other. *Knack* is short, blunt, ancient —
-Germanic, the kind of word English has had forever, with that silent K at the front that
-makes no sense unless you know it used to be pronounced. *Albumen* is a laboratory word,
-Latin, scientific — and 1928 is exactly when nutrition and home economics and school science
-are pushing into American classrooms.
-
-The oldest kind of English word, and the newest, inside the same minute.
-
-She took a thousand dollars. Pauline Gray of Akron took five hundred for second. Bessie Doig
-of Detroit took two hundred for third. And President Coolidge received them all at the White
-House — there are photographs of it in the Library of Congress to this day.
-
-**[10:00 — WHAT HAPPENED TO THE REST OF THEM]**
-
-So what became of the others?
-
-And here I have to be honest with you, because the honest answer is better than a made-up
-one.
-
-**We don't really know.**
-
-Pauline Bell. Dean Lucas. Betty Robinson. They won the biggest thing an American child could
-win. They shook hands with the President of the United States. Their photographs are sitting
-in the national archive right now.
-
-And then they went home. And grew up. And got on with their lives. And the record just…
-stops.
-
-No books. No interviews. No obituaries that anybody kept.
-
-Frank Neuhauser is the exception, not the rule — and he's the exception mostly because he
-lived to ninety-seven and kept turning up.
-
-I've come to think that's the truest thing about those first four bees. These weren't
-professional children. Nobody had a coach. Nobody had a study plan. They were ordinary kids
-who happened to be very good at one thing, for one afternoon, in front of the entire country
-— and then went back to being ordinary.
-
-**[10:50 — THE PATTERN]**
-
-Four years. Four winning words. Line them up.
-
-A garden flower. A Paris colour. A legal term. And the white of an egg.
-
-That's not a random list — that's a portrait. That is precisely what a well-schooled American
-child was expected to have in their head in the 1920s. A bit of Latin. A bit of French. Some
-civics. Some science.
-
-Those words weren't chosen to be impossible. They were chosen to be *reasonable*.
-
-Which is why they look so easy now. Today you need words like *guetapens* and *psammophile*
-to win. In 1928 you could take the national title with **knack**.
+Which is why they look easy now. Today you need words like *guetapens* to win. In 1928 you
+could take the national title with **knack**.
 
 The bee didn't get harder because children got smarter. It got harder because the moment the
-word list went public, everybody studied it — and the bee has been running to stay ahead of
-its own contestants ever since.
+word list went public, everybody studied it.
 
-**[11:35 — CLOSE]**
-
-One last thing.
-
-Those four bees — 1925, '26, '27, '28 — all happen in the last few summers of the boom.
-In October 1929 the market collapses, and America becomes a completely different country.
-
-Nine children in their best clothes, shaking hands with a President, spelling the name of a
-flower.
-
-It's the very end of that world. And it's still going, a hundred years later.
+And it all starts with a thirteen-year-old girl in Cleveland, in 1908, who spelled every
+single word right.
 
 *[END]*
