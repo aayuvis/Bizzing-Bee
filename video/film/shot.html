@@ -3,6 +3,10 @@
 <style>
 @font-face{font-family:Fraunces;src:url('../../spellbound-app/fonts/fraunces-800.woff2') format('woff2');font-weight:800;font-display:block}
 @font-face{font-family:Hanken;src:url('../../spellbound-app/fonts/hanken-var.woff2') format('woff2-variations');font-weight:100 900;font-display:block}
+/* Sono is the app's spelling-tile face (FONT-HANDOVER: Hanken=body/UI · Sono=spelling
+   tiles · one display face per world). The letter-drop IS a spelling tile, so it is set in
+   Sono here rather than in the display face — same type the app shows a child mid-word. */
+@font-face{font-family:Sono;src:url('../../spellbound-app/fonts/sono-600.woff2') format('woff2');font-weight:400 800;font-display:block}
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;overflow:hidden;background:#100B26}
 /* --- tokens: the app's own ink, honey and paper --- */
@@ -18,7 +22,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:#100B26}
 .kb img.contain{object-fit:contain;background:var(--ink)}
 
 /* ============================ TYPE ============================ */
-.card{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:10px;padding:0 12%}
+.card{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:10px;padding:0 12%;z-index:5}
 .kicker{font:700 30px Hanken,system-ui;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);opacity:.92}
 .line{font:800 104px Fraunces,serif;color:#fff;line-height:1.05;text-wrap:balance}
 .sub{font:600 38px Hanken,system-ui;color:var(--cream);opacity:.86;margin-top:6px}
@@ -28,7 +32,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:#100B26}
    Each letter is its own element with its own delay, so the assertion can read
    the assembled string straight out of the DOM before a frame is rendered. */
 #word{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:.06em}
-#word span{font:800 var(--sz,190px) Fraunces,serif;color:#fff;display:inline-block;
+#word span{font:800 var(--sz,190px) Sono,ui-monospace,monospace;color:#fff;display:inline-block;
   animation:drop .42s cubic-bezier(.2,.9,.25,1) both}
 @keyframes drop{from{opacity:0;transform:translateY(-58px) scale(1.22);filter:blur(6px)}
                 to  {opacity:1;transform:none;filter:none}}
@@ -55,13 +59,9 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:#100B26}
 /* A6 — word cards */
 .cards{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:34px;flex-wrap:wrap;padding:0 8%}
 .wc{background:rgba(255,255,255,.06);border:2px solid rgba(255,216,115,.42);border-radius:22px;
-  padding:26px 40px;font:800 62px Fraunces,serif;color:#fff;animation:drop .5s ease both}
+  padding:26px 40px;font:800 62px Sono,ui-monospace,monospace;color:#fff;animation:drop .5s ease both}
 .wc.big{font-size:86px;border-color:var(--honey)}
 
-/* A7 — medal */
-#medal{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:620px;
-  animation:drop .8s ease both}
-#medal.ghost{filter:grayscale(1) brightness(.32);opacity:.5}
 
 /* counter */
 #count{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
@@ -74,15 +74,15 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:#100B26}
 #swap span.drop{animation:fall 1.4s ease-in 1.0s both;color:var(--bad)}
 
 /* outro */
-#outro{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:18px}
+#outro{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:22px}
 #outro .brand{font:800 118px Fraunces,serif;color:#fff}
 #outro .brand i{font-style:italic} #outro .tm{font-size:.4em;vertical-align:.78em;margin-left:.24em}
-#outro .url{font:700 44px Hanken,system-ui;color:var(--honey)}
-#outro .ai{font:600 26px Hanken,system-ui;color:var(--cream);opacity:.62;margin-top:26px}
+#outro .blurb{font:600 40px Hanken,system-ui;color:var(--cream);opacity:.92;line-height:1.42;margin-top:6px}
+#outro .url{font:700 46px Hanken,system-ui;color:var(--honey);margin-top:12px}
 
 /* Scrims are POSITIONED and would otherwise paint over static type (brief §5.5).
    Everything gets an explicit z-index; nothing relies on source order. */
-.hexbed{z-index:1} .glow{z-index:2} #word,#swap,.card,.cards,#count,#medal,#outro,#t25,#t08,#ttl{z-index:5}
+.hexbed{z-index:1} .glow{z-index:2} #word,#swap,.card,.cards,#count,#outro,#t25,#t08,#ttl{z-index:5}
 .kb{z-index:0}
 </style></head>
 <body><div id="stage"></div>

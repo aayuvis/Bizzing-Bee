@@ -105,6 +105,152 @@ SLOTS = {
         'house lights ON and the stage completely bare, flat and unlit. Everything evenly '
         'and plainly lit like a room being cleaned in the morning — no spotlight anywhere, '
         'no dramatic shadow, no darkness. Empty seats, dust in the air. Calm and everyday.', '16:9'),
+
+    # ══════════════════════════════════════════════════════════════════════════════════
+    # SECOND PASS. The first cut ran 57 shots over eight and a half minutes and read as
+    # static, because whole paragraphs of very concrete narration — a mail carrier, a
+    # quilting bee, betting at the schoolhouse, radio arriving, gold coins, a parade, an
+    # egg — had no picture at all and sat on a repeated plate instead. Every slot below is
+    # a noun the narrator actually says out loud.
+    # ══════════════════════════════════════════════════════════════════════════════════
+
+    # §01 — "her father is a mail carrier"
+    'plate-mail-carrier': (
+        'A uniformed American letter carrier of about 1908 walking away from us down a '
+        'residential street in early morning, leather satchel on his hip, peaked cap, seen '
+        'from behind so no face is visible. Modest wooden houses and picket fences receding, '
+        'long low sunlight, empty street. Quiet dignity, ordinary working life.', '16:9'),
+
+    # §01/§04 — segregation, carried by architecture rather than by people. Two doors is the
+    # whole statement; anything more literal would need faces this file may not draw.
+    'plate-two-doors': (
+        'A plain brick wall of a public building in the American South around 1908, seen '
+        'straight on, with TWO separate plain doorways side by side a few feet apart. One '
+        'doorway is well kept with a swept step; the other is plainer and more worn. No '
+        'people, no signs, no lettering of any kind. Flat hard daylight. Stark, restrained, '
+        'and quietly wrong.', '16:9'),
+
+    # §03 — what a "bee" actually was
+    'plate-quilting-bee': (
+        'Six or seven women of the 1840s American frontier seated close around a large '
+        'rectangular quilting frame in a plain wooden room, all bent to their needlework, '
+        'seen from slightly above so we read bonnets, shoulders and hands rather than faces. '
+        'The quilt itself a warm geometric field of flat colour. Companionable and busy.', '16:9'),
+
+    'plate-husking-bee': (
+        'The inside of a large American timber barn at night in the 1840s, lantern-lit, with '
+        'a great heap of maize cobs on the floor and a ring of figures seated around it '
+        'husking, seen from behind and in silhouette. Husks flying. Enormous dark roof '
+        'timbers above, warm pools of lantern light below. Festive, communal, noisy.', '16:9'),
+
+    'plate-betting-desk': (
+        'Close on the corner of a scarred wooden schoolhouse desk in lamplight, with a small '
+        'untidy pile of 19th-century American coins and folded banknotes on it, and two '
+        'weathered adult hands resting near the pile — hands only, no face, cropped at the '
+        'wrist. Warm low light, deep shadow beyond. Conspiratorial and cheerful.', '16:9'),
+
+    # §04 — the venue from outside, and the news getting out
+    'plate-theatre-exterior-1908': (
+        'The façade of a very large American theatre in 1908 seen from across the street, '
+        'crowds of small distant figures in period hats converging on its entrances, awnings '
+        'and a canopy over the pavement, horse-drawn vehicles and one or two early motor cars '
+        'at the kerb. Every sign board and poster panel completely BLANK. Bright summer '
+        'daylight, sense of a big public occasion.', '16:9'),
+
+    'plate-newsboys': (
+        'Two newsboys of about 1908 on a city street corner, seen from behind and to the '
+        'side, one with a bundle of newspapers under his arm and one arm raised calling out. '
+        'Blurred crowd and storefronts beyond. The newspapers are BLANK — no headlines, no '
+        'text, no lettering anywhere. Energetic, morning light, motion.', '16:9'),
+
+    'plate-family-reading': (
+        'A modest American kitchen in 1908 at evening, lamplit. A seated adult holds an open '
+        'newspaper; two children lean in against the chair to look at it with them. All '
+        'figures seen from behind or in profile deep in shadow, no readable faces. The '
+        'newspaper is completely BLANK. Warm, close, domestic. The lamp is the only light.', '16:9'),
+
+    # §05 — the commercial pressure that invented the national bee
+    'plate-radio-1920s': (
+        'A 1920s American parlour at night with a large wooden cabinet radio as the centre of '
+        'the room, its dial glowing warm, and a family seated in a loose semicircle facing it, '
+        'all seen from behind. Patterned rug, heavy furniture, everything else in shadow. The '
+        'radio dial is the brightest thing in the picture.', '16:9'),
+
+    'plate-newsroom-desks': (
+        'A 1920s American newspaper editorial room seen down its length: rows of wooden desks '
+        'with heavy manual typewriters, paper spikes and telephones, a dozen figures in '
+        'shirtsleeves working, all seen from behind or turned away. Hanging lamps, haze of '
+        'cigarette smoke, hard light from tall windows at the far end. All paper is BLANK.', '16:9'),
+
+    # §06 — the 1925 final
+    'plate-museum-hall-chairs': (
+        'A grand American museum hall of about 1925 arranged for a contest: a wide floor with '
+        'rows of empty wooden folding chairs facing a low platform, tall arched windows and '
+        'iron galleries above, everything waiting and unoccupied. Dust in shafts of daylight. '
+        'Formal, institutional, expectant. No people.', '16:9'),
+
+    'plate-gladiolus-garden': (
+        'A row of tall gladiolus flower spikes growing in a modest American back garden in '
+        'summer, drawn close and from slightly below so the spikes rise against a bright open '
+        'sky. Sword-shaped upright leaves clearly drawn. Blooms stacked up each stem, warm '
+        'coral and gold. A plain timber fence behind. Nobody in the picture. Vivid and alive.', '16:9'),
+
+    'plate-gold-coins': (
+        'A small loose pile of gold coins spilling across a dark plain surface, drawn close '
+        'and straight on, lit from the upper left so the rims catch. The coin faces are '
+        'entirely BLANK — smooth metal discs with a plain raised rim, no design, no lettering, '
+        'no portrait, no numerals. Generous dark space around the pile.', '1:1'),
+
+    'plate-parade': (
+        'A small American city main street in 1925 during a modest civic parade: bunting '
+        'strung across the street, an open motor car moving slowly, people lining both '
+        'pavements waving, all figures small and distant. Every banner, flag and shopfront '
+        'sign completely BLANK. Bright summer light, confetti in the air. Joyful and homemade.', '16:9'),
+
+    # §07 — the patent attorney
+    'plate-drafting-desk': (
+        'A draughtsman\'s sloped desk under a single lamp, seen from above and behind an empty '
+        'chair: technical drawing instruments, dividers, a scale rule, and large mechanical '
+        'drawings pinned flat — the drawings show precise geometric machine parts and section '
+        'lines but carry NO text, NO numerals, NO title blocks, NO labels. Everything else in '
+        'shadow. Exacting and quiet.', '16:9'),
+
+    'plate-old-man-hall': (
+        'A tall hall filled with rows of seated schoolchildren seen from the back of the room, '
+        'and in the foreground the small dark silhouette of one elderly figure with a walking '
+        'stick standing alone in the aisle facing away from us towards them. The children are '
+        'distant and indistinct. High windows, cool even light. Tender and a little lonely.', '16:9'),
+
+    # §08 — cerise as a fashion word
+    # First attempt came back as a near-empty pale field with one small washed-out figure at
+    # the edge and no cerise in it at all. Rewritten to pin the crop, the scale and the colour.
+    'plate-fashion-plate-cerise': (
+        'A 1920s fashion illustration, CROPPED CLOSE and FILLING THE WHOLE FRAME: three '
+        'elongated stylised female figures standing together, seen from the knees up, their '
+        'drop-waist evening dresses drawn flat and graphic. The dresses are a VIVID, '
+        'SATURATED CHERRY-PINK — strong hot pink, the single loudest colour in the picture, '
+        'covering a large area of the image. Faces left as blank ovals with no features. '
+        'Deep indigo ground behind them. The figures are LARGE and fill the frame edge to '
+        'edge; no empty margins, no small figure lost in white space.', '16:9'),
+
+    # §10 — albumen
+    'plate-egg-albumen': (
+        'A single hen\'s egg freshly cracked into a plain white shallow bowl on a scrubbed '
+        'wooden table, drawn close and from above: the clear albumen spread around a domed '
+        'yolk, two pieces of broken shell beside the bowl. Cool daylight from one side. '
+        'Ordinary, domestic, and oddly beautiful. Nothing else in the picture.', '16:9'),
+
+    # §11 — what the record does not hold
+    'plate-four-chairs': (
+        'Four plain wooden chairs standing in a row, well spaced, on a bare floor in a large '
+        'empty room, seen straight on in flat even light. Nobody sitting in them. Long soft '
+        'shadows stretching away. Quiet, formal, and unmistakably about absence.', '16:9'),
+
+    'plate-attic-record': (
+        'The corner of a dusty attic storeroom: stacked cardboard document boxes, a tied '
+        'bundle of papers, an old trunk, one shaft of daylight from a small window falling '
+        'across them. All papers and box faces completely BLANK. Everything softened by dust. '
+        'Still, forgotten, and unread.', '16:9'),
 }
 
 

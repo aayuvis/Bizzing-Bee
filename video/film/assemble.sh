@@ -14,8 +14,23 @@ VO=../vo/bizzing-vo-ep1-despina.mp3
 OUT=../out
 mkdir -p "$OUT"
 
+# Concatenating whatever happens to be on disk is how you ship a film with a hole in it: a
+# worker that died leaves its slice missing and `-c copy` joins the rest without complaint.
+# So the count is checked against the scene graph before anything is joined.
+want=$(NODE_PATH=/opt/node22/lib/node_modules node -e 'process.stdout.write(String(require("./scenes.js").build().length))')
 n=$(ls out/shot*.mp4 2>/dev/null | wc -l)
 [ "$n" -gt 0 ] || { echo "no shots rendered — run: node render.cjs --all"; exit 1; }
+if [ "$n" -ne "$want" ]; then
+  echo "FAIL: $n shot files on disk but the scene graph has $want."
+  NODE_PATH=/opt/node22/lib/node_modules node -e '
+    const fs=require("fs");
+    const have=new Set(fs.readdirSync("out").filter(f=>/^shot\d+\.mp4$/.test(f)));
+    const miss=require("./scenes.js").build()
+      .filter(s=>!have.has("shot"+String(s.idx).padStart(3,"0")+".mp4"))
+      .map(s=>s.idx);
+    console.log("missing shots:", miss.join(", "));'
+  exit 1
+fi
 echo "concatenating $n shots"
 
 : > out/list.txt
@@ -28,10 +43,15 @@ AD=$(probe "$VO")
 echo "picture $VD"
 echo "voice   $AD"
 
-# Master. -shortest guards the tail: the picture is built from the narration's own
-# lengths, so any drift here means scenes.js and timing.json have come apart.
+# Master. The picture now runs PAST the narration: scenes.js holds a TAIL of sign-off after
+# the last word, so the mix is padded with that much silence rather than the video being
+# truncated to the audio. -shortest here would cut the sign-off off entirely, which is
+# exactly what it did the first time this tail was added.
+TAIL=$(node -e 'process.stdout.write(String(require("./scenes.js").TAIL))')
+echo "tail    ${TAIL}s of silence after the last word"
 "$FF" -y -loglevel error -i out/picture.mp4 -i "$VO" \
-  -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -shortest \
+  -filter_complex "[1:a]apad=pad_dur=${TAIL}[a]" \
+  -map 0:v -map "[a]" -c:v copy -c:a aac -b:a 192k -shortest \
   "$OUT/before-the-bee-ep1-1080p.mp4"
 
 # Preview. Quality-TARGETED, not bitrate-pinned: a derived file that comes out larger than
@@ -43,7 +63,16 @@ echo "voice   $AD"
 
 M=$(stat -c%s "$OUT/before-the-bee-ep1-1080p.mp4")
 P=$(stat -c%s "$OUT/before-the-bee-ep1-720p.mp4")
-echo "master  $((M/1048576)) MB"
+echo "master  $((M/1048576)) MB   $(probe "$OUT/before-the-bee-ep1-1080p.mp4")"
 echo "preview $((P/1048576)) MB"
 [ "$P" -lt "$M" ] || { echo "FAIL: preview is not smaller than the master"; exit 1; }
+
+# The master must be as long as the picture. If -shortest has quietly clipped the sign-off
+# again, this is where it shows up rather than in the upload.
+secs(){ "$FF" -i "$1" 2>&1 | sed -n 's/.*Duration: \([0-9]*\):\([0-9]*\):\([0-9.]*\).*/\1 \2 \3/p' | sed -n 1p \
+        | awk '{printf "%.2f", $1*3600+$2*60+$3}'; }
+PV=$(secs out/picture.mp4); MV=$(secs "$OUT/before-the-bee-ep1-1080p.mp4")
+echo "picture ${PV}s · master ${MV}s"
+awk -v a="$PV" -v b="$MV" 'BEGIN{ if ((a-b)>0.5 || (b-a)>0.5) exit 1 }' \
+  || { echo "FAIL: master ${MV}s does not match picture ${PV}s — the tail was clipped"; exit 1; }
 echo "done → $OUT/"

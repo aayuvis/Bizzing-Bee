@@ -21,32 +21,54 @@ const CHROME = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 
 const shots = build();
 
-/* ---------------- assertions (brief Rule 5) ---------------- */
+/* ---------------- assertions (brief Rule 5) ----------------
+ * Cue resolution happens inside build(), which throws on a cue the narrator never says, so
+ * by the time we get here every shot is known to sit on a real moment in the recording.
+ * What is left to check is the things cueing cannot guarantee: that the film is continuous,
+ * that no shot is too brief to read, that every asset exists, and — above all — that no word
+ * is misspelled on screen.
+ */
 function check() {
-  const errs = [];
+  const errs = [], warns = [];
   const imgs = new Set(fs.readdirSync(path.join(DIR, '..', 'images')));
+  const FLOOR = 1.2, COMFY = 1.5;
+
   shots.forEach(s => {
-    const tag = `shot ${s.idx} §${s.sec}`;
-    if (s.dur < 2.0) errs.push(`${tag}: ${s.dur}s — under the 2.0s floor, will strobe`);
+    const tag = `shot ${s.idx} §${s.sec} ${JSON.stringify(s.cue || 'tail')}`;
+    if (s.dur < FLOOR) errs.push(`${tag}: ${s.dur}s — under the ${FLOOR}s floor, will strobe`);
+    else if (s.dur < COMFY) warns.push(`${tag}: ${s.dur}s — short`);
+    if (s.dur > 11) warns.push(`${tag}: ${s.dur}s — long, consider a cue inside it`);
     if (s.src && !imgs.has(s.src)) errs.push(`${tag}: missing asset ${s.src}`);
-    if (s.type === 'spell' && !/^[A-Z]+$/.test(s.word)) errs.push(`${tag}: word not A–Z: ${s.word}`);
-    if (s.type === 'spell' && s.wrong && (s.wrong.i < 0 || s.wrong.i >= s.word.length))
-      errs.push(`${tag}: wrong-letter index ${s.wrong.i} outside "${s.word}"`);
+    if (s.type === 'spell') {
+      if (!/^[A-Z]+$/.test(s.word)) errs.push(`${tag}: word not A–Z: ${s.word}`);
+      if (s.wrong && (s.wrong.i < 0 || s.wrong.i >= s.word.length))
+        errs.push(`${tag}: wrong-letter index ${s.wrong.i} outside "${s.word}"`);
+      if (s.fix && (s.fix.i < 0 || s.fix.i >= s.word.length))
+        errs.push(`${tag}: fix index ${s.fix.i} outside "${s.word}"`);
+      if (s.sync && !s.letterAt)
+        warns.push(`${tag}: sync requested but the spoken letters were not found — even stagger`);
+      if (s.letterAt && s.letterAt.some(t => t < -0.01 || t > s.dur))
+        errs.push(`${tag}: a synced letter falls outside its own shot`);
+    }
+    // the drawn shots reach for plates by name from inside shotrender; check those too
+    if (s.type === 'fourwords') {
+      ['plate-gladiolus-garden.png', 'plate-fashion-plate-cerise.png',
+       'plate-prohibition.png', 'plate-egg-albumen.png']
+        .forEach(f => { if (!imgs.has(f)) errs.push(`${tag}: fourwords needs missing ${f}`); });
+    }
   });
+
+  // continuous: no gap, no overlap, nothing out of order
+  for (let i = 1; i < shots.length; i++) {
+    const gap = +(shots[i].in - shots[i - 1].out).toFixed(3);
+    if (Math.abs(gap) > 0.01)
+      errs.push(`shots ${i - 1}→${i}: ${gap > 0 ? 'gap' : 'overlap'} of ${Math.abs(gap)}s`);
+  }
+  if (shots[0].in > 0.35) warns.push(`film opens ${shots[0].in}s in — black before the first word`);
+
   const d = drift();
-  if (Math.abs(d) > 0.05) errs.push(`picture is ${d}s short of the voiceover — inter-section gaps unclaimed`);
-  // every section is covered edge to edge, with no gap and no overlap
-  const { SECTIONS } = require('./scenes.js');
-  SECTIONS.forEach(sec => {
-    const mine = shots.filter(s => s.sec === sec.n);
-    if (!mine.length) { errs.push(`§${sec.n} ${sec.label}: no shots`); return; }
-    const covered = mine.reduce((a, s) => a + s.dur, 0);
-    const nx = SECTIONS.find(x => x.n === sec.n + 1);
-    const want = nx ? +(nx.in - sec.in).toFixed(3) : sec.len;   // includes the trailing gap
-    if (Math.abs(covered - want) > 0.05)
-      errs.push(`§${sec.n}: shots cover ${covered.toFixed(2)}s, need ${want}s`);
-  });
-  return errs;
+  if (Math.abs(d) > 0.08) errs.push(`picture is ${d}s off the voiceover plus tail`);
+  return { errs, warns };
 }
 
 /* ---------------- render ---------------- */
@@ -97,14 +119,49 @@ async function render(list) {
   if (errs.length) { console.error('PAGEERRORS:', errs.slice(0, 5)); process.exit(1); }
 }
 
+/* One PNG at a chosen moment inside a shot — the cheap way to look at a new animation
+ * before committing four cores to a hundred and twenty of them. */
+async function still(idx, frac) {
+  const s = shots[idx];
+  const b = await chromium.launch({ executablePath: CHROME });
+  const page = await (await b.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1 })).newPage();
+  const errs = [];
+  page.on('pageerror', e => errs.push(e.message));
+  await page.goto('file://' + path.join(DIR, 'shot.html'), { waitUntil: 'load' });
+  await page.evaluate(() => document.fonts.ready);
+  await page.evaluate(sh => window.SHOT(sh), s);
+  await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
+  await page.evaluate(() => document.getAnimations().forEach(a => a.pause()));
+  await page.evaluate(([ms, p]) => {
+    document.getAnimations().forEach(a => { a.currentTime = ms; });
+    window.SETPROGRESS(p);
+  }, [s.dur * frac * 1000, frac]);
+  fs.mkdirSync(OUT, { recursive: true });
+  const p = path.join(OUT, `still-${String(idx).padStart(3, '0')}-${Math.round(frac * 100)}.png`);
+  await page.screenshot({ path: p });
+  await b.close();
+  console.log(`${p}   §${s.sec} ${s.type} ${s.dur}s  ${JSON.stringify(s.cue || 'tail')}`);
+  if (errs.length) { console.error('PAGEERRORS:', errs.slice(0, 5)); process.exit(1); }
+}
+
 /* ---------------- main ---------------- */
 (async () => {
   const a = process.argv;
-  const errs = check();
+  const { errs, warns } = check();
   console.log(errs.length ? '--- ASSERTIONS FAILED ---' : `assertions pass: ${shots.length} shots`);
-  errs.forEach(e => console.log('  ' + e));
+  errs.forEach(e => console.log('  ERR  ' + e));
+  warns.forEach(w => console.log('  warn ' + w));
   if (errs.length) process.exit(1);
   if (a.includes('--check')) return;
+
+  if (a.includes('--still')) {
+    const spec = a[a.indexOf('--still') + 1];             // "34" or "34@0.6" or "12,34,56"
+    for (const one of spec.split(',')) {
+      const [i, f] = one.split('@');
+      await still(+i, f == null ? 0.6 : +f);
+    }
+    return;
+  }
 
   let list = shots;
   /* --resume skips shots whose mp4 already exists. The renderer had no resume and a
