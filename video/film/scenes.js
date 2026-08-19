@@ -69,7 +69,9 @@ function cue(sec, phrase) {
  */
 const SHOTS = [
   // ── §01 COLD OPEN ────────────────────────────────────────────────────────────
-  { s:1, cue:'Cleveland, Ohio',            type:'plate', src:'plate-theatre-exterior-1908.png', push:0.05 },
+  { s:1, cue:'Cleveland, Ohio',            type:'plate', src:'plate-theatre-exterior-1908.png', push:0.05,
+    traffic:[{ sp:'sprite-carriage',      bottom:3,  h:22, w:22, x0:96,  x1:64 },
+             { sp:'sprite-motorcar-1908', bottom:4,  h:17, w:19, x0:6,   x1:34, flip:true }] },
   { s:1, cue:'A thirteen-year-old girl',   type:'plate', src:'plate-theatre-stage.png', push:0.06, from:'center' },
   { s:1, cue:'Her name is Marie',          type:'card',  kicker:'Cleveland, Ohio', line:'Marie C. Bolden', sub:'thirteen years old' },
   { s:1, cue:'Her father is a mail',       type:'plate', src:'plate-mail-carrier.png', push:0.05, from:'left' },
@@ -100,7 +102,9 @@ const SHOTS = [
   { s:3, cue:'What nobody had done',       type:'cities', lit:0 },
 
   // ── §04 1908 ─────────────────────────────────────────────────────────────────
-  { s:4, cue:'Until the summer',           type:'plate', src:'plate-theatre-exterior-1908.png', push:0.05, from:'right' },
+  { s:4, cue:'Until the summer',           type:'plate', src:'plate-theatre-exterior-1908.png', push:0.05, from:'right',
+    traffic:[{ sp:'sprite-cart',          bottom:3,  h:20, w:21, x0:-24, x1:12 },
+             { sp:'sprite-motorcar-1908', bottom:5,  h:16, w:18, x0:88,  x1:58 }] },
   { s:4, cue:'The National Education',     type:'cities', lit:1 },
   { s:4, cue:'The venue is the Hippodrome', type:'plate', src:'plate-theatre-stage.png', push:0.05, from:'left' },
   { s:4, cue:'The date is the twenty-ninth', type:'card', kicker:'Hippodrome Theater · Cleveland', line:'29 June 1908' },
@@ -111,7 +115,8 @@ const SHOTS = [
   { s:4, cue:'Marie is named individual',  type:'medal' },
   { s:4, cue:'Now understand what that meant', type:'plate', src:'plate-two-doors.png', push:0.05, from:'left' },
   { s:4, cue:'A Black teenager',           type:'plate', src:'plate-theatre-stage.png', push:0.05, from:'right' },
-  { s:4, cue:'Newspapers carried it',      type:'plate', src:'plate-newsboys.png', push:0.06 },
+  { s:4, cue:'Newspapers carried it',      type:'plate', src:'plate-newsboys.png', push:0.06,
+    traffic:[{ sp:'sprite-cart',          bottom:14, h:17, w:18, x0:78,  x1:52 }] },
   { s:4, cue:'For a lot of Black families', type:'plate', src:'plate-family-reading.png', push:0.04 },
   { s:4, cue:'Guinness World Records',     type:'card',  kicker:'Guinness World Records', line:'the first nationwide spelling bee' },
   { s:4, cue:'And her gold medal',         type:'medal' },
@@ -128,7 +133,8 @@ const SHOTS = [
   { s:5, cue:'The Louisville Courier-Journal', type:'plate', src:'plate-newsroom-desks.png', push:0.05 },
   { s:5, cue:'someone there had an idea',  type:'papers' },
   { s:5, cue:'Every paper that joins',     type:'plate', src:'plate-newsroom-desks.png', push:0.04, from:'right' },
-  { s:5, cue:'That\'s weeks of stories',   type:'plate', src:'plate-newsboys.png', push:0.05, from:'left' },
+  { s:5, cue:'That\'s weeks of stories',   type:'plate', src:'plate-newsboys.png', push:0.05, from:'left',
+    traffic:[{ sp:'sprite-carriage',      bottom:13, h:18, w:19, x0:-20, x1:14, flip:true }] },
   { s:5, cue:'radio had just arrived',     type:'plate', src:'plate-radio-1920s.png', push:0.05 },
   { s:5, cue:'Nine newspapers said yes',   type:'count', to:9, label:'newspapers said yes' },
   { s:5, cue:'More than two million',      type:'count', to:2000000, label:'children entered' },
@@ -146,10 +152,12 @@ const SHOTS = [
   { s:6, cue:'Until two eleven-year-olds', type:'card',  kicker:'the last two', line:'Edna Stover · Frank Neuhauser', sub:'both eleven years old' },
   { s:6, cue:'The word is gladiolus',      type:'spell', word:'GLADIOLUS' },
   { s:6, cue:'little sword',               type:'sword' },
-  // The narration says "a Y where the second I belongs"; the misspelling shown is
-  // GLADIOLYS, the Y in the U's place. Script and picture disagree by one letter and the
-  // recording is locked, so the picture follows the historical spelling, not the sentence.
-  { s:6, cue:'And she puts a Y',           type:'spell', word:'GLADIOLUS', wrong:{ i:7, ch:'Y' } },
+  // The narration says "a Y where the second I belongs". GLADIOLUS contains exactly one I,
+  // so "second" is wrong in the script and the recording is locked. Of the two readings, the
+  // Y replacing the I (GLADYOLUS) is the one that makes sense: it is what a child hearing
+  // "glad-ee-OH-lus" actually writes, and it matches "a Y where the I belongs". The previous
+  // version put the Y in the U's place, which matches no part of the sentence at all.
+  { s:6, cue:'And she puts a Y',           type:'spell', word:'GLADIOLUS', wrong:{ i:4, ch:'Y' } },
   { s:6, cue:'She sits down',              type:'card',  kicker:'second in the country', line:'$250', sub:'and one letter' },
   { s:6, cue:'And now the same word',      type:'plate', src:'plate-museum-hall-chairs.png', push:0.04, from:'right' },
   { s:6, cue:'Frank grew gladioli',        type:'gladiolus' },
@@ -157,7 +165,8 @@ const SHOTS = [
   { s:6, cue:'G',                          type:'spell', word:'GLADIOLUS', fix:{ i:7 }, sync:true },
   { s:6, cue:'Champion of the United States', type:'card', line:'Champion of the United States' },
   { s:6, cue:'Five hundred dollars',       type:'coins' },
-  { s:6, cue:'And when he got home',       type:'plate', src:'plate-parade.png', push:0.05 },
+  { s:6, cue:'And when he got home',       type:'plate', src:'plate-parade.png', push:0.05,
+    traffic:[{ sp:'sprite-motorcar-1925', bottom:6,  h:24, w:26, x0:22,  x1:56 }] },
 
   // ── §07 WHAT HAPPENED TO FRANK ───────────────────────────────────────────────
   { s:7, cue:'Engineering degree',         type:'card',  kicker:'1934 engineering · 1940 law', line:'then patent law' },
@@ -176,6 +185,7 @@ const SHOTS = [
   { s:8, cue:'That is serious money',      type:'plate', src:'ford-model-t-roadster-1926-nmah.jpg', push:0.05, fit:'contain' },
   { s:8, cue:'The winner is Pauline Bell', type:'card',  kicker:'Clarkson, Kentucky', line:'Pauline Bell', sub:'thirteen' },
   { s:8, cue:'Her word',                   type:'spell', word:'CERISE' },
+  { s:8, cue:'It means cherry',            type:'colourfill', hex:'#DE3163', label:'cerise' },
   { s:8, cue:'A thirteen-year-old is expected', type:'plate', src:'plate-fashion-plate-cerise.png', push:0.05, fit:'contain' },
   { s:8, cue:'Gladiolus came from the garden', type:'plate', src:'plate-gladiolus-garden.png', push:0.04, from:'left' },
   { s:8, cue:'Cerise came from a shop window', type:'plate', src:'plate-shopwindow-1920s.png', push:0.04, from:'right' },

@@ -34,9 +34,48 @@ function el(tag, attrs, parent) {
  * needs both (grow AND sway) gets nested groups instead of a second animation. */
 const anim = (e, frames, opts) => e.animate(frames, Object.assign({ fill: 'both', easing: 'ease' }, opts));
 
-function hexbed(stage) {
-  stage.appendChild($('<div class="hexbed"></div>'));
-  stage.appendChild($('<div class="glow"></div>'));
+/* Deterministic pseudo-randomness. Math.random would make two renders of the same shot
+ * differ, which breaks --resume: a re-rendered shot would no longer match its neighbours.
+ * Seeded from the shot index, so every run places the same mote in the same place. */
+function rng(seed) {
+  let x = (seed * 2654435761) >>> 0;
+  return () => { x ^= x << 13; x ^= x >>> 17; x ^= x << 5; x >>>= 0; return x / 4294967296; };
+}
+
+function hexbed(stage, sh) {
+  const h = $('<div class="hexbed"></div>');
+  const g = $('<div class="glow"></div>');
+  stage.appendChild(h); stage.appendChild(g);
+  // The comb drifts and the glow breathes. Far too slow to notice as movement, but a
+  // still frame of a drawn shot and a live one no longer look like the same thing.
+  anim(h, [{ transform: 'translate(0,0)' }, { transform: 'translate(-52px,-90px)' }],
+    { duration: 26000, iterations: Infinity, easing: 'linear' });
+  anim(g, [{ transform: 'translate(-50%,-50%) scale(1)', opacity: .85 },
+           { transform: 'translate(-50%,-50%) scale(1.09)', opacity: 1 }],
+    { duration: 7400, direction: 'alternate', iterations: Infinity, easing: 'ease-in-out' });
+}
+
+/* Motes of dust in the light. Every plate gets them, which is what turns ninety slow zooms
+ * into ninety shots that are alive — the Ken Burns move alone reads as a static image being
+ * pushed, because nothing in the frame changes relative to anything else. */
+function dust(stage, sh, n) {
+  const r = rng((sh.idx || 0) + 7);
+  const layer = document.createElement('div');
+  layer.style.cssText = 'position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden';
+  for (let i = 0; i < n; i++) {
+    const size = 2 + r() * 5, x = r() * 100, y = r() * 100;
+    const d = document.createElement('div');
+    d.style.cssText = `position:absolute;left:${x.toFixed(2)}%;top:${y.toFixed(2)}%;`
+      + `width:${size.toFixed(1)}px;height:${size.toFixed(1)}px;border-radius:50%;`
+      + `background:#FFE9B8;opacity:${(0.10 + r() * 0.26).toFixed(2)};`
+      + `filter:blur(${(r() * 1.4).toFixed(1)}px)`;
+    layer.appendChild(d);
+    const dx = (r() - 0.5) * 130, dy = -30 - r() * 120;
+    anim(d, [{ transform: 'translate(0,0)' }, { transform: `translate(${dx.toFixed(0)}px,${dy.toFixed(0)}px)` }],
+      { duration: 9000 + r() * 11000, iterations: Infinity, direction: 'alternate',
+        easing: 'ease-in-out', delay: -r() * 9000 });
+  }
+  stage.appendChild(layer);
 }
 
 /* ---------- PLATE (Ken Burns) ---------- */
@@ -45,12 +84,62 @@ function plate(stage, sh) {
   const fit = sh.fit === 'contain' ? ' class="contain"' : '';
   const org = { left: '18% 50%', right: '82% 50%', center: '50% 50%' }[sh.from || 'center'];
   const kb = $(`<div class="kb"><img src="${IMG}${esc(sh.src)}"${fit}></div>`);
+  // Several generated plates come back with a faint painted paper edge despite the prompt
+  // forbidding it. A 3.5% overscan crops it away, and costs nothing: the sources are
+  // 2752px wide, so 1920 x 1.035 is still a downscale. Not applied to `contain` shots —
+  // those are real archive photographs, letterboxed, where cropping would eat the picture.
+  if (sh.fit !== 'contain') kb.querySelector('img').style.transform = 'scale(1.035)';
   stage.appendChild(kb);
   if (push > 0) {
     kb.style.transformOrigin = org;
     anim(kb, [{ transform: `scale(${1 + push})` }, { transform: 'scale(1)' }],
       { duration: sh.dur * 1000, easing: 'linear' });
   }
+
+  /* Traffic. The street plates are drawn with carriages and motor cars standing at the kerb,
+   * which reads as a photograph of a moment rather than a moment. Each vehicle here is a
+   * separately drawn sprite, keyed to transparency, and it lives INSIDE .kb so the Ken Burns
+   * move carries it along with the road it is on — parented to the stage instead, it would
+   * slide across a street that was itself drifting, and read as a sticker. */
+  (sh.traffic || []).forEach(t => {
+    const lane = document.createElement('div');
+    lane.style.cssText = `position:absolute;left:0;bottom:${t.bottom}%;height:${t.h}%;`
+      + `width:${t.w}%;z-index:1;pointer-events:none`;
+    const art = document.createElement('div');
+    // Knocked back slightly: the sprites are generated against a flat field and come out a
+    // shade hotter and cleaner than the plates they sit on, which makes them read as pasted
+    // rather than drawn in. A touch less saturation and brightness settles them into the ink.
+    art.style.cssText = `position:absolute;inset:0;background:url(${IMG}${t.sp}.png) `
+      + `no-repeat center/contain;filter:saturate(.88) brightness(.96);`
+      + `${t.flip ? 'transform:scaleX(-1)' : ''}`;
+    lane.appendChild(art);
+    kb.querySelector('img').after(lane);
+    const px = v => (v / 100 * 1920).toFixed(0) + 'px';
+    anim(lane, [{ transform: `translateX(${px(t.x0)})` }, { transform: `translateX(${px(t.x1)})` }],
+      { duration: sh.dur * 1000, easing: 'linear' });
+  });
+
+  // A light that travels across the plate. Shots are concatenated as hard cuts, so there is
+  // no dissolve available to carry one image into the next; a slow raking gradient gives the
+  // frame its own internal change instead.
+  const r = rng((sh.idx || 0) + 31);
+  const lamp = document.createElement('div');
+  lamp.style.cssText = 'position:absolute;inset:-20%;z-index:2;pointer-events:none;'
+    + 'background:radial-gradient(38% 52% at 50% 50%,rgba(255,226,160,.13),transparent 70%)';
+  stage.appendChild(lamp);
+  const from = r() < 0.5 ? -26 : 26;
+  anim(lamp, [{ transform: `translateX(${from}%)` }, { transform: `translateX(${-from}%)` }],
+    { duration: Math.max(9000, sh.dur * 1600), easing: 'ease-in-out' });
+
+  dust(stage, sh, 34);
+
+  // Settle in over the first half-second. Not a fade from black — that would flicker at
+  // every cut — just a slight lift, so the cut lands softly.
+  // Deliberately NOT composite:'add' — the underlying opacity is 1, so an additive 0.84
+  // would clamp straight back to 1 and the settle would never appear at all. The transform
+  // animation above touches different properties, so plain replace on both is safe.
+  anim(kb, [{ opacity: .84, filter: 'saturate(.86)' }, { opacity: 1, filter: 'saturate(1)' }],
+    { duration: 520, easing: 'ease-out' });
 }
 
 /* ---------- SPELL — the letter drop ----------
@@ -111,9 +200,12 @@ function swap(stage, sh) {
 function cards(stage, sh) {
   hexbed(stage);
   const w = $('<div class="cards"></div>');
+  // Stagger has to fit inside the shot. A flat 0.35s gap put the last of four cards on
+  // screen at 1.05s of a 1.28s shot, so it was gone before it had arrived.
+  const gap = Math.min(0.35, sh.dur / (sh.words.length + 2.5));
   sh.words.forEach((word, i) => {
     const c = $(`<div class="wc${sh.compare ? ' big' : ''}">${esc(word)}</div>`);
-    c.style.animationDelay = (0.35 * i) + 's';
+    c.style.animationDelay = (gap * i).toFixed(2) + 's';
     w.appendChild(c);
   });
   stage.appendChild(w);
