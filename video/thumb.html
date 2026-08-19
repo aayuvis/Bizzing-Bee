@@ -1,0 +1,31 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:Fraunces;src:url('file:///home/user/Bizzing-Bee/spellbound-app/fonts/fraunces-800.woff2') format('woff2');font-weight:800}
+@font-face{font-family:Hanken;src:url('file:///home/user/Bizzing-Bee/spellbound-app/fonts/hanken-var.woff2') format('woff2-variations');font-weight:100 900}
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1280px;height:720px;overflow:hidden}
+.t{position:relative;width:1280px;height:720px;background:#100B26;overflow:hidden}
+.bg{position:absolute;inset:0}
+.bg img{width:106%;height:106%;margin:-3% 0 0 -3%;object-fit:cover;opacity:.42}
+.scrim{position:absolute;inset:0;background:linear-gradient(90deg,rgba(16,11,38,.94) 40%,rgba(16,11,38,.55) 75%,rgba(16,11,38,.3));z-index:2}
+.wrap{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;justify-content:center;padding:0 60px}
+.kick{font:700 30px Hanken;letter-spacing:.28em;text-transform:uppercase;color:#FFD873;margin-bottom:6px}
+.y25{font:800 118px Fraunces,serif;color:#fff;opacity:.45;line-height:1;position:relative;display:inline-block}
+.y25:after{content:'';position:absolute;left:-8px;right:-8px;top:52%;height:11px;background:#E0483C;transform:rotate(-7deg)}
+.y08{font:800 250px Fraunces,serif;color:#FFC23D;line-height:.92;letter-spacing:-.02em;
+     text-shadow:0 10px 44px rgba(0,0,0,.75)}
+.sub{font:800 76px Fraunces,serif;color:#fff;line-height:1.04;margin-top:16px}
+.sub em{font-style:normal;color:#FFD873}
+.brand{position:absolute;right:44px;bottom:36px;z-index:4;font:800 34px Fraunces,serif;color:#fff;opacity:.92}
+.brand i{font-style:italic}
+</style></head><body>
+<div class="t">
+  <div class="bg"><img src="file:///home/user/Bizzing-Bee/video/images/plate-theatre-stage.png"></div>
+  <div class="scrim"></div>
+  <div class="wrap">
+    <div class="kick">The first spelling bee was not</div>
+    <div><span class="y25">1925</span></div>
+    <div class="y08">1908</div>
+    <div class="sub">She was <em>13</em>.</div>
+  </div>
+  <div class="brand"><i>Bizzing</i> Bee</div>
+</div></body></html>
