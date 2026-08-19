@@ -29,7 +29,17 @@ which would resolve against the outer viewport), then rasterise at 800×800.
 
 ## bizzing-bee-banner-2048.png — YouTube channel banner
 
-2048×1152. Source: `banner-source.html` (**copy it into `spellbound-app/` to render** —
+Two renders of the same layout — **upload `bizzing-bee-banner-2560.png`**:
+
+| File | Size | Notes |
+|---|---|---|
+| `bizzing-bee-banner-2560.png` | 2560×1440, 2.45MB | **Use this.** YouTube asks for *at least* 2048×1152; the extra pixels matter on a TV |
+| `bizzing-bee-banner-2048.png` | 2048×1152, 1.70MB | The stated minimum, kept as a fallback |
+
+Both are well under YouTube's 6MB cap. The 2560 is the identical composition rendered at
+1.25×, so the safe area scales in proportion (1235×338 → 1544×423) and nothing reflows.
+
+Source: `banner-source.html` (**copy it into `spellbound-app/` to render** —
 it loads `fonts/fraunces-800.woff2` and `fonts/hanken-var.woff2` by relative path, and
 must not be left there, since everything in that folder ships to the site).
 
