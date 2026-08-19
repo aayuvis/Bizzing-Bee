@@ -107,7 +107,15 @@ async function render(list) {
   if (a.includes('--check')) return;
 
   let list = shots;
-  if (a.includes('--shot')) list = [shots[+a[a.indexOf('--shot') + 1]]];
+  /* --resume skips shots whose mp4 already exists. The renderer had no resume and a
+     killed run meant starting over; with 57 shots at ~70s that is an hour thrown away
+     for one interruption. */
+  if (a.includes('--resume')) {
+    const have = new Set(fs.existsSync(OUT) ? fs.readdirSync(OUT).filter(f => f.endsWith('.mp4')) : []);
+    list = shots.filter(s => !have.has('shot' + String(s.idx).padStart(3, '0') + '.mp4'));
+    console.log(`resume: ${have.size} already rendered, ${list.length} to go`);
+  }
+  else if (a.includes('--shot')) list = [shots[+a[a.indexOf('--shot') + 1]]];
   else if (a.includes('--sec')) list = shots.filter(s => s.sec === +a[a.indexOf('--sec') + 1]);
   else if (!a.includes('--all')) { console.log('nothing to do — pass --all, --sec N or --shot N'); return; }
 
