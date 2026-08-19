@@ -11,7 +11,7 @@
 const { chromium } = require('playwright');
 const { execFileSync } = require('child_process');
 const fs = require('fs'), path = require('path');
-const { build } = require('./scenes.js');
+const { build, drift } = require('./scenes.js');
 
 const FPS = 24, W = 1920, H = 1080;
 const DIR = __dirname;
@@ -33,14 +33,18 @@ function check() {
     if (s.type === 'spell' && s.wrong && (s.wrong.i < 0 || s.wrong.i >= s.word.length))
       errs.push(`${tag}: wrong-letter index ${s.wrong.i} outside "${s.word}"`);
   });
+  const d = drift();
+  if (Math.abs(d) > 0.05) errs.push(`picture is ${d}s short of the voiceover — inter-section gaps unclaimed`);
   // every section is covered edge to edge, with no gap and no overlap
   const { SECTIONS } = require('./scenes.js');
   SECTIONS.forEach(sec => {
     const mine = shots.filter(s => s.sec === sec.n);
     if (!mine.length) { errs.push(`§${sec.n} ${sec.label}: no shots`); return; }
     const covered = mine.reduce((a, s) => a + s.dur, 0);
-    if (Math.abs(covered - sec.len) > 0.05)
-      errs.push(`§${sec.n}: shots cover ${covered.toFixed(2)}s but narration is ${sec.len}s`);
+    const nx = SECTIONS.find(x => x.n === sec.n + 1);
+    const want = nx ? +(nx.in - sec.in).toFixed(3) : sec.len;   // includes the trailing gap
+    if (Math.abs(covered - want) > 0.05)
+      errs.push(`§${sec.n}: shots cover ${covered.toFixed(2)}s, need ${want}s`);
   });
   return errs;
 }

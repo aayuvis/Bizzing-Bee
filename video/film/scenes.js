@@ -110,7 +110,14 @@ function build() {
     const sec = bySec[sh.s];
     if (!sec) throw new Error('shot ' + i + ' references missing section ' + sh.s);
     const next = SHOTS[i + 1];
-    const endAt = (next && next.s === sh.s) ? next.at : sec.len;
+    /* The LAST shot of a section runs across the 0.45s of silence that follows it, up to
+       where the next section's audio actually begins. Without this the gaps belong to no
+       shot: the picture runs ~5s short over eleven of them, and every shot after the first
+       sits progressively earlier than its own sentence -- by the end the outro lands while
+       the narrator is still mid-story. The gap is picture time; it just is not speech. */
+    const nextSec = bySec[sh.s + 1];
+    const tail = nextSec ? +(nextSec.in - sec.in).toFixed(3) : sec.len;
+    const endAt = (next && next.s === sh.s) ? next.at : tail;
     const dur = +(endAt - sh.at).toFixed(3);
     if (dur <= 0) throw new Error(`shot ${i} (§${sh.s} @${sh.at}) has non-positive duration`);
     out.push(Object.assign({}, sh, {
@@ -121,4 +128,11 @@ function build() {
   return out;
 }
 
-module.exports = { SHOTS, SECTIONS, build };
+/* Picture length must equal voiceover length. The check that would have caught the gap
+   drift on day one rather than at render time. */
+function drift() {
+  const picture = build().reduce((a, s) => a + s.dur, 0);
+  return +(SECTIONS[SECTIONS.length - 1].out - picture).toFixed(3);
+}
+
+module.exports = { SHOTS, SECTIONS, build, drift };
