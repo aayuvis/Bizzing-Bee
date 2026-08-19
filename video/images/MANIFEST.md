@@ -486,3 +486,42 @@ Also note **`the-village-school-lithograph-c1870-nmah.jpg` is only 942 x 617 px*
 Smithsonian offers no larger derivative. It is fine as a small inset or a slow push-in on a
 1080p timeline, but it will not hold a full-frame 4K shot.
 
+
+---
+
+# PART 2 — GENERATED ILLUSTRATIONS (not archival)
+
+**Everything below is AI-generated artwork made for this film. None of it is a photograph,
+a document, or a historical record, and none of it may ever be captioned as one.**
+
+Regenerate with `../plates.py --all`. Model `gemini-3-pro-image`, 2K, prompts in that file.
+
+Two rules enforced in `plates.py`, both about honesty rather than taste:
+
+1. **No generated picture of a real person.** There is no slot for a face and there must
+   never be one. Marie Bolden, Frank Neuhauser and Edna Stover have no free photograph, so
+   the film carries them **typographically**. A synthesised face presented as a historical
+   figure is a fabrication dressed as a document.
+2. **Nothing reads as a photograph.** Every plate is openly an illustration — inked line,
+   flat inks, visible drawing. This is what stops a generated image being mistaken for
+   archive footage when it sits three seconds away from a real Library of Congress
+   photograph. The viewer must never have to guess which is which.
+
+| File | Shows | Used in |
+|---|---|---|
+| `plate-theatre-stage.png` | Large 1908 theatre from the stalls, lit stage | §01 |
+| `plate-theatre-spot.png` | Bare boards under a single overhead circle | §01 |
+| `plate-schoolhouse-night.png` | One-room prairie schoolhouse at night, buggies outside | §03 |
+| `plate-schoolroom-interior.png` | Packed lamplit schoolroom, all backs and silhouettes | §03 |
+| `plate-pressroom.png` | 1920s newspaper pressroom, rotary presses | §05 |
+| `plate-shopwindow-1920s.png` | 1920s department-store window, one cerise dress | §08 |
+| `plate-prohibition.png` | Empty 1920s courtroom | §09 |
+| `plate-medal.png` | A blank gold medal on indigo (1:1, for the §04 animation) | §04 |
+| `plate-empty-stage-dawn.png` | The same theatre, house lights up, stage bare | §12 |
+
+**The theatre is NOT the Hippodrome.** No reference for that building was obtainable, and
+captioning a drawing as a named real venue is the same fabrication rule 1 forbids. It is "a
+theatre in 1908", and the narration never claims more.
+
+**AI disclosure:** these plates are why the video description must carry a synthetic-media
+disclosure. That is not optional and not a formality.
