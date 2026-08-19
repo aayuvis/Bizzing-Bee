@@ -69,8 +69,12 @@ echo "preview $((P/1048576)) MB"
 
 # The master must be as long as the picture. If -shortest has quietly clipped the sign-off
 # again, this is where it shows up rather than in the upload.
-secs(){ "$FF" -i "$1" 2>&1 | sed -n 's/.*Duration: \([0-9]*\):\([0-9]*\):\([0-9.]*\).*/\1 \2 \3/p' | sed -n 1p \
-        | awk '{printf "%.2f", $1*3600+$2*60+$3}'; }
+# `|| true` is load-bearing, same as in probe() above: `ffmpeg -i` with no output file exits
+# non-zero by design, and under `set -o pipefail` that aborts the script — silently, because
+# the caller pipes this to tail. It is what stopped the previous build right after printing
+# the file sizes, so the length check never ran at all.
+secs(){ { "$FF" -i "$1" 2>&1 | sed -n 's/.*Duration: \([0-9]*\):\([0-9]*\):\([0-9.]*\).*/\1 \2 \3/p' | sed -n 1p \
+        | awk '{printf "%.2f", $1*3600+$2*60+$3}'; } || true; }
 PV=$(secs out/picture.mp4); MV=$(secs "$OUT/before-the-bee-ep1-1080p.mp4")
 echo "picture ${PV}s · master ${MV}s"
 awk -v a="$PV" -v b="$MV" 'BEGIN{ if ((a-b)>0.5 || (b-a)>0.5) exit 1 }' \
