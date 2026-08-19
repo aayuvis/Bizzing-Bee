@@ -1,45 +1,45 @@
 <!doctype html><html><head><meta charset="utf-8"><style>
-/* The app's LOCKED type system (fonts/fonts.css): Hanken = body/UI, Sono = spelling
-   tiles, one display face per world. The thumbnail obeys it: Fraunces for the display
-   line, Sono for anything that is a SPELLED word, Hanken for the label. */
+/* App's locked type system: Fraunces = display, Sono = spelled letters, Hanken = UI. */
 @font-face{font-family:Fraunces;src:url('file:///home/user/Bizzing-Bee/spellbound-app/fonts/fraunces-800.woff2') format('woff2');font-weight:400 900}
 @font-face{font-family:Sono;src:url('file:///home/user/Bizzing-Bee/spellbound-app/fonts/sono-600.woff2') format('woff2');font-weight:400 800}
 @font-face{font-family:Hanken;src:url('file:///home/user/Bizzing-Bee/spellbound-app/fonts/hanken-var.woff2') format('woff2-variations');font-weight:100 900}
 *{margin:0;padding:0;box-sizing:border-box}
-body{width:1280px;height:720px;overflow:hidden;background:#0d0a18}
-.t{position:relative;width:1280px;height:720px;overflow:hidden}
+body{width:1280px;height:720px;overflow:hidden}
+.t{position:relative;width:1280px;height:720px;overflow:hidden;
+   background:radial-gradient(120% 100% at 22% 20%,#3A2A72,#241A56 55%,#150F30)}
+.hex{position:absolute;inset:0;opacity:.30;z-index:1;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='52' height='90'><g fill='none' stroke='%23FFD873' stroke-opacity='0.55' stroke-width='2'><path d='M0,-30 L26,-15 L26,15 L0,30 L-26,15 L-26,-15 Z'/><path d='M52,-30 L78,-15 L78,15 L52,30 L26,15 L26,-15 Z'/><path d='M26,15 L52,30 L52,60 L26,75 L0,60 L0,30 Z'/><path d='M0,60 L26,75 L26,105 L0,120 L-26,105 L-26,75 Z'/><path d='M52,60 L78,75 L78,105 L52,120 L26,105 L26,75 Z'/></g></svg>")}
 
-/* REAL PHOTOGRAPH: the nine finalists of the 1925 National Spelling Bee with President
-   Coolidge. Library of Congress, public domain. Actual children, actual bee. */
-.ph{position:absolute;inset:0}
-.ph img{width:100%;height:100%;object-fit:cover;object-position:50% 34%;
-        filter:contrast(1.12) brightness(1.06) sepia(.16)}
-/* Warm the photo towards the app's honey rather than leaving it cold grey */
-.tone{position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,194,61,.10),rgba(40,22,8,.30));mix-blend-mode:multiply;z-index:2}
-/* Legibility only where the type sits — the brief's rule about not dimming the whole frame */
-.scrim{position:absolute;left:0;right:0;bottom:0;height:56%;z-index:3;
-       background:linear-gradient(180deg,transparent,rgba(12,8,20,.62) 42%,rgba(12,8,20,.93))}
-.top{position:absolute;left:0;right:0;top:0;height:22%;z-index:3;
-     background:linear-gradient(180deg,rgba(12,8,20,.80),transparent)}
+/* The photograph SUPPORTS: a framed print on the right, tilted, not the ground of the
+   image. Cropped inside the mount so the scan's black border and typed caption -- which
+   is where the 1926 date lives -- never appear. */
+.photo{position:absolute;right:-26px;top:96px;width:560px;height:400px;z-index:3;
+  transform:rotate(3deg);box-shadow:0 26px 60px rgba(0,0,0,.62);border:9px solid #F3EEE2;overflow:hidden}
+.photo img{width:100%;height:100%;object-fit:cover;object-position:50% 42%;filter:contrast(1.1) sepia(.12)}
+.credit{position:absolute;right:26px;top:512px;z-index:4;font:700 17px Hanken;color:#C9BEE8;opacity:.8;
+  transform:rotate(3deg)}
 
-.label{position:absolute;top:30px;left:0;right:0;z-index:6;text-align:center;
-  font:800 27px Hanken;letter-spacing:.2em;text-transform:uppercase;color:#FFD873}
-.mid{position:absolute;left:0;right:0;bottom:196px;z-index:6;text-align:center;
-  font:900 116px Fraunces,serif;color:#fff;line-height:.98;
-  text-shadow:0 6px 30px rgba(0,0,0,.85),0 2px 5px rgba(0,0,0,.9)}
-.mid em{font-style:normal;color:#FFC23D}
-/* SONO — the app sets spelled letters in Sono, so the year does too */
-.yr{position:absolute;left:0;right:0;bottom:78px;z-index:6;text-align:center;
-  font:800 96px Sono,ui-monospace,monospace;letter-spacing:.16em;color:#FFC23D;
-  text-shadow:0 5px 24px rgba(0,0,0,.8)}
-.brand{position:absolute;right:34px;bottom:26px;z-index:7;font:800 30px Fraunces,serif;color:#fff;opacity:.9}
+.wrap{position:absolute;left:62px;top:0;bottom:0;width:700px;z-index:5;display:flex;flex-direction:column;justify-content:center}
+.kick{font:800 30px Hanken;white-space:nowrap;letter-spacing:.2em;text-transform:uppercase;color:#FFD873;margin-bottom:10px}
+.y25{position:relative;display:inline-block;font:900 104px Fraunces,serif;color:#fff;opacity:.42;line-height:1}
+.y25:after{content:'';position:absolute;left:-10px;right:-10px;top:50%;height:12px;background:#E0483C;
+  transform:rotate(-6deg);border-radius:3px}
+.y08{font:800 236px Sono,ui-monospace,monospace;color:#FFC23D;line-height:.94;letter-spacing:.03em;
+  text-shadow:0 12px 40px rgba(0,0,0,.6)}
+.sub{font:900 62px Fraunces,serif;color:#fff;margin-top:6px}
+.sub em{font-style:normal;color:#FFD873}
+.brand{position:absolute;left:62px;bottom:34px;z-index:6;font:800 30px Fraunces,serif;color:#fff;opacity:.85}
 .brand i{font-style:italic}
 </style></head><body>
 <div class="t">
-  <div class="ph"><img src="file:///home/user/Bizzing-Bee/video/images/spelling-bee-1925-finalists-coolidge-loc.jpg"></div>
-  <div class="tone"></div><div class="top"></div><div class="scrim"></div>
-  <div class="label">America&rsquo;s first spelling bee</div>
-  <div class="mid">It wasn&rsquo;t <em>these</em> kids.</div>
-  <div class="yr">1908</div>
+  <div class="hex"></div>
+  <div class="photo"><img src="file:///home/user/Bizzing-Bee/video/images/spelling-bee-1926-finalists-CROP.jpg"></div>
+  <div class="credit">National Spelling Bee, 1926</div>
+  <div class="wrap">
+    <div class="kick">The first spelling bee was not</div>
+    <div><span class="y25">1925</span></div>
+    <div class="y08">1908</div>
+    <div class="sub">She was <em>13</em>.</div>
+  </div>
   <div class="brand"><i>Bizzing</i> Bee</div>
 </div></body></html>
