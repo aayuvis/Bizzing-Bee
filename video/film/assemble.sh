@@ -54,6 +54,10 @@ echo "tail    ${TAIL}s of silence after the last word"
 # never over it. normalize=0 matters: amix's default halves every input to guard against
 # clipping, which would quietly drop the voice 6dB and undo the whole recording.
 SFX=../vo/sfx.wav
+# Regenerate it if absent: it is a build artifact, not a source file, and is deliberately
+# not tracked. sfx.py is deterministic, so this reproduces the same bed every time.
+if [ ! -f "$SFX" ] && [ -f ../sfx.py ]; then
+  echo "sfx     $SFX missing — regenerating"; ( cd .. && python3 sfx.py >/dev/null ); fi
 if [ -f "$SFX" ]; then
   echo "sfx     mixing $SFX under the narration"
   "$FF" -y -loglevel error -i out/picture.mp4 -i "$VO" -i "$SFX" \
