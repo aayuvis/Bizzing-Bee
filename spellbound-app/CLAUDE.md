@@ -904,3 +904,23 @@ the attempt with the same inputs.
   seconds past wall-clock — cut against extracted frames; clearBoxes() before racing
   segments; single-frame inputs into zoompan). Useful for QC reels and dev demos —
   not for audience-facing video.
+
+### Narration: Gemini TTS (Aug 2026) — the "TTS can't perform" verdict was about Kokoro
+- **Gemini TTS is a different class of tool** and is worth auditioning before writing off
+  synthetic narration. `models/gemini-2.5-pro-preview-tts` (also `2.5-flash` and
+  `3.1-flash-tts-preview`) takes a **style instruction prepended to the text** and ~30
+  prebuilt voices. Same `/root/.gkey`, `x-goog-api-key` header,
+  `generativelanguage.googleapis.com/v1beta/models/<m>:generateContent` with
+  `responseModalities:["AUDIO"]` + `speechConfig.voiceConfig.prebuiltVoiceConfig.voiceName`.
+  The separate **Cloud TTS API (texttospeech.googleapis.com) 401s on this key** — it is not
+  enabled; do not waste time on it.
+- **It returns raw PCM, not a container**: `audio/L16;codec=pcm;rate=24000`, base64 in
+  `inlineData`. Write a 44-byte WAV header yourself or every player rejects it.
+- **The style prompt controls pace, and it is dangerously literal.** Asking for an
+  "unhurried" documentary read produced **7.0s** for an eleven-word line — the user's first
+  note was that it was too slow. Naming the pace explicitly and *forbidding* the failure
+  mode ("natural, brisk conversational pace… do NOT slow down, do NOT add long dramatic
+  pauses, do NOT sound solemn") brought the same line to **4.8s** with no loss of warmth.
+  Prompt the tempo, don't fix it afterwards with `atempo`.
+- Audition voices by generating **one identical line across a shortlist** and normalising
+  them (`loudnorm=I=-16:TP=-1.5`) so the comparison is voice, not level.
