@@ -59,6 +59,11 @@ SLOTS = {
         'A cheerful girl of about thirteen from 1928, in a plain drop-waist dress with a '
         'sailor collar and a bobbed haircut with a hair clip, holding a small speckled hen '
         'egg carefully in cupped hands, looking determined and pleased.'),
+    'stover': (
+        'A cheerful girl of about eleven from 1925, in a simple drop-waist school dress with a '
+        'white collar and a large hair bow, hair in a neat bob, holding a single coral-and-gold '
+        'gladiolus bloom in both hands and smiling gently — the runner-up who missed by one '
+        'letter, so warm and dignified rather than downcast.'),
 }
 
 

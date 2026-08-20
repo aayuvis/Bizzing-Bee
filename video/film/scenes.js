@@ -75,7 +75,7 @@ const SHOTS = [
     traffic:[{ sp:'sprite-carriage',      bottom:3,  h:22, w:22, x0:96,  x1:64 },
              { sp:'sprite-motorcar-1908', bottom:4,  h:17, w:19, x0:6,   x1:34, flip:true }] },
   { s:1, cue:'A thirteen-year-old girl',   type:'plate', src:'plate-stage-over-shoulder.png', push:0.06, from:'center' },
-  { s:1, cue:'Her name is Marie',          type:'card',  kicker:'Cleveland, Ohio', line:'Marie C. Bolden', sub:'thirteen years old' },
+  { s:1, cue:'Her name is Marie',          type:'card',  kicker:'Cleveland, Ohio', line:'Marie C. Bolden', sub:'thirteen years old', avatar:'bolden' },
   { s:1, cue:'Her father is a mail',       type:'plate', src:'plate-mail-carrier.png', push:0.05, from:'left' },
   { s:1, cue:'She is Black',               type:'plate', src:'plate-two-doors.png', push:0.04 },
   { s:1, cue:'have already said',             type:'card',  line:'“…that they do not want to compete against her.”' },
@@ -89,11 +89,11 @@ const SHOTS = [
   { s:3, cue:'Quick, because you need it', type:'plate', src:'plate-schoolroom-interior.png', push:0.04, from:'left' },
   { s:3, cue:'Two things made this',       type:'card',  kicker:'before there was a bee', line:'Two things' },
   { s:3, cue:'First, a book',              type:'plate', src:'noah-webster-portrait-1833-herring-npg.jpg', push:0.05, fit:'contain' },
-  { s:3, cue:'seventeen eighty-three',     type:'plate', src:'webster-american-spelling-book-1821-cover-nmah.jpg', push:0.06, fit:'contain' },
+  { s:3, cue:'seventeen eighty-three',     type:'plate', src:'webster-american-spelling-book-1821-cover-nmah.jpg', push:0.05, zoom:1.34 },
   { s:3, cue:'Kids called it the blue-backed', type:'plate', src:'webster-american-spelling-book-1821-pages-nmah.jpg', push:0.05, fit:'contain' },
-  { s:3, cue:'sold tens of millions',      type:'count', to:60000000, label:'copies sold' },
+  { s:3, cue:'sold tens of millions',      type:'count', to:60000000, label:'copies sold', book:true },
   { s:3, cue:'Webster wanted American',    type:'plate', src:'noah-webster-schoolmaster-of-the-republic-print-nmah.jpg', push:0.05, fit:'contain' },
-  { s:3, cue:'Colour loses its U',         type:'swap',  a:'colour', b:'color' },
+  { s:3, cue:'Colour loses its U',         type:'swap',  pairs:[['colour','color'],['centre','center']] },
   { s:3, cue:'American spelling was',      type:'card',  line:'a deliberate act' },
   { s:3, cue:'Second, the word bee',       type:'beeword' },
   { s:3, cue:'In early America',           type:'plate', src:'plate-quilting-bee.png', push:0.05 },
@@ -112,13 +112,12 @@ const SHOTS = [
   { s:4, cue:'The date is the twenty-ninth', type:'card', kicker:'Hippodrome Theater · Cleveland', line:'29 June 1908' },
   { s:4, cue:'It is a team competition',   type:'plate', src:'plate-schoolroom-interior.png', push:0.05 },
   { s:4, cue:'And when the spelling is finished', type:'spotlight', caption:'no mistakes at all' },
-  { s:4, cue:'Marie Bolden',               type:'card',  kicker:'individual champion, 1908', line:'Marie C. Bolden', sub:'thirteen years old' },
+  { s:4, cue:'Marie Bolden',               type:'card',  kicker:'individual champion, 1908', line:'Marie C. Bolden', sub:'thirteen years old', avatar:'bolden' },
   { s:4, cue:'Cleveland takes the team',   type:'card',  kicker:'team title', line:'Cleveland' },
   { s:4, cue:'Marie is named individual',  type:'medal' },
   { s:4, cue:'Now understand what that meant', type:'plate', src:'plate-segregation-streetcar.png', push:0.05, from:'left' },
   { s:4, cue:'A Black teenager',           type:'plate', src:'plate-theatre-stage.png', push:0.05, from:'right' },
-  { s:4, cue:'Newspapers carried it',      type:'plate', src:'plate-newsboys.png', push:0.06,
-    traffic:[{ sp:'sprite-cart',          bottom:14, h:17, w:18, x0:78,  x1:52 }] },
+  { s:4, cue:'Newspapers carried it',      type:'plate', src:'plate-newsboys.png', push:0.06 },
   { s:4, cue:'For a lot of Black families', type:'plate', src:'plate-family-reading.png', push:0.04 },
   { s:4, cue:'Guinness World Records',     type:'card',  kicker:'Guinness World Records', line:'the first nationwide spelling bee' },
   { s:4, cue:'And her gold medal',         type:'medal' },
@@ -135,8 +134,7 @@ const SHOTS = [
   { s:5, cue:'The Louisville Courier-Journal', type:'plate', src:'plate-newsroom-desks.png', push:0.05 },
   { s:5, cue:'someone there had an idea',  type:'papers' },
   { s:5, cue:'Every paper that joins',     type:'plate', src:'plate-newsroom-desks.png', push:0.04, from:'right' },
-  { s:5, cue:'That\'s weeks of stories',   type:'plate', src:'plate-newsboys.png', push:0.05, from:'left',
-    traffic:[{ sp:'sprite-carriage',      bottom:13, h:18, w:19, x0:-20, x1:14, flip:true }] },
+  { s:5, cue:'That\'s weeks of stories',   type:'plate', src:'plate-newsboys.png', push:0.05, from:'left' },
   { s:5, cue:'radio had just arrived',     type:'plate', src:'plate-radio-1920s.png', push:0.05 },
   { s:5, cue:'Nine newspapers said yes',   type:'count', to:9, label:'newspapers said yes' },
   { s:5, cue:'More than two million',      type:'count', to:2000000, label:'children entered' },
@@ -144,15 +142,14 @@ const SHOTS = [
 
   // ── §06 THE 1925 FINAL — the hero sequence ───────────────────────────────────
   { s:6, cue:'The seventeenth of June',    type:'plate', src:'us-national-museum-exterior-1880s-sia.jpg', push:0.05, fit:'cover' },
-  { s:6, cue:'The National Museum',        type:'plate', src:'plate-museum-hall-chairs.png', push:0.05,
-    traffic:[{ sp:'sprite-walkers', bottom:2, h:26, w:20, x0:-22, x1:16 }] },
+  { s:6, cue:'The National Museum',        type:'plate', src:'plate-museum-hall-chairs.png', push:0.05 },
   { s:6, cue:'Six girls, three boys',      type:'card',  kicker:'Washington, D.C. · 17 June 1925', line:'nine finalists', sub:'six girls, three boys' },
   { s:6, cue:'Before it starts',           type:'plate', src:'calvin-coolidge-photo-c1924-ulmann-npg.jpg', push:0.04, fit:'contain' },
-  { s:6, cue:'Calvin Coolidge shakes',     type:'plate', src:'calvin-coolidge-print-1925-sturges-npg.jpg', push:0.05, fit:'contain' },
+  { s:6, cue:'Calvin Coolidge shakes',     type:'plate', src:'plate-handshake-line.png', push:0.05 },
   { s:6, cue:'Then they\'re walked back in', type:'plate', src:'us-national-museum-interior-inventions-exhibit-c1920-sia.jpg', push:0.05 },
   { s:6, cue:'It runs an hour and a half', type:'elim',  from:9, to:9 },
   { s:6, cue:'One by one, they go out',    type:'elim',  from:9, to:2 },
-  { s:6, cue:'Until two eleven-year-olds', type:'card',  kicker:'the last two', line:'Edna Stover · Frank Neuhauser', sub:'both eleven years old' },
+  { s:6, cue:'Until two eleven-year-olds', type:'card',  kicker:'the last two', line:'Edna Stover · Frank Neuhauser', sub:'both eleven years old', avatar:['stover','neuhauser'], avatarPx:300 },
   { s:6, cue:'The word is gladiolus',      type:'spell', word:'GLADIOLUS' },
   { s:6, cue:'little sword',               type:'sword' },
   // The narration says "a Y where the second I belongs". GLADIOLUS contains exactly one I,
@@ -185,7 +182,7 @@ const SHOTS = [
   { s:8, cue:'nine children becomes',      type:'count', to:25, label:'contestants' },
   { s:8, cue:'the prize doubles',          type:'count', to:1000, label:'first prize', prefix:'$' },
   { s:8, cue:'That is serious money',      type:'plate', src:'plate-family-1926.png', push:0.05 },
-  { s:8, cue:'The winner is Pauline Bell', type:'card',  kicker:'Clarkson, Kentucky', line:'Pauline Bell', sub:'thirteen' },
+  { s:8, cue:'The winner is Pauline Bell', type:'card',  kicker:'Clarkson, Kentucky', line:'Pauline Bell', sub:'thirteen', avatar:'pbell' },
   { s:8, cue:'Her word',                   type:'spell', word:'CERISE' },
   { s:8, cue:'It means cherry',            type:'colourfill', hex:'#DE3163', label:'cerise' },
   { s:8, cue:'A thirteen-year-old is expected', type:'plate', src:'plate-fashion-plate-cerise.png', push:0.05, fit:'contain' },
@@ -193,18 +190,18 @@ const SHOTS = [
   { s:8, cue:'Cerise came from a shop window', type:'plate', src:'plate-shopwindow-1920s.png', push:0.04, from:'right' },
   { s:8, cue:'And hold on to one name',    type:'hold' },
   { s:8, cue:'Second place that year',     type:'plate', src:'spelling-bee-1926-finalists-coolidge-loc.jpg', push:0.04, fit:'contain' },
-  { s:8, cue:'Betty Robinson',             type:'card',  kicker:'second place, 1926', line:'Betty Robinson' },
+  { s:8, cue:'Betty Robinson',             type:'card',  kicker:'second place, 1926', line:'Betty Robinson', avatar:'brobinson' },
 
   // ── §09 1927 ─────────────────────────────────────────────────────────────────
   { s:9, cue:'Seventeen contestants',      type:'count', to:17, label:'contestants' },
-  { s:9, cue:'Dean Lucas',                 type:'card',  kicker:'West Salem, Ohio', line:'Dean Lucas', sub:'thirteen' },
+  { s:9, cue:'Dean Lucas',                 type:'card',  kicker:'West Salem, Ohio', line:'Dean Lucas', sub:'thirteen', avatar:'lucas' },
   { s:9, cue:'His word',                   type:'spell', word:'ABROGATE' },
   { s:9, cue:'Not a flower',               type:'card',  line:'not a flower, not a colour' },
   { s:9, cue:'And this is America',        type:'plate', src:'plate-prohibition.png', push:0.04, from:'right' },
 
   // ── §10 1928 ─────────────────────────────────────────────────────────────────
   { s:10, cue:'nineteen twenty-eight',     type:'plate', src:'spelling-bee-1928-winners-coolidge-loc.jpg', push:0.04, fit:'contain' },
-  { s:10, cue:'Betty Robinson',            type:'card',  kicker:'South Bend, Indiana', line:'Betty Robinson', sub:'she came back' },
+  { s:10, cue:'Betty Robinson',            type:'card',  kicker:'South Bend, Indiana', line:'Betty Robinson', sub:'she came back', avatar:'brobinson' },
   { s:10, cue:'Ask three sources',         type:'spell', word:'KNACK' },
   { s:10, cue:'the champion had to spell', type:'card',  line:'one more word' },
   { s:10, cue:'Then albumen',              type:'spell', word:'ALBUMEN' },
@@ -213,11 +210,12 @@ const SHOTS = [
   // ── §11 WHAT HAPPENED TO THEM — no motion anywhere ───────────────────────────
   { s:11, cue:'So what became of them all', type:'plate', src:'plate-four-chairs.png', push:0.0 },
   { s:11, cue:'Frank we know',             type:'card',  line:'Frank we know.', fade:true },
-  { s:11, cue:'Marie Bolden, Pauline Bell', type:'card', line:'Marie Bolden · Pauline Bell<br>Dean Lucas · Betty Robinson', fade:true },
+  { s:11, cue:'Marie Bolden, Pauline Bell', type:'card', fade:true,
+    faces:[['bolden','Marie Bolden'],['pbell','Pauline Bell'],['lucas','Dean Lucas'],['brobinson','Betty Robinson']] },
   { s:11, cue:'They won the biggest thing', type:'plate', src:'plate-attic-record.png', push:0.03 },
   { s:11, cue:'And then they went home',   type:'plate', src:'plate-attic-record.png', push:0.03, from:'right' },
   { s:11, cue:'Marie\'s medal is still missing', type:'medal', ghost:true },
-  { s:11, cue:'They weren\'t professional', type:'card', line:'no coaches, no study plans', fade:true },
+  { s:11, cue:'They weren\'t professional', type:'noplan', fade:true },
   { s:11, cue:'They were ordinary kids',   type:'plate', src:'plate-four-chairs.png', push:0.0 },
 
   // ── §12 CLOSE ────────────────────────────────────────────────────────────────
@@ -258,6 +256,22 @@ function build() {
       idx: out.length, sec: sh.s, secLabel: bySec[sh.s].label,
       in: +start.toFixed(3), out: +stop.toFixed(3), dur,
     });
+
+    /* Graphics that reveal in steps must reveal ON the words, not on a designer's guess at
+     * where the words are. The title card showed "1925" the instant the shot began — three
+     * seconds before the narrator says it — and the big "bee" landed before the word too.
+     * Both now take their delays from the recording, like everything else here. */
+    if (sh.type === 'title') {
+      rec.t25At = +(cue(2, 'nineteen twenty-five') - start).toFixed(3);
+      rec.t08At = +(cue(2, "It wasn't") - start).toFixed(3);
+    }
+    if (sh.type === 'beeword') {
+      rec.beeAt = +(cue(3, 'bee') - start).toFixed(3);
+    }
+    // the second spelling pair arrives on the sentence that describes it
+    if (sh.type === 'swap' && sh.pairs && sh.pairs.length > 1) {
+      rec.at2 = +(cue(3, 'Centre flips to center') - start).toFixed(3);
+    }
 
     /* A spelling channel spelling a word on screen should land each letter as the narrator
      * says it. The letter times are already in words.json — "G." "L." "A." are ordinary

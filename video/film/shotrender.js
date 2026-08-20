@@ -60,9 +60,10 @@ const cityXY = k => {
   return [(lon - US.w) / (US.e - US.w), (US.n - lat) / (US.n - US.s)];
 };
 
-/* The bee's own mark, animated — a small rosette of honeycomb cells that fill one after
- * another. Review note: every plain hexagon-background type frame should carry a moving
- * element rather than sitting as a static caption. */
+/* RETIRED from the type slides. A rosette of honeycomb cells filling one after another was
+ * added so type frames carried something moving; in the cut it read as a loading spinner —
+ * "looks like the page is loading" — which is a worse failure than a caption sitting still.
+ * Still used by `cities`, where a filling row genuinely reads as a legend. */
 function ornament(stage, sh, where) {
   const box = document.createElement('div');
   const bottom = where === 'bottom';
@@ -138,7 +139,11 @@ function plate(stage, sh) {
   // forbidding it. A 3.5% overscan crops it away, and costs nothing: the sources are
   // 2752px wide, so 1920 x 1.035 is still a downscale. Not applied to `contain` shots —
   // those are real archive photographs, letterboxed, where cropping would eat the picture.
-  if (sh.fit !== 'contain') kb.querySelector('img').style.transform = 'scale(1.035)';
+  // `zoom` crops INTO an archive scan — the Webster cover carries a library shelfmark in
+  // its margin, and the answer to "don't want to see DL" is to frame past it rather than to
+  // retouch a primary source.
+  const over = sh.zoom || (sh.fit === 'contain' ? 1 : 1.035);
+  if (over !== 1) kb.querySelector('img').style.transform = `scale(${over})`;
   stage.appendChild(kb);
   if (push > 0) {
     kb.style.transformOrigin = org;
@@ -290,15 +295,76 @@ function spell(stage, sh) {
   stage.appendChild(row);
 }
 
+
+/* The champions, drawn. The film refuses to generate a PHOTOGRAPH of any of these children —
+ * beside four genuine archive plates a viewer could not tell which was the document — but
+ * the app's own collectible avatars are a different register entirely: unmistakably a
+ * stylised character, and the one the audience already meets in Bizzing Bee. Naming a
+ * champion and showing nothing beside the name was the note; this answers it. */
+const AVA = '../images/av/';
+function avatarImg(id, px) {
+  const d = document.createElement('div');
+  d.style.cssText = `width:${px}px;height:${px}px;flex:0 0 auto;`
+    + `background:url(${AVA}${id}.webp) no-repeat center/contain;`
+    + `filter:drop-shadow(0 10px 26px rgba(0,0,0,.45))`;
+  return d;
+}
+
 /* ---------- TYPE ---------- */
 function card(stage, sh) {
   hexbed(stage);
+
+  /* A ROW of avatars with a name under each, for the roll-call: the note was that the names
+   * should line up with their faces beneath them. Handled first because it replaces the type
+   * block rather than decorating it. */
+  if (sh.faces) {
+    const row = document.createElement('div');
+    row.style.cssText = 'position:absolute;inset:0;z-index:5;display:flex;align-items:center;'
+      + 'justify-content:center;gap:46px;padding:0 5%';
+    sh.faces.forEach(([id, name], i) => {
+      const col = document.createElement('div');
+      col.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:16px';
+      col.appendChild(avatarImg(id, 330));
+      const lab = document.createElement('div');
+      lab.style.cssText = 'font:800 38px Fraunces,serif;color:#fff;text-align:center;'
+        + 'text-wrap:balance;max-width:270px;line-height:1.12';
+      lab.textContent = name;
+      col.appendChild(lab);
+      row.appendChild(col);
+      anim(col, [{ opacity: 0, transform: 'translateY(26px)' }, { opacity: 1, transform: 'none' }],
+        { duration: 700, delay: 180 + i * 480, easing: 'cubic-bezier(.2,.9,.25,1)' });
+    });
+    stage.appendChild(row);
+    if (sh.fade) {
+      const f = document.createElement('div');
+      f.style.cssText = 'position:absolute;inset:0;z-index:6;background:' + INK;
+      stage.appendChild(f);
+      anim(f, [{ opacity: 0 }, { opacity: 0 }, { opacity: .86 }],
+        { duration: sh.dur * 1000, easing: 'linear' });
+    }
+    return;
+  }
+
   const c = $(`<div class="card">
     ${sh.kicker ? `<div class="kicker">${esc(sh.kicker)}</div>` : ''}
     <div class="line">${sh.line || ''}</div>
     ${sh.sub ? `<div class="sub">${esc(sh.sub)}</div>` : ''}</div>`);
   stage.appendChild(c);
-  ornament(stage, sh, 'bottom');
+  if (sh.avatar) {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'position:absolute;inset:0;z-index:4;display:flex;align-items:center;'
+      + 'justify-content:center;gap:40px;padding:0 6% 210px;pointer-events:none';
+    [].concat(sh.avatar).forEach((id, i) => {
+      const a = avatarImg(id, sh.avatarPx || 560);
+      wrap.appendChild(a);
+      anim(a, [{ opacity: 0, transform: 'translateY(30px) scale(.94)' },
+               { opacity: 1, transform: 'none' }],
+        { duration: 760, delay: 120 + i * 360, easing: 'cubic-bezier(.2,.9,.25,1)' });
+    });
+    stage.appendChild(wrap);
+    c.style.alignContent = 'end';           // type steps out of the picture's way
+    c.style.paddingBottom = '62px';
+  }
   anim(c, [{ opacity: 0, transform: 'translateY(18px)' }, { opacity: 1, transform: 'none' }],
     { duration: 700, easing: 'cubic-bezier(.2,.9,.25,1)' });
   if (sh.fade) {
@@ -312,12 +378,62 @@ function card(stage, sh) {
 
 function swap(stage, sh) {
   hexbed(stage);
-  const row = $('<div id="swap"></div>');
-  const a = sh.a.split(''), b = sh.b.split('');
-  a.forEach(ch => { const s = document.createElement('span'); s.textContent = ch; row.appendChild(s); });
-  let d = 0; while (d < b.length && a[d] === b[d]) d++;
-  if (row.children[d]) row.children[d].className = 'drop';
-  stage.appendChild(row);
+  /* Both spelling changes now live in ONE shot. "Centre flips to center" is spoken only
+   * 1.0s before the next sentence, which is under the strobe floor as a shot of its own —
+   * it was cut for that reason and the note asked for it back. Holding both here gives the
+   * pair three seconds together, and the second lands on its own cue. */
+  const PAIRS = sh.pairs || [[sh.a, sh.b]];
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'position:absolute;inset:0;z-index:5';
+  stage.appendChild(wrap);
+
+  PAIRS.forEach(([a, b], k) => {
+    const row = document.createElement('div');
+    row.id = k === 0 ? 'swap' : '';
+    row.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;'
+      + 'justify-content:center;gap:.04em';
+    a.split('').forEach(ch => {
+      const sp = document.createElement('span');
+      sp.textContent = ch;
+      sp.style.cssText = 'font:800 160px Fraunces,serif;color:#fff;display:inline-block';
+      row.appendChild(sp);
+    });
+    const at = (sh.at2 != null && k === 1) ? sh.at2 * 1000 : 0;
+    const drop = a.length !== b.length;      // colour -> color: a letter genuinely leaves
+    let d = 0; while (d < Math.min(a.length, b.length) && a[d] === b[d]) d++;
+    if (drop) {
+      const gone = row.children[d];
+      if (gone) {
+        gone.style.color = BAD;
+        anim(gone, [{ transform: 'none', opacity: 1 },
+                    { transform: 'none', opacity: 1, offset: .32 },
+                    { transform: 'translateY(-12px) rotate(-5deg)', opacity: 1, offset: .40 },
+                    { transform: 'translateY(330px) rotate(24deg)', opacity: 0 }],
+          { duration: 1500, delay: at + 900, easing: 'ease-in' });
+      }
+    } else {
+      /* centre -> center: same letters, two of them trade places. Marking one of them as
+       * "wrong" and dropping it was simply untrue — nothing is lost, the pair transposes. */
+      const i = d, j = d + 1;
+      const li = row.children[i], lj = row.children[j];
+      if (li && lj) {
+        const w = 86;                         // one glyph advance at 160px Fraunces
+        [li, lj].forEach(e => { e.style.color = HONEY; });
+        anim(li, [{ transform: 'none' }, { transform: `translateX(${w}px)` }],
+          { duration: 620, delay: at + 220, easing: 'cubic-bezier(.5,0,.2,1)' });
+        anim(lj, [{ transform: 'none' }, { transform: `translateX(${-w}px)` }],
+          { duration: 620, delay: at + 220, easing: 'cubic-bezier(.5,0,.2,1)' });
+      }
+    }
+    wrap.appendChild(row);
+    if (k > 0) {
+      anim(row, [{ opacity: 0 }, { opacity: 0, offset: .99 }, { opacity: 1 }],
+        { duration: Math.max(30, at), easing: 'linear' });
+      // the first pair steps aside as the second arrives
+      anim(wrap.children[0], [{ opacity: 1 }, { opacity: 1, offset: .99 }, { opacity: 0 }],
+        { duration: Math.max(30, at), easing: 'linear' });
+    }
+  });
 }
 
 function cards(stage, sh) {
@@ -334,20 +450,81 @@ function cards(stage, sh) {
   stage.appendChild(w);
 }
 
+/* Webster's speller, drawn. The note asked for the book itself here rather than a number
+ * alone: it is the object the sentence is about, and "the blue-backed speller" is a
+ * description of a cover. */
+function spellerBook(px) {
+  const s = document.createElementNS(NS, 'svg');
+  s.setAttribute('viewBox', '0 0 300 380');
+  s.setAttribute('width', px); s.setAttribute('height', Math.round(px * 380 / 300));
+  s.style.cssText = 'filter:drop-shadow(0 18px 34px rgba(0,0,0,.5))';
+  const g = el('defs', {}, s);
+  const lg = el('linearGradient', { id: 'bk', x1: '0', y1: '0', x2: '1', y2: '1' }, g);
+  el('stop', { offset: '0%', 'stop-color': '#4A6FC4' }, lg);
+  el('stop', { offset: '100%', 'stop-color': '#26407E' }, lg);
+  el('path', { d: 'M62,26 L268,26 L268,354 L62,354 Z', fill: '#D8CDB4' }, s);   // pages
+  for (let i = 0; i < 16; i++)
+    el('rect', { x: 258 - i * 0.6, y: 34 + i * 20, width: 8, height: 10, fill: '#BEB194', opacity: '.7' }, s);
+  el('path', { d: 'M30,18 L250,18 L250,362 L30,362 Z', fill: 'url(#bk)' }, s);  // blue board
+  el('path', { d: 'M30,18 L52,18 L52,362 L30,362 Z', fill: '#1B2F63' }, s);     // spine
+  el('rect', { x: 74, y: 52, width: 152, height: 232, fill: 'none', stroke: GOLD,
+    'stroke-width': 3, opacity: '.75' }, s);
+  el('rect', { x: 86, y: 64, width: 128, height: 208, fill: 'none', stroke: GOLD,
+    'stroke-width': 1.6, opacity: '.5' }, s);
+  // a blind-stamped ornament, not lettering: this is a drawing, not a facsimile
+  el('circle', { cx: 150, cy: 168, r: 34, fill: 'none', stroke: GOLD, 'stroke-width': 2.6, opacity: '.8' }, s);
+  el('circle', { cx: 150, cy: 168, r: 15, fill: GOLD, opacity: '.55' }, s);
+  el('rect', { x: 104, y: 306, width: 92, height: 4, rx: 2, fill: GOLD, opacity: '.6' }, s);
+  return s;
+}
+
 function count(stage, sh) {
   hexbed(stage);
   const box = $(`<div id="count"><div class="n">0</div><div class="l">${esc(sh.label || '')}</div></div>`);
   stage.appendChild(box);
   const n = box.querySelector('.n');
   n.dataset.to = sh.to; n.dataset.prefix = sh.prefix || '';
-  ornament(stage, sh, 'bottom');
+  if (sh.book) {
+    // The book sits to the LEFT of the number and the counter is pushed right to meet it;
+    // centring both put a blue board straight through the middle of the digits.
+    const holder = document.createElement('div');
+    holder.style.cssText = 'position:absolute;left:12%;top:50%;z-index:4;'
+      + 'transform:translateY(-50%);pointer-events:none';
+    holder.appendChild(spellerBook(330));
+    stage.appendChild(holder);
+    anim(holder, [{ opacity: 0, transform: 'translateY(-50%) translateX(-30px) rotate(-9deg)' },
+                  { opacity: 1, transform: 'translateY(-50%) rotate(-5deg)' }],
+      { duration: 860, easing: 'cubic-bezier(.2,.9,.25,1)' });
+    box.style.paddingLeft = '20%';
+  }
 }
 
-function title(stage) {
+function title(stage, sh) {
   hexbed(stage);
-  stage.appendChild($('<div id="t25"><s>1925</s></div>'));
-  stage.appendChild($('<div id="t08">1908</div>'));
-  stage.appendChild($('<div id="ttl">BEFORE THE BEE</div>'));
+  const a = $('<div id="t25"><s>1925</s></div>');
+  const b = $('<div id="t08">1908</div>');
+  const c = $('<div id="ttl">BEFORE THE BEE</div>');
+  [a, b, c].forEach(e => { e.style.animation = 'none'; e.style.opacity = '0'; stage.appendChild(e); });
+  // Delays come from scenes.js, which read them out of the recording: "1925" appears as it
+  // is said and is struck through the moment the narrator says "It wasn't".
+  const t25 = (sh.t25At != null ? sh.t25At : 0) * 1000;
+  const t08 = (sh.t08At != null ? sh.t08At : 1.6) * 1000;
+  anim(a, [{ opacity: 0, transform: 'translateY(-30px)' }, { opacity: .55, transform: 'none' }],
+    { duration: 520, delay: t25, easing: 'cubic-bezier(.2,.9,.25,1)' });
+  anim(a.querySelector('s'), [{ 'text-decoration-color': 'transparent' },
+                              { 'text-decoration-color': 'transparent', offset: .99 },
+                              { 'text-decoration-color': BAD }],
+    { duration: Math.max(60, t08 - t25), delay: t25 });
+  anim(b, [{ opacity: 0, transform: 'translateY(-46px) scale(1.15)' }, { opacity: 1, transform: 'none' }],
+    { duration: 620, delay: t08, easing: 'cubic-bezier(.2,.9,.25,1)' });
+  // and 1925 leaves as 1908 lands — both sit at the same y, so holding the struck year
+  // underneath left the two numbers overlapping as one unreadable smudge
+  anim(a, [{ opacity: .55, transform: 'none' },
+           { opacity: .55, transform: 'none', offset: .35 },
+           { opacity: 0, transform: 'translateY(26px)' }],
+    { duration: 700, delay: t08, easing: 'ease-in' });
+  anim(c, [{ opacity: 0, transform: 'translateY(22px)' }, { opacity: 1, transform: 'none' }],
+    { duration: 620, delay: t08 + 620, easing: 'cubic-bezier(.2,.9,.25,1)' });
 }
 
 /* ---------- MEDAL ----------
@@ -593,38 +770,72 @@ function coins(stage, sh) {
 /* ---------- ELIM — nine finalists, one by one ---------- */
 function elim(stage, sh) {
   hexbed(stage);
-  const s = svg(1920, 1080); stage.appendChild(s);
+  /* Nine finalists, drawn as nine children rather than nine lights. The note was explicit:
+   * six girls and three boys, which is the real 1925 field, and the one who wins carries the
+   * champion's own avatar so the room has a face in it by the time he is named. */
   const N = sh.from || 9, keep = sh.to == null ? N : sh.to;
-  const hex = (cx, cy, r) => {
-    let d = '';
-    for (let i = 0; i < 6; i++) {
-      const a = (Math.PI / 180) * (60 * i - 90);
-      d += (i ? 'L' : 'M') + (cx + r * Math.cos(a)).toFixed(1) + ',' + (cy + r * Math.sin(a)).toFixed(1);
+  const GIRL = [0, 1, 3, 5, 6, 8];                 // six girls, three boys
+  const WIN = 4;                                    // the one still standing at the end
+  const row = document.createElement('div');
+  row.style.cssText = 'position:absolute;inset:0;z-index:5;display:flex;align-items:center;'
+    + 'justify-content:center;gap:22px;padding:0 3% 90px';
+  stage.appendChild(row);
+
+  const kid = (i) => {
+    const g = document.createElementNS(NS, 'svg');
+    g.setAttribute('viewBox', '0 0 120 210');
+    g.setAttribute('width', 120); g.setAttribute('height', 210);
+    const isGirl = GIRL.includes(i);
+    const DK = '#2A2050', HAIR = '#1B1338';
+    if (isGirl) el('path', { d: 'M22,206 Q34,120 46,96 L74,96 Q86,120 98,206 Z', fill: DK }, g);
+    else {
+      el('path', { d: 'M40,206 L40,140 L56,140 L56,206 Z', fill: DK }, g);
+      el('path', { d: 'M64,206 L64,140 L80,140 L80,206 Z', fill: DK }, g);
+      el('path', { d: 'M38,96 L82,96 L82,146 L38,146 Z', fill: DK }, g);
     }
-    return d + 'Z';
+    el('path', { d: 'M40,94 L80,94 L76,60 L44,60 Z', fill: DK }, g);          // torso
+    el('path', { d: 'M42,66 q-14,30 -8,52', stroke: DK, 'stroke-width': 13, fill: 'none',
+      'stroke-linecap': 'round' }, g);
+    el('path', { d: 'M78,66 q14,30 8,52', stroke: DK, 'stroke-width': 13, fill: 'none',
+      'stroke-linecap': 'round' }, g);
+    el('circle', { cx: 60, cy: 38, r: 25, fill: HAIR }, g);                    // head, no face
+    if (isGirl) {
+      el('path', { d: 'M37,34 q-11,26 -4,42', stroke: HAIR, 'stroke-width': 10, fill: 'none',
+        'stroke-linecap': 'round' }, g);
+      el('path', { d: 'M83,34 q11,26 4,42', stroke: HAIR, 'stroke-width': 10, fill: 'none',
+        'stroke-linecap': 'round' }, g);
+    }
+    el('path', { d: 'M44,20 a16,14 0 0 1 32,0 z', fill: '#3E2F78' }, g);
+    return g;
   };
-  const outOrder = [4, 0, 7, 2, 6, 1, 8];   // scattered, so it never reads as a wipe
+
   for (let i = 0; i < N; i++) {
-    const cx = 960 + (i - (N - 1) / 2) * 190, cy = 540;
-    const g = el('g', {}, s);
-    el('path', { d: hex(cx, cy, 78), fill: HONEY, opacity: '.16' }, g);
-    el('path', { d: hex(cx, cy, 78), fill: 'none', stroke: GOLD, 'stroke-width': 5 }, g);
-    el('circle', { cx, cy, r: 22, fill: GOLD }, g);
+    const cell = document.createElement('div');
+    cell.style.cssText = 'position:relative;width:150px;height:250px;display:flex;'
+      + 'align-items:flex-end;justify-content:center';
+    if (keep < N && i === WIN) cell.appendChild(avatarImg('neuhauser', 210));
+    else cell.appendChild(kid(i));
+    row.appendChild(cell);
+
     if (keep < N) {
-      const rank = outOrder.indexOf(i);
+      // scattered, so it never reads as a wipe across the row
+      const order = [7, 0, 2, 8, 1, 6, 3];
+      const rank = order.indexOf(i);
       if (rank > -1 && rank < N - keep) {
-        const at = 0.10 + rank * (0.78 / Math.max(1, N - keep));
-        anim(g, [{ opacity: 1 }, { opacity: 1, offset: Math.max(0, at - 0.02) },
-                 { opacity: .13, offset: Math.min(1, at + 0.05) }, { opacity: .13 }],
-          { duration: sh.dur * 1000, easing: 'linear' });
+        const at = 0.12 + rank * (0.74 / Math.max(1, N - keep));
+        anim(cell, [{ opacity: 1, transform: 'none' },
+                    { opacity: 1, transform: 'none', offset: Math.max(0, at - 0.02) },
+                    { opacity: .10, transform: 'translateY(26px)', offset: Math.min(1, at + 0.06) },
+                    { opacity: .10, transform: 'translateY(26px)' }],
+          { duration: sh.dur * 1000, easing: 'ease-in' });
       }
     } else {
-      anim(g, [{ opacity: .55 }, { opacity: 1 }, { opacity: .55 }],
-        { duration: 2000, iterations: Infinity, easing: 'ease-in-out', delay: -i * 210 });
+      anim(cell, [{ opacity: 0, transform: 'translateY(22px)' }, { opacity: 1, transform: 'none' }],
+        { duration: 520, delay: 90 * i, easing: 'cubic-bezier(.2,.9,.25,1)' });
     }
   }
-  const cap = $(`<div class="card" style="align-content:end;padding-bottom:150px">
-    <div class="kicker">${keep < N ? 'one by one, they go out' : 'nine finalists'}</div></div>`);
+  const cap = $(`<div class="card" style="align-content:end;padding-bottom:56px">
+    <div class="kicker">${keep < N ? 'one by one, they go out' : 'six girls, three boys'}</div></div>`);
   stage.appendChild(cap);
 }
 
@@ -713,7 +924,6 @@ function cities(stage, sh) {
   const cap = $(`<div class="card" style="align-content:end;padding-bottom:126px"><div class="kicker">${
     sh.lit ? 'city against city' : 'nobody had made it national'}</div></div>`);
   stage.appendChild(cap);
-  ornament(stage, sh, 'bottom');
 }
 
 /* ---------- SPOTLIGHT ----------
@@ -801,7 +1011,7 @@ function beeword(stage, sh) {
     + '<div class="sub">a gathering of neighbours — nothing to do with the insect</div></div>');
   stage.appendChild(wrap);
   anim(wrap, [{ opacity: 0, transform: 'translateY(16px)' }, { opacity: 1, transform: 'none' }],
-    { duration: 640, easing: 'cubic-bezier(.2,.9,.25,1)' });
+    { duration: 560, delay: (sh.beeAt || 0) * 1000, easing: 'cubic-bezier(.2,.9,.25,1)' });
 
   const s = svg(1920, 1080); stage.appendChild(s);
   const b = el('g', {}, s);
@@ -859,14 +1069,80 @@ function outro(stage, sh) {
     <div class="blurb">A free spelling-bee training app.<br>128,000 words — every one spoken aloud.</div>
     <div class="url">www.bizzingbee.com</div></div>`);
   stage.appendChild(o);
-  ornament(stage, sh, 'bottom');
   [...o.children].forEach((c, i) =>
     anim(c, [{ opacity: 0, transform: 'translateY(22px)' }, { opacity: 1, transform: 'none' }],
       { duration: 780, delay: 180 + i * 460, easing: 'cubic-bezier(.2,.9,.25,1)' }));
 }
 
+
+/* 7:37 — "They weren't professional children. No coaches, no study plans." Type alone did
+ * not carry it; the note asked to see the two things they did NOT have, struck out. */
+function noplan(stage, sh) {
+  hexbed(stage);
+  const row = document.createElement('div');
+  row.style.cssText = 'position:absolute;inset:0;z-index:5;display:flex;align-items:center;'
+    + 'justify-content:center;gap:120px;padding:0 8% 90px';
+  const panel = (label, draw) => {
+    const col = document.createElement('div');
+    col.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:26px;position:relative';
+    const art = document.createElementNS(NS, 'svg');
+    art.setAttribute('viewBox', '0 0 260 260');
+    art.setAttribute('width', 300); art.setAttribute('height', 300);
+    draw(art);
+    col.appendChild(art);
+    const lab = document.createElement('div');
+    lab.style.cssText = 'font:800 52px Fraunces,serif;color:#fff';
+    lab.textContent = label;
+    col.appendChild(lab);
+    // the red strike that says they did not have it
+    const bar = document.createElement('div');
+    bar.style.cssText = 'position:absolute;left:-14px;right:-14px;top:44%;height:9px;border-radius:5px;'
+      + 'background:' + BAD + ';transform-origin:left center';
+    col.appendChild(bar);
+    row.appendChild(col);
+    return { col, bar };
+  };
+
+  const coach = panel('no coaches', a => {
+    el('circle', { cx: 130, cy: 62, r: 34, fill: '#2A2050' }, a);
+    el('path', { d: 'M96,44 a34,26 0 0 1 68,0 z', fill: '#3E2F78' }, a);          // cap
+    el('path', { d: 'M78,232 L78,120 q52,-26 104,0 L182,232 Z', fill: '#2A2050' }, a);
+    el('circle', { cx: 186, cy: 126, r: 20, fill: 'none', stroke: GOLD, 'stroke-width': 6 }, a);
+    el('path', { d: 'M186,106 L186,96', stroke: GOLD, 'stroke-width': 6, 'stroke-linecap': 'round' }, a);
+  });
+  const plan = panel('no study plans', a => {
+    el('rect', { x: 52, y: 26, width: 156, height: 208, rx: 8, fill: '#F3EEFF' }, a);
+    el('rect', { x: 52, y: 26, width: 156, height: 34, rx: 8, fill: '#C9BEE8' }, a);
+    for (let i = 0; i < 6; i++) {
+      el('rect', { x: 74, y: 82 + i * 25, width: 16, height: 16, rx: 4, fill: 'none',
+        stroke: '#6C5FA8', 'stroke-width': 3 }, a);
+      el('rect', { x: 100, y: 88 + i * 25, width: 88 - (i % 3) * 18, height: 7, rx: 3.5, fill: '#8B7FC0' }, a);
+    }
+  });
+
+  stage.appendChild(row);
+  [coach, plan].forEach((p, i) => {
+    anim(p.col, [{ opacity: 0, transform: 'translateY(26px)' }, { opacity: 1, transform: 'none' }],
+      { duration: 700, delay: 150 + i * 420, easing: 'cubic-bezier(.2,.9,.25,1)' });
+    anim(p.bar, [{ transform: 'scaleX(0)' }, { transform: 'scaleX(0)', offset: .3 },
+                 { transform: 'scaleX(1)' }],
+      { duration: 1500, delay: 700 + i * 420, easing: 'cubic-bezier(.3,0,.2,1)' });
+  });
+
+  const cap = $('<div class="card" style="align-content:end;padding-bottom:64px">'
+    + '<div class="kicker">they were not professional children</div></div>');
+  stage.appendChild(cap);
+  if (sh.fade) {
+    const f = document.createElement('div');
+    f.style.cssText = 'position:absolute;inset:0;z-index:6;background:' + INK;
+    stage.appendChild(f);
+    anim(f, [{ opacity: 0 }, { opacity: 0 }, { opacity: .86 }],
+      { duration: sh.dur * 1000, easing: 'linear' });
+  }
+}
+
 const KIND = { plate, spell, card, swap, cards, count, medal, title, outro, gladiolus, sword,
-               colourfill, coins, elim, papers, cities, beeword, fourwords, spotlight,
+               colourfill, coins, elim, papers, cities, beeword, fourwords, spotlight, noplan,
                hold: (s) => hexbed(s) };
 
 window.SHOT = function (sh) {

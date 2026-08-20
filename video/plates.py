@@ -116,7 +116,8 @@ SLOTS = {
 
     # §01 — "her father is a mail carrier"
     'plate-mail-carrier': (
-        'A uniformed American letter carrier of about 1908 walking away from us down a '
+        'A BLACK AFRICAN-AMERICAN uniformed letter carrier of about 1908 — dark brown skin '
+        'clearly visible on his hands and the back of his neck — walking away from us down a '
         'residential street in early morning, leather satchel on his hip, peaked cap, seen '
         'from behind so no face is visible. Modest wooden houses and picket fences receding, '
         'long low sunlight, empty street. Quiet dignity, ordinary working life.', '16:9'),
@@ -133,9 +134,12 @@ SLOTS = {
     # §03 — what a "bee" actually was
     'plate-quilting-bee': (
         'Six or seven women of the 1840s American frontier seated close around a large '
-        'rectangular quilting frame in a plain wooden room, all bent to their needlework, '
-        'seen from slightly above so we read bonnets, shoulders and hands rather than faces. '
-        'The quilt itself a warm geometric field of flat colour. Companionable and busy.', '16:9'),
+        'rectangular quilting frame in a plain wooden room, seen from BEHIND AND ABOVE, over '
+        'their shoulders and down onto the quilt. Every woman is turned away from us: we see '
+        'the backs of bonnets, shoulders, and hands at work. NO FACE IS VISIBLE AT ALL — not '
+        'blank, not featureless, simply turned away, because a face drawn without features '
+        'reads as a mistake. The quilt is a warm geometric field of flat colour and is the '
+        'brightest thing in the picture.', '16:9'),
 
     'plate-husking-bee': (
         'The inside of a large American timber barn at night in the 1840s, lantern-lit, with '
@@ -164,11 +168,13 @@ SLOTS = {
         'text, no lettering anywhere. Energetic, morning light, motion.', '16:9'),
 
     'plate-family-reading': (
-        'A modest African-American family in their own kitchen in 1908 at evening, lamplit: a '
-        'seated adult holding an open newspaper with two children leaning in against the chair '
-        'to read it with them. Every figure is seen FROM BEHIND or in deep profile shadow so '
-        'that no face is readable at all. The newspaper is completely BLANK. Warm, close, '
-        'domestic, dignified. The oil lamp is the only light in the room.', '16:9'),
+        'A BLACK AFRICAN-AMERICAN family in their own kitchen in 1908 at evening, lamplit. '
+        'Every person in the picture is Black with clearly DARK BROWN SKIN, visible on their '
+        'hands, arms and the backs of their necks — this must be unmistakable. A seated Black '
+        'father holds an open newspaper; two Black children lean against his chair to read it '
+        'with him; a Black mother stands behind. All are seen FROM BEHIND or in deep profile '
+        'shadow so no face is readable. The newspaper is completely BLANK. Warm, close, '
+        'dignified. The oil lamp is the only light.', '16:9'),
 
     # §05 — the commercial pressure that invented the national bee
     'plate-radio-1920s': (
@@ -221,12 +227,13 @@ SLOTS = {
         'shadow. Exacting and quiet.', '16:9'),
 
     'plate-old-man-hall': (
-        'A tall hall filled with rows of seated schoolchildren, seen from behind. In the near '
-        'foreground, large and dominating the frame, stands ONE TALL ELDERLY MAN in a long '
-        'overcoat and hat, stooped, leaning on a walking stick, seen entirely FROM BEHIND and '
-        'facing away from us down the aisle towards the children. He is unmistakably an old '
-        'man: tall, broad-shouldered, adult height, at least twice the height of the seated '
-        'children. The children are small and distant. High windows, cool even light.', '16:9'),
+        'A large hall seen from the BACK of the room looking FORWARD towards a low stage at '
+        'the far end. Rows of schoolchildren are seated in the hall with their BACKS to us, '
+        'every one of them FACING FORWARD TOWARDS THE STAGE, as an audience does. Walking away '
+        'from us down the centre aisle, SMALL and at a distance, is one elderly man in a long '
+        'overcoat and hat with a walking stick, also seen from behind. He is modest in the '
+        'frame — roughly a fifth of the picture height — not looming in the foreground. The '
+        'stage at the far end is the brightest thing in the picture. High windows, cool light.', '16:9'),
 
     # §08 — cerise as a fashion word
     # First attempt came back as a near-empty pale field with one small washed-out figure at
@@ -291,6 +298,14 @@ SLOTS = {
         'porch step. Every figure is seen from behind or in near silhouette against the light, '
         'with no readable faces. A washing line, a wooden fence, a plain yard. Flat afternoon '
         'light. Unglamorous, hardworking, and warm.', '16:9'),
+    # 3:57 — "Calvin Coolidge shakes every one of their hands". A formal portrait print of
+    # Coolidge did not read as that at all; the moment is the receiving line itself.
+    'plate-handshake-line': (
+        'A formal reception in a grand American hall in 1925: a tall adult man in a dark suit '
+        'bends slightly to shake the hand of a child, while a neat line of eight or nine other '
+        'children waits its turn behind. Every figure is seen from BEHIND or in near '
+        'silhouette against tall bright windows, so no face is readable. Polished floor, '
+        'columns, formal and slightly nervous. Warm light from the windows.', '16:9'),
 }
 
 
