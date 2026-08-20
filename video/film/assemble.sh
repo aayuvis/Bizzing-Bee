@@ -53,6 +53,12 @@ echo "tail    ${TAIL}s of silence after the last word"
 # The effects bed (typewriters, press rumble, firecrackers) is mixed UNDER the narration,
 # never over it. normalize=0 matters: amix's default halves every input to guard against
 # clipping, which would quietly drop the voice 6dB and undo the whole recording.
+# STEREO, always. The narration source is mono and ffmpeg will happily carry that through to
+# a mono AAC track, which is technically correct and reads as a film with NO SOUND: several
+# embedded players drop a mono track rather than downmixing it. A review copy was reported
+# as silent for exactly this reason while every measurement said the audio was fine.
+AOPT="-c:a aac -b:a 192k -ac 2 -ar 44100"
+
 SFX=../vo/sfx.wav
 # Regenerate it if absent: it is a build artifact, not a source file, and is deliberately
 # not tracked. sfx.py is deterministic, so this reproduces the same bed every time.
@@ -63,12 +69,12 @@ if [ -f "$SFX" ]; then
   "$FF" -y -loglevel error -i out/picture.mp4 -i "$VO" -i "$SFX" \
     -filter_complex "[1:a]apad=pad_dur=${TAIL}[v];[2:a]volume=0.32[s];\
 [v][s]amix=inputs=2:normalize=0:duration=first:dropout_transition=0,alimiter=limit=0.97[a]" \
-    -map 0:v -map "[a]" -c:v copy -c:a aac -b:a 192k -shortest \
+    -map 0:v -map "[a]" -c:v copy $AOPT -shortest \
     "$OUT/before-the-bee-ep1-1080p.mp4"
 else
   "$FF" -y -loglevel error -i out/picture.mp4 -i "$VO" \
     -filter_complex "[1:a]apad=pad_dur=${TAIL}[a]" \
-    -map 0:v -map "[a]" -c:v copy -c:a aac -b:a 192k -shortest \
+    -map 0:v -map "[a]" -c:v copy $AOPT -shortest \
     "$OUT/before-the-bee-ep1-1080p.mp4"
 fi
 
@@ -97,4 +103,12 @@ PV=$(secs out/picture.mp4); MV=$(secs "$OUT/before-the-bee-ep1-1080p.mp4")
 echo "picture ${PV}s · master ${MV}s"
 awk -v a="$PV" -v b="$MV" 'BEGIN{ if ((a-b)>0.5 || (b-a)>0.5) exit 1 }' \
   || { echo "FAIL: master ${MV}s does not match picture ${PV}s — the tail was clipped"; exit 1; }
+# And prove the track really is stereo, from the file rather than from the flags we passed.
+# This is the one defect that measures clean and plays as silence, so it gets its own check.
+for f in "$OUT/before-the-bee-ep1-1080p.mp4" "$OUT/before-the-bee-ep1-720p.mp4"; do
+  ch=$({ "$FF" -i "$f" 2>&1 | sed -n 's/.*Audio: .*, \(mono\|stereo\).*/\1/p' | sed -n 1p; } || true)
+  echo "audio   $(basename "$f"): ${ch:-UNKNOWN}"
+  [ "$ch" = stereo ] || { echo "FAIL: $(basename "$f") is ${ch:-missing audio}, not stereo — players will drop it"; exit 1; }
+done
+
 echo "done → $OUT/"
