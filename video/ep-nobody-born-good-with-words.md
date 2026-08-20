@@ -1,165 +1,143 @@
 # Nobody Is Born Good With Words
 
-**Runtime:** ~10–11 min · **Voice:** the same documentary narrator as episode one —
+**Runtime:** 9:28 — measured, not guessed (1418 words / 152 wpm + 9 s tail) · **Voice:** the same documentary narrator as episode one —
 warm, brisk, dry. Amused rather than awed.
 
 **⚠️ THE TRAP THIS SCRIPT EXISTS TO AVOID.** The subject is "why learn to spell," which is
 the most preachy premise available. **The film never once tells anyone to learn to spell.**
-It tells seven true stories in which the mechanism is visible — the specific word, the
-specific root, the specific trick — and lets the viewer assemble the argument themselves.
-Any line that could be printed on a classroom poster is a line to cut. The test for every
-sentence: *would a fourteen-year-old feel talked down to?*
+It tells true stories in which the mechanism is visible — the specific word, the specific
+root, the specific trick — and lets the viewer assemble the argument themselves. Any line
+that could be printed on a classroom poster is a line to cut. The test for every sentence:
+*would a fourteen-year-old feel talked down to?*
 
 **The thesis, never stated as a thesis:** great language is **built, not born**. Everyone in
-this film worked at it, and several of them got their best ideas by accident or from their
-brother. That is the anti-preachy version of "practise your spelling," and it is also true.
+this film worked at it, and several got their best idea by accident or from a relative. That
+is the anti-preachy version of "practise your spelling," and it happens to be true.
 
 **The spine:** English is a machine with the case off. Each act hands over one gear —
-register, etymology, coinage, sound, access — attached to a story. By the close the viewer
-is holding the toolkit and nobody has given them a lecture.
+register, etymology, coinage, sound, reach — attached to a story. By the close the viewer is
+holding a toolkit and nobody has given them a lecture.
+
+**Length is measured, not guessed.** Episode one ran 1,272 script words over 502.8 s of
+narration = **152 wpm**. This script is **1418 words = 9:28** with episode one's 9 s tail. A
+true 9:00 needs 78 words fewer, and there is no prose left to squeeze — see the note at the
+end of the script for what the last 33 seconds would actually cost. Adding a beat means
+removing one.
 
 ---
 
 ## RIGHTS — read before writing a single line of quotation
 
-Episode one's rule holds: **first published 1928 or earlier, or a work of the US federal
+Episode one's line: **first published 1928 or earlier, or a work of the US federal
 government.** A documentary has a stronger fair-use position for brief attributed quotation
-than a printed book does, but the safe line is the same line, and this script stays behind
-it deliberately.
+than a printed book does, but this script stays behind the safe line deliberately, and for
+the two twentieth-century speeches it **quotes nothing at all**.
 
-| Source | Status | What this film may do |
+| Source | Status | What this film does |
 |---|---|---|
-| Lincoln, Gettysburg Address (1863) | PD, US gov | Quote freely |
-| Everett's letter to Lincoln (1863) | PD | Quote freely |
-| Douglass, *Narrative* (1845) | PD | Quote freely |
-| Hamilton's hurricane letter (1772) | PD | Quote freely |
-| Shakespeare | PD | Quote freely |
-| Čapek, *R.U.R.* (1920) | PD | Quote freely |
-| Scott, *Ivanhoe* (1819) | PD | Quote freely |
-| **Churchill (1940, 1941)** | **In copyright, estate is protective** | **DESCRIBE ONLY.** Naming one word — *surrender* — is not a quotation. Do not put the beaches line on screen or in the narration. |
-| **Dr Seuss, *If I Ran the Zoo* (1950)** | **In copyright** | State the *fact* of first printed use of "nerd". Facts are not copyrightable. No quotation, no art. |
-| **Stan Lee / Marvel** | **In copyright** | Character names and Lee's own documented remarks about his memory, paraphrased. **No comic art, no panels, no logos, no character likenesses.** |
-| **Hamilton (musical, 2015)** | **In copyright** | Describe the technique. **No lyrics, not one line.** |
-| Lemkin, *Axis Rule* (1944) | In copyright | The coinage and its two roots are facts. No quotation needed. |
+| Lincoln, Gettysburg Address (1863) | PD, US gov | Quotes freely |
+| Everett's letter to Lincoln (1863) | PD | Quotes freely |
+| Douglass, *Narrative* (1845) | PD | Quotes freely |
+| Shakespeare; Čapek, *R.U.R.* (1920); Scott, *Ivanhoe* (1819) | PD | Quotes freely |
+| **King, "I Have a Dream" (1963)** | **In copyright to 2058. The King estate litigates — it has sued news organisations over this speech.** | **NOT ONE WORD.** The film describes what the speech *did* and how it was made. Naming the speech is fine; titles are not copyrightable. This project has already been burned here — the close of this speech had to be pulled from `books/poem-chapters.js`. |
+| **Nehru, "Tryst with Destiny" (1947)** | **Murky.** Nehru d. 1964; India is life+60, so PD in India since 1 Jan 2025. In the US a 1947 foreign work may have been URAA-restored to 95 years → 2042. | **One sentence, attributed, for commentary.** This is the line the owner asked for. Strong fair-use position; not a certainty. Fallback below if you'd rather carry zero risk. |
+| **King (Stephen), *On Writing* (2000)** | In copyright | One eight-word aphorism, attributed. Everything else paraphrased. The *Carrie* wastebasket story is a fact, and facts are free. |
+| **Stan Lee / Marvel** | In copyright | Character names and Lee's own documented account of his memory, paraphrased. **No comic art, no panels, no logos, no likenesses.** |
 
-**On depicting the people in this film.** Lincoln, Douglass, Hamilton, Čapek, Lee and
-Lemkin all have genuine public-domain photographs or portraits, and those are better than
-anything that could be generated — Douglass alone sat for well over a hundred, deliberately,
-because he understood what a photograph of him did. Use them.
-
-Where something illustrated is wanted anyway, the test that actually matters is whether a
-viewer can tell the drawing from the document. Photoreal generated imagery of a named real
-person fails that test; an obviously-cartoon avatar does not, which is why episode one
-carries the champions as app avatars throughout. Judgement call per shot, not a rule.
+**On depicting the people in this film.** Lincoln, Douglass, Nehru, King, Čapek and Lee all
+have genuine public-domain or licensable photographs, and those beat anything generated —
+Douglass alone sat for well over a hundred, deliberately. Use them. Where something
+illustrated is wanted, the test that matters is whether a viewer can tell the drawing from
+the document: photoreal generated imagery of a named real person fails it, an obviously
+cartoon avatar does not. Judgement per shot, not a rule.
 
 ---
 
 ## THE FACTS (check every one before recording)
 
-**Gettysburg, 19 November 1863.** Edward Everett — former Secretary of State, president of
-Harvard, the most celebrated orator in America — was the *booked main speaker*. He spoke
-for about two hours, from memory, roughly 13,600 words. Lincoln was invited to add "a few
-appropriate remarks" and spoke for about two minutes. The address runs **268–272 words**
-depending on which of the five manuscript copies you count (Nicolay, Hay, Everett, Bancroft,
-Bliss); the Bliss copy, the one usually reproduced, is 272.
+**Gettysburg, 19 Nov 1863.** Edward Everett — former Secretary of State, president of
+Harvard, the most celebrated orator in America — was the **booked main speaker**, ~2 hours,
+from memory, ~13,600 words. Lincoln was invited to add "a few appropriate remarks" and spoke
+about two minutes. The address runs **268–272 words** depending which of five manuscript
+copies you count; the Bliss copy, the one usually reproduced, is 272.
+- **Everett's letter, 20 Nov 1863:** "I should be glad if I could flatter myself that I came
+  as near to the central idea of the occasion, in two hours, as you did in two minutes."
+- **The envelope is a myth.** Five copies survive in Lincoln's hand.
+- ⚠️ Lincoln did **not** originate "of the people, by the people, for the people" — similar
+  constructions appear in Wycliffe and in Theodore Parker. The film says he *chose* those
+  words, never that he coined them.
 
-- **Everett's letter, 20 November 1863:** "I should be glad if I could flatter myself that I
-  came as near to the central idea of the occasion, in two hours, as you did in two minutes."
-- **The envelope is a myth.** Five copies survive in Lincoln's own hand. He drafted it in
-  Washington and revised it after arriving.
-- "of the people, by the people, for the people" — every word Old English in origin.
-  ⚠️ Lincoln did not originate the phrasing; similar constructions appear in Wycliffe's
-  Bible preface and in Theodore Parker. The film should not claim he invented it.
+**The Norman doublets.** cow/**beef**, pig/**pork**, sheep/**mutton**, calf/**veal**,
+deer/**venison**. ⚠️ Popularised by **Walter Scott, *Ivanhoe* (1819)**, ch. 1, in the mouth of
+Wamba the jester — on-screen card, not a narrated line. ⚠️ The split hardened over centuries;
+it is not a clean 1066 switch.
 
-**The Norman doublets.** After 1066, the Anglo-Saxon words for livestock survived in the
-field while French words took over at the table: **cow/beef** (*boeuf*), **pig** or
-**swine/pork** (*porc*), **sheep/mutton** (*mouton*), **calf/veal** (*veau*), **deer/venison**
-(*venaison*).
-- ⚠️ The observation was popularised by **Walter Scott in *Ivanhoe* (1819)** — Wamba the
-  jester makes the joke in chapter 1. Credit Scott; the film should not present it as a
-  modern discovery. The historical picture is real but messier than the joke: the split
-  hardened over centuries and is not a clean 1066 switch.
+**Silent K.** *knight, knee, know* — pronounced in Old and Middle English, silent by the 17th
+century, spelling already frozen. ⚠️ *knight*'s *gh* was also a real sound; don't imply the K
+was the only change.
 
-**Silent K.** *knight, knee, know, knife* — the K was pronounced in Old and Middle English
-and fell silent around the 17th century. The spelling had already frozen. ⚠️ *Knight* also
-carries a *gh* that was a real back-of-the-throat sound; do not imply only the K changed.
+**Greek *ph*.** **photograph** = *phos/photo* (light) + *graphein* (to write). Same root:
+*photon*, *photosynthesis*, *telephoto*.
 
-**Greek in the spelling.** *ph* for phi: **photograph** = *phos/photo* (light) + *graphein*
-(to write). Same root: *photon*, *photosynthesis*, *telephoto*.
+**Robot.** Karel Čapek's *R.U.R.*, published 1920, premiered Prague Jan 1921. Čapek publicly
+credited his brother **Josef** with the word, from Czech ***robota*** — forced labour, the
+work a serf owed. Čapek's own account says he first tried *labori* and hated it.
 
-**Robot.** Karel Čapek's play *R.U.R.* (*Rossum's Universal Robots*), Prague, premiered
-January 1921, published 1920. Čapek publicly credited his brother **Josef** with the word,
-which comes from Czech ***robota*** — forced labour, the work a serf owed. Čapek's own
-account says he first tried *labori* and disliked it.
-
-**Nerd.** First known printed appearance: **Dr Seuss, *If I Ran the Zoo* (1950)**, where it
-names an imaginary animal. ⚠️ Whether the modern sense descends from it is **disputed** —
-say "first printed," not "invented the word we use."
-
-**Shakespeare.** The OED credits him with the earliest recorded use of roughly 1,700 words.
-⚠️ **This is not the same as inventing them**, and the script must say so. Full-text
-databases (EEBO and others) have pushed many first attestations earlier since the OED's
-original reading programme. He was heavily read and heavily searched, which inflates the
-count. What is solid: he used **functional shift** constantly — nouns as verbs, adjectives
-as nouns — and built with prefixes.
+**Shakespeare.** OED credits him with earliest recorded use of ~1,700 words. ⚠️ **Recorded ≠
+invented**, and the script says so. Full-text databases have pushed many attestations
+earlier. What is solid: constant **functional shift** (nouns as verbs) and prefix building.
 
 **Stan Lee's alliteration.** Peter Parker, Bruce Banner, Reed Richards, Sue Storm, Stephen
-Strange, Matt Murdock, J. Jonah Jameson, Otto Octavius, Curt Connors, Silver Surfer. Lee
-said repeatedly in interviews that he did it because his memory was poor: if he could recall
-the initial of the first name, the surname started the same way. ⚠️ Attribute it to Lee's
+Strange, Matt Murdock, J. Jonah Jameson, Otto Octavius. Lee said repeatedly that his memory
+was poor and the repeated initial helped him keep characters straight. ⚠️ Attribute to Lee's
 own account, which is how it is known.
 
-**Lee's vocabulary.** He used words like *nefarious*, *uncanny*, *invulnerable*, *cosmic* in
-comics for children and defended it. ⚠️ Verify a specific quotation before putting one in
-the narration; the paraphrase in the script is safe as written.
+**Stephen King, *On Writing* (2000).**
+- "The road to hell is paved with adverbs." ⚠️ Verify wording against the book before
+  recording; it is widely misquoted.
+- His vocabulary advice is **anti-showing-off**: use the first word that comes to mind if it
+  is the right one. This is load-bearing for the film — it stops the whole thing collapsing
+  into "learn big words."
+- **He wrote the opening pages of *Carrie* and threw them in the wastebasket; his wife
+  Tabitha retrieved them and told him to continue.** King has told this many times.
+- "Read a lot, write a lot" is a condensation of his own longer formulation — paraphrase,
+  don't quote as verbatim.
 
-**Hamilton's hurricane letter.** A hurricane struck St Croix on **31 August 1772**. Hamilton,
-about 17, wrote an account of it; it was published in the *Royal Danish-American Gazette*
-on 3 October 1772. Local subscribers raised funds to send him to North America for his
-education. ⚠️ Scholarship differs on the precise mechanics and on how much the letter alone
-caused it — say the letter was part of what got him off the island, not the sole cause.
+**Nehru, 14 August 1947.** Constituent Assembly, New Delhi, minutes before midnight, as
+India became independent. "Tryst with Destiny."
+- ***Tryst*** enters English from Old French *triste* — **a hunting term: the appointed
+  station where you agreed to wait.** It later shifts to a secret meeting between lovers.
+  ⚠️ Verify against OED before recording; this etymology is the reason the beat exists.
 
-**Frederick Douglass.** Born into slavery in Talbot County, Maryland, c. February 1818. From
-his *Narrative* (1845), all of it his own account:
-- Sent to Baltimore; Sophia Auld began teaching him the alphabet until Hugh Auld stopped
-  her, saying learning would "spoil" him — which Douglass says taught him that literacy was
-  the path out.
-- In **Durgin and Bailey's shipyard** he watched carpenters chalk letters on timber to mark
-  its place: **L** larboard, **S** starboard, **F** forward, **A** aft.
-- He would challenge boys who could write — *I bet you can't write better than that* — and
-  copy what they produced to prove it.
-- He traded **bread** from the house to poor white boys for reading lessons.
-- He bought ***The Columbian Orator*** — a school reader of speeches — for **fifty cents**.
-- ⚠️ Teaching enslaved people to read was banned by statute in several Southern states;
-  Maryland's position was more custom than statute. Say "in much of the American South,"
-  not "everywhere it was illegal."
-- He appears on the US $1 coin (2017 American Innovation / Frederick Douglass quarter for
-  DC, 2017) — ⚠️ **verify the exact coin before saying "he's on the money."** Safer line:
-  "There are statues of him on two continents."
-
-**Genocide.** Coined by **Raphael Lemkin**, a Polish-Jewish lawyer, in *Axis Rule in Occupied
-Europe* (1944), from Greek ***genos*** (race, people) + Latin ***-cide*** (killing). Adopted
-in the UN Genocide Convention, **9 December 1948**. ⚠️ The phrase "a crime without a name"
-is **Churchill's**, from a 1941 broadcast — attribute it or, better, paraphrase and avoid
-the quotation entirely. Lemkin lost most of his family in the Holocaust. **Handle with
-restraint: no imagery, no detail, one sober beat, then move on.**
+**King, 28 August 1963.** March on Washington, steps of the Lincoln Memorial. **~250,000
+people present**; carried live by all three US television networks.
+- He **opened by echoing Lincoln** — Lincoln's "four score and seven years ago" against
+  King's own opening, delivered in front of Lincoln's statue, measuring out a century. ⚠️
+  Describe the echo; do not quote King's four words if you want zero risk.
+- **The most famous passage was not in the prepared text.** Gospel singer **Mahalia Jackson**,
+  standing behind him, called out to him about the dream; he set the pages aside. Attested by
+  Clarence Jones (who helped draft the text) and others present.
+- ⚠️ **But he was not inventing on the spot.** He had used versions of that material earlier —
+  Detroit in June 1963, Rocky Mount NC in Nov 1962. **This distinction is the entire reason
+  the beat is in this film** and must not be flattened into "he improvised it."
 
 ---
 
 ## SCRIPT
 
-Timings are estimates at ~150 wpm. Total ≈ 1,720 words ≈ 11:00. **See "If it needs to be
-shorter" at the end** — there are three clean cuts that bring it to about 9:30.
+**1418 words = 560 s narration + 9 s tail = 9:28.** Down from 1,876 words (12:20) in
+the first draft, while adding Stephen King, Nehru and King. Re-measure after any edit:
+word count ÷ 152 = minutes.
 
 ---
 
 **[0:00 — COLD OPEN]**
 
-On the nineteenth of November, 1863, two men spoke at the same event, in the same field, to
-the same crowd.
+On the nineteenth of November, 1863, two men spoke in the same field, on the same afternoon,
+to the same crowd.
 
-The first spoke for two hours. He was the most famous public speaker in America, and he did
-the whole thing from memory. Thirteen thousand words. No notes.
+The first spoke for two hours. From memory. Thirteen thousand words, no notes — he was the
+most famous speaker in America.
 
 The second spoke for about two minutes.
 
@@ -171,33 +149,29 @@ This film is about why.
 
 ---
 
-**[0:30 — ACT ONE · THE TWO-MINUTE SPEECH]**
+**[0:24 — ACT ONE · THE TWO-MINUTE SPEECH]**
 
-The man who spoke for two hours was Edward Everett, and here is the part everyone leaves
-out: he was *good*. He wasn't a bore who went on too long. He was the best in the business,
-he was the headline act, and Lincoln had been invited to add — this is the actual wording —
-"a few appropriate remarks."
+The man who spoke for two hours was Edward Everett, and here's the part everyone leaves out:
+he was *good*. Not a bore who overran — the best in the business. Lincoln was there to add, and this is the real wording, "a few appropriate
+remarks."
 
 Lincoln's few remarks came to two hundred and seventy-two words.
 
-Look at what he built them out of.
-
 > *of the people, by the people, for the people*
 
-Every single word in that line is Old English. The language that was already here before
-anybody invaded. They're short. They're all one syllable. A five-year-old knows every word.
+Every word in that line is Old English — the language that was here before anybody invaded. Short. All one syllable.
 
-That is not Lincoln running out of vocabulary. Lincoln could do anything he wanted with
-English. It's Lincoln knowing the thing that every person in this film knows:
+That isn't Lincoln running out of vocabulary. It's the thing everyone in this film knows:
+**when you want to be believed, reach for the short old words. The long ones are for
+explaining.**
 
-**when you want to be believed, you reach for the short old words. When you want to explain,
-you reach for the long ones.**
+And no, he didn't scribble it on an envelope on the train. Five copies survive in his own
+hand — he wrote it, and then he wrote it again.
 
-And no, he did not scribble it on the back of an envelope on the train. That story is lovely
-and it is not true. We have five copies in his own handwriting. He wrote it, and then he
-wrote it again, and then he changed it again after he got there.
+Stephen King put the same instinct more rudely, a hundred and forty years later: *the road to
+hell is paved with adverbs.*
 
-The next morning, Everett sat down and wrote to him.
+Next morning, Everett wrote to him.
 
 > *"I should be glad if I could flatter myself that I came as near to the central idea of the
 > occasion, in two hours, as you did in two minutes."*
@@ -206,212 +180,165 @@ Two hours. Two minutes. Everett knew exactly what had happened to him.
 
 ---
 
-**[2:00 — ACT TWO · THREE LANGUAGES IN A TRENCHCOAT]**
+**[1:50 — ACT TWO · THREE LANGUAGES IN A TRENCHCOAT]**
 
-So short old words hit hardest. Which raises a question — where does English *keep* its short
-old words, and why is everything else so unbelievably annoying to spell?
+So the short old words hit hardest. Which raises a question — why is everything else so
+annoying to spell?
 
-Because English isn't one language. It's about three, standing on each other's shoulders in
-a long coat, pretending to be one language.
+Because English isn't one language. It's three, standing on each other's shoulders in a long
+coat. Old English at the bottom — blunt, short, and it owns your body and your family. French
+upstairs after 1066, when the Normans arrive and the people running the country stop speaking
+it. Then Latin and Greek over both, for science, medicine and law.
 
-At the bottom: Old English. Anglo-Saxon. Blunt, short, and it owns almost everything you do
-with your body and your family. *Eat. Sleep. Run. Hand. Mother. House. Word.*
+You can still see the seam — on the menu.
 
-Then 1066. The Normans arrive, and for three hundred years the people running the country
-speak French. So French moves in upstairs. *Government. Justice. Courage. Fashion.*
+In the field it's a **cow**. On the plate, **beef**. **Pig**, **pork**. **Sheep**, **mutton**.
 
-And on top of both, scholars go shopping in Latin and Greek whenever they need something for
-science, medicine or law. *Photograph. Democracy. Telescope.*
-
-You can still see the seam. It's on the menu.
-
-In the field, the animal is a **cow**. On the plate, it's **beef**. In the field, **pig**. On
-the plate, **pork**. **Sheep**, **mutton**. **Calf**, **veal**.
-
-Same animal, twice, in two languages — because for three centuries the people who looked
-after the animal spoke English, and the people who ate it spoke French.
-
-A novelist spotted that first, by the way. Walter Scott, in *Ivanhoe*, in 1819 — and he gave
-the joke to a jester.
+The same animal twice, in two languages — because for three hundred years the people who
+looked after it spoke English and the people who ate it spoke French.
 
 *[beat]*
 
-And this is the moment English spelling stops being unfair and starts being **evidence**.
+And this is where English spelling stops being unfair and starts being **evidence**.
 
-Why is there a K in **knight**? Because we used to say it. *K-nicht.* The K isn't silent, it's
-*extinct* — English froze the spelling and kept walking, and left the K standing there like a
-fossil in a cliff face.
+Why is there a K in **knight**? Because we used to say it. *K-nicht.* That K isn't silent,
+it's *extinct* — the spelling froze, the language walked off and left it there, like a fossil
+in a cliff.
 
-Why does **photograph** have a *ph* instead of an honest F? Because it's Greek and it is
-telling you so. *Photo* — light. *Graph* — writing. Writing with light. Which is exactly what
-a photograph is.
+Why does **photograph** have a *ph* and not an honest F? Because it's Greek, and it's
+telling you so. *Photo* — light. *Graph* — writing. Writing with light.
 
 Every hard spelling in English is a passport stamp. It's the word telling you where it's
 been.
 
 ---
 
-**[4:00 — ACT THREE · IF THERE ISN'T A WORD, BUILD ONE]**
+**[3:20 — ACT THREE · IF THERE ISN'T A WORD, BUILD ONE]**
 
-Once you can read the stamps, you can do something better than read. You can make a word that
-strangers will understand the first time they meet it.
+Once you can read the stamps, you can build — a word strangers understand the first time they
+meet it.
 
-In 1920, a Czech playwright named Karel Čapek was writing a play about artificial workers,
-and he was stuck for what to call them. He tried *labori*. It was awful. He went next door,
-where his brother Josef was painting, and asked.
+In 1920 a Czech playwright, Karel Čapek, was writing a play about artificial workers and was
+stuck for what to call them. He tried *labori*. Awful. So he went next door, where his
+brother Josef was painting, and asked.
 
-Josef, without putting down the brush, suggested the old Czech word for the grinding,
-compulsory work a serf owed his lord.
-
-***Robota.***
+Josef didn't put the brush down. He suggested the old Czech word for the grinding,
+compulsory work a serf owed his lord. ***Robota.***
 
 **Robot.**
 
-One playwright, one play, one word — and a century later it is in very nearly every language
-on Earth. Čapek spent the rest of his life telling people the credit belonged to his brother.
+One playwright, one play, one word — and a century later it's in nearly every language on
+Earth. Čapek spent his life telling people it was his brother's.
 
-In 1950, Dr Seuss needed a rhyme and put a word into print that nobody had printed before:
-**nerd**. He meant a small imaginary animal with unusual hair. The word had other plans.
+And you'll hear that Shakespeare invented seventeen hundred words. Careful — what the
+dictionary records is the earliest *surviving printed* use, which is a different claim, and
+computers keep finding earlier ones. What he actually did was treat English as a kit: need a
+verb, grab a noun and use it as one.
 
-*[beat]*
-
-Which brings us to the one you were waiting for.
-
-You will hear that Shakespeare invented seventeen hundred words. Be careful with that one.
-What the dictionary actually records is that Shakespeare is the **earliest surviving printed
-use** of about that many — and those are two extremely different claims. He wrote a lot, he
-got printed, and then he got *searched*, over and over, for four hundred years. Now that
-computers can read everything else from that century, plenty of his "inventions" are turning
-up earlier, in somebody else's book, where nobody had bothered to look.
-
-Which is fine, because the true version is better.
-
-Shakespeare treated English as a kit. Needed a verb? He'd grab a noun and use it as one.
-Needed the opposite of something? Bolt *un-* on the front and find out what happens.
-
-That's not genius arriving like weather. That's the LEGO instinct — and it's the same box
+That's not genius arriving like weather. That's the LEGO instinct, and it's the same box
 you've got.
 
 ---
 
-**[6:00 — ACT FOUR · WHY IT SOUNDS LIKE THAT]**
+**[4:32 — ACT FOUR · IT'S SOUND ENGINEERING]**
 
-Now the part nobody mentions at school: an enormous amount of great writing is **sound
-engineering**.
+Peter Parker. Bruce Banner. Reed Richards. Sue Storm. Stephen Strange. Matt Murdock.
 
-Peter Parker. Bruce Banner. Reed Richards. Sue Storm. Stephen Strange. Matt Murdock. J.
-Jonah Jameson.
+All Marvel characters. All the same letter twice.
 
-Every one of those a Marvel character. Every one of them with the same letter twice.
+That was Stan Lee — and by his own account he wasn't being clever. He said his memory was
+terrible: dozens of characters to keep straight, and if he could remember the first name
+started with a P, at least he knew the surname did too.
 
-That was Stan Lee — and by his own account he was not being clever. He said he did it because
-his memory was *terrible*. He had dozens of characters to keep straight, and if he could
-remember the first name started with a P, then at least he knew the surname did too.
+A workaround for forgetfulness became one of the most recognisable naming conventions in pop
+culture.
 
-A workaround for a bad memory became one of the most recognisable naming conventions in
-popular culture.
-
-Lee did one other thing, and that one was deliberate. He wrote comics for children using
-words like *nefarious* and *uncanny* and *invulnerable* — and he got letters telling him to
-knock it off, because children wouldn't understand. He kept doing it. His argument, roughly,
-was that a kid who meets a big word inside a story they already love will work out what it
-means from what's happening on the page, and then own it forever.
-
-He was right. That's how most people get most of their words. Not from a list — from a story
-that needed them.
-
-Songwriters run the same machinery at a higher gear. Rhyme is the obvious tool; the
-interesting one is **internal rhyme**, where the echoes land in the middle of the line
-instead of politely waiting at the end. Hip-hop pushed that density further than anything in
-English had for centuries — and when Lin-Manuel Miranda walked it into a Broadway theatre in
-2015, that was the machine he brought with him.
-
-The show was about a man who wrote his way off an island.
+Songwriters run the same trick harder — the interesting one isn't rhyme, it's **internal
+rhyme**, landing mid-line instead of waiting politely at the end.
 
 ---
 
-**[8:00 — ACT FIVE · A WORD CAN BE A KEY]**
-
-Alexander Hamilton was seventeen years old, clerking on St Croix, with no money and no
-prospect of ever leaving.
-
-On the thirty-first of August, 1772, a hurricane hit the island. Hamilton wrote an account of
-it — just a letter, describing what the storm had done. Somebody showed it to the newspaper.
-The newspaper printed it. And the people who read it put money together to send the boy who
-wrote it to school in America.
-
-He described the weather, and it moved him across an ocean.
-
-*[beat]*
-
-Now the hard one.
+**[5:13 — ACT FIVE · WHAT WORDS ACTUALLY DO]**
 
 Frederick Douglass was born into slavery in Maryland, around 1818. In much of the American
 South it was against the law to teach an enslaved child to read — and it was against the law
-for exactly the reason you'd think. It worked.
+for exactly the reason you'd guess.
 
-Douglass learned anyway. And the way he did it belongs in a spelling manual.
+He learned anyway, and how he did it belongs in a spelling manual.
 
-He was sent to work at a Baltimore shipyard, and he noticed that the carpenters chalked
-letters onto the timbers to mark where each piece went on the ship. **L** for larboard. **S**
-for starboard. **F** for forward. **A** for aft.
+Sent to work at a Baltimore shipyard, he watched the carpenters chalk letters onto the
+timbers, to mark where each piece went on the ship. **L** for larboard. **S** for starboard.
+**F** for forward. **A** for aft.
 
 Four letters. He learned those four.
 
-Then he'd find a boy in the street who could write, and say: *I bet you can't write better
+Then he'd find a boy in the street who could write and say: *I bet you can't write better
 than that.* And the boy, being a boy, would prove that he absolutely could — and Douglass
-would copy down the proof and keep it.
+copied down the proof and kept it.
 
-He traded bread out of the kitchen for reading lessons. He saved fifty cents and bought a
-second-hand schoolbook of famous speeches called *The Columbian Orator*, and took it apart
-line by line, on his own, to find out how the sentences were doing it.
+He traded bread from the kitchen for reading lessons, and saved fifty cents for a second-hand
+book of speeches that he took apart line by line, to see how the sentences did it.
 
-That boy grew into one of the greatest orators the English language has produced. He argued
-with presidents. There are statues of him on two continents.
+That boy became one of the greatest orators the English language has produced. He argued with
+presidents.
 
 He started with four letters chalked on a plank.
 
 *[beat]*
 
-One more, and this one is serious.
+Words don't only open a door for one person. Sometimes they open a country.
 
-In 1944, a lawyer named Raphael Lemkin was trying to get a crime punished and kept hitting
-the same wall: the crime had no name. And you cannot write a law against something you have
-no word for.
+Delhi, the night of the fourteenth of August, 1947. Minutes to midnight, and India is minutes
+from independence. Jawaharlal Nehru stands up and says that at the stroke of the midnight
+hour, when the world sleeps, India will awake to life and freedom.
 
-So he built the word. Greek ***genos*** — a people. Latin ***-cide*** — killing.
+But look at the word he'd chosen a sentence earlier: India had made a ***tryst*** with
+destiny. *Tryst* comes into English from Old French, where it began as a hunting word — the
+appointed place where you agreed to wait.
 
-**Genocide.**
+A word about a waiting place, at midnight, at the birth of a nation. He could have said
+*promise*.
 
-Four years later it was in an international treaty, and it has been the name of that crime
-ever since.
+*[beat]*
 
-He needed a law. To get the law, he first needed a word. That is the entire argument of this
-film, and a man had to prove it the hardest way there is.
+Sixteen years later, Washington. The twenty-eighth of August, 1963. A quarter of a million
+people on the Mall, every television network in the country carrying it live.
+
+Martin Luther King Jr stands on the steps of the Lincoln Memorial and opens by measuring out
+a hundred years in Lincoln's own phrasing, with Lincoln's statue behind him.
+
+Here's the part almost nobody knows. The most famous passage in that speech **was not in the
+script.** He was working through a prepared text. Behind him, the gospel singer Mahalia
+Jackson called out — tell them about the dream. He put the pages aside.
+
+But he wasn't making it up. He'd been building that passage for a year, in halls of a few
+hundred people.
+
+So when a quarter of a million people went quiet, it was ready.
+
+That's what improvisation is. Preparation you can reach without looking.
 
 ---
 
-**[10:00 — ACT SIX · NOBODY WAS BORN WITH IT]**
+**[8:15 — ACT SIX · NOBODY WAS BORN WITH IT]**
 
-So: why learn to spell, in a world that has spell-check?
+So — why learn to spell, in a world with spell-check?
 
-Not because it's tidy. Here's the actual reason.
-
-Every person in this film had exactly the equipment you have. Lincoln rewrote his two minutes
-at least five times. Stan Lee used a trick because he kept forgetting his own characters'
-names. Čapek's greatest word was his brother's idea, shouted through a door. Shakespeare's
-reputation turns out to include a certain amount of luck about whose book got kept.
+Every person in this film had the equipment you have. Lincoln rewrote his two minutes five
+times. Stan Lee used a crutch because he forgot his own characters' names. Čapek's best word
+was shouted through a doorway by his brother. Stephen King threw the first pages of *Carrie*
+in the bin; his wife took them back out.
 
 Not one of them was born good with words. Every one of them went and looked inside the
 machine.
 
-And spelling is the door into it. The moment you learn that **photograph** has a *ph*
-because it's Greek for light, you haven't memorised a spelling. You've been handed *photon*,
-*photosynthesis*, *telephoto* and a hundred more, free, for the rest of your life.
+And spelling is the door in. Learn that **photograph** has a *ph* because it's Greek for
+light, and you haven't memorised a spelling — you've been handed *photon*, *photosynthesis*,
+*telephoto* and a hundred more, free, for life.
 
 That's the trade. Every hard word you take apart hands you the next twenty.
 
-The rest is practice.
+The rest is practice. King's version: read a lot, write a lot. There isn't a third thing.
 
 Which is what a spelling bee is for.
 
@@ -419,55 +346,84 @@ Which is what a spelling bee is for.
 
 ---
 
-## VISUAL PLAN (one line per act — detail comes at scene-graph time)
+## LENGTH: 9:28, AND WHAT THE LAST 28 SECONDS WOULD COST
 
-- **Cold open** — a field, two lecterns, one enormous shadow and one small one. Two clocks:
-  02:00:00 and 00:02:00. No faces.
-- **Act 1** — the 272 words as actual type filling one screen, then the six words of "of the
-  people" pulled out and held. Everett's letter as a real handwriting plate. Lincoln has
-  genuine PD photographs; use them, not a drawing.
-- **Act 2** — **the trenchcoat.** Three stacked figures under one coat is the film's best
-  visual gag and should be the thumbnail candidate. Then the menu: field on the left in
-  Anglo-Saxon type, plate on the right in French type, animals walking across. Then the K in
-  *knight* as a fossil embedded in rock strata.
-- **Act 3** — *robota* → *robot* on a workshop bench, built from two gears. Shakespeare as a
-  LEGO baseplate with prefixes and suffixes as bricks. **No Seuss art of any kind.**
-- **Act 4** — the alliteration names as a typographic wall, initials igniting in pairs. Sound
-  visualised as waveform, internal rhyme as echoes landing mid-line. **No Marvel art, no
-  Hamilton imagery.**
-- **Act 5** — the shipyard: chalked L, S, F, A on real timber. This is the emotional peak of
-  the film and should be its most beautiful shot. Douglass has magnificent PD photographs —
-  he was the most photographed American of the 19th century, which is itself worth a line if
-  there's room. Lemkin: type only, on black. No imagery.
-- **Act 6** — the machine, case open, gears turning, each gear labelled with a root the film
-  has taught. Then the bee.
+The brief was 9:00. This is **9:28** — 1,418 words, down from 1,876 (12:20) in the first
+draft, while *adding* Stephen King, Nehru and Martin Luther King Jr.
 
-**Motion:** same discipline as episode one — SVG elements animated over stills, inside the
-Ken Burns wrapper so the move carries them. No generated video.
+The prose has no slack left; three passes of tightening bought 71 words, then 53, then 12.
+Everything from here removes a beat, so it's your call rather than mine:
+
+| Cut | Saves | What you lose |
+|---|---|---|
+| Act four entirely | 0:41 | Stan Lee, and the only modern-popular-culture story in the film. You asked for comic writers. |
+| The Shakespeare paragraph (act three) | 0:22 | The film's one lesson in doubting a famous claim. *Robot* still carries the act. |
+| The Nehru beat | 0:40 | *Tryst*, and the film's only non-Anglo-American story. You asked for it. |
+| Everett's letter (act one) | 0:16 | The best button in the film. Don't. |
+
+My recommendation: **ship 9:28.** Nothing above is worth 28 seconds. If it must be 9:00,
+cut Shakespeare and trim act four's closing line — that lands 9:01 and costs least.
 
 ---
 
-## IF IT NEEDS TO BE SHORTER
+## WHAT WAS ALREADY CUT, AND WHY
 
-Three clean cuts, in the order I'd make them, taking it from ~11:00 to ~9:30:
+From the 12:20 draft. Restore any of these and something else has to go.
 
-1. **The Seuss/nerd beat** (act 3, ~20s). Charming, but the disputed etymology means it needs
-   a hedge, and a hedge costs more time than the joke is worth.
-2. **The Hamilton hurricane letter** (act 5, ~45s). It hurts, but Douglass makes the same
-   point far harder in the same act, and act 5 is the longest in the film.
-3. **The Walter Scott attribution** (act 2, ~15s) — trim to a card on screen rather than a
-   narrated line.
+- **Raphael Lemkin and the coining of *genocide*** (~110 words). The strongest *logical*
+  proof in the film — he needed a law, so he first needed a word — and the reason it went is
+  that Nehru and King now carry "words move the world" far more warmly, and the owner's brief
+  asked for fun and knowledgeable. It was also the film's only grave beat. **This resolves
+  the open question from the previous draft.** Say the word and it comes back.
+- **Alexander Hamilton's hurricane letter, 1772** (~90 words). A seventeen-year-old describes
+  a storm, a newspaper prints it, and strangers raise the money to send him to America.
+  Genuinely wonderful. Cut because Douglass makes the same point harder in the same act.
+- **Dr Seuss and the first printing of *nerd*** (~55 words). The modern sense may not descend
+  from it, and the hedge costs more than the joke earns.
+- **Walter Scott's *Ivanhoe* credit for the cow/beef observation** (~35 words) → on-screen
+  card during the menu sequence.
+- **Stan Lee's big-vocabulary-for-children argument** (~90 words). Stephen King now makes the
+  sharper version of the same point, and King's version — *don't dress it up* — is the one
+  that keeps this film honest.
+- The narrated word-lists in act two (*eat, sleep, run…*) → on screen, not spoken (~40 words).
 
-**Do not cut** for length: Everett's letter, the cow/beef seam, the shipyard, or Lemkin.
-Those are the four things people will remember.
+---
 
-## OPEN QUESTIONS FOR THE OWNER
+## VISUAL PLAN (one line per act)
 
-1. **The Lemkin beat.** One sober moment about the Holocaust, no imagery, ~25 seconds, in a
-   film for 8–15s. I think it earns the entire thesis and that children's documentaries earn
-   trust by not lying about the world — but it is the one grave note in an otherwise light
-   film, and it's your channel. Keep, soften, or cut?
-2. **Runtime.** ~11:00 as written, ~9:30 with the three cuts above. Episode one was 8:31.
-3. **Title.** *Nobody Is Born Good With Words* is the least preachy framing I could find for
-   a preachy premise — it's a reassurance rather than an instruction, and it makes the whole
-   film a proof. Alternative if you'd rather lead with the hook: *Two Hours and Two Minutes*.
+- **Cold open** — a field, two lecterns, one enormous shadow and one small. Two clocks:
+  02:00:00, 00:02:00. No faces.
+- **Act 1** — 272 words as actual type filling the screen, then six words pulled out and held.
+  Everett's letter as a handwriting plate. Lincoln has genuine PD photographs; use them.
+- **Act 2** — **the trenchcoat** is the film's best gag and the thumbnail candidate. Then the
+  menu: field left in Anglo-Saxon type, plate right in French type, animals walking across.
+  Then the K in *knight* as a fossil in rock strata.
+- **Act 3** — *robota* → *robot* built from two gears on a workshop bench. Shakespeare as a
+  LEGO baseplate, prefixes and suffixes as bricks.
+- **Act 4** — the names as a typographic wall, initials igniting in pairs. Internal rhyme as
+  echoes landing mid-line. **No Marvel art of any kind.**
+- **Act 5** — three movements, and the act carries the film. The shipyard first: chalked L, S,
+  F, A on real timber, the most beautiful shot in the picture. Then Delhi at midnight — a
+  clock, a flag at the instant, the word *tryst* dissolving from a hunting station into the
+  date. Then Washington: **the crowd, not the man.** The whole point of the King beat is
+  scale and silence, so shoot the quarter of a million, the microphones, the networks. Genuine
+  archive stills only.
+- **Act 6** — the machine, case open, gears turning, each labelled with a root the film has
+  taught. Then the bee.
+
+**Motion:** episode one's discipline — SVG animated over stills, inside the Ken Burns wrapper
+so the move carries them. No generated video.
+
+---
+
+## OPEN QUESTIONS
+
+1. **Nehru's line.** The script paraphrases the sentence into reported speech — "says that at
+   the stroke of the midnight hour…" — which is the form you asked for while keeping it out
+   of direct quotation. If you want it as a true quote on screen, the rights position is
+   strong but not certain (see table). Your call; the reported-speech version is what's
+   written.
+2. **King's opening echo of Lincoln.** Currently *described* rather than quoted, so the film
+   carries zero King text. If you'd rather hear the four words, that's a brief attributed
+   quotation for commentary — defensible, but this estate is the one that sues.
+3. **Runtime.** 9:00 as written. The three biggest restorable cuts are listed above.
