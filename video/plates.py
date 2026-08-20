@@ -5,19 +5,21 @@
     plates.py <slug>...  generate the named slots
     plates.py --all      generate whatever is missing
 
-TWO RULES THIS FILE EXISTS TO ENFORCE, both of them about honesty rather than taste.
+TWO CONVENTIONS FOR THIS FILE, both about honesty rather than taste. They govern PLATES —
+the 2K illustrated backgrounds — and nothing else.
 
-1. **No generated picture of a real person, ever.** Not Marie Bolden, not Frank Neuhauser,
-   not Edna Stover. A synthesised face presented as a historical figure is a fabrication
-   dressed as a document, and on a children's history channel it is unrecoverable. Where a
-   person has no free photograph, the film carries them TYPOGRAPHICALLY. There is no slot
-   below for a face and there must never be one.
-
-2. **Nothing here may read as a photograph.** Every plate is openly an illustration —
+1. **Nothing here may read as a photograph.** Every plate is openly an illustration —
    inked line, flat inks, visible drawing. That is not a stylistic preference; it is what
    stops a generated image being mistaken for archive footage. Anything photoreal would be
    a fake primary source sitting next to four real Library of Congress photographs, and the
    viewer has no way to tell which is which.
+
+2. **No portrait slots here.** There is no slot below for a specific historical person's
+   face and there should not be one, because a 2K plate is exactly the object a viewer
+   might read as a document. That is a decision about *this file*, not a ban on depicting
+   the champions: the film shows them as app avatars from `images/av/`, which are drawn in
+   an obviously cartoon register and cannot be confused with the archive photographs. See
+   `spellbound-app/champions-pack.py` for why that case is the opposite one.
 
 Register is the book series' `mature` style (see CLAUDE.md), not the app's Ghibli-painterly
 one — this is 1908 social history, and the children's-picture-book look would misread the

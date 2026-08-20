@@ -23,7 +23,9 @@ Smithsonian Open Access (CC0) — Webster's American Spelling Book (1821), Cooli
 Guinness World Records recognises the 1908 NEA contest as the first nationwide spelling bee.
 
 A NOTE ON HOW THIS WAS MADE
-The narration in this film is AI-generated, and so are the illustrated backgrounds — the theatre, the schoolhouse, the pressroom and the rest. They are drawings, deliberately, and never photographs: no image here depicts a real person who could not be shown from a genuine archive photograph. There is no AI-generated portrait of Marie Bolden, Frank Neuhauser or anyone else in this story. Where no free photograph of a person exists, the film names them in type instead.
+The narration in this film is AI-generated, and so is the artwork — the theatre, the schoolhouse, the pressroom, and the cartoon avatars of the champions. The photographs are the exception: every photograph you see is a genuine archive image from the Library of Congress or the Smithsonian, and none of them has been altered or generated.
+
+The champions appear as cartoon avatars from the Bizzing Bee app, drawn in the same style as the rest of that collection. They are characters inspired by real children, not claimed likenesses, and none is drawn from a specific photograph. Nothing generated in this film is made to look like a photograph, so you can always tell which images are the historical record and which are illustration.
 
 Bizzing Bee is a free spelling-bee training app — 128,000 words, every one spoken aloud.
 https://www.bizzingbee.com

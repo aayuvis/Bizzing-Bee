@@ -41,14 +41,24 @@ That changes the central risk. In a story film the thing that embarrasses you is
 drawings, and a generated portrait captioned with a real person's name is a fabrication
 presented as a document. On a children's history channel that is unrecoverable.
 
-So the two rules from `CLAUDE.md` gain a third, which is absolute:
+The useful distinction — and it is a judgement, not a rule anyone has laid down:
 
-> **3. No generated picture of a real person, ever.** Not Marie Bolden, not Frank
-> Neuhauser, not Edna Stover. Where a person has no free photograph, the film carries them
-> TYPOGRAPHICALLY, or from behind, or as an app avatar — never as a synthesised face
-> presented as a likeness.
+> **What matters is whether a viewer can tell the drawing from the document.** A generated
+> image that could pass for a photograph, captioned with a real person's name, is a
+> fabrication presented as evidence. A cartoon avatar of the same person, in an obviously
+> illustrated style, is not — nobody mistakes a chibi sticker for an archive plate.
 
-Two corollaries that took a review round each:
+**What episode one actually does**, so nobody inherits a rule the film itself breaks: the
+champions — Marie Bolden, Frank Neuhauser, Pauline Bell, Dean Lucas, Betty Robinson, Edna
+Stover — appear throughout as generated app avatars, at the owner's explicit and repeated
+request. What the film does *not* do is generate anything photoreal of them. That is the
+line that was actually held, and it is the one worth keeping.
+
+An earlier draft of this document stated a blanket "no generated picture of a real person,
+ever" and attributed it to `CLAUDE.md`. `CLAUDE.md` says no such thing, and the shipped film
+does not obey it. Corrected here rather than left for the next session to trip over.
+
+One corollary that took a review round:
 
 - **Nothing generated may read as a photograph.** Every plate is openly a drawing: inked
   line, flat inks, visible hand. That is not taste, it is what stops a generated image being

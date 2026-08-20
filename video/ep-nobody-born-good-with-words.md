@@ -42,9 +42,15 @@ it deliberately.
 | **Hamilton (musical, 2015)** | **In copyright** | Describe the technique. **No lyrics, not one line.** |
 | Lemkin, *Axis Rule* (1944) | In copyright | The coinage and its two roots are facts. No quotation needed. |
 
-**And episode one's absolute rule still stands: no generated picture of a real person,
-ever.** Lincoln, Douglass, Hamilton, Čapek, Lee and Lemkin all have genuine public-domain
-photographs or portraits — use those or use type. Never a synthesised face.
+**On depicting the people in this film.** Lincoln, Douglass, Hamilton, Čapek, Lee and
+Lemkin all have genuine public-domain photographs or portraits, and those are better than
+anything that could be generated — Douglass alone sat for well over a hundred, deliberately,
+because he understood what a photograph of him did. Use them.
+
+Where something illustrated is wanted anyway, the test that actually matters is whether a
+viewer can tell the drawing from the document. Photoreal generated imagery of a named real
+person fails that test; an obviously-cartoon avatar does not, which is why episode one
+carries the champions as app avatars throughout. Judgement call per shot, not a rule.
 
 ---
 
