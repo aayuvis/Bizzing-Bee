@@ -157,7 +157,7 @@ remarks."
 
 Lincoln's few remarks came to two hundred and seventy-two words.
 
-> *of the people, by the people, for the people*
+**LINCOLN:** of the people, by the people, for the people
 
 Every word in that line is Old English — the language that was here before anybody invaded. Short. All one syllable.
 
@@ -168,13 +168,14 @@ explaining.**
 And no, he didn't scribble it on an envelope on the train. Five copies survive in his own
 hand — he wrote it, and then he wrote it again.
 
-Stephen King put the same instinct more rudely, a hundred and forty years later: *the road to
-hell is paved with adverbs.*
+Stephen King put the same instinct more rudely, a hundred and forty years later.
+
+**STEPHEN KING:** The road to hell is paved with adverbs.
 
 Next morning, Everett wrote to him.
 
-> *"I should be glad if I could flatter myself that I came as near to the central idea of the
-> occasion, in two hours, as you did in two minutes."*
+**EDWARD EVERETT:** I should be glad if I could flatter myself that I came as near to the
+central idea of the occasion, in two hours, as you did in two minutes.
 
 Two hours. Two minutes. Everett knew exactly what had happened to him.
 
@@ -223,7 +224,9 @@ stuck for what to call them. He tried *labori*. Awful. So he went next door, whe
 brother Josef was painting, and asked.
 
 Josef didn't put the brush down. He suggested the old Czech word for the grinding,
-compulsory work a serf owed his lord. ***Robota.***
+compulsory work a serf owed his lord.
+
+**JOSEF ČAPEK:** Robota.
 
 **Robot.**
 
@@ -272,9 +275,12 @@ timbers, to mark where each piece went on the ship. **L** for larboard. **S** fo
 
 Four letters. He learned those four.
 
-Then he'd find a boy in the street who could write and say: *I bet you can't write better
-than that.* And the boy, being a boy, would prove that he absolutely could — and Douglass
-copied down the proof and kept it.
+Then he'd find a boy in the street who could write, and say —
+
+**YOUNG DOUGLASS:** I bet you can't write better than that.
+
+And the boy, being a boy, would prove that he absolutely could — and Douglass copied down the
+proof and kept it.
 
 He traded bread from the kitchen for reading lessons, and saved fifty cents for a second-hand
 book of speeches that he took apart line by line, to see how the sentences did it.
@@ -289,8 +295,10 @@ He started with four letters chalked on a plank.
 Words don't only open a door for one person. Sometimes they open a country.
 
 Delhi, the night of the fourteenth of August, 1947. Minutes to midnight, and India is minutes
-from independence. Jawaharlal Nehru stands up and says that at the stroke of the midnight
-hour, when the world sleeps, India will awake to life and freedom.
+from independence. Jawaharlal Nehru stands up.
+
+**NEHRU:** At the stroke of the midnight hour, when the world sleeps, India will awake to life
+and freedom.
 
 But look at the word he'd chosen a sentence earlier: India had made a ***tryst*** with
 destiny. *Tryst* comes into English from Old French, where it began as a hunting word — the
@@ -308,8 +316,11 @@ Martin Luther King Jr stands on the steps of the Lincoln Memorial and opens by m
 a hundred years in Lincoln's own phrasing, with Lincoln's statue behind him.
 
 Here's the part almost nobody knows. The most famous passage in that speech **was not in the
-script.** He was working through a prepared text. Behind him, the gospel singer Mahalia
-Jackson called out — tell them about the dream. He put the pages aside.
+script.** He was working through a prepared text. Behind him, the gospel singer Mahalia Jackson called out —
+
+**MAHALIA JACKSON:** Tell them about the dream, Martin.
+
+He put the pages aside.
 
 But he wasn't making it up. He'd been building that passage for a year, in halls of a few
 hundred people.
