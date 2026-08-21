@@ -20,7 +20,7 @@ Three preprocessing rules carried over from episode one, all learned the hard wa
 """
 import re, json, os, sys
 
-SRC = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ep-nobody-born-good-with-words.md')
+SRC = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ep-four-letters-on-a-plank.md')
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cues2.json')
 
 # The narrator's direction is byte-identical to episode one's, because it is the same
@@ -84,7 +84,8 @@ PHON = {'Martin': 'Mar-tin'}
 # address the crowd, so "him" points at the wrong person entirely. Capitals read as emphasis.
 EMPH = {'Tell them about': 'Tell THEM about'}
 
-YEARS = {'1066':'ten sixty-six', '1818':'eighteen eighteen', '1819':'eighteen nineteen',
+YEARS = {'1066':'ten sixty-six', '1772':'seventeen seventy-two',
+         '1826':'eighteen twenty-six', '1818':'eighteen eighteen', '1819':'eighteen nineteen',
          '1845':'eighteen forty-five', '1863':'eighteen sixty-three', '1920':'nineteen twenty',
          '1947':'nineteen forty-seven', '1950':'nineteen fifty', '1963':'nineteen sixty-three',
          '2000':'two thousand'}
@@ -120,7 +121,12 @@ def clean(t):
 
 
 def build():
-    body = open(SRC).read().split('## SCRIPT', 1)[1].split('## LENGTH', 1)[0]
+    # End the script at the NEXT top-level heading, whatever it is called. Splitting on a
+    # named section ('## LENGTH') silently swallowed the production notes into the narration
+    # when the next draft renamed that heading — 261 words of table and commentary would
+    # have been read aloud.
+    body = open(SRC).read().split('## SCRIPT', 1)[1]
+    body = re.split(r'^## ', body, maxsplit=1, flags=re.M)[0]
     parts = re.split(r'\*\*\[(\d+:\d+)\s*—\s*([^\]]+)\]\*\*', body)
     cues, n = [], 0
     for i in range(1, len(parts), 3):
@@ -173,6 +179,12 @@ def build():
 
 if __name__ == '__main__':
     cues = build()
+    # A year the YEARS table does not know reaches the model as digits, and the model reads
+    # it as a cardinal number ("one thousand eight hundred and twenty-six"). Silent, and
+    # obvious the moment anyone hears it. Fail here instead.
+    stray = sorted({y for c in cues for y in re.findall(r'\b\d{3,4}\b', c['tts'])})
+    if stray:
+        sys.exit(f"FAIL: {stray} not in YEARS — add them or they will be read as numbers")
     json.dump(cues, open(OUT, 'w'), indent=1, ensure_ascii=False)
     words = sum(len(c['tts'].split()) for c in cues)
     chars = [c for c in cues if c['who'] != 'NARRATOR']
