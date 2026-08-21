@@ -20,7 +20,7 @@ Three preprocessing rules carried over from episode one, all learned the hard wa
 """
 import re, json, os, sys
 
-SRC = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ep-four-letters-on-a-plank.md')
+SRC = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ep-the-right-word.md')
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cues2.json')
 
 # The narrator's direction is byte-identical to episode one's, because it is the same
