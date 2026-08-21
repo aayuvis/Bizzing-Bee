@@ -129,9 +129,9 @@ compulsory work a serf owed his lord.
 
 *[beat]*
 
-That play is barely performed now. Almost nobody reads it.
+The play itself faded. It is hardly ever staged now, and hardly anyone reads it.
 
-But the word got out.
+The word did not fade.
 
 It is in Japanese, and Hindi, and Arabic, and Finnish. It is in the name of a factory
 machine, a vacuum cleaner, a Mars rover and a hundred films that have never heard of Karel
