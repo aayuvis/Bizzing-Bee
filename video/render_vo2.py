@@ -33,7 +33,36 @@ CUES = os.path.join(HERE, 'cues2.json')
 OUT = os.path.join(HERE, 'vo2')
 KEY = open(os.environ.get('GKEY_FILE', '/root/.gkey')).read().strip()
 MODEL = os.environ.get('TTS_MODEL', 'gemini-2.5-pro-preview-tts')
-FF = '/usr/local/lib/python3.11/dist-packages/imageio_ffmpeg/binaries/ffmpeg-linux-x86_64-v7.0.2'
+def _ffmpeg():
+    """Find a FULL ffmpeg, or say why not.
+
+    The path was hardcoded, and a container rebuild moved it — 64 cues rendered and then
+    assembly died on a missing binary. Playwright ships an ffmpeg at
+    /opt/pw-browsers/.../ffmpeg-linux and it is NOT a substitute: it is built without the
+    concat demuxer and without loudnorm, anullsrc and aresample, which is everything this
+    script needs. So check for a filter we actually use rather than for the file existing."""
+    import shutil, subprocess as sp
+    cands = []
+    try:
+        import imageio_ffmpeg
+        cands.append(imageio_ffmpeg.get_ffmpeg_exe())
+    except Exception:
+        pass
+    cands += [shutil.which('ffmpeg') or '', '/opt/pw-browsers/ffmpeg-1011/ffmpeg-linux']
+    for c in cands:
+        if not c or not os.path.exists(c):
+            continue
+        try:
+            if b'loudnorm' in sp.run([c, '-hide_banner', '-filters'],
+                                     capture_output=True, timeout=30).stdout:
+                return c
+        except Exception:
+            continue
+    raise SystemExit("no full ffmpeg found — `python3 -m pip install imageio-ffmpeg` "
+                     "(Playwright's build lacks concat/loudnorm and will not do)")
+
+
+FF = _ffmpeg()
 RATE = 24000
 WORKERS = 4          # the TTS quota is per-model; more workers just queue on the same limit
 
