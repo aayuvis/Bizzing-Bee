@@ -97,20 +97,19 @@ Everett spoke ~2 hours before him, from memory, ~13,600 words, and was well rece
 
 **[0:00 — COLD OPEN]**
 
-This film is four true stories, and they are all the same story.
+Somebody reaches for a word. And afterwards, the world is different.
 
-In each one, somebody reaches for a word. And afterwards, the world is different.
+It has happened over and over, in rooms nobody was watching.
 
 *[beat]*
 
-They get bigger as we go. The first word changes a thing. The second changes a life. The third
-changes a country.
+Sometimes it changes a thing. Sometimes a life. Sometimes a whole country.
 
-And the last one changes what a war meant.
+Once, it changed what a war had been for.
 
 ---
 
-**[0:30 — ONE · A WORD THAT CHANGED A THING]**
+**[0:16 — ONE · A WORD THAT CHANGED A THING]**
 
 In 1920, a Czech playwright called Karel Čapek was writing a play about artificial workers
 built to do the jobs nobody wanted.
@@ -140,11 +139,9 @@ over his shoulder, in one room, in one afternoon, in 1920.
 
 One word. A hundred years. Every language on Earth.
 
-That's the smallest story in this film.
-
 ---
 
-**[1:50 — TWO · A WORD THAT CHANGED A LIFE]**
+**[1:19 — TWO · A WORD THAT CHANGED A LIFE]**
 
 In the summer of 1772, a boy of about seventeen was working as a clerk on the island of St
 Croix.
@@ -172,13 +169,11 @@ He described the weather, and strangers bought him an ocean.
 
 His name was Alexander Hamilton, and everything you have ever heard about him happens after
 that letter. The revolution, the arguments, the bank, the duel. All of it downstream of a
-seventeen-year-old finding the words for a storm.
-
-One word can change a thing. That letter changed a life.
+seventeen-year-old on a ruined island, finding the words for a storm.
 
 ---
 
-**[3:20 — THREE · A WORD THAT CHANGED A COUNTRY]**
+**[2:29 — THREE · A WORD THAT CHANGED A COUNTRY]**
 
 Delhi, the night of the fourteenth of August, 1947.
 
@@ -215,7 +210,7 @@ Every schoolchild in India still learns that sentence.
 
 ---
 
-**[5:05 — FOUR · A WORD THAT CHANGED WHAT A WAR MEANT]**
+**[3:37 — FOUR · A WORD THAT CHANGED WHAT A WAR MEANT]**
 
 The nineteenth of November, 1863. A field in Pennsylvania where, four months earlier, around
 fifty thousand men had been killed or wounded in three days.
@@ -248,32 +243,29 @@ A new birth of freedom.
 Nobody voted on that. There was no announcement. He simply said it, in two minutes, in a
 field, and it became what that war had been for — and it has been ever since.
 
-That is the largest thing anyone in this film did with words. And he did it with two hundred
-and seventy-two of them, most of them one syllable long.
+Two hundred and seventy-two words. Most of them one syllable long.
 
 ---
 
-**[7:00 — CLOSE]**
+**[4:56 — CLOSE]**
 
-Four stories. One word from a painter, one letter from a boy, one word chosen over another at
-midnight, and two hundred and seventy-two words in a field.
+A word from a painter. A letter from a boy on an island. One word chosen over another at
+midnight. Two hundred and seventy-two words in a field.
 
 A thing, a life, a country, and the meaning of a war.
 
 *[beat]*
 
-Here is the only thing this film wants you to notice.
-
-Every one of those people had a word available to them at the moment they needed it. Josef
-Čapek had *robota.* Nehru had *tryst.* Lincoln had a whole language of short, old, plain words
-and knew exactly which ones would be believed.
+And every one of them already had the word when the moment came for it. Josef Čapek had
+*robota.* Nehru had *tryst.* Lincoln had a whole language of short, old, plain words, and knew
+exactly which ones would be believed.
 
 You cannot reach for a word you do not have.
 
-That's it. That's the entire reason any of this is worth learning. Not to sound clever — so
-that on the day it matters, the right word is already in your hands.
+That is the entire reason any of this is worth learning. Not to sound clever — so that on the
+day it matters, the right word is already there.
 
-And the way you get words is one at a time.
+And you collect them one at a time.
 
 Which is what a spelling bee is for.
 
