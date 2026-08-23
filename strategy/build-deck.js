@@ -254,7 +254,7 @@ function card(s, o) {
       items: [['Bizzing India', 'free hook'], ['↳ Bizzing Bhasha', 'paid pack']] },
     { x: 8.96, name: 'NUMBERS & THE WORLD', c: GREEN,
       items: [['Bizzing Maths', 'planned'], ['Bizzing Finance', 'in flight'],
-              ['Bizzing Business', 'exploratory'], ['Bizzing Quiz', 'gap']] },
+              ['Bizzing Business', 'committed'], ['Bizzing Quiz', 'gap']] },
   ];
   fams.forEach(f => {
     const w = 3.63;
@@ -352,15 +352,18 @@ const PRODUCTS = [
           'An honest decision on competition maths — it is the demand, and it is the part that does not reuse anything',
           'Numeric input and working-out capture, which the word engine has never needed'] },
 
-  { name: 'Bizzing Business', status: ['EXPLORATORY', GOLD], age: 'Ages 11–16', reuse: 'Least of anything here',
-    vision: 'A twelve-year-old who can look at a business and explain why it works.',
-    why: 'It is what these families talk about at the dinner table, and almost nothing exists for children. It also lands squarely in the twelve-to-sixteen gap where the bee ends and families leave.',
-    what: 'How a business makes money, pricing, customers, competition, brand and ethics — taught through real cases and capstone projects the child builds and pitches.',
-    how: 'Case-based and project-based rather than drilled. This is the honest caveat: it is a different product shape from everything else in the house.',
-    usp: ['Capstone projects. The child makes and pitches something real, which no product at this age does well — and it is exactly what the CKO already does with slime and clay.'],
-    add: ['A case library written for eleven-year-olds',
-          'Project submission, a rubric, and someone or something to review the work',
-          'A decision on whether review is automated, parent-led, or a paid live service'] },
+  { name: 'Bizzing Business', status: ['COMMITTED', VIOLET], age: 'Ages 11–16', reuse: 'New shape, on purpose',
+    vision: 'A sixteen-year-old who has built something, pitched it to a room, and can explain why it worked or why it did not.',
+    why: 'This is the conversation these families already have at the dinner table, and nothing exists for children that is not a four-figure summer camp. It lands in the twelve-to-sixteen gap where the bee ends, it is the highest price a family will pay in the whole house, and it is the product that turns Bizzing from a practice app into the place a child grew up.',
+    what: 'How a business makes money, customers, pricing, competition, brand, operations and ethics — taught through real cases, worked in small teams, and finished with a capstone the child builds and pitches at a demo day.',
+    how: 'Cohorts with fixed start dates, teams of three or four, a trained mentor per cohort, recorded core lessons and live sessions. Teamwork and a real teacher are FEATURES here, not obstacles — they are the reason it works and the reason it cannot be cloned by software.',
+    usp: ['A mentor network is a moat. Content can be copied in a quarter; a trained bench of coaches who know these families cannot.',
+          'The capstone: the child makes and pitches something real. It is exactly what the CKO already does with slime, clay and loom bags — the product is that instinct, given structure.',
+          'Demo day is a marketing asset as well as a lesson: parents in a room watching their own children present.'],
+    add: ['A case library written for eleven-year-olds, and a cohort curriculum',
+          'Teams, project submission and mentor review in the app — none of which exists today',
+          'A mentor bench: recruited, trained, paid and quality-managed. This is a hiring plan, not a feature ticket',
+          'Safeguarding for adults working with children — background checks, session recording, parent visibility'] },
 ];
 
 PRODUCTS.forEach((pr, idx) => {
@@ -397,6 +400,49 @@ PRODUCTS.forEach((pr, idx) => {
   s.addNotes(`${pr.name} — ${pr.vision}`);
 });
 
+/* =====================  BIZZING BUSINESS — HOW IT RUNS  ===================== */
+{
+  const s = darkSlide();
+  s.addText('BIZZING BUSINESS', { x: M, y: 0.58, w: 8, h: 0.32, fontFace: BODY, fontSize: 12, bold: true, color: GOLD, charSpacing: 3, margin: 0 });
+  s.addText('The one product where the people are the moat.', {
+    x: M, y: 0.98, w: 11.6, h: 0.75, fontFace: DISP, fontSize: 28, bold: true, color: PAPER, margin: 0,
+  });
+  s.addText('Everything else in the house is software a competitor could clone in a quarter. A trained bench of mentors who know these families cannot be cloned at all — which is exactly why this one is worth the extra difficulty.', {
+    x: M, y: 1.78, w: 11.2, h: 0.55, fontFace: BODY, fontSize: 13, color: TINT_D, margin: 0, lineSpacing: 17,
+  });
+
+  const flow = [
+    ['Cohort opens', 'Fixed start dates, not always-on. Scarcity is the point: a cohort has classmates, a calendar and an ending.'],
+    ['Teams of three', 'The child works with others. Teamwork is a FEATURE — it is half of what a parent is buying and none of what an app usually gives.'],
+    ['Cases, then build', 'Recorded lessons and real cases carry the theory. The team then builds something actual — a product, a service, a plan.'],
+    ['Mentor review', 'A trained coach reviews the work against a rubric and meets the team live. This is the paid, human, uncopyable layer.'],
+    ['Demo day', 'The team pitches to a room of parents. A lesson, a rite of passage, and the best marketing asset the brand will ever have.'],
+  ];
+  flow.forEach(([h, b], i) => {
+    const x = M + i * 2.42, w = 2.2;
+    s.addShape(p.ShapeType.roundRect, { x, y: 2.55, w, h: 2.5, rectRadius: 0.13, fill: { color: PAPER, transparency: 92 }, line: { color: VIOLET, width: 1 } });
+    hexBullet(s, x + 0.2, 2.78, String(i + 1), i === 3 ? GOLD : VIOLET, i === 3 ? INK : PAPER);
+    s.addText(h, { x: x + 0.16, y: 3.34, w: w - 0.32, h: 0.56, fontFace: DISP, fontSize: 14, bold: true, color: PAPER, margin: 0 });
+    s.addText(b, { x: x + 0.16, y: 3.92, w: w - 0.32, h: 1.0, fontFace: BODY, fontSize: 10, color: TINT_D, margin: 0, lineSpacing: 13 });
+    if (i < flow.length - 1) s.addText('›', { x: x + w + 0.02, y: 3.42, w: 0.2, h: 0.44, align: 'center', valign: 'middle', fontFace: DISP, fontSize: 20, bold: true, color: GOLD, margin: 0 });
+  });
+
+  const notes = [
+    ['Where the mentors come from', 'This diaspora is full of MBAs, founders and operators whose own children are the target age. They will teach for status, for community, and because their kid is in the room. Recruit, train, pay, and manage quality — a hiring plan, not a feature ticket.', GOLD],
+    ['Why it starts earliest of the late products', 'Content can be written in weeks. A trained mentor bench and a safeguarding process cannot. Business has the longest lead time in the house, so its build begins before its launch gate — the one product where that is true.', VIOLET],
+  ];
+  notes.forEach(([h, b, c], i) => {
+    const x = M + i * 5.9;
+    s.addShape(p.ShapeType.roundRect, { x, y: 5.25, w: 5.55, h: 1.5, rectRadius: 0.13, fill: { color: PAPER, transparency: 94 }, line: { type: 'none' } });
+    s.addText(h, { x: x + 0.28, y: 5.4, w: 5.0, h: 0.3, fontFace: BODY, fontSize: 10, bold: true, color: c, charSpacing: 1.4, margin: 0 });
+    s.addText(b, { x: x + 0.28, y: 5.7, w: 5.0, h: 0.92, fontFace: BODY, fontSize: 10.5, color: TINT_D, margin: 0, lineSpacing: 13.5 });
+  });
+  s.addText('It is also the answer to the live-training revenue line — Business IS that line, not a separate venture. And safeguarding is not optional: adults working with children needs checks, recorded sessions and parent visibility from day one.', {
+    x: M, y: 6.88, w: 11.6, h: 0.45, fontFace: BODY, fontSize: 11, italic: true, color: MUTED, margin: 0,
+  });
+  s.addNotes('The user pushed back on treating "needs teachers" as a risk. It is the moat. Build it.');
+}
+
 /* =====================  WHAT WE ARE STILL MISSING  ===================== */
 {
   const s = darkSlide();
@@ -422,7 +468,7 @@ PRODUCTS.forEach((pr, idx) => {
   s.addText('Coding · chess · music · dance. Every one has real diaspora demand, and every one needs a solver, a rating system or a live teacher. None of them reuses a single line of what has been built, and each would be a company of its own. Chess in particular is surging right now and is still the wrong answer for this house.', {
     x: M + 0.32, y: 5.9, w: 10.95, h: 0.7, fontFace: BODY, fontSize: 11.5, color: TINT_D, margin: 0, lineSpacing: 15,
   });
-  s.addText('Twelve products total. The discipline is not thinking of them — it is refusing to start the fifth before the second has paid for itself.', {
+  s.addText('The refusals are about ENGINE FIT, not ambition. Bizzing Business also needs people, and it is being built — because there the people ARE the product.', {
     x: M, y: 6.84, w: 11.6, h: 0.55, fontFace: DISP, fontSize: 13.5, italic: true, color: GOLD, margin: 0,
   });
 }
@@ -437,7 +483,7 @@ PRODUCTS.forEach((pr, idx) => {
     ['NOW', 'Bizzing Bee', 'Spelling, live', 'The wedge. Free app, paid packs, the YouTube channel feeding it.', GREEN],
     ['GATE 1', 'India + Bhasha + Quiz', 'Culture free, language paid', 'Unlocks when Bee shows a repeatable way to acquire a family and keep them past the first month. Quiz rides along — its 31k questions already exist.', GOLD],
     ['GATE 2', 'Eleven, then Prep', 'Exam verbal reasoning', 'Unlocks when a second paid pack proves families will buy more than one thing from us. Near-total engine reuse, so the cost is content, not build.', VIOLET],
-    ['GATE 3', 'Both ends of the range', 'Buzz · Speak · English · Maths · Finance · Business', 'Unlocks when households run more than one product on one account. This is where the 4–6 and 12–16 gaps get closed.', VIOLET],
+    ['GATE 3', 'Both ends of the range', 'Buzz · Speak · English · Maths · Finance', 'Closes the 4–6 and 12–16 gaps, once households run more than one product on one account. Business is the exception — its mentor bench takes so long to build that recruiting starts back at Gate 1.', VIOLET],
   ];
   const spineY = 3.05, CW = 2.76, GAP = 2.98;
   s.addShape(p.ShapeType.line, { x: M + CW / 2, y: spineY, w: GAP * 3, h: 0, line: { color: TINT_D, width: 3 } });
@@ -445,11 +491,11 @@ PRODUCTS.forEach((pr, idx) => {
     const x = M + i * GAP, cx = x + CW / 2;
     s.addShape(p.ShapeType.hexagon, { x: cx - 0.28, y: spineY - 0.28, w: 0.56, h: 0.56, rotate: 90, fill: { color: c }, line: { color: PAPER, width: 2.5 } });
     s.addText(tag, { x, y: 2.3, w: CW, h: 0.3, align: 'center', fontFace: BODY, fontSize: 9.5, bold: true, color: c === GOLD ? GOLD_D : c, charSpacing: 1.6, margin: 0 });
-    card(s, { x, y: 3.62, w: CW, h: 2.42, fill: i === 0 ? TINT : PAPER });
-    if (i > 0) s.addShape(p.ShapeType.roundRect, { x, y: 3.62, w: CW, h: 2.42, rectRadius: 0.14, fill: { color: PAPER }, line: { color: TINT_D, width: 1.25 } });
+    card(s, { x, y: 3.62, w: CW, h: 2.56, fill: i === 0 ? TINT : PAPER });
+    if (i > 0) s.addShape(p.ShapeType.roundRect, { x, y: 3.62, w: CW, h: 2.56, rectRadius: 0.14, fill: { color: PAPER }, line: { color: TINT_D, width: 1.25 } });
     s.addText(name, { x: x + 0.22, y: 3.8, w: CW - 0.44, h: 0.6, fontFace: DISP, fontSize: 14.5, bold: true, color: INK, margin: 0 });
     s.addText(sub, { x: x + 0.22, y: 4.4, w: CW - 0.44, h: 0.44, fontFace: BODY, fontSize: 9.5, bold: true, color: VIOL_D, margin: 0, lineSpacing: 12 });
-    s.addText(why, { x: x + 0.22, y: 4.86, w: CW - 0.44, h: 1.06, fontFace: BODY, fontSize: 10, color: '4A4360', margin: 0, lineSpacing: 13.5 });
+    s.addText(why, { x: x + 0.22, y: 4.84, w: CW - 0.44, h: 1.24, fontFace: BODY, fontSize: 9.5, color: '4A4360', margin: 0, lineSpacing: 13.5 });
   });
   s.addText('Gates are written as proofs, not targets — the numbers behind each are the CMO’s. Nothing at Gate 3 starts until Gate 2 has paid for itself.', {
     x: M, y: 6.28, w: 11.6, h: 0.5, fontFace: BODY, fontSize: 12.5, italic: true, color: MUTED, margin: 0,
@@ -511,7 +557,7 @@ PRODUCTS.forEach((pr, idx) => {
     ['Playable avatar cards', 'The trump-card deck already exists in-app, and every card carries a real word fact. A physical product that still teaches.', [null, LAUNCH, GROW]],
     ['Plushies, tees, goodies', 'Bizzy and the champion avatars. Print-on-demand first; stock only what has already sold.', [null, LAUNCH, GROW]],
     ['YouTube', 'Ad revenue and sponsorship. Worth having, but its real return is acquisition — count it as marketing that pays for itself.', [null, GROW, GROW]],
-    ['Live training', 'Bee coaching, workshops, beginner classes. Highest price per family and the only stream limited by someone’s time.', [null, null, LAUNCH]],
+    ['Live training', 'Bizzing Business cohorts, bee coaching, beginner classes. Highest price per family — and Business IS this line, not a separate venture.', [null, GROW, LAUNCH]],
   ];
 
   rows.forEach(([name, note, cells], i) => {
@@ -527,10 +573,10 @@ PRODUCTS.forEach((pr, idx) => {
     });
   });
 
-  s.addShape(p.ShapeType.roundRect, { x: M, y: 6.74, w: 11.6, h: 0.52, rectRadius: 0.12, fill: { color: 'FBF3E0' }, line: { type: 'none' } });
+  s.addShape(p.ShapeType.roundRect, { x: M, y: 6.7, w: 11.6, h: 0.62, rectRadius: 0.12, fill: { color: 'FBF3E0' }, line: { type: 'none' } });
   s.addText([{ text: 'Two cautions:  ', options: { bold: true } },
-             { text: 'merch that holds stock is a different business — cash, sizes, returns — so print-on-demand until something proves itself. And live training is the only line capped by a person’s calendar; it scales by being recorded, or by other people teaching it.' }], {
-    x: M + 0.3, y: 6.74, w: 11.0, h: 0.52, fontFace: BODY, fontSize: 10.5, color: GOLD_D, margin: 0, valign: 'middle', lineSpacing: 13,
+             { text: 'merch that holds stock is a different business — cash, sizes, returns — so print-on-demand until something proves itself. And live training is capped by people, not by software, which is why the mentor bench for Bizzing Business has to start being recruited long before the product launches.' }], {
+    x: M + 0.3, y: 6.7, w: 11.0, h: 0.62, fontFace: BODY, fontSize: 10.5, color: GOLD_D, margin: 0, valign: 'middle', lineSpacing: 13,
   });
   s.addNotes('No prices, splits or targets anywhere — those are the CMO’s to set. This slide fixes what the streams are and the order they switch on.');
 }
