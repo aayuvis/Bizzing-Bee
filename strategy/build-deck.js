@@ -38,7 +38,8 @@ const FACE = {
   'Bizzing Bee': 'bizzy', 'Bizzing India': 'ganesha', 'Bizzing Bhasha': 'saraswati',
   'Bizzing Eleven': 'brainiac', 'Bizzing Buzz': 'bumble', 'Bizzing English': 'gutenberg',
   'Bizzing Maths': 'aryabhatta', 'Bizzing Business': 'bossbot', 'Bizzing Quiz': 'einstein',
-  'Bizzing Speak': 'mic', 'Bizzing Prep': 'newton',
+  'Bizzing Speak': 'mic', 'Bizzing Prep': 'newton', 'Bizzing AI': 'robo',
+  'Bizzing Carrom': 'dpad',
 };
 function face(s, name, x, y, sz) {
   const f = FACE[name.replace('↳ ', '')];
@@ -286,7 +287,7 @@ function card(s, o) {
       items: [['Bizzing India', 'free hook'], ['Bizzing Bhasha', 'paid pack']] },
     { x: 8.96, name: 'NUMBERS & THE WORLD', c: GREEN,
       items: [['Bizzing Maths', 'planned'], ['Bizzing Finance', 'in flight'],
-              ['Bizzing Business', 'committed'], ['Bizzing Quiz', 'gap']] },
+              ['Bizzing Business', 'committed'], ['Bizzing AI', 'proposed'], ['Bizzing Quiz', 'gap']] },
   ];
   fams.forEach(f => {
     const w = 3.63;
@@ -302,8 +303,8 @@ function card(s, o) {
       s.addText(tag, { x: f.x + w - 1.42, y, w: 1.22, h: 0.38, align: 'right', valign: 'middle', fontFace: BODY, fontSize: 9, italic: true, color: VIOL_D, margin: 0 });
     });
   });
-  s.addText('Twelve products named. Three already have real content behind them — Bee, India and Quiz — and the rest are still a sentence. The naming rule: sub-brands are SUBJECTS, so there is no Bizzing UK, only a UK edition of Bizzing Eleven.', {
-    x: M, y: 6.72, w: 11.6, h: 0.55, fontFace: BODY, fontSize: 11.5, italic: true, color: MUTED, margin: 0, lineSpacing: 15,
+  s.addText('Thirteen products named. Three already have real content behind them — Bee, India and Quiz — and the rest are still a sentence. The naming rule: sub-brands are SUBJECTS, so there is no Bizzing UK, only a UK edition of Bizzing Eleven. Games are the exception and sit outside the house: they are hooks, not subjects.', {
+    x: M, y: 6.72, w: 11.6, h: 0.68, fontFace: BODY, fontSize: 11.5, italic: true, color: MUTED, margin: 0, lineSpacing: 15,
   });
   s.addNotes('Culture is free and shareable; the language pack inside it is paid. That is the freemium spine.');
 }
@@ -397,6 +398,19 @@ const PRODUCTS = [
           'Teams, project submission and mentor review in the app — none of which exists today',
           'A mentor bench: recruited, trained, paid and quality-managed. This is a hiring plan, not a feature ticket',
           'Safeguarding for adults working with children — background checks, session recording, parent visibility'] },
+
+  { name: 'Bizzing AI', status: ['PROPOSED', GOLD], age: 'Ages 10–16', reuse: 'Least of any product here',
+    vision: 'A child who can build with AI, not just talk to it.',
+    why: 'Every child in this decade will use AI; almost none will understand it, and the distance between using and building is where the advantage sits. These parents feel it sharply — many work in technology and know exactly which side of that line they want their child on. It also lands in the 12–16 gap, where the bee ends and the family leaves.',
+    what: 'Blocks, then real Python, then how a model actually works — tokens, training, why it is confidently wrong. The capstone is the point: the child ships a working AI thing that somebody other than their parent actually uses.',
+    how: 'A sandboxed editor with no open-ended chat. Every prompt is bounded, every response logged and visible to a parent. It runs as cohorts on the Business rails, not as a solo app, because code a child writes needs a person to read it.',
+    usp: ['Most children’s coding products stop at “you made a thing.” Most children’s business products are hypothetical. Run together, Bizzing AI and Bizzing Business become “you made a thing and somebody paid for it” — and nobody else is offering that sentence.',
+          'The mentor bench being built for Business is the expensive part, and it is already being paid for. A second mentor-led subject is cheap once the first exists.',
+          'It is the only subject on this list where a parent cannot help — which makes the cohort worth more, not less.'],
+    add: ['A code sandbox and execution environment. Nothing in the current engine does this',
+          'Child-safe model plumbing: bounded prompts, moderation on both sides, no free-form chat, full parent visibility',
+          'A curriculum written by someone who can teach programming to eleven-year-olds',
+          '⚠ The FIRST product with a real marginal cost per child. Everything else is static files; inference is metered and scales with use. Price for that or it quietly breaks the cost model'] },
 ];
 
 PRODUCTS.forEach((pr, idx) => {
@@ -481,7 +495,7 @@ PRODUCTS.forEach((pr, idx) => {
 {
   const s = darkSlide();
   s.addText('THE GAPS', { x: M, y: 0.6, w: 8, h: 0.32, fontFace: BODY, fontSize: 12, bold: true, color: GOLD, charSpacing: 3, margin: 0 });
-  s.addText('Three products missing, and four we should not build.', {
+  s.addText('Three products missing, and three we should not build.', {
     x: M, y: 1.0, w: 11.6, h: 0.75, fontFace: DISP, fontSize: 27, bold: true, color: PAPER, margin: 0,
   });
   const missing = [
@@ -499,8 +513,12 @@ PRODUCTS.forEach((pr, idx) => {
   });
   s.addShape(p.ShapeType.roundRect, { x: M, y: 5.42, w: 11.6, h: 1.28, rectRadius: 0.12, fill: { color: PAPER, transparency: 94 }, line: { type: 'none' } });
   s.addText('Deliberately NOT building', { x: M + 0.32, y: 5.56, w: 5, h: 0.3, fontFace: BODY, fontSize: 10, bold: true, color: 'E8807A', charSpacing: 1.8, margin: 0 });
-  s.addText('Coding · chess · music · dance. Every one has real diaspora demand, and every one needs a solver, a rating system or a live teacher. None of them reuses a single line of what has been built, and each would be a company of its own. Chess in particular is surging right now and is still the wrong answer for this house.', {
-    x: M + 0.32, y: 5.9, w: 10.95, h: 0.7, fontFace: BODY, fontSize: 11.5, color: TINT_D, margin: 0, lineSpacing: 15,
+  s.addText('Chess · music · dance. Each has real diaspora demand, each needs a solver, a rating system or a live teacher, and none reuses a line of what has been built. Chess in particular is surging right now and is still the wrong answer for this house.', {
+    x: M + 0.32, y: 5.88, w: 10.95, h: 0.44, fontFace: BODY, fontSize: 11.5, color: TINT_D, margin: 0, lineSpacing: 15,
+  });
+  s.addText([{ text: 'Coding was on this list until now. ', options: { bold: true, color: GOLD } },
+             { text: 'It moves because the objection expired, not because the ambition grew: the reason to refuse it was “needs a live teacher”, and Business is already building a mentor bench. Bizzing AI rides those rails or it does not happen.', options: { color: TINT_D } }], {
+    x: M + 0.32, y: 6.28, w: 10.95, h: 0.52, fontFace: BODY, fontSize: 10.5, margin: 0, lineSpacing: 13,
   });
   s.addText('The refusals are about ENGINE FIT, not ambition. Bizzing Business also needs people, and it is being built — because there the people ARE the product.', {
     x: M, y: 6.84, w: 11.6, h: 0.55, fontFace: DISP, fontSize: 13.5, italic: true, color: GOLD, margin: 0,
@@ -517,7 +535,7 @@ PRODUCTS.forEach((pr, idx) => {
     ['NOW', 'Bizzing Bee', 'Spelling, live', 'The wedge. Free app, paid packs, the YouTube channel feeding it.', GREEN],
     ['GATE 1', 'India + Bhasha + Quiz', 'Culture free, language paid', 'Unlocks when Bee shows a repeatable way to acquire a family and keep them past the first month. Quiz rides along — its 31k questions already exist.', GOLD],
     ['GATE 2', 'Eleven, then Prep', 'Exam verbal reasoning', 'Unlocks when a second paid pack proves families will buy more than one thing from us. Near-total engine reuse, so the cost is content, not build.', VIOLET],
-    ['GATE 3', 'Both ends of the range', 'Buzz · Speak · English · Maths · Finance', 'Closes the 4–6 and 12–16 gaps, once households run more than one product on one account. Business is the exception — its mentor bench takes so long to build that recruiting starts back at Gate 1.', VIOLET],
+    ['GATE 3', 'Both ends of the range', 'Buzz · Speak · English · Maths · Finance · AI', 'Closes the 4–6 and 12–16 gaps, once households run more than one product on one account. Business is the exception — its mentor bench takes so long to build that recruiting starts back at Gate 1, and AI launches on the same bench or not at all.', VIOLET],
   ];
   const spineY = 3.05, CW = 2.76, GAP = 2.98;
   s.addShape(p.ShapeType.line, { x: M + CW / 2, y: spineY, w: GAP * 3, h: 0, line: { color: TINT_D, width: 3 } });
@@ -551,8 +569,8 @@ PRODUCTS.forEach((pr, idx) => {
      'The core. Everything built so far lands squarely here, and this is where the bee community lives.'],
     ['10–12', 'Peak bee, 11+,\ngifted testing', 'Bee · Eleven · Prep\nBhasha · English', 'COVERED', GREEN,
      'The highest-intent, highest-spend years. Four products can serve one child at once, on one account.'],
-    ['12–16', 'Debate, essays,\nmoney, business', 'Speak · Business\nFinance · English', 'GAP, NAMED', 'C4453C',
-     'The bee ends around fourteen and the family leaves. Four products aim here and not one of them is built. The churn cliff is still open.'],
+    ['12–16', 'Debate, essays,\nmoney, business, AI', 'Speak · Business · AI\nFinance · English', 'GAP, NAMED', 'C4453C',
+     'The bee ends around fourteen and the family leaves. Five products aim here and not one is built. The churn cliff is still open.'],
   ];
   bands.forEach(([age, need, have, tag, c, body], i) => {
     const x = M + i * 2.42;
@@ -1347,6 +1365,86 @@ const money = v => Math.abs(v) >= 1e6 ? `$${(v / 1e6).toFixed(2)}M` : `$${Math.r
 }
 
 /* ==========================================================================
+   GAMES — one slide, two different businesses that share one asset.
+
+   LEFT  = app games as free acquisition hooks. This is the larger idea, and it
+           answers the constraint set on the finance slides: paid media is
+           capped at 18% of revenue, so 58–83% of households must be EARNED.
+           A culturally-native free game is the cheapest earning asset we have.
+   RIGHT = physical games as product. Real, but the only line in the whole plan
+           that wants cash before revenue — so it is allowed only on pre-order.
+   ========================================================================== */
+{
+  const s = lightSlide('Games are the hook, not the product', 'Games · acquisition and shelf');
+  s.addImage({ data: av('dpad'), x: 11.55, y: 0.62, w: 1.05, h: 1.05 });
+  s.addText('Two businesses, one asset. A free game is the cheapest way to EARN a household — and most must be earned. A printed game is real revenue that wants cash first.',
+    { x: M, y: 1.54, w: 10.7, h: 0.5, fontFace: BODY, fontSize: 13.5, color: MUTED, margin: 0, lineSpacing: 16 });
+
+  /* ---------- LEFT: app games as hooks ---------- */
+  s.addShape(p.ShapeType.roundRect, { x: M, y: 2.14, w: 6.15, h: 0.3, rectRadius: 0.12, fill: { color: VIOLET }, line: { type: 'none' } });
+  s.addText('IN THE APP — FREE, TO BE SHARED', { x: M, y: 2.14, w: 6.15, h: 0.3, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 8.5, bold: true, color: PAPER, charSpacing: 1.4, margin: 0 });
+  s.addText('A child who would never install a spelling app will install carrom. They arrive for the game and land on a Bizzing account — same avatar collection, same coin wallet, same household.',
+    { x: M, y: 2.5, w: 6.15, h: 0.42, fontFace: BODY, fontSize: 9.5, italic: true, color: MUTED, margin: 0, lineSpacing: 11.5 });
+
+  const hooks = [
+    ['Bizzing Carrom', 'THE ONE TO BUILD', 'Every South Asian household knows it, and the parents know it best — so they play WITH the child, putting the brand in front of the person who pays. Pure physics, no homework smell.', GREEN],
+    ['Bizzing Antakshari', 'BEST FIT OF ALL', 'The song-chain game is already a WORD game — the last syllable of one song starts the next. It runs on the voice layer we have already built, and it walks straight into Bhasha.', GREEN],
+    ['Ludo · Snakes & Ladders', 'PROBABLY NOT', 'Familiar and multiplayer, but there are a thousand good free clones and nothing about ours would be better. Recognition is not differentiation.', 'C4453C'],
+    ['Gully cricket', 'LATER, IF EVER', 'The largest pull on this list and the largest build. A real game studio project, not a content pack.', GOLD],
+  ];
+  hooks.forEach(([n, tag, b, c], i) => {
+    const y = 3.02 + i * 0.86;
+    s.addShape(p.ShapeType.roundRect, { x: M, y, w: 6.15, h: 0.78, rectRadius: 0.1, fill: { color: TINT }, line: { type: 'none' } });
+    s.addShape(p.ShapeType.rect, { x: M, y, w: 0.06, h: 0.78, fill: { color: c }, line: { type: 'none' } });
+    s.addText(n, { x: M + 0.2, y: y + 0.06, w: 2.6, h: 0.24, fontFace: DISP, fontSize: 12, bold: true, color: INK, margin: 0 });
+    s.addShape(p.ShapeType.roundRect, { x: M + 2.9, y: y + 0.07, w: 1.5, h: 0.22, rectRadius: 0.11, fill: { color: c }, line: { type: 'none' } });
+    s.addText(tag, { x: M + 2.9, y: y + 0.07, w: 1.5, h: 0.22, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 6.5, bold: true, color: c === GOLD ? INK : PAPER, margin: 0 });
+    s.addText(b, { x: M + 0.2, y: y + 0.32, w: 5.8, h: 0.42, fontFace: BODY, fontSize: 8.5, color: '4A4360', margin: 0, lineSpacing: 10.5 });
+  });
+
+  s.addShape(p.ShapeType.roundRect, { x: M, y: 6.44, w: 6.15, h: 0.96, rectRadius: 0.11, fill: { color: INK }, line: { type: 'none' } });
+  s.addText('THE BRIDGE, AND THE KILL SWITCH', { x: M + 0.24, y: 6.5, w: 5.7, h: 0.22, fontFace: BODY, fontSize: 8, bold: true, color: GOLD, charSpacing: 1.3, margin: 0 });
+  s.addText('Coins earned in carrom buy an avatar worn in Bee — one account, one collection, one wallet. That is the whole mechanism. Watch CROSS-OVER RATE: the share of game-only households that open a learning product within 30 days. Below 10%, the game is not a hook, it is a hobby, and we stop paying for it.',
+    { x: M + 0.24, y: 6.72, w: 5.7, h: 0.66, fontFace: BODY, fontSize: 8.5, color: TINT_D, margin: 0, lineSpacing: 10.5 });
+
+  /* ---------- RIGHT: physical games ---------- */
+  const RX = 7.15, RW = 5.15;
+  s.addShape(p.ShapeType.roundRect, { x: RX, y: 2.14, w: RW, h: 0.3, rectRadius: 0.12, fill: { color: GOLD }, line: { type: 'none' } });
+  s.addText('ON THE SHELF — PAID, PRE-ORDER ONLY', { x: RX, y: 2.14, w: RW, h: 0.3, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 8.5, bold: true, color: INK, charSpacing: 1.4, margin: 0 });
+  s.addText('The art is drawn and the card game already exists inside the app. Printing it is packaging, not invention.',
+    { x: RX, y: 2.5, w: RW, h: 0.42, fontFace: BODY, fontSize: 9.5, italic: true, color: MUTED, margin: 0, lineSpacing: 11.5 });
+
+  const phys = [
+    ['Bizzing Trump Cards', '$24.99', 'The deck already exists in-app across 217 painted avatars, each carrying a real word fact. Lowest-risk physical product in the house.', GREEN],
+    ['The Bee Box — family word game', '$39.99', 'Graded word cards from the 128k corpus, with a QR code to the recorded pronunciation so no adult has to be the pronouncer.', VIOLET],
+    ['Co-branded carrom board', '—', 'Heavy, bulky, freight-expensive, thin margin. Licence the artwork to someone who already makes them, or skip it.', 'C4453C'],
+  ];
+  phys.forEach(([n, price, b, c], i) => {
+    const y = 3.02 + i * 0.86;
+    s.addShape(p.ShapeType.roundRect, { x: RX, y, w: RW, h: 0.78, rectRadius: 0.1, fill: { color: TINT }, line: { type: 'none' } });
+    s.addShape(p.ShapeType.rect, { x: RX, y, w: 0.06, h: 0.78, fill: { color: c }, line: { type: 'none' } });
+    s.addText(n, { x: RX + 0.2, y: y + 0.06, w: 3.6, h: 0.24, fontFace: DISP, fontSize: 12, bold: true, color: INK, margin: 0 });
+    s.addText(price, { x: RX + 3.85, y: y + 0.04, w: 1.1, h: 0.26, align: 'right', fontFace: DISP, fontSize: 13, bold: true, color: c, margin: 0 });
+    s.addText(b, { x: RX + 0.2, y: y + 0.32, w: 4.75, h: 0.42, fontFace: BODY, fontSize: 8.5, color: '4A4360', margin: 0, lineSpacing: 10.5 });
+  });
+
+  // the unit economics, because "board game" hides a nasty margin story
+  s.addText('Where a $24.99 deck actually goes', { x: RX, y: 5.58, w: 3.6, h: 0.24, fontFace: BODY, fontSize: 8.5, bold: true, color: VIOL_D, charSpacing: 1.2, margin: 0 });
+  [['Direct to our own list', 18, GREEN], ['Through Amazon', 11, GOLD], ['Through retail distribution', 6, 'C4453C']].forEach(([l, v, c], i) => {
+    const y = 5.86 + i * 0.26;
+    s.addText(l, { x: RX, y, w: 2.5, h: 0.24, valign: 'middle', fontFace: BODY, fontSize: 8.5, color: '4A4360', margin: 0 });
+    s.addShape(p.ShapeType.roundRect, { x: RX + 2.55, y: y + 0.06, w: Math.max(0.15, 1.9 * v / 18), h: 0.13, rectRadius: 0.065, fill: { color: c }, line: { type: 'none' } });
+    s.addText(`$${v} kept`, { x: RX + 4.5, y, w: 0.65, h: 0.24, align: 'right', valign: 'middle', fontFace: BODY, fontSize: 8.5, bold: true, color: c, margin: 0 });
+  });
+
+  s.addShape(p.ShapeType.roundRect, { x: RX, y: 6.44, w: RW, h: 0.96, rectRadius: 0.11, fill: { color: 'FBF3E0' }, line: { type: 'none' } });
+  s.addText([{ text: 'The rule: never print what is not already sold. ', options: { bold: true } },
+             { text: 'Inventory is the one thing here that wants cash before revenue, which is exactly what week-one profitability forbids. So it runs on pre-order — a campaign, then a print run. Same discipline as billing the year up front, applied to cardboard.' }], {
+    x: RX + 0.22, y: 6.52, w: 4.75, h: 0.8, fontFace: BODY, fontSize: 8.5, color: GOLD_D, margin: 0, lineSpacing: 10.5 });
+  s.addNotes('Two businesses, one asset. The hook half matters more: the finance model needs 58-83% of households earned rather than bought, and a free culturally-native game is the cheapest earning asset available. The shelf half is real but must stay pre-order funded or it breaks the week-one rule.');
+}
+
+/* ==========================================================================
    ADDITIONAL OPPORTUNITIES — two slides.
 
    Deliberately kept OUT of the five-year P&L. The plan is profitable without
@@ -1363,7 +1461,7 @@ const money = v => Math.abs(v) >= 1e6 ? `$${(v / 1e6).toFixed(2)}M` : `$${Math.r
 /* -------------------  12 · THE OPPORTUNITY LEDGER  ------------------- */
 {
   const s = lightSlide('Six doors we have not opened', 'Additional opportunities');
-  s.addText('None of this is in the five-year P&L, and it should not be — the plan has to work without it. Each is ranked by RETURN ON UNLOCK, which is not the order of headline size.',
+  s.addText('None of this is in the five-year P&L, and it should not be — the plan has to work without it. Ranked, ranked by RETURN ON UNLOCK, which is not the order of headline size.',
     { x: M, y: 1.54, w: 11.6, h: 0.5, fontFace: BODY, fontSize: 13.5, color: MUTED, margin: 0, lineSpacing: 16 });
 
   const VX = 3.9, UX = 5.1, CX = 10.35, RX = 11.5;
@@ -1383,14 +1481,16 @@ const money = v => Math.abs(v) >= 1e6 ? `$${(v / 1e6).toFixed(2)}M` : `$${Math.r
       50, 10, 'A teacher mode, printable packs and a 30-week scope cut to a Saturday-morning rhythm. No procurement, no privacy review — a head teacher decides.', 'Year 2', VIOLET],
     ['Shopify — avatar merch', '217 painted avatars already exist. 2,000 orders a year at a $32 average basket.',
       65, 16, 'Store plus print-on-demand for tees and posters is cheap. Plushies are the expensive half: a real minimum order, sizes, returns.', 'Year 2', GOLD],
+    ['Printed games', 'The trump deck already exists in-app across 217 avatars. 3,000 decks at ~$18 kept selling direct.',
+      75, 8, 'Die lines, a manufacturer and a pre-order campaign. Never print what is not already sold — inventory is the one thing here that wants cash before revenue.', 'Year 3', GOLD],
     ['School districts', 'Supplemental literacy licensing. 3 districts × ~10,000 students in band × $4 per student per year.',
       120, 35, 'COPPA/FERPA compliance, an SDPC data agreement, Clever or ClassLink rostering, a teacher dashboard, and one pilot with real outcome data.', 'Year 3', 'C4453C'],
   ];
   let tv = 0, tc = 0;
   doors.forEach(([n, why, val, cost, takes, when, c], i) => {
-    const y = 2.46 + i * 0.68;
+    const y = 2.44 + i * 0.6;
     tv += val; tc += cost;
-    if (i % 2 === 0) s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y - 0.05, w: 11.98, h: 0.64, rectRadius: 0.09, fill: { color: TINT }, line: { type: 'none' } });
+    if (i % 2 === 0) s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y - 0.05, w: 11.98, h: 0.56, rectRadius: 0.09, fill: { color: TINT }, line: { type: 'none' } });
     s.addShape(p.ShapeType.hexagon, { x: M, y: y + 0.08, w: 0.24, h: 0.24, rotate: 90, fill: { color: c }, line: { type: 'none' } });
     s.addText(n, { x: M + 0.34, y: y - 0.04, w: 2.05, h: 0.26, fontFace: DISP, fontSize: 11.5, bold: true, color: INK, margin: 0 });
     s.addText(when, { x: M + 2.42, y: y - 0.02, w: 0.7, h: 0.22, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 7.5, bold: true, color: MUTED, margin: 0 });
@@ -1401,9 +1501,9 @@ const money = v => Math.abs(v) >= 1e6 ? `$${(v / 1e6).toFixed(2)}M` : `$${Math.r
     s.addShape(p.ShapeType.roundRect, { x: RX, y: y + 0.13, w: 0.95, h: 0.28, rectRadius: 0.14, fill: { color: c }, line: { type: 'none' } });
     s.addText(`${Math.round(val / cost)}×`, { x: RX, y: y + 0.13, w: 0.95, h: 0.28, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 9, bold: true, color: c === GOLD ? INK : PAPER, margin: 0 });
   });
-  const ty = 2.46 + 6 * 0.68;
+  const ty = 2.44 + 7 * 0.6;
   s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: ty - 0.05, w: 11.98, h: 0.56, rectRadius: 0.09, fill: { color: INK }, line: { type: 'none' } });
-  s.addText('All six, fully open', { x: M + 0.34, y: ty, w: 2.75, h: 0.46, valign: 'middle', fontFace: DISP, fontSize: 12.5, bold: true, color: PAPER, margin: 0 });
+  s.addText('All seven, fully open', { x: M + 0.34, y: ty, w: 2.75, h: 0.46, valign: 'middle', fontFace: DISP, fontSize: 12.5, bold: true, color: PAPER, margin: 0 });
   s.addText(`$${tv}k`, { x: VX, y: ty, w: 1.0, h: 0.46, align: 'right', valign: 'middle', fontFace: DISP, fontSize: 15, bold: true, color: GOLD, margin: 0 });
   s.addText('a year by Year 4 — roughly half of base-case Year 4 revenue, added to a business that already pays for itself without any of it.', { x: UX, y: ty, w: 5.1, h: 0.46, valign: 'middle', fontFace: BODY, fontSize: 8.5, color: TINT_D, margin: 0 });
   s.addText(`$${tc}k`, { x: CX, y: ty, w: 1.0, h: 0.46, align: 'right', valign: 'middle', fontFace: BODY, fontSize: 11, bold: true, color: PAPER, margin: 0 });
@@ -1411,7 +1511,7 @@ const money = v => Math.abs(v) >= 1e6 ? `$${(v / 1e6).toFixed(2)}M` : `$${Math.r
 
   s.addShape(p.ShapeType.roundRect, { x: M, y: 7.02, w: 11.6, h: 0.42, rectRadius: 0.1, fill: { color: 'E8F4EC' }, line: { type: 'none' } });
   s.addText([{ text: 'The rule these have to clear:  ', options: { bold: true } },
-             { text: 'an unlock cost is paid out of the PRIOR year’s profit, never out of a budget. $85k opens all six — which the base case cannot afford until Year 3, so the top two go first and fund the rest. That ordering is why school districts, the most impressive line on this slide, is also the last one we should touch.' }], {
+             { text: 'an unlock cost is paid out of the PRIOR year’s profit, never out of a budget. $93k opens all seven — which the base case cannot afford until Year 3, so the top two go first and fund the rest. That ordering is why school districts, the most impressive line on this slide, is also the last one we should touch.' }], {
     x: M + 0.26, y: 7.02, w: 11.1, h: 0.42, valign: 'middle', fontFace: BODY, fontSize: 9, color: '1F4A33', margin: 0, lineSpacing: 11 });
   s.addNotes('Ranked by return on unlock, not by size. Bee networks and Amazon are near-free and should start in Year 1; districts are a 9–18 month enterprise sale and should wait.');
 }
