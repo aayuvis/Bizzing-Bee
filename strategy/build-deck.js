@@ -1346,6 +1346,144 @@ const money = v => Math.abs(v) >= 1e6 ? `$${(v / 1e6).toFixed(2)}M` : `$${Math.r
   s.addNotes('Peak cash need $0. Break-even week 1. The two things that genuinely hurt are a price cut and a product families do not return to — not a slow start.');
 }
 
+/* ==========================================================================
+   ADDITIONAL OPPORTUNITIES — two slides.
+
+   Deliberately kept OUT of the five-year P&L. The plan is profitable without
+   any of them, and adding them to the base case would quietly undo the
+   discipline that makes it profitable. They are ranked by RETURN ON UNLOCK —
+   annual value divided by what it costs to open the door — because that, not
+   headline size, is the order they should actually be attempted in.
+
+   ⚠️ Partner organisations are named from working knowledge, NOT from live
+   research — this environment cannot browse. Several named are competitors as
+   well as candidates. The slide says so, prominently.
+   ========================================================================== */
+
+/* -------------------  12 · THE OPPORTUNITY LEDGER  ------------------- */
+{
+  const s = lightSlide('Six doors we have not opened', 'Additional opportunities');
+  s.addText('None of this is in the five-year P&L, and it should not be — the plan has to work without it. Each is ranked by RETURN ON UNLOCK, which is not the order of headline size.',
+    { x: M, y: 1.54, w: 11.6, h: 0.5, fontFace: BODY, fontSize: 13.5, color: MUTED, margin: 0, lineSpacing: 16 });
+
+  const VX = 3.9, UX = 5.1, CX = 10.35, RX = 11.5;
+  [['ANNUAL VALUE', VX, 1.0, 'right'], ['WHAT IT TAKES TO UNLOCK', UX, 5.1, 'left'],
+   ['UNLOCK COST', CX, 1.0, 'right'], ['RETURN', RX, 0.95, 'center']].forEach(([h, x, w, a]) =>
+    s.addText(h, { x, y: 2.14, w, h: 0.26, align: a, fontFace: BODY, fontSize: 7.5, bold: true, color: VIOL_D, charSpacing: 1.1, margin: 0 }));
+
+  // [name, arithmetic, annual $k, unlock $k, what it takes, when, colour]
+  const doors = [
+    ['Bee & tutor networks', 'NSF and SASB chapters reach tens of thousands of exactly our families. 5,000 households at a $60 partner price.',
+      300, 5, 'One relationship, a co-branded practice track, a revenue share. The app already ships NSF’s own 2026 word lists — we are not asking them to trust a stranger.', 'Year 2', GREEN],
+    ['Amazon KDP & audiobook', '23 volumes are already written, typeset and illustrated. 8,000 units a year at ~$4.50 net across the list.',
+      45, 3, 'ISBNs, print-ready covers, a KDP and ACX account. The audiobook narration can come off the TTS pipeline already built for the films.', 'Year 1', GREEN],
+    ['Employer learning benefit', 'Firms with large diaspora workforces already run family learning stipends. 4 employers × 200 families × $250.',
+      200, 15, 'A W-9, invoicing, an HR-facing one-pager and a named reference. SOC 2 becomes necessary above roughly ten employers, not before.', 'Year 4', VIOLET],
+    ['Weekend & heritage', 'Bhasha’s natural home. ~1,500 such schools in North America; 100 of them at a $500 site licence.',
+      50, 10, 'A teacher mode, printable packs and a 30-week scope cut to a Saturday-morning rhythm. No procurement, no privacy review — a head teacher decides.', 'Year 2', VIOLET],
+    ['Shopify — avatar merch', '217 painted avatars already exist. 2,000 orders a year at a $32 average basket.',
+      65, 16, 'Store plus print-on-demand for tees and posters is cheap. Plushies are the expensive half: a real minimum order, sizes, returns.', 'Year 2', GOLD],
+    ['School districts', 'Supplemental literacy licensing. 3 districts × ~10,000 students in band × $4 per student per year.',
+      120, 35, 'COPPA/FERPA compliance, an SDPC data agreement, Clever or ClassLink rostering, a teacher dashboard, and one pilot with real outcome data.', 'Year 3', 'C4453C'],
+  ];
+  let tv = 0, tc = 0;
+  doors.forEach(([n, why, val, cost, takes, when, c], i) => {
+    const y = 2.46 + i * 0.68;
+    tv += val; tc += cost;
+    if (i % 2 === 0) s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y - 0.05, w: 11.98, h: 0.64, rectRadius: 0.09, fill: { color: TINT }, line: { type: 'none' } });
+    s.addShape(p.ShapeType.hexagon, { x: M, y: y + 0.08, w: 0.24, h: 0.24, rotate: 90, fill: { color: c }, line: { type: 'none' } });
+    s.addText(n, { x: M + 0.34, y: y - 0.04, w: 2.05, h: 0.26, fontFace: DISP, fontSize: 11.5, bold: true, color: INK, margin: 0 });
+    s.addText(when, { x: M + 2.42, y: y - 0.02, w: 0.7, h: 0.22, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 7.5, bold: true, color: MUTED, margin: 0 });
+    s.addText(why, { x: M + 0.34, y: y + 0.2, w: 2.75, h: 0.38, fontFace: BODY, fontSize: 7.5, color: MUTED, margin: 0, lineSpacing: 9 });
+    s.addText(`$${val}k`, { x: VX, y, w: 1.0, h: 0.54, align: 'right', valign: 'middle', fontFace: DISP, fontSize: 15, bold: true, color: c, margin: 0 });
+    s.addText(takes, { x: UX, y, w: 5.1, h: 0.56, valign: 'middle', fontFace: BODY, fontSize: 8.5, color: '4A4360', margin: 0, lineSpacing: 10.5 });
+    s.addText(`$${cost}k`, { x: CX, y, w: 1.0, h: 0.54, align: 'right', valign: 'middle', fontFace: BODY, fontSize: 11, color: '4A4360', margin: 0 });
+    s.addShape(p.ShapeType.roundRect, { x: RX, y: y + 0.13, w: 0.95, h: 0.28, rectRadius: 0.14, fill: { color: c }, line: { type: 'none' } });
+    s.addText(`${Math.round(val / cost)}×`, { x: RX, y: y + 0.13, w: 0.95, h: 0.28, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 9, bold: true, color: c === GOLD ? INK : PAPER, margin: 0 });
+  });
+  const ty = 2.46 + 6 * 0.68;
+  s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: ty - 0.05, w: 11.98, h: 0.56, rectRadius: 0.09, fill: { color: INK }, line: { type: 'none' } });
+  s.addText('All six, fully open', { x: M + 0.34, y: ty, w: 2.75, h: 0.46, valign: 'middle', fontFace: DISP, fontSize: 12.5, bold: true, color: PAPER, margin: 0 });
+  s.addText(`$${tv}k`, { x: VX, y: ty, w: 1.0, h: 0.46, align: 'right', valign: 'middle', fontFace: DISP, fontSize: 15, bold: true, color: GOLD, margin: 0 });
+  s.addText('a year by Year 4 — roughly half of base-case Year 4 revenue, added to a business that already pays for itself without any of it.', { x: UX, y: ty, w: 5.1, h: 0.46, valign: 'middle', fontFace: BODY, fontSize: 8.5, color: TINT_D, margin: 0 });
+  s.addText(`$${tc}k`, { x: CX, y: ty, w: 1.0, h: 0.46, align: 'right', valign: 'middle', fontFace: BODY, fontSize: 11, bold: true, color: PAPER, margin: 0 });
+  s.addText(`${Math.round(tv / tc)}×`, { x: RX, y: ty, w: 0.95, h: 0.46, align: 'center', valign: 'middle', fontFace: DISP, fontSize: 13, bold: true, color: GOLD, margin: 0 });
+
+  s.addShape(p.ShapeType.roundRect, { x: M, y: 7.02, w: 11.6, h: 0.42, rectRadius: 0.1, fill: { color: 'E8F4EC' }, line: { type: 'none' } });
+  s.addText([{ text: 'The rule these have to clear:  ', options: { bold: true } },
+             { text: 'an unlock cost is paid out of the PRIOR year’s profit, never out of a budget. $85k opens all six — which the base case cannot afford until Year 3, so the top two go first and fund the rest. That ordering is why school districts, the most impressive line on this slide, is also the last one we should touch.' }], {
+    x: M + 0.26, y: 7.02, w: 11.1, h: 0.42, valign: 'middle', fontFace: BODY, fontSize: 9, color: '1F4A33', margin: 0, lineSpacing: 11 });
+  s.addNotes('Ranked by return on unlock, not by size. Bee networks and Amazon are near-free and should start in Year 1; districts are a 9–18 month enterprise sale and should wait.');
+}
+
+/* -------------------  13 · WHO WE WOULD CALL  ------------------- */
+{
+  const s = lightSlide('Who we would actually call', 'Partners · needs verification');
+  s.addText('Four networks that already gather our families in one place, so we rent an audience instead of buying one. The app already ships North South Foundation’s own word lists — we arrive built to their syllabus.',
+    { x: M, y: 1.54, w: 11.6, h: 0.5, fontFace: BODY, fontSize: 13.5, color: MUTED, margin: 0, lineSpacing: 16 });
+
+  const cats = [
+    ['BEE & DIASPORA', 'The warmest room we could walk into', [
+      ['North South Foundation', '~100 US chapters; regional and national contests for Indian-American children'],
+      ['South Asian Spelling Bee', 'National competition, exactly our demographic'],
+      ['Scripps National Spelling Bee', 'The apex — but ships Word Club, so partner and rival at once'],
+      ['SPELLPundit · Hexco', 'Direct competitors. Partner, or the eventual acquirer'],
+    ], GREEN],
+    ['TUTOR & TEACHER', 'Distribution that already charges by the hour', [
+      ['Outschool', 'Live small-group marketplace — the natural shelf for Business cohorts'],
+      ['Varsity Tutors · Wyzant', 'Large US networks, both with a schools arm'],
+      ['Kumon · Mathnasium · Sylvan', 'Franchise centres, heavy diaspora footfall. Sell as an add-on'],
+      ['UK: Explore Learning', 'Third Space Learning sells tutoring INTO schools — a rail, not a rival'],
+    ], VIOLET],
+    ['WEEKEND & HERITAGE', 'Where Bhasha belongs, and nobody is serving it', [
+      ['Chinmaya Mission · BAPS', 'Bala Vihar and Bal Mandal run weekly classes at scale'],
+      ['Language academies', 'Tamil, Telugu, Gujarati, Punjabi and Bengali schools across North America'],
+      ['TANA · ATA · community bodies', 'Regional associations with conference stages and mailing lists'],
+      ['Temple & gurdwara networks', 'The most trusted room, and the hardest to enter on a sales call'],
+    ], GOLD],
+    ['SCHOOL & EMPLOYER RAILS', 'Procurement, not persuasion', [
+      ['Clever · ClassLink', 'Rostering. Without one of these a district cannot deploy us'],
+      ['SDPC · iKeepSafe', 'The data agreement and COPPA/FERPA certification that gate every district'],
+      ['First districts to try', 'Fremont, Cupertino, Plano, Frisco, Naperville, Edison, Bellevue'],
+      ['Employer benefits teams', 'Microsoft, Google, Deloitte, Infosys, TCS — family learning stipends'],
+    ], 'C4453C'],
+  ];
+  cats.forEach(([tag, sub, items, c], i) => {
+    const x = M + i * 2.95;
+    s.addShape(p.ShapeType.roundRect, { x, y: 2.14, w: 2.76, h: 2.42, rectRadius: 0.12, fill: { color: TINT }, line: { type: 'none' } });
+    s.addShape(p.ShapeType.roundRect, { x, y: 2.14, w: 2.76, h: 0.28, rectRadius: 0.12, fill: { color: c }, line: { type: 'none' } });
+    s.addText(tag, { x, y: 2.14, w: 2.76, h: 0.28, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 8, bold: true, color: c === GOLD ? INK : PAPER, charSpacing: 1.2, margin: 0 });
+    s.addText(sub, { x: x + 0.16, y: 2.46, w: 2.44, h: 0.24, fontFace: BODY, fontSize: 7.5, italic: true, color: MUTED, margin: 0 });
+    items.forEach(([n, b], k) => {
+      const y = 2.74 + k * 0.44;
+      s.addText(n, { x: x + 0.16, y, w: 2.44, h: 0.18, fontFace: DISP, fontSize: 9, bold: true, color: INK, margin: 0 });
+      s.addText(b, { x: x + 0.16, y: y + 0.16, w: 2.44, h: 0.26, fontFace: BODY, fontSize: 7, color: '4A4360', margin: 0, lineSpacing: 8.5 });
+    });
+  });
+
+  s.addText('Three flagship programmes to take to them', { x: M, y: 4.68, w: 5.0, h: 0.3, fontFace: DISP, fontSize: 15, bold: true, color: INK, margin: 0 });
+  s.addText('Each sells a whole thing a network can run, not a licence it has to explain.', { x: 5.9, y: 4.72, w: 6.4, h: 0.26, fontFace: BODY, fontSize: 9.5, italic: true, color: MUTED, margin: 0 });
+  const flags = [
+    ['BEE SEASON IN A BOX', 'A chapter or district runs its own bee', 'Graded word lists, pronouncer audio, judge sheets, a live scoreboard. The 42,483 recorded clips mean we can already pronounce every word — the single hardest part of running a bee, solved before we ask.', GREEN],
+    ['BHASHA SATURDAY', 'A 30-week heritage-language track', 'Cut to the rhythm of a weekend school: teacher mode, printable packs, a term that ends in something parents are invited to. Sold to a head teacher, not a procurement office.', GOLD],
+    ['FOUNDERS’ EIGHT', 'Bizzing Business, after school', 'Eight weeks, a team, a mentor, a demo night. The highest price per family we have, and the one programme a school can put its own name on.', VIOLET],
+  ];
+  flags.forEach(([tag, h, b, c], i) => {
+    const x = M + i * 3.95;
+    s.addShape(p.ShapeType.roundRect, { x, y: 5.04, w: 3.75, h: 1.28, rectRadius: 0.12, fill: { color: TINT }, line: { type: 'none' } });
+    s.addShape(p.ShapeType.rect, { x, y: 5.04, w: 0.07, h: 1.28, fill: { color: c }, line: { type: 'none' } });
+    s.addText(tag, { x: x + 0.24, y: 5.13, w: 3.35, h: 0.24, fontFace: BODY, fontSize: 8.5, bold: true, color: c, charSpacing: 1.2, margin: 0 });
+    s.addText(h, { x: x + 0.24, y: 5.35, w: 3.35, h: 0.26, fontFace: DISP, fontSize: 11, bold: true, color: INK, margin: 0 });
+    s.addText(b, { x: x + 0.24, y: 5.62, w: 3.35, h: 0.62, fontFace: BODY, fontSize: 8, color: '4A4360', margin: 0, lineSpacing: 10 });
+  });
+
+  s.addShape(p.ShapeType.roundRect, { x: M, y: 6.42, w: 11.6, h: 1.0, rectRadius: 0.12, fill: { color: 'FBF3E0' }, line: { type: 'none' } });
+  s.addText('⚠ Every name on this slide needs verifying before anyone is contacted', { x: M + 0.28, y: 6.48, w: 8, h: 0.26, fontFace: BODY, fontSize: 10, bold: true, color: GOLD_D, margin: 0 });
+  s.addText('These organisations are named from working knowledge, not from research done today — chapter counts, programme names and even whether a body still operates all need checking. Three specific cautions. Scripps ships a competing app, so an approach there is a negotiation, not a partnership. SPELLPundit and Hexco are direct competitors before they are anything else. And in India, at least one major tutoring brand has been in serious financial distress — confirm a partner is solvent before building anything on them. Treat this slide as a research brief with a starting list, not as a contact sheet.',
+    { x: M + 0.28, y: 6.7, w: 11.04, h: 0.68, fontFace: BODY, fontSize: 9, color: GOLD_D, margin: 0, lineSpacing: 11 });
+  s.addNotes('Research brief, not a contact sheet. The NSF angle is the strongest because the product is already built to their word lists — that is verifiable in the repo (nsf-vocab26-data.js, nsf-finals500-data.js).');
+}
+
 
 /* =====================  20 · DECISIONS  ===================== */
 {
