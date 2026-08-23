@@ -88,7 +88,7 @@ function card(s, o) {
     x: M, y: 3.35, w: 8.4, h: 0.6, fontFace: DISP, fontSize: 21, italic: true,
     color: GOLD, margin: 0,
   });
-  s.addText('Vision · Strategy · Roadmap · Marketing · Content · Organisation', {
+  s.addText('Vision · Strategy · Roadmap · Money · Marketing · Content · Team', {
     x: M, y: 4.25, w: 8.4, h: 0.4, fontFace: BODY, fontSize: 14, color: TINT_D, margin: 0,
   });
   s.addShape(p.ShapeType.line, { x: M, y: 5.15, w: 3.2, h: 0, line: { color: VIOLET, width: 2.5 } });
@@ -342,7 +342,51 @@ function card(s, o) {
   });
 }
 
-/* =====================  11 · MARKETING STRATEGY  ===================== */
+/* =====================  11 · MONETISATION  ===================== */
+{
+  const s = lightSlide('How Bizzing earns, and when', 'Monetisation · years one to five');
+  s.addText('Six streams. Two of them can start almost immediately because the asset already exists — the books are written and the avatar art is drawn.', {
+    x: M, y: 1.58, w: 11.6, h: 0.56, fontFace: BODY, fontSize: 14.5, color: MUTED, margin: 0,
+  });
+
+  const NX = M, NW = 4.55, CX = [5.3, 7.8, 10.3], CW = 2.3;
+  ['YEAR 1', 'YEARS 2–3', 'YEARS 4–5'].forEach((h, i) => {
+    s.addText(h, { x: CX[i], y: 2.18, w: CW, h: 0.3, align: 'center', fontFace: BODY, fontSize: 10, bold: true, color: VIOL_D, charSpacing: 1.8, margin: 0 });
+  });
+
+  // start = index of the year column a stream switches on; '' = not yet
+  const LAUNCH = ['LAUNCH', GREEN], GROW = ['GROW', VIOLET], SCALE = ['SCALE', GOLD];
+  const rows = [
+    ['Subscription & packs', 'Advanced, Bhasha, Eleven. The compounding line — everything else is a supplement to it.', [LAUNCH, GROW, SCALE]],
+    ['Books', '23 volumes and 1,700 pages already generated. Print-on-demand and ebook carry no inventory risk.', [LAUNCH, GROW, SCALE]],
+    ['Playable avatar cards', 'The trump-card deck already exists in-app, and every card carries a real word fact. A physical product that still teaches.', [null, LAUNCH, GROW]],
+    ['Plushies, tees, goodies', 'Bizzy and the champion avatars. Print-on-demand first; stock only what has already sold.', [null, LAUNCH, GROW]],
+    ['YouTube', 'Ad revenue and sponsorship. Worth having, but its real return is acquisition — count it as marketing that pays for itself.', [null, GROW, GROW]],
+    ['Live training', 'Bee coaching, workshops, beginner classes. Highest price per family and the only stream limited by someone’s time.', [null, null, LAUNCH]],
+  ];
+
+  rows.forEach(([name, note, cells], i) => {
+    const y = 2.56 + i * 0.69;
+    if (i % 2 === 0) s.addShape(p.ShapeType.roundRect, { x: NX - 0.14, y: y - 0.06, w: 12.02, h: 0.63, rectRadius: 0.1, fill: { color: TINT }, line: { type: 'none' } });
+    s.addText(name, { x: NX, y: y - 0.02, w: NW, h: 0.28, fontFace: DISP, fontSize: 13.5, bold: true, color: INK, margin: 0 });
+    s.addText(note, { x: NX, y: y + 0.25, w: NW, h: 0.36, fontFace: BODY, fontSize: 9.5, color: '4A4360', margin: 0, lineSpacing: 11.5 });
+    cells.forEach((cell, k) => {
+      if (!cell) return;
+      const [label, c] = cell;
+      s.addShape(p.ShapeType.roundRect, { x: CX[k] + 0.45, y: y + 0.11, w: 1.4, h: 0.3, rectRadius: 0.15, fill: { color: c }, line: { type: 'none' } });
+      s.addText(label, { x: CX[k] + 0.45, y: y + 0.11, w: 1.4, h: 0.3, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 8, bold: true, color: c === GOLD ? INK : PAPER, margin: 0 });
+    });
+  });
+
+  s.addShape(p.ShapeType.roundRect, { x: M, y: 6.74, w: 11.6, h: 0.52, rectRadius: 0.12, fill: { color: 'FBF3E0' }, line: { type: 'none' } });
+  s.addText([{ text: 'Two cautions:  ', options: { bold: true } },
+             { text: 'merch that holds stock is a different business — cash, sizes, returns — so print-on-demand until something proves itself. And live training is the only line capped by a person’s calendar; it scales by being recorded, or by other people teaching it.' }], {
+    x: M + 0.3, y: 6.74, w: 11.0, h: 0.52, fontFace: BODY, fontSize: 10.5, color: GOLD_D, margin: 0, valign: 'middle', lineSpacing: 13,
+  });
+  s.addNotes('No prices, splits or targets anywhere — those are the CMO’s to set. This slide fixes what the streams are and the order they switch on.');
+}
+
+/* =====================  12 · MARKETING STRATEGY  ===================== */
 {
   const s = darkSlide();
   s.addText('MARKETING STRATEGY', { x: M, y: 0.6, w: 8, h: 0.32, fontFace: BODY, fontSize: 12, bold: true, color: GOLD, charSpacing: 3, margin: 0 });
@@ -370,7 +414,7 @@ function card(s, o) {
   });
 }
 
-/* =====================  12 · YOUTUBE — WHY  ===================== */
+/* =====================  13 · YOUTUBE — WHY  ===================== */
 {
   const s = lightSlide('YouTube is not an ad channel', 'Content strategy · 1 of 3');
   s.addText('It is the only asset that earns trust while we sleep — and the one place a parent decides whether Bizzing is serious.', {
@@ -404,7 +448,7 @@ function card(s, o) {
   });
 }
 
-/* =====================  13 · YOUTUBE — PILLARS  ===================== */
+/* =====================  14 · YOUTUBE — PILLARS  ===================== */
 {
   const s = lightSlide('Four content pillars', 'Content strategy · 2 of 3');
   s.addText('Each pillar does a different job in the funnel. Together they cover reach, trust and intent.', {
@@ -434,7 +478,7 @@ function card(s, o) {
   });
 }
 
-/* =====================  14 · YOUTUBE — HOW IT RUNS  ===================== */
+/* =====================  15 · YOUTUBE — HOW IT RUNS  ===================== */
 {
   const s = lightSlide('How it runs, and where it lands', 'Content strategy · 3 of 3');
   s.addText('Production', { x: M, y: 1.6, w: 5, h: 0.36, fontFace: DISP, fontSize: 18, bold: true, color: INK, margin: 0 });
@@ -475,7 +519,7 @@ function card(s, o) {
   });
 }
 
-/* =====================  15 · ORG CHART  ===================== */
+/* =====================  16 · ORG CHART  ===================== */
 {
   const s = lightSlide('Organisation', 'How the team is built');
   s.addText('Two co-founders run separate, clearly-owned lanes. Joint decisions are made at founder level. The third role is advisory and sits on top as a brand asset, not an operating function.', {
@@ -504,7 +548,7 @@ function card(s, o) {
   });
 }
 
-/* =====================  16-18 · ROLES  ===================== */
+/* =====================  17-19 · ROLES  ===================== */
 const roles = [
   {
     name: 'Aayush', title: 'Co-Founder & Chief Product and Technology Officer', c: VIOLET,
@@ -573,7 +617,7 @@ roles.forEach(r => {
   });
 });
 
-/* =====================  19 · DECISIONS  ===================== */
+/* =====================  20 · DECISIONS  ===================== */
 {
   const s = darkSlide();
   hexField(s, { x: 9.85, y: 4.45, n: 6, size: 0.8, color: GOLD, transparency: 82, spread: 1.0 });
