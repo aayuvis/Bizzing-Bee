@@ -847,18 +847,23 @@ roles.forEach(r => {
 });
 
 /* ==========================================================================
-   BUSINESS MODEL — nine slides, rebuilt at owner-set pricing and a 4-per-week
-   Year 1. Every figure derives from the assumption block on the last slide and
-   the model is internally consistent: households x ARPU -> revenue, revenue
-   less cost -> EBITDA, and both cases share one cost structure.
+   BUSINESS MODEL — eleven slides, rebuilt to a single constraint: the business
+   must be profitable from week one and must never require outside cash.
 
-   ⚠️ The benchmark prices are from domain knowledge, NOT from live pricing
-   pages — this environment cannot browse. They are labelled on the slide as
-   needing verification before the deck is shown to anyone external.
+   Two structural rules deliver that, and both are printed on the slides:
+     (1) ANNUAL-UPFRONT billing — cash arrives before the service is delivered.
+     (2) Every discretionary cost is a PERCENTAGE OF TRAILING REVENUE, not a
+         fixed budget. A cost line cannot outrun the income that funds it.
+
+   Every figure here is computed by strategy/model.py, not typed by hand, and
+   that script asserts positive EBITDA in all five years and in week one. If a
+   number on a slide disagrees with the script, the script is right.
+
+   ⚠️ Benchmark competitor prices are from working knowledge, NOT from live
+   pricing pages — this environment cannot browse. The slide says so.
    ========================================================================== */
 
 const money = v => Math.abs(v) >= 1e6 ? `$${(v / 1e6).toFixed(2)}M` : `$${Math.round(v / 1e3)}k`;
-const num = v => v >= 1000 ? `${(v / 1000).toFixed(v < 10000 ? 1 : 0)}k` : String(Math.round(v));
 
 /* -------------------  1 · THE BUSINESS MODEL  ------------------- */
 {
@@ -866,36 +871,104 @@ const num = v => v >= 1000 ? `${(v / 1000).toFixed(v < 10000 ? 1 : 0)}k` : Strin
   s.addImage({ data: av('bizzy'), x: 11.0, y: 0.5, w: 1.55, h: 1.55 });
   s.addText('THE BUSINESS MODEL', { x: M, y: 0.6, w: 8, h: 0.32, fontFace: BODY, fontSize: 12, bold: true, color: GOLD, charSpacing: 3, margin: 0 });
   s.addText('Free to arrive. Paid to go deep. Human where it matters.', {
-    x: M, y: 1.0, w: 10.6, h: 1.0, fontFace: DISP, fontSize: 28, bold: true, color: PAPER, margin: 0,
+    x: M, y: 1.0, w: 10.6, h: 0.95, fontFace: DISP, fontSize: 28, bold: true, color: PAPER, margin: 0,
   });
-  s.addText('The unit is the HOUSEHOLD, not the child, and the competitor is the tutor, not the app. A family with three children buys once and stays twelve years — which is why every price is a family price and why the age gaps cost more than any conversion rate.', {
-    x: M, y: 2.0, w: 11.4, h: 0.6, fontFace: BODY, fontSize: 12.5, color: TINT_D, margin: 0, lineSpacing: 16,
+  s.addText('The unit is the HOUSEHOLD, not the child, and the competitor is the tutor, not the app. A family with three children buys once and stays twelve years — which is why every price is a family price, and why the age gaps cost more than any conversion rate.', {
+    x: M, y: 2.0, w: 10.6, h: 0.72, fontFace: BODY, fontSize: 12.5, color: TINT_D, margin: 0, lineSpacing: 16,
   });
   const layers = [
     ['FREE', 'Arrive', 'Bizzing Bee core · Bizzing India culture · the YouTube channel. No card, no signup wall. This layer exists to be shared.', GOLD],
-    ['SUBSCRIPTION', 'Go deep', 'Per-product packs, or one family plan across the house. The compounding line and the only one that improves while you sleep.', VIOLET],
+    ['SUBSCRIPTION', 'Go deep', 'Per-product packs, or one family plan across the house. Billed annually up front — the decision that makes week one cash-positive.', VIOLET],
     ['COHORT', 'Be taught', 'Bizzing Business, bee coaching, beginner classes. Highest price per family, capped by people rather than by servers.', GREEN],
     ['PHYSICAL & MEDIA', 'Take it home', 'Books, avatar cards, plushies and tees; YouTube ad and sponsorship. Margin support, and a brand a child can hold.', 'E3B23C'],
   ];
   layers.forEach(([tag, verb, body, c], i) => {
-    const y = 2.74 + i * 1.02;
-    s.addShape(p.ShapeType.roundRect, { x: M, y, w: 2.4, h: 0.9, rectRadius: 0.11, fill: { color: c }, line: { type: 'none' } });
-    s.addText(tag, { x: M, y: y + 0.13, w: 2.4, h: 0.3, align: 'center', fontFace: BODY, fontSize: 9.5, bold: true, color: c === VIOLET || c === GREEN ? PAPER : INK, charSpacing: 1.4, margin: 0 });
-    s.addText(verb, { x: M, y: y + 0.44, w: 2.4, h: 0.34, align: 'center', fontFace: DISP, fontSize: 15, bold: true, color: c === VIOLET || c === GREEN ? PAPER : INK, margin: 0 });
-    s.addText(body, { x: M + 2.72, y: y + 0.06, w: 9.0, h: 0.8, fontFace: BODY, fontSize: 12, color: TINT_D, margin: 0, lineSpacing: 16 });
+    const y = 2.78 + i * 1.0;
+    s.addShape(p.ShapeType.roundRect, { x: M, y, w: 2.4, h: 0.88, rectRadius: 0.11, fill: { color: c }, line: { type: 'none' } });
+    s.addText(tag, { x: M, y: y + 0.12, w: 2.4, h: 0.3, align: 'center', fontFace: BODY, fontSize: 9.5, bold: true, color: c === VIOLET || c === GREEN ? PAPER : INK, charSpacing: 1.4, margin: 0 });
+    s.addText(verb, { x: M, y: y + 0.43, w: 2.4, h: 0.34, align: 'center', fontFace: DISP, fontSize: 15, bold: true, color: c === VIOLET || c === GREEN ? PAPER : INK, margin: 0 });
+    s.addText(body, { x: M + 2.72, y: y + 0.04, w: 9.0, h: 0.8, fontFace: BODY, fontSize: 12, color: TINT_D, margin: 0, lineSpacing: 16 });
   });
   s.addText('Everything after this slide derives from one assumption block, printed in full at the end — so any number can be argued with by changing an input rather than by disbelieving a chart.', {
-    x: M, y: 6.9, w: 11.6, h: 0.4, fontFace: BODY, fontSize: 11, italic: true, color: MUTED, margin: 0,
+    x: M, y: 6.86, w: 11.6, h: 0.4, fontFace: BODY, fontSize: 11, italic: true, color: MUTED, margin: 0,
   });
 }
 
-/* -------------------  2 · PRICING BENCHMARK  ------------------- */
+/* -------------------  2 · PROFITABLE FROM WEEK ONE  ------------------- */
 {
-  const s = lightSlide('We are priced against the tutor, not the app', 'Competitive benchmark');
-  s.addText('A family preparing a child for a bee is already paying somebody by the hour. That is the alternative we are actually replacing — and against it, $149 is inexpensive.',
-    { x: M, y: 1.58, w: 11.6, h: 0.56, fontFace: BODY, fontSize: 14.5, color: MUTED, margin: 0 });
+  const s = darkSlide();
+  hexField(s, { x: 10.9, y: 5.5, n: 3, size: 0.7, color: GREEN, transparency: 82, spread: 0.88 });
+  s.addText('THE CONSTRAINT', { x: M, y: 0.55, w: 8, h: 0.3, fontFace: BODY, fontSize: 12, bold: true, color: GOLD, charSpacing: 3, margin: 0 });
+  s.addText('Profitable in week one. No outside cash, in any year.', {
+    x: M, y: 0.92, w: 11.4, h: 0.9, fontFace: DISP, fontSize: 30, bold: true, color: PAPER, margin: 0,
+  });
+  s.addText('This is not a forecast that happens to turn positive. It is a cost structure built so that it cannot turn negative.', {
+    x: M, y: 1.84, w: 11.4, h: 0.36, fontFace: BODY, fontSize: 13, color: TINT_D, margin: 0,
+  });
 
-  // scale: log-ish bands so a $30 app and a $3,000 tutor fit one axis
+  // --- the week-one arithmetic, in full ---
+  s.addShape(p.ShapeType.roundRect, { x: M, y: 2.36, w: 5.2, h: 2.72, rectRadius: 0.14, fill: { color: PAPER, transparency: 92 }, line: { type: 'none' } });
+  s.addText('WEEK ONE, IN FULL', { x: M + 0.28, y: 2.5, w: 4.6, h: 0.28, fontFace: BODY, fontSize: 9.5, bold: true, color: GOLD, charSpacing: 1.8, margin: 0 });
+  const wk = [
+    ['4 households × $250, billed annually', '+$1,000', GREEN, true],
+    ['Paid media — 18% of that revenue', '−$180', TINT_D, false],
+    ['Content & tools — weekly share', '−$208', TINT_D, false],
+    ['Payment fees — 3.5%', '−$35', TINT_D, false],
+    ['Hosting', '−$4', TINT_D, false],
+    ['G&A — weekly share', '−$40', TINT_D, false],
+  ];
+  wk.forEach(([l, v, c, strong], i) => {
+    const y = 2.86 + i * 0.31;
+    s.addText(l, { x: M + 0.28, y, w: 3.5, h: 0.28, valign: 'middle', fontFace: BODY, fontSize: 10, bold: strong, color: strong ? PAPER : TINT_D, margin: 0 });
+    s.addText(v, { x: M + 3.7, y, w: 1.2, h: 0.28, align: 'right', valign: 'middle', fontFace: BODY, fontSize: 10.5, bold: true, color: c, margin: 0 });
+  });
+  s.addShape(p.ShapeType.line, { x: M + 0.28, y: 4.76, w: 4.62, h: 0, line: { color: PAPER, width: 1, transparency: 60 } });
+  s.addText('Week-one profit', { x: M + 0.28, y: 4.82, w: 3.0, h: 0.34, valign: 'middle', fontFace: DISP, fontSize: 13, bold: true, color: PAPER, margin: 0 });
+  s.addText('+$533', { x: M + 3.2, y: 4.8, w: 1.7, h: 0.36, align: 'right', valign: 'middle', fontFace: DISP, fontSize: 21, bold: true, color: GREEN, margin: 0 });
+
+  // --- the three rules that make it structural ---
+  s.addText('THE THREE RULES', { x: 6.4, y: 2.5, w: 6, h: 0.28, fontFace: BODY, fontSize: 9.5, bold: true, color: GOLD, charSpacing: 1.8, margin: 0 });
+  const rules = [
+    ['1', 'Bill the year up front', 'Cash arrives before the service is delivered. A household that joins in January funds twelve months of its own cost on the day it joins.'],
+    ['2', 'Every discretionary cost is a % of revenue', 'Paid media 18%. Content and tools 12%. Mentors 50% of cohort revenue only. COGS 55% of physical revenue only. These are not budgets — they are fractions, and a fraction of income cannot exceed income.'],
+    ['3', 'Fixed cost stays smaller than one week of sales', 'G&A and hosting total $2.1k in Year 1 — $40 a week against $1,000 of weekly revenue. Nothing else is fixed.'],
+  ];
+  rules.forEach(([n, h, b], i) => {
+    const y = 2.86 + i * 0.76;
+    hexBullet(s, 6.4, y, n, i === 1 ? GOLD : VIOLET, i === 1 ? INK : PAPER);
+    s.addText(h, { x: 6.98, y: y - 0.03, w: 5.6, h: 0.28, fontFace: DISP, fontSize: 13, bold: true, color: PAPER, margin: 0 });
+    s.addText(b, { x: 6.98, y: y + 0.23, w: 5.6, h: 0.5, fontFace: BODY, fontSize: 9.5, color: TINT_D, margin: 0, lineSpacing: 11.5 });
+  });
+
+  // --- five-year proof strip ---
+  const eb = [7406, 52470, 209699, 450134, 829040];
+  s.addText('EBITDA, every year, base case', { x: M, y: 5.3, w: 5, h: 0.3, fontFace: BODY, fontSize: 9.5, bold: true, color: GOLD, charSpacing: 1.6, margin: 0 });
+  eb.forEach((v, i) => {
+    const x = M + i * 2.35;
+    s.addShape(p.ShapeType.roundRect, { x, y: 5.62, w: 2.15, h: 0.62, rectRadius: 0.1, fill: { color: GREEN, transparency: 76 }, line: { type: 'none' } });
+    s.addText(`Y${i + 1}`, { x: x + 0.16, y: 5.7, w: 0.36, h: 0.46, valign: 'middle', fontFace: BODY, fontSize: 9.5, bold: true, color: TINT_D, margin: 0 });
+    s.addText(`+${money(v)}`, { x: x + 0.55, y: 5.7, w: 1.44, h: 0.46, align: 'right', valign: 'middle', fontFace: DISP, fontSize: 16, bold: true, color: PAPER, margin: 0 });
+  });
+
+  // --- the two honest caveats, on the slide rather than in a footnote ---
+  s.addShape(p.ShapeType.roundRect, { x: M, y: 6.38, w: 11.6, h: 0.98, rectRadius: 0.12, fill: { color: GOLD, transparency: 84 }, line: { type: 'none' } });
+  s.addText('Two things this claim does NOT mean', { x: M + 0.3, y: 6.46, w: 5, h: 0.26, fontFace: BODY, fontSize: 9.5, bold: true, color: GOLD, charSpacing: 1.4, margin: 0 });
+  s.addText([
+    { text: 'It is cash profit, not economic profit. ', options: { bold: true, color: PAPER } },
+    { text: 'Founders draw no salary until Year 3 — until then EBITDA IS founder pay, and in Year 1 that is $7.4k between two people. That is the real price of a four-a-week start.   ', options: { color: TINT_D } },
+    { text: 'And accounting profit lags cash, ', options: { bold: true, color: PAPER } },
+    { text: 'because annual billing creates deferred revenue: the bank balance is right, the P&L recognises it over twelve months.', options: { color: TINT_D } },
+  ], { x: M + 0.3, y: 6.7, w: 11.0, h: 0.6, fontFace: BODY, fontSize: 10, margin: 0, lineSpacing: 12.5 });
+  s.addNotes('The claim is deliberately narrow and the caveats are on the slide: cash profit with unpaid founders, and deferred revenue means the P&L lags the bank. Both are stated so nobody discovers them later.');
+}
+
+/* -------------------  3 · PRICING BENCHMARK  ------------------- */
+{
+  const s = lightSlide('We are priced against the tutor, not the app');
+  s.addText('COMPETITIVE BENCHMARK', { x: M, y: 0.44, w: 8, h: 0.28, fontFace: BODY, fontSize: 11.5, bold: true, color: VIOLET, charSpacing: 2.4, margin: 0 });
+  s.addText('A family preparing a child for a bee is already paying somebody by the hour. That is the alternative we actually replace — and against it, $149 is inexpensive.',
+    { x: M, y: 1.58, w: 11.6, h: 0.52, fontFace: BODY, fontSize: 14.5, color: MUTED, margin: 0 });
+
   const items = [
     ['Scripps Word Club (official bee app)', 30, 'APP', 'C4453C'],
     ['SpellingCity / bee practice apps', 60, 'APP', 'C4453C'],
@@ -904,114 +977,174 @@ const num = v => v >= 1000 ? `${(v / 1000).toFixed(v < 10000 ? 1 : 0)}k` : Strin
     ['Atom Learning (UK 11+)', 400, 'APP', 'C4453C'],
     ['Bizzing Bee Plus', 149, 'US', VIOLET],
     ['Bizzing Advanced Pack', 399, 'US', VIOLET],
-    ['Bizzing Family (whole house)', 449, 'US', VIOLET],
-    ['Bizzing Business cohort', 899, 'US', VIOLET],
+    ['Bizzing Family (whole house)', 499, 'US', VIOLET],
+    ['Bizzing Business cohort', 999, 'US', VIOLET],
     ['Hexco bee study packages', 700, 'TUTOR', GREEN],
     ['Kumon, one subject', 2000, 'TUTOR', GREEN],
     ['Bee coach — weekly, one hour', 3500, 'TUTOR', GREEN],
     ['UK 11+ tutoring, exam year', 3000, 'TUTOR', GREEN],
     ['Summer business camp, one week', 2200, 'TUTOR', GREEN],
   ];
-  const LX = M, LW = 4.6, BX = 5.5, BW = 5.5, MAXV = 3500;
+  const LX = M, LW = 4.6, BX = 5.5, BW = 5.4, MAXV = 3500;
   const scale = v => Math.max(0.14, BW * Math.pow(v / MAXV, 0.42));
   items.sort((a, b) => a[1] - b[1]).forEach(([n, v, kind, c], i) => {
-    const y = 2.24 + i * 0.335;
+    const y = 2.22 + i * 0.33;
     const us = kind === 'US';
-    if (us) s.addShape(p.ShapeType.roundRect, { x: LX - 0.12, y: y - 0.02, w: 11.55, h: 0.31, rectRadius: 0.07, fill: { color: TINT }, line: { type: 'none' } });
-    s.addText(n, { x: LX, y: y - 0.02, w: LW, h: 0.31, valign: 'middle', fontFace: us ? DISP : BODY, fontSize: us ? 11 : 10, bold: us, color: us ? VIOLET : '4A4360', margin: 0 });
+    if (us) s.addShape(p.ShapeType.roundRect, { x: LX - 0.12, y: y - 0.02, w: 11.5, h: 0.3, rectRadius: 0.07, fill: { color: TINT }, line: { type: 'none' } });
+    s.addText(n, { x: LX, y: y - 0.02, w: LW, h: 0.3, valign: 'middle', fontFace: us ? DISP : BODY, fontSize: us ? 11 : 10, bold: us, color: us ? VIOLET : '4A4360', margin: 0 });
     s.addShape(p.ShapeType.roundRect, { x: BX, y: y + 0.05, w: scale(v), h: 0.17, rectRadius: 0.085, fill: { color: c }, line: { type: 'none' } });
-    s.addText(`$${v.toLocaleString()}`, { x: BX + scale(v) + 0.1, y: y - 0.02, w: 1.1, h: 0.31, valign: 'middle', fontFace: BODY, fontSize: 9.5, bold: us, color: us ? VIOLET : MUTED, margin: 0 });
+    s.addText(`$${v.toLocaleString()}`, { x: BX + scale(v) + 0.08, y: y - 0.02, w: 1.05, h: 0.3, valign: 'middle', fontFace: BODY, fontSize: 9.5, bold: us, color: us ? VIOLET : MUTED, margin: 0 });
   });
-  [['APPS', 'C4453C', 11.35], ['BIZZING', VIOLET, 11.35], ['TUTORING', GREEN, 11.35]].forEach(([t, c], i) => {
-    const y = 2.3 + i * 0.42;
-    s.addShape(p.ShapeType.roundRect, { x: 11.35, y, w: 1.28, h: 0.3, rectRadius: 0.15, fill: { color: c }, line: { type: 'none' } });
-    s.addText(t, { x: 11.35, y, w: 1.28, h: 0.3, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 8, bold: true, color: PAPER, margin: 0 });
+  [['APPS', 'C4453C'], ['BIZZING', VIOLET], ['TUTORING', GREEN]].forEach(([t, c], i) => {
+    const y = 2.28 + i * 0.4;
+    s.addShape(p.ShapeType.roundRect, { x: 11.32, y, w: 1.28, h: 0.3, rectRadius: 0.15, fill: { color: c }, line: { type: 'none' } });
+    s.addText(t, { x: 11.32, y, w: 1.28, h: 0.3, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 8, bold: true, color: PAPER, margin: 0 });
   });
-  s.addText('Annual cost, US dollars, log-ish scale', { x: 11.3, y: 3.68, w: 1.5, h: 0.5, fontFace: BODY, fontSize: 8, italic: true, color: MUTED, margin: 0, lineSpacing: 10 });
-  s.addShape(p.ShapeType.roundRect, { x: M, y: 7.0, w: 11.6, h: 0.4, rectRadius: 0.1, fill: { color: 'FBF3E0' }, line: { type: 'none' } });
+  s.addText('Annual cost, US dollars.\nLog-ish scale so a $30 app\nand a $3,500 coach share\none axis.', { x: 11.3, y: 3.62, w: 1.55, h: 0.9, fontFace: BODY, fontSize: 7.5, italic: true, color: MUTED, margin: 0, lineSpacing: 9.5 });
+  s.addShape(p.ShapeType.roundRect, { x: M, y: 6.96, w: 11.6, h: 0.4, rectRadius: 0.1, fill: { color: 'FBF3E0' }, line: { type: 'none' } });
   s.addText([{ text: '⚠ Verify before showing externally:  ', options: { bold: true } },
              { text: 'these benchmark prices are from working knowledge, not from live pricing pages pulled today. Atom and Kumon in particular vary by region and change often. Check each before this slide leaves the building.' }], {
-    x: M + 0.24, y: 7.0, w: 11.1, h: 0.4, valign: 'middle', fontFace: BODY, fontSize: 9.5, color: GOLD_D, margin: 0 });
+    x: M + 0.24, y: 6.96, w: 11.1, h: 0.4, valign: 'middle', fontFace: BODY, fontSize: 9.5, color: GOLD_D, margin: 0 });
 }
 
-/* -------------------  3 · SUBSCRIPTION MODELS  ------------------- */
+/* -------------------  4 · SUBSCRIPTION MODELS  ------------------- */
 {
-  const s = lightSlide('What each product charges', 'Subscription models · repriced');
-  s.addText('Repriced upward against the tutor benchmark. The old ladder was priced like an app, which left roughly 60% of the revenue on the table.',
-    { x: M, y: 1.58, w: 11.6, h: 0.56, fontFace: BODY, fontSize: 14.5, color: MUTED, margin: 0 });
+  const s = lightSlide('What each product charges', 'Subscription models');
+  s.addText('Every price is annual and billed up front. That single billing choice is what puts the cash in before the cost goes out.',
+    { x: M, y: 1.58, w: 11.6, h: 0.52, fontFace: BODY, fontSize: 14.5, color: MUTED, margin: 0 });
   const tiers = [
-    ['Bizzing Bee', 'Free', '$0', '—', 'Full library, journey, arcade. Most families never pay, and that is what makes them trust us.'],
-    ['Bee Plus', 'Subscription', '$149 / yr', '$59', 'One twentieth of a weekly bee coach. The default upgrade.'],
-    ['Advanced Pack', 'Subscription', '$399 / yr', '$299', 'The champion track. Sits against Hexco packages and coaching, not against apps.'],
-    ['Bizzing Eleven', 'Exam year', '$299 / yr', '$99', 'Atom Learning is ~$400 and does not speak every word. 11+ tutoring is ten times this.'],
-    ['Bizzing Bhasha', 'Per language', '$179 / yr', '$79', 'Heritage-language tutoring runs $40–60 an hour. Nothing comparable exists as software.'],
-    ['Maths · English · Finance', 'Subscription', '$149 / yr', '$59', 'Priced to be added without a family meeting.'],
-    ['Bizzing Family', 'Everything', '$449 / yr', '$199', 'Whole house, up to four children. Cheaper than any three packs — the SKU that makes a twelve-year household real.'],
-    ['Bizzing Business', 'Cohort', '$899', '$549', 'Eight weeks, a team, a mentor, a demo day. A one-week summer camp is $2,200.'],
-    ['India edition', 'All products', '≈ $36 / yr', '$18', 'Roughly ₹2,999. A different market at a different price, not a discount.'],
+    ['Bizzing Bee', 'Free', '$0', 'Full library, journey, arcade. Most families never pay — and that is what makes them trust us.'],
+    ['Bee Plus', 'Subscription', '$149 / yr', 'One twenty-third of a weekly bee coach. The default upgrade.'],
+    ['Advanced Pack', 'Subscription', '$399 / yr', 'The champion track. Sits against Hexco packages and coaching, not against apps.'],
+    ['Bizzing Eleven', 'Exam year', '$349 / yr', 'Atom Learning is ~$400 and does not speak every word. 11+ tutoring is ten times this.'],
+    ['Bizzing Bhasha', 'Per language', '$199 / yr', 'Heritage-language tutoring runs $40–60 an hour. Nothing comparable exists as software.'],
+    ['Maths · English · Finance', 'Subscription', '$149 / yr', 'Priced to be added without a family meeting.'],
+    ['Bizzing Family', 'Everything', '$499 / yr', 'Whole house, up to four children. Cheaper than any three packs — the SKU that makes a twelve-year household real.'],
+    ['Bizzing Business', 'Cohort', '$999', 'Eight weeks, a team, a mentor, a demo day. A one-week summer camp is $2,200.'],
+    ['India edition', 'All products', '≈ $49 / yr', 'Roughly ₹3,999. A different market at a different price, not a discount.'],
   ];
-  tiers.forEach(([n, kind, price, was, note], i) => {
-    const y = 2.26 + i * 0.53;
-    if (i % 2 === 0) s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y - 0.04, w: 12.02, h: 0.5, rectRadius: 0.09, fill: { color: TINT }, line: { type: 'none' } });
+  tiers.forEach(([n, kind, price, note], i) => {
+    const y = 2.26 + i * 0.52;
+    if (i % 2 === 0) s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y - 0.04, w: 11.98, h: 0.49, rectRadius: 0.09, fill: { color: TINT }, line: { type: 'none' } });
     const hero = n === 'Bizzing Family' || n === 'Bee Plus' || n === 'Advanced Pack';
     s.addText(n, { x: M, y, w: 2.45, h: 0.42, valign: 'middle', fontFace: DISP, fontSize: 12, bold: true, color: hero ? VIOLET : INK, margin: 0 });
     s.addText(kind, { x: M + 2.5, y, w: 1.5, h: 0.42, valign: 'middle', fontFace: BODY, fontSize: 9.5, italic: true, color: MUTED, margin: 0 });
     s.addText(price, { x: M + 4.05, y, w: 1.4, h: 0.42, valign: 'middle', align: 'right', fontFace: BODY, fontSize: 12, bold: true, color: hero ? VIOLET : GOLD_D, margin: 0 });
-    s.addText(was === '—' ? '' : `was ${was}`, { x: M + 5.5, y, w: 0.9, h: 0.42, valign: 'middle', fontFace: BODY, fontSize: 8.5, italic: true, color: 'C4453C', margin: 0 });
-    s.addText(note, { x: M + 6.5, y, w: 5.05, h: 0.42, valign: 'middle', fontFace: BODY, fontSize: 9.5, color: '4A4360', margin: 0 });
+    s.addText(note, { x: M + 5.7, y, w: 5.8, h: 0.42, valign: 'middle', fontFace: BODY, fontSize: 9.5, color: '4A4360', margin: 0 });
   });
-  s.addText('Blended ARPU used throughout: $210 diaspora (55% Bee Plus, 12% Advanced, 20% another single pack, 13% Family), $32 India. Up from $95 — the single biggest change in the model.', {
-    x: M, y: 7.02, w: 11.6, h: 0.35, fontFace: BODY, fontSize: 10, italic: true, color: MUTED, margin: 0,
-  });
+  s.addShape(p.ShapeType.roundRect, { x: M, y: 6.98, w: 11.6, h: 0.4, rectRadius: 0.1, fill: { color: TINT }, line: { type: 'none' } });
+  s.addText([{ text: 'Blended ARPU used throughout:  ', options: { bold: true } },
+             { text: '$250 diaspora (55% Bee Plus, 12% Advanced, 20% another single pack, 13% Family) and $45 India. The blended figure FALLS from $250 to $172 across five years as India grows into a third of the base — that dilution is in the model, not assumed away.' }], {
+    x: M + 0.26, y: 6.98, w: 11.1, h: 0.4, valign: 'middle', fontFace: BODY, fontSize: 9.5, color: '4A4360', margin: 0 });
 }
 
-/* -------------------  4 · ACQUISITION  ------------------- */
+/* -------------------  5 · ACQUISITION STRATEGY  ------------------- */
 {
-  const s = lightSlide('Four a week, then earn the right to more', 'Customer acquisition');
-  s.addText('Year 1 is deliberately tiny: four paying households a week. Every later year is a rate, not a wish — and 30% annual churn is taken off the front of each one.',
-    { x: M, y: 1.58, w: 11.6, h: 0.56, fontFace: BODY, fontSize: 14.5, color: MUTED, margin: 0 });
-  const rows = [
-    ['New paying households / week', ['4', '20', '65', '140', '240'], false, MUTED],
-    ['New in year', ['210', '1,040', '3,400', '7,300', '12,500'], false, MUTED],
-    ['Retained from prior year (70%)', ['—', '147', '833', '2,961', '7,182'], false, MUTED],
-    ['Paying households, end of year', ['210', '1.2k', '4.2k', '10.3k', '19.7k'], true, VIOLET],
+  const s = lightSlide('How a household actually arrives', 'Customer acquisition strategy');
+  s.addText('Capping paid media at 18% of revenue has a consequence we should say out loud: growth cannot be bought. Between 83% of Year 1 and 58% of Year 5, households have to be earned. This slide is how.',
+    { x: M, y: 1.56, w: 11.6, h: 0.52, fontFace: BODY, fontSize: 14, color: MUTED, margin: 0 });
+
+  // --- the four-step motion ---
+  const steps = [
+    ['FIND', 'A parent searches, or a video finds them', 'YouTube and search are where a bee parent already is. The free product means there is nothing between the click and the child playing.', GOLD],
+    ['PROVE', 'The child comes back without being asked', 'The only honest signal. We watch week-two return rate, not signups — a family that returns is a family that will pay.', VIOLET],
+    ['ASK', 'Upgrade at the moment of ambition', 'Not on day one. At the point the child hits the wall the free tier stops at — a regional list, a harder root, a real bee date.', GREEN],
+    ['SPREAD', 'One family tells four', 'The diaspora channel is a WhatsApp group, a temple hall, a school corridor. It cannot be bought. It can be deserved, and it compounds.', 'E3B23C'],
   ];
-  const CX = [5.3, 6.75, 8.2, 9.65, 11.1], CW = 1.35;
+  steps.forEach(([tag, h, b, c], i) => {
+    const x = M + i * 2.95;
+    s.addShape(p.ShapeType.roundRect, { x, y: 2.24, w: 2.75, h: 1.62, rectRadius: 0.12, fill: { color: TINT }, line: { type: 'none' } });
+    s.addShape(p.ShapeType.roundRect, { x, y: 2.24, w: 2.75, h: 0.28, rectRadius: 0.12, fill: { color: c }, line: { type: 'none' } });
+    s.addText(tag, { x, y: 2.24, w: 2.75, h: 0.28, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 9, bold: true, color: c === GOLD || c === 'E3B23C' ? INK : PAPER, charSpacing: 1.6, margin: 0 });
+    s.addText(h, { x: x + 0.18, y: 2.6, w: 2.4, h: 0.44, fontFace: DISP, fontSize: 11.5, bold: true, color: INK, margin: 0, lineSpacing: 13 });
+    s.addText(b, { x: x + 0.18, y: 3.06, w: 2.4, h: 0.74, fontFace: BODY, fontSize: 8.5, color: '4A4360', margin: 0, lineSpacing: 10.5 });
+    if (i < 3) s.addText('→', { x: x + 2.76, y: 2.84, w: 0.2, h: 0.4, align: 'center', fontFace: BODY, fontSize: 15, color: MUTED, margin: 0 });
+  });
+
+  // --- channels, with the role each plays ---
+  s.addText('What each channel is for', { x: M, y: 4.02, w: 5, h: 0.3, fontFace: DISP, fontSize: 15, bold: true, color: INK, margin: 0 });
+  const CX = [4.35, 6.15, 8.05];
+  ['ROLE', 'SWITCHES ON', 'THE NUMBER WE WATCH'].forEach((h, i) =>
+    s.addText(h, { x: CX[i], y: 4.38, w: i === 2 ? 4.25 : 1.75, h: 0.26, fontFace: BODY, fontSize: 8, bold: true, color: VIOL_D, charSpacing: 1.2, margin: 0 }));
+  const chans = [
+    ['The free product itself', 'Converts', 'Week 1', 'Week-two return rate — everything downstream is a function of it', GREEN],
+    ['YouTube back catalogue', 'Finds', 'Week 1', 'Views per video after 90 days, not on launch day', GOLD],
+    ['Referral & WhatsApp', 'Multiplies', 'Month 3', 'Invites sent per paying household per year — target 2+', GREEN],
+    ['Community & events', 'Converts hardest', 'Month 6', 'Cost per household at a regional bee, versus $130 paid', 'E3B23C'],
+    ['Search & Meta', 'Amplifies', 'When funded', 'Only ever 18% of trailing revenue — never a fixed budget', VIOLET],
+    ['School & club partnerships', 'Reaches at scale', 'Year 2', 'Households per partnership; one club is worth ~40', VIOLET],
+  ];
+  chans.forEach(([n, role, on, watch, c], i) => {
+    const y = 4.68 + i * 0.4;
+    if (i % 2 === 0) s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y - 0.03, w: 11.98, h: 0.38, rectRadius: 0.08, fill: { color: TINT }, line: { type: 'none' } });
+    s.addShape(p.ShapeType.hexagon, { x: M, y: y + 0.04, w: 0.24, h: 0.24, rotate: 90, fill: { color: c }, line: { type: 'none' } });
+    s.addText(n, { x: M + 0.34, y: y - 0.02, w: 3.3, h: 0.36, valign: 'middle', fontFace: DISP, fontSize: 11, bold: true, color: INK, margin: 0 });
+    s.addText(role, { x: CX[0], y: y - 0.02, w: 1.75, h: 0.36, valign: 'middle', fontFace: BODY, fontSize: 9.5, italic: true, color: c, margin: 0 });
+    s.addText(on, { x: CX[1], y: y - 0.02, w: 1.75, h: 0.36, valign: 'middle', fontFace: BODY, fontSize: 9.5, bold: true, color: '4A4360', margin: 0 });
+    s.addText(watch, { x: CX[2], y: y - 0.02, w: 4.25, h: 0.36, valign: 'middle', fontFace: BODY, fontSize: 9, color: '4A4360', margin: 0 });
+  });
+  s.addShape(p.ShapeType.roundRect, { x: M, y: 7.06, w: 11.6, h: 0.38, rectRadius: 0.09, fill: { color: INK }, line: { type: 'none' } });
+  s.addText([{ text: 'The order is deliberate.  ', options: { bold: true, color: GOLD } },
+             { text: 'Paid media is last because it multiplies whatever it is pointed at. Pointed at a product families do not return to, it multiplies a leak — which is the most common way a plan like this loses money.', options: { color: TINT_D } }], {
+    x: M + 0.26, y: 7.06, w: 11.1, h: 0.38, valign: 'middle', fontFace: BODY, fontSize: 9.5, margin: 0 });
+  s.addNotes('This slide exists because the 18% paid cap makes organic acquisition load-bearing. If only one metric survives, it is week-two return rate.');
+}
+
+/* -------------------  6 · ACQUISITION TARGETS  ------------------- */
+{
+  const s = lightSlide('Four a week, then earn the right to more', 'Acquisition targets');
+  s.addText('The rate rises every year, but the growth MULTIPLE falls every year — 4.5×, then 2.9×, 2.2×, 1.7×. That deceleration is the honest shape of acquisition getting harder as the easy households are used up.',
+    { x: M, y: 1.56, w: 11.6, h: 0.52, fontFace: BODY, fontSize: 14, color: MUTED, margin: 0 });
+  const CX = [5.5, 6.9, 8.3, 9.7, 11.1], CW = 1.3;
   ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'].forEach((h, i) =>
-    s.addText(h, { x: CX[i], y: 2.24, w: CW, h: 0.3, align: 'center', fontFace: BODY, fontSize: 10.5, bold: true, color: VIOL_D, margin: 0 }));
-  rows.forEach(([n, vals, strong, c], i) => {
-    const y = 2.62 + i * 0.62;
-    if (strong) s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y - 0.05, w: 12.02, h: 0.58, rectRadius: 0.09, fill: { color: INK }, line: { type: 'none' } });
-    else if (i % 2 === 0) s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y - 0.05, w: 12.02, h: 0.58, rectRadius: 0.09, fill: { color: TINT }, line: { type: 'none' } });
-    s.addText(n, { x: M, y, w: 4.4, h: 0.48, valign: 'middle', fontFace: strong ? DISP : BODY, fontSize: strong ? 13 : 11.5, bold: strong, color: strong ? PAPER : '4A4360', margin: 0 });
-    vals.forEach((v, k) => s.addText(v, { x: CX[k], y, w: CW, h: 0.48, align: 'center', valign: 'middle', fontFace: BODY, fontSize: strong ? 14 : 11.5, bold: strong, color: strong ? (k === 4 ? GOLD : PAPER) : INK, margin: 0 }));
-  });
-  const geo = [
-    ['United States', '520k households', '9.1k', VIOLET], ['United Kingdom', '190k', '2.4k', VIOLET],
-    ['Canada & Australia', '250k', '1.5k', VIOLET], ['Gulf', '350k', '0.7k', GOLD], ['India', '6.0M', '6.0k', GREEN],
+    s.addText(h, { x: CX[i], y: 2.2, w: CW, h: 0.3, align: 'center', fontFace: BODY, fontSize: 10.5, bold: true, color: VIOL_D, margin: 0 }));
+  const rows = [
+    ['New paying households / week', ['4', '18', '52', '115', '195'], 'The target the team is actually run against', true, VIOLET],
+    ['Growth on the year before', ['—', '4.5×', '2.9×', '2.2×', '1.7×'], 'Decelerating, because it should', false, MUTED],
+    ['New in the year', ['208', '936', '2,704', '5,980', '10,140'], '', false, MUTED],
+    ['Retained from prior year (70%)', ['—', '146', '757', '2,422', '5,882'], '30% annual churn taken off the front', false, MUTED],
+    ['Paying households, end of year', ['208', '1,082', '3,461', '8,403', '16.0k'], '', true, INK],
   ];
-  s.addText('Year 5 split by market', { x: M, y: 5.28, w: 5, h: 0.34, fontFace: DISP, fontSize: 15, bold: true, color: INK, margin: 0 });
-  geo.forEach(([n, sam, v, c], i) => {
-    const x = M + i * 2.42;
-    card(s, { x, y: 5.7, w: 2.2, h: 1.06, fill: TINT });
-    s.addText(n, { x: x + 0.14, y: 5.8, w: 1.95, h: 0.3, fontFace: BODY, fontSize: 9.5, bold: true, color: INK, margin: 0 });
-    s.addText(v, { x: x + 0.14, y: 6.06, w: 1.95, h: 0.4, fontFace: DISP, fontSize: 19, bold: true, color: c, margin: 0 });
-    s.addText(`of ${sam}`, { x: x + 0.14, y: 6.44, w: 1.95, h: 0.26, fontFace: BODY, fontSize: 8, italic: true, color: MUTED, margin: 0 });
+  rows.forEach(([n, vals, note, strong, c], i) => {
+    const y = 2.56 + i * 0.6;
+    const dark = i === 4;
+    if (dark) s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y - 0.05, w: 11.98, h: 0.56, rectRadius: 0.09, fill: { color: INK }, line: { type: 'none' } });
+    else if (i % 2 === 0) s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y - 0.05, w: 11.98, h: 0.56, rectRadius: 0.09, fill: { color: TINT }, line: { type: 'none' } });
+    s.addText(n, { x: M, y: y - 0.02, w: 4.6, h: 0.3, fontFace: strong ? DISP : BODY, fontSize: strong ? 12.5 : 11, bold: strong, color: dark ? PAPER : (strong ? VIOLET : '4A4360'), margin: 0 });
+    if (note) s.addText(note, { x: M, y: y + 0.24, w: 4.6, h: 0.24, fontFace: BODY, fontSize: 8, italic: true, color: dark ? TINT_D : MUTED, margin: 0 });
+    vals.forEach((v, k) => s.addText(v, { x: CX[k], y, w: CW, h: 0.46, align: 'center', valign: 'middle', fontFace: BODY, fontSize: strong ? 14 : 11.5, bold: strong, color: dark ? (k === 4 ? GOLD : PAPER) : INK, margin: 0 }));
   });
-  s.addText('19.7k at Year 5 is ~1.0% of diaspora households with a child in band. The previous draft assumed 75k — nearly 4% — which was the least defensible number in the deck.', {
-    x: M, y: 6.92, w: 11.6, h: 0.4, fontFace: BODY, fontSize: 11, italic: true, color: VIOLET, margin: 0,
+
+  // --- the split between what paid can buy and what must be earned ---
+  s.addText('Of those households, how many can paid media actually buy?', { x: M, y: 5.66, w: 7.5, h: 0.3, fontFace: DISP, fontSize: 14, bold: true, color: INK, margin: 0 });
+  const split = [['Y1', 36, 208], ['Y2', 220, 936], ['Y3', 832, 2704], ['Y4', 2150, 5980], ['Y5', 4280, 10140]];
+  split.forEach(([lbl, bought, total], i) => {
+    const x = M + i * 2.35, frac = bought / total;
+    s.addShape(p.ShapeType.roundRect, { x, y: 6.04, w: 2.15, h: 0.3, rectRadius: 0.08, fill: { color: TINT_D }, line: { type: 'none' } });
+    s.addShape(p.ShapeType.roundRect, { x, y: 6.04, w: Math.max(0.2, 2.15 * frac), h: 0.3, rectRadius: 0.08, fill: { color: VIOLET }, line: { type: 'none' } });
+    s.addText(`${lbl}  ${Math.round(frac * 100)}% paid`, { x: x + 0.1, y: 6.04, w: 1.95, h: 0.3, valign: 'middle', fontFace: BODY, fontSize: 8.5, bold: true, color: frac > 0.45 ? PAPER : INK, margin: 0 });
+    s.addText(`${bought.toLocaleString()} bought · ${(total - bought).toLocaleString()} earned`, { x, y: 6.36, w: 2.15, h: 0.26, fontFace: BODY, fontSize: 7.5, color: MUTED, margin: 0 });
+  });
+  const geo = [['United States', '520k households', '7.3k', VIOLET], ['United Kingdom', '190k', '2.0k', VIOLET],
+    ['Canada & Australia', '250k', '1.3k', VIOLET], ['Gulf', '350k', '0.6k', GOLD], ['India', '6.0M', '4.8k', GREEN]];
+  s.addText('Year 5 split by market', { x: M, y: 6.72, w: 5, h: 0.28, fontFace: BODY, fontSize: 9.5, bold: true, color: VIOL_D, charSpacing: 1.4, margin: 0 });
+  geo.forEach(([n, sam, v, c], i) => {
+    const x = M + i * 2.35;
+    s.addText(`${n} — `, { x, y: 7.0, w: 1.5, h: 0.24, fontFace: BODY, fontSize: 8.5, color: MUTED, margin: 0 });
+    s.addText(v, { x: x + 1.5, y: 6.97, w: 0.65, h: 0.28, fontFace: DISP, fontSize: 12, bold: true, color: c, margin: 0 });
+    s.addText(`of ${sam}`, { x, y: 7.2, w: 2.1, h: 0.22, fontFace: BODY, fontSize: 7.5, italic: true, color: MUTED, margin: 0 });
   });
 }
 
-/* -------------------  5 · PAID MEDIA  ------------------- */
+/* -------------------  7 · PAID MEDIA  ------------------- */
 {
   const s = darkSlide();
-  s.addText('PAID MEDIA — WHAT IT WOULD TAKE', { x: M, y: 0.58, w: 9, h: 0.32, fontFace: BODY, fontSize: 12, bold: true, color: GOLD, charSpacing: 3, margin: 0 });
-  s.addText('Paid does not pay back in a month. It pays back in six.', {
-    x: M, y: 0.98, w: 11.0, h: 0.85, fontFace: DISP, fontSize: 28, bold: true, color: PAPER, margin: 0,
+  s.addText('PAID MEDIA — WHAT IT WOULD TAKE', { x: M, y: 0.55, w: 9, h: 0.3, fontFace: BODY, fontSize: 12, bold: true, color: GOLD, charSpacing: 3, margin: 0 });
+  s.addText('The budget is not chosen. It is 18% of what came in last quarter.', {
+    x: M, y: 0.90, w: 11.4, h: 1.02, fontFace: DISP, fontSize: 27, bold: true, color: PAPER, margin: 0,
   });
-  s.addText('At $210 ARPU and 85% gross margin, a $149 customer returns about $15 a month. That is the number every channel below has to clear — and it is why the channel mix matters more than the budget.', {
-    x: M, y: 1.86, w: 11.2, h: 0.5, fontFace: BODY, fontSize: 12.5, color: TINT_D, margin: 0, lineSpacing: 16,
+  s.addText('That is the whole discipline. It means paid media can never be the reason a month loses money — and it means we spend $4.7k in Year 1 and $556k in Year 5 without ever making a budget decision.', {
+    x: M, y: 1.98, w: 11.4, h: 0.42, fontFace: BODY, fontSize: 12.5, color: TINT_D, margin: 0, lineSpacing: 15,
   });
   const chans = [
     ['Google Search', '$1.80–3.50', '$10–16', '$100', '2.1×', 'Highest intent: "spelling bee practice", "11+ verbal reasoning". Small volume, best economics. Start here.', GREEN],
@@ -1022,43 +1155,42 @@ const num = v => v >= 1000 ? `${(v / 1000).toFixed(v < 10000 ? 1 : 0)}k` : Strin
   ];
   const CX = [3.9, 5.35, 6.8, 8.1];
   ['CPC', 'CPL', 'CAC', 'YR-1 ROAS'].forEach((h, i) =>
-    s.addText(h, { x: CX[i], y: 2.48, w: 1.35, h: 0.28, align: 'center', fontFace: BODY, fontSize: 9, bold: true, color: GOLD, charSpacing: 1.2, margin: 0 }));
+    s.addText(h, { x: CX[i], y: 2.44, w: 1.35, h: 0.26, align: 'center', fontFace: BODY, fontSize: 9, bold: true, color: GOLD, charSpacing: 1.2, margin: 0 }));
   chans.forEach(([n, cpc, cpl, cac, roas, note, c], i) => {
-    const y = 2.82 + i * 0.72;
-    if (i % 2 === 0) s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y - 0.05, w: 12.02, h: 0.66, rectRadius: 0.09, fill: { color: PAPER, transparency: 94 }, line: { type: 'none' } });
-    s.addShape(p.ShapeType.hexagon, { x: M, y: y + 0.16, w: 0.26, h: 0.26, rotate: 90, fill: { color: c }, line: { type: 'none' } });
-    s.addText(n, { x: M + 0.38, y, w: 2.8, h: 0.56, valign: 'middle', fontFace: DISP, fontSize: 11.5, bold: true, color: PAPER, margin: 0 });
-    [cpc, cpl, cac, roas].forEach((v, k) => s.addText(v, { x: CX[k], y, w: 1.35, h: 0.56, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 11, bold: k >= 2, color: k === 3 ? c : TINT_D, margin: 0 }));
-    s.addText(note, { x: 9.6, y, w: 3.0, h: 0.6, valign: 'middle', fontFace: BODY, fontSize: 9, color: TINT_D, margin: 0, lineSpacing: 11 });
+    const y = 2.74 + i * 0.69;
+    if (i % 2 === 0) s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y - 0.05, w: 11.98, h: 0.64, rectRadius: 0.09, fill: { color: PAPER, transparency: 94 }, line: { type: 'none' } });
+    s.addShape(p.ShapeType.hexagon, { x: M, y: y + 0.15, w: 0.26, h: 0.26, rotate: 90, fill: { color: c }, line: { type: 'none' } });
+    s.addText(n, { x: M + 0.38, y, w: 2.8, h: 0.54, valign: 'middle', fontFace: DISP, fontSize: 12.5, bold: true, color: PAPER, margin: 0 });
+    [cpc, cpl, cac, roas].forEach((v, k) => s.addText(v, { x: CX[k], y, w: 1.35, h: 0.54, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 11, bold: k >= 2, color: k === 3 ? c : TINT_D, margin: 0 }));
+    s.addText(note, { x: 9.6, y, w: 3.0, h: 0.58, valign: 'middle', fontFace: BODY, fontSize: 9, color: TINT_D, margin: 0, lineSpacing: 11 });
   });
   const facts = [
-    ['Blended CAC', '$85', 'Assumes 45% of new households come from paid at ~$130, and 55% from content, referral and events at ~$30.'],
-    ['Payback', '5.7 months', '$85 CAC ÷ $14.9 monthly gross profit. Anything over nine months breaks the cash plan.'],
-    ['LTV : CAC', '4.7 : 1', '$210 ARPU ÷ 30% churn × 85% margin = $595 LTV. Healthy; three-to-one is the floor.'],
+    ['Blended CAC', '$22 → $55', 'Total paid spend ÷ ALL new households. It rises as paid takes a larger share — from 17% of new households in Year 1 to 42% in Year 5.'],
+    ['Payback', '1.3 → 4.5 mo', 'Against $250 ARPU at 85% gross margin. Annual billing means the cash is in on day one regardless; this is the accounting view.'],
+    ['LTV : CAC', '31 : 1 → 9 : 1', '$250 ÷ 30% churn × 85% = $708 LTV in Year 1, $488 by Year 5 as India dilutes ARPU. Three-to-one is the floor; we are far above it.'],
   ];
   facts.forEach(([h, v, b], i) => {
-    const x = M + i * 4.03;
-    s.addShape(p.ShapeType.roundRect, { x, y: 6.5, w: 3.73, h: 0.82, rectRadius: 0.12, fill: { color: PAPER, transparency: 92 }, line: { type: 'none' } });
-    s.addText(h, { x: x + 0.22, y: 6.58, w: 1.65, h: 0.28, fontFace: BODY, fontSize: 9, bold: true, color: GOLD, charSpacing: 1.2, margin: 0 });
-    s.addText(v, { x: x + 1.95, y: 6.55, w: 1.6, h: 0.34, align: 'right', fontFace: DISP, fontSize: 16, bold: true, color: PAPER, margin: 0 });
-    s.addText(b, { x: x + 0.22, y: 6.88, w: 3.3, h: 0.4, fontFace: BODY, fontSize: 8, color: TINT_D, margin: 0, lineSpacing: 10 });
+    const x = M + i * 4.02;
+    s.addShape(p.ShapeType.roundRect, { x, y: 6.28, w: 3.72, h: 1.06, rectRadius: 0.12, fill: { color: PAPER, transparency: 92 }, line: { type: 'none' } });
+    s.addText(h, { x: x + 0.22, y: 6.36, w: 1.48, h: 0.28, fontFace: BODY, fontSize: 9, bold: true, color: GOLD, charSpacing: 1.2, margin: 0 });
+    s.addText(v, { x: x + 1.75, y: 6.33, w: 1.8, h: 0.32, align: 'right', fontFace: DISP, fontSize: 15, bold: true, color: PAPER, margin: 0 });
+    s.addText(b, { x: x + 0.22, y: 6.66, w: 3.3, h: 0.6, fontFace: BODY, fontSize: 8, color: TINT_D, margin: 0, lineSpacing: 10 });
   });
 }
 
-/* -------------------  6 · REVENUE MIX  ------------------- */
+/* -------------------  8 · REVENUE MIX  ------------------- */
 {
   const s = lightSlide('Where the money comes from', 'Revenue mix · base case');
   s.addText('Subscription carries it. Everything else widens the margin, deepens the brand, or reaches an age the app cannot.',
-    { x: M, y: 1.58, w: 11.6, h: 0.56, fontFace: BODY, fontSize: 14.5, color: MUTED, margin: 0 });
+    { x: M, y: 1.58, w: 11.6, h: 0.52, fontFace: BODY, fontSize: 14.5, color: MUTED, margin: 0 });
   const years = ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'];
   const series = [
-    { name: 'Subscriptions', labels: years, values: [0.022, 0.133, 0.474, 1.193, 2.366], color: VIOLET },
-    { name: 'Business cohorts', labels: years, values: [0, 0, 0.108, 0.405, 0.809], color: GREEN },
-    { name: 'Books, cards, merch', labels: years, values: [0, 0.018, 0.070, 0.180, 0.360], color: GOLD },
-    { name: 'YouTube', labels: years, values: [0, 0.008, 0.030, 0.075, 0.150], color: '9C89E8' },
+    { name: 'Subscriptions', labels: years, values: [0.026, 0.151, 0.475, 1.118, 2.102], color: VIOLET },
+    { name: 'Business cohorts', labels: years, values: [0, 0, 0.078, 0.295, 0.680], color: GREEN },
+    { name: 'Books, cards, merch, YouTube', labels: years, values: [0, 0.008, 0.048, 0.140, 0.309], color: GOLD },
   ];
   s.addChart(p.ChartType.bar, series, {
-    x: M, y: 2.25, w: 7.5, h: 4.3,
+    x: M, y: 2.25, w: 7.5, h: 4.2,
     barDir: 'col', barGrouping: 'stacked', chartColors: series.map(x => x.color),
     showLegend: true, legendPos: 'b', legendColor: '4A4360', legendFontSize: 10, showValue: false,
     catAxisLabelColor: '4A4360', catAxisLabelFontSize: 11,
@@ -1068,145 +1200,152 @@ const num = v => v >= 1000 ? `${(v / 1000).toFixed(v < 10000 ? 1 : 0)}k` : Strin
     dataBorder: { pt: 1, color: PAPER },
   });
   const notes = [
-    ['Year 1', '$22k', 'Subscription only, and barely that. 210 households, most joining late in the year.', VIOLET],
-    ['Year 3', '$682k', 'Cohorts and physical arrive. Subscription still 70% of the line.', GREEN],
-    ['Year 5', '$3.69M', 'Subscription 64%, cohorts 22%, physical and media 14%. Higher prices made cohorts matter more, not less.', GOLD],
+    ['Year 1', '$26k', 'Subscription only. 208 households, most joining late in the year — which is why average, not ending, households drive revenue.', VIOLET],
+    ['Year 3', '$601k', 'Cohorts and physical arrive. Subscription still 79% of the line.', GREEN],
+    ['Year 5', '$3.09M', 'Subscription 68%, cohorts 22%, physical and media 10%. Higher cohort pricing made that line matter more, not less.', GOLD],
   ];
   notes.forEach(([y1, v, b, c], i) => {
-    const y = 2.35 + i * 1.53;
-    card(s, { x: 8.5, y, w: 3.8, h: 1.34, fill: TINT });
-    s.addText(y1, { x: 8.76, y: y + 0.16, w: 1.1, h: 0.28, fontFace: BODY, fontSize: 10, bold: true, color: MUTED, charSpacing: 1.4, margin: 0 });
-    s.addText(v, { x: 10.05, y: y + 0.06, w: 2.05, h: 0.42, align: 'right', fontFace: DISP, fontSize: 20, bold: true, color: c, margin: 0 });
-    s.addText(b, { x: 8.76, y: y + 0.5, w: 3.3, h: 0.75, fontFace: BODY, fontSize: 10, color: '4A4360', margin: 0, lineSpacing: 13 });
+    const y = 2.32 + i * 1.5;
+    card(s, { x: 8.5, y, w: 3.8, h: 1.32, fill: TINT });
+    s.addText(y1, { x: 8.76, y: y + 0.14, w: 1.1, h: 0.28, fontFace: BODY, fontSize: 10, bold: true, color: MUTED, charSpacing: 1.4, margin: 0 });
+    s.addText(v, { x: 10.05, y: y + 0.05, w: 2.05, h: 0.4, align: 'right', fontFace: DISP, fontSize: 20, bold: true, color: c, margin: 0 });
+    s.addText(b, { x: 8.76, y: y + 0.47, w: 3.3, h: 0.76, fontFace: BODY, fontSize: 10, color: '4A4360', margin: 0, lineSpacing: 13 });
   });
-  s.addText('Aggressive reaches $10.3M at Year 5 on the same mix shape — 2.2× the households, not a different business.', {
-    x: M, y: 6.82, w: 11.6, h: 0.4, fontFace: BODY, fontSize: 11, italic: true, color: MUTED, margin: 0,
+  s.addText('The aggressive case reaches $5.37M at Year 5 on the same mix shape — 1.7× the households, not a different business.', {
+    x: M, y: 6.86, w: 11.6, h: 0.4, fontFace: BODY, fontSize: 11, italic: true, color: MUTED, margin: 0,
   });
 }
 
-/* -------------------  7 · THE CEILING  ------------------- */
+/* -------------------  9 · THE CEILING  ------------------- */
 {
   const s = darkSlide();
   s.addImage({ data: av('titan'), x: 11.05, y: 0.5, w: 1.5, h: 1.5 });
   s.addText('THE CEILING', { x: M, y: 0.6, w: 8, h: 0.32, fontFace: BODY, fontSize: 12, bold: true, color: GOLD, charSpacing: 3, margin: 0 });
-  s.addText('The higher price does not just add revenue. It shrinks the market share we need.', {
-    x: M, y: 1.0, w: 10.4, h: 1.0, fontFace: DISP, fontSize: 26, bold: true, color: PAPER, margin: 0,
+  s.addText('Priced against the tutor, we need less of the market than any app would.', {
+    x: M, y: 1.0, w: 10.2, h: 0.98, fontFace: DISP, fontSize: 25, bold: true, color: PAPER, margin: 0,
   });
   const bars = [
     ['Diaspora households with a child 4–16', '1.31M', 1.0, GOLD],
-    ['× $210 blended — the whole diaspora market', '$275M', 1.0, GOLD],
-    ['Year 5 base case — 19.7k households', '1.0%', 0.04, VIOLET],
-    ['At 5% penetration', '$13.8M', 0.20, VIOLET],
-    ['At 15% — category default, a decade in', '$41M', 0.60, VIOLET],
-    ['India at 5% of 6.0M × $32', '$9.6M', 0.35, GREEN],
+    ['× $250 blended — the whole diaspora market', '$328M', 1.0, GOLD],
+    ['Year 5 base case — 16.0k households', '0.9%', 0.04, VIOLET],
+    ['At 5% penetration', '$16.4M', 0.20, VIOLET],
+    ['At 15% — category default, a decade in', '$49M', 0.60, VIOLET],
+    ['India at 5% of 6.0M × $45', '$13.5M', 0.38, GREEN],
   ];
   bars.forEach(([label, val, frac, c], i) => {
-    const y = 2.2 + i * 0.66;
+    const y = 2.18 + i * 0.65;
     s.addText(label, { x: M, y, w: 5.4, h: 0.46, valign: 'middle', fontFace: BODY, fontSize: 11.5, color: TINT_D, margin: 0 });
     s.addShape(p.ShapeType.roundRect, { x: 6.3, y: y + 0.09, w: 4.2, h: 0.28, rectRadius: 0.14, fill: { color: PAPER, transparency: 90 }, line: { type: 'none' } });
     s.addShape(p.ShapeType.roundRect, { x: 6.3, y: y + 0.09, w: Math.max(0.26, 4.2 * frac), h: 0.28, rectRadius: 0.14, fill: { color: c }, line: { type: 'none' } });
     s.addText(val, { x: 10.65, y, w: 1.7, h: 0.46, align: 'right', valign: 'middle', fontFace: DISP, fontSize: 16, bold: true, color: c, margin: 0 });
   });
-  s.addShape(p.ShapeType.roundRect, { x: M, y: 6.24, w: 11.6, h: 1.0, rectRadius: 0.12, fill: { color: PAPER, transparency: 93 }, line: { type: 'none' } });
-  s.addText('The honest read', { x: M + 0.32, y: 6.36, w: 4, h: 0.3, fontFace: BODY, fontSize: 10, bold: true, color: GOLD, charSpacing: 1.6, margin: 0 });
-  s.addText('At tutor-adjacent pricing the realistic ceiling as category leader is $40–80M of revenue. Year 5 needs only 1% of the diaspora, which is the strongest fact on this slide: the plan does not require winning the market, only being findable in it. It becomes venture-scale only if Bizzing is the default learning brand for a whole diaspora, or India scales past the ₹2,999 assumption. Neither should be assumed.',
-    { x: M + 0.32, y: 6.62, w: 10.95, h: 0.56, fontFace: BODY, fontSize: 10.5, color: TINT_D, margin: 0, lineSpacing: 13.5 });
+  s.addShape(p.ShapeType.roundRect, { x: M, y: 6.14, w: 11.6, h: 1.22, rectRadius: 0.12, fill: { color: PAPER, transparency: 93 }, line: { type: 'none' } });
+  s.addText('The honest read', { x: M + 0.32, y: 6.24, w: 4, h: 0.28, fontFace: BODY, fontSize: 10, bold: true, color: GOLD, charSpacing: 1.6, margin: 0 });
+  s.addText('At tutor-adjacent pricing the realistic ceiling as category leader is $45–90M of revenue. Year 5 needs 0.9% of the diaspora, which is the strongest fact on this slide: the plan does not require winning the market, only being findable in it. But the same cost rules that guarantee profit also cap the pace — 18% of revenue on media cannot outrun a competitor who raises $20M and spends it. We win slowly or not at all, and the deck should not pretend otherwise.',
+    { x: M + 0.32, y: 6.5, w: 10.95, h: 0.82, fontFace: BODY, fontSize: 10.5, color: TINT_D, margin: 0, lineSpacing: 13.5 });
+  s.addNotes('The trade-off is explicit: never losing money and growing fast are not both available. This deck chooses the first.');
 }
 
-/* -------------------  8 · COSTS  ------------------- */
+/* -------------------  10 · COST STRUCTURE  ------------------- */
 {
-  const s = lightSlide('What it costs to run', 'Cost structure · base case');
-  s.addText('Paid media is smaller than most plans assume, because the model buys fewer than half its customers. People is the line that decides whether this works.',
-    { x: M, y: 1.58, w: 11.6, h: 0.56, fontFace: BODY, fontSize: 14.5, color: MUTED, margin: 0 });
+  const s = lightSlide('Costs are fractions, not budgets', 'Cost structure · base case');
+  s.addText('Only two lines are fixed, and together they are smaller than one week of Year 1 sales. Everything else moves with revenue by rule — which is the mechanism, not the forecast, behind never losing money.',
+    { x: M, y: 1.56, w: 11.6, h: 0.52, fontFace: BODY, fontSize: 14, color: MUTED, margin: 0 });
   const rows = [
-    ['Paid media', [8, 42, 138, 296, 510], '45% of new households at ~$130 CAC; India at $12. Can be switched off in a week.', VIOLET],
-    ['Content & product', [45, 110, 240, 400, 580], 'AI generation, art and audio, contract writers per subject. Grows with products, not users.', VIOLET],
-    ['People', [0, 60, 260, 620, 1050], 'Founders unpaid to Year 2. First hire Year 3; six to eight by Year 5. The largest line and the real constraint.', 'C4453C'],
-    ['Mentors & live delivery', [0, 0, 54, 203, 405], 'Half of cohort revenue. A true cost of goods, and the price of the moat.', GREEN],
-    ['Physical COGS', [0, 10, 39, 99, 198], '55% of books, cards and merch. Print-on-demand keeps it variable.', GOLD],
-    ['G&A, legal, safeguarding', [30, 40, 80, 140, 220], 'Entity, filings, accounting, insurance, background checks for the mentor bench.', GOLD],
-    ['Infrastructure', [3, 8, 18, 32, 50], 'Offline-first and statically hosted. Genuinely small, and it stays small.', GREEN],
+    ['Paid media', '18% of revenue', [4.7, 28.5, 108.2, 279.5, 556.3], 'Never a budget. Can be switched off in a week without breaking anything.', VIOLET],
+    ['Content & tools', '12%, floored', [10.8, 34.0, 72.1, 186.4, 370.9], 'AI credits, art, audio, contract writers. Floored in Y1–Y2 because some spend is real even at tiny revenue.', VIOLET],
+    ['People', 'capped at 20%', [0, 24.0, 96.0, 300.0, 620.0], 'Founders unpaid until Year 3 — until then EBITDA IS founder pay. First hire Y2 part-time; six by Y5.', 'C4453C'],
+    ['Mentors & live delivery', '50% of cohort rev', [0, 0, 39.1, 147.5, 340.0], 'A true cost of goods. It exists only when a cohort has already been sold.', GREEN],
+    ['Physical COGS', '55% of physical rev', [0, 4.4, 26.4, 76.9, 170.0], 'Print-on-demand. We never hold stock we have not already sold.', GOLD],
+    ['Payment fees & hosting', '3.9% of revenue', [1.0, 6.2, 23.4, 60.6, 120.5], 'Stripe, plus a statically hosted offline-first app. Genuinely small, and it stays small.', GREEN],
+    ['G&A — the only fixed line', 'fixed', [2.1, 9.0, 26.0, 52.0, 84.0], 'Entity, filings, accounting, insurance, background checks. $40 a week in Year 1.', GOLD],
   ];
-  const CX = [6.5, 7.65, 8.8, 9.95, 11.1], CW = 1.05;
+  const CX = [6.6, 7.72, 8.84, 9.96, 11.08], CW = 1.02;
   ['Y1', 'Y2', 'Y3', 'Y4', 'Y5'].forEach((h, i) =>
-    s.addText(h, { x: CX[i], y: 2.22, w: CW, h: 0.3, align: 'center', fontFace: BODY, fontSize: 10.5, bold: true, color: VIOL_D, margin: 0 }));
+    s.addText(h, { x: CX[i], y: 2.2, w: CW, h: 0.28, align: 'center', fontFace: BODY, fontSize: 10.5, bold: true, color: VIOL_D, margin: 0 }));
   const tot = [0, 0, 0, 0, 0];
-  rows.forEach(([n, vals, note, c], i) => {
+  rows.forEach(([n, rule, vals, note, c], i) => {
     const y = 2.5 + i * 0.56;
-    if (i % 2 === 0) s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y - 0.04, w: 12.02, h: 0.52, rectRadius: 0.09, fill: { color: TINT }, line: { type: 'none' } });
+    if (i % 2 === 0) s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y - 0.04, w: 11.98, h: 0.52, rectRadius: 0.09, fill: { color: TINT }, line: { type: 'none' } });
     s.addShape(p.ShapeType.hexagon, { x: M, y: y + 0.08, w: 0.26, h: 0.26, rotate: 90, fill: { color: c }, line: { type: 'none' } });
-    s.addText(n, { x: M + 0.38, y: y - 0.02, w: 2.6, h: 0.28, fontFace: DISP, fontSize: 12, bold: true, color: INK, margin: 0 });
-    s.addText(note, { x: M + 0.38, y: y + 0.19, w: 5.5, h: 0.3, fontFace: BODY, fontSize: 8, color: MUTED, margin: 0 });
-    vals.forEach((v, k) => { tot[k] += v; s.addText(v ? `$${v}k` : '—', { x: CX[k], y, w: CW, h: 0.48, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 11, color: v ? INK : TINT_D, margin: 0 }); });
+    s.addText(n, { x: M + 0.36, y: y - 0.03, w: 2.5, h: 0.26, fontFace: DISP, fontSize: 11.5, bold: true, color: INK, margin: 0 });
+    s.addShape(p.ShapeType.roundRect, { x: M + 2.9, y: y + 0.02, w: 1.42, h: 0.24, rectRadius: 0.12, fill: { color: c }, line: { type: 'none' } });
+    s.addText(rule, { x: M + 2.9, y: y + 0.02, w: 1.42, h: 0.24, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 7.5, bold: true, color: c === GOLD ? INK : PAPER, margin: 0 });
+    s.addText(note, { x: M + 0.36, y: y + 0.22, w: 5.5, h: 0.28, fontFace: BODY, fontSize: 8, color: MUTED, margin: 0 });
+    vals.forEach((v, k) => { tot[k] += v; s.addText(v ? `$${v < 10 ? v.toFixed(1) : Math.round(v)}k` : '—', { x: CX[k], y, w: CW, h: 0.46, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 10.5, color: v ? INK : TINT_D, margin: 0 }); });
   });
   const y = 2.5 + 7 * 0.56;
-  s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y - 0.04, w: 12.02, h: 0.52, rectRadius: 0.09, fill: { color: INK }, line: { type: 'none' } });
-  s.addText('Total operating cost', { x: M + 0.38, y, w: 4, h: 0.48, valign: 'middle', fontFace: DISP, fontSize: 12.5, bold: true, color: PAPER, margin: 0 });
-  tot.forEach((v, k) => s.addText(money(v * 1000), { x: CX[k], y, w: CW, h: 0.48, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 11.5, bold: true, color: k === 4 ? GOLD : PAPER, margin: 0 }));
-  s.addText('People is 35% of Year 5 cost and paid media only 17%. This is a business constrained by who you can hire and train, not by how much traffic you can buy.', {
-    x: M, y: 7.02, w: 11.6, h: 0.36, fontFace: BODY, fontSize: 10, italic: true, color: VIOLET, margin: 0,
-  });
+  s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y - 0.04, w: 11.98, h: 0.52, rectRadius: 0.09, fill: { color: INK }, line: { type: 'none' } });
+  s.addText('Total operating cost', { x: M + 0.36, y, w: 4, h: 0.46, valign: 'middle', fontFace: DISP, fontSize: 12.5, bold: true, color: PAPER, margin: 0 });
+  tot.forEach((v, k) => s.addText(money(v * 1000), { x: CX[k], y, w: CW, h: 0.46, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 11, bold: true, color: k === 4 ? GOLD : PAPER, margin: 0 }));
+  s.addShape(p.ShapeType.roundRect, { x: M, y: 6.94, w: 11.6, h: 0.44, rectRadius: 0.1, fill: { color: 'E8F4EC' }, line: { type: 'none' } });
+  s.addText([{ text: 'Why this cannot produce a loss:  ', options: { bold: true } },
+             { text: 'the rule-driven lines sum to 33.9% of revenue plus 50% of cohort and 55% of physical revenue — about 42% blended. The only way to lose money is for the two fixed lines, People and G&A, to exceed the remaining 58%. Both are set annually, in arrears, from revenue already banked.' }], {
+    x: M + 0.26, y: 6.94, w: 11.1, h: 0.44, valign: 'middle', fontFace: BODY, fontSize: 9.5, color: '1F4A33', margin: 0, lineSpacing: 11.5 });
 }
 
-/* -------------------  9 · P&L AND STRESS TESTS  ------------------- */
+/* -------------------  11 · P&L AND STRESS TESTS  ------------------- */
 {
   const s = lightSlide('Five-year P&L, and what breaks it', 'Summary · stress tested');
   const CX = [4.15, 5.5, 6.85, 8.2, 9.55], CW = 1.3;
   function block(title, y0, rows, accent) {
-    s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y0 - 0.34, w: 10.42, h: 0.32, rectRadius: 0.09, fill: { color: accent }, line: { type: 'none' } });
-    s.addText(title, { x: M + 0.06, y: y0 - 0.34, w: 3.3, h: 0.32, valign: 'middle', fontFace: BODY, fontSize: 9.5, bold: true, color: PAPER, charSpacing: 1.6, margin: 0 });
+    s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y0 - 0.32, w: 10.4, h: 0.3, rectRadius: 0.09, fill: { color: accent }, line: { type: 'none' } });
+    s.addText(title, { x: M + 0.06, y: y0 - 0.32, w: 3.3, h: 0.3, valign: 'middle', fontFace: BODY, fontSize: 9.5, bold: true, color: PAPER, charSpacing: 1.6, margin: 0 });
     ['Y1', 'Y2', 'Y3', 'Y4', 'Y5'].forEach((h, i) =>
-      s.addText(h, { x: CX[i], y: y0 - 0.34, w: CW, h: 0.32, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 9, bold: true, color: PAPER, margin: 0 }));
+      s.addText(h, { x: CX[i], y: y0 - 0.32, w: CW, h: 0.3, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 9, bold: true, color: PAPER, margin: 0 }));
     rows.forEach(([n, vals, strong], i) => {
-      const y = y0 + i * 0.38;
-      s.addText(n, { x: M, y, w: 3.3, h: 0.34, valign: 'middle', fontFace: strong ? DISP : BODY, fontSize: strong ? 11.5 : 10.5, bold: strong, color: strong ? INK : '4A4360', margin: 0 });
+      const y = y0 + i * 0.36;
+      s.addText(n, { x: M, y, w: 3.3, h: 0.32, valign: 'middle', fontFace: strong ? DISP : BODY, fontSize: strong ? 11.5 : 10.5, bold: strong, color: strong ? INK : '4A4360', margin: 0 });
       vals.forEach((v, k) => s.addText(typeof v === 'number' ? money(v) : v, {
-        x: CX[k], y, w: CW, h: 0.34, align: 'center', valign: 'middle', fontFace: BODY,
+        x: CX[k], y, w: CW, h: 0.32, align: 'center', valign: 'middle', fontFace: BODY,
         fontSize: strong ? 11 : 10, bold: strong,
         color: typeof v === 'number' && v < 0 ? 'C4453C' : (strong ? INK : '4A4360'), margin: 0 }));
     });
   }
-  block('BASE CASE', 1.86, [
-    ['Paying households', ['210', '1.2k', '4.2k', '10.3k', '19.7k'], false],
-    ['Revenue', [22e3, 159e3, 682e3, 1.853e6, 3.685e6], true],
-    ['Operating cost', [86e3, 270e3, 829e3, 1.790e6, 3.013e6], false],
-    ['EBITDA', [-64e3, -111e3, -147e3, 63e3, 672e3], true],
+  block('BASE CASE — 4 / 18 / 52 / 115 / 195 per week', 1.82, [
+    ['Paying households', ['208', '1,082', '3,461', '8,403', '16.0k'], false],
+    ['Revenue', [26e3, 158.6e3, 600.9e3, 1.553e6, 3.091e6], true],
+    ['Operating cost', [18.6e3, 106.1e3, 391.2e3, 1.103e6, 2.262e6], false],
+    ['EBITDA', [7.4e3, 52.5e3, 209.7e3, 450.1e3, 829.0e3], true],
   ], VIOLET);
-  block('AGGRESSIVE CASE', 3.82, [
-    ['Paying households', ['470', '2.9k', '11k', '27k', '52k'], false],
-    ['Revenue', [52e3, 394e3, 1.778e6, 5.020e6, 10.300e6], true],
-    ['Operating cost', [120e3, 430e3, 1.450e6, 3.850e6, 7.300e6], false],
-    ['EBITDA', [-68e3, -36e3, 328e3, 1.170e6, 3.000e6], true],
+  block('AGGRESSIVE CASE — 6 / 30 / 90 / 200 / 340 per week', 3.62, [
+    ['Paying households', ['312', '1,778', '5,925', '14.5k', '27.9k'], false],
+    ['Revenue', [39e3, 257e3, 1.019e6, 2.680e6, 5.367e6], true],
+    ['Operating cost', [21.4e3, 142.4e3, 632.5e3, 1.818e6, 3.749e6], false],
+    ['EBITDA', [17.6e3, 114.7e3, 386.5e3, 862.2e3, 1.618e6], true],
   ], GREEN);
 
-  s.addShape(p.ShapeType.roundRect, { x: 11.05, y: 1.52, w: 1.32, h: 3.9, rectRadius: 0.12, fill: { color: TINT }, line: { type: 'none' } });
-  s.addText('PEAK CASH\nNEED', { x: 11.05, y: 1.66, w: 1.32, h: 0.5, align: 'center', fontFace: BODY, fontSize: 8, bold: true, color: MUTED, margin: 0, lineSpacing: 10 });
-  s.addText('$322k', { x: 11.05, y: 2.18, w: 1.32, h: 0.44, align: 'center', fontFace: DISP, fontSize: 19, bold: true, color: 'C4453C', margin: 0 });
-  s.addText('base, before\nYear 4 turns', { x: 11.05, y: 2.62, w: 1.32, h: 0.44, align: 'center', fontFace: BODY, fontSize: 8, color: MUTED, margin: 0, lineSpacing: 10 });
-  s.addText('$104k', { x: 11.05, y: 3.66, w: 1.32, h: 0.44, align: 'center', fontFace: DISP, fontSize: 19, bold: true, color: GREEN, margin: 0 });
-  s.addText('aggressive —\nit turns sooner', { x: 11.05, y: 4.1, w: 1.32, h: 0.44, align: 'center', fontFace: BODY, fontSize: 8, color: MUTED, margin: 0, lineSpacing: 10 });
-  s.addText('18% / 29%', { x: 11.05, y: 4.72, w: 1.32, h: 0.32, align: 'center', fontFace: DISP, fontSize: 13, bold: true, color: VIOLET, margin: 0 });
-  s.addText('Y5 EBITDA\nmargin', { x: 11.05, y: 5.02, w: 1.32, h: 0.36, align: 'center', fontFace: BODY, fontSize: 7.5, color: MUTED, margin: 0, lineSpacing: 9 });
+  s.addShape(p.ShapeType.roundRect, { x: 11.02, y: 1.5, w: 1.36, h: 3.66, rectRadius: 0.12, fill: { color: 'E8F4EC' }, line: { type: 'none' } });
+  s.addText('PEAK CASH\nNEED', { x: 11.02, y: 1.62, w: 1.36, h: 0.46, align: 'center', fontFace: BODY, fontSize: 8, bold: true, color: '1F4A33', margin: 0, lineSpacing: 10 });
+  s.addText('$0', { x: 11.02, y: 2.08, w: 1.36, h: 0.5, align: 'center', fontFace: DISP, fontSize: 26, bold: true, color: GREEN, margin: 0 });
+  s.addText('in both cases,\nin every month', { x: 11.02, y: 2.58, w: 1.36, h: 0.44, align: 'center', fontFace: BODY, fontSize: 8, color: '1F4A33', margin: 0, lineSpacing: 10 });
+  s.addText('BREAK-EVEN', { x: 11.02, y: 3.16, w: 1.36, h: 0.24, align: 'center', fontFace: BODY, fontSize: 8, bold: true, color: '1F4A33', margin: 0 });
+  s.addText('Week 1', { x: 11.02, y: 3.4, w: 1.36, h: 0.34, align: 'center', fontFace: DISP, fontSize: 17, bold: true, color: GREEN, margin: 0 });
+  s.addText('27% / 30%', { x: 11.02, y: 3.86, w: 1.36, h: 0.3, align: 'center', fontFace: DISP, fontSize: 13, bold: true, color: VIOLET, margin: 0 });
+  s.addText('Y5 EBITDA margin,\nbase / aggressive', { x: 11.02, y: 4.16, w: 1.36, h: 0.36, align: 'center', fontFace: BODY, fontSize: 7.5, color: MUTED, margin: 0, lineSpacing: 9 });
+  s.addText('$1.55M', { x: 11.02, y: 4.56, w: 1.36, h: 0.32, align: 'center', fontFace: DISP, fontSize: 14, bold: true, color: GOLD_D, margin: 0 });
+  s.addText('cumulative EBITDA,\nbase, Y1–Y5', { x: 11.02, y: 4.86, w: 1.36, h: 0.34, align: 'center', fontFace: BODY, fontSize: 7.5, color: MUTED, margin: 0, lineSpacing: 9 });
 
-  s.addText('Stress tests — what actually breaks it', { x: M, y: 5.46, w: 6, h: 0.34, fontFace: DISP, fontSize: 15, bold: true, color: INK, margin: 0 });
+  s.addText('Stress tests — none of them produce a loss, and that is the point', { x: M, y: 5.28, w: 8, h: 0.32, fontFace: DISP, fontSize: 14.5, bold: true, color: INK, margin: 0 });
   const stress = [
-    ['Churn 30% → 45%', 'LTV falls to $397, LTV:CAC to 3.1:1. Survivable. Year 5 revenue −22%.', GOLD],
-    ['Bee Plus $149 → $99', 'ARPU $160, payback 7.5 months, Year 5 EBITDA roughly halves. The pricing decision IS the plan.', 'C4453C'],
-    ['Paid share 45% → 70%', 'Blended CAC $105, payback 7.0 months, peak cash need $460k. Buying growth is the expensive path.', 'C4453C'],
-    ['India stalls entirely', 'Year 5 revenue −$140k, about 4%. India is upside, not load-bearing — a genuine relief.', GREEN],
+    ['We only ever hit 2 a week, not 4', 'Year 1 revenue halves to $13k — and so do the four cost lines that are fractions of it. EBITDA stays positive at ~$1.5k. Slower, never underwater.', GREEN],
+    ['Churn 30% → 45%', 'LTV falls to $472 and Year 5 revenue drops about 21%. Costs fall with it. Margin holds within two points.', GREEN],
+    ['Bee Plus $149 → $99', 'ARPU falls to $190. This is the one that genuinely hurts: Year 5 EBITDA roughly halves. The pricing decision IS the plan.', 'C4453C'],
+    ['India stalls entirely', 'Year 5 revenue −$830k, about 27% — but blended ARPU RISES to $250 and margin improves. India is volume, not profit.', GOLD],
   ];
   stress.forEach(([h, b, c], i) => {
-    const x = M + (i % 2) * 5.9, y = 5.86 + Math.floor(i / 2) * 0.68;
-    s.addShape(p.ShapeType.roundRect, { x, y, w: 5.55, h: 0.62, rectRadius: 0.1, fill: { color: c === GREEN ? 'E8F4EC' : 'FBF3E0' }, line: { type: 'none' } });
-    s.addText(h, { x: x + 0.2, y: y + 0.04, w: 5.15, h: 0.26, fontFace: BODY, fontSize: 10, bold: true, color: c === GREEN ? '1F4A33' : GOLD_D, margin: 0 });
-    s.addText(b, { x: x + 0.2, y: y + 0.28, w: 5.15, h: 0.32, fontFace: BODY, fontSize: 8.5, color: c === GREEN ? '1F4A33' : GOLD_D, margin: 0, lineSpacing: 10.5 });
+    const x = M + (i % 2) * 5.9, y = 5.68 + Math.floor(i / 2) * 0.74;
+    s.addShape(p.ShapeType.roundRect, { x, y, w: 5.55, h: 0.66, rectRadius: 0.1, fill: { color: c === GREEN ? 'E8F4EC' : 'FBF3E0' }, line: { type: 'none' } });
+    s.addText(h, { x: x + 0.2, y: y + 0.04, w: 5.15, h: 0.24, fontFace: BODY, fontSize: 10, bold: true, color: c === GREEN ? '1F4A33' : GOLD_D, margin: 0 });
+    s.addText(b, { x: x + 0.2, y: y + 0.27, w: 5.15, h: 0.36, fontFace: BODY, fontSize: 8.5, color: c === GREEN ? '1F4A33' : GOLD_D, margin: 0, lineSpacing: 10.5 });
   });
-  s.addShape(p.ShapeType.roundRect, { x: M, y: 7.06, w: 11.6, h: 0.36, rectRadius: 0.09, fill: { color: TINT }, line: { type: 'none' } });
+  s.addShape(p.ShapeType.roundRect, { x: M, y: 7.2, w: 11.6, h: 0.3, rectRadius: 0.08, fill: { color: TINT }, line: { type: 'none' } });
   s.addText([{ text: 'Assumptions:  ', options: { bold: true } },
-             { text: 'ARPU $210 diaspora / $32 India · blended CAC $85 (45% paid at $130, 55% organic at $30) · churn 30% · gross margin 85% · cohorts from Y3 at $899 with 50% delivery cost · founders unpaid to Y2. Break-even is YEAR 4 in the base case, not Year 2 — the honest consequence of starting at four a week.' }], {
-    x: M + 0.24, y: 7.06, w: 11.1, h: 0.36, valign: 'middle', fontFace: BODY, fontSize: 8.5, color: '4A4360', margin: 0 });
-  s.addNotes('Peak cash need $322k base. Break-even Year 4. The pricing decision is the single largest lever in the model.');
+             { text: 'ARPU $250 diaspora / $45 India, blended falling $250→$172 as India grows · churn 30% · annual upfront billing · paid media 18% of revenue, content 12%, mentors 50% of cohort, COGS 55% of physical, fees & hosting 3.9% · founders unpaid to Y3 · cohorts from Y3 at $999. Computed by strategy/model.py, which asserts positive EBITDA in every year and in week one.' }], {
+    x: M + 0.24, y: 7.2, w: 11.1, h: 0.3, valign: 'middle', fontFace: BODY, fontSize: 8, color: '4A4360', margin: 0 });
+  s.addNotes('Peak cash need $0. Break-even week 1. The two things that genuinely hurt are a price cut and a product families do not return to — not a slow start.');
 }
+
 
 /* =====================  20 · DECISIONS  ===================== */
 {
