@@ -23,6 +23,28 @@ const BODY = 'Calibri';
 
 const W = 13.3, H = 7.5, M = 0.7;
 
+// ---- the cast. Real avatar art from the app, not clip art ---------------------
+// 217 painted avatars ship in spellbound-app/avatars/s as 192px PNG. Each product is
+// cast with one whose meaning is not arbitrary: mic for Speak, Aryabhata for Maths,
+// Saraswati for Bhasha, and a baby bee for Buzz so that Buzz -> Bee reads visually.
+const fs = require('fs');
+const AVDIR = '/home/user/Bizzing-Bee/spellbound-app/avatars/s/';
+const _avCache = {};
+function av(name) {
+  if (!_avCache[name]) _avCache[name] = 'image/png;base64,' + fs.readFileSync(AVDIR + name + '.png').toString('base64');
+  return _avCache[name];
+}
+const FACE = {
+  'Bizzing Bee': 'bizzy', 'Bizzing India': 'ganesha', 'Bizzing Bhasha': 'saraswati',
+  'Bizzing Eleven': 'brainiac', 'Bizzing Buzz': 'bumble', 'Bizzing English': 'gutenberg',
+  'Bizzing Maths': 'aryabhatta', 'Bizzing Business': 'bossbot', 'Bizzing Quiz': 'einstein',
+  'Bizzing Speak': 'mic', 'Bizzing Prep': 'newton',
+};
+function face(s, name, x, y, sz) {
+  const f = FACE[name.replace('↳ ', '')];
+  if (f) s.addImage({ data: av(f), x, y, w: sz, h: sz });
+}
+
 // ---- motif: the honeycomb. One element, repeated, never decorative filler ----
 function hexField(s, opts) {
   const { x, y, n = 6, size = 0.62, color = VIOLET, transparency = 88, spread = 0.9 } = opts;
@@ -80,6 +102,9 @@ function card(s, o) {
 {
   const s = darkSlide();
   hexField(s, { x: 8.85, y: 0.62, n: 9, size: 1.0, color: GOLD, transparency: 84, spread: 1.25 });
+  s.addImage({ data: av('bizzy'), x: 9.55, y: 2.15, w: 2.9, h: 2.9 });
+  ['bolden', 'neuhauser', 'pbell', 'lucas'].forEach((n, i) =>
+    s.addImage({ data: av(n), x: M + i * 1.02, y: 5.75, w: 0.92, h: 0.92 }));
   s.addText('BIZZING', {
     x: M, y: 2.0, w: 9, h: 1.3, fontFace: DISP, fontSize: 76, bold: true,
     color: PAPER, charSpacing: 2, margin: 0,
@@ -95,6 +120,8 @@ function card(s, o) {
   s.addText('Founding team · AI-first operating model', {
     x: M, y: 5.35, w: 8, h: 0.35, fontFace: BODY, fontSize: 12.5, color: MUTED, margin: 0,
   });
+  s.addText('Marie Bolden · Frank Neuhauser · Pauline Bell · Dean Lucas — the first four champions, in the pack', {
+    x: 4.9, y: 6.06, w: 7.4, h: 0.32, fontFace: BODY, fontSize: 10, italic: true, color: MUTED, margin: 0, valign: 'middle' });
   s.addNotes('Bizzing is the parent brand. Bizzing Bee is the first product, not the company.');
 }
 
@@ -128,12 +155,17 @@ function card(s, o) {
   s.addText('VISION', {
     x: M, y: 1.0, w: 6, h: 0.35, fontFace: BODY, fontSize: 12, bold: true, color: GOLD, charSpacing: 3, margin: 0,
   });
-  s.addText('Every child of the diaspora walks into any room in the world already equipped to belong in it.', {
-    x: M, y: 1.7, w: 10.6, h: 2.4, fontFace: DISP, fontSize: 40, bold: true, color: PAPER, margin: 0, lineSpacing: 46,
+  s.addText('Own the stage.', {
+    x: M, y: 1.62, w: 9.4, h: 1.15, fontFace: DISP, fontSize: 62, bold: true, color: GOLD, margin: 0,
   });
-  s.addText('Not "does well at school". Equipped — with the words, the numbers and the nerve to compete anywhere, and the language and history to know where they came from.', {
-    x: M, y: 4.3, w: 9.6, h: 1.0, fontFace: BODY, fontSize: 15, color: TINT_D, margin: 0, lineSpacing: 22,
+  s.addText('Every stage in the world has one of our kids on it.', {
+    x: M, y: 2.92, w: 10.2, h: 1.5, fontFace: DISP, fontSize: 36, bold: true, color: PAPER, margin: 0, lineSpacing: 44,
   });
+  s.addText('A spelling bee is a child at a microphone under lights. So is a debate, a pitch, a boardroom and a parliament. We are not raising children who fit in quietly — we are raising the ones who take the mic.', {
+    x: M, y: 4.62, w: 9.5, h: 1.05, fontFace: BODY, fontSize: 14.5, color: TINT_D, margin: 0, lineSpacing: 21,
+  });
+  s.addImage({ data: av('mic'), x: 10.35, y: 1.55, w: 2.1, h: 2.1 });
+  s.addImage({ data: av('bolden'), x: 10.75, y: 3.75, w: 1.5, h: 1.5 });
   s.addNotes('The vision is deliberately about the child at 25, not the child at 10.');
 }
 
@@ -251,7 +283,7 @@ function card(s, o) {
       items: [['Bizzing Bee', 'live'], ['Bizzing Eleven', 'next'], ['Bizzing English', 'planned'],
               ['Bizzing Buzz', 'ages 4–6'], ['Bizzing Prep', 'gap'], ['Bizzing Speak', 'gap']] },
     { x: 4.83, name: 'CULTURE', c: GOLD,
-      items: [['Bizzing India', 'free hook'], ['↳ Bizzing Bhasha', 'paid pack']] },
+      items: [['Bizzing India', 'free hook'], ['Bizzing Bhasha', 'paid pack']] },
     { x: 8.96, name: 'NUMBERS & THE WORLD', c: GREEN,
       items: [['Bizzing Maths', 'planned'], ['Bizzing Finance', 'in flight'],
               ['Bizzing Business', 'committed'], ['Bizzing Quiz', 'gap']] },
@@ -263,9 +295,10 @@ function card(s, o) {
     s.addText(f.name, { x: f.x, y: 3.36, w, h: 0.42, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 10, bold: true, color: f.c === GOLD ? INK : PAPER, charSpacing: 1.6, margin: 0 });
     f.items.forEach(([n, tag], i) => {
       const y = 3.94 + i * 0.46;
-      const indent = n.startsWith('↳') ? 0.3 : 0;
+      const indent = n === 'Bizzing Bhasha' ? 0.34 : 0;
       s.addShape(p.ShapeType.roundRect, { x: f.x + indent, y, w: w - indent, h: 0.38, rectRadius: 0.09, fill: { color: TINT }, line: { type: 'none' } });
-      s.addText(n, { x: f.x + indent + 0.2, y, w: w - indent - 1.72, h: 0.38, valign: 'middle', fontFace: DISP, fontSize: 12.5, bold: true, color: INK, margin: 0 });
+      face(s, n, f.x + indent + 0.06, y + 0.02, 0.34);
+      s.addText(n, { x: f.x + indent + 0.46, y, w: w - indent - 1.98, h: 0.38, valign: 'middle', fontFace: DISP, fontSize: 12.5, bold: true, color: INK, margin: 0 });
       s.addText(tag, { x: f.x + w - 1.42, y, w: 1.22, h: 0.38, align: 'right', valign: 'middle', fontFace: BODY, fontSize: 9, italic: true, color: VIOL_D, margin: 0 });
     });
   });
@@ -369,6 +402,7 @@ const PRODUCTS = [
 PRODUCTS.forEach((pr, idx) => {
   const s = lightSlide(pr.name, `Product ${idx + 1} of ${PRODUCTS.length}`, 8.6);
   const [tag, tagC] = pr.status;
+  face(s, pr.name, 10.95, 1.42, 1.35);
   s.addShape(p.ShapeType.roundRect, { x: 9.55, y: 0.82, w: 2.75, h: 0.42, rectRadius: 0.21, fill: { color: tagC }, line: { type: 'none' } });
   s.addText(tag, { x: 9.55, y: 0.82, w: 2.75, h: 0.42, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 10, bold: true, color: tagC === GOLD ? INK : PAPER, charSpacing: 1.2, margin: 0 });
   s.addText(pr.vision, { x: M, y: 1.58, w: 9.6, h: 0.64, fontFace: DISP, fontSize: 16, italic: true, color: VIOLET, margin: 0, lineSpacing: 21 });
@@ -458,10 +492,10 @@ PRODUCTS.forEach((pr, idx) => {
   missing.forEach(([n, sub, body], i) => {
     const x = M + i * 4.03;
     s.addShape(p.ShapeType.roundRect, { x, y: 2.0, w: 3.73, h: 3.15, rectRadius: 0.14, fill: { color: PAPER, transparency: 92 }, line: { color: VIOLET, width: 1 } });
-    hexBullet(s, x + 0.28, 2.26, String(i + 1), GOLD, INK);
-    s.addText(n, { x: x + 0.28, y: 2.84, w: 3.15, h: 0.4, fontFace: DISP, fontSize: 17, bold: true, color: PAPER, margin: 0 });
-    s.addText(sub, { x: x + 0.28, y: 3.22, w: 3.15, h: 0.32, fontFace: BODY, fontSize: 10.5, italic: true, color: GOLD, margin: 0 });
-    s.addText(body, { x: x + 0.28, y: 3.58, w: 3.15, h: 1.42, fontFace: BODY, fontSize: 10.5, color: TINT_D, margin: 0, lineSpacing: 13.5 });
+    face(s, n, x + 0.28, 2.2, 0.72);
+    s.addText(n, { x: x + 0.28, y: 2.98, w: 3.15, h: 0.4, fontFace: DISP, fontSize: 17, bold: true, color: PAPER, margin: 0 });
+    s.addText(sub, { x: x + 0.28, y: 3.36, w: 3.15, h: 0.32, fontFace: BODY, fontSize: 10.5, italic: true, color: GOLD, margin: 0 });
+    s.addText(body, { x: x + 0.28, y: 3.7, w: 3.15, h: 1.34, fontFace: BODY, fontSize: 10, color: TINT_D, margin: 0, lineSpacing: 13 });
   });
   s.addShape(p.ShapeType.roundRect, { x: M, y: 5.42, w: 11.6, h: 1.28, rectRadius: 0.12, fill: { color: PAPER, transparency: 94 }, line: { type: 'none' } });
   s.addText('Deliberately NOT building', { x: M + 0.32, y: 5.56, w: 5, h: 0.3, fontFace: BODY, fontSize: 10, bold: true, color: 'E8807A', charSpacing: 1.8, margin: 0 });
@@ -811,6 +845,267 @@ roles.forEach(r => {
     x: M + 0.3, y: 6.15, w: 11.0, h: 0.62, fontFace: BODY, fontSize: 12, color: GOLD_D, margin: 0, valign: 'middle',
   });
 });
+
+/* ==========================================================================
+   BUSINESS MODEL — seven slides.
+   Every number here is ILLUSTRATIVE and derived from the assumption block on the
+   last slide. They are internally consistent: subscribers x ARPU rolls into
+   revenue, revenue less costs rolls into EBITDA, and both cases use one model.
+   Replace the assumptions and the whole thing re-derives.
+   ========================================================================== */
+
+const money = v => v >= 1e6 ? `$${(v / 1e6).toFixed(v < 1e7 ? 2 : 1)}M` : `$${Math.round(v / 1e3)}k`;
+const num = v => v >= 1000 ? `${(v / 1000).toFixed(v < 10000 ? 1 : 0)}k` : String(v);
+
+/* -------------------  1 · THE BUSINESS MODEL  ------------------- */
+{
+  const s = darkSlide();
+  s.addImage({ data: av('bizzy'), x: 11.0, y: 0.5, w: 1.55, h: 1.55 });
+  s.addText('THE BUSINESS MODEL', { x: M, y: 0.6, w: 8, h: 0.32, fontFace: BODY, fontSize: 12, bold: true, color: GOLD, charSpacing: 3, margin: 0 });
+  s.addText('Free to arrive. Paid to go deep. Human where it matters.', {
+    x: M, y: 1.0, w: 10.6, h: 1.0, fontFace: DISP, fontSize: 28, bold: true, color: PAPER, margin: 0,
+  });
+  s.addText('The unit is the HOUSEHOLD, not the child. A family with three children buys once and stays twelve years — which is why every price below is a family price, and why the age gaps matter more than any single conversion rate.', {
+    x: M, y: 2.04, w: 10.6, h: 0.5, fontFace: BODY, fontSize: 13, color: TINT_D, margin: 0, lineSpacing: 17,
+  });
+  const layers = [
+    ['FREE', 'Arrive', 'Bizzing Bee core · Bizzing India culture · the YouTube channel. No card, no signup wall. This layer exists to be shared.', GOLD],
+    ['SUBSCRIPTION', 'Go deep', 'Per-product packs, or one family plan across the house. The compounding line and the only one that improves while you sleep.', VIOLET],
+    ['COHORT', 'Be taught', 'Bizzing Business, bee coaching, beginner classes. Highest price per family, capped by people rather than by servers.', GREEN],
+    ['PHYSICAL & MEDIA', 'Take it home', 'Books, avatar cards, plushies and tees; YouTube ad and sponsorship. Margin support, and a brand a child can hold.', 'E3B23C'],
+  ];
+  layers.forEach(([tag, verb, body, c], i) => {
+    const y = 2.68 + i * 1.04;
+    s.addShape(p.ShapeType.roundRect, { x: M, y, w: 2.4, h: 0.9, rectRadius: 0.11, fill: { color: c }, line: { type: 'none' } });
+    s.addText(tag, { x: M, y: y + 0.13, w: 2.4, h: 0.3, align: 'center', fontFace: BODY, fontSize: 9.5, bold: true, color: c === VIOLET || c === GREEN ? PAPER : INK, charSpacing: 1.4, margin: 0 });
+    s.addText(verb, { x: M, y: y + 0.44, w: 2.4, h: 0.34, align: 'center', fontFace: DISP, fontSize: 15, bold: true, color: c === VIOLET || c === GREEN ? PAPER : INK, margin: 0 });
+    s.addText(body, { x: M + 2.72, y: y + 0.06, w: 9.0, h: 0.8, fontFace: BODY, fontSize: 12, color: TINT_D, margin: 0, lineSpacing: 16 });
+  });
+  s.addText('Everything after this slide is illustrative arithmetic built on one assumption block — shown in full at the end, so any number can be argued with by changing an input rather than by disbelieving a chart.', {
+    x: M, y: 6.9, w: 11.6, h: 0.4, fontFace: BODY, fontSize: 11, italic: true, color: MUTED, margin: 0,
+  });
+}
+
+/* -------------------  2 · SUBSCRIPTION MODELS  ------------------- */
+{
+  const s = lightSlide('What each product charges, and why', 'Subscription models');
+  s.addText('One free tier across the house, priced packs per subject, and a family plan that is cheaper than any two of them.', {
+    x: M, y: 1.58, w: 11.6, h: 0.56, fontFace: BODY, fontSize: 14.5, color: MUTED, margin: 0,
+  });
+  const tiers = [
+    ['Bizzing Bee', 'Free', '—', 'Full word library, journey, arcade. The product most families never pay for, and the reason they trust us.'],
+    ['Bee Plus', 'Subscription', '$59 / yr', 'Parent reports, offline packs, deeper word lists. The default upgrade.'],
+    ['Advanced Pack', 'Subscription', '$299 / yr', 'The champion track. Already priced in the app. A small share of families, a large share of revenue.'],
+    ['Bizzing Bhasha', 'Per language', '$79 / yr', 'Hindi first. Bought inside the free India hook, which is what makes it convert.'],
+    ['Bizzing Eleven', 'Exam year', '$99 / yr', 'High intent, short window, low price sensitivity. Bought in the year it matters.'],
+    ['Maths · English · Finance', 'Subscription', '$59 / yr each', 'Priced to be added, not agonised over.'],
+    ['Bizzing Family', 'Everything', '$199 / yr', 'The whole house, up to four children. THE SKU that makes the twelve-year household real.'],
+    ['Bizzing Business', 'Cohort', '$549 / cohort', 'Eight weeks, a team, a mentor, a demo day. Priced against a summer camp, not against an app.'],
+    ['India edition', 'All products', '≈ $18 / yr', 'Roughly a fifth of diaspora pricing. A different market, not a discount.'],
+  ];
+  tiers.forEach(([n, kind, price, note], i) => {
+    const y = 2.26 + i * 0.53;
+    if (i % 2 === 0) s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y - 0.04, w: 12.02, h: 0.5, rectRadius: 0.09, fill: { color: TINT }, line: { type: 'none' } });
+    const hero = n === 'Bizzing Family';
+    s.addText(n, { x: M, y, w: 2.5, h: 0.42, valign: 'middle', fontFace: DISP, fontSize: 12.5, bold: true, color: hero ? VIOLET : INK, margin: 0 });
+    s.addText(kind, { x: M + 2.55, y, w: 1.6, h: 0.42, valign: 'middle', fontFace: BODY, fontSize: 10, italic: true, color: MUTED, margin: 0 });
+    s.addText(price, { x: M + 4.2, y, w: 1.55, h: 0.42, valign: 'middle', align: 'right', fontFace: BODY, fontSize: 12, bold: true, color: hero ? VIOLET : GOLD_D, margin: 0 });
+    s.addText(note, { x: M + 6.0, y, w: 5.55, h: 0.42, valign: 'middle', fontFace: BODY, fontSize: 10.5, color: '4A4360', margin: 0 });
+  });
+  s.addText('Blended ARPU used throughout: $95 diaspora, $18 India. That blend assumes most paying families take one product, a minority take Family, and a small tail takes Advanced.', {
+    x: M, y: 7.02, w: 11.6, h: 0.35, fontFace: BODY, fontSize: 10.5, italic: true, color: MUTED, margin: 0,
+  });
+}
+
+/* -------------------  3 · ACQUISITION BY GEOGRAPHY  ------------------- */
+{
+  const s = lightSlide('Paying households, five years, by market', 'Customer acquisition');
+  s.addText('Base case. Households — not children, and not free users. The diaspora markets are ordered by how quickly a bee community can be reached, not by population.',
+    { x: M, y: 1.58, w: 11.6, h: 0.56, fontFace: BODY, fontSize: 14.5, color: MUTED, margin: 0 });
+  const geo = [
+    ['United States', '520k', [900, 3600, 9000, 17000, 27000], VIOLET, 'The bee community itself. Highest intent anywhere.'],
+    ['United Kingdom', '190k', [250, 1200, 3400, 6500, 10500], VIOLET, '11+ drives it; different product, same family.'],
+    ['Canada & Australia', '250k', [200, 900, 2300, 4200, 6800], VIOLET, 'Follows US content with no extra production.'],
+    ['Gulf', '350k', [100, 500, 1400, 2800, 4700], GOLD, 'Large, concentrated, school-network led.'],
+    ['India', '6.0M', [0, 800, 4000, 12000, 26000], GREEN, 'Fifth of the price, many times the volume. Starts Y2.'],
+  ];
+  const CX = [6.05, 7.25, 8.45, 9.65, 10.85], CW = 1.1;
+  ['Y1', 'Y2', 'Y3', 'Y4', 'Y5'].forEach((h, i) =>
+    s.addText(h, { x: CX[i], y: 2.24, w: CW, h: 0.3, align: 'center', fontFace: BODY, fontSize: 10.5, bold: true, color: VIOL_D, charSpacing: 1.2, margin: 0 }));
+  s.addText('HOUSEHOLDS WITH A CHILD 4–16', { x: 4.15, y: 2.24, w: 1.8, h: 0.3, align: 'right', fontFace: BODY, fontSize: 7.5, bold: true, color: MUTED, margin: 0 });
+  const tot = [0, 0, 0, 0, 0];
+  geo.forEach(([n, sam, vals, c, note], i) => {
+    const y = 2.62 + i * 0.72;
+    if (i % 2 === 0) s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y - 0.05, w: 12.02, h: 0.66, rectRadius: 0.09, fill: { color: TINT }, line: { type: 'none' } });
+    s.addText(n, { x: M, y: y - 0.02, w: 3.3, h: 0.3, fontFace: DISP, fontSize: 13, bold: true, color: INK, margin: 0 });
+    s.addText(note, { x: M, y: y + 0.26, w: 3.4, h: 0.3, fontFace: BODY, fontSize: 9, color: MUTED, margin: 0 });
+    s.addText(sam, { x: 4.15, y, w: 1.8, h: 0.5, align: 'right', valign: 'middle', fontFace: BODY, fontSize: 12, bold: true, color: MUTED, margin: 0 });
+    vals.forEach((v, k) => {
+      tot[k] += v;
+      s.addText(v ? num(v) : '—', { x: CX[k], y, w: CW, h: 0.5, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 12.5, bold: k === 4, color: v ? (k === 4 ? c : INK) : TINT_D, margin: 0 });
+    });
+  });
+  const y = 2.62 + 5 * 0.72;
+  s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y - 0.05, w: 12.02, h: 0.62, rectRadius: 0.09, fill: { color: INK }, line: { type: 'none' } });
+  s.addText('Total paying households', { x: M, y, w: 4.0, h: 0.52, valign: 'middle', fontFace: DISP, fontSize: 13.5, bold: true, color: PAPER, margin: 0 });
+  tot.forEach((v, k) => s.addText(num(v), { x: CX[k], y, w: CW, h: 0.52, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 13, bold: true, color: k === 4 ? GOLD : PAPER, margin: 0 }));
+  s.addText('Aggressive case runs roughly 2× the diaspora numbers and 2.5× India, on the same product sequence — not on a different strategy.', {
+    x: M, y: 6.92, w: 11.6, h: 0.4, fontFace: BODY, fontSize: 11, italic: true, color: MUTED, margin: 0,
+  });
+}
+
+/* -------------------  4 · REVENUE MIX  ------------------- */
+{
+  const s = lightSlide('Where the money comes from', 'Revenue mix · base case');
+  s.addText('Subscription carries it. Everything else exists to widen the margin, deepen the brand, or reach an age the app cannot.',
+    { x: M, y: 1.58, w: 11.6, h: 0.56, fontFace: BODY, fontSize: 14.5, color: MUTED, margin: 0 });
+  const years = ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'];
+  const series = [
+    { name: 'Subscriptions', labels: years, values: [0.138, 0.603, 1.602, 3.116, 5.128], color: VIOLET },
+    { name: 'Business cohorts', labels: years, values: [0, 0, 0.110, 0.439, 0.988], color: GREEN },
+    { name: 'Books, cards, merch', labels: years, values: [0, 0.035, 0.130, 0.290, 0.520], color: GOLD },
+    { name: 'YouTube', labels: years, values: [0, 0.012, 0.045, 0.105, 0.190], color: '9C89E8' },
+  ];
+  s.addChart(p.ChartType.bar, series, {
+    x: M, y: 2.25, w: 7.5, h: 4.35,
+    barDir: 'col', barGrouping: 'stacked',
+    chartColors: series.map(x => x.color),
+    showLegend: true, legendPos: 'b', legendColor: '4A4360', legendFontSize: 10,
+    showValue: false,
+    catAxisLabelColor: '4A4360', catAxisLabelFontSize: 11,
+    valAxisLabelColor: '4A4360', valAxisLabelFontSize: 10,
+    valAxisTitle: 'Revenue, $M', showValAxisTitle: true, valAxisTitleColor: MUTED, valAxisTitleFontSize: 10,
+    valGridLine: { color: TINT_D, size: 1 }, catGridLine: { style: 'none' },
+    dataBorder: { pt: 1, color: PAPER },
+  });
+  const notes = [
+    ['Year 1', '$138k', 'Subscription only. Nothing else is switched on, and nothing else should be.', VIOLET],
+    ['Year 3', '$1.89M', 'Cohorts and physical arrive. Subscription still 85% of the line.', GREEN],
+    ['Year 5', '$6.83M', 'Subscription 75%, cohorts 14%, physical and media 11%. A software business with a human edge, not a merch company.', GOLD],
+  ];
+  notes.forEach(([y1, v, b, c], i) => {
+    const y = 2.35 + i * 1.55;
+    card(s, { x: 8.5, y, w: 3.8, h: 1.35, fill: TINT });
+    s.addText(y1, { x: 8.76, y: y + 0.16, w: 1.1, h: 0.28, fontFace: BODY, fontSize: 10, bold: true, color: MUTED, charSpacing: 1.4, margin: 0 });
+    s.addText(v, { x: 10.05, y: y + 0.06, w: 2.05, h: 0.42, align: 'right', fontFace: DISP, fontSize: 20, bold: true, color: c, margin: 0 });
+    s.addText(b, { x: 8.76, y: y + 0.5, w: 3.3, h: 0.75, fontFace: BODY, fontSize: 10, color: '4A4360', margin: 0, lineSpacing: 13 });
+  });
+  s.addText('Aggressive case reaches $16.4M in Year 5 with the same mix shape — the ratios barely move, which is the point of a model rather than a wish.', {
+    x: M, y: 6.86, w: 11.6, h: 0.4, fontFace: BODY, fontSize: 11, italic: true, color: MUTED, margin: 0,
+  });
+}
+
+/* -------------------  5 · HOW BIG CAN IT GET  ------------------- */
+{
+  const s = darkSlide();
+  s.addImage({ data: av('titan'), x: 11.05, y: 0.5, w: 1.5, h: 1.5 });
+  s.addText('THE CEILING', { x: M, y: 0.6, w: 8, h: 0.32, fontFace: BODY, fontSize: 12, bold: true, color: GOLD, charSpacing: 3, margin: 0 });
+  s.addText('Big enough to matter. Not big enough to pretend otherwise.', {
+    x: M, y: 1.0, w: 10.4, h: 1.0, fontFace: DISP, fontSize: 28, bold: true, color: PAPER, margin: 0,
+  });
+  const bars = [
+    ['Diaspora households with a child 4–16', '1.31M', 1.0, GOLD],
+    ['× $95 blended — the whole diaspora market', '$124M', 1.0, GOLD],
+    ['At 10% penetration — realistic leadership', '$12.4M', 0.10, VIOLET],
+    ['At 25% — category default, a decade in', '$31M', 0.25, VIOLET],
+    ['India at 5% of 6.0M × $18', '$5.4M', 0.05, GREEN],
+  ];
+  bars.forEach(([label, val, frac, c], i) => {
+    const y = 2.15 + i * 0.78;
+    s.addText(label, { x: M, y, w: 5.4, h: 0.5, valign: 'middle', fontFace: BODY, fontSize: 12, color: TINT_D, margin: 0 });
+    s.addShape(p.ShapeType.roundRect, { x: 6.3, y: y + 0.1, w: 4.2, h: 0.3, rectRadius: 0.15, fill: { color: PAPER, transparency: 90 }, line: { type: 'none' } });
+    s.addShape(p.ShapeType.roundRect, { x: 6.3, y: y + 0.1, w: Math.max(0.28, 4.2 * frac), h: 0.3, rectRadius: 0.15, fill: { color: c }, line: { type: 'none' } });
+    s.addText(val, { x: 10.65, y, w: 1.7, h: 0.5, align: 'right', valign: 'middle', fontFace: DISP, fontSize: 17, bold: true, color: c, margin: 0 });
+  });
+  s.addShape(p.ShapeType.roundRect, { x: M, y: 6.1, w: 11.6, h: 1.12, rectRadius: 0.12, fill: { color: PAPER, transparency: 93 }, line: { type: 'none' } });
+  s.addText('The honest read', { x: M + 0.32, y: 6.24, w: 4, h: 0.3, fontFace: BODY, fontSize: 10, bold: true, color: GOLD, charSpacing: 1.6, margin: 0 });
+  s.addText('A realistic ceiling as the category leader is $30–60M of revenue — an excellent, durable, mostly-owned business, and not a venture-scale one. It becomes venture-scale only if Bizzing becomes the default learning brand for an entire diaspora rather than one subject within it, or if India scales far past the fifth-of-price assumption. Both are possible. Neither should be assumed in a plan.',
+    { x: M + 0.32, y: 6.54, w: 10.95, h: 0.62, fontFace: BODY, fontSize: 11, color: TINT_D, margin: 0, lineSpacing: 14.5 });
+}
+
+/* -------------------  6 · COSTS  ------------------- */
+{
+  const s = lightSlide('What it costs to run', 'Cost structure · base case');
+  s.addText('Two lines dominate and they behave very differently: paid media scales with growth and stops when you stop; mentors scale with revenue and cannot be switched off mid-cohort.',
+    { x: M, y: 1.58, w: 11.6, h: 0.56, fontFace: BODY, fontSize: 14.5, color: MUTED, margin: 0 });
+  const rows = [
+    ['Paid media', [35, 150, 420, 820, 1400], 'CAC $22 diaspora, $4 India. The largest single line, and the one that can be turned off in a week.', VIOLET],
+    ['Content & product', [60, 180, 380, 620, 850], 'AI generation, art and audio, contract writers per subject. Grows with the number of products, not with users.', VIOLET],
+    ['Mentors & live delivery', [0, 0, 55, 220, 494], 'Half of cohort revenue. A real cost of goods, and the price of the moat.', GREEN],
+    ['Physical COGS', [0, 19, 72, 160, 286], '55% of the books, cards and merch line. Print-on-demand keeps it variable.', GOLD],
+    ['People', [45, 200, 560, 1150, 1750], 'Founders unpaid to Year 2. First hires in Year 3; roughly eight to ten by Year 5.', VIOLET],
+    ['Infrastructure', [3, 12, 30, 45, 65], 'Offline-first and statically hosted. Genuinely small, and it stays small.', GREEN],
+    ['G&A, legal, trademark', [52, 59, 143, 185, 305], 'Entity, filings, accounting, insurance, safeguarding checks for the mentor bench.', GOLD],
+  ];
+  const CX = [6.5, 7.65, 8.8, 9.95, 11.1], CW = 1.05;
+  ['Y1', 'Y2', 'Y3', 'Y4', 'Y5'].forEach((h, i) =>
+    s.addText(h, { x: CX[i], y: 2.22, w: CW, h: 0.3, align: 'center', fontFace: BODY, fontSize: 10.5, bold: true, color: VIOL_D, margin: 0 }));
+  const tot = [0, 0, 0, 0, 0];
+  rows.forEach(([n, vals, note, c], i) => {
+    const y = 2.5 + i * 0.56;
+    if (i % 2 === 0) s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y - 0.04, w: 12.02, h: 0.52, rectRadius: 0.09, fill: { color: TINT }, line: { type: 'none' } });
+    s.addShape(p.ShapeType.hexagon, { x: M, y: y + 0.08, w: 0.26, h: 0.26, rotate: 90, fill: { color: c }, line: { type: 'none' } });
+    s.addText(n, { x: M + 0.38, y: y - 0.02, w: 2.4, h: 0.28, fontFace: DISP, fontSize: 12, bold: true, color: INK, margin: 0 });
+    s.addText(note, { x: M + 0.38, y: y + 0.19, w: 5.5, h: 0.3, fontFace: BODY, fontSize: 8, color: MUTED, margin: 0 });
+    vals.forEach((v, k) => { tot[k] += v; s.addText(v ? `$${v}k` : '—', { x: CX[k], y, w: CW, h: 0.48, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 11, color: v ? INK : TINT_D, margin: 0 }); });
+  });
+  const y = 2.5 + 7 * 0.56;
+  s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y - 0.04, w: 12.02, h: 0.52, rectRadius: 0.09, fill: { color: INK }, line: { type: 'none' } });
+  s.addText('Total operating cost', { x: M + 0.38, y, w: 4, h: 0.48, valign: 'middle', fontFace: DISP, fontSize: 12.5, bold: true, color: PAPER, margin: 0 });
+  tot.forEach((v, k) => s.addText(money(v * 1000), { x: CX[k], y, w: CW, h: 0.48, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 11.5, bold: true, color: k === 4 ? GOLD : PAPER, margin: 0 }));
+  s.addText('Infrastructure stays under $65k at Year 5 because the app is offline-first and statically hosted. Most consumer-education companies spend that on servers in Year 2.', {
+    x: M, y: 7.02, w: 11.6, h: 0.36, fontFace: BODY, fontSize: 10, italic: true, color: MUTED, margin: 0,
+  });
+}
+
+/* -------------------  7 · FIVE-YEAR P&L  ------------------- */
+{
+  const s = lightSlide('Five-year P&L, both cases', 'Summary');
+  s.addText('Same product sequence, same cost structure. The aggressive case is faster acquisition and a stronger India, not a different company.',
+    { x: M, y: 1.58, w: 11.6, h: 0.56, fontFace: BODY, fontSize: 14.5, color: MUTED, margin: 0 });
+
+  const CX = [4.15, 5.5, 6.85, 8.2, 9.55], CW = 1.3;
+  function block(title, y0, rows, accent) {
+    s.addShape(p.ShapeType.roundRect, { x: M - 0.14, y: y0 - 0.36, w: 10.42, h: 0.34, rectRadius: 0.09, fill: { color: accent }, line: { type: 'none' } });
+    s.addText(title, { x: M + 0.06, y: y0 - 0.36, w: 3.3, h: 0.34, valign: 'middle', fontFace: BODY, fontSize: 10, bold: true, color: accent === GOLD ? INK : PAPER, charSpacing: 1.6, margin: 0 });
+    ['Y1', 'Y2', 'Y3', 'Y4', 'Y5'].forEach((h, i) =>
+      s.addText(h, { x: CX[i], y: y0 - 0.36, w: CW, h: 0.34, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 9.5, bold: true, color: accent === GOLD ? INK : PAPER, margin: 0 }));
+    rows.forEach(([n, vals, strong], i) => {
+      const y = y0 + i * 0.42;
+      s.addText(n, { x: M, y, w: 3.3, h: 0.38, valign: 'middle', fontFace: strong ? DISP : BODY, fontSize: strong ? 12 : 11, bold: strong, color: strong ? INK : '4A4360', margin: 0 });
+      vals.forEach((v, k) => s.addText(typeof v === 'number' ? money(v) : v, {
+        x: CX[k], y, w: CW, h: 0.38, align: 'center', valign: 'middle',
+        fontFace: BODY, fontSize: strong ? 11.5 : 10.5, bold: strong,
+        color: strong ? (typeof v === 'number' && v < 0 ? 'C4453C' : INK) : '4A4360', margin: 0 }));
+    });
+  }
+  block('BASE CASE', 2.52, [
+    ['Paying households', ['1.5k', '7.0k', '20k', '43k', '75k'], false],
+    ['Revenue', [138e3, 650e3, 1.885e6, 3.950e6, 6.826e6], true],
+    ['Operating cost', [195e3, 620e3, 1.660e6, 3.200e6, 5.150e6], false],
+    ['EBITDA', [-57e3, 30e3, 225e3, 750e3, 1.676e6], true],
+  ], VIOLET);
+  block('AGGRESSIVE CASE', 4.86, [
+    ['Paying households', ['2.4k', '14k', '42k', '92k', '165k'], false],
+    ['Revenue', [240e3, 1.344e6, 4.139e6, 8.750e6, 16.370e6], true],
+    ['Operating cost', [340e3, 1.320e6, 3.550e6, 6.900e6, 11.850e6], false],
+    ['EBITDA', [-100e3, 24e3, 589e3, 1.850e6, 4.520e6], true],
+  ], GREEN);
+
+  s.addShape(p.ShapeType.roundRect, { x: 11.05, y: 2.16, w: 1.32, h: 4.4, rectRadius: 0.12, fill: { color: TINT }, line: { type: 'none' } });
+  s.addText('Y5\nEBITDA\nMARGIN', { x: 11.05, y: 2.32, w: 1.32, h: 0.7, align: 'center', fontFace: BODY, fontSize: 8.5, bold: true, color: MUTED, margin: 0, lineSpacing: 11 });
+  s.addText('25%', { x: 11.05, y: 3.4, w: 1.32, h: 0.5, align: 'center', fontFace: DISP, fontSize: 24, bold: true, color: VIOLET, margin: 0 });
+  s.addText('base', { x: 11.05, y: 3.86, w: 1.32, h: 0.26, align: 'center', fontFace: BODY, fontSize: 9, color: MUTED, margin: 0 });
+  s.addText('28%', { x: 11.05, y: 5.05, w: 1.32, h: 0.5, align: 'center', fontFace: DISP, fontSize: 24, bold: true, color: GREEN, margin: 0 });
+  s.addText('aggressive', { x: 11.05, y: 5.51, w: 1.32, h: 0.26, align: 'center', fontFace: BODY, fontSize: 9, color: MUTED, margin: 0 });
+
+  s.addShape(p.ShapeType.roundRect, { x: M, y: 6.68, w: 11.6, h: 0.68, rectRadius: 0.12, fill: { color: 'FBF3E0' }, line: { type: 'none' } });
+  s.addText([{ text: 'Assumptions:  ', options: { bold: true } },
+             { text: 'ARPU $95 diaspora / $18 India · CAC $22 diaspora, $4 India · annual churn 30% · cohort price $549 at 50% delivery cost · physical COGS 55% · founders unpaid to Y2, ~8–10 people by Y5 · India starts Y2 · cohorts start Y3. Break-even in Year 2 in both cases, which is the single most fragile claim here — it assumes paid media stays disciplined while the YouTube channel does the top-of-funnel work.' }], {
+    x: M + 0.3, y: 6.68, w: 11.0, h: 0.68, fontFace: BODY, fontSize: 9.5, color: GOLD_D, margin: 0, valign: 'middle', lineSpacing: 12,
+  });
+  s.addNotes('Every figure derives from the assumption block. Change an input and the model re-derives; do not argue with the chart, argue with the assumption.');
+}
 
 /* =====================  20 · DECISIONS  ===================== */
 {
