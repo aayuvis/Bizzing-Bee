@@ -1460,8 +1460,8 @@ const money = v => Math.abs(v) >= 1e6 ? `$${(v / 1e6).toFixed(2)}M` : `$${Math.r
 
 /* -------------------  12 · THE OPPORTUNITY LEDGER  ------------------- */
 {
-  const s = lightSlide('Six doors we have not opened', 'Additional opportunities');
-  s.addText('None of this is in the five-year P&L, and it should not be — the plan has to work without it. Ranked, ranked by RETURN ON UNLOCK, which is not the order of headline size.',
+  const s = lightSlide('Seven doors we have not opened', 'Additional opportunities');
+  s.addText('None of this is in the five-year P&L, and it should not be — the plan has to work without it. Each is ranked by RETURN ON UNLOCK, which is not the order of headline size.',
     { x: M, y: 1.54, w: 11.6, h: 0.5, fontFace: BODY, fontSize: 13.5, color: MUTED, margin: 0, lineSpacing: 16 });
 
   const VX = 3.9, UX = 5.1, CX = 10.35, RX = 11.5;
@@ -1511,7 +1511,7 @@ const money = v => Math.abs(v) >= 1e6 ? `$${(v / 1e6).toFixed(2)}M` : `$${Math.r
 
   s.addShape(p.ShapeType.roundRect, { x: M, y: 7.02, w: 11.6, h: 0.42, rectRadius: 0.1, fill: { color: 'E8F4EC' }, line: { type: 'none' } });
   s.addText([{ text: 'The rule these have to clear:  ', options: { bold: true } },
-             { text: 'an unlock cost is paid out of the PRIOR year’s profit, never out of a budget. $93k opens all seven — which the base case cannot afford until Year 3, so the top two go first and fund the rest. That ordering is why school districts, the most impressive line on this slide, is also the last one we should touch.' }], {
+             { text: `an unlock cost is paid out of the PRIOR year’s profit, never out of a budget. $${tc}k opens all seven — which the base case cannot afford until Year 3, so the top two go first and fund the rest. That ordering is why school districts, the most impressive line on this slide, is also the last one we should touch.` }], {
     x: M + 0.26, y: 7.02, w: 11.1, h: 0.42, valign: 'middle', fontFace: BODY, fontSize: 9, color: '1F4A33', margin: 0, lineSpacing: 11 });
   s.addNotes('Ranked by return on unlock, not by size. Bee networks and Amazon are near-free and should start in Year 1; districts are a 9–18 month enterprise sale and should wait.');
 }
