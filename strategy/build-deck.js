@@ -55,7 +55,7 @@ function darkSlide() {
   s.background = { color: INK };
   return s;
 }
-function lightSlide(title, kicker) {
+function lightSlide(title, kicker, titleW) {
   const s = p.addSlide();
   s.background = { color: PAPER };
   if (kicker) s.addText(kicker.toUpperCase(), {
@@ -63,7 +63,7 @@ function lightSlide(title, kicker) {
     color: VIOLET, charSpacing: 2.4, margin: 0,
   });
   if (title) s.addText(title, {
-    x: M, y: 0.76, w: 11.6, h: 0.82, fontFace: DISP, fontSize: 29, bold: true,
+    x: M, y: 0.76, w: titleW || 11.6, h: 0.82, fontFace: DISP, fontSize: 29, bold: true,
     color: INK, margin: 0,
   });
   return s;
@@ -235,47 +235,196 @@ function card(s, o) {
   });
 }
 
-/* =====================  8 · BRAND ARCHITECTURE  ===================== */
+/* =====================  8 · THE HOUSE  ===================== */
 {
-  const s = lightSlide('Brand architecture', 'The house');
-  s.addText('Subjects are brands. Geography is a hook, not a second brand — and the hook is free so the pack inside it can be paid.', {
+  const s = lightSlide('The house', 'Brand architecture');
+  s.addText('Three families, one engine. Geography is a hook rather than a brand — which is why India is the only place-name here, and why it is free.', {
     x: M, y: 1.58, w: 11.6, h: 0.56, fontFace: BODY, fontSize: 14.5, color: MUTED, margin: 0,
   });
-  s.addShape(p.ShapeType.roundRect, { x: 5.4, y: 2.18, w: 2.5, h: 0.72, rectRadius: 0.14, fill: { color: INK }, line: { type: 'none' } });
-  s.addText('BIZZING', { x: 5.4, y: 2.18, w: 2.5, h: 0.72, align: 'center', valign: 'middle', fontFace: DISP, fontSize: 21, bold: true, color: PAPER, charSpacing: 2, margin: 0 });
-  s.addShape(p.ShapeType.line, { x: 6.65, y: 2.9, w: 0, h: 0.34, line: { color: TINT_D, width: 2 } });
-  s.addShape(p.ShapeType.line, { x: 2.0, y: 3.24, w: 9.3, h: 0, line: { color: TINT_D, width: 2 } });
+  s.addShape(p.ShapeType.roundRect, { x: 5.4, y: 2.12, w: 2.5, h: 0.64, rectRadius: 0.13, fill: { color: INK }, line: { type: 'none' } });
+  s.addText('BIZZING', { x: 5.4, y: 2.12, w: 2.5, h: 0.64, align: 'center', valign: 'middle', fontFace: DISP, fontSize: 20, bold: true, color: PAPER, charSpacing: 2, margin: 0 });
+  s.addShape(p.ShapeType.line, { x: 6.65, y: 2.76, w: 0, h: 0.3, line: { color: TINT_D, width: 2 } });
+  s.addShape(p.ShapeType.line, { x: 2.5, y: 3.06, w: 8.3, h: 0, line: { color: TINT_D, width: 2 } });
 
-  const cols = [
-    { x: 0.75, w: 3.5, name: 'Bizzing Bee', sub: 'Spelling & words', tag: 'LIVE · PAID', c: GREEN,
-      body: 'The wedge. Proven demand, an existing competition, and the engine everything else reuses.' },
-    { x: 4.9, w: 3.5, name: 'Bizzing India', sub: 'Culture — the hook', tag: 'FREE', c: GOLD,
-      body: 'Stories, festivals, mythology, the words English took from India. Free, shareable, and why a family arrives.' },
-    { x: 9.05, w: 3.5, name: 'Bizzing Finance', sub: 'Money & numeracy', tag: 'IN FLIGHT', c: VIOLET,
-      body: 'Extends the house past words, and reaches the age band where the bee stops.' },
+  const fams = [
+    { x: 0.7, name: 'WORDS', c: VIOLET,
+      items: [['Bizzing Bee', 'live'], ['Bizzing Eleven', 'next'], ['Bizzing English', 'planned'],
+              ['Bizzing Buzz', 'ages 4–6'], ['Bizzing Prep', 'gap'], ['Bizzing Speak', 'gap']] },
+    { x: 4.83, name: 'CULTURE', c: GOLD,
+      items: [['Bizzing India', 'free hook'], ['↳ Bizzing Bhasha', 'paid pack']] },
+    { x: 8.96, name: 'NUMBERS & THE WORLD', c: GREEN,
+      items: [['Bizzing Maths', 'planned'], ['Bizzing Finance', 'in flight'],
+              ['Bizzing Business', 'exploratory'], ['Bizzing Quiz', 'gap']] },
   ];
-  cols.forEach(col => {
-    s.addShape(p.ShapeType.line, { x: col.x + col.w / 2, y: 3.24, w: 0, h: 0.36, line: { color: TINT_D, width: 2 } });
-    card(s, { x: col.x, y: 3.6, w: col.w, h: 1.72, fill: TINT });
-    s.addText(col.name, { x: col.x + 0.24, y: 3.78, w: col.w - 1.78, h: 0.42, fontFace: DISP, fontSize: 15.5, bold: true, color: INK, margin: 0 });
-    s.addText(col.sub, { x: col.x + 0.24, y: 4.18, w: col.w - 0.48, h: 0.3, fontFace: BODY, fontSize: 12, color: VIOL_D, margin: 0 });
-    s.addText(col.body, { x: col.x + 0.24, y: 4.5, w: col.w - 0.48, h: 0.75, fontFace: BODY, fontSize: 11.5, color: '4A4360', margin: 0, lineSpacing: 15 });
-    s.addShape(p.ShapeType.roundRect, { x: col.x + col.w - 1.42, y: 3.74, w: 1.18, h: 0.3, rectRadius: 0.15, fill: { color: col.c }, line: { type: 'none' } });
-    s.addText(col.tag, { x: col.x + col.w - 1.42, y: 3.74, w: 1.18, h: 0.3, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 8, bold: true, color: col.c === GOLD ? INK : PAPER, margin: 0 });
+  fams.forEach(f => {
+    const w = 3.63;
+    s.addShape(p.ShapeType.line, { x: f.x + w / 2, y: 3.06, w: 0, h: 0.3, line: { color: TINT_D, width: 2 } });
+    s.addShape(p.ShapeType.roundRect, { x: f.x, y: 3.36, w, h: 0.42, rectRadius: 0.1, fill: { color: f.c }, line: { type: 'none' } });
+    s.addText(f.name, { x: f.x, y: 3.36, w, h: 0.42, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 10, bold: true, color: f.c === GOLD ? INK : PAPER, charSpacing: 1.6, margin: 0 });
+    f.items.forEach(([n, tag], i) => {
+      const y = 3.94 + i * 0.46;
+      const indent = n.startsWith('↳') ? 0.3 : 0;
+      s.addShape(p.ShapeType.roundRect, { x: f.x + indent, y, w: w - indent, h: 0.38, rectRadius: 0.09, fill: { color: TINT }, line: { type: 'none' } });
+      s.addText(n, { x: f.x + indent + 0.2, y, w: w - indent - 1.72, h: 0.38, valign: 'middle', fontFace: DISP, fontSize: 12.5, bold: true, color: INK, margin: 0 });
+      s.addText(tag, { x: f.x + w - 1.42, y, w: 1.22, h: 0.38, align: 'right', valign: 'middle', fontFace: BODY, fontSize: 9, italic: true, color: VIOL_D, margin: 0 });
+    });
   });
-
-  // Bhasha nests INSIDE the India hook — that is the whole point of the slide
-  s.addShape(p.ShapeType.line, { x: 6.65, y: 5.32, w: 0, h: 0.3, line: { color: GOLD, width: 2 } });
-  s.addShape(p.ShapeType.roundRect, { x: 4.9, y: 5.62, w: 3.5, h: 0.92, rectRadius: 0.14, fill: { color: 'FBF3E0' }, line: { color: GOLD, width: 1.5 } });
-  s.addText('Bizzing Bhasha', { x: 5.14, y: 5.74, w: 1.88, h: 0.34, fontFace: DISP, fontSize: 15.5, bold: true, color: GOLD_D, margin: 0 });
-  s.addShape(p.ShapeType.roundRect, { x: 7.1, y: 5.76, w: 1.06, h: 0.28, rectRadius: 0.14, fill: { color: GOLD_D }, line: { type: 'none' } });
-  s.addText('PAID', { x: 7.1, y: 5.76, w: 1.06, h: 0.28, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 8, bold: true, color: PAPER, margin: 0 });
-  s.addText('Hindi first, then Tamil and Telugu. The pack the culture hook converts into.', { x: 5.14, y: 6.1, w: 3.0, h: 0.36, fontFace: BODY, fontSize: 10.5, color: GOLD_D, margin: 0, lineSpacing: 13 });
-
-  s.addText('Naming rule to settle now: sub-brands are SUBJECTS. "Bizzing India" is the one exception and it earns it by being a free hook, not a market. There is no "Bizzing UK" — the UK gets an edition of Bizzing Eleven.', {
+  s.addText('Twelve products named. Three already have real content behind them — Bee, India and Quiz — and the rest are still a sentence. The naming rule: sub-brands are SUBJECTS, so there is no Bizzing UK, only a UK edition of Bizzing Eleven.', {
     x: M, y: 6.72, w: 11.6, h: 0.55, fontFace: BODY, fontSize: 11.5, italic: true, color: MUTED, margin: 0, lineSpacing: 15,
   });
-  s.addNotes('Free culture hook -> paid language pack is the freemium spine. Culture is shareable; language is deep and worth paying for.');
+  s.addNotes('Culture is free and shareable; the language pack inside it is paid. That is the freemium spine.');
+}
+
+/* =====================  PRODUCT PAGES  ===================== */
+const PRODUCTS = [
+  { name: 'Bizzing Bee', status: ['LIVE', GREEN], age: 'Ages 8–14', reuse: 'The engine itself',
+    vision: 'The best place in the world to prepare for a spelling bee.',
+    why: 'The one competition this community already organises around, and dominates. The demand exists; we neither create it nor explain it.',
+    what: '128,491 words with every one spoken aloud, a mapped journey, 164 concept chapters, an arcade, and a mock bee against ten simulated rivals.',
+    how: 'Offline-first, no build step, no accounts required to start. Difficulty ramps on how tricky a spelling is, not on how rare the word is.',
+    usp: ['Difficulty is measured by TRICKINESS, not rarity — a silent letter beats a long word. Nothing else on the market does this.',
+          'Every one of 128k words is spoken. Competitors voice a curated few hundred.',
+          'A mock bee with ten rivals who each have their own nerve, speciality and vocabulary skill.'],
+    add: ['A gentler on-ramp so a six-year-old is not defeated on screen one',
+          'Parent-facing progress reporting — today the parent cannot see what is happening',
+          'Live and community bee events to convert the strongest users into advocates'] },
+
+  { name: 'Bizzing India', status: ['SEEDED · FREE', GOLD], age: 'Ages 6–16', reuse: 'Concept + trivia engines',
+    vision: 'A child who knows where they came from, and finds it genuinely interesting rather than dutiful.',
+    why: 'Heritage is the one hook no product built for a general audience can copy. It is also the warmest reason a family arrives, and it costs them nothing to try.',
+    what: 'Culture, festivals, mythology, geography, and the words English took from India. Free, shareable, and the doorway to the paid Bhasha packs.',
+    how: 'Reuses the concept-chapter and trivia engines outright. It is a content programme, not a new build.',
+    usp: ['A real seed already ships: southasia-data.js carries eleven authored chapters on South Asian words in English, live as Expedition IV of the Word Atlas and as Volume 14 of the book series.',
+          'It teaches Sanskrit, Hindi and Tamil loanwords as a bee STRATEGY — say it, spell it, trust the vowels — not as a curiosity.'],
+    add: ['Festival, mythology and India-GK packs on top of the language chapters',
+          'A clear free/paid line, with Bhasha as the paid pack inside the free hook',
+          'The funnel itself: what a family does next after finishing a free chapter'] },
+
+  { name: 'Bizzing Bhasha', status: ['PLANNED · PAID', VIOLET], age: 'Ages 5–16', reuse: 'Audio pipeline, drills',
+    vision: 'The grandparent and the grandchild can hold a conversation.',
+    why: 'The deepest emotional driver in this market, and the only category where the diaspora is the entire market rather than a slice of it. Parents fear a child losing the family, not a school place.',
+    what: 'Hindi first, then Tamil and Telugu. Script, vocabulary, listening and reading — sold as packs inside the free Bizzing India hook.',
+    how: 'The Google TTS pipeline that voiced 128k English words does the expensive part again in another language.',
+    usp: ['Nobody serious is aiming at diaspora heritage language with a real product — the field is Saturday schools and PDF worksheets.',
+          'One brand across many Indian languages, rather than a separate app per language.'],
+    add: ['A per-language content build — this is the real cost, and it repeats per language',
+          'Non-Latin script rendering and input, which the app has never done',
+          'A decision on which language ships second, on family demand rather than speaker counts'] },
+
+  { name: 'Bizzing Eleven', status: ['NEXT', VIOLET], age: 'Ages 8–11', reuse: 'Near-total',
+    vision: 'The 11+ verbal paper stops being a mystery a family has to buy tutoring to solve.',
+    why: 'British Indian families spend heavily and start at eight. The incumbents are photocopied workbooks and past papers with no feedback loop.',
+    what: 'Synonyms, antonyms, homophones, odd-one-out, word codes, letter manipulation and comprehension vocabulary — the verbal paper, drilled.',
+    how: 'Closer to a re-skin than a new product. The homophone groups, diacritics, alternate pronunciations and the 128k library already exist.',
+    usp: ['It would be the only 11+ verbal product where every word is spoken and difficulty adapts to the child rather than to the page number.'],
+    add: ['The 11+ specific item types — codes, sequences, letter shifts',
+          'A timed mock-paper mode, because the exam is as much about clock as vocabulary',
+          'Mapping to what UK grammar schools actually set'] },
+
+  { name: 'Bizzing Buzz', status: ['WHITE SPACE', 'C4453C'], age: 'Ages 4–6', reuse: 'Audio + art, not the UI',
+    vision: 'A child who cannot read yet still plays with words every day.',
+    why: 'The family arrives when the first child is four and Bizzing has nothing for them. The younger sibling is lost before they ever get to the Bee — this is the on-ramp gap on the age roadmap.',
+    what: 'Letter sounds, phonics, rhyme, first words, picture-to-word matching, and Indian nursery stories read aloud.',
+    how: 'Audio-first and picture-first, because the child cannot read the interface. The voice library and avatar art transfer; the reading-free UI does not exist and must be built.',
+    usp: ['The buzz before the bee. A child graduates Buzz → Bee, which is the single strongest retention story in the house.',
+          'Would be the only phonics product that is diaspora-aware from the first screen.'],
+    add: ['A UI a pre-reader can operate — icons, audio prompts, very large targets',
+          'A phonics curriculum, which the app has never had',
+          'A parent-alongside mode, since a four-year-old does not practise alone'] },
+
+  { name: 'Bizzing English', status: ['PLANNED', VIOLET], age: 'Ages 6–16', reuse: 'Concept engine; writing is new',
+    vision: 'A child who owns the language, rather than one who passes tests in it.',
+    why: 'Spelling is a wedge into English, not the whole of it. Grammar, reading and writing are what school actually grades — and the second thing every parent asks about.',
+    what: 'Grammar, punctuation, comprehension, writing structure, idiom and register, on one continuous ladder from first sentence to essay.',
+    how: 'The concept-chapter engine already teaches exactly this way, and the 43 advanced chapters are the template. Writing is the exception: it needs assessment, not drills.',
+    usp: ['One continuous ladder instead of a workbook per school year — the child never restarts, and a sibling can join at their own rung.'],
+    add: ['A grammar and punctuation curriculum',
+          'A comprehension passage bank with questions',
+          'A writing-feedback loop — the hardest single thing in the whole house, and the one to prototype before committing'] },
+
+  { name: 'Bizzing Maths', status: ['PLANNED', VIOLET], age: 'Ages 6–14', reuse: 'Drills yes, problems no',
+    vision: 'A child who is fast and fearless with numbers, and knows why the trick works.',
+    why: 'Already named in the trademark filing. Mental maths and competition maths are the largest adjacent category to spelling in this community, and abacus and Vedic programmes already have the parents’ attention.',
+    what: 'Fact fluency, mental-maths and Vedic techniques, then a decision about competition problems.',
+    how: 'Fact drills reuse the engine almost exactly. Competition problems do NOT — they need worked solutions and a solver, which is a different product.',
+    usp: ['Would be the only mental-maths product that also teaches the reasoning, using the same concept-chapter model as the Bee.'],
+    add: ['A fact-fluency bank and a Vedic technique chapter set',
+          'An honest decision on competition maths — it is the demand, and it is the part that does not reuse anything',
+          'Numeric input and working-out capture, which the word engine has never needed'] },
+
+  { name: 'Bizzing Business', status: ['EXPLORATORY', GOLD], age: 'Ages 11–16', reuse: 'Least of anything here',
+    vision: 'A twelve-year-old who can look at a business and explain why it works.',
+    why: 'It is what these families talk about at the dinner table, and almost nothing exists for children. It also lands squarely in the twelve-to-sixteen gap where the bee ends and families leave.',
+    what: 'How a business makes money, pricing, customers, competition, brand and ethics — taught through real cases and capstone projects the child builds and pitches.',
+    how: 'Case-based and project-based rather than drilled. This is the honest caveat: it is a different product shape from everything else in the house.',
+    usp: ['Capstone projects. The child makes and pitches something real, which no product at this age does well — and it is exactly what the CKO already does with slime and clay.'],
+    add: ['A case library written for eleven-year-olds',
+          'Project submission, a rubric, and someone or something to review the work',
+          'A decision on whether review is automated, parent-led, or a paid live service'] },
+];
+
+PRODUCTS.forEach((pr, idx) => {
+  const s = lightSlide(pr.name, `Product ${idx + 1} of ${PRODUCTS.length}`, 8.6);
+  const [tag, tagC] = pr.status;
+  s.addShape(p.ShapeType.roundRect, { x: 9.55, y: 0.82, w: 2.75, h: 0.42, rectRadius: 0.21, fill: { color: tagC }, line: { type: 'none' } });
+  s.addText(tag, { x: 9.55, y: 0.82, w: 2.75, h: 0.42, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 10, bold: true, color: tagC === GOLD ? INK : PAPER, charSpacing: 1.2, margin: 0 });
+  s.addText(pr.vision, { x: M, y: 1.58, w: 9.6, h: 0.64, fontFace: DISP, fontSize: 16, italic: true, color: VIOLET, margin: 0, lineSpacing: 21 });
+
+  // left: why / what / how
+  [['WHY', pr.why], ['WHAT', pr.what], ['HOW', pr.how]].forEach(([k, v], i) => {
+    const y = 2.28 + i * 1.52;
+    s.addShape(p.ShapeType.hexagon, { x: M, y: y + 0.02, w: 0.5, h: 0.5, rotate: 90, fill: { color: i === 1 ? GOLD : VIOLET }, line: { type: 'none' } });
+    s.addText(k, { x: M, y: y + 0.02, w: 0.5, h: 0.5, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 8.5, bold: true, color: i === 1 ? INK : PAPER, margin: 0 });
+    s.addText(v, { x: M + 0.68, y, w: 4.5, h: 1.4, fontFace: BODY, fontSize: 11.5, color: '4A4360', margin: 0, lineSpacing: 15.5 });
+  });
+
+  // right: what makes it different / what must be built
+  const uspLive = tag.startsWith('LIVE') || tag.startsWith('SEEDED');
+  card(s, { x: 6.1, y: 2.24, w: 6.2, h: 2.3, fill: 'E8F4EC' });
+  s.addText(uspLive ? 'WHAT MAKES IT DIFFERENT' : 'WHAT ITS EDGE WOULD BE', {
+    x: 6.42, y: 2.4, w: 5.6, h: 0.28, fontFace: BODY, fontSize: 9, bold: true, color: GREEN, charSpacing: 1.8, margin: 0 });
+  s.addText(pr.usp.map((t, k) => ({ text: t, options: { bullet: true, breakLine: k < pr.usp.length - 1 } })), {
+    x: 6.46, y: 2.72, w: 5.55, h: 1.7, fontFace: BODY, fontSize: 10.5, color: '1F4A33', margin: 0, paraSpaceAfter: 6, lineSpacing: 14 });
+
+  card(s, { x: 6.1, y: 4.72, w: 6.2, h: 2.3, fill: 'FBF3E0' });
+  s.addText('WHAT STILL HAS TO BE BUILT', { x: 6.42, y: 4.88, w: 5.6, h: 0.28, fontFace: BODY, fontSize: 9, bold: true, color: GOLD_D, charSpacing: 1.8, margin: 0 });
+  s.addText(pr.add.map((t, k) => ({ text: t, options: { bullet: true, breakLine: k < pr.add.length - 1 } })), {
+    x: 6.46, y: 5.2, w: 5.55, h: 1.7, fontFace: BODY, fontSize: 10.5, color: GOLD_D, margin: 0, paraSpaceAfter: 6, lineSpacing: 14 });
+
+  // footer facts
+  s.addText([{ text: pr.age, options: { bold: true } }, { text: '   ·   engine reuse: ' }, { text: pr.reuse, options: { bold: true } }], {
+    x: M, y: 6.86, w: 5.3, h: 0.34, fontFace: BODY, fontSize: 10.5, color: MUTED, margin: 0 });
+  s.addNotes(`${pr.name} — ${pr.vision}`);
+});
+
+/* =====================  WHAT WE ARE STILL MISSING  ===================== */
+{
+  const s = darkSlide();
+  s.addText('THE GAPS', { x: M, y: 0.6, w: 8, h: 0.32, fontFace: BODY, fontSize: 12, bold: true, color: GOLD, charSpacing: 3, margin: 0 });
+  s.addText('Three products missing, and four we should not build.', {
+    x: M, y: 1.0, w: 11.6, h: 0.75, fontFace: DISP, fontSize: 27, bold: true, color: PAPER, margin: 0,
+  });
+  const missing = [
+    ['Bizzing Speak', 'Public speaking, debate, spoken English', 'The strongest omission. It fills the twelve-to-sixteen cliff, it is the largest education category in India by search, and it is the same subject the YouTube channel already makes films about. The catch: doing it properly needs the app to LISTEN and score pronunciation, which is speech recognition and not in the engine.'],
+    ['Bizzing Quiz', 'General knowledge, quiz-bowl', 'The cheapest product in the house to launch: 31,000 questions across 32 themes and 5 levels already exist and are already sharded and levelled. It is a skin and a scoring loop, not a build.'],
+    ['Bizzing Prep', 'US gifted and selective entry', 'CogAT, NNAT, OLSAT verbal and SHSAT vocabulary. The highest-anxiety, highest-spend segment in the US, and the incumbent products are poor. Sits beside Eleven and shares its item types.'],
+  ];
+  missing.forEach(([n, sub, body], i) => {
+    const x = M + i * 4.03;
+    s.addShape(p.ShapeType.roundRect, { x, y: 2.0, w: 3.73, h: 3.15, rectRadius: 0.14, fill: { color: PAPER, transparency: 92 }, line: { color: VIOLET, width: 1 } });
+    hexBullet(s, x + 0.28, 2.26, String(i + 1), GOLD, INK);
+    s.addText(n, { x: x + 0.28, y: 2.84, w: 3.15, h: 0.4, fontFace: DISP, fontSize: 17, bold: true, color: PAPER, margin: 0 });
+    s.addText(sub, { x: x + 0.28, y: 3.22, w: 3.15, h: 0.32, fontFace: BODY, fontSize: 10.5, italic: true, color: GOLD, margin: 0 });
+    s.addText(body, { x: x + 0.28, y: 3.58, w: 3.15, h: 1.42, fontFace: BODY, fontSize: 10.5, color: TINT_D, margin: 0, lineSpacing: 13.5 });
+  });
+  s.addShape(p.ShapeType.roundRect, { x: M, y: 5.42, w: 11.6, h: 1.28, rectRadius: 0.12, fill: { color: PAPER, transparency: 94 }, line: { type: 'none' } });
+  s.addText('Deliberately NOT building', { x: M + 0.32, y: 5.56, w: 5, h: 0.3, fontFace: BODY, fontSize: 10, bold: true, color: 'E8807A', charSpacing: 1.8, margin: 0 });
+  s.addText('Coding · chess · music · dance. Every one has real diaspora demand, and every one needs a solver, a rating system or a live teacher. None of them reuses a single line of what has been built, and each would be a company of its own. Chess in particular is surging right now and is still the wrong answer for this house.', {
+    x: M + 0.32, y: 5.9, w: 10.95, h: 0.7, fontFace: BODY, fontSize: 11.5, color: TINT_D, margin: 0, lineSpacing: 15,
+  });
+  s.addText('Twelve products total. The discipline is not thinking of them — it is refusing to start the fifth before the second has paid for itself.', {
+    x: M, y: 6.84, w: 11.6, h: 0.55, fontFace: DISP, fontSize: 13.5, italic: true, color: GOLD, margin: 0,
+  });
 }
 
 /* =====================  9 · ROADMAP — BY MILESTONE  ===================== */
@@ -286,9 +435,9 @@ function card(s, o) {
   });
   const gates = [
     ['NOW', 'Bizzing Bee', 'Spelling, live', 'The wedge. Free app, paid packs, the YouTube channel feeding it.', GREEN],
-    ['GATE 1', 'Bizzing India + Bhasha', 'Culture free, language paid', 'Unlocks when Bee shows a repeatable way to acquire a family and keep them past the first month.', GOLD],
-    ['GATE 2', 'Bizzing Eleven / Prep', 'Exam verbal reasoning', 'Unlocks when a second paid pack proves families will buy more than one thing from us.', VIOLET],
-    ['GATE 3', 'Bizzing Finance, older ages', 'Past the bee', 'Unlocks when households run more than one product on one account — the multi-product home.', VIOLET],
+    ['GATE 1', 'India + Bhasha + Quiz', 'Culture free, language paid', 'Unlocks when Bee shows a repeatable way to acquire a family and keep them past the first month. Quiz rides along — its 31k questions already exist.', GOLD],
+    ['GATE 2', 'Eleven, then Prep', 'Exam verbal reasoning', 'Unlocks when a second paid pack proves families will buy more than one thing from us. Near-total engine reuse, so the cost is content, not build.', VIOLET],
+    ['GATE 3', 'Both ends of the range', 'Buzz · Speak · English · Maths · Finance · Business', 'Unlocks when households run more than one product on one account. This is where the 4–6 and 12–16 gaps get closed.', VIOLET],
   ];
   const spineY = 3.05, CW = 2.76, GAP = 2.98;
   s.addShape(p.ShapeType.line, { x: M + CW / 2, y: spineY, w: GAP * 3, h: 0, line: { color: TINT_D, width: 3 } });
@@ -298,11 +447,11 @@ function card(s, o) {
     s.addText(tag, { x, y: 2.3, w: CW, h: 0.3, align: 'center', fontFace: BODY, fontSize: 9.5, bold: true, color: c === GOLD ? GOLD_D : c, charSpacing: 1.6, margin: 0 });
     card(s, { x, y: 3.62, w: CW, h: 2.42, fill: i === 0 ? TINT : PAPER });
     if (i > 0) s.addShape(p.ShapeType.roundRect, { x, y: 3.62, w: CW, h: 2.42, rectRadius: 0.14, fill: { color: PAPER }, line: { color: TINT_D, width: 1.25 } });
-    s.addText(name, { x: x + 0.22, y: 3.8, w: CW - 0.44, h: 0.62, fontFace: DISP, fontSize: 15, bold: true, color: INK, margin: 0 });
-    s.addText(sub, { x: x + 0.22, y: 4.42, w: CW - 0.44, h: 0.3, fontFace: BODY, fontSize: 10.5, bold: true, color: VIOL_D, margin: 0 });
-    s.addText(why, { x: x + 0.22, y: 4.76, w: CW - 0.44, h: 1.14, fontFace: BODY, fontSize: 10.5, color: '4A4360', margin: 0, lineSpacing: 13.5 });
+    s.addText(name, { x: x + 0.22, y: 3.8, w: CW - 0.44, h: 0.6, fontFace: DISP, fontSize: 14.5, bold: true, color: INK, margin: 0 });
+    s.addText(sub, { x: x + 0.22, y: 4.4, w: CW - 0.44, h: 0.44, fontFace: BODY, fontSize: 9.5, bold: true, color: VIOL_D, margin: 0, lineSpacing: 12 });
+    s.addText(why, { x: x + 0.22, y: 4.86, w: CW - 0.44, h: 1.06, fontFace: BODY, fontSize: 10, color: '4A4360', margin: 0, lineSpacing: 13.5 });
   });
-  s.addText('The gates are deliberately written as proofs, not targets — the numbers behind each one are the CMO’s to set.', {
+  s.addText('Gates are written as proofs, not targets — the numbers behind each are the CMO’s. Nothing at Gate 3 starts until Gate 2 has paid for itself.', {
     x: M, y: 6.28, w: 11.6, h: 0.5, fontFace: BODY, fontSize: 12.5, italic: true, color: MUTED, margin: 0,
   });
 }
@@ -314,16 +463,16 @@ function card(s, o) {
     x: M, y: 1.58, w: 11.6, h: 0.56, fontFace: BODY, fontSize: 14.5, color: MUTED, margin: 0,
   });
   const bands = [
-    ['4–6', 'Letters, sounds,\nfirst words', 'Nothing yet', 'WHITE SPACE', 'C4453C',
-     'Phonics, letter sounds, first-word games, Indian nursery stories. The child cannot read — so this is audio and pictures, which the engine already does.'],
-    ['6–8', 'Reading fluency,\nfirst spelling', 'Bee, entry levels', 'PARTIAL', GOLD,
-     'Bizzing Bee starts too hard for most six-year-olds. A gentler on-ramp keeps the younger sibling instead of losing them.'],
-    ['8–10', 'Spelling bee,\nvocabulary, GK', 'Bizzing Bee', 'COVERED', GREEN,
+    ['4–6', 'Letters, sounds,\nfirst words', 'Buzz — to build', 'GAP, NAMED', 'C4453C',
+     'Bizzing Buzz. Audio and pictures, because the child cannot read the interface. The voice library transfers; the reading-free UI does not exist yet.'],
+    ['6–8', 'Reading fluency,\nfirst spelling', 'Bee entry · Buzz · English', 'PARTIAL', GOLD,
+     'Bee starts too hard for most six-year-olds. Buzz→Bee is the bridge, and it is the strongest retention story in the house.'],
+    ['8–10', 'Spelling bee,\nvocabulary, GK', 'Bee · India · Quiz · Maths', 'COVERED', GREEN,
      'The core. Everything built so far lands squarely here, and this is where the bee community lives.'],
-    ['10–12', 'Peak bee, 11+,\ngifted testing', 'Bee · Eleven · Bhasha', 'COVERED', GREEN,
-     'The highest-intent, highest-spend years. Three products can serve one child at once.'],
-    ['12–16', 'Debate, essays,\nmoney, SAT words', 'Finance only', 'WHITE SPACE', 'C4453C',
-     'The bee ends around fourteen and the family leaves. This is the churn cliff, and the biggest single gap in the house.'],
+    ['10–12', 'Peak bee, 11+,\ngifted testing', 'Bee · Eleven · Prep\nBhasha · English', 'COVERED', GREEN,
+     'The highest-intent, highest-spend years. Four products can serve one child at once, on one account.'],
+    ['12–16', 'Debate, essays,\nmoney, business', 'Speak · Business\nFinance · English', 'GAP, NAMED', 'C4453C',
+     'The bee ends around fourteen and the family leaves. Four products aim here and not one of them is built. The churn cliff is still open.'],
   ];
   bands.forEach(([age, need, have, tag, c, body], i) => {
     const x = M + i * 2.42;
@@ -333,11 +482,11 @@ function card(s, o) {
     s.addText(need, { x: x + 0.1, y: 2.92, w: w - 0.2, h: 0.66, fontFace: BODY, fontSize: 11.5, bold: true, color: VIOL_D, margin: 0, lineSpacing: 14 });
     s.addShape(p.ShapeType.roundRect, { x: x + 0.1, y: 3.66, w: w - 0.2, h: 0.3, rectRadius: 0.15, fill: { color: c }, line: { type: 'none' } });
     s.addText(tag, { x: x + 0.1, y: 3.66, w: w - 0.2, h: 0.3, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 8, bold: true, color: c === GOLD ? INK : PAPER, margin: 0 });
-    s.addText(have, { x: x + 0.1, y: 4.02, w: w - 0.2, h: 0.32, fontFace: BODY, fontSize: 10.5, italic: true, color: MUTED, margin: 0 });
-    s.addText(body, { x: x + 0.1, y: 4.4, w: w - 0.2, h: 1.55, fontFace: BODY, fontSize: 10.5, color: '4A4360', margin: 0, lineSpacing: 13.5 });
+    s.addText(have, { x: x + 0.1, y: 4.02, w: w - 0.2, h: 0.46, fontFace: BODY, fontSize: 10, italic: true, color: MUTED, margin: 0, lineSpacing: 12 });
+    s.addText(body, { x: x + 0.1, y: 4.54, w: w - 0.2, h: 1.45, fontFace: BODY, fontSize: 10, color: '4A4360', margin: 0, lineSpacing: 13.5 });
   });
   card(s, { x: M, y: 6.12, w: 11.6, h: 0.72, fill: TINT });
-  s.addText('Bizzing’s job is never to hand a family back. Two gaps do exactly that today — the four-to-six on-ramp, and the cliff after the bee ends at fourteen. Both are product decisions, not marketing ones.', {
+  s.addText('Bizzing’s job is never to hand a family back. Both gaps now have product names against them — but a name is not a build, and until Buzz and Speak exist the family still walks out at four and again at fourteen.', {
     x: M + 0.34, y: 6.12, w: 10.9, h: 0.72, fontFace: DISP, fontSize: 14, italic: true, color: INK, margin: 0, valign: 'middle', lineSpacing: 19,
   });
 }
