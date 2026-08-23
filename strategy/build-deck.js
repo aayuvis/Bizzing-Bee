@@ -88,7 +88,7 @@ function card(s, o) {
     x: M, y: 3.35, w: 8.4, h: 0.6, fontFace: DISP, fontSize: 21, italic: true,
     color: GOLD, margin: 0,
   });
-  s.addText('Vision · Mission · Strategy · Product roadmap · Organisation', {
+  s.addText('Vision · Strategy · Roadmap · Marketing · Content · Organisation', {
     x: M, y: 4.25, w: 8.4, h: 0.4, fontFace: BODY, fontSize: 14, color: TINT_D, margin: 0,
   });
   s.addShape(p.ShapeType.line, { x: M, y: 5.15, w: 3.2, h: 0, line: { color: VIOLET, width: 2.5 } });
@@ -238,71 +238,244 @@ function card(s, o) {
 /* =====================  8 · BRAND ARCHITECTURE  ===================== */
 {
   const s = lightSlide('Brand architecture', 'The house');
-  s.addText('Subjects are brands. Geography is an edition inside them — not a second brand.', {
-    x: M, y: 1.58, w: 11.6, h: 0.4, fontFace: BODY, fontSize: 15, color: MUTED, margin: 0,
+  s.addText('Subjects are brands. Geography is a hook, not a second brand — and the hook is free so the pack inside it can be paid.', {
+    x: M, y: 1.58, w: 11.6, h: 0.56, fontFace: BODY, fontSize: 14.5, color: MUTED, margin: 0,
   });
-  s.addShape(p.ShapeType.roundRect, { x: 5.15, y: 2.2, w: 3.0, h: 0.85, rectRadius: 0.14, fill: { color: INK }, line: { type: 'none' } });
-  s.addText('BIZZING', { x: 5.15, y: 2.2, w: 3.0, h: 0.85, align: 'center', valign: 'middle', fontFace: DISP, fontSize: 24, bold: true, color: PAPER, charSpacing: 2, margin: 0 });
-  s.addShape(p.ShapeType.line, { x: 6.65, y: 3.05, w: 0, h: 0.42, line: { color: TINT_D, width: 2 } });
-  s.addShape(p.ShapeType.line, { x: 1.55, y: 3.47, w: 10.2, h: 0, line: { color: TINT_D, width: 2 } });
-  const kids = [
-    ['Bizzing Bee', 'Spelling', 'LIVE', GREEN],
-    ['Bizzing Eleven', '11+ verbal reasoning', 'NEXT', VIOLET],
-    ['Bizzing Bhasha', 'Heritage languages', 'BUILD', VIOLET],
-    ['Bizzing Finance', 'Money & numeracy', 'IN FLIGHT', GOLD],
+  s.addShape(p.ShapeType.roundRect, { x: 5.4, y: 2.18, w: 2.5, h: 0.72, rectRadius: 0.14, fill: { color: INK }, line: { type: 'none' } });
+  s.addText('BIZZING', { x: 5.4, y: 2.18, w: 2.5, h: 0.72, align: 'center', valign: 'middle', fontFace: DISP, fontSize: 21, bold: true, color: PAPER, charSpacing: 2, margin: 0 });
+  s.addShape(p.ShapeType.line, { x: 6.65, y: 2.9, w: 0, h: 0.34, line: { color: TINT_D, width: 2 } });
+  s.addShape(p.ShapeType.line, { x: 2.0, y: 3.24, w: 9.3, h: 0, line: { color: TINT_D, width: 2 } });
+
+  const cols = [
+    { x: 0.75, w: 3.5, name: 'Bizzing Bee', sub: 'Spelling & words', tag: 'LIVE · PAID', c: GREEN,
+      body: 'The wedge. Proven demand, an existing competition, and the engine everything else reuses.' },
+    { x: 4.9, w: 3.5, name: 'Bizzing India', sub: 'Culture — the hook', tag: 'FREE', c: GOLD,
+      body: 'Stories, festivals, mythology, the words English took from India. Free, shareable, and why a family arrives.' },
+    { x: 9.05, w: 3.5, name: 'Bizzing Finance', sub: 'Money & numeracy', tag: 'IN FLIGHT', c: VIOLET,
+      body: 'Extends the house past words, and reaches the age band where the bee stops.' },
   ];
-  kids.forEach(([n, sub, tag, c], i) => {
-    const x = 0.86 + i * 3.0;
-    s.addShape(p.ShapeType.line, { x: x + 1.32, y: 3.47, w: 0, h: 0.4, line: { color: TINT_D, width: 2 } });
-    card(s, { x, y: 3.87, w: 2.64, h: 1.62, fill: TINT });
-    s.addText(n, { x: x + 0.2, y: 4.06, w: 2.24, h: 0.42, fontFace: DISP, fontSize: 16.5, bold: true, color: INK, margin: 0 });
-    s.addText(sub, { x: x + 0.2, y: 4.48, w: 2.24, h: 0.36, fontFace: BODY, fontSize: 12, color: '4A4360', margin: 0 });
-    s.addShape(p.ShapeType.roundRect, { x: x + 0.2, y: 4.92, w: 1.15, h: 0.32, rectRadius: 0.16, fill: { color: c }, line: { type: 'none' } });
-    s.addText(tag, { x: x + 0.2, y: 4.92, w: 1.15, h: 0.32, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 9, bold: true, color: c === GOLD ? INK : PAPER, margin: 0 });
+  cols.forEach(col => {
+    s.addShape(p.ShapeType.line, { x: col.x + col.w / 2, y: 3.24, w: 0, h: 0.36, line: { color: TINT_D, width: 2 } });
+    card(s, { x: col.x, y: 3.6, w: col.w, h: 1.72, fill: TINT });
+    s.addText(col.name, { x: col.x + 0.24, y: 3.78, w: col.w - 1.78, h: 0.42, fontFace: DISP, fontSize: 15.5, bold: true, color: INK, margin: 0 });
+    s.addText(col.sub, { x: col.x + 0.24, y: 4.18, w: col.w - 0.48, h: 0.3, fontFace: BODY, fontSize: 12, color: VIOL_D, margin: 0 });
+    s.addText(col.body, { x: col.x + 0.24, y: 4.5, w: col.w - 0.48, h: 0.75, fontFace: BODY, fontSize: 11.5, color: '4A4360', margin: 0, lineSpacing: 15 });
+    s.addShape(p.ShapeType.roundRect, { x: col.x + col.w - 1.42, y: 3.74, w: 1.18, h: 0.3, rectRadius: 0.15, fill: { color: col.c }, line: { type: 'none' } });
+    s.addText(col.tag, { x: col.x + col.w - 1.42, y: 3.74, w: 1.18, h: 0.3, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 8, bold: true, color: col.c === GOLD ? INK : PAPER, margin: 0 });
   });
-  s.addText('Naming caution: "Bizzing Finance" is a subject, "Bizzing India" is a place. Mixing the two axes makes "Bizzing Hindi" ambiguous — language product, or India edition? Settle it now, while it is cheap.', {
-    x: M, y: 5.85, w: 11.6, h: 0.7, fontFace: BODY, fontSize: 13, italic: true, color: GOLD_D, margin: 0, lineSpacing: 18,
+
+  // Bhasha nests INSIDE the India hook — that is the whole point of the slide
+  s.addShape(p.ShapeType.line, { x: 6.65, y: 5.32, w: 0, h: 0.3, line: { color: GOLD, width: 2 } });
+  s.addShape(p.ShapeType.roundRect, { x: 4.9, y: 5.62, w: 3.5, h: 0.92, rectRadius: 0.14, fill: { color: 'FBF3E0' }, line: { color: GOLD, width: 1.5 } });
+  s.addText('Bizzing Bhasha', { x: 5.14, y: 5.74, w: 1.88, h: 0.34, fontFace: DISP, fontSize: 15.5, bold: true, color: GOLD_D, margin: 0 });
+  s.addShape(p.ShapeType.roundRect, { x: 7.1, y: 5.76, w: 1.06, h: 0.28, rectRadius: 0.14, fill: { color: GOLD_D }, line: { type: 'none' } });
+  s.addText('PAID', { x: 7.1, y: 5.76, w: 1.06, h: 0.28, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 8, bold: true, color: PAPER, margin: 0 });
+  s.addText('Hindi first, then Tamil and Telugu. The pack the culture hook converts into.', { x: 5.14, y: 6.1, w: 3.0, h: 0.36, fontFace: BODY, fontSize: 10.5, color: GOLD_D, margin: 0, lineSpacing: 13 });
+
+  s.addText('Naming rule to settle now: sub-brands are SUBJECTS. "Bizzing India" is the one exception and it earns it by being a free hook, not a market. There is no "Bizzing UK" — the UK gets an edition of Bizzing Eleven.', {
+    x: M, y: 6.72, w: 11.6, h: 0.55, fontFace: BODY, fontSize: 11.5, italic: true, color: MUTED, margin: 0, lineSpacing: 15,
+  });
+  s.addNotes('Free culture hook -> paid language pack is the freemium spine. Culture is shareable; language is deep and worth paying for.');
+}
+
+/* =====================  9 · ROADMAP — BY MILESTONE  ===================== */
+{
+  const s = lightSlide('Roadmap, view one: by milestone', 'Sequence');
+  s.addText('Nothing launches on a date. Each product unlocks when the one before it has proved something specific.', {
+    x: M, y: 1.58, w: 11.6, h: 0.56, fontFace: BODY, fontSize: 14.5, color: MUTED, margin: 0,
+  });
+  const gates = [
+    ['NOW', 'Bizzing Bee', 'Spelling, live', 'The wedge. Free app, paid packs, the YouTube channel feeding it.', GREEN],
+    ['GATE 1', 'Bizzing India + Bhasha', 'Culture free, language paid', 'Unlocks when Bee shows a repeatable way to acquire a family and keep them past the first month.', GOLD],
+    ['GATE 2', 'Bizzing Eleven / Prep', 'Exam verbal reasoning', 'Unlocks when a second paid pack proves families will buy more than one thing from us.', VIOLET],
+    ['GATE 3', 'Bizzing Finance, older ages', 'Past the bee', 'Unlocks when households run more than one product on one account — the multi-product home.', VIOLET],
+  ];
+  const spineY = 3.05, CW = 2.76, GAP = 2.98;
+  s.addShape(p.ShapeType.line, { x: M + CW / 2, y: spineY, w: GAP * 3, h: 0, line: { color: TINT_D, width: 3 } });
+  gates.forEach(([tag, name, sub, why, c], i) => {
+    const x = M + i * GAP, cx = x + CW / 2;
+    s.addShape(p.ShapeType.hexagon, { x: cx - 0.28, y: spineY - 0.28, w: 0.56, h: 0.56, rotate: 90, fill: { color: c }, line: { color: PAPER, width: 2.5 } });
+    s.addText(tag, { x, y: 2.3, w: CW, h: 0.3, align: 'center', fontFace: BODY, fontSize: 9.5, bold: true, color: c === GOLD ? GOLD_D : c, charSpacing: 1.6, margin: 0 });
+    card(s, { x, y: 3.62, w: CW, h: 2.42, fill: i === 0 ? TINT : PAPER });
+    if (i > 0) s.addShape(p.ShapeType.roundRect, { x, y: 3.62, w: CW, h: 2.42, rectRadius: 0.14, fill: { color: PAPER }, line: { color: TINT_D, width: 1.25 } });
+    s.addText(name, { x: x + 0.22, y: 3.8, w: CW - 0.44, h: 0.62, fontFace: DISP, fontSize: 15, bold: true, color: INK, margin: 0 });
+    s.addText(sub, { x: x + 0.22, y: 4.42, w: CW - 0.44, h: 0.3, fontFace: BODY, fontSize: 10.5, bold: true, color: VIOL_D, margin: 0 });
+    s.addText(why, { x: x + 0.22, y: 4.76, w: CW - 0.44, h: 1.14, fontFace: BODY, fontSize: 10.5, color: '4A4360', margin: 0, lineSpacing: 13.5 });
+  });
+  s.addText('The gates are deliberately written as proofs, not targets — the numbers behind each one are the CMO’s to set.', {
+    x: M, y: 6.28, w: 11.6, h: 0.5, fontFace: BODY, fontSize: 12.5, italic: true, color: MUTED, margin: 0,
   });
 }
 
-/* =====================  9 · ROADMAP  ===================== */
+/* =====================  10 · ROADMAP — BY CHILD AGE  ===================== */
 {
-  const s = lightSlide('Product roadmap', 'Three horizons');
-  const hz = [
-    ['HORIZON 1', 'Prove the wedge', GREEN, [
-      'Bizzing Bee to paid conversion at a repeatable CAC',
-      'YouTube documentary channel as top-of-funnel',
-      'Spelling Champions avatar pack + merch test',
-      'Supabase accounts & cloud backup live',
-    ]],
-    ['HORIZON 2', 'Reuse the engine', VIOLET, [
-      'Bizzing Eleven — 11+ verbal reasoning, UK',
-      'Bizzing Finance to first paying cohort',
-      'US gifted & selective-entry verbal item bank',
-      'Shared account across products, one subscription',
-    ]],
-    ['HORIZON 3', 'Own the category', GOLD, [
-      'Bizzing Bhasha — Hindi first, then Tamil & Telugu',
-      'Pronunciation scoring (needs speech recognition)',
-      'School and community partnerships',
-      'Bizzing as the diaspora learning house, not one app',
-    ]],
+  const s = lightSlide('Roadmap, view two: by the age of the child', 'Coverage');
+  s.addText('A family with three children is with Bizzing from the first child at four to the last at sixteen. The gaps are where we hand them back.', {
+    x: M, y: 1.58, w: 11.6, h: 0.56, fontFace: BODY, fontSize: 14.5, color: MUTED, margin: 0,
+  });
+  const bands = [
+    ['4–6', 'Letters, sounds,\nfirst words', 'Nothing yet', 'WHITE SPACE', 'C4453C',
+     'Phonics, letter sounds, first-word games, Indian nursery stories. The child cannot read — so this is audio and pictures, which the engine already does.'],
+    ['6–8', 'Reading fluency,\nfirst spelling', 'Bee, entry levels', 'PARTIAL', GOLD,
+     'Bizzing Bee starts too hard for most six-year-olds. A gentler on-ramp keeps the younger sibling instead of losing them.'],
+    ['8–10', 'Spelling bee,\nvocabulary, GK', 'Bizzing Bee', 'COVERED', GREEN,
+     'The core. Everything built so far lands squarely here, and this is where the bee community lives.'],
+    ['10–12', 'Peak bee, 11+,\ngifted testing', 'Bee · Eleven · Bhasha', 'COVERED', GREEN,
+     'The highest-intent, highest-spend years. Three products can serve one child at once.'],
+    ['12–16', 'Debate, essays,\nmoney, SAT words', 'Finance only', 'WHITE SPACE', 'C4453C',
+     'The bee ends around fourteen and the family leaves. This is the churn cliff, and the biggest single gap in the house.'],
   ];
-  hz.forEach(([tag, head, c, items], i) => {
+  bands.forEach(([age, need, have, tag, c, body], i) => {
+    const x = M + i * 2.42;
+    const w = 2.2;
+    s.addShape(p.ShapeType.roundRect, { x, y: 2.2, w, h: 0.62, rectRadius: 0.12, fill: { color: INK }, line: { type: 'none' } });
+    s.addText(age, { x, y: 2.2, w, h: 0.62, align: 'center', valign: 'middle', fontFace: DISP, fontSize: 19, bold: true, color: PAPER, margin: 0 });
+    s.addText(need, { x: x + 0.1, y: 2.92, w: w - 0.2, h: 0.66, fontFace: BODY, fontSize: 11.5, bold: true, color: VIOL_D, margin: 0, lineSpacing: 14 });
+    s.addShape(p.ShapeType.roundRect, { x: x + 0.1, y: 3.66, w: w - 0.2, h: 0.3, rectRadius: 0.15, fill: { color: c }, line: { type: 'none' } });
+    s.addText(tag, { x: x + 0.1, y: 3.66, w: w - 0.2, h: 0.3, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 8, bold: true, color: c === GOLD ? INK : PAPER, margin: 0 });
+    s.addText(have, { x: x + 0.1, y: 4.02, w: w - 0.2, h: 0.32, fontFace: BODY, fontSize: 10.5, italic: true, color: MUTED, margin: 0 });
+    s.addText(body, { x: x + 0.1, y: 4.4, w: w - 0.2, h: 1.55, fontFace: BODY, fontSize: 10.5, color: '4A4360', margin: 0, lineSpacing: 13.5 });
+  });
+  card(s, { x: M, y: 6.12, w: 11.6, h: 0.72, fill: TINT });
+  s.addText('Bizzing’s job is never to hand a family back. Two gaps do exactly that today — the four-to-six on-ramp, and the cliff after the bee ends at fourteen. Both are product decisions, not marketing ones.', {
+    x: M + 0.34, y: 6.12, w: 10.9, h: 0.72, fontFace: DISP, fontSize: 14, italic: true, color: INK, margin: 0, valign: 'middle', lineSpacing: 19,
+  });
+}
+
+/* =====================  11 · MARKETING STRATEGY  ===================== */
+{
+  const s = darkSlide();
+  s.addText('MARKETING STRATEGY', { x: M, y: 0.6, w: 8, h: 0.32, fontFace: BODY, fontSize: 12, bold: true, color: GOLD, charSpacing: 3, margin: 0 });
+  s.addText('Earn attention, prove it in person, then pay to scale it.', {
+    x: M, y: 1.0, w: 11.6, h: 0.8, fontFace: DISP, fontSize: 27, bold: true, color: PAPER, margin: 0,
+  });
+  s.addText('The order matters more than the mix. Paid media applied to content nobody trusts yet is the fastest way to spend money badly.', {
+    x: M, y: 1.8, w: 11.0, h: 0.55, fontFace: BODY, fontSize: 13.5, color: TINT_D, margin: 0,
+  });
+  const chans = [
+    ['1', 'YouTube', 'Earns trust and reach', 'Long-form documentaries make a stranger believe we know words. Shorts put us in front of families no targeting could find. A video keeps working for years; an ad stops the day the card does.', GOLD],
+    ['2', 'Events & community', 'Turns trust into proof', 'Regional bees, cultural associations, temple and community fairs, homeschool conferences — where this diaspora already gathers. Small reach, unmatched credibility. Parent WhatsApp groups are the real distribution channel.', VIOLET],
+    ['3', 'Paid media', 'Scales what is proven', 'Harvests demand the content created and retargets the warmed. Creative comes from the channel, not from an agency. It amplifies; it does not originate.', GREEN],
+    ['4', 'The child', 'Compounds all three', 'A child who likes the app tells other children, and a champion who used it is worth more than any campaign. The CKO role exists partly for this.', 'E3B23C'],
+  ];
+  chans.forEach(([n, name, role, body, c], i) => {
+    const y = 2.45 + i * 1.08;
+    hexBullet(s, M, y + 0.12, n, c, INK);
+    s.addText(name, { x: M + 0.62, y: y + 0.02, w: 2.3, h: 0.38, fontFace: DISP, fontSize: 17, bold: true, color: PAPER, margin: 0 });
+    s.addText(role, { x: M + 0.62, y: y + 0.42, w: 2.3, h: 0.3, fontFace: BODY, fontSize: 10.5, italic: true, color: c === 'E3B23C' ? GOLD : TINT_D, margin: 0 });
+    s.addText(body, { x: M + 3.15, y, w: 8.75, h: 0.9, fontFace: BODY, fontSize: 11.5, color: TINT_D, margin: 0, lineSpacing: 15 });
+  });
+  s.addText('No budgets, targets or channel splits here by design — those are the CMO’s call. This slide fixes the ORDER, not the numbers.', {
+    x: M, y: 6.85, w: 11.6, h: 0.4, fontFace: BODY, fontSize: 11.5, italic: true, color: MUTED, margin: 0,
+  });
+}
+
+/* =====================  12 · YOUTUBE — WHY  ===================== */
+{
+  const s = lightSlide('YouTube is not an ad channel', 'Content strategy · 1 of 3');
+  s.addText('It is the only asset that earns trust while we sleep — and the one place a parent decides whether Bizzing is serious.', {
+    x: M, y: 1.58, w: 11.6, h: 0.56, fontFace: BODY, fontSize: 14.5, color: MUTED, margin: 0,
+  });
+  const jobs = [
+    ['Authority', 'A parent choosing where their child practises is really asking whether we know the subject. Ten minutes of well-made history about words answers that better than any landing page.', VIOLET],
+    ['Discovery', 'The algorithm reaches families we could never target — the ones who do not yet know a product like this exists. That is reach we do not have to buy.', GOLD],
+    ['An asset, not a spend', 'A documentary published this year is still working in five. Paid media stops the moment the card stops. Over time the channel becomes the cheapest acquisition we own.', GREEN],
+  ];
+  jobs.forEach(([h, b, c], i) => {
     const x = M + i * 4.03;
-    card(s, { x, y: 1.65, w: 3.73, h: 4.55, fill: i === 0 ? TINT : PAPER });
-    if (i > 0) s.addShape(p.ShapeType.roundRect, { x, y: 1.65, w: 3.73, h: 4.55, rectRadius: 0.14, fill: { color: PAPER }, line: { color: TINT_D, width: 1.25 } });
-    s.addShape(p.ShapeType.roundRect, { x: x + 0.28, y: 1.92, w: 1.5, h: 0.34, rectRadius: 0.17, fill: { color: c }, line: { type: 'none' } });
-    s.addText(tag, { x: x + 0.28, y: 1.92, w: 1.5, h: 0.34, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 9, bold: true, color: c === GOLD ? INK : PAPER, margin: 0 });
-    s.addText(head, { x: x + 0.28, y: 2.42, w: 3.17, h: 0.5, fontFace: DISP, fontSize: 19, bold: true, color: INK, margin: 0 });
-    s.addText(items.map((t, k) => ({ text: t, options: { bullet: true, breakLine: k < items.length - 1 } })), {
-      x: x + 0.32, y: 3.0, w: 3.1, h: 3.0, fontFace: BODY, fontSize: 12.5, color: '4A4360',
-      margin: 0, paraSpaceAfter: 9, lineSpacing: 16,
+    card(s, { x, y: 2.3, w: 3.73, h: 2.5, fill: TINT });
+    s.addShape(p.ShapeType.hexagon, { x: x + 0.3, y: 2.55, w: 0.46, h: 0.46, rotate: 90, fill: { color: c }, line: { type: 'none' } });
+    s.addText(h, { x: x + 0.3, y: 3.14, w: 3.15, h: 0.44, fontFace: DISP, fontSize: 17, bold: true, color: INK, margin: 0 });
+    s.addText(b, { x: x + 0.3, y: 3.58, w: 3.15, h: 1.15, fontFace: BODY, fontSize: 11.5, color: '4A4360', margin: 0, lineSpacing: 15 });
+  });
+  s.addText('Two audiences, one video', { x: M, y: 4.92, w: 6, h: 0.4, fontFace: DISP, fontSize: 18, bold: true, color: INK, margin: 0 });
+  const aud = [
+    ['The parent decides.', 'They need to see rigour — real sources, real history, nothing that feels like a cartoon selling something.'],
+    ['The child watches.', 'They need story and pace. If the child is bored the parent never finishes it either.'],
+  ];
+  aud.forEach(([h, b], i) => {
+    const x = M + i * 5.9;
+    s.addShape(p.ShapeType.hexagon, { x, y: 5.44, w: 0.3, h: 0.3, rotate: 90, fill: { color: i ? GOLD : VIOLET }, line: { type: 'none' } });
+    s.addText(h, { x: x + 0.44, y: 5.38, w: 5.0, h: 0.34, fontFace: BODY, fontSize: 13, bold: true, color: INK, margin: 0 });
+    s.addText(b, { x: x + 0.44, y: 5.72, w: 5.0, h: 0.7, fontFace: BODY, fontSize: 11.5, color: '4A4360', margin: 0, lineSpacing: 15 });
+  });
+  s.addText('The rule that follows: the video never sells. The product is named once, at the end, and that is the whole ask.', {
+    x: M, y: 6.6, w: 11.6, h: 0.4, fontFace: DISP, fontSize: 14, italic: true, color: VIOLET, margin: 0,
+  });
+}
+
+/* =====================  13 · YOUTUBE — PILLARS  ===================== */
+{
+  const s = lightSlide('Four content pillars', 'Content strategy · 2 of 3');
+  s.addText('Each pillar does a different job in the funnel. Together they cover reach, trust and intent.', {
+    x: M, y: 1.58, w: 11.6, h: 0.56, fontFace: BODY, fontSize: 14.5, color: MUTED, margin: 0,
+  });
+  const pil = [
+    ['Story documentaries', 'Long form', 'True stories about words and the people who used them. "Before the Bee" — the 1908 contest and the girl whose medal was never found. "The Right Word" — four times somebody reached for a word and the world changed.', 'Authority. The piece a parent shares with another parent.', VIOLET],
+    ['Word-origin shorts', 'Short form', 'One word, one surprising origin, under a minute. Why "knight" keeps a silent K. Why the menu says beef and the field says cow. Built straight from the app’s existing etymology bank.', 'Reach. Volume the algorithm can work with, at almost no marginal cost.', GOLD],
+    ['Bee craft', 'Mid form', 'How champions actually study: root patterns, language-of-origin cues, what to ask the pronouncer, how to handle a word you have never seen.', 'Intent. These viewers are already preparing — the shortest path to a trial.', GREEN],
+    ['Culture & India', 'Mixed', 'Festivals, mythology, the words English took from India, why the diaspora spells the way it does. Feeds Bizzing India directly.', 'Connection. The pillar that makes this channel ours and nobody else’s.', 'E3B23C'],
+  ];
+  pil.forEach(([name, form, body, job, c], i) => {
+    const x = M + (i % 2) * 5.9, y = 2.2 + Math.floor(i / 2) * 2.2;
+    card(s, { x, y, w: 5.55, h: 1.95, fill: i % 3 === 0 ? TINT : PAPER });
+    if (i % 3 !== 0) s.addShape(p.ShapeType.roundRect, { x, y, w: 5.55, h: 1.95, rectRadius: 0.14, fill: { color: PAPER }, line: { color: TINT_D, width: 1.25 } });
+    s.addShape(p.ShapeType.hexagon, { x: x + 0.26, y: y + 0.24, w: 0.42, h: 0.42, rotate: 90, fill: { color: c }, line: { type: 'none' } });
+    s.addText(name, { x: x + 0.84, y: y + 0.2, w: 3.3, h: 0.4, fontFace: DISP, fontSize: 16, bold: true, color: INK, margin: 0 });
+    s.addShape(p.ShapeType.roundRect, { x: x + 4.25, y: y + 0.26, w: 1.05, h: 0.28, rectRadius: 0.14, fill: { color: TINT_D }, line: { type: 'none' } });
+    s.addText(form, { x: x + 4.25, y: y + 0.26, w: 1.05, h: 0.28, align: 'center', valign: 'middle', fontFace: BODY, fontSize: 8, bold: true, color: VIOL_D, margin: 0 });
+    s.addText(body, { x: x + 0.26, y: y + 0.68, w: 5.05, h: 0.78, fontFace: BODY, fontSize: 11, color: '4A4360', margin: 0, lineSpacing: 14 });
+    s.addText([{ text: 'Job:  ', options: { bold: true } }, { text: job }], {
+      x: x + 0.26, y: y + 1.48, w: 5.05, h: 0.38, fontFace: BODY, fontSize: 10.5, italic: true, color: VIOL_D, margin: 0, lineSpacing: 13,
     });
   });
+  s.addText('One documentary yields six to ten shorts, and a shorts run seeds a book chapter. Nothing is made once.', {
+    x: M, y: 6.62, w: 11.6, h: 0.4, fontFace: DISP, fontSize: 14, italic: true, color: VIOLET, margin: 0,
+  });
 }
 
-/* =====================  10 · ORG CHART  ===================== */
+/* =====================  14 · YOUTUBE — HOW IT RUNS  ===================== */
+{
+  const s = lightSlide('How it runs, and where it lands', 'Content strategy · 3 of 3');
+  s.addText('Production', { x: M, y: 1.6, w: 5, h: 0.36, fontFace: DISP, fontSize: 18, bold: true, color: INK, margin: 0 });
+  const steps = ['Script written to one message, checked against sources',
+                 'Narration generated and blind-verified for accent and words',
+                 'Plates generated; archive photographs used where a real person appears',
+                 'Assembled by the render pipeline, timed to the narration'];
+  steps.forEach((t, i) => {
+    const y = 2.08 + i * 0.62;
+    hexBullet(s, M, y, String(i + 1), VIOLET, PAPER);
+    s.addText(t, { x: M + 0.6, y, w: 5.1, h: 0.5, fontFace: BODY, fontSize: 11.5, color: '4A4360', margin: 0, valign: 'middle', lineSpacing: 14 });
+  });
+  card(s, { x: M, y: 4.66, w: 5.7, h: 0.92, fill: TINT });
+  s.addText('Two episodes are already built this way, founder-run, with no editor, agency or studio.', {
+    x: M + 0.28, y: 4.66, w: 5.14, h: 0.92, fontFace: BODY, fontSize: 11.5, italic: true, color: VIOL_D, margin: 0, valign: 'middle', lineSpacing: 15,
+  });
+
+  s.addText('The path from a video to a paying family', { x: 6.9, y: 1.6, w: 5.4, h: 0.36, fontFace: DISP, fontSize: 18, bold: true, color: INK, margin: 0 });
+  const funnel = [
+    ['Watches', 'A story worth ten minutes, or a short worth sixty seconds', VIOLET],
+    ['Trusts', 'Sources on screen; nothing oversold; no pitch inside the film', VIOLET],
+    ['Opens the app', 'One link in the description, free and instant — no signup wall', GOLD],
+    ['Makes an account', 'Progress worth keeping is the reason, not a gate', GOLD],
+    ['Buys a pack', 'Bhasha, Eleven, or Advanced — bought because the free part worked', GREEN],
+  ];
+  funnel.forEach(([h, b, c], i) => {
+    const y = 2.08 + i * 0.72;
+    s.addShape(p.ShapeType.hexagon, { x: 6.9, y: y + 0.06, w: 0.34, h: 0.34, rotate: 90, fill: { color: c }, line: { type: 'none' } });
+    if (i < funnel.length - 1) s.addShape(p.ShapeType.line, { x: 7.07, y: y + 0.42, w: 0, h: 0.3, line: { color: TINT_D, width: 1.5 } });
+    s.addText(h, { x: 7.44, y, w: 1.5, h: 0.44, fontFace: BODY, fontSize: 12, bold: true, color: INK, margin: 0, valign: 'middle' });
+    s.addText(b, { x: 8.95, y, w: 3.35, h: 0.5, fontFace: BODY, fontSize: 10.5, color: '4A4360', margin: 0, valign: 'middle', lineSpacing: 13 });
+  });
+
+  s.addShape(p.ShapeType.roundRect, { x: M, y: 5.88, w: 11.6, h: 1.0, rectRadius: 0.12, fill: { color: 'FBF3E0' }, line: { type: 'none' } });
+  s.addText([{ text: 'Standing rules:  ', options: { bold: true } },
+             { text: 'never sell inside a film · disclose what is generated and what is archive · name sources on screen · verify every claim before it is narrated · publish nothing that would embarrass the brand in front of a bee community that will recognise every error.' }], {
+    x: M + 0.3, y: 5.88, w: 11.0, h: 1.0, fontFace: BODY, fontSize: 11.5, color: GOLD_D, margin: 0, valign: 'middle', lineSpacing: 15,
+  });
+}
+
+/* =====================  15 · ORG CHART  ===================== */
 {
   const s = lightSlide('Organisation', 'How the team is built');
   s.addText('Two co-founders run separate, clearly-owned lanes. Joint decisions are made at founder level. The third role is advisory and sits on top as a brand asset, not an operating function.', {
@@ -331,7 +504,7 @@ function card(s, o) {
   });
 }
 
-/* =====================  11-13 · ROLES  ===================== */
+/* =====================  16-18 · ROLES  ===================== */
 const roles = [
   {
     name: 'Aayush', title: 'Co-Founder & Chief Product and Technology Officer', c: VIOLET,
@@ -400,7 +573,7 @@ roles.forEach(r => {
   });
 });
 
-/* =====================  14 · DECISIONS  ===================== */
+/* =====================  19 · DECISIONS  ===================== */
 {
   const s = darkSlide();
   hexField(s, { x: 9.85, y: 4.45, n: 6, size: 0.8, color: GOLD, transparency: 82, spread: 1.0 });
