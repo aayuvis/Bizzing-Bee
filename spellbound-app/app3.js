@@ -1839,6 +1839,10 @@ const app = {
      names apart. The rulebook is lazy, so ask for it and let the view re-render. */
   openCoachDesk:()=>{ try{ loadConcepts(); }catch(e){} try{ if(window.SB_LAZY) SB_LAZY.need('coach',()=>{ if(state.nav==='coachdesk') render(); }); }catch(e){}
     set({nav:'coachdesk', screen:'app', trapSel:null, conceptSel:null}); },
+  coachTrap:(k)=>set({coachTrap:k}),
+  coachTipNext:()=>{ const n=(window.SB_COACH_TIPS||[]).length||1;
+    const cur=(state.coachTip==null?(typeof dayNum==='function'?dayNum():0):state.coachTip);
+    set({coachTip:(cur+1)%n}); },
   openTraps:()=>{ try{ loadConcepts(); }catch(e){} set({nav:'traps', screen:'app', trapSel:null, conceptSel:null}); },
   openWorlds:()=>set({nav:'worlds', screen:'app', conceptSel:null}),
   openEvo:()=>set({nav:'evolution', screen:'app'}),
@@ -4379,22 +4383,54 @@ function viewLevelTest(){ const lt=state.lt||{}; if(lt.done) return `<div style=
 const TRAP_CONCEPT_RE={ double:/Double Consonant/i, silent:/Silent kn|Silent -gh|Blends & Silent/i, ieei:/ie \/ ei/i, schwa:/Schwa/i, endings:/Suffix|-tion|able/i, french:/French Loanword/i, greek:/Greek (Prefixes|Root|Suffixes)/i, latin:/Latin (Prefixes|Root|Suffixes)/i,
   epon:/Eponym|Named After|Personality/i, hom:/Homonym|Homophone|Sound-Alike|Meaning/i };
 /* ===================== THE COACH ==========================================
-   A tiled briefing built from what the app already measures, and answered from a
-   HARDCODED rulebook (coach-rules.js). No model, no network, nothing generated.
+   A tiled briefing built from what the app already measures, answered from a HARDCODED
+   rulebook (coach-rules.js). No model, no network, nothing generated.
 
-   The pieces were all here and none of them talked to each other: missTraps() knew which
-   patterns catch this child, trickAnal() knew a word's concept family, beeBand() knew the
-   level, TRAP_CONCEPT_RE knew which chapter teaches a pattern, and the trap page could say
-   "Silent letters · 6 misses" and then offer nothing but more of the same words. What was
-   missing was anything to SAY. SB_COACH_RULES is that: for each trap, the mistake in the
-   child's terms, the rule, a check to run at the microphone, and worked examples.
+   Play-testing on the first cut: "good but boring looking… no flow… no graphics… just
+   advice in blocks. Kids should engage with it." Fair. The rewrite makes three changes:
+     - every trap is a CHARACTER with a face and a colour, not a heading;
+     - the centrepiece is a PICTURE of the mistake — the word spelled right beside the way
+       it is commonly got wrong, with the letters that differ lit up. 26,879 words in the
+       library carry a recorded common misspelling (`m`), so this is the child's own error
+       drawn for them rather than described;
+     - it reads as a path — meet the trap, see the mistake, learn the trick, beat it —
+       instead of five equal boxes of prose.
 
-   Naming: `nav:'coach'` is the PRACTICE session (openCoach, SRS drills). This is
-   `nav:'coachdesk'` — the page that explains rather than drills. Two different things;
-   keep the names apart.
+   Naming: nav 'coach' is the PRACTICE session that drills. This is 'coachdesk', the page
+   that explains. Keep them apart.
    ========================================================================== */
+
+/* Where two spellings part company. Aligns on the shared head and tail and calls the
+   middle the mistake, which is exactly right for the way words are actually misspelled
+   (a doubled letter, a swapped vowel pair, a dropped silent letter). */
+function spellSplit(right, wrong){
+  const a=String(right||''), b=String(wrong||'');
+  if(!a||!b||a.toLowerCase()===b.toLowerCase()) return null;
+  let p=0; while(p<a.length&&p<b.length&&a[p].toLowerCase()===b[p].toLowerCase()) p++;
+  let q=0; while(q<a.length-p&&q<b.length-p&&a[a.length-1-q].toLowerCase()===b[b.length-1-q].toLowerCase()) q++;
+  return { pre:a.slice(0,p), mid:a.slice(p,a.length-q), post:a.slice(a.length-q),
+           wmid:b.slice(p,b.length-q) };
+}
+/* The word drawn twice: right, and the way it goes wrong. The differing letters carry the
+   colour; everything else stays quiet, so the eye lands on the one thing to remember. */
+function coachWordArt(w){
+  const sp=spellSplit(w.w, w.m); if(!sp) return '';
+  const dim='color:var(--muted);opacity:.85';
+  const cell=(pre,mid,post,ok)=>`<div style="display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:11px;background:${ok?'color-mix(in srgb,var(--good) 11%,transparent)':'color-mix(in srgb,var(--bad) 10%,transparent)'}">
+      <span style="font-size:14px;flex:none">${ok?'✓':'✗'}</span>
+      <span style="font-family:var(--mono);font-size:clamp(15px,3.4vw,19px);font-weight:800;letter-spacing:.06em;overflow-wrap:anywhere">
+        <span style="${dim}">${esc(pre)}</span>${mid?`<span style="color:${ok?'var(--good)':'var(--bad)'};background:${ok?'color-mix(in srgb,var(--good) 22%,transparent)':'color-mix(in srgb,var(--bad) 20%,transparent)'};border-radius:4px;padding:1px 3px">${esc(mid)}</span>`:`<span title="a letter is missing here" style="display:inline-block;width:.55em;height:1.05em;border-radius:4px;background:color-mix(in srgb,var(--bad) 20%,transparent);border:1px dashed var(--bad);vertical-align:-.18em;margin:0 2px"></span>`}<span style="${dim}">${esc(post)}</span>
+      </span></div>`;
+  return `<div style="display:flex;flex-direction:column;gap:6px">
+      ${cell(sp.pre,sp.mid,sp.post,true)}${cell(sp.pre,sp.wmid,sp.post,false)}
+    </div>`;
+}
+function coachFace(id,sz,ring){
+  try{ if(window.SB_AVATAR){ const a=SB_AVATAR(id,sz); if(a) return `<span style="flex:none;width:${sz}px;height:${sz}px;border-radius:50%;overflow:hidden;display:grid;place-items:center;${ring?`box-shadow:0 0 0 3px ${ring}`:''}">${a}</span>`; } }catch(e){}
+  return '';
+}
+/* which chapters teach the patterns catching this child */
 function coachConcepts(keys){
-  // which chapters teach the patterns that are catching this child
   /* Index STRICTLY into state.conceptData, because that is the array openConcept reads.
      Falling back to SB_CONCEPTS.chapters here would hand out indexes into a different
      array — free chapters happen to line up, advanced ones do not. */
@@ -4406,97 +4442,176 @@ function coachConcepts(keys){
       if(re.test(ch.title)||re.test(ch.category)){ seen.add(i); out.push({ch,i,k}); } }); });
   return out.slice(0,6);
 }
-function coachTile(title, sub, body, accent){
-  return `<section class="sb-card" style="padding:0;overflow:hidden">
-    <div style="padding:15px 18px 12px;border-bottom:1px solid var(--line);background:color-mix(in srgb,${accent||'var(--accent)'} 7%,transparent)">
-      <div style="font-family:var(--display);font-weight:800;font-size:16px;line-height:1.2">${title}</div>
-      ${sub?`<div style="font-size:12.5px;color:var(--muted);margin-top:2px">${sub}</div>`:''}
-    </div>
-    <div style="padding:15px 18px">${body}</div></section>`;
+/* an example of this trap taken from the CHILD'S OWN misses, with its misspelling if the
+   library records one — their word beats a textbook word every time */
+function coachExample(k){
+  const idx=wordIndex(), def=TRAP_DEFS.find(t=>t[0]===k);
+  const hit=(w)=>{ if(!w||!w.w) return false; if(def) return def[1].test(w.w);
+    const o=(w.o||'').toLowerCase(); return k==='french'?/french/.test(o):k==='greek'?/greek/.test(o):k==='latin'?/latin/.test(o):false; };
+  const mine=((active().missed)||[]).map(m=>idx[nkey(m.w)]||{w:m.w}).filter(hit);
+  return mine.find(w=>spellSplit(w.w,w.m)) || mine.find(w=>w.h||w.sy) || mine[0] || null;
 }
 function viewCoachDesk(){
   const R=window.SB_COACH_RULES;
-  if(!R){ try{ if(window.SB_LAZY) SB_LAZY.need('coach',()=>render()); }catch(e){}
-    return `<div style="max-width:1100px;margin:0 auto">${pageHead('Coach','','Reading your practice…')}
-      <div class="sb-card" style="text-align:center;color:var(--muted)">One moment — the coach is opening your notes.</div></div>`; }
+  if(!R){ try{ if(window.SB_LAZY) SB_LAZY.need('coach',()=>{ if(state.nav==='coachdesk') render(); }); }catch(e){}
+    return `<div style="max-width:1080px;margin:0 auto">${pageHead('Coach','','Reading your practice…')}
+      <div class="sb-card" style="text-align:center;color:var(--muted)">One moment — Bizzy is opening your notes.</div></div>`; }
 
-  const c=active(); const bb=beeBand(c); const traps=missTraps(); const missed=(c.missed||[]);
-  const B=(window.SB_COACH_BANDS||[])[bb.band]||{};
-  const tips=window.SB_COACH_TIPS||[];
+  const c=active(), bb=beeBand(c), traps=missTraps(), missed=(c.missed||[]);
+  const B=(window.SB_COACH_BANDS||[])[bb.band]||{}, tips=window.SB_COACH_TIPS||[];
   const known=traps.filter(t=>R[t.k]);
+  const sel=known.find(t=>t.k===state.coachTrap)||known[0]||null;
+  const top=known[0]||null, maxN=known.length?known[0].n:1;
 
-  /* 1 — where you are, and what is coming */
-  const nextTile=coachTile('Where you are, and what is next',
-    `Word difficulty ${bb.band} of 9 · ${esc(bb.tier)}${bb.acc?` · ${bb.acc}% accurate lately`:''}`,
-    `<div style="display:flex;flex-direction:column;gap:11px">
-      <div><div style="font-size:11.5px;font-weight:800;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px">Words at your level</div>
-        <div style="font-size:14px;line-height:1.55">${esc(B.words||'Everyday words.')}</div></div>
-      <div style="padding:12px 14px;border-radius:12px;background:color-mix(in srgb,var(--treasure,#F0B429) 12%,transparent)">
-        <div style="font-size:11.5px;font-weight:800;color:var(--treasure-deep,#8A5B00);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px">What to expect next</div>
-        <div style="font-size:14px;line-height:1.55;color:var(--treasure-deep,#8A5B00)">${esc(B.next||'')}</div></div>
-    </div>`, 'var(--accent)');
+  /* ---- 1. Bizzy says the one thing, on a coloured band ---- */
+  const line = !missed.length
+    ? 'We have not met enough words yet for me to spot a pattern. Go and get some wrong — that is the fastest way to make me useful.'
+    : top ? `Nearly every word you lose goes the same way: <b style="color:#fff">${esc(top.label.toLowerCase())}</b>. Fix that one thing and ${top.n} of your misses stop happening.`
+          : 'Your misses are spread thin — no single pattern is catching you, which is a good place to be.';
+  const hero=`<div style="position:relative;overflow:hidden;border-radius:20px;background:linear-gradient(135deg,${top?esc(R[top.k].col):'var(--accent)'},var(--ink));padding:clamp(16px,3vw,22px);margin-bottom:16px;box-shadow:var(--sh-rest)">
+      <div style="display:flex;align-items:center;gap:clamp(12px,2.4vw,18px)">
+        <div style="width:clamp(58px,11vw,84px);height:clamp(66px,12vw,94px);flex:none">${mascotSVG(missed.length?'think':'happy')}</div>
+        <div style="min-width:0;flex:1">
+          <div style="font-family:var(--body);font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-bottom:4px">Bizzy’s read on ${esc(c.name||'you')}</div>
+          <div style="font-family:var(--display);font-weight:800;font-size:clamp(15px,2.6vw,20px);line-height:1.4;color:#fff">${line}</div>
+        </div>
+        ${top?coachFace(R[top.k].face,64,'rgba(255,255,255,.5)'):''}
+      </div></div>`;
 
-  /* 2 — the mistakes actually being made, each with the rule that fixes it */
-  const ruleBlock=(t)=>{ const r=R[t.k]; if(!r) return '';
-    return `<details style="border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:9px">
-      <summary style="cursor:pointer;list-style:none;padding:11px 13px;display:flex;align-items:center;gap:10px;background:var(--surface)">
-        <span style="flex:1;min-width:0"><b style="font-size:14.5px">${esc(r.label)}</b>
-          <span style="font-size:12px;color:var(--muted);margin-left:7px">${t.n} miss${t.n>1?'es':''}</span></span>
-        <span style="font-size:11.5px;color:var(--accent);font-weight:800">Read the rule ▾</span></summary>
-      <div style="padding:13px;display:flex;flex-direction:column;gap:10px;font-size:13.5px;line-height:1.55">
-        <div><b style="color:var(--bad)">What goes wrong.</b> ${esc(r.mistake)}</div>
-        <div><b style="color:var(--good)">The rule.</b> ${esc(r.rule)}</div>
-        <div style="padding:10px 12px;border-radius:10px;background:var(--surface2)"><b>Check yourself.</b> ${esc(r.check)}</div>
-        <div><b>Worked examples</b><div style="display:flex;flex-direction:column;gap:5px;margin-top:6px">
-          ${r.egs.map(([w,why])=>`<div style="display:flex;gap:9px;align-items:baseline">
-            <button data-act="say" data-arg="${escA(w)}" style="font-family:var(--mono);font-size:12.5px;font-weight:800;padding:3px 8px;border-radius:6px;background:var(--chip);color:var(--accent);flex-shrink:0">${esc(w)}</button>
-            <span style="font-size:12.5px;color:var(--muted)">${esc(why)}</span></div>`).join('')}
-        </div></div>
-        <button data-act="drillTrap" data-arg="${t.k}" style="align-self:flex-start;padding:9px 15px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">Drill this pattern →</button>
-      </div></details>`; };
-  const mistakesTile=coachTile('The mistakes you are actually making',
-    known.length?`Traced from your ${missed.length} missed word${missed.length>1?'s':''} — the rule for each is hardcoded, not guessed`:'',
-    known.length ? known.slice(0,5).map(ruleBlock).join('')
-      : `<div style="color:var(--muted);font-size:13.5px;line-height:1.55">Nothing to report yet — you have not missed enough words for a pattern to show. Practise a set and come back; the coach needs misses to work with, which is the one time getting a word wrong is genuinely useful.</div>`,
-    'var(--bad)');
+  /* ---- 2. the traps as a bar chart of characters, tap to switch ---- */
+  const radar = !known.length ? '' : `<div style="display:flex;flex-direction:column;gap:7px">
+      ${known.slice(0,6).map(t=>{ const r=R[t.k], on=sel&&sel.k===t.k, pct=Math.max(14,Math.round(t.n/maxN*100));
+        return `<button data-act="coachTrap" data-arg="${t.k}" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px 11px;border-radius:12px;background:${on?'var(--surface2)':'transparent'};border:1px solid ${on?r.col:'transparent'}">
+          ${coachFace(r.face,34,on?r.col:'')}
+          <span style="flex:1;min-width:0">
+            <span style="display:block;font-weight:800;font-size:13.5px;margin-bottom:4px">${esc(r.label)}</span>
+            <span style="display:block;height:7px;border-radius:4px;background:var(--surface2);overflow:hidden"><span style="display:block;height:100%;width:${pct}%;border-radius:4px;background:${r.col}"></span></span>
+          </span>
+          <span style="flex:none;font-family:var(--display);font-weight:800;font-size:15px;color:${r.col}">${t.n}</span>
+        </button>`; }).join('')}
+    </div>`;
 
-  /* 3 — the chapters that teach those patterns */
-  const rel=coachConcepts(known.map(t=>t.k));
-  const conceptTile=coachTile('Concepts to revise', rel.length?'The chapters that teach the patterns above':'',
-    rel.length ? `<div style="display:flex;flex-wrap:wrap;gap:8px">${rel.map(x=>
-        `<button data-act="openConcept" data-arg="${x.i}" style="display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">${esc(conceptShort(x.ch.title))}</button>`).join('')}</div>`
-      : `<div style="color:var(--muted);font-size:13.5px">Once a pattern shows up in your misses, the chapter that teaches it will appear here.</div>`,
-    'var(--good)');
+  /* ---- 3. the selected trap, as a path: meet it → see it → beat it ---- */
+  let detail;
+  if(!sel){
+    detail=`<div style="text-align:center;padding:26px 18px">
+      <div style="width:86px;height:96px;margin:0 auto 10px">${mascotSVG('happy')}</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:17px;margin-bottom:5px">Nothing is catching you yet</div>
+      <div style="font-size:13.5px;color:var(--muted);line-height:1.6;max-width:34em;margin:0 auto">Practise a set and come back. Every word you get wrong teaches me something about how you spell — which is the one time a mistake is worth more than a right answer.</div>
+      <button data-act="levelup" style="margin-top:15px;padding:12px 20px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">Go and practise →</button></div>`;
+  } else {
+    const r=R[sel.k], eg=coachExample(sel.k);
+    const art=eg?coachWordArt(eg):'';
+    const step=(n,t,body,col)=>`<div style="display:flex;gap:11px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)">
+        <span style="flex:none;width:24px;height:24px;border-radius:50%;background:${col};color:#fff;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:12.5px">${n}</span>
+        <span style="min-width:0;flex:1"><span style="display:block;font-weight:800;font-size:13px;color:${col};letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px">${t}</span>${body}</span></div>`;
+    detail=`<div>
+      <div style="display:flex;align-items:center;gap:13px;padding-bottom:13px">
+        ${coachFace(r.face,58,r.col)}
+        <div style="min-width:0;flex:1">
+          <div style="font-family:var(--display);font-weight:800;font-size:clamp(17px,3vw,21px);line-height:1.15">${esc(r.label)}</div>
+          <div style="font-size:12.5px;color:var(--muted);margin-top:2px">caught you <b style="color:${r.col}">${sel.n}</b> time${sel.n>1?'s':''}</div>
+        </div>
+        <button data-act="drillTrap" data-arg="${sel.k}" style="flex:none;padding:11px 17px;border-radius:12px;background:${r.col};color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge)">Beat it →</button>
+      </div>
+      ${step(1,'What goes wrong',`<div style="font-size:13.5px;line-height:1.55;color:var(--text)">${esc(r.mistake)}</div>${art?`<div style="margin-top:10px">${art}<div style="font-size:11px;color:var(--muted);margin-top:6px">“${esc(eg.w)}” — one of your own missed words, and the way it usually goes wrong.</div></div>`:''}`,'var(--bad)')}
+      ${step(2,'The trick',`<div style="font-size:13.5px;line-height:1.55">${esc(r.rule)}</div>
+        <div style="margin-top:9px;padding:10px 12px;border-radius:11px;background:color-mix(in srgb,${r.col} 12%,transparent);font-size:13px;line-height:1.5;color:var(--text)"><b>At the microphone:</b> ${esc(r.check)}</div>
+        ${eg&&eg.h?`<div style="margin-top:8px;font-size:12.5px;color:var(--muted);line-height:1.5">💡 ${esc(eg.h)}</div>`:''}`,r.col)}
+      ${step(3,'Watch it work',`<div style="display:flex;flex-direction:column;gap:6px">${r.egs.map(([w,why])=>
+          `<div style="display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+            <button data-act="say" data-arg="${escA(w)}" title="Hear it" style="font-family:var(--mono);font-size:12.5px;font-weight:800;padding:4px 9px;border-radius:7px;background:var(--chip);color:var(--accent);flex:none">🔊 ${esc(w)}</button>
+            <span style="font-size:12.5px;color:var(--muted);flex:1;min-width:180px">${esc(why)}</span></div>`).join('')}</div>`,'var(--good)')}
+    </div>`;
+  }
 
-  /* 4 — their own words, worst first */
-  const idx=wordIndex();
-  const worst=missed.slice().sort((a,b)=>(b.n||1)-(a.n||1)).slice(0,12);
-  const wordsTile=coachTile('Words that keep catching you',
-    missed.length?`${missed.length} on the revision pile · most-missed first`:'',
-    worst.length ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">${worst.map(m=>{
-        const w=idx[nkey(m.w)]||m; const tk=(()=>{try{return trickAnal(w).cls;}catch(e){return 'plain';}})();
-        const lab=(R[Object.keys(R).find(k=>(R[k].cls||[]).indexOf(tk)>=0)]||{}).label||'';
-        return `<button data-act="say" data-arg="${escA(m.w)}" title="${escA(lab?lab+' — tap to hear':'tap to hear')}" style="font-family:var(--mono);font-size:12.5px;font-weight:700;padding:6px 11px;border-radius:7px;background:var(--surface2)">${esc(m.w)}${(m.n||1)>1?`<span style="color:var(--bad);font-weight:800"> ×${m.n}</span>`:''}</button>`;
-      }).join('')}</div>
-      <button data-act="openRevisions" style="padding:10px 16px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px">Open the revision pile →</button>`
-      : `<div style="color:var(--muted);font-size:13.5px">Nothing waiting. Every word you have missed has been cleared — which is exactly where you want to be.</div>`,
-    'var(--treasure,#F0B429)');
+  /* ---- 4. the ladder: where you stand and what the next rung brings ---- */
+  const rungs=[...Array(9)].map((_,i)=>{ const n=i+1, on=n===bb.band, done=n<bb.band;
+    return `<span title="Word difficulty ${n}" style="flex:1;height:${on?18:done?11:8}px;border-radius:5px;background:${on?'var(--accent)':done?'color-mix(in srgb,var(--accent) 40%,transparent)':'var(--surface2)'};${on?'box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)':''}"></span>`; }).join('');
+  const ladder=`<div style="display:flex;align-items:flex-end;gap:4px;margin:4px 0 12px">${rungs}</div>
+    <div style="display:flex;gap:11px;flex-wrap:wrap">
+      <div style="flex:1;min-width:210px"><div style="font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:3px">Right now · word difficulty ${bb.band} of 9</div>
+        <div style="font-size:13.5px;line-height:1.55">${esc(B.words||'')}</div></div>
+      <div style="flex:1;min-width:210px;padding:11px 13px;border-radius:12px;background:color-mix(in srgb,var(--treasure,#F0B429) 13%,transparent)">
+        <div style="font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:3px">Coming next</div>
+        <div style="font-size:13.5px;line-height:1.55;color:var(--treasure-deep,#8A5B00)">${esc(B.next||'')}</div></div>
+    </div>`;
 
-  /* 5 — the routine. Rotates daily so it is not the same five every day. */
+  /* ---- 5. one habit a day, as a card you turn over ---- */
   const seed=(typeof dayNum==='function'?dayNum():0);
-  const shown=tips.length?Array.from({length:Math.min(4,tips.length)},(_,i)=>tips[(seed+i)%tips.length]):[];
-  const tipsTile=coachTile('Tips and tricks', 'The routine that separates a good speller from a lucky one',
-    `<div style="display:flex;flex-direction:column;gap:11px">${shown.map(t=>
-      `<div><div style="font-weight:800;font-size:14px;margin-bottom:2px">${esc(t.t)}</div>
-        <div style="font-size:13px;color:var(--muted);line-height:1.55">${esc(t.b)}</div></div>`).join('')}</div>`,
-    '#9C89E8');
+  const ti=((state.coachTip==null?seed:state.coachTip)%Math.max(1,tips.length)+tips.length)%Math.max(1,tips.length);
+  const tip=tips[ti]||{t:'',b:''};
+  const tipCard=`<div style="display:flex;align-items:flex-start;gap:12px">
+      <div style="width:46px;height:52px;flex:none">${mascotSVG('excited')}</div>
+      <div style="min-width:0;flex:1">
+        <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px">${esc(tip.t)}</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.6">${esc(tip.b)}</div>
+      </div></div>
+    <div style="display:flex;align-items:center;gap:9px;margin-top:12px">
+      <button data-act="coachTipNext" style="padding:9px 15px;border-radius:11px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12.5px">Another one →</button>
+      <span style="font-size:11.5px;color:var(--muted)">${ti+1} of ${tips.length}</span></div>`;
 
-  return `<div style="max-width:1100px;margin:0 auto;animation:sb-rise .35s ease both">
-    ${pageHead('Coach', esc(c.name||'Speller'), 'Everything here is worked out from your own practice and answered from a fixed rulebook — no guessing, and nothing sent anywhere.')}
-    <div class="sb-coach-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;align-items:start">
-      ${nextTile}${mistakesTile}${conceptTile}${wordsTile}${tipsTile}
+  /* ---- 6. chapters, as covers rather than a chip row ---- */
+  const rel=coachConcepts(known.map(t=>t.k));
+  const chapters = rel.length
+    ? `<div style="display:flex;flex-wrap:wrap;gap:8px">${rel.map(x=>{ const r=R[x.k]||{};
+        return `<button data-act="openConcept" data-arg="${x.i}" style="display:inline-flex;align-items:center;gap:8px;padding:8px 13px 8px 8px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12.5px">
+          ${coachFace(r.face||'bizzy',26,'')}${esc(conceptShort(x.ch.title))} →</button>`; }).join('')}</div>`
+    : `<div style="color:var(--muted);font-size:13px">Once a pattern shows up in your misses, the chapter that teaches it appears here.</div>`;
+
+  /* Numbers that move. A child checks these the way they check a score, and they fill
+     the column beside the trap detail — which was the dead space play-testing called out. */
+  const stat=(v,l,col)=>`<div style="padding:11px 12px;border-radius:13px;background:color-mix(in srgb,${col} 11%,transparent)">
+      <div style="font-family:var(--display);font-weight:800;font-size:clamp(19px,3.4vw,24px);line-height:1;color:${col}">${v}</div>
+      <div style="font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-top:4px">${l}</div></div>`;
+  const stats=`<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+      ${stat(masteredCount(),'words mastered','var(--good)')}
+      ${stat(missed.length,'to revise','var(--bad)')}
+      ${stat((c.streak||0),'day streak','var(--treasure-deep,#8A5B00)')}
+      ${stat(bb.acc?bb.acc+'%':'—','accuracy','var(--accent)')}
+    </div>`;
+
+  /* Their own words, worst first — v1 had this and the redesign dropped it. It belongs
+     in the short column, and a word chip is a thing to tap rather than a thing to read. */
+  const idx2=wordIndex();
+  const worst=missed.slice().sort((a,b)=>(b.n||1)-(a.n||1)).slice(0,14);
+  const wordChips = worst.length
+    ? `<div style="display:flex;flex-wrap:wrap;gap:6px">${worst.map(m=>{
+        const w=idx2[nkey(m.w)]||m, k=Object.keys(R).find(x=>{ const re=TRAP_DEFS.find(t=>t[0]===x); return re&&re[1].test(w.w); });
+        const col=(R[k]||{}).col||'var(--muted)';
+        return `<button data-act="say" data-arg="${escA(m.w)}" title="Hear it" style="font-family:var(--mono);font-size:12px;font-weight:700;padding:5px 9px;border-radius:7px;background:var(--surface2);border-left:3px solid ${col}">${esc(m.w)}${(m.n||1)>1?`<span style="color:var(--bad);font-weight:800"> ×${m.n}</span>`:''}</button>`;
+      }).join('')}</div>
+      <button data-act="openRevisions" style="margin-top:11px;padding:9px 15px;border-radius:11px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12.5px">Open the revision pile →</button>`
+    : `<div style="color:var(--muted);font-size:13px">Nothing waiting — every word you have missed is cleared.</div>`;
+
+  const panel=(title,body,pad)=>`<section class="sb-card" style="padding:${pad||'15px 17px'};display:flex;flex-direction:column">
+      ${title?`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:11px">${title}</div>`:''}${body}</section>`;
+
+  return `<div style="max-width:1080px;margin:0 auto;animation:sb-rise .35s ease both">
+    ${pageHead('Coach', esc(c.name||'Speller'), 'Worked out from your own practice, answered from a fixed rulebook. Nothing here is guessed, and nothing leaves this device.')}
+    ${hero}
+    <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:14px">
+      ${/* The trap detail is tall and the list beside it is short, which left a column of
+            empty card under it. The narrow column now carries three tiles that each earn
+            their height, and both columns stretch, so neither ends in white space. */''}
+      <div class="sb-coach-2col" style="display:grid;grid-template-columns:minmax(250px,.66fr) minmax(0,1.34fr);gap:14px;align-items:start">
+        <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+          ${panel('What catches you', radar||'<div style="color:var(--muted);font-size:13px">No pattern yet.</div>')}
+          ${panel('Your numbers', stats)}
+          ${panel('Words that keep catching you', wordChips)}
+        </div>
+        ${panel('', detail)}
+      </div>
+      ${/* natural heights, not stretched: a stretched card ends in empty card, which is
+            the dead space itself. */''}
+      <div class="sb-coach-2col" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;align-items:start">
+        ${panel('Your word difficulty, and the step ahead', ladder)}
+        ${panel('Bizzy’s habit of the day', tipCard)}
+        ${panel('Chapters that teach this', chapters)}
+      </div>
     </div></div>`;
 }
+
 function viewTraps(){ const S=state; const traps=missTraps(); const sel=S.trapSel;
   if(sel){ const t=traps.find(x=>x.k===sel)||{k:sel,label:(sel[0].toUpperCase()+sel.slice(1)),n:0};
     const idx=wordIndex(); const ws=trapWords(sel); const mine=((active().missed)||[]).map(m=>idx[nkey(m.w)]||{w:m.w}).filter(w=>ws.some(x=>nkey(x.w)===nkey(w.w)));

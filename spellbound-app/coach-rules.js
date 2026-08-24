@@ -16,6 +16,7 @@
 window.SB_COACH_RULES = {
 
   double: {
+    face: 'echo', col: '#C4763C',
     label: 'Double letters',
     cls: ['dbl'],
     mistake: 'You write one letter where the word wants two — or two where it only wants one.',
@@ -27,6 +28,7 @@ window.SB_COACH_RULES = {
   },
 
   silent: {
+    face: 'ghost', col: '#6C4FE0',
     label: 'Silent letters',
     cls: ['silent'],
     mistake: 'You spell what you hear, and a letter you cannot hear goes missing.',
@@ -37,6 +39,7 @@ window.SB_COACH_RULES = {
   },
 
   ieei: {
+    face: 'glitch', col: '#2E8FB8',
     label: 'ie or ei',
     cls: ['vow'],
     mistake: 'You put the i first when the e goes first, or the other way round.',
@@ -47,6 +50,7 @@ window.SB_COACH_RULES = {
   },
 
   schwa: {
+    face: 'wisp', col: '#7A7291',
     label: 'The schwa',
     cls: [],
     mistake: 'An unstressed vowel turns into a lazy "uh" and you cannot tell which letter it is.',
@@ -59,6 +63,7 @@ window.SB_COACH_RULES = {
   },
 
   endings: {
+    face: 'gatekeeper', col: '#178A4C',
     label: 'Suffix endings',
     cls: ['end'],
     mistake: 'You choose -able when the word wants -ible, or -ance when it wants -ence.',
@@ -70,6 +75,7 @@ window.SB_COACH_RULES = {
   },
 
   french: {
+    face: 'diva', col: '#C4453C',
     label: 'French origins',
     cls: ['fr'],
     mistake: 'A French word is spelled the English way, so the silent tail falls off.',
@@ -80,6 +86,7 @@ window.SB_COACH_RULES = {
   },
 
   greek: {
+    face: 'athena', col: '#3A7CA5',
     label: 'Greek origins',
     cls: ['gk'],
     mistake: 'You write f for the ph sound, or k for ch, or i for the Greek y.',
@@ -91,6 +98,7 @@ window.SB_COACH_RULES = {
   },
 
   latin: {
+    face: 'aurum', col: '#B8860B',
     label: 'Latin origins',
     cls: [],
     mistake: 'You spell the sound instead of the root, so the prefix or the stem loses a letter.',
@@ -103,6 +111,7 @@ window.SB_COACH_RULES = {
   },
 
   epon: {
+    face: 'gutenberg', col: '#8A5B00',
     label: 'Words from names',
     cls: ['epon'],
     mistake: 'You spell it phonetically and lose the person or place inside it.',
@@ -115,6 +124,7 @@ window.SB_COACH_RULES = {
   },
 
   hom: {
+    face: 'kitsune', col: '#A0522D',
     label: 'Sound-alikes',
     cls: ['hom'],
     mistake: 'You spell a real word — just not the one that was asked for.',
