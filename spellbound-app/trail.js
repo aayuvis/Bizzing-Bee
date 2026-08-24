@@ -1117,8 +1117,15 @@
           <span style="display:block;font-family:var(--display);font-weight:800;font-size:22px;line-height:1.1">${esc(act.title)}</span>
           <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:700;margin-top:2px">${esc(WORLD_LINE[world] || 'the route continues')} · ${dn} of ${n} stops${treFound(c, act.id) ? ' · ' + treFound(c, act.id) + '/3 caches' : ''}</span></span>
       </div>
+      ${/* The stop card used to be a sibling BELOW the board, and the board is as tall as
+            the viewport — so the two buttons that are the whole point of the screen sat
+            under the fold and a child had to scroll to find out what to do. The board and
+            the card now share a positioned wrapper and the card floats over the foot of
+            the map. `.act-stopcard` handles the rest: it is an overlay on a tall screen and
+            reverts to a plain stacked card where there is not room for one. */''}
+      <div class="act-stage" style="position:relative">
       ${actBoard('map-' + act.id, m, pts, walked, marks, caches, crs === 'exp')}
-      <div class="sb-card" style="margin-top:14px;padding:15px 17px 17px">
+      <div class="sb-card act-stopcard" style="margin-top:14px;padding:15px 17px 17px">
         <div style="display:flex;align-items:flex-start;gap:13px">
           <span style="width:40px;height:40px;flex-shrink:0;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:15px;${st(sel) === 'done' ? 'background:linear-gradient(160deg,#FFE49B,#E8A81C);color:#4A3306' : st(sel) === 'now' ? 'background:#FFFBEF;border:2px solid #F0B429;color:#7A5300' : 'background:var(--surface2);color:var(--muted)'}">${st(sel) === 'done' ? '✓' : (sel + 1)}</span>
           <div style="min-width:0;flex:1">
@@ -1134,7 +1141,7 @@
           ${(!locked && u) ? `<button data-act="trailTrain" data-arg="${escA(u.id)}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 16px;border-radius:var(--r-md,10px);background:var(--paper,var(--bg2));border:1px solid var(--line);color:var(--ink,var(--text));font-weight:800;font-size:13.5px">${iconSVG('pencil', 15)} Train these words</button>` : ''}
         </div>
       </div>
-    </div>`;
+    </div></div>`;
   }
   /* one line of flavour per world, so an act page says where you are */
   const WORLD_LINE = { meadow: 'first words, first wins', library: 'every rule English wrote down',
