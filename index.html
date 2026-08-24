@@ -342,9 +342,9 @@
 }
 </script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 viewBox%3D%220 0 64 64%22%3E%3Cellipse cx%3D%2215%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(-24 15 20)%22%2F%3E%3Cellipse cx%3D%2249%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(24 49 20)%22%2F%3E%3Cpath d%3D%22M27 17 Q23 7 21 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Cpath d%3D%22M37 17 Q41 7 43 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Ccircle cx%3D%2221%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Ccircle cx%3D%2243%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22 fill%3D%22%23FFC23D%22%2F%3E%3Cellipse cx%3D%2224%22 cy%3D%2230%22 rx%3D%2211%22 ry%3D%227%22 fill%3D%22%23FFD86E%22 opacity%3D%22.55%22%2F%3E%3CclipPath id%3D%22b%22%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22%2F%3E%3C%2FclipPath%3E%3Cg clip-path%3D%22url(%23b)%22%3E%3Crect x%3D%225%22 y%3D%2245%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3Crect x%3D%225%22 y%3D%2256%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3C%2Fg%3E%3Cellipse cx%3D%2217%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Cellipse cx%3D%2247%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Ccircle cx%3D%2224%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2225.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2224.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2240%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2241.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2240.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Cpath d%3D%22M26 49 Q32 55 40 49%22 fill%3D%22none%22 stroke%3D%22%233A1E5C%22 stroke-width%3D%222.8%22 stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E">
-<link rel="stylesheet" href="fonts/fonts.css?v=20260824e">
-<link rel="stylesheet" href="tokens.css?v=20260824e">
-<link rel="stylesheet" href="worlds4.css?v=20260824e">
+<link rel="stylesheet" href="fonts/fonts.css?v=20260824f">
+<link rel="stylesheet" href="tokens.css?v=20260824f">
+<link rel="stylesheet" href="worlds4.css?v=20260824f">
 
 <style>
   *{box-sizing:border-box}
@@ -980,35 +980,29 @@
     opacity:.30;animation:wh-drift 12s ease-in-out infinite}
   @keyframes wh-drift{0%,100%{transform:translateX(-6%)}50%{transform:translateX(6%)}}
   /* ---- act sub-maps: one painted map per act, its stops walked along its own road ---- */
-  /* The act's stop card floats over the foot of the map instead of sitting below it.
-     The board fills a laptop viewport, so as a sibling the two buttons that are the point
-     of the screen landed under the fold. Only overlaid where there is height to spare —
-     below 620px tall it goes back to a plain card under the board, because an overlay on a
-     short screen covers the road it is describing. */
-  @media (min-height:620px){
-    .act-stage{padding-bottom:6px}
-    .act-stage .act-pan>.atlas-board>img{max-height:min(62vh,560px);object-fit:cover;object-position:center 38%}
-    /* Specificity, not style: worlds4.css carries [data-theme="godly"] .sb-card{position:relative}
-       and friends at 0-2-0, which beats a bare .act-stopcard at 0-1-0 — the overlay silently
-       stayed in the flow. .act-stage .sb-card.act-stopcard is 0-3-0 and wins outright. */
-    .act-stage .sb-card.act-stopcard{position:absolute;left:14px;right:14px;bottom:14px;margin-top:0 !important;z-index:6;
-      background:color-mix(in srgb,var(--paper,var(--bg2)) 92%,transparent);
-      -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);
-      box-shadow:0 10px 30px rgba(26,18,54,.28),0 0 0 1px var(--line);
-      padding:11px 14px !important}
-    /* Compact as an overlay: the card sits ON the road, so every pixel of it hides a stop.
-       Laid out as one row — badge, title, buttons — it covers about half what the stacked
-       version did, and the flavour line goes (the title already says where you are). */
-    .act-stage .act-stopcard>div:first-child{align-items:center !important;gap:11px !important}
-    .act-stage .act-stopcard>div:first-child>div>div:nth-child(3){display:none}
-    .act-stage .act-stopcard>div:first-child>div>div:nth-child(2){font-size:16px !important;margin-top:1px !important}
-    .act-stage .act-stopcard>div:last-child{margin-top:9px !important}
-    .act-stage .act-stopcard>div:last-child>*{padding:9px 15px !important;font-size:13px !important}
-  }
-  @media (min-height:820px){
-    /* room for both rows again on a tall screen: put the flavour line back */
-    .act-stage .act-stopcard>div:first-child>div>div:nth-child(3){display:block}
-  }
+  /* The act's stop card is a CALLOUT pinned to the stop you tapped, inside the board so
+     it pans with the pins. It replaced a full-width bar across the foot of the map, which
+     covered the first six stops of the road and left a wide empty stripe beside two small
+     buttons. The pointer sits at --ax and flips with .below; --tx/--ty are set per stop in
+     trail.js from that pin's own percentage coordinates. */
+  .atlas-pop{position:absolute;z-index:9;width:min(336px,76vw);
+    transform:translate(var(--tx,-50%),var(--ty,calc(-100% - 24px)));
+    animation:atlas-pop-in .18s cubic-bezier(.2,.9,.3,1.2) both;pointer-events:auto}
+  @keyframes atlas-pop-in{from{opacity:0;transform:translate(var(--tx,-50%),calc(var(--ty,-100%) + 8px)) scale(.96)}}
+  .atlas-pop-in{position:relative;background:var(--paper,var(--bg2));border:1px solid var(--line);
+    border-radius:16px;padding:12px 14px 13px;line-height:normal;text-align:left;
+    box-shadow:0 14px 34px rgba(10,6,26,.34),0 2px 6px rgba(10,6,26,.18)}
+  /* the pointer: a rotated square so the border joins the card's own edge cleanly */
+  .atlas-pop-in::after{content:"";position:absolute;left:var(--ax,50%);width:13px;height:13px;
+    margin-left:-6.5px;background:var(--paper,var(--bg2));transform:rotate(45deg)}
+  .atlas-pop:not(.below) .atlas-pop-in::after{bottom:-7px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .atlas-pop.below .atlas-pop-in::after{top:-7px;border-left:1px solid var(--line);border-top:1px solid var(--line)}
+  .atlas-pop .atlas-pop-in>div:first-child{align-items:center}
+  /* the two actions fit side by side in a callout this wide once they stop wearing
+     full-page button padding */
+  .atlas-pop .atlas-pop-in>div:last-child{margin-top:10px !important;gap:7px !important}
+  .atlas-pop .atlas-pop-in>div:last-child>*{padding:9px 12px !important;font-size:12.5px !important}
+  @media (prefers-reduced-motion:reduce){ .atlas-pop{animation:none} }
   .act-pan{overflow-x:auto;overflow-y:hidden;border-radius:22px;-webkit-overflow-scrolling:touch;
     box-shadow:0 0 0 1px var(--line),0 14px 32px rgba(26,18,54,.2)}
   .act-pan::-webkit-scrollbar{height:6px}
@@ -1417,7 +1411,7 @@
   @keyframes lx-gleam{0%,100%{opacity:0;transform:translateY(-6px)}50%{opacity:1;transform:translateY(6px)}}
   @keyframes lx-string{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.7)}}
 </style>
-  <link rel="stylesheet" href="saga2.css?v=20260824e">
+  <link rel="stylesheet" href="saga2.css?v=20260824f">
 </head>
 <body>
 <div id="root">
@@ -1476,9 +1470,9 @@
 <p style="margin:28px 0 0;font-size:12.5px;color:#5A5470;line-height:1.55">Bizzing&trade; and Bizzing Bee&trade; are trademarks of the Bizzing Bee developer. Bizzing Bee is an independent study tool and is not affiliated with, sponsored by or endorsed by the Scripps National Spelling Bee, the North South Foundation or Merriam-Webster.</p>
 </main>
 </div>
-<script defer src="icons.js?v=20260824e"></script>
-<script defer src="icons-art.js?v=20260824e"></script>
-<script defer src="cover-art.js?v=20260824e"></script>
+<script defer src="icons.js?v=20260824f"></script>
+<script defer src="icons-art.js?v=20260824f"></script>
+<script defer src="cover-art.js?v=20260824f"></script>
 <script>/* Deferred scripts run after parsing, so this call has to wait for them —
    inline script runs at parse time and would find SB_ICON_MOTION undefined. The old
    try/catch would have swallowed that silently and simply left icon motion off. */
@@ -1531,46 +1525,46 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
 </script>
 <!-- Backend config + the real-accounts adapter. Both are inert until sb-config.js
      carries a project URL and anon key, so shipping them changes nothing yet. -->
-<script defer src="sb-config.js?v=20260824e"></script>
-<script defer src="voice-cdn.js?v=20260824e"></script>
-<script>window.SB_ASSET_V="?v=20260824e";</script>
+<script defer src="sb-config.js?v=20260824f"></script>
+<script defer src="voice-cdn.js?v=20260824f"></script>
+<script>window.SB_ASSET_V="?v=20260824f";</script>
 <!-- boot-lazy: everything the first screen does not need arrives after paint.
      Registry + idle order live in boot-lazy.js; call SB_LAZY.need(...) before
      opening a feature whose data is deferred. -->
-<script defer src="boot-lazy.js?v=20260824e"></script>
-<script defer src="words-data.js?v=20260824e"></script>
-<script defer src="words-extra.js?v=20260824e"></script>
-<script defer src="words-patch.js?v=20260824e"></script>
-<script defer src="themes-data.js?v=20260824e"></script>
-<script defer src="quotes.js?v=20260824e"></script>
-<script defer src="trivia-icons.js?v=20260824e"></script>
-<script defer src="trivia-data.js?v=20260824e"></script>
-<script defer src="tips-data.js?v=20260824e"></script>
-<script defer src="voice-manifest.js?v=20260824e"></script>
-<script defer src="voice-adv-manifest.js?v=20260824e"></script>
-<script defer src="voice-review.js?v=20260824e"></script>
-<script defer src="app.js?v=20260824e"></script>
-<script defer src="avatars-art.js?v=20260824e"></script>
-<script defer src="avatar-png.js?v=20260824e"></script>
-<script defer src="game-art.js?v=20260824e"></script>
-<script defer src="avatars.js?v=20260824e"></script>
-<script defer src="avatar-greetings.js?v=20260824e"></script>
-<script defer src="avatar-cards.js?v=20260824e"></script>
-<script defer src="app2.js?v=20260824e"></script>
-<script defer src="pricing.js?v=20260824e"></script>
-<script defer src="auth.js?v=20260824e"></script>
-<script defer src="supabase-auth.js?v=20260824e"></script>
-<script defer src="app3.js?v=20260824e"></script>
-<script defer src="worlds4.js?v=20260824e"></script>
-<script defer src="mockbee.js?v=20260824e"></script>
-  <script defer src="games-daily.js?v=20260824e"></script>
-  <script defer src="saga-art/saga-art.js?v=20260824e"></script>
-  <script defer src="saga-art/saga-map.js?v=20260824e"></script>
-  <script defer src="saga-art/worlds-art.js?v=20260824e"></script>
-  <script defer src="saga-art-dom.js?v=20260824e"></script>
-  <script defer src="saga2.js?v=20260824e"></script>
-<script defer src="trivia.js?v=20260824e"></script>
-<script defer src="advanced.js?v=20260824e"></script>
-<script defer src="trail.js?v=20260824e"></script>
+<script defer src="boot-lazy.js?v=20260824f"></script>
+<script defer src="words-data.js?v=20260824f"></script>
+<script defer src="words-extra.js?v=20260824f"></script>
+<script defer src="words-patch.js?v=20260824f"></script>
+<script defer src="themes-data.js?v=20260824f"></script>
+<script defer src="quotes.js?v=20260824f"></script>
+<script defer src="trivia-icons.js?v=20260824f"></script>
+<script defer src="trivia-data.js?v=20260824f"></script>
+<script defer src="tips-data.js?v=20260824f"></script>
+<script defer src="voice-manifest.js?v=20260824f"></script>
+<script defer src="voice-adv-manifest.js?v=20260824f"></script>
+<script defer src="voice-review.js?v=20260824f"></script>
+<script defer src="app.js?v=20260824f"></script>
+<script defer src="avatars-art.js?v=20260824f"></script>
+<script defer src="avatar-png.js?v=20260824f"></script>
+<script defer src="game-art.js?v=20260824f"></script>
+<script defer src="avatars.js?v=20260824f"></script>
+<script defer src="avatar-greetings.js?v=20260824f"></script>
+<script defer src="avatar-cards.js?v=20260824f"></script>
+<script defer src="app2.js?v=20260824f"></script>
+<script defer src="pricing.js?v=20260824f"></script>
+<script defer src="auth.js?v=20260824f"></script>
+<script defer src="supabase-auth.js?v=20260824f"></script>
+<script defer src="app3.js?v=20260824f"></script>
+<script defer src="worlds4.js?v=20260824f"></script>
+<script defer src="mockbee.js?v=20260824f"></script>
+  <script defer src="games-daily.js?v=20260824f"></script>
+  <script defer src="saga-art/saga-art.js?v=20260824f"></script>
+  <script defer src="saga-art/saga-map.js?v=20260824f"></script>
+  <script defer src="saga-art/worlds-art.js?v=20260824f"></script>
+  <script defer src="saga-art-dom.js?v=20260824f"></script>
+  <script defer src="saga2.js?v=20260824f"></script>
+<script defer src="trivia.js?v=20260824f"></script>
+<script defer src="advanced.js?v=20260824f"></script>
+<script defer src="trail.js?v=20260824f"></script>
 </body>
 </html>

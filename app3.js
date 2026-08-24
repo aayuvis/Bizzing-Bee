@@ -5661,7 +5661,7 @@ function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageI
 /* My Hive — one home for everything you've earned & everything you spend: the Collection,
    the Evolution ladder and the Store share this section bar (one lit top-nav tab). */
 function hiveBar(cur){ const seg=(k,act,l,ic)=>`<button data-act="${act}" style="flex:1;min-width:110px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 10px;border-radius:12px;font-weight:800;font-size:13.5px;${cur===k?'background:var(--accent);color:#fff;box-shadow:var(--edge)':'background:var(--bg2);color:var(--muted);border:1px solid var(--line)'}">${iconSVG(ic,16)} ${l}</button>`;
-  return `<div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px">${seg('coll','openCollection','Collection','crown')}${seg('evo','openEvo','Rank','spark')}${seg('worlds','openWorlds','Worlds','palette')}${seg('store','openShop','Store','cart')}</div>`; }
+  return `<div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px">${seg('coll','openCollection','Collection','crown')}${seg('evo','openEvo','Your bee','spark')}${seg('worlds','openWorlds','Worlds','palette')}${seg('store','openShop','Store','cart')}</div>`; }
 /* Worlds live in the hive, beside the other things you collect — a world is a look you
    own, not a setting you configure. The picker keeps its painted hero cards. */
 function viewWorlds(){ const S=state;
@@ -5671,7 +5671,7 @@ function viewWorlds(){ const S=state;
   return `<div style="max-width:900px;margin:0 auto">
     ${hiveBar('worlds')}
     <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 4px">Worlds</h2><span style="font-size:13px;color:var(--muted);font-weight:650">the look you wear</span></div>
-    <p style="margin:0 0 16px;font-size:14px;color:var(--muted);line-height:1.5">Each world repaints the app — its colours, its type and its motif — and brings its own cast. Your rank keeps its ten forms and their names in every one of them.</p>
+    <p style="margin:0 0 16px;font-size:14px;color:var(--muted);line-height:1.5">Each world repaints the app — its colours, its type and its motif — and brings its own cast. Your bee keeps its ten forms and their names in every one of them.</p>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px">${cards}</div>
     ${locked?`<div class="sb-cn" style="padding-top:12px">🔒 ${locked} more ${locked===1?'world is':'worlds are'} waiting — tap one to see what unlocks it.</div>`:''}
   </div>`; }
@@ -5759,13 +5759,13 @@ function viewEvolution(){ const S=state; const c=active(); ensureLists(c); const
   const xpToForm=Math.max(0, stageXp(Math.min(9,fIdx+1))-totalXp);
   return `<div style="max-width:900px;margin:0 auto">
     ${hiveBar('evo')}
-    <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 4px">Your rank</h2><span style="font-size:13px;color:var(--muted);font-weight:650">how your bee grows</span></div>
-    <p style="margin:0 0 16px;font-size:14px;color:var(--muted);line-height:1.5">Every word you practise feeds your bee. Your rank measures <b style="color:var(--text)">effort</b> — it always climbs and never falls, and its ten forms keep their names in every world. (What you're <i>ready</i> to spell is your word difficulty — that lives on Progress.)</p>
+    <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 4px">Your bee</h2><span style="font-size:13px;color:var(--muted);font-weight:650">ten forms, earned by practising</span></div>
+    <p style="margin:0 0 16px;font-size:14px;color:var(--muted);line-height:1.5">Every word you practise feeds your bee, and it grows through ten forms that keep their names in every world. This is a <b style="color:var(--text)">collection</b>, not a level: it measures effort, always climbs and never falls. <b style="color:var(--text)">Your spelling level is the Bee Band</b> — the pill in the header — and that is the one that decides how hard your words are.</p>
     <div class="sb-card" style="margin-bottom:14px">
       <div style="display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin-bottom:10px">
         <span style="width:56px;height:60px;flex-shrink:0;display:grid;place-items:center;border-radius:14px;background:var(--surface2)">${rankArt(fIdx)}</span>
         <span style="min-width:0;flex:1">
-          <span class="sb-cs">Your rank</span>
+          <span class="sb-cs">Your bee</span>
           <span style="display:block;font-family:var(--display);font-weight:800;font-size:20px;line-height:1.12">Level ${_r.level} · ${esc(rankName(fIdx))}</span>
           <span style="display:block;font-size:13px;color:var(--muted);font-weight:650;margin-top:3px">
             <b style="color:var(--text)">${fmtN(totalXp)} words spelled right</b>${fIdx>=9?' — top form reached 🎉':(' · '+fmtN(xpToForm)+' more to '+esc(rankName(fIdx+1)))}</span>
@@ -5773,7 +5773,7 @@ function viewEvolution(){ const S=state; const c=active(); ensureLists(c); const
         </span>
       </div>
       <div style="overflow-x:auto;padding:4px 0 2px"><div style="min-width:760px">${evoLadderHTML('spellbound',fIdx,rungMarks)}</div></div>
-      <div class="sb-cn" style="margin-top:6px">Each rung shows how many words spelled right opens it — anywhere in the app, and the count never goes down.</div>
+      <div class="sb-cn" style="margin-top:6px">Each form shows how many words spelled right unlocks it — anywhere in the app, and the count never goes down. This is your bee’s <b>look</b>, not your level: your <b>spelling level</b> is the Bee Band, and it lives in the header.</div>
     </div>
     <div class="sb-card" style="margin-bottom:14px">
       <div class="sb-ct" style="font-size:15px;margin-bottom:6px">How your bee evolves</div>
@@ -7055,7 +7055,7 @@ function viewProgress(){
       <div style="display:flex;align-items:center;gap:13px;flex-wrap:wrap">
         <span style="width:60px;height:64px;flex-shrink:0;display:grid;place-items:center;border-radius:14px;background:var(--surface2)">${rankArt(r.form)}</span>
         <span style="min-width:0;flex:1">
-          <span class="sb-cs">Your rank</span>
+          <span class="sb-cs">Your bee</span>
           <span style="display:block;font-family:var(--display);font-weight:800;font-size:20px;line-height:1.12">Level ${r.level} · ${esc(r.name)}</span>
           <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:650;margin-top:2px">Effort, not readiness — it only ever climbs, and it keeps these names in every world.</span>
         </span>
@@ -7094,7 +7094,7 @@ function viewProgress(){
   }
   const legend=[['var(--good)','Mastered'],['var(--bad)','Needs work'],['var(--surface2)','Not yet mastered']].map(([cc,l])=>`<span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:600"><span style="width:12px;height:12px;border-radius:6px;background:${cc}"></span>${l}</span>`).join('');
   return `<div style="animation:sb-rise .35s ease both">
-    ${pageHead('Progress','where you stand','Your rank, then the two journeys, then this week — and where every word stands.')}
+    ${pageHead('Progress','where you stand','Your spelling level, then the two journeys, then this week — and where every word stands.')}
     ${rankBlock}
     ${(()=>{ /* The World Atlas, in its own words */
       const nx=(typeof window.SB_TRAIL_NEXT==='function')?SB_TRAIL_NEXT():null;
@@ -7987,7 +7987,14 @@ function coachTrain(){
     </div>`; }).join('');
   const pausedShelf=pausedKeys.length?`<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)"><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700">Paused</span>${pausedKeys.map(k=>`<button data-act="resumeList" data-arg="${escA(k)}" title="Tap to resume training this list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;border:1px dashed var(--line);background:transparent;color:var(--muted);font-weight:700;font-size:12px">${SB_ICON('play',{size:14})} ${esc(dockLabel(k))} <span style="font-size:12px">L${listStageIdx(c,k)+1}</span></button>`).join('')}</div>`:'';
   const addBtn=`<button data-act="coachSetupOpen" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px dashed var(--line);background:transparent;color:var(--accent)">+ Add list</button>`;
-  const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button><span style="font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">Practice</span><button data-act="openQuestChooser" title="Change your practice path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} My path</button>${(()=>{ const n=missTraps().length; return `<button data-act="openTraps" title="Your weak patterns" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${n?'var(--fix-tint,#FBE9E7)':'var(--surface2)'};border:1px solid ${n?'var(--fix,#C4453C)':'var(--line)'};color:${n?'var(--fix,#C4453C)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('target',13)} Traps${n?' · '+n:''}</button>`; })()}${(()=>{ const r=((active().missed)||[]).length; return `<button data-act="openRevisions" title="Words you marked to revise" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${r?'color-mix(in srgb,var(--treasure,#F0B429) 18%,transparent)':'var(--surface2)'};border:1px solid ${r?'var(--treasure,#F0B429)':'var(--line)'};color:${r?'var(--treasure-deep,#8A5B00)':'var(--muted)'};font-weight:800;font-size:12px">⚑ Revise${r?' · '+r:''}</button>`; })()}${(()=>{ const ms=milestone(); return ms?`<span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('target',14)} ${ms.days} days to ${esc(ms.label)}</span>`:''; })()}</div>`;
+  const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button><span style="font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">Practice</span><button data-act="openQuestChooser" title="Change your practice path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} My path</button>${(()=>{ const n=missTraps().length; return `<button data-act="openTraps" title="Your weak patterns" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${n?'var(--fix-tint,#FBE9E7)':'var(--surface2)'};border:1px solid ${n?'var(--fix,#C4453C)':'var(--line)'};color:${n?'var(--fix,#C4453C)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('target',13)} Traps${n?' · '+n:''}</button>`; })()}${(()=>{ const r=((active().missed)||[]).length; return `<button data-act="openRevisions" title="Words you marked to revise" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${r?'color-mix(in srgb,var(--treasure,#F0B429) 18%,transparent)':'var(--surface2)'};border:1px solid ${r?'var(--treasure,#F0B429)':'var(--line)'};color:${r?'var(--treasure-deep,#8A5B00)':'var(--muted)'};font-weight:800;font-size:12px">⚑ Revise${r?' · '+r:''}</button>`; })()}${(()=>{ /* Ultra rides here as a pill. It used to be a full-width
+      purple banner between the header and the tabs, which ate a whole row of Practice and
+      pushed the thing the child came for below the fold — for a pack most of them do not
+      own. A pill says the same thing and costs 40px. */
+      const _c=active(); if(!advModeOn(_c)) return '';
+      const _on=(activeListKey()==='ultra');
+      const _ic=(window.SB_ICON_ART&&SB_ICON_ART.ultraJourney)?SB_ICON_ART('ultraJourney',{size:13}):'';
+      return `<button data-act="${_on?'openAdvJourney':'pickUltra'}" title="Ultra Champions Journey — the Advanced Pack's hardest words, 200 a day" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${_on?'linear-gradient(135deg,#3A2A72,#5B3FA6)':'var(--surface2)'};border:1px solid ${_on?'transparent':'color-mix(in srgb,#5B3FA6 42%,var(--line))'};color:${_on?'#fff':'#5B3FA6'};font-weight:800;font-size:12px">${_ic} Ultra${_on?' · on':''}</button>`; })()}${(()=>{ const ms=milestone(); return ms?`<span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('target',14)} ${ms.days} days to ${esc(ms.label)}</span>`:''; })()}</div>`;
   const allWordsBtn=`<button data-act="luToggleWords" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid ${S.luWordsOpen?'var(--accent)':'var(--line)'};background:var(--surface2);color:var(--text)">${iconSVG('grid',14)} All words <span style="color:var(--muted);font-weight:700">${fullList.length}</span> ${S.luWordsOpen?'▴':'▾'}</button>`;
   const newSetBtn = fullList.length>WORK_MAX ? `<button data-act="newBatch" title="Swap in a fresh set of words from this list" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid var(--line);background:var(--surface2);color:var(--text)">${SB_ICON('retry',{size:16})} New set</button>` : '';
   const chipsRow=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px">
@@ -8060,25 +8067,10 @@ function coachTrain(){
   const actions=`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:18px 2px 10px">Quick practice</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:11px">${act('startBuzz','flame','Daily Buzz','#E8845C')}${act('startWritten','pencil','Written','#7C5CFF')}${act('startOral','speaker','Oral round','#13A892')}${act('coachSetupOpen','sliders','Setup','#C8901B')}</div>`;
   const journeyPromo = (key!=='journey' && (getList(c,'journey').stage||0)===0) ? `<button data-act="startJourney" style="width:100%;text-align:left;border-radius:14px;margin-top:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 4px 14px rgba(43,27,94,.16)"><div style="padding:13px 16px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">★ Recommended path</div><div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">${journeyName()} — 20 Stages to Champ</div></div><span style="padding:8px 14px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Start →</span></div></button>` : '';
-  const advJourney = !advModeOn(c) ? '' : (key==='ultra'
-    ? `<button class="sb-lift" data-act="openAdvJourney" style="width:100%;text-align:left;border-radius:16px;margin-bottom:16px;overflow:hidden;background:linear-gradient(135deg,#241B4E,#3A2A72 58%,#5B3FA6);box-shadow:0 6px 18px rgba(36,27,78,.28)">
-      <div style="padding:14px 17px;display:flex;align-items:center;gap:13px;color:#fff;flex-wrap:wrap">
-        <span style="width:42px;height:42px;flex-shrink:0;border-radius:12px;background:rgba(255,255,255,.14);display:grid;place-items:center;color:#fff">${(window.SB_ICON_ART&&SB_ICON_ART.ultraJourney)?SB_ICON_ART('ultraJourney',{size:23}):''}</span>
-        <span style="min-width:0;flex:1">
-          <span style="display:block;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.82)">Advanced Pack</span>
-          <span style="display:block;font-family:var(--display);font-weight:800;font-size:16px;line-height:1.15">Sprint today's ${fmtN(stage.words.length)} words</span>
-          <span style="display:block;font-size:12px;color:rgba(255,255,255,.88);font-weight:600;margin-top:2px;line-height:1.4">Scan in bulk, drill only your gaps — faster than card-by-card for a whole day's list.</span></span>
-        <span style="flex-shrink:0;padding:9px 15px;border-radius:10px;background:#fff;color:#3A2A72;font-weight:800;font-size:12.5px;white-space:nowrap">Sprint &rarr;</span>
-      </div></button>`
-    : `<button class="sb-lift" data-act="pickUltra" style="width:100%;text-align:left;border-radius:16px;margin-bottom:16px;overflow:hidden;background:linear-gradient(135deg,#241B4E,#3A2A72 58%,#5B3FA6);box-shadow:0 6px 18px rgba(36,27,78,.28)">
-      <div style="padding:14px 17px;display:flex;align-items:center;gap:13px;color:#fff;flex-wrap:wrap">
-        <span style="width:42px;height:42px;flex-shrink:0;border-radius:12px;background:rgba(255,255,255,.14);display:grid;place-items:center;color:#fff">${(window.SB_ICON_ART&&SB_ICON_ART.ultraJourney)?SB_ICON_ART('ultraJourney',{size:23}):''}</span>
-        <span style="min-width:0;flex:1">
-          <span style="display:block;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.82)">Advanced Pack</span>
-          <span style="display:block;font-family:var(--display);font-weight:800;font-size:16px;line-height:1.15">Ultra Champions Journey</span>
-          <span style="display:block;font-size:12px;color:rgba(255,255,255,.88);font-weight:600;margin-top:2px;line-height:1.4">${fmtN(((window.ADV&&ADV.pool)?ADV.pool().length:0))} hardest words, ${((window.ADV&&ADV.daySize)?ADV.daySize():200)} a day — same tabs and cards as here.</span></span>
-        <span style="flex-shrink:0;padding:9px 15px;border-radius:10px;background:#fff;color:#3A2A72;font-weight:800;font-size:12.5px;white-space:nowrap">Train this &rarr;</span>
-      </div></button>`);
+  /* The Ultra banner moved into the Practice header as a pill (see topBar above):
+     a full-width card for a pack most spellers do not own was pushing Practice itself
+     below the fold. */
+  const advJourney = '';
   return `<div style="max-width:760px;margin:0 auto">${printDlg}${topBar}${advJourney}
     <div style="display:flex;gap:5px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:16px">${tab('revise','Learn')}${tab('practice','Practice Spelling')}${tab('vocab','Practice Vocabulary')}</div>
     ${body}

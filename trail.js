@@ -1104,6 +1104,33 @@
     const goAct = node.kind === 'unit' ? 'trailUnit' : 'trailChk';
     const goArg = node.kind === 'unit' ? u.id : (crs + '|' + node.id);
 
+    /* Where the callout sits, worked out from the selected pin's own coordinates: below
+       the pin in the top half so it cannot run off the top, and edge-anchored near the
+       margins because the board clips (overflow:hidden). */
+    const _P = pts[sel] || { x: 50, y: 50 };
+    const _side = _P.x < 27 ? 'l' : _P.x > 73 ? 'r' : 'c';
+    const _below = _P.y < 44;
+    const _tx = _side === 'l' ? '-16px' : _side === 'r' ? 'calc(-100% + 16px)' : '-50%';
+    const _ty = _below ? '24px' : 'calc(-100% - 24px)';
+    const _ax = _side === 'l' ? '24px' : _side === 'r' ? 'calc(100% - 24px)' : '50%';
+    const stopPop = `<div class="atlas-pop${_below ? ' below' : ''}" style="left:${_P.x.toFixed(2)}%;top:${_P.y.toFixed(2)}%;--tx:${_tx};--ty:${_ty};--ax:${_ax}">
+      <div class="atlas-pop-in">
+        <div style="display:flex;align-items:flex-start;gap:13px">
+          <span style="width:40px;height:40px;flex-shrink:0;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:15px;${st(sel) === 'done' ? 'background:linear-gradient(160deg,#FFE49B,#E8A81C);color:#4A3306' : st(sel) === 'now' ? 'background:#FFFBEF;border:2px solid #F0B429;color:#7A5300' : 'background:var(--surface2);color:var(--muted)'}">${st(sel) === 'done' ? '✓' : (sel + 1)}</span>
+          <div style="min-width:0;flex:1">
+            <div style="font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">Stop ${sel + 1} of ${n}${node.kind === 'chk' ? ' · checkpoint' : ''}${score ? ' · ' + score + '%' : ''}</div>
+            <div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1.15;margin-top:3px">${esc(title)}</div>
+            ${sub ? `<div style="font-size:13px;color:var(--muted);line-height:1.45;margin-top:4px">${esc(sub)}</div>` : ''}
+          </div>
+        </div>
+        <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:13px">
+          ${locked
+            ? `<span style="display:inline-flex;align-items:center;gap:7px;padding:11px 16px;border-radius:var(--r-md,10px);background:var(--surface2);color:var(--muted);font-weight:800;font-size:14px">${iconSVG('lock', 15)} Clear the earlier stops first</span>`
+            : `<button data-act="${goAct}" data-arg="${escA(goArg)}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:var(--r-md,10px);background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:14px;box-shadow:var(--edge)">${iconSVG(node.kind === 'chk' ? 'target' : 'steps', 15)} ${score ? 'Walk it again' : (node.kind === 'chk' ? 'Take the checkpoint' : 'Learn this stop')}</button>`}
+          ${(!locked && u) ? `<button data-act="trailTrain" data-arg="${escA(u.id)}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 16px;border-radius:var(--r-md,10px);background:var(--paper,var(--bg2));border:1px solid var(--line);color:var(--ink,var(--text));font-weight:800;font-size:13.5px">${iconSVG('pencil', 15)} Train these words</button>` : ''}
+        </div>
+      </div></div>`;
+
     return `<div style="animation:sb-rise .35s ease both;max-width:980px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
         <button data-act="trailBack" style="display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:var(--muted)">← The map</button>
@@ -1123,25 +1150,13 @@
             the card now share a positioned wrapper and the card floats over the foot of
             the map. `.act-stopcard` handles the rest: it is an overlay on a tall screen and
             reverts to a plain stacked card where there is not room for one. */''}
-      <div class="act-stage" style="position:relative">
-      ${actBoard('map-' + act.id, m, pts, walked, marks, caches, crs === 'exp')}
-      <div class="sb-card act-stopcard" style="margin-top:14px;padding:15px 17px 17px">
-        <div style="display:flex;align-items:flex-start;gap:13px">
-          <span style="width:40px;height:40px;flex-shrink:0;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:15px;${st(sel) === 'done' ? 'background:linear-gradient(160deg,#FFE49B,#E8A81C);color:#4A3306' : st(sel) === 'now' ? 'background:#FFFBEF;border:2px solid #F0B429;color:#7A5300' : 'background:var(--surface2);color:var(--muted)'}">${st(sel) === 'done' ? '✓' : (sel + 1)}</span>
-          <div style="min-width:0;flex:1">
-            <div style="font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">Stop ${sel + 1} of ${n}${node.kind === 'chk' ? ' · checkpoint' : ''}${score ? ' · ' + score + '%' : ''}</div>
-            <div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1.15;margin-top:3px">${esc(title)}</div>
-            ${sub ? `<div style="font-size:13px;color:var(--muted);line-height:1.45;margin-top:4px">${esc(sub)}</div>` : ''}
-          </div>
-        </div>
-        <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:13px">
-          ${locked
-            ? `<span style="display:inline-flex;align-items:center;gap:7px;padding:11px 16px;border-radius:var(--r-md,10px);background:var(--surface2);color:var(--muted);font-weight:800;font-size:14px">${iconSVG('lock', 15)} Clear the earlier stops first</span>`
-            : `<button data-act="${goAct}" data-arg="${escA(goArg)}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:var(--r-md,10px);background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:14px;box-shadow:var(--edge)">${iconSVG(node.kind === 'chk' ? 'target' : 'steps', 15)} ${score ? 'Walk it again' : (node.kind === 'chk' ? 'Take the checkpoint' : 'Learn this stop')}</button>`}
-          ${(!locked && u) ? `<button data-act="trailTrain" data-arg="${escA(u.id)}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 16px;border-radius:var(--r-md,10px);background:var(--paper,var(--bg2));border:1px solid var(--line);color:var(--ink,var(--text));font-weight:800;font-size:13.5px">${iconSVG('pencil', 15)} Train these words</button>` : ''}
-        </div>
-      </div>
-    </div></div>`;
+      ${/* The stop card is a CALLOUT on the pin you tapped, not a bar across the map. As a
+            full-width bar pinned to the foot of the board it covered the first six stops of
+            the road and left a wide empty stripe beside two small buttons. It goes in with
+            `marks` so it lives inside the board and pans with the pins, anchored off the
+            selected pin's own percentage coordinates. */''}
+      ${actBoard('map-' + act.id, m, pts, walked, marks + stopPop, caches, crs === 'exp')}
+    </div>`;
   }
   /* one line of flavour per world, so an act page says where you are */
   const WORLD_LINE = { meadow: 'first words, first wins', library: 'every rule English wrote down',
