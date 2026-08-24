@@ -180,7 +180,7 @@
       if (q.v) return `<div style="text-align:center;font-size:clamp(58px,14vw,84px);line-height:1.15;margin:2px 0 8px;${q.sil ? 'filter:brightness(0) opacity(.82);' : ''}">${q.v}</div>`; return ''; },
 
     _buddy(g) { try { const c = active();
-      const av = (c.avatar && window.SB_AVATARS && SB_AVATARS.byId[c.avatar]) ? SB_AVATAR(c.avatar, 78) : mascotAcc(g.mood === 'party' ? 'love' : g.mood === 'oops' ? 'oops' : 'happy');
+      const av = (c.avatar && window.SB_AVATARS && SB_AVATARS.byId[c.avatar]) ? SB_AVATAR(c.avatar, 78) : mascotSVG(g.mood === 'party' ? 'love' : g.mood === 'oops' ? 'oops' : 'happy');
       const anim = g.picked == null ? 'sb-bee-bob 3.2s ease-in-out infinite' : (g.mood === 'party' ? 'sb-bee-talk .9s ease-in-out 2' : 'sb-m-shake 1.2s ease 1');
       const bubble = g.picked == null ? '' : (g.mood === 'party' ? sample(['Yes!! 🎉','Brilliant! ⭐','Bzzz-tastic!','You got it! 💛','Genius! 🧠'], 1)[0] : sample(['Ooh, so close!','Now we know! 💡','Tricky one!','On to the next!'], 1)[0]);
       return `<div style="position:relative;width:86px;flex-shrink:0;align-self:flex-end;text-align:center">

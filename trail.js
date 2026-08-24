@@ -451,10 +451,16 @@
     const total = s.length, done = s.filter(n => passedNode(c, n)).length;
     return { acts, total, done, lap: lapOf(c) };
   }
+  /* The route is 102 stops long, and saying so to a child who has cleared none of them
+     reads as a mountain rather than a map. The bar carries the same information without
+     a total to be daunted by; the words beside it say where you are, not how far it is. */
+  const tierWord = (done, total) => { const p = done / Math.max(1, total);
+    return !done ? 'just setting off' : p >= 1 ? 'tier complete ✓' : p >= .75 ? 'nearly there'
+      : p >= .4 ? 'well on the way' : 'on your way'; };
   const tierBar = (lap, done, total) => `<div style="display:flex;align-items:center;gap:12px;background:var(--bg2);border-radius:16px;padding:12px 16px;margin-bottom:16px;box-shadow:0 0 0 1px var(--line)">
         <span style="font-family:var(--display);font-weight:800;font-size:13px;background:var(--chip);color:var(--accent);border-radius:999px;padding:5px 13px">Tier ${lap} of 3</span>
         <div style="flex:1;height:9px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;background:linear-gradient(90deg,var(--accent),var(--treasure));width:${Math.round(done / Math.max(1, total) * 100)}%"></div></div>
-        <span style="font-size:12px;font-weight:800;color:var(--muted)">${done}/${total} stops</span></div>`;
+        <span style="font-size:12px;font-weight:800;color:var(--muted);white-space:nowrap">${tierWord(done, total)}</span></div>`;
   /* The revision pile and the weak-pattern trainer used to sit in a Library section
      of their own, which meant leaving the journey to reach the two things you want
      precisely while you are on it. They ride the Atlas header as pills, and the
@@ -487,7 +493,7 @@
       ? advHead + tierBar(x.lap, x.done, x.total) + x.acts
       : advHead + `<button data-act="openAdvanced" style="width:100%;text-align:left;background:var(--bg2);border-radius:18px;padding:22px 24px;box-shadow:0 0 0 1px var(--line);display:flex;align-items:center;gap:16px;flex-wrap:wrap">
           <span style="display:inline-grid;place-items:center;width:52px;height:52px;border-radius:15px;background:linear-gradient(135deg,#37415B,#1F2A44);color:#fff;flex-shrink:0">${iconSVG('target', 26)}</span>
-          <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:16px">43 expert stops across five expeditions</span>
+          <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:16px">Five expert expeditions</span>
           <span style="display:block;font-size:13px;color:var(--muted);margin-top:3px">The hardest chapters in the library — 90% gates, no mercy, national-level words. Unlocks with the Advanced Pack.</span></span>
           <span style="flex-shrink:0;padding:10px 17px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;white-space:nowrap">Unlock · $${price}/yr →</span></button>`;
     return `<div style="animation:sb-rise .35s ease both;max-width:660px;margin:0 auto">
