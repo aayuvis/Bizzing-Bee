@@ -55,10 +55,11 @@ const path=require('path').resolve(__dirname,'..');
       if(r.ow) errs.push(vp.n+' H-OVERFLOW on '+name);
       if(/\bStore\b/.test(r.txt)) errs.push(vp.n+' "Store" copy on '+name);
     }
-    // hive bar has exactly 3 segments and no Store
+    // My Hive is one page: no section bar at all (Worlds is a tab, the bee moved to the
+    // Bee Band page), and certainly no Store segment.
     await pg.evaluate(()=>app.openCollection()); await pg.waitForTimeout(300);
-    const segs=await pg.evaluate(()=>{ const el=[...document.querySelectorAll('[data-act="openCollection"],[data-act="openEvo"],[data-act="openWorlds"]')]; return el.length; });
-    if(segs<3) errs.push(vp.n+' hiveBar segments = '+segs);
+    const segs=await pg.evaluate(()=>[...document.querySelectorAll('[data-act="openEvo"],[data-act="openWorlds"],[data-act="openShop"]')].length);
+    if(segs) errs.push(vp.n+' a section bar is still above My Hive ('+segs+' segments)');
     // artifact grant path
     const grant=await pg.evaluate(()=>{ const c=state.children[0]; const before=(c.pow.shield||0)+(c.pow.reveal||0)+(c.pow.time||0);
       for(let i=0;i<30;i++) gainXp();

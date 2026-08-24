@@ -1900,7 +1900,8 @@ const app = {
     const cur=(state.coachTip==null?(typeof dayNum==='function'?dayNum():0):state.coachTip);
     set({coachTip:(cur+1)%n}); },
   openTraps:()=>{ try{ loadConcepts(); }catch(e){} set({nav:'traps', screen:'app', trapSel:null, conceptSel:null}); },
-  openWorlds:()=>set({nav:'worlds', screen:'app', conceptSel:null}),
+  // Worlds live in the Hive's Worlds tab now; this stays so old entry points still land.
+  openWorlds:()=>{ state.collTab='worlds'; app.openCollection(); },
   openEvo:()=>set({nav:'evolution', screen:'app'}),
   openCollection:()=>set({nav:'collection', screen:'app'}),
   collTab:(t)=>set({collTab:t}),
@@ -2200,7 +2201,16 @@ const app = {
   openAdvJourney:()=>app.advJump('ucj'),
   /* Train the advanced journey through the ordinary shell, which is what gives it the
      Practice / Test / Revise / Vocab tabs and word cards. */
-  pickUltra:()=>{ const c=active(); if(!advModeOn(c)) { app.openAdvanced(); return; }
+  /* Locked: show the Advanced Pack's offer. ADV.open() renders its own gate screen when
+     the pack is not owned, so it is the offer, not a way in. */
+  ultraUpsell:()=>{
+    // openAdvanced bails when ADV is not loaded yet — which is the common case on a first
+    // tap, since the module is lazy. Pull it in, then open its gate; fall back to the
+    // plan sheet if it will not come.
+    if(window.ADV) return app.openAdvanced();
+    lazyNeed('advanced', ()=>{ if(window.ADV){ try{ app.openAdvanced(); }catch(e){} }
+      else { try{ openUpsell('advanced','The Ultra Champions Journey'); }catch(e){} } }); },
+  pickUltra:()=>{ const c=active(); if(!advModeOn(c)) { app.ultraUpsell(); return; }
     ensureLists(c); c.activeList='ultra'; c.pinnedLists={...(c.pinnedLists||{}),ultra:1}; save();
     set({nav:'coach', screen:'app', coachMode:null, luTab:'practice', conceptSel:null}); },
   openAdvConcepts:()=>app.advJump('concepts'),
@@ -3289,7 +3299,10 @@ const WORLD_FX={
 };
 function worldHeroCard(t, on, locked, act){ const H=WORLD_HERO[t.id]||WORLD_HERO.spellbound; const ev=EVO[t.id]||EVO.spellbound;
   const badge=on?'<span style="position:absolute;top:10px;right:10px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.94);color:#241E33;font-weight:800;font-size:12px;font-family:var(--ui,var(--body))">Active ✓</span>'
-    :(locked?('<span style="position:absolute;top:10px;right:10px;left:auto;z-index:3;display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.94);color:#8A5B00;font-weight:900;font-size:12px;box-shadow:0 1px 4px rgba(0,0,0,.18)">🔒 '+coinAmt(COST.theme,11)+'</span>'):'');
+    :'';
+  /* The price used to sit as a badge over the artwork, where it competed with the world's
+     own title. It reads better as a line under the tile, beside what the world is. */
+  const priceRow=locked?`<span style="display:inline-flex;align-items:center;gap:5px;margin-top:9px;padding:5px 11px;border-radius:999px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:900;font-size:12px">${iconSVG('lock',11,2.2)} Unlock · ${coinAmt(COST.theme,11)}</span>`:'';
   return `<button data-act="${act||'pickTheme'}" data-arg="${t.id}" style="position:relative;text-align:left;border-radius:20px;overflow:hidden;background:var(--paper,var(--bg2));border:1px solid var(--line);box-shadow:${on?'0 0 0 2px '+t.c1+',var(--sh-raised)':'var(--sh-rest)'};${locked?'opacity:.94':''}">
     <div class="wh-band" style="position:relative;height:118px;${H.bg};${locked?'filter:grayscale(1) brightness(.96);opacity:.75':''}">
       ${locked?'':(WORLD_FX[t.id]||'')}${H.art}${badge}
@@ -3301,6 +3314,7 @@ function worldHeroCard(t, on, locked, act){ const H=WORLD_HERO[t.id]||WORLD_HERO
     </div>
     <div style="padding:10px 14px 12px">
       <span style="display:block;font-family:var(--ui,var(--body));font-size:12.5px;font-weight:600;line-height:1.42;color:var(--muted)">${esc(WORLD_ABOUT[t.id]||'A world of its own — colours, type and cast.')}</span>
+      ${priceRow}
     </div></button>`; }
 /* ---- Wayfinding tiles: destination color pops (spec §1). 48px solid tile, white icon,
    press edge, playful ±2–3° tilt. Colors are PLACE identity — stable across worlds. ---- */
@@ -3327,10 +3341,20 @@ const WAYFIND={ quest:{c:'var(--action,#6C4FE0)',ic:'steps',sb:null,label:'Pract
   advmock:{c:'#C8901B',ic:'crown',sb:'trophy',label:'Mock Spelling Bee'} };
 /* One predicate for "is Advanced Mode on", so every surface agrees. Mirrors advUnlocked()
    inside advanced.js and falls back to the same arithmetic if that module has not loaded. */
+/* The Advanced Pack is a paid ADD-ON — not part of any tier, and not something a child
+   levels into. advanced.js says so plainly ("READINESS ... never grants access"), but this
+   fallback — the one that runs in the window before that module lazy-loads, which is
+   exactly when Practice draws the Ultra pill — handed the pack to any free child at
+   level 12 or band 7, and to anyone on Premium. It now mirrors advUnlocked() instead. */
 function advModeOn(c){ c=c||active(); if(!c) return false;
   try{ if(window.ADV&&ADV.unlocked) return !!ADV.unlocked(); }catch(e){}
-  try{ const lvl=listStageIdx(c,'journey')+1; const band=beeBand(c).band;
-    return !!(state.devUnlock||state.premium||c.advPaid||lvl>=12||band>=7); }catch(e){ return false; } }
+  try{ if(state.devUnlock) return true; }catch(e){}
+  try{ if(window.SB_ENT && SB_ENT.hasAddon('advanced')) return true; }catch(e){}
+  return !!(c.advOn||c.advPaid); }
+/* Level 12 / Bee Band 7 is a READINESS signal: it changes how the pack is pitched, never
+   whether it is open. Kept separate from advModeOn so the two can never be confused again. */
+function advReadyOn(c){ c=c||active(); if(!c) return false;
+  try{ return (listStageIdx(c,'journey')+1)>=12 || beeBand(c).band>=7; }catch(e){ return false; } }
 /* The Journey is renamed once Advanced Mode is on — same ladder, but it now draws on the
    128k library, so calling it the beginner name undersells it. */
 /* Headword sizing. A 58-letter word (Llanfairpwllgwyngyll...) has to shrink and wrap or it
@@ -4559,6 +4583,16 @@ function viewBeeBand(){
       ${bb.calibrating?`<button data-act="startLevelTest" style="margin-top:14px;padding:11px 19px;border-radius:12px;background:#fff;color:var(--accent);font-weight:800;font-size:14px">Take the 3-minute placement →</button>`:''}
     </div>
 
+    ${(()=>{ const r=rankOf(c);
+      return `<button data-act="openEvo" class="sb-card" style="width:100%;text-align:left;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:15px;cursor:pointer">
+        <span style="width:56px;height:60px;flex:none;display:grid;place-items:center;border-radius:14px;background:var(--surface2)">${rankArt(r.form)}</span>
+        <span style="min-width:0;flex:1">
+          <span class="sb-cs">Your bee</span>
+          <span style="display:block;font-family:var(--display);font-weight:800;font-size:18px;line-height:1.15">${esc(rankName(r.form))} · form ${r.form+1} of 10</span>
+          <span class="sb-cn" style="display:block;margin-top:3px">A <b style="color:var(--text)">collection</b>, not a level — it counts effort and only ever climbs. The level above is the one that sets how hard your words are.</span>
+        </span>
+        <span style="flex:none;font-weight:800;font-size:13px;color:var(--accent);white-space:nowrap">See all ten →</span></button>`; })()}
+
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;align-items:start">
       <section class="sb-card">
         <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:10px">How to level up</div>
@@ -4590,7 +4624,7 @@ function viewBeeBand(){
         `<div style="margin-top:13px;font-size:13.5px;color:var(--muted)">You are at the top stage. From here it is depth and calm, not new categories.</div>`}
       <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:14px">
         <button data-act="openCoachDesk" style="padding:11px 18px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge)">What to fix next →</button>
-        <button data-act="setNav" data-arg="collection" style="padding:11px 18px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13.5px">Your bee’s forms →</button>
+        <button data-act="openEvo" style="padding:11px 18px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13.5px">See all ten bee forms →</button>
       </div>
     </section></div>`;
 }
@@ -4876,7 +4910,6 @@ function viewApp(){
   else if(S.nav==='traps') content=viewTraps();
   else if(S.nav==='revisions') content=viewRevisions();
   else if(S.nav==='evolution') content=viewEvolution();
-  else if(S.nav==='worlds') content=viewWorlds();
   else if(S.nav==='collection') content=viewCollection();
   else if(S.nav==='finder') content=viewFinder();
   else if(S.nav==='games') content=viewGames();
@@ -5720,25 +5753,12 @@ function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageI
     { g:'Vocabulary', id:'figdecks3', name:'Phrase Fancier', desc:'Complete 3 idiom & simile decks', ic:'spark', done:Object.keys(c.figDone||{}).length>=3 },
     { g:'Vocabulary', id:'figq5', name:'Idiom Sleuth', desc:'Play 5 idiom or simile quiz rounds', ic:'spark', done:(c.figQuiz||0)>=5 },
   ]; }
-/* My Hive — one home for everything you've earned & everything you spend: the Collection,
-   the Evolution ladder and the Worlds picker share this section bar (one lit top-nav tab).
-   There is no Store: a thing is bought where it lives — a pack on the pack, a world on
-   the world, a concept chapter in the Library. */
-function hiveBar(cur){ const seg=(k,act,l,ic)=>`<button data-act="${act}" style="flex:1;min-width:110px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 10px;border-radius:12px;font-weight:800;font-size:13.5px;${cur===k?'background:var(--accent);color:#fff;box-shadow:var(--edge)':'background:var(--bg2);color:var(--muted);border:1px solid var(--line)'}">${iconSVG(ic,16)} ${l}</button>`;
-  return `<div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px">${seg('coll','openCollection','Collection','crown')}${seg('evo','openEvo','Your bee','spark')}${seg('worlds','openWorlds','Worlds','palette')}</div>`; }
-/* Worlds live in the hive, beside the other things you collect — a world is a look you
-   own, not a setting you configure. The picker keeps its painted hero cards. */
-function viewWorlds(){ const S=state;
-  const cards=THEMES.map(t=>{ const un=isThemeUnlocked(t.id);
-    return worldHeroCard(t, t.id===S.theme, !un, un?'pickTheme':'buyTheme'); }).join('');
-  const locked=THEMES.filter(t=>!isThemeUnlocked(t.id)).length;
-  return `<div style="max-width:900px;margin:0 auto">
-    ${hiveBar('worlds')}
-    <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 4px">Worlds</h2><span style="font-size:13px;color:var(--muted);font-weight:650">the look you wear</span></div>
-    <p style="margin:0 0 16px;font-size:14px;color:var(--muted);line-height:1.5">Each world repaints the app — its colours, its type and its motif — and brings its own cast. Your bee keeps its ten forms and their names in every one of them.</p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px">${cards}</div>
-    ${locked?`<div class="sb-cn" style="padding-top:12px">🔒 ${locked} more ${locked===1?'world is':'worlds are'} waiting — tap one to see what unlocks it.</div>`:''}
-  </div>`; }
+/* My Hive is one page with tabs — there is no section bar above it any more.
+   "Your bee" moved to the Bee Band page (tap the pill in the header), because the bee
+   and the band are the two ladders and they belong side by side, not one tab apart.
+   Worlds merged into the Collection's own Worlds tab, which now shows the painted hero
+   cards the standalone picker used to have. There is no Store either: a thing is bought
+   where it lives — a pack on the pack, a world on the world, a chapter in the Library. */
 function viewCollection(){ const S=state; const c=active(); const tab=S.collTab||'badges';
   const tabBtn=(k,ic,l)=>`<button data-act="collTab" data-arg="${k}" style="flex:1;min-width:96px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${iconSVG(ic,15)} ${l}</button>`;
   let body='';
@@ -5795,14 +5815,17 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
         ${S.oddsOpen===p.id?oddsPanel(p.id,c):''}
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:9px">${tiles}</div></div>`; }).join('');
   } else if(tab==='worlds'){
-    const rows=THEMES.map(t=>{ const on=t.id===S.theme; const un=isThemeUnlocked(t.id); const ev=EVO[t.id]||EVO.spellbound;
-      return `<div style="display:flex;align-items:center;gap:12px;background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:12px 14px;${un?'':'filter:grayscale(.6);opacity:.65'}">
-        <div style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,${t.c1},${t.c2});flex-shrink:0;color:#fff">${un?worldEmblemSVG(t.id,24):iconSVG('lock',20,2.2)}</div>
-        <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:15px">${t.label}</div><div style="font-size:12px;color:var(--muted)">${WORLD_DEF[t.id]||(ev[0]+' → '+ev[9])}</div></div>
-        ${on?'<span style="font-weight:800;font-size:12px;color:var(--accent)">Active ✓</span>':(un?`<button data-act="pickTheme" data-arg="${t.id}" style="padding:8px 14px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:12px">Use</button>`:`<button data-act="openWorlds" style="display:inline-flex;align-items:center;gap:5px;padding:8px 12px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:12px;color:var(--muted)">${iconSVG('lock',11,2.2)} ${coinAmt(COST.theme,11)}</button>`)}
-      </div>`; }).join('');
-    const unc=THEMES.filter(t=>isThemeUnlocked(t.id)).length;
-    body=`<div class="sb-card"><div style="display:flex;align-items:baseline;gap:9px;margin-bottom:12px"><span class="sb-ct" style="font-size:15px">Worlds</span><span class="sb-cn">${unc}/${THEMES.length} unlocked — switch any time</span></div><div style="display:grid;gap:9px">${rows}</div></div>`;
+    /* The painted hero cards, moved here from the standalone picker. A locked world is
+       greyed and carries its coin price under the tile — a price belongs with the thing,
+       not floating over its artwork. */
+    const cards=THEMES.map(t=>{ const un=isThemeUnlocked(t.id);
+      return worldHeroCard(t, t.id===S.theme, !un, un?'pickTheme':'buyTheme'); }).join('');
+    const unc=THEMES.filter(t=>isThemeUnlocked(t.id)).length; const lockedN=THEMES.length-unc;
+    body=`<div class="sb-card">
+      <div style="display:flex;align-items:baseline;gap:9px;margin-bottom:4px"><span class="sb-ct" style="font-size:15px">Worlds</span><span class="sb-cn">${unc}/${THEMES.length} unlocked — switch any time</span></div>
+      <p class="sb-cn" style="margin:0 0 13px;line-height:1.5">Each world repaints the app — its colours, its type and its motif — and brings its own cast. Your bee keeps its ten forms and their names in every one of them.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px">${cards}</div>
+      ${lockedN?`<div class="sb-cn" style="padding-top:12px">🔒 ${lockedN} more ${lockedN===1?'world is':'worlds are'} waiting — tap one to unlock it.</div>`:''}</div>`;
   } else if(tab==='artifacts'){
     /* Artifacts are won, never bought — so each card states its earn route rather than a
        price, and a zero card reads as "not yet" instead of "not paid for". */
@@ -5836,7 +5859,6 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
   }
   const bAll=badgeDefs();
   return `<div style="max-width:920px;margin:0 auto">
-    ${hiveBar('coll')}
     ${pageHead('My Hive', avOwnedCount(c)+'/'+SB_AVATARS.list.length+' avatars', '',
       `<span style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px">${coinAmt(c.coins||0,14)}</span>`)}
     <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">${tabBtn('badges','crown','Badges · '+bAll.filter(b=>b.done).length+'/'+bAll.length)}${tabBtn('avatars','spark','Avatars · '+avOwnedCount(c)+'/'+SB_AVATARS.list.length)}${tabBtn('worlds','palette','Worlds · '+THEMES.filter(t=>isThemeUnlocked(t.id)).length+'/'+THEMES.length)}${tabBtn('artifacts','bolt','Artifacts')}</div>
@@ -5850,7 +5872,7 @@ function viewEvolution(){ const S=state; const c=active(); ensureLists(c); const
   const rungMarks=Array.from({length:10},(_,i)=>i===0?'start':fmtN(stageXp(i))+' words');
   const xpToForm=Math.max(0, stageXp(Math.min(9,fIdx+1))-totalXp);
   return `<div style="max-width:900px;margin:0 auto">
-    ${hiveBar('evo')}
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px"><button data-act="setNav" data-arg="beeband" style="color:var(--muted);font-weight:700;font-size:13px">← Your spelling level</button></div>
     <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 4px">Your bee</h2><span style="font-size:13px;color:var(--muted);font-weight:650">ten forms, earned by practising</span></div>
     <p style="margin:0 0 16px;font-size:14px;color:var(--muted);line-height:1.5">Every word you practise feeds your bee, and it grows through ten forms that keep their names in every world. This is a <b style="color:var(--text)">collection</b>, not a level: it measures effort, always climbs and never falls. <b style="color:var(--text)">Your spelling level is the Bee Band</b> — the pill in the header — and that is the one that decides how hard your words are.</p>
     <div class="sb-card" style="margin-bottom:14px">
@@ -8083,9 +8105,13 @@ function coachTrain(){
       purple banner between the header and the tabs, which ate a whole row of Practice and
       pushed the thing the child came for below the fold — for a pack most of them do not
       own. A pill says the same thing and costs 40px. */
-      const _c=active(); if(!advModeOn(_c)) return '';
-      const _on=(activeListKey()==='ultra');
+      const _c=active(); const _own=advModeOn(_c); const _ready=advReadyOn(_c);
+      const _on=_own&&(activeListKey()==='ultra');
       const _ic=(window.SB_ICON_ART&&SB_ICON_ART.ultraJourney)?SB_ICON_ART('ultraJourney',{size:13}):'';
+      /* Locked, the pill stays on screen and says what it costs. Hiding it made the pack
+         invisible to the people who would buy it, and the old gate handed it out free at
+         level 12 — so it was both unsellable and unpaid for. */
+      if(!_own) return `<button data-act="ultraUpsell" title="Ultra Champions Journey — 200 of the hardest words a day, from the Advanced Pack" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid color-mix(in srgb,#5B3FA6 42%,var(--line));color:#5B3FA6;font-weight:800;font-size:12px">${iconSVG('lock',12,2.2)} Ultra · ${_ready?'you\u2019re ready — unlock':'Advanced Pack'}</button>`;
       return `<button data-act="${_on?'openAdvJourney':'pickUltra'}" title="Ultra Champions Journey — the Advanced Pack's hardest words, 200 a day" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${_on?'linear-gradient(135deg,#3A2A72,#5B3FA6)':'var(--surface2)'};border:1px solid ${_on?'transparent':'color-mix(in srgb,#5B3FA6 42%,var(--line))'};color:${_on?'#fff':'#5B3FA6'};font-weight:800;font-size:12px">${_ic} Ultra${_on?' · on':''}</button>`; })()}${(()=>{ const ms=milestone(); return ms?`<span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('target',14)} ${ms.days} days to ${esc(ms.label)}</span>`:''; })()}</div>`;
   const allWordsBtn=`<button data-act="luToggleWords" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid ${S.luWordsOpen?'var(--accent)':'var(--line)'};background:var(--surface2);color:var(--text)">${iconSVG('grid',14)} All words <span style="color:var(--muted);font-weight:700">${fullList.length}</span> ${S.luWordsOpen?'▴':'▾'}</button>`;
   const newSetBtn = fullList.length>WORK_MAX ? `<button data-act="newBatch" title="Swap in a fresh set of words from this list" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid var(--line);background:var(--surface2);color:var(--text)">${SB_ICON('retry',{size:16})} New set</button>` : '';

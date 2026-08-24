@@ -218,7 +218,26 @@ handlers. App lives in this folder; open `index.html` to run.
   "Practice paths" chooser (nav 'quest'); its list catalogue is collapsed into four
   group cards (My Words / The Champion Ladder / Word Origins / Tricky Words —
   `grp` fields in `coachCatalog`, `state.catGroup` opens one; keys unchanged).
-  My Hive = Collection + Your bee + Worlds behind one lit tab (`hiveBar`).
+  My Hive is ONE page (`viewCollection`) with four tabs — Badges / Avatars / Worlds /
+  Artifacts. `hiveBar` is deleted: with the Store gone, Worlds merged in as a tab and the
+  bee moved out, a section bar over a single destination was noise. The Worlds tab carries
+  the painted `worldHeroCard` grid the standalone picker had; a locked world is greyed and
+  its coin price sits UNDER the tile, not as a badge over the artwork. `viewWorlds` and
+  nav `'worlds'` are deleted; `app.openWorlds` survives as a redirect to the Worlds tab.
+- **"Your bee" hangs off the Bee Band, not the Hive.** nav `'evolution'` is still its own
+  page, reached from `viewBeeBand` (the header pill) — the two ladders belong side by side,
+  because the whole point is that the bee is a collection and the band is the level. The
+  Hive no longer links to it at all.
+- **The Advanced Pack is a paid ADD-ON and level never grants it.** `advModeOn`'s fallback
+  — the branch that runs before `advanced.js` loads, which is exactly when Practice draws
+  the Ultra pill — used to return true for `lvl>=12 || band>=7 || state.premium`, handing
+  the pack free to any child who levelled into it and to everyone on Premium. advanced.js
+  had it right all along ("READINESS ... never grants access"); `advModeOn` now mirrors its
+  `advUnlocked()`: devUnlock, `SB_ENT.hasAddon('advanced')`, `c.advOn`, `c.advPaid`.
+  Readiness lives in the new `advReadyOn()` and only changes the pitch. The Ultra pill is
+  now always visible: locked it reads "Ultra · Advanced Pack" (or "you're ready — unlock"
+  when `advReadyOn`) and taps to `ultraUpsell`. Hiding it made the pack unsellable while
+  the gate made it unpaid-for. Guard: `tests/hive-nav.cjs`.
 - **There is no Store. A thing is bought where it lives.** `viewShop()` and `state.shopTab`
   are deleted. The Store sold avatars, worlds, concepts and word lists that all already
   had a home, so the same avatar pack was purchasable from two screens under two
