@@ -63,6 +63,7 @@
     voiceFrench: 'voice-french.js',
     story: 'story-data.js',
     themeLore: 'theme-lore.js',     // the explanation that opens every Theme Journey
+    coachRules: 'coach-rules.js',   // the Coach's hardcoded rulebook — one entry per trap
     /* Cloud backup. Not on the boot path by design: a child opening the app must
        reach a word without waiting on anything that talks to a network, and a
        family that never makes an account must never pay for this file at all. It
@@ -84,12 +85,13 @@
     lists: ['words2', 'lessons', 'vocab26', 'finals500', 'scripps'],
     themes: ['words2', 'themeLore'],
     sounds: ['sounds', 'pron'],
+    coach: ['coachRules', 'concepts', 'words2'],
     cloud: ['sync']
   };
 
   var IDLE = ['words2', 'lore', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
     'themeLore', 'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',
-    'scripps', 'southasia', 'voiceFrench', 'story', 'alts', 'sync'];
+    'scripps', 'southasia', 'voiceFrench', 'story', 'alts', 'coachRules', 'sync'];
 
   var state = {};          // name -> 'loading' | 'done'
   var waiters = {};        // name -> [cb]

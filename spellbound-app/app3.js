@@ -1621,7 +1621,7 @@ const app = {
     trail:()=>app.openTrail&&app.openTrail(), revisions:()=>app.openRevisions(), ipatrain:()=>app.openIpaTrain(),
       coach:()=>app.openCoach(), journeys:()=>app.openJourneys(), study:()=>app.coachStudy(), written:()=>app.startWritten(), oral:()=>app.startOral(),
       weak:()=>app.coachWeakDrill(), parentview:()=>{ state.progTab='parent'; app.setNav('progress'); }, settings:()=>app.setNav('settings'), themes:()=>app.setNav('themes'),
-      quest:()=>app.openQuestChooser(), traps:()=>app.openTraps(), collection:()=>app.openCollection(), finder:()=>app.openFinder(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore'), figurative:()=>app.setNav('figurative'), vocab:()=>app.openVocab(), typing:()=>app.openTyping(), quotes:()=>app.openQuotes(), trivia:()=>app.openTrivia(), trivtrain:()=>app.openTrivTrain(), ipatrain:()=>app.openIpaTrain(), trail:()=>app.openTrail() };
+      quest:()=>app.openQuestChooser(), coachdesk:()=>app.openCoachDesk(), traps:()=>app.openTraps(), collection:()=>app.openCollection(), finder:()=>app.openFinder(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore'), figurative:()=>app.setNav('figurative'), vocab:()=>app.openVocab(), typing:()=>app.openTyping(), quotes:()=>app.openQuotes(), trivia:()=>app.openTrivia(), trivtrain:()=>app.openTrivTrain(), ipatrain:()=>app.openIpaTrain(), trail:()=>app.openTrail() };
     (F[key]||(()=>{}))(); },
   // coach
   openCoach:()=>{ lazyNeed(['card','lists']); const c=active(); ensureLists(c);
@@ -1820,6 +1820,10 @@ const app = {
       g.phase='done'; const a=g.p[0].right,b=g.p[1].right; addCoins(a===b?8:12); sfx('win'); burstConfetti(120); render(); return; }
     render(); setTimeout(()=>{ const gg=state.game; if(gg&&gg.type==='duel'&&gg.phase==='play'&&gg.list[gg.i]) say(gg.list[gg.i].w); },300); },
   duelP2:()=>{ const g=state.game; g.turn=1; g.i=0; g.phase='play'; state.typed=''; render(); setTimeout(()=>{ const gg=state.game; if(gg&&gg.type==='duel'&&gg.phase==='play'&&gg.list[0]) say(gg.list[0].w); },350); },
+  /* The Coach explains; openCoach (nav 'coach') drills. Two different screens — keep the
+     names apart. The rulebook is lazy, so ask for it and let the view re-render. */
+  openCoachDesk:()=>{ try{ loadConcepts(); }catch(e){} try{ if(window.SB_LAZY) SB_LAZY.need('coach',()=>{ if(state.nav==='coachdesk') render(); }); }catch(e){}
+    set({nav:'coachdesk', screen:'app', trapSel:null, conceptSel:null}); },
   openTraps:()=>{ try{ loadConcepts(); }catch(e){} set({nav:'traps', screen:'app', trapSel:null, conceptSel:null}); },
   openWorlds:()=>set({nav:'worlds', screen:'app', conceptSel:null}),
   openEvo:()=>set({nav:'evolution', screen:'app'}),
@@ -4351,7 +4355,124 @@ function viewLevelTest(){ const lt=state.lt||{}; if(lt.done) return `<div style=
       <button data-act="ltSkip" style="margin-top:12px;color:var(--muted);font-weight:700;font-size:13px;text-decoration:underline;text-underline-offset:3px">Skip — start at Level 1</button>
     </div></div>`; }
 // Traps — the weak-pattern radar screen. Overview = radar; detail = tips + concepts first, then practice.
-const TRAP_CONCEPT_RE={ double:/Double Consonant/i, silent:/Silent kn|Silent -gh|Blends & Silent/i, ieei:/ie \/ ei/i, schwa:/Schwa/i, endings:/Suffix|-tion|able/i, french:/French Loanword/i, greek:/Greek (Prefixes|Root|Suffixes)/i, latin:/Latin (Prefixes|Root|Suffixes)/i };
+const TRAP_CONCEPT_RE={ double:/Double Consonant/i, silent:/Silent kn|Silent -gh|Blends & Silent/i, ieei:/ie \/ ei/i, schwa:/Schwa/i, endings:/Suffix|-tion|able/i, french:/French Loanword/i, greek:/Greek (Prefixes|Root|Suffixes)/i, latin:/Latin (Prefixes|Root|Suffixes)/i,
+  epon:/Eponym|Named After|Personality/i, hom:/Homonym|Homophone|Sound-Alike|Meaning/i };
+/* ===================== THE COACH ==========================================
+   A tiled briefing built from what the app already measures, and answered from a
+   HARDCODED rulebook (coach-rules.js). No model, no network, nothing generated.
+
+   The pieces were all here and none of them talked to each other: missTraps() knew which
+   patterns catch this child, trickAnal() knew a word's concept family, beeBand() knew the
+   level, TRAP_CONCEPT_RE knew which chapter teaches a pattern, and the trap page could say
+   "Silent letters · 6 misses" and then offer nothing but more of the same words. What was
+   missing was anything to SAY. SB_COACH_RULES is that: for each trap, the mistake in the
+   child's terms, the rule, a check to run at the microphone, and worked examples.
+
+   Naming: `nav:'coach'` is the PRACTICE session (openCoach, SRS drills). This is
+   `nav:'coachdesk'` — the page that explains rather than drills. Two different things;
+   keep the names apart.
+   ========================================================================== */
+function coachConcepts(keys){
+  // which chapters teach the patterns that are catching this child
+  const chs=(state.conceptData||(window.SB_CONCEPTS&&SB_CONCEPTS.chapters)||[]);
+  if(!chs.length) return [];
+  const out=[], seen=new Set();
+  keys.forEach(k=>{ const re=TRAP_CONCEPT_RE[k]; if(!re) return;
+    chs.forEach((ch,i)=>{ if(seen.has(i)) return;
+      if(re.test(ch.title)||re.test(ch.category)){ seen.add(i); out.push({ch,i,k}); } }); });
+  return out.slice(0,6);
+}
+function coachTile(title, sub, body, accent){
+  return `<section class="sb-card" style="padding:0;overflow:hidden">
+    <div style="padding:15px 18px 12px;border-bottom:1px solid var(--line);background:color-mix(in srgb,${accent||'var(--accent)'} 7%,transparent)">
+      <div style="font-family:var(--display);font-weight:800;font-size:16px;line-height:1.2">${title}</div>
+      ${sub?`<div style="font-size:12.5px;color:var(--muted);margin-top:2px">${sub}</div>`:''}
+    </div>
+    <div style="padding:15px 18px">${body}</div></section>`;
+}
+function viewCoachDesk(){
+  const R=window.SB_COACH_RULES;
+  if(!R){ try{ if(window.SB_LAZY) SB_LAZY.need('coach',()=>render()); }catch(e){}
+    return `<div style="max-width:1100px;margin:0 auto">${pageHead('Coach','','Reading your practice…')}
+      <div class="sb-card" style="text-align:center;color:var(--muted)">One moment — the coach is opening your notes.</div></div>`; }
+
+  const c=active(); const bb=beeBand(c); const traps=missTraps(); const missed=(c.missed||[]);
+  const B=(window.SB_COACH_BANDS||[])[bb.band]||{};
+  const tips=window.SB_COACH_TIPS||[];
+  const known=traps.filter(t=>R[t.k]);
+
+  /* 1 — where you are, and what is coming */
+  const nextTile=coachTile('Where you are, and what is next',
+    `Word difficulty ${bb.band} of 9 · ${esc(bb.tier)}${bb.acc?` · ${bb.acc}% accurate lately`:''}`,
+    `<div style="display:flex;flex-direction:column;gap:11px">
+      <div><div style="font-size:11.5px;font-weight:800;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px">Words at your level</div>
+        <div style="font-size:14px;line-height:1.55">${esc(B.words||'Everyday words.')}</div></div>
+      <div style="padding:12px 14px;border-radius:12px;background:color-mix(in srgb,var(--treasure,#F0B429) 12%,transparent)">
+        <div style="font-size:11.5px;font-weight:800;color:var(--treasure-deep,#8A5B00);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px">What to expect next</div>
+        <div style="font-size:14px;line-height:1.55;color:var(--treasure-deep,#8A5B00)">${esc(B.next||'')}</div></div>
+    </div>`, 'var(--accent)');
+
+  /* 2 — the mistakes actually being made, each with the rule that fixes it */
+  const ruleBlock=(t)=>{ const r=R[t.k]; if(!r) return '';
+    return `<details style="border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:9px">
+      <summary style="cursor:pointer;list-style:none;padding:11px 13px;display:flex;align-items:center;gap:10px;background:var(--surface)">
+        <span style="flex:1;min-width:0"><b style="font-size:14.5px">${esc(r.label)}</b>
+          <span style="font-size:12px;color:var(--muted);margin-left:7px">${t.n} miss${t.n>1?'es':''}</span></span>
+        <span style="font-size:11.5px;color:var(--accent);font-weight:800">Read the rule ▾</span></summary>
+      <div style="padding:13px;display:flex;flex-direction:column;gap:10px;font-size:13.5px;line-height:1.55">
+        <div><b style="color:var(--bad)">What goes wrong.</b> ${esc(r.mistake)}</div>
+        <div><b style="color:var(--good)">The rule.</b> ${esc(r.rule)}</div>
+        <div style="padding:10px 12px;border-radius:10px;background:var(--surface2)"><b>Check yourself.</b> ${esc(r.check)}</div>
+        <div><b>Worked examples</b><div style="display:flex;flex-direction:column;gap:5px;margin-top:6px">
+          ${r.egs.map(([w,why])=>`<div style="display:flex;gap:9px;align-items:baseline">
+            <button data-act="say" data-arg="${escA(w)}" style="font-family:var(--mono);font-size:12.5px;font-weight:800;padding:3px 8px;border-radius:6px;background:var(--chip);color:var(--accent);flex-shrink:0">${esc(w)}</button>
+            <span style="font-size:12.5px;color:var(--muted)">${esc(why)}</span></div>`).join('')}
+        </div></div>
+        <button data-act="drillTrap" data-arg="${t.k}" style="align-self:flex-start;padding:9px 15px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">Drill this pattern →</button>
+      </div></details>`; };
+  const mistakesTile=coachTile('The mistakes you are actually making',
+    known.length?`Traced from your ${missed.length} missed word${missed.length>1?'s':''} — the rule for each is hardcoded, not guessed`:'',
+    known.length ? known.slice(0,5).map(ruleBlock).join('')
+      : `<div style="color:var(--muted);font-size:13.5px;line-height:1.55">Nothing to report yet — you have not missed enough words for a pattern to show. Practise a set and come back; the coach needs misses to work with, which is the one time getting a word wrong is genuinely useful.</div>`,
+    'var(--bad)');
+
+  /* 3 — the chapters that teach those patterns */
+  const rel=coachConcepts(known.map(t=>t.k));
+  const conceptTile=coachTile('Concepts to revise', rel.length?'The chapters that teach the patterns above':'',
+    rel.length ? `<div style="display:flex;flex-wrap:wrap;gap:8px">${rel.map(x=>
+        `<button data-act="openConcept" data-arg="${x.i}" style="display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">${esc(conceptShort(x.ch.title))}</button>`).join('')}</div>`
+      : `<div style="color:var(--muted);font-size:13.5px">Once a pattern shows up in your misses, the chapter that teaches it will appear here.</div>`,
+    'var(--good)');
+
+  /* 4 — their own words, worst first */
+  const idx=wordIndex();
+  const worst=missed.slice().sort((a,b)=>(b.n||1)-(a.n||1)).slice(0,12);
+  const wordsTile=coachTile('Words that keep catching you',
+    missed.length?`${missed.length} on the revision pile · most-missed first`:'',
+    worst.length ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">${worst.map(m=>{
+        const w=idx[nkey(m.w)]||m; const tk=(()=>{try{return trickAnal(w).cls;}catch(e){return 'plain';}})();
+        const lab=(R[Object.keys(R).find(k=>(R[k].cls||[]).indexOf(tk)>=0)]||{}).label||'';
+        return `<button data-act="say" data-arg="${escA(m.w)}" title="${escA(lab?lab+' — tap to hear':'tap to hear')}" style="font-family:var(--mono);font-size:12.5px;font-weight:700;padding:6px 11px;border-radius:7px;background:var(--surface2)">${esc(m.w)}${(m.n||1)>1?`<span style="color:var(--bad);font-weight:800"> ×${m.n}</span>`:''}</button>`;
+      }).join('')}</div>
+      <button data-act="openRevisions" style="padding:10px 16px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px">Open the revision pile →</button>`
+      : `<div style="color:var(--muted);font-size:13.5px">Nothing waiting. Every word you have missed has been cleared — which is exactly where you want to be.</div>`,
+    'var(--treasure,#F0B429)');
+
+  /* 5 — the routine. Rotates daily so it is not the same five every day. */
+  const seed=(typeof dayNum==='function'?dayNum():0);
+  const shown=tips.length?Array.from({length:Math.min(4,tips.length)},(_,i)=>tips[(seed+i)%tips.length]):[];
+  const tipsTile=coachTile('Tips and tricks', 'The routine that separates a good speller from a lucky one',
+    `<div style="display:flex;flex-direction:column;gap:11px">${shown.map(t=>
+      `<div><div style="font-weight:800;font-size:14px;margin-bottom:2px">${esc(t.t)}</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.55">${esc(t.b)}</div></div>`).join('')}</div>`,
+    '#9C89E8');
+
+  return `<div style="max-width:1100px;margin:0 auto;animation:sb-rise .35s ease both">
+    ${pageHead('Coach', esc(c.name||'Speller'), 'Everything here is worked out from your own practice and answered from a fixed rulebook — no guessing, and nothing sent anywhere.')}
+    <div class="sb-coach-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;align-items:start">
+      ${nextTile}${mistakesTile}${conceptTile}${wordsTile}${tipsTile}
+    </div></div>`;
+}
 function viewTraps(){ const S=state; const traps=missTraps(); const sel=S.trapSel;
   if(sel){ const t=traps.find(x=>x.k===sel)||{k:sel,label:(sel[0].toUpperCase()+sel.slice(1)),n:0};
     const idx=wordIndex(); const ws=trapWords(sel); const mine=((active().missed)||[]).map(m=>idx[nkey(m.w)]||{w:m.w}).filter(w=>ws.some(x=>nkey(x.w)===nkey(w.w)));
@@ -4446,6 +4567,7 @@ function viewApp(){
   else if(S.nav==='typing') content=viewTyping();
   else if(S.nav==='builder') content=viewBuilder();
   else if(S.nav==='leveltest') content=viewLevelTest();
+  else if(S.nav==='coachdesk') content=viewCoachDesk();
   else if(S.nav==='traps') content=viewTraps();
   else if(S.nav==='revisions') content=viewRevisions();
   else if(S.nav==='evolution') content=viewEvolution();
@@ -4614,31 +4736,35 @@ function viewDrawer(){
       </div>
       <nav style="display:flex;flex-direction:column;gap:1px;overflow-y:auto">
         ${row('levelup','steps','Continue practising','${LBL}'.replace('${LBL}',esc(listLabel(key).split(' · ')[0])+' · Stage '+(listStageIdx(c,key)+1)),false)}
+        ${row('coachdesk','bulb','Coach',missedN?('what to fix, and how — '+missedN+' word'+(missedN>1?'s':'')+' to work on'):'your patterns, your level, what comes next',state.nav==='coachdesk')}
         ${row('trail','steps','The Word Atlas',atlasSub(c),state.nav==='trail')}
-        ${missedN?row('weak','spark','Revenge round',missedN+' missed words waiting',false):''}
         ${kick('Learn')}
         ${wayRow('concepts','concepts','Concepts',conceptDrawerSub())}
         ${wayRow('themes','themes','Theme Journeys',(themeDefs().length||75)+' families'+(myThemes().length?' · '+myThemes().length+' picked':''))}
         ${wayRow("vocab","vocab","Vocabulary","word → meaning, bee-style")}
-        ${kick('Train')}
-        ${wayRow("figurative","figurative","Idioms & Sayings","2,350 phrases · true origin stories")}
-        ${wayRow("typing","typing","Typing Trainer","learn to type · 60s test")}
-        ${wayRow('quotes','quotes','Quotes','words worth keeping')}
-        ${wayRow('trivtrain','trivtrain','Know the World of Words','etymology cards by chapter')}
-        ${row('ipatrain','book','The Sound Alphabet','read IPA · the notation study lists use',state.nav==='ipatrain')}
         ${kick('Play')}
-        ${row('games','joystick','Arcade','seven games · saga, quest, trivia, sprints',state.nav==='games')}
+        ${row('games','joystick','Arcade','eight games plus the Mock Bee',state.nav==='games')}
         ${row('trivia','bulb','Bee Trivia','25,000 questions · 32 chapters',state.nav==='trivia')}
         ${kick('Revise')}
         ${row('revisions','retry','Revision pile',missedN?missedN+' words waiting':'nothing waiting — nice',state.nav==='revisions')}
-        ${row('traps','target','Your weak patterns','beat the traps that keep catching you',state.nav==='traps')}
         <div class="sb-mob-only" style="display:contents">
         ${kick('My Hive')}
         ${row('collection','crown','Collection, evolution & store',avOwnedCount(c)+'/'+SB_AVATARS.list.length+' avatars',state.nav==='collection')}
         ${row('finder','search','Search words','find any of 129,000 words',state.nav==='finder')}
         </div>
         ${kick('')}
-        ${row('builder','pencil','List Builder','custom list in five taps',state.nav==='builder')}
+        <details style="margin:0 2px 2px">
+          <summary style="cursor:pointer;list-style:none;padding:10px 12px;border-radius:10px;font-weight:800;font-size:14px;color:var(--muted);display:flex;align-items:center;gap:8px">${iconSVG('grid',17)} More ways to train ▾</summary>
+          <div style="display:flex;flex-direction:column;gap:1px;padding-top:2px">
+            ${wayRow("figurative","figurative","Idioms & Sayings","2,350 phrases · true origin stories")}
+            ${wayRow('quotes','quotes','Quotes','words worth keeping')}
+            ${wayRow('trivtrain','trivtrain','Know the World of Words','etymology cards by chapter')}
+            ${row('ipatrain','book','The Sound Alphabet','read IPA · the notation study lists use',state.nav==='ipatrain')}
+            ${wayRow("typing","typing","Typing Trainer","learn to type · 60s test")}
+            ${row('traps','target','Your weak patterns','the trap drills, on their own',state.nav==='traps')}
+            ${row('builder','pencil','List Builder','custom list in five taps',state.nav==='builder')}
+          </div>
+        </details>
         ${row('settings','gear','Theme & settings','worlds, voice, style',state.nav==='settings')}
       </nav>
     </aside>`;
@@ -6204,14 +6330,31 @@ function parentSignals(){ const c=active(); const played=(c.daysPlayed||[]).slic
   const cutoff=Date.now()-14*86400000; const active14=played.filter(k=>new Date(k+'T12:00').getTime()>=cutoff).length;
   const missedN=((c.missed)||[]).length; const key=activeListKey(); const enc=encounteredWords(key);
   const encM=enc.filter(w=>state.luMastered[nkey(w.w)]).length; const coverage=enc.length?Math.round(encM/enc.length*100):0;
+  /* Signals added Aug 2026. The tip rules were written when the app was Practice plus a
+     word list; it has since grown an Atlas, a vocabulary ladder with its own progression,
+     an Arcade, Trivia, Theme Journeys and the Advanced Pack — and a parent was never told
+     a word about any of them, because parentTips() could not see them. Each of these is a
+     cheap read that unlocks an if-this-then-tip rule below. */
+  const band=(function(){ try{ return beeBand(c); }catch(e){ return {band:2,calibrating:true,acc:0}; } })();
+  const trail=c.trail||{}; const trailDone=Object.keys(trail.done||{}).length;
+  const vocab=c.vocab||{}; const vocabTouched=Object.keys(vocab).length>0;
+  const themesN=(function(){ try{ return myThemes().length; }catch(e){ return 0; } })();
+  const arcadeN=(function(){ try{ return Object.keys(JSON.parse(localStorage.getItem('sb_arc_best')||'{}')).length; }catch(e){ return 0; } })();
+  const advOn=(function(){ try{ return !!(window.ADV&&ADV.active&&ADV.active()); }catch(e){ return false; } })();
+  const traps=(function(){ try{ return missTraps(); }catch(e){ return []; } })();
   return { c, daysSince, active14, acc:(c.acc||0), missedN, streak:(c.streak||0), toBee:(milestone()||{days:9999}).days, age:(c.age||9), coverage,
-    reviewHealth:Math.max(0,100-missedN*5), consistency:Math.round(active14/14*100) }; }
+    reviewHealth:Math.max(0,100-missedN*5), consistency:Math.round(active14/14*100),
+    band:band.band, calibrating:!!band.calibrating, trailDone, vocabTouched, themesN, arcadeN, advOn,
+    traps, topTrap:traps[0]||null }; }
 // Generated tips multiply the authored library with real app data — every concept, theme,
 // champion-word hook and the child's own misses become concrete, presentable coaching tips.
 function genTip(kind,idx){ const T=window.SB_TIPS||{};
   if(kind==='pattern'){ const chs=state.conceptData||(window.SB_CONCEPTS&&SB_CONCEPTS.chapters)||[]; if(!chs.length) return null; const ch=chs[idx%chs.length]; return 'Pattern coaching — '+conceptShort(ch.title)+': '+ch.concept; }
   if(kind==='theme'){ const ts=themeDefs(); if(!ts.length) return null; const t=ts[idx%ts.length]; return 'Interest is memory glue: if '+t.label.toLowerCase()+' excites your child, add the “'+t.label+'” Theme Journey — its words will stick twice as fast as neutral lists.'; }
   if(kind==='champword'){ const pool=journeySorted().filter(w=>w.h&&(w.y||3)>=4); if(!pool.length) return null; const w=pool[idx%pool.length]; return 'Champion word of the day — “'+w.w+'”: '+w.h; }
+  if(kind==='trap'){ const t=(function(){ try{ return missTraps()[0]; }catch(e){ return null; } })(); if(!t) return null;
+    const how=(typeof TRAP_TIP!=='undefined'&&TRAP_TIP[t.k])||'';
+    return 'Their misses cluster in one place — '+t.label.toLowerCase()+' ('+t.n+' of them). '+(how?how+' ':'')+'Coach the PATTERN for a week rather than the words: fixing one pattern retires a dozen words at once.'; }
   if(kind==='miss'){ const ms=(active().missed)||[]; if(!ms.length) return null; const m=ms[idx%ms.length]; const w=wordIndex()[nkey(m.w)];
     if(w&&w.h) return 'On the review pile — “'+w.w+'”: '+w.h;
     if(w&&w.sy) return 'On the review pile — “'+w.w+'”: spell it beat by beat ('+w.sy.replace(/\./g,' · ')+'), then say the whole word to seal it.';
@@ -6224,7 +6367,7 @@ function tipLibraryCount(){ const T=window.SB_TIPS||{}; let n=0; Object.keys(T).
 function parentTips(){ const T=window.SB_TIPS||{}; const s=parentSignals(); const page=state.tipPage||0; const seed=dayNum()+page*7;
   const picks=[]; const used=new Set();
   const take=(cat,why)=>{ if(used.has(cat)) return; used.add(cat);
-    if(cat==='pattern'||cat==='theme'||cat==='champword'||cat==='miss'){ const t=genTip(cat,seed+picks.length); if(t) picks.push({cat,why,text:t}); return; }
+    if(cat==='pattern'||cat==='theme'||cat==='champword'||cat==='miss'||cat==='trap'){ const t=genTip(cat,seed+picks.length); if(t) picks.push({cat,why,text:t}); return; }
     const arr=T[cat]; if(!arr||!arr.length) return; picks.push({cat,why,text:arr[(seed+picks.length)%arr.length]}); };
   if(!everPractised(s.c)){ take('young','the first session is ahead'); take('motivation','starting strong'); take('parenting','setting up the habit'); return picks; }
   if(s.daysSince>=3) take('reengage','no practice in '+s.daysSince+' days');
@@ -6235,9 +6378,19 @@ function parentTips(){ const T=window.SB_TIPS||{}; const s=parentSignals(); cons
   if(s.toBee<=21) { take('beeday',s.toBee+' days to the bee'); take('nerves','competition is close'); }
   if(s.coverage<40 && s.toBee>28) take('coverage','list coverage at '+s.coverage+'%');
   if(s.age<=8) take('young','tuned for younger spellers');
-  ['motivation','memory','parenting','oral','written','origin','pattern','champword','theme','plateau'].forEach(cat=>{ if(picks.length<6) take(cat,'daily coaching rotation'); });
+  /* --- surfaces the app grew after these rules were first written --- */
+  if(s.topTrap && s.topTrap.n>=3) take('trap','misses cluster in '+s.topTrap.label.toLowerCase());
+  if(s.calibrating) take('placement','still working out the right word difficulty');
+  if(s.trailDone===0 && s.active14>=2) take('atlas','practising, but the Atlas is untouched');
+  else if(s.trailDone>0 && s.trailDone<4) take('atlas','only '+s.trailDone+' Atlas stop'+(s.trailDone>1?'s':'')+' cleared');
+  if(!s.vocabTouched && s.band>=3) take('vocab','spelling at level '+s.band+', vocabulary not started');
+  if(s.themesN===0 && s.active14>=3) take('themes','no Theme Journey picked yet');
+  if(s.arcadeN===0 && s.age<=11) take('arcade','has not opened the Arcade');
+  if(s.band>=6 && !s.advOn) take('advanced','at level '+s.band+' of 9 without the Advanced Pack');
+  if(s.band>=5) take('origin','origin questions matter from level 5');
+  ['motivation','memory','parenting','oral','written','origin','pattern','champword','theme','plateau','atlas','vocab','themes','arcade','placement'].forEach(cat=>{ if(picks.length<6) take(cat,'daily coaching rotation'); });
   return picks.slice(0,6); }
-const TIP_CAT_LABEL={reengage:'Re-engage',consistency:'Consistency',difficult:'Hard words',memory:'Memory science',accuracy:'Accuracy',oral:'Oral rounds',written:'Written rounds',beeday:'Bee day',nerves:'Nerves',motivation:'Motivation',parenting:'Parenting',young:'Young spellers',plateau:'Plateau',review:'Review',coverage:'Coverage',origin:'Origins',pattern:'Patterns',champword:'Champion words',theme:'Themes',miss:'Their words'};
+const TIP_CAT_LABEL={trap:'Their pattern',atlas:'The Atlas',vocab:'Vocabulary',themes:'Theme Journeys',arcade:'The Arcade',advanced:'Advanced Pack',placement:'Finding their level',reengage:'Re-engage',consistency:'Consistency',difficult:'Hard words',memory:'Memory science',accuracy:'Accuracy',oral:'Oral rounds',written:'Written rounds',beeday:'Bee day',nerves:'Nerves',motivation:'Motivation',parenting:'Parenting',young:'Young spellers',plateau:'Plateau',review:'Review',coverage:'Coverage',origin:'Origins',pattern:'Patterns',champword:'Champion words',theme:'Themes',miss:'Their words'};
 function everPractised(c){ c=c||active(); try{ return bandEvidence(c)>0 || masteredCount()>0 || (c.missed||[]).length>0 || Object.keys(state.coachHistory||{}).length>0; }catch(e){ return false; } }
 function parentAnalytics(){ const s=parentSignals(); let rd=0; try{ rd=coachReadiness().ready||0; }catch(e){}
   if(!everPractised(s.c)) return `<div class="sb-card" style="display:flex;align-items:center;gap:16px">
