@@ -180,8 +180,23 @@ handlers. App lives in this folder; open `index.html` to run.
   the same curve serves 2 stops at Tier I and 22 at Tier III. Long acts pan sideways and
   auto-scroll to the frontier. `trailPick` selects, `trailTrain` hands the stop's words
   to Practice, `SB_TRAIL_TAUGHT(gi)` answers the reverse question for concept pages.
-- **One thing is called a Level: your rank.** Per-list ladders read **Stage** everywhere;
-  `overallLevel` is deleted; the header pill says **Word difficulty**, not Bee Band.
+- **One thing is called a Level: the BEE BAND, and it is your spelling level.** (Reversed
+  Aug 2026.) There used to be three: a Bee Band pill reading "Word difficulty 3", a rank
+  pill reading "Level 1 · Egg", and **Karma** — which turned out to be two different
+  quantities sharing a name, one of them (`c.karma`) written in two places and read by
+  nothing, while the app's explainer described the other (the sum of per-list `xp`).
+  Now: the header carries **one** pill, `bandStage(band).n + ' · Level ' + band`, wearing
+  the evolution emblem for that band (`bandArt`), opening **`nav:'beeband'`** — a page that
+  says what the stage means and exactly what moves it. `BAND_STAGE` holds the nine names
+  (Egg · Hatchling · Forager · Worker · Scout · Ranger · Guardian · Champion · Legend).
+  The word **Karma is gone from the app**; the three `karma*` achievement **ids** stay
+  because they are storage keys and renaming them would re-lock earned badges. Per-list
+  ladders still read **Stage**; `overallLevel` is still deleted; the evolution forms still
+  live in My Hive, which is where a collection belongs.
+- **The band is evidence only — never time on the app.** `diffRange()` reads it to choose
+  which corpus slice every game serves, so a band inflated by hours played would hand a
+  child words they cannot spell. Time is rewarded by **coins**, which are spendable and
+  therefore have a job. Say this on any screen that explains the band.
 - **ONE concept-first guided journey.** The Journey tab IS the Word Map
   (nav 'trail'): one continuous map of 9 base acts followed by **The Advanced Rounds**
   (the 6 expeditions, unit ids `x*`), which render locked with a **$299/yr** Advanced

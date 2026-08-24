@@ -353,9 +353,9 @@ function rankArt(i,size){ try{ return evEmb('spellbound',Math.max(0,Math.min(9,i
 const milestone = () => { const c=active(); let m=c.milestone; if((!m||!m.date) && state.coachDate) m={label:(m&&m.label)||'the bee', date:state.coachDate};
   if(!m||!m.date) return null; const d=Math.ceil((new Date(m.date+'T00:00:00') - new Date())/86400000);
   return d>=0?{ days:d, label:m.label||'the bee', date:m.date }:null; };
-/* ---- Lists (tracks): per-list Karma/level; mastery stays global (word knowledge) ---- */
+/* ---- Lists (tracks): per-list progress/level; mastery stays global (word knowledge) ---- */
 const FREE_LEVEL_CAP = 5; const WORK_MAX = 40;
-/* Leveling curve: easy at first, then near-exponential — each level needs more Karma than the last.
+/* Leveling curve: easy at first, then near-exponential — each level needs more right words than the last.
    xpToNext(L) = round(3 · 1.45^(L-1))  →  3, 4, 6, 9, 13, 19, 28, 40, 58, 85 … */
 const XP_BASE = 5, XP_GROWTH = 1.6;
 function xpToNext(level){ return Math.max(1, Math.round(XP_BASE * Math.pow(XP_GROWTH, (level||1)-1))); }
@@ -987,6 +987,23 @@ function _bandUpdate(c){ if(bandEvidence(c)<BAND_MIN_EV) return;
   if(cur>was && was>0){ try{ state.toast='📈 Word difficulty '+cur+' — '+bandTier(cur)+'! Proven on level '+cur+' words.'; scheduleToast(3600); sfx('win'); burstConfetti(120); }catch(e){} }
   c.band=cur; }
 function bandTier(b){ return b<=2?'Classroom Speller':b<=4?'School-Bee Ready':b<=6?'Regional Ready':b<=8?'State & National':'Championship'; }
+/* The Bee Band is YOUR SPELLING LEVEL, and it is now the only ladder a child is shown.
+   It used to sit in the header as "Word difficulty 3" beside a second pill reading
+   "Level 1 · Egg", and a third quantity called Karma that nothing read — three numbers
+   for what a child experiences as one question: how good am I, and how do I get better?
+   One named stage per band, each saying plainly what a speller at that stage can do. */
+const BAND_STAGE=[null,
+  {n:'Egg',       s:'Beginner speller',  d:'Everyday words, spelled the way they sound.'},
+  {n:'Hatchling', s:'Finding your feet', d:'Common words, and the first letters you cannot hear.'},
+  {n:'Forager',   s:'Building patterns', d:'Double letters and suffix endings start to appear.'},
+  {n:'Worker',    s:'School-bee ready',  d:'Where a word comes from starts to decide how it is spelled.'},
+  {n:'Scout',     s:'Reading origins',   d:'French and Greek patterns, recognised on sight.'},
+  {n:'Ranger',    s:'Regional ready',    d:'Roots and prefixes that hold their spelling at the joins.'},
+  {n:'Guardian',  s:'State level',       d:'Loanwords from many languages, and the schwa everywhere.'},
+  {n:'Champion',  s:'National level',    d:'Rare words, long builds, multi-part questions.'},
+  {n:'Legend',    s:'Championship',      d:'Words chosen to defeat every rule you know.'}];
+const bandStage=(b)=>BAND_STAGE[Math.max(1,Math.min(9,b|0))]||BAND_STAGE[1];
+const bandArt=(b)=>{ try{ return rankArt(Math.max(0,Math.min(9,(b|0)-1))); }catch(e){ return ''; } };
 function beeBand(c){ c=c||active(); const band=Math.max(1,Math.min(9,c.band||c.bandSeed||2));
   const cal=bandEvidence(c)<BAND_MIN_EV && !c.bandSeed; /* a placement result IS evidence — never call it calibrating */
   const s=_bandAcc(c,band);
@@ -1281,8 +1298,8 @@ const app = {
       v.known[dk]=v.known[dk].slice(-800); v.miss[dk]=v.miss[dk].slice(-200);
     }catch(e){}
     if(g.ok){ g.right++; sfx('correct');
-      if(g.mode==='practice'){ addCoins(1); const c=active(); c.karma=(c.karma||0)+1;
-        state.toast='✓ +1 coin · +1 karma 🌟'; scheduleToast(1400); save(); } }
+      if(g.mode==='practice'){ addCoins(1);
+        state.toast='✓ +1 coin 🪙'; scheduleToast(1400); save(); } }
     else { sfx('wrong'); g.missed.push(nkey(q.w.w)); }
     render(); },
   vocNext:()=>{ const g=state.vocCheck; if(!g||g.picked==null) return;
@@ -1485,7 +1502,7 @@ const app = {
   toggleOrigin:()=>set({showOrigin:!state.showOrigin}),
   luSetTab:(t)=>{ if(t==='vocab' && !state.vp && !state.vpAllDone) app.vocabNewQ(); set({luTab:t, heatReveal:false, coachCardView:false}); if(t==='practice') setTimeout(speak,250); if(t==='vocab') setTimeout(()=>{ try{ if(state.vp) say(state.vp.w.w); }catch(e){} },250); },
   // Practice Vocabulary — optional, no progression: pick the right meaning from 4 options,
-  // earn a coin + karma for a correct pick. Distractors are other words' meanings from the list.
+  // earn a coin for a correct pick. Distractors are other words' meanings from the list.
   // Words never repeat within a run — once every word has been seen the run is done and the
   // speller gets a confetti + avatar celebration. Returns true if a fresh question was built.
   vocabNewQ:()=>{ const pool=learnWords().filter(w=>w&&w.w&&String(w.d||'').trim());
@@ -1500,7 +1517,7 @@ const app = {
     state.vp={ w:target, opts:opts, picked:null, total:pool.length, idx:(state._vpSeen||[]).length }; state.vpAllDone=false; return true; },
   vocabSay:()=>{ if(state.vp) say(state.vp.w.w); },
   vocabPick:(i)=>{ i=+i; const vp=state.vp; if(!vp||vp.picked!=null) return; vp.picked=i; const ok=!!(vp.opts[i]&&vp.opts[i].correct);
-    if(ok){ sfx('correct'); addCoins(1); const c=active(); c.karma=(c.karma||0)+1; state.vpRight=(state.vpRight||0)+1; state.toast='✓ +1 coin · +1 karma 🌟'; scheduleToast(1500); save(); }
+    if(ok){ sfx('correct'); addCoins(1); state.vpRight=(state.vpRight||0)+1; state.toast='✓ +1 coin 🪙'; scheduleToast(1500); save(); }
     else { sfx('wrong'); }
     state.vpDone=(state.vpDone||0)+1; render();
     clearTimeout(state._vpTimer); state._vpTimer=setTimeout(()=>{ if(state.luTab==='vocab' && state.vp && state.vp.picked!=null){
@@ -2763,7 +2780,7 @@ function landCollect(){
     `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(clamp(52px,7.4vw,76px),1fr));gap:10px;justify-items:center;margin-bottom:22px">${strip}</div>
      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px">
        ${[['Egg to Queen Bee', SB_FACTS.evoForms + ' evolution forms across twelve worlds, each hand-drawn with its own idle animation. It measures effort, and it never goes down.'],
-          ['Karma is the record', 'Karma is never spent. Coins buy cosmetics. There is no way to pay your way past a word you cannot spell.'],
+          ['Coins buy things, never words', 'Coins are for the store — worlds, avatars, power-ups. There is no way to pay your way past a word you cannot spell.'],
           ['A golden reveal', 'Pack drops are the reason a nine-year-old comes back tomorrow without being asked — bought with practice, not with a card.']]
         .map(([t,b])=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:20px">
           <div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:7px">${t}</div>
@@ -4451,6 +4468,90 @@ function coachExample(k){
   const mine=((active().missed)||[]).map(m=>idx[nkey(m.w)]||{w:m.w}).filter(hit);
   return mine.find(w=>spellSplit(w.w,w.m)) || mine.find(w=>w.h||w.sy) || mine[0] || null;
 }
+/* ===================== YOUR SPELLING LEVEL ================================
+   One ladder, nine named stages, and an honest answer to "how do I move up?".
+
+   Before this there were three numbers a child could see — a Bee Band pill reading
+   "Word difficulty 3", a rank pill reading "Level 1 · Egg", and a Karma counter that
+   nothing in the app read. Three answers to one question. This page is the single answer,
+   and the header pill opens it.
+
+   What moves the band is deliberately NOT time on the app: it is graded evidence, because
+   the band is also the dial diffRange() reads to choose which words every game serves. A
+   band inflated by hours played would serve a child words they cannot spell. Time is
+   rewarded by coins, which is the right currency for showing up.
+   ========================================================================== */
+function viewBeeBand(){
+  const c=active(), bb=beeBand(c), st=bandStage(bb.band);
+  const wordsRight=(typeof rankXp==='function')?rankXp(c):0;
+  const mastered=masteredCount();
+  const next=bb.band<9?bandStage(bb.band+1):null;
+
+  const rung=(i)=>{ const n=i+1, s2=bandStage(n), on=n===bb.band, done=n<bb.band;
+    return `<div style="display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:12px;background:${on?'color-mix(in srgb,var(--accent) 13%,transparent)':'transparent'};border:1px solid ${on?'var(--accent)':'transparent'}">
+      <span style="flex:none;width:30px;height:32px;display:block;${done?'':on?'':'opacity:.42;filter:grayscale(.65)'}">${bandArt(n)}</span>
+      <span style="min-width:0;flex:1">
+        <span style="display:block;font-weight:800;font-size:13.5px;color:${on?'var(--accent)':'var(--text)'}">${esc(s2.n)}<span style="font-weight:650;color:var(--muted);font-size:12px"> · ${esc(s2.s)}</span></span>
+        ${on||n===bb.band+1?`<span style="display:block;font-size:11.5px;color:var(--muted);line-height:1.45;margin-top:2px">${esc(s2.d)}</span>`:''}
+      </span>
+      ${on?'<span style="flex:none;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)">you</span>':''}
+    </div>`; };
+
+  const mover=(ic,t,b,col)=>`<div style="display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--line)">
+      <span style="flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:15px;background:color-mix(in srgb,${col} 14%,transparent)">${ic}</span>
+      <span style="min-width:0;flex:1"><span style="display:block;font-weight:800;font-size:13.5px;margin-bottom:2px">${t}</span>
+        <span style="display:block;font-size:12.5px;color:var(--muted);line-height:1.55">${b}</span></span></div>`;
+
+  return `<div style="max-width:900px;margin:0 auto;animation:sb-rise .35s ease both">
+    ${pageHead('Your spelling level','','One ladder, nine stages. Here is what yours means and exactly what moves it.')}
+
+    <div style="position:relative;overflow:hidden;border-radius:20px;background:linear-gradient(135deg,var(--accent),var(--ink));padding:clamp(17px,3.2vw,24px);margin-bottom:15px;box-shadow:var(--sh-rest)">
+      <div style="display:flex;align-items:center;gap:clamp(13px,2.6vw,20px);flex-wrap:wrap">
+        <div style="width:clamp(58px,11vw,80px);height:clamp(64px,12vw,88px);flex:none;filter:drop-shadow(0 3px 10px rgba(0,0,0,.28))">${bandArt(bb.band)||mascotSVG('excited')}</div>
+        <div style="min-width:0;flex:1">
+          <div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.72)">${bb.calibrating?'Still working it out':'Level '+bb.band+' of 9'}</div>
+          <div style="font-family:var(--display);font-weight:800;font-size:clamp(24px,4.6vw,34px);color:#fff;line-height:1.1;margin:2px 0 3px">${esc(st.n)}</div>
+          <div style="font-size:13.5px;color:rgba(255,255,255,.9);line-height:1.5">${esc(st.s)} — ${esc(st.d)}</div>
+        </div>
+      </div>
+      ${bb.calibrating?`<button data-act="startLevelTest" style="margin-top:14px;padding:11px 19px;border-radius:12px;background:#fff;color:var(--accent);font-weight:800;font-size:14px">Take the 3-minute placement →</button>`:''}
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;align-items:start">
+      <section class="sb-card">
+        <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:10px">How to level up</div>
+        ${mover('🎯','Spell harder words right','Only graded answers count — Practice, an Atlas quiz, the mock bee. The level follows the trickiness of the words you get right, not how many you attempt.','var(--accent)')}
+        ${mover('🔁','Clear your revision pile','A word you once missed and now spell right is the strongest evidence there is, which is why the pile is worth more than a fresh list.','var(--bad)')}
+        ${mover('📅','Come back tomorrow','Spelling a word right on three different days beats spelling it right three times today. The level moves on what sticks.','var(--good)')}
+        <div style="margin-top:12px;padding:10px 12px;border-radius:11px;background:var(--surface2);font-size:12px;color:var(--muted);line-height:1.55">
+          <b style="color:var(--text)">It cannot be bought or waited out.</b> Coins buy things in the Store and never touch this. Time on the app earns coins, not levels — because this number also decides how hard your words are, and a level you did not earn would hand you words you cannot spell.</div>
+      </section>
+
+      <section class="sb-card">
+        <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:10px">The nine stages</div>
+        <div style="display:flex;flex-direction:column;gap:3px">${[...Array(9)].map((_,i)=>rung(i)).join('')}</div>
+      </section>
+    </div>
+
+    <section class="sb-card" style="margin-top:14px">
+      <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:11px">Where you are right now</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px">
+        ${[[mastered,'words mastered','var(--good)'],[wordsRight,'words spelled right','var(--accent)'],
+           [((c.missed||[]).length),'on the revision pile','var(--bad)'],[bb.acc?bb.acc+'%':'—','recent accuracy','var(--treasure-deep,#8A5B00)']]
+          .map(([v,l,col])=>`<div style="padding:12px 13px;border-radius:13px;background:color-mix(in srgb,${col} 10%,transparent)">
+            <div style="font-family:var(--display);font-weight:800;font-size:23px;line-height:1;color:${col}">${v}</div>
+            <div style="font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-top:5px">${l}</div></div>`).join('')}
+      </div>
+      ${next?`<div style="margin-top:13px;padding:12px 14px;border-radius:12px;background:color-mix(in srgb,var(--treasure,#F0B429) 13%,transparent);color:var(--treasure-deep,#8A5B00)">
+        <div style="font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;margin-bottom:3px">Next stage · ${esc(next.n)}</div>
+        <div style="font-size:13.5px;line-height:1.55">${esc(next.d)}</div></div>`:
+        `<div style="margin-top:13px;font-size:13.5px;color:var(--muted)">You are at the top stage. From here it is depth and calm, not new categories.</div>`}
+      <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:14px">
+        <button data-act="openCoachDesk" style="padding:11px 18px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge)">What to fix next →</button>
+        <button data-act="setNav" data-arg="collection" style="padding:11px 18px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13.5px">Your bee’s forms →</button>
+      </div>
+    </section></div>`;
+}
 function viewCoachDesk(){
   const R=window.SB_COACH_RULES;
   if(!R){ try{ if(window.SB_LAZY) SB_LAZY.need('coach',()=>{ if(state.nav==='coachdesk') render(); }); }catch(e){}
@@ -4526,11 +4627,12 @@ function viewCoachDesk(){
   }
 
   /* ---- 4. the ladder: where you stand and what the next rung brings ---- */
-  const rungs=[...Array(9)].map((_,i)=>{ const n=i+1, on=n===bb.band, done=n<bb.band;
-    return `<span title="Word difficulty ${n}" style="flex:1;height:${on?18:done?11:8}px;border-radius:5px;background:${on?'var(--accent)':done?'color-mix(in srgb,var(--accent) 40%,transparent)':'var(--surface2)'};${on?'box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)':''}"></span>`; }).join('');
-  const ladder=`<div style="display:flex;align-items:flex-end;gap:4px;margin:4px 0 12px">${rungs}</div>
+  const rungs=[...Array(9)].map((_,i)=>{ const n=i+1, on=n===bb.band, done=n<bb.band, st=bandStage(n);
+    return `<span title="${escA(st.n+' · '+st.s)}" style="flex:1;display:grid;place-items:center;padding:${on?'2px':'5px'} 0;border-radius:9px;background:${on?'color-mix(in srgb,var(--accent) 15%,transparent)':'transparent'}">
+      <span style="display:block;width:100%;max-width:${on?34:26}px;aspect-ratio:27/29;${done||on?'':'opacity:.38;filter:grayscale(.7)'}">${bandArt(n)}</span></span>`; }).join('');
+  const ladder=`<div style="display:flex;align-items:flex-end;gap:3px;margin:2px 0 12px">${rungs}</div>
     <div style="display:flex;gap:11px;flex-wrap:wrap">
-      <div style="flex:1;min-width:210px"><div style="font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:3px">Right now · word difficulty ${bb.band} of 9</div>
+      <div style="flex:1;min-width:210px"><div style="font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:3px">Right now · ${esc(bandStage(bb.band).n)} · level ${bb.band} of 9</div>
         <div style="font-size:13.5px;line-height:1.55">${esc(B.words||'')}</div></div>
       <div style="flex:1;min-width:210px;padding:11px 13px;border-radius:12px;background:color-mix(in srgb,var(--treasure,#F0B429) 13%,transparent)">
         <div style="font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:3px">Coming next</div>
@@ -4605,7 +4707,7 @@ function viewCoachDesk(){
       ${/* natural heights, not stretched: a stretched card ends in empty card, which is
             the dead space itself. */''}
       <div class="sb-coach-2col" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;align-items:start">
-        ${panel('Your word difficulty, and the step ahead', ladder)}
+        ${panel('Your spelling level, and the step ahead', ladder)}
         ${panel('Bizzy’s habit of the day', tipCard)}
         ${panel('Chapters that teach this', chapters)}
       </div>
@@ -4706,6 +4808,7 @@ function viewApp(){
   else if(S.nav==='typing') content=viewTyping();
   else if(S.nav==='builder') content=viewBuilder();
   else if(S.nav==='leveltest') content=viewLevelTest();
+  else if(S.nav==='beeband') content=viewBeeBand();
   else if(S.nav==='coachdesk') content=viewCoachDesk();
   else if(S.nav==='traps') content=viewTraps();
   else if(S.nav==='revisions') content=viewRevisions();
@@ -4800,19 +4903,19 @@ function viewApp(){
         <button data-act="goHome" title="Home" aria-label="Bizzing Bee — Home" style="display:flex;align-items:center;gap:9px;margin-right:auto;background:none;border:0;cursor:pointer"><div style="width:34px;height:38px;flex-shrink:0">${mascotSVG('happy')}</div><span class="sb-brand" style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i><span class="sb-tm" aria-hidden="true">™</span> Bee</span></button>
         ${(()=>{ const bb=beeBand(active());
           // Bee Band lives in the header as a pill: prompts calibration, then shows the band itself.
-          return `<button data-act="${bb.calibrating?'startLevelTest':'setNav'}" data-arg="progress" class="sb-mob-hide ${bb.calibrating?'sb-band-call':''}" title="${bb.calibrating?'A 3-minute placement quest sets your words, games and tips exactly to you':'Word difficulty '+bb.band+' of 9 · '+bb.tier+' — the dial that sets how tricky your words are'}" aria-label="${bb.calibrating?'Find your word difficulty':'Word difficulty '+bb.band}" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:color-mix(in srgb,var(--accent) 13%,var(--chip));border:1px solid color-mix(in srgb,var(--accent) ${bb.calibrating?'62':'38'}%,var(--line));color:var(--accent);font-weight:${bb.calibrating?'900':'800'};font-size:13px;flex-shrink:0;max-width:none">
-            <span class="${bb.calibrating?'sb-band-spark':''}" style="display:inline-flex;line-height:0;flex-shrink:0">${bb.calibrating?'✨':iconSVG('target',15)}</span>
-            <span class="sb-band-lbl" style="white-space:nowrap;position:relative">${bb.calibrating?'Find your level':('Word difficulty '+bb.band)}</span>
-            <span class="sb-band-mini" style="display:none;font-weight:900;position:relative">${bb.calibrating?'Band?':bb.band}</span>
+          const _st=bandStage(bb.band);
+          return `<button data-act="${bb.calibrating?'startLevelTest':'setNav'}" data-arg="beeband" class="sb-mob-hide ${bb.calibrating?'sb-band-call':''}" title="${bb.calibrating?'A 3-minute placement quest sets your words, games and tips exactly to you':escA(_st.n+' · '+_st.s+' — your spelling level. Tap to see how to level up.')}" aria-label="${bb.calibrating?'Find your spelling level':escA('Spelling level '+bb.band+', '+_st.n)}" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:color-mix(in srgb,var(--accent) 13%,var(--chip));border:1px solid color-mix(in srgb,var(--accent) ${bb.calibrating?'62':'38'}%,var(--line));color:var(--accent);font-weight:${bb.calibrating?'900':'800'};font-size:13px;flex-shrink:0;max-width:none">
+            <span class="${bb.calibrating?'sb-band-spark':''}" style="display:inline-flex;line-height:0;flex-shrink:0;${bb.calibrating?'':'width:22px;height:24px'}">${bb.calibrating?'✨':bandArt(bb.band)}</span>
+            <span class="sb-band-lbl" style="white-space:nowrap;position:relative">${bb.calibrating?'Find your level':(bandStage(bb.band).n+' · Level '+bb.band)}</span>
+            <span class="sb-band-mini" style="display:none;font-weight:900;position:relative">${bb.calibrating?'Level?':bb.band}</span>
           </button>`; })()}
         <button data-act="openFinder" title="Word Finder — search 129,000 words, hear them, and add them to a list" aria-label="Search words" style="display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:13px;flex-shrink:0">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2 21 21"/></svg><span class="sb-search-lbl">Search</span></button>
-        ${(()=>{ /* Rank rides in the header beside Search: one ladder, one place, always
-            the same name and emblem whatever world is on. */
-          const r=rankOf(active());
-          return `<button data-act="setNav" data-arg="evolution" class="sb-mob-hide" title="Your rank — ${escA(r.name)} · effort, never falls" aria-label="Rank ${r.level}, ${escA(r.name)}" style="display:inline-flex;align-items:center;gap:7px;padding:4px 13px 4px 5px;border-radius:999px;background:var(--chip);border:1px solid color-mix(in srgb,var(--accent) 26%,var(--line));color:var(--accent);font-weight:800;font-size:13px;flex-shrink:0">
-            <span style="width:24px;height:26px;display:block;flex-shrink:0">${rankArt(r.form)}</span>
-            <span style="white-space:nowrap">Level ${r.level} · ${esc(r.name)}</span></button>`; })()}
+        ${/* The rank pill used to sit here reading "Level 1 · Egg" beside a Bee Band pill
+             reading "Word difficulty 3" — two pills that both read as "your level", for two
+             different things. There is one ladder in the header now: the Bee Band, which IS
+             the spelling level. The evolution forms still live in My Hive, where a
+             collection belongs, reached by the Bizzy button. */''}
         <button data-act="openShop" title="Your coins — tap to open the Store" aria-label="Coins" style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12);flex-shrink:0">${coinAmt(active().coins||0,14)}</button>
         ${(()=>{ const _fon=!!(window.SB_W4_FOCUS&&SB_W4_FOCUS.on());
           /* One button for how the app looks: a tap cycles Light → White → Dusk, a
@@ -5450,7 +5553,7 @@ function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageI
   const owned=avOwnedCount(c);
   const legs=SB_AVATARS.list.filter(a=>a.rarity==='legendary'&&avOwned(c,a.id)).length;
   const epics=SB_AVATARS.list.filter(a=>a.rarity==='epic'&&avOwned(c,a.id)).length;
-  const karma=Object.values(c.lists||{}).reduce((s,l)=>s+(l.xp||0),0);
+  const wordsRight=Object.values(c.lists||{}).reduce((s,l)=>s+(l.xp||0),0);   // one per word spelled right
   /* Spelling Quest's fifteen seasons are retired; the competition record is the
      Mock Spelling Bee's — bees entered, bees won, and the best finish of eleven. */
   let mbSt={}; try{ if(window.MOCKBEE) mbSt=MOCKBEE.stats()||{}; }catch(e){}
@@ -5487,9 +5590,12 @@ function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageI
     { g:'Levels', id:'quest10', name:'Level 10 Ace', desc:'Reach Level 10 on the Journey', ic:'steps', done:jl>=10 },
     { g:'Levels', id:'quest15', name:'Level 15 Star', desc:'Reach Level 15 on the Journey', ic:'steps', done:jl>=15 },
     { g:'Levels', id:'champ', name:'Bizzing Bee Champ', desc:'Clear all 20 Champ Levels', ic:'crown', done:isChampDone(c) },
-    { g:'Levels', id:'karma100', name:'Karma Kindler', desc:'Earn 100 Karma', ic:'bolt', done:karma>=100 },
-    { g:'Levels', id:'karma500', name:'Karma Keeper', desc:'Earn 500 Karma', ic:'bolt', done:karma>=500 },
-    { g:'Levels', id:'karma2000', name:'Karma Legend', desc:'Earn 2,000 Karma', ic:'bolt', done:karma>=2000 },
+    /* The three ids below still read karma*. They are STORAGE KEYS for earned badges —
+       renaming them would re-lock all three for every child who already has them. The name
+       and the wording are what a child reads, and those are fixed. */
+    { g:'Levels', id:'karma100', name:'Hundred Club', desc:'Spell 100 words right', ic:'bolt', done:wordsRight>=100 },
+    { g:'Levels', id:'karma500', name:'Five Hundred', desc:'Spell 500 words right', ic:'bolt', done:wordsRight>=500 },
+    { g:'Levels', id:'karma2000', name:'Two Thousand', desc:'Spell 2,000 words right', ic:'bolt', done:wordsRight>=2000 },
     // Collection
     { g:'Collection', id:'coll10', name:'Starter Set', desc:'Own 10 avatars', ic:'spark', done:owned>=10 },
     { g:'Collection', id:'coll25', name:'Collector', desc:'Own 25 avatars', ic:'spark', done:owned>=25 },
@@ -5647,9 +5753,9 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
 /* ---- Evolution ladder as its own screen (Home shows only the compact card) ---- */
 function viewEvolution(){ const S=state; const c=active(); ensureLists(c); const theme=S.theme; const evo=EVO[theme]||EVO.spellbound;
   const aKey=activeListKey(); const _r=rankOf(c); const fIdx=_r.form; const totalXp=_r.xp;
-  // Karma needed to REACH each rung (stage i needs level 2i+1 → sum of the first 2i level costs)
+  // Right words needed to REACH each rung (stage i needs level 2i+1 → sum of the first 2i level costs)
   const stageXp=(i)=>{ let t=0; for(let l=1;l<=i*2;l++) t+=xpToNext(l); return t; };
-  const rungMarks=Array.from({length:10},(_,i)=>i===0?'start':fmtN(stageXp(i))+' Karma');
+  const rungMarks=Array.from({length:10},(_,i)=>i===0?'start':fmtN(stageXp(i))+' words');
   const xpToForm=Math.max(0, stageXp(Math.min(9,fIdx+1))-totalXp);
   return `<div style="max-width:900px;margin:0 auto">
     ${hiveBar('evo')}
@@ -5662,19 +5768,19 @@ function viewEvolution(){ const S=state; const c=active(); ensureLists(c); const
           <span class="sb-cs">Your rank</span>
           <span style="display:block;font-family:var(--display);font-weight:800;font-size:20px;line-height:1.12">Level ${_r.level} · ${esc(rankName(fIdx))}</span>
           <span style="display:block;font-size:13px;color:var(--muted);font-weight:650;margin-top:3px">
-            <b style="color:var(--text)">${fmtN(totalXp)} karma</b> earned${fIdx>=9?' — top form reached 🎉':(' · '+fmtN(xpToForm)+' more to '+esc(rankName(fIdx+1)))}</span>
+            <b style="color:var(--text)">${fmtN(totalXp)} words spelled right</b>${fIdx>=9?' — top form reached 🎉':(' · '+fmtN(xpToForm)+' more to '+esc(rankName(fIdx+1)))}</span>
           <span style="display:block;height:7px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden;margin-top:8px"><span style="display:block;height:100%;width:${Math.max(0,Math.min(100,Math.round((1-(xpToForm/Math.max(1,(stageXp(Math.min(9,fIdx+1))-stageXp(fIdx))||1)))*100)))}%;background:var(--action,var(--accent))"></span></span>
         </span>
       </div>
       <div style="overflow-x:auto;padding:4px 0 2px"><div style="min-width:760px">${evoLadderHTML('spellbound',fIdx,rungMarks)}</div></div>
-      <div class="sb-cn" style="margin-top:6px">Each rung shows the karma that opens it. Karma is your practice record — one right word anywhere in the app earns one, and it is never spent.</div>
+      <div class="sb-cn" style="margin-top:6px">Each rung shows how many words spelled right opens it — anywhere in the app, and the count never goes down.</div>
     </div>
     <div class="sb-card" style="margin-bottom:14px">
-      <div class="sb-ct" style="font-size:15px;margin-bottom:6px">How Karma works</div>
-      <div class="sb-cs" style="line-height:1.6">One word spelled right = <b style="color:var(--text)">1 Karma</b> — in Practice, the Arcade, Concepts, anywhere. Karma is your practice record: it only grows and is never spent.<br>Coins 🪙 are different — they're treasure you win and <i>spend</i> in the Store on worlds, avatars and power-ups. Spending coins never touches your Karma or your evolution.</div>
+      <div class="sb-ct" style="font-size:15px;margin-bottom:6px">How your bee evolves</div>
+      <div class="sb-cs" style="line-height:1.6">Every word you spell right — in Practice, the Arcade, Concepts, anywhere — moves your bee one step along. The count only grows; nothing takes it away.<br>Coins 🪙 are different: treasure you win and <i>spend</i> in the Store on worlds, avatars and power-ups. Spending coins never costs you a step.</div>
     </div>
     ${(theme==='spellbound')?`<div class="sb-card" style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><span style="font-size:26px;flex-shrink:0">👑</span><span class="sb-cs"><b style="color:var(--text)">Why a Queen at the top?</b> Every hive is ruled by its Queen — the strongest, most protected bee alive. Reaching her means you outgrew every other bee in the hive.</span></div>`:''}
-    ${beeEmpty('happy','Ten forms, one bee. Practise anywhere — Practice, the Arcade, Concepts — and the Karma all feeds the same evolution.')}
+    ${beeEmpty('happy','Ten forms, one bee. Practise anywhere — Practice, the Arcade, Concepts — and every right word feeds the same evolution.')}
   </div>`;
 }
 
@@ -6265,7 +6371,7 @@ function cardDonePanel(){ const miss=((active().missed)||[]).length;
     </div></div>`;
 }
 // Practice Vocabulary — a 4-option meaning quiz on the list's words. Optional (no level impact);
-// a correct pick earns a coin + a karma point.
+// a correct pick earns a coin.
 function vocabPracticeCard(){
   if(!state.vp && !state.vpAllDone) app.vocabNewQ();
   // Whole list matched — a calm "all done" panel (the big celebration fires once, on completion)
@@ -6274,12 +6380,12 @@ function vocabPracticeCard(){
       <div style="width:132px;height:132px;margin:6px auto 4px">${myAvatar(132)}</div>
       <div style="font-family:var(--display);font-weight:800;font-size:26px;margin:6px 0 4px">Every word — matched! 🌟</div>
       <div style="font-size:14.5px;color:var(--muted);font-weight:500;margin-bottom:6px">You went through the whole list and matched <b style="color:var(--text)">${right}</b> of <b style="color:var(--text)">${total}</b> meanings${pct>=80?' — superb!':pct>=50?' — nicely done!':'.'}</div>
-      <div style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;color:var(--treasure-deep,#8A5B00);background:color-mix(in srgb,var(--treasure,#F0B429) 16%,transparent);border-radius:999px;padding:5px 13px;margin-bottom:16px">🌟 ${(active().karma)||0} karma</div>
+      <div style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;color:var(--treasure-deep,#8A5B00);background:color-mix(in srgb,var(--treasure,#F0B429) 16%,transparent);border-radius:999px;padding:5px 13px;margin-bottom:16px">🪙 ${(active().coins)||0} coins</div>
       <div><button data-act="vocabRestart" style="padding:13px 26px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">↺ Play the list again</button></div>
     </div>`; }
   const vp=state.vp;
   if(!vp) return `<div style="max-width:520px;margin:0 auto">${beeEmpty('sleepy','No words with meanings in this list yet — pick a list with definitions and try again.')}</div>`;
-  const w=vp.w; const karma=(active().karma)||0;
+  const w=vp.w;
   const optBtn=(o,i)=>{ let bg='var(--surface2)',bd='var(--line)',col='var(--text)',mark='';
     if(vp.picked!=null){ if(o.correct){ bg='color-mix(in srgb,var(--good) 16%,transparent)'; bd='var(--good)'; col='var(--good)'; mark=' ✓'; }
       else if(i===vp.picked){ bg='color-mix(in srgb,var(--bad) 14%,transparent)'; bd='var(--bad)'; col='var(--bad)'; mark=' ✗'; } else { col='var(--muted)'; } }
@@ -6287,7 +6393,7 @@ function vocabPracticeCard(){
   return `<div style="max-width:560px;margin:0 auto">
     <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:12px">
       <span style="font-size:12px;color:var(--muted);font-weight:700">Optional — doesn’t change your level, but great practice (recommended!)</span>
-      <span style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;color:var(--treasure-deep,#8A5B00);background:color-mix(in srgb,var(--treasure,#F0B429) 16%,transparent);border-radius:999px;padding:4px 11px">🌟 ${karma} karma</span>
+      <span style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;color:var(--treasure-deep,#8A5B00);background:color-mix(in srgb,var(--treasure,#F0B429) 16%,transparent);border-radius:999px;padding:4px 11px">🪙 ${(active().coins)||0}</span>
       ${vp.total?`<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">Word ${vp.idx||1} of ${vp.total}</span>`:''}
       ${state.vpDone?`<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">✓ ${state.vpRight||0}/${state.vpDone}</span>`:''}
     </div>
