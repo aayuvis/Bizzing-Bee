@@ -133,8 +133,11 @@ handlers. App lives in this folder; open `index.html` to run.
   which is the point — the two notations on a card must agree with each other).
 
 ## The Word Map (`trail.js` + `trail-data.js`) — the Journey tab
-- **Five tabs: Home · World Atlas · Practice · Library · Play**, spread evenly
-  across the bar (`flex:1` each). The Atlas has **no sub-nav** — the tab is the map, and the
+- **SIX tabs: Home · World Atlas · Practice · Library · Play · My Hive**, spread evenly
+  across the bar (`flex:1` each). My Hive earned a tab: it is a place a speller goes on
+  purpose, and reaching it through a small round face in the top-right read as a profile
+  menu. That button is deleted, and `navIcon` gained a `hive` glyph in the same dialect.
+  Progress is still NOT a tab. The Atlas has **no sub-nav** — the tab is the map, and the
   only chrome on it is the Revise / My traps pill pair. The Library is its own tab again
   (every explore-family nav lights it). My Hive is not a tab: the **Bizzy button** in the
   header opens it. The mobile bar carries the same six (Atlas / Stats are the short labels).
@@ -190,6 +193,14 @@ handlers. App lives in this folder; open `index.html` to run.
   the same curve serves 2 stops at Tier I and 22 at Tier III. Long acts pan sideways and
   auto-scroll to the frontier. `trailPick` selects, `trailTrain` hands the stop's words
   to Practice, `SB_TRAIL_TAUGHT(gi)` answers the reverse question for concept pages.
+- **The Bee Band pill lives on HOME, under the daily-goal rings** — not in the header any
+  more (Aug 2026, with the top-right icons cleared). The rings card is itself a `<button>`,
+  so the band cannot nest inside it: card and pill are SIBLINGS in one flex column.
+  `tests/nav-hive-band.cjs` asserts no `button button` anywhere, because a nested button
+  is invalid and the inner one silently never fires.
+- **"Find your level" SHEENS, it does not flash.** It used to pulse a shadow ring outward
+  and hop the pill 1.5px twice every four seconds, on a card a speller is trying to read.
+  Only `sb-band-sheen` survives — a highlight travelling across the tile, no movement.
 - **One thing is called a Level: the BEE BAND, and it is your spelling level.** (Reversed
   Aug 2026.) There used to be three: a Bee Band pill reading "Word difficulty 3", a rank
   pill reading "Level 1 · Egg", and **Karma** — which turned out to be two different
@@ -284,6 +295,21 @@ handlers. App lives in this folder; open `index.html` to run.
   boot migration refunds the full purchase price and flashes once. `mascotAcc` was also
   called from `trivia.js` — check other files when removing an app3 helper. Bee Cheer went
   with them. Guard: `tests/no-accessories.cjs`.
+- **Settings is quick TILES, not rows** (`.sb-qgrid` / `.sb-qtile`, index.html). Look & feel
+  and Sound & voice were two sections of look-alike rows a parent had to read end to end;
+  they are one grid of ten tap-to-change tiles. Two kinds, and the distinction is the
+  borrowed phone idea: a TOGGLE lights up (accent ground, white ink) when on; a CHOICE
+  never lights and shows the current option, advancing on tap via `data-arg` (no new
+  actions needed — `choice()` computes the next value). The Advanced Pack is folded INSIDE
+  Account & subscription; it used to be a card directly beneath, where a parent looking for
+  the plan found two things that both looked like the plan. The Buddy row is gone — it was
+  read-only and could only tell you to go to the Hive. Guard: `tests/settings-tiles.cjs`.
+- **AGE IS A RANGE, NOT A NUMBER, and the name is a DISPLAY name.** Onboarding and Settings
+  ask for one of four bands (`AGE_BANDS`: 5–7 / 8–10 / 11–13 / 14–18) — never a birthday-exact
+  age. `c.ageBand` is the value of record; **`c.age` is still written as the band MIDPOINT**,
+  which is why all eight existing readers (`ttBand`, `diffRange`, `ageMode`, `parentSignals`,
+  the weekly report…) needed no change. Legacy profiles carry a bare `c.age` and are read
+  through `bandForAge`. Guard: `tests/onboarding-age.cjs`.
 - **Never show a speller how long the road is.** The Atlas said `0/102 stops` on Home, in
   the drawer (`atlasSub`) and above the map (`tierBar` in trail.js). 102 is a mountain, not
   a map, and the bar beside it already said the same thing — the bar stays, the total goes,

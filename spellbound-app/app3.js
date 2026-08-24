@@ -1041,6 +1041,23 @@ function beeBand(c){ c=c||active(); const band=Math.max(1,Math.min(9,c.band||c.b
   const cal=bandEvidence(c)<BAND_MIN_EV && !c.bandSeed; /* a placement result IS evidence — never call it calibrating */
   const s=_bandAcc(c,band);
   return { band, tier:bandTier(band), calibrating:cal, acc:Math.round((s.acc||0)*100), n:s.w }; }
+/* AGE IS A RANGE, NOT A NUMBER. We ask a child for a band, never their birthday-exact
+   age: it is less to hold about a real child, and nothing in the app needed the precision
+   — every reader (ttBand, diffRange, ageMode, the tips engine) buckets it anyway. `c.age`
+   is still written, as the band's MIDPOINT, so all eight of those readers keep working
+   untouched; `c.ageBand` is the value of record. Legacy profiles carry a bare `c.age` and
+   are read through bandForAge. */
+const AGE_BANDS=[
+  {k:'5-7',   lo:5,  hi:7,  mid:6,  n:'5\u20137',   sub:'just starting'},
+  {k:'8-10',  lo:8,  hi:10, mid:9,  n:'8\u201310',  sub:'school bee age'},
+  {k:'11-13', lo:11, hi:13, mid:12, n:'11\u201313', sub:'regional level'},
+  {k:'14-18', lo:14, hi:18, mid:16, n:'14\u201318', sub:'national level'},
+];
+const bandForAge=(a)=>{ a=+a||9; return AGE_BANDS.find(x=>a>=x.lo&&a<=x.hi)||AGE_BANDS[1]; };
+const ageBandOf=(c)=>{ c=c||active(); const b=c&&c.ageBand&&AGE_BANDS.find(x=>x.k===c.ageBand);
+  return b || bandForAge(c&&c.age); };
+function setAgeBand(c,k){ const b=AGE_BANDS.find(x=>x.k===k); if(!c||!b) return false;
+  c.ageBand=b.k; c.age=b.mid; return true; }
 function masteredCount(){ try{ return Object.keys(state.luMastered||{}).filter(k=>state.luMastered[k]).length; }catch(e){ return 0; } }
 function coachReadiness(){ const pool=coachPool(); const srs=state.coachSrs||{}; let nw=0,lr=0,rv=0,ms=0;
   pool.forEach(r=>{ const st=srsState(srs[nkey(r.w)]); if(st==='new')nw++; else if(st==='learning')lr++; else if(st==='review')rv++; else ms++; });
@@ -1072,6 +1089,7 @@ const app = {
   // onboarding
   onDraftName:(v)=>set({draft:{...state.draft,name:v}}),
   onDraftAge:(v)=>set({draft:{...state.draft,age:+v}}),
+  onDraftBand:(k)=>{ const b=AGE_BANDS.find(x=>x.k===k)||AGE_BANDS[1]; set({draft:{...state.draft, age:b.mid, ageBand:b.k}}); },
   pickAvatar:(id)=>set({draft:{...state.draft,avatar:id}}),
   pickGoal:(v)=>set({draft:{...state.draft,goal:+v}}),
   onbBeeDate:(v)=>{ state.draft.beeDate=v||null; },
@@ -1089,7 +1107,7 @@ const app = {
     if(state.landWant && state.landWant!=='free'){ const want=state.landWant; state.landWant=null;
       setTimeout(()=>{ try{ state.tierUpsell={feature:'plan', label:'the plan you picked', need:want};
         set({showTiers:true}); }catch(e){} }, 700); } },
-  _finishOnb:()=>{ const S=state; const kid={ name:S.draft.name.trim()||'Speller', age:S.draft.age, avatar:S.draft.avatar, theme:S.theme, goal:S.draft.goal, level:1, streak:0, acc:0, xp:0, week:[0,0,0,0,0,0,0] };
+  _finishOnb:()=>{ const S=state; const kid={ name:S.draft.name.trim()||'Speller', age:S.draft.age, ageBand:S.draft.ageBand||bandForAge(S.draft.age).k, avatar:S.draft.avatar, theme:S.theme, goal:S.draft.goal, level:1, streak:0, acc:0, xp:0, week:[0,0,0,0,0,0,0] };
     if(S.draft.beeDate) kid.milestone={ label:(S.draft.beeLabel||'the bee'), date:S.draft.beeDate };
     const newIdx=S.children.length; state.children=[...S.children,kid]; state.activeIdx=newIdx; state.goalDone=0; state.addingMore=false; save(); },
   startLevelTest:()=>{ if(state.screen==='onboarding'){ if(!state.draft.name.trim()){ flash('Add a name first'); return; } app._finishOnb(); }
@@ -2300,7 +2318,7 @@ const app = {
     const missChips=misses.length?misses.map(m=>`<span style="display:inline-block;border:1px solid #ddd;border-radius:20px;padding:3px 10px;margin:3px;font-size:12px;font-family:monospace">${E(m.w)}${m.n>1?(' ×'+m.n):''}</span>`).join(''):'<i style="color:#888">No misses — great week!</i>';
     const html='<!doctype html><html><head><meta charset="utf-8"><title>Bizzing Bee — '+E(c.name)+'</title>'+
       '<style>*{box-sizing:border-box}body{font-family:-apple-system,Segoe UI,Arial,sans-serif;color:#1a1530;max-width:740px;margin:0 auto;padding:28px}h1{font-size:24px;margin:0}h2{font-size:15px;text-transform:uppercase;letter-spacing:.05em;color:#7C5CFF;margin:26px 0 10px;border-bottom:2px solid #eee;padding-bottom:6px}.row{display:flex;gap:14px;flex-wrap:wrap}.stat{flex:1;min-width:120px;border:1px solid #eee;border-radius:10px;padding:14px;text-align:center}.stat b{display:block;font-size:24px}.stat span{font-size:12px;color:#888;text-transform:uppercase;letter-spacing:.04em}@media print{body{padding:0}button{display:none}}</style></head><body>'+
-      '<div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #7C5CFF;padding-bottom:12px"><div><div style="font-size:13px;color:#7C5CFF;font-weight:800;letter-spacing:.08em">BIZZING BEE · WEEKLY REPORT</div><h1>'+E(c.name)+'</h1></div><div style="text-align:right;font-size:12px;color:#888">'+new Date().toLocaleDateString()+'<br>Age '+E(c.age||9)+'</div></div>'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #7C5CFF;padding-bottom:12px"><div><div style="font-size:13px;color:#7C5CFF;font-weight:800;letter-spacing:.08em">BIZZING BEE · WEEKLY REPORT</div><h1>'+E(c.name)+'</h1></div><div style="text-align:right;font-size:12px;color:#888">'+new Date().toLocaleDateString()+'<br>Ages '+E(ageBandOf(c).n)+'</div></div>'+
       '<h2>This week at a glance</h2><div class="row"><div class="stat"><b>'+daysThisWeek+'/7</b><span>Days practised</span></div><div class="stat"><b>'+(c.streak||0)+'</b><span>Day streak</span></div><div class="stat"><b>'+sessions+'</b><span>Sessions</span></div><div class="stat"><b>'+acc+'%</b><span>Accuracy</span></div></div>'+
       '<table style="width:100%;margin-top:16px;border-collapse:collapse"><tr>'+dotRow+'</tr></table>'+
       '<h2>Progress</h2><div class="row"><div class="stat"><b>'+rk.level+'</b><span>Rank · '+E(rk.name)+'</span></div><div class="stat"><b>'+ov+'</b><span>Stage ('+E(listLabel(activeListKey()))+')</span></div><div class="stat"><b>'+mastered+'</b><span>Words mastered</span></div><div class="stat"><b>'+totRight+'</b><span>Correct this week</span></div><div class="stat"><b>'+bnd.band+'</b><span>Word difficulty · '+E(bnd.tier)+'</span></div></div>'+
@@ -2350,12 +2368,14 @@ const app = {
   signOut:()=>set({screen:'landing', nav:'home', email:'', pw:''}),
   celebrateClose:()=>set({celebrate:null}),
   setAgeMode:(m)=>{ const c=active(); c.ageMode=m; save(); render(); },
+  setAgeBand:(k)=>{ const c=active(); if(setAgeBand(c,k)){ save(); render(); } },
   setLight:()=>app.setMode('light'), setWhite:()=>app.setMode('white'), setDusk:()=>app.setMode('dusk'),
   /* A tap cycles the look; a double-tap is focus. The cycle waits a beat so the two
      gestures cannot both fire off one double-tap. */
   cycleMode:()=>{ clearTimeout(app._modeT); app._modeT=setTimeout(()=>{ const o=['light','white','dusk']; app.setMode(o[(o.indexOf(state.mode)+1)%3]); },230); },
   profName:(v)=>{ const c=active(); c.name=(v||'').slice(0,24); save(); }, /* no per-key render (input keeps its own value) */
-  profAge:(v)=>{ const c=active(); const n=parseInt(v,10); if(n>=5&&n<=18){ c.age=n; save(); render(); } },
+  /* Kept for old callers: still snaps to the band, so nothing stores a bare age. */
+  profAge:(v)=>{ const c=active(); const n=parseInt(v,10); if(n>=5&&n<=18){ setAgeBand(c, bandForAge(n).k); save(); render(); } },
   profGoal:(v)=>{ const c=active(); c.goal=+v||10; save(); render(); flash('Daily goal set to '+c.goal+' words'); },
   // The three self-set daily targets behind the Home rings.
   setTgtApp:(v)=>{ const c=active(); c.tgt=c.tgt||{}; c.tgt.app=Math.max(1,Math.min(600,parseInt(v,10)||TGT_DEF.app)); save(); render(); },
@@ -3101,13 +3121,15 @@ function viewOnboarding(){
     card=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow)">
       <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">Who's practising?</h2>
       <p style="margin:0 0 20px;color:var(--muted);font-size:13px">Set up your speller's profile.</p>
-      <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Name</label>
-      <input data-inp="onDraftName" data-fkey="draftName" value="${escA(S.draft.name)}" placeholder="e.g. Ahana" style="width:100%;padding:13px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:700;margin-bottom:18px;outline:none">
-      <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:8px">Age · <b style="color:var(--text)">${S.draft.age}</b></label>
-      <input data-inp="onDraftAge" data-fkey="draftAge" type="range" min="5" max="15" step="1" value="${S.draft.age}" style="width:100%;accent-color:var(--accent);margin-bottom:20px">
+      <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Display name <span style="font-weight:600">— a nickname is perfect</span></label>
+      <input data-inp="onDraftName" data-fkey="draftName" value="${escA(S.draft.name)}" placeholder="e.g. Ahana, or Fox" style="width:100%;padding:13px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:700;margin-bottom:18px;outline:none">
+      <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:8px">Age range</label>
+      ${(()=>{ const cur=bandForAge(S.draft.age).k;
+        return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(76px,1fr));gap:8px;margin-bottom:20px">${AGE_BANDS.map(b=>{ const on=b.k===cur;
+          return `<button data-act="onDraftBand" data-arg="${b.k}" style="padding:11px 8px;border-radius:13px;text-align:center;background:${on?'var(--accent)':'var(--surface)'};border:1.5px solid ${on?'var(--accent)':'var(--line)'};color:${on?'#fff':'var(--text)'};font-weight:800;font-size:14px;line-height:1.2">${b.n}<span style="display:block;font-size:10.5px;font-weight:650;opacity:.8;margin-top:2px">${b.sub}</span></button>`; }).join('')}</div>`; })()}
       <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:10px;text-align:center">Pick a buddy</label>
       ${avatars}
-      <p style="margin:18px 0 0;font-size:12px;color:var(--muted);font-weight:650;text-align:center;line-height:1.5">A nickname works great. The name and age stay on this device — nothing is sent anywhere.<br><a href="privacy.html" style="color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:3px">Privacy &amp; Parents' Notice</a></p></div>`;
+      <p style="margin:18px 0 0;font-size:12px;color:var(--muted);font-weight:650;text-align:center;line-height:1.5">The display name and age range stay on this device — nothing is sent anywhere, and we never ask for a real name or an exact age.<br><a href="privacy.html" style="color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:3px">Privacy &amp; Parents' Notice</a></p></div>`;
   } else if(S.onbStep===1){
     const worldCards=THEMES.map(t=>{ const open=FREE_THEMES.indexOf(t.id)>=0;
       return worldHeroCard(t, t.id===S.draft.theme, !open, 'onbWorld'); }).join('');
@@ -4191,7 +4213,7 @@ function viewIpaTrain(){ const S=state; const it=S.it; const pool=ipaPool();
    icon drops back to currentColor, because the pill behind it is already the
    accent and a coloured glyph on it would be unreadable. */
 const NAV_TINT={ home:'#F0A93C', atlas:'#6C4FE0', practice:'#E8458C', library:'#0E8A78',
-  play:'#3B6FE0', progress:'#C8901B' };
+  play:'#3B6FE0', hive:'#C8901B', progress:'#C8901B' };
 function navIcon(key,size,plain){ size=size||22;
   const tint=plain?'currentColor':(NAV_TINT[key]||'currentColor');
   const w=(inner)=>`<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="${tint}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;flex-shrink:0">${inner}</svg>`;
@@ -4208,6 +4230,8 @@ function navIcon(key,size,plain){ size=size||22;
     /* a gamepad */
     play:()=>w(f('M7.2 7.4h9.6a4.6 4.6 0 0 1 4.6 4.6v.6a4 4 0 0 1-7.1 2.5H9.7A4 4 0 0 1 2.6 12.6V12a4.6 4.6 0 0 1 4.6-4.6z')+'<path d="M7.2 7.4h9.6a4.6 4.6 0 0 1 4.6 4.6v.6a4 4 0 0 1-7.1 2.5H9.7A4 4 0 0 1 2.6 12.6V12a4.6 4.6 0 0 1 4.6-4.6z"/><path d="M6.4 11.6h2.8M7.8 10.2v2.8"/><circle cx="15.4" cy="10.8" r=".9" fill="${tint}" stroke="none"/><circle cx="17.6" cy="12.8" r=".9" fill="${tint}" stroke="none"/>'),
     /* a climbing chart with the last point lit */
+    /* a skep hive with its comb — My Hive is a tab now, not a face in the corner */
+    hive:()=>w(f('M12 3.2c4.3 0 7.4 3.6 7.4 8.4s-3.1 8.8-7.4 8.8-7.4-4-7.4-8.8S7.7 3.2 12 3.2z')+'<path d="M12 3.2c4.3 0 7.4 3.6 7.4 8.4s-3.1 8.8-7.4 8.8-7.4-4-7.4-8.8S7.7 3.2 12 3.2z"/><path d="M5.6 8.6h12.8M4.8 12.4h14.4M5.4 16.2h13.2"/><path d="M10.4 20.4h3.2"/>'),
     progress:()=>w(f('M4.6 19.4h15V21h-15zM6.4 13h2.8v6.4H6.4zM11.2 9.6H14v9.8h-2.8zM16 5.8h2.8v13.6H16z')+'<path d="M4 20.4h16"/><rect x="6.4" y="12.4" width="3" height="8" rx="1.1"/><rect x="11" y="9" width="3" height="11.4" rx="1.1"/><rect x="15.6" y="5.2" width="3" height="15.2" rx="1.1"/><circle cx="17.1" cy="3" r="1.5" fill="${tint}" stroke="none"/>'),
   };
   return (M[key]||M.home)();
@@ -4868,10 +4892,10 @@ function viewApp(){
   const S=state;
   const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,quotes:1,typing:1,builder:1,adv:1,traps:1,revisions:1,trivtrain:1,ipatrain:1};
   const NAV_ART={home:'home',coach:'practice',explore:'explore',games:'arcade',progress:'progress',collection:'collection'};
-  /* Four tabs. The Library is not a destination any more — it is the Journey's
-     index, so every explore-family nav lights the Journey tab. Progress and My Hive
-     are not tabs either: they are you, and you are the avatar in the header. */
-  const navTabs=[['home','Home','home'],['trail','World Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play']].map(([key,label,ic])=>{
+  /* SIX tabs. My Hive earned one: it is a place a speller goes on purpose, and reaching
+     it through a small round face in the corner made it feel like a profile menu. That
+     button is gone. Progress is still not a tab — it opens from Settings and the drawer. */
+  const navTabs=[['home','Home','home'],['trail','World Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play'],['collection','My Hive','hive']].map(([key,label,ic])=>{
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:key==='coach'?(S.nav==='coach'||S.nav==='train'||S.nav==='levelup'||S.nav==='quest'):S.nav===key;
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
     const glyph=`<span style="display:inline-flex;line-height:0">${navIcon(ic,21,on)}</span>`;
@@ -4986,14 +5010,6 @@ function viewApp(){
       <div style="max-width:1080px;margin:0 auto;padding:11px clamp(9px,3.2vw,32px);display:flex;flex-wrap:wrap;align-items:center;gap:8px">
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
         <button data-act="goHome" title="Home" aria-label="Bizzing Bee — Home" style="display:flex;align-items:center;gap:9px;margin-right:auto;background:none;border:0;cursor:pointer"><div style="width:34px;height:38px;flex-shrink:0">${mascotSVG('happy')}</div><span class="sb-brand" style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i><span class="sb-tm" aria-hidden="true">™</span> Bee</span></button>
-        ${(()=>{ const bb=beeBand(active());
-          // Bee Band lives in the header as a pill: prompts calibration, then shows the band itself.
-          const _st=bandStage(bb.band);
-          return `<button data-act="${bb.calibrating?'startLevelTest':'setNav'}" data-arg="beeband" class="sb-mob-hide ${bb.calibrating?'sb-band-call':''}" title="${bb.calibrating?'A 3-minute placement quest sets your words, games and tips exactly to you':escA(_st.n+' · '+_st.s+' — your spelling level. Tap to see how to level up.')}" aria-label="${bb.calibrating?'Find your spelling level':escA('Spelling level '+bb.band+', '+_st.n)}" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:color-mix(in srgb,var(--accent) 13%,var(--chip));border:1px solid color-mix(in srgb,var(--accent) ${bb.calibrating?'62':'38'}%,var(--line));color:var(--accent);font-weight:${bb.calibrating?'900':'800'};font-size:13px;flex-shrink:0;max-width:none">
-            <span class="${bb.calibrating?'sb-band-spark':''}" style="display:inline-flex;line-height:0;flex-shrink:0;${bb.calibrating?'':'width:22px;height:24px'}">${bb.calibrating?'✨':bandArt(bb.band)}</span>
-            <span class="sb-band-lbl" style="white-space:nowrap;position:relative">${bb.calibrating?'Find your level':(bandStage(bb.band).n+' · Level '+bb.band)}</span>
-            <span class="sb-band-mini" style="display:none;font-weight:900;position:relative">${bb.calibrating?'Level?':bb.band}</span>
-          </button>`; })()}
         <button data-act="openFinder" title="Word Finder — search 129,000 words, hear them, and add them to a list" aria-label="Search words" style="display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:13px;flex-shrink:0">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2 21 21"/></svg><span class="sb-search-lbl">Search</span></button>
         ${/* The rank pill used to sit here reading "Level 1 · Egg" beside a Bee Band pill
@@ -5011,17 +5027,18 @@ function viewApp(){
             ? `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"><rect x="4.2" y="4.2" width="15.6" height="15.6" rx="4"/><path d="M12 4.2v15.6" opacity=".45"/></svg>`
             : `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="none"><path d="M20.6 14.8A8.8 8.8 0 0 1 9.2 3.4 8.8 8.8 0 1 0 20.6 14.8z"/><circle cx="17.4" cy="5.6" r="1.1" opacity=".8"/></svg>`;
           return `<button data-act="cycleMode" data-dbl="toggleFocus" class="sb-hdr-ico${_fon?' on':''}" aria-label="Appearance: light, white or dusk. Double-tap for focus." title="Tap: Light / White / Dusk${_fon?' · focus is ON':''} — double-tap for focus">${glyph}</button>`; })()}
-        <button data-act="setNav" data-arg="collection" class="sb-hdr-ico round" aria-label="Your hive — collection, your bee and worlds" title="Your hive — collection, your bee, worlds">
-          <span style="width:30px;height:34px;display:block">${mascotSVG('happy')}</span></button>
         <button data-act="goSettings" class="sb-hdr-ico" aria-label="Settings" title="Settings">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M4 7.5h9M17.5 7.5H20M4 12h3.5M12 12h8M4 16.5h7.5M16 16.5H20"/><circle cx="15" cy="7.5" r="2.2"/><circle cx="9.5" cy="12" r="2.2"/><circle cx="13.5" cy="16.5" r="2.2"/></svg></button>
+          ${/* Three sliders in a 24-box put the rows 5px apart and the knobs all but
+                touching — it read as a smudge at 20px. Two rows, further apart, bigger
+                knobs, hollow centres: the same idea, legible. */''}
+          <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3.6 8.6h5.2M13.4 8.6h7M3.6 15.4h7.2M15.8 15.4h4.6"/><circle cx="11.1" cy="8.6" r="2.6" fill="var(--bg2,#fff)"/><circle cx="13.5" cy="15.4" r="2.6" fill="var(--bg2,#fff)"/></svg></button>
       </div>
       <div class="sb-topnav" style="max-width:1080px;margin:0 auto;padding:0 clamp(14px,3.5vw,32px) 9px;display:flex;gap:6px;overflow-x:auto">${navTabs}</div>
     </div>
     ${viewDrawer()}
     <div class="sb-content" style="max-width:1080px;margin:0 auto;width:100%;padding:18px clamp(14px,3.5vw,32px) 60px">${content}</div>
     <nav class="sb-tabbar" aria-label="Primary">
-      ${[['home','Home','home'],['trail','Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play']].map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='coach'&&(S.nav==='train'||S.nav==='levelup'||S.nav==='quest')));
+      ${[['home','Home','home'],['trail','Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play'],['collection','Hive','hive']].map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='coach'&&(S.nav==='train'||S.nav==='levelup'||S.nav==='quest')));
         const gl=`<span style="display:inline-flex;line-height:0">${navIcon(ic,23)}</span>`;
         return `<button data-act="setNav" data-arg="${k}" aria-current="${on?'page':'false'}" style="${on?'color:var(--accent)':'color:var(--muted)'}">${gl}<span>${l}</span></button>`; }).join('')}
     </nav>
@@ -5245,7 +5262,17 @@ function viewHome(){
           <span style="width:8px;height:8px;border-radius:3px;background:${col};flex-shrink:0"></span>
           <span style="color:var(--muted)">${lab}</span>
           <span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;color:var(--ink,var(--text));white-space:nowrap">${val}<span style="color:var(--muted)">/${tgt}</span></span></div>`;
-        return `<button data-act="openCoachDesk" title="See what Bizzy makes of today" class="sb-card" style="display:flex;align-items:center;gap:13px;min-height:128px;padding:14px;text-align:left;cursor:pointer;width:100%">
+        /* The rings card is a BUTTON, so the band pill cannot live inside it — a button
+           may not contain a button. Card and pill are siblings in one column instead. */
+        const bb=beeBand(c); const st=bandStage(bb.band);
+        const bandRow=`<button data-act="${bb.calibrating?'startLevelTest':'setNav'}" data-arg="beeband" class="${bb.calibrating?'sb-band-call':''}" aria-label="${bb.calibrating?'Find your spelling level':escA('Spelling level '+bb.band+', '+st.n)}" title="${bb.calibrating?'A 3-minute placement quest sets your words, games and tips exactly to you':escA(st.n+' · '+st.s+' — your spelling level. Tap to see how to level up.')}" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 13px;border-radius:14px;background:${bb.calibrating?'var(--chip)':'var(--paper,var(--bg2))'};border:1px solid ${bb.calibrating?'color-mix(in srgb,var(--accent) 45%,var(--line))':'var(--line)'};box-shadow:var(--sh-rest);cursor:pointer">
+            <span style="flex:none;display:inline-flex;line-height:0;${bb.calibrating?'':'width:26px;height:28px'}">${bb.calibrating?'✨':bandArt(bb.band)}</span>
+            <span style="min-width:0;flex:1">
+              <span style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)">Your spelling level</span>
+              <span style="display:block;font-family:var(--display);font-weight:800;font-size:14.5px;line-height:1.2;color:var(--text)">${bb.calibrating?'Find your level':esc(st.n+' · Level '+bb.band)}</span></span>
+            <span style="flex:none;font-weight:800;font-size:12.5px;color:var(--accent)">${bb.calibrating?'Start →':'→'}</span></button>`;
+        return `<div style="display:flex;flex-direction:column;gap:9px">
+        <button data-act="openCoachDesk" title="Coach speaks — what Bizzy makes of today" class="sb-card" style="display:flex;align-items:center;gap:13px;min-height:128px;padding:14px;text-align:left;cursor:pointer;width:100%">
         <span style="flex-shrink:0;width:104px;height:104px;display:grid;place-items:center">${ringsSVG(104,[m.pApp,m.pPrac,m.pWords])}</span>
         <span style="min-width:0;flex:1">
           <span class="sb-ct" style="display:block;margin-bottom:6px">Daily goal${allDone?' ✓':''}</span>
@@ -5254,8 +5281,9 @@ function viewHome(){
             ${line('Practise time', RING_COL[1][0], fmtMins(m.prac), targets(c).prac+'m')}
             ${line('Word count', RING_COL[2][0], m.words, m.tWords)}
           </span>
-          <span class="sb-cl" style="display:block;margin-top:8px">${allDone?'All three rings closed — brilliant!':'what Bizzy makes of it →'}</span>
-        </span></button>`; })()}
+          <span class="sb-cl" style="display:block;margin-top:8px;color:var(--accent);font-weight:800">${allDone?'All three rings closed — Coach speaks →':'Coach speaks →'}</span>
+        </span></button>
+        ${bandRow}</div>`; })()}
       ${wohTile}
     </div>
     <div class="sb-home-r2">
@@ -7882,93 +7910,103 @@ function viewVoiceTest(){
 }
 
 function viewSettings(){
-  const S=state;
-  const themes=THEMES.map(t=>{ const un=isThemeUnlocked(t.id);
-    return worldHeroCard(t, t.id===S.theme, !un, un?'pickTheme':'buyTheme'); }).join('');
+  const S=state, c=active();
   const _voices=enVoices();
   const _nat=(n)=>/natural|enhanced|premium|siri|google|neural|online/i.test(n);
   const voiceOpts=['<option value="">Auto · best available</option>'].concat(_voices.map(v=>`<option value="${escA(v.name)}"${VOICE.name===v.name?' selected':''}>${esc(v.name)}${_nat(v.name)?' ✨':''}</option>`)).join('');
-  const _pc=active();
-  const _avActive=SB_AVATARS.byId[_pc.avatar]||{name:'Buddy'};
-  const _avRows=`<div style="display:flex;align-items:center;gap:14px">
-      <span style="width:66px;height:66px;flex-shrink:0;display:grid;place-items:center;background:var(--surface2);border-radius:14px;border:2px solid var(--accent);padding:5px"><span style="width:56px;height:56px;display:inline-block">${avatarSVG(_pc.avatar,56)}</span></span>
-      <div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:15px">${esc(_avActive.name||'Buddy')}</div>
-      <button data-act="openCollection" class="sb-cl" style="background:none;border:0;padding:0;cursor:pointer;white-space:normal;text-align:left">Change or collect buddies in your Collection →</button></div>
-    </div>`;
-  const profileCard=`<div class="sb-card" style="margin-bottom:16px">
-      <div style="font-family:var(--display);font-weight:800;font-size:15px">Profile</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Pick your own display name and buddy — parents can adjust age, the daily targets and milestones here too.</div>
-      <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Display name</label>
-      <input data-inp="profName" data-fkey="profName" value="${escA(_pc.name||'')}" maxlength="24" placeholder="e.g. Ahana" autocomplete="off" style="width:100%;max-width:320px;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:700;margin-bottom:14px;outline:none">
-      <div style="display:flex;gap:22px;flex-wrap:wrap;margin-bottom:14px">
-        <div><label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Age · <b style="color:var(--text)">${_pc.age||9}</b></label>
-          <input type="range" min="5" max="18" value="${_pc.age||9}" data-inp="profAge" style="width:200px"></div>
-      </div>
-      ${(()=>{ const t=targets(_pc);
-        const num=(lab,col,act,val,unit,hint)=>`<div style="flex:1;min-width:150px">
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px"><span style="width:9px;height:9px;border-radius:3px;background:${col};flex-shrink:0"></span>${lab}</label>
-          <div style="display:flex;align-items:center;gap:7px">
-            <input type="number" min="1" max="600" data-chg="${act}" value="${val}" style="width:82px;padding:11px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:14px;outline:none">
-            <span style="font-size:12.5px;color:var(--muted);font-weight:700">${unit}</span></div>
-          <div style="font-size:11.5px;color:var(--muted);font-weight:600;margin-top:4px;line-height:1.35">${hint}</div></div>`;
-        return `<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px">
-          <div style="display:flex;align-items:center;gap:9px;margin-bottom:3px"><span style="flex-shrink:0">${ringsSVG(34,[1,1,1])}</span><span style="font-family:var(--display);font-weight:800;font-size:15px">Your three daily targets</span></div>
-          <div style="font-size:12.5px;color:var(--muted);margin-bottom:12px;line-height:1.45">Set them yourself — they draw the three rings on the Home card. Going past a target is encouraged; the ring keeps filling.</div>
-          <div style="display:flex;gap:14px;flex-wrap:wrap">
-            ${num('Total time on the app', RING_COL[0][0], 'setTgtApp', t.app, 'min / day', 'Everything you do in Bizzing Bee.')}
-            ${num('Time practising words', RING_COL[1][0], 'setTgtPrac', t.prac, 'min / day', 'Practice and revisions only — the clock stops in games.')}
-            ${num('Words practised', RING_COL[2][0], 'setTgtWords', t.words, 'words / day', 'Your daily word goal — used all across the app.')}
-          </div></div>`; })()}
-      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px">
-        <div><label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Milestone <span style="font-weight:600">(optional — e.g. NSF Finals)</span></label>
-          <input data-inp="profMsLabel" data-fkey="profMsLabel" value="${escA((_pc.milestone&&_pc.milestone.label)||'')}" maxlength="30" placeholder="e.g. NSF Finals" style="width:200px;padding:11px 13px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:700;outline:none"></div>
-        <div><label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Date</label>
-          <input type="date" data-chg="profMsDate" value="${escA((_pc.milestone&&_pc.milestone.date)||'')}" style="width:170px;padding:11px 13px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:700;outline:none"></div>
-        ${_pc.milestone&&_pc.milestone.date?`<div class="sb-cn" style="padding-bottom:12px">countdown shows in Practice & Progress</div>`:''}
-      </div>
-      <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:8px">Buddy</label>
-      ${_avRows}</div>`;
-  const voiceCard=`<div class="sb-card" style="margin-bottom:16px">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px">
-        <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Voice</div><div style="font-size:13px;color:var(--muted)">The voice that reads words &amp; sentences aloud</div></div>
-        <button data-act="voiceTest" style="padding:11px 18px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge);white-space:nowrap">▶ Test</button>
-      </div>
-      <div style="position:relative"><select data-chg="voiceSetDevice" style="width:100%;appearance:none;-webkit-appearance:none;padding:13px 36px 13px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px;cursor:pointer">${voiceOpts}</select><span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--accent);font-size:12px">▼</span></div>
-      <p style="font-size:12px;color:var(--muted);line-height:1.55;margin:12px 0 0">Bizzing Bee picks the smoothest voice your device offers — no account or key, fully offline. Voices marked ✨ are the most natural. ${_voices.length?'':'<b style="color:var(--text)">Voices load a moment after opening</b> — reopen Settings to see the full list. '}</p>
-      ${voiceUpgradeTip()}
-    </div>`;
+
+  /* ---------- the tile: one control, tap to change, state legible at a glance ----------
+     Two kinds, and the difference is the whole idea borrowed from a phone's quick
+     settings: a TOGGLE lights up when it is on, a CHOICE never lights and just shows
+     which option is current. A grid of ten of these replaces two sections of look-alike
+     rows that a parent had to read end to end to find one switch. */
+  const tileBtn=(act,arg,icon,label,value,lit)=>`<button data-act="${act}"${arg!=null?` data-arg="${escA(String(arg))}"`:''} aria-label="${escA(label+': '+value)}" class="sb-qtile${lit?' on':''}">
+      <span class="sb-qtile-i">${window.SB_ICON?SB_ICON(icon,{size:19}):iconSVG(icon,19)}</span>
+      <span class="sb-qtile-l">${label}</span>
+      <span class="sb-qtile-v">${value}</span></button>`;
+  const toggle=(act,icon,label,on,onW,offW)=>tileBtn(act,null,icon,label,on?(onW||'On'):(offW||'Off'),on);
+  // a CHOICE tile advances to the next option on tap — no menu, no sub-screen
+  const choice=(act,icon,label,opts,cur)=>{ const i=Math.max(0,opts.findIndex(o=>o[0]===cur));
+    const nxt=opts[(i+1)%opts.length]; return tileBtn(act,nxt[0],icon,label,opts[i]?opts[i][1]:opts[0][1],false); };
+
+  const mode=S.mode||'light';
+  const ageM=(c.ageMode||((c.age||9)<=11?'playful':'focused'));
+  const tiles=[
+    choice('setMode','palette','Background',[['light','Light'],['white','White'],['dusk','Dusk']],mode),
+    choice('setAgeMode','sparkle','Style',[['playful','Playful'],['focused','Focused']],ageM),
+    choice('setTextSize','list','Text size',[['normal','Normal'],['large','Large']],S.textSize||'normal'),
+    choice('setA11yFont','book','Letters',[['std','Standard'],['easy','Easy-read']],S.a11yFont||'std'),
+    toggle('toggleContrast','star','High contrast',!!S.a11yContrast),
+    toggle('toggleReduceMotion','pause','Reduce motion',!!S.a11yMotion),
+    toggle('toggleCalm','heart','Calm mode',!!S.calmMode),
+    toggle('toggleSound',S.sound?'speaker':'mute','Sound effects',!!S.sound),
+    choice('setVoiceRate','timer','Voice speed',[['normal','Normal'],['slow','Slow']],((S.voiceRate||1)<1)?'slow':'normal'),
+    toggle('toggleReadAloud','mic','Read cards aloud',!!S.readAloud),
+  ].join('');
+
+  /* ---------- Account: the plan, the parent, and the Advanced Pack, in one place ----------
+     The pack used to be a card of its own directly beneath this one, which is where a
+     parent looks for a plan and then finds two things that both look like the plan. */
   const _tierId=(window.SB_ENT)?SB_ENT.tierId():'free'; const _tier=(window.SB_TIERS&&SB_TIERS[_tierId])||{name:'Free',badge:'🐝'};
   const _parent=(window.SB_AUTH)?SB_AUTH.current():null;
-  const accountCard=`<div class="sb-card" style="margin-bottom:16px">
+  const _advOn=advModeOn(c);
+  const advRow=`<div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:13px;margin-top:13px">
+      <span style="width:38px;height:38px;flex:none;border-radius:11px;background:linear-gradient(135deg,#3A2A72,#5B3FA6);display:grid;place-items:center;color:#fff">${(window.SB_ICON_ART&&SB_ICON_ART.advanced)?SB_ICON_ART('advanced',{size:20}):(window.SB_ICON?SB_ICON('trophy',{size:19}):'')}</span>
+      <span style="min-width:0;flex:1">
+        <span style="display:block;font-weight:800;font-size:14.5px">Advanced Pack <span style="font-weight:700;font-size:12px;color:var(--muted)">add-on</span></span>
+        <span style="display:block;font-size:12.5px;color:var(--muted);line-height:1.45">${_advOn?'On — the 128,000-word library, mock bees, advanced concepts, tips and games are live.':'$'+((window.ADV&&ADV.price)?ADV.price():299)+'/yr adds national-bee prep. Turn on to preview it.'}</span></span>
+      ${S.devUnlock
+        ? `<button data-act="toggleDevUnlock" title="Testing unlock is forcing this on" style="flex:none;padding:9px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:12.5px;white-space:nowrap">Testing unlock is on →</button>`
+        : `<button data-act="toggleAdvPack" role="switch" aria-label="Advanced Pack" aria-checked="${_advOn?'true':'false'}" style="flex:none;width:52px;height:30px;border-radius:999px;background:${_advOn?'var(--accent)':'var(--line)'};position:relative;transition:background .2s">
+        <span style="position:absolute;top:3px;left:${_advOn?'25px':'3px'};width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.24);transition:left .2s"></span></button>`}
+    </div>${S.devUnlock?`<div style="margin-top:10px;padding:9px 12px;border-radius:10px;background:var(--surface2);font-size:12.5px;line-height:1.45;color:var(--muted)"><b style="color:var(--text)">Testing unlock is on</b>, so every gate reads as open and this switch cannot change anything. Turn it off in <b style="color:var(--text)">Testing tools</b> below.</div>`:''}`;
+  const accountCard=`<div class="sb-card" style="margin-bottom:18px">
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:11px"><span style="font-family:var(--display);font-weight:800;font-size:15px">Account &amp; subscription</span><span style="font-size:11px;color:var(--muted);font-weight:700;display:inline-flex;align-items:center;gap:4px">${iconSVG('lock',11,2.2)} Grown-ups only</span></div>
     <div style="display:flex;align-items:center;gap:13px;flex-wrap:wrap">
       <div style="min-width:0;flex:1"><div style="font-size:12.5px;color:var(--muted)">Current plan</div><div style="font-family:var(--display);font-weight:800;font-size:17px">${_tier.badge} ${esc(_tier.name)}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${_parent?('Signed in · '+esc(_parent.email)):'Not signed in · playing offline'}</div></div>
       <button data-act="openTiers" style="padding:10px 16px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">Manage plan →</button>
     </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;border-top:1px solid var(--line);padding-top:12px">
+    ${advRow}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:13px;border-top:1px solid var(--line);padding-top:13px">
       ${_parent?`<button data-act="doSignOut" style="padding:9px 15px;border-radius:9px;background:var(--surface2);border:1px solid var(--bad);color:var(--bad);font-weight:800;font-size:13px">Sign out of ${esc(_parent.email)}</button>`:`<button data-act="openAuth" data-arg="signin" style="padding:9px 15px;border-radius:9px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">Parent sign in</button>`}
       <button data-act="openAdmin" style="padding:8px 13px;border-radius:9px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:12.5px">🛡️ Admin console</button>
       <a href="privacy.html" style="display:inline-flex;align-items:center;padding:8px 13px;border-radius:9px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:12.5px;text-decoration:none">🔒 Privacy &amp; Parents' Notice</a>
     </div></div>`;
-  /* Advanced Pack switch. Billing is still a local preview, so a parent needs a way to turn
-     the pack off again — for trying it, and for seeing the locked app as a buyer would. */
-  const _ac=active()||{}; const _advOn=advModeOn(_ac);
-  const advCard=`<div class="sb-card" style="margin-bottom:16px">
-    <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap">
-      <span style="width:40px;height:40px;flex-shrink:0;border-radius:12px;background:linear-gradient(135deg,#3A2A72,#5B3FA6);display:grid;place-items:center;color:#fff">${(window.SB_ICON_ART&&SB_ICON_ART.advanced)?SB_ICON_ART('advanced',{size:22}):(SB_ICON?SB_ICON('trophy',{size:20}):'')}</span>
-      <div style="min-width:0;flex:1">
-        <div style="font-family:var(--display);font-weight:800;font-size:15px">Advanced Pack</div>
-        <div style="font-size:12.5px;color:var(--muted);line-height:1.45">${_advOn?'On — the 128,000-word library, mock bees, advanced concepts, tips and games are live across the app.':'Off — $'+((window.ADV&&ADV.price)?ADV.price():299)+'/yr adds national-bee prep. Turn on to preview it.'}</div>
-      </div>
-      ${S.devUnlock
-        ? `<button data-act="toggleDevUnlock" title="Testing unlock is forcing this on" style="flex-shrink:0;padding:9px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:12.5px;white-space:nowrap">Testing unlock is on →</button>`
-        : `<button data-act="toggleAdvPack" role="switch" aria-checked="${_advOn?'true':'false'}" style="flex-shrink:0;width:52px;height:30px;border-radius:999px;background:${_advOn?'var(--accent)':'var(--line)'};position:relative;transition:background .2s">
-        <span style="position:absolute;top:3px;left:${_advOn?'25px':'3px'};width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.24);transition:left .2s"></span></button>`}
-    </div>${S.devUnlock?`<div style="margin-top:10px;padding:9px 12px;border-radius:10px;background:var(--surface2);font-size:12.5px;line-height:1.45;color:var(--muted)"><b style="color:var(--text)">Testing unlock is on</b>, so every gate in the app reads as open and this switch cannot change anything. Turn it off in <b style="color:var(--text)">Testing tools</b> below to control the pack — or to see the app the way a family sees it.</div>`:''}</div>`;
-  /* Settings is grouped, not stacked: four headed sections and one collapsed testing
-     drawer, so a parent finds the thing they came for instead of scrolling twelve
-     look-alike cards. Worlds moved to My Hive — a world is something you own. */
-  const sec=(title,sub,body)=>`<section style="margin-bottom:22px">
+
+  /* ---------- the speller: a DISPLAY NAME and an age RANGE, and no buddy ----------
+     The buddy lived here as a read-only picture with a link to the Hive, which is where
+     you actually change it — a row that could only tell you to go somewhere else. */
+  const _band=ageBandOf(c);
+  const t=targets(c);
+  const num=(lab,col,act,val,unit,hint)=>`<div style="flex:1;min-width:150px">
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px"><span style="width:9px;height:9px;border-radius:3px;background:${col};flex-shrink:0"></span>${lab}</label>
+      <div style="display:flex;align-items:center;gap:7px">
+        <input type="number" min="1" max="600" data-chg="${act}" value="${val}" style="width:82px;padding:11px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:14px;outline:none">
+        <span style="font-size:12.5px;color:var(--muted);font-weight:700">${unit}</span></div>
+      <div style="font-size:11.5px;color:var(--muted);font-weight:600;margin-top:4px;line-height:1.35">${hint}</div></div>`;
+  const spellerCard=`<div style="padding:15px 16px">
+      <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Display name <span style="font-weight:600">— a nickname is perfect</span></label>
+      <input data-inp="profName" data-fkey="profName" value="${escA(c.name||'')}" maxlength="24" placeholder="e.g. Ahana, or Fox" autocomplete="off" style="width:100%;max-width:320px;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:700;margin-bottom:16px;outline:none">
+      <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:8px">Age range <span style="font-weight:600">— sets how hard the words start</span></label>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(76px,1fr));gap:8px;margin-bottom:16px;max-width:420px">${AGE_BANDS.map(b=>{ const on=b.k===_band.k;
+        return `<button data-act="setAgeBand" data-arg="${b.k}" aria-pressed="${on?'true':'false'}" style="padding:11px 8px;border-radius:13px;text-align:center;background:${on?'var(--accent)':'var(--surface)'};border:1.5px solid ${on?'var(--accent)':'var(--line)'};color:${on?'#fff':'var(--text)'};font-weight:800;font-size:14px;line-height:1.2">${b.n}<span style="display:block;font-size:10.5px;font-weight:650;opacity:.8;margin-top:2px">${b.sub}</span></button>`; }).join('')}</div>
+      <div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:3px"><span style="flex-shrink:0">${ringsSVG(34,[1,1,1])}</span><span style="font-family:var(--display);font-weight:800;font-size:15px">Your three daily targets</span></div>
+        <div style="font-size:12.5px;color:var(--muted);margin-bottom:12px;line-height:1.45">They draw the three rings on the Home card. Going past a target is encouraged; the ring keeps filling.</div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap">
+          ${num('Total time on the app', RING_COL[0][0], 'setTgtApp', t.app, 'min / day', 'Everything you do in Bizzing Bee.')}
+          ${num('Time practising words', RING_COL[1][0], 'setTgtPrac', t.prac, 'min / day', 'Practice and revisions only — the clock stops in games.')}
+          ${num('Words practised', RING_COL[2][0], 'setTgtWords', t.words, 'words / day', 'Your daily word goal — used all across the app.')}
+        </div></div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end">
+        <div><label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Milestone <span style="font-weight:600">(optional — e.g. NSF Finals)</span></label>
+          <input data-inp="profMsLabel" data-fkey="profMsLabel" value="${escA((c.milestone&&c.milestone.label)||'')}" maxlength="30" placeholder="e.g. NSF Finals" style="width:200px;padding:11px 13px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:700;outline:none"></div>
+        <div><label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Date</label>
+          <input type="date" data-chg="profMsDate" value="${escA((c.milestone&&c.milestone.date)||'')}" style="width:170px;padding:11px 13px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:700;outline:none"></div>
+        ${c.milestone&&c.milestone.date?`<div class="sb-cn" style="padding-bottom:12px">countdown shows in Practice &amp; Progress</div>`:''}
+      </div></div>`;
+
+  const sec=(title,sub,body)=>`<section style="margin-bottom:20px">
       <div style="display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin:0 0 9px 2px">
         <h3 style="font-family:var(--display);font-weight:800;font-size:15px;margin:0">${title}</h3>
         ${sub?`<span style="font-size:12.5px;color:var(--muted);font-weight:650">${sub}</span>`:''}</div>
@@ -7976,45 +8014,38 @@ function viewSettings(){
   const line=(title,sub,ctrl)=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:13px 16px;border-top:1px solid var(--line)">
       <div style="min-width:0;flex:1"><div style="font-weight:800;font-size:14.5px;line-height:1.25">${title}</div>
         ${sub?`<div style="font-size:12.5px;color:var(--muted);line-height:1.45;margin-top:2px">${sub}</div>`:''}</div>${ctrl}</div>`;
-  const pick=(opts)=>`<div style="display:flex;background:var(--surface2);border-radius:999px;padding:3px;flex-shrink:0">${opts}</div>`;
   const tog=(act,on,onLbl,offLbl)=>`<button data-act="${act}" style="display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:10px;background:${on?'var(--accent)':'var(--surface2)'};color:${on?'#fff':'var(--muted)'};font-weight:800;font-size:13px;white-space:nowrap;flex-shrink:0">${on?onLbl:offLbl}</button>`;
   const go=(act,arg,label)=>`<button data-act="${act}"${arg?` data-arg="${escA(arg)}"`:''} style="display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:13px;white-space:nowrap;flex-shrink:0">${label} →</button>`;
-  const ageM=(active().ageMode||((active().age||9)<=11?'playful':'focused'));
 
-  return `<div style="max-width:660px">
-    <h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:0 0 4px">Settings</h2>
-    <p style="margin:0 0 20px;font-size:13.5px;color:var(--muted)">Worlds moved to <b style="color:var(--text)">My Hive → Worlds</b>. Progress and the parent zone live here now.</p>
+  return `<div style="max-width:660px;margin:0 auto">
+    ${pageHead('Settings','','',null,'goHome','Home',null,window.SB_ICON?SB_ICON('sliders',{size:20}):'')}
     ${accountCard}
-    ${advCard}
-    ${sec('Your speller','name, age and daily goal', profileCard.replace('<div class="sb-card" style="margin-bottom:16px">','<div style="padding:14px 16px">').replace(/<\/div>\s*$/,'</div>'))}
+    ${sec('Your speller','display name, age range and daily goal', spellerCard)}
     ${sec('Progress &amp; reports','for grown-ups',
-        line('Progress','Rank, the Atlas, this week and every word met',go('setNav','progress','Open'))
+        line('Progress','Your level, the Atlas, this week and every word met',go('setNav','progress','Open'))
       + line('Parent zone','Weekly report, printables and the plan',go('setNav','parent','Open'))
       + line('Parent PIN', pinSet()?'Set — protects Settings, the parent zone and purchases.':'Add a 4-digit PIN so only grown-ups can open Settings and buy things.',
           `<button data-act="pinSetup" style="display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:10px;background:${pinSet()?'var(--surface2)':'var(--accent)'};color:${pinSet()?'var(--muted)':'#fff'};font-weight:800;font-size:13px;white-space:nowrap">${pinSet()?'Change':'Set PIN'}</button>`))}
-    ${sec('Look &amp; feel','how the app appears',
-        line('Background','Tinted paper, pure white or dusk',
-          pick(`<button data-act="setLight" style="${seg(S.mode==='light')}">Light</button><button data-act="setWhite" style="${seg(S.mode==='white')}">White</button><button data-act="setDusk" style="${seg(S.mode==='dusk')}">Dusk</button>`))
-      + line('Style','Playful = buddy everywhere and big celebrations · Focused = calmer, compact',
-          pick(`<button data-act="setAgeMode" data-arg="playful" style="${seg(ageM==='playful')}">Playful</button><button data-act="setAgeMode" data-arg="focused" style="${seg(ageM==='focused')}">Focused</button>`))
-      + line('Text size','Larger text everywhere — easier for young or new readers',
-          pick(`<button data-act="setTextSize" data-arg="normal" style="${seg((S.textSize||'normal')==='normal')}">Normal</button><button data-act="setTextSize" data-arg="large" style="${seg(S.textSize==='large')}">Large</button>`))
-      + line('Easy-read font','Clearer letters with extra spacing — made for dyslexic readers',
-          pick(`<button data-act="setA11yFont" data-arg="std" style="${seg((S.a11yFont||'std')!=='easy')}">Standard</button><button data-act="setA11yFont" data-arg="easy" style="${seg(S.a11yFont==='easy')}">Easy-read</button>`))
-      + line('High contrast','Stronger text and outlines',tog('toggleContrast',!!S.a11yContrast,'On','Off'))
-      + line('Reduce motion','Turn off animations and moving effects',tog('toggleReduceMotion',!!S.a11yMotion,'On','Off'))
-      + line('Calm mode','Games run gentler — slower pace, no time pressure',tog('toggleCalm',!!S.calmMode,'On','Off')))}
-    ${sec('Sound &amp; voice','what you hear',
-        line('Sound effects','Dings, coins and celebrations during games',tog('toggleSound',!!S.sound,'On','Off'))
-      + line('Voice speed','How fast words and sentences are read aloud',
-          pick(`<button data-act="setVoiceRate" data-arg="slow" style="${seg((S.voiceRate||1)<1)}">Slow</button><button data-act="setVoiceRate" data-arg="normal" style="${seg((S.voiceRate||1)>=1)}">Normal</button>`))
-      + line('Read cards to me','Bizzy reads every vocabulary and idiom card aloud when it flips',tog('toggleReadAloud',!!S.readAloud,'On','Off'))
-      + voiceCard.replace('<div class="sb-card" style="margin-bottom:16px">','<div style="padding:13px 16px;border-top:1px solid var(--line)">'))}
+    <section style="margin-bottom:20px">
+      <div style="display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin:0 0 10px 2px">
+        <h3 style="font-family:var(--display);font-weight:800;font-size:15px;margin:0">How the app looks &amp; sounds</h3>
+        <span style="font-size:12.5px;color:var(--muted);font-weight:650">tap a tile to change it</span></div>
+      <div class="sb-qgrid">${tiles}</div>
+      <div class="sb-card" style="margin-top:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:11px">
+          <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Reading voice</div><div style="font-size:12.5px;color:var(--muted)">The voice that reads words &amp; sentences aloud</div></div>
+          <button data-act="voiceTest" style="padding:10px 17px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge);white-space:nowrap">▶ Test</button>
+        </div>
+        <div style="position:relative"><select data-chg="voiceSetDevice" style="width:100%;appearance:none;-webkit-appearance:none;padding:13px 36px 13px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px;cursor:pointer">${voiceOpts}</select><span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--accent);font-size:12px">▼</span></div>
+        <p style="font-size:12px;color:var(--muted);line-height:1.55;margin:11px 0 0">Bizzing Bee picks the smoothest voice your device offers — no account or key, fully offline. Voices marked ✨ are the most natural. ${_voices.length?'':'<b style="color:var(--text)">Voices load a moment after opening</b> — reopen Settings to see the full list. '}</p>
+        ${voiceUpgradeTip()}
+      </div>
+    </section>
     <details style="margin-bottom:20px">
       <summary style="cursor:pointer;font-weight:800;font-size:13.5px;color:var(--muted);padding:10px 2px">Testing tools</summary>
       <div class="sb-card" style="padding:4px 0;margin-top:8px">
         ${line('Unlock everything','All concepts, lists, worlds, Advanced Mode and every level — no coins or Premium needed.',tog('toggleDevUnlock',!!S.devUnlock,'On','Off'))}
-        ${line('Test coins','Tops the purse up to 1,000,000 so you can test buying. Switching it off puts the real balance back.',tog('toggleDevCoins',!!(active()&&active().devCoins),'On','Off'))}
+        ${line('Test coins','Tops the purse up to 1,000,000 so you can test buying. Switching it off puts the real balance back.',tog('toggleDevCoins',!!(c&&c.devCoins),'On','Off'))}
       </div>
     </details>
     ${backPill('signOut','Exit to the start screen',null)}
@@ -9867,7 +9898,7 @@ function viewAdmin(){ const S=state; const tab=S.adminTab||'users'; const me=SB_
     const kids=(S.children||[]).map((c,i)=>{ const t=(c.tier&&SB_TIERS[c.tier])?c.tier:'free';
       const sel=['free','beginner','regional'].map(id=>`<button data-act="adminSetTier" data-arg="${i}|${id}" style="padding:6px 10px;border-radius:8px;font-weight:800;font-size:11.5px;${t===id?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">${SB_TIERS[id].name}</button>`).join('');
       return `<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-bottom:9px">
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px"><span style="font-family:var(--display);font-weight:800;font-size:15px">${esc(c.name||'Speller '+(i+1))}</span><span style="font-size:12px;color:var(--muted)">age ${c.age||'?'} · 🪙 ${fmtN(c.coins||0)} · plan: <b style="color:var(--accent)">${esc(SB_TIERS[t].name)}</b></span></div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px"><span style="font-family:var(--display);font-weight:800;font-size:15px">${esc(c.name||'Speller '+(i+1))}</span><span style="font-size:12px;color:var(--muted)">ages ${ageBandOf(c).n} · 🪙 ${fmtN(c.coins||0)} · plan: <b style="color:var(--accent)">${esc(SB_TIERS[t].name)}</b></span></div>
         <div style="display:flex;gap:7px;flex-wrap:wrap">${sel}</div></div>`; }).join('')||'<div style="color:var(--muted);font-size:13px">No child profiles on this device yet.</div>';
     const accts=SB_AUTH.listUsers().map(u=>`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:99px;background:var(--surface2);border:1px solid var(--line);font-weight:700;font-size:12px">${u.role==='admin'?'🛡️':'👤'} ${esc(u.email)} <span style="color:var(--muted)">· ${esc(u.role)}</span></span>`).join(' ');
     body=`<div class="sb-card" style="margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px">Child profiles &amp; plans</div><div style="font-size:12px;color:var(--muted);margin-bottom:12px">Set any speller's subscription tier (local — mirrors what a Stripe webhook will do in Phase 2).</div>${kids}</div>

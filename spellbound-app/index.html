@@ -342,9 +342,9 @@
 }
 </script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 viewBox%3D%220 0 64 64%22%3E%3Cellipse cx%3D%2215%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(-24 15 20)%22%2F%3E%3Cellipse cx%3D%2249%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(24 49 20)%22%2F%3E%3Cpath d%3D%22M27 17 Q23 7 21 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Cpath d%3D%22M37 17 Q41 7 43 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Ccircle cx%3D%2221%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Ccircle cx%3D%2243%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22 fill%3D%22%23FFC23D%22%2F%3E%3Cellipse cx%3D%2224%22 cy%3D%2230%22 rx%3D%2211%22 ry%3D%227%22 fill%3D%22%23FFD86E%22 opacity%3D%22.55%22%2F%3E%3CclipPath id%3D%22b%22%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22%2F%3E%3C%2FclipPath%3E%3Cg clip-path%3D%22url(%23b)%22%3E%3Crect x%3D%225%22 y%3D%2245%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3Crect x%3D%225%22 y%3D%2256%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3C%2Fg%3E%3Cellipse cx%3D%2217%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Cellipse cx%3D%2247%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Ccircle cx%3D%2224%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2225.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2224.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2240%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2241.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2240.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Cpath d%3D%22M26 49 Q32 55 40 49%22 fill%3D%22none%22 stroke%3D%22%233A1E5C%22 stroke-width%3D%222.8%22 stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E">
-<link rel="stylesheet" href="fonts/fonts.css?v=20260824j">
-<link rel="stylesheet" href="tokens.css?v=20260824j">
-<link rel="stylesheet" href="worlds4.css?v=20260824j">
+<link rel="stylesheet" href="fonts/fonts.css?v=20260824k">
+<link rel="stylesheet" href="tokens.css?v=20260824k">
+<link rel="stylesheet" href="worlds4.css?v=20260824k">
 
 <style>
   *{box-sizing:border-box}
@@ -370,6 +370,24 @@
   /* The Coach stacks below a tablet: a two-column briefing on a phone puts the trap
      list and the trap detail in columns too narrow for either. */
   @media (max-width:760px){ .sb-coach-2col{grid-template-columns:minmax(0,1fr) !important} }
+  /* Settings quick tiles — the phone-quick-settings idea: one control per tile, tap to
+     change, state legible without reading. A TOGGLE lights (accent ground, white ink);
+     a CHOICE never lights and shows the current option in the accent colour. Both keep a
+     square-ish footprint so the grid reads as a grid and not as a list of buttons. */
+  .sb-qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(116px,1fr));gap:10px}
+  .sb-qtile{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;
+    min-height:104px;padding:12px 13px;border-radius:18px;cursor:pointer;
+    background:var(--paper,var(--bg2));border:1px solid var(--line);box-shadow:var(--sh-rest);
+    color:var(--text);transition:background .16s,border-color .16s,color .16s}
+  .sb-qtile:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+  .sb-qtile-i{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;
+    background:var(--chip);color:var(--accent);margin-bottom:5px;flex:none;line-height:0;transition:background .16s,color .16s}
+  .sb-qtile-l{font-weight:800;font-size:12.5px;line-height:1.25}
+  .sb-qtile-v{margin-top:auto;font-family:var(--display);font-weight:800;font-size:13.5px;color:var(--accent);line-height:1.2}
+  .sb-qtile.on{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:var(--edge)}
+  .sb-qtile.on .sb-qtile-i{background:rgba(255,255,255,.22);color:#fff}
+  .sb-qtile.on .sb-qtile-v{color:rgba(255,255,255,.92)}
+  @media (max-width:420px){ .sb-qgrid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))} }
   /* The page header centres its title against the page (grid 1fr/auto/1fr). On a phone
      three columns leave the title a sliver, so it stacks: pill and actions on one row,
      the name below, still centred. */
@@ -436,7 +454,6 @@
      Two things were hiding it. #root carries zoom:1.09, so the layout inside runs 9%
      wider than the viewport these queries test against; and nothing clips the row, so
      the overflow lands on the document instead of on the header. */
-  @media(max-width:1000px){ .sb-band-lbl{display:none!important} .sb-band-mini{display:inline!important} }
   /* …and the wordmark yields to it; the mascot beside it stays as the home button */
   @media(max-width:900px){ .sb-brand{display:none!important} }
   /* The ™ on the wordmark. Fraunces draws U+2122 on the BASELINE, not pre-raised — a plain
@@ -522,17 +539,17 @@
   @keyframes sb-gm-idea{0%,45%{opacity:.35;transform:scale(.86)}60%{opacity:1;transform:scale(1.18)}78%,100%{opacity:.55;transform:scale(1)}}
   @keyframes sb-gm-sweep{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
   @keyframes sb-gm-spin{0%{transform:rotate(0) scale(1)}50%{transform:rotate(180deg) scale(1.2)}100%{transform:rotate(360deg) scale(1)}}
-  /* "Find your Bee Band" is the one thing a new speller must tap, so the header pill calls
-     for attention until the band is known — then it goes quiet for good. */
-  @keyframes sb-band-call{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 55%,transparent);transform:translateY(0)}
-    50%{box-shadow:0 0 0 7px color-mix(in srgb,var(--accent) 0%,transparent);transform:translateY(-1.5px)}}
+  /* "Find your level" is the one thing a new speller must tap, so it asks for attention
+     until the band is known and then goes quiet for good. It used to PULSE — a ring of
+     shadow throwing outward and the whole pill hopping 1.5px, twice every four seconds,
+     which is a distraction on a card you are trying to read. Only the SHEEN is left: a
+     highlight travelling across the tile, no movement, no flashing.
+     It also stops entirely under Reduce motion, like every other animation. */
   @keyframes sb-band-sheen{0%{transform:translateX(-130%)}55%,100%{transform:translateX(240%)}}
-  .sb-band-call{position:relative;overflow:hidden;animation:sb-band-call 1.9s ease-in-out infinite;
-    background:linear-gradient(120deg,color-mix(in srgb,var(--accent) 22%,var(--chip)),color-mix(in srgb,var(--treasure,#F0B429) 26%,var(--chip)))!important}
+  .sb-band-call{position:relative;overflow:hidden;
+    background:linear-gradient(120deg,color-mix(in srgb,var(--accent) 16%,var(--chip)),color-mix(in srgb,var(--treasure,#F0B429) 20%,var(--chip)))!important}
   .sb-band-call::after{content:"";position:absolute;top:0;bottom:0;width:38%;pointer-events:none;
-    background:linear-gradient(100deg,transparent,rgba(255,255,255,.62),transparent);animation:sb-band-sheen 2.6s ease-in-out infinite}
-  .sb-band-call .sb-band-spark{animation:sb-band-spark 1.9s ease-in-out infinite}
-  @keyframes sb-band-spark{0%,100%{transform:scale(1) rotate(0)}45%{transform:scale(1.22) rotate(14deg)}}
+    background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);animation:sb-band-sheen 3.4s ease-in-out infinite}
   /* livelier "talking" loop: hop, lean side to side, little scale pulses */
   @keyframes sb-bee-talk{0%{transform:translate(0,0) rotate(-5deg) scale(1)}20%{transform:translate(-3px,-9px) rotate(3deg) scale(1.05)}40%{transform:translate(2px,-2px) rotate(6deg) scale(1)}60%{transform:translate(4px,-8px) rotate(-2deg) scale(1.04)}80%{transform:translate(-2px,-1px) rotate(-6deg) scale(1)}100%{transform:translate(0,0) rotate(-5deg) scale(1)}}
   @keyframes sb-bee-pop{0%{transform:scale(.55) translateY(14px) rotate(-12deg);opacity:0}65%{transform:scale(1.12) translateY(-2px) rotate(4deg)}100%{transform:scale(1) translateY(0) rotate(0);opacity:1}}
@@ -1424,7 +1441,7 @@
   @keyframes lx-gleam{0%,100%{opacity:0;transform:translateY(-6px)}50%{opacity:1;transform:translateY(6px)}}
   @keyframes lx-string{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.7)}}
 </style>
-  <link rel="stylesheet" href="saga2.css?v=20260824j">
+  <link rel="stylesheet" href="saga2.css?v=20260824k">
 </head>
 <body>
 <div id="root">
@@ -1483,9 +1500,9 @@
 <p style="margin:28px 0 0;font-size:12.5px;color:#5A5470;line-height:1.55">Bizzing&trade; and Bizzing Bee&trade; are trademarks of the Bizzing Bee developer. Bizzing Bee is an independent study tool and is not affiliated with, sponsored by or endorsed by the Scripps National Spelling Bee, the North South Foundation or Merriam-Webster.</p>
 </main>
 </div>
-<script defer src="icons.js?v=20260824j"></script>
-<script defer src="icons-art.js?v=20260824j"></script>
-<script defer src="cover-art.js?v=20260824j"></script>
+<script defer src="icons.js?v=20260824k"></script>
+<script defer src="icons-art.js?v=20260824k"></script>
+<script defer src="cover-art.js?v=20260824k"></script>
 <script>/* Deferred scripts run after parsing, so this call has to wait for them —
    inline script runs at parse time and would find SB_ICON_MOTION undefined. The old
    try/catch would have swallowed that silently and simply left icon motion off. */
@@ -1538,46 +1555,46 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
 </script>
 <!-- Backend config + the real-accounts adapter. Both are inert until sb-config.js
      carries a project URL and anon key, so shipping them changes nothing yet. -->
-<script defer src="sb-config.js?v=20260824j"></script>
-<script defer src="voice-cdn.js?v=20260824j"></script>
-<script>window.SB_ASSET_V="?v=20260824j";</script>
+<script defer src="sb-config.js?v=20260824k"></script>
+<script defer src="voice-cdn.js?v=20260824k"></script>
+<script>window.SB_ASSET_V="?v=20260824k";</script>
 <!-- boot-lazy: everything the first screen does not need arrives after paint.
      Registry + idle order live in boot-lazy.js; call SB_LAZY.need(...) before
      opening a feature whose data is deferred. -->
-<script defer src="boot-lazy.js?v=20260824j"></script>
-<script defer src="words-data.js?v=20260824j"></script>
-<script defer src="words-extra.js?v=20260824j"></script>
-<script defer src="words-patch.js?v=20260824j"></script>
-<script defer src="themes-data.js?v=20260824j"></script>
-<script defer src="quotes.js?v=20260824j"></script>
-<script defer src="trivia-icons.js?v=20260824j"></script>
-<script defer src="trivia-data.js?v=20260824j"></script>
-<script defer src="tips-data.js?v=20260824j"></script>
-<script defer src="voice-manifest.js?v=20260824j"></script>
-<script defer src="voice-adv-manifest.js?v=20260824j"></script>
-<script defer src="voice-review.js?v=20260824j"></script>
-<script defer src="app.js?v=20260824j"></script>
-<script defer src="avatars-art.js?v=20260824j"></script>
-<script defer src="avatar-png.js?v=20260824j"></script>
-<script defer src="game-art.js?v=20260824j"></script>
-<script defer src="avatars.js?v=20260824j"></script>
-<script defer src="avatar-greetings.js?v=20260824j"></script>
-<script defer src="avatar-cards.js?v=20260824j"></script>
-<script defer src="app2.js?v=20260824j"></script>
-<script defer src="pricing.js?v=20260824j"></script>
-<script defer src="auth.js?v=20260824j"></script>
-<script defer src="supabase-auth.js?v=20260824j"></script>
-<script defer src="app3.js?v=20260824j"></script>
-<script defer src="worlds4.js?v=20260824j"></script>
-<script defer src="mockbee.js?v=20260824j"></script>
-  <script defer src="games-daily.js?v=20260824j"></script>
-  <script defer src="saga-art/saga-art.js?v=20260824j"></script>
-  <script defer src="saga-art/saga-map.js?v=20260824j"></script>
-  <script defer src="saga-art/worlds-art.js?v=20260824j"></script>
-  <script defer src="saga-art-dom.js?v=20260824j"></script>
-  <script defer src="saga2.js?v=20260824j"></script>
-<script defer src="trivia.js?v=20260824j"></script>
-<script defer src="advanced.js?v=20260824j"></script>
-<script defer src="trail.js?v=20260824j"></script>
+<script defer src="boot-lazy.js?v=20260824k"></script>
+<script defer src="words-data.js?v=20260824k"></script>
+<script defer src="words-extra.js?v=20260824k"></script>
+<script defer src="words-patch.js?v=20260824k"></script>
+<script defer src="themes-data.js?v=20260824k"></script>
+<script defer src="quotes.js?v=20260824k"></script>
+<script defer src="trivia-icons.js?v=20260824k"></script>
+<script defer src="trivia-data.js?v=20260824k"></script>
+<script defer src="tips-data.js?v=20260824k"></script>
+<script defer src="voice-manifest.js?v=20260824k"></script>
+<script defer src="voice-adv-manifest.js?v=20260824k"></script>
+<script defer src="voice-review.js?v=20260824k"></script>
+<script defer src="app.js?v=20260824k"></script>
+<script defer src="avatars-art.js?v=20260824k"></script>
+<script defer src="avatar-png.js?v=20260824k"></script>
+<script defer src="game-art.js?v=20260824k"></script>
+<script defer src="avatars.js?v=20260824k"></script>
+<script defer src="avatar-greetings.js?v=20260824k"></script>
+<script defer src="avatar-cards.js?v=20260824k"></script>
+<script defer src="app2.js?v=20260824k"></script>
+<script defer src="pricing.js?v=20260824k"></script>
+<script defer src="auth.js?v=20260824k"></script>
+<script defer src="supabase-auth.js?v=20260824k"></script>
+<script defer src="app3.js?v=20260824k"></script>
+<script defer src="worlds4.js?v=20260824k"></script>
+<script defer src="mockbee.js?v=20260824k"></script>
+  <script defer src="games-daily.js?v=20260824k"></script>
+  <script defer src="saga-art/saga-art.js?v=20260824k"></script>
+  <script defer src="saga-art/saga-map.js?v=20260824k"></script>
+  <script defer src="saga-art/worlds-art.js?v=20260824k"></script>
+  <script defer src="saga-art-dom.js?v=20260824k"></script>
+  <script defer src="saga2.js?v=20260824k"></script>
+<script defer src="trivia.js?v=20260824k"></script>
+<script defer src="advanced.js?v=20260824k"></script>
+<script defer src="trail.js?v=20260824k"></script>
 </body>
 </html>
