@@ -64,6 +64,10 @@
   /* Settings → Unlock everything is meant to open the whole app for testing. The Atlas
      gates on the frontier rather than on entitlement, so it needs to honour it too. */
   const devOn = () => { try { return !!state.devUnlock; } catch (e) { return false; } };
+  /* app3's one back control (window.SB_BACK), in its dark variant — the Atlas draws its
+     headers over artwork. Aliased rather than reimplemented so the Atlas can never drift
+     from the pill every other screen uses. */
+  const bpill = (act, label, arg) => { try { return window.SB_BACK ? SB_BACK(act, label, arg, true) : ''; } catch (e) { return ''; } };
   const unitsOf = tab => tab === 'exp' ? T().expedition.units : T().honey.units;
   const actsOf = tab => tab === 'exp' ? T().expedition.expeds : T().honey.acts;
   const unit = id => unitsOf(course()).find(u => u.id === id);
@@ -520,10 +524,11 @@
       <button data-act="${act2}" style="flex-shrink:0;padding:9px 16px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:12.5px">${cta}</button></div>`;
     return `<div style="animation:sb-rise .35s ease both;max-width:640px;margin:0 auto">
       <div style="position:relative;border-radius:20px;overflow:hidden;margin-bottom:14px;height:112px">${banner(world, 112, course() === 'exp' ? 3 : 2)}${scrim()}
-        <button data-act="trailBack" style="position:absolute;left:12px;top:10px;color:#fff;font-weight:800;font-size:12.5px;background:rgba(0,0,0,.3);border-radius:999px;padding:5px 12px">← Map</button>
-        <div style="position:absolute;left:16px;bottom:10px;right:16px;display:flex;align-items:baseline;gap:10px">
-          <span style="font-family:var(--display);font-weight:800;font-size:18px;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.4);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(u.title)}</span>
-          <span style="margin-left:auto;flex-shrink:0;font-size:11px;font-weight:800;color:#fff;background:rgba(0,0,0,.3);border-radius:999px;padding:3px 10px">Tier ${lap}${passed ? ' · ' + passed + '%' : ''}</span></div></div>
+        <div style="position:absolute;left:14px;right:14px;top:10px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px">
+          <span style="justify-self:start">${bpill('trailBack', 'Map')}</span>
+          <span style="justify-self:center;min-width:0;font-family:var(--display);font-weight:800;font-size:18px;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.45);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center">${esc(u.title)}</span>
+          <span style="justify-self:end;flex-shrink:0;font-size:11px;font-weight:800;color:#fff;background:rgba(0,0,0,.34);border:1px solid rgba(255,255,255,.24);border-radius:999px;padding:4px 11px;white-space:nowrap">Tier ${lap}${passed ? ' · ' + passed + '%' : ''}</span>
+        </div></div>
       <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">${gsvg}
         <div style="position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:11px 14px;font-size:13.5px;line-height:1.5;box-shadow:var(--sh-rest)">${esc(String(ch.concept || '').split(/(?<=[.!?])\s/).slice(0, 2).join(' '))}</div></div>
       <div style="display:grid;gap:10px">

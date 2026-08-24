@@ -218,8 +218,8 @@ handlers. App lives in this folder; open `index.html` to run.
   "Practice paths" chooser (nav 'quest'); its list catalogue is collapsed into four
   group cards (My Words / The Champion Ladder / Word Origins / Tricky Words —
   `grp` fields in `coachCatalog`, `state.catGroup` opens one; keys unchanged).
-  My Hive is ONE page (`viewCollection`) with four tabs — Badges / Avatars / Worlds /
-  Artifacts. `hiveBar` is deleted: with the Store gone, Worlds merged in as a tab and the
+  My Hive is ONE page (`viewCollection`) with three tabs — Badges (artifacts ride along at
+  the foot of it) / Avatars / Worlds. `hiveBar` is deleted: with the Store gone, Worlds merged in as a tab and the
   bee moved out, a section bar over a single destination was noise. The Worlds tab carries
   the painted `worldHeroCard` grid the standalone picker had; a locked world is greyed and
   its coin price sits UNDER the tile, not as a badge over the artwork. `viewWorlds` and
@@ -254,24 +254,36 @@ handlers. App lives in this folder; open `index.html` to run.
   would have killed four live game mechanics. Earn routes: a per-list stage-up in
   `gainXp()` grants one of shield/reveal/time (rotating on `rankXp() % 3`), and a 7/14/30-day
   streak in `markActiveToday()` grants a Streak Freeze. `c.freezes` holds the freeze (the
-  streak code reads it there); `c.pow` holds the rest. Bee Cheer was never an artifact —
-  nothing is stocked — so it survives as `app.beeCheer`, a coin treat in Collection → Avatars.
+  streak code reads it there); `c.pow` holds the rest. Bee Cheer is gone too (removed with
+  the accessories) — `app.beeCheer` no longer exists.
 - **Word lists are not sold for coins.** `buyList` is deleted; `app.lockedList` opens the
   plan sheet where the list stands. `isListUnlocked` still reads `c.unlockedLists`, so
   anyone who bought a list under the old coin price keeps it. `COST` is now `{theme, concept}`.
   Guards: `tests/hive-store.cjs` and `tests/buy-where-it-lives.cjs`.
-- **Artifacts live on the Badges tab.** Both are proof of play — a badge records what you
-  did, an artifact is what you won for doing it — so the Hive has three tabs, not four.
-  `collTab==='artifacts'` falls back to `'badges'` so an old stored tab key still lands.
+- **Artifacts live at the FOOT of the Badges tab.** Both are proof of play — a badge
+  records what you did, an artifact is what you won for doing it — so the Hive has three
+  tabs, not four. `collTab==='artifacts'` falls back to `'badges'` so an old stored key
+  still lands. The Hive header carries no avatar count; **Print my cards** is a pill beside
+  the purse, shown only while the Avatars tab is open (it was a full-width banner).
+- **ONE back control: `backPill` / `window.SB_BACK`.** There were thirty-odd bespoke
+  "← Home" links, each in whatever weight and colour its screen used, and over artwork they
+  all but disappeared. `pageHead(title, meta, sub, right, backAct, backLabel, backArg, icon)`
+  lays every screen out the same way: **pill hard left, the screen's name and icon CENTRED
+  against the page, actions hard right** — a `1fr auto 1fr` grid, because a flex row with
+  `margin-left:auto` drifts as the right-hand side changes width. Stacks below 620px
+  (`.sb-phead` in index.html). trail.js aliases the same helper as `bpill` in its dark
+  variant (`SB_BACK(act,label,arg,true)`) for headers drawn over artwork — never
+  reimplement it there. Carousel "← Back / ← Prev" controls inside a deck (`figNav`,
+  `vocNav`, `qNav`, `ttNav`, `conceptPrev`, `lessonStepPrev`, `journeyPagePrev`) are a
+  DIFFERENT control and deliberately keep their own shape. Guard: `tests/back-pill.cjs`.
 - **Bee-style accessories are DELETED** (`AV_ACCS`/`avAccSVG`/`beeAccSVG`/`mascotAcc`, and
   `avatarSVG`'s third argument). They were stickers drawn at fixed coordinates in the bee's
   120×120 space — crown at the top, moustache across the middle — so they worked on the bee
   and collided with everything else: the gods already wear crowns and haloes, the real
   people are drawn as people. An overlay that suits 1 of 217 avatars is not a feature. A
   boot migration refunds the full purchase price and flashes once. `mascotAcc` was also
-  called from `trivia.js` — check other files when removing an app3 helper. Bee Cheer was
-  never an accessory (nothing is worn) and survives as `app.beeCheer`.
-  Guard: `tests/no-accessories.cjs`.
+  called from `trivia.js` — check other files when removing an app3 helper. Bee Cheer went
+  with them. Guard: `tests/no-accessories.cjs`.
 - **Never show a speller how long the road is.** The Atlas said `0/102 stops` on Home, in
   the drawer (`atlasSub`) and above the map (`tierBar` in trail.js). 102 is a mountain, not
   a map, and the bar beside it already said the same thing — the bar stays, the total goes,
