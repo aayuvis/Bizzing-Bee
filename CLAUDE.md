@@ -133,11 +133,25 @@ handlers. App lives in this folder; open `index.html` to run.
   which is the point — the two notations on a card must agree with each other).
 
 ## The Word Map (`trail.js` + `trail-data.js`) — the Journey tab
-- **SIX tabs: Home · World Atlas · Practice · Library · Play · My Hive**, spread evenly
-  across the bar (`flex:1` each). My Hive earned a tab: it is a place a speller goes on
-  purpose, and reaching it through a small round face in the top-right read as a profile
-  menu. That button is deleted, and `navIcon` gained a `hive` glyph in the same dialect.
-  Progress is still NOT a tab. The Atlas has **no sub-nav** — the tab is the map, and the
+- **Five tabs: Home · World Atlas · Practice · Library · Play**, spread evenly
+  across the bar (`flex:1` each). **My Hive is NOT a tab** — the **coins pill** in the
+  header is its door (that is where coins are spent) and it heads the drawer. It briefly
+  had a sixth tab; that crowded the phone bar and put a collection beside the five things
+  a speller actually does. The old round Bizzy button that used to open it is deleted.
+  Progress is not a tab either. `navIcon` still carries a `hive` glyph if one is wanted.
+- **The header search is a real BAR, not a button** (`.sb-hsearch` / `.sb-hsug`). Type in
+  it, a Google-style list drops under it, ↑/↓ walk it, Enter opens the Finder on the query
+  and a tapped suggestion opens that word's card. Three things make it work:
+  (1) the render loop's `data-fkey` focus/caret restore, which is why typing survives a
+  full re-render on every keystroke; (2) **`suggestWords(q,n)`, NOT `finderResults`** —
+  the latter sweeps both pools exhaustively to rank hits, fine for one screen but this
+  runs on every keystroke on every screen, so `suggestWords` breaks out the moment it has
+  n prefix matches; (3) the dropdown **never closes on blur** — blur fires before the
+  click that picks a suggestion, so closing there would kill the very tap the list exists
+  for. It closes on pick, Enter, Escape, nav change, and a capture-phase click outside —
+  and that last one renders on `setTimeout(…,0)`, because re-rendering during capture
+  detaches the element the click is still travelling towards. Guard:
+  `tests/header-search.cjs`. The Atlas has **no sub-nav** — the tab is the map, and the
   only chrome on it is the Revise / My traps pill pair. The Library is its own tab again
   (every explore-family nav lights it). My Hive is not a tab: the **Bizzy button** in the
   header opens it. The mobile bar carries the same six (Atlas / Stats are the short labels).

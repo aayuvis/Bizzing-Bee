@@ -684,6 +684,22 @@ function finderResults(q){ q=nkey((q||'').trim()); if(q.length<2) return [];
       else if(starts.length<8 && contains.length<12 && k.includes(q)){ seen.add(k); contains.push(r); } } };
   scan((window.SB_DATA&&SB_DATA.nsf)||[]); if(window.SB_FULL) scan(window.SB_FULL);
   return exact.concat(starts,contains).slice(0,24); }
+/* Header autocomplete. finderResults() is exhaustive by design — it sweeps both pools to
+   rank exact / prefix / substring hits — and that is fine on the Finder page, where a
+   render costs one screen. The header input is on EVERY screen and re-renders the whole
+   app per keystroke, so this one stops the moment it has enough: prefix hits first, and
+   only if there is room does it look for substrings. */
+function suggestWords(q, n){ q=nkey((q||'').trim()); n=n||7; if(q.length<2) return [];
+  const seen=new Set(), exact=[], starts=[], contains=[];
+  const pools=[(window.SB_DATA&&SB_DATA.nsf)||[], window.SB_FULL||[]];
+  for(const pool of pools){
+    for(let i=0;i<pool.length;i++){ const r=pool[i]; if(!r||!r.w) continue;
+      const k=nkey(r.w); if(seen.has(k)) continue;
+      if(k===q){ seen.add(k); exact.push(r); }
+      else if(k.startsWith(q)){ seen.add(k); starts.push(r); if(exact.length+starts.length>=n) return exact.concat(starts).slice(0,n); }
+      else if(contains.length<n && k.indexOf(q)>0){ seen.add(k); contains.push(r); } }
+  }
+  return exact.concat(starts, contains).slice(0,n); }
 /* ---- word DB / coach ---- */
 let _wdb = null;
 function wordDB(){ if(_wdb) return _wdb; const m=new Map();
@@ -1529,6 +1545,25 @@ const app = {
   toggleDef:()=>set({showDef:!state.showDef}),
   openFinder:()=>{ state.drawerOpen=false; set({nav:'finder', conceptSel:null}); },
   finderQ:(v)=>{ state.finderQ=v||''; state.finderSel=null; render(); },
+  /* ---- header search: type here, see suggestions, Enter opens the Finder ----
+     The dropdown is NOT closed on blur. Blur fires before the click that picks a
+     suggestion, so closing there kills the very tap it exists for; it closes on pick,
+     on Enter, on Escape, on any nav change, and on a click outside the bar. */
+  hqType:(v)=>{ state.hq=v||''; state.hqSel=-1; render(); },
+  hqClear:()=>{ state.hq=''; state.hqSel=-1; render();
+    setTimeout(()=>{ try{ document.querySelector('[data-fkey="hq"]')?.focus(); }catch(e){} },0); },
+  hqGo:()=>{ const q=(state.hq||'').trim(); if(q.length<2){ flash('Type at least two letters'); return; }
+    state.finderQ=q; state.finderSel=null; state.hq=''; state.hqSel=-1; app.openFinder(); },
+  hqPick:(w)=>{ state.finderQ=w||''; state.hq=''; state.hqSel=-1; state.finderSel=null;
+    app.openFinder(); try{ app.finderPick(w); }catch(e){} },
+  hqKey:(e)=>{ const list=suggestWords(state.hq,7); const n=list.length;
+    if(e.key==='ArrowDown'){ e.preventDefault(); state.hqSel=n?((state.hqSel+1+n+1)%(n+1))-0:-1; if(state.hqSel>=n) state.hqSel=-1; render(); return; }
+    if(e.key==='ArrowUp'){ e.preventDefault(); state.hqSel=n?(state.hqSel<=-1?n-1:state.hqSel-1):-1; render(); return; }
+    if(e.key==='Escape'){ state.hq=''; state.hqSel=-1; render(); try{ e.target.blur(); }catch(_){} return; }
+    if(e.key!=='Enter') return;
+    e.preventDefault();
+    // Enter takes the highlighted suggestion if there is one, otherwise the typed query
+    if(state.hqSel>=0 && list[state.hqSel]) app.hqPick(list[state.hqSel].w); else app.hqGo(); },
   finderPick:(w)=>{ const r=finderResults(state.finderQ).find(x=>nkey(x.w)===nkey(w)) || wordDB().get(nkey(w)); if(r){ state.finderSel=r; try{window.scrollTo(0,0);}catch(e){} render(); } },
   finderBack:()=>set({finderSel:null}),
   finderLoadFull:()=>loadFullLibrary(()=>{}),
@@ -4892,10 +4927,11 @@ function viewApp(){
   const S=state;
   const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,quotes:1,typing:1,builder:1,adv:1,traps:1,revisions:1,trivtrain:1,ipatrain:1};
   const NAV_ART={home:'home',coach:'practice',explore:'explore',games:'arcade',progress:'progress',collection:'collection'};
-  /* SIX tabs. My Hive earned one: it is a place a speller goes on purpose, and reaching
-     it through a small round face in the corner made it feel like a profile menu. That
-     button is gone. Progress is still not a tab — it opens from Settings and the drawer. */
-  const navTabs=[['home','Home','home'],['trail','World Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play'],['collection','My Hive','hive']].map(([key,label,ic])=>{
+  /* FIVE tabs. My Hive is not one: it is where your coins go, so the COINS PILL is its
+     door, and it heads the drawer. (It briefly had a tab; a sixth crowded the phone bar
+     and put a collection beside the five things a speller actually does.) Progress is not
+     a tab either — it opens from Settings and the drawer. */
+  const navTabs=[['home','Home','home'],['trail','World Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play']].map(([key,label,ic])=>{
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:key==='coach'?(S.nav==='coach'||S.nav==='train'||S.nav==='levelup'||S.nav==='quest'):S.nav===key;
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
     const glyph=`<span style="display:inline-flex;line-height:0">${navIcon(ic,21,on)}</span>`;
@@ -5010,14 +5046,27 @@ function viewApp(){
       <div style="max-width:1080px;margin:0 auto;padding:11px clamp(9px,3.2vw,32px);display:flex;flex-wrap:wrap;align-items:center;gap:8px">
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
         <button data-act="goHome" title="Home" aria-label="Bizzing Bee — Home" style="display:flex;align-items:center;gap:9px;margin-right:auto;background:none;border:0;cursor:pointer"><div style="width:34px;height:38px;flex-shrink:0">${mascotSVG('happy')}</div><span class="sb-brand" style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i><span class="sb-tm" aria-hidden="true">™</span> Bee</span></button>
-        <button data-act="openFinder" title="Word Finder — search 129,000 words, hear them, and add them to a list" aria-label="Search words" style="display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:13px;flex-shrink:0">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2 21 21"/></svg><span class="sb-search-lbl">Search</span></button>
+        ${(()=>{ /* A real search bar, not a button that goes somewhere to find one. Type
+             here, suggestions drop under it, Enter opens the Finder on the query — and a
+             suggestion tapped goes straight to that word's card. */
+          const _q=state.hq||''; const _sug=suggestWords(_q,7); const _sel=state.hqSel==null?-1:state.hqSel;
+          const _rows=_sug.map((r,i)=>`<button data-act="hqPick" data-arg="${escA(r.w)}" class="sb-hsug-row${i===_sel?' on':''}" role="option" aria-selected="${i===_sel?'true':'false'}">
+              <span class="sb-hsug-w">${esc(r.w)}</span>${r.d?`<span class="sb-hsug-d">${esc(trunc(r.d,64))}</span>`:''}</button>`).join('');
+          return `<div class="sb-hsearch">
+            <span class="sb-hsearch-ic"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2 21 21"/></svg></span>
+            <input data-inp="hqType" data-key="hqKey" data-fkey="hq" value="${escA(_q)}" role="combobox" aria-expanded="${_sug.length?'true':'false'}" aria-autocomplete="list" aria-label="Search words" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Search any word…">
+            ${_q?`<button data-act="hqClear" class="sb-hsearch-x" aria-label="Clear search">✕</button>`:''}
+            ${_sug.length?`<div class="sb-hsug" role="listbox">${_rows}<button data-act="hqGo" class="sb-hsug-all">See all matches for “${esc(_q)}” →</button></div>`
+              :(_q.trim().length===1?`<div class="sb-hsug"><div class="sb-hsug-none">Keep typing — two letters and the words start arriving.</div></div>`:'')}
+          </div>`; })()}
         ${/* The rank pill used to sit here reading "Level 1 · Egg" beside a Bee Band pill
              reading "Word difficulty 3" — two pills that both read as "your level", for two
              different things. There is one ladder in the header now: the Bee Band, which IS
              the spelling level. The evolution forms still live in My Hive, where a
              collection belongs, reached by the Bizzy button. */''}
-        <button data-act="openCollection" title="Your coins — tap to open My Hive" aria-label="Coins" style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12);flex-shrink:0">${coinAmt(active().coins||0,14)}</button>
+        ${/* The coins pill IS the door to My Hive — that is where coins are spent, and the
+             Hive has no tab of its own. */''}
+        <button data-act="openCollection" title="My Hive — your coins, badges, avatars and worlds" aria-label="My Hive — ${escA(String(active().coins||0))} coins" style="display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12);flex-shrink:0">${coinAmt(active().coins||0,14)}<span style="display:inline-flex;line-height:0;opacity:.85">${iconSVG('crown',14)}</span></button>
         ${(()=>{ const _fon=!!(window.SB_W4_FOCUS&&SB_W4_FOCUS.on());
           /* One button for how the app looks: a tap cycles Light → White → Dusk, a
              double-tap holds the world still (focus) in whichever look you are in. */
@@ -5038,7 +5087,7 @@ function viewApp(){
     ${viewDrawer()}
     <div class="sb-content" style="max-width:1080px;margin:0 auto;width:100%;padding:18px clamp(14px,3.5vw,32px) 60px">${content}</div>
     <nav class="sb-tabbar" aria-label="Primary">
-      ${[['home','Home','home'],['trail','Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play'],['collection','Hive','hive']].map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='coach'&&(S.nav==='train'||S.nav==='levelup'||S.nav==='quest')));
+      ${[['home','Home','home'],['trail','Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play']].map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='coach'&&(S.nav==='train'||S.nav==='levelup'||S.nav==='quest')));
         const gl=`<span style="display:inline-flex;line-height:0">${navIcon(ic,23)}</span>`;
         return `<button data-act="setNav" data-arg="${k}" aria-current="${on?'page':'false'}" style="${on?'color:var(--accent)':'color:var(--muted)'}">${gl}<span>${l}</span></button>`; }).join('')}
     </nav>
@@ -5081,6 +5130,9 @@ function viewDrawer(){
         <button data-act="closeDrawer" aria-label="Close" style="width:32px;height:32px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('close',18)}</button>
       </div>
       <nav style="display:flex;flex-direction:column;gap:1px;overflow-y:auto">
+        ${/* My Hive first: it is the one destination with no tab of its own, and the coins
+             pill in the header is its other door. */''}
+        ${row('collection','crown','My Hive','badges, avatars and worlds · '+fmtN(c.coins||0)+' coins',state.nav==='collection')}
         ${row('levelup','steps','Continue practising','${LBL}'.replace('${LBL}',esc(listLabel(key).split(' · ')[0])+' · Stage '+(listStageIdx(c,key)+1)),false)}
         ${row('coachdesk','bulb','Coach',missedN?('what to fix, and how — '+missedN+' word'+(missedN>1?'s':'')+' to work on'):'your patterns, your level, what comes next',state.nav==='coachdesk')}
         ${row('trail','steps','The Word Atlas',atlasSub(c),state.nav==='trail')}
@@ -5094,8 +5146,7 @@ function viewDrawer(){
         ${kick('Revise')}
         ${row('revisions','retry','Revision pile',missedN?missedN+' words waiting':'nothing waiting — nice',state.nav==='revisions')}
         <div class="sb-mob-only" style="display:contents">
-        ${kick('My Hive')}
-        ${row('collection','crown','Collection, your bee & worlds',avOwnedCount(c)+'/'+SB_AVATARS.list.length+' avatars',state.nav==='collection')}
+        ${kick('Find')}
         ${row('finder','search','Search words','find any of 129,000 words',state.nav==='finder')}
         </div>
         ${kick('')}
@@ -10011,6 +10062,15 @@ function callAct(act, arg, ev){ const fn=app[act]; if(typeof fn==='function') fn
 root.addEventListener('click', e=>{ const el=e.target.closest('[data-act]'); if(!el) return; callAct(el.getAttribute('data-act'), el.getAttribute('data-arg')); });
 root.addEventListener('dblclick', e=>{ const el=e.target.closest('[data-dbl]'); if(!el) return;
   e.preventDefault(); callAct(el.getAttribute('data-dbl'), el.getAttribute('data-arg')); });
+/* The suggestion list closes on pick, Enter, Escape and any nav change. This covers the
+   last case — a click that lands somewhere else entirely. It runs on capture so it fires
+   before the click's own action re-renders. */
+root.addEventListener('click', e=>{ try{ if(!state.hq) return; if(e.target.closest('.sb-hsearch')) return;
+  state.hq=''; state.hqSel=-1;
+  /* Render on the NEXT tick, not here: this runs on capture, so re-rendering now would
+     detach the element the click is still travelling towards and its action would never
+     fire. Setting the state and letting the tick repaint keeps both. */
+  setTimeout(()=>{ try{ render(); }catch(_){} },0); }catch(_){} }, true);
 root.addEventListener('input', e=>{ const el=e.target.closest('[data-inp]'); if(!el) return; callAct(el.getAttribute('data-inp'), el.value); });
 root.addEventListener('change', e=>{ const el=e.target.closest('[data-chg]'); if(!el) return; callAct(el.getAttribute('data-chg'), el.value); });
 root.addEventListener('keydown', e=>{ const el=e.target.closest('[data-key]'); if(!el) return; const fn=app[el.getAttribute('data-key')]; if(fn) fn(e); });
