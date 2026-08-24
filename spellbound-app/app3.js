@@ -545,7 +545,15 @@ function deviceSpeak(text,rate){ try{
     if(_wvAudio){ try{ _wvAudio.pause(); }catch(e){} }
     const a=new Audio(clip); try{ a.preservesPitch=true; a.mozPreservesPitch=true; }catch(e){}
     a.playbackRate=Math.max(.55,Math.min(1.3,(rate||0.9)/0.9)); _wvAudio=a;
-    const tts=()=>{ try{ window.speechSynthesis.speak(utter(text,rate||0.92)); }catch(e){} };
+    /* A clip that fails to load fires BOTH `error` on the element AND a rejection from
+       play() — so an unguarded fallback spoke the word twice, which is what a word with
+       no working recording sounded like on every hosted build (those stream each clip
+       from raw.githubusercontent, so a word listed in SB_WVOICE whose file isn't there
+       404s and lands here). Fire once. The identity check also stops a slow failure from
+       talking over a newer word the child has already tapped. */
+    let _said=false;
+    const tts=()=>{ if(_said||_wvAudio!==a) return; _said=true;
+      try{ window.speechSynthesis.speak(utter(text,rate||0.92)); }catch(e){} };
     a.onerror=tts; a.play().catch(tts); return; }
   window.speechSynthesis.cancel(); window.speechSynthesis.speak(utter(text,rate||0.92)); }catch(e){} }
 // voice preference: which installed device voice to use ('' = auto best). No account, no key.
@@ -2163,7 +2171,10 @@ const app = {
      been generated (the Audio wrapper in voice-cdn.js resolves it on Pages), otherwise
      the device voice reads the speakable respelling from SB_ALT_PRON */
   sayAlt:(word)=>{ const a=altPron(word); if(!a) return;
-    const fallback=()=>{ try{ window.speechSynthesis.cancel(); window.speechSynthesis.speak(utter(a.s||word,0.88)); }catch(e){} };
+    // Same double-fire as deviceSpeak: `error` and the play() rejection both arrive.
+    let said=false;
+    const fallback=()=>{ if(said) return; said=true;
+      try{ window.speechSynthesis.cancel(); window.speechSynthesis.speak(utter(a.s||word,0.88)); }catch(e){} };
     try{ const slug=String(word).toLowerCase().replace(/[^a-z0-9]/g,'-');
       const au=new Audio('voice/ap/'+slug+'.mp3');
       au.onerror=fallback; au.play().catch(fallback);

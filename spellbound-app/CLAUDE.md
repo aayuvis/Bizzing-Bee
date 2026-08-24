@@ -56,6 +56,16 @@ handlers. App lives in this folder; open `index.html` to run.
 - `voice-cdn.js` — on `*.github.io`, rewrites `voice/…` → raw.githubusercontent of `main`.
   Concept narration (`voice/c*`, `voice/a*`) is exempt: it is bundled on `gh-pages` and
   served same-origin, so it never depends on those clips reaching `main`.
+- **A failed clip fires TWICE — guard every fallback.** A media element whose source
+  404s fires `error` on the element AND rejects the promise from `play()`. Wiring the
+  device-TTS fallback to both (`a.onerror=tts; a.play().catch(tts)`) made the app say
+  the word twice, which is what a word with no working recording sounded like on every
+  hosted build (those stream each clip from raw.githubusercontent, so a word listed in
+  `SB_WVOICE` whose file isn't on `main` lands here). `deviceSpeak` and `sayAlt` now
+  latch a flag; `deviceSpeak` also checks `_wvAudio` identity so a slow failure cannot
+  talk over a word the child has already tapped since. Guard: `tests/tts-once.cjs`.
+  mockbee's `aqPump` has the same two-wire shape but its `miss` is a `Set.add`, so it
+  is idempotent — leave it.
 - `advanced.js` + `adv-concepts-data.js` — the **Advanced Pack** ($299/yr add-on, gated by
   `SB_ENT.hasAddon('advanced')` only). `SB_ADV_CONCEPTS` holds **43 expert chapters** in
   four categories, `SB_ADV_CSCRIPT` their 258 narrated scenes. These live entirely outside
