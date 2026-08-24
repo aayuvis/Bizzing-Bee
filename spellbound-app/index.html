@@ -370,6 +370,10 @@
   /* The Coach stacks below a tablet: a two-column briefing on a phone puts the trap
      list and the trap detail in columns too narrow for either. */
   @media (max-width:760px){ .sb-coach-2col{grid-template-columns:minmax(0,1fr) !important} }
+  /* Coach hero: Bizzy's read takes two thirds, today's rings the last third. Below
+     760px they stack, because a third of a phone is not a ring. */
+  .sb-coach-hero{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:clamp(12px,2.4vw,20px);align-items:center}
+  @media (max-width:760px){ .sb-coach-hero{grid-template-columns:minmax(0,1fr)} }
   .sb-card{background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:var(--r-xl,20px);box-shadow:var(--sh-rest);padding:18px 20px;text-align:left}
   .sb-ct{font-family:var(--display);font-weight:800;font-size:17px;line-height:1.2;color:var(--ink,var(--text))}
   /* Today's bee tip is body copy, not a headline. It used to take the world's HERO face,

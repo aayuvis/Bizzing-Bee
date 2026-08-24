@@ -4060,7 +4060,7 @@ function viewQuotesWordPop(){ const wp=state.qWord; if(!wp) return '';
       <button data-act="qWordClose" style="margin-top:18px;width:100%;padding:12px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">Got it ✓</button>
     </div></div>`; }
 function viewQuotes(){ const c=active(); const S=state; const all=(window.SB_QUOTES||[]);
-  if(!all.length) return `<div style="max-width:640px;margin:0 auto">${pageHead('Quotes','famous people','Wise, funny and inspiring lines from people worth knowing.')}${beeEmpty('sleepy','The quote library is still loading — check back in a moment!')}</div>`;
+  if(!all.length) return `<div style="max-width:640px;margin:0 auto">${pageHead('Quotes','famous people')}${beeEmpty('sleepy','The quote library is still loading — check back in a moment!')}</div>`;
   const L=quoteList(); const total=L.length; let i=Math.min(Math.max(S.qi||0,0),Math.max(0,total-1));
   const x=L[i]||all[0]; const favs=(c.quoteFavs)||{}; const isFav=!!favs[(x.q||'').slice(0,60)];
   const catList=quoteCats(); const favN=all.filter(q=>favs[(q.q||'').slice(0,60)]).length;
@@ -4099,7 +4099,7 @@ function viewQuotes(){ const c=active(); const S=state; const all=(window.SB_QUO
     <div style="text-align:center;font-size:11.5px;color:var(--muted);margin-top:9px">Swipe or use ← → keys · tap ❤ to keep your favorites</div>`
    : beeEmpty('sleepy','No quotes here yet — try another category or your favorites.');
   return `<div style="animation:sb-rise .35s ease both;max-width:760px;margin:0 auto">
-    ${pageHead('Quotes','from famous people','Wise, funny and inspiring lines from people worth knowing — '+fmtN(all.length)+' to explore.')}
+    ${pageHead('Quotes',fmtN(all.length)+' from famous people')}
     ${chips}
     ${body}
   </div>`; }
@@ -4611,14 +4611,35 @@ function viewCoachDesk(){
     ? 'We have not met enough words yet for me to spot a pattern. Go and get some wrong — that is the fastest way to make me useful.'
     : top ? `Nearly every word you lose goes the same way: <b style="color:#fff">${esc(top.label.toLowerCase())}</b>. Fix that one thing and ${top.n} of your misses stop happening.`
           : 'Your misses are spread thin — no single pattern is catching you, which is a good place to be.';
+  /* Today's rings ride in the Coach header, a third of the band to the right of Bizzy's
+     read. Home's rings open the Coach; the Coach's rings open the 30-day chart, so the
+     three targets read as one chain: today -> why -> the month. */
+  const _m=todayMetrics(c); const _t=targets(c);
+  const _ringLine=(lab,col,val,tgt)=>`<span style="display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:800;line-height:1.3">
+      <span style="width:7px;height:7px;border-radius:2px;background:${col};flex:none"></span>
+      <span style="color:rgba(255,255,255,.72)">${lab}</span>
+      <span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;color:#fff;white-space:nowrap">${val}<span style="color:rgba(255,255,255,.6)">/${tgt}</span></span></span>`;
+  const _allDone=_m.pApp>=1&&_m.pPrac>=1&&_m.pWords>=1;
+  const ringPanel=`<button data-act="openMetrics" title="See the last 30 days in Progress" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:16px;padding:12px 14px;cursor:pointer">
+      <span style="flex:none;width:72px;height:72px;display:grid;place-items:center">${ringsSVG(72,[_m.pApp,_m.pPrac,_m.pWords])}</span>
+      <span style="min-width:0;flex:1;display:flex;flex-direction:column;gap:3px">
+        <span style="font-family:var(--body);font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-bottom:2px">Today${_allDone?' \u2713':''}</span>
+        ${_ringLine('App', RING_COL[0][0], fmtMins(_m.app), _t.app+'m')}
+        ${_ringLine('Practise', RING_COL[1][0], fmtMins(_m.prac), _t.prac+'m')}
+        ${_ringLine('Words', RING_COL[2][0], _m.words, _m.tWords)}
+        <span style="font-size:10.5px;font-weight:700;color:rgba(255,255,255,.6);margin-top:3px">last 30 days \u2192</span>
+      </span></button>`;
   const hero=`<div style="position:relative;overflow:hidden;border-radius:20px;background:linear-gradient(135deg,${top?esc(R[top.k].col):'var(--accent)'},var(--ink));padding:clamp(16px,3vw,22px);margin-bottom:16px;box-shadow:var(--sh-rest)">
-      <div style="display:flex;align-items:center;gap:clamp(12px,2.4vw,18px)">
-        <div style="width:clamp(58px,11vw,84px);height:clamp(66px,12vw,94px);flex:none">${mascotSVG(missed.length?'think':'happy')}</div>
-        <div style="min-width:0;flex:1">
-          <div style="font-family:var(--body);font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-bottom:4px">Bizzy’s read on ${esc(c.name||'you')}</div>
-          <div style="font-family:var(--display);font-weight:800;font-size:clamp(15px,2.6vw,20px);line-height:1.4;color:#fff">${line}</div>
+      <div class="sb-coach-hero">
+        <div style="display:flex;align-items:center;gap:clamp(12px,2.4vw,18px);min-width:0">
+          <div style="width:clamp(58px,11vw,84px);height:clamp(66px,12vw,94px);flex:none">${mascotSVG(missed.length?'think':'happy')}</div>
+          <div style="min-width:0;flex:1">
+            <div style="font-family:var(--body);font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-bottom:4px">Bizzy’s read on ${esc(c.name||'you')}</div>
+            <div style="font-family:var(--display);font-weight:800;font-size:clamp(15px,2.6vw,20px);line-height:1.4;color:#fff">${line}</div>
+          </div>
+          ${top?coachFace(R[top.k].face,64,'rgba(255,255,255,.5)'):''}
         </div>
-        ${top?coachFace(R[top.k].face,64,'rgba(255,255,255,.5)'):''}
+        ${ringPanel}
       </div></div>`;
 
   /* ---- 2. the traps as a bar chart of characters, tap to switch ---- */
@@ -4732,7 +4753,7 @@ function viewCoachDesk(){
       ${title?`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:11px">${title}</div>`:''}${body}</section>`;
 
   return `<div style="max-width:1080px;margin:0 auto;animation:sb-rise .35s ease both">
-    ${pageHead('Coach', esc(c.name||'Speller'), 'Worked out from your own practice, answered from a fixed rulebook. Nothing here is guessed, and nothing leaves this device.')}
+    ${pageHead('Coach', esc(c.name||'Speller'))}
     ${hero}
     <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:14px">
       ${/* The trap detail is tall and the list beside it is short, which left a column of
@@ -4786,7 +4807,7 @@ function viewTraps(){ const S=state; const traps=missTraps(); const sel=S.trapSe
         <span style="display:block;height:5px;border-radius:999px;background:var(--tint-deep,var(--surface2));overflow:hidden;margin-top:7px"><span style="display:block;height:100%;background:var(--fix,#C4453C);width:${Math.round(t.n/maxN*100)}%"></span></span></span>
       <span style="color:var(--action,var(--accent));font-weight:800">→</span></button>`).join('');
   return `<div style="max-width:640px;margin:0 auto;animation:sb-rise .35s ease both">
-    ${pageHead('Your Traps','the weak-pattern radar','Your misses, clustered by the pattern that caused them. Beat the pattern and whole families of words come free.')}
+    ${pageHead('Your Traps','the weak-pattern radar','Beat one pattern and whole families of words come free.')}
     <div style="position:relative;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--sh-rest);margin-bottom:16px">
       ${SB_COVER(state.theme,'traps',{h:110,dark:state.mode==='dusk'})}
       <span style="position:absolute;left:14px;bottom:12px;font-family:var(--display);font-weight:800;font-size:20px;color:${state.mode==='dusk'?'var(--action,#6C4FE0)':'#fff'};text-shadow:0 1px 5px rgba(0,0,0,.3)">${traps.length?traps.length+' patterns on the radar':'Radar clear'}</span>
@@ -5232,7 +5253,7 @@ function viewHome(){
           <span style="width:8px;height:8px;border-radius:3px;background:${col};flex-shrink:0"></span>
           <span style="color:var(--muted)">${lab}</span>
           <span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;color:var(--ink,var(--text));white-space:nowrap">${val}<span style="color:var(--muted)">/${tgt}</span></span></div>`;
-        return `<button data-act="openMetrics" title="See the last 30 days in Progress" class="sb-card" style="display:flex;align-items:center;gap:13px;min-height:128px;padding:14px;text-align:left;cursor:pointer;width:100%">
+        return `<button data-act="openCoachDesk" title="See what Bizzy makes of today" class="sb-card" style="display:flex;align-items:center;gap:13px;min-height:128px;padding:14px;text-align:left;cursor:pointer;width:100%">
         <span style="flex-shrink:0;width:104px;height:104px;display:grid;place-items:center">${ringsSVG(104,[m.pApp,m.pPrac,m.pWords])}</span>
         <span style="min-width:0;flex:1">
           <span class="sb-ct" style="display:block;margin-bottom:6px">Daily goal${allDone?' ✓':''}</span>
@@ -5241,7 +5262,7 @@ function viewHome(){
             ${line('Practise time', RING_COL[1][0], fmtMins(m.prac), targets(c).prac+'m')}
             ${line('Word count', RING_COL[2][0], m.words, m.tWords)}
           </span>
-          <span class="sb-cl" style="display:block;margin-top:8px">${allDone?'All three rings closed — brilliant!':'last 30 days →'}</span>
+          <span class="sb-cl" style="display:block;margin-top:8px">${allDone?'All three rings closed — brilliant!':'what Bizzy makes of it →'}</span>
         </span></button>`; })()}
       ${wohTile}
     </div>
@@ -5816,7 +5837,7 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
   const bAll=badgeDefs();
   return `<div style="max-width:920px;margin:0 auto">
     ${hiveBar('coll')}
-    ${pageHead('My Hive', avOwnedCount(c)+'/'+SB_AVATARS.list.length+' avatars', 'Everything you\'ve earned and unlocked — badges, avatars, worlds and artifacts.',
+    ${pageHead('My Hive', avOwnedCount(c)+'/'+SB_AVATARS.list.length+' avatars', '',
       `<span style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px">${coinAmt(c.coins||0,14)}</span>`)}
     <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">${tabBtn('badges','crown','Badges · '+bAll.filter(b=>b.done).length+'/'+bAll.length)}${tabBtn('avatars','spark','Avatars · '+avOwnedCount(c)+'/'+SB_AVATARS.list.length)}${tabBtn('worlds','palette','Worlds · '+THEMES.filter(t=>isThemeUnlocked(t.id)).length+'/'+THEMES.length)}${tabBtn('artifacts','bolt','Artifacts')}</div>
     ${body}
@@ -7165,7 +7186,7 @@ function viewProgress(){
   }
   const legend=[['var(--good)','Mastered'],['var(--bad)','Needs work'],['var(--surface2)','Not yet mastered']].map(([cc,l])=>`<span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:600"><span style="width:12px;height:12px;border-radius:6px;background:${cc}"></span>${l}</span>`).join('');
   return `<div style="animation:sb-rise .35s ease both">
-    ${pageHead('Progress','where you stand','Your spelling level, then the two journeys, then this week — and where every word stands.')}
+    ${pageHead('Progress','where you stand')}
     ${rankBlock}
     ${(()=>{ /* The World Atlas, in its own words */
       const nx=(typeof window.SB_TRAIL_NEXT==='function')?SB_TRAIL_NEXT():null;
@@ -7290,7 +7311,7 @@ function viewFinder(){ const S=state; const c=active(); const q=S.finderQ||'';
         :`<div class="sb-card" style="text-align:center;padding:30px 20px"><div class="sb-ct">No matches for “${esc(q)}”</div><div class="sb-cs" style="margin-top:4px">${window.SB_FULL?'Try a different spelling.':'Try a different spelling — or load the full 128,000-word library below.'}</div><div style="margin-top:12px">${loadBtn}</div></div>`);
   }
   return `<div style="max-width:860px;margin:0 auto">
-    ${pageHead('Word Finder','search '+total+' words','Look up any word, study its learn card, and add it to one of your lists.',loadBtn)}
+    ${pageHead('Word Finder','search '+total+' words','',loadBtn)}
     <div style="position:relative;margin-bottom:14px"><span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)">${iconSVG('book',18)}</span>
       <input data-inp="finderQ" data-fkey="finderQ" value="${escA(q)}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type a word… e.g. iridescent" style="width:100%;padding:14px 16px 14px 44px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:17px;outline:none"></div>
     ${body}
@@ -7592,7 +7613,7 @@ function viewThemes(){ const S=state; const c=active(); ensureLists(c);
       <span style="flex:1;height:1px;background:var(--line)"></span>
     </div><div style="${grid}">${ts.map(themeCard).join('')}</div>`; }).join('');
   return `<div style="animation:sb-rise .35s ease both">
-    ${pageHead('Theme Journeys', defs.length+' themes', 'Words by the family they belong to — a subject, or the language they came from. Every theme opens with the explanation: what the family is, how to spot one at the microphone, and the trap it sets. Then the cards, the drill and the meaning check.')}
+    ${pageHead('Theme Journeys', defs.length+' themes', 'Words by the family they belong to — learn to spot one at the microphone, and the trap it sets.')}
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin-bottom:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
       <span style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('palette',15)} ${mine.length} picked · ${doneThemes} complete</span>
       <span style="font-size:12px;color:var(--muted);font-weight:700">${fmtN(mastered)} themed words mastered</span>
@@ -9641,7 +9662,7 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
       <span style="font-size:11.5px;color:var(--muted);font-weight:700">${ttBandNote(c)}</span>
       <span style="margin-left:auto;display:inline-flex;gap:5px;flex-wrap:wrap">${bchip(0,'Auto',!(+(c.ttLvSel||0)))}${[1,2,3,4,5].map(n=>bchip(n,'L'+n,+(c.ttLvSel||0)===n)).join('')}</span></div>`;
     return `<div style="max-width:860px;margin:0 auto">
-      ${pageHead('Know the World of Words','trivia training · '+fmtN(total)+' cards at your level','Study the trivia bank at your own pace — question on the front, answer and a fun fact on the back. Cards match your age and spelling level; change the level any time. No timer, no score.',
+      ${pageHead('Know the World of Words','trivia training · '+fmtN(total)+' cards at your level','Your own pace — no timer, no score.',
         studied?`<span style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">${ttGlyph('book',15)}${fmtN(studied)} cards studied</span>`:'')}
       ${bandStrip}
       ${wordIds.length?`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:2px 2px 9px;display:flex;align-items:center;gap:7px">${ttGlyph('bee',18)}Word chapters <span style="font-size:12px;color:var(--muted);font-weight:700">— built from the spelling library</span></div>${grid(wordIds)}`:''}
