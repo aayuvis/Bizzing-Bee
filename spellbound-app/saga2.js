@@ -5,6 +5,26 @@
   function pool(n){ try{ const l=pickFresh(gameWordsD(),n)||[];
     l.forEach(w=>{ try{ if(typeof logGameWord==='function'&&w&&w.w) logGameWord(nkey(w.w)); }catch(e){} });
     return l; }catch(e){ return []; } }
+  /* Every word an arcade game asked for, and whether it was spelled right.
+     A game used to swallow its words: miss one mid-flight and the correct spelling went by
+     in the same breath as the crash, so the one word you most needed to see was the one you
+     never got. Engines record here as they go; the arcade result card reads it back and
+     shows the round's words with their spellings (app3.js, arcadeResult).
+     Keyed by lower-cased word so a word met twice in a round is one row — and a word missed
+     at any point stays missed, because that is the row worth reading. */
+  const WORDLOG={
+    list:[],
+    reset(){ this.list=[]; },
+    add(w,ok){ try{
+      if(!w||!w.w) return;
+      const k=String(w.w).toLowerCase();
+      const hit=this.list.find(x=>x.k===k);
+      if(hit){ hit.ok=hit.ok&&!!ok; return; }
+      this.list.push({k,w:w.w,d:w.d||'',ok:!!ok});
+    }catch(e){} },
+  };
+  W().SB_WORDLOG=WORDLOG;
+  const wlog=(w,ok)=>WORDLOG.add(w,ok);
   /* refilling word source: never cycles the same small batch - when a game runs long
      it draws a FRESH batch (still respecting the global 150-word no-repeat window). */
   function wordFeed(n,filter){ const f=filter||(w=>w&&w.w); let q=pool(n).filter(f);
@@ -453,8 +473,32 @@
     cv.addEventListener('touchend',e=>{ const dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
       bee.want=Math.abs(dx)>Math.abs(dy)?[Math.sign(dx),0]:[0,Math.sign(dy)]; },{passive:true});
     function open(c,r){ return MAZE[r]&&MAZE[r][c]!==0; }
+    /* Which cell this thing will arrive at next along one axis. Handles being exactly on a
+       centre, where floor and ceil both name the cell you are already standing in. */
+    function nextCell(v,d){ return d>0?Math.floor(v)+1 : d<0?Math.ceil(v)-1 : Math.round(v); }
+    const TURNWIN=0.4;      // cells: how early a turn may be entered before the junction
     function step(ent,sp){ // grid mover with desired-turn buffering
       const spd=sp/60, thr=spd*0.6;   // snap window MUST be smaller than the per-frame step, or the bee vibrates in place
+      /* A turn used to be accepted ONLY within one step of a cell centre, so an arrow
+         pressed a moment late was dropped in silence and the player waited out a whole
+         cell — often a whole corridor — before it took. Play-testing read that as the
+         controls being unresponsive, which it was. Two standard maze fixes:
+           1. a REVERSE takes effect at once, since turning back needs no repositioning;
+           2. a turn entered while approaching a junction is accepted early and the bee is
+              pulled up to the corner — the forward hop is along the way it is already
+              travelling, so it reads as cutting the corner rather than as a jump. */
+      if(ent===bee && (bee.want[0]||bee.want[1]) && (ent.dir[0]||ent.dir[1])){
+        const rev = bee.want[0]===-ent.dir[0] && bee.want[1]===-ent.dir[1];
+        if(rev){
+          if(open(nextCell(ent.px,bee.want[0]), nextCell(ent.py,bee.want[1]))) ent.dir=bee.want.slice();
+        } else {
+          const jc=nextCell(ent.px,ent.dir[0]), jr=nextCell(ent.py,ent.dir[1]);
+          if(Math.abs(jc-ent.px)<=TURNWIN && Math.abs(jr-ent.py)<=TURNWIN
+             && open(jc+bee.want[0], jr+bee.want[1])){
+            ent.px=jc; ent.py=jr; ent.dir=bee.want.slice();
+          }
+        }
+      }
       const atC=Math.abs(ent.px-Math.round(ent.px))<thr && Math.abs(ent.py-Math.round(ent.py))<thr;
       if(atC){ ent.px=Math.round(ent.px); ent.py=Math.round(ent.py);
         if(ent===bee && open(ent.px+bee.want[0], ent.py+bee.want[1])) ent.dir=bee.want.slice();
@@ -471,7 +515,7 @@
       el.innerHTML='<div class="sg-cardbox"><b>🌼 Spell it to bloom — earn time &amp; coins!</b><button class="sg-cardw" id="sg-cw">'+iconSVG('volume',18)+'</button>'+meaningHTML(w)+'<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off"><button class="sg-rbtn go" id="sg-cgo">Bloom</button></div><div id="sg-ct">12</div></div>';
       el.style.display='grid'; try{ say(w.w); }catch(e){}
       const inp=el.querySelector('#sg-ci'); inp.focus();
-      function submit(){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase();
+      function submit(){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase(); wlog(w,ok);
         if(ok){ score+=150; t+=15; lives=Math.min(5,lives+1); try{ if(typeof addCoins==='function') addCoins(20); }catch(_){}
           el.style.display='none'; card=null; spawnSplash();
           try{flash('🌸 +1 life ❤ · +150 · +15 seconds · +20 🪙 — the meadow blooms!');}catch(_){} return; }
@@ -622,19 +666,35 @@
     const pup=()=>{ holding=false; };
     addEventListener('keydown',flap);
     host.addEventListener('pointerdown',pdown); addEventListener('pointerup',pup); addEventListener('pointercancel',pup);
-    function spawn(){ const g=CFG.gap, y=60+Math.random()*(Ht-120-g); obs.push({x:Wd+30,y,g}); }
+    /* Collectibles are placed by the TOWERS, not by chance.
+       Every one of these used to pick its own random height with no idea where the pillars
+       were, so a honey pot could arrive flat against a wall — spell it or crash, pick one —
+       and a coin run could cross the gap the player was already lining up for. Play-testing
+       called both out, and they are the same bug.
+       Everything drifts left at CFG.speed, so relative positions never change: a collectible
+       released WITH a tower and centred on that tower's gap is still centred on it when it
+       reaches the bee. TRAIL sets it down just past the pillar, in air the bee is already
+       flying through, so collecting it costs no risk at all. */
+    const TRAIL=170;
+    let pending=[];          // collectibles waiting for a tower to tell them where the lane is
+    function spawn(){ const g=CFG.gap, y=60+Math.random()*(Ht-120-g); obs.push({x:Wd+30,y,g});
+      const mid=y+g/2, k=pending.shift();
+      if(k==='pot'&&!pot) pot={x:Wd+30+TRAIL,y:mid-18};        // pickup tests pot.y+18
+      else if(k==='coins') spawnCoins(mid,g);
+      else if(k==='heart') hearts.push({x:Wd+30+TRAIL,y:mid-16,ph:0}); }
     function spawnMoth(){ const big=Math.random()<0.14;
       moths.push({x:Wd+40,y:60+Math.random()*(Ht-140),ph:Math.random()*7,amp:14+Math.random()*26,sp:CFG.speed*(0.9+Math.random()*0.5),s:big?54:38,big}); }
-    function spawnCoins(){ const y0=70+Math.random()*(Ht-200), up=Math.random()<0.5;
-      for(let i=0;i<5;i++) coins.push({x:Wd+30+i*34, y:y0+(up?-1:1)*Math.sin(i/4*Math.PI)*42, ph:i*0.7}); }
-    function spawnHeart(){ hearts.push({x:Wd+30,y:80+Math.random()*(Ht-200),ph:0}); }
+    function spawnCoins(mid,g){ const up=Math.random()<0.5;
+      // the arc has to stay inside the corridor, so its swing is bounded by the gap
+      const amp=Math.min(42,Math.max(12,g/2-34));
+      for(let i=0;i<5;i++) coins.push({x:Wd+30+TRAIL+i*34, y:mid+(up?-1:1)*Math.sin(i/4*Math.PI)*amp, ph:i*0.7}); }
     function spellStop(){
       const w=feed.next(); card={w};
       const el=host.querySelector('#sg-card');
       el.innerHTML='<div class="sg-cardbox"><b>🍯 Honey pot! Spell to bank it</b><button class="sg-cardw" id="sg-cspk">'+iconSVG('volume',18)+'</button>'+meaningHTML(w)+'<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off"><button class="sg-rbtn go" id="sg-cgo">Bank</button></div></div>';
       el.style.display='grid'; try{ say(w.w); }catch(e){}
       const inp=el.querySelector('#sg-ci'); inp.focus();
-      function submit(){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase();
+      function submit(){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase(); wlog(w,ok);
         if(ok){ banked++;
           if(lives<MAXLIVES){ lives++; try{flash('🍯 Pot banked — ❤ Extra life! '+banked+'/'+CFG.pots);}catch(_){} }
           else { try{flash('🍯 Pot banked! '+banked+'/'+CFG.pots+' (lives full)');}catch(_){} }
@@ -656,10 +716,14 @@
       else { spawnT+=dt/1000; bee.vy+=0.187; bee.vy=Math.min(bee.vy,7.5); bee.y+=bee.vy; }   // gravity −15% per tuning + a terminal fall speed
       if(!gate){
         if(spawnT>CFG.every){ spawnT=0; spawn(); }              // towers spaced to the world speed
-        if(potT<=0&&!pot){ potT=8; pot={x:Wd+30,y:80+Math.random()*(Ht-220)}; }
+        // Collectibles are QUEUED here and positioned by the next tower (see spawn()).
+        // Coins and hearts wait while a pot is pending or in play: the pot is the one that
+        // stops the game to ask for a spelling, so nothing is allowed to compete with it.
+        const potBusy = pot || pending.indexOf('pot')>=0;
+        if(potT<=0&&!potBusy){ potT=8; pending.push('pot'); }
         if(mothT<=0){ mothT=4.8+Math.random()*3.2; spawnMoth(); } // fewer moths
-        if(coinT<=0){ coinT=6+Math.random()*5; spawnCoins(); }
-        if(heartT<=0){ heartT=13+Math.random()*8; if(lives<MAXLIVES) spawnHeart(); }
+        if(coinT<=0&&!potBusy&&pending.indexOf('coins')<0){ coinT=6+Math.random()*5; pending.push('coins'); }
+        if(heartT<=0){ heartT=13+Math.random()*8; if(lives<MAXLIVES&&!potBusy&&pending.indexOf('heart')<0) pending.push('heart'); }
       } else gate.x-=CFG.speed;
       obs.forEach(o=>o.x-=CFG.speed); if(pot) pot.x-=CFG.speed;
       moths.forEach(m=>{ m.x-=m.sp; m.ph+=dt/130; m.y+=Math.sin(m.ph)*0.8*(m.amp/22); });
@@ -1069,7 +1133,7 @@
         '<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="sg-rbtn go" id="sg-cgo">Unlock</button></div></div>';
       el.style.display='grid'; try{ say(w.w); }catch(e){}
       const inp=el.querySelector('#sg-ci'); try{inp.focus();}catch(e){}
-      function submit(){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase();
+      function submit(){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase(); wlog(w,ok);
         el.style.display='none'; el.innerHTML='';
         if(ok){ held=p; renderHold();
           // spell combo: unbroken correct spells stack an instant extra boost
@@ -1548,7 +1612,7 @@
     const inp=host.querySelector('#sg-di'); inp.focus();
     let p2right=0;
     function cast(){ if(over) return;
-      const ok=inp.value.trim().toLowerCase()===cur.w.toLowerCase(); inp.value=''; try{inp.focus();}catch(e){}
+      const ok=inp.value.trim().toLowerCase()===cur.w.toLowerCase(); wlog(cur,ok); inp.value=''; try{inp.focus();}catch(e){}
       clearInterval(timer);
       if(ok){ if(phase===1){ hexes++; wall(); try{flash('⬡ Shield hex forged!');}catch(_){} }
         else { p2right++; try{flash('⚡ The Quill fires! '+p2right+'/3');}catch(_){}
@@ -2135,7 +2199,7 @@
       [...host.querySelectorAll('.sg-stile')].forEach(t=>t.style.visibility='hidden');
       const inp=el.querySelector('#sg-ci'); inp.focus();
       function submit(){
-        const ok=inp.value.trim().toLowerCase()===seq.w;
+        const ok=inp.value.trim().toLowerCase()===seq.w; wlog({w:seq.w},ok);
         el.style.display='none'; [...host.querySelectorAll('.sg-stile')].forEach(t=>t.style.visibility='');
         if(ok){ si++; host.querySelector('#sg-seq').textContent='Song '+Math.min(si+1,CFG.seqs)+'/'+CFG.seqs;
           try{flash('✨ '+seq.w.toUpperCase()+' — the marquee brightens!');}catch(_){} newSeq(); }

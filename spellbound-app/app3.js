@@ -1520,7 +1520,7 @@ const app = {
   // Show answer = you didn't know it → save for revision and move on (no manual marking in Practice)
   reveal:()=>{ if(state.status==='revealed') return; const cw=curWord(); if(cw&&cw.w){ addMiss(cw); state.sessionDone=(state.sessionDone||0)+1; state._run=0;
       const rk=nkey(cw.w); state.sessionCorrect=(state.sessionCorrect||[]).filter(x=>nkey(x.w)!==rk); state.sessionWrong=(state.sessionWrong||[]).filter(x=>nkey(x.w)!==rk); state.sessionWrong.push(cw); }
-    set({status:'revealed', mood:'sleepy'}); autoAdvance(2400); },
+    set({status:'revealed', mood:'sleepy'}); },   // asked to see it → it stays until they move on
   primary:()=>{ app.check(); },
   // Self-directed advance: the two card buttons replace the old "Next" button.
   completeWord:()=>{ const cw=curWord(); if(cw&&cw.w){ const t=cw.w.toLowerCase(); markMastered(t); clearMiss(t);
@@ -1578,7 +1578,10 @@ const app = {
       addMiss(curWord());
       sfx('wrong'); const d=lev(ans,target); if(d>0 && d<=2 && target.length>=4){ state.toast='So close — '+d+' letter'+(d>1?'s':'')+' off! 💡'; scheduleToast(2400); }
       state.status='wrong'; state.mood='oops'; state.sessionDone+=1; state._run=0; render();
-      autoAdvance(2200);  // wrong → already saved for revision; move on, no click needed
+      // NO auto-advance on a wrong answer. It used to move on after 2.2s, which is less
+      // time than it takes to read a word you have just got wrong — play-testing asked for
+      // longer, and the honest answer is that the reader should decide, not a timer. The
+      // correct spelling stays up with a Next word button beside it.
     } },
   next:()=>{ clearTimeout(state._advTimer); state._advTimer=null;
     const N=(state.sessionWords&&state.sessionWords.length)||0;
@@ -1996,6 +1999,8 @@ const app = {
     el.querySelector('#arc-back').onclick=arcadeClose;
     const host=el.querySelector('#arc-host');
     const onUnlock=()=>{ try{ addCoins(15); }catch(e){} };
+    // one round = one word log, so the result card reports this play and not the last one
+    try{ if(window.SB_WORDLOG) SB_WORDLOG.reset(); }catch(e){}
     const done=(res)=>{ _arcHandle=null; arcadeResult(g, res||{}); };
     const gopts=extra.opts||((c.arcGame&&c.arcGame[k]&&c.arcGame[k].opts))||{};
     // no tint: karts/heroes carry their own colours (a leftover saved arcColour used to
@@ -5940,10 +5945,10 @@ function trainerCard(){
   let resultText='',resultStyle=''; const primaryLabel=(st==='idle')?'Check':'Check again'; const showResult=(st!=='idle');
   const rbase='border-radius:14px;padding:13px 16px;font-weight:800;font-size:15px;margin-bottom:16px;animation:sb-pop .3s ease both;';
   if(st==='correct'){ resultText='✓ Correct! Nicely spelled — next word…'; resultStyle=rbase+'background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good)'; }
-  else if(st==='wrong'){ resultText='✗ Not quite — it’s "'+word.w+'". Saved for revision — next word…'; resultStyle=rbase+'background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)'; }
+  else if(st==='wrong'){ resultText='✗ Not quite — it’s "'+word.w+'". Saved for revision. Take your time.'; resultStyle=rbase+'background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)'; }
   else if(st==='revealed'){ resultText='The word is "'+word.w+'".'; resultStyle=rbase+'background:var(--surface2);color:var(--text)'; }
-  // Correct/wrong now auto-advance (no click needed), so the manual buttons only show
-  // before a check (skip / defer) and after Show answer (to continue).
+  // Correct auto-advances (no click needed). Wrong and Show-answer HOLD, so the reader
+  // controls when the spelling leaves the screen — they get a Next word button instead.
   const showMarks=(st==='idle'||st==='revealed');
   const completeHot=false, reviseHot=(st==='revealed');
   const completeStyle=completeHot
@@ -5969,7 +5974,7 @@ function trainerCard(){
       ${hints.length?`<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:left;font-size:15px;line-height:1.6;margin-bottom:18px">${hints.join('  ·  ')}</div>`:''}
       <input data-inp="onType" data-key="trainKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="spell it" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;text-align:center;padding:16px 14px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(20px,5vw,28px);letter-spacing:.14em;text-transform:lowercase;outline:none;margin-bottom:16px">
       ${showResult?`<div style="${resultStyle}">${esc(resultText)}</div>`:''}
-      <div style="display:flex;gap:10px"><button data-act="reveal" style="padding:14px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Show answer</button><button data-act="primary" style="flex:1;padding:14px;border-radius:14px;${showResult?'background:var(--surface2);color:var(--text);border:1px solid var(--line)':'background:var(--accent);color:#fff;box-shadow:var(--edge)'};font-weight:800;font-size:15px">${primaryLabel}</button></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap"><button data-act="reveal" style="padding:14px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Show answer</button><button data-act="primary" style="flex:1;min-width:120px;padding:14px;border-radius:14px;${showResult?'background:var(--surface2);color:var(--text);border:1px solid var(--line)':'background:var(--accent);color:#fff;box-shadow:var(--edge)'};font-weight:800;font-size:15px">${primaryLabel}</button>${st==='wrong'?`<button data-act="next" style="flex:1;min-width:120px;padding:14px;border-radius:14px;background:var(--accent);color:#fff;box-shadow:var(--edge);font-weight:800;font-size:15px">Next word →</button>`:''}</div>
     </div>`;
 }
 // Practice CARD VIEW — a portrait flash-card deck. The word shows on a tall card; tap or
@@ -7452,7 +7457,7 @@ function viewSettings(){
       <button data-act="openTiers" style="padding:10px 16px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">Manage plan →</button>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;border-top:1px solid var(--line);padding-top:12px">
-      ${_parent?`<button data-act="doSignOut" style="padding:8px 13px;border-radius:9px;background:var(--surface2);color:var(--text);font-weight:800;font-size:12.5px">Sign out</button>`:`<button data-act="openAuth" data-arg="signin" style="padding:8px 13px;border-radius:9px;background:var(--surface2);color:var(--text);font-weight:800;font-size:12.5px">Parent sign in</button>`}
+      ${_parent?`<button data-act="doSignOut" style="padding:9px 15px;border-radius:9px;background:var(--surface2);border:1px solid var(--bad);color:var(--bad);font-weight:800;font-size:13px">Sign out of ${esc(_parent.email)}</button>`:`<button data-act="openAuth" data-arg="signin" style="padding:9px 15px;border-radius:9px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">Parent sign in</button>`}
       <button data-act="openAdmin" style="padding:8px 13px;border-radius:9px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:12.5px">🛡️ Admin console</button>
       <a href="privacy.html" style="display:inline-flex;align-items:center;padding:8px 13px;border-radius:9px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:12.5px;text-decoration:none">🔒 Privacy &amp; Parents' Notice</a>
     </div></div>`;
@@ -7523,7 +7528,8 @@ function viewSettings(){
         ${line('Test coins','Tops the purse up to 1,000,000 so you can test the Store. Switching it off puts the real balance back.',tog('toggleDevCoins',!!(active()&&active().devCoins),'On','Off'))}
       </div>
     </details>
-    <button data-act="signOut" style="width:100%;padding:14px;border-radius:14px;background:var(--surface2);color:var(--bad);font-weight:800;font-size:15px">Sign out</button>
+    <button data-act="signOut" style="width:100%;padding:14px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">← Exit to the start screen</button>
+    <p style="margin:7px 2px 0;font-size:12px;color:var(--muted);text-align:center">Leaves the app open on the welcome screen. To sign the parent account out, use <b style="color:var(--text)">Account &amp; subscription</b> at the top.</p>
     <button data-act="devTap" style="display:block;width:100%;text-align:center;background:none;border:0;cursor:default;margin-top:14px;font-size:11.5px;color:var(--muted);font-weight:650">Bizzing Bee · made with 🐝 for spellers</button>
   </div>`;
 }
@@ -8518,12 +8524,37 @@ function arcadeResult(g, res){
         ? `<div style="margin-top:9px;font-family:var(--display);font-weight:800;font-size:14px;color:var(--accent)">🏆 New personal best — ${score}!</div>`
         : `<div style="margin-top:9px;font-size:12.5px;color:var(--muted)">You scored <b style="color:var(--text)">${score}</b> · best <b style="color:var(--text)">${shownBest}</b></div>`)
     : '';
+  /* The words this round asked for, spelling and all.
+     A game used to swallow them: miss one mid-flight and the answer went past in the same
+     breath as the crash, so the one word you most needed to read was the one you never got.
+     Missed words come first — they are the reason to look — and every row can go straight
+     onto the revision list. saga2.js fills SB_WORDLOG; arcadePlay clears it each round. */
+  const logged=(()=>{ try{ return (window.SB_WORDLOG&&SB_WORDLOG.list||[]).slice(); }catch(e){ return []; } })();
+  logged.sort((a,b)=>(a.ok?1:0)-(b.ok?1:0));
+  const missedN=logged.filter(x=>!x.ok).length;
+  const recap = !logged.length ? '' : `
+      <div class="arc-r-words" style="margin-top:16px;border-top:1px solid var(--line);padding-top:13px;text-align:left">
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:9px">
+          <b style="font-family:var(--display);font-size:14.5px">Words you met</b>
+          <span style="font-size:11.5px;color:var(--muted)">${logged.length} word${logged.length>1?'s':''}${missedN?` · ${missedN} to revise`:' · all correct 🎉'}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;max-height:210px;overflow-y:auto">
+        ${logged.map(x=>`<div style="display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:9px;background:${x.ok?'var(--surface2)':'color-mix(in srgb,var(--bad) 11%,transparent)'}">
+            <span style="font-size:13px">${x.ok?'✓':'✗'}</span>
+            <span style="font-family:var(--display);font-weight:800;font-size:14.5px;color:${x.ok?'var(--text)':'var(--bad)'};letter-spacing:.02em">${esc(x.w)}</span>
+            <span style="flex:1;min-width:0;font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(x.d||'')}</span>
+            <button class="arc-r-say" data-w="${escA(x.w)}" title="Hear it" aria-label="Hear ${escA(x.w)}" style="flex:none;padding:4px 7px;border-radius:7px;background:var(--surface);border:1px solid var(--line);color:var(--muted);font-size:11px">🔊</button>
+            <button class="arc-r-rev" data-w="${escA(x.w)}" data-d="${escA(x.d||'')}" style="flex:none;padding:4px 9px;border-radius:7px;background:${x.ok?'var(--surface)':'var(--treasure,#F0B429)'};border:1px solid ${x.ok?'var(--line)':'transparent'};color:${x.ok?'var(--muted)':'var(--treasure-deep,#8A5B00)'};font-weight:800;font-size:11px;white-space:nowrap">⚑ Revise</button>
+          </div>`).join('')}
+        </div>
+      </div>`;
   const card=document.createElement('div'); card.className='arc-play-result';
   card.innerHTML=`<div class="arc-play-rcard">
       <div style="font-size:34px;line-height:1">${isBest?'🌟':win?'🏆':'💪'}</div>
       <div style="font-family:var(--display);font-weight:800;font-size:20px;margin:6px 0 2px">${isBest?'New record!':win?'Nice spelling!':'Good try!'}</div>
       <div style="font-size:13px;color:var(--muted)">${win?('+'+coins+' 🪙 · play again to beat it'):'Every round makes the words stick. Give it another go.'}</div>
       ${bestLine}
+      ${recap}
       <div style="display:flex;gap:9px;margin-top:16px;justify-content:center;flex-wrap:wrap">
         <button class="arc-r-again" style="padding:11px 18px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:14px">Play again</button>
         <button class="arc-r-back" style="padding:11px 18px;border-radius:11px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:14px">← Arcade</button>
@@ -8531,6 +8562,12 @@ function arcadeResult(g, res){
   _arcEl.appendChild(card);
   card.querySelector('.arc-r-again').onclick=()=>{ arcadeClose(); if(window.app) app.arcadePlay(g.k); };
   card.querySelector('.arc-r-back').onclick=arcadeClose;
+  card.querySelectorAll('.arc-r-say').forEach(b=>{ b.onclick=()=>{ try{ say(b.dataset.w); }catch(e){} }; });
+  card.querySelectorAll('.arc-r-rev').forEach(b=>{ b.onclick=()=>{
+    try{ addMiss({w:b.dataset.w, d:b.dataset.d||''}); }catch(e){}
+    b.textContent='⚑ On revise list'; b.disabled=true; b.style.opacity='.65';
+    try{ flash('Marked for revision ⚑'); }catch(e){}
+  }; });
 }
 /* ============================================================================
    WHO WANTS TO BE A BIZZILLIONAIRE — a 15-rung money ladder over the 31k trivia
