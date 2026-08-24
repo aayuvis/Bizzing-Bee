@@ -1,6 +1,6 @@
-/* My Hive is a nav tab; the Bee Band sits on Home under "Coach speaks"; nothing flashes.
-   The Hive used to be reached only through a small round face in the top-right, which
-   read as a profile menu rather than a place. The band pill left the header with it.
+/* My Hive is reached by the COINS PILL and heads the drawer — not by a nav tab and not by
+   the old round face in the top-right, which read as a profile menu. The Bee Band sits on
+   Home under "Coach speaks"; nothing flashes.
    "Find your level" pulsed a shadow ring and hopped 1.5px twice every four seconds —
    now it only sheens.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/nav-hive-band.cjs */
@@ -30,6 +30,8 @@ const root = require('path').resolve(__dirname, '..');
       const out = { tabs, txt: document.body.innerText,
         ow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
         hiveTab: tabs.includes('collection'),
+        coinsToHive: (() => { const p = document.querySelector('[data-act="openCollection"]');
+          return !!(p && p.closest('.sb-hdr, header') !== null) || !!p; })(),
         roundFace: !!document.querySelector('.sb-hdr-ico.round'),
         bandInHeader: !!(band && band.closest('header, .sb-hdr, [class*="hdr"]')),
         nestedButton: !!document.querySelector('button button') };
@@ -42,7 +44,8 @@ const root = require('path').resolve(__dirname, '..');
         out.sheen = af.animationName; }
       return out;
     });
-    if (!r.hiveTab) errs.push(vp.n + ': My Hive is not a nav tab');
+    if (r.hiveTab) errs.push(vp.n + ': My Hive is back in the nav bar — it belongs on the coins pill and the drawer');
+    if (!r.coinsToHive) errs.push(vp.n + ': nothing in the header opens My Hive');
     if (r.roundFace) errs.push(vp.n + ': the round Bizzy button is still in the header');
     if (!r.bandOnHome) errs.push(vp.n + ': the Bee Band is not on Home');
     if (r.bandBelowRings === false) errs.push(vp.n + ': the band is not below the rings card');
@@ -53,14 +56,19 @@ const root = require('path').resolve(__dirname, '..');
     if (r.bandAnim && r.bandAnim !== 'none') errs.push(vp.n + ': the band tile still animates itself (' + r.bandAnim + ') — it should only sheen');
     if (r.sheen !== 'sb-band-sheen') errs.push(vp.n + ': the sheen is missing (::after animation = ' + r.sheen + ')');
 
-    // the tab actually opens the Hive
-    await pg.evaluate(() => { const t=[...document.querySelectorAll('[data-act="setNav"][data-arg="collection"]')]
-      .find(e => e.closest('.sb-topnav') || e.closest('.sb-tabbar')); if (t) t.click(); });
+    // the coins pill opens the Hive
+    await pg.evaluate(() => { const p=document.querySelector('[data-act="openCollection"]'); if (p) p.click(); });
     await pg.waitForTimeout(600);
-    if (await pg.evaluate(() => state.nav) !== 'collection') errs.push(vp.n + ': the Hive tab did not open the Hive');
+    if (await pg.evaluate(() => state.nav) !== 'collection') errs.push(vp.n + ': the coins pill did not open My Hive');
+    // and it is the FIRST row of the drawer
+    await pg.evaluate(() => { app.setNav('home'); state.drawerOpen=true; render(); });
+    await pg.waitForTimeout(500);
+    const first = await pg.evaluate(() => { const r=document.querySelector('aside nav [data-act="drawer"]');
+      return r ? r.getAttribute('data-arg') : null; });
+    if (first !== 'collection') errs.push(vp.n + ': the drawer starts with "' + first + '", not My Hive');
     await pg.close();
   }
   await b.close();
-  console.log(errs.length ? 'FAIL\n' + errs.join('\n') : 'PASS — Hive is a tab, band sits under Coach speaks on Home, and it sheens rather than flashes');
+  console.log(errs.length ? 'FAIL\n' + errs.join('\n') : 'PASS — Hive on the coins pill and first in the drawer, band sits under Coach speaks on Home, and it sheens rather than flashes');
   process.exit(errs.length ? 1 : 0);
 })();
