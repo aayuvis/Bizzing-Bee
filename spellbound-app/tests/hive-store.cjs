@@ -23,7 +23,7 @@ const path=require('path').resolve(__dirname,'..');
         beeAcc:{},unlockedConcepts:{},unlockedLists:{}}];
       st.activeIdx=0; st.screen='app'; st.premium=true; st.devUnlock=false; try{ window.SB_ENT.avatarPackLimit=()=>'all'; }catch(e){}
     });
-    for(const [tab,label] of [['badges','Badges'],['avatars','Avatars'],['worlds','Worlds'],['artifacts','Artifacts']]){
+    for(const [tab,label] of [['badges','Badges'],['avatars','Avatars'],['worlds','Worlds']]){
       await pg.evaluate(t=>{ state.collTab=t; app.openCollection(); }, tab);
       await pg.waitForTimeout(400);
       const r=await pg.evaluate(()=>({
@@ -35,9 +35,13 @@ const path=require('path').resolve(__dirname,'..');
       if(/Store/.test(r.txt)) errs.push(vp.n+' "Store" copy still on collection/'+tab);
       const bad=r.acts.filter(a=>['openShop','openShopAvatars','buyPower','buyList','shopTab'].includes(a));
       if(bad.length) errs.push(vp.n+' dead act on '+tab+': '+[...new Set(bad)].join(','));
-      if(tab==='artifacts'&&!/won by playing/i.test(r.txt)) errs.push(vp.n+' artifacts copy missing');
+      // artifacts merged into Badges — the earn copy must ride along with it
+      if(tab==='badges'&&!/won by playing/i.test(r.txt)) errs.push(vp.n+' artifacts are not on the Badges tab');
+      if(tab==='badges'&&!/Boss Shield/.test(r.txt)) errs.push(vp.n+' the artifact inventory is missing from Badges');
       
-      if(tab==='avatars'&&!/Bee style/i.test(r.txt)) errs.push(vp.n+' accessories missing');
+      // Bee style was retired (see tests/no-accessories.cjs); Bee Cheer took its place here
+      if(tab==='avatars'&&/Bee style/i.test(r.txt)) errs.push(vp.n+' Bee style is back on the avatars tab');
+      if(tab==='avatars'&&!/Bee Cheer/.test(r.txt)) errs.push(vp.n+' Bee Cheer missing from the avatars tab');
     }
     // odds panel actually opens
     await pg.evaluate(()=>{ state.collTab='avatars'; app.openCollection(); });

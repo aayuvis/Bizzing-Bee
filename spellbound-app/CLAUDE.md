@@ -260,6 +260,24 @@ handlers. App lives in this folder; open `index.html` to run.
   plan sheet where the list stands. `isListUnlocked` still reads `c.unlockedLists`, so
   anyone who bought a list under the old coin price keeps it. `COST` is now `{theme, concept}`.
   Guards: `tests/hive-store.cjs` and `tests/buy-where-it-lives.cjs`.
+- **Artifacts live on the Badges tab.** Both are proof of play — a badge records what you
+  did, an artifact is what you won for doing it — so the Hive has three tabs, not four.
+  `collTab==='artifacts'` falls back to `'badges'` so an old stored tab key still lands.
+- **Bee-style accessories are DELETED** (`AV_ACCS`/`avAccSVG`/`beeAccSVG`/`mascotAcc`, and
+  `avatarSVG`'s third argument). They were stickers drawn at fixed coordinates in the bee's
+  120×120 space — crown at the top, moustache across the middle — so they worked on the bee
+  and collided with everything else: the gods already wear crowns and haloes, the real
+  people are drawn as people. An overlay that suits 1 of 217 avatars is not a feature. A
+  boot migration refunds the full purchase price and flashes once. `mascotAcc` was also
+  called from `trivia.js` — check other files when removing an app3 helper. Bee Cheer was
+  never an accessory (nothing is worn) and survives as `app.beeCheer`.
+  Guard: `tests/no-accessories.cjs`.
+- **Never show a speller how long the road is.** The Atlas said `0/102 stops` on Home, in
+  the drawer (`atlasSub`) and above the map (`tierBar` in trail.js). 102 is a mountain, not
+  a map, and the bar beside it already said the same thing — the bar stays, the total goes,
+  and the words beside it now say where you are (`tierWord`). COLLECTION counts are the
+  exception and must keep their totals: `24/217 avatars`, `3/80 badges` are a sticker album,
+  where the count is the whole appeal. Guard: `tests/no-big-totals.cjs`.
 - **The Arcade is 'Bizzy's Great Spelling Arcade'** (`gamesHub()`), and difficulty is
   chosen PER GAME, not once for the whole room. The old global My-level/Easy/Medium/
   Hard/Champ pill row is gone (it was redundant, and did nothing for games that carry
