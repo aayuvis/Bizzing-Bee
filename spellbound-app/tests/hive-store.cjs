@@ -41,7 +41,7 @@ const path=require('path').resolve(__dirname,'..');
       
       // Bee style was retired (see tests/no-accessories.cjs); Bee Cheer took its place here
       if(tab==='avatars'&&/Bee style/i.test(r.txt)) errs.push(vp.n+' Bee style is back on the avatars tab');
-      if(tab==='avatars'&&!/Bee Cheer/.test(r.txt)) errs.push(vp.n+' Bee Cheer missing from the avatars tab');
+      if(tab==='avatars'&&/Bee Cheer/.test(r.txt)) errs.push(vp.n+' Bee Cheer is back on the avatars tab');
     }
     // odds panel actually opens
     await pg.evaluate(()=>{ state.collTab='avatars'; app.openCollection(); });

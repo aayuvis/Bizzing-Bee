@@ -1962,13 +1962,6 @@ const app = {
     const w=g.list[g.i]; if(!w) return; const cur=(state.typed||''); if(cur.length>=w.w.length) return;
     c.pow.reveal--; state.typed=w.w.slice(0,cur.length+1); save(); sfx('coin'); render();
     try{ document.querySelector('[data-fkey="gType"],[data-inp="gType"]')?.focus(); }catch(e){} },
-  /* Artifacts are no longer sold — they are won (grantStageArt / streak milestones).
-     Bee Cheer was never an artifact: nothing is stocked, it just throws a party. It
-     stays as a coin treat and lives with the bee, in the Hive. */
-  beeCheer:()=>{ const c=active(); if(!window.confirm('Have Bizzy cheer for you? 20 coins')) return;
-    if(!spendCoins(20)){ flash('Need 20 🪙 — one warm-up round gets you there!'); return; }
-    save(); sfx('win'); burstConfetti(200); try{ say('Hip hip hooray for '+(c.name||'our speller')+'! You are amazing!'); }catch(e){}
-    flash('🎉 Bizzy cheers for '+(c.name||'you')+'!'); render(); },
 
   toggleSound:()=>{ set({sound:!state.sound}); if(state.sound) sfx('coin'); },
   toggleFocus:()=>{ clearTimeout(app._modeT); try{ if(window.SB_W4_FOCUS){ const on=SB_W4_FOCUS.toggle(); flash(on?'Focus on — music off, world held still':'Focus off — the world wakes up'); } }catch(e){} render(); },
@@ -3085,7 +3078,7 @@ function viewAuth(){
       <input data-inp="onPw" data-fkey="pw" value="${escA(S.pw)}" type="password" placeholder="••••••••" autocomplete="off" style="width:100%;padding:13px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:600;margin-bottom:20px;outline:none">
       <button data-act="doAuth" style="width:100%;padding:15px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${signup?'Create account':'Sign in'}</button>
       <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--muted)">${signup?'Already have an account?':'New to Bizzing Bee?'} <button data-act="swapAuth" style="color:var(--accent);font-weight:800;font-size:13px">${signup?'Sign in':'Create one'}</button></div>
-      <div style="text-align:center;margin-top:18px"><button data-act="goLanding" style="color:var(--muted);font-size:13px;font-weight:600">← Back</button></div>
+      <div style="text-align:center;margin-top:18px">${backPill('goLanding','Back',null)}</div>
     </div>
   </div>`;
 }
@@ -3609,7 +3602,7 @@ function figLearnView(){ const S=state; const c=active();
         <div style="font-size:13px;font-style:italic;opacity:.85">“${esc(x.ex)}”</div>
         ${(x.eq&&x.eq.length)?`<div style="font-size:12px;color:var(--muted)"><b>Same idea elsewhere:</b> ${x.eq.map(e=>esc(e.lang)+': “'+esc(e.p)+'”').join(' · ')}</div>`:''}</div>`;
     return `<div style="max-width:640px;margin:0 auto">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><button data-act="figBackToDecks" style="color:var(--muted);font-weight:700;font-size:13px">← All decks</button><span style="font-family:var(--display);font-weight:800;font-size:18px">${esc(deck.label)}</span><span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">${i+1} / ${items.length}</span></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">${backPill('figBackToDecks','All decks',null)}<span style="font-family:var(--display);font-weight:800;font-size:18px">${esc(deck.label)}</span><span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">${i+1} / ${items.length}</span></div>
       <div style="height:6px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-bottom:14px"><div style="height:100%;background:var(--accent);width:${Math.round((i+1)/items.length*100)}%"></div></div>
       <button data-act="figFlip" style="display:block;width:100%;text-align:center;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--sh-rest);min-height:290px">
         <div style="display:flex;gap:6px;justify-content:center;margin-bottom:10px"><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:var(--surface2);color:var(--muted)">${x.t}</span>${x.region&&x.region!=='global'?`<span style="font-size:10px;font-weight:800;padding:2px 9px;border-radius:99px;background:var(--chip);color:var(--accent)">🌍 ${esc(x.region)}</span>`:''}</div>
@@ -3756,7 +3749,7 @@ function viewTyping(){ const S=state; const c=active(); const st=tyStats(c);
   if(S.ty && !S.ty.done){ const t=S.ty;
     const chars=t.seq.split('').map((ch,i)=>`<span id="ty-c${i}" style="color:${i<t.pos?'var(--good,#1f9d57)':'var(--muted)'};border-bottom:2px solid ${i===t.pos?'var(--accent)':'transparent'}">${ch===' '?'&nbsp;':esc(ch)}</span>`).join('');
     return `<div style="max-width:760px;margin:0 auto;text-align:center">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><button data-act="tyExit" style="color:var(--muted);font-weight:700;font-size:13px">← Typing</button><span style="font-family:var(--display);font-weight:800;font-size:18px">${esc(t.title)}</span><span style="margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--muted)">${t.mode==='test'?`<span id="ty-time">60s</span>`:''}</span></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">${backPill('tyExit','Typing',null)}<span style="font-family:var(--display);font-weight:800;font-size:18px">${esc(t.title)}</span><span style="margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--muted)">${t.mode==='test'?`<span id="ty-time">60s</span>`:''}</span></div>
       ${t.tip?`<p style="font-size:13px;color:var(--muted);margin:0 0 12px">💡 ${esc(t.tip)}</p>`:''}
       <div style="height:6px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-bottom:16px"><div id="ty-prog" style="height:100%;background:var(--accent);width:${Math.round(t.pos/t.seq.length*100)}%"></div></div>
       <div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:20px 22px;font-family:var(--mono);font-size:clamp(18px,3.4vw,26px);letter-spacing:.06em;line-height:2;word-break:break-word;text-align:left;margin-bottom:16px;box-shadow:var(--sh-rest)">${chars}</div>
@@ -3857,7 +3850,7 @@ function vocHeatmap(){ const deck=state.vocDeck; const words=state.vocWords||[];
 function vocShell(inner){ const c=active(); const key=vocListKey(); const deck=vocDeckOfList();
   const cat=vocListCat(key);
   const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-    <button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button>
+    ${backPill('goHome','Home',null)}
     <span style="font-family:var(--display);font-weight:800;font-size:15px">Vocabulary</span>
     <span style="font-size:12px;color:var(--muted);font-weight:650">word → meaning</span>
     <span style="margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:700">Vocabulary levels are separate from spelling</span></div>`;
@@ -3956,7 +3949,7 @@ function viewVocCheck(){ const g=state.vocCheck; if(!g) return '';
       <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:800;color:var(--muted);margin-right:9px">${idx+1}</span>${esc(d)}</button>`; };
   return `<div style="max-width:600px;margin:0 auto">
     <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px">
-      <button data-act="vocCheckClose" style="color:var(--muted);font-weight:700;font-size:13px">← Cards</button>
+      ${backPill('vocCheckClose','Cards',null)}
       <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:800;color:var(--accent)">${g.mode==='revise'?'REVISION':g.mode==='practice'?'PRACTICE':'CHECK'} ${g.i+1}/${total}</span>
       <span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:800;color:var(--good,#1f9d57)">✓ ${g.right}</span></div>
     <div style="height:6px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-bottom:8px"><div style="height:100%;background:var(--accent);width:${Math.round((g.i+1)/total*100)}%"></div></div>
@@ -4817,7 +4810,7 @@ function viewTraps(){ const S=state; const traps=missTraps(); const sel=S.trapSe
     const relChips=rel.map(x=>`<button data-act="openConcept" data-arg="${x.i}" style="display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">${window.SB_ICON?SB_ICON('grid',{size:14}):iconSVG('grid',14)} ${esc(conceptShort(x.ch.title))}</button>`).join('');
     const wordChips=ws.slice(0,12).map(w=>`<button data-act="say" data-arg="${escA(w.w)}" style="font-family:var(--mono);font-size:12px;font-weight:700;padding:6px 10px;border-radius:6px;background:var(--surface2)">${esc(w.w)}</button>`).join('');
     return `<div style="max-width:640px;margin:0 auto;animation:sb-rise .35s ease both">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><button data-act="trapBack" style="color:var(--muted);font-weight:700;font-size:14px">← All traps</button></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">${backPill('trapBack','All traps',null)}</div>
       ${pageHead(t.label, t.n?(t.n+' misses traced here'):'', 'Step 1: understand the pattern. Step 2: beat it in practice.')}
       <div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--sh-rest);margin-bottom:14px">
         <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:8px">The trick</div>
@@ -5730,7 +5723,7 @@ function viewCollection(){ const S=state; const c=active(); let tab=S.collTab||'
   if(tab==='avatars'){
     const dupN=avDupeTotal(c); const dupV=avDupeValue(c);
     const dupBar=dupN?`<div class="sb-card" style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-color:var(--treasure,#F0B429)"><div style="min-width:0"><div class="sb-ct" style="font-size:15px">🪙 ${dupN} spare ${dupN===1?'copy':'copies'}</div><div class="sb-cn">Duplicates from packs. Sell them all for ${fmtN(dupV)} coins — you keep one of every avatar.</div></div><button data-act="sellDupes" style="padding:11px 17px;border-radius:10px;background:var(--treasure,#F0B429);color:#5a3d00;font-weight:800;font-size:13px;box-shadow:var(--edge);white-space:nowrap">Sell spares · ${fmtN(dupV)}🪙</button></div>`:'';
-    const printBar=dupBar+`<div class="sb-card" style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><div style="min-width:0"><div class="sb-ct" style="font-size:15px">🃏 Your avatar cards</div><div class="sb-cn">Print your ${avOwnedCount(c)} collected avatars as cut-out trading cards — with a Bizzing Bee back.</div></div><button data-act="printAvCards" style="display:inline-flex;align-items:center;gap:7px;padding:11px 17px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge);white-space:nowrap">${SB_ICON('printer',{size:16})} Print my cards</button></div>`;
+    const printBar=dupBar;   // printing moved to a header pill; the banner it had was pure overhead
     // How packs work used to be explained only in the Store. With the Store gone it
     // belongs beside the packs themselves — you read the odds where you open one.
     /* The old Store showed an Open-a-pack button on every pack; the Collection checks the
@@ -5739,18 +5732,14 @@ function viewCollection(){ const S=state; const c=active(); let tab=S.collTab||'
        drop odds when there is a pack this speller can actually open. */
     const anyPack=SB_AVATARS.packs.some(p=>avPackUnlocked(p.id));
     const howPacks=anyPack
-      ? `<p class="sb-cn" style="margin:0 0 14px;line-height:1.5">Every pack drop is an avatar you don't own yet — <b>70% rare · 24% epic · 6% legendary</b>. Each pack has its own price and its own odds; tap <b>🎲 Drop odds</b> on a pack to see every avatar's chance. Duplicates never drop, and spares sell back for coins.</p>`
-      : `<p class="sb-cn" style="margin:0 0 14px;line-height:1.5">Avatars arrive in packs, and a pack is a surprise — you never draw one you already own. Packs come with a plan; from there you open them with the coins you earn.</p>`;
+      ? `<p class="sb-cn" style="margin:0 0 14px">A pack drops an avatar you don't own — <b>70% rare · 24% epic · 6% legendary</b>.</p>`
+      : `<p class="sb-cn" style="margin:0 0 14px">Avatars arrive in packs, and packs come with a plan.</p>`;
     /* "Bee style" is gone. The accessories were stickers drawn at fixed coordinates in the
        bee's 120x120 space — a crown at the top, a moustache across the middle — which
        worked on the bee and collided with everything else. The gods already wear crowns
        and haloes of their own, and the real people are drawn as people. An overlay that
-       only suits one of 217 avatars is not a feature. Bee Cheer was never an accessory:
-       nothing is worn, it just throws a party, so it stays. */
-    const cheer=`<div class="sb-card" style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-      <div style="min-width:0;flex:1"><div class="sb-ct" style="font-size:15px">Bee Cheer 🎉</div><div class="sb-cn">Bizzy shouts your name with a confetti storm — right now.</div></div>
-      <button data-act="beeCheer" style="padding:11px 17px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:900;font-size:13px;white-space:nowrap">${coinAmt(20,12)}</button></div>`;
-    body=printBar+howPacks+cheer+SB_AVATARS.packs.map(p=>{ const avs=SB_AVATARS.list.filter(a=>a.pack===p.id); const ownedN=avs.filter(a=>avOwned(c,a.id)).length;
+       only suits one of 217 avatars is not a feature. */
+    body=printBar+howPacks+SB_AVATARS.packs.map(p=>{ const avs=SB_AVATARS.list.filter(a=>a.pack===p.id); const ownedN=avs.filter(a=>avOwned(c,a.id)).length;
       const inPlan=avPackUnlocked(p.id);
       const tiles=avs.map(a=>{ const own=avOwned(c,a.id); const R=SB_AVATARS.rarities[a.rarity]; const on=c.avatar===a.id;
         const n=avCount(c,a.id); const dup=Math.max(0,n-1);
@@ -5810,19 +5799,23 @@ function viewCollection(){ const S=state; const c=active(); let tab=S.collTab||'
       ${inv}</div>`;
     const B=badgeDefs(); const won=B.filter(b=>b.done).length;
     const groups=[...new Set(B.map(b=>b.g))];
-    body=artCard+groups.map(g=>{ const list=B.filter(b=>b.g===g); const w=list.filter(b=>b.done).length;
+    body=groups.map(g=>{ const list=B.filter(b=>b.g===g); const w=list.filter(b=>b.done).length;
       return `<div class="sb-card" style="margin-bottom:14px"><div style="display:flex;align-items:baseline;gap:9px;margin-bottom:12px"><span class="sb-ct" style="font-size:15px">${g}</span><span class="sb-cn">${w}/${list.length} won</span></div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px">${list.map(b=>`<div style="background:var(--paper,var(--bg2));border:1.5px solid ${b.done?'var(--treasure,#F0B429)':'var(--line)'};border-radius:14px;padding:13px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;${b.done?'':'opacity:.55;filter:grayscale(.6)'}">
         <span style="width:62px;height:66px;display:grid;place-items:center">${badgeArtSVG(b.ic,58,b.done)}</span>
         <span style="font-weight:800;font-size:12.5px;line-height:1.15">${b.name}</span>
         <span class="sb-cn" style="font-size:11px">${b.desc}</span>
         <span style="font-weight:800;font-size:10.5px;color:${b.done?'var(--good)':'var(--muted)'}">${b.done?'WON ✓':'LOCKED'}</span></div>`).join('')}</div></div>`; }).join('')
-      + `<div class="sb-cn" style="margin:4px 2px 0">${won}/${B.length} badges won — earned by playing, never bought.</div>`;
+      + `<div class="sb-cn" style="margin:4px 2px 14px">${won}/${B.length} badges won — earned by playing, never bought.</div>`
+      + artCard;
   }
   const bAll=badgeDefs();
   return `<div style="max-width:920px;margin:0 auto">
-    ${pageHead('My Hive', avOwnedCount(c)+'/'+SB_AVATARS.list.length+' avatars', '',
-      `<span style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px">${coinAmt(c.coins||0,14)}</span>`)}
+    ${/* Printing is an avatars-only action, so it rides the header beside the purse when
+          that tab is open rather than standing as a banner over the packs. */''}
+    ${pageHead('My Hive', '', '',
+      (tab==='avatars'?`<button data-act="printAvCards" title="Print your ${avOwnedCount(c)} collected avatars as cut-out trading cards" style="display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">${SB_ICON('printer',{size:15})} Print my cards</button>`:'')
+      + `<span style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px">${coinAmt(c.coins||0,14)}</span>`)}
     <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">${tabBtn('badges','crown','Badges · '+bAll.filter(b=>b.done).length+'/'+bAll.length)}${tabBtn('avatars','spark','Avatars · '+avOwnedCount(c)+'/'+SB_AVATARS.list.length)}${tabBtn('worlds','palette','Worlds · '+THEMES.filter(t=>isThemeUnlocked(t.id)).length+'/'+THEMES.length)}</div>
     ${body}
   </div>`; }
@@ -5834,8 +5827,7 @@ function viewEvolution(){ const S=state; const c=active(); ensureLists(c); const
   const rungMarks=Array.from({length:10},(_,i)=>i===0?'start':fmtN(stageXp(i))+' words');
   const xpToForm=Math.max(0, stageXp(Math.min(9,fIdx+1))-totalXp);
   return `<div style="max-width:900px;margin:0 auto">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px"><button data-act="setNav" data-arg="beeband" style="color:var(--muted);font-weight:700;font-size:13px">← Your spelling level</button></div>
-    <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 4px">Your bee</h2><span style="font-size:13px;color:var(--muted);font-weight:650">ten forms, earned by practising</span></div>
+    ${pageHead('Your bee','ten forms, earned by practising','','','setNav','Your spelling level','beeband')}
     <p style="margin:0 0 16px;font-size:14px;color:var(--muted);line-height:1.5">Every word you practise feeds your bee, and it grows through ten forms that keep their names in every world. This is a <b style="color:var(--text)">collection</b>, not a level: it measures effort, always climbs and never falls. <b style="color:var(--text)">Your spelling level is the Bee Band</b> — the pill in the header — and that is the one that decides how hard your words are.</p>
     <div class="sb-card" style="margin-bottom:14px">
       <div style="display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin-bottom:10px">
@@ -6043,11 +6035,34 @@ function chapterCoverCard(chap){ const f=CONCEPT_FAM[chap.name]||CONCEPT_FAM.Adv
   </button>`; }
 // Shared page header — back link + display title + optional mono meta + muted subtitle.
 // Keeps every top-level view's header identical (the Concepts/Journeys reference treatment).
-function pageHead(title, meta, sub, right){
-  return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button></div>
-    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px">
-      <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0">${title}</h2>${meta?`<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">${meta}</span>`:''}</div>
-      ${right?`<div style="display:flex;gap:8px;flex-wrap:wrap">${right}</div>`:''}
+/* ONE back control for the whole app. There were thirty-odd of these, every one a bare
+   "← Home" in whatever weight and colour the screen happened to use, and on a painted
+   header they all but vanished. It is a pill, it always sits immediately left of the
+   title it returns from, and it is the same object on every screen.
+   `dark` is for the two places it sits on artwork rather than on paper.
+   Exposed on window so trail.js and the other extension files share it. */
+function backPill(act, label, arg, dark){
+  const A=arg==null?'':` data-arg="${escA(String(arg))}"`;
+  const sty = dark
+    ? 'background:rgba(0,0,0,.34);border:1px solid rgba(255,255,255,.28);color:#fff'
+    : 'background:var(--surface2);border:1px solid var(--line);color:var(--text)';
+  return `<button data-act="${act}"${A} aria-label="Back to ${escA(label)}" style="flex:none;display:inline-flex;align-items:center;gap:6px;padding:7px 14px 7px 11px;border-radius:999px;font-weight:800;font-size:13px;line-height:1;white-space:nowrap;${sty}">
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:block;flex:none"><path d="M15 5 8 12l7 7"/></svg>${esc(label)}</button>`;
+}
+try{ window.SB_BACK=backPill; }catch(e){}
+/* One header bar for every screen: back pill hard left, the screen's own name (with its
+   icon, when it has one) CENTRED on the page, actions hard right. Three grid columns with
+   1fr on both flanks is what centres the title against the page rather than against
+   whatever is left over — a flex row with margin-auto drifts as the right side changes.
+   Below 620px it stacks (.sb-phead in index.html) so the title never gets crushed. */
+function pageHead(title, meta, sub, right, backAct, backLabel, backArg, icon){
+  return `<div class="sb-phead" style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:11px;margin-bottom:8px">
+      <span class="sb-phead-l" style="justify-self:start;display:flex;align-items:center">${backPill(backAct||'goHome', backLabel||'Home', backArg)}</span>
+      <span class="sb-phead-c" style="justify-self:center;min-width:0;display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;text-align:center">
+        ${icon?`<span style="flex:none;display:inline-flex;align-items:center;line-height:0">${icon}</span>`:''}
+        <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0;line-height:1.15">${title}</h2>${meta?`<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">${meta}</span>`:''}
+      </span>
+      <span class="sb-phead-r" style="justify-self:end;display:flex;gap:8px;flex-wrap:wrap;align-items:center">${right||''}</span>
     </div>
     ${sub?`<p style="margin:0 0 14px;color:var(--muted);font-size:13px;max-width:52em">${sub}</p>`:''}`;
 }
@@ -6065,13 +6080,13 @@ function viewConceptList(){
       mainContent=`<div style="font-size:12px;color:var(--muted);font-weight:700;margin:0 2px 12px">${list.length} match${list.length===1?'':'es'} for “${esc(S.conceptQuery.trim())}”</div>`+(list.length?`<div style="${gridStyle}">${list.map(ch=>conceptCardHTML(ch,allChs)).join('')}</div>`:'<div style="padding:44px 0;text-align:center;color:var(--muted);font-weight:700">No matches.</div>');
     } else if(S.conceptChapter!=null && chapters[S.conceptChapter]){ const chap=chapters[S.conceptChapter]; const st=conceptChapterStat(chap);
       headDesc='Ten short chapters of spelling patterns — finish one, then the next.';
-      backRow=`<button data-act="conceptChaptersBack" style="display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-weight:700;font-size:13px;margin-bottom:12px">← All chapters</button>`;
+      backRow=`${backPill('conceptChaptersBack','All chapters',null)}`;
       mainContent=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><span style="width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:800;font-size:20px;${famCoverBG(chap.name)}">${chap.n}</span><div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1.1">Chapter ${chap.n} · ${esc(chap.name)}</div><div style="font-size:12px;color:var(--muted);font-weight:700">${st.done}/${st.total} concepts done</div></div></div><div style="${gridStyle}">${chap.items.map(ch=>conceptCardHTML(ch,allChs)).join('')}</div>`;
     } else { headDesc='Every explanation in the app, on one shelf. Free shelves teach the patterns; the Advanced Pack shelves go to national-bee depth. A chapter is yours once you nail 70% of its words.';
       mainContent=`<div style="${gridStyle}">${chapters.map(chapterCoverCard).join('')}${sideShelves()}</div>`; }
   }
   return `<div style="animation:sb-rise .35s ease both">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">${backPill('goHome','Home',null)}</div>
     <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px"><h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0">Concepts</h2><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">${allChs.length||121} chapters on ${conceptChapters().length||9} shelves</span></div>
     <p style="margin:0 0 12px;color:var(--muted);font-size:13px;max-width:52em">${headDesc}</p>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin-bottom:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
@@ -6318,7 +6333,7 @@ function viewConceptDetail(){
   const stepContent = step.kind==='anim' ? conceptPlayer() : genericCard(step);
   const stepNav = (idx>0||idx<total-1) ? `<div style="display:flex;gap:10px;margin-bottom:14px">${idx>0?`<button data-act="conceptPrev" style="padding:12px 18px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">← Back</button>`:''}${idx<total-1?(idx===0?`<button data-act="conceptNext" style="flex:1;padding:12px;border-radius:10px;background:transparent;color:var(--accent);font-weight:800;font-size:15px;text-decoration:underline;text-underline-offset:3px">Read more →</button>`:`<button data-act="conceptNext" style="flex:1;padding:12px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next card →</button>`):''}</div>` : '';
   return `<div style="animation:sb-rise .35s ease both;max-width:780px">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><button data-act="conceptBack" style="color:var(--muted);font-weight:700;font-size:13px">← All concepts</button></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">${backPill('conceptBack','All concepts',null)}</div>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700">${esc(csel.category)}</span><span style="${diffStyleFor(csel.difficulty)}">${(diffMap[csel.difficulty]||diffMap.medium)[0]}</span></div>
     <h2 style="font-family:var(--display);font-weight:800;font-size:24px;line-height:1.1;margin:0 0 4px">${esc(conceptShort(csel.title))}</h2>
     <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--accent);font-weight:700;margin-bottom:16px">${esc(conceptRoots(csel.title))}</div>
@@ -6442,7 +6457,7 @@ function cardDonePanel(){ const miss=((active().missed)||[]).length;
       ${miss?`<button data-act="cardToRevise" style="padding:14px;border-radius:12px;background:color-mix(in srgb,var(--treasure,#F0B429) 18%,transparent);border:1px solid var(--treasure,#F0B429);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:15px">⚑ Revise the ${miss} revision word${miss>1?'s':''}</button>`:''}
       <div style="display:flex;gap:9px">
         <button data-act="cardRestart" style="flex:1;padding:11px;border-radius:12px;background:var(--surface2);color:var(--text);font-weight:800;font-size:13px">↺ Cards again</button>
-        <button data-act="toggleCardView" style="flex:1;padding:11px;border-radius:12px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:13px">← Back to Learn</button>
+        ${backPill('toggleCardView','Back to Learn',null)}
       </div>
     </div></div>`;
 }
@@ -6532,7 +6547,7 @@ function viewTrain(){
       return `<button data-act="trailUnit" data-arg="${escA(w.unit)}" style="display:inline-flex;align-items:center;gap:7px;margin-bottom:12px;padding:7px 13px;border-radius:var(--r-pill,999px);background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">
         ${iconSVG('steps',14)} From the World Atlas · ${esc(w.act)} · stop ${w.stop} of ${w.total}</button>`; }catch(e){ return ''; } })();
   return `<div style="max-width:620px;margin:0 auto">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><button data-act="exitTrain" style="color:var(--muted);font-weight:700;font-size:13px">← Exit</button><div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${S.sessionDone} done · ${S.sessionRight} correct</div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">${backPill('exitTrain','Exit',null)}<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${S.sessionDone} done · ${S.sessionRight} correct</div></div>
     ${from}
     <div style="height:7px;border-radius:999px;background:var(--surface2);overflow:hidden;margin-bottom:22px"><div style="height:100%;background:var(--accent);border-radius:999px;width:${goalPctNum}%;transition:width .4s"></div></div>
     ${(S.coachCardView&&!S.sessionOver)?coachFlashCard():trainerCard()}
@@ -6622,7 +6637,7 @@ function viewLevelUp(){
   const lw=listWords('default'); const N=lw.length||1; const mastered=lw.filter(w=>S.luMastered[nkey(w.w)]).length; const pos=(S.gi%N)+1;
   const tab=(k,l)=>`<button data-act="luSetTab" data-arg="${k}" style="flex:1;padding:9px 8px;border-radius:10px;font-weight:800;font-size:13px;${S.luTab===k?'background:var(--bg2);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.08)':'background:transparent;color:var(--muted)'}">${l}</button>`;
   const header=`<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
-      <button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button>
+      ${backPill('goHome','Home',null)}
       <span style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${esc(rankName(fIdx))}</span>
       <span style="font-size:12px;color:var(--muted);font-weight:700">${S.luTab==='practice'?('Word '+pos+' of '+N+' · '):''}${mastered}/${N} mastered</span>
       <button data-act="luToggleWords" style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">${iconSVG('grid',15)} Word list ${S.luWordsOpen?'▲':'▼'}</button>
@@ -7276,7 +7291,7 @@ function viewFinder(){ const S=state; const c=active(); const q=S.finderQ||'';
   if(S.finderSel){ const w=S.finderSel;
     const lists=Object.entries(c.builtLists||{});
     const addChips=lists.map(([k,bl])=>`<button data-act="finderAddTo" data-arg="${escA(k)}" style="padding:8px 13px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12.5px">＋ ${esc(bl.label)}</button>`).join('');
-    body=`<button data-act="finderBack" style="color:var(--muted);font-weight:700;font-size:13px;margin-bottom:10px">← Back to results</button>
+    body=`${backPill('finderBack','Back to results',null)}
       <div class="sb-card" style="margin-bottom:12px">
         <div class="sb-ct" style="font-size:14px;margin-bottom:8px">Add “${esc(w.w)}” to a list</div>
         <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">${addChips}
@@ -7425,7 +7440,7 @@ function viewJourneys(){ const S=state; if(S.lessonSel) return viewLesson();
        in this scope, so the whole screen threw for every free speller and the only
        route to the upsell was a blank page. */
   return `<div style="max-width:620px;margin:0 auto">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">${backPill('goHome','Home',null)}</div>
       <div style="background:var(--bg2);border:1px solid var(--accent);border-radius:20px;padding:30px;text-align:center;box-shadow:var(--glow)">
         <div style="width:64px;height:64px;border-radius:14px;background:var(--chip);color:var(--accent);display:grid;place-items:center;margin:0 auto 14px">${iconSVG('book',32)}</div>
         <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 8px">Word Journeys</h2>
@@ -7460,7 +7475,7 @@ function viewJourneys(){ const S=state; if(S.lessonSel) return viewLesson();
   }
   const pathBtn=`<button data-act="journeySetView" data-arg="${guided?'all':'guided'}" style="display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">${guided?('← Browse all '+iconSVG('grid',15)):('Guided path '+iconSVG('arrow',15))}</button>`;
   return `<div style="${wrapStyle}">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">${backPill('goHome','Home',null)}</div>
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px"><div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0">Word Journeys</h2><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">${chaptersTotal} chapters</span></div>${pathBtn}</div>
     <p style="margin:0 0 8px;color:var(--muted);font-size:13px;max-width:52em">${headDesc}</p>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin:12px 0 4px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
@@ -7659,7 +7674,7 @@ function viewThemeDetail(){
   return `<div style="animation:sb-rise .35s ease both;max-width:760px;margin:0 auto">
     <div style="position:relative;border-radius:20px;overflow:hidden;margin-bottom:16px;height:132px">
       ${themeBannerHTML(world)}
-      <button data-act="themeBack" style="position:absolute;left:12px;top:11px;color:#fff;font-weight:800;font-size:12.5px;background:rgba(10,6,26,.42);border-radius:999px;padding:5px 13px">← All themes</button>
+      ${backPill('themeBack','All themes',null)}
       <div style="position:absolute;left:16px;right:16px;bottom:12px;display:flex;align-items:flex-end;gap:12px">
         <div style="width:54px;height:54px;flex-shrink:0;filter:drop-shadow(0 3px 6px rgba(14,9,32,.5))">${themeArtSVG(id,54,false)}</div>
         <span style="min-width:0;flex:1">
@@ -7727,7 +7742,7 @@ function viewLesson(){ const S=state; const L=S.lessonSel; const dn=lessonComple
           `<button data-act="openCoach" style="flex:1;padding:14px;border-radius:14px;background:${nextOpen?'var(--surface2)':'var(--accent)'};color:${nextOpen?'var(--text)':'#fff'};font-weight:800;font-size:15px;${nextOpen?'border:1px solid var(--line)':'box-shadow:var(--edge)'}">Back to Practice →</button>`; })()
     : `<button data-act="lessonStepNext" style="flex:1;padding:14px;border-radius:14px;background:${f.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next card →</button>`;
   return `<div style="max-width:660px;margin:0 auto;animation:sb-rise .35s ease both">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><button data-act="lessonBack" style="color:var(--muted);font-weight:700;font-size:13px">← All lessons</button><span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:700"><span style="font-family:var(--display);font-variant-numeric:tabular-nums">${L.id}</span> · <span style="text-transform:capitalize">${L.diff}</span> <span style="width:9px;height:9px;border-radius:50%;background:${DIFF_DOT[L.diff]}"></span></span></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">${backPill('lessonBack','All lessons',null)}<span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:700"><span style="font-family:var(--display);font-variant-numeric:tabular-nums">${L.id}</span> · <span style="text-transform:capitalize">${L.diff}</span> <span style="width:9px;height:9px;border-radius:50%;background:${DIFF_DOT[L.diff]}"></span></span></div>
     <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:12px;color:${f.c};margin-bottom:3px">Chapter ${L.unit} · ${esc(capWords(u.title))}</div>
     <h2 style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1.15;margin:0 0 14px">${esc(L.title)}${dn?' <span style="color:var(--good);font-size:17px">✓</span>':''}</h2>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span style="font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">Card ${idx+1} of ${N}</span><div style="display:flex;gap:5px;flex:1">${dots}</div></div>
@@ -7763,7 +7778,7 @@ function viewEvoFeedback(){ const S=state; const themes=Object.keys(EV_NOMEN);
     return `<div style="margin-bottom:18px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:9px;display:flex;align-items:center;gap:8px"><span style="width:14px;height:14px;border-radius:6px;background:linear-gradient(135deg,${(EV_TC[t]||EV_TC.spellbound).a},${(EV_TC[t]||EV_TC.spellbound).b})"></span>${esc(THEME_LABEL[t]||t)}</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px">${tiles}</div></div>`;
   }).join('');
   return `<div style="max-width:760px;margin:0 auto">
-    <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:6px"><button data-act="goSettings" style="color:var(--muted);font-weight:700;font-size:13px">← Settings</button><span style="font-family:var(--display);font-weight:800;font-size:20px">Design feedback</span><span style="margin-left:auto;display:inline-flex;align-items:center;gap:10px"><span style="font-size:12px;color:var(--muted);font-weight:700">${reviewed}/80 reviewed</span><button data-act="evoExport" style="padding:9px 16px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">Export →</button></span></div>
+    <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:6px">${backPill('goSettings','Settings',null)}<span style="font-family:var(--display);font-weight:800;font-size:20px">Design feedback</span><span style="margin-left:auto;display:inline-flex;align-items:center;gap:10px"><span style="font-size:12px;color:var(--muted);font-weight:700">${reviewed}/80 reviewed</span><button data-act="evoExport" style="padding:9px 16px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">Export →</button></span></div>
     <p style="margin:0 0 14px;color:var(--muted);font-size:13px">All 80 evolution tiles (8 worlds × 10 levels). Give per-tile feedback, then export it.</p>
     ${editor}${sections}
   </div>`; }
@@ -7797,7 +7812,7 @@ function viewDebug(){
   const eng=(e)=>`<button data-act="dbgSaga" data-arg="${e[0]}" style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-left:5px solid #F0B429;border-radius:12px;padding:13px 15px;box-shadow:var(--sh-rest);color:var(--text);cursor:pointer"><div style="font-family:var(--display);font-weight:800;font-size:15px">${e[1]}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${e[2]} · <span style="font-family:var(--display);font-variant-numeric:tabular-nums">${e[0]}</span></div></button>`;
   const grid=(items)=>`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:8px 0 20px">${items}</div>`;
   return `<div style="max-width:820px;margin:0 auto">
-    <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:4px"><button data-act="goSettings" style="color:var(--muted);font-weight:700;font-size:13px">← Settings</button><span style="font-family:var(--display);font-weight:800;font-size:22px">🐞 Debug · QC games</span><span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:3px 9px;border-radius:999px">dev only</span></div>
+    <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:4px">${backPill('goSettings','Settings',null)}<span style="font-family:var(--display);font-weight:800;font-size:22px">🐞 Debug · QC games</span><span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:3px 9px;border-radius:999px">dev only</span></div>
     <p style="margin:0 0 12px;color:var(--muted);font-size:13px">One-tap launch for every game — for testing. Only visible while “Unlock everything” is on.</p>
     <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:4px 0 2px">Full games &amp; hubs</div>
     ${grid(hubs.map(card).join(''))}
@@ -7854,7 +7869,7 @@ function viewVoiceTest(){
   const tested=Object.keys(f.ok).length+flagged.length;
   const tabBtn=(id,label)=>`<button data-act="vtTab" data-arg="${id}" style="padding:8px 14px;border-radius:999px;font-weight:800;font-size:13px;border:1px solid var(--line);background:${tab===id?'var(--accent)':'var(--surface2)'};color:${tab===id?'#fff':'var(--text)'}">${label}</button>`;
   return `<div style="max-width:640px;margin:0 auto">
-    <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:4px"><button data-act="goSettings" style="color:var(--muted);font-weight:700;font-size:13px">← Settings</button><span style="font-family:var(--display);font-weight:800;font-size:22px">🎧 Word voice tester</span></div>
+    <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:4px">${backPill('goSettings','Settings',null)}<span style="font-family:var(--display);font-weight:800;font-size:22px">🎧 Word voice tester</span></div>
     <p style="margin:0 0 12px;color:var(--muted);font-size:13px">Tap 🔊 to hear a word — <b>double-tap 🔊 if it sounds right</b> (it turns green and the next word moves up). Tap ✗ if it sounds wrong, then type how it sounded (e.g. “soda” → “sod”); tap ✗ again to undo. Flags are saved permanently. Press <b>Save &amp; export</b> and share the file with Claude to rebuild them; rebuilt words come back under <b>Re-review</b>.</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">${tabBtn('test','To test')}${tabBtn('flagged','Flagged · '+flagged.length)}${tabBtn('review','Re-review · '+review.length)}${tabBtn('french','🇫🇷 French · '+frLeft.length)}</div>
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px">
@@ -8002,7 +8017,7 @@ function viewSettings(){
         ${line('Test coins','Tops the purse up to 1,000,000 so you can test buying. Switching it off puts the real balance back.',tog('toggleDevCoins',!!(active()&&active().devCoins),'On','Off'))}
       </div>
     </details>
-    <button data-act="signOut" style="width:100%;padding:14px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">← Exit to the start screen</button>
+    ${backPill('signOut','Exit to the start screen',null)}
     <p style="margin:7px 2px 0;font-size:12px;color:var(--muted);text-align:center">Leaves the app open on the welcome screen. To sign the parent account out, use <b style="color:var(--text)">Account &amp; subscription</b> at the top.</p>
     <button data-act="devTap" style="display:block;width:100%;text-align:center;background:none;border:0;cursor:default;margin-top:14px;font-size:11.5px;color:var(--muted);font-weight:650">Bizzing Bee · made with 🐝 for spellers</button>
   </div>`;
@@ -8063,7 +8078,7 @@ function coachTrain(){
     </div>`; }).join('');
   const pausedShelf=pausedKeys.length?`<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)"><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700">Paused</span>${pausedKeys.map(k=>`<button data-act="resumeList" data-arg="${escA(k)}" title="Tap to resume training this list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;border:1px dashed var(--line);background:transparent;color:var(--muted);font-weight:700;font-size:12px">${SB_ICON('play',{size:14})} ${esc(dockLabel(k))} <span style="font-size:12px">L${listStageIdx(c,k)+1}</span></button>`).join('')}</div>`:'';
   const addBtn=`<button data-act="coachSetupOpen" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px dashed var(--line);background:transparent;color:var(--accent)">+ Add list</button>`;
-  const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button><span style="font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">Practice</span><button data-act="openQuestChooser" title="Change your practice path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} My path</button>${(()=>{ const n=missTraps().length; return `<button data-act="openTraps" title="Your weak patterns" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${n?'var(--fix-tint,#FBE9E7)':'var(--surface2)'};border:1px solid ${n?'var(--fix,#C4453C)':'var(--line)'};color:${n?'var(--fix,#C4453C)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('target',13)} Traps${n?' · '+n:''}</button>`; })()}${(()=>{ const r=((active().missed)||[]).length; return `<button data-act="openRevisions" title="Words you marked to revise" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${r?'color-mix(in srgb,var(--treasure,#F0B429) 18%,transparent)':'var(--surface2)'};border:1px solid ${r?'var(--treasure,#F0B429)':'var(--line)'};color:${r?'var(--treasure-deep,#8A5B00)':'var(--muted)'};font-weight:800;font-size:12px">⚑ Revise${r?' · '+r:''}</button>`; })()}${(()=>{ /* Ultra rides here as a pill. It used to be a full-width
+  const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">${backPill('goHome','Home',null)}<span style="font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">Practice</span><button data-act="openQuestChooser" title="Change your practice path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} My path</button>${(()=>{ const n=missTraps().length; return `<button data-act="openTraps" title="Your weak patterns" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${n?'var(--fix-tint,#FBE9E7)':'var(--surface2)'};border:1px solid ${n?'var(--fix,#C4453C)':'var(--line)'};color:${n?'var(--fix,#C4453C)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('target',13)} Traps${n?' · '+n:''}</button>`; })()}${(()=>{ const r=((active().missed)||[]).length; return `<button data-act="openRevisions" title="Words you marked to revise" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${r?'color-mix(in srgb,var(--treasure,#F0B429) 18%,transparent)':'var(--surface2)'};border:1px solid ${r?'var(--treasure,#F0B429)':'var(--line)'};color:${r?'var(--treasure-deep,#8A5B00)':'var(--muted)'};font-weight:800;font-size:12px">⚑ Revise${r?' · '+r:''}</button>`; })()}${(()=>{ /* Ultra rides here as a pill. It used to be a full-width
       purple banner between the header and the tabs, which ate a whole row of Practice and
       pushed the thing the child came for below the fold — for a pack most of them do not
       own. A pill says the same thing and costs 40px. */
@@ -8269,7 +8284,7 @@ function coachSetup(){
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><span style="font-size:12px;font-weight:800;color:rgba(255,255,255,.92)">${champLabel} · ${fmtN(jMast)} mastered</span><span style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:10px;background:#fff;color:${jc.c};font-weight:800;font-size:13px">${jStarted?'Continue':'Start the Journey'} →</span></div>
     </div></button>`;
   return `<div style="max-width:760px;margin:0 auto">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><button data-act="openCoach" style="color:var(--muted);font-weight:700;font-size:13px">← Back to Practice</button></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">${backPill('openCoach','Back to Practice',null)}</div>
     <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 4px">Setup &amp; lists</h2>
     <p style="margin:0 0 16px;color:var(--muted);font-size:13px">Pick the list you're training — each keeps its own level.${state.premium?'':' 🔒 lists come with Premium.'}</p>
     ${(()=>{ const on=advModeOn(c);
@@ -8290,7 +8305,7 @@ function coachSetup(){
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px">
       <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end"><div style="flex:1;min-width:150px"><label style="display:block;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px">Bee day</label><input data-chg="setCoachDate" type="date" value="${escA(S.coachDate||'')}" style="width:100%;padding:11px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px"></div><div style="width:120px"><label style="display:block;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px">Daily goal</label><input data-chg="setCoachGoal" value="${escA(S.coachGoal)}" style="width:100%;padding:11px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px"></div></div>
       <div style="font-size:12px;color:var(--muted);margin-top:8px">The daily goal is a target, not a limit — keep going as long as you like.</div></div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:12px;display:flex;align-items:center;gap:10px">${gSel?`<button data-act="catGroup" data-arg="" style="color:var(--muted);font-weight:700;font-size:13px">← All lists</button><span>${esc((LIST_GROUPS[gSel]||{}).label||'')}</span>`:'Choose a list'}</div><div style="${coverGrid}">${gSel?'':defCard}${others}</div></div>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:12px;display:flex;align-items:center;gap:10px">${gSel?`${backPill('catGroup','All lists','')}<span>${esc((LIST_GROUPS[gSel]||{}).label||'')}</span>`:'Choose a list'}</div><div style="${coverGrid}">${gSel?'':defCard}${others}</div></div>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:16px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px;display:flex;align-items:center;gap:8px"><span style="color:var(--accent)">${iconSVG('upload',18)}</span> Bring your own words</div><p style="font-size:12px;color:var(--muted);margin:0 0 10px">Paste words (commas or new lines) — we enrich them from the database.</p>
       <textarea data-inp="setCustomText" data-fkey="customText" placeholder="silhouette, bouquet, mnemonic" style="width:100%;min-height:74px;resize:vertical;padding:12px 13px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:600;font-size:13px;margin-bottom:10px;font-family:var(--body)">${esc(S.customText)}</textarea>
       <button data-act="enrichCustom" style="width:100%;padding:12px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;border:1px solid var(--line)">Enrich &amp; train these →</button></div>
@@ -8554,7 +8569,7 @@ function challengeConfig(){ const S=state; const key=S.challengeKey||activeListK
     : `<div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:7px">How many words?</div><div style="display:flex;gap:8px;margin-bottom:16px">${[10,15,20,30].map(n=>seg('count',n,String(n),S.chCount===n)).join('')}</div>`;
   const bandRow=`<div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:7px">Difficulty</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px">${BANDS.map(([v,l])=>seg('band',v,l,S.chBand===v)).join('')}</div>`;
   return `<div style="max-width:560px;margin:0 auto;animation:sb-rise .35s ease both">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px"><button data-act="chExit" style="color:var(--muted);font-weight:700;font-size:13px">← Back</button></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">${backPill('chExit','Back',null)}</div>
     <h2 style="display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">${iconSVG('bolt',22)} Champ Challenge</h2>
     <p style="margin:0 0 18px;color:var(--muted);font-size:13px">Pick your format and difficulty. Pass the <b>This Level</b> challenge to <b>test out</b> and jump straight to the next Level.</p>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:18px">
@@ -8705,7 +8720,7 @@ function viewGames(){ const g=state.game; if(!g) return gamesHub();
   if(g.qs) return (g.status==='done')?mcDone():mcGame();
   return (g.status==='done'||g.status==='won'||g.status==='lost')?typedDone():typedGame(); }
 function gamePickerShell(title,sub,cards){ return `<div style="max-width:620px;margin:0 auto;animation:sb-rise .3s ease both">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><button data-act="exitGame" style="color:var(--muted);font-weight:700;font-size:14px">← Arcade</button><span style="font-family:var(--display);font-weight:800;font-size:20px">${esc(title)}</span></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">${backPill('exitGame','Arcade',null)}<span style="font-family:var(--display);font-weight:800;font-size:20px">${esc(title)}</span></div>
     <p style="margin:0 0 16px;color:var(--muted);font-size:13px">${sub}</p>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">${cards}</div></div>`; }
 function pickerCard(act,arg,c,ic,name,desc){ return `<button data-act="${act}" data-arg="${arg}" style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:16px 16px 15px;box-shadow:var(--sh-rest);display:flex;flex-direction:column;gap:7px">
@@ -8729,7 +8744,7 @@ function wordQuizPicker(){ return gamePickerShell('Word Quiz','Choose a round �
   (advModeOn()?pickerCard('arcAdvMem','','#3A2A72','grid','◆ Memory Match','Pair the hardest words with their meanings — trains recall.'):'')); }
 /* ---- Spelling Duel: pass-the-device, same 10 words, two spellers ---- */
 function duelView(){ const S=state; const g=S.game; const shell=(inner)=>`<div style="max-width:560px;margin:0 auto;animation:sb-rise .3s ease both">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><button data-act="exitGame" style="color:var(--muted);font-weight:700;font-size:14px">← Arcade</button><span style="font-family:var(--display);font-weight:800;font-size:20px">Spelling Duel</span></div>${inner}</div>`;
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">${backPill('exitGame','Arcade',null)}<span style="font-family:var(--display);font-weight:800;font-size:20px">Spelling Duel</span></div>${inner}</div>`;
   if(g.phase==='setup') return shell(`<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;padding:26px;box-shadow:var(--sh-rest);text-align:center">
       <div style="width:84px;height:92px;margin:0 auto 10px">${mascotSVG('excited')}</div>
       <div style="font-family:var(--display);font-weight:800;font-size:24px;margin-bottom:6px">${esc(g.p[0].name)} vs …</div>
@@ -8757,7 +8772,7 @@ function duelView(){ const S=state; const g=S.game; const shell=(inner)=>`<div s
 }
 /* ---- Magic Squares view: board → 5-question cell → result (+ line celebrations) ---- */
 function magicView(){ const g=state.game; const S=state;
-  const head=`<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px"><button data-act="exitGame" style="color:var(--muted);font-weight:700;font-size:13px">← Arcade</button><span style="display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">${iconSVG('palette',21)} Magic Squares</span><span style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px">${coinIc(14)} +${g.coins}</span></div>`;
+  const head=`<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">${backPill('exitGame','Arcade',null)}<span style="display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">${iconSVG('palette',21)} Magic Squares</span><span style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px">${coinIc(14)} +${g.coins}</span></div>`;
   if(g.status==='board'){
     const tiles=g.board.map((cell,i)=>{ const cl=magicClusterOf(cell);
       const doneBG=`${themeCoverBG(cl)};color:#fff`;
@@ -9265,11 +9280,7 @@ function gamesHub(){ const S=state; const c=active();
     <!-- No global difficulty row: each game sets its own level, on its own tile. A single
          Arcade-wide selector was redundant with that and misleading (it did nothing for
          the games that carry their own level, like Trivia). -->
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px">
-      <button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button>
-      <span style="margin-left:2px">${arcadeLogoSVG(38)}</span>
-      <span style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em">Bizzy&rsquo;s Great Spelling Arcade</span>
-      <span style="margin-left:auto">${coinChip()}</span></div>
+    ${pageHead('Bizzy&rsquo;s Great Spelling Arcade','','',coinChip(),'goHome','Home',null,arcadeLogoSVG(34))}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:16px">${heroes.join('')}</div>
     ${dailyBanner}
     <div class="arc-sech">The games — pick your level on each</div>
@@ -9366,7 +9377,7 @@ function typedDone(){ const S=state; const g=S.game; let title,big,sub;
       <div style="display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 15px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:15px">${coinIc(15)} +${g.bonus||0} coins earned</div>
       ${gameReveal(g)}
     </div>
-    <div style="display:flex;gap:10px;justify-content:center"><button data-act="exitGame" style="padding:13px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">← Arcade</button><button data-act="gReplay" style="padding:13px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Play again →</button></div>
+    <div style="display:flex;gap:10px;justify-content:center">${backPill('exitGame','Arcade',null)}<button data-act="gReplay" style="padding:13px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Play again →</button></div>
   </div>`; }
 function mcGame(){ const S=state; const g=S.game; const q=g.qs[g.i]; const mono=q.kind==='spell';
   const statusBar=`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${gameName(g.type)} · ${g.i+1}/${g.qs.length} · ✓ ${g.right} <span class="sb-mob-hide" style="opacity:.7">· keys 1–4 pick · R repeat</span></div>`;
@@ -9398,7 +9409,7 @@ function mcDone(){ const g=state.game; const pct=Math.round(g.right/(g.qs.length
       <div style="display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 15px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:15px">${coinIc(15)} +${g.bonus||0} coins earned</div>
       ${gameReveal(g)}
     </div>
-    <div style="display:flex;gap:10px;justify-content:center"><button data-act="exitGame" style="padding:13px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">← Arcade</button><button data-act="gReplay" style="padding:13px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Play again →</button></div>
+    <div style="display:flex;gap:10px;justify-content:center">${backPill('exitGame','Arcade',null)}<button data-act="gReplay" style="padding:13px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Play again →</button></div>
   </div>`; }
 
 
@@ -9661,7 +9672,7 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
     </div>`; }
   // ---------- flip-card deck ----------
   const th=ths.find(x=>x.id===t.th)||ths[0]; const deck=ttDeck(t.th); const col=TT_COL[t.th]||'#7C5CFF';
-  if(!deck.length) return `<div style="max-width:640px;margin:0 auto"><button data-act="ttBack" style="color:var(--muted);font-weight:800;font-size:13px">← Chapters</button>${beeEmpty('think','No cards in this chapter yet.')}</div>`;
+  if(!deck.length) return `<div style="max-width:640px;margin:0 auto">${backPill('ttBack','Chapters',null)}${beeEmpty('think','No cards in this chapter yet.')}</div>`;
   const i=Math.min(t.i||0, deck.length-1); const q=deck[i]; const LVL=['','Starter','Easy','Medium','Hard','Champion'];
   const face=t.flip
     ? `<div style="animation:sb-pop .28s ease both">
@@ -9677,7 +9688,7 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
     +`<button data-act="ttRevise" title="Add this card to your revision pile" style="flex:1;min-width:88px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:11px;font-weight:800;font-size:12.5px;border:1.5px solid ${rec.r?'var(--treasure,#F0B429)':'var(--line)'};background:${rec.r?'var(--treasure,#F0B429)':'var(--surface2)'};color:${rec.r?'#5a3d00':'var(--muted)'}">${ttPlate('list',15,rec.r)} Revise${rec.r?' ✓':''}</button>`;
   return `<div style="max-width:640px;margin:0 auto">
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
-      <button data-act="ttBack" title="Back to the deck of chapters" style="color:var(--muted);font-weight:800;font-size:13px">← Chapters</button>
+      ${backPill('ttBack','Chapters',null)}
       <span style="font-family:var(--display);font-weight:800;font-size:17px;display:inline-flex;align-items:center;gap:7px"><span style="width:22px;height:22px;flex-shrink:0">${ttIcon(th,22)}</span>${esc(th.label)}</span>
       <span style="display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;background:${col}22;color:${col};font-weight:800;font-size:11px">L${ttBand(c)} · ${LVL[ttBand(c)]}</span>
       <span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);font-weight:700">${i+1} / ${fmtN(deck.length)}</span></div>
@@ -9882,7 +9893,7 @@ function viewAdmin(){ const S=state; const tab=S.adminTab||'users'; const me=SB_
       <span style="width:38px;height:38px;border-radius:11px;background:#241E33;color:#fff;display:grid;place-items:center;font-size:18px">🛡️</span>
       <span style="font-family:var(--display);font-weight:800;font-size:20px">Admin console</span>
       <span style="font-size:12px;color:var(--muted)">${me?esc(me.email):''}</span>
-      <span style="margin-left:auto;display:inline-flex;gap:8px"><button data-act="doSignOut" style="padding:9px 14px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:12.5px">Sign out</button><button data-act="closeAdmin" style="padding:9px 14px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:12.5px">← Back to app</button></span>
+      <span style="margin-left:auto;display:inline-flex;gap:8px"><button data-act="doSignOut" style="padding:9px 14px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:12.5px">Sign out</button>${backPill('closeAdmin','Back to app',null)}</span>
     </div>
     <div style="background:#FEF3C7;border:1px solid #F0C040;color:#7a5a00;border-radius:10px;padding:9px 13px;font-size:12px;font-weight:600;margin-bottom:14px">⚠️ Local dev console. This is not production security — real admin runs server-side (RBAC) in Phase 2.</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">${tabBtn('users','Users & plans')}${tabBtn('promos','Promotions')}${tabBtn('content','Content')}${tabBtn('analytics','Analytics')}</div>

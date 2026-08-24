@@ -1,7 +1,8 @@
 /* Bee-style accessories are removed. They were stickers drawn at fixed coordinates in the
    bee's 120x120 space, so a crown landed on the head of a god who already wears one and a
    moustache landed across a real person's face. This proves no avatar carries an overlay
-   any more, that the buy/wear paths are gone, and that anyone who bought one is refunded.
+   any more, that the buy/wear paths are gone, and that anyone who bought one is refunded. Bee
+   Cheer was removed alongside them at the user's request.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/no-accessories.cjs */
 const { chromium } = require('playwright');
 const root = require('path').resolve(__dirname, '..');
@@ -61,9 +62,9 @@ const root = require('path').resolve(__dirname, '..');
     if (/Bee style/i.test(s.txt)) errs.push('"Bee style" still on the ' + tab + ' tab');
     if (/Moustache|Funbrella|Royal Sceptre|Hero Cape/i.test(s.txt)) errs.push('an accessory is still listed on ' + tab);
     if (s.ow) errs.push('H-OVERFLOW on ' + tab);
-    if (tab === 'avatars' && !/Bee Cheer/.test(s.txt)) errs.push('Bee Cheer was removed too — it should stay');
+    if (tab === 'avatars' && /Bee Cheer/.test(s.txt)) errs.push('Bee Cheer is back on the avatars tab');
   }
   await b.close();
-  console.log(errs.length ? 'FAIL\n' + errs.join('\n') : 'PASS — no avatar takes an overlay, the buy/wear paths are gone, coins are refunded, Bee Cheer stays');
+  console.log(errs.length ? 'FAIL\n' + errs.join('\n') : 'PASS — no avatar takes an overlay, the buy/wear paths are gone, coins are refunded, Bee Cheer gone too');
   process.exit(errs.length ? 1 : 0);
 })();
