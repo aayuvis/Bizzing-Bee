@@ -1602,8 +1602,23 @@ const app = {
   conceptTier:(t)=>set({conceptTier:t, conceptPage:0}),
   conceptPagePrev:()=>set({conceptPage:Math.max(0,(state.conceptPage||0)-1)}),
   conceptPageNext:()=>set({conceptPage:(state.conceptPage||0)+1}),
-  openConcept:(ci)=>{ ci=+ci; const ch=state.conceptData&&state.conceptData[ci]; if(!ch) return; if(!isConceptUnlocked(ci)){ app.buyConcept(ci); return; } clearAnimTimer(); stopNarration(); state.conceptSel=ch; state.conceptStep=0; state.conceptWordsOpen=false; state.conceptWordIdx=0; state.animOn=false; state.animScene=0; try{window.scrollTo(0,0);}catch(e){} render(); },
-  conceptBack:()=>{ clearAnimTimer(); stopNarration(); if(state.trailReturn&&app.trailUnit){ const u=state.trailReturn; state.trailReturn=null; state.conceptSel=null; state.animOn=false; set({nav:'trail'}); app.trailUnit(u); return; } set({conceptSel:null, animOn:false, animScene:0}); },
+  openConcept:(ci)=>{ ci=+ci; const ch=state.conceptData&&state.conceptData[ci];
+    if(!ch){ flash('That chapter is still loading — one moment'); try{ loadConcepts(); }catch(e){} return; }
+    if(!isConceptUnlocked(ci)){ app.buyConcept(ci); return; }
+    clearAnimTimer(); stopNarration();
+    /* The detail view only renders under nav 'concepts', so a chapter opened from the
+       Coach, the traps page or the random-word button used to set conceptSel and then
+       render the page the reader was already on — a click that did nothing. Carry the
+       nav, and remember the origin so Back goes home rather than to the chapter list. */
+    if(state.nav!=='concepts') state.conceptFrom=state.nav;
+    state.conceptSel=ch; state.conceptStep=0; state.conceptWordsOpen=false; state.conceptWordIdx=0;
+    state.animOn=false; state.animScene=0;
+    try{window.scrollTo(0,0);}catch(e){} set({nav:'concepts'}); },
+  conceptBack:()=>{ clearAnimTimer(); stopNarration();
+    if(state.trailReturn&&app.trailUnit){ const u=state.trailReturn; state.trailReturn=null; state.conceptSel=null; state.animOn=false; set({nav:'trail'}); app.trailUnit(u); return; }
+    const from=state.conceptFrom; state.conceptFrom=null;
+    if(from){ set({conceptSel:null, animOn:false, animScene:0, nav:from}); return; }
+    set({conceptSel:null, animOn:false, animScene:0}); },
   conceptStepGo:(i)=>{ clearAnimTimer(); stopNarration(); set({conceptStep:+i, animOn:false}); },
   conceptPlay:()=>{ clearAnimTimer(); stopNarration(); state.animNonce=(state.animNonce||0)+1; playScene(0); },
   conceptReplay:()=>{ clearAnimTimer(); stopNarration(); state.animNonce=(state.animNonce||0)+1; playScene(0); },
@@ -3282,7 +3297,13 @@ function journeyName(){ return advModeOn()?'The Advanced Spelling Journey':'The 
    never collapsed. We only ever undo what we switched on ourselves, so a manual toggle
    elsewhere is respected. */
 const FOCUS_NAVS=new Set(['explore','concepts','journeys','builder','vocab','figurative',
-  'typing','quotes','trivtrain','revisions','traps','adv']);
+  'typing','quotes','trivtrain','revisions','traps','adv',
+  /* added after play-testing: "clicking on word atlas is not freezing the background as
+     it did with practice and library". The Atlas is the course itself, Practice is where
+     the words are actually spelled, and the Coach is a reading screen — all three belong
+     in the quiet half of the app. 'train'/'quest' come with 'coach' because Practice
+     reaches them without the reader feeling they have left it. */
+  'trail','coach','train','quest','coachdesk','ipatrain']);
 function focusAutoSync(){ try{ const F=window.SB_W4_FOCUS; if(!F) return;
     const want=FOCUS_NAVS.has(state.nav);
     if(want && !F.on()){ F.toggle(); state._focusAuto=1; }
@@ -4374,7 +4395,10 @@ const TRAP_CONCEPT_RE={ double:/Double Consonant/i, silent:/Silent kn|Silent -gh
    ========================================================================== */
 function coachConcepts(keys){
   // which chapters teach the patterns that are catching this child
-  const chs=(state.conceptData||(window.SB_CONCEPTS&&SB_CONCEPTS.chapters)||[]);
+  /* Index STRICTLY into state.conceptData, because that is the array openConcept reads.
+     Falling back to SB_CONCEPTS.chapters here would hand out indexes into a different
+     array — free chapters happen to line up, advanced ones do not. */
+  const chs=state.conceptData||[];
   if(!chs.length) return [];
   const out=[], seen=new Set();
   keys.forEach(k=>{ const re=TRAP_CONCEPT_RE[k]; if(!re) return;
