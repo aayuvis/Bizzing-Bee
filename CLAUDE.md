@@ -56,7 +56,17 @@ handlers. App lives in this folder; open `index.html` to run.
 - `voice-cdn.js` — on `*.github.io`, rewrites `voice/…` → raw.githubusercontent of `main`.
   Concept narration (`voice/c*`, `voice/a*`) is exempt: it is bundled on `gh-pages` and
   served same-origin, so it never depends on those clips reaching `main`.
-- `advanced.js` + `adv-concepts-data.js` — the **Advanced Pack** ($49.99/yr add-on, gated by
+- **A failed clip fires TWICE — guard every fallback.** A media element whose source
+  404s fires `error` on the element AND rejects the promise from `play()`. Wiring the
+  device-TTS fallback to both (`a.onerror=tts; a.play().catch(tts)`) made the app say
+  the word twice, which is what a word with no working recording sounded like on every
+  hosted build (those stream each clip from raw.githubusercontent, so a word listed in
+  `SB_WVOICE` whose file isn't on `main` lands here). `deviceSpeak` and `sayAlt` now
+  latch a flag; `deviceSpeak` also checks `_wvAudio` identity so a slow failure cannot
+  talk over a word the child has already tapped since. Guard: `tests/tts-once.cjs`.
+  mockbee's `aqPump` has the same two-wire shape but its `miss` is a `Set.add`, so it
+  is idempotent — leave it.
+- `advanced.js` + `adv-concepts-data.js` — the **Advanced Pack** ($299/yr add-on, gated by
   `SB_ENT.hasAddon('advanced')` only). `SB_ADV_CONCEPTS` holds **43 expert chapters** in
   four categories, `SB_ADV_CSCRIPT` their 258 narrated scenes. These live entirely outside
   `state.conceptData`, so they cannot leak into the free 121-chapter course. Narration is
@@ -146,6 +156,14 @@ handlers. App lives in this folder; open `index.html` to run.
   authored) and drills its own 24-word block **sampled across** its band of `ADV.pool()`
   — a contiguous slice reads as dictionary dregs once the difficulty score flattens.
   Progress lives at `c.ultra.done`; `ultraTrain` hands the block to Practice.
+- **There is NO takeover when the Advanced Pack unlocks.** It used to open a sixteen-step
+  guided tour (`ADV_TOUR`, `advTourCard`, `adv-tour-shots.js`) full-screen the instant the
+  pack went live. Wrong twice over: it interrupted the exact moment the parent had paid to
+  reach, and it *described* five features instead of letting the child meet them. All of it
+  is deleted — the data, the card, the timer, the five `advTour*`/`advReveal*` actions and
+  the lazy registration. The unlock is a confetti burst and a one-line `flash`; the five
+  surfaces announce themselves where they live. If a "what's new" is ever wanted again it
+  belongs in Settings, opened on purpose — not over the screen.
 - **Testing unlock overrides entitlements, and now says so.** `SB_ENT.hasAddon` returns
   true for everything under dev unlock, which made the Advanced Pack switch look dead and
   plan changes look ignored. The Advanced card swaps its switch for a "Testing unlock is
@@ -172,11 +190,26 @@ handlers. App lives in this folder; open `index.html` to run.
   the same curve serves 2 stops at Tier I and 22 at Tier III. Long acts pan sideways and
   auto-scroll to the frontier. `trailPick` selects, `trailTrain` hands the stop's words
   to Practice, `SB_TRAIL_TAUGHT(gi)` answers the reverse question for concept pages.
-- **One thing is called a Level: your rank.** Per-list ladders read **Stage** everywhere;
-  `overallLevel` is deleted; the header pill says **Word difficulty**, not Bee Band.
+- **One thing is called a Level: the BEE BAND, and it is your spelling level.** (Reversed
+  Aug 2026.) There used to be three: a Bee Band pill reading "Word difficulty 3", a rank
+  pill reading "Level 1 · Egg", and **Karma** — which turned out to be two different
+  quantities sharing a name, one of them (`c.karma`) written in two places and read by
+  nothing, while the app's explainer described the other (the sum of per-list `xp`).
+  Now: the header carries **one** pill, `bandStage(band).n + ' · Level ' + band`, wearing
+  the evolution emblem for that band (`bandArt`), opening **`nav:'beeband'`** — a page that
+  says what the stage means and exactly what moves it. `BAND_STAGE` holds the nine names
+  (Egg · Hatchling · Forager · Worker · Scout · Ranger · Guardian · Champion · Legend).
+  The word **Karma is gone from the app**; the three `karma*` achievement **ids** stay
+  because they are storage keys and renaming them would re-lock earned badges. Per-list
+  ladders still read **Stage**; `overallLevel` is still deleted; the evolution forms still
+  live in My Hive, which is where a collection belongs.
+- **The band is evidence only — never time on the app.** `diffRange()` reads it to choose
+  which corpus slice every game serves, so a band inflated by hours played would hand a
+  child words they cannot spell. Time is rewarded by **coins**, which are spendable and
+  therefore have a job. Say this on any screen that explains the band.
 - **ONE concept-first guided journey.** The Journey tab IS the Word Map
   (nav 'trail'): one continuous map of 9 base acts followed by **The Advanced Rounds**
-  (the 6 expeditions, unit ids `x*`), which render locked with a **$49.99/yr** Advanced
+  (the 6 expeditions, unit ids `x*`), which render locked with a **$299/yr** Advanced
   Pack CTA until `ADV.active()`. Course is derived from the unit id prefix
   (`state.trailCourse`, set by `trailUnit`/`trailChk`; checkpoint args are
   `"course|actId:n"`). A "Chapter shelf" button on the map opens the Concepts library,
@@ -185,7 +218,85 @@ handlers. App lives in this folder; open `index.html` to run.
   "Practice paths" chooser (nav 'quest'); its list catalogue is collapsed into four
   group cards (My Words / The Champion Ladder / Word Origins / Tricky Words —
   `grp` fields in `coachCatalog`, `state.catGroup` opens one; keys unchanged).
-  My Hive = Collection + Evolution + Store behind one lit tab (`hiveBar`).
+  My Hive = Collection + Your bee + Worlds behind one lit tab (`hiveBar`).
+- **There is no Store. A thing is bought where it lives.** `viewShop()` and `state.shopTab`
+  are deleted. The Store sold avatars, worlds, concepts and word lists that all already
+  had a home, so the same avatar pack was purchasable from two screens under two
+  different rules (the Store showed "Open a pack" to everyone; the Collection checked
+  the plan first — `app.buyPack` bounced the free tap to the upsell anyway, so the
+  Collection's rule was the honest one and is the one that survived). Now:
+  `buyPack` + the drop-odds panel live in Collection → Avatars, `buyTheme` on the world
+  in `viewWorlds`, `buyConcept` in the Concepts library (via `openConcept`, which routes
+  a locked chapter to it). `app.openShop` / `openShopAvatars` survive ONLY as redirects
+  to the Collection so old deep links don't dead-end.
+- **Artifacts are won, never bought** (`ART_DEFS` / `grantArt` / `grantStageArt`).
+  `buyPower` is deleted. This mattered: the Store was the ONLY source of Boss Shield,
+  Letter Reveal, Time Warp and Streak Freeze, so deleting the shop without an earn path
+  would have killed four live game mechanics. Earn routes: a per-list stage-up in
+  `gainXp()` grants one of shield/reveal/time (rotating on `rankXp() % 3`), and a 7/14/30-day
+  streak in `markActiveToday()` grants a Streak Freeze. `c.freezes` holds the freeze (the
+  streak code reads it there); `c.pow` holds the rest. Bee Cheer was never an artifact —
+  nothing is stocked — so it survives as `app.beeCheer`, a coin treat in Collection → Avatars.
+- **Word lists are not sold for coins.** `buyList` is deleted; `app.lockedList` opens the
+  plan sheet where the list stands. `isListUnlocked` still reads `c.unlockedLists`, so
+  anyone who bought a list under the old coin price keeps it. `COST` is now `{theme, concept}`.
+  Guards: `tests/hive-store.cjs` and `tests/buy-where-it-lives.cjs`.
+- **The Arcade is 'Bizzy's Great Spelling Arcade'** (`gamesHub()`), and difficulty is
+  chosen PER GAME, not once for the whole room. The old global My-level/Easy/Medium/
+  Hard/Champ pill row is gone (it was redundant, and did nothing for games that carry
+  their own level like Trivia). Word games use `gtile()`: the card is one Play button,
+  a difficulty strip below it is separate buttons (a button can't nest a button).
+  `c.gameDiffBy[type]` remembers each game's choice; `gameDiffFor(c,type)` reads it;
+  `playGame` copies it into the live `c.gameDiff` on launch (the same trick champTen
+  used) so the mid-play engines that read `c.gameDiff` see the right level.
+  The arcade's engine games are PLAYABLE DIRECTLY (SB_ARCADE_GAMES + app.arcadePlay):
+  each tile shows its painted play-field (app-art/sgw-<world>.jpg) and
+  mounts its SB_SAGA_ENGINES engine in a self-managed fullscreen overlay (.arc-play,
+  appended to <body>), DECOUPLED from saga2's story machinery — so removing the story
+  (task 46) leaves the arcade working. CRITICAL: the engines key their config by
+  easy/medium/hard/champ and THROW on 'auto' (CFG['auto'].time) — the saga only ever
+  passed the four concrete levels. arcadePlay resolves a tile's 'auto' to a concrete
+  level from the speller's band before the engine sees it.
+  SECOND arcade-only gotcha, fixed in QC: the four letter-typing engines (typeBlaster,
+  stageRhythm, constellationConnect, spellScene) drew ONE small `pool(n+k)` batch and
+  filtered it to short words (3-8/3-9/3-12 letters); if that single draw yielded zero
+  passing words they instant-"won" on a BLANK host. It only bit at some bands because
+  `diffRange` shifts the corpus slice: Band 6 'medium' = corpus y-bands [5,7], a rarer/
+  longer slice where only ~12% of a draw is 3-9 letters, so ~35% of typeBlaster launches
+  came up empty (Band 4 'medium' = [3,5], 0%). Fix: `fillWords(n,min,max)` in saga2.js
+  keeps drawing fresh `pool()` batches (deduped) until it has n words, so the field is
+  never hollow; pickFresh backfills used words so it always terminates. Verified 0% empty
+  across bands 2/4/6/8/9 and all games mount at bands 2/6/9.
+  CULLED 14 -> 8 on a fun x learning index: kept beeGrandPrix, honeycombRun, typeBlaster,
+  keepFlying, wordSnake, unscrambleStars, spotlightSimon, spellScene — eight distinct feels
+  (Race/Maze/Speed/Flight/Arcade/Puzzle/Memory/Scene), weighted to games that make the
+  child PRODUCE the spelling. Dropped the redundant select/catch-given-letters cluster
+  (whackAMoth, combCatcher, constellationConnect, wordHive) and two lowest-learning
+  novelties (spellShield — duplicated typeBlaster's spell-fast-under-threat; stageRhythm —
+  timing crowded out recall). wordSnake was kept by user request as a fun-dexterity anchor.
+  The dropped ENGINES stay in saga2.js (still exported), so a re-add is one line in
+  SB_ARCADE_GAMES. Still to do: a Bizzillionaire
+  Bizzillionaire (app.openBizz + SB_BIZZ_LADDER) is a 15-rung money-ladder quiz over
+  the 31k trivia bank — a self-managed overlay (.bz-play), DOM-driven, no engine.
+  Rungs 1-3 draw lv1 … rungs 13-15 draw lv5 (_bizzLevelOf) — the difficulty RAMP.
+  Questions are drawn RANDOMLY from the whole level pool (not a fixed index) and every
+  id asked is remembered across plays in localStorage `sb_bizz_seen` (_bizzSeen), so a
+  second/third/tenth playthrough serves NEW questions; a level is only recycled once its
+  entire bank is exhausted. Answer order is a real Fisher-Yates shuffle so the correct
+  slot moves every play. two safe havens (5, 10);
+  three one-shot lifelines (50:50 / Ask Bizzy = the question's `f` fact / Skip). c[0]
+  is the correct answer in the bank; the overlay shuffles its own A-D order. COINS
+  REWARD THE CLIMB, not the money (which is exponential flavour): ~12/rung, +150 to
+  finish, capped 400 — busting at rung 6 pays 72, not 0. Bizzillionaire is a HERO tile
+  at the top of the arcade (alongside the Mock Spelling Bee), NOT one of the eight game
+  tiles — it stays there.
+  DONE: the story is fully removed. saga2.js's 360-line story controller (map/board/
+  beats/CH_META/ACTS/SAGA_MAP, 166KB->144KB) is deleted; saga-script.js (dialogue) and
+  saga-music.js (SAGA_MUSIC — the story's bed; the LIVE world music is SB_W4_MUSIC in
+  worlds4.js, untouched) and the 6 app-art/saga-act*.jpg board images are gone. KEPT,
+  because the engines' drawWorld fallback needs them: saga-art-dom.js + saga-art/
+  saga-map.js (WORLD_ART / SAGA_ART) and the sgw-<world>.jpg play-fields. The only
+  SAGA2 reference left is a guarded parent-analytics read that degrades to 0.
   Arcade holds exactly 7 surfaces: Saga, Spelling Quest (whose season map carries the
   classic Boss Battle quick fight — `sqBoss`), Daily Buzz, Bee Trivia, Magic Squares,
   Beat the Buzzer (modes: Sprint / Warm-Up / Level Challenge / Duel / ◆ Rapid
@@ -314,6 +425,50 @@ handlers. App lives in this folder; open `index.html` to run.
 - Before any **commercial launch**: the policy must carry the operator's full legal name,
   mailing address and phone (placeholder noted in §1), and if real payments are added the
   purchase flow must stay parent-only (behind the PIN) with notice/consent revisited.
+
+## Accounts & cloud backup (Supabase)
+- **Four files, and three of them do nothing until two values are pasted in.**
+  `sb-config.js` holds the project URL + anon key (blank = the app is exactly as it was:
+  offline, no account, zero requests). `auth.js` is the local scaffold; `supabase-auth.js`
+  re-backs `window.SB_AUTH` with real auth when configured; `supabase-sync.js` is the
+  backup layer. **No SDK, no CDN script tag** — Supabase's auth and REST APIs are plain
+  HTTP and `fetch` is the correct client for a no-build app. `supabase-schema.sql` is the
+  whole database; paste it into the SQL editor.
+- **`supabase-sync.js` is registered in `boot-lazy.js` (`sync` / group `cloud`), never in
+  index.html.** It is last on the idle queue: a child must reach a word without waiting on
+  anything that talks to a network, and a family that never makes an account should never
+  pay for the file. Every entry point goes through `app.cloudNeed(cb)` because a parent can
+  open the card before the file lands.
+- **A child's real name and age NEVER leave the device**, and that is enforced twice over.
+  `shred()` is an **allow-list** (`PROGRESS_KEYS`) so a field added to the child object next
+  year is not silently uploaded, and the schema has **no column** for either — a column that
+  does not exist cannot be filled in by a careless commit. `rebuild()` deletes both again on
+  the way back, so a legacy blob cannot smuggle them in. There is a headless assertion that
+  greps the serialized `shred()` output for the name and the age.
+- **`children.display_name` is derived from the AVATAR, not from `c.name`.** The app has one
+  name field and its onboarding asks for "first name or nickname", so most families type the
+  real one; a column called display_name is a standing invitation to put it there. `label()`
+  answers that invitation with "Fox"/"Panda". Restore tells spellers apart on avatar + level
+  + date, and asks the parent for the name and age **on the device**.
+- **Three gates, all of which must be true before one byte moves**: configured
+  (`SB_CLOUD_ON`), signed in (`SB_AUTH.token()`), and **consented** (`SB_SYNC.consented()`).
+  Consent is a screen, not a switch — it is the one moment a parent decides something about
+  their child leaves the device — reached only from the Parent Zone behind the PIN, and it is
+  recorded both locally and on `accounts.consent_at` so it survives a wiped device.
+  Withdrawing it **deletes** what was uploaded; it does not merely stop uploading.
+- `save()` calls `SB_SYNC.queue()` last and wrapped: save() fires on nearly every
+  interaction, so the push is coalesced (4s) and can never break the local write above it.
+- **Conflicts are last-write-wins per child, deliberately.** Merging two divergent progress
+  blobs invents a history neither device had. `fetchAll()` therefore never touches local
+  state — it returns candidates and the restore sheet decides.
+- **Deleting a speller exists now** (`askDelSpeller` → `delSpeller`, two taps, in the Parent
+  Zone). It has to: COPPA gives a parent the right to delete, and `privacy.html` has always
+  claimed the app offered one. It deletes the cloud row too.
+- **`privacy.html` is updated BEFORE any network feature ships, with a new effective date.**
+  The Aug 2026 rewrite fixed a policy that had gone self-contradictory — half of it described
+  cloud backup while §3 still said "we operate no server that could receive it" and §8 still
+  warned the password was only scrambled locally. If you touch sync, re-read the whole policy
+  for claims that the change has just made false; they are load-bearing.
 
 ## Trivia: levels, sharding, and the authoring pipeline
 - **Five levels, one band per speller.** `ttBand(c)` (app3.js) picks 1–5: base from age
@@ -447,6 +602,24 @@ handlers. App lives in this folder; open `index.html` to run.
   differs (envelope correlation) before shipping — see `voice/pipeline/` QA scripts.
 
 ## Boot budget (`boot-lazy.js`) — read before adding a script tag
+- **EVERY `<script src>` in index.html carries `defer`, and it must stay that way.** All 42
+  were plain blocking, which made the parser stop and restart 42 times: DOMContentLoaded
+  **2952ms**, first contentful paint **716ms**. Adding `defer` to all of them — not one byte
+  less JS — gave DCL **792ms** and FCP **228ms**, a 3.5x improvement. Execution order is
+  preserved for deferred classic scripts, so the icons -> app -> app3 -> trail chain is
+  unaffected; only parsing stops being blocked.
+  - **An inline script that CALLS into a deferred one must wait for `DOMContentLoaded`.**
+    `try{SB_ICON_MOTION()}catch(e){}` ran at parse time, before any deferred script existed,
+    and its own try/catch would have swallowed the failure and silently left icon motion off.
+    Inline scripts that merely SET a global (`window.SB_ASSET_V`) are fine where they are —
+    they run earlier, which is what their readers need.
+  - Measure with the resource-timing harness, not by eye: `paints`, `domContentLoadedEventEnd`
+    and per-resource transfer sizes. Note localhost serves uncompressed, so byte figures there
+    are ~3-4x the gzipped reality on Pages; the parse/execute time is the honest part.
+- Boot is **5.03MB across 42 files**; `words-data.js` alone is 2.3MB of it (46%) and `app3.js`
+  1.0MB. The next real lever, if boot needs to get faster again, is a smaller first word
+  shard (`voice/pipeline/words-shard.js`) and moving the saga/mockbee/advanced/trail cluster
+  (~800KB, none of it needed for Home's first paint) into `boot-lazy` groups.
 - The app boots in ~400ms on 4.7MB of critical JS. It used to be 1417ms on 31.9MB.
   **Do not add a data file to `index.html`.** Register it in `boot-lazy.js` (REG +
   IDLE order, and a GROUP if a feature needs it) and it arrives on an idle queue
@@ -462,8 +635,14 @@ handlers. App lives in this folder; open `index.html` to run.
   `SB_WORDS_PATCH()` so its QC pass re-runs over the second shard; the words-lore
   merge is re-entrant for the same reason. Regenerate with
   `voice/pipeline/words-shard.js` and `words-lore-split.js`.
-- Avatars: `avatars/s/` holds 192px renditions (9KB vs 348KB). `SB_AVATAR` serves them
-  at ≤96px. Regenerate with `voice/pipeline/avatar-thumbs.py` after any avatar change.
+- Avatars: full-size art is **WebP q=95** in `avatars/<id>.webp` (29.6MB of PNG -> 7.1MB,
+  76% off, no visible loss — the encoder only touches outline-edge pixels and the app
+  downscales a 384px source to <=150px anyway). `avatars/s/` holds 192px **PNG** thumbs
+  (WebP measured ~2% LARGER at that size, so thumbs stay PNG). `avSrc` in avatars.js
+  picks `.webp` above 96px and `s/<id>.png` at or below. `avatar-thumbs.py` reads the
+  `.webp` source now and still writes PNG thumbs. Full-size PNGs are DELETED from the
+  repo — regeneration works from the WebP. Convert new avatar art to WebP q=95 before
+  committing, then run avatar-thumbs.py.
 - **The book series** (`books/`, one generator: `books/mkbooks.js`, run from the repo
   root) is **19 numbered volumes plus 2 standalone companions / 1,707 pages**.
   Vols 1-10 build from `SB_CONCEPTS`, 11-16 from `SB_ADV_CONCEPTS`, and four are AUTHORED
@@ -562,6 +741,89 @@ handlers. App lives in this folder; open `index.html` to run.
   strips by `voice/pipeline/app-banners.py`. The Word Atlas, the theme pages and the
   home Atlas tile all draw from it — one visual language with the books.
 
+## The Library's book shelf, and the drawn spines
+- The books are a **shelf of 23 spines above the tiles** (`libShelf()` in app3.js), not a
+  tile among tiles. `SB_SHELF` is the ordered list; **`s` (the file name) is the ONLY one
+  of a volume's three identities that may build a URL** — `n` is the printed number and
+  `art` is the art prefix, and they disagree (17 is `book-17.html` with `b19` art; the
+  companions have no number). The table was read out of `mkbooks.js` via `slugOf`/`artOf`
+  and cross-checked against the `books/*.html` redirect stubs; all 23 matched both ways.
+- **Two levels of click, for free.** The shelf carries `data-act="openBooks"` and each
+  spine `data-act="openBook"`; app3's handler resolves `closest('[data-act]')`, so a spine
+  wins on its own hit area and the shelf catches the wood and the gaps. `openBook`
+  validates the slug against `SB_SHELF` rather than pasting it into a URL.
+- **Spine art carries NO lettering** (`voice/pipeline/spine-art.py`, 23 PNGs in
+  `app-art/spines/`). An image model letters convincingly and spells badly, and this is a
+  spelling app — so the model paints the spine and HTML sets the type over it. Titles stay
+  correct, selectable and crisp, and a re-render never needs new art.
+  - Only **`gemini-3.1-flash-image`** reliably reads "spine" as the narrow edge of a book;
+    the other two drew the front COVER 10 times in 23. The script MEASURES the aspect and
+    retries outside **`[MIN_RATIO, MAX_RATIO]` = [0.095, 0.185]** rather than trusting it.
+    The first run accepted 0.126–0.28 — a 17px book beside a 46px one — and that spread was
+    most of why the shelf read as scruffy AND why type spilled off the narrow spines.
+  - The band has moved twice and BOTH corrections mattered: 0.28 (too loose, accepted
+    covers) -> 0.185 (too slender — the books read as thin card and thirteen of them left a
+    third of the shelf empty) -> **0.17-0.30**, which fills 89% of the row. A real hardback
+    spine is roughly a quarter of its height.
+  - The style prompt says **"fine, even, confident ink line"** and forbids a cartoon in the
+    negative (no thick wobbly outline, no childish doodle, no bouncy uneven shapes). The
+    first cut was drawn with a heavy wobble and read as a picture book.
+  - **A spine reads as real because it is the curved back of a cylinder.** The prompt asks
+    for a highlight down the centre and deeper tone at both long edges, plus the details a
+    bound book actually has — a striped **headband** at head and tail, raised **hubs**, a
+    pasted paper **label**, stamped **rules**, a **quarter-bound** join, a colophon. Eight
+    such bindings rotate, so no two books on the shelf are the same object. Without that
+    shading the drawings were clean but flat: a coloured rectangle, not a book.
+  - Quantise the PNGs to **160 colours, not 64** — 64 banded the very spine shading that
+    sells the roundness.
+  - The Gemini key lives at **`/root/.gkey`** (mode 600, `GKEY_FILE` overrides). It is the
+    newer `AQ.`-prefixed format, not `AIza…`, and goes in the `x-goog-api-key` header.
+- **`window.SB_SPINE_R` in app3.js holds every spine's MEASURED width/height**, written by
+  the script to `app-art/spines/ratios.json` and **baked into the source** — no build step
+  and `file://` support mean a runtime fetch for 23 numbers would be a request and a new
+  failure mode. **Regenerate that block whenever the spine art changes.**
+- **Spine geometry is derived, never tabulated, in BOTH directions.** Type is sized by the
+  smaller of: the title's character count (so a long title fits end to end) and **the
+  spine's own measured width** (so a vertical line of letters is never thicker than the
+  book it is printed on). Sizing on length alone let the letters paint out over both edges
+  of the thinnest spines onto the shelf behind — and a box-vs-image geometry check could
+  not see it, because the box and the image are the same width by construction. The
+  divisor is **the shortest row any layout uses (150px, the phone's two shelves)**, not the
+  desktop row: sizing against the taller row measured clean on desktop and clipped four
+  titles on a phone.
+- **Title ink is chosen by CONTRAST, not by a luminance threshold** (`ink()`): compute the
+  WCAG ratio for white and for near-black against the spine colour and keep the better. A
+  single cut-off fixed the yellow and orange and left a cluster of mid-tone golds at about
+  1.8:1 — technically past the line, actually unreadable. Every spine now clears 4.35:1.
+  `cover-ink.py` does the same job for the book covers.
+- The row height IS the book height: `.bk-books` 180px desktop, `.bk-row` 150px phone.
+  Stacks are **five** books — against a 180px row a 3-high stack left a conspicuous
+  rectangle of empty shelf above it. With the thicker spines the row fills 89% of its
+  width, leaving ~59px at each end, which reads as shelf rather than as a gap.
+- `--bh` is a **percentage of the row and must never exceed 100** — the row is
+  `align-items:flex-end` with no clipping, so a 110% book grows up out of the box and
+  pushes the shelf into the heading above it.
+- Leaning books need their own side margin or they lie across the neighbour's title.
+- **Two shelves below 720px.** The row is authored as two halves that `display:contents`
+  re-joins into one row on wider screens — one source of markup, no duplicated list.
+- A mobile override of equal specificity only wins by **source order**: the phone block
+  sits after the base `.lib-*` rules, because declared above them its `display:none` and
+  `font-size` were quietly beaten by the base rules.
+
+## The Atlas is a journey on scenery, not a painting with pins
+- The painted map is held at **`opacity:.6`** (dusk `.5`, high-contrast `.34`) and
+  desaturated; the route SVG and the pins are SIBLINGS above it and keep full contrast, so
+  dimming the art lifts the journey without touching anything that must stay legible.
+- **`.atlas-board`'s own background is load-bearing.** It was a near-black `#241E33`, so
+  lowering the image's opacity *darkened* the map instead of calming it. It is a paper tone
+  now; only dusk keeps a dark ground.
+- **Route ink is theme-tokened** (`--rt-guide` / `--rt-walk` / `--rt-sh` on `.atlas-board`).
+  The strokes were white-on-dark, correct over a full-strength painting and the faintest
+  marks on screen over a dimmed one. Light and white get a drawn-road brown; dusk keeps the
+  original glow. Both the overview route and the act board read the same tokens.
+- The advanced band's scrim dropped from a near-black wash to a light violet tint: over a
+  42% painting the old weight just made mud.
+
 ## Concepts is ONE library
 - `state.conceptData` = free `SB_CONCEPTS.chapters` **concat** `SB_ADV_CONCEPTS.chapters`.
   Advanced is always **appended**, never interleaved — concept narration is indexed by
@@ -615,6 +877,22 @@ handlers. App lives in this folder; open `index.html` to run.
 - **Book PDFs are not in git.** They were 214MB of files generated from HTML that is
   already complete; the shelf opens the HTML. Regenerate on demand; `.gitignore` keeps
   them out. Do not re-add them to the repo or to gh-pages.
+- **Deleting a generated artifact does not un-commit it, and the repo grew to 3.4GB
+  proving it.** The PDFs were removed and gitignored, and every version of every one of
+  them stayed in history: **1.63GB across 197 blobs on paths no branch referenced**, plus
+  188MB of `books/art` PNG intermediates from the same habit. They were purged with
+  `git filter-repo --invert-paths` in Aug 2026 (all six branches rewritten and
+  force-pushed; every branch's root tree SHA came out **identical**, so only commit SHAs
+  moved). GitHub's reported size lags — its GC is asynchronous and can take days — but a
+  fresh clone drops immediately, because a clone only ever sends reachable objects.
+  The rule that follows: an artifact regenerated by a script belongs in `.gitignore`
+  **before** its first commit, never after.
+- **`gc.auto` is 0 in this repo's local config, so nothing is ever packed automatically.**
+  That is deliberate — auto-gc pauses on a 130k-file working tree are painful — but it
+  means loose objects accumulate forever, and a loose object gets zlib and **no delta**.
+  455 versions of `app3.js` were each stored in full: 136,865 loose objects / 3.34GB,
+  which is how `.git` came to be *larger* than the remote. Run `git gc` by hand every so
+  often; it took 4.0GB → 2.9GB on its own, with no history change and nothing to push.
 - **Shipped art is sized to how it is drawn, not to how it came out of the model.**
   `voice/pipeline/art-slim.py` (`--dry` measures first) holds the rule: full-size avatars
   384px RGBA, book plates 1400px at q78. The 640px avatars were ~360KB each and nothing
@@ -629,6 +907,15 @@ handlers. App lives in this folder; open `index.html` to run.
 - **Cache busting (do BOTH every deploy):** bump the `?v=` stamp on every asset URL in
   `index.html` (one `sed -i 's/?v=OLD/?v=NEW/g'`) so devices never run stale JS, and bump
   `SB_VOICE_VER` in `voice-review.js` whenever voice clips changed.
+- **The site is `www.bizzingbee.com`, and a `CNAME` file is what makes that true.**
+  GitHub writes `CNAME` onto `gh-pages` when you set the custom domain in Settings.
+  The deploy here is `git push -f origin HEAD:gh-pages` from a worktree, which replaces
+  the whole branch — so a worktree without that file **silently unsets the domain** and
+  the site falls back to the github.io URL with no error anywhere. `CNAME` therefore
+  lives in the SOURCE `spellbound-app/` and is copied across on every deploy, exactly
+  like `index.html`. Never delete it, and `git fetch` + reset the worktree to
+  `origin/gh-pages` before deploying if anything may have changed the branch from the
+  GitHub side.
 - **Bump the stamp in the SOURCE `index.html`, not in the gh-pages worktree.** Bumping it
   only in the worktree leaves the branch a stamp behind, and the next deploy that copies
   `index.html` across silently reverts the stamp BACKWARDS — devices then keep serving the
@@ -640,3 +927,47 @@ handlers. App lives in this folder; open `index.html` to run.
   Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
   Claude-Session: https://claude.ai/code/session_01QWsiRQxQMXwKsQoppGtYWa
   ```
+
+## Video production — a failed experiment, and its lessons (Aug 2026)
+Two YouTube videos were built from in-app assets (`voice/pipeline/trailer/`) and both
+were rejected — storyline, graphics and voice. The lessons are the point; do not repeat
+the attempt with the same inputs.
+- **TTS cannot perform.** Kokoro is a pronunciation voice; commentary/let's-play formats
+  are mostly voice energy, and synthetic enthusiasm reads as uncanny. Any narrated video
+  needs a HUMAN voice track first — write the script, let the user record it, build
+  around it. Never ship TTS narration as entertainment.
+- **Choreographed drama is fake drama.** Setbacks staged through debug hooks (toHaz/
+  gateNow teleports), a "rule" that was never at risk, a comeback that couldn't fail —
+  scripted stakes with no real uncertainty read hollow on sight. Real content needs real
+  play (genuine winnable/losable runs) or genuinely authored narrative craft.
+- **A screen recording is not footage.** The game reads well in hand; at 1080p passive
+  viewing it is a fixed camera, small sprites and app chrome. Text overlays are not
+  production value. If footage must come from the app, it needs a purpose-built
+  cinematic mode (no HUD, dynamic camera), not a capture of the play surface.
+- **QC the bar, not the storyboard.** Every check verified "frame X at time Y", never
+  "would anyone watch this?" Judge a 15-second test cut against real videos in the
+  genre BEFORE building the full length — and show the user that cut first.
+- What survives: the capture/assembly tooling works (Playwright recordVideo drifts
+  seconds past wall-clock — cut against extracted frames; clearBoxes() before racing
+  segments; single-frame inputs into zoompan). Useful for QC reels and dev demos —
+  not for audience-facing video.
+
+### Narration: Gemini TTS (Aug 2026) — the "TTS can't perform" verdict was about Kokoro
+- **Gemini TTS is a different class of tool** and is worth auditioning before writing off
+  synthetic narration. `models/gemini-2.5-pro-preview-tts` (also `2.5-flash` and
+  `3.1-flash-tts-preview`) takes a **style instruction prepended to the text** and ~30
+  prebuilt voices. Same `/root/.gkey`, `x-goog-api-key` header,
+  `generativelanguage.googleapis.com/v1beta/models/<m>:generateContent` with
+  `responseModalities:["AUDIO"]` + `speechConfig.voiceConfig.prebuiltVoiceConfig.voiceName`.
+  The separate **Cloud TTS API (texttospeech.googleapis.com) 401s on this key** — it is not
+  enabled; do not waste time on it.
+- **It returns raw PCM, not a container**: `audio/L16;codec=pcm;rate=24000`, base64 in
+  `inlineData`. Write a 44-byte WAV header yourself or every player rejects it.
+- **The style prompt controls pace, and it is dangerously literal.** Asking for an
+  "unhurried" documentary read produced **7.0s** for an eleven-word line — the user's first
+  note was that it was too slow. Naming the pace explicitly and *forbidding* the failure
+  mode ("natural, brisk conversational pace… do NOT slow down, do NOT add long dramatic
+  pauses, do NOT sound solemn") brought the same line to **4.8s** with no loss of warmth.
+  Prompt the tempo, don't fix it afterwards with `atempo`.
+- Audition voices by generating **one identical line across a shortlist** and normalising
+  them (`loudnorm=I=-16:TP=-1.5`) so the comparison is voice, not level.

@@ -27,7 +27,7 @@ const state = {
   coachSession:false, trainBack:'home', wr:null, or:null, wrInfoKey:'', orInfoKey:'', orFeedback:'',
   drawerOpen:false,
   luTab:'revise', luWordsOpen:false, luMastered:{}, reviseIdx:0, conceptWordIdx:0, heatReveal:false,
-  game:null, gInfo:false, sound:true, parentLogOpen:null, shopTab:'worlds', evoSel:null,
+  game:null, gInfo:false, sound:true, parentLogOpen:null, evoSel:null,
   lessonSel:null, lessonWordsOpen:false,
 };
 /* ---- Word Journeys: 100 etymology lessons (premium) ---- */
@@ -364,8 +364,28 @@ function ensureLists(c){ if(!c) return c; if(!c.lists){ c.lists = { default:{ xp
   if(c.coins==null) c.coins=0; if(!c.unlockedThemes) c.unlockedThemes=[c.theme||'spellbound']; if(!c.unlockedLists) c.unlockedLists={}; if(!c.gameLog) c.gameLog=[]; if(!c.pinnedLists) c.pinnedLists={};
   if(!c.missed) c.missed=[]; if(!c.activity) c.activity=[]; if(!c.unlockedConcepts) c.unlockedConcepts={};
   if(!c.daysPlayed) c.daysPlayed=[]; if(!c.streakRewards) c.streakRewards={}; if(!c.listNames) c.listNames={}; if(c.journeyDay==null) c.journeyDay=0; return c; }
-/* ---- coins economy: earn by playing, spend on boosts / lists / themes ---- */
-const COST = { theme:400, list:250, boost:200, concept:150 };
+/* ---- coins economy: earn by playing, spend on worlds, packs and concepts ----
+   Coins buy the things that live in the Hive and the Library — a world, an avatar
+   pack, a concept chapter. They no longer buy artifacts: those are EARNED (see
+   grantArt below), because an edge in a game should come from playing it, not
+   from a balance. Word lists are not sold either — a premium list comes with a
+   plan. unlockedLists is still read, so anyone who bought one before keeps it. */
+const COST = { theme:400, concept:150 };
+/* Artifacts: won, never bought. Each has one earn route, stated on its card. */
+const ART_DEFS = [
+  { k:'shield', ic:'crown', name:'Boss Shield 🛡️', desc:'Absorbs one wrong answer in Boss Battle.',  how:'Won when you stage up a list' },
+  { k:'reveal', ic:'bulb',  name:'Letter Reveal 💡', desc:'Reveals the next letter in Boss Battle.',   how:'Won when you stage up a list' },
+  { k:'time',   ic:'timer', name:'Time Warp ⏱️',    desc:'+15 seconds on your next Buzzer sprint.',   how:'Won when you stage up a list' },
+  { k:'freeze', ic:'flame', name:'Streak Freeze 🧊', desc:'Miss a day — your streak survives.',        how:'Won at a 7, 14 or 30-day streak' },
+];
+const ART_BY = Object.fromEntries(ART_DEFS.map(a=>[a.k,a]));
+const artCount = (c,k) => k==='freeze' ? (c.freezes||0) : (((c.pow||{})[k])||0);
+/* Freeze lives on c.freezes (the streak code reads it there); the rest on c.pow. */
+function grantArt(k,n){ const c=active(); n=n||1; if(!ART_BY[k]) return;
+  if(k==='freeze') c.freezes=(c.freezes||0)+n; else { if(!c.pow) c.pow={}; c.pow[k]=(c.pow[k]||0)+n; } }
+/* Stage-ups rotate through the three game artifacts so a speller collects a spread
+   rather than a pile of one — keyed off total words right, which only ever climbs. */
+function grantStageArt(){ const rot=['shield','reveal','time']; const k=rot[(rankXp()|0)%3]; grantArt(k,1); return ART_BY[k]; }
 /* Theme tiers: 2 open free, +2 with Premium, the rest are earn-with-coins for everyone. */
 const FREE_THEMES = ['spellbound','marquee'];          // open from the start
 const PREMIUM_THEMES = ['aurora','anime'];             // included with Premium
@@ -422,7 +442,11 @@ function markActiveToday(){ const c=active(); if(!c) return; const t=todayKey();
   else if(d>1) c.streak=1; else c.streak=(c.streak||1);
   c.lastActiveDay=t; c.streakBest=Math.max(c.streakBest||0, c.streak||1);
   if(!c.streakRewards) c.streakRewards={}; const rw=STREAK_REWARDS[c.streak];
-  if(rw && !c.streakRewards[c.streak]){ c.streakRewards[c.streak]=1; addCoins(rw); state.toast='🔥 '+c.streak+'-day streak! +'+rw+' coins'; scheduleToast(2800); sfx('win'); burstConfetti(80); }
+  if(rw && !c.streakRewards[c.streak]){ c.streakRewards[c.streak]=1; addCoins(rw);
+    // 7 / 14 / 30 also hand over a Streak Freeze — the artifact that protects the very
+    // thing being rewarded. (Day 3 is coins only; a freeze that early is wasted.)
+    const frz = c.streak>=7; if(frz) grantArt('freeze',1);
+    state.toast='🔥 '+c.streak+'-day streak! +'+rw+' coins'+(frz?' and a Streak Freeze 🧊':''); scheduleToast(3000); sfx('win'); burstConfetti(80); }
 }
 /* ---- misses: persist per-child to a revise list (with counts) AND the working pool ---- */
 function addMiss(w){ if(!w||!w.w) return; const c=active(); if(!c.missed) c.missed=[]; const k=nkey(w.w);
@@ -486,7 +510,8 @@ function ensureCoachWords(key){ if(state.sessionListKey!==key || !(state.session
 function newCoachBatch(){ const key=state.sessionListKey||activeListKey(); state.sessionWords=workingSet(key); state.sessionListKey=key; state.reviseIdx=0; state.gi=0; try{ if(key&&key[0]!=='_') getList(active(),key).gi=0; }catch(e){} resetSessionScore(); }
 function gainXp(){ const c=active(); const key=activeListKey(); const lp=getList(c,key); const before=listLevel(c,key);
   lp.xp=(lp.xp||0)+1; const rawAfter=listLevelRaw(c,key); const after=Math.min(rawAfter, levelCap());
-  if(after>before){ const form=formIdx(after); state.toast='Stage up in '+listLabel(key)+' ✨'; scheduleToast(2600); addCoins(4); sfx('level'); burstConfetti(90); }
+  if(after>before){ const form=formIdx(after); const art=grantStageArt();
+    state.toast='Stage up in '+listLabel(key)+' ✨ — you won a '+art.name; scheduleToast(3000); addCoins(4); sfx('level'); burstConfetti(90); }
   else if(!state.premium && rawAfter>FREE_LEVEL_CAP && before>=FREE_LEVEL_CAP && (lp.xp % 6 === 0)){ state.toast='Level 5 reached — go Premium to keep leveling 👑'; scheduleToast(2800); }
 }
 // pick the smoothest natural voice the device offers (loaded async)
@@ -520,7 +545,15 @@ function deviceSpeak(text,rate){ try{
     if(_wvAudio){ try{ _wvAudio.pause(); }catch(e){} }
     const a=new Audio(clip); try{ a.preservesPitch=true; a.mozPreservesPitch=true; }catch(e){}
     a.playbackRate=Math.max(.55,Math.min(1.3,(rate||0.9)/0.9)); _wvAudio=a;
-    const tts=()=>{ try{ window.speechSynthesis.speak(utter(text,rate||0.92)); }catch(e){} };
+    /* A clip that fails to load fires BOTH `error` on the element AND a rejection from
+       play() — so an unguarded fallback spoke the word twice, which is what a word with
+       no working recording sounded like on every hosted build (those stream each clip
+       from raw.githubusercontent, so a word listed in SB_WVOICE whose file isn't there
+       404s and lands here). Fire once. The identity check also stops a slow failure from
+       talking over a newer word the child has already tapped. */
+    let _said=false;
+    const tts=()=>{ if(_said||_wvAudio!==a) return; _said=true;
+      try{ window.speechSynthesis.speak(utter(text,rate||0.92)); }catch(e){} };
     a.onerror=tts; a.play().catch(tts); return; }
   window.speechSynthesis.cancel(); window.speechSynthesis.speak(utter(text,rate||0.92)); }catch(e){} }
 // voice preference: which installed device voice to use ('' = auto best). No account, no key.
@@ -1087,7 +1120,10 @@ const app = {
   buyTheme:(id)=>{ if(isThemeUnlocked(id)) return app.pickTheme(id);
     if(!themeInPlan(id)){ const t=(typeof THEMES!=='undefined')&&THEMES.find(x=>x.id===id); openUpsell('worlds','The '+((t&&t.label)||'world')+' world', themePlanNeeded(id)); return; }
     if(!window.confirm('Unlock this world for '+COST.theme+' coins?')) return; if(spendCoins(COST.theme)){ const c=active(); c.unlockedThemes=[...(c.unlockedThemes||[]),id]; sfx('win'); burstConfetti(70); flash('New world unlocked! 🎨'); app.pickTheme(id); } else { flash('Need '+COST.theme+' 🪙 — play games to earn!'); } },
-  buyList:(key)=>{ if(isListUnlocked(key)) return app.selectList(key); if(!window.confirm('Unlock this list for '+COST.list+' coins?')) return; if(spendCoins(COST.list)){ const c=active(); c.unlockedLists={...(c.unlockedLists||{}),[key]:1}; sfx('win'); burstConfetti(70); flash('List unlocked! 🔓'); app.selectList(key); } else { flash('Need '+COST.list+' 🪙 to unlock — earn by playing!'); } },
+  /* Word lists are not sold. A premium list comes with a plan, so a locked one opens
+     the plan sheet where it stands, in the Library. (Lists bought under the old coin
+     price stay unlocked — isListUnlocked still reads c.unlockedLists.) */
+  lockedList:(key)=>{ if(isListUnlocked(key)) return app.selectList(key); openUpsell('lists', listLabel(key)); },
   buyConcept:(ci)=>{ ci=+ci; if(isConceptUnlocked(ci)) return app.openConcept(ci); if(!window.confirm('Unlock this concept for '+COST.concept+' coins?')) return; if(spendCoins(COST.concept)){ const c=active(); c.unlockedConcepts={...(c.unlockedConcepts||{}),[ci]:1}; sfx('win'); burstConfetti(70); flash('Concept unlocked! 🔓'); app.openConcept(ci); } else { flash('Need '+COST.concept+' 🪙 to unlock — earn by playing!'); } },
   setMode:(m)=>set({mode:m}),
   setTextSize:(k)=>set({textSize:k==='large'?'large':'normal'}),
@@ -1100,7 +1136,7 @@ const app = {
   setVoiceRate:(k)=>{ state.voiceRate=(k==='slow'?0.75:1); save(); say('Hello! I read the words like this.'); render(); },
   // nav
   setNav:(key)=>{ if(state.settingsOpen && key!=='settings') state.settingsOpen=false;   // navigating away closes the Settings pop-up
-    if(key==='train'){ app.startTrain(); return; } if(key==='coach'){ app.openCoach(); return; } if(key==='games'){ app.openGames(); return; } if(key==='shop'){ app.openShop(); return; } if(key==='journeys'){ app.openJourneys(); return; } if(key==='trivia'){ app.openTrivia(); return; }
+    if(key==='train'){ app.startTrain(); return; } if(key==='coach'){ app.openCoach(); return; } if(key==='games'){ app.openGames(); return; } if(key==='journeys'){ app.openJourneys(); return; } if(key==='trivia'){ app.openTrivia(); return; }
     if(key==='settings'){ pinGate(()=>app.openSettings(),'Settings — grown-ups only'); return; }
     if(key==='parent'){ pinGate(()=>{ state.progTab='parent'; set({nav:'progress', screen:'app', mood:'happy', conceptSel:null}); },'Parent zone'); return; }
     if(key==='progress'&&state.progTab==null) state.progTab='me';
@@ -1649,7 +1685,7 @@ const app = {
     state.sessionWords=words; state.sessionLabel=conceptShort(ch.title); state.gi=0; state.conceptSel=null; app.startTrain(); },
   // drawer
   openDrawer:()=>set({drawerOpen:true}), closeDrawer:()=>set({drawerOpen:false}),
-  drawer:(key)=>{ state.drawerOpen=false; const F={ home:()=>app.setNav('home'), levelup:()=>app.startLevelUp(), games:()=>app.openGames(), shop:()=>app.openShop(), concepts:()=>app.setNav('concepts'),
+  drawer:(key)=>{ state.drawerOpen=false; const F={ home:()=>app.setNav('home'), levelup:()=>app.startLevelUp(), games:()=>app.openGames(), concepts:()=>app.setNav('concepts'),
     trail:()=>app.openTrail&&app.openTrail(), revisions:()=>app.openRevisions(), ipatrain:()=>app.openIpaTrain(),
       coach:()=>app.openCoach(), journeys:()=>app.openJourneys(), study:()=>app.coachStudy(), written:()=>app.startWritten(), oral:()=>app.startOral(),
       weak:()=>app.coachWeakDrill(), parentview:()=>{ state.progTab='parent'; app.setNav('progress'); }, settings:()=>app.setNav('settings'), themes:()=>app.setNav('themes'),
@@ -1829,8 +1865,11 @@ const app = {
   magicHear:()=>{ const g=state.game; if(g&&g.qs&&g.qs[g.qi]) say(g.qs[g.qi].w.w); },
   magicBoard:()=>{ const g=state.game; if(!g) return; g.status='board'; g.celebr=null; state.typed=''; render(); },
   magicNew:()=>magicNewBoard(),
-  openShop:()=>{ try{ loadConcepts(); }catch(e){} set({nav:'shop', screen:'app', game:null, conceptSel:null}); },
-  shopTab:(t)=>set({shopTab:t}),
+  /* The Store is gone: it sold avatars, worlds and concepts that already had a home,
+     so the buy button now sits on the thing itself. openShop survives only as a
+     redirect, so old entry points (deep links, the drawer) land somewhere sensible
+     instead of a blank screen. */
+  openShop:()=>app.openCollection(),
   celebrateLore:(n)=>{ state.celebrate=null; app.openLesson(n); },
   celebrateNextSet:()=>{ state.celebrate=null; newCoachBatch(); state.luTab='practice'; state.status='idle'; state.typed=''; render(); setTimeout(speak,350); },
   celebrateBadges:()=>{ state.celebrate=null; app.setNav('collection'); },
@@ -1912,7 +1951,7 @@ const app = {
   toggleOdds:(pk)=>{ state.oddsOpen=(state.oddsOpen===pk?null:pk); render(); },
   packClose:()=>set({packDrop:null, packDupe:0}),
   packWear:()=>{ const id=state.packDrop; if(id){ const c=active(); c.avatar=id; save(); sfx('correct'); } set({packDrop:null, packDupe:0}); },
-  openShopAvatars:()=>{ state.shopTab='avatars'; app.openShop(); },
+  openShopAvatars:()=>{ state.collTab='avatars'; app.openCollection(); },
   wearAv:(id)=>{ const c=active(); if(!avOwned(c,id)){ flash('Not collected yet'); return; } c.avatar=id; save(); sfx('correct'); render(); },
   trapPick:(k)=>set({trapSel:k}),
   trapBack:()=>set({trapSel:null}),
@@ -1922,13 +1961,13 @@ const app = {
     const w=g.list[g.i]; if(!w) return; const cur=(state.typed||''); if(cur.length>=w.w.length) return;
     c.pow.reveal--; state.typed=w.w.slice(0,cur.length+1); save(); sfx('coin'); render();
     try{ document.querySelector('[data-fkey="gType"],[data-inp="gType"]')?.focus(); }catch(e){} },
-  buyPower:(k)=>{ const c=active(); const cost={freeze:80,shield:60,reveal:40,time:40,cheer:20}[k]||40; if(!window.confirm('Buy this power-up for '+cost+' coins?')) return;
-    if(k==='cheer'){ if(!spendCoins(20)){ flash('Need 20 🪙 — one warm-up round gets you there!'); return; }
-      save(); sfx('win'); burstConfetti(200); try{ say('Hip hip hooray for '+(c.name||'our speller')+'! You are amazing!'); }catch(e){}
-      flash('🎉 Bizzy cheers for '+(c.name||'you')+'!'); render(); return; }
-    if(!spendCoins(cost)){ flash('Need '+cost+' 🪙 — play games to earn!'); return; }
-    if(k==='freeze') c.freezes=(c.freezes||0)+1; else { if(!c.pow) c.pow={}; c.pow[k]=(c.pow[k]||0)+1; }
-    save(); sfx('coin'); flash(k==='freeze'?'🧊 Streak Freeze stocked!':'🎒 Artifact stocked!'); render(); },
+  /* Artifacts are no longer sold — they are won (grantStageArt / streak milestones).
+     Bee Cheer was never an artifact: nothing is stocked, it just throws a party. It
+     stays as a coin treat and lives with the bee, in the Hive. */
+  beeCheer:()=>{ const c=active(); if(!window.confirm('Have Bizzy cheer for you? 20 coins')) return;
+    if(!spendCoins(20)){ flash('Need 20 🪙 — one warm-up round gets you there!'); return; }
+    save(); sfx('win'); burstConfetti(200); try{ say('Hip hip hooray for '+(c.name||'our speller')+'! You are amazing!'); }catch(e){}
+    flash('🎉 Bizzy cheers for '+(c.name||'you')+'!'); render(); },
   buyAcc:(k)=>{ const c=active(); const a=AV_ACC_BY[k]||{price:120,name:'accessory'}; if(!window.confirm('Buy '+a.name+' for '+a.price+' coins?')) return; if(!spendCoins(a.price)){ flash('Need '+a.price+' 🪙 — play games to earn!'); return; }
     if(!c.beeAcc) c.beeAcc={}; c.beeAcc[k]=1; c.accOn=k; save(); sfx('win'); burstConfetti(50); flash('✨ '+a.name+' equipped!'); render(); },
   wearAcc:(k)=>{ const c=active(); c.accOn=(c.accOn===k?null:k); save(); render(); },
@@ -2132,7 +2171,10 @@ const app = {
      been generated (the Audio wrapper in voice-cdn.js resolves it on Pages), otherwise
      the device voice reads the speakable respelling from SB_ALT_PRON */
   sayAlt:(word)=>{ const a=altPron(word); if(!a) return;
-    const fallback=()=>{ try{ window.speechSynthesis.cancel(); window.speechSynthesis.speak(utter(a.s||word,0.88)); }catch(e){} };
+    // Same double-fire as deviceSpeak: `error` and the play() rejection both arrive.
+    let said=false;
+    const fallback=()=>{ if(said) return; said=true;
+      try{ window.speechSynthesis.cancel(); window.speechSynthesis.speak(utter(a.s||word,0.88)); }catch(e){} };
     try{ const slug=String(word).toLowerCase().replace(/[^a-z0-9]/g,'-');
       const au=new Audio('voice/ap/'+slug+'.mp3');
       au.onerror=fallback; au.play().catch(fallback);
@@ -2780,7 +2822,7 @@ function landCollect(){
     `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(clamp(52px,7.4vw,76px),1fr));gap:10px;justify-items:center;margin-bottom:22px">${strip}</div>
      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px">
        ${[['Egg to Queen Bee', SB_FACTS.evoForms + ' evolution forms across twelve worlds, each hand-drawn with its own idle animation. It measures effort, and it never goes down.'],
-          ['Coins buy things, never words', 'Coins are for the store — worlds, avatars, power-ups. There is no way to pay your way past a word you cannot spell.'],
+          ['Coins buy things, never words', 'Coins buy a world to wear, an avatar pack or a concept chapter. There is no way to pay your way past a word you cannot spell — and game artifacts are won by playing, not bought.'],
           ['A golden reveal', 'Pack drops are the reason a nine-year-old comes back tomorrow without being asked — bought with practice, not with a card.']]
         .map(([t,b])=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:20px">
           <div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:7px">${t}</div>
@@ -4018,7 +4060,7 @@ function viewQuotesWordPop(){ const wp=state.qWord; if(!wp) return '';
       <button data-act="qWordClose" style="margin-top:18px;width:100%;padding:12px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">Got it ✓</button>
     </div></div>`; }
 function viewQuotes(){ const c=active(); const S=state; const all=(window.SB_QUOTES||[]);
-  if(!all.length) return `<div style="max-width:640px;margin:0 auto">${pageHead('Quotes','famous people','Wise, funny and inspiring lines from people worth knowing.')}${beeEmpty('sleepy','The quote library is still loading — check back in a moment!')}</div>`;
+  if(!all.length) return `<div style="max-width:640px;margin:0 auto">${pageHead('Quotes','famous people')}${beeEmpty('sleepy','The quote library is still loading — check back in a moment!')}</div>`;
   const L=quoteList(); const total=L.length; let i=Math.min(Math.max(S.qi||0,0),Math.max(0,total-1));
   const x=L[i]||all[0]; const favs=(c.quoteFavs)||{}; const isFav=!!favs[(x.q||'').slice(0,60)];
   const catList=quoteCats(); const favN=all.filter(q=>favs[(q.q||'').slice(0,60)]).length;
@@ -4057,7 +4099,7 @@ function viewQuotes(){ const c=active(); const S=state; const all=(window.SB_QUO
     <div style="text-align:center;font-size:11.5px;color:var(--muted);margin-top:9px">Swipe or use ← → keys · tap ❤ to keep your favorites</div>`
    : beeEmpty('sleepy','No quotes here yet — try another category or your favorites.');
   return `<div style="animation:sb-rise .35s ease both;max-width:760px;margin:0 auto">
-    ${pageHead('Quotes','from famous people','Wise, funny and inspiring lines from people worth knowing — '+fmtN(all.length)+' to explore.')}
+    ${pageHead('Quotes',fmtN(all.length)+' from famous people')}
     ${chips}
     ${body}
   </div>`; }
@@ -4524,7 +4566,7 @@ function viewBeeBand(){
         ${mover('🔁','Clear your revision pile','A word you once missed and now spell right is the strongest evidence there is, which is why the pile is worth more than a fresh list.','var(--bad)')}
         ${mover('📅','Come back tomorrow','Spelling a word right on three different days beats spelling it right three times today. The level moves on what sticks.','var(--good)')}
         <div style="margin-top:12px;padding:10px 12px;border-radius:11px;background:var(--surface2);font-size:12px;color:var(--muted);line-height:1.55">
-          <b style="color:var(--text)">It cannot be bought or waited out.</b> Coins buy things in the Store and never touch this. Time on the app earns coins, not levels — because this number also decides how hard your words are, and a level you did not earn would hand you words you cannot spell.</div>
+          <b style="color:var(--text)">It cannot be bought or waited out.</b> Coins buy looks and chapters in your Hive and never touch this. Time on the app earns coins, not levels — because this number also decides how hard your words are, and a level you did not earn would hand you words you cannot spell.</div>
       </section>
 
       <section class="sb-card">
@@ -4569,14 +4611,35 @@ function viewCoachDesk(){
     ? 'We have not met enough words yet for me to spot a pattern. Go and get some wrong — that is the fastest way to make me useful.'
     : top ? `Nearly every word you lose goes the same way: <b style="color:#fff">${esc(top.label.toLowerCase())}</b>. Fix that one thing and ${top.n} of your misses stop happening.`
           : 'Your misses are spread thin — no single pattern is catching you, which is a good place to be.';
+  /* Today's rings ride in the Coach header, a third of the band to the right of Bizzy's
+     read. Home's rings open the Coach; the Coach's rings open the 30-day chart, so the
+     three targets read as one chain: today -> why -> the month. */
+  const _m=todayMetrics(c); const _t=targets(c);
+  const _ringLine=(lab,col,val,tgt)=>`<span style="display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:800;line-height:1.3">
+      <span style="width:7px;height:7px;border-radius:2px;background:${col};flex:none"></span>
+      <span style="color:rgba(255,255,255,.72)">${lab}</span>
+      <span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;color:#fff;white-space:nowrap">${val}<span style="color:rgba(255,255,255,.6)">/${tgt}</span></span></span>`;
+  const _allDone=_m.pApp>=1&&_m.pPrac>=1&&_m.pWords>=1;
+  const ringPanel=`<button data-act="openMetrics" title="See the last 30 days in Progress" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:16px;padding:12px 14px;cursor:pointer">
+      <span style="flex:none;width:72px;height:72px;display:grid;place-items:center">${ringsSVG(72,[_m.pApp,_m.pPrac,_m.pWords])}</span>
+      <span style="min-width:0;flex:1;display:flex;flex-direction:column;gap:3px">
+        <span style="font-family:var(--body);font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-bottom:2px">Today${_allDone?' \u2713':''}</span>
+        ${_ringLine('App', RING_COL[0][0], fmtMins(_m.app), _t.app+'m')}
+        ${_ringLine('Practise', RING_COL[1][0], fmtMins(_m.prac), _t.prac+'m')}
+        ${_ringLine('Words', RING_COL[2][0], _m.words, _m.tWords)}
+        <span style="font-size:10.5px;font-weight:700;color:rgba(255,255,255,.6);margin-top:3px">last 30 days \u2192</span>
+      </span></button>`;
   const hero=`<div style="position:relative;overflow:hidden;border-radius:20px;background:linear-gradient(135deg,${top?esc(R[top.k].col):'var(--accent)'},var(--ink));padding:clamp(16px,3vw,22px);margin-bottom:16px;box-shadow:var(--sh-rest)">
-      <div style="display:flex;align-items:center;gap:clamp(12px,2.4vw,18px)">
-        <div style="width:clamp(58px,11vw,84px);height:clamp(66px,12vw,94px);flex:none">${mascotSVG(missed.length?'think':'happy')}</div>
-        <div style="min-width:0;flex:1">
-          <div style="font-family:var(--body);font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-bottom:4px">Bizzy’s read on ${esc(c.name||'you')}</div>
-          <div style="font-family:var(--display);font-weight:800;font-size:clamp(15px,2.6vw,20px);line-height:1.4;color:#fff">${line}</div>
+      <div class="sb-coach-hero">
+        <div style="display:flex;align-items:center;gap:clamp(12px,2.4vw,18px);min-width:0">
+          <div style="width:clamp(58px,11vw,84px);height:clamp(66px,12vw,94px);flex:none">${mascotSVG(missed.length?'think':'happy')}</div>
+          <div style="min-width:0;flex:1">
+            <div style="font-family:var(--body);font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-bottom:4px">Bizzy’s read on ${esc(c.name||'you')}</div>
+            <div style="font-family:var(--display);font-weight:800;font-size:clamp(15px,2.6vw,20px);line-height:1.4;color:#fff">${line}</div>
+          </div>
+          ${top?coachFace(R[top.k].face,64,'rgba(255,255,255,.5)'):''}
         </div>
-        ${top?coachFace(R[top.k].face,64,'rgba(255,255,255,.5)'):''}
+        ${ringPanel}
       </div></div>`;
 
   /* ---- 2. the traps as a bar chart of characters, tap to switch ---- */
@@ -4690,7 +4753,7 @@ function viewCoachDesk(){
       ${title?`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:11px">${title}</div>`:''}${body}</section>`;
 
   return `<div style="max-width:1080px;margin:0 auto;animation:sb-rise .35s ease both">
-    ${pageHead('Coach', esc(c.name||'Speller'), 'Worked out from your own practice, answered from a fixed rulebook. Nothing here is guessed, and nothing leaves this device.')}
+    ${pageHead('Coach', esc(c.name||'Speller'))}
     ${hero}
     <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:14px">
       ${/* The trap detail is tall and the list beside it is short, which left a column of
@@ -4744,7 +4807,7 @@ function viewTraps(){ const S=state; const traps=missTraps(); const sel=S.trapSe
         <span style="display:block;height:5px;border-radius:999px;background:var(--tint-deep,var(--surface2));overflow:hidden;margin-top:7px"><span style="display:block;height:100%;background:var(--fix,#C4453C);width:${Math.round(t.n/maxN*100)}%"></span></span></span>
       <span style="color:var(--action,var(--accent));font-weight:800">→</span></button>`).join('');
   return `<div style="max-width:640px;margin:0 auto;animation:sb-rise .35s ease both">
-    ${pageHead('Your Traps','the weak-pattern radar','Your misses, clustered by the pattern that caused them. Beat the pattern and whole families of words come free.')}
+    ${pageHead('Your Traps','the weak-pattern radar','Beat one pattern and whole families of words come free.')}
     <div style="position:relative;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--sh-rest);margin-bottom:16px">
       ${SB_COVER(state.theme,'traps',{h:110,dark:state.mode==='dusk'})}
       <span style="position:absolute;left:14px;bottom:12px;font-family:var(--display);font-weight:800;font-size:20px;color:${state.mode==='dusk'?'var(--action,#6C4FE0)':'#fff'};text-shadow:0 1px 5px rgba(0,0,0,.3)">${traps.length?traps.length+' patterns on the radar':'Radar clear'}</span>
@@ -4780,7 +4843,7 @@ function viewRevisions(){
 function viewApp(){
   const S=state;
   const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,quotes:1,typing:1,builder:1,adv:1,traps:1,revisions:1,trivtrain:1,ipatrain:1};
-  const NAV_ART={home:'home',coach:'practice',explore:'explore',games:'arcade',shop:'store',progress:'progress',collection:'collection'};
+  const NAV_ART={home:'home',coach:'practice',explore:'explore',games:'arcade',progress:'progress',collection:'collection'};
   /* Four tabs. The Library is not a destination any more — it is the Journey's
      index, so every explore-family nav lights the Journey tab. Progress and My Hive
      are not tabs either: they are you, and you are the avatar in the header. */
@@ -4821,7 +4884,6 @@ function viewApp(){
   else if(S.nav==='sq') content=viewGames();          /* Spelling Quest retired */
   else if(S.nav==='trivia') content=(window.STV?STV.view():viewGames());
   else if(S.nav==='adv') content=(window.ADV?ADV.view():viewHome());
-  else if(S.nav==='shop') content=viewShop();
   else if(S.nav==='themes') content=viewThemes();
   else if(S.nav==='progress') content=viewProgressShell();
   else if(S.nav==='parent') content=viewProgressShell();
@@ -4916,7 +4978,7 @@ function viewApp(){
              different things. There is one ladder in the header now: the Bee Band, which IS
              the spelling level. The evolution forms still live in My Hive, where a
              collection belongs, reached by the Bizzy button. */''}
-        <button data-act="openShop" title="Your coins — tap to open the Store" aria-label="Coins" style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12);flex-shrink:0">${coinAmt(active().coins||0,14)}</button>
+        <button data-act="openCollection" title="Your coins — tap to open My Hive" aria-label="Coins" style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12);flex-shrink:0">${coinAmt(active().coins||0,14)}</button>
         ${(()=>{ const _fon=!!(window.SB_W4_FOCUS&&SB_W4_FOCUS.on());
           /* One button for how the app looks: a tap cycles Light → White → Dusk, a
              double-tap holds the world still (focus) in whichever look you are in. */
@@ -4926,7 +4988,7 @@ function viewApp(){
             ? `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"><rect x="4.2" y="4.2" width="15.6" height="15.6" rx="4"/><path d="M12 4.2v15.6" opacity=".45"/></svg>`
             : `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="none"><path d="M20.6 14.8A8.8 8.8 0 0 1 9.2 3.4 8.8 8.8 0 1 0 20.6 14.8z"/><circle cx="17.4" cy="5.6" r="1.1" opacity=".8"/></svg>`;
           return `<button data-act="cycleMode" data-dbl="toggleFocus" class="sb-hdr-ico${_fon?' on':''}" aria-label="Appearance: light, white or dusk. Double-tap for focus." title="Tap: Light / White / Dusk${_fon?' · focus is ON':''} — double-tap for focus">${glyph}</button>`; })()}
-        <button data-act="setNav" data-arg="collection" class="sb-hdr-ico round" aria-label="Your hive — collection, evolution and store" title="Your hive — collection, evolution, store">
+        <button data-act="setNav" data-arg="collection" class="sb-hdr-ico round" aria-label="Your hive — collection, your bee and worlds" title="Your hive — collection, your bee, worlds">
           <span style="width:30px;height:34px;display:block">${mascotSVG('happy')}</span></button>
         <button data-act="goSettings" class="sb-hdr-ico" aria-label="Settings" title="Settings">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M4 7.5h9M17.5 7.5H20M4 12h3.5M12 12h8M4 16.5h7.5M16 16.5H20"/><circle cx="15" cy="7.5" r="2.2"/><circle cx="9.5" cy="12" r="2.2"/><circle cx="13.5" cy="16.5" r="2.2"/></svg></button>
@@ -4991,7 +5053,7 @@ function viewDrawer(){
         ${row('revisions','retry','Revision pile',missedN?missedN+' words waiting':'nothing waiting — nice',state.nav==='revisions')}
         <div class="sb-mob-only" style="display:contents">
         ${kick('My Hive')}
-        ${row('collection','crown','Collection, evolution & store',avOwnedCount(c)+'/'+SB_AVATARS.list.length+' avatars',state.nav==='collection')}
+        ${row('collection','crown','Collection, your bee & worlds',avOwnedCount(c)+'/'+SB_AVATARS.list.length+' avatars',state.nav==='collection')}
         ${row('finder','search','Search words','find any of 129,000 words',state.nav==='finder')}
         </div>
         ${kick('')}
@@ -5191,7 +5253,7 @@ function viewHome(){
           <span style="width:8px;height:8px;border-radius:3px;background:${col};flex-shrink:0"></span>
           <span style="color:var(--muted)">${lab}</span>
           <span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;color:var(--ink,var(--text));white-space:nowrap">${val}<span style="color:var(--muted)">/${tgt}</span></span></div>`;
-        return `<button data-act="openMetrics" title="See the last 30 days in Progress" class="sb-card" style="display:flex;align-items:center;gap:13px;min-height:128px;padding:14px;text-align:left;cursor:pointer;width:100%">
+        return `<button data-act="openCoachDesk" title="See what Bizzy makes of today" class="sb-card" style="display:flex;align-items:center;gap:13px;min-height:128px;padding:14px;text-align:left;cursor:pointer;width:100%">
         <span style="flex-shrink:0;width:104px;height:104px;display:grid;place-items:center">${ringsSVG(104,[m.pApp,m.pPrac,m.pWords])}</span>
         <span style="min-width:0;flex:1">
           <span class="sb-ct" style="display:block;margin-bottom:6px">Daily goal${allDone?' ✓':''}</span>
@@ -5200,7 +5262,7 @@ function viewHome(){
             ${line('Practise time', RING_COL[1][0], fmtMins(m.prac), targets(c).prac+'m')}
             ${line('Word count', RING_COL[2][0], m.words, m.tWords)}
           </span>
-          <span class="sb-cl" style="display:block;margin-top:8px">${allDone?'All three rings closed — brilliant!':'last 30 days →'}</span>
+          <span class="sb-cl" style="display:block;margin-top:8px">${allDone?'All three rings closed — brilliant!':'what Bizzy makes of it →'}</span>
         </span></button>`; })()}
       ${wohTile}
     </div>
@@ -5659,9 +5721,11 @@ function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageI
     { g:'Vocabulary', id:'figq5', name:'Idiom Sleuth', desc:'Play 5 idiom or simile quiz rounds', ic:'spark', done:(c.figQuiz||0)>=5 },
   ]; }
 /* My Hive — one home for everything you've earned & everything you spend: the Collection,
-   the Evolution ladder and the Store share this section bar (one lit top-nav tab). */
+   the Evolution ladder and the Worlds picker share this section bar (one lit top-nav tab).
+   There is no Store: a thing is bought where it lives — a pack on the pack, a world on
+   the world, a concept chapter in the Library. */
 function hiveBar(cur){ const seg=(k,act,l,ic)=>`<button data-act="${act}" style="flex:1;min-width:110px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 10px;border-radius:12px;font-weight:800;font-size:13.5px;${cur===k?'background:var(--accent);color:#fff;box-shadow:var(--edge)':'background:var(--bg2);color:var(--muted);border:1px solid var(--line)'}">${iconSVG(ic,16)} ${l}</button>`;
-  return `<div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px">${seg('coll','openCollection','Collection','crown')}${seg('evo','openEvo','Your bee','spark')}${seg('worlds','openWorlds','Worlds','palette')}${seg('store','openShop','Store','cart')}</div>`; }
+  return `<div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px">${seg('coll','openCollection','Collection','crown')}${seg('evo','openEvo','Your bee','spark')}${seg('worlds','openWorlds','Worlds','palette')}</div>`; }
 /* Worlds live in the hive, beside the other things you collect — a world is a look you
    own, not a setting you configure. The picker keeps its painted hero cards. */
 function viewWorlds(){ const S=state;
@@ -5682,14 +5746,36 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
     const dupN=avDupeTotal(c); const dupV=avDupeValue(c);
     const dupBar=dupN?`<div class="sb-card" style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-color:var(--treasure,#F0B429)"><div style="min-width:0"><div class="sb-ct" style="font-size:15px">🪙 ${dupN} spare ${dupN===1?'copy':'copies'}</div><div class="sb-cn">Duplicates from packs. Sell them all for ${fmtN(dupV)} coins — you keep one of every avatar.</div></div><button data-act="sellDupes" style="padding:11px 17px;border-radius:10px;background:var(--treasure,#F0B429);color:#5a3d00;font-weight:800;font-size:13px;box-shadow:var(--edge);white-space:nowrap">Sell spares · ${fmtN(dupV)}🪙</button></div>`:'';
     const printBar=dupBar+`<div class="sb-card" style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><div style="min-width:0"><div class="sb-ct" style="font-size:15px">🃏 Your avatar cards</div><div class="sb-cn">Print your ${avOwnedCount(c)} collected avatars as cut-out trading cards — with a Bizzing Bee back.</div></div><button data-act="printAvCards" style="display:inline-flex;align-items:center;gap:7px;padding:11px 17px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge);white-space:nowrap">${SB_ICON('printer',{size:16})} Print my cards</button></div>`;
-    body=printBar+SB_AVATARS.packs.map(p=>{ const avs=SB_AVATARS.list.filter(a=>a.pack===p.id); const ownedN=avs.filter(a=>avOwned(c,a.id)).length;
+    // How packs work used to be explained only in the Store. With the Store gone it
+    // belongs beside the packs themselves — you read the odds where you open one.
+    /* The old Store showed an Open-a-pack button on every pack; the Collection checks the
+       plan first, and app.buyPack would have bounced the free-plan tap to the upsell anyway.
+       The Collection's rule is the honest one, so the explainer follows it: only promise
+       drop odds when there is a pack this speller can actually open. */
+    const anyPack=SB_AVATARS.packs.some(p=>avPackUnlocked(p.id));
+    const howPacks=anyPack
+      ? `<p class="sb-cn" style="margin:0 0 14px;line-height:1.5">Every pack drop is an avatar you don't own yet — <b>70% rare · 24% epic · 6% legendary</b>. Each pack has its own price and its own odds; tap <b>🎲 Drop odds</b> on a pack to see every avatar's chance. Duplicates never drop, and spares sell back for coins.</p>`
+      : `<p class="sb-cn" style="margin:0 0 14px;line-height:1.5">Avatars arrive in packs, and a pack is a surprise — you never draw one you already own. Packs come with a plan; from there you open them with the coins you earn.</p>`;
+    const accs=`<div class="sb-card" style="margin-bottom:14px"><div style="display:flex;align-items:baseline;gap:9px;margin-bottom:4px"><span class="sb-ct" style="font-size:15px">Bee style</span><span class="sb-cn">accessories layer onto whichever avatar you're wearing</span></div>
+      <p class="sb-cn" style="margin:0 0 11px">${c.accOn?`Wearing one now — <button data-act="wearAcc" data-arg="${c.accOn}" style="color:var(--accent);font-weight:800;background:none;border:0;padding:0;cursor:pointer">take it off</button>.`:'Buy one with coins, then wear it on any avatar.'}</p>
+      ${AV_ACCS.map(a=>{ const owned=state.devUnlock||!!((c.beeAcc||{})[a.k]); const on=c.accOn===a.k;
+        return `<div style="display:flex;align-items:center;gap:12px;background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:12px 14px;margin-bottom:9px">
+          <div style="width:52px;height:52px;flex-shrink:0;display:grid;place-items:center;background:rgba(255,255,255,.7);border-radius:13px">${avatarSVG(c.avatar||'bee',44,a.k)}</div>
+          <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:15px">${a.name}</div><div style="font-size:12px;color:var(--muted)">${a.desc}</div></div>
+          ${owned?`<button data-act="wearAcc" data-arg="${a.k}" style="display:inline-flex;align-items:center;gap:5px;padding:9px 14px;border-radius:10px;background:${on?'var(--action,var(--accent))':'var(--surface)'};color:${on?'var(--action-ink,#fff)':'var(--text)'};font-weight:800;font-size:13px;border:1px solid var(--line)">${on?SB_ICON('check',{size:14})+' Wearing':'Wear'}</button>`
+            :`<button data-act="buyAcc" data-arg="${a.k}" style="padding:9px 14px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:900;font-size:13px;white-space:nowrap">${coinAmt(a.price,12)}</button>`}
+        </div>`; }).join('')}
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:12px 14px">
+        <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:15px">Bee Cheer 🎉</div><div style="font-size:12px;color:var(--muted)">Bizzy shouts your name with a confetti storm — right now.</div></div>
+        <button data-act="beeCheer" style="padding:9px 14px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:900;font-size:13px;white-space:nowrap">${coinAmt(20,12)}</button></div></div>`;
+    body=printBar+howPacks+accs+SB_AVATARS.packs.map(p=>{ const avs=SB_AVATARS.list.filter(a=>a.pack===p.id); const ownedN=avs.filter(a=>avOwned(c,a.id)).length;
       const inPlan=avPackUnlocked(p.id);
       const tiles=avs.map(a=>{ const own=avOwned(c,a.id); const R=SB_AVATARS.rarities[a.rarity]; const on=c.avatar===a.id;
         const n=avCount(c,a.id); const dup=Math.max(0,n-1);
         const sellBtn=(a.rarity!=='free')?`<button data-act="sellAvatar" data-arg="${a.id}" title="${dup?('Sell one of your '+n+' copies for '+a.sell+' coins'):('Sell for '+a.sell+' coins')}" style="padding:6px 9px;border-radius:8px;background:${dup?'var(--treasure-tint,#FFF3D6)':'var(--surface2)'};border:1px solid ${dup?'var(--treasure,#F0B429)':'var(--line)'};font-weight:800;font-size:11.5px;color:${dup?'var(--treasure-deep,#8A5B00)':'var(--muted)'}">Sell ${a.sell}🪙</button>`:'';
         const action= on?`<span style="display:inline-flex;gap:6px;align-items:center"><span style="font-weight:800;font-size:11.5px;color:var(--good)">Wearing ✓</span>${dup?sellBtn:''}</span>`
           : own?`<span style="display:inline-flex;gap:6px"><button data-act="wearAv" data-arg="${a.id}" style="padding:6px 11px;border-radius:8px;background:var(--accent);color:#fff;font-weight:800;font-size:11.5px">Use</button>${sellBtn}</span>`
-          : inPlan?`<button data-act="openShopAvatars" title="Drops from a ${p.label} pack in the Store" style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--muted)">${iconSVG('lock',11,2.2)} Store pack</button>`
+          : inPlan?`<button data-act="buyPack" data-arg="${p.id}" title="Drops from a ${p.label} pack — ${packCost(p.id)} coins" style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--muted)">${iconSVG('lock',11,2.2)} In a pack</button>`
           : `<button data-act="openTiers" title="Part of a paid plan" style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;background:var(--chip);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--accent)">${iconSVG('lock',11,2.2)} Plan</button>`;
         const card=(typeof SB_AV_CARD==='function')?SB_AV_CARD(a.id):null;
         // Unowned avatars are drawn as silhouettes-in-waiting: desaturated and dimmed, so the
@@ -5702,34 +5788,40 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
           <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:99px;color:#fff;background:${R.c}">${R.label}</span>
           ${action}</div>`; }).join('');
       return `<div class="sb-card" style="margin-bottom:14px">
-        <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px;flex-wrap:wrap"><span style="width:12px;height:12px;border-radius:4px;background:linear-gradient(135deg,${p.c1},${p.c2});display:inline-block"></span><span class="sb-ct" style="font-size:15px">${p.label}</span><span class="sb-cn">${ownedN}/${avs.length} collected</span>${!inPlan
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px;flex-wrap:wrap"><span style="width:12px;height:12px;border-radius:4px;background:linear-gradient(135deg,${p.c1},${p.c2});display:inline-block"></span><span class="sb-ct" style="font-size:15px">${p.label}</span><span class="sb-cn">${ownedN}/${avs.length} collected</span>${ownedN<avs.length&&inPlan?`<button data-act="toggleOdds" data-arg="${p.id}" style="font-size:11.5px;font-weight:800;color:var(--accent);background:none;border:0;padding:2px 0;cursor:pointer;white-space:nowrap">🎲 ${S.oddsOpen===p.id?'Hide odds':'Drop odds'}</button>`:''}${!inPlan
           ?`<button data-act="openTiers" style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('lock',11,2.2)} Comes with ${esc((SB_TIERS[packPlanNeeded(p.id)]||{}).name||'a paid plan')}</button>`
           :(ownedN<avs.length?`<button data-act="buyPack" data-arg="${p.id}" style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:999px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12px">🎁 Open pack · ${coinAmt(packCost(p.id),11)}</button>`:'')}</div>
         <div style="height:5px;border-radius:99px;background:var(--tint-deep,var(--surface2));overflow:hidden;margin-bottom:11px"><div style="height:100%;background:linear-gradient(90deg,${p.c1},${p.c2});width:${Math.round(ownedN/(avs.length||1)*100)}%"></div></div>
+        ${S.oddsOpen===p.id?oddsPanel(p.id,c):''}
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:9px">${tiles}</div></div>`; }).join('');
   } else if(tab==='worlds'){
     const rows=THEMES.map(t=>{ const on=t.id===S.theme; const un=isThemeUnlocked(t.id); const ev=EVO[t.id]||EVO.spellbound;
       return `<div style="display:flex;align-items:center;gap:12px;background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:12px 14px;${un?'':'filter:grayscale(.6);opacity:.65'}">
         <div style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,${t.c1},${t.c2});flex-shrink:0;color:#fff">${un?worldEmblemSVG(t.id,24):iconSVG('lock',20,2.2)}</div>
         <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:15px">${t.label}</div><div style="font-size:12px;color:var(--muted)">${WORLD_DEF[t.id]||(ev[0]+' → '+ev[9])}</div></div>
-        ${on?'<span style="font-weight:800;font-size:12px;color:var(--accent)">Active ✓</span>':(un?`<button data-act="pickTheme" data-arg="${t.id}" style="padding:8px 14px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:12px">Use</button>`:`<button data-act="openShop" style="display:inline-flex;align-items:center;gap:5px;padding:8px 12px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:12px;color:var(--muted)">${iconSVG('lock',11,2.2)} Store</button>`)}
+        ${on?'<span style="font-weight:800;font-size:12px;color:var(--accent)">Active ✓</span>':(un?`<button data-act="pickTheme" data-arg="${t.id}" style="padding:8px 14px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:12px">Use</button>`:`<button data-act="openWorlds" style="display:inline-flex;align-items:center;gap:5px;padding:8px 12px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:12px;color:var(--muted)">${iconSVG('lock',11,2.2)} ${coinAmt(COST.theme,11)}</button>`)}
       </div>`; }).join('');
     const unc=THEMES.filter(t=>isThemeUnlocked(t.id)).length;
     body=`<div class="sb-card"><div style="display:flex;align-items:baseline;gap:9px;margin-bottom:12px"><span class="sb-ct" style="font-size:15px">Worlds</span><span class="sb-cn">${unc}/${THEMES.length} unlocked — switch any time</span></div><div style="display:grid;gap:9px">${rows}</div></div>`;
   } else if(tab==='artifacts'){
-    const inv=[
-      {k:'shield', ic:'crown', name:'Boss Shield 🛡️', desc:'Absorbs one wrong answer in Boss Battle.', own:((c.pow||{}).shield||0)},
-      {k:'reveal', ic:'bulb',  name:'Letter Reveal 💡', desc:'Reveals the next letter in Boss Battle.', own:((c.pow||{}).reveal||0)},
-      {k:'time',   ic:'timer', name:'Time Warp ⏱️', desc:'+15 seconds on your next Buzzer sprint.', own:((c.pow||{}).time||0)},
-      {k:'freeze', ic:'flame', name:'Streak Freeze 🧊', desc:'Miss a day — your streak survives.', own:(c.freezes||0)},
-    ].map(it=>`<div style="display:flex;align-items:center;gap:12px;background:var(--paper,var(--bg2));border:1.5px solid ${it.own?'var(--treasure,#F0B429)':'var(--line)'};border-radius:14px;padding:12px 14px;${it.own?'':'opacity:.6;filter:grayscale(.5)'}">
-        <div style="width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:var(--chip);color:var(--accent);flex-shrink:0">${iconSVG(it.ic,20)}</div>
-        <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:15px">${it.name}</div><div style="font-size:12px;color:var(--muted)">${it.desc}</div></div>
-        <span style="font-weight:900;font-size:14px;color:${it.own?'var(--good)':'var(--muted)'}">× ${it.own}</span></div>`).join('');
+    /* Artifacts are won, never bought — so each card states its earn route rather than a
+       price, and a zero card reads as "not yet" instead of "not paid for". */
+    // Stage-ups are per LIST (gainXp), so the countdown reads the list being trained —
+    // and goes quiet at the free-plan level cap, where no stage-up can fire.
+    const _lk=activeListKey(); const _lp=listProgress(c,_lk);
+    const _capped=!state.premium && _lp.level>=levelCap();
+    const _left=Math.max(1,(_lp.need||1)-(_lp.into||0));
+    const inv=ART_DEFS.map(it=>{ const own=artCount(c,it.k);
+      return `<div style="display:flex;align-items:center;gap:12px;background:var(--paper,var(--bg2));border:1.5px solid ${own?'var(--treasure,#F0B429)':'var(--line)'};border-radius:14px;padding:12px 14px;margin-bottom:9px;${own?'':'opacity:.72'}">
+        <div style="width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:var(--chip);color:var(--accent);flex-shrink:0;${own?'':'filter:grayscale(.6)'}">${iconSVG(it.ic,20)}</div>
+        <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:15px">${it.name}</div><div style="font-size:12px;color:var(--muted)">${it.desc}</div>
+          <div style="font-size:11.5px;font-weight:800;color:var(--accent);margin-top:3px">${it.how}</div></div>
+        <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:900;font-size:14px;color:${own?'var(--good)':'var(--muted)'};white-space:nowrap">× ${own}</span></div>`; }).join('');
     const accOwned=Object.keys(c.beeAcc||{});
-    const accs=accOwned.length?`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:16px 2px 10px">Bee style</div><div style="display:flex;gap:10px;flex-wrap:wrap">${accOwned.map(k=>`<div style="width:64px;height:70px;position:relative;background:var(--surface2);border-radius:14px;padding:8px;${c.accOn===k?'box-shadow:inset 0 0 0 2px var(--accent)':''}">${mascotSVG('happy')}<div style="position:absolute;inset:8px">${beeAccSVG(k)}</div></div>`).join('')}</div>`:'';
-    body=`<div class="sb-card"><div style="display:flex;align-items:baseline;gap:9px;margin-bottom:12px"><span class="sb-ct" style="font-size:15px">Artifacts</span><span class="sb-cn">your stash — stock up in the Store</span></div>${inv}${accs}
-      <button data-act="openShop" style="width:100%;margin-top:12px;padding:12px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:14px">Get more in the Store →</button></div>`;
+    const accs=accOwned.length?`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:16px 2px 10px">Bee style you own</div><div style="display:flex;gap:10px;flex-wrap:wrap">${accOwned.map(k=>`<div style="width:64px;height:70px;position:relative;background:var(--surface2);border-radius:14px;padding:8px;${c.accOn===k?'box-shadow:inset 0 0 0 2px var(--accent)':''}">${mascotSVG('happy')}<div style="position:absolute;inset:8px">${beeAccSVG(k)}</div></div>`).join('')}</div><div class="sb-cn" style="margin:8px 2px 0">Buy and wear these under <button data-act="collTab" data-arg="avatars" style="color:var(--accent);font-weight:800;background:none;border:0;padding:0;cursor:pointer">Avatars</button>.</div>`:'';
+    body=`<div class="sb-card"><div style="display:flex;align-items:baseline;gap:9px;margin-bottom:4px"><span class="sb-ct" style="font-size:15px">Artifacts</span><span class="sb-cn">won by playing, never bought</span></div>
+      <p class="sb-cn" style="margin:0 0 12px;line-height:1.5">An edge in a game is something you earn in one. Stage up any list and you win a game artifact${_capped?' — you\'re at the free level cap, so Premium reopens these.':` — <b style="color:var(--text)">${_left} more right ${_left===1?'word':'words'}</b> in ${esc(listLabel(_lk))} wins the next one.`} Keep a daily streak going to ${(c.streak||0)>=7?'keep earning':'reach'} the Streak Freeze.</p>
+      ${inv}${accs}</div>`;
   } else {
     const B=badgeDefs(); const won=B.filter(b=>b.done).length;
     const groups=[...new Set(B.map(b=>b.g))];
@@ -5745,7 +5837,7 @@ function viewCollection(){ const S=state; const c=active(); const tab=S.collTab|
   const bAll=badgeDefs();
   return `<div style="max-width:920px;margin:0 auto">
     ${hiveBar('coll')}
-    ${pageHead('My Hive', avOwnedCount(c)+'/'+SB_AVATARS.list.length+' avatars', 'Everything you\'ve earned and unlocked — badges, avatars, worlds and artifacts.',
+    ${pageHead('My Hive', avOwnedCount(c)+'/'+SB_AVATARS.list.length+' avatars', '',
       `<span style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px">${coinAmt(c.coins||0,14)}</span>`)}
     <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">${tabBtn('badges','crown','Badges · '+bAll.filter(b=>b.done).length+'/'+bAll.length)}${tabBtn('avatars','spark','Avatars · '+avOwnedCount(c)+'/'+SB_AVATARS.list.length)}${tabBtn('worlds','palette','Worlds · '+THEMES.filter(t=>isThemeUnlocked(t.id)).length+'/'+THEMES.length)}${tabBtn('artifacts','bolt','Artifacts')}</div>
     ${body}
@@ -5777,7 +5869,7 @@ function viewEvolution(){ const S=state; const c=active(); ensureLists(c); const
     </div>
     <div class="sb-card" style="margin-bottom:14px">
       <div class="sb-ct" style="font-size:15px;margin-bottom:6px">How your bee evolves</div>
-      <div class="sb-cs" style="line-height:1.6">Every word you spell right — in Practice, the Arcade, Concepts, anywhere — moves your bee one step along. The count only grows; nothing takes it away.<br>Coins 🪙 are different: treasure you win and <i>spend</i> in the Store on worlds, avatars and power-ups. Spending coins never costs you a step.</div>
+      <div class="sb-cs" style="line-height:1.6">Every word you spell right — in Practice, the Arcade, Concepts, anywhere — moves your bee one step along. The count only grows; nothing takes it away.<br>Coins 🪙 are different: treasure you win and <i>spend</i> on worlds, avatar packs and concept chapters. Spending coins never costs you a step.</div>
     </div>
     ${(theme==='spellbound')?`<div class="sb-card" style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><span style="font-size:26px;flex-shrink:0">👑</span><span class="sb-cs"><b style="color:var(--text)">Why a Queen at the top?</b> Every hive is ruled by its Queen — the strongest, most protected bee alive. Reaching her means you outgrew every other bee in the hive.</span></div>`:''}
     ${beeEmpty('happy','Ten forms, one bee. Practise anywhere — Practice, the Arcade, Concepts — and every right word feeds the same evolution.')}
@@ -6804,7 +6896,7 @@ function printCards(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1
 // then cut out. Backs were dropped: they doubled the paper for decoration, and the duplex
 // mirroring came out misaligned on any printer that feeds differently.
 function printAvCardsDoc(){ const c=active(); const owned=SB_AVATARS.list.filter(a=>avOwned(c,a.id));
-  if(!owned.length) return '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:sans-serif;padding:40px;color:#333">No avatars collected yet — open packs in the Store first! 🐝</body></html>';
+  if(!owned.length) return '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:sans-serif;padding:40px;color:#333">No avatars collected yet — open a pack in your Hive first! 🐝</body></html>';
   const bar=(lab,val,col)=>`<div class="abar"><span class="al">${lab}</span><span class="at"><i style="width:${Math.max(6,val)}%;background:${col}"></i></span><b class="av">${val}</b></div>`;
   const front=(a)=>{ const d=(typeof SB_AV_CARD==='function')?SB_AV_CARD(a.id):null; if(!d) return '<div class="card afront"></div>';
     const art=avatarSVG(a.id,124); const vil=d.villain;
@@ -7094,7 +7186,7 @@ function viewProgress(){
   }
   const legend=[['var(--good)','Mastered'],['var(--bad)','Needs work'],['var(--surface2)','Not yet mastered']].map(([cc,l])=>`<span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:600"><span style="width:12px;height:12px;border-radius:6px;background:${cc}"></span>${l}</span>`).join('');
   return `<div style="animation:sb-rise .35s ease both">
-    ${pageHead('Progress','where you stand','Your spelling level, then the two journeys, then this week — and where every word stands.')}
+    ${pageHead('Progress','where you stand')}
     ${rankBlock}
     ${(()=>{ /* The World Atlas, in its own words */
       const nx=(typeof window.SB_TRAIL_NEXT==='function')?SB_TRAIL_NEXT():null;
@@ -7219,7 +7311,7 @@ function viewFinder(){ const S=state; const c=active(); const q=S.finderQ||'';
         :`<div class="sb-card" style="text-align:center;padding:30px 20px"><div class="sb-ct">No matches for “${esc(q)}”</div><div class="sb-cs" style="margin-top:4px">${window.SB_FULL?'Try a different spelling.':'Try a different spelling — or load the full 128,000-word library below.'}</div><div style="margin-top:12px">${loadBtn}</div></div>`);
   }
   return `<div style="max-width:860px;margin:0 auto">
-    ${pageHead('Word Finder','search '+total+' words','Look up any word, study its learn card, and add it to one of your lists.',loadBtn)}
+    ${pageHead('Word Finder','search '+total+' words','',loadBtn)}
     <div style="position:relative;margin-bottom:14px"><span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)">${iconSVG('book',18)}</span>
       <input data-inp="finderQ" data-fkey="finderQ" value="${escA(q)}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type a word… e.g. iridescent" style="width:100%;padding:14px 16px 14px 44px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:17px;outline:none"></div>
     ${body}
@@ -7521,7 +7613,7 @@ function viewThemes(){ const S=state; const c=active(); ensureLists(c);
       <span style="flex:1;height:1px;background:var(--line)"></span>
     </div><div style="${grid}">${ts.map(themeCard).join('')}</div>`; }).join('');
   return `<div style="animation:sb-rise .35s ease both">
-    ${pageHead('Theme Journeys', defs.length+' themes', 'Words by the family they belong to — a subject, or the language they came from. Every theme opens with the explanation: what the family is, how to spot one at the microphone, and the trap it sets. Then the cards, the drill and the meaning check.')}
+    ${pageHead('Theme Journeys', defs.length+' themes', 'Words by the family they belong to — learn to spot one at the microphone, and the trap it sets.')}
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin-bottom:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
       <span style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('palette',15)} ${mine.length} picked · ${doneThemes} complete</span>
       <span style="font-size:12px;color:var(--muted);font-weight:700">${fmtN(mastered)} themed words mastered</span>
@@ -7923,7 +8015,7 @@ function viewSettings(){
       <summary style="cursor:pointer;font-weight:800;font-size:13.5px;color:var(--muted);padding:10px 2px">Testing tools</summary>
       <div class="sb-card" style="padding:4px 0;margin-top:8px">
         ${line('Unlock everything','All concepts, lists, worlds, Advanced Mode and every level — no coins or Premium needed.',tog('toggleDevUnlock',!!S.devUnlock,'On','Off'))}
-        ${line('Test coins','Tops the purse up to 1,000,000 so you can test the Store. Switching it off puts the real balance back.',tog('toggleDevCoins',!!(active()&&active().devCoins),'On','Off'))}
+        ${line('Test coins','Tops the purse up to 1,000,000 so you can test buying. Switching it off puts the real balance back.',tog('toggleDevCoins',!!(active()&&active().devCoins),'On','Off'))}
       </div>
     </details>
     <button data-act="signOut" style="width:100%;padding:14px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">← Exit to the start screen</button>
@@ -8120,7 +8212,7 @@ function listCoverBG(k){ const f=listCoverOf(k); const t=CONCEPT_TEX[f.tex]||CON
    never changes which list the speller is training for spelling. */
 function listCoverCard(k,label,sub,count,locked){ const c=active(); const voc=!!state.vocPick;
   const on=voc?((c.vocabList||c.activeList||'default')===k):((c.activeList||'default')===k);
-  const f=listCoverOf(k); const act=locked?'buyList':(voc?'vocSelectList':'selectList');
+  const f=listCoverOf(k); const act=locked?'lockedList':(voc?'vocSelectList':'selectList');
   /* getList() lazily creates a spelling-list record, so in vocabulary mode we must not call
      it — browsing lists to read should never write anything into the spelling data. */
   const lvl = voc ? (vocLevel('list:'+k)+1) : ((getList(c,k).stage||0)+1);
@@ -8137,7 +8229,7 @@ function listCoverCard(k,label,sub,count,locked){ const c=active(); const voc=!!
       <div style="font-family:var(--body);font-weight:600;font-size:12px;line-height:1.4;color:var(--muted);margin-top:4px">${esc(trunc(sub,64))}</div>
       <div style="margin-top:auto;padding-top:11px;display:flex;align-items:center;justify-content:space-between;gap:8px">
         <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);font-weight:700">${count} words · L${lvl}${stMeta}</span>
-        <span style="display:inline-flex;align-items:center;gap:4px;font-family:var(--body);font-weight:800;font-size:12px;color:${on?f.c:(locked?'#a06a00':f.c)};white-space:nowrap">${on?'Training':(locked?(iconSVG('lock',11,2.2)+' '+coinAmt(COST.list,11)):'Choose →')}</span>
+        <span style="display:inline-flex;align-items:center;gap:4px;font-family:var(--body);font-weight:800;font-size:12px;color:${on?f.c:(locked?'#a06a00':f.c)};white-space:nowrap">${on?'Training':(locked?(iconSVG('lock',11,2.2)+' Premium'):'Choose →')}</span>
       </div>
     </div>
   </button>`; }
@@ -8191,7 +8283,7 @@ function coachSetup(){
   return `<div style="max-width:760px;margin:0 auto">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><button data-act="openCoach" style="color:var(--muted);font-weight:700;font-size:13px">← Back to Practice</button></div>
     <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 4px">Setup &amp; lists</h2>
-    <p style="margin:0 0 16px;color:var(--muted);font-size:13px">Pick the list you're training — each keeps its own level.${state.premium?'':' 🔒 lists unlock with Premium <b>or</b> 🪙 '+COST.list+' coins from playing.'}</p>
+    <p style="margin:0 0 16px;color:var(--muted);font-size:13px">Pick the list you're training — each keeps its own level.${state.premium?'':' 🔒 lists come with Premium.'}</p>
     ${(()=>{ const on=advModeOn(c);
       const ultra=`<button class="sb-lift" data-act="pickUltra" style="width:100%;text-align:left;border-radius:20px;margin-bottom:16px;overflow:hidden;background:linear-gradient(135deg,#241B4E,#3A2A72 58%,#5B3FA6);box-shadow:0 8px 22px rgba(36,27,78,.3)">
         <div style="padding:17px 19px;color:#fff">
@@ -9181,10 +9273,6 @@ function gamesHub(){ const S=state; const c=active();
     art:'',badge:g.tag,title:g.n,blurb:g.blurb,cta:'var(--accent)',stat:''})).join('');
   // ---- QUICK GAMES: the timed/quiz engines that aren't part of the 14 ----
   const quick=GAMES.map(gm=>gtile({act:'playGame',arg:gm.type,grad:gameCoverBG(gm),art:gameArtSVG(gm.type,48),badge:gm.tag,title:gm.name,blurb:gm.blurb,cta:gm.c,stat:''})).join('');
-  const store=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:16px 18px;margin-top:4px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-      <span style="width:44px;height:44px;flex-shrink:0;border-radius:12px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);display:grid;place-items:center">${iconSVG('cart',22)}</span>
-      <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15px">Coin store</span><span style="display:block;font-size:12px;color:var(--muted)">Spend your 🪙 on avatar packs, worlds and power-ups.</span></span>
-      <button data-act="openShop" style="padding:10px 16px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge);white-space:nowrap">Open the Store →</button></div>`;
   return `<div style="max-width:860px;margin:0 auto">
     <!-- No global difficulty row: each game sets its own level, on its own tile. A single
          Arcade-wide selector was redundant with that and misleading (it did nothing for
@@ -9200,83 +9288,8 @@ function gamesHub(){ const S=state; const c=active();
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin:8px 0 18px">${arcadeGames}</div>
     <div class="arc-sech">More to play</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin:8px 0 16px">${feats.join('')}${quick}</div>
-    ${store}
   </div>`;
 }
-function viewShop(){ const S=state; const c=active(); ensureLists(c); const tab=S.shopTab||'avatars';
-  const tabBtn=(k,ic,l)=>`<button data-act="shopTab" data-arg="${k}" style="flex:1;min-width:96px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${iconSVG(ic,15)} ${l}</button>`;
-  let body='';
-  if(tab==='avatars'){
-    const packs=SB_AVATARS.packs.map(p=>{ const avs=SB_AVATARS.list.filter(a=>a.pack===p.id); const ownedN=avs.filter(a=>avOwned(c,a.id)).length; const full=ownedN>=avs.length;
-      const leg=avs.find(a=>a.rarity==='legendary');
-      const preview=avs.filter(a=>avOwned(c,a.id)).slice(0,2).concat(leg?[leg]:[]).slice(0,3)
-        .map(a=>{ const own=avOwned(c,a.id); return `<span style="width:61px;height:61px;display:inline-grid;place-items:center;background:rgba(255,255,255,.85);border-radius:12px;${own?'':'opacity:.94'}">${avatarSVG(a.id,52)}</span>`; }).join('');
-      return `<div style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column">
-        <div style="background:linear-gradient(135deg,${p.c1},${p.c2});padding:13px 14px;display:flex;align-items:center;gap:8px">${preview}<span style="flex:1"></span><span style="font-weight:900;font-size:12px;color:rgba(255,255,255,.95);background:rgba(0,0,0,.22);border-radius:99px;padding:4px 10px">${ownedN}/${avs.length}</span></div>
-        <div style="padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;flex:1">
-          <div style="display:flex;align-items:center;gap:8px"><span style="font-family:var(--display);font-weight:800;font-size:15px;flex:1">${p.label}</span>${full?'':`<button data-act="toggleOdds" data-arg="${p.id}" style="font-size:11.5px;font-weight:800;color:var(--accent);background:none;padding:2px 0;white-space:nowrap">🎲 ${S.oddsOpen===p.id?'Hide odds':'Drop odds'}</button>`}</div>
-          ${S.oddsOpen===p.id?oddsPanel(p.id,c):''}
-          ${full?`<div style="font-weight:800;font-size:13px;color:var(--good);margin-top:auto">Complete ✓ — every avatar collected</div>`
-            :`<button data-act="buyPack" data-arg="${p.id}" style="margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px;border-radius:11px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:900;font-size:13.5px">🎁 Open a pack · ${coinAmt(packCost(p.id),13)}</button>`}
-        </div></div>`; }).join('');
-    body=`<p style="font-size:13px;color:var(--muted);margin:0 0 6px">Every pack drop is a surprise avatar you don't own yet — <b>70% rare · 24% epic · 6% legendary</b>. Each pack has its own price and its own odds — tap <b>🎲 Drop odds</b> to see every avatar's chance. Duplicates never drop.</p>
-      <p style="font-size:12px;color:var(--muted);margin:0 0 14px">Change your mind? Sell spare avatars back for coins from <button data-act="setNav" data-arg="collection" style="color:var(--accent);font-weight:800;background:none;border:0;padding:0;cursor:pointer">your Collection</button>.</p>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px">${packs}</div>`;
-  } else if(tab==='worlds'){
-    const rows=THEMES.map(t=>{ const on=t.id===S.theme; const un=isThemeUnlocked(t.id); const ev=EVO[t.id]||EVO.spellbound;
-      const right=on?'<span style="font-weight:800;font-size:12px;color:var(--accent)">Active</span>':(un?`<span style="font-weight:800;font-size:12px;color:var(--good)">Use</span>`:`<span style="font-weight:900;font-size:12px;color:#a06a00">${coinAmt(COST.theme,12)}</span>`);
-      return `<button data-act="${un?'pickTheme':'buyTheme'}" data-arg="${t.id}" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface2);border:1px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:12px 14px;margin-bottom:9px">
-        <div style="width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,${t.c1},${t.c2});flex-shrink:0;color:#fff;${un?'':'filter:grayscale(.5)'}">${un?worldEmblemSVG(t.id,21):iconSVG('lock',19,2.2)}</div>
-        <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:15px">${t.label}</div><div style="font-size:12px;color:var(--muted)">${WORLD_DEF[t.id]||(ev[0]+' → '+ev[9])}</div></div>${right}</button>`; }).join('');
-    const unc=THEMES.filter(t=>isThemeUnlocked(t.id)).length;
-    body=`<p style="font-size:13px;color:var(--muted);margin:0 0 12px">${unc}/${THEMES.length} worlds unlocked · 2 free, ${state.premium?'2 more with Premium, ':''}the rest with coins.</p>${rows}`;
-  } else if(tab==='power'){
-    const items=[
-      {k:'cheer',  ic:'spark', name:'Bee Cheer 🎉', desc:'Bizzy shouts your name with a confetti storm — right now! A perfect first buy.', cost:20, own:0},
-      {k:'shield', ic:'crown', name:'Boss Shield 🛡️', desc:'Absorbs one wrong answer in Boss Battle — keep all your lives.', cost:60, own:((c.pow||{}).shield||0)},
-      {k:'reveal', ic:'bulb',  name:'Letter Reveal 💡', desc:'Reveals the next letter in Boss Battle. One use each.', cost:40, own:((c.pow||{}).reveal||0)},
-      {k:'time',   ic:'timer', name:'Time Warp ⏱️', desc:'+15 seconds on your next Beat the Buzzer sprint. Auto-used.', cost:40, own:((c.pow||{}).time||0)},
-      {k:'freeze', ic:'flame', name:'Streak Freeze 🧊', desc:'Miss a day and your daily streak survives. Auto-used.', cost:80, own:(c.freezes||0)},
-    ].map(it=>`<div style="display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:9px">
-        <div style="width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--chip);color:var(--accent);flex-shrink:0">${window.SB_ICON?SB_ICON(it.ic,{size:20}):iconSVG('spark',20)}</div>
-        <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:15px">${it.name} ${it.own?`<span style="font-size:12px;color:var(--good);font-weight:800">× ${it.own}</span>`:''}</div><div style="font-size:12px;color:var(--muted)">${it.desc}</div></div>
-        <button data-act="buyPower" data-arg="${it.k}" style="padding:9px 14px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:900;font-size:13px;white-space:nowrap">${coinAmt(it.cost,12)}</button>
-      </div>`).join('');
-    const avId=c.avatar||'bee';
-    const accs=AV_ACCS.map(a=>{ const owned=state.devUnlock||!!((c.beeAcc||{})[a.k]); const on=c.accOn===a.k;
-      return `<div style="display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:12px 14px;margin-bottom:9px">
-        <div style="width:52px;height:52px;flex-shrink:0;display:grid;place-items:center;background:rgba(255,255,255,.7);border-radius:13px">${avatarSVG(avId,44,a.k)}</div>
-        <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:15px">${a.name}</div><div style="font-size:12px;color:var(--muted)">${a.desc}</div></div>
-        ${owned?`<button data-act="wearAcc" data-arg="${a.k}" style="display:inline-flex;align-items:center;gap:5px;padding:9px 14px;border-radius:10px;background:${on?'var(--action,var(--accent))':'var(--surface)'};color:${on?'var(--action-ink,#fff)':'var(--text)'};font-weight:800;font-size:13px">${on?SB_ICON('check',{size:14})+' Wearing':'Wear'}</button>`
-          :`<button data-act="buyAcc" data-arg="${a.k}" style="padding:9px 14px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:900;font-size:13px;white-space:nowrap">${coinAmt(a.price,12)}</button>`}
-      </div>`; }).join('');
-    body=`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:2px 2px 4px">Artifacts</div>
-      <p style="font-size:13px;color:var(--muted);margin:0 0 12px">Spend coins on artifacts that give you an edge in the games.</p>${items}
-      <div style="font-family:var(--display);font-weight:800;font-size:15px;margin:16px 2px 4px">Avatar style</div>
-      <p style="font-size:13px;color:var(--muted);margin:0 0 12px">Dress up your avatar — accessories layer onto whichever character you're wearing.${c.accOn?` <button data-act="wearAcc" data-arg="${c.accOn}" style="color:var(--accent);font-weight:800">Take it off</button>`:''}</p>${accs}`;
-  }
-  else if(tab==='lists'){
-    const cats=[{key:'default',label:'Default · Level-Up',sub:'Curated starter words',count:LEVEL_WORDS.length}].concat(coachCatalog().filter(o=>o.key!=='default').map(o=>({key:o.key,label:o.label,sub:o.sub,count:o.count})));
-    const rows=cats.map(o=>{ const un=isListUnlocked(o.key); const on=(c.activeList||'default')===o.key;
-      const right=on?'<span style="font-weight:800;font-size:12px;color:var(--accent)">Active</span>':(un?'<span style="font-weight:800;font-size:12px;color:var(--good)">Train</span>':`<span style="font-weight:900;font-size:12px;color:#a06a00">${coinAmt(COST.list,12)}</span>`);
-      return `<button data-act="${un?'selectList':'buyList'}" data-arg="${o.key}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;background:var(--surface2);border:1px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:12px 14px;margin-bottom:9px"><div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:15px;display:flex;align-items:center;gap:6px">${un?'':`<span style="color:var(--muted);display:inline-flex">${iconSVG('lock',14,2.2)}</span>`}${esc(o.label)}</div><div style="font-size:12px;color:var(--muted)">${esc(o.sub)} · ${o.count} words</div></div>${right}</button>`; }).join('');
-    const unc=cats.filter(o=>isListUnlocked(o.key)).length;
-    body=`<p style="font-size:13px;color:var(--muted);margin:0 0 12px">${unc}/${cats.length} lists unlocked. Premium lists open with Premium or coins.</p>${rows}`;
-  } else {
-    const chs=S.conceptData||[]; const total=chs.length||110; const unc=chs.filter((ch,ci)=>isConceptUnlocked(ci)).length;
-    const locked=chs.map((ch,ci)=>({ch,ci})).filter(x=>!isConceptUnlocked(x.ci)).slice(0,8);
-    const rows=locked.map(({ch,ci})=>`<button data-act="buyConcept" data-arg="${ci}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:9px"><div style="min-width:0"><div style="font-family:var(--display);font-weight:800;font-size:15px;display:flex;align-items:center;gap:6px"><span style="color:var(--muted);display:inline-flex">${iconSVG('lock',14,2.2)}</span>${esc(conceptShort(ch.title))}</div><div style="font-size:12px;color:var(--muted)">${esc(catGroup(ch.category))} · ${(diffMap[ch.difficulty]||diffMap.medium)[0]}</div></div><span style="font-weight:900;font-size:12px;color:#a06a00;white-space:nowrap">${coinAmt(COST.concept,12)}</span></button>`).join('');
-    body=`<p style="font-size:13px;color:var(--muted);margin:0 0 12px">${unc}/${total} concepts unlocked. ${state.premium?'Premium opens the easier half — ':'All locked on the free plan — '}unlock more with coins.</p>
-      ${locked.length?rows:'<p style="font-size:13px;color:var(--muted)">Everything available is unlocked. 🎉</p>'}
-      <button data-act="goConcepts" style="width:100%;margin-top:6px;padding:13px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;border:1px solid var(--line)">Browse all concepts →</button>`;
-  }
-  return `<div style="max-width:680px;margin:0 auto">
-    ${hiveBar('store')}
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px"><span style="display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:20px">${iconSVG("cart",21)} Store</span><span style="margin-left:auto">${coinChip()}</span></div>
-    <p style="margin:0 0 14px;color:var(--muted);font-size:13px">Spend the coins you earn from games, Practice &amp; Concepts.</p>
-    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">${tabBtn('avatars','crown','Avatars')}${tabBtn('worlds','palette','Worlds')}${tabBtn('power','spark','Artifacts')}${tabBtn('lists','book','Word lists')}${tabBtn('concepts','grid','Concepts')}</div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px">${body}</div>
-  </div>`; }
 /* Themed "calculating your drop" reel — plays while the app rolls, then the card drops. */
 function packRollOverlay(){ const r=state.packRoll; if(!r) return '';
   const P=SB_AVATARS.packs.find(p=>p.id===r.pk)||{label:'Pack'};
@@ -9289,7 +9302,7 @@ function packRollOverlay(){ const r=state.packRoll; if(!r) return '';
       <div class="pk-scan"><i></i></div>
       <div style="font-size:11.5px;color:rgba(255,255,255,.62);font-weight:650;margin-top:12px">Shuffling the ${esc(P.label)} — tap to reveal</div>
     </div></div>`; }
-/* Pack-drop reveal: modal card over the Store after opening a pack — the won card drops in. */
+/* Pack-drop reveal: modal card over the Hive after opening a pack — the won card drops in. */
 function packDropOverlay(){ const id=state.packDrop; if(!id) return '';
   const a=SB_AVATARS.byId[id]; if(!a) return ''; const R=SB_AVATARS.rarities[a.rarity]||{label:a.rarity,c:'#888'};
   const leg=a.rarity==='legendary'; const od=(typeof packOdds==='function')?packOdds(a.pack).find(o=>o.id===id):null;
@@ -9649,7 +9662,7 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
       <span style="font-size:11.5px;color:var(--muted);font-weight:700">${ttBandNote(c)}</span>
       <span style="margin-left:auto;display:inline-flex;gap:5px;flex-wrap:wrap">${bchip(0,'Auto',!(+(c.ttLvSel||0)))}${[1,2,3,4,5].map(n=>bchip(n,'L'+n,+(c.ttLvSel||0)===n)).join('')}</span></div>`;
     return `<div style="max-width:860px;margin:0 auto">
-      ${pageHead('Know the World of Words','trivia training · '+fmtN(total)+' cards at your level','Study the trivia bank at your own pace — question on the front, answer and a fun fact on the back. Cards match your age and spelling level; change the level any time. No timer, no score.',
+      ${pageHead('Know the World of Words','trivia training · '+fmtN(total)+' cards at your level','Your own pace — no timer, no score.',
         studied?`<span style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">${ttGlyph('book',15)}${fmtN(studied)} cards studied</span>`:'')}
       ${bandStrip}
       ${wordIds.length?`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:2px 2px 9px;display:flex;align-items:center;gap:7px">${ttGlyph('bee',18)}Word chapters <span style="font-size:12px;color:var(--muted);font-weight:700">— built from the spelling library</span></div>${grid(wordIds)}`:''}
