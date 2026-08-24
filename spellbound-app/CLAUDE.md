@@ -208,7 +208,29 @@ handlers. App lives in this folder; open `index.html` to run.
   "Practice paths" chooser (nav 'quest'); its list catalogue is collapsed into four
   group cards (My Words / The Champion Ladder / Word Origins / Tricky Words —
   `grp` fields in `coachCatalog`, `state.catGroup` opens one; keys unchanged).
-  My Hive = Collection + Evolution + Store behind one lit tab (`hiveBar`).
+  My Hive = Collection + Your bee + Worlds behind one lit tab (`hiveBar`).
+- **There is no Store. A thing is bought where it lives.** `viewShop()` and `state.shopTab`
+  are deleted. The Store sold avatars, worlds, concepts and word lists that all already
+  had a home, so the same avatar pack was purchasable from two screens under two
+  different rules (the Store showed "Open a pack" to everyone; the Collection checked
+  the plan first — `app.buyPack` bounced the free tap to the upsell anyway, so the
+  Collection's rule was the honest one and is the one that survived). Now:
+  `buyPack` + the drop-odds panel live in Collection → Avatars, `buyTheme` on the world
+  in `viewWorlds`, `buyConcept` in the Concepts library (via `openConcept`, which routes
+  a locked chapter to it). `app.openShop` / `openShopAvatars` survive ONLY as redirects
+  to the Collection so old deep links don't dead-end.
+- **Artifacts are won, never bought** (`ART_DEFS` / `grantArt` / `grantStageArt`).
+  `buyPower` is deleted. This mattered: the Store was the ONLY source of Boss Shield,
+  Letter Reveal, Time Warp and Streak Freeze, so deleting the shop without an earn path
+  would have killed four live game mechanics. Earn routes: a per-list stage-up in
+  `gainXp()` grants one of shield/reveal/time (rotating on `rankXp() % 3`), and a 7/14/30-day
+  streak in `markActiveToday()` grants a Streak Freeze. `c.freezes` holds the freeze (the
+  streak code reads it there); `c.pow` holds the rest. Bee Cheer was never an artifact —
+  nothing is stocked — so it survives as `app.beeCheer`, a coin treat in Collection → Avatars.
+- **Word lists are not sold for coins.** `buyList` is deleted; `app.lockedList` opens the
+  plan sheet where the list stands. `isListUnlocked` still reads `c.unlockedLists`, so
+  anyone who bought a list under the old coin price keeps it. `COST` is now `{theme, concept}`.
+  Guards: `tests/hive-store.cjs` and `tests/buy-where-it-lives.cjs`.
 - **The Arcade is 'Bizzy's Great Spelling Arcade'** (`gamesHub()`), and difficulty is
   chosen PER GAME, not once for the whole room. The old global My-level/Easy/Medium/
   Hard/Champ pill row is gone (it was redundant, and did nothing for games that carry
