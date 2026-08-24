@@ -179,4 +179,38 @@ origin:[
 "The schwa in a mystery word often resolves through origin: Latin -or (doctor), French -er/-re (theatre). Ask 'where's it from?' before guessing letters.",
 "Sanskrit and Hindi loanwords (guru, bungalow, juggernaut) delight kids with their stories — use them as the fun course between heavy drills.",
 "Make origin questions reflexive at practice: every 5th word, ask 'what language do you THINK it is?' before revealing. Prediction locks learning."],
+/* Added Aug 2026. The library above was written when the app was Practice plus a word
+   list. It has since grown the Word Atlas, a vocabulary ladder with its own progression,
+   the Arcade, Theme Journeys, the Advanced Pack and a placement-driven word difficulty —
+   and a parent was never told a word about any of them, because parentSignals() could not
+   see them. These categories are matched by the new if-this-then rules in parentTips(). */
+atlas:[
+"The Word Atlas is the spine of the course, not a side quest: each stop teaches a concept, meets its words, then gates on a real quiz. Ten minutes there is worth more than half an hour of loose practice.",
+"If the Atlas has stalled, open the stop together once. Almost every child who stops does it at the quiz gate, and almost every one of those needs company for exactly one attempt.",
+"A stop asks for 80% to pass, and that is deliberate — it is the number that means the concept stuck rather than the words did. A near miss is information, not a setback.",
+"Atlas progress moves in laps: finishing every stop unlocks the same road at a harder band. A child who says they have 'done it' has usually done lap one of three.",
+],
+vocab:[
+"Spelling and vocabulary are separate ladders in this app, on purpose — a child can spell far past what they can define, and the bee asks for both. If the spelling level is climbing and vocabulary is untouched, that gap will show up on a meaning question.",
+"The vocabulary check is four-option multiple choice and it never touches spelling progress. It is safe to attempt badly, which makes it the cheapest way to find out what a word actually means to them.",
+"Any word list can be studied for meaning, not just the vocabulary decks. If they are drilling a list for spelling, run the same list as vocabulary a week later — same words, different muscle.",
+],
+themes:[
+"Interest is memory glue. A Theme Journey groups words by what they are ABOUT — space, food, myth, medicine — and a child remembers a word met inside something they care about far longer than one met in an alphabetical list.",
+"Themes also teach by ORIGIN, not only by meaning. The origin families are the fastest route to the language-of-origin habit that decides hard spellings at the bee.",
+"Let them pick the theme. A journey chosen by a child is practised; a journey assigned by an adult is completed.",
+],
+arcade:[
+"The Arcade is practice wearing a costume — every game makes the child produce a spelling, not just recognise one. For a child who resists drills, this is the drill.",
+"After a game the result card lists every word it asked for, with the correct spelling and a one-tap way onto the revision pile. That list is the useful part; the score is the bait.",
+"Difficulty is set per game, not once for the whole room. If a game feels punishing, drop that one game a level rather than making everything easier.",
+],
+advanced:[
+"Above about level six the words stop being predictable from sound, and origin, roots and routine become the whole game. That is the point where the Advanced Pack's expert chapters start to matter more than more practice.",
+"If you are weighing the Advanced Pack, look at the misses rather than the level: when a child is losing words to Greek and Latin patterns rather than to carelessness, the expert chapters are what is missing.",
+],
+placement:[
+"The app is still working out the right word difficulty. Let them practise normally for a few sessions — every graded word is evidence, and a level guessed from a handful of words is worse than one earned from thirty.",
+"Do not hand-set the level to flatter or to stretch. Words too easy teach nothing and words too hard teach avoidance; the ramp finds the edge faster than an adult can.",
+],
 };

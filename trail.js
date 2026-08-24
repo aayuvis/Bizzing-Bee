@@ -939,7 +939,24 @@
      at Tier I and twenty-two at Tier III without anyone re-measuring anything.
      Falls back to a straight diagonal if the browser cannot measure the path
      (it always can, but the map must not depend on it). */
+  /* The world is FROZEN once and reused.
+
+     This walks a cubic by arc length, which means one createElementNS, one
+     getTotalLength and n getPointAtLength calls — real SVG geometry work, in the DOM.
+     It sat on the render path: the app re-renders from `state` on nearly every
+     interaction, and a 22-stop act therefore re-solved the same 22 points, against the
+     same unchanged curve, several times a second. Nothing about a road moves.
+
+     It is a pure function of (d, n), so the cache is exact rather than a guess: same
+     path and same stop count can only ever produce the same points. Keyed on both,
+     because one act's road serves 2 stops at Tier I and 22 at Tier III. The returned
+     arrays are frozen — a caller that mutated one would corrupt every later render,
+     and that is the one way a cache like this goes wrong quietly. */
+  const _ptCache = Object.create(null);
   function mapPoints(d, n) {
+    const key = n + '|' + d;
+    const hit = _ptCache[key];
+    if (hit) return hit;
     const out = [];
     let path = null, L = 0;
     try {
@@ -953,8 +970,11 @@
       /* the board clips, so no marker may sit on an edge — a route traced to the
          corner of its painting would put half a medallion outside the frame */
       x = Math.min(96, Math.max(4, x)); y = Math.min(93, Math.max(7, y));
-      out.push({ x, y, f });
+      out.push(Object.freeze({ x, y, f }));
     }
+    // getTotalLength returns 0 before the SVG machinery is ready; that fallback is a
+    // straight diagonal, not the road, so it must never be the answer we keep.
+    if (L) _ptCache[key] = Object.freeze(out);
     return out;
   }
 
