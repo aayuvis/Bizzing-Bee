@@ -427,8 +427,16 @@
           row.push(wall?0:1);
         } M.push(row); } return M; }
     const MAZE=makeMaze(COLS,ROWS,HEX);
-    const CFG={easy:{moths:2,speed:2.0,target:900,time:150},medium:{moths:3,speed:2.6,target:1200,time:180},
-               hard:{moths:4,speed:3.1,target:1500,time:180},champ:{moths:5,speed:3.6,target:1800,time:180}}[diff];
+    /* SPEED IS IN CELLS PER SECOND, and the bee moves at speed x 1.25. It used to run at
+       2.5 (easy) to 4.5 (champ) cells/s, against about 1.5-2.0 for the arcade maze game
+       everyone is comparing it to — play-tested as "the avatar is moving too fast", and it
+       is: at 3.25 cells/s a 13-wide maze crosses in four seconds and a junction arrives
+       before you have decided. Cut 25%, which lands the bee at 1.9 to 3.4. The moths keep
+       their 0.8 relative disadvantage because the bee's 1.25 multiplier is unchanged, and
+       the round is not made harder by the cut: the moth swarm fix above already removed
+       far more pressure than a slower bee adds. */
+    const CFG={easy:{moths:2,speed:1.5,target:900,time:150},medium:{moths:3,speed:1.95,target:1200,time:180},
+               hard:{moths:4,speed:2.35,target:1500,time:180},champ:{moths:5,speed:2.75,target:1800,time:180}}[diff];
     // bee starts on the centre corridor row (odd row = always open)
     let scr=Math.floor(ROWS/2); if(scr%2===0) scr=Math.max(1,scr-1); let scc=Math.floor(COLS/2);
     try{ if(MAZE[scr][scc]===0) scc=Math.max(1,scc-1); MAZE[scr][scc]=2; }catch(e){}
@@ -1073,7 +1081,10 @@
     const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
 
     /* ---- pseudo-3D track ---- */
-    const segLen=200, roadW=2200, rumbleLen=3, drawDist=130, camH=3600, fov=62;   // zoomed-in, high camera — the race world sits close and large, looking down onto the track
+    // drawDist is the count of road segments projected AND drawn every frame — the
+    // dominant per-frame cost. 130 segments is 2.8s of road at top speed; 100 is 2.2s and
+    // still well past the horizon haze, for 23% less work on every frame.
+    const segLen=200, roadW=2200, rumbleLen=3, drawDist=100, camH=3600, fov=62;   // zoomed-in, high camera — the race world sits close and large, looking down onto the track
     // Elevated chase-cam: taller camera + a horizon lifted above mid-screen so you
     // look DOWN onto more of the track ahead instead of skimming it at ground level.
     const horizonY=Math.round(Ht*0.30);   // horizon high up-screen: more track visible from above
@@ -1483,9 +1494,11 @@
     function update(dt){
       boostT=Math.max(0,boostT-dt); if(boostT===0) boostMul=1; shieldT=Math.max(0,shieldT-dt); spinFlashT=Math.max(0,spinFlashT-dt);
       const seg=segs[Math.min(segs.length-1,Math.floor(pos/segLen))];
-      // steer first (works even at a crawl, so you can always get back on) — HALF the old
-      // speed: a tap nudges one lane-notch instead of leaping across the road
-      const dxs=dt*1.1*Math.max(0.42,v/maxV);
+      /* Steering was halved in an earlier tuning pass to stop a tap leaping across the
+         road. It overshot: at 1.1 a full crossing took 1.8 SECONDS of holding, which is
+         what "it's just self-driving, it's not gonna let me swerve" describes. Back to
+         2.2 — the road crosses in 0.9s, a tap still nudges, and the kart answers. */
+      const dxs=dt*2.2*Math.max(0.42,v/maxV);
       playerX+=steer*dxs;
       // world-straight through bends: the road curves away under a hands-off kart, so the
       // player steers INTO the curve to hold the racing line (this is not auto-correct —
@@ -1509,9 +1522,21 @@
         if(d<segLen*0.9 && Math.abs(playerX-h.off)<CATCH && v>maxV*0.25){ h.hit=true; setTimeout(()=>{h.hit=false;},1400);
           if(h.kind==='cop'){ v*=0.5; spinFlashT=0.5; try{flash('🚓 Pulled over — the cops!');}catch(_){} }
           else { v*=0.55; spinFlashT=0.5; try{flash('🛢️ Slipped on oil!');}catch(_){} } } }); }
-      items.forEach(it=>{ if(it.gone) return; const iz=it.seg*segLen; const d=iz-pm;
-        if(d>-segLen*0.5&&d<segLen*1.1 && Math.abs(playerX-it.off)<CATCH){ it.gone=true; spellGate(); } });
+      /* THE BOX IS SWEPT, NOT SAMPLED. This used to ask "is the box inside a 1.6-segment
+         window THIS frame?", which is a point test against a fixed window and therefore
+         frame-rate dependent: at 60fps the kart covers 0.77 of a segment per frame and you
+         get two chances, but a 100ms hitch — measured, they happen — carries it 4.6
+         segments and straight past the window with no chance at all. That is the reported
+         "the box didn't trigger", and it is the same bug as the reported lag.
+         Now it asks "did we CROSS the box between the last frame and this one?", which is
+         true however long the frame took. */
+      const _prevPm=pm;
       pos+=v*dt;
+      const _pm2=pos%trackLen;
+      const _wrapped=_pm2<_prevPm;                    // crossed the start/finish this frame
+      items.forEach(it=>{ if(it.gone) return; const iz=it.seg*segLen;
+        const crossed=_wrapped ? (iz>_prevPm || iz<=_pm2) : (iz>_prevPm && iz<=_pm2);
+        if(crossed && Math.abs(playerX-it.off)<CATCH){ it.gone=true; spellGate(); } });
       const nl=1+Math.floor(pos/trackLen);
       if(nl>lap&&nl<=CFG.laps){ lap=nl; items.forEach(it=>it.gone=false); try{flash('🏁 Lap '+lap+' of '+CFG.laps+'!');}catch(_){ } }
       if(pos>=TOTAL){ over=true; return finish(); }

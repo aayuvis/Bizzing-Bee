@@ -70,6 +70,12 @@ ok(/moths\.some\(m=>Math\.abs\(Math\.round\(m\.px\)-c\)\+Math\.abs\(Math\.round\
 const reseed = +src.match(/if\(flowerT<=0&&!flower\)\{ flowerT=(\d+); placeFlower\(\); \}/)[1];
 ok(reseed <= 4, `a new flower every ${reseed}s (was 9)`);
 ok(/finish\(score>=CFG\.target && spelled>=2\)/.test(src), 'a timed-out round needs words spelled, not just dots eaten');
+// the bee is paced like an arcade maze game, not a racing game
+const BEE_MULT = +src.match(/step\(bee,CFG\.speed\*([\d.]+)\)/)[1];
+for (const [k, c] of Object.entries(HC)) {
+  const cps = c.speed * BEE_MULT;
+  ok(cps <= 3.5, `${k.padEnd(6)} bee runs at ${cps.toFixed(2)} cells/s (arcade maze pace is ~1.5-2.0; was ${(c.speed / 0.75 * BEE_MULT).toFixed(2)})`);
+}
 
 for (const [k, c] of Object.entries(HC)) {
   const { cols, rows } = DIM[k];
