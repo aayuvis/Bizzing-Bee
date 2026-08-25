@@ -68,6 +68,13 @@
      headers over artwork. Aliased rather than reimplemented so the Atlas can never drift
      from the pill every other screen uses. */
   const bpill = (act, label, arg) => { try { return window.SB_BACK ? SB_BACK(act, label, arg, true) : ''; } catch (e) { return ''; } };
+  /* ENTRANCE ANIMATIONS PLAY ON ARRIVAL, NOT ON EVERY RENDER. The idle loader
+     re-renders the app several times just after boot as data shards land, and a
+     rise/pop that replays on each rebuild reads as the whole act board flashing
+     (play-tested as exactly that, on Act I). TRAIL.view() compares a key of the
+     current view identity against the last one it drew: same key, no animation. */
+  let _vk = '', _fresh = true, _popK = '';
+  const RISE = d => _fresh ? ('animation:sb-rise ' + (d || '.35s') + ' ease both;') : '';
   const unitsOf = tab => tab === 'exp' ? T().expedition.units : T().honey.units;
   const actsOf = tab => tab === 'exp' ? T().expedition.expeds : T().honey.acts;
   const unit = id => unitsOf(course()).find(u => u.id === id);
@@ -583,7 +590,7 @@
           <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:16px">Five expert expeditions</span>
           <span style="display:block;font-size:13px;color:var(--muted);margin-top:3px">The hardest chapters in the library — 90% gates, no mercy, national-level words. Unlocks with the Advanced Pack.</span></span>
           <span style="flex-shrink:0;padding:10px 17px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;white-space:nowrap">Unlock · $${price}/yr →</span></button>`;
-    return `<div style="animation:sb-rise .35s ease both;max-width:660px;margin:0 auto">
+    return `<div style="${RISE()}max-width:660px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
         <span style="font-family:var(--display);font-weight:800;font-size:22px">${esc(T().names.honey)}</span>
         ${atlasPills(c)}</div>
@@ -606,7 +613,7 @@
       <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:14.5px">${title}</span>
       <span style="font-size:12px;color:var(--muted);font-weight:600">${sub}</span></span>
       <button data-act="${act2}" style="flex-shrink:0;padding:9px 16px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:12.5px">${cta}</button></div>`;
-    return `<div style="animation:sb-rise .35s ease both;max-width:640px;margin:0 auto">
+    return `<div style="${RISE()}max-width:640px;margin:0 auto">
       <div style="position:relative;border-radius:20px;overflow:hidden;margin-bottom:14px;height:112px">${banner(world, 112, course() === 'exp' ? 3 : 2)}${scrim()}
         <div style="position:absolute;left:14px;right:14px;top:10px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px">
           <span style="justify-self:start">${bpill('trailBack', 'Map')}</span>
@@ -644,7 +651,7 @@
     const c = active(); const u = unit(state.trailUnit); if (!u) return viewMap();
     const ws = lapWords(u, lapOf(c), 24).map(x => ({ w: x.w, d: x.d, s: x.s, p: x.p, o: x.o, h: x.h }));
     state.trailWordsN = ws.length;
-    return `<div style="animation:sb-rise .3s ease both;max-width:640px;margin:0 auto">
+    return `<div style="${RISE(".3s")}max-width:640px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><button data-act="trailUnit" data-arg="${escA(u.id)}" style="color:var(--muted);font-weight:700;font-size:13px">← ${esc(u.title.split('—')[0].trim())}</button></div>
       ${wordFlash(ws, state.trailWordIdx || 0, 'trailWordNav', { selfMark: true })}
       <div style="display:flex;justify-content:center;gap:10px;margin-top:12px">
@@ -658,7 +665,7 @@
     const back = state.trailChk ? 'trailBack' : 'trailUnit';
     if (q2.over) {
       const pct = Math.round((q2.pct || 0) * 100);
-      return `<div style="animation:sb-rise .35s ease both;max-width:460px;margin:0 auto;text-align:center">
+      return `<div style="${RISE()}max-width:460px;margin:0 auto;text-align:center">
         <div style="background:var(--bg2);border-radius:20px;padding:28px;box-shadow:0 0 0 1px var(--line),var(--glow)">
           <div style="width:92px;height:92px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(${q2.pass ? 'var(--good)' : 'var(--bad)'} ${pct}%,var(--surface2) 0)"><div style="width:72px;height:72px;border-radius:50%;background:var(--bg2);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:21px">${pct}%</div></div>
           ${q2.lapUp ? `<h2 style="font-family:var(--display);font-size:21px;margin-bottom:6px">TIER ${lapOf(c)} UNLOCKED</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">The whole route returns — tougher words, same ideas. That is how it sticks.</p>`
@@ -686,7 +693,7 @@
           : i === picked ? 'background:color-mix(in srgb,var(--bad) 14%,transparent);border:1.5px solid var(--bad)' : 'background:var(--surface2);border:1px solid var(--line);opacity:.55';
           return `<button data-act="tqPick" data-arg="${i}" ${picked != null ? 'disabled' : ''} style="display:flex;gap:10px;align-items:flex-start;text-align:left;padding:12px 14px;border-radius:12px;font-weight:700;font-size:13px;line-height:1.4;${st}"><span style="flex-shrink:0;width:22px;height:22px;border-radius:7px;background:var(--chip);color:var(--accent);display:grid;place-items:center;font-size:11.5px;font-weight:800">${i + 1}</span><span>${esc(String(o.c))}</span></button>`; }).join('')}</div>`;
     }
-    return `<div style="animation:sb-rise .3s ease both;max-width:560px;margin:0 auto">
+    return `<div style="${RISE(".3s")}max-width:560px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
         <button data-act="trailBack" style="color:var(--muted);font-weight:700;font-size:13px">✕ Quit</button>
         <div style="flex:1;height:8px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;background:var(--accent);width:${Math.round(q2.i / q2.items.length * 100)}%"></div></div>
@@ -917,8 +924,9 @@
       </button>`;
     }).join('');
     const caches = (m.t || []).map((xy, i) => treMark(c, slug, i, xy[0], xy[1], dn, stops.length)).join('');
-    panTo(sel, pts);
-    return `<div style="animation:sb-rise .35s ease both;max-width:900px;margin:0 auto">
+    const popNew = _popK !== ('u:' + slug + ':' + sel); if (popNew) _popK = 'u:' + slug + ':' + sel;
+    if (popNew || _fresh) panTo(sel, pts);   // never yank a hand-scrolled board on a background render
+    return `<div style="${RISE()}max-width:900px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
         <button data-act="trailToMap" style="display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:var(--muted)">← The map</button>
         <span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px">
@@ -956,7 +964,7 @@
     const advBoard = atlasBoard(c, 'exp');
     state.trailCourse = 'honey';
     const price = (window.ADV && ADV.price) ? ADV.price() : 299;
-    return `<div style="animation:sb-rise .35s ease both;max-width:980px;margin:0 auto">
+    return `<div style="${RISE()}max-width:980px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
         <span style="font-family:var(--display);font-weight:800;font-size:22px">${esc(T().names.honey)}</span>
         ${atlasPills(c)}</div>
@@ -1269,7 +1277,8 @@
       </button>`;
     }).join('');
     const caches = (m.t || []).map((xy, i) => treMark(c, act.id, i, xy[0], xy[1], dn, n)).join('');
-    panTo(sel, pts);
+    const popNew = _popK !== ('a:' + act.id + ':' + sel); if (popNew) _popK = 'a:' + act.id + ':' + sel;
+    if (popNew || _fresh) panTo(sel, pts);   // never yank a hand-scrolled board on a background render
 
     const cur = nodes[sel], node = cur.n, locked = cur.i > fr && !devOn();
     const u = node.kind === 'unit' ? node.u : null;
@@ -1292,7 +1301,7 @@
     const _tx = _side === 'l' ? '-16px' : _side === 'r' ? 'calc(-100% + 16px)' : '-50%';
     const _ty = _below ? '24px' : 'calc(-100% - 24px)';
     const _ax = _side === 'l' ? '24px' : _side === 'r' ? 'calc(100% - 24px)' : '50%';
-    const stopPop = `<div class="atlas-pop${_below ? ' below' : ''}" style="left:${_P.x.toFixed(2)}%;top:${_P.y.toFixed(2)}%;--tx:${_tx};--ty:${_ty};--ax:${_ax}">
+    const stopPop = `<div class="atlas-pop${_below ? ' below' : ''}" style="left:${_P.x.toFixed(2)}%;top:${_P.y.toFixed(2)}%;--tx:${_tx};--ty:${_ty};--ax:${_ax};${(popNew || _fresh) ? '' : 'animation:none;'}">
       <div class="atlas-pop-in">
         <div style="display:flex;align-items:flex-start;gap:13px">
           <span style="width:40px;height:40px;flex-shrink:0;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:15px;${st(sel) === 'done' ? 'background:linear-gradient(160deg,#FFE49B,#E8A81C);color:#4A3306' : st(sel) === 'now' ? 'background:#FFFBEF;border:2px solid #F0B429;color:#7A5300' : 'background:var(--surface2);color:var(--muted)'}">${st(sel) === 'done' ? '✓' : (sel + 1)}</span>
@@ -1313,7 +1322,7 @@
         </div>
       </div></div>`;
 
-    return `<div style="animation:sb-rise .35s ease both;max-width:980px;margin:0 auto">
+    return `<div style="${RISE()}max-width:980px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
         <button data-act="trailBack" style="display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:var(--muted)">← The map</button>
         <span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px">
@@ -1351,6 +1360,8 @@
 
   window.TRAIL = { view: () => { if (!T()) return '<div style="padding:40px;text-align:center;color:var(--muted)">Opening the Word Atlas…</div>';
     const v = state.trailView || 'map';
+    const k = v + '|' + (state.trailAct || '') + '|' + (state.trailUnit || '') + '|' + (state.trailChk || '') + '|' + (state.tq ? (state.tq.over ? 'qo' : 'q' + state.tq.i) : '');
+    _fresh = k !== _vk; _vk = k;
     return v === 'unit' ? viewUnit() : v === 'words' ? viewWords() : v === 'quiz' ? viewQuiz()
       : v === 'ultra' ? viewUltraAct() : v === 'act' ? viewAct() : viewAtlas(); } };
 

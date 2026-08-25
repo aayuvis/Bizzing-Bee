@@ -10100,8 +10100,15 @@ function save(){ try{ localStorage.setItem('sb_saas_v2', JSON.stringify({ theme:
    repainting the SAME view, suppress the entrances. Moving between screens
    still animates, which is the only time it meant anything. */
 function viewKey(){
+  /* trailView/Act/Unit/Chk/Stop, not the long-dead trailOpen: with one key for the
+     whole Atlas, sb-norise never lifted on real navigation inside it (no entrance
+     animation ever replayed on arrival) — and background re-renders still flashed
+     the stop callout, whose pop is a CLASS animation the [style*=…] rules below
+     cannot reach. trail.js gates its own inline rises and the callout by the same
+     identity; this key keeps the body-level mechanism telling the same story. */
   try{ return [state.screen, state.nav, state.view, state.coachTab, state.vocTab,
-    state.vocDeck, state.mb && state.mb.view, state.trailOpen, state.chapter].join('|'); }
+    state.vocDeck, state.mb && state.mb.view, state.trailView, state.trailAct,
+    state.trailUnit, state.trailChk, state.trailStop, state.chapter].join('|'); }
   catch(e){ return ''; }
 }
 var _lastViewKey = null;
