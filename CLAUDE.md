@@ -630,6 +630,31 @@ handlers. App lives in this folder; open `index.html` to run.
   hobbit → dogma → oregano → melee → dhole → harmattan → benthamite. It rebuilds when the
   corpus grows under it, like every other memoised pool.
 
+## The two word-games must keep the WORD in front of the player
+Both were play-tested as "it stopped being about spelling", and both had the same shape of
+bug: the collectible that TRIGGERS a word was placed without regard to where the player
+actually is. Guard for both: `tests/arcade-geometry.js`, which parses the real constants
+out of saga2.js so a retune cannot quietly undo them.
+- **Keep Flying — a pickup goes at the MIDPOINT of the line between two consecutive gaps.**
+  Not at a random height (the original bug: honey flush against a pillar, spell it or
+  crash) and not 170px past one tower at THAT tower's gap height either — which was my
+  first fix, sounded right, and played badly. A flappy bee cannot hold a height: taking one
+  meant threading gap N, HOLDING that line for a second, then climbing or diving to gap N+1
+  at a different random height. Three precise manoeuvres for one word. The bee's real path
+  is the line between the two gaps, so the pickup sits on it. That is why a pickup is placed
+  when tower N+1 spawns, not tower N — only then are both ends known (`prevTower`).
+- **Everything a tower places MUST drift at `CFG.speed`.** Hearts were on `CFG.speed*0.8`
+  while the geometry that placed them moved at 1x, so a heart laid on the lane slid off it.
+  The comment above the placement code claimed "everything drifts at CFG.speed"; hearts did
+  not, and the first test never checked the drift rate.
+- **Honeycomb Run — moths do not breed.** A 16%-per-second spawn up to `CFG.moths+6`
+  saturated EVERY difficulty at 8–11 chasers inside 38 seconds (easy 51 open cells / 8
+  moths), which erased the tuned per-difficulty counts and turned the round into evasion.
+  One late arrival at the halfway mark, once. And the flower — the only way to spell in that
+  game — used to pick a uniformly random open cell every 9s, often the far corner past a
+  moth; `placeFlower()` now puts it 2–6 cells from the BEE, never on a moth, re-seeded every
+  3s. A timed-out round also needs `spelled>=2`, so a round spent dodging is not a round won.
+
 ## Adding a saga chapter
 1. Append to `CH_META`: `{n, act, title, world, engine, opts, script}` (sequential `n`).
 2. Add a `SB_SAGA_SCRIPT[script]` block (format above).
