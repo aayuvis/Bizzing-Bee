@@ -630,6 +630,26 @@ handlers. App lives in this folder; open `index.html` to run.
   hobbit → dogma → oregano → melee → dhole → harmattan → benthamite. It rebuilds when the
   corpus grows under it, like every other memoised pool.
 
+## flash() must never rebuild the app while a game is on screen
+- `flash()` called `render()`, which rebuilds the whole app DOM from ~1MB of template
+  strings — and `scheduleToast` called it AGAIN 2.2s later when the toast cleared. The
+  arcade games run in their own fullscreen overlay appended to `<body>` and flash
+  constantly (every lap, hazard, power-up, fizzled box), so every message cost two full
+  app rebuilds under a game trying to hold 60fps. **Measured in the Grand Prix: 12 root
+  rebuilds and a p99 frame of 33.4ms over five seconds; with the fix, 0 rebuilds and a
+  p99 of 16.8ms.** `_gameOverlayUp()` detects `.arc-play` / `.bz-play` / `.sg-hud` and
+  `_paintToast()` writes the toast straight into the DOM instead. This is what "it's very
+  laggy" was, and it is the same bug as a missed item box (below).
+- **A pickup test must be SWEPT, not sampled.** The Grand Prix asked "is the box inside a
+  1.6-segment window THIS frame?" — a point test against a fixed window, and therefore
+  frame-rate dependent. At 60fps the kart covers 0.77 segments a frame and gets two
+  chances; a 100ms hitch carries it 4.6 segments and straight past. It now asks "did we
+  CROSS the box between the last frame and this one?", which holds however long the frame
+  took, with a wrap case for the start/finish line.
+- **Grand Prix steering was halved in an earlier pass and overshot.** At 1.1 a full road
+  crossing took 1.8 SECONDS of holding, which is what "it's just self-driving" describes.
+  2.2 crosses in 0.9s and a tap still only nudges.
+
 ## The two word-games must keep the WORD in front of the player
 Both were play-tested as "it stopped being about spelling", and both had the same shape of
 bug: the collectible that TRIGGERS a word was placed without regard to where the player

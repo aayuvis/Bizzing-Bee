@@ -330,8 +330,31 @@ const trunc = (s,n) => { s=s||''; return s.length>n ? esc(s.slice(0,n).replace(/
 const fmtN = (n) => String(n==null?'':n).replace(/\B(?=(\d{3})+(?!\d))/g,',');
 function set(patch){ Object.assign(state, patch); render(); }
 let _toastTimer = null;
-function flash(msg){ state.toast = msg; scheduleToast(); render(); }
-function scheduleToast(ms){ clearTimeout(_toastTimer); _toastTimer = setTimeout(() => { state.toast=''; render(); }, ms||2200); }
+/* THE TOAST MUST NOT REBUILD THE APP WHILE A GAME IS ON SCREEN.
+   flash() called render(), which rebuilds the entire app DOM out of ~1MB of template
+   strings. The arcade games run in their OWN fullscreen overlay appended to <body>, and
+   they flash constantly — every lap, every hazard, every power-up, every fizzled box — so
+   each one cost a full app rebuild underneath a game that is trying to hold 60fps, and
+   scheduleToast cost a SECOND one 2.2 seconds later when the toast cleared. Measured in
+   the Grand Prix: a 100ms frame, which at top speed carries the kart 4.6 road segments.
+   That is the reported lag, and it is why the item box could be missed.
+   When an overlay is up the toast is written straight into the DOM instead. */
+function _gameOverlayUp(){ try{ return !!document.querySelector('.arc-play,.bz-play,.sg-hud'); }catch(e){ return false; } }
+function _paintToast(){ try{
+    let el=document.getElementById('sb-toast-live');
+    if(!state.toast){ if(el) el.remove(); return true; }
+    if(!el){ el=document.createElement('div'); el.id='sb-toast-live'; el.className='sb-toast';
+      el.style.cssText='position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:9999;pointer-events:none;background:var(--accent);color:#fff;font-weight:800;font-size:15px;padding:13px 22px;border-radius:14px;box-shadow:0 8px 26px rgba(10,6,26,.34);max-width:min(90vw,460px);text-align:center';
+      document.body.appendChild(el); }
+    el.textContent=state.toast; return true;
+  }catch(e){ return false; } }
+function flash(msg){ state.toast = msg; scheduleToast();
+  if(_gameOverlayUp() && _paintToast()) return;      // a game is running: do not rebuild the app
+  render(); }
+function scheduleToast(ms){ clearTimeout(_toastTimer); _toastTimer = setTimeout(() => { state.toast='';
+  if(_gameOverlayUp() && _paintToast()) return;
+  try{ document.getElementById('sb-toast-live')?.remove(); }catch(e){}
+  render(); }, ms||2200); }
 
 const nkey = (w) => (w||'').toLowerCase().trim();
 const sample = (arr,n) => { const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=a[i];a[i]=a[j];a[j]=t; } return n?a.slice(0,n):a; };
@@ -3216,6 +3239,14 @@ function viewOnboarding(){
    collapsing the grid — otherwise the row reflows the moment it arrives and the
    whole screen jumps. Same shell, same height, a quiet shimmer where the words
    will be. */
+/* One waiting state for the whole app: the same comb the boot screen fills, at panel
+   scale. A screen that waited on its data used to print a bare line of text, which reads
+   as a different product than the one that just started up. */
+function hiveLoader(label){ let cells='';
+  for(let i=0;i<10;i++) cells+='<i class="sb-hive-cell" style="animation-delay:'+(i*0.13).toFixed(2)+'s"></i>';
+  return `<div class="sb-hive" role="status" aria-live="polite">
+    <div class="sb-hive-comb" aria-hidden="true">${cells}</div>
+    <div class="sb-hive-lbl">${esc(label||'filling the hive…')}</div></div>`; }
 function cardHold(label,h){ return `<div class="sb-card" aria-hidden="true" style="min-height:${h||128}px;padding:14px;display:flex;flex-direction:column;justify-content:center;gap:9px">
   <span style="font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">${esc(label)}</span>
   <span class="sb-hold" style="width:58%"></span><span class="sb-hold" style="width:88%"></span><span class="sb-hold" style="width:71%"></span></div>`; }
@@ -5342,28 +5373,31 @@ function viewHome(){
           <span style="width:8px;height:8px;border-radius:3px;background:${col};flex-shrink:0"></span>
           <span style="color:var(--muted)">${lab}</span>
           <span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;color:var(--ink,var(--text));white-space:nowrap">${val}<span style="color:var(--muted)">/${tgt}</span></span></div>`;
-        /* The rings card is a BUTTON, so the band pill cannot live inside it — a button
-           may not contain a button. Card and pill are siblings in one column instead. */
+        /* ONE card, two actions. It used to be a single <button>, which is why the band
+           had to sit outside it as a sibling — a button may not contain a button. The card
+           is a <div> now and each half is its own control: the rings and their three lines
+           open the Coach, the level strip along the foot opens the Bee Band page. Both keep
+           a real hit area, and neither is nested inside the other. */
         const bb=beeBand(c); const st=bandStage(bb.band);
-        const bandRow=`<button data-act="${bb.calibrating?'startLevelTest':'setNav'}" data-arg="beeband" class="${bb.calibrating?'sb-band-call':''}" aria-label="${bb.calibrating?'Find your spelling level':escA('Spelling level '+bb.band+', '+st.n)}" title="${bb.calibrating?'A 3-minute placement quest sets your words, games and tips exactly to you':escA(st.n+' · '+st.s+' — your spelling level. Tap to see how to level up.')}" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 13px;border-radius:14px;background:${bb.calibrating?'var(--chip)':'var(--paper,var(--bg2))'};border:1px solid ${bb.calibrating?'color-mix(in srgb,var(--accent) 45%,var(--line))':'var(--line)'};box-shadow:var(--sh-rest);cursor:pointer">
+        return `<div class="sb-card" style="display:flex;flex-direction:column;gap:0;min-height:178px;padding:0;overflow:hidden">
+          <button data-act="openCoachDesk" title="Coach speaks — what Bizzy makes of today" style="display:flex;align-items:center;gap:13px;flex:1;padding:14px;text-align:left;cursor:pointer;width:100%;background:none;border:0">
+            <span style="flex-shrink:0;width:104px;height:104px;display:grid;place-items:center">${ringsSVG(104,[m.pApp,m.pPrac,m.pWords])}</span>
+            <span style="min-width:0;flex:1">
+              <span class="sb-ct" style="display:block;margin-bottom:6px">Daily goal${allDone?' ✓':''}</span>
+              <span style="display:flex;flex-direction:column;gap:4px">
+                ${line('App time', RING_COL[0][0], fmtMins(m.app), targets(c).app+'m')}
+                ${line('Practise time', RING_COL[1][0], fmtMins(m.prac), targets(c).prac+'m')}
+                ${line('Word count', RING_COL[2][0], m.words, m.tWords)}
+              </span>
+              <span class="sb-cl" style="display:block;margin-top:8px;color:var(--accent);font-weight:800">${allDone?'All three rings closed — Coach speaks →':'Coach speaks →'}</span>
+            </span></button>
+          <button data-act="${bb.calibrating?'startLevelTest':'setNav'}" data-arg="beeband" class="${bb.calibrating?'sb-band-call':''}" aria-label="${bb.calibrating?'Find your spelling level':escA('Spelling level '+bb.band+', '+st.n)}" title="${bb.calibrating?'A 3-minute placement quest sets your words, games and tips exactly to you':escA(st.n+' · '+st.s+' — your spelling level. Tap to see how to level up.')}" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:11px 14px;border:0;border-top:1px solid var(--line);background:${bb.calibrating?'var(--chip)':'var(--surface2)'};cursor:pointer">
             <span style="flex:none;display:inline-flex;line-height:0;${bb.calibrating?'':'width:26px;height:28px'}">${bb.calibrating?'✨':bandArt(bb.band)}</span>
             <span style="min-width:0;flex:1">
               <span style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)">Your spelling level</span>
               <span style="display:block;font-family:var(--display);font-weight:800;font-size:14.5px;line-height:1.2;color:var(--text)">${bb.calibrating?'Find your level':esc(st.n+' · Level '+bb.band)}</span></span>
-            <span style="flex:none;font-weight:800;font-size:12.5px;color:var(--accent)">${bb.calibrating?'Start →':'→'}</span></button>`;
-        return `<div style="display:flex;flex-direction:column;gap:9px">
-        <button data-act="openCoachDesk" title="Coach speaks — what Bizzy makes of today" class="sb-card" style="display:flex;align-items:center;gap:13px;min-height:128px;padding:14px;text-align:left;cursor:pointer;width:100%">
-        <span style="flex-shrink:0;width:104px;height:104px;display:grid;place-items:center">${ringsSVG(104,[m.pApp,m.pPrac,m.pWords])}</span>
-        <span style="min-width:0;flex:1">
-          <span class="sb-ct" style="display:block;margin-bottom:6px">Daily goal${allDone?' ✓':''}</span>
-          <span style="display:flex;flex-direction:column;gap:4px">
-            ${line('App time', RING_COL[0][0], fmtMins(m.app), targets(c).app+'m')}
-            ${line('Practise time', RING_COL[1][0], fmtMins(m.prac), targets(c).prac+'m')}
-            ${line('Word count', RING_COL[2][0], m.words, m.tWords)}
-          </span>
-          <span class="sb-cl" style="display:block;margin-top:8px;color:var(--accent);font-weight:800">${allDone?'All three rings closed — Coach speaks →':'Coach speaks →'}</span>
-        </span></button>
-        ${bandRow}</div>`; })()}
+            <span style="flex:none;font-weight:800;font-size:12.5px;color:var(--accent)">${bb.calibrating?'Start →':'→'}</span></button>
+        </div>`; })()}
       ${wohTile}
     </div>
     <div class="sb-home-r2">
@@ -6213,7 +6247,7 @@ function viewConceptList(){
       <span style="font-size:12px;color:var(--muted);font-weight:700">${pct}%</span>
     </div>
     ${backRow}${search}
-    ${loading?'<div style="padding:60px 0;text-align:center;color:var(--muted);font-weight:700">Loading chapters…</div>':''}
+    ${loading?hiveLoader('loading chapters…'):''}
     ${mainContent}
   </div>`;
 }
@@ -9757,7 +9791,7 @@ function ttOptions(q,i,col){
   </div>`; }
 const TT_COL={animals:'#4F9E6A',bugs:'#E0922E',ocean:'#3D7DF0',space:'#7B52E0',body:'#E8458C',plants:'#3C8455',food:'#F0703C',sports:'#2A63D6',music:'#B14FC4',myth:'#9B59D0',world:'#13A892',history:'#C8901B',science:'#0E8A78',numbers:'#6A47F5',weather:'#36A3D9',machines:'#4A6B8A',art:'#DC5B7E',fest:'#D6453A',story:'#7C5CFF',words:'#C8791B',india:'#E07A18',code:'#3B6FE0',langs:'#0E8A78',explore:'#B8860B',lit:'#8A5BD6',ent:'#E0567A',brands:'#2E8FB8',quotes:'#C8791B',wroots:'#4F9E6A',wbreak:'#2A8FA8',wmeaning:'#7C5CFF',wstories:'#C8791B',eponyms:'#A8763C'};
 function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const ths=ttThemes();
-  if(!ths.length) return `<div style="max-width:760px;margin:0 auto">${pageHead('Trivia Training','loading…','')}</div>`;
+  if(!ths.length) return `<div style="max-width:760px;margin:0 auto">${pageHead('Trivia Training','','')}${hiveLoader('loading the question bank…')}</div>`;
   // this level's cards are still on the wire — say so rather than drawing empty chapters
   if(S.ttLoading||S.ttLoadErr){ const lv=ttBand(c); const LVN=['','Starter','Easy','Medium','Hard','Champion'];
     const n=((window.SB_TRIVIA||{}).byLevel||{})[lv]||0;
