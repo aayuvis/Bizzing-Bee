@@ -1072,6 +1072,11 @@
     };
     const SCN=SCENES[opts.scene]||SCENES.meadow;
     const SKY=SCN.sky, NIGHT=(opts.scene==='city');
+    /* DISTANCE FOG — the colour the world dissolves INTO at the horizon. One value per
+       scene, used by both the per-segment fog and the haze band, so the road and the sky
+       agree about how far away "far" looks. */
+    const FOG_RGB={meadow:'214,232,242', sunset:'255,214,160', city:'150,190,235'}[opts.scene]||'214,232,242';
+    const FOG_DENSITY=4.2;   // exponential falloff; higher = the road disappears sooner
     // one epic point-to-point run - length ~= minutes of driving; boxes pace the spelling
     const CFG=calmCFG({easy:{len:1800,laps:2,rivals:3,rival:0.84,haz:0.014,boxEvery:280},
                medium:{len:2300,laps:2,rivals:4,rival:0.90,haz:0.026,boxEvery:300},
@@ -1278,6 +1283,12 @@
       if(!done_&&!o.kart){ cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(px,riderY+hd*0.4,hd*0.32,0,7); cx.fill(); }
       if(o.spin){ cx.font='700 '+Math.round(w*0.7)+'px serif'; cx.textAlign='center'; cx.fillText('💫',px,riderY-hd*0.1); cx.textAlign='left'; } }
 
+    /* hx() returns an opaque shade; the ground needs the same shade at an ALPHA so the
+       painting can show through the far field. */
+    function hxa(hexc,mul,a){ const c=hx(hexc,mul);
+      const m=/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(c);
+      if(!m) return c;
+      return 'rgba('+parseInt(m[1],16)+','+parseInt(m[2],16)+','+parseInt(m[3],16)+','+a+')'; }
     function drawBG(){
       const hz=horizonY;
       const sky=sgTex(SKY);
@@ -1286,25 +1297,42 @@
         // (its top ~68%, i.e. sky + skyline/hills) is cropped and mapped onto the area
         // above the horizon; the ground below is OUR gradient. Drawing the whole painting
         // full-height put its bottom edge mid-screen — a hard seam straight across the road.
+        /* THE PAINTING GOES BEHIND THE ROAD, NOT UNDER A LID.
+           The backdrop used to stop dead at the horizon (dh=hz+2) and an OPAQUE ground
+           gradient was painted from the horizon down — so the flat plane overwrote the
+           picture along a hard horizontal line, which is exactly "the road is rendered
+           above the background, not the other way round". Two changes:
+           1. The painting is drawn WELL BELOW the horizon (42% of the way down the ground)
+              using more of its source height, so the far field IS the painting.
+           2. Our ground starts fully TRANSPARENT at the horizon and only becomes opaque
+              as it comes toward the camera. The distance is the artist's; the near ground
+              is ours; there is no line where one becomes the other. */
         const par=Math.sin(pos/2600)*16 - playerX*26;         // gentle parallax
-        const srcH=sky.height*0.68, iw=Wd*1.12, dh=hz+2;
+        const groundH=Ht-hz;
+        const srcH=sky.height*0.88, iw=Wd*1.12, dh=hz+groundH*0.42;
         try{ cx.drawImage(sky, 0,0, sky.width,srcH, -(iw-Wd)/2 + par*0.35, 0, iw, dh); }catch(e){}
-        // ground: horizon haze → open field, so nothing cuts across the track
         const gg=cx.createLinearGradient(0,hz,0,Ht);
-        gg.addColorStop(0, hx(LIGHT.grass,1.16));
-        gg.addColorStop(0.35, LIGHT.grass);
-        gg.addColorStop(1, hx(LIGHT.grass,0.86));
-        cx.fillStyle=gg; cx.fillRect(0,hz,Wd,Ht-hz);
+        gg.addColorStop(0,    hxa(LIGHT.grass,1.16,0));      // horizon: the painting shows through
+        gg.addColorStop(0.16, hxa(LIGHT.grass,1.12,0.35));
+        gg.addColorStop(0.34, hxa(LIGHT.grass,1.02,0.88));
+        gg.addColorStop(0.52, hxa(LIGHT.grass,1.00,1));      // near field: fully ours
+        gg.addColorStop(1,    hxa(LIGHT.grass,0.86,1));
+        cx.fillStyle=gg; cx.fillRect(0,hz,Wd,groundH);
         if(NIGHT){   // neon city: let the skyline bleed a glow onto the ground
           const ng=cx.createLinearGradient(0,hz-30,0,hz+120);
           ng.addColorStop(0,'rgba(150,220,255,.30)'); ng.addColorStop(1,'rgba(150,220,255,0)');
           cx.fillStyle=ng; cx.fillRect(0,hz-30,Wd,150);
         }
         // atmospheric haze across the join, so the painting and our ground read as one distance
-        const hazeCol=NIGHT?'170,205,255':(SCN.prop==='cactus'?'255,214,160':'236,248,255');
-        const hb=cx.createLinearGradient(0,hz-26,0,hz+34);
-        hb.addColorStop(0,'rgba('+hazeCol+',0)'); hb.addColorStop(.45,'rgba('+hazeCol+',.55)'); hb.addColorStop(1,'rgba('+hazeCol+',0)');
-        cx.fillStyle=hb; cx.fillRect(0,hz-26,Wd,60);
+        /* The join is a GRADIENT, not an edge. Same colour the segments fog toward, and
+           three times as tall as it was — 60px could not hide a seam the eye reads as a
+           cut. Weighted below the horizon, because that is where the road arrives. */
+        const hb=cx.createLinearGradient(0,hz-52,0,hz+118);
+        hb.addColorStop(0,'rgba('+FOG_RGB+',0)');
+        hb.addColorStop(.30,'rgba('+FOG_RGB+',.85)');
+        hb.addColorStop(.52,'rgba('+FOG_RGB+',.70)');
+        hb.addColorStop(1,'rgba('+FOG_RGB+',0)');
+        cx.fillStyle=hb; cx.fillRect(0,hz-52,Wd,170);
         return;
       }
       const sway=Math.sin(pos/2600)*34 - playerX*26;
@@ -1347,6 +1375,16 @@
         poly(s1.x+s1.w+r1,s1.y, s2.x+s2.w+r2,s2.y, s2.x+s2.w,s2.y, s1.x+s1.w,s1.y, c.rumble);
         poly(s1.x-s1.w,s1.y, s2.x-s2.w,s2.y, s2.x+s2.w,s2.y, s1.x+s1.w,s1.y, c.road);
         if(c.lane){ const lw1=s1.w*0.03, lw2=s2.w*0.03; poly(s1.x-lw1,s1.y, s2.x-lw2,s2.y, s2.x+lw2,s2.y, s1.x+lw1,s1.y, c.lane); }
+        /* DISTANCE FOG, per segment. Every segment used to be drawn at full colour right up
+           to the horizon, so the furthest one was as saturated as the nearest and the road
+           simply STOPPED at a hard line where the backdrop began — "the flat background
+           image cuts the road off". Fogging each band toward the horizon colour is how
+           every pseudo-3D racer since OutRun has handled this: the road dissolves into the
+           distance instead of terminating. Exponential in the squared distance, which is
+           what atmospheric scattering actually looks like. */
+        const _f=1/Math.exp(Math.pow(n/drawDist,2)*FOG_DENSITY);
+        if(_f<0.995){ cx.fillStyle='rgba('+FOG_RGB+','+(1-_f).toFixed(3)+')';
+          cx.fillRect(0, s2.y, Wd, Math.max(1, s1.y-s2.y+1)); }
         // checkered finish strip
         if(Math.abs(seg.index*segLen-FINVIS)<segLen*2){ const cw=(s1.w*2)/10;
           for(let k=0;k<10;k++){ cx.fillStyle=(k%2)?'#111':'#EEE'; cx.fillRect(s1.x-s1.w+k*cw,s1.y-3,cw,6); } }
