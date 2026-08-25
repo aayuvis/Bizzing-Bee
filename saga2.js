@@ -1380,25 +1380,40 @@
           for(let k=0;k<10;k++){ cx.fillStyle=(k%2)?'#111':'#EEE'; cx.fillRect(s1.x-s1.w+k*cw,s1.y-3,cw,6); } }
         _lastSeg={x:s2.x,y:s2.y,w:s2.w,c:c};
       }
-      /* THE ROAD MEETS THE HORIZON AT A POINT.
-         It did not. drawDist segments end at a finite width — measured on a 900px canvas
-         the furthest drawn band was 108 pixels SHORT of the horizon and still 165 pixels
-         WIDE, so the road stopped in mid-air and the backdrop began. That is the cut.
-         Drawing enough segments to converge honestly would take about 5,400 of them
-         (the projection falls off as 1/z, so the last stretch is enormously long), which
-         is not sensible per frame. Instead the far field is closed with ONE wedge: the
-         road, its rumble strips and the verge, carried from the last real band to the
-         true vanishing point on the horizon. It is the same geometry the segments would
-         have drawn, in three polygons instead of five thousand. */
+      /* THE ROAD MEETS THE HORIZON AT A POINT — BY PROJECTION, NOT BY A WEDGE.
+         drawDist segments end ~108px short of the horizon and still ~165px wide; that
+         stump against the backdrop was the cut. The first fix closed it with one
+         STRAIGHT wedge to a vanishing point, which reads as a grey pyramid the moment
+         the road curves — the wedge ignored the bend the segments had been drawing.
+         This carries on the real projection instead: keep accumulating the track's own
+         curve past drawDist (six additions a segment — the expensive part of a segment
+         is drawing it, not projecting it) and emit a band only when it advances a whole
+         screen pixel. ~110 polygons for a road that genuinely bends with the track all
+         the way down to a sub-pixel sliver at the horizon. */
       if(_lastSeg){
-        const vx=_lastSeg.x, vy=hzY(), c=_lastSeg.c;
-        const L=_lastSeg.x-_lastSeg.w, R=_lastSeg.x+_lastSeg.w, Y=_lastSeg.y;
-        const rw=_lastSeg.w*0.18;
-        // verge first, then rumble, then road — same painter's order as a segment
-        poly(0,Y, 0,vy, Wd,vy, Wd,Y, c.grass);
-        poly(L-rw,Y, vx,vy, vx,vy, L,Y, c.rumble);
-        poly(R+rw,Y, vx,vy, vx,vy, R,Y, c.rumble);
-        poly(L,Y, vx,vy, vx,vy, R,Y, c.road);
+        const c=_lastSeg.c;
+        let pxD=_lastSeg.x, pwD=_lastSeg.w, pyD=_lastSeg.y;
+        let n=drawDist;
+        while(pyD>horizonY+1 && n<6000){
+          const seg=segs[(base.index+n)%segs.length];
+          const xf=x+dx;
+          x+=dx; dx+=seg.curve; n++;
+          const z=(n-basePct)*segLen;            // far edge of the band just entered
+          const sc=camDepth/z;
+          const y=horizonY + sc*camH*Ht/2;       // camera.y is -camH: the road rises TOWARD the horizon from below
+          if(pyD-y<1) continue;                  // sub-pixel step: accumulate, draw later
+          const xs=Wd/2 + sc*xf*Wd/2, w=sc*roadW*Wd/2;
+          /* no grass band out here — the ground gradient (and the painting through it)
+             already owns the far field, and ~110 alpha-blended full-width polys a frame
+             is what pushed p99 from 17ms to 33. Rumble stops once it is a sliver. */
+          if(w>3){ const r1=pwD*0.18, r2=w*0.18;
+            poly(pxD-pwD-r1,pyD, xs-w-r2,y, xs-w,y, pxD-pwD,pyD, c.rumble);
+            poly(pxD+pwD+r1,pyD, xs+w+r2,y, xs+w,y, pxD+pwD,pyD, c.rumble); }
+          poly(pxD-pwD,pyD, xs-w,y, xs+w,y, pxD+pwD,pyD, c.road);
+          pxD=xs; pwD=w; pyD=y;
+        }
+        // whatever sub-pixel sliver remains, closed to its own point
+        if(pyD>hzY()) poly(pxD-pwD,pyD, pxD,hzY(), pxD,hzY(), pxD+pwD,pyD, c.road);
       }
       const order=[];
       for(let n=drawDist-1;n>=0;n--){ const seg=segs[(base.index+n)%segs.length]; if(!seg._vis) continue; const sc=seg.p1.screen;
@@ -1563,20 +1578,17 @@
       const dxs=dt*2.2*Math.max(0.42,v/maxV);
       playerX+=steer*dxs;
       /* THE KART GOES STRAIGHT; THE ROAD TURNS AWAY UNDER IT.
-         This was already the intent and it did not read as one, for three reasons that
-         compounded. The authored curves were softened 30% (`curve*=0.7`), the drift
-         coefficient was a gentle 0.4, and `centri` — the centrifugal push, the whole
-         reason a bend throws a car wide — was declared on the maxV line and NEVER USED.
-         Measured: the hardest bend pushed 1.40 road-units/second against 2.20 of steering,
-         so the player needed 64% of the wheel to hold the line and the road never actually
-         threatened to lose them. It felt like the kart was on rails because, in effect,
-         it was.
-         Now: the authored curves are unsoftened (up to 5), and the push scales with the
-         SQUARE of speed, which is what centrifugal force does — a corner taken flat out
-         throws you wide, the same corner at half throttle barely tugs. At the hardest bend
-         at full speed the drift is 1.70 u/s against 2.20 of steer: the road takes 77% of
-         the wheel and lifting off is a real option. */
-      playerX-=(seg.curve||0)*Math.pow(v/maxV,2)*dt*centri;
+         playerX is the kart's place RELATIVE TO THE ROAD, so leaving it alone in a bend
+         means the kart follows the bend — on rails. For a kart that holds its heading
+         while the road turns under it, the road-relative slide is v × curvature: LINEAR
+         in speed. The first fix used v² ("centrifugal force"), which meant a bend taken
+         at half throttle pulled with a QUARTER of the force — imperceptible at the speeds
+         the game is actually played at, so the kart still read as steering itself.
+         Linear now: the same bend pulls with half the force at half the speed. Flat out
+         the hardest bend (curve 5) still drifts 1.70 u/s against 2.20 of steer — holdable
+         at 77% of the wheel — but at half throttle it is 0.85 u/s (39%), a pull the
+         player feels and must answer, instead of 19% they never noticed. */
+      playerX-=(seg.curve||0)*(v/maxV)*dt*centri;
       playerX=Math.max(-1.2,Math.min(1.2,playerX));
       const offRoad=(playerX<-0.95||playerX>0.95);
       if(offRoad){
@@ -1639,7 +1651,7 @@
     host.appendChild(intro);
     intro.querySelector('#sg-howgo').onclick=()=>{ intro.remove(); countT=1.0; mode='count'; };
     renderHold();
-    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over}),
+    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over,x:playerX}),
       steerTo:(x)=>{playerX=x;}, jump:(z)=>{pos=z;}, grant:(i)=>{held=POWERS[i||0];renderHold();},
       toBox:()=>{ const pm=pos%trackLen, it=items.find(x=>!x.gone&&x.seg*segLen>pm+segLen*10);   // capture tooling: line up the next ? box
         if(it){ pos+= (it.seg-8)*segLen - pm; playerX=it.off; } },
