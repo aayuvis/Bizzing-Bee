@@ -45,10 +45,17 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     SB_TRAIL_PRACTICED(first.arg, 5, 10);
     out.bestSticks = ((c.trail.st || {})[first.arg + ':1'] || {}).p === 80;
 
-    // the card now points at the QUIZ as the next star
+    // the card now points at the QUIZ as the next star, and offers the THREE ROADS
     app.trailUnit(first.arg);
     await new Promise(res => setTimeout(res, 200));
     out.nextIsQuiz = /Pass the Quiz/.test(document.body.innerHTML);
+    out.threeRoads = /Next stop →/.test(document.body.innerHTML)
+      && /★ Gain stars/.test(document.body.innerHTML)
+      && /Practice more words/.test(document.body.innerHTML);
+    // and "Next stop →" actually goes there
+    app.trailNextFrom(first.arg);
+    await new Promise(res => setTimeout(res, 200));
+    out.nextRoadWorks = state.trailUnit !== first.arg && (state.trailView === 'unit' || state.trailView === 'quiz');
 
     // legacy save: a quiz-passed stop (doneMap pct only) still counts as passed + starred
     const second = SB_TRAIL_NEXT();
@@ -85,6 +92,8 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(r.starAfterPractice, 'best practice % is recorded on the stop (80)');
   ok(r.bestSticks, 'a worse later session never lowers the best');
   ok(r.nextIsQuiz, 'once unlocked, the card points at the quiz for the next star');
+  ok(r.threeRoads, 'a cleared stop offers the three roads: Next stop / Gain stars / Practice more words');
+  ok(r.nextRoadWorks, 'and Next stop actually opens the following node');
   ok(r.legacyUnlocks, 'an old save with only a quiz % still counts as passed');
   ok(r.legacyStars, 'and still shows its earned stars');
   ok(r.completionRecords === true || r.completionRecords === 'skipped(checkpoint)',
