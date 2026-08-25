@@ -508,18 +508,22 @@
        distance in frames of different lengths and read as jumping rather than gliding.
        Distance per second is now constant whatever the frame does. `thr` scales with the
        step, which keeps the snap window smaller than it — the invariant that stops the
-       bee vibrating in place at a cell centre. dt is clamped so a background tab or a
-       hitch cannot teleport anyone through a wall. */
+       bee vibrating in place at a cell centre. dt is clamped at TWO frames (34ms): a
+       hitched frame otherwise paints several frames of travel in one hop, which on a
+       device that hitches often IS the jumping. Under the clamp the game runs a shade
+       slow through a hitch instead — invisible; the hop was not. */
     function step(ent,sp,dt){
-      const spd=sp*Math.max(0.001,Math.min(0.05,dt||1/60)), thr=spd*0.6;
+      const spd=sp*Math.max(0.001,Math.min(0.034,dt||1/60)), thr=spd*0.6;
       /* A turn used to be accepted ONLY within one step of a cell centre, so an arrow
          pressed a moment late was dropped in silence and the player waited out a whole
          cell — often a whole corridor — before it took. Play-testing read that as the
          controls being unresponsive, which it was. Two standard maze fixes:
            1. a REVERSE takes effect at once, since turning back needs no repositioning;
-           2. a turn entered while approaching a junction is accepted early and the bee is
-              pulled up to the corner — the forward hop is along the way it is already
-              travelling, so it reads as cutting the corner rather than as a jump. */
+           2. a turn entered while approaching a junction is accepted early — and the bee
+              GLIDES onto the new corridor diagonally at running speed (the Pac-Man
+              cornering rule). It used to be teleported to the corner, a snap of up to
+              0.4 cells — ~40px on a big board — on every early turn, which is exactly
+              the "jumping, not smooth" that play-testing kept reporting. */
       if(ent===bee && (bee.want[0]||bee.want[1]) && (ent.dir[0]||ent.dir[1])){
         const rev = bee.want[0]===-ent.dir[0] && bee.want[1]===-ent.dir[1];
         if(rev){
@@ -528,7 +532,7 @@
           const jc=nextCell(ent.px,ent.dir[0]), jr=nextCell(ent.py,ent.dir[1]);
           if(Math.abs(jc-ent.px)<=TURNWIN && Math.abs(jr-ent.py)<=TURNWIN
              && open(jc+bee.want[0], jr+bee.want[1])){
-            ent.px=jc; ent.py=jr; ent.dir=bee.want.slice();
+            ent.dir=bee.want.slice();          // turn NOW; the cornering glide below closes the offset
           }
         }
       }
@@ -541,6 +545,14 @@
         if(ent!==bee && Math.random()<0.25){ const ops=[[1,0],[-1,0],[0,1],[0,-1]].filter(d=>open(ent.px+d[0],ent.py+d[1])&&!(d[0]===-ent.dir[0]&&d[1]===-ent.dir[1]));
           if(ops.length) ent.dir=ops[Math.floor(Math.random()*ops.length)]; } }
       ent.px+=ent.dir[0]*spd; ent.py+=ent.dir[1]*spd;
+      /* cornering glide: after an early turn the bee sits a little off the new
+         corridor's centreline. Slide onto it at the SAME speed it runs at — a short
+         diagonal, finished in a few frames, instead of a snap. (TURNWIN < 0.5 keeps
+         Math.round pointing at the junction the turn was accepted for.) */
+      if(ent.dir[0]!==0 && ent.py!==Math.round(ent.py)){ const ty=Math.round(ent.py);
+        ent.py+=Math.sign(ty-ent.py)*Math.min(spd,Math.abs(ty-ent.py)); }
+      else if(ent.dir[1]!==0 && ent.px!==Math.round(ent.px)){ const tx=Math.round(ent.px);
+        ent.px+=Math.sign(tx-ent.px)*Math.min(spd,Math.abs(tx-ent.px)); }
     }
     function spellCard(){
       if(wi>=words.length) wi=0; const w=words[wi++]; card={w,typed:'',t:12};
@@ -563,12 +575,18 @@
     /* Every other engine in this file drives on requestAnimationFrame; this one was the
        last on setInterval(1000/60), which free-runs against the display refresh and lands
        frames unevenly — visible judder even at a nominal 60fps. */
-    let last=Date.now(), dotTimer=0, loop=null, raf=null;
-    function frame(){
+    /* the clock is the rAF TIMESTAMP, not Date.now(): Date.now() is whole milliseconds,
+       so at 60Hz the frame delta alternates 16/17ms — a permanent ±3% speed shimmer
+       that reads as micro-judder. The rAF timestamp is sub-millisecond and is the
+       display's own clock. */
+    let last=performance.now(), dotTimer=0, loop=null, raf=null;
+    function frame(ts){
       if(over){ if(loop){ clearInterval(loop); loop=null; } if(raf){ cancelAnimationFrame(raf); raf=null; } return; }
       try{
+        // the clock ticks through a spell card too — otherwise the first frame after
+        // the card closes gets the whole pause as its dt (clamped to 50ms: a visible lurch)
+        const now=(ts!==undefined?ts:performance.now()), dt=Math.min(34, now-last); last=now;
         if(!card){                                   // paused during a spell card
-          const now=Date.now(), dt=Math.min(50, now-last); last=now;
           const ds=dt/1000;
           step(bee,CFG.speed*1.25,ds); moths.forEach(m=>step(m, flee>0?CFG.speed*0.6:CFG.speed, ds));
           flee=Math.max(0,flee-dt/1000);
@@ -668,7 +686,9 @@
       el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; honeycombRun(host,opts,done); };
       el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); };
     }
-    (function pump(){ raf=requestAnimationFrame(()=>{ frame(); if(!over) pump(); }); })();
+    if(window.SB_DEBUG) window._maze={ state:()=>({px:bee.px,py:bee.py,dir:bee.dir.slice(),lives,cell:CELL,cols:COLS,rows:ROWS}),
+      want:d=>{bee.want=d.slice();}, openAt:(c,r)=>open(c,r) };   // capture tooling: watch the bee glide
+    (function pump(){ raf=requestAnimationFrame(ts=>{ frame(ts); if(!over) pump(); }); })();
     return { destroy(){ over=true; if(loop){ clearInterval(loop); loop=null; } removeEventListener('keydown',key); } };
   }
 

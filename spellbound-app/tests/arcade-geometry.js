@@ -99,7 +99,10 @@ ok(reseed <= 4, `a new flower every ${reseed}s (was 9)`);
 ok(/finish\(score>=CFG\.target && spelled>=2\)/.test(src), 'a timed-out round needs words spelled, not just dots eaten');
 // movement is per SECOND, on the display's clock — it used to be a fixed step per frame
 ok(/function step\(ent,sp,dt\)/.test(src), 'step takes dt: movement is time-based, not frame-based');
-ok(/const spd=sp\*Math\.max\(0\.001,Math\.min\(0\.05,dt\|\|1\/60\)\)/.test(src), 'and dt is clamped so a hitch cannot teleport through a wall');
+ok(/const spd=sp\*Math\.max\(0\.001,Math\.min\(0\.034,dt\|\|1\/60\)\)/.test(src), 'and dt is clamped at TWO frames — a hitch is a shade of slowdown, never a hop');
+ok(!/ent\.px=jc; ent\.py=jr; ent\.dir=bee\.want\.slice\(\);/.test(src), 'the early-turn teleport (up to 0.4 cells a frame) is gone');
+ok(/if\(ent\.dir\[0\]!==0 && ent\.py!==Math\.round\(ent\.py\)\)/.test(src), 'cornering GLIDES onto the new corridor at running speed');
+ok(/const now=\(ts!==undefined\?ts:performance\.now\(\)\)/.test(src), 'the maze clock is the sub-ms rAF timestamp, not Date.now()');
 ok(!/loop=setInterval\(frame, 1000\/60\)/.test(src), 'the maze runs on requestAnimationFrame like every other engine, not setInterval');
 // the bee is paced like an arcade maze game, not a racing game
 const BEE_MULT = +src.match(/step\(bee,CFG\.speed\*([\d.]+),/)[1];
