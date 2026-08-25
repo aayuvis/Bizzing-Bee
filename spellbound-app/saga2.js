@@ -1192,8 +1192,8 @@
     const items=[]; for(let n=70;n<segs.length-60;n+=Math.floor(CFG.boxEvery*(0.8+Math.random()*0.5))){ items.push({seg:n,off:(Math.random()*1.1-0.55),gone:false,k:Math.random()*6}); }
 
     /* ---- racers: the villains ---- */
-    const maxV=segLen*46, accel=maxV/4.6, offDecel=-maxV/1.6, offLimit=maxV/3.2, centri=0.34;
-    let pos=0, playerX=0, v=0, over=false, mode='howto', lap=1, hudT=1; // howto -> count -> race -> spell -> done
+    const maxV=segLen*46, accel=maxV/4.6, offDecel=-maxV/1.6, offLimit=maxV/3.2, CPUSH=0.30, DRIFT_HALF=2.4, GRIP_HALF=0.22;
+    let pos=0, playerX=0, drift=0, v=0, over=false, mode='howto', lap=1, hudT=1; // howto -> count -> race -> spell -> done
     let boostT=0, boostMul=1, shieldT=0, spinFlashT=0, countT=0, finishedRivals=0, gpCombo=0, offGrass=false;
     const heroKart=HERO;
     const VILL=[
@@ -1623,18 +1623,28 @@
          2.2 — the road crosses in 0.9s, a tap still nudges, and the kart answers. */
       const dxs=dt*2.2*Math.max(0.42,v/maxV);
       playerX+=steer*dxs;
-      /* THE KART GOES STRAIGHT; THE ROAD TURNS AWAY UNDER IT.
-         playerX is the kart's place RELATIVE TO THE ROAD, so leaving it alone in a bend
-         means the kart follows the bend — on rails. For a kart that holds its heading
-         while the road turns under it, the road-relative slide is v × curvature: LINEAR
-         in speed. The first fix used v² ("centrifugal force"), which meant a bend taken
-         at half throttle pulled with a QUARTER of the force — imperceptible at the speeds
-         the game is actually played at, so the kart still read as steering itself.
-         Linear now: the same bend pulls with half the force at half the speed. Flat out
-         the hardest bend (curve 5) still drifts 1.70 u/s against 2.20 of steer — holdable
-         at 77% of the wheel — but at half throttle it is 0.85 u/s (39%), a pull the
-         player feels and must answer, instead of 19% they never noticed. */
-      playerX-=(seg.curve||0)*(v/maxV)*dt*centri;
+      /* THE KART GOES STRAIGHT; THE ROAD TURNS AWAY UNDER IT — WITH MEMORY.
+         Two earlier models drifted the kart at a rate proportional to the CURRENT curve
+         only. Both still read as self-driving on the real track, and play-testing said
+         so in exactly those words. The reason is the track, not the coefficient: the
+         authored bends are SHORT (about a second) and ALTERNATE direction (-3, +4,
+         -4, +5…), so a memoryless drift pushes the kart most of the way to the edge,
+         then the bend ends, the push stops dead, and the NEXT bend pushes it back.
+         The kart pendulums across the road and never leaves it: rails, again.
+         The missing physics is HEADING. A kart that did not steer through a bend comes
+         out of it still POINTED off the road, and keeps sliding until the driver
+         counter-steers. So `drift` is a persistent lateral velocity:
+           - while the road turns, it builds:  curve x (v/maxV) x CPUSH
+           - it washes out only SLOWLY on its own (half-life 2.4s) — a slide does not fix itself,
+           - and COUNTER-STEERING kills it fast (half-life 0.22s — grip), which is what
+             makes correcting a slide feel like an action rather than a wait.
+         Equilibrium on the hardest bend (curve 5, flat out) is ~1.9 u/s against 2.2 of
+         steering — holdable at 89% of the wheel; and a mid bend (3) now ejects an
+         unsteered kart shortly after the bend, because the slide OUTLIVES the bend. */
+      drift+=(seg.curve||0)*(v/maxV)*dt*CPUSH;
+      const gripping = steer!==0 && steer*drift>0;    // steering against the slide
+      drift*=Math.pow(0.5, dt/(gripping?GRIP_HALF:DRIFT_HALF));
+      playerX-=drift*dt;
       playerX=Math.max(-1.2,Math.min(1.2,playerX));
       const offRoad=(playerX<-0.95||playerX>0.95);
       if(offRoad){
@@ -1697,7 +1707,7 @@
     host.appendChild(intro);
     intro.querySelector('#sg-howgo').onclick=()=>{ intro.remove(); countT=1.0; mode='count'; };
     renderHold();
-    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over,x:playerX}),
+    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over,x:playerX,drift}),
       steerTo:(x)=>{playerX=x;}, jump:(z)=>{pos=z;}, grant:(i)=>{held=POWERS[i||0];renderHold();},
       toBox:()=>{ const pm=pos%trackLen, it=items.find(x=>!x.gone&&x.seg*segLen>pm+segLen*10);   // capture tooling: line up the next ? box
         if(it){ pos+= (it.seg-8)*segLen - pm; playerX=it.off; } },
