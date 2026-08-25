@@ -649,23 +649,47 @@ handlers. App lives in this folder; open `index.html` to run.
 - **Grand Prix steering was halved in an earlier pass and overshot.** At 1.1 a full road
   crossing took 1.8 SECONDS of holding, which is what "it's just self-driving" describes.
   2.2 crosses in 0.9s and a tap still only nudges.
-- **THE KART GOES STRAIGHT; THE ROAD TURNS AWAY UNDER IT — and for a long time it did not,
-  for three compounding reasons.** The authored curves were softened 30% (`curve*=0.7`),
-  the drift coefficient was a gentle `0.4`, and **`centri` — the centrifugal push, the
-  whole reason a bend throws a car wide — was declared on the `maxV` line and NEVER USED**
-  (one occurrence in the whole file). Measured: the hardest bend pushed 1.40 road-units/s
-  against 2.20 of steering, so 64% of the wheel held the line and the road never threatened
-  to lose you. Now the curves are unsoftened (up to 5) and the push is
-  `curve * (v/maxV)² * dt * centri` — squared, because that is what centrifugal force does:
-  the hardest bend flat out takes 77% of the wheel, the same bend at half throttle takes
-  19%, so lifting off is a real option. Guard: `tests/arcade-geometry.js` asserts centri is
-  APPLIED and not merely declared, and pins the drift-to-steer ratio.
-- **Honeycomb movement is time-based and on requestAnimationFrame.** `step()` used
-  `sp/60` — a fixed distance PER FRAME on the assumption every frame is 1/60s — while the
-  loop was the only `setInterval(1000/60)` left in saga2.js, free-running against the
-  display refresh. Uneven frames therefore moved the bee unevenly: play-tested as "not
-  moving smoothly, it's jumping". `step(ent,sp,dt)` now takes real elapsed seconds (clamped
-  so a hitch cannot teleport through a wall) and the loop is rAF like every other engine.
+- **THE KART GOES STRAIGHT; THE ROAD TURNS AWAY UNDER IT — and it took three passes to
+  make that true on screen.** Pass one: `centri` — the drift the whole mechanic depends
+  on — was declared and NEVER USED, curves were softened 30%, and the kart was on rails.
+  Pass two applied it as `curve * (v/maxV)² * dt * centri` — "centrifugal force" — which
+  was wrong physics for this feel: at half throttle v² pulls with a QUARTER strength,
+  imperceptible at real playing speeds, so it still read as self-steering. The truth is
+  a kart holding its heading slides across a turning road at **v × curvature — LINEAR**:
+  `curve * (v/maxV) * dt * centri`. Flat out the hardest bend (5) takes 77% of the wheel;
+  half throttle now pulls a felt 39% instead of 19%.
+  **And the CAMERA follows the KART, not the road** (`camX=playerX*roadW`, kart drawn at
+  `Wd/2`): with the camera welded to the road's centreline, correct physics still showed
+  up as the KART sliding sideways — "the car is steering on its own". From the chase
+  camera the kart never moves; bends and steering pan the world under it. Guard:
+  `tests/arcade-geometry.js` (linear model, v² absent, drift-to-steer ratios) and the
+  headless drive in the scratchpad's `gpdrive.cjs` (no-hands runs off the outside;
+  full lock beats the bend).
+- **The far road is PROJECTED past drawDist, never patched.** drawDist segments end
+  ~108px short of the horizon and 165px wide — a stump against the backdrop. A straight
+  wedge to the vanishing point reads as a grey pyramid the moment the road curves. The
+  fix carries on the real projection: keep accumulating the track's own curve past
+  drawDist (six additions a segment) and draw a band only when it advances a whole
+  pixel — the far ribbon bends with the track down to a sub-pixel sliver AT the horizon.
+  Three rules keep it honest: the ribbon wears ONE fixed colour set (inheriting the last
+  segment's ALTERNATING colours strobed the whole distance at speed); its x subtracts
+  the same `camX` the segment loop uses; and no grass bands out there (the ground
+  gradient owns the far field — ~110 alpha polys a frame doubled p99). The backdrop
+  painting is cropped strictly ABOVE the horizon with an opaque level ground below —
+  every painting's own ground-line sits at a different height, so letting the picture
+  run below the horizon made the ribbon ride up over its painted hills, "floating into
+  the air". Road tip, ground edge and painting base all meet on one line.
+- **Honeycomb movement is time-based, on requestAnimationFrame — and the bee GLIDES.**
+  `step()` used `sp/60` per frame on a free-running `setInterval`; that was pass one of
+  "it's jumping". Three more sources survived it: (1) an early turn TELEPORTED the bee
+  up to 0.4 cells to the junction — now it turns at once and glides onto the new
+  corridor diagonally at running speed (Pac-Man cornering); (2) the clock was
+  `Date.now()`, whole milliseconds, so 60Hz deltas alternated 16/17ms — the loop now
+  uses the sub-ms rAF timestamp, and keeps ticking while a spell card is open so
+  closing one is not a 50ms lurch; (3) dt clamps at TWO frames (34ms), so a hitched
+  frame is a shade of slowdown, never a multi-frame hop. Measured (scratchpad
+  `mazedrive.cjs`): worst single-frame hop 0.4 → 0.11 cells; true speed varies only by
+  the cornering diagonal (exactly √2). Guards in `tests/arcade-geometry.js`.
 - **Each Atlas region's cache is its OWN object** (`TRE_KIT` in trail.js): a wild honeycomb
   in the Meadow, a buried amphora in the Forum, a pressed bookmark in the Library, a
   bottled charge in the Storm. Same mechanic, same gating, same payout — but the thing you
