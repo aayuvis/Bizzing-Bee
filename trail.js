@@ -362,6 +362,7 @@
     if (crs === 'exp' && !advOn() && !devOn()) { app2.openAdvanced ? app2.openAdvanced() : flash('The Advanced Rounds come with the Advanced Pack'); return; }
     state.trailCourse = crs === 'exp' ? 'exp' : 'honey';
     try { window.scrollTo(0, 0); } catch (e) {}
+    maybeAmbush(active(), id);
     set({ nav: 'trail', screen: 'app', trailView: 'act', trailAct: id, trailActCrs: crs, tq: null }); };
   app2.trailToMap = () => set({ nav: 'trail', screen: 'app', trailView: 'map', trailAct: null, trailStop: null, tq: null });
   app2.trailLesson = () => { const u = unit(state.trailUnit); const ch = chOf(u);
@@ -887,7 +888,8 @@
     return out;
   }
   const ultraDone = (c, id) => !!(uProg(c).done || {})[id];
-  app2.ultraAct = i => set({ nav: 'trail', screen: 'app', trailView: 'ultra', ultraAct: Math.max(0, Math.min(ULTRA_PINS.length - 1, +i || 0)), ultraStop: null });
+  app2.ultraAct = i => { maybeAmbush(active(), 'ultra' + (+i || 0));
+    set({ nav: 'trail', screen: 'app', trailView: 'ultra', ultraAct: Math.max(0, Math.min(ULTRA_PINS.length - 1, +i || 0)), ultraStop: null }); };
   app2.ultraPick = i => set({ ultraStop: +i });
   app2.ultraSteps = () => set({ ultraOpen: !state.ultraOpen });
   /* Train the block: the same hand-off the Honey stops use, so Ultra words land in
@@ -930,13 +932,14 @@
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
         <button data-act="trailToMap" style="display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:var(--muted)">← The map</button>
         <span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px">
-          <span style="font-size:12px;font-weight:800;color:var(--muted)">Ultra Champions</span>${ring(dn, stops.length, dn === stops.length ? 'var(--good)' : '#FFD24D', 34)}</span>
+          ${musicPill()}<span style="font-size:12px;font-weight:800;color:var(--muted)">Ultra Champions</span>${ring(dn, stops.length, dn === stops.length ? 'var(--good)' : '#FFD24D', 34)}</span>
       </div>
       <div style="margin-bottom:10px">
         <span style="display:block;font-family:var(--display);font-weight:800;font-size:22px;line-height:1.1">${esc(name)}</span>
         <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:700;margin-top:2px">Landmark ${ai + 1} of ${ULTRA_PINS.length} · ${dn} of ${stops.length} stops · the hardest words in the library</span>
       </div>
       ${actBoard('map-' + slug, m, pts, Math.max(0, Math.min(stops.length - 1, dn)), marks, caches, true)}
+      ${villainCard(c)}${treGiftCard()}
       <div class="sb-card" style="margin-top:14px;padding:16px 18px 18px">
         <div style="font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">Stop ${sel + 1} of ${stops.length}${tip ? ' · ' + esc(tip.cat) : ''}${ultraDone(c, cur.id) ? ' · done' : ''}</div>
         <div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1.15;margin-top:4px">${tip && tip.ic ? tip.ic + ' ' : ''}${esc(cur.title)}</div>
@@ -1112,6 +1115,22 @@
   const treMap = c => (tr(c).tre || (tr(c).tre = {}));
   const treGate = (n, i) => Math.max(1, Math.ceil(n * (i + 1) / 4));
   const treGot = (c, act, i) => !!(treMap(c)[act] || {})[i];
+  /* ---- A CHEST IS A SURPRISE, NOT A COIN DISPENSER ----
+     Play-tested ask: "treasure chests that lead to games or elements in the library
+     or a random trivia appears". The coins still pay out (they are the reliable part),
+     and then the chest opens onto ONE of three doors, picked at random:
+       game   — the region's own arcade game, one tap from the chest
+       lore   — the chapter this region teaches, opened where it lives
+       trivia — one real question from the bank, answered right here for +10
+     No XP from any of it: rank still comes from spelling. */
+  const TRE_GAME = { meadow: 'honeycombRun', library: 'typeBlaster', forum: 'unscrambleStars',
+    storm: 'keepFlying', roots: 'wordSnake', strait: 'keepFlying', junkyard: 'typeBlaster',
+    sprints: 'beeGrandPrix', stage: 'spotlightSimon', greysea: 'spellScene',
+    uproving: 'beeGrandPrix', ulibrary: 'typeBlaster', ucrucible: 'honeycombRun',
+    uobservatory: 'unscrambleStars', uchampionship: 'beeGrandPrix' };
+  const GAME_NAME = { beeGrandPrix: 'Bee Grand Prix', honeycombRun: 'Honeycomb Run', typeBlaster: 'Type Blaster',
+    keepFlying: 'Keep Flying', wordSnake: 'Word Snake', unscrambleStars: 'Unscramble Stars',
+    spotlightSimon: 'Spotlight Simon', spellScene: 'Spell Scene' };
   app2.trailTre = arg => { const c = active();
     const [act, si] = String(arg).split(':'); const i = +si || 0;
     const cell = treMap(c)[act] || (treMap(c)[act] = {});
@@ -1123,7 +1142,139 @@
        point of nine painted regions is that they are different places. */
     const k = treKit(act);
     flash(k.g + ' ' + k.n[0].toUpperCase() + k.n.slice(1) + ' — ' + k.l + ' +' + (TRE_PAY[i] || 20) + ' coins');
+    const kinds = ['game', 'lore', 'trivia'];
+    const kind = kinds[Math.floor(Math.random() * kinds.length)];
+    const g = { kind, act, game: TRE_GAME[act] || 'honeycombRun' };
+    if (kind === 'lore') { try { const a2 = actsOf(course()).find(x => x.id === act);
+      g.uid = a2 && a2.units[0]; } catch (e) {}
+      if (!g.uid) g.kind = 'game'; }
+    if (g.kind === 'trivia') {
+      g.q = null;
+      const lv = (function () { try { return Math.max(1, Math.min(5, ttBand(c))); } catch (e) { return 2; } })();
+      const pick = () => { try {
+        const pool = (window.SB_TRIVIA.questions || []).filter(q => q.lv === lv && q.ty === 'mc');
+        const q = pool[Math.floor(Math.random() * pool.length)];
+        if (!q) { g.kind = 'game'; render(); return; }
+        const opts = q.c.map((c2, ix) => ({ c: c2, ok: ix === 0 }));
+        shuffle(opts);
+        g.q = { q: q.q, f: q.f || '', opts, picked: null }; render();
+      } catch (e) { g.kind = 'game'; render(); } };
+      try { window.SB_TRIVIA.loaded(lv) ? pick() : SB_TRIVIA.need(lv, pick); }
+      catch (e) { g.kind = 'game'; }
+    }
+    state.treG = g;
     render(); };
+  app2.treClose = () => { state.treG = null; render(); };
+  app2.treGame = () => { const g = state.treG; state.treG = null; render();
+    try { app2.arcadeMenu(g.game); } catch (e) { try { app2.arcadePlay(g.game); } catch (_) {} } };
+  app2.treLore = () => { const g = state.treG; state.treG = null;
+    if (g && g.uid) { app2.trailUnit(g.uid); setTimeout(() => { try { app2.trailLesson(); } catch (e) {} }, 60); }
+    else render(); };
+  app2.treTrivAns = i => { const g = state.treG; if (!g || !g.q || g.q.picked != null) return;
+    g.q.picked = +i;
+    if (g.q.opts[+i] && g.q.opts[+i].ok) { addCoins(10); try { sfx('win'); burstConfetti(50); } catch (e) {} }
+    else { try { sfx('wrong'); } catch (e) {} }
+    render(); };
+  function treGiftCard() {
+    const g = state.treG; if (!g) return '';
+    const shell = inner => `<div style="position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:18px;background:rgba(20,12,30,.5)" data-act="treClose">
+      <div style="width:min(430px,94vw);background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:22px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.4);animation:sb-rise .3s ease both" onclick="event.stopPropagation()">
+        ${inner}
+        <button data-act="treClose" style="position:absolute;top:10px;right:12px;width:26px;height:26px;border-radius:8px;background:var(--surface2);color:var(--muted);font-weight:800">✕</button>
+      </div></div>`;
+    if (g.kind === 'game') return shell(`<div style="font-size:40px">🗝️</div>
+      <h3 style="font-family:var(--display);font-weight:800;font-size:19px;margin:8px 0 4px">The chest hides a game!</h3>
+      <p style="font-size:13px;color:var(--muted);margin:0 0 14px">A round of <b>${esc(GAME_NAME[g.game] || 'the arcade')}</b> — this region's own game.</p>
+      <button data-act="treGame" style="padding:13px 22px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">🕹️ Play it →</button>
+      <button data-act="treClose" style="margin-left:8px;padding:13px 18px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">Later</button>`);
+    if (g.kind === 'lore') return shell(`<div style="font-size:40px">📜</div>
+      <h3 style="font-family:var(--display);font-weight:800;font-size:19px;margin:8px 0 4px">An old page from the Library!</h3>
+      <p style="font-size:13px;color:var(--muted);margin:0 0 14px">It tells the story this region teaches — read it where it lives.</p>
+      <button data-act="treLore" style="padding:13px 22px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">📖 Read the chapter →</button>
+      <button data-act="treClose" style="margin-left:8px;padding:13px 18px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">Later</button>`);
+    // trivia
+    if (!g.q) return shell(`<div style="font-size:40px">❓</div>
+      <h3 style="font-family:var(--display);font-weight:800;font-size:19px;margin:8px 0 4px">The chest holds a riddle…</h3>
+      <p style="font-size:13px;color:var(--muted)">unrolling the scroll…</p>`);
+    const done = g.q.picked != null;
+    return shell(`<div style="font-size:40px">❓</div>
+      <h3 style="font-family:var(--display);font-weight:800;font-size:17px;margin:8px 0 12px;line-height:1.35">${esc(g.q.q)}</h3>
+      <div style="display:grid;gap:8px">${g.q.opts.map((o, ix) => {
+        const st = !done ? 'background:var(--surface2);border:1px solid var(--line)'
+          : o.ok ? 'background:var(--good);color:#fff'
+          : ix === g.q.picked ? 'background:var(--bad);color:#fff' : 'background:var(--surface2);border:1px solid var(--line);opacity:.6';
+        return `<button data-act="treTrivAns" data-arg="${ix}" ${done ? 'disabled' : ''} style="padding:11px 14px;border-radius:12px;font-weight:700;font-size:13.5px;text-align:left;${st}">${esc(o.c)}</button>`;
+      }).join('')}</div>
+      ${done ? `<p style="font-size:12.5px;color:var(--muted);margin:12px 0 0;line-height:1.5">${g.q.opts[g.q.picked].ok ? '🎉 +10 coins! ' : ''}${esc(g.q.f)}</p>
+        <button data-act="treClose" style="margin-top:12px;padding:12px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:14px">Back to the map</button>` : ''}`);
+  }
+
+  /* ---- THE AMBUSH: a moth of the Unspelling snatches your buddy ----
+     Rarely, on stepping onto a region, a villain grabs the avatar and only a
+     SPELLED WORD cuts them free — the action is always spelling, never a chore.
+     At most once per region per day; fleeing costs nothing but the rescue reward. */
+  function ambushWord(c) {
+    try { const s = seq(c); const fr = s[Math.min(frontier(c), s.length - 1)];
+      const u = fr && fr.kind === 'unit' ? fr.u : (s.find(n => n.kind === 'unit') || {}).u;
+      const ws = lapWords(u, lapOf(c), 24).filter(w => /^[a-z]+$/i.test(w.w) && w.w.length >= 3 && w.w.length <= 9);
+      if (ws.length) return ws[Math.floor(Math.random() * ws.length)].w; } catch (e) {}
+    return ['meadow', 'honey', 'friend', 'journey', 'bright'][Math.floor(Math.random() * 5)];
+  }
+  function maybeAmbush(c, key) {
+    try { const day = Math.floor(Date.now() / 864e5);
+      const am = tr(c).ambD = tr(c).ambD || {};
+      if (state.villain || state.treG || am[key] === day || Math.random() >= 0.22) return;
+      am[key] = day; save();
+      state.villain = { w: ambushWord(c), typed: '', wrong: 0 };
+      setTimeout(() => { try { if (state.villain) say(state.villain.w); } catch (e) {} }, 650);
+    } catch (e) {}
+  }
+  app2.villType = v => { if (state.villain) state.villain.typed = String(v == null ? '' : v); };
+  app2.villKey = e => { if (e.key === 'Enter') { e.preventDefault(); app2.villGo(); } };
+  app2.villSay = () => { try { state.villain && say(state.villain.w); } catch (e) {} };
+  app2.villFlee = () => { state.villain = null; flash('The moth keeps its prize… this time. 🦇'); render(); };
+  app2.villGo = () => { const V = state.villain; if (!V) return;
+    if (nkey(V.typed || '') === nkey(V.w)) {
+      state.villain = null; addCoins(12);
+      try { sfx('win'); burstConfetti(90); } catch (e) {}
+      flash('✂️ ' + V.w + ' — the net bursts and the moth flees! +12 🪙');
+    } else {
+      V.wrong = (V.wrong || 0) + 1; V.typed = '';
+      try { sfx('wrong'); } catch (e) {}
+      flash('The net holds — listen again!'); try { say(V.w); } catch (e) {}
+    }
+    render(); };
+  function villainCard(c) {
+    const V = state.villain; if (!V) return '';
+    const av = (function () { try { return SB_AVATAR(c.avatar || 'bizzy', 56) || ''; } catch (e) { return ''; } })();
+    return `<div style="position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:18px;background:rgba(16,10,28,.6)">
+      <div style="width:min(430px,94vw);background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:24px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.45);animation:sb-rise .3s ease both">
+        <div style="font-size:42px;line-height:1">🦇</div>
+        <div style="position:relative;width:76px;height:76px;margin:8px auto 2px;display:grid;place-items:center">
+          <span style="width:56px;height:56px;display:block;filter:saturate(.65) brightness(.92)">${av || '🐝'}</span>
+          <span style="position:absolute;inset:0;border-radius:50%;border:3px dashed rgba(130,96,210,.85)"></span>
+        </div>
+        <h3 style="font-family:var(--display);font-weight:800;font-size:19px;margin:8px 0 3px">A moth of the Unspelling strikes!</h3>
+        <p style="font-size:13px;color:var(--muted);margin:0 0 12px;line-height:1.5">It has your buddy in a net. <b>Spell the word you hear</b> to cut them free.</p>
+        <button data-act="villSay" style="display:inline-flex;align-items:center;gap:7px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge);margin-bottom:12px">🔊 Hear the word</button>
+        <input data-inp="villType" data-key="villKey" data-fkey="villType" value="${escA(V.typed || '')}" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="spell it…" style="width:100%;max-width:300px;display:block;margin:0 auto 10px;padding:13px 15px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);font-size:17px;font-weight:800;text-align:center;letter-spacing:.08em;outline:none">
+        ${V.wrong >= 2 ? `<p style="font-size:12.5px;font-weight:700;color:var(--muted);margin:0 0 10px">Hint: it starts with “${esc(V.w.slice(0, 2))}…” and has ${V.w.length} letters.</p>` : ''}
+        <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
+          <button data-act="villGo" style="padding:13px 22px;border-radius:14px;background:var(--good);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">✂️ Cut them free!</button>
+          <button data-act="villFlee" style="padding:13px 18px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:13.5px">Run away</button>
+        </div>
+      </div></div>`;
+  }
+
+  /* ---- world music, one pill on every board ---- */
+  app2.atlasMusic = () => { try {
+    const on = SB_W4_MUSIC.toggle(); SB_W4_MUSIC.sync();
+    flash(on ? '🎵 Music on — every world hums its own tune' : '🔇 Music off');
+  } catch (e) { flash('Music is still tuning up — one moment'); } render(); };
+  function musicPill() {
+    let on = false; try { on = !!(window.SB_W4_MUSIC && SB_W4_MUSIC.on()); } catch (e) {}
+    return `<button data-act="atlasMusic" title="World music" aria-label="World music ${on ? 'off' : 'on'}" style="width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:${on ? 'var(--accent)' : 'var(--surface2)'};border:1px solid ${on ? 'var(--accent)' : 'var(--line)'};font-size:15px">${on ? '🎵' : '🔇'}</button>`;
+  }
 
   /* One cache marker: a shut chest you cannot reach yet reads as a faint
      glimmer, so the map has something to walk towards without giving it away. */
@@ -1202,6 +1353,13 @@
     farflung: ['rise',   '#FFD9A8'],
     factory:  ['sparks', '#FFB86B'],
     proving:  ['motes',  '#F2E2C0'],
+    /* the five Ultra landmarks — play-tested as "the worlds are static" on the
+       Champion's Routine: their slugs never matched a key, so they alone had no life */
+    uproving:      ['motes',  '#EAD9B0'],   // training-yard dust
+    ulibrary:      ['motes',  '#C9B8E8'],   // violet dust of the black library
+    ucrucible:     ['sparks', '#FFB86B'],   // the forge
+    uobservatory:  ['rise',   '#BFD8FF'],   // starlight lifting
+    uchampionship: ['sparks', '#FFD24D'],   // stadium flashbulbs
   };
   function ambLayer(slug){
     const key = String(slug || '').replace(/^map-/, '');
@@ -1325,7 +1483,8 @@
     return `<div style="${RISE()}max-width:980px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
         <button data-act="trailBack" style="display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:var(--muted)">← The map</button>
-        <span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px">
+        <span style="margin-left:auto;display:inline-flex;align-items:center;gap:9px">
+          ${musicPill()}
           <span style="font-size:12px;font-weight:800;color:var(--muted)">Tier ${lapOf(c)}</span>
           ${ring(dn, n, dn === n ? 'var(--good)' : '#FFD24D', 34)}</span>
       </div>
@@ -1347,6 +1506,7 @@
             `marks` so it lives inside the board and pans with the pins, anchored off the
             selected pin's own percentage coordinates. */''}
       ${actBoard('map-' + act.id, m, pts, walked, marks + stopPop, caches, crs === 'exp')}
+      ${villainCard(c)}${treGiftCard()}
     </div>`;
   }
   /* one line of flavour per world, so an act page says where you are */
