@@ -442,6 +442,53 @@
     .rv-mark{position:absolute;top:6px;left:6px;z-index:5;background:rgba(108,79,224,.9);color:#fff;
       font-family:'BB Kicker';font-size:10px;border-radius:999px;padding:2px 9px}
     .page.rv-flag{outline:3px solid #E0922E;outline-offset:-3px}
+  }
+  .nb-w{outline:none}
+  .nb-note{font-family:'BB Body';font-size:9pt;line-height:1.36;color:var(--ink);
+    background:color-mix(in srgb,var(--accent) 8%,transparent);border-left:2.5pt solid var(--accent);
+    border-radius:2pt 7pt 7pt 2pt;padding:4pt 7pt;margin-top:5pt;white-space:pre-wrap;word-break:break-word}
+  .nb-note:empty{display:none}
+  @media print{
+    .nb-tab,.nb-panel,.nb-add,.nb-hint{display:none !important}
+    .nb-w{border-bottom-color:var(--ink) !important}
+    .nb-note{background:transparent}
+  }
+  @media screen{
+    /* a line you can type on has to look like one */
+    .nb-w{min-height:.24in;cursor:text;border-radius:3px;padding:0 2px;transition:background .12s}
+    .nb-w:hover{background:color-mix(in srgb,var(--accent) 7%,transparent)}
+    .nb-w:focus{background:color-mix(in srgb,var(--accent) 12%,transparent);
+      box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 40%,transparent)}
+    .nb-w[data-filled]{background:color-mix(in srgb,var(--accent) 5%,transparent)}
+    .nb-add{position:absolute;top:6px;right:6px;z-index:6;border:0;cursor:pointer;
+      background:rgba(108,79,224,.86);color:#fff;font-family:'BB Kicker';font-size:10px;
+      border-radius:999px;padding:3px 10px;opacity:0;transition:opacity .15s}
+    .page:hover .nb-add{opacity:1}
+    .nb-card-add{position:static;opacity:.55;margin-left:6px;padding:1px 8px;font-size:9px}
+    .bb-card:hover .nb-card-add{opacity:1}
+    .nb-tab{position:fixed;right:14px;bottom:70px;z-index:10000;background:#2C8B57;color:#fff;border:0;
+      cursor:pointer;border-radius:999px;padding:12px 18px;font-weight:800;font-size:13.5px;
+      font-family:'BB Body',sans-serif;box-shadow:0 6px 18px rgba(44,139,87,.4)}
+    body.nb-open .nb-tab{right:344px}
+    body.nb-open{padding-right:330px}
+    .nb-panel{position:fixed;top:0;right:0;width:330px;height:100vh;background:#fff;
+      border-left:1px solid #cfe6da;z-index:9999;display:none;flex-direction:column;
+      font-family:'BB Body',sans-serif;box-shadow:-8px 0 24px rgba(20,14,44,.10)}
+    body.nb-open .nb-panel{display:flex}
+    .nb-panel h4{font-family:'BB Display';font-size:16px;padding:14px 16px 10px;margin:0;
+      border-bottom:1px solid #e4f0ea}
+    .nb-panel h4 span{display:block;font-family:'BB Body';font-weight:600;font-size:11.5px;
+      color:#5c7a6b;margin-top:3px}
+    .nb-list{flex:1;overflow:auto;padding:10px 12px}
+    .nb-item{border:1px solid #e4f0ea;border-radius:10px;padding:8px 10px;margin-bottom:8px;background:#f7fcf9}
+    .nb-item b{font-family:'BB Kicker';font-size:11px;color:#2C8B57;display:block;margin-bottom:4px;cursor:pointer}
+    .nb-item b:hover{text-decoration:underline}
+    .nb-item p{margin:0;font-size:12px;line-height:1.45;color:#2b2440;white-space:pre-wrap}
+    .nb-foot{display:flex;gap:8px;padding:10px 12px;border-top:1px solid #e4f0ea}
+    .nb-foot button{flex:1;padding:9px 10px;border-radius:9px;border:0;cursor:pointer;font-weight:800;
+      font-size:12.5px;font-family:'BB Body',sans-serif;background:#2C8B57;color:#fff}
+    .nb-foot button.alt{background:#e4f0ea;color:#2C8B57}
+    .nb-hint{padding:8px 14px;font-size:11.5px;line-height:1.45;color:#8a5a2b;background:#fff6e8}
   }</style></head><body data-vol="11" data-band="advanced"><div class="page" data-cover data-vol="11" style="color:#241E33;padding:0;background:#F6F3EC">
     <img src="art/b11-cover.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
     <!-- One centred masthead: Bizzy, then the series name, then the volume line,
@@ -2332,4 +2379,144 @@ window.RV = (function(){
 })();
 document.addEventListener('DOMContentLoaded', function(){ RV._build(); });
 if (document.readyState !== 'loading') RV._build();
+</script><button class="nb-tab" onclick="NB.toggle()">✎ My notes</button>
+<aside class="nb-panel"><h4>My notes<span>The Playbook — saved in this browser only</span></h4>
+  <div class="nb-hint" id="nb-hint" style="display:none"></div>
+  <div class="nb-list" id="nb-list"></div>
+  <div class="nb-foot">
+    <button onclick="NB.save()">Download</button>
+    <button class="alt" onclick="NB.load()">Restore</button>
+    <button class="alt" onclick="NB.wipe()">Clear</button>
+  </div></aside>
+<script>
+window.NB = (function(){
+  var KEY = 'bbnote-book-11';
+  var BOOK = "The Playbook";
+  var d = { w:{}, n:{}, word:{} };          // write-ins, page notes, word notes
+  var ok = true;
+  try { d = Object.assign(d, JSON.parse(localStorage.getItem(KEY) || '{}')); }
+  catch(e){ ok = false; }
+  function put(){ if(!ok) return; try { localStorage.setItem(KEY, JSON.stringify(d)); } catch(e){ ok=false; hint(); } }
+  function hint(){
+    var h = document.getElementById('nb-hint'); if(!h) return;
+    h.style.display = ok ? 'none' : 'block';
+    h.textContent = 'This browser will not let the page save (a downloaded file in some browsers, or a private window). You can still type, and Download will save what is on screen — but it will not survive a reload.';
+  }
+  function esc(t){ return String(t==null?'':t).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];}); }
+  /* plaintext-only keeps pasted markup out of a ruled line, but not every
+     browser has it; where it is not supported the attribute simply does not
+     stick and the field would be uneditable, so fall back and strip on input */
+  var PT = (function(){ var t=document.createElement('div');
+    try { t.contentEditable='plaintext-only'; return t.contentEditable==='plaintext-only'; }
+    catch(e){ return false; } })();
+
+  function build(){
+    var pages = [].slice.call(document.querySelectorAll('.page'));
+    pages.forEach(function(pg, pi){
+      var n = pi + 1;
+      if (!pg.id) pg.id = 'pg' + n;
+      /* every ruled line and answer box becomes typable */
+      var fields = pg.querySelectorAll('.bb-writeline, .qz-write, .qz-box');
+      [].forEach.call(fields, function(f, fi){
+        var k = n + ':' + fi;
+        f.className += ' nb-w';
+        f.setAttribute('contenteditable', PT ? 'plaintext-only' : 'true');
+        f.setAttribute('data-k', k);
+        f.setAttribute('spellcheck','false');
+        if (d.w[k]) { f.textContent = d.w[k]; f.setAttribute('data-filled','1'); }
+      });
+      /* a note for the page */
+      var b = document.createElement('button');
+      b.className = 'nb-add'; b.type = 'button'; b.textContent = '✎ note';
+      b.onclick = function(){ ask('n', String(n), 'Note on page ' + n); };
+      pg.appendChild(b);
+      var host = document.createElement('div');
+      host.className = 'nb-note'; host.setAttribute('data-note', n);
+      host.textContent = d.n[n] || '';
+      pg.appendChild(host);
+      /* and one for each word on it, keyed by the WORD so it outlives repagination */
+      [].forEach.call(pg.querySelectorAll('.bb-card'), function(card){
+        var h = card.querySelector('h3, .w, b');
+        var word = (h ? h.textContent : '').trim().split(/\s+/)[0];
+        if (!word) return;
+        var ab = document.createElement('button');
+        ab.className = 'nb-add nb-card-add'; ab.type = 'button'; ab.textContent = '✎';
+        ab.title = 'Note on ' + word;
+        ab.onclick = function(){ ask('word', word, 'Note on “' + word + '”'); };
+        (h || card).appendChild(ab);
+        var nd = document.createElement('div');
+        nd.className = 'nb-note'; nd.setAttribute('data-word', word);
+        nd.textContent = d.word[word] || '';
+        card.appendChild(nd);
+      });
+    });
+    document.addEventListener('input', function(e){
+      var t = e.target;
+      if (t.classList && t.classList.contains('nb-w')) {
+        var k = t.getAttribute('data-k');
+        if (!PT && t.innerHTML.indexOf('<') > -1) t.textContent = t.textContent;  // strip pasted markup
+        var v = t.textContent.trim();
+        if (v) { d.w[k] = v; t.setAttribute('data-filled','1'); }
+        else { delete d.w[k]; t.removeAttribute('data-filled'); }
+        put(); list();
+      }
+    });
+    hint(); list();
+  }
+  function ask(kind, key, label){
+    var cur = d[kind][key] || '';
+    var v = window.prompt(label, cur);
+    if (v === null) return;
+    v = v.trim();
+    if (v) d[kind][key] = v; else delete d[kind][key];
+    put();
+    var sel = kind === 'n' ? '[data-note="' + key + '"]' : '[data-word="' + CSS.escape(key) + '"]';
+    [].forEach.call(document.querySelectorAll(sel), function(el){ el.textContent = v; });
+    list();
+  }
+  function rows(){
+    var out = [];
+    Object.keys(d.n).sort(function(a,b){return a-b;}).forEach(function(n){
+      out.push({ go:'pg'+n, t:'Page ' + n, v:d.n[n] }); });
+    Object.keys(d.word).sort().forEach(function(w){
+      out.push({ go:null, t:'“' + w + '”', v:d.word[w] }); });
+    Object.keys(d.w).sort(function(a,b){return parseInt(a)-parseInt(b);}).forEach(function(k){
+      out.push({ go:'pg'+k.split(':')[0], t:'Page ' + k.split(':')[0] + ' · answer', v:d.w[k] }); });
+    return out;
+  }
+  function list(){
+    var el = document.getElementById('nb-list'); if(!el) return;
+    var r = rows();
+    el.innerHTML = r.length ? r.map(function(x){
+      return '<div class="nb-item"><b' + (x.go ? ' onclick="NB.go(\'' + x.go + '\')"' : '') + '>' +
+        esc(x.t) + (x.go ? ' ›' : '') + '</b><p>' + esc(x.v) + '</p></div>';
+    }).join('') : '<div class="nb-item"><p>Nothing yet. Type on any ruled line, or use ✎ note on a page or a word.</p></div>';
+  }
+  build.call(null);
+  return {
+    toggle: function(){ document.body.classList.toggle('nb-open'); },
+    go: function(id){ var e=document.getElementById(id); if(e) e.scrollIntoView({behavior:'smooth',block:'start'}); },
+    save: function(){
+      var lines = ['My notes — ' + BOOK, ''];
+      rows().forEach(function(x){ lines.push(x.t + ': ' + x.v); });
+      var blob = new Blob([lines.join('\n') + '\n\n---- keep this part to restore ----\n' + JSON.stringify(d)],
+        {type:'text/plain'});
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'notes-book-11.txt'; a.click();
+    },
+    load: function(){
+      var t = window.prompt('Paste the line that begins with { from a notes file:');
+      if (!t) return;
+      var i = t.indexOf('{');
+      try { d = Object.assign({w:{},n:{},word:{}}, JSON.parse(t.slice(i))); }
+      catch(e){ alert('That did not look like a notes file.'); return; }
+      put(); location.reload();
+    },
+    wipe: function(){
+      if (!window.confirm('Clear every note in this book? This cannot be undone.')) return;
+      d = {w:{},n:{},word:{}}; put(); location.reload();
+    }
+  };
+})();
 </script></body></html>
