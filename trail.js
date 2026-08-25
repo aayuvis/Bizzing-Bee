@@ -314,6 +314,14 @@
     if (i > frontier(c) && !devOn()) { flash('Locked — clear the earlier stops first'); return; }
     const items = buildCheckpoint(c, { id });
     set({ nav: 'trail', screen: 'app', trailView: 'quiz', trailUnit: null, trailChk: id, tq: { items, i: 0, score: 0, picked: null, typed: '', missed: [], over: false } }); };
+  /* "Next stop →" from a cleared stop: the node AFTER this one on the route — a unit
+     or a checkpoint. trailUnit/trailChk still enforce the frontier, so this can never
+     jump a lock; at the end of the tier it says so and returns to the map. */
+  app2.trailNextFrom = id => { const c = active(); const s = seq(c);
+    const i = s.findIndex(n => n.kind === 'unit' && n.u.id === id);
+    const nx = i >= 0 ? s[i + 1] : null;
+    if (!nx) { flash('That was the last stop of this tier — the route returns tougher!'); app2.trailBack(); return; }
+    if (nx.kind === 'unit') app2.trailUnit(nx.u.id); else app2.trailChk(course() + '|' + nx.id); };
   app2.trailPick = i => set({ trailStop: +i });
   /* Ultra is a map now, but its words are still the Ultra Champions Journey list —
      the map is the way in, the list is the training ground behind it. */
@@ -613,12 +621,23 @@
         ${stepCard(3, 'Practice', stars.p > 0 ? `Best ${stars.p}% · ${PGATE}%+ opens the next stop · ⭐` : `${PGATE}%+ opens the next stop · ⭐`, 'trailPractice', stars.s[0], 'Train')}
         ${stepCard(4, 'The Quiz', `Pass at ${Math.round(gate() * 100)}% ⭐ · ace at ${QSTAR()}% ⭐${stars.q ? ` · best ${stars.q}%` : ''}`, 'trailQuiz', stars.s[3], stars.s[3] ? 'Again' : 'Go!')}
       </div>
-      ${next
-        ? `<button data-act="${next.act}" style="display:flex;width:100%;align-items:center;gap:11px;margin-top:12px;padding:13px 16px;border-radius:14px;background:color-mix(in srgb,var(--treasure,#FFD24D) 26%,var(--bg2));border:1px solid color-mix(in srgb,var(--treasure,#FFD24D) 55%,var(--line));text-align:left">
-            <span style="font-size:17px">👉</span>
-            <span style="flex:1;font-size:13px;font-weight:700;line-height:1.4">${esc(next.txt)}</span>
-            <span style="flex-shrink:0;padding:8px 15px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:12.5px">${esc(next.cta)}</span></button>`
-        : `<p style="font-size:13px;font-weight:800;color:var(--good);margin-top:12px;text-align:center">★★★★★ — this stop is completely yours.</p>`}
+      ${stars.s[0]
+        ? /* the practice gate is met: the stop offers its THREE ROADS, always —
+             move on, chase the stars, or drill a fresh set of this stop's words */
+          `<div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:12px">
+            <button data-act="trailNextFrom" data-arg="${escA(u.id)}" style="flex:1.2;min-width:150px;padding:13px 16px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">Next stop →</button>
+            ${next ? `<button data-act="${next.act}" style="flex:1;min-width:130px;padding:13px 16px;border-radius:14px;background:color-mix(in srgb,var(--treasure,#FFD24D) 30%,var(--bg2));border:1px solid color-mix(in srgb,var(--treasure,#FFD24D) 60%,var(--line));font-weight:800;font-size:14px">★ Gain stars</button>` : ''}
+            <button data-act="trailPractice" style="flex:1;min-width:150px;padding:13px 16px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">Practice more words</button>
+          </div>
+          ${next
+            ? `<p style="font-size:12.5px;color:var(--muted);font-weight:700;margin-top:9px;text-align:center">👉 ${esc(next.txt)}</p>`
+            : `<p style="font-size:13px;font-weight:800;color:var(--good);margin-top:9px;text-align:center">★★★★★ — this stop is completely yours.</p>`}`
+        : (next
+          ? `<button data-act="${next.act}" style="display:flex;width:100%;align-items:center;gap:11px;margin-top:12px;padding:13px 16px;border-radius:14px;background:color-mix(in srgb,var(--treasure,#FFD24D) 26%,var(--bg2));border:1px solid color-mix(in srgb,var(--treasure,#FFD24D) 55%,var(--line));text-align:left">
+              <span style="font-size:17px">👉</span>
+              <span style="flex:1;font-size:13px;font-weight:700;line-height:1.4">${esc(next.txt)}</span>
+              <span style="flex-shrink:0;padding:8px 15px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:12.5px">${esc(next.cta)}</span></button>`
+          : '')}
     </div>`;
   }
   function viewWords() {
@@ -1288,7 +1307,8 @@
         <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:13px">
           ${locked
             ? `<span style="display:inline-flex;align-items:center;gap:7px;padding:11px 16px;border-radius:var(--r-md,10px);background:var(--surface2);color:var(--muted);font-weight:800;font-size:14px">${iconSVG('lock', 15)} Clear the earlier stops first</span>`
-            : `<button data-act="${goAct}" data-arg="${escA(goArg)}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:var(--r-md,10px);background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:14px;box-shadow:var(--edge)">${iconSVG(node.kind === 'chk' ? 'target' : 'steps', 15)} ${node.kind === 'chk' ? (score ? 'Walk it again' : 'Take the checkpoint') : (uStars && uStars.n >= 5 ? 'Walk it again' : uStars && uStars.n > 0 ? 'Keep going' : 'Learn this stop')}</button>`}
+            : `${(u && uStars && uStars.s[0]) ? `<button data-act="trailNextFrom" data-arg="${escA(u.id)}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:var(--r-md,10px);background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:14px;box-shadow:var(--edge)">Next stop →</button>` : ''}
+              <button data-act="${goAct}" data-arg="${escA(goArg)}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:var(--r-md,10px);${(u && uStars && uStars.s[0]) ? 'background:var(--paper,var(--bg2));border:1px solid var(--line);color:var(--ink,var(--text))' : 'background:var(--action,var(--accent));color:var(--action-ink,#fff);box-shadow:var(--edge)'};font-weight:800;font-size:14px">${iconSVG(node.kind === 'chk' ? 'target' : 'steps', 15)} ${node.kind === 'chk' ? (score ? 'Walk it again' : 'Take the checkpoint') : (uStars && uStars.n >= 5 ? 'Walk it again' : uStars && uStars.n > 0 ? '★ Gain stars' : 'Learn this stop')}</button>`}
           ${(!locked && u) ? `<button data-act="trailTrain" data-arg="${escA(u.id)}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 16px;border-radius:var(--r-md,10px);background:var(--paper,var(--bg2));border:1px solid var(--line);color:var(--ink,var(--text));font-weight:800;font-size:13.5px">${iconSVG('pencil', 15)} Train these words</button>` : ''}
         </div>
       </div></div>`;
