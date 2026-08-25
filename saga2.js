@@ -1072,6 +1072,10 @@
     };
     const SCN=SCENES[opts.scene]||SCENES.meadow;
     const SKY=SCN.sky, NIGHT=(opts.scene==='city');
+    /* DISTANCE FOG — the colour the world dissolves INTO at the horizon. One value per
+       scene, used by both the per-segment fog and the haze band, so the road and the sky
+       agree about how far away "far" looks. */
+    const FOG_RGB={meadow:'214,232,242', sunset:'255,214,160', city:'150,190,235'}[opts.scene]||'214,232,242';
     // one epic point-to-point run - length ~= minutes of driving; boxes pace the spelling
     const CFG=calmCFG({easy:{len:1800,laps:2,rivals:3,rival:0.84,haz:0.014,boxEvery:280},
                medium:{len:2300,laps:2,rivals:4,rival:0.90,haz:0.026,boxEvery:300},
@@ -1278,6 +1282,12 @@
       if(!done_&&!o.kart){ cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(px,riderY+hd*0.4,hd*0.32,0,7); cx.fill(); }
       if(o.spin){ cx.font='700 '+Math.round(w*0.7)+'px serif'; cx.textAlign='center'; cx.fillText('💫',px,riderY-hd*0.1); cx.textAlign='left'; } }
 
+    /* hx() returns an opaque shade; the ground needs the same shade at an ALPHA so the
+       painting can show through the far field. */
+    function hxa(hexc,mul,a){ const c=hx(hexc,mul);
+      const m=/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(c);
+      if(!m) return c;
+      return 'rgba('+parseInt(m[1],16)+','+parseInt(m[2],16)+','+parseInt(m[3],16)+','+a+')'; }
     function drawBG(){
       const hz=horizonY;
       const sky=sgTex(SKY);
@@ -1286,25 +1296,41 @@
         // (its top ~68%, i.e. sky + skyline/hills) is cropped and mapped onto the area
         // above the horizon; the ground below is OUR gradient. Drawing the whole painting
         // full-height put its bottom edge mid-screen — a hard seam straight across the road.
+        /* THE PAINTING GOES BEHIND THE ROAD, NOT UNDER A LID.
+           The backdrop used to stop dead at the horizon (dh=hz+2) and an OPAQUE ground
+           gradient was painted from the horizon down — so the flat plane overwrote the
+           picture along a hard horizontal line, which is exactly "the road is rendered
+           above the background, not the other way round". Two changes:
+           1. The painting is drawn WELL BELOW the horizon (42% of the way down the ground)
+              using more of its source height, so the far field IS the painting.
+           2. Our ground starts fully TRANSPARENT at the horizon and only becomes opaque
+              as it comes toward the camera. The distance is the artist's; the near ground
+              is ours; there is no line where one becomes the other. */
         const par=Math.sin(pos/2600)*16 - playerX*26;         // gentle parallax
-        const srcH=sky.height*0.68, iw=Wd*1.12, dh=hz+2;
+        const groundH=Ht-hz;
+        const srcH=sky.height*0.88, iw=Wd*1.12, dh=hz+groundH*0.42;
         try{ cx.drawImage(sky, 0,0, sky.width,srcH, -(iw-Wd)/2 + par*0.35, 0, iw, dh); }catch(e){}
-        // ground: horizon haze → open field, so nothing cuts across the track
         const gg=cx.createLinearGradient(0,hz,0,Ht);
-        gg.addColorStop(0, hx(LIGHT.grass,1.16));
-        gg.addColorStop(0.35, LIGHT.grass);
-        gg.addColorStop(1, hx(LIGHT.grass,0.86));
-        cx.fillStyle=gg; cx.fillRect(0,hz,Wd,Ht-hz);
+        gg.addColorStop(0,    hxa(LIGHT.grass,1.16,0));      // horizon: the painting shows through
+        gg.addColorStop(0.16, hxa(LIGHT.grass,1.12,0.35));
+        gg.addColorStop(0.34, hxa(LIGHT.grass,1.02,0.88));
+        gg.addColorStop(0.52, hxa(LIGHT.grass,1.00,1));      // near field: fully ours
+        gg.addColorStop(1,    hxa(LIGHT.grass,0.86,1));
+        cx.fillStyle=gg; cx.fillRect(0,hz,Wd,groundH);
         if(NIGHT){   // neon city: let the skyline bleed a glow onto the ground
           const ng=cx.createLinearGradient(0,hz-30,0,hz+120);
           ng.addColorStop(0,'rgba(150,220,255,.30)'); ng.addColorStop(1,'rgba(150,220,255,0)');
           cx.fillStyle=ng; cx.fillRect(0,hz-30,Wd,150);
         }
         // atmospheric haze across the join, so the painting and our ground read as one distance
-        const hazeCol=NIGHT?'170,205,255':(SCN.prop==='cactus'?'255,214,160':'236,248,255');
-        const hb=cx.createLinearGradient(0,hz-26,0,hz+34);
-        hb.addColorStop(0,'rgba('+hazeCol+',0)'); hb.addColorStop(.45,'rgba('+hazeCol+',.55)'); hb.addColorStop(1,'rgba('+hazeCol+',0)');
-        cx.fillStyle=hb; cx.fillRect(0,hz-26,Wd,60);
+        /* A whisper of haze at the join and nothing more — the painting is meant to be
+           SEEN, not washed out. The road reaching a true vanishing point (the wedge in
+           draw()) is what removes the cut; haze was never the right tool for it. */
+        const hb=cx.createLinearGradient(0,hz-14,0,hz+26);
+        hb.addColorStop(0,'rgba('+FOG_RGB+',0)');
+        hb.addColorStop(.5,'rgba('+FOG_RGB+',.22)');
+        hb.addColorStop(1,'rgba('+FOG_RGB+',0)');
+        cx.fillStyle=hb; cx.fillRect(0,hz-14,Wd,40);
         return;
       }
       const sway=Math.sin(pos/2600)*34 - playerX*26;
@@ -1325,11 +1351,13 @@
       const hg=cx.createLinearGradient(0,hz-18,0,hz+18); hg.addColorStop(0,'rgba(233,246,255,0)'); hg.addColorStop(.5,'rgba(233,246,255,.6)'); hg.addColorStop(1,'rgba(233,246,255,0)');
       cx.fillStyle=hg; cx.fillRect(0,hz-18,Wd,36);
     }
+    const hzY=()=>horizonY;
     function draw(){
       drawBG();
       const posm=pos%trackLen;
       const base=segs[Math.floor(posm/segLen)%segs.length]; const basePct=(posm%segLen)/segLen;
       let x=0, dx=-(base.curve*basePct), maxy=Ht;
+      let _lastSeg=null;                  // the furthest road band actually drawn
       const camX=0;                    // camera fixed on the (straight) road centre; the KART slides across, the world does not pan
       for(let n=0;n<drawDist;n++){ const seg=segs[(base.index+n)%segs.length];
         const looped=seg.index<base.index; const cz=posm-(looped?trackLen:0);
@@ -1350,6 +1378,27 @@
         // checkered finish strip
         if(Math.abs(seg.index*segLen-FINVIS)<segLen*2){ const cw=(s1.w*2)/10;
           for(let k=0;k<10;k++){ cx.fillStyle=(k%2)?'#111':'#EEE'; cx.fillRect(s1.x-s1.w+k*cw,s1.y-3,cw,6); } }
+        _lastSeg={x:s2.x,y:s2.y,w:s2.w,c:c};
+      }
+      /* THE ROAD MEETS THE HORIZON AT A POINT.
+         It did not. drawDist segments end at a finite width — measured on a 900px canvas
+         the furthest drawn band was 108 pixels SHORT of the horizon and still 165 pixels
+         WIDE, so the road stopped in mid-air and the backdrop began. That is the cut.
+         Drawing enough segments to converge honestly would take about 5,400 of them
+         (the projection falls off as 1/z, so the last stretch is enormously long), which
+         is not sensible per frame. Instead the far field is closed with ONE wedge: the
+         road, its rumble strips and the verge, carried from the last real band to the
+         true vanishing point on the horizon. It is the same geometry the segments would
+         have drawn, in three polygons instead of five thousand. */
+      if(_lastSeg){
+        const vx=_lastSeg.x, vy=hzY(), c=_lastSeg.c;
+        const L=_lastSeg.x-_lastSeg.w, R=_lastSeg.x+_lastSeg.w, Y=_lastSeg.y;
+        const rw=_lastSeg.w*0.18;
+        // verge first, then rumble, then road — same painter's order as a segment
+        poly(0,Y, 0,vy, Wd,vy, Wd,Y, c.grass);
+        poly(L-rw,Y, vx,vy, vx,vy, L,Y, c.rumble);
+        poly(R+rw,Y, vx,vy, vx,vy, R,Y, c.rumble);
+        poly(L,Y, vx,vy, vx,vy, R,Y, c.road);
       }
       const order=[];
       for(let n=drawDist-1;n>=0;n--){ const seg=segs[(base.index+n)%segs.length]; if(!seg._vis) continue; const sc=seg.p1.screen;
