@@ -1302,12 +1302,6 @@
       if(!done_&&!o.kart){ cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(px,riderY+hd*0.4,hd*0.32,0,7); cx.fill(); }
       if(o.spin){ cx.font='700 '+Math.round(w*0.7)+'px serif'; cx.textAlign='center'; cx.fillText('💫',px,riderY-hd*0.1); cx.textAlign='left'; } }
 
-    /* hx() returns an opaque shade; the ground needs the same shade at an ALPHA so the
-       painting can show through the far field. */
-    function hxa(hexc,mul,a){ const c=hx(hexc,mul);
-      const m=/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(c);
-      if(!m) return c;
-      return 'rgba('+parseInt(m[1],16)+','+parseInt(m[2],16)+','+parseInt(m[3],16)+','+a+')'; }
     function drawBG(){
       const hz=horizonY;
       const sky=sgTex(SKY);
@@ -1316,26 +1310,24 @@
         // (its top ~68%, i.e. sky + skyline/hills) is cropped and mapped onto the area
         // above the horizon; the ground below is OUR gradient. Drawing the whole painting
         // full-height put its bottom edge mid-screen — a hard seam straight across the road.
-        /* THE PAINTING GOES BEHIND THE ROAD, NOT UNDER A LID.
-           The backdrop used to stop dead at the horizon (dh=hz+2) and an OPAQUE ground
-           gradient was painted from the horizon down — so the flat plane overwrote the
-           picture along a hard horizontal line, which is exactly "the road is rendered
-           above the background, not the other way round". Two changes:
-           1. The painting is drawn WELL BELOW the horizon (42% of the way down the ground)
-              using more of its source height, so the far field IS the painting.
-           2. Our ground starts fully TRANSPARENT at the horizon and only becomes opaque
-              as it comes toward the camera. The distance is the artist's; the near ground
-              is ours; there is no line where one becomes the other. */
+        /* THE PAINTING OWNS THE SKY; THE GROUND IS LEVEL AND OURS.
+           An earlier pass let the painting run 42% of the way down the ground under a
+           see-through gradient, hoping the far field could BE the picture. It cannot:
+           every painting's own ground-line sits at a different height (and moves with
+           the canvas aspect), so the road ribbon converging on OUR projection horizon
+           rode up over the painted hills and read as floating into the air. Now the
+           painting is cropped to strictly ABOVE the horizon and the ground below it is
+           opaque and level — and because the road genuinely converges to a point AT
+           that line (the projected far ribbon in draw()), there is no cut for a lid
+           to cause: road tip, ground edge and painting base all meet on one line. */
         const par=Math.sin(pos/2600)*16 - playerX*26;         // gentle parallax
         const groundH=Ht-hz;
-        const srcH=sky.height*0.88, iw=Wd*1.12, dh=hz+groundH*0.42;
-        try{ cx.drawImage(sky, 0,0, sky.width,srcH, -(iw-Wd)/2 + par*0.35, 0, iw, dh); }catch(e){}
+        const srcH=sky.height*0.68, iw=Wd*1.12;
+        try{ cx.drawImage(sky, 0,0, sky.width,srcH, -(iw-Wd)/2 + par*0.35, 0, iw, hz+2); }catch(e){}
         const gg=cx.createLinearGradient(0,hz,0,Ht);
-        gg.addColorStop(0,    hxa(LIGHT.grass,1.16,0));      // horizon: the painting shows through
-        gg.addColorStop(0.16, hxa(LIGHT.grass,1.12,0.35));
-        gg.addColorStop(0.34, hxa(LIGHT.grass,1.02,0.88));
-        gg.addColorStop(0.52, hxa(LIGHT.grass,1.00,1));      // near field: fully ours
-        gg.addColorStop(1,    hxa(LIGHT.grass,0.86,1));
+        gg.addColorStop(0,  hx(LIGHT.grass,1.14));            // lit at the horizon
+        gg.addColorStop(0.5,hx(LIGHT.grass,1.0));
+        gg.addColorStop(1,  hx(LIGHT.grass,0.86));            // shaded at the bumper
         cx.fillStyle=gg; cx.fillRect(0,hz,Wd,groundH);
         if(NIGHT){   // neon city: let the skyline bleed a glow onto the ground
           const ng=cx.createLinearGradient(0,hz-30,0,hz+120);
@@ -1378,7 +1370,13 @@
       const base=segs[Math.floor(posm/segLen)%segs.length]; const basePct=(posm%segLen)/segLen;
       let x=0, dx=-(base.curve*basePct), maxy=Ht;
       let _lastSeg=null;                  // the furthest road band actually drawn
-      const camX=0;                    // camera fixed on the (straight) road centre; the KART slides across, the world does not pan
+      /* THE CAMERA FOLLOWS THE KART, NOT THE ROAD. With camX=0 the camera was welded to
+         the road's centreline, so the kart's physics (going straight while the road
+         turns) showed up on screen as the KART sliding sideways — play-tested as "the
+         car is steering on its own". Now the camera rides with the kart: the kart draws
+         dead centre and never moves; steering and bends pan the WORLD under it, which is
+         what "the road turns, the car goes straight" looks like from a chase camera. */
+      const camX=playerX*roadW;
       for(let n=0;n<drawDist;n++){ const seg=segs[(base.index+n)%segs.length];
         const looped=seg.index<base.index; const cz=posm-(looped?trackLen:0);
         project(seg.p1, camX - x,        camH, cz);
@@ -1411,7 +1409,10 @@
          screen pixel. ~110 polygons for a road that genuinely bends with the track all
          the way down to a sub-pixel sliver at the horizon. */
       if(_lastSeg){
-        const c=_lastSeg.c;
+        /* one FIXED colour set for the whole far ribbon: it used to inherit the last
+           segment's colour, which alternates light/dark every rumbleLen segments — so at
+           speed the entire distant road strobed ~15x a second. */
+        const c=LIGHT;
         let pxD=_lastSeg.x, pwD=_lastSeg.w, pyD=_lastSeg.y;
         let n=drawDist;
         while(pyD>horizonY+1 && n<6000){
@@ -1422,7 +1423,7 @@
           const sc=camDepth/z;
           const y=horizonY + sc*camH*Ht/2;       // camera.y is -camH: the road rises TOWARD the horizon from below
           if(pyD-y<1) continue;                  // sub-pixel step: accumulate, draw later
-          const xs=Wd/2 + sc*xf*Wd/2, w=sc*roadW*Wd/2;
+          const xs=Wd/2 + sc*(xf-camX)*Wd/2, w=sc*roadW*Wd/2;
           /* no grass band out here — the ground gradient (and the painting through it)
              already owns the far field, and ~110 alpha-blended full-width polys a frame
              is what pushed p99 from 17ms to 33. Rumble stops once it is a sliver. */
@@ -1543,14 +1544,11 @@
         else { const r=o.r; drawKart(o.sx,o.sy,w*2.15,r.col,{sprite:r.sprite,glyph:r.glyph},{spin:r.spin>0,kart:'kart-red'}); }
         cx.globalAlpha=1; cx.restore();
       });
-      // Straight flat road + fixed camera: place the kart ANALYTICALLY at its lane on the
-      // near road (projection solved at the kart's screen row) — stable every frame, no
-      // per-segment anchor to wobble. Items at the same z project identically, so what you
-      // see is what you hit; the kart holds its lane rock-steady unless steered.
+      // Chase camera: the kart IS the camera's anchor, so it draws dead centre every
+      // frame — the road pans under it. Items at the same z project through the same
+      // camX, so what you see is still exactly what you hit.
       const pw=Wd*0.115, py=Ht-14;
-      const kScale=(py-horizonY)/(camH*Ht/2);            // projection scale at the kart's row
-      const kHalfW=kScale*roadW*Wd/2;                    // road half-width there
-      const px=Wd/2 + kHalfW*playerX;
+      const px=Wd/2;
       cx.save(); cx.translate(px,py); cx.rotate(steer*0.05);
       drawKart(0,0,pw,'#F0B429',{av:heroKart},{boost:boostT>0,kart:KART,tint:opts.tint});
       cx.restore();
