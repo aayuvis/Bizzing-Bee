@@ -120,6 +120,13 @@
   const starHTML = (n, size) => `<span style="font-size:${size || 13}px;letter-spacing:2px;color:#E8A81C;white-space:nowrap">${'★'.repeat(n)}<span style="opacity:.32">${'★'.repeat(5 - n)}</span></span>`;
   /* Practice reports back through here (app3's exitTrain calls it): best % sticks,
      and crossing the practice gate is announced, because that IS the unlock. */
+  /* the recorded best for a stop, for app3's session summary — the banner there must
+     reflect what was RECORDED, not the mini-round the child just finished */
+  window.SB_TRAIL_BEST = function (uid) {
+    try { const c = active(); const u = unitsOf(courseOfId(uid)).find(x => x.id === uid); if (!c || !u) return null;
+      const r = (tr(c).st || {})[uid + ':' + lapOf(c)] || {};
+      return { p: r.p || 0, gate: PGATE }; } catch (e) { return null; }
+  };
   window.SB_TRAIL_PRACTICED = function (uid, right, done) {
     try {
       const c = active(); const u = unitsOf(courseOfId(uid)).find(x => x.id === uid); if (!c || !u) return;
