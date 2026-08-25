@@ -501,8 +501,17 @@
        centre, where floor and ceil both name the cell you are already standing in. */
     function nextCell(v,d){ return d>0?Math.floor(v)+1 : d<0?Math.ceil(v)-1 : Math.round(v); }
     const TURNWIN=0.4;      // cells: how early a turn may be entered before the junction
-    function step(ent,sp){ // grid mover with desired-turn buffering
-      const spd=sp/60, thr=spd*0.6;   // snap window MUST be smaller than the per-frame step, or the bee vibrates in place
+    /* Grid mover with desired-turn buffering. `sp` is CELLS PER SECOND and `dt` is the
+       real elapsed seconds — it used to be `sp/60`, a fixed distance PER FRAME on the
+       assumption that every frame is exactly 1/60s. It is not: the loop below was a
+       setInterval drifting against the display refresh, so the bee covered the same
+       distance in frames of different lengths and read as jumping rather than gliding.
+       Distance per second is now constant whatever the frame does. `thr` scales with the
+       step, which keeps the snap window smaller than it — the invariant that stops the
+       bee vibrating in place at a cell centre. dt is clamped so a background tab or a
+       hitch cannot teleport anyone through a wall. */
+    function step(ent,sp,dt){
+      const spd=sp*Math.max(0.001,Math.min(0.05,dt||1/60)), thr=spd*0.6;
       /* A turn used to be accepted ONLY within one step of a cell centre, so an arrow
          pressed a moment late was dropped in silence and the player waited out a whole
          cell — often a whole corridor — before it took. Play-testing read that as the
@@ -551,13 +560,17 @@
       const tick=setInterval(()=>{ if(!card){ clearInterval(tick); return; } card.t--; el.querySelector('#sg-ct').textContent=card.t;
         if(card.t<=0){ clearInterval(tick); el.style.display='none'; card=null; } },1000);
     }
-    let last=Date.now(), dotTimer=0, loop=null;
+    /* Every other engine in this file drives on requestAnimationFrame; this one was the
+       last on setInterval(1000/60), which free-runs against the display refresh and lands
+       frames unevenly — visible judder even at a nominal 60fps. */
+    let last=Date.now(), dotTimer=0, loop=null, raf=null;
     function frame(){
-      if(over){ if(loop){ clearInterval(loop); loop=null; } return; }
+      if(over){ if(loop){ clearInterval(loop); loop=null; } if(raf){ cancelAnimationFrame(raf); raf=null; } return; }
       try{
         if(!card){                                   // paused during a spell card
           const now=Date.now(), dt=Math.min(50, now-last); last=now;
-          step(bee,CFG.speed*1.25); moths.forEach(m=>step(m, flee>0?CFG.speed*0.6:CFG.speed));
+          const ds=dt/1000;
+          step(bee,CFG.speed*1.25,ds); moths.forEach(m=>step(m, flee>0?CFG.speed*0.6:CFG.speed, ds));
           flee=Math.max(0,flee-dt/1000);
           const bc=Math.round(bee.px), br=Math.round(bee.py);
           if(MAZE[br]&&MAZE[br][bc]===1){ MAZE[br][bc]=2; score+=10; dots--;
@@ -655,7 +668,7 @@
       el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; honeycombRun(host,opts,done); };
       el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); };
     }
-    loop=setInterval(frame, 1000/60);
+    (function pump(){ raf=requestAnimationFrame(()=>{ frame(); if(!over) pump(); }); })();
     return { destroy(){ over=true; if(loop){ clearInterval(loop); loop=null; } removeEventListener('keydown',key); } };
   }
 
@@ -1100,10 +1113,10 @@
         p2:{world:{y:y,z:(n+1)*segLen},camera:{},screen:{}},
         color:(Math.floor(n/rumbleLen)%2)?DARK:LIGHT, sprites:[]}); }
     const eI=(a,b,p)=>a+(b-a)*Math.pow(p,2), eIO=(a,b,p)=>a+(b-a)*(-Math.cos(p*Math.PI)/2+0.5);
-    // CURVED but FLAT: gentle curves are back (softened 30%) — the kart holds a WORLD-straight
+    // CURVED but FLAT: the authored curves at full strength — the kart holds a WORLD-straight
     // line, so on a bend the road slides away from under it and the player must steer into the
     // curve (no auto-tracking). Hills stay flattened: crest culling made rivals flicker/slice.
-    function road(enter,hold,leave,curve,hill){ hill=0; curve*=0.7; const sY=lastY(), eY=sY+hill*segLen, tot=enter+hold+leave; let i;
+    function road(enter,hold,leave,curve,hill){ hill=0; const sY=lastY(), eY=sY+hill*segLen, tot=enter+hold+leave; let i;
       for(i=0;i<enter;i++) addSeg(eI(0,curve,i/enter), eIO(sY,eY,i/tot));
       for(i=0;i<hold;i++)  addSeg(curve,              eIO(sY,eY,(enter+i)/tot));
       for(i=0;i<leave;i++) addSeg(eIO(curve,0,i/leave),eIO(sY,eY,(enter+hold+i)/tot)); }
@@ -1127,7 +1140,7 @@
     const items=[]; for(let n=70;n<segs.length-60;n+=Math.floor(CFG.boxEvery*(0.8+Math.random()*0.5))){ items.push({seg:n,off:(Math.random()*1.1-0.55),gone:false,k:Math.random()*6}); }
 
     /* ---- racers: the villains ---- */
-    const maxV=segLen*46, accel=maxV/4.6, offDecel=-maxV/1.6, offLimit=maxV/3.2, centri=0.32;
+    const maxV=segLen*46, accel=maxV/4.6, offDecel=-maxV/1.6, offLimit=maxV/3.2, centri=0.34;
     let pos=0, playerX=0, v=0, over=false, mode='howto', lap=1, hudT=1; // howto -> count -> race -> spell -> done
     let boostT=0, boostMul=1, shieldT=0, spinFlashT=0, countT=0, finishedRivals=0, gpCombo=0, offGrass=false;
     const heroKart=HERO;
@@ -1500,10 +1513,21 @@
          2.2 — the road crosses in 0.9s, a tap still nudges, and the kart answers. */
       const dxs=dt*2.2*Math.max(0.42,v/maxV);
       playerX+=steer*dxs;
-      // world-straight through bends: the road curves away under a hands-off kart, so the
-      // player steers INTO the curve to hold the racing line (this is not auto-correct —
-      // it is the absence of it)
-      playerX-=(seg.curve||0)*(v/maxV)*dt*0.4;
+      /* THE KART GOES STRAIGHT; THE ROAD TURNS AWAY UNDER IT.
+         This was already the intent and it did not read as one, for three reasons that
+         compounded. The authored curves were softened 30% (`curve*=0.7`), the drift
+         coefficient was a gentle 0.4, and `centri` — the centrifugal push, the whole
+         reason a bend throws a car wide — was declared on the maxV line and NEVER USED.
+         Measured: the hardest bend pushed 1.40 road-units/second against 2.20 of steering,
+         so the player needed 64% of the wheel to hold the line and the road never actually
+         threatened to lose them. It felt like the kart was on rails because, in effect,
+         it was.
+         Now: the authored curves are unsoftened (up to 5), and the push scales with the
+         SQUARE of speed, which is what centrifugal force does — a corner taken flat out
+         throws you wide, the same corner at half throttle barely tugs. At the hardest bend
+         at full speed the drift is 1.70 u/s against 2.20 of steer: the road takes 77% of
+         the wheel and lifting off is a real option. */
+      playerX-=(seg.curve||0)*Math.pow(v/maxV,2)*dt*centri;
       playerX=Math.max(-1.2,Math.min(1.2,playerX));
       const offRoad=(playerX<-0.95||playerX>0.95);
       if(offRoad){

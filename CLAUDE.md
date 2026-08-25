@@ -649,6 +649,29 @@ handlers. App lives in this folder; open `index.html` to run.
 - **Grand Prix steering was halved in an earlier pass and overshot.** At 1.1 a full road
   crossing took 1.8 SECONDS of holding, which is what "it's just self-driving" describes.
   2.2 crosses in 0.9s and a tap still only nudges.
+- **THE KART GOES STRAIGHT; THE ROAD TURNS AWAY UNDER IT — and for a long time it did not,
+  for three compounding reasons.** The authored curves were softened 30% (`curve*=0.7`),
+  the drift coefficient was a gentle `0.4`, and **`centri` — the centrifugal push, the
+  whole reason a bend throws a car wide — was declared on the `maxV` line and NEVER USED**
+  (one occurrence in the whole file). Measured: the hardest bend pushed 1.40 road-units/s
+  against 2.20 of steering, so 64% of the wheel held the line and the road never threatened
+  to lose you. Now the curves are unsoftened (up to 5) and the push is
+  `curve * (v/maxV)² * dt * centri` — squared, because that is what centrifugal force does:
+  the hardest bend flat out takes 77% of the wheel, the same bend at half throttle takes
+  19%, so lifting off is a real option. Guard: `tests/arcade-geometry.js` asserts centri is
+  APPLIED and not merely declared, and pins the drift-to-steer ratio.
+- **Honeycomb movement is time-based and on requestAnimationFrame.** `step()` used
+  `sp/60` — a fixed distance PER FRAME on the assumption every frame is 1/60s — while the
+  loop was the only `setInterval(1000/60)` left in saga2.js, free-running against the
+  display refresh. Uneven frames therefore moved the bee unevenly: play-tested as "not
+  moving smoothly, it's jumping". `step(ent,sp,dt)` now takes real elapsed seconds (clamped
+  so a hitch cannot teleport through a wall) and the loop is rAF like every other engine.
+- **Each Atlas region's cache is its OWN object** (`TRE_KIT` in trail.js): a wild honeycomb
+  in the Meadow, a buried amphora in the Forum, a pressed bookmark in the Library, a
+  bottled charge in the Storm. Same mechanic, same gating, same payout — but the thing you
+  find belongs to the place and the message names it instead of saying "Cache found". A
+  region with no entry falls back to a plain cache: a wrong object is worse than a plain
+  one.
 
 ## The two word-games must keep the WORD in front of the player
 Both were play-tested as "it stopped being about spelling", and both had the same shape of
