@@ -82,6 +82,58 @@
   const doneMap = c => course() === 'exp' ? tr(c).edone : tr(c).done;
   const chkMap = c => course() === 'exp' ? tr(c).echk : tr(c).chk;
   const gate = () => course() === 'exp' ? (T().rules.expeditionGate || .9) : (T().rules.gate || .8);
+  /* ---- stars: the stop always tells you how you are doing and what to do next ----
+     Play-tested as "I completed all the words but I am not told what I need to do to
+     qualify for the next round". The quiz used to be the ONLY gate and the only score.
+     Now every part of a stop counts, PRACTICE is the gate, and the card names the next
+     move at all times:
+       ★ Practice at 70%+        — opens the next stop (the bare minimum)
+       ★ Read the chapter        (Learn the idea)
+       ★ Flip through every word (Meet the words)
+       ★ Pass the Quiz           (the course gate, 80% / 90% Advanced)
+       ★ Ace the Quiz            (90% / 95% Advanced)
+     Per-child record: tr(c).st[unitId+':'+lap] = {l, w, p: best practice %, q: best
+     quiz %}. Old saves carry only the quiz % in doneMap — starsOf reads both, so a
+     stop passed last month keeps its quiz stars and its unlock. */
+  const QSTAR = () => course() === 'exp' ? 95 : 90;
+  const PGATE = 70;                       // practice % that opens the next stop
+  const stKey = (u, lap) => u.id + ':' + lap;
+  const stRec = (c, u, lap) => { const st = tr(c).st = tr(c).st || {}; return st[stKey(u, lap)] = st[stKey(u, lap)] || {}; };
+  function starsOf(c, u, lap) {
+    const r = (tr(c).st || {})[stKey(u, lap)] || {};
+    const q = Math.max(r.q || 0, (doneMap(c)[u.id] || {})[lap] || 0);
+    const p = Math.max(r.p || 0, q >= Math.round(gate() * 100) ? PGATE : 0);   // a passed quiz proves the words too
+    const s = [p >= PGATE, !!r.l, !!r.w, q >= Math.round(gate() * 100), q >= QSTAR()];
+    return { n: s.filter(Boolean).length, s, p, q };
+  }
+  /* the single next move, in priority order: unlock first, then the course gate,
+     then the completionist stars */
+  function nextStar(c, u, lap) {
+    const { s, p, q } = starsOf(c, u, lap);
+    if (!s[0]) return { act: 'trailPractice', cta: 'Train', txt: p > 0 ? `Practice again — your best is ${p}%, reach ${PGATE}% to open the next stop` : `Practice and get ${PGATE}% right to open the next stop` };
+    if (!s[3]) return { act: 'trailQuiz', cta: 'Quiz', txt: `Pass the Quiz — ${Math.round(gate() * 100)}%${q ? ` (best so far ${q}%)` : ''} — for another star` };
+    if (!s[1]) return { act: 'trailLesson', cta: 'Learn', txt: 'Read the chapter for another star' };
+    if (!s[2]) return { act: 'trailWords', cta: 'Browse', txt: 'Flip through every word for another star' };
+    if (!s[4]) return { act: 'trailQuiz', cta: 'Quiz', txt: `Ace the Quiz — ${QSTAR()}% or better — for the fifth star` };
+    return null;
+  }
+  const starHTML = (n, size) => `<span style="font-size:${size || 13}px;letter-spacing:2px;color:#E8A81C;white-space:nowrap">${'★'.repeat(n)}<span style="opacity:.32">${'★'.repeat(5 - n)}</span></span>`;
+  /* Practice reports back through here (app3's exitTrain calls it): best % sticks,
+     and crossing the practice gate is announced, because that IS the unlock. */
+  window.SB_TRAIL_PRACTICED = function (uid, right, done) {
+    try {
+      const c = active(); const u = unitsOf(courseOfId(uid)).find(x => x.id === uid); if (!c || !u) return;
+      state.trailCourse = courseOfId(uid);
+      const lap = lapOf(c);
+      const need = Math.min(10, (lapWords(u, lap, 24) || []).length || 10);
+      if (!done || done < need) return;                    // two words at 100% is not a session
+      const pct = Math.round((right / done) * 100);
+      const r = stRec(c, u, lap); const had = (r.p || 0) >= PGATE;
+      if (pct > (r.p || 0)) r.p = pct;
+      save();
+      if (!had && r.p >= PGATE) { try { sfx('win'); burstConfetti(40); } catch (e) {} flash(`⭐ ${pct}% — the next stop is open!`); }
+    } catch (e) {}
+  };
   function availableIn(u, lap) { if (course() === 'exp') return lap === 1 || !!(doneMap(active())[u.id] || {})[lap - 1] === false ? lap === 1 : true; return (u.laps || [u.lap || 1]).includes(lap); }
   function seq(c) { // ordered nodes for the current lap: units + checkpoint markers every 4th
     const lap = lapOf(c); const out = [];
@@ -95,7 +147,11 @@
     }
     return out;
   }
-  const passedNode = (c, node) => node.kind === 'unit' ? !!(doneMap(c)[node.u.id] || {})[lapOf(c)] : !!chkMap(c)[lapOf(c) + ':' + node.id];
+  /* a UNIT opens the road behind it at Practice >= PGATE (or a legacy quiz pass);
+     a CHECKPOINT is still its quiz — the every-4th-stop consolidation stays a quiz */
+  const passedNode = (c, node) => node.kind === 'unit'
+    ? (!!(doneMap(c)[node.u.id] || {})[lapOf(c)] || (((tr(c).st || {})[node.u.id + ':' + lapOf(c)] || {}).p || 0) >= PGATE)
+    : !!chkMap(c)[lapOf(c) + ':' + node.id];
   function frontier(c) { const s = seq(c); for (let i = 0; i < s.length; i++) if (!passedNode(c, s[i])) return i; return s.length; }
 
   /* ---- word pools ---- */
@@ -287,6 +343,7 @@
     set({ nav: 'trail', screen: 'app', trailView: 'act', trailAct: id, trailActCrs: crs, tq: null }); };
   app2.trailToMap = () => set({ nav: 'trail', screen: 'app', trailView: 'map', trailAct: null, trailStop: null, tq: null });
   app2.trailLesson = () => { const u = unit(state.trailUnit); const ch = chOf(u);
+    try { stRec(active(), u, lapOf(active())).l = 1; save(); } catch (e) {}
     state.trailReturn = u.id;
     state.nav = 'concepts';
     if (u.gi >= 0) { try { loadConcepts(); } catch (e) {} app2.openConcept(u.gi); return; }
@@ -295,10 +352,15 @@
   app2.trailWords = () => { const u = unit(state.trailUnit);
     needMap(() => { const c = active(); const ws = lapWords(u, lapOf(c), 24);
       state.sessionWords = ws.map(x => ({ w: x.w, d: x.d, s: x.s, p: x.p, o: '', r: x.h }));
+      if (ws.length <= 1) { try { stRec(c, u, lapOf(c)).w = 1; save(); } catch (e) {} }
       set({ trailView: 'words', trailWordIdx: 0 }); }); };
   app2.trailWordNav = d => { const n = (state.trailWordsN || 1);
     const step = d === 'next' ? 1 : d === 'prev' ? -1 : (+d || 0);
-    set({ trailWordIdx: Math.max(0, Math.min(n - 1, (state.trailWordIdx || 0) + step)) }); };
+    const idx = Math.max(0, Math.min(n - 1, (state.trailWordIdx || 0) + step));
+    /* the "met every word" star lands when the LAST card is reached, not on open */
+    if (idx === n - 1 && n > 1) { try { const u = unit(state.trailUnit); const c = active();
+      if (u && !stRec(c, u, lapOf(c)).w) { stRec(c, u, lapOf(c)).w = 1; save(); } } catch (e) {} }
+    set({ trailWordIdx: idx }); };
   app2.trailPractice = () => { const u = unit(state.trailUnit); const c = active();
     needMap(() => { const ws = lapWords(u, lapOf(c), 24);
       if (!ws.length) { flash('No words here yet'); return; }
@@ -322,6 +384,10 @@
     render(); };
   function finishQuiz() { const c = active(); const q2 = state.tq; const pct = q2.items.length ? q2.score / q2.items.length : 0;
     q2.pct = pct; q2.pass = pct >= gate();
+    /* the best full-quiz score sticks even on a fail — it feeds the quiz stars;
+       a revise round is missed-items-only, so its score proves nothing */
+    if (!state.trailChk && !q2.revising) { try { const u = unit(state.trailUnit);
+      const r = stRec(c, u, lapOf(c)); r.q = Math.max(r.q || 0, Math.round(pct * 100)); save(); } catch (e) {} }
     if (q2.pass) { addCoins(15); try { sfx('win'); burstConfetti(60); } catch (e) {}
       if (state.trailChk) chkMap(c)[lapOf(c) + ':' + state.trailChk] = Math.round(pct * 100);
       else { const u = unit(state.trailUnit); (doneMap(c)[u.id] = doneMap(c)[u.id] || {})[lapOf(c)] = Math.round(pct * 100); }
@@ -373,7 +439,9 @@
     const title = chk ? 'Checkpoint' : u.title.split('—')[0].trim();
     const tag = chk ? 'mixed quiz — no new words'
       : (u.kind === 'lesson' || course() === 'exp' ? 'lesson' : 'word family');
-    const score = passed ? (chk ? (chkMap(c)[lapOf(c) + ':' + node.id] || 0) : ((doneMap(c)[u.id] || {})[lapOf(c)] || 0)) + '%' : '';
+    /* a unit row wears its STARS; a checkpoint still wears its quiz score */
+    const score = chk ? (passed ? (chkMap(c)[lapOf(c) + ':' + node.id] || 0) + '%' : '')
+      : ((passed || starsOf(c, u, lapOf(c)).n) ? starHTML(starsOf(c, u, lapOf(c)).n, 12) : '');
     const act = chk ? `data-act="trailChk" data-arg="${escA(course() + '|' + node.id)}"` : `data-act="trailUnit" data-arg="${escA(u.id)}"`;
     const mark = passed ? '✓' : chk ? '◆' : String(i + 1);
     const av = isCur && window.SB_AVATAR ? SB_AVATAR(c.avatar || 'bizzy', 30) : '';
@@ -516,6 +584,7 @@
     const act = actsOf(course()).find(a => a.id === u.act); const world = act ? act.world : 'meadow';
     const guide = GUIDE[world] || 'honeypot';
     const passed = (doneMap(c)[u.id] || {})[lap];
+    const stars = starsOf(c, u, lap); const next = nextStar(c, u, lap);
     const gsvg = window.SB_AVATAR ? `<span style="width:64px;height:64px;flex-shrink:0;display:block">${SB_AVATAR(guide, 64)}</span>` : '';
     const stepCard = (n, title, sub, act2, done2, cta) => `<div style="display:flex;align-items:center;gap:13px;background:var(--bg2);border-radius:16px;padding:13px 15px;box-shadow:0 0 0 1px var(--line),var(--sh-rest)">
       <span style="width:38px;height:38px;flex-shrink:0;display:grid;place-items:center;border-radius:11px;background:${done2 ? 'var(--good)' : 'var(--chip)'};color:${done2 ? '#fff' : 'var(--accent)'};font-family:var(--display);font-weight:800">${done2 ? '✓' : n}</span>
@@ -527,17 +596,22 @@
         <div style="position:absolute;left:14px;right:14px;top:10px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px">
           <span style="justify-self:start">${bpill('trailBack', 'Map')}</span>
           <span style="justify-self:center;min-width:0;font-family:var(--display);font-weight:800;font-size:18px;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.45);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center">${esc(u.title)}</span>
-          <span style="justify-self:end;flex-shrink:0;font-size:11px;font-weight:800;color:#fff;background:rgba(0,0,0,.34);border:1px solid rgba(255,255,255,.24);border-radius:999px;padding:4px 11px;white-space:nowrap">Tier ${lap}${passed ? ' · ' + passed + '%' : ''}</span>
+          <span style="justify-self:end;flex-shrink:0;font-size:11px;font-weight:800;color:#fff;background:rgba(0,0,0,.34);border:1px solid rgba(255,255,255,.24);border-radius:999px;padding:4px 11px;white-space:nowrap;display:inline-flex;align-items:center;gap:7px">Tier ${lap} ${starHTML(stars.n, 12)}</span>
         </div></div>
       <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">${gsvg}
         <div style="position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:11px 14px;font-size:13.5px;line-height:1.5;box-shadow:var(--sh-rest)">${esc(String(ch.concept || '').split(/(?<=[.!?])\s/).slice(0, 2).join(' '))}</div></div>
       <div style="display:grid;gap:10px">
-        ${stepCard(1, 'Learn the idea', 'The full chapter — cards, method' + (u.gi >= 0 ? ', narration' : ''), 'trailLesson', false, 'Open')}
-        ${stepCard(2, 'Meet the words', 'Flip through this stop’s words', 'trailWords', false, 'Browse')}
-        ${stepCard(3, 'Practice', 'Say it, spell it out loud, type it', 'trailPractice', false, 'Train')}
-        ${stepCard(4, 'The Quiz', 'Concept + spelling + meaning · ' + Math.round(gate() * 100) + '% wins the stop', 'trailQuiz', !!passed, passed ? 'Again' : 'Go!')}
+        ${stepCard(1, 'Learn the idea', 'The full chapter — cards, method' + (u.gi >= 0 ? ', narration' : '') + ' · ⭐', 'trailLesson', stars.s[1], 'Open')}
+        ${stepCard(2, 'Meet the words', 'Flip through to the last card · ⭐', 'trailWords', stars.s[2], 'Browse')}
+        ${stepCard(3, 'Practice', stars.p > 0 ? `Best ${stars.p}% · ${PGATE}%+ opens the next stop · ⭐` : `${PGATE}%+ opens the next stop · ⭐`, 'trailPractice', stars.s[0], 'Train')}
+        ${stepCard(4, 'The Quiz', `Pass at ${Math.round(gate() * 100)}% ⭐ · ace at ${QSTAR()}% ⭐${stars.q ? ` · best ${stars.q}%` : ''}`, 'trailQuiz', stars.s[3], stars.s[3] ? 'Again' : 'Go!')}
       </div>
-      <p style="font-size:12px;color:var(--muted);font-weight:600;margin-top:12px;text-align:center">The quiz is the gate — everything else is how you win it.</p>
+      ${next
+        ? `<button data-act="${next.act}" style="display:flex;width:100%;align-items:center;gap:11px;margin-top:12px;padding:13px 16px;border-radius:14px;background:color-mix(in srgb,var(--treasure,#FFD24D) 26%,var(--bg2));border:1px solid color-mix(in srgb,var(--treasure,#FFD24D) 55%,var(--line));text-align:left">
+            <span style="font-size:17px">👉</span>
+            <span style="flex:1;font-size:13px;font-weight:700;line-height:1.4">${esc(next.txt)}</span>
+            <span style="flex-shrink:0;padding:8px 15px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:12.5px">${esc(next.cta)}</span></button>`
+        : `<p style="font-size:13px;font-weight:800;color:var(--good);margin-top:12px;text-align:center">★★★★★ — this stop is completely yours.</p>`}
     </div>`;
   }
   function viewWords() {
@@ -1178,6 +1252,8 @@
     const title = cut > 0 ? raw.slice(0, cut) : raw;
     const sub = node.kind === 'chk' ? 'A mixed quiz over everything so far — no new words.' : (cut > 0 ? raw.slice(cut + 3) : '');
     const score = node.kind === 'unit' ? ((doneMap(c)[u.id] || {})[lapOf(c)] || 0) : (chkMap(c)[lapOf(c) + ':' + node.id] || 0);
+    const uStars = u ? starsOf(c, u, lapOf(c)) : null;
+    const uNext = (u && !locked) ? nextStar(c, u, lapOf(c)) : null;
     const goAct = node.kind === 'unit' ? 'trailUnit' : 'trailChk';
     const goArg = node.kind === 'unit' ? u.id : (crs + '|' + node.id);
 
@@ -1195,15 +1271,17 @@
         <div style="display:flex;align-items:flex-start;gap:13px">
           <span style="width:40px;height:40px;flex-shrink:0;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:15px;${st(sel) === 'done' ? 'background:linear-gradient(160deg,#FFE49B,#E8A81C);color:#4A3306' : st(sel) === 'now' ? 'background:#FFFBEF;border:2px solid #F0B429;color:#7A5300' : 'background:var(--surface2);color:var(--muted)'}">${st(sel) === 'done' ? '✓' : (sel + 1)}</span>
           <div style="min-width:0;flex:1">
-            <div style="font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">Stop ${sel + 1} of ${n}${node.kind === 'chk' ? ' · checkpoint' : ''}${score ? ' · ' + score + '%' : ''}</div>
+            <div style="font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap">Stop ${sel + 1} of ${n}${node.kind === 'chk' ? ' · checkpoint' + (score ? ' · ' + score + '%' : '') : ''}${uStars ? ' ' + starHTML(uStars.n, 12) : ''}</div>
             <div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1.15;margin-top:3px">${esc(title)}</div>
             ${sub ? `<div style="font-size:13px;color:var(--muted);line-height:1.45;margin-top:4px">${esc(sub)}</div>` : ''}
+            ${uNext ? `<div style="font-size:12.5px;font-weight:700;line-height:1.45;margin-top:6px;color:var(--text)">👉 ${esc(uNext.txt)}</div>`
+              : (uStars && uStars.n >= 5) ? `<div style="font-size:12.5px;font-weight:800;margin-top:6px;color:var(--good)">Completely yours — five stars.</div>` : ''}
           </div>
         </div>
         <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:13px">
           ${locked
             ? `<span style="display:inline-flex;align-items:center;gap:7px;padding:11px 16px;border-radius:var(--r-md,10px);background:var(--surface2);color:var(--muted);font-weight:800;font-size:14px">${iconSVG('lock', 15)} Clear the earlier stops first</span>`
-            : `<button data-act="${goAct}" data-arg="${escA(goArg)}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:var(--r-md,10px);background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:14px;box-shadow:var(--edge)">${iconSVG(node.kind === 'chk' ? 'target' : 'steps', 15)} ${score ? 'Walk it again' : (node.kind === 'chk' ? 'Take the checkpoint' : 'Learn this stop')}</button>`}
+            : `<button data-act="${goAct}" data-arg="${escA(goArg)}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:var(--r-md,10px);background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:14px;box-shadow:var(--edge)">${iconSVG(node.kind === 'chk' ? 'target' : 'steps', 15)} ${node.kind === 'chk' ? (score ? 'Walk it again' : 'Take the checkpoint') : (uStars && uStars.n >= 5 ? 'Walk it again' : uStars && uStars.n > 0 ? 'Keep going' : 'Learn this stop')}</button>`}
           ${(!locked && u) ? `<button data-act="trailTrain" data-arg="${escA(u.id)}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 16px;border-radius:var(--r-md,10px);background:var(--paper,var(--bg2));border:1px solid var(--line);color:var(--ink,var(--text));font-weight:800;font-size:13.5px">${iconSVG('pencil', 15)} Train these words</button>` : ''}
         </div>
       </div></div>`;

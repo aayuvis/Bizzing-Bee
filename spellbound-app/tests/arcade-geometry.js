@@ -88,6 +88,17 @@ const DIM = {}; for (const m of dimLine.matchAll(/(easy|medium|hard|champ):\[(\d
   DIM[m[1]] = { cols: +m[2], rows: +m[3] };
 
 ok(!/moths\.length<CFG\.moths\+6/.test(src), 'the 16%-a-second moth spam is gone');
+// difficulty comes from moths that HUNT, not from more moths
+const CH = {}; for (const m of src.matchAll(/const CHASE=\{easy:([\d.]+),medium:([\d.]+),hard:([\d.]+),champ:([\d.]+)\}/g))
+  { CH.easy=+m[1]; CH.medium=+m[2]; CH.hard=+m[3]; CH.champ=+m[4]; }
+ok(CH.easy>0 && CH.easy<CH.medium && CH.medium<CH.hard && CH.hard<CH.champ,
+   `moths hunt with per-difficulty appetite (${CH.easy}/${CH.medium}/${CH.hard}/${CH.champ}), ascending`);
+ok(/const CHASE_R=8/.test(src), 'a moth only hunts what it can plausibly have noticed (range 8)');
+ok(/const HUNTERS=\{easy:1,medium:2,hard:2,champ:2\}/.test(src),
+   'at most two moths hunt at once — five converging chasers gang-wiped the play-tester');
+ok(/else if\(grace<=0\)\{ grace=2;/.test(src), 'two seconds of grace after a hit — no chained respawn deaths');
+ok(/ops\.sort\(\(a,b\)=>flee>0 \? dHome\(b\)-dHome\(a\) : dHome\(a\)-dHome\(b\)\)/.test(src),
+   'a hunting moth turns toward the bee, and AWAY while she holds royal jelly');
 ok(/if\(!lateMoth && t<=Math\.floor\(CFG\.time\/2\)\)/.test(src), 'exactly one late moth, once, at the halfway mark');
 ok(/function placeFlower\(\)/.test(src), 'the flower has a placement function, not a random cell');
 ok(/const d=Math\.abs\(c-bc\)\+Math\.abs\(r-br\); if\(d<2\) continue;/.test(src), 'the flower is placed relative to the BEE');
