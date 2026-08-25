@@ -58,7 +58,28 @@ const root = require('path').resolve(__dirname, '..');
     }
     await pg.close();
   }
+  // a Library destination goes back to the LIBRARY, not to Home — play-testing flagged
+  // that getting back there from deep inside was not obvious.
+  const pg2 = await b.newPage({ viewport: { width: 1180, height: 900 } });
+  await pg2.goto('file://' + root + '/index.html'); await pg2.waitForTimeout(3000);
+  await pg2.evaluate(() => { state.children=[{name:'T',avatar:'bee',coins:900,pow:{},age:9,
+    lists:{default:{xp:30}},activeList:'default',missed:[],unlockedThemes:['spellbound'],
+    unlockedConcepts:{},unlockedLists:{},questPath:'journey'}]; state.activeIdx=0; state.screen='app';
+    state.devUnlock=true; });   // these hubs sit behind plan gates; the back pill is what is under test
+  for (const [act, name] of [['openTyping','typing'],['openQuotes','quotes'],['openTraps','traps'],['openBuilder','builder']]) {
+    await pg2.evaluate(a => app[a] && app[a](), act); await pg2.waitForTimeout(600);
+    const r = await pg2.evaluate(() => { const p = document.querySelector('.sb-phead-l button');
+      return p ? { label: p.textContent.trim(), act: p.dataset.act, arg: p.dataset.arg } : null; });
+    if (!r) { errs.push(name + ': no back pill'); continue; }
+    if (!/Library/i.test(r.label)) errs.push(name + ': back pill says "' + r.label + '", not Library');
+    if (r.act !== 'setNav' || r.arg !== 'explore') errs.push(name + ': back pill goes to ' + r.act + '/' + r.arg);
+  }
+  // and Home-family screens still say Home
+  await pg2.evaluate(() => app.openCollection()); await pg2.waitForTimeout(500);
+  const hive = await pg2.evaluate(() => { const p = document.querySelector('.sb-phead-l button'); return p ? p.textContent.trim() : null; });
+  if (hive && !/Home/i.test(hive)) errs.push('My Hive back pill says "' + hive + '" — it is not a Library screen');
+  await pg2.close();
   await b.close();
-  console.log(errs.length ? 'FAIL\n' + errs.join('\n') : 'PASS — one back pill per screen, hard left, with the screen name centred against the page');
+  console.log(errs.length ? 'FAIL\n' + errs.join('\n') : 'PASS — one back pill per screen, hard left, name centred, and Library screens go back to the Library');
   process.exit(errs.length ? 1 : 0);
 })();

@@ -588,10 +588,8 @@ function tortoiseSVG(sz){ sz=sz||24; return `<svg width="${sz}" height="${sz}" v
 function cardsSVG(sz){ sz=sz||20; return `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block"><rect x="3.5" y="7.5" width="12" height="13" rx="2.4"/><path d="M8 7.5V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v9.5a2 2 0 0 1-2 2h-1.5"/></svg>`; }
 // split a sentence around its target word (and simple inflections) so we can read it aloud
 // WITHOUT speaking the answer — used by "Finish the Sentence"
-function maskParts(sentence, word){ const t=sentence||''; const w=(word||'').trim(); if(!w) return {before:t, after:'', matched:false};
-  let re; try{ re=new RegExp('\\b'+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'[a-z]*\\b','i'); }catch(e){ return {before:t, after:'', matched:false}; }
-  const m=t.match(re); if(!m) return {before:t, after:'', matched:false};
-  return { before:t.slice(0,m.index).trim(), after:t.slice(m.index+m[0].length).trim(), matched:true }; }
+/* maskParts is gone with the bleep: nothing splits a sentence around its word any
+   more. The WRITTEN masking is maskTxt / blankHTML, which are still very much in use. */
 function maskTxt(text, word){ const t=text||''; const w=(word||'').trim(); if(!w) return t;
   try{ return _applyMasks(t, w, '_____'); }catch(e){ return t; } }
 // Alternate/other senses of a word (validated WordNet layer in window.SB_ALT).
@@ -602,14 +600,19 @@ function altsHTML(word, mask){ const a=altsFor(word); if(!a||!a.length) return '
       <span style="font-size:13.5px;color:var(--text);line-height:1.5">${mask?blankHTML(s.d,word):esc(s.d)}</span></div>`).join('');
   return `<div style="margin-top:12px;padding-top:11px;border-top:1px dashed var(--line);text-align:left;max-width:40em;margin-left:auto;margin-right:auto">
     <div style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:1px">📖 Other meanings</div>${rows}</div>`; }
-function sayMasked(sentence, word){ try{ window.speechSynthesis.cancel(); }catch(e){}
-  const parts=maskParts(sentence, word);
-  if(!parts.matched){ const safe=(sentence||'').replace(new RegExp((word||'').replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'ig'),' beep '); deviceSpeak(safe||'beep',0.92); return; }
-  const speakPart=(txt)=>new Promise(res=>{ if(!txt){ res(); return; } let done=false; const fin=()=>{ if(done) return; done=true; res(); };
-    let u; try{ u=utter(txt,0.92); }catch(e){ return fin(); } u.onend=fin; u.onerror=fin;
-    try{ window.speechSynthesis.speak(u); }catch(e){ return fin(); }
-    setTimeout(fin, 1100 + txt.length*60); }); // fallback if onend never fires (flaky on some devices)
-  speakPart(parts.before).then(()=>{ beep(); return new Promise(r=>setTimeout(r,460)); }).then(()=>speakPart(parts.after)); }
+/* THE SENTENCE IS READ IN FULL, TARGET WORD AND ALL.
+   It used to bleep the word out — speak the first half, play a tone, pause, speak the
+   rest — on the reasoning that saying it would give the answer away. That is the wrong
+   channel to withhold. This is a SPELLING test: hearing the word is the entire point of a
+   sentence prompt, and it is what a pronouncer does at a real bee. What must never be
+   given away is the WRITTEN form, and that is masked separately (maskTxt / blankHTML on
+   the sentence, and the answer input). Play-testing was explicit that the placeholder tone
+   left people unsure what was even being asked.
+   Named for what it does now: sayMasked was a name that would mislead the next reader. */
+function saySentence(sentence, word){
+  const t=String(sentence||'').trim();
+  if(!t){ if(word) say(word); return; }
+  deviceSpeak(t, 0.92*(state.voiceRate||1)); }
 
 /* ---- concepts ---- */
 const conceptShort = (t) => (t||'').split('—')[0].trim();
@@ -1587,7 +1590,7 @@ const app = {
   clearReports:()=>{ state.wordReports=[]; save(); render(); flash('Reports cleared'); },
   wordCard:(w)=>{ const ws=state.sessionWords||[]; const i=ws.findIndex(x=>nkey(x.w)===nkey(w));
     if(i>=0){ state.luTab='revise'; state.reviseIdx=i; try{window.scrollTo(0,0);}catch(e){} render(); } else { say(w); } },
-  toggleSent:()=>{ const on=!state.showSent; if(on){ const w=curWord(); if(w&&w.s) sayMasked(w.s,w.w); } set({showSent:on}); },
+  toggleSent:()=>{ const on=!state.showSent; if(on){ const w=curWord(); if(w&&w.s) saySentence(w.s,w.w); } set({showSent:on}); },
   toggleOrigin:()=>set({showOrigin:!state.showOrigin}),
   luSetTab:(t)=>{ if(t==='vocab' && !state.vp && !state.vpAllDone) app.vocabNewQ(); set({luTab:t, heatReveal:false, coachCardView:false}); if(t==='practice') setTimeout(speak,250); if(t==='vocab') setTimeout(()=>{ try{ if(state.vp) say(state.vp.w.w); }catch(e){} },250); },
   // Practice Vocabulary — optional, no progression: pick the right meaning from 4 options,
@@ -3747,7 +3750,7 @@ const TY_LESSONS=[
   {id:'caps', name:'Capitals with Shift', seq:'Fox Jam Kid Sun The Bee Wins Big Now', tip:'Hold Shift with the OPPOSITE pinky, then tap the letter.'},
   {id:'words', name:'Common words', seq:'the and you that was for are with they have this from', tip:'The twelve most common words — type them until they flow.'},
   {id:'bee', name:'Bee words at your level', dyn:true, tip:'Your own spelling words — type them fast AND right.'},
-  {id:'sent', name:'Sentences from your words', dyn:'sent', tip:'Real sentences from your word bank — capitals, commas, full stops. Just like the online bee.'},
+  {id:'sent', name:'Sentences from your words', dyn:'sent', tip:'Real sentences from your word bank — capitals, commas, periods. Just like the online bee.'},
   {id:'mean', name:'Type the meaning', dyn:'mean', tip:'Hear the word, then type its meaning — spelling, typing and vocabulary in one drill.'},
 ];
 const TY_FINGER={q:'p',a:'p',z:'p',w:'r',s:'r',x:'r',e:'m',d:'m',c:'m',r:'i',f:'i',v:'i',t:'i',g:'i',b:'i',y:'I',h:'I',n:'I',u:'I',j:'I',m:'I',i:'M',k:'M',',':'M',o:'R',l:'R','.':'R',p:'P',';':'P'};
@@ -3883,6 +3886,11 @@ function vocDockColor(k){ if(k==='journey') return '#7C5CFF'; if(k==='review') r
    grey = not asked yet. Anonymized coloured tiles by default with the same tap-to-reveal
    eye toggle the coach uses; a revealed chip jumps to that word's card. Reads and writes
    nothing in luMastered/missedWords — spelling's heatmap stays its own. */
+/* Chip type for a mixed-length word tray: shorter words keep the full size, longer ones
+   step down so no single chip dominates the row. Capped in ch so the widest still wraps. */
+function chipType(w){ const L=String(w||'').length;
+  const px = L<=12?12 : L<=18?11 : L<=26?10 : L<=34?9.2 : 8.6;
+  return `font-size:${px}px;max-width:min(100%,${Math.min(26,Math.max(12,Math.ceil(L*0.62)))}ch)`; }
 function vocHeatmap(){ const deck=state.vocDeck; const words=state.vocWords||[];
   if(!deck||!words.length) return '';
   const v=vocProg(active());
@@ -4933,7 +4941,7 @@ function viewRevisions(){
 /* ===================== APP SHELL ===================== */
 function viewApp(){
   const S=state;
-  const EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,quotes:1,typing:1,builder:1,adv:1,traps:1,revisions:1,trivtrain:1,ipatrain:1};
+  const EXPLORE_NAVS=SB_EXPLORE_NAVS;
   const NAV_ART={home:'home',coach:'practice',explore:'explore',games:'arcade',progress:'progress',collection:'collection'};
   /* FIVE tabs. My Hive is not one: it is where your coins go, so the COINS PILL is its
      door, and it heads the drawer. (It briefly had a tab; a sixth crowded the phone bar
@@ -5296,14 +5304,21 @@ function viewHome(){
       </button>`:cardHold('Quote of the hour',132);
       return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:12px">
       <div class="sb-card" style="display:flex;align-items:center;gap:14px;min-height:178px;padding:14px">
-        ${(()=>{ const hasCard=c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar]&&typeof SB_AV_CARD==='function';
+        ${(()=>{ /* Two different questions, and they used to be answered by one flag.
+             WHICH ART to draw depends on the avatar worn — Bizzy and the plain bee are the
+             mascot, everyone else is their own portrait. WHETHER THE CARD DECK OPENS does
+             not: the deck is every card you OWN, and openAvDeck already clamps a start id
+             that is not in it. Tying the button to hasCard meant a child wearing the
+             standard Bizzy tapped their own picture and nothing happened. */
+          const hasCard=c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'&&window.SB_AVATARS&&SB_AVATARS.byId[c.avatar]&&typeof SB_AV_CARD==='function';
+          const deckN=(()=>{ try{ return SB_AVATARS.list.filter(a=>avOwned(c,a.id)&&typeof SB_AV_CARD==='function'&&SB_AV_CARD(a.id)).length; }catch(e){ return 0; } })();
           /* 1.5x the original 94/84 — the buddy is the first thing on Home and read small.
              avSrc switches to the full-size .webp above 96px, so the bigger draw is also a
              sharper source rather than an upscale of the 192px thumb. */
           const art=hasCard?avatarSVG(c.avatar,141):mascotSVG(S.mood);
           const inner=`<div style="width:144px;height:150px;flex-shrink:0;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center;position:relative">${art}</div>`;
-          return hasCard?`<button data-act="openAvDeck" data-arg="${c.avatar}" title="Flip through your avatar cards" style="flex-shrink:0;background:none;border:0;padding:0;cursor:pointer">${inner}</button>`
-                        :`<div style="position:relative;flex-shrink:0">${inner}</div>`; })()}
+          return deckN?`<button data-act="openAvDeck" data-arg="${escA(c.avatar||'')}" title="Flip through your avatar cards — ${deckN} owned" aria-label="Your avatar cards" style="flex-shrink:0;background:none;border:0;padding:0;cursor:pointer">${inner}</button>`
+                      :`<div style="position:relative;flex-shrink:0">${inner}</div>`; })()}
         <div style="min-width:0;flex:1">
           <div class="sb-cs">${greeting}</div>
           <div style="font-family:var(--display);font-weight:800;font-size:21px;line-height:1.1;margin-bottom:6px">${esc(c.name)}</div>
@@ -6134,6 +6149,9 @@ function chapterCoverCard(chap){ const f=CONCEPT_FAM[chap.name]||CONCEPT_FAM.Adv
    title it returns from, and it is the same object on every screen.
    `dark` is for the two places it sits on artwork rather than on paper.
    Exposed on window so trail.js and the other extension files share it. */
+/* The Library family. Hoisted out of viewApp so pageHead can read it: a screen you reached
+   FROM the Library should go back to the Library. */
+const SB_EXPLORE_NAVS={explore:1,concepts:1,journeys:1,themes:1,figurative:1,vocab:1,quotes:1,typing:1,builder:1,adv:1,traps:1,revisions:1,trivtrain:1,ipatrain:1};
 function backPill(act, label, arg, dark){
   const A=arg==null?'':` data-arg="${escA(String(arg))}"`;
   const sty = dark
@@ -6149,8 +6167,15 @@ try{ window.SB_BACK=backPill; }catch(e){}
    whatever is left over — a flex row with margin-auto drifts as the right side changes.
    Below 620px it stacks (.sb-phead in index.html) so the title never gets crushed. */
 function pageHead(title, meta, sub, right, backAct, backLabel, backArg, icon){
+  /* The default back is not always Home. Everything in the Library family — Typing, Quotes,
+     Vocabulary, Idioms, Trivia Training, the Sound Alphabet, Themes, Concepts, the Builder,
+     Traps — was reached FROM the Library, and play-testing flagged that getting back there
+     was not obvious. A screen only defaults to Home when it is not one of those. */
+  const _back = backAct || (SB_EXPLORE_NAVS[state.nav] && state.nav!=='explore' ? 'setNav' : 'goHome');
+  const _bl   = backLabel || (_back==='setNav' ? 'Library' : 'Home');
+  const _ba   = backArg!=null ? backArg : (_back==='setNav' ? 'explore' : null);
   return `<div class="sb-phead" style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:11px;margin-bottom:8px">
-      <span class="sb-phead-l" style="justify-self:start;display:flex;align-items:center">${backPill(backAct||'goHome', backLabel||'Home', backArg)}</span>
+      <span class="sb-phead-l" style="justify-self:start;display:flex;align-items:center">${backPill(_back, _bl, _ba)}</span>
       <span class="sb-phead-c" style="justify-self:center;min-width:0;display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;text-align:center">
         ${icon?`<span style="flex:none;display:inline-flex;align-items:center;line-height:0">${icon}</span>`:''}
         <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0;line-height:1.15">${title}</h2>${meta?`<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">${meta}</span>`:''}
@@ -6607,7 +6632,7 @@ function coachFlashCard(){
       <div style="flex:1;height:7px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--accent);width:${pct}%;transition:width .3s"></div></div>
       ${onRev?'<span style="color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12px;white-space:nowrap">⚑ On revise</span>':''}
     </div>
-    <div data-swipe="coach" class="coach-card" style="position:relative;max-width:340px;margin:0 auto;height:min(72vh,470px);border-radius:24px;overflow:hidden;touch-action:pan-y;-webkit-user-select:none;user-select:none">
+    <div data-swipe="coach" class="coach-card" style="position:relative;max-width:340px;margin:0 auto;min-height:min(72vh,470px);border-radius:24px;overflow:hidden;touch-action:pan-y;-webkit-user-select:none;user-select:none">
       <div class="coach-glimmer"></div>
       <!-- One d-pad everywhere in the app: ← previous · ↑ deck · ↓ revise · → next.
            Each edge is both a tap target and a label, and the arrow keys and swipes match. -->
@@ -6617,9 +6642,16 @@ function coachFlashCard(){
       <button data-act="cardNext" title="Next word (→ key)" aria-label="Next word" style="position:absolute;right:0;top:34px;bottom:34px;width:34px;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border:0;background:linear-gradient(270deg,color-mix(in srgb,var(--good) 22%,transparent),transparent);color:${okCol}"><span style="font-size:15px;font-weight:900">›</span><span style="font-size:9px;font-weight:800;writing-mode:vertical-rl;letter-spacing:.08em">NEXT</span></button>
       <button data-act="toggleCardView" title="Back to the deck (↑ key)" aria-label="Back to the deck" style="position:absolute;left:0;right:0;top:0;height:34px;z-index:4;display:flex;align-items:center;justify-content:center;gap:7px;border:0;background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 20%,transparent),transparent);color:var(--accent);font-size:9.5px;font-weight:800;letter-spacing:.09em">↑ DECK</button>
       <button data-act="cardRevise" title="Mark for revision (↓ key)" aria-label="Mark for revision" style="position:absolute;left:0;right:0;bottom:0;height:34px;z-index:4;display:flex;align-items:center;justify-content:center;gap:7px;border:0;background:linear-gradient(0deg,color-mix(in srgb,var(--treasure,#F0B429) 26%,transparent),transparent);color:${revCol};font-size:9.5px;font-weight:800;letter-spacing:.09em">↓ ${onRev?'ON REVISE':'REVISE'}</button>
-      <div style="position:relative;z-index:2;pointer-events:none;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:44px 40px 42px;overflow:auto">
-        <div style="font-family:var(--display);font-weight:800;${hwStyle(w.w,33)}">${esc(w.w)}</div>
-        ${w.sy&&w.sy.toLowerCase()!==(w.w||'').toLowerCase()?`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.04em;margin-top:4px">${esc(w.sy)}</div>`:''}
+      ${/* justify-content:center on a fixed-height flex column overflows BOTH ends, and a
+            browser cannot scroll above the start of its content — so on a 45-letter word the
+            top of the card became unreachable and the headword and the syllable line drew
+            over each other. The card now GROWS (min-height, not height) and the content is
+            centred by `margin:auto 0` on a single child, which centres when there is room
+            and clamps to the top when there is not. */''}
+      <div style="position:relative;z-index:2;pointer-events:none;min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;padding:44px 40px 42px">
+        <div style="margin:auto 0;width:100%;display:flex;flex-direction:column;align-items:center">
+        <div style="font-family:var(--display);font-weight:800;max-width:100%;${hwStyle(w.w,33)}">${esc(w.w)}</div>
+        ${w.sy&&w.sy.toLowerCase()!==(w.w||'').toLowerCase()?`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.04em;margin-top:4px;max-width:100%;overflow-wrap:anywhere;word-break:break-word;line-height:1.35">${esc(w.sy)}</div>`:''}
         <div style="display:flex;gap:10px;justify-content:center;margin:13px 0 4px;pointer-events:auto">
           <button data-act="cardSpeak" aria-label="Hear the word" title="Hear the word" style="width:46px;height:46px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',21)}</button>
           <button data-act="cardSpeakSlow" aria-label="Hear it slowly" title="Hear it slowly" style="width:46px;height:46px;border-radius:50%;background:var(--surface2);color:var(--accent);border:1px solid var(--line);display:grid;place-items:center">${tortoiseSVG(23)}</button>
@@ -6628,6 +6660,7 @@ function coachFlashCard(){
         ${w.s?`<div style="font-size:12.5px;color:var(--muted);line-height:1.55;margin-top:9px"><b style="color:var(--text)">Sentence.</b> ${esc(w.s)}</div>`:''}
         ${w.h?`<div style="display:flex;align-items:flex-start;gap:7px;font-size:12.5px;color:var(--text);line-height:1.5;margin-top:10px;background:var(--chip);border-radius:10px;padding:8px 11px"><span style="color:var(--accent);margin-top:1px;flex-shrink:0">${iconSVG('bulb',14)}</span><span>${esc(w.h)}</span></div>`:''}
         <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:12px">${w.p?chip('/ '+esc(w.p)+' /'):''}${w.o?chip(esc(w.o)):''}${w.ps?chip(esc(w.ps)):''}</div>
+        </div>
       </div>
     </div>`;
 }
@@ -6711,8 +6744,12 @@ function liveHeatmap(words, opts){
     }
     if(anon && isCur) return `<span title="current word — hidden" style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;padding:5px 9px;border-radius:6px;color:var(--muted);background:var(--surface2);box-shadow:0 0 0 2px var(--accent)">•••</span>`;
     /* A 58-letter word made this chip wider than a phone screen and pushed the whole page
-       sideways — cap it at the row width and let it wrap inside itself. */
-    return `<button data-act="wordCard" data-arg="${escA(w.w)}" title="open the learn card" style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;padding:5px 9px;border-radius:6px;max-width:100%;min-width:0;text-align:left;overflow-wrap:anywhere;word-break:break-word;line-height:1.25;color:${fg};background:${bg};${isCur?'box-shadow:0 0 0 2px var(--accent)':''}">${esc(w.w)}</button>`;
+       sideways — cap it at the row width and let it wrap inside itself.
+       And the tray holds words of wildly different lengths side by side, so a flat 12px
+       left "sapphic" looking oversized next to a 45-letter monster that ate a whole row.
+       chipType() steps the size down with length, the same idea hwStyle uses on headwords,
+       so every chip takes a comparable amount of the row. */
+    return `<button data-act="wordCard" data-arg="${escA(w.w)}" title="open the learn card" style="font-family:var(--display);font-variant-numeric:tabular-nums;${chipType(w.w)};font-weight:700;padding:5px 9px;border-radius:6px;min-width:0;text-align:left;overflow-wrap:anywhere;word-break:break-word;line-height:1.25;color:${fg};background:${bg};${isCur?'box-shadow:0 0 0 2px var(--accent)':''}">${esc(w.w)}</button>`;
   }).join('');
   const legend=[['var(--good)','Mastered'],['var(--bad)','Missed'],['var(--surface2)','New']].map(([c,l])=>`<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:700"><span style="width:11px;height:11px;border-radius:6px;background:${c};display:inline-block"></span>${l}</span>`).join('');
   const pct=Math.round(m/N*100);
@@ -8636,7 +8673,7 @@ function misspellings(w, n){ const out=new Set();
     x=>x.replace(/cc/,'c'), x=>x.replace(/ss/,'s'), x=>x.replace(/ph/,'f') ];
   let t=0; while(out.size<n && t<50){ t++; const c=ops[Math.floor(Math.random()*ops.length)](w); if(c && c!==w && /^[a-z'\- ]+$/i.test(c)) out.add(c); }
   return [...out]; }
-function mcSpeak(q){ if(!q) return; if(q.kind==='sentence') sayMasked(q.say, q.word); else if(q.kind==='spell'||q.kind==='origin') say(q.word); else if(q.kind==='idiom'||q.kind==='simile2'||q.kind==='vocab') say(q.say); /* 'meaning': stay silent so the word isn't given away */ }
+function mcSpeak(q){ if(!q) return; if(q.kind==='sentence') saySentence(q.say, q.word); else if(q.kind==='spell'||q.kind==='origin') say(q.word); else if(q.kind==='idiom'||q.kind==='simile2'||q.kind==='vocab') say(q.say); /* 'meaning': stay silent so the word isn't given away */ }
 const gameName=(t)=>{ const g=GAMES.find(x=>x.type===t); return g?g.name:'Game'; };
 let _gtimer=null;
 function clearGTimer(){ if(_gtimer){ clearInterval(_gtimer); _gtimer=null; } }

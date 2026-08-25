@@ -389,7 +389,7 @@
   /* EVERY CHOICE IS PUNCTUATED THE SAME WAY, and this is not cosmetic.
      The answer comes from the round's word and the distractors from wherever the
      pool found them, and the two banks are written differently: SB_VOCAB26
-     definitions are sentence-cased and end in a full stop, the library's are
+     definitions are sentence-cased and end in a period, the library's are
      lowercase fragments that do not. Printed side by side, the right answer was
      the only tidy one — a child could learn to pick it without knowing the word,
      which is a quiz that tests nothing. Normalising all four identically is what
