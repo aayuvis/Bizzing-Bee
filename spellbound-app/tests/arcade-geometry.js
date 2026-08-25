@@ -55,18 +55,24 @@ for (const [k, c] of Object.entries(FLY)) {
 console.log('\nBEE GRAND PRIX');
 const CENTRI = +src.match(/centri=([\d.]+);/)[1];
 const STEER  = +src.match(/const dxs=dt\*([\d.]+)\*Math\.max/)[1];
-// the centrifugal force must actually be USED, not merely declared
-ok(/playerX-=\(seg\.curve\|\|0\)\*Math\.pow\(v\/maxV,2\)\*dt\*centri/.test(src),
-   'the bend pushes the kart via centri, scaled by the SQUARE of speed');
+// the drift must be LINEAR in speed — a kart holding its heading slides across a
+// turning road at v x curvature. The v^2 "centrifugal" model meant half throttle
+// pulled with a QUARTER of the force, imperceptible at real playing speeds.
+ok(/playerX-=\(seg\.curve\|\|0\)\*\(v\/maxV\)\*dt\*centri/.test(src),
+   'the bend pushes the kart via centri, linear in speed (goes-straight model)');
+ok(!/Math\.pow\(v\/maxV,2\)\*dt\*centri/.test(src), 'the v^2 model (rails at half throttle) is gone');
 ok((src.match(/centri/g) || []).length >= 2, 'centri is applied somewhere, not just declared');
 ok(!/hill=0; curve\*=0\.7;/.test(src), 'the authored curves are no longer softened 30%');   // anchored to the CODE, not my comment about it
 // the hardest authored bend
 const CURVE_MAX = Math.max(...[...src.matchAll(/road\(\d+,\d+,\d+,(-?\d+(?:\.\d+)?),/g)].map(m => Math.abs(+m[1])));
-const driftFlat = CURVE_MAX * CENTRI, driftHalf = CURVE_MAX * 0.25 * CENTRI;
+const driftFlat = CURVE_MAX * CENTRI, driftHalf = CURVE_MAX * 0.5 * CENTRI;
 ok(CURVE_MAX >= 4, `hardest authored bend is ${CURVE_MAX}`);
 ok(driftFlat / STEER > 0.6, `flat out the hardest bend takes ${(driftFlat / STEER * 100).toFixed(0)}% of the wheel — the road fights back`);
 ok(driftFlat / STEER < 0.95, `and it is still holdable: ${driftFlat.toFixed(2)} u/s drift vs ${STEER.toFixed(2)} u/s steer`);
-ok(driftHalf / STEER < 0.3, `lifting off makes it easy — ${(driftHalf / STEER * 100).toFixed(0)}% of the wheel at half throttle`);
+ok(driftHalf / STEER > 0.3, `half throttle still pulls a felt ${(driftHalf / STEER * 100).toFixed(0)}% of the wheel — no more rails at cruising speed`);
+// the far road is drawn by continued projection, never a straight wedge
+ok(/while\(pyD>horizonY\+1 && n<6000\)/.test(src), 'the road past drawDist is projected on, following the curve');
+ok(!/poly\(L-rw,Y, vx,vy, vx,vy, L,Y, c\.rumble\)/.test(src), 'the straight horizon wedge (the grey pyramid on curves) is gone');
 ok(2 / STEER < 1.2, `a full road crossing takes ${(2 / STEER).toFixed(2)}s of holding (self-driving territory is >1.5s)`);
 // the item box is swept, not sampled
 ok(/const crossed=_wrapped \? \(iz>_prevPm \|\| iz<=_pm2\) : \(iz>_prevPm && iz<=_pm2\)/.test(src),
