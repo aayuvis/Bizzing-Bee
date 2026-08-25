@@ -2400,7 +2400,15 @@ const app = {
   selectChild:(i)=>{ i=+i; state.activeIdx=i; const c=state.children[i]; ensureLists(c); state.theme=(c&&c.theme)||'spellbound'; state.parentLogOpen=null; state.sessionListKey=null; syncMissed(); render(); },
   goPaywall:()=>set({showPaywall:true}), closePaywall:()=>set({showPaywall:false}),
   pickPlan:(p)=>set({plan:p}), upgrade:()=>{ pinGate(()=>{ set({premium:true, showPaywall:false}); flash('Welcome to Premium! 👑'); },'Start free trial — grown-ups only'); },
-  signOut:()=>set({screen:'landing', nav:'home', email:'', pw:''}),
+  /* THE sign-out. There used to be two controls and neither was right: this one only
+     returned to the landing screen (so "Sign out" was a lie), and the real one lived as a
+     chip inside the account card, invisible unless a parent happened to be signed in — so
+     a family playing offline had no sign-out at all. Calling it "Exit to the start screen"
+     described the mechanism honestly and answered a question nobody asks. One button now,
+     with the name everyone looks for: it signs the account out if there is one, and
+     always returns to the start screen. */
+  signOut:()=>{ try{ if(window.SB_AUTH && SB_AUTH.current && SB_AUTH.current()) SB_AUTH.signOut(); }catch(e){}
+    set({screen:'landing', nav:'home', email:'', pw:''}); },
   celebrateClose:()=>set({celebrate:null}),
   setAgeMode:(m)=>{ const c=active(); c.ageMode=m; save(); render(); },
   setAgeBand:(k)=>{ const c=active(); if(setAgeBand(c,k)){ save(); render(); } },
@@ -5162,12 +5170,18 @@ function viewDrawer(){
             ${row('builder','pencil','List Builder','custom list in five taps',state.nav==='builder')}
           </div>
         </details>
-        ${row('settings','gear','Theme & settings','worlds, voice, style',state.nav==='settings')}
+        ${row('settings','gear','Settings','look, sound, account and plan',state.nav==='settings')}
+        ${/* The same one control as the foot of Settings, in the other place people look
+             for it. Both dispatch app.signOut, which signs the account out if there is one
+             and always returns to the welcome screen. */''}
+        <button data-act="signOut" style="display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:10px 12px;margin-top:6px;border-radius:10px;background:transparent;border:0;border-top:1px solid var(--line);cursor:pointer;color:var(--bad,#D6453A)">
+          <span style="display:inline-flex;flex-shrink:0"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 17v2.4a1.6 1.6 0 0 1-1.6 1.6H5.6A1.6 1.6 0 0 1 4 19.4V4.6A1.6 1.6 0 0 1 5.6 3h7.8A1.6 1.6 0 0 1 15 4.6V7"/><path d="M10 12h10M17 8.6 20.4 12 17 15.4"/></svg></span>
+          <span style="min-width:0"><span style="display:block;font-weight:800;font-size:15px;line-height:1.15">Sign out</span>
+            <span style="display:block;font-size:12px;font-weight:650;opacity:.8">back to the welcome screen</span></span></button>
       </nav>
     </aside>`;
 }
 
-// bee accessories — cosmetic overlays on the mascot (viewBox matches mascotSVG)
 function streakCard(){ const c=active(); ensureLists(c); const t=todayKey(); const played=new Set(c.daysPlayed||[]);
   const days=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); days.push({on:played.has(k), today:k===t, dn:['S','M','T','W','T','F','S'][d.getDay()]}); }
   const dots=days.map(d=>`<div style="display:flex;flex-direction:column;align-items:center;gap:3px"><span style="width:17px;height:17px;border-radius:6px;display:inline-block;background:${d.on?'var(--accent)':'var(--surface2)'};${d.today?'box-shadow:0 0 0 2px var(--accent)':''}"></span><span style="font-size:12px;color:var(--muted);font-weight:700">${d.dn}</span></div>`).join('');
@@ -8019,7 +8033,7 @@ function viewSettings(){
     </div>
     ${advRow}
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:13px;border-top:1px solid var(--line);padding-top:13px">
-      ${_parent?`<button data-act="doSignOut" style="padding:9px 15px;border-radius:9px;background:var(--surface2);border:1px solid var(--bad);color:var(--bad);font-weight:800;font-size:13px">Sign out of ${esc(_parent.email)}</button>`:`<button data-act="openAuth" data-arg="signin" style="padding:9px 15px;border-radius:9px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">Parent sign in</button>`}
+      ${_parent?'':`<button data-act="openAuth" data-arg="signin" style="padding:9px 15px;border-radius:9px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">Parent sign in</button>`}
       <button data-act="openAdmin" style="padding:8px 13px;border-radius:9px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:12.5px">🛡️ Admin console</button>
       <a href="privacy.html" style="display:inline-flex;align-items:center;padding:8px 13px;border-radius:9px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:12.5px;text-decoration:none">🔒 Privacy &amp; Parents' Notice</a>
     </div></div>`;
@@ -8099,8 +8113,9 @@ function viewSettings(){
         ${line('Test coins','Tops the purse up to 1,000,000 so you can test buying. Switching it off puts the real balance back.',tog('toggleDevCoins',!!(c&&c.devCoins),'On','Off'))}
       </div>
     </details>
-    ${backPill('signOut','Exit to the start screen',null)}
-    <p style="margin:7px 2px 0;font-size:12px;color:var(--muted);text-align:center">Leaves the app open on the welcome screen. To sign the parent account out, use <b style="color:var(--text)">Account &amp; subscription</b> at the top.</p>
+    <button data-act="signOut" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px 18px;border-radius:13px;background:var(--surface2);border:1px solid var(--bad,#D6453A);color:var(--bad,#D6453A);font-weight:800;font-size:14.5px">
+      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 17v2.4a1.6 1.6 0 0 1-1.6 1.6H5.6A1.6 1.6 0 0 1 4 19.4V4.6A1.6 1.6 0 0 1 5.6 3h7.8A1.6 1.6 0 0 1 15 4.6V7"/><path d="M10 12h10M17 8.6 20.4 12 17 15.4"/></svg>Sign out</button>
+    <p style="margin:8px 2px 0;font-size:12px;color:var(--muted);text-align:center">${_parent?('Signs '+esc(_parent.email)+' out and returns to the welcome screen.'):'Returns to the welcome screen. No account is signed in — this device is playing offline.'}</p>
     <button data-act="devTap" style="display:block;width:100%;text-align:center;background:none;border:0;cursor:default;margin-top:14px;font-size:11.5px;color:var(--muted);font-weight:650">Bizzing Bee · made with 🐝 for spellers</button>
   </div>`;
 }
