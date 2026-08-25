@@ -433,7 +433,23 @@
     let scr=Math.floor(ROWS/2); if(scr%2===0) scr=Math.max(1,scr-1); let scc=Math.floor(COLS/2);
     try{ if(MAZE[scr][scc]===0) scc=Math.max(1,scc-1); MAZE[scr][scc]=2; }catch(e){}
     let bee={c:scc,r:scr,px:scc,py:scr,dir:[0,0],want:[0,0]};
-    let moths=[], score=0, lives=3, t=CFG.time, jelly=null, flee=0, flower=null, flowerT=5, card=null, over=false, fx=[];
+    let moths=[], score=0, lives=3, t=CFG.time, jelly=null, flee=0, flower=null, flowerT=2, card=null, over=false, fx=[];
+    let lateMoth=false, spelled=0;
+    /* A flower is the ONLY way to spell in this game, so it is placed within reach and
+       there is always one on the board. It used to pick a uniformly random open cell —
+       on a medium maze that averages a dozen cells of corridor away, often past a moth —
+       and only reappeared every nine seconds. Now: 3 to 6 cells from the bee, never on top
+       of a moth, and re-seeded the instant one is taken. */
+    function placeFlower(){
+      const bc=Math.round(bee.px), br=Math.round(bee.py);
+      const near=[], far=[];
+      for(let r=1;r<ROWS-1;r++) for(let c=1;c<COLS-1;c++){
+        if(!open(c,r)) continue;
+        const d=Math.abs(c-bc)+Math.abs(r-br); if(d<2) continue;
+        if(moths.some(m=>Math.abs(Math.round(m.px)-c)+Math.abs(Math.round(m.py)-r)<2)) continue;
+        (d<=6?near:far).push({c,r}); }
+      const pool=near.length?near:(far.length?far:null);
+      if(pool) flower=pool[Math.floor(Math.random()*pool.length)]; }
     // Celebratory splash — petal burst + shockwave ring + "+1 LIFE" pop, drawn in the loop.
     const trail=SGFX.trail(), shake=SGFX.shake(), motes=SGFX.motes(26,COLS*CELL,ROWS*CELL);
     function spawnSplash(){ const cw=COLS*CELL, ch=ROWS*CELL;
@@ -516,7 +532,7 @@
       el.style.display='grid'; try{ say(w.w); }catch(e){}
       const inp=el.querySelector('#sg-ci'); inp.focus();
       function submit(){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase(); wlog(w,ok);
-        if(ok){ score+=150; t+=15; lives=Math.min(5,lives+1); try{ if(typeof addCoins==='function') addCoins(20); }catch(_){}
+        if(ok){ spelled++; score+=150; t+=15; lives=Math.min(5,lives+1); try{ if(typeof addCoins==='function') addCoins(20); }catch(_){}
           el.style.display='none'; card=null; spawnSplash();
           try{flash('🌸 +1 life ❤ · +150 · +15 seconds · +20 🪙 — the meadow blooms!');}catch(_){} return; }
         else { try{flash('Not quite — the moth got that one.');}catch(_){} }
@@ -540,18 +556,27 @@
             SGFX.spark(fx,bc*CELL+CELL/2,br*CELL+CELL/2,4,['#FFE9A8','#F0B429'],{speed:1.9,decay:0.06,rx:2,ry:2.6});
             if(dots<=0){ over=true; finish(true); return; } }          // maze cleared → win the round
           if(J.c===bc&&J.r===br&&!J.got){ J.got=true; flee=6; }
-          if(flower && Math.round(flower.c)===bc && Math.round(flower.r)===br){ flower=null; spellCard(); }
+          if(flower && Math.round(flower.c)===bc && Math.round(flower.r)===br){ flower=null; flowerT=2; spellCard(); }
           moths.forEach(m=>{ if(Math.abs(m.px-bee.px)<0.5&&Math.abs(m.py-bee.py)<0.5){
             if(flee>0){ score+=50; m.px=6;m.py=1; SGFX.ring(fx,m.px*CELL+CELL/2,m.py*CELL+CELL/2,'150,180,255',{grow:9}); }
             else { lives--; shake.hit(11); trail.clear();
               SGFX.spark(fx,bee.px*CELL+CELL/2,bee.py*CELL+CELL/2,14,['#E0553C','#FF9C7A'],{speed:4});
               bee.px=6;bee.py=5;bee.dir=[0,0];
               if(lives<=0){ over=true; finish(false); } } } });
-          dotTimer+=dt/1000; if(dotTimer>=1){ dotTimer=0; t--; flowerT--; if(flowerT<=0&&!flower){ flowerT=9;
-            let c,r,tries=0; do{ c=1+Math.floor(Math.random()*(COLS-2)); r=1+Math.floor(Math.random()*(ROWS-2)); }while(!open(c,r)&&++tries<50);
-            flower={c,r}; }
-            if(Math.random()<0.16 && moths.length<CFG.moths+6){ moths.push({c:scc,r:1,px:scc,py:1,dir:[[1,0],[-1,0]][Math.floor(Math.random()*2)]}); }  // random moth spam
-            if(t<=0){ over=true; finish(score>=CFG.target); } }
+          dotTimer+=dt/1000; if(dotTimer>=1){ dotTimer=0; t--; flowerT--;
+            if(flowerT<=0&&!flower){ flowerT=3; placeFlower(); }
+            /* Moths no longer breed. This line used to add one on a 16% roll every second
+               up to CFG.moths+6, which saturated in 38 seconds and left EVERY difficulty
+               with a swarm: easy 8 moths, champ 11, in a maze of 51 to 130 open cells. The
+               per-difficulty counts above stopped meaning anything, and the round stopped
+               being about words — you spent it running. One late arrival, once, at the
+               halfway mark, is enough to keep the maze from going stale. */
+            if(!lateMoth && t<=Math.floor(CFG.time/2)){ lateMoth=true;
+              moths.push({c:scc,r:1,px:scc,py:1,dir:[[1,0],[-1,0]][Math.floor(Math.random()*2)]}); }
+            /* Time-out: the score alone used to decide it, and score comes from dots and
+               eaten moths — so it was possible to win without spelling a word. Two words is
+               a low bar and it makes the point: this is a spelling game with a maze in it. */
+            if(t<=0){ over=true; finish(score>=CFG.target && spelled>=2); } }
           draw();
         }
       }catch(err){ /* never let a render/logic error stop the loop — the bee must keep moving */ }
@@ -635,8 +660,8 @@
     // Real flappy feel: a world that actually moves, honest gravity, and towers spaced
     // ~500px apart (every = seconds between spawns, tuned to each speed) so you get time
     // to read the next gap instead of meeting a wall the moment the last one clears.
-    const CFG={easy:{gap:250,speed:2.4,pots:8,every:3.4},medium:{gap:210,speed:3.0,pots:10,every:2.8},
-               hard:{gap:185,speed:3.5,pots:10,every:2.4},champ:{gap:168,speed:3.9,pots:12,every:2.1}}[diff];
+    const CFG={easy:{gap:276,speed:2.7,pots:8,every:3.02},medium:{gap:232,speed:3.4,pots:10,every:2.47},
+               hard:{gap:204,speed:3.9,pots:10,every:2.15},champ:{gap:185,speed:4.4,pots:12,every:1.86}}[diff];
     const MAXLIVES=5;
     host.innerHTML='<div class="sg-hud"><span id="sg-pots">🍯 0/'+CFG.pots+'</span><span class="sg-flyprog"><i id="sg-fill"></i><b>⛩️</b></span><span id="sg-coins">🪙 0</span><span id="sg-lives"></span></div><canvas id="sg-cv"></canvas><div id="sg-card"></div>';
     const cv=host.querySelector('#sg-cv');
@@ -661,33 +686,42 @@
     const stars=[]; if(pal&&pal.stars) for(let i=0;i<pal.stars;i++) stars.push({x:Math.random()*Wd,y:Math.random()*Ht*0.8,r:0.6+Math.random()*1.5,tw:Math.random()*7});
     const birds=[]; 
     let holding=false;
-    const flap=e=>{ if(e.key!==' ')return; bee.vy=-5.6; e.preventDefault&&e.preventDefault(); };
-    const pdown=e=>{ if(e.target.closest&&e.target.closest('#sg-card,.sg-howto'))return; holding=true; if(bee.vy>-2.6) bee.vy=-3.9; e.preventDefault&&e.preventDefault(); };
+    const flap=e=>{ if(e.key!==' ')return; bee.vy=-7.0; e.preventDefault&&e.preventDefault(); };
+    const pdown=e=>{ if(e.target.closest&&e.target.closest('#sg-card,.sg-howto'))return; holding=true; if(bee.vy>-3.4) bee.vy=-5.0; e.preventDefault&&e.preventDefault(); };
     const pup=()=>{ holding=false; };
     addEventListener('keydown',flap);
     host.addEventListener('pointerdown',pdown); addEventListener('pointerup',pup); addEventListener('pointercancel',pup);
-    /* Collectibles are placed by the TOWERS, not by chance.
-       Every one of these used to pick its own random height with no idea where the pillars
-       were, so a honey pot could arrive flat against a wall — spell it or crash, pick one —
-       and a coin run could cross the gap the player was already lining up for. Play-testing
-       called both out, and they are the same bug.
-       Everything drifts left at CFG.speed, so relative positions never change: a collectible
-       released WITH a tower and centred on that tower's gap is still centred on it when it
-       reaches the bee. TRAIL sets it down just past the pillar, in air the bee is already
-       flying through, so collecting it costs no risk at all. */
-    const TRAIL=170;
-    let pending=[];          // collectibles waiting for a tower to tell them where the lane is
-    function spawn(){ const g=CFG.gap, y=60+Math.random()*(Ht-120-g); obs.push({x:Wd+30,y,g});
+    /* COLLECTIBLES SIT ON THE FLIGHT PATH — this is the second attempt and the first was
+       wrong in an instructive way.
+       Originally each pickup chose its own random height, blind to the pillars, so a honey
+       pot could arrive flat against a wall: spell it or crash, pick one. The first fix put
+       it 170px past a tower at THAT tower's gap height, which sounded right and plays
+       badly, because a flappy bee cannot hold a height. To take the pot it had to thread
+       gap N, then HOLD that line for a second, then immediately climb or dive to gap N+1 at
+       a different random height. Three precise manoeuvres for one word.
+       The bee's actual path is the line from gap N to gap N+1. So a pickup goes at the
+       MIDPOINT of that line: half way between the two towers, at the mean of their two gap
+       centres. It is exactly where the bee already is at exactly the moment it is there,
+       and everything drifts left at one speed so the geometry never moves.
+       That is why a pickup is placed when tower N+1 spawns, not tower N: only then are both
+       ends of the line known. */
+    let pending=[], prevTower=null;
+    function spawn(){ const g=CFG.gap, y=60+Math.random()*(Ht-120-g); const o={x:Wd+30,y,g}; obs.push(o);
       const mid=y+g/2, k=pending.shift();
-      if(k==='pot'&&!pot) pot={x:Wd+30+TRAIL,y:mid-18};        // pickup tests pot.y+18
-      else if(k==='coins') spawnCoins(mid,g);
-      else if(k==='heart') hearts.push({x:Wd+30+TRAIL,y:mid-16,ph:0}); }
+      if(k && prevTower){
+        const px=(prevTower.x+o.x)/2, py=(prevTower.mid+mid)/2;
+        if(k==='pot'&&!pot) pot={x:px,y:py-18};                 // pickup tests pot.y+18
+        else if(k==='coins') spawnCoins(px,py,prevTower.mid,mid,g);
+        else if(k==='heart') hearts.push({x:px,y:py-16,ph:0});
+      } else if(k) pending.unshift(k);        // no previous tower yet — wait one spawn
+      prevTower={x:o.x,mid}; }
     function spawnMoth(){ const big=Math.random()<0.14;
       moths.push({x:Wd+40,y:60+Math.random()*(Ht-140),ph:Math.random()*7,amp:14+Math.random()*26,sp:CFG.speed*(0.9+Math.random()*0.5),s:big?54:38,big}); }
-    function spawnCoins(mid,g){ const up=Math.random()<0.5;
-      // the arc has to stay inside the corridor, so its swing is bounded by the gap
-      const amp=Math.min(42,Math.max(12,g/2-34));
-      for(let i=0;i<5;i++) coins.push({x:Wd+30+TRAIL+i*34, y:mid+(up?-1:1)*Math.sin(i/4*Math.PI)*amp, ph:i*0.7}); }
+    /* A coin run is laid ALONG the path between the two gaps, five coins strung on that
+       line, rather than arced across the corridor. Following it IS flying the route. */
+    function spawnCoins(px,py,mA,mB,g){ const span=4*34;
+      for(let i=0;i<5;i++){ const f=(i-2)/4;                 // -0.5 .. +0.5 around the midpoint
+        coins.push({x:px+f*span, y:py+(mB-mA)*f, ph:i*0.7}); } }
     function spellStop(){
       const w=feed.next(); card={w};
       const el=host.querySelector('#sg-card');
@@ -711,9 +745,9 @@
       if(card||!started){ last=ts; requestAnimationFrame(frame); return; }
       const dt=Math.min(50,ts-last); last=ts; t+=dt/1000; potT-=dt/1000; mothT-=dt/1000; coinT-=dt/1000; heartT-=dt/1000;
       const GRACE=(t<3)||(t<graceUntil);
-      if(holding) bee.vy-=0.50;                                 // hold to climb (beats gravity)
+      if(holding) bee.vy-=0.65;                                 // hold to climb (beats gravity)
       if(GRACE){ bee.vy*=0.9; bee.y+=bee.vy; bee.y=Math.max(30,Math.min(Ht-40,bee.y)); }
-      else { spawnT+=dt/1000; bee.vy+=0.187; bee.vy=Math.min(bee.vy,7.5); bee.y+=bee.vy; }   // gravity −15% per tuning + a terminal fall speed
+      else { spawnT+=dt/1000; bee.vy+=0.243; bee.vy=Math.min(bee.vy,9.0); bee.y+=bee.vy; }   // gravity and lift scaled together: same feel, quicker answer
       if(!gate){
         if(spawnT>CFG.every){ spawnT=0; spawn(); }              // towers spaced to the world speed
         // Collectibles are QUEUED here and positioned by the next tower (see spawn()).
@@ -728,7 +762,7 @@
       obs.forEach(o=>o.x-=CFG.speed); if(pot) pot.x-=CFG.speed;
       moths.forEach(m=>{ m.x-=m.sp; m.ph+=dt/130; m.y+=Math.sin(m.ph)*0.8*(m.amp/22); });
       coins.forEach(c=>{ c.x-=CFG.speed; c.ph+=dt/240; });
-      hearts.forEach(h=>{ h.x-=CFG.speed*0.8; h.ph+=dt/300; });
+      hearts.forEach(h=>{ h.x-=CFG.speed; h.ph+=dt/300; });   // MUST match the towers, or a placed heart drifts off its lane
       obs=obs.filter(o=>o.x>-40); moths=moths.filter(m=>m.x>-70); coins=coins.filter(c=>c.x>-30); hearts=hearts.filter(h=>h.x>-30);
       // collisions — the CEILING is soft (just don't fly off-screen), but the GROUND is deadly
       if(bee.y<24){ bee.y=24; if(bee.vy<0) bee.vy=0; }
