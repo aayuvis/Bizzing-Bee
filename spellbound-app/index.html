@@ -342,9 +342,9 @@
 }
 </script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 viewBox%3D%220 0 64 64%22%3E%3Cellipse cx%3D%2215%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(-24 15 20)%22%2F%3E%3Cellipse cx%3D%2249%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(24 49 20)%22%2F%3E%3Cpath d%3D%22M27 17 Q23 7 21 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Cpath d%3D%22M37 17 Q41 7 43 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Ccircle cx%3D%2221%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Ccircle cx%3D%2243%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22 fill%3D%22%23FFC23D%22%2F%3E%3Cellipse cx%3D%2224%22 cy%3D%2230%22 rx%3D%2211%22 ry%3D%227%22 fill%3D%22%23FFD86E%22 opacity%3D%22.55%22%2F%3E%3CclipPath id%3D%22b%22%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22%2F%3E%3C%2FclipPath%3E%3Cg clip-path%3D%22url(%23b)%22%3E%3Crect x%3D%225%22 y%3D%2245%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3Crect x%3D%225%22 y%3D%2256%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3C%2Fg%3E%3Cellipse cx%3D%2217%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Cellipse cx%3D%2247%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Ccircle cx%3D%2224%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2225.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2224.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2240%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2241.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2240.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Cpath d%3D%22M26 49 Q32 55 40 49%22 fill%3D%22none%22 stroke%3D%22%233A1E5C%22 stroke-width%3D%222.8%22 stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E">
-<link rel="stylesheet" href="fonts/fonts.css?v=20260824m">
-<link rel="stylesheet" href="tokens.css?v=20260824m">
-<link rel="stylesheet" href="worlds4.css?v=20260824m">
+<link rel="stylesheet" href="fonts/fonts.css?v=20260824n">
+<link rel="stylesheet" href="tokens.css?v=20260824n">
+<link rel="stylesheet" href="worlds4.css?v=20260824n">
 
 <style>
   *{box-sizing:border-box}
@@ -955,13 +955,80 @@
      (#241E33), so lowering the image's opacity DARKENED the map instead of calming it.
      It is a paper tone now, and only dusk keeps a dark ground. */
   .atlas-board{position:relative;border-radius:20px;overflow:hidden;box-shadow:0 0 0 1px var(--line),0 14px 32px rgba(26,18,54,.2);background:#F5EEE0;line-height:0}
-  .atlas-board>img{display:block;width:100%;height:auto;opacity:.6;filter:saturate(.78) contrast(.96)}
+  /* THE PAINTING IS THE POINT. It used to be held at 60% opacity and desaturated (dusk
+     50%, high-contrast 34%) so the route and pins could read over it. Play-testing named
+     exactly what that produced: "fading away", "a translucent layer", "weird fog" on art
+     that is already painted misty. It was solving the right problem in the wrong place —
+     dimming the whole picture to make two things on top of it legible.
+     The art now runs near full strength and slightly WARMER than the file. Legibility is
+     handled where it belongs, on the route and the pins themselves: the stroke carries its
+     own shadow and every pin sits on a scrim ring (below). Fog is reserved for what is
+     genuinely not yet reachable — see .atlas-board.locked. */
+  .atlas-board>img{display:block;width:100%;height:auto;opacity:.97;filter:saturate(1.08) contrast(1.05)}
   :root[data-mode="white"] .atlas-board{background:#FAF7F1}
   :root[data-mode="dusk"] .atlas-board{background:#241E33}
-  :root[data-mode="dusk"] .atlas-board>img{opacity:.5;filter:saturate(.7) brightness(.94)}
-  /* Reduced motion is about movement, not contrast — but a speller who has asked for
-     high contrast wants the map to stop competing with the pins even more, not less. */
-  :root[data-contrast="high"] .atlas-board>img{opacity:.34;filter:saturate(.58)}
+  :root[data-mode="dusk"] .atlas-board>img{opacity:.92;filter:saturate(1.02) contrast(1.04) brightness(1.06)}
+  /* High contrast means the ROUTE gets bolder, not the painting fainter — dimming the art
+     to 34% was the very "fog" complaint, applied hardest to the people who need it least. */
+  :root[data-contrast="high"] .atlas-board>img{opacity:.9;filter:saturate(1.12) contrast(1.12)}
+  /* AMBIENT MOTION over the map — one motif per region (ACT_AMB in trail.js).
+     Sits BELOW the route and the pins (z-index 1 against their 2+) so it can never
+     obscure the journey, never takes a pointer, and stops completely under Reduce motion.
+     Each motif is one repeating gradient drifting on a long loop — no images, no video,
+     nothing added to the boot budget. */
+  .atlas-amb{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;
+    mix-blend-mode:screen;opacity:.5}
+  :root[data-mode="dusk"] .atlas-amb{opacity:.62}
+  .atlas-amb::before,.atlas-amb::after{content:"";position:absolute;inset:-30% -10%;}
+  /* bees: two staggered rows of small warm dots crossing the meadow at different speeds */
+  .amb-bees::before{background:radial-gradient(circle at 50% 50%,var(--ac) 0 1.6px,transparent 2.4px);
+    background-size:120px 84px;animation:atlas-cross 26s linear infinite}
+  .amb-bees::after{background:radial-gradient(circle at 50% 50%,var(--ac) 0 1.2px,transparent 2px);
+    background-size:171px 119px;opacity:.7;animation:atlas-cross 39s linear infinite reverse}
+  /* motes: fine dust lifting slowly through a shaft of light */
+  .amb-motes::before{background:radial-gradient(circle at 50% 50%,var(--ac) 0 1.3px,transparent 2.1px);
+    background-size:96px 96px;animation:atlas-lift 34s linear infinite}
+  .amb-motes::after{background:radial-gradient(circle at 50% 50%,var(--ac) 0 1px,transparent 1.7px);
+    background-size:143px 137px;opacity:.62;animation:atlas-lift 51s linear infinite}
+  /* rain: fine slanted streaks, driven */
+  .amb-rain::before{background:repeating-linear-gradient(104deg,transparent 0 13px,var(--ac) 13px 14px,transparent 14px 27px);
+    opacity:.42;animation:atlas-rain 2.6s linear infinite}
+  .amb-rain::after{background:repeating-linear-gradient(101deg,transparent 0 21px,var(--ac) 21px 22px,transparent 22px 43px);
+    opacity:.26;animation:atlas-rain 4.1s linear infinite}
+  /* rise: spores drifting upward off the ground */
+  .amb-rise::before{background:radial-gradient(circle at 50% 50%,var(--ac) 0 1.5px,transparent 2.3px);
+    background-size:108px 108px;animation:atlas-lift 21s linear infinite}
+  .amb-rise::after{background:radial-gradient(circle at 50% 50%,var(--ac) 0 1.1px,transparent 1.8px);
+    background-size:151px 129px;opacity:.6;animation:atlas-lift 31s linear infinite}
+  /* drift: spray and shimmer carried sideways */
+  .amb-drift::before{background:radial-gradient(ellipse at 50% 50%,var(--ac) 0 2px,transparent 3.4px);
+    background-size:134px 74px;animation:atlas-cross 30s linear infinite}
+  .amb-drift::after{background:radial-gradient(ellipse at 50% 50%,var(--ac) 0 1.4px,transparent 2.6px);
+    background-size:187px 101px;opacity:.6;animation:atlas-cross 44s linear infinite}
+  /* sparks: small bright points that flare rather than travel */
+  .amb-sparks::before{background:radial-gradient(circle at 50% 50%,var(--ac) 0 1.4px,transparent 2.2px);
+    background-size:117px 91px;animation:atlas-flare 3.8s ease-in-out infinite}
+  .amb-sparks::after{background:radial-gradient(circle at 50% 50%,var(--ac) 0 1.1px,transparent 1.9px);
+    background-size:163px 127px;animation:atlas-flare 5.6s ease-in-out infinite reverse}
+  @keyframes atlas-cross{to{transform:translateX(171px)}}
+  @keyframes atlas-lift{to{transform:translateY(-151px)}}
+  @keyframes atlas-rain{to{transform:translateY(58px)}}
+  @keyframes atlas-flare{0%,100%{opacity:.28}45%{opacity:.95}}
+  /* Reduce motion means REDUCE MOTION: the layer goes entirely, not merely slower. */
+  :root[data-motion="off"] .atlas-amb{display:none}
+  @media (prefers-reduced-motion:reduce){ .atlas-amb{display:none} }
+  /* Fog belongs to a region you have not REACHED yet — on the pin, because a board is
+     never wholly locked (its stops are). An unreached region recedes; a reached one is
+     bold; the painting behind them both stays at full strength. */
+  .atlas-pin.locked{filter:saturate(.55) brightness(.96);opacity:.82}
+  .atlas-pin.locked::before{opacity:.55}
+  .atlas-pin.done .atlas-chip{border-color:color-mix(in srgb,var(--treasure,#F0B429) 55%,transparent)}
+  /* The route and the pins carry their own legibility now, at every strength. */
+  .atlas-pin::before{content:"";position:absolute;left:50%;top:14px;width:46px;height:46px;
+    transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;z-index:-1;
+    background:radial-gradient(circle,rgba(255,251,242,.82) 0%,rgba(255,251,242,.5) 52%,rgba(255,251,242,0) 74%)}
+  :root[data-mode="dusk"] .atlas-pin::before{background:radial-gradient(circle,rgba(18,10,34,.8) 0%,rgba(18,10,34,.46) 54%,rgba(18,10,34,0) 76%)}
+
   /* Route ink. Light and white grounds get a warm brown that reads as a drawn road on
      pale paper; dusk keeps the original glow, which was always correct there. */
   .atlas-board{--rt-guide:rgba(104,68,26,.55);--rt-walk:#B4620E;--rt-sh:rgba(255,255,255,.55)}
@@ -1465,7 +1532,7 @@
   @keyframes lx-gleam{0%,100%{opacity:0;transform:translateY(-6px)}50%{opacity:1;transform:translateY(6px)}}
   @keyframes lx-string{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.7)}}
 </style>
-  <link rel="stylesheet" href="saga2.css?v=20260824m">
+  <link rel="stylesheet" href="saga2.css?v=20260824n">
 </head>
 <body>
 <div id="root">
@@ -1524,9 +1591,9 @@
 <p style="margin:28px 0 0;font-size:12.5px;color:#5A5470;line-height:1.55">Bizzing&trade; and Bizzing Bee&trade; are trademarks of the Bizzing Bee developer. Bizzing Bee is an independent study tool and is not affiliated with, sponsored by or endorsed by the Scripps National Spelling Bee, the North South Foundation or Merriam-Webster.</p>
 </main>
 </div>
-<script defer src="icons.js?v=20260824m"></script>
-<script defer src="icons-art.js?v=20260824m"></script>
-<script defer src="cover-art.js?v=20260824m"></script>
+<script defer src="icons.js?v=20260824n"></script>
+<script defer src="icons-art.js?v=20260824n"></script>
+<script defer src="cover-art.js?v=20260824n"></script>
 <script>/* Deferred scripts run after parsing, so this call has to wait for them —
    inline script runs at parse time and would find SB_ICON_MOTION undefined. The old
    try/catch would have swallowed that silently and simply left icon motion off. */
@@ -1579,46 +1646,46 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
 </script>
 <!-- Backend config + the real-accounts adapter. Both are inert until sb-config.js
      carries a project URL and anon key, so shipping them changes nothing yet. -->
-<script defer src="sb-config.js?v=20260824m"></script>
-<script defer src="voice-cdn.js?v=20260824m"></script>
-<script>window.SB_ASSET_V="?v=20260824m";</script>
+<script defer src="sb-config.js?v=20260824n"></script>
+<script defer src="voice-cdn.js?v=20260824n"></script>
+<script>window.SB_ASSET_V="?v=20260824n";</script>
 <!-- boot-lazy: everything the first screen does not need arrives after paint.
      Registry + idle order live in boot-lazy.js; call SB_LAZY.need(...) before
      opening a feature whose data is deferred. -->
-<script defer src="boot-lazy.js?v=20260824m"></script>
-<script defer src="words-data.js?v=20260824m"></script>
-<script defer src="words-extra.js?v=20260824m"></script>
-<script defer src="words-patch.js?v=20260824m"></script>
-<script defer src="themes-data.js?v=20260824m"></script>
-<script defer src="quotes.js?v=20260824m"></script>
-<script defer src="trivia-icons.js?v=20260824m"></script>
-<script defer src="trivia-data.js?v=20260824m"></script>
-<script defer src="tips-data.js?v=20260824m"></script>
-<script defer src="voice-manifest.js?v=20260824m"></script>
-<script defer src="voice-adv-manifest.js?v=20260824m"></script>
-<script defer src="voice-review.js?v=20260824m"></script>
-<script defer src="app.js?v=20260824m"></script>
-<script defer src="avatars-art.js?v=20260824m"></script>
-<script defer src="avatar-png.js?v=20260824m"></script>
-<script defer src="game-art.js?v=20260824m"></script>
-<script defer src="avatars.js?v=20260824m"></script>
-<script defer src="avatar-greetings.js?v=20260824m"></script>
-<script defer src="avatar-cards.js?v=20260824m"></script>
-<script defer src="app2.js?v=20260824m"></script>
-<script defer src="pricing.js?v=20260824m"></script>
-<script defer src="auth.js?v=20260824m"></script>
-<script defer src="supabase-auth.js?v=20260824m"></script>
-<script defer src="app3.js?v=20260824m"></script>
-<script defer src="worlds4.js?v=20260824m"></script>
-<script defer src="mockbee.js?v=20260824m"></script>
-  <script defer src="games-daily.js?v=20260824m"></script>
-  <script defer src="saga-art/saga-art.js?v=20260824m"></script>
-  <script defer src="saga-art/saga-map.js?v=20260824m"></script>
-  <script defer src="saga-art/worlds-art.js?v=20260824m"></script>
-  <script defer src="saga-art-dom.js?v=20260824m"></script>
-  <script defer src="saga2.js?v=20260824m"></script>
-<script defer src="trivia.js?v=20260824m"></script>
-<script defer src="advanced.js?v=20260824m"></script>
-<script defer src="trail.js?v=20260824m"></script>
+<script defer src="boot-lazy.js?v=20260824n"></script>
+<script defer src="words-data.js?v=20260824n"></script>
+<script defer src="words-extra.js?v=20260824n"></script>
+<script defer src="words-patch.js?v=20260824n"></script>
+<script defer src="themes-data.js?v=20260824n"></script>
+<script defer src="quotes.js?v=20260824n"></script>
+<script defer src="trivia-icons.js?v=20260824n"></script>
+<script defer src="trivia-data.js?v=20260824n"></script>
+<script defer src="tips-data.js?v=20260824n"></script>
+<script defer src="voice-manifest.js?v=20260824n"></script>
+<script defer src="voice-adv-manifest.js?v=20260824n"></script>
+<script defer src="voice-review.js?v=20260824n"></script>
+<script defer src="app.js?v=20260824n"></script>
+<script defer src="avatars-art.js?v=20260824n"></script>
+<script defer src="avatar-png.js?v=20260824n"></script>
+<script defer src="game-art.js?v=20260824n"></script>
+<script defer src="avatars.js?v=20260824n"></script>
+<script defer src="avatar-greetings.js?v=20260824n"></script>
+<script defer src="avatar-cards.js?v=20260824n"></script>
+<script defer src="app2.js?v=20260824n"></script>
+<script defer src="pricing.js?v=20260824n"></script>
+<script defer src="auth.js?v=20260824n"></script>
+<script defer src="supabase-auth.js?v=20260824n"></script>
+<script defer src="app3.js?v=20260824n"></script>
+<script defer src="worlds4.js?v=20260824n"></script>
+<script defer src="mockbee.js?v=20260824n"></script>
+  <script defer src="games-daily.js?v=20260824n"></script>
+  <script defer src="saga-art/saga-art.js?v=20260824n"></script>
+  <script defer src="saga-art/saga-map.js?v=20260824n"></script>
+  <script defer src="saga-art/worlds-art.js?v=20260824n"></script>
+  <script defer src="saga-art-dom.js?v=20260824n"></script>
+  <script defer src="saga2.js?v=20260824n"></script>
+<script defer src="trivia.js?v=20260824n"></script>
+<script defer src="advanced.js?v=20260824n"></script>
+<script defer src="trail.js?v=20260824n"></script>
 </body>
 </html>

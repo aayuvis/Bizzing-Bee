@@ -646,7 +646,11 @@
     const ring = done ? 'linear-gradient(160deg,#FFD24D,#C8791B)' : cur ? `linear-gradient(160deg,${a},${d})` : 'rgba(22,15,44,.52)';
     const size = cur ? 52 : 44;
     const av = cur && window.SB_AVATAR ? SB_AVATAR(c.avatar || 'bizzy', 30) : '';
-    return `<button data-act="trailAct" data-arg="${escA(crs + '|' + act.id)}" class="atlas-pin"
+    /* Fog belongs to a region you have NOT reached. Play-testing asked for exactly this
+       swap: bold art everywhere, and the mist kept for what is still ahead, so an unreached
+       region recedes instead of the whole map fading. It is on the PIN, not the board — a
+       board is never wholly locked, its stops are. */
+    return `<button data-act="trailAct" data-arg="${escA(crs + '|' + act.id)}" class="atlas-pin${locked ? ' locked' : ''}${done ? ' done' : ''}"
         style="left:${x}%;top:${y}%;--pz:${cur ? 3 : 2}" title="${escA(label)}">
       <span class="atlas-dot" style="width:${size}px;height:${size}px;background:${ring};
         box-shadow:${cur ? `0 0 0 5px color-mix(in srgb,${a} 26%,transparent),0 6px 16px rgba(10,6,26,.5)` : '0 4px 12px rgba(10,6,26,.45)'};
@@ -668,8 +672,10 @@
             them was at full strength. Over a map deliberately taken down to 42% they
             were the faintest marks on screen — and the route IS the journey. They read
             from CSS custom properties now, so light gets ink and dusk keeps its glow. */''}
-      <path d="${d}" fill="none" stroke="var(--rt-guide,rgba(255,255,255,.5))" stroke-width=".8" stroke-dasharray="1.4 2.2" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
-      ${upto >= 1 ? `<path d="${walked}" fill="none" stroke="var(--rt-walk,#FFD24D)" stroke-width="1.3" stroke-linecap="round" vector-effect="non-scaling-stroke"/>` : ''}</svg>`;
+      <path d="${d}" fill="none" stroke="var(--rt-guide,rgba(255,255,255,.5))" stroke-width=".8" stroke-dasharray="1.4 2.2" stroke-linecap="round" vector-effect="non-scaling-stroke"
+        style="filter:drop-shadow(0 1px 2px var(--rt-sh,rgba(24,14,4,.5)))"/>
+      ${upto >= 1 ? `<path d="${walked}" fill="none" stroke="var(--rt-walk,#FFD24D)" stroke-width="1.3" stroke-linecap="round" vector-effect="non-scaling-stroke"
+        style="filter:drop-shadow(0 1px 3px var(--rt-sh,rgba(24,14,4,.55)))"/>` : ''}</svg>`;
   }
 
   function atlasBoard(c, crs) {
@@ -1035,6 +1041,36 @@
      whole way and a solid gold overlay clipped to how far the speller has walked
      (pathLength=100 turns the dash array into a percentage, so it works whatever
      the real path length is). */
+  /* AMBIENT MOTION, ONE MOTIF PER REGION.
+     The map read as a static picture with pins on it; a completed Meadow should look
+     alive. Each region gets a small drifting layer keyed to what that place IS — bees over
+     the Meadow, dust motes in the Library, embers in the Storm, sparks off the Junkyard —
+     so the Roman Forum does not animate like a meadow. Pure CSS on one element, drawn
+     BELOW the route and pins so it can never obscure the journey, and every one of them
+     stops dead under Reduce motion (see .atlas-amb in index.html).
+     Regions with no entry get nothing rather than a generic default: a wrong motif reads
+     worse than none. */
+  const ACT_AMB = {
+    meadow:   ['bees',   '#F0B429'],   // bees working the flowers
+    library:  ['motes',  '#E8D9A8'],   // dust in the reading-room light
+    forum:    ['motes',  '#EAD9B0'],   // marble dust over the stones
+    storm:    ['rain',   '#BFD8FF'],   // driven rain
+    roots:    ['rise',   '#9FE0A8'],   // spores lifting off the root kingdom
+    strait:   ['drift',  '#BFE9FF'],   // spray carried along the water
+    junkyard: ['sparks', '#FFC46B'],   // sparks off the scrap
+    sprints:  ['drift',  '#FFE08A'],   // heat shimmer along the track
+    stage:    ['motes',  '#FFF0C2'],   // dust in the follow-spot
+    greysea:  ['drift',  '#CFE6F2'],
+    liars:    ['sparks', '#D9C0FF'],
+    farflung: ['rise',   '#FFD9A8'],
+    factory:  ['sparks', '#FFB86B'],
+    proving:  ['motes',  '#F2E2C0'],
+  };
+  function ambLayer(slug){
+    const key = String(slug || '').replace(/^map-/, '');
+    const a = ACT_AMB[key]; if (!a) return '';
+    return `<span class="atlas-amb amb-${a[0]}" style="--ac:${a[1]}" aria-hidden="true"></span>`;
+  }
   function actBoard(slug, m, pts, walked, marks, caches, dark) {
     const f = (pts[walked] ? pts[walked].f * 100 : 0).toFixed(1);
     /* 42px of board per stop is the least that keeps two markers apart. On a
@@ -1044,12 +1080,13 @@
     const minW = Math.max(1, pts.length) * 42;
     return `<div class="act-pan" id="sb-pan"><div class="atlas-board act-board" style="min-width:min(${minW}px,190vw)">
       <img src="app-art/${slug}.jpg" alt="" loading="lazy" decoding="async">
+      ${ambLayer(slug)}
       ${/* The advanced half reads darker on sight. That used to be a near-black wash,
             which was right when the painting underneath was at full strength; over a
             painting deliberately taken down to 42% it just makes mud. A violet tint at
             a third of the weight still says "this is the advanced road" and leaves the
             route and pins to carry the screen. */''}
-      ${dark ? '<span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(58,38,110,.07),rgba(58,38,110,.13));z-index:1;pointer-events:none"></span>' : ''}
+      ${dark ? '<span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(58,38,110,.10),rgba(58,38,110,.18));z-index:1;pointer-events:none"></span>' : ''}
       <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none">
         <path d="${m.d}" fill="none" stroke="var(--rt-guide,rgba(255,250,235,.72))" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 7" vector-effect="non-scaling-stroke"
           style="filter:drop-shadow(0 1px 2px var(--rt-sh,rgba(24,14,4,.5)))"/>
